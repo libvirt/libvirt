@@ -356,7 +356,7 @@ connect
 is automatically run with the *URI* parameter requested by the ``-c``
 option on the command line. The *URI* parameter specifies how to
 connect to the hypervisor. The URI docs
-`https://libvirt.org/uri.html <https://libvirt.org/uri.html>`_ list the
+`https://libvirt.org/uri.html <https://libvirt.org/uri.html>`__ list the
 values supported, but the most common are:
 
 
@@ -379,7 +379,7 @@ values supported, but the most common are:
 To find the currently used URI, check the *uri* command documented below.
 
 For remote access see the URI docs
-`https://libvirt.org/uri.html <https://libvirt.org/uri.html>`_ on how
+`https://libvirt.org/uri.html <https://libvirt.org/uri.html>`__ on how
 to make URIs. The *--readonly* option allows for read-only connection
 
 
@@ -879,7 +879,7 @@ domain capabilities XML (printed by ``domcapabilities`` command). In
 addition to the <cpu> element itself, this command accepts
 full domain XML, capabilities XML, or domain capabilities XML containing
 the CPU definition. For more information on guest CPU definition see:
-`https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#elementsCPU>`_. If *--error* is
+`https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#elementsCPU>`__. If *--error* is
 specified, the command will return an error when the given CPU is
 incompatible with host CPU and a message providing more details about the
 incompatibility will be printed out.
@@ -943,7 +943,7 @@ host CPU model found in the domain capabilities XML (printed by the
 ``domcapabilities`` command). In addition to the <cpu> element itself, this
 command accepts full domain XML, capabilities XML, or domain capabilities XML
 containing the CPU definition. For more information on guest CPU definition
-see: `https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#elementsCPU>`_.
+see: `https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#elementsCPU>`__.
 
 The *virttype* option specifies the virtualization type (usable in the 'type'
 attribute of the <domain> top level element from the domain XML). *emulator*
@@ -1819,8 +1819,8 @@ domid
 Convert a domain name (or UUID) to a domain id
 
 
-domif
------
+domif-getlink
+-------------
 
 **Syntax:**
 
@@ -1835,8 +1835,8 @@ purposes, *--persistent* is alias of *--config*.
 *interface-device* can be the interface's target name or the MAC address.
 
 
-domif
------
+domif-setlink
+-------------
 
 **Syntax:**
 
@@ -1979,7 +1979,7 @@ inbound or outbound bandwidth. *average,peak,burst,floor* is the same as
 in command *attach-interface*.  Values for *average*, *peak* and *floor*
 are expressed in kilobytes per second, while *burst* is expressed in kilobytes
 in a single burst at *peak* speed as described in the Network XML
-documentation at `https://libvirt.org/formatnetwork.html#elementQoS <https://libvirt.org/formatnetwork.html#elementQoS>`_.
+documentation at `https://libvirt.org/formatnetwork.html#elementQoS <https://libvirt.org/formatnetwork.html#elementQoS>`__.
 
 To clear inbound or outbound settings, use *--inbound* or *--outbound*
 respectfully with average value of zero.
@@ -2444,8 +2444,8 @@ domuuid
 Convert a domain name or id to domain UUID
 
 
-domxml
-------
+domxml-from-native
+------------------
 
 **Syntax:**
 
@@ -2462,8 +2462,8 @@ VMware/ESX hypervisor, the *format* argument must be ``vmware-vmx``.
 For the Bhyve hypervisor, the *format* argument must be ``bhyve-argv``.
 
 
-domxml
-------
+domxml-to-native
+----------------
 
 **Syntax:**
 
@@ -4392,7 +4392,7 @@ attach-device
 Attach a device to the domain, using a device definition in an XML
 file using a device definition element such as <disk> or <interface>
 as the top-level element.  See the documentation at
-`https://libvirt.org/formatdomain.html#elementsDevices <https://libvirt.org/formatdomain.html#elementsDevices>`_ to learn about
+`https://libvirt.org/formatdomain.html#elementsDevices <https://libvirt.org/formatdomain.html#elementsDevices>`__ to learn about
 libvirt XML format for a device.  If *--config* is specified the
 command alters the persistent domain configuration with the device
 attach taking effect the next time libvirt starts the domain.
@@ -4549,7 +4549,7 @@ specified.  The other two *peak* and *burst* are optional, so
 are expressed in kilobytes per second, while *burst* is expressed in
 kilobytes in a single burst at *peak* speed as described in the
 Network XML documentation at
-`https://libvirt.org/formatnetwork.html#elementQoS <https://libvirt.org/formatnetwork.html#elementQoS>`_.
+`https://libvirt.org/formatnetwork.html#elementQoS <https://libvirt.org/formatnetwork.html#elementQoS>`__.
 
 ``--managed`` is usable only for *hostdev* type and tells libvirt
 that the interface should be managed, which means detached and reattached
@@ -4719,7 +4719,7 @@ Update the characteristics of a device associated with *domain*,
 based on the device definition in an XML *file*.  The *--force* option
 can be used to force device update, e.g., to eject a CD-ROM even if it is
 locked/mounted in the domain. See the documentation at
-`https://libvirt.org/formatdomain.html#elementsDevices <https://libvirt.org/formatdomain.html#elementsDevices>`_ to learn about
+`https://libvirt.org/formatdomain.html#elementsDevices <https://libvirt.org/formatdomain.html#elementsDevices>`__ to learn about
 libvirt XML format for a device.
 
 If *--live* is specified, affect a running domain.
@@ -4957,7 +4957,7 @@ VIRTUAL NETWORK COMMANDS
 The following commands manipulate networks. Libvirt has the capability to
 define virtual networks which can then be used by domains and linked to
 actual network devices. For more detailed information about this feature
-see the documentation at `https://libvirt.org/formatnetwork.html <https://libvirt.org/formatnetwork.html>`_ . Many
+see the documentation at `https://libvirt.org/formatnetwork.html <https://libvirt.org/formatnetwork.html>`__ . Many
 of the commands for virtual networks are similar to the ones used for domains,
 but the way to name a virtual network is either by its name or UUID.
 
@@ -4986,7 +4986,7 @@ net-create
 
 Create a transient (temporary) virtual network from an
 XML *file* and instantiate (start) the network.
-See the documentation at `https://libvirt.org/formatnetwork.html <https://libvirt.org/formatnetwork.html>`_
+See the documentation at `https://libvirt.org/formatnetwork.html <https://libvirt.org/formatnetwork.html>`__
 to get a description of the XML network format used by libvirt.
 
 
