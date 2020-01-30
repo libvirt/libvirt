@@ -464,8 +464,13 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
     if (VIR_ALLOC(mig->nbd) < 0)
         return -1;
 
-    if (vm->def->ndisks &&
-        VIR_ALLOC_N(mig->nbd->disks, vm->def->ndisks) < 0)
+    mig->nbd->port = priv->nbdPort;
+    mig->flags |= QEMU_MIGRATION_COOKIE_NBD;
+
+    if (vm->def->ndisks == 0)
+        return 0;
+
+    if (VIR_ALLOC_N(mig->nbd->disks, vm->def->ndisks) < 0)
         return -1;
     mig->nbd->ndisks = 0;
 
@@ -495,9 +500,6 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
         mig->nbd->disks[mig->nbd->ndisks].capacity = entry->capacity;
         mig->nbd->ndisks++;
     }
-
-    mig->nbd->port = priv->nbdPort;
-    mig->flags |= QEMU_MIGRATION_COOKIE_NBD;
 
     ret = 0;
  cleanup:
