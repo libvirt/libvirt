@@ -461,8 +461,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
     /* It is not a bug if there already is a NBD data */
     qemuMigrationCookieNBDFree(mig->nbd);
 
-    if (VIR_ALLOC(mig->nbd) < 0)
-        return -1;
+    mig->nbd = g_new0(qemuMigrationCookieNBD, 1);
 
     mig->nbd->port = priv->nbdPort;
     mig->flags |= QEMU_MIGRATION_COOKIE_NBD;
@@ -470,8 +469,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
     if (vm->def->ndisks == 0)
         return 0;
 
-    if (VIR_ALLOC_N(mig->nbd->disks, vm->def->ndisks) < 0)
-        return -1;
+    mig->nbd->disks = g_new0(struct qemuMigrationCookieNBDDisk, vm->def->ndisks);
     mig->nbd->ndisks = 0;
 
     for (i = 0; i < vm->def->ndisks; i++) {
