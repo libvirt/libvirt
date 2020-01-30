@@ -61,7 +61,7 @@
         <tr>
           <td>Go</td>
           <td>
-            <a href="https://libvirt.org/sources/go/">libvirt</a>
+            <a href="https://libvirt.org/libvirt-go">libvirt</a>
           </td>
           <td>
             <a href="https://libvirt.org/git/?p=libvirt-go.git;a=summary">libvirt</a>
@@ -196,7 +196,7 @@
         <tr>
           <td>Go XML</td>
           <td>
-            <a href="https://libvirt.org/sources/go/">libvirt</a>
+            <a href="https://libvirt.org/libvirt-go-xml">libvirt</a>
           </td>
           <td>
             <a href="https://libvirt.org/git/?p=libvirt-go-xml.git;a=summary">libvirt</a>
