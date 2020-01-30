@@ -1,7 +1,7 @@
 #include <tunables/global>
 @{LIBVIRT}="libvirt"
 
-profile libvirtd /usr/sbin/libvirtd flags=(attach_disconnected) {
+profile libvirtd @sbindir@/libvirtd flags=(attach_disconnected) {
   #include <abstractions/base>
   #include <abstractions/dbus>
 
@@ -80,8 +80,8 @@ profile libvirtd /usr/sbin/libvirtd flags=(attach_disconnected) {
   /bin/* PUx,
   /sbin/* PUx,
   /usr/bin/* PUx,
-  /usr/sbin/virtlogd pix,
-  /usr/sbin/* PUx,
+  @sbindir@/virtlogd pix,
+  @sbindir@/* PUx,
   /{usr/,}lib/udev/scsi_id PUx,
   /usr/{lib,lib64}/xen-common/bin/xen-toolstack PUx,
   /usr/{lib,lib64}/xen/bin/* Ux,
@@ -98,9 +98,9 @@ profile libvirtd /usr/sbin/libvirtd flags=(attach_disconnected) {
   audit deny /sys/kernel/security/apparmor/matching rwxl,
   audit deny /sys/kernel/security/apparmor/.* rwxl,
   /sys/kernel/security/apparmor/profiles r,
-  /usr/{lib,lib64}/libvirt/* PUxr,
-  /usr/{lib,lib64}/libvirt/libvirt_parthelper ix,
-  /usr/{lib,lib64}/libvirt/libvirt_iohelper ix,
+  @libexecdir@/* PUxr,
+  @libexecdir@/libvirt_parthelper ix,
+  @libexecdir@/libvirt_iohelper ix,
   /etc/libvirt/hooks/** rmix,
   /etc/xen/scripts/** rmix,
 

@@ -30,16 +30,36 @@ SECURITY_DRIVER_APPARMOR_SOURCES = \
 	security/security_apparmor.c \
 	$(NULL)
 
+SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES_IN = \
+	security/apparmor/usr.lib.libvirt.virt-aa-helper.in \
+	security/apparmor/usr.sbin.libvirtd.in \
+	$(NULL)
+
+SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES = \
+	$(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES_IN:%.in=%)
+	$(NULL)
+
+security/apparmor/%: $(srcdir)/security/apparmor/%.in
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
+	$(SED) \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
+		-e 's|[@]sbindir[@]|@sbindir@|' \
+		-e 's|[@]runstatedir[@]|@runstatedir@|' \
+		-e 's|[@]libexecdir[@]|@libexecdir@|' \
+		$< > $@
+
+BUILT_SOURCES += $(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES)
+CLEANFILES += $(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES)
+
 EXTRA_DIST += \
 	$(SECURITY_DRIVER_SELINUX_SOURCES) \
 	$(SECURITY_DRIVER_APPARMOR_SOURCES) \
 	$(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES) \
+	$(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES_IN) \
 	security/apparmor/TEMPLATE.qemu \
 	security/apparmor/TEMPLATE.lxc \
 	security/apparmor/libvirt-qemu \
 	security/apparmor/libvirt-lxc \
-	security/apparmor/usr.lib.libvirt.virt-aa-helper \
-	security/apparmor/usr.sbin.libvirtd \
 	$(NULL)
 
 libvirt_security_manager_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
@@ -91,8 +111,7 @@ endif WITH_SECDRIVER_APPARMOR
 if WITH_APPARMOR_PROFILES
 apparmordir = $(sysconfdir)/apparmor.d/
 apparmor_DATA = \
-	security/apparmor/usr.lib.libvirt.virt-aa-helper \
-	security/apparmor/usr.sbin.libvirtd \
+	$(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES)
 	$(NULL)
 
 abstractionsdir = $(apparmordir)/abstractions
@@ -108,7 +127,7 @@ templates_DATA = \
 	$(NULL)
 
 APPARMOR_LOCAL_DIR = "$(DESTDIR)$(apparmordir)/local"
-install-apparmor-local:
+install-apparmor-local: $(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES)
 	$(MKDIR_P) "$(APPARMOR_LOCAL_DIR)"
 	echo "# Site-specific additions and overrides for \
 		'usr.lib.libvirt.virt-aa-helper'" \

@@ -1,6 +1,6 @@
 #include <tunables/global>
 
-profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
+profile virt-aa-helper @libexecdir@/virt-aa-helper {
   #include <abstractions/base>
 
   # needed for searching directories
@@ -19,7 +19,7 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
   # Used when internally running another command (namely apparmor_parser)
   @{PROC}/@{pid}/fd/ r,
 
-  /etc/libnl-3/classid r,
+  @sysconfdir@/libnl-3/classid r,
 
   # for gl enabled graphics
   /dev/dri/{,*} r,
@@ -38,11 +38,11 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
   deny /dev/mapper/ r,
   deny /dev/mapper/* r,
 
-  /usr/{lib,lib64}/libvirt/virt-aa-helper mr,
+  @libexecdir@/virt-aa-helper mr,
   /{usr/,}sbin/apparmor_parser Ux,
 
-  /etc/apparmor.d/libvirt/* r,
-  /etc/apparmor.d/libvirt/libvirt-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]* rw,
+  @sysconfdir@/apparmor.d/libvirt/* r,
+  @sysconfdir@/apparmor.d/libvirt/libvirt-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]* rw,
 
   # for backingstore -- allow access to non-hidden files in @{HOME} as well
   # as storage pools
