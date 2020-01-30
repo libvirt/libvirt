@@ -456,7 +456,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virHashTable) stats = virHashNew(virHashValueFree);
     size_t i;
-    int ret = -1, rc;
+    int rc;
 
     /* It is not a bug if there already is a NBD data */
     qemuMigrationCookieNBDFree(mig->nbd);
@@ -473,10 +473,10 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
     mig->nbd->ndisks = 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, priv->job.asyncJob) < 0)
-        goto cleanup;
+        return -1;
     rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats, false);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
@@ -491,9 +491,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
         mig->nbd->ndisks++;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
