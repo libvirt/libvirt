@@ -242,23 +242,6 @@ struct _virNWFilterDHCPDecodeJob {
 # define DHCP_PKT_BURST         50 /* pkts/sec */
 # define DHCP_BURST_INTERVAL_S  10 /* sec */
 
-/*
- * NB: Any libpcap built with HAVE_TPACKET3 will require
- * PCAP_BUFFERSIZE to be at least 262144 (although
- * pcap_set_buffer_size() with a lower value will succeed, and the
- * error will only show up later when pcap_setfilter() is called).
- *
- * It is possible that in the future libpcap could increase the
- * minimum size even further, but due to the fact that each guest
- * using dhcp snooping keeps 2 pcap sockets open (and thus 2 buffers
- * allocated) for the life of the guest, we want to minimize the
- * length of the buffer, so instead of leaving it at the default size
- * (2MB), we are setting it to the minimum viable size and including
- * this clue in the source to help quickly resolve the problem when/if
- * it reoccurs.
- */
-# define PCAP_BUFFERSIZE        (256 * 1024)
-
 # define MAX_QUEUED_JOBS        (DHCP_PKT_BURST + 2 * DHCP_PKT_RATE)
 
 typedef struct _virNWFilterSnoopRateLimitConf virNWFilterSnoopRateLimitConf;
@@ -1098,13 +1081,8 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
         goto cleanup_nohandle;
     }
 
-    /* IMPORTANT: If there is any failure of *any* pcap_* function
-     * during setup of the socket, look to the comment where
-     * PCAP_BUFFERSIZE is defined. It may be too small, even if the
-     * generated error doesn't imply that.
-     */
     if (pcap_set_snaplen(handle, PCAP_PBUFSIZE) < 0 ||
-        pcap_set_buffer_size(handle, PCAP_BUFFERSIZE) < 0 ||
+        pcap_set_immediate_mode(handle, 1) < 0 ||
         pcap_activate(handle) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("setup of pcap handle failed: %s"),
