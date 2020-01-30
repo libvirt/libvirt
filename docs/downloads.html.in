@@ -165,7 +165,7 @@
         <tr>
           <td>Rust</td>
           <td>
-            <a href="https://libvirt.org/sources/rust/">libvirt</a>
+            <a href="https://crates.io/crates/virt">crates.io</a>
           </td>
           <td>
             <a href="https://libvirt.org/git/?p=libvirt-rust.git;a=summary">libvirt</a>
@@ -174,7 +174,9 @@
             <a href="https://gitlab.com/libvirt/libvirt-rust">gitlab</a>
             <a href="https://github.com/libvirt/libvirt-rust">github</a>
           </td>
-          <td></td>
+          <td>
+            <a href="https://docs.rs/virt">api ref</a>
+          </td>
         </tr>
         <tr>
           <th colspan="7">Integration modules</th>
