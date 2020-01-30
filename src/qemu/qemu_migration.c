@@ -1281,6 +1281,16 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
                 return false;
             }
         }
+
+        for (i = 0; i < vm->def->nfss; i++) {
+            virDomainFSDefPtr fs = vm->def->fss[i];
+
+            if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("migration with virtiofs device is not supported"));
+                return false;
+            }
+        }
     }
 
     return true;
