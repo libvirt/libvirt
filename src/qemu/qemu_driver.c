@@ -17706,7 +17706,7 @@ qemuDomainBlockPullCommon(virDomainObjPtr vm,
         speed <<= 20;
     }
 
-    if (!(job = qemuBlockJobDiskNewPull(vm, disk, baseSource)))
+    if (!(job = qemuBlockJobDiskNewPull(vm, disk, baseSource, flags)))
         goto endjob;
 
     if (blockdev) {
@@ -18393,7 +18393,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
             goto endjob;
     }
 
-    if (!(job = qemuBlockJobDiskNewCopy(vm, disk, mirror, mirror_shallow, mirror_reuse)))
+    if (!(job = qemuBlockJobDiskNewCopy(vm, disk, mirror, mirror_shallow, mirror_reuse, flags)))
         goto endjob;
 
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
@@ -18814,7 +18814,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (!(job = qemuBlockJobDiskNewCommit(vm, disk, top_parent, topSource,
                                           baseSource,
-                                          flags & VIR_DOMAIN_BLOCK_COMMIT_DELETE)))
+                                          flags & VIR_DOMAIN_BLOCK_COMMIT_DELETE,
+                                          flags)))
         goto endjob;
 
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;

@@ -252,7 +252,8 @@ qemuBlockJobDiskNew(virDomainObjPtr vm,
 qemuBlockJobDataPtr
 qemuBlockJobDiskNewPull(virDomainObjPtr vm,
                         virDomainDiskDefPtr disk,
-                        virStorageSourcePtr base)
+                        virStorageSourcePtr base,
+                        unsigned int jobflags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(qemuBlockJobData) job = NULL;
@@ -269,6 +270,7 @@ qemuBlockJobDiskNewPull(virDomainObjPtr vm,
         return NULL;
 
     job->data.pull.base = base;
+    job->jobflags = jobflags;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
         return NULL;
@@ -283,7 +285,8 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
                           virStorageSourcePtr topparent,
                           virStorageSourcePtr top,
                           virStorageSourcePtr base,
-                          bool delete_imgs)
+                          bool delete_imgs,
+                          unsigned int jobflags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(qemuBlockJobData) job = NULL;
@@ -307,6 +310,7 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
     job->data.commit.top = top;
     job->data.commit.base = base;
     job->data.commit.deleteCommittedImages = delete_imgs;
+    job->jobflags = jobflags;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
         return NULL;
@@ -350,7 +354,8 @@ qemuBlockJobDiskNewCopy(virDomainObjPtr vm,
                         virDomainDiskDefPtr disk,
                         virStorageSourcePtr mirror,
                         bool shallow,
-                        bool reuse)
+                        bool reuse,
+                        unsigned int jobflags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(qemuBlockJobData) job = NULL;
@@ -370,6 +375,8 @@ qemuBlockJobDiskNewCopy(virDomainObjPtr vm,
 
     if (shallow && !reuse)
         job->data.copy.shallownew = true;
+
+    job->jobflags = jobflags;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
         return NULL;

@@ -176,7 +176,8 @@ qemuBlockJobDiskNew(virDomainObjPtr vm,
 qemuBlockJobDataPtr
 qemuBlockJobDiskNewPull(virDomainObjPtr vm,
                         virDomainDiskDefPtr disk,
-                        virStorageSourcePtr base);
+                        virStorageSourcePtr base,
+                        unsigned int jobflags);
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
@@ -184,7 +185,8 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
                           virStorageSourcePtr topparent,
                           virStorageSourcePtr top,
                           virStorageSourcePtr base,
-                          bool delete_imgs);
+                          bool delete_imgs,
+                          unsigned int jobflags);
 
 qemuBlockJobDataPtr
 qemuBlockJobNewCreate(virDomainObjPtr vm,
@@ -197,7 +199,8 @@ qemuBlockJobDiskNewCopy(virDomainObjPtr vm,
                         virDomainDiskDefPtr disk,
                         virStorageSourcePtr mirror,
                         bool shallow,
-                        bool reuse);
+                        bool reuse,
+                        unsigned int jobflags);
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskNewBackup(virDomainObjPtr vm,
