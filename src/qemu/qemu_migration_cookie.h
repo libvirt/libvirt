@@ -84,16 +84,18 @@ struct _qemuMigrationCookieNetwork {
     qemuMigrationCookieNetDataPtr net;
 };
 
+struct qemuMigrationCookieNBDDisk {
+    char *target;                   /* Disk target */
+    unsigned long long capacity;    /* And its capacity */
+};
+
 typedef struct _qemuMigrationCookieNBD qemuMigrationCookieNBD;
 typedef qemuMigrationCookieNBD *qemuMigrationCookieNBDPtr;
 struct _qemuMigrationCookieNBD {
     int port; /* on which port does NBD server listen for incoming data */
 
     size_t ndisks;  /* Number of items in @disk array */
-    struct {
-        char *target;                   /* Disk target */
-        unsigned long long capacity;    /* And its capacity */
-    } *disks;
+    struct qemuMigrationCookieNBDDisk *disks;
 };
 
 typedef struct _qemuMigrationCookieCaps qemuMigrationCookieCaps;
