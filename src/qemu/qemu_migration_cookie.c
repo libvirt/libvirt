@@ -454,7 +454,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
                           virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virHashTablePtr stats = NULL;
+    g_autoptr(virHashTable) stats = virHashNew(virHashValueFree);
     size_t i;
     int ret = -1, rc;
 
@@ -471,9 +471,6 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
 
     mig->nbd->disks = g_new0(struct qemuMigrationCookieNBDDisk, vm->def->ndisks);
     mig->nbd->ndisks = 0;
-
-    if (!(stats = virHashCreate(10, virHashValueFree)))
-        goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, priv->job.asyncJob) < 0)
         goto cleanup;
@@ -496,7 +493,6 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
 
     ret = 0;
  cleanup:
-    virHashFree(stats);
     return ret;
 }
 
