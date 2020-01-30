@@ -472,23 +472,18 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
     mig->nbd->disks = g_new0(struct qemuMigrationCookieNBDDisk, vm->def->ndisks);
     mig->nbd->ndisks = 0;
 
+    if (!(stats = virHashCreate(10, virHashValueFree)))
+        goto cleanup;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, priv->job.asyncJob) < 0)
+        goto cleanup;
+    rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats, false);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuBlockStats *entry;
-
-        if (!stats) {
-            if (!(stats = virHashCreate(10, virHashValueFree)))
-                goto cleanup;
-
-            if (qemuDomainObjEnterMonitorAsync(driver, vm,
-                                               priv->job.asyncJob) < 0)
-                goto cleanup;
-            rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats, false);
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                goto cleanup;
-            if (rc < 0)
-                goto cleanup;
-        }
 
         if (!disk->info.alias ||
             !(entry = virHashLookup(stats, disk->info.alias)))
