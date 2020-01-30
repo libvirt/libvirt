@@ -17572,6 +17572,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+    g_autoptr(virJSONValue) actions = NULL;
 
     switch ((qemuBlockJobType) job->type) {
     case QEMU_BLOCKJOB_TYPE_NONE:
@@ -17592,6 +17593,20 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         return -1;
 
     case QEMU_BLOCKJOB_TYPE_COPY:
+        if (blockdev && !job->jobflagsmissing) {
+            g_autoptr(virHashTable) blockNamedNodeData = NULL;
+            bool shallow = job->jobflags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
+
+            if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+                return -1;
+
+            if (qemuBlockBitmapsHandleBlockcopy(disk->src, disk->mirror,
+                                                blockNamedNodeData,
+                                                shallow, &actions) < 0)
+                return -1;
+        }
+        break;
+
     case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
         break;
     }
@@ -17604,10 +17619,17 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (blockdev)
-        ret = qemuMonitorJobComplete(priv->mon, job->name);
-    else
+    if (blockdev) {
+        int rc = 0;
+
+        if (actions)
+            rc = qemuMonitorTransaction(priv->mon, &actions);
+
+        if (rc == 0)
+            ret = qemuMonitorJobComplete(priv->mon, job->name);
+    } else {
         ret = qemuMonitorDrivePivot(priv->mon, job->name);
+    }
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -1;
 
