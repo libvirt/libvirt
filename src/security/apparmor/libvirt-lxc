@@ -1,5 +1,3 @@
-# Last Modified: Fri Feb  7 13:01:36 2014
-
   #include <abstractions/base>
 
   umount,

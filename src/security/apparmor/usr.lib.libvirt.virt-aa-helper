@@ -1,4 +1,3 @@
-# Last Modified: Mon Apr  5 15:10:27 2010
 #include <tunables/global>
 
 profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {

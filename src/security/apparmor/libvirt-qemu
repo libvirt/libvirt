@@ -1,5 +1,3 @@
-# Last Modified: Wed Sep 3 21:52:03 2014
-
   #include <abstractions/base>
   #include <abstractions/consoles>
   #include <abstractions/nameservice>
