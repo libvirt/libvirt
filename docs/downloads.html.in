@@ -71,7 +71,7 @@
             <a href="https://github.com/libvirt/libvirt-go">github</a>
           </td>
           <td>
-            <a href="https://godoc.org/github.com/libvirt/libvirt-go">api ref</a>
+            <a href="https://godoc.org/libvirt.org/libvirt-go">api ref</a>
           </td>
         </tr>
         <tr>
@@ -206,7 +206,7 @@
             <a href="https://github.com/libvirt/libvirt-go-xml">github</a>
           </td>
           <td>
-            <a href="https://godoc.org/github.com/libvirt/libvirt-go-xml">api ref</a>
+            <a href="https://godoc.org/libvirt.org/libvirt-go-xml">api ref</a>
           </td>
         </tr>
         <tr>
