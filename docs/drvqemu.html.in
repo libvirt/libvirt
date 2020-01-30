@@ -439,7 +439,8 @@ chmod o+x /path/to/directory
     <p>
       While users can define their own AppArmor profile scheme, a typical
       configuration will include a profile for <code>/usr/sbin/libvirtd</code>,
-      <code>/usr/lib/libvirt/virt-aa-helper</code> (a helper program which the
+      <code>/usr/lib/libvirt/virt-aa-helper</code> or
+      <code>/usr/libexec/virt-aa-helper</code>(a helper program which the
       libvirtd daemon uses instead of manipulating AppArmor directly), and
       an abstraction to be included by <code>/etc/apparmor.d/libvirt/TEMPLATE</code>
       (typically <code>/etc/apparmor.d/abstractions/libvirt-qemu</code>).
