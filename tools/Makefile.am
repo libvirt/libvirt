@@ -357,7 +357,7 @@ libvirt-guests.service: libvirt-guests.service.in $(top_builddir)/config.status
 if WITH_BASH_COMPLETION
 install-bash-completion:
 	$(MKDIR_P) "$(DESTDIR)$(BASH_COMPLETIONS_DIR)"
-	$(INSTALL_SCRIPT) $(srcdir)/bash-completion/vsh \
+	$(INSTALL_DATA) $(srcdir)/bash-completion/vsh \
 		"$(DESTDIR)$(BASH_COMPLETIONS_DIR)/vsh"
 	( cd $(DESTDIR)$(BASH_COMPLETIONS_DIR) && \
 		rm -f virsh virt-admin && \
