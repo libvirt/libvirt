@@ -302,7 +302,7 @@ BuildRequires: yajl-devel
 %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
 %endif
-BuildRequires: libpcap-devel
+BuildRequires: libpcap-devel >= 1.5.0
 BuildRequires: libnl3-devel
 BuildRequires: libselinux-devel
 BuildRequires: dnsmasq >= 2.41
