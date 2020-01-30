@@ -61,8 +61,8 @@ profile libvirtd /usr/sbin/libvirtd flags=(attach_disconnected) {
   signal (send) set=("kill", "term") peer=unconfined,
 
   # For communication/control to qemu-bridge-helper
-  unix (send, receive) type=stream addr=none peer=(label=/usr/sbin/libvirtd//qemu_bridge_helper),
-  signal (send) set=("term") peer=/usr/sbin/libvirtd//qemu_bridge_helper,
+  unix (send, receive) type=stream addr=none peer=(label=libvirtd//qemu_bridge_helper),
+  signal (send) set=("term") peer=libvirtd//qemu_bridge_helper,
 
   # allow connect with openGraphicsFD, direction reversed in newer versions
   unix (send, receive) type=stream addr=none peer=(label=libvirt-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*),
@@ -120,7 +120,7 @@ profile libvirtd /usr/sbin/libvirtd flags=(attach_disconnected) {
    network inet stream,
 
    # For communication/control from libvirtd
-   unix (send, receive) type=stream addr=none peer=(label=/usr/sbin/libvirtd),
+   unix (send, receive) type=stream addr=none peer=(label=libvirtd),
    signal (receive) set=("term") peer=/usr/sbin/libvirtd,
    signal (receive) set=("term") peer=libvirtd,
 
