@@ -51,7 +51,6 @@
 #include "virstoragefile.h"
 #include "virstring.h"
 #include "virthreadjob.h"
-#include "viratomic.h"
 #include "virprocess.h"
 #include "vircrypto.h"
 #include "virrandom.h"

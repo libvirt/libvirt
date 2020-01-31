@@ -25,7 +25,6 @@
 #include "virobject.h"
 #include "virthread.h"
 #include "viralloc.h"
-#include "viratomic.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virprobe.h"

@@ -59,7 +59,6 @@
 #include "virstring.h"
 #include "cpu/cpu.h"
 #include "virauth.h"
-#include "viratomic.h"
 #include "virdomainobjlist.h"
 #include "virinterfaceobj.h"
 #include "virhostcpu.h"

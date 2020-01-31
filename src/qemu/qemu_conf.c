@@ -45,7 +45,6 @@
 #include "virfile.h"
 #include "virsocket.h"
 #include "virstring.h"
-#include "viratomic.h"
 #include "storage_conf.h"
 #include "configmake.h"
 

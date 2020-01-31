@@ -50,7 +50,6 @@
 #include "virstring.h"
 #include "virsysinfo.h"
 #include "viraccessapicheck.h"
-#include "viratomic.h"
 #include "virhostdev.h"
 #include "virpidfile.h"
 #include "locking/domain_lock.h"

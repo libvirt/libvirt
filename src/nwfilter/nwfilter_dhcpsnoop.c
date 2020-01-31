@@ -55,7 +55,6 @@
 #include "nwfilter_ipaddrmap.h"
 #include "virnetdev.h"
 #include "virfile.h"
-#include "viratomic.h"
 #include "virsocketaddr.h"
 #include "virthreadpool.h"
 #include "configmake.h"

@@ -390,12 +390,6 @@ else ! WITH_SSH2
 SYM_FILES += $(srcdir)/libvirt_libssh2.syms
 endif ! WITH_SSH2
 
-if WITH_ATOMIC_OPS_PTHREAD
-USED_SYM_FILES += $(srcdir)/libvirt_atomic.syms
-else ! WITH_ATOMIC_OPS_PTHREAD
-SYM_FILES += $(srcdir)/libvirt_atomic.syms
-endif ! WITH_ATOMIC_OPS_PTHREAD
-
 if WITH_LIBSSH
 USED_SYM_FILES += $(srcdir)/libvirt_libssh.syms
 else ! WITH_LIBSSH

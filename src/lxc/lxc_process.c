@@ -48,7 +48,6 @@
 #include "lxc_hostdev.h"
 #include "virhook.h"
 #include "virstring.h"
-#include "viratomic.h"
 #include "virprocess.h"
 #include "virsystemd.h"
 #include "netdev_bandwidth_conf.h"

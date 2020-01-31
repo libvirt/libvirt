@@ -11,8 +11,6 @@ UTIL_SOURCES = \
 	util/virarch.h \
 	util/virarptable.c \
 	util/virarptable.h \
-	util/viratomic.c \
-	util/viratomic.h \
 	util/viraudit.c \
 	util/viraudit.h \
 	util/virauth.c \

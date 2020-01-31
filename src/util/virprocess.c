@@ -57,7 +57,6 @@
 # include <windows.h>
 #endif
 
-#include "viratomic.h"
 #include "virprocess.h"
 #include "virerror.h"
 #include "viralloc.h"

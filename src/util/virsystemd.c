@@ -25,7 +25,6 @@
 #include "virsystemdpriv.h"
 
 #include "virsystemd.h"
-#include "viratomic.h"
 #include "virbuffer.h"
 #include "virdbus.h"
 #include "virstring.h"

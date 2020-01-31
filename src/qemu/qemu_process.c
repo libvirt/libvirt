@@ -79,7 +79,6 @@
 #include "virnetdevopenvswitch.h"
 #include "virnetdevmidonet.h"
 #include "virbitmap.h"
-#include "viratomic.h"
 #include "virnuma.h"
 #include "virstring.h"
 #include "virhostdev.h"

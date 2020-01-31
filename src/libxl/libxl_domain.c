@@ -26,7 +26,6 @@
 #include "libxl_capabilities.h"
 
 #include "viralloc.h"
-#include "viratomic.h"
 #include "virfile.h"
 #include "virerror.h"
 #include "virhook.h"
