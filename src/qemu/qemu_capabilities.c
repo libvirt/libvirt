@@ -559,6 +559,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "rng-builtin",
               "virtio-net.failover",
               "tpm-spapr",
+              "cpu.kvm-no-adjvtime",
     );
 
 
@@ -1562,6 +1563,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendMemfd[] 
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMaxCPU[] = {
     { "unavailable-features", QEMU_CAPS_CPU_UNAVAILABLE_FEATURES },
+    { "kvm-no-adjvtime", QEMU_CAPS_CPU_KVM_NO_ADJVTIME },
 };
 
 static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {

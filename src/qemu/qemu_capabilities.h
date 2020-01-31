@@ -541,6 +541,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_OBJECT_RNG_BUILTIN, /* -object rng-builtin */
     QEMU_CAPS_VIRTIO_NET_FAILOVER, /* virtio-net-*.failover */
     QEMU_CAPS_DEVICE_TPM_SPAPR, /* -device tpm-spapr */
+    QEMU_CAPS_CPU_KVM_NO_ADJVTIME, /* cpu.kvm-no-adjvtime */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
