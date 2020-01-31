@@ -344,7 +344,6 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
     size_t key, len = 0;
     virHashEntryPtr entry;
     virHashEntryPtr last = NULL;
-    void *new_name;
 
     if ((table == NULL) || (name == NULL))
         return -1;
@@ -374,12 +373,8 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
         len++;
     }
 
-    if (VIR_ALLOC(entry) < 0 || !(new_name = table->keyCopy(name))) {
-        VIR_FREE(entry);
-        return -1;
-    }
-
-    entry->name = new_name;
+    entry = g_new0(virHashEntry, 1);
+    entry->name = table->keyCopy(name);
     entry->payload = userdata;
 
     if (last)
