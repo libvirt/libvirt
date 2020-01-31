@@ -446,7 +446,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNKNOWN);
 
-    if (virAtomicIntInc(&driver->nactive) == 0 && driver->inhibitCallback)
+    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
     /* Enable domain death events */

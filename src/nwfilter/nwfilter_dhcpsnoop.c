@@ -541,7 +541,7 @@ virNWFilterSnoopReqLeaseTimerRun(virNWFilterSnoopReqPtr req)
 static void
 virNWFilterSnoopReqGet(virNWFilterSnoopReqPtr req)
 {
-    virAtomicIntInc(&req->refctr);
+    g_atomic_int_add(&req->refctr, 1);
 }
 
 /*
@@ -756,7 +756,7 @@ virNWFilterSnoopReqLeaseAdd(virNWFilterSnoopReqPtr req,
     /* put the lease on the req's list */
     virNWFilterSnoopIPLeaseTimerAdd(pl);
 
-    virAtomicIntInc(&virNWFilterSnoopState.nLeases);
+    g_atomic_int_add(&virNWFilterSnoopState.nLeases, 1);
 
  exit:
     if (update_leasefile)
@@ -1172,7 +1172,7 @@ virNWFilterSnoopDHCPDecodeJobSubmit(virThreadPoolPtr pool,
     ret = virThreadPoolSendJob(pool, 0, job);
 
     if (ret == 0)
-        virAtomicIntInc(qCtr);
+        g_atomic_int_add(qCtr, 1);
     else
         VIR_FREE(job);
 
@@ -1649,7 +1649,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
 
     threadPuts = true;
 
-    virAtomicIntInc(&virNWFilterSnoopState.nThreads);
+    g_atomic_int_add(&virNWFilterSnoopState.nThreads, 1);
 
     req->threadkey = virNWFilterSnoopActivate(req);
     if (!req->threadkey) {
@@ -1777,7 +1777,7 @@ virNWFilterSnoopLeaseFileSave(virNWFilterSnoopIPLeasePtr ipl)
         goto err_exit;
 
     /* keep dead leases at < ~95% of file size */
-    if (virAtomicIntInc(&virNWFilterSnoopState.wLeases) >=
+    if (g_atomic_int_add(&virNWFilterSnoopState.wLeases, 1) >=
         g_atomic_int_get(&virNWFilterSnoopState.nLeases) * 20)
         virNWFilterSnoopLeaseFileLoad();   /* load & refresh lease file */
 

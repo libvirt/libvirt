@@ -182,7 +182,7 @@ virClassNew(virClassPtr parent,
         goto error;
 
     klass->parent = parent;
-    klass->magic = virAtomicIntInc(&magicCounter);
+    klass->magic = g_atomic_int_add(&magicCounter, 1);
     if (klass->magic > 0xCAFEFFFF) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("too many object classes defined"));
@@ -382,7 +382,7 @@ virObjectRef(void *anyobj)
 
     if (VIR_OBJECT_NOTVALID(obj))
         return NULL;
-    virAtomicIntInc(&obj->u.s.refs);
+    g_atomic_int_add(&obj->u.s.refs, 1);
     PROBE(OBJECT_REF, "obj=%p", obj);
     return anyobj;
 }

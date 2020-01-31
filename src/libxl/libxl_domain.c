@@ -1471,7 +1471,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
     if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         goto destroy_dom;
 
-    if (virAtomicIntInc(&driver->nactive) == 0 && driver->inhibitCallback)
+    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
     /* finally we can call the 'started' hook script if any */

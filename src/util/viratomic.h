@@ -27,17 +27,6 @@
 #include "internal.h"
 
 /**
- * virAtomicIntInc:
- * Increments the value of atomic by 1.
- *
- * Think of this operation as an atomic version of
- * { tmp = *atomic; *atomic += 1; return tmp; }
- *
- * This call acts as a full compiler and hardware memory barrier.
- */
-#define virAtomicIntInc(i) g_atomic_int_add(i, 1)
-
-/**
  * virAtomicIntDecAndTest:
  * Decrements the value of atomic by 1.
  *

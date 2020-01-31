@@ -5571,7 +5571,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
         qemuDomainSetFakeReboot(driver, vm, false);
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
 
-        if (virAtomicIntInc(&driver->nactive) == 0 && driver->inhibitCallback)
+        if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
             driver->inhibitCallback(true, driver->inhibitOpaque);
 
         /* Run an early hook to set-up missing devices */
@@ -8146,7 +8146,7 @@ qemuProcessReconnect(void *opaque)
             goto error;
     }
 
-    if (virAtomicIntInc(&driver->nactive) == 0 && driver->inhibitCallback)
+    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
  cleanup:
