@@ -785,8 +785,7 @@ qemuMigrationCapsToJSON(virBitmapPtr caps,
     qemuMigrationCapability bit;
     const char *name;
 
-    if (!(json = virJSONValueNewArray()))
-        return NULL;
+    json = virJSONValueNewArray();
 
     for (bit = 0; bit < QEMU_MIGRATION_CAP_LAST; bit++) {
         bool supported = false;

@@ -1201,9 +1201,6 @@ qemuAgentMakeStringsArray(const char **strings, unsigned int len)
     size_t i;
     virJSONValuePtr ret = virJSONValueNewArray(), str;
 
-    if (!ret)
-        return NULL;
-
     for (i = 0; i < len; i++) {
         str = virJSONValueNewString(strings[i]);
         if (!str)
@@ -1534,8 +1531,7 @@ qemuAgentSetVCPUsCommand(qemuAgentPtr mon,
     *nmodified = 0;
 
     /* create the key data array */
-    if (!(cpus = virJSONValueNewArray()))
-        goto cleanup;
+    cpus = virJSONValueNewArray();
 
     for (i = 0; i < ninfo; i++) {
         qemuAgentCPUInfoPtr in = &info[i];

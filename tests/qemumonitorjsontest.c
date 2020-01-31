@@ -2948,9 +2948,8 @@ testQemuMonitorJSONTransaction(const void *opaque)
     if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
         return -1;
 
-    if (!(actions = virJSONValueNewArray()) ||
-        !(mergebitmaps = virJSONValueNewArray()))
-        return -1;
+    actions = virJSONValueNewArray();
+    mergebitmaps = virJSONValueNewArray();
 
     if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(mergebitmaps, "node1", "bitmap1") < 0 ||
         qemuMonitorTransactionBitmapMergeSourceAddBitmap(mergebitmaps, "node2", "bitmap2") < 0)

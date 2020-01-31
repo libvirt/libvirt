@@ -619,8 +619,7 @@ virLogHandlerPreExecRestart(virLogHandlerPtr handler)
     if (!ret)
         return NULL;
 
-    if (!(files = virJSONValueNewArray()))
-        goto error;
+    files = virJSONValueNewArray();
 
     if (virJSONValueObjectAppend(ret, "files", files) < 0) {
         virJSONValueFree(files);

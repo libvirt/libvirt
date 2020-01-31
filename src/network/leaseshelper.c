@@ -200,11 +200,7 @@ main(int argc, char **argv)
         break;
     }
 
-    if (!(leases_array_new = virJSONValueNewArray())) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to create json"));
-        goto cleanup;
-    }
+    leases_array_new = virJSONValueNewArray();
 
     if (virLeaseReadCustomLeaseFile(leases_array_new, custom_lease_file,
                                     delete ? ip : NULL, &server_duid) < 0)

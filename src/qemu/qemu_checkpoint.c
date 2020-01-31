@@ -217,8 +217,7 @@ qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
                     return -1;
             }
 
-            if (!(arr = virJSONValueNewArray()))
-                return -1;
+            arr = virJSONValueNewArray();
 
             if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr,
                                                                  n->nodeformat,
@@ -261,8 +260,7 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
     g_autoptr(GSList) relabelimages = NULL;
     GSList *next;
 
-    if (!(actions = virJSONValueNewArray()))
-        return -1;
+    actions = virJSONValueNewArray();
 
     qemuDomainObjEnterMonitor(driver, vm);
     blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
@@ -535,8 +533,7 @@ qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
     if ((parent = virDomainCheckpointGetCurrent(vm->checkpoints)))
         (*def)->parent.parent_name = g_strdup(parent->def->name);
 
-    if (!(tmpactions = virJSONValueNewArray()))
-        return -1;
+    tmpactions = virJSONValueNewArray();
 
     if (qemuCheckpointAddActions(vm, tmpactions, parent, *def) < 0)
         return -1;

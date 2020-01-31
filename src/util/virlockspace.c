@@ -443,8 +443,7 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
         virJSONValueObjectAppendString(object, "directory", lockspace->dir) < 0)
         goto error;
 
-    if (!(resources = virJSONValueNewArray()))
-        goto error;
+    resources = virJSONValueNewArray();
 
     if (virJSONValueObjectAppend(object, "resources", resources) < 0) {
         virJSONValueFree(resources);
@@ -479,8 +478,7 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
             goto error;
         }
 
-        if (!(owners = virJSONValueNewArray()))
-            goto error;
+        owners = virJSONValueNewArray();
 
         if (virJSONValueObjectAppend(child, "owners", owners) < 0) {
             virJSONValueFree(owners);

@@ -15639,8 +15639,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
 
-    if (!(actions = virJSONValueNewArray()))
-        return -1;
+    actions = virJSONValueNewArray();
 
     if (blockdev &&
         !(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))

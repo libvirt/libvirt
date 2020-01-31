@@ -561,10 +561,7 @@ virJSONValueNewNull(void)
 virJSONValuePtr
 virJSONValueNewArray(void)
 {
-    virJSONValuePtr val;
-
-    if (VIR_ALLOC(val) < 0)
-        return NULL;
+    virJSONValuePtr val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_ARRAY;
 
@@ -1265,8 +1262,7 @@ virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap)
     virJSONValuePtr ret;
     ssize_t pos = -1;
 
-    if (!(ret = virJSONValueNewArray()))
-        return NULL;
+    ret = virJSONValueNewArray();
 
     if (!bitmap)
         return ret;
@@ -1522,8 +1518,6 @@ virJSONValueCopy(const virJSONValue *in)
         break;
     case VIR_JSON_TYPE_ARRAY:
         out = virJSONValueNewArray();
-        if (!out)
-            return NULL;
         for (i = 0; i < in->data.array.nvalues; i++) {
             virJSONValuePtr val = NULL;
             if (!(val = virJSONValueCopy(in->data.array.values[i])))
@@ -1781,9 +1775,6 @@ virJSONParserHandleStartArray(void *ctx)
     virJSONValuePtr value = virJSONValueNewArray();
 
     VIR_DEBUG("parser=%p", parser);
-
-    if (!value)
-        return 0;
 
     if (virJSONParserInsertValue(parser, value) < 0) {
         virJSONValueFree(value);

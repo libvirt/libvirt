@@ -737,8 +737,7 @@ testQemuCheckpointDeleteMerge(const void *opaque)
         return -1;
     }
 
-    if (!(actions = virJSONValueNewArray()))
-        return -1;
+    actions = virJSONValueNewArray();
 
     if (qemuCheckpointDiscardDiskBitmaps(data->chain,
                                          nodedata,

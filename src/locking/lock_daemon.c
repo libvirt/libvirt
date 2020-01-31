@@ -949,8 +949,8 @@ virLockDaemonPreExecRestart(const char *state_file,
         goto cleanup;
     }
 
-    if (!(lockspaces = virJSONValueNewArray()))
-        goto cleanup;
+    lockspaces = virJSONValueNewArray();
+
     if (virJSONValueObjectAppend(object, "lockspaces", lockspaces) < 0) {
         virJSONValueFree(lockspaces);
         goto cleanup;

@@ -180,8 +180,7 @@ qemuBackupDiskPrepareOneBitmapsChain(virDomainMomentDefPtr *incremental,
     g_autoptr(virJSONValue) ret = NULL;
     size_t incridx = 0;
 
-    if (!(ret = virJSONValueNewArray()))
-        return NULL;
+    ret = virJSONValueNewArray();
 
     if (!(bitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData,
                                                          backingChain,
@@ -819,8 +818,7 @@ qemuBackupBegin(virDomainObjPtr vm,
         !(incremental = qemuBackupBeginCollectIncrementalCheckpoints(vm, def->incremental)))
         goto endjob;
 
-    if (!(actions = virJSONValueNewArray()))
-        goto endjob;
+    actions = virJSONValueNewArray();
 
     /* The 'chk' checkpoint must be rolled back if the transaction command
      * which creates it on disk is not executed or fails */

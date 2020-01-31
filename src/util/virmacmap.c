@@ -206,9 +206,10 @@ virMACMapHashDumper(void *payload,
     size_t i;
     int ret = -1;
 
-    if (!(obj = virJSONValueNewObject()) ||
-        !(arr = virJSONValueNewArray()))
+    if (!(obj = virJSONValueNewObject()))
         goto cleanup;
+
+    arr = virJSONValueNewArray();
 
     for (i = 0; macs[i]; i++) {
         virJSONValuePtr m = virJSONValueNewString(macs[i]);
@@ -244,8 +245,7 @@ virMacMapDumpStrLocked(virMacMapPtr mgr,
     virJSONValuePtr arr;
     int ret = -1;
 
-    if (!(arr = virJSONValueNewArray()))
-        goto cleanup;
+    arr = virJSONValueNewArray();
 
     if (virHashForEach(mgr->macs, virMACMapHashDumper, arr) < 0)
         goto cleanup;

@@ -4800,8 +4800,7 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
     size_t i;
 
     /* create the key data array */
-    if (!(keys = virJSONValueNewArray()))
-        goto cleanup;
+    keys = virJSONValueNewArray();
 
     for (i = 0; i < nkeycodes; i++) {
         if (keycodes[i] > 0xffff) {

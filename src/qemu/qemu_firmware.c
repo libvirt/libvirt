@@ -651,8 +651,7 @@ qemuFirmwareInterfaceFormat(virJSONValuePtr doc,
     g_autoptr(virJSONValue) interfacesJSON = NULL;
     size_t i;
 
-    if (!(interfacesJSON = virJSONValueNewArray()))
-        return -1;
+    interfacesJSON = virJSONValueNewArray();
 
     for (i = 0; i < fw->ninterfaces; i++) {
         if (virJSONValueArrayAppendString(interfacesJSON,
@@ -799,8 +798,7 @@ qemuFirmwareTargetFormat(virJSONValuePtr doc,
     g_autoptr(virJSONValue) targetsJSON = NULL;
     size_t i;
 
-    if (!(targetsJSON = virJSONValueNewArray()))
-        return -1;
+    targetsJSON = virJSONValueNewArray();
 
     for (i = 0; i < fw->ntargets; i++) {
         qemuFirmwareTargetPtr t = fw->targets[i];
@@ -816,8 +814,7 @@ qemuFirmwareTargetFormat(virJSONValuePtr doc,
                                            virQEMUCapsArchToString(t->architecture)) < 0)
             return -1;
 
-        if (!(machines = virJSONValueNewArray()))
-            return -1;
+        machines = virJSONValueNewArray();
 
         for (j = 0; j < t->nmachines; j++) {
             if (virJSONValueArrayAppendString(machines,
@@ -851,8 +848,7 @@ qemuFirmwareFeatureFormat(virJSONValuePtr doc,
     g_autoptr(virJSONValue) featuresJSON = NULL;
     size_t i;
 
-    if (!(featuresJSON = virJSONValueNewArray()))
-        return -1;
+    featuresJSON = virJSONValueNewArray();
 
     for (i = 0; i < fw->nfeatures; i++) {
         if (virJSONValueArrayAppendString(featuresJSON,

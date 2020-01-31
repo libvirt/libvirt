@@ -1344,8 +1344,7 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriverPtr driver,
         return;
 
     if (job->data.backup.bitmap) {
-        if (!(actions = virJSONValueNewArray()))
-            return;
+        actions = virJSONValueNewArray();
 
         if (qemuMonitorTransactionBitmapRemove(actions,
                                                job->disk->src->nodeformat,

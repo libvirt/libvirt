@@ -524,8 +524,7 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
     virStorageNetHostDefPtr host;
     size_t i;
 
-    if (!(servers = virJSONValueNewArray()))
-        return NULL;
+    servers = virJSONValueNewArray();
 
     for (i = 0; i < src->nhosts; i++) {
         host = src->hosts + i;
@@ -590,8 +589,7 @@ qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(virStorageSourcePtr src)
     virStorageNetHostDefPtr host;
     size_t i;
 
-    if (!(servers = virJSONValueNewArray()))
-        return NULL;
+    servers = virJSONValueNewArray();
 
     for (i = 0; i < src->nhosts; i++) {
         host = src->hosts + i;
@@ -837,8 +835,7 @@ qemuBlockStorageSourceGetRBDProps(virStorageSourcePtr src,
         username = srcPriv->secinfo->s.aes.username;
         keysecret = srcPriv->secinfo->s.aes.alias;
         /* the auth modes are modelled after our old command line generator */
-        if (!(authmodes = virJSONValueNewArray()))
-            return NULL;
+        authmodes = virJSONValueNewArray();
 
         if (!(mode = virJSONValueNewString("cephx")) ||
             virJSONValueArrayAppend(authmodes, mode) < 0)
