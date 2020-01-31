@@ -913,7 +913,6 @@ qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
                       virCgroupPtr cgroup)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char *pidfile = NULL;
     char *shortName = NULL;
     int ret = -1, rc;
     pid_t pid;
@@ -940,7 +939,6 @@ qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(pidfile);
     VIR_FREE(shortName);
     virObjectUnref(cfg);
 
