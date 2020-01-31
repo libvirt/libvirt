@@ -425,7 +425,7 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
                         const unsigned char *secretuuid,
                         bool incomingMigration)
 {
-    virCommandPtr cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int exitstatus;
     int ret = -1;
     char uuid[VIR_UUID_STRING_BUFLEN];
@@ -512,8 +512,6 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
-
     return ret;
 }
 
@@ -547,7 +545,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
                             const char *shortName,
                             bool incomingMigration)
 {
-    virCommandPtr cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     bool created = false;
     g_autofree char *pidfile = NULL;
     g_autofree char *swtpm = virTPMGetSwtpm();
@@ -639,13 +637,11 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
         migpwdfile_fd = -1;
     }
 
-    return cmd;
+    return g_steal_pointer(&cmd);
 
  error:
     if (created)
         qemuTPMDeleteEmulatorStorage(tpm);
-
-    virCommandFree(cmd);
 
     return NULL;
 }
@@ -703,7 +699,7 @@ int
 qemuExtTPMInitPaths(virQEMUDriverPtr driver,
                     virDomainDefPtr def)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = 0;
 
     switch (def->tpm->type) {
@@ -716,8 +712,6 @@ qemuExtTPMInitPaths(virQEMUDriverPtr driver,
         break;
     }
 
-    virObjectUnref(cfg);
-
     return ret;
 }
 
@@ -726,7 +720,7 @@ int
 qemuExtTPMPrepareHost(virQEMUDriverPtr driver,
                       virDomainDefPtr def)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = 0;
     g_autofree char *shortName = NULL;
 
@@ -748,8 +742,6 @@ qemuExtTPMPrepareHost(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    virObjectUnref(cfg);
-
     return ret;
 }
 
@@ -876,7 +868,7 @@ void
 qemuExtTPMStop(virQEMUDriverPtr driver,
                virDomainObjPtr vm)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = NULL;
 
     switch (vm->def->tpm->type) {
@@ -894,7 +886,7 @@ qemuExtTPMStop(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    virObjectUnref(cfg);
+    return;
 }
 
 
@@ -903,7 +895,7 @@ qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
                       virDomainDefPtr def,
                       virCgroupPtr cgroup)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = NULL;
     int ret = -1, rc;
     pid_t pid;
@@ -930,7 +922,5 @@ qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    virObjectUnref(cfg);
-
     return ret;
 }
