@@ -246,7 +246,7 @@ virObjectNew(virClassPtr klass)
 
     obj->u.s.magic = klass->magic;
     obj->klass = klass;
-    virAtomicIntSet(&obj->u.s.refs, 1);
+    g_atomic_int_set(&obj->u.s.refs, 1);
 
     PROBE(OBJECT_NEW, "obj=%p classname=%s", obj, obj->klass->name);
 

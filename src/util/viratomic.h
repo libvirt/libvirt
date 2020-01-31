@@ -27,15 +27,6 @@
 #include "internal.h"
 
 /**
- * virAtomicIntSet:
- * Sets the value of atomic to newval.
- *
- * This call acts as a full compiler and hardware memory barrier
- * (after the set)
- */
-#define virAtomicIntSet(i, newv) g_atomic_int_set(i, newv)
-
-/**
  * virAtomicIntInc:
  * Increments the value of atomic by 1.
  *

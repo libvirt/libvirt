@@ -1884,7 +1884,7 @@ virNWFilterSnoopLeaseFileRefresh(void)
                              TMPLEASEFILE, LEASEFILE);
         unlink(TMPLEASEFILE);
     }
-    virAtomicIntSet(&virNWFilterSnoopState.wLeases, 0);
+    g_atomic_int_set(&virNWFilterSnoopState.wLeases, 0);
 
  skip_rename:
     virNWFilterSnoopLeaseFileOpen();

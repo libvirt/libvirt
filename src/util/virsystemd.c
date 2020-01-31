@@ -160,13 +160,13 @@ virSystemdHasMachined(void)
 
     if ((ret = virDBusIsServiceEnabled("org.freedesktop.machine1")) < 0) {
         if (ret == -2)
-            virAtomicIntSet(&virSystemdHasMachinedCachedValue, -2);
+            g_atomic_int_set(&virSystemdHasMachinedCachedValue, -2);
         return ret;
     }
 
     if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) == -1)
         return ret;
-    virAtomicIntSet(&virSystemdHasMachinedCachedValue, ret);
+    g_atomic_int_set(&virSystemdHasMachinedCachedValue, ret);
     return ret;
 }
 
@@ -183,14 +183,14 @@ virSystemdHasLogind(void)
     ret = virDBusIsServiceEnabled("org.freedesktop.login1");
     if (ret < 0) {
         if (ret == -2)
-            virAtomicIntSet(&virSystemdHasLogindCachedValue, -2);
+            g_atomic_int_set(&virSystemdHasLogindCachedValue, -2);
         return ret;
     }
 
     if ((ret = virDBusIsServiceRegistered("org.freedesktop.login1")) == -1)
         return ret;
 
-    virAtomicIntSet(&virSystemdHasLogindCachedValue, ret);
+    g_atomic_int_set(&virSystemdHasLogindCachedValue, ret);
     return ret;
 }
 
@@ -386,7 +386,7 @@ int virSystemdCreateMachine(const char *name,
                 VIR_INFO("CreateMachineWithNetwork isn't supported, switching "
                          "to legacy CreateMachine method for systemd-machined");
                 virResetError(&error);
-                virAtomicIntSet(&hasCreateWithNetwork, 0);
+                g_atomic_int_set(&hasCreateWithNetwork, 0);
                 /* Could re-structure without Using goto, but this
                  * avoids another atomic read which would trigger
                  * another memory barrier */

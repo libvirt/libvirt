@@ -106,7 +106,7 @@ struct _testDriver {
     size_t numAuths;
     testAuthPtr auths;
 
-    /* virAtomic access only */
+    /* g_atomic access only */
     volatile int nextDomID;
 
     /* immutable pointer, immutable object after being initialized with
@@ -448,7 +448,7 @@ testDriverNew(void)
         !(ret->pools = virStoragePoolObjListNew()))
         goto error;
 
-    virAtomicIntSet(&ret->nextDomID, 1);
+    g_atomic_int_set(&ret->nextDomID, 1);
 
     return ret;
 
