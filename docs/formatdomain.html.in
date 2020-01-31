@@ -5877,7 +5877,7 @@
 
     <p>
       <span class="since">Since 6.1.0 (QEMU and KVM only, requires
-        QEMU 4.2.0 or newer axnd a guest virtio-net driver supporting
+        QEMU 4.2.0 or newer and a guest virtio-net driver supporting
         the "failover" feature, such as the one included in Linux
         kernel 4.18 and newer)
       </span>
