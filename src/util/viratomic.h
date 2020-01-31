@@ -27,17 +27,6 @@
 #include "internal.h"
 
 /**
- * virAtomicIntDecAndTest:
- * Decrements the value of atomic by 1.
- *
- * Think of this operation as an atomic version of
- * { *atomic -= 1; return *atomic == 0; }
- *
- * This call acts as a full compiler and hardware memory barrier.
- */
-#define virAtomicIntDecAndTest(i) (!!g_atomic_int_dec_and_test(i))
-
-/**
  * virAtomicIntCompareExchange:
  * Compares atomic to oldval and, if equal, sets it to newval. If
  * atomic was not equal to oldval then no change occurs.

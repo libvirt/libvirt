@@ -7313,7 +7313,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     qemuProcessBuildDestroyMemoryPaths(driver, vm, NULL, false);
 
-    if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
+    if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
     /* Wake up anything waiting on domain condition */

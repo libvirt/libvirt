@@ -878,7 +878,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
 
     priv->ignoreDeathEvent = false;
 
-    if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
+    if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
     if ((vm->def->ngraphics == 1) &&

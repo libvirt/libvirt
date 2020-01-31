@@ -344,7 +344,7 @@ virObjectUnref(void *anyobj)
     if (VIR_OBJECT_NOTVALID(obj))
         return false;
 
-    bool lastRef = virAtomicIntDecAndTest(&obj->u.s.refs);
+    bool lastRef = !!g_atomic_int_dec_and_test(&obj->u.s.refs);
     PROBE(OBJECT_UNREF, "obj=%p", obj);
     if (lastRef) {
         PROBE(OBJECT_DISPOSE, "obj=%p", obj);
