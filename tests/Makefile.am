@@ -179,7 +179,6 @@ test_programs = virshtest sockettest \
 	virhostcputest virbuftest \
 	commandtest seclabeltest \
 	virhashtest virconftest \
-	viratomictest \
 	utiltest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
 	viralloctest \
@@ -1455,10 +1454,6 @@ virbuftest_LDADD = $(LDADDS)
 virhashtest_SOURCES = \
 	virhashtest.c virhashdata.h testutils.h testutils.c
 virhashtest_LDADD = $(LDADDS)
-
-viratomictest_SOURCES = \
-	viratomictest.c testutils.h testutils.c
-viratomictest_LDADD = $(LDADDS)
 
 virbitmaptest_SOURCES = \
 	virbitmaptest.c testutils.h testutils.c
