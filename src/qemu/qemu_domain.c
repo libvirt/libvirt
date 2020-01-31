@@ -2546,6 +2546,8 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
     virBufferEscapeString(&attrBuf, " newstate='%s'", newstate);
     if (job->brokentype != QEMU_BLOCKJOB_TYPE_NONE)
         virBufferEscapeString(&attrBuf, " brokentype='%s'", qemuBlockjobTypeToString(job->brokentype));
+    if (!job->jobflagsmissing)
+        virBufferAsprintf(&attrBuf, " jobflags='0x%x'", job->jobflags);
     virBufferEscapeString(&childBuf, "<errmsg>%s</errmsg>", job->errmsg);
 
     if (job->disk) {
@@ -3244,6 +3246,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     int newstate = -1;
     bool invalidData = false;
     xmlNodePtr tmp;
+    unsigned long jobflags = 0;
 
     ctxt->node = node;
 
@@ -3283,6 +3286,9 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
         STRNEQ(mirror, "yes"))
         invalidData = true;
 
+    if (virXPathULongHex("string(./@jobflags)", ctxt, &jobflags) != 0)
+        job->jobflagsmissing = true;
+
     if (!disk && !invalidData) {
         if ((tmp = virXPathNode("./chains/disk", ctxt)) &&
             !(job->chain = qemuDomainObjPrivateXMLParseBlockjobChain(tmp, ctxt, xmlopt)))
@@ -3302,6 +3308,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
 
     job->state = state;
     job->newstate = newstate;
+    job->jobflags = jobflags;
     job->errmsg = virXPathString("string(./errmsg)", ctxt);
     job->invalidData = invalidData;
     job->disk = disk;

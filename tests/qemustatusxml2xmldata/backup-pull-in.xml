@@ -235,7 +235,7 @@
   <allowReboot value='yes'/>
   <nodename index='0'/>
   <blockjobs active='yes'>
-    <blockjob name='backup-vda-libvirt-3-format' type='backup' state='running'>
+    <blockjob name='backup-vda-libvirt-3-format' type='backup' state='running' jobflags='0x0'>
       <disk dst='vda'/>
       <bitmap name='bitmapname'/>
       <store type='file' format='qcow2'>

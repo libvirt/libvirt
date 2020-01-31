@@ -261,19 +261,19 @@
         </source>
       </src>
     </blockjob>
-    <blockjob name='copy-vdd-libvirt-4321-format' type='copy' state='ready' shallownew='yes'>
+    <blockjob name='copy-vdd-libvirt-4321-format' type='copy' state='ready' jobflags='0x0' shallownew='yes'>
       <disk dst='vdd'/>
     </blockjob>
-    <blockjob name='commit-vdc-libvirt-9-format' type='commit' state='running'>
+    <blockjob name='commit-vdc-libvirt-9-format' type='commit' state='running' jobflags='0x0'>
       <disk dst='vdc'/>
       <base node='libvirt-11-format'/>
       <top node='libvirt-9-format'/>
       <topparent node='libvirt-2-format'/>
     </blockjob>
-    <blockjob name='drive-virtio-disk0' type='copy' state='ready'>
+    <blockjob name='drive-virtio-disk0' type='copy' state='ready' jobflags='0x0'>
       <disk dst='vda' mirror='yes'/>
     </blockjob>
-    <blockjob name='create-libvirt-1338-format' type='create' state='running'>
+    <blockjob name='create-libvirt-1338-format' type='create' state='running' jobflags='0xabcd'>
       <chains>
         <disk type='file' format='qcow2'>
           <source file='/create/src1.qcow2' index='1339'>

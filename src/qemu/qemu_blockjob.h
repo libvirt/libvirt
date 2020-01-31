@@ -129,6 +129,9 @@ struct _qemuBlockJobData {
     virStorageSourcePtr chain; /* Reference to the chain the job operates on. */
     virStorageSourcePtr mirrorChain; /* reference to 'mirror' part of the job */
 
+    unsigned int jobflags; /* per job flags */
+    bool jobflagsmissing; /* job flags were not stored */
+
     union {
         qemuBlockJobPullData pull;
         qemuBlockJobCommitData commit;
