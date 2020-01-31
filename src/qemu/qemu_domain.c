@@ -10346,8 +10346,6 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                                  virDomainDiskDefPtr disk,
                                  qemuDomainLogContextPtr logCtxt)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
     if (disk->rawio == VIR_TRISTATE_BOOL_YES)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
                            logCtxt);
