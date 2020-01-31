@@ -988,10 +988,7 @@ virZPCIAddrKeyEqual(const void *namea,
 static void *
 virZPCIAddrKeyCopy(const void *name)
 {
-    unsigned int *copy;
-
-    if (VIR_ALLOC(copy) < 0)
-        return NULL;
+    unsigned int *copy = g_new0(unsigned int, 1);
 
     *copy = *((unsigned int *)name);
     return (void *)copy;

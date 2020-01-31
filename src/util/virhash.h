@@ -83,7 +83,8 @@ typedef bool (*virHashKeyEqual)(const void *namea, const void *nameb);
  * Create a copy of the hash key, duplicating
  * memory allocation where applicable
  *
- * Returns a newly allocated copy of @name
+ * Returns a copy of @name which will eventually be passed to the
+ * 'virHashKeyFree' callback at the end of its lifetime.
  */
 typedef void *(*virHashKeyCopy)(const void *name);
 /**
