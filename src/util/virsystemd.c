@@ -154,7 +154,7 @@ virSystemdHasMachined(void)
     int ret;
     int val;
 
-    val = virAtomicIntGet(&virSystemdHasMachinedCachedValue);
+    val = g_atomic_int_get(&virSystemdHasMachinedCachedValue);
     if (val != -1)
         return val;
 
@@ -176,7 +176,7 @@ virSystemdHasLogind(void)
     int ret;
     int val;
 
-    val = virAtomicIntGet(&virSystemdHasLogindCachedValue);
+    val = g_atomic_int_get(&virSystemdHasLogindCachedValue);
     if (val != -1)
         return val;
 
@@ -352,7 +352,7 @@ int virSystemdCreateMachine(const char *name,
      */
 
     VIR_DEBUG("Attempting to create machine via systemd");
-    if (virAtomicIntGet(&hasCreateWithNetwork)) {
+    if (g_atomic_int_get(&hasCreateWithNetwork)) {
         virError error;
         memset(&error, 0, sizeof(error));
 

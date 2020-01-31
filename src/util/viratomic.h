@@ -27,15 +27,6 @@
 #include "internal.h"
 
 /**
- * virAtomicIntGet:
- * Gets the current value of atomic.
- *
- * This call acts as a full compiler and hardware memory barrier
- * (before the get)
- */
-#define virAtomicIntGet(v) g_atomic_int_get(v)
-
-/**
  * virAtomicIntSet:
  * Sets the value of atomic to newval.
  *

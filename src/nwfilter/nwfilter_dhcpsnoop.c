@@ -601,7 +601,7 @@ virNWFilterSnoopReqFree(virNWFilterSnoopReqPtr req)
     if (!req)
         return;
 
-    if (virAtomicIntGet(&req->refctr) != 0)
+    if (g_atomic_int_get(&req->refctr) != 0)
         return;
 
     /* free all leases */
@@ -1477,7 +1477,7 @@ virNWFilterDHCPSnoopThread(void *req0)
                 unsigned int diff;
 
                 /* submit packet to worker thread */
-                if (virAtomicIntGet(&pcapConf[i].qCtr) >
+                if (g_atomic_int_get(&pcapConf[i].qCtr) >
                     pcapConf[i].maxQSize) {
                     if (last_displayed_queue - time(0) > 10) {
                         last_displayed_queue = time(0);
@@ -1778,7 +1778,7 @@ virNWFilterSnoopLeaseFileSave(virNWFilterSnoopIPLeasePtr ipl)
 
     /* keep dead leases at < ~95% of file size */
     if (virAtomicIntInc(&virNWFilterSnoopState.wLeases) >=
-        virAtomicIntGet(&virNWFilterSnoopState.nLeases) * 20)
+        g_atomic_int_get(&virNWFilterSnoopState.nLeases) * 20)
         virNWFilterSnoopLeaseFileLoad();   /* load & refresh lease file */
 
  err_exit:
@@ -1809,7 +1809,7 @@ virNWFilterSnoopPruneIter(const void *payload,
     /*
      * have the entry removed if it has no leases and no one holds a ref
      */
-    del_req = ((req->start == NULL) && (virAtomicIntGet(&req->refctr) == 0));
+    del_req = ((req->start == NULL) && (g_atomic_int_get(&req->refctr) == 0));
 
     virNWFilterSnoopReqUnlock(req);
 
@@ -1973,9 +1973,9 @@ virNWFilterSnoopLeaseFileLoad(void)
 static void
 virNWFilterSnoopJoinThreads(void)
 {
-    while (virAtomicIntGet(&virNWFilterSnoopState.nThreads) != 0) {
+    while (g_atomic_int_get(&virNWFilterSnoopState.nThreads) != 0) {
         VIR_WARN("Waiting for snooping threads to terminate: %u",
-                 virAtomicIntGet(&virNWFilterSnoopState.nThreads));
+                 g_atomic_int_get(&virNWFilterSnoopState.nThreads));
         g_usleep(1000 * 1000);
     }
 }
