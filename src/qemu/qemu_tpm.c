@@ -125,11 +125,10 @@ qemuTPMCreateEmulatorStorage(const char *storagepath,
                              uid_t swtpm_user,
                              gid_t swtpm_group)
 {
-    int ret = -1;
     g_autofree char *swtpmStorageDir = g_path_get_dirname(storagepath);
 
     if (qemuTPMEmulatorInitStorage(swtpmStorageDir) < 0)
-        goto cleanup;
+        return -1;
 
     *created = false;
 
@@ -141,16 +140,13 @@ qemuTPMCreateEmulatorStorage(const char *storagepath,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not create directory %s as %u:%d"),
                        storagepath, swtpm_user, swtpm_group);
-        goto cleanup;
+        return -1;
     }
 
     if (virFileChownFiles(storagepath, swtpm_user, swtpm_group) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -427,7 +423,6 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
 {
     g_autoptr(virCommand) cmd = NULL;
     int exitstatus;
-    int ret = -1;
     char uuid[VIR_UUID_STRING_BUFLEN];
     g_autofree char *vmid = NULL;
     g_autofree char *swtpm_setup = virTPMGetSwtpmSetup();
@@ -444,7 +439,7 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
 
     cmd = virCommandNew(swtpm_setup);
     if (!cmd)
-        goto cleanup;
+        return -1;
 
     virUUIDFormat(vmuuid, uuid);
     vmid = g_strdup_printf("%s:%s", vmname, uuid);
@@ -469,10 +464,10 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                 _("%s does not support passing a passphrase using a file "
                   "descriptor"), swtpm_setup);
-            goto cleanup;
+            return -1;
         }
         if ((pwdfile_fd = qemuTPMSetupEncryption(secretuuid, cmd)) < 0)
-            goto cleanup;
+            return -1;
 
         virCommandAddArg(cmd, "--pwdfile-fd");
         virCommandAddArgFormat(cmd, "%d", pwdfile_fd);
@@ -506,13 +501,10 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
                        _("Could not run '%s'. exitstatus: %d; "
                          "Check error log '%s' for details."),
                           swtpm_setup, exitstatus, logfile);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -673,11 +665,11 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
         return;
 
     if (!virFileExists(pathname))
-        goto cleanup;
+        return;
 
     cmd = virCommandNew(swtpm_ioctl);
     if (!cmd)
-        goto cleanup;
+        return;
 
     virCommandAddArgList(cmd, "--unix", pathname, "-s", NULL);
 
@@ -689,9 +681,6 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
 
     /* clean up the socket */
     unlink(pathname);
-
- cleanup:
-    return;
 }
 
 
@@ -700,19 +689,17 @@ qemuExtTPMInitPaths(virQEMUDriverPtr driver,
                     virDomainDefPtr def)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    int ret = 0;
 
     switch (def->tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        ret = qemuTPMEmulatorInitPaths(def->tpm, cfg->swtpmStorageDir,
-                                       def->uuid);
-        break;
+        return qemuTPMEmulatorInitPaths(def->tpm, cfg->swtpmStorageDir,
+                                        def->uuid);
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
 
-    return ret;
+    return 0;
 }
 
 
@@ -721,28 +708,25 @@ qemuExtTPMPrepareHost(virQEMUDriverPtr driver,
                       virDomainDefPtr def)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    int ret = 0;
     g_autofree char *shortName = NULL;
 
     switch (def->tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         shortName = virDomainDefGetShortName(def);
         if (!shortName)
-            goto cleanup;
+            return -1;
 
-        ret = qemuTPMEmulatorPrepareHost(def->tpm, cfg->swtpmLogDir,
-                                         def->name, cfg->swtpm_user,
-                                         cfg->swtpm_group,
-                                         cfg->swtpmStateDir, cfg->user,
-                                         shortName);
-        break;
+        return qemuTPMEmulatorPrepareHost(def->tpm, cfg->swtpmLogDir,
+                                          def->name, cfg->swtpm_user,
+                                          cfg->swtpm_group,
+                                          cfg->swtpmStateDir, cfg->user,
+                                          shortName);
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -875,7 +859,7 @@ qemuExtTPMStop(virQEMUDriverPtr driver,
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         shortName = virDomainDefGetShortName(vm->def);
         if (!shortName)
-            goto cleanup;
+            return;
 
         qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
         qemuSecurityCleanupTPMEmulator(driver, vm);
@@ -885,7 +869,6 @@ qemuExtTPMStop(virQEMUDriverPtr driver,
         break;
     }
 
- cleanup:
     return;
 }
 
@@ -897,30 +880,27 @@ qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = NULL;
-    int ret = -1, rc;
+    int rc;
     pid_t pid;
 
     switch (def->tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         shortName = virDomainDefGetShortName(def);
         if (!shortName)
-            goto cleanup;
+            return -1;
         rc = qemuTPMEmulatorGetPid(cfg->swtpmStateDir, shortName, &pid);
         if (rc < 0 || (rc == 0 && pid == (pid_t)-1)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not get process id of swtpm"));
-            goto cleanup;
+            return -1;
         }
         if (virCgroupAddProcess(cgroup, pid) < 0)
-            goto cleanup;
+            return -1;
         break;
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
