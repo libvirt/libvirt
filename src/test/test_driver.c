@@ -695,7 +695,7 @@ testDomainStartState(testDriverPtr privconn,
     int ret = -1;
 
     virDomainObjSetState(dom, VIR_DOMAIN_RUNNING, reason);
-    dom->def->id = virAtomicIntAdd(&privconn->nextDomID, 1);
+    dom->def->id = g_atomic_int_add(&privconn->nextDomID, 1);
 
     if (virDomainObjSetDefTransient(privconn->xmlopt,
                                     dom, NULL) < 0) {
