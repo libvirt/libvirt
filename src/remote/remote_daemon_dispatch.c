@@ -7163,41 +7163,6 @@ remoteDispatchDomainInterfaceAddresses(virNetServerPtr server G_GNUC_UNUSED,
 
 
 static int
-remoteDispatchStorageVolGetInfoFlags(virNetServerPtr server G_GNUC_UNUSED,
-                                     virNetServerClientPtr client,
-                                     virNetMessagePtr msg G_GNUC_UNUSED,
-                                     virNetMessageErrorPtr rerr,
-                                     remote_storage_vol_get_info_flags_args *args,
-                                     remote_storage_vol_get_info_flags_ret *ret)
-{
-    int rv = -1;
-    virStorageVolPtr vol = NULL;
-    virStorageVolInfo tmp;
-    virConnectPtr conn = remoteGetStorageConn(client);
-
-    if (!conn)
-        goto cleanup;
-
-    if (!(vol = get_nonnull_storage_vol(conn, args->vol)))
-        goto cleanup;
-
-    if (virStorageVolGetInfoFlags(vol, &tmp, args->flags) < 0)
-        goto cleanup;
-
-    ret->type = tmp.type;
-    ret->capacity = tmp.capacity;
-    ret->allocation = tmp.allocation;
-    rv = 0;
-
- cleanup:
-    if (rv < 0)
-        virNetMessageSaveError(rerr);
-    virObjectUnref(vol);
-    return rv;
-}
-
-
-static int
 remoteDispatchNetworkPortGetParameters(virNetServerPtr server G_GNUC_UNUSED,
                                        virNetServerClientPtr client,
                                        virNetMessagePtr msg G_GNUC_UNUSED,

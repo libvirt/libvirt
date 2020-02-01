@@ -994,6 +994,7 @@ elsif ($mode eq "server") {
                 } else {
                     my $struct_name = $call->{ProcName};
                     $struct_name =~ s/Get//;
+                    $struct_name =~ s/Flags$//;
 
                     splice(@args_list, $call->{ret_offset}, 0, ("&tmp"));
 
