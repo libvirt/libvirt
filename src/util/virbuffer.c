@@ -701,6 +701,25 @@ virBufferTrimChars(virBufferPtr buf, const char *trim)
 }
 
 /**
+ * virBufferTrimLen:
+ * @buf: the buffer to trim
+ * @len: the number of bytes to trim
+ *
+ * Trim the tail of a buffer.
+ */
+void
+virBufferTrimLen(virBufferPtr buf, int len)
+{
+    if (!buf || !buf->str)
+        return;
+
+    if (len > buf->str->len)
+        return;
+
+    g_string_truncate(buf->str, buf->str->len - len);
+}
+
+/**
  * virBufferAddStr:
  * @buf: the buffer to append to
  * @str: string to append

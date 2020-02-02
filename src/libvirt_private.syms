@@ -1646,6 +1646,7 @@ virBufferStrcat;
 virBufferStrcatVArgs;
 virBufferTrim;
 virBufferTrimChars;
+virBufferTrimLen;
 virBufferURIEncodeString;
 virBufferUse;
 virBufferVasprintf;
