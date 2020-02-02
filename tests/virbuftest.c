@@ -108,9 +108,9 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
     virBufferAddLit(buf, "a;");
     virBufferTrim(buf, "", 0);
     virBufferTrim(buf, "", -1);
-    virBufferTrim(buf, NULL, 1);
-    virBufferTrim(buf, NULL, 5);
-    virBufferTrim(buf, "a", 2);
+    virBufferTrimLen(buf, 1);
+    virBufferTrimLen(buf, 5);
+    virBufferTrimLen(buf, 2);
 
     virBufferAddLit(buf, ",b,,");
     virBufferTrim(buf, NULL, -1);

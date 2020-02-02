@@ -215,7 +215,7 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef,
         virBufferAdd(&buf, ttyPaths[i] + 5, -1);
         virBufferAddChar(&buf, ' ');
     }
-    virBufferTrim(&buf, NULL, 1);
+    virBufferTrimLen(&buf, 1);
 
     virUUIDFormat(vmDef->uuid, uuidstr);
 

@@ -2525,7 +2525,7 @@ vshTreePrintInternal(vshControl *ctl,
         vshPrint(ctl, "%s\n", virBufferCurrentContent(indent));
 
     if (!root)
-        virBufferTrim(indent, NULL, 2);
+        virBufferTrimLen(indent, 2);
 
     return 0;
 }
