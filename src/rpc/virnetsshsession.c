@@ -357,7 +357,7 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
              * we have to use a *MAGIC* constant. */
             for (i = 0; i < 16; i++)
                 virBufferAsprintf(&buff, "%02hhX:", keyhash[i]);
-            virBufferTrim(&buff, ":", 1);
+            virBufferTrim(&buff, ":");
 
             keyhashstr = virBufferContentAndReset(&buff);
 

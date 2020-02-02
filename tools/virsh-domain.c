@@ -8453,7 +8453,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
     while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
         virBufferAsprintf(&buf, "%s ", opt->data);
 
-    virBufferTrim(&buf, " ", -1);
+    virBufferTrim(&buf, " ");
 
     desc = virBufferContentAndReset(&buf);
 
@@ -9570,7 +9570,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
         virBufferAsprintf(&buf, "%s ", opt->data);
 
-    virBufferTrim(&buf, " ", -1);
+    virBufferTrim(&buf, " ");
 
     monitor_cmd = virBufferContentAndReset(&buf);
 
@@ -9863,7 +9863,7 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
     while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
         virBufferAsprintf(&buf, "%s ", opt->data);
 
-    virBufferTrim(&buf, " ", -1);
+    virBufferTrim(&buf, " ");
 
     guest_agent_cmd = virBufferContentAndReset(&buf);
 
@@ -14077,7 +14077,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
 
             for (j = 0; j < info[i]->ndevAlias; j++)
                 virBufferAsprintf(&targetsBuff, "%s,", info[i]->devAlias[j]);
-            virBufferTrim(&targetsBuff, ",", -1);
+            virBufferTrim(&targetsBuff, ",");
 
             targets = virBufferContentAndReset(&targetsBuff);
 

@@ -1981,7 +1981,7 @@ x86FormatSignatures(virCPUx86ModelPtr model)
                           (unsigned long)model->signatures[i]);
     }
 
-    virBufferTrim(&buf, ",", -1);
+    virBufferTrim(&buf, ",");
 
     return virBufferContentAndReset(&buf);
 }
@@ -3059,8 +3059,8 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
         }
     }
 
-    virBufferTrim(&bufAdded, ",", -1);
-    virBufferTrim(&bufRemoved, ",", -1);
+    virBufferTrim(&bufAdded, ",");
+    virBufferTrim(&bufRemoved, ",");
 
     added = virBufferContentAndReset(&bufAdded);
     removed = virBufferContentAndReset(&bufRemoved);

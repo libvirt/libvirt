@@ -637,38 +637,26 @@ virBufferStrcat(virBufferPtr buf, ...)
 /**
  * virBufferTrim:
  * @buf: the buffer to trim
- * @str: the optional string, to force an exact trim
- * @len: the number of bytes to trim, or -1 to use @str
+ * @str: the string to be trimmed from the tail
  *
- * Trim the tail of a buffer.  If @str is provided, the trim only occurs
- * if the current tail of the buffer matches @str; a non-negative @len
- * further limits how much of the tail is trimmed.  If @str is NULL, then
- * @len must be non-negative.
+ * Trim the supplied string from the tail of the buffer.
  */
 void
-virBufferTrim(virBufferPtr buf, const char *str, int len)
+virBufferTrim(virBufferPtr buf, const char *str)
 {
-    size_t len2 = 0;
+    size_t len = 0;
 
     if (!buf || !buf->str)
         return;
 
-    if (!str && len < 0)
+    if (!str)
         return;
 
+    len = strlen(str);
 
-    if (len > 0 && len > buf->str->len)
+    if (len > buf->str->len ||
+        memcmp(&buf->str->str[buf->str->len - len], str, len) != 0)
         return;
-
-    if (str) {
-        len2 = strlen(str);
-        if (len2 > buf->str->len ||
-            memcmp(&buf->str->str[buf->str->len - len2], str, len2) != 0)
-            return;
-    }
-
-    if (len < 0)
-        len = len2;
 
     g_string_truncate(buf->str, buf->str->len - len);
 }

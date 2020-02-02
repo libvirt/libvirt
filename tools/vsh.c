@@ -2225,7 +2225,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     }
     virBufferAsprintf(&buf, "%s ", lvl);
     virBufferVasprintf(&buf, msg_format, ap);
-    virBufferTrim(&buf, "\n", -1);
+    virBufferTrim(&buf, "\n");
     virBufferAddChar(&buf, '\n');
 
     str = virBufferContentAndReset(&buf);
@@ -2517,7 +2517,7 @@ vshTreePrintInternal(vshControl *ctl,
                                  false, indent) < 0)
             return -1;
     }
-    virBufferTrim(indent, "  ", -1);
+    virBufferTrim(indent, "  ");
 
     /* If there was no child device, and we're the last in
      * a list of devices, then print another blank line */

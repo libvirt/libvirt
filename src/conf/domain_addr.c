@@ -1946,7 +1946,7 @@ virDomainUSBAddressPortFormatBuf(virBufferPtr buf,
             break;
         virBufferAsprintf(buf, "%u.", port[i]);
     }
-    virBufferTrim(buf, ".", -1);
+    virBufferTrim(buf, ".");
 }
 
 

@@ -2360,7 +2360,7 @@ qemuBuildFloppyCommandLineControllerOptions(virCommandPtr cmd,
 
     if (explicitfdc && hasfloppy) {
         /* Newer Q35 machine types require an explicit FDC controller */
-        virBufferTrim(&fdc_opts, ",", -1);
+        virBufferTrim(&fdc_opts, ",");
         virCommandAddArg(cmd, "-device");
         virCommandAddArgBuffer(cmd, &fdc_opts);
     }
@@ -3979,7 +3979,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     }
 
 
-    virBufferTrim(&buf, ",", -1);
+    virBufferTrim(&buf, ",");
 
     return virBufferContentAndReset(&buf);
 }
@@ -6330,7 +6330,7 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_STRICT))
         virBufferAddLit(&boot_buf, "strict=on,");
 
-    virBufferTrim(&boot_buf, ",", -1);
+    virBufferTrim(&boot_buf, ",");
 
     boot_opts_str = virBufferContentAndReset(&boot_buf);
     if (boot_opts_str) {
@@ -7744,7 +7744,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
      * doesn't support it, it fallbacks to previous migration algorithm silently. */
     virBufferAddLit(&opt, "seamless-migration=on,");
 
-    virBufferTrim(&opt, ",", -1);
+    virBufferTrim(&opt, ",");
 
     virCommandAddArg(cmd, "-spice");
     virCommandAddArgBuffer(cmd, &opt);

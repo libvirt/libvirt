@@ -755,7 +755,7 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
         }
     }
 
-    virBufferTrim(&buf, ",", -1);
+    virBufferTrim(&buf, ",");
 
     *opts = virBufferContentAndReset(&buf);
     return 0;
@@ -4083,7 +4083,7 @@ virStorageBackendFileSystemMountAddOptions(virCommandPtr cmd,
                  "mount_opts from XML", def->name, uuidstr);
     }
 
-    virBufferTrim(&buf, ",", -1);
+    virBufferTrim(&buf, ",");
     mountOpts = virBufferContentAndReset(&buf);
 
     if (mountOpts)

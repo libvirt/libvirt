@@ -25521,7 +25521,7 @@ virDomainVirtioNetGuestOptsFormat(char **outstr,
         virBufferAsprintf(&buf, "ufo='%s' ",
                           virTristateSwitchTypeToString(def->driver.virtio.guest.ufo));
     }
-    virBufferTrim(&buf, " ", -1);
+    virBufferTrim(&buf, " ");
 
     *outstr = virBufferContentAndReset(&buf);
     return 0;
@@ -25561,7 +25561,7 @@ virDomainVirtioNetHostOptsFormat(char **outstr,
         virBufferAsprintf(&buf, "mrg_rxbuf='%s' ",
                           virTristateSwitchTypeToString(def->driver.virtio.host.mrg_rxbuf));
     }
-    virBufferTrim(&buf, " ", -1);
+    virBufferTrim(&buf, " ");
 
     *outstr = virBufferContentAndReset(&buf);
     return 0;
@@ -30580,7 +30580,7 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
                               def->blkio.devices[i].path, \
                               def->blkio.devices[i].param); \
         } \
-        virBufferTrim(&buf, ",", -1); \
+        virBufferTrim(&buf, ","); \
         data = virBufferContentAndReset(&buf); \
         if (virTypedParameterAssign(&(params[(*nparams)++]), name, \
                                     VIR_TYPED_PARAM_STRING, data) < 0) \

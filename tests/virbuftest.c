@@ -102,21 +102,20 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
     const char *expected = "a,b";
     int ret = -1;
 
-    virBufferTrim(buf, "", 0);
+    virBufferTrim(buf, "");
     buf = &bufinit;
 
     virBufferAddLit(buf, "a;");
-    virBufferTrim(buf, "", 0);
-    virBufferTrim(buf, "", -1);
+    virBufferTrim(buf, "");
+    virBufferTrim(buf, "");
     virBufferTrimLen(buf, 1);
     virBufferTrimLen(buf, 5);
     virBufferTrimLen(buf, 2);
 
     virBufferAddLit(buf, ",b,,");
-    virBufferTrim(buf, NULL, -1);
-    virBufferTrim(buf, "b", -1);
-    virBufferTrim(buf, "b,,", 1);
-    virBufferTrim(buf, ",", -1);
+    virBufferTrim(buf, NULL);
+    virBufferTrim(buf, "b");
+    virBufferTrim(buf, ",,");
 
     result = virBufferContentAndReset(buf);
     if (!result || STRNEQ(result, expected)) {

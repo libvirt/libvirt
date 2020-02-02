@@ -454,7 +454,7 @@ testQemuImageCreate(const void *opaque)
 
     virBufferStrcat(&actualbuf, "protocol:\n", NULLSTR(jsonprotocol),
                     "\nformat:\n", NULLSTR(jsonformat), NULL);
-    virBufferTrim(&actualbuf, "\n", -1);
+    virBufferTrim(&actualbuf, "\n");
     virBufferAddLit(&actualbuf, "\n");
 
     jsonpath = g_strdup_printf("%s%s.json", testQemuImageCreatePath, data->name);

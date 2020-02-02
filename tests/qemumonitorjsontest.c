@@ -2777,7 +2777,7 @@ testBlockNodeNameDetect(const void *opaque)
 
     virHashForEach(nodedata, testBlockNodeNameDetectFormat, &buf);
 
-    virBufferTrim(&buf, "\n", -1);
+    virBufferTrim(&buf, "\n");
 
     actual = virBufferContentAndReset(&buf);
 
@@ -2919,7 +2919,7 @@ testQueryJobs(const void *opaque)
     for (i = 0; i < njobs; i++)
         testQueryJobsPrintJob(&buf, jobs[i]);
 
-    virBufferTrim(&buf, "\n", -1);
+    virBufferTrim(&buf, "\n");
 
     actual = virBufferContentAndReset(&buf);
 

@@ -220,7 +220,7 @@ virQEMUBuildCommandLineJSON(virJSONValuePtr value,
     if (virQEMUBuildCommandLineJSONRecurse(NULL, value, buf, array, false) < 0)
         return -1;
 
-    virBufferTrim(buf, ",", -1);
+    virBufferTrim(buf, ",");
 
     return 0;
 }
