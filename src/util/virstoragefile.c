@@ -3052,7 +3052,8 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
 static int
 virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
                                          virJSONValuePtr json,
-                                         const char *jsonstr);
+                                         const char *jsonstr,
+                                         bool allowformat);
 
 
 static int
@@ -3531,7 +3532,7 @@ virStorageSourceParseBackingJSONRaw(virStorageSourcePtr src,
         return -1;
     }
 
-    return virStorageSourceParseBackingJSONInternal(src, file, jsonstr);
+    return virStorageSourceParseBackingJSONInternal(src, file, jsonstr, false);
 }
 
 
@@ -3606,7 +3607,8 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
 static int
 virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
                                          virJSONValuePtr json,
-                                         const char *jsonstr)
+                                         const char *jsonstr,
+                                         bool allowformat)
 {
     const char *drvname;
     size_t i;
@@ -3619,8 +3621,17 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
     }
 
     for (i = 0; i < G_N_ELEMENTS(jsonParsers); i++) {
-        if (STREQ(drvname, jsonParsers[i].drvname))
-            return jsonParsers[i].func(src, json, jsonstr, jsonParsers[i].opaque);
+        if (STRNEQ(drvname, jsonParsers[i].drvname))
+            continue;
+
+        if (jsonParsers[i].formatdriver && !allowformat) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("JSON backing volume definition '%s' must not have nested format drivers"),
+                           jsonstr);
+            return -1;
+        }
+
+        return jsonParsers[i].func(src, json, jsonstr, jsonParsers[i].opaque);
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3655,7 +3666,7 @@ virStorageSourceParseBackingJSON(virStorageSourcePtr src,
     if (!file)
         file = deflattened;
 
-    return virStorageSourceParseBackingJSONInternal(src, file, json);
+    return virStorageSourceParseBackingJSONInternal(src, file, json, true);
 }
 
 
