@@ -2248,6 +2248,30 @@ virStorageSourcePoolDefCopy(const virStorageSourcePoolDef *src)
 }
 
 
+static virStorageSourceSlicePtr
+virStorageSourceSliceCopy(const virStorageSourceSlice *src)
+{
+    virStorageSourceSlicePtr ret = g_new0(virStorageSourceSlice, 1);
+
+    ret->offset = src->offset;
+    ret->size = src->size;
+    ret->nodename = g_strdup(src->nodename);
+
+    return ret;
+}
+
+
+static void
+virStorageSourceSliceFree(virStorageSourceSlicePtr slice)
+{
+    if (!slice)
+        return;
+
+    g_free(slice->nodename);
+    g_free(slice);
+}
+
+
 /**
  * virStorageSourcePtr:
  *
@@ -2301,6 +2325,9 @@ virStorageSourceCopy(const virStorageSource *src,
     def->compat = g_strdup(src->compat);
     def->tlsAlias = g_strdup(src->tlsAlias);
     def->tlsCertdir = g_strdup(src->tlsCertdir);
+
+    if (src->sliceStorage)
+        def->sliceStorage = virStorageSourceSliceCopy(src->sliceStorage);
 
     if (src->nhosts) {
         if (!(def->hosts = virStorageNetHostDefCopy(src->nhosts, src->hosts)))
@@ -2580,6 +2607,8 @@ virStorageSourceClear(virStorageSourcePtr def)
     virStoragePermsFree(def->perms);
     VIR_FREE(def->timestamps);
     VIR_FREE(def->externalDataStoreRaw);
+
+    virStorageSourceSliceFree(def->sliceStorage);
 
     virObjectUnref(def->externalDataStore);
     def->externalDataStore = NULL;
