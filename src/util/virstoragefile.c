@@ -3563,6 +3563,7 @@ virStorageSourceParseBackingJSONVxHS(virStorageSourcePtr src,
 
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
+    bool formatdriver;
     /**
      * The callback gets a pre-allocated storage source @src and the JSON
      * object to parse. The callback shall return -1 on error and report error
@@ -3575,22 +3576,22 @@ struct virStorageSourceJSONDriverParser {
 };
 
 static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
-    {"file", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_FILE},
-    {"host_device", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_BLOCK},
-    {"host_cdrom", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_BLOCK},
-    {"http", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_HTTP},
-    {"https", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_HTTPS},
-    {"ftp", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_FTP},
-    {"ftps", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_FTPS},
-    {"tftp", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_TFTP},
-    {"gluster", virStorageSourceParseBackingJSONGluster, 0},
-    {"iscsi", virStorageSourceParseBackingJSONiSCSI, 0},
-    {"nbd", virStorageSourceParseBackingJSONNbd, 0},
-    {"sheepdog", virStorageSourceParseBackingJSONSheepdog, 0},
-    {"ssh", virStorageSourceParseBackingJSONSSH, 0},
-    {"rbd", virStorageSourceParseBackingJSONRBD, 0},
-    {"raw", virStorageSourceParseBackingJSONRaw, 0},
-    {"vxhs", virStorageSourceParseBackingJSONVxHS, 0},
+    {"file", false, virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_FILE},
+    {"host_device", false, virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_BLOCK},
+    {"host_cdrom", false, virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_BLOCK},
+    {"http", false, virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_HTTP},
+    {"https", false, virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_HTTPS},
+    {"ftp", false, virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_FTP},
+    {"ftps", false, virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_FTPS},
+    {"tftp", false, virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_TFTP},
+    {"gluster", false, virStorageSourceParseBackingJSONGluster, 0},
+    {"iscsi", false, virStorageSourceParseBackingJSONiSCSI, 0},
+    {"nbd", false, virStorageSourceParseBackingJSONNbd, 0},
+    {"sheepdog", false, virStorageSourceParseBackingJSONSheepdog, 0},
+    {"ssh", false, virStorageSourceParseBackingJSONSSH, 0},
+    {"rbd", false, virStorageSourceParseBackingJSONRBD, 0},
+    {"raw", true, virStorageSourceParseBackingJSONRaw, 0},
+    {"vxhs", false, virStorageSourceParseBackingJSONVxHS, 0},
 };
 
 
