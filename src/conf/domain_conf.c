@@ -9470,6 +9470,57 @@ virDomainStorageSourceParseBase(const char *type,
 }
 
 
+static virStorageSourceSlicePtr
+virDomainStorageSourceParseSlice(xmlNodePtr node,
+                                 xmlXPathContextPtr ctxt)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    g_autofree char *offset = NULL;
+    g_autofree char *size = NULL;
+    g_autofree virStorageSourceSlicePtr ret = g_new0(virStorageSourceSlice, 1);
+
+    ctxt->node = node;
+
+    if (!(offset = virXPathString("string(./@offset)", ctxt)) ||
+        !(size = virXPathString("string(./@size)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing offset or size attribute of slice"));
+        return NULL;
+    }
+
+    if (virStrToLong_ullp(offset, NULL, 10, &ret->offset) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("malformed value '%s' of 'offset' attribute of slice"),
+                       offset);
+        return NULL;
+    }
+
+    if (virStrToLong_ullp(size, NULL, 10, &ret->size) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("malformed value '%s' of 'size' attribute of slice"),
+                       size);
+        return NULL;
+    }
+
+    return g_steal_pointer(&ret);
+}
+
+
+static int
+virDomainStorageSourceParseSlices(virStorageSourcePtr src,
+                                  xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr node;
+
+    if ((node = virXPathNode("./slices/slice[@type='storage']", ctxt))) {
+        if (!(src->sliceStorage = virDomainStorageSourceParseSlice(node, ctxt)))
+            return -1;
+    }
+
+    return 0;
+}
+
+
 /**
  * virDomainStorageSourceParse:
  * @node: XML node pointing to the source element to parse
@@ -9533,6 +9584,9 @@ virDomainStorageSourceParse(xmlNodePtr node,
         return -1;
 
     if (virDomainDiskSourcePRParse(node, ctxt, &src->pr) < 0)
+        return -1;
+
+    if (virDomainStorageSourceParseSlices(src, ctxt) < 0)
         return -1;
 
     if (virSecurityDeviceLabelDefParseXML(&src->seclabels, &src->nseclabels,
@@ -24376,6 +24430,36 @@ virDomainDiskSourceFormatPrivateData(virBufferPtr buf,
 }
 
 
+static void
+virDomainDiskSourceFormatSlice(virBufferPtr buf,
+                               const char *slicetype,
+                               virStorageSourceSlicePtr slice)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+
+    if (!slice)
+        return;
+
+    virBufferAsprintf(&attrBuf, " type='%s'", slicetype);
+    virBufferAsprintf(&attrBuf, " offset='%llu'", slice->offset);
+    virBufferAsprintf(&attrBuf, " size='%llu'", slice->size);
+
+    virXMLFormatElement(buf, "slice", &attrBuf, NULL);
+}
+
+
+static void
+virDomainDiskSourceFormatSlices(virBufferPtr buf,
+                                virStorageSourcePtr src)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    virDomainDiskSourceFormatSlice(&childBuf, "storage", src->sliceStorage);
+
+    virXMLFormatElement(buf, "slices", NULL, &childBuf);
+}
+
+
 /**
  * virDomainDiskSourceFormat:
  * @buf: output buffer
@@ -24445,6 +24529,8 @@ virDomainDiskSourceFormat(virBufferPtr buf,
                        _("unexpected disk type %d"), src->type);
         return -1;
     }
+
+    virDomainDiskSourceFormatSlices(&childBuf, src);
 
     if (src->type != VIR_STORAGE_TYPE_NETWORK)
         virDomainSourceDefFormatSeclabel(&childBuf, src->nseclabels,
