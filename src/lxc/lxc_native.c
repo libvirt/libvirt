@@ -414,7 +414,6 @@ lxcCreateHostdevDef(int mode, int type, const char *data)
 typedef struct _lxcNetworkParseData lxcNetworkParseData;
 typedef lxcNetworkParseData *lxcNetworkParseDataPtr;
 struct _lxcNetworkParseData {
-    virDomainDefPtr def;
     char *type;
     char *link;
     char *mac;
@@ -470,7 +469,7 @@ lxcAddNetworkRouteDefinition(const char *address,
 }
 
 static int
-lxcAddNetworkDefinition(lxcNetworkParseData *data)
+lxcAddNetworkDefinition(virDomainDefPtr def, lxcNetworkParseData *data)
 {
     virDomainNetDefPtr net = NULL;
     virDomainHostdevDefPtr hostdev = NULL;
@@ -518,9 +517,9 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
                                          &hostdev->source.caps.u.net.ip.nroutes) < 0)
                 goto error;
 
-        if (VIR_EXPAND_N(data->def->hostdevs, data->def->nhostdevs, 1) < 0)
+        if (VIR_EXPAND_N(def->hostdevs, def->nhostdevs, 1) < 0)
             goto error;
-        data->def->hostdevs[data->def->nhostdevs - 1] = hostdev;
+        def->hostdevs[def->nhostdevs - 1] = hostdev;
     } else {
         if (!(net = lxcCreateNetDef(data->type, data->link, data->mac,
                                     data->flag, data->macvlanmode,
@@ -542,9 +541,9 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
                                          &net->guestIP.nroutes) < 0)
                 goto error;
 
-        if (VIR_EXPAND_N(data->def->nets, data->def->nnets, 1) < 0)
+        if (VIR_EXPAND_N(def->nets, def->nnets, 1) < 0)
             goto error;
-        data->def->nets[data->def->nnets - 1] = net;
+        def->nets[def->nnets - 1] = net;
     }
 
     return 1;
@@ -766,9 +765,8 @@ lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
 
     for (i = 0; i < networks.ndata; i++) {
         lxcNetworkParseDataPtr data = networks.parseData[i];
-        data->def = def;
 
-        status = lxcAddNetworkDefinition(data);
+        status = lxcAddNetworkDefinition(def, data);
 
         if (status < 0)
             goto error;
