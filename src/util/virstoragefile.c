@@ -3600,15 +3600,11 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
                                          virJSONValuePtr json,
                                          const char *jsonstr)
 {
-    g_autoptr(virJSONValue) deflattened = NULL;
     virJSONValuePtr file;
     const char *drvname;
     size_t i;
 
-    if (!(deflattened = virJSONValueObjectDeflatten(json)))
-        return -1;
-
-    if (!(file = virJSONValueObjectGetObject(deflattened, "file"))) {
+    if (!(file = virJSONValueObjectGetObject(json, "file"))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("JSON backing volume definition '%s' lacks 'file' object"),
                        jsonstr);
@@ -3639,11 +3635,15 @@ virStorageSourceParseBackingJSON(virStorageSourcePtr src,
                                  const char *json)
 {
     g_autoptr(virJSONValue) root = NULL;
+    g_autoptr(virJSONValue) deflattened = NULL;
 
     if (!(root = virJSONValueFromString(json)))
         return -1;
 
-    return virStorageSourceParseBackingJSONInternal(src, root, json);
+    if (!(deflattened = virJSONValueObjectDeflatten(root)))
+        return -1;
+
+    return virStorageSourceParseBackingJSONInternal(src, deflattened, json);
 }
 
 
