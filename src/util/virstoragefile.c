@@ -3521,10 +3521,17 @@ virStorageSourceParseBackingJSONRaw(virStorageSourcePtr src,
                                     const char *jsonstr,
                                     int opaque G_GNUC_UNUSED)
 {
-    /* There are no interesting attributes in raw driver.
-     * Treat it as pass-through.
-     */
-    return virStorageSourceParseBackingJSONInternal(src, json, jsonstr);
+    virJSONValuePtr file;
+
+    /* 'raw' is a format driver so it can have protocol driver children */
+    if (!(file = virJSONValueObjectGetObject(json, "file"))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("JSON backing volume definition '%s' lacks 'file' object"),
+                       jsonstr);
+        return -1;
+    }
+
+    return virStorageSourceParseBackingJSONInternal(src, file, jsonstr);
 }
 
 
@@ -3601,18 +3608,10 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
                                          virJSONValuePtr json,
                                          const char *jsonstr)
 {
-    virJSONValuePtr file;
     const char *drvname;
     size_t i;
 
-    if (!(file = virJSONValueObjectGetObject(json, "file"))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("JSON backing volume definition '%s' lacks 'file' object"),
-                       jsonstr);
-        return -1;
-    }
-
-    if (!(drvname = virJSONValueObjectGetString(file, "driver"))) {
+    if (!(drvname = virJSONValueObjectGetString(json, "driver"))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("JSON backing volume definition '%s' lacks driver name"),
                        jsonstr);
@@ -3621,7 +3620,7 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
 
     for (i = 0; i < G_N_ELEMENTS(jsonParsers); i++) {
         if (STREQ(drvname, jsonParsers[i].drvname))
-            return jsonParsers[i].func(src, file, jsonstr, jsonParsers[i].opaque);
+            return jsonParsers[i].func(src, json, jsonstr, jsonParsers[i].opaque);
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3637,6 +3636,7 @@ virStorageSourceParseBackingJSON(virStorageSourcePtr src,
 {
     g_autoptr(virJSONValue) root = NULL;
     g_autoptr(virJSONValue) deflattened = NULL;
+    virJSONValuePtr file = NULL;
 
     if (!(root = virJSONValueFromString(json)))
         return -1;
@@ -3644,7 +3644,18 @@ virStorageSourceParseBackingJSON(virStorageSourcePtr src,
     if (!(deflattened = virJSONValueObjectDeflatten(root)))
         return -1;
 
-    return virStorageSourceParseBackingJSONInternal(src, deflattened, json);
+    /* There are 2 possible syntaxes:
+     * 1) json:{"file":{"driver":...}}
+     * 2) json:{"driver":...}
+     * Remove the 'file' wrapper object in case 1.
+     */
+    if (!virJSONValueObjectHasKey(deflattened, "driver"))
+        file = virJSONValueObjectGetObject(deflattened, "file");
+
+    if (!file)
+        file = deflattened;
+
+    return virStorageSourceParseBackingJSONInternal(src, file, json);
 }
 
 
