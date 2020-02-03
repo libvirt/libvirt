@@ -1315,6 +1315,10 @@ mymain(void)
                                         "}"
                             "}",
                        "<source file='/path/to/file'/>\n");
+    TEST_BACKING_PARSE("json:{\"driver\":\"file\","
+                             "\"filename\":\"/path/to/file\""
+                            "}",
+                       "<source file='/path/to/file'/>\n");
     TEST_BACKING_PARSE("json:{\"file.driver\":\"host_device\", "
                              "\"file.filename\":\"/path/to/dev\"}",
                        "<source dev='/path/to/dev'/>\n");
@@ -1385,6 +1389,12 @@ mymain(void)
     TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"nbd\","
                                        "\"path\":\"/path/to/socket\""
                                       "}"
+                            "}",
+                       "<source protocol='nbd'>\n"
+                       "  <host transport='unix' socket='/path/to/socket'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("json:{\"driver\":\"nbd\","
+                             "\"path\":\"/path/to/socket\""
                             "}",
                        "<source protocol='nbd'>\n"
                        "  <host transport='unix' socket='/path/to/socket'/>\n"
