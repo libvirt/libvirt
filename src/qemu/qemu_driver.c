@@ -4876,6 +4876,20 @@ processRdmaGidStatusChangedEvent(virDomainObjPtr vm,
 }
 
 
+static void
+processGuestCrashloadedEvent(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm)
+{
+    virObjectEventPtr event = NULL;
+
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_CRASHED,
+                                              VIR_DOMAIN_EVENT_CRASHED_CRASHLOADED);
+
+    virObjectEventStateQueue(driver->domainEventState, event);
+}
+
+
 static void qemuProcessEventHandler(void *data, void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
@@ -4921,6 +4935,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         break;
     case QEMU_PROCESS_EVENT_RDMA_GID_STATUS_CHANGED:
         processRdmaGidStatusChangedEvent(vm, processEvent->data);
+        break;
+    case QEMU_PROCESS_EVENT_GUEST_CRASHLOADED:
+        processGuestCrashloadedEvent(driver, vm);
         break;
     case QEMU_PROCESS_EVENT_LAST:
         break;

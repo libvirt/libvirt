@@ -3175,6 +3175,7 @@ typedef enum {
  */
 typedef enum {
     VIR_DOMAIN_EVENT_CRASHED_PANICKED = 0, /* Guest was panicked */
+    VIR_DOMAIN_EVENT_CRASHED_CRASHLOADED = 1, /* Guest was crashloaded */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_CRASHED_LAST

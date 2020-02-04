@@ -273,6 +273,9 @@ eventDetailToString(int event,
            case VIR_DOMAIN_EVENT_CRASHED_PANICKED:
                return "Panicked";
 
+           case VIR_DOMAIN_EVENT_CRASHED_CRASHLOADED:
+               return "Crashloaded";
+
            case VIR_DOMAIN_EVENT_CRASHED_LAST:
                break;
            }

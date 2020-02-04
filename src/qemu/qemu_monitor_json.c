@@ -99,6 +99,7 @@ static void qemuMonitorJSONHandleBlockJobReady(qemuMonitorPtr mon, virJSONValueP
 static void qemuMonitorJSONHandleJobStatusChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleGuestCrashloaded(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleGuestPanic(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleDeviceDeleted(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleNicRxFilterChanged(qemuMonitorPtr mon, virJSONValuePtr data);
@@ -128,6 +129,7 @@ static qemuEventHandler eventHandlers[] = {
     { "DEVICE_DELETED", qemuMonitorJSONHandleDeviceDeleted, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
     { "DUMP_COMPLETED", qemuMonitorJSONHandleDumpCompleted, },
+    { "GUEST_CRASHLOADED", qemuMonitorJSONHandleGuestCrashloaded, },
     { "GUEST_PANICKED", qemuMonitorJSONHandleGuestPanic, },
     { "JOB_STATUS_CHANGE", qemuMonitorJSONHandleJobStatusChange, },
     { "MIGRATION", qemuMonitorJSONHandleMigrationStatus, },
@@ -1540,6 +1542,16 @@ static void qemuMonitorJSONHandleRdmaGidStatusChanged(qemuMonitorPtr mon,
 
     qemuMonitorEmitRdmaGidStatusChanged(mon, netdev, gid_status, subnet_prefix,
                                         interface_id);
+}
+
+
+static void
+qemuMonitorJSONHandleGuestCrashloaded(qemuMonitorPtr mon,
+                                      virJSONValuePtr data)
+{
+    VIR_DEBUG("qemuMonitorJSONHandleGuestCrashloaded event, mon %p, data %p", mon, data);
+
+    qemuMonitorEmitGuestCrashloaded(mon);
 }
 
 

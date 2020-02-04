@@ -12910,7 +12910,8 @@ VIR_ENUM_IMPL(virshDomainEventPMSuspended,
 VIR_ENUM_DECL(virshDomainEventCrashed);
 VIR_ENUM_IMPL(virshDomainEventCrashed,
               VIR_DOMAIN_EVENT_CRASHED_LAST,
-              N_("Panicked"));
+              N_("Panicked"),
+              N_("Crashloaded"));
 
 static const char *
 virshDomainEventDetailToString(int event, int detail)

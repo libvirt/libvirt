@@ -16375,6 +16375,7 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
     case QEMU_PROCESS_EVENT_SERIAL_CHANGED:
     case QEMU_PROCESS_EVENT_BLOCK_JOB:
     case QEMU_PROCESS_EVENT_MONITOR_EOF:
+    case QEMU_PROCESS_EVENT_GUEST_CRASHLOADED:
         VIR_FREE(event->data);
         break;
     case QEMU_PROCESS_EVENT_JOB_STATUS_CHANGE:

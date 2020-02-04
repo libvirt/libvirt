@@ -345,6 +345,10 @@ typedef int (*qemuMonitorDomainRdmaGidStatusChangedCallback)(qemuMonitorPtr mon,
                                                              unsigned long long interface_id,
                                                              void *opaque);
 
+typedef int (*qemuMonitorDomainGuestCrashloadedCallback)(qemuMonitorPtr mon,
+                                                         virDomainObjPtr vm,
+                                                         void *opaque);
+
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 typedef qemuMonitorCallbacks *qemuMonitorCallbacksPtr;
 struct _qemuMonitorCallbacks {
@@ -380,6 +384,7 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainDumpCompletedCallback domainDumpCompleted;
     qemuMonitorDomainPRManagerStatusChangedCallback domainPRManagerStatusChanged;
     qemuMonitorDomainRdmaGidStatusChangedCallback domainRdmaGidStatusChanged;
+    qemuMonitorDomainGuestCrashloadedCallback domainGuestCrashloaded;
 };
 
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
@@ -511,6 +516,8 @@ int qemuMonitorEmitRdmaGidStatusChanged(qemuMonitorPtr mon,
                                         bool gid_status,
                                         unsigned long long subnet_prefix,
                                         unsigned long long interface_id);
+
+int qemuMonitorEmitGuestCrashloaded(qemuMonitorPtr mon);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon);
 int qemuMonitorStopCPUs(qemuMonitorPtr mon);
