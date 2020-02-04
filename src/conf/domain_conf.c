@@ -16516,7 +16516,7 @@ virDomainDeviceDefParse(const char *xmlStr,
     g_autoptr(xmlDoc) xml = NULL;
     xmlNodePtr node;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    g_autofree virDomainDeviceDefPtr dev = NULL;
+    g_autoptr(virDomainDeviceDef) dev = NULL;
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, _("(device_definition)"), &ctxt)))
         return NULL;

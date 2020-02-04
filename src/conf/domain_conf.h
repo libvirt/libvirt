@@ -2916,6 +2916,7 @@ void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);
 void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def);
 void virDomainShmemDefFree(virDomainShmemDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainDeviceDef, virDomainDeviceDefFree);
 virDomainDeviceDefPtr virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                                              const virDomainDef *def,
                                              virDomainXMLOptionPtr xmlopt,
