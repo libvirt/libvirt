@@ -31344,8 +31344,10 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
 
     def->src->hosts[0].name = g_strdup(pooldef->source.hosts[0].name);
 
-    def->src->hosts[0].port = pooldef->source.hosts[0].port ?
-        pooldef->source.hosts[0].port : 3260;
+    if (pooldef->source.hosts[0].port != 0)
+        def->src->hosts[0].port = pooldef->source.hosts[0].port;
+    else
+        def->src->hosts[0].port = 3260;
 
     /* iscsi volume has name like "unit:0:0:1" */
     if (!(tokens = virStringSplitCount(def->src->srcpool->volume, ":", 0, &ntokens)))
