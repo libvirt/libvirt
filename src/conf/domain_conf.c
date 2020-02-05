@@ -31377,18 +31377,18 @@ virDomainDiskAddISCSIPoolSourceHost(virStorageSourcePtr src,
 
 
 static int
-virDomainDiskTranslateSourcePoolAuth(virDomainDiskDefPtr def,
+virDomainDiskTranslateSourcePoolAuth(virStorageSourcePtr src,
                                      virStoragePoolSourcePtr source)
 {
     /* Only necessary when authentication set */
     if (!source->auth)
         return 0;
 
-    def->src->auth = virStorageAuthDefCopy(source->auth);
-    if (!def->src->auth)
+    src->auth = virStorageAuthDefCopy(source->auth);
+    if (!src->auth)
         return -1;
     /* A <disk> doesn't use <auth type='%s', so clear that out for the disk */
-    def->src->auth->authType = VIR_STORAGE_AUTH_TYPE_NONE;
+    src->auth->authType = VIR_STORAGE_AUTH_TYPE_NONE;
     return 0;
 }
 
@@ -31400,7 +31400,7 @@ virDomainDiskTranslateISCSIDirect(virDomainDiskDefPtr def,
     def->src->srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
     def->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
-    if (virDomainDiskTranslateSourcePoolAuth(def,
+    if (virDomainDiskTranslateSourcePoolAuth(def->src,
                                              &pooldef->source) < 0)
         return -1;
 
