@@ -31341,9 +31341,7 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
 
     /* iscsi pool only supports one host */
     def->src->nhosts = 1;
-
-    if (VIR_ALLOC_N(def->src->hosts, def->src->nhosts) < 0)
-        goto cleanup;
+    def->src->hosts = g_new0(virStorageNetHostDef, 1);
 
     def->src->hosts[0].name = g_strdup(pooldef->source.hosts[0].name);
 
