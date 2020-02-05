@@ -1,0 +1,45 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-TPM-VM \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-TPM-VM/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-TPM-VM/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc64 \
+-name guest=TPM-VM,debug-threads=on \
+-S \
+-object secret,id=masterKey0,format=raw,\
+file=/tmp/lib/domain--1-TPM-VM/master-key.aes \
+-machine pseries-5.0,accel=tcg,usb=off,dump-guest-core=off \
+-cpu POWER9 \
+-m 2048 \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 11d7cd22-da89-3094-6212-079a48a309a1 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot menu=on,strict=on \
+-device pci-ohci,id=usb,bus=pci.0,addr=0x1 \
+-device spapr-vscsi,id=scsi0,reg=0x00002000 \
+-device spapr-vscsi,id=scsi1,reg=0x00003000 \
+-drive file=/tmp/scsidisk.img,format=raw,if=none,id=drive-scsi1-0-0-0 \
+-device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,\
+device_id=drive-scsi1-0-0-0,drive=drive-scsi1-0-0-0,id=scsi1-0-0-0,bootindex=1 \
+-chardev pty,id=charserial0 \
+-device spapr-vty,chardev=charserial0,id=serial0,reg=0x30000000 \
+-chardev pty,id=charserial1 \
+-device spapr-vty,chardev=charserial1,id=serial1,reg=0x30001000 \
+-tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
+-chardev socket,id=chrtpm,path=/dev/test \
+-device tpm-spapr,tpmdev=tpm-tpm0,id=tpm0,reg=0x00005000 \
+-global spapr-nvram.reg=0x4000 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
+resourcecontrol=deny \
+-msg timestamp=on

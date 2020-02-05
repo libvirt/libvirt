@@ -738,6 +738,9 @@ mymain(void)
 # define DO_TEST_CAPS_VER(name, ver) \
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
+# define DO_TEST_CAPS_LATEST_PPC64(name) \
+    DO_TEST_CAPS_ARCH_LATEST(name, "ppc64")
+
 # define DO_TEST_CAPS_ARCH_LATEST_FAILURE(name, arch) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
                                   ARG_FLAGS, FLAG_EXPECT_FAILURE)
@@ -2193,6 +2196,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("tpm-emulator");
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2");
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2-enc");
+    DO_TEST_CAPS_LATEST_PPC64("tpm-emulator-spapr");
 
     DO_TEST_PARSE_ERROR("pci-domain-invalid", NONE);
     DO_TEST_PARSE_ERROR("pci-bus-invalid", NONE);

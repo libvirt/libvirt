@@ -1,0 +1,60 @@
+<domain type='qemu'>
+  <name>TPM-VM</name>
+  <uuid>11d7cd22-da89-3094-6212-079a48a309a1</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>512288</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries-5.0'>hvm</type>
+    <boot dev='hd'/>
+    <bootmenu enable='yes'/>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <console type='pty'>
+      <address type="spapr-vio"/>
+    </console>
+
+    <!-- Two serials, first is the console -->
+    <serial type="pty">
+      <address type="spapr-vio"/>
+    </serial>
+    <serial type="pty">
+      <address type="spapr-vio"/>
+    </serial>
+
+    <!-- One disk -->
+    <disk type="file" device="disk">
+      <driver name="qemu" type="raw"/>
+      <source file="/tmp/scsidisk.img"/>
+      <target dev="sda" bus="scsi"/>
+      <address type="drive" controller="1"/>
+    </disk>
+
+    <!-- Two SCSI controllers -->
+    <controller type="scsi" index="1">
+      <address type="spapr-vio"/>
+    </controller>
+    <controller type="scsi" index="0">
+      <address type="spapr-vio"/>
+    </controller>
+
+    <nvram>
+      <address type='spapr-vio' reg='0x4000'/>
+    </nvram>
+
+    <!-- TPM emulator -->
+    <tpm model='tpm-spapr'>
+      <backend type='emulator' version='2.0'/>
+    </tpm>
+
+    <memballoon model='none'/>
+  </devices>
+</domain>
