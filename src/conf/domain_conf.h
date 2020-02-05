@@ -1252,6 +1252,7 @@ struct _virDomainHubDef {
 };
 
 typedef enum {
+    VIR_DOMAIN_TPM_MODEL_DEFAULT,
     VIR_DOMAIN_TPM_MODEL_TIS,
     VIR_DOMAIN_TPM_MODEL_CRB,
 

@@ -1125,6 +1125,7 @@ VIR_ENUM_IMPL(virDomainRNGBackend,
 
 VIR_ENUM_IMPL(virDomainTPMModel,
               VIR_DOMAIN_TPM_MODEL_LAST,
+              "default",
               "tpm-tis",
               "tpm-crb",
 );

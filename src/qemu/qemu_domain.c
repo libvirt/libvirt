@@ -9036,6 +9036,15 @@ qemuDomainHostdevDefPostParse(virDomainHostdevDefPtr hostdev,
 
 
 static int
+qemuDomainTPMDefPostParse(virDomainTPMDefPtr tpm)
+{
+    if (tpm->model == VIR_DOMAIN_TPM_MODEL_DEFAULT)
+        tpm->model = VIR_DOMAIN_TPM_MODEL_TIS;
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              unsigned int parseFlags,
@@ -9088,6 +9097,10 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         ret = qemuDomainHostdevDefPostParse(dev->data.hostdev, qemuCaps);
         break;
 
+    case VIR_DOMAIN_DEVICE_TPM:
+        ret = qemuDomainTPMDefPostParse(dev->data.tpm);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -9100,7 +9113,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_RNG:
-    case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
         ret = 0;
