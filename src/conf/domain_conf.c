@@ -31394,30 +31394,30 @@ virDomainDiskTranslateSourcePoolAuth(virStorageSourcePtr src,
 
 
 static int
-virDomainDiskTranslateISCSIDirect(virDomainDiskDefPtr def,
+virDomainDiskTranslateISCSIDirect(virStorageSourcePtr src,
                                   virStoragePoolDefPtr pooldef)
 {
-    def->src->srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
-    def->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
+    src->srcpool->actualtype = VIR_STORAGE_TYPE_NETWORK;
+    src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
-    if (virDomainDiskTranslateSourcePoolAuth(def->src,
+    if (virDomainDiskTranslateSourcePoolAuth(src,
                                              &pooldef->source) < 0)
         return -1;
 
     /* Source pool may not fill in the secrettype field,
      * so we need to do so here
      */
-    if (def->src->auth && !def->src->auth->secrettype) {
+    if (src->auth && !src->auth->secrettype) {
         const char *secrettype =
             virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_ISCSI);
-        def->src->auth->secrettype = g_strdup(secrettype);
+        src->auth->secrettype = g_strdup(secrettype);
     }
 
-    if (virDomainDiskAddISCSIPoolSourceHost(def->src, pooldef) < 0)
+    if (virDomainDiskAddISCSIPoolSourceHost(src, pooldef) < 0)
         return -1;
 
-    if (!def->src->initiator.iqn && pooldef->source.initiator.iqn &&
-        virStorageSourceInitiatorCopy(&def->src->initiator,
+    if (!src->initiator.iqn && pooldef->source.initiator.iqn &&
+        virStorageSourceInitiatorCopy(&src->initiator,
                                       &pooldef->source.initiator) < 0) {
         return -1;
     }
@@ -31542,7 +31542,7 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
             return -1;
         }
 
-        if (virDomainDiskTranslateISCSIDirect(def, pooldef) < 0)
+        if (virDomainDiskTranslateISCSIDirect(def->src, pooldef) < 0)
             return -1;
 
         break;
@@ -31567,7 +31567,7 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
            break;
 
        case VIR_STORAGE_SOURCE_POOL_MODE_DIRECT:
-           if (virDomainDiskTranslateISCSIDirect(def, pooldef) < 0)
+           if (virDomainDiskTranslateISCSIDirect(def->src, pooldef) < 0)
                return -1;
            break;
        }
