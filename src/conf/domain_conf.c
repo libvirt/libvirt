@@ -31426,37 +31426,28 @@ virDomainDiskTranslateISCSIDirect(virStorageSourcePtr src,
 }
 
 
-int
-virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
+static int
+virDomainStorageSourceTranslateSourcePool(virStorageSourcePtr src,
+                                          virConnectPtr conn)
 {
     virStorageVolInfo info;
     g_autoptr(virStoragePoolDef) pooldef = NULL;
     g_autofree char *poolxml = NULL;
-    g_autoptr(virConnect) conn = NULL;
     g_autoptr(virStoragePool) pool = NULL;
     g_autoptr(virStorageVol) vol = NULL;
 
-    if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
-        return 0;
-
-    if (!def->src->srcpool)
-        return 0;
-
-    if (!(conn = virGetConnectStorage()))
-        return -1;
-
-    if (!(pool = virStoragePoolLookupByName(conn, def->src->srcpool->pool)))
+    if (!(pool = virStoragePoolLookupByName(conn, src->srcpool->pool)))
         return -1;
 
     if (virStoragePoolIsActive(pool) != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("storage pool '%s' containing volume '%s' "
                          "is not active"),
-                       def->src->srcpool->pool, def->src->srcpool->volume);
+                       src->srcpool->pool, src->srcpool->volume);
         return -1;
     }
 
-    if (!(vol = virStorageVolLookupByName(pool, def->src->srcpool->volume)))
+    if (!(vol = virStorageVolLookupByName(pool, src->srcpool->volume)))
         return -1;
 
     if (virStorageVolGetInfo(vol, &info) < 0)
@@ -31468,22 +31459,22 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
     if (!(pooldef = virStoragePoolDefParseString(poolxml)))
         return -1;
 
-    def->src->srcpool->pooltype = pooldef->type;
-    def->src->srcpool->voltype = info.type;
+    src->srcpool->pooltype = pooldef->type;
+    src->srcpool->voltype = info.type;
 
-    if (def->src->srcpool->mode && pooldef->type != VIR_STORAGE_POOL_ISCSI) {
+    if (src->srcpool->mode && pooldef->type != VIR_STORAGE_POOL_ISCSI) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("disk source mode is only valid when "
                          "storage pool is of iscsi type"));
         return -1;
     }
 
-    VIR_FREE(def->src->path);
-    virStorageNetHostDefFree(def->src->nhosts, def->src->hosts);
-    def->src->nhosts = 0;
-    def->src->hosts = NULL;
-    virStorageAuthDefFree(def->src->auth);
-    def->src->auth = NULL;
+    VIR_FREE(src->path);
+    virStorageNetHostDefFree(src->nhosts, src->hosts);
+    src->nhosts = 0;
+    src->hosts = NULL;
+    virStorageAuthDefFree(src->auth);
+    src->auth = NULL;
 
     switch ((virStoragePoolType) pooldef->type) {
     case VIR_STORAGE_POOL_DIR:
@@ -31494,32 +31485,24 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
     case VIR_STORAGE_POOL_SCSI:
     case VIR_STORAGE_POOL_ZFS:
     case VIR_STORAGE_POOL_VSTORAGE:
-        if (!(def->src->path = virStorageVolGetPath(vol)))
+        if (!(src->path = virStorageVolGetPath(vol)))
             return -1;
-
-        if (def->startupPolicy && info.type != VIR_STORAGE_VOL_FILE) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("'startupPolicy' is only valid for "
-                             "'file' type volume"));
-            return -1;
-        }
-
 
         switch (info.type) {
         case VIR_STORAGE_VOL_FILE:
-            def->src->srcpool->actualtype = VIR_STORAGE_TYPE_FILE;
+            src->srcpool->actualtype = VIR_STORAGE_TYPE_FILE;
             break;
 
         case VIR_STORAGE_VOL_DIR:
-            def->src->srcpool->actualtype = VIR_STORAGE_TYPE_DIR;
+            src->srcpool->actualtype = VIR_STORAGE_TYPE_DIR;
             break;
 
         case VIR_STORAGE_VOL_BLOCK:
-            def->src->srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
+            src->srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
             break;
 
         case VIR_STORAGE_VOL_PLOOP:
-            def->src->srcpool->actualtype = VIR_STORAGE_TYPE_FILE;
+            src->srcpool->actualtype = VIR_STORAGE_TYPE_FILE;
             break;
 
         case VIR_STORAGE_VOL_NETWORK:
@@ -31535,39 +31518,25 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
         break;
 
     case VIR_STORAGE_POOL_ISCSI_DIRECT:
-        if (def->startupPolicy) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("'startupPolicy' is only valid for "
-                             "'file' type volume"));
-            return -1;
-        }
-
-        if (virDomainDiskTranslateISCSIDirect(def->src, pooldef) < 0)
+        if (virDomainDiskTranslateISCSIDirect(src, pooldef) < 0)
             return -1;
 
         break;
 
     case VIR_STORAGE_POOL_ISCSI:
-        if (def->startupPolicy) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("'startupPolicy' is only valid for "
-                             "'file' type volume"));
-            return -1;
-        }
-
-       switch (def->src->srcpool->mode) {
+       switch (src->srcpool->mode) {
        case VIR_STORAGE_SOURCE_POOL_MODE_DEFAULT:
        case VIR_STORAGE_SOURCE_POOL_MODE_LAST:
-           def->src->srcpool->mode = VIR_STORAGE_SOURCE_POOL_MODE_HOST;
+           src->srcpool->mode = VIR_STORAGE_SOURCE_POOL_MODE_HOST;
            G_GNUC_FALLTHROUGH;
        case VIR_STORAGE_SOURCE_POOL_MODE_HOST:
-           def->src->srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
-           if (!(def->src->path = virStorageVolGetPath(vol)))
+           src->srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
+           if (!(src->path = virStorageVolGetPath(vol)))
                return -1;
            break;
 
        case VIR_STORAGE_SOURCE_POOL_MODE_DIRECT:
-           if (virDomainDiskTranslateISCSIDirect(def->src, pooldef) < 0)
+           if (virDomainDiskTranslateISCSIDirect(src, pooldef) < 0)
                return -1;
            break;
        }
@@ -31582,6 +31551,35 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
                        _("using '%s' pools for backing 'volume' disks "
                          "isn't yet supported"),
                        virStoragePoolTypeToString(pooldef->type));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
+{
+    g_autoptr(virConnect) conn = NULL;
+
+    if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
+        return 0;
+
+    if (!def->src->srcpool)
+        return 0;
+
+    if (!(conn = virGetConnectStorage()))
+        return -1;
+
+    if (virDomainStorageSourceTranslateSourcePool(def->src, conn) < 0)
+        return -1;
+
+    if (def->startupPolicy != 0 &&
+        virStorageSourceGetActualType(def->src) != VIR_STORAGE_VOL_FILE) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("'startupPolicy' is only valid for "
+                         "'file' type volume"));
         return -1;
     }
 
