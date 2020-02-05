@@ -7760,9 +7760,9 @@ qemuDomainDeviceDefValidateTPM(virDomainTPMDef *tpm,
 
     switch (tpm->version) {
     case VIR_DOMAIN_TPM_VERSION_1_2:
-        /* only TIS available for emulator */
+        /* TPM 1.2 + CRB do not work */
         if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
-            tpm->model != VIR_DOMAIN_TPM_MODEL_TIS) {
+            tpm->model == VIR_DOMAIN_TPM_MODEL_CRB) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported interface %s for TPM 1.2"),
                            virDomainTPMModelTypeToString(tpm->model));
@@ -7797,6 +7797,7 @@ qemuDomainDeviceDefValidateTPM(virDomainTPMDef *tpm,
     case VIR_DOMAIN_TPM_MODEL_CRB:
         flag = QEMU_CAPS_DEVICE_TPM_CRB;
         break;
+    case VIR_DOMAIN_TPM_MODEL_SPAPR:
     case VIR_DOMAIN_TPM_MODEL_LAST:
     default:
         virReportEnumRangeError(virDomainTPMModel, tpm->model);
@@ -9036,10 +9037,16 @@ qemuDomainHostdevDefPostParse(virDomainHostdevDefPtr hostdev,
 
 
 static int
-qemuDomainTPMDefPostParse(virDomainTPMDefPtr tpm)
+qemuDomainTPMDefPostParse(virDomainTPMDefPtr tpm,
+                          virArch arch)
 {
-    if (tpm->model == VIR_DOMAIN_TPM_MODEL_DEFAULT)
-        tpm->model = VIR_DOMAIN_TPM_MODEL_TIS;
+    if (tpm->model == VIR_DOMAIN_TPM_MODEL_DEFAULT) {
+        if (ARCH_IS_PPC64(arch))
+            tpm->model = VIR_DOMAIN_TPM_MODEL_SPAPR;
+        else
+            tpm->model = VIR_DOMAIN_TPM_MODEL_TIS;
+    }
+
     return 0;
 }
 
@@ -9098,7 +9105,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_TPM:
-        ret = qemuDomainTPMDefPostParse(dev->data.tpm);
+        ret = qemuDomainTPMDefPostParse(dev->data.tpm, def->os.arch);
         break;
 
     case VIR_DOMAIN_DEVICE_LEASE:

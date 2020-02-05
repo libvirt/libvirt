@@ -1128,6 +1128,7 @@ VIR_ENUM_IMPL(virDomainTPMModel,
               "default",
               "tpm-tis",
               "tpm-crb",
+              "tpm-spapr",
 );
 
 VIR_ENUM_IMPL(virDomainTPMBackend,
