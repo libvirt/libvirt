@@ -1600,7 +1600,11 @@ mymain(void)
                                                 "\"filename\": \"/tmp/testfle\""
                                               "}"
                                   "}",
-                            "<source file='/tmp/testfle'/>\n", 0);
+                            "<source file='/tmp/testfle'>\n"
+                            "  <slices>\n"
+                            "    <slice type='storage' offset='10752' size='4063232'/>\n"
+                            "  </slices>\n"
+                            "</source>\n", 0);
 
 #endif /* WITH_YAJL */
 

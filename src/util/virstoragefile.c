@@ -3551,7 +3551,27 @@ virStorageSourceParseBackingJSONRaw(virStorageSourcePtr src,
                                     const char *jsonstr,
                                     int opaque G_GNUC_UNUSED)
 {
+    bool has_offset = virJSONValueObjectHasKey(json, "offset");
+    bool has_size = virJSONValueObjectHasKey(json, "size");
     virJSONValuePtr file;
+
+    if (has_offset || has_size) {
+        src->sliceStorage = g_new0(virStorageSourceSlice, 1);
+
+        if (has_offset &&
+            virJSONValueObjectGetNumberUlong(json, "offset", &src->sliceStorage->offset) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("malformed 'offset' property of 'raw' driver"));
+            return -1;
+        }
+
+        if (has_size &&
+            virJSONValueObjectGetNumberUlong(json, "size", &src->sliceStorage->size) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("malformed 'size' property of 'raw' driver"));
+            return -1;
+        }
+    }
 
     /* 'raw' is a format driver so it can have protocol driver children */
     if (!(file = virJSONValueObjectGetObject(json, "file"))) {
