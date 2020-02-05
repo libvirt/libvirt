@@ -531,6 +531,8 @@ mymain(void)
     DO_TEST("pci-rom-disabled-invalid", NONE);
     DO_TEST("pci-serial-dev-chardev", NONE);
 
+    DO_TEST_CAPS_LATEST("disk-slices");
+
     DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS);
     DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS);
     DO_TEST("luks-disks", NONE);
