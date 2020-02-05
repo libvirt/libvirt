@@ -31325,7 +31325,7 @@ virDomainNetResolveActualType(virDomainNetDefPtr iface)
 
 
 static int
-virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
+virDomainDiskAddISCSIPoolSourceHost(virStorageSourcePtr src,
                                     virStoragePoolDefPtr pooldef)
 {
     VIR_AUTOSTRINGLIST tokens = NULL;
@@ -31339,38 +31339,38 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     }
 
     /* iscsi pool only supports one host */
-    def->src->nhosts = 1;
-    def->src->hosts = g_new0(virStorageNetHostDef, 1);
+    src->nhosts = 1;
+    src->hosts = g_new0(virStorageNetHostDef, 1);
 
-    def->src->hosts[0].name = g_strdup(pooldef->source.hosts[0].name);
+    src->hosts[0].name = g_strdup(pooldef->source.hosts[0].name);
 
     if (pooldef->source.hosts[0].port != 0)
-        def->src->hosts[0].port = pooldef->source.hosts[0].port;
+        src->hosts[0].port = pooldef->source.hosts[0].port;
     else
-        def->src->hosts[0].port = 3260;
+        src->hosts[0].port = 3260;
 
     /* iscsi volume has name like "unit:0:0:1" */
-    if (!(tokens = virStringSplitCount(def->src->srcpool->volume, ":", 0, &ntokens)))
+    if (!(tokens = virStringSplitCount(src->srcpool->volume, ":", 0, &ntokens)))
         return -1;
 
     if (ntokens != 4) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected iscsi volume name '%s'"),
-                       def->src->srcpool->volume);
+                       src->srcpool->volume);
         return -1;
     }
 
     /* iscsi pool has only one source device path */
-    def->src->path = g_strdup_printf("%s/%s", pooldef->source.devices[0].path,
-                                     tokens[3]);
+    src->path = g_strdup_printf("%s/%s", pooldef->source.devices[0].path,
+                                tokens[3]);
 
     /* Storage pool have not supported these 2 attributes yet,
      * use the defaults.
      */
-    def->src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
-    def->src->hosts[0].socket = NULL;
+    src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+    src->hosts[0].socket = NULL;
 
-    def->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
+    src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
     return 0;
 }
@@ -31413,7 +31413,7 @@ virDomainDiskTranslateISCSIDirect(virDomainDiskDefPtr def,
         def->src->auth->secrettype = g_strdup(secrettype);
     }
 
-    if (virDomainDiskAddISCSIPoolSourceHost(def, pooldef) < 0)
+    if (virDomainDiskAddISCSIPoolSourceHost(def->src, pooldef) < 0)
         return -1;
 
     if (!def->src->initiator.iqn && pooldef->source.initiator.iqn &&
