@@ -1596,11 +1596,30 @@
     </optional>
   </define>
 
+  <define name="diskSourceSlice">
+    <attribute name='offset'>
+      <ref name="positiveInteger"/>
+    </attribute>
+    <attribute name='size'>
+      <ref name="positiveInteger"/>
+    </attribute>
+  </define>
+
   <define name="diskSourceCommon">
     <optional>
       <attribute name="index">
         <ref name="positiveInteger"/>
       </attribute>
+    </optional>
+    <optional>
+      <element name='slices'>
+        <element name='slice'>
+          <attribute name='type'>
+            <value>storage</value>
+          </attribute>
+          <ref name="diskSourceSlice"/>
+        </element>
+      </element>
     </optional>
   </define>
 

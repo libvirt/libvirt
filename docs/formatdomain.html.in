@@ -2878,6 +2878,9 @@
   &lt;disk type='block' device='lun'&gt;
     &lt;driver name='qemu' type='raw'/&gt;
     &lt;source dev='/dev/sda'&gt;
+      &lt;slices&gt;
+        &lt;slice type='storage' offset='12345' size='123'/&gt;
+      &lt;/slices&gt;
       &lt;reservations managed='no'&gt;
         &lt;source type='unix' path='/path/to/qemu-pr-helper' mode='client'/&gt;
       &lt;/reservations&gt;
@@ -3359,6 +3362,16 @@
             specifies the PCI address of the host NVMe
             controller.
             <span class="since">Since 6.0.0</span>
+          </dd>
+          <dt><code>slices</code></dt>
+          <dd>The <code>slices</code> element using its <code>slice</code>
+            sub-elements allows configuring offset and size of either the
+            location of the image format (<code>slice type='storage'</code>)
+            inside the storage source or the guest data inside the image format
+            container (future expansion).
+
+            The <code>offset</code> and <code>size</code> values are in bytes.
+            <span class="since">Since 6.1.0</span>
           </dd>
         </dl>
 
