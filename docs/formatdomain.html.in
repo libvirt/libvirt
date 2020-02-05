@@ -2881,6 +2881,7 @@
       &lt;reservations managed='no'&gt;
         &lt;source type='unix' path='/path/to/qemu-pr-helper' mode='client'/&gt;
       &lt;/reservations&gt;
+    &lt;/source&gt;
     &lt;target dev='sda' bus='scsi'/&gt;
     &lt;address type='drive' controller='0' bus='0' target='3' unit='0'/&gt;
   &lt;/disk&gt;
