@@ -6862,6 +6862,18 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         return -1;
     }
 
+    if (src->sliceStorage) {
+        /* In pre-blockdev era we can't configure the slice so we can allow them
+         * only for detected backing store entries as they are populated
+         * from a place that qemu would be able to read */
+        if (!src->detected &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("storage slice is not supported by this QEMU binary"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
