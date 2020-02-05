@@ -6022,7 +6022,7 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
     }
 
     if (!virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, def->virtType,
-                                       def->cpu->mode)) {
+                                       def->cpu->mode, def->os.machine)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("CPU mode '%s' for %s %s domain on %s host is not "
                          "supported by hypervisor"),

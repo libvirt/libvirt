@@ -2279,7 +2279,8 @@ bool
 virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                               virArch hostarch,
                               virDomainVirtType type,
-                              virCPUMode mode)
+                              virCPUMode mode,
+                              const char *machineType G_GNUC_UNUSED)
 {
     qemuMonitorCPUDefsPtr cpus;
 
@@ -5644,18 +5645,21 @@ virQEMUCapsFillDomainCPUCaps(virQEMUCapsPtr qemuCaps,
                              virDomainCapsPtr domCaps)
 {
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
-                                      VIR_CPU_MODE_HOST_PASSTHROUGH))
+                                      VIR_CPU_MODE_HOST_PASSTHROUGH,
+                                      domCaps->machine))
         domCaps->cpu.hostPassthrough = true;
 
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
-                                      VIR_CPU_MODE_HOST_MODEL)) {
+                                      VIR_CPU_MODE_HOST_MODEL,
+                                      domCaps->machine)) {
         virCPUDefPtr cpu = virQEMUCapsGetHostModel(qemuCaps, domCaps->virttype,
                                                    VIR_QEMU_CAPS_HOST_CPU_REPORTED);
         domCaps->cpu.hostModel = virCPUDefCopy(cpu);
     }
 
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
-                                      VIR_CPU_MODE_CUSTOM)) {
+                                      VIR_CPU_MODE_CUSTOM,
+                                      domCaps->machine)) {
         const char *blacklist[] = { "host", NULL };
         VIR_AUTOSTRINGLIST models = NULL;
 

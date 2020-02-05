@@ -4600,7 +4600,8 @@ qemuDomainDefSetDefaultCPU(virDomainDefPtr def,
     if (STREQ(model, "host")) {
         if (ARCH_IS_S390(def->os.arch) &&
             virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, def->virtType,
-                                          VIR_CPU_MODE_HOST_MODEL)) {
+                                          VIR_CPU_MODE_HOST_MODEL,
+                                          def->os.machine)) {
             def->cpu->mode = VIR_CPU_MODE_HOST_MODEL;
         } else {
             def->cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;

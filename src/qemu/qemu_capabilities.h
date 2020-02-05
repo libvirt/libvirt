@@ -629,7 +629,8 @@ bool virQEMUCapsIsVirtTypeSupported(virQEMUCapsPtr qemuCaps,
 bool virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                                    virArch hostarch,
                                    virDomainVirtType type,
-                                   virCPUMode mode);
+                                   virCPUMode mode,
+                                   const char *machineType);
 const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
                                            virDomainVirtType virtType,
                                            const char *name);
