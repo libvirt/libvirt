@@ -31562,18 +31562,20 @@ int
 virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
 {
     g_autoptr(virConnect) conn = NULL;
+    virStorageSourcePtr n;
 
-    if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
-        return 0;
+    for (n = def->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (n->type != VIR_STORAGE_TYPE_VOLUME || !n->srcpool)
+            continue;
 
-    if (!def->src->srcpool)
-        return 0;
+        if (!conn) {
+            if (!(conn = virGetConnectStorage()))
+                return -1;
+        }
 
-    if (!(conn = virGetConnectStorage()))
-        return -1;
-
-    if (virDomainStorageSourceTranslateSourcePool(def->src, conn) < 0)
-        return -1;
+        if (virDomainStorageSourceTranslateSourcePool(n, conn) < 0)
+            return -1;
+    }
 
     if (def->startupPolicy != 0 &&
         virStorageSourceGetActualType(def->src) != VIR_STORAGE_VOL_FILE) {
