@@ -1194,14 +1194,19 @@ qemuBlockStorageSourceGetFormatRawProps(virStorageSourcePtr src,
         secretalias = srcPriv->encinfo->s.aes.alias;
     }
 
-    /* currently unhandled properties for the 'raw' driver:
-     * 'offset'
-     * 'size'
-     */
-
     if (virJSONValueObjectAdd(props,
                               "s:driver", driver,
                               "S:key-secret", secretalias, NULL) < 0)
+        return -1;
+
+    /* Currently only storage slices are supported. We'll have to calculate
+     * the union of the slices here if we don't want to be adding needless
+     * 'raw' nodes. */
+    if (src->sliceStorage &&
+        virJSONValueObjectAdd(props,
+                              "U:offset", src->sliceStorage->offset,
+                              "U:size", src->sliceStorage->size,
+                              NULL) < 0)
         return -1;
 
     return 0;
