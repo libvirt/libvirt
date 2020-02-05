@@ -31328,7 +31328,6 @@ static int
 virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
                                     virStoragePoolDefPtr pooldef)
 {
-    int ret = -1;
     VIR_AUTOSTRINGLIST tokens = NULL;
     size_t ntokens;
 
@@ -31336,7 +31335,7 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     if (pooldef->source.nhost != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Expected exactly 1 host for the storage pool"));
-        goto cleanup;
+        return -1;
     }
 
     /* iscsi pool only supports one host */
@@ -31350,13 +31349,13 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
 
     /* iscsi volume has name like "unit:0:0:1" */
     if (!(tokens = virStringSplitCount(def->src->srcpool->volume, ":", 0, &ntokens)))
-        goto cleanup;
+        return -1;
 
     if (ntokens != 4) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected iscsi volume name '%s'"),
                        def->src->srcpool->volume);
-        goto cleanup;
+        return -1;
     }
 
     /* iscsi pool has only one source device path */
@@ -31371,10 +31370,7 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
 
     def->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
