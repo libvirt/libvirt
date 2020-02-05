@@ -35,6 +35,7 @@ VIR_LOG_INIT("qemu.qemu_domain_address");
 #define VIO_ADDR_SCSI 0x2000ul
 #define VIO_ADDR_SERIAL 0x30000000ul
 #define VIO_ADDR_NVRAM 0x3000ul
+#define VIO_ADDR_TPM 0x4000ul
 
 
 /**
@@ -264,6 +265,14 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
             def->nvram->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuDomainAssignSpaprVIOAddress(def, &def->nvram->info,
                                             VIO_ADDR_NVRAM) < 0)
+            return -1;
+    }
+
+    if (def->tpm) {
+        if (qemuDomainIsPSeries(def))
+            def->tpm->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
+        if (qemuDomainAssignSpaprVIOAddress(def, &def->tpm->info,
+                                            VIO_ADDR_TPM) < 0)
             return -1;
     }
 
