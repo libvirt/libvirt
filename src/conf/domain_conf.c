@@ -31329,7 +31329,8 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
                                     virStoragePoolDefPtr pooldef)
 {
     int ret = -1;
-    char **tokens = NULL;
+    VIR_AUTOSTRINGLIST tokens = NULL;
+    size_t ntokens;
 
     /* Only support one host */
     if (pooldef->source.nhost != 1) {
@@ -31350,10 +31351,10 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
         pooldef->source.hosts[0].port : 3260;
 
     /* iscsi volume has name like "unit:0:0:1" */
-    if (!(tokens = virStringSplit(def->src->srcpool->volume, ":", 0)))
+    if (!(tokens = virStringSplitCount(def->src->srcpool->volume, ":", 0, &ntokens)))
         goto cleanup;
 
-    if (virStringListLength((const char * const *)tokens) != 4) {
+    if (ntokens != 4) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected iscsi volume name '%s'"),
                        def->src->srcpool->volume);
@@ -31375,7 +31376,6 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     ret = 0;
 
  cleanup:
-    virStringListFree(tokens);
     return ret;
 }
 
