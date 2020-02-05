@@ -16458,7 +16458,7 @@ virDomainVsockDefParseXML(virDomainXMLOptionPtr xmlopt,
     xmlNodePtr cid;
     int val;
     g_autofree char *tmp = NULL;
-    g_autofree virDomainVsockDefPtr vsock = NULL;
+    g_autoptr(virDomainVsockDef) vsock = NULL;
 
     ctxt->node = node;
 
