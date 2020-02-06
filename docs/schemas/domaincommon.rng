@@ -1239,6 +1239,7 @@
             <choice>
               <value>hpet</value>
               <value>pit</value>
+              <value>armvtimer</value>
             </choice>
           </attribute>
           <optional>

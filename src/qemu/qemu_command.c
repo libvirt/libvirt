@@ -6199,6 +6199,7 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
         case VIR_DOMAIN_TIMER_NAME_TSC:
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
         case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
             /* Timers above are handled when building -cpu.  */
         case VIR_DOMAIN_TIMER_NAME_LAST:
             break;
@@ -6609,6 +6610,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             if (timer->frequency > 0)
                 virBufferAsprintf(&buf, ",tsc-frequency=%lu", timer->frequency);
             break;
+        case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
         case VIR_DOMAIN_TIMER_NAME_PIT:
         case VIR_DOMAIN_TIMER_NAME_RTC:

@@ -5428,6 +5428,9 @@ qemuDomainDefValidateClockTimers(const virDomainDef *def,
                 return -1;
             }
             break;
+
+        case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
+            break;
         }
     }
 

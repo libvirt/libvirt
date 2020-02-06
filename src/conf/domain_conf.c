@@ -1063,6 +1063,7 @@ VIR_ENUM_IMPL(virDomainTimerName,
               "tsc",
               "kvmclock",
               "hypervclock",
+              "armvtimer",
 );
 
 VIR_ENUM_IMPL(virDomainTimerTrack,
