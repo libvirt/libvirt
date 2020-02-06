@@ -597,7 +597,7 @@ int qemuMonitorJSONBlockdevCreate(qemuMonitorPtr mon,
     ATTRIBUTE_NONNULL(1);
 
 int qemuMonitorJSONBlockdevAdd(qemuMonitorPtr mon,
-                               virJSONValuePtr props)
+                               virJSONValuePtr *props)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONBlockdevDel(qemuMonitorPtr mon,

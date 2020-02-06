@@ -1537,13 +1537,8 @@ static int
 qemuBlockStorageSourceAttachApplyStorage(qemuMonitorPtr mon,
                                          qemuBlockStorageSourceAttachDataPtr data)
 {
-    int rv;
-
     if (data->storageProps) {
-        rv = qemuMonitorBlockdevAdd(mon, data->storageProps);
-        data->storageProps = NULL;
-
-        if (rv < 0)
+        if (qemuMonitorBlockdevAdd(mon, &data->storageProps) < 0)
             return -1;
 
         data->storageAttached = true;
@@ -1570,13 +1565,8 @@ static int
 qemuBlockStorageSourceAttachApplyFormat(qemuMonitorPtr mon,
                                         qemuBlockStorageSourceAttachDataPtr data)
 {
-    int rv;
-
     if (data->formatProps) {
-        rv = qemuMonitorBlockdevAdd(mon, data->formatProps);
-        data->formatProps = NULL;
-
-        if (rv < 0)
+        if (qemuMonitorBlockdevAdd(mon, &data->formatProps) < 0)
             return -1;
 
         data->formatAttached = true;
