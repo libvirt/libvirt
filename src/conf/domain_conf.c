@@ -30886,6 +30886,7 @@ virDomainNetDefToNetworkPort(virDomainDefPtr dom,
     if (virNetDevVlanCopy(&port->vlan, &iface->vlan) < 0)
         return NULL;
 
+    port->isolatedPort = iface->isolatedPort;
     port->trustGuestRxFilters = iface->trustGuestRxFilters;
 
     return g_steal_pointer(&port);
@@ -30985,6 +30986,7 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDefPtr iface,
     if (virNetDevVlanCopy(&actual->vlan, &port->vlan) < 0)
         goto error;
 
+    actual->isolatedPort = port->isolatedPort;
     actual->class_id = port->class_id;
     actual->trustGuestRxFilters = port->trustGuestRxFilters;
 
@@ -31124,6 +31126,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
     if (virNetDevVlanCopy(&port->vlan, &actual->vlan) < 0)
         return NULL;
 
+    port->isolatedPort = actual->isolatedPort;
     port->class_id = actual->class_id;
     port->trustGuestRxFilters = actual->trustGuestRxFilters;
 

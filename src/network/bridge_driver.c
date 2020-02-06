@@ -4532,6 +4532,9 @@ networkAllocatePort(virNetworkObjPtr obj,
             port->trustGuestRxFilters = netdef->trustGuestRxFilters;
     }
 
+    if (port->isolatedPort == VIR_TRISTATE_BOOL_ABSENT)
+        port->isolatedPort = netdef->isolatedPort;
+
     /* merge virtualports from interface, network, and portgroup to
      * arrive at actual virtualport to use
      */
