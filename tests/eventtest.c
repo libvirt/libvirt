@@ -43,6 +43,7 @@ VIR_LOG_INIT("tests.eventtest");
 
 static pthread_mutex_t eventThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t eventThreadCond = PTHREAD_COND_INITIALIZER;
+static bool eventThreadSignaled;
 
 static struct handleInfo {
     int pipeFD[2];
@@ -138,8 +139,9 @@ testPipeReader(int watch, int fd, int events, void *data)
         virEventRemoveHandle(info->delete);
 
  cleanup:
-    pthread_mutex_unlock(&eventThreadMutex);
     pthread_cond_signal(&eventThreadCond);
+    eventThreadSignaled = true;
+    pthread_mutex_unlock(&eventThreadMutex);
 }
 
 
@@ -164,8 +166,9 @@ testTimer(int timer, void *data)
         virEventRemoveTimeout(info->delete);
 
  cleanup:
-    pthread_mutex_unlock(&eventThreadMutex);
     pthread_cond_signal(&eventThreadCond);
+    eventThreadSignaled = true;
+    pthread_mutex_unlock(&eventThreadMutex);
 }
 
 G_GNUC_NORETURN static void *eventThreadLoop(void *data G_GNUC_UNUSED) {
@@ -185,7 +188,10 @@ waitEvents(int nhandle, int ntimer)
     VIR_DEBUG("Wait events nhandle %d ntimer %d",
               nhandle, ntimer);
     while (ngothandle != nhandle || ngottimer != ntimer) {
-        pthread_cond_wait(&eventThreadCond, &eventThreadMutex);
+        while (!eventThreadSignaled)
+            pthread_cond_wait(&eventThreadCond, &eventThreadMutex);
+
+        eventThreadSignaled = false;
 
         ngothandle = ngottimer = 0;
         for (i = 0; i < NUM_FDS; i++) {
