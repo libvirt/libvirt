@@ -579,3 +579,7 @@ ul.news-section-content li dl dd {
     font-family: monospace;
     background: #eeeeee;
 }
+
+.contents li p {
+    margin: 2px;
+}
