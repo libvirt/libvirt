@@ -44,10 +44,12 @@ VIR_ENUM_IMPL(virLXCNetworkConfigEntry,
               "flags",
               "macvlan.mode",
               "vlan.id",
-              "ipv4",
+              "ipv4", /* Legacy: LXC IPv4 address */
               "ipv4.gateway",
-              "ipv6",
-              "ipv6.gateway"
+              "ipv4.address",
+              "ipv6", /* Legacy: LXC IPv6 address */
+              "ipv6.gateway",
+              "ipv6.address"
 );
 
 static virDomainFSDefPtr
@@ -570,7 +572,7 @@ lxcNetworkParseDataIPs(const char *name,
     if (VIR_ALLOC(ip) < 0)
         return -1;
 
-    if (STREQ(name, "ipv6"))
+    if (STREQ(name, "ipv6") || STREQ(name, "ipv6.address"))
         family = AF_INET6;
 
     ipparts = virStringSplit(value->str, "/", 2);
@@ -627,7 +629,9 @@ lxcNetworkParseDataSuffix(const char *entry,
         parseData->name = value->str;
         break;
     case VIR_LXC_NETWORK_CONFIG_IPV4:
+    case VIR_LXC_NETWORK_CONFIG_IPV4_ADDRESS:
     case VIR_LXC_NETWORK_CONFIG_IPV6:
+    case VIR_LXC_NETWORK_CONFIG_IPV6_ADDRESS:
         if (lxcNetworkParseDataIPs(entry, value, parseData) < 0)
             return -1;
         break;
