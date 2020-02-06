@@ -13,9 +13,7 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-test/master-key.aes \
 -machine s390-ccw-virtio-2.7,accel=kvm,usb=off,dump-guest-core=off \
--cpu z13.2-base,aen=on,aefsi=on,msa5=on,msa4=on,msa3=on,msa2=on,msa1=on,\
-sthyi=on,edat=on,ri=on,edat2=on,vx=on,ipter=on,ap=on,esop=on,apft=on,apqci=on,\
-cte=on,bpb=on,ppa15=on,zpci=on,sea_esop2=on,te=on,cmm=on \
+-cpu host \
 -m 256 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

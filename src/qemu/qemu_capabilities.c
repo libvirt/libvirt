@@ -2274,15 +2274,32 @@ virQEMUCapsIsVirtTypeSupported(virQEMUCapsPtr qemuCaps,
     return false;
 }
 
+const char *s390HostPassthroughOnlyMachines[] = {
+    "s390-ccw-virtio-2.4",
+    "s390-ccw-virtio-2.5",
+    "s390-ccw-virtio-2.6",
+    "s390-ccw-virtio-2.7",
+    NULL
+};
 
 bool
 virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                               virArch hostarch,
                               virDomainVirtType type,
                               virCPUMode mode,
-                              const char *machineType G_GNUC_UNUSED)
+                              const char *machineType)
 {
     qemuMonitorCPUDefsPtr cpus;
+
+    /* CPU models (except for "host") are not supported by QEMU for on s390
+     * KVM domains with old machine types regardless on QEMU version. */
+    if (ARCH_IS_S390(qemuCaps->arch) &&
+        type == VIR_DOMAIN_VIRT_KVM &&
+        mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
+        machineType &&
+        g_strv_contains(s390HostPassthroughOnlyMachines, machineType)) {
+        return false;
+    }
 
     switch (mode) {
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
