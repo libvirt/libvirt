@@ -1081,8 +1081,14 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
         break;
 
     case VIR_STORAGE_TYPE_VOLUME:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("storage source pool '%s' volume '%s' is not translated"),
+                       src->srcpool->pool, src->srcpool->volume);
+        return NULL;
+
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
+        virReportEnumRangeError(virStorageType, actualType);
         return NULL;
 
     case VIR_STORAGE_TYPE_NETWORK:
@@ -1141,6 +1147,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
 
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
+            virReportEnumRangeError(virStorageNetProtocol, src->protocol);
             return NULL;
         }
         break;
