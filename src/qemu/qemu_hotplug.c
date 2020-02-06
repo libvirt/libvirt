@@ -680,6 +680,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virJSONValue) corProps = NULL;
     g_autofree char *corAlias = NULL;
+    bool corAdded = false;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     if (qemuDomainStorageSourceChainAccessAllow(driver, vm, disk->src) < 0)
@@ -692,9 +693,12 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (blockdev) {
-        if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON &&
-            !(corProps = qemuBlockStorageGetCopyOnReadProps(disk)))
-        goto cleanup;
+        if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
+            if (!(corProps = qemuBlockStorageGetCopyOnReadProps(disk)))
+                goto cleanup;
+
+            corAlias = g_strdup(QEMU_DOMAIN_DISK_PRIVATE(disk)->nodeCopyOnRead);
+        }
 
         if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src,
                                                                       priv->qemuCaps)))
@@ -719,9 +723,12 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (qemuBlockStorageSourceChainAttach(priv->mon, data) < 0)
         goto exit_monitor;
 
-    if (corProps &&
-        qemuMonitorAddObject(priv->mon, &corProps, &corAlias) < 0)
-        goto exit_monitor;
+    if (corProps) {
+        if (qemuMonitorBlockdevAdd(priv->mon, &corProps) < 0)
+            goto exit_monitor;
+
+        corAdded = true;
+    }
 
     if (qemuDomainAttachExtensionDevice(priv->mon, &disk->info) < 0)
         goto exit_monitor;
@@ -763,8 +770,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     return ret;
 
  exit_monitor:
-    if (corAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, corAlias));
+    if (corAdded)
+        ignore_value(qemuMonitorBlockdevDel(priv->mon, corAlias));
     qemuBlockStorageSourceChainDetach(priv->mon, data);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
@@ -4250,7 +4257,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (corAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, corAlias));
+        ignore_value(qemuMonitorBlockdevDel(priv->mon, corAlias));
 
     if (diskBackend)
         qemuBlockStorageSourceChainDetach(priv->mon, diskBackend);
