@@ -717,7 +717,11 @@ lxcNetworkGetParseDataByIndexLegacy(lxcNetworkParseDataArray *networks,
     }
 
     /* Return last element added like a stack. */
-    return networks->parseData[ndata - 1];
+    if (ndata > 0)
+        return networks->parseData[ndata - 1];
+
+    /* Not able to retrive an element */
+    return NULL;
 }
 
 
