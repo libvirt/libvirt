@@ -29,6 +29,10 @@
         <dt><a href="kbase/backing_chains.html">Backing chain management</a></dt>
         <dd>Explanation of how disk backing chain specification impacts libvirt's
           behaviour and basic troubleshooting steps of disk problems.</dd>
+
+        <dt><a href="kbase/qemu-passthrough-security.html">Security with QEMU passthrough</a></dt>
+        <dd>Examination of the security protections used for QEMU and how they need
+          configuring to allow use of QEMU passthrough with host files/devices.</dd>
       </dl>
     </div>
 
