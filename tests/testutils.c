@@ -54,6 +54,7 @@ static unsigned int testRegenerate = -1;
 
 static size_t testCounter;
 static virBitmapPtr testBitmap;
+static virBitmapPtr failedTests;
 
 virArch virTestHostArch = VIR_ARCH_X86_64;
 
@@ -171,6 +172,9 @@ virTestRun(const char *title,
         else
             fprintf(stderr, "!");
     }
+
+    if (ret != 0)
+        ignore_value(virBitmapSetBitExpand(failedTests, testCounter));
 
     g_unsetenv("VIR_TEST_MOCK_TESTNAME");
     return ret;
@@ -930,6 +934,9 @@ int virTestMain(int argc,
         }
     }
 
+    if (!(failedTests = virBitmapNew(1)))
+        return EXIT_FAILURE;
+
     ret = (func)();
 
     virResetLastError();
@@ -937,6 +944,11 @@ int virTestMain(int argc,
         if (testCounter == 0 || testCounter % 40)
             fprintf(stderr, "%*s", 40 - (int)(testCounter % 40), "");
         fprintf(stderr, " %-3zu %s\n", testCounter, ret == 0 ? "OK" : "FAIL");
+    }
+    if (ret == EXIT_FAILURE && !virBitmapIsAllClear(failedTests)) {
+        g_autofree char *failed = virBitmapFormat(failedTests);
+        fprintf(stderr, "Some tests failed. Run them using:\n");
+        fprintf(stderr, "VIR_TEST_DEBUG=1 VIR_TEST_RANGE=%s %s\n", failed, argv[0]);
     }
     virLogReset();
     return ret;
