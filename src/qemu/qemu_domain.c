@@ -5430,6 +5430,44 @@ qemuDomainDefValidateClockTimers(const virDomainDef *def,
             break;
 
         case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
+            if (def->virtType != VIR_DOMAIN_VIRT_KVM ||
+                !qemuDomainIsARMVirt(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Configuring the '%s' timer is not supported "
+                                 "for virtType=%s arch=%s machine=%s guests"),
+                               virDomainTimerNameTypeToString(timer->name),
+                               virDomainVirtTypeToString(def->virtType),
+                               virArchToString(def->os.arch),
+                               def->os.machine);
+                return -1;
+            }
+            if (timer->present == 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("The '%s' timer can't be disabled"),
+                               virDomainTimerNameTypeToString(timer->name));
+                return -1;
+            }
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_KVM_NO_ADJVTIME)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Configuring the '%s' timer is not supported "
+                                 "with this QEMU binary"),
+                               virDomainTimerNameTypeToString(timer->name));
+                return -1;
+            }
+
+            switch (timer->tickpolicy) {
+            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("The '%s' timer does not support tickpolicy '%s'"),
+                               virDomainTimerNameTypeToString(timer->name),
+                               virDomainTimerTickpolicyTypeToString(timer->tickpolicy));
+                return -1;
+            }
             break;
         }
     }
