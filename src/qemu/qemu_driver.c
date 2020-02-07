@@ -11678,6 +11678,9 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
         if (virNetDevBandwidthSet(net->ifname, newBandwidth, false,
                                   !virDomainNetTypeSharesHostView(net)) < 0) {
+            virErrorPtr orig_err;
+
+            virErrorPreserveLast(&orig_err);
             ignore_value(virNetDevBandwidthSet(net->ifname,
                                                net->bandwidth,
                                                false,
@@ -11686,6 +11689,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                 ignore_value(virDomainNetBandwidthUpdate(net,
                                                          net->bandwidth));
             }
+            virErrorRestore(&orig_err);
             goto endjob;
         }
 
