@@ -6611,6 +6611,19 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
                 virBufferAsprintf(&buf, ",tsc-frequency=%lu", timer->frequency);
             break;
         case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
+            switch (timer->tickpolicy) {
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
+                virBufferAddLit(&buf, ",kvm-no-adjvtime=off");
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
+                virBufferAddLit(&buf, ",kvm-no-adjvtime=on");
+                break;
+            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
+                break;
+            }
+            break;
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
         case VIR_DOMAIN_TIMER_NAME_PIT:
         case VIR_DOMAIN_TIMER_NAME_RTC:
