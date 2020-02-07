@@ -118,6 +118,25 @@
     </section>
     <section title="Bug fixes">
     </section>
+    <section title="Packaging changes">
+      <change>
+        <summary>
+          use of gnulib has been completely eliminated
+        </summary>
+        <description>
+          Historically libvirt has embedded gnulib to provide fixes for
+          various platform portability problems. This usage has now been
+          eliminated and alternative approaches for platform portability
+          problems adopted where required. This has been validated on the
+          set of platforms covered by automated CI build testing. Other
+          modern Linux distros using glibc are expected to work. Linux
+          distros using non-glibc packages, and other non-Linux platforms
+          may encounter regressions when building this release. Please
+          report any build problems encountered back to the project
+          maintainers for evaluation.
+        </description>
+      </change>
+    </section>
   </release>
   <release version="v6.0.0" date="2020-01-15">
     <section title="Packaging changes">
