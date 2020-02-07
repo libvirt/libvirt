@@ -497,7 +497,7 @@ testQemuGetLatestCapsForArch(const char *arch,
     char *tmp = NULL;
     unsigned long maxver = 0;
     unsigned long ver;
-    const char *maxname = NULL;
+    g_autofree char *maxname = NULL;
     char *ret = NULL;
 
     fullsuffix = g_strdup_printf("%s.%s", arch, suffix);
@@ -522,7 +522,8 @@ testQemuGetLatestCapsForArch(const char *arch,
         }
 
         if (ver > maxver) {
-            maxname = ent->d_name;
+            g_free(maxname);
+            maxname = g_strdup(ent->d_name);
             maxver = ver;
         }
     }
