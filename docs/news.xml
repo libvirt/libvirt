@@ -82,6 +82,16 @@
           "type" and "persistent" attributes.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Introduce the 'armvtimer' timer type
+        </summary>
+        <description>
+          QEMU 5.0 introduces the ability to control the behavior of the
+          virtual timer for KVM ARM/virt guests, and this new timer type
+          exposes the same capability to libvirt users.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
