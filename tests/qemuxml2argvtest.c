@@ -2729,6 +2729,8 @@ mymain(void)
     /* SVE aarch64 CPU features work on modern QEMU */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
 
+    DO_TEST_CAPS_ARCH_LATEST("clock-timer-armvtimer", "aarch64");
+
     qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
     DO_TEST("kvm-pit-delay", QEMU_CAPS_KVM_PIT_TICK_POLICY);

@@ -269,6 +269,7 @@ mymain(void)
     DO_TEST("clock-catchup", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("kvmclock", NONE);
     DO_TEST("clock-timer-hyperv-rtc", NONE);
+    DO_TEST_CAPS_ARCH_LATEST("clock-timer-armvtimer", "aarch64");
 
     DO_TEST("cpu-eoi-disabled", NONE);
     DO_TEST("cpu-eoi-enabled", NONE);
