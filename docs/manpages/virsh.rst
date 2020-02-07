@@ -7485,13 +7485,18 @@ qemu-monitor-command
    qemu-monitor-command domain { [--hmp] | [--pretty] } command...
 
 Send an arbitrary monitor command *command* to domain *domain* through the
-QEMU monitor.  The results of the command will be printed on stdout.  If
-*--hmp* is passed, the command is considered to be a human monitor command
-and libvirt will automatically convert it into QMP if needed.  In that case
-the result will also be converted back from QMP.  If *--pretty* is given,
-and the monitor uses QMP, then the output will be pretty-printed.  If more
-than one argument is provided for *command*, they are concatenated with a
-space in between before passing the single command to the monitor.
+QEMU monitor.  The results of the command will be printed on stdout.
+
+If more than one argument is provided for *command*, they are concatenated with
+a space in between before passing the single command to the monitor.
+
+Note that libvirt uses the QMP to talk to qemu so *command* must be valid JSON
+in QMP format to work properly.
+
+If *--pretty* is given the QMP reply is pretty-printed.
+
+If *--hmp* is passed, the command is considered to be a human monitor command
+and libvirt will automatically convert it into QMP and convert the result back.
 
 
 qemu-agent-command
