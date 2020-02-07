@@ -6594,16 +6594,30 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     for (i = 0; i < def->clock.ntimers; i++) {
         virDomainTimerDefPtr timer = def->clock.timers[i];
 
-        if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK &&
-            timer->present != -1) {
-            qemuBuildCpuFeature(qemuCaps, &buf, "kvmclock",
-                                !!timer->present);
-        } else if (timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK &&
-                   timer->present == 1) {
-            virBufferAddLit(&buf, ",hv-time");
-        } else if (timer->name == VIR_DOMAIN_TIMER_NAME_TSC &&
-                   timer->frequency > 0) {
-            virBufferAsprintf(&buf, ",tsc-frequency=%lu", timer->frequency);
+        switch ((virDomainTimerNameType)timer->name) {
+        case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
+            if (timer->present != -1) {
+                qemuBuildCpuFeature(qemuCaps, &buf, "kvmclock",
+                                    !!timer->present);
+            }
+            break;
+        case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+            if (timer->present == 1)
+                virBufferAddLit(&buf, ",hv-time");
+            break;
+        case VIR_DOMAIN_TIMER_NAME_TSC:
+            if (timer->frequency > 0)
+                virBufferAsprintf(&buf, ",tsc-frequency=%lu", timer->frequency);
+            break;
+        case VIR_DOMAIN_TIMER_NAME_PLATFORM:
+        case VIR_DOMAIN_TIMER_NAME_PIT:
+        case VIR_DOMAIN_TIMER_NAME_RTC:
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+            break;
+        case VIR_DOMAIN_TIMER_NAME_LAST:
+        default:
+            virReportEnumRangeError(virDomainTimerNameType, timer->name);
+            return -1;
         }
     }
 
