@@ -279,7 +279,7 @@ virTestLoadFileGetPath(const char *p,
 char *
 virTestLoadFilePath(const char *p, ...)
 {
-    char *path = NULL;
+    g_autofree char *path = NULL;
     char *ret = NULL;
     va_list ap;
 
@@ -292,7 +292,6 @@ virTestLoadFilePath(const char *p, ...)
 
  cleanup:
     va_end(ap);
-    VIR_FREE(path);
 
     return ret;
 }
@@ -309,8 +308,8 @@ virJSONValuePtr
 virTestLoadFileJSON(const char *p, ...)
 {
     virJSONValuePtr ret = NULL;
-    char *jsonstr = NULL;
-    char *path = NULL;
+    g_autofree char *jsonstr = NULL;
+    g_autofree char *path = NULL;
     va_list ap;
 
     va_start(ap, p);
@@ -326,8 +325,6 @@ virTestLoadFileJSON(const char *p, ...)
 
  cleanup:
     va_end(ap);
-    VIR_FREE(jsonstr);
-    VIR_FREE(path);
     return ret;
 }
 
@@ -420,7 +417,7 @@ static int
 virTestRewrapFile(const char *filename)
 {
     int ret = -1;
-    char *script = NULL;
+    g_autofree char *script = NULL;
     virCommandPtr cmd = NULL;
 
     if (!(virStringHasSuffix(filename, ".args") ||
@@ -435,7 +432,6 @@ virTestRewrapFile(const char *filename)
 
     ret = 0;
  cleanup:
-    VIR_FREE(script);
     virCommandFree(cmd);
     return ret;
 }
@@ -669,8 +665,8 @@ virTestCompareToFile(const char *actual,
                      const char *filename)
 {
     int ret = -1;
-    char *filecontent = NULL;
-    char *fixedcontent = NULL;
+    g_autofree char *filecontent = NULL;
+    g_autofree char *fixedcontent = NULL;
     const char *cmpcontent = actual;
 
     if (!cmpcontent)
@@ -700,8 +696,6 @@ virTestCompareToFile(const char *actual,
 
     ret = 0;
  failure:
-    VIR_FREE(fixedcontent);
-    VIR_FREE(filecontent);
     return ret;
 }
 
@@ -826,7 +820,7 @@ virTestSetEnvPath(void)
 {
     int ret = -1;
     const char *path = getenv("PATH");
-    char *new_path = NULL;
+    g_autofree char *new_path = NULL;
 
     if (path) {
         if (strstr(path, abs_builddir) != path)
@@ -841,7 +835,6 @@ virTestSetEnvPath(void)
 
     ret = 0;
  cleanup:
-    VIR_FREE(new_path);
     return ret;
 }
 
@@ -1045,15 +1038,13 @@ virCapsPtr virTestGenericCapsInit(void)
 
 
     if (virTestGetDebug() > 1) {
-        char *caps_str;
+        g_autofree char *caps_str = NULL;
 
         caps_str = virCapabilitiesFormatXML(caps);
         if (!caps_str)
             goto error;
 
         VIR_TEST_DEBUG("Generic driver capabilities:\n%s", caps_str);
-
-        VIR_FREE(caps_str);
     }
 
     return caps;
@@ -1131,7 +1122,7 @@ testCompareDomXML2XMLFiles(virCapsPtr caps G_GNUC_UNUSED,
                            unsigned int parseFlags,
                            testCompareDomXML2XMLResult expectResult)
 {
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     testCompareDomXML2XMLResult result;
     virDomainDefPtr def = NULL;
@@ -1184,7 +1175,6 @@ testCompareDomXML2XMLFiles(virCapsPtr caps G_GNUC_UNUSED,
                        expectResult, result);
     }
 
-    VIR_FREE(actual);
     virDomainDefFree(def);
     return ret;
 }
