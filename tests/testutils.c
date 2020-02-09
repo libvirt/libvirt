@@ -836,7 +836,7 @@ virTestSetEnvPath(void)
     }
 
     if (new_path &&
-        g_setenv("PATH", new_path, TRUE) < 0)
+        g_setenv("PATH", new_path, TRUE) == FALSE)
         goto cleanup;
 
     ret = 0;
