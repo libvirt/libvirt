@@ -418,7 +418,7 @@ virTestRewrapFile(const char *filename)
 {
     int ret = -1;
     g_autofree char *script = NULL;
-    virCommandPtr cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (!(virStringHasSuffix(filename, ".args") ||
           virStringHasSuffix(filename, ".ldargs")))
@@ -432,7 +432,6 @@ virTestRewrapFile(const char *filename)
 
     ret = 0;
  cleanup:
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -1001,7 +1000,7 @@ void virTestClearCommandPath(char *cmdset)
 
 virCapsPtr virTestGenericCapsInit(void)
 {
-    virCapsPtr caps;
+    g_autoptr(virCaps) caps = NULL;
     virCapsGuestPtr guest;
 
     if ((caps = virCapabilitiesNew(VIR_ARCH_X86_64,
@@ -1047,10 +1046,9 @@ virCapsPtr virTestGenericCapsInit(void)
         VIR_TEST_DEBUG("Generic driver capabilities:\n%s", caps_str);
     }
 
-    return caps;
+    return g_steal_pointer(&caps);
 
  error:
-    virObjectUnref(caps);
     return NULL;
 }
 
@@ -1066,7 +1064,7 @@ virCapsPtr virTestGenericCapsInit(void)
 virCapsHostNUMAPtr
 virTestCapsBuildNUMATopology(int seq)
 {
-    virCapsHostNUMAPtr caps = virCapabilitiesHostNUMANew();
+    g_autoptr(virCapsHostNUMA) caps = virCapabilitiesHostNUMANew();
     virCapsHostNUMACellCPUPtr cell_cpus = NULL;
     int core_id, cell_id;
     int id;
@@ -1096,10 +1094,9 @@ virTestCapsBuildNUMATopology(int seq)
         cell_cpus = NULL;
     }
 
-    return caps;
+    return g_steal_pointer(&caps);
 
  error:
-    virCapabilitiesHostNUMAUnref(caps);
     VIR_FREE(cell_cpus);
     return NULL;
 }
