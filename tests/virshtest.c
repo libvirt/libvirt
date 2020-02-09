@@ -60,26 +60,20 @@ static int
 testCompareOutputLit(const char *expectData,
                      const char *filter, const char *const argv[])
 {
-    int result = -1;
-    char *actualData = NULL;
+    g_autofree char *actualData = NULL;
 
     if (virTestCaptureProgramOutput(argv, &actualData, 4096) < 0)
-        goto cleanup;
+        return -1;
 
     if (filter && testFilterLine(actualData, filter) < 0)
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(expectData, actualData)) {
         virTestDifference(stderr, expectData, actualData);
-        goto cleanup;
+        return -1;
     }
 
-    result = 0;
-
- cleanup:
-    VIR_FREE(actualData);
-
-    return result;
+    return 0;
 }
 
 # define VIRSH_DEFAULT abs_top_builddir "/tools/virsh", \
