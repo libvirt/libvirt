@@ -5,6 +5,7 @@
 #include "internal.h"
 #include "virxml.h"
 #include "testutils.h"
+#include "vircommand.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -61,9 +62,25 @@ testCompareOutputLit(const char *expectData,
                      const char *filter, const char *const argv[])
 {
     g_autofree char *actualData = NULL;
+    const char *empty = "";
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *errbuf = NULL;
 
-    if (virTestCaptureProgramOutput(argv, &actualData, 4096) < 0)
+    if (!(cmd = virCommandNewArgs(argv)))
         return -1;
+
+    virCommandAddEnvString(cmd, "LANG=C");
+    virCommandSetInputBuffer(cmd, empty);
+    virCommandSetOutputBuffer(cmd, &actualData);
+    virCommandSetErrorBuffer(cmd, &errbuf);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        return -1;
+
+    if (STRNEQ(errbuf, "")) {
+        fprintf(stderr, "Command reported error: %s", errbuf);
+        return -1;
+    }
 
     if (filter && testFilterLine(actualData, filter) < 0)
         return -1;
