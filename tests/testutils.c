@@ -416,7 +416,6 @@ virTestCaptureProgramOutput(const char *const argv[] G_GNUC_UNUSED,
 static int
 virTestRewrapFile(const char *filename)
 {
-    int ret = -1;
     g_autofree char *script = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
@@ -428,11 +427,9 @@ virTestRewrapFile(const char *filename)
 
     cmd = virCommandNewArgList(PYTHON, script, "--in-place", filename, NULL);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /**
@@ -663,7 +660,6 @@ int
 virTestCompareToFile(const char *actual,
                      const char *filename)
 {
-    int ret = -1;
     g_autofree char *filecontent = NULL;
     g_autofree char *fixedcontent = NULL;
     const char *cmpcontent = actual;
@@ -672,7 +668,7 @@ virTestCompareToFile(const char *actual,
         cmpcontent = "";
 
     if (virTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
-        goto failure;
+        return -1;
 
     if (filecontent) {
         size_t filecontentLen = strlen(filecontent);
@@ -690,12 +686,10 @@ virTestCompareToFile(const char *actual,
         virTestDifferenceFull(stderr,
                               filecontent, filename,
                               cmpcontent, NULL);
-        goto failure;
+        return -1;
     }
 
-    ret = 0;
- failure:
-    return ret;
+    return 0;
 }
 
 int
@@ -817,7 +811,6 @@ virTestGetRegenerate(void)
 static int
 virTestSetEnvPath(void)
 {
-    int ret = -1;
     const char *path = getenv("PATH");
     g_autofree char *new_path = NULL;
 
@@ -830,11 +823,9 @@ virTestSetEnvPath(void)
 
     if (new_path &&
         g_setenv("PATH", new_path, TRUE) == FALSE)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 int virTestMain(int argc,
@@ -1010,30 +1001,30 @@ virCapsPtr virTestGenericCapsInit(void)
     if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
                                          "/usr/bin/acme-virt", NULL,
                                          0, NULL)) == NULL)
-        goto error;
+        return NULL;
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
-        goto error;
+        return NULL;
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
                                        NULL, NULL, 0, NULL))
-        goto error;
+        return NULL;
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
                                        NULL, NULL, 0, NULL))
-        goto error;
+        return NULL;
 
     if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
                                          "/usr/bin/acme-virt", NULL,
                                          0, NULL)) == NULL)
-        goto error;
+        return NULL;
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
-        goto error;
+        return NULL;
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
                                        NULL, NULL, 0, NULL))
-        goto error;
+        return NULL;
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
                                        NULL, NULL, 0, NULL))
-        goto error;
+        return NULL;
 
 
     if (virTestGetDebug() > 1) {
@@ -1041,15 +1032,12 @@ virCapsPtr virTestGenericCapsInit(void)
 
         caps_str = virCapabilitiesFormatXML(caps);
         if (!caps_str)
-            goto error;
+            return NULL;
 
         VIR_TEST_DEBUG("Generic driver capabilities:\n%s", caps_str);
     }
 
     return g_steal_pointer(&caps);
-
- error:
-    return NULL;
 }
 
 
