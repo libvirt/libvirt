@@ -2370,15 +2370,12 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
 {
     g_auto(virBuffer) tmp = VIR_BUFFER_INIT_CHILD(buf);
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    g_auto(virBuffer) nodenamesChildBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    if (src->nodestorage || src->nodeformat) {
-        virBufferAddLit(buf, "<nodenames>\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<nodename type='storage' name='%s'/>\n", src->nodestorage);
-        virBufferEscapeString(buf, "<nodename type='format' name='%s'/>\n", src->nodeformat);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</nodenames>\n");
-    }
+    virBufferEscapeString(&nodenamesChildBuf, "<nodename type='storage' name='%s'/>\n", src->nodestorage);
+    virBufferEscapeString(&nodenamesChildBuf, "<nodename type='format' name='%s'/>\n", src->nodeformat);
+
+    virXMLFormatElement(buf, "nodenames", NULL, &nodenamesChildBuf);
 
     if (src->pr)
         virBufferAsprintf(buf, "<reservations mgralias='%s'/>\n", src->pr->mgralias);
