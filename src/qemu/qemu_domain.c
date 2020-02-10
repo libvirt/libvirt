@@ -16264,6 +16264,10 @@ qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDefPtr disk,
     src->nodestorage = g_strdup_printf("libvirt-%u-storage", src->id);
     src->nodeformat = g_strdup_printf("libvirt-%u-format", src->id);
 
+    if (src->sliceStorage &&
+        src->format != VIR_STORAGE_FILE_RAW)
+        src->sliceStorage->nodename = g_strdup_printf("libvirt-%u-slice-sto", src->id);
+
     if (qemuDomainValidateStorageSource(src, priv->qemuCaps) < 0)
         return -1;
 

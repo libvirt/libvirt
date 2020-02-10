@@ -2411,6 +2411,14 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
         VIR_FREE(tmp);
     }
 
+    if (data->storageSliceProps) {
+        if (!(tmp = virJSONValueToString(data->storageSliceProps, false)))
+            return -1;
+
+        virCommandAddArgList(cmd, "-blockdev", tmp, NULL);
+        VIR_FREE(tmp);
+    }
+
     if (data->formatProps) {
         if (!(tmp = virJSONValueToString(data->formatProps, false)))
             return -1;

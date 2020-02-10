@@ -1316,6 +1316,7 @@ qemuBlockJobProcessEventConcludedCreate(virQEMUDriverPtr driver,
     backend->formatAttached = false;
     if (job->data.create.storage) {
         backend->storageAttached = false;
+        backend->storageSliceAttached = false;
         VIR_FREE(backend->encryptsecretAlias);
     }
 

@@ -1423,11 +1423,16 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src,
                                        virStorageSourcePtr backingStore)
 {
     g_autoptr(virJSONValue) props = NULL;
+    const char *storagenode = src->nodestorage;
+
+    if (src->sliceStorage &&
+        src->format != VIR_STORAGE_FILE_RAW)
+        storagenode = src->sliceStorage->nodename;
 
     if (!(props = qemuBlockStorageSourceGetBlockdevFormatProps(src)))
         return NULL;
 
-    if (virJSONValueObjectAppendString(props, "file", src->nodestorage) < 0)
+    if (virJSONValueObjectAppendString(props, "file", storagenode) < 0)
         return NULL;
 
     if (backingStore) {
@@ -1456,6 +1461,32 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src,
 }
 
 
+static virJSONValuePtr
+qemuBlockStorageSourceGetBlockdevStorageSliceProps(virStorageSourcePtr src)
+{
+    g_autoptr(virJSONValue) props = NULL;
+
+    if (qemuBlockNodeNameValidate(src->sliceStorage->nodename) < 0)
+        return NULL;
+
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "raw",
+                                 "s:node-name", src->sliceStorage->nodename,
+                                 "U:offset", src->sliceStorage->offset,
+                                 "U:size", src->sliceStorage->size,
+                                 "s:file", src->nodestorage,
+                                 "b:auto-read-only", true,
+                                 "s:discard", "unmap",
+                                 NULL) < 0)
+        return NULL;
+
+    if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, props) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
+}
+
+
 void
 qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
 {
@@ -1463,6 +1494,7 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
         return;
 
     virJSONValueFree(data->storageProps);
+    virJSONValueFree(data->storageSliceProps);
     virJSONValueFree(data->formatProps);
     virJSONValueFree(data->prmgrProps);
     virJSONValueFree(data->authsecretProps);
@@ -1512,6 +1544,13 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
 
     data->storageNodeName = src->nodestorage;
     data->formatNodeName = src->nodeformat;
+
+    if (src->sliceStorage && src->format != VIR_STORAGE_FILE_RAW) {
+        if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src)))
+            return NULL;
+
+        data->storageSliceNodeName = src->sliceStorage->nodename;
+    }
 
     return g_steal_pointer(&data);
 }
@@ -1581,6 +1620,21 @@ qemuBlockStorageSourceAttachApplyFormat(qemuMonitorPtr mon,
 }
 
 
+static int
+qemuBlockStorageSourceAttachApplyStorageSlice(qemuMonitorPtr mon,
+                                              qemuBlockStorageSourceAttachDataPtr data)
+{
+    if (data->storageSliceProps) {
+        if (qemuMonitorBlockdevAdd(mon, &data->storageSliceProps) < 0)
+            return -1;
+
+        data->storageSliceAttached = true;
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuBlockStorageSourceAttachApply:
  * @mon: monitor object
@@ -1600,6 +1654,7 @@ qemuBlockStorageSourceAttachApply(qemuMonitorPtr mon,
 {
     if (qemuBlockStorageSourceAttachApplyStorageDeps(mon, data) < 0 ||
         qemuBlockStorageSourceAttachApplyStorage(mon, data) < 0 ||
+        qemuBlockStorageSourceAttachApplyStorageSlice(mon, data) < 0 ||
         qemuBlockStorageSourceAttachApplyFormatDeps(mon, data) < 0 ||
         qemuBlockStorageSourceAttachApplyFormat(mon, data) < 0)
         return -1;
@@ -1641,6 +1696,9 @@ qemuBlockStorageSourceAttachRollback(qemuMonitorPtr mon,
 
     if (data->formatAttached)
         ignore_value(qemuMonitorBlockdevDel(mon, data->formatNodeName));
+
+    if (data->storageSliceAttached)
+        ignore_value(qemuMonitorBlockdevDel(mon, data->storageSliceNodeName));
 
     if (data->storageAttached)
         ignore_value(qemuMonitorBlockdevDel(mon, data->storageNodeName));
@@ -1689,6 +1747,14 @@ qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,
         data->formatAttached = true;
         data->storageNodeName = src->nodestorage;
         data->storageAttached = true;
+
+        /* 'raw' format doesn't need the extra 'raw' layer when slicing, thus
+         * the nodename is NULL */
+        if (src->sliceStorage &&
+            src->sliceStorage->nodename) {
+            data->storageSliceNodeName = src->sliceStorage->nodename;
+            data->storageSliceAttached = true;
+        }
     }
 
     if (src->pr &&
