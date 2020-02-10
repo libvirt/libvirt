@@ -220,6 +220,8 @@ ci-run-command@%: ci-prepare-tree
 		  --login \
 		  --user="#$(CI_UID)" \
 		  --group="#$(CI_GID)" \
+		  CONFIGURE_OPTS="$$CONFIGURE_OPTS" \
+		  PKG_CONFIG_LIBDIR="$$PKG_CONFIG_LIBDIR" \
 		  CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)" \
 		  CI_CONT_BUILDDIR="$(CI_CONT_BUILDDIR)" \
 		  CI_SMP="$(CI_SMP)" \
