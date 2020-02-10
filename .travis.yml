@@ -56,17 +56,15 @@ matrix:
     - services:
         - docker
       env:
-        - IMAGE="fedora-30"
-        - MINGW="mingw32"
+        - IMAGE="fedora-30-cross-mingw32"
       script:
-        - make -C ci/ ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
+        - make -C ci/ ci-build@$IMAGE
     - services:
         - docker
       env:
-        - IMAGE="fedora-30"
-        - MINGW="mingw64"
+        - IMAGE="fedora-30-cross-mingw64"
       script:
-        - make -C ci/ ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
+        - make -C ci/ ci-build@$IMAGE
     - compiler: clang
       language: c
       os: osx
