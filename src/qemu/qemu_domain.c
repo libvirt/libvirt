@@ -2322,6 +2322,9 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
     src->tlsAlias = virXPathString("string(./objects/TLSx509/@alias)", ctxt);
 
+    if (src->sliceStorage)
+        src->sliceStorage->nodename = virXPathString("string(./nodenames/nodename[@type='slice-storage']/@name)", ctxt);
+
     if (src->pr)
         src->pr->mgralias = virXPathString("string(./reservations/@mgralias)", ctxt);
 
@@ -2374,6 +2377,10 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
 
     virBufferEscapeString(&nodenamesChildBuf, "<nodename type='storage' name='%s'/>\n", src->nodestorage);
     virBufferEscapeString(&nodenamesChildBuf, "<nodename type='format' name='%s'/>\n", src->nodeformat);
+
+    if (src->sliceStorage)
+        virBufferEscapeString(&nodenamesChildBuf, "<nodename type='slice-storage' name='%s'/>\n",
+                              src->sliceStorage->nodename);
 
     virXMLFormatElement(buf, "nodenames", NULL, &nodenamesChildBuf);
 

@@ -312,6 +312,9 @@
         <backingStore type='file' index='1'>
           <format type='qcow2'/>
           <source file='/var/lib/libvirt/images/base.qcow2'>
+            <slices>
+              <slice type='storage' offset='1234' size='3456'/>
+            </slices>
             <seclabel model='dac' relabel='yes'>
               <label>qemu:qemu</label>
             </seclabel>
@@ -322,6 +325,7 @@
               <nodenames>
                 <nodename type='storage' name='test-storage'/>
                 <nodename type='format' name='test-format'/>
+                <nodename type='slice-storage' name='test-slice-storage'/>
               </nodenames>
               <reservations mgralias='test-alias'/>
               <relPath>base.qcow2</relPath>
