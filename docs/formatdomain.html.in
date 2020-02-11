@@ -7510,7 +7510,10 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">since 4.7.0</span>, <code>16550a</code> (usable
       with the <code>system-serial</code> target type);
       <code>sclpconsole</code> and <code>sclplmconsole</code> (usable with
-      the <code>sclp-serial</code> target type).
+      the <code>sclp-serial</code> target type). Providing a target model is
+      usually unnecessary: libvirt will automatically pick one that's suitable
+      for the chosen target type, and overriding that value is generally not
+      recommended.
     </p>
 
     <p>
@@ -7656,7 +7659,8 @@ qemu-kvm -net nic,model=? /dev/null
       for early boot logging / interactive / recovery use, and one
       paravirtualized serial console to be used eg. as a side channel. Most
       people will be fine with having just the first <code>console</code>
-      element in their configuration.
+      element in their configuration, but if a specific configuration is
+      desired then both elements should be specified.
     </p>
 
     <p>
