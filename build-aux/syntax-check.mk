@@ -1655,14 +1655,6 @@ sc_GFDL_version:
 	halt='GFDL vN, N!=3'						\
 	  $(_sc_search_regexp)
 
-cvs_keywords = \
-  Author|Date|Header|Id|Name|Locker|Log|RCSfile|Revision|Source|State
-
-sc_prohibit_cvs_keyword:
-	@prohibit='\$$($(cvs_keywords))\$$'				\
-	halt='do not use CVS keyword expansion'				\
-	  $(_sc_search_regexp)
-
 # This Perl code is slightly obfuscated.  Not only is each "$" doubled
 # because it's in a Makefile, but the $$c's are comments;  we cannot
 # use "#" due to the way the script ends up concatenated onto one line.
