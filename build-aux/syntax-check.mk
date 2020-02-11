@@ -1616,13 +1616,6 @@ sc_prohibit_dirent_without_use:
 sc_prohibit_xfreopen_without_use:
 	@h='xfreopen.h' re='\<xfreopen *\(' $(_sc_header_without_use)
 
-# Each nonempty ChangeLog line must start with a year number, or a TAB.
-sc_changelog:
-	@prohibit='^[^12	]'					\
-	in_vc_files='^ChangeLog$$'					\
-	halt='found unexpected prefix in a ChangeLog'			\
-	  $(_sc_search_regexp)
-
 # Ensure that each .c file containing a "main" function also
 # calls bindtextdomain.
 sc_bindtextdomain:
