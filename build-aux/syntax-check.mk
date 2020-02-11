@@ -1795,20 +1795,6 @@ sc_const_long_option:
 	halt='add "const" to the above declarations'			\
 	  $(_sc_search_regexp)
 
-NEWS_hash =								\
-  $$($(SED) -n '/^\*.* $(PREV_VERSION_REGEXP) ([0-9-]*)/,$$p'		\
-       $(srcdir)/NEWS							\
-     | perl -0777 -pe							\
-	's/^Copyright.+?Free\sSoftware\sFoundation,\sInc\.\n//ms'	\
-     | md5sum -								\
-     | $(SED) 's/ .*//')
-
-# Update the hash stored above.  Do this after each release and
-# for any corrections to old entries.
-update-NEWS-hash: NEWS
-	perl -pi -e 's/^(old_NEWS_hash[ \t]+:?=[ \t]+).*/$${1}'"$(NEWS_hash)/" \
-	  $(srcdir)/syntax-check.mk
-
 # Ensure that we use only the standard $(VAR) notation,
 # not @...@ in Makefile.am, now that we can rely on automake
 # to emit a definition for each substituted variable.
