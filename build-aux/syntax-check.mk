@@ -2008,10 +2008,10 @@ exclude_file_name_regexp--sc_prohibit_access_xok = \
 	^(src/util/virutil\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(build-aux/syntax-check\.mk|examples/|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c|tools/virt-login-shell\.c|tools/nss/libvirt_nss\.c$$)
+  ^(build-aux/syntax-check\.mk|examples/|tests/vircgroupmock\.c|tools/virt-login-shell\.c|tools/nss/libvirt_nss\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_strdup = \
-  ^(docs/|examples/|src/util/virstring\.c|tests/vir(netserverclient|cgroup)mock.c|tests/commandhelper\.c|tools/nss/libvirt_nss_(leases|macs)\.c$$)
+  ^(docs/|examples/|tests/virnetserverclientmock.c|tests/commandhelper.c|tools/nss/libvirt_nss_(leases|macs)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|\.spec\.in$$|^docs/|^(src/util/vir(file|event)\.c|src/libvirt-stream\.c|tests/(vir.+mock\.c|commandhelper\.c|qemusecuritymock\.c)|tools/nss/libvirt_nss_(leases|macs)\.c)$$)
@@ -2053,8 +2053,6 @@ exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c|tools/virt-l
 
 exclude_file_name_regexp--sc_prohibit_snprintf = \
   ^(build-aux/syntax-check\.mk|docs/hacking\.html\.in|tools/virt-login-shell\.c)$$
-
-exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virstring\.c$$
 
 exclude_file_name_regexp--sc_prohibit_strtol = ^examples/.*$$
 
