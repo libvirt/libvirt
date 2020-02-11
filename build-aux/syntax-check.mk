@@ -130,17 +130,6 @@ syntax-check: $(local-check)
 
 _test_script_regex = \<test-lib\.sh\>
 
-# Most developers don't run 'make distcheck'.  We want the official
-# dist to be secure, but don't want to penalize other developers
-# using a distro that has not yet picked up the automake fix.
-# FIXME remove this ifeq (making the syntax check unconditional)
-# once fixed automake (1.11.6 or 1.12.2+) is more common.
-ifeq ($(filter dist%, $(MAKECMDGOALS)), )
-local-checks-to-skip +=	sc_vulnerable_makefile_CVE-2012-3386
-else
-distdir: sc_vulnerable_makefile_CVE-2012-3386.z
-endif
-
 # Files that should never cause syntax check failures.
 VC_LIST_ALWAYS_EXCLUDE_REGEX = \
   (^(docs/(news(-[0-9]*)?\.html\.in|.*\.patch))|\.(po|fig|gif|ico|png))$$
@@ -1956,25 +1945,6 @@ sc_prohibit_path_max_allocation:
 	@prohibit='(\balloca *\([^)]*|\[[^]]*)\bPATH_MAX'		\
 	halt='Avoid stack allocations of size PATH_MAX'			\
 	  $(_sc_search_regexp)
-
-sc_vulnerable_makefile_CVE-2009-4029:
-	@prohibit='perm -777 -exec chmod a\+rwx|chmod 777 \$$\(distdir\)' \
-	in_files='(^|/)Makefile\.in$$'					\
-	halt=$$(printf '%s\n'						\
-	  'the above files are vulnerable; beware of running'		\
-	  '  "make dist*" rules, and upgrade to fixed automake'		\
-	  '  see https://bugzilla.redhat.com/show_bug.cgi?id=542609 for details') \
-	  $(_sc_search_regexp)
-
-sc_vulnerable_makefile_CVE-2012-3386:
-	@prohibit='chmod a\+w \$$\(distdir\)'				\
-	in_files='(^|/)Makefile\.in$$'					\
-	halt=$$(printf '%s\n'						\
-	  'the above files are vulnerable; beware of running'		\
-	  '  "make distcheck", and upgrade to fixed automake'		\
-	  '  see https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2012-3386 for details') \
-	  $(_sc_search_regexp)
-
 
 ifneq ($(_gl-Makefile),)
 syntax-check: spacing-check test-wrap-argv \
