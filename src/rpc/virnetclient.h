@@ -30,6 +30,9 @@
 #include "virobject.h"
 #include "viruri.h"
 
+char *
+virNetClientSSHHelperCommand(const char *netcatPath,
+                             const char *socketPath);
 
 virNetClientPtr virNetClientNewUNIX(const char *path,
                                     bool spawnDaemon,

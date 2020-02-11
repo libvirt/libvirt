@@ -391,28 +391,74 @@ virNetClientPtr virNetClientNewTCP(const char *nodename,
     return virNetClientNew(sock, nodename);
 }
 
+
+/*
+ * The SSH Server uses shell to spawn the command we give
+ * it.  Our command then invokes shell again. Thus we need
+ * to apply two levels of escaping, so that commands with
+ * whitespace in their path get correctly interpreted.
+ */
+static char *
+virNetClientDoubleEscapeShell(const char *str)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *tmp = NULL;
+
+    virBufferEscapeShell(&buf, str);
+
+    tmp = virBufferContentAndReset(&buf);
+
+    virBufferEscapeShell(&buf, tmp);
+
+    return virBufferContentAndReset(&buf);
+}
+
+char *
+virNetClientSSHHelperCommand(const char *netcatPath,
+                             const char *socketPath)
+{
+    g_autofree char *netcatPathSafe = virNetClientDoubleEscapeShell(netcatPath);
+
+    return g_strdup_printf(
+        "sh -c "
+        "'if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+          "ARG=-q0;"
+        "else "
+          "ARG=;"
+        "fi;"
+        "'%s' $ARG -U %s'",
+        netcatPathSafe, netcatPathSafe, socketPath);
+}
+
+
+#define DEFAULT_VALUE(VAR, VAL) \
+    if (!VAR) \
+        VAR = VAL;
+
 virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    const char *service,
                                    const char *binary,
                                    const char *username,
                                    bool noTTY,
                                    bool noVerify,
-                                   const char *netcat,
+                                   const char *netcatPath,
                                    const char *keyfile,
-                                   const char *path)
+                                   const char *socketPath)
 {
     virNetSocketPtr sock;
+    g_autofree char *command = NULL;
+
+    DEFAULT_VALUE(netcatPath, "nc");
+
+    command = virNetClientSSHHelperCommand(netcatPath, socketPath);
 
     if (virNetSocketNewConnectSSH(nodename, service, binary, username, noTTY,
-                                  noVerify, netcat, keyfile, path, &sock) < 0)
+                                  noVerify, keyfile, command, &sock) < 0)
         return NULL;
 
     return virNetClientNew(sock, NULL);
 }
 
-#define DEFAULT_VALUE(VAR, VAL) \
-    if (!VAR) \
-        VAR = VAL;
 virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *port,
                                        int family,
@@ -427,101 +473,7 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        virURIPtr uri)
 {
     virNetSocketPtr sock = NULL;
-
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_autofree char *nc = NULL;
     g_autofree char *command = NULL;
-
-    g_autofree char *homedir = NULL;
-    g_autofree char *confdir = NULL;
-    g_autofree char *knownhosts = NULL;
-    g_autofree char *privkey = NULL;
-
-    /* Use default paths for known hosts an public keys if not provided */
-    if (knownHostsPath) {
-        knownhosts = g_strdup(knownHostsPath);
-    } else {
-        confdir = virGetUserConfigDirectory();
-        virBufferAsprintf(&buf, "%s/known_hosts", confdir);
-        if (!(knownhosts = virBufferContentAndReset(&buf)))
-            return NULL;
-    }
-
-    if (privkeyPath) {
-        privkey = g_strdup(privkeyPath);
-    } else {
-        homedir = virGetUserDirectory();
-        if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
-            return NULL;
-    }
-
-    if (!authMethods) {
-        if (privkey)
-            authMethods = "agent,privkey,password,keyboard-interactive";
-        else
-            authMethods = "agent,password,keyboard-interactive";
-    }
-
-    DEFAULT_VALUE(host, "localhost");
-    DEFAULT_VALUE(port, "22");
-    DEFAULT_VALUE(username, "root");
-    DEFAULT_VALUE(netcatPath, "nc");
-    DEFAULT_VALUE(knownHostsVerify, "normal");
-
-    virBufferEscapeShell(&buf, netcatPath);
-    if (!(nc = virBufferContentAndReset(&buf)))
-        return NULL;
-    virBufferEscapeShell(&buf, nc);
-    VIR_FREE(nc);
-    if (!(nc = virBufferContentAndReset(&buf)))
-        return NULL;
-
-    virBufferAsprintf(&buf,
-         "sh -c "
-         "'if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-             "ARG=-q0;"
-         "else "
-             "ARG=;"
-         "fi;"
-         "'%s' $ARG -U %s'",
-         nc, nc, socketPath);
-
-    if (!(command = virBufferContentAndReset(&buf)))
-        return NULL;
-
-    if (virNetSocketNewConnectLibSSH2(host, port,
-                                      family,
-                                      username, privkey,
-                                      knownhosts, knownHostsVerify, authMethods,
-                                      command, authPtr, uri, &sock) != 0)
-        return NULL;
-
-   return virNetClientNew(sock, NULL);
-}
-#undef DEFAULT_VALUE
-
-#define DEFAULT_VALUE(VAR, VAL) \
-    if (!VAR) \
-        VAR = VAL;
-virNetClientPtr virNetClientNewLibssh(const char *host,
-                                      const char *port,
-                                      int family,
-                                      const char *username,
-                                      const char *privkeyPath,
-                                      const char *knownHostsPath,
-                                      const char *knownHostsVerify,
-                                      const char *authMethods,
-                                      const char *netcatPath,
-                                      const char *socketPath,
-                                      virConnectAuthPtr authPtr,
-                                      virURIPtr uri)
-{
-    virNetSocketPtr sock = NULL;
-
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_autofree char *nc = NULL;
-    g_autofree char *command = NULL;
-
     g_autofree char *homedir = NULL;
     g_autofree char *confdir = NULL;
     g_autofree char *knownhosts = NULL;
@@ -556,18 +508,68 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
     DEFAULT_VALUE(netcatPath, "nc");
     DEFAULT_VALUE(knownHostsVerify, "normal");
 
-    virBufferEscapeShell(&buf, netcatPath);
-    if (!(nc = virBufferContentAndReset(&buf)))
-        return NULL;
-    virBufferEscapeShell(&buf, nc);
-    VIR_FREE(nc);
-    if (!(nc = virBufferContentAndReset(&buf)))
+    command = virNetClientSSHHelperCommand(netcatPath, socketPath);
+
+    if (virNetSocketNewConnectLibSSH2(host, port,
+                                      family,
+                                      username, privkey,
+                                      knownhosts, knownHostsVerify, authMethods,
+                                      command, authPtr, uri, &sock) != 0)
         return NULL;
 
-    command = g_strdup_printf("sh -c "
-                              "'if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-                              "ARG=-q0;" "else " "ARG=;" "fi;" "'%s' $ARG -U %s'", nc, nc,
-                              socketPath);
+   return virNetClientNew(sock, NULL);
+}
+
+virNetClientPtr virNetClientNewLibssh(const char *host,
+                                      const char *port,
+                                      int family,
+                                      const char *username,
+                                      const char *privkeyPath,
+                                      const char *knownHostsPath,
+                                      const char *knownHostsVerify,
+                                      const char *authMethods,
+                                      const char *netcatPath,
+                                      const char *socketPath,
+                                      virConnectAuthPtr authPtr,
+                                      virURIPtr uri)
+{
+    virNetSocketPtr sock = NULL;
+    g_autofree char *command = NULL;
+    g_autofree char *homedir = NULL;
+    g_autofree char *confdir = NULL;
+    g_autofree char *knownhosts = NULL;
+    g_autofree char *privkey = NULL;
+
+    /* Use default paths for known hosts an public keys if not provided */
+    if (knownHostsPath) {
+        knownhosts = g_strdup(knownHostsPath);
+    } else {
+        confdir = virGetUserConfigDirectory();
+        knownhosts = g_strdup_printf("%s/known_hosts", confdir);
+    }
+
+    if (privkeyPath) {
+        privkey = g_strdup(privkeyPath);
+    } else {
+        homedir = virGetUserDirectory();
+        if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
+            return NULL;
+    }
+
+    if (!authMethods) {
+        if (privkey)
+            authMethods = "agent,privkey,password,keyboard-interactive";
+        else
+            authMethods = "agent,password,keyboard-interactive";
+    }
+
+    DEFAULT_VALUE(host, "localhost");
+    DEFAULT_VALUE(port, "22");
+    DEFAULT_VALUE(username, "root");
+    DEFAULT_VALUE(netcatPath, "nc");
+    DEFAULT_VALUE(knownHostsVerify, "normal");
+
+    command = virNetClientSSHHelperCommand(netcatPath, socketPath);
 
     if (virNetSocketNewConnectLibssh(host, port,
                                      family,

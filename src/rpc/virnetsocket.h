@@ -78,9 +78,8 @@ int virNetSocketNewConnectSSH(const char *nodename,
                               const char *username,
                               bool noTTY,
                               bool noVerify,
-                              const char *netcat,
                               const char *keyfile,
-                              const char *path,
+                              const char *command,
                               virNetSocketPtr *addr);
 
 int virNetSocketNewConnectLibSSH2(const char *host,

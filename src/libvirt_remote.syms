@@ -42,6 +42,7 @@ virNetClientSendStream;
 virNetClientSendWithReply;
 virNetClientSetCloseCallback;
 virNetClientSetTLSSession;
+virNetClientSSHHelperCommand;
 
 
 # rpc/virnetclientprogram.h
