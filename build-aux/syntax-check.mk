@@ -871,7 +871,7 @@ sc_prohibit_cross_inclusion:
 	      safe="($$dir|util|conf|storage)";; \
 	    *) safe="($$dir|$(mid_dirs)|util)";; \
 	  esac; \
-	  in_vc_files="^src/$$dir" \
+	  in_vc_files="src/$$dir" \
 	  prohibit='^# *include .$(cross_dirs_re)' \
 	  exclude="# *include .$$safe" \
 	  halt='unsafe cross-directory include' \
