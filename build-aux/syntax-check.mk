@@ -1969,7 +1969,7 @@ group-qemu-caps:
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
 
-_src1=libvirt-stream|qemu/qemu_monitor|util/vir(command|file|fdstream)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon
+_src1=libvirt-stream|qemu/qemu_monitor|util/vir(command|file|fdstream)|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon
 _test1=shunloadtest|virnettlscontexttest|virnettlssessiontest|vircgroupmock|commandhelper
 exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|tools/virsh-console|tests/($(_test1)))\.c$$
@@ -2008,7 +2008,7 @@ exclude_file_name_regexp--sc_prohibit_access_xok = \
 	^(src/util/virutil\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(build-aux/syntax-check\.mk|bootstrap.conf$$|examples/|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c|tools/virt-login-shell\.c|tools/nss/libvirt_nss\.c$$)
+  ^(build-aux/syntax-check\.mk|examples/|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c|tools/virt-login-shell\.c|tools/nss/libvirt_nss\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_strdup = \
   ^(docs/|examples/|src/util/virstring\.c|tests/vir(netserverclient|cgroup)mock.c|tests/commandhelper\.c|tools/nss/libvirt_nss_(leases|macs)\.c$$)
