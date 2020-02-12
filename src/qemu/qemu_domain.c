@@ -2150,6 +2150,33 @@ dbusVMStateHashFree(void *opaque)
 }
 
 
+int
+qemuDomainObjStartWorker(virDomainObjPtr dom)
+{
+    qemuDomainObjPrivatePtr priv = dom->privateData;
+
+    if (!priv->eventThread) {
+        g_autofree char *threadName = g_strdup_printf("vm-%s", dom->def->name);
+        if (!(priv->eventThread = virEventThreadNew(threadName)))
+            return -1;
+    }
+
+    return 0;
+}
+
+
+void
+qemuDomainObjStopWorker(virDomainObjPtr dom)
+{
+    qemuDomainObjPrivatePtr priv = dom->privateData;
+
+    if (priv->eventThread) {
+        g_object_unref(priv->eventThread);
+        priv->eventThread = NULL;
+    }
+}
+
+
 static void *
 qemuDomainObjPrivateAlloc(void *opaque)
 {
@@ -2288,6 +2315,12 @@ qemuDomainObjPrivateFree(void *data)
 
     virHashFree(priv->blockjobs);
     virHashFree(priv->dbusVMStates);
+
+    /* This should never be non-NULL if we get here, but just in case... */
+    if (priv->eventThread) {
+        VIR_ERROR(_("Unexpected event thread still active during domain deletion"));
+        g_object_unref(priv->eventThread);
+    }
 
     VIR_FREE(priv);
 }

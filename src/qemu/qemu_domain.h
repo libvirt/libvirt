@@ -40,6 +40,7 @@
 #include "logging/log_manager.h"
 #include "virdomainmomentobjlist.h"
 #include "virenum.h"
+#include "vireventthread.h"
 
 #define QEMU_DOMAIN_FORMAT_LIVE_FLAGS \
     (VIR_DOMAIN_XML_SECURE)
@@ -299,6 +300,8 @@ struct _qemuDomainObjPrivate {
     qemuDomainJobObj job;
 
     virBitmapPtr namespaces;
+
+    virEventThread *eventThread;
 
     qemuMonitorPtr mon;
     virDomainChrSourceDefPtr monConfig;
@@ -629,6 +632,9 @@ struct _qemuDomainXmlNsDef {
     size_t ncapsdel;
     char **capsdel;
 };
+
+int qemuDomainObjStartWorker(virDomainObjPtr dom);
+void qemuDomainObjStopWorker(virDomainObjPtr dom);
 
 virDomainObjPtr qemuDomainObjFromDomain(virDomainPtr domain);
 

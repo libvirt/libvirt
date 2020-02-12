@@ -320,6 +320,9 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon,
     qemuDomainDestroyNamespace(driver, vm);
 
  cleanup:
+    /* Now we got EOF we're not expecting more I/O, so we
+     * can finally kill the event thread */
+    qemuDomainObjStopWorker(vm);
     virObjectUnlock(vm);
 }
 
@@ -6908,6 +6911,9 @@ qemuProcessLaunch(virConnectPtr conn,
     if (rv == -1) /* The VM failed to start */
         goto cleanup;
 
+    if (qemuDomainObjStartWorker(vm) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Waiting for monitor to show up");
     if (qemuProcessWaitForMonitor(driver, vm, asyncJob, logCtxt) < 0)
         goto cleanup;
@@ -7389,6 +7395,18 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         virObjectUnref(priv->monConfig);
         priv->monConfig = NULL;
     }
+
+    /*
+     * We cannot stop the event thread at this time. When
+     * we are in this code, we may not yet have processed the
+     * STOP event or EOF from the monitor. So the event loop
+     * may have pending input that we need to process still.
+     * The qemuProcessHandleMonitorEOF method will kill
+     * the event thread because at that point we don't
+     * expect any more I/O from the QEMU monitor. We are
+     * assuming we don't need to get any more events from the
+     * QEMU agent at that time.
+     */
 
     /* Remove the master key */
     qemuDomainMasterKeyRemove(priv);
@@ -7980,6 +7998,9 @@ qemuProcessReconnect(void *opaque)
     if (priv->qemuCaps &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS))
         retry = false;
+
+    if (qemuDomainObjStartWorker(obj) < 0)
+        goto error;
 
     VIR_DEBUG("Reconnect monitor to def=%p name='%s' retry=%d",
               obj, obj->def->name, retry);
