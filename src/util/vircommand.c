@@ -494,6 +494,60 @@ virCommandMassCloseGetFDsGeneric(virCommandPtr cmd G_GNUC_UNUSED,
 }
 # endif /* !__linux__ */
 
+# ifdef __FreeBSD__
+
+static int
+virCommandMassClose(virCommandPtr cmd,
+                    int childin,
+                    int childout,
+                    int childerr)
+{
+    int lastfd = -1;
+    int fd = -1;
+    size_t i;
+
+    /*
+     * Two phases of closing.
+     *
+     * The first (inefficient) phase iterates over FDs,
+     * preserving certain FDs we need to pass down, and
+     * closing others. The number of iterations is bounded
+     * to the number of the biggest FD we need to preserve.
+     *
+     * The second (speedy) phase uses closefrom() to cull
+     * all remaining FDs in the process.
+     *
+     * Usually the first phase will be fairly quick only
+     * processing a handful of low FD numbers, and thus using
+     * closefrom() is a massive win for high ulimit() NFILES
+     * values.
+     */
+    lastfd = MAX(lastfd, childin);
+    lastfd = MAX(lastfd, childout);
+    lastfd = MAX(lastfd, childerr);
+
+    for (i = 0; i < cmd->npassfd; i++)
+        lastfd = MAX(lastfd, cmd->passfd[i].fd);
+
+    for (fd = 0; fd <= lastfd; fd++) {
+        if (fd == childin || fd == childout || fd == childerr)
+            continue;
+        if (!virCommandFDIsSet(cmd, fd)) {
+            int tmpfd = fd;
+            VIR_MASS_CLOSE(tmpfd);
+        } else if (virSetInherit(fd, true) < 0) {
+            virReportSystemError(errno, _("failed to preserve fd %d"), fd);
+            return -1;
+        }
+    }
+
+    closefrom(lastfd + 1);
+
+    return 0;
+}
+
+# else /* ! __FreeBSD__ */
+
 static int
 virCommandMassClose(virCommandPtr cmd,
                     int childin,
@@ -520,13 +574,13 @@ virCommandMassClose(virCommandPtr cmd,
     if (!(fds = virBitmapNew(openmax)))
         return -1;
 
-# ifdef __linux__
+#  ifdef __linux__
     if (virCommandMassCloseGetFDsLinux(cmd, fds) < 0)
         return -1;
-# else
+#  else
     if (virCommandMassCloseGetFDsGeneric(cmd, fds) < 0)
         return -1;
-# endif
+#  endif
 
     fd = virBitmapNextSetBit(fds, 2);
     for (; fd >= 0; fd = virBitmapNextSetBit(fds, fd)) {
@@ -544,6 +598,7 @@ virCommandMassClose(virCommandPtr cmd,
     return 0;
 }
 
+# endif /* ! __FreeBSD__ */
 
 /*
  * virExec:
