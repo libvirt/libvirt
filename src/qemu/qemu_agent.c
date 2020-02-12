@@ -224,30 +224,6 @@ qemuAgentOpenUnix(const char *monitor)
     return -1;
 }
 
-static int
-qemuAgentOpenPty(const char *monitor)
-{
-    int monfd;
-
-    if ((monfd = open(monitor, O_RDWR | O_NONBLOCK)) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to open monitor path %s"), monitor);
-        return -1;
-    }
-
-    if (virSetCloseExec(monfd) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to set monitor close-on-exec flag"));
-        goto error;
-    }
-
-    return monfd;
-
- error:
-    VIR_FORCE_CLOSE(monfd);
-    return -1;
-}
-
 
 static int
 qemuAgentIOProcessEvent(qemuAgentPtr mon,
@@ -706,22 +682,14 @@ qemuAgentOpen(virDomainObjPtr vm,
     mon->vm = vm;
     mon->cb = cb;
 
-    switch (config->type) {
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        mon->fd = qemuAgentOpenUnix(config->data.nix.path);
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-        mon->fd = qemuAgentOpenPty(config->data.file.path);
-        break;
-
-    default:
+    if (config->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to handle monitor type: %s"),
                        virDomainChrTypeToString(config->type));
         goto cleanup;
     }
 
+    mon->fd = qemuAgentOpenUnix(config->data.nix.path);
     if (mon->fd == -1)
         goto cleanup;
 
