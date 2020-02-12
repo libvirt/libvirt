@@ -237,6 +237,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
 
     agent = qemuAgentOpen(vm,
                           config->source,
+                          virEventThreadGetContext(priv->eventThread),
                           &agentCallbacks);
 
     virObjectLock(vm);
