@@ -1064,6 +1064,8 @@ mymain(void)
     TEST_IMAGE_CREATE("qcow2-backing-raw-nbd", "raw-nbd");
     TEST_IMAGE_CREATE("qcow2-backing-luks", "luks-noopts");
     TEST_IMAGE_CREATE("qcow2-luks-encopts-backing", "qcow2");
+    TEST_IMAGE_CREATE("qcow2-backing-raw-slice", "raw-slice");
+    TEST_IMAGE_CREATE("qcow2-backing-qcow2-slice", "qcow2-slice");
 
     TEST_IMAGE_CREATE("network-gluster-qcow2", NULL);
     TEST_IMAGE_CREATE("network-rbd-qcow2", NULL);
