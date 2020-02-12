@@ -382,11 +382,12 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                virDomainChrSourceDefPtr config,
                                bool retry,
                                unsigned long long timeout,
+                               GMainContext *context,
                                qemuMonitorCallbacksPtr cb,
                                void *opaque)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
-bool qemuMonitorRegister(qemuMonitorPtr mon)
+void qemuMonitorRegister(qemuMonitorPtr mon)
     ATTRIBUTE_NONNULL(1);
 void qemuMonitorUnregister(qemuMonitorPtr mon)
     ATTRIBUTE_NONNULL(1);

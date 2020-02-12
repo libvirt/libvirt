@@ -1977,6 +1977,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
                           priv->monConfig,
                           retry,
                           timeout,
+                          virEventThreadGetContext(priv->eventThread),
                           &monitorCallbacks,
                           driver);
 
@@ -8597,8 +8598,9 @@ qemuProcessQMPConnectMonitor(qemuProcessQMPPtr proc)
 
     proc->vm->pid = proc->pid;
 
-    if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig, true,
-                                      0, &callbacks, NULL)))
+    if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig, true, 0,
+                                      virEventThreadGetContext(proc->eventThread),
+                                      &callbacks, NULL)))
         goto cleanup;
 
     virObjectLock(proc->mon);
