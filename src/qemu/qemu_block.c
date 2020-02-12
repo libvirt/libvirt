@@ -1930,44 +1930,48 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src)
 {
     int actualType = virStorageSourceGetActualType(src);
     g_autoptr(virJSONValue) backingProps = NULL;
+    g_autoptr(virJSONValue) sliceProps = NULL;
+    virJSONValuePtr props = NULL;
     g_autoptr(virURI) uri = NULL;
     g_autofree char *backingJSON = NULL;
     char *ret = NULL;
 
-    if (virStorageSourceIsLocalStorage(src)) {
-        ret = g_strdup(src->path);
-        return ret;
-    }
-
-    /* generate simplified URIs for the easy cases */
-    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-        src->nhosts == 1 &&
-        src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
-
-        switch ((virStorageNetProtocol) src->protocol) {
-        case VIR_STORAGE_NET_PROTOCOL_NBD:
-        case VIR_STORAGE_NET_PROTOCOL_HTTP:
-        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
-        case VIR_STORAGE_NET_PROTOCOL_FTP:
-        case VIR_STORAGE_NET_PROTOCOL_FTPS:
-        case VIR_STORAGE_NET_PROTOCOL_TFTP:
-        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
-        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            if (!(uri = qemuBlockStorageSourceGetURI(src)))
-                return NULL;
-
-            if (!(ret = virURIFormat(uri)))
-                return NULL;
-
+    if (!src->sliceStorage) {
+        if (virStorageSourceIsLocalStorage(src)) {
+            ret = g_strdup(src->path);
             return ret;
+        }
 
-        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
-        case VIR_STORAGE_NET_PROTOCOL_RBD:
-        case VIR_STORAGE_NET_PROTOCOL_VXHS:
-        case VIR_STORAGE_NET_PROTOCOL_SSH:
-        case VIR_STORAGE_NET_PROTOCOL_LAST:
-        case VIR_STORAGE_NET_PROTOCOL_NONE:
-            break;
+        /* generate simplified URIs for the easy cases */
+        if (actualType == VIR_STORAGE_TYPE_NETWORK &&
+            src->nhosts == 1 &&
+            src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
+
+            switch ((virStorageNetProtocol) src->protocol) {
+            case VIR_STORAGE_NET_PROTOCOL_NBD:
+            case VIR_STORAGE_NET_PROTOCOL_HTTP:
+            case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+            case VIR_STORAGE_NET_PROTOCOL_FTP:
+            case VIR_STORAGE_NET_PROTOCOL_FTPS:
+            case VIR_STORAGE_NET_PROTOCOL_TFTP:
+            case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+            case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+                if (!(uri = qemuBlockStorageSourceGetURI(src)))
+                    return NULL;
+
+                if (!(ret = virURIFormat(uri)))
+                    return NULL;
+
+                return ret;
+
+            case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+            case VIR_STORAGE_NET_PROTOCOL_RBD:
+            case VIR_STORAGE_NET_PROTOCOL_VXHS:
+            case VIR_STORAGE_NET_PROTOCOL_SSH:
+            case VIR_STORAGE_NET_PROTOCOL_LAST:
+            case VIR_STORAGE_NET_PROTOCOL_NONE:
+                break;
+            }
         }
     }
 
@@ -1975,7 +1979,21 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src)
     if (!(backingProps = qemuBlockStorageSourceGetBackendProps(src, false, true, false)))
         return NULL;
 
-    if (!(backingJSON = virJSONValueToString(backingProps, false)))
+    props = backingProps;
+
+    if (src->sliceStorage) {
+        if (virJSONValueObjectCreate(&sliceProps,
+                                     "s:driver", "raw",
+                                     "U:offset", src->sliceStorage->offset,
+                                     "U:size", src->sliceStorage->size,
+                                     "a:file", &backingProps,
+                                     NULL) < 0)
+            return NULL;
+
+        props = sliceProps;
+    }
+
+    if (!(backingJSON = virJSONValueToString(props, false)))
         return NULL;
 
     ret = g_strdup_printf("json:%s", backingJSON);
