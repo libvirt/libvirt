@@ -36,6 +36,7 @@
 #include "virlog.h"
 #include "virerror.h"
 #include "virstring.h"
+#include "vireventthread.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -65,6 +66,8 @@ struct _qemuMonitorTest {
 
     virNetSocketPtr server;
     virNetSocketPtr client;
+
+    virEventThread *eventThread;
 
     qemuMonitorPtr mon;
     qemuAgentPtr agent;
@@ -388,6 +391,8 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
         virObjectUnlock(test->agent);
         qemuAgentClose(test->agent);
     }
+
+    g_object_unref(test->eventThread);
 
     virObjectUnref(test->vm);
 
@@ -1138,6 +1143,7 @@ qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
                             "}"
 /* We skip the normal handshake reply of "{\"execute\":\"qmp_capabilities\"}" */
 
+
 qemuMonitorTestPtr
 qemuMonitorTestNew(virDomainXMLOptionPtr xmlopt,
                    virDomainObjPtr vm,
@@ -1151,6 +1157,9 @@ qemuMonitorTestNew(virDomainXMLOptionPtr xmlopt,
     memset(&src, 0, sizeof(src));
 
     if (!(test = qemuMonitorCommonTestNew(xmlopt, vm, &src)))
+        goto error;
+
+    if (!(test->eventThread = virEventThreadNew("mon-test")))
         goto error;
 
     test->qapischema = schema;
@@ -1389,6 +1398,9 @@ qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt)
     memset(&src, 0, sizeof(src));
 
     if (!(test = qemuMonitorCommonTestNew(xmlopt, NULL, &src)))
+        goto error;
+
+    if (!(test->eventThread = virEventThreadNew("agent-test")))
         goto error;
 
     if (!(test->agent = qemuAgentOpen(test->vm,
