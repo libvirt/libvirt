@@ -385,11 +385,6 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                qemuMonitorCallbacksPtr cb,
                                void *opaque)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
-qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
-                                 int sockfd,
-                                 qemuMonitorCallbacksPtr cb,
-                                 void *opaque)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
 bool qemuMonitorRegister(qemuMonitorPtr mon)
     ATTRIBUTE_NONNULL(1);
