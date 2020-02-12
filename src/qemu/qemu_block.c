@@ -2529,6 +2529,12 @@ qemuBlockStorageSourceCreate(virDomainObjPtr vm,
     int ret = -1;
     int rc;
 
+    if (src->sliceStorage) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("creation of images with slice type='storage' is not supported"));
+        return -1;
+    }
+
     if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
         goto cleanup;
 
