@@ -8373,6 +8373,9 @@ qemuProcessQMPFree(qemuProcessQMPPtr proc)
         return;
 
     qemuProcessQMPStop(proc);
+
+    g_object_unref(proc->eventThread);
+
     VIR_FREE(proc->binary);
     VIR_FREE(proc->libDir);
     VIR_FREE(proc->uniqDir);
@@ -8404,6 +8407,8 @@ qemuProcessQMPNew(const char *binary,
 {
     qemuProcessQMPPtr ret = NULL;
     qemuProcessQMPPtr proc = NULL;
+    const char *threadSuffix;
+    g_autofree char *threadName = NULL;
 
     VIR_DEBUG("exec=%s, libDir=%s, runUid=%u, runGid=%u, forceTCG=%d",
               binary, libDir, runUid, runGid, forceTCG);
@@ -8417,6 +8422,16 @@ qemuProcessQMPNew(const char *binary,
     proc->runUid = runUid;
     proc->runGid = runGid;
     proc->forceTCG = forceTCG;
+
+    threadSuffix = strrchr(binary, '-');
+    if (threadSuffix)
+        threadSuffix++;
+    else
+        threadSuffix = binary;
+    threadName = g_strdup_printf("qmp-%s", threadSuffix);
+
+    if (!(proc->eventThread = virEventThreadNew(threadName)))
+        goto cleanup;
 
     ret = g_steal_pointer(&proc);
 

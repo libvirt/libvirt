@@ -24,6 +24,7 @@
 #include "qemu_conf.h"
 #include "qemu_domain.h"
 #include "virstoragefile.h"
+#include "vireventthread.h"
 
 int qemuProcessPrepareMonitorChr(virDomainChrSourceDefPtr monConfig,
                                  const char *domainDir);
@@ -217,6 +218,7 @@ struct _qemuProcessQMP {
     char *monpath;
     char *pidfile;
     char *uniqDir;
+    virEventThread *eventThread;
     virCommandPtr cmd;
     qemuMonitorPtr mon;
     pid_t pid;
