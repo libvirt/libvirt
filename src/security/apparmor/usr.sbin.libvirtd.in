@@ -86,6 +86,7 @@ profile libvirtd @sbindir@/libvirtd flags=(attach_disconnected) {
   /usr/{lib,lib64}/xen-common/bin/xen-toolstack PUx,
   /usr/{lib,lib64}/xen/bin/* Ux,
   /usr/lib/xen-*/bin/libxl-save-helper PUx,
+  /usr/{lib,lib64,lib/qemu,libexec}/vhost-user-gpu PUx,
 
   # Required by nwfilter_ebiptables_driver.c:ebiptablesWriteToTempFile() to
   # read and run an ebtables script.
