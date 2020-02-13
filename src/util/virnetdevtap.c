@@ -505,6 +505,7 @@ virNetDevTapAttachBridge(const char *tapname,
                          const unsigned char *vmuuid,
                          const virNetDevVPortProfile *virtPortProfile,
                          const virNetDevVlan *virtVlan,
+                         virTristateBool isolatedPort,
                          unsigned int mtu,
                          unsigned int *actualMTU)
 {
@@ -545,6 +546,16 @@ virNetDevTapAttachBridge(const char *tapname,
     } else {
         if (virNetDevBridgeAddPort(brname, tapname) < 0)
             return -1;
+
+        if (isolatedPort == VIR_TRISTATE_BOOL_YES &&
+            virNetDevBridgePortSetIsolated(brname, tapname, true) < 0) {
+            virErrorPtr err;
+
+            virErrorPreserveLast(&err);
+            ignore_value(virNetDevBridgeRemovePort(brname, tapname));
+            virErrorRestore(&err);
+            return -1;
+        }
     }
 
     return 0;
@@ -574,6 +585,7 @@ virNetDevTapReattachBridge(const char *tapname,
                            const unsigned char *vmuuid,
                            const virNetDevVPortProfile *virtPortProfile,
                            const virNetDevVlan *virtVlan,
+                           virTristateBool isolatedPort,
                            unsigned int mtu,
                            unsigned int *actualMTU)
 {
@@ -611,6 +623,7 @@ virNetDevTapReattachBridge(const char *tapname,
                                  macaddr, vmuuid,
                                  virtPortProfile,
                                  virtVlan,
+                                 isolatedPort,
                                  mtu, actualMTU) < 0)
         return -1;
 
@@ -660,6 +673,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    size_t tapfdSize,
                                    const virNetDevVPortProfile *virtPortProfile,
                                    const virNetDevVlan *virtVlan,
+                                   virTristateBool isolatedPort,
                                    virNetDevCoalescePtr coalesce,
                                    unsigned int mtu,
                                    unsigned int *actualMTU,
@@ -697,7 +711,8 @@ int virNetDevTapCreateInBridgePort(const char *brname,
         goto error;
 
     if (virNetDevTapAttachBridge(*ifname, brname, macaddr, vmuuid,
-                                 virtPortProfile, virtVlan, mtu, actualMTU) < 0) {
+                                 virtPortProfile, virtVlan,
+                                 isolatedPort, mtu, actualMTU) < 0) {
         goto error;
     }
 

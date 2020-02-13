@@ -3350,12 +3350,28 @@ qemuDomainChangeNetBridge(virDomainObjPtr vm,
     }
 
     ret = virNetDevBridgeAddPort(newbridge, olddev->ifname);
+    if (ret == 0 &&
+        virDomainNetGetActualPortOptionsIsolated(newdev) == VIR_TRISTATE_BOOL_YES) {
+
+        ret = virNetDevBridgePortSetIsolated(newbridge, olddev->ifname, true);
+        if (ret < 0) {
+            virErrorPtr err;
+
+            virErrorPreserveLast(&err);
+            ignore_value(virNetDevBridgeRemovePort(newbridge, olddev->ifname));
+            virErrorRestore(&err);
+        }
+    }
     virDomainAuditNet(vm, NULL, newdev, "attach", ret == 0);
     if (ret < 0) {
         virErrorPtr err;
 
         virErrorPreserveLast(&err);
         ret = virNetDevBridgeAddPort(oldbridge, olddev->ifname);
+        if (ret == 0 &&
+            virDomainNetGetActualPortOptionsIsolated(olddev) == VIR_TRISTATE_BOOL_YES) {
+            ignore_value(virNetDevBridgePortSetIsolated(newbridge, olddev->ifname, true));
+        }
         virDomainAuditNet(vm, NULL, olddev, "attach", ret == 0);
         virErrorRestore(&err);
         return -1;

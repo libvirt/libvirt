@@ -2489,6 +2489,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         if (virNetDevTapCreateInBridgePort(def->bridge,
                                            &macTapIfName, &def->mac,
                                            NULL, NULL, &tapfd, 1, NULL, NULL,
+                                           VIR_TRISTATE_BOOL_NO,
                                            NULL, def->mtu, NULL,
                                            VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE |
                                            VIR_NETDEV_TAP_CREATE_IFUP |

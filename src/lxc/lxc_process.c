@@ -303,6 +303,16 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
         } else {
             if (virNetDevBridgeAddPort(brname, parentVeth) < 0)
                 return NULL;
+
+            if (virDomainNetGetActualPortOptionsIsolated(net) == VIR_TRISTATE_BOOL_YES &&
+                virNetDevBridgePortSetIsolated(brname, parentVeth, true) < 0) {
+                virErrorPtr err;
+
+                virErrorPreserveLast(&err);
+                ignore_value(virNetDevBridgeRemovePort(brname, parentVeth));
+                virErrorRestore(&err);
+                return NULL;
+            }
         }
     }
 

@@ -65,6 +65,7 @@ virNetDevTapAttachBridge(const char *tapname,
                          const unsigned char *vmuuid,
                          const virNetDevVPortProfile *virtPortProfile,
                          const virNetDevVlan *virtVlan,
+                         virTristateBool isolatedPort,
                          unsigned int mtu,
                          unsigned int *actualMTU)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
@@ -77,6 +78,7 @@ virNetDevTapReattachBridge(const char *tapname,
                            const unsigned char *vmuuid,
                            const virNetDevVPortProfile *virtPortProfile,
                            const virNetDevVlan *virtVlan,
+                           virTristateBool isolatedPort,
                            unsigned int mtu,
                            unsigned int *actualMTU)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
@@ -91,6 +93,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    size_t tapfdSize,
                                    const virNetDevVPortProfile *virtPortProfile,
                                    const virNetDevVlan *virtVlan,
+                                   virTristateBool isolatedPort,
                                    virNetDevCoalescePtr coalesce,
                                    unsigned int mtu,
                                    unsigned int *actualMTU,

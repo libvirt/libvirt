@@ -31232,6 +31232,7 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
                                                 &iface->mac, dom->uuid,
                                                 virDomainNetGetActualVirtPortProfile(iface),
                                                 virDomainNetGetActualVlan(iface),
+                                                virDomainNetGetActualPortOptionsIsolated(iface),
                                                 iface->mtu, NULL));
     }
 }
