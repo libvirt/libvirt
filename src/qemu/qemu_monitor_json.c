@@ -8816,6 +8816,27 @@ qemuMonitorJSONBlockdevAdd(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorJSONBlockdevReopen(qemuMonitorPtr mon,
+                              virJSONValuePtr *props)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValuePtr pr = g_steal_pointer(props);
+
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("blockdev-reopen", pr)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
 qemuMonitorJSONBlockdevDel(qemuMonitorPtr mon,
                            const char *nodename)
 {

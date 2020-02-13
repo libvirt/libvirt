@@ -602,6 +602,10 @@ int qemuMonitorJSONBlockdevAdd(qemuMonitorPtr mon,
                                virJSONValuePtr *props)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJSONBlockdevReopen(qemuMonitorPtr mon,
+                                  virJSONValuePtr *props)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int qemuMonitorJSONBlockdevDel(qemuMonitorPtr mon,
                                const char *nodename)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
