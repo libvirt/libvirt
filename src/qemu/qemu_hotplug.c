@@ -3352,14 +3352,13 @@ qemuDomainChangeNetBridge(virDomainObjPtr vm,
     ret = virNetDevBridgeAddPort(newbridge, olddev->ifname);
     virDomainAuditNet(vm, NULL, newdev, "attach", ret == 0);
     if (ret < 0) {
+        virErrorPtr err;
+
+        virErrorPreserveLast(&err);
         ret = virNetDevBridgeAddPort(oldbridge, olddev->ifname);
         virDomainAuditNet(vm, NULL, olddev, "attach", ret == 0);
-        if (ret < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("unable to recover former state by adding port "
-                             "to bridge %s"), oldbridge);
-        }
-        return ret;
+        virErrorRestore(&err);
+        return -1;
     }
     /* caller will replace entire olddev with newdev in domain nets list */
     return 0;
