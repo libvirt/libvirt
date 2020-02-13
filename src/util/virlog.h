@@ -22,7 +22,6 @@
 #pragma once
 
 #include "internal.h"
-#include "virbuffer.h"
 
 #ifdef PACKAGER_VERSION
 # ifdef PACKAGER
@@ -178,14 +177,6 @@ void virLogMessage(virLogSourcePtr source,
                    const char *funcname,
                    virLogMetadataPtr metadata,
                    const char *fmt, ...) G_GNUC_PRINTF(7, 8);
-void virLogVMessage(virLogSourcePtr source,
-                    virLogPriority priority,
-                    const char *filename,
-                    int linenr,
-                    const char *funcname,
-                    virLogMetadataPtr metadata,
-                    const char *fmt,
-                    va_list vargs) G_GNUC_PRINTF(7, 0);
 
 bool virLogProbablyLogMessage(const char *str);
 virLogOutputPtr virLogOutputNew(virLogOutputFunc f,

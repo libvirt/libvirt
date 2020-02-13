@@ -2475,7 +2475,6 @@ virLogSetFilters;
 virLogSetFromEnv;
 virLogSetOutputs;
 virLogUnlock;
-virLogVMessage;
 
 
 # util/virmacaddr.h

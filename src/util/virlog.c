@@ -493,7 +493,8 @@ virLogSourceUpdate(virLogSourcePtr source)
  * Call the libvirt logger with some information. Based on the configuration
  * the message may be stored, sent to output or just discarded
  */
-void
+static void
+G_GNUC_PRINTF(7, 0)
 virLogVMessage(virLogSourcePtr source,
                virLogPriority priority,
                const char *filename,
