@@ -18,8 +18,6 @@
 
 #pragma once
 
-#include <stdarg.h>
-
 #include "internal.h"
 
 #define VIR_INT64_STR_BUFLEN 21
