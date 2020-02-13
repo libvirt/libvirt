@@ -2988,3 +2988,104 @@ qemuBlockBitmapsHandleBlockcopy(virStorageSourcePtr src,
 
     return 0;
 }
+
+
+/**
+ * qemuBlockReopenFormat:
+ * @vm: domain object
+ * @src: storage source to reopen
+ * @asyncJob: qemu async job type
+ *
+ * Invokes the 'blockdev-reopen' command on the format layer of @src. This means
+ * that @src must be already properly configured for the desired outcome. The
+ * nodenames of @src are used to identify the specific image in qemu.
+ */
+static int
+qemuBlockReopenFormat(virDomainObjPtr vm,
+                      virStorageSourcePtr src,
+                      qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    g_autoptr(virJSONValue) reopenprops = NULL;
+    int rc;
+
+    /* If we are lacking the object here, qemu might have opened an image with
+     * a node name unknown to us */
+    if (!src->backingStore) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("can't reopen image with unknown presence of backing store"));
+        return -1;
+    }
+
+    if (!(reopenprops = qemuBlockStorageSourceGetBlockdevProps(src, src->backingStore)))
+        return -1;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorBlockdevReopen(priv->mon, &reopenprops);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * qemuBlockReopenReadWrite:
+ * @vm: domain object
+ * @src: storage source to reopen
+ * @asyncJob: qemu async job type
+ *
+ * Wrapper that reopens @src read-write. We currently depend on qemu
+ * reopening the storage with 'auto-read-only' enabled for us.
+ * After successful reopen @src's 'readonly' flag is modified. Does nothing
+ * if @src is already read-write.
+ */
+int
+qemuBlockReopenReadWrite(virDomainObjPtr vm,
+                         virStorageSourcePtr src,
+                         qemuDomainAsyncJob asyncJob)
+{
+    if (!src->readonly)
+        return 0;
+
+    src->readonly = false;
+    if (qemuBlockReopenFormat(vm, src, asyncJob) < 0) {
+        src->readonly = true;
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuBlockReopenReadOnly:
+ * @vm: domain object
+ * @src: storage source to reopen
+ * @asyncJob: qemu async job type
+ *
+ * Wrapper that reopens @src read-only. We currently depend on qemu
+ * reopening the storage with 'auto-read-only' enabled for us.
+ * After successful reopen @src's 'readonly' flag is modified. Does nothing
+ * if @src is already read-only.
+ */
+int
+qemuBlockReopenReadOnly(virDomainObjPtr vm,
+                         virStorageSourcePtr src,
+                         qemuDomainAsyncJob asyncJob)
+{
+    if (src->readonly)
+        return 0;
+
+    src->readonly = true;
+    if (qemuBlockReopenFormat(vm, src, asyncJob) < 0) {
+        src->readonly = false;
+        return -1;
+    }
+
+    return 0;
+}

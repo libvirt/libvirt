@@ -231,3 +231,12 @@ qemuBlockBitmapsHandleBlockcopy(virStorageSourcePtr src,
                                 virHashTablePtr blockNamedNodeData,
                                 bool shallow,
                                 virJSONValuePtr *actions);
+
+int
+qemuBlockReopenReadWrite(virDomainObjPtr vm,
+                         virStorageSourcePtr src,
+                         qemuDomainAsyncJob asyncJob);
+int
+qemuBlockReopenReadOnly(virDomainObjPtr vm,
+                        virStorageSourcePtr src,
+                        qemuDomainAsyncJob asyncJob);
