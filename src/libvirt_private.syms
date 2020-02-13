@@ -1989,6 +1989,11 @@ virEventGLibRegister;
 virEventGLibRunOnce;
 
 
+# util/vireventthread.h
+virEventThreadGetContext;
+virEventThreadNew;
+
+
 # util/virfcp.h
 virFCIsCapableRport;
 virFCReadRportValue;
