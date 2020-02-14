@@ -631,7 +631,7 @@
           goes through one point where QoS decisions can take place, hence
           why this attribute works only for virtual networks for now
           (that is <code>&lt;interface type='network'/&gt;</code> with a
-          forward type of route, nat, or no forward at all). Moreover, the
+          forward type of route, nat, open or no forward at all). Moreover, the
           virtual network the interface is connected to is required to have
           at least inbound QoS set (<code>average</code> at least). If
           using the <code>floor</code> attribute users don't need to specify
