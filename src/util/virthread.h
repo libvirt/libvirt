@@ -90,12 +90,14 @@ typedef void (*virThreadFunc)(void *opaque);
 int virThreadCreateFull(virThreadPtr thread,
                         bool joinable,
                         virThreadFunc func,
-                        const char *funcName,
+                        const char *name,
                         bool worker,
                         void *opaque) G_GNUC_WARN_UNUSED_RESULT;
 void virThreadSelf(virThreadPtr thread);
 bool virThreadIsSelf(virThreadPtr thread);
 void virThreadJoin(virThreadPtr thread);
+
+size_t virThreadMaxName(void);
 
 /* This API is *NOT* for general use. It exists solely as a stub
  * for integration with libselinux AVC callbacks */
