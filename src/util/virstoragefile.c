@@ -5003,15 +5003,8 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         goto cleanup;
 
     if ((headerLen = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER,
-                                        &buf)) < 0) {
-        if (headerLen == -2)
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("storage file reading is not supported for "
-                             "storage type %s (protocol: %s)"),
-                           virStorageTypeToString(src->type),
-                           virStorageNetProtocolTypeToString(src->protocol));
+                                        &buf)) < 0)
         goto cleanup;
-    }
 
     if (virStorageFileGetMetadataInternal(src, buf, headerLen,
                                           &backingFormat) < 0)
