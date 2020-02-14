@@ -11676,13 +11676,12 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
 
     revoke_lockspace = true;
 
-    if (qemuDomainStorageSourceAccessModifyNVMe(driver, vm, src, false) < 0)
-        goto revoke;
-
-    revoke_nvme = true;
-
-    /* When modifying access of existing @src namespace does not need update */
     if (!(flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS)) {
+        if (qemuDomainStorageSourceAccessModifyNVMe(driver, vm, src, false) < 0)
+            goto revoke;
+
+        revoke_nvme = true;
+
         if (qemuDomainNamespaceSetupDisk(vm, src) < 0)
             goto revoke;
 
