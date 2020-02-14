@@ -3481,6 +3481,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     bool needBandwidthSet = false;
     bool needCoalesceChange = false;
     bool needVlanUpdate = false;
+    bool needIsolatedPortChange = false;
     int ret = -1;
     int changeidx = -1;
     g_autoptr(virConnect) conn = NULL;
@@ -3805,6 +3806,11 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         needVlanUpdate = true;
     }
 
+    if (virDomainNetGetActualPortOptionsIsolated(olddev) !=
+        virDomainNetGetActualPortOptionsIsolated(newdev)) {
+        needIsolatedPortChange = true;
+    }
+
     if (olddev->linkstate != newdev->linkstate)
         needLinkStateChange = true;
 
@@ -3850,6 +3856,20 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         /* we successfully switched to the new bridge, and we've
          * determined that the rest of newdev is equivalent to olddev,
          * so move newdev into place */
+        needReplaceDevDef = true;
+
+        /* this is already updated as a part of reconnecting the bridge */
+        needIsolatedPortChange = false;
+    }
+
+    if (needIsolatedPortChange) {
+        const char *bridge = virDomainNetGetActualBridgeName(newdev);
+        bool isolatedOn = (virDomainNetGetActualPortOptionsIsolated(newdev) ==
+                           VIR_TRISTATE_BOOL_YES);
+
+        if (virNetDevBridgePortSetIsolated(bridge, newdev->ifname, isolatedOn) < 0)
+            goto cleanup;
+
         needReplaceDevDef = true;
     }
 
