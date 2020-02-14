@@ -11672,9 +11672,21 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                    sizeof(*newBandwidth->out));
         }
 
-        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-            virDomainNetBandwidthUpdate(net, newBandwidth) < 0)
-            goto endjob;
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            if (virDomainNetBandwidthUpdate(net, newBandwidth) < 0)
+                goto endjob;
+        } else {
+            if (virNetDevBandwidthHasFloor(bandwidth)) {
+                char ifmac[VIR_MAC_STRING_BUFLEN];
+
+                virMacAddrFormat(&net->mac, ifmac);
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("Invalid use of 'floor' on interface with MAC address %s "
+                               "- 'floor' is only supported for interface type 'network' with forward type 'nat', 'route', 'open' or none"),
+                               ifmac);
+                goto endjob;
+            }
+        }
 
         if (virNetDevBandwidthSet(net->ifname, newBandwidth, false,
                                   !virDomainNetTypeSharesHostView(net)) < 0) {
