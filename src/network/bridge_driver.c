@@ -4571,8 +4571,6 @@ networkAllocatePort(virNetworkObjPtr obj,
             return -1;
         }
 
-        if (networkPlugBandwidth(obj, &port->mac, port->bandwidth, &port->class_id) < 0)
-            return -1;
         break;
 
     case VIR_NETWORK_FORWARD_HOSTDEV: {
@@ -4637,8 +4635,6 @@ networkAllocatePort(virNetworkObjPtr obj,
                 }
             }
 
-            if (networkPlugBandwidth(obj, &port->mac, port->bandwidth, &port->class_id) < 0)
-                return -1;
             break;
         }
 
@@ -4735,6 +4731,11 @@ networkAllocatePort(virNetworkObjPtr obj,
         virReportEnumRangeError(virNetworkForwardType, netdef->forward.type);
         return -1;
     }
+
+
+    if (networkPlugBandwidth(obj, &port->mac, port->bandwidth,
+                             &port->class_id) < 0)
+        return -1;
 
     if (virNetworkObjMacMgrAdd(obj, driver->dnsmasqStateDir,
                                port->ownername, &port->mac) < 0)
