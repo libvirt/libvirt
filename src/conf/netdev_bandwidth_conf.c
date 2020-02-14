@@ -297,3 +297,10 @@ virDomainClearNetBandwidth(virDomainObjPtr vm)
             virNetDevBandwidthClear(vm->def->nets[i]->ifname);
     }
 }
+
+
+bool
+virNetDevBandwidthHasFloor(const virNetDevBandwidth *b)
+{
+    return b && b->in && b->in->floor != 0;
+}

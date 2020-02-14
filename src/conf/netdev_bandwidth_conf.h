@@ -57,3 +57,6 @@ static inline bool virNetDevSupportBandwidth(virDomainNetType type)
     }
     return false;
 }
+
+
+bool virNetDevBandwidthHasFloor(const virNetDevBandwidth *b);
