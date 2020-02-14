@@ -220,9 +220,11 @@ int virNodeSuspend(unsigned int target,
     if (virNodeSuspendSetNodeWakeup(duration) < 0)
         goto cleanup;
 
-    if (virThreadCreate(&thread, false,
-                        virNodeSuspendHelper,
-                        (void *)cmdString) < 0) {
+    if (virThreadCreateFull(&thread, false,
+                            virNodeSuspendHelper,
+                            "node-suspend",
+                            false,
+                            (void *)cmdString) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to create thread to suspend the host"));
         goto cleanup;

@@ -2367,8 +2367,8 @@ virStorageVolFDStreamCloseCb(virStreamPtr st G_GNUC_UNUSED,
 {
     virThread thread;
 
-    if (virThreadCreate(&thread, false, virStorageVolPoolRefreshThread,
-                        opaque) < 0) {
+    if (virThreadCreateFull(&thread, false, virStorageVolPoolRefreshThread,
+                            "vol-refresh", false, opaque) < 0) {
         /* Not much else can be done */
         VIR_ERROR(_("Failed to create thread to handle pool refresh"));
         goto error;

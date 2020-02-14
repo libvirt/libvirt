@@ -35,7 +35,7 @@ virThreadPoolPtr virThreadPoolNewFull(size_t minWorkers,
                                       size_t maxWorkers,
                                       size_t prioWorkers,
                                       virThreadPoolJobFunc func,
-                                      const char *funcName,
+                                      const char *name,
                                       void *opaque) ATTRIBUTE_NONNULL(4);
 
 size_t virThreadPoolGetMinWorkers(virThreadPoolPtr pool);

@@ -1863,7 +1863,8 @@ nodeStateInitialize(bool privileged,
         udev_monitor_set_receive_buffer_size(priv->udev_monitor,
                                              128 * 1024 * 1024);
 
-    if (virThreadCreate(&priv->th, true, udevEventHandleThread, NULL) < 0) {
+    if (virThreadCreateFull(&priv->th, true, udevEventHandleThread,
+                            "udev-event", false, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create udev handler thread"));
         goto unlock;
@@ -1889,8 +1890,8 @@ nodeStateInitialize(bool privileged,
     if (udevSetupSystemDev() != 0)
         goto cleanup;
 
-    if (virThreadCreate(&enumThread, false, nodeStateInitializeEnumerate,
-                        udev) < 0) {
+    if (virThreadCreateFull(&enumThread, false, nodeStateInitializeEnumerate,
+                            "nodedev-init", false, udev) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create udev enumerate thread"));
         goto cleanup;

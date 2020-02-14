@@ -734,10 +734,12 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
     if (rc < 0)
         goto err_free_req;
 
-    if (virThreadCreate(&thread,
-                        false,
-                        learnIPAddressThread,
-                        req) != 0)
+    if (virThreadCreateFull(&thread,
+                            false,
+                            learnIPAddressThread,
+                            "ip-learn",
+                            false,
+                            req) != 0)
         goto err_dereg_req;
 
     return 0;

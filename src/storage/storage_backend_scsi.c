@@ -334,8 +334,8 @@ createVport(virStoragePoolDefPtr def,
         memcpy(cbdata->pool_uuid, def->uuid, VIR_UUID_BUFLEN);
         cbdata->fchost_name = g_steal_pointer(&name);
 
-        if (virThreadCreate(&thread, false, virStoragePoolFCRefreshThread,
-                            cbdata) < 0) {
+        if (virThreadCreateFull(&thread, false, virStoragePoolFCRefreshThread,
+                                "scsi-refresh", false, cbdata) < 0) {
             /* Oh well - at least someone can still refresh afterwards */
             VIR_DEBUG("Failed to create FC Pool Refresh Thread");
             virStoragePoolFCRefreshDataFree(cbdata);

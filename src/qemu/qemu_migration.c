@@ -3309,9 +3309,11 @@ qemuMigrationSrcStartTunnel(virStreamPtr st,
     io->wakeupRecvFD = wakeupFD[0];
     io->wakeupSendFD = wakeupFD[1];
 
-    if (virThreadCreate(&io->thread, true,
-                        qemuMigrationSrcIOFunc,
-                        io) < 0) {
+    if (virThreadCreateFull(&io->thread, true,
+                            qemuMigrationSrcIOFunc,
+                            "qemu-mig-tunnel",
+                            false,
+                            io) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to create migration thread"));
         goto error;

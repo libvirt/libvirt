@@ -1366,9 +1366,10 @@ virNWFilterDHCPSnoopThread(void *req0)
         }
         tmp = virNetDevGetIndex(req->binding->portdevname, &ifindex);
         threadkey = g_strdup(req->threadkey);
-        worker = virThreadPoolNew(1, 1, 0,
-                                  virNWFilterDHCPDecodeWorker,
-                                  req);
+        worker = virThreadPoolNewFull(1, 1, 0,
+                                      virNWFilterDHCPDecodeWorker,
+                                      "dhcp-decode",
+                                      req);
     }
 
     /* let creator know how well we initialized */
@@ -1638,8 +1639,8 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     /* prevent thread from holding req */
     virNWFilterSnoopReqLock(req);
 
-    if (virThreadCreate(&thread, false, virNWFilterDHCPSnoopThread,
-                        req) != 0) {
+    if (virThreadCreateFull(&thread, false, virNWFilterDHCPSnoopThread,
+                            "dhcp-snoop", false, req) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("virNWFilterDHCPSnoopReq virThreadCreate "
                          "failed on interface '%s'"), binding->portdevname);

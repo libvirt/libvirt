@@ -54,7 +54,7 @@ struct _virThreadPool {
     bool quit;
 
     virThreadPoolJobFunc jobFunc;
-    const char *jobFuncName;
+    const char *jobName;
     void *jobOpaque;
     virThreadPoolJobList jobList;
     size_t jobQueueDepth;
@@ -187,6 +187,7 @@ virThreadPoolExpand(virThreadPoolPtr pool, size_t gain, bool priority)
         return -1;
 
     for (i = 0; i < gain; i++) {
+        g_autofree char *name = NULL;
         if (VIR_ALLOC(data) < 0)
             goto error;
 
@@ -194,10 +195,15 @@ virThreadPoolExpand(virThreadPoolPtr pool, size_t gain, bool priority)
         data->cond = priority ? &pool->prioCond : &pool->cond;
         data->priority = priority;
 
+        if (priority)
+            name = g_strdup_printf("prio-%s", pool->jobName);
+        else
+            name = g_strdup(pool->jobName);
+
         if (virThreadCreateFull(&(*workers)[i],
                                 false,
                                 virThreadPoolWorker,
-                                pool->jobFuncName,
+                                name,
                                 true,
                                 data) < 0) {
             VIR_FREE(data);
@@ -218,7 +224,7 @@ virThreadPoolNewFull(size_t minWorkers,
                      size_t maxWorkers,
                      size_t prioWorkers,
                      virThreadPoolJobFunc func,
-                     const char *funcName,
+                     const char *name,
                      void *opaque)
 {
     virThreadPoolPtr pool;
@@ -232,7 +238,7 @@ virThreadPoolNewFull(size_t minWorkers,
     pool->jobList.tail = pool->jobList.head = NULL;
 
     pool->jobFunc = func;
-    pool->jobFuncName = funcName;
+    pool->jobName = name;
     pool->jobOpaque = opaque;
 
     if (virMutexInit(&pool->mutex) < 0)

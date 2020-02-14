@@ -294,6 +294,7 @@ libxlMigrateDstReceive(virNetSocketPtr sock,
     virNetSocketPtr client_sock;
     int recvfd = -1;
     size_t i;
+    g_autofree char *name = NULL;
 
     /* Accept migration connection */
     if (virNetSocketAccept(sock, &client_sock) < 0 || !client_sock) {
@@ -314,8 +315,13 @@ libxlMigrateDstReceive(virNetSocketPtr sock,
     VIR_FREE(priv->migrationDstReceiveThr);
     if (VIR_ALLOC(priv->migrationDstReceiveThr) < 0)
         goto fail;
-    if (virThreadCreate(priv->migrationDstReceiveThr, true,
-                        libxlDoMigrateDstReceive, args) < 0) {
+
+    name = g_strdup_printf("mig-%s", args->vm->def->name);
+    if (virThreadCreateFull(priv->migrationDstReceiveThr, true,
+                            libxlDoMigrateDstReceive,
+                            name,
+                            false,
+                            args) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to create thread for receiving migration data"));
         goto fail;
@@ -554,6 +560,7 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
     char *xmlout = NULL;
     int dataFD[2] = { -1, -1 };
     int ret = -1;
+    g_autofree char *name = NULL;
 
     if (libxlDomainMigrationPrepareAny(dconn, def, cookiein, cookieinlen,
                                        &mig, &xmlout, &taint_hook) < 0)
@@ -611,7 +618,10 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
     VIR_FREE(priv->migrationDstReceiveThr);
     if (VIR_ALLOC(priv->migrationDstReceiveThr) < 0)
         goto error;
-    if (virThreadCreate(priv->migrationDstReceiveThr, true, libxlDoMigrateDstReceive, args) < 0) {
+    name = g_strdup_printf("mig-%s", args->vm->def->name);
+    if (virThreadCreateFull(priv->migrationDstReceiveThr, true,
+                            libxlDoMigrateDstReceive,
+                            name, false, args) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to create thread for receiving migration data"));
         goto endjob;
@@ -910,6 +920,7 @@ libxlMigrationSrcStartTunnel(libxlDriverPrivatePtr driver,
     struct libxlTunnelControl *tc = NULL;
     libxlTunnelMigrationThread *arg = NULL;
     int ret = -1;
+    g_autofree char *name = NULL;
 
     if (VIR_ALLOC(tc) < 0)
         goto out;
@@ -925,8 +936,10 @@ libxlMigrationSrcStartTunnel(libxlDriverPrivatePtr driver,
     arg->srcFD = tc->dataFD[0];
     /* Write to dest stream */
     arg->st = st;
-    if (virThreadCreate(&tc->thread, true,
-                        libxlTunnel3MigrationSrcFunc, arg) < 0) {
+    name = g_strdup_printf("mig-%s", vm->def->name);
+    if (virThreadCreateFull(&tc->thread, true,
+                            libxlTunnel3MigrationSrcFunc,
+                            name, false, arg) < 0) {
         virReportError(errno, "%s",
                        _("Unable to create tunnel migration thread"));
         goto out;

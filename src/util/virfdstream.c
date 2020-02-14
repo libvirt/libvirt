@@ -1134,10 +1134,12 @@ static int virFDStreamOpenInternal(virStreamPtr st,
             goto error;
         }
 
-        if (virThreadCreate(fdst->thread,
-                            true,
-                            virFDStreamThread,
-                            threadData) < 0)
+        if (virThreadCreateFull(fdst->thread,
+                                true,
+                                virFDStreamThread,
+                                "fd-stream",
+                                false,
+                                threadData) < 0)
             goto error;
     }
 

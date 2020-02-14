@@ -367,10 +367,11 @@ virNetServerPtr virNetServerNew(const char *name,
     if (!(srv = virObjectLockableNew(virNetServerClass)))
         return NULL;
 
-    if (!(srv->workers = virThreadPoolNew(min_workers, max_workers,
-                                          priority_workers,
-                                          virNetServerHandleJob,
-                                          srv)))
+    if (!(srv->workers = virThreadPoolNewFull(min_workers, max_workers,
+                                              priority_workers,
+                                              virNetServerHandleJob,
+                                              "rpc-worker",
+                                              srv)))
         goto error;
 
     srv->name = g_strdup(name);

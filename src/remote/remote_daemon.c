@@ -713,7 +713,8 @@ static void daemonReloadHandler(virNetDaemonPtr dmn G_GNUC_UNUSED,
         return;
     }
 
-    if (virThreadCreate(&thr, false, daemonReloadHandlerThread, NULL) < 0) {
+    if (virThreadCreateFull(&thr, false, daemonReloadHandlerThread,
+                            "daemon-reload", false, NULL) < 0) {
         /*
          * Not much we can do on error here except log it.
          */
@@ -770,7 +771,8 @@ static void daemonStop(virNetDaemonPtr dmn)
 {
     virThread thr;
     virObjectRef(dmn);
-    if (virThreadCreate(&thr, false, daemonStopWorker, dmn) < 0)
+    if (virThreadCreateFull(&thr, false, daemonStopWorker,
+                            "daemon-stop", false, dmn) < 0)
         virObjectUnref(dmn);
 }
 
@@ -876,7 +878,8 @@ static int daemonStateInit(virNetDaemonPtr dmn)
 {
     virThread thr;
     virObjectRef(dmn);
-    if (virThreadCreate(&thr, false, daemonRunStateInit, dmn) < 0) {
+    if (virThreadCreateFull(&thr, false, daemonRunStateInit,
+                            "daemon-init", false, dmn) < 0) {
         virObjectUnref(dmn);
         return -1;
     }

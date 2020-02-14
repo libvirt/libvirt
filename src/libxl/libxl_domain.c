@@ -664,6 +664,7 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     virThread thread;
     g_autoptr(libxlDriverConfig) cfg = NULL;
     int ret = -1;
+    g_autofree char *name = NULL;
 
     if (event->type != LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN &&
             event->type != LIBXL_EVENT_TYPE_DOMAIN_DEATH) {
@@ -687,12 +688,13 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
 
     shutdown_info->driver = driver;
     shutdown_info->event = (libxl_event *)event;
+    name = g_strdup_printf("ev-%d", event->domid);
     if (event->type == LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN)
-        ret = virThreadCreate(&thread, false, libxlDomainShutdownThread,
-                              shutdown_info);
+        ret = virThreadCreateFull(&thread, false, libxlDomainShutdownThread,
+                                  name, false, shutdown_info);
     else if (event->type == LIBXL_EVENT_TYPE_DOMAIN_DEATH)
-        ret = virThreadCreate(&thread, false, libxlDomainDeathThread,
-                              shutdown_info);
+        ret = virThreadCreateFull(&thread, false, libxlDomainDeathThread,
+                                  name, false, shutdown_info);
 
     if (ret < 0) {
         /*
