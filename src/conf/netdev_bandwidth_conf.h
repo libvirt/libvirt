@@ -23,6 +23,7 @@
 #include "virbuffer.h"
 #include "virxml.h"
 #include "domain_conf.h"
+#include "network_conf.h"
 
 int virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                             unsigned int *class_id,
@@ -60,3 +61,4 @@ static inline bool virNetDevSupportBandwidth(virDomainNetType type)
 
 
 bool virNetDevBandwidthHasFloor(const virNetDevBandwidth *b);
+bool virNetDevBandwidthSupportsFloor(virNetworkForwardType type);

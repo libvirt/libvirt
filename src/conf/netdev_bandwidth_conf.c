@@ -304,3 +304,23 @@ virNetDevBandwidthHasFloor(const virNetDevBandwidth *b)
 {
     return b && b->in && b->in->floor != 0;
 }
+
+
+bool virNetDevBandwidthSupportsFloor(virNetworkForwardType type)
+{
+    switch (type) {
+    case VIR_NETWORK_FORWARD_NONE:
+    case VIR_NETWORK_FORWARD_NAT:
+    case VIR_NETWORK_FORWARD_ROUTE:
+    case VIR_NETWORK_FORWARD_OPEN:
+        return true;
+    case VIR_NETWORK_FORWARD_BRIDGE:
+    case VIR_NETWORK_FORWARD_PRIVATE:
+    case VIR_NETWORK_FORWARD_VEPA:
+    case VIR_NETWORK_FORWARD_PASSTHROUGH:
+    case VIR_NETWORK_FORWARD_HOSTDEV:
+    case VIR_NETWORK_FORWARD_LAST:
+        break;
+    }
+    return false;
+}
