@@ -3743,3 +3743,13 @@ virDomainBlockIoTuneInfoCopy(const virDomainBlockIoTuneInfo *src,
 bool
 virDomainBlockIoTuneInfoEqual(const virDomainBlockIoTuneInfo *a,
                               const virDomainBlockIoTuneInfo *b);
+
+bool
+virHostdevIsSCSIDevice(const virDomainHostdevDef *hostdev)
+    ATTRIBUTE_NONNULL(1);
+bool
+virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
+    ATTRIBUTE_NONNULL(1);
+bool
+virHostdevIsVFIODevice(const virDomainHostdevDef *hostdev)
+    ATTRIBUTE_NONNULL(1);

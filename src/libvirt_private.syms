@@ -715,6 +715,9 @@ virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
 virDomainQemuMonitorEventNew;
 virDomainQemuMonitorEventStateRegisterID;
+virHostdevIsMdevDevice;
+virHostdevIsSCSIDevice;
+virHostdevIsVFIODevice;
 
 
 # conf/domain_nwfilter.h
@@ -2168,9 +2171,6 @@ virHostCPUStatsAssign;
 
 # util/virhostdev.h
 virHostdevFindUSBDevice;
-virHostdevIsMdevDevice;
-virHostdevIsSCSIDevice;
-virHostdevIsVFIODevice;
 virHostdevManagerGetDefault;
 virHostdevPCINodeDeviceDetach;
 virHostdevPCINodeDeviceReAttach;

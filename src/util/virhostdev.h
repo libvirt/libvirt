@@ -191,15 +191,6 @@ virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
                                 unsigned int flags,
                                 const char *oldStateDir)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-bool
-virHostdevIsSCSIDevice(const virDomainHostdevDef *hostdev)
-    ATTRIBUTE_NONNULL(1);
-bool
-virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
-    ATTRIBUTE_NONNULL(1);
-bool
-virHostdevIsVFIODevice(const virDomainHostdevDef *hostdev)
-    ATTRIBUTE_NONNULL(1);
 
 /* functions used by NodeDevDetach/Reattach/Reset */
 int virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,

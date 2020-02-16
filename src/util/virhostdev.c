@@ -359,49 +359,6 @@ virHostdevIsPCINetDevice(const virDomainHostdevDef *hostdev)
 }
 
 
-/**
- * virHostdevIsSCSIDevice:
- * @hostdev: host device to check
- *
- * Returns true if @hostdev is a SCSI device, false otherwise.
- */
-bool
-virHostdevIsSCSIDevice(const virDomainHostdevDef *hostdev)
-{
-    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI;
-}
-
-
-/**
- * virHostdevIsMdevDevice:
- * @hostdev: host device to check
- *
- * Returns true if @hostdev is a Mediated device, false otherwise.
- */
-bool
-virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
-{
-    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV;
-}
-
-
-/**
- * virHostdevIsVFIODevice:
- * @hostdev: host device to check
- *
- * Returns true if @hostdev is a PCI device with VFIO backend, false otherwise.
- */
-bool
-virHostdevIsVFIODevice(const virDomainHostdevDef *hostdev)
-{
-    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-        hostdev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
-}
-
-
 static int
 virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
                                    const virNetDevVPortProfile *virtPort,

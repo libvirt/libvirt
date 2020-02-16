@@ -58,7 +58,6 @@
 #include "virnetdevtap.h"
 #include "virnetdevmacvlan.h"
 #include "virarptable.h"
-#include "virhostdev.h"
 #include "virmdev.h"
 #include "virdomainsnapshotobjlist.h"
 #include "virdomaincheckpointobjlist.h"
@@ -32033,4 +32032,47 @@ virDomainBlockIoTuneInfoEqual(const virDomainBlockIoTuneInfo *a,
         a->total_iops_sec_max_length == b->total_iops_sec_max_length &&
         a->read_iops_sec_max_length == b->read_iops_sec_max_length &&
         a->write_iops_sec_max_length == b->write_iops_sec_max_length;
+}
+
+
+/**
+ * virHostdevIsSCSIDevice:
+ * @hostdev: host device to check
+ *
+ * Returns true if @hostdev is a SCSI device, false otherwise.
+ */
+bool
+virHostdevIsSCSIDevice(const virDomainHostdevDef *hostdev)
+{
+    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI;
+}
+
+
+/**
+ * virHostdevIsMdevDevice:
+ * @hostdev: host device to check
+ *
+ * Returns true if @hostdev is a Mediated device, false otherwise.
+ */
+bool
+virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
+{
+    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV;
+}
+
+
+/**
+ * virHostdevIsVFIODevice:
+ * @hostdev: host device to check
+ *
+ * Returns true if @hostdev is a PCI device with VFIO backend, false otherwise.
+ */
+bool
+virHostdevIsVFIODevice(const virDomainHostdevDef *hostdev)
+{
+    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+        hostdev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
 }
