@@ -67,6 +67,7 @@
 #include "virhook.h"
 #include "virjson.h"
 #include "virnetworkportdef.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 #define MAX_BRIDGE_ID 256

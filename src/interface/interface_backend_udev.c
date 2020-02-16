@@ -35,6 +35,7 @@
 #include "viraccessapicheck.h"
 #include "virinterfaceobj.h"
 #include "virnetdev.h"
+#include "virutil.h"
 
 #include "configmake.h"
 

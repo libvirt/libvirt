@@ -45,6 +45,7 @@
 #include "virsocket.h"
 #include "virstring.h"
 #include "storage_conf.h"
+#include "virutil.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU

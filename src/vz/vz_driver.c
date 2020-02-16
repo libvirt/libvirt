@@ -48,6 +48,7 @@
 #include "virhostmem.h"
 #include "virhostcpu.h"
 #include "viraccessapicheck.h"
+#include "virutil.h"
 
 #include "vz_driver.h"
 #include "vz_utils.h"

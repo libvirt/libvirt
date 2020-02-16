@@ -64,6 +64,7 @@
 # include <linux/capability.h>
 #endif
 #include "logging/log_manager.h"
+#include "virutil.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>

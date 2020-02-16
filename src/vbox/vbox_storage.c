@@ -27,6 +27,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "storage_conf.h"
+#include "virutil.h"
 
 #include "vbox_common.h"
 #include "vbox_uniformed_api.h"

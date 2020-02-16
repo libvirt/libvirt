@@ -25,6 +25,7 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virsocketaddr.h"
+#include "virutil.h"
 
 #if !defined WIN32 && HAVE_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
 

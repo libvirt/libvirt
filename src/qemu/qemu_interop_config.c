@@ -28,6 +28,7 @@
 #include "virhash.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

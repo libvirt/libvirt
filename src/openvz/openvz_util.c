@@ -34,6 +34,8 @@
 #include "openvz_conf.h"
 #include "openvz_util.h"
 
+#include "virutil.h"
+
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
 long

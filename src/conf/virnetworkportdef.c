@@ -19,6 +19,7 @@
  */
 
 #include <config.h>
+#include <unistd.h>
 
 #include "viralloc.h"
 #include "virerror.h"

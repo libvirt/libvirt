@@ -34,6 +34,7 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "virutil.h"
 #include "storage_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE

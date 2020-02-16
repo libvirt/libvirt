@@ -47,6 +47,7 @@
 #include "viruri.h"
 #include "virnetdevtap.h"
 #include "virstring.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 

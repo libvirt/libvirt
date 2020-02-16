@@ -40,6 +40,7 @@
 #include "viruuid.h"
 #include "virsecret.h"
 #include "storage_util.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

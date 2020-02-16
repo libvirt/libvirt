@@ -27,6 +27,7 @@
 #include "virstring.h"
 #include "viralloc.h"
 #include "virenum.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

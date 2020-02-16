@@ -38,6 +38,7 @@
 #include "virthread.h"
 #include "virstring.h"
 #include "virprocess.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

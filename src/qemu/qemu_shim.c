@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include "virfile.h"
 #include "virstring.h"

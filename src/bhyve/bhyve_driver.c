@@ -53,6 +53,7 @@
 #include "virhostmem.h"
 #include "virportallocator.h"
 #include "conf/domain_capabilities.h"
+#include "virutil.h"
 
 #include "bhyve_conf.h"
 #include "bhyve_device.h"

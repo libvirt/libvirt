@@ -40,6 +40,7 @@
 #include "virstring.h"
 #include "virnetdev.h"
 #include "virmdev.h"
+#include "virutil.h"
 
 #include "configmake.h"
 

@@ -25,6 +25,7 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virutil.h"
 
 #define QEMU_DRIVE_HOST_PREFIX "drive-"
 

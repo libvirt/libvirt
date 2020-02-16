@@ -39,6 +39,7 @@
 #include "virstring.h"
 #include "virenum.h"
 #include "virsocket.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

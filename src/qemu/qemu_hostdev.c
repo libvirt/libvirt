@@ -35,6 +35,7 @@
 #include "virnetdev.h"
 #include "virfile.h"
 #include "virhostdev.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

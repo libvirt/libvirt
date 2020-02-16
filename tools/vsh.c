@@ -45,6 +45,7 @@
 #include "vircommand.h"
 #include "virtypedparam.h"
 #include "virstring.h"
+#include "virutil.h"
 
 #ifdef WITH_READLINE
 /* For autocompletion */

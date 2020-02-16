@@ -39,6 +39,7 @@
 #include "virvhba.h"
 #include "viraccessapicheck.h"
 #include "virnetdev.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 

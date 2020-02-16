@@ -37,6 +37,7 @@
 #include "snapshot_conf.h"
 #include "vbox_snapshot_conf.h"
 #include "virfdstream.h"
+#include "virutil.h"
 #include "configmake.h"
 
 #include "vbox_common.h"

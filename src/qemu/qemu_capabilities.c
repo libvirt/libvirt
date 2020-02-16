@@ -47,6 +47,7 @@
 #include "qemu_qapi.h"
 #include "qemu_process.h"
 #include "qemu_firmware.h"
+#include "virutil.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>

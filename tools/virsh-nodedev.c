@@ -29,6 +29,7 @@
 #include "virtime.h"
 #include "conf/node_device_conf.h"
 #include "virenum.h"
+#include "virutil.h"
 
 /*
  * "nodedev-create" command

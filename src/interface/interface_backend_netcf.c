@@ -34,6 +34,7 @@
 #include "virstring.h"
 #include "viraccessapicheck.h"
 #include "virinterfaceobj.h"
+#include "virutil.h"
 
 #include "configmake.h"
 

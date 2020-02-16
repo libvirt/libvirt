@@ -41,6 +41,7 @@
 #include "virstring.h"
 #include "viraccessapicheck.h"
 #include "secret_event.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 

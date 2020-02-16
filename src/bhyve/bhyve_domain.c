@@ -27,6 +27,7 @@
 #include "bhyve_capabilities.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_BHYVE
 

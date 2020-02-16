@@ -29,6 +29,7 @@
 #include "viralloc.h"
 #include "vircommand.h"
 #include "virfile.h"
+#include "virutil.h"
 #include "configmake.h"
 #include "virstring.h"
 

@@ -54,6 +54,7 @@
 #include "viruri.h"
 #include "vsh-table.h"
 #include "virenum.h"
+#include "virutil.h"
 
 #define VIRSH_COMMON_OPT_DOMAIN_PERSISTENT \
     {.name = "persistent", \

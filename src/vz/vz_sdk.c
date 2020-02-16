@@ -33,6 +33,7 @@
 #include "virtime.h"
 #include "virhostcpu.h"
 #include "virsocketaddr.h"
+#include "virutil.h"
 
 #include "vz_sdk.h"
 

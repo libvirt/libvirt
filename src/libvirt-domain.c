@@ -26,6 +26,7 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "virtypedparam.h"
+#include "virutil.h"
 
 VIR_LOG_INIT("libvirt.domain");
 

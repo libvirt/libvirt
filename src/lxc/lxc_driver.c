@@ -73,6 +73,7 @@
 #include "virhostdev.h"
 #include "netdev_bandwidth_conf.h"
 #include "virsocket.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

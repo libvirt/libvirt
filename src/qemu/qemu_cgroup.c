@@ -38,6 +38,7 @@
 #include "virnuma.h"
 #include "virsystemd.h"
 #include "virdevmapper.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

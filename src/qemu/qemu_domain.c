@@ -61,6 +61,7 @@
 #include "virdomainsnapshotobjlist.h"
 #include "virdomaincheckpointobjlist.h"
 #include "backup_conf.h"
+#include "virutil.h"
 
 #ifdef __linux__
 # include <sys/sysmacros.h>

@@ -30,6 +30,7 @@
 #include "viralloc.h"
 #include "virdbus.h"
 #include "virfile.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_POLKIT
 

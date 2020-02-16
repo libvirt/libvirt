@@ -61,6 +61,7 @@
 #include "virmdev.h"
 #include "virdomainsnapshotobjlist.h"
 #include "virdomaincheckpointobjlist.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 

@@ -42,6 +42,7 @@
 #include "configmake.h"
 #include "virstring.h"
 #include "virfirewall.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

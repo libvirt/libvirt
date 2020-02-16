@@ -29,6 +29,7 @@
 #include "virlog.h"
 #include "virrotatingfile.h"
 #include "viruuid.h"
+#include "virutil.h"
 
 #include <unistd.h>
 #include <fcntl.h>

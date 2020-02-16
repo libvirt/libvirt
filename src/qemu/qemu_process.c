@@ -90,6 +90,7 @@
 #include "virvsock.h"
 #include "viridentity.h"
 #include "virthreadjob.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

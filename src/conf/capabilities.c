@@ -40,6 +40,7 @@
 #include "virtypedparam.h"
 #include "viruuid.h"
 #include "virenum.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 
