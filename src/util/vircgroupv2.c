@@ -19,6 +19,7 @@
  */
 #include <config.h>
 
+#include <unistd.h>
 #ifdef __linux__
 # include <mntent.h>
 # include <sys/mount.h>

@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include "virutil.h"
 #include "virbitmap.h"
 #include "virenum.h"
 
