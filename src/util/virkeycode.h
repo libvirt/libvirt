@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include "virutil.h"
 #include "virenum.h"
 
 VIR_ENUM_DECL(virKeycodeSet);

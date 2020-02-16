@@ -22,7 +22,6 @@
 
 #include "internal.h"
 #include "virobject.h"
-#include "virutil.h"
 
 typedef struct _virSCSIVHostDevice virSCSIVHostDevice;
 typedef virSCSIVHostDevice *virSCSIVHostDevicePtr;

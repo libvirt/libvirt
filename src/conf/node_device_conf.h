@@ -24,7 +24,6 @@
 
 #include "internal.h"
 #include "virbitmap.h"
-#include "virutil.h"
 #include "virscsihost.h"
 #include "virpci.h"
 #include "virvhba.h"

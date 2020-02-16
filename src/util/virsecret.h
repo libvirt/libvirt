@@ -23,7 +23,6 @@
 
 #include "internal.h"
 
-#include "virutil.h"
 #include "virxml.h"
 #include "virenum.h"
 

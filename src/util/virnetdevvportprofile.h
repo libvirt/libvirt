@@ -20,7 +20,6 @@
 
 #include "internal.h"
 #include "viruuid.h"
-#include "virutil.h"
 #include "virmacaddr.h"
 #include "virenum.h"
 

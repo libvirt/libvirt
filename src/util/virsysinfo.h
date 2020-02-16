@@ -22,7 +22,6 @@
 #pragma once
 
 #include "internal.h"
-#include "virutil.h"
 #include "virbuffer.h"
 #include "virenum.h"
 

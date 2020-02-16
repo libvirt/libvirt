@@ -27,7 +27,6 @@
 #include "virobject.h"
 #include "virseclabel.h"
 #include "virstorageencryption.h"
-#include "virutil.h"
 #include "virsecret.h"
 #include "virenum.h"
 #include "virpci.h"

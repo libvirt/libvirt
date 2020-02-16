@@ -21,7 +21,6 @@
 #pragma once
 
 #include "internal.h"
-#include "virutil.h"
 
 typedef struct _virSecretDef virSecretDef;
 typedef virSecretDef *virSecretDefPtr;

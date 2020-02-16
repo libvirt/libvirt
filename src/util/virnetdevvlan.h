@@ -18,8 +18,6 @@
 
 #pragma once
 
-#include <virutil.h>
-
 #include "virenum.h"
 
 typedef enum {

@@ -20,7 +20,6 @@
 
 #include "internal.h"
 #include "virobject.h"
-#include "virutil.h"
 #include "virenum.h"
 
 typedef enum {

@@ -25,7 +25,6 @@
 #include <libxml/xpath.h>
 
 #include "internal.h"
-#include "virutil.h"
 #include "virthread.h"
 #include "device_conf.h"
 #include "virenum.h"

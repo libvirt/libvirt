@@ -23,7 +23,6 @@
 #include <libxml/xpath.h>
 
 #include "internal.h"
-#include "virutil.h"
 #include "virbitmap.h"
 #include "virbuffer.h"
 #include "virenum.h"

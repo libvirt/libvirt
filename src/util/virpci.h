@@ -23,7 +23,6 @@
 #include "internal.h"
 #include "virmdev.h"
 #include "virobject.h"
-#include "virutil.h"
 #include "virenum.h"
 
 typedef struct _virPCIDevice virPCIDevice;

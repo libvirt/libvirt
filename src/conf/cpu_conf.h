@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "virutil.h"
 #include "virbuffer.h"
 #include "virxml.h"
 #include "virbitmap.h"

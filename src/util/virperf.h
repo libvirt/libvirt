@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include "virutil.h"
 #include "virenum.h"
 
 /* Some Intel processor families introduced some RDT (Resource Director

@@ -23,7 +23,6 @@
 
 #include "internal.h"
 #include "virbitmap.h"
-#include "virutil.h"
 
 
 char *virNumaGetAutoPlacementAdvice(unsigned short vcpus,
