@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <libxml/uri.h>
-
 #include "internal.h"
 #include "virconf.h"
 

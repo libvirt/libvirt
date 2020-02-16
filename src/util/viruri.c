@@ -20,6 +20,8 @@
 
 #include <config.h>
 
+#include <libxml/uri.h>
+
 #include "viruri.h"
 
 #include "viralloc.h"
