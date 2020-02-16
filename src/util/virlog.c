@@ -478,37 +478,6 @@ virLogSourceUpdate(virLogSourcePtr source)
     virLogUnlock();
 }
 
-/**
- * virLogMessage:
- * @source: where is that message coming from
- * @priority: the priority level
- * @filename: file where the message was emitted
- * @linenr: line where the message was emitted
- * @funcname: the function emitting the (debug) message
- * @metadata: NULL or metadata array, terminated by an item with NULL key
- * @fmt: the string format
- * @...: the arguments
- *
- * Call the libvirt logger with some information. Based on the configuration
- * the message may be stored, sent to output or just discarded
- */
-void
-virLogMessage(virLogSourcePtr source,
-              virLogPriority priority,
-              const char *filename,
-              int linenr,
-              const char *funcname,
-              virLogMetadataPtr metadata,
-              const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    virLogVMessage(source, priority,
-                   filename, linenr, funcname,
-                   metadata, fmt, ap);
-    va_end(ap);
-}
-
 
 /**
  * virLogVMessage:
@@ -636,6 +605,38 @@ virLogVMessage(virLogSourcePtr source,
     VIR_FREE(str);
     VIR_FREE(msg);
     errno = saved_errno;
+}
+
+
+/**
+ * virLogMessage:
+ * @source: where is that message coming from
+ * @priority: the priority level
+ * @filename: file where the message was emitted
+ * @linenr: line where the message was emitted
+ * @funcname: the function emitting the (debug) message
+ * @metadata: NULL or metadata array, terminated by an item with NULL key
+ * @fmt: the string format
+ * @...: the arguments
+ *
+ * Call the libvirt logger with some information. Based on the configuration
+ * the message may be stored, sent to output or just discarded
+ */
+void
+virLogMessage(virLogSourcePtr source,
+              virLogPriority priority,
+              const char *filename,
+              int linenr,
+              const char *funcname,
+              virLogMetadataPtr metadata,
+              const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    virLogVMessage(source, priority,
+                   filename, linenr, funcname,
+                   metadata, fmt, ap);
+    va_end(ap);
 }
 
 
