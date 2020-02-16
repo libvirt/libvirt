@@ -32,6 +32,7 @@
 #include "virt-host-validate-common.h"
 #include "virstring.h"
 #include "virarch.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
