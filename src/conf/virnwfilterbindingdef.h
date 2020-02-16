@@ -25,6 +25,7 @@
 #include "virmacaddr.h"
 #include "virhash.h"
 #include "virbuffer.h"
+#include "virxml.h"
 
 typedef struct _virNWFilterBindingDef virNWFilterBindingDef;
 typedef virNWFilterBindingDef *virNWFilterBindingDefPtr;
