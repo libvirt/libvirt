@@ -17,6 +17,7 @@
  */
 #include <config.h>
 
+#include <unistd.h>
 #ifndef WIN32
 # include <sys/ioctl.h>
 #endif

@@ -24,6 +24,7 @@
 
 # include <dbus/dbus.h>
 # include <fcntl.h>
+# include <unistd.h>
 
 # define LIBVIRT_VIRSYSTEMDPRIV_H_ALLOW
 # include "virsystemdpriv.h"

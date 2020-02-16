@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <sys/mount.h>
 #include <mntent.h>
+#include <unistd.h>
 
 #include "lxc_fuse.h"
 #include "lxc_cgroup.h"

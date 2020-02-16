@@ -20,6 +20,7 @@
  */
 
 #include <config.h>
+#include <unistd.h>
 
 #include "virpolkit.h"
 #include "virerror.h"

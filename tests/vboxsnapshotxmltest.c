@@ -1,5 +1,7 @@
 #include <config.h>
 
+#include <unistd.h>
+
 #include "testutils.h"
 
 #ifdef WITH_VBOX
