@@ -740,6 +740,7 @@ virNetDevBandwidthFormat;
 virNetDevBandwidthHasFloor;
 virNetDevBandwidthParse;
 virNetDevBandwidthSupportsFloor;
+virNetDevSupportsBandwidth;
 
 
 # conf/netdev_vlan_conf.h
