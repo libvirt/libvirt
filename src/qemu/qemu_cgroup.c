@@ -625,19 +625,7 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
         }
     }
 
-    if (virMemoryLimitIsSet(vm->def->mem.hard_limit))
-        if (virCgroupSetMemoryHardLimit(priv->cgroup, vm->def->mem.hard_limit) < 0)
-            return -1;
-
-    if (virMemoryLimitIsSet(vm->def->mem.soft_limit))
-        if (virCgroupSetMemorySoftLimit(priv->cgroup, vm->def->mem.soft_limit) < 0)
-            return -1;
-
-    if (virMemoryLimitIsSet(vm->def->mem.swap_hard_limit))
-        if (virCgroupSetMemSwapHardLimit(priv->cgroup, vm->def->mem.swap_hard_limit) < 0)
-            return -1;
-
-    return 0;
+    return virDomainCgroupSetupMemtune(priv->cgroup, vm->def->mem);
 }
 
 

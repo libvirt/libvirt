@@ -25,3 +25,4 @@
 
 
 int virDomainCgroupSetupBlkio(virCgroupPtr cgroup, virDomainBlkiotune blkio);
+int virDomainCgroupSetupMemtune(virCgroupPtr cgroup, virDomainMemtune mem);

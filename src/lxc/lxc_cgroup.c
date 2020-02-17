@@ -112,19 +112,7 @@ static int virLXCCgroupSetupMemTune(virDomainDefPtr def,
     if (virCgroupSetMemory(cgroup, virDomainDefGetMemoryInitial(def)) < 0)
         return -1;
 
-    if (virMemoryLimitIsSet(def->mem.hard_limit))
-        if (virCgroupSetMemoryHardLimit(cgroup, def->mem.hard_limit) < 0)
-            return -1;
-
-    if (virMemoryLimitIsSet(def->mem.soft_limit))
-        if (virCgroupSetMemorySoftLimit(cgroup, def->mem.soft_limit) < 0)
-            return -1;
-
-    if (virMemoryLimitIsSet(def->mem.swap_hard_limit))
-        if (virCgroupSetMemSwapHardLimit(cgroup, def->mem.swap_hard_limit) < 0)
-            return -1;
-
-    return 0;
+    return virDomainCgroupSetupMemtune(cgroup, def->mem);
 }
 
 

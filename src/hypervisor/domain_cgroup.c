@@ -65,3 +65,22 @@ virDomainCgroupSetupBlkio(virCgroupPtr cgroup, virDomainBlkiotune blkio)
 
     return 0;
 }
+
+
+int
+virDomainCgroupSetupMemtune(virCgroupPtr cgroup, virDomainMemtune mem)
+{
+    if (virMemoryLimitIsSet(mem.hard_limit))
+        if (virCgroupSetMemoryHardLimit(cgroup, mem.hard_limit) < 0)
+            return -1;
+
+    if (virMemoryLimitIsSet(mem.soft_limit))
+        if (virCgroupSetMemorySoftLimit(cgroup, mem.soft_limit) < 0)
+            return -1;
+
+    if (virMemoryLimitIsSet(mem.swap_hard_limit))
+        if (virCgroupSetMemSwapHardLimit(cgroup, mem.swap_hard_limit) < 0)
+            return -1;
+
+    return 0;
+}
