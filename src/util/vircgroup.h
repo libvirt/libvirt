@@ -135,46 +135,6 @@ int virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
                                       long long *requests_read,
                                       long long *requests_write);
 
-int virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
-                                  const char *path,
-                                  unsigned int weight);
-
-int virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
-                                    const char *path,
-                                    unsigned int riops);
-
-int virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
-                                     const char *path,
-                                     unsigned int wiops);
-
-int virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
-                                   const char *path,
-                                   unsigned long long rbps);
-
-int virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
-                                    const char *path,
-                                    unsigned long long wbps);
-
-int virCgroupGetBlkioDeviceWeight(virCgroupPtr group,
-                                  const char *path,
-                                  unsigned int *weight);
-
-int virCgroupGetBlkioDeviceReadIops(virCgroupPtr group,
-                                    const char *path,
-                                    unsigned int *riops);
-
-int virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group,
-                                     const char *path,
-                                     unsigned int *wiops);
-
-int virCgroupGetBlkioDeviceReadBps(virCgroupPtr group,
-                                   const char *path,
-                                   unsigned long long *rbps);
-
-int virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group,
-                                    const char *path,
-                                    unsigned long long *wbps);
-
 int virCgroupSetupBlkioDeviceWeight(virCgroupPtr cgroup,
                                     const char *path,
                                     unsigned int *weight);

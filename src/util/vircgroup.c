@@ -1415,7 +1415,7 @@ virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
                                 const char *path,
                                 unsigned int riops)
@@ -1433,7 +1433,7 @@ virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
                                  const char *path,
                                  unsigned int wiops)
@@ -1451,7 +1451,7 @@ virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
                                const char *path,
                                unsigned long long rbps)
@@ -1468,7 +1468,7 @@ virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
                                 const char *path,
                                 unsigned long long wbps)
@@ -1487,7 +1487,7 @@ virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
                               const char *path,
                               unsigned int weight)
@@ -1504,7 +1504,7 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupGetBlkioDeviceReadIops(virCgroupPtr group,
                                 const char *path,
                                 unsigned int *riops)
@@ -1521,7 +1521,7 @@ virCgroupGetBlkioDeviceReadIops(virCgroupPtr group,
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group,
                                  const char *path,
                                  unsigned int *wiops)
@@ -1538,7 +1538,7 @@ virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group,
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupGetBlkioDeviceReadBps(virCgroupPtr group,
                                const char *path,
                                unsigned long long *rbps)
@@ -1555,7 +1555,7 @@ virCgroupGetBlkioDeviceReadBps(virCgroupPtr group,
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group,
                                 const char *path,
                                 unsigned long long *wbps)
@@ -1572,7 +1572,7 @@ virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group,
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virCgroupGetBlkioDeviceWeight(virCgroupPtr group,
                               const char *path,
                               unsigned int *weight)
@@ -2993,7 +2993,7 @@ virCgroupGetBlkioWeight(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 
-int
+static int
 virCgroupSetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
                               const char *path G_GNUC_UNUSED,
                               unsigned int weight G_GNUC_UNUSED)
@@ -3003,7 +3003,7 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
     return -1;
 }
 
-int
+static int
 virCgroupSetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
                                 const char *path G_GNUC_UNUSED,
                                 unsigned int riops G_GNUC_UNUSED)
@@ -3013,7 +3013,7 @@ virCgroupSetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
     return -1;
 }
 
-int
+static int
 virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
                                  const char *path G_GNUC_UNUSED,
                                  unsigned int wiops G_GNUC_UNUSED)
@@ -3023,7 +3023,7 @@ virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
     return -1;
 }
 
-int
+static int
 virCgroupSetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
                                const char *path G_GNUC_UNUSED,
                                unsigned long long rbps G_GNUC_UNUSED)
@@ -3033,7 +3033,7 @@ virCgroupSetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
     return -1;
 }
 
-int
+static int
 virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group G_GNUC_UNUSED,
                                 const char *path G_GNUC_UNUSED,
                                 unsigned long long wbps G_GNUC_UNUSED)
@@ -3043,7 +3043,7 @@ virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group G_GNUC_UNUSED,
     return -1;
 }
 
-int
+static int
 virCgroupGetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
                               const char *path G_GNUC_UNUSED,
                               unsigned int *weight G_GNUC_UNUSED)
@@ -3053,7 +3053,7 @@ virCgroupGetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
     return -1;
 }
 
-int
+static int
 virCgroupGetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
                                 const char *path G_GNUC_UNUSED,
                                 unsigned int *riops G_GNUC_UNUSED)
@@ -3063,7 +3063,7 @@ virCgroupGetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
     return -1;
 }
 
-int
+static int
 virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
                                  const char *path G_GNUC_UNUSED,
                                  unsigned int *wiops G_GNUC_UNUSED)
@@ -3073,7 +3073,7 @@ virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
     return -1;
 }
 
-int
+static int
 virCgroupGetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
                                const char *path G_GNUC_UNUSED,
                                unsigned long long *rbps G_GNUC_UNUSED)
@@ -3083,7 +3083,7 @@ virCgroupGetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
     return -1;
 }
 
-int
+static int
 virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group G_GNUC_UNUSED,
                                 const char *path G_GNUC_UNUSED,
                                 unsigned long long *wbps G_GNUC_UNUSED)
