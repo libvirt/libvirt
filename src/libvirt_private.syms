@@ -1391,6 +1391,7 @@ virSetConnectStorage;
 
 
 # hypervisor/domain_cgroup.h
+virDomainCgroupSetMemoryLimitParameters;
 virDomainCgroupSetupBlkio;
 virDomainCgroupSetupDomainBlkioParameters;
 virDomainCgroupSetupMemtune;

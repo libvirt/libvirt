@@ -9502,14 +9502,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     virDomainObjPtr vm = NULL;
-    unsigned long long swap_hard_limit;
-    unsigned long long hard_limit = 0;
-    unsigned long long soft_limit = 0;
-    bool set_swap_hard_limit = false;
-    bool set_hard_limit = false;
-    bool set_soft_limit = false;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    int rc;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
 
@@ -9556,66 +9549,10 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         goto endjob;
     }
 
-#define VIR_GET_LIMIT_PARAMETER(PARAM, VALUE) \
-    if ((rc = virTypedParamsGetULLong(params, nparams, PARAM, &VALUE)) < 0) \
-        goto endjob; \
- \
-    if (rc == 1) \
-        set_ ## VALUE = true;
-
-    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, swap_hard_limit)
-    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_HARD_LIMIT, hard_limit)
-    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SOFT_LIMIT, soft_limit)
-
-#undef VIR_GET_LIMIT_PARAMETER
-
-    /* Swap hard limit must be greater than hard limit. */
-    if (set_swap_hard_limit || set_hard_limit) {
-        unsigned long long mem_limit = vm->def->mem.hard_limit;
-        unsigned long long swap_limit = vm->def->mem.swap_hard_limit;
-
-        if (set_swap_hard_limit)
-            swap_limit = swap_hard_limit;
-
-        if (set_hard_limit)
-            mem_limit = hard_limit;
-
-        if (mem_limit > swap_limit) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("memory hard_limit tunable value must be lower "
-                             "than or equal to swap_hard_limit"));
-            goto endjob;
-        }
-    }
-
-#define VIR_SET_MEM_PARAMETER(FUNC, VALUE) \
-    if (set_ ## VALUE) { \
-        if (def) { \
-            if ((rc = FUNC(priv->cgroup, VALUE)) < 0) \
-                goto endjob; \
-            def->mem.VALUE = VALUE; \
-        } \
- \
-        if (persistentDef) \
-            persistentDef->mem.VALUE = VALUE; \
-    }
-
-    /* Soft limit doesn't clash with the others */
-    VIR_SET_MEM_PARAMETER(virCgroupSetMemorySoftLimit, soft_limit);
-
-    /* set hard limit before swap hard limit if decreasing it */
-    if (def && def->mem.hard_limit > hard_limit) {
-        VIR_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
-        /* inhibit changing the limit a second time */
-        set_hard_limit = false;
-    }
-
-    VIR_SET_MEM_PARAMETER(virCgroupSetMemSwapHardLimit, swap_hard_limit);
-
-    /* otherwise increase it after swap hard limit */
-    VIR_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
-
-#undef VIR_SET_MEM_PARAMETER
+    if (virDomainCgroupSetMemoryLimitParameters(priv->cgroup, vm, def,
+                                                persistentDef,
+                                                params, nparams) < 0)
+        goto endjob;
 
     if (def &&
         virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
