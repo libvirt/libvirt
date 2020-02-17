@@ -222,6 +222,8 @@ virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
 
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares);
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);
+int virCgroupSetupCpuShares(virCgroupPtr cgroup, unsigned long long shares,
+                            unsigned long long *realValue);
 
 int virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period);
 int virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period);

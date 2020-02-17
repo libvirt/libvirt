@@ -1959,10 +1959,8 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
             if (def) {
                 unsigned long long val;
-                if (virCgroupSetCpuShares(priv->cgroup, params[i].value.ul) < 0)
-                    goto endjob;
-
-                if (virCgroupGetCpuShares(priv->cgroup, &val) < 0)
+                if (virCgroupSetupCpuShares(priv->cgroup, params[i].value.ul,
+                                            &val) < 0)
                     goto endjob;
 
                 def->cputune.shares = val;

@@ -3681,3 +3681,23 @@ virCgroupSetupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask)
 
     return 0;
 }
+
+
+/* Per commit 97814d8ab3, the Linux kernel can consider a 'shares'
+ * value of '0' and '1' as 2, and any value larger than a maximum
+ * is reduced to maximum.
+ *
+ * The 'realValue' pointer holds the actual 'shares' value set by
+ * the kernel if the function returned success. */
+int
+virCgroupSetupCpuShares(virCgroupPtr cgroup, unsigned long long shares,
+                        unsigned long long *realValue)
+{
+    if (virCgroupSetCpuShares(cgroup, shares) < 0)
+        return -1;
+
+    if (virCgroupGetCpuShares(cgroup, realValue) < 0)
+        return -1;
+
+    return 0;
+}

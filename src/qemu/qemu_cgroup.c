@@ -894,11 +894,10 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
 
     if (vm->def->cputune.sharesSpecified) {
         unsigned long long val;
-        if (virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares) < 0)
+        if (virCgroupSetupCpuShares(priv->cgroup, vm->def->cputune.shares,
+                                    &val) < 0)
             return -1;
 
-        if (virCgroupGetCpuShares(priv->cgroup, &val) < 0)
-            return -1;
         if (vm->def->cputune.shares != val) {
             vm->def->cputune.shares = val;
             if (virTypedParamsAddULLong(&eventParams, &eventNparams,
