@@ -3521,7 +3521,7 @@ lxcDomainAttachDeviceNetLive(virLXCDriverPtr driver,
     /* Set bandwidth or warn if requested and not supported. */
     actualBandwidth = virDomainNetGetActualBandwidth(net);
     if (actualBandwidth) {
-        if (virNetDevSupportBandwidth(actualType)) {
+        if (virNetDevSupportsBandwidth(actualType)) {
             if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
                                       !virDomainNetTypeSharesHostView(net)) < 0)
                 goto cleanup;
@@ -3978,7 +3978,7 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
 
     /* clear network bandwidth */
     if (virDomainNetGetActualBandwidth(detach) &&
-        virNetDevSupportBandwidth(actualType) &&
+        virNetDevSupportsBandwidth(actualType) &&
         virNetDevBandwidthClear(detach->ifname))
         goto cleanup;
 

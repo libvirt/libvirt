@@ -293,7 +293,7 @@ virDomainClearNetBandwidth(virDomainObjPtr vm)
     for (i = 0; i < vm->def->nnets; i++) {
         type = virDomainNetGetActualType(vm->def->nets[i]);
         if (virDomainNetGetActualBandwidth(vm->def->nets[i]) &&
-            virNetDevSupportBandwidth(type))
+            virNetDevSupportsBandwidth(type))
             virNetDevBandwidthClear(vm->def->nets[i]->ifname);
     }
 }

@@ -1342,7 +1342,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     /* Set bandwidth or warn if requested and not supported. */
     actualBandwidth = virDomainNetGetActualBandwidth(net);
     if (actualBandwidth) {
-        if (virNetDevSupportBandwidth(actualType)) {
+        if (virNetDevSupportsBandwidth(actualType)) {
             if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
                                       !virDomainNetTypeSharesHostView(net)) < 0)
                 goto cleanup;
@@ -4582,7 +4582,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
         return -1;
 
     if (virDomainNetGetActualBandwidth(net) &&
-        virNetDevSupportBandwidth(virDomainNetGetActualType(net)) &&
+        virNetDevSupportsBandwidth(virDomainNetGetActualType(net)) &&
         virNetDevBandwidthClear(net->ifname) < 0)
         VIR_WARN("cannot clear bandwidth setting for device : %s",
                  net->ifname);

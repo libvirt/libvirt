@@ -37,7 +37,7 @@ int virNetDevBandwidthFormat(const virNetDevBandwidth *def,
 void virDomainClearNetBandwidth(virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1);
 
-static inline bool virNetDevSupportBandwidth(virDomainNetType type)
+static inline bool virNetDevSupportsBandwidth(virDomainNetType type)
 {
     switch (type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:

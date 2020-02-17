@@ -11220,12 +11220,12 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
     if (net) {
         actualType = virDomainNetGetActualType(net);
-        qosSupported = virNetDevSupportBandwidth(actualType);
+        qosSupported = virNetDevSupportsBandwidth(actualType);
     }
 
     if (qosSupported && persistentNet) {
         actualType = virDomainNetGetActualType(persistentNet);
-        qosSupported = virNetDevSupportBandwidth(actualType);
+        qosSupported = virNetDevSupportsBandwidth(actualType);
     }
 
     if (!qosSupported) {

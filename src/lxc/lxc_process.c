@@ -622,7 +622,7 @@ virLXCProcessSetupInterfaces(virLXCDriverPtr driver,
         /* Set bandwidth or warn if requested and not supported. */
         actualBandwidth = virDomainNetGetActualBandwidth(net);
         if (actualBandwidth) {
-            if (virNetDevSupportBandwidth(type)) {
+            if (virNetDevSupportsBandwidth(type)) {
                 if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
                                           !virDomainNetTypeSharesHostView(net)) < 0)
                     goto cleanup;
