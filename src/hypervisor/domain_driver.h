@@ -30,3 +30,7 @@ int virDomainDriverMergeBlkioDevice(virBlkioDevicePtr *dest_array,
 
 int virDomainDriverParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
                                        virBlkioDevicePtr *dev, size_t *size);
+
+int virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
+                                                 virTypedParameterPtr params,
+                                                 int nparams);

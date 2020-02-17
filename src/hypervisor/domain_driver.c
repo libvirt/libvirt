@@ -206,3 +206,47 @@ virDomainDriverParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
     }
     return -1;
 }
+
+
+int
+virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
+                                             virTypedParameterPtr params,
+                                             int nparams)
+{
+    size_t i;
+    int ret = 0;
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
+            persistentDef->blkio.weight = param->value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) ||
+                   STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS) ||
+                   STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS) ||
+                   STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS) ||
+                   STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
+            virBlkioDevicePtr devices = NULL;
+            size_t ndevices;
+
+            if (virDomainDriverParseBlkioDeviceStr(param->value.s,
+                                             param->field,
+                                             &devices,
+                                             &ndevices) < 0) {
+                ret = -1;
+                continue;
+            }
+
+            if (virDomainDriverMergeBlkioDevice(&persistentDef->blkio.devices,
+                                                &persistentDef->blkio.ndevices,
+                                                devices, ndevices,
+                                                param->field) < 0)
+                ret = -1;
+
+            virBlkioDeviceArrayClear(devices, ndevices);
+            g_free(devices);
+        }
+    }
+
+    return ret;
+}

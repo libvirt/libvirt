@@ -9319,7 +9319,6 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                              unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    size_t i;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
     virDomainDefPtr persistentDef;
@@ -9385,35 +9384,9 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
     if (ret < 0)
         goto endjob;
     if (persistentDef) {
-        for (i = 0; i < nparams; i++) {
-            virTypedParameterPtr param = &params[i];
-
-            if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-                persistentDef->blkio.weight = param->value.ui;
-            } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) ||
-                       STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS) ||
-                       STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS) ||
-                       STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS) ||
-                       STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
-                virBlkioDevicePtr devices = NULL;
-                size_t ndevices;
-
-                if (virDomainDriverParseBlkioDeviceStr(param->value.s,
-                                                       param->field,
-                                                       &devices,
-                                                       &ndevices) < 0) {
-                    ret = -1;
-                    continue;
-                }
-                if (virDomainDriverMergeBlkioDevice(&persistentDef->blkio.devices,
-                                                    &persistentDef->blkio.ndevices,
-                                                    devices, ndevices,
-                                                    param->field) < 0)
-                    ret = -1;
-                virBlkioDeviceArrayClear(devices, ndevices);
-                VIR_FREE(devices);
-            }
-        }
+        ret = virDomainDriverSetupPersistentDefBlkioParams(persistentDef,
+                                                           params,
+                                                           nparams);
 
         if (virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir) < 0)
             ret = -1;
