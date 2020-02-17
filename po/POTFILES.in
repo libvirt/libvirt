@@ -78,6 +78,7 @@
 @SRCDIR@/src/hyperv/hyperv_driver.c
 @SRCDIR@/src/hyperv/hyperv_util.c
 @SRCDIR@/src/hyperv/hyperv_wmi.c
+@SRCDIR@/src/hypervisor/domain_driver.c
 @SRCDIR@/src/interface/interface_backend_netcf.c
 @SRCDIR@/src/interface/interface_backend_udev.c
 @SRCDIR@/src/internal.h

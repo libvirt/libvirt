@@ -1395,6 +1395,10 @@ virDomainCgroupSetupBlkio;
 virDomainCgroupSetupMemtune;
 
 
+# hypervisor/domain_cgroup.h
+virDomainDriverMergeBlkioDevice;
+
+
 # libvirt_internal.h
 virConnectSupportsFeature;
 virDomainMigrateBegin3;
