@@ -4992,14 +4992,14 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     if (!(uniqueName = virStorageFileGetUniqueIdentifier(src)))
         goto cleanup;
 
-    if (virHashLookup(cycle, uniqueName)) {
+    if (virHashHasEntry(cycle, uniqueName)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("backing store for %s (%s) is self-referential"),
                        NULLSTR(src->path), uniqueName);
         goto cleanup;
     }
 
-    if (virHashAddEntry(cycle, uniqueName, (void *)1) < 0)
+    if (virHashAddEntry(cycle, uniqueName, NULL) < 0)
         goto cleanup;
 
     if ((headerLen = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER,
