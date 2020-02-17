@@ -2581,6 +2581,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
                        STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS) ||
                        STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS) ||
                        STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
+                virCgroupPtr cgroup = priv->cgroup;
                 size_t ndevices;
                 virBlkioDevicePtr devices = NULL;
                 size_t j;
@@ -2595,60 +2596,40 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
 
                 if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
                     for (j = 0; j < ndevices; j++) {
-                        if (virCgroupSetBlkioDeviceWeight(priv->cgroup,
-                                                          devices[j].path,
-                                                          devices[j].weight) < 0 ||
-                            virCgroupGetBlkioDeviceWeight(priv->cgroup,
-                                                          devices[j].path,
-                                                          &devices[j].weight) < 0) {
+                        if (virCgroupSetupBlkioDeviceWeight(cgroup, devices[j].path,
+                                                            &devices[j].weight) < 0) {
                             ret = -1;
                             break;
                         }
                     }
                 } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS)) {
                     for (j = 0; j < ndevices; j++) {
-                        if (virCgroupSetBlkioDeviceReadIops(priv->cgroup,
-                                                            devices[j].path,
-                                                            devices[j].riops) < 0 ||
-                            virCgroupGetBlkioDeviceReadIops(priv->cgroup,
-                                                            devices[j].path,
-                                                            &devices[j].riops) < 0) {
+                        if (virCgroupSetupBlkioDeviceReadIops(cgroup, devices[j].path,
+                                                              &devices[j].riops) < 0) {
                             ret = -1;
                             break;
                         }
                     }
                 } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS)) {
                     for (j = 0; j < ndevices; j++) {
-                        if (virCgroupSetBlkioDeviceWriteIops(priv->cgroup,
-                                                             devices[j].path,
-                                                             devices[j].wiops) < 0 ||
-                            virCgroupGetBlkioDeviceWriteIops(priv->cgroup,
-                                                             devices[j].path,
-                                                             &devices[j].wiops) < 0) {
+                        if (virCgroupSetupBlkioDeviceWriteIops(cgroup, devices[j].path,
+                                                               &devices[j].wiops) < 0) {
                             ret = -1;
                             break;
                         }
                     }
                 } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS)) {
                     for (j = 0; j < ndevices; j++) {
-                        if (virCgroupSetBlkioDeviceReadBps(priv->cgroup,
-                                                           devices[j].path,
-                                                           devices[j].rbps) < 0 ||
-                            virCgroupGetBlkioDeviceReadBps(priv->cgroup,
-                                                           devices[j].path,
-                                                           &devices[j].rbps) < 0) {
+                        if (virCgroupSetupBlkioDeviceReadBps(cgroup, devices[j].path,
+                                                             &devices[j].rbps) < 0) {
                             ret = -1;
                             break;
                         }
                     }
                 } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
                     for (j = 0; j < ndevices; j++) {
-                        if (virCgroupSetBlkioDeviceWriteBps(priv->cgroup,
-                                                            devices[j].path,
-                                                            devices[j].wbps) < 0 ||
-                            virCgroupGetBlkioDeviceWriteBps(priv->cgroup,
-                                                            devices[j].path,
-                                                            &devices[j].wbps) < 0) {
+                        if (virCgroupSetupBlkioDeviceWriteBps(cgroup, devices[j].path,
+                                                              &devices[j].wbps) < 0) {
                             ret = -1;
                             break;
                         }
