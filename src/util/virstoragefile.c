@@ -4986,6 +4986,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                  virHashTablePtr cycle,
                                  unsigned int depth)
 {
+    virStorageFileFormat orig_format = src->format;
     size_t headerLen;
     int rv;
     g_autofree char *buf = NULL;
@@ -4995,10 +4996,17 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
               NULLSTR(src->path), src->format,
               (unsigned int)uid, (unsigned int)gid);
 
+    if (src->format == VIR_STORAGE_FILE_AUTO_SAFE)
+        src->format = VIR_STORAGE_FILE_AUTO;
+
     /* exit if we can't load information about the current image */
     rv = virStorageFileSupportsBackingChainTraversal(src);
-    if (rv <= 0)
+    if (rv <= 0) {
+        if (orig_format == VIR_STORAGE_FILE_AUTO)
+            return -2;
+
         return rv;
+    }
 
     if (virStorageFileGetMetadataRecurseReadHeader(src, parent, uid, gid,
                                                    &buf, &headerLen, cycle) < 0)
@@ -5006,6 +5014,18 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
 
     if (virStorageFileGetMetadataInternal(src, buf, headerLen) < 0)
         return -1;
+
+    /* If we probed the format we MUST ensure that nothing else than the current
+     * image (this includes both backing files and external data store) is
+     * considered for security labelling and/or recursion. */
+    if (orig_format == VIR_STORAGE_FILE_AUTO) {
+        if (src->backingStoreRaw || src->externalDataStoreRaw) {
+            src->format = VIR_STORAGE_FILE_RAW;
+            VIR_FREE(src->backingStoreRaw);
+            VIR_FREE(src->externalDataStoreRaw);
+            return -2;
+        }
+    }
 
     if (src->backingStoreRaw) {
         if ((rv = virStorageSourceNewFromBacking(src, &backingStore)) < 0)
@@ -5015,33 +5035,21 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         if (rv == 1)
             return 0;
 
-        if (backingStore->format == VIR_STORAGE_FILE_AUTO) {
-            /* Assuming the backing store to be raw can lead to failures. We do
-             * it only when we must not report an error to prevent losing VMs.
-             * Otherwise report an error.
-             */
-            if (report_broken) {
+        if ((rv = virStorageFileGetMetadataRecurse(backingStore, parent,
+                                                   uid, gid,
+                                                   report_broken,
+                                                   cycle, depth + 1)) < 0) {
+            if (!report_broken)
+                return 0;
+
+            if (rv == -2) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("format of backing image '%s' of image '%s' was not specified in the image metadata "
                                  "(See https://libvirt.org/kbase/backing_chains.html for troubleshooting)"),
                                src->backingStoreRaw, NULLSTR(src->path));
-                return -1;
             }
 
-            backingStore->format = VIR_STORAGE_FILE_RAW;
-        }
-
-        if (backingStore->format == VIR_STORAGE_FILE_AUTO_SAFE)
-            backingStore->format = VIR_STORAGE_FILE_AUTO;
-
-        if (virStorageFileGetMetadataRecurse(backingStore, parent,
-                                             uid, gid,
-                                             report_broken,
-                                             cycle, depth + 1) < 0) {
-            if (report_broken)
-                return -1;
-            else
-                return 0;
+            return -1;
         }
 
         backingStore->id = depth;
