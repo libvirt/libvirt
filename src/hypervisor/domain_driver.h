@@ -27,3 +27,6 @@ int virDomainDriverMergeBlkioDevice(virBlkioDevicePtr *dest_array,
                                     virBlkioDevicePtr src_array,
                                     size_t src_size,
                                     const char *type);
+
+int virDomainDriverParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
+                                       virBlkioDevicePtr *dev, size_t *size);
