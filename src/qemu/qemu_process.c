@@ -7349,7 +7349,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     }
 
     /* Clear network bandwidth */
-    virDomainClearNetBandwidth(vm);
+    virDomainClearNetBandwidth(vm->def);
 
     virDomainConfVMNWFilterTeardown(vm);
 

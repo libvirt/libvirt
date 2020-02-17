@@ -285,16 +285,16 @@ virNetDevBandwidthFormat(const virNetDevBandwidth *def,
 }
 
 void
-virDomainClearNetBandwidth(virDomainObjPtr vm)
+virDomainClearNetBandwidth(virDomainDefPtr def)
 {
     size_t i;
     virDomainNetType type;
 
-    for (i = 0; i < vm->def->nnets; i++) {
-        type = virDomainNetGetActualType(vm->def->nets[i]);
-        if (virDomainNetGetActualBandwidth(vm->def->nets[i]) &&
+    for (i = 0; i < def->nnets; i++) {
+        type = virDomainNetGetActualType(def->nets[i]);
+        if (virDomainNetGetActualBandwidth(def->nets[i]) &&
             virNetDevSupportsBandwidth(type))
-            virNetDevBandwidthClear(vm->def->nets[i]->ifname);
+            virNetDevBandwidthClear(def->nets[i]->ifname);
     }
 }
 
