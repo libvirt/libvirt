@@ -3581,3 +3581,88 @@ virCgroupDelThread(virCgroupPtr cgroup,
 
     return 0;
 }
+
+
+/**
+ * Calls virCgroupSetBlkioDeviceWeight() to set up blkio device weight,
+ * then retrieves the actual value set by the kernel with
+ * virCgroupGetBlkioDeviceWeight() in the same @weight pointer.
+ */
+int
+virCgroupSetupBlkioDeviceWeight(virCgroupPtr cgroup, const char *path,
+                                unsigned int *weight)
+{
+    if (virCgroupSetBlkioDeviceWeight(cgroup, path, *weight) < 0 ||
+        virCgroupGetBlkioDeviceWeight(cgroup, path, weight) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * Calls virCgroupSetBlkioDeviceReadIops() to set up blkio device riops,
+ * then retrieves the actual value set by the kernel with
+ * virCgroupGetBlkioDeviceReadIops() in the same @riops pointer.
+ */
+int
+virCgroupSetupBlkioDeviceReadIops(virCgroupPtr cgroup, const char *path,
+                                  unsigned int *riops)
+{
+    if (virCgroupSetBlkioDeviceReadIops(cgroup, path, *riops) < 0 ||
+        virCgroupGetBlkioDeviceReadIops(cgroup, path, riops) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * Calls virCgroupSetBlkioDeviceWriteIops() to set up blkio device wiops,
+ * then retrieves the actual value set by the kernel with
+ * virCgroupGetBlkioDeviceWriteIops() in the same @wiops pointer.
+ */
+int
+virCgroupSetupBlkioDeviceWriteIops(virCgroupPtr cgroup, const char *path,
+                                   unsigned int *wiops)
+{
+    if (virCgroupSetBlkioDeviceWriteIops(cgroup, path, *wiops) < 0 ||
+        virCgroupGetBlkioDeviceWriteIops(cgroup, path, wiops) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * Calls virCgroupSetBlkioDeviceReadBps() to set up blkio device rbps,
+ * then retrieves the actual value set by the kernel with
+ * virCgroupGetBlkioDeviceReadBps() in the same @rbps pointer.
+ */
+int
+virCgroupSetupBlkioDeviceReadBps(virCgroupPtr cgroup, const char *path,
+                                 unsigned long long *rbps)
+{
+    if (virCgroupSetBlkioDeviceReadBps(cgroup, path, *rbps) < 0 ||
+        virCgroupGetBlkioDeviceReadBps(cgroup, path, rbps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * Calls virCgroupSetBlkioDeviceWriteBps() to set up blkio device wbps,
+ * then retrieves the actual value set by the kernel with
+ * virCgroupGetBlkioDeviceWriteBps() in the same @wbps pointer.
+ */
+int
+virCgroupSetupBlkioDeviceWriteBps(virCgroupPtr cgroup, const char *path,
+                                  unsigned long long *wbps)
+{
+    if (virCgroupSetBlkioDeviceWriteBps(cgroup, path, *wbps) < 0 ||
+        virCgroupGetBlkioDeviceWriteBps(cgroup, path, wbps) < 0)
+        return -1;
+
+    return 0;
+}

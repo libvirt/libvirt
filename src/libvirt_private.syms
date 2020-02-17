@@ -1731,6 +1731,11 @@ virCgroupSetMemoryHardLimit;
 virCgroupSetMemorySoftLimit;
 virCgroupSetMemSwapHardLimit;
 virCgroupSetOwner;
+virCgroupSetupBlkioDeviceReadBps;
+virCgroupSetupBlkioDeviceReadIops;
+virCgroupSetupBlkioDeviceWeight;
+virCgroupSetupBlkioDeviceWriteBps;
+virCgroupSetupBlkioDeviceWriteIops;
 virCgroupSupportsCpuBW;
 virCgroupTerminateMachine;
 
