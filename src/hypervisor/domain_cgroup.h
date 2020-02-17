@@ -26,3 +26,7 @@
 
 int virDomainCgroupSetupBlkio(virCgroupPtr cgroup, virDomainBlkiotune blkio);
 int virDomainCgroupSetupMemtune(virCgroupPtr cgroup, virDomainMemtune mem);
+int virDomainCgroupSetupDomainBlkioParameters(virCgroupPtr cgroup,
+                                              virDomainDefPtr def,
+                                              virTypedParameterPtr params,
+                                              int nparams);
