@@ -146,12 +146,10 @@ struct FileEncryptionInfo {
     int payloadOffset; /* start offset of the volume data (in 512 byte sectors) */
 };
 
-/* Either 'magic' or 'extension' *must* be provided */
 struct FileTypeInfo {
     int magicOffset;    /* Byte offset of the magic */
     const char *magic;  /* Optional string of file magic
                          * to check at head of file */
-    const char *extension; /* Optional file extension to check */
     enum lv_endian endian; /* Endianness of file format */
 
     int versionOffset;    /* Byte offset from start of file
@@ -297,17 +295,17 @@ static struct FileEncryptionInfo const qcow2EncryptionInfo[] = {
 };
 
 static struct FileTypeInfo const fileTypeInfo[] = {
-    [VIR_STORAGE_FILE_NONE] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_NONE] = { 0, NULL, LV_LITTLE_ENDIAN,
                                 -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL },
-    [VIR_STORAGE_FILE_RAW] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_RAW] = { 0, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, {0}, 0, 0, 0,
                                luksEncryptionInfo,
                                NULL, NULL },
-    [VIR_STORAGE_FILE_DIR] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_DIR] = { 0, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL },
     [VIR_STORAGE_FILE_BOCHS] = {
         /*"Bochs Virtual HD Image", */ /* Untested */
-        0, NULL, NULL,
+        0, NULL,
         LV_LITTLE_ENDIAN, 64, 4, {0x20000},
         32+16+16+4+4+4+4+4, 8, 1, NULL, NULL, NULL
     },
@@ -316,7 +314,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
            #V2.0 Format
            modprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1
         */ /* Untested */
-        0, NULL, NULL,
+        0, NULL,
         LV_LITTLE_ENDIAN, -1, 0, {0},
         -1, 0, 0, NULL, NULL, NULL
     },
@@ -324,50 +322,50 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         /* XXX QEMU says there's no magic for dmg,
          * /usr/share/misc/magic lists double magic (both offsets
          * would have to match) but then disables that check. */
-        0, NULL, ".dmg",
+        0, NULL,
         0, -1, 0, {0},
         -1, 0, 0, NULL, NULL, NULL
     },
     [VIR_STORAGE_FILE_ISO] = {
-        32769, "CD001", ".iso",
+        32769, "CD001",
         LV_LITTLE_ENDIAN, -2, 0, {0},
         -1, 0, 0, NULL, NULL, NULL
     },
     [VIR_STORAGE_FILE_VPC] = {
-        0, "conectix", NULL,
+        0, "conectix",
         LV_BIG_ENDIAN, 12, 4, {0x10000},
         8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, NULL, NULL, NULL
     },
     /* TODO: add getBackingStore function */
     [VIR_STORAGE_FILE_VDI] = {
-        64, "\x7f\x10\xda\xbe", ".vdi",
+        64, "\x7f\x10\xda\xbe",
         LV_LITTLE_ENDIAN, 68, 4, {0x00010001},
         64 + 5 * 4 + 256 + 7 * 4, 8, 1, NULL, NULL, NULL},
 
     /* Not direct file formats, but used for various drivers */
-    [VIR_STORAGE_FILE_FAT] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_FAT] = { 0, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL },
-    [VIR_STORAGE_FILE_VHD] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_VHD] = { 0, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL },
-    [VIR_STORAGE_FILE_PLOOP] = { 0, "WithouFreSpacExt", NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_PLOOP] = { 0, "WithouFreSpacExt", LV_LITTLE_ENDIAN,
                                  -2, 0, {0}, PLOOP_IMAGE_SIZE_OFFSET, 0,
                                  PLOOP_SIZE_MULTIPLIER, NULL, NULL, NULL },
 
     /* All formats with a backing store probe below here */
     [VIR_STORAGE_FILE_COW] = {
-        0, "OOOM", NULL,
+        0, "OOOM",
         LV_BIG_ENDIAN, 4, 4, {2},
         4+4+1024+4, 8, 1, NULL, cowGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_QCOW] = {
-        0, "QFI", NULL,
+        0, "QFI",
         LV_BIG_ENDIAN, 4, 4, {1},
         QCOWX_HDR_IMAGE_SIZE, 8, 1,
         qcow1EncryptionInfo,
         qcowXGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_QCOW2] = {
-        0, "QFI", NULL,
+        0, "QFI",
         LV_BIG_ENDIAN, 4, 4, {2, 3},
         QCOWX_HDR_IMAGE_SIZE, 8, 1,
         qcow2EncryptionInfo,
@@ -376,12 +374,12 @@ static struct FileTypeInfo const fileTypeInfo[] = {
     },
     [VIR_STORAGE_FILE_QED] = {
         /* https://wiki.qemu.org/Features/QED */
-        0, "QED", NULL,
+        0, "QED",
         LV_LITTLE_ENDIAN, -2, 0, {0},
         QED_HDR_IMAGE_SIZE, 8, 1, NULL, qedGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_VMDK] = {
-        0, "KDMV", NULL,
+        0, "KDMV",
         LV_LITTLE_ENDIAN, 4, 4, {1, 2, 3},
         4+4+4, 8, 512, NULL, vmdk4GetBackingStore, NULL
     },
@@ -708,20 +706,6 @@ virStorageFileMatchesMagic(int magicOffset,
 
 
 static bool
-virStorageFileMatchesExtension(const char *extension,
-                               const char *path)
-{
-    if (extension == NULL)
-        return false;
-
-    if (virStringHasCaseSuffix(path, extension))
-        return true;
-
-    return false;
-}
-
-
-static bool
 virStorageFileMatchesVersion(int versionOffset,
                              int versionSize,
                              const int *versionNumbers,
@@ -841,14 +825,6 @@ virStorageFileProbeFormatFromBuf(const char *path,
         VIR_WARN("File %s matches %s magic, but version is wrong. "
                  "Please report new version to libvir-list@redhat.com",
                  path, virStorageFileFormatTypeToString(possibleFormat));
-
-    /* No magic, so check file extension */
-    for (i = 0; i < VIR_STORAGE_FILE_LAST; i++) {
-        if (virStorageFileMatchesExtension(fileTypeInfo[i].extension, path)) {
-            format = i;
-            goto cleanup;
-        }
-    }
 
  cleanup:
     VIR_DEBUG("format=%d", format);
