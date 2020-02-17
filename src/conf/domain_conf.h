@@ -44,6 +44,7 @@
 #include "virnetdevvportprofile.h"
 #include "virnetdevbandwidth.h"
 #include "virnetdevvlan.h"
+#include "virnetworkportdef.h"
 #include "virobject.h"
 #include "device_conf.h"
 #include "virbitmap.h"
@@ -3642,11 +3643,6 @@ virDomainNetTypeSharesHostView(const virDomainNetDef *net);
 bool
 virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
                                    virDomainLifecycleAction action);
-
-// Forward decl to avoid pulling in virnetworkportdef.h because
-// that pulls in virhostdev.h which pulls in domain_conf.h (evil)
-typedef struct _virNetworkPortDef virNetworkPortDef;
-typedef virNetworkPortDef *virNetworkPortDefPtr;
 
 virNetworkPortDefPtr
 virDomainNetDefToNetworkPort(virDomainDefPtr dom,
