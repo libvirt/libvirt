@@ -4973,7 +4973,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     g_autoptr(virStorageSource) backingStore = NULL;
 
     VIR_DEBUG("path=%s format=%d uid=%u gid=%u",
-              src->path, src->format,
+              NULLSTR(src->path), src->format,
               (unsigned int)uid, (unsigned int)gid);
 
     /* exit if we can't load information about the current image */
@@ -4995,7 +4995,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     if (virHashLookup(cycle, uniqueName)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("backing store for %s (%s) is self-referential"),
-                       src->path, uniqueName);
+                       NULLSTR(src->path), uniqueName);
         goto cleanup;
     }
 
