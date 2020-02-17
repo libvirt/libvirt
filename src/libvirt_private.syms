@@ -1390,6 +1390,10 @@ virSetConnectSecret;
 virSetConnectStorage;
 
 
+# hypervisor/domain_cgroup.h
+virDomainCgroupSetupBlkio;
+
+
 # libvirt_internal.h
 virConnectSupportsFeature;
 virDomainMigrateBegin3;

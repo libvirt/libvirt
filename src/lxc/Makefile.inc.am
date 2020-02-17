@@ -97,6 +97,7 @@ libvirt_driver_lxc_impl_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	-I$(builddir)/lxc \
 	-I$(builddir)/rpc \
+	-I$(srcdir)/hypervisor \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_lxc_impl_la_LIBADD = \
@@ -221,6 +222,7 @@ libvirt_lxc_CFLAGS = \
 	-I$(srcdir)/conf \
 	-I$(builddir)/lxc \
 	-I$(builddir)/rpc \
+	-I$(srcdir)/hypervisor \
 	$(AM_CFLAGS) \
 	$(PIE_CFLAGS) \
 	$(CAPNG_CFLAGS) \

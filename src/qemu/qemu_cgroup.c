@@ -30,6 +30,7 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "domain_audit.h"
+#include "domain_cgroup.h"
 #include "virscsi.h"
 #include "virstring.h"
 #include "virfile.h"
@@ -591,7 +592,6 @@ static int
 qemuSetupBlkioCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    size_t i;
 
     if (!virCgroupHasController(priv->cgroup,
                                 VIR_CGROUP_CONTROLLER_BLKIO)) {
@@ -604,43 +604,7 @@ qemuSetupBlkioCgroup(virDomainObjPtr vm)
         }
     }
 
-    if (vm->def->blkio.weight != 0 &&
-        virCgroupSetBlkioWeight(priv->cgroup, vm->def->blkio.weight) < 0)
-        return -1;
-
-    if (vm->def->blkio.ndevices) {
-        for (i = 0; i < vm->def->blkio.ndevices; i++) {
-            virBlkioDevicePtr dev = &vm->def->blkio.devices[i];
-            virCgroupPtr cgroup = priv->cgroup;
-
-            if (dev->weight &&
-                virCgroupSetupBlkioDeviceWeight(cgroup, dev->path,
-                                                &dev->weight) < 0)
-                return -1;
-
-            if (dev->riops &&
-                virCgroupSetupBlkioDeviceReadIops(cgroup, dev->path,
-                                                  &dev->riops) < 0)
-                return -1;
-
-            if (dev->wiops &&
-                virCgroupSetupBlkioDeviceWriteIops(cgroup, dev->path,
-                                                   &dev->wiops) < 0)
-                return -1;
-
-            if (dev->rbps &&
-                virCgroupSetupBlkioDeviceReadBps(cgroup, dev->path,
-                                                 &dev->rbps) < 0)
-                return -1;
-
-            if (dev->wbps &&
-                virCgroupSetupBlkioDeviceWriteBps(cgroup, dev->path,
-                                                  &dev->wbps) < 0)
-                return -1;
-        }
-    }
-
-    return 0;
+    return virDomainCgroupSetupBlkio(priv->cgroup, vm->def->blkio);
 }
 
 

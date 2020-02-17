@@ -23,6 +23,7 @@
 
 #include "lxc_cgroup.h"
 #include "lxc_container.h"
+#include "domain_cgroup.h"
 #include "virfile.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -101,44 +102,7 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
 static int virLXCCgroupSetupBlkioTune(virDomainDefPtr def,
                                       virCgroupPtr cgroup)
 {
-    size_t i;
-
-    if (def->blkio.weight &&
-        virCgroupSetBlkioWeight(cgroup, def->blkio.weight) < 0)
-        return -1;
-
-    if (def->blkio.ndevices) {
-        for (i = 0; i < def->blkio.ndevices; i++) {
-            virBlkioDevicePtr dev = &def->blkio.devices[i];
-
-            if (dev->weight &&
-                virCgroupSetupBlkioDeviceWeight(cgroup, dev->path,
-                                                &dev->weight) < 0)
-                return -1;
-
-            if (dev->riops &&
-                virCgroupSetupBlkioDeviceReadIops(cgroup, dev->path,
-                                                  &dev->riops) < 0)
-                return -1;
-
-            if (dev->wiops &&
-                virCgroupSetupBlkioDeviceWriteIops(cgroup, dev->path,
-                                                   &dev->wiops) < 0)
-                return -1;
-
-            if (dev->rbps &&
-                virCgroupSetupBlkioDeviceReadBps(cgroup, dev->path,
-                                                 &dev->rbps) < 0)
-                return -1;
-
-            if (dev->wbps &&
-                virCgroupSetupBlkioDeviceWriteBps(cgroup, dev->path,
-                                                  &dev->wbps) < 0)
-                return -1;
-        }
-    }
-
-    return 0;
+    return virDomainCgroupSetupBlkio(cgroup, def->blkio);
 }
 
 
