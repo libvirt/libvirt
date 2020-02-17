@@ -4955,31 +4955,18 @@ virStorageFileReportBrokenChain(int errcode,
 }
 
 
-/* Recursive workhorse for virStorageFileGetMetadata.  */
 static int
-virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
-                                 virStorageSourcePtr parent,
-                                 uid_t uid, gid_t gid,
-                                 bool report_broken,
-                                 virHashTablePtr cycle,
-                                 unsigned int depth)
+virStorageFileGetMetadataRecurseReadHeader(virStorageSourcePtr src,
+                                           virStorageSourcePtr parent,
+                                           uid_t uid,
+                                           gid_t gid,
+                                           char **buf,
+                                           size_t *headerLen,
+                                           virHashTablePtr cycle)
 {
     int ret = -1;
     const char *uniqueName;
-    ssize_t headerLen;
-    int backingFormat;
-    int rv;
-    g_autofree char *buf = NULL;
-    g_autoptr(virStorageSource) backingStore = NULL;
-
-    VIR_DEBUG("path=%s format=%d uid=%u gid=%u",
-              NULLSTR(src->path), src->format,
-              (unsigned int)uid, (unsigned int)gid);
-
-    /* exit if we can't load information about the current image */
-    rv = virStorageFileSupportsBackingChainTraversal(src);
-    if (rv <= 0)
-        return rv;
+    ssize_t len;
 
     if (virStorageFileInitAs(src, uid, gid) < 0)
         return -1;
@@ -5002,9 +4989,46 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     if (virHashAddEntry(cycle, uniqueName, NULL) < 0)
         goto cleanup;
 
-    if ((headerLen = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER,
-                                        &buf)) < 0)
+    if ((len = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER, buf)) < 0)
         goto cleanup;
+
+    *headerLen = len;
+    ret = 0;
+
+ cleanup:
+    virStorageFileDeinit(src);
+    return ret;
+}
+
+
+/* Recursive workhorse for virStorageFileGetMetadata.  */
+static int
+virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
+                                 virStorageSourcePtr parent,
+                                 uid_t uid, gid_t gid,
+                                 bool report_broken,
+                                 virHashTablePtr cycle,
+                                 unsigned int depth)
+{
+    int ret = -1;
+    size_t headerLen;
+    int backingFormat;
+    int rv;
+    g_autofree char *buf = NULL;
+    g_autoptr(virStorageSource) backingStore = NULL;
+
+    VIR_DEBUG("path=%s format=%d uid=%u gid=%u",
+              NULLSTR(src->path), src->format,
+              (unsigned int)uid, (unsigned int)gid);
+
+    /* exit if we can't load information about the current image */
+    rv = virStorageFileSupportsBackingChainTraversal(src);
+    if (rv <= 0)
+        return rv;
+
+    if (virStorageFileGetMetadataRecurseReadHeader(src, parent, uid, gid,
+                                                   &buf, &headerLen, cycle) < 0)
+        return -1;
 
     if (virStorageFileGetMetadataInternal(src, buf, headerLen,
                                           &backingFormat) < 0)
@@ -5081,7 +5105,6 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     ret = 0;
 
  cleanup:
-    virStorageFileDeinit(src);
     return ret;
 }
 
