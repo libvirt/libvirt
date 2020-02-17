@@ -84,6 +84,27 @@
       </change>
       <change>
         <summary>
+          support BR_ISOLATED flag for guest interfaces attached to a Linux host bridge
+        </summary>
+        <description>
+          Since Linux kernel 4.18, the Linux host bridge has had a
+          flag BR_ISOLATED that can be applied to individual
+          ports. When this flag is set for a port, traffic is blocked
+          between that port and any other port that also has the
+          BR_ISOLATED flag set. libvirt domain interface config now
+          supports setting this flag via the &lt;port
+          isolated='yes'/&gt; setting. It can also be set for all
+          connections to a particular libvirt network by setting the
+          same option in the network config - since the port for the
+          host itself does not have BR_ISOLATED set, the guests can
+          communicate with the host and the outside world, but guests
+          on that network can't communicate with each other. This
+          feature works for QEMU and LXC guests with interfaces
+          attached to a Linux host bridge.
+        </description>
+      </change>
+      <change>
+        <summary>
           qemu: Introduce the 'armvtimer' timer type
         </summary>
         <description>
