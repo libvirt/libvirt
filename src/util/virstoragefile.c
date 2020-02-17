@@ -5010,7 +5010,6 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                  virHashTablePtr cycle,
                                  unsigned int depth)
 {
-    int ret = -1;
     size_t headerLen;
     int backingFormat;
     int rv;
@@ -5030,19 +5029,16 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                                    &buf, &headerLen, cycle) < 0)
         return -1;
 
-    if (virStorageFileGetMetadataInternal(src, buf, headerLen,
-                                          &backingFormat) < 0)
-        goto cleanup;
+    if (virStorageFileGetMetadataInternal(src, buf, headerLen, &backingFormat) < 0)
+        return -1;
 
     if (src->backingStoreRaw) {
         if ((rv = virStorageSourceNewFromBacking(src, &backingStore)) < 0)
-            goto cleanup;
+            return -1;
 
-        if (rv == 1) {
-            /* the backing file would not be usable for VM usage */
-            ret = 0;
-            goto cleanup;
-        }
+        /* the backing file would not be usable for VM usage */
+        if (rv == 1)
+            return 0;
 
         backingStore->format = backingFormat;
 
@@ -5065,17 +5061,14 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         if (backingStore->format == VIR_STORAGE_FILE_AUTO_SAFE)
             backingStore->format = VIR_STORAGE_FILE_AUTO;
 
-        if ((ret = virStorageFileGetMetadataRecurse(backingStore, parent,
-                                                    uid, gid,
-                                                    report_broken,
-                                                    cycle, depth + 1)) < 0) {
+        if (virStorageFileGetMetadataRecurse(backingStore, parent,
+                                             uid, gid,
+                                             report_broken,
+                                             cycle, depth + 1) < 0) {
             if (report_broken)
-                goto cleanup;
-
-            /* if we fail somewhere midway, just accept and return a
-             * broken chain */
-            ret = 0;
-            goto cleanup;
+                return -1;
+            else
+                return 0;
         }
 
         backingStore->id = depth;
@@ -5083,7 +5076,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     } else {
         /* add terminator */
         if (!(src->backingStore = virStorageSourceNew()))
-            goto cleanup;
+            return -1;
     }
 
     if (src->externalDataStoreRaw) {
@@ -5091,21 +5084,16 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
 
         if ((rv = virStorageSourceNewFromExternalData(src,
                                                       &externalDataStore)) < 0)
-            goto cleanup;
+            return -1;
 
-        if (rv == 1) {
-            /* the file would not be usable for VM usage */
-            ret = 0;
-            goto cleanup;
-        }
+        /* the file would not be usable for VM usage */
+        if (rv == 1)
+            return 0;
 
         src->externalDataStore = g_steal_pointer(&externalDataStore);
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
