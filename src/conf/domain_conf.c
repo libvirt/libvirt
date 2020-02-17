@@ -6239,6 +6239,47 @@ virDomainRedirdevDefValidate(const virDomainDef *def,
 }
 
 
+static int
+virDomainNetDefValidatePortOptions(const char *macstr,
+                                   virDomainNetType type,
+                                   const virNetDevVPortProfile *vport,
+                                   virTristateBool isolatedPort)
+{
+    /*
+     * This function can be called for either a config interface
+     * object (NetDef) or a runtime interface object (ActualNetDef),
+     * by calling it with either, e.g., the "type" (what is in the
+     * config) or the "actualType" (what is determined at runtime by
+     * acquiring a port from the network).
+     */
+    /*
+     * port isolation can only be set for an interface that is
+     * connected to a Linux host bridge (either a libvirt-managed
+     * network, or plain type='bridge')
+     */
+    if (isolatedPort == VIR_TRISTATE_BOOL_YES) {
+        if (!(type == VIR_DOMAIN_NET_TYPE_NETWORK ||
+              type == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("interface %s - <port isolated='yes'/> is not supported for network interfaces with type='%s'"),
+                           macstr, virDomainNetTypeToString(type));
+            return -1;
+        }
+        /*
+         * also not allowed for anything with <virtualport> setting
+         * (openvswitch or 802.11Qb[gh])
+         */
+        if (vport && vport->virtPortType != VIR_NETDEV_VPORT_PROFILE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("interface %s - <port isolated='yes'/> is not supported for network interfaces with virtualport type='%s'"),
+                           macstr, virNetDevVPortTypeToString(vport->virtPortType));
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
 int
 virDomainActualNetDefValidate(const virDomainNetDef *net)
 {
@@ -6291,6 +6332,11 @@ virDomainActualNetDefValidate(const virDomainNetDef *net)
         return -1;
     }
 
+    if (virDomainNetDefValidatePortOptions(macstr, actualType, vport,
+                                           virDomainNetGetActualPortOptionsIsolated(net)) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
@@ -6298,6 +6344,10 @@ virDomainActualNetDefValidate(const virDomainNetDef *net)
 static int
 virDomainNetDefValidate(const virDomainNetDef *net)
 {
+    char macstr[VIR_MAC_STRING_BUFLEN];
+
+    virMacAddrFormat(&net->mac, macstr);
+
     if ((net->hostIP.nroutes || net->hostIP.nips) &&
         net->type != VIR_DOMAIN_NET_TYPE_ETHERNET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -6331,6 +6381,12 @@ virDomainNetDefValidate(const virDomainNetDef *net)
             return -1;
         }
     }
+
+    if (virDomainNetDefValidatePortOptions(macstr, net->type, net->virtPortProfile,
+                                           net->isolatedPort) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
