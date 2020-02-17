@@ -5053,13 +5053,14 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
             ret = 0;
             goto cleanup;
         }
+
+        backingStore->id = depth;
+        src->backingStore = g_steal_pointer(&backingStore);
     } else {
         /* add terminator */
-        if (!(backingStore = virStorageSourceNew()))
+        if (!(src->backingStore = virStorageSourceNew()))
             goto cleanup;
     }
-
-    src->backingStore = g_steal_pointer(&backingStore);
 
     if (src->externalDataStoreRaw) {
         g_autoptr(virStorageSource) externalDataStore = NULL;
@@ -5080,8 +5081,6 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     ret = 0;
 
  cleanup:
-    if (virStorageSourceHasBacking(src))
-        src->backingStore->id = depth;
     virStorageFileDeinit(src);
     return ret;
 }
