@@ -45,15 +45,8 @@ static int virLXCCgroupSetupCpuTune(virDomainDefPtr def,
         def->cputune.shares = val;
     }
 
-    if (def->cputune.quota != 0 &&
-        virCgroupSetCpuCfsQuota(cgroup, def->cputune.quota) < 0)
-        return -1;
-
-    if (def->cputune.period != 0 &&
-        virCgroupSetCpuCfsPeriod(cgroup, def->cputune.period) < 0)
-        return -1;
-
-    return 0;
+    return virCgroupSetupCpuPeriodQuota(cgroup, def->cputune.period,
+                                        def->cputune.quota);
 }
 
 

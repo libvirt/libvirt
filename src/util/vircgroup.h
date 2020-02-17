@@ -227,6 +227,8 @@ int virCgroupSetupCpuShares(virCgroupPtr cgroup, unsigned long long shares,
 
 int virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period);
 int virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period);
+int virCgroupSetupCpuPeriodQuota(virCgroupPtr cgroup, unsigned long long period,
+                                 long long quota);
 
 int virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota);
 int virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota);

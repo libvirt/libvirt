@@ -1857,37 +1857,7 @@ lxcGetVcpuBWLive(virCgroupPtr cgroup, unsigned long long *period,
 static int lxcSetVcpuBWLive(virCgroupPtr cgroup, unsigned long long period,
                             long long quota)
 {
-    unsigned long long old_period;
-
-    if (period == 0 && quota == 0)
-        return 0;
-
-    if (period) {
-        /* get old period, and we can rollback if set quota failed */
-        if (virCgroupGetCpuCfsPeriod(cgroup, &old_period) < 0)
-            return -1;
-
-        if (virCgroupSetCpuCfsPeriod(cgroup, period) < 0)
-            return -1;
-    }
-
-    if (quota) {
-        if (virCgroupSetCpuCfsQuota(cgroup, quota) < 0)
-            goto error;
-    }
-
-    return 0;
-
- error:
-    if (period) {
-        virErrorPtr saved;
-
-        virErrorPreserveLast(&saved);
-        virCgroupSetCpuCfsPeriod(cgroup, old_period);
-        virErrorRestore(&saved);
-    }
-
-    return -1;
+    return virCgroupSetupCpuPeriodQuota(cgroup, period, quota);
 }
 
 
