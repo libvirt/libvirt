@@ -1165,19 +1165,7 @@ int
 qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup,
                           virBitmapPtr cpumask)
 {
-    int ret = -1;
-    char *new_cpus = NULL;
-
-    if (!(new_cpus = virBitmapFormat(cpumask)))
-        goto cleanup;
-
-    if (virCgroupSetCpusetCpus(cgroup, new_cpus) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    VIR_FREE(new_cpus);
-    return ret;
+    return virCgroupSetupCpusetCpus(cgroup, cpumask);
 }
 
 

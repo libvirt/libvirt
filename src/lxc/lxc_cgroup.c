@@ -69,14 +69,9 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
     virDomainNumatuneMemMode mode;
 
     if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
-        def->cpumask) {
-        if (!(mask = virBitmapFormat(def->cpumask)))
-            return -1;
-
-        if (virCgroupSetCpusetCpus(cgroup, mask) < 0)
-            goto cleanup;
-        /* free mask to make sure we won't use it in a wrong way later */
-        VIR_FREE(mask);
+        def->cpumask &&
+        virCgroupSetupCpusetCpus(cgroup, def->cpumask) < 0) {
+        return -1;
     }
 
     if (virDomainNumatuneGetMode(def->numa, -1, &mode) < 0 ||

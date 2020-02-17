@@ -245,6 +245,7 @@ int virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate);
 
 int virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus);
 int virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus);
+int virCgroupSetupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask);
 
 int virCgroupRemove(virCgroupPtr group);
 

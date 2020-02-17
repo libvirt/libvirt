@@ -3666,3 +3666,18 @@ virCgroupSetupBlkioDeviceWriteBps(virCgroupPtr cgroup, const char *path,
 
     return 0;
 }
+
+
+int
+virCgroupSetupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask)
+{
+    g_autofree char *new_cpus = NULL;
+
+    if (!(new_cpus = virBitmapFormat(cpumask)))
+        return -1;
+
+    if (virCgroupSetCpusetCpus(cgroup, new_cpus) < 0)
+        return -1;
+
+    return 0;
+}

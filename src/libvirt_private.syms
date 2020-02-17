@@ -1731,6 +1731,7 @@ virCgroupSetupBlkioDeviceReadIops;
 virCgroupSetupBlkioDeviceWeight;
 virCgroupSetupBlkioDeviceWriteBps;
 virCgroupSetupBlkioDeviceWriteIops;
+virCgroupSetupCpusetCpus;
 virCgroupSupportsCpuBW;
 virCgroupTerminateMachine;
 
