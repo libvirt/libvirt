@@ -248,6 +248,13 @@ qemuExtDevicesHasDevice(virDomainDefPtr def)
     if (def->tpm && def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR)
         return true;
 
+    for (i = 0; i < def->nfss; i++) {
+        virDomainFSDefPtr fs = def->fss[i];
+
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
+            return true;
+    }
+
     return false;
 }
 
@@ -271,6 +278,14 @@ qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
     if (def->tpm &&
         qemuExtTPMSetupCgroup(driver, def, cgroup) < 0)
         return -1;
+
+    for (i = 0; i < def->nfss; i++) {
+        virDomainFSDefPtr fs = def->fss[i];
+
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS &&
+            qemuVirtioFSSetupCgroup(vm, fs, cgroup) < 0)
+            return -1;
+    }
 
     return 0;
 }

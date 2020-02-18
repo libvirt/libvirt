@@ -35,3 +35,8 @@ void
 qemuVirtioFSStop(virQEMUDriverPtr driver,
                  virDomainObjPtr vm,
                  virDomainFSDefPtr fs);
+
+int
+qemuVirtioFSSetupCgroup(virDomainObjPtr vm,
+                        virDomainFSDefPtr fs,
+                        virCgroupPtr cgroup);
