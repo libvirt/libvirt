@@ -2487,26 +2487,36 @@
             <p>
             The <code>tickpolicy</code> attribute determines what
             happens when QEMU misses a deadline for injecting a
-            tick to the guest:
+            tick to the guest. This can happen, for example, because the
+            guest was paused.
             </p>
             <dl>
               <dt><code>delay</code></dt>
-              <dd>Continue to deliver ticks at the normal rate.
-                The guest time will be delayed due to the late
-                tick</dd>
+              <dd>Continue to deliver ticks at the normal rate. The guest OS
+                will not notice anything is amiss, as from its point of view
+                time will have continued to flow normally. The time in the
+                guest should now be behind the time in the host by exactly
+                the amount of time during which ticks have been missed.</dd>
               <dt><code>catchup</code></dt>
-              <dd>Deliver ticks at a higher rate to catch up
-                with the missed tick. The guest time should
-                not be delayed once catchup is complete.</dd>
+              <dd>Deliver ticks at a higher rate to catch up with the missed
+                ticks. The guest OS will not notice anything is amiss, as
+                from its point of view time will have continued to flow
+                normally. Once the timer has managed to catch up with all
+                the missing ticks, the time in the guest and in the host
+                should match.</dd>
               <dt><code>merge</code></dt>
               <dd>Merge the missed tick(s) into one tick and
                 inject. The guest time may be delayed, depending
                 on how the OS reacts to the merging of ticks</dd>
               <dt><code>discard</code></dt>
-              <dd>Throw away the missed tick(s) and continue
-                with future injection normally. The guest time
-                may be delayed, unless the OS has explicit
-                handling of lost ticks</dd>
+              <dd>Throw away the missed ticks and continue with future
+                injection normally. The guest OS will see the timer jump
+                ahead by a potentially quite significant amount all at once,
+                as if the intervening chunk of time had simply not existed;
+                needless to say, such a sudden jump can easily confuse a
+                guest OS which is not specifically prepared to deal with it.
+                Assuming the guest OS can deal correctly with the time jump,
+                the time in the guest and in the host should now match.</dd>
             </dl>
             <p>If the policy is "catchup", there can be further details in
             the <code>catchup</code> sub-element.</p>
