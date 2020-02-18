@@ -17236,6 +17236,13 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     g_autoptr(virJSONValue) actions = NULL;
 
+    if (job->state != QEMU_BLOCKJOB_STATE_READY) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
+                       _("block job '%s' not ready for pivot yet"),
+                       job->name);
+        return -1;
+    }
+
     switch ((qemuBlockJobType) job->type) {
     case QEMU_BLOCKJOB_TYPE_NONE:
     case QEMU_BLOCKJOB_TYPE_LAST:
@@ -17271,13 +17278,6 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 
     case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
         break;
-    }
-
-    if (job->state != QEMU_BLOCKJOB_STATE_READY) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("block job '%s' not ready for pivot yet"),
-                       job->name);
-        return -1;
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
