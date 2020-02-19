@@ -89,11 +89,11 @@ GSource *virEventGLibCreateSocketWatch(int fd,
                           sizeof(virEventGLibFDSource));
     ssource = (virEventGLibFDSource *)source;
 
-    ssource->condition = condition;
+    ssource->condition = condition | G_IO_HUP | G_IO_ERR;
     ssource->fd = fd;
 
     ssource->pollfd.fd = fd;
-    ssource->pollfd.events = condition;
+    ssource->pollfd.events = condition | G_IO_HUP | G_IO_ERR;
 
     g_source_add_poll(source, &ssource->pollfd);
 
