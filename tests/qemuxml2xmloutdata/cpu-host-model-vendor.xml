@@ -8,7 +8,9 @@
     <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='network'/>
   </os>
-  <cpu mode='host-model' check='partial'/>
+  <cpu mode='host-model' check='partial'>
+    <model vendor_id='Libvirt QEMU'/>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

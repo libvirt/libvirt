@@ -791,10 +791,10 @@ virCPUDefFormatBuf(virBufferPtr buf,
         return -1;
     }
 
-    if (formatModel && def->model) {
+    if (formatModel && (def->model || def->vendor_id)) {
         virBufferAddLit(buf, "<model");
 
-        if (def->type == VIR_CPU_TYPE_GUEST) {
+        if (def->type == VIR_CPU_TYPE_GUEST && def->model) {
             const char *fallback;
 
             fallback = virCPUFallbackTypeToString(def->fallback);
@@ -805,11 +805,15 @@ virCPUDefFormatBuf(virBufferPtr buf,
                 return -1;
             }
             virBufferAsprintf(buf, " fallback='%s'", fallback);
-            if (def->vendor_id)
-                virBufferEscapeString(buf, " vendor_id='%s'", def->vendor_id);
         }
 
-        virBufferEscapeString(buf, ">%s</model>\n", def->model);
+        if (def->type == VIR_CPU_TYPE_GUEST)
+            virBufferEscapeString(buf, " vendor_id='%s'", def->vendor_id);
+
+        if (def->model)
+            virBufferEscapeString(buf, ">%s</model>\n", def->model);
+        else
+            virBufferAddLit(buf, "/>\n");
     }
 
     if (formatModel && def->vendor)
