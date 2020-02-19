@@ -17231,10 +17231,12 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
                      qemuBlockJobDataPtr job,
                      virDomainDiskDefPtr disk)
 {
+    g_autoptr(qemuBlockStorageSourceChainData) chainattachdata = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     g_autoptr(virJSONValue) actions = NULL;
+    g_autoptr(virJSONValue) reopenactions = NULL;
 
     if (job->state != QEMU_BLOCKJOB_STATE_READY) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
@@ -17265,6 +17267,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         if (blockdev && !job->jobflagsmissing) {
             g_autoptr(virHashTable) blockNamedNodeData = NULL;
             bool shallow = job->jobflags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
+            bool reuse = job->jobflags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT;
 
             if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
                 return -1;
@@ -17273,6 +17276,27 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
                                                 blockNamedNodeData,
                                                 shallow, &actions) < 0)
                 return -1;
+
+            /* Open and install the backing chain of 'mirror' late if we can use
+             * blockdev-snapshot to do it. This is to appease oVirt that wants
+             * to copy data into the backing chain while the top image is being
+             * copied shallow */
+            if (reuse && shallow &&
+                virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY) &&
+                virStorageSourceHasBacking(disk->mirror)) {
+
+                if (!(chainattachdata = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->mirror->backingStore,
+                                                                                         priv->qemuCaps)))
+                    return -1;
+
+                reopenactions = virJSONValueNewArray();
+
+                if (qemuMonitorTransactionSnapshotBlockdev(reopenactions,
+                                                           disk->mirror->backingStore->nodeformat,
+                                                           disk->mirror->nodeformat))
+                    return -1;
+            }
+
         }
         break;
 
@@ -17284,7 +17308,15 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     if (blockdev) {
         int rc = 0;
 
-        if (actions)
+        if (chainattachdata) {
+            if ((rc = qemuBlockStorageSourceChainAttach(priv->mon, chainattachdata)) == 0) {
+                /* install backing images on success, or unplug them on failure */
+                if ((rc = qemuMonitorTransaction(priv->mon, &reopenactions)) != 0)
+                    qemuBlockStorageSourceChainDetach(priv->mon, chainattachdata);
+            }
+        }
+
+        if (actions && rc == 0)
             rc = qemuMonitorTransaction(priv->mon, &actions);
 
         if (rc == 0)
@@ -18029,9 +18061,26 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     if (blockdev) {
         if (mirror_reuse) {
-            if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror,
-                                                                          priv->qemuCaps)))
-                goto endjob;
+            /* oVirt depended on late-backing-chain-opening semantics the old
+             * qemu command had to copy the backing chain data while the top
+             * level is being copied. To restore this semantics if
+             * blockdev-reopen is supported defer opening of the backing chain
+             * of 'mirror' to the pivot step */
+            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY)) {
+                g_autoptr(virStorageSource) terminator = virStorageSourceNew();
+
+                if (!terminator)
+                    goto endjob;
+
+                if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
+                                                                                 terminator,
+                                                                                 priv->qemuCaps)))
+                    goto endjob;
+            } else {
+                if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror,
+                                                                              priv->qemuCaps)))
+                    goto endjob;
+            }
         } else {
             if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
                 goto endjob;
