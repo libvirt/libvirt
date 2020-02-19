@@ -21759,8 +21759,12 @@ qemuDomainGetStatsIOThread(virQEMUDriverPtr driver,
     if ((niothreads = qemuDomainGetIOThreadsMon(driver, dom, &iothreads)) < 0)
         return -1;
 
-    if (niothreads == 0)
-        return 0;
+    /* qemuDomainGetIOThreadsMon returns a NULL-terminated list, so we must free
+     * it even if it returns 0 */
+    if (niothreads == 0) {
+        ret = 0;
+        goto cleanup;
+    }
 
     if (virTypedParamListAddUInt(params, niothreads, "iothread.count") < 0)
         goto cleanup;
