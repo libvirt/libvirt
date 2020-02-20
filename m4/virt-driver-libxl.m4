@@ -30,7 +30,7 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
 
   dnl search for libxl, aka libxenlight
   old_with_libxl="$with_libxl"
-  LIBVIRT_CHECK_PKG([LIBXL], [xenlight], [4.6.0], [true])
+  LIBVIRT_CHECK_PKG([LIBXL], [xenlight], [4.6.0])
   if test "x$with_libxl" = "xyes" ; then
     LIBXL_FIRMWARE_DIR=$($PKG_CONFIG --variable xenfirmwaredir xenlight)
     LIBXL_EXECBIN_DIR=$($PKG_CONFIG --variable libexec_bin xenlight)
