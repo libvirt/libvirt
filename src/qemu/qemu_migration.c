@@ -1185,43 +1185,25 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
                            nsnapshots);
             return false;
         }
-
-        /* cancel migration if disk I/O error is emitted while migrating */
-        if (flags & VIR_MIGRATE_ABORT_ON_ERROR &&
-            !(flags & VIR_MIGRATE_OFFLINE) &&
-            virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
-            pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot migrate domain with I/O error"));
-            return false;
-        }
-    }
-
-    if (virHashSize(priv->dbusVMStates) > 0 &&
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain requires dbus-vmstate support"));
-        return false;
-    }
-
-    for (i = 0; i < vm->def->nnets; i++) {
-        virDomainNetDefPtr net = vm->def->nets[i];
-        qemuSlirpPtr slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
-
-        if (slirp && !qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_MIGRATE)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("a slirp-helper cannot be migrated"));
-            return false;
-        }
     }
 
     /* following checks don't make sense for offline migration */
     if (!(flags & VIR_MIGRATE_OFFLINE)) {
-        if (remote &&
-            qemuProcessAutoDestroyActive(driver, vm)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("domain is marked for auto destroy"));
-            return false;
+        if (remote) {
+            /* cancel migration if disk I/O error is emitted while migrating */
+            if (flags & VIR_MIGRATE_ABORT_ON_ERROR &&
+                virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
+                pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("cannot migrate domain with I/O error"));
+                return false;
+            }
+
+            if (qemuProcessAutoDestroyActive(driver, vm)) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               "%s", _("domain is marked for auto destroy"));
+                return false;
+            }
         }
 
 
@@ -1279,6 +1261,24 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("migration with shmem device is not supported"));
             return false;
+        }
+
+        if (virHashSize(priv->dbusVMStates) > 0 &&
+            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain requires dbus-vmstate support"));
+            return false;
+        }
+
+        for (i = 0; i < vm->def->nnets; i++) {
+            virDomainNetDefPtr net = vm->def->nets[i];
+            qemuSlirpPtr slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
+
+            if (slirp && !qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_MIGRATE)) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("a slirp-helper cannot be migrated"));
+                return false;
+            }
         }
     }
 
