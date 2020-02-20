@@ -1345,6 +1345,11 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
             }
 #endif /* !WIN32 */
 
+            if (virFileIsSharedFS(p)) {
+                /* Probably a root squashed NFS. */
+                continue;
+            }
+
             virReportSystemError(errno,
                                  _("unable to open %s"),
                                  p);
