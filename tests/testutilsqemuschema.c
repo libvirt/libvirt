@@ -524,7 +524,7 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
  * replies file used for qemucapabilitiestest for the x86_64 architecture.
  */
 virJSONValuePtr
-testQEMUSchemaGetLatest(void)
+testQEMUSchemaGetLatest(const char* arch)
 {
     char *capsLatestFile = NULL;
     char *capsLatest = NULL;
@@ -533,7 +533,7 @@ testQEMUSchemaGetLatest(void)
     virJSONValuePtr reply = NULL;
     virJSONValuePtr schema = NULL;
 
-    if (!(capsLatestFile = testQemuGetLatestCapsForArch("x86_64", "replies"))) {
+    if (!(capsLatestFile = testQemuGetLatestCapsForArch(arch, "replies"))) {
         VIR_TEST_VERBOSE("failed to find latest caps replies");
         return NULL;
     }
@@ -575,11 +575,11 @@ testQEMUSchemaGetLatest(void)
 
 
 virHashTablePtr
-testQEMUSchemaLoad(void)
+testQEMUSchemaLoad(const char* arch)
 {
     virJSONValuePtr schema;
 
-    if (!(schema = testQEMUSchemaGetLatest()))
+    if (!(schema = testQEMUSchemaGetLatest(arch)))
         return NULL;
 
     return virQEMUQAPISchemaConvert(schema);

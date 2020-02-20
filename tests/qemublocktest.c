@@ -981,7 +981,7 @@ mymain(void)
 
 #define TEST_DISK_TO_JSON(nme) TEST_DISK_TO_JSON_FULL(nme, false)
 
-    if (!(diskxmljsondata.schema = testQEMUSchemaLoad())) {
+    if (!(diskxmljsondata.schema = testQEMUSchemaLoad("x86_64"))) {
         ret = -1;
         goto cleanup;
     }

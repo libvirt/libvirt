@@ -29,7 +29,7 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
                        virBufferPtr debug);
 
 virJSONValuePtr
-testQEMUSchemaGetLatest(void);
+testQEMUSchemaGetLatest(const char* arch);
 
 virHashTablePtr
-testQEMUSchemaLoad(void);
+testQEMUSchemaLoad(const char* arch);

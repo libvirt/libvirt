@@ -2995,7 +2995,7 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-    if (!(qapiData.schema = testQEMUSchemaLoad())) {
+    if (!(qapiData.schema = testQEMUSchemaLoad("x86_64"))) {
         VIR_TEST_VERBOSE("failed to load qapi schema");
         ret = -1;
         goto cleanup;
@@ -3232,7 +3232,7 @@ mymain(void)
     DO_TEST_QAPI_VALIDATE("alternate 2", "blockdev-add/arg-type", false,
                           "{\"driver\":\"qcow2\",\"file\": 1234}");
 
-    if (!(metaschema = testQEMUSchemaGetLatest()) ||
+    if (!(metaschema = testQEMUSchemaGetLatest("x86_64")) ||
         !(metaschemastr = virJSONValueToString(metaschema, false))) {
         VIR_TEST_VERBOSE("failed to load latest qapi schema");
         ret = -1;
