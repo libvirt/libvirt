@@ -3023,6 +3023,82 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelComparison(const void *opaque)
 
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetCPUModelBaseline(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    g_autoptr(qemuMonitorTest) test = NULL;
+    virCPUDefPtr cpu_a;
+    virCPUDefPtr cpu_b = NULL;
+    qemuMonitorCPUModelInfoPtr baseline = NULL;
+    int ret = -1;
+
+    if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-cpu-model-baseline",
+                               "{ "
+                               "   \"return\": { "
+                               "       \"model\": { "
+                               "           \"name\": \"cpu_c\", "
+                               "           \"props\": { "
+                               "                \"feat_a\": true, "
+                               "                \"feat_b\": false "
+                               "            } "
+                               "        } "
+                               "    } "
+                               "}") < 0)
+        return -1;
+
+    if (VIR_ALLOC(cpu_a) < 0 || VIR_ALLOC(cpu_b) < 0)
+        goto cleanup;
+
+    cpu_a->model = g_strdup("cpu_a");
+    cpu_b->model = g_strdup("cpu_b");
+
+    if (virCPUDefAddFeature(cpu_a, "feat_a", VIR_CPU_FEATURE_REQUIRE) < 0 ||
+        virCPUDefAddFeature(cpu_a, "feat_b", VIR_CPU_FEATURE_REQUIRE) < 0 ||
+        virCPUDefAddFeature(cpu_a, "feat_c", VIR_CPU_FEATURE_REQUIRE) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONGetCPUModelBaseline(qemuMonitorTestGetMonitor(test),
+                                           cpu_a, cpu_b, &baseline) < 0)
+        goto cleanup;
+
+    if (!baseline) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Baseline missing result");
+        goto cleanup;
+    }
+    if (!baseline->name) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Baseline missing model name");
+        goto cleanup;
+    }
+    if (baseline->nprops != 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Baseline missing properties");
+        goto cleanup;
+    }
+    if (STRNEQ(baseline->props[0].name, "feat_a") ||
+        !baseline->props[0].value.boolean ||
+        STRNEQ(baseline->props[1].name, "feat_b") ||
+        baseline->props[1].value.boolean) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Baseline property error");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(cpu_a);
+    virCPUDefFree(cpu_b);
+    qemuMonitorCPUModelInfoFree(baseline);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -3306,6 +3382,7 @@ mymain(void)
     }
 
     DO_TEST(qemuMonitorJSONGetCPUModelComparison);
+    DO_TEST(qemuMonitorJSONGetCPUModelBaseline);
 
  cleanup:
     VIR_FREE(metaschemastr);
