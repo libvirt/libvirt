@@ -2981,6 +2981,48 @@ testQemuMonitorJSONTransaction(const void *opaque)
 
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetCPUModelComparison(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    g_autoptr(qemuMonitorTest) test = NULL;
+    virCPUDefPtr cpu_a;
+    virCPUDefPtr cpu_b = NULL;
+    g_autofree char *result = NULL;
+    int ret = -1;
+
+    if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-cpu-model-comparison",
+                               "{\"return\":{\"result\":\"test\"}}") < 0)
+        return -1;
+
+    if (VIR_ALLOC(cpu_a) < 0 || VIR_ALLOC(cpu_b) < 0)
+        goto cleanup;
+
+    cpu_a->model = g_strdup("cpu_a");
+    cpu_b->model = g_strdup("cpu_b");
+
+    if (qemuMonitorJSONGetCPUModelComparison(qemuMonitorTestGetMonitor(test),
+                                             cpu_a, cpu_b, &result) < 0)
+        goto cleanup;
+
+    if (!result || STRNEQ(result, "test")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Compare result not set");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(cpu_a);
+    virCPUDefFree(cpu_b);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -3256,6 +3298,14 @@ mymain(void)
     DO_TEST_QUERY_JOBS("create");
 
 #undef DO_TEST_QUERY_JOBS
+
+    if (!(qapiData.schema = testQEMUSchemaLoad("s390x"))) {
+        VIR_TEST_VERBOSE("failed to load qapi schema for s390x");
+        ret = -1;
+        goto cleanup;
+    }
+
+    DO_TEST(qemuMonitorJSONGetCPUModelComparison);
 
  cleanup:
     VIR_FREE(metaschemastr);
