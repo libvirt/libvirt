@@ -203,6 +203,12 @@ int virSecurityManagerRestoreTPMLabels(virSecurityManagerPtr mgr,
 
 typedef struct _virSecurityManagerMetadataLockState virSecurityManagerMetadataLockState;
 typedef virSecurityManagerMetadataLockState *virSecurityManagerMetadataLockStatePtr;
+struct _virSecurityManagerMetadataLockState {
+    size_t nfds; /* Captures size of both @fds and @paths */
+    int *fds;
+    const char **paths;
+};
+
 
 virSecurityManagerMetadataLockStatePtr
 virSecurityManagerMetadataLock(virSecurityManagerPtr mgr,

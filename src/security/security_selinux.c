@@ -271,6 +271,20 @@ virSecuritySELinuxTransactionRun(pid_t pid G_GNUC_UNUSED,
 
         if (!(state = virSecurityManagerMetadataLock(list->manager, paths, npaths)))
             goto cleanup;
+
+        for (i = 0; i < list->nItems; i++) {
+            virSecuritySELinuxContextItemPtr item = list->items[i];
+            size_t j;
+
+            for (j = 0; j < state->nfds; j++) {
+                if (STREQ_NULLABLE(item->path, state->paths[j]))
+                    break;
+            }
+
+            /* If path wasn't locked, don't try to remember its label. */
+            if (j == state->nfds)
+                item->remember = false;
+        }
     }
 
     rv = 0;

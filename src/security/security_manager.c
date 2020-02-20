@@ -1245,13 +1245,6 @@ virSecurityManagerRestoreTPMLabels(virSecurityManagerPtr mgr,
 }
 
 
-struct _virSecurityManagerMetadataLockState {
-    size_t nfds; /* Captures size of both @fds and @paths */
-    int *fds;
-    const char **paths;
-};
-
-
 static int
 cmpstringp(const void *p1, const void *p2)
 {
