@@ -935,14 +935,10 @@ virStorageFileGetEncryptionPayloadOffset(const struct FileEncryptionInfo *info,
 static int
 virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                   char *buf,
-                                  size_t len,
-                                  int *backingFormat)
+                                  size_t len)
 {
-    int dummy;
+    int format;
     size_t i;
-
-    if (!backingFormat)
-        backingFormat = &dummy;
 
     VIR_DEBUG("path=%s, buf=%p, len=%zu, meta->format=%d",
               meta->path, buf, len, meta->format);
@@ -1009,8 +1005,10 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
     VIR_FREE(meta->backingStoreRaw);
     if (fileTypeInfo[meta->format].getBackingStore != NULL) {
         int store = fileTypeInfo[meta->format].getBackingStore(&meta->backingStoreRaw,
-                                                               backingFormat,
+                                                               &format,
                                                                buf, len);
+        meta->backingStoreRawFormat = format;
+
         if (store == BACKING_STORE_INVALID)
             return 0;
 
@@ -1135,19 +1133,17 @@ virStorageFileGetMetadataFromBuf(const char *path,
                                  int *backingFormat)
 {
     virStorageSourcePtr ret = NULL;
-    int dummy;
-
-    if (!backingFormat)
-        backingFormat = &dummy;
 
     if (!(ret = virStorageFileMetadataNew(path, format)))
         return NULL;
 
-    if (virStorageFileGetMetadataInternal(ret, buf, len,
-                                          backingFormat) < 0) {
+    if (virStorageFileGetMetadataInternal(ret, buf, len) < 0) {
         virObjectUnref(ret);
         return NULL;
     }
+
+    if (backingFormat)
+        *backingFormat = ret->backingStoreRawFormat;
 
     return ret;
 }
@@ -1211,8 +1207,11 @@ virStorageFileGetMetadataFromFD(const char *path,
         return NULL;
     }
 
-    if (virStorageFileGetMetadataInternal(meta, buf, len, backingFormat) < 0)
+    if (virStorageFileGetMetadataInternal(meta, buf, len) < 0)
         return NULL;
+
+    if (backingFormat)
+        *backingFormat = meta->backingStoreRawFormat;
 
     if (S_ISREG(sb.st_mode))
         meta->type = VIR_STORAGE_TYPE_FILE;
@@ -2293,6 +2292,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->volume = g_strdup(src->volume);
     def->relPath = g_strdup(src->relPath);
     def->backingStoreRaw = g_strdup(src->backingStoreRaw);
+    def->backingStoreRawFormat = src->backingStoreRawFormat;
     def->externalDataStoreRaw = g_strdup(src->externalDataStoreRaw);
     def->snapshot = g_strdup(src->snapshot);
     def->configFile = g_strdup(src->configFile);
@@ -5000,7 +5000,6 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                  unsigned int depth)
 {
     size_t headerLen;
-    int backingFormat;
     int rv;
     g_autofree char *buf = NULL;
     g_autoptr(virStorageSource) backingStore = NULL;
@@ -5018,7 +5017,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                                    &buf, &headerLen, cycle) < 0)
         return -1;
 
-    if (virStorageFileGetMetadataInternal(src, buf, headerLen, &backingFormat) < 0)
+    if (virStorageFileGetMetadataInternal(src, buf, headerLen) < 0)
         return -1;
 
     if (src->backingStoreRaw) {
@@ -5029,7 +5028,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         if (rv == 1)
             return 0;
 
-        backingStore->format = backingFormat;
+        backingStore->format = src->backingStoreRawFormat;
 
         if (backingStore->format == VIR_STORAGE_FILE_AUTO) {
             /* Assuming the backing store to be raw can lead to failures. We do
@@ -5180,7 +5179,7 @@ virStorageFileGetBackingStoreStr(virStorageSourcePtr src,
     if (!(tmp = virStorageSourceCopy(src, false)))
         return -1;
 
-    if (virStorageFileGetMetadataInternal(tmp, buf, headerLen, NULL) < 0)
+    if (virStorageFileGetMetadataInternal(tmp, buf, headerLen) < 0)
         return -1;
 
     *backing = g_steal_pointer(&tmp->backingStoreRaw);
