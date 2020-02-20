@@ -130,7 +130,7 @@ int virPidFileReadPath(const char *path,
     if (virStrToLong_ll(pidstr, &endptr, 10, &pid_value) < 0 ||
         !(*endptr == '\0' || g_ascii_isspace(*endptr)) ||
         (pid_t) pid_value != pid_value) {
-        rc = -1;
+        rc = -EINVAL;
         goto cleanup;
     }
 
