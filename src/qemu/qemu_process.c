@@ -2802,14 +2802,7 @@ qemuProcessKillManagedPRDaemon(virDomainObjPtr vm)
     if (virPidFileForceCleanupPath(pidfile) < 0) {
         VIR_WARN("Unable to kill pr-helper process");
     } else {
-        if (unlink(pidfile) < 0 &&
-            errno != ENOENT) {
-            virReportSystemError(errno,
-                                 _("Unable to remove stale pidfile %s"),
-                                 pidfile);
-        } else {
-            priv->prDaemonRunning = false;
-        }
+        priv->prDaemonRunning = false;
     }
     virErrorRestore(&orig_err);
 }

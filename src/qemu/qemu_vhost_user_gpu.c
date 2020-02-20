@@ -223,16 +223,8 @@ void qemuExtVhostUserGPUStop(virQEMUDriverPtr driver,
     }
 
     virErrorPreserveLast(&orig_err);
-    if (virPidFileForceCleanupPath(pidfile) < 0) {
+    if (virPidFileForceCleanupPath(pidfile) < 0)
         VIR_WARN("Unable to kill vhost-user-gpu process");
-    } else {
-        if (unlink(pidfile) < 0 &&
-            errno != ENOENT) {
-            virReportSystemError(errno,
-                                 _("Unable to remove stale pidfile %s"),
-                                 pidfile);
-        }
-    }
     virErrorRestore(&orig_err);
 }
 
