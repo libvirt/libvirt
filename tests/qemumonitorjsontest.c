@@ -3014,8 +3014,8 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelBaseline(const void *opaque)
 {
     const testGenericData *data = opaque;
     g_autoptr(qemuMonitorTest) test = NULL;
-    virCPUDefPtr cpu_a;
-    virCPUDefPtr cpu_b = NULL;
+    g_autoptr(virCPUDef) cpu_a = virCPUDefNew();
+    g_autoptr(virCPUDef) cpu_b = virCPUDefNew();
     qemuMonitorCPUModelInfoPtr baseline = NULL;
     int ret = -1;
 
@@ -3035,9 +3035,6 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelBaseline(const void *opaque)
                                "    } "
                                "}") < 0)
         return -1;
-
-    cpu_a = virCPUDefNew();
-    cpu_b = virCPUDefNew();
 
     cpu_a->model = g_strdup("cpu_a");
     cpu_b->model = g_strdup("cpu_b");
@@ -3078,8 +3075,6 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelBaseline(const void *opaque)
     ret = 0;
 
  cleanup:
-    virCPUDefFree(cpu_a);
-    virCPUDefFree(cpu_b);
     qemuMonitorCPUModelInfoFree(baseline);
     return ret;
 }
