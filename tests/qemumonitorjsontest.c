@@ -2981,10 +2981,9 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelComparison(const void *opaque)
 {
     const testGenericData *data = opaque;
     g_autoptr(qemuMonitorTest) test = NULL;
-    virCPUDefPtr cpu_a;
-    virCPUDefPtr cpu_b = NULL;
+    g_autoptr(virCPUDef) cpu_a = virCPUDefNew();
+    g_autoptr(virCPUDef) cpu_b = virCPUDefNew();
     g_autofree char *result = NULL;
-    int ret = -1;
 
     if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
         return -1;
@@ -2993,28 +2992,20 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelComparison(const void *opaque)
                                "{\"return\":{\"result\":\"test\"}}") < 0)
         return -1;
 
-    cpu_a = virCPUDefNew();
-    cpu_b = virCPUDefNew();
-
     cpu_a->model = g_strdup("cpu_a");
     cpu_b->model = g_strdup("cpu_b");
 
     if (qemuMonitorJSONGetCPUModelComparison(qemuMonitorTestGetMonitor(test),
                                              cpu_a, cpu_b, &result) < 0)
-        goto cleanup;
+        return -1;
 
     if (!result || STRNEQ(result, "test")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Compare result not set");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virCPUDefFree(cpu_a);
-    virCPUDefFree(cpu_b);
-    return ret;
+    return 0;
 }
 
 
