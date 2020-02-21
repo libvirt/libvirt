@@ -2444,6 +2444,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
 
     VIR_FREE(def->backend.tap);
     VIR_FREE(def->backend.vhost);
+    VIR_FREE(def->teaming.persistent);
     VIR_FREE(def->virtPortProfile);
     VIR_FREE(def->script);
     VIR_FREE(def->domain_name);
