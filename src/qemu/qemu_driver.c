@@ -11894,7 +11894,7 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
     if (virStorageSourceUpdateBackingSizes(src, fd, &sb) < 0)
         goto cleanup;
 
-    if (virStorageSourceUpdateCapacity(src, buf, len, false) < 0)
+    if (virStorageSourceUpdateCapacity(src, buf, len) < 0)
         goto cleanup;
 
     /* If guest is not using raw disk format and is on a host block

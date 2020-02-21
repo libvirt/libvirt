@@ -1756,7 +1756,7 @@ storageBackendUpdateVolTargetInfo(virStorageVolType voltype,
             }
         }
 
-        if (virStorageSourceUpdateCapacity(target, buf, len, false) < 0)
+        if (virStorageSourceUpdateCapacity(target, buf, len) < 0)
             return -1;
     }
 

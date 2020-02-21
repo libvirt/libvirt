@@ -472,8 +472,7 @@ int virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
 int virStorageSourceUpdateBackingSizes(virStorageSourcePtr src,
                                        int fd, struct stat const *sb);
 int virStorageSourceUpdateCapacity(virStorageSourcePtr src,
-                                   char *buf, ssize_t len,
-                                   bool probe);
+                                   char *buf, ssize_t len);
 
 int virStorageSourceNewFromBacking(virStorageSourcePtr parent,
                                    virStorageSourcePtr *backing);

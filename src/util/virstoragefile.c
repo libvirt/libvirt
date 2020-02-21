@@ -3964,18 +3964,15 @@ virStorageSourceUpdateBackingSizes(virStorageSourcePtr src,
  * @src: disk source definition structure
  * @buf: buffer to the storage file header
  * @len: length of the storage file header
- * @probe: allow probe
  *
- * Update the storage @src capacity. This may involve probing the storage
- * @src in order to "see" if we can recognize what exists.
+ * Update the storage @src capacity.
  *
  * Returns 0 on success, -1 on error.
  */
 int
 virStorageSourceUpdateCapacity(virStorageSourcePtr src,
                                char *buf,
-                               ssize_t len,
-                               bool probe)
+                               ssize_t len)
 {
     int format = src->format;
     g_autoptr(virStorageSource) meta = NULL;
@@ -3984,18 +3981,10 @@ virStorageSourceUpdateCapacity(virStorageSourcePtr src,
      * the metadata has a capacity, use that, otherwise fall back to
      * physical size.  */
     if (format == VIR_STORAGE_FILE_NONE) {
-        if (!probe) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("no disk format for %s and probing is disabled"),
-                           src->path);
-            return -1;
-        }
-
-        if ((format = virStorageFileProbeFormatFromBuf(src->path,
-                                                       buf, len)) < 0)
-            return -1;
-
-        src->format = format;
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no disk format for %s was specified"),
+                       src->path);
+        return -1;
     }
 
     if (format == VIR_STORAGE_FILE_RAW && !src->encryption) {
