@@ -3824,6 +3824,7 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent,
                                            backing)) < 0)
         return rc;
 
+    (*backing)->format = parent->backingStoreRawFormat;
     (*backing)->readonly = true;
     return rc;
 }
@@ -5027,8 +5028,6 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         /* the backing file would not be usable for VM usage */
         if (rv == 1)
             return 0;
-
-        backingStore->format = src->backingStoreRawFormat;
 
         if (backingStore->format == VIR_STORAGE_FILE_AUTO) {
             /* Assuming the backing store to be raw can lead to failures. We do

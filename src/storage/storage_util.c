@@ -3329,7 +3329,6 @@ static int
 storageBackendProbeTarget(virStorageSourcePtr target,
                           virStorageEncryptionPtr *encryption)
 {
-    int backingStoreFormat;
     int rc;
     struct stat sb;
     g_autoptr(virStorageSource) meta = NULL;
@@ -3360,14 +3359,12 @@ storageBackendProbeTarget(virStorageSourcePtr target,
     if (!(meta = virStorageFileGetMetadataFromFD(target->path,
                                                  fd,
                                                  VIR_STORAGE_FILE_AUTO,
-                                                 &backingStoreFormat)))
+                                                 NULL)))
         return -1;
 
     if (meta->backingStoreRaw) {
         if (virStorageSourceNewFromBacking(meta, &target->backingStore) < 0)
             return -1;
-
-        target->backingStore->format = backingStoreFormat;
 
         /* XXX: Remote storage doesn't play nicely with volumes backed by
          * remote storage. To avoid trouble, just fake the backing store is RAW
