@@ -1109,7 +1109,6 @@ virStorageFileMetadataNew(const char *path,
  * @buf: header bytes from @path
  * @len: length of @buf
  * @format: format of the storage file
- * @backingFormat: format of @backing
  *
  * Extract metadata about the storage volume with the specified image format.
  * If image format is VIR_STORAGE_FILE_AUTO, it will probe to automatically
@@ -1119,9 +1118,10 @@ virStorageFileMetadataNew(const char *path,
  * that might be raw if that file will then be passed to a guest, since a
  * malicious guest can turn a raw file into any other non-raw format at will.
  *
- * If the returned @backingFormat is VIR_STORAGE_FILE_AUTO it indicates the
- * image didn't specify an explicit format for its backing store. Callers are
- * advised against probing for the backing store format in this case.
+ * If the 'backingStoreRawFormat' field of the returned structure is
+ * VIR_STORAGE_FILE_AUTO it indicates the image didn't specify an explicit
+ * format for its backing store. Callers are advised against probing for the
+ * backing store format in this case.
  *
  * Caller MUST free the result after use via virObjectUnref.
  */
@@ -1129,8 +1129,7 @@ virStorageSourcePtr
 virStorageFileGetMetadataFromBuf(const char *path,
                                  char *buf,
                                  size_t len,
-                                 int format,
-                                 int *backingFormat)
+                                 int format)
 {
     virStorageSourcePtr ret = NULL;
 
@@ -1141,9 +1140,6 @@ virStorageFileGetMetadataFromBuf(const char *path,
         virObjectUnref(ret);
         return NULL;
     }
-
-    if (backingFormat)
-        *backingFormat = ret->backingStoreRawFormat;
 
     return ret;
 }
@@ -3991,7 +3987,7 @@ virStorageSourceUpdateCapacity(virStorageSourcePtr src,
     if (format == VIR_STORAGE_FILE_RAW && !src->encryption) {
         src->capacity = src->physical;
     } else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
-                                                        len, format, NULL))) {
+                                                        len, format))) {
         src->capacity = meta->capacity ? meta->capacity : src->physical;
         if (src->encryption && meta->encryption)
             src->encryption->payload_offset = meta->encryption->payload_offset;
