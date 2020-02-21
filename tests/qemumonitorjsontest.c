@@ -3371,6 +3371,7 @@ mymain(void)
 
 #undef DO_TEST_QUERY_JOBS
 
+    virHashFree(qapiData.schema);
     if (!(qapiData.schema = testQEMUSchemaLoad("s390x"))) {
         VIR_TEST_VERBOSE("failed to load qapi schema for s390x");
         ret = -1;
