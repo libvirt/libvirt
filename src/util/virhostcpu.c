@@ -852,7 +852,7 @@ virHostCPUGetStatsLinux(FILE *procstat,
                         _("Invalid cpuNum in %s"),
                         __FUNCTION__);
 
-    return 0;
+    return -1;
 }
 
 

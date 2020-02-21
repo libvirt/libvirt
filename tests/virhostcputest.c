@@ -196,6 +196,7 @@ linuxTestHostCPU(const void *opaque)
 struct nodeCPUStatsData {
     const char *name;
     int ncpus;
+    bool shouldFail;
 };
 
 static int
@@ -214,6 +215,19 @@ linuxTestNodeCPUStats(const void *data)
     result = linuxCPUStatsCompareFiles(cpustatfile,
                                        testData->ncpus,
                                        outfile);
+    if (result < 0) {
+        if (testData->shouldFail) {
+            /* Expected error */
+            result = 0;
+        }
+    } else {
+        if (testData->shouldFail) {
+            fprintf(stderr, "Expected a failure, got success");
+            result = -1;
+        }
+    }
+
+
     VIR_FREE(cpustatfile);
     VIR_FREE(outfile);
     return result;
@@ -258,14 +272,15 @@ mymain(void)
         if (virTestRun(nodeData[i].testName, linuxTestHostCPU, &nodeData[i]) != 0)
             ret = -1;
 
-# define DO_TEST_CPU_STATS(name, ncpus) \
+# define DO_TEST_CPU_STATS(name, ncpus, shouldFail) \
     do { \
-        static struct nodeCPUStatsData data = { name, ncpus }; \
+        static struct nodeCPUStatsData data = { name, ncpus, shouldFail}; \
         if (virTestRun("CPU stats " name, linuxTestNodeCPUStats, &data) < 0) \
             ret = -1; \
     } while (0)
 
-    DO_TEST_CPU_STATS("24cpu", 24);
+    DO_TEST_CPU_STATS("24cpu", 24, false);
+    DO_TEST_CPU_STATS("24cpu", 25, true);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
