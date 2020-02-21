@@ -1161,20 +1161,13 @@ virStorageFileGetMetadataFromBuf(const char *path,
 virStorageSourcePtr
 virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
-                                int format,
-                                int *backingFormat)
+                                int format)
 
 {
     ssize_t len = VIR_STORAGE_MAX_HEADER;
     struct stat sb;
-    int dummy;
     g_autofree char *buf = NULL;
     g_autoptr(virStorageSource) meta = NULL;
-
-    if (!backingFormat)
-        backingFormat = &dummy;
-
-    *backingFormat = VIR_STORAGE_FILE_NONE;
 
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,
@@ -1205,9 +1198,6 @@ virStorageFileGetMetadataFromFD(const char *path,
 
     if (virStorageFileGetMetadataInternal(meta, buf, len) < 0)
         return NULL;
-
-    if (backingFormat)
-        *backingFormat = meta->backingStoreRawFormat;
 
     if (S_ISREG(sb.st_mode))
         meta->type = VIR_STORAGE_TYPE_FILE;
