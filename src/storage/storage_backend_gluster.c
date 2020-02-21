@@ -224,7 +224,6 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     int ret = -1;
     glfs_fd_t *fd = NULL;
     ssize_t len;
-    int backingFormat;
     g_autoptr(virStorageVolDef) vol = NULL;
     g_autoptr(virStorageSource) meta = NULL;
     g_autofree char *header = NULL;
@@ -277,7 +276,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
 
     if (!(meta = virStorageFileGetMetadataFromBuf(name, header, len,
                                                   VIR_STORAGE_FILE_AUTO,
-                                                  &backingFormat)))
+                                                  NULL)))
         goto cleanup;
 
     if (meta->backingStoreRaw) {
@@ -286,13 +285,11 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
 
         vol->target.backingStore->type = VIR_STORAGE_TYPE_NETWORK;
 
-        vol->target.backingStore->path = meta->backingStoreRaw;
+        vol->target.backingStore->path = g_steal_pointer(&meta->backingStoreRaw);
+        vol->target.backingStore->format = meta->backingStoreRawFormat;
 
-        if (backingFormat < 0)
+        if (vol->target.backingStore->format < 0)
             vol->target.backingStore->format = VIR_STORAGE_FILE_RAW;
-        else
-            vol->target.backingStore->format = backingFormat;
-        meta->backingStoreRaw = NULL;
     }
 
     vol->target.format = meta->format;
