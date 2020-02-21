@@ -555,11 +555,14 @@ testActivation(bool useNames)
     size_t nfds = 0;
     g_autoptr(virSystemdActivation) act = NULL;
     g_auto(virBuffer) names = VIR_BUFFER_INITIALIZER;
+    g_autofree char *demo_socket_path = NULL;
 
     virBufferAddLit(&names, "demo-unix.socket");
 
     if (testActivationCreateFDs(&sockUNIX, &sockIP, &nsockIP) < 0)
         return -1;
+
+    demo_socket_path = virNetSocketGetPath(sockUNIX);
 
     for (i = 0; i < nsockIP; i++)
         virBufferAddLit(&names, ":demo-ip.socket");
@@ -577,7 +580,7 @@ testActivation(bool useNames)
 
     map[0].name = "demo-unix.socket";
     map[0].family = AF_UNIX;
-    map[0].path = virNetSocketGetPath(sockUNIX);
+    map[0].path = demo_socket_path;
 
     map[1].name = "demo-ip.socket";
     map[1].family = AF_INET;
