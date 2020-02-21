@@ -2324,6 +2324,7 @@ void virDomainFSDefFree(virDomainFSDefPtr def)
     VIR_FREE(def->dst);
     virDomainDeviceInfoClear(&def->info);
     VIR_FREE(def->virtio);
+    virObjectUnref(def->privateData);
 
     VIR_FREE(def);
 }
