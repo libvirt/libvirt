@@ -964,7 +964,7 @@ mymain(void)
     /* Rewrite wrap and qcow2 back to 3-deep chain, absolute backing */
     virCommandFree(cmd);
     cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "qcow2", "-b", absraw, "qcow2", NULL);
+                               "-F", "raw", "-b", absraw, "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
 
