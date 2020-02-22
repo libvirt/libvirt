@@ -77,8 +77,8 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
     if (kev.filter == EVFILT_PROC && (kev.fflags & NOTE_EXIT) != 0) {
         if ((pid_t)kev.ident != vm->pid) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("event from unexpected proc %ju!=%ju"),
-                        (uintmax_t)vm->pid, (uintmax_t)kev.ident);
+                           _("event from unexpected proc %ju!=%ju"),
+                           (uintmax_t)vm->pid, (uintmax_t)kev.ident);
             return;
         }
 

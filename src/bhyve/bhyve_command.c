@@ -196,10 +196,10 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
 
         if ((disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
             (disk_source == NULL)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("cdrom device without source path "
-                                 "not supported"));
-                goto error;
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cdrom device without source path "
+                             "not supported"));
+            goto error;
         }
 
         switch (disk->device) {
@@ -276,8 +276,8 @@ bhyveBuildUSBControllerArgStr(const virDomainDef *def,
 
 static int
 bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
-                     virDomainDiskDefPtr disk,
-                     virCommandPtr cmd)
+                           virDomainDiskDefPtr disk,
+                           virCommandPtr cmd)
 {
     const char *disk_source;
 
@@ -550,26 +550,26 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver,
         virDomainControllerDefPtr controller = def->controllers[i];
         switch (controller->type) {
         case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-                if (controller->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       "%s", _("unsupported PCI controller model: only PCI root supported"));
-                        goto error;
-                }
-                break;
+            if (controller->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("unsupported PCI controller model: only PCI root supported"));
+                goto error;
+            }
+            break;
         case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
-                if (bhyveBuildAHCIControllerArgStr(def, controller, driver, cmd) < 0)
-                    goto error;
-                break;
+            if (bhyveBuildAHCIControllerArgStr(def, controller, driver, cmd) < 0)
+                goto error;
+            break;
         case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-                if (++nusbcontrollers > 1) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       "%s", _("only single USB controller is supported"));
-                        goto error;
-                }
+            if (++nusbcontrollers > 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("only single USB controller is supported"));
+                goto error;
+            }
 
-                if (bhyveBuildUSBControllerArgStr(def, controller, cmd) < 0)
-                    goto error;
-                break;
+            if (bhyveBuildUSBControllerArgStr(def, controller, cmd) < 0)
+                goto error;
+            break;
         }
     }
     for (i = 0; i < def->nnets; i++) {
