@@ -710,22 +710,22 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
             goto cleanup;
         }
 
-        if ((bhyveDriverGetCaps(conn) & BHYVE_CAP_LPC_BOOTROM) == 0) {
+        if ((bhyveDriverGetBhyveCaps(privconn) & BHYVE_CAP_LPC_BOOTROM) == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Installed bhyve binary does not support "
                           "bootrom"));
             goto cleanup;
         }
     } else {
-        if (!(loadcmd = virBhyveProcessBuildLoadCmd(conn, def, "<device.map>",
-                                                NULL)))
+        if (!(loadcmd = virBhyveProcessBuildLoadCmd(privconn, def,
+                                                    "<device.map>", NULL)))
             goto cleanup;
 
         virBufferAdd(&buf, virCommandToString(loadcmd, false), -1);
         virBufferAddChar(&buf, '\n');
     }
 
-    if (!(cmd = virBhyveProcessBuildBhyveCmd(conn, def, true)))
+    if (!(cmd = virBhyveProcessBuildBhyveCmd(privconn, def, true)))
         goto cleanup;
 
     virBufferAdd(&buf, virCommandToString(cmd, false), -1);
@@ -1282,20 +1282,16 @@ bhyveStateInitialize(bool privileged,
 }
 
 unsigned
-bhyveDriverGetCaps(virConnectPtr conn)
+bhyveDriverGetBhyveCaps(bhyveConnPtr driver)
 {
-    bhyveConnPtr driver = conn->privateData;
-
     if (driver != NULL)
         return driver->bhyvecaps;
     return 0;
 }
 
 unsigned
-bhyveDriverGetGrubCaps(virConnectPtr conn)
+bhyveDriverGetGrubCaps(bhyveConnPtr driver)
 {
-    bhyveConnPtr driver = conn->privateData;
-
     if (driver != NULL)
         return driver->grubcaps;
     return 0;
@@ -1543,7 +1539,7 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
     char *xml = NULL;
     virDomainDefPtr def = NULL;
     bhyveConnPtr privconn = conn->privateData;
-    unsigned caps = bhyveDriverGetCaps(conn);
+    unsigned bhyveCaps = bhyveDriverGetBhyveCaps(privconn);
 
     virCheckFlags(0, NULL);
 
@@ -1556,7 +1552,8 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    def = bhyveParseCommandLineString(nativeConfig, caps, privconn->xmlopt);
+    def = bhyveParseCommandLineString(nativeConfig, bhyveCaps,
+                                      privconn->xmlopt);
     if (def == NULL)
         goto cleanup;
 

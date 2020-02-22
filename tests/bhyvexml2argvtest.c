@@ -51,11 +51,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     conn->privateData = &driver;
 
-    cmd = virBhyveProcessBuildBhyveCmd(conn, vmdef, false);
+    cmd = virBhyveProcessBuildBhyveCmd(&driver, vmdef, false);
     if (vmdef->os.loader)
         ldcmd = virCommandNew("dummy");
     else
-        ldcmd = virBhyveProcessBuildLoadCmd(conn, vmdef, "<device.map>",
+        ldcmd = virBhyveProcessBuildLoadCmd(&driver, vmdef, "<device.map>",
                                             &actualdm);
 
     if ((cmd == NULL) || (ldcmd == NULL)) {

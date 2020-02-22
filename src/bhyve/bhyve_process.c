@@ -141,9 +141,7 @@ virBhyveProcessStart(virConnectPtr conn,
         goto cleanup;
 
     /* Call bhyve to start the VM */
-    if (!(cmd = virBhyveProcessBuildBhyveCmd(conn,
-                                             vm->def,
-                                             false)))
+    if (!(cmd = virBhyveProcessBuildBhyveCmd(driver, vm->def, false)))
         goto cleanup;
 
     virCommandSetOutputFD(cmd, &logfd);
@@ -159,8 +157,8 @@ virBhyveProcessStart(virConnectPtr conn,
 
         virBhyveFormatDevMapFile(vm->def->name, &devmap_file);
 
-        if (!(load_cmd = virBhyveProcessBuildLoadCmd(conn, vm->def, devmap_file,
-                                                     &devicemap)))
+        if (!(load_cmd = virBhyveProcessBuildLoadCmd(driver, vm->def,
+                                                     devmap_file, &devicemap)))
             goto cleanup;
         virCommandSetOutputFD(load_cmd, &logfd);
         virCommandSetErrorFD(load_cmd, &logfd);

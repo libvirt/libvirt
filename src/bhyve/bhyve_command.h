@@ -29,7 +29,7 @@
 
 #define BHYVE_CONFIG_FORMAT_ARGV "bhyve-argv"
 
-virCommandPtr virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
+virCommandPtr virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver,
                                            virDomainDefPtr def,
                                            bool dryRun);
 
@@ -38,5 +38,5 @@ virBhyveProcessBuildDestroyCmd(bhyveConnPtr driver,
                                virDomainDefPtr def);
 
 virCommandPtr
-virBhyveProcessBuildLoadCmd(virConnectPtr conn, virDomainDefPtr def,
+virBhyveProcessBuildLoadCmd(bhyveConnPtr driver, virDomainDefPtr def,
                             const char *devmap_file, char **devicesmap_out);
