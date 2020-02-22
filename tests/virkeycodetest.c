@@ -22,7 +22,6 @@
 #include "testutils.h"
 
 #include "virkeycode.h"
-#include "virutil.h"
 #include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"

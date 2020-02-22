@@ -29,7 +29,6 @@
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virutil.h"
 #include "virfile.h"
 #include "virstring.h"
 #include "virtime.h"

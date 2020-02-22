@@ -31,7 +31,6 @@
 #include "virlog.h"
 #include "virscsi.h"
 #include "virfile.h"
-#include "virutil.h"
 #include "virstring.h"
 #include "virerror.h"
 #include "viralloc.h"

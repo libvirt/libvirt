@@ -26,7 +26,6 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "virstring.h"
-#include "virutil.h"
 #include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

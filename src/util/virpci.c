@@ -36,7 +36,6 @@
 #include "virfile.h"
 #include "virkmod.h"
 #include "virstring.h"
-#include "virutil.h"
 #include "viralloc.h"
 
 VIR_LOG_INIT("util.pci");

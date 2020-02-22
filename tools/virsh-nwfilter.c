@@ -25,7 +25,6 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
-#include "virutil.h"
 #include "vsh-table.h"
 
 virNWFilterPtr

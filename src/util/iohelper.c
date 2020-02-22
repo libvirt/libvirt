@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "virutil.h"
 #include "virthread.h"
 #include "virfile.h"
 #include "viralloc.h"

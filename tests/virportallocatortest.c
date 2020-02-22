@@ -26,7 +26,6 @@
 
 #if defined(__linux__) && defined(RTLD_NEXT)
 
-# include "virutil.h"
 # include "virerror.h"
 # include "viralloc.h"
 # include "virlog.h"

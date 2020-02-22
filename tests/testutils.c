@@ -29,7 +29,6 @@
 #include "testutils.h"
 #include "internal.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virthread.h"
 #include "virerror.h"
 #include "virbuffer.h"

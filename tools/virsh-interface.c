@@ -40,7 +40,6 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virmacaddr.h"
-#include "virutil.h"
 #include "virxml.h"
 #include "virstring.h"
 #include "vsh-table.h"

@@ -21,7 +21,6 @@
 #include <config.h>
 #include "internal.h"
 #include "virgic.h"
-#include "virutil.h"
 
 VIR_ENUM_IMPL(virGICVersion,
               VIR_GIC_VERSION_LAST,

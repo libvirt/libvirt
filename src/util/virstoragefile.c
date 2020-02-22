@@ -34,7 +34,6 @@
 #include "virhash.h"
 #include "virendian.h"
 #include "virstring.h"
-#include "virutil.h"
 #include "viruri.h"
 #include "virbuffer.h"
 #include "virjson.h"

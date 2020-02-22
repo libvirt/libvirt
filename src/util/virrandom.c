@@ -29,7 +29,6 @@
 
 #include "virrandom.h"
 #include "virthread.h"
-#include "virutil.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "virlog.h"
