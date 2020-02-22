@@ -130,7 +130,6 @@ bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver)
 {
     bhyveMonitorPtr mon = NULL;
     struct kevent kev;
-    int rc;
 
     if (VIR_ALLOC(mon) < 0)
         return NULL;
@@ -145,8 +144,7 @@ bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver)
     }
 
     EV_SET(&kev, vm->pid, EVFILT_PROC, EV_ADD, NOTE_EXIT, 0, mon);
-    rc = kevent(mon->kq, &kev, 1, NULL, 0, NULL);
-    if (rc < 0) {
+    if (kevent(mon->kq, &kev, 1, NULL, 0, NULL) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
                        _("Unable to register process kevent"));
         goto cleanup;
