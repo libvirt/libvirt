@@ -50,4 +50,5 @@ libxlMakeDomainCapabilities(virDomainCapsPtr domCaps,
                             size_t nfirmwares);
 
 int
-libxlDomainGetEmulatorType(const virDomainDef *def);
+libxlDomainGetEmulatorType(const virDomainDef *def)
+    G_GNUC_NO_INLINE;

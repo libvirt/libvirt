@@ -30,6 +30,7 @@
 
 # include "virfile.h"
 # include "virsocket.h"
+# include "libxl/libxl_capabilities.h"
 
 VIR_MOCK_IMPL_RET_VOID(xs_daemon_open,
                        struct xs_handle *)
@@ -121,6 +122,12 @@ VIR_MOCK_IMPL_RET_ARGS(stat, int,
     }
 
     return real_stat(path, sb);
+}
+
+int
+libxlDomainGetEmulatorType(const virDomainDef *def G_GNUC_UNUSED)
+{
+    return LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN;
 }
 
 #endif /* WITH_LIBXL && WITH_YAJL */
