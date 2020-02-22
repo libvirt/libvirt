@@ -55,6 +55,13 @@ VIRTLOGD_UNIT_FILES_IN = \
 SYSTEMD_UNIT_FILES += $(notdir $(VIRTLOGD_UNIT_FILES_IN:%.in=%))
 SYSTEMD_UNIT_FILES_IN += $(VIRTLOGD_UNIT_FILES_IN)
 
+OPENRC_INIT_FILES += \
+	virtlogd.init \
+	$(NULL)
+OPENRC_INIT_FILES_IN += \
+	virtlogd.init.in \
+	$(NULL)
+
 noinst_LTLIBRARIES += libvirt_driver_log.la
 
 libvirt_la_BUILT_LIBADD += libvirt_driver_log.la
@@ -125,6 +132,9 @@ logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	    virLogManagerProtocol VIR_LOG_MANAGER_PROTOCOL \
 	    $(LOG_PROTOCOL) > logging/log_daemon_dispatch_stubs.h
+
+virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 virtlogd.service: logging/virtlogd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@

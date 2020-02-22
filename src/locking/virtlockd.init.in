@@ -1,0 +1,24 @@
+#!/sbin/openrc-run
+
+description="Virtualization locking daemon"
+
+VIRTLOCKD_OPTS=${VIRTLOCKD_OPTS:-"${VIRTLOCKD_OPTS}"}
+
+command="@sbindir@/virtlockd"
+command_args="${VIRTLOCKD_OPTS}"
+supervisor="supervise-daemon"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    keyword -shutdown
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtlockd"
+
+    ${supervisor} ${RC_SVCNAME} --signal HUP
+    eend $?
+}

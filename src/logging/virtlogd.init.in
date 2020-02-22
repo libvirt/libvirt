@@ -1,0 +1,24 @@
+#!/sbin/openrc-run
+
+description="Virtualization logging daemon"
+
+VIRTLOGD_OPTS=${VIRTLOGD_OPTS:-"${VIRTLOGD_OPTS}"}
+
+command="@sbindir@/virtlogd"
+command_args="${VIRTLOGD_OPTS}"
+supervisor="supervise-daemon"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    keyword -shutdown
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtlogd"
+
+    ${supervisor} ${RC_SVCNAME} --signal HUP
+    eend $?
+}
