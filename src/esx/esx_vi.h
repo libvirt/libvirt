@@ -204,8 +204,8 @@ struct _esxVI_Context {
 
 int esxVI_Context_Alloc(esxVI_Context **ctx);
 void esxVI_Context_Free(esxVI_Context **ctx);
-int esxVI_Context_Connect(esxVI_Context *ctx, const char *ipAddress,
-                          const char *url, const char *username,
+int esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
+                          const char *ipAddress, const char *username,
                           const char *password, esxUtil_ParsedUri *parsedUri);
 int esxVI_Context_LookupManagedObjects(esxVI_Context *ctx);
 int esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path);
