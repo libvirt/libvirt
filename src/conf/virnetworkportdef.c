@@ -29,6 +29,10 @@
 #include "virnetworkportdef.h"
 #include "network_conf.h"
 
+#include "netdev_bandwidth_conf.h"
+#include "netdev_vlan_conf.h"
+#include "netdev_vport_profile_conf.h"
+
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
 VIR_ENUM_IMPL(virNetworkPortPlug,

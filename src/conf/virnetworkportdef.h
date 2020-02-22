@@ -28,9 +28,6 @@
 #include "virnetdevbandwidth.h"
 #include "virpci.h"
 #include "virxml.h"
-#include "netdev_vport_profile_conf.h"
-#include "netdev_bandwidth_conf.h"
-#include "netdev_vlan_conf.h"
 
 typedef struct _virNetworkPortDef virNetworkPortDef;
 typedef virNetworkPortDef *virNetworkPortDefPtr;
