@@ -1763,6 +1763,10 @@ libxlDriverConfigNew(void)
         goto error;
     cfg->firmwares[cfg->nfirmwares - 1]->name = g_strdup(LIBXL_FIRMWARE_DIR "/hvmloader");
 
+    /* defaults for keepalive messages */
+    cfg->keepAliveInterval = 5;
+    cfg->keepAliveCount = 5;
+
     return cfg;
 
  error:
@@ -1785,10 +1789,6 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
                               const char *filename)
 {
     g_autoptr(virConf) conf = NULL;
-
-    /* defaults for keepalive messages */
-    cfg->keepAliveInterval = 5;
-    cfg->keepAliveCount = 5;
 
     /* Check the file is readable before opening it, otherwise
      * libvirt emits an error.
