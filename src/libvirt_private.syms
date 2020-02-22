@@ -1406,6 +1406,15 @@ virDomainDriverParseBlkioDeviceStr;
 virDomainDriverSetupPersistentDefBlkioParams;
 
 
+# hypervisor/virclosecallbacks.h
+virCloseCallbacksGet;
+virCloseCallbacksGetConn;
+virCloseCallbacksNew;
+virCloseCallbacksRun;
+virCloseCallbacksSet;
+virCloseCallbacksUnset;
+
+
 # hypervisor/virhostdev.h
 virHostdevFindUSBDevice;
 virHostdevManagerGetDefault;
@@ -1797,14 +1806,6 @@ virCgroupV2DevicesGetKey;
 virCgroupV2DevicesGetPerms;
 virCgroupV2DevicesPrepareProg;
 virCgroupV2DevicesRemoveProg;
-
-# util/virclosecallbacks.h
-virCloseCallbacksGet;
-virCloseCallbacksGetConn;
-virCloseCallbacksNew;
-virCloseCallbacksRun;
-virCloseCallbacksSet;
-virCloseCallbacksUnset;
 
 # util/vircommand.h
 virCommandAbort;

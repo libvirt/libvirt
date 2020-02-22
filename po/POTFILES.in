@@ -80,6 +80,7 @@
 @SRCDIR@/src/hyperv/hyperv_wmi.c
 @SRCDIR@/src/hypervisor/domain_cgroup.c
 @SRCDIR@/src/hypervisor/domain_driver.c
+@SRCDIR@/src/hypervisor/virclosecallbacks.c
 @SRCDIR@/src/hypervisor/virhostdev.c
 @SRCDIR@/src/interface/interface_backend_netcf.c
 @SRCDIR@/src/interface/interface_backend_udev.c
@@ -232,7 +233,6 @@
 @SRCDIR@/src/util/vircgroupv1.c
 @SRCDIR@/src/util/vircgroupv2.c
 @SRCDIR@/src/util/vircgroupv2devices.c
-@SRCDIR@/src/util/virclosecallbacks.c
 @SRCDIR@/src/util/vircommand.c
 @SRCDIR@/src/util/virconf.c
 @SRCDIR@/src/util/vircrypto.c

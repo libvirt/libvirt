@@ -43,6 +43,7 @@ libvirt_driver_bhyve_impl_la_CFLAGS = \
 	-I$(srcdir)/access \
 	-I$(builddir)/access \
 	-I$(srcdir)/conf \
+	-I$(srcdir)/hypervisor \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_bhyve_impl_la_LDFLAGS = $(AM_LDFLAGS)

@@ -2118,9 +2118,6 @@ exclude_file_name_regexp--sc_prohibit_pthread_create = \
 exclude_file_name_regexp--sc_prohibit_readdir = \
   ^(tests/(.*mock|virfilewrapper)\.c|tools/nss/libvirt_nss\.c)$$
 
-exclude_file_name_regexp--sc_prohibit_cross_inclusion = \
-  ^(src/util/virclosecallbacks\.h)$$
-
 exclude_file_name_regexp--sc_prohibit_dirent_d_type = \
   ^(src/util/vircgroup.c)$
 
