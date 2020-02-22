@@ -97,6 +97,9 @@ libxlDriverPrivatePtr testXLInitDriver(void)
     if (!(driver->config = libxlDriverConfigNew()))
         return NULL;
 
+    if (libxlDriverConfigInit(driver->config) < 0)
+        return NULL;
+
     driver->config->caps = testXLInitCaps();
 
     driver->xmlopt = libxlCreateXMLConf(driver);

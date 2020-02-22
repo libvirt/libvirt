@@ -164,6 +164,8 @@ struct _libxlSavefileHeader {
 
 libxlDriverConfigPtr
 libxlDriverConfigNew(void);
+int
+libxlDriverConfigInit(libxlDriverConfigPtr cfg);
 
 libxlDriverConfigPtr
 libxlDriverConfigGet(libxlDriverPrivatePtr driver);

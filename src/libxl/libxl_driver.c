@@ -708,6 +708,9 @@ libxlStateInitialize(bool privileged,
     if (libxlDriverConfigLoadFile(cfg, driverConf) < 0)
         goto error;
 
+    if (libxlDriverConfigInit(cfg) < 0)
+        goto error;
+
     /* Register the callbacks providing access to libvirt's event loop */
     libxl_osevent_register_hooks(cfg->ctx, &libxl_osevent_callbacks, cfg->ctx);
 

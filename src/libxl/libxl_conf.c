@@ -1686,8 +1686,6 @@ libxlDriverConfigPtr
 libxlDriverConfigNew(void)
 {
     libxlDriverConfigPtr cfg;
-    char ebuf[1024];
-    unsigned int free_mem;
 
     if (libxlConfigInitialize() < 0)
         return NULL;
@@ -1704,41 +1702,6 @@ libxlDriverConfigNew(void)
     cfg->saveDir = g_strdup(LIBXL_SAVE_DIR);
     cfg->autoDumpDir = g_strdup(LIBXL_DUMP_DIR);
     cfg->channelDir = g_strdup(LIBXL_CHANNEL_DIR);
-
-    if (virFileMakePath(cfg->logDir) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to create log dir '%s': %s"),
-                       cfg->logDir,
-                       virStrerror(errno, ebuf, sizeof(ebuf)));
-        goto error;
-    }
-
-    cfg->logger = libxlLoggerNew(cfg->logDir, virLogGetDefaultPriority());
-    if (!cfg->logger) {
-        VIR_ERROR(_("cannot create logger for libxenlight, disabling driver"));
-        goto error;
-    }
-
-    if (libxl_ctx_alloc(&cfg->ctx, LIBXL_VERSION, 0, (xentoollog_logger *)cfg->logger)) {
-        VIR_ERROR(_("cannot initialize libxenlight context, probably not "
-                    "running in a Xen Dom0, disabling driver"));
-        goto error;
-    }
-
-    if ((cfg->verInfo = libxl_get_version_info(cfg->ctx)) == NULL) {
-        VIR_ERROR(_("cannot version information from libxenlight, "
-                    "disabling driver"));
-        goto error;
-    }
-    cfg->version = (cfg->verInfo->xen_version_major * 1000000) +
-        (cfg->verInfo->xen_version_minor * 1000);
-
-    /* This will fill xenstore info about free and dom0 memory if missing,
-     * should be called before starting first domain */
-    if (libxl_get_free_memory(cfg->ctx, &free_mem)) {
-        VIR_ERROR(_("Unable to configure libxl's memory management parameters"));
-        goto error;
-    }
 
 #ifdef DEFAULT_LOADER_NVRAM
     if (virFirmwareParseList(DEFAULT_LOADER_NVRAM,
@@ -1772,6 +1735,50 @@ libxlDriverConfigNew(void)
  error:
     virObjectUnref(cfg);
     return NULL;
+}
+
+int
+libxlDriverConfigInit(libxlDriverConfigPtr cfg)
+{
+    char ebuf[1024];
+    unsigned int free_mem;
+
+    if (virFileMakePath(cfg->logDir) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create log dir '%s': %s"),
+                       cfg->logDir,
+                       virStrerror(errno, ebuf, sizeof(ebuf)));
+        return -1;
+    }
+
+    cfg->logger = libxlLoggerNew(cfg->logDir, virLogGetDefaultPriority());
+    if (!cfg->logger) {
+        VIR_ERROR(_("cannot create logger for libxenlight, disabling driver"));
+        return -1;
+    }
+
+    if (libxl_ctx_alloc(&cfg->ctx, LIBXL_VERSION, 0, (xentoollog_logger *)cfg->logger)) {
+        VIR_ERROR(_("cannot initialize libxenlight context, probably not "
+                    "running in a Xen Dom0, disabling driver"));
+        return -1;
+    }
+
+    if ((cfg->verInfo = libxl_get_version_info(cfg->ctx)) == NULL) {
+        VIR_ERROR(_("cannot version information from libxenlight, "
+                    "disabling driver"));
+        return -1;
+    }
+    cfg->version = (cfg->verInfo->xen_version_major * 1000000) +
+        (cfg->verInfo->xen_version_minor * 1000);
+
+    /* This will fill xenstore info about free and dom0 memory if missing,
+     * should be called before starting first domain */
+    if (libxl_get_free_memory(cfg->ctx, &free_mem)) {
+        VIR_ERROR(_("Unable to configure libxl's memory management parameters"));
+        return -1;
+    }
+
+    return 0;
 }
 
 libxlDriverConfigPtr
