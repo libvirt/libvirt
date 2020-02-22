@@ -100,6 +100,7 @@ virt_aa_helper_LDADD += libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 virt_aa_helper_CFLAGS = \
 	-I$(srcdir)/conf \
+	-I$(top_srcdir)/src/hypervisor \
 	-I$(srcdir)/security \
 	$(AM_CFLAGS) \
 	$(PIE_CFLAGS) \

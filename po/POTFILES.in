@@ -80,6 +80,7 @@
 @SRCDIR@/src/hyperv/hyperv_wmi.c
 @SRCDIR@/src/hypervisor/domain_cgroup.c
 @SRCDIR@/src/hypervisor/domain_driver.c
+@SRCDIR@/src/hypervisor/virhostdev.c
 @SRCDIR@/src/interface/interface_backend_netcf.c
 @SRCDIR@/src/interface/interface_backend_udev.c
 @SRCDIR@/src/internal.h
@@ -250,7 +251,6 @@
 @SRCDIR@/src/util/virhash.c
 @SRCDIR@/src/util/virhook.c
 @SRCDIR@/src/util/virhostcpu.c
-@SRCDIR@/src/util/virhostdev.c
 @SRCDIR@/src/util/virhostmem.c
 @SRCDIR@/src/util/virhostuptime.c
 @SRCDIR@/src/util/viridentity.c

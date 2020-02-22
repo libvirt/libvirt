@@ -5,6 +5,8 @@ HYPERVISOR_SOURCES = \
 	hypervisor/domain_cgroup.c \
 	hypervisor/domain_driver.h \
 	hypervisor/domain_driver.c \
+	hypervisor/virhostdev.h \
+	hypervisor/virhostdev.c \
 	$(NULL)
 
 noinst_LTLIBRARIES += libvirt_hypervisor.la

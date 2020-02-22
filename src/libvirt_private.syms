@@ -1406,6 +1406,36 @@ virDomainDriverParseBlkioDeviceStr;
 virDomainDriverSetupPersistentDefBlkioParams;
 
 
+# hypervisor/virhostdev.h
+virHostdevFindUSBDevice;
+virHostdevManagerGetDefault;
+virHostdevPCINodeDeviceDetach;
+virHostdevPCINodeDeviceReAttach;
+virHostdevPCINodeDeviceReset;
+virHostdevPrepareDomainDevices;
+virHostdevPrepareMediatedDevices;
+virHostdevPrepareNVMeDevices;
+virHostdevPrepareOneNVMeDevice;
+virHostdevPreparePCIDevices;
+virHostdevPrepareSCSIDevices;
+virHostdevPrepareSCSIVHostDevices;
+virHostdevPrepareUSBDevices;
+virHostdevReAttachDomainDevices;
+virHostdevReAttachMediatedDevices;
+virHostdevReAttachNVMeDevices;
+virHostdevReAttachOneNVMeDevice;
+virHostdevReAttachPCIDevices;
+virHostdevReAttachSCSIDevices;
+virHostdevReAttachSCSIVHostDevices;
+virHostdevReAttachUSBDevices;
+virHostdevUpdateActiveDomainDevices;
+virHostdevUpdateActiveMediatedDevices;
+virHostdevUpdateActiveNVMeDevices;
+virHostdevUpdateActivePCIDevices;
+virHostdevUpdateActiveSCSIDevices;
+virHostdevUpdateActiveUSBDevices;
+
+
 # libvirt_internal.h
 virConnectSupportsFeature;
 virDomainMigrateBegin3;
@@ -2167,36 +2197,6 @@ virHostCPUGetStats;
 virHostCPUGetThreadsPerSubcore;
 virHostCPUHasBitmap;
 virHostCPUStatsAssign;
-
-
-# util/virhostdev.h
-virHostdevFindUSBDevice;
-virHostdevManagerGetDefault;
-virHostdevPCINodeDeviceDetach;
-virHostdevPCINodeDeviceReAttach;
-virHostdevPCINodeDeviceReset;
-virHostdevPrepareDomainDevices;
-virHostdevPrepareMediatedDevices;
-virHostdevPrepareNVMeDevices;
-virHostdevPrepareOneNVMeDevice;
-virHostdevPreparePCIDevices;
-virHostdevPrepareSCSIDevices;
-virHostdevPrepareSCSIVHostDevices;
-virHostdevPrepareUSBDevices;
-virHostdevReAttachDomainDevices;
-virHostdevReAttachMediatedDevices;
-virHostdevReAttachNVMeDevices;
-virHostdevReAttachOneNVMeDevice;
-virHostdevReAttachPCIDevices;
-virHostdevReAttachSCSIDevices;
-virHostdevReAttachSCSIVHostDevices;
-virHostdevReAttachUSBDevices;
-virHostdevUpdateActiveDomainDevices;
-virHostdevUpdateActiveMediatedDevices;
-virHostdevUpdateActiveNVMeDevices;
-virHostdevUpdateActivePCIDevices;
-virHostdevUpdateActiveSCSIDevices;
-virHostdevUpdateActiveUSBDevices;
 
 
 # util/virhostmem.h
