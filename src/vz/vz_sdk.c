@@ -1609,13 +1609,13 @@ prlsdkInBootList(PRL_HANDLE sdkdom,
     size_t i;
 
     pret = PrlVmDev_GetType(sdktargetdev, &targetType);
-    prlsdkCheckRetExit(pret, -1);
+    prlsdkCheckRetExit(pret, false);
 
     pret = PrlVmDev_GetIndex(sdktargetdev, &targetIndex);
-    prlsdkCheckRetExit(pret, -1);
+    prlsdkCheckRetExit(pret, false);
 
     pret = PrlVmCfg_GetBootDevCount(sdkdom, &bootNum);
-    prlsdkCheckRetExit(pret, -1);
+    prlsdkCheckRetExit(pret, false);
 
     for (i = 0; i < bootNum; ++i) {
         pret = PrlVmCfg_GetBootDev(sdkdom, i, &bootDev);
