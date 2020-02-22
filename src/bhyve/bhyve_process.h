@@ -24,7 +24,6 @@
 #include "bhyve_utils.h"
 
 int virBhyveProcessStart(virConnectPtr conn,
-                         bhyveConnPtr driver,
                          virDomainObjPtr vm,
                          virDomainRunningReason reason,
                          unsigned int flags);

@@ -94,7 +94,6 @@ virBhyveFormatDevMapFile(const char *vm_name, char **fn_out)
 
 int
 virBhyveProcessStart(virConnectPtr conn,
-                     bhyveConnPtr driver,
                      virDomainObjPtr vm,
                      virDomainRunningReason reason,
                      unsigned int flags)
@@ -107,12 +106,11 @@ virBhyveProcessStart(virConnectPtr conn,
     char ebuf[1024];
     virCommandPtr cmd = NULL;
     virCommandPtr load_cmd = NULL;
-    bhyveConnPtr privconn = conn->privateData;
+    bhyveConnPtr driver = conn->privateData;
     bhyveDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1, rc;
 
     logfile = g_strdup_printf("%s/%s.log", BHYVE_LOG_DIR, vm->def->name);
-
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
                       S_IRUSR | S_IWUSR)) < 0) {
         virReportSystemError(errno,
@@ -121,19 +119,19 @@ virBhyveProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    VIR_FREE(privconn->pidfile);
-    if (!(privconn->pidfile = virPidFileBuildPath(BHYVE_STATE_DIR,
-                                                  vm->def->name))) {
+    VIR_FREE(driver->pidfile);
+    if (!(driver->pidfile = virPidFileBuildPath(BHYVE_STATE_DIR,
+                                                vm->def->name))) {
         virReportSystemError(errno,
                              "%s", _("Failed to build pidfile path"));
         goto cleanup;
     }
 
-    if (unlink(privconn->pidfile) < 0 &&
+    if (unlink(driver->pidfile) < 0 &&
         errno != ENOENT) {
         virReportSystemError(errno,
                              _("Cannot remove state PID file %s"),
-                             privconn->pidfile);
+                             driver->pidfile);
         goto cleanup;
     }
 
@@ -147,7 +145,7 @@ virBhyveProcessStart(virConnectPtr conn,
     virCommandSetOutputFD(cmd, &logfd);
     virCommandSetErrorFD(cmd, &logfd);
     virCommandWriteArgLog(cmd, logfd);
-    virCommandSetPidFile(cmd, privconn->pidfile);
+    virCommandSetPidFile(cmd, driver->pidfile);
     virCommandDaemonize(cmd);
 
     if (vm->def->os.loader == NULL) {
@@ -189,7 +187,7 @@ virBhyveProcessStart(virConnectPtr conn,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (virPidFileReadPath(privconn->pidfile, &vm->pid) < 0) {
+    if (virPidFileReadPath(driver->pidfile, &vm->pid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Domain %s didn't show up"), vm->def->name);
         goto cleanup;
