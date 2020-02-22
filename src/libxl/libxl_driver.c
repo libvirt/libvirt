@@ -653,7 +653,7 @@ libxlStateInitialize(bool privileged,
                      void *opaque)
 {
     libxlDriverConfigPtr cfg;
-    char *driverConf = NULL;
+    g_autofree char *driverConf = NULL;
     char ebuf[1024];
     bool autostart = true;
 
@@ -707,7 +707,6 @@ libxlStateInitialize(bool privileged,
 
     if (libxlDriverConfigLoadFile(cfg, driverConf) < 0)
         goto error;
-    VIR_FREE(driverConf);
 
     /* Register the callbacks providing access to libvirt's event loop */
     libxl_osevent_register_hooks(cfg->ctx, &libxl_osevent_callbacks, cfg->ctx);
@@ -823,7 +822,6 @@ libxlStateInitialize(bool privileged,
     return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
-    VIR_FREE(driverConf);
     libxlStateCleanup();
     return VIR_DRV_STATE_INIT_ERROR;
 }
