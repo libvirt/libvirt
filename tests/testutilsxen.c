@@ -94,7 +94,8 @@ libxlDriverPrivatePtr testXLInitDriver(void)
         return NULL;
     }
 
-    driver->config = libxlDriverConfigNew();
+    if (!(driver->config = libxlDriverConfigNew()))
+        return NULL;
 
     driver->config->caps = testXLInitCaps();
 
