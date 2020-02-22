@@ -946,7 +946,8 @@ bhyveDomainCreateXML(virConnectPtr conn,
 static int
 bhyveDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
 {
-    bhyveConnPtr privconn = dom->conn->privateData;
+    virConnectPtr conn = dom->conn;
+    bhyveConnPtr privconn = conn->privateData;
     virDomainObjPtr vm;
     virObjectEventPtr event = NULL;
     int ret = -1;
@@ -956,7 +957,7 @@ bhyveDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
     if (!(vm = bhyveDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainDestroyFlagsEnsureACL(conn, vm->def) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -1060,7 +1061,8 @@ bhyveDomainSetMetadata(virDomainPtr dom,
                        const char *uri,
                        unsigned int flags)
 {
-    bhyveConnPtr privconn = dom->conn->privateData;
+    virConnectPtr conn = dom->conn;
+    bhyveConnPtr privconn = conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -1070,7 +1072,7 @@ bhyveDomainSetMetadata(virDomainPtr dom,
     if (!(vm = bhyveDomObjFromDomain(dom)))
         return -1;
 
-    if (virDomainSetMetadataEnsureACL(dom->conn, vm->def, flags) < 0)
+    if (virDomainSetMetadataEnsureACL(conn, vm->def, flags) < 0)
         goto cleanup;
 
     ret = virDomainObjSetMetadata(vm, type, metadata, key, uri,
