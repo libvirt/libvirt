@@ -94,17 +94,6 @@ VIR_MOCK_STUB_RET_ARGS(bind,
                        const struct sockaddr *, addr,
                        socklen_t, addrlen)
 
-VIR_MOCK_IMPL_RET_ARGS(virFileMakePath, int,
-                       const char *, path)
-{
-    /* replace log path with a writable directory */
-    if (strstr(path, "/log/")) {
-        g_snprintf((char*)path, strlen(path), ".");
-        return 0;
-    }
-    return real_virFileMakePath(path);
-}
-
 VIR_MOCK_IMPL_RET_ARGS(__xstat, int,
                        int, ver,
                        const char *, path,

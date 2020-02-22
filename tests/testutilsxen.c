@@ -97,6 +97,9 @@ libxlDriverPrivatePtr testXLInitDriver(void)
     if (!(driver->config = libxlDriverConfigNew()))
         return NULL;
 
+    g_free(driver->config->logDir);
+    driver->config->logDir = g_strdup(abs_builddir);
+
     if (libxlDriverConfigInit(driver->config) < 0)
         return NULL;
 
