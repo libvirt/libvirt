@@ -2993,8 +2993,8 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelComparison(const void *opaque)
                                "{\"return\":{\"result\":\"test\"}}") < 0)
         return -1;
 
-    if (VIR_ALLOC(cpu_a) < 0 || VIR_ALLOC(cpu_b) < 0)
-        goto cleanup;
+    cpu_a = virCPUDefNew();
+    cpu_b = virCPUDefNew();
 
     cpu_a->model = g_strdup("cpu_a");
     cpu_b->model = g_strdup("cpu_b");
@@ -3045,8 +3045,8 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelBaseline(const void *opaque)
                                "}") < 0)
         return -1;
 
-    if (VIR_ALLOC(cpu_a) < 0 || VIR_ALLOC(cpu_b) < 0)
-        goto cleanup;
+    cpu_a = virCPUDefNew();
+    cpu_b = virCPUDefNew();
 
     cpu_a->model = g_strdup("cpu_a");
     cpu_b->model = g_strdup("cpu_b");
