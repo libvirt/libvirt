@@ -506,17 +506,20 @@ libxltestdriver_la_LIBADD = $(libxl_LDADDS)
 xlconfigtest_SOURCES = \
 	xlconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
-xlconfigtest_LDADD =$(libxl_LDADDS)
+xlconfigtest_LDADD = libxltestdriver.la \
+	$(libxl_LDADDS)
 
 xmconfigtest_SOURCES = \
 	xmconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
-xmconfigtest_LDADD = $(libxl_LDADDS)
+xmconfigtest_LDADD = libxltestdriver.la \
+	$(libxl_LDADDS)
 
 libxlxml2domconfigtest_SOURCES = \
 	libxlxml2domconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
-libxlxml2domconfigtest_LDADD = $(libxl_LDADDS) $(LIBXML_LIBS)
+libxlxml2domconfigtest_LDADD = libxltestdriver.la \
+	$(libxl_LDADDS) $(LIBXML_LIBS)
 
 libxlmock_la_SOURCES = \
 	libxlmock.c
