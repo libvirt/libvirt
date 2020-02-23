@@ -22,6 +22,7 @@
 
 #include <config.h>
 
+#include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/utsname.h>
