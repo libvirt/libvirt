@@ -1019,3 +1019,50 @@ int virStringParseYesNo(const char *str, bool *result)
 
     return 0;
 }
+
+
+/**
+ * virParseVersionString:
+ * @str: const char pointer to the version string
+ * @version: unsigned long pointer to output the version number
+ * @allowMissing: true to treat 3 like 3.0.0, false to error out on
+ * missing minor or micro
+ *
+ * Parse an unsigned version number from a version string. Expecting
+ * 'major.minor.micro' format, ignoring an optional suffix.
+ *
+ * The major, minor and micro numbers are encoded into a single version number:
+ *
+ *   1000000 * major + 1000 * minor + micro
+ *
+ * Returns the 0 for success, -1 for error.
+ */
+int
+virParseVersionString(const char *str, unsigned long *version,
+                      bool allowMissing)
+{
+    unsigned int major, minor = 0, micro = 0;
+    char *tmp;
+
+    if (virStrToLong_ui(str, &tmp, 10, &major) < 0)
+        return -1;
+
+    if (!allowMissing && *tmp != '.')
+        return -1;
+
+    if ((*tmp == '.') && virStrToLong_ui(tmp + 1, &tmp, 10, &minor) < 0)
+        return -1;
+
+    if (!allowMissing && *tmp != '.')
+        return -1;
+
+    if ((*tmp == '.') && virStrToLong_ui(tmp + 1, &tmp, 10, &micro) < 0)
+        return -1;
+
+    if (major > UINT_MAX / 1000000 || minor > 999 || micro > 999)
+        return -1;
+
+    *version = 1000000 * major + 1000 * minor + micro;
+
+    return 0;
+}

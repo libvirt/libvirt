@@ -3303,6 +3303,7 @@ virStorageFileParseBackingStoreStr;
 
 
 # util/virstring.h
+virParseVersionString;
 virSkipSpaces;
 virSkipSpacesAndBackslash;
 virSkipSpacesBackwards;
@@ -3549,7 +3550,6 @@ virMemoryLimitIsSet;
 virMemoryLimitTruncate;
 virMemoryMaxValue;
 virParseOwnershipIds;
-virParseVersionString;
 virPipe;
 virPipeNonBlock;
 virPipeQuiet;

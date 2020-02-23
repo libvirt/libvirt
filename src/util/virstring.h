@@ -135,3 +135,7 @@ int virStringParsePort(const char *str,
 int virStringParseYesNo(const char *str,
                         bool *result)
     G_GNUC_WARN_UNUSED_RESULT;
+
+int virParseVersionString(const char *str,
+                          unsigned long *version,
+                          bool allowMissing);
