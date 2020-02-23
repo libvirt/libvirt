@@ -40,7 +40,6 @@
 #include "vircommand.h"
 #include "virstring.h"
 #include "virhostcpu.h"
-#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 

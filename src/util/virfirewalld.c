@@ -28,7 +28,6 @@
 #include "virfirewalldpriv.h"
 #include "viralloc.h"
 #include "virerror.h"
-#include "virutil.h"
 #include "virlog.h"
 #include "virgdbus.h"
 #include "virenum.h"

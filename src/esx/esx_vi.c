@@ -35,7 +35,6 @@
 #include "esx_vi_methods.h"
 #include "esx_util.h"
 #include "virstring.h"
-#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 

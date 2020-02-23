@@ -12,7 +12,6 @@
 # include "qemu/qemu_capspriv.h"
 # include "virstring.h"
 # include "virfilecache.h"
-# include "virutil.h"
 
 # define VIR_FROM_THIS VIR_FROM_QEMU
 

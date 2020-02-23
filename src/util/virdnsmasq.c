@@ -34,7 +34,6 @@
 #include "datatypes.h"
 #include "virbitmap.h"
 #include "virdnsmasq.h"
-#include "virutil.h"
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virerror.h"
