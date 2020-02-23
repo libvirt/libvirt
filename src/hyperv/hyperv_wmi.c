@@ -37,6 +37,7 @@
 #include "virstring.h"
 #include "openwsman.h"
 #include "virlog.h"
+#include "virxml.h"
 
 #define WS_SERIALIZER_FREE_MEM_WORKS 0
 
