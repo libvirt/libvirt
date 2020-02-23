@@ -27,7 +27,6 @@
 #include "viralloc.h"
 #include "virbuffer.h"
 #include "virstring.h"
-#include "virutil.h"
 #include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -1168,7 +1167,7 @@ virBitmapNewString(const char *string)
         return NULL;
 
     for (i = 0; i < len; i++) {
-        unsigned long nibble = virHexToBin(string[len - i - 1]);
+        unsigned long nibble = g_ascii_xdigit_value(string[len - i - 1]);
         nibble <<= VIR_BITMAP_BIT_OFFSET(i * 4);
         bitmap->map[VIR_BITMAP_UNIT_OFFSET(i * 4)] |= nibble;
     }

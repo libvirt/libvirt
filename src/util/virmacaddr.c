@@ -23,7 +23,6 @@
 
 #include "virmacaddr.h"
 #include "virrandom.h"
-#include "virutil.h"
 #include "viralloc.h"
 
 static const unsigned char virMacAddrBroadcastAddrRaw[VIR_MAC_BUFLEN] =
@@ -213,8 +212,8 @@ virMacAddrParseHex(const char *str, virMacAddrPtr addr)
         return -1;
 
     for (i = 0; i < VIR_MAC_BUFLEN; i++)
-        addr->addr[i] = (virHexToBin(str[2 * i]) << 4 |
-                         virHexToBin(str[2 * i + 1]));
+        addr->addr[i] = (g_ascii_xdigit_value(str[2 * i]) << 4 |
+                         g_ascii_xdigit_value(str[2 * i + 1]));
     return 0;
 }
 

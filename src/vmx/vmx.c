@@ -28,7 +28,6 @@
 #include "virconf.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "viruuid.h"
 #include "vmx.h"
 #include "viruri.h"
 #include "virstring.h"
@@ -673,7 +672,8 @@ virVMXUnescapeHex(char *string, char escape)
             if (!g_ascii_isxdigit(tmp1[1]) || !g_ascii_isxdigit(tmp1[2]))
                 return -1;
 
-            *tmp2++ = virHexToBin(tmp1[1]) * 16 + virHexToBin(tmp1[2]);
+            *tmp2++ = g_ascii_xdigit_value(tmp1[1]) * 16 +
+                g_ascii_xdigit_value(tmp1[2]);
             tmp1 += 3;
         } else {
             *tmp2++ = *tmp1++;
