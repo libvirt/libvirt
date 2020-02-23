@@ -21,10 +21,6 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <net/if.h>
-#include <net/if_tap.h>
-
 #include "bhyve_capabilities.h"
 #include "bhyve_command.h"
 #include "bhyve_domain.h"
