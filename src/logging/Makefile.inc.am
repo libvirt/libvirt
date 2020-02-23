@@ -59,7 +59,7 @@ OPENRC_INIT_FILES += \
 	virtlogd.init \
 	$(NULL)
 OPENRC_INIT_FILES_IN += \
-	virtlogd.init.in \
+	logging/virtlogd.init.in \
 	$(NULL)
 
 noinst_LTLIBRARIES += libvirt_driver_log.la

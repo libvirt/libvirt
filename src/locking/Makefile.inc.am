@@ -83,7 +83,7 @@ OPENRC_INIT_FILES += \
 	virtlockd.init \
 	$(NULL)
 OPENRC_INIT_FILES_IN += \
-	virtlockd.init.in \
+	locking/virtlockd.init.in \
 	$(NULL)
 
 noinst_LTLIBRARIES += libvirt_driver_lock.la
