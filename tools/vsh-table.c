@@ -28,8 +28,6 @@
 
 #include "viralloc.h"
 #include "virbuffer.h"
-#include "virstring.h"
-#include "virsh-util.h"
 
 #define HEX_ENCODE_LENGTH 4 /* represents length of '\xNN' */
 

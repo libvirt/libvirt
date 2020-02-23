@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "virsh.h"
+#include "vsh.h"
 
 struct virshSecretEventCallback {
     const char *name;

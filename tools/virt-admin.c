@@ -19,8 +19,9 @@
  */
 
 #include <config.h>
-#include "virt-admin.h"
 
+#include <stdio.h>
+#include <unistd.h>
 #include <getopt.h>
 
 #if WITH_READLINE
@@ -29,6 +30,7 @@
 #endif
 
 #include "internal.h"
+#include "virt-admin.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virfile.h"

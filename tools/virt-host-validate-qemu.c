@@ -20,7 +20,6 @@
  */
 
 #include <config.h>
-#include <unistd.h>
 
 #include "virt-host-validate-qemu.h"
 #include "virt-host-validate-common.h"

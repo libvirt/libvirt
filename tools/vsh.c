@@ -24,9 +24,7 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <unistd.h>
-#include <sys/time.h>
 #include <fcntl.h>
-#include <time.h>
 #include <sys/stat.h>
 #include <inttypes.h>
 #include <signal.h>
@@ -42,7 +40,6 @@
 #include "virfile.h"
 #include "virthread.h"
 #include "vircommand.h"
-#include "virtypedparam.h"
 #include "virstring.h"
 #include "virutil.h"
 

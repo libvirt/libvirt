@@ -22,10 +22,8 @@
 #include "virsh-network.h"
 
 #include "internal.h"
-#include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
-#include "virstring.h"
 #include "virtime.h"
 #include "conf/network_conf.h"
 #include "vsh-table.h"

@@ -24,12 +24,9 @@
 
 #include <fcntl.h>
 #include <signal.h>
-#include <sys/time.h>
 
 #include <libxml/parser.h>
-#include <libxml/tree.h>
 #include <libxml/xpath.h>
-#include <libxml/xmlsave.h>
 
 #include "internal.h"
 #include "virbitmap.h"
@@ -50,7 +47,6 @@
 #include "virtime.h"
 #include "virtypedparam.h"
 #include "virxml.h"
-#include "virsh-nodedev.h"
 #include "viruri.h"
 #include "vsh-table.h"
 #include "virenum.h"

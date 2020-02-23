@@ -28,7 +28,6 @@
 #include "virfile.h"
 #include "virutil.h"
 #include "virsecret.h"
-#include "virstring.h"
 #include "virtime.h"
 #include "vsh-table.h"
 #include "virenum.h"

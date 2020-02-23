@@ -24,7 +24,6 @@
 #include "internal.h"
 #include "virt-admin.h"
 #include "viralloc.h"
-#include "virstring.h"
 
 
 char **

@@ -21,8 +21,6 @@
 #pragma once
 
 #include <stdarg.h>
-#include <unistd.h>
-#include <sys/stat.h>
 #ifndef WIN32
 # include <termios.h>
 #endif

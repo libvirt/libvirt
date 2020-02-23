@@ -20,18 +20,15 @@
 
 #include <config.h>
 #include "virsh-host.h"
+#include "virsh.h"
 
 #include <libxml/parser.h>
-#include <libxml/tree.h>
 #include <libxml/xpath.h>
-#include <libxml/xmlsave.h>
 
 #include "internal.h"
 #include "virbitmap.h"
-#include "virbuffer.h"
 #include "viralloc.h"
 #include "virxml.h"
-#include "virtypedparam.h"
 #include "virstring.h"
 #include "virfile.h"
 #include "virenum.h"

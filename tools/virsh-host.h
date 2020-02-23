@@ -20,6 +20,6 @@
 
 #pragma once
 
-#include "virsh.h"
+#include "vsh.h"
 
 extern const vshCmdDef hostAndHypervisorCmds[];

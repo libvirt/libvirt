@@ -31,17 +31,13 @@
 #include "virsh-interface.h"
 
 #include <libxml/parser.h>
-#include <libxml/tree.h>
 #include <libxml/xpath.h>
-#include <libxml/xmlsave.h>
 
 #include "internal.h"
-#include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virmacaddr.h"
 #include "virxml.h"
-#include "virstring.h"
 #include "vsh-table.h"
 
 virInterfacePtr

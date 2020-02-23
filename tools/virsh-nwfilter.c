@@ -22,7 +22,6 @@
 #include "virsh-nwfilter.h"
 
 #include "internal.h"
-#include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "vsh-table.h"
