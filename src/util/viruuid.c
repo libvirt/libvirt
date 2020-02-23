@@ -29,7 +29,6 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "virutil.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "viralloc.h"
@@ -105,6 +104,7 @@ virUUIDParse(const char *uuidstr, unsigned char *uuid)
         cur++;
 
     for (i = 0; i < VIR_UUID_BUFLEN;) {
+        int val;
         uuid[i] = 0;
         if (*cur == 0)
             return -1;
@@ -112,16 +112,15 @@ virUUIDParse(const char *uuidstr, unsigned char *uuid)
             cur++;
             continue;
         }
-        if (!g_ascii_isxdigit(*cur))
+        if ((val = g_ascii_xdigit_value(*cur)) < 0)
             return -1;
-        uuid[i] = virHexToBin(*cur);
-        uuid[i] *= 16;
+        uuid[i] = 16 * val;
         cur++;
         if (*cur == 0)
             return -1;
-        if (!g_ascii_isxdigit(*cur))
+        if ((val = g_ascii_xdigit_value(*cur)) < 0)
             return -1;
-        uuid[i] += virHexToBin(*cur);
+        uuid[i] += val;
         i++;
         cur++;
     }
