@@ -44,8 +44,6 @@ int virScaleInteger(unsigned long long *value, const char *suffix,
                     unsigned long long scale, unsigned long long limit)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-int virHexToBin(unsigned char c);
-
 int virParseVersionString(const char *str, unsigned long *version,
                           bool allowMissing);
 

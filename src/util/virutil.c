@@ -164,21 +164,6 @@ int virSetSockReuseAddr(int fd, bool fatal)
 #endif
 
 
-/* Convert C from hexadecimal character to integer.  */
-int
-virHexToBin(unsigned char c)
-{
-    switch (c) {
-    default: return c - '0';
-    case 'a': case 'A': return 10;
-    case 'b': case 'B': return 11;
-    case 'c': case 'C': return 12;
-    case 'd': case 'D': return 13;
-    case 'e': case 'E': return 14;
-    case 'f': case 'F': return 15;
-    }
-}
-
 /* Scale an integer VALUE in-place by an optional case-insensitive
  * SUFFIX, defaulting to SCALE if suffix is NULL or empty (scale is
  * typically 1 or 1024).  Recognized suffixes include 'b' or 'bytes',

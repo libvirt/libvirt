@@ -3409,7 +3409,6 @@ virGetUserID;
 virGetUserName;
 virGetUserRuntimeDirectory;
 virGetUserShell;
-virHexToBin;
 virHostGetDRMRenderNode;
 virHostHasIOMMU;
 virIndexToDiskName;
