@@ -151,7 +151,7 @@ testParseVersionString(const void *data G_GNUC_UNUSED)
     unsigned long version;
 
     for (i = 0; i < G_N_ELEMENTS(versions); ++i) {
-        result = virParseVersionString(versions[i].string, &version,
+        result = virStringParseVersion(&version, versions[i].string,
                                        versions[i].allowMissing);
 
         if (result != versions[i].result) {

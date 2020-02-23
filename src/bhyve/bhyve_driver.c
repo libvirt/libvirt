@@ -267,7 +267,7 @@ bhyveConnectGetVersion(virConnectPtr conn, unsigned long *version)
 
     uname(&ver);
 
-    if (virParseVersionString(ver.release, version, true) < 0) {
+    if (virStringParseVersion(version, ver.release, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown release: %s"), ver.release);
         return -1;

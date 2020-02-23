@@ -170,7 +170,7 @@ vboxExtractVersion(void)
 
     gVBoxAPI.UPFN.Utf16ToUtf8(vbox_driver->pFuncs, versionUtf16, &vboxVersion);
 
-    if (virParseVersionString(vboxVersion, &vbox_driver->version, false) >= 0)
+    if (virStringParseVersion(&vbox_driver->version, vboxVersion, false) >= 0)
         ret = 0;
 
     gVBoxAPI.UPFN.Utf8Free(vbox_driver->pFuncs, vboxVersion);

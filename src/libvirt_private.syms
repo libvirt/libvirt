@@ -3303,7 +3303,6 @@ virStorageFileParseBackingStoreStr;
 
 
 # util/virstring.h
-virParseVersionString;
 virSkipSpaces;
 virSkipSpacesAndBackslash;
 virSkipSpacesBackwards;
@@ -3320,6 +3319,7 @@ virStringIsPrintable;
 virStringMatch;
 virStringMatchesNameSuffix;
 virStringParsePort;
+virStringParseVersion;
 virStringParseYesNo;
 virStringReplace;
 virStringSearch;

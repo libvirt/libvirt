@@ -3656,7 +3656,7 @@ ebiptablesDriverProbeCtdir(void)
     }
 
     /* following Linux lxr, the logic was inverted in 2.6.39 */
-    if (virParseVersionString(utsname.release, &thisversion, true) < 0) {
+    if (virStringParseVersion(&thisversion, utsname.release, true) < 0) {
         VIR_ERROR(_("Could not determine kernel version from string %s"),
                   utsname.release);
         return;
@@ -3689,7 +3689,7 @@ ebiptablesDriverProbeStateMatchQuery(virFirewall *fw G_GNUC_UNUSED,
      * 'iptables v1.4.16'
      */
     if (!(tmp = strchr(lines[0], 'v')) ||
-        virParseVersionString(tmp + 1, version, true) < 0) {
+        virStringParseVersion(version, tmp + 1, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot parse version string '%s'"),
                        lines[0]);

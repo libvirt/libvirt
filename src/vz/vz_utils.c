@@ -182,7 +182,7 @@ vzInitVersion(struct _vzDriver *driver)
     }
 
     tmp[0] = '\0';
-    if (virParseVersionString(sVer, &(driver->vzVersion), true) < 0) {
+    if (virStringParseVersion(&(driver->vzVersion), sVer, true) < 0) {
         vzParseError();
         goto cleanup;
     }

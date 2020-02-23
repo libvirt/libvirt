@@ -615,7 +615,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 
     virSkipToDigit(&p);
 
-    if (virParseVersionString(p, &version, true) < 0)
+    if (virStringParseVersion(&version, p, true) < 0)
         goto error;
 
     if (version < DNSMASQ_MIN_MAJOR * 1000000 + DNSMASQ_MIN_MINOR * 1000) {

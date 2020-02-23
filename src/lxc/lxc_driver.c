@@ -1656,7 +1656,7 @@ static int lxcConnectGetVersion(virConnectPtr conn, unsigned long *version)
     if (virConnectGetVersionEnsureACL(conn) < 0)
         return -1;
 
-    if (virParseVersionString(ver.release, version, true) < 0) {
+    if (virStringParseVersion(version, ver.release, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Unknown release: %s"), ver.release);
         return -1;
     }

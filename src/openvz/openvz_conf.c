@@ -86,7 +86,7 @@ openvzExtractVersionInfo(const char *cmdstr, int *retversion)
     if ((tmp = STRSKIP(tmp, "vzctl version ")) == NULL)
         return -1;
 
-    if (virParseVersionString(tmp, &version, true) < 0)
+    if (virStringParseVersion(&version, tmp, true) < 0)
         return -1;
 
     if (retversion)

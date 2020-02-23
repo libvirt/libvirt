@@ -869,8 +869,8 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         return -1;
     }
 
-    if (virParseVersionString(ctx->service->about->apiVersion,
-                              &ctx->apiVersion, true) < 0) {
+    if (virStringParseVersion(&ctx->apiVersion,
+                              ctx->service->about->apiVersion, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse VI API version '%s'"),
                        ctx->service->about->apiVersion);
@@ -884,8 +884,8 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         return -1;
     }
 
-    if (virParseVersionString(ctx->service->about->version,
-                              &ctx->productVersion, true) < 0) {
+    if (virStringParseVersion(&ctx->productVersion,
+                              ctx->service->about->version, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse product version '%s'"),
                        ctx->service->about->version);

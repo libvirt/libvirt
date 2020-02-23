@@ -696,7 +696,7 @@ testQemuGetLatestCapsForArch(const char *arch,
         if (!virStringStripSuffix(tmp, fullsuffix))
             continue;
 
-        if (virParseVersionString(tmp, &ver, false) < 0) {
+        if (virStringParseVersion(&ver, tmp, false) < 0) {
             VIR_TEST_DEBUG("skipping caps file '%s'", ent->d_name);
             continue;
         }

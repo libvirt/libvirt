@@ -1022,9 +1022,9 @@ int virStringParseYesNo(const char *str, bool *result)
 
 
 /**
- * virParseVersionString:
- * @str: const char pointer to the version string
+ * virStringParseVersion:
  * @version: unsigned long pointer to output the version number
+ * @str: const char pointer to the version string
  * @allowMissing: true to treat 3 like 3.0.0, false to error out on
  * missing minor or micro
  *
@@ -1038,7 +1038,8 @@ int virStringParseYesNo(const char *str, bool *result)
  * Returns the 0 for success, -1 for error.
  */
 int
-virParseVersionString(const char *str, unsigned long *version,
+virStringParseVersion(unsigned long *version,
+                      const char *str,
                       bool allowMissing)
 {
     unsigned int major, minor = 0, micro = 0;

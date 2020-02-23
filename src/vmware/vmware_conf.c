@@ -230,7 +230,7 @@ vmwareParseVersionStr(int type, const char *verbuf, unsigned long *version)
         return -1;
     }
 
-    if (virParseVersionString(tmp, version, false) < 0) {
+    if (virStringParseVersion(version, tmp, false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("version parsing error"));
         return -1;

@@ -267,7 +267,7 @@ int virHostValidateLinuxKernel(const char *hvname,
         return VIR_HOST_VALIDATE_FAILURE(level);
     }
 
-    if (virParseVersionString(uts.release, &thisversion, true) < 0) {
+    if (virStringParseVersion(&thisversion, uts.release, true) < 0) {
         virHostMsgFail(level, "%s", hint);
         return VIR_HOST_VALIDATE_FAILURE(level);
     }
