@@ -19,10 +19,10 @@
 #include <config.h>
 
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "testutils.h"
 #include "virnettlshelpers.h"
-#include "virutil.h"
 #include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"

@@ -19,10 +19,10 @@
 #include <config.h>
 
 #include <signal.h>
+#include <unistd.h>
 #include <sys/stat.h>
 
 #include "testutils.h"
-#include "virutil.h"
 #include "virerror.h"
 #include "viralloc.h"
 #include "virfile.h"

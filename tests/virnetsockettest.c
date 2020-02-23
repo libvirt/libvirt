@@ -19,12 +19,12 @@
 #include <config.h>
 
 #include <signal.h>
+#include <unistd.h>
 #ifdef HAVE_IFADDRS_H
 # include <ifaddrs.h>
 #endif
 
 #include "testutils.h"
-#include "virutil.h"
 #include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"
