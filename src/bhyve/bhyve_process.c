@@ -27,7 +27,6 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #include <sys/user.h>
-#include <sys/ioctl.h>
 #include <net/if.h>
 #include <net/if_tap.h>
 
