@@ -41,6 +41,7 @@
 #include "virxml.h"
 #include "viruuid.h"
 #include "virusb.h"
+#include "virutil.h"
 #include "virpci.h"
 #include "virfile.h"
 #include "configmake.h"
