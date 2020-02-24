@@ -1886,7 +1886,7 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
     }
 
     while ((rc = virDirRead(dh, &de, dir)) > 0) {
-        char *file = NULL;
+        g_autofree char *file = NULL;
 
         if (!virStringStripSuffix(de->d_name, ".xml"))
             continue;
@@ -1894,9 +1894,6 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
         file = g_strdup_printf("%s/%s.xml", dir, de->d_name);
 
         portdef = virNetworkPortDefParseFile(file);
-        VIR_FREE(file);
-        file = NULL;
-
         if (!portdef) {
             VIR_WARN("Cannot parse port %s", file);
             continue;
