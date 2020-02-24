@@ -101,8 +101,6 @@ virBhyveProcessStart(virConnectPtr conn,
     char *devicemap = NULL;
     char *logfile = NULL;
     int logfd = -1;
-    off_t pos = -1;
-    char ebuf[1024];
     virCommandPtr cmd = NULL;
     virCommandPtr load_cmd = NULL;
     bhyveConnPtr driver = conn->privateData;
@@ -172,9 +170,6 @@ virBhyveProcessStart(virConnectPtr conn,
 
         /* Log generated command line */
         virCommandWriteArgLog(load_cmd, logfd);
-        if ((pos = lseek(logfd, 0, SEEK_END)) < 0)
-            VIR_WARN("Unable to seek to end of logfile: %s",
-                     virStrerror(errno, ebuf, sizeof(ebuf)));
 
         VIR_DEBUG("Loading domain '%s'", vm->def->name);
         if (virCommandRun(load_cmd, NULL) < 0)
