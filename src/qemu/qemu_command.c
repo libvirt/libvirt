@@ -3522,7 +3522,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                            _("this qemu doesn't support the "
                              "memory-backend-ram object"));
             return -1;
-        } else if (STREQ(backendType, "memory-backend-memory") &&
+        } else if (STREQ(backendType, "memory-backend-memfd") &&
                    !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
