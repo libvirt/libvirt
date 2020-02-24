@@ -110,11 +110,10 @@ bhyveProcessStopHook(virDomainObjPtr vm, virHookBhyveOpType op)
                     VIR_HOOK_SUBOP_END, NULL, NULL, NULL);
 }
 
-int
-virBhyveProcessStart(virConnectPtr conn,
-                     virDomainObjPtr vm,
-                     virDomainRunningReason reason,
-                     unsigned int flags)
+static int
+virBhyveProcessStartImpl(bhyveConnPtr driver,
+                         virDomainObjPtr vm,
+                         virDomainRunningReason reason)
 {
     char *devmap_file = NULL;
     char *devicemap = NULL;
@@ -122,7 +121,6 @@ virBhyveProcessStart(virConnectPtr conn,
     int logfd = -1;
     virCommandPtr cmd = NULL;
     virCommandPtr load_cmd = NULL;
-    bhyveConnPtr driver = conn->privateData;
     bhyveDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1, rc;
 
@@ -152,10 +150,6 @@ virBhyveProcessStart(virConnectPtr conn,
     }
 
     if (bhyveDomainAssignAddresses(vm->def, NULL) < 0)
-        goto cleanup;
-
-    /* Run an early hook to setup missing devices. */
-    if (bhyveProcessStartHook(vm, VIR_HOOK_BHYVE_OP_PREPARE) < 0)
         goto cleanup;
 
     /* Call bhyve to start the VM */
@@ -213,11 +207,6 @@ virBhyveProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (flags & VIR_BHYVE_PROCESS_START_AUTODESTROY &&
-        virCloseCallbacksSet(driver->closeCallbacks, vm,
-                             conn, bhyveProcessAutoDestroy) < 0)
-        goto cleanup;
-
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
     priv->mon = bhyveMonitorOpen(vm, driver);
@@ -260,6 +249,26 @@ virBhyveProcessStart(virConnectPtr conn,
     VIR_FREE(logfile);
     VIR_FORCE_CLOSE(logfd);
     return ret;
+}
+
+int
+virBhyveProcessStart(virConnectPtr conn,
+                     virDomainObjPtr vm,
+                     virDomainRunningReason reason,
+                     unsigned int flags)
+{
+    bhyveConnPtr driver = conn->privateData;
+
+    /* Run an early hook to setup missing devices. */
+    if (bhyveProcessStartHook(vm, VIR_HOOK_BHYVE_OP_PREPARE) < 0)
+        return -1;
+
+    if (flags & VIR_BHYVE_PROCESS_START_AUTODESTROY &&
+        virCloseCallbacksSet(driver->closeCallbacks, vm,
+                             conn, bhyveProcessAutoDestroy) < 0)
+        return -1;
+
+    return virBhyveProcessStartImpl(driver, vm, reason);
 }
 
 int
@@ -345,6 +354,19 @@ virBhyveProcessShutdown(virDomainObjPtr vm)
                  vm->def->name, virGetLastErrorMessage());
         return -1;
     }
+
+    return 0;
+}
+
+int
+virBhyveProcessRestart(bhyveConnPtr driver,
+                       virDomainObjPtr vm)
+{
+    if (virBhyveProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN) < 0)
+        return -1;
+
+    if (virBhyveProcessStartImpl(driver, vm, VIR_DOMAIN_RUNNING_BOOTED) < 0)
+        return -1;
 
     return 0;
 }

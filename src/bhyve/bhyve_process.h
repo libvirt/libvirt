@@ -32,6 +32,9 @@ int virBhyveProcessStop(bhyveConnPtr driver,
                         virDomainObjPtr vm,
                         virDomainShutoffReason reason);
 
+int virBhyveProcessRestart(bhyveConnPtr driver,
+                           virDomainObjPtr vm);
+
 int virBhyveProcessShutdown(virDomainObjPtr vm);
 
 int virBhyveGetDomainTotalCpuStats(virDomainObjPtr vm,

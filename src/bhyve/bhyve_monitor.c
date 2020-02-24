@@ -41,10 +41,11 @@ VIR_LOG_INIT("bhyve.bhyve_monitor");
 struct _bhyveMonitor {
     virObject parent;
 
-    int kq;
-    int watch;
     bhyveConnPtr driver;
     virDomainObjPtr vm;
+    int kq;
+    int watch;
+    bool reboot;
 };
 
 static virClassPtr bhyveMonitorClass;
@@ -100,6 +101,12 @@ bhyveMonitorUnregister(bhyveMonitorPtr mon)
     mon->watch = -1;
 }
 
+void
+bhyveMonitorSetReboot(bhyveMonitorPtr mon)
+{
+    mon->reboot = true;
+}
+
 static void
 bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
 {
@@ -148,11 +155,10 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
                            name, WTERMSIG(status));
             virBhyveProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED);
         } else if (WIFEXITED(status)) {
-            if (WEXITSTATUS(status) == 0) {
+            if (WEXITSTATUS(status) == 0 || mon->reboot) {
                 /* 0 - reboot */
-                /* TODO: Implementing reboot is a little more complicated. */
-                VIR_INFO("Guest %s rebooted; destroying domain.", name);
-                virBhyveProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+                VIR_INFO("Guest %s rebooted; restarting domain.", name);
+                virBhyveProcessRestart(driver, vm);
             } else if (WEXITSTATUS(status) < 3) {
                 /* 1 - shutdown, 2 - halt, 3 - triple fault. others - error */
                 VIR_INFO("Guest %s shut itself down; destroying domain.", name);
@@ -179,6 +185,7 @@ bhyveMonitorOpenImpl(virDomainObjPtr vm, bhyveConnPtr driver)
         return NULL;
 
     mon->driver = driver;
+    mon->reboot = false;
 
     virObjectRef(vm);
     mon->vm = vm;

@@ -1014,6 +1014,35 @@ bhyveDomainShutdown(virDomainPtr dom)
 }
 
 static int
+bhyveDomainReboot(virDomainPtr dom, unsigned int flags)
+{
+    virConnectPtr conn = dom->conn;
+    virDomainObjPtr vm;
+    bhyveDomainObjPrivatePtr priv;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainRebootEnsureACL(conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+    bhyveMonitorSetReboot(priv->mon);
+
+    ret = virBhyveProcessShutdown(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
 bhyveDomainOpenConsole(virDomainPtr dom,
                        const char *dev_name G_GNUC_UNUSED,
                        virStreamPtr st,
@@ -1657,6 +1686,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainDestroyFlags = bhyveDomainDestroyFlags, /* 5.6.0 */
     .domainShutdown = bhyveDomainShutdown, /* 1.3.3 */
     .domainShutdownFlags = bhyveDomainShutdownFlags, /* 5.6.0 */
+    .domainReboot = bhyveDomainReboot, /* TBD */
     .domainLookupByUUID = bhyveDomainLookupByUUID, /* 1.2.2 */
     .domainLookupByName = bhyveDomainLookupByName, /* 1.2.2 */
     .domainLookupByID = bhyveDomainLookupByID, /* 1.2.3 */

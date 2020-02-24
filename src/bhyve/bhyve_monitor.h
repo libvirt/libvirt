@@ -29,3 +29,5 @@ typedef bhyveMonitor *bhyveMonitorPtr;
 
 bhyveMonitorPtr bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver);
 void bhyveMonitorClose(bhyveMonitorPtr mon);
+
+void bhyveMonitorSetReboot(bhyveMonitorPtr mon);
