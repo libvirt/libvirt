@@ -29,6 +29,7 @@ typedef enum {
     VIR_HOOK_DRIVER_LXC,               /* LXC domains related events */
     VIR_HOOK_DRIVER_NETWORK,           /* network related events */
     VIR_HOOK_DRIVER_LIBXL,             /* Xen libxl domains related events */
+    VIR_HOOK_DRIVER_BHYVE,             /* Bhyve domains related events */
 
     VIR_HOOK_DRIVER_LAST,
 } virHookDriverType;
@@ -96,6 +97,16 @@ typedef enum {
 
     VIR_HOOK_LIBXL_OP_LAST,
 } virHookLibxlOpType;
+
+typedef enum {
+    VIR_HOOK_BHYVE_OP_START,            /* domain is about to start */
+    VIR_HOOK_BHYVE_OP_STOPPED,          /* domain has stopped */
+    VIR_HOOK_BHYVE_OP_PREPARE,          /* domain startup initiated */
+    VIR_HOOK_BHYVE_OP_RELEASE,          /* domain destruction is over */
+    VIR_HOOK_BHYVE_OP_STARTED,          /* domain has started */
+
+    VIR_HOOK_BHYVE_OP_LAST,
+} virHookBhyveOpType;
 
 int virHookInitialize(void);
 

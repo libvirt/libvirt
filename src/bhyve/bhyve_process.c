@@ -37,6 +37,7 @@
 #include "bhyve_process.h"
 #include "datatypes.h"
 #include "virerror.h"
+#include "virhook.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "viralloc.h"
@@ -91,6 +92,24 @@ virBhyveFormatDevMapFile(const char *vm_name, char **fn_out)
     *fn_out = g_strdup_printf("%s/grub_bhyve-%s-device.map", BHYVE_STATE_DIR, vm_name);
 }
 
+static int
+bhyveProcessStartHook(virDomainObjPtr vm, virHookBhyveOpType op)
+{
+    if (!virHookPresent(VIR_HOOK_DRIVER_BHYVE))
+        return 0;
+
+    return virHookCall(VIR_HOOK_DRIVER_BHYVE, vm->def->name, op,
+                       VIR_HOOK_SUBOP_BEGIN, NULL, NULL, NULL);
+}
+
+static void
+bhyveProcessStopHook(virDomainObjPtr vm, virHookBhyveOpType op)
+{
+    if (virHookPresent(VIR_HOOK_DRIVER_BHYVE))
+        virHookCall(VIR_HOOK_DRIVER_BHYVE, vm->def->name, op,
+                    VIR_HOOK_SUBOP_END, NULL, NULL, NULL);
+}
+
 int
 virBhyveProcessStart(virConnectPtr conn,
                      virDomainObjPtr vm,
@@ -135,6 +154,10 @@ virBhyveProcessStart(virConnectPtr conn,
     if (bhyveDomainAssignAddresses(vm->def, NULL) < 0)
         goto cleanup;
 
+    /* Run an early hook to setup missing devices. */
+    if (bhyveProcessStartHook(vm, VIR_HOOK_BHYVE_OP_PREPARE) < 0)
+        goto cleanup;
+
     /* Call bhyve to start the VM */
     if (!(cmd = virBhyveProcessBuildBhyveCmd(driver, vm->def, false)))
         goto cleanup;
@@ -176,6 +199,9 @@ virBhyveProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
+    if (bhyveProcessStartHook(vm, VIR_HOOK_BHYVE_OP_START) < 0)
+        goto cleanup;
+
     /* Now we can start the domain */
     VIR_DEBUG("Starting domain '%s'", vm->def->name);
     if (virCommandRun(cmd, NULL) < 0)
@@ -198,6 +224,9 @@ virBhyveProcessStart(virConnectPtr conn,
 
     if (virDomainObjSave(vm, driver->xmlopt,
                          BHYVE_STATE_DIR) < 0)
+        goto cleanup;
+
+    if (bhyveProcessStartHook(vm, VIR_HOOK_BHYVE_OP_STARTED) < 0)
         goto cleanup;
 
     ret = 0;
@@ -263,6 +292,8 @@ virBhyveProcessStop(bhyveConnPtr driver,
     if ((priv != NULL) && (priv->mon != NULL))
          bhyveMonitorClose(priv->mon);
 
+    bhyveProcessStopHook(vm, VIR_HOOK_BHYVE_OP_STOPPED);
+
     /* Cleanup network interfaces */
     bhyveNetCleanup(vm);
 
@@ -283,6 +314,8 @@ virBhyveProcessStop(bhyveConnPtr driver,
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     vm->pid = -1;
     vm->def->id = -1;
+
+    bhyveProcessStopHook(vm, VIR_HOOK_BHYVE_OP_RELEASE);
 
  cleanup:
     virCommandFree(cmd);

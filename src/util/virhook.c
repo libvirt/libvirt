@@ -47,6 +47,7 @@ VIR_ENUM_DECL(virHookQemuOp);
 VIR_ENUM_DECL(virHookLxcOp);
 VIR_ENUM_DECL(virHookNetworkOp);
 VIR_ENUM_DECL(virHookLibxlOp);
+VIR_ENUM_DECL(virHookBhyveOp);
 
 VIR_ENUM_IMPL(virHookDriver,
               VIR_HOOK_DRIVER_LAST,
@@ -55,6 +56,7 @@ VIR_ENUM_IMPL(virHookDriver,
               "lxc",
               "network",
               "libxl",
+              "bhyve",
 );
 
 VIR_ENUM_IMPL(virHookDaemonOp,
@@ -113,6 +115,15 @@ VIR_ENUM_IMPL(virHookLibxlOp,
               "migrate",
               "started",
               "reconnect",
+);
+
+VIR_ENUM_IMPL(virHookBhyveOp,
+              VIR_HOOK_BHYVE_OP_LAST,
+              "start",
+              "stopped",
+              "prepare",
+              "release",
+              "started",
 );
 
 static int virHooksFound = -1;
@@ -283,6 +294,10 @@ virHookCall(int driver,
             break;
         case VIR_HOOK_DRIVER_NETWORK:
             opstr = virHookNetworkOpTypeToString(op);
+            break;
+        case VIR_HOOK_DRIVER_BHYVE:
+            opstr = virHookBhyveOpTypeToString(op);
+            break;
     }
     if (opstr == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
