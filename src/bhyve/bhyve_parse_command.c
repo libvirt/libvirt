@@ -352,8 +352,8 @@ bhyveParseBhyveLPCArg(virDomainDefPtr def,
 
 static int
 bhyveParsePCISlot(const char *slotdef,
-                  unsigned *pcislot,
                   unsigned *bus,
+                  unsigned *slot,
                   unsigned *function)
 {
     /* slot[:function] | bus:slot:function */
@@ -385,7 +385,7 @@ bhyveParsePCISlot(const char *slotdef,
     }
 
     *bus = 0;
-    *pcislot = 0;
+    *slot = 0;
     *function = 0;
 
     switch (i + 1) {
@@ -393,12 +393,12 @@ bhyveParsePCISlot(const char *slotdef,
         /* pcislot[:function] */
         *function = values[1];
     case 1:
-        *pcislot = values[0];
+        *slot = values[0];
         break;
     case 3:
         /* bus:pcislot:function */
         *bus = values[0];
-        *pcislot = values[1];
+        *slot = values[1];
         *function = values[2];
         break;
     }
@@ -409,8 +409,8 @@ bhyveParsePCISlot(const char *slotdef,
 static int
 bhyveParsePCIDisk(virDomainDefPtr def,
                   unsigned caps G_GNUC_UNUSED,
-                  unsigned pcislot,
                   unsigned pcibus,
+                  unsigned pcislot,
                   unsigned function,
                   int bus,
                   int device,
@@ -430,8 +430,8 @@ bhyveParsePCIDisk(virDomainDefPtr def,
     disk->device = device;
 
     disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-    disk->info.addr.pci.slot = pcislot;
     disk->info.addr.pci.bus = pcibus;
+    disk->info.addr.pci.slot = pcislot;
     disk->info.addr.pci.function = function;
 
     if (STRPREFIX(config, "/dev/"))
@@ -480,8 +480,8 @@ static int
 bhyveParsePCINet(virDomainDefPtr def,
                  virDomainXMLOptionPtr xmlopt,
                  unsigned caps G_GNUC_UNUSED,
-                 unsigned pcislot,
-                 unsigned pcibus,
+                 unsigned bus,
+                 unsigned slot,
                  unsigned function,
                  int model,
                  const char *config)
@@ -503,8 +503,8 @@ bhyveParsePCINet(virDomainDefPtr def,
 
     net->model = model;
     net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-    net->info.addr.pci.slot = pcislot;
-    net->info.addr.pci.bus = pcibus;
+    net->info.addr.pci.bus = bus;
+    net->info.addr.pci.slot = slot;
     net->info.addr.pci.function = function;
 
     if (!config)
@@ -565,7 +565,7 @@ bhyveParseBhyvePCIArg(virDomainDefPtr def,
     char *slotdef = NULL;
     char *emulation = NULL;
     char *conf = NULL;
-    unsigned pcislot, bus, function;
+    unsigned bus, slot, function;
 
     separator = strchr(arg, ',');
 
@@ -584,35 +584,35 @@ bhyveParseBhyvePCIArg(virDomainDefPtr def,
         emulation = g_strdup(separator);
     }
 
-    if (bhyveParsePCISlot(slotdef, &pcislot, &bus, &function) < 0)
+    if (bhyveParsePCISlot(slotdef, &bus, &slot, &function) < 0)
         goto error;
 
     if (STREQ(emulation, "ahci-cd"))
-        bhyveParsePCIDisk(def, caps, pcislot, bus, function,
+        bhyveParsePCIDisk(def, caps, bus, slot, function,
                           VIR_DOMAIN_DISK_BUS_SATA,
                           VIR_DOMAIN_DISK_DEVICE_CDROM,
                           nvirtiodisk,
                           nahcidisk,
                           conf);
     else if (STREQ(emulation, "ahci-hd"))
-        bhyveParsePCIDisk(def, caps, pcislot, bus, function,
+        bhyveParsePCIDisk(def, caps, bus, slot, function,
                           VIR_DOMAIN_DISK_BUS_SATA,
                           VIR_DOMAIN_DISK_DEVICE_DISK,
                           nvirtiodisk,
                           nahcidisk,
                           conf);
     else if (STREQ(emulation, "virtio-blk"))
-        bhyveParsePCIDisk(def, caps, pcislot, bus, function,
+        bhyveParsePCIDisk(def, caps, bus, slot, function,
                           VIR_DOMAIN_DISK_BUS_VIRTIO,
                           VIR_DOMAIN_DISK_DEVICE_DISK,
                           nvirtiodisk,
                           nahcidisk,
                           conf);
     else if (STREQ(emulation, "virtio-net"))
-        bhyveParsePCINet(def, xmlopt, caps, pcislot, bus, function,
+        bhyveParsePCINet(def, xmlopt, caps, bus, slot, function,
                          VIR_DOMAIN_NET_MODEL_VIRTIO, conf);
     else if (STREQ(emulation, "e1000"))
-        bhyveParsePCINet(def, xmlopt, caps, pcislot, bus, function,
+        bhyveParsePCINet(def, xmlopt, caps, bus, slot, function,
                          VIR_DOMAIN_NET_MODEL_E1000, conf);
 
     VIR_FREE(emulation);
