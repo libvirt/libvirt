@@ -15,7 +15,6 @@ cd "$srcdir"
 
 git submodule update --init || exit 1
 
-aclocal --install || exit 1
 autoreconf --verbose --force --install || exit 1
 
 if test "x$1" = "x--system"; then
