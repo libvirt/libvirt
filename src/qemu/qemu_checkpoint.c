@@ -283,7 +283,7 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
          * ancestor. */
         if ((parentchkdisk = qemuCheckpointFindActiveDiskInParent(vm, parent,
                                                                   chkdisk->name)))
-            parentbitmap = parentchkdisk->name;
+            parentbitmap = parentchkdisk->bitmap;
 
         if (qemuCheckpointDiscardDiskBitmaps(domdisk->src, blockNamedNodeData,
                                              chkdisk->bitmap, parentbitmap,
