@@ -55,8 +55,7 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
                                        virCgroupPtr cgroup,
                                        virBitmapPtr nodemask)
 {
-    int ret = -1;
-    char *mask = NULL;
+    g_autofree char *mask = NULL;
     virDomainNumatuneMemMode mode;
 
     if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
@@ -67,21 +66,17 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
 
     if (virDomainNumatuneGetMode(def->numa, -1, &mode) < 0 ||
         mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (virDomainNumatuneMaybeFormatNodeset(def->numa, nodemask,
                                             &mask, -1) < 0)
-        goto cleanup;
+        return -1;
 
     if (mask && virCgroupSetCpusetMems(cgroup, mask) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(mask);
-    return ret;
+    return 0;
 }
 
 
