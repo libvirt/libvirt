@@ -26,7 +26,7 @@
 #include "configmake.h"
 #include "virdomainobjlist.h"
 #include "virthread.h"
-#include "virclosecallbacks.h"
+#include "hypervisor/virclosecallbacks.h"
 #include "virportallocator.h"
 
 #define BHYVE_AUTOSTART_DIR    SYSCONFDIR "/libvirt/bhyve/autostart"
