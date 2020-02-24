@@ -69,6 +69,37 @@ bhyveMonitorOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(bhyveMonitor);
 
+static void bhyveMonitorIO(int, int, int, void *);
+
+static bool
+bhyveMonitorRegister(bhyveMonitorPtr mon)
+{
+    virObjectRef(mon);
+    mon->watch = virEventAddHandle(mon->kq,
+                                   VIR_EVENT_HANDLE_READABLE |
+                                   VIR_EVENT_HANDLE_ERROR |
+                                   VIR_EVENT_HANDLE_HANGUP,
+                                   bhyveMonitorIO,
+                                   mon,
+                                   virObjectFreeCallback);
+    if (mon->watch < 0) {
+        VIR_DEBUG("failed to add event handle for mon %p", mon);
+        virObjectUnref(mon);
+        return false;
+    }
+    return true;
+}
+
+static void
+bhyveMonitorUnregister(bhyveMonitorPtr mon)
+{
+    if (mon->watch < 0)
+        return;
+
+    virEventRemoveHandle(mon->watch);
+    mon->watch = -1;
+}
+
 static void
 bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
 {
@@ -166,17 +197,7 @@ bhyveMonitorOpenImpl(virDomainObjPtr vm, bhyveConnPtr driver)
         goto cleanup;
     }
 
-    virObjectRef(mon);
-    mon->watch = virEventAddHandle(mon->kq,
-                                   VIR_EVENT_HANDLE_READABLE |
-                                   VIR_EVENT_HANDLE_ERROR |
-                                   VIR_EVENT_HANDLE_HANGUP,
-                                   bhyveMonitorIO,
-                                   mon,
-                                   virObjectFreeCallback);
-    if (mon->watch < 0) {
-        VIR_DEBUG("failed to add event handle for mon %p", mon);
-        virObjectUnref(mon);
+    if (!bhyveMonitorRegister(mon)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to register monitor events"));
         goto cleanup;
@@ -209,11 +230,6 @@ bhyveMonitorClose(bhyveMonitorPtr mon)
 
     VIR_DEBUG("cleaning up bhyveMonitor %p", mon);
 
-    if (mon->watch < 0)
-        return;
-
-    virEventRemoveHandle(mon->watch);
-    mon->watch = -1;
-
+    bhyveMonitorUnregister(mon);
     virObjectUnref(mon);
 }
