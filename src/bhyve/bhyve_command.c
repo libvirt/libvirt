@@ -40,9 +40,9 @@
 VIR_LOG_INIT("bhyve.bhyve_command");
 
 static int
-bhyveBuildNetArgStr(bhyveConnPtr driver,
-                    const virDomainDef *def,
+bhyveBuildNetArgStr(const virDomainDef *def,
                     virDomainNetDefPtr net,
+                    bhyveConnPtr driver,
                     virCommandPtr cmd,
                     bool dryRun)
 {
@@ -308,6 +308,61 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
 }
 
 static int
+bhyveBuildDiskArgStr(const virDomainDef *def,
+                     virDomainDiskDefPtr disk,
+                     virCommandPtr cmd)
+{
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        /* Handled by bhyveBuildAHCIControllerArgStr() */
+        break;
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        if (bhyveBuildVirtIODiskArgStr(def, disk, cmd) < 0)
+            return -1;
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unsupported disk device"));
+        return -1;
+    }
+    return 0;
+}
+
+static int
+bhyveBuildControllerArgStr(const virDomainDef *def,
+                           virDomainControllerDefPtr controller,
+                           bhyveConnPtr driver,
+                           virCommandPtr cmd,
+                           unsigned *nusbcontrollers)
+{
+    switch (controller->type) {
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        if (controller->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unsupported PCI controller model: "
+                             "only PCI root supported"));
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+        if (bhyveBuildAHCIControllerArgStr(def, controller, driver, cmd) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+        if (++*nusbcontrollers > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only single USB controller is supported"));
+            return -1;
+        }
+
+        if (bhyveBuildUSBControllerArgStr(def, controller, cmd) < 0)
+            return -1;
+        break;
+    }
+    return 0;
+}
+
+static int
 bhyveBuildLPCArgStr(const virDomainDef *def G_GNUC_UNUSED,
                     virCommandPtr cmd)
 {
@@ -428,8 +483,8 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
 }
 
 virCommandPtr
-virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver,
-                             virDomainDefPtr def, bool dryRun)
+virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
+                             bool dryRun)
 {
     /*
      * /usr/sbin/bhyve -c 2 -m 256 -AI -H -P \
@@ -439,11 +494,10 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver,
      *            -S 31,uart,stdio \
      *            vm0
      */
-    size_t i;
-    int nusbcontrollers = 0;
-    unsigned int nvcpus = virDomainDefGetVcpus(def);
-
     virCommandPtr cmd = virCommandNew(BHYVE);
+    size_t i;
+    unsigned nusbcontrollers = 0;
+    unsigned nvcpus = virDomainDefGetVcpus(def);
 
     /* CPUs */
     virCommandAddArg(cmd, "-c");
@@ -547,52 +601,17 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver,
 
     /* Devices */
     for (i = 0; i < def->ncontrollers; i++) {
-        virDomainControllerDefPtr controller = def->controllers[i];
-        switch (controller->type) {
-        case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-            if (controller->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("unsupported PCI controller model: only PCI root supported"));
-                goto error;
-            }
-            break;
-        case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
-            if (bhyveBuildAHCIControllerArgStr(def, controller, driver, cmd) < 0)
-                goto error;
-            break;
-        case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-            if (++nusbcontrollers > 1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("only single USB controller is supported"));
-                goto error;
-            }
-
-            if (bhyveBuildUSBControllerArgStr(def, controller, cmd) < 0)
-                goto error;
-            break;
-        }
+        if (bhyveBuildControllerArgStr(def, def->controllers[i], driver, cmd,
+                                       &nusbcontrollers) < 0)
+            goto error;
     }
     for (i = 0; i < def->nnets; i++) {
-        virDomainNetDefPtr net = def->nets[i];
-        if (bhyveBuildNetArgStr(driver, def, net, cmd, dryRun) < 0)
+        if (bhyveBuildNetArgStr(def, def->nets[i], driver, cmd, dryRun) < 0)
             goto error;
     }
     for (i = 0; i < def->ndisks; i++) {
-        virDomainDiskDefPtr disk = def->disks[i];
-
-        switch (disk->bus) {
-        case VIR_DOMAIN_DISK_BUS_SATA:
-            /* Handled by bhyveBuildAHCIControllerArgStr() */
-            break;
-        case VIR_DOMAIN_DISK_BUS_VIRTIO:
-            if (bhyveBuildVirtIODiskArgStr(def, disk, cmd) < 0)
-                goto error;
-            break;
-        default:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("unsupported disk device"));
+        if (bhyveBuildDiskArgStr(def, def->disks[i], cmd) < 0)
             goto error;
-        }
     }
 
     if (def->ngraphics && def->nvideos) {
