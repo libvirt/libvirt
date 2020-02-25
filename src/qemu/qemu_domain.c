@@ -4576,6 +4576,9 @@ qemuDomainDefSetDefaultCPU(virDomainDefPtr def,
          def->cpu->model))
         return 0;
 
+    if (!virCPUArchIsSupported(def->os.arch))
+        return 0;
+
     /* Default CPU model info from QEMU is usable for TCG only except for
      * x86, s390, and ppc64. */
     if (!ARCH_IS_X86(def->os.arch) &&

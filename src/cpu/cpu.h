@@ -265,6 +265,9 @@ int
 virCPUDataAddFeature(virCPUDataPtr cpuData,
                      const char *name);
 
+bool
+virCPUArchIsSupported(virArch arch);
+
 /* virCPUDataFormat and virCPUDataParse are implemented for unit tests only and
  * have no real-life usage
  */

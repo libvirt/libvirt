@@ -1310,6 +1310,7 @@ virStoragePoolObjVolumeListExport;
 # cpu/cpu.h
 cpuDecode;
 cpuEncode;
+virCPUArchIsSupported;
 virCPUBaseline;
 virCPUCheckFeature;
 virCPUCompare;

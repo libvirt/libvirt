@@ -1096,3 +1096,27 @@ virCPUDataAddFeature(virCPUDataPtr cpuData,
 
     return driver->dataAddFeature(cpuData, name);
 }
+
+
+/**
+ * virCPUArchIsSupported:
+ *
+ * @arch: CPU architecture
+ *
+ * Returns true if the architecture is supported by any CPU driver.
+ */
+bool
+virCPUArchIsSupported(virArch arch)
+{
+    size_t i;
+    size_t j;
+
+    for (i = 0; i < G_N_ELEMENTS(drivers); i++) {
+        for (j = 0; j < drivers[i]->narch; j++) {
+            if (arch == drivers[i]->arch[j])
+                return true;
+        }
+    }
+
+    return false;
+}
