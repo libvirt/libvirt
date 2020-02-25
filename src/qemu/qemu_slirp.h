@@ -66,14 +66,12 @@ int qemuSlirpStart(qemuSlirpPtr slirp,
                    virDomainObjPtr vm,
                    virQEMUDriverPtr driver,
                    virDomainNetDefPtr net,
-                   bool hot,
                    bool incoming);
 
 void qemuSlirpStop(qemuSlirpPtr slirp,
                    virDomainObjPtr vm,
                    virQEMUDriverPtr driver,
-                   virDomainNetDefPtr net,
-                   bool hot);
+                   virDomainNetDefPtr net);
 
 int qemuSlirpGetFD(qemuSlirpPtr slirp);
 

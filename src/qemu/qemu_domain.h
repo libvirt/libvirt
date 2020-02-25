@@ -411,7 +411,6 @@ struct _qemuDomainObjPrivate {
     /* running block jobs */
     virHashTablePtr blockjobs;
 
-    virHashTablePtr dbusVMStates;
     bool disableSlirp;
 
     /* Until we add full support for backing chains for pflash drives, these

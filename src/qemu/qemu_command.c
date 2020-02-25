@@ -27,7 +27,6 @@
 #include "qemu_interface.h"
 #include "qemu_alias.h"
 #include "qemu_security.h"
-#include "qemu_dbus.h"
 #include "qemu_slirp.h"
 #include "qemu_block.h"
 #include "cpu/cpu.h"
@@ -9571,85 +9570,6 @@ qemuBuildPflashBlockdevCommandLine(virCommandPtr cmd,
 }
 
 
-static virJSONValuePtr
-qemuBuildDBusVMStateInfoPropsInternal(const char *alias,
-                                      const char *addr)
-{
-    virJSONValuePtr ret = NULL;
-
-    if (qemuMonitorCreateObjectProps(&ret,
-                                     "dbus-vmstate", alias,
-                                     "s:addr", addr, NULL) < 0)
-        return NULL;
-
-    return ret;
-}
-
-
-virJSONValuePtr
-qemuBuildDBusVMStateInfoProps(const char *id,
-                              const char *addr)
-{
-    g_autofree char *alias = qemuAliasDBusVMStateFromId(id);
-
-    if (!alias)
-        return NULL;
-
-    return qemuBuildDBusVMStateInfoPropsInternal(alias, addr);
-}
-
-
-typedef struct qemuBuildDBusVMStateCommandLineData {
-    virCommandPtr cmd;
-} qemuBuildDBusVMStateCommandLineData;
-
-
-static int
-qemuBuildDBusVMStateCommandLineEach(void *payload,
-                                    const void *id,
-                                    void *user_data)
-{
-    qemuBuildDBusVMStateCommandLineData *data = user_data;
-    qemuDBusVMStatePtr vms = payload;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virJSONValue) props = NULL;
-
-    if (!(props = qemuBuildDBusVMStateInfoProps(id, vms->addr)))
-        return -1;
-
-    if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
-        return -1;
-
-    virCommandAddArg(data->cmd, "-object");
-    virCommandAddArgBuffer(data->cmd, &buf);
-
-    return 0;
-}
-
-static int
-qemuBuildDBusVMStateCommandLine(virCommandPtr cmd,
-                                qemuDomainObjPrivatePtr priv)
-{
-    qemuBuildDBusVMStateCommandLineData data = {
-        .cmd = cmd,
-    };
-
-    if (virHashSize(priv->dbusVMStates) == 0)
-        return 0;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("dbus-vmstate object is not supported by this QEMU binary"));
-        return 0;
-    }
-
-    if (virHashForEach(priv->dbusVMStates, qemuBuildDBusVMStateCommandLineEach, &data) < 0)
-        return -1;
-
-    return 0;
-}
-
-
 /**
  * qemuBuildCommandLineValidate:
  *
@@ -9879,9 +9799,6 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         virCommandAddArg(cmd, "-S"); /* freeze CPU */
 
     if (qemuBuildMasterKeyCommandLine(cmd, priv) < 0)
-        return NULL;
-
-    if (qemuBuildDBusVMStateCommandLine(cmd, priv) < 0)
         return NULL;
 
     if (qemuBuildManagedPRCommandLine(cmd, def, priv) < 0)

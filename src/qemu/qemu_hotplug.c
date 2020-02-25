@@ -405,83 +405,6 @@ qemuHotplugRemoveManagedPR(virQEMUDriverPtr driver,
 
 
 /**
- * qemuDomainAttachDBusVMState:
- * @driver: QEMU driver object
- * @vm: domain object
- * @id
- * @addr
- * @asyncJob: asynchronous job identifier
- *
- * Add dbus-vmstate object.
- *
- * Returns: 0 on success, -1 on error.
- */
-int
-qemuDomainAttachDBusVMState(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            const char *id,
-                            const char *addr,
-                            qemuDomainAsyncJob asyncJob)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autoptr(virJSONValue) props = NULL;
-    int ret;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("dbus-vmstate object is not supported by this QEMU binary"));
-        return -1;
-    }
-
-    if (!(props = qemuBuildDBusVMStateInfoProps(id, addr)))
-        return -1;
-
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        return -1;
-
-    ret = qemuMonitorAddObject(priv->mon, &props, NULL);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
-
-    return ret;
-}
-
-
-/**
- * qemuDomainDetachDBusVMState:
- * @driver: QEMU driver object
- * @vm: domain object
- * @asyncJob: asynchronous job identifier
- *
- * Remove dbus-vmstate object from @vm.
- *
- * Returns: 0 on success, -1 on error.
- */
-int
-qemuDomainDetachDBusVMState(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            const char *id,
-                            qemuDomainAsyncJob asyncJob)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autofree char *alias = qemuAliasDBusVMStateFromId(id);
-    int ret;
-
-    if (!alias ||
-        qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        return -1;
-
-    ret = qemuMonitorDelObject(priv->mon, alias, true);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
-
-    return ret;
-}
-
-
-/**
  * qemuDomainChangeMediaBlockdev:
  * @driver: qemu driver structure
  * @vm: domain definition
@@ -1312,7 +1235,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp = slirp;
 
             if (qemuSlirpOpen(slirp, driver, vm->def) < 0 ||
-                qemuSlirpStart(slirp, vm, driver, net, true, NULL) < 0) {
+                qemuSlirpStart(slirp, vm, driver, net, NULL) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Failed to start slirp"));
                 goto cleanup;
@@ -1519,7 +1442,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     virErrorPreserveLast(&originalError);
     netdev_name = g_strdup_printf("host%s", net->info.alias);
     if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
-        qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net, true);
+        qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net);
     qemuDomainObjEnterMonitor(driver, vm);
     if (charDevPlugged &&
         qemuMonitorDetachCharDev(priv->mon, charDevAlias) < 0)
@@ -4620,7 +4543,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
         return -1;
 
     if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
-        qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net, true);
+        qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net);
 
     virDomainAuditNet(vm, net, NULL, "detach", true);
 

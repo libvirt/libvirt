@@ -829,19 +829,3 @@ qemuDomainGetUnmanagedPRAlias(const char *parentalias)
 
     return ret;
 }
-
-char *
-qemuAliasDBusVMStateFromId(const char *id)
-{
-    char *ret;
-    size_t i;
-
-    ret = g_strdup_printf("dbus-vms-%s", id);
-
-    for (i = 0; ret[i]; i++) {
-        if (ret[i] == ':')
-            ret[i] = '_';
-    }
-
-    return ret;
-}

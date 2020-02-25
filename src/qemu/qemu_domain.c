@@ -26,7 +26,6 @@
 #include "qemu_block.h"
 #include "qemu_cgroup.h"
 #include "qemu_command.h"
-#include "qemu_dbus.h"
 #include "qemu_process.h"
 #include "qemu_capabilities.h"
 #include "qemu_hostdev.h"
@@ -2170,13 +2169,6 @@ qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
 }
 
 
-static void
-dbusVMStateHashFree(void *opaque)
-{
-    qemuDBusVMStateFree(opaque);
-}
-
-
 int
 qemuDomainObjStartWorker(virDomainObjPtr dom)
 {
@@ -2222,9 +2214,6 @@ qemuDomainObjPrivateAlloc(void *opaque)
         goto error;
 
     if (!(priv->blockjobs = virHashCreate(5, virObjectFreeHashData)))
-        goto error;
-
-    if (!(priv->dbusVMStates = virHashCreate(5, dbusVMStateHashFree)))
         goto error;
 
     /* agent commands block by default, user can choose different behavior */
@@ -2297,7 +2286,6 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
     priv->migrationCaps = NULL;
 
     virHashRemoveAll(priv->blockjobs);
-    virHashRemoveAll(priv->dbusVMStates);
 
     virObjectUnref(priv->pflash0);
     priv->pflash0 = NULL;
@@ -2341,7 +2329,6 @@ qemuDomainObjPrivateFree(void *data)
     qemuDomainMasterKeyFree(priv);
 
     virHashFree(priv->blockjobs);
-    virHashFree(priv->dbusVMStates);
 
     /* This should never be non-NULL if we get here, but just in case... */
     if (priv->eventThread) {
