@@ -11493,6 +11493,10 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         return -1;
 
     for (n = src->backingStore; virStorageSourceIsBacking(n); n = n->backingStore) {
+        /* convert detected ISO format to 'raw' as qemu would not understand it */
+        if (n->format == VIR_STORAGE_FILE_ISO)
+            n->format = VIR_STORAGE_FILE_RAW;
+
         if (qemuDomainValidateStorageSource(n, priv->qemuCaps) < 0)
             return -1;
 
