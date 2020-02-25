@@ -421,6 +421,8 @@ struct _qemuDomainObjPrivate {
 
     /* running backup job */
     virDomainBackupDefPtr backup;
+
+    bool dbusDaemonRunning;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \

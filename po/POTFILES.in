@@ -150,6 +150,7 @@
 @SRCDIR@/src/qemu/qemu_checkpoint.c
 @SRCDIR@/src/qemu/qemu_command.c
 @SRCDIR@/src/qemu/qemu_conf.c
+@SRCDIR@/src/qemu/qemu_dbus.c
 @SRCDIR@/src/qemu/qemu_domain.c
 @SRCDIR@/src/qemu/qemu_domain_address.c
 @SRCDIR@/src/qemu/qemu_driver.c
