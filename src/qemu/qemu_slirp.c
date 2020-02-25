@@ -285,35 +285,21 @@ qemuSlirpStart(qemuSlirpPtr slirp,
         const virNetDevIPAddr *ip = net->guestIP.ips[i];
         g_autofree char *addr = NULL;
         const char *opt = "";
+        unsigned prefix = ip->prefix;
 
         if (!(addr = virSocketAddrFormat(&ip->address)))
             return -1;
 
-        if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET))
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
             opt = "--net";
-        if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6))
-            opt = "--prefix-ipv6";
-
-        virCommandAddArgFormat(cmd, "%s=%s", opt, addr);
-
-        if (ip->prefix) {
-            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
-                virSocketAddr netmask;
-                g_autofree char *netmaskStr = NULL;
-
-                if (virSocketAddrPrefixToNetmask(ip->prefix, &netmask, AF_INET) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Failed to translate prefix %d to netmask"),
-                                   ip->prefix);
-                    return -1;
-                }
-                if (!(netmaskStr = virSocketAddrFormat(&netmask)))
-                    return -1;
-                virCommandAddArgFormat(cmd, "--mask=%s", netmaskStr);
-            }
-            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6))
-                virCommandAddArgFormat(cmd, "--prefix-length-ipv6=%u", ip->prefix);
+            prefix = prefix ?: 24;
         }
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
+            opt = "--net6";
+            prefix = prefix ?: 64;
+        }
+
+        virCommandAddArgFormat(cmd, "%s=%s/%u", opt, addr, prefix);
     }
 
     if (qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_DBUS_ADDRESS)) {
