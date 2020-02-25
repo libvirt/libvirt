@@ -6620,6 +6620,12 @@ virDomainInputDefValidate(const virDomainInputDef *input)
             break;
 
         case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+            if (input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("only bus 'virtio' is supported for 'passthrough' "
+                                 "input devices"));
+                return -1;
+            }
             break;
 
         case VIR_DOMAIN_INPUT_TYPE_LAST:
