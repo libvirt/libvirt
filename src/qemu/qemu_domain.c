@@ -2607,6 +2607,24 @@ qemuDomainObjPrivateXMLFormatBlockjobFormatSource(virBufferPtr buf,
 }
 
 
+static void
+qemuDomainPrivateBlockJobFormatCommit(qemuBlockJobDataPtr job,
+                                      virBufferPtr buf)
+{
+    if (job->data.commit.base)
+        virBufferAsprintf(buf, "<base node='%s'/>\n", job->data.commit.base->nodeformat);
+
+    if (job->data.commit.top)
+        virBufferAsprintf(buf, "<top node='%s'/>\n", job->data.commit.top->nodeformat);
+
+    if (job->data.commit.topparent)
+        virBufferAsprintf(buf, "<topparent node='%s'/>\n", job->data.commit.topparent->nodeformat);
+
+    if (job->data.commit.deleteCommittedImages)
+        virBufferAddLit(buf, "<deleteCommittedImages/>\n");
+}
+
+
 static int
 qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
                                               const void *name G_GNUC_UNUSED,
@@ -2666,14 +2684,7 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
 
         case QEMU_BLOCKJOB_TYPE_COMMIT:
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
-            if (job->data.commit.base)
-                virBufferAsprintf(&childBuf, "<base node='%s'/>\n", job->data.commit.base->nodeformat);
-            if (job->data.commit.top)
-                virBufferAsprintf(&childBuf, "<top node='%s'/>\n", job->data.commit.top->nodeformat);
-            if (job->data.commit.topparent)
-                virBufferAsprintf(&childBuf, "<topparent node='%s'/>\n", job->data.commit.topparent->nodeformat);
-            if (job->data.commit.deleteCommittedImages)
-                virBufferAddLit(&childBuf, "<deleteCommittedImages/>\n");
+            qemuDomainPrivateBlockJobFormatCommit(job, &childBuf);
             break;
 
         case QEMU_BLOCKJOB_TYPE_CREATE:
