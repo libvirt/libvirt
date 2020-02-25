@@ -2361,6 +2361,21 @@ qemuMonitorJSONSetMemoryStatsPeriod(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorJSONSetDBusVMStateIdList(qemuMonitorPtr mon,
+                                    const char *vmstatepath,
+                                    const char **list)
+{
+    g_autofree char *str = virStringListJoin(list, ",");
+    qemuMonitorJSONObjectProperty prop = {
+        .type = QEMU_MONITOR_OBJECT_PROPERTY_STRING,
+        .val.str = str,
+    };
+
+    return qemuMonitorJSONSetObjectProperty(mon, vmstatepath, "id-list", &prop);
+}
+
+
 /* qemuMonitorJSONQueryBlock:
  * @mon: Monitor pointer
  *

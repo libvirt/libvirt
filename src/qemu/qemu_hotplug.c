@@ -312,6 +312,88 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
 
 
 /**
+ * qemuHotplugAttachDBusVMState:
+ * @driver: QEMU driver object
+ * @vm: domain object
+ * @asyncJob: asynchronous job identifier
+ *
+ * Add -object dbus-vmstate if necessary.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+qemuHotplugAttachDBusVMState(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virJSONValue) props = NULL;
+    int ret;
+
+    if (priv->dbusVMState)
+        return 0;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
+        VIR_DEBUG("dbus-vmstate object is not supported by this QEMU binary");
+        return 0;
+    }
+
+    if (!(props = qemuBuildDBusVMStateInfoProps(driver, vm)))
+        return -1;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorAddObject(priv->mon, &props, NULL);
+
+    if (ret == 0)
+        priv->dbusVMState = true;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    return ret;
+}
+
+
+/**
+ * qemuHotplugRemoveDBusVMState:
+ * @driver: QEMU driver object
+ * @vm: domain object
+ * @asyncJob: asynchronous job identifier
+ *
+ * Remove -object dbus-vmstate from @vm if the configuration does not require
+ * it any more.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+qemuHotplugRemoveDBusVMState(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
+
+    if (!priv->dbusVMState)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorDelObject(priv->mon, qemuDomainGetDBusVMStateAlias(), true);
+
+    if (ret == 0)
+        priv->dbusVMState = false;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    return ret;
+}
+
+
+/**
  * qemuHotplugAttachManagedPR:
  * @driver: QEMU driver object
  * @vm: domain object
