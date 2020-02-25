@@ -263,6 +263,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged,
     cfg->bridgeHelperName = g_strdup(QEMU_BRIDGE_HELPER);
     cfg->prHelperName = g_strdup(QEMU_PR_HELPER);
     cfg->slirpHelperName = g_strdup(QEMU_SLIRP_HELPER);
+    cfg->dbusDaemonName = g_strdup(QEMU_DBUS_DAEMON);
 
     cfg->securityDefaultConfined = true;
     cfg->securityRequireConfined = false;
@@ -350,6 +351,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->bridgeHelperName);
     VIR_FREE(cfg->prHelperName);
     VIR_FREE(cfg->slirpHelperName);
+    VIR_FREE(cfg->dbusDaemonName);
 
     VIR_FREE(cfg->saveImageFormat);
     VIR_FREE(cfg->dumpImageFormat);
@@ -639,6 +641,9 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfigPtr cfg,
         return -1;
 
     if (virConfGetValueString(conf, "slirp_helper", &cfg->slirpHelperName) < 0)
+        return -1;
+
+    if (virConfGetValueString(conf, "dbus_daemon", &cfg->dbusDaemonName) < 0)
         return -1;
 
     if (virConfGetValueBool(conf, "set_process_name", &cfg->setProcessName) < 0)

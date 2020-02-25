@@ -110,6 +110,12 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_QEMU], [
                [/usr/bin:/usr/libexec])
   AC_DEFINE_UNQUOTED([QEMU_SLIRP_HELPER], ["$QEMU_SLIRP_HELPER"],
                      [QEMU slirp helper])
+
+  AC_PATH_PROG([QEMU_DBUS_DAEMON], [dbus-daemon],
+               [/usr/bin/dbus-daemon],
+               [/usr/bin:/usr/libexec])
+  AC_DEFINE_UNQUOTED([QEMU_DBUS_DAEMON], ["$QEMU_DBUS_DAEMON"],
+                     [QEMU dbus daemon])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_RESULT_QEMU], [
