@@ -38,6 +38,7 @@
 #include "virlog.h"
 #include "virdbus.h"
 #include "virstring.h"
+#include "virutil.h"
 
 #include "configmake.h"
 
