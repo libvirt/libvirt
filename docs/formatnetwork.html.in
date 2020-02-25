@@ -548,10 +548,10 @@
         (<span class="since">since 0.9.4</span>). Setting
         <code>bandwidth</code> for a network is supported only
         for networks with a <code>&lt;forward&gt;</code> mode
-        of <code>route</code>, <code>nat</code>, or no mode at all
-        (i.e. an "isolated" network). Setting <code>bandwidth</code>
-        is <b>not</b> supported for forward modes
-        of <code>bridge</code>, <code>passthrough</code>, <code>private</code>,
+        of <code>route</code>, <code>nat</code>, <code>bridge</code>,
+        or no mode at all (i.e. an "isolated" network). Setting
+        <code>bandwidth</code> is <b>not</b> supported for forward modes
+        <code>passthrough</code>, <code>private</code>,
         or <code>hostdev</code>. Attempts to do this will lead to
         a failure to define the network or to create a transient network.
       </p>
