@@ -88,6 +88,8 @@ struct _qemuBlockJobCommitData {
     virStorageSourcePtr top;
     virStorageSourcePtr base;
     bool deleteCommittedImages;
+    char **disabledBitmapsBase; /* a NULL-terminated list of bitmap names which
+                                   were disabled in @base for the commit job */
 };
 
 

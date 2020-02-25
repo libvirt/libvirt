@@ -2611,6 +2611,9 @@ static void
 qemuDomainPrivateBlockJobFormatCommit(qemuBlockJobDataPtr job,
                                       virBufferPtr buf)
 {
+    g_auto(virBuffer) disabledBitmapsBuf = VIR_BUFFER_INIT_CHILD(buf);
+    char **bitmaps = job->data.commit.disabledBitmapsBase;
+
     if (job->data.commit.base)
         virBufferAsprintf(buf, "<base node='%s'/>\n", job->data.commit.base->nodeformat);
 
@@ -2622,6 +2625,11 @@ qemuDomainPrivateBlockJobFormatCommit(qemuBlockJobDataPtr job,
 
     if (job->data.commit.deleteCommittedImages)
         virBufferAddLit(buf, "<deleteCommittedImages/>\n");
+
+    while (bitmaps && *bitmaps)
+        virBufferEscapeString(&disabledBitmapsBuf, "<bitmap name='%s'/>\n", *(bitmaps++));
+
+    virXMLFormatElement(buf, "disabledBaseBitmaps", NULL, &disabledBitmapsBuf);
 }
 
 
@@ -3234,6 +3242,9 @@ static int
 qemuDomainObjPrivateXMLParseBlockjobDataCommit(qemuBlockJobDataPtr job,
                                                xmlXPathContextPtr ctxt)
 {
+    g_autofree xmlNodePtr *nodes = NULL;
+    ssize_t nnodes;
+
     if (job->type == QEMU_BLOCKJOB_TYPE_COMMIT) {
         qemuDomainObjPrivateXMLParseBlockjobNodename(job,
                                                      "string(./topparent/@node)",
@@ -3259,6 +3270,21 @@ qemuDomainObjPrivateXMLParseBlockjobDataCommit(qemuBlockJobDataPtr job,
     if (!job->data.commit.top ||
         !job->data.commit.base)
         return -1;
+
+    if ((nnodes = virXPathNodeSet("./disabledBaseBitmaps/bitmap", ctxt, &nodes)) > 0) {
+        size_t i;
+
+        job->data.commit.disabledBitmapsBase = g_new0(char *, nnodes + 1);
+
+        for (i = 0; i < nnodes; i++) {
+            char *tmp;
+
+            if (!(tmp = virXMLPropString(nodes[i], "name")))
+                return -1;
+
+            job->data.commit.disabledBitmapsBase[i] = g_steal_pointer(&tmp);
+        }
+    }
 
     return 0;
 }
