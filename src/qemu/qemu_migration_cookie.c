@@ -1230,19 +1230,17 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     }
     VIR_FREE(tmp);
 
-    /* Check & forbid "localhost" migration */
     if (!(mig->remoteHostname = virXPathString("string(./hostname[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing hostname element in migration data"));
         goto error;
     }
-    if (STREQ(mig->remoteHostname, mig->localHostname)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Attempt to migrate guest to the same host %s"),
-                       mig->remoteHostname);
-        goto error;
-    }
+    /* Historically, this is the place where we checked whether remoteHostname
+     * and localHostname are the same. But even if they were, it doesn't mean
+     * the domain is migrating onto the same host. Rely on UUID which can tell
+     * for sure. */
 
+    /* Check & forbid localhost migration */
     if (!(tmp = virXPathString("string(./hostuuid[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing hostuuid element in migration data"));
