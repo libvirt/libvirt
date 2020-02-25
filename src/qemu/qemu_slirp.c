@@ -18,6 +18,7 @@
 
 #include <config.h>
 
+#include "qemu_dbus.h"
 #include "qemu_extdevice.h"
 #include "qemu_security.h"
 #include "qemu_slirp.h"
@@ -202,6 +203,16 @@ qemuSlirpGetFD(qemuSlirpPtr slirp)
 }
 
 
+static char *
+qemuSlirpGetDBusVMStateId(virDomainNetDefPtr net)
+{
+    char macstr[VIR_MAC_STRING_BUFLEN] = "";
+
+    /* can't use alias, because it's not stable across restarts */
+    return g_strdup_printf("slirp-%s", virMacAddrFormat(&net->mac, macstr));
+}
+
+
 void
 qemuSlirpStop(qemuSlirpPtr slirp,
               virDomainObjPtr vm,
@@ -209,8 +220,11 @@ qemuSlirpStop(qemuSlirpPtr slirp,
               virDomainNetDefPtr net)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    g_autofree char *id = qemuSlirpGetDBusVMStateId(net);
     g_autofree char *pidfile = NULL;
     virErrorPtr orig_err;
+
+    qemuDBusVMStateRemove(vm, id);
 
     if (!(pidfile = qemuSlirpCreatePidFilename(cfg, vm->def, net->info.alias))) {
         VIR_WARN("Unable to construct slirp pidfile path");
@@ -302,14 +316,36 @@ qemuSlirpStart(qemuSlirpPtr slirp,
         }
     }
 
+    if (qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_DBUS_ADDRESS)) {
+        g_autofree char *id = qemuSlirpGetDBusVMStateId(net);
+        g_autofree char *dbus_addr = qemuDBusGetAddress(driver, vm);
+
+        if (qemuDBusStart(driver, vm) < 0)
+            return -1;
+
+        virCommandAddArgFormat(cmd, "--dbus-id=%s", id);
+
+        virCommandAddArgFormat(cmd, "--dbus-address=%s", dbus_addr);
+
+        if (qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_MIGRATE)) {
+            if (qemuDBusVMStateAdd(vm, id) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Failed to register slirp migration"));
+                goto error;
+            }
+            if (incoming)
+                virCommandAddArg(cmd, "--dbus-incoming");
+        }
+    }
+
     if (qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_EXIT_WITH_PARENT))
         virCommandAddArg(cmd, "--exit-with-parent");
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "slirp") < 0)
-        return -1;
+        goto error;
 
     if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, &exitstatus, &cmdret) < 0)
-        return -1;
+        goto error;
 
     if (cmdret < 0 || exitstatus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -333,5 +369,6 @@ qemuSlirpStart(qemuSlirpPtr slirp,
         virProcessKillPainfully(pid, true);
     if (pidfile)
         unlink(pidfile);
+    qemuDBusStop(driver, vm);
     return -1;
 }
