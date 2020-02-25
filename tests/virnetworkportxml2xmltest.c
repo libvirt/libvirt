@@ -94,6 +94,7 @@ mymain(void)
     DO_TEST("plug-bridge-mactbl");
     DO_TEST("plug-direct");
     DO_TEST("plug-hostdev-pci");
+    DO_TEST("plug-network");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

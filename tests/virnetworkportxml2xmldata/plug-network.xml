@@ -10,6 +10,11 @@
     <inbound average='1000' peak='4000' floor='2000' burst='1024'/>
     <outbound average='128' peak='256' burst='32768'/>
   </bandwidth>
+  <vlan trunk='yes'>
+    <tag id='2'/>
+    <tag id='1729'/>
+  </vlan>
+  <port isolated='yes'/>
   <rxfilters trustGuest='yes'/>
   <plug type='network' bridge='virbr0'/>
 </networkport>
