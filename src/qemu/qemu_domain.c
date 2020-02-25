@@ -3230,6 +3230,40 @@ qemuDomainObjPrivateXMLParseBlockjobNodename(qemuBlockJobDataPtr job,
 }
 
 
+static int
+qemuDomainObjPrivateXMLParseBlockjobDataCommit(qemuBlockJobDataPtr job,
+                                               xmlXPathContextPtr ctxt)
+{
+    if (job->type == QEMU_BLOCKJOB_TYPE_COMMIT) {
+        qemuDomainObjPrivateXMLParseBlockjobNodename(job,
+                                                     "string(./topparent/@node)",
+                                                     &job->data.commit.topparent,
+                                                     ctxt);
+
+        if (!job->data.commit.topparent)
+            return -1;
+    }
+
+    qemuDomainObjPrivateXMLParseBlockjobNodename(job,
+                                                 "string(./top/@node)",
+                                                 &job->data.commit.top,
+                                                 ctxt);
+    qemuDomainObjPrivateXMLParseBlockjobNodename(job,
+                                                 "string(./base/@node)",
+                                                 &job->data.commit.base,
+                                                 ctxt);
+
+    if (virXPathNode("./deleteCommittedImages", ctxt))
+        job->data.commit.deleteCommittedImages = true;
+
+    if (!job->data.commit.top ||
+        !job->data.commit.base)
+        return -1;
+
+    return 0;
+}
+
+
 static void
 qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
                                                  xmlXPathContextPtr ctxt,
@@ -3249,29 +3283,10 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
             break;
 
         case QEMU_BLOCKJOB_TYPE_COMMIT:
-            qemuDomainObjPrivateXMLParseBlockjobNodename(job,
-                                                         "string(./topparent/@node)",
-                                                         &job->data.commit.topparent,
-                                                         ctxt);
-
-            if (!job->data.commit.topparent)
-                goto broken;
-
-            G_GNUC_FALLTHROUGH;
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
-            qemuDomainObjPrivateXMLParseBlockjobNodename(job,
-                                                         "string(./top/@node)",
-                                                         &job->data.commit.top,
-                                                         ctxt);
-            qemuDomainObjPrivateXMLParseBlockjobNodename(job,
-                                                         "string(./base/@node)",
-                                                         &job->data.commit.base,
-                                                         ctxt);
-            if (virXPathNode("./deleteCommittedImages", ctxt))
-                job->data.commit.deleteCommittedImages = true;
-            if (!job->data.commit.top ||
-                !job->data.commit.base)
+            if (qemuDomainObjPrivateXMLParseBlockjobDataCommit(job, ctxt) < 0)
                 goto broken;
+
             break;
 
         case QEMU_BLOCKJOB_TYPE_CREATE:
