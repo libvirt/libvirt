@@ -34,6 +34,7 @@
 #include "virstring.h"
 #include "virthreadjob.h"
 #include "virtypedparam.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_ADMIN
 

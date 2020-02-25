@@ -31,6 +31,7 @@
 #include "virmodule.h"
 #include "virstring.h"
 #include "virthread.h"
+#include "virutil.h"
 #include "configmake.h"
 
 VIR_LOG_INIT("driver");

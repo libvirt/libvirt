@@ -27,6 +27,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virlog.h"
+#include "virutil.h"
 
 #include "virlockspace.h"
 
