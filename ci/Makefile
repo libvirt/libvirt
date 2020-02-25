@@ -216,15 +216,11 @@ ci-run-command@%: ci-prepare-tree
 	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) \
 		/bin/bash -c ' \
 		$(CI_USER_HOME)/prepare || exit 1; \
-		if test "$$PKG_CONFIG_LIBDIR"; then \
-			pkgconfig_env="PKG_CONFIG_LIBDIR=$$PKG_CONFIG_LIBDIR"; \
-		fi; \
 		sudo \
 		  --login \
 		  --user="#$(CI_UID)" \
 		  --group="#$(CI_GID)" \
 		  CONFIGURE_OPTS="$$CONFIGURE_OPTS" \
-		  $$pkgconfig_env \
 		  CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)" \
 		  CI_CONT_BUILDDIR="$(CI_CONT_BUILDDIR)" \
 		  CI_SMP="$(CI_SMP)" \
