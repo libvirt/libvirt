@@ -162,6 +162,7 @@ mymain(void)
         return EXIT_FAILURE;
 
     cfg = virQEMUDriverGetConfig(&driver);
+    driver.privileged = true;
 
 # define DO_TEST_INTERNAL(_name, suffix, when, ...) \
     do { \
