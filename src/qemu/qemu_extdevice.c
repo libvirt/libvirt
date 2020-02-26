@@ -236,9 +236,10 @@ qemuExtDevicesHasDevice(virDomainDefPtr def)
 
 int
 qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
-                          virDomainDefPtr def,
+                          virDomainObjPtr vm,
                           virCgroupPtr cgroup)
 {
+    virDomainDefPtr def = vm->def;
     size_t i;
 
     for (i = 0; i < def->nvideos; i++) {

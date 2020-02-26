@@ -58,5 +58,5 @@ void qemuExtDevicesStop(virQEMUDriverPtr driver,
 bool qemuExtDevicesHasDevice(virDomainDefPtr def);
 
 int qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
-                              virDomainDefPtr def,
+                              virDomainObjPtr vm,
                               virCgroupPtr cgroup);

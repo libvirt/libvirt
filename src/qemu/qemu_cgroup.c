@@ -1165,7 +1165,7 @@ qemuSetupCgroupForExtDevices(virDomainObjPtr vm,
                            false, &cgroup_temp) < 0)
         goto cleanup;
 
-    ret = qemuExtDevicesSetupCgroup(driver, vm->def, cgroup_temp);
+    ret = qemuExtDevicesSetupCgroup(driver, vm, cgroup_temp);
 
  cleanup:
     virCgroupFree(&cgroup_temp);
