@@ -35,18 +35,6 @@
 
 VIR_LOG_INIT("util.audit");
 
-/* Provide the macros in case the header file is old.
-   FIXME: should be removed. */
-#ifndef AUDIT_VIRT_CONTROL
-# define AUDIT_VIRT_CONTROL              2500 /* Start, Pause, Stop VM */
-#endif
-#ifndef AUDIT_VIRT_RESOURCE
-# define AUDIT_VIRT_RESOURCE             2501 /* Resource assignment */
-#endif
-#ifndef AUDIT_VIRT_MACHINE_ID
-# define AUDIT_VIRT_MACHINE_ID           2502 /* Binding of label to VM */
-#endif
-
 #define VIR_FROM_THIS VIR_FROM_AUDIT
 
 #if WITH_AUDIT
