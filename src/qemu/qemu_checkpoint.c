@@ -262,9 +262,7 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
 
     actions = virJSONValueNewArray();
 
-    qemuDomainObjEnterMonitor(driver, vm);
-    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
-    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || !blockNamedNodeData)
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
         return -1;
 
     for (i = 0; i < chkdef->ndisks; i++) {
