@@ -289,9 +289,8 @@ virPCIDeviceConfigOpenInternal(virPCIDevicePtr dev, bool readonly, bool fatal)
                                  _("Failed to open config space file '%s'"),
                                  dev->path);
         } else {
-            char ebuf[1024];
             VIR_WARN("Failed to open config space file '%s': %s",
-                     dev->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                     dev->path, g_strerror(errno));
         }
         return -1;
     }
@@ -322,9 +321,8 @@ static void
 virPCIDeviceConfigClose(virPCIDevicePtr dev, int cfgfd)
 {
     if (VIR_CLOSE(cfgfd) < 0) {
-        char ebuf[1024];
         VIR_WARN("Failed to close config space file '%s': %s",
-                 dev->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                 dev->path, g_strerror(errno));
     }
 }
 
@@ -340,9 +338,8 @@ virPCIDeviceRead(virPCIDevicePtr dev,
 
     if (lseek(cfgfd, pos, SEEK_SET) != pos ||
         saferead(cfgfd, buf, buflen) != buflen) {
-        char ebuf[1024];
         VIR_WARN("Failed to read from '%s' : %s", dev->path,
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
+                 g_strerror(errno));
         return -1;
     }
     return 0;
@@ -407,9 +404,8 @@ virPCIDeviceWrite(virPCIDevicePtr dev,
 {
     if (lseek(cfgfd, pos, SEEK_SET) != pos ||
         safewrite(cfgfd, buf, buflen) != buflen) {
-        char ebuf[1024];
         VIR_WARN("Failed to write to '%s' : %s", dev->path,
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
+                 g_strerror(errno));
         return -1;
     }
     return 0;

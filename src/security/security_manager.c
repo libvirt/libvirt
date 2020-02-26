@@ -1407,7 +1407,6 @@ virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
         return;
 
     for (i = 0; i < (*state)->nfds; i++) {
-        char ebuf[1024];
         const char *path = (*state)->paths[i];
         int fd = (*state)->fds[i];
 
@@ -1415,12 +1414,12 @@ virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
          * happen on VIR_CLOSE() anyway. But let's play it nice. */
         if (virFileUnlock(fd, METADATA_OFFSET, METADATA_LEN) < 0) {
             VIR_WARN("Unable to unlock fd %d path %s: %s",
-                     fd, path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                     fd, path, g_strerror(errno));
         }
 
         if (VIR_CLOSE(fd) < 0) {
             VIR_WARN("Unable to close fd %d path %s: %s",
-                     fd, path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                     fd, path, g_strerror(errno));
         }
     }
 

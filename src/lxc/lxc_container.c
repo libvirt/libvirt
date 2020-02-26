@@ -566,12 +566,11 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     for (i = 0; i < nmounts; i++) {
         VIR_DEBUG("Umount %s", mounts[i]);
         if (umount(mounts[i]) < 0) {
-            char ebuf[1024];
             failedUmount = mounts[i];
             saveErrno = errno;
             VIR_WARN("Failed to unmount '%s', trying to detach subtree '%s': %s",
                      failedUmount, mounts[nmounts-1],
-                     virStrerror(errno, ebuf, sizeof(ebuf)));
+                     g_strerror(errno));
             break;
         }
     }

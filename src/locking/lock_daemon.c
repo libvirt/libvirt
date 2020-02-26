@@ -1225,9 +1225,8 @@ int main(int argc, char **argv) {
         old_umask = umask(077);
     VIR_DEBUG("Ensuring run dir '%s' exists", run_dir);
     if (virFileMakePath(run_dir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("unable to create rundir %s: %s"), run_dir,
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
+                  g_strerror(errno));
         ret = VIR_LOCK_DAEMON_ERR_RUNDIR;
         umask(old_umask);
         goto cleanup;
@@ -1253,17 +1252,15 @@ int main(int argc, char **argv) {
         };
 
         if (godaemon) {
-            char ebuf[1024];
-
             if (chdir("/") < 0) {
                 VIR_ERROR(_("cannot change to root directory: %s"),
-                          virStrerror(errno, ebuf, sizeof(ebuf)));
+                          g_strerror(errno));
                 goto cleanup;
             }
 
             if ((statuswrite = virLockDaemonForkIntoBackground(argv[0])) < 0) {
                 VIR_ERROR(_("Failed to fork as daemon: %s"),
-                          virStrerror(errno, ebuf, sizeof(ebuf)));
+                          g_strerror(errno));
                 goto cleanup;
             }
         }

@@ -1740,14 +1740,13 @@ libxlDriverConfigNew(void)
 int
 libxlDriverConfigInit(libxlDriverConfigPtr cfg)
 {
-    char ebuf[1024];
     unsigned int free_mem;
 
     if (virFileMakePath(cfg->logDir) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create log dir '%s': %s"),
                        cfg->logDir,
-                       virStrerror(errno, ebuf, sizeof(ebuf)));
+                       g_strerror(errno));
         return -1;
     }
 

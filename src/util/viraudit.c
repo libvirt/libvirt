@@ -121,9 +121,8 @@ void virAuditSend(virLogSourcePtr source,
             VIR_WARN("Unknown audit record type %d", type);
         else if (audit_log_user_message(auditfd, record_types[type], str, NULL,
                                         clientaddr, clienttty, success) < 0) {
-            char ebuf[1024];
             VIR_WARN("Failed to send audit message %s: %s",
-                     NULLSTR(str), virStrerror(errno, ebuf, sizeof(ebuf)));
+                     NULLSTR(str), g_strerror(errno));
         }
     }
 #endif

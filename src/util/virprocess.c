@@ -1292,9 +1292,8 @@ virProcessNamespaceAvailable(unsigned int ns)
     cpid = clone(virProcessDummyChild, childStack, flags, NULL);
 
     if (cpid < 0) {
-        char ebuf[1024] G_GNUC_UNUSED;
         VIR_DEBUG("clone call returned %s, container support is not enabled",
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
+                  g_strerror(errno));
         return -1;
     } else if (virProcessWait(cpid, NULL, false) < 0) {
         return -1;

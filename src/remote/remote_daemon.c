@@ -189,12 +189,10 @@ static int daemonForkIntoBackground(const char *argv0)
             VIR_FORCE_CLOSE(statuspipe[0]);
 
             if (ret != 1) {
-                char ebuf[1024];
-
                 fprintf(stderr,
                         _("%s: error: unable to determine if daemon is "
                           "running: %s\n"), argv0,
-                        virStrerror(errno, ebuf, sizeof(ebuf)));
+                        g_strerror(errno));
                 exit(EXIT_FAILURE);
             } else if (status != 0) {
                 fprintf(stderr,
@@ -1194,17 +1192,15 @@ int main(int argc, char **argv) {
               NULLSTR(sock_file_adm));
 
     if (godaemon) {
-        char ebuf[1024];
-
         if (chdir("/") < 0) {
             VIR_ERROR(_("cannot change to root directory: %s"),
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
+                      g_strerror(errno));
             goto cleanup;
         }
 
         if ((statuswrite = daemonForkIntoBackground(argv[0])) < 0) {
             VIR_ERROR(_("Failed to fork as daemon: %s"),
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
+                      g_strerror(errno));
             goto cleanup;
         }
     }
@@ -1227,9 +1223,8 @@ int main(int argc, char **argv) {
         old_umask = umask(077);
     VIR_DEBUG("Ensuring run dir '%s' exists", run_dir);
     if (virFileMakePath(run_dir) < 0) {
-        char ebuf[1024];
         VIR_ERROR(_("unable to create rundir %s: %s"), run_dir,
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
+                  g_strerror(errno));
         ret = VIR_DAEMON_ERR_RUNDIR;
         goto cleanup;
     }

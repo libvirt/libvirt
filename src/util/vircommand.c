@@ -2061,9 +2061,8 @@ virCommandWriteArgLog(virCommandPtr cmd, int logfd)
     }
 
     if (ioError) {
-        char ebuf[1024];
         VIR_WARN("Unable to write command %s args to logfile: %s",
-                 cmd->args[0], virStrerror(ioError, ebuf, sizeof(ebuf)));
+                 cmd->args[0], g_strerror(ioError));
     }
 }
 

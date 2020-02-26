@@ -1451,7 +1451,6 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
     struct stat buf;
     security_context_t fcon = NULL;
     char *newpath = NULL;
-    char ebuf[1024];
     int rc;
     int ret = -1;
 
@@ -1465,7 +1464,7 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
 
     if (virFileResolveLink(path, &newpath) < 0) {
         VIR_WARN("cannot resolve symlink %s: %s", path,
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
+                 g_strerror(errno));
         goto cleanup;
     }
 
@@ -1492,7 +1491,7 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
     if (!recall || rc == -2) {
         if (stat(newpath, &buf) != 0) {
             VIR_WARN("cannot stat %s: %s", newpath,
-                     virStrerror(errno, ebuf, sizeof(ebuf)));
+                     g_strerror(errno));
             goto cleanup;
         }
 

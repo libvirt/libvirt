@@ -654,7 +654,6 @@ libxlStateInitialize(bool privileged,
 {
     libxlDriverConfigPtr cfg;
     g_autofree char *driverConf = NULL;
-    char ebuf[1024];
     bool autostart = true;
 
     if (root != NULL) {
@@ -725,35 +724,35 @@ libxlStateInitialize(bool privileged,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create state dir '%s': %s"),
                        cfg->stateDir,
-                       virStrerror(errno, ebuf, sizeof(ebuf)));
+                       g_strerror(errno));
         goto error;
     }
     if (virFileMakePath(cfg->libDir) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create lib dir '%s': %s"),
                        cfg->libDir,
-                       virStrerror(errno, ebuf, sizeof(ebuf)));
+                       g_strerror(errno));
         goto error;
     }
     if (virFileMakePath(cfg->saveDir) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create save dir '%s': %s"),
                        cfg->saveDir,
-                       virStrerror(errno, ebuf, sizeof(ebuf)));
+                       g_strerror(errno));
         goto error;
     }
     if (virFileMakePath(cfg->autoDumpDir) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create dump dir '%s': %s"),
                        cfg->autoDumpDir,
-                       virStrerror(errno, ebuf, sizeof(ebuf)));
+                       g_strerror(errno));
         goto error;
     }
     if (virFileMakePath(cfg->channelDir) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create channel dir '%s': %s"),
                        cfg->channelDir,
-                       virStrerror(errno, ebuf, sizeof(ebuf)));
+                       g_strerror(errno));
         goto error;
     }
 

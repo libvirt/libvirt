@@ -996,11 +996,10 @@ networkKillDaemon(pid_t pid,
             if (errno == ESRCH) {
                 ret = 0;
             } else {
-                char ebuf[1024];
                 VIR_WARN("Failed to terminate %s process %d "
                          "for network '%s' with SIG%s: %s",
                          daemonName, pid, networkName, signame,
-                         virStrerror(errno, ebuf, sizeof(ebuf)));
+                         g_strerror(errno));
             }
             return ret;
         }

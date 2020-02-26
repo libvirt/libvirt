@@ -900,9 +900,8 @@ storagePoolUndefine(virStoragePoolPtr pool)
 
     if (autostartLink && unlink(autostartLink) < 0 &&
         errno != ENOENT && errno != ENOTDIR) {
-        char ebuf[1024];
         VIR_ERROR(_("Failed to delete autostart link '%s': %s"),
-                  autostartLink, virStrerror(errno, ebuf, sizeof(ebuf)));
+                  autostartLink, g_strerror(errno));
     }
 
     event = virStoragePoolEventLifecycleNew(def->name,

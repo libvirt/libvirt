@@ -135,14 +135,13 @@ static void
 lxcProcessRemoveDomainStatus(virLXCDriverConfigPtr cfg,
                               virDomainObjPtr vm)
 {
-    char ebuf[1024];
     char *file = NULL;
 
     file = g_strdup_printf("%s/%s.xml", cfg->stateDir, vm->def->name);
 
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
         VIR_WARN("Failed to remove domain XML for %s: %s",
-                 vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
+                 vm->def->name, g_strerror(errno));
     VIR_FREE(file);
 }
 
@@ -1410,7 +1409,7 @@ int virLXCProcessStart(virConnectPtr conn,
     if (safewrite(logfd, timestamp, strlen(timestamp)) < 0 ||
         safewrite(logfd, START_POSTFIX, strlen(START_POSTFIX)) < 0) {
         VIR_WARN("Unable to write timestamp to logfile: %s",
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
+                 g_strerror(errno));
     }
     VIR_FREE(timestamp);
 
@@ -1418,7 +1417,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virCommandWriteArgLog(cmd, logfd);
     if ((pos = lseek(logfd, 0, SEEK_END)) < 0)
         VIR_WARN("Unable to seek to end of logfile: %s",
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
+                 g_strerror(errno));
 
     VIR_DEBUG("Launching container");
     virCommandRawStatus(cmd);

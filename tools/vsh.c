@@ -1930,7 +1930,7 @@ vshTTYMakeRaw(vshControl *ctl G_GNUC_UNUSED,
 {
 #ifndef WIN32
     struct termios rawattr = ctl->termattr;
-    char ebuf[1024];
+
 
     if (!ctl->istty) {
         if (report_errors) {
@@ -1946,7 +1946,7 @@ vshTTYMakeRaw(vshControl *ctl G_GNUC_UNUSED,
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawattr) < 0) {
         if (report_errors)
             vshError(ctl, _("unable to set tty attributes: %s"),
-                     virStrerror(errno, ebuf, sizeof(ebuf)));
+                     g_strerror(errno));
         return -1;
     }
 #endif
@@ -2120,12 +2120,10 @@ vshEventWait(vshControl *ctl)
     assert(ctl->eventPipe[0] >= 0);
     while ((rv = read(ctl->eventPipe[0], &buf, 1)) < 0 && errno == EINTR);
     if (rv != 1) {
-        char ebuf[1024];
-
         if (!rv)
             errno = EPIPE;
         vshError(ctl, _("failed to determine loop exit status: %s"),
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
+                 g_strerror(errno));
         return -1;
     }
     return buf;
@@ -2256,13 +2254,11 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
 void
 vshCloseLogFile(vshControl *ctl)
 {
-    char ebuf[1024];
-
     /* log file close */
     if (VIR_CLOSE(ctl->log_fd) < 0) {
         vshError(ctl, _("%s: failed to write log file: %s"),
                  ctl->logfile ? ctl->logfile : "?",
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
+                 g_strerror(errno));
     }
 
     if (ctl->logfile) {
@@ -2366,7 +2362,6 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     char *ret;
     const char *tmpdir;
     int fd;
-    char ebuf[1024];
 
     tmpdir = getenv("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
@@ -2374,14 +2369,14 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     fd = g_mkstemp_full(ret, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
     if (fd == -1) {
         vshError(ctl, _("g_mkstemp_full: failed to create temporary file: %s"),
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
+                 g_strerror(errno));
         VIR_FREE(ret);
         return NULL;
     }
 
     if (safewrite(fd, doc, strlen(doc)) == -1) {
         vshError(ctl, _("write: %s: failed to write to temporary file: %s"),
-                 ret, virStrerror(errno, ebuf, sizeof(ebuf)));
+                 ret, g_strerror(errno));
         VIR_FORCE_CLOSE(fd);
         unlink(ret);
         VIR_FREE(ret);
@@ -2389,7 +2384,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     }
     if (VIR_CLOSE(fd) < 0) {
         vshError(ctl, _("close: %s: failed to write or close temporary file: %s"),
-                 ret, virStrerror(errno, ebuf, sizeof(ebuf)));
+                 ret, g_strerror(errno));
         unlink(ret);
         VIR_FREE(ret);
         return NULL;
@@ -2459,12 +2454,11 @@ char *
 vshEditReadBackFile(vshControl *ctl, const char *filename)
 {
     char *ret;
-    char ebuf[1024];
 
     if (virFileReadAll(filename, VSH_MAX_XML_FILE, &ret) == -1) {
         vshError(ctl,
                  _("%s: failed to read temporary file: %s"),
-                 filename, virStrerror(errno, ebuf, sizeof(ebuf)));
+                 filename, g_strerror(errno));
         return NULL;
     }
     return ret;
@@ -2916,9 +2910,8 @@ vshReadlineDeinit(vshControl *ctl)
     if (ctl->historyfile != NULL) {
         if (virFileMakePathWithMode(ctl->historydir, 0755) < 0 &&
             errno != EEXIST) {
-            char ebuf[1024];
             vshError(ctl, _("Failed to create '%s': %s"),
-                     ctl->historydir, virStrerror(errno, ebuf, sizeof(ebuf)));
+                     ctl->historydir, g_strerror(errno));
         } else {
             write_history(ctl->historyfile);
         }
@@ -3155,7 +3148,6 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
 {
     const char *dir = NULL;
     g_autofree char *dir_malloced = NULL;
-    char ebuf[1024];
 
     if (!ctl->imode) {
         vshError(ctl, "%s", _("cd: command valid only in interactive mode"));
@@ -3169,7 +3161,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
 
     if (chdir(dir) == -1) {
         vshError(ctl, _("cd: %s: %s"),
-                 virStrerror(errno, ebuf, sizeof(ebuf)), dir);
+                 g_strerror(errno), dir);
         return false;
     }
 

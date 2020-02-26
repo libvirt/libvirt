@@ -67,7 +67,6 @@ libvirt_vmessage(xentoollog_logger *logger_in,
     char timestamp[VIR_TIME_STRING_BUFLEN];
     char *message = NULL;
     char *start, *end;
-    char ebuf[1024];
 
     VIR_DEBUG("libvirt_vmessage: context='%s' format='%s'", context, format);
 
@@ -104,7 +103,7 @@ libvirt_vmessage(xentoollog_logger *logger_in,
     fprintf(logFile, "%s", message);
 
     if (errnoval >= 0)
-        fprintf(logFile, ": %s", virStrerror(errnoval, ebuf, sizeof(ebuf)));
+        fprintf(logFile, ": %s", g_strerror(errnoval));
 
     fputc('\n', logFile);
     fflush(logFile);
@@ -192,14 +191,13 @@ libxlLoggerOpenFile(libxlLoggerPtr logger,
     char *path = NULL;
     FILE *logFile = NULL;
     char *domidstr = NULL;
-    char ebuf[1024];
 
     path = g_strdup_printf("%s/%s.log", logger->logDir, name);
     domidstr = g_strdup_printf("%d", id);
 
     if (!(logFile = fopen(path, "a"))) {
         VIR_WARN("Failed to open log file %s: %s",
-                 path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                 path, g_strerror(errno));
         goto cleanup;
     }
     ignore_value(virHashAddEntry(logger->files, domidstr, logFile));

@@ -89,17 +89,15 @@ static void virLockSpaceResourceFree(virLockSpaceResourcePtr res)
             } else {
                 if (unlink(res->path) < 0 &&
                     errno != ENOENT) {
-                    char ebuf[1024];
                     VIR_WARN("Failed to unlink resource %s: %s",
-                             res->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                             res->path, g_strerror(errno));
                 }
             }
         } else {
             if (unlink(res->path) < 0 &&
                 errno != ENOENT) {
-                char ebuf[1024];
                 VIR_WARN("Failed to unlink resource %s: %s",
-                         res->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                         res->path, g_strerror(errno));
             }
         }
     }
@@ -173,9 +171,8 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
              * one that now exists on the filesystem
              */
             if (stat(res->path, &a) < 0) {
-                char ebuf[1024] G_GNUC_UNUSED;
                 VIR_DEBUG("Resource '%s' disappeared: %s",
-                          res->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                          res->path, g_strerror(errno));
                 VIR_FORCE_CLOSE(res->fd);
                 /* Someone else must be racing with us, so try again */
                 continue;

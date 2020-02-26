@@ -793,12 +793,11 @@ virGetUserIDByName(const char *name, uid_t *uid, bool missing_ok)
 
     if (!pw) {
         if (rc != 0 && !missing_ok) {
-            char buf[1024];
             /* log the possible error from getpwnam_r. Unfortunately error
              * reporting from this function is bad and we can't really
              * rely on it, so we just report that the user wasn't found */
             VIR_WARN("User record for user '%s' was not found: %s",
-                     name, virStrerror(rc, buf, sizeof(buf)));
+                     name, g_strerror(rc));
         }
 
         ret = 1;
@@ -876,12 +875,11 @@ virGetGroupIDByName(const char *name, gid_t *gid, bool missing_ok)
 
     if (!gr) {
         if (rc != 0 && !missing_ok) {
-            char buf[1024];
             /* log the possible error from getgrnam_r. Unfortunately error
              * reporting from this function is bad and we can't really
              * rely on it, so we just report that the user wasn't found */
             VIR_WARN("Group record for user '%s' was not found: %s",
-                     name, virStrerror(rc, buf, sizeof(buf)));
+                     name, g_strerror(rc));
         }
 
         ret = 1;

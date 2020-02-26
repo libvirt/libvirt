@@ -1228,9 +1228,8 @@ virHostCPUGetMicrocodeVersion(void)
     unsigned int version = 0;
 
     if (virFileReadHeaderQuiet(CPUINFO_PATH, 4096, &outbuf) < 0) {
-        char ebuf[1024];
         VIR_DEBUG("Failed to read microcode version from %s: %s",
-                  CPUINFO_PATH, virStrerror(errno, ebuf, sizeof(ebuf)));
+                  CPUINFO_PATH, g_strerror(errno));
         return 0;
     }
 
@@ -1301,13 +1300,12 @@ virHostCPUGetMSR(unsigned long index,
                  uint64_t *msr)
 {
     VIR_AUTOCLOSE fd = -1;
-    char ebuf[1024];
 
     *msr = 0;
 
     if ((fd = open(MSR_DEVICE, O_RDONLY)) < 0) {
         VIR_DEBUG("Unable to open %s: %s",
-                  MSR_DEVICE, virStrerror(errno, ebuf, sizeof(ebuf)));
+                  MSR_DEVICE, g_strerror(errno));
     } else {
         int rc = pread(fd, msr, sizeof(*msr), index);
 
@@ -1320,7 +1318,7 @@ virHostCPUGetMSR(unsigned long index,
         }
 
         VIR_DEBUG("Cannot read MSR 0x%lx from %s: %s",
-                  index, MSR_DEVICE, virStrerror(errno, ebuf, sizeof(ebuf)));
+                  index, MSR_DEVICE, g_strerror(errno));
     }
 
     VIR_DEBUG("Falling back to KVM ioctl");

@@ -4646,10 +4646,9 @@ virQEMUCapsIsValid(void *data,
     }
 
     if (stat(qemuCaps->binary, &sb) < 0) {
-        char ebuf[1024];
         VIR_DEBUG("Failed to stat QEMU binary '%s': %s",
                   qemuCaps->binary,
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
+                  g_strerror(errno));
         return false;
     }
 

@@ -105,7 +105,6 @@ static void
 qemuProcessRemoveDomainStatus(virQEMUDriverPtr driver,
                               virDomainObjPtr vm)
 {
-    char ebuf[1024];
     g_autofree char *file = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -114,13 +113,13 @@ qemuProcessRemoveDomainStatus(virQEMUDriverPtr driver,
 
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
         VIR_WARN("Failed to remove domain XML for %s: %s",
-                 vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
+                 vm->def->name, g_strerror(errno));
 
     if (priv->pidfile &&
         unlink(priv->pidfile) < 0 &&
         errno != ENOENT)
         VIR_WARN("Failed to remove PID file for %s: %s",
-                 vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
+                 vm->def->name, g_strerror(errno));
 }
 
 
@@ -8344,13 +8343,11 @@ qemuProcessQMPStop(qemuProcessQMPPtr proc)
     virDomainObjEndAPI(&proc->vm);
 
     if (proc->pid != 0) {
-        char ebuf[1024];
-
         VIR_DEBUG("Killing QMP caps process %lld", (long long)proc->pid);
         if (virProcessKill(proc->pid, SIGKILL) < 0 && errno != ESRCH)
             VIR_ERROR(_("Failed to kill process %lld: %s"),
                       (long long)proc->pid,
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
+                      g_strerror(errno));
 
         proc->pid = 0;
     }

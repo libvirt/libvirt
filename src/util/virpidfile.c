@@ -374,9 +374,8 @@ int virPidFileAcquirePath(const char *path,
          * one that now exists on the filesystem
          */
         if (stat(path, &a) < 0) {
-            char ebuf[1024] G_GNUC_UNUSED;
             VIR_DEBUG("Pid file '%s' disappeared: %s",
-                      path, virStrerror(errno, ebuf, sizeof(ebuf)));
+                      path, g_strerror(errno));
             VIR_FORCE_CLOSE(fd);
             /* Someone else must be racing with us, so try again */
             continue;

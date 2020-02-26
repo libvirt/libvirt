@@ -127,9 +127,8 @@ int virFileClose(int *fdptr, virFileCloseFlags flags)
                 if (!(flags & VIR_FILE_CLOSE_IGNORE_EBADF))
                     VIR_WARN("Tried to close invalid fd %d", *fdptr);
             } else {
-                char ebuf[1024] G_GNUC_UNUSED;
                 VIR_DEBUG("Failed to close fd %d: %s",
-                          *fdptr, virStrerror(errno, ebuf, sizeof(ebuf)));
+                          *fdptr, g_strerror(errno));
             }
         } else {
             VIR_DEBUG("Closed fd %d", *fdptr);
