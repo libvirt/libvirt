@@ -6539,6 +6539,37 @@ qemu-kvm -net nic,model=? /dev/null
       traffic for that VLAN will be tagged.
     </p>
 
+    <h5><a id="elementPort">Isolating guests's network traffic from each other</a></h5>
+
+<pre>
+...
+&lt;devices&gt;
+  &lt;interface type='network'&gt;
+    &lt;source network='default'/&gt;
+    <b>&lt;port isolated='yes'/&gt;</b>
+  &lt;/interface&gt;
+&lt;/devices&gt;
+...</pre>
+
+    <p>
+      <span class="since">Since 6.1.0.</span> The <code>port</code>
+      element property <code>isolated</code>, when set
+      to <code>yes</code> (default setting is <code>no</code>) is used
+      to isolate this interface's network traffic from that of other
+      guest interfaces connected to the same network that also
+      have <code>&lt;port isolated='yes'/&gt;</code>.  This setting is
+      only supported for emulated interface devices that use a
+      standard tap device to connect to the network via a Linux host
+      bridge. This property can be inherited from a libvirt network,
+      so if all guests that will be connected to the network should be
+      isolated, it is better to put the setting in the network
+      configuration. (NB: this only prevents guests that
+      have <code>isolated='yes'</code> from communicating with each
+      other; if there is a guest on the same bridge that doesn't
+      have <code>isolated='yes'</code>, even the isolated guests will
+      be able to communicate with it.)
+    </p>
+
     <h5><a id="elementLink">Modifying virtual link state</a></h5>
 <pre>
 ...

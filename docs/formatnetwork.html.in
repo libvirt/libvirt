@@ -729,6 +729,31 @@
       or <code>&lt;interface&gt;</code>.
     </p>
 
+    <h5><a id="elementPort">Isolating ports from one another</a></h5>
+
+<pre>
+&lt;network&gt;
+  &lt;name&gt;isolated-ports&lt;/name&gt;
+  &lt;forward mode='bridge'/&gt;
+  &lt;bridge name='br0'/&gt;
+  &lt;port isolated='yes'/&gt;
+&lt;/network&gt;
+</pre>
+
+    <p>
+      <span class="since">Since 6.1.0.</span> The <code>port</code>
+      element property <code>isolated</code>, when set
+      to <code>yes</code> (default setting is <code>no</code>) is used
+      to isolate the network traffic of each guest on the network from
+      all other guests connected to the network; it does not have an
+      effect on communication between the guests and the host, or
+      between the guests and destinations beyond this network. This
+      setting is only supported for networks that use a Linux host
+      bridge to connect guest interfaces via a standard tap device
+      (i.e. those with a forward mode of nat, route, open, bridge, or
+      no forward mode).
+    </p>
+
     <h5><a id="elementsPortgroup">Portgroups</a></h5>
 
 <pre>
