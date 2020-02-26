@@ -24,14 +24,11 @@
 #ifdef WITH_AUDIT
 # include <libaudit.h>
 #endif
-#include <unistd.h>
 
 #include "virerror.h"
 #include "virlog.h"
 #include "viraudit.h"
 #include "virfile.h"
-#include "viralloc.h"
-#include "virstring.h"
 
 VIR_LOG_INIT("util.audit");
 
