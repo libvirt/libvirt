@@ -227,7 +227,6 @@
 @SRCDIR@/src/util/virauth.c
 @SRCDIR@/src/util/virauthconfig.c
 @SRCDIR@/src/util/virbitmap.c
-@SRCDIR@/src/util/virbpf.c
 @SRCDIR@/src/util/vircgroup.c
 @SRCDIR@/src/util/vircgroupbackend.c
 @SRCDIR@/src/util/vircgroupbackend.h

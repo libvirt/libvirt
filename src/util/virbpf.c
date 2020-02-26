@@ -302,8 +302,7 @@ virBPFCreateMap(unsigned int mapType G_GNUC_UNUSED,
                 unsigned int valSize G_GNUC_UNUSED,
                 unsigned int maxEntries G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -313,8 +312,7 @@ virBPFLoadProg(struct bpf_insn *insns G_GNUC_UNUSED,
                int progType G_GNUC_UNUSED,
                unsigned int insnCnt G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -324,8 +322,7 @@ virBPFAttachProg(int progfd G_GNUC_UNUSED,
                  int targetfd G_GNUC_UNUSED,
                  int attachType G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -335,8 +332,7 @@ virBPFDetachProg(int progfd G_GNUC_UNUSED,
                  int targetfd G_GNUC_UNUSED,
                  int attachType G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -348,8 +344,7 @@ virBPFQueryProg(int targetfd G_GNUC_UNUSED,
                 unsigned int *progcnt G_GNUC_UNUSED,
                 void *progids G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -357,8 +352,7 @@ virBPFQueryProg(int targetfd G_GNUC_UNUSED,
 int
 virBPFGetProg(unsigned int id G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -368,8 +362,7 @@ virBPFGetProgInfo(int progfd G_GNUC_UNUSED,
                   struct bpf_prog_info *info G_GNUC_UNUSED,
                   unsigned int **mapIDs G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -377,8 +370,7 @@ virBPFGetProgInfo(int progfd G_GNUC_UNUSED,
 int
 virBPFGetMap(unsigned int id G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -387,8 +379,7 @@ int
 virBPFGetMapInfo(int mapfd G_GNUC_UNUSED,
                  struct bpf_map_info *info G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -398,8 +389,7 @@ virBPFLookupElem(int mapfd G_GNUC_UNUSED,
                  void *key G_GNUC_UNUSED,
                  void *val G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -409,8 +399,7 @@ virBPFGetNextElem(int mapfd G_GNUC_UNUSED,
                   void *key G_GNUC_UNUSED,
                   void *nextKey G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -420,8 +409,7 @@ virBPFUpdateElem(int mapfd G_GNUC_UNUSED,
                  void *key G_GNUC_UNUSED,
                  void *val G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 
@@ -430,8 +418,7 @@ int
 virBPFDeleteElem(int mapfd G_GNUC_UNUSED,
                  void *key G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("BPF not supported with this kernel"));
+    errno = ENOSYS;
     return -1;
 }
 #endif /* !HAVE_SYS_SYSCALL_H || !HAVE_DECL_BPF_PROG_QUERY */
