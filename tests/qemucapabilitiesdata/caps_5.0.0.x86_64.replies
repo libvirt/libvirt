@@ -6042,11 +6042,140 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "pcie-root-port"
+  },
+  "id": "libvirt-35"
+}
+
+{
+  "return": [
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "default-value": -1,
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "failover_pair_id",
+      "type": "str"
+    },
+    {
+      "default-value": true,
+      "name": "x-pcie-lnksta-dllla",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 1,
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "x-pcie-extcap-init",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "port",
+      "type": "uint8"
+    },
+    {
+      "default-value": 8,
+      "name": "aer_log_max",
+      "type": "uint16"
+    },
+    {
+      "default-value": true,
+      "name": "hotplug",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "slot",
+      "type": "uint16"
+    },
+    {
+      "default-value": 0,
+      "name": "chassis",
+      "type": "uint8"
+    },
+    {
+      "default-value": true,
+      "name": "power_controller_present",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "disable-acs",
+      "type": "bool"
+    },
+    {
+      "default-value": 18446744073709551615,
+      "name": "mem-reserve",
+      "type": "size"
+    },
+    {
+      "default-value": 18446744073709551615,
+      "name": "pref64-reserve",
+      "type": "size"
+    },
+    {
+      "default-value": 4294967295,
+      "name": "bus-reserve",
+      "type": "uint32"
+    },
+    {
+      "default-value": "32",
+      "name": "x-width",
+      "description": "1/2/4/8/12/16/32",
+      "type": "PCIELinkWidth"
+    },
+    {
+      "default-value": true,
+      "name": "x-migrate-msix",
+      "type": "bool"
+    },
+    {
+      "default-value": 18446744073709551615,
+      "name": "io-reserve",
+      "type": "size"
+    },
+    {
+      "default-value": "16",
+      "name": "x-speed",
+      "description": "2_5/5/8/16",
+      "type": "PCIELinkSpeed"
+    },
+    {
+      "default-value": 18446744073709551615,
+      "name": "pref32-reserve",
+      "type": "size"
+    }
+  ],
+  "id": "libvirt-35"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -6116,7 +6245,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -6124,7 +6253,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -6193,7 +6322,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -6201,7 +6330,7 @@
   "arguments": {
     "typename": "max-x86_64-cpu"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -7767,12 +7896,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -8148,12 +8277,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -9665,12 +9794,12 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -9678,12 +9807,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -9691,12 +9820,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -10972,12 +11101,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -11055,12 +11184,12 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -24788,16 +24917,16 @@
       ]
     }
   ],
-  "id": "libvirt-44"
-}
-
-{
-  "execute": "query-sev-capabilities",
   "id": "libvirt-45"
 }
 
 {
-  "id": "libvirt-45",
+  "execute": "query-sev-capabilities",
+  "id": "libvirt-46"
+}
+
+{
+  "id": "libvirt-46",
   "error": {
     "class": "GenericError",
     "desc": "SEV feature is not available"
@@ -24812,7 +24941,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -25115,7 +25244,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -25129,7 +25258,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -25432,7 +25561,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {

@@ -572,6 +572,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 360 */
               "fsdev.multidevs",
               "virtio.packed",
+              "pcie-root-port.hotplug",
     );
 
 
@@ -1327,6 +1328,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioNet[] = {
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsPCIeRootPort[] = {
+    { "hotplug", QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG },
+};
+
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSpaprPCIHostBridge[] = {
     { "numa_node", QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE },
 };
@@ -1570,6 +1575,9 @@ static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
     { "nvdimm", virQEMUCapsDevicePropsNVDIMM,
       G_N_ELEMENTS(virQEMUCapsDevicePropsNVDIMM),
       QEMU_CAPS_DEVICE_NVDIMM },
+    { "pcie-root-port", virQEMUCapsDevicePropsPCIeRootPort,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsPCIeRootPort),
+      QEMU_CAPS_DEVICE_PCIE_ROOT_PORT },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {

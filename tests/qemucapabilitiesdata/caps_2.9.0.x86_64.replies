@@ -3992,8 +3992,118 @@
 }
 
 {
-  "execute": "query-machines",
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "pcie-root-port"
+  },
   "id": "libvirt-35"
+}
+
+{
+  "return": [
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "power_controller_present",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "aer_log_max",
+      "type": "uint16"
+    },
+    {
+      "name": "x-speed",
+      "description": "2_5/5/8/16",
+      "type": "PCIELinkSpeed"
+    },
+    {
+      "name": "slot",
+      "type": "uint16"
+    },
+    {
+      "name": "x-pcie-lnksta-dllla",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "port",
+      "type": "uint8"
+    },
+    {
+      "name": "mem-reserve",
+      "type": "size"
+    },
+    {
+      "name": "x-pcie-extcap-init",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "pref64-reserve",
+      "type": "size"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "chassis",
+      "type": "uint8"
+    },
+    {
+      "name": "x-width",
+      "description": "1/2/4/8/12/16/32",
+      "type": "PCIELinkWidth"
+    },
+    {
+      "name": "failover_pair_id",
+      "type": "str"
+    },
+    {
+      "name": "pref32-reserve",
+      "type": "size"
+    },
+    {
+      "name": "bus-reserve",
+      "type": "uint32"
+    },
+    {
+      "name": "x-migrate-msix",
+      "type": "bool"
+    },
+    {
+      "name": "disable-acs",
+      "type": "bool"
+    },
+    {
+      "name": "io-reserve",
+      "type": "size"
+    }
+  ],
+  "id": "libvirt-35"
+}
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-36"
 }
 
 {
@@ -4172,12 +4282,12 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -4459,36 +4569,36 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -5737,12 +5847,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -5784,12 +5894,12 @@
       "capability": "release-ram"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -15075,7 +15185,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -15086,7 +15196,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -15265,7 +15375,7 @@
       }
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -15446,7 +15556,7 @@
       }
     }
   },
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -15687,7 +15797,7 @@
       }
     }
   },
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -15701,7 +15811,7 @@
       }
     }
   },
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -15880,7 +15990,7 @@
       }
     }
   },
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -16061,7 +16171,7 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -16302,7 +16412,7 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
