@@ -176,6 +176,21 @@ properly. ``$BACKING_IMAGE_PATH`` should be specified as a full absolute path.
 If relative referencing of the backing image is desired, the path must be
 relative to the location of image described by ``$IMAGE_PATH``.
 
+**Important:** If the ``$BACKING_IMAGE_FORMAT`` is not known it can be queried
+using ``qemu-img info $BACKING_IMAGE_PATH`` and looking for the ``file format:``
+field, but for security reasons should be used *only* if at least one of the
+following criteria is met:
+
+- ``file format`` is ``raw``
+- ``backing file`` is NOT present
+- ``backing file`` is present AND is correct/trusted
+
+Note that the last criteria may require manual inspection and thus should not
+be scripted unless the trust for the image can be expressed programatically.
+
+Also note that the above steps may need to be repeated recursively for any
+subsequent backing images.
+
 Missing images reported after after moving disk images into a different path
 ----------------------------------------------------------------------------
 
