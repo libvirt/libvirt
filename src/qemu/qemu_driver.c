@@ -17917,8 +17917,10 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     }
 
     /* clear the _SHALLOW flag if there is only one layer */
-    if (!virStorageSourceHasBacking(disk->src))
+    if (!virStorageSourceHasBacking(disk->src)) {
+        flags &= ~VIR_DOMAIN_BLOCK_COPY_SHALLOW;
         mirror_shallow = false;
+    }
 
     if (qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(mirror,
                                                                 mirror_shallow,
