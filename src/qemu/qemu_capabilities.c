@@ -566,6 +566,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vhost-user-fs",
               "query-named-block-nodes.flat",
               "blockdev-snapshot.allow-write-only-overlay",
+              "blockdev-reopen",
     );
 
 
