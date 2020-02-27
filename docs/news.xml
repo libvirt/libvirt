@@ -113,8 +113,31 @@
           exposes the same capability to libvirt users.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Storage configuration improvements
+        </summary>
+        <description>
+          Libvirt now accepts <code>&lt;backingStore type='volume'&gt;</code>
+          and allows specifying the offset and size of the image format
+          container inside the storage source via the <code>&lt;slices&gt;</code>
+          subelement.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Image format probing is allowed in certain cases
+        </summary>
+        <description>
+          To resolve regressions when users didn't specify the backing image
+          format in the overlay, libvirt now probes the format in certain
+          secure scenarios which fixes a few common existing cases. Additionally
+          the knowledge base was extended to provide more information on how
+          to rectify the problem.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
