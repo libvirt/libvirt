@@ -227,10 +227,10 @@
   <flag name='query-named-block-nodes.flat'/>
   <flag name='blockdev-snapshot.allow-write-only-overlay'/>
   <flag name='storage.werror'/>
-  <version>4002050</version>
+  <version>4002091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100241</microcodeVersion>
-  <package>v4.2.0-2365-gd4f7d56759</package>
+  <package>v5.0.0-rc1</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -475,6 +475,7 @@
     <property name='kvm-pv-unhalt' type='boolean' value='true' migratable='yes'/>
     <property name='tsc-scale' type='boolean' value='false'/>
     <property name='topoext' type='boolean' value='false'/>
+    <property name='amd-stibp' type='boolean' value='false'/>
     <property name='vmx-preemption-timer' type='boolean' value='true' migratable='yes'/>
     <property name='clflushopt' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-vnmi-pending' type='boolean' value='true' migratable='yes'/>
@@ -928,6 +929,21 @@
   <cpu type='kvm' name='Haswell-noTSX' typename='Haswell-noTSX-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Haswell-IBRS' typename='Haswell-IBRS-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Haswell' typename='Haswell-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='EPYC-v3' typename='EPYC-v3-x86_64-cpu' usable='no'>
+    <blocker name='sha-ni'/>
+    <blocker name='mmxext'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='cr8legacy'/>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+    <blocker name='osvw'/>
+    <blocker name='perfctr-core'/>
+    <blocker name='clzero'/>
+    <blocker name='xsaveerptr'/>
+    <blocker name='ibpb'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
+  </cpu>
   <cpu type='kvm' name='EPYC-v2' typename='EPYC-v2-x86_64-cpu' usable='no'>
     <blocker name='sha-ni'/>
     <blocker name='mmxext'/>
@@ -948,6 +964,44 @@
     <blocker name='sse4a'/>
     <blocker name='misalignsse'/>
     <blocker name='osvw'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-Rome-v1' typename='EPYC-Rome-v1-x86_64-cpu' usable='no'>
+    <blocker name='clwb'/>
+    <blocker name='sha-ni'/>
+    <blocker name='rdpid'/>
+    <blocker name='mmxext'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='cr8legacy'/>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+    <blocker name='osvw'/>
+    <blocker name='perfctr-core'/>
+    <blocker name='clzero'/>
+    <blocker name='xsaveerptr'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='ibpb'/>
+    <blocker name='amd-stibp'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-Rome' typename='EPYC-Rome-x86_64-cpu' usable='no'>
+    <blocker name='clwb'/>
+    <blocker name='sha-ni'/>
+    <blocker name='rdpid'/>
+    <blocker name='mmxext'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='cr8legacy'/>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+    <blocker name='osvw'/>
+    <blocker name='perfctr-core'/>
+    <blocker name='clzero'/>
+    <blocker name='xsaveerptr'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='ibpb'/>
+    <blocker name='amd-stibp'/>
     <blocker name='npt'/>
     <blocker name='nrip-save'/>
   </cpu>
@@ -995,6 +1049,10 @@
     <blocker name='ibpb'/>
     <blocker name='npt'/>
     <blocker name='nrip-save'/>
+  </cpu>
+  <cpu type='kvm' name='Denverton-v2' typename='Denverton-v2-x86_64-cpu' usable='no'>
+    <blocker name='sha-ni'/>
+    <blocker name='rdctl-no'/>
   </cpu>
   <cpu type='kvm' name='Denverton-v1' typename='Denverton-v1-x86_64-cpu' usable='no'>
     <blocker name='sha-ni'/>
@@ -1421,6 +1479,7 @@
     <property name='kvm-pv-unhalt' type='boolean' value='false'/>
     <property name='tsc-scale' type='boolean' value='false'/>
     <property name='topoext' type='boolean' value='false'/>
+    <property name='amd-stibp' type='boolean' value='false'/>
     <property name='vmx-preemption-timer' type='boolean' value='false'/>
     <property name='clflushopt' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-vnmi-pending' type='boolean' value='false'/>
@@ -2236,6 +2295,26 @@
     <blocker name='invpcid'/>
     <blocker name='rtm'/>
   </cpu>
+  <cpu type='tcg' name='EPYC-v3' typename='EPYC-v3-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='rdseed'/>
+    <blocker name='sha-ni'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='misalignsse'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='osvw'/>
+    <blocker name='topoext'/>
+    <blocker name='perfctr-core'/>
+    <blocker name='clzero'/>
+    <blocker name='xsaveerptr'/>
+    <blocker name='ibpb'/>
+    <blocker name='nrip-save'/>
+    <blocker name='xsavec'/>
+    <blocker name='xsaves'/>
+  </cpu>
   <cpu type='tcg' name='EPYC-v2' typename='EPYC-v2-x86_64-cpu' usable='no'>
     <blocker name='fma'/>
     <blocker name='avx'/>
@@ -2266,6 +2345,54 @@
     <blocker name='topoext'/>
     <blocker name='nrip-save'/>
     <blocker name='xsavec'/>
+  </cpu>
+  <cpu type='tcg' name='EPYC-Rome-v1' typename='EPYC-Rome-v1-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='rdseed'/>
+    <blocker name='sha-ni'/>
+    <blocker name='umip'/>
+    <blocker name='rdpid'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='misalignsse'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='osvw'/>
+    <blocker name='topoext'/>
+    <blocker name='perfctr-core'/>
+    <blocker name='clzero'/>
+    <blocker name='xsaveerptr'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='ibpb'/>
+    <blocker name='amd-stibp'/>
+    <blocker name='nrip-save'/>
+    <blocker name='xsavec'/>
+    <blocker name='xsaves'/>
+  </cpu>
+  <cpu type='tcg' name='EPYC-Rome' typename='EPYC-Rome-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='rdseed'/>
+    <blocker name='sha-ni'/>
+    <blocker name='umip'/>
+    <blocker name='rdpid'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='misalignsse'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='osvw'/>
+    <blocker name='topoext'/>
+    <blocker name='perfctr-core'/>
+    <blocker name='clzero'/>
+    <blocker name='xsaveerptr'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='ibpb'/>
+    <blocker name='amd-stibp'/>
+    <blocker name='nrip-save'/>
+    <blocker name='xsavec'/>
+    <blocker name='xsaves'/>
   </cpu>
   <cpu type='tcg' name='EPYC-IBPB' typename='EPYC-IBPB-x86_64-cpu' usable='no'>
     <blocker name='fma'/>
@@ -2327,6 +2454,19 @@
     <blocker name='ibpb'/>
     <blocker name='nrip-save'/>
     <blocker name='xsavec'/>
+  </cpu>
+  <cpu type='tcg' name='Denverton-v2' typename='Denverton-v2-x86_64-cpu' usable='no'>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='rdseed'/>
+    <blocker name='sha-ni'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='arch-capabilities'/>
+    <blocker name='ssbd'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='xsavec'/>
+    <blocker name='rdctl-no'/>
+    <blocker name='skip-l1dfl-vmentry'/>
   </cpu>
   <cpu type='tcg' name='Denverton-v1' typename='Denverton-v1-x86_64-cpu' usable='no'>
     <blocker name='x2apic'/>
