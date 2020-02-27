@@ -1824,7 +1824,8 @@ static int
 virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
                                         virDomainDefPtr def,
                                         virStorageSourcePtr src,
-                                        virStorageSourcePtr parent)
+                                        virStorageSourcePtr parent,
+                                        bool isChainTop)
 {
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
@@ -1832,7 +1833,6 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
     virSecurityDeviceLabelDefPtr parent_seclabel = NULL;
     char *use_label = NULL;
     bool remember;
-    bool is_toplevel = parent == src || parent->externalDataStore == src;
     g_autofree char *vfioGroupDev = NULL;
     const char *path = src->path;
     int ret;
@@ -1856,7 +1856,7 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
      * but the top layer, or read only image, or disk explicitly
      * marked as shared.
      */
-    remember = is_toplevel && !src->readonly && !src->shared;
+    remember = isChainTop && !src->readonly && !src->shared;
 
     disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
                                                         SECURITY_SELINUX_NAME);
@@ -1873,7 +1873,7 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
             return 0;
 
         use_label = parent_seclabel->label;
-    } else if (is_toplevel) {
+    } else if (parent == src || parent->externalDataStore == src) {
         if (src->shared) {
             use_label = data->file_context;
         } else if (src->readonly) {
@@ -1930,7 +1930,9 @@ virSecuritySELinuxSetImageLabelRelative(virSecurityManagerPtr mgr,
     virStorageSourcePtr n;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (virSecuritySELinuxSetImageLabelInternal(mgr, def, n, parent) < 0)
+        const bool isChainTop = flags & VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP;
+
+        if (virSecuritySELinuxSetImageLabelInternal(mgr, def, n, parent, isChainTop) < 0)
             return -1;
 
         if (n->externalDataStore &&
@@ -1943,6 +1945,8 @@ virSecuritySELinuxSetImageLabelRelative(virSecurityManagerPtr mgr,
 
         if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))
             break;
+
+        flags &= ~VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP;
     }
 
     return 0;
@@ -3146,7 +3150,8 @@ virSecuritySELinuxSetAllLabel(virSecurityManagerPtr mgr,
             continue;
         }
         if (virSecuritySELinuxSetImageLabel(mgr, def, def->disks[i]->src,
-                                            VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN) < 0)
+                                            VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN |
+                                            VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP) < 0)
             return -1;
     }
     /* XXX fixme process  def->fss if relabel == true */

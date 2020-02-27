@@ -889,14 +889,14 @@ static int
 virSecurityDACSetImageLabelInternal(virSecurityManagerPtr mgr,
                                     virDomainDefPtr def,
                                     virStorageSourcePtr src,
-                                    virStorageSourcePtr parent)
+                                    virStorageSourcePtr parent,
+                                    bool isChainTop)
 {
     virSecurityLabelDefPtr secdef;
     virSecurityDeviceLabelDefPtr disk_seclabel;
     virSecurityDeviceLabelDefPtr parent_seclabel = NULL;
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     bool remember;
-    bool is_toplevel = parent == src || parent->externalDataStore == src;
     uid_t user;
     gid_t group;
 
@@ -954,7 +954,7 @@ virSecurityDACSetImageLabelInternal(virSecurityManagerPtr mgr,
      * but the top layer, or read only image, or disk explicitly
      * marked as shared.
      */
-    remember = is_toplevel && !src->readonly && !src->shared;
+    remember = isChainTop && !src->readonly && !src->shared;
 
     return virSecurityDACSetOwnership(mgr, src, NULL, user, group, remember);
 }
@@ -970,7 +970,9 @@ virSecurityDACSetImageLabelRelative(virSecurityManagerPtr mgr,
     virStorageSourcePtr n;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (virSecurityDACSetImageLabelInternal(mgr, def, n, parent) < 0)
+        const bool isChainTop = flags & VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP;
+
+        if (virSecurityDACSetImageLabelInternal(mgr, def, n, parent, isChainTop) < 0)
             return -1;
 
         if (n->externalDataStore &&
@@ -983,6 +985,8 @@ virSecurityDACSetImageLabelRelative(virSecurityManagerPtr mgr,
 
         if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))
             break;
+
+        flags &= ~VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP;
     }
 
     return 0;
@@ -2114,7 +2118,8 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
         if (virDomainDiskGetType(def->disks[i]) == VIR_STORAGE_TYPE_DIR)
             continue;
         if (virSecurityDACSetImageLabel(mgr, def, def->disks[i]->src,
-                                        VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN) < 0)
+                                        VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN |
+                                        VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP) < 0)
             return -1;
     }
 
