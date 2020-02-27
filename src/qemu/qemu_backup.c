@@ -469,8 +469,8 @@ qemuBackupDiskPrepareOneStorage(virDomainObjPtr vm,
         dd->created = true;
     }
 
-    if (qemuDomainStorageSourceAccessAllow(priv->driver, vm, dd->store, false,
-                                           true) < 0)
+    if (qemuDomainStorageSourceAccessAllow(priv->driver, vm, dd->store,
+                                           false, true, true) < 0)
         return -1;
 
     dd->labelled = true;

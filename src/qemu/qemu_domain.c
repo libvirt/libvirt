@@ -11668,6 +11668,8 @@ typedef enum {
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE = 1 << 4,
     /* VM already has access to the source and we are just modifying it */
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS = 1 << 5,
+    /* whether the image is the top image of the backing chain (e.g. disk source) */
+    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN_TOP = 1 << 6,
 } qemuDomainStorageSourceAccessFlags;
 
 
@@ -11745,6 +11747,7 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     bool force_ro = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_ONLY;
     bool force_rw = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_WRITE;
     bool revoke = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE;
+    bool chain_top = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN_TOP;
     int rc;
     bool was_readonly = src->readonly;
     bool revoke_cgroup = false;
@@ -11791,7 +11794,7 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
         revoke_namespace = true;
     }
 
-    if (qemuSecuritySetImageLabel(driver, vm, src, chain) < 0)
+    if (qemuSecuritySetImageLabel(driver, vm, src, chain, chain_top) < 0)
         goto revoke;
 
     revoke_label = true;
@@ -11854,7 +11857,8 @@ qemuDomainStorageSourceChainAccessAllow(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         virStorageSourcePtr src)
 {
-    qemuDomainStorageSourceAccessFlags flags = QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN;
+    qemuDomainStorageSourceAccessFlags flags = QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN |
+                                               QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN_TOP;
 
     return qemuDomainStorageSourceAccessModify(driver, vm, src, flags);
 }
@@ -11866,7 +11870,8 @@ qemuDomainStorageSourceChainAccessRevoke(virQEMUDriverPtr driver,
                                          virStorageSourcePtr src)
 {
     qemuDomainStorageSourceAccessFlags flags = QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE |
-                                               QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN;
+                                               QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN |
+                                               QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN_TOP;
 
     return qemuDomainStorageSourceAccessModify(driver, vm, src, flags);
 }
@@ -11896,6 +11901,7 @@ qemuDomainStorageSourceAccessRevoke(virQEMUDriverPtr driver,
  * @elem: source structure to set access for
  * @readonly: setup read-only access if true
  * @newSource: @elem describes a storage source which @vm can't access yet
+ * @chainTop: @elem is top parent of backing chain
  *
  * Allow a VM access to a single element of a disk backing chain; this helper
  * ensures that the lock manager, cgroup device controller, and security manager
@@ -11903,13 +11909,20 @@ qemuDomainStorageSourceAccessRevoke(virQEMUDriverPtr driver,
  *
  * When modifying permissions of @elem which @vm can already access (is in the
  * backing chain) @newSource needs to be set to false.
+ *
+ * The @chainTop flag must be set if the @elem image is the topmost image of a
+ * given backing chain or meant to become the topmost image (for e.g.
+ * snapshots, or blockcopy or even in the end for active layer block commit,
+ * where we discard the top of the backing chain so one of the intermediates
+ * (the base) becomes the top of the chain).
  */
 int
 qemuDomainStorageSourceAccessAllow(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virStorageSourcePtr elem,
                                    bool readonly,
-                                   bool newSource)
+                                   bool newSource,
+                                   bool chainTop)
 {
     qemuDomainStorageSourceAccessFlags flags = QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE;
 
@@ -11920,6 +11933,9 @@ qemuDomainStorageSourceAccessAllow(virQEMUDriverPtr driver,
 
     if (!newSource)
         flags |= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS;
+
+    if (chainTop)
+        flags |= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN_TOP;
 
     return qemuDomainStorageSourceAccessModify(driver, vm, elem, flags);
 }

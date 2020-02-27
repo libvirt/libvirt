@@ -1105,9 +1105,11 @@ qemuBlockJobProcessEventCompletedCommit(virQEMUDriverPtr driver,
         return;
 
     /* revert access to images */
-    qemuDomainStorageSourceAccessAllow(driver, vm, job->data.commit.base, true, false);
+    qemuDomainStorageSourceAccessAllow(driver, vm, job->data.commit.base,
+                                       true, false, false);
     if (job->data.commit.topparent != job->disk->src)
-        qemuDomainStorageSourceAccessAllow(driver, vm, job->data.commit.topparent, true, false);
+        qemuDomainStorageSourceAccessAllow(driver, vm, job->data.commit.topparent,
+                                           true, false, true);
 
     baseparent->backingStore = NULL;
     job->data.commit.topparent->backingStore = job->data.commit.base;

@@ -296,7 +296,8 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
     for (next = reopenimages; next; next = next->next) {
         virStorageSourcePtr src = next->data;
 
-        if (qemuDomainStorageSourceAccessAllow(driver, vm, src, false, false) < 0)
+        if (qemuDomainStorageSourceAccessAllow(driver, vm, src,
+                                               false, false, false) < 0)
             goto relabel;
 
         relabelimages = g_slist_prepend(relabelimages, src);
@@ -311,7 +312,8 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
     for (next = relabelimages; next; next = next->next) {
         virStorageSourcePtr src = next->data;
 
-        ignore_value(qemuDomainStorageSourceAccessAllow(driver, vm, src, true, false));
+        ignore_value(qemuDomainStorageSourceAccessAllow(driver, vm, src,
+                                                        true, false, false));
     }
 
     return rc;

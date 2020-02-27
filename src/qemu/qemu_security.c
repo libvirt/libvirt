@@ -98,7 +98,8 @@ int
 qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virStorageSourcePtr src,
-                          bool backingChain)
+                          bool backingChain,
+                          bool chainTop)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pid_t pid = -1;
@@ -107,6 +108,9 @@ qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
 
     if (backingChain)
         labelFlags |= VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN;
+
+    if (chainTop)
+        labelFlags |= VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP;
 
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         pid = vm->pid;

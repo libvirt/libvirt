@@ -896,7 +896,8 @@ int qemuDomainStorageSourceAccessAllow(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virStorageSourcePtr elem,
                                        bool readonly,
-                                       bool newSource);
+                                       bool newSource,
+                                       bool chainTop);
 
 int qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDefPtr disk,
                                            virStorageSourcePtr src,
