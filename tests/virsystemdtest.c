@@ -736,7 +736,7 @@ mymain(void)
     TEST_MACHINE("demo", 1, "qemu-1-demo");
     TEST_MACHINE("demo-name", 2, "qemu-2-demo-name");
     TEST_MACHINE("demo!name", 3, "qemu-3-demoname");
-    TEST_MACHINE(".demo", 4, "qemu-4-.demo");
+    TEST_MACHINE(".demo", 4, "qemu-4-demo");
     TEST_MACHINE("bull\U0001f4a9", 5, "qemu-5-bull");
     TEST_MACHINE("demo..name", 6, "qemu-6-demo.name");
     TEST_MACHINE("12345678901234567890123456789012345678901234567890123456789", 7,
@@ -746,7 +746,8 @@ mymain(void)
     TEST_MACHINE("kstest-network-device-default-httpks_(c9eed63e-981e-48ec-acdc-56b3f8c5f678)", 100,
                  "qemu-100-kstest-network-device-default-httpksc9eed63e-981e-48ec");
     TEST_MACHINE("kstest-network-device-default-httpks_(c9eed63e-981e-48ec--cdc-56b3f8c5f678)", 10,
-                 "qemu-10-kstest-network-device-default-httpksc9eed63e-981e-48ec");
+                 "qemu-10-kstest-network-device-default-httpksc9eed63e-981e-48ec-c");
+    TEST_MACHINE("demo.-.test.", 11, "qemu-11-demo.test");
 
 # define TESTS_PM_SUPPORT_HELPER(name, function) \
     do { \

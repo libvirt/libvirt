@@ -30927,20 +30927,20 @@ static void
 virDomainMachineNameAppendValid(virBufferPtr buf,
                                 const char *name)
 {
-    bool skip_dot = false;
+    bool skip = true;
 
     for (; *name; name++) {
         if (strlen(virBufferCurrentContent(buf)) >= 64)
             break;
 
-        if (*name == '.') {
-            if (!skip_dot)
+        if (*name == '.' || *name == '-') {
+            if (!skip)
                 virBufferAddChar(buf, *name);
-            skip_dot = true;
+            skip = true;
             continue;
         }
 
-        skip_dot = false;
+        skip = false;
 
         if (!strchr(HOSTNAME_CHARS, *name))
             continue;
@@ -30948,8 +30948,8 @@ virDomainMachineNameAppendValid(virBufferPtr buf,
         virBufferAddChar(buf, *name);
     }
 
-    /* trailing dashes are not allowed */
-    virBufferTrimChars(buf, "-");
+    /* trailing dashes or dots are not allowed */
+    virBufferTrimChars(buf, "-.");
 }
 
 #undef HOSTNAME_CHARS
