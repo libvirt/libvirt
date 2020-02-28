@@ -150,6 +150,7 @@ int main(int argc, char **argv)
     signal(SIGINT, qemuShimSigShutdown);
     signal(SIGQUIT, qemuShimSigShutdown);
     signal(SIGHUP, qemuShimSigShutdown);
+    signal(SIGPIPE, SIG_IGN);
 
     if (root == NULL) {
         if (!(root = g_dir_make_tmp("virt-qemu-run-XXXXXX", &error))) {
