@@ -158,6 +158,12 @@ int main(int argc, char **argv)
             return 1;
         }
         tmproot = true;
+
+        if (chmod(root, 0755) < 0) {
+            g_printerr("%s: cannot chown temporary dir: %s\n",
+                       argv[0], g_strerror(errno));
+            goto cleanup;
+        }
     }
 
     virFileActivateDirOverrideForProg(argv[0]);
