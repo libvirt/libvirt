@@ -124,6 +124,15 @@
           subelement.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Introduce the 'tpm-spapr' TPM model
+        </summary>
+        <description>
+          This device, available starting from QEMU 5.0, is limited to
+          pSeries guests.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
@@ -138,8 +147,35 @@
           to rectify the problem.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Support "dies" in CPU topology
+        </summary>
+        <description>
+          This CPU topology concept, new in QEMU 4.1.0, sits between the
+          existing "socket" and "core".
+        </description>
+      </change>
+      <change>
+        <summary>
+          libxl: Add support for Credit2 scheduler parameters
+        </summary>
+      </change>
+      <change>
+        <summary>
+          lxc: Add support LXC 3 network configuration format
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          conf: Do not generate machine names ending with a dash
+        </summary>
+        <description>
+          Recent systemd versions do not allow them.
+        </description>
+      </change>
     </section>
     <section title="Packaging changes">
       <change>
