@@ -669,6 +669,21 @@ testQemuBackupIncrementalBitmapCalculateGetFakeChain(void)
 }
 
 
+static virStorageSourcePtr
+testQemuBitmapGetFakeChainEntry(virStorageSourcePtr src,
+                                size_t idx)
+{
+    virStorageSourcePtr n;
+
+    for (n = src; n; n = n->backingStore) {
+        if (n->id == idx)
+            return n;
+    }
+
+    return NULL;
+}
+
+
 typedef virDomainMomentDefPtr testMomentList;
 
 static void
@@ -923,6 +938,68 @@ testQemuBlockBitmapBlockcopy(const void *opaque)
     return virTestCompareToFile(actual, expectpath);
 }
 
+static const char *blockcommitPrefix = "qemublocktestdata/bitmapblockcommit/";
+
+struct testQemuBlockBitmapBlockcommitData {
+    const char *name;
+    virStorageSourcePtr top;
+    virStorageSourcePtr base;
+    virStorageSourcePtr chain;
+    const char *nodedatafile;
+};
+
+
+static int
+testQemuBlockBitmapBlockcommit(const void *opaque)
+{
+    const struct testQemuBlockBitmapBlockcommitData *data = opaque;
+
+    g_autofree char *actual = NULL;
+    g_autofree char *expectpath = NULL;
+    g_autoptr(virJSONValue) actionsDisable = NULL;
+    g_autoptr(virJSONValue) actionsMerge = NULL;
+    g_autoptr(virJSONValue) nodedatajson = NULL;
+    g_autoptr(virHashTable) nodedata = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOSTRINGLIST bitmapsDisable = NULL;
+
+    expectpath = g_strdup_printf("%s/%s%s", abs_srcdir,
+                                 blockcommitPrefix, data->name);
+
+    if (!(nodedatajson = virTestLoadFileJSON(bitmapDetectPrefix, data->nodedatafile,
+                                             ".json", NULL)))
+        return -1;
+
+    if (!(nodedata = qemuMonitorJSONBlockGetNamedNodeDataJSON(nodedatajson))) {
+        VIR_TEST_VERBOSE("failed to load nodedata JSON\n");
+        return -1;
+    }
+
+    if (qemuBlockBitmapsHandleCommitStart(data->top, data->base, nodedata,
+                                          &actionsDisable, &bitmapsDisable) < 0)
+        return -1;
+
+    virBufferAddLit(&buf, "pre job bitmap disable:\n");
+
+    if (actionsDisable &&
+        virJSONValueToBuffer(actionsDisable, &buf, true) < 0)
+        return -1;
+
+    virBufferAddLit(&buf, "merge bitmpas:\n");
+
+    if (qemuBlockBitmapsHandleCommitFinish(data->top, data->base, nodedata,
+                                           &actionsMerge, bitmapsDisable) < 0)
+        return -1;
+
+    if (actionsMerge &&
+        virJSONValueToBuffer(actionsMerge, &buf, true) < 0)
+        return -1;
+
+    actual = virBufferContentAndReset(&buf);
+
+    return virTestCompareToFile(actual, expectpath);
+}
+
 
 static int
 mymain(void)
@@ -937,6 +1014,7 @@ mymain(void)
     struct testQemuCheckpointDeleteMergeData checkpointdeletedata;
     struct testQemuBlockBitmapValidateData blockbitmapvalidatedata;
     struct testQemuBlockBitmapBlockcopyData blockbitmapblockcopydata;
+    struct testQemuBlockBitmapBlockcommitData blockbitmapblockcommitdata;
     char *capslatest_x86_64 = NULL;
     virQEMUCapsPtr caps_x86_64 = NULL;
     g_autoptr(virHashTable) qmp_schema_x86_64 = NULL;
@@ -1300,6 +1378,23 @@ mymain(void)
 
     TEST_BITMAP_BLOCKCOPY("snapshots-shallow", true, "snapshots");
     TEST_BITMAP_BLOCKCOPY("snapshots-deep", false, "snapshots");
+
+
+#define TEST_BITMAP_BLOCKCOMMIT(testname, topimg, baseimg, ndf) \
+    do {\
+        blockbitmapblockcommitdata.name = testname; \
+        blockbitmapblockcommitdata.top = testQemuBitmapGetFakeChainEntry(bitmapSourceChain, topimg); \
+        blockbitmapblockcommitdata.base = testQemuBitmapGetFakeChainEntry(bitmapSourceChain, baseimg); \
+        blockbitmapblockcommitdata.nodedatafile = ndf; \
+        if (virTestRun("bitmap block commit " testname, \
+                       testQemuBlockBitmapBlockcommit, \
+                       &blockbitmapblockcommitdata) < 0) \
+        ret = -1; \
+    } while (0)
+
+    TEST_BITMAP_BLOCKCOMMIT("basic-1-2", 1, 2, "basic");
+    TEST_BITMAP_BLOCKCOMMIT("basic-1-3", 1, 3, "basic");
+    TEST_BITMAP_BLOCKCOMMIT("basic-2-3", 2, 3, "basic");
 
  cleanup:
     qemuTestDriverFree(&driver);
