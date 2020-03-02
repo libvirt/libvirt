@@ -1557,7 +1557,6 @@ virLXCControllerSetupTimers(virLXCControllerPtr ctrl)
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
         case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
         case VIR_DOMAIN_TIMER_NAME_PIT:
-        case VIR_DOMAIN_TIMER_NAME_HPET:
         case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
         case VIR_DOMAIN_TIMER_NAME_LAST:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1568,6 +1567,11 @@ virLXCControllerSetupTimers(virLXCControllerPtr ctrl)
             timer_dev = "/dev/rtc0";
             path = g_strdup_printf("/%s/%s.dev/%s", LXC_STATE_DIR,
                                    def->name, "/rtc");
+            break;
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+            timer_dev = "/dev/hpet";
+            path = g_strdup_printf("/%s/%s.dev/%s", LXC_STATE_DIR,
+                                   ctrl->def->name, "/hpet");
             break;
         }
 

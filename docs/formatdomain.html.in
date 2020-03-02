@@ -2464,7 +2464,7 @@
             The <code>name</code> attribute selects which timer is
             being modified, and can be one of
             "platform" (currently unsupported),
-            "hpet" (libxl, xen, qemu), "kvmclock" (qemu),
+            "hpet" (libxl, xen, qemu, lxc), "kvmclock" (qemu),
             "pit" (qemu), "rtc" (qemu, lxc), "tsc" (libxl, qemu -
             <span class="since">since 3.2.0</span>), "hypervclock"
             (qemu - <span class="since">since 1.2.2</span>) or

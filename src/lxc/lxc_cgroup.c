@@ -350,12 +350,14 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
         case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
         case VIR_DOMAIN_TIMER_NAME_PIT:
-        case VIR_DOMAIN_TIMER_NAME_HPET:
         case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
         case VIR_DOMAIN_TIMER_NAME_LAST:
             break;
         case VIR_DOMAIN_TIMER_NAME_RTC:
             dev = "/dev/rtc0";
+            break;
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+            dev = "/dev/hpet";
             break;
         }
 
