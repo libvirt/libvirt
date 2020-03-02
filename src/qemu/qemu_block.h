@@ -233,6 +233,20 @@ qemuBlockBitmapsHandleBlockcopy(virStorageSourcePtr src,
                                 virJSONValuePtr *actions);
 
 int
+qemuBlockBitmapsHandleCommitStart(virStorageSourcePtr topsrc,
+                                  virStorageSourcePtr basesrc,
+                                  virHashTablePtr blockNamedNodeData,
+                                  virJSONValuePtr *actions,
+                                  char ***disabledBitmapsBase);
+
+int
+qemuBlockBitmapsHandleCommitFinish(virStorageSourcePtr topsrc,
+                                   virStorageSourcePtr basesrc,
+                                   virHashTablePtr blockNamedNodeData,
+                                   virJSONValuePtr *actions,
+                                   char **disabledBitmapsBase);
+
+int
 qemuBlockReopenReadWrite(virDomainObjPtr vm,
                          virStorageSourcePtr src,
                          qemuDomainAsyncJob asyncJob);

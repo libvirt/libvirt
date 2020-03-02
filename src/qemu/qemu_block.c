@@ -2991,6 +2991,225 @@ qemuBlockBitmapsHandleBlockcopy(virStorageSourcePtr src,
 
 
 /**
+ * @topsrc: virStorageSource representing 'top' of the job
+ * @basesrc: virStorageSource representing 'base' of the job
+ * @blockNamedNodeData: hash table containing data about bitmaps
+ * @actions: filled with arguments for a 'transaction' command
+ * @disabledBitmapsBase: filled with a list of bitmap names which must be disabled
+ *
+ * Prepares data for correctly handling bitmaps during the start of a commit
+ * job. The bitmaps in the 'base' image must be disabled, so that the writes
+ * done by the blockjob don't dirty the enabled bitmaps.
+ *
+ * @actions and @disabledBitmapsBase are untouched if no bitmaps need
+ * to be disabled.
+ */
+int
+qemuBlockBitmapsHandleCommitStart(virStorageSourcePtr topsrc,
+                                  virStorageSourcePtr basesrc,
+                                  virHashTablePtr blockNamedNodeData,
+                                  virJSONValuePtr *actions,
+                                  char ***disabledBitmapsBase)
+{
+    g_autoptr(virJSONValue) act = virJSONValueNewArray();
+    VIR_AUTOSTRINGLIST bitmaplist = NULL;
+    size_t curbitmapstr = 0;
+    qemuBlockNamedNodeDataPtr entry;
+    bool disable_bitmaps = false;
+    size_t i;
+
+    if (!(entry = virHashLookup(blockNamedNodeData, basesrc->nodeformat)))
+        return 0;
+
+    bitmaplist = g_new0(char *, entry->nbitmaps);
+
+    for (i = 0; i < entry->nbitmaps; i++) {
+        qemuBlockNamedNodeDataBitmapPtr bitmap = entry->bitmaps[i];
+
+        if (!bitmap->recording || bitmap->inconsistent ||
+            !qemuBlockBitmapChainIsValid(topsrc, bitmap->name, blockNamedNodeData))
+            continue;
+
+        disable_bitmaps = true;
+
+        if (qemuMonitorTransactionBitmapDisable(act, basesrc->nodeformat,
+                                                bitmap->name) < 0)
+            return -1;
+
+        bitmaplist[curbitmapstr++] = g_strdup(bitmap->name);
+    }
+
+    if (disable_bitmaps) {
+        *actions = g_steal_pointer(&act);
+        *disabledBitmapsBase = g_steal_pointer(&bitmaplist);
+    }
+
+    return 0;
+}
+
+
+struct qemuBlockBitmapsHandleCommitData {
+    bool skip;
+    bool create;
+    bool enable;
+    const char *basenode;
+    virJSONValuePtr merge;
+    unsigned long long granularity;
+    bool persistent;
+};
+
+
+static void
+qemuBlockBitmapsHandleCommitDataFree(void *opaque)
+{
+    struct qemuBlockBitmapsHandleCommitData *data = opaque;
+
+    virJSONValueFree(data->merge);
+    g_free(data);
+}
+
+
+static int
+qemuBlockBitmapsHandleCommitFinishIterate(void *payload,
+                                          const void *entryname,
+                                          void *opaque)
+{
+    struct qemuBlockBitmapsHandleCommitData *data = payload;
+    const char *bitmapname = entryname;
+    virJSONValuePtr actions = opaque;
+
+    if (data->skip)
+        return 0;
+
+    if (data->create) {
+        if (qemuMonitorTransactionBitmapAdd(actions, data->basenode, bitmapname,
+                                            data->persistent, !data->enable,
+                                            data->granularity) < 0)
+            return -1;
+    } else {
+        if (data->enable &&
+            qemuMonitorTransactionBitmapEnable(actions, data->basenode, bitmapname) < 0)
+            return -1;
+    }
+
+    if (data->merge &&
+        qemuMonitorTransactionBitmapMerge(actions, data->basenode, bitmapname,
+                                          &data->merge) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * @topsrc: virStorageSource representing 'top' of the job
+ * @basesrc: virStorageSource representing 'base' of the job
+ * @blockNamedNodeData: hash table containing data about bitmaps
+ * @actions: filled with arguments for a 'transaction' command
+ * @disabledBitmapsBase: bitmap names which were disabled
+ *
+ * Calculates the necessary bitmap merges/additions/enablements to properly
+ * handle commit of images from 'top' into 'base'. The necessary operations
+ * in the form of arguments of the 'transaction' command are filled into
+ * 'actions' if there is anything to do. Otherwise NULL is returned.
+ */
+int
+qemuBlockBitmapsHandleCommitFinish(virStorageSourcePtr topsrc,
+                                   virStorageSourcePtr basesrc,
+                                   virHashTablePtr blockNamedNodeData,
+                                   virJSONValuePtr *actions,
+                                   char **disabledBitmapsBase)
+{
+    g_autoptr(virJSONValue) act = virJSONValueNewArray();
+    virStorageSourcePtr n;
+    qemuBlockNamedNodeDataPtr entry;
+    g_autoptr(virHashTable) commitdata = NULL;
+    struct qemuBlockBitmapsHandleCommitData *bitmapdata;
+    size_t i;
+
+    commitdata = virHashNew(qemuBlockBitmapsHandleCommitDataFree);
+
+    for (n = topsrc; n != basesrc; n = n->backingStore) {
+        if (!(entry = virHashLookup(blockNamedNodeData, n->nodeformat)))
+            continue;
+
+        for (i = 0; i < entry->nbitmaps; i++) {
+            qemuBlockNamedNodeDataBitmapPtr bitmap = entry->bitmaps[i];
+
+            if (!(bitmapdata = virHashLookup(commitdata, bitmap->name))) {
+                bitmapdata = g_new0(struct qemuBlockBitmapsHandleCommitData, 1);
+
+                /* we must mirror the state of the topmost bitmap and merge
+                 * everything else */
+                bitmapdata->create = true;
+                bitmapdata->enable = bitmap->recording;
+                bitmapdata->basenode = basesrc->nodeformat;
+                bitmapdata->merge = virJSONValueNewArray();
+                bitmapdata->granularity = bitmap->granularity;
+                bitmapdata->persistent = bitmap->persistent;
+
+                if (virHashAddEntry(commitdata, bitmap->name, bitmapdata) < 0) {
+                    qemuBlockBitmapsHandleCommitDataFree(bitmapdata);
+                    return -1;
+                }
+            }
+
+            if (bitmap->inconsistent ||
+                !qemuBlockBitmapChainIsValid(topsrc, bitmap->name, blockNamedNodeData))
+                bitmapdata->skip = true;
+
+            if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(bitmapdata->merge,
+                                                                 n->nodeformat,
+                                                                 bitmap->name) < 0)
+                return -1;
+        }
+    }
+
+    if ((entry = virHashLookup(blockNamedNodeData, basesrc->nodeformat))) {
+        /* note that all bitmaps in 'base' were disabled when commit was started */
+        for (i = 0; i < entry->nbitmaps; i++) {
+            qemuBlockNamedNodeDataBitmapPtr bitmap = entry->bitmaps[i];
+
+            if ((bitmapdata = virHashLookup(commitdata, bitmap->name))) {
+                bitmapdata->create = false;
+            } else {
+                if (disabledBitmapsBase) {
+                    char **disabledbitmaps;
+
+                    for (disabledbitmaps = disabledBitmapsBase; *disabledbitmaps; disabledbitmaps++) {
+                        if (STREQ(*disabledBitmapsBase, bitmap->name)) {
+                            bitmapdata = g_new0(struct qemuBlockBitmapsHandleCommitData, 1);
+
+                            bitmapdata->create = false;
+                            bitmapdata->enable = true;
+                            bitmapdata->basenode = basesrc->nodeformat;
+                            bitmapdata->granularity = bitmap->granularity;
+                            bitmapdata->persistent = bitmap->persistent;
+
+                            if (virHashAddEntry(commitdata, bitmap->name, bitmapdata) < 0) {
+                                qemuBlockBitmapsHandleCommitDataFree(bitmapdata);
+                                return -1;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (virHashForEach(commitdata, qemuBlockBitmapsHandleCommitFinishIterate, act) < 0)
+        return -1;
+
+    if (virJSONValueArraySize(act) > 0)
+        *actions = g_steal_pointer(&act);
+
+    return 0;
+}
+
+
+/**
  * qemuBlockReopenFormat:
  * @vm: domain object
  * @src: storage source to reopen
