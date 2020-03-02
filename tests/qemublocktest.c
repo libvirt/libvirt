@@ -640,6 +640,7 @@ testQemuBackupIncrementalBitmapCalculateGetFakeImage(size_t idx)
    if (!(ret = virStorageSourceNew()))
        abort();
 
+   ret->id = idx;
    ret->type = VIR_STORAGE_TYPE_FILE;
    ret->format = VIR_STORAGE_FILE_QCOW2;
    ret->path = g_strdup_printf("/image%zu", idx);
@@ -659,7 +660,7 @@ testQemuBackupIncrementalBitmapCalculateGetFakeChain(void)
 
     n = ret = testQemuBackupIncrementalBitmapCalculateGetFakeImage(1);
 
-    for (i = 2; i < 10; i++) {
+    for (i = 2; i < 6; i++) {
         n->backingStore = testQemuBackupIncrementalBitmapCalculateGetFakeImage(i);
         n = n->backingStore;
     }
