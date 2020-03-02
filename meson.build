@@ -955,6 +955,16 @@ foreach name : optional_programs
 endforeach
 
 
+# generic build dependencies
+
+if host_machine.system() == 'linux' and cc.has_header('sys/acl.h')
+  acl_dep = cc.find_library('acl', required: false)
+  conf.set('HAVE_SYS_ACL_H', 1)
+else
+  acl_dep = dependency('', required: false)
+endif
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
@@ -972,6 +982,11 @@ configure_file(output: 'meson-config.h', configuration: conf)
 
 
 # print configuration summary
+
+libs_summary = {
+  'acl': acl_dep.found(),
+}
+summary(libs_summary, section: 'Libraries', bool_yn: true)
 
 test_summary = {
   'Coverage': coverage_flags.length() > 0,
