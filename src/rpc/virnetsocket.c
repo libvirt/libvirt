@@ -575,7 +575,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = family;
-    hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
+    hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG | AI_V4MAPPED;
     hints.ai_socktype = SOCK_STREAM;
 
     int e = getaddrinfo(nodename, service, &hints, &ai);
