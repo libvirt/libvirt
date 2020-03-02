@@ -1531,6 +1531,73 @@ static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
 
 
 static int
+virLXCControllerSetupTimers(virLXCControllerPtr ctrl)
+{
+    virDomainDefPtr def = ctrl->def;
+    size_t i;
+
+    /* Not sync'ed with Host clock */
+    if (def->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME)
+        return 0;
+
+    for (i = 0; i < def->clock.ntimers; i++) {
+        virDomainTimerDefPtr timer = def->clock.timers[i];
+        g_autofree char *path = NULL;
+        const char *timer_dev = NULL;
+        struct stat sb;
+        dev_t dev;
+
+        /* Check if "present" is set to "no" otherwise enable it. */
+        if (!timer->present)
+            continue;
+
+        switch ((virDomainTimerNameType)timer->name) {
+        case VIR_DOMAIN_TIMER_NAME_PLATFORM:
+        case VIR_DOMAIN_TIMER_NAME_TSC:
+        case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_PIT:
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+        case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
+        case VIR_DOMAIN_TIMER_NAME_LAST:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported timer type (name) '%s'"),
+                           virDomainTimerNameTypeToString(timer->name));
+            return -1;
+        case VIR_DOMAIN_TIMER_NAME_RTC:
+            timer_dev = "/dev/rtc0";
+            path = g_strdup_printf("/%s/%s.dev/%s", LXC_STATE_DIR,
+                                   def->name, "/rtc");
+            break;
+        }
+
+        if (!timer_dev)
+            continue;
+
+        if (stat(timer_dev, &sb) < 0) {
+            virReportSystemError(errno, _("Unable to access %s"),
+                                 timer_dev);
+            return -1;
+        }
+
+        dev = makedev(major(sb.st_rdev), minor(sb.st_rdev));
+        if (mknod(path, S_IFCHR, dev) < 0 ||
+            chmod(path, sb.st_mode)) {
+            virReportSystemError(errno,
+                                 _("Failed to make device %s"),
+                                 path);
+            return -1;
+        }
+
+        if (lxcContainerChown(def, path) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virLXCControllerSetupHostdevSubsysUSB(virDomainDefPtr vmDef,
                                       virDomainHostdevDefPtr def,
                                       virSecurityManagerPtr securityDriver)
@@ -2319,6 +2386,9 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
         goto cleanup;
 
     if (virLXCControllerPopulateDevices(ctrl) < 0)
+        goto cleanup;
+
+    if (virLXCControllerSetupTimers(ctrl) < 0)
         goto cleanup;
 
     if (virLXCControllerSetupAllDisks(ctrl) < 0)

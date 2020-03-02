@@ -2465,7 +2465,7 @@
             being modified, and can be one of
             "platform" (currently unsupported),
             "hpet" (libxl, xen, qemu), "kvmclock" (qemu),
-            "pit" (qemu), "rtc" (qemu), "tsc" (libxl, qemu -
+            "pit" (qemu), "rtc" (qemu, lxc), "tsc" (libxl, qemu -
             <span class="since">since 3.2.0</span>), "hypervclock"
             (qemu - <span class="since">since 1.2.2</span>) or
             "armvtimer" (qemu - <span class="since">since 6.1.0</span>).

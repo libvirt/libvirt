@@ -333,6 +333,46 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                              VIR_CGROUP_DEVICE_RWM) < 0)
         return -1;
 
+    VIR_DEBUG("Allowing timers char devices");
+
+    /* Sync'ed with Host clock */
+    for (i = 0; i < def->clock.ntimers; i++) {
+        virDomainTimerDefPtr timer = def->clock.timers[i];
+        const char *dev = NULL;
+
+        /* Check if "present" is set to "no" otherwise enable it. */
+        if (!timer->present)
+            continue;
+
+        switch ((virDomainTimerNameType)timer->name) {
+        case VIR_DOMAIN_TIMER_NAME_PLATFORM:
+        case VIR_DOMAIN_TIMER_NAME_TSC:
+        case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_PIT:
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+        case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
+        case VIR_DOMAIN_TIMER_NAME_LAST:
+            break;
+        case VIR_DOMAIN_TIMER_NAME_RTC:
+            dev = "/dev/rtc0";
+            break;
+        }
+
+        if (!dev)
+            continue;
+
+        if (!virFileExists(dev)) {
+            VIR_DEBUG("Ignoring non-existent device %s", dev);
+            continue;
+        }
+
+        if (virCgroupAllowDevicePath(cgroup, dev,
+                                     VIR_CGROUP_DEVICE_READ,
+                                     false) < 0)
+            return -1;
+    }
+
     VIR_DEBUG("Device whitelist complete");
 
     return 0;
