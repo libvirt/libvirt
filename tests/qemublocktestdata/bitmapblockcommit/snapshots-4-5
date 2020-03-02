@@ -1,0 +1,33 @@
+pre job bitmap disable:
+[
+  {
+    "type": "block-dirty-bitmap-disable",
+    "data": {
+      "node": "libvirt-5-format",
+      "name": "a"
+    }
+  }
+]
+merge bitmpas:
+[
+  {
+    "type": "block-dirty-bitmap-enable",
+    "data": {
+      "node": "libvirt-5-format",
+      "name": "a"
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-5-format",
+      "target": "a",
+      "bitmaps": [
+        {
+          "node": "libvirt-4-format",
+          "name": "a"
+        }
+      ]
+    }
+  }
+]
