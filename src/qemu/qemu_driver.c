@@ -18556,7 +18556,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     }
 
     if (!(job = qemuBlockJobDiskNewCommit(vm, disk, top_parent, topSource,
-                                          baseSource,
+                                          baseSource, NULL,
                                           flags & VIR_DOMAIN_BLOCK_COMMIT_DELETE,
                                           flags)))
         goto endjob;

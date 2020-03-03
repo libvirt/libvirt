@@ -187,6 +187,7 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
                           virStorageSourcePtr topparent,
                           virStorageSourcePtr top,
                           virStorageSourcePtr base,
+                          char ***disabledBitmapsBase,
                           bool delete_imgs,
                           unsigned int jobflags);
 

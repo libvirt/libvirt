@@ -285,6 +285,7 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
                           virStorageSourcePtr topparent,
                           virStorageSourcePtr top,
                           virStorageSourcePtr base,
+                          char ***disabledBitmapsBase,
                           bool delete_imgs,
                           unsigned int jobflags)
 {
@@ -310,6 +311,7 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
     job->data.commit.top = top;
     job->data.commit.base = base;
     job->data.commit.deleteCommittedImages = delete_imgs;
+    job->data.commit.disabledBitmapsBase = g_steal_pointer(disabledBitmapsBase);
     job->jobflags = jobflags;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
