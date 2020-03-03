@@ -17301,6 +17301,23 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         break;
 
     case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+        /* we technically don't need reopen here, but we couldn't prepare
+         * the bitmaps if it wasn't present thus must skip this */
+        if (blockdev &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN)) {
+            g_autoptr(virHashTable) blockNamedNodeData = NULL;
+
+            if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+                return -1;
+
+            if (qemuBlockBitmapsHandleCommitFinish(job->data.commit.top,
+                                                   job->data.commit.base,
+                                                   blockNamedNodeData,
+                                                   &actions,
+                                                   job->data.commit.disabledBitmapsBase) < 0)
+                return -1;
+        }
+
         break;
     }
 
