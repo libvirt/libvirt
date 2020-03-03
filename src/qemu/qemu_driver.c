@@ -18413,9 +18413,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (virDomainBlockCommitEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
-        goto cleanup;
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -18423,12 +18420,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
 
     blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-
-    if (!blockdev && (flags & VIR_DOMAIN_BLOCK_COMMIT_DELETE)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("deleting committed images is not supported by this VM"));
-        goto endjob;
-    }
 
     /* Convert bandwidth MiB to bytes, if necessary */
     if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES)) {
@@ -18453,6 +18444,15 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
+
+    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
+        goto endjob;
+
+    if (!blockdev && (flags & VIR_DOMAIN_BLOCK_COMMIT_DELETE)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("deleting committed images is not supported by this VM"));
+        goto endjob;
+    }
 
     if (!top || STREQ(top, disk->dst))
         topSource = disk->src;
