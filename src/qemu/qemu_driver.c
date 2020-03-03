@@ -18399,6 +18399,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
     const char *nodebase = NULL;
     bool persistjob = false;
     bool blockdev = false;
+    g_autoptr(virJSONValue) bitmapDisableActions = NULL;
+    VIR_AUTOSTRINGLIST bitmapDisableList = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
                   VIR_DOMAIN_BLOCK_COMMIT_ACTIVE |
@@ -18555,8 +18557,29 @@ qemuDomainBlockCommit(virDomainPtr dom,
             goto endjob;
     }
 
+    if (blockdev &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN)) {
+        g_autoptr(virHashTable) blockNamedNodeData = NULL;
+        if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+            goto endjob;
+
+        if (qemuBlockBitmapsHandleCommitStart(topSource, baseSource,
+                                              blockNamedNodeData,
+                                              &bitmapDisableActions,
+                                              &bitmapDisableList) < 0)
+            goto endjob;
+
+        /* if we don't have terminator on 'base' we can't reopen it */
+        if (bitmapDisableActions && !baseSource->backingStore) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("can't handle bitmaps on unterminated backing image '%s'"),
+                           base);
+            goto endjob;
+        }
+    }
+
     if (!(job = qemuBlockJobDiskNewCommit(vm, disk, top_parent, topSource,
-                                          baseSource, NULL,
+                                          baseSource, &bitmapDisableList,
                                           flags & VIR_DOMAIN_BLOCK_COMMIT_DELETE,
                                           flags)))
         goto endjob;
@@ -18578,6 +18601,24 @@ qemuDomainBlockCommit(virDomainPtr dom,
         if (!backingPath && top_parent &&
             !(backingPath = qemuBlockGetBackingStoreString(baseSource)))
             goto endjob;
+
+        if (bitmapDisableActions) {
+            int rc;
+
+            if (qemuBlockReopenReadWrite(vm, baseSource, QEMU_ASYNC_JOB_NONE) < 0)
+                goto endjob;
+
+            qemuDomainObjEnterMonitor(driver, vm);
+            rc = qemuMonitorTransaction(priv->mon, &bitmapDisableActions);
+            if (qemuDomainObjExitMonitor(driver, vm) < 0)
+                goto endjob;
+
+            if (qemuBlockReopenReadOnly(vm, baseSource, QEMU_ASYNC_JOB_NONE) < 0)
+                goto endjob;
+
+            if (rc < 0)
+                goto endjob;
+        }
     } else {
         device = job->name;
     }
