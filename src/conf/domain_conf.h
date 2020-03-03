@@ -722,6 +722,7 @@ struct _virDomainPCIControllerOpts {
      * item in memory target config) -1 == unspecified
      */
     int numaNode;
+    virTristateSwitch hotplug; /* 'off' to prevent hotplug/unplug, default 'on' */
 };
 
 struct _virDomainUSBControllerOpts {

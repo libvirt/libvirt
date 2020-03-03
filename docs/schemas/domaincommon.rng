@@ -2476,6 +2476,11 @@
                   </attribute>
                 </optional>
                 <optional>
+                  <attribute name='hotplug'>
+                    <ref name="virOnOff"/>
+                  </attribute>
+                </optional>
+                <optional>
                   <element name='node'>
                     <ref name='unsignedInt'/>
                   </element>

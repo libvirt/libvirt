@@ -4726,6 +4726,17 @@
         which is visible to the virtual machine. If set, port must be
         between 0 and 255.
       </dd>
+      <dt><code>hotplug</code></dt>
+      <dd>
+        pcie-root-port and pcie-switch-downstream-port controllers can
+        also have a <code>hotplug</code> attribute in
+        the <code>&lt;target&gt;</code> subelement, which is used to
+        disable hotplug/unplug of devices on a particular
+        controller. The default setting of <code>hotplug</code>
+        is <code>on</code>; it should be set to <code>off</code> to
+        disable hotplug/unplug of devices on a particular controller.
+        <span class="since">Since 6.3.0</span>
+      </dd>
       <dt><code>busNr</code></dt>
       <dd>
         pci-expander-bus and pcie-expander-bus controllers can have an

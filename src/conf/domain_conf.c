@@ -11055,6 +11055,7 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
     g_autofree char *port = NULL;
     g_autofree char *busNr = NULL;
     g_autofree char *targetIndex = NULL;
+    g_autofree char *hotplug = NULL;
     g_autofree char *ioeventfd = NULL;
     g_autofree char *portsStr = NULL;
     g_autofree char *iothread = NULL;
@@ -11126,6 +11127,7 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
                 chassis = virXMLPropString(cur, "chassis");
                 port = virXMLPropString(cur, "port");
                 busNr = virXMLPropString(cur, "busNr");
+                hotplug = virXMLPropString(cur, "hotplug");
                 targetIndex = virXMLPropString(cur, "index");
                 processedTarget = true;
             }
@@ -11361,6 +11363,17 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
             }
             def->opts.pciopts.numaNode = numaNode;
+        }
+        if (hotplug) {
+            int val = virTristateSwitchTypeFromString(hotplug);
+
+            if (val <= 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("PCI controller unrecognized hotplug setting '%s'"),
+                               hotplug);
+                goto error;
+            }
+            def->opts.pciopts.hotplug = val;
         }
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS: {
@@ -25375,7 +25388,8 @@ virDomainControllerDefFormat(virBufferPtr buf,
             def->opts.pciopts.port != -1 ||
             def->opts.pciopts.busNr != -1 ||
             def->opts.pciopts.targetIndex != -1 ||
-            def->opts.pciopts.numaNode != -1) {
+            def->opts.pciopts.numaNode != -1 ||
+            def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
             virBufferAddLit(&childBuf, "<target");
             if (def->opts.pciopts.chassisNr != -1)
                 virBufferAsprintf(&childBuf, " chassisNr='%d'",
@@ -25392,6 +25406,10 @@ virDomainControllerDefFormat(virBufferPtr buf,
             if (def->opts.pciopts.targetIndex != -1)
                 virBufferAsprintf(&childBuf, " index='%d'",
                                   def->opts.pciopts.targetIndex);
+            if (def->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
+                virBufferAsprintf(&childBuf, " hotplug='%s'",
+                                  virTristateSwitchTypeToString(def->opts.pciopts.hotplug));
+            }
             if (def->opts.pciopts.numaNode == -1) {
                 virBufferAddLit(&childBuf, "/>\n");
             } else {

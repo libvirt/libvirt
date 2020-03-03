@@ -1,0 +1,35 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>11dbdcdd-4c3b-482b-8903-9bdb8c0a2774</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='pcie-root-port'/>
+    <controller type='pci' index='2' model='pcie-root-port'>
+      <target hotplug='off'/>
+    </controller>
+    <controller type='pci' index='3' model='pcie-root-port'>
+      <model name='ioh3420'/>
+      <target hotplug='off'/>
+    </controller>
+    <controller type='pci' index='4' model='pcie-switch-upstream-port'/>
+    <controller type='pci' index='5' model='pcie-switch-downstream-port'>
+      <target hotplug='off'/>
+    </controller>
+    <controller type='pci' index='6' model='pcie-switch-downstream-port'>
+      <target hotplug='on'/>
+    </controller>
+    <controller type='pci' index='7' model='pcie-switch-downstream-port'/>
+    <controller type='pci' index='8' model='pcie-switch-downstream-port'>
+      <model name='xio3130-downstream'/>
+      <target chassis='30' port='0x27'/>
+    </controller>
+    <memballoon model='none'/>
+  </devices>
+</domain>
