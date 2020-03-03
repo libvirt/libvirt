@@ -1049,6 +1049,55 @@ qemuBlockJobDeleteImages(virQEMUDriverPtr driver,
     }
 }
 
+
+/**
+ * qemuBlockJobProcessEventCompletedCommitBitmaps:
+ *
+ * Handles the bitmap changes after commit. This returns -1 on monitor failures.
+ */
+static int
+qemuBlockJobProcessEventCompletedCommitBitmaps(virDomainObjPtr vm,
+                                               qemuBlockJobDataPtr job,
+                                               qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autoptr(virJSONValue) actions = NULL;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
+        return 0;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
+        return -1;
+
+    if (qemuBlockBitmapsHandleCommitFinish(job->data.commit.top,
+                                           job->data.commit.base,
+                                           blockNamedNodeData,
+                                           &actions,
+                                           job->data.commit.disabledBitmapsBase) < 0)
+        return 0;
+
+    if (!actions)
+        return 0;
+
+    if (qemuBlockReopenReadWrite(vm, job->data.commit.base, asyncJob) < 0)
+        return -1;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        return -1;
+
+    qemuMonitorTransaction(priv->mon, &actions);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
+        return -1;
+
+    if (qemuBlockReopenReadOnly(vm, job->data.commit.base, asyncJob) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuBlockJobProcessEventCompletedCommit:
  * @driver: qemu driver object
@@ -1104,6 +1153,9 @@ qemuBlockJobProcessEventCompletedCommit(virQEMUDriverPtr driver,
     }
 
     if (!n)
+        return;
+
+    if (qemuBlockJobProcessEventCompletedCommitBitmaps(vm, job, asyncJob) < 0)
         return;
 
     /* revert access to images */
