@@ -1346,6 +1346,40 @@ qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriverPtr driver,
 
 
 static void
+qemuBlockJobProcessEventFailedCommitCommon(virDomainObjPtr vm,
+                                           qemuBlockJobDataPtr job,
+                                           qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virJSONValue) actions = virJSONValueNewArray();
+    char **disabledBitmaps = job->data.commit.disabledBitmapsBase;
+
+    if (!disabledBitmaps || !*disabledBitmaps)
+        return;
+
+    for (; *disabledBitmaps; disabledBitmaps++) {
+        qemuMonitorTransactionBitmapEnable(actions,
+                                           job->data.commit.base->nodeformat,
+                                           *disabledBitmaps);
+    }
+
+    if (qemuBlockReopenReadWrite(vm, job->data.commit.base, asyncJob) < 0)
+        return;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        return;
+
+    qemuMonitorTransaction(priv->mon, &actions);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
+        return;
+
+    if (qemuBlockReopenReadOnly(vm, job->data.commit.base, asyncJob) < 0)
+        return;
+}
+
+
+static void
 qemuBlockJobProcessEventConcludedCreate(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         qemuBlockJobDataPtr job,
@@ -1452,13 +1486,17 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
     case QEMU_BLOCKJOB_TYPE_COMMIT:
         if (success)
             qemuBlockJobProcessEventCompletedCommit(driver, vm, job, asyncJob);
+        else
+            qemuBlockJobProcessEventFailedCommitCommon(vm, job, asyncJob);
         break;
 
     case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
-        if (success)
+        if (success) {
             qemuBlockJobProcessEventCompletedActiveCommit(driver, vm, job, asyncJob);
-        else
+        } else {
             qemuBlockJobProcessEventFailedActiveCommit(driver, vm, job);
+            qemuBlockJobProcessEventFailedCommitCommon(vm, job, asyncJob);
+        }
         break;
 
     case QEMU_BLOCKJOB_TYPE_CREATE:
