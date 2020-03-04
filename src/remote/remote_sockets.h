@@ -54,3 +54,11 @@ int
 remoteSplitURIScheme(virURIPtr uri,
                      char **driver,
                      remoteDriverTransport *transport);
+
+char *
+remoteGetUNIXSocket(remoteDriverTransport transport,
+                    remoteDriverMode mode,
+                    const char *driver,
+                    bool ro,
+                    bool session,
+                    char **daemon);

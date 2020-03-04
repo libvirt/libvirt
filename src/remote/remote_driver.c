@@ -697,131 +697,6 @@ remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
     }
 
 
-static char *
-remoteGetUNIXSocketHelper(remoteDriverTransport transport,
-                          const char *sock_prefix,
-                          unsigned int flags)
-{
-    char *sockname = NULL;
-    g_autofree char *userdir = NULL;
-
-    if (flags & VIR_DRV_OPEN_REMOTE_USER) {
-        if (transport != REMOTE_DRIVER_TRANSPORT_UNIX) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("Connecting to session instance without "
-                             "socket path is not supported by the %s "
-                             "transport"),
-                           remoteDriverTransportTypeToString(transport));
-            return NULL;
-        }
-        userdir = virGetUserRuntimeDirectory();
-
-        sockname = g_strdup_printf("%s/%s-sock", userdir, sock_prefix);
-    } else {
-        /* Intentionally do *NOT* use RUNSTATEDIR here. We might
-         * be connecting to a remote machine, and cannot assume
-         * the remote host has /run. The converse is ok though,
-         * any machine with /run will have a /var/run symlink.
-         * The portable option is to thus use $LOCALSTATEDIR/run
-         */
-        sockname = g_strdup_printf("%s/run/libvirt/%s-%s", LOCALSTATEDIR,
-                                   sock_prefix,
-                                   flags & VIR_DRV_OPEN_REMOTE_RO ? "sock-ro" : "sock");
-    }
-
-    VIR_DEBUG("Built UNIX sockname %s for transport %s prefix %s flags=0x%x",
-              sockname, remoteDriverTransportTypeToString(transport),
-              sock_prefix, flags);
-    return sockname;
-}
-
-
-static char *
-remoteGetUNIXSocket(remoteDriverTransport transport,
-                    remoteDriverMode mode,
-                    const char *driver,
-                    char **daemon,
-                    unsigned int flags)
-{
-    char *sock_name = NULL;
-    g_autofree char *direct_daemon = NULL;
-    g_autofree char *legacy_daemon = NULL;
-    g_autofree char *direct_sock_name = NULL;
-    g_autofree char *legacy_sock_name = NULL;
-
-    if (driver)
-        direct_daemon = g_strdup_printf("virt%sd", driver);
-
-    legacy_daemon = g_strdup("libvirtd");
-
-    if (driver &&
-        !(direct_sock_name = remoteGetUNIXSocketHelper(transport, direct_daemon, flags)))
-        return NULL;
-
-    if (!(legacy_sock_name = remoteGetUNIXSocketHelper(transport, "libvirt", flags)))
-        return NULL;
-
-    if (mode == REMOTE_DRIVER_MODE_AUTO) {
-        if (transport == REMOTE_DRIVER_TRANSPORT_UNIX) {
-            if (direct_sock_name && virFileExists(direct_sock_name)) {
-                mode = REMOTE_DRIVER_MODE_DIRECT;
-            } else if (virFileExists(legacy_sock_name)) {
-                mode = REMOTE_DRIVER_MODE_LEGACY;
-            } else if (driver) {
-                /*
-                 * This constant comes from the configure script and
-                 * maps to either the direct or legacy mode constant
-                 */
-                mode = REMOTE_DRIVER_MODE_DEFAULT;
-            } else {
-                mode = REMOTE_DRIVER_MODE_LEGACY;
-            }
-        } else {
-            mode = REMOTE_DRIVER_MODE_LEGACY;
-        }
-    }
-
-    switch ((remoteDriverMode)mode) {
-    case REMOTE_DRIVER_MODE_LEGACY:
-        sock_name = g_steal_pointer(&legacy_sock_name);
-        *daemon = g_steal_pointer(&legacy_daemon);
-        break;
-
-    case REMOTE_DRIVER_MODE_DIRECT:
-        if (transport != REMOTE_DRIVER_TRANSPORT_UNIX) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("Cannot use direct socket mode for %s transport"),
-                           remoteDriverTransportTypeToString(transport));
-            return NULL;
-        }
-
-        if (!direct_sock_name) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("Cannot use direct socket mode if no URI is set"));
-            return NULL;
-        }
-
-        sock_name = g_steal_pointer(&direct_sock_name);
-        *daemon = g_steal_pointer(&direct_daemon);
-        break;
-
-    case REMOTE_DRIVER_MODE_AUTO:
-    case REMOTE_DRIVER_MODE_LAST:
-    default:
-        virReportEnumRangeError(remoteDriverMode, mode);
-        return NULL;
-    }
-
-    VIR_DEBUG("Chosen UNIX sockname %s daemon %s "
-              "for mode %s transport %s flags=0x%x",
-              sock_name, NULLSTR(*daemon),
-              remoteDriverModeTypeToString(mode),
-              remoteDriverTransportTypeToString(transport),
-              flags);
-    return sock_name;
-}
-
-
 #ifndef WIN32
 static const char *
 remoteGetDaemonPathEnv(void)
@@ -1014,7 +889,9 @@ doRemoteOpen(virConnectPtr conn,
     case REMOTE_DRIVER_TRANSPORT_LIBSSH2:
         if (!sockname &&
             !(sockname = remoteGetUNIXSocket(transport, mode, driver_str,
-                                             &daemon_name, flags)))
+                                             flags & VIR_DRV_OPEN_REMOTE_RO,
+                                             flags & VIR_DRV_OPEN_REMOTE_USER,
+                                             &daemon_name)))
             goto failed;
         break;
 
