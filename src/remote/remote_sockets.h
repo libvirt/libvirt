@@ -21,6 +21,7 @@
 #pragma once
 
 #include "virenum.h"
+#include "viruri.h"
 
 typedef enum {
     REMOTE_DRIVER_TRANSPORT_TLS,
@@ -48,3 +49,8 @@ typedef enum {
 } remoteDriverMode;
 
 VIR_ENUM_DECL(remoteDriverMode);
+
+int
+remoteSplitURIScheme(virURIPtr uri,
+                     char **driver,
+                     char **transport);

@@ -165,31 +165,6 @@ static void make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapsho
 /*----------------------------------------------------------------------*/
 
 /* Helper functions for remoteOpen. */
-static int remoteSplitURIScheme(virURIPtr uri,
-                                char **driver,
-                                char **transport)
-{
-    char *p = strchr(uri->scheme, '+');
-
-    *driver = *transport = NULL;
-
-    if (p)
-        *driver = g_strndup(uri->scheme, p - uri->scheme);
-    else
-        *driver = g_strdup(uri->scheme);
-
-    if (p) {
-        *transport = g_strdup(p + 1);
-
-        p = *transport;
-        while (*p) {
-            *p = g_ascii_tolower(*p);
-            p++;
-        }
-    }
-
-    return 0;
-}
 
 
 static int
