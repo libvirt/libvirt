@@ -2435,6 +2435,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_IOH3420);
     DO_TEST("pcie-root-port-model-ioh3420",
             QEMU_CAPS_DEVICE_IOH3420);
+    DO_TEST_CAPS_LATEST("pcie-root-port-nohotplug");
 
     DO_TEST("autoindex",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,

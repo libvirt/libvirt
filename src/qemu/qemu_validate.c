@@ -2637,6 +2637,37 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
         virReportEnumRangeError(virDomainControllerModelPCI, cont->model);
     }
 
+    /* hotplug */
+    if (pciopts->hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
+        switch ((virDomainControllerModelPCI) cont->model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("setting the hotplug property on a '%s' device is not supported by this QEMU binary"),
+                               modelName);
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+        case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
+            virReportControllerInvalidOption(cont, model, modelName, "hotplug");
+            return -1;
+
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+        default:
+            virReportEnumRangeError(virDomainControllerModelPCI, cont->model);
+        }
+    }
+
     /* QEMU device availability */
     if (cap < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

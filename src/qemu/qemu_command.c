@@ -3026,6 +3026,10 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             virBufferAsprintf(&buf, "%s,port=0x%x,chassis=%d,id=%s",
                               modelName, pciopts->port,
                               pciopts->chassis, def->info.alias);
+            if (pciopts->hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
+                virBufferAsprintf(&buf, ",hotplug=%s",
+                                  virTristateSwitchTypeToString(pciopts->hotplug));
+            }
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
             virBufferAsprintf(&buf, "%s,index=%d,id=%s",
