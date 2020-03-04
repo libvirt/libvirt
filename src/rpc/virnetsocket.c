@@ -1283,8 +1283,7 @@ virJSONValuePtr virNetSocketPreExecRestart(virNetSocketPtr sock)
         goto error;
     }
 
-    if (!(object = virJSONValueNewObject()))
-        goto error;
+    object = virJSONValueNewObject();
 
     if (virJSONValueObjectAppendNumberInt(object, "fd", sock->fd) < 0)
         goto error;

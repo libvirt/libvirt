@@ -382,17 +382,11 @@ virJSONValuePtr
 virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
 {
     size_t i = 0;
-    virJSONValuePtr object = NULL;
-    virJSONValuePtr srvObj = NULL;
+    virJSONValuePtr object = virJSONValueNewObject();
+    virJSONValuePtr srvObj = virJSONValueNewObject();
     virHashKeyValuePairPtr srvArray = NULL;
 
     virObjectLock(dmn);
-
-    if (!(object = virJSONValueNewObject()))
-        goto error;
-
-    if (!(srvObj = virJSONValueNewObject()))
-        goto error;
 
     if (virJSONValueObjectAppend(object, "servers", srvObj) < 0) {
         virJSONValueFree(srvObj);

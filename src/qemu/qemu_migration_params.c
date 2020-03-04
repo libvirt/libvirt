@@ -729,14 +729,11 @@ qemuMigrationParamsFromJSON(virJSONValuePtr params)
 virJSONValuePtr
 qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams)
 {
-    virJSONValuePtr params = NULL;
+    virJSONValuePtr params = virJSONValueNewObject();
     qemuMigrationParamValuePtr pv;
     const char *name;
     size_t i;
     int rc;
-
-    if (!(params = virJSONValueNewObject()))
-        return NULL;
 
     for (i = 0; i < QEMU_MIGRATION_PARAM_LAST; i++) {
         name = qemuMigrationParamTypeToString(i);
@@ -797,8 +794,7 @@ qemuMigrationCapsToJSON(virBitmapPtr caps,
 
         ignore_value(virBitmapGetBit(states, bit, &state));
 
-        if (!(cap = virJSONValueNewObject()))
-            goto error;
+        cap = virJSONValueNewObject();
 
         name = qemuMigrationCapabilityTypeToString(bit);
         if (virJSONValueObjectAppendString(cap, "capability", name) < 0)

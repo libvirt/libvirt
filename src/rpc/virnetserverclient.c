@@ -593,9 +593,6 @@ virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
     virJSONValuePtr object = virJSONValueNewObject();
     virJSONValuePtr child;
 
-    if (!object)
-        return NULL;
-
     virObjectLock(client);
 
     if (virJSONValueObjectAppendNumberUlong(object, "id",

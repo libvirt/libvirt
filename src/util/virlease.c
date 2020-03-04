@@ -238,11 +238,7 @@ virLeaseNew(virJSONValuePtr *lease_ret,
     }
 
     /* Create new lease */
-    if (!(lease_new = virJSONValueNewObject())) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to create json"));
-        return -1;
-    }
+    lease_new = virJSONValueNewObject();
 
     if (iaid && virJSONValueObjectAppendString(lease_new, "iaid", iaid) < 0)
         return -1;

@@ -1166,14 +1166,11 @@ static virJSONValuePtr G_GNUC_NULL_TERMINATED
 qemuAgentMakeCommand(const char *cmdname,
                      ...)
 {
-    virJSONValuePtr obj;
+    virJSONValuePtr obj = virJSONValueNewObject();
     virJSONValuePtr jargs = NULL;
     va_list args;
 
     va_start(args, cmdname);
-
-    if (!(obj = virJSONValueNewObject()))
-        goto error;
 
     if (virJSONValueObjectAppendString(obj, "execute", cmdname) < 0)
         goto error;
@@ -1544,8 +1541,7 @@ qemuAgentSetVCPUsCommand(qemuAgentPtr mon,
         (*nmodified)++;
 
         /* create single cpu object */
-        if (!(cpu = virJSONValueNewObject()))
-            goto cleanup;
+        cpu = virJSONValueNewObject();
 
         if (virJSONValueObjectAppendNumberInt(cpu, "logical-id", in->id) < 0)
             goto cleanup;

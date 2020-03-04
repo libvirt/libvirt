@@ -362,8 +362,7 @@ virJSONValueObjectCreateVArgs(virJSONValuePtr *obj,
 {
     int ret;
 
-    if (!(*obj = virJSONValueNewObject()))
-        return -1;
+    *obj = virJSONValueNewObject();
 
     /* free the object on error, or if no value objects were added */
     if ((ret = virJSONValueObjectAddVArgs(*obj, args)) <= 0) {
@@ -572,10 +571,7 @@ virJSONValueNewArray(void)
 virJSONValuePtr
 virJSONValueNewObject(void)
 {
-    virJSONValuePtr val;
-
-    if (VIR_ALLOC(val) < 0)
-        return NULL;
+    virJSONValuePtr val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_OBJECT;
 
@@ -1503,8 +1499,6 @@ virJSONValueCopy(const virJSONValue *in)
     switch ((virJSONType) in->type) {
     case VIR_JSON_TYPE_OBJECT:
         out = virJSONValueNewObject();
-        if (!out)
-            return NULL;
         for (i = 0; i < in->data.object.npairs; i++) {
             virJSONValuePtr val = NULL;
             if (!(val = virJSONValueCopy(in->data.object.pairs[i].value)))
@@ -1723,9 +1717,6 @@ virJSONParserHandleStartMap(void *ctx)
     virJSONValuePtr value = virJSONValueNewObject();
 
     VIR_DEBUG("parser=%p", parser);
-
-    if (!value)
-        return 0;
 
     if (virJSONParserInsertValue(parser, value) < 0) {
         virJSONValueFree(value);
@@ -2103,8 +2094,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
     }
 
     if (!(existobj = virJSONValueObjectGet(retobj, tokens[0]))) {
-        if (!(existobj = virJSONValueNewObject()))
-            goto cleanup;
+        existobj = virJSONValueNewObject();
 
         if (virJSONValueObjectAppend(retobj, tokens[0], existobj) < 0)
             goto cleanup;
@@ -2143,10 +2133,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
 virJSONValuePtr
 virJSONValueObjectDeflatten(virJSONValuePtr json)
 {
-    g_autoptr(virJSONValue) deflattened = NULL;
-
-    if (!(deflattened = virJSONValueNewObject()))
-        return NULL;
+    g_autoptr(virJSONValue) deflattened = virJSONValueNewObject();
 
     if (virJSONValueObjectForeachKeyValue(json,
                                           virJSONValueObjectDeflattenWorker,

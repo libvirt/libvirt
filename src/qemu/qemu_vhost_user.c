@@ -217,8 +217,7 @@ qemuVhostUserFormat(qemuVhostUserPtr vu)
     if (!vu)
         return NULL;
 
-    if (!(doc = virJSONValueNewObject()))
-        return NULL;
+    doc = virJSONValueNewObject();
 
     if (virJSONValueObjectAppendString(doc, "type",
                                        qemuVhostUserTypeTypeToString(vu->type)) < 0)

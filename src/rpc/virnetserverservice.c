@@ -343,9 +343,6 @@ virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
     virJSONValuePtr socks;
     size_t i;
 
-    if (!object)
-        return NULL;
-
     if (virJSONValueObjectAppendNumberInt(object, "auth", svc->auth) < 0)
         goto error;
     if (virJSONValueObjectAppendBoolean(object, "readonly", svc->readonly) < 0)

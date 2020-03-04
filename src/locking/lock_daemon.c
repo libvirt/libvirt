@@ -774,9 +774,6 @@ virLockDaemonClientPreExecRestart(virNetServerClientPtr client G_GNUC_UNUSED,
     virJSONValuePtr object = virJSONValueNewObject();
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!object)
-        return NULL;
-
     if (virJSONValueObjectAppendBoolean(object, "restricted", priv->restricted) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot set restricted data in JSON document"));
@@ -923,15 +920,12 @@ virLockDaemonPreExecRestart(const char *state_file,
     virJSONValuePtr child;
     char *state = NULL;
     int ret = -1;
-    virJSONValuePtr object;
+    virJSONValuePtr object = virJSONValueNewObject();
     char *magic;
     virHashKeyValuePairPtr pairs = NULL, tmp;
     virJSONValuePtr lockspaces;
 
     VIR_DEBUG("Running pre-restart exec");
-
-    if (!(object = virJSONValueNewObject()))
-        goto cleanup;
 
     if (!(child = virNetDaemonPreExecRestart(dmn)))
         goto cleanup;

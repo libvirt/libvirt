@@ -3442,8 +3442,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
             return -1;
     }
 
-    if (!(props = virJSONValueNewObject()))
-        return -1;
+    props = virJSONValueNewObject();
 
     if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
         backendType = "memory-backend-memfd";

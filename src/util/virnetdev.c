@@ -1874,8 +1874,7 @@ virNetDevSaveNetConfig(const char *linkdev, int vf,
         }
     }
 
-    if (!(configJSON = virJSONValueNewObject()))
-        goto cleanup;
+    configJSON = virJSONValueNewObject();
 
     /* if there is a PF, it's now in pfDevName, and linkdev is either
      * the VF's name, or NULL (if the VF isn't bound to a net driver

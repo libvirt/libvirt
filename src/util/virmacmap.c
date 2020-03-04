@@ -200,14 +200,11 @@ virMACMapHashDumper(void *payload,
                     const void *name,
                     void *data)
 {
-    virJSONValuePtr obj = NULL;
+    virJSONValuePtr obj = virJSONValueNewObject();
     virJSONValuePtr arr = NULL;
     const char **macs = payload;
     size_t i;
     int ret = -1;
-
-    if (!(obj = virJSONValueNewObject()))
-        goto cleanup;
 
     arr = virJSONValueNewArray();
 

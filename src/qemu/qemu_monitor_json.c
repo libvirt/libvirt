@@ -690,14 +690,11 @@ qemuMonitorJSONParseKeywords(const char *str,
 static virJSONValuePtr
 qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
 {
-    virJSONValuePtr ret = NULL;
+    virJSONValuePtr ret = virJSONValueNewObject();
     char **keywords = NULL;
     char **values = NULL;
     int nkeywords = 0;
     size_t i;
-
-    if (!(ret = virJSONValueNewObject()))
-        return NULL;
 
     if (qemuMonitorJSONParseKeywords(str, &keywords, &values, &nkeywords, 1) < 0)
         goto error;
@@ -3444,11 +3441,8 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
                                   virJSONValuePtr params)
 {
     int ret = -1;
-    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr cmd = virJSONValueNewObject();
     virJSONValuePtr reply = NULL;
-
-    if (!(cmd = virJSONValueNewObject()))
-        goto cleanup;
 
     if (virJSONValueObjectAppendString(cmd, "execute",
                                        "migrate-set-parameters") < 0)
@@ -4823,8 +4817,7 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
         }
 
         /* create single key object */
-        if (!(key = virJSONValueNewObject()))
-            goto cleanup;
+        key = virJSONValueNewObject();
 
         /* Union KeyValue has two types, use the generic one */
         if (virJSONValueObjectAppendString(key, "type", "number") < 0)
@@ -5817,19 +5810,15 @@ static virJSONValuePtr
 qemuMonitorJSONMakeCPUModel(virCPUDefPtr cpu,
                             bool migratable)
 {
-    virJSONValuePtr model = NULL;
+    virJSONValuePtr model = virJSONValueNewObject();
     virJSONValuePtr props = NULL;
     size_t i;
-
-    if (!(model = virJSONValueNewObject()))
-        goto error;
 
     if (virJSONValueObjectAppendString(model, "name", cpu->model) < 0)
         goto error;
 
     if (cpu->nfeatures || !migratable) {
-        if (!(props = virJSONValueNewObject()))
-            goto error;
+        props = virJSONValueNewObject();
 
         for (i = 0; i < cpu->nfeatures; i++) {
             char *name = cpu->features[i].name;
@@ -7382,19 +7371,14 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
                                     const virDomainChrSourceDef *chr)
 {
     virJSONValuePtr ret = NULL;
-    virJSONValuePtr backend = NULL;
-    virJSONValuePtr data = NULL;
+    virJSONValuePtr backend = virJSONValueNewObject();
+    virJSONValuePtr data = virJSONValueNewObject();
     virJSONValuePtr addr = NULL;
     const char *backend_type = NULL;
     const char *host;
     const char *port;
     char *tlsalias = NULL;
     bool telnet;
-
-    if (!(backend = virJSONValueNewObject()) ||
-        !(data = virJSONValueNewObject())) {
-        goto cleanup;
-    }
 
     switch ((virDomainChrType)chr->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:

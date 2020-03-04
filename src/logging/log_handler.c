@@ -615,9 +615,6 @@ virLogHandlerPreExecRestart(virLogHandlerPtr handler)
     size_t i;
     char domuuid[VIR_UUID_STRING_BUFLEN];
 
-    if (!ret)
-        return NULL;
-
     files = virJSONValueNewArray();
 
     if (virJSONValueObjectAppend(ret, "files", files) < 0) {
@@ -627,8 +624,6 @@ virLogHandlerPreExecRestart(virLogHandlerPtr handler)
 
     for (i = 0; i < handler->nfiles; i++) {
         virJSONValuePtr file = virJSONValueNewObject();
-        if (!file)
-            goto error;
 
         if (virJSONValueArrayAppend(files, file) < 0) {
             virJSONValueFree(file);

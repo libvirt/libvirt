@@ -597,9 +597,6 @@ virLogDaemonClientPreExecRestart(virNetServerClientPtr client G_GNUC_UNUSED,
 {
     virJSONValuePtr object = virJSONValueNewObject();
 
-    if (!object)
-        return NULL;
-
     return object;
 }
 
@@ -718,14 +715,11 @@ virLogDaemonPreExecRestart(const char *state_file,
     virJSONValuePtr child;
     char *state = NULL;
     int ret = -1;
-    virJSONValuePtr object;
+    virJSONValuePtr object = virJSONValueNewObject();
     char *magic;
     virHashKeyValuePairPtr pairs = NULL;
 
     VIR_DEBUG("Running pre-restart exec");
-
-    if (!(object = virJSONValueNewObject()))
-        goto cleanup;
 
     if (!(child = virNetDaemonPreExecRestart(dmn)))
         goto cleanup;

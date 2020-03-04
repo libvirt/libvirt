@@ -119,9 +119,6 @@ virJSONValuePtr remoteAdmClientPreExecRestart(virNetServerClientPtr client G_GNU
 {
     virJSONValuePtr object = virJSONValueNewObject();
 
-    if (!object)
-        return NULL;
-
     /* No content to add at this time - just need empty object */
 
     return object;

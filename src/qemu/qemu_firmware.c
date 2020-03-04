@@ -672,11 +672,8 @@ qemuFirmwareInterfaceFormat(virJSONValuePtr doc,
 static virJSONValuePtr
 qemuFirmwareFlashFileFormat(qemuFirmwareFlashFile flash)
 {
-    g_autoptr(virJSONValue) json = NULL;
+    g_autoptr(virJSONValue) json = virJSONValueNewObject();
     virJSONValuePtr ret;
-
-    if (!(json = virJSONValueNewObject()))
-        return NULL;
 
     if (virJSONValueObjectAppendString(json,
                                        "filename",
@@ -754,10 +751,7 @@ static int
 qemuFirmwareMappingFormat(virJSONValuePtr doc,
                           qemuFirmwarePtr fw)
 {
-    g_autoptr(virJSONValue) mapping = NULL;
-
-    if (!(mapping = virJSONValueNewObject()))
-        return -1;
+    g_autoptr(virJSONValue) mapping = virJSONValueNewObject();
 
     if (virJSONValueObjectAppendString(mapping,
                                        "device",
@@ -802,12 +796,9 @@ qemuFirmwareTargetFormat(virJSONValuePtr doc,
 
     for (i = 0; i < fw->ntargets; i++) {
         qemuFirmwareTargetPtr t = fw->targets[i];
-        g_autoptr(virJSONValue) target = NULL;
+        g_autoptr(virJSONValue) target = virJSONValueNewObject();
         g_autoptr(virJSONValue) machines = NULL;
         size_t j;
-
-        if (!(target = virJSONValueNewObject()))
-            return -1;
 
         if (virJSONValueObjectAppendString(target,
                                            "architecture",
@@ -869,12 +860,9 @@ qemuFirmwareFeatureFormat(virJSONValuePtr doc,
 char *
 qemuFirmwareFormat(qemuFirmwarePtr fw)
 {
-    g_autoptr(virJSONValue) doc = NULL;
+    g_autoptr(virJSONValue) doc = virJSONValueNewObject();
 
     if (!fw)
-        return NULL;
-
-    if (!(doc = virJSONValueNewObject()))
         return NULL;
 
     if (qemuFirmwareInterfaceFormat(doc, fw) < 0)

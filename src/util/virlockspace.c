@@ -434,9 +434,6 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
     virJSONValuePtr resources;
     virHashKeyValuePairPtr pairs = NULL, tmp;
 
-    if (!object)
-        return NULL;
-
     virMutexLock(&lockspace->lock);
 
     if (lockspace->dir &&
@@ -456,9 +453,6 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
         virJSONValuePtr child = virJSONValueNewObject();
         virJSONValuePtr owners = NULL;
         size_t i;
-
-        if (!child)
-            goto error;
 
         if (virJSONValueArrayAppend(resources, child) < 0) {
             virJSONValueFree(child);

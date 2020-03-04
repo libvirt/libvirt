@@ -529,12 +529,8 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
         return -1;
     }
 
-    if (!args) {
-        if (!(emptyargs = virJSONValueNewObject()))
-            return -1;
-
-        args = emptyargs;
-    }
+    if (!args)
+        args = emptyargs = virJSONValueNewObject();
 
     if (testQEMUSchemaValidate(args, schemaroot, test->qapischema, &debug) < 0) {
         if (qemuMonitorReportError(test,

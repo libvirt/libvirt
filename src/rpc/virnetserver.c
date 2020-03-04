@@ -546,15 +546,12 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
 
 virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
 {
-    virJSONValuePtr object;
+    virJSONValuePtr object = virJSONValueNewObject();
     virJSONValuePtr clients;
     virJSONValuePtr services;
     size_t i;
 
     virObjectLock(srv);
-
-    if (!(object = virJSONValueNewObject()))
-        goto error;
 
     if (virJSONValueObjectAppendNumberUint(object, "min_workers",
                                            virThreadPoolGetMinWorkers(srv->workers)) < 0) {
