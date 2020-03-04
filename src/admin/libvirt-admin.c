@@ -111,7 +111,7 @@ getSocketPath(virURIPtr uri)
         virURIParamPtr param = &uri->params[i];
 
         if (STREQ(param->name, "socket")) {
-            VIR_FREE(sock_path);
+            g_free(sock_path);
             sock_path = g_strdup(param->value);
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -203,11 +203,11 @@ virAdmGetDefaultURI(virConfPtr conf, char **uristr)
 virAdmConnectPtr
 virAdmConnectOpen(const char *name, unsigned int flags)
 {
-    char *sock_path = NULL;
+    g_autofree char *sock_path = NULL;
     char *alias = NULL;
     virAdmConnectPtr conn = NULL;
     g_autoptr(virConf) conf = NULL;
-    char *uristr = NULL;
+    g_autofree char *uristr = NULL;
 
     if (virAdmInitialize() < 0)
         goto error;
@@ -233,7 +233,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
         goto error;
 
     if (alias) {
-        VIR_FREE(uristr);
+        g_free(uristr);
         uristr = alias;
     }
 
@@ -251,16 +251,12 @@ virAdmConnectOpen(const char *name, unsigned int flags)
     if (remoteAdminConnectOpen(conn, flags) < 0)
         goto error;
 
- cleanup:
-    VIR_FREE(sock_path);
-    VIR_FREE(uristr);
     return conn;
 
  error:
     virDispatchError(NULL);
     virObjectUnref(conn);
-    conn = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 /**
