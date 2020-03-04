@@ -1,0 +1,27 @@
+pre job bitmap disable:
+merge bitmpas:
+[
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "libvirt-5-format",
+      "name": "b",
+      "persistent": true,
+      "disabled": false,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-5-format",
+      "target": "b",
+      "bitmaps": [
+        {
+          "node": "libvirt-3-format",
+          "name": "b"
+        }
+      ]
+    }
+  }
+]

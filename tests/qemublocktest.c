@@ -1410,6 +1410,19 @@ mymain(void)
 
     TEST_BITMAP_BLOCKCOMMIT("snapshots-4-5", 4, 5, "snapshots");
 
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-2", 1, 2, "snapshots-synthetic-broken");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-3", 1, 3, "snapshots-synthetic-broken");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-4", 1, 4, "snapshots-synthetic-broken");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-5", 1, 5, "snapshots-synthetic-broken");
+
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-2-3", 2, 3, "snapshots-synthetic-broken");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-2-4", 2, 4, "snapshots-synthetic-broken");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-2-5", 2, 5, "snapshots-synthetic-broken");
+
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-3-4", 3, 4, "snapshots-synthetic-broken");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-3-5", 3, 5, "snapshots-synthetic-broken");
+
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-4-5", 4, 5, "snapshots-synthetic-broken");
 
  cleanup:
     qemuTestDriverFree(&driver);
