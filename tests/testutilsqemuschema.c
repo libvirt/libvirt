@@ -518,6 +518,50 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
 
 
 /**
+ * testQEMUSchemaValidateCommand:
+ * @command: command to validate
+ * @arguments: arguments of @command to validate
+ * @schema: hash table containing schema entries
+ * @debug: a virBuffer which will be filled with debug information if provided
+ *
+ * Validates whether @command and its @arguments conform to the QAPI schema
+ * passed in via @schema. Returns 0, if the command and args match @schema,
+ * -1 if it does not and -2 if there is a problem with the schema or with
+ *  internals.
+ *
+ * @debug is filled with information regarding the validation process
+ */
+int
+testQEMUSchemaValidateCommand(const char *command,
+                              virJSONValuePtr arguments,
+                              virHashTablePtr schema,
+                              virBufferPtr debug)
+{
+    g_autofree char *schemapatharguments = g_strdup_printf("%s/arg-type", command);
+    g_autoptr(virJSONValue) emptyargs = NULL;
+    virJSONValuePtr schemarootcommand;
+    virJSONValuePtr schemarootarguments;
+
+    if (virQEMUQAPISchemaPathGet(command, schema, &schemarootcommand) < 0 ||
+        !schemarootcommand) {
+        virBufferAsprintf(debug, "ERROR: command '%s' not found in the schema", command);
+        return -1;
+    }
+
+    if (!arguments)
+        arguments = emptyargs = virJSONValueNewObject();
+
+    if (virQEMUQAPISchemaPathGet(schemapatharguments, schema, &schemarootarguments) < 0 ||
+        !schemarootarguments) {
+        virBufferAsprintf(debug, "ERROR: failed to look up 'arg-type' of  '%s'", command);
+        return -1;
+    }
+
+    return testQEMUSchemaValidateRecurse(arguments, schemarootarguments, schema, debug);
+}
+
+
+/**
  * testQEMUSchemaGetLatest:
  *
  * Returns the schema data as the qemu monitor would reply from the latest

@@ -28,6 +28,12 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
                        virHashTablePtr schema,
                        virBufferPtr debug);
 
+int
+testQEMUSchemaValidateCommand(const char *command,
+                              virJSONValuePtr arguments,
+                              virHashTablePtr schema,
+                              virBufferPtr debug);
+
 virJSONValuePtr
 testQEMUSchemaGetLatest(const char* arch);
 
