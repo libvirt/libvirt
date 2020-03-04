@@ -3440,30 +3440,19 @@ int
 qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
                                   virJSONValuePtr params)
 {
-    int ret = -1;
-    virJSONValuePtr cmd = virJSONValueNewObject();
-    virJSONValuePtr reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
-    if (virJSONValueObjectAppendString(cmd, "execute",
-                                       "migrate-set-parameters") < 0)
-        goto cleanup;
-
-    if (virJSONValueObjectAppend(cmd, "arguments", params) < 0)
-        goto cleanup;
-    params = NULL;
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("migrate-set-parameters", params)))
+        return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(params);
-    virJSONValueFree(reply);
-    return ret;
+    return 0;
 }
 
 
