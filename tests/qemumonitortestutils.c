@@ -537,9 +537,6 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
                                              virJSONValuePtr args)
 {
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
-    virJSONValuePtr schemaroot;
-    g_autoptr(virJSONValue) emptyargs = NULL;
-    g_autofree char *schemapath = NULL;
 
     if (!test->qapischema)
         return 0;
@@ -555,20 +552,13 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
     if (STREQ(cmdname, "device_add"))
         return 0;
 
-    schemapath = g_strdup_printf("%s/arg-type", cmdname);
-
-    if (virQEMUQAPISchemaPathGet(schemapath, test->qapischema, &schemaroot) < 0 ||
-        !schemaroot) {
-        qemuMonitorTestError("command '%s' not found in QAPI schema", cmdname);
-        return -1;
-    }
-
-    if (!args)
-        args = emptyargs = virJSONValueNewObject();
-
-    if (testQEMUSchemaValidate(args, schemaroot, test->qapischema, &debug) < 0) {
+    if (testQEMUSchemaValidateCommand(cmdname, args, test->qapischema, &debug) < 0) {
         if (virTestGetDebug() == 2) {
-            g_autofree char *argstr = virJSONValueToString(args, true);
+            g_autofree char *argstr = NULL;
+
+            if (args)
+                argstr = virJSONValueToString(args, true);
+
             fprintf(stderr,
                     "\nfailed to validate arguments of '%s' against QAPI schema\n"
                     "args:\n%s\nvalidator output:\n %s\n",
