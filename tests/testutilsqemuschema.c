@@ -446,12 +446,57 @@ testQEMUSchemaValidateAlternate(virJSONValuePtr obj,
 
 
 static int
+testQEMUSchemaValidateDeprecated(virJSONValuePtr root,
+                                 const char *name,
+                                 struct testQEMUSchemaValidateCtxt *ctxt)
+{
+    virJSONValuePtr features = virJSONValueObjectGetArray(root, "features");
+    size_t nfeatures;
+    size_t i;
+
+    if (!features)
+        return 0;
+
+    nfeatures = virJSONValueArraySize(features);
+
+    for (i = 0; i < nfeatures; i++) {
+        virJSONValuePtr cur = virJSONValueArrayGet(features, i);
+        const char *curstr;
+
+        if (!cur ||
+            !(curstr = virJSONValueGetString(cur))) {
+            virBufferAsprintf(ctxt->debug, "ERROR: features of '%s' are malformed", name);
+            return -2;
+        }
+
+        if (STREQ(curstr, "deprecated")) {
+            if (ctxt->allowDeprecated) {
+                virBufferAsprintf(ctxt->debug, "WARNING: '%s' is deprecated", name);
+                if (virTestGetVerbose())
+                    g_fprintf(stderr, "\nWARNING: '%s' is deprecated\n", name);
+                return 0;
+            } else {
+                virBufferAsprintf(ctxt->debug, "ERROR: '%s' is deprecated", name);
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 testQEMUSchemaValidateRecurse(virJSONValuePtr obj,
                               virJSONValuePtr root,
                               struct testQEMUSchemaValidateCtxt *ctxt)
 {
     const char *n = virJSONValueObjectGetString(root, "name");
     const char *t = virJSONValueObjectGetString(root, "meta-type");
+    int rc;
+
+    if ((rc = testQEMUSchemaValidateDeprecated(root, n, ctxt)) < 0)
+        return rc;
 
     if (STREQ_NULLABLE(t, "builtin")) {
         return testQEMUSchemaValidateBuiltin(obj, root, ctxt);
@@ -525,7 +570,7 @@ testQEMUSchemaValidateCommand(const char *command,
                               virJSONValuePtr arguments,
                               virHashTablePtr schema,
                               bool allowDeprecated,
-                              bool allowRemoved G_GNUC_UNUSED,
+                              bool allowRemoved,
                               virBufferPtr debug)
 {
     struct testQEMUSchemaValidateCtxt ctxt = { .schema = schema,
@@ -535,12 +580,19 @@ testQEMUSchemaValidateCommand(const char *command,
     g_autoptr(virJSONValue) emptyargs = NULL;
     virJSONValuePtr schemarootcommand;
     virJSONValuePtr schemarootarguments;
+    int rc;
 
     if (virQEMUQAPISchemaPathGet(command, schema, &schemarootcommand) < 0 ||
         !schemarootcommand) {
+        if (allowRemoved)
+            return 0;
+
         virBufferAsprintf(debug, "ERROR: command '%s' not found in the schema", command);
         return -1;
     }
+
+    if ((rc = testQEMUSchemaValidateDeprecated(schemarootcommand, command, &ctxt)) < 0)
+        return rc;
 
     if (!arguments)
         arguments = emptyargs = virJSONValueNewObject();
