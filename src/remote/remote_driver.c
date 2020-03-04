@@ -38,6 +38,7 @@
 #include "virbuffer.h"
 #include "remote_driver.h"
 #include "remote_protocol.h"
+#include "remote_sockets.h"
 #include "lxc_protocol.h"
 #include "qemu_protocol.h"
 #include "viralloc.h"
@@ -54,46 +55,6 @@
 
 VIR_LOG_INIT("remote.remote_driver");
 
-typedef enum {
-    REMOTE_DRIVER_TRANSPORT_TLS,
-    REMOTE_DRIVER_TRANSPORT_UNIX,
-    REMOTE_DRIVER_TRANSPORT_SSH,
-    REMOTE_DRIVER_TRANSPORT_LIBSSH2,
-    REMOTE_DRIVER_TRANSPORT_EXT,
-    REMOTE_DRIVER_TRANSPORT_TCP,
-    REMOTE_DRIVER_TRANSPORT_LIBSSH,
-
-    REMOTE_DRIVER_TRANSPORT_LAST,
-} remoteDriverTransport;
-
-VIR_ENUM_DECL(remoteDriverTransport);
-VIR_ENUM_IMPL(remoteDriverTransport,
-              REMOTE_DRIVER_TRANSPORT_LAST,
-              "tls",
-              "unix",
-              "ssh",
-              "libssh2",
-              "ext",
-              "tcp",
-              "libssh");
-
-typedef enum {
-    /* Try to figure out the "best" choice magically */
-    REMOTE_DRIVER_MODE_AUTO,
-    /* Always use the legacy libvirtd */
-    REMOTE_DRIVER_MODE_LEGACY,
-    /* Always use the per-driver virt*d daemons */
-    REMOTE_DRIVER_MODE_DIRECT,
-
-    REMOTE_DRIVER_MODE_LAST
-} remoteDriverMode;
-
-VIR_ENUM_DECL(remoteDriverMode);
-VIR_ENUM_IMPL(remoteDriverMode,
-              REMOTE_DRIVER_MODE_LAST,
-              "auto",
-              "legacy",
-              "direct");
 
 #if SIZEOF_LONG < 8
 # define HYPER_TO_TYPE(_type, _to, _from) \

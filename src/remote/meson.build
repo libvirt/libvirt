@@ -1,5 +1,6 @@
 remote_driver_sources = [
   'remote_driver.c',
+  'remote_sockets.c',
 ]
 
 remote_driver_generated = []
