@@ -156,6 +156,7 @@ static void
 testDriverDispose(void *obj)
 {
     testDriverPtr driver = obj;
+    size_t i;
 
     virObjectUnref(driver->caps);
     virObjectUnref(driver->xmlopt);
@@ -165,6 +166,11 @@ testDriverDispose(void *obj)
     virObjectUnref(driver->ifaces);
     virObjectUnref(driver->pools);
     virObjectUnref(driver->eventState);
+    for (i = 0; i < driver->numAuths; i++) {
+        g_free(driver->auths[i].username);
+        g_free(driver->auths[i].password);
+    }
+    g_free(driver->auths);
 }
 
 typedef struct _testDomainNamespaceDef testDomainNamespaceDef;
