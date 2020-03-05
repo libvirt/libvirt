@@ -44,6 +44,18 @@
 <libvirt>
   <release version="v6.3.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: support disabling hotplug/unplug of PCIe devices
+        </summary>
+        <description>
+          libvirt can now set the "hotplug" option for pcie-root-ports
+          and pcie-switch-downstream-ports, which can be used to
+          disable hotplug/unplug of devices from these ports (default
+          behavior is for these controllers to accept all
+          hotplug/unplug attempts, but this is often undesireable).
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
