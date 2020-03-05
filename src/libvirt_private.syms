@@ -1584,7 +1584,6 @@ virDeleteElementsN;
 virDispose;
 virDisposeString;
 virExpandN;
-virFree;
 virInsertElementsN;
 virReallocN;
 virResizeN;

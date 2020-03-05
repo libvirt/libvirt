@@ -55,7 +55,6 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 int virAllocVar(void *ptrptr, size_t struct_size, size_t element_size, size_t count)
     G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
-void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
 
 void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countptr)
     ATTRIBUTE_NONNULL(1);
@@ -417,11 +416,7 @@ void virDisposeString(char **strptr)
  *
  * This macro is safe to use on arguments with side effects.
  */
-/* The ternary ensures that ptr is a non-const pointer and not an
- * integer type, all while evaluating ptr only once.  This gives us
- * extra compiler safety when compiling under gcc.
- */
-#define VIR_FREE(ptr) virFree(1 ? (void *) &(ptr) : (ptr))
+#define VIR_FREE(ptr) g_clear_pointer(&(ptr), g_free)
 
 
 /**

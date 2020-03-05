@@ -178,7 +178,8 @@ void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t toremove)
         if (virReallocN(ptrptr, size, *countptr -= toremove) < 0)
             abort();
     } else {
-        virFree(ptrptr);
+        g_free(*((void **)ptrptr));
+        *((void **)ptrptr) = NULL;
         *countptr = 0;
     }
 }
@@ -330,24 +331,6 @@ int virAllocVar(void *ptrptr,
     alloc_size = struct_size + (element_size * count);
     *(void **)ptrptr = g_malloc0(alloc_size);
     return 0;
-}
-
-
-/**
- * virFree:
- * @ptrptr: pointer to pointer for address of memory to be freed
- *
- * Release the chunk of memory in the pointer pointed to by
- * the 'ptrptr' variable. After release, 'ptrptr' will be
- * updated to point to NULL.
- */
-void virFree(void *ptrptr)
-{
-    int save_errno = errno;
-
-    g_free(*(void**)ptrptr);
-    *(void**)ptrptr = NULL;
-    errno = save_errno;
 }
 
 
