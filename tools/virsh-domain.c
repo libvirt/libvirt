@@ -11885,9 +11885,8 @@ VIR_ENUM_IMPL(virshDomainHostnameSource,
 static bool
 cmdDomHostname(vshControl *ctl, const vshCmd *cmd)
 {
-    char *hostname;
-    virDomainPtr dom;
-    bool ret = false;
+    g_autofree char *hostname = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *sourcestr = NULL;
     int flags = 0; /* Use default value. Drivers can have its own default. */
 
@@ -11895,14 +11894,14 @@ cmdDomHostname(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "source", &sourcestr) < 0)
-        goto error;
+        return false;
 
     if (sourcestr) {
         int source = virshDomainHostnameSourceTypeFromString(sourcestr);
 
         if (source < 0) {
             vshError(ctl, _("Unknown data source '%s'"), sourcestr);
-            goto error;
+            return false;
         }
 
         switch ((virshDomainHostnameSource) source) {
@@ -11920,16 +11919,11 @@ cmdDomHostname(vshControl *ctl, const vshCmd *cmd)
     hostname = virDomainGetHostname(dom, flags);
     if (hostname == NULL) {
         vshError(ctl, "%s", _("failed to get hostname"));
-        goto error;
+        return false;
     }
 
     vshPrint(ctl, "%s\n", hostname);
-    ret = true;
-
- error:
-    VIR_FREE(hostname);
-    virshDomainFree(dom);
-    return ret;
+    return true;
 }
 
 /**
