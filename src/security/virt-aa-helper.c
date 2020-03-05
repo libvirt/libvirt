@@ -264,22 +264,21 @@ static int
 create_profile(const char *profile, const char *profile_name,
                const char *profile_files, int virtType)
 {
-    char *template;
-    char *tcontent = NULL;
-    char *pcontent = NULL;
-    char *replace_name = NULL;
-    char *replace_files = NULL;
+    g_autofree char *template = NULL;
+    g_autofree char *tcontent = NULL;
+    g_autofree char *pcontent = NULL;
+    g_autofree char *replace_name = NULL;
+    g_autofree char *replace_files = NULL;
     char *tmp = NULL;
     const char *template_name = "\nprofile LIBVIRT_TEMPLATE";
     const char *template_end = "\n}";
     int tlen, plen;
     int fd;
-    int rc = -1;
     const char *driver_name = NULL;
 
     if (virFileExists(profile)) {
         vah_error(NULL, 0, _("profile exists"));
-        goto end;
+        return -1;
     }
 
     switch (virtType) {
@@ -296,22 +295,22 @@ create_profile(const char *profile, const char *profile_name,
 
     if (!virFileExists(template)) {
         vah_error(NULL, 0, _("template does not exist"));
-        goto end;
+        return -1;
     }
 
     if ((tlen = virFileReadAll(template, MAX_FILE_LEN, &tcontent)) < 0) {
         vah_error(NULL, 0, _("failed to read AppArmor template"));
-        goto end;
+        return -1;
     }
 
     if (strstr(tcontent, template_name) == NULL) {
         vah_error(NULL, 0, _("no replacement string in template"));
-        goto clean_tcontent;
+        return -1;
     }
 
     if (strstr(tcontent, template_end) == NULL) {
         vah_error(NULL, 0, _("no replacement string in template"));
-        goto clean_tcontent;
+        return -1;
     }
 
     /* '\nprofile <profile_name>\0' */
@@ -328,15 +327,15 @@ create_profile(const char *profile, const char *profile_name,
 
     if (plen > MAX_FILE_LEN || plen < tlen) {
         vah_error(NULL, 0, _("invalid length for new profile"));
-        goto clean_replace;
+        return -1;
     }
 
     if (!(pcontent = virStringReplace(tcontent, template_name, replace_name)))
-        goto clean_all;
+        return -1;
 
     if (virtType != VIR_DOMAIN_VIRT_LXC) {
         if (!(tmp = virStringReplace(pcontent, template_end, replace_files)))
-            goto clean_all;
+            return -1;
         VIR_FREE(pcontent);
         pcontent = g_steal_pointer(&tmp);
     }
@@ -344,31 +343,21 @@ create_profile(const char *profile, const char *profile_name,
     /* write the file */
     if ((fd = open(profile, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
         vah_error(NULL, 0, _("failed to create profile"));
-        goto clean_all;
+        return -1;
     }
 
     if (safewrite(fd, pcontent, plen - 1) < 0) { /* don't write the '\0' */
         VIR_FORCE_CLOSE(fd);
         vah_error(NULL, 0, _("failed to write to profile"));
-        goto clean_all;
+        return -1;
     }
 
     if (VIR_CLOSE(fd) != 0) {
         vah_error(NULL, 0, _("failed to close or write to profile"));
-        goto clean_all;
+        return -1;
     }
-    rc = 0;
 
- clean_all:
-    VIR_FREE(pcontent);
- clean_replace:
-    VIR_FREE(replace_name);
-    VIR_FREE(replace_files);
- clean_tcontent:
-    VIR_FREE(tcontent);
- end:
-    VIR_FREE(template);
-    return rc;
+    return 0;
 }
 
 /*
