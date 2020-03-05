@@ -1808,6 +1808,25 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolPropsCommon">
+    <optional>
+      <element name="readahead">
+        <attribute name="size">
+          <ref name="positiveInteger"/>
+        </attribute>
+        <empty/>
+      </element>
+    </optional>
+    <optional>
+      <element name="timeout">
+        <attribute name="seconds">
+          <ref name="positiveInteger"/>
+        </attribute>
+        <empty/>
+      </element>
+    </optional>
+  </define>
+
   <define name="diskSourceNetworkProtocolSSLVerify">
     <element name="ssl">
       <attribute name="verify">
@@ -1854,6 +1873,7 @@
       <optional>
         <ref name="diskSourceNetworkProtocolHTTPCookies"/>
       </optional>
+      <ref name="diskSourceNetworkProtocolPropsCommon"/>
     </element>
   </define>
 
@@ -1873,6 +1893,7 @@
       <optional>
         <ref name="diskSourceNetworkProtocolHTTPCookies"/>
       </optional>
+      <ref name="diskSourceNetworkProtocolPropsCommon"/>
     </element>
   </define>
 
@@ -1892,6 +1913,7 @@
       <optional>
         <ref name="diskSourceNetworkProtocolSSLVerify"/>
       </optional>
+      <ref name="diskSourceNetworkProtocolPropsCommon"/>
     </element>
   </define>
 
@@ -1910,6 +1932,7 @@
       <optional>
         <ref name="encryption"/>
       </optional>
+      <ref name="diskSourceNetworkProtocolPropsCommon"/>
     </element>
   </define>
 

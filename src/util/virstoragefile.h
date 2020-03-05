@@ -295,6 +295,9 @@ struct _virStorageSource {
     bool encryptionInherited;
     virStoragePRDefPtr pr;
     virTristateBool sslverify;
+    /* both values below have 0 as default value */
+    unsigned long long readahead; /* size of the readahead buffer in bytes */
+    unsigned long long timeout; /* connection timeout in seconds */
 
     virStorageSourceNVMeDefPtr nvme; /* type == VIR_STORAGE_TYPE_NVME */
 

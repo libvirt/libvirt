@@ -2852,6 +2852,8 @@
       &lt;cookies&gt;
         &lt;cookie name="test"&gt;somevalue&lt;/cookie&gt;
       &lt;/cookies&gt;
+      &lt;readahead size='65536'/&gt;
+      &lt;timeout seconds='6'/&gt;
     &lt;/source&gt;
     &lt;target dev='hde' bus='ide' tray='open'/&gt;
     &lt;readonly/&gt;
@@ -3400,6 +3402,20 @@
             For <code>http</code> and <code>https</code> accessed storage it's
             possible to pass one or more cookies. The cookie name and value
             must conform to the HTTP specification.
+            <span class="since">Since 6.2.0</span>
+          </dd>
+          <dt><code>readahead</code></dt>
+          <dd>
+            Specifies the size of the readahead buffer for protocols
+            which support it. (all 'curl' based drivers in qemu). The size
+            is in bytes. Note that '0' is considered as if the value is not
+            provided.
+            <span class="since">Since 6.2.0</span>
+          </dd>
+          <dt><code>timeout</code></dt>
+          <dd>
+            Specifies the connection timeout for protocols which support it.
+            Note that '0' is considered as if the value is not provided.
             <span class="since">Since 6.2.0</span>
           </dd>
         </dl>

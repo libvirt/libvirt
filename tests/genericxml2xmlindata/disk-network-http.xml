@@ -49,6 +49,8 @@
           <cookie name='test'>testcookievalue</cookie>
           <cookie name='test2'>blurb</cookie>
         </cookies>
+        <readahead size='65536'/>
+        <timeout seconds='10'/>
       </source>
       <target dev='vdd' bus='virtio'/>
     </disk>

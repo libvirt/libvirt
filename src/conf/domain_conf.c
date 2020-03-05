@@ -9500,6 +9500,19 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
             return -1;
     }
 
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTP ||
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTPS ||
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_FTP ||
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_FTPS) {
+
+        if (virXPathULongLong("string(./readahead/@size)", ctxt, &src->readahead) == -2 ||
+            virXPathULongLong("string(./timeout/@seconds)", ctxt, &src->timeout) == -2) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                          _("invalid readahead size or timeout"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -24631,6 +24644,12 @@ virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
     }
 
     virDomainDiskSourceFormatNetworkCookies(childBuf, src);
+
+    if (src->readahead)
+        virBufferAsprintf(childBuf, "<readahead size='%llu'/>\n", src->readahead);
+
+    if (src->timeout)
+        virBufferAsprintf(childBuf, "<timeout seconds='%llu'/>\n", src->timeout);
 
     return 0;
 }
