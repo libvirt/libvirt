@@ -261,19 +261,15 @@ static int
 virMacMapWriteFileLocked(virMacMapPtr mgr,
                          const char *file)
 {
-    char *str;
-    int ret = -1;
+    g_autofree char *str = NULL;
 
     if (virMacMapDumpStrLocked(mgr, &str) < 0)
-        goto cleanup;
+        return -1;
 
     if (virFileRewriteStr(file, 0644, str) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(str);
-    return ret;
+    return 0;
 }
 
 
