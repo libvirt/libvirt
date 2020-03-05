@@ -409,7 +409,7 @@ static int virLXCProcessSetupNamespaceName(virLXCDriverPtr driver,
     int fd = -1;
     virDomainObjPtr vm;
     virLXCDomainObjPrivatePtr priv;
-    char *path;
+    g_autofree char *path = NULL;
 
     vm = virDomainObjListFindByName(driver->domains, name);
     if (!vm) {
@@ -436,7 +436,6 @@ static int virLXCProcessSetupNamespaceName(virLXCDriverPtr driver,
     }
 
  cleanup:
-    VIR_FREE(path);
     virDomainObjEndAPI(&vm);
     return fd;
 }
