@@ -2162,8 +2162,7 @@ testQemuMonitorJSONqemuMonitorJSONGetTargetArch(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
-    char *arch;
+    g_autofree char *arch = NULL;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
@@ -2176,22 +2175,19 @@ testQemuMonitorJSONqemuMonitorJSONGetTargetArch(const void *opaque)
                                "    },"
                                "    \"id\": \"libvirt-21\""
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (!(arch = qemuMonitorJSONGetTargetArch(qemuMonitorTestGetMonitor(test))))
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(arch, "x86_64")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected architecture %s, expecting x86_64",
                        arch);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(arch);
-    return ret;
+    return 0;
 }
 
 static int
