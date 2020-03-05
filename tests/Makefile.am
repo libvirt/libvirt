@@ -164,6 +164,7 @@ EXTRA_DIST = \
 	xlconfigdata \
 	xmconfigdata \
 	xml2vmxdata \
+	virsh-auth.xml \
 	virstorageutildata \
 	virfilecachedata \
 	virresctrldata \
@@ -406,6 +407,7 @@ test_scripts =
 libvirtd_test_scripts = \
 	libvirtd-fail \
 	libvirtd-pool \
+	virsh-auth \
 	virsh-cpuset \
 	virsh-define-dev-segfault \
 	virsh-int-overflow \

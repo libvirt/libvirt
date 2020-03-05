@@ -111,7 +111,7 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
 
     for (i = 0; i < ncred; i++) {
         char buf[1024];
-        char *bufptr = buf;
+        char *bufptr = NULL;
         size_t len;
 
         switch (cred[i].type) {
@@ -138,14 +138,15 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
 
             if (!fgets(buf, sizeof(buf), stdin)) {
                 if (feof(stdin)) { /* Treat EOF as "" */
-                    buf[0] = '\0';
                     break;
                 }
                 return -1;
             }
+
             len = strlen(buf);
             if (len != 0 && buf[len-1] == '\n')
                 buf[len-1] = '\0';
+            bufptr = g_strdup(buf);
             break;
 
         case VIR_CRED_PASSPHRASE:

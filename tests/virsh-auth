@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+# run virsh to validate interactive auth
+
+# Copyright (C) 2020 Red Hat, Inc.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see
+# <http://www.gnu.org/licenses/>.
+
+import os
+import os.path
+import sys
+import subprocess
+
+builddir = os.getenv("abs_top_builddir")
+if builddir is None:
+   builddir = os.path.join(os.getcwd(), "..")
+
+srcdir = os.getenv("abs_top_srcdir")
+if srcdir is None:
+   srcdir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+uri = "test://" + os.path.join(srcdir, "tests", "virsh-auth.xml")
+
+virsh = os.path.join(builddir, "tools", "virsh")
+
+proc = subprocess.Popen([virsh, "-c", uri, "uri"],
+                        universal_newlines=True,
+                        start_new_session=True,
+                        stdin=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE)
+out, err = proc.communicate("astrochicken")
+
+if proc.returncode != 0:
+   print("virsh failed with code %d" % proc.returncode, file=sys.stderr)
+   if out != "":
+      print("stdout=%s" % out)
+   if err != "":
+      print("stderr=%s" % err)
+   sys.exit(1)
+
+if uri not in out:
+   print("Expected '%s' in '%s'" % (uri, out), file=sys.stderr)
+   sys.exit(1)
+
+sys.exit(0)
