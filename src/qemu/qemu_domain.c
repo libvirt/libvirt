@@ -6919,6 +6919,81 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         }
     }
 
+    if (src->sslverify != VIR_TRISTATE_BOOL_ABSENT) {
+        if (actualType != VIR_STORAGE_TYPE_NETWORK ||
+            (src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTPS &&
+             src->protocol != VIR_STORAGE_NET_PROTOCOL_FTPS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ssl verification is supported only with HTTPS/FTPS protocol"));
+            return -1;
+        }
+
+        if (!src->detected &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ssl verification setting is not supported by this QEMU binary"));
+            return -1;
+        }
+    }
+
+    if (src->ncookies > 0) {
+        if (actualType != VIR_STORAGE_TYPE_NETWORK ||
+            (src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTPS &&
+             src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTP)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("http cookies are supported only with HTTP(S) protocol"));
+            return -1;
+        }
+
+        if (!src->detected &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("http cookies are not supported by this QEMU binary"));
+            return -1;
+        }
+
+        if (virStorageSourceNetCookiesValidate(src) < 0)
+            return -1;
+    }
+
+    if (src->readahead > 0) {
+        if (actualType != VIR_STORAGE_TYPE_NETWORK ||
+            (src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTPS &&
+             src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTP &&
+             src->protocol != VIR_STORAGE_NET_PROTOCOL_FTP &&
+             src->protocol != VIR_STORAGE_NET_PROTOCOL_FTPS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("readaehad is supported only with HTTP(S)/FTP(s) protocols"));
+            return -1;
+        }
+
+        if (!src->detected &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("readahead setting is not supported with this QEMU binary"));
+            return -1;
+        }
+    }
+
+    if (src->timeout > 0) {
+        if (actualType != VIR_STORAGE_TYPE_NETWORK ||
+            (src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTPS &&
+             src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTP &&
+             src->protocol != VIR_STORAGE_NET_PROTOCOL_FTP &&
+             src->protocol != VIR_STORAGE_NET_PROTOCOL_FTPS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("timeout is supported only with HTTP(S)/FTP(s) protocols"));
+            return -1;
+        }
+
+        if (!src->detected &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("timeout setting is not supported with this QEMU binary"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
