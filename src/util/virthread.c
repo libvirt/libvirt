@@ -23,6 +23,10 @@
 
 #include "virthread.h"
 
+#ifdef __FreeBSD__
+# include <pthread_np.h>
+#endif
+
 #include <unistd.h>
 #include <inttypes.h>
 #if HAVE_SYS_SYSCALL_H
