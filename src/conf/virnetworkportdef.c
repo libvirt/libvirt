@@ -444,29 +444,24 @@ virNetworkPortDefSaveStatus(virNetworkPortDef *def,
                             const char *dir)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *path;
-    char *xml = NULL;
-    int ret = -1;
+    g_autofree char *path = NULL;
+    g_autofree char *xml = NULL;
 
     virUUIDFormat(def->uuid, uuidstr);
 
     if (virFileMakePath(dir) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(path = virNetworkPortDefConfigFile(dir, uuidstr)))
-        goto cleanup;
+        return -1;
 
     if (!(xml = virNetworkPortDefFormat(def)))
-        goto cleanup;
+        return -1;
 
     if (virXMLSaveFile(path, uuidstr, "net-port-create", xml) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(xml);
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }
 
 
