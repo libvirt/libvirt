@@ -108,6 +108,8 @@ struct _qemuAgent {
     GSource *watch;
 
     bool running;
+    bool singleSync;
+    bool inSync;
 
     virDomainObjPtr vm;
 
@@ -673,7 +675,8 @@ qemuAgentPtr
 qemuAgentOpen(virDomainObjPtr vm,
               const virDomainChrSourceDef *config,
               GMainContext *context,
-              qemuAgentCallbacksPtr cb)
+              qemuAgentCallbacksPtr cb,
+              bool singleSync)
 {
     qemuAgentPtr agent;
     g_autoptr(GError) gerr = NULL;
@@ -700,6 +703,7 @@ qemuAgentOpen(virDomainObjPtr vm,
     }
     agent->vm = vm;
     agent->cb = cb;
+    agent->singleSync = singleSync;
 
     if (config->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -853,6 +857,7 @@ static int qemuAgentSend(qemuAgentPtr agent,
                                      _("Unable to wait on agent socket "
                                        "condition"));
             }
+            agent->inSync = false;
             goto cleanup;
         }
     }
@@ -893,6 +898,9 @@ qemuAgentGuestSync(qemuAgentPtr agent)
     unsigned long long id;
     qemuAgentMessage sync_msg;
     int timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT;
+
+    if (agent->singleSync && agent->inSync)
+        return 0;
 
     /* if user specified a custom agent timeout that is lower than the
      * default timeout, use the shorter timeout instead */
@@ -938,6 +946,9 @@ qemuAgentGuestSync(qemuAgentPtr agent)
             goto cleanup;
         }
     }
+
+    if (agent->singleSync)
+        agent->inSync = true;
 
     ret = 0;
 

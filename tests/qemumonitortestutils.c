@@ -1407,7 +1407,8 @@ qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt)
     if (!(test->agent = qemuAgentOpen(test->vm,
                                       &src,
                                       virEventThreadGetContext(test->eventThread),
-                                      &qemuMonitorTestAgentCallbacks)))
+                                      &qemuMonitorTestAgentCallbacks,
+                                      false)))
         goto error;
 
     virObjectLock(test->agent);
