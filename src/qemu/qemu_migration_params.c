@@ -1086,7 +1086,7 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
     secAlias = qemuDomainGetSecretAESAlias(QEMU_MIGRATION_TLS_ALIAS_BASE, false);
 
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
-    qemuDomainSecretInfoFree(&QEMU_DOMAIN_PRIVATE(vm)->migSecinfo);
+    g_clear_pointer(&QEMU_DOMAIN_PRIVATE(vm)->migSecinfo, qemuDomainSecretInfoFree);
 
     VIR_FREE(tlsAlias);
     VIR_FREE(secAlias);

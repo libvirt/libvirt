@@ -1039,7 +1039,7 @@ void qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv);
 
 bool qemuDomainSupportsEncryptedSecret(qemuDomainObjPrivatePtr priv);
 
-void qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
+void qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr secinfo)
     ATTRIBUTE_NONNULL(1);
 
 void qemuDomainSecretInfoDestroy(qemuDomainSecretInfoPtr secinfo);

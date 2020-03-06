@@ -1100,14 +1100,10 @@ qemuDomainSecretInfoClear(qemuDomainSecretInfoPtr secinfo,
 
 
 void
-qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
+qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr secinfo)
 {
-    if (!*secinfo)
-        return;
-
-    qemuDomainSecretInfoClear(*secinfo, false);
-
-    VIR_FREE(*secinfo);
+    qemuDomainSecretInfoClear(secinfo, false);
+    g_free(secinfo);
 }
 
 
@@ -1197,8 +1193,8 @@ qemuDomainStorageSourcePrivateDispose(void *obj)
 {
     qemuDomainStorageSourcePrivatePtr priv = obj;
 
-    qemuDomainSecretInfoFree(&priv->secinfo);
-    qemuDomainSecretInfoFree(&priv->encinfo);
+    g_clear_pointer(&priv->secinfo, qemuDomainSecretInfoFree);
+    g_clear_pointer(&priv->encinfo, qemuDomainSecretInfoFree);
 }
 
 
@@ -1277,7 +1273,7 @@ qemuDomainChrSourcePrivateDispose(void *obj)
 {
     qemuDomainChrSourcePrivatePtr priv = obj;
 
-    qemuDomainSecretInfoFree(&priv->secinfo);
+    g_clear_pointer(&priv->secinfo, qemuDomainSecretInfoFree);
 }
 
 
@@ -1356,7 +1352,7 @@ qemuDomainGraphicsPrivateDispose(void *obj)
     qemuDomainGraphicsPrivatePtr priv = obj;
 
     VIR_FREE(priv->tlsAlias);
-    qemuDomainSecretInfoFree(&priv->secinfo);
+    g_clear_pointer(&priv->secinfo, qemuDomainSecretInfoFree);
 }
 
 
@@ -1632,7 +1628,7 @@ qemuDomainSecretInfoNewPlain(virSecretUsageType usageType,
         return NULL;
 
     if (qemuDomainSecretPlainSetup(secinfo, usageType, username, lookupDef) < 0) {
-        qemuDomainSecretInfoFree(&secinfo);
+        g_clear_pointer(&secinfo, qemuDomainSecretInfoFree);
         return NULL;
     }
 
@@ -1675,7 +1671,7 @@ qemuDomainSecretInfoNew(qemuDomainObjPrivatePtr priv,
 
     if (qemuDomainSecretAESSetup(priv, secinfo, srcAlias, usageType, username,
                                  lookupDef, isLuks) < 0) {
-        qemuDomainSecretInfoFree(&secinfo);
+        g_clear_pointer(&secinfo, qemuDomainSecretInfoFree);
         return NULL;
     }
 
@@ -1837,7 +1833,7 @@ qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
             srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
             if (srcPriv && srcPriv->secinfo)
-                qemuDomainSecretInfoFree(&srcPriv->secinfo);
+                g_clear_pointer(&srcPriv->secinfo, qemuDomainSecretInfoFree);
         }
     }
 }
@@ -1881,7 +1877,7 @@ qemuDomainSecretChardevDestroy(virDomainChrSourceDefPtr dev)
     if (!chrSourcePriv || !chrSourcePriv->secinfo)
         return;
 
-    qemuDomainSecretInfoFree(&chrSourcePriv->secinfo);
+    g_clear_pointer(&chrSourcePriv->secinfo, qemuDomainSecretInfoFree);
 }
 
 
@@ -1936,7 +1932,7 @@ qemuDomainSecretGraphicsDestroy(virDomainGraphicsDefPtr graphics)
         return;
 
     VIR_FREE(gfxPriv->tlsAlias);
-    qemuDomainSecretInfoFree(&gfxPriv->secinfo);
+    g_clear_pointer(&gfxPriv->secinfo, qemuDomainSecretInfoFree);
 }
 
 
@@ -2311,7 +2307,7 @@ qemuDomainObjPrivateFree(void *data)
     }
     VIR_FREE(priv->cleanupCallbacks);
 
-    qemuDomainSecretInfoFree(&priv->migSecinfo);
+    g_clear_pointer(&priv->migSecinfo, qemuDomainSecretInfoFree);
     qemuDomainMasterKeyFree(priv);
 
     virHashFree(priv->blockjobs);
