@@ -3278,16 +3278,23 @@ virStorageSourceParseBackingJSONUri(virStorageSourcePtr src,
     if (protocol == VIR_STORAGE_NET_PROTOCOL_HTTPS ||
         protocol == VIR_STORAGE_NET_PROTOCOL_FTPS) {
         if (virJSONValueObjectHasKey(json, "sslverify")) {
+            const char *tmpstr;
             bool tmp;
 
-            if (virJSONValueObjectGetBoolean(json, "sslverify", &tmp) < 0) {
-                virReportError(VIR_ERR_INVALID_ARG,
-                               _("malformed 'sslverify' field in backing store definition '%s'"),
-                               jsonstr);
-                return -1;
-            }
+            /* libguestfs still uses undocumented legacy value of 'off' */
+            if ((tmpstr = virJSONValueObjectGetString(json, "sslverify")) &&
+                STREQ(tmpstr, "off")) {
+                src->sslverify = VIR_TRISTATE_BOOL_NO;
+            } else {
+                if (virJSONValueObjectGetBoolean(json, "sslverify", &tmp) < 0) {
+                    virReportError(VIR_ERR_INVALID_ARG,
+                                   _("malformed 'sslverify' field in backing store definition '%s'"),
+                                   jsonstr);
+                    return -1;
+                }
 
-            src->sslverify = virTristateBoolFromBool(tmp);
+                src->sslverify = virTristateBoolFromBool(tmp);
+            }
         }
     }
 

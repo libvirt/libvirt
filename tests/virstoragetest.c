@@ -1622,6 +1622,21 @@ mymain(void)
                            "  <timeout seconds='2000'/>\n"
                            "</source>\n", 0);
 
+    TEST_BACKING_PARSE_FULL("json:{ \"file.cookie\": \"vmware_soap_session=\\\"0c8db85112873a79b7ef74f294cb70ef7f\\\"\","
+                                   "\"file.sslverify\": \"off\","
+                                   "\"file.driver\": \"https\","
+                                   "\"file.url\": \"https://host/folder/esx6.5-rhel7.7-x86%5f64/esx6.5-rhel7.7-x86%5f64-flat.vmdk?dcPath=data&dsName=esx6.5-matrix\","
+                                   "\"file.timeout\": 2000"
+                                 "}",
+                           "<source protocol='https' name='folder/esx6.5-rhel7.7-x86_64/esx6.5-rhel7.7-x86_64-flat.vmdk'>\n"
+                           "  <host name='host' port='443'/>\n"
+                           "  <ssl verify='no'/>\n"
+                           "  <cookies>\n"
+                           "    <cookie name='vmware_soap_session'>&quot;0c8db85112873a79b7ef74f294cb70ef7f&quot;</cookie>\n"
+                           "  </cookies>\n"
+                           "  <timeout seconds='2000'/>\n"
+                           "</source>\n", 0);
+
 #endif /* WITH_YAJL */
 
  cleanup:
