@@ -1751,8 +1751,8 @@ qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
 static int
 qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
                                      virStorageSourcePtr src,
-                                     const char *authalias,
-                                     const char *encalias)
+                                     const char *aliasprotocol,
+                                     const char *aliasformat)
 {
     qemuDomainStorageSourcePrivatePtr srcPriv;
     bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET);
@@ -1779,7 +1779,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
                                                             src->auth->username,
                                                             &src->auth->seclookupdef);
         } else {
-            srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv, authalias,
+            srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv, aliasprotocol,
                                                                   usageType,
                                                                   src->auth->username,
                                                                   &src->auth->seclookupdef,
@@ -1791,7 +1791,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
     }
 
     if (hasEnc) {
-        if (!(srcPriv->encinfo = qemuDomainSecretAESSetupFromSecret(priv, encalias,
+        if (!(srcPriv->encinfo = qemuDomainSecretAESSetupFromSecret(priv, aliasformat,
                                                                     VIR_SECRET_USAGE_TYPE_VOLUME,
                                                                     NULL,
                                                                     &src->encryption->secrets[0]->seclookupdef,
