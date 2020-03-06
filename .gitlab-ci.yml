@@ -25,39 +25,39 @@ stages:
     - /^ci-full-.*$/
 
 
-debian-9-cross-armv6l:
+armv6l-debian-9:
   <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-armv6l:latest
 
-debian-9-cross-mips64el:
+mips64el-debian-9:
   <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-mips64el:latest
 
-debian-9-cross-mips:
+mips-debian-9:
   <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-mips:latest
 
-debian-10-cross-aarch64:
+aarch64-debian-10:
   <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-10-cross-aarch64:latest
 
-debian-10-cross-ppc64le:
+ppc64le-debian-10:
   <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-10-cross-ppc64le:latest
 
-debian-10-cross-s390x:
+s390x-debian-10:
   <<: *cross_build_default_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-10-cross-s390x:latest
 
-debian-sid-cross-armv7l:
+armv7l-debian-sid:
   <<: *cross_build_default_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-armv7l:latest
 
-debian-sid-cross-i686:
+i686-debian-sid:
   <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-i686:latest
 
-debian-sid-cross-mipsel:
+mipsel-debian-sid:
   <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-mipsel:latest
 
