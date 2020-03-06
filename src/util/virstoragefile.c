@@ -3211,9 +3211,60 @@ virStorageSourceParseBackingJSONUriStr(virStorageSourcePtr src,
 
 
 static int
+virStorageSourceParseBackingJSONUriCookies(virStorageSourcePtr src,
+                                           virJSONValuePtr json,
+                                           const char *jsonstr)
+{
+    const char *cookiestr;
+    VIR_AUTOSTRINGLIST cookies = NULL;
+    size_t ncookies = 0;
+    size_t i;
+
+    if (!virJSONValueObjectHasKey(json, "cookie"))
+        return 0;
+
+    if (!(cookiestr = virJSONValueObjectGetString(json, "cookie"))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("wrong format of 'cookie' field in backing store definition '%s'"),
+                       jsonstr);
+        return -1;
+    }
+
+    if (!(cookies = virStringSplitCount(cookiestr, ";", 0, &ncookies)))
+        return -1;
+
+    src->cookies = g_new0(virStorageNetCookieDefPtr, ncookies);
+    src->ncookies = ncookies;
+
+    for (i = 0; i < ncookies; i++) {
+        char *cookiename = cookies[i];
+        char *cookievalue;
+
+        virSkipSpaces((const char **) &cookiename);
+
+        if (!(cookievalue = strchr(cookiename, '='))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("malformed http cookie '%s' in backing store definition '%s'"),
+                           cookies[i], jsonstr);
+            return -1;
+        }
+
+        *cookievalue = '\0';
+        cookievalue++;
+
+        src->cookies[i] = g_new0(virStorageNetCookieDef, 1);
+        src->cookies[i]->name = g_strdup(cookiename);
+        src->cookies[i]->value = g_strdup(cookievalue);
+    }
+
+    return 0;
+}
+
+
+static int
 virStorageSourceParseBackingJSONUri(virStorageSourcePtr src,
                                     virJSONValuePtr json,
-                                    const char *jsonstr G_GNUC_UNUSED,
+                                    const char *jsonstr,
                                     int protocol)
 {
     const char *uri;
@@ -3221,6 +3272,44 @@ virStorageSourceParseBackingJSONUri(virStorageSourcePtr src,
     if (!(uri = virJSONValueObjectGetString(json, "url"))) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("missing 'url' in JSON backing volume definition"));
+        return -1;
+    }
+
+    if (protocol == VIR_STORAGE_NET_PROTOCOL_HTTPS ||
+        protocol == VIR_STORAGE_NET_PROTOCOL_FTPS) {
+        if (virJSONValueObjectHasKey(json, "sslverify")) {
+            bool tmp;
+
+            if (virJSONValueObjectGetBoolean(json, "sslverify", &tmp) < 0) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("malformed 'sslverify' field in backing store definition '%s'"),
+                               jsonstr);
+                return -1;
+            }
+
+            src->sslverify = virTristateBoolFromBool(tmp);
+        }
+    }
+
+    if (protocol == VIR_STORAGE_NET_PROTOCOL_HTTPS ||
+        protocol == VIR_STORAGE_NET_PROTOCOL_HTTP) {
+        if (virStorageSourceParseBackingJSONUriCookies(src, json, jsonstr) < 0)
+            return -1;
+    }
+
+    if (virJSONValueObjectHasKey(json, "readahead") &&
+        virJSONValueObjectGetNumberUlong(json, "readahead", &src->readahead) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("malformed 'readahead' field in backing store definition '%s'"),
+                       jsonstr);
+        return -1;
+    }
+
+    if (virJSONValueObjectHasKey(json, "timeout") &&
+        virJSONValueObjectGetNumberUlong(json, "timeout", &src->timeout) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("malformed 'timeout' field in backing store definition '%s'"),
+                       jsonstr);
         return -1;
     }
 

@@ -917,6 +917,12 @@ mymain(void)
     TEST_JSON_FORMAT_NET("<source protocol='https' name='file'>\n"
                          "  <host name='example.com' port='432'/>\n"
                          "</source>\n");
+    TEST_JSON_FORMAT_NET("<source protocol='https' name='file'>\n"
+                         "  <host name='example.com' port='432'/>\n"
+                         "  <ssl verify='no'/>\n"
+                         "  <readahead size='1024'/>\n"
+                         "  <timeout seconds='1337'/>\n"
+                         "</source>\n");
     TEST_JSON_FORMAT_NET("<source protocol='gluster' name='vol/file'>\n"
                          "  <host name='example.com' port='24007'/>\n"
                          "</source>\n");
