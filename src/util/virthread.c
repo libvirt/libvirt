@@ -217,7 +217,6 @@ static void *virThreadHelper(void *data)
     } else {
         thname = g_strdup(local.name);
     }
-    g_free(local.name);
 
 #if defined(__linux__) || defined(WIN32)
     pthread_setname_np(pthread_self(), thname);
@@ -236,6 +235,7 @@ static void *virThreadHelper(void *data)
     if (!local.worker)
         virThreadJobClear(0);
 
+    g_free(local.name);
     return NULL;
 }
 
