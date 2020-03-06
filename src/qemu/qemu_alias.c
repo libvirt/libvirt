@@ -793,6 +793,23 @@ qemuDomainGetSecretAESAlias(const char *srcalias,
 }
 
 
+/* qemuAliasForSecret:
+ * @parentalias: alias of the parent object
+ * @obj: optional sub-object of the parent device the secret is for
+ *
+ * Generate alias for a secret object used by @parentalias device or one of
+ * the dependencies of the device described by @obj.
+ */
+char *
+qemuAliasForSecret(const char *parentalias,
+                   const char *obj)
+{
+    if (obj)
+        return g_strdup_printf("%s-%s-secret0", parentalias, obj);
+    else
+        return g_strdup_printf("%s-secret0", parentalias);
+}
+
 /* qemuAliasTLSObjFromSrcAlias
  * @srcAlias: Pointer to a source alias string
  *
