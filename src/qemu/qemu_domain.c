@@ -9031,16 +9031,14 @@ qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDefPtr disk,
     }
 
     if (restoreAuthSecret) {
-        if (!(authalias = qemuDomainGetSecretAESAlias(disk->info.alias, false)))
-            return -1;
+        authalias = g_strdup_printf("%s-secret0", disk->info.alias);
 
         if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->secinfo, &authalias) < 0)
             return -1;
     }
 
     if (restoreEncSecret) {
-        if (!(encalias = qemuDomainGetSecretAESAlias(disk->info.alias, true)))
-            return -1;
+        encalias = g_strdup_printf("%s-luks-secret0", disk->info.alias);
 
         if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->encinfo, &encalias) < 0)
             return -1;
