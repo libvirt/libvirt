@@ -1,0 +1,1769 @@
+{
+  "return": {
+    "model": {
+      "name": "base",
+      "props": {
+        "vmx-entry-load-rtit-ctl": false,
+        "phys-bits": 0,
+        "core-id": -1,
+        "xlevel": 2147483656,
+        "cmov": true,
+        "ia64": false,
+        "ssb-no": false,
+        "aes": true,
+        "vmx-apicv-xapic": true,
+        "mmx": true,
+        "arat": true,
+        "rdpid": false,
+        "vmx-page-walk-5": false,
+        "vmx-page-walk-4": true,
+        "vmx-desc-exit": true,
+        "gfni": false,
+        "ibrs-all": false,
+        "pause-filter": false,
+        "xsavec": true,
+        "intel-pt": false,
+        "vmx-cr8-store-exit": true,
+        "hv-frequencies": false,
+        "tsc-frequency": 0,
+        "vmx-rdseed-exit": true,
+        "xd": true,
+        "x-intel-pt-auto-level": true,
+        "hv-vendor-id": "",
+        "vmx-eptp-switching": true,
+        "kvm_asyncpf": true,
+        "kvm-asyncpf": true,
+        "perfctr_core": false,
+        "perfctr-core": false,
+        "mpx": true,
+        "avx512cd": false,
+        "pbe": false,
+        "decodeassists": false,
+        "vmx-exit-clear-bndcfgs": false,
+        "vmx-exit-load-efer": true,
+        "sse4_1": true,
+        "sse4-1": true,
+        "sse4.1": true,
+        "family": 6,
+        "legacy-cache": true,
+        "vmx-vmwrite-vmexit-fields": true,
+        "vmx-vnmi": true,
+        "vmx-true-ctls": true,
+        "host-phys-bits-limit": 0,
+        "vmx-ept-execonly": true,
+        "vmx-exit-save-efer": true,
+        "vmx-invept-all-context": true,
+        "vmware-cpuid-freq": true,
+        "wbnoinvd": false,
+        "avx512f": false,
+        "xcrypt": false,
+        "hv-runtime": false,
+        "hv-stimer-direct": false,
+        "mce": true,
+        "mca": true,
+        "msr": true,
+        "thread-id": -1,
+        "vmx-exit-load-pat": true,
+        "vmx-intr-exit": true,
+        "min-level": 22,
+        "vmx-flexpriority": true,
+        "xgetbv1": true,
+        "cid": false,
+        "hv-relaxed": false,
+        "avx512-bf16": false,
+        "ds": false,
+        "hv-crash": false,
+        "fxsr": true,
+        "vmx-cr8-load-exit": true,
+        "xsaveopt": true,
+        "vmx-apicv-vid": false,
+        "vmx-exit-save-pat": true,
+        "tsx-ctrl": false,
+        "xtpr": false,
+        "vmx-ple": false,
+        "hv-evmcs": false,
+        "avx512-vpopcntdq": false,
+        "phe": false,
+        "avx512vl": false,
+        "extapic": false,
+        "vmx-vmfunc": true,
+        "3dnowprefetch": true,
+        "vmx-activity-shutdown": false,
+        "avx512vbmi2": false,
+        "cr8legacy": false,
+        "vmx-encls-exit": false,
+        "stibp": true,
+        "vmx-msr-bitmap": true,
+        "cpuid-0xb": true,
+        "xcrypt-en": false,
+        "vmx-mwait-exit": true,
+        "kvm_pv_eoi": true,
+        "vmx-pml": true,
+        "apic-id": 4294967295,
+        "vmx-nmi-exit": true,
+        "vmx-invept-single-context-noglobals": true,
+        "pn": false,
+        "rsba": false,
+        "dca": false,
+        "vmx-unrestricted-guest": true,
+        "vendor": "GenuineIntel",
+        "hv-ipi": false,
+        "vmx-cr3-store-noexit": true,
+        "pku": false,
+        "smx": false,
+        "cmp-legacy": false,
+        "cmp_legacy": false,
+        "node-id": -1,
+        "avx512-4fmaps": false,
+        "vmcb_clean": false,
+        "vmcb-clean": false,
+        "hle": false,
+        "amd-no-ssb": false,
+        "3dnowext": false,
+        "npt": false,
+        "rdctl-no": false,
+        "vmx-invvpid": true,
+        "memory": "/machine/unattached/system[0]",
+        "clwb": false,
+        "lbrv": false,
+        "adx": true,
+        "ss": true,
+        "pni": true,
+        "svm_lock": false,
+        "svm-lock": false,
+        "pfthreshold": false,
+        "smap": true,
+        "smep": true,
+        "vmx-invpcid-exit": true,
+        "x2apic": true,
+        "avx512vnni": false,
+        "avx512vbmi": false,
+        "vmx-apicv-x2apic": true,
+        "hv-stimer": false,
+        "kvm-pv-sched-yield": true,
+        "vmx-invlpg-exit": true,
+        "x-hv-synic-kvm-only": false,
+        "vmx-invvpid-all-context": true,
+        "i64": true,
+        "vmx-activity-hlt": true,
+        "flushbyasid": false,
+        "f16c": true,
+        "vmx-exit-ack-intr": true,
+        "ace2-en": false,
+        "pae": true,
+        "pat": true,
+        "sse": true,
+        "die-id": -1,
+        "vmx-tsc-offset": true,
+        "phe-en": false,
+        "kvm_nopiodelay": true,
+        "kvm-nopiodelay": true,
+        "tm": false,
+        "kvmclock-stable-bit": true,
+        "vmx-rdtsc-exit": true,
+        "hypervisor": true,
+        "vmx-rdtscp-exit": true,
+        "socket-id": -1,
+        "mds-no": false,
+        "pcommit": false,
+        "vmx-vpid": true,
+        "syscall": true,
+        "level": 22,
+        "avx512dq": false,
+        "x-migrate-smi-count": true,
+        "svm": false,
+        "full-cpuid-auto-level": true,
+        "hv-reset": false,
+        "invtsc": false,
+        "vmx-monitor-exit": true,
+        "sse3": true,
+        "sse2": true,
+        "ssbd": true,
+        "vmx-wbinvd-exit": true,
+        "est": false,
+        "kvm-poll-control": true,
+        "kvm_poll_control": true,
+        "avx512ifma": false,
+        "tm2": false,
+        "kvm-pv-eoi": true,
+        "kvm-pv-ipi": true,
+        "cx8": true,
+        "vmx-invvpid-single-addr": true,
+        "waitpkg": false,
+        "cldemote": false,
+        "vmx-ept": true,
+        "hv-reenlightenment": false,
+        "kvm_mmu": false,
+        "kvm-mmu": false,
+        "sse4-2": true,
+        "sse4.2": true,
+        "sse4_2": true,
+        "pge": true,
+        "fill-mtrr-mask": true,
+        "avx512bitalg": false,
+        "vmx-entry-load-bndcfgs": false,
+        "nodeid_msr": false,
+        "pdcm": false,
+        "vmx-exit-clear-rtit-ctl": false,
+        "model": 142,
+        "movbe": true,
+        "nrip_save": false,
+        "nrip-save": false,
+        "vmx-pause-exit": true,
+        "ssse3": true,
+        "kvm_pv_unhalt": true,
+        "sse4a": false,
+        "invpcid": true,
+        "pdpe1gb": true,
+        "tsc-deadline": true,
+        "skip-l1dfl-vmentry": true,
+        "vmx-exit-load-perf-global-ctrl": false,
+        "fma": true,
+        "cx16": true,
+        "de": true,
+        "enforce": false,
+        "stepping": 10,
+        "xsave": true,
+        "clflush": true,
+        "skinit": false,
+        "tsc": true,
+        "tce": false,
+        "fpu": true,
+        "ds-cpl": false,
+        "ds_cpl": false,
+        "ibs": false,
+        "fma4": false,
+        "host-phys-bits": false,
+        "vmx-exit-nosave-debugctl": true,
+        "vmx-invept": true,
+        "la57": false,
+        "osvw": false,
+        "check": true,
+        "hv-spinlocks": 4294967295,
+        "vmx-eptad": true,
+        "pmu": false,
+        "vmx-entry-noload-debugctl": true,
+        "pmm": false,
+        "apic": true,
+        "spec-ctrl": true,
+        "vmx-posted-intr": false,
+        "vmx-apicv-register": false,
+        "min-xlevel2": 0,
+        "tsc-adjust": true,
+        "tsc_adjust": true,
+        "kvm-steal-time": true,
+        "kvm_steal_time": true,
+        "kvmclock": true,
+        "vmx-zero-len-inject": false,
+        "l3-cache": true,
+        "pschange-mc-no": true,
+        "vmx-rdrand-exit": true,
+        "lwp": false,
+        "hv-passthrough": false,
+        "amd-ssbd": false,
+        "ibpb": false,
+        "xop": false,
+        "core-capability": false,
+        "avx": true,
+        "vmx-invept-single-context": true,
+        "movdiri": false,
+        "avx512bw": false,
+        "acpi": false,
+        "ace2": false,
+        "fsgsbase": true,
+        "hv-vapic": false,
+        "vmx-ept-1gb": true,
+        "vmx-ept-2mb": true,
+        "ht": false,
+        "vmx-io-exit": true,
+        "nx": true,
+        "pclmulqdq": true,
+        "mmxext": false,
+        "popcnt": true,
+        "vaes": false,
+        "xsaves": true,
+        "movdir64b": false,
+        "vmx-shadow-vmcs": true,
+        "tcg-cpuid": true,
+        "lm": true,
+        "vmx-exit-save-preemption-timer": true,
+        "vmx-entry-load-pat": true,
+        "vmx-entry-load-perf-global-ctrl": false,
+        "vmx-io-bitmap": true,
+        "vmx-store-lma": true,
+        "umip": true,
+        "vmx-movdr-exit": true,
+        "avx2": true,
+        "pse": true,
+        "pclmuldq": true,
+        "sep": true,
+        "vmx-cr3-load-noexit": true,
+        "virt-ssbd": false,
+        "x-hv-max-vps": -1,
+        "nodeid-msr": false,
+        "md-clear": true,
+        "split-lock-detect": false,
+        "kvm": true,
+        "misalignsse": false,
+        "min-xlevel": 2147483656,
+        "realized": false,
+        "kvm-pv-unhalt": true,
+        "bmi2": true,
+        "bmi1": true,
+        "tsc_scale": false,
+        "tsc-scale": false,
+        "topoext": false,
+        "hv-vpindex": false,
+        "hv-no-nonarch-coresharing": "off",
+        "vmx-preemption-timer": true,
+        "xlevel2": 0,
+        "clflushopt": true,
+        "vmx-vnmi-pending": true,
+        "kvm-no-smi-migration": false,
+        "monitor": false,
+        "vmx-vintr-pending": true,
+        "avx512er": false,
+        "pmm-en": false,
+        "taa-no": false,
+        "pcid": true,
+        "vmx-secondary-ctls": true,
+        "arch-capabilities": true,
+        "vmx-xsaves": true,
+        "clzero": false,
+        "3dnow": false,
+        "erms": true,
+        "x-force-features": false,
+        "vmx-entry-ia32e-mode": true,
+        "lahf-lm": true,
+        "lahf_lm": true,
+        "vmx-ins-outs": true,
+        "vpclmulqdq": false,
+        "xstore": false,
+        "fxsr-opt": false,
+        "fxsr_opt": false,
+        "hv-synic": false,
+        "rtm": false,
+        "kvm-hint-dedicated": false,
+        "lmce": true,
+        "hv-time": false,
+        "perfctr_nb": false,
+        "perfctr-nb": false,
+        "hv-tlbflush": false,
+        "ffxsr": false,
+        "rdrand": true,
+        "rdseed": true,
+        "avx512-4vnniw": false,
+        "vme": true,
+        "vmx": true,
+        "dtes64": false,
+        "mtrr": true,
+        "rdtscp": true,
+        "xsaveerptr": false,
+        "pse36": true,
+        "kvm-pv-tlb-flush": true,
+        "vmx-activity-wait-sipi": false,
+        "tbm": false,
+        "vmx-rdpmc-exit": true,
+        "wdt": false,
+        "vmx-entry-load-efer": true,
+        "level-func7": 0,
+        "vmx-mtf": true,
+        "pause_filter": false,
+        "model-id": "Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz",
+        "sha-ni": false,
+        "abm": true,
+        "vmx-ept-advanced-exitinfo": false,
+        "avx512pf": false,
+        "vmx-hlt-exit": true,
+        "xstore-en": false
+      }
+    }
+  },
+  "id": "model-expansion"
+}
+
+{
+  "return": [
+    {
+      "name": "max",
+      "typename": "max-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": false
+    },
+    {
+      "name": "host",
+      "typename": "host-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": false
+    },
+    {
+      "name": "base",
+      "typename": "base-x86_64-cpu",
+      "unavailable-features": [],
+      "static": true,
+      "migration-safe": true
+    },
+    {
+      "name": "qemu64-v1",
+      "typename": "qemu64-v1-x86_64-cpu",
+      "unavailable-features": [
+        "svm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "qemu64",
+      "typename": "qemu64-x86_64-cpu",
+      "unavailable-features": [
+        "svm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "qemu32-v1",
+      "typename": "qemu32-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "qemu32",
+      "typename": "qemu32-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "phenom-v1",
+      "typename": "phenom-v1-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "fxsr-opt",
+        "3dnowext",
+        "3dnow",
+        "svm",
+        "sse4a",
+        "npt"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "phenom",
+      "typename": "phenom-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "fxsr-opt",
+        "3dnowext",
+        "3dnow",
+        "svm",
+        "sse4a",
+        "npt"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "pentium3-v1",
+      "typename": "pentium3-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "pentium3",
+      "typename": "pentium3-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "pentium2-v1",
+      "typename": "pentium2-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "pentium2",
+      "typename": "pentium2-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "pentium-v1",
+      "typename": "pentium-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "pentium",
+      "typename": "pentium-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "n270-v1",
+      "typename": "n270-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "n270",
+      "typename": "n270-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "kvm64-v1",
+      "typename": "kvm64-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "kvm64",
+      "typename": "kvm64-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "kvm32-v1",
+      "typename": "kvm32-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "kvm32",
+      "typename": "kvm32-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "coreduo-v1",
+      "typename": "coreduo-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "coreduo",
+      "typename": "coreduo-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "core2duo-v1",
+      "typename": "core2duo-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "core2duo",
+      "typename": "core2duo-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "athlon-v1",
+      "typename": "athlon-v1-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "3dnowext",
+        "3dnow"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "athlon",
+      "typename": "athlon-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "3dnowext",
+        "3dnow"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Westmere-v2",
+      "typename": "Westmere-v2-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Westmere-v1",
+      "typename": "Westmere-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Westmere-IBRS",
+      "typename": "Westmere-IBRS-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Westmere",
+      "typename": "Westmere-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Snowridge-v2",
+      "typename": "Snowridge-v2-x86_64-cpu",
+      "unavailable-features": [
+        "clwb",
+        "sha-ni",
+        "gfni",
+        "cldemote",
+        "movdiri",
+        "movdir64b",
+        "core-capability",
+        "split-lock-detect"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Snowridge-v1",
+      "typename": "Snowridge-v1-x86_64-cpu",
+      "unavailable-features": [
+        "clwb",
+        "sha-ni",
+        "gfni",
+        "cldemote",
+        "movdiri",
+        "movdir64b",
+        "core-capability",
+        "split-lock-detect"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Snowridge",
+      "typename": "Snowridge-x86_64-cpu",
+      "unavailable-features": [
+        "clwb",
+        "sha-ni",
+        "gfni",
+        "cldemote",
+        "movdiri",
+        "movdir64b",
+        "core-capability",
+        "split-lock-detect"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Server-v3",
+      "typename": "Skylake-Server-v3-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Server-v2",
+      "typename": "Skylake-Server-v2-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Server-v1",
+      "typename": "Skylake-Server-v1-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Server-noTSX-IBRS",
+      "typename": "Skylake-Server-noTSX-IBRS-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Server-IBRS",
+      "typename": "Skylake-Server-IBRS-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Server",
+      "typename": "Skylake-Server-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Client-v3",
+      "typename": "Skylake-Client-v3-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Client-v2",
+      "typename": "Skylake-Client-v2-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Client-v1",
+      "typename": "Skylake-Client-v1-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Client-noTSX-IBRS",
+      "typename": "Skylake-Client-noTSX-IBRS-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Client-IBRS",
+      "typename": "Skylake-Client-IBRS-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Client",
+      "typename": "Skylake-Client-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "SandyBridge-v2",
+      "typename": "SandyBridge-v2-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "SandyBridge-v1",
+      "typename": "SandyBridge-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "SandyBridge-IBRS",
+      "typename": "SandyBridge-IBRS-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "SandyBridge",
+      "typename": "SandyBridge-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Penryn-v1",
+      "typename": "Penryn-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Penryn",
+      "typename": "Penryn-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G5-v1",
+      "typename": "Opteron_G5-v1-x86_64-cpu",
+      "unavailable-features": [
+        "svm",
+        "sse4a",
+        "misalignsse",
+        "xop",
+        "fma4",
+        "tbm",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G5",
+      "typename": "Opteron_G5-x86_64-cpu",
+      "unavailable-features": [
+        "svm",
+        "sse4a",
+        "misalignsse",
+        "xop",
+        "fma4",
+        "tbm",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G4-v1",
+      "typename": "Opteron_G4-v1-x86_64-cpu",
+      "unavailable-features": [
+        "svm",
+        "sse4a",
+        "misalignsse",
+        "xop",
+        "fma4",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G4",
+      "typename": "Opteron_G4-x86_64-cpu",
+      "unavailable-features": [
+        "svm",
+        "sse4a",
+        "misalignsse",
+        "xop",
+        "fma4",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G3-v1",
+      "typename": "Opteron_G3-v1-x86_64-cpu",
+      "unavailable-features": [
+        "svm",
+        "sse4a",
+        "misalignsse"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G3",
+      "typename": "Opteron_G3-x86_64-cpu",
+      "unavailable-features": [
+        "svm",
+        "sse4a",
+        "misalignsse"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G2-v1",
+      "typename": "Opteron_G2-v1-x86_64-cpu",
+      "unavailable-features": [
+        "svm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G2",
+      "typename": "Opteron_G2-x86_64-cpu",
+      "unavailable-features": [
+        "svm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G1-v1",
+      "typename": "Opteron_G1-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G1",
+      "typename": "Opteron_G1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Nehalem-v2",
+      "typename": "Nehalem-v2-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Nehalem-v1",
+      "typename": "Nehalem-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Nehalem-IBRS",
+      "typename": "Nehalem-IBRS-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Nehalem",
+      "typename": "Nehalem-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "KnightsMill-v1",
+      "typename": "KnightsMill-v1-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512pf",
+        "avx512er",
+        "avx512cd",
+        "avx512-vpopcntdq",
+        "avx512-4vnniw",
+        "avx512-4fmaps",
+        "avx512f",
+        "avx512f",
+        "avx512f"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "KnightsMill",
+      "typename": "KnightsMill-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512pf",
+        "avx512er",
+        "avx512cd",
+        "avx512-vpopcntdq",
+        "avx512-4vnniw",
+        "avx512-4fmaps",
+        "avx512f",
+        "avx512f",
+        "avx512f"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "IvyBridge-v2",
+      "typename": "IvyBridge-v2-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "IvyBridge-v1",
+      "typename": "IvyBridge-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "IvyBridge-IBRS",
+      "typename": "IvyBridge-IBRS-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "IvyBridge",
+      "typename": "IvyBridge-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Server-v2",
+      "typename": "Icelake-Server-v2-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "la57",
+        "wbnoinvd",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Server-v1",
+      "typename": "Icelake-Server-v1-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "la57",
+        "wbnoinvd",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Server-noTSX",
+      "typename": "Icelake-Server-noTSX-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "la57",
+        "wbnoinvd",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Server",
+      "typename": "Icelake-Server-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "la57",
+        "wbnoinvd",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Client-v2",
+      "typename": "Icelake-Client-v2-x86_64-cpu",
+      "unavailable-features": [
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "wbnoinvd",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Client-v1",
+      "typename": "Icelake-Client-v1-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "wbnoinvd",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Client-noTSX",
+      "typename": "Icelake-Client-noTSX-x86_64-cpu",
+      "unavailable-features": [
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "wbnoinvd",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Client",
+      "typename": "Icelake-Client-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "wbnoinvd",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell-v4",
+      "typename": "Haswell-v4-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell-v3",
+      "typename": "Haswell-v3-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell-v2",
+      "typename": "Haswell-v2-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell-v1",
+      "typename": "Haswell-v1-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell-noTSX-IBRS",
+      "typename": "Haswell-noTSX-IBRS-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell-noTSX",
+      "typename": "Haswell-noTSX-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell-IBRS",
+      "typename": "Haswell-IBRS-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell",
+      "typename": "Haswell-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "EPYC-v2",
+      "typename": "EPYC-v2-x86_64-cpu",
+      "unavailable-features": [
+        "sha-ni",
+        "mmxext",
+        "fxsr-opt",
+        "svm",
+        "cr8legacy",
+        "sse4a",
+        "misalignsse",
+        "osvw",
+        "ibpb",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "EPYC-v1",
+      "typename": "EPYC-v1-x86_64-cpu",
+      "unavailable-features": [
+        "sha-ni",
+        "mmxext",
+        "fxsr-opt",
+        "svm",
+        "cr8legacy",
+        "sse4a",
+        "misalignsse",
+        "osvw",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "EPYC-IBPB",
+      "typename": "EPYC-IBPB-x86_64-cpu",
+      "unavailable-features": [
+        "sha-ni",
+        "mmxext",
+        "fxsr-opt",
+        "svm",
+        "cr8legacy",
+        "sse4a",
+        "misalignsse",
+        "osvw",
+        "ibpb",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "EPYC",
+      "typename": "EPYC-x86_64-cpu",
+      "unavailable-features": [
+        "sha-ni",
+        "mmxext",
+        "fxsr-opt",
+        "svm",
+        "cr8legacy",
+        "sse4a",
+        "misalignsse",
+        "osvw",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Dhyana-v1",
+      "typename": "Dhyana-v1-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "fxsr-opt",
+        "svm",
+        "cr8legacy",
+        "sse4a",
+        "misalignsse",
+        "osvw",
+        "ibpb",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Dhyana",
+      "typename": "Dhyana-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "fxsr-opt",
+        "svm",
+        "cr8legacy",
+        "sse4a",
+        "misalignsse",
+        "osvw",
+        "ibpb",
+        "npt",
+        "nrip-save"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Denverton-v1",
+      "typename": "Denverton-v1-x86_64-cpu",
+      "unavailable-features": [
+        "sha-ni",
+        "rdctl-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Denverton",
+      "typename": "Denverton-x86_64-cpu",
+      "unavailable-features": [
+        "sha-ni",
+        "rdctl-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Cooperlake-v1",
+      "typename": "Cooperlake-v1-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "avx512-bf16",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "rdctl-no",
+        "ibrs-all",
+        "mds-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Cooperlake",
+      "typename": "Cooperlake-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "avx512-bf16",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "rdctl-no",
+        "ibrs-all",
+        "mds-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Conroe-v1",
+      "typename": "Conroe-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Conroe",
+      "typename": "Conroe-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Cascadelake-Server-v3",
+      "typename": "Cascadelake-Server-v3-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "rdctl-no",
+        "ibrs-all",
+        "mds-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Cascadelake-Server-v2",
+      "typename": "Cascadelake-Server-v2-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "rdctl-no",
+        "ibrs-all",
+        "mds-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Cascadelake-Server-v1",
+      "typename": "Cascadelake-Server-v1-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Cascadelake-Server-noTSX",
+      "typename": "Cascadelake-Server-noTSX-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "rdctl-no",
+        "ibrs-all",
+        "mds-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Cascadelake-Server",
+      "typename": "Cascadelake-Server-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell-v4",
+      "typename": "Broadwell-v4-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell-v3",
+      "typename": "Broadwell-v3-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell-v2",
+      "typename": "Broadwell-v2-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell-v1",
+      "typename": "Broadwell-v1-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell-noTSX-IBRS",
+      "typename": "Broadwell-noTSX-IBRS-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell-noTSX",
+      "typename": "Broadwell-noTSX-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell-IBRS",
+      "typename": "Broadwell-IBRS-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell",
+      "typename": "Broadwell-x86_64-cpu",
+      "unavailable-features": [
+        "hle",
+        "rtm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "486-v1",
+      "typename": "486-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "486",
+      "typename": "486-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    }
+  ],
+  "id": "definitions"
+}
