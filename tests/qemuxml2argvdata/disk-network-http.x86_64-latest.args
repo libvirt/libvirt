@@ -29,13 +29,15 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -blockdev '{"driver":"http","url":"http://example.org:80/test.img",\
-"node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
+"timeout":1234,"node-name":"libvirt-4-storage","auto-read-only":true,\
+"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw",\
 "file":"libvirt-4-storage"}' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=libvirt-4-format,\
 id=virtio-disk0,bootindex=1 \
 -blockdev '{"driver":"https","url":"https://example.org:443/test2.img",\
-"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+"readahead":1024,"node-name":"libvirt-3-storage","auto-read-only":true,\
+"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw",\
 "file":"libvirt-3-storage"}' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=libvirt-3-format,\

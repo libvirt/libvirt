@@ -722,6 +722,8 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
                                           "S:password-secret", passwordalias,
                                           "T:sslverify", src->sslverify,
                                           "S:cookie-secret", cookiealias,
+                                          "P:timeout", src->timeout,
+                                          "P:readahead", src->readahead,
                                           NULL));
 
     return ret;

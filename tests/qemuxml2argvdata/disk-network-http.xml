@@ -17,6 +17,7 @@
       <driver name='qemu' type='raw'/>
       <source protocol='http' name='test.img'>
         <host name='example.org'/>
+        <timeout seconds='1234'/>
       </source>
       <target dev='vda' bus='virtio'/>
     </disk>
@@ -24,6 +25,7 @@
       <driver name='qemu' type='raw'/>
       <source protocol='https' name='test2.img'>
         <host name='example.org'/>
+        <readahead size='1024'/>
       </source>
       <target dev='vdb' bus='virtio'/>
     </disk>
