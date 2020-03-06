@@ -1734,10 +1734,8 @@ qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,
 {
     qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
-    qemuBlockStorageSourceAttachDataPtr ret = NULL;
 
-    if (VIR_ALLOC(data) < 0)
-        goto cleanup;
+    data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
     if (driveAlias) {
         data->driveAlias = g_steal_pointer(&driveAlias);
@@ -1771,11 +1769,7 @@ qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,
             data->encryptsecretAlias = g_strdup(srcpriv->encinfo->s.aes.alias);
     }
 
-    ret = g_steal_pointer(&data);
-
- cleanup:
-    VIR_FREE(driveAlias);
-    return ret;
+    return g_steal_pointer(&data);
 }
 
 
