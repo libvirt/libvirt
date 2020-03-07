@@ -1114,7 +1114,9 @@ int virNetServerClientInit(virNetServerClientPtr client)
                                   client->tls);
 
         /* Begin the TLS handshake. */
+        virObjectLock(client->tlsCtxt);
         ret = virNetTLSSessionHandshake(client->tls);
+        virObjectUnlock(client->tlsCtxt);
         if (ret == 0) {
             /* Unlikely, but ...  Next step is to check the certificate. */
             if (virNetServerClientCheckAccess(client) < 0)
@@ -1435,7 +1437,9 @@ virNetServerClientDispatchHandshake(virNetServerClientPtr client)
 {
     int ret;
     /* Continue the handshake. */
+    virObjectLock(client->tlsCtxt);
     ret = virNetTLSSessionHandshake(client->tls);
+    virObjectUnlock(client->tlsCtxt);
     if (ret == 0) {
         /* Finished.  Next step is to check the certificate. */
         if (virNetServerClientCheckAccess(client) < 0)
