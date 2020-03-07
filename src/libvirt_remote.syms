@@ -137,6 +137,7 @@ virNetServerSetClientLimits;
 virNetServerSetThreadPoolParameters;
 virNetServerSetTLSContext;
 virNetServerUpdateServices;
+virNetServerUpdateTlsFiles;
 
 
 # rpc/virnetserverclient.h

@@ -28,6 +28,7 @@
 #include "virthread.h"
 #include "virthreadpool.h"
 #include "virstring.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
@@ -1202,6 +1203,55 @@ virNetServerSetClientLimits(virNetServerPtr srv,
 
     ret = 0;
  cleanup:
+    virObjectUnlock(srv);
+    return ret;
+}
+
+static virNetTLSContextPtr
+virNetServerGetTLSContext(virNetServerPtr srv)
+{
+    size_t i;
+    virNetTLSContextPtr ctxt = NULL;
+    virNetServerServicePtr svc = NULL;
+
+    /* find svcTLS from srv, get svcTLS->tls */
+    for (i = 0; i < srv->nservices; i++) {
+        svc = srv->services[i];
+        ctxt = virNetServerServiceGetTLSContext(svc);
+        if (ctxt != NULL)
+            break;
+    }
+
+    return ctxt;
+}
+
+int
+virNetServerUpdateTlsFiles(virNetServerPtr srv)
+{
+    int ret = -1;
+    virNetTLSContextPtr ctxt = NULL;
+    bool privileged = geteuid() == 0 ? true : false;
+
+    ctxt = virNetServerGetTLSContext(srv);
+    if (!ctxt) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no tls service found, unable to update tls files"));
+        return -1;
+    }
+
+    virObjectLock(srv);
+    virObjectLock(ctxt);
+
+    if (virNetTLSContextReloadForServer(ctxt, !privileged)) {
+        VIR_DEBUG("failed to reload server's tls context");
+        goto cleanup;
+    }
+
+    VIR_DEBUG("update tls files success");
+    ret = 0;
+
+ cleanup:
+    virObjectUnlock(ctxt);
     virObjectUnlock(srv);
     return ret;
 }

@@ -919,6 +919,52 @@ virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
 }
 
 
+int virNetTLSContextReloadForServer(virNetTLSContextPtr ctxt,
+                                    bool tryUserPkiPath)
+{
+    gnutls_certificate_credentials_t x509credBak;
+    int err;
+    char *cacert = NULL;
+    char *cacrl = NULL;
+    char *cert = NULL;
+    char *key = NULL;
+
+    x509credBak = ctxt->x509cred;
+    ctxt->x509cred = NULL;
+
+    if (virNetTLSContextLocateCredentials(NULL, tryUserPkiPath, true,
+                                          &cacert, &cacrl, &cert, &key))
+        goto error;
+
+    err = gnutls_certificate_allocate_credentials(&ctxt->x509cred);
+    if (err) {
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("Unable to allocate x509 credentials: %s"),
+                       gnutls_strerror(err));
+        goto error;
+    }
+
+    if (virNetTLSContextSanityCheckCredentials(true, cacert, cert))
+        goto error;
+
+    if (virNetTLSContextLoadCredentials(ctxt, true, cacert, cacrl, cert, key))
+        goto error;
+
+    gnutls_certificate_set_dh_params(ctxt->x509cred,
+                                     ctxt->dhParams);
+
+    gnutls_certificate_free_credentials(x509credBak);
+
+    return 0;
+
+ error:
+    if (ctxt->x509cred)
+        gnutls_certificate_free_credentials(ctxt->x509cred);
+    ctxt->x509cred = x509credBak;
+    return -1;
+}
+
+
 virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
                                               const char *cacrl,
                                               const char *cert,

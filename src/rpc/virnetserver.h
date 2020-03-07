@@ -133,3 +133,5 @@ size_t virNetServerGetCurrentUnauthClients(virNetServerPtr srv);
 int virNetServerSetClientLimits(virNetServerPtr srv,
                                 long long int maxClients,
                                 long long int maxClientsUnauth);
+
+int virNetServerUpdateTlsFiles(virNetServerPtr srv);

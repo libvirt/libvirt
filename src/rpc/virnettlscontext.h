@@ -62,6 +62,9 @@ virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
                                               bool sanityCheckCert,
                                               bool requireValidCert);
 
+int virNetTLSContextReloadForServer(virNetTLSContextPtr ctxt,
+                                    bool tryUserPkiPath);
+
 int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
                                      virNetTLSSessionPtr sess);
 
