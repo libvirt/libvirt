@@ -442,6 +442,22 @@ Set new client-related limits on *server*.
   *--max-clients*.
 
 
+server-update-tls
+-----------------
+
+**Syntax:**
+
+.. code-block::
+
+   server-update-tls server
+
+Update tls context on *server*.
+
+- *server*
+
+  Available servers on a daemon. Currently only supports 'libvirtd'.
+
+
 CLIENT COMMANDS
 ===============
 
