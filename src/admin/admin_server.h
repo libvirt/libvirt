@@ -67,3 +67,6 @@ int adminServerSetClientLimits(virNetServerPtr srv,
                                virTypedParameterPtr params,
                                int nparams,
                                unsigned int flags);
+
+int adminServerUpdateTlsFiles(virNetServerPtr srv,
+                              unsigned int flags);

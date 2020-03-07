@@ -402,6 +402,9 @@ int virAdmServerSetClientLimits(virAdmServerPtr srv,
                                 int nparams,
                                 unsigned int flags);
 
+int virAdmServerUpdateTlsFiles(virAdmServerPtr srv,
+                               unsigned int flags);
+
 int virAdmConnectGetLoggingOutputs(virAdmConnectPtr conn,
                                    char **outputs,
                                    unsigned int flags);

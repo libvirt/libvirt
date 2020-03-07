@@ -367,3 +367,12 @@ adminServerSetClientLimits(virNetServerPtr srv,
 
     return 0;
 }
+
+int
+adminServerUpdateTlsFiles(virNetServerPtr srv,
+                          unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    return virNetServerUpdateTlsFiles(srv);
+}

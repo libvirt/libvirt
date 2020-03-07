@@ -31,6 +31,7 @@ xdr_admin_server_lookup_client_args;
 xdr_admin_server_lookup_client_ret;
 xdr_admin_server_set_client_limits_args;
 xdr_admin_server_set_threadpool_parameters_args;
+xdr_admin_server_update_tls_files_args;
 
 # datatypes.h
 virAdmClientClass;

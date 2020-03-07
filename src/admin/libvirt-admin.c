@@ -1079,6 +1079,36 @@ virAdmServerSetClientLimits(virAdmServerPtr srv,
 }
 
 /**
+ * virAdmServerUpdateTlsFiles:
+ * @srv: a valid server object reference
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Notify server to update tls file, such as cacert, cacrl, server cert / key.
+ *
+ * Returns 0 if the TLS files have been updated successfully or -1 in case of an
+ * error.
+ */
+int
+virAdmServerUpdateTlsFiles(virAdmServerPtr srv,
+                           unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("srv=%p, flags=0x%x", srv, flags);
+    virResetLastError();
+
+    virCheckAdmServerGoto(srv, error);
+
+    if ((ret = remoteAdminServerUpdateTlsFiles(srv, flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return ret;
+}
+
+/**
  * virAdmConnectGetLoggingOutputs:
  * @conn: pointer to an active admin connection
  * @outputs: pointer to a variable to store a string containing all currently

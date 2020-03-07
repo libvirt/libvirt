@@ -118,6 +118,10 @@ struct admin_server_set_client_limits_args {
         } params;
         u_int                      flags;
 };
+struct admin_server_update_tls_files_args {
+        admin_nonnull_server       srv;
+        u_int                      flags;
+};
 struct admin_connect_get_logging_outputs_args {
         u_int                      flags;
 };
@@ -158,4 +162,5 @@ enum admin_procedure {
         ADMIN_PROC_CONNECT_GET_LOGGING_FILTERS = 15,
         ADMIN_PROC_CONNECT_SET_LOGGING_OUTPUTS = 16,
         ADMIN_PROC_CONNECT_SET_LOGGING_FILTERS = 17,
+        ADMIN_PROC_SERVER_UPDATE_TLS_FILES = 18,
 };
