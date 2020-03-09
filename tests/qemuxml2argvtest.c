@@ -1092,6 +1092,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_TLS_CREDS_X509, QEMU_CAPS_NBD_TLS);
     DO_TEST_CAPS_VER("disk-network-tlsx509", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509");
+    DO_TEST_CAPS_LATEST("disk-network-http");
     driver.config->vxhsTLS = 0;
     VIR_FREE(driver.config->vxhsTLSx509certdir);
     DO_TEST("disk-no-boot", NONE);
