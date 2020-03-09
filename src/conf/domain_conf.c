@@ -31856,7 +31856,7 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
     }
 
     if (def->startupPolicy != 0 &&
-        virStorageSourceGetActualType(def->src) != VIR_STORAGE_VOL_FILE) {
+        virStorageSourceGetActualType(def->src) != VIR_STORAGE_TYPE_FILE) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("'startupPolicy' is only valid for "
                          "'file' type volume"));
