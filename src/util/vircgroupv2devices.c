@@ -55,7 +55,7 @@ virCgroupV2DevicesAvailable(virCgroupPtr group)
     }
 
     if (virBPFQueryProg(cgroupfd, 0, BPF_CGROUP_DEVICE, &progCnt, NULL) < 0) {
-        VIR_DEBUG("failed to query cgroup progs");
+        VIR_DEBUG("failed to query cgroup progs: %s", g_strerror(errno));
         return false;
     }
 
