@@ -2352,6 +2352,7 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     qemuDomainStorageSourcePrivatePtr priv;
     g_autofree char *authalias = NULL;
     g_autofree char *encalias = NULL;
+    g_autofree char *httpcookiealias = NULL;
 
     src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
@@ -2365,8 +2366,9 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
 
     authalias = virXPathString("string(./objects/secret[@type='auth']/@alias)", ctxt);
     encalias = virXPathString("string(./objects/secret[@type='encryption']/@alias)", ctxt);
+    httpcookiealias = virXPathString("string(./objects/secret[@type='httpcookie']/@alias)", ctxt);
 
-    if (authalias || encalias) {
+    if (authalias || encalias || httpcookiealias) {
         if (!src->privateData &&
             !(src->privateData = qemuDomainStorageSourcePrivateNew()))
             return -1;
@@ -2377,6 +2379,9 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
             return -1;
 
         if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->encinfo, &encalias) < 0)
+            return -1;
+
+        if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->httpcookie, &httpcookiealias) < 0)
             return -1;
     }
 
@@ -2428,6 +2433,7 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
     if (srcPriv) {
         qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->secinfo, "auth");
         qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->encinfo, "encryption");
+        qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->httpcookie, "httpcookie");
     }
 
     if (src->tlsAlias)

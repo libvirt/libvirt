@@ -463,6 +463,9 @@ struct _qemuDomainStorageSourcePrivate {
 
     /* data required for decryption of encrypted storage source */
     qemuDomainSecretInfoPtr encinfo;
+
+    /* secure passthrough of the http cookie */
+    qemuDomainSecretInfoPtr httpcookie;
 };
 
 virObjectPtr qemuDomainStorageSourcePrivateNew(void);
