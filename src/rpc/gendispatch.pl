@@ -171,7 +171,13 @@ sub get_conn_method {
     if ($proc =~ /Connect.*Network/) {
         return "remoteGetNetworkConn";
     }
-    if ($proc =~ /Node.*Device/) {
+    # Carefully whitelist a few APIs with NodeDevice name
+    # prefix which actually get handled by the virt drivers
+    if ($proc =~ /Node.*Device/ &&
+        !($proc =~ /NodeDeviceReset/ ||
+          $proc =~ /NodeDeviceReAttach/ ||
+          $proc =~ /NodeDeviceDettach/ ||
+          $proc =~ /NodeDeviceDetachFlags/)) {
         return "remoteGetNodeDevConn";
     }
     if ($proc =~ /Connect.*NWFilter/) {
