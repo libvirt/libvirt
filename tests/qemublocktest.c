@@ -868,6 +868,7 @@ mymain(void)
     char *capslatest_x86_64 = NULL;
     virQEMUCapsPtr caps_x86_64 = NULL;
     g_autoptr(virHashTable) qmp_schema_x86_64 = NULL;
+    virJSONValuePtr qmp_schemaroot_x86_64_blockdev_add = NULL;
     g_autoptr(virStorageSource) bitmapSourceChain = NULL;
 
     if (qemuTestDriverInit(&driver) < 0)
@@ -891,6 +892,15 @@ mymain(void)
     imagecreatedata.qemuCaps = caps_x86_64;
 
     if (!(qmp_schema_x86_64 = testQEMUSchemaLoad("x86_64"))) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (virQEMUQAPISchemaPathGet("blockdev-add/arg-type",
+                                 qmp_schema_x86_64,
+                                 &qmp_schemaroot_x86_64_blockdev_add) < 0 ||
+        !qmp_schemaroot_x86_64_blockdev_add) {
+        VIR_TEST_VERBOSE("failed to find schema entry for blockdev-add");
         ret = -1;
         goto cleanup;
     }
@@ -994,15 +1004,7 @@ mymain(void)
 #define TEST_DISK_TO_JSON(nme) TEST_DISK_TO_JSON_FULL(nme, false)
 
     diskxmljsondata.schema = qmp_schema_x86_64;
-
-    if (virQEMUQAPISchemaPathGet("blockdev-add/arg-type",
-                                 diskxmljsondata.schema,
-                                 &diskxmljsondata.schemaroot) < 0 ||
-        !diskxmljsondata.schemaroot) {
-        VIR_TEST_VERBOSE("failed to find schema entry for blockdev-add");
-        ret = -1;
-        goto cleanup;
-    }
+    diskxmljsondata.schemaroot = qmp_schemaroot_x86_64_blockdev_add;
 
     TEST_DISK_TO_JSON_FULL("nodename-long-format", true);
     TEST_DISK_TO_JSON_FULL("nodename-long-protocol", true);
