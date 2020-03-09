@@ -43,23 +43,23 @@ id=virtio-disk0,bootindex=1 \
 "file":"libvirt-4-storage"}' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-4-format,\
 id=virtio-disk1 \
--object secret,id=libvirt-3-storage-secret0,\
+-object secret,id=libvirt-3-storage-auth-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -blockdev '{"driver":"iscsi","portal":"example.org:6000",\
 "target":"iqn.1992-01.com.example:storage","lun":1,"transport":"tcp",\
-"user":"myname","password-secret":"libvirt-3-storage-secret0",\
+"user":"myname","password-secret":"libvirt-3-storage-auth-secret0",\
 "node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw",\
 "file":"libvirt-3-storage"}' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=libvirt-3-format,\
 id=virtio-disk2 \
--object secret,id=libvirt-2-storage-secret0,\
+-object secret,id=libvirt-2-storage-auth-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -blockdev '{"driver":"iscsi","portal":"example.org:6000",\
 "target":"iqn.1992-01.com.example:storage","lun":2,"transport":"tcp",\
-"user":"myname","password-secret":"libvirt-2-storage-secret0",\
+"user":"myname","password-secret":"libvirt-2-storage-auth-secret0",\
 "node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
 "file":"libvirt-2-storage"}' \

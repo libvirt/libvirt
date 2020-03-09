@@ -1778,7 +1778,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
                                                             &src->auth->seclookupdef);
         } else {
             srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv, aliasprotocol,
-                                                                  NULL,
+                                                                  "auth",
                                                                   usageType,
                                                                   src->auth->username,
                                                                   &src->auth->seclookupdef);
@@ -1790,7 +1790,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
 
     if (hasEnc) {
         if (!(srcPriv->encinfo = qemuDomainSecretAESSetupFromSecret(priv, aliasformat,
-                                                                    "luks",
+                                                                    "encryption",
                                                                     VIR_SECRET_USAGE_TYPE_VOLUME,
                                                                     NULL,
                                                                     &src->encryption->secrets[0]->seclookupdef)))

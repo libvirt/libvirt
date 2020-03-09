@@ -81,15 +81,15 @@ id=virtio-disk2 \
 "node-name":"libvirt-15-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-15-format","read-only":true,"driver":"qcow2",\
 "file":"libvirt-15-storage","backing":null}' \
--object secret,id=libvirt-14-storage-secret0,\
+-object secret,id=libvirt-14-storage-auth-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -blockdev '{"driver":"rbd","pool":"pool","image":"image",\
 "server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org",\
 "port":"6322"},{"host":"mon3.example.org","port":"6322"}],"user":"myname",\
 "auth-client-required":["cephx","none"],\
-"key-secret":"libvirt-14-storage-secret0","node-name":"libvirt-14-storage",\
-"auto-read-only":true,"discard":"unmap"}' \
+"key-secret":"libvirt-14-storage-auth-secret0",\
+"node-name":"libvirt-14-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-14-format","read-only":false,"driver":"qcow2",\
 "file":"libvirt-14-storage","backing":"libvirt-15-format"}' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=libvirt-14-format,\

@@ -47,7 +47,7 @@ id=virtio-disk1 \
 "file":"libvirt-2-storage"}' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=libvirt-2-format,\
 id=virtio-disk2 \
--object secret,id=libvirt-1-format-luks-secret0,\
+-object secret,id=libvirt-1-format-encryption-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -blockdev '{"driver":"nvme","device":"0001:02:00.0","namespace":2,\
@@ -55,7 +55,7 @@ keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 "auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,\
 "cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
-"encrypt":{"format":"luks","key-secret":"libvirt-1-format-luks-secret0"},\
+"encrypt":{"format":"luks","key-secret":"libvirt-1-format-encryption-secret0"},\
 "file":"libvirt-1-storage"}' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x7,drive=libvirt-1-format,\
 id=virtio-disk3,write-cache=on \

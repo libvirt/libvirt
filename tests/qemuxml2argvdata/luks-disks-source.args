@@ -27,41 +27,45 @@ path=/tmp/lib/domain--1-encryptdisk/monitor.sock,server,nowait \
 -no-shutdown \
 -no-acpi \
 -usb \
--object secret,id=virtio-disk0-luks-secret0,\
+-object secret,id=virtio-disk0-encryption-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -drive file=/storage/guest_disks/encryptdisk,\
-key-secret=virtio-disk0-luks-secret0,format=luks,if=none,id=drive-virtio-disk0 \
+key-secret=virtio-disk0-encryption-secret0,format=luks,if=none,\
+id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
 id=virtio-disk0,bootindex=1 \
--object secret,id=virtio-disk1-luks-secret0,\
+-object secret,id=virtio-disk1-encryption-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -drive file=/storage/guest_disks/encryptdisk2,\
-key-secret=virtio-disk1-luks-secret0,format=luks,if=none,id=drive-virtio-disk1 \
+key-secret=virtio-disk1-encryption-secret0,format=luks,if=none,\
+id=drive-virtio-disk1 \
 -device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk1,\
 id=virtio-disk1 \
--object secret,id=virtio-disk2-luks-secret0,\
+-object secret,id=virtio-disk2-encryption-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org:\
-6000/iqn.1992-01.com.example%3Astorage/1,key-secret=virtio-disk2-luks-secret0,\
-format=luks,if=none,id=drive-virtio-disk2 \
+6000/iqn.1992-01.com.example%3Astorage/1,\
+key-secret=virtio-disk2-encryption-secret0,format=luks,if=none,\
+id=drive-virtio-disk2 \
 -device virtio-blk-pci,bus=pci.0,addr=0x6,drive=drive-virtio-disk2,\
 id=virtio-disk2 \
--object secret,id=virtio-disk3-luks-secret0,\
+-object secret,id=virtio-disk3-encryption-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -drive file=iscsi://iscsi.example.com:3260/demo-target/3,\
-key-secret=virtio-disk3-luks-secret0,format=luks,if=none,id=drive-virtio-disk3 \
+key-secret=virtio-disk3-encryption-secret0,format=luks,if=none,\
+id=drive-virtio-disk3 \
 -device virtio-blk-pci,bus=pci.0,addr=0x7,drive=drive-virtio-disk3,\
 id=virtio-disk3 \
--object secret,id=virtio-disk4-luks-secret0,\
+-object secret,id=virtio-disk4-encryption-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -drive 'file=rbd:pool/image:auth_supported=none:mon_host=mon1.example.org\:\
 6321\;mon2.example.org\:6322\;mon3.example.org\:6322,\
-key-secret=virtio-disk4-luks-secret0,format=luks,if=none,\
+key-secret=virtio-disk4-encryption-secret0,format=luks,if=none,\
 id=drive-virtio-disk4' \
 -device virtio-blk-pci,bus=pci.0,addr=0x8,drive=drive-virtio-disk4,\
 id=virtio-disk4 \
