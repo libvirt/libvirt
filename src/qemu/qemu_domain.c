@@ -1732,6 +1732,30 @@ qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
 }
 
 
+static qemuDomainSecretInfoPtr
+qemuDomainSecretStorageSourcePrepareCookies(qemuDomainObjPrivatePtr priv,
+                                            virStorageSourcePtr src,
+                                            const char *aliasprotocol)
+{
+    g_autofree char *secretalias = qemuAliasForSecret(aliasprotocol, "httpcookie");
+    g_autofree char *cookies = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    for (i = 0; i < src->ncookies; i++) {
+        virStorageNetCookieDefPtr cookie = src->cookies[i];
+
+        virBufferAsprintf(&buf, "%s=%s; ", cookie->name, cookie->value);
+    }
+
+    virBufferTrim(&buf, "; ");
+    cookies = virBufferContentAndReset(&buf);
+
+    return qemuDomainSecretAESSetup(priv, secretalias, NULL,
+                                    (uint8_t *) cookies, strlen(cookies));
+}
+
+
 /**
  * qemuDomainSecretStorageSourcePrepare:
  * @priv: domain private object
@@ -1757,7 +1781,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
     bool hasAuth = qemuDomainStorageSourceHasAuth(src);
     bool hasEnc = qemuDomainDiskHasEncryptionSecret(src);
 
-    if (!hasAuth && !hasEnc)
+    if (!hasAuth && !hasEnc && src->ncookies == 0)
         return 0;
 
     if (!(src->privateData = qemuDomainStorageSourcePrivateNew()))
@@ -1796,6 +1820,13 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
                                                                     &src->encryption->secrets[0]->seclookupdef)))
               return -1;
     }
+
+    if (src->ncookies &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+        !(srcPriv->httpcookie = qemuDomainSecretStorageSourcePrepareCookies(priv,
+                                                                            src,
+                                                                            aliasprotocol)))
+        return -1;
 
     return 0;
 }
