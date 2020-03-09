@@ -867,6 +867,7 @@ mymain(void)
     struct testQemuBlockBitmapBlockcopyData blockbitmapblockcopydata;
     char *capslatest_x86_64 = NULL;
     virQEMUCapsPtr caps_x86_64 = NULL;
+    g_autoptr(virHashTable) qmp_schema_x86_64 = NULL;
     g_autoptr(virStorageSource) bitmapSourceChain = NULL;
 
     if (qemuTestDriverInit(&driver) < 0)
@@ -888,6 +889,11 @@ mymain(void)
 
     diskxmljsondata.qemuCaps = caps_x86_64;
     imagecreatedata.qemuCaps = caps_x86_64;
+
+    if (!(qmp_schema_x86_64 = testQEMUSchemaLoad("x86_64"))) {
+        ret = -1;
+        goto cleanup;
+    }
 
     virTestCounterReset("qemu storage source xml->json->xml ");
 
@@ -987,10 +993,7 @@ mymain(void)
 
 #define TEST_DISK_TO_JSON(nme) TEST_DISK_TO_JSON_FULL(nme, false)
 
-    if (!(diskxmljsondata.schema = testQEMUSchemaLoad("x86_64"))) {
-        ret = -1;
-        goto cleanup;
-    }
+    diskxmljsondata.schema = qmp_schema_x86_64;
 
     if (virQEMUQAPISchemaPathGet("blockdev-add/arg-type",
                                  diskxmljsondata.schema,
@@ -1049,7 +1052,9 @@ mymain(void)
                        &imagecreatedata) < 0) \
             ret = -1; \
     } while (0)
-    imagecreatedata.schema = diskxmljsondata.schema;
+
+    imagecreatedata.schema = qmp_schema_x86_64;
+
     if (virQEMUQAPISchemaPathGet("blockdev-create/arg-type/options",
                                  imagecreatedata.schema,
                                  &imagecreatedata.schemaroot) < 0 ||
@@ -1202,7 +1207,6 @@ mymain(void)
     TEST_BITMAP_BLOCKCOPY("snapshots-deep", false, "snapshots");
 
  cleanup:
-    virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);
     VIR_FREE(capslatest_x86_64);
     virObjectUnref(caps_x86_64);
