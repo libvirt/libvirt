@@ -100,6 +100,9 @@ struct qemuBlockStorageSourceAttachData {
     virJSONValuePtr encryptsecretProps;
     char *encryptsecretAlias;
 
+    virJSONValuePtr httpcookiesecretProps;
+    char *httpcookiesecretAlias;
+
     virJSONValuePtr tlsProps;
     char *tlsAlias;
 };

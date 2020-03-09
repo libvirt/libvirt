@@ -2398,6 +2398,7 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
     if (qemuBuildObjectCommandline(cmd, data->prmgrProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->authsecretProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->encryptsecretProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->httpcookiesecretProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->tlsProps) < 0)
         return -1;
 
@@ -10332,6 +10333,10 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
 
         if (srcpriv->encinfo &&
             qemuBuildSecretInfoProps(srcpriv->encinfo, &data->encryptsecretProps) < 0)
+            return -1;
+
+        if (srcpriv->httpcookie &&
+            qemuBuildSecretInfoProps(srcpriv->httpcookie, &data->httpcookiesecretProps) < 0)
             return -1;
     }
 

@@ -1499,11 +1499,13 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
     virJSONValueFree(data->formatProps);
     virJSONValueFree(data->prmgrProps);
     virJSONValueFree(data->authsecretProps);
+    virJSONValueFree(data->httpcookiesecretProps);
     virJSONValueFree(data->encryptsecretProps);
     virJSONValueFree(data->tlsProps);
     VIR_FREE(data->tlsAlias);
     VIR_FREE(data->authsecretAlias);
     VIR_FREE(data->encryptsecretAlias);
+    VIR_FREE(data->httpcookiesecretAlias);
     VIR_FREE(data->driveCmd);
     VIR_FREE(data->driveAlias);
     VIR_FREE(data);
@@ -1568,6 +1570,11 @@ qemuBlockStorageSourceAttachApplyStorageDeps(qemuMonitorPtr mon,
     if (data->authsecretProps &&
         qemuMonitorAddObject(mon, &data->authsecretProps,
                              &data->authsecretAlias) < 0)
+        return -1;
+
+    if (data->httpcookiesecretProps &&
+        qemuMonitorAddObject(mon, &data->httpcookiesecretProps,
+                             &data->httpcookiesecretAlias) < 0)
         return -1;
 
     if (data->tlsProps &&
@@ -1713,6 +1720,9 @@ qemuBlockStorageSourceAttachRollback(qemuMonitorPtr mon,
     if (data->encryptsecretAlias)
         ignore_value(qemuMonitorDelObject(mon, data->encryptsecretAlias));
 
+    if (data->httpcookiesecretAlias)
+        ignore_value(qemuMonitorDelObject(mon, data->httpcookiesecretAlias));
+
     if (data->tlsAlias)
         ignore_value(qemuMonitorDelObject(mon, data->tlsAlias));
 
@@ -1768,6 +1778,9 @@ qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,
 
         if (srcpriv->encinfo && srcpriv->encinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
             data->encryptsecretAlias = g_strdup(srcpriv->encinfo->s.aes.alias);
+
+        if (srcpriv->httpcookie)
+            data->httpcookiesecretAlias = g_strdup(srcpriv->httpcookie->s.aes.alias);
     }
 
     return g_steal_pointer(&data);
