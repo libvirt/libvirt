@@ -3009,8 +3009,10 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
                     virCPUDataPtr dataEnabled,
                     virCPUDataPtr dataDisabled)
 {
+    bool hostPassthrough = cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH;
     virCPUx86MapPtr map;
     virCPUx86ModelPtr model = NULL;
+    virCPUx86ModelPtr modelDisabled = NULL;
     virCPUx86Data enabled = VIR_CPU_X86_DATA_INIT;
     virCPUx86Data disabled = VIR_CPU_X86_DATA_INIT;
     virBuffer bufAdded = VIR_BUFFER_INITIALIZER;
@@ -3024,6 +3026,10 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
         return -1;
 
     if (!(model = x86ModelFromCPU(cpu, map, -1)))
+        goto cleanup;
+
+    if (hostPassthrough &&
+        !(modelDisabled = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_DISABLE)))
         goto cleanup;
 
     if (dataEnabled &&
@@ -3040,7 +3046,8 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
 
         if (x86DataIsSubset(&model->data, &feature->data))
             expected = VIR_CPU_FEATURE_REQUIRE;
-        else
+        else if (!hostPassthrough ||
+                 x86DataIsSubset(&modelDisabled->data, &feature->data))
             expected = VIR_CPU_FEATURE_DISABLE;
 
         if (expected == VIR_CPU_FEATURE_DISABLE &&
@@ -3101,6 +3108,7 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
 
  cleanup:
     x86ModelFree(model);
+    x86ModelFree(modelDisabled);
     virCPUx86DataClear(&enabled);
     virCPUx86DataClear(&disabled);
     VIR_FREE(added);

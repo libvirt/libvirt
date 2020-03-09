@@ -647,7 +647,8 @@ virCPUUpdateLive(virArch arch,
     if (!driver->updateLive)
         return 1;
 
-    if (cpu->mode == VIR_CPU_MODE_CUSTOM) {
+    if (cpu->mode == VIR_CPU_MODE_CUSTOM ||
+        cpu->check == VIR_CPU_CHECK_FULL) {
         if (driver->updateLive(cpu, dataEnabled, dataDisabled) < 0)
             return -1;
 
