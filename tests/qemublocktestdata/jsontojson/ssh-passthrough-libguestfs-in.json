@@ -1,0 +1,1 @@
+json:{"file.driver":"ssh","file.user":"testuser","file.host":"random.host","file.port":1234,"file.path":"somewhere/something","file.host_key_check":"no"}

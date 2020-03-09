@@ -1,0 +1,14 @@
+{
+  "driver": "ssh",
+  "path": "somewhere/something",
+  "server": {
+    "host": "random.host",
+    "port": "22"
+  },
+  "user": "testuser",
+  "host-key-check": {
+    "mode": "none"
+  },
+  "auto-read-only": true,
+  "discard": "unmap"
+}

@@ -384,6 +384,11 @@ struct _virStorageSource {
                        as a source for floppy drive */
 
     bool hostcdrom; /* backing device is a cdrom */
+
+    /* passthrough variables for the ssh driver which we don't handle properly */
+    /* these must not be used apart from formatting the output JSON in the qemu driver */
+    char *ssh_user;
+    bool ssh_host_key_check_disabled;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSource, virObjectUnref);

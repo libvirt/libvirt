@@ -2464,6 +2464,10 @@ virStorageSourceCopy(const virStorageSource *src,
             return NULL;
     }
 
+    /* ssh config passthrough for libguestfs */
+    def->ssh_host_key_check_disabled = src->ssh_host_key_check_disabled;
+    def->ssh_user = g_strdup(src->ssh_user);
+
     return g_steal_pointer(&def);
 }
 
@@ -2704,6 +2708,8 @@ virStorageSourceClear(virStorageSourcePtr def)
 
     VIR_FREE(def->tlsAlias);
     VIR_FREE(def->tlsCertdir);
+
+    VIR_FREE(def->ssh_user);
 
     virStorageSourceInitiatorClear(&def->initiator);
 
@@ -3635,6 +3641,8 @@ virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
     const char *path = virJSONValueObjectGetString(json, "path");
     const char *host = virJSONValueObjectGetString(json, "host");
     const char *port = virJSONValueObjectGetString(json, "port");
+    const char *user = virJSONValueObjectGetString(json, "user");
+    const char *host_key_check = virJSONValueObjectGetString(json, "host_key_check");
     virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
 
     if (!(host || server) || !path) {
@@ -3664,6 +3672,11 @@ virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
         if (virStringParsePort(port, &src->hosts[0].port) < 0)
             return -1;
     }
+
+    /* these two are parsed just to be passed back as we don't model them yet */
+    src->ssh_user = g_strdup(user);
+    if (STREQ_NULLABLE(host_key_check, "no"))
+        src->ssh_host_key_check_disabled = true;
 
     return 0;
 }

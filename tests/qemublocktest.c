@@ -1136,6 +1136,7 @@ mymain(void)
     jsontojsondata.schemaroot = qmp_schemaroot_x86_64_blockdev_add;
 
     TEST_JSON_TO_JSON("curl-libguestfs");
+    TEST_JSON_TO_JSON("ssh-passthrough-libguestfs");
 
 #define TEST_IMAGE_CREATE(testname, testbacking) \
     do { \

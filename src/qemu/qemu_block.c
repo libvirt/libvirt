@@ -911,6 +911,7 @@ qemuBlockStorageSourceGetSshProps(virStorageSourcePtr src)
     g_autoptr(virJSONValue) serverprops = NULL;
     virJSONValuePtr ret = NULL;
     const char *username = NULL;
+    g_autoptr(virJSONValue) host_key_check = NULL;
 
     if (src->nhosts != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -924,11 +925,20 @@ qemuBlockStorageSourceGetSshProps(virStorageSourcePtr src)
 
     if (src->auth)
         username = src->auth->username;
+    else if (src->ssh_user)
+        username = src->ssh_user;
+
+    if (src->ssh_host_key_check_disabled &&
+        virJSONValueObjectCreate(&host_key_check,
+                                 "s:mode", "none",
+                                 NULL) < 0)
+        return NULL;
 
     if (virJSONValueObjectCreate(&ret,
                                  "s:path", src->path,
                                  "a:server", &serverprops,
                                  "S:user", username,
+                                 "A:host-key-check", &host_key_check,
                                  NULL) < 0)
         return NULL;
 
