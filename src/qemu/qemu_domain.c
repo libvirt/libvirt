@@ -1840,8 +1840,29 @@ qemuDomainSecretHostdevPrepare(qemuDomainObjPrivatePtr priv,
 
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
             src->auth) {
-            if (qemuDomainSecretStorageSourcePrepare(priv, src,
-                                                     hostdev->info->alias, NULL) < 0)
+            bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET);
+            virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
+            qemuDomainStorageSourcePrivatePtr srcPriv;
+
+            if (!(src->privateData = qemuDomainStorageSourcePrivateNew()))
+                return -1;
+
+            srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+            if (!qemuDomainSupportsEncryptedSecret(priv) || !iscsiHasPS) {
+                srcPriv->secinfo = qemuDomainSecretInfoNewPlain(usageType,
+                                                                src->auth->username,
+                                                                &src->auth->seclookupdef);
+            } else {
+                srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv,
+                                                                      hostdev->info->alias,
+                                                                      usageType,
+                                                                      src->auth->username,
+                                                                      &src->auth->seclookupdef,
+                                                                      false);
+            }
+
+            if (!srcPriv->secinfo)
                 return -1;
         }
     }

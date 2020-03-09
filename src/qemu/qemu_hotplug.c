@@ -4471,7 +4471,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET) &&
             qemuDomainStorageSourceHasAuth(iscsisrc->src)) {
-            if (!(objAlias = qemuDomainGetSecretAESAlias(hostdev->info->alias, false)))
+            if (!(objAlias = qemuAliasForSecret(hostdev->info->alias, NULL)))
                 return -1;
         }
 
