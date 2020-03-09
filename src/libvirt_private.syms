@@ -1981,7 +1981,6 @@ virReportOOMErrorFull;
 virReportSystemErrorFull;
 virSetError;
 virSetErrorLogPriorityFunc;
-virStrerror;
 
 
 # util/vireventglib.h

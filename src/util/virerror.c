@@ -1308,31 +1308,6 @@ void virReportErrorHelper(int domcode,
 }
 
 /**
- * virStrerror:
- * @theerrno: the errno value
- * @errBuf: the buffer to save the error to
- * @errBufLen: the buffer length
- *
- * Generate an error string for the given errno
- *
- * Returns a pointer to the error string, possibly indicating that the
- *         error is unknown
- */
-const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
-{
-    int save_errno = errno;
-    const char *ret;
-    const char *str = g_strerror(theerrno);
-    size_t len = strlen(str);
-
-    memcpy(errBuf, str, MIN(len, errBufLen));
-    errBuf[errBufLen-1] = '\0';
-    ret = errBuf;
-    errno = save_errno;
-    return ret;
-}
-
-/**
  * virReportSystemErrorFull:
  * @domcode: the virErrorDomain indicating where it's coming from
  * @theerrno: an errno number
