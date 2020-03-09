@@ -3036,9 +3036,15 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
 
     for (i = 0; i < map->nfeatures; i++) {
         virCPUx86FeaturePtr feature = map->features[i];
+        virCPUFeaturePolicy expected = VIR_CPU_FEATURE_LAST;
 
-        if (x86DataIsSubset(&enabled, &feature->data) &&
-            !x86DataIsSubset(&model->data, &feature->data)) {
+        if (x86DataIsSubset(&model->data, &feature->data))
+            expected = VIR_CPU_FEATURE_REQUIRE;
+        else
+            expected = VIR_CPU_FEATURE_DISABLE;
+
+        if (expected == VIR_CPU_FEATURE_DISABLE &&
+            x86DataIsSubset(&enabled, &feature->data)) {
             VIR_DEBUG("Feature '%s' enabled by the hypervisor", feature->name);
             if (cpu->check == VIR_CPU_CHECK_FULL)
                 virBufferAsprintf(&bufAdded, "%s,", feature->name);
@@ -3048,7 +3054,7 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
         }
 
         if (x86DataIsSubset(&disabled, &feature->data) ||
-            (x86DataIsSubset(&model->data, &feature->data) &&
+            (expected == VIR_CPU_FEATURE_REQUIRE &&
              !x86DataIsSubset(&enabled, &feature->data))) {
             VIR_DEBUG("Feature '%s' disabled by the hypervisor", feature->name);
             if (cpu->check == VIR_CPU_CHECK_FULL)
