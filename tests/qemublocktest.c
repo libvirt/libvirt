@@ -41,6 +41,9 @@ VIR_LOG_INIT("tests.storagetest");
 struct testBackingXMLjsonXMLdata {
     int type;
     const char *xml;
+    bool legacy;
+    virHashTablePtr schema;
+    virJSONValuePtr schemaroot;
 };
 
 static int
@@ -57,6 +60,7 @@ testBackingXMLjsonXML(const void *args)
     g_autofree char *actualxml = NULL;
     g_autoptr(virStorageSource) xmlsrc = NULL;
     g_autoptr(virStorageSource) jsonsrc = NULL;
+    g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
 
     if (!(xmlsrc = virStorageSourceNew()))
         return -1;
@@ -71,10 +75,25 @@ testBackingXMLjsonXML(const void *args)
         return -1;
     }
 
-    if (!(backendprops = qemuBlockStorageSourceGetBackendProps(xmlsrc, true, false,
+    if (!(backendprops = qemuBlockStorageSourceGetBackendProps(xmlsrc,
+                                                               data->legacy,
+                                                               false,
                                                                false))) {
         fprintf(stderr, "failed to format disk source json\n");
         return -1;
+    }
+
+    if (!data->legacy) {
+        if (testQEMUSchemaValidate(backendprops, data->schemaroot,
+                                   data->schema, &debug) < 0) {
+            g_autofree char *debugmsg = virBufferContentAndReset(&debug);
+            g_autofree char *debugprops = virJSONValueToString(backendprops, true);
+
+            VIR_TEST_VERBOSE("json does not conform to QAPI schema");
+            VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
+                           debugprops, NULLSTR(debugmsg));
+            return -1;
+        }
     }
 
     if (virJSONValueObjectCreate(&wrapper, "a:file", &backendprops, NULL) < 0)
@@ -911,6 +930,10 @@ mymain(void)
     do { \
         xmljsonxmldata.type = tpe; \
         xmljsonxmldata.xml = xmlstr; \
+        xmljsonxmldata.legacy = true; \
+        if (virTestRun(virTestCounterNext(), testBackingXMLjsonXML, \
+                       &xmljsonxmldata) < 0) \
+        xmljsonxmldata.legacy = false; \
         if (virTestRun(virTestCounterNext(), testBackingXMLjsonXML, \
                        &xmljsonxmldata) < 0) \
             ret = -1; \
@@ -918,6 +941,9 @@ mymain(void)
 
 #define TEST_JSON_FORMAT_NET(xmlstr) \
     TEST_JSON_FORMAT(VIR_STORAGE_TYPE_NETWORK, xmlstr)
+
+    xmljsonxmldata.schema = qmp_schema_x86_64;
+    xmljsonxmldata.schemaroot = qmp_schemaroot_x86_64_blockdev_add;
 
     TEST_JSON_FORMAT(VIR_STORAGE_TYPE_FILE, "<source file='/path/to/file'/>\n");
 
