@@ -37,7 +37,6 @@
 #endif
 
 #include "internal.h"
-#include "virerror.h"
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
