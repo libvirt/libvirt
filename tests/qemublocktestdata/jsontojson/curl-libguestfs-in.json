@@ -1,0 +1,1 @@
+json:{"file.driver":"https","file.url":"https://test.host/whatever.img","file.timeout":2000,"file.readahead":65536,"file.sslverify":"off","file.cookie":"some_cookie=\"some_value_or_whatever\""}

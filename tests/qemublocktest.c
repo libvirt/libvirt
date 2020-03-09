@@ -128,6 +128,57 @@ testBackingXMLjsonXML(const void *args)
     return 0;
 }
 
+static const char *testJSONtoJSONPath = abs_srcdir "/qemublocktestdata/jsontojson/";
+
+struct testJSONtoJSONData {
+    const char *name;
+    virHashTablePtr schema;
+    virJSONValuePtr schemaroot;
+};
+
+static int
+testJSONtoJSON(const void *args)
+{
+    const struct testJSONtoJSONData *data = args;
+    g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) jsonsrcout = NULL;
+    g_autoptr(virStorageSource) src = NULL;
+    g_autofree char *actual = NULL;
+    g_autofree char *in = NULL;
+    g_autofree char *infile = g_strdup_printf("%s%s-in.json", testJSONtoJSONPath,
+                                              data->name);
+    g_autofree char *outfile = g_strdup_printf("%s%s-out.json", testJSONtoJSONPath,
+                                              data->name);
+
+    if (virTestLoadFile(infile, &in) < 0)
+        return -1;
+
+    if (virStorageSourceNewFromBackingAbsolute(in, &src) < 0) {
+        fprintf(stderr, "failed to parse disk json\n");
+        return -1;
+    }
+
+    if (!(jsonsrcout = qemuBlockStorageSourceGetBackendProps(src, false, false, true))) {
+        fprintf(stderr, "failed to format disk source json\n");
+        return -1;
+    }
+
+    if (!(actual = virJSONValueToString(jsonsrcout, true)))
+        return -1;
+
+    if (testQEMUSchemaValidate(jsonsrcout, data->schemaroot,
+                               data->schema, &debug) < 0) {
+        g_autofree char *debugmsg = virBufferContentAndReset(&debug);
+
+        VIR_TEST_VERBOSE("json does not conform to QAPI schema");
+        VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
+                       actual, NULLSTR(debugmsg));
+        return -1;
+    }
+
+    return virTestCompareToFile(actual, outfile);
+}
+
 
 struct testQemuDiskXMLToJSONData {
     virQEMUDriverPtr driver;
@@ -879,6 +930,7 @@ mymain(void)
     virQEMUDriver driver;
     struct testBackingXMLjsonXMLdata xmljsonxmldata;
     struct testQemuDiskXMLToJSONData diskxmljsondata;
+    struct testJSONtoJSONData jsontojsondata;
     struct testQemuImageCreateData imagecreatedata;
     struct testQemuBackupIncrementalBitmapCalculateData backupbitmapcalcdata;
     struct testQemuCheckpointDeleteMergeData checkpointdeletedata;
@@ -1071,6 +1123,19 @@ mymain(void)
 
     TEST_DISK_TO_JSON("block-raw-noopts");
     TEST_DISK_TO_JSON("block-raw-reservations");
+
+#define TEST_JSON_TO_JSON(nme) \
+    do { \
+        jsontojsondata.name = nme; \
+        if (virTestRun("JSON to JSON " nme, testJSONtoJSON, \
+                       &jsontojsondata) < 0) \
+            ret = -1; \
+    } while (0)
+
+    jsontojsondata.schema = qmp_schema_x86_64;
+    jsontojsondata.schemaroot = qmp_schemaroot_x86_64_blockdev_add;
+
+    TEST_JSON_TO_JSON("curl-libguestfs");
 
 #define TEST_IMAGE_CREATE(testname, testbacking) \
     do { \
