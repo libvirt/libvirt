@@ -1061,7 +1061,7 @@ qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
  * @apiFlags: API flags used to start the migration
  *
  * Deconstruct all the setup possibly done for TLS - delete the TLS and
- * security objects, free the secinfo, and reset the migration params to "".
+ * security objects and free the secinfo
  */
 static void
 qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
