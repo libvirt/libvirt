@@ -83,9 +83,6 @@ char *qemuAliasFromHostdev(const virDomainHostdevDef *hostdev);
 
 char *qemuDomainGetMasterKeyAlias(void);
 
-char *qemuDomainGetSecretAESAlias(const char *srcalias,
-                                  bool isLuks);
-
 char *qemuAliasForSecret(const char *parentalias,
                          const char *obj);
 

@@ -764,35 +764,6 @@ qemuDomainGetMasterKeyAlias(void)
 }
 
 
-/* qemuDomainGetSecretAESAlias:
- * @srcalias: Source alias used to generate the secret alias
- * @isLuks: True when we are generating a secret for LUKS encrypt/decrypt
- *
- * Generate and return an alias for the encrypted secret
- *
- * Returns NULL or a string containing the alias
- */
-char *
-qemuDomainGetSecretAESAlias(const char *srcalias,
-                            bool isLuks)
-{
-    char *alias;
-
-    if (!srcalias) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("encrypted secret alias requires valid source alias"));
-        return NULL;
-    }
-
-    if (isLuks)
-        alias = g_strdup_printf("%s-luks-secret0", srcalias);
-    else
-        alias = g_strdup_printf("%s-secret0", srcalias);
-
-    return alias;
-}
-
-
 /* qemuAliasForSecret:
  * @parentalias: alias of the parent object
  * @obj: optional sub-object of the parent device the secret is for
