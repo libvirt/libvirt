@@ -1070,8 +1070,8 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
                             qemuMigrationParamsPtr origParams,
                             unsigned long apiFlags)
 {
-    char *tlsAlias = NULL;
-    char *secAlias = NULL;
+    g_autofree char *tlsAlias = NULL;
+    g_autofree char *secAlias = NULL;
 
     /* There's nothing to do if QEMU does not support TLS migration or we were
      * not asked to enable it. */
@@ -1079,17 +1079,11 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
         !(apiFlags & VIR_MIGRATE_TLS))
         return;
 
-    /* NB: If either or both fail to allocate memory we can still proceed
-     *     since the next time we migrate another deletion attempt will be
-     *     made after successfully generating the aliases. */
     tlsAlias = qemuAliasTLSObjFromSrcAlias(QEMU_MIGRATION_TLS_ALIAS_BASE);
     secAlias = qemuDomainGetSecretAESAlias(QEMU_MIGRATION_TLS_ALIAS_BASE, false);
 
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
     g_clear_pointer(&QEMU_DOMAIN_PRIVATE(vm)->migSecinfo, qemuDomainSecretInfoFree);
-
-    VIR_FREE(tlsAlias);
-    VIR_FREE(secAlias);
 }
 
 
