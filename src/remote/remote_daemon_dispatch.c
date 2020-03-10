@@ -95,6 +95,7 @@ static virNWFilterBindingPtr get_nonnull_nwfilter_binding(virConnectPtr conn, re
 static virDomainCheckpointPtr get_nonnull_domain_checkpoint(virDomainPtr dom, remote_nonnull_domain_checkpoint checkpoint);
 static virDomainSnapshotPtr get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot snapshot);
 static virNodeDevicePtr get_nonnull_node_device(virConnectPtr conn, remote_nonnull_node_device dev);
+static virNodeDevicePtr get_nonnull_node_device_name(virConnectPtr conn, remote_nonnull_string name);
 static void make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_network_port(remote_nonnull_network_port *port_dst, virNetworkPortPtr port_src);
@@ -7289,6 +7290,12 @@ static virNodeDevicePtr
 get_nonnull_node_device(virConnectPtr conn, remote_nonnull_node_device dev)
 {
     return virGetNodeDevice(conn, dev.name);
+}
+
+static virNodeDevicePtr
+get_nonnull_node_device_name(virConnectPtr conn, remote_nonnull_string name)
+{
+    return virGetNodeDevice(conn, name);
 }
 
 static void

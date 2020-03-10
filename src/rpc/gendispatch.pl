@@ -571,7 +571,7 @@ elsif ($mode eq "server") {
                 $has_node_device = 1;
                 push(@vars_list, "virNodeDevicePtr dev = NULL");
                 push(@getters_list,
-                     "    if (!(dev = virNodeDeviceLookupByName($conn_var, args->name)))\n" .
+                     "    if (!(dev = get_nonnull_node_device_name($conn_var, args->name)))\n" .
                      "        goto cleanup;\n");
                 push(@args_list, "dev");
                 push(@free_list,
