@@ -20,6 +20,7 @@ cpumap_DATA = \
 	cpu_map/x86_Broadwell-noTSX.xml \
 	cpu_map/x86_Broadwell-noTSX-IBRS.xml \
 	cpu_map/x86_Cascadelake-Server.xml \
+	cpu_map/x86_Cascadelake-Server-noTSX.xml \
 	cpu_map/x86_Conroe.xml \
 	cpu_map/x86_core2duo.xml \
 	cpu_map/x86_coreduo.xml \
@@ -33,7 +34,9 @@ cpumap_DATA = \
 	cpu_map/x86_Haswell-noTSX.xml \
 	cpu_map/x86_Haswell-noTSX-IBRS.xml \
 	cpu_map/x86_Icelake-Client.xml \
+	cpu_map/x86_Icelake-Client-noTSX.xml \
 	cpu_map/x86_Icelake-Server.xml \
+	cpu_map/x86_Icelake-Server-noTSX.xml \
 	cpu_map/x86_IvyBridge.xml \
 	cpu_map/x86_IvyBridge-IBRS.xml \
 	cpu_map/x86_kvm32.xml \
@@ -58,8 +61,10 @@ cpumap_DATA = \
 	cpu_map/x86_SandyBridge-IBRS.xml \
 	cpu_map/x86_Skylake-Client.xml \
 	cpu_map/x86_Skylake-Client-IBRS.xml \
+	cpu_map/x86_Skylake-Client-noTSX-IBRS.xml \
 	cpu_map/x86_Skylake-Server.xml \
 	cpu_map/x86_Skylake-Server-IBRS.xml \
+	cpu_map/x86_Skylake-Server-noTSX-IBRS.xml \
 	cpu_map/x86_Westmere.xml \
 	cpu_map/x86_Westmere-IBRS.xml \
 	$(NULL)

@@ -44,11 +44,16 @@
     <include filename="x86_Broadwell-IBRS.xml"/>
     <include filename="x86_Skylake-Client.xml"/>
     <include filename="x86_Skylake-Client-IBRS.xml"/>
+    <include filename="x86_Skylake-Client-noTSX-IBRS.xml"/>
     <include filename="x86_Skylake-Server.xml"/>
     <include filename="x86_Skylake-Server-IBRS.xml"/>
+    <include filename="x86_Skylake-Server-noTSX-IBRS.xml"/>
     <include filename="x86_Cascadelake-Server.xml"/>
+    <include filename="x86_Cascadelake-Server-noTSX.xml"/>
     <include filename="x86_Icelake-Client.xml"/>
+    <include filename="x86_Icelake-Client-noTSX.xml"/>
     <include filename="x86_Icelake-Server.xml"/>
+    <include filename="x86_Icelake-Server-noTSX.xml"/>
 
     <!-- AMD CPUs -->
     <include filename="x86_athlon.xml"/>

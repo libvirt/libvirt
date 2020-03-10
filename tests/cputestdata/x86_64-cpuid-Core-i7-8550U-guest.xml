@@ -1,5 +1,5 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>Skylake-Client-IBRS</model>
+  <model fallback='forbid'>Skylake-Client-noTSX-IBRS</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='ds'/>
   <feature policy='require' name='acpi'/>
@@ -26,6 +26,4 @@
   <feature policy='require' name='pdpe1gb'/>
   <feature policy='require' name='invtsc'/>
   <feature policy='require' name='skip-l1dfl-vmentry'/>
-  <feature policy='disable' name='hle'/>
-  <feature policy='disable' name='rtm'/>
 </cpu>

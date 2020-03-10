@@ -63,8 +63,10 @@
       <model usable='no'>athlon</model>
       <model usable='yes'>Westmere-IBRS</model>
       <model usable='yes'>Westmere</model>
+      <model usable='no'>Skylake-Server-noTSX-IBRS</model>
       <model usable='no'>Skylake-Server-IBRS</model>
       <model usable='no'>Skylake-Server</model>
+      <model usable='yes'>Skylake-Client-noTSX-IBRS</model>
       <model usable='yes'>Skylake-Client-IBRS</model>
       <model usable='yes'>Skylake-Client</model>
       <model usable='yes'>SandyBridge-IBRS</model>
@@ -79,7 +81,9 @@
       <model usable='yes'>Nehalem</model>
       <model usable='yes'>IvyBridge-IBRS</model>
       <model usable='yes'>IvyBridge</model>
+      <model usable='no'>Icelake-Server-noTSX</model>
       <model usable='no'>Icelake-Server</model>
+      <model usable='no'>Icelake-Client-noTSX</model>
       <model usable='no'>Icelake-Client</model>
       <model usable='yes'>Haswell-noTSX-IBRS</model>
       <model usable='yes'>Haswell-noTSX</model>
@@ -89,6 +93,7 @@
       <model usable='no'>EPYC</model>
       <model usable='no'>Dhyana</model>
       <model usable='yes'>Conroe</model>
+      <model usable='no'>Cascadelake-Server-noTSX</model>
       <model usable='no'>Cascadelake-Server</model>
       <model usable='yes'>Broadwell-noTSX-IBRS</model>
       <model usable='yes'>Broadwell-noTSX</model>
