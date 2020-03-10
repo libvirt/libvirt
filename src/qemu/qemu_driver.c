@@ -12965,10 +12965,23 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     g_autofree char *xml = NULL;
     bool vfio = qemuHostdevHostSupportsPassthroughVFIO();
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virConnectPtr nodeconn = NULL;
+    virNodeDevicePtr nodedev = NULL;
 
     virCheckFlags(0, -1);
 
-    xml = virNodeDeviceGetXMLDesc(dev, 0);
+    if (!(nodeconn = virGetConnectNodeDev()))
+        goto cleanup;
+
+    /* 'dev' is associated with the QEMU virConnectPtr,
+     * so for split daemons, we need to get a copy that
+     * is associated with the virnodedevd daemon.
+     */
+    if (!(nodedev = virNodeDeviceLookupByName(nodeconn,
+                                              virNodeDeviceGetName(dev))))
+        goto cleanup;
+
+    xml = virNodeDeviceGetXMLDesc(nodedev, 0);
     if (!xml)
         goto cleanup;
 
@@ -12976,6 +12989,8 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (!def)
         goto cleanup;
 
+    /* ACL check must happen against original 'dev',
+     * not the new 'nodedev' we acquired */
     if (virNodeDeviceDetachFlagsEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
@@ -13012,6 +13027,8 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
  cleanup:
     virPCIDeviceFree(pci);
     virNodeDeviceDefFree(def);
+    virObjectUnref(nodedev);
+    virObjectUnref(nodeconn);
     return ret;
 }
 
@@ -13031,8 +13048,21 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     virNodeDeviceDefPtr def = NULL;
     g_autofree char *xml = NULL;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virConnectPtr nodeconn = NULL;
+    virNodeDevicePtr nodedev = NULL;
 
-    xml = virNodeDeviceGetXMLDesc(dev, 0);
+    if (!(nodeconn = virGetConnectNodeDev()))
+        goto cleanup;
+
+    /* 'dev' is associated with the QEMU virConnectPtr,
+     * so for split daemons, we need to get a copy that
+     * is associated with the virnodedevd daemon.
+     */
+    if (!(nodedev = virNodeDeviceLookupByName(
+              nodeconn, virNodeDeviceGetName(dev))))
+        goto cleanup;
+
+    xml = virNodeDeviceGetXMLDesc(nodedev, 0);
     if (!xml)
         goto cleanup;
 
@@ -13040,6 +13070,8 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     if (!def)
         goto cleanup;
 
+    /* ACL check must happen against original 'dev',
+     * not the new 'nodedev' we acquired */
     if (virNodeDeviceReAttachEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
@@ -13055,6 +13087,8 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     virPCIDeviceFree(pci);
  cleanup:
     virNodeDeviceDefFree(def);
+    virObjectUnref(nodedev);
+    virObjectUnref(nodeconn);
     return ret;
 }
 
@@ -13068,8 +13102,21 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
     virNodeDeviceDefPtr def = NULL;
     g_autofree char *xml = NULL;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virConnectPtr nodeconn = NULL;
+    virNodeDevicePtr nodedev = NULL;
 
-    xml = virNodeDeviceGetXMLDesc(dev, 0);
+    if (!(nodeconn = virGetConnectNodeDev()))
+        goto cleanup;
+
+    /* 'dev' is associated with the QEMU virConnectPtr,
+     * so for split daemons, we need to get a copy that
+     * is associated with the virnodedevd daemon.
+     */
+    if (!(nodedev = virNodeDeviceLookupByName(
+              nodeconn, virNodeDeviceGetName(dev))))
+        goto cleanup;
+
+    xml = virNodeDeviceGetXMLDesc(nodedev, 0);
     if (!xml)
         goto cleanup;
 
@@ -13077,6 +13124,8 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
     if (!def)
         goto cleanup;
 
+    /* ACL check must happen against original 'dev',
+     * not the new 'nodedev' we acquired */
     if (virNodeDeviceResetEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
@@ -13092,6 +13141,8 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
     virPCIDeviceFree(pci);
  cleanup:
     virNodeDeviceDefFree(def);
+    virObjectUnref(nodedev);
+    virObjectUnref(nodeconn);
     return ret;
 }
 
