@@ -638,7 +638,6 @@ static void virQEMUDomainCapsCacheDispose(void *obj)
 struct _virQEMUCaps {
     virObject parent;
 
-    bool usedQMP;
     bool kvmSupportsNesting;
 
     char *binary;
@@ -1825,7 +1824,6 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
         return NULL;
 
     ret->invalidation = qemuCaps->invalidation;
-    ret->usedQMP = qemuCaps->usedQMP;
     ret->kvmSupportsNesting = qemuCaps->kvmSupportsNesting;
 
     ret->ctime = qemuCaps->ctime;
@@ -4980,7 +4978,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     qemuCaps->version = major * 1000000 + minor * 1000 + micro;
     qemuCaps->package = g_steal_pointer(&package);
-    qemuCaps->usedQMP = true;
 
     if (virQEMUCapsInitQMPArch(qemuCaps, mon) < 0)
         return -1;
