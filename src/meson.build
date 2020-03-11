@@ -92,6 +92,7 @@ subdir('rpc')
 subdir('access')
 subdir('cpu')
 
+subdir('hypervisor')
 subdir('vmx')
 
 subdir('admin')
