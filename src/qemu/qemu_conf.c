@@ -115,6 +115,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged,
 
     if (root) {
         cfg->uri = g_strdup_printf("qemu:///embed?root=%s", root);
+        cfg->root = g_strdup(root);
     } else {
         cfg->uri = g_strdup(privileged ? "qemu:///system" : "qemu:///session");
     }
@@ -299,6 +300,7 @@ static void virQEMUDriverConfigDispose(void *obj)
 
     virStringListFree(cfg->cgroupDeviceACL);
     VIR_FREE(cfg->uri);
+    VIR_FREE(cfg->root);
 
     VIR_FREE(cfg->configBaseDir);
     VIR_FREE(cfg->configDir);
