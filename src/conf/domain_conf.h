@@ -3649,6 +3649,7 @@ int virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
 
 char *
 virDomainGenerateMachineName(const char *drivername,
+                             const char *root,
                              int id,
                              const char *name,
                              bool privileged);

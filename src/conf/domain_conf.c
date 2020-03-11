@@ -62,6 +62,7 @@
 #include "virdomainsnapshotobjlist.h"
 #include "virdomaincheckpointobjlist.h"
 #include "virutil.h"
+#include "vircrypto.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -31076,21 +31077,33 @@ virDomainMachineNameAppendValid(virBufferPtr buf,
 
 char *
 virDomainGenerateMachineName(const char *drivername,
+                             const char *root,
                              int id,
                              const char *name,
                              bool privileged)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (privileged) {
-        virBufferAsprintf(&buf, "%s-", drivername);
-    } else {
+    virBufferAsprintf(&buf, "%s-", drivername);
+
+    if (root) {
+        g_autofree char *hash = NULL;
+
+        /* When two embed drivers start two domains with the same @name and @id
+         * we would generate a non-unique name. Include parts of hashed @root
+         * which guarantees uniqueness. The first 8 characters of SHA256 ought
+         * to be enough for anybody. */
+        if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, root, &hash) < 0)
+            return NULL;
+
+        virBufferAsprintf(&buf, "embed-%.8s-", hash);
+    } else if (!privileged) {
         g_autofree char *username = NULL;
         if (!(username = virGetUserName(geteuid()))) {
             virBufferFreeAndReset(&buf);
             return NULL;
         }
-        virBufferAsprintf(&buf, "%s-%s-", username, drivername);
+        virBufferAsprintf(&buf, "%s-", username);
     }
 
     virBufferAsprintf(&buf, "%d-", id);

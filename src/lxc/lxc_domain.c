@@ -406,7 +406,7 @@ virLXCDomainGetMachineName(virDomainDefPtr def, pid_t pid)
     }
 
     if (!ret)
-        ret = virDomainGenerateMachineName("lxc", def->id, def->name, true);
+        ret = virDomainGenerateMachineName("lxc", NULL, def->id, def->name, true);
 
     return ret;
 }

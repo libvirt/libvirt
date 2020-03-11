@@ -379,6 +379,7 @@ testGetMachineName(const void *opaque G_GNUC_UNUSED)
 struct testNameData {
     const char *name;
     const char *expected;
+    const char *root;
     int id;
     bool legacy;
 };
@@ -413,8 +414,8 @@ testMachineName(const void *opaque)
     int ret = -1;
     char *actual = NULL;
 
-    if (!(actual = virDomainGenerateMachineName("qemu", data->id,
-                                                data->name, true)))
+    if (!(actual = virDomainGenerateMachineName("qemu", data->root,
+                                                data->id, data->name, true)))
         goto cleanup;
 
     if (STRNEQ(actual, data->expected)) {
@@ -724,30 +725,34 @@ mymain(void)
 
     TEST_SCOPE_NEW("qemu-3-demo", "machine-qemu\\x2d3\\x2ddemo.scope");
 
-# define TEST_MACHINE(_name, _id, machinename) \
+# define TEST_MACHINE(_name, _root, _id, machinename) \
     do { \
         struct testNameData data = { \
-            .name = _name, .expected = machinename, .id = _id, \
+            .name = _name, .expected = machinename, .root = _root, .id = _id, \
         }; \
         if (virTestRun("Test scopename", testMachineName, &data) < 0) \
             ret = -1; \
     } while (0)
 
-    TEST_MACHINE("demo", 1, "qemu-1-demo");
-    TEST_MACHINE("demo-name", 2, "qemu-2-demo-name");
-    TEST_MACHINE("demo!name", 3, "qemu-3-demoname");
-    TEST_MACHINE(".demo", 4, "qemu-4-demo");
-    TEST_MACHINE("bull\U0001f4a9", 5, "qemu-5-bull");
-    TEST_MACHINE("demo..name", 6, "qemu-6-demo.name");
-    TEST_MACHINE("12345678901234567890123456789012345678901234567890123456789", 7,
+    TEST_MACHINE("demo", NULL, 1, "qemu-1-demo");
+    TEST_MACHINE("demo-name", NULL, 2, "qemu-2-demo-name");
+    TEST_MACHINE("demo!name", NULL, 3, "qemu-3-demoname");
+    TEST_MACHINE(".demo", NULL, 4, "qemu-4-demo");
+    TEST_MACHINE("bull\U0001f4a9", NULL, 5, "qemu-5-bull");
+    TEST_MACHINE("demo..name", NULL, 6, "qemu-6-demo.name");
+    TEST_MACHINE("12345678901234567890123456789012345678901234567890123456789", NULL, 7,
                  "qemu-7-123456789012345678901234567890123456789012345678901234567");
-    TEST_MACHINE("123456789012345678901234567890123456789012345678901234567890", 8,
+    TEST_MACHINE("123456789012345678901234567890123456789012345678901234567890", NULL, 8,
                  "qemu-8-123456789012345678901234567890123456789012345678901234567");
-    TEST_MACHINE("kstest-network-device-default-httpks_(c9eed63e-981e-48ec-acdc-56b3f8c5f678)", 100,
+    TEST_MACHINE("kstest-network-device-default-httpks_(c9eed63e-981e-48ec-acdc-56b3f8c5f678)",
+                 NULL, 100,
                  "qemu-100-kstest-network-device-default-httpksc9eed63e-981e-48ec");
-    TEST_MACHINE("kstest-network-device-default-httpks_(c9eed63e-981e-48ec--cdc-56b3f8c5f678)", 10,
+    TEST_MACHINE("kstest-network-device-default-httpks_(c9eed63e-981e-48ec--cdc-56b3f8c5f678)",
+                 NULL, 10,
                  "qemu-10-kstest-network-device-default-httpksc9eed63e-981e-48ec-c");
-    TEST_MACHINE("demo.-.test.", 11, "qemu-11-demo.test");
+    TEST_MACHINE("demo.-.test.", NULL, 11, "qemu-11-demo.test");
+    TEST_MACHINE("demo", "/tmp/root1", 1, "qemu-embed-0991f456-1-demo");
+    TEST_MACHINE("demo", "/tmp/root2", 1, "qemu-embed-95d47ff5-1-demo");
 
 # define TESTS_PM_SUPPORT_HELPER(name, function) \
     do { \
