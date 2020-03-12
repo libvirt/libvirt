@@ -1941,7 +1941,7 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
     return 0;
 }
 
-/* Returns: 0 on success
+/* Returns: number of entries in '@info' on success
  *          -2 when agent command is not supported by the agent
  *          -1 otherwise
  */

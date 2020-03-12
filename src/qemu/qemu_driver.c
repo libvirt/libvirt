@@ -22814,7 +22814,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     g_autofree char *hostname = NULL;
     unsigned int supportedTypes = types;
     int rc;
-    int nfs = 0;
+    size_t nfs = 0;
     qemuAgentFSInfoPtr *agentfsinfo = NULL;
     size_t i;
 
@@ -22867,9 +22867,13 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         }
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
-        rc = nfs = qemuAgentGetFSInfo(agent, &agentfsinfo);
-        if (rc < 0 && !(rc == -2 && types == 0))
-            goto exitagent;
+        rc = qemuAgentGetFSInfo(agent, &agentfsinfo);
+        if (rc < 0) {
+            if (!(rc == -2 && types == 0))
+                goto exitagent;
+        } else {
+            nfs = rc;
+        }
     }
 
     ret = 0;
