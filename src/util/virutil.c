@@ -1407,9 +1407,10 @@ virGetDeviceID(const char *path, int *maj, int *min)
 #else
 int
 virGetDeviceID(const char *path G_GNUC_UNUSED,
-               int *maj G_GNUC_UNUSED,
-               int *min G_GNUC_UNUSED)
+               int *maj,
+               int *min)
 {
+    *maj = *min = 0;
     return -ENOSYS;
 }
 #endif
