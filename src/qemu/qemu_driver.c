@@ -22709,24 +22709,20 @@ qemuDomainGetGuestInfoCheckSupport(unsigned int *types)
     *types = *types & supportedGuestInfoTypes;
 }
 
-/* Returns: 0 on success
- *          -1 otherwise
- */
-static int
+static void
 qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
                             int nfs,
                             virDomainDefPtr vmdef,
                             virTypedParameterPtr *params,
                             int *nparams, int *maxparams)
 {
-    int ret = -1;
     size_t i, j;
 
     /* FIXME: get disk target */
 
     if (virTypedParamsAddUInt(params, nparams, maxparams,
                               "fs.count", nfs) < 0)
-        goto cleanup;
+        return;
 
     for (i = 0; i < nfs; i++) {
         char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
@@ -22734,17 +22730,17 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
                    "fs.%zu.name", i);
         if (virTypedParamsAddString(params, nparams, maxparams,
                                     param_name, fsinfo[i]->name) < 0)
-            goto cleanup;
+            return;
         g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
                    "fs.%zu.mountpoint", i);
         if (virTypedParamsAddString(params, nparams, maxparams,
                                     param_name, fsinfo[i]->mountpoint) < 0)
-            goto cleanup;
+            return;
         g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
                    "fs.%zu.fstype", i);
         if (virTypedParamsAddString(params, nparams, maxparams,
                                     param_name, fsinfo[i]->fstype) < 0)
-            goto cleanup;
+            return;
 
         /* disk usage values are not returned by older guest agents, so
          * only add the params if the value is set */
@@ -22753,20 +22749,20 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
         if (fsinfo[i]->total_bytes != -1 &&
             virTypedParamsAddULLong(params, nparams, maxparams,
                                     param_name, fsinfo[i]->total_bytes) < 0)
-            goto cleanup;
+            return;
 
         g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
                    "fs.%zu.used-bytes", i);
         if (fsinfo[i]->used_bytes != -1 &&
             virTypedParamsAddULLong(params, nparams, maxparams,
                                     param_name, fsinfo[i]->used_bytes) < 0)
-            goto cleanup;
+            return;
 
         g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
                    "fs.%zu.disk.count", i);
         if (virTypedParamsAddUInt(params, nparams, maxparams,
                                   param_name, fsinfo[i]->ndisks) < 0)
-            goto cleanup;
+            return;
         for (j = 0; j < fsinfo[i]->ndisks; j++) {
             virDomainDiskDefPtr diskdef = NULL;
             qemuAgentDiskInfoPtr d = fsinfo[i]->disks[j];
@@ -22782,7 +22778,7 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
                 if (diskdef->dst &&
                     virTypedParamsAddString(params, nparams, maxparams,
                                             param_name, diskdef->dst) < 0)
-                    goto cleanup;
+                    return;
             }
 
             g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
@@ -22790,21 +22786,18 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
             if (d->serial &&
                 virTypedParamsAddString(params, nparams, maxparams,
                                         param_name, d->serial) < 0)
-                goto cleanup;
+                return;
 
             g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
                        "fs.%zu.disk.%zu.device", i, j);
             if (d->devnode &&
                 virTypedParamsAddString(params, nparams, maxparams,
                                         param_name, d->devnode) < 0)
-                goto cleanup;
+                return;
         }
     }
-    ret = nfs;
-
- cleanup:
-    return ret;
 }
+
 
 static int
 qemuDomainGetGuestInfo(virDomainPtr dom,
