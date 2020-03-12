@@ -1,5 +1,6 @@
 <cpus>
   <model name='pentium'>
+    <decode host='on' guest='on'/>
     <feature name='cx8'/>
     <feature name='de'/>
     <feature name='fpu'/>

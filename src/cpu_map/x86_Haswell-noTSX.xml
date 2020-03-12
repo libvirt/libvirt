@@ -1,5 +1,6 @@
 <cpus>
   <model name='Haswell-noTSX'>
+    <decode host='on' guest='on'/>
     <signature family='6' model='60'/> <!-- 0306c0 -->
     <signature family='6' model='63'/> <!-- 0306f0 -->
     <signature family='6' model='69'/> <!-- 040650 -->

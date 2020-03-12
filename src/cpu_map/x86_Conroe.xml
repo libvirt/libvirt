@@ -1,5 +1,6 @@
 <cpus>
   <model name='Conroe'>
+    <decode host='on' guest='on'/>
     <signature family='6' model='15'/> <!-- 0006f0 -->
     <signature family='6' model='22'/> <!-- 010660 -->
     <vendor name='Intel'/>

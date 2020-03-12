@@ -1,5 +1,6 @@
 <cpus>
   <model name='phenom'>
+    <decode host='on' guest='on'/>
     <vendor name='AMD'/>
     <feature name='3dnow'/>
     <feature name='3dnowext'/>

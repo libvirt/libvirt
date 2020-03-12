@@ -1,5 +1,6 @@
 <cpus>
   <model name='pentiumpro'>
+    <decode host='on' guest='on'/>
     <feature name='apic'/>
     <feature name='cmov'/>
     <feature name='cx8'/>

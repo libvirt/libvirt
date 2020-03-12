@@ -1,5 +1,6 @@
 <cpus>
   <model name='Opteron_G2'>
+    <decode host='on' guest='on'/>
     <signature family='15' model='6'/> <!-- 100e60 -->
     <vendor name='AMD'/>
     <feature name='apic'/>

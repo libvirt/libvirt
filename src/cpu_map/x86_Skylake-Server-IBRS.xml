@@ -1,5 +1,6 @@
 <cpus>
   <model name='Skylake-Server-IBRS'>
+    <decode host='on' guest='on'/>
     <signature family='6' model='85'/> <!-- 050654 -->
     <vendor name='Intel'/>
     <feature name='3dnowprefetch'/>

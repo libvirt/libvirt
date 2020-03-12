@@ -1,5 +1,6 @@
 <cpus>
   <model name='Westmere-IBRS'>
+    <decode host='on' guest='on'/>
     <signature family='6' model='44'/> <!-- 0206c0 -->
     <vendor name='Intel'/>
     <feature name='aes'/>

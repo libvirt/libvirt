@@ -1,5 +1,6 @@
 <cpus>
   <model name='Opteron_G5'>
+    <decode host='on' guest='on'/>
     <signature family='21' model='2'/> <!-- 600f20 -->
     <vendor name='AMD'/>
     <feature name='3dnowprefetch'/>

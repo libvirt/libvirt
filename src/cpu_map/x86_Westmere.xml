@@ -1,5 +1,6 @@
 <cpus>
   <model name='Westmere'>
+    <decode host='on' guest='on'/>
     <signature family='6' model='44'/> <!-- 0206c0 -->
     <signature family='6' model='47'/> <!-- 0206f0 -->
     <signature family='6' model='37'/> <!-- 020650 -->

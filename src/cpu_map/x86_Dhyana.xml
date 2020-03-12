@@ -1,5 +1,6 @@
 <cpus>
   <model name='Dhyana'>
+    <decode host='on' guest='on'/>
     <signature family='24' model='0'/> <!-- 900f00 -->
     <vendor name='Hygon'/>
     <feature name='3dnowprefetch'/>

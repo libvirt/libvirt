@@ -1,5 +1,6 @@
 <cpus>
   <model name='IvyBridge'>
+    <decode host='on' guest='on'/>
     <signature family='6' model='58'/> <!-- 0306a0 -->
     <signature family='6' model='62'/> <!-- 0306e0 -->
     <vendor name='Intel'/>

@@ -1,5 +1,6 @@
 <cpus>
   <model name='EPYC'>
+    <decode host='on' guest='on'/>
     <signature family='23' model='1'/> <!-- 800f10 -->
     <vendor name='AMD'/>
     <feature name='3dnowprefetch'/>

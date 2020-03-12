@@ -1,5 +1,6 @@
 <cpus>
   <model name='pentium2'>
+    <decode host='on' guest='on'/>
     <feature name='cmov'/>
     <feature name='cx8'/>
     <feature name='de'/>

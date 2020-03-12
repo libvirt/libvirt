@@ -1,5 +1,6 @@
 <cpus>
   <model name='core2duo'>
+    <decode host='on' guest='on'/>
     <vendor name='Intel'/>
     <feature name='apic'/>
     <feature name='clflush'/>

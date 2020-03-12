@@ -1,5 +1,6 @@
 <cpus>
   <model name='Penryn'>
+    <decode host='on' guest='on'/>
     <signature family='6' model='23'/> <!-- 010670 -->
     <signature family='6' model='29'/> <!-- 0106d0 -->
     <vendor name='Intel'/>

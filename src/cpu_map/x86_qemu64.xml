@@ -1,5 +1,6 @@
 <cpus>
   <model name='qemu64'>
+    <decode host='on' guest='on'/>
     <!-- These are supported only by TCG.  KVM supports them only if the
          host does.  So we leave them out:
 

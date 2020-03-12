@@ -1,5 +1,6 @@
 <cpus>
   <model name='Nehalem-IBRS'>
+    <decode host='on' guest='on'/>
     <signature family='6' model='26'/> <!-- 0106a0 -->
     <signature family='6' model='30'/> <!-- 0106e0 -->
     <signature family='6' model='31'/> <!-- 0106f0 -->

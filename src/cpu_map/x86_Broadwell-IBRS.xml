@@ -1,5 +1,6 @@
 <cpus>
   <model name='Broadwell-IBRS'>
+    <decode host='on' guest='on'/>
     <signature family='6' model='61'/> <!-- 0306d0 -->
     <signature family='6' model='71'/> <!-- 040670 -->
     <signature family='6' model='79'/> <!-- 0406f0 -->
