@@ -36,6 +36,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+VIR_LOG_INIT("qemu.virtiofs");
+
 
 char *
 qemuVirtioFSCreatePidFilename(virDomainObjPtr vm,
@@ -271,27 +273,18 @@ qemuVirtioFSStop(virQEMUDriverPtr driver G_GNUC_UNUSED,
 {
     g_autofree char *pidfile = NULL;
     virErrorPtr orig_err;
-    pid_t pid = -1;
-    int rc;
 
     virErrorPreserveLast(&orig_err);
 
     if (!(pidfile = qemuVirtioFSCreatePidFilename(vm, fs->info.alias)))
         goto cleanup;
 
-    rc = virPidFileReadPathIfAlive(pidfile, &pid, NULL);
-    if (rc >= 0 && pid != (pid_t) -1)
-        virProcessKillPainfully(pid, true);
-
-    if (unlink(pidfile) < 0 &&
-        errno != ENOENT) {
-        virReportSystemError(errno,
-                             _("Unable to remove stale pidfile %s"),
-                             pidfile);
+    if (virPidFileForceCleanupPath(pidfile) < 0) {
+        VIR_WARN("Unable to kill virtiofsd process");
+    } else {
+        if (QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock)
+            unlink(QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock);
     }
-
-    if (QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock)
-        unlink(QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock);
 
  cleanup:
     virErrorRestore(&orig_err);
