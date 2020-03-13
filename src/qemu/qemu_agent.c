@@ -1720,44 +1720,36 @@ int
 qemuAgentGetHostname(qemuAgentPtr agent,
                      char **hostname)
 {
-    int ret = -1;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
+    g_autoptr(virJSONValue) cmd = qemuAgentMakeCommand("guest-get-host-name", NULL);
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data = NULL;
     const char *result = NULL;
 
-    cmd = qemuAgentMakeCommand("guest-get-host-name",
-                               NULL);
-
     if (!cmd)
-        return ret;
+        return -1;
 
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0) {
         if (qemuAgentErrorCommandUnsupported(reply))
-            ret = -2;
-        goto cleanup;
+            return -2;
+
+        return -1;
     }
 
     if (!(data = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed return value"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(result = virJSONValueObjectGetString(data, "host-name"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("'host-name' missing in guest-get-host-name reply"));
-        goto cleanup;
+        return -1;
     }
 
     *hostname = g_strdup(result);
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return 0;
 }
 
 
