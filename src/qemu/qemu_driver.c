@@ -22853,20 +22853,32 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     return ret;
 }
 
-static const unsigned int supportedGuestInfoTypes =
+static const unsigned int qemuDomainGetGuestInfoSupportedTypes =
     VIR_DOMAIN_GUEST_INFO_USERS |
     VIR_DOMAIN_GUEST_INFO_OS |
     VIR_DOMAIN_GUEST_INFO_TIMEZONE |
     VIR_DOMAIN_GUEST_INFO_HOSTNAME |
     VIR_DOMAIN_GUEST_INFO_FILESYSTEM;
 
-static void
-qemuDomainGetGuestInfoCheckSupport(unsigned int *types)
+static int
+qemuDomainGetGuestInfoCheckSupport(unsigned int types,
+                                   unsigned int *supportedTypes)
 {
-    if (*types == 0)
-        *types = supportedGuestInfoTypes;
+    if (types == 0) {
+        *supportedTypes = qemuDomainGetGuestInfoSupportedTypes;
+        return 0;
+    }
 
-    *types = *types & supportedGuestInfoTypes;
+    *supportedTypes = types & qemuDomainGetGuestInfoSupportedTypes;
+
+    if (types != *supportedTypes) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported guest information types '0x%x'"),
+                       types & ~qemuDomainGetGuestInfoSupportedTypes);
+        return -1;
+    }
+
+    return 0;
 }
 
 static void
@@ -22972,14 +22984,16 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     int ret = -1;
     int maxparams = 0;
     g_autofree char *hostname = NULL;
-    unsigned int supportedTypes = types;
+    unsigned int supportedTypes;
     int rc;
     size_t nfs = 0;
     qemuAgentFSInfoPtr *agentfsinfo = NULL;
     size_t i;
 
     virCheckFlags(0, -1);
-    qemuDomainGetGuestInfoCheckSupport(&supportedTypes);
+
+    if (qemuDomainGetGuestInfoCheckSupport(types, &supportedTypes) < 0)
+        return -1;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
