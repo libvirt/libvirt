@@ -612,6 +612,7 @@ virExec(virCommandPtr cmd)
     int null = -1;
     int pipeout[2] = {-1, -1};
     int pipeerr[2] = {-1, -1};
+    int pipesync[2] = {-1, -1};
     int childin = cmd->infd;
     int childout = -1;
     int childerr = -1;
@@ -745,9 +746,15 @@ virExec(virCommandPtr cmd)
     /* Initialize full logging for a while */
     virLogSetFromEnv();
 
+    if (cmd->pidfile &&
+        virPipe(pipesync) < 0)
+        goto fork_error;
+
     /* Daemonize as late as possible, so the parent process can detect
      * the above errors with wait* */
     if (cmd->flags & VIR_EXEC_DAEMON) {
+        char c;
+
         if (setsid() < 0) {
             virReportSystemError(errno,
                                  "%s", _("cannot become session leader"));
@@ -768,12 +775,13 @@ virExec(virCommandPtr cmd)
         }
 
         if (pid > 0) {
-            if (cmd->pidfile && (virPidFileWritePath(cmd->pidfile, pid) < 0)) {
-                if (virProcessKillPainfully(pid, true) >= 0)
-                    virReportSystemError(errno,
-                                         _("could not write pidfile %s for %d"),
-                                         cmd->pidfile, pid);
-                goto fork_error;
+            /* The parent expect us to have written the pid file before
+             * exiting. Wait here for the child to write it and signal us. */
+            if (cmd->pidfile &&
+                saferead(pipesync[0], &c, sizeof(c)) != sizeof(c)) {
+                virReportSystemError(errno, "%s",
+                                     _("Unable to wait for child process"));
+                _exit(EXIT_FAILURE);
             }
             _exit(EXIT_SUCCESS);
         }
@@ -788,6 +796,37 @@ virExec(virCommandPtr cmd)
     if (cmd->setMaxCore &&
         virProcessSetMaxCoreSize(0, cmd->maxCore) < 0)
         goto fork_error;
+    if (cmd->pidfile) {
+        VIR_AUTOCLOSE pidfilefd = -1;
+        int newpidfilefd = -1;
+        char c;
+
+        pidfilefd = virPidFileAcquirePath(cmd->pidfile, false, getpid());
+        if (pidfilefd < 0)
+            goto fork_error;
+        if (virSetInherit(pidfilefd, true) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Cannot disable close-on-exec flag"));
+            goto fork_error;
+        }
+
+        c = '1';
+        if (safewrite(pipesync[1], &c, sizeof(c)) != sizeof(c)) {
+            virReportSystemError(errno, "%s", _("Unable to notify child process"));
+            goto fork_error;
+        }
+        VIR_FORCE_CLOSE(pipesync[0]);
+        VIR_FORCE_CLOSE(pipesync[1]);
+
+        /* This is here only to move the pidfilefd
+         * to the lowest possible number. */
+        if ((newpidfilefd = dup(pidfilefd)) < 0) {
+            virReportSystemError(errno, "%s", _("Unable to dup FD"));
+            goto fork_error;
+        }
+
+        /* newpidfilefd is intentionally leaked. */
+    }
 
     if (cmd->hook) {
         VIR_DEBUG("Run hook %p %p", cmd->hook, cmd->opaque);
@@ -1080,8 +1119,9 @@ virCommandPassFDGetFDIndex(virCommandPtr cmd, int fd)
  * @cmd: the command to modify
  * @pidfile: filename to use
  *
- * Save the child PID in a pidfile.  The pidfile will be populated
- * before the exec of the child.
+ * Save the child PID in a pidfile. The pidfile will be populated before the
+ * exec of the child and the child will inherit opened and locked FD to the
+ * pidfile.
  */
 void
 virCommandSetPidFile(virCommandPtr cmd, const char *pidfile)

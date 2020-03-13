@@ -9,6 +9,7 @@ ENV:USER=test
 FD:0
 FD:1
 FD:2
+FD:3
 DAEMON:yes
 CWD:/
 UMASK:0022

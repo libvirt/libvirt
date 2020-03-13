@@ -226,7 +226,9 @@ virCommandSetPidFile(cmd, "/var/run/dnsmasq.pid");
 
     <p>
       This PID file is guaranteed to be written before
-      the intermediate process exits.
+      the intermediate process exits. Moreover, the daemonized
+      process will inherit the FD of the opened and locked PID
+      file.
     </p>
 
     <h3><a id="privs">Reducing command privileges</a></h3>
