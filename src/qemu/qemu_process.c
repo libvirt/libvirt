@@ -2850,7 +2850,6 @@ qemuProcessStartManagedPRDaemon(virDomainObjPtr vm)
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     int errfd = -1;
     g_autofree char *pidfile = NULL;
-    int pidfd = -1;
     g_autofree char *socketPath = NULL;
     pid_t cpid = -1;
     g_autoptr(virCommand) cmd = NULL;
@@ -2869,10 +2868,6 @@ qemuProcessStartManagedPRDaemon(virDomainObjPtr vm)
     if (!(pidfile = qemuProcessBuildPRHelperPidfilePath(vm)))
         goto cleanup;
 
-    /* Just try to acquire. Dummy pid will be replaced later */
-    if ((pidfd = virPidFileAcquirePath(pidfile, false, -1)) < 0)
-        goto cleanup;
-
     if (!(socketPath = qemuDomainGetManagedPRSocketPath(priv)))
         goto cleanup;
 
@@ -2887,13 +2882,10 @@ qemuProcessStartManagedPRDaemon(virDomainObjPtr vm)
 
     if (!(cmd = virCommandNewArgList(cfg->prHelperName,
                                      "-k", socketPath,
-                                     "-f", pidfile,
                                      NULL)))
         goto cleanup;
 
     virCommandDaemonize(cmd);
-    /* We want our virCommand to write child PID into the pidfile
-     * so that we can read it even before exec(). */
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetErrorFD(cmd, &errfd);
 
@@ -2956,7 +2948,6 @@ qemuProcessStartManagedPRDaemon(virDomainObjPtr vm)
         if (pidfile)
             unlink(pidfile);
     }
-    VIR_FORCE_CLOSE(pidfd);
     VIR_FORCE_CLOSE(errfd);
     return ret;
 }
