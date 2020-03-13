@@ -561,6 +561,7 @@ struct qemuMonitorQueryHotpluggableCpusEntry {
     /* topology information -1 if qemu didn't report given parameter */
     int node_id;
     int socket_id;
+    int die_id;
     int core_id;
     int thread_id;
 
@@ -583,6 +584,7 @@ struct _qemuMonitorCPUInfo {
     /* topology info for hotplug purposes. Hotplug of given vcpu impossible if
      * all entries are -1 */
     int socket_id;
+    int die_id;
     int core_id;
     int thread_id;
     int node_id;

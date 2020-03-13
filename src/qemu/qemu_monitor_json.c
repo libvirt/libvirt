@@ -8560,11 +8560,13 @@ qemuMonitorJSONProcessHotpluggableCpusReply(virJSONValuePtr vcpu,
 
     entry->node_id = -1;
     entry->socket_id = -1;
+    entry->die_id = -1;
     entry->core_id = -1;
     entry->thread_id = -1;
 
     ignore_value(virJSONValueObjectGetNumberInt(props, "node-id", &entry->node_id));
     ignore_value(virJSONValueObjectGetNumberInt(props, "socket-id", &entry->socket_id));
+    ignore_value(virJSONValueObjectGetNumberInt(props, "die-id", &entry->die_id));
     ignore_value(virJSONValueObjectGetNumberInt(props, "core-id", &entry->core_id));
     ignore_value(virJSONValueObjectGetNumberInt(props, "thread-id", &entry->thread_id));
 
@@ -8598,6 +8600,9 @@ qemuMonitorQueryHotpluggableCpusEntrySort(const void *p1,
 
     if (a->socket_id != b->socket_id)
         return a->socket_id - b->socket_id;
+
+    if (a->die_id != b->die_id)
+        return a->die_id - b->die_id;
 
     if (a->core_id != b->core_id)
         return a->core_id - b->core_id;

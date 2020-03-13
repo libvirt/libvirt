@@ -13644,8 +13644,14 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
         }
 
         if (validTIDs)
-            VIR_DEBUG("vCPU[%zu] PID %llu is valid",
-                      i, (unsigned long long)info[i].tid);
+            VIR_DEBUG("vCPU[%zu] PID %llu is valid "
+                      "(node=%d socket=%d die=%d core=%d thread=%d)",
+                      i, (unsigned long long)info[i].tid,
+                      info[i].node_id,
+                      info[i].socket_id,
+                      info[i].die_id,
+                      info[i].core_id,
+                      info[i].thread_id);
     }
 
     VIR_DEBUG("Extracting vCPU information validTIDs=%d", validTIDs);
