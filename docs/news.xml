@@ -48,6 +48,24 @@
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Open backing chain late for shallow block copy reusing external images
+        </summary>
+        <description>
+          With introduction of -blockdev for QEMU storage configuration
+          in libvirt-5.10 we've started opening the backing chain of the
+          destination/mirror of a virDomainBlockcopy started with
+          VIR_DOMAIN_BLOCK_COPY_REUSE_EXT | VIR_DOMAIN_BLOCK_COPY_SHALLOW flags
+          when starting the job rather than when virDomainBlockJobAbort with
+          VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT is issued. For users depending on
+          this undocumented quirky pre-blockdev behaviour this caused a
+          regression as the backing chain could not be modified while the copy
+          of the top image was progressing due to QEMU image locking. Note that
+          this fix also requires qemu-5.0 while -blockdev is used starting from
+          QEMU-4.2.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v6.1.0" date="2020-03-03">
