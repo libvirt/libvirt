@@ -22967,14 +22967,14 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_HOSTNAME) {
         rc = qemuAgentGetHostname(agent, &hostname);
-        if (rc < 0 && !(rc == -2 && types == 0)) {
+        if (rc < 0 && !(rc == -2 && types == 0))
             goto exitagent;
-        } else {
-            if (virTypedParamsAddString(params, nparams, &maxparams, "hostname",
-                                        hostname) < 0)
-                goto exitagent;
-        }
     }
+
+    if (hostname &&
+        virTypedParamsAddString(params, nparams, &maxparams, "hostname", hostname) < 0)
+        goto exitagent;
+
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
         rc = qemuAgentGetFSInfo(agent, &agentfsinfo);
         if (rc < 0) {
