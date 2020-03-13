@@ -246,8 +246,6 @@ qemuSlirpStop(qemuSlirpPtr slirp,
     g_autofree char *dbus_path = NULL;
     g_autofree char *id = qemuSlirpGetDBusVMStateId(net);
     virErrorPtr orig_err;
-    pid_t pid;
-    int rc;
 
     if (!(pidfile = qemuSlirpCreatePidFilename(cfg, vm->def, net->info.alias))) {
         VIR_WARN("Unable to construct slirp pidfile path");
@@ -261,17 +259,11 @@ qemuSlirpStop(qemuSlirpPtr slirp,
     }
 
     virErrorPreserveLast(&orig_err);
-    rc = virPidFileReadPathIfAlive(pidfile, &pid, cfg->slirpHelperName);
-    if (rc >= 0 && pid != (pid_t) -1)
-        virProcessKillPainfully(pid, true);
-
-    if (unlink(pidfile) < 0 &&
-        errno != ENOENT) {
-        virReportSystemError(errno,
-                             _("Unable to remove stale pidfile %s"),
-                             pidfile);
+    if (virPidFileForceCleanupPath(pidfile) < 0) {
+        VIR_WARN("Unable to kill slirp process");
+    } else {
+        slirp->pid = 0;
     }
-    slirp->pid = 0;
 
     dbus_path = qemuSlirpGetDBusPath(cfg, vm->def, net->info.alias);
     if (dbus_path) {
