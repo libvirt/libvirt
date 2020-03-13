@@ -1051,7 +1051,8 @@ qemuAgentCommandName(virJSONValuePtr cmd)
 
 static int
 qemuAgentCheckError(virJSONValuePtr cmd,
-                    virJSONValuePtr reply)
+                    virJSONValuePtr reply,
+                    bool report_unsupported)
 {
     if (virJSONValueObjectHasKey(reply, "error")) {
         virJSONValuePtr error = virJSONValueObjectGet(reply, "error");
@@ -1063,15 +1064,25 @@ qemuAgentCheckError(virJSONValuePtr cmd,
                   NULLSTR(cmdstr), NULLSTR(replystr));
 
         /* Only send the user the command name + friendly error */
-        if (!error)
+        if (!error) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to execute QEMU agent command '%s'"),
                            qemuAgentCommandName(cmd));
-        else
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to execute QEMU agent command '%s': %s"),
-                           qemuAgentCommandName(cmd),
-                           qemuAgentStringifyError(error));
+            return -1;
+        }
+
+        if (!report_unsupported) {
+            const char *klass = virJSONValueObjectGetString(error, "class");
+
+            if (STREQ_NULLABLE(klass, "CommandNotFound") ||
+                STREQ_NULLABLE(klass, "CommandDisabled"))
+                return -2;
+        }
+
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to execute QEMU agent command '%s': %s"),
+                       qemuAgentCommandName(cmd),
+                       qemuAgentStringifyError(error));
 
         return -1;
     } else if (!virJSONValueObjectHasKey(reply, "return")) {
@@ -1089,10 +1100,11 @@ qemuAgentCheckError(virJSONValuePtr cmd,
 }
 
 static int
-qemuAgentCommand(qemuAgentPtr agent,
-                 virJSONValuePtr cmd,
-                 virJSONValuePtr *reply,
-                 int seconds)
+qemuAgentCommandFull(qemuAgentPtr agent,
+                     virJSONValuePtr cmd,
+                     virJSONValuePtr *reply,
+                     int seconds,
+                     bool report_unsupported)
 {
     int ret = -1;
     qemuAgentMessage msg;
@@ -1143,7 +1155,7 @@ qemuAgentCommand(qemuAgentPtr agent,
     }
 
     *reply = msg.rxObject;
-    ret = qemuAgentCheckError(cmd, *reply);
+    ret = qemuAgentCheckError(cmd, *reply, report_unsupported);
 
  cleanup:
     VIR_FREE(cmdstr);
@@ -1151,6 +1163,15 @@ qemuAgentCommand(qemuAgentPtr agent,
     agent->await_event = QEMU_AGENT_EVENT_NONE;
 
     return ret;
+}
+
+static int
+qemuAgentCommand(qemuAgentPtr agent,
+                 virJSONValuePtr cmd,
+                 virJSONValuePtr *reply,
+                 int seconds)
+{
+    return qemuAgentCommandFull(agent, cmd, reply, seconds, true);
 }
 
 static virJSONValuePtr G_GNUC_NULL_TERMINATED
