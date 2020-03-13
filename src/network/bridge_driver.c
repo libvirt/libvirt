@@ -966,67 +966,6 @@ static int networkConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 }
 
 
-/* networkKillDaemon:
- *
- * kill the specified pid/name, and wait a bit to make sure it's dead.
- */
-static int
-networkKillDaemon(pid_t pid,
-                  const char *daemonName,
-                  const char *networkName)
-{
-    size_t i;
-    int ret = -1;
-    const char *signame = "TERM";
-
-    /* send SIGTERM, then wait up to 3 seconds for the process to
-     * disappear, send SIGKILL, then wait for up to another 2
-     * seconds. If that fails, log a warning and continue, hoping
-     * for the best.
-     */
-    for (i = 0; i < 25; i++) {
-        int signum = 0;
-        if (i == 0) {
-            signum = SIGTERM;
-        } else if (i == 15) {
-            signum = SIGKILL;
-            signame = "KILL";
-        }
-        if (kill(pid, signum) < 0) {
-            if (errno == ESRCH) {
-                ret = 0;
-            } else {
-                VIR_WARN("Failed to terminate %s process %d "
-                         "for network '%s' with SIG%s: %s",
-                         daemonName, pid, networkName, signame,
-                         g_strerror(errno));
-            }
-            return ret;
-        }
-        /* NB: since networks have no reference count like
-         * domains, there is no safe way to unlock the network
-         * object temporarily, and so we can't follow the
-         * procedure used by the qemu driver of 1) unlock driver
-         * 2) sleep, 3) add ref to object 4) unlock object, 5)
-         * re-lock driver, 6) re-lock object. We may need to add
-         * that functionality eventually, but for now this
-         * function is rarely used and, at worst, leaving the
-         * network driver locked during this loop of sleeps will
-         * have the effect of holding up any other thread trying
-         * to make modifications to a network for up to 5 seconds;
-         * since modifications to networks are much less common
-         * than modifications to domains, this seems a reasonable
-         * tradeoff in exchange for less code disruption.
-         */
-        g_usleep(20 * 1000);
-    }
-    VIR_WARN("Timed out waiting after SIG%s to %s process %d "
-             "(network '%s')",
-             signame, daemonName, pid, networkName);
-    return ret;
-}
-
-
 /* the following does not build a file, it builds a list
  * which is later saved into a file
  */
@@ -1832,12 +1771,11 @@ static int
 networkRestartDhcpDaemon(virNetworkDriverStatePtr driver,
                          virNetworkObjPtr obj)
 {
-    virNetworkDefPtr def = virNetworkObjGetDef(obj);
     pid_t dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
 
     /* if there is a running dnsmasq, kill it */
     if (dnsmasqPid > 0) {
-        networkKillDaemon(dnsmasqPid, "dnsmasq", def->name);
+        virProcessKillPainfully(dnsmasqPid, false);
         virNetworkObjSetDnsmasqPid(obj, -1);
     }
     /* now start dnsmasq if it should be started */
@@ -2066,23 +2004,19 @@ networkRefreshRadvd(virNetworkDriverStatePtr driver,
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     dnsmasqCapsPtr dnsmasq_caps = networkGetDnsmasqCaps(driver);
-    char *radvdpidbase;
+    g_autofree char *radvdpidbase = NULL;
+    g_autofree char *pidfile = NULL;
     pid_t radvdPid;
 
     /* Is dnsmasq handling RA? */
     if (DNSMASQ_RA_SUPPORT(dnsmasq_caps)) {
         virObjectUnref(dnsmasq_caps);
-        radvdPid = virNetworkObjGetRadvdPid(obj);
-        if (radvdPid <= 0)
-            return 0;
-        /* radvd should not be running but in case it is */
-        if ((networkKillDaemon(radvdPid, "radvd", def->name) >= 0) &&
-            ((radvdpidbase = networkRadvdPidfileBasename(def->name))
-             != NULL)) {
-            virPidFileDelete(driver->pidDir, radvdpidbase);
-            VIR_FREE(radvdpidbase);
+        if ((radvdpidbase = networkRadvdPidfileBasename(def->name)) &&
+            (pidfile = virPidFileBuildPath(driver->pidDir, radvdpidbase))) {
+            /* radvd should not be running but in case it is */
+            virPidFileForceCleanupPath(pidfile);
+            virNetworkObjSetRadvdPid(obj, -1);
         }
-        virNetworkObjSetRadvdPid(obj, -1);
         return 0;
     }
     virObjectUnref(dnsmasq_caps);
@@ -2110,23 +2044,19 @@ static int
 networkRestartRadvd(virNetworkObjPtr obj)
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
-    char *radvdpidbase;
-    pid_t radvdPid = virNeworkObjGetRadvdPid(obj);
+    g_autofree char *radvdpidbase = NULL;
+    g_autofree char *pidfile = NULL;
 
-    /* if there is a running radvd, kill it */
-    if (radvdPid > 0) {
-        /* essentially ignore errors from the following two functions,
-         * since there's really no better recovery to be done than to
-         * just push ahead (and that may be exactly what's needed).
-         */
-        if ((networkKillDaemon(radvdPid, "radvd", def->name) >= 0) &&
-            ((radvdpidbase = networkRadvdPidfileBasename(def->name))
-             != NULL)) {
-            virPidFileDelete(driver->pidDir, radvdpidbase);
-            VIR_FREE(radvdpidbase);
-        }
+    /* If there is a running radvd, kill it. Essentially ignore errors from the
+     * following two functions, since there's really no better recovery to be
+     * done than to just push ahead (and that may be exactly what's needed).
+     */
+    if ((radvdpidbase = networkRadvdPidfileBasename(def->name)) &&
+        (pidfile = virPidFileBuildPath(driver->pidDir, radvdpidbase))) {
+        virPidFileForceCleanupPath(pidfile);
         virNetworkObjSetRadvdPid(obj, -1);
     }
+
     /* now start radvd if it should be started */
     return networkStartRadvd(obj);
 }
