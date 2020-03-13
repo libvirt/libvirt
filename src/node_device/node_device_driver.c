@@ -156,6 +156,22 @@ nodeDeviceUnlock(void)
 }
 
 
+static int
+nodeDeviceWaitInit(void)
+{
+    nodeDeviceLock();
+    while (!driver->initialized) {
+        if (virCondWait(&driver->initCond, &driver->lock) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("failed to wait on condition"));
+            nodeDeviceUnlock();
+            return -1;
+        }
+    }
+    nodeDeviceUnlock();
+    return 0;
+}
+
 int
 nodeNumOfDevices(virConnectPtr conn,
                  const char *cap,
@@ -165,6 +181,9 @@ nodeNumOfDevices(virConnectPtr conn,
         return -1;
 
     virCheckFlags(0, -1);
+
+    if (nodeDeviceWaitInit() < 0)
+        return -1;
 
     return virNodeDeviceObjListNumOfDevices(driver->devs, conn, cap,
                                             virNodeNumOfDevicesCheckACL);
@@ -183,6 +202,9 @@ nodeListDevices(virConnectPtr conn,
 
     virCheckFlags(0, -1);
 
+    if (nodeDeviceWaitInit() < 0)
+        return -1;
+
     return virNodeDeviceObjListGetNames(driver->devs, conn,
                                         virNodeListDevicesCheckACL,
                                         cap, names, maxnames);
@@ -197,6 +219,9 @@ nodeConnectListAllNodeDevices(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP, -1);
 
     if (virConnectListAllNodeDevicesEnsureACL(conn) < 0)
+        return -1;
+
+    if (nodeDeviceWaitInit() < 0)
         return -1;
 
     return virNodeDeviceObjListExport(conn, driver->devs, devices,
@@ -228,6 +253,9 @@ nodeDeviceLookupByName(virConnectPtr conn,
     virNodeDeviceDefPtr def;
     virNodeDevicePtr device = NULL;
 
+    if (nodeDeviceWaitInit() < 0)
+        return NULL;
+
     if (!(obj = nodeDeviceObjFindByName(name)))
         return NULL;
     def = virNodeDeviceObjGetDef(obj);
@@ -255,6 +283,9 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
     virNodeDevicePtr device = NULL;
 
     virCheckFlags(0, NULL);
+
+    if (nodeDeviceWaitInit() < 0)
+        return NULL;
 
     if (!(obj = virNodeDeviceObjListFindSCSIHostByWWNs(driver->devs,
                                                        wwnn, wwpn)))
@@ -470,6 +501,10 @@ nodeDeviceCreateXML(virConnectPtr conn,
     const char *virt_type = NULL;
 
     virCheckFlags(0, NULL);
+
+    if (nodeDeviceWaitInit() < 0)
+        return NULL;
+
     virt_type  = virConnectGetType(conn);
 
     if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type)))
@@ -511,6 +546,9 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     g_autofree char *wwnn = NULL;
     g_autofree char *wwpn = NULL;
     unsigned int parent_host;
+
+    if (nodeDeviceWaitInit() < 0)
+        return -1;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
@@ -564,6 +602,9 @@ nodeConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
     if (virConnectNodeDeviceEventRegisterAnyEnsureACL(conn) < 0)
         return -1;
 
+    if (nodeDeviceWaitInit() < 0)
+        return -1;
+
     if (virNodeDeviceEventStateRegisterID(conn, driver->nodeDeviceEventState,
                                           device, eventID, callback,
                                           opaque, freecb, &callbackID) < 0)
@@ -578,6 +619,9 @@ nodeConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
                                         int callbackID)
 {
     if (virConnectNodeDeviceEventDeregisterAnyEnsureACL(conn) < 0)
+        return -1;
+
+    if (nodeDeviceWaitInit() < 0)
         return -1;
 
     if (virObjectEventStateDeregisterID(conn,

@@ -1477,6 +1477,7 @@ nodeStateCleanup(void)
         virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
 
     VIR_FREE(driver->stateDir);
+    virCondDestroy(&driver->initCond);
     virMutexDestroy(&driver->lock);
     VIR_FREE(driver);
 
@@ -1744,6 +1745,11 @@ nodeStateInitializeEnumerate(void *opaque)
     if (udevEnumerateDevices(udev) != 0)
         goto error;
 
+    nodeDeviceLock();
+    driver->initialized = true;
+    nodeDeviceUnlock();
+    virCondBroadcast(&driver->initCond);
+
     return;
 
  error:
@@ -1803,6 +1809,13 @@ nodeStateInitialize(bool privileged,
     if (virMutexInit(&driver->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to initialize mutex"));
+        VIR_FREE(driver);
+        return VIR_DRV_STATE_INIT_ERROR;
+    }
+    if (virCondInit(&driver->initCond) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to initialize condition variable"));
+        virMutexDestroy(&driver->lock);
         VIR_FREE(driver);
         return VIR_DRV_STATE_INIT_ERROR;
     }
