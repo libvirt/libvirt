@@ -687,8 +687,7 @@ msg_gen_function += virLastErrorPrefixMessage
 # msg_gen_function += vshPrint
 # msg_gen_function += vshError
 
-space =
-space +=
+space = $(null) $(null)
 func_re= ($(subst $(space),|,$(msg_gen_function)))
 
 # Look for diagnostics that aren't marked for translation.
