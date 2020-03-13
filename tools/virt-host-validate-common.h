@@ -82,3 +82,5 @@ int virHostValidateCGroupControllers(const char *hvname,
 
 int virHostValidateIOMMU(const char *hvname,
                          virHostValidateLevel level);
+
+bool virHostKernelModuleIsLoaded(const char *module);

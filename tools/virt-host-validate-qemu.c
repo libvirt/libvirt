@@ -57,6 +57,11 @@ int virHostValidateQEMU(void)
         if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SIE))
             hasHwVirt = true;
         break;
+    case VIR_ARCH_PPC64:
+    case VIR_ARCH_PPC64LE:
+        hasVirtFlag = true;
+        hasHwVirt = true;
+        break;
     default:
         hasHwVirt = false;
     }
@@ -82,6 +87,16 @@ int virHostValidateQEMU(void)
                                                  _("Check /dev/kvm is world writable or you are in "
                                                    "a group that is allowed to access it")) < 0)
             ret = -1;
+    }
+
+    if (arch == VIR_ARCH_PPC64 || arch == VIR_ARCH_PPC64LE) {
+        virHostMsgCheck("QEMU", "%s", _("for PowerPC KVM module loaded"));
+
+        if (!virHostKernelModuleIsLoaded("kvm_hv"))
+            virHostMsgFail(VIR_HOST_VALIDATE_WARN,
+                          _("Load kvm_hv for better performance"));
+        else
+            virHostMsgPass();
     }
 
     virBitmapFree(flags);

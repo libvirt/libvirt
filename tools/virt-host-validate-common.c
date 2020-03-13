@@ -412,3 +412,30 @@ int virHostValidateIOMMU(const char *hvname,
     virHostMsgPass();
     return 0;
 }
+
+
+bool virHostKernelModuleIsLoaded(const char *module)
+{
+    FILE *fp;
+    bool ret = false;
+
+    if (!(fp = fopen("/proc/modules", "r")))
+        return false;
+
+    do {
+        char line[1024];
+
+        if (!fgets(line, sizeof(line), fp))
+            break;
+
+        if (STRPREFIX(line, module)) {
+            ret = true;
+            break;
+        }
+
+    } while (1);
+
+    VIR_FORCE_FCLOSE(fp);
+
+    return ret;
+}
