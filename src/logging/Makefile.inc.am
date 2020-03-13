@@ -9,11 +9,6 @@ LOG_DAEMON_GENERATED = \
 	logging/log_daemon_dispatch_stubs.h
 	$(NULL)
 
-LOG_DRIVER_SOURCES = \
-	logging/log_manager.c \
-	logging/log_manager.h \
-	$(NULL)
-
 LOG_DAEMON_SOURCES = \
 	logging/log_daemon.h \
 	logging/log_daemon.c \
@@ -48,22 +43,6 @@ OPENRC_INIT_FILES += \
 	$(NULL)
 OPENRC_INIT_FILES_IN += \
 	logging/virtlogd.init.in \
-	$(NULL)
-
-noinst_LTLIBRARIES += libvirt_driver_log.la
-
-libvirt_la_BUILT_LIBADD += libvirt_driver_log.la
-libvirt_driver_log_la_SOURCES = \
-	$(LOG_DRIVER_SOURCES) \
-	$(NULL)
-nodist_libvirt_driver_log_la_SOURCES = \
-	$(LOG_PROTOCOL_GENERATED) \
-	$(NULL)
-libvirt_driver_log_la_CFLAGS = \
-	-I$(builddir)/logging \
-	-I$(builddir)/rpc \
-	$(AM_CFLAGS) \
-	$(XDR_CFLAGS) \
 	$(NULL)
 
 if WITH_LIBVIRTD
