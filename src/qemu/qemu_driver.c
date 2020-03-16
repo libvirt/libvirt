@@ -20237,7 +20237,7 @@ qemuDomainGetHostnameAgent(virQEMUDriverPtr driver,
         goto endjob;
 
     agent = qemuDomainObjEnterAgent(vm);
-    ignore_value(qemuAgentGetHostname(agent, hostname));
+    ignore_value(qemuAgentGetHostname(agent, hostname, true));
     qemuDomainObjExitAgent(vm, agent);
 
     ret = 0;
@@ -23031,7 +23031,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
             goto exitagent;
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_HOSTNAME) {
-        rc = qemuAgentGetHostname(agent, &hostname);
+        rc = qemuAgentGetHostname(agent, &hostname, true);
         if (rc < 0 && !(rc == -2 && types == 0))
             goto exitagent;
     }

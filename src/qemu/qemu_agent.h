@@ -129,7 +129,8 @@ int qemuAgentUpdateCPUInfo(unsigned int nvcpus,
 
 int
 qemuAgentGetHostname(qemuAgentPtr mon,
-                     char **hostname);
+                     char **hostname,
+                     bool report_unsupported);
 
 int qemuAgentGetTime(qemuAgentPtr mon,
                      long long *seconds,

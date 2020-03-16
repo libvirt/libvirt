@@ -1716,24 +1716,32 @@ qemuAgentUpdateCPUInfo(unsigned int nvcpus,
 }
 
 
+/**
+ * qemuAgentGetHostname:
+ *
+ * Gets the guest hostname using the guest agent.
+ *
+ * Returns 0 on success and fills @hostname. On error -1 is returned with an
+ * error reported and if '@report_unsupported' is false -2 is returned if the
+ * guest agent does not support the command without reporting an error
+ */
 int
 qemuAgentGetHostname(qemuAgentPtr agent,
-                     char **hostname)
+                     char **hostname,
+                     bool report_unsupported)
 {
     g_autoptr(virJSONValue) cmd = qemuAgentMakeCommand("guest-get-host-name", NULL);
     g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data = NULL;
     const char *result = NULL;
+    int rc;
 
     if (!cmd)
         return -1;
 
-    if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0) {
-        if (qemuAgentErrorCommandUnsupported(reply))
-            return -2;
-
-        return -1;
-    }
+    if ((rc = qemuAgentCommandFull(agent, cmd, &reply, agent->timeout,
+                                   report_unsupported)) < 0)
+        return rc;
 
     if (!(data = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
