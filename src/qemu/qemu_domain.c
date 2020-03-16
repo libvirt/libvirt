@@ -1661,33 +1661,6 @@ qemuDomainSecretInfoNewPlain(virSecretUsageType usageType,
 }
 
 
-/* qemuDomainSecretInfoNew:
- * @priv: pointer to domain private object
- * @srcAlias: Alias base to use for TLS object
- * @usageType: Secret usage type
- * @username: username
- * @looupDef: lookup def describing secret
- * @isLuks: boolean for luks lookup
- *
- * Helper function to create a secinfo to be used for secinfo consumers. This
- * sets up encrypted data to be used with qemu's 'secret' object.
- *
- * Returns @secinfo on success, NULL on failure. Caller is responsible
- * to eventually free @secinfo.
- */
-static qemuDomainSecretInfoPtr
-qemuDomainSecretInfoNew(qemuDomainObjPrivatePtr priv,
-                        const char *srcAlias,
-                        virSecretUsageType usageType,
-                        const char *username,
-                        virSecretLookupTypeDefPtr lookupDef,
-                        bool isLuks)
-{
-    return qemuDomainSecretAESSetupFromSecret(priv, srcAlias, usageType, username,
-                                              lookupDef, isLuks);
-}
-
-
 /**
  * qemuDomainSecretInfoTLSNew:
  * @priv: pointer to domain private object
@@ -1714,9 +1687,9 @@ qemuDomainSecretInfoTLSNew(qemuDomainObjPrivatePtr priv,
     }
     seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
 
-    return qemuDomainSecretInfoNew(priv, srcAlias,
-                                   VIR_SECRET_USAGE_TYPE_TLS, NULL,
-                                   &seclookupdef, false);
+    return qemuDomainSecretAESSetupFromSecret(priv, srcAlias,
+                                              VIR_SECRET_USAGE_TYPE_TLS,
+                                              NULL, &seclookupdef, false);
 }
 
 
@@ -1806,11 +1779,11 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
                                                             src->auth->username,
                                                             &src->auth->seclookupdef);
         } else {
-            srcPriv->secinfo = qemuDomainSecretInfoNew(priv, authalias,
-                                                       usageType,
-                                                       src->auth->username,
-                                                       &src->auth->seclookupdef,
-                                                       false);
+            srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv, authalias,
+                                                                  usageType,
+                                                                  src->auth->username,
+                                                                  &src->auth->seclookupdef,
+                                                                  false);
         }
 
         if (!srcPriv->secinfo)
@@ -1818,11 +1791,11 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
     }
 
     if (hasEnc) {
-        if (!(srcPriv->encinfo =
-              qemuDomainSecretInfoNew(priv, encalias,
-                                      VIR_SECRET_USAGE_TYPE_VOLUME, NULL,
-                                      &src->encryption->secrets[0]->seclookupdef,
-                                      true)))
+        if (!(srcPriv->encinfo = qemuDomainSecretAESSetupFromSecret(priv, encalias,
+                                                                    VIR_SECRET_USAGE_TYPE_VOLUME,
+                                                                    NULL,
+                                                                    &src->encryption->secrets[0]->seclookupdef,
+                                                                    true)))
               return -1;
     }
 
