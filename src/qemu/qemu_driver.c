@@ -23026,7 +23026,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
             goto exitagent;
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_TIMEZONE) {
-        rc = qemuAgentGetTimezone(agent, params, nparams, &maxparams);
+        rc = qemuAgentGetTimezone(agent, params, nparams, &maxparams, true);
         if (rc < 0 && !(rc == -2 && types == 0))
             goto exitagent;
     }

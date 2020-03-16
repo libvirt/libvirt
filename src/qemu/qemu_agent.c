@@ -2458,29 +2458,30 @@ qemuAgentGetOSInfo(qemuAgentPtr agent,
 }
 
 /* Returns: 0 on success
- *          -2 when agent command is not supported by the agent
- *          -1 otherwise
+ *          -2 when agent command is not supported by the agent and
+ *             'report_unsupported' is false (libvirt error is not reported)
+ *          -1 otherwise (libvirt error is reported)
  */
 int
 qemuAgentGetTimezone(qemuAgentPtr agent,
                      virTypedParameterPtr *params,
                      int *nparams,
-                     int *maxparams)
+                     int *maxparams,
+                     bool report_unsupported)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data = NULL;
     const char *name;
     int offset;
+    int rc;
 
     if (!(cmd = qemuAgentMakeCommand("guest-get-timezone", NULL)))
         return -1;
 
-    if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0) {
-        if (qemuAgentErrorCommandUnsupported(reply))
-            return -2;
-        return -1;
-    }
+    if ((rc = qemuAgentCommandFull(agent, cmd, &reply, agent->timeout,
+                                   report_unsupported)) < 0)
+        return rc;
 
     if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

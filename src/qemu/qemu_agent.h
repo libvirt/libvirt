@@ -163,7 +163,8 @@ int qemuAgentGetOSInfo(qemuAgentPtr mon,
 int qemuAgentGetTimezone(qemuAgentPtr mon,
                          virTypedParameterPtr *params,
                          int *nparams,
-                         int *maxparams);
+                         int *maxparams,
+                         bool report_unsupported);
 
 void qemuAgentSetResponseTimeout(qemuAgentPtr mon,
                                  int timeout);

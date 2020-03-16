@@ -1244,7 +1244,7 @@ testQemuAgentTimezone(const void *data)
                                    response_) < 0) \
             goto cleanup; \
         if (qemuAgentGetTimezone(qemuMonitorTestGetAgent(test), \
-                                 &params_, &nparams_, &maxparams_) < 0) \
+                                 &params_, &nparams_, &maxparams_, true) < 0) \
             goto cleanup; \
         if (nparams_ != 2) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
