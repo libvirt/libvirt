@@ -1536,11 +1536,11 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
 {
     g_autoptr(virConnect) conn = virGetConnectSecret();
     int ret = -1;
-    uint8_t *raw_iv = NULL;
+    g_autofree uint8_t *raw_iv = NULL;
     size_t ivlen = QEMU_DOMAIN_AES_IV_LEN;
     uint8_t *secret = NULL;
     size_t secretlen = 0;
-    uint8_t *ciphertext = NULL;
+    g_autofree uint8_t *ciphertext = NULL;
     size_t ciphertextlen = 0;
 
     if (!conn)
@@ -1550,14 +1550,13 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
     secinfo->s.aes.username = g_strdup(username);
 
     if (!(secinfo->s.aes.alias = qemuDomainGetSecretAESAlias(srcalias, isLuks)))
-        goto cleanup;
+        return -1;
 
-    if (VIR_ALLOC_N(raw_iv, ivlen) < 0)
-        goto cleanup;
+    raw_iv = g_new0(uint8_t, ivlen);
 
     /* Create a random initialization vector */
     if (virRandomBytes(raw_iv, ivlen) < 0)
-        goto cleanup;
+        return -1;
 
     /* Encode the IV and save that since qemu will need it */
     secinfo->s.aes.iv = g_base64_encode(raw_iv, ivlen);
@@ -1583,9 +1582,7 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
     ret = 0;
 
  cleanup:
-    VIR_DISPOSE_N(raw_iv, ivlen);
     VIR_DISPOSE_N(secret, secretlen);
-    VIR_DISPOSE_N(ciphertext, ciphertextlen);
     return ret;
 }
 
