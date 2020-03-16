@@ -1521,21 +1521,20 @@ qemuDomainSecretPlainSetup(qemuDomainSecretInfoPtr secinfo,
  * @seclookupdef: Pointer to seclookupdef data
  * @isLuks: True/False for is for luks (alias generation)
  *
- * Taking a secinfo, fill in the AES specific information using the
+ * Encrypts a secret looked up via @seclookupdef for use with qemu.
  *
- * Returns 0 on success, -1 on failure with error message
+ * Returns qemuDomainSecretInfoPtr filled with the necessary information.
  */
-static int
+static qemuDomainSecretInfoPtr
 qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
-                         qemuDomainSecretInfoPtr secinfo,
                          const char *srcalias,
                          virSecretUsageType usageType,
                          const char *username,
                          virSecretLookupTypeDefPtr seclookupdef,
                          bool isLuks)
 {
+    g_autoptr(qemuDomainSecretInfo) secinfo = NULL;
     g_autoptr(virConnect) conn = virGetConnectSecret();
-    int ret = -1;
     g_autofree uint8_t *raw_iv = NULL;
     size_t ivlen = QEMU_DOMAIN_AES_IV_LEN;
     uint8_t *secret = NULL;
@@ -1544,19 +1543,27 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
     size_t ciphertextlen = 0;
 
     if (!conn)
-        return -1;
+        return NULL;
+
+    if (!qemuDomainSupportsEncryptedSecret(priv)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("encrypted secrets are not supported"));
+        return NULL;
+    }
+
+    secinfo = g_new0(qemuDomainSecretInfo, 1);
 
     secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
     secinfo->s.aes.username = g_strdup(username);
 
     if (!(secinfo->s.aes.alias = qemuDomainGetSecretAESAlias(srcalias, isLuks)))
-        return -1;
+        return NULL;
 
     raw_iv = g_new0(uint8_t, ivlen);
 
     /* Create a random initialization vector */
     if (virRandomBytes(raw_iv, ivlen) < 0)
-        return -1;
+        return NULL;
 
     /* Encode the IV and save that since qemu will need it */
     secinfo->s.aes.iv = g_base64_encode(raw_iv, ivlen);
@@ -1564,13 +1571,13 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
     /* Grab the unencoded secret */
     if (virSecretGetSecretString(conn, seclookupdef, usageType,
                                  &secret, &secretlen) < 0)
-        goto cleanup;
+        goto error;
 
     if (virCryptoEncryptData(VIR_CRYPTO_CIPHER_AES256CBC,
                              priv->masterKey, QEMU_DOMAIN_MASTER_KEY_LEN,
                              raw_iv, ivlen, secret, secretlen,
                              &ciphertext, &ciphertextlen) < 0)
-        goto cleanup;
+        goto error;
 
     /* Clear out the secret */
     memset(secret, 0, secretlen);
@@ -1579,11 +1586,11 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
     secinfo->s.aes.ciphertext = g_base64_encode(ciphertext,
                                                 ciphertextlen);
 
-    ret = 0;
+    return g_steal_pointer(&secinfo);
 
- cleanup:
+ error:
     VIR_DISPOSE_N(secret, secretlen);
-    return ret;
+    return NULL;
 }
 
 
@@ -1655,24 +1662,8 @@ qemuDomainSecretInfoNew(qemuDomainObjPrivatePtr priv,
                         virSecretLookupTypeDefPtr lookupDef,
                         bool isLuks)
 {
-    qemuDomainSecretInfoPtr secinfo = NULL;
-
-    if (!qemuDomainSupportsEncryptedSecret(priv)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("encrypted secrets are not supported"));
-        return NULL;
-    }
-
-    if (VIR_ALLOC(secinfo) < 0)
-        return NULL;
-
-    if (qemuDomainSecretAESSetup(priv, secinfo, srcAlias, usageType, username,
-                                 lookupDef, isLuks) < 0) {
-        g_clear_pointer(&secinfo, qemuDomainSecretInfoFree);
-        return NULL;
-    }
-
-    return secinfo;
+    return qemuDomainSecretAESSetup(priv, srcAlias, usageType, username,
+                                    lookupDef, isLuks);
 }
 
 
