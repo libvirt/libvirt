@@ -1,0 +1,95 @@
+{
+    "return": [
+        {
+            "arch": "x86",
+            "thread-id": 1538346,
+            "props": {
+                "core-id": 0,
+                "thread-id": 0,
+                "die-id": 0,
+                "socket-id": 0
+            },
+            "qom-path": "/machine/unattached/device[0]",
+            "cpu-index": 0,
+            "target": "x86_64"
+        },
+        {
+            "arch": "x86",
+            "thread-id": 1538347,
+            "props": {
+                "core-id": 0,
+                "thread-id": 1,
+                "die-id": 0,
+                "socket-id": 0
+            },
+            "qom-path": "/machine/unattached/device[2]",
+            "cpu-index": 1,
+            "target": "x86_64"
+        },
+        {
+            "arch": "x86",
+            "thread-id": 1538348,
+            "props": {
+                "core-id": 1,
+                "thread-id": 0,
+                "die-id": 0,
+                "socket-id": 0
+            },
+            "qom-path": "/machine/unattached/device[3]",
+            "cpu-index": 2,
+            "target": "x86_64"
+        },
+        {
+            "arch": "x86",
+            "thread-id": 1538349,
+            "props": {
+                "core-id": 1,
+                "thread-id": 1,
+                "die-id": 0,
+                "socket-id": 0
+            },
+            "qom-path": "/machine/unattached/device[4]",
+            "cpu-index": 3,
+            "target": "x86_64"
+        },
+        {
+            "arch": "x86",
+            "thread-id": 1538350,
+            "props": {
+                "core-id": 0,
+                "thread-id": 0,
+                "die-id": 1,
+                "socket-id": 0
+            },
+            "qom-path": "/machine/unattached/device[5]",
+            "cpu-index": 4,
+            "target": "x86_64"
+        },
+        {
+            "arch": "x86",
+            "thread-id": 1538351,
+            "props": {
+                "core-id": 0,
+                "thread-id": 1,
+                "die-id": 1,
+                "socket-id": 0
+            },
+            "qom-path": "/machine/unattached/device[6]",
+            "cpu-index": 5,
+            "target": "x86_64"
+        },
+        {
+            "arch": "x86",
+            "thread-id": 1538352,
+            "props": {
+                "core-id": 1,
+                "thread-id": 0,
+                "die-id": 1,
+                "socket-id": 0
+            },
+            "qom-path": "/machine/unattached/device[7]",
+            "cpu-index": 6,
+            "target": "x86_64"
+        }
+    ]
+}

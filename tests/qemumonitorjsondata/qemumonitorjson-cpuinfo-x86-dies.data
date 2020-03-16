@@ -1,0 +1,108 @@
+[vcpu libvirt-id='0']
+    online=yes
+    hotpluggable=no
+    thread-id='1538346'
+    enable-id='1'
+    query-cpus-id='0'
+    type='host-x86_64-cpu'
+    qom_path='/machine/unattached/device[0]'
+    topology: socket='0' die='0' core='0' thread='0' vcpus='1'
+[vcpu libvirt-id='1']
+    online=yes
+    hotpluggable=no
+    thread-id='1538347'
+    enable-id='2'
+    query-cpus-id='1'
+    type='host-x86_64-cpu'
+    qom_path='/machine/unattached/device[2]'
+    topology: socket='0' die='0' core='0' thread='1' vcpus='1'
+[vcpu libvirt-id='2']
+    online=yes
+    hotpluggable=no
+    thread-id='1538348'
+    enable-id='3'
+    query-cpus-id='2'
+    type='host-x86_64-cpu'
+    qom_path='/machine/unattached/device[3]'
+    topology: socket='0' die='0' core='1' thread='0' vcpus='1'
+[vcpu libvirt-id='3']
+    online=yes
+    hotpluggable=no
+    thread-id='1538349'
+    enable-id='4'
+    query-cpus-id='3'
+    type='host-x86_64-cpu'
+    qom_path='/machine/unattached/device[4]'
+    topology: socket='0' die='0' core='1' thread='1' vcpus='1'
+[vcpu libvirt-id='4']
+    online=yes
+    hotpluggable=no
+    thread-id='1538350'
+    enable-id='5'
+    query-cpus-id='4'
+    type='host-x86_64-cpu'
+    qom_path='/machine/unattached/device[5]'
+    topology: socket='0' die='1' core='0' thread='0' vcpus='1'
+[vcpu libvirt-id='5']
+    online=yes
+    hotpluggable=no
+    thread-id='1538351'
+    enable-id='6'
+    query-cpus-id='5'
+    type='host-x86_64-cpu'
+    qom_path='/machine/unattached/device[6]'
+    topology: socket='0' die='1' core='0' thread='1' vcpus='1'
+[vcpu libvirt-id='6']
+    online=yes
+    hotpluggable=no
+    thread-id='1538352'
+    enable-id='7'
+    query-cpus-id='6'
+    type='host-x86_64-cpu'
+    qom_path='/machine/unattached/device[7]'
+    topology: socket='0' die='1' core='1' thread='0' vcpus='1'
+[vcpu libvirt-id='7']
+    online=no
+    hotpluggable=yes
+    type='host-x86_64-cpu'
+    topology: socket='0' die='1' core='1' thread='1' vcpus='1'
+[vcpu libvirt-id='8']
+    online=no
+    hotpluggable=yes
+    type='host-x86_64-cpu'
+    topology: socket='1' die='0' core='0' thread='0' vcpus='1'
+[vcpu libvirt-id='9']
+    online=no
+    hotpluggable=yes
+    type='host-x86_64-cpu'
+    topology: socket='1' die='0' core='0' thread='1' vcpus='1'
+[vcpu libvirt-id='10']
+    online=no
+    hotpluggable=yes
+    type='host-x86_64-cpu'
+    topology: socket='1' die='0' core='1' thread='0' vcpus='1'
+[vcpu libvirt-id='11']
+    online=no
+    hotpluggable=yes
+    type='host-x86_64-cpu'
+    topology: socket='1' die='0' core='1' thread='1' vcpus='1'
+[vcpu libvirt-id='12']
+    online=no
+    hotpluggable=yes
+    type='host-x86_64-cpu'
+    topology: socket='1' die='1' core='0' thread='0' vcpus='1'
+[vcpu libvirt-id='13']
+    online=no
+    hotpluggable=yes
+    type='host-x86_64-cpu'
+    topology: socket='1' die='1' core='0' thread='1' vcpus='1'
+[vcpu libvirt-id='14']
+    online=no
+    hotpluggable=yes
+    type='host-x86_64-cpu'
+    topology: socket='1' die='1' core='1' thread='0' vcpus='1'
+[vcpu libvirt-id='15']
+    online=no
+    hotpluggable=yes
+    type='host-x86_64-cpu'
+    topology: socket='1' die='1' core='1' thread='1' vcpus='1'
