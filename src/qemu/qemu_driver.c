@@ -22985,6 +22985,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     int maxparams = 0;
     g_autofree char *hostname = NULL;
     unsigned int supportedTypes;
+    bool report_unsupported = types != 0;
     int rc;
     size_t nfs = 0;
     qemuAgentFSInfoPtr *agentfsinfo = NULL;
@@ -23015,37 +23016,31 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
      * categories were explicitly requested (i.e. 'types' is 0), ignore
      * 'unsupported' errors and gather as much information as we can. In all
      * other cases, abort on error. */
-    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_USERS) {
-        rc = qemuAgentGetUsers(agent, params, nparams, &maxparams, true);
-        if (rc < 0 && !(rc == -2 && types == 0))
-            goto exitagent;
-    }
-    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_OS) {
-        rc = qemuAgentGetOSInfo(agent, params, nparams, &maxparams, true);
-        if (rc < 0 && !(rc == -2 && types == 0))
-            goto exitagent;
-    }
-    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_TIMEZONE) {
-        rc = qemuAgentGetTimezone(agent, params, nparams, &maxparams, true);
-        if (rc < 0 && !(rc == -2 && types == 0))
-            goto exitagent;
-    }
-    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_HOSTNAME) {
-        rc = qemuAgentGetHostname(agent, &hostname, true);
-        if (rc < 0 && !(rc == -2 && types == 0))
-            goto exitagent;
-    }
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_USERS &&
+        qemuAgentGetUsers(agent, params, nparams, &maxparams, report_unsupported) == -1)
+        goto exitagent;
+
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_OS &&
+        qemuAgentGetOSInfo(agent, params, nparams, &maxparams, report_unsupported) == -1)
+        goto exitagent;
+
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_TIMEZONE &&
+        qemuAgentGetTimezone(agent, params, nparams, &maxparams, report_unsupported) == -1)
+        goto exitagent;
+
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_HOSTNAME &&
+        qemuAgentGetHostname(agent, &hostname, report_unsupported) == -1)
+        goto exitagent;
 
     if (hostname &&
         virTypedParamsAddString(params, nparams, &maxparams, "hostname", hostname) < 0)
         goto exitagent;
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
-        rc = qemuAgentGetFSInfo(agent, &agentfsinfo, true);
-        if (rc < 0) {
-            if (!(rc == -2 && types == 0))
-                goto exitagent;
-        } else {
+        rc = qemuAgentGetFSInfo(agent, &agentfsinfo, report_unsupported);
+        if (rc == -1) {
+            goto exitagent;
+        } else if (rc >= 0) {
             nfs = rc;
         }
     }
