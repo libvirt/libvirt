@@ -1040,7 +1040,7 @@ testQemuAgentUsers(const void *data)
 
     /* get users */
     if (qemuAgentGetUsers(qemuMonitorTestGetAgent(test),
-                          &params, &nparams, &maxparams) < 0)
+                          &params, &nparams, &maxparams, true) < 0)
         goto cleanup;
 
     if (virTypedParamsGetUInt(params, nparams, "user.count", &count) < 0)
@@ -1069,7 +1069,7 @@ testQemuAgentUsers(const void *data)
 
     /* get users with domain */
     if (qemuAgentGetUsers(qemuMonitorTestGetAgent(test),
-                          &params, &nparams, &maxparams) < 0)
+                          &params, &nparams, &maxparams, true) < 0)
         goto cleanup;
 
     if (virTypedParamsGetUInt(params, nparams, "user.count", &count) < 0)
