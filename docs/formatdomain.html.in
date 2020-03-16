@@ -3981,7 +3981,7 @@
     &lt;readonly/&gt;
   &lt;/filesystem&gt;
   &lt;filesystem type='mount' accessmode='passthrough'&gt;
-      &lt;driver type='virtiofs queue='1024'/&gt;
+      &lt;driver type='virtiofs' queue='1024'/&gt;
       &lt;binary path='/usr/libexec/virtiofsd' xattr='on'&gt;
          &lt;cache mode='always'/&gt;
          &lt;lock posix='on' flock='on'/&gt;
