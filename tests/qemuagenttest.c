@@ -254,7 +254,7 @@ testQemuAgentGetFSInfo(const void *data)
         goto cleanup;
 
     if ((ninfo = qemuAgentGetFSInfo(qemuMonitorTestGetAgent(test),
-                                    &info)) < 0)
+                                    &info, true)) < 0)
         goto cleanup;
 
     if (ninfo != 3) {
@@ -326,7 +326,7 @@ testQemuAgentGetFSInfo(const void *data)
                                "}") < 0)
         goto cleanup;
 
-    if (qemuAgentGetFSInfo(qemuMonitorTestGetAgent(test), &info) >= 0) {
+    if (qemuAgentGetFSInfo(qemuMonitorTestGetAgent(test), &info, true) >= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "agent get-fsinfo command should have failed");
         goto cleanup;

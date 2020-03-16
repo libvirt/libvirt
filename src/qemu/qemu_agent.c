@@ -993,31 +993,6 @@ qemuAgentStringifyErrorClass(const char *klass)
         return "unknown QEMU command error";
 }
 
-/* Checks whether the agent reply msg is an error caused by an unsupported
- * command.
- *
- * Returns true when reply is CommandNotFound or CommandDisabled
- *         false otherwise
- */
-static bool
-qemuAgentErrorCommandUnsupported(virJSONValuePtr reply)
-{
-    const char *klass;
-    virJSONValuePtr error;
-
-    if (!reply)
-        return false;
-
-    error = virJSONValueObjectGet(reply, "error");
-
-    if (!error)
-        return false;
-
-    klass = virJSONValueObjectGetString(error, "class");
-    return STREQ_NULLABLE(klass, "CommandNotFound") ||
-        STREQ_NULLABLE(klass, "CommandDisabled");
-}
-
 /* Ignoring OOM in this method, since we're already reporting
  * a more important error
  *
@@ -1959,12 +1934,14 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
 }
 
 /* Returns: number of entries in '@info' on success
- *          -2 when agent command is not supported by the agent
- *          -1 otherwise
+ *          -2 when agent command is not supported by the agent and
+ *             'report_unsupported' is false (libvirt error is not reported)
+ *          -1 otherwise (libvirt error is reported)
  */
 int
 qemuAgentGetFSInfo(qemuAgentPtr agent,
-                   qemuAgentFSInfoPtr **info)
+                   qemuAgentFSInfoPtr **info,
+                   bool report_unsupported)
 {
     size_t i;
     int ret = -1;
@@ -1973,16 +1950,15 @@ qemuAgentGetFSInfo(qemuAgentPtr agent,
     virJSONValuePtr data;
     size_t ndata = 0;
     qemuAgentFSInfoPtr *info_ret = NULL;
+    int rc;
 
     cmd = qemuAgentMakeCommand("guest-get-fsinfo", NULL);
     if (!cmd)
         return ret;
 
-    if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0) {
-        if (qemuAgentErrorCommandUnsupported(reply))
-            ret = -2;
-        goto cleanup;
-    }
+    if ((rc = qemuAgentCommandFull(agent, cmd, &reply, agent->timeout,
+                                   report_unsupported)) < 0)
+        return rc;
 
     if (!(data = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

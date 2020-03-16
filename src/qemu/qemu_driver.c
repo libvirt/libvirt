@@ -21883,7 +21883,7 @@ qemuDomainGetFSInfoAgent(virQEMUDriverPtr driver,
         goto endjob;
 
     agent = qemuDomainObjEnterAgent(vm);
-    ret = qemuAgentGetFSInfo(agent, info);
+    ret = qemuAgentGetFSInfo(agent, info, true);
     qemuDomainObjExitAgent(vm, agent);
 
  endjob:
@@ -23041,7 +23041,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         goto exitagent;
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
-        rc = qemuAgentGetFSInfo(agent, &agentfsinfo);
+        rc = qemuAgentGetFSInfo(agent, &agentfsinfo, true);
         if (rc < 0) {
             if (!(rc == -2 && types == 0))
                 goto exitagent;

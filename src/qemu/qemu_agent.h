@@ -98,7 +98,9 @@ int qemuAgentShutdown(qemuAgentPtr mon,
 int qemuAgentFSFreeze(qemuAgentPtr mon,
                       const char **mountpoints, unsigned int nmountpoints);
 int qemuAgentFSThaw(qemuAgentPtr mon);
-int qemuAgentGetFSInfo(qemuAgentPtr mon, qemuAgentFSInfoPtr **info);
+int qemuAgentGetFSInfo(qemuAgentPtr mon,
+                       qemuAgentFSInfoPtr **info,
+                       bool report_unsupported);
 
 int qemuAgentSuspend(qemuAgentPtr mon,
                      unsigned int target);
