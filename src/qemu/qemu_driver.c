@@ -23021,7 +23021,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
             goto exitagent;
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_OS) {
-        rc = qemuAgentGetOSInfo(agent, params, nparams, &maxparams);
+        rc = qemuAgentGetOSInfo(agent, params, nparams, &maxparams, true);
         if (rc < 0 && !(rc == -2 && types == 0))
             goto exitagent;
     }

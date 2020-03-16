@@ -157,7 +157,8 @@ int qemuAgentGetUsers(qemuAgentPtr mon,
 int qemuAgentGetOSInfo(qemuAgentPtr mon,
                        virTypedParameterPtr *params,
                        int *nparams,
-                       int *maxparams);
+                       int *maxparams,
+                       bool report_unsupported);
 
 int qemuAgentGetTimezone(qemuAgentPtr mon,
                          virTypedParameterPtr *params,

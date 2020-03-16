@@ -1139,7 +1139,7 @@ testQemuAgentOSInfo(const void *data)
 
     /* get osinfo */
     if (qemuAgentGetOSInfo(qemuMonitorTestGetAgent(test),
-                           &params, &nparams, &maxparams) < 0)
+                           &params, &nparams, &maxparams, true) < 0)
         goto cleanup;
 
     if (nparams != 8) {
@@ -1184,7 +1184,7 @@ testQemuAgentOSInfo(const void *data)
 
     /* get users with domain */
     if (qemuAgentGetOSInfo(qemuMonitorTestGetAgent(test),
-                           &params, &nparams, &maxparams) < 0)
+                           &params, &nparams, &maxparams, true) < 0)
         goto cleanup;
 
     if (nparams != 10) {
