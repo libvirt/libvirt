@@ -151,7 +151,7 @@ qemuDomainObjFromDomain(virDomainPtr domain)
 
 
 struct _qemuDomainLogContext {
-    virObject parent;
+    GObject parent;
 
     int writefd;
     int readfd; /* Only used if manager == NULL */
@@ -161,37 +161,46 @@ struct _qemuDomainLogContext {
     virLogManagerPtr manager;
 };
 
-static virClassPtr qemuDomainLogContextClass;
+G_DEFINE_TYPE(qemuDomainLogContext, qemu_domain_log_context, G_TYPE_OBJECT);
 static virClassPtr qemuDomainSaveCookieClass;
 
-static void qemuDomainLogContextDispose(void *obj);
+static void qemuDomainLogContextFinalize(GObject *obj);
 static void qemuDomainSaveCookieDispose(void *obj);
 
 
 static int
 qemuDomainOnceInit(void)
 {
-    if (!VIR_CLASS_NEW(qemuDomainLogContext, virClassForObject()))
-        return -1;
-
     if (!VIR_CLASS_NEW(qemuDomainSaveCookie, virClassForObject()))
         return -1;
 
     return 0;
 }
 
+static void qemu_domain_log_context_init(qemuDomainLogContext *logctxt G_GNUC_UNUSED)
+{
+}
+
+static void qemu_domain_log_context_class_init(qemuDomainLogContextClass *klass)
+{
+    GObjectClass *obj = G_OBJECT_CLASS(klass);
+
+    obj->finalize = qemuDomainLogContextFinalize;
+}
+
 VIR_ONCE_GLOBAL_INIT(qemuDomain);
 
 static void
-qemuDomainLogContextDispose(void *obj)
+qemuDomainLogContextFinalize(GObject *object)
 {
-    qemuDomainLogContextPtr ctxt = obj;
+    qemuDomainLogContextPtr ctxt = QEMU_DOMAIN_LOG_CONTEXT(object);
     VIR_DEBUG("ctxt=%p", ctxt);
 
     virLogManagerFree(ctxt->manager);
     VIR_FREE(ctxt->path);
     VIR_FORCE_CLOSE(ctxt->writefd);
     VIR_FORCE_CLOSE(ctxt->readfd);
+    G_OBJECT_CLASS(qemu_domain_log_context_parent_class)->finalize(object);
 }
 
 const char *
@@ -10698,13 +10707,7 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
                                                 qemuDomainLogContextMode mode)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainLogContextPtr ctxt = NULL;
-
-    if (qemuDomainInitialize() < 0)
-        return NULL;
-
-    if (!(ctxt = virObjectNew(qemuDomainLogContextClass)))
-        return NULL;
+    qemuDomainLogContextPtr ctxt = QEMU_DOMAIN_LOG_CONTEXT(g_object_new(QEMU_TYPE_DOMAIN_LOG_CONTEXT, NULL));
 
     VIR_DEBUG("Context new %p stdioLogD=%d", ctxt, cfg->stdioLogD);
     ctxt->writefd = -1;
@@ -10773,7 +10776,7 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
     return ctxt;
 
  error:
-    virObjectUnref(ctxt);
+    g_clear_object(&ctxt);
     return NULL;
 }
 
