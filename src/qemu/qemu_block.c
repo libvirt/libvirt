@@ -3021,7 +3021,7 @@ qemuBlockBitmapsHandleCommitStart(virStorageSourcePtr topsrc,
     if (!(entry = virHashLookup(blockNamedNodeData, basesrc->nodeformat)))
         return 0;
 
-    bitmaplist = g_new0(char *, entry->nbitmaps);
+    bitmaplist = g_new0(char *, entry->nbitmaps + 1);
 
     for (i = 0; i < entry->nbitmaps; i++) {
         qemuBlockNamedNodeDataBitmapPtr bitmap = entry->bitmaps[i];
