@@ -3,6 +3,8 @@ libvirt-1-format:
   current: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
 libvirt-2-format:
         c: record:0 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
+       oa: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
+       ob: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
         d: record:1 busy:0 persist:1 inconsist:1 gran:65536 dirty:0
 libvirt-3-format:
         a: record:0 busy:0 persist:1 inconsist:0 gran:65536 dirty:0

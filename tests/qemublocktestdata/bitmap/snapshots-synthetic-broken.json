@@ -399,6 +399,24 @@
                 "count": 0
             },
             {
+                "name": "oa",
+                "recording": true,
+                "persistent": true,
+                "busy": false,
+                "status": "active",
+                "granularity": 65536,
+                "count": 0
+            },
+            {
+                "name": "ob",
+                "recording": true,
+                "persistent": true,
+                "busy": false,
+                "status": "active",
+                "granularity": 65536,
+                "count": 0
+            },
+            {
                 "name": "d",
                 "recording": true,
                 "persistent": true,

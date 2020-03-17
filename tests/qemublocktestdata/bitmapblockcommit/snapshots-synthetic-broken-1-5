@@ -69,5 +69,51 @@ merge bitmpas:
         }
       ]
     }
+  },
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "libvirt-5-format",
+      "name": "oa",
+      "persistent": true,
+      "disabled": false,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-5-format",
+      "target": "oa",
+      "bitmaps": [
+        {
+          "node": "libvirt-2-format",
+          "name": "oa"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "libvirt-5-format",
+      "name": "ob",
+      "persistent": true,
+      "disabled": false,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-5-format",
+      "target": "ob",
+      "bitmaps": [
+        {
+          "node": "libvirt-2-format",
+          "name": "ob"
+        }
+      ]
+    }
   }
 ]
