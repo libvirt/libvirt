@@ -1,6 +1,6 @@
 <cpus>
   <model name='Icelake-Server-noTSX'>
-    <decode host='on' guest='on'/>
+    <decode host='on' guest='off'/>
     <signature family='6' model='134'/> <!-- 080660 -->
     <vendor name='Intel'/>
     <feature name='3dnowprefetch'/>
