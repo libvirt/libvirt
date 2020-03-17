@@ -220,15 +220,22 @@ virHostCPUGetSocket(unsigned int cpu, unsigned int *socket)
 int
 virHostCPUGetDie(unsigned int cpu, unsigned int *die)
 {
-    int ret = virFileReadValueUint(die,
-                                   "%s/cpu/cpu%u/topology/die_id",
-                                   SYSFS_SYSTEM_PATH, cpu);
+    int die_id;
+    int ret = virFileReadValueInt(&die_id,
+                                  "%s/cpu/cpu%u/topology/die_id",
+                                  SYSFS_SYSTEM_PATH, cpu);
 
-    /* If the file is not there, it's 0 */
-    if (ret == -2)
-        *die = 0;
-    else if (ret < 0)
+    if (ret == -1)
         return -1;
+
+    /* If the file is not there, it's 0.
+     * Another alternative is die_id set to -1, meaning that
+     * the arch does not have die_id support. Set @die to
+     * 0 in this case too. */
+    if (ret == -2 || die_id < 0)
+        *die = 0;
+    else
+        *die = die_id;
 
     return 0;
 }
