@@ -3177,7 +3177,7 @@ qemuBlockBitmapsHandleCommitFinish(virStorageSourcePtr topsrc,
                     char **disabledbitmaps;
 
                     for (disabledbitmaps = disabledBitmapsBase; *disabledbitmaps; disabledbitmaps++) {
-                        if (STREQ(*disabledBitmapsBase, bitmap->name)) {
+                        if (STREQ(*disabledbitmaps, bitmap->name)) {
                             bitmapdata = g_new0(struct qemuBlockBitmapsHandleCommitData, 1);
 
                             bitmapdata->create = false;
