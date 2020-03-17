@@ -2044,10 +2044,23 @@ x86DecodeUseCandidate(virCPUx86ModelPtr current,
                       virCPUx86ModelPtr candidate,
                       virCPUDefPtr cpuCandidate,
                       uint32_t signature,
-                      const char *preferred,
-                      bool checkPolicy)
+                      const char *preferred)
 {
-    if (checkPolicy) {
+    if (cpuCandidate->type == VIR_CPU_TYPE_HOST &&
+        !candidate->decodeHost) {
+        VIR_DEBUG("%s is not supposed to be used for host CPU definition",
+                  cpuCandidate->model);
+        return 0;
+    }
+
+    if (cpuCandidate->type == VIR_CPU_TYPE_GUEST &&
+        !candidate->decodeGuest) {
+        VIR_DEBUG("%s is not supposed to be used for guest CPU definition",
+                  cpuCandidate->model);
+        return 0;
+    }
+
+    if (cpuCandidate->type == VIR_CPU_TYPE_HOST) {
         size_t i;
         for (i = 0; i < cpuCandidate->nfeatures; i++) {
             if (cpuCandidate->features[i].policy == VIR_CPU_FEATURE_DISABLE)
@@ -2209,8 +2222,7 @@ x86Decode(virCPUDefPtr cpu,
 
         if ((rc = x86DecodeUseCandidate(model, cpuModel,
                                         candidate, cpuCandidate,
-                                        signature, preferred,
-                                        cpu->type == VIR_CPU_TYPE_HOST))) {
+                                        signature, preferred))) {
             virCPUDefFree(cpuModel);
             cpuModel = cpuCandidate;
             model = candidate;
