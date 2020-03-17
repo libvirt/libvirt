@@ -6478,18 +6478,16 @@ qemuDomainVcpuValidateConfig(virDomainDefPtr def,
         return -1;
     }
 
+    firstvcpu = virBitmapNextSetBit(map, -1);
+
     /* non-hotpluggable vcpus need to stay clustered starting from vcpu 0 */
-    for (next = virBitmapNextSetBit(map, -1) + 1; next < maxvcpus; next++) {
+    for (next = firstvcpu + 1; next < maxvcpus; next++) {
         if (!(vcpu = virDomainDefGetVcpu(def, next)))
             continue;
 
         /* skip vcpus being modified */
-        if (virBitmapIsBitSet(map, next)) {
-            if (firstvcpu < 0)
-                firstvcpu = next;
-
+        if (virBitmapIsBitSet(map, next))
             continue;
-        }
 
         if (vcpu->online && vcpu->hotpluggable == VIR_TRISTATE_BOOL_NO) {
             virReportError(VIR_ERR_INVALID_ARG,
