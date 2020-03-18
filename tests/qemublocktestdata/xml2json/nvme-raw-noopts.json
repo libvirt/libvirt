@@ -1,0 +1,14 @@
+{
+  "node-name": "0123456789ABCDEF0123456789ABCDE",
+  "read-only": false,
+  "driver": "raw",
+  "file": "0123456789ABCDEF0123456789ABCDE"
+}
+{
+  "driver": "nvme",
+  "device": "0000:01:00.0",
+  "namespace": 1,
+  "node-name": "0123456789ABCDEF0123456789ABCDE",
+  "auto-read-only": true,
+  "discard": "unmap"
+}

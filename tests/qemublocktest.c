@@ -1203,6 +1203,8 @@ mymain(void)
     TEST_DISK_TO_JSON("block-raw-noopts");
     TEST_DISK_TO_JSON("block-raw-reservations");
 
+    TEST_DISK_TO_JSON("nvme-raw-noopts");
+
 #define TEST_JSON_TO_JSON(nme) \
     do { \
         jsontojsondata.name = nme; \

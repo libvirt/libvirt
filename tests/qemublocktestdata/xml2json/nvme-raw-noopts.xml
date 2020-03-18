@@ -1,0 +1,13 @@
+<disk type='nvme' device='disk'>
+  <driver name='qemu' type='raw'/>
+  <source type='pci' managed='yes' namespace='1'>
+    <address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='0123456789ABCDEF0123456789ABCDE'/>
+        <nodename type='format' name='0123456789ABCDEF0123456789ABCDE'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <target dev='vda' bus='virtio'/>
+</disk>
