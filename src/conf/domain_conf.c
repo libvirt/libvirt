@@ -31080,18 +31080,17 @@ virDomainGenerateMachineName(const char *drivername,
                              const char *name,
                              bool privileged)
 {
-    char *username = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (privileged) {
         virBufferAsprintf(&buf, "%s-", drivername);
     } else {
+        g_autofree char *username = NULL;
         if (!(username = virGetUserName(geteuid()))) {
             virBufferFreeAndReset(&buf);
             return NULL;
         }
         virBufferAsprintf(&buf, "%s-%s-", username, drivername);
-        VIR_FREE(username);
     }
 
     virBufferAsprintf(&buf, "%d-", id);
