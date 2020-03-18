@@ -590,6 +590,8 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     virStorageSourcePtr oldsrc = disk->src;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     bool sharedAdded = false;
+    bool managedpr = virStorageSourceChainHasManagedPR(oldsrc) ||
+                     virStorageSourceChainHasManagedPR(newsrc);
     int ret = -1;
     int rc;
 
@@ -653,7 +655,8 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     }
 
     /* remove PR manager object if unneeded */
-    ignore_value(qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE));
+    if (managedpr)
+        ignore_value(qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE));
 
     /* revert old image do the disk definition */
     if (oldsrc)
