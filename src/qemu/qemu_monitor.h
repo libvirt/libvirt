@@ -931,7 +931,8 @@ int qemuMonitorAddObject(qemuMonitorPtr mon,
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorDelObject(qemuMonitorPtr mon,
-                         const char *objalias);
+                         const char *objalias,
+                         bool report_error);
 
 int qemuMonitorAddDrive(qemuMonitorPtr mon,
                         const char *drivestr);

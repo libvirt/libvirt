@@ -2966,13 +2966,14 @@ qemuMonitorAddObject(qemuMonitorPtr mon,
 
 int
 qemuMonitorDelObject(qemuMonitorPtr mon,
-                     const char *objalias)
+                     const char *objalias,
+                     bool report_error)
 {
     VIR_DEBUG("objalias=%s", objalias);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONDelObject(mon, objalias);
+    return qemuMonitorJSONDelObject(mon, objalias, report_error);
 }
 
 

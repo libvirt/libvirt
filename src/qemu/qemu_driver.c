@@ -6047,7 +6047,7 @@ qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    rc = qemuMonitorDelObject(priv->mon, alias);
+    rc = qemuMonitorDelObject(priv->mon, alias, true);
     exp_niothreads--;
     if (rc < 0)
         goto exit_monitor;

@@ -4448,7 +4448,8 @@ qemuMonitorJSONAddObject(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONDelObject(qemuMonitorPtr mon,
-                         const char *objalias)
+                         const char *objalias,
+                         bool report_error)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
@@ -4459,7 +4460,7 @@ qemuMonitorJSONDelObject(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+    if (qemuMonitorJSONCheckErrorFull(cmd, reply, report_error) < 0)
         return -1;
 
     return 0;

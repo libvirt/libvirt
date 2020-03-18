@@ -1732,19 +1732,19 @@ qemuBlockStorageSourceAttachRollback(qemuMonitorPtr mon,
         ignore_value(qemuMonitorBlockdevDel(mon, data->storageNodeName));
 
     if (data->prmgrAlias)
-        ignore_value(qemuMonitorDelObject(mon, data->prmgrAlias));
+        ignore_value(qemuMonitorDelObject(mon, data->prmgrAlias, false));
 
     if (data->authsecretAlias)
-        ignore_value(qemuMonitorDelObject(mon, data->authsecretAlias));
+        ignore_value(qemuMonitorDelObject(mon, data->authsecretAlias, false));
 
     if (data->encryptsecretAlias)
-        ignore_value(qemuMonitorDelObject(mon, data->encryptsecretAlias));
+        ignore_value(qemuMonitorDelObject(mon, data->encryptsecretAlias, false));
 
     if (data->httpcookiesecretAlias)
-        ignore_value(qemuMonitorDelObject(mon, data->httpcookiesecretAlias));
+        ignore_value(qemuMonitorDelObject(mon, data->httpcookiesecretAlias, false));
 
     if (data->tlsAlias)
-        ignore_value(qemuMonitorDelObject(mon, data->tlsAlias));
+        ignore_value(qemuMonitorDelObject(mon, data->tlsAlias, false));
 
 
     virErrorRestore(&orig_err);

@@ -237,7 +237,8 @@ int qemuMonitorJSONAddObject(qemuMonitorPtr mon,
                              virJSONValuePtr props);
 
 int qemuMonitorJSONDelObject(qemuMonitorPtr mon,
-                             const char *objalias);
+                             const char *objalias,
+                             bool report_error);
 
 int qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
