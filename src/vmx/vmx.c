@@ -2207,7 +2207,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
         goto cleanup;
 
     /* vmx:fileName -> def:src, def:type */
-    if (virVMXGetConfigString(conf, fileName_name, &fileName, false) < 0)
+    if (virVMXGetConfigString(conf, fileName_name, &fileName, true) < 0)
         goto cleanup;
 
     /* vmx:writeThrough -> def:cachemode */
@@ -2218,7 +2218,8 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
 
     /* Setup virDomainDiskDef */
     if (device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-        if (virStringHasCaseSuffix(fileName, ".iso") ||
+        if (fileName == NULL ||
+            virStringHasCaseSuffix(fileName, ".iso") ||
             STREQ(fileName, "emptyBackingString") ||
             (deviceType &&
              (STRCASEEQ(deviceType, "atapi-cdrom") ||
@@ -2277,7 +2278,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        if (virStringHasCaseSuffix(fileName, ".vmdk")) {
+        if (fileName && virStringHasCaseSuffix(fileName, ".vmdk")) {
             /*
              * This function was called in order to parse a CDROM device, but
              * .vmdk files are for harddisk devices only. Just ignore it,
@@ -2285,7 +2286,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
              * handle it.
              */
             goto ignore;
-        } else if (virStringHasCaseSuffix(fileName, ".iso")) {
+        } else if (fileName && virStringHasCaseSuffix(fileName, ".iso")) {
             char *tmp;
 
             if (deviceType && STRCASENEQ(deviceType, "cdrom-image")) {
@@ -2306,7 +2307,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
         } else if (deviceType && STRCASEEQ(deviceType, "atapi-cdrom")) {
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
 
-            if (STRCASEEQ(fileName, "auto detect")) {
+            if (fileName && STRCASEEQ(fileName, "auto detect")) {
                 ignore_value(virDomainDiskSetSource(*def, NULL));
                 (*def)->startupPolicy = VIR_DOMAIN_STARTUP_POLICY_OPTIONAL;
             } else if (virDomainDiskSetSource(*def, fileName) < 0) {
@@ -2317,7 +2318,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             (*def)->device = VIR_DOMAIN_DISK_DEVICE_LUN;
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
 
-            if (STRCASEEQ(fileName, "auto detect")) {
+            if (fileName && STRCASEEQ(fileName, "auto detect")) {
                 ignore_value(virDomainDiskSetSource(*def, NULL));
                 (*def)->startupPolicy = VIR_DOMAIN_STARTUP_POLICY_OPTIONAL;
             } else if (virDomainDiskSetSource(*def, fileName) < 0) {
@@ -2325,7 +2326,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             }
         } else if (busType == VIR_DOMAIN_DISK_BUS_SCSI &&
                    deviceType && STRCASEEQ(deviceType, "scsi-passthru")) {
-            if (STRPREFIX(fileName, "/vmfs/devices/cdrom/")) {
+            if (fileName && STRPREFIX(fileName, "/vmfs/devices/cdrom/")) {
                 /* SCSI-passthru CD-ROMs actually are device='lun' */
                 (*def)->device = VIR_DOMAIN_DISK_DEVICE_LUN;
                 virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
@@ -2341,7 +2342,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                  */
                 goto ignore;
             }
-        } else if (STREQ(fileName, "emptyBackingString")) {
+        } else if (fileName && STREQ(fileName, "emptyBackingString")) {
             if (deviceType && STRCASENEQ(deviceType, "cdrom-image")) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Expecting VMX entry '%s' to be 'cdrom-image' "
@@ -2355,7 +2356,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid or not yet handled value '%s' "
                              "for VMX entry '%s' for device type '%s'"),
-                           fileName, fileName_name,
+                           NULLSTR(fileName), fileName_name,
                            deviceType ? deviceType : "unknown");
             goto cleanup;
         }
@@ -2365,10 +2366,10 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             if (virDomainDiskSetSource(*def, fileName) < 0)
                 goto cleanup;
         } else if (fileType != NULL && STRCASEEQ(fileType, "file")) {
-            char *tmp;
+            char *tmp = NULL;
 
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
-            if (!(tmp = ctx->parseFileName(fileName, ctx->opaque)))
+            if (fileName && !(tmp = ctx->parseFileName(fileName, ctx->opaque)))
                 goto cleanup;
             if (virDomainDiskSetSource(*def, tmp) < 0) {
                 VIR_FREE(tmp);
@@ -2379,7 +2380,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid or not yet handled value '%s' "
                              "for VMX entry '%s' for device type '%s'"),
-                           fileName, fileName_name,
+                           NULLSTR(fileName), fileName_name,
                            deviceType ? deviceType : "unknown");
             goto cleanup;
         }

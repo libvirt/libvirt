@@ -218,6 +218,7 @@ mymain(void)
     DO_TEST("cdrom-scsi-passthru", "cdrom-scsi-passthru");
     DO_TEST("cdrom-ide-file", "cdrom-ide-file");
     DO_TEST("cdrom-ide-empty", "cdrom-ide-empty");
+    DO_TEST("cdrom-ide-empty-2", "cdrom-ide-empty-2");
     DO_TEST("cdrom-ide-device", "cdrom-ide-device");
     DO_TEST("cdrom-ide-raw-device", "cdrom-ide-raw-device");
     DO_TEST("cdrom-ide-raw-auto-detect", "cdrom-ide-raw-auto-detect");
