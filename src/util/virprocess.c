@@ -1126,6 +1126,23 @@ virProcessRunInMountNamespace(pid_t pid G_GNUC_UNUSED,
 
 
 #ifndef WIN32
+typedef struct {
+    int code;
+    int domain;
+    char message[VIR_ERROR_MAX_LENGTH];
+    virErrorLevel level;
+    char str1[VIR_ERROR_MAX_LENGTH];
+    char str2[VIR_ERROR_MAX_LENGTH];
+    char str3[VIR_ERROR_MAX_LENGTH];
+    int int1;
+    int int2;
+} errorData;
+
+typedef union {
+    errorData data;
+    char bindata[sizeof(errorData)];
+} errorDataBin;
+
 static int
 virProcessRunInForkHelper(int errfd,
                           pid_t ppid,
@@ -1134,9 +1151,24 @@ virProcessRunInForkHelper(int errfd,
 {
     if (cb(ppid, opaque) < 0) {
         virErrorPtr err = virGetLastError();
+
         if (err) {
-            size_t len = strlen(err->message) + 1;
-            ignore_value(safewrite(errfd, err->message, len));
+            g_autofree errorDataBin *bin = g_new0(errorDataBin, 1);
+
+            bin->data.code = err->code;
+            bin->data.domain = err->domain;
+            ignore_value(virStrcpy(bin->data.message, err->message, sizeof(bin->data.message)));
+            bin->data.level = err->level;
+            if (err->str1)
+                ignore_value(virStrcpy(bin->data.str1, err->str1, sizeof(bin->data.str1)));
+            if (err->str2)
+                ignore_value(virStrcpy(bin->data.str2, err->str2, sizeof(bin->data.str2)));
+            if (err->str3)
+                ignore_value(virStrcpy(bin->data.str3, err->str3, sizeof(bin->data.str3)));
+            bin->data.int1 = err->int1;
+            bin->data.int2 = err->int2;
+
+            ignore_value(safewrite(errfd, bin->bindata, sizeof(*bin)));
         }
 
         return -1;
@@ -1188,16 +1220,38 @@ virProcessRunInFork(virProcessForkCallback cb,
     } else {
         int status;
         g_autofree char *buf = NULL;
+        g_autofree errorDataBin *bin = NULL;
+        int nread;
 
         VIR_FORCE_CLOSE(errfd[1]);
-        ignore_value(virFileReadHeaderFD(errfd[0], 1024, &buf));
+        nread = virFileReadHeaderFD(errfd[0], sizeof(*bin), &buf);
         ret = virProcessWait(child, &status, false);
         if (ret == 0) {
             ret = status == EXIT_CANCELED ? -1 : status;
             if (ret) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("child reported (status=%d): %s"),
-                               status, NULLSTR(buf));
+                if (nread == sizeof(*bin)) {
+                    bin = g_new0(errorDataBin, 1);
+                    memcpy(bin->bindata, buf, sizeof(*bin));
+
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("child reported (status=%d): %s"),
+                                   status, NULLSTR(bin->data.message));
+
+                    virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,
+                                      bin->data.domain,
+                                      bin->data.code,
+                                      bin->data.level,
+                                      bin->data.str1,
+                                      bin->data.str2,
+                                      bin->data.str3,
+                                      bin->data.int1,
+                                      bin->data.int2,
+                                      "%s", bin->data.message);
+                } else {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("child didn't write error (status=%d)"),
+                                   status);
+                }
             }
         }
     }

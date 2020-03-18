@@ -1258,6 +1258,48 @@ static int test27(const void *unused G_GNUC_UNUSED)
 
 
 static int
+test28Callback(pid_t pid G_GNUC_UNUSED,
+               void *opaque G_GNUC_UNUSED)
+{
+    virReportSystemError(ENODATA, "%s", "some error message");
+    return -1;
+}
+
+
+static int
+test28(const void *unused G_GNUC_UNUSED)
+{
+    /* Not strictly a virCommand test, but this is the easiest place
+     * to test this lower-level interface. */
+    virErrorPtr err;
+
+    if (virProcessRunInFork(test28Callback, NULL) != -1) {
+        fprintf(stderr, "virProcessRunInFork did not fail\n");
+        return -1;
+    }
+
+    if (!(err = virGetLastError())) {
+        fprintf(stderr, "Expected error but got nothing\n");
+        return -1;
+    }
+
+    if (!(err->code == VIR_ERR_SYSTEM_ERROR &&
+          err->domain == 0 &&
+          STREQ(err->message, "some error message: No data available") &&
+          err->level == VIR_ERR_ERROR &&
+          STREQ(err->str1, "%s") &&
+          STREQ(err->str2, "some error message: No data available") &&
+          err->int1 == ENODATA &&
+          err->int2 == -1)) {
+        fprintf(stderr, "Unexpected error object\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1354,6 +1396,7 @@ mymain(void)
     DO_TEST(test25);
     DO_TEST(test26);
     DO_TEST(test27);
+    DO_TEST(test28);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
