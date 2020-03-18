@@ -2055,11 +2055,10 @@ virJSONValueObjectDeflattenWorker(const char *key,
                                   void *opaque)
 {
     virJSONValuePtr retobj = opaque;
-    virJSONValuePtr newval = NULL;
+    g_autoptr(virJSONValue) newval = NULL;
     virJSONValuePtr existobj;
-    char **tokens = NULL;
+    VIR_AUTOSTRINGLIST tokens = NULL;
     size_t ntokens = 0;
-    int ret = -1;
 
     /* non-nested keys only need to be copied */
     if (!strchr(key, '.')) {
@@ -2075,46 +2074,42 @@ virJSONValueObjectDeflattenWorker(const char *key,
         if (virJSONValueObjectHasKey(retobj, key)) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("can't deflatten colliding key '%s'"), key);
-            goto cleanup;
+            return -1;
         }
 
         if (virJSONValueObjectAppend(retobj, key, newval) < 0)
-            goto cleanup;
+            return -1;
+
+        newval = NULL;
 
         return 0;
     }
 
     if (!(tokens = virStringSplitCount(key, ".", 2, &ntokens)))
-        goto cleanup;
+        return -1;
 
     if (ntokens != 2) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid nested value key '%s'"), key);
-        goto cleanup;
+        return -1;
     }
 
     if (!(existobj = virJSONValueObjectGet(retobj, tokens[0]))) {
         existobj = virJSONValueNewObject();
 
         if (virJSONValueObjectAppend(retobj, tokens[0], existobj) < 0)
-            goto cleanup;
+            return -1;
 
     } else {
         if (!virJSONValueIsObject(existobj)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("mixing nested objects and values is forbidden in "
                              "JSON deflattening"));
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = virJSONValueObjectDeflattenWorker(tokens[1], value, existobj);
-
- cleanup:
-    virStringListFreeCount(tokens, ntokens);
-    virJSONValueFree(newval);
-
-    return ret;
+    return virJSONValueObjectDeflattenWorker(tokens[1], value, existobj);
 }
 
 
