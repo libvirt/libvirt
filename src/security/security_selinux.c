@@ -1163,15 +1163,23 @@ virSecuritySELinuxTransactionCommit(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 
     list->lock = lock;
 
+    if (pid != -1) {
+        rc = virProcessRunInMountNamespace(pid,
+                                           virSecuritySELinuxTransactionRun,
+                                           list);
+        if (rc < 0) {
+            if (virGetLastErrorCode() == VIR_ERR_SYSTEM_ERROR)
+                pid = -1;
+            else
+                goto cleanup;
+        }
+    }
+
     if (pid == -1) {
         if (lock)
             rc = virProcessRunInFork(virSecuritySELinuxTransactionRun, list);
         else
             rc = virSecuritySELinuxTransactionRun(pid, list);
-    } else {
-        rc = virProcessRunInMountNamespace(pid,
-                                           virSecuritySELinuxTransactionRun,
-                                           list);
     }
 
     if (rc < 0)
