@@ -2218,7 +2218,21 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
 
     /* Setup virDomainDiskDef */
     if (device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-        if (virStringHasCaseSuffix(fileName, ".vmdk")) {
+        if (virStringHasCaseSuffix(fileName, ".iso") ||
+            STREQ(fileName, "emptyBackingString") ||
+            (deviceType &&
+             (STRCASEEQ(deviceType, "atapi-cdrom") ||
+              STRCASEEQ(deviceType, "cdrom-raw") ||
+              (STRCASEEQ(deviceType, "scsi-passthru") &&
+               STRPREFIX(fileName, "/vmfs/devices/cdrom/"))))) {
+            /*
+             * This function was called in order to parse a harddisk device,
+             * but .iso files, 'atapi-cdrom', 'cdrom-raw', and 'scsi-passthru'
+             * CDROM devices are for CDROM devices only. Just ignore it, another
+             * call to this function to parse a CDROM device may handle it.
+             */
+            goto ignore;
+        } else if (virStringHasCaseSuffix(fileName, ".vmdk")) {
             char *tmp;
 
             if (deviceType != NULL) {
@@ -2254,20 +2268,6 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             if (mode)
                 (*def)->transient = STRCASEEQ(mode,
                                               "independent-nonpersistent");
-        } else if (virStringHasCaseSuffix(fileName, ".iso") ||
-                   STREQ(fileName, "emptyBackingString") ||
-                   (deviceType &&
-                    (STRCASEEQ(deviceType, "atapi-cdrom") ||
-                     STRCASEEQ(deviceType, "cdrom-raw") ||
-                     (STRCASEEQ(deviceType, "scsi-passthru") &&
-                      STRPREFIX(fileName, "/vmfs/devices/cdrom/"))))) {
-            /*
-             * This function was called in order to parse a harddisk device,
-             * but .iso files, 'atapi-cdrom', 'cdrom-raw', and 'scsi-passthru'
-             * CDROM devices are for CDROM devices only. Just ignore it, another
-             * call to this function to parse a CDROM device may handle it.
-             */
-            goto ignore;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid or not yet handled value '%s' "
@@ -2277,7 +2277,15 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        if (virStringHasCaseSuffix(fileName, ".iso")) {
+        if (virStringHasCaseSuffix(fileName, ".vmdk")) {
+            /*
+             * This function was called in order to parse a CDROM device, but
+             * .vmdk files are for harddisk devices only. Just ignore it,
+             * another call to this function to parse a harddisk device may
+             * handle it.
+             */
+            goto ignore;
+        } else if (virStringHasCaseSuffix(fileName, ".iso")) {
             char *tmp;
 
             if (deviceType && STRCASENEQ(deviceType, "cdrom-image")) {
@@ -2295,14 +2303,6 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 goto cleanup;
             }
             VIR_FREE(tmp);
-        } else if (virStringHasCaseSuffix(fileName, ".vmdk")) {
-            /*
-             * This function was called in order to parse a CDROM device, but
-             * .vmdk files are for harddisk devices only. Just ignore it,
-             * another call to this function to parse a harddisk device may
-             * handle it.
-             */
-            goto ignore;
         } else if (deviceType && STRCASEEQ(deviceType, "atapi-cdrom")) {
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
 
