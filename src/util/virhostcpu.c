@@ -336,8 +336,7 @@ virHostCPUParseNode(const char *node,
         goto cleanup;
 
     /* enumerate sockets in the node */
-    if (!(sockets_map = virBitmapNewEmpty()))
-        goto cleanup;
+    sockets_map = virBitmapNewEmpty();
 
     while ((direrr = virDirRead(cpudir, &cpudirent, node)) > 0) {
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
@@ -373,8 +372,7 @@ virHostCPUParseNode(const char *node,
         goto cleanup;
 
     for (i = 0; i < sock_max; i++)
-        if (!(cores_maps[i] = virBitmapNewEmpty()))
-            goto cleanup;
+        cores_maps[i] = virBitmapNewEmpty();
 
     /* Iterate over all CPUs in the node, in ascending order */
     for (cpu = 0; cpu < npresent_cpus; cpu++) {
