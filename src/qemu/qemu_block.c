@@ -1446,8 +1446,7 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src,
     g_autoptr(virJSONValue) props = NULL;
     const char *storagenode = src->nodestorage;
 
-    if (src->sliceStorage &&
-        src->format != VIR_STORAGE_FILE_RAW)
+    if (qemuBlockStorageSourceNeedsStorageSliceLayer(src))
         storagenode = src->sliceStorage->nodename;
 
     if (!(props = qemuBlockStorageSourceGetBlockdevFormatProps(src)))
@@ -1568,7 +1567,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
     data->storageNodeName = src->nodestorage;
     data->formatNodeName = src->nodeformat;
 
-    if (src->sliceStorage && src->format != VIR_STORAGE_FILE_RAW) {
+    if (qemuBlockStorageSourceNeedsStorageSliceLayer(src)) {
         if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src)))
             return NULL;
 
@@ -3307,4 +3306,23 @@ qemuBlockReopenReadOnly(virDomainObjPtr vm,
     }
 
     return 0;
+}
+
+/**
+ * qemuBlockStorageSourceNeedSliceLayer:
+ * @src: source to inspect
+ *
+ * Returns true if @src requires an extra 'raw' layer for handling of the storage
+ * slice.
+ */
+bool
+qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src)
+{
+    if (!src->sliceStorage)
+        return false;
+
+    if (src->format != VIR_STORAGE_FILE_RAW)
+        return true;
+
+    return false;
 }
