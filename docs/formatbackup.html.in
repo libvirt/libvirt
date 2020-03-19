@@ -14,7 +14,7 @@
       description of the actions to perform, as well as an optional
       second XML document <a href="formatcheckpoint.html">describing a
       checkpoint</a> to create at the same point in time. See
-      also <a href="domainstatecapture.html">a comparison</a> between
+      also <a href="kbase/domainstatecapture.html">a comparison</a> between
       the various state capture APIs.
     </p>
     <p>
