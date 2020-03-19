@@ -1792,8 +1792,7 @@ virStorageAuthDefCopy(const virStorageAuthDef *src)
     authdef->secrettype = g_strdup(src->secrettype);
     authdef->authType = src->authType;
 
-    if (virSecretLookupDefCopy(&authdef->seclookupdef, &src->seclookupdef) < 0)
-        return NULL;
+    virSecretLookupDefCopy(&authdef->seclookupdef, &src->seclookupdef);
 
     return g_steal_pointer(&authdef);
 }
