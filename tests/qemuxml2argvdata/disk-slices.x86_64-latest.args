@@ -56,7 +56,7 @@ keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 "size":321,"file":"libvirt-1-storage","auto-read-only":true,\
 "discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"luks",\
-"key-secret":"libvirt-1-format-encryption-secret0","offset":1234,"size":321,\
+"key-secret":"libvirt-1-format-encryption-secret0",\
 "file":"libvirt-1-slice-sto"}' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-1-format,\
 id=virtio-disk2 \

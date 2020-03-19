@@ -1200,24 +1200,32 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
 
 
 static int
-qemuBlockStorageSourceGetFormatRawProps(virStorageSourcePtr src,
-                                        virJSONValuePtr props)
+qemuBlockStorageSourceGetFormatLUKSProps(virStorageSourcePtr src,
+                                         virJSONValuePtr props)
 {
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-    const char *driver = "raw";
-    const char *secretalias = NULL;
 
-    if (src->encryption &&
-        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
-        srcPriv &&
-        srcPriv->encinfo) {
-        driver = "luks";
-        secretalias = srcPriv->encinfo->s.aes.alias;
+    if (!srcPriv || !srcPriv->encinfo || !srcPriv->encinfo->s.aes.alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing secret info for 'luks' driver"));
+        return -1;
     }
 
     if (virJSONValueObjectAdd(props,
-                              "s:driver", driver,
-                              "S:key-secret", secretalias, NULL) < 0)
+                              "s:driver", "luks",
+                              "s:key-secret", srcPriv->encinfo->s.aes.alias,
+                              NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuBlockStorageSourceGetFormatRawProps(virStorageSourcePtr src,
+                                        virJSONValuePtr props)
+{
+    if (virJSONValueObjectAdd(props, "s:driver", "raw", NULL) < 0)
         return -1;
 
     /* Currently only storage slices are supported. We'll have to calculate
@@ -1371,8 +1379,14 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSourcePtr src)
         /* The fat layer is emulated by the storage access layer, so we need to
          * put a raw layer on top */
     case VIR_STORAGE_FILE_RAW:
-        if (qemuBlockStorageSourceGetFormatRawProps(src, props) < 0)
-            return NULL;
+        if (src->encryption &&
+            src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+            if (qemuBlockStorageSourceGetFormatLUKSProps(src, props) < 0)
+                return NULL;
+        } else {
+            if (qemuBlockStorageSourceGetFormatRawProps(src, props) < 0)
+                return NULL;
+        }
         break;
 
     case VIR_STORAGE_FILE_QCOW2:
