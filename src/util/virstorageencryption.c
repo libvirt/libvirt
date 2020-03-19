@@ -85,12 +85,10 @@ virStorageEncryptionFree(virStorageEncryptionPtr enc)
 static virStorageEncryptionSecretPtr
 virStorageEncryptionSecretCopy(const virStorageEncryptionSecret *src)
 {
-    virStorageEncryptionSecretPtr ret;
+    virStorageEncryptionSecretPtr ret = g_new0(virStorageEncryptionSecret, 1);
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
-
-    memcpy(ret, src, sizeof(*src));
+    ret->type = src->type;
+    virSecretLookupDefCopy(&ret->seclookupdef, &src->seclookupdef);
 
     return ret;
 }
