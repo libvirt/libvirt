@@ -18,13 +18,15 @@
 
 #include <config.h>
 
+#include <unistd.h>
+
 #include "testutils.h"
 #include "virerror.h"
 #include "rpc/virnetdaemon.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
-#if defined(HAVE_SOCKETPAIR) && defined(WITH_YAJL)
+#if !defined(WIN32) && defined(WITH_YAJL)
 struct testClientPriv {
     int magic;
 };

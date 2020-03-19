@@ -24,7 +24,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
-#ifdef HAVE_SOCKETPAIR
+#ifndef WIN32
 
 static void *
 testClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
