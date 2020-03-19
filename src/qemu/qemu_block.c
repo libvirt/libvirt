@@ -3324,5 +3324,9 @@ qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src)
     if (src->format != VIR_STORAGE_FILE_RAW)
         return true;
 
+    if (src->encryption &&
+        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS)
+        return true;
+
     return false;
 }
