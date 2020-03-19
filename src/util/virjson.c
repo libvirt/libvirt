@@ -2049,6 +2049,10 @@ virJSONStringReformat(const char *jsonstr,
 }
 
 
+static virJSONValuePtr
+virJSONValueObjectDeflattenKeys(virJSONValuePtr json);
+
+
 static int
 virJSONValueObjectDeflattenWorker(const char *key,
                                   virJSONValuePtr value,
@@ -2064,7 +2068,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
     if (!strchr(key, '.')) {
 
         if (virJSONValueIsObject(value))
-            newval = virJSONValueObjectDeflatten(value);
+            newval = virJSONValueObjectDeflattenKeys(value);
         else
             newval = virJSONValueCopy(value);
 
@@ -2113,6 +2117,20 @@ virJSONValueObjectDeflattenWorker(const char *key,
 }
 
 
+static virJSONValuePtr
+virJSONValueObjectDeflattenKeys(virJSONValuePtr json)
+{
+    g_autoptr(virJSONValue) deflattened = virJSONValueNewObject();
+
+    if (virJSONValueObjectForeachKeyValue(json,
+                                          virJSONValueObjectDeflattenWorker,
+                                          deflattened) < 0)
+        return NULL;
+
+    return g_steal_pointer(&deflattened);
+}
+
+
 /**
  * virJSONValueObjectDeflatten:
  *
@@ -2128,12 +2146,5 @@ virJSONValueObjectDeflattenWorker(const char *key,
 virJSONValuePtr
 virJSONValueObjectDeflatten(virJSONValuePtr json)
 {
-    g_autoptr(virJSONValue) deflattened = virJSONValueNewObject();
-
-    if (virJSONValueObjectForeachKeyValue(json,
-                                          virJSONValueObjectDeflattenWorker,
-                                          deflattened) < 0)
-        return NULL;
-
-    return g_steal_pointer(&deflattened);
+    return virJSONValueObjectDeflattenKeys(json);
 }
