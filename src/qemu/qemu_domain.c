@@ -15846,7 +15846,6 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
     bool hasNVMe = false;
 
     for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
-        VIR_AUTOSTRINGLIST targetPaths = NULL;
         g_autofree char *tmpPath = NULL;
 
         if (next->type == VIR_STORAGE_TYPE_NVME) {
@@ -15855,6 +15854,8 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
             if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&next->nvme->pciAddr)))
                 return -1;
         } else {
+            VIR_AUTOSTRINGLIST targetPaths = NULL;
+
             if (virStorageSourceIsEmpty(next) ||
                 !virStorageSourceIsLocalStorage(next)) {
                 /* Not creating device. Just continue. */
@@ -15862,20 +15863,20 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
             }
 
             tmpPath = g_strdup(next->path);
+
+            if (virDevMapperGetTargets(next->path, &targetPaths) < 0 &&
+                errno != ENOSYS && errno != EBADF) {
+                virReportSystemError(errno,
+                                     _("Unable to get devmapper targets for %s"),
+                                     next->path);
+                return -1;
+            }
+
+            if (virStringListMerge(&paths, &targetPaths) < 0)
+                return -1;
         }
 
         if (virStringListAdd(&paths, tmpPath) < 0)
-            return -1;
-
-        if (virDevMapperGetTargets(next->path, &targetPaths) < 0 &&
-            errno != ENOSYS && errno != EBADF) {
-            virReportSystemError(errno,
-                                 _("Unable to get devmapper targets for %s"),
-                                 next->path);
-            return -1;
-        }
-
-        if (virStringListMerge(&paths, &targetPaths) < 0)
             return -1;
     }
 
