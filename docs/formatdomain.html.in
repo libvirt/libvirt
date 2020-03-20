@@ -4084,12 +4084,19 @@
         </dd>
         </dl>
 
+      <p>
       <span class="since">Since 5.2.0</span>, the filesystem element
       has an optional attribute <code>model</code> with supported values
       "virtio-transitional", "virtio-non-transitional", or "virtio".
       See <a href="#elementsVirtioTransitional">Virtio transitional devices</a>
       for more details.
+      </p>
+
       </dd>
+
+      <p>
+      The <code>filesystem</code> element may contain the following subelements:
+      </p>
 
       <dt><code>driver</code></dt>
       <dd>
