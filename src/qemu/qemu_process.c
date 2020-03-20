@@ -7393,17 +7393,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         priv->monConfig = NULL;
     }
 
-    /*
-     * We cannot stop the event thread at this time. When
-     * we are in this code, we may not yet have processed the
-     * STOP event or EOF from the monitor. So the event loop
-     * may have pending input that we need to process still.
-     * The qemuProcessHandleMonitorEOF method will kill
-     * the event thread because at that point we don't
-     * expect any more I/O from the QEMU monitor. We are
-     * assuming we don't need to get any more events from the
-     * QEMU agent at that time.
-     */
+    qemuDomainObjStopWorker(vm);
 
     /* Remove the master key */
     qemuDomainMasterKeyRemove(priv);
