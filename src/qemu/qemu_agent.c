@@ -1113,7 +1113,7 @@ qemuAgentCommand(qemuAgentPtr agent,
     }
 
     if (qemuAgentGuestSync(agent) < 0)
-        return -1;
+        goto cleanup;
 
     if (!(cmdstr = virJSONValueToString(cmd, false)))
         goto cleanup;
