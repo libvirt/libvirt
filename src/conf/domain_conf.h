@@ -3662,13 +3662,6 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
 int virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
                                 virDomainBlockIoTuneInfo *info);
 
-char *
-virDomainGenerateMachineName(const char *drivername,
-                             const char *root,
-                             int id,
-                             const char *name,
-                             bool privileged);
-
 bool
 virDomainNetTypeSharesHostView(const virDomainNetDef *net);
 

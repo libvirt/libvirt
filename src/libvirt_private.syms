@@ -406,7 +406,6 @@ virDomainFSTypeFromString;
 virDomainFSTypeToString;
 virDomainFSWrpolicyTypeFromString;
 virDomainFSWrpolicyTypeToString;
-virDomainGenerateMachineName;
 virDomainGetBlkioParametersAssignFromDef;
 virDomainGetFilesystemForTarget;
 virDomainGraphicsAuthConnectedTypeFromString;
@@ -1403,6 +1402,7 @@ virDomainCgroupSetupMemtune;
 
 
 # hypervisor/domain_driver.h
+virDomainDriverGenerateMachineName;
 virDomainDriverMergeBlkioDevice;
 virDomainDriverParseBlkioDeviceStr;
 virDomainDriverSetupPersistentDefBlkioParams;

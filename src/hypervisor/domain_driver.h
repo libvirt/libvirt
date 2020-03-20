@@ -22,6 +22,13 @@
 
 #include "domain_conf.h"
 
+char *
+virDomainDriverGenerateMachineName(const char *drivername,
+                                   const char *root,
+                                   int id,
+                                   const char *name,
+                                   bool privileged);
+
 int virDomainDriverMergeBlkioDevice(virBlkioDevicePtr *dest_array,
                                     size_t *dest_size,
                                     virBlkioDevicePtr src_array,

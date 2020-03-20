@@ -23,8 +23,82 @@
 #include "domain_driver.h"
 #include "viralloc.h"
 #include "virstring.h"
+#include "vircrypto.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
+
+
+#define HOSTNAME_CHARS \
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"
+
+static void
+virDomainMachineNameAppendValid(virBufferPtr buf,
+                                const char *name)
+{
+    bool skip = true;
+
+    for (; *name; name++) {
+        if (strlen(virBufferCurrentContent(buf)) >= 64)
+            break;
+
+        if (*name == '.' || *name == '-') {
+            if (!skip)
+                virBufferAddChar(buf, *name);
+            skip = true;
+            continue;
+        }
+
+        skip = false;
+
+        if (!strchr(HOSTNAME_CHARS, *name))
+            continue;
+
+        virBufferAddChar(buf, *name);
+    }
+
+    /* trailing dashes or dots are not allowed */
+    virBufferTrimChars(buf, "-.");
+}
+
+#undef HOSTNAME_CHARS
+
+char *
+virDomainDriverGenerateMachineName(const char *drivername,
+                                   const char *root,
+                                   int id,
+                                   const char *name,
+                                   bool privileged)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf, "%s-", drivername);
+
+    if (root) {
+        g_autofree char *hash = NULL;
+
+        /* When two embed drivers start two domains with the same @name and @id
+         * we would generate a non-unique name. Include parts of hashed @root
+         * which guarantees uniqueness. The first 8 characters of SHA256 ought
+         * to be enough for anybody. */
+        if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, root, &hash) < 0)
+            return NULL;
+
+        virBufferAsprintf(&buf, "embed-%.8s-", hash);
+    } else if (!privileged) {
+        g_autofree char *username = NULL;
+        if (!(username = virGetUserName(geteuid()))) {
+            virBufferFreeAndReset(&buf);
+            return NULL;
+        }
+        virBufferAsprintf(&buf, "%s-", username);
+    }
+
+    virBufferAsprintf(&buf, "%d-", id);
+    virDomainMachineNameAppendValid(&buf, name);
+
+    return virBufferContentAndReset(&buf);
+}
 
 
 /* Modify dest_array to reflect all blkio device changes described in

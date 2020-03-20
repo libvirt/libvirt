@@ -34,6 +34,7 @@
 # include "virlog.h"
 # include "virmock.h"
 # include "rpc/virnetsocket.h"
+# include "domain_driver.h"
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("tests.systemdtest");
@@ -414,8 +415,8 @@ testMachineName(const void *opaque)
     int ret = -1;
     char *actual = NULL;
 
-    if (!(actual = virDomainGenerateMachineName("qemu", data->root,
-                                                data->id, data->name, true)))
+    if (!(actual = virDomainDriverGenerateMachineName("qemu", data->root,
+                                                      data->id, data->name, true)))
         goto cleanup;
 
     if (STRNEQ(actual, data->expected)) {

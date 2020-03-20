@@ -31,6 +31,7 @@
 #include "virtime.h"
 #include "virsystemd.h"
 #include "virinitctl.h"
+#include "domain_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -406,7 +407,7 @@ virLXCDomainGetMachineName(virDomainDefPtr def, pid_t pid)
     }
 
     if (!ret)
-        ret = virDomainGenerateMachineName("lxc", NULL, def->id, def->name, true);
+        ret = virDomainDriverGenerateMachineName("lxc", NULL, def->id, def->name, true);
 
     return ret;
 }
