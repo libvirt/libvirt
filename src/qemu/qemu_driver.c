@@ -912,7 +912,7 @@ qemuStateInitialize(bool privileged,
     for (i = 0; i < cfg->nhugetlbfs; i++) {
         g_autofree char *hugepagePath = NULL;
 
-        hugepagePath = qemuGetBaseHugepagePath(&cfg->hugetlbfs[i]);
+        hugepagePath = qemuGetBaseHugepagePath(qemu_driver, &cfg->hugetlbfs[i]);
 
         if (!hugepagePath)
             goto error;

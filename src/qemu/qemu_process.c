@@ -3881,7 +3881,7 @@ qemuProcessBuildDestroyMemoryPaths(virQEMUDriverPtr driver,
     if (!build || shouldBuildHP) {
         for (i = 0; i < cfg->nhugetlbfs; i++) {
             g_autofree char *path = NULL;
-            path = qemuGetDomainHugepagePath(vm->def, &cfg->hugetlbfs[i]);
+            path = qemuGetDomainHugepagePath(driver, vm->def, &cfg->hugetlbfs[i]);
 
             if (!path)
                 return -1;

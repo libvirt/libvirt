@@ -386,12 +386,14 @@ virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver,
 
 int qemuTranslateSnapshotDiskSourcePool(virDomainSnapshotDiskDefPtr def);
 
-char * qemuGetBaseHugepagePath(virHugeTLBFSPtr hugepage);
-char * qemuGetDomainHugepagePath(const virDomainDef *def,
+char * qemuGetBaseHugepagePath(virQEMUDriverPtr driver,
+                               virHugeTLBFSPtr hugepage);
+char * qemuGetDomainHugepagePath(virQEMUDriverPtr driver,
+                                 const virDomainDef *def,
                                  virHugeTLBFSPtr hugepage);
 
-int qemuGetDomainHupageMemPath(const virDomainDef *def,
-                               virQEMUDriverConfigPtr cfg,
+int qemuGetDomainHupageMemPath(virQEMUDriverPtr driver,
+                               const virDomainDef *def,
                                unsigned long long pagesize,
                                char **memPath);
 

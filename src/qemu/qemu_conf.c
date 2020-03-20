@@ -40,6 +40,7 @@
 #include "virxml.h"
 #include "virlog.h"
 #include "cpu/cpu.h"
+#include "domain_driver.h"
 #include "domain_nwfilter.h"
 #include "virfile.h"
 #include "virsocket.h"
@@ -1887,21 +1888,29 @@ qemuTranslateSnapshotDiskSourcePool(virDomainSnapshotDiskDefPtr def)
 }
 
 char *
-qemuGetBaseHugepagePath(virHugeTLBFSPtr hugepage)
+qemuGetBaseHugepagePath(virQEMUDriverPtr driver,
+                        virHugeTLBFSPtr hugepage)
 {
+    const char *root = driver->embeddedRoot;
     char *ret;
 
-    ret = g_strdup_printf("%s/libvirt/qemu", hugepage->mnt_dir);
+    if (root && !STRPREFIX(hugepage->mnt_dir, root)) {
+        g_autofree char * hash = virDomainDriverGenerateRootHash("qemu", root);
+        ret = g_strdup_printf("%s/libvirt/%s", hugepage->mnt_dir, hash);
+    } else {
+        ret = g_strdup_printf("%s/libvirt/qemu", hugepage->mnt_dir);
+    }
 
     return ret;
 }
 
 
 char *
-qemuGetDomainHugepagePath(const virDomainDef *def,
+qemuGetDomainHugepagePath(virQEMUDriverPtr driver,
+                          const virDomainDef *def,
                           virHugeTLBFSPtr hugepage)
 {
-    g_autofree char *base = qemuGetBaseHugepagePath(hugepage);
+    g_autofree char *base = qemuGetBaseHugepagePath(driver, hugepage);
     g_autofree char *domPath = virDomainDefGetShortName(def);
     char *ret = NULL;
 
@@ -1920,11 +1929,12 @@ qemuGetDomainHugepagePath(const virDomainDef *def,
  *        -1 otherwise.
  */
 int
-qemuGetDomainHupageMemPath(const virDomainDef *def,
-                           virQEMUDriverConfigPtr cfg,
+qemuGetDomainHupageMemPath(virQEMUDriverPtr driver,
+                           const virDomainDef *def,
                            unsigned long long pagesize,
                            char **memPath)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     size_t i = 0;
 
     if (!cfg->nhugetlbfs) {
@@ -1947,7 +1957,7 @@ qemuGetDomainHupageMemPath(const virDomainDef *def,
         return -1;
     }
 
-    if (!(*memPath = qemuGetDomainHugepagePath(def, &cfg->hugetlbfs[i])))
+    if (!(*memPath = qemuGetDomainHugepagePath(driver, def, &cfg->hugetlbfs[i])))
         return -1;
 
     return 0;
