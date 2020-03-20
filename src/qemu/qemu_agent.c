@@ -904,7 +904,7 @@ qemuAgentGuestSync(qemuAgentPtr agent)
 
     /* if user specified a custom agent timeout that is lower than the
      * default timeout, use the shorter timeout instead */
-    if ((agent->timeout >= 0) && (agent->timeout < timeout))
+    if ((agent->timeout >= 0) && (agent->timeout < QEMU_AGENT_WAIT_TIME))
         timeout = agent->timeout;
 
     memset(&sync_msg, 0, sizeof(sync_msg));
