@@ -23,6 +23,10 @@
 #include "domain_conf.h"
 
 char *
+virDomainDriverGenerateRootHash(const char *drivername,
+                                const char *root);
+
+char *
 virDomainDriverGenerateMachineName(const char *drivername,
                                    const char *root,
                                    int id,

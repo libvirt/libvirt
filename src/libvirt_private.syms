@@ -1403,6 +1403,7 @@ virDomainCgroupSetupMemtune;
 
 # hypervisor/domain_driver.h
 virDomainDriverGenerateMachineName;
+virDomainDriverGenerateRootHash;
 virDomainDriverMergeBlkioDevice;
 virDomainDriverParseBlkioDeviceStr;
 virDomainDriverSetupPersistentDefBlkioParams;

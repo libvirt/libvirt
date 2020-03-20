@@ -28,6 +28,22 @@
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
+char *
+virDomainDriverGenerateRootHash(const char *drivername,
+                                const char *root)
+{
+    g_autofree char *hash = NULL;
+
+    if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, root, &hash) < 0)
+        return NULL;
+
+    /* When two embed drivers start two domains with the same @name and @id
+     * we would generate a non-unique name. Include parts of hashed @root
+     * which guarantees uniqueness. The first 8 characters of SHA256 ought
+     * to be enough for anybody. */
+    return g_strdup_printf("%s-embed-%.8s", drivername, hash);
+}
+
 
 #define HOSTNAME_CHARS \
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"
@@ -72,26 +88,24 @@ virDomainDriverGenerateMachineName(const char *drivername,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, "%s-", drivername);
-
     if (root) {
         g_autofree char *hash = NULL;
 
-        /* When two embed drivers start two domains with the same @name and @id
-         * we would generate a non-unique name. Include parts of hashed @root
-         * which guarantees uniqueness. The first 8 characters of SHA256 ought
-         * to be enough for anybody. */
-        if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, root, &hash) < 0)
+        if (!(hash = virDomainDriverGenerateRootHash(drivername, root)))
             return NULL;
 
-        virBufferAsprintf(&buf, "embed-%.8s-", hash);
-    } else if (!privileged) {
-        g_autofree char *username = NULL;
-        if (!(username = virGetUserName(geteuid()))) {
-            virBufferFreeAndReset(&buf);
-            return NULL;
+        virBufferAsprintf(&buf, "%s-", hash);
+    } else {
+        virBufferAsprintf(&buf, "%s-", drivername);
+        if (!privileged) {
+
+            g_autofree char *username = NULL;
+            if (!(username = virGetUserName(geteuid()))) {
+                virBufferFreeAndReset(&buf);
+                return NULL;
+            }
+            virBufferAsprintf(&buf, "%s-", username);
         }
-        virBufferAsprintf(&buf, "%s-", username);
     }
 
     virBufferAsprintf(&buf, "%d-", id);
