@@ -9203,7 +9203,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
         labelskip = virXMLPropString(list[i], "labelskip");
         seclabels[i]->labelskip = false;
         if (labelskip && !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-            seclabels[i]->labelskip = STREQ(labelskip, "yes");
+            ignore_value(virStringParseYesNo(labelskip, &seclabels[i]->labelskip));
         VIR_FREE(labelskip);
 
         ctxt->node = list[i];
@@ -12354,16 +12354,14 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
 
     if (managed_tap) {
-        if (STREQ(managed_tap, "no")) {
-            def->managed_tap = VIR_TRISTATE_BOOL_NO;
-        } else if (STREQ(managed_tap, "yes")) {
-            def->managed_tap = VIR_TRISTATE_BOOL_YES;
-        } else {
+        bool state = false;
+        if (virStringParseYesNo(managed_tap, &state) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("invalid 'managed' value '%s'"),
                            managed_tap);
             goto error;
         }
+        def->managed_tap = virTristateBoolFromBool(state);
     }
 
     if (def->managed_tap != VIR_TRISTATE_BOOL_NO && ifname &&
@@ -13887,15 +13885,13 @@ virDomainTimerDefParseXML(xmlNodePtr node,
 
     def->present = -1; /* unspecified */
     if ((present = virXMLPropString(node, "present")) != NULL) {
-        if (STREQ(present, "yes")) {
-            def->present = 1;
-        } else if (STREQ(present, "no")) {
-            def->present = 0;
-        } else {
+        bool state = false;
+        if (virStringParseYesNo(present, &state) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown timer present value '%s'"), present);
             goto error;
         }
+        def->present = state ? 1 : 0;
     }
 
     def->tickpolicy = -1;
@@ -18611,10 +18607,9 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     if ((node = virXPathNode("./os/bios[1]", ctxt))) {
         tmp = virXMLPropString(node, "useserial");
         if (tmp) {
-            if (STREQ(tmp, "yes"))
-                def->os.bios.useserial = VIR_TRISTATE_BOOL_YES;
-            else
-                def->os.bios.useserial = VIR_TRISTATE_BOOL_NO;
+            bool state = false;
+            ignore_value(virStringParseYesNo(tmp, &state));
+            def->os.bios.useserial = virTristateBoolFromBool(state);
             VIR_FREE(tmp);
         }
 
