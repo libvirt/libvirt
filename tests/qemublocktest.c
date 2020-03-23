@@ -387,6 +387,37 @@ testQemuDiskXMLToPropsValidateFile(const void *opaque)
 }
 
 
+static int
+testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
+{
+    struct testQemuDiskXMLToJSONData *data = (void *) opaque;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *jsonpath = NULL;
+    g_autofree char *actual = NULL;
+    size_t i;
+
+    if (data->fail)
+        return EXIT_AM_SKIP;
+
+    jsonpath = g_strdup_printf("%s%s-srconly.json", testQemuDiskXMLToJSONPath,
+                               data->name);
+
+    for (i = 0; i < data->npropssrc; i++) {
+        g_autofree char *jsonstr = NULL;
+
+        if (!(jsonstr = virJSONValueToString(data->propssrc[i], true)))
+            return -1;
+
+        virBufferAdd(&buf, jsonstr, -1);
+    }
+
+    actual = virBufferContentAndReset(&buf);
+
+    return virTestCompareToFile(actual, jsonpath);
+}
+
+
+
 struct testQemuImageCreateData {
     const char *name;
     const char *backingname;
@@ -510,36 +541,6 @@ testQemuImageCreate(const void *opaque)
 
     if (!(actual = virBufferContentAndReset(&actualbuf)))
         return -1;
-
-    return virTestCompareToFile(actual, jsonpath);
-}
-
-
-static int
-testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
-{
-    struct testQemuDiskXMLToJSONData *data = (void *) opaque;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_autofree char *jsonpath = NULL;
-    g_autofree char *actual = NULL;
-    size_t i;
-
-    if (data->fail)
-        return EXIT_AM_SKIP;
-
-    jsonpath = g_strdup_printf("%s%s-srconly.json", testQemuDiskXMLToJSONPath,
-                               data->name);
-
-    for (i = 0; i < data->npropssrc; i++) {
-        g_autofree char *jsonstr = NULL;
-
-        if (!(jsonstr = virJSONValueToString(data->propssrc[i], true)))
-            return -1;
-
-        virBufferAdd(&buf, jsonstr, -1);
-    }
-
-    actual = virBufferContentAndReset(&buf);
 
     return virTestCompareToFile(actual, jsonpath);
 }
