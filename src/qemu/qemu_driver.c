@@ -17499,7 +17499,7 @@ qemuDomainBlockPullCommon(virDomainObjPtr vm,
         if (baseSource) {
             nodebase = baseSource->nodeformat;
             if (!backingPath &&
-                !(backingPath = qemuBlockGetBackingStoreString(baseSource)))
+                !(backingPath = qemuBlockGetBackingStoreString(baseSource, false)))
                 goto endjob;
         }
         device = disk->src->nodeformat;
@@ -18667,7 +18667,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
         nodebase = baseSource->nodeformat;
         device = qemuDomainDiskGetTopNodename(disk);
         if (!backingPath && top_parent &&
-            !(backingPath = qemuBlockGetBackingStoreString(baseSource)))
+            !(backingPath = qemuBlockGetBackingStoreString(baseSource, false)))
             goto endjob;
 
         if (bitmapDisableActions) {

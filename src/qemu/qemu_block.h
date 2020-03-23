@@ -178,7 +178,8 @@ qemuBlockSnapshotAddBlockdev(virJSONValuePtr actions,
                              virStorageSourcePtr newsrc);
 
 char *
-qemuBlockGetBackingStoreString(virStorageSourcePtr src)
+qemuBlockGetBackingStoreString(virStorageSourcePtr src,
+                               bool pretty)
     ATTRIBUTE_NONNULL(1);
 
 int

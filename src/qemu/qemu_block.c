@@ -2027,13 +2027,15 @@ qemuBlockStorageGetCopyOnReadProps(virDomainDiskDefPtr disk)
 /**
  * qemuBlockGetBackingStoreString:
  * @src: storage source to get the string for
+ * @pretty: pretty-print the JSON (if applicable, used by tests)
  *
  * Formats a string used in the backing store field of a disk image which
  * supports backing store. Non-local storage may result in use of the json:
  * pseudo protocol for any complex configuration.
  */
 char *
-qemuBlockGetBackingStoreString(virStorageSourcePtr src)
+qemuBlockGetBackingStoreString(virStorageSourcePtr src,
+                               bool pretty)
 {
     int actualType = virStorageSourceGetActualType(src);
     g_autoptr(virJSONValue) backingProps = NULL;
@@ -2100,7 +2102,7 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src)
         props = sliceProps;
     }
 
-    if (!(backingJSON = virJSONValueToString(props, false)))
+    if (!(backingJSON = virJSONValueToString(props, pretty)))
         return NULL;
 
     ret = g_strdup_printf("json:%s", backingJSON);
@@ -2128,7 +2130,7 @@ qemuBlockStorageSourceCreateAddBacking(virStorageSourcePtr backing,
             backingFormatStr = virStorageFileFormatTypeToString(backing->format);
     }
 
-    if (!(backingFileStr = qemuBlockGetBackingStoreString(backing)))
+    if (!(backingFileStr = qemuBlockGetBackingStoreString(backing, false)))
         return -1;
 
     if (virJSONValueObjectAdd(props,
