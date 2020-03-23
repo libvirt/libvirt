@@ -1,0 +1,15 @@
+<disk type='network' device='disk'>
+  <driver name='qemu' type='qcow2'/>
+  <source protocol='https' name='/something'>
+    <host name='host1.example.com'/>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='node-a-s'/>
+        <nodename type='format' name='node-b-f'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <backingStore/>
+  <target dev='vda' bus='virtio'/>
+  <alias name='virtio-disk0'/>
+</disk>

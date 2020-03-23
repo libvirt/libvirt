@@ -1,0 +1,14 @@
+{
+  "node-name": "node-b-f",
+  "read-only": false,
+  "driver": "qcow2",
+  "file": "node-a-s",
+  "backing": null
+}
+{
+  "driver": "https",
+  "url": "https://host1.example.com:443/something",
+  "node-name": "node-a-s",
+  "auto-read-only": true,
+  "discard": "unmap"
+}

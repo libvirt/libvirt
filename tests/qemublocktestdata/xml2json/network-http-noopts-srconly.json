@@ -1,0 +1,9 @@
+(
+  source only properties:
+  {
+    "driver": "https",
+    "url": "https://host1.example.com:443/something"
+  }
+  backing store string:
+  https://host1.example.com:443/something
+)

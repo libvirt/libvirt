@@ -685,6 +685,7 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
     virJSONValuePtr ret = NULL;
     g_autoptr(virURI) uri = NULL;
     g_autofree char *uristr = NULL;
+    g_autofree char *cookiestr = NULL;
 
     /**
      * Common options:
@@ -714,6 +715,9 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
         if (srcPriv &&
             srcPriv->httpcookie)
             cookiealias = srcPriv->httpcookie->s.aes.alias;
+    } else {
+        /* format target string along with cookies */
+        cookiestr = qemuBlockStorageSourceGetCookieString(src);
     }
 
     ignore_value(virJSONValueObjectCreate(&ret,
@@ -721,6 +725,7 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
                                           "S:username", username,
                                           "S:password-secret", passwordalias,
                                           "T:sslverify", src->sslverify,
+                                          "S:cookie", cookiestr,
                                           "S:cookie-secret", cookiealias,
                                           "P:timeout", src->timeout,
                                           "P:readahead", src->readahead,
@@ -2056,7 +2061,12 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src,
         /* generate simplified URIs for the easy cases */
         if (actualType == VIR_STORAGE_TYPE_NETWORK &&
             src->nhosts == 1 &&
-            src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
+            src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP &&
+            src->timeout == 0 &&
+            src->ncookies == 0 &&
+            src->sslverify == VIR_TRISTATE_BOOL_ABSENT &&
+            src->timeout == 0 &&
+            src->readahead == 0) {
 
             switch ((virStorageNetProtocol) src->protocol) {
             case VIR_STORAGE_NET_PROTOCOL_NBD:
