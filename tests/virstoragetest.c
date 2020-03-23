@@ -1226,6 +1226,7 @@ mymain(void)
     TEST_BACKING_PARSE_FULL(bck, xml, 0)
 
     TEST_BACKING_PARSE("path", "<source file='path'/>\n");
+    TEST_BACKING_PARSE("fat:/somedir", "<source dir='/somedir'/>\n");
     TEST_BACKING_PARSE("://", NULL);
     TEST_BACKING_PARSE("http://example.com",
                        "<source protocol='http' name=''>\n"

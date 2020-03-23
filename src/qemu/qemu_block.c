@@ -2045,8 +2045,13 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src,
     g_autofree char *backingJSON = NULL;
 
     if (!src->sliceStorage) {
-        if (virStorageSourceIsLocalStorage(src))
+        if (virStorageSourceIsLocalStorage(src)) {
+            if (src->type == VIR_STORAGE_TYPE_DIR &&
+                src->format == VIR_STORAGE_FILE_FAT)
+                return g_strdup_printf("fat:%s", src->path);
+
             return g_strdup(src->path);
+        }
 
         /* generate simplified URIs for the easy cases */
         if (actualType == VIR_STORAGE_TYPE_NETWORK &&

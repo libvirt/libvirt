@@ -6,5 +6,5 @@
     "floppy": false
   }
   backing store string:
-  /var/somefiles
+  fat:/var/somefiles
 )

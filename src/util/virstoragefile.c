@@ -3922,6 +3922,7 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
                                        virStorageSourcePtr *src)
 {
     const char *json;
+    const char *dirpath;
     int rc = 0;
     g_autoptr(virStorageSource) def = NULL;
 
@@ -3935,6 +3936,14 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
 
         def->path = g_strdup(path);
     } else {
+        if ((dirpath = STRSKIP(path, "fat:"))) {
+            def->type = VIR_STORAGE_TYPE_DIR;
+            def->format = VIR_STORAGE_FILE_FAT;
+            def->path = g_strdup(dirpath);
+            *src = g_steal_pointer(&def);
+            return 0;
+        }
+
         def->type = VIR_STORAGE_TYPE_NETWORK;
 
         VIR_DEBUG("parsing backing store string: '%s'", path);
