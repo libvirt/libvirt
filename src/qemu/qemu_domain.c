@@ -12980,7 +12980,6 @@ qemuDomainGetMachineName(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     char *ret = NULL;
 
     if (vm->pid > 0) {
@@ -12990,7 +12989,8 @@ qemuDomainGetMachineName(virDomainObjPtr vm)
     }
 
     if (!ret)
-        ret = virDomainDriverGenerateMachineName("qemu", cfg->root,
+        ret = virDomainDriverGenerateMachineName("qemu",
+                                                 driver->embeddedRoot,
                                                  vm->def->id, vm->def->name,
                                                  driver->privileged);
 
