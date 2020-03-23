@@ -259,39 +259,38 @@ testQemuDiskXMLToProps(const void *opaque)
     g_autoptr(virDomainDef) vmdef = NULL;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr n;
-    virJSONValuePtr formatProps = NULL;
-    virJSONValuePtr storageProps = NULL;
+    g_autoptr(virJSONValue) formatProps = NULL;
+    g_autoptr(virJSONValue) storageProps = NULL;
     g_autoptr(virJSONValue) storageSrcOnlyProps = NULL;
-    char *xmlpath = NULL;
-    char *xmlstr = NULL;
-    int ret = -1;
+    g_autofree char *xmlpath = NULL;
+    g_autofree char *xmlstr = NULL;
 
     xmlpath = g_strdup_printf("%s%s.xml", testQemuDiskXMLToJSONPath, data->name);
 
     if (virTestLoadFile(xmlpath, &xmlstr) < 0)
-        goto cleanup;
+        return -1;
 
     /* qemu stores node names in the status XML portion */
     if (!(disk = virDomainDiskDefParse(xmlstr, data->driver->xmlopt,
                                        VIR_DOMAIN_DEF_PARSE_STATUS)))
-        goto cleanup;
+        return -1;
 
     if (!(vmdef = virDomainDefNew()) ||
         virDomainDiskInsert(vmdef, disk) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuCheckDiskConfig(disk, vmdef, data->qemuCaps) < 0 ||
         qemuDomainDeviceDefValidateDisk(disk, data->qemuCaps) < 0) {
         VIR_TEST_VERBOSE("invalid configuration for disk");
-        goto cleanup;
+        return -1;
     }
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuDomainValidateStorageSource(n, data->qemuCaps) < 0)
-            goto cleanup;
+            return -1;
 
         qemuDomainPrepareDiskSourceData(disk, n);
 
@@ -300,27 +299,20 @@ testQemuDiskXMLToProps(const void *opaque)
             !(storageProps = qemuBlockStorageSourceGetBackendProps(n, false, false, true))) {
             if (!data->fail) {
                 VIR_TEST_VERBOSE("failed to generate qemu blockdev props");
-                goto cleanup;
+                return -1;
             }
         } else if (data->fail) {
             VIR_TEST_VERBOSE("qemu blockdev props should have failed");
-            goto cleanup;
+            return -1;
         }
 
         if (VIR_APPEND_ELEMENT(data->props, data->nprops, formatProps) < 0 ||
             VIR_APPEND_ELEMENT(data->props, data->nprops, storageProps) < 0 ||
             VIR_APPEND_ELEMENT(data->propssrc, data->npropssrc, storageSrcOnlyProps) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(formatProps);
-    virJSONValueFree(storageProps);
-    VIR_FREE(xmlpath);
-    VIR_FREE(xmlstr);
-    return ret;
+    return 0;
 }
 
 
@@ -328,9 +320,6 @@ static int
 testQemuDiskXMLToPropsValidateSchema(const void *opaque)
 {
     struct testQemuDiskXMLToJSONData *data = (void *) opaque;
-    virBuffer debug = VIR_BUFFER_INITIALIZER;
-    char *propsstr = NULL;
-    char *debugmsg = NULL;
     int ret = 0;
     size_t i;
 
@@ -338,35 +327,31 @@ testQemuDiskXMLToPropsValidateSchema(const void *opaque)
         return EXIT_AM_SKIP;
 
     for (i = 0; i < data->nprops; i++) {
+        g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+
         if (testQEMUSchemaValidate(data->props[i], data->schemaroot,
                                    data->schema, &debug) < 0) {
-            debugmsg = virBufferContentAndReset(&debug);
-            propsstr = virJSONValueToString(data->props[i], true);
+            g_autofree char *debugmsg = virBufferContentAndReset(&debug);
+            g_autofree char *propsstr = virJSONValueToString(data->props[i], true);
             VIR_TEST_VERBOSE("json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
                            propsstr, NULLSTR(debugmsg));
-            VIR_FREE(debugmsg);
-            VIR_FREE(propsstr);
             ret = -1;
         }
-
-        virBufferFreeAndReset(&debug);
     }
 
     for (i = 0; i < data->npropssrc; i++) {
+        g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+
         if (testQEMUSchemaValidate(data->propssrc[i], data->schemaroot,
                                    data->schema, &debug) < 0) {
-            debugmsg = virBufferContentAndReset(&debug);
-            propsstr = virJSONValueToString(data->propssrc[i], true);
+            g_autofree char *debugmsg = virBufferContentAndReset(&debug);
+            g_autofree char *propsstr = virJSONValueToString(data->propssrc[i], true);
             VIR_TEST_VERBOSE("json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
                            propsstr, NULLSTR(debugmsg));
-            VIR_FREE(debugmsg);
-            VIR_FREE(propsstr);
             ret = -1;
         }
-
-        virBufferFreeAndReset(&debug);
     }
 
     return ret;
@@ -378,9 +363,8 @@ testQemuDiskXMLToPropsValidateFile(const void *opaque)
 {
     struct testQemuDiskXMLToJSONData *data = (void *) opaque;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *jsonpath = NULL;
-    char *actual = NULL;
-    int ret = -1;
+    g_autofree char *jsonpath = NULL;
+    g_autofree char *actual = NULL;
     size_t i;
 
     if (data->fail)
@@ -389,23 +373,17 @@ testQemuDiskXMLToPropsValidateFile(const void *opaque)
     jsonpath = g_strdup_printf("%s%s.json", testQemuDiskXMLToJSONPath, data->name);
 
     for (i = 0; i < data->nprops; i++) {
-        char *jsonstr;
+        g_autofree char *jsonstr = NULL;
 
         if (!(jsonstr = virJSONValueToString(data->props[i], true)))
-            goto cleanup;
+            return -1;
 
         virBufferAdd(&buf, jsonstr, -1);
-        VIR_FREE(jsonstr);
     }
 
     actual = virBufferContentAndReset(&buf);
 
-    ret = virTestCompareToFile(actual, jsonpath);
-
- cleanup:
-    VIR_FREE(jsonpath);
-    VIR_FREE(actual);
-    return ret;
+    return virTestCompareToFile(actual, jsonpath);
 }
 
 
