@@ -180,6 +180,13 @@ testJSONtoJSON(const void *args)
 }
 
 
+struct testQemuDiskXMLToJSONImageData {
+    virJSONValuePtr formatprops;
+    virJSONValuePtr storageprops;
+    virJSONValuePtr storagepropssrc;
+};
+
+
 struct testQemuDiskXMLToJSONData {
     virQEMUDriverPtr driver;
     virHashTablePtr schema;
@@ -187,11 +194,8 @@ struct testQemuDiskXMLToJSONData {
     const char *name;
     bool fail;
 
-    virJSONValuePtr *props;
-    size_t nprops;
-
-    virJSONValuePtr *propssrc;
-    size_t npropssrc;
+    struct testQemuDiskXMLToJSONImageData *images;
+    size_t nimages;
 
     virQEMUCapsPtr qemuCaps;
 };
@@ -202,16 +206,13 @@ testQemuDiskXMLToPropsClear(struct testQemuDiskXMLToJSONData *data)
 {
     size_t i;
 
-    for (i = 0; i < data->nprops; i++)
-        virJSONValueFree(data->props[i]);
-
-    for (i = 0; i < data->npropssrc; i++)
-        virJSONValueFree(data->propssrc[i]);
-
-    data->nprops = 0;
-    VIR_FREE(data->props);
-    data->npropssrc = 0;
-    VIR_FREE(data->propssrc);
+    for (i = 0; i < data->nimages; i++) {
+        virJSONValueFree(data->images[i].formatprops);
+        virJSONValueFree(data->images[i].storageprops);
+        virJSONValueFree(data->images[i].storagepropssrc);
+    }
+    data->nimages = 0;
+    VIR_FREE(data->images);
 }
 
 
@@ -286,6 +287,7 @@ testQemuDiskXMLToProps(const void *opaque)
     }
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+
         if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
             return -1;
 
@@ -306,10 +308,14 @@ testQemuDiskXMLToProps(const void *opaque)
             return -1;
         }
 
-        if (VIR_APPEND_ELEMENT(data->props, data->nprops, formatProps) < 0 ||
-            VIR_APPEND_ELEMENT(data->props, data->nprops, storageProps) < 0 ||
-            VIR_APPEND_ELEMENT(data->propssrc, data->npropssrc, storageSrcOnlyProps) < 0)
+        if (VIR_REALLOC_N(data->images, data->nimages + 1) < 0)
             return -1;
+
+        data->images[data->nimages].formatprops = g_steal_pointer(&formatProps);
+        data->images[data->nimages].storageprops = g_steal_pointer(&storageProps);
+        data->images[data->nimages].storagepropssrc = g_steal_pointer(&storageSrcOnlyProps);
+
+        data->nimages++;
     }
 
     return 0;
@@ -326,27 +332,37 @@ testQemuDiskXMLToPropsValidateSchema(const void *opaque)
     if (data->fail)
         return EXIT_AM_SKIP;
 
-    for (i = 0; i < data->nprops; i++) {
+    for (i = 0; i < data->nimages; i++) {
         g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
 
-        if (testQEMUSchemaValidate(data->props[i], data->schemaroot,
+        if (testQEMUSchemaValidate(data->images[i].formatprops, data->schemaroot,
                                    data->schema, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
-            g_autofree char *propsstr = virJSONValueToString(data->props[i], true);
+            g_autofree char *propsstr = virJSONValueToString(data->images[i].formatprops, true);
             VIR_TEST_VERBOSE("json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
                            propsstr, NULLSTR(debugmsg));
             ret = -1;
         }
-    }
 
-    for (i = 0; i < data->npropssrc; i++) {
-        g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+        virBufferFreeAndReset(&debug);
 
-        if (testQEMUSchemaValidate(data->propssrc[i], data->schemaroot,
+        if (testQEMUSchemaValidate(data->images[i].storageprops, data->schemaroot,
                                    data->schema, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
-            g_autofree char *propsstr = virJSONValueToString(data->propssrc[i], true);
+            g_autofree char *propsstr = virJSONValueToString(data->images[i].storageprops, true);
+            VIR_TEST_VERBOSE("json does not conform to QAPI schema");
+            VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
+                           propsstr, NULLSTR(debugmsg));
+            ret = -1;
+        }
+
+        virBufferFreeAndReset(&debug);
+
+        if (testQEMUSchemaValidate(data->images[i].storagepropssrc, data->schemaroot,
+                                   data->schema, &debug) < 0) {
+            g_autofree char *debugmsg = virBufferContentAndReset(&debug);
+            g_autofree char *propsstr = virJSONValueToString(data->images[i].storagepropssrc, true);
             VIR_TEST_VERBOSE("json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
                            propsstr, NULLSTR(debugmsg));
@@ -372,13 +388,17 @@ testQemuDiskXMLToPropsValidateFile(const void *opaque)
 
     jsonpath = g_strdup_printf("%s%s.json", testQemuDiskXMLToJSONPath, data->name);
 
-    for (i = 0; i < data->nprops; i++) {
-        g_autofree char *jsonstr = NULL;
+    for (i = 0; i < data->nimages; i++) {
+        g_autofree char *formatprops = NULL;
+        g_autofree char *storageprops = NULL;
 
-        if (!(jsonstr = virJSONValueToString(data->props[i], true)))
+        if (!(formatprops = virJSONValueToString(data->images[i].formatprops, true)))
             return -1;
 
-        virBufferAdd(&buf, jsonstr, -1);
+        if (!(storageprops = virJSONValueToString(data->images[i].storageprops, true)))
+            return -1;
+
+        virBufferStrcat(&buf, formatprops, storageprops, NULL);
     }
 
     actual = virBufferContentAndReset(&buf);
@@ -402,10 +422,10 @@ testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
     jsonpath = g_strdup_printf("%s%s-srconly.json", testQemuDiskXMLToJSONPath,
                                data->name);
 
-    for (i = 0; i < data->npropssrc; i++) {
+    for (i = 0; i < data->nimages; i++) {
         g_autofree char *jsonstr = NULL;
 
-        if (!(jsonstr = virJSONValueToString(data->propssrc[i], true)))
+        if (!(jsonstr = virJSONValueToString(data->images[i].storagepropssrc, true)))
             return -1;
 
         virBufferAdd(&buf, jsonstr, -1);
@@ -1117,10 +1137,8 @@ mymain(void)
 #define TEST_DISK_TO_JSON_FULL(nme, fl) \
     do { \
         diskxmljsondata.name = nme; \
-        diskxmljsondata.props = NULL; \
-        diskxmljsondata.nprops = 0; \
-        diskxmljsondata.propssrc = NULL; \
-        diskxmljsondata.npropssrc = 0; \
+        diskxmljsondata.images = NULL; \
+        diskxmljsondata.nimages = 0; \
         diskxmljsondata.fail = fl; \
         if (virTestRun("disk xml to props " nme, testQemuDiskXMLToProps, \
                        &diskxmljsondata) < 0) \
