@@ -44,6 +44,17 @@
 <libvirt>
   <release version="v6.2.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: NVDIMM support for pSeries guests
+        </summary>
+        <description>
+          QEMU 5.0 implements NVDIMM memory support for pSeries guests. This
+          is done by adding an 'uuid' element in the memory XML, which can
+          either be provided in the XML or, if ommited, generated
+          automatically.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
