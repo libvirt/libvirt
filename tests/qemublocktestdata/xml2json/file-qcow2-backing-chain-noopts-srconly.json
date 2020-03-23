@@ -1,40 +1,90 @@
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1507297895"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1484071872"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1483615252"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1483605924"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1483605920"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1483546244"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1483545901"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1483545313"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1483536402"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.qcow2"
-}
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1507297895"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1507297895
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1484071872"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1484071872
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483615252"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1483615252
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483605924"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1483605924
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483605920"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1483605920
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483546244"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1483546244
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483545901"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1483545901
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483545313"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1483545313
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483536402"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1483536402
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.qcow2"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.qcow2
+)

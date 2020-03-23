@@ -1,8 +1,13 @@
-{
-  "driver": "nbd",
-  "server": {
-    "type": "inet",
-    "host": "host1.example.com",
-    "port": "10809"
+(
+  source only properties:
+  {
+    "driver": "nbd",
+    "server": {
+      "type": "inet",
+      "host": "host1.example.com",
+      "port": "10809"
+    }
   }
-}
+  backing store string:
+  nbd://host1.example.com:10809
+)

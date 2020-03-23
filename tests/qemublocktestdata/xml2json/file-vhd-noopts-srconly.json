@@ -1,4 +1,9 @@
-{
-  "driver": "file",
-  "filename": "/path/to/i.img"
-}
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/path/to/i.img"
+  }
+  backing store string:
+  /path/to/i.img
+)

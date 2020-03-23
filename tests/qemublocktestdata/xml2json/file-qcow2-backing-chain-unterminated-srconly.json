@@ -1,8 +1,18 @@
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1507297895"
-}
-{
-  "driver": "file",
-  "filename": "/var/lib/libvirt/images/rhel7.3.1484071872"
-}
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1507297895"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1507297895
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1484071872"
+  }
+  backing store string:
+  /var/lib/libvirt/images/rhel7.3.1484071872
+)

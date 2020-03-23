@@ -184,6 +184,7 @@ struct testQemuDiskXMLToJSONImageData {
     virJSONValuePtr formatprops;
     virJSONValuePtr storageprops;
     virJSONValuePtr storagepropssrc;
+    char *backingstore;
 };
 
 
@@ -210,6 +211,7 @@ testQemuDiskXMLToPropsClear(struct testQemuDiskXMLToJSONData *data)
         virJSONValueFree(data->images[i].formatprops);
         virJSONValueFree(data->images[i].storageprops);
         virJSONValueFree(data->images[i].storagepropssrc);
+        g_free(data->images[i].backingstore);
     }
     data->nimages = 0;
     VIR_FREE(data->images);
@@ -287,6 +289,7 @@ testQemuDiskXMLToProps(const void *opaque)
     }
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        g_autofree char *backingstore = NULL;
 
         if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
             return -1;
@@ -298,7 +301,8 @@ testQemuDiskXMLToProps(const void *opaque)
 
         if (!(formatProps = qemuBlockStorageSourceGetBlockdevProps(n, n->backingStore)) ||
             !(storageSrcOnlyProps = qemuBlockStorageSourceGetBackendProps(n, false, true, true)) ||
-            !(storageProps = qemuBlockStorageSourceGetBackendProps(n, false, false, true))) {
+            !(storageProps = qemuBlockStorageSourceGetBackendProps(n, false, false, true)) ||
+            !(backingstore = qemuBlockGetBackingStoreString(n, true))) {
             if (!data->fail) {
                 VIR_TEST_VERBOSE("failed to generate qemu blockdev props");
                 return -1;
@@ -314,6 +318,7 @@ testQemuDiskXMLToProps(const void *opaque)
         data->images[data->nimages].formatprops = g_steal_pointer(&formatProps);
         data->images[data->nimages].storageprops = g_steal_pointer(&storageProps);
         data->images[data->nimages].storagepropssrc = g_steal_pointer(&storageSrcOnlyProps);
+        data->images[data->nimages].backingstore = g_steal_pointer(&backingstore);
 
         data->nimages++;
     }
@@ -425,10 +430,21 @@ testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
     for (i = 0; i < data->nimages; i++) {
         g_autofree char *jsonstr = NULL;
 
+        virBufferAddLit(&buf, "(\n");
+        virBufferAdjustIndent(&buf, 2);
+        virBufferAddLit(&buf, "source only properties:\n");
+
         if (!(jsonstr = virJSONValueToString(data->images[i].storagepropssrc, true)))
             return -1;
 
-        virBufferAdd(&buf, jsonstr, -1);
+        virBufferAddStr(&buf, jsonstr);
+
+        virBufferAddLit(&buf, "backing store string:\n");
+        virBufferAddStr(&buf, data->images[i].backingstore);
+
+        virBufferTrim(&buf, "\n");
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "\n)\n");
     }
 
     actual = virBufferContentAndReset(&buf);

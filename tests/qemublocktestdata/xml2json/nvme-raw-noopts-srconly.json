@@ -1,5 +1,14 @@
-{
-  "driver": "nvme",
-  "device": "0000:01:00.0",
-  "namespace": 1
-}
+(
+  source only properties:
+  {
+    "driver": "nvme",
+    "device": "0000:01:00.0",
+    "namespace": 1
+  }
+  backing store string:
+  json:{
+    "driver": "nvme",
+    "device": "0000:01:00.0",
+    "namespace": 1
+  }
+)

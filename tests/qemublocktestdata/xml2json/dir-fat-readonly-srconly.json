@@ -1,5 +1,10 @@
-{
-  "driver": "vvfat",
-  "dir": "/var/somefiles",
-  "floppy": false
-}
+(
+  source only properties:
+  {
+    "driver": "vvfat",
+    "dir": "/var/somefiles",
+    "floppy": false
+  }
+  backing store string:
+  /var/somefiles
+)

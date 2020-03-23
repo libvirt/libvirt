@@ -1,22 +1,46 @@
-{
-  "driver": "rbd",
-  "pool": "rbdpool",
-  "image": "rbdimg",
-  "server": [
-    {
-      "host": "host1.example.com",
-      "port": "0"
-    },
-    {
-      "host": "host2.example.com",
-      "port": "0"
-    }
-  ]
-}
-{
-  "driver": "iscsi",
-  "portal": "example.org:3260",
-  "target": "iqn.2016-09.com.example:iscsitarget",
-  "lun": 1,
-  "transport": "tcp"
-}
+(
+  source only properties:
+  {
+    "driver": "rbd",
+    "pool": "rbdpool",
+    "image": "rbdimg",
+    "server": [
+      {
+        "host": "host1.example.com",
+        "port": "0"
+      },
+      {
+        "host": "host2.example.com",
+        "port": "0"
+      }
+    ]
+  }
+  backing store string:
+  json:{
+    "driver": "rbd",
+    "pool": "rbdpool",
+    "image": "rbdimg",
+    "server": [
+      {
+        "host": "host1.example.com",
+        "port": "0"
+      },
+      {
+        "host": "host2.example.com",
+        "port": "0"
+      }
+    ]
+  }
+)
+(
+  source only properties:
+  {
+    "driver": "iscsi",
+    "portal": "example.org:3260",
+    "target": "iqn.2016-09.com.example:iscsitarget",
+    "lun": 1,
+    "transport": "tcp"
+  }
+  backing store string:
+  iscsi://example.org:3260/iqn.2016-09.com.example%3Aiscsitarget/1
+)
