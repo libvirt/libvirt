@@ -5755,6 +5755,11 @@
       </optional>
       <interleave>
         <optional>
+          <element name="uuid">
+            <ref name="UUID"/>
+          </element>
+        </optional>
+        <optional>
           <ref name="memorydev-source"/>
         </optional>
         <ref name="memorydev-target"/>

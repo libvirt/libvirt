@@ -16588,6 +16588,7 @@ static virDomainMemoryDefPtr
 virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
                            xmlNodePtr memdevNode,
                            xmlXPathContextPtr ctxt,
+                           const virDomainDef *dom,
                            unsigned int flags)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
@@ -16633,6 +16634,25 @@ virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
 
         def->discard = val;
+    }
+    VIR_FREE(tmp);
+
+    if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        ARCH_IS_PPC64(dom->os.arch)) {
+        /* Extract nvdimm uuid or generate a new one */
+        tmp = virXPathString("string(./uuid[1])", ctxt);
+
+        if (!tmp) {
+            if (virUUIDGenerate(def->uuid) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Failed to generate UUID"));
+                goto error;
+            }
+        } else if (virUUIDParse(tmp, def->uuid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("malformed uuid element"));
+            goto error;
+        }
     }
 
     /* source */
@@ -16931,7 +16951,8 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
         if (!(dev->data.memory = virDomainMemoryDefParseXML(xmlopt, node,
-                                                            ctxt, flags)))
+                                                            ctxt, def,
+                                                            flags)))
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_IOMMU:
@@ -21877,6 +21898,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         virDomainMemoryDefPtr mem = virDomainMemoryDefParseXML(xmlopt,
                                                                nodes[i],
                                                                ctxt,
+                                                               def,
                                                                flags);
         if (!mem)
             goto error;
@@ -27092,6 +27114,7 @@ virDomainMemoryTargetDefFormat(virBufferPtr buf,
 static int
 virDomainMemoryDefFormat(virBufferPtr buf,
                          virDomainMemoryDefPtr def,
+                         const virDomainDef *dom,
                          unsigned int flags)
 {
     const char *model = virDomainMemoryModelTypeToString(def->model);
@@ -27105,6 +27128,14 @@ virDomainMemoryDefFormat(virBufferPtr buf,
                           virTristateBoolTypeToString(def->discard));
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
+
+    if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        ARCH_IS_PPC64(dom->os.arch)) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(def->uuid, uuidstr);
+        virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+    }
 
     if (virDomainMemorySourceDefFormat(buf, def) < 0)
         return -1;
@@ -29435,7 +29466,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     }
 
     for (n = 0; n < def->nmems; n++) {
-        if (virDomainMemoryDefFormat(buf, def->mems[n], flags) < 0)
+        if (virDomainMemoryDefFormat(buf, def->mems[n], def, flags) < 0)
             goto error;
     }
 
@@ -30548,7 +30579,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         rc = virDomainPanicDefFormat(&buf, src->data.panic);
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
-        rc = virDomainMemoryDefFormat(&buf, src->data.memory, flags);
+        rc = virDomainMemoryDefFormat(&buf, src->data.memory, def, flags);
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
         rc = virDomainShmemDefFormat(&buf, src->data.shmem, flags);
