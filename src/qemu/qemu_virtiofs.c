@@ -56,7 +56,7 @@ qemuVirtioFSCreateSocketFilename(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    return virFileBuildPath(priv->libDir, alias, "-virtiofsd.sock");
+    return virFileBuildPath(priv->libDir, alias, "-fs.sock");
 }
 
 
