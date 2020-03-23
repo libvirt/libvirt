@@ -8892,6 +8892,7 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;/target&gt;
   &lt;/memory&gt;
   &lt;memory model='nvdimm'&gt;
+    &lt;uuid&gt;
     &lt;source&gt;
       &lt;path&gt;/tmp/nvdimm&lt;/path&gt;
     &lt;/source&gt;
@@ -8905,6 +8906,7 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;/target&gt;
   &lt;/memory&gt;
   &lt;memory model='nvdimm' access='shared'&gt;
+    &lt;uuid&gt;
     &lt;source&gt;
       &lt;path&gt;/dev/dax0.0&lt;/path&gt;
       &lt;alignsize unit='KiB'&gt;2048&lt;/alignsize&gt;
@@ -8957,6 +8959,17 @@ qemu-kvm -net nic,model=? /dev/null
           <a href="#elementsMemoryBacking">Memory Backing</a>.
           This attribute is allowed only for
           <code>model='dimm'</code>.
+        </p>
+      </dd>
+
+      <dt><code>uuid</code></dt>
+      <dd>
+        <p>
+          For pSeries guests, an uuid can be set to identify the
+          nvdimm module. If absent, libvirt will generate an uuid.
+          automatically. This attribute is allowed only for
+          <code>model='nvdimm'</code> for pSeries guests.
+          <span class="since">Since 6.2.0</span>
         </p>
       </dd>
 
