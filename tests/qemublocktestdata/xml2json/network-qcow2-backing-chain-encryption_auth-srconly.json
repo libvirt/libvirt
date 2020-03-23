@@ -16,7 +16,7 @@
     ]
   }
   backing store string:
-  json:{
+  json:{"file":{
     "driver": "rbd",
     "pool": "rbdpool",
     "image": "rbdimg",
@@ -30,6 +30,7 @@
         "port": "0"
       }
     ]
+  }
   }
 )
 (

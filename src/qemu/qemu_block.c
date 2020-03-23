@@ -2104,7 +2104,7 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src,
     if (!(backingJSON = virJSONValueToString(props, pretty)))
         return NULL;
 
-    return g_strdup_printf("json:%s", backingJSON);
+    return g_strdup_printf("json:{\"file\":%s}", backingJSON);
 }
 
 

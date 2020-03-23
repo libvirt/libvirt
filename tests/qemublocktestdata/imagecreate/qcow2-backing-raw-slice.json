@@ -10,6 +10,6 @@ format:
   "driver": "qcow2",
   "file": "0123456789ABCDEF0123456789ABCDE",
   "size": 8589934590,
-  "backing-file": "json:{\"driver\":\"raw\",\"offset\":9876,\"size\":54321,\"file\":{\"driver\":\"file\",\"filename\":\"/var/lib/libvirt/images/i.img\"}}",
+  "backing-file": "json:{\"file\":{\"driver\":\"raw\",\"offset\":9876,\"size\":54321,\"file\":{\"driver\":\"file\",\"filename\":\"/var/lib/libvirt/images/i.img\"}}}",
   "backing-fmt": "raw"
 }
