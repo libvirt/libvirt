@@ -1965,16 +1965,23 @@ qemuGetDomainHupageMemPath(virQEMUDriverPtr driver,
 
 
 int
-qemuGetMemoryBackingDomainPath(const virDomainDef *def,
-                               virQEMUDriverConfigPtr cfg,
+qemuGetMemoryBackingDomainPath(virQEMUDriverPtr driver,
+                               const virDomainDef *def,
                                char **path)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    const char *root = driver->embeddedRoot;
     g_autofree char *shortName = NULL;
 
     if (!(shortName = virDomainDefGetShortName(def)))
         return -1;
 
-    *path = g_strdup_printf("%s/%s", cfg->memoryBackingDir, shortName);
+    if (root && !STRPREFIX(cfg->memoryBackingDir, root)) {
+        g_autofree char * hash = virDomainDriverGenerateRootHash("qemu", root);
+        *path = g_strdup_printf("%s/%s-%s", cfg->memoryBackingDir, hash, shortName);
+    } else {
+        *path = g_strdup_printf("%s/%s", cfg->memoryBackingDir, shortName);
+    }
 
     return 0;
 }
@@ -1982,8 +1989,8 @@ qemuGetMemoryBackingDomainPath(const virDomainDef *def,
 
 /**
  * qemuGetMemoryBackingPath:
+ * @driver: the qemu driver
  * @def: domain definition
- * @cfg: the driver config
  * @alias: memory object alias
  * @memPath: constructed path
  *
@@ -1993,8 +2000,8 @@ qemuGetMemoryBackingDomainPath(const virDomainDef *def,
  *          -1 otherwise (with error reported).
  */
 int
-qemuGetMemoryBackingPath(const virDomainDef *def,
-                         virQEMUDriverConfigPtr cfg,
+qemuGetMemoryBackingPath(virQEMUDriverPtr driver,
+                         const virDomainDef *def,
                          const char *alias,
                          char **memPath)
 {
@@ -2007,7 +2014,7 @@ qemuGetMemoryBackingPath(const virDomainDef *def,
         return -1;
     }
 
-    if (qemuGetMemoryBackingDomainPath(def, cfg, &domainPath) < 0)
+    if (qemuGetMemoryBackingDomainPath(driver, def, &domainPath) < 0)
         return -1;
 
     *memPath = g_strdup_printf("%s/%s", domainPath, alias);

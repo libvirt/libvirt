@@ -3479,7 +3479,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         } else {
             /* We can have both pagesize and mem source. If that's the case,
              * prefer hugepages as those are more specific. */
-            if (qemuGetMemoryBackingPath(def, cfg, mem->info.alias, &memPath) < 0)
+            if (qemuGetMemoryBackingPath(priv->driver, def, mem->info.alias, &memPath) < 0)
                 return -1;
         }
 
@@ -7240,11 +7240,11 @@ qemuBuildSmpCommandLine(virCommandPtr cmd,
 
 
 static int
-qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
-                    const virDomainDef *def,
+qemuBuildMemPathStr(const virDomainDef *def,
                     virCommandPtr cmd,
                     qemuDomainObjPrivatePtr priv)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     const long system_page_size = virGetSystemPageSizeKB();
     g_autofree char *mem_path = NULL;
 
@@ -7261,7 +7261,7 @@ qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
         if (qemuGetDomainHupageMemPath(priv->driver, def, pagesize, &mem_path) < 0)
             return -1;
     } else if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
-        if (qemuGetMemoryBackingPath(def, cfg, "ram", &mem_path) < 0)
+        if (qemuGetMemoryBackingPath(priv->driver, def, "ram", &mem_path) < 0)
             return -1;
     } else {
         return 0;
@@ -7280,7 +7280,6 @@ qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
 
 static int
 qemuBuildMemCommandLine(virCommandPtr cmd,
-                        virQEMUDriverConfigPtr cfg,
                         const virDomainDef *def,
                         virQEMUCapsPtr qemuCaps,
                         qemuDomainObjPrivatePtr priv)
@@ -7312,7 +7311,7 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
      * the hugepages and no numa node is specified.
      */
     if (!virDomainNumaGetNodeCount(def->numa) &&
-        qemuBuildMemPathStr(cfg, def, cmd, priv) < 0)
+        qemuBuildMemPathStr(def, cmd, priv) < 0)
         return -1;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OVERCOMMIT)) {
@@ -7393,7 +7392,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     }
 
     if (!needBackend &&
-        qemuBuildMemPathStr(cfg, def, cmd, priv) < 0)
+        qemuBuildMemPathStr(def, cmd, priv) < 0)
         goto cleanup;
 
     for (i = 0; i < ncells; i++) {
@@ -9886,7 +9885,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (!migrateURI && !snapshot && qemuDomainAlignMemorySizes(def) < 0)
         return NULL;
 
-    if (qemuBuildMemCommandLine(cmd, cfg, def, qemuCaps, priv) < 0)
+    if (qemuBuildMemCommandLine(cmd, def, qemuCaps, priv) < 0)
         return NULL;
 
     if (qemuBuildSmpCommandLine(cmd, def, qemuCaps) < 0)
