@@ -245,7 +245,7 @@ struct _virStorageSourceInitiatorDef {
 typedef struct _virStorageSourceNVMeDef virStorageSourceNVMeDef;
 typedef virStorageSourceNVMeDef *virStorageSourceNVMeDefPtr;
 struct _virStorageSourceNVMeDef {
-    unsigned long long namespace;
+    unsigned long long namespc;
     int managed; /* enum virTristateBool */
     virPCIDeviceAddress pciAddr;
 

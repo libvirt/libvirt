@@ -1008,7 +1008,7 @@ qemuBlockStorageSourceGetNVMeProps(virStorageSourcePtr src)
     ignore_value(virJSONValueObjectCreate(&ret,
                                           "s:driver", "nvme",
                                           "s:device", pciAddr,
-                                          "U:namespace", nvme->namespace,
+                                          "U:namespace", nvme->namespc,
                                           NULL));
     return ret;
 }

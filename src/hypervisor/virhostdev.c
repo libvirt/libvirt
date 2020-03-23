@@ -2212,7 +2212,7 @@ virHostdevGetNVMeDeviceList(virNVMeDeviceListPtr nvmeDevices,
             continue;
 
         if (!(dev = virNVMeDeviceNew(&srcNVMe->pciAddr,
-                                     srcNVMe->namespace,
+                                     srcNVMe->namespc,
                                      srcNVMe->managed)))
             return -1;
 

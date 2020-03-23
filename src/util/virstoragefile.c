@@ -2052,7 +2052,7 @@ virStorageSourceNVMeDefCopy(const virStorageSourceNVMeDef *src)
 
     ret = g_new0(virStorageSourceNVMeDef, 1);
 
-    ret->namespace = src->namespace;
+    ret->namespc = src->namespc;
     ret->managed = src->managed;
     virPCIDeviceAddressCopy(&ret->pciAddr, &src->pciAddr);
     return ret;
@@ -2069,7 +2069,7 @@ virStorageSourceNVMeDefIsEqual(const virStorageSourceNVMeDef *a,
     if (!a || !b)
         return false;
 
-    if (a->namespace != b->namespace ||
+    if (a->namespc != b->namespc ||
         a->managed != b->managed ||
         !virPCIDeviceAddressEqual(&a->pciAddr, &b->pciAddr))
         return false;
