@@ -2274,10 +2274,9 @@ qemuAgentSetUserPassword(qemuAgentPtr agent,
                          const char *password,
                          bool crypted)
 {
-    int ret = -1;
-    virJSONValuePtr cmd = NULL;
-    virJSONValuePtr reply = NULL;
-    char *password64 = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autofree char *password64 = NULL;
 
     password64 = g_base64_encode((unsigned char *)password,
                                  strlen(password));
@@ -2287,18 +2286,12 @@ qemuAgentSetUserPassword(qemuAgentPtr agent,
                                      "s:username", user,
                                      "s:password", password64,
                                      NULL)))
-        goto cleanup;
+        return -1;
 
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    VIR_FREE(password64);
-    return ret;
+    return 0;
 }
 
 /* Returns: 0 on success
