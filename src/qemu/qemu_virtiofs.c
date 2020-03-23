@@ -42,13 +42,9 @@ qemuVirtioFSCreatePidFilename(virDomainObjPtr vm,
                               const char *alias)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autofree char *shortName = NULL;
     g_autofree char *name = NULL;
 
-    if (!(shortName = virDomainDefGetShortName(vm->def)))
-        return NULL;
-
-    name = g_strdup_printf("%s-%s-virtiofsd", shortName, alias);
+    name = g_strdup_printf("%s-fs", alias);
 
     return virPidFileBuildPath(priv->libDir, name);
 }
