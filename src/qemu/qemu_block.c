@@ -2043,13 +2043,10 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src,
     virJSONValuePtr props = NULL;
     g_autoptr(virURI) uri = NULL;
     g_autofree char *backingJSON = NULL;
-    char *ret = NULL;
 
     if (!src->sliceStorage) {
-        if (virStorageSourceIsLocalStorage(src)) {
-            ret = g_strdup(src->path);
-            return ret;
-        }
+        if (virStorageSourceIsLocalStorage(src))
+            return g_strdup(src->path);
 
         /* generate simplified URIs for the easy cases */
         if (actualType == VIR_STORAGE_TYPE_NETWORK &&
@@ -2068,10 +2065,7 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src,
                 if (!(uri = qemuBlockStorageSourceGetURI(src)))
                     return NULL;
 
-                if (!(ret = virURIFormat(uri)))
-                    return NULL;
-
-                return ret;
+                return virURIFormat(uri);
 
             case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
             case VIR_STORAGE_NET_PROTOCOL_RBD:
@@ -2105,9 +2099,7 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src,
     if (!(backingJSON = virJSONValueToString(props, pretty)))
         return NULL;
 
-    ret = g_strdup_printf("json:%s", backingJSON);
-
-    return ret;
+    return g_strdup_printf("json:%s", backingJSON);
 }
 
 
