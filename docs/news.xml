@@ -45,6 +45,19 @@
   <release version="v6.2.0" date="unreleased">
     <section title="New features">
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          Removed support for INI style of comments
+        </summary>
+        <description>
+          With switching of our internal code to GLib, parsing of client
+          authentication config files is handed over to GLib which does not
+          support <code>INI</code> style of comments starting with a semicolon
+          (<code>;</code>). Use number sign (<code>#</code>) instead.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
