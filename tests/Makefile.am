@@ -176,7 +176,7 @@ test_programs = virshtest sockettest \
 	commandtest seclabeltest \
 	virhashtest virconftest \
 	utiltest shunloadtest \
-	virtimetest viruritest virkeyfiletest \
+	virtimetest viruritest \
 	viralloctest \
 	virauthconfigtest \
 	virbitmaptest \
@@ -1396,10 +1396,6 @@ endif ! WITH_DBUS
 viruritest_SOURCES = \
 	viruritest.c testutils.h testutils.c
 viruritest_LDADD = $(LDADDS)
-
-virkeyfiletest_SOURCES = \
-	virkeyfiletest.c testutils.h testutils.c
-virkeyfiletest_LDADD = $(LDADDS)
 
 viralloctest_SOURCES = \
 	viralloctest.c testutils.h testutils.c

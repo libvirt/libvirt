@@ -108,8 +108,6 @@ UTIL_SOURCES = \
 	util/virjson.h \
 	util/virkeycode.c \
 	util/virkeycode.h \
-	util/virkeyfile.c \
-	util/virkeyfile.h \
 	util/virlease.c \
 	util/virlease.h \
 	util/virlockspace.c \
