@@ -76,8 +76,6 @@ struct _virQEMUDriverConfig {
     virObject parent;
 
     char *uri;
-    char *root; /* The root directory for embed driver,
-                   NULL for system/session connections */
 
     uid_t user;
     gid_t group;
