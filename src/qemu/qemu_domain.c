@@ -1747,18 +1747,7 @@ qemuDomainSecretStorageSourcePrepareCookies(qemuDomainObjPrivatePtr priv,
                                             const char *aliasprotocol)
 {
     g_autofree char *secretalias = qemuAliasForSecret(aliasprotocol, "httpcookie");
-    g_autofree char *cookies = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    size_t i;
-
-    for (i = 0; i < src->ncookies; i++) {
-        virStorageNetCookieDefPtr cookie = src->cookies[i];
-
-        virBufferAsprintf(&buf, "%s=%s; ", cookie->name, cookie->value);
-    }
-
-    virBufferTrim(&buf, "; ");
-    cookies = virBufferContentAndReset(&buf);
+    g_autofree char *cookies = qemuBlockStorageSourceGetCookieString(src);
 
     return qemuDomainSecretAESSetup(priv, secretalias, NULL,
                                     (uint8_t *) cookies, strlen(cookies));

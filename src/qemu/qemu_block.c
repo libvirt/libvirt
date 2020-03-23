@@ -3343,3 +3343,28 @@ qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src)
 
     return false;
 }
+
+
+/**
+ * qemuBlockStorageSourceGetCookieString:
+ * @src: storage source
+ *
+ * Returns a properly formatted string representing cookies of @src in format
+ * accepted by qemu.
+ */
+char *
+qemuBlockStorageSourceGetCookieString(virStorageSourcePtr src)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    for (i = 0; i < src->ncookies; i++) {
+        virStorageNetCookieDefPtr cookie = src->cookies[i];
+
+        virBufferAsprintf(&buf, "%s=%s; ", cookie->name, cookie->value);
+    }
+
+    virBufferTrim(&buf, "; ");
+
+    return virBufferContentAndReset(&buf);
+}
