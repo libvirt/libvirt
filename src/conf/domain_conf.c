@@ -24687,8 +24687,9 @@ virDomainDiskSourceNVMeFormat(virBufferPtr attrBuf,
                               const virStorageSourceNVMeDef *nvme)
 {
     virBufferAddLit(attrBuf, " type='pci'");
-    virBufferAsprintf(attrBuf, " managed='%s'",
-                      virTristateBoolTypeToString(nvme->managed));
+    if (nvme->managed != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(attrBuf, " managed='%s'",
+                          virTristateBoolTypeToString(nvme->managed));
     virBufferAsprintf(attrBuf, " namespace='%llu'", nvme->namespc);
     virPCIDeviceAddressFormat(childBuf, nvme->pciAddr, false);
 }
