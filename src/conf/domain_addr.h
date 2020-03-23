@@ -32,26 +32,27 @@ typedef enum {
 } virPCIDeviceAddressExtensionFlags;
 
 typedef enum {
-   VIR_PCI_CONNECT_HOTPLUGGABLE = 1 << 0, /* is hotplug needed/supported */
+    VIR_PCI_CONNECT_AUTOASSIGN = 1 << 0, /* okay to autoassign a device to this controller */
+    VIR_PCI_CONNECT_HOTPLUGGABLE = 1 << 1, /* is hotplug needed/supported */
 
-   /* set for devices that can share a single slot in auto-assignment
-    * (by assigning one device to each of the 8 functions on the slot)
-    */
-   VIR_PCI_CONNECT_AGGREGATE_SLOT = 1 << 1,
+    /* set for devices that can share a single slot in auto-assignment
+     * (by assigning one device to each of the 8 functions on the slot)
+     */
+    VIR_PCI_CONNECT_AGGREGATE_SLOT = 1 << 2,
 
-   /* kinds of devices as a bitmap so they can be combined (some PCI
-    * controllers permit connecting multiple types of devices)
-    */
-   VIR_PCI_CONNECT_TYPE_PCI_DEVICE = 1 << 2,
-   VIR_PCI_CONNECT_TYPE_PCIE_DEVICE = 1 << 3,
-   VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT = 1 << 4,
-   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT = 1 << 5,
-   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT = 1 << 6,
-   VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE = 1 << 7,
-   VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS = 1 << 8,
-   VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS = 1 << 9,
-   VIR_PCI_CONNECT_TYPE_PCI_BRIDGE = 1 << 10,
-   VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE = 1 << 11,
+    /* kinds of devices as a bitmap so they can be combined (some PCI
+     * controllers permit connecting multiple types of devices)
+     */
+    VIR_PCI_CONNECT_TYPE_PCI_DEVICE = 1 << 3,
+    VIR_PCI_CONNECT_TYPE_PCIE_DEVICE = 1 << 4,
+    VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT = 1 << 5,
+    VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT = 1 << 6,
+    VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT = 1 << 7,
+    VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE = 1 << 8,
+    VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS = 1 << 9,
+    VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS = 1 << 10,
+    VIR_PCI_CONNECT_TYPE_PCI_BRIDGE = 1 << 11,
+    VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE = 1 << 12,
 } virDomainPCIConnectFlags;
 
 /* a combination of all bits that describe the type of connections
