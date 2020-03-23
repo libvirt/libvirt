@@ -369,7 +369,7 @@ mymain(void)
 #endif
 
 #if WITH_QEMU
-    virQEMUDriverConfigPtr cfg = virQEMUDriverConfigNew(false, "");
+    virQEMUDriverConfigPtr cfg = virQEMUDriverConfigNew(false, NULL);
 
     if (!cfg)
         return EXIT_FAILURE;
