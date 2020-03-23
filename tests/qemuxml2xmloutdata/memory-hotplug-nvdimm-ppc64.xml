@@ -38,8 +38,11 @@
         <path>/tmp/nvdimm</path>
       </source>
       <target>
-        <size unit='KiB'>523264</size>
+        <size unit='KiB'>550000</size>
         <node>0</node>
+        <label>
+          <size unit='KiB'>128</size>
+        </label>
       </target>
       <address type='dimm' slot='0'/>
     </memory>

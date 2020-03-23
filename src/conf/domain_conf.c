@@ -6580,13 +6580,21 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
 
 
 static int
-virDomainMemoryDefValidate(const virDomainMemoryDef *mem)
+virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
+                           const virDomainDef *def)
 {
-    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        mem->discard == VIR_TRISTATE_BOOL_YES) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("discard is not supported for nvdimms"));
-        return -1;
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+        if (mem->discard == VIR_TRISTATE_BOOL_YES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("discard is not supported for nvdimms"));
+            return -1;
+        }
+
+        if (ARCH_IS_PPC64(def->os.arch) && mem->labelsize == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("label size is required for NVDIMM device"));
+            return -1;
+        }
     }
 
     return 0;
@@ -6697,7 +6705,7 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
         return virDomainVideoDefValidate(dev->data.video, def);
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        return virDomainMemoryDefValidate(dev->data.memory);
+        return virDomainMemoryDefValidate(dev->data.memory, def);
 
     case VIR_DOMAIN_DEVICE_VSOCK:
         return virDomainVsockDefValidate(dev->data.vsock);

@@ -3678,6 +3678,13 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
         if (mem->labelsize)
             virBufferAsprintf(&buf, "label-size=%llu,", mem->labelsize * 1024);
 
+        if (virUUIDIsValid(mem->uuid)) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+            virUUIDFormat(mem->uuid, uuidstr);
+            virBufferAsprintf(&buf, "uuid=%s,", uuidstr);
+        }
+
         if (mem->readonly) {
             if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_NVDIMM_UNARMED)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
