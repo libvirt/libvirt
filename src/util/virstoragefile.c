@@ -3806,6 +3806,35 @@ virStorageSourceParseBackingJSONVxHS(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageSourceParseBackingJSONNVMe(virStorageSourcePtr src,
+                                     virJSONValuePtr json,
+                                     const char *jsonstr G_GNUC_UNUSED,
+                                     int opaque G_GNUC_UNUSED)
+{
+    g_autoptr(virStorageSourceNVMeDef) nvme = g_new0(virStorageSourceNVMeDef, 1);
+    const char *device = virJSONValueObjectGetString(json, "device");
+
+    if (!device || virPCIDeviceAddressParse((char *) device, &nvme->pciAddr) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing or malformed 'device' field of 'nvme' storage"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberUlong(json, "namespace", &nvme->namespc) < 0 ||
+        nvme->namespc == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing or malformed 'namespace' field of 'nvme' storage"));
+        return -1;
+    }
+
+    src->type = VIR_STORAGE_TYPE_NVME;
+    src->nvme = g_steal_pointer(&nvme);
+
+    return 0;
+}
+
+
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
     bool formatdriver;
@@ -3837,6 +3866,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"rbd", false, virStorageSourceParseBackingJSONRBD, 0},
     {"raw", true, virStorageSourceParseBackingJSONRaw, 0},
     {"vxhs", false, virStorageSourceParseBackingJSONVxHS, 0},
+    {"nvme", false, virStorageSourceParseBackingJSONNVMe, 0},
 };
 
 

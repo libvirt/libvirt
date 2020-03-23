@@ -1656,6 +1656,15 @@ mymain(void)
                            "  <timeout seconds='2000'/>\n"
                            "</source>\n", 0);
 
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\": \"nvme\","
+                                       "\"device\": \"0000:01:00.0\","
+                                       "\"namespace\": 1"
+                                      "}"
+                            "}",
+                        "<source type='pci' namespace='1'>\n"
+                        "  <address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>\n"
+                        "</source>\n");
+
 #endif /* WITH_YAJL */
 
  cleanup:

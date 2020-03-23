@@ -1096,6 +1096,11 @@ mymain(void)
     /* type VIR_STORAGE_TYPE_BLOCK is not tested since it parses back to 'file' */
     /* type VIR_STORAGE_TYPE_DIR it is a 'format' driver in qemu */
 
+    TEST_JSON_FORMAT(VIR_STORAGE_TYPE_NVME,
+                     "<source type='pci' namespace='1'>\n"
+                     "  <address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>\n"
+                     "</source>\n");
+
     TEST_JSON_FORMAT_NET("<source protocol='http' name=''>\n"
                          "  <host name='example.com' port='80'/>\n"
                          "</source>\n");
