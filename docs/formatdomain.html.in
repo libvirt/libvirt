@@ -9061,12 +9061,13 @@ qemu-kvm -net nic,model=? /dev/null
           <dt><code>label</code></dt>
           <dd>
             <p>
-              For NVDIMM type devices one can optionally use
-              <code>label</code> and its subelement <code>size</code>
-              to configure the size of namespaces label storage
-              within the NVDIMM module. The <code>size</code> element
-              has usual meaning described
+              For NVDIMM type devices one can use <code>label</code> and its
+              subelement <code>size</code> to configure the size of
+              namespaces label storage within the NVDIMM module. The
+              <code>size</code> element has usual meaning described
               <a href="#elementsMemoryAllocation">here</a>.
+              <code>label</code> is mandatory for pSeries guests and optional
+              for all other architectures.
               For QEMU domains the following restrictions apply:
             </p>
             <ol>
