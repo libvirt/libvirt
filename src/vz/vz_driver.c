@@ -281,6 +281,14 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         def->os.type == VIR_DOMAIN_OSTYPE_HVM)
         dev->data.net->model = VIR_DOMAIN_NET_MODEL_E1000;
 
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO &&
+        dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
+        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
+            dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
+        else
+            dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
+    }
+
     return 0;
 }
 

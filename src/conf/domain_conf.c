@@ -15732,10 +15732,6 @@ virDomainVideoDefaultType(const virDomainDef *def)
 
     case VIR_DOMAIN_VIRT_VZ:
     case VIR_DOMAIN_VIRT_PARALLELS:
-        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
-            return VIR_DOMAIN_VIDEO_TYPE_VGA;
-        else
-            return VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
     case VIR_DOMAIN_VIRT_XEN:
     case VIR_DOMAIN_VIRT_BHYVE:
     case VIR_DOMAIN_VIRT_QEMU:
