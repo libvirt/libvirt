@@ -1,5 +1,6 @@
 variables:
   MAKE: make
+  GIT_DEPTH: 100
 
 .job_template: &job_definition
   script:
