@@ -5284,12 +5284,23 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
             }
             break;
 
+        case VIR_DOMAIN_FEATURE_HYPERV:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
+                !ARCH_IS_X86(def->os.arch) && !qemuDomainIsARMVirt(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Hyperv features are not supported for "
+                                 "architecture '%s' or machine type '%s'"),
+                                 virArchToString(def->os.arch),
+                                 def->os.machine);
+                 return -1;
+            }
+            break;
+
         case VIR_DOMAIN_FEATURE_ACPI:
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_HAP:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
-        case VIR_DOMAIN_FEATURE_HYPERV:
         case VIR_DOMAIN_FEATURE_CAPABILITIES:
         case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_MSRS:
