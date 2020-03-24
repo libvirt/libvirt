@@ -5296,13 +5296,22 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
             }
             break;
 
+        case VIR_DOMAIN_FEATURE_PMU:
+            if (def->features[i] == VIR_TRISTATE_SWITCH_OFF &&
+                ARCH_IS_PPC64(def->os.arch)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("PMU is always enabled for architecture '%s'"),
+                                 virArchToString(def->os.arch));
+                 return -1;
+            }
+            break;
+
         case VIR_DOMAIN_FEATURE_ACPI:
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_HAP:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
         case VIR_DOMAIN_FEATURE_CAPABILITIES:
-        case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_MSRS:
         case VIR_DOMAIN_FEATURE_LAST:
             break;

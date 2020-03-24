@@ -6784,7 +6784,9 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
         }
     }
 
-    if (def->features[VIR_DOMAIN_FEATURE_PMU]) {
+    /* ppc64 guests always have PMU enabled, but the 'pmu' option
+     * is not supported. */
+    if (def->features[VIR_DOMAIN_FEATURE_PMU] && !ARCH_IS_PPC64(def->os.arch)) {
         virTristateSwitch pmu = def->features[VIR_DOMAIN_FEATURE_PMU];
         virBufferAsprintf(&buf, ",pmu=%s",
                           virTristateSwitchTypeToString(pmu));
