@@ -15715,18 +15715,10 @@ int
 virDomainVideoDefaultType(const virDomainDef *def)
 {
     switch ((virDomainVirtType)def->virtType) {
-    case VIR_DOMAIN_VIRT_TEST:
-        if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
-            def->os.type == VIR_DOMAIN_OSTYPE_LINUX)
-            return VIR_DOMAIN_VIDEO_TYPE_XEN;
-        else if (ARCH_IS_PPC64(def->os.arch))
-            return VIR_DOMAIN_VIDEO_TYPE_VGA;
-        else
-            return VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
-
     case VIR_DOMAIN_VIRT_VBOX:
         return VIR_DOMAIN_VIDEO_TYPE_VBOX;
 
+    case VIR_DOMAIN_VIRT_TEST:
     case VIR_DOMAIN_VIRT_VMWARE:
     case VIR_DOMAIN_VIRT_VZ:
     case VIR_DOMAIN_VIRT_PARALLELS:

@@ -407,6 +407,28 @@ testDomainObjPrivateAlloc(void *opaque)
 }
 
 
+static int
+testDomainDevicesDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
+                              const virDomainDef *def G_GNUC_UNUSED,
+                              unsigned int parseFlags G_GNUC_UNUSED,
+                              void *opaque G_GNUC_UNUSED,
+                              void *parseOpaque G_GNUC_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO &&
+        dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
+        if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+            def->os.type == VIR_DOMAIN_OSTYPE_LINUX)
+            dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_XEN;
+        else if (ARCH_IS_PPC64(def->os.arch))
+            dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
+        else
+            dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
+    }
+
+    return 0;
+}
+
+
 static void
 testDomainObjPrivateFree(void *data)
 {
@@ -431,6 +453,7 @@ testDriverNew(void)
                     VIR_DOMAIN_DEF_FEATURE_USER_ALIAS |
                     VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
                     VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
+        .devicesPostParseCallback = testDomainDevicesDefPostParse,
         .defArch = VIR_ARCH_I686,
     };
     virDomainXMLPrivateDataCallbacks privatecb = {
