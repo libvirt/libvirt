@@ -137,6 +137,10 @@ vmwareDomainDeviceDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                                void *opaque G_GNUC_UNUSED,
                                void *parseOpaque G_GNUC_UNUSED)
 {
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO &&
+        dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT)
+        dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_VMVGA;
+
     return 0;
 }
 

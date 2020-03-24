@@ -15728,8 +15728,6 @@ virDomainVideoDefaultType(const virDomainDef *def)
         return VIR_DOMAIN_VIDEO_TYPE_VBOX;
 
     case VIR_DOMAIN_VIRT_VMWARE:
-        return VIR_DOMAIN_VIDEO_TYPE_VMVGA;
-
     case VIR_DOMAIN_VIRT_VZ:
     case VIR_DOMAIN_VIRT_PARALLELS:
     case VIR_DOMAIN_VIRT_XEN:
