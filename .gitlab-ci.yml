@@ -161,3 +161,28 @@ website:
     expire_in: 30 days
     paths:
       - website
+
+
+# This artifact published by this job is downloaded to push to Weblate
+# for translation usage:
+#    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=potfile
+potfile:
+  stage: prebuild
+  only:
+    - master
+  script:
+    - mkdir build
+    - cd build
+    - ../autogen.sh || (cat config.log && exit 1)
+    - $MAKE -j $(getconf _NPROCESSORS_ONLN) -C src generated-sources
+    - $MAKE -j $(getconf _NPROCESSORS_ONLN) -C po libvirt.pot
+    - cd ..
+    - mv build/po/libvirt.pot libvirt.pot
+  image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
+  artifacts:
+    expose_as: 'Potfile'
+    name: 'potfile'
+    when: on_success
+    expire_in: 30 days
+    paths:
+      - libvirt.pot
