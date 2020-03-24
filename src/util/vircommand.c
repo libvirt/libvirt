@@ -797,8 +797,7 @@ virExec(virCommandPtr cmd)
         virProcessSetMaxCoreSize(0, cmd->maxCore) < 0)
         goto fork_error;
     if (cmd->pidfile) {
-        VIR_AUTOCLOSE pidfilefd = -1;
-        int newpidfilefd = -1;
+        int pidfilefd = -1;
         char c;
 
         pidfilefd = virPidFileAcquirePath(cmd->pidfile, false, getpid());
@@ -818,14 +817,7 @@ virExec(virCommandPtr cmd)
         VIR_FORCE_CLOSE(pipesync[0]);
         VIR_FORCE_CLOSE(pipesync[1]);
 
-        /* This is here only to move the pidfilefd
-         * to the lowest possible number. */
-        if ((newpidfilefd = dup(pidfilefd)) < 0) {
-            virReportSystemError(errno, "%s", _("Unable to dup FD"));
-            goto fork_error;
-        }
-
-        /* newpidfilefd is intentionally leaked. */
+        /* pidfilefd is intentionally leaked. */
     }
 
     if (cmd->hook) {
