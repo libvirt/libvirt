@@ -1272,6 +1272,7 @@ test28(const void *unused G_GNUC_UNUSED)
     /* Not strictly a virCommand test, but this is the easiest place
      * to test this lower-level interface. */
     virErrorPtr err;
+    g_autofree char *msg = g_strdup_printf("some error message: %s", g_strerror(ENODATA));
 
     if (virProcessRunInFork(test28Callback, NULL) != -1) {
         fprintf(stderr, "virProcessRunInFork did not fail\n");
@@ -1285,10 +1286,10 @@ test28(const void *unused G_GNUC_UNUSED)
 
     if (!(err->code == VIR_ERR_SYSTEM_ERROR &&
           err->domain == 0 &&
-          STREQ(err->message, "some error message: No data available") &&
+          STREQ(err->message, msg) &&
           err->level == VIR_ERR_ERROR &&
           STREQ(err->str1, "%s") &&
-          STREQ(err->str2, "some error message: No data available") &&
+          STREQ(err->str2, msg) &&
           err->int1 == ENODATA &&
           err->int2 == -1)) {
         fprintf(stderr, "Unexpected error object\n");
