@@ -15711,32 +15711,6 @@ virDomainVideoDefaultRAM(const virDomainDef *def,
 }
 
 
-int
-virDomainVideoDefaultType(const virDomainDef *def)
-{
-    switch ((virDomainVirtType)def->virtType) {
-    case VIR_DOMAIN_VIRT_VBOX:
-    case VIR_DOMAIN_VIRT_TEST:
-    case VIR_DOMAIN_VIRT_VMWARE:
-    case VIR_DOMAIN_VIRT_VZ:
-    case VIR_DOMAIN_VIRT_PARALLELS:
-    case VIR_DOMAIN_VIRT_XEN:
-    case VIR_DOMAIN_VIRT_BHYVE:
-    case VIR_DOMAIN_VIRT_QEMU:
-    case VIR_DOMAIN_VIRT_KQEMU:
-    case VIR_DOMAIN_VIRT_KVM:
-    case VIR_DOMAIN_VIRT_LXC:
-    case VIR_DOMAIN_VIRT_UML:
-    case VIR_DOMAIN_VIRT_OPENVZ:
-    case VIR_DOMAIN_VIRT_HYPERV:
-    case VIR_DOMAIN_VIRT_PHYP:
-    case VIR_DOMAIN_VIRT_NONE:
-    case VIR_DOMAIN_VIRT_LAST:
-    default:
-        return VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
-    }
-}
-
 static virDomainVideoAccelDefPtr
 virDomainVideoAccelDefParseXML(xmlNodePtr node)
 {
@@ -15854,7 +15828,6 @@ static virDomainVideoDefPtr
 virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
                           xmlNodePtr node,
                           xmlXPathContextPtr ctxt,
-                          const virDomainDef *dom,
                           unsigned int flags)
 {
     virDomainVideoDefPtr def;
@@ -15925,7 +15898,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
     } else {
-        def->type = virDomainVideoDefaultType(dom);
+        def->type = VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
     }
 
     if (driver_name) {
@@ -16871,7 +16844,7 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_VIDEO:
         if (!(dev->data.video = virDomainVideoDefParseXML(xmlopt, node,
-                                                          ctxt, def, flags)))
+                                                          ctxt, flags)))
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
@@ -21633,7 +21606,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         ssize_t insertAt = -1;
 
         if (!(video = virDomainVideoDefParseXML(xmlopt, nodes[i],
-                                                ctxt, def, flags)))
+                                                ctxt, flags)))
             goto error;
 
         if (video->primary) {
@@ -24314,7 +24287,7 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def, virDomainXMLOptionPtr xmlopt)
 
     if (!(video = virDomainVideoDefNew(xmlopt)))
         goto cleanup;
-    video->type = virDomainVideoDefaultType(def);
+    video->type = VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
     if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
         goto cleanup;
 

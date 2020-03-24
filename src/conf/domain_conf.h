@@ -3364,7 +3364,6 @@ int virDomainFSInsert(virDomainDefPtr def, virDomainFSDefPtr fs);
 int virDomainFSIndexByName(virDomainDefPtr def, const char *name);
 virDomainFSDefPtr virDomainFSRemove(virDomainDefPtr def, size_t i);
 
-int virDomainVideoDefaultType(const virDomainDef *def);
 unsigned int virDomainVideoDefaultRAM(const virDomainDef *def,
                                       const virDomainVideoType type);
 
