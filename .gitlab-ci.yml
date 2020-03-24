@@ -1,9 +1,12 @@
+variables:
+  MAKE: make
+
 .job_template: &job_definition
   script:
     - mkdir build
     - cd build
     - ../autogen.sh $CONFIGURE_OPTS || (cat config.log && exit 1)
-    - make -j $(getconf _NPROCESSORS_ONLN)
+    - $MAKE -j $(getconf _NPROCESSORS_ONLN)
 
 # We could run every arch on every versions, but it is a little
 # overkill. Instead we split jobs evenly across 9, 10 and sid
