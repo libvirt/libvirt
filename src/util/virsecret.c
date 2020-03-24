@@ -48,7 +48,7 @@ virSecretLookupDefClear(virSecretLookupTypeDefPtr def)
 }
 
 
-int
+void
 virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
                        const virSecretLookupTypeDef *src)
 {
@@ -58,7 +58,6 @@ virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
     } else if (dst->type == VIR_SECRET_LOOKUP_TYPE_USAGE) {
         dst->u.usage = g_strdup(src->u.usage);
     }
-    return 0;
 }
 
 

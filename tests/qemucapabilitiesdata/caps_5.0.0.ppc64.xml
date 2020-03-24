@@ -28,7 +28,6 @@
   <flag name='blockio'/>
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
-  <flag name='seccomp-sandbox'/>
   <flag name='reboot-timeout'/>
   <flag name='vnc'/>
   <flag name='VGA'/>
@@ -41,6 +40,7 @@
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
   <flag name='megasas'/>
+  <flag name='tpm-passthrough'/>
   <flag name='nvram'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
@@ -110,6 +110,7 @@
   <flag name='vhost-scsi'/>
   <flag name='drive-iotune-group'/>
   <flag name='virtio-net.host_mtu'/>
+  <flag name='nvdimm'/>
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
   <flag name='block-write-threshold'/>
@@ -138,7 +139,6 @@
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>
   <flag name='pcie-pci-bridge'/>
-  <flag name='seccomp-blacklist'/>
   <flag name='query-cpus-fast'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
@@ -157,6 +157,7 @@
   <flag name='usb-storage.werror'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
+  <flag name='blockdev'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
@@ -164,6 +165,7 @@
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.align'/>
   <flag name='memory-backend-file.pmem'/>
+  <flag name='nvdimm.unarmed'/>
   <flag name='scsi-disk.device_id'/>
   <flag name='virtio-pci-non-transitional'/>
   <flag name='overcommit'/>
@@ -172,24 +174,31 @@
   <flag name='nbd-bitmap'/>
   <flag name='bochs-display'/>
   <flag name='migration-file-drop-cache'/>
+  <flag name='dbus-vmstate'/>
   <flag name='vhost-user-gpu'/>
   <flag name='vhost-user-vga'/>
   <flag name='machine.pseries.cap-ccf-assist'/>
   <flag name='blockdev-file-dynamic-auto-read-only'/>
+  <flag name='savevm-monitor-nodes'/>
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
   <flag name='i8042'/>
   <flag name='rng-builtin'/>
+  <flag name='virtio-net.failover'/>
   <flag name='tpm-spapr'/>
-  <version>4001050</version>
+  <flag name='vhost-user-fs'/>
+  <flag name='query-named-block-nodes.flat'/>
+  <flag name='blockdev-snapshot.allow-write-only-overlay'/>
+  <version>4002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900241</microcodeVersion>
-  <package>v4.1.0-2198-g9e583f2</package>
+  <package>v4.2.0-2387-g3189e9d38c</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc32' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc64' typename='970fx_v3.1-powerpc64-cpu'/>
+  <cpu type='kvm' name='power10' typename='power10_v1.0-powerpc64-cpu'/>
   <cpu type='kvm' name='POWER9' typename='power9_v2.0-powerpc64-cpu'/>
   <cpu type='kvm' name='power8nvl' typename='power8nvl_v1.0-powerpc64-cpu'/>
   <cpu type='kvm' name='POWER8' typename='host-powerpc64-cpu'/>
@@ -315,351 +324,353 @@
   <cpu type='kvm' name='405cr' typename='405crc-powerpc64-cpu'/>
   <cpu type='kvm' name='405' typename='405d4-powerpc64-cpu'/>
   <cpu type='kvm' name='403' typename='403gc-powerpc64-cpu'/>
-  <cpu type='kvm' name='mpc8547e_v21'/>
-  <cpu type='kvm' name='g2gp'/>
-  <cpu type='kvm' name='7457a_v1.1'/>
-  <cpu type='kvm' name='750cl_v1.0'/>
-  <cpu type='kvm' name='750cxe_v2.1'/>
-  <cpu type='kvm' name='755_v2.7'/>
-  <cpu type='kvm' name='750_v2.1'/>
-  <cpu type='kvm' name='755_v2.2'/>
-  <cpu type='kvm' name='745_v2.0'/>
-  <cpu type='kvm' name='mpc8377'/>
-  <cpu type='kvm' name='7455_v1.0'/>
-  <cpu type='kvm' name='mpc8545_v21'/>
-  <cpu type='kvm' name='mpc8548_v11'/>
-  <cpu type='kvm' name='405d4'/>
-  <cpu type='kvm' name='g2le'/>
-  <cpu type='kvm' name='750e'/>
-  <cpu type='kvm' name='mpc8572'/>
-  <cpu type='kvm' name='g2hip3'/>
-  <cpu type='kvm' name='970fx_v2.0'/>
-  <cpu type='kvm' name='750fx_v2.0'/>
-  <cpu type='kvm' name='603p'/>
-  <cpu type='kvm' name='405gpb'/>
-  <cpu type='kvm' name='7400_v2.7'/>
-  <cpu type='kvm' name='mpc8544e_v10'/>
-  <cpu type='kvm' name='e500v2_v10'/>
-  <cpu type='kvm' name='e500mc'/>
-  <cpu type='kvm' name='603e7v1'/>
-  <cpu type='kvm' name='970mp_v1.0'/>
-  <cpu type='kvm' name='740e'/>
-  <cpu type='kvm' name='405crc'/>
-  <cpu type='kvm' name='403ga'/>
-  <cpu type='kvm' name='7447a_v1.0'/>
-  <cpu type='kvm' name='e300c1'/>
-  <cpu type='kvm' name='mpc8572e'/>
-  <cpu type='kvm' name='e500v2_v21'/>
-  <cpu type='kvm' name='7400_v2.2'/>
-  <cpu type='kvm' name='970fx_v1.0'/>
-  <cpu type='kvm' name='750gx_v1.2'/>
-  <cpu type='kvm' name='750fx_v1.0'/>
-  <cpu type='kvm' name='7457_v1.1'/>
-  <cpu type='kvm' name='970fx_v3.0'/>
-  <cpu type='kvm' name='604e_v2.2'/>
-  <cpu type='kvm' name='745_v2.4'/>
-  <cpu type='kvm' name='401a1'/>
-  <cpu type='kvm' name='755_v2.6'/>
-  <cpu type='kvm' name='power9_v1.0'/>
-  <cpu type='kvm' name='npe405h'/>
-  <cpu type='kvm' name='g2ls'/>
-  <cpu type='kvm' name='7410_v1.4'/>
-  <cpu type='kvm' name='750_v2.0'/>
-  <cpu type='kvm' name='401b2'/>
-  <cpu type='kvm' name='mpc8349'/>
-  <cpu type='kvm' name='mpc8347ep'/>
-  <cpu type='kvm' name='mpc8540_v21'/>
-  <cpu type='kvm' name='mpc8543_v11'/>
-  <cpu type='kvm' name='403gcx'/>
-  <cpu type='kvm' name='7445_v3.2'/>
-  <cpu type='kvm' name='mpc8548_v21'/>
-  <cpu type='kvm' name='750l_v3.2'/>
-  <cpu type='kvm' name='750_v1.0'/>
-  <cpu type='kvm' name='755_v1.1'/>
-  <cpu type='kvm' name='750cxe_v3.0'/>
-  <cpu type='kvm' name='e500_v10'/>
-  <cpu type='kvm' name='mpc8541e_v10'/>
-  <cpu type='kvm' name='power9_v2.0'/>
-  <cpu type='kvm' name='mpc8347p'/>
-  <cpu type='kvm' name='mpc8555e_v10'/>
-  <cpu type='kvm' name='power7_v2.3'/>
-  <cpu type='kvm' name='603e7v'/>
-  <cpu type='kvm' name='mpc8543e_v11'/>
-  <cpu type='kvm' name='750_v3.0'/>
-  <cpu type='kvm' name='7400_v2.6'/>
-  <cpu type='kvm' name='405gpa'/>
-  <cpu type='kvm' name='440epx'/>
-  <cpu type='kvm' name='750l_v2.2'/>
-  <cpu type='kvm' name='e200z6'/>
-  <cpu type='kvm' name='mpc8547e_v20'/>
-  <cpu type='kvm' name='7457a_v1.0'/>
-  <cpu type='kvm' name='mpc8349ea'/>
-  <cpu type='kvm' name='e500v2_v20'/>
-  <cpu type='kvm' name='power8nvl_v1.0'/>
-  <cpu type='kvm' name='mpc8540_v10'/>
-  <cpu type='kvm' name='755_v2.1'/>
-  <cpu type='kvm' name='745_v2.8'/>
-  <cpu type='kvm' name='npe405l'/>
-  <cpu type='kvm' name='mpc8343ea'/>
-  <cpu type='kvm' name='mpc8545_v20'/>
-  <cpu type='kvm' name='mpc8548_v10'/>
-  <cpu type='kvm' name='7448_v1.1'/>
-  <cpu type='kvm' name='740_v2.2'/>
-  <cpu type='kvm' name='7455_v3.4'/>
-  <cpu type='kvm' name='7400_v1.1'/>
-  <cpu type='kvm' name='mpc8347et'/>
-  <cpu type='kvm' name='7441_v2.10'/>
-  <cpu type='kvm' name='603e_v1.4'/>
-  <cpu type='kvm' name='mpc8543_v10'/>
-  <cpu type='kvm' name='401c2'/>
-  <cpu type='kvm' name='7451_v2.10'/>
-  <cpu type='kvm' name='750cx_v2.2'/>
-  <cpu type='kvm' name='mpc8543_v21'/>
-  <cpu type='kvm' name='603e7'/>
-  <cpu type='kvm' name='7448_v2.1'/>
-  <cpu type='kvm' name='7441_v2.3'/>
-  <cpu type='kvm' name='405crb'/>
-  <cpu type='kvm' name='604'/>
-  <cpu type='kvm' name='7400_v2.1'/>
-  <cpu type='kvm' name='440-xilinx-w-dfpu'/>
-  <cpu type='kvm' name='7445_v2.1'/>
-  <cpu type='kvm' name='cobra'/>
-  <cpu type='kvm' name='e500_v20'/>
-  <cpu type='kvm' name='mpc8541_v11'/>
-  <cpu type='kvm' name='750gx_v1.1'/>
-  <cpu type='kvm' name='750cxe_v2.4'/>
-  <cpu type='kvm' name='mpc8641d'/>
-  <cpu type='kvm' name='mpc8543e_v21'/>
-  <cpu type='kvm' name='750l_v2.1'/>
-  <cpu type='kvm' name='7457_v1.0'/>
-  <cpu type='kvm' name='7450_v1.2'/>
-  <cpu type='kvm' name='755_v2.5'/>
-  <cpu type='kvm' name='7410_v1.3'/>
-  <cpu type='kvm' name='745_v2.3'/>
-  <cpu type='kvm' name='755_v2.0'/>
-  <cpu type='kvm' name='e500v2_v30'/>
-  <cpu type='kvm' name='7455_v3.3'/>
-  <cpu type='kvm' name='mpc8540_v20'/>
-  <cpu type='kvm' name='405d2'/>
-  <cpu type='kvm' name='mpc8560_v21'/>
-  <cpu type='kvm' name='mpc8343'/>
-  <cpu type='kvm' name='mpc8548_v20'/>
-  <cpu type='kvm' name='mpc8347t'/>
-  <cpu type='kvm' name='755_v1.0'/>
-  <cpu type='kvm' name='603e_v1.3'/>
-  <cpu type='kvm' name='host'/>
-  <cpu type='kvm' name='mpc8543e_v10'/>
-  <cpu type='kvm' name='mpc8347eap'/>
-  <cpu type='kvm' name='mpc8548e_v11'/>
-  <cpu type='kvm' name='mpc8543_v20'/>
-  <cpu type='kvm' name='401d2'/>
-  <cpu type='kvm' name='power8_v2.0'/>
-  <cpu type='kvm' name='740_v3.1'/>
-  <cpu type='kvm' name='e200z5'/>
-  <cpu type='kvm' name='405cra'/>
-  <cpu type='kvm' name='7400_v2.0'/>
-  <cpu type='kvm' name='750cxe_v2.3'/>
-  <cpu type='kvm' name='745_v2.7'/>
-  <cpu type='kvm' name='mpc8560_v10'/>
-  <cpu type='kvm' name='e5500'/>
-  <cpu type='kvm' name='mpc8544_v11'/>
-  <cpu type='kvm' name='7448_v1.0'/>
-  <cpu type='kvm' name='401e2'/>
-  <cpu type='kvm' name='740_v2.1'/>
-  <cpu type='kvm' name='7410_v1.2'/>
-  <cpu type='kvm' name='745_v2.2'/>
-  <cpu type='kvm' name='7400_v1.0'/>
-  <cpu type='kvm' name='x2vp4'/>
-  <cpu type='kvm' name='mpc8347ap'/>
-  <cpu type='kvm' name='mpc8533_v11'/>
-  <cpu type='kvm' name='mpc5200b_v21'/>
-  <cpu type='kvm' name='750fx_v2.3'/>
-  <cpu type='kvm' name='601_v2'/>
-  <cpu type='kvm' name='g2legp3'/>
-  <cpu type='kvm' name='750cx_v2.1'/>
-  <cpu type='kvm' name='604e_v1.0'/>
-  <cpu type='kvm' name='mpc8610'/>
-  <cpu type='kvm' name='g2h4'/>
-  <cpu type='kvm' name='750l_v3.0'/>
-  <cpu type='kvm' name='mpc8377e'/>
-  <cpu type='kvm' name='e300c4'/>
-  <cpu type='kvm' name='mpc5200_v12'/>
-  <cpu type='kvm' name='7448_v2.0'/>
-  <cpu type='kvm' name='7450_v2.1'/>
-  <cpu type='kvm' name='750cxe_v3.1b'/>
-  <cpu type='kvm' name='g2'/>
-  <cpu type='kvm' name='7400_v2.9'/>
-  <cpu type='kvm' name='405gpd'/>
-  <cpu type='kvm' name='603'/>
-  <cpu type='kvm' name='603e7t'/>
-  <cpu type='kvm' name='mpc8555_v11'/>
-  <cpu type='kvm' name='750gx_v1.0'/>
-  <cpu type='kvm' name='mpc8541_v10'/>
-  <cpu type='kvm' name='mpc8543e_v20'/>
-  <cpu type='kvm' name='750fl'/>
-  <cpu type='kvm' name='750l_v2.0'/>
-  <cpu type='kvm' name='stb04'/>
-  <cpu type='kvm' name='mpc8548e_v21'/>
-  <cpu type='kvm' name='x2vp20'/>
-  <cpu type='kvm' name='e600'/>
-  <cpu type='kvm' name='405ez'/>
-  <cpu type='kvm' name='7450_v1.1'/>
-  <cpu type='kvm' name='755_v2.4'/>
-  <cpu type='kvm' name='mpc8379'/>
-  <cpu type='kvm' name='7445_v1.0'/>
-  <cpu type='kvm' name='7447_v1.1'/>
-  <cpu type='kvm' name='603e_v2.2'/>
-  <cpu type='kvm' name='603e_v4'/>
-  <cpu type='kvm' name='g2legp'/>
-  <cpu type='kvm' name='7455_v3.2'/>
   <cpu type='kvm' name='740_v2.0'/>
-  <cpu type='kvm' name='mpc8560_v20'/>
-  <cpu type='kvm' name='440-xilinx'/>
-  <cpu type='kvm' name='401f2'/>
-  <cpu type='kvm' name='mpc8533_v10'/>
-  <cpu type='kvm' name='mpc8349a'/>
-  <cpu type='kvm' name='405gpr'/>
-  <cpu type='kvm' name='stb25'/>
-  <cpu type='kvm' name='603e_v1.2'/>
-  <cpu type='kvm' name='mpc5200b_v20'/>
-  <cpu type='kvm' name='750fx_v2.2'/>
-  <cpu type='kvm' name='mpc8347eat'/>
-  <cpu type='kvm' name='740_v1.0'/>
-  <cpu type='kvm' name='745_v1.1'/>
-  <cpu type='kvm' name='750cx_v2.0'/>
-  <cpu type='kvm' name='mpc8548e_v10'/>
-  <cpu type='kvm' name='601_v1'/>
-  <cpu type='kvm' name='403gc'/>
-  <cpu type='kvm' name='e300c3'/>
-  <cpu type='kvm' name='7447a_v1.2'/>
-  <cpu type='kvm' name='mpc5200_v11'/>
-  <cpu type='kvm' name='7441_v2.1'/>
-  <cpu type='kvm' name='740_v3.0'/>
+  <cpu type='kvm' name='mpc8343'/>
   <cpu type='kvm' name='mpc8545e_v21'/>
-  <cpu type='kvm' name='602'/>
-  <cpu type='kvm' name='mpc8378e'/>
-  <cpu type='kvm' name='mpc8343a'/>
+  <cpu type='kvm' name='power8nvl_v1.0'/>
+  <cpu type='kvm' name='mpc8543e_v10'/>
   <cpu type='kvm' name='mpc8555_v10'/>
-  <cpu type='kvm' name='460exb'/>
-  <cpu type='kvm' name='mpc8568'/>
-  <cpu type='kvm' name='7457a_v1.2'/>
-  <cpu type='kvm' name='750cx_v1.0'/>
-  <cpu type='kvm' name='750cxe_v2.2'/>
-  <cpu type='kvm' name='604e_v2.4'/>
-  <cpu type='kvm' name='755_v2.8'/>
-  <cpu type='kvm' name='405lp'/>
-  <cpu type='kvm' name='745_v2.6'/>
-  <cpu type='kvm' name='stb03'/>
-  <cpu type='kvm' name='405ep'/>
+  <cpu type='kvm' name='750_v2.0'/>
+  <cpu type='kvm' name='405gpb'/>
+  <cpu type='kvm' name='stb04'/>
   <cpu type='kvm' name='mpc8544_v10'/>
-  <cpu type='kvm' name='mpc8347at'/>
-  <cpu type='kvm' name='750_v2.2'/>
-  <cpu type='kvm' name='755_v2.3'/>
-  <cpu type='kvm' name='7410_v1.1'/>
-  <cpu type='kvm' name='745_v2.1'/>
-  <cpu type='kvm' name='750gl'/>
-  <cpu type='kvm' name='e6500'/>
-  <cpu type='kvm' name='750p'/>
-  <cpu type='kvm' name='7450_v1.0'/>
-  <cpu type='kvm' name='7445_v3.4'/>
-  <cpu type='kvm' name='440epb'/>
-  <cpu type='kvm' name='npe4gs3'/>
-  <cpu type='kvm' name='603e_v3'/>
-  <cpu type='kvm' name='mpc8349e'/>
-  <cpu type='kvm' name='970_v2.2'/>
   <cpu type='kvm' name='g2lels'/>
-  <cpu type='kvm' name='g2hip4'/>
-  <cpu type='kvm' name='740p'/>
-  <cpu type='kvm' name='mpc8567e'/>
-  <cpu type='kvm' name='mpc8533e_v11'/>
-  <cpu type='kvm' name='7451_v2.3'/>
-  <cpu type='kvm' name='603e_v1.1'/>
-  <cpu type='kvm' name='401g2'/>
-  <cpu type='kvm' name='7400_v2.8'/>
-  <cpu type='kvm' name='405gpc'/>
-  <cpu type='kvm' name='7455_v2.1'/>
-  <cpu type='kvm' name='7450_v2.0'/>
-  <cpu type='kvm' name='power7+_v2.1'/>
-  <cpu type='kvm' name='mpc8544e_v11'/>
-  <cpu type='kvm' name='970mp_v1.1'/>
-  <cpu type='kvm' name='603e7v2'/>
-  <cpu type='kvm' name='604r'/>
-  <cpu type='kvm' name='e500v2_v22'/>
-  <cpu type='kvm' name='mpc8548e_v20'/>
-  <cpu type='kvm' name='mpc8545e_v20'/>
-  <cpu type='kvm' name='mpc8378'/>
-  <cpu type='kvm' name='mpc8567'/>
-  <cpu type='kvm' name='7457_v1.2'/>
-  <cpu type='kvm' name='7447_v1.0'/>
-  <cpu type='kvm' name='970fx_v3.1'/>
-  <cpu type='kvm' name='745_v2.5'/>
-  <cpu type='kvm' name='mpc8379e'/>
-  <cpu type='kvm' name='mpc8641'/>
-  <cpu type='kvm' name='750cxe_v2.4b'/>
-  <cpu type='kvm' name='7410_v1.0'/>
-  <cpu type='kvm' name='mpc603'/>
-  <cpu type='kvm' name='603e_v4.1'/>
-  <cpu type='kvm' name='7445_v3.3'/>
-  <cpu type='kvm' name='440epa'/>
-  <cpu type='kvm' name='970fx_v2.1'/>
-  <cpu type='kvm' name='iop480'/>
-  <cpu type='kvm' name='750fx_v2.1'/>
-  <cpu type='kvm' name='601_v0'/>
-  <cpu type='kvm' name='g2legp1'/>
-  <cpu type='kvm' name='745_v1.0'/>
-  <cpu type='kvm' name='750cl_v2.0'/>
+  <cpu type='kvm' name='mpc8548e_v10'/>
+  <cpu type='kvm' name='440epx'/>
   <cpu type='kvm' name='750cxr'/>
-  <cpu type='kvm' name='401'/>
-  <cpu type='kvm' name='mpc8541e_v11'/>
-  <cpu type='kvm' name='750cxe_v3.1'/>
+  <cpu type='kvm' name='g2le'/>
+  <cpu type='kvm' name='mpc8543e_v11'/>
+  <cpu type='kvm' name='755_v2.0'/>
+  <cpu type='kvm' name='e500v2_v20'/>
+  <cpu type='kvm' name='401b2'/>
+  <cpu type='kvm' name='x2vp20'/>
+  <cpu type='kvm' name='405gpc'/>
+  <cpu type='kvm' name='mpc8544_v11'/>
+  <cpu type='kvm' name='mpc8548e_v11'/>
+  <cpu type='kvm' name='405cra'/>
+  <cpu type='kvm' name='npe405h'/>
+  <cpu type='kvm' name='mpc8533_v11'/>
+  <cpu type='kvm' name='7441_v2.10'/>
+  <cpu type='kvm' name='mpc8544e_v10'/>
+  <cpu type='kvm' name='750cxe_v2.1'/>
+  <cpu type='kvm' name='750cx_v2.0'/>
+  <cpu type='kvm' name='405gpd'/>
+  <cpu type='kvm' name='7445_v3.2'/>
+  <cpu type='kvm' name='mpc8545_v20'/>
+  <cpu type='kvm' name='603p'/>
+  <cpu type='kvm' name='601_v0'/>
+  <cpu type='kvm' name='7400_v2.1'/>
+  <cpu type='kvm' name='7455_v3.2'/>
+  <cpu type='kvm' name='603e_v1.2'/>
+  <cpu type='kvm' name='mpc8610'/>
+  <cpu type='kvm' name='mpc8544e_v11'/>
+  <cpu type='kvm' name='750cxe_v2.2'/>
+  <cpu type='kvm' name='401g2'/>
+  <cpu type='kvm' name='mpc8547e_v20'/>
+  <cpu type='kvm' name='7445_v3.3'/>
+  <cpu type='kvm' name='mpc8545_v21'/>
+  <cpu type='kvm' name='mpc8379e'/>
+  <cpu type='kvm' name='403gcx'/>
+  <cpu type='kvm' name='mpc8349e'/>
+  <cpu type='kvm' name='iop480'/>
+  <cpu type='kvm' name='601_v1'/>
+  <cpu type='kvm' name='7400_v2.2'/>
+  <cpu type='kvm' name='7455_v3.3'/>
+  <cpu type='kvm' name='603e_v1.3'/>
+  <cpu type='kvm' name='750cxe_v2.4b'/>
+  <cpu type='kvm' name='mpc8543_v11'/>
+  <cpu type='kvm' name='750cxe_v2.3'/>
+  <cpu type='kvm' name='mpc8547e_v21'/>
+  <cpu type='kvm' name='mpc8572e'/>
+  <cpu type='kvm' name='mpc8543e_v20'/>
+  <cpu type='kvm' name='750fx_v2.1'/>
+  <cpu type='kvm' name='602'/>
+  <cpu type='kvm' name='mpc8555e_v10'/>
+  <cpu type='kvm' name='7451_v2.10'/>
+  <cpu type='kvm' name='750l_v2.2'/>
+  <cpu type='kvm' name='970fx_v3.0'/>
+  <cpu type='kvm' name='mpc8548e_v20'/>
+  <cpu type='kvm' name='mpc8641d'/>
+  <cpu type='kvm' name='7410_v1.0'/>
+  <cpu type='kvm' name='401a1'/>
+  <cpu type='kvm' name='mpc8543e_v21'/>
+  <cpu type='kvm' name='750fx_v2.2'/>
+  <cpu type='kvm' name='e500v2_v30'/>
+  <cpu type='kvm' name='405ez'/>
+  <cpu type='kvm' name='401c2'/>
   <cpu type='kvm' name='mpc8555e_v11'/>
-  <cpu type='kvm' name='power5+_v2.1'/>
-  <cpu type='kvm' name='403gb'/>
+  <cpu type='kvm' name='405d2'/>
+  <cpu type='kvm' name='970fx_v3.1'/>
+  <cpu type='kvm' name='mpc8548e_v21'/>
+  <cpu type='kvm' name='405lp'/>
+  <cpu type='kvm' name='mpc8349ea'/>
+  <cpu type='kvm' name='750e'/>
+  <cpu type='kvm' name='750cxe_v3.1b'/>
+  <cpu type='kvm' name='740_v3.0'/>
+  <cpu type='kvm' name='440epa'/>
+  <cpu type='kvm' name='mpc5200b_v20'/>
+  <cpu type='kvm' name='745_v2.6'/>
+  <cpu type='kvm' name='750_v3.0'/>
+  <cpu type='kvm' name='603e7v'/>
+  <cpu type='kvm' name='mpc8377'/>
+  <cpu type='kvm' name='7445_v1.0'/>
   <cpu type='kvm' name='7447a_v1.1'/>
-  <cpu type='kvm' name='e300c2'/>
-  <cpu type='kvm' name='npe405h2'/>
-  <cpu type='kvm' name='mpc8533e_v10'/>
-  <cpu type='kvm' name='mpc5200_v10'/>
-  <cpu type='kvm' name='mpc8343e'/>
+  <cpu type='kvm' name='740_v3.1'/>
+  <cpu type='kvm' name='970mp_v1.0'/>
+  <cpu type='kvm' name='mpc8641'/>
+  <cpu type='kvm' name='e200z5'/>
+  <cpu type='kvm' name='750p'/>
+  <cpu type='kvm' name='745_v2.7'/>
   <cpu type='kvm' name='750_v3.1'/>
+  <cpu type='kvm' name='7450_v1.1'/>
+  <cpu type='kvm' name='x2vp4'/>
+  <cpu type='kvm' name='cobra'/>
+  <cpu type='kvm' name='7447a_v1.2'/>
+  <cpu type='kvm' name='mpc8543_v21'/>
+  <cpu type='kvm' name='755_v2.7'/>
+  <cpu type='kvm' name='970mp_v1.1'/>
+  <cpu type='kvm' name='mpc8545e_v20'/>
+  <cpu type='kvm' name='e200z6'/>
+  <cpu type='kvm' name='745_v2.8'/>
+  <cpu type='kvm' name='7450_v1.2'/>
+  <cpu type='kvm' name='405gpa'/>
+  <cpu type='kvm' name='stb03'/>
+  <cpu type='kvm' name='755_v2.8'/>
+  <cpu type='kvm' name='power9_v1.0'/>
+  <cpu type='kvm' name='7457a_v1.0'/>
+  <cpu type='kvm' name='mpc8349a'/>
+  <cpu type='kvm' name='401d2'/>
+  <cpu type='kvm' name='g2gp'/>
+  <cpu type='kvm' name='stb25'/>
+  <cpu type='kvm' name='750cl_v1.0'/>
+  <cpu type='kvm' name='7457a_v1.1'/>
+  <cpu type='kvm' name='g2legp3'/>
+  <cpu type='kvm' name='mpc8347t'/>
+  <cpu type='kvm' name='mpc8533_v10'/>
+  <cpu type='kvm' name='401'/>
+  <cpu type='kvm' name='440-xilinx'/>
+  <cpu type='kvm' name='mpc8548_v10'/>
+  <cpu type='kvm' name='mpc8347ap'/>
+  <cpu type='kvm' name='604e_v1.0'/>
+  <cpu type='kvm' name='7457a_v1.2'/>
+  <cpu type='kvm' name='7400_v2.0'/>
+  <cpu type='kvm' name='603e7v1'/>
+  <cpu type='kvm' name='7447_v1.0'/>
+  <cpu type='kvm' name='603e_v4.1'/>
+  <cpu type='kvm' name='603e_v1.1'/>
+  <cpu type='kvm' name='npe4gs3'/>
+  <cpu type='kvm' name='mpc8548_v11'/>
+  <cpu type='kvm' name='970fx_v1.0'/>
+  <cpu type='kvm' name='604e_v2.4'/>
+  <cpu type='kvm' name='7457_v1.0'/>
+  <cpu type='kvm' name='e300c4'/>
+  <cpu type='kvm' name='603e7v2'/>
+  <cpu type='kvm' name='7447_v1.1'/>
+  <cpu type='kvm' name='mpc8543_v10'/>
+  <cpu type='kvm' name='mpc5200_v12'/>
   <cpu type='kvm' name='power8e_v2.1'/>
+  <cpu type='kvm' name='750l_v2.0'/>
+  <cpu type='kvm' name='mpc8343a'/>
+  <cpu type='kvm' name='host'/>
+  <cpu type='kvm' name='mpc8347eap'/>
+  <cpu type='kvm' name='7457_v1.1'/>
+  <cpu type='kvm' name='e600'/>
+  <cpu type='kvm' name='750fx_v2.0'/>
+  <cpu type='kvm' name='740_v1.0'/>
+  <cpu type='kvm' name='7448_v1.0'/>
+  <cpu type='kvm' name='750l_v2.1'/>
+  <cpu type='kvm' name='7457_v1.2'/>
+  <cpu type='kvm' name='750_v1.0'/>
+  <cpu type='kvm' name='745_v2.3'/>
+  <cpu type='kvm' name='745_v1.0'/>
+  <cpu type='kvm' name='7448_v1.1'/>
+  <cpu type='kvm' name='755_v1.0'/>
+  <cpu type='kvm' name='power7_v2.3'/>
+  <cpu type='kvm' name='npe405h2'/>
+  <cpu type='kvm' name='745_v2.4'/>
+  <cpu type='kvm' name='745_v1.1'/>
+  <cpu type='kvm' name='603e7t'/>
+  <cpu type='kvm' name='mpc8572'/>
+  <cpu type='kvm' name='g2legp'/>
+  <cpu type='kvm' name='755_v2.4'/>
+  <cpu type='kvm' name='mpc8548_v20'/>
+  <cpu type='kvm' name='755_v1.1'/>
+  <cpu type='kvm' name='750fl'/>
+  <cpu type='kvm' name='750cx_v1.0'/>
+  <cpu type='kvm' name='745_v2.5'/>
+  <cpu type='kvm' name='mpc8349'/>
+  <cpu type='kvm' name='power9_v2.0'/>
+  <cpu type='kvm' name='7447a_v1.0'/>
+  <cpu type='kvm' name='755_v2.5'/>
+  <cpu type='kvm' name='mpc8548_v21'/>
+  <cpu type='kvm' name='603e_v4'/>
+  <cpu type='kvm' name='403gb'/>
+  <cpu type='kvm' name='7450_v1.0'/>
+  <cpu type='kvm' name='mpc8543_v20'/>
+  <cpu type='kvm' name='755_v2.6'/>
+  <cpu type='kvm' name='e5500'/>
+  <cpu type='kvm' name='mpc8568'/>
+  <cpu type='kvm' name='mpc8343ea'/>
+  <cpu type='kvm' name='g2'/>
+  <cpu type='kvm' name='403gc'/>
+  <cpu type='kvm' name='mpc8541_v10'/>
+  <cpu type='kvm' name='7455_v1.0'/>
+  <cpu type='kvm' name='750cxe_v3.0'/>
+  <cpu type='kvm' name='603e7'/>
+  <cpu type='kvm' name='power5+_v2.1'/>
+  <cpu type='kvm' name='g2legp1'/>
+  <cpu type='kvm' name='7441_v2.3'/>
+  <cpu type='kvm' name='mpc8541_v11'/>
+  <cpu type='kvm' name='750cxe_v3.1'/>
+  <cpu type='kvm' name='7410_v1.3'/>
+  <cpu type='kvm' name='7451_v2.3'/>
+  <cpu type='kvm' name='7400_v2.7'/>
+  <cpu type='kvm' name='e500_v10'/>
+  <cpu type='kvm' name='603e_v2.2'/>
+  <cpu type='kvm' name='970fx_v2.1'/>
+  <cpu type='kvm' name='7410_v1.4'/>
+  <cpu type='kvm' name='mpc8567e'/>
+  <cpu type='kvm' name='604e_v2.2'/>
+  <cpu type='kvm' name='7400_v2.8'/>
+  <cpu type='kvm' name='740e'/>
+  <cpu type='kvm' name='e300c2'/>
+  <cpu type='kvm' name='750gl'/>
+  <cpu type='kvm' name='mpc8540_v10'/>
+  <cpu type='kvm' name='7448_v2.0'/>
+  <cpu type='kvm' name='mpc5200_v10'/>
+  <cpu type='kvm' name='7400_v2.9'/>
+  <cpu type='kvm' name='mpc8533e_v11'/>
+  <cpu type='kvm' name='745_v2.0'/>
+  <cpu type='kvm' name='e500mc'/>
+  <cpu type='kvm' name='e300c3'/>
+  <cpu type='kvm' name='740_v2.1'/>
+  <cpu type='kvm' name='7448_v2.1'/>
+  <cpu type='kvm' name='750l_v3.2'/>
+  <cpu type='kvm' name='mpc8555_v11'/>
+  <cpu type='kvm' name='mpc5200_v11'/>
+  <cpu type='kvm' name='740p'/>
+  <cpu type='kvm' name='750_v2.1'/>
+  <cpu type='kvm' name='745_v2.1'/>
+  <cpu type='kvm' name='g2h4'/>
+  <cpu type='kvm' name='740_v2.2'/>
+  <cpu type='kvm' name='755_v2.1'/>
+  <cpu type='kvm' name='mpc603'/>
+  <cpu type='kvm' name='e500v2_v21'/>
+  <cpu type='kvm' name='750_v2.2'/>
+  <cpu type='kvm' name='745_v2.2'/>
+  <cpu type='kvm' name='405crb'/>
+  <cpu type='kvm' name='mpc8347et'/>
+  <cpu type='kvm' name='755_v2.2'/>
+  <cpu type='kvm' name='e500v2_v22'/>
+  <cpu type='kvm' name='750cx_v2.1'/>
+  <cpu type='kvm' name='e6500'/>
+  <cpu type='kvm' name='e500_v20'/>
+  <cpu type='kvm' name='7450_v2.0'/>
+  <cpu type='kvm' name='power8_v2.0'/>
+  <cpu type='kvm' name='g2hip3'/>
+  <cpu type='kvm' name='405crc'/>
+  <cpu type='kvm' name='755_v2.3'/>
+  <cpu type='kvm' name='401e2'/>
+  <cpu type='kvm' name='mpc8560_v10'/>
   <cpu type='kvm' name='mpc8568e'/>
+  <cpu type='kvm' name='750cx_v2.2'/>
+  <cpu type='kvm' name='mpc8540_v20'/>
+  <cpu type='kvm' name='mpc8377e'/>
+  <cpu type='kvm' name='7450_v2.1'/>
+  <cpu type='kvm' name='7445_v3.4'/>
+  <cpu type='kvm' name='7445_v2.1'/>
+  <cpu type='kvm' name='g2hip4'/>
+  <cpu type='kvm' name='601_v2'/>
+  <cpu type='kvm' name='7400_v1.0'/>
+  <cpu type='kvm' name='7455_v3.4'/>
+  <cpu type='kvm' name='603e_v1.4'/>
+  <cpu type='kvm' name='750cxe_v2.4'/>
+  <cpu type='kvm' name='403ga'/>
+  <cpu type='kvm' name='7455_v2.1'/>
+  <cpu type='kvm' name='603e_v3'/>
+  <cpu type='kvm' name='405ep'/>
+  <cpu type='kvm' name='mpc8540_v21'/>
+  <cpu type='kvm' name='g2ls'/>
+  <cpu type='kvm' name='mpc8347at'/>
+  <cpu type='kvm' name='npe405l'/>
+  <cpu type='kvm' name='603'/>
+  <cpu type='kvm' name='mpc8541e_v10'/>
+  <cpu type='kvm' name='7400_v1.1'/>
+  <cpu type='kvm' name='mpc8567'/>
+  <cpu type='kvm' name='mpc8347p'/>
+  <cpu type='kvm' name='7441_v2.1'/>
+  <cpu type='kvm' name='7410_v1.1'/>
+  <cpu type='kvm' name='e500v2_v10'/>
+  <cpu type='kvm' name='750cl_v2.0'/>
+  <cpu type='kvm' name='750fx_v2.3'/>
+  <cpu type='kvm' name='604'/>
+  <cpu type='kvm' name='mpc8541e_v11'/>
+  <cpu type='kvm' name='750fx_v1.0'/>
+  <cpu type='kvm' name='405gpr'/>
+  <cpu type='kvm' name='mpc8343e'/>
+  <cpu type='kvm' name='mpc8347eat'/>
+  <cpu type='kvm' name='7410_v1.2'/>
+  <cpu type='kvm' name='750gx_v1.0'/>
+  <cpu type='kvm' name='7400_v2.6'/>
+  <cpu type='kvm' name='440epb'/>
+  <cpu type='kvm' name='mpc5200b_v21'/>
+  <cpu type='kvm' name='405d4'/>
+  <cpu type='kvm' name='970fx_v2.0'/>
+  <cpu type='kvm' name='750gx_v1.1'/>
+  <cpu type='kvm' name='mpc8378'/>
+  <cpu type='kvm' name='mpc8560_v20'/>
+  <cpu type='kvm' name='460exb'/>
+  <cpu type='kvm' name='401f2'/>
+  <cpu type='kvm' name='e300c1'/>
+  <cpu type='kvm' name='power7+_v2.1'/>
+  <cpu type='kvm' name='440-xilinx-w-dfpu'/>
+  <cpu type='kvm' name='mpc8378e'/>
+  <cpu type='kvm' name='mpc8347ep'/>
+  <cpu type='kvm' name='750l_v3.0'/>
+  <cpu type='kvm' name='604r'/>
+  <cpu type='kvm' name='750gx_v1.2'/>
+  <cpu type='kvm' name='power10_v1.0'/>
+  <cpu type='kvm' name='mpc8560_v21'/>
+  <cpu type='kvm' name='970_v2.2'/>
+  <cpu type='kvm' name='mpc8533e_v10'/>
+  <cpu type='kvm' name='mpc8379'/>
   <machine type='kvm' name='pseries-5.0' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='ref405ep' maxCpus='1'/>
-  <machine type='kvm' name='sam460ex' maxCpus='1' defaultCPU='460exb-powerpc64-cpu'/>
-  <machine type='kvm' name='virtex-ml507' maxCpus='1' defaultCPU='440-xilinx-powerpc64-cpu'/>
-  <machine type='kvm' name='ppce500' maxCpus='32' defaultCPU='e500v2_v30-powerpc64-cpu'/>
-  <machine type='kvm' name='mpc8544ds' maxCpus='15' defaultCPU='e500v2_v30-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-3.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='bamboo' maxCpus='1' defaultCPU='440epb-powerpc64-cpu'/>
+  <machine type='kvm' name='powernv9' alias='powernv' maxCpus='2048' defaultCPU='power9_v2.0-powerpc64-cpu'/>
   <machine type='kvm' name='g3beige' maxCpus='1' defaultCPU='750_v3.1-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-3.0' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='prep' maxCpus='1' defaultCPU='602-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
   <machine type='kvm' name='pseries-2.12' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
   <machine type='kvm' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='mac99' maxCpus='1' defaultCPU='970fx_v3.1-powerpc64-cpu'/>
+  <machine type='kvm' name='ref405ep' maxCpus='1'/>
+  <machine type='kvm' name='pseries-2.2' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='40p' maxCpus='1' defaultCPU='604-powerpc64-cpu'/>
+  <machine type='kvm' name='pseries-4.2' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='pseries-2.3' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
   <machine type='kvm' name='pseries-2.6' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='sam460ex' maxCpus='1' defaultCPU='460exb-powerpc64-cpu'/>
+  <machine type='kvm' name='virtex-ml507' maxCpus='1' defaultCPU='440-xilinx-powerpc64-cpu'/>
+  <machine type='kvm' name='pseries-3.0' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
   <machine type='kvm' name='pseries-2.7' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
   <machine type='kvm' name='pseries-2.8' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-4.2' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-2.4' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-2.5' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
   <machine type='kvm' name='pseries-4.0' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-4.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='pseries-2.2' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
-  <machine type='kvm' name='taihu' maxCpus='1'/>
-  <machine type='kvm' name='pseries-2.3' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='bamboo' maxCpus='1' defaultCPU='440epb-powerpc64-cpu'/>
   <machine type='kvm' name='pseries-2.1' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='taihu' maxCpus='1'/>
+  <machine type='kvm' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='pseries-2.4' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='mpc8544ds' maxCpus='15' defaultCPU='e500v2_v30-powerpc64-cpu'/>
+  <machine type='kvm' name='pseries-4.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
   <machine type='kvm' name='powernv8' maxCpus='2048' defaultCPU='power8_v2.0-powerpc64-cpu'/>
-  <machine type='kvm' name='powernv9' alias='powernv' maxCpus='2048' defaultCPU='power9_v2.0-powerpc64-cpu'/>
-  <machine type='kvm' name='40p' maxCpus='1' defaultCPU='604-powerpc64-cpu'/>
+  <machine type='kvm' name='powernv10' maxCpus='2048' defaultCPU='power10_v1.0-powerpc64-cpu'/>
+  <machine type='kvm' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='pseries-2.5' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='pseries-3.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu'/>
+  <machine type='kvm' name='mac99' maxCpus='1' defaultCPU='970fx_v3.1-powerpc64-cpu'/>
+  <machine type='kvm' name='ppce500' maxCpus='32' defaultCPU='e500v2_v30-powerpc64-cpu'/>
   <cpu type='tcg' name='default' typename='604-powerpc64-cpu'/>
   <cpu type='tcg' name='ppc' typename='604-powerpc64-cpu'/>
   <cpu type='tcg' name='ppc32' typename='604-powerpc64-cpu'/>
   <cpu type='tcg' name='ppc64' typename='970fx_v3.1-powerpc64-cpu'/>
+  <cpu type='tcg' name='power10' typename='power10_v1.0-powerpc64-cpu'/>
   <cpu type='tcg' name='POWER9' typename='power9_v2.0-powerpc64-cpu'/>
   <cpu type='tcg' name='power8nvl' typename='power8nvl_v1.0-powerpc64-cpu'/>
   <cpu type='tcg' name='POWER8' typename='power8_v2.0-powerpc64-cpu'/>
@@ -785,344 +796,345 @@
   <cpu type='tcg' name='405cr' typename='405crc-powerpc64-cpu'/>
   <cpu type='tcg' name='405' typename='405d4-powerpc64-cpu'/>
   <cpu type='tcg' name='403' typename='403gc-powerpc64-cpu'/>
-  <cpu type='tcg' name='mpc8547e_v21'/>
-  <cpu type='tcg' name='g2gp'/>
-  <cpu type='tcg' name='7457a_v1.1'/>
-  <cpu type='tcg' name='750cl_v1.0'/>
-  <cpu type='tcg' name='750cxe_v2.1'/>
-  <cpu type='tcg' name='755_v2.7'/>
-  <cpu type='tcg' name='750_v2.1'/>
-  <cpu type='tcg' name='755_v2.2'/>
-  <cpu type='tcg' name='745_v2.0'/>
-  <cpu type='tcg' name='mpc8377'/>
-  <cpu type='tcg' name='7455_v1.0'/>
-  <cpu type='tcg' name='mpc8545_v21'/>
-  <cpu type='tcg' name='mpc8548_v11'/>
-  <cpu type='tcg' name='405d4'/>
-  <cpu type='tcg' name='g2le'/>
-  <cpu type='tcg' name='750e'/>
-  <cpu type='tcg' name='mpc8572'/>
-  <cpu type='tcg' name='g2hip3'/>
-  <cpu type='tcg' name='970fx_v2.0'/>
-  <cpu type='tcg' name='750fx_v2.0'/>
-  <cpu type='tcg' name='603p'/>
-  <cpu type='tcg' name='405gpb'/>
-  <cpu type='tcg' name='7400_v2.7'/>
-  <cpu type='tcg' name='mpc8544e_v10'/>
-  <cpu type='tcg' name='e500v2_v10'/>
-  <cpu type='tcg' name='e500mc'/>
-  <cpu type='tcg' name='603e7v1'/>
-  <cpu type='tcg' name='970mp_v1.0'/>
-  <cpu type='tcg' name='740e'/>
-  <cpu type='tcg' name='405crc'/>
-  <cpu type='tcg' name='403ga'/>
-  <cpu type='tcg' name='7447a_v1.0'/>
-  <cpu type='tcg' name='e300c1'/>
-  <cpu type='tcg' name='mpc8572e'/>
-  <cpu type='tcg' name='e500v2_v21'/>
-  <cpu type='tcg' name='7400_v2.2'/>
-  <cpu type='tcg' name='970fx_v1.0'/>
-  <cpu type='tcg' name='750gx_v1.2'/>
-  <cpu type='tcg' name='750fx_v1.0'/>
-  <cpu type='tcg' name='7457_v1.1'/>
-  <cpu type='tcg' name='970fx_v3.0'/>
-  <cpu type='tcg' name='604e_v2.2'/>
-  <cpu type='tcg' name='745_v2.4'/>
-  <cpu type='tcg' name='401a1'/>
-  <cpu type='tcg' name='755_v2.6'/>
-  <cpu type='tcg' name='power9_v1.0'/>
-  <cpu type='tcg' name='npe405h'/>
-  <cpu type='tcg' name='g2ls'/>
-  <cpu type='tcg' name='7410_v1.4'/>
-  <cpu type='tcg' name='750_v2.0'/>
-  <cpu type='tcg' name='401b2'/>
-  <cpu type='tcg' name='mpc8349'/>
-  <cpu type='tcg' name='mpc8347ep'/>
-  <cpu type='tcg' name='mpc8540_v21'/>
-  <cpu type='tcg' name='mpc8543_v11'/>
-  <cpu type='tcg' name='403gcx'/>
-  <cpu type='tcg' name='7445_v3.2'/>
-  <cpu type='tcg' name='mpc8548_v21'/>
-  <cpu type='tcg' name='750l_v3.2'/>
-  <cpu type='tcg' name='750_v1.0'/>
-  <cpu type='tcg' name='755_v1.1'/>
-  <cpu type='tcg' name='750cxe_v3.0'/>
-  <cpu type='tcg' name='e500_v10'/>
-  <cpu type='tcg' name='mpc8541e_v10'/>
-  <cpu type='tcg' name='power9_v2.0'/>
-  <cpu type='tcg' name='mpc8347p'/>
-  <cpu type='tcg' name='mpc8555e_v10'/>
-  <cpu type='tcg' name='power7_v2.3'/>
-  <cpu type='tcg' name='603e7v'/>
-  <cpu type='tcg' name='mpc8543e_v11'/>
-  <cpu type='tcg' name='750_v3.0'/>
-  <cpu type='tcg' name='7400_v2.6'/>
-  <cpu type='tcg' name='405gpa'/>
-  <cpu type='tcg' name='440epx'/>
-  <cpu type='tcg' name='750l_v2.2'/>
-  <cpu type='tcg' name='e200z6'/>
-  <cpu type='tcg' name='mpc8547e_v20'/>
-  <cpu type='tcg' name='7457a_v1.0'/>
-  <cpu type='tcg' name='mpc8349ea'/>
-  <cpu type='tcg' name='e500v2_v20'/>
-  <cpu type='tcg' name='power8nvl_v1.0'/>
-  <cpu type='tcg' name='mpc8540_v10'/>
-  <cpu type='tcg' name='755_v2.1'/>
-  <cpu type='tcg' name='745_v2.8'/>
-  <cpu type='tcg' name='npe405l'/>
-  <cpu type='tcg' name='mpc8343ea'/>
-  <cpu type='tcg' name='mpc8545_v20'/>
-  <cpu type='tcg' name='mpc8548_v10'/>
-  <cpu type='tcg' name='7448_v1.1'/>
-  <cpu type='tcg' name='740_v2.2'/>
-  <cpu type='tcg' name='7455_v3.4'/>
-  <cpu type='tcg' name='7400_v1.1'/>
-  <cpu type='tcg' name='mpc8347et'/>
-  <cpu type='tcg' name='7441_v2.10'/>
-  <cpu type='tcg' name='603e_v1.4'/>
-  <cpu type='tcg' name='mpc8543_v10'/>
-  <cpu type='tcg' name='401c2'/>
-  <cpu type='tcg' name='7451_v2.10'/>
-  <cpu type='tcg' name='750cx_v2.2'/>
-  <cpu type='tcg' name='mpc8543_v21'/>
-  <cpu type='tcg' name='603e7'/>
-  <cpu type='tcg' name='7448_v2.1'/>
-  <cpu type='tcg' name='7441_v2.3'/>
-  <cpu type='tcg' name='405crb'/>
-  <cpu type='tcg' name='604'/>
-  <cpu type='tcg' name='7400_v2.1'/>
-  <cpu type='tcg' name='440-xilinx-w-dfpu'/>
-  <cpu type='tcg' name='7445_v2.1'/>
-  <cpu type='tcg' name='cobra'/>
-  <cpu type='tcg' name='e500_v20'/>
-  <cpu type='tcg' name='mpc8541_v11'/>
-  <cpu type='tcg' name='750gx_v1.1'/>
-  <cpu type='tcg' name='750cxe_v2.4'/>
-  <cpu type='tcg' name='mpc8641d'/>
-  <cpu type='tcg' name='mpc8543e_v21'/>
-  <cpu type='tcg' name='750l_v2.1'/>
-  <cpu type='tcg' name='7457_v1.0'/>
-  <cpu type='tcg' name='7450_v1.2'/>
-  <cpu type='tcg' name='755_v2.5'/>
-  <cpu type='tcg' name='7410_v1.3'/>
-  <cpu type='tcg' name='745_v2.3'/>
-  <cpu type='tcg' name='755_v2.0'/>
-  <cpu type='tcg' name='e500v2_v30'/>
-  <cpu type='tcg' name='7455_v3.3'/>
-  <cpu type='tcg' name='mpc8540_v20'/>
-  <cpu type='tcg' name='405d2'/>
-  <cpu type='tcg' name='mpc8560_v21'/>
-  <cpu type='tcg' name='mpc8343'/>
-  <cpu type='tcg' name='mpc8548_v20'/>
-  <cpu type='tcg' name='mpc8347t'/>
-  <cpu type='tcg' name='755_v1.0'/>
-  <cpu type='tcg' name='603e_v1.3'/>
-  <cpu type='tcg' name='mpc8543e_v10'/>
-  <cpu type='tcg' name='mpc8347eap'/>
-  <cpu type='tcg' name='mpc8548e_v11'/>
-  <cpu type='tcg' name='mpc8543_v20'/>
-  <cpu type='tcg' name='401d2'/>
-  <cpu type='tcg' name='power8_v2.0'/>
-  <cpu type='tcg' name='740_v3.1'/>
-  <cpu type='tcg' name='e200z5'/>
-  <cpu type='tcg' name='405cra'/>
-  <cpu type='tcg' name='7400_v2.0'/>
-  <cpu type='tcg' name='750cxe_v2.3'/>
-  <cpu type='tcg' name='745_v2.7'/>
-  <cpu type='tcg' name='mpc8560_v10'/>
-  <cpu type='tcg' name='e5500'/>
-  <cpu type='tcg' name='mpc8544_v11'/>
-  <cpu type='tcg' name='7448_v1.0'/>
-  <cpu type='tcg' name='401e2'/>
-  <cpu type='tcg' name='740_v2.1'/>
-  <cpu type='tcg' name='7410_v1.2'/>
-  <cpu type='tcg' name='745_v2.2'/>
-  <cpu type='tcg' name='7400_v1.0'/>
-  <cpu type='tcg' name='x2vp4'/>
-  <cpu type='tcg' name='mpc8347ap'/>
-  <cpu type='tcg' name='mpc8533_v11'/>
-  <cpu type='tcg' name='mpc5200b_v21'/>
-  <cpu type='tcg' name='750fx_v2.3'/>
-  <cpu type='tcg' name='601_v2'/>
-  <cpu type='tcg' name='g2legp3'/>
-  <cpu type='tcg' name='750cx_v2.1'/>
-  <cpu type='tcg' name='604e_v1.0'/>
-  <cpu type='tcg' name='mpc8610'/>
-  <cpu type='tcg' name='g2h4'/>
-  <cpu type='tcg' name='750l_v3.0'/>
-  <cpu type='tcg' name='mpc8377e'/>
-  <cpu type='tcg' name='e300c4'/>
-  <cpu type='tcg' name='mpc5200_v12'/>
-  <cpu type='tcg' name='7448_v2.0'/>
-  <cpu type='tcg' name='7450_v2.1'/>
-  <cpu type='tcg' name='750cxe_v3.1b'/>
-  <cpu type='tcg' name='g2'/>
-  <cpu type='tcg' name='7400_v2.9'/>
-  <cpu type='tcg' name='405gpd'/>
-  <cpu type='tcg' name='603'/>
-  <cpu type='tcg' name='603e7t'/>
-  <cpu type='tcg' name='mpc8555_v11'/>
-  <cpu type='tcg' name='750gx_v1.0'/>
-  <cpu type='tcg' name='mpc8541_v10'/>
-  <cpu type='tcg' name='mpc8543e_v20'/>
-  <cpu type='tcg' name='750fl'/>
-  <cpu type='tcg' name='750l_v2.0'/>
-  <cpu type='tcg' name='stb04'/>
-  <cpu type='tcg' name='mpc8548e_v21'/>
-  <cpu type='tcg' name='x2vp20'/>
-  <cpu type='tcg' name='e600'/>
-  <cpu type='tcg' name='405ez'/>
-  <cpu type='tcg' name='7450_v1.1'/>
-  <cpu type='tcg' name='755_v2.4'/>
-  <cpu type='tcg' name='mpc8379'/>
-  <cpu type='tcg' name='7445_v1.0'/>
-  <cpu type='tcg' name='7447_v1.1'/>
-  <cpu type='tcg' name='603e_v2.2'/>
-  <cpu type='tcg' name='603e_v4'/>
-  <cpu type='tcg' name='g2legp'/>
-  <cpu type='tcg' name='7455_v3.2'/>
   <cpu type='tcg' name='740_v2.0'/>
-  <cpu type='tcg' name='mpc8560_v20'/>
-  <cpu type='tcg' name='440-xilinx'/>
-  <cpu type='tcg' name='401f2'/>
-  <cpu type='tcg' name='mpc8533_v10'/>
-  <cpu type='tcg' name='mpc8349a'/>
-  <cpu type='tcg' name='405gpr'/>
-  <cpu type='tcg' name='stb25'/>
-  <cpu type='tcg' name='603e_v1.2'/>
-  <cpu type='tcg' name='mpc5200b_v20'/>
-  <cpu type='tcg' name='750fx_v2.2'/>
-  <cpu type='tcg' name='mpc8347eat'/>
-  <cpu type='tcg' name='740_v1.0'/>
-  <cpu type='tcg' name='745_v1.1'/>
-  <cpu type='tcg' name='750cx_v2.0'/>
-  <cpu type='tcg' name='mpc8548e_v10'/>
-  <cpu type='tcg' name='601_v1'/>
-  <cpu type='tcg' name='403gc'/>
-  <cpu type='tcg' name='e300c3'/>
-  <cpu type='tcg' name='7447a_v1.2'/>
-  <cpu type='tcg' name='mpc5200_v11'/>
-  <cpu type='tcg' name='7441_v2.1'/>
-  <cpu type='tcg' name='740_v3.0'/>
+  <cpu type='tcg' name='mpc8343'/>
   <cpu type='tcg' name='mpc8545e_v21'/>
-  <cpu type='tcg' name='602'/>
-  <cpu type='tcg' name='mpc8378e'/>
-  <cpu type='tcg' name='mpc8343a'/>
+  <cpu type='tcg' name='power8nvl_v1.0'/>
+  <cpu type='tcg' name='mpc8543e_v10'/>
   <cpu type='tcg' name='mpc8555_v10'/>
-  <cpu type='tcg' name='460exb'/>
-  <cpu type='tcg' name='mpc8568'/>
-  <cpu type='tcg' name='7457a_v1.2'/>
-  <cpu type='tcg' name='750cx_v1.0'/>
-  <cpu type='tcg' name='750cxe_v2.2'/>
-  <cpu type='tcg' name='604e_v2.4'/>
-  <cpu type='tcg' name='755_v2.8'/>
-  <cpu type='tcg' name='405lp'/>
-  <cpu type='tcg' name='745_v2.6'/>
-  <cpu type='tcg' name='stb03'/>
-  <cpu type='tcg' name='405ep'/>
+  <cpu type='tcg' name='750_v2.0'/>
+  <cpu type='tcg' name='405gpb'/>
+  <cpu type='tcg' name='stb04'/>
   <cpu type='tcg' name='mpc8544_v10'/>
-  <cpu type='tcg' name='mpc8347at'/>
-  <cpu type='tcg' name='750_v2.2'/>
-  <cpu type='tcg' name='755_v2.3'/>
-  <cpu type='tcg' name='7410_v1.1'/>
-  <cpu type='tcg' name='745_v2.1'/>
-  <cpu type='tcg' name='750gl'/>
-  <cpu type='tcg' name='e6500'/>
-  <cpu type='tcg' name='750p'/>
-  <cpu type='tcg' name='7450_v1.0'/>
-  <cpu type='tcg' name='7445_v3.4'/>
-  <cpu type='tcg' name='440epb'/>
-  <cpu type='tcg' name='npe4gs3'/>
-  <cpu type='tcg' name='603e_v3'/>
-  <cpu type='tcg' name='mpc8349e'/>
-  <cpu type='tcg' name='970_v2.2'/>
   <cpu type='tcg' name='g2lels'/>
-  <cpu type='tcg' name='g2hip4'/>
-  <cpu type='tcg' name='740p'/>
-  <cpu type='tcg' name='mpc8567e'/>
-  <cpu type='tcg' name='mpc8533e_v11'/>
-  <cpu type='tcg' name='7451_v2.3'/>
-  <cpu type='tcg' name='603e_v1.1'/>
-  <cpu type='tcg' name='401g2'/>
-  <cpu type='tcg' name='7400_v2.8'/>
-  <cpu type='tcg' name='405gpc'/>
-  <cpu type='tcg' name='7455_v2.1'/>
-  <cpu type='tcg' name='7450_v2.0'/>
-  <cpu type='tcg' name='power7+_v2.1'/>
-  <cpu type='tcg' name='mpc8544e_v11'/>
-  <cpu type='tcg' name='970mp_v1.1'/>
-  <cpu type='tcg' name='603e7v2'/>
-  <cpu type='tcg' name='604r'/>
-  <cpu type='tcg' name='e500v2_v22'/>
-  <cpu type='tcg' name='mpc8548e_v20'/>
-  <cpu type='tcg' name='mpc8545e_v20'/>
-  <cpu type='tcg' name='mpc8378'/>
-  <cpu type='tcg' name='mpc8567'/>
-  <cpu type='tcg' name='7457_v1.2'/>
-  <cpu type='tcg' name='7447_v1.0'/>
-  <cpu type='tcg' name='970fx_v3.1'/>
-  <cpu type='tcg' name='745_v2.5'/>
-  <cpu type='tcg' name='mpc8379e'/>
-  <cpu type='tcg' name='mpc8641'/>
-  <cpu type='tcg' name='750cxe_v2.4b'/>
-  <cpu type='tcg' name='7410_v1.0'/>
-  <cpu type='tcg' name='mpc603'/>
-  <cpu type='tcg' name='603e_v4.1'/>
-  <cpu type='tcg' name='7445_v3.3'/>
-  <cpu type='tcg' name='440epa'/>
-  <cpu type='tcg' name='970fx_v2.1'/>
-  <cpu type='tcg' name='iop480'/>
-  <cpu type='tcg' name='750fx_v2.1'/>
-  <cpu type='tcg' name='601_v0'/>
-  <cpu type='tcg' name='g2legp1'/>
-  <cpu type='tcg' name='745_v1.0'/>
-  <cpu type='tcg' name='750cl_v2.0'/>
+  <cpu type='tcg' name='mpc8548e_v10'/>
+  <cpu type='tcg' name='440epx'/>
   <cpu type='tcg' name='750cxr'/>
-  <cpu type='tcg' name='401'/>
-  <cpu type='tcg' name='mpc8541e_v11'/>
-  <cpu type='tcg' name='750cxe_v3.1'/>
+  <cpu type='tcg' name='g2le'/>
+  <cpu type='tcg' name='mpc8543e_v11'/>
+  <cpu type='tcg' name='755_v2.0'/>
+  <cpu type='tcg' name='e500v2_v20'/>
+  <cpu type='tcg' name='401b2'/>
+  <cpu type='tcg' name='x2vp20'/>
+  <cpu type='tcg' name='405gpc'/>
+  <cpu type='tcg' name='mpc8544_v11'/>
+  <cpu type='tcg' name='mpc8548e_v11'/>
+  <cpu type='tcg' name='405cra'/>
+  <cpu type='tcg' name='npe405h'/>
+  <cpu type='tcg' name='mpc8533_v11'/>
+  <cpu type='tcg' name='7441_v2.10'/>
+  <cpu type='tcg' name='mpc8544e_v10'/>
+  <cpu type='tcg' name='750cxe_v2.1'/>
+  <cpu type='tcg' name='750cx_v2.0'/>
+  <cpu type='tcg' name='405gpd'/>
+  <cpu type='tcg' name='7445_v3.2'/>
+  <cpu type='tcg' name='mpc8545_v20'/>
+  <cpu type='tcg' name='603p'/>
+  <cpu type='tcg' name='601_v0'/>
+  <cpu type='tcg' name='7400_v2.1'/>
+  <cpu type='tcg' name='7455_v3.2'/>
+  <cpu type='tcg' name='603e_v1.2'/>
+  <cpu type='tcg' name='mpc8610'/>
+  <cpu type='tcg' name='mpc8544e_v11'/>
+  <cpu type='tcg' name='750cxe_v2.2'/>
+  <cpu type='tcg' name='401g2'/>
+  <cpu type='tcg' name='mpc8547e_v20'/>
+  <cpu type='tcg' name='7445_v3.3'/>
+  <cpu type='tcg' name='mpc8545_v21'/>
+  <cpu type='tcg' name='mpc8379e'/>
+  <cpu type='tcg' name='403gcx'/>
+  <cpu type='tcg' name='mpc8349e'/>
+  <cpu type='tcg' name='iop480'/>
+  <cpu type='tcg' name='601_v1'/>
+  <cpu type='tcg' name='7400_v2.2'/>
+  <cpu type='tcg' name='7455_v3.3'/>
+  <cpu type='tcg' name='603e_v1.3'/>
+  <cpu type='tcg' name='750cxe_v2.4b'/>
+  <cpu type='tcg' name='mpc8543_v11'/>
+  <cpu type='tcg' name='750cxe_v2.3'/>
+  <cpu type='tcg' name='mpc8547e_v21'/>
+  <cpu type='tcg' name='mpc8572e'/>
+  <cpu type='tcg' name='mpc8543e_v20'/>
+  <cpu type='tcg' name='750fx_v2.1'/>
+  <cpu type='tcg' name='602'/>
+  <cpu type='tcg' name='mpc8555e_v10'/>
+  <cpu type='tcg' name='7451_v2.10'/>
+  <cpu type='tcg' name='750l_v2.2'/>
+  <cpu type='tcg' name='970fx_v3.0'/>
+  <cpu type='tcg' name='mpc8548e_v20'/>
+  <cpu type='tcg' name='mpc8641d'/>
+  <cpu type='tcg' name='7410_v1.0'/>
+  <cpu type='tcg' name='401a1'/>
+  <cpu type='tcg' name='mpc8543e_v21'/>
+  <cpu type='tcg' name='750fx_v2.2'/>
+  <cpu type='tcg' name='e500v2_v30'/>
+  <cpu type='tcg' name='405ez'/>
+  <cpu type='tcg' name='401c2'/>
   <cpu type='tcg' name='mpc8555e_v11'/>
-  <cpu type='tcg' name='power5+_v2.1'/>
-  <cpu type='tcg' name='403gb'/>
+  <cpu type='tcg' name='405d2'/>
+  <cpu type='tcg' name='970fx_v3.1'/>
+  <cpu type='tcg' name='mpc8548e_v21'/>
+  <cpu type='tcg' name='405lp'/>
+  <cpu type='tcg' name='mpc8349ea'/>
+  <cpu type='tcg' name='750e'/>
+  <cpu type='tcg' name='750cxe_v3.1b'/>
+  <cpu type='tcg' name='740_v3.0'/>
+  <cpu type='tcg' name='440epa'/>
+  <cpu type='tcg' name='mpc5200b_v20'/>
+  <cpu type='tcg' name='745_v2.6'/>
+  <cpu type='tcg' name='750_v3.0'/>
+  <cpu type='tcg' name='603e7v'/>
+  <cpu type='tcg' name='mpc8377'/>
+  <cpu type='tcg' name='7445_v1.0'/>
   <cpu type='tcg' name='7447a_v1.1'/>
-  <cpu type='tcg' name='e300c2'/>
-  <cpu type='tcg' name='npe405h2'/>
-  <cpu type='tcg' name='mpc8533e_v10'/>
-  <cpu type='tcg' name='mpc5200_v10'/>
-  <cpu type='tcg' name='mpc8343e'/>
+  <cpu type='tcg' name='740_v3.1'/>
+  <cpu type='tcg' name='970mp_v1.0'/>
+  <cpu type='tcg' name='mpc8641'/>
+  <cpu type='tcg' name='e200z5'/>
+  <cpu type='tcg' name='750p'/>
+  <cpu type='tcg' name='745_v2.7'/>
   <cpu type='tcg' name='750_v3.1'/>
+  <cpu type='tcg' name='7450_v1.1'/>
+  <cpu type='tcg' name='x2vp4'/>
+  <cpu type='tcg' name='cobra'/>
+  <cpu type='tcg' name='7447a_v1.2'/>
+  <cpu type='tcg' name='mpc8543_v21'/>
+  <cpu type='tcg' name='755_v2.7'/>
+  <cpu type='tcg' name='970mp_v1.1'/>
+  <cpu type='tcg' name='mpc8545e_v20'/>
+  <cpu type='tcg' name='e200z6'/>
+  <cpu type='tcg' name='745_v2.8'/>
+  <cpu type='tcg' name='7450_v1.2'/>
+  <cpu type='tcg' name='405gpa'/>
+  <cpu type='tcg' name='stb03'/>
+  <cpu type='tcg' name='755_v2.8'/>
+  <cpu type='tcg' name='power9_v1.0'/>
+  <cpu type='tcg' name='7457a_v1.0'/>
+  <cpu type='tcg' name='mpc8349a'/>
+  <cpu type='tcg' name='401d2'/>
+  <cpu type='tcg' name='g2gp'/>
+  <cpu type='tcg' name='stb25'/>
+  <cpu type='tcg' name='750cl_v1.0'/>
+  <cpu type='tcg' name='7457a_v1.1'/>
+  <cpu type='tcg' name='g2legp3'/>
+  <cpu type='tcg' name='mpc8347t'/>
+  <cpu type='tcg' name='mpc8533_v10'/>
+  <cpu type='tcg' name='401'/>
+  <cpu type='tcg' name='440-xilinx'/>
+  <cpu type='tcg' name='mpc8548_v10'/>
+  <cpu type='tcg' name='mpc8347ap'/>
+  <cpu type='tcg' name='604e_v1.0'/>
+  <cpu type='tcg' name='7457a_v1.2'/>
+  <cpu type='tcg' name='7400_v2.0'/>
+  <cpu type='tcg' name='603e7v1'/>
+  <cpu type='tcg' name='7447_v1.0'/>
+  <cpu type='tcg' name='603e_v4.1'/>
+  <cpu type='tcg' name='603e_v1.1'/>
+  <cpu type='tcg' name='npe4gs3'/>
+  <cpu type='tcg' name='mpc8548_v11'/>
+  <cpu type='tcg' name='970fx_v1.0'/>
+  <cpu type='tcg' name='604e_v2.4'/>
+  <cpu type='tcg' name='7457_v1.0'/>
+  <cpu type='tcg' name='e300c4'/>
+  <cpu type='tcg' name='603e7v2'/>
+  <cpu type='tcg' name='7447_v1.1'/>
+  <cpu type='tcg' name='mpc8543_v10'/>
+  <cpu type='tcg' name='mpc5200_v12'/>
   <cpu type='tcg' name='power8e_v2.1'/>
+  <cpu type='tcg' name='750l_v2.0'/>
+  <cpu type='tcg' name='mpc8343a'/>
+  <cpu type='tcg' name='mpc8347eap'/>
+  <cpu type='tcg' name='7457_v1.1'/>
+  <cpu type='tcg' name='e600'/>
+  <cpu type='tcg' name='750fx_v2.0'/>
+  <cpu type='tcg' name='740_v1.0'/>
+  <cpu type='tcg' name='7448_v1.0'/>
+  <cpu type='tcg' name='750l_v2.1'/>
+  <cpu type='tcg' name='7457_v1.2'/>
+  <cpu type='tcg' name='750_v1.0'/>
+  <cpu type='tcg' name='745_v2.3'/>
+  <cpu type='tcg' name='745_v1.0'/>
+  <cpu type='tcg' name='7448_v1.1'/>
+  <cpu type='tcg' name='755_v1.0'/>
+  <cpu type='tcg' name='power7_v2.3'/>
+  <cpu type='tcg' name='npe405h2'/>
+  <cpu type='tcg' name='745_v2.4'/>
+  <cpu type='tcg' name='745_v1.1'/>
+  <cpu type='tcg' name='603e7t'/>
+  <cpu type='tcg' name='mpc8572'/>
+  <cpu type='tcg' name='g2legp'/>
+  <cpu type='tcg' name='755_v2.4'/>
+  <cpu type='tcg' name='mpc8548_v20'/>
+  <cpu type='tcg' name='755_v1.1'/>
+  <cpu type='tcg' name='750fl'/>
+  <cpu type='tcg' name='750cx_v1.0'/>
+  <cpu type='tcg' name='745_v2.5'/>
+  <cpu type='tcg' name='mpc8349'/>
+  <cpu type='tcg' name='power9_v2.0'/>
+  <cpu type='tcg' name='7447a_v1.0'/>
+  <cpu type='tcg' name='755_v2.5'/>
+  <cpu type='tcg' name='mpc8548_v21'/>
+  <cpu type='tcg' name='603e_v4'/>
+  <cpu type='tcg' name='403gb'/>
+  <cpu type='tcg' name='7450_v1.0'/>
+  <cpu type='tcg' name='mpc8543_v20'/>
+  <cpu type='tcg' name='755_v2.6'/>
+  <cpu type='tcg' name='e5500'/>
+  <cpu type='tcg' name='mpc8568'/>
+  <cpu type='tcg' name='mpc8343ea'/>
+  <cpu type='tcg' name='g2'/>
+  <cpu type='tcg' name='403gc'/>
+  <cpu type='tcg' name='mpc8541_v10'/>
+  <cpu type='tcg' name='7455_v1.0'/>
+  <cpu type='tcg' name='750cxe_v3.0'/>
+  <cpu type='tcg' name='603e7'/>
+  <cpu type='tcg' name='power5+_v2.1'/>
+  <cpu type='tcg' name='g2legp1'/>
+  <cpu type='tcg' name='7441_v2.3'/>
+  <cpu type='tcg' name='mpc8541_v11'/>
+  <cpu type='tcg' name='750cxe_v3.1'/>
+  <cpu type='tcg' name='7410_v1.3'/>
+  <cpu type='tcg' name='7451_v2.3'/>
+  <cpu type='tcg' name='7400_v2.7'/>
+  <cpu type='tcg' name='e500_v10'/>
+  <cpu type='tcg' name='603e_v2.2'/>
+  <cpu type='tcg' name='970fx_v2.1'/>
+  <cpu type='tcg' name='7410_v1.4'/>
+  <cpu type='tcg' name='mpc8567e'/>
+  <cpu type='tcg' name='604e_v2.2'/>
+  <cpu type='tcg' name='7400_v2.8'/>
+  <cpu type='tcg' name='740e'/>
+  <cpu type='tcg' name='e300c2'/>
+  <cpu type='tcg' name='750gl'/>
+  <cpu type='tcg' name='mpc8540_v10'/>
+  <cpu type='tcg' name='7448_v2.0'/>
+  <cpu type='tcg' name='mpc5200_v10'/>
+  <cpu type='tcg' name='7400_v2.9'/>
+  <cpu type='tcg' name='mpc8533e_v11'/>
+  <cpu type='tcg' name='745_v2.0'/>
+  <cpu type='tcg' name='e500mc'/>
+  <cpu type='tcg' name='e300c3'/>
+  <cpu type='tcg' name='740_v2.1'/>
+  <cpu type='tcg' name='7448_v2.1'/>
+  <cpu type='tcg' name='750l_v3.2'/>
+  <cpu type='tcg' name='mpc8555_v11'/>
+  <cpu type='tcg' name='mpc5200_v11'/>
+  <cpu type='tcg' name='740p'/>
+  <cpu type='tcg' name='750_v2.1'/>
+  <cpu type='tcg' name='745_v2.1'/>
+  <cpu type='tcg' name='g2h4'/>
+  <cpu type='tcg' name='740_v2.2'/>
+  <cpu type='tcg' name='755_v2.1'/>
+  <cpu type='tcg' name='mpc603'/>
+  <cpu type='tcg' name='e500v2_v21'/>
+  <cpu type='tcg' name='750_v2.2'/>
+  <cpu type='tcg' name='745_v2.2'/>
+  <cpu type='tcg' name='405crb'/>
+  <cpu type='tcg' name='mpc8347et'/>
+  <cpu type='tcg' name='755_v2.2'/>
+  <cpu type='tcg' name='e500v2_v22'/>
+  <cpu type='tcg' name='750cx_v2.1'/>
+  <cpu type='tcg' name='e6500'/>
+  <cpu type='tcg' name='e500_v20'/>
+  <cpu type='tcg' name='7450_v2.0'/>
+  <cpu type='tcg' name='power8_v2.0'/>
+  <cpu type='tcg' name='g2hip3'/>
+  <cpu type='tcg' name='405crc'/>
+  <cpu type='tcg' name='755_v2.3'/>
+  <cpu type='tcg' name='401e2'/>
+  <cpu type='tcg' name='mpc8560_v10'/>
   <cpu type='tcg' name='mpc8568e'/>
+  <cpu type='tcg' name='750cx_v2.2'/>
+  <cpu type='tcg' name='mpc8540_v20'/>
+  <cpu type='tcg' name='mpc8377e'/>
+  <cpu type='tcg' name='7450_v2.1'/>
+  <cpu type='tcg' name='7445_v3.4'/>
+  <cpu type='tcg' name='7445_v2.1'/>
+  <cpu type='tcg' name='g2hip4'/>
+  <cpu type='tcg' name='601_v2'/>
+  <cpu type='tcg' name='7400_v1.0'/>
+  <cpu type='tcg' name='7455_v3.4'/>
+  <cpu type='tcg' name='603e_v1.4'/>
+  <cpu type='tcg' name='750cxe_v2.4'/>
+  <cpu type='tcg' name='403ga'/>
+  <cpu type='tcg' name='7455_v2.1'/>
+  <cpu type='tcg' name='603e_v3'/>
+  <cpu type='tcg' name='405ep'/>
+  <cpu type='tcg' name='mpc8540_v21'/>
+  <cpu type='tcg' name='g2ls'/>
+  <cpu type='tcg' name='mpc8347at'/>
+  <cpu type='tcg' name='npe405l'/>
+  <cpu type='tcg' name='603'/>
+  <cpu type='tcg' name='mpc8541e_v10'/>
+  <cpu type='tcg' name='7400_v1.1'/>
+  <cpu type='tcg' name='mpc8567'/>
+  <cpu type='tcg' name='mpc8347p'/>
+  <cpu type='tcg' name='7441_v2.1'/>
+  <cpu type='tcg' name='7410_v1.1'/>
+  <cpu type='tcg' name='e500v2_v10'/>
+  <cpu type='tcg' name='750cl_v2.0'/>
+  <cpu type='tcg' name='750fx_v2.3'/>
+  <cpu type='tcg' name='604'/>
+  <cpu type='tcg' name='mpc8541e_v11'/>
+  <cpu type='tcg' name='750fx_v1.0'/>
+  <cpu type='tcg' name='405gpr'/>
+  <cpu type='tcg' name='mpc8343e'/>
+  <cpu type='tcg' name='mpc8347eat'/>
+  <cpu type='tcg' name='7410_v1.2'/>
+  <cpu type='tcg' name='750gx_v1.0'/>
+  <cpu type='tcg' name='7400_v2.6'/>
+  <cpu type='tcg' name='440epb'/>
+  <cpu type='tcg' name='mpc5200b_v21'/>
+  <cpu type='tcg' name='405d4'/>
+  <cpu type='tcg' name='970fx_v2.0'/>
+  <cpu type='tcg' name='750gx_v1.1'/>
+  <cpu type='tcg' name='mpc8378'/>
+  <cpu type='tcg' name='mpc8560_v20'/>
+  <cpu type='tcg' name='460exb'/>
+  <cpu type='tcg' name='401f2'/>
+  <cpu type='tcg' name='e300c1'/>
+  <cpu type='tcg' name='power7+_v2.1'/>
+  <cpu type='tcg' name='440-xilinx-w-dfpu'/>
+  <cpu type='tcg' name='mpc8378e'/>
+  <cpu type='tcg' name='mpc8347ep'/>
+  <cpu type='tcg' name='750l_v3.0'/>
+  <cpu type='tcg' name='604r'/>
+  <cpu type='tcg' name='750gx_v1.2'/>
+  <cpu type='tcg' name='power10_v1.0'/>
+  <cpu type='tcg' name='mpc8560_v21'/>
+  <cpu type='tcg' name='970_v2.2'/>
+  <cpu type='tcg' name='mpc8533e_v10'/>
+  <cpu type='tcg' name='mpc8379'/>
   <machine type='tcg' name='pseries-5.0' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes' defaultCPU='power9_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='ref405ep' maxCpus='1'/>
-  <machine type='tcg' name='sam460ex' maxCpus='1' defaultCPU='460exb-powerpc64-cpu'/>
-  <machine type='tcg' name='virtex-ml507' maxCpus='1' defaultCPU='440-xilinx-powerpc64-cpu'/>
-  <machine type='tcg' name='ppce500' maxCpus='32' defaultCPU='e500v2_v30-powerpc64-cpu'/>
-  <machine type='tcg' name='mpc8544ds' maxCpus='15' defaultCPU='e500v2_v30-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-3.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='bamboo' maxCpus='1' defaultCPU='440epb-powerpc64-cpu'/>
+  <machine type='tcg' name='powernv9' alias='powernv' maxCpus='2048' defaultCPU='power9_v2.0-powerpc64-cpu'/>
   <machine type='tcg' name='g3beige' maxCpus='1' defaultCPU='750_v3.1-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-3.0' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='prep' maxCpus='1' defaultCPU='602-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
   <machine type='tcg' name='pseries-2.12' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
   <machine type='tcg' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='mac99' maxCpus='1' defaultCPU='970fx_v3.1-powerpc64-cpu'/>
+  <machine type='tcg' name='ref405ep' maxCpus='1'/>
+  <machine type='tcg' name='pseries-2.2' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
+  <machine type='tcg' name='40p' maxCpus='1' defaultCPU='604-powerpc64-cpu'/>
+  <machine type='tcg' name='pseries-4.2' hotplugCpus='yes' maxCpus='1024' defaultCPU='power9_v2.0-powerpc64-cpu'/>
+  <machine type='tcg' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
+  <machine type='tcg' name='pseries-2.3' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
   <machine type='tcg' name='pseries-2.6' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
+  <machine type='tcg' name='sam460ex' maxCpus='1' defaultCPU='460exb-powerpc64-cpu'/>
+  <machine type='tcg' name='virtex-ml507' maxCpus='1' defaultCPU='440-xilinx-powerpc64-cpu'/>
+  <machine type='tcg' name='pseries-3.0' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
   <machine type='tcg' name='pseries-2.7' hotplugCpus='yes' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
   <machine type='tcg' name='pseries-2.8' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-4.2' hotplugCpus='yes' maxCpus='1024' defaultCPU='power9_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-2.4' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-2.5' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
   <machine type='tcg' name='pseries-4.0' hotplugCpus='yes' maxCpus='1024' defaultCPU='power9_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-4.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='power9_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='pseries-2.2' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
-  <machine type='tcg' name='taihu' maxCpus='1'/>
-  <machine type='tcg' name='pseries-2.3' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
+  <machine type='tcg' name='bamboo' maxCpus='1' defaultCPU='440epb-powerpc64-cpu'/>
   <machine type='tcg' name='pseries-2.1' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
+  <machine type='tcg' name='taihu' maxCpus='1'/>
+  <machine type='tcg' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
+  <machine type='tcg' name='pseries-2.4' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
+  <machine type='tcg' name='mpc8544ds' maxCpus='15' defaultCPU='e500v2_v30-powerpc64-cpu'/>
+  <machine type='tcg' name='pseries-4.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='power9_v2.0-powerpc64-cpu'/>
   <machine type='tcg' name='powernv8' maxCpus='2048' defaultCPU='power8_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='powernv9' alias='powernv' maxCpus='2048' defaultCPU='power9_v2.0-powerpc64-cpu'/>
-  <machine type='tcg' name='40p' maxCpus='1' defaultCPU='604-powerpc64-cpu'/>
+  <machine type='tcg' name='powernv10' maxCpus='2048' defaultCPU='power10_v1.0-powerpc64-cpu'/>
+  <machine type='tcg' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
+  <machine type='tcg' name='pseries-2.5' maxCpus='1024' defaultCPU='power7_v2.3-powerpc64-cpu'/>
+  <machine type='tcg' name='pseries-3.1' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu'/>
+  <machine type='tcg' name='mac99' maxCpus='1' defaultCPU='970fx_v3.1-powerpc64-cpu'/>
+  <machine type='tcg' name='ppce500' maxCpus='32' defaultCPU='e500v2_v30-powerpc64-cpu'/>
 </qemuCaps>

@@ -259,7 +259,6 @@
 @SRCDIR@/src/util/viriptables.c
 @SRCDIR@/src/util/viriscsi.c
 @SRCDIR@/src/util/virjson.c
-@SRCDIR@/src/util/virkeyfile.c
 @SRCDIR@/src/util/virlease.c
 @SRCDIR@/src/util/virlockspace.c
 @SRCDIR@/src/util/virlog.c

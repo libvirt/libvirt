@@ -6580,13 +6580,21 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
 
 
 static int
-virDomainMemoryDefValidate(const virDomainMemoryDef *mem)
+virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
+                           const virDomainDef *def)
 {
-    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        mem->discard == VIR_TRISTATE_BOOL_YES) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("discard is not supported for nvdimms"));
-        return -1;
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+        if (mem->discard == VIR_TRISTATE_BOOL_YES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("discard is not supported for nvdimms"));
+            return -1;
+        }
+
+        if (ARCH_IS_PPC64(def->os.arch) && mem->labelsize == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("label size is required for NVDIMM device"));
+            return -1;
+        }
     }
 
     return 0;
@@ -6697,7 +6705,7 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
         return virDomainVideoDefValidate(dev->data.video, def);
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        return virDomainMemoryDefValidate(dev->data.memory);
+        return virDomainMemoryDefValidate(dev->data.memory, def);
 
     case VIR_DOMAIN_DEVICE_VSOCK:
         return virDomainVsockDefValidate(dev->data.vsock);
@@ -9203,7 +9211,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
         labelskip = virXMLPropString(list[i], "labelskip");
         seclabels[i]->labelskip = false;
         if (labelskip && !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-            seclabels[i]->labelskip = STREQ(labelskip, "yes");
+            ignore_value(virStringParseYesNo(labelskip, &seclabels[i]->labelskip));
         VIR_FREE(labelskip);
 
         ctxt->node = list[i];
@@ -12354,16 +12362,14 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
 
     if (managed_tap) {
-        if (STREQ(managed_tap, "no")) {
-            def->managed_tap = VIR_TRISTATE_BOOL_NO;
-        } else if (STREQ(managed_tap, "yes")) {
-            def->managed_tap = VIR_TRISTATE_BOOL_YES;
-        } else {
+        bool state = false;
+        if (virStringParseYesNo(managed_tap, &state) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("invalid 'managed' value '%s'"),
                            managed_tap);
             goto error;
         }
+        def->managed_tap = virTristateBoolFromBool(state);
     }
 
     if (def->managed_tap != VIR_TRISTATE_BOOL_NO && ifname &&
@@ -13887,15 +13893,13 @@ virDomainTimerDefParseXML(xmlNodePtr node,
 
     def->present = -1; /* unspecified */
     if ((present = virXMLPropString(node, "present")) != NULL) {
-        if (STREQ(present, "yes")) {
-            def->present = 1;
-        } else if (STREQ(present, "no")) {
-            def->present = 0;
-        } else {
+        bool state = false;
+        if (virStringParseYesNo(present, &state) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown timer present value '%s'"), present);
             goto error;
         }
+        def->present = state ? 1 : 0;
     }
 
     def->tickpolicy = -1;
@@ -16592,6 +16596,7 @@ static virDomainMemoryDefPtr
 virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
                            xmlNodePtr memdevNode,
                            xmlXPathContextPtr ctxt,
+                           const virDomainDef *dom,
                            unsigned int flags)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
@@ -16637,6 +16642,25 @@ virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
 
         def->discard = val;
+    }
+    VIR_FREE(tmp);
+
+    if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        ARCH_IS_PPC64(dom->os.arch)) {
+        /* Extract nvdimm uuid or generate a new one */
+        tmp = virXPathString("string(./uuid[1])", ctxt);
+
+        if (!tmp) {
+            if (virUUIDGenerate(def->uuid) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Failed to generate UUID"));
+                goto error;
+            }
+        } else if (virUUIDParse(tmp, def->uuid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("malformed uuid element"));
+            goto error;
+        }
     }
 
     /* source */
@@ -16935,7 +16959,8 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
         if (!(dev->data.memory = virDomainMemoryDefParseXML(xmlopt, node,
-                                                            ctxt, flags)))
+                                                            ctxt, def,
+                                                            flags)))
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_IOMMU:
@@ -18611,10 +18636,9 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     if ((node = virXPathNode("./os/bios[1]", ctxt))) {
         tmp = virXMLPropString(node, "useserial");
         if (tmp) {
-            if (STREQ(tmp, "yes"))
-                def->os.bios.useserial = VIR_TRISTATE_BOOL_YES;
-            else
-                def->os.bios.useserial = VIR_TRISTATE_BOOL_NO;
+            bool state = false;
+            ignore_value(virStringParseYesNo(tmp, &state));
+            def->os.bios.useserial = virTristateBoolFromBool(state);
             VIR_FREE(tmp);
         }
 
@@ -21882,6 +21906,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         virDomainMemoryDefPtr mem = virDomainMemoryDefParseXML(xmlopt,
                                                                nodes[i],
                                                                ctxt,
+                                                               def,
                                                                flags);
         if (!mem)
             goto error;
@@ -27097,6 +27122,7 @@ virDomainMemoryTargetDefFormat(virBufferPtr buf,
 static int
 virDomainMemoryDefFormat(virBufferPtr buf,
                          virDomainMemoryDefPtr def,
+                         const virDomainDef *dom,
                          unsigned int flags)
 {
     const char *model = virDomainMemoryModelTypeToString(def->model);
@@ -27110,6 +27136,14 @@ virDomainMemoryDefFormat(virBufferPtr buf,
                           virTristateBoolTypeToString(def->discard));
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
+
+    if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        ARCH_IS_PPC64(dom->os.arch)) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(def->uuid, uuidstr);
+        virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+    }
 
     if (virDomainMemorySourceDefFormat(buf, def) < 0)
         return -1;
@@ -29440,7 +29474,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     }
 
     for (n = 0; n < def->nmems; n++) {
-        if (virDomainMemoryDefFormat(buf, def->mems[n], flags) < 0)
+        if (virDomainMemoryDefFormat(buf, def->mems[n], def, flags) < 0)
             goto error;
     }
 
@@ -30553,7 +30587,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         rc = virDomainPanicDefFormat(&buf, src->data.panic);
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
-        rc = virDomainMemoryDefFormat(&buf, src->data.memory, flags);
+        rc = virDomainMemoryDefFormat(&buf, src->data.memory, def, flags);
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
         rc = virDomainShmemDefFormat(&buf, src->data.shmem, flags);

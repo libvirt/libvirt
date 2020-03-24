@@ -2189,6 +2189,9 @@ struct _virDomainMemoryDef {
     unsigned long long labelsize; /* kibibytes; valid only for NVDIMM */
     bool readonly; /* valid only for NVDIMM */
 
+    /* required for QEMU NVDIMM ppc64 support */
+    unsigned char uuid[VIR_UUID_BUFLEN];
+
     virDomainDeviceInfo info;
 };
 

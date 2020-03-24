@@ -27,13 +27,13 @@ file=/tmp/lib/domain--1-guest/master-key.aes \
 -no-shutdown \
 -boot strict=on \
 -device pci-ohci,id=usb,bus=pci.0,addr=0x1 \
--drive file=/var/lib/libvirt/images/guest.qcow2,format=qcow2,if=none,\
-id=drive-virtio-disk0 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=drive-virtio-disk0,\
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/guest.qcow2",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2",\
+"file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=libvirt-1-format,\
 id=virtio-disk0,bootindex=1 \
 -chardev pty,id=charserial0 \
 -device spapr-vty,chardev=charserial0,id=serial0,reg=0x30000000 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
 -msg timestamp=on

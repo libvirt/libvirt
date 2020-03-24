@@ -38,6 +38,19 @@
       </backingStore>
       <target dev='vdb' bus='virtio'/>
     </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/luks.img'>
+        <slices>
+          <slice type='storage' offset='1234' size='321'/>
+        </slices>
+        <encryption format='luks'>
+          <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
+        </encryption>
+      </source>
+      <backingStore/>
+      <target dev='vdc' bus='virtio'/>
+    </disk>
     <controller type='usb'/>
     <controller type='pci' model='pci-root'/>
     <memballoon model='virtio'/>

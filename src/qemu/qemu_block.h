@@ -254,3 +254,6 @@ int
 qemuBlockReopenReadOnly(virDomainObjPtr vm,
                         virStorageSourcePtr src,
                         qemuDomainAsyncJob asyncJob);
+
+bool
+qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src);

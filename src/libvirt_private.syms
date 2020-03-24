@@ -2378,16 +2378,6 @@ virKeycodeValueFromString;
 virKeycodeValueTranslate;
 
 
-# util/virkeyfile.h
-virKeyFileFree;
-virKeyFileGetValueString;
-virKeyFileHasGroup;
-virKeyFileHasValue;
-virKeyFileLoadData;
-virKeyFileLoadFile;
-virKeyFileNew;
-
-
 # util/virkmod.h
 virKModConfig;
 virKModIsBlacklisted;

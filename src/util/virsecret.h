@@ -48,8 +48,8 @@ struct _virSecretLookupTypeDef {
 };
 
 void virSecretLookupDefClear(virSecretLookupTypeDefPtr def);
-int virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
-                           const virSecretLookupTypeDef *src);
+void virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
+                            const virSecretLookupTypeDef *src);
 int virSecretLookupParseSecret(xmlNodePtr secretnode,
                                virSecretLookupTypeDefPtr def);
 void virSecretLookupFormatSecret(virBufferPtr buf,

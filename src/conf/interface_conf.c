@@ -28,6 +28,7 @@
 #include "virxml.h"
 #include "viruuid.h"
 #include "virbuffer.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
@@ -268,21 +269,19 @@ virInterfaceDefParseDhcp(virInterfaceProtocolDefPtr def,
     def->dhcp = 1;
     save = ctxt->node;
     ctxt->node = dhcp;
+    def->peerdns = -1;
     /* Not much to do in the current version */
     tmp = virXPathString("string(./@peerdns)", ctxt);
     if (tmp) {
-        if (STREQ(tmp, "yes")) {
-            def->peerdns = 1;
-        } else if (STREQ(tmp, "no")) {
-            def->peerdns = 0;
-        } else {
+        bool state = false;
+        if (virStringParseYesNo(tmp, &state) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown dhcp peerdns value %s"), tmp);
             ret = -1;
+        } else {
+            def->peerdns = state ? 1 : 0;
         }
         VIR_FREE(tmp);
-    } else {
-        def->peerdns = -1;
     }
 
     ctxt->node = save;

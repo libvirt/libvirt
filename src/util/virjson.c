@@ -2049,23 +2049,26 @@ virJSONStringReformat(const char *jsonstr,
 }
 
 
+static virJSONValuePtr
+virJSONValueObjectDeflattenKeys(virJSONValuePtr json);
+
+
 static int
 virJSONValueObjectDeflattenWorker(const char *key,
                                   virJSONValuePtr value,
                                   void *opaque)
 {
     virJSONValuePtr retobj = opaque;
-    virJSONValuePtr newval = NULL;
+    g_autoptr(virJSONValue) newval = NULL;
     virJSONValuePtr existobj;
-    char **tokens = NULL;
+    VIR_AUTOSTRINGLIST tokens = NULL;
     size_t ntokens = 0;
-    int ret = -1;
 
     /* non-nested keys only need to be copied */
     if (!strchr(key, '.')) {
 
         if (virJSONValueIsObject(value))
-            newval = virJSONValueObjectDeflatten(value);
+            newval = virJSONValueObjectDeflattenKeys(value);
         else
             newval = virJSONValueCopy(value);
 
@@ -2075,46 +2078,108 @@ virJSONValueObjectDeflattenWorker(const char *key,
         if (virJSONValueObjectHasKey(retobj, key)) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("can't deflatten colliding key '%s'"), key);
-            goto cleanup;
+            return -1;
         }
 
         if (virJSONValueObjectAppend(retobj, key, newval) < 0)
-            goto cleanup;
+            return -1;
+
+        newval = NULL;
 
         return 0;
     }
 
     if (!(tokens = virStringSplitCount(key, ".", 2, &ntokens)))
-        goto cleanup;
+        return -1;
 
     if (ntokens != 2) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid nested value key '%s'"), key);
-        goto cleanup;
+        return -1;
     }
 
     if (!(existobj = virJSONValueObjectGet(retobj, tokens[0]))) {
         existobj = virJSONValueNewObject();
 
         if (virJSONValueObjectAppend(retobj, tokens[0], existobj) < 0)
-            goto cleanup;
+            return -1;
 
     } else {
         if (!virJSONValueIsObject(existobj)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("mixing nested objects and values is forbidden in "
                              "JSON deflattening"));
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = virJSONValueObjectDeflattenWorker(tokens[1], value, existobj);
+    return virJSONValueObjectDeflattenWorker(tokens[1], value, existobj);
+}
 
- cleanup:
-    virStringListFreeCount(tokens, ntokens);
-    virJSONValueFree(newval);
 
-    return ret;
+static virJSONValuePtr
+virJSONValueObjectDeflattenKeys(virJSONValuePtr json)
+{
+    g_autoptr(virJSONValue) deflattened = virJSONValueNewObject();
+
+    if (virJSONValueObjectForeachKeyValue(json,
+                                          virJSONValueObjectDeflattenWorker,
+                                          deflattened) < 0)
+        return NULL;
+
+    return g_steal_pointer(&deflattened);
+}
+
+
+/**
+ * virJSONValueObjectDeflattenArrays:
+ *
+ * Reconstruct JSON arrays from objects which only have sequential numeric
+ * keys starting from 0.
+ */
+static void
+virJSONValueObjectDeflattenArrays(virJSONValuePtr json)
+{
+    g_autofree virJSONValuePtr *arraymembers = NULL;
+    virJSONObjectPtr obj;
+    size_t i;
+
+    if (!json ||
+        json->type != VIR_JSON_TYPE_OBJECT)
+        return;
+
+    obj = &json->data.object;
+
+    arraymembers = g_new0(virJSONValuePtr, obj->npairs);
+
+    for (i = 0; i < obj->npairs; i++)
+        virJSONValueObjectDeflattenArrays(obj->pairs[i].value);
+
+    for (i = 0; i < obj->npairs; i++) {
+        virJSONObjectPairPtr pair = obj->pairs + i;
+        unsigned int keynum;
+
+        if (virStrToLong_uip(pair->key, NULL, 10, &keynum) < 0)
+            return;
+
+        if (keynum >= obj->npairs)
+            return;
+
+        if (arraymembers[keynum])
+            return;
+
+        arraymembers[keynum] = pair->value;
+    }
+
+    for (i = 0; i < obj->npairs; i++)
+        g_free(obj->pairs[i].key);
+
+    g_free(json->data.object.pairs);
+
+    i = obj->npairs;
+    json->type = VIR_JSON_TYPE_ARRAY;
+    json->data.array.nvalues = i;
+    json->data.array.values = g_steal_pointer(&arraymembers);
 }
 
 
@@ -2133,12 +2198,12 @@ virJSONValueObjectDeflattenWorker(const char *key,
 virJSONValuePtr
 virJSONValueObjectDeflatten(virJSONValuePtr json)
 {
-    g_autoptr(virJSONValue) deflattened = virJSONValueNewObject();
+    virJSONValuePtr deflattened;
 
-    if (virJSONValueObjectForeachKeyValue(json,
-                                          virJSONValueObjectDeflattenWorker,
-                                          deflattened) < 0)
+    if (!(deflattened = virJSONValueObjectDeflattenKeys(json)))
         return NULL;
 
-    return g_steal_pointer(&deflattened);
+    virJSONValueObjectDeflattenArrays(deflattened);
+
+    return deflattened;
 }

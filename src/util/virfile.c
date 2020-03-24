@@ -3743,8 +3743,17 @@ int
 virFileBindMountDevice(const char *src,
                        const char *dst)
 {
-    if (virFileTouch(dst, 0666) < 0)
-        return -1;
+    if (!virFileExists(dst)) {
+        if (virFileIsDir(src)) {
+            if (virFileMakePath(dst) < 0) {
+                virReportSystemError(errno, _("Unable to make dir %s"), dst);
+                return -1;
+            }
+        } else {
+            if (virFileTouch(dst, 0666) < 0)
+                return -1;
+        }
+    }
 
     if (mount(src, dst, "none", MS_BIND, NULL) < 0) {
         virReportSystemError(errno, _("Failed to bind %s on to %s"), src,

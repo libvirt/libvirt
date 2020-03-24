@@ -1,0 +1,27 @@
+{
+    "valid": {
+        "0": "test",
+        "1": { "something": 123 },
+        "2": true
+    },
+    "outoforder": {
+        "1": { "something": 123 },
+        "2": true,
+        "0": "test"
+    },
+    "invalid-overflow": {
+        "1": { "something": 123 },
+        "2": true,
+        "4": "test"
+    },
+    "invalid-strings": {
+        "1": { "something": 123 },
+        "2": true,
+        "test": "test"
+    },
+    "nestedkeys": {
+        "test.0.test": 123,
+        "test.2.test": 123,
+        "test.1.test": 123
+    }
+}
