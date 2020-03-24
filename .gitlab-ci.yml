@@ -61,6 +61,15 @@ mipsel-debian-sid:
   <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-mipsel:latest
 
+mingw32-fedora-30:
+  <<: *cross_build_default_job_definition
+  image: quay.io/libvirt/buildenv-libvirt-fedora-30-cross-mingw32:latest
+
+mingw64-fedora-30:
+  <<: *cross_build_default_job_definition
+  image: quay.io/libvirt/buildenv-libvirt-fedora-30-cross-mingw64:latest
+
+
 # This artifact published by this job is downloaded by libvirt.org to
 # be deployed to the web root:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=website
