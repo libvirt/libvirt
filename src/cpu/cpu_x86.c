@@ -1937,8 +1937,6 @@ virCPUx86Compare(virCPUDefPtr host,
                  bool failIncompatible)
 {
     virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
-    virCPUx86MapPtr map;
-    virCPUx86ModelPtr model = NULL;
     char *message = NULL;
 
     if (!host || !host->model) {
@@ -1954,46 +1952,16 @@ virCPUx86Compare(virCPUDefPtr host,
 
     ret = x86Compute(host, cpu, NULL, &message);
 
-    if (ret == VIR_CPU_COMPARE_INCOMPATIBLE) {
-        bool noTSX = false;
-
-        if (STREQ_NULLABLE(cpu->model, "Haswell") ||
-            STREQ_NULLABLE(cpu->model, "Broadwell")) {
-            if (!(map = virCPUx86GetMap()))
-                goto cleanup;
-
-            if (!(model = x86ModelFromCPU(cpu, map, -1)))
-                goto cleanup;
-
-            noTSX = !x86FeatureInData("hle", &model->data, map) ||
-                    !x86FeatureInData("rtm", &model->data, map);
-        }
-
-        if (failIncompatible) {
-            ret = VIR_CPU_COMPARE_ERROR;
-            if (message) {
-                if (noTSX) {
-                    virReportError(VIR_ERR_CPU_INCOMPATIBLE,
-                                   _("%s; try using '%s-noTSX' CPU model"),
-                                   message, cpu->model);
-                } else {
-                    virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s", message);
-                }
-            } else {
-                if (noTSX) {
-                    virReportError(VIR_ERR_CPU_INCOMPATIBLE,
-                                   _("try using '%s-noTSX' CPU model"),
-                                   cpu->model);
-                } else {
-                    virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
-                }
-            }
-        }
+    if (ret == VIR_CPU_COMPARE_INCOMPATIBLE && failIncompatible) {
+        ret = VIR_CPU_COMPARE_ERROR;
+        if (message)
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s", message);
+        else
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
     }
 
  cleanup:
     VIR_FREE(message);
-    x86ModelFree(model);
     return ret;
 }
 
