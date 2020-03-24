@@ -315,31 +315,43 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             pcisrc->backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN;
     }
 
-    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO && def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-        int dm_type = libxlDomainGetEmulatorType(def);
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
+        if (dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
+            if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+                def->os.type == VIR_DOMAIN_OSTYPE_LINUX)
+                dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_XEN;
+            else if (ARCH_IS_PPC64(def->os.arch))
+                dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
+            else
+                dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
+        }
 
-        switch (dev->data.video->type) {
-        case VIR_DOMAIN_VIDEO_TYPE_VGA:
-        case VIR_DOMAIN_VIDEO_TYPE_XEN:
-            if (dev->data.video->vram == 0) {
-                if (dm_type == LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN)
-                    dev->data.video->vram = 16 * 1024;
-                else
-                    dev->data.video->vram = 8 * 1024;
-                }
-            break;
-        case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
-            if (dev->data.video->vram == 0) {
-                if (dm_type == LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN)
-                    dev->data.video->vram = 8 * 1024;
-                else
-                    dev->data.video->vram = 4 * 1024;
+        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+            int dm_type = libxlDomainGetEmulatorType(def);
+
+            switch (dev->data.video->type) {
+                case VIR_DOMAIN_VIDEO_TYPE_VGA:
+                case VIR_DOMAIN_VIDEO_TYPE_XEN:
+                    if (dev->data.video->vram == 0) {
+                        if (dm_type == LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN)
+                            dev->data.video->vram = 16 * 1024;
+                        else
+                            dev->data.video->vram = 8 * 1024;
+                    }
+                    break;
+                case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+                    if (dev->data.video->vram == 0) {
+                        if (dm_type == LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN)
+                            dev->data.video->vram = 8 * 1024;
+                        else
+                            dev->data.video->vram = 4 * 1024;
+                    }
+                    break;
+                case VIR_DOMAIN_VIDEO_TYPE_QXL:
+                    if (dev->data.video->vram == 0)
+                        dev->data.video->vram = 128 * 1024;
+                    break;
             }
-            break;
-        case VIR_DOMAIN_VIDEO_TYPE_QXL:
-            if (dev->data.video->vram == 0)
-                dev->data.video->vram = 128 * 1024;
-            break;
         }
     }
 
