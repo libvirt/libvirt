@@ -15738,7 +15738,6 @@ virDomainVideoDefaultType(const virDomainDef *def)
         else
             return VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
     case VIR_DOMAIN_VIRT_BHYVE:
-        return VIR_DOMAIN_VIDEO_TYPE_GOP;
     case VIR_DOMAIN_VIRT_QEMU:
     case VIR_DOMAIN_VIRT_KQEMU:
     case VIR_DOMAIN_VIRT_KVM:
