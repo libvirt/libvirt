@@ -51,7 +51,7 @@
         <description>
           QEMU 5.0 implements NVDIMM memory support for pSeries guests. This
           is done by adding an 'uuid' element in the memory XML, which can
-          either be provided in the XML or, if ommited, generated
+          either be provided in the XML or, if omitted, generated
           automatically.
         </description>
       </change>
