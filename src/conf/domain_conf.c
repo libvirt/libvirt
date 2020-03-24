@@ -15716,8 +15716,6 @@ virDomainVideoDefaultType(const virDomainDef *def)
 {
     switch ((virDomainVirtType)def->virtType) {
     case VIR_DOMAIN_VIRT_VBOX:
-        return VIR_DOMAIN_VIDEO_TYPE_VBOX;
-
     case VIR_DOMAIN_VIRT_TEST:
     case VIR_DOMAIN_VIRT_VMWARE:
     case VIR_DOMAIN_VIRT_VZ:

@@ -62,9 +62,25 @@ static virMutex vbox_driver_lock = VIR_MUTEX_INITIALIZER;
 static vboxDriverPtr vbox_driver;
 static vboxDriverPtr vboxDriverObjNew(void);
 
+static int
+vboxDomainDevicesDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
+                              const virDomainDef *def G_GNUC_UNUSED,
+                              unsigned int parseFlags G_GNUC_UNUSED,
+                              void *opaque G_GNUC_UNUSED,
+                              void *parseOpaque G_GNUC_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO &&
+        dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
+        dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_VBOX;
+    }
+
+    return 0;
+}
+
 static virDomainDefParserConfig vboxDomainDefParserConfig = {
     .macPrefix = { 0x08, 0x00, 0x27 },
     .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
+    .devicesPostParseCallback = vboxDomainDevicesDefPostParse,
 };
 
 static virCapsPtr
