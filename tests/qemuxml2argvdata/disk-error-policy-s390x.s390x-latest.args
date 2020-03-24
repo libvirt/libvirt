@@ -26,17 +26,29 @@ file=/tmp/lib/domain--1-guest/master-key.aes \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--drive file=/var/images/image1,format=qcow2,if=none,id=drive-virtio-disk0,\
-cache=none \
--device virtio-blk-ccw,scsi=off,devno=fe.0.0000,drive=drive-virtio-disk0,\
+-blockdev '{"driver":"file","filename":"/var/images/image1",\
+"node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
+"file":"libvirt-3-storage"}' \
+-device virtio-blk-ccw,scsi=off,devno=fe.0.0000,drive=libvirt-3-format,\
 id=virtio-disk0,bootindex=1,write-cache=on,werror=stop,rerror=stop \
--drive file=/var/images/image2,format=qcow2,if=none,id=drive-virtio-disk1,\
-cache=none \
--device virtio-blk-ccw,scsi=off,devno=fe.0.0001,drive=drive-virtio-disk1,\
+-blockdev '{"driver":"file","filename":"/var/images/image2",\
+"node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
+"file":"libvirt-2-storage"}' \
+-device virtio-blk-ccw,scsi=off,devno=fe.0.0001,drive=libvirt-2-format,\
 id=virtio-disk1,write-cache=on,werror=enospc \
--drive file=/var/images/image3,format=qcow2,if=none,id=drive-virtio-disk2,\
-cache=none \
--device virtio-blk-ccw,scsi=off,devno=fe.0.0002,drive=drive-virtio-disk2,\
+-blockdev '{"driver":"file","filename":"/var/images/image3",\
+"node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},\
+"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,\
+"cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
+"file":"libvirt-1-storage"}' \
+-device virtio-blk-ccw,scsi=off,devno=fe.0.0002,drive=libvirt-1-format,\
 id=virtio-disk2,write-cache=on,werror=report,rerror=ignore \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
