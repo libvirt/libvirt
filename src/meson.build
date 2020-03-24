@@ -168,6 +168,7 @@ subdir('qemu')
 subdir('test')
 subdir('vbox')
 subdir('vmware')
+subdir('vz')
 
 
 driver_sources = [
