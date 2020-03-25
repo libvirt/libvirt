@@ -1111,29 +1111,18 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
 }
 
 
-static virCPUx86ModelPtr
-x86ModelNew(void)
-{
-    virCPUx86ModelPtr model;
-
-    if (VIR_ALLOC(model) < 0)
-        return NULL;
-
-    return model;
-}
-
-
 static void
 x86ModelFree(virCPUx86ModelPtr model)
 {
     if (!model)
         return;
 
-    VIR_FREE(model->name);
-    VIR_FREE(model->signatures);
+    g_free(model->name);
+    g_free(model->signatures);
     virCPUx86DataClear(&model->data);
-    VIR_FREE(model);
+    g_free(model);
 }
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUx86Model, x86ModelFree);
 
 
 static int
@@ -1161,9 +1150,7 @@ x86ModelCopy(virCPUx86ModelPtr model)
 {
     virCPUx86ModelPtr copy;
 
-    if (VIR_ALLOC(copy) < 0)
-        return NULL;
-
+    copy = g_new0(virCPUx86Model, 1);
     copy->name = g_strdup(model->name);
 
     if (x86ModelCopySignatures(copy, model) < 0) {
@@ -1216,7 +1203,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
     if (cpu->type == VIR_CPU_TYPE_HOST &&
         policy != VIR_CPU_FEATURE_REQUIRE &&
         policy != -1)
-        return x86ModelNew();
+        return g_new0(virCPUx86Model, 1);
 
     if (cpu->model &&
         (policy == VIR_CPU_FEATURE_REQUIRE || policy == -1)) {
@@ -1228,7 +1215,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
 
         model = x86ModelCopy(model);
     } else {
-        model = x86ModelNew();
+        model = g_new0(virCPUx86Model, 1);
     }
 
     if (!model)
@@ -1540,9 +1527,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-    if (!(model = x86ModelNew()))
-        goto cleanup;
-
+    model = g_new0(virCPUx86Model, 1);
     model->name = g_strdup(name);
 
     if (x86ModelParseDecode(model, ctxt) < 0)
