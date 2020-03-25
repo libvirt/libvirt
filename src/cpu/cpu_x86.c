@@ -3015,45 +3015,39 @@ static int
 virCPUx86Translate(virCPUDefPtr cpu,
                    virDomainCapsCPUModelsPtr models)
 {
-    virCPUDefPtr translated = NULL;
+    g_autoptr(virCPUDef) translated = NULL;
     virCPUx86MapPtr map;
-    virCPUx86ModelPtr model = NULL;
+    g_autoptr(virCPUx86Model) model = NULL;
     size_t i;
-    int ret = -1;
 
     if (!(map = virCPUx86GetMap()))
-        goto cleanup;
+        return -1;
 
     if (!(model = x86ModelFromCPU(cpu, map, -1)))
-        goto cleanup;
+        return -1;
 
     if (model->vendor &&
         virCPUx86DataAddItem(&model->data, &model->vendor->data) < 0)
-        goto cleanup;
+        return -1;
 
     if (model->signatures &&
         x86DataAddSignature(&model->data, model->signatures[0]) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(translated = virCPUDefCopyWithoutModel(cpu)))
-        goto cleanup;
+        return -1;
 
     if (x86Decode(translated, &model->data, models, NULL, false) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < cpu->nfeatures; i++) {
         virCPUFeatureDefPtr f = cpu->features + i;
         if (virCPUDefUpdateFeature(translated, f->name, f->policy) < 0)
-            goto cleanup;
+            return -1;
     }
 
     virCPUDefStealModel(cpu, translated, true);
-    ret = 0;
-
- cleanup:
-    virCPUDefFree(translated);
-    x86ModelFree(model);
-    return ret;
+    return 0;
 }
 
 
