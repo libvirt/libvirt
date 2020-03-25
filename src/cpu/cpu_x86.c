@@ -2817,17 +2817,16 @@ static int
 x86UpdateHostModel(virCPUDefPtr guest,
                    const virCPUDef *host)
 {
-    virCPUDefPtr updated = NULL;
+    g_autoptr(virCPUDef) updated = NULL;
     size_t i;
-    int ret = -1;
 
     if (!(updated = virCPUDefCopyWithoutModel(host)))
-        goto cleanup;
+        return -1;
 
     updated->type = VIR_CPU_TYPE_GUEST;
     updated->mode = VIR_CPU_MODE_CUSTOM;
     if (virCPUDefCopyModel(updated, host, true) < 0)
-        goto cleanup;
+        return -1;
 
     if (guest->vendor_id) {
         VIR_FREE(updated->vendor_id);
@@ -2838,18 +2837,15 @@ x86UpdateHostModel(virCPUDefPtr guest,
         if (virCPUDefUpdateFeature(updated,
                                    guest->features[i].name,
                                    guest->features[i].policy) < 0)
-            goto cleanup;
+            return -1;
     }
 
     virCPUDefStealModel(guest, updated,
                         guest->mode == VIR_CPU_MODE_CUSTOM);
     guest->mode = VIR_CPU_MODE_CUSTOM;
     guest->match = VIR_CPU_MATCH_EXACT;
-    ret = 0;
 
- cleanup:
-    virCPUDefFree(updated);
-    return ret;
+    return 0;
 }
 
 
