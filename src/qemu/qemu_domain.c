@@ -12686,8 +12686,6 @@ qemuDomainNVDimmAlignSizePseries(virDomainDefPtr def,
     }
 
     guestArea = (guestArea/ppc64AlignSize) * ppc64AlignSize;
-    guestArea = MAX(guestArea, ppc64AlignSize);
-
     mem->size = guestArea + mem->labelsize;
 
     return 0;
