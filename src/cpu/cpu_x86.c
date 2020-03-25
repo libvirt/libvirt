@@ -3109,7 +3109,7 @@ x86FeatureFilterMigratable(const char *name,
 static virCPUDefPtr
 virCPUx86CopyMigratable(virCPUDefPtr cpu)
 {
-    virCPUDefPtr copy;
+    g_autoptr(virCPUDef) copy = NULL;
     virCPUx86MapPtr map;
 
     if (!(map = virCPUx86GetMap()))
@@ -3120,13 +3120,9 @@ virCPUx86CopyMigratable(virCPUDefPtr cpu)
 
     if (virCPUDefCopyModelFilter(copy, cpu, false,
                                  x86FeatureFilterMigratable, map) < 0)
-        goto error;
+        return NULL;
 
-    return copy;
-
- error:
-    virCPUDefFree(copy);
-    return NULL;
+    return g_steal_pointer(&copy);
 }
 
 
