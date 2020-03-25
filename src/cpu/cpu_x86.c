@@ -2853,9 +2853,8 @@ static int
 virCPUx86Update(virCPUDefPtr guest,
                 const virCPUDef *host)
 {
-    virCPUx86ModelPtr model = NULL;
+    g_autoptr(virCPUx86Model) model = NULL;
     virCPUx86MapPtr map;
-    int ret = -1;
     size_t i;
 
     if (!host) {
@@ -2868,14 +2867,14 @@ virCPUx86Update(virCPUDefPtr guest,
         return -1;
 
     if (!(model = x86ModelFromCPU(host, map, -1)))
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < guest->nfeatures; i++) {
         if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
             int supported = x86FeatureInData(guest->features[i].name,
                                              &model->data, map);
             if (supported < 0)
-                goto cleanup;
+                return -1;
             else if (supported)
                 guest->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
             else
@@ -2885,13 +2884,9 @@ virCPUx86Update(virCPUDefPtr guest,
 
     if (guest->mode == VIR_CPU_MODE_HOST_MODEL ||
         guest->match == VIR_CPU_MATCH_MINIMUM)
-        ret = x86UpdateHostModel(guest, host);
-    else
-        ret = 0;
+        return x86UpdateHostModel(guest, host);
 
- cleanup:
-    x86ModelFree(model);
-    return ret;
+    return 0;
 }
 
 
