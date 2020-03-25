@@ -1847,32 +1847,30 @@ virCPUx86Compare(virCPUDefPtr host,
                  virCPUDefPtr cpu,
                  bool failIncompatible)
 {
-    virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
-    char *message = NULL;
+    virCPUCompareResult ret;
+    g_autofree char *message = NULL;
 
     if (!host || !host->model) {
         if (failIncompatible) {
             virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s",
                            _("unknown host CPU"));
-        } else {
-            VIR_WARN("unknown host CPU");
-            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+            return VIR_CPU_COMPARE_ERROR;
         }
-        goto cleanup;
+
+        VIR_WARN("unknown host CPU");
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
     ret = x86Compute(host, cpu, NULL, &message);
 
     if (ret == VIR_CPU_COMPARE_INCOMPATIBLE && failIncompatible) {
-        ret = VIR_CPU_COMPARE_ERROR;
         if (message)
             virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s", message);
         else
             virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
+        return VIR_CPU_COMPARE_ERROR;
     }
 
- cleanup:
-    VIR_FREE(message);
     return ret;
 }
 
