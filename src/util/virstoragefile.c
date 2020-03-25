@@ -2217,6 +2217,10 @@ static const char virStorageSourceCookieNameInvalidChars[] =
 static int
 virStorageSourceNetCookieValidate(virStorageNetCookieDefPtr def)
 {
+    g_autofree char *val = g_strdup(def->value);
+    const char *checkval = val;
+    size_t len = strlen(val);
+
     /* name must have at least 1 character */
     if (*(def->name) == '\0') {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -2233,8 +2237,21 @@ virStorageSourceNetCookieValidate(virStorageNetCookieDefPtr def)
         return -1;
     }
 
+    /* check for optional quotes around the cookie value string */
+    if (val[0] == '"') {
+        if (val[len - 1] != '"') {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("value of cookie '%s' contains invalid characters"),
+                           def->name);
+            return -1;
+        }
+
+        val[len - 1] = '\0';
+        checkval++;
+    }
+
     /* check invalid characters in value */
-    if (virStringHasChars(def->value, virStorageSourceCookieValueInvalidChars)) {
+    if (virStringHasChars(checkval, virStorageSourceCookieValueInvalidChars)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("value of cookie '%s' contains invalid characters"),
                        def->name);

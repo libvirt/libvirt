@@ -41,7 +41,7 @@
         <host name='example.org' port='1234'/>
         <cookies>
           <cookie name='test'>testcookievalue</cookie>
-          <cookie name='test2'>blurb</cookie>
+          <cookie name='test2'>&quot;blurb&quot;</cookie>
         </cookies>
       </source>
       <target dev='vdc' bus='virtio'/>
@@ -54,7 +54,7 @@
         <ssl verify='no'/>
         <cookies>
           <cookie name='test'>testcookievalue</cookie>
-          <cookie name='test2'>blurb</cookie>
+          <cookie name='test2'>&quot;blurb&quot;</cookie>
         </cookies>
       </source>
       <target dev='vdd' bus='virtio'/>

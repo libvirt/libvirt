@@ -43,7 +43,7 @@ id=virtio-disk0,bootindex=1 \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=libvirt-3-format,\
 id=virtio-disk1 \
 -object secret,id=libvirt-2-storage-httpcookie-secret0,\
-data=DrPR9NA6GKJb7qi1KbjHad3f3UIGTTDmAmOZHHv1F5w5T8rhnk3f+uSKStHe0J2O,\
+data=DrPR9NA6GKJb7qi1KbjHaealKEMVtOWUl2h3yvO5lgIh6cyLHemmlg+h9fcgwREA,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -blockdev '{"driver":"http","url":"http://example.org:1234/test3.img",\
 "cookie-secret":"libvirt-2-storage-httpcookie-secret0",\
@@ -53,7 +53,7 @@ keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-2-format,\
 id=virtio-disk2 \
 -object secret,id=libvirt-1-storage-httpcookie-secret0,\
-data=DrPR9NA6GKJb7qi1KbjHad3f3UIGTTDmAmOZHHv1F5w5T8rhnk3f+uSKStHe0J2O,\
+data=DrPR9NA6GKJb7qi1KbjHaealKEMVtOWUl2h3yvO5lgIh6cyLHemmlg+h9fcgwREA,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -blockdev '{"driver":"https","url":"https://example.org:1234/test4.img",\
 "sslverify":false,"cookie-secret":"libvirt-1-storage-httpcookie-secret0",\

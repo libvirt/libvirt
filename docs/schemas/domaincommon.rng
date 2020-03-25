@@ -1852,7 +1852,7 @@
             </data>
           </attribute>
           <data type="string">
-            <param name="pattern">[!#$%&amp;'()*+\-./0-9:&gt;=&lt;?@A-Z\^_`\[\]a-z|~]+</param>
+            <param name="pattern">"?[!#$%&amp;'()*+\-./0-9:&gt;=&lt;?@A-Z\^_`\[\]a-z|~]+"?</param>
           </data>
         </element>
       </oneOrMore>
