@@ -849,9 +849,8 @@ x86VendorParse(xmlXPathContextPtr ctxt,
                void *data)
 {
     virCPUx86MapPtr map = data;
-    virCPUx86VendorPtr vendor = NULL;
-    char *string = NULL;
-    int ret = -1;
+    g_autoptr(virCPUx86Vendor) vendor = NULL;
+    g_autofree char *string = NULL;
 
     vendor = g_new0(virCPUx86Vendor, 1);
     vendor->name = g_strdup(name);
@@ -859,7 +858,7 @@ x86VendorParse(xmlXPathContextPtr ctxt,
     if (x86VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU vendor %s already defined"), vendor->name);
-        goto cleanup;
+        return -1;
     }
 
     string = virXPathString("string(@string)", ctxt);
@@ -867,21 +866,16 @@ x86VendorParse(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing vendor string for CPU vendor %s"),
                        vendor->name);
-        goto cleanup;
+        return -1;
     }
 
     if (virCPUx86VendorToData(string, &vendor->data) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    x86VendorFree(vendor);
-    VIR_FREE(string);
-    return ret;
+    return 0;
 }
 
 
