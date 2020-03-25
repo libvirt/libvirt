@@ -468,8 +468,9 @@ virCPUx86DataClear(virCPUx86Data *data)
     if (!data)
         return;
 
-    VIR_FREE(data->items);
+    g_free(data->items);
 }
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virCPUx86Data, virCPUx86DataClear);
 
 
 static void
@@ -481,21 +482,19 @@ virCPUx86DataFree(virCPUDataPtr data)
     virCPUx86DataClear(&data->data.x86);
     VIR_FREE(data);
 }
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUData, virCPUx86DataFree);
 
 
-static int
+static void
 x86DataCopy(virCPUx86Data *dst, const virCPUx86Data *src)
 {
     size_t i;
 
-    if (VIR_ALLOC_N(dst->items, src->len) < 0)
-        return -1;
-
+    dst->items = g_new0(virCPUx86DataItem, src->len);
     dst->len = src->len;
+
     for (i = 0; i < src->len; i++)
         dst->items[i] = src->items[i];
-
-    return 0;
 }
 
 
@@ -781,9 +780,8 @@ x86DataToCPU(const virCPUx86Data *data,
 
     cpu->model = g_strdup(model->name);
 
-    if (x86DataCopy(&copy, data) < 0 ||
-        x86DataCopy(&modelData, &model->data) < 0)
-        goto error;
+    x86DataCopy(&copy, data);
+    x86DataCopy(&modelData, &model->data);
 
     if ((vendor = x86DataToVendor(&copy, map)))
         cpu->vendor = g_strdup(vendor->name);
@@ -1183,11 +1181,11 @@ x86ModelCopy(virCPUx86ModelPtr model)
 
     copy->name = g_strdup(model->name);
 
-    if (x86ModelCopySignatures(copy, model) < 0 ||
-        x86DataCopy(&copy->data, &model->data) < 0) {
+    if (x86ModelCopySignatures(copy, model) < 0) {
         x86ModelFree(copy);
         return NULL;
     }
+    x86DataCopy(&copy->data, &model->data);
 
     copy->vendor = model->vendor;
 
@@ -1415,9 +1413,10 @@ x86ModelParseAncestor(virCPUx86ModelPtr model,
     }
 
     model->vendor = ancestor->vendor;
-    if (x86ModelCopySignatures(model, ancestor) < 0 ||
-        x86DataCopy(&model->data, &ancestor->data) < 0)
+    if (x86ModelCopySignatures(model, ancestor) < 0)
         return -1;
+
+    x86DataCopy(&model->data, &ancestor->data);
 
     return 0;
 }
@@ -1904,9 +1903,9 @@ x86Compute(virCPUDefPtr host,
 
         x86DataSubtract(&guest_model->data, &cpu_disable->data);
 
-        if (!(guestData = virCPUDataNew(arch)) ||
-            x86DataCopy(&guestData->data.x86, &guest_model->data) < 0)
+        if (!(guestData = virCPUDataNew(arch)))
             goto error;
+        x86DataCopy(&guestData->data.x86, &guest_model->data);
 
         *guest = guestData;
     }
@@ -2139,8 +2138,10 @@ x86Decode(virCPUDefPtr cpu,
     ssize_t i;
     int rc;
 
-    if (!cpuData || x86DataCopy(&data, cpuData) < 0)
+    if (!cpuData)
         return -1;
+
+    x86DataCopy(&data, cpuData);
 
     if (!(map = virCPUx86GetMap()))
         goto cleanup;
@@ -3055,13 +3056,11 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
         !(modelDisabled = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_DISABLE)))
         goto cleanup;
 
-    if (dataEnabled &&
-        x86DataCopy(&enabled, &dataEnabled->data.x86) < 0)
-        goto cleanup;
+    if (dataEnabled)
+        x86DataCopy(&enabled, &dataEnabled->data.x86);
 
-    if (dataDisabled &&
-        x86DataCopy(&disabled, &dataDisabled->data.x86) < 0)
-        goto cleanup;
+    if (dataDisabled)
+        x86DataCopy(&disabled, &dataDisabled->data.x86);
 
     for (i = 0; i < map->nfeatures; i++) {
         virCPUx86FeaturePtr feature = map->features[i];
