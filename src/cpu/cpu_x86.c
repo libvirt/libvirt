@@ -2164,7 +2164,7 @@ x86EncodePolicy(virCPUx86Data *data,
                 virCPUx86MapPtr map,
                 virCPUFeaturePolicy policy)
 {
-    virCPUx86ModelPtr model;
+    g_autoptr(virCPUx86Model) model = NULL;
 
     if (!(model = x86ModelFromCPU(cpu, map, policy)))
         return -1;
@@ -2172,7 +2172,6 @@ x86EncodePolicy(virCPUx86Data *data,
     *data = model->data;
     model->data.len = 0;
     model->data.items = NULL;
-    x86ModelFree(model);
 
     return 0;
 }
