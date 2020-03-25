@@ -1095,6 +1095,8 @@ mymain(void)
     DO_TEST("disk-backing-chains-index", NONE);
     DO_TEST("disk-backing-chains-noindex", NONE);
 
+    DO_TEST_CAPS_LATEST("disk-network-http");
+
     DO_TEST("chardev-label",
             QEMU_CAPS_DEVICE_VIRTIO_RNG);
 
