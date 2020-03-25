@@ -3121,21 +3121,13 @@ virCPUx86GetModels(char ***models)
         return -1;
 
     if (models) {
-        if (VIR_ALLOC_N(*models, map->nmodels + 1) < 0)
-            goto error;
+        *models = g_new0(char *, map->nmodels + 1);
 
         for (i = 0; i < map->nmodels; i++)
             (*models)[i] = g_strdup(map->models[i]->name);
     }
 
     return map->nmodels;
-
- error:
-    if (models) {
-        virStringListFree(*models);
-        *models = NULL;
-    }
-    return -1;
 }
 
 
