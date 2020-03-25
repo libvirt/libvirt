@@ -1636,8 +1636,8 @@ virCPUx86DataFormat(const virCPUData *data)
 static virCPUDataPtr
 virCPUx86DataParse(xmlXPathContextPtr ctxt)
 {
-    xmlNodePtr *nodes = NULL;
-    virCPUDataPtr cpuData = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_autoptr(virCPUData) cpuData = NULL;
     virCPUx86DataItem item;
     size_t i;
     int n;
@@ -1646,11 +1646,11 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
     if (n <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no x86 CPU data found"));
-        goto error;
+        return NULL;
     }
 
     if (!(cpuData = virCPUDataNew(VIR_ARCH_X86_64)))
-        goto error;
+        return NULL;
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
@@ -1658,28 +1658,21 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
             if (x86ParseCPUID(ctxt, &item) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("failed to parse cpuid[%zu]"), i);
-                goto error;
+                return NULL;
             }
         } else {
             if (x86ParseMSR(ctxt, &item) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("failed to parse msr[%zu]"), i);
-                goto error;
+                return NULL;
             }
         }
 
         if (virCPUx86DataAdd(cpuData, &item) < 0)
-            goto error;
+            return NULL;
     }
 
- cleanup:
-    VIR_FREE(nodes);
-    return cpuData;
-
- error:
-    virCPUx86DataFree(cpuData);
-    cpuData = NULL;
-    goto cleanup;
+    return g_steal_pointer(&cpuData);
 }
 
 
