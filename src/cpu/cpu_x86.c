@@ -1680,7 +1680,6 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
  * redundant code:
  * MSG: error message
  * CPU_DEF: a virCPUx86Data pointer with flags that are conflicting
- * RET: return code to set
  *
  * This macro generates the error string outputs it into logs.
  */
@@ -1689,13 +1688,12 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
             char *flagsStr = NULL; \
             if (!(flagsStr = x86FeatureNames(map, ", ", (CPU_DEF)))) { \
                 virReportOOMError(); \
-                goto error; \
+                return VIR_CPU_COMPARE_ERROR; \
             } \
             if (message) \
                 *message = g_strdup_printf("%s: %s", _(MSG), flagsStr); \
             VIR_DEBUG("%s: %s", MSG, flagsStr); \
             VIR_FREE(flagsStr); \
-            ret = VIR_CPU_COMPARE_INCOMPATIBLE; \
         } while (0)
 
 
@@ -1706,15 +1704,15 @@ x86Compute(virCPUDefPtr host,
            char **message)
 {
     virCPUx86MapPtr map = NULL;
-    virCPUx86ModelPtr host_model = NULL;
-    virCPUx86ModelPtr cpu_force = NULL;
-    virCPUx86ModelPtr cpu_require = NULL;
-    virCPUx86ModelPtr cpu_optional = NULL;
-    virCPUx86ModelPtr cpu_disable = NULL;
-    virCPUx86ModelPtr cpu_forbid = NULL;
-    virCPUx86ModelPtr diff = NULL;
-    virCPUx86ModelPtr guest_model = NULL;
-    virCPUDataPtr guestData = NULL;
+    g_autoptr(virCPUx86Model) host_model = NULL;
+    g_autoptr(virCPUx86Model) cpu_force = NULL;
+    g_autoptr(virCPUx86Model) cpu_require = NULL;
+    g_autoptr(virCPUx86Model) cpu_optional = NULL;
+    g_autoptr(virCPUx86Model) cpu_disable = NULL;
+    g_autoptr(virCPUx86Model) cpu_forbid = NULL;
+    g_autoptr(virCPUx86Model) diff = NULL;
+    g_autoptr(virCPUx86Model) guest_model = NULL;
+    g_autoptr(virCPUData) guestData = NULL;
     virCPUCompareResult ret;
     virCPUx86CompareResult result;
     virArch arch;
@@ -1764,13 +1762,13 @@ x86Compute(virCPUDefPtr host,
         !(cpu_optional = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_OPTIONAL)) ||
         !(cpu_disable = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_DISABLE)) ||
         !(cpu_forbid = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_FORBID)))
-        goto error;
+        return VIR_CPU_COMPARE_ERROR;
 
     x86DataIntersect(&cpu_forbid->data, &host_model->data);
     if (!x86DataIsEmpty(&cpu_forbid->data)) {
         virX86CpuIncompatible(N_("Host CPU provides forbidden features"),
                               &cpu_forbid->data);
-        goto cleanup;
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
     /* first remove features that were inherited from the CPU model and were
@@ -1785,20 +1783,20 @@ x86Compute(virCPUDefPtr host,
         virX86CpuIncompatible(N_("Host CPU does not provide required "
                                  "features"),
                               &cpu_require->data);
-        goto cleanup;
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
-    ret = VIR_CPU_COMPARE_IDENTICAL;
-
     if (!(diff = x86ModelCopy(host_model)))
-        goto error;
+        return VIR_CPU_COMPARE_ERROR;
 
     x86DataSubtract(&diff->data, &cpu_optional->data);
     x86DataSubtract(&diff->data, &cpu_require->data);
     x86DataSubtract(&diff->data, &cpu_disable->data);
     x86DataSubtract(&diff->data, &cpu_force->data);
 
-    if (!x86DataIsEmpty(&diff->data))
+    if (x86DataIsEmpty(&diff->data))
+        ret = VIR_CPU_COMPARE_IDENTICAL;
+    else
         ret = VIR_CPU_COMPARE_SUPERSET;
 
     if (ret == VIR_CPU_COMPARE_SUPERSET
@@ -1807,54 +1805,39 @@ x86Compute(virCPUDefPtr host,
         virX86CpuIncompatible(N_("Host CPU does not strictly match guest CPU: "
                                  "Extra features"),
                               &diff->data);
-        goto cleanup;
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
     if (guest) {
         if (!(guest_model = x86ModelCopy(host_model)))
-            goto error;
+            return VIR_CPU_COMPARE_ERROR;
 
         if (cpu->vendor && host_model->vendor &&
             virCPUx86DataAddItem(&guest_model->data,
                                  &host_model->vendor->data) < 0)
-            goto error;
+            return VIR_CPU_COMPARE_ERROR;
 
         if (host_model->signatures &&
             x86DataAddSignature(&guest_model->data, *host_model->signatures) < 0)
-            goto error;
+            return VIR_CPU_COMPARE_ERROR;
 
         if (cpu->type == VIR_CPU_TYPE_GUEST
             && cpu->match == VIR_CPU_MATCH_EXACT)
             x86DataSubtract(&guest_model->data, &diff->data);
 
         if (x86DataAdd(&guest_model->data, &cpu_force->data))
-            goto error;
+            return VIR_CPU_COMPARE_ERROR;
 
         x86DataSubtract(&guest_model->data, &cpu_disable->data);
 
         if (!(guestData = virCPUDataNew(arch)))
-            goto error;
+            return VIR_CPU_COMPARE_ERROR;
         x86DataCopy(&guestData->data.x86, &guest_model->data);
 
-        *guest = guestData;
+        *guest = g_steal_pointer(&guestData);
     }
 
- cleanup:
-    x86ModelFree(host_model);
-    x86ModelFree(diff);
-    x86ModelFree(cpu_force);
-    x86ModelFree(cpu_require);
-    x86ModelFree(cpu_optional);
-    x86ModelFree(cpu_disable);
-    x86ModelFree(cpu_forbid);
-    x86ModelFree(guest_model);
-
     return ret;
-
- error:
-    virCPUx86DataFree(guestData);
-    ret = VIR_CPU_COMPARE_ERROR;
-    goto cleanup;
 }
 #undef virX86CpuIncompatible
 
