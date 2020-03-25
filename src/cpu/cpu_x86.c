@@ -2188,12 +2188,12 @@ x86Encode(virArch arch,
           virCPUDataPtr *vendor)
 {
     virCPUx86MapPtr map = NULL;
-    virCPUDataPtr data_forced = NULL;
-    virCPUDataPtr data_required = NULL;
-    virCPUDataPtr data_optional = NULL;
-    virCPUDataPtr data_disabled = NULL;
-    virCPUDataPtr data_forbidden = NULL;
-    virCPUDataPtr data_vendor = NULL;
+    g_autoptr(virCPUData) data_forced = NULL;
+    g_autoptr(virCPUData) data_required = NULL;
+    g_autoptr(virCPUData) data_optional = NULL;
+    g_autoptr(virCPUData) data_disabled = NULL;
+    g_autoptr(virCPUData) data_forbidden = NULL;
+    g_autoptr(virCPUData) data_vendor = NULL;
 
     if (forced)
         *forced = NULL;
@@ -2209,37 +2209,37 @@ x86Encode(virArch arch,
         *vendor = NULL;
 
     if (!(map = virCPUx86GetMap()))
-        goto error;
+        return -1;
 
     if (forced &&
         (!(data_forced = virCPUDataNew(arch)) ||
          x86EncodePolicy(&data_forced->data.x86, cpu, map,
                          VIR_CPU_FEATURE_FORCE) < 0))
-        goto error;
+        return -1;
 
     if (required &&
         (!(data_required = virCPUDataNew(arch)) ||
          x86EncodePolicy(&data_required->data.x86, cpu, map,
                          VIR_CPU_FEATURE_REQUIRE) < 0))
-        goto error;
+        return -1;
 
     if (optional &&
         (!(data_optional = virCPUDataNew(arch)) ||
          x86EncodePolicy(&data_optional->data.x86, cpu, map,
                          VIR_CPU_FEATURE_OPTIONAL) < 0))
-        goto error;
+        return -1;
 
     if (disabled &&
         (!(data_disabled = virCPUDataNew(arch)) ||
          x86EncodePolicy(&data_disabled->data.x86, cpu, map,
                          VIR_CPU_FEATURE_DISABLE) < 0))
-        goto error;
+        return -1;
 
     if (forbidden &&
         (!(data_forbidden = virCPUDataNew(arch)) ||
          x86EncodePolicy(&data_forbidden->data.x86, cpu, map,
                          VIR_CPU_FEATURE_FORBID) < 0))
-        goto error;
+        return -1;
 
     if (vendor) {
         virCPUx86VendorPtr v = NULL;
@@ -2247,39 +2247,30 @@ x86Encode(virArch arch,
         if (cpu->vendor && !(v = x86VendorFind(map, cpu->vendor))) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("CPU vendor %s not found"), cpu->vendor);
-            goto error;
+            return -1;
         }
 
         if (!(data_vendor = virCPUDataNew(arch)))
-            goto error;
+            return -1;
 
         if (v && virCPUx86DataAdd(data_vendor, &v->data) < 0)
-            goto error;
+            return -1;
     }
 
     if (forced)
-        *forced = data_forced;
+        *forced = g_steal_pointer(&data_forced);
     if (required)
-        *required = data_required;
+        *required = g_steal_pointer(&data_required);
     if (optional)
-        *optional = data_optional;
+        *optional = g_steal_pointer(&data_optional);
     if (disabled)
-        *disabled = data_disabled;
+        *disabled = g_steal_pointer(&data_disabled);
     if (forbidden)
-        *forbidden = data_forbidden;
+        *forbidden = g_steal_pointer(&data_forbidden);
     if (vendor)
-        *vendor = data_vendor;
+        *vendor = g_steal_pointer(&data_vendor);
 
     return 0;
-
- error:
-    virCPUx86DataFree(data_forced);
-    virCPUx86DataFree(data_required);
-    virCPUx86DataFree(data_optional);
-    virCPUx86DataFree(data_disabled);
-    virCPUx86DataFree(data_forbidden);
-    virCPUx86DataFree(data_vendor);
-    return -1;
 }
 
 
