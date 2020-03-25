@@ -1493,41 +1493,36 @@ x86ModelParse(xmlXPathContextPtr ctxt,
               void *data)
 {
     virCPUx86MapPtr map = data;
-    virCPUx86ModelPtr model = NULL;
-    int ret = -1;
+    g_autoptr(virCPUx86Model) model = NULL;
 
     if (x86ModelFind(map, name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Multiple definitions of CPU model '%s'"), name);
-        goto cleanup;
+        return -1;
     }
 
     model = g_new0(virCPUx86Model, 1);
     model->name = g_strdup(name);
 
     if (x86ModelParseDecode(model, ctxt) < 0)
-        goto cleanup;
+        return -1;
 
     if (x86ModelParseAncestor(model, ctxt, map) < 0)
-        goto cleanup;
+        return -1;
 
     if (x86ModelParseSignatures(model, ctxt) < 0)
-        goto cleanup;
+        return -1;
 
     if (x86ModelParseVendor(model, ctxt, map) < 0)
-        goto cleanup;
+        return -1;
 
     if (x86ModelParseFeatures(model, ctxt, map) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    x86ModelFree(model);
-    return ret;
+    return 0;
 }
 
 
