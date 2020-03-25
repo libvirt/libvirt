@@ -2278,21 +2278,16 @@ static int
 virCPUx86CheckFeature(const virCPUDef *cpu,
                       const char *name)
 {
-    int ret = -1;
     virCPUx86MapPtr map;
-    virCPUx86ModelPtr model = NULL;
+    g_autoptr(virCPUx86Model) model = NULL;
 
     if (!(map = virCPUx86GetMap()))
         return -1;
 
     if (!(model = x86ModelFromCPU(cpu, map, -1)))
-        goto cleanup;
+        return -1;
 
-    ret = x86FeatureInData(name, &model->data, map);
-
- cleanup:
-    x86ModelFree(model);
-    return ret;
+    return x86FeatureInData(name, &model->data, map);
 }
 
 
