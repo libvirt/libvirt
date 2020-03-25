@@ -1023,13 +1023,12 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
                 void *data)
 {
     virCPUx86MapPtr map = data;
-    xmlNodePtr *nodes = NULL;
-    virCPUx86FeaturePtr feature;
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_autoptr(virCPUx86Feature) feature = NULL;
     virCPUx86DataItem item;
     size_t i;
     int n;
-    char *str = NULL;
-    int ret = -1;
+    g_autofree char *str = NULL;
 
     feature = g_new0(virCPUx86Feature, 1);
     feature->migratable = true;
@@ -1038,7 +1037,7 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
     if (x86FeatureFind(map, feature->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU feature %s already defined"), feature->name);
-        goto cleanup;
+        return -1;
     }
 
     str = virXPathString("string(@migratable)", ctxt);
@@ -1047,13 +1046,13 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
 
     n = virXPathNodeSet("./cpuid|./msr", ctxt, &nodes);
     if (n < 0)
-        goto cleanup;
+        return -1;
 
     if (n == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing cpuid or msr element in feature %s"),
                        feature->name);
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < n; i++) {
@@ -1063,37 +1062,31 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Invalid cpuid[%zu] in %s feature"),
                                i, feature->name);
-                goto cleanup;
+                return -1;
             }
         } else {
             if (x86ParseMSR(ctxt, &item) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Invalid msr[%zu] in %s feature"),
                                i, feature->name);
-                goto cleanup;
+                return -1;
             }
         }
 
         if (virCPUx86DataAddItem(&feature->data, &item))
-            goto cleanup;
+            return -1;
     }
 
     if (!feature->migratable &&
         VIR_APPEND_ELEMENT_COPY(map->migrate_blockers,
                                 map->nblockers,
                                 feature) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_APPEND_ELEMENT(map->features, map->nfeatures, feature) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    x86FeatureFree(feature);
-    VIR_FREE(nodes);
-    VIR_FREE(str);
-    return ret;
+    return 0;
 }
 
 
