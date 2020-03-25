@@ -2897,26 +2897,25 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
 {
     bool hostPassthrough = cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH;
     virCPUx86MapPtr map;
-    virCPUx86ModelPtr model = NULL;
-    virCPUx86ModelPtr modelDisabled = NULL;
-    virCPUx86Data enabled = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data disabled = VIR_CPU_X86_DATA_INIT;
-    virBuffer bufAdded = VIR_BUFFER_INITIALIZER;
-    virBuffer bufRemoved = VIR_BUFFER_INITIALIZER;
-    char *added = NULL;
-    char *removed = NULL;
+    g_autoptr(virCPUx86Model) model = NULL;
+    g_autoptr(virCPUx86Model) modelDisabled = NULL;
+    g_auto(virCPUx86Data) enabled = VIR_CPU_X86_DATA_INIT;
+    g_auto(virCPUx86Data) disabled = VIR_CPU_X86_DATA_INIT;
+    g_auto(virBuffer) bufAdded = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) bufRemoved = VIR_BUFFER_INITIALIZER;
+    g_autofree char *added = NULL;
+    g_autofree char *removed = NULL;
     size_t i;
-    int ret = -1;
 
     if (!(map = virCPUx86GetMap()))
         return -1;
 
     if (!(model = x86ModelFromCPU(cpu, map, -1)))
-        goto cleanup;
+        return -1;
 
     if (hostPassthrough &&
         !(modelDisabled = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_DISABLE)))
-        goto cleanup;
+        return -1;
 
     if (dataEnabled)
         x86DataCopy(&enabled, &dataEnabled->data.x86);
@@ -2941,7 +2940,7 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
                 virBufferAsprintf(&bufAdded, "%s,", feature->name);
             else if (virCPUDefUpdateFeature(cpu, feature->name,
                                             VIR_CPU_FEATURE_REQUIRE) < 0)
-                goto cleanup;
+                return -1;
         }
 
         if (x86DataIsSubset(&disabled, &feature->data) ||
@@ -2952,7 +2951,7 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
                 virBufferAsprintf(&bufRemoved, "%s,", feature->name);
             else if (virCPUDefUpdateFeature(cpu, feature->name,
                                             VIR_CPU_FEATURE_DISABLE) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -2978,28 +2977,17 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
                            _("guest CPU doesn't match specification: "
                              "missing features: %s"),
                            removed);
-        goto cleanup;
+        return -1;
     }
 
     if (cpu->check == VIR_CPU_CHECK_FULL &&
         !x86DataIsEmpty(&disabled)) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("guest CPU doesn't match specification"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    x86ModelFree(model);
-    x86ModelFree(modelDisabled);
-    virCPUx86DataClear(&enabled);
-    virCPUx86DataClear(&disabled);
-    VIR_FREE(added);
-    VIR_FREE(removed);
-    virBufferFreeAndReset(&bufAdded);
-    virBufferFreeAndReset(&bufRemoved);
-    return ret;
+    return 0;
 }
 
 
