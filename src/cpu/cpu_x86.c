@@ -1173,7 +1173,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
                 virCPUx86MapPtr map,
                 int policy)
 {
-    virCPUx86ModelPtr model = NULL;
+    g_autoptr(virCPUx86Model) model = NULL;
     size_t i;
 
     /* host CPU only contains required features; requesting other features
@@ -1216,7 +1216,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
         if (!(feature = x86FeatureFind(map, cpu->features[i].name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown CPU feature %s"), cpu->features[i].name);
-            goto error;
+            return NULL;
         }
 
         if (policy == -1) {
@@ -1224,7 +1224,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
             case VIR_CPU_FEATURE_FORCE:
             case VIR_CPU_FEATURE_REQUIRE:
                 if (x86DataAdd(&model->data, &feature->data) < 0)
-                    goto error;
+                    return NULL;
                 break;
 
             case VIR_CPU_FEATURE_DISABLE:
@@ -1238,15 +1238,11 @@ x86ModelFromCPU(const virCPUDef *cpu,
                 break;
             }
         } else if (x86DataAdd(&model->data, &feature->data) < 0) {
-            goto error;
+            return NULL;
         }
     }
 
-    return model;
-
- error:
-    x86ModelFree(model);
-    return NULL;
+    return g_steal_pointer(&model);
 }
 
 
