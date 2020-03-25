@@ -830,9 +830,10 @@ x86VendorFree(virCPUx86VendorPtr vendor)
     if (!vendor)
         return;
 
-    VIR_FREE(vendor->name);
-    VIR_FREE(vendor);
+    g_free(vendor->name);
+    g_free(vendor);
 }
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUx86Vendor, x86VendorFree);
 
 
 static virCPUx86VendorPtr
@@ -860,9 +861,7 @@ x86VendorParse(xmlXPathContextPtr ctxt,
     char *string = NULL;
     int ret = -1;
 
-    if (VIR_ALLOC(vendor) < 0)
-        goto cleanup;
-
+    vendor = g_new0(virCPUx86Vendor, 1);
     vendor->name = g_strdup(name);
 
     if (x86VendorFind(map, vendor->name)) {
