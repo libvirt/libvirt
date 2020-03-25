@@ -2637,18 +2637,18 @@ static int
 virCPUx86GetHost(virCPUDefPtr cpu,
                  virDomainCapsCPUModelsPtr models)
 {
-    virCPUDataPtr cpuData = NULL;
-    int ret = -1;
+    g_autoptr(virCPUData) cpuData = NULL;
+    int ret;
 
     if (virCPUx86DriverInitialize() < 0)
-        goto cleanup;
+        return -1;
 
     if (!(cpuData = virCPUDataNew(archs[0])))
-        goto cleanup;
+        return -1;
 
     if (cpuidSet(CPUX86_BASIC, cpuData) < 0 ||
         cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
-        goto cleanup;
+        return -1;
 
     /* Read the IA32_ARCH_CAPABILITIES MSR (0x10a) if supported.
      * This is best effort since there might be no way to read the MSR
@@ -2668,7 +2668,7 @@ virCPUx86GetHost(virCPUDefPtr cpu,
             };
 
             if (virCPUx86DataAdd(cpuData, &item) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -2684,8 +2684,6 @@ virCPUx86GetHost(virCPUDefPtr cpu,
         VIR_DEBUG("Host CPU does not support invariant TSC");
     }
 
- cleanup:
-    virCPUx86DataFree(cpuData);
     return ret;
 }
 #endif
