@@ -1566,23 +1566,24 @@ x86MapFree(virCPUx86MapPtr map)
 
     for (i = 0; i < map->nfeatures; i++)
         x86FeatureFree(map->features[i]);
-    VIR_FREE(map->features);
+    g_free(map->features);
 
     for (i = 0; i < map->nmodels; i++)
         x86ModelFree(map->models[i]);
-    VIR_FREE(map->models);
+    g_free(map->models);
 
     for (i = 0; i < map->nvendors; i++)
         x86VendorFree(map->vendors[i]);
-    VIR_FREE(map->vendors);
+    g_free(map->vendors);
 
     /* migrate_blockers only points to the features from map->features list,
      * which were already freed above
      */
-    VIR_FREE(map->migrate_blockers);
+    g_free(map->migrate_blockers);
 
-    VIR_FREE(map);
+    g_free(map);
 }
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUx86Map, x86MapFree);
 
 
 static virCPUx86MapPtr
@@ -1590,8 +1591,7 @@ virCPUx86LoadMap(void)
 {
     virCPUx86MapPtr map;
 
-    if (VIR_ALLOC(map) < 0)
-        return NULL;
+    map = g_new0(virCPUx86Map, 1);
 
     if (cpuMapLoad("x86", x86VendorParse, x86FeatureParse, x86ModelParse, map) < 0)
         goto error;
