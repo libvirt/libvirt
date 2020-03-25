@@ -7,6 +7,7 @@ stages:
   - cross_build
 
 
+# Default cross build jobs that are always run
 .cross_build_default_job_template: &cross_build_default_job_definition
   stage: cross_build
   script:
@@ -15,28 +16,33 @@ stages:
     - ../autogen.sh $CONFIGURE_OPTS || (cat config.log && exit 1)
     - $MAKE -j $(getconf _NPROCESSORS_ONLN)
 
-# We could run every arch on every versions, but it is a little
-# overkill. Instead we split jobs evenly across 9, 10 and sid
-# to achieve reasonable cross-coverage.
+# Extra cross build jobs that are only run post-merge, or
+# when code is pushed to a branch with "ci-full-" name prefix
+.cross_build_extra_job_template: &cross_build_extra_job_definition
+  <<: *cross_build_default_job_definition
+  only:
+    - master
+    - /^ci-full-.*$/
+
 
 debian-9-cross-armv6l:
-  <<: *cross_build_default_job_definition
+  <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-armv6l:latest
 
 debian-9-cross-mips64el:
-  <<: *cross_build_default_job_definition
+  <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-mips64el:latest
 
 debian-9-cross-mips:
-  <<: *cross_build_default_job_definition
+  <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-mips:latest
 
 debian-10-cross-aarch64:
-  <<: *cross_build_default_job_definition
+  <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-10-cross-aarch64:latest
 
 debian-10-cross-ppc64le:
-  <<: *cross_build_default_job_definition
+  <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-10-cross-ppc64le:latest
 
 debian-10-cross-s390x:
@@ -48,11 +54,11 @@ debian-sid-cross-armv7l:
   image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-armv7l:latest
 
 debian-sid-cross-i686:
-  <<: *cross_build_default_job_definition
+  <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-i686:latest
 
 debian-sid-cross-mipsel:
-  <<: *cross_build_default_job_definition
+  <<: *cross_build_extra_job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-mipsel:latest
 
 # This artifact published by this job is downloaded by libvirt.org to
