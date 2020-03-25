@@ -893,28 +893,17 @@ x86VendorParse(xmlXPathContextPtr ctxt,
 }
 
 
-static virCPUx86FeaturePtr
-x86FeatureNew(void)
-{
-    virCPUx86FeaturePtr feature;
-
-    if (VIR_ALLOC(feature) < 0)
-        return NULL;
-
-    return feature;
-}
-
-
 static void
 x86FeatureFree(virCPUx86FeaturePtr feature)
 {
     if (!feature)
         return;
 
-    VIR_FREE(feature->name);
+    g_free(feature->name);
     virCPUx86DataClear(&feature->data);
-    VIR_FREE(feature);
+    g_free(feature);
 }
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUx86Feature, x86FeatureFree);
 
 
 static int
@@ -1056,11 +1045,8 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
     char *str = NULL;
     int ret = -1;
 
-    if (!(feature = x86FeatureNew()))
-        goto cleanup;
-
+    feature = g_new0(virCPUx86Feature, 1);
     feature->migratable = true;
-
     feature->name = g_strdup(name);
 
     if (x86FeatureFind(map, feature->name)) {
