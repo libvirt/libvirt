@@ -3055,30 +3055,29 @@ static int
 virCPUx86ExpandFeatures(virCPUDefPtr cpu)
 {
     virCPUx86MapPtr map;
-    virCPUDefPtr expanded = NULL;
-    virCPUx86ModelPtr model = NULL;
+    g_autoptr(virCPUDef) expanded = NULL;
+    g_autoptr(virCPUx86Model) model = NULL;
     bool host = cpu->type == VIR_CPU_TYPE_HOST;
     size_t i;
-    int ret = -1;
 
     if (!(map = virCPUx86GetMap()))
-        goto cleanup;
+        return -1;
 
     if (!(expanded = virCPUDefCopy(cpu)))
-        goto cleanup;
+        return -1;
 
     virCPUDefFreeFeatures(expanded);
 
     if (!(model = x86ModelFind(map, cpu->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown CPU model %s"), cpu->model);
-        goto cleanup;
+        return -1;
     }
 
     if (!(model = x86ModelCopy(model)) ||
         x86DataToCPUFeatures(expanded, host ? -1 : VIR_CPU_FEATURE_REQUIRE,
                              &model->data, map) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < cpu->nfeatures; i++) {
         virCPUFeatureDefPtr f = cpu->features + i;
@@ -3089,17 +3088,12 @@ virCPUx86ExpandFeatures(virCPUDefPtr cpu)
             continue;
 
         if (virCPUDefUpdateFeature(expanded, f->name, f->policy) < 0)
-            goto cleanup;
+            return -1;
     }
 
     virCPUDefFreeModel(cpu);
 
-    ret = virCPUDefCopyModel(cpu, expanded, false);
-
- cleanup:
-    virCPUDefFree(expanded);
-    x86ModelFree(model);
-    return ret;
+    return virCPUDefCopyModel(cpu, expanded, false);
 }
 
 
