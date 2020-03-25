@@ -1559,18 +1559,14 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUx86Map, x86MapFree);
 static virCPUx86MapPtr
 virCPUx86LoadMap(void)
 {
-    virCPUx86MapPtr map;
+    g_autoptr(virCPUx86Map) map = NULL;
 
     map = g_new0(virCPUx86Map, 1);
 
     if (cpuMapLoad("x86", x86VendorParse, x86FeatureParse, x86ModelParse, map) < 0)
-        goto error;
+        return NULL;
 
-    return map;
-
- error:
-    x86MapFree(map);
-    return NULL;
+    return g_steal_pointer(&map);
 }
 
 
