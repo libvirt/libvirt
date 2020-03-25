@@ -2032,15 +2032,12 @@ x86Decode(virCPUDefPtr cpu,
           const char *preferred,
           bool migratable)
 {
-    int ret = -1;
     virCPUx86MapPtr map;
     virCPUx86ModelPtr candidate;
     virCPUDefPtr cpuCandidate;
     virCPUx86ModelPtr model = NULL;
-    virCPUDefPtr cpuModel = NULL;
-    virCPUx86Data data = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data copy = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data features = VIR_CPU_X86_DATA_INIT;
+    g_autoptr(virCPUDef) cpuModel = NULL;
+    g_auto(virCPUx86Data) data = VIR_CPU_X86_DATA_INIT;
     virCPUx86VendorPtr vendor;
     virDomainCapsCPUModelPtr hvModel = NULL;
     g_autofree char *sigs = NULL;
@@ -2054,7 +2051,7 @@ x86Decode(virCPUDefPtr cpu,
     x86DataCopy(&data, cpuData);
 
     if (!(map = virCPUx86GetMap()))
-        goto cleanup;
+        return -1;
 
     vendor = x86DataToVendor(&data, map);
     signature = x86DataToSignature(&data);
@@ -2073,7 +2070,7 @@ x86Decode(virCPUDefPtr cpu,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("CPU model %s is not supported by hypervisor"),
                                    preferred);
-                    goto cleanup;
+                    return -1;
                 } else {
                     VIR_WARN("Preferred CPU model %s not allowed by"
                              " hypervisor; closest supported model will be"
@@ -2096,7 +2093,7 @@ x86Decode(virCPUDefPtr cpu,
         }
 
         if (!(cpuCandidate = x86DataToCPU(&data, candidate, map, hvModel)))
-            goto cleanup;
+            return -1;
         cpuCandidate->type = cpu->type;
 
         if ((rc = x86DecodeUseCandidate(model, cpuModel,
@@ -2115,7 +2112,7 @@ x86Decode(virCPUDefPtr cpu,
     if (!cpuModel) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Cannot find suitable CPU model for given data"));
-        goto cleanup;
+        return -1;
     }
 
     /* Remove non-migratable features if requested
@@ -2149,14 +2146,7 @@ x86Decode(virCPUDefPtr cpu,
     cpu->nfeatures_max = cpuModel->nfeatures_max;
     cpuModel->nfeatures_max = 0;
 
-    ret = 0;
-
- cleanup:
-    virCPUDefFree(cpuModel);
-    virCPUx86DataClear(&data);
-    virCPUx86DataClear(&copy);
-    virCPUx86DataClear(&features);
-    return ret;
+    return 0;
 }
 
 static int
