@@ -771,9 +771,9 @@ x86DataToCPU(const virCPUx86Data *data,
              virCPUx86MapPtr map,
              virDomainCapsCPUModelPtr hvModel)
 {
-    virCPUDefPtr cpu;
-    virCPUx86Data copy = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data modelData = VIR_CPU_X86_DATA_INIT;
+    g_autoptr(virCPUDef) cpu = NULL;
+    g_auto(virCPUx86Data) copy = VIR_CPU_X86_DATA_INIT;
+    g_auto(virCPUx86Data) modelData = VIR_CPU_X86_DATA_INIT;
     virCPUx86VendorPtr vendor;
 
     cpu = virCPUDefNew();
@@ -801,7 +801,7 @@ x86DataToCPU(const virCPUx86Data *data,
             if ((feature = x86FeatureFind(map, *blocker)) &&
                 !x86DataIsSubset(&copy, &feature->data))
                 if (x86DataAdd(&modelData, &feature->data) < 0)
-                    goto error;
+                    return NULL;
         }
     }
 
@@ -810,17 +810,9 @@ x86DataToCPU(const virCPUx86Data *data,
 
     if (x86DataToCPUFeatures(cpu, VIR_CPU_FEATURE_REQUIRE, &copy, map) ||
         x86DataToCPUFeatures(cpu, VIR_CPU_FEATURE_DISABLE, &modelData, map))
-        goto error;
+        return NULL;
 
- cleanup:
-    virCPUx86DataClear(&modelData);
-    virCPUx86DataClear(&copy);
-    return cpu;
-
- error:
-    virCPUDefFree(cpu);
-    cpu = NULL;
-    goto cleanup;
+    return g_steal_pointer(&cpu);
 }
 
 
