@@ -125,6 +125,7 @@ typedef struct _virCPUx86Signature virCPUx86Signature;
 struct _virCPUx86Signature {
     unsigned int family;
     unsigned int model;
+    virBitmapPtr stepping;
 };
 
 typedef struct _virCPUx86Signatures virCPUx86Signatures;
@@ -732,7 +733,17 @@ x86MakeSignature(unsigned int family,
 static uint32_t
 virCPUx86SignatureToCPUID(virCPUx86Signature *sig)
 {
-    return x86MakeSignature(sig->family, sig->model, 0);
+    unsigned int stepping = 0;
+
+    if (sig->stepping) {
+        ssize_t firstBit;
+
+        firstBit = virBitmapNextSetBit(sig->stepping, -1);
+        if (firstBit >= 0)
+            stepping = firstBit;
+    }
+
+    return x86MakeSignature(sig->family, sig->model, stepping);
 }
 
 
@@ -767,8 +778,8 @@ x86DataToSignatureFull(const virCPUx86Data *data,
 }
 
 
-/* Mask out irrelevant bits (R and Step) from processor signature. */
-#define SIGNATURE_MASK  0x0fff3ff0
+/* Mask out reserved bits from processor signature. */
+#define SIGNATURE_MASK  0x0fff3fff
 
 static uint32_t
 x86DataToSignature(const virCPUx86Data *data)
@@ -1134,8 +1145,13 @@ virCPUx86SignaturesNew(size_t count)
 static void
 virCPUx86SignaturesFree(virCPUx86SignaturesPtr sigs)
 {
+    size_t i;
+
     if (!sigs)
         return;
+
+    for (i = 0; i < sigs->count; i++)
+        virBitmapFree(sigs->items[i].stepping);
 
     g_free(sigs->items);
     g_free(sigs);
@@ -1153,8 +1169,12 @@ virCPUx86SignaturesCopy(virCPUx86SignaturesPtr src)
 
     dst = virCPUx86SignaturesNew(src->count);
 
-    for (i = 0; i < src->count; i++)
-        dst->items[i] = src->items[i];
+    for (i = 0; i < src->count; i++) {
+        dst->items[i].family = src->items[i].family;
+        dst->items[i].model = src->items[i].model;
+        if (src->items[i].stepping)
+            dst->items[i].stepping = virBitmapNewCopy(src->items[i].stepping);
+    }
 
     return dst;
 }
@@ -1176,7 +1196,9 @@ virCPUx86SignaturesMatch(virCPUx86SignaturesPtr sigs,
 
     for (i = 0; i < sigs->count; i++) {
         if (sigs->items[i].family == family &&
-            sigs->items[i].model == model)
+            sigs->items[i].model == model &&
+            (!sigs->items[i].stepping ||
+             virBitmapIsBitSet(sigs->items[i].stepping, stepping)))
             return true;
     }
 
@@ -1194,9 +1216,15 @@ virCPUx86SignaturesFormat(virCPUx86SignaturesPtr sigs)
         return virBufferContentAndReset(&buf);
 
     for (i = 0; i < sigs->count; i++) {
-        virBufferAsprintf(&buf, "(%u,%u,0), ",
+        g_autofree char *stepping = NULL;
+
+        if (sigs->items[i].stepping)
+            stepping = virBitmapFormat(sigs->items[i].stepping);
+
+        virBufferAsprintf(&buf, "(%u,%u,%s), ",
                           sigs->items[i].family,
-                          sigs->items[i].model);
+                          sigs->items[i].model,
+                          stepping ? stepping : "0-15");
     }
 
     virBufferTrim(&buf, ", ");
@@ -1473,6 +1501,7 @@ x86ModelParseSignatures(virCPUx86ModelPtr model,
 
     for (i = 0; i < n; i++) {
         virCPUx86Signature *sig = &model->signatures->items[i];
+        g_autofree char *stepping = NULL;
         int rc;
 
         ctxt->node = nodes[i];
@@ -1492,6 +1521,11 @@ x86ModelParseSignatures(virCPUx86ModelPtr model,
                            model->name);
             return -1;
         }
+
+        stepping = virXPathString("string(@stepping)", ctxt);
+        /* stepping corresponds to 4 bits in 32b signature, see above */
+        if (stepping && virBitmapParse(stepping, &sig->stepping, 16) < 0)
+            return -1;
     }
 
     ctxt->node = root;
@@ -2090,6 +2124,9 @@ x86Decode(virCPUDefPtr cpu,
     virDomainCapsCPUModelPtr hvModel = NULL;
     g_autofree char *sigs = NULL;
     uint32_t signature;
+    unsigned int sigFamily;
+    unsigned int sigModel;
+    unsigned int sigStepping;
     ssize_t i;
     int rc;
 
@@ -2103,6 +2140,7 @@ x86Decode(virCPUDefPtr cpu,
 
     vendor = x86DataToVendor(&data, map);
     signature = x86DataToSignature(&data);
+    virCPUx86SignatureFromCPUID(signature, &sigFamily, &sigModel, &sigStepping);
 
     x86DataFilterTSX(&data, vendor, map);
 
@@ -2184,8 +2222,10 @@ x86Decode(virCPUDefPtr cpu,
 
     sigs = virCPUx86SignaturesFormat(model->signatures);
 
-    VIR_DEBUG("Using CPU model %s (signatures %s) for CPU with signature %06lx",
-              model->name, NULLSTR(sigs), (unsigned long)signature);
+    VIR_DEBUG("Using CPU model %s with signatures [%s] for "
+              "CPU with signature (%u,%u,%u)",
+              model->name, NULLSTR(sigs),
+              sigFamily, sigModel, sigStepping);
 
     cpu->model = g_steal_pointer(&cpuModel->model);
     cpu->features = g_steal_pointer(&cpuModel->features);
