@@ -232,9 +232,10 @@ int
 qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
                         virDomainObjPtr vm);
 
-int qemuBlockJobUpdate(virDomainObjPtr vm,
-                       qemuBlockJobDataPtr job,
-                       int asyncJob);
+void
+qemuBlockJobUpdate(virDomainObjPtr vm,
+                   qemuBlockJobDataPtr job,
+                   int asyncJob);
 
 void qemuBlockJobSyncBegin(qemuBlockJobDataPtr job);
 void qemuBlockJobSyncEnd(virDomainObjPtr vm,

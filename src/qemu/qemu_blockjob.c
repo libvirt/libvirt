@@ -1658,10 +1658,8 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
  *
  * Update disk's mirror state in response to a block job event stored in
  * blockJobStatus by qemuProcessHandleBlockJob event handler.
- *
- * Returns the block job event processed or -1 if there was no pending event.
  */
-int
+void
 qemuBlockJobUpdate(virDomainObjPtr vm,
                    qemuBlockJobDataPtr job,
                    int asyncJob)
@@ -1669,14 +1667,12 @@ qemuBlockJobUpdate(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (job->newstate == -1)
-        return -1;
+        return;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         qemuBlockJobEventProcess(priv->driver, vm, job, asyncJob);
     else
         qemuBlockJobEventProcessLegacy(priv->driver, vm, job, asyncJob);
-
-    return job->state;
 }
 
 
