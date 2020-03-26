@@ -361,7 +361,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriverPtr driver)
 #endif
     if (rv < 0) {
         if (-rv == EINPROGRESS && --retries) {
-#ifdef HAVE_SANLOCK_INQ_LOCKSPACE
+#ifdef HAVE_SANLK_INQ_WAIT
             /* we have this function which blocks until lockspace change the
              * state. It returns 0 if lockspace has been added, -ENOENT if it
              * hasn't. */

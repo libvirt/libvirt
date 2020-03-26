@@ -29,6 +29,10 @@ AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
       #include <stdint.h>
       #include <sanlock_admin.h>
     ]])
+    if test sanlock_inq_wait = 1; then
+      AC_DEFINE_UNQUOTED([HAVE_SANLK_INQ_WAIT], 1,
+        [whether sanlock supports SANLK_INQ_WAIT])
+    fi
 
     old_cppflags="$CPPFLAGS"
     old_libs="$LIBS"
@@ -40,14 +44,6 @@ AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
     if test "x$sanlock_killpath" = "xyes" ; then
       AC_DEFINE_UNQUOTED([HAVE_SANLOCK_KILLPATH], 1,
         [whether Sanlock supports sanlock_killpath])
-    fi
-
-    AC_CHECK_LIB([sanlock_client], [sanlock_inq_lockspace],
-               [sanlock_inq_lockspace=yes], [sanlock_inq_lockspace=no])
-    if test "x$sanlock_inq_lockspace" = "xyes" && \
-       test $sanlock_inq_wait = 1; then
-      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_INQ_LOCKSPACE], 1,
-        [whether sanlock supports sanlock_inq_lockspace])
     fi
 
     dnl Ideally, we would check for sanlock_add_lockspace_timeout here too, but
