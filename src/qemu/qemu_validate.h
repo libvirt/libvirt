@@ -41,3 +41,6 @@ int qemuValidateDomainRedirdevDef(const virDomainRedirdevDef *def,
                                   virQEMUCapsPtr qemuCaps);
 int qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
                                   const virDomainDef *def);
+int qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
+                                       const virDomainDef *def,
+                                       virQEMUCapsPtr qemuCaps);
