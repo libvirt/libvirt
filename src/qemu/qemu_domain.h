@@ -177,6 +177,14 @@ struct _qemuDomainJobInfo {
     qemuDomainMirrorStats mirrorStats;
 };
 
+void
+qemuDomainJobInfoFree(qemuDomainJobInfoPtr info);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuDomainJobInfo, qemuDomainJobInfoFree);
+
+qemuDomainJobInfoPtr
+qemuDomainJobInfoCopy(qemuDomainJobInfoPtr info);
+
 typedef struct _qemuDomainJobObj qemuDomainJobObj;
 typedef qemuDomainJobObj *qemuDomainJobObjPtr;
 struct _qemuDomainJobObj {

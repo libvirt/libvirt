@@ -3747,7 +3747,7 @@ qemuDumpToFd(virQEMUDriverPtr driver,
     if (detach)
         priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP;
     else
-        VIR_FREE(priv->job.current);
+        g_clear_pointer(&priv->job.current, qemuDomainJobInfoFree);
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
@@ -13598,16 +13598,16 @@ static int
 qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               bool completed,
-                              qemuDomainJobInfoPtr jobInfo)
+                              qemuDomainJobInfoPtr *jobInfo)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
+    *jobInfo = NULL;
+
     if (completed) {
         if (priv->job.completed && !priv->job.current)
-            *jobInfo = *priv->job.completed;
-        else
-            jobInfo->status = QEMU_DOMAIN_JOB_STATUS_NONE;
+            *jobInfo = qemuDomainJobInfoCopy(priv->job.completed);
 
         return 0;
     }
@@ -13626,26 +13626,25 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (!priv->job.current) {
-        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_NONE;
         ret = 0;
         goto cleanup;
     }
-    *jobInfo = *priv->job.current;
+    *jobInfo = qemuDomainJobInfoCopy(priv->job.current);
 
-    switch (jobInfo->statsType) {
+    switch ((*jobInfo)->statsType) {
     case QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION:
     case QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP:
-        if (qemuDomainGetJobInfoMigrationStats(driver, vm, jobInfo) < 0)
+        if (qemuDomainGetJobInfoMigrationStats(driver, vm, *jobInfo) < 0)
             goto cleanup;
         break;
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP:
-        if (qemuDomainGetJobInfoDumpStats(driver, vm, jobInfo) < 0)
+        if (qemuDomainGetJobInfoDumpStats(driver, vm, *jobInfo) < 0)
             goto cleanup;
         break;
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP:
-        if (qemuBackupGetJobInfoStats(driver, vm, jobInfo) < 0)
+        if (qemuBackupGetJobInfoStats(driver, vm, *jobInfo) < 0)
             goto cleanup;
         break;
 
@@ -13666,7 +13665,7 @@ qemuDomainGetJobInfo(virDomainPtr dom,
                      virDomainJobInfoPtr info)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    qemuDomainJobInfo jobInfo;
+    g_autoptr(qemuDomainJobInfo) jobInfo = NULL;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -13681,12 +13680,13 @@ qemuDomainGetJobInfo(virDomainPtr dom,
     if (qemuDomainGetJobStatsInternal(driver, vm, false, &jobInfo) < 0)
         goto cleanup;
 
-    if (jobInfo.status == QEMU_DOMAIN_JOB_STATUS_NONE) {
+    if (!jobInfo ||
+        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_NONE) {
         ret = 0;
         goto cleanup;
     }
 
-    ret = qemuDomainJobInfoToInfo(&jobInfo, info);
+    ret = qemuDomainJobInfoToInfo(jobInfo, info);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -13704,7 +13704,7 @@ qemuDomainGetJobStats(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
-    qemuDomainJobInfo jobInfo;
+    g_autoptr(qemuDomainJobInfo) jobInfo = NULL;
     bool completed = !!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED);
     int ret = -1;
 
@@ -13721,7 +13721,8 @@ qemuDomainGetJobStats(virDomainPtr dom,
     if (qemuDomainGetJobStatsInternal(driver, vm, completed, &jobInfo) < 0)
         goto cleanup;
 
-    if (jobInfo.status == QEMU_DOMAIN_JOB_STATUS_NONE) {
+    if (!jobInfo ||
+        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_NONE) {
         *type = VIR_DOMAIN_JOB_NONE;
         *params = NULL;
         *nparams = 0;
@@ -13729,10 +13730,10 @@ qemuDomainGetJobStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuDomainJobInfoToParams(&jobInfo, type, params, nparams);
+    ret = qemuDomainJobInfoToParams(jobInfo, type, params, nparams);
 
     if (completed && ret == 0 && !(flags & VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED))
-        VIR_FREE(priv->job.completed);
+        g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
 
  cleanup:
     virDomainObjEndAPI(&vm);

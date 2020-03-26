@@ -306,6 +306,23 @@ qemuDomainDisableNamespace(virDomainObjPtr vm,
 
 
 void
+qemuDomainJobInfoFree(qemuDomainJobInfoPtr info)
+{
+    g_free(info);
+}
+
+
+qemuDomainJobInfoPtr
+qemuDomainJobInfoCopy(qemuDomainJobInfoPtr info)
+{
+    qemuDomainJobInfoPtr ret = g_new0(qemuDomainJobInfo, 1);
+
+    memcpy(ret, info, sizeof(*info));
+
+    return ret;
+}
+
+void
 qemuDomainEventEmitJobCompleted(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm)
 {
@@ -385,7 +402,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     job->spiceMigrated = false;
     job->dumpCompleted = false;
     VIR_FREE(job->error);
-    VIR_FREE(job->current);
+    g_clear_pointer(&job->current, qemuDomainJobInfoFree);
     qemuMigrationParamsFree(job->migParams);
     job->migParams = NULL;
     job->apiFlags = 0;
@@ -415,8 +432,8 @@ qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
 {
     qemuDomainObjResetJob(priv);
     qemuDomainObjResetAsyncJob(priv);
-    VIR_FREE(priv->job.current);
-    VIR_FREE(priv->job.completed);
+    g_clear_pointer(&priv->job.current, qemuDomainJobInfoFree);
+    g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
     virCondDestroy(&priv->job.cond);
     virCondDestroy(&priv->job.asyncCond);
 }
@@ -6299,8 +6316,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
                       qemuDomainAsyncJobTypeToString(asyncJob),
                       obj, obj->def->name);
             qemuDomainObjResetAsyncJob(priv);
-            if (VIR_ALLOC(priv->job.current) < 0)
-                goto cleanup;
+            priv->job.current = g_new0(qemuDomainJobInfo, 1);
             priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
             priv->job.asyncJob = asyncJob;
             priv->job.asyncOwner = virThreadSelfID();

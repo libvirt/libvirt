@@ -641,9 +641,8 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
 
     qemuDomainJobInfoUpdateTime(priv->job.current);
 
-    g_free(priv->job.completed);
-    priv->job.completed = g_new0(qemuDomainJobInfo, 1);
-    *priv->job.completed = *priv->job.current;
+    g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
+    priv->job.completed = qemuDomainJobInfoCopy(priv->job.current);
 
     priv->job.completed->stats.backup.total = priv->backup->push_total;
     priv->job.completed->stats.backup.transferred = priv->backup->push_transferred;

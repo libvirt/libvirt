@@ -1724,11 +1724,9 @@ qemuMigrationSrcWaitForCompletion(virQEMUDriverPtr driver,
 
     qemuDomainJobInfoUpdateTime(jobInfo);
     qemuDomainJobInfoUpdateDowntime(jobInfo);
-    VIR_FREE(priv->job.completed);
-    if (VIR_ALLOC(priv->job.completed) == 0) {
-        *priv->job.completed = *jobInfo;
-        priv->job.completed->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
-    }
+    g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
+    priv->job.completed = qemuDomainJobInfoCopy(jobInfo);
+    priv->job.completed->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
 
     if (asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT &&
         jobInfo->status == QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED)
@@ -3017,7 +3015,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
     if (retcode == 0)
         jobInfo = priv->job.completed;
     else
-        VIR_FREE(priv->job.completed);
+        g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
 
     /* Update times with the values sent by the destination daemon */
     if (mig->jobInfo && jobInfo) {
@@ -5036,7 +5034,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
                                        : QEMU_MIGRATION_PHASE_FINISH2);
 
     qemuDomainCleanupRemove(vm, qemuMigrationDstPrepareCleanup);
-    VIR_FREE(priv->job.completed);
+    g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
 
     cookie_flags = QEMU_MIGRATION_COOKIE_NETWORK |
                    QEMU_MIGRATION_COOKIE_STATS |
@@ -5257,7 +5255,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
          * is obsolete anyway.
          */
         if (inPostCopy)
-            VIR_FREE(priv->job.completed);
+            g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
     }
 
     qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
@@ -5268,7 +5266,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
         qemuDomainRemoveInactiveJob(driver, vm);
 
  cleanup:
-    VIR_FREE(jobInfo);
+    g_clear_pointer(&jobInfo, qemuDomainJobInfoFree);
     virPortAllocatorRelease(port);
     if (priv->mon)
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);

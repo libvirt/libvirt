@@ -123,7 +123,7 @@ qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
     VIR_FREE(mig->name);
     VIR_FREE(mig->lockState);
     VIR_FREE(mig->lockDriver);
-    VIR_FREE(mig->jobInfo);
+    g_clear_pointer(&mig->jobInfo, qemuDomainJobInfoFree);
     virCPUDefFree(mig->cpu);
     qemuMigrationCookieCapsFree(mig->caps);
     VIR_FREE(mig);
@@ -513,10 +513,9 @@ qemuMigrationCookieAddStatistics(qemuMigrationCookiePtr mig,
     if (!priv->job.completed)
         return 0;
 
-    if (!mig->jobInfo && VIR_ALLOC(mig->jobInfo) < 0)
-        return -1;
+    g_clear_pointer(&mig->jobInfo, qemuDomainJobInfoFree);
+    mig->jobInfo = qemuDomainJobInfoCopy(priv->job.completed);
 
-    *mig->jobInfo = *priv->job.completed;
     mig->flags |= QEMU_MIGRATION_COOKIE_STATS;
 
     return 0;
@@ -1051,8 +1050,7 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
     if (!(ctxt->node = virXPathNode("./statistics", ctxt)))
         return NULL;
 
-    if (VIR_ALLOC(jobInfo) < 0)
-        return NULL;
+    jobInfo = g_new0(qemuDomainJobInfo, 1);
 
     stats = &jobInfo->stats.mig;
     jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
