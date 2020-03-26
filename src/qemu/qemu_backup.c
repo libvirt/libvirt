@@ -894,7 +894,7 @@ qemuBackupBegin(virDomainObjPtr vm,
     qemuCheckpointRollbackMetadata(vm, chk);
 
     if (!job_started && nbd_running &&
-        qemuDomainObjEnterMonitorAsync(priv->driver, vm, QEMU_ASYNC_JOB_BACKUP) < 0) {
+        qemuDomainObjEnterMonitorAsync(priv->driver, vm, QEMU_ASYNC_JOB_BACKUP) == 0) {
         ignore_value(qemuMonitorNBDServerStop(priv->mon));
         ignore_value(qemuDomainObjExitMonitor(priv->driver, vm));
     }
