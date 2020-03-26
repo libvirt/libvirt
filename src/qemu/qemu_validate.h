@@ -56,3 +56,7 @@ int qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
                                         const virDomainDef *def,
                                         virQEMUDriverPtr driver,
                                         virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
+                                  const virDomainDef *def,
+                                  virQEMUDriverPtr driver,
+                                  virQEMUCapsPtr qemuCaps);

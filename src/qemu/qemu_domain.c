@@ -5736,123 +5736,6 @@ qemuDomainDeviceDefValidateIOMMU(const virDomainIOMMUDef *iommu,
     return 0;
 }
 
-static int
-qemuDomainDefValidateVirtioFSSharedMemory(const virDomainDef *def)
-{
-    size_t numa_nodes = virDomainNumaGetNodeCount(def->numa);
-    size_t i;
-
-    if (numa_nodes == 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("virtiofs requires one or more NUMA nodes"));
-        return -1;
-    }
-
-    for (i = 0; i < numa_nodes; i++) {
-        virDomainMemoryAccess node_access =
-            virDomainNumaGetNodeMemoryAccessMode(def->numa, i);
-
-        switch (node_access) {
-        case VIR_DOMAIN_MEMORY_ACCESS_DEFAULT:
-            if (def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_SHARED) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("virtiofs requires shared memory"));
-                return -1;
-            }
-            break;
-        case VIR_DOMAIN_MEMORY_ACCESS_SHARED:
-            break;
-        case VIR_DOMAIN_MEMORY_ACCESS_PRIVATE:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtiofs requires shared memory"));
-            return -1;
-
-        case VIR_DOMAIN_MEMORY_ACCESS_LAST:
-        default:
-            virReportEnumRangeError(virDomainMemoryAccess, node_access);
-            return -1;
-
-        }
-    }
-    return 0;
-}
-
-static int
-qemuDomainDeviceDefValidateFS(virDomainFSDefPtr fs,
-                              const virDomainDef *def,
-                              virQEMUDriverPtr driver,
-                              virQEMUCapsPtr qemuCaps)
-{
-    if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only supports mount filesystem type"));
-        return -1;
-    }
-
-    switch ((virDomainFSDriverType) fs->fsdriver) {
-    case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
-    case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
-        break;
-
-    case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:
-        if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only supports passthrough accessmode"));
-            return -1;
-        }
-        break;
-
-    case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
-    case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
-    case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Filesystem driver type not supported"));
-        return -1;
-
-    case VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS:
-        if (!virQEMUDriverIsPrivileged(driver)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtiofs is not yet supported in session mode"));
-            return -1;
-        }
-        if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtiofs only supports passthrough accessmode"));
-            return -1;
-        }
-        if (fs->wrpolicy != VIR_DOMAIN_FS_WRPOLICY_DEFAULT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtiofs does not support wrpolicy"));
-            return -1;
-        }
-        if (fs->model != VIR_DOMAIN_FS_MODEL_DEFAULT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtiofs does not support model"));
-            return -1;
-        }
-        if (fs->format != VIR_STORAGE_FILE_NONE) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtiofs does not support format"));
-            return -1;
-        }
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_FS)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtiofs is not supported with this QEMU binary"));
-            return -1;
-        }
-        if (qemuDomainDefValidateVirtioFSSharedMemory(def) < 0)
-            return -1;
-        break;
-
-    case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
-    default:
-        virReportEnumRangeError(virDomainFSDriverType, fs->fsdriver);
-        return -1;
-    }
-
-    return 0;
-}
-
 
 static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
@@ -5949,7 +5832,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
-        ret = qemuDomainDeviceDefValidateFS(dev->data.fs, def, driver, qemuCaps);
+        ret = qemuValidateDomainDeviceDefFS(dev->data.fs, def, driver, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_NVRAM:
