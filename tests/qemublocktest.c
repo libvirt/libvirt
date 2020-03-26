@@ -28,6 +28,7 @@
 #include "qemu/qemu_monitor_json.h"
 #include "qemu/qemu_backup.h"
 #include "qemu/qemu_checkpoint.h"
+#include "qemu/qemu_validate.h"
 
 #include "qemu/qemu_command.h"
 
@@ -283,7 +284,7 @@ testQemuDiskXMLToProps(const void *opaque)
         return -1;
 
     if (qemuCheckDiskConfig(disk, vmdef, data->qemuCaps) < 0 ||
-        qemuDomainDeviceDefValidateDisk(disk, data->qemuCaps) < 0) {
+        qemuValidateDomainDeviceDefDisk(disk, data->qemuCaps) < 0) {
         VIR_TEST_VERBOSE("invalid configuration for disk");
         return -1;
     }

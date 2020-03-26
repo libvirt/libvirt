@@ -5430,104 +5430,6 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
 }
 
 
-int
-qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
-                                virQEMUCapsPtr qemuCaps)
-{
-    const char *driverName = virDomainDiskGetDriver(disk);
-    virStorageSourcePtr n;
-    int idx;
-    int partition;
-
-    if (disk->src->shared && !disk->src->readonly &&
-        !qemuBlockStorageSourceSupportsConcurrentAccess(disk->src)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("shared access for disk '%s' requires use of "
-                         "supported storage format"), disk->dst);
-        return -1;
-    }
-
-    if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
-        if (disk->src->readonly) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("copy_on_read is not compatible with read-only disk '%s'"),
-                           disk->dst);
-            return -1;
-        }
-
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
-            disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("copy_on_read is not supported with removable disk '%s'"),
-                           disk->dst);
-            return -1;
-        }
-    }
-
-    if (disk->geometry.cylinders > 0 &&
-        disk->geometry.heads > 0 &&
-        disk->geometry.sectors > 0) {
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_USB ||
-            disk->bus == VIR_DOMAIN_DISK_BUS_SD) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("CHS geometry can not be set for '%s' bus"),
-                           virDomainDiskBusTypeToString(disk->bus));
-            return -1;
-        }
-
-        if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT &&
-            disk->bus != VIR_DOMAIN_DISK_BUS_IDE) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("CHS translation mode can only be set for 'ide' bus not '%s'"),
-                           virDomainDiskBusTypeToString(disk->bus));
-            return -1;
-        }
-    }
-
-    if (disk->serial && disk->bus == VIR_DOMAIN_DISK_BUS_SD) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Serial property not supported for drive bus '%s'"),
-                       virDomainDiskBusTypeToString(disk->bus));
-        return -1;
-    }
-
-    if (driverName && STRNEQ(driverName, "qemu")) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported driver name '%s' for disk '%s'"),
-                       driverName, disk->dst);
-        return -1;
-    }
-
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-        disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("disk type 'virtio' of '%s' does not support ejectable media"),
-                       disk->dst);
-        return -1;
-    }
-
-    if (virDiskNameParse(disk->dst, &idx, &partition) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid disk target '%s'"), disk->dst);
-        return -1;
-    }
-
-    if (partition != 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid disk target '%s', partitions can't appear in disk targets"),
-                       disk->dst);
-        return -1;
-    }
-
-    for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (qemuDomainValidateStorageSource(n, qemuCaps) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-
 static int
 qemuDomainDeviceDefValidateControllerAttributes(const virDomainControllerDef *controller)
 {
@@ -6990,7 +6892,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = qemuDomainDeviceDefValidateDisk(dev->data.disk, qemuCaps);
+        ret = qemuValidateDomainDeviceDefDisk(dev->data.disk, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_CONTROLLER:
