@@ -18,7 +18,7 @@ file=/tmp/lib/domain--1-guest/master-key.aes \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -object memory-backend-file,id=ram-node0,\
-mem-path=/var/lib/libvirt/qemu/ram/libvirt/qemu/-1-guest/ram-node0,share=yes,\
+mem-path=/var/lib/libvirt/qemu/ram/-1-guest/ram-node0,share=yes,\
 size=15032385536 \
 -numa node,nodeid=0,cpus=0-1,memdev=ram-node0 \
 -uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \

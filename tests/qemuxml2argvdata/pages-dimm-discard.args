@@ -20,8 +20,8 @@ mem-path=/dev/hugepages1G/libvirt/qemu/-1-fedora,size=1073741824,\
 host-nodes=1-3,policy=bind \
 -device pc-dimm,node=0,memdev=memdimm0,id=dimm0,slot=0 \
 -object memory-backend-file,id=memdimm1,\
-mem-path=/var/lib/libvirt/qemu/ram/libvirt/qemu/-1-fedora/dimm1,\
-discard-data=yes,share=no,size=536870912 \
+mem-path=/var/lib/libvirt/qemu/ram/-1-fedora/dimm1,discard-data=yes,share=no,\
+size=536870912 \
 -device pc-dimm,node=0,memdev=memdimm1,id=dimm1,slot=1 \
 -uuid 63840878-0deb-4095-97e6-fc444d9bc9fa \
 -display none \

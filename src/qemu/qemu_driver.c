@@ -635,7 +635,6 @@ qemuStateInitialize(bool privileged,
     virQEMUDriverConfigPtr cfg;
     uid_t run_uid = -1;
     gid_t run_gid = -1;
-    g_autofree char *memoryBackingPath = NULL;
     bool autostart = true;
     size_t i;
     const char *defsecmodel = NULL;
@@ -930,17 +929,8 @@ qemuStateInitialize(bool privileged,
             goto error;
     }
 
-    qemuGetMemoryBackingBasePath(cfg, &memoryBackingPath);
-
-    if (virFileMakePath(memoryBackingPath) < 0) {
-        virReportSystemError(errno,
-                             _("unable to create memory backing path %s"),
-                             memoryBackingPath);
-        goto error;
-    }
-
     if (privileged &&
-        virFileUpdatePerm(memoryBackingPath,
+        virFileUpdatePerm(cfg->memoryBackingDir,
                           0, S_IXGRP | S_IXOTH) < 0)
         goto error;
 

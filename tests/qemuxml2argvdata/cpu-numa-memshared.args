@@ -15,12 +15,12 @@ QEMU_AUDIO_DRV=none \
 -realtime mlock=off \
 -smp 16,sockets=2,cores=4,threads=2 \
 -object memory-backend-file,id=ram-node0,\
-mem-path=/var/lib/libvirt/qemu/ram/libvirt/qemu/-1-QEMUGuest1/ram-node0,\
-share=yes,size=112197632 \
+mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node0,share=yes,\
+size=112197632 \
 -numa node,nodeid=0,cpus=0-7,memdev=ram-node0 \
 -object memory-backend-file,id=ram-node1,\
-mem-path=/var/lib/libvirt/qemu/ram/libvirt/qemu/-1-QEMUGuest1/ram-node1,\
-share=no,size=112197632 \
+mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node1,share=no,\
+size=112197632 \
 -numa node,nodeid=1,cpus=8-15,memdev=ram-node1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \

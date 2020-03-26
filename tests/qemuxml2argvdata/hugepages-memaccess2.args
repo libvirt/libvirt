@@ -15,20 +15,20 @@ QEMU_AUDIO_DRV=none \
 -realtime mlock=off \
 -smp 4,sockets=4,cores=1,threads=1 \
 -object memory-backend-file,id=ram-node0,\
-mem-path=/var/lib/libvirt/qemu/ram/libvirt/qemu/-1-QEMUGuest1/ram-node0,\
-share=no,size=1073741824,host-nodes=0-3,policy=bind \
+mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node0,share=no,\
+size=1073741824,host-nodes=0-3,policy=bind \
 -numa node,nodeid=0,cpus=0,memdev=ram-node0 \
 -object memory-backend-file,id=ram-node1,prealloc=yes,\
 mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,share=yes,size=1073741824,\
 host-nodes=0-3,policy=bind \
 -numa node,nodeid=1,cpus=1,memdev=ram-node1 \
 -object memory-backend-file,id=ram-node2,\
-mem-path=/var/lib/libvirt/qemu/ram/libvirt/qemu/-1-QEMUGuest1/ram-node2,\
-share=no,size=1073741824,host-nodes=0-3,policy=bind \
+mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node2,share=no,\
+size=1073741824,host-nodes=0-3,policy=bind \
 -numa node,nodeid=2,cpus=2,memdev=ram-node2 \
 -object memory-backend-file,id=ram-node3,\
-mem-path=/var/lib/libvirt/qemu/ram/libvirt/qemu/-1-QEMUGuest1/ram-node3,\
-share=no,size=1073741824,host-nodes=3,policy=bind \
+mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node3,share=no,\
+size=1073741824,host-nodes=3,policy=bind \
 -numa node,nodeid=3,cpus=3,memdev=ram-node3 \
 -object memory-backend-file,id=memdimm0,prealloc=yes,\
 mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,share=yes,size=536870912,\

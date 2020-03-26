@@ -970,7 +970,18 @@ static int
 virQEMUDriverConfigLoadMemoryEntry(virQEMUDriverConfigPtr cfg,
                                    virConfPtr conf)
 {
-    return virConfGetValueString(conf, "memory_backing_dir", &cfg->memoryBackingDir);
+    char *dir = NULL;
+    int rc;
+
+    if ((rc = virConfGetValueString(conf, "memory_backing_dir", &dir)) < 0) {
+        return -1;
+    } else if (rc > 0) {
+        VIR_FREE(cfg->memoryBackingDir);
+        cfg->memoryBackingDir = g_strdup_printf("%s/libvirt/qemu", dir);
+        return 1;
+    }
+
+    return 0;
 }
 
 
@@ -1945,27 +1956,17 @@ qemuGetDomainHupageMemPath(const virDomainDef *def,
 }
 
 
-void
-qemuGetMemoryBackingBasePath(virQEMUDriverConfigPtr cfg,
-                             char **path)
-{
-    *path = g_strdup_printf("%s/libvirt/qemu", cfg->memoryBackingDir);
-}
-
-
 int
 qemuGetMemoryBackingDomainPath(const virDomainDef *def,
                                virQEMUDriverConfigPtr cfg,
                                char **path)
 {
     g_autofree char *shortName = NULL;
-    g_autofree char *base = NULL;
 
     if (!(shortName = virDomainDefGetShortName(def)))
         return -1;
 
-    qemuGetMemoryBackingBasePath(cfg, &base);
-    *path = g_strdup_printf("%s/%s", base, shortName);
+    *path = g_strdup_printf("%s/%s", cfg->memoryBackingDir, shortName);
 
     return 0;
 }

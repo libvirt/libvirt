@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -machine pc-i440fx-2.3,accel=kvm,usb=off,dump-guest-core=off \
 -m 14336 \
 -mem-prealloc \
--mem-path /var/lib/libvirt/qemu/ram/libvirt/qemu/-1-instance-00000092/ram \
+-mem-path /var/lib/libvirt/qemu/ram/-1-instance-00000092/ram \
 -realtime mlock=off \
 -smp 8,sockets=8,cores=1,threads=1 \
 -uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
