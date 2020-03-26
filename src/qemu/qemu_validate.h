@@ -48,3 +48,6 @@ int qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                                        virQEMUCapsPtr qemuCaps);
 int qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
                                      virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
+                                          const virDomainDef *def,
+                                          virQEMUCapsPtr qemuCaps);
