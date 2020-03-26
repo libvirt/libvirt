@@ -5150,30 +5150,6 @@ qemuDomainDeviceDefValidateMemory(virDomainMemoryDefPtr mem,
 }
 
 
-static bool
-qemuDomainNetSupportsCoalesce(virDomainNetType type)
-{
-    switch (type) {
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        return true;
-    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
-    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-    case VIR_DOMAIN_NET_TYPE_USER:
-    case VIR_DOMAIN_NET_TYPE_SERVER:
-    case VIR_DOMAIN_NET_TYPE_CLIENT:
-    case VIR_DOMAIN_NET_TYPE_MCAST:
-    case VIR_DOMAIN_NET_TYPE_INTERNAL:
-    case VIR_DOMAIN_NET_TYPE_UDP:
-    case VIR_DOMAIN_NET_TYPE_LAST:
-        break;
-    }
-    return false;
-}
-
-
 static int
 qemuDomainChrSourceReconnectDefValidate(const virDomainChrSourceReconnectDef *def)
 {
@@ -5638,126 +5614,6 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
                        macstr, virDomainNetTypeToString(actualType));
         return -1;
     }
-    return 0;
-}
-
-
-static int
-qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net,
-                                   virQEMUCapsPtr qemuCaps)
-{
-    bool hasIPv4 = false;
-    bool hasIPv6 = false;
-    size_t i;
-
-    if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
-        if (net->guestIP.nroutes) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Invalid attempt to set network interface "
-                             "guest-side IP route, not supported by QEMU"));
-            return -1;
-        }
-
-        for (i = 0; i < net->guestIP.nips; i++) {
-            const virNetDevIPAddr *ip = net->guestIP.ips[i];
-
-            if (VIR_SOCKET_ADDR_VALID(&net->guestIP.ips[i]->peer)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Invalid attempt to set peer IP for guest"));
-                return -1;
-            }
-
-            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
-                if (hasIPv4) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Only one IPv4 address per "
-                                     "interface is allowed"));
-                    return -1;
-                }
-                hasIPv4 = true;
-
-                if (ip->prefix > 0 &&
-                    (ip->prefix < 4 || ip->prefix > 27)) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("invalid prefix, must be in range of 4-27"));
-                    return -1;
-                }
-            }
-
-            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
-                if (hasIPv6) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Only one IPv6 address per "
-                                     "interface is allowed"));
-                    return -1;
-                }
-                hasIPv6 = true;
-
-                if (ip->prefix > 120) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("prefix too long"));
-                    return -1;
-                }
-            }
-        }
-    } else if (net->guestIP.nroutes || net->guestIP.nips) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Invalid attempt to set network interface "
-                         "guest-side IP route and/or address info, "
-                         "not supported by QEMU"));
-        return -1;
-    }
-
-    if (virDomainNetIsVirtioModel(net)) {
-        if (net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("rx_queue_size has to be a power of two"));
-            return -1;
-        }
-        if (net->driver.virtio.tx_queue_size & (net->driver.virtio.tx_queue_size - 1)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("tx_queue_size has to be a power of two"));
-            return -1;
-        }
-    }
-
-    if (net->mtu &&
-        !qemuDomainNetSupportsMTU(net->type)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("setting MTU on interface type %s is not supported yet"),
-                       virDomainNetTypeToString(net->type));
-        return -1;
-    }
-
-    if (net->teaming.type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_FAILOVER)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("virtio-net failover (teaming) is not supported with this QEMU binary"));
-        return -1;
-    }
-    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT
-        && !virDomainNetIsVirtioModel(net)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("virtio-net teaming persistent interface must be <model type='virtio'/>, not '%s'"),
-                       virDomainNetGetModelString(net));
-        return -1;
-    }
-    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
-        net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        net->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("virtio-net teaming transient interface must be type='hostdev', not '%s'"),
-                       virDomainNetTypeToString(net->type));
-        return -1;
-    }
-
-   if (net->coalesce && !qemuDomainNetSupportsCoalesce(net->type)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("coalesce settings on interface type %s are not supported"),
-                       virDomainNetTypeToString(net->type));
-        return -1;
-    }
-
     return 0;
 }
 
@@ -7758,7 +7614,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
-        ret = qemuDomainDeviceDefValidateNetwork(dev->data.net, qemuCaps);
+        ret = qemuValidateDomainDeviceDefNetwork(dev->data.net, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_CHR:

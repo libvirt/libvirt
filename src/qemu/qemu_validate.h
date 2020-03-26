@@ -28,3 +28,5 @@
 int qemuValidateDomainDef(const virDomainDef *def, void *opaque);
 int qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
                                        virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
+                                       virQEMUCapsPtr qemuCaps);
