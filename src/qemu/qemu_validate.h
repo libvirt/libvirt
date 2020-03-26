@@ -30,3 +30,14 @@ int qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
                                        virQEMUCapsPtr qemuCaps);
 int qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                                        virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainChrDef(const virDomainChrDef *dev,
+                             const virDomainDef *def,
+                             virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
+                                   virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainRNGDef(const virDomainRNGDef *def,
+                             virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainRedirdevDef(const virDomainRedirdevDef *def,
+                                  virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
+                                  const virDomainDef *def);
