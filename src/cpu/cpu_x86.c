@@ -1090,23 +1090,9 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
 }
 
 
-static void
-x86ModelFree(virCPUx86ModelPtr model)
-{
-    if (!model)
-        return;
-
-    g_free(model->name);
-    g_free(model->signatures);
-    virCPUx86DataClear(&model->data);
-    g_free(model);
-}
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUx86Model, x86ModelFree);
-
-
 static int
-x86ModelCopySignatures(virCPUx86ModelPtr dst,
-                       virCPUx86ModelPtr src)
+virCPUx86SignaturesCopy(virCPUx86ModelPtr dst,
+                        virCPUx86ModelPtr src)
 {
     size_t i;
 
@@ -1124,6 +1110,20 @@ x86ModelCopySignatures(virCPUx86ModelPtr dst,
 }
 
 
+static void
+x86ModelFree(virCPUx86ModelPtr model)
+{
+    if (!model)
+        return;
+
+    g_free(model->name);
+    g_free(model->signatures);
+    virCPUx86DataClear(&model->data);
+    g_free(model);
+}
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUx86Model, x86ModelFree);
+
+
 static virCPUx86ModelPtr
 x86ModelCopy(virCPUx86ModelPtr model)
 {
@@ -1132,7 +1132,7 @@ x86ModelCopy(virCPUx86ModelPtr model)
     copy = g_new0(virCPUx86Model, 1);
     copy->name = g_strdup(model->name);
 
-    if (x86ModelCopySignatures(copy, model) < 0) {
+    if (virCPUx86SignaturesCopy(copy, model) < 0) {
         x86ModelFree(copy);
         return NULL;
     }
@@ -1360,7 +1360,7 @@ x86ModelParseAncestor(virCPUx86ModelPtr model,
     }
 
     model->vendor = ancestor->vendor;
-    if (x86ModelCopySignatures(model, ancestor) < 0)
+    if (virCPUx86SignaturesCopy(model, ancestor) < 0)
         return -1;
 
     x86DataCopy(&model->data, &ancestor->data);
