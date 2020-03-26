@@ -25,5 +25,4 @@
 #include "domain_conf.h"
 #include "qemu_capabilities.h"
 
-int qemuValidateDomainDefFeatures(const virDomainDef *def,
-                                  virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDef(const virDomainDef *def, void *opaque);
