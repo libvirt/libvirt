@@ -1090,6 +1090,13 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
 }
 
 
+static void
+virCPUx86SignaturesFree(uint32_t *signatures)
+{
+    g_free(signatures);
+}
+
+
 static int
 virCPUx86SignaturesCopy(virCPUx86ModelPtr dst,
                         virCPUx86ModelPtr src)
@@ -1149,7 +1156,7 @@ x86ModelFree(virCPUx86ModelPtr model)
         return;
 
     g_free(model->name);
-    g_free(model->signatures);
+    virCPUx86SignaturesFree(model->signatures);
     virCPUx86DataClear(&model->data);
     g_free(model);
 }
@@ -1414,7 +1421,7 @@ x86ModelParseSignatures(virCPUx86ModelPtr model,
         return n;
 
     /* Remove inherited signatures. */
-    VIR_FREE(model->signatures);
+    virCPUx86SignaturesFree(model->signatures);
 
     model->nsignatures = n;
     if (VIR_ALLOC_N(model->signatures, n) < 0)
