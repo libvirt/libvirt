@@ -44,3 +44,5 @@ int qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
 int qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                                        const virDomainDef *def,
                                        virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
+                                     virQEMUCapsPtr qemuCaps);
