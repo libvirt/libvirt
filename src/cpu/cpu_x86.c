@@ -718,6 +718,18 @@ x86MakeSignature(unsigned int family,
 
 
 static void
+virCPUx86SignatureFromCPUID(uint32_t sig,
+                            unsigned int *family,
+                            unsigned int *model,
+                            unsigned int *stepping)
+{
+    *family = ((sig >> 20) & 0xff) + ((sig >> 8) & 0xf);
+    *model = ((sig >> 12) & 0xf0) + ((sig >> 4) & 0xf);
+    *stepping = sig & 0xf;
+}
+
+
+static void
 x86DataToSignatureFull(const virCPUx86Data *data,
                        unsigned int *family,
                        unsigned int *model,
@@ -725,17 +737,14 @@ x86DataToSignatureFull(const virCPUx86Data *data,
 {
     virCPUx86DataItem leaf1 = CPUID(.eax_in = 0x1);
     virCPUx86DataItemPtr item;
-    virCPUx86CPUIDPtr cpuid;
 
     *family = *model = *stepping = 0;
 
     if (!(item = virCPUx86DataGet(data, &leaf1)))
         return;
 
-    cpuid = &item->data.cpuid;
-    *family = ((cpuid->eax >> 20) & 0xff) + ((cpuid->eax >> 8) & 0xf);
-    *model = ((cpuid->eax >> 12) & 0xf0) + ((cpuid->eax >> 4) & 0xf);
-    *stepping = cpuid->eax & 0xf;
+    virCPUx86SignatureFromCPUID(item->data.cpuid.eax,
+                                family, model, stepping);
 }
 
 
