@@ -249,10 +249,6 @@ qemuSecurityChownCallback(const virStorageSource *src,
     int rv;
     g_autoptr(virStorageSource) cpy = NULL;
 
-    rv = virStorageFileSupportsSecurityDriver(src);
-    if (rv <= 0)
-        return rv;
-
     if (virStorageSourceIsLocalStorage(src)) {
         /* use direct chown for local files so that the file doesn't
          * need to be initialized */
@@ -272,6 +268,9 @@ qemuSecurityChownCallback(const virStorageSource *src,
 
         return 0;
     }
+
+    if ((rv = virStorageFileSupportsSecurityDriver(src)) <= 0)
+        return rv;
 
     if (!(cpy = virStorageSourceCopy(src, false)))
         return -1;
