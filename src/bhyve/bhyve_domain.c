@@ -162,8 +162,8 @@ bhyveDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO &&
-        dev->data.video.type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
-        dev->data.video.type = VIR_DOMAIN_VIDEO_TYPE_GOP;
+        dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
+        dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_GOP;
     }
 
     return 0;
