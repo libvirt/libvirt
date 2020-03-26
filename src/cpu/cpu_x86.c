@@ -1110,6 +1110,21 @@ virCPUx86SignaturesCopy(virCPUx86ModelPtr dst,
 }
 
 
+static bool
+virCPUx86SignaturesMatch(virCPUx86ModelPtr model,
+                         uint32_t signature)
+{
+    size_t i;
+
+    for (i = 0; i < model->nsignatures; i++) {
+        if (model->signatures[i] == signature)
+            return true;
+    }
+
+    return false;
+}
+
+
 static void
 x86ModelFree(virCPUx86ModelPtr model)
 {
@@ -1875,21 +1890,6 @@ virCPUx86Compare(virCPUDefPtr host,
 }
 
 
-static bool
-x86ModelHasSignature(virCPUx86ModelPtr model,
-                     uint32_t signature)
-{
-    size_t i;
-
-    for (i = 0; i < model->nsignatures; i++) {
-        if (model->signatures[i] == signature)
-            return true;
-    }
-
-    return false;
-}
-
-
 static char *
 x86FormatSignatures(virCPUx86ModelPtr model)
 {
@@ -1961,8 +1961,8 @@ x86DecodeUseCandidate(virCPUx86ModelPtr current,
      * consider candidates with matching family/model.
      */
     if (signature &&
-        x86ModelHasSignature(current, signature) &&
-        !x86ModelHasSignature(candidate, signature)) {
+        virCPUx86SignaturesMatch(current, signature) &&
+        !virCPUx86SignaturesMatch(candidate, signature)) {
         VIR_DEBUG("%s differs in signature from matching %s",
                   cpuCandidate->model, cpuCurrent->model);
         return 0;
@@ -1978,8 +1978,8 @@ x86DecodeUseCandidate(virCPUx86ModelPtr current,
      * result in longer list of features.
      */
     if (signature &&
-        x86ModelHasSignature(candidate, signature) &&
-        !x86ModelHasSignature(current, signature)) {
+        virCPUx86SignaturesMatch(candidate, signature) &&
+        !virCPUx86SignaturesMatch(current, signature)) {
         VIR_DEBUG("%s provides matching signature", cpuCandidate->model);
         return 1;
     }
