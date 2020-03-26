@@ -1287,9 +1287,6 @@ x86ModelFromCPU(const virCPUDef *cpu,
         model = g_new0(virCPUx86Model, 1);
     }
 
-    if (!model)
-        return NULL;
-
     for (i = 0; i < cpu->nfeatures; i++) {
         virCPUx86FeaturePtr feature;
         virCPUFeaturePolicy fpol;
@@ -1869,9 +1866,7 @@ x86Compute(virCPUDefPtr host,
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
-    if (!(diff = x86ModelCopy(host_model)))
-        return VIR_CPU_COMPARE_ERROR;
-
+    diff = x86ModelCopy(host_model);
     x86DataSubtract(&diff->data, &cpu_optional->data);
     x86DataSubtract(&diff->data, &cpu_require->data);
     x86DataSubtract(&diff->data, &cpu_disable->data);
@@ -1892,8 +1887,7 @@ x86Compute(virCPUDefPtr host,
     }
 
     if (guest) {
-        if (!(guest_model = x86ModelCopy(host_model)))
-            return VIR_CPU_COMPARE_ERROR;
+        guest_model = x86ModelCopy(host_model);
 
         if (cpu->vendor && host_model->vendor &&
             virCPUx86DataAddItem(&guest_model->data,
@@ -3131,8 +3125,8 @@ virCPUx86ExpandFeatures(virCPUDefPtr cpu)
         return -1;
     }
 
-    if (!(model = x86ModelCopy(model)) ||
-        x86DataToCPUFeatures(expanded, host ? -1 : VIR_CPU_FEATURE_REQUIRE,
+    model = x86ModelCopy(model);
+    if (x86DataToCPUFeatures(expanded, host ? -1 : VIR_CPU_FEATURE_REQUIRE,
                              &model->data, map) < 0)
         return -1;
 
