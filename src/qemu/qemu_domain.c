@@ -7731,78 +7731,6 @@ qemuDomainDeviceDefValidateFS(virDomainFSDefPtr fs,
 
 
 static int
-qemuDomainDeviceDefValidateZPCIAddress(virDomainDeviceInfoPtr info,
-                                       virQEMUCapsPtr qemuCaps)
-{
-    if (!virZPCIDeviceAddressIsEmpty(&info->addr.pci.zpci) &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_ZPCI)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s",
-                       _("This QEMU binary doesn't support zPCI"));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
-qemuDomainDeviceDefValidateAddress(const virDomainDeviceDef *dev,
-                                   virQEMUCapsPtr qemuCaps)
-{
-    virDomainDeviceInfoPtr info;
-
-    if (!(info = virDomainDeviceGetInfo((virDomainDeviceDef *)dev)))
-        return 0;
-
-    switch ((virDomainDeviceAddressType) info->type) {
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
-        return qemuDomainDeviceDefValidateZPCIAddress(info, qemuCaps);
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
-        /* Address validation might happen before we have had a chance to
-         * automatically assign addresses to devices for which the user
-         * didn't specify one themselves */
-        break;
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO: {
-        virDomainDeviceSpaprVioAddressPtr addr = &(info->addr.spaprvio);
-
-        if (addr->has_reg && addr->reg > 0xffffffff) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("spapr-vio reg='0x%llx' exceeds maximum "
-                             "possible value (0xffffffff)"),
-                           addr->reg);
-            return -1;
-        }
-
-        break;
-        }
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
-        /* No validation for these address types yet */
-        break;
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
-    default:
-        virReportEnumRangeError(virDomainDeviceAddressType, info->type);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
                             void *opaque)
@@ -7822,7 +7750,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                                        def->virtType)))
         return -1;
 
-    if ((ret = qemuDomainDeviceDefValidateAddress(dev, qemuCaps)) < 0)
+    if ((ret = qemuValidateDomainDeviceDefAddress(dev, qemuCaps)) < 0)
         return ret;
 
     if ((ret = virDomainCapsDeviceDefValidate(domCaps, dev, def)) < 0)

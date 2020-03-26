@@ -26,3 +26,5 @@
 #include "qemu_capabilities.h"
 
 int qemuValidateDomainDef(const virDomainDef *def, void *opaque);
+int qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
+                                       virQEMUCapsPtr qemuCaps);
