@@ -5062,80 +5062,6 @@ qemuDomainDeviceDefValidateHub(virDomainHubDefPtr hub,
 
 
 static int
-qemuSoundCodecTypeToCaps(int type)
-{
-    switch (type) {
-    case VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX:
-        return QEMU_CAPS_HDA_DUPLEX;
-    case VIR_DOMAIN_SOUND_CODEC_TYPE_MICRO:
-        return QEMU_CAPS_HDA_MICRO;
-    case VIR_DOMAIN_SOUND_CODEC_TYPE_OUTPUT:
-        return QEMU_CAPS_HDA_OUTPUT;
-    default:
-        return -1;
-    }
-}
-
-
-static int
-qemuDomainDeviceDefValidateSound(virDomainSoundDefPtr sound,
-                                 virQEMUCapsPtr qemuCaps)
-{
-    size_t i;
-
-    switch ((virDomainSoundModel) sound->model) {
-    case VIR_DOMAIN_SOUND_MODEL_USB:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_USB_AUDIO)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("usb-audio controller is not supported "
-                             "by this QEMU binary"));
-            return -1;
-        }
-        break;
-    case VIR_DOMAIN_SOUND_MODEL_ICH9:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_ICH9_INTEL_HDA)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("The ich9-intel-hda audio controller "
-                             "is not supported in this QEMU binary"));
-            return -1;
-        }
-        break;
-
-    case VIR_DOMAIN_SOUND_MODEL_ES1370:
-    case VIR_DOMAIN_SOUND_MODEL_AC97:
-    case VIR_DOMAIN_SOUND_MODEL_ICH6:
-    case VIR_DOMAIN_SOUND_MODEL_SB16:
-    case VIR_DOMAIN_SOUND_MODEL_PCSPK:
-        break;
-    case VIR_DOMAIN_SOUND_MODEL_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("sound card model '%s' is not supported by qemu"),
-                       virDomainSoundModelTypeToString(sound->model));
-        return -1;
-    }
-
-    if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
-        sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
-        for (i = 0; i < sound->ncodecs; i++) {
-            const char *stype;
-            int type, flags;
-
-            type = sound->codecs[i]->type;
-            stype = qemuSoundCodecTypeToString(type);
-            flags = qemuSoundCodecTypeToCaps(type);
-
-            if (flags == -1 || !virQEMUCapsGet(qemuCaps, flags)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("%s not supported in this QEMU binary"), stype);
-                return -1;
-            }
-        }
-    }
-
-    return 0;
-}
-
-static int
 qemuDomainDeviceDefValidateMemory(virDomainMemoryDefPtr mem,
                                   virQEMUCapsPtr qemuCaps)
 {
@@ -5844,7 +5770,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_SOUND:
-        ret = qemuDomainDeviceDefValidateSound(dev->data.sound, qemuCaps);
+        ret = qemuValidateDomainDeviceDefSound(dev->data.sound, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:

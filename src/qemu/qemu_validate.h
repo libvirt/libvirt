@@ -60,3 +60,5 @@ int qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
                                   const virDomainDef *def,
                                   virQEMUDriverPtr driver,
                                   virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefSound(virDomainSoundDefPtr sound,
+                                     virQEMUCapsPtr qemuCaps);
