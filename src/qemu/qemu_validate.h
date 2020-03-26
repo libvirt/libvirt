@@ -24,6 +24,7 @@
 
 #include "domain_conf.h"
 #include "qemu_capabilities.h"
+#include "qemu_conf.h"
 
 int qemuValidateDomainDef(const virDomainDef *def, void *opaque);
 int qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
@@ -51,3 +52,7 @@ int qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
 int qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
                                           const virDomainDef *def,
                                           virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
+                                        const virDomainDef *def,
+                                        virQEMUDriverPtr driver,
+                                        virQEMUCapsPtr qemuCaps);
