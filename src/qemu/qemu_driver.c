@@ -268,24 +268,20 @@ qemuSecurityChownCallback(const virStorageSource *src,
         }
 
         if (chown(src->path, uid, gid) < 0)
-            goto cleanup;
-    } else {
-        if (!(cpy = virStorageSourceCopy(src, false)))
-            goto cleanup;
+            return -1;
 
-        /* src file init reports errors, return -2 on failure */
-        if (virStorageFileInit(cpy) < 0) {
-            ret = -2;
-            goto cleanup;
-        }
-
-        if (virStorageFileChown(cpy, uid, gid) < 0)
-            goto cleanup;
+        return 0;
     }
 
-    ret = 0;
+    if (!(cpy = virStorageSourceCopy(src, false)))
+        return -1;
 
- cleanup:
+    /* src file init reports errors, return -2 on failure */
+    if (virStorageFileInit(cpy) < 0)
+        return -2;
+
+    ret = virStorageFileChown(cpy, uid, gid);
+
     save_errno = errno;
     virStorageFileDeinit(cpy);
     errno = save_errno;
