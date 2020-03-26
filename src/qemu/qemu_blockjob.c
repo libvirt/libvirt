@@ -571,6 +571,7 @@ qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
 
         if (job->newstate != -1)
             qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
+        /* 'job' may be invalid after this update */
     }
 
     /* remove data for job which qemu didn't report (the algorithm is
