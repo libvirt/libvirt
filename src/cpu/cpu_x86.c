@@ -1125,6 +1125,23 @@ virCPUx86SignaturesMatch(virCPUx86ModelPtr model,
 }
 
 
+static char *
+virCPUx86SignaturesFormat(virCPUx86ModelPtr model)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    for (i = 0; i < model->nsignatures; i++) {
+        virBufferAsprintf(&buf, "%06lx,",
+                          (unsigned long)model->signatures[i]);
+    }
+
+    virBufferTrim(&buf, ",");
+
+    return virBufferContentAndReset(&buf);
+}
+
+
 static void
 x86ModelFree(virCPUx86ModelPtr model)
 {
@@ -1890,23 +1907,6 @@ virCPUx86Compare(virCPUDefPtr host,
 }
 
 
-static char *
-x86FormatSignatures(virCPUx86ModelPtr model)
-{
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    size_t i;
-
-    for (i = 0; i < model->nsignatures; i++) {
-        virBufferAsprintf(&buf, "%06lx,",
-                          (unsigned long)model->signatures[i]);
-    }
-
-    virBufferTrim(&buf, ",");
-
-    return virBufferContentAndReset(&buf);
-}
-
-
 /*
  * Checks whether a candidate model is a better fit for the CPU data than the
  * current model.
@@ -2134,7 +2134,7 @@ x86Decode(virCPUDefPtr cpu,
     if (vendor)
         cpu->vendor = g_strdup(vendor->name);
 
-    sigs = x86FormatSignatures(model);
+    sigs = virCPUx86SignaturesFormat(model);
 
     VIR_DEBUG("Using CPU model %s (signatures %s) for CPU with signature %06lx",
               model->name, NULLSTR(sigs), (unsigned long)signature);
