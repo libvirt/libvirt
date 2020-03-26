@@ -62,3 +62,24 @@ int qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
                                   virQEMUCapsPtr qemuCaps);
 int qemuValidateDomainDeviceDefSound(virDomainSoundDefPtr sound,
                                      virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefVsock(const virDomainVsockDef *vsock,
+                                     const virDomainDef *def,
+                                     virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
+                                   const virDomainDef *def,
+                                   virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
+                                     const virDomainDef *def,
+                                     virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefMemballoon(const virDomainMemballoonDef *memballoon,
+                                          virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
+                                     const virDomainDef *def,
+                                     virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefMemory(virDomainMemoryDefPtr mem,
+                                      virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefHub(virDomainHubDefPtr hub,
+                                   virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDefNVRAM(virDomainNVRAMDefPtr nvram,
+                                     const virDomainDef *def,
+                                     virQEMUCapsPtr qemuCaps);
