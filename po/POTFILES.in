@@ -170,6 +170,7 @@
 @SRCDIR@/src/qemu/qemu_qapi.c
 @SRCDIR@/src/qemu/qemu_slirp.c
 @SRCDIR@/src/qemu/qemu_tpm.c
+@SRCDIR@/src/qemu/qemu_validate.c
 @SRCDIR@/src/qemu/qemu_vhost_user.c
 @SRCDIR@/src/qemu/qemu_vhost_user_gpu.c
 @SRCDIR@/src/qemu/qemu_virtiofs.c

@@ -73,6 +73,8 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_checkpoint.h \
 	qemu/qemu_backup.c \
 	qemu/qemu_backup.h \
+	qemu/qemu_validate.c \
+	qemu/qemu_validate.h \
 	$(NULL)
 
 
