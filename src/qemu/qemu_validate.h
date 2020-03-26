@@ -29,57 +29,6 @@
 int qemuValidateDomainDef(const virDomainDef *def, void *opaque);
 int qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
                                     virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
-                                       virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
-                                       virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainChrDef(const virDomainChrDef *dev,
-                             const virDomainDef *def,
-                             virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
-                                   virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainRNGDef(const virDomainRNGDef *def,
-                             virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainRedirdevDef(const virDomainRedirdevDef *def,
-                                  virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
-                                  const virDomainDef *def);
-int qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
-                                       const virDomainDef *def,
-                                       virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
-                                     virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
-                                          const virDomainDef *def,
-                                          virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
-                                        const virDomainDef *def,
-                                        virQEMUDriverPtr driver,
-                                        virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
-                                  const virDomainDef *def,
-                                  virQEMUDriverPtr driver,
-                                  virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefSound(virDomainSoundDefPtr sound,
-                                     virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefVsock(const virDomainVsockDef *vsock,
-                                     const virDomainDef *def,
-                                     virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
-                                   const virDomainDef *def,
-                                   virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
-                                     const virDomainDef *def,
-                                     virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefMemballoon(const virDomainMemballoonDef *memballoon,
-                                          virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
-                                     const virDomainDef *def,
-                                     virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefMemory(virDomainMemoryDefPtr mem,
-                                      virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefHub(virDomainHubDefPtr hub,
-                                   virQEMUCapsPtr qemuCaps);
-int qemuValidateDomainDeviceDefNVRAM(virDomainNVRAMDefPtr nvram,
-                                     const virDomainDef *def,
-                                     virQEMUCapsPtr qemuCaps);
+int qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
+                                const virDomainDef *def,
+                                void *opaque);
