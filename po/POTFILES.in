@@ -236,6 +236,7 @@
 @SRCDIR@/src/util/vircommand.c
 @SRCDIR@/src/util/virconf.c
 @SRCDIR@/src/util/vircrypto.c
+@SRCDIR@/src/util/virdaemon.c
 @SRCDIR@/src/util/virdbus.c
 @SRCDIR@/src/util/virdnsmasq.c
 @SRCDIR@/src/util/virerror.c

@@ -1906,6 +1906,12 @@ virCryptoHashString;
 virCryptoHaveCipher;
 
 
+# util/virdaemon.h
+virDaemonForkIntoBackground;
+virDaemonSetupLogging;
+virDaemonUnixSocketPaths;
+
+
 # util/virdbus.h
 virDBusCallMethod;
 virDBusCloseSystemBus;
