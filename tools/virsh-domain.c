@@ -3002,7 +3002,10 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom,
     }
 
     vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
-    vshPrintExtra(ctl, _("Escape character is %s\n"), priv->escapeChar);
+    vshPrintExtra(ctl, _("Escape character is %s"), priv->escapeChar);
+    if (priv->escapeChar[0] == '^')
+        vshPrintExtra(ctl, " (Ctrl + %c)", priv->escapeChar[1]);
+    vshPrintExtra(ctl, "\n");
     fflush(stdout);
     if (virshRunConsole(ctl, dom, name, flags) == 0)
         return true;
