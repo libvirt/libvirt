@@ -249,9 +249,11 @@
         The <code>mode</code> element contains a list of supported CPU
         models, each described by a dedicated <code>model</code> element.
         The <code>usable</code> attribute specifies whether the model can
-        be used on the host. A special value <code>unknown</code> indicates
-        libvirt does not have enough information to provide the usability
-        data.
+        be used directly on the host. When usable='no' the corresponding model
+        cannot be used without disabling some features that the CPU of such
+        model is expected to have. A special value <code>unknown</code>
+        indicates libvirt does not have enough information to provide the
+        usability data.
       </dd>
     </dl>
 
