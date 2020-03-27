@@ -7,6 +7,8 @@ stages:
   - native_build
   - cross_build
 
+.script_variables: &script_variables |
+  export MAKEFLAGS="-j$(getconf _NPROCESSORS_ONLN)"
 
 # Common templates
 
@@ -18,6 +20,7 @@ stages:
       - ccache/
     key: "$CI_JOB_NAME"
   before_script:
+    - *script_variables
     - mkdir -p ccache
     - export CC="ccache gcc"
     - export CCACHE_BASEDIR=${PWD}
@@ -26,7 +29,7 @@ stages:
     - mkdir build
     - cd build
     - ../autogen.sh || (cat config.log && exit 1)
-    - $MAKE -j $(getconf _NPROCESSORS_ONLN) distcheck
+    - $MAKE distcheck
 
 # Extra native build jobs that are only run post-merge, or
 # when code is pushed to a branch with "ci-full-" name prefix
@@ -45,6 +48,7 @@ stages:
       - ccache/
     key: "$CI_JOB_NAME"
   before_script:
+    - *script_variables
     - mkdir -p ccache
     - export CC="ccache ${ABI}-gcc"
     - export CCACHE_BASEDIR=${PWD}
@@ -53,7 +57,7 @@ stages:
     - mkdir build
     - cd build
     - ../autogen.sh $CONFIGURE_OPTS || (cat config.log && exit 1)
-    - $MAKE -j $(getconf _NPROCESSORS_ONLN)
+    - $MAKE
 
 # Extra cross build jobs that are only run post-merge, or
 # when code is pushed to a branch with "ci-full-" name prefix
@@ -163,12 +167,14 @@ mingw64-fedora-30:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=website
 website:
   stage: prebuild
+  before_script:
+    - *script_variables
   script:
     - mkdir build
     - cd build
     - ../autogen.sh --prefix=$(pwd)/../vroot || (cat config.log && exit 1)
-    - $MAKE -j $(getconf _NPROCESSORS_ONLN) -C docs
-    - $MAKE -j $(getconf _NPROCESSORS_ONLN) -C docs install
+    - $MAKE -C docs
+    - $MAKE -C docs install
     - cd ..
     - mv vroot/share/doc/libvirt/html/ website
   image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
@@ -183,11 +189,13 @@ website:
 
 codestyle:
   stage: prebuild
+  before_script:
+    - *script_variables
   script:
     - mkdir build
     - cd build
     - ../autogen.sh || (cat config.log && exit 1)
-    - $MAKE -j $(getconf _NPROCESSORS_ONLN) syntax-check
+    - $MAKE syntax-check
   image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
 
 
@@ -198,12 +206,14 @@ potfile:
   stage: prebuild
   only:
     - master
+  before_script:
+    - *script_variables
   script:
     - mkdir build
     - cd build
     - ../autogen.sh || (cat config.log && exit 1)
-    - $MAKE -j $(getconf _NPROCESSORS_ONLN) -C src generated-sources
-    - $MAKE -j $(getconf _NPROCESSORS_ONLN) -C po libvirt.pot
+    - $MAKE -C src generated-sources
+    - $MAKE -C po libvirt.pot
     - cd ..
     - mv build/po/libvirt.pot libvirt.pot
   image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
@@ -222,6 +232,8 @@ potfile:
 dco:
   stage: prebuild
   image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
+  before_script:
+    - *script_variables
   script:
     - ./scripts/require-dco.py
   only:
