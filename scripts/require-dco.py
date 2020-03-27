@@ -46,7 +46,10 @@ print("\nChecking for 'Signed-off-by: NAME <EMAIL>' on all commits since %s...\n
 log = subprocess.check_output(["git", "log", "--format=%H %s", ancestor + "..."],
                               universal_newlines=True)
 
-commits = [[c[0:40], c[41:]] for c in log.strip().split("\n")]
+if log == "":
+    commits = []
+else:
+    commits = [[c[0:40], c[41:]] for c in log.strip().split("\n")]
 
 for sha, subject in commits:
 
