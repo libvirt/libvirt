@@ -2016,9 +2016,8 @@ exclude_file_name_regexp--sc_prohibit_close = \
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^tests/(virhostcpu|virpcitest)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)
 
-_src2=src/(util/(vircommand|virdaemon)|lxc/lxc_controller)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
-  (^($(_src2)|tests/testutils)\.c$$)
+  (^(src/(util/(vircommand|virdaemon)|lxc/lxc_controller)|tests/testutils)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/vir(util|log)\.c$$
 
