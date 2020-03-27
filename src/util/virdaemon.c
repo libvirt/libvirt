@@ -20,9 +20,7 @@
 
 #include <config.h>
 
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdbool.h>
@@ -32,8 +30,12 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "viralloc.h"
+#include "virprocess.h"
+#include "vircommand.h"
 
 #include "configmake.h"
+
+#ifndef WIN32
 
 int
 virDaemonForkIntoBackground(const char *argv0)
@@ -42,7 +44,7 @@ virDaemonForkIntoBackground(const char *argv0)
     if (virPipeQuiet(statuspipe) < 0)
         return -1;
 
-    pid_t pid = fork();
+    pid_t pid = virFork();
     switch (pid) {
     case 0:
         {
@@ -71,7 +73,7 @@ virDaemonForkIntoBackground(const char *argv0)
             if (setsid() < 0)
                 goto cleanup;
 
-            nextpid = fork();
+            nextpid = virFork();
             switch (nextpid) {
             case 0: /* grandchild */
                 return statuspipe[1];
@@ -102,7 +104,7 @@ virDaemonForkIntoBackground(const char *argv0)
             VIR_FORCE_CLOSE(statuspipe[1]);
 
             /* We wait to make sure the first child forked successfully */
-            if ((got = waitpid(pid, &exitstatus, 0)) < 0 ||
+            if ((got = virProcessWait(pid, &exitstatus, 0)) < 0 ||
                 got != pid ||
                 exitstatus != 0) {
                 goto error;
@@ -250,3 +252,37 @@ virDaemonUnixSocketPaths(const char *sock_prefix,
     VIR_FREE(rundir);
     return ret;
 }
+
+#else /* WIN32 */
+
+int virDaemonForkIntoBackground(const char *argv0 G_GNUC_UNUSED)
+{
+    errno = ENOTSUP;
+    return -1;
+}
+
+void virDaemonSetupLogging(const char *daemon_name G_GNUC_UNUSED,
+                           unsigned int log_level G_GNUC_UNUSED,
+                           char *log_filters G_GNUC_UNUSED,
+                           char *log_outputs G_GNUC_UNUSED,
+                           bool privileged G_GNUC_UNUSED,
+                           bool verbose G_GNUC_UNUSED,
+                           bool godaemon G_GNUC_UNUSED)
+{
+    /* NOOP */
+    errno = ENOTSUP;
+    return;
+}
+
+int virDaemonUnixSocketPaths(const char *sock_prefix G_GNUC_UNUSED,
+                             bool privileged G_GNUC_UNUSED,
+                             char *unix_sock_dir G_GNUC_UNUSED,
+                             char **sockfile G_GNUC_UNUSED,
+                             char **rosockfile G_GNUC_UNUSED,
+                             char **adminSockfile G_GNUC_UNUSED)
+{
+    errno = ENOTSUP;
+    return -1;
+}
+
+#endif /* WIN32 */
