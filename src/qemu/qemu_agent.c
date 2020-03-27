@@ -332,9 +332,8 @@ static int qemuAgentIOProcessData(qemuAgentPtr agent,
     size_t i = 0;
 #if DEBUG_IO
 # if DEBUG_RAW_IO
-    char *str1 = qemuAgentEscapeNonPrintable(data);
+    g_autofree char *str1 = qemuAgentEscapeNonPrintable(data);
     VIR_ERROR(_("[%s]"), str1);
-    VIR_FREE(str1);
 # else
     VIR_DEBUG("Data %zu bytes [%s]", len, data);
 # endif
@@ -377,12 +376,10 @@ qemuAgentIOProcess(qemuAgentPtr agent)
 
 #if DEBUG_IO
 # if DEBUG_RAW_IO
-    char *str1 = qemuAgentEscapeNonPrintable(msg ? msg->txBuffer : "");
-    char *str2 = qemuAgentEscapeNonPrintable(agent->buffer);
+    g_autofree char *str1 = qemuAgentEscapeNonPrintable(msg ? msg->txBuffer : "");
+    g_autofree char *str2 = qemuAgentEscapeNonPrintable(agent->buffer);
     VIR_ERROR(_("Process %zu %p %p [[[%s]]][[[%s]]]"),
               agent->bufferOffset, agent->msg, msg, str1, str2);
-    VIR_FREE(str1);
-    VIR_FREE(str2);
 # else
     VIR_DEBUG("Process %zu", agent->bufferOffset);
 # endif
@@ -1083,7 +1080,7 @@ qemuAgentCommandFull(qemuAgentPtr agent,
 {
     int ret = -1;
     qemuAgentMessage msg;
-    char *cmdstr = NULL;
+    g_autofree char *cmdstr = NULL;
     int await_event = agent->await_event;
 
     *reply = NULL;
@@ -1133,7 +1130,6 @@ qemuAgentCommandFull(qemuAgentPtr agent,
     ret = qemuAgentCheckError(cmd, *reply, report_unsupported);
 
  cleanup:
-    VIR_FREE(cmdstr);
     VIR_FREE(msg.txBuffer);
     agent->await_event = QEMU_AGENT_EVENT_NONE;
 
