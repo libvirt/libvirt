@@ -1632,7 +1632,7 @@ mymain(void)
                                    "\"file.url\": \"https://host/folder/esx6.5-rhel7.7-x86%5f64/esx6.5-rhel7.7-x86%5f64-flat.vmdk?dcPath=data&dsName=esx6.5-matrix\","
                                    "\"file.timeout\": 2000"
                                  "}",
-                           "<source protocol='https' name='folder/esx6.5-rhel7.7-x86_64/esx6.5-rhel7.7-x86_64-flat.vmdk'>\n"
+                           "<source protocol='https' name='folder/esx6.5-rhel7.7-x86_64/esx6.5-rhel7.7-x86_64-flat.vmdk' query='dcPath=data&amp;dsName=esx6.5-matrix'>\n"
                            "  <host name='host' port='443'/>\n"
                            "  <ssl verify='no'/>\n"
                            "  <cookies>\n"
@@ -1647,7 +1647,7 @@ mymain(void)
                                    "\"file.url\": \"https://host/folder/esx6.5-rhel7.7-x86%5f64/esx6.5-rhel7.7-x86%5f64-flat.vmdk?dcPath=data&dsName=esx6.5-matrix\","
                                    "\"file.timeout\": 2000"
                                  "}",
-                           "<source protocol='https' name='folder/esx6.5-rhel7.7-x86_64/esx6.5-rhel7.7-x86_64-flat.vmdk'>\n"
+                           "<source protocol='https' name='folder/esx6.5-rhel7.7-x86_64/esx6.5-rhel7.7-x86_64-flat.vmdk' query='dcPath=data&amp;dsName=esx6.5-matrix'>\n"
                            "  <host name='host' port='443'/>\n"
                            "  <ssl verify='no'/>\n"
                            "  <cookies>\n"

@@ -2853,9 +2853,16 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
         return -1;
     }
 
-    /* handle socket stored as a query */
-    if (uri->query)
-        src->hosts->socket = g_strdup(STRSKIP(uri->query, "socket="));
+    if (uri->query) {
+        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTP ||
+            src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTPS) {
+            src->query = g_strdup(uri->query);
+        } else {
+            /* handle socket stored as a query */
+            if (STRPREFIX(uri->query, "socket="))
+                src->hosts->socket = g_strdup(STRSKIP(uri->query, "socket="));
+        }
+    }
 
     /* uri->path is NULL if the URI does not contain slash after host:
      * transport://host:port */
