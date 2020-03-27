@@ -130,17 +130,6 @@ dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
 
 
-LIBVIRT_ARG_WITH_FEATURE([SECRETS], [local secrets management driver], [yes])
-
-if test "$with_libvirtd" = "no"; then
-  with_secrets=no
-fi
-if test "$with_secrets" = "yes" ; then
-  AC_DEFINE_UNQUOTED([WITH_SECRETS], 1, [whether local secrets management driver is available])
-fi
-AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
-
-
 dnl
 dnl Storage driver checks
 dnl
