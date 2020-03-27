@@ -37,7 +37,8 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"raw",\
 "file":"libvirt-3-storage"}' \
 -device ide-cd,bus=ide.0,unit=1,drive=libvirt-3-format,id=ide0-0-1 \
--blockdev '{"driver":"https","url":"https://host.name:443/url/path/file.iso",\
+-blockdev '{"driver":"https",\
+"url":"https://host.name:443/url/path/file.iso?test=val",\
 "node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"raw",\
 "file":"libvirt-2-storage"}' \

@@ -55,8 +55,9 @@ id=virtio-disk2 \
 -object secret,id=libvirt-1-storage-httpcookie-secret0,\
 data=DrPR9NA6GKJb7qi1KbjHaealKEMVtOWUl2h3yvO5lgIh6cyLHemmlg+h9fcgwREA,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
--blockdev '{"driver":"https","url":"https://example.org:1234/test4.img",\
-"sslverify":false,"cookie-secret":"libvirt-1-storage-httpcookie-secret0",\
+-blockdev '{"driver":"https",\
+"url":"https://example.org:1234/test4.img?par=val&other=ble","sslverify":false,\
+"cookie-secret":"libvirt-1-storage-httpcookie-secret0",\
 "node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
 "file":"libvirt-1-storage"}' \

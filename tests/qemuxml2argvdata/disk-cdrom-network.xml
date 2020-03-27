@@ -39,7 +39,7 @@
     </disk>
     <disk type='network' device='cdrom'>
       <driver name='qemu' type='raw'/>
-      <source protocol='https' name='/url/path/file.iso'>
+      <source protocol='https' name='/url/path/file.iso' query='test=val'>
         <host name='host.name' port='443'/>
       </source>
       <target dev='hdc' bus='ide'/>

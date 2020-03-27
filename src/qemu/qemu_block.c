@@ -437,6 +437,8 @@ qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
         }
     }
 
+    uri->query = g_strdup(src->query);
+
     uri->server = g_strdup(src->hosts->name);
 
     return g_steal_pointer(&uri);

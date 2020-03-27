@@ -7132,6 +7132,15 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         }
     }
 
+    if (src->query &&
+        (actualType != VIR_STORAGE_TYPE_NETWORK ||
+         (src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTPS &&
+          src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTP))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("query is supported only with HTTP(S) protocols"));
+        return -1;
+    }
+
     return 0;
 }
 
