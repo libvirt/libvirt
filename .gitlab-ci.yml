@@ -228,3 +228,4 @@ dco:
     - branches
   except:
     - /^v.*-maint$/
+    - master
