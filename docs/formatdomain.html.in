@@ -3973,7 +3973,7 @@
     &lt;source name='my-vm-template'/&gt;
     &lt;target dir='/'/&gt;
   &lt;/filesystem&gt;
-  &lt;filesystem type='mount' accessmode='passthrough'&gt;
+  &lt;filesystem type='mount' accessmode='passthrough' multidevs='remap'&gt;
     &lt;driver type='path' wrpolicy='immediate'/&gt;
     &lt;source dir='/export/to/guest'/&gt;
     &lt;target dir='/import/from/host'/&gt;
@@ -4097,6 +4097,44 @@
       See <a href="#elementsVirtioTransitional">Virtio transitional devices</a>
       for more details.
       </p>
+
+      <p>
+      The filesystem element has an optional attribute <code>multidevs</code>
+      which specifies how to deal with a filesystem export containing more than
+      one device, in order to avoid file ID collisions on guest when using 9pfs
+      (<span class="since">since 6.3.0, requires QEMU 4.2</span>).
+      This attribute is not available for virtiofs. The possible values are:
+      </p>
+
+        <dl>
+        <dt><code>default</code></dt>
+        <dd>
+        Use QEMU's default setting (which currently is <code>warn</code>).
+        </dd>
+        <dt><code>remap</code></dt>
+        <dd>
+        This setting allows guest to access multiple devices per export without
+        encountering misbehaviours. Inode numbers from host are automatically
+        remapped on guest to actively prevent file ID collisions if guest
+        accesses one export containing multiple devices.
+        </dd>
+        <dt><code>forbid</code></dt>
+        <dd>
+        Only allow to access one device per export by guest. Attempts to access
+        additional devices on the same export will cause the individual
+        filesystem access by guest to fail with an error and being logged (once)
+        as error on host side.
+        </dd>
+        <dt><code>warn</code></dt>
+        <dd>
+        This setting resembles the behaviour of 9pfs prior to QEMU 4.2, that is
+        no action is performed to prevent any potential file ID collisions if an
+        export contains multiple devices, with the only exception: a warning is
+        logged (once) on host side now. This setting may lead to misbehaviours
+        on guest side if more than one device is exported per export, due to the
+        potential file ID collisions this may cause on guest side in that case.
+        </dd>
+        </dl>
 
       </dd>
 

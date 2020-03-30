@@ -2707,6 +2707,16 @@
           </attribute>
         </optional>
         <optional>
+          <attribute name="multidevs">
+            <choice>
+              <value>default</value>
+              <value>remap</value>
+              <value>forbid</value>
+              <value>warn</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
           <element name='readonly'>
             <empty/>
           </element>
