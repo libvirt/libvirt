@@ -278,7 +278,8 @@ findMACs(const char *file,
         *macs = NULL;
         *nmacs = 0;
     }
-    yajl_free(parser);
+    if (parser)
+        yajl_free(parser);
     for (i = 0; i < parserState.entry.nmacs; i++)
         free(parserState.entry.macs[i]);
     free(parserState.entry.macs);

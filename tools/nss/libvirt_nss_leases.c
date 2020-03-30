@@ -426,7 +426,8 @@ findLeases(const char *file,
         *addrs = NULL;
         *naddrs = 0;
     }
-    yajl_free(parser);
+    if (parser)
+        yajl_free(parser);
     free(parserState.entry.ipaddr);
     free(parserState.entry.macaddr);
     free(parserState.entry.hostname);

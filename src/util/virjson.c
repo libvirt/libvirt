@@ -1838,7 +1838,7 @@ virJSONValueFromString(const char *jsonstring)
     if (!hand) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to create JSON parser"));
-        goto cleanup;
+        return NULL;
     }
 
     /* Yajl 2 is nice enough to default to rejecting trailing garbage. */
