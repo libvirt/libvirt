@@ -568,6 +568,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "blockdev-snapshot.allow-write-only-overlay",
               "blockdev-reopen",
               "storage.werror",
+
+              /* 360 */
+              "fsdev.multidevs",
     );
 
 
@@ -3160,6 +3163,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS },
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "smp-opts", "dies", QEMU_CAPS_SMP_DIES },
+    { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
 };
 
 static int

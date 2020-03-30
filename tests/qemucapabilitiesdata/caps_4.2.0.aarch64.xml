@@ -180,6 +180,7 @@
   <flag name='virtio-net.failover'/>
   <flag name='vhost-user-fs'/>
   <flag name='storage.werror'/>
+  <flag name='fsdev.multidevs'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700242</microcodeVersion>

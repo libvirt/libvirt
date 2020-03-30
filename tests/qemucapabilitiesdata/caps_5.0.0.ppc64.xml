@@ -190,6 +190,7 @@
   <flag name='query-named-block-nodes.flat'/>
   <flag name='blockdev-snapshot.allow-write-only-overlay'/>
   <flag name='storage.werror'/>
+  <flag name='fsdev.multidevs'/>
   <version>4002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900241</microcodeVersion>

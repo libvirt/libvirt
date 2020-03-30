@@ -550,6 +550,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_BLOCKDEV_REOPEN, /* 'blockdev-reopen' qmp command is supported */
     QEMU_CAPS_STORAGE_WERROR, /* virtio-blk,scsi-hd.werror */
 
+    /* 360 */
+    QEMU_CAPS_FSDEV_MULTIDEVS, /* fsdev.multidevs */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
