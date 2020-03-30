@@ -1713,7 +1713,8 @@ virQEMUCapsNewBinary(const char *binary)
 {
     virQEMUCapsPtr qemuCaps = virQEMUCapsNew();
 
-    qemuCaps->binary = g_strdup(binary);
+    if (qemuCaps)
+        qemuCaps->binary = g_strdup(binary);
 
     return qemuCaps;
 }
