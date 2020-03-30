@@ -77,7 +77,7 @@ virSecurityDeviceLabelDefNew(const char *model)
 
     if (VIR_ALLOC(seclabel) < 0) {
         virSecurityDeviceLabelDefFree(seclabel);
-        seclabel = NULL;
+        return NULL;
     }
 
     seclabel->model = g_strdup(model);
