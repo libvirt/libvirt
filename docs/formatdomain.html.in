@@ -3096,10 +3096,11 @@
               <dd>
               The <code>protocol</code> attribute specifies the protocol to
               access to the requested image. Possible values are "nbd",
-              "iscsi", "rbd", "sheepdog", "gluster" or "vxhs".
+              "iscsi", "rbd", "sheepdog", "gluster", "vxhs", "http", "https",
+              "ftp", ftps", or "tftp".
 
-              <p>If the <code>protocol</code> attribute is "rbd", "sheepdog",
-              "gluster", or "vxhs", an additional attribute <code>name</code>
+              <p>For any <code>protocol</code> other than <code>nbd</code>
+              an additional attribute <code>name</code>
               is mandatory to specify which volume/image will be used.
               </p>
 
