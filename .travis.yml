@@ -18,53 +18,6 @@ addons:
 
 matrix:
   include:
-    - services:
-        - docker
-      env:
-        - IMAGE="ubuntu-1804"
-        - MAKE_ARGS="syntax-check distcheck"
-      script:
-        - make -C ci/ ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
-    - services:
-        - docker
-      env:
-        - IMAGE="centos-7"
-        - MAKE_ARGS="syntax-check distcheck"
-      script:
-        - make -C ci/ ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
-    - services:
-        - docker
-      env:
-        - IMAGE="debian-9"
-        - MAKE_ARGS="syntax-check distcheck"
-      script:
-        - make -C ci/ ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
-    - services:
-        - docker
-      env:
-        - IMAGE="fedora-31"
-        - MAKE_ARGS="syntax-check distcheck"
-      script:
-        - make -C ci/ ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
-    - services:
-        - docker
-      env:
-        - IMAGE="fedora-rawhide"
-        - MAKE_ARGS="syntax-check distcheck"
-      script:
-        - make -C ci/ ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
-    - services:
-        - docker
-      env:
-        - IMAGE="fedora-30-cross-mingw32"
-      script:
-        - make -C ci/ ci-build@$IMAGE
-    - services:
-        - docker
-      env:
-        - IMAGE="fedora-30-cross-mingw64"
-      script:
-        - make -C ci/ ci-build@$IMAGE
     - compiler: clang
       language: c
       os: osx
