@@ -8,6 +8,10 @@ stages:
 
 .script_variables: &script_variables |
   export MAKEFLAGS="-j$(getconf _NPROCESSORS_ONLN)"
+  export CCACHE_BASEDIR="$(pwd)"
+  export CCACHE_DIR="$CCACHE_BASEDIR/ccache"
+  export CCACHE_MAXSIZE="500M"
+  export PATH="$CCACHE_WRAPPERSDIR:$PATH"
 
 # Common templates
 
@@ -20,10 +24,6 @@ stages:
     key: "$CI_JOB_NAME"
   before_script:
     - *script_variables
-    - mkdir -p ccache
-    - export CC="ccache gcc"
-    - export CCACHE_BASEDIR=${PWD}
-    - export CCACHE_DIR=${PWD}/ccache
   script:
     - mkdir build
     - cd build
@@ -48,10 +48,6 @@ stages:
     key: "$CI_JOB_NAME"
   before_script:
     - *script_variables
-    - mkdir -p ccache
-    - export CC="ccache ${ABI}-gcc"
-    - export CCACHE_BASEDIR=${PWD}
-    - export CCACHE_DIR=${PWD}/ccache
   script:
     - mkdir build
     - cd build
