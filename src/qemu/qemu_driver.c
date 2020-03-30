@@ -17466,6 +17466,10 @@ qemuDomainBlockPullCommon(virDomainObjPtr vm,
                 goto endjob;
             }
 
+            if (blockdev &&
+                qemuBlockUpdateRelativeBacking(vm, disk->src, disk->src) < 0)
+                goto endjob;
+
             if (virStorageFileGetRelativeBackingPath(disk->src->backingStore,
                                                      baseSource,
                                                      &backingPath) < 0)
@@ -18592,6 +18596,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
                            _("this qemu doesn't support relative block commit"));
             goto endjob;
         }
+
+        if (blockdev && top_parent &&
+            qemuBlockUpdateRelativeBacking(vm, top_parent, disk->src) < 0)
+            goto endjob;
 
         if (virStorageFileGetRelativeBackingPath(topSource, baseSource,
                                                  &backingPath) < 0)

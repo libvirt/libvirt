@@ -261,3 +261,8 @@ qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src);
 
 char *
 qemuBlockStorageSourceGetCookieString(virStorageSourcePtr src);
+
+int
+qemuBlockUpdateRelativeBacking(virDomainObjPtr vm,
+                               virStorageSourcePtr src,
+                               virStorageSourcePtr topsrc);

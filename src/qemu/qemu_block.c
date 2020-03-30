@@ -3378,3 +3378,49 @@ qemuBlockStorageSourceGetCookieString(virStorageSourcePtr src)
 
     return virBufferContentAndReset(&buf);
 }
+
+
+/**
+ * qemuBlockUpdateRelativeBacking:
+ * @vm: domain object
+ * @src: starting point of the update
+ * @topsrc: top level image in the backing chain (used to get security label)
+ *
+ * Reload data necessary for keeping backing store links starting from @src
+ * relative.
+ */
+int
+qemuBlockUpdateRelativeBacking(virDomainObjPtr vm,
+                               virStorageSourcePtr src,
+                               virStorageSourcePtr topsrc)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virStorageSourcePtr n;
+
+    for (n = src; virStorageSourceHasBacking(n); n = n->backingStore) {
+        g_autofree char *backingStoreStr = NULL;
+        int rc;
+
+        if (n->backingStore->relPath)
+            break;
+
+        if (!virStorageFileSupportsBackingChainTraversal(n))
+            continue;
+
+        if (qemuDomainStorageFileInit(driver, vm, n, topsrc) < 0)
+            return -1;
+
+        rc = virStorageFileGetBackingStoreStr(n, &backingStoreStr);
+
+        virStorageFileDeinit(n);
+
+        if (rc < 0)
+            return rc;
+
+        if (backingStoreStr && virStorageIsRelative(backingStoreStr))
+            n->backingStore->relPath = g_steal_pointer(&backingStoreStr);
+    }
+
+    return 0;
+}
