@@ -2950,6 +2950,13 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
                        _("only supports mount filesystem type"));
         return -1;
     }
+    if (fs->multidevs != VIR_DOMAIN_FS_MODEL_DEFAULT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_MULTIDEVS))
+    {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("multidevs is not supported with this QEMU binary"));
+        return -1;
+    }
 
     switch ((virDomainFSDriverType) fs->fsdriver) {
     case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
@@ -3000,6 +3007,11 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_FS)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtiofs is not supported with this QEMU binary"));
+            return -1;
+        }
+        if (fs->multidevs != VIR_DOMAIN_FS_MULTIDEVS_DEFAULT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtiofs does not support multidevs"));
             return -1;
         }
         if (qemuValidateDomainDefVirtioFSSharedMemory(def) < 0)
