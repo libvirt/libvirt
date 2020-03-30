@@ -1869,6 +1869,9 @@
           </choice>
         </attribute>
         <attribute name="name"/>
+        <optional>
+          <attribute name="query"/>
+        </optional>
         <ref name="diskSourceCommon"/>
         <ref name="diskSourceNetworkHost"/>
         <optional>
@@ -1894,6 +1897,9 @@
           </choice>
         </attribute>
         <attribute name="name"/>
+        <optional>
+          <attribute name="query"/>
+        </optional>
         <ref name="diskSourceCommon"/>
         <ref name="diskSourceNetworkHost"/>
         <optional>

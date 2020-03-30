@@ -49,7 +49,7 @@
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source protocol='https' name='test4.img'>
+      <source protocol='https' name='test4.img' query='par=val&amp;other=ble'>
         <host name='example.org' port='1234'/>
         <ssl verify='no'/>
         <cookies>

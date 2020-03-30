@@ -2847,7 +2847,7 @@
   &lt;/disk&gt;
   &lt;disk type='network' device='cdrom'&gt;
     &lt;driver name='qemu' type='raw'/&gt;
-    &lt;source protocol="http" name="url_path"&gt;
+    &lt;source protocol="http" name="url_path" query="foo=bar&amp;amp;baz=flurb&gt;
       &lt;host name="hostname" port="80"/&gt;
       &lt;cookies&gt;
         &lt;cookie name="test"&gt;somevalue&lt;/cookie&gt;
@@ -3111,6 +3111,11 @@
               the <code>nbd_tls</code> and <code>nbd_tls_x509_cert_dir</code> in
               /etc/libvirt/qemu.conf.
               ('tls' <span class="since">Since 4.5.0</span>)
+              </p>
+
+              <p>For protocols <code>http</code> and <code>https</code> an
+              optional attribute <code>query</code> specifies the query string.
+              (<span class="since">Since 6.2.0</span>)
               </p>
 
               <p>For "iscsi" (<span class="since">since 1.0.4</span>), the
