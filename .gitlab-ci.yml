@@ -1,5 +1,4 @@
 variables:
-  MAKE: make
   GIT_DEPTH: 100
 
 stages:
