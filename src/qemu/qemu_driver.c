@@ -15167,8 +15167,9 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
         dd->initialized = true;
 
         /* relative backing store paths need to be updated so that relative
-         * block commit still works */
-        if (reuse) {
+         * block commit still works. With blockdev we must update it when doing
+         * commit anyways so it's skipped here */
+        if (reuse && !blockdev) {
             if (supportsBacking) {
                 g_autofree char *backingStoreStr = NULL;
 
