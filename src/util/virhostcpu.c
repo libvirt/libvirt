@@ -1416,3 +1416,40 @@ virHostCPUGetTscInfo(void)
 #endif /* HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
           (defined(__i386__) || defined(__x86_64__)) && \
           (defined(__linux__) || defined(__FreeBSD__)) */
+
+int
+virHostCPUReadSignature(virArch arch G_GNUC_UNUSED,
+                        FILE *cpuinfo G_GNUC_UNUSED,
+                        char **signature G_GNUC_UNUSED)
+{
+    return 0;
+}
+
+#ifdef __linux__
+
+int
+virHostCPUGetSignature(char **signature)
+{
+    g_autoptr(FILE) cpuinfo = NULL;
+
+    *signature = NULL;
+
+    if (!(cpuinfo = fopen(CPUINFO_PATH, "r"))) {
+        virReportSystemError(errno, _("Failed to open cpuinfo file '%s'"),
+                             CPUINFO_PATH);
+        return -1;
+    }
+
+    return virHostCPUReadSignature(virArchFromHost(), cpuinfo, signature);
+}
+
+#else
+
+int
+virHostCPUGetSignature(char **signature)
+{
+    *signature = NULL;
+    return 0;
+}
+
+#endif /* __linux__ */

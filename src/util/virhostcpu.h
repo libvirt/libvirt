@@ -79,3 +79,5 @@ int virHostCPUGetMSR(unsigned long index,
                      uint64_t *msr);
 
 virHostCPUTscInfoPtr virHostCPUGetTscInfo(void);
+
+int virHostCPUGetSignature(char **signature);

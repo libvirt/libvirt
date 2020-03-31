@@ -42,3 +42,7 @@ int virHostCPUGetStatsLinux(FILE *procstat,
                             virNodeCPUStatsPtr params,
                             int *nparams);
 #endif
+
+int virHostCPUReadSignature(virArch arch,
+                            FILE *cpuinfo,
+                            char **signature);

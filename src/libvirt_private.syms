@@ -2218,9 +2218,11 @@ virHostCPUGetMSR;
 virHostCPUGetOnline;
 virHostCPUGetOnlineBitmap;
 virHostCPUGetPresentBitmap;
+virHostCPUGetSignature;
 virHostCPUGetStats;
 virHostCPUGetThreadsPerSubcore;
 virHostCPUHasBitmap;
+virHostCPUReadSignature;
 virHostCPUStatsAssign;
 
 
