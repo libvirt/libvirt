@@ -7163,7 +7163,7 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = obj->privateData;
     bool custom_hypervisor_feat = false;
 
-    if (virQEMUDriverIsPrivileged(driver) &&
+    if (driver->privileged &&
         (cfg->user == 0 ||
          cfg->group == 0))
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logCtxt);
@@ -7262,7 +7262,7 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
     ctxt->path = g_strdup_printf("%s/%s.log", cfg->logDir, vm->def->name);
 
     if (cfg->stdioLogD) {
-        ctxt->manager = virLogManagerNew(virQEMUDriverIsPrivileged(driver));
+        ctxt->manager = virLogManagerNew(driver->privileged);
         if (!ctxt->manager)
             goto error;
 
@@ -7292,7 +7292,7 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
          * we can't rely on logrotate. We don't use O_TRUNC since
          * it is better for SELinux policy if we truncate afterwards */
         if (mode == QEMU_DOMAIN_LOG_CONTEXT_MODE_START &&
-            !virQEMUDriverIsPrivileged(driver) &&
+            !driver->privileged &&
             ftruncate(ctxt->writefd, 0) < 0) {
             virReportSystemError(errno, _("failed to truncate %s"),
                                  ctxt->path);
@@ -7436,7 +7436,7 @@ qemuDomainLogAppendMessage(virQEMUDriverPtr driver,
     path = g_strdup_printf("%s/%s.log", cfg->logDir, vm->def->name);
 
     if (cfg->stdioLogD) {
-        if (!(manager = virLogManagerNew(virQEMUDriverIsPrivileged(driver))))
+        if (!(manager = virLogManagerNew(driver->privileged)))
             goto cleanup;
 
         if (virLogManagerDomainAppendMessage(manager, "qemu", vm->def->uuid,
@@ -12991,7 +12991,7 @@ qemuDomainGetMachineName(virDomainObjPtr vm)
     if (!ret)
         ret = virDomainGenerateMachineName("qemu", cfg->root,
                                            vm->def->id, vm->def->name,
-                                           virQEMUDriverIsPrivileged(driver));
+                                           driver->privileged);
 
     return ret;
 }

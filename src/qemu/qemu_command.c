@@ -8109,7 +8109,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         /* network and bridge use a tap device, and direct uses a
          * macvtap device
          */
-        if (virQEMUDriverIsPrivileged(driver) && nicindexes && nnicindexes &&
+        if (driver->privileged && nicindexes && nnicindexes &&
             net->ifname) {
             if (virNetDevGetIndex(net->ifname, &nicindex) < 0 ||
                 VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex) < 0)
@@ -9649,7 +9649,7 @@ qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
     int spice = 0;
     int egl_headless = 0;
 
-    if (!virQEMUDriverIsPrivileged(driver)) {
+    if (!driver->privileged) {
         /* If we have no cgroups then we can have no tunings that
          * require them */
 

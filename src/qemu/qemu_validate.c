@@ -2979,7 +2979,7 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
         return -1;
 
     case VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS:
-        if (!virQEMUDriverIsPrivileged(driver)) {
+        if (!driver->privileged) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtiofs is not yet supported in session mode"));
             return -1;

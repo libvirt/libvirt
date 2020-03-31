@@ -1224,12 +1224,6 @@ virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)
     return conf;
 }
 
-bool
-virQEMUDriverIsPrivileged(virQEMUDriverPtr driver)
-{
-    return driver->privileged;
-}
-
 virDomainXMLOptionPtr
 virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver,
                            const char *defsecmodel)
