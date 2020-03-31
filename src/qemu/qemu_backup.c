@@ -105,6 +105,8 @@ struct qemuBackupDiskData {
     virDomainDiskDefPtr domdisk;
     qemuBlockJobDataPtr blockjob;
     virStorageSourcePtr store;
+    virStorageSourcePtr terminator;
+    virStorageSourcePtr backingStore;
     char *incrementalBitmap;
     qemuBlockStorageSourceChainDataPtr crdata;
     bool labelled;
@@ -146,6 +148,7 @@ qemuBackupDiskDataCleanupOne(virDomainObjPtr vm,
         qemuBlockJobStartupFinalize(vm, dd->blockjob);
 
     qemuBlockStorageSourceChainDataFree(dd->crdata);
+    virObjectUnref(dd->terminator);
 }
 
 
@@ -295,6 +298,7 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
                              virDomainBackupDiskDefPtr backupdisk,
                              struct qemuBackupDiskData *dd,
                              virJSONValuePtr actions,
+                             bool pull,
                              virDomainMomentDefPtr *incremental,
                              virHashTablePtr blockNamedNodeData,
                              virQEMUDriverConfigPtr cfg)
@@ -313,6 +317,19 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
 
     if (!dd->store->format)
         dd->store->format = VIR_STORAGE_FILE_QCOW2;
+
+    /* calculate backing store to use:
+     * push mode:
+     *   full backups: no backing store
+     *   incremental: original disk if format supports backing store
+     * pull mode:
+     *   both: original disk
+     */
+    if (pull || (incremental && dd->store->format >= VIR_STORAGE_FILE_BACKING)) {
+        dd->backingStore = dd->domdisk->src;
+    } else {
+        dd->backingStore = dd->terminator = virStorageSourceNew();
+    }
 
     if (qemuDomainStorageFileInit(priv->driver, vm, dd->store, dd->domdisk->src) < 0)
         return -1;
@@ -337,7 +354,7 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
 
     /* use original disk as backing to prevent opening the backing chain */
     if (!(dd->crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(dd->store,
-                                                                           dd->domdisk->src,
+                                                                           dd->backingStore,
                                                                            priv->qemuCaps)))
         return -1;
 
@@ -398,6 +415,7 @@ qemuBackupDiskPrepareData(virDomainObjPtr vm,
     struct qemuBackupDiskData *disks = NULL;
     ssize_t ndisks = 0;
     size_t i;
+    bool pull = def->type == VIR_DOMAIN_BACKUP_TYPE_PULL;
 
     disks = g_new0(struct qemuBackupDiskData, def->ndisks);
 
@@ -410,12 +428,12 @@ qemuBackupDiskPrepareData(virDomainObjPtr vm,
 
         ndisks++;
 
-        if (qemuBackupDiskPrepareDataOne(vm, backupdisk, dd, actions,
+        if (qemuBackupDiskPrepareDataOne(vm, backupdisk, dd, actions, pull,
                                          incremental, blockNamedNodeData,
                                          cfg) < 0)
             goto error;
 
-        if (def->type == VIR_DOMAIN_BACKUP_TYPE_PULL) {
+        if (pull) {
             if (qemuBackupDiskPrepareDataOnePull(actions, dd) < 0)
                 goto error;
         } else {
@@ -480,7 +498,7 @@ qemuBackupDiskPrepareOneStorage(virDomainObjPtr vm,
                                                    dd->store, dd->domdisk->src) < 0)
             return -1;
 
-        if (qemuBlockStorageSourceCreate(vm, dd->store, NULL, NULL,
+        if (qemuBlockStorageSourceCreate(vm, dd->store, dd->backingStore, NULL,
                                          dd->crdata->srcdata[0],
                                          QEMU_ASYNC_JOB_BACKUP) < 0)
             return -1;
