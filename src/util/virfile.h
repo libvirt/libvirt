@@ -89,6 +89,7 @@ static inline void virForceCloseHelper(int *fd)
  */
 #define VIR_AUTOCLOSE __attribute__((cleanup(virForceCloseHelper))) int
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(FILE, fclose);
 
 /* Opaque type for managing a wrapper around a fd.  */
 struct _virFileWrapperFd;
