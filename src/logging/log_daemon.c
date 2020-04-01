@@ -653,7 +653,7 @@ int main(int argc, char **argv) {
     int pid_file_fd = -1;
     char *sock_file = NULL;
     char *admin_sock_file = NULL;
-    int timeout = -1;        /* -t: Shutdown timeout */
+    int timeout = 0;         /* -t: Shutdown timeout */
     char *state_file = NULL;
     bool implicit_conf = false;
     mode_t old_umask;
@@ -703,7 +703,7 @@ int main(int argc, char **argv) {
 
         case 't':
             if (virStrToLong_i(optarg, &tmp, 10, &timeout) != 0
-                || timeout <= 0
+                || timeout < 0
                 /* Ensure that we can multiply by 1000 without overflowing.  */
                 || timeout > INT_MAX / 1000) {
                 VIR_ERROR(_("Invalid value for timeout"));
@@ -905,7 +905,7 @@ int main(int argc, char **argv) {
             adminSrv = virNetDaemonGetServer(logDaemon->dmn, "admin");
     }
 
-    if (timeout != -1) {
+    if (timeout > 0) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
         virNetDaemonAutoShutdown(logDaemon->dmn,
                                  timeout);
