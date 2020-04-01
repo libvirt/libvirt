@@ -2102,7 +2102,7 @@ exclude_file_name_regexp--sc_prohibit_useless_translation = \
   ^tests/virpolkittest.c
 
 exclude_file_name_regexp--sc_prohibit_devname = \
-  ^(tools/virsh.pod|build-aux/syntax-check\.mk|docs/.*)$$
+  ^(tools/virsh.pod|build-aux/syntax-check\.mk|docs/.*|tests/qemucapabilitiesdata/.*)$$
 
 exclude_file_name_regexp--sc_prohibit_virXXXFree = \
   ^(docs/|tests/|examples/|tools/|build-aux/syntax-check\.mk|src/test/test_driver.c|src/libvirt_public.syms|include/libvirt/libvirt-(domain|network|nodedev|storage|stream|secret|nwfilter|interface|domain-snapshot).h|src/libvirt-(domain|qemu|network|nodedev|storage|stream|secret|nwfilter|interface|domain-snapshot).c|src/qemu/qemu_shim.c$$)
