@@ -90,6 +90,7 @@
   <flag name='virtual-css-bridge'/>
   <flag name='sdl-gl'/>
   <flag name='zpci'/>
+  <flag name='storage.werror'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100245</microcodeVersion>

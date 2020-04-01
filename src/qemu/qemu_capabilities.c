@@ -567,6 +567,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-named-block-nodes.flat",
               "blockdev-snapshot.allow-write-only-overlay",
               "blockdev-reopen",
+              "storage.werror",
     );
 
 
@@ -1304,6 +1305,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
+    { "werror", QEMU_CAPS_STORAGE_WERROR },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioNet[] = {
@@ -1339,6 +1341,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
     { "device_id", QEMU_CAPS_SCSI_DISK_DEVICE_ID },
+    { "werror", QEMU_CAPS_STORAGE_WERROR },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsIDEDrive[] = {
@@ -4853,6 +4856,11 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCapsPtr qemuCaps)
 {
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_WERROR)) {
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_STORAGE_WERROR);
+    }
 }
 
 

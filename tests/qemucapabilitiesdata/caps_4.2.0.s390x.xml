@@ -138,6 +138,7 @@
   <flag name='smp-dies'/>
   <flag name='rng-builtin'/>
   <flag name='vhost-user-fs'/>
+  <flag name='storage.werror'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100242</microcodeVersion>

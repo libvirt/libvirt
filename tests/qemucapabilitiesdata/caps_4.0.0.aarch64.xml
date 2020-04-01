@@ -169,6 +169,7 @@
   <flag name='ramfb'/>
   <flag name='arm-max-cpu'/>
   <flag name='drive-nvme'/>
+  <flag name='storage.werror'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700240</microcodeVersion>

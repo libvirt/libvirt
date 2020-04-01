@@ -179,6 +179,7 @@
   <flag name='smp-dies'/>
   <flag name='i8042'/>
   <flag name='rng-builtin'/>
+  <flag name='storage.werror'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900242</microcodeVersion>

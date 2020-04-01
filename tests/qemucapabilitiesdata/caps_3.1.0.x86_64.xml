@@ -206,6 +206,7 @@
   <flag name='ramfb'/>
   <flag name='drive-nvme'/>
   <flag name='i8042'/>
+  <flag name='storage.werror'/>
   <version>3000092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100240</microcodeVersion>

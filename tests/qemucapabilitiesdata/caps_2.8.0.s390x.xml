@@ -95,6 +95,7 @@
   <flag name='zpci'/>
   <flag name='query-cpu-model-baseline'/>
   <flag name='query-cpu-model-comparison'/>
+  <flag name='storage.werror'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100246</microcodeVersion>

@@ -181,6 +181,7 @@
   <flag name='virtio-net.failover'/>
   <flag name='cpu.kvm-no-adjvtime'/>
   <flag name='vhost-user-fs'/>
+  <flag name='storage.werror'/>
   <version>4002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700241</microcodeVersion>

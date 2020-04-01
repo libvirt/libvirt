@@ -136,6 +136,7 @@
   <flag name='query-cpu-model-baseline'/>
   <flag name='query-cpu-model-comparison'/>
   <flag name='drive-nvme'/>
+  <flag name='storage.werror'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100240</microcodeVersion>
