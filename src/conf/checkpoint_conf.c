@@ -550,6 +550,10 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
             *update_current = true;
     }
 
+    /* set the first redefined checkpoint as current */
+    if (virDomainCheckpointGetCurrent(vm->checkpoints) == NULL)
+        *update_current = true;
+
     other = virDomainCheckpointFindByName(vm->checkpoints, def->parent.name);
     if (other) {
         otherdef = virDomainCheckpointObjGetDef(other);
