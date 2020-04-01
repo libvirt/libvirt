@@ -1,0 +1,3 @@
+# Customizations for the virtqemud.service systemd unit
+
+VIRTQEMUD_ARGS=""

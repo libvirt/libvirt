@@ -136,6 +136,8 @@ virtlxcd_CFLAGS = \
 virtlxcd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 virtlxcd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
+SYSCONF_FILES += lxc/virtlxcd.sysconf
+
 SYSTEMD_UNIT_FILES += \
 	virtlxcd.service \
 	virtlxcd.socket \

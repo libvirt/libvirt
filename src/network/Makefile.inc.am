@@ -69,6 +69,8 @@ virtnetworkd_CFLAGS = \
 virtnetworkd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 virtnetworkd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
+SYSCONF_FILES += network/virtnetworkd.sysconf
+
 SYSTEMD_UNIT_FILES += \
 	virtnetworkd.service \
 	virtnetworkd.socket \

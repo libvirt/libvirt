@@ -1,0 +1,3 @@
+# Customizations for the virtlxcd.service systemd unit
+
+VIRTLXCD_ARGS=""

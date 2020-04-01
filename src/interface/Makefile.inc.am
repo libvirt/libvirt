@@ -61,6 +61,8 @@ virtinterfaced_CFLAGS = \
 virtinterfaced_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 virtinterfaced_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
+SYSCONF_FILES += interface/virtinterfaced.sysconf
+
 SYSTEMD_UNIT_FILES += \
 	virtinterfaced.service \
 	virtinterfaced.socket \

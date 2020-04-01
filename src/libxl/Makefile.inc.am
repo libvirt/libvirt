@@ -73,6 +73,8 @@ virtxend_CFLAGS = \
 virtxend_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 virtxend_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
+SYSCONF_FILES += libxl/virtxend.sysconf
+
 SYSTEMD_UNIT_FILES += \
 	virtxend.service \
 	virtxend.socket \

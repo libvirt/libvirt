@@ -14,7 +14,8 @@ Documentation=https://libvirt.org
 
 [Service]
 Type=notify
-ExecStart=@sbindir@/virtvboxd --timeout 120
+EnvironmentFile=-@sysconfdir@/sysconfig/virtvboxd
+ExecStart=@sbindir@/virtvboxd --timeout 120 $VIRTVBOXD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 

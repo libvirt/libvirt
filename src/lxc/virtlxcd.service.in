@@ -18,7 +18,8 @@ Documentation=https://libvirt.org
 
 [Service]
 Type=notify
-ExecStart=@sbindir@/virtlxcd --timeout 120
+EnvironmentFile=-@sysconfdir@/sysconfig/virtlxcd
+ExecStart=@sbindir@/virtlxcd --timeout 120 $VIRTLXCD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure

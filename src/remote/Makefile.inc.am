@@ -88,7 +88,10 @@ LOGROTATE_FILES_IN += \
 	remote/libvirtd.logrotate.in \
 	$(NULL)
 
-SYSCONF_FILES += remote/libvirtd.sysconf
+SYSCONF_FILES += \
+	remote/libvirtd.sysconf \
+	remote/virtproxyd.sysconf \
+	$(NULL)
 
 LIBVIRTD_SOCKET_UNIT_FILES_IN = \
 	remote/libvirtd.socket.in \

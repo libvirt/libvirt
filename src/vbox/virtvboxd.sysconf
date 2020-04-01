@@ -1,0 +1,3 @@
+# Customizations for the virtvboxd.service systemd unit
+
+VIRTVBOXD_ARGS=""

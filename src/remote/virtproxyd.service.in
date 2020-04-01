@@ -13,7 +13,8 @@ Documentation=https://libvirt.org
 
 [Service]
 Type=notify
-ExecStart=@sbindir@/virtproxyd --timeout 120
+EnvironmentFile=-@sysconfdir@/sysconfig/virtproxyd
+ExecStart=@sbindir@/virtproxyd --timeout 120 $VIRTPROXYD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 

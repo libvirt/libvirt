@@ -146,6 +146,8 @@ virtqemud_CFLAGS = \
 virtqemud_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 virtqemud_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
+SYSCONF_FILES += qemu/virtqemud.sysconf
+
 SYSTEMD_UNIT_FILES += \
 	virtqemud.service \
 	virtqemud.socket \

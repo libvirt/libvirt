@@ -13,7 +13,8 @@ Documentation=https://libvirt.org
 
 [Service]
 Type=notify
-ExecStart=@sbindir@/virtnetworkd --timeout 120
+EnvironmentFile=-@sysconfdir@/sysconfig/virtnetworkd
+ExecStart=@sbindir@/virtnetworkd --timeout 120 $VIRTNETWORKD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 KillMode=process

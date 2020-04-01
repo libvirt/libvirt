@@ -56,6 +56,8 @@ virtvzd_CFLAGS = \
 virtvzd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 virtvzd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
+SYSCONF_FILES += vz/virtvzd.sysconf
+
 SYSTEMD_UNIT_FILES += \
 	virtvzd.service \
 	virtvzd.socket \

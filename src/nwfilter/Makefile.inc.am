@@ -70,6 +70,8 @@ virtnwfilterd_CFLAGS = \
 virtnwfilterd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 virtnwfilterd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
+SYSCONF_FILES += nwfilter/virtnwfilterd.sysconf
+
 SYSTEMD_UNIT_FILES += \
 	virtnwfilterd.service \
 	virtnwfilterd.socket \

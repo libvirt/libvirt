@@ -84,6 +84,8 @@ virtnodedevd_CFLAGS = \
 virtnodedevd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 virtnodedevd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
+SYSCONF_FILES += node_device/virtnodedevd.sysconf
+
 SYSTEMD_UNIT_FILES += \
 	virtnodedevd.service \
 	virtnodedevd.socket \

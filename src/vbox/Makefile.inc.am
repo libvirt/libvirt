@@ -81,6 +81,8 @@ virtvboxd_CFLAGS = \
 virtvboxd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 virtvboxd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
+SYSCONF_FILES += vbox/virtvboxd.sysconf
+
 SYSTEMD_UNIT_FILES += \
 	virtvboxd.service \
 	virtvboxd.socket \

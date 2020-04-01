@@ -15,7 +15,8 @@ Documentation=https://libvirt.org
 
 [Service]
 Type=notify
-ExecStart=@sbindir@/virtstoraged --timeout 120
+EnvironmentFile=-@sysconfdir@/sysconfig/virtstoraged
+ExecStart=@sbindir@/virtstoraged --timeout 120 $VIRTSTORAGED_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 
