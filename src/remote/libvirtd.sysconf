@@ -11,9 +11,6 @@ LIBVIRTD_ARGS="--timeout 120"
 # can be used to listen on TCP/TLS sockets
 #LIBVIRTD_ARGS="--listen"
 
-# Override Kerberos service keytab for SASL/GSSAPI
-#KRB5_KTNAME=/etc/libvirt/krb5.tab
-
 # Override the QEMU/SDL default audio driver probing when
 # starting virtual machines using SDL graphics
 #

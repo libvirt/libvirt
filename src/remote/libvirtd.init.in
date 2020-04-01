@@ -7,7 +7,6 @@ LIBVIRTD_TIMEOUT=${LIBVIRTD_TERMTIMEOUT:-"TERM/25/KILL/5"}
 
 command="@sbindir@/libvirtd"
 command_args="-d ${LIBVIRTD_OPTS}"
-start_stop_daemon_args="--env KRB5_KTNAME=/etc/libvirt/krb5.tab"
 pidfile="@runstatedir@/libvirtd.pid"
 retry="${LIBVIRTD_TERMTIMEOUT}"
 

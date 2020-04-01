@@ -33,9 +33,7 @@ mech_list: gssapi
 #   qemu+tcp://hostname/system?auth=sasl.gssapi
 #mech_list: scram-sha-1 gssapi
 
-# Some older builds of MIT kerberos on Linux ignore this option &
-# instead need KRB5_KTNAME env var.
-# For modern Linux, and other OS, this should be sufficient
+# File containing the service principal for libvirtd
 #
 keytab: /etc/libvirt/krb5.tab
 
