@@ -160,6 +160,12 @@
                     <zeroOrMore>
                       <ref name='devSeclabel'/>
                     </zeroOrMore>
+                    <optional>
+                      <ref name='diskSourceCommon'/>
+                    </optional>
+                    <optional>
+                      <ref name="encryption"/>
+                    </optional>
                     <empty/>
                   </element>
                 </optional>
@@ -179,6 +185,12 @@
                     <zeroOrMore>
                       <ref name='devSeclabel'/>
                     </zeroOrMore>
+                    <optional>
+                      <ref name='diskSourceCommon'/>
+                    </optional>
+                    <optional>
+                      <ref name="encryption"/>
+                    </optional>
                     <empty/>
                   </element>
                 </optional>
