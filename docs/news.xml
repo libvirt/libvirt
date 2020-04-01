@@ -114,6 +114,16 @@
           malfunctioning VM could affect all those running on the same host.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Support migration with SLIRP helper interface
+        </summary>
+        <description>
+          With QEMU 5.0, a new D-Bus backend allows migration of external
+          processes. When needed, libvirt will start a per-vm D-Bus bus, and
+          migrate the slirp-helper along with QEMU.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
