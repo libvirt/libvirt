@@ -1790,7 +1790,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
 
     /* werror/rerror are really frontend attributes, but older
      * qemu requires them on -drive instead of -device */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_WERROR))
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_STORAGE_WERROR))
         qemuBuildDiskFrontendAttributeErrorPolicy(disk, &opt);
 
     if (disk->src->readonly)
@@ -2241,7 +2241,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
 
     qemuBuildDiskFrontendAttributes(disk, &opt);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_WERROR))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_STORAGE_WERROR))
         qemuBuildDiskFrontendAttributeErrorPolicy(disk, &opt);
 
     return virBufferContentAndReset(&opt);

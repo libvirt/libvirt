@@ -27,17 +27,17 @@ file=/tmp/lib/domain--1-guest/master-key.aes \
 -no-shutdown \
 -boot strict=on \
 -drive file=/var/images/image1,format=qcow2,if=none,id=drive-virtio-disk0,\
-werror=stop,rerror=stop,cache=none \
+cache=none \
 -device virtio-blk-ccw,scsi=off,devno=fe.0.0000,drive=drive-virtio-disk0,\
-id=virtio-disk0,bootindex=1,write-cache=on \
+id=virtio-disk0,bootindex=1,write-cache=on,werror=stop,rerror=stop \
 -drive file=/var/images/image2,format=qcow2,if=none,id=drive-virtio-disk1,\
-werror=enospc,cache=none \
+cache=none \
 -device virtio-blk-ccw,scsi=off,devno=fe.0.0001,drive=drive-virtio-disk1,\
-id=virtio-disk1,write-cache=on \
+id=virtio-disk1,write-cache=on,werror=enospc \
 -drive file=/var/images/image3,format=qcow2,if=none,id=drive-virtio-disk2,\
-werror=report,rerror=ignore,cache=none \
+cache=none \
 -device virtio-blk-ccw,scsi=off,devno=fe.0.0002,drive=drive-virtio-disk2,\
-id=virtio-disk2,write-cache=on \
+id=virtio-disk2,write-cache=on,werror=report,rerror=ignore \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on
