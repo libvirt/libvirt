@@ -55,6 +55,27 @@
           automatically.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add virtiofs support
+        </summary>
+        <description>
+          This feature, introduced in QEMU 4.2, is a more modern alternative
+          to virtio-9p, which is exposed through the same
+          <code>&lt;filesystem/&gt;</code> element.
+        </description>
+      </change>
+      <change>
+        <summary>
+          admin: Support reloading TLS certificates
+        </summary>
+        <description>
+          After renewing TLS certificates, it was usually necessary to restart
+          libvirtd for the new ones to be loaded: now the same result can be
+          obtained without restarting the daemon by using <code>virt-admin
+          server-update-tls</code>.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
@@ -70,6 +91,29 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Don't compare local and remote hostnames on migration
+        </summary>
+        <description>
+          This check was introduced to prevent same-host migration, but did
+          not work as expected when multiple libvirtd instances were running
+          on the same host but in different containers. With this release, the
+          host UUID (which should be unique to the container) is checked
+          instead.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Use per-VM event loops
+        </summary>
+        <description>
+          Instead of using a single even loop to process communication with
+          the QEMU monitor and guest agent, create a separate one for each VM.
+          This helps with scalability and prevents scenarios where a single
+          malfunctioning VM could affect all those running on the same host.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -88,6 +132,16 @@
           of the top image was progressing due to QEMU image locking. Note that
           this fix also requires qemu-5.0 while -blockdev is used starting from
           QEMU-4.2.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Don't generate machine names containing dots
+        </summary>
+        <description>
+          Even though the guest name containing dots is not a problem for
+          libvirt itself, we need to strip them out when registering with
+          machined because of the latter's requirements.
         </description>
       </change>
     </section>
