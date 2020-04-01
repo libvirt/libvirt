@@ -3272,7 +3272,7 @@ mymain(void)
         qapiData.query = qry; \
         qapiData.rc = scc; \
         qapiData.replyobj = rplobj; \
-        if (virTestRun("qapi schema query" nme, testQAPISchemaQuery, &qapiData) < 0)\
+        if (virTestRun("qapi schema query " nme, testQAPISchemaQuery, &qapiData) < 0)\
             ret = -1; \
     } while (0)
 
@@ -3304,7 +3304,7 @@ mymain(void)
         qapiData.query = rootquery; \
         qapiData.success = scc; \
         qapiData.json = jsonstr; \
-        if (virTestRun("qapi schema validate" nme, testQAPISchemaValidate, &qapiData) < 0)\
+        if (virTestRun("qapi schema validate " nme, testQAPISchemaValidate, &qapiData) < 0)\
             ret = -1; \
     } while (0)
 
