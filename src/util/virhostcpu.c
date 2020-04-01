@@ -1418,10 +1418,54 @@ virHostCPUGetTscInfo(void)
           (defined(__linux__) || defined(__FreeBSD__)) */
 
 int
-virHostCPUReadSignature(virArch arch G_GNUC_UNUSED,
-                        FILE *cpuinfo G_GNUC_UNUSED,
-                        char **signature G_GNUC_UNUSED)
+virHostCPUReadSignature(virArch arch,
+                        FILE *cpuinfo,
+                        char **signature)
 {
+    size_t lineLen = 1024;
+    g_autofree char *line = g_new0(char, lineLen);
+    g_autofree char *vendor = NULL;
+    g_autofree char *name = NULL;
+    g_autofree char *family = NULL;
+    g_autofree char *model = NULL;
+    g_autofree char *stepping = NULL;
+
+    if (!ARCH_IS_X86(arch))
+        return 0;
+
+    while (fgets(line, lineLen, cpuinfo)) {
+        g_auto(GStrv) parts = g_strsplit(line, ": ", 2);
+
+        if (g_strv_length(parts) != 2)
+            continue;
+
+        g_strstrip(parts[0]);
+        g_strstrip(parts[1]);
+
+        if (STREQ(parts[0], "vendor_id")) {
+            if (!vendor)
+                vendor = g_steal_pointer(&parts[1]);
+        } else if (STREQ(parts[0], "model name")) {
+            if (!name)
+                name = g_steal_pointer(&parts[1]);
+        } else if (STREQ(parts[0], "cpu family")) {
+            if (!family)
+                family = g_steal_pointer(&parts[1]);
+        } else if (STREQ(parts[0], "model")) {
+            if (!model)
+                model = g_steal_pointer(&parts[1]);
+        } else if (STREQ(parts[0], "stepping")) {
+            if (!stepping)
+                stepping = g_steal_pointer(&parts[1]);
+        }
+
+        if (vendor && name && family && model && stepping) {
+            *signature = g_strdup_printf("%s, %s, family: %s, model: %s, stepping: %s",
+                                         vendor, name, family, model, stepping);
+            return 0;
+        }
+    }
+
     return 0;
 }
 
