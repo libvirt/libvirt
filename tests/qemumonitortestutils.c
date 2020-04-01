@@ -538,10 +538,19 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
         args = emptyargs = virJSONValueNewObject();
 
     if (testQEMUSchemaValidate(args, schemaroot, test->qapischema, &debug) < 0) {
+        if (virTestGetDebug() == 2) {
+            g_autofree char *argstr = virJSONValueToString(args, true);
+            fprintf(stderr,
+                    "\nfailed to validate arguments of '%s' against QAPI schema\n"
+                    "args:\n%s\nvalidator output:\n %s\n",
+                    cmdname, NULLSTR(argstr), virBufferCurrentContent(&debug));
+        }
+
         if (qemuMonitorReportError(test,
                                    "failed to validate arguments of '%s' "
-                                   "against QAPI schema: %s",
-                                   cmdname, virBufferCurrentContent(&debug)) == 0)
+                                   "against QAPI schema "
+                                   "(to see debug output use VIR_TEST_DEBUG=2)",
+                                   cmdname) == 0)
             return 1;
         return -1;
     }
