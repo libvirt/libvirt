@@ -14,7 +14,7 @@ Documentation=https://libvirt.org
 [Service]
 Type=notify
 EnvironmentFile=-@sysconfdir@/sysconfig/virtnwfilterd
-ExecStart=@sbindir@/virtnwfilterd --timeout 120 $VIRTNWFILTERD_ARGS
+ExecStart=@sbindir@/virtnwfilterd $VIRTNWFILTERD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 

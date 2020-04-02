@@ -1,3 +1,3 @@
 # Customizations for the virtqemud.service systemd unit
 
-VIRTQEMUD_ARGS=""
+VIRTQEMUD_ARGS="--timeout 120"

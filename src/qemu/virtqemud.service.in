@@ -19,7 +19,7 @@ Documentation=https://libvirt.org
 [Service]
 Type=notify
 EnvironmentFile=-@sysconfdir@/sysconfig/virtqemud
-ExecStart=@sbindir@/virtqemud --timeout 120 $VIRTQEMUD_ARGS
+ExecStart=@sbindir@/virtqemud $VIRTQEMUD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure

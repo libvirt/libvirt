@@ -18,7 +18,7 @@ ConditionPathExists=/proc/xen/capabilities
 [Service]
 Type=notify
 EnvironmentFile=-@sysconfdir@/sysconfig/virtxend
-ExecStart=@sbindir@/virtxend --timeout 120 $VIRTXEND_ARGS
+ExecStart=@sbindir@/virtxend $VIRTXEND_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 KillMode=process
