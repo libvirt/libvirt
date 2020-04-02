@@ -42,7 +42,7 @@
      -->
 
 <libvirt>
-  <release version="v6.2.0" date="unreleased">
+  <release version="v6.2.0" date="2020-04-02">
     <section title="New features">
       <change>
         <summary>
