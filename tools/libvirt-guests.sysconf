@@ -1,3 +1,5 @@
+# Customizations for the libvirt-guests.service systemd unit
+
 # URIs to check for running guests
 # example: URIS='default xen:///system vbox+tcp://host/system lxc:///system'
 #URIS=default
