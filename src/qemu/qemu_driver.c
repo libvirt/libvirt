@@ -15129,7 +15129,7 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
 {
     virDomainDiskDefPtr persistdisk;
     bool supportsCreate;
-    bool supportsBacking;
+    bool updateRelativeBacking = false;
 
     dd->disk = disk;
 
@@ -15158,19 +15158,22 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
     }
 
     supportsCreate = virStorageFileSupportsCreate(dd->src);
-    supportsBacking = virStorageFileSupportsBackingChainTraversal(dd->src);
 
-    if (supportsCreate || supportsBacking) {
+    /* relative backing store paths need to be updated so that relative
+     * block commit still works. With blockdev we must update it when doing
+     * commit anyways so it's skipped here */
+    if (!blockdev &&
+        virStorageFileSupportsBackingChainTraversal(dd->src))
+        updateRelativeBacking = true;
+
+    if (supportsCreate || updateRelativeBacking) {
         if (qemuDomainStorageFileInit(driver, vm, dd->src, NULL) < 0)
             return -1;
 
         dd->initialized = true;
 
-        /* relative backing store paths need to be updated so that relative
-         * block commit still works. With blockdev we must update it when doing
-         * commit anyways so it's skipped here */
-        if (reuse && !blockdev) {
-            if (supportsBacking) {
+        if (reuse) {
+            if (updateRelativeBacking) {
                 g_autofree char *backingStoreStr = NULL;
 
                 if (virStorageFileGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
