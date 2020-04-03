@@ -39,6 +39,13 @@ qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pid_t pid = -1;
 
+    /* Explicitly run this outside of transaction. We really want to relabel
+     * the file in the host and not in the domain's namespace. */
+    if (virSecurityManagerDomainSetPathLabelRO(driver->securityManager,
+                                               vm->def,
+                                               stdin_path) < 0)
+        goto cleanup;
+
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         pid = vm->pid;
 
