@@ -702,12 +702,12 @@ libxlStateInitialize(bool privileged,
     if (!(cfg = libxlDriverConfigNew()))
         goto error;
 
+    if (libxlDriverConfigInit(cfg) < 0)
+        goto error;
+
     driverConf = g_strdup_printf("%s/libxl.conf", cfg->configBaseDir);
 
     if (libxlDriverConfigLoadFile(cfg, driverConf) < 0)
-        goto error;
-
-    if (libxlDriverConfigInit(cfg) < 0)
         goto error;
 
     /* Register the callbacks providing access to libvirt's event loop */
