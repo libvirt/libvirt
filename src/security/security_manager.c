@@ -1078,6 +1078,35 @@ virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
 
 
 /**
+ * virSecurityManagerDomainSetPathLabelRO:
+ * @mgr: security manager object
+ * @vm: domain definition object
+ * @path: path to label
+ *
+ * This function relabels given @path for read only access, which
+ * is in contrast with virSecurityManagerDomainSetPathLabel() which
+ * gives read write access.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+virSecurityManagerDomainSetPathLabelRO(virSecurityManagerPtr mgr,
+                                       virDomainDefPtr vm,
+                                       const char *path)
+{
+    if (mgr->drv->domainSetPathLabelRO) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetPathLabelRO(mgr, vm, path);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    return 0;
+}
+
+
+/**
  * virSecurityManagerSetMemoryLabel:
  * @mgr: security manager object
  * @vm: domain definition object

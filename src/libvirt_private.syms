@@ -1525,6 +1525,7 @@ virSecurityDriverLookup;
 virSecurityManagerCheckAllLabel;
 virSecurityManagerClearSocketLabel;
 virSecurityManagerDomainSetPathLabel;
+virSecurityManagerDomainSetPathLabelRO;
 virSecurityManagerGenLabel;
 virSecurityManagerGetBaseLabel;
 virSecurityManagerGetDOI;

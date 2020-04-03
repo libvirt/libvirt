@@ -189,6 +189,10 @@ int virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
                                          const char *path,
                                          bool allowSubtree);
 
+int virSecurityManagerDomainSetPathLabelRO(virSecurityManagerPtr mgr,
+                                           virDomainDefPtr vm,
+                                           const char *path);
+
 int virSecurityManagerSetChardevLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       virDomainChrSourceDefPtr dev_source,
