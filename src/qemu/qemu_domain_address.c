@@ -580,7 +580,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
                                          virDomainPCIConnectFlags virtioFlags)
 {
     virDomainPCIConnectFlags pciFlags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
-                                         VIR_PCI_CONNECT_HOTPLUGGABLE);
+                                         VIR_PCI_CONNECT_AUTOASSIGN);
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_CONTROLLER: {
@@ -1072,17 +1072,17 @@ qemuDomainFillDevicePCIConnectFlagsIterInit(virDomainDefPtr def,
 
     if (qemuDomainHasPCIeRoot(def)) {
         data->pcieFlags = (VIR_PCI_CONNECT_TYPE_PCIE_DEVICE |
-                           VIR_PCI_CONNECT_HOTPLUGGABLE);
+                           VIR_PCI_CONNECT_AUTOASSIGN);
     } else {
         data->pcieFlags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
-                           VIR_PCI_CONNECT_HOTPLUGGABLE);
+                           VIR_PCI_CONNECT_AUTOASSIGN);
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
         data->virtioFlags = data->pcieFlags;
     } else {
         data->virtioFlags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
-                             VIR_PCI_CONNECT_HOTPLUGGABLE);
+                             VIR_PCI_CONNECT_AUTOASSIGN);
     }
 }
 
@@ -1736,7 +1736,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
     virPCIDeviceAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     g_autofree char *addrStr = NULL;
-    virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_HOTPLUGGABLE
+    virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_AUTOASSIGN
                                       | VIR_PCI_CONNECT_TYPE_PCI_DEVICE);
 
     /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
@@ -2673,7 +2673,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
              * domain.
              */
             virDomainDeviceInfo info = {
-                .pciConnectFlags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                .pciConnectFlags = (VIR_PCI_CONNECT_AUTOASSIGN |
                                     VIR_PCI_CONNECT_TYPE_PCI_DEVICE),
                 .pciAddrExtFlags = VIR_PCI_ADDRESS_EXTENSION_NONE
             };
@@ -2714,7 +2714,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
             addrs->nbuses > max_idx + 1 &&
             qemuDomainHasPCIeRoot(def)) {
             virDomainDeviceInfo info = {
-                .pciConnectFlags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                .pciConnectFlags = (VIR_PCI_CONNECT_AUTOASSIGN |
                                     VIR_PCI_CONNECT_TYPE_PCIE_DEVICE),
                 .pciAddrExtFlags = VIR_PCI_ADDRESS_EXTENSION_NONE
             };

@@ -362,8 +362,8 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
          * libvirt's assumptions about whether or not hotplug
          * capability will be required.
          */
-        if (devFlags & VIR_PCI_CONNECT_HOTPLUGGABLE)
-            busFlags |= VIR_PCI_CONNECT_HOTPLUGGABLE;
+        if (devFlags & VIR_PCI_CONNECT_AUTOASSIGN)
+            busFlags |= VIR_PCI_CONNECT_AUTOASSIGN;
         /* if the device is a pci-bridge, allow manually
          * assigning to any bus that would also accept a
          * standard PCI device.
@@ -419,8 +419,8 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
                        addrStr, addr->bus, connectStr);
         return false;
     }
-    if ((devFlags & VIR_PCI_CONNECT_HOTPLUGGABLE) &&
-        !(busFlags & VIR_PCI_CONNECT_HOTPLUGGABLE)) {
+    if ((devFlags & VIR_PCI_CONNECT_AUTOASSIGN) &&
+        !(busFlags & VIR_PCI_CONNECT_AUTOASSIGN)) {
         if (reportError) {
             virReportError(errType,
                            _("The device at PCI address %s requires "
@@ -509,7 +509,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
      */
     switch (model) {
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+        bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
                       VIR_PCI_CONNECT_TYPE_PCI_BRIDGE |
                       VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS);
@@ -517,14 +517,14 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+        bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
                       VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
-        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+        bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
                       VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
         bus->minSlot = 0;
@@ -555,7 +555,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         /* Same as pci-bridge: 32 hotpluggable traditional PCI slots (0-31),
          * the first of which is not usable because of the SHPC */
-        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+        bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
                       VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
         bus->minSlot = 1;
@@ -566,7 +566,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         /* provides one slot which is pcie, can be used by endpoint
          * devices, pcie-switch-upstream-ports or pcie-to-pci-bridges,
          * and is hotpluggable */
-        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+        bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCIE_DEVICE |
                       VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT |
                       VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE);
