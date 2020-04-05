@@ -358,18 +358,22 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
          */
         if (busFlags & VIR_PCI_CONNECT_TYPES_ENDPOINT)
             busFlags |= VIR_PCI_CONNECT_TYPES_ENDPOINT;
-        /* Also allow manual specification of bus to override
-         * libvirt's assumptions about whether or not hotplug
-         * capability will be required.
-         */
-        if (devFlags & VIR_PCI_CONNECT_AUTOASSIGN)
-            busFlags |= VIR_PCI_CONNECT_AUTOASSIGN;
         /* if the device is a pci-bridge, allow manually
          * assigning to any bus that would also accept a
          * standard PCI device.
          */
         if (devFlags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE)
             devFlags |= VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
+    } else if ((devFlags & VIR_PCI_CONNECT_AUTOASSIGN) &&
+               !(busFlags & VIR_PCI_CONNECT_AUTOASSIGN)) {
+        if (reportError) {
+            virReportError(errType,
+                           _("The device at PCI address %s was auto-assigned "
+                             "this address, but the PCI controller "
+                             "with index='%d' doesn't allow auto-assignment"),
+                           addrStr, addr->bus);
+        }
+        return false;
     }
 
     /* If this bus doesn't allow the type of connection (PCI
@@ -417,17 +421,6 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
                          "plugged into the PCI controller with index='%d'. "
                          "It requires a controller that accepts a %s."),
                        addrStr, addr->bus, connectStr);
-        return false;
-    }
-    if ((devFlags & VIR_PCI_CONNECT_AUTOASSIGN) &&
-        !(busFlags & VIR_PCI_CONNECT_AUTOASSIGN)) {
-        if (reportError) {
-            virReportError(errType,
-                           _("The device at PCI address %s requires "
-                             "hotplug capability, but the PCI controller "
-                             "with index='%d' doesn't support hotplug"),
-                           addrStr, addr->bus);
-        }
         return false;
     }
     return true;
