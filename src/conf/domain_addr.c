@@ -376,6 +376,18 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
         return false;
     }
 
+    if ((devFlags & VIR_PCI_CONNECT_HOTPLUGGABLE) &&
+        !(busFlags & VIR_PCI_CONNECT_HOTPLUGGABLE)) {
+        if (reportError) {
+            virReportError(errType,
+                           _("The device at PCI address %s requires "
+                             "hotplug capability, but the PCI controller "
+                             "with index='%d' doesn't support hotplug"),
+                           addrStr, addr->bus);
+        }
+        return false;
+    }
+
     /* If this bus doesn't allow the type of connection (PCI
      * vs. PCIe) required by the device, or if the device requires
      * hot-plug and this bus doesn't have it, return false.
