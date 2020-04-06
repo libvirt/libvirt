@@ -225,6 +225,7 @@
   <flag name='vhost-user-fs'/>
   <flag name='storage.werror'/>
   <flag name='fsdev.multidevs'/>
+  <flag name='virtio.packed'/>
   <version>4002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
