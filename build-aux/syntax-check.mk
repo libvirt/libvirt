@@ -2048,7 +2048,7 @@ exclude_file_name_regexp--sc_prohibit_readlink = \
 exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c|tools/virt-login-shell\.c$$
 
 exclude_file_name_regexp--sc_prohibit_snprintf = \
-  ^(build-aux/syntax-check\.mk|docs/hacking\.rst|tools/virt-login-shell\.c)$$
+  ^(build-aux/syntax-check\.mk|docs/coding-style\.rst|tools/virt-login-shell\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_strtol = ^examples/.*$$
 
