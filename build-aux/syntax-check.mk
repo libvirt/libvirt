@@ -2040,7 +2040,7 @@ exclude_file_name_regexp--sc_prohibit_canonicalize_file_name = \
   ^(build-aux/syntax-check\.mk|tests/virfilemock\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
-  ^(docs/hacking\.html\.in|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c|tools/nss/libvirt_nss(_leases|_macs)?\.c|build-aux/useless-if-before-free)$$
+  ^(docs/hacking\.rst|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c|tools/nss/libvirt_nss(_leases|_macs)?\.c|build-aux/useless-if-before-free)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/virutil|lxc/lxc_container)\.c$$
@@ -2048,7 +2048,7 @@ exclude_file_name_regexp--sc_prohibit_readlink = \
 exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c|tools/virt-login-shell\.c$$
 
 exclude_file_name_regexp--sc_prohibit_snprintf = \
-  ^(build-aux/syntax-check\.mk|docs/hacking\.html\.in|tools/virt-login-shell\.c)$$
+  ^(build-aux/syntax-check\.mk|docs/hacking\.rst|tools/virt-login-shell\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_strtol = ^examples/.*$$
 
