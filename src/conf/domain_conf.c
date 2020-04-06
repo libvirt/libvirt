@@ -1512,6 +1512,16 @@ virDomainVirtioOptionsParseXML(xmlNodePtr driver,
         }
         res->ats = val;
     }
+    VIR_FREE(str);
+
+    if ((str = virXMLPropString(driver, "packed"))) {
+        if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid packed value"));
+            return -1;
+        }
+        res->packed = val;
+    }
 
     return 0;
 }
@@ -5091,6 +5101,12 @@ virDomainCheckVirtioOptions(virDomainVirtioOptionsPtr virtio)
                          "for virtio devices"));
         return -1;
     }
+    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("packed driver option is only supported "
+                         "for virtio devices"));
+        return -1;
+    }
     return 0;
 }
 
@@ -7376,6 +7392,10 @@ virDomainVirtioOptionsFormat(virBufferPtr buf,
     if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(buf, " ats='%s'",
                           virTristateSwitchTypeToString(virtio->ats));
+    }
+    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(buf, " packed='%s'",
+                          virTristateSwitchTypeToString(virtio->packed));
     }
 }
 
@@ -22413,6 +22433,14 @@ virDomainVirtioOptionsCheckABIStability(virDomainVirtioOptionsPtr src,
                          "match source '%s'"),
                        virTristateSwitchTypeToString(dst->ats),
                        virTristateSwitchTypeToString(src->ats));
+        return false;
+    }
+    if (src->packed != dst->packed) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target device packed option '%s' does not "
+                         "match source '%s'"),
+                       virTristateSwitchTypeToString(dst->packed),
+                       virTristateSwitchTypeToString(src->packed));
         return false;
     }
     return true;

@@ -5961,6 +5961,11 @@
         <ref name="virOnOff"/>
       </attribute>
     </optional>
+    <optional>
+      <attribute name="packed">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
   </define>
 
   <define name="usbmaster">
