@@ -1,50 +1,79 @@
-======================
-Contributor guidelines
-======================
+============
+Contributing
+============
 
-.. contents::
+These are the basics steps you need to follow to contribute to
+libvirt.
 
-General tips for contributing patches
-=====================================
+Repositories and external resources
+===================================
 
-#. Official upstream repository is kept in git
-   (``https://libvirt.org/git/libvirt.git``) and is browsable
-   along with other libvirt-related repositories (e.g.
-   libvirt-python) `online <https://libvirt.org/git/>`__.
+The official upstream repository is kept in git
+(``https://libvirt.org/git/libvirt.git``) and is browsable
+along with other libvirt-related repositories (e.g.
+libvirt-python) `online <https://libvirt.org/git/>`__.
 
-#. Patches to translations are maintained via the `zanata
-   project <https://fedora.zanata.org/>`__. If you want to fix a
-   translation in a .po file, join the appropriate language team.
-   The libvirt release process automatically pulls the latest
-   version of each translation file from zanata.
+Patches to translations are maintained via the `zanata
+project <https://fedora.zanata.org/>`__. If you want to fix a
+translation in a .po file, join the appropriate language team.
+The libvirt release process automatically pulls the latest
+version of each translation file from zanata.
 
-#. Contributors to libvirt projects **must** assert that they are
-   in compliance with the `Developer Certificate of Origin
-   1.1 <https://developercertificate.org/>`__. This is achieved by
-   adding a "Signed-off-by" line containing the contributor's name
-   and e-mail to every commit message. The presence of this line
-   attests that the contributor has read the above lined DCO and
-   agrees with its statements.
+Preparing patches
+=================
 
-#. Make sure your patches apply against libvirt GIT. Developers
-   only follow GIT and don't care much about released versions.
+Make sure your patches apply against libvirt git. Developers
+only follow git and don't care much about released versions.
 
-#. Run the automated tests on your code before submitting any
-   changes. That is:
+Run the automated tests on your code before submitting any
+changes. That is:
 
-   ::
+::
 
-     make check
-     make syntax-check
+  $ make check
+  $ make syntax-check
 
-#. Update tests and/or documentation, particularly if you are
-   adding a new feature or changing the output of a program.
+These tests help making sure that your changes don't introduce
+regressions in libvirt, as well as validating that any new code
+follows the project's `coding style <coding-style.html>`__.
 
-#. Don't forget to update the `release notes <news.html>`__ by
-   changing ``docs/news.xml`` if your changes are significant. All
-   user-visible changes, such as adding new XML elements or fixing
-   all but the most obscure bugs, must be (briefly) described in a
-   release notes entry; changes that are only relevant to other
-   libvirt developers, such as code refactoring, don't belong in
-   the release notes. Note that ``docs/news.xml`` should be
-   updated in its own commit not to get in the way of backports.
+If you're going to submit multiple patches, the automated tests
+must pass **after each patch**, not just after the last one.
+
+Update tests and/or documentation, particularly if you are
+adding a new feature or changing the output of a program, and
+don't forget to update the `release notes <news.html>`__ if your
+changes are significant and user-visible.
+
+Submitting patches
+==================
+
+Libvirt uses a mailing list based development workflow.
+
+While preparing your patches for submissions, make sure you
+follow the `best practices <best-practices.html>`__ and, once
+you're satisfied with the result, go ahead and
+`submit your patches <submitting-patches.html>`__.
+
+Developer Certificate of Origin
+===============================
+
+Contributors to libvirt projects **must** assert that they are
+in compliance with the `Developer Certificate of Origin
+1.1 <https://developercertificate.org/>`__. This is achieved by
+adding a "Signed-off-by" line containing the contributor's name
+and e-mail to every commit message. The presence of this line
+attests that the contributor has read the above lined DCO and
+agrees with its statements.
+
+Further reading
+===============
+
+This page only covers the very basics, so it's recommended that
+you also take a look at the following documents:
+
+-  `Programming languages <programming-languages.html>`__
+-  `Developer tooling <developer-tooling.html>`__
+-  `Advanced test suite usage <advanced-tests.html>`__
+-  `Adoption of GLib APIs <glib-adoption.html>`__
+-  `Committer guidelines <committer-guidelines.html>`__
