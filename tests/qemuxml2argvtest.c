@@ -2989,7 +2989,8 @@ mymain(void)
             QEMU_CAPS_OBJECT_RNG_RANDOM,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM,
-            QEMU_CAPS_VIRTIO_PCI_ATS);
+            QEMU_CAPS_VIRTIO_PCI_ATS,
+            QEMU_CAPS_VIRTIO_PACKED_QUEUES);
 
     DO_TEST("fd-memory-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);

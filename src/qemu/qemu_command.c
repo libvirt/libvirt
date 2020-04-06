@@ -614,6 +614,16 @@ qemuBuildVirtioOptionsStr(virBufferPtr buf,
         virBufferAsprintf(buf, ",ats=%s",
                           virTristateSwitchTypeToString(virtio->ats));
     }
+    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PACKED_QUEUES)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the packed setting is not supported with this "
+                             "QEMU binary"));
+            return -1;
+        }
+        virBufferAsprintf(buf, ",packed=%s",
+                          virTristateSwitchTypeToString(virtio->packed));
+    }
 
     return 0;
 }
