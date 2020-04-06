@@ -931,6 +931,11 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
     if (!flags)
        return 0;
 
+    /* This function is only called during hotplug, so we require hotplug
+     * support from the controller.
+     */
+    flags |= VIR_PCI_CONNECT_HOTPLUGGABLE;
+
     if (!(addrStr = virPCIDeviceAddressAsString(&dev->addr.pci)))
         return -1;
 
