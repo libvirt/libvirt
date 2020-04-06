@@ -1652,6 +1652,7 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
         size_t idx = cont->idx;
+        bool allowHotplug = false;
 
         if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_PCI)
             continue;
@@ -1663,7 +1664,10 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
             goto error;
         }
 
-        if (virDomainPCIAddressBusSetModel(&addrs->buses[idx], cont->model) < 0)
+        if (cont->opts.pciopts.hotplug != VIR_TRISTATE_SWITCH_OFF)
+            allowHotplug = true;
+
+        if (virDomainPCIAddressBusSetModel(&addrs->buses[idx], cont->model, allowHotplug) < 0)
             goto error;
 
         /* Forward the information about isolation groups */
@@ -1681,7 +1685,7 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
          * assigning addresses to devices.
          */
         if (virDomainPCIAddressBusSetModel(&addrs->buses[0],
-                                           VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
+                                           VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT, true) < 0)
             goto error;
     }
 
@@ -1703,7 +1707,7 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
         if (addrs->buses[i].model)
             continue;
 
-        if (virDomainPCIAddressBusSetModel(&addrs->buses[i], defaultModel) < 0)
+        if (virDomainPCIAddressBusSetModel(&addrs->buses[i], defaultModel, true) < 0)
             goto error;
 
         VIR_DEBUG("Auto-adding <controller type='pci' model='%s' index='%zu'/>",

@@ -495,31 +495,40 @@ virDomainPCIAddressValidate(virDomainPCIAddressSetPtr addrs,
 
 int
 virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
-                               virDomainControllerModelPCI model)
+                               virDomainControllerModelPCI model,
+                               bool allowHotplug)
 {
     /* set flags for what can be connected *downstream* from each
      * bus.
      */
+    virDomainPCIConnectFlags hotplugFlag = 0;
+
+    if (allowHotplug)
+        hotplugFlag = VIR_PCI_CONNECT_HOTPLUGGABLE;
+
     switch (model) {
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
         bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
                       VIR_PCI_CONNECT_TYPE_PCI_BRIDGE |
-                      VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS);
+                      VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS |
+                      hotplugFlag);
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
         bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
-                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
+                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE |
+                      hotplugFlag);
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
         bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
-                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
+                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE |
+                      hotplugFlag);
         bus->minSlot = 0;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
@@ -550,7 +559,8 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
          * the first of which is not usable because of the SHPC */
         bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
-                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
+                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE |
+                      hotplugFlag);
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
@@ -562,7 +572,8 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->flags = (VIR_PCI_CONNECT_AUTOASSIGN |
                       VIR_PCI_CONNECT_TYPE_PCIE_DEVICE |
                       VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT |
-                      VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE);
+                      VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE |
+                      hotplugFlag);
         bus->minSlot = 0;
         bus->maxSlot = 0;
         break;
@@ -759,7 +770,7 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
          * rest are of the requested type
          */
         if (virDomainPCIAddressBusSetModel(&addrs->buses[i++],
-                                           VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE) < 0) {
+                                           VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE, false) < 0) {
             return -1;
         }
     }
@@ -776,20 +787,20 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
          * will be allocated for the dummy PCIe device later on.
          */
         if (virDomainPCIAddressBusSetModel(&addrs->buses[i],
-                                           VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT) < 0) {
+                                           VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT, true) < 0) {
             return -1;
         }
         addrs->buses[i].flags = VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE;
         i++;
 
         if (virDomainPCIAddressBusSetModel(&addrs->buses[i++],
-                                           VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE) < 0) {
+                                           VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE, true) < 0) {
             return -1;
         }
     }
 
     for (; i < addrs->nbuses; i++) {
-        if (virDomainPCIAddressBusSetModel(&addrs->buses[i], model) < 0)
+        if (virDomainPCIAddressBusSetModel(&addrs->buses[i], model, true) < 0)
             return -1;
     }
 

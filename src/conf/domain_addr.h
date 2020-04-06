@@ -148,7 +148,8 @@ bool virDomainPCIAddressValidate(virDomainPCIAddressSetPtr addrs,
 
 
 int virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
-                                   virDomainControllerModelPCI model)
+                                   virDomainControllerModelPCI model,
+                                   bool allowHotplug)
     ATTRIBUTE_NONNULL(1);
 
 bool virDomainPCIAddressBusIsFullyReserved(virDomainPCIAddressBusPtr bus)
