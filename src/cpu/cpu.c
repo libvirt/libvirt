@@ -772,40 +772,35 @@ virCPUDataPtr
 virCPUDataParse(const char *xmlStr)
 {
     struct cpuArchDriver *driver;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     virCPUDataPtr data = NULL;
-    char *arch = NULL;
+    g_autofree char *arch = NULL;
 
     VIR_DEBUG("xmlStr=%s", xmlStr);
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, _("CPU data"), &ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot parse CPU data"));
-        goto cleanup;
+        return NULL;
     }
 
     if (!(arch = virXPathString("string(/cpudata/@arch)", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing CPU data architecture"));
-        goto cleanup;
+        return NULL;
     }
 
     if (!(driver = cpuGetSubDriverByName(arch)))
-        goto cleanup;
+        return NULL;
 
     if (!driver->dataParse) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("cannot parse %s CPU data"), arch);
-        goto cleanup;
+        return NULL;
     }
 
     data = driver->dataParse(ctxt);
-
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    VIR_FREE(arch);
     return data;
 }
 
