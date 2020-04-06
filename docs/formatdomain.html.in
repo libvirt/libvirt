@@ -4372,6 +4372,16 @@
       Possible values are <code>on</code> or <code>off</code>.
       <span class="since">Since 3.5.0</span>
     </p>
+    <p>
+      The attribute <code>packed</code> controls if QEMU should try to use
+      packed virtqueues. Compared to regular split queues, packed queues
+      consist of only a single descriptor ring replacing available and used
+      ring, index and descriptor buffer. This can result in better cache
+      utilization and performance. If packed virtqueues are actually used
+      depends on the feature negotiation between QEMU, vhost backends and guest
+      drivers. Possible values are <code>on</code> or <code>off</code>.
+      <span class="since">Since 6.3.0 (QEMU and KVM only)</span>
+    </p>
 
     <h4><a id="elementsVirtioTransitional">Virtio transitional devices</a></h4>
 
