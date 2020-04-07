@@ -4464,7 +4464,7 @@
     &lt;driver iothread='4'/&gt;
     &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/&gt;
   &lt;/controller&gt;
-  &lt;controller type='xenbus' maxGrantFrames='64'/&gt;
+  &lt;controller type='xenbus' maxGrantFrames='64' maxEventChannels='2047'/&gt;
   ...
 &lt;/devices&gt;
 ...</pre>
@@ -4524,7 +4524,11 @@
         <dd><span class="since">Since 5.2.0</span>, the <code>xenbus</code>
         controller has an optional attribute <code>maxGrantFrames</code>,
         which specifies the maximum number of grant frames the controller
-        makes available for connected devices.</dd>
+        makes available for connected devices.
+        <span class="since">Since 6.3.0</span>, the xenbus controller
+        supports the optional <code>maxEventChannels</code> attribute,
+        which specifies maximum number of event channels (PV interrupts)
+        that can be used by the guest.</dd>
       </dl>
 
     <p>

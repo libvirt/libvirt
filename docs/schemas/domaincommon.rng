@@ -2548,6 +2548,11 @@
                 <ref name="unsignedInt"/>
               </attribute>
             </optional>
+            <optional>
+              <attribute name="maxEventChannels">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
           </group>
         </choice>
         <optional>

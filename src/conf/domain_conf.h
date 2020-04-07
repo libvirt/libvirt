@@ -730,6 +730,7 @@ struct _virDomainUSBControllerOpts {
 
 struct _virDomainXenbusControllerOpts {
     int maxGrantFrames;   /* -1 == undef */
+    int maxEventChannels; /* -1 == undef */
 };
 
 /* Stores the virtual disk controller configuration */

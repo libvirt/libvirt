@@ -2262,6 +2262,7 @@ virDomainControllerDefNew(virDomainControllerType type)
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
         def->opts.xenbusopts.maxGrantFrames = -1;
+        def->opts.xenbusopts.maxEventChannels = -1;
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
@@ -11364,6 +11365,7 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS: {
         g_autofree char *gntframes = virXMLPropString(node, "maxGrantFrames");
+        g_autofree char *eventchannels = virXMLPropString(node, "maxEventChannels");
 
         if (gntframes) {
             int r = virStrToLong_i(gntframes, NULL, 10,
@@ -11371,6 +11373,15 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
             if (r != 0 || def->opts.xenbusopts.maxGrantFrames < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Invalid maxGrantFrames: %s"), gntframes);
+                goto error;
+            }
+        }
+        if (eventchannels) {
+            int r = virStrToLong_i(eventchannels, NULL, 10,
+                                   &def->opts.xenbusopts.maxEventChannels);
+            if (r != 0 || def->opts.xenbusopts.maxEventChannels < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Invalid maxEventChannels: %s"), eventchannels);
                 goto error;
             }
         }
@@ -25313,6 +25324,10 @@ virDomainControllerDefFormat(virBufferPtr buf,
         if (def->opts.xenbusopts.maxGrantFrames != -1) {
             virBufferAsprintf(&attrBuf, " maxGrantFrames='%d'",
                               def->opts.xenbusopts.maxGrantFrames);
+        }
+        if (def->opts.xenbusopts.maxEventChannels != -1) {
+            virBufferAsprintf(&attrBuf, " maxEventChannels='%d'",
+                              def->opts.xenbusopts.maxEventChannels);
         }
         break;
 
