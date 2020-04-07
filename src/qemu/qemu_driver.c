@@ -14837,14 +14837,13 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
                                                       active) < 0)
                 return -1;
 
-            if (vm->def->disks[i]->src->format > 0 &&
-                vm->def->disks[i]->src->format != VIR_STORAGE_FILE_QCOW2) {
+            if (dom_disk->src->format > 0 &&
+                dom_disk->src->format != VIR_STORAGE_FILE_QCOW2) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("internal snapshot for disk %s unsupported "
                                  "for storage type %s"),
                                disk->name,
-                               virStorageFileFormatTypeToString(
-                                   vm->def->disks[i]->src->format));
+                               virStorageFileFormatTypeToString(dom_disk->src->format));
                 return -1;
             }
             break;
