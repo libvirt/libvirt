@@ -18,8 +18,7 @@
       <source file='/var/lib/xen/images/debian/disk.qcow2'/>
       <target dev='xvda' bus='xen'/>
     </disk>
-    <controller type='xenbus' index='0'/>
-    <controller type='usb' index='0' model='qusb2' ports='6'/>
+    <controller type='xenbus' index='0' maxEventChannels='2047'/>
     <interface type='ethernet'>
       <mac address='5a:36:0e:be:00:09'/>
     </interface>

@@ -597,19 +597,12 @@ xenParseXLVnuma(virConfPtr conf,
 }
 #endif
 
-#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
 static int
-xenParseXLGntLimits(virConfPtr conf, virDomainDefPtr def)
+xenParseXLXenbusLimits(virConfPtr conf, virDomainDefPtr def)
 {
-    unsigned long max_gntframes;
     int ctlr_idx;
     virDomainControllerDefPtr xenbus_ctlr;
-
-    if (xenConfigGetULong(conf, "max_grant_frames", &max_gntframes, 0) < 0)
-        return -1;
-
-    if (max_gntframes <= 0)
-        return 0;
+    unsigned long limit;
 
     ctlr_idx = virDomainControllerFindByType(def, VIR_DOMAIN_CONTROLLER_TYPE_XENBUS);
     if (ctlr_idx == -1)
@@ -620,10 +613,20 @@ xenParseXLGntLimits(virConfPtr conf, virDomainDefPtr def)
     if (xenbus_ctlr == NULL)
         return -1;
 
-    xenbus_ctlr->opts.xenbusopts.maxGrantFrames = max_gntframes;
+    if (xenConfigGetULong(conf, "max_event_channels", &limit, 0) < 0)
+        return -1;
+    if (limit > 0)
+        xenbus_ctlr->opts.xenbusopts.maxEventChannels = limit;
+
+#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
+    if (xenConfigGetULong(conf, "max_grant_frames", &limit, 0) < 0)
+        return -1;
+    if (limit > 0)
+        xenbus_ctlr->opts.xenbusopts.maxGrantFrames = limit;
+#endif
+
     return 0;
 }
-#endif
 
 static int
 xenParseXLDiskSrc(virDomainDiskDefPtr disk, char *srcstr)
@@ -1180,10 +1183,8 @@ xenParseXL(virConfPtr conf,
         goto cleanup;
 #endif
 
-#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
-    if (xenParseXLGntLimits(conf, def) < 0)
+    if (xenParseXLXenbusLimits(conf, def) < 0)
         goto cleanup;
-#endif
 
     if (xenParseXLCPUID(conf, def) < 0)
         goto cleanup;
@@ -1532,23 +1533,31 @@ xenFormatXLDomainVnuma(virConfPtr conf,
 }
 #endif
 
-#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
 static int
-xenFormatXLGntLimits(virConfPtr conf, virDomainDefPtr def)
+xenFormatXLXenbusLimits(virConfPtr conf, virDomainDefPtr def)
 {
     size_t i;
 
     for (i = 0; i < def->ncontrollers; i++) {
-        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_XENBUS &&
-            def->controllers[i]->opts.xenbusopts.maxGrantFrames > 0) {
-            if (xenConfigSetInt(conf, "max_grant_frames",
-                                def->controllers[i]->opts.xenbusopts.maxGrantFrames) < 0)
-                return -1;
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_XENBUS) {
+            if (def->controllers[i]->opts.xenbusopts.maxEventChannels > 0) {
+                if (xenConfigSetInt(conf, "max_event_channels",
+                                    def->controllers[i]->opts.xenbusopts.maxEventChannels) < 0)
+                    return -1;
+            }
+
+#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
+            if (def->controllers[i]->opts.xenbusopts.maxGrantFrames > 0) {
+                if (xenConfigSetInt(conf, "max_grant_frames",
+                                    def->controllers[i]->opts.xenbusopts.maxGrantFrames) < 0)
+                    return -1;
+            }
+#endif
         }
     }
+
     return 0;
 }
-#endif
 
 static char *
 xenFormatXLDiskSrcNet(virStorageSourcePtr src)
@@ -2191,10 +2200,8 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
         return NULL;
 #endif
 
-#ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
-    if (xenFormatXLGntLimits(conf, def) < 0)
+    if (xenFormatXLXenbusLimits(conf, def) < 0)
         return NULL;
-#endif
 
     if (xenFormatXLDomainDisks(conf, def) < 0)
         return NULL;

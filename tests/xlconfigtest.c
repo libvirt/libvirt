@@ -294,6 +294,8 @@ mymain(void)
     DO_TEST("max-gntframes");
 #endif
 
+    DO_TEST("max-eventchannels");
+
     DO_TEST("vif-typename");
     DO_TEST("vif-multi-ip");
     DO_TEST("usb");
