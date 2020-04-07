@@ -1,5 +1,7 @@
 # Configuration for Repo Lockdown - https://github.com/dessant/repo-lockdown
 
+skipCreatedBefore: 2020-01-01
+
 # Close issues and pull requests
 close: true
 
