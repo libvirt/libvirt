@@ -1,0 +1,37 @@
+<domain type='xen'>
+  <name>test-hvm</name>
+  <description>None</description>
+  <uuid>2147d599-9cc6-c0dc-92ab-4064b5446e9b</uuid>
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu>4</vcpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <clock offset='utc'/>
+  <os>
+    <type>hvm</type>
+    <loader>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <apic/>
+    <acpi/>
+    <pae/>
+  </features>
+  <devices>
+    <emulator>/bin/true</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu'/>
+      <source file='/var/lib/xen/images/test-hvm.img'/>
+      <target dev='hda'/>
+    </disk>
+    <controller type='xenbus' maxEventChannels='2047'/>
+    <interface type='bridge'>
+      <source bridge='br0'/>
+      <mac address='00:16:3e:66:12:b4'/>
+      <script path='/etc/xen/scripts/vif-bridge'/>
+    </interface>
+    <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0'/>
+  </devices>
+</domain>

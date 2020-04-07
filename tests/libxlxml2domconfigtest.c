@@ -202,6 +202,8 @@ mymain(void)
     DO_TEST("max-gntframes-hvm");
 # endif
 
+    DO_TEST("max-eventchannels-hvm");
+
     unlink("libxl-driver.log");
 
     testXLFreeDriver(driver);
