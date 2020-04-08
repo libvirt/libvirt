@@ -142,13 +142,11 @@ qemuDBusStop(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree char *shortName = NULL;
     g_autofree char *pidfile = NULL;
-    g_autofree char *configfile = NULL;
 
     if (!(shortName = virDomainDefGetShortName(vm->def)))
         return;
 
     pidfile = qemuDBusCreatePidFilename(cfg, shortName);
-    configfile = qemuDBusCreateConfPath(cfg, shortName);
 
     if (virPidFileForceCleanupPath(pidfile) < 0) {
         VIR_WARN("Unable to kill dbus-daemon process");
