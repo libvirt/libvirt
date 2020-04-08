@@ -75,4 +75,7 @@ void qemuSlirpStop(qemuSlirpPtr slirp,
 
 int qemuSlirpGetFD(qemuSlirpPtr slirp);
 
+int qemuSlirpSetupCgroup(qemuSlirpPtr slirp,
+                         virCgroupPtr cgroup);
+
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuSlirp, qemuSlirpFree);

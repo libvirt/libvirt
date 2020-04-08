@@ -243,12 +243,21 @@ qemuSlirpStop(qemuSlirpPtr slirp,
 
 
 int
+qemuSlirpSetupCgroup(qemuSlirpPtr slirp,
+                     virCgroupPtr cgroup)
+{
+    return virCgroupAddProcess(cgroup, slirp->pid);
+}
+
+
+int
 qemuSlirpStart(qemuSlirpPtr slirp,
                virDomainObjPtr vm,
                virQEMUDriverPtr driver,
                virDomainNetDefPtr net,
                bool incoming)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = NULL;
@@ -352,6 +361,10 @@ qemuSlirpStart(qemuSlirpPtr slirp,
     }
 
     slirp->pid = pid;
+
+    if (priv->cgroup && qemuSlirpSetupCgroup(slirp, priv->cgroup) < 0)
+        goto error;
+
     return 0;
 
  error:
@@ -361,5 +374,6 @@ qemuSlirpStart(qemuSlirpPtr slirp,
         unlink(pidfile);
     if (killDBusDaemon)
         qemuDBusStop(driver, vm);
+    slirp->pid = 0;
     return -1;
 }

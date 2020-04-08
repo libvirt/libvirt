@@ -284,6 +284,14 @@ qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
             return -1;
     }
 
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        qemuSlirpPtr slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
+
+        if (slirp && qemuSlirpSetupCgroup(slirp, cgroup) < 0)
+            return -1;
+    }
+
     if (def->tpm &&
         qemuExtTPMSetupCgroup(driver, def, cgroup) < 0)
         return -1;
