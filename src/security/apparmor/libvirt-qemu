@@ -227,3 +227,8 @@
   # required for sasl GSSAPI plugin
   /etc/gss/mech.d/ r,
   /etc/gss/mech.d/* r,
+
+  # required by libpmem init to fts_open()/fts_read() the symlinks in
+  # /sys/bus/nd/devices
+  / r, # harmless on any lsb compliant system
+  /sys/bus/nd/devices/{,**/} r,
