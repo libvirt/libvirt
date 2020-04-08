@@ -35,3 +35,6 @@ void qemuDBusStop(virQEMUDriverPtr driver,
 int qemuDBusVMStateAdd(virDomainObjPtr vm, const char *id);
 
 void qemuDBusVMStateRemove(virDomainObjPtr vm, const char *id);
+
+int qemuDBusSetupCgroup(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm);

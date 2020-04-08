@@ -157,6 +157,30 @@ qemuDBusStop(virQEMUDriverPtr driver,
 
 
 int
+qemuDBusSetupCgroup(virQEMUDriverPtr driver,
+                    virDomainObjPtr vm)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autofree char *shortName = NULL;
+    g_autofree char *pidfile = NULL;
+    pid_t cpid = -1;
+
+    if (!priv->dbusDaemonRunning)
+        return 0;
+
+    if (!(shortName = virDomainDefGetShortName(vm->def)))
+        return -1;
+    pidfile = qemuDBusCreatePidFilename(cfg, shortName);
+    if (virPidFileReadPath(pidfile, &cpid) < 0) {
+        VIR_WARN("Unable to get DBus PID");
+        return -1;
+    }
+
+    return virCgroupAddProcess(priv->cgroup, cpid);
+}
+
+int
 qemuDBusStart(virQEMUDriverPtr driver,
               virDomainObjPtr vm)
 {

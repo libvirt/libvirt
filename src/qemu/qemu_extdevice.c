@@ -23,6 +23,7 @@
 #include "qemu_command.h"
 #include "qemu_extdevice.h"
 #include "qemu_vhost_user_gpu.h"
+#include "qemu_dbus.h"
 #include "qemu_domain.h"
 #include "qemu_tpm.h"
 #include "qemu_slirp.h"
@@ -275,6 +276,9 @@ qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
 {
     virDomainDefPtr def = vm->def;
     size_t i;
+
+    if (qemuDBusSetupCgroup(driver, vm) < 0)
+        return -1;
 
     for (i = 0; i < def->nvideos; i++) {
         virDomainVideoDefPtr video = def->videos[i];
