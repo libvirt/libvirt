@@ -453,7 +453,7 @@ br.clear {
     text-decoration: underline;
 }
 
-#contact, #community {
+#contact, #community, #contribute {
     float: left;
     padding: 0px;
     margin-left: 3em;

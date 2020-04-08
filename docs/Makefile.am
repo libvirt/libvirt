@@ -429,6 +429,10 @@ manpages/%.html.in: manpages/%.rst
 %.html.tmp: %.html.in site.xsl subsite.xsl page.xsl \
 		$(acl_generated)
 	$(AM_V_GEN)name=`echo $@ | sed -e 's/.tmp//'`; \
+	  genhtmlin=`echo $@ | sed -e 's/.tmp/.in/'`; \
+	  rst=`echo $@ | sed -e 's/.html.tmp/.rst/'`; \
+	  src="$$genhtmlin"; \
+	  test -f "$$genhtmlin" && src="$$rst"; \
 	  dir=`dirname $@` ; \
 	  if test "$$dir" = "."; \
 	  then \
@@ -438,6 +442,7 @@ manpages/%.html.in: manpages/%.rst
 	    style=subsite.xsl; \
 	  fi; \
 	  $(XSLTPROC) --stringparam pagename $$name \
+	    --stringparam pagesrc $$src \
 	    --stringparam builddir '$(abs_top_builddir)' \
 	    --stringparam timestamp $(timestamp) --nonet \
 	    $(top_srcdir)/docs/$$style $< > $@ \
