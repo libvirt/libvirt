@@ -172,6 +172,9 @@
         <dt><a href="testsuites.html">Functional testing</a></dt>
         <dd>Testing libvirt with <a href="testtck.html">TCK test suite</a> and
          <a href="testapi.html">Libvirt-test-API</a></dd>
+
+        <dt><a href="newreposetup.html">New repo setup</a></dt>
+        <dd>Procedure for configuring new git repositories for libvirt</dd>
       </dl>
     </div>
 
