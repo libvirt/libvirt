@@ -97,15 +97,14 @@ virDaemonForkIntoBackground(const char *argv0)
     default:
         {
             /* parent */
-            int got, exitstatus = 0;
+            int exitstatus = 0;
             int ret;
             char status;
 
             VIR_FORCE_CLOSE(statuspipe[1]);
 
             /* We wait to make sure the first child forked successfully */
-            if ((got = virProcessWait(pid, &exitstatus, 0)) < 0 ||
-                got != pid ||
+            if (virProcessWait(pid, &exitstatus, 0) < 0 ||
                 exitstatus != 0) {
                 goto error;
             }
