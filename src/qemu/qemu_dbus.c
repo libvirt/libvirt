@@ -177,6 +177,9 @@ qemuDBusStart(virQEMUDriverPtr driver,
     pid_t cpid = -1;
     int ret = -1;
 
+    if (priv->dbusDaemonRunning)
+        return 0;
+
     if (!virFileIsExecutable(cfg->dbusDaemonName)) {
         virReportSystemError(errno,
                              _("'%s' is not a suitable dbus-daemon"),
