@@ -36,7 +36,6 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virnuma.h"
-#include "virsystemd.h"
 #include "virdevmapper.h"
 #include "virutil.h"
 
