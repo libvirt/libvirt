@@ -258,6 +258,7 @@ qemuSlirpStart(qemuSlirpPtr slirp,
     int exitstatus = 0;
     int cmdret = 0;
     VIR_AUTOCLOSE errfd = -1;
+    bool killDBusDaemon = false;
 
     if (incoming &&
         !qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_MIGRATE)) {
@@ -306,6 +307,9 @@ qemuSlirpStart(qemuSlirpPtr slirp,
         g_autofree char *id = qemuSlirpGetDBusVMStateId(net);
         g_autofree char *dbus_addr = qemuDBusGetAddress(driver, vm);
 
+        /* If per VM DBus daemon is not running yet, start it
+         * now. But if we fail later on, make sure to kill it. */
+        killDBusDaemon = !QEMU_DOMAIN_PRIVATE(vm)->dbusDaemonRunning;
         if (qemuDBusStart(driver, vm) < 0)
             return -1;
 
@@ -355,6 +359,7 @@ qemuSlirpStart(qemuSlirpPtr slirp,
         virProcessKillPainfully(pid, true);
     if (pidfile)
         unlink(pidfile);
-    qemuDBusStop(driver, vm);
+    if (killDBusDaemon)
+        qemuDBusStop(driver, vm);
     return -1;
 }
