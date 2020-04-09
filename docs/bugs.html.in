@@ -19,7 +19,7 @@
       <a href="securityprocess.html">security process</a> instead.
     </p>
 
-    <h2><a id="bugzilla">Bug Tracking</a></h2>
+    <h2><a id="bugtracking">Bug Tracking</a></h2>
 
     <p>
       If you are using libvirt binaries from a Linux distribution
@@ -30,22 +30,17 @@
     <h2><a id="general">General libvirt bug reports</a></h2>
 
     <p>
-      The <a href="http://bugzilla.redhat.com">Red Hat Bugzilla Server</a>
-      should be used to report bugs and request features in libvirt.
+      Bugs in upstream libvirt code should be reported as issues in the
+      appropriate <a href="https://gitlab.com/libvirt">project on GitLab.</a>
       Before submitting a ticket, check the existing tickets to see if
       the bug/feature is already tracked.
-
-      For general libvirt bug reports, from self-built releases, GIT snapshots
-      and any other non-distribution supported builds, enter tickets under
-      the <code>Virtualization Tools</code> product and the <code>libvirt</code>
-      component.
     </p>
     <p>
       It's always a good idea to file bug reports, as the process of
       filing the report always makes it easier to describe the
       problem, and the bug number provides a quick way of referring to
-      the problem.  However, not everybody in the community pays
-      attention to bugzilla, so after you file a bug, asking questions
+      the problem.  However, not everybody in the community pays frequent
+      attention to issues, so after you file a bug, asking questions
       and submitting patches on <a href="contact.html">the libvirt
       mailing lists</a> will increase your bug's visibility and
       encourage people to think about your problem.  Don't hesitate to
@@ -65,9 +60,15 @@
     </p>
 
     <ul>
-      <li><a href="http://bugzilla.redhat.com/buglist.cgi?component=libvirt&amp;product=Virtualization%20Tools">View libvirt tickets</a></li>
-      <li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Virtualization%20Tools&amp;component=libvirt">New libvirt ticket</a></li>
+      <li><a href="https://gitlab.com/libvirt/libvirt/-/issues">View libvirt.git tickets</a></li>
+      <li><a href="https://gitlab.com/libvirt/libvirt/-/issues/new">New libvirt.git ticket</a></li>
     </ul>
+
+    <p>
+      Note bugs in language bindings and other sub-projects should be
+      reported to their corresponding git repository rather than the
+      main libvirt.git linked above.
+    </p>
 
     <h2><a id="distribution">Linux Distribution specific bug reports</a></h2>
     <ul>

@@ -15,8 +15,9 @@ with minimal back-and-forth.
    by any longer description of why your patch makes sense. If the
    patch fixes a regression, and you know what commit introduced
    the problem, mentioning that is useful. If the patch resolves a
-   bugzilla report, mentioning the URL of the bug number is
-   useful; but also summarize the issue rather than making all
+   upstream bug reported in GitLab, put "Fixes: #NNN" in the commit
+   message. For a downstream bug, mention the URL of the bug instead.
+   In both cases also summarize the issue rather than making all
    readers follow the link. You can use 'git shortlog -30' to get
    an idea of typical summary lines.
 
