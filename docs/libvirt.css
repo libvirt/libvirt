@@ -583,3 +583,12 @@ ul.news-section-content li dl dd {
 .contents li p {
     margin: 2px;
 }
+
+td.gitmirror {
+    font-size: smaller;
+    font-style: italic;
+}
+
+td.gitmirror a {
+    color: inherit;
+}
