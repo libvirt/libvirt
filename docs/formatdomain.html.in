@@ -808,6 +808,12 @@
       <dd>
          The optional <code>cputune</code> element provides details
          regarding the CPU tunable parameters for the domain.
+         Note: for the qemu driver, the optional <code>vcpupin</code>
+         and <code>emulatorpin</code> pinning settings are honored after
+         the emulator is launched and NUMA constraints considered. This
+         means that it is expected that other physical CPUs of the host
+         will be used during this time by the domain, which will be
+         reflected by the output of <code>virsh cpu-stats</code>.
          <span class="since">Since 0.9.0</span>
       </dd>
       <dt><code>vcpupin</code></dt>
