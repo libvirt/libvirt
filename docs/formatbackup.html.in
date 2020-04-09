@@ -97,12 +97,11 @@
               <dt><code>type</code></dt>
               <dd>A mandatory attribute to describe the type of the
                 disk, except when <code>backup='no'</code> is
-                used. Valid values include <code>file</code>,
-                <code>block</code>, or <code>network</code>.
+                used. Valid values include <code>file</code>, or
+                <code>block</code>.
                 Similar to a disk declaration for a domain, the choice of type
                 controls what additional sub-elements are needed to describe
-                the destination (such as <code>protocol</code> for a
-                network destination).</dd>
+                the destination.</dd>
               <dt><code>target</code></dt>
               <dd>Valid only for push mode backups, this is the
                 primary sub-element that describes the file name of
