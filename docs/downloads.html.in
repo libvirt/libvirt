@@ -325,14 +325,14 @@
           <td></td>
         </tr>
         <tr>
-          <td>Jenkins Config</td>
+          <td>Continuous Integration Config</td>
           <td></td>
           <td>
-            <a href="https://gitlab.com/libvirt/libvirt-jenkins-ci">gitlab</a>
+            <a href="https://gitlab.com/libvirt/libvirt-ci">gitlab</a>
           </td>
           <td class="gitmirror">
-            <a href="https://libvirt.org/git/?p=libvirt-jenkins-ci.git;a=summary">libvirt</a>
-            <a href="https://github.com/libvirt/libvirt-jenkins-ci">github</a>
+            <a href="https://libvirt.org/git/?p=libvirt-ci.git;a=summary">libvirt</a>
+            <a href="https://github.com/libvirt/libvirt-ci">github</a>
           </td>
           <td></td>
         </tr>
