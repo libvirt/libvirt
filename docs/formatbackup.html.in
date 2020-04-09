@@ -110,7 +110,8 @@
                 disk. An optional sub-element <code>driver</code> can
                 also be used, with an attribute <code>type</code> to
                 specify a destination format different from
-                qcow2. </dd>
+                qcow2. See documentation for <code>scratch</code> below for
+                additional configuration.</dd>
               <dt><code>scratch</code></dt>
               <dd>Valid only for pull mode backups, this is the
                 primary sub-element that describes the file name of
@@ -130,7 +131,14 @@
                 used without modification. The file is not deleted after the
                 backup but the contents of the file don't make sense outside
                 of the backup. The same applies for the block device which
-                must be formatted appropriately.</dd>
+                must be formatted appropriately.
+
+                Similarly to the domain
+                <a href="formatdomain.html#elementsDisks"><code>disk</code></a>
+                definition <code>scratch</code> and <code>target</code> can
+                contain <code>seclabel</code> and/or <code>encryption</code>
+                subelements to configure the corresponding properties.
+              </dd>
             </dl>
           </dd>
         </dl>

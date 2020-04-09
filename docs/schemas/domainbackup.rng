@@ -7,6 +7,27 @@
 
   <include href='domaincommon.rng'/>
 
+  <define name='backupEncryption'>
+    <element name='encryption'>
+      <attribute name='format'>
+        <choice>
+          <value>luks</value>
+        </choice>
+      </attribute>
+      <interleave>
+        <ref name='secret'/>
+        <optional>
+          <element name='cipher'>
+            <ref name='keycipher'/>
+          </element>
+          <element name='ivgen'>
+            <ref name='keyivgen'/>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
   <define name='domainbackup'>
     <element name='domainbackup'>
       <interleave>
@@ -123,9 +144,14 @@
                       <attribute name='file'>
                         <ref name='absFilePath'/>
                       </attribute>
-                      <zeroOrMore>
-                        <ref name='devSeclabel'/>
-                      </zeroOrMore>
+                      <interleave>
+                        <zeroOrMore>
+                          <ref name='devSeclabel'/>
+                        </zeroOrMore>
+                        <optional>
+                          <ref name='backupEncryption'/>
+                        </optional>
+                      </interleave>
                     </element>
                   </optional>
                   <ref name='backupPushDriver'/>
@@ -142,9 +168,14 @@
                       <attribute name='dev'>
                         <ref name='absFilePath'/>
                       </attribute>
-                      <zeroOrMore>
-                        <ref name='devSeclabel'/>
-                      </zeroOrMore>
+                      <interleave>
+                        <zeroOrMore>
+                          <ref name='devSeclabel'/>
+                        </zeroOrMore>
+                        <optional>
+                          <ref name='backupEncryption'/>
+                        </optional>
+                      </interleave>
                     </element>
                   </optional>
                   <ref name='backupPushDriver'/>
@@ -192,9 +223,14 @@
                       <attribute name='file'>
                         <ref name='absFilePath'/>
                       </attribute>
-                      <zeroOrMore>
-                        <ref name='devSeclabel'/>
-                      </zeroOrMore>
+                      <interleave>
+                        <zeroOrMore>
+                          <ref name='devSeclabel'/>
+                        </zeroOrMore>
+                        <optional>
+                          <ref name='backupEncryption'/>
+                        </optional>
+                      </interleave>
                     </element>
                     <ref name='backupPullDriver'/>
                   </interleave>
@@ -210,9 +246,14 @@
                     <attribute name='dev'>
                       <ref name='absFilePath'/>
                     </attribute>
-                    <zeroOrMore>
-                      <ref name='devSeclabel'/>
-                    </zeroOrMore>
+                    <interleave>
+                      <zeroOrMore>
+                        <ref name='devSeclabel'/>
+                      </zeroOrMore>
+                      <optional>
+                        <ref name='backupEncryption'/>
+                      </optional>
+                    </interleave>
                   </element>
                   <ref name='backupPullDriver'/>
                 </interleave>

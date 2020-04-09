@@ -192,8 +192,11 @@ mymain(void)
     DO_TEST_BACKUP("empty");
     DO_TEST_BACKUP("backup-pull");
     DO_TEST_BACKUP("backup-pull-seclabel");
+    DO_TEST_BACKUP("backup-pull-encrypted");
     DO_TEST_BACKUP("backup-push");
     DO_TEST_BACKUP("backup-push-seclabel");
+    DO_TEST_BACKUP("backup-push-encrypted");
+
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

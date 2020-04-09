@@ -1,0 +1,29 @@
+<domainbackup mode="push">
+  <incremental>1525889631</incremental>
+  <disks>
+    <disk name='vda' type='file'>
+      <driver type='qcow2'/>
+      <target file='/path/to/file'>
+        <encryption format='luks'>
+          <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
+        </encryption>
+      </target>
+    </disk>
+    <disk name='vdb' type='file'>
+      <driver type='raw'/>
+      <target file='/path/to/file'>
+        <encryption format='luks'>
+          <secret type='passphrase' usage='/storage/backup/vdb'/>
+        </encryption>
+      </target>
+    </disk>
+    <disk name='vdc' type='block'>
+      <driver type='qcow2'/>
+      <target dev='/dev/block'>
+        <encryption format='luks'>
+          <secret type='passphrase' usage='/storage/backup/vdc'/>
+        </encryption>
+      </target>
+    </disk>
+  </disks>
+</domainbackup>
