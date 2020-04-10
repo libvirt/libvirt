@@ -1,5 +1,7 @@
 sudo: required
-language: generic
+language: c
+compiler: clang
+os: osx
 
 branches:
   except:
@@ -18,36 +20,23 @@ addons:
 
 matrix:
   include:
-    - compiler: clang
-      language: c
-      os: osx
-      osx_image: xcode10.3
-      env:
-        - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/ccache/libexec:/usr/local/opt/rpcgen/bin:$PATH"
-        - PKG_CONFIG_PATH="/usr/local/opt/libxml2/lib/pkgconfig"
-      before_script:
-        # Hack to blow away py2
-        - brew link --overwrite python
-      script:
-        # We can't run 'distcheck' or 'syntax-check' because they fail on
-        # macOS, but doing 'install' and 'dist' gives us some useful coverage
-        - mkdir build && cd build
-        - ../autogen.sh --prefix=$(pwd)/install-root && make -j3 && make -j3 install && make -j3 dist
-    - compiler: clang
-      language: c
-      os: osx
-      osx_image: xcode11.3
-      env:
-        - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/ccache/libexec:/usr/local/opt/rpcgen/bin:$PATH"
-        - PKG_CONFIG_PATH="/usr/local/opt/libxml2/lib/pkgconfig"
-      before_script:
-        # Hack to blow away py2
-        - brew link --overwrite python
-      script:
-        # We can't run 'distcheck' or 'syntax-check' because they fail on
-        # macOS, but doing 'install' and 'dist' gives us some useful coverage
-        - mkdir build && cd build
-        - ../autogen.sh --prefix=$(pwd)/install-root && make -j3 && make -j3 install && make -j3 dist
+    - osx_image: xcode11.3
+    - osx_image: xcode10.3
+
+env:
+  global:
+    - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/ccache/libexec:/usr/local/opt/rpcgen/bin:$PATH"
+    - PKG_CONFIG_PATH="/usr/local/opt/libxml2/lib/pkgconfig"
+
+before_script:
+  # Hack to blow away py2
+  - brew link --overwrite python
+
+script:
+  # We can't run 'distcheck' or 'syntax-check' because they fail on
+  # macOS, but doing 'install' and 'dist' gives us some useful coverage
+  - mkdir build && cd build
+  - ../autogen.sh --prefix=$(pwd)/install-root && make -j3 && make -j3 install && make -j3 dist
 
 git:
   submodules: true
