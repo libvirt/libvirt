@@ -1,4 +1,3 @@
-sudo: required
 language: c
 compiler: clang
 os: osx
