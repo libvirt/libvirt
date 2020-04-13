@@ -25,6 +25,11 @@
 #include <mntent.h>
 #include <unistd.h>
 
+#if WITH_FUSE
+# define FUSE_USE_VERSION 26
+# include <fuse.h>
+#endif
+
 #include "lxc_fuse.h"
 #include "lxc_cgroup.h"
 #include "lxc_conf.h"

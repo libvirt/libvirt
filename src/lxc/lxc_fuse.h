@@ -20,11 +20,6 @@
 
 #pragma once
 
-#define FUSE_USE_VERSION 26
-
-#if WITH_FUSE
-# include <fuse.h>
-#endif
 
 #include "virconftypes.h"
 
