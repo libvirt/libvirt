@@ -48,7 +48,7 @@ virDriverLoadModule(const char *name,
                     const char *regfunc,
                     bool required)
 {
-    char *modfile = NULL;
+    g_autofree char *modfile = NULL;
     int ret;
 
     VIR_DEBUG("Module load %s", name);
@@ -62,9 +62,6 @@ virDriverLoadModule(const char *name,
         return -1;
 
     ret = virModuleLoad(modfile, regfunc, required);
-
-    VIR_FREE(modfile);
-
     return ret;
 }
 
