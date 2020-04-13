@@ -573,7 +573,7 @@ virStreamSendAll(virStreamPtr stream,
                  virStreamSourceFunc handler,
                  void *opaque)
 {
-    char *bytes = NULL;
+    g_autofree char *bytes = NULL;
     size_t want = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
     int ret = -1;
     VIR_DEBUG("stream=%p, handler=%p, opaque=%p", stream, handler, opaque);
@@ -616,8 +616,6 @@ virStreamSendAll(virStreamPtr stream,
     ret = 0;
 
  cleanup:
-    VIR_FREE(bytes);
-
     if (ret != 0) {
         virErrorPtr orig_err;
 
@@ -706,7 +704,7 @@ int virStreamSparseSendAll(virStreamPtr stream,
                            virStreamSourceSkipFunc skipHandler,
                            void *opaque)
 {
-    char *bytes = NULL;
+    g_autofree char *bytes = NULL;
     size_t bufLen = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
     int ret = -1;
     unsigned long long dataLen = 0;
@@ -787,8 +785,6 @@ int virStreamSparseSendAll(virStreamPtr stream,
     ret = 0;
 
  cleanup:
-    VIR_FREE(bytes);
-
     if (ret != 0) {
         virErrorPtr orig_err;
 
@@ -847,7 +843,7 @@ virStreamRecvAll(virStreamPtr stream,
                  virStreamSinkFunc handler,
                  void *opaque)
 {
-    char *bytes = NULL;
+    g_autofree char *bytes = NULL;
     size_t want = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
     int ret = -1;
     VIR_DEBUG("stream=%p, handler=%p, opaque=%p", stream, handler, opaque);
@@ -892,8 +888,6 @@ virStreamRecvAll(virStreamPtr stream,
     ret = 0;
 
  cleanup:
-    VIR_FREE(bytes);
-
     if (ret != 0) {
         virErrorPtr orig_err;
 
@@ -964,7 +958,7 @@ virStreamSparseRecvAll(virStreamPtr stream,
                        virStreamSinkHoleFunc holeHandler,
                        void *opaque)
 {
-    char *bytes = NULL;
+    g_autofree char *bytes = NULL;
     size_t want = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
     const unsigned int flags = VIR_STREAM_RECV_STOP_AT_HOLE;
     int ret = -1;
@@ -1025,8 +1019,6 @@ virStreamSparseRecvAll(virStreamPtr stream,
     ret = 0;
 
  cleanup:
-    VIR_FREE(bytes);
-
     if (ret != 0) {
         virErrorPtr orig_err;
 
