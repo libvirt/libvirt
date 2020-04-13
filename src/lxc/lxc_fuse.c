@@ -28,6 +28,9 @@
 #if WITH_FUSE
 # define FUSE_USE_VERSION 26
 # include <fuse.h>
+# if FUSE_USE_VERSION >= 31
+#  include <fuse_lowlevel.h>
+# endif
 #endif
 
 #include "lxc_fuse.h"
@@ -48,15 +51,19 @@ struct virLXCFuse {
     virThread thread;
     char *mountpoint;
     struct fuse *fuse;
+# if FUSE_USE_VERSION < 31
     struct fuse_chan *ch;
+# else
+    struct fuse_session *sess;
+# endif
     virMutex lock;
 };
 
 static const char *fuse_meminfo_path = "/meminfo";
 
 static int
-lxcProcGetattr(const char *path,
-               struct stat *stbuf)
+lxcProcGetattrImpl(const char *path,
+                   struct stat *stbuf)
 {
     g_autofree char *mempath = NULL;
     struct stat sb;
@@ -90,6 +97,40 @@ lxcProcGetattr(const char *path,
     return 0;
 }
 
+# if FUSE_USE_VERSION >= 31
+static int
+lxcProcGetattr(const char *path,
+               struct stat *stbuf,
+               struct fuse_file_info *fi G_GNUC_UNUSED)
+{
+    return lxcProcGetattrImpl(path, stbuf);
+}
+# else
+static int lxcProcGetattr(const char *path, struct stat *stbuf)
+{
+    return lxcProcGetattrImpl(path, stbuf);
+}
+# endif
+
+# if FUSE_USE_VERSION >= 31
+static int
+lxcProcReaddir(const char *path,
+               void *buf,
+               fuse_fill_dir_t filler,
+               off_t offset G_GNUC_UNUSED,
+               struct fuse_file_info *fi G_GNUC_UNUSED,
+               enum fuse_readdir_flags unused_flags G_GNUC_UNUSED)
+{
+    if (STRNEQ(path, "/"))
+        return -ENOENT;
+
+    filler(buf, ".", NULL, 0, 0);
+    filler(buf, "..", NULL, 0, 0);
+    filler(buf, fuse_meminfo_path + 1, NULL, 0, 0);
+
+    return 0;
+}
+# else
 static int
 lxcProcReaddir(const char *path,
                void *buf,
@@ -106,6 +147,7 @@ lxcProcReaddir(const char *path,
 
     return 0;
 }
+# endif
 
 static int
 lxcProcOpen(const char *path,
@@ -292,7 +334,11 @@ lxcFuseDestroy(struct virLXCFuse *fuse)
 {
     VIR_LOCK_GUARD lock = virLockGuardLock(&fuse->lock);
 
+# if FUSE_USE_VERSION >= 31
+    fuse_unmount(fuse->fuse);
+# else
     fuse_unmount(fuse->mountpoint, fuse->ch);
+# endif
     g_clear_pointer(&fuse->fuse, fuse_destroy);
 }
 
@@ -335,6 +381,23 @@ lxcSetupFuse(struct virLXCFuse **f,
         fuse_opt_add_arg(&args, "-ofsname=libvirt") == -1)
         goto error;
 
+# if FUSE_USE_VERSION >= 31
+    fuse->fuse = fuse_new(&args, &lxcProcOper, sizeof(lxcProcOper), fuse->def);
+    if (fuse->fuse == NULL)
+        goto error;
+
+    if (fuse_mount(fuse->fuse, fuse->mountpoint) < 0)
+        goto error;
+
+    fuse->sess = fuse_get_session(fuse->fuse);
+
+    if (virSetInherit(fuse_session_fd(fuse->sess), false) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot disable close-on-exec flag"));
+        goto error;
+    }
+
+# else
     fuse->ch = fuse_mount(fuse->mountpoint, &args);
     if (fuse->ch == NULL)
         goto error;
@@ -344,6 +407,7 @@ lxcSetupFuse(struct virLXCFuse **f,
     if (fuse->fuse == NULL) {
         goto error;
     }
+# endif
 
     *f = g_steal_pointer(&fuse);
     ret = 0;
@@ -352,8 +416,13 @@ lxcSetupFuse(struct virLXCFuse **f,
     return ret;
 
  error:
+# if FUSE_USE_VERSION < 31
     if (fuse->ch)
         fuse_unmount(fuse->mountpoint, fuse->ch);
+# else
+    fuse_unmount(fuse->fuse);
+    fuse_destroy(fuse->fuse);
+# endif
     g_free(fuse->mountpoint);
     virMutexDestroy(&fuse->lock);
     goto cleanup;
