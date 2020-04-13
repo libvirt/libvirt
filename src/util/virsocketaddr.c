@@ -271,7 +271,7 @@ int virSocketAddrResolveService(const char *service)
             port = ntohs(in.sin6_port);
             goto cleanup;
         }
-        tmp++;
+        tmp = tmp->ai_next;
     }
 
     virReportError(VIR_ERR_SYSTEM_ERROR,
