@@ -41,14 +41,6 @@ struct virLXCMeminfo {
     unsigned long long swapusage;
 };
 
-struct virLXCFuse {
-    virDomainDef *def;
-    virThread thread;
-    char *mountpoint;
-    struct fuse *fuse;
-    struct fuse_chan *ch;
-    virMutex lock;
-};
 typedef struct virLXCFuse virLXCFuse;
 
 int lxcSetupFuse(struct virLXCFuse **f, virDomainDef *def);

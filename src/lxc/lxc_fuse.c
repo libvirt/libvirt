@@ -37,6 +37,15 @@
 
 #if WITH_FUSE
 
+struct virLXCFuse {
+    virDomainDef *def;
+    virThread thread;
+    char *mountpoint;
+    struct fuse *fuse;
+    struct fuse_chan *ch;
+    virMutex lock;
+};
+
 static const char *fuse_meminfo_path = "/meminfo";
 
 static int lxcProcGetattr(const char *path, struct stat *stbuf)
