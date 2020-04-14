@@ -692,6 +692,20 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             b_info->u.pv.kernel = g_strdup(def->os.kernel);
         }
         b_info->u.pv.ramdisk = g_strdup(def->os.initrd);
+
+        if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
+            switch ((virTristateSwitch) def->xen_features[VIR_DOMAIN_XEN_E820_HOST]) {
+                case VIR_TRISTATE_SWITCH_ON:
+                    libxl_defbool_set(&b_info->u.pv.e820_host, true);
+                    break;
+                case VIR_TRISTATE_SWITCH_OFF:
+                    libxl_defbool_set(&b_info->u.pv.e820_host, false);
+                    break;
+                case VIR_TRISTATE_SWITCH_ABSENT:
+                case VIR_TRISTATE_SWITCH_LAST:
+                    break;
+            }
+        }
     }
 
     /* only the 'xen' balloon device model is supported */
