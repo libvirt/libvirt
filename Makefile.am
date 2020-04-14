@@ -43,7 +43,7 @@ EXTRA_DIST = \
   autogen.sh \
   GNUmakefile \
   run.in \
-  README.md \
+  README.rst \
   AUTHORS.in \
   scripts/apibuild.py \
   scripts/augeas-gentest.py \

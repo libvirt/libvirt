@@ -1,6 +1,11 @@
-[![Build Status](https://travis-ci.org/libvirt/libvirt.svg)](https://travis-ci.org/libvirt/libvirt)
- [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/355/badge)](https://bestpractices.coreinfrastructure.org/projects/355)
+.. image:: https://travis-ci.org/libvirt/libvirt.svg
+     :target: https://travis-ci.org/libvirt/libvirt
+     :alt: Travis CI Build Status
+.. image:: https://bestpractices.coreinfrastructure.org/projects/355/badge
+     :target: https://bestpractices.coreinfrastructure.org/projects/355
+     :alt: CII Best Practices
 
+==============================
 Libvirt API for virtualization
 ==============================
 
@@ -21,66 +26,66 @@ mappings into object systems such as GObject, CIM and SNMP.
 Further information about the libvirt project can be found on the
 website:
 
-[https://libvirt.org](https://libvirt.org)
+https://libvirt.org
 
 
 License
--------
+=======
 
 The libvirt C API is distributed under the terms of GNU Lesser General
 Public License, version 2.1 (or later). Some parts of the code that are
 not part of the C library may have the more restrictive GNU General
-Public License, version 2.0 (or later). See the files `COPYING.LESSER`
-and `COPYING` for full license terms & conditions.
+Public License, version 2.0 (or later). See the files ``COPYING.LESSER``
+and ``COPYING`` for full license terms & conditions.
 
 
 Installation
-------------
+============
 
 Libvirt uses the GNU Autotools build system, so in general can be built
 and installed with the usual commands, however, we mandate to have the
 build directory different than the source directory. For example, to build
 in a manner that is suitable for installing as root, use:
 
-```
-$ mkdir build && cd build
-$ ../configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
-$ make
-$ sudo make install
-```
+::
+
+  $ mkdir build && cd build
+  $ ../configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
+  $ make
+  $ sudo make install
 
 While to build & install as an unprivileged user
 
-```
-$ mkdir build && cd build
-$ ../configure --prefix=$HOME/usr
-$ make
-$ make install
-```
+::
+
+  $ mkdir build && cd build
+  $ ../configure --prefix=$HOME/usr
+  $ make
+  $ make install
 
 The libvirt code relies on a large number of 3rd party libraries. These will
-be detected during execution of the `configure` script and a summary printed
+be detected during execution of the ``configure`` script and a summary printed
 which lists any missing (optional) dependencies.
 
 
 Contributing
-------------
+============
 
 The libvirt project welcomes contributions in many ways. For most components
 the best way to contribute is to send patches to the primary development
 mailing list. Further guidance on this can be found on the website:
 
-[https://libvirt.org/contribute.html](https://libvirt.org/contribute.html)
+https://libvirt.org/contribute.html
 
 
 Contact
--------
+=======
 
 The libvirt project has two primary mailing lists:
 
-  * libvirt-users@redhat.com (**for user discussions**)
-  * libvir-list@redhat.com (**for development only**)
+* libvirt-users@redhat.com (**for user discussions**)
+* libvir-list@redhat.com (**for development only**)
 
 Further details on contacting the project are available on the website:
 
-[https://libvirt.org/contact.html](https://libvirt.org/contact.html)
+https://libvirt.org/contact.html

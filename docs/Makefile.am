@@ -118,7 +118,7 @@ javascriptdir = $(HTML_DIR)/js
 javascript_DATA = $(javascript)
 
 fonts = \
-  fonts/LICENSE.md \
+  fonts/LICENSE.rst \
   fonts/stylesheet.css \
   fonts/overpass-bold-italic.woff \
   fonts/overpass-bold.woff \

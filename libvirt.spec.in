@@ -1505,7 +1505,7 @@ exit 0
 %files
 
 %files docs
-%doc AUTHORS ChangeLog NEWS README README.md
+%doc AUTHORS ChangeLog NEWS README README.rst
 %doc %{_vpath_builddir}/libvirt-docs/*
 
 %files daemon
