@@ -173,6 +173,7 @@ VIR_ENUM_IMPL(virDomainFeature,
               "nested-hv",
               "msrs",
               "ccf-assist",
+              "xen",
 );
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy,
@@ -204,6 +205,11 @@ VIR_ENUM_IMPL(virDomainKVM,
               VIR_DOMAIN_KVM_LAST,
               "hidden",
               "hint-dedicated",
+);
+
+VIR_ENUM_IMPL(virDomainXen,
+              VIR_DOMAIN_XEN_LAST,
+              "e820_host"
 );
 
 VIR_ENUM_IMPL(virDomainMsrsUnknown,
@@ -20862,6 +20868,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         case VIR_DOMAIN_FEATURE_HYPERV:
         case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_MSRS:
+        case VIR_DOMAIN_FEATURE_XEN:
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
 
@@ -21166,6 +21173,51 @@ virDomainDefParseXML(xmlDocPtr xml,
 
                 /* coverity[dead_error_begin] */
                 case VIR_DOMAIN_KVM_LAST:
+                    break;
+            }
+        }
+        VIR_FREE(nodes);
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
+        int feature;
+        int value;
+        if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            feature = virDomainXenTypeFromString((const char *)nodes[i]->name);
+            if (feature < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported Xen feature: %s"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            switch ((virDomainXen) feature) {
+                case VIR_DOMAIN_XEN_E820_HOST:
+                    if (!(tmp = virXMLPropString(nodes[i], "state"))) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("missing 'state' attribute for "
+                                         "Xen feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("invalid value of state argument "
+                                         "for Xen feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    VIR_FREE(tmp);
+                    def->xen_features[feature] = value;
+                    break;
+
+                /* coverity[dead_error_begin] */
+                case VIR_DOMAIN_XEN_LAST:
                     break;
             }
         }
@@ -23173,6 +23225,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
         case VIR_DOMAIN_FEATURE_PRIVNET:
         case VIR_DOMAIN_FEATURE_HYPERV:
         case VIR_DOMAIN_FEATURE_KVM:
+        case VIR_DOMAIN_FEATURE_XEN:
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
         case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_VMPORT:
@@ -23341,6 +23394,30 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
                            virTristateSwitchTypeToString(src->hyperv_stimer_direct),
                            virTristateSwitchTypeToString(dst->hyperv_stimer_direct));
             return false;
+        }
+    }
+
+    /* xen */
+    if (src->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
+        for (i = 0; i < VIR_DOMAIN_XEN_LAST; i++) {
+            switch ((virDomainXen) i) {
+            case VIR_DOMAIN_XEN_E820_HOST:
+                if (src->xen_features[i] != dst->xen_features[i]) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("State of Xen feature '%s' differs: "
+                                     "source: '%s', destination: '%s'"),
+                                   virDomainXenTypeToString(i),
+                                   virTristateSwitchTypeToString(src->xen_features[i]),
+                                   virTristateSwitchTypeToString(dst->xen_features[i]));
+                    return false;
+                }
+
+                break;
+
+            /* coverity[dead_error_begin] */
+            case VIR_DOMAIN_XEN_LAST:
+                break;
+            }
         }
     }
 
@@ -28961,6 +29038,31 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             }
             virBufferAdjustIndent(&childBuf, -2);
             virBufferAddLit(&childBuf, "</kvm>\n");
+            break;
+
+        case VIR_DOMAIN_FEATURE_XEN:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            virBufferAddLit(&childBuf, "<xen>\n");
+            virBufferAdjustIndent(&childBuf, 2);
+            for (j = 0; j < VIR_DOMAIN_XEN_LAST; j++) {
+                switch ((virDomainXen) j) {
+                case VIR_DOMAIN_XEN_E820_HOST:
+                    if (def->xen_features[j])
+                        virBufferAsprintf(&childBuf, "<%s state='%s'/>\n",
+                                          virDomainXenTypeToString(j),
+                                          virTristateSwitchTypeToString(
+                                              def->xen_features[j]));
+                    break;
+
+                /* coverity[dead_error_begin] */
+                case VIR_DOMAIN_XEN_LAST:
+                    break;
+                }
+            }
+            virBufferAdjustIndent(&childBuf, -2);
+            virBufferAddLit(&childBuf, "</xen>\n");
             break;
 
         case VIR_DOMAIN_FEATURE_CAPABILITIES:

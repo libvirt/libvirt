@@ -5349,6 +5349,9 @@
             <ref name="kvm"/>
           </optional>
           <optional>
+            <ref name="xen"/>
+          </optional>
+          <optional>
             <element name="privnet">
               <empty/>
             </element>
@@ -6330,6 +6333,19 @@
         </optional>
         <optional>
           <element name="hint-dedicated">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <!-- Optional Xen features -->
+  <define name="xen">
+    <element name="xen">
+      <interleave>
+        <optional>
+          <element name="e820_host">
             <ref name="featurestate"/>
           </element>
         </optional>

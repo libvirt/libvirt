@@ -2061,6 +2061,9 @@
     &lt;hidden state='on'/&gt;
     &lt;hint-dedicated state='on'/&gt;
   &lt;/kvm&gt;
+  &lt;xen&gt;
+    &lt;e820_host state='on'/&gt;
+  &lt;/xen&gt;
   &lt;pvspinlock state='on'/&gt;
   &lt;gic version='2'/&gt;
   &lt;ioapic driver='qemu'/&gt;
@@ -2239,6 +2242,23 @@
           <td>Allows a guest to enable optimizations when running on dedicated vCPUs</td>
           <td>on, off</td>
           <td><span class="since">5.7.0 (QEMU 2.12.0)</span></td>
+        </tr>
+      </table>
+      </dd>
+      <dt><code>xen</code></dt>
+      <dd>Various features to change the behavior of the Xen hypervisor.
+      <table class="top_table">
+        <tr>
+          <th>Feature</th>
+          <th>Description</th>
+          <th>Value</th>
+          <th>Since</th>
+        </tr>
+        <tr>
+          <td>e820_host</td>
+          <td>Expose the host e820 to the guest (PV only)</td>
+          <td>on, off</td>
+          <td><span class="since">6.3.0</span></td>
         </tr>
       </table>
       </dd>
