@@ -1,3 +1,6 @@
+.. image:: https://gitlab.com/libvirt/libvirt/badges/master/pipeline.svg
+     :target: https://gitlab.com/libvirt/libvirt/pipelines
+     :alt: GitLab CI Build Status
 .. image:: https://travis-ci.org/libvirt/libvirt.svg
      :target: https://travis-ci.org/libvirt/libvirt
      :alt: Travis CI Build Status
