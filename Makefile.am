@@ -45,6 +45,7 @@ EXTRA_DIST = \
   run.in \
   README.rst \
   AUTHORS.in \
+  CONTRIBUTING.rst \
   scripts/apibuild.py \
   scripts/augeas-gentest.py \
   build-aux/check-spacing.pl \
