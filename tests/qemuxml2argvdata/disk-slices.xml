@@ -51,6 +51,31 @@
       <backingStore/>
       <target dev='vdc' bus='virtio'/>
     </disk>
+    <disk type='nvme' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source type='pci' managed='no' namespace='1'>
+        <address domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
+        <slices>
+          <slice type='storage' offset='1234' size='321'/>
+        </slices>
+      </source>
+      <target dev='vdd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
+    <disk type='nvme' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source type='pci' managed='no' namespace='2'>
+        <address domain='0x0001' bus='0x02' slot='0x00' function='0x0'/>
+        <slices>
+          <slice type='storage' offset='1234' size='321'/>
+        </slices>
+        <encryption format='luks'>
+          <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
+        </encryption>
+      </source>
+      <target dev='vde' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </disk>
     <controller type='usb'/>
     <controller type='pci' model='pci-root'/>
     <memballoon model='virtio'/>
