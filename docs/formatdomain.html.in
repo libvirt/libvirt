@@ -4286,7 +4286,11 @@
         element with no other attributes as an explicit request to
         assign a PCI address for the device rather than some other
         type of address that may also be appropriate for that same
-        device (e.g. virtio-mmio).
+        device (e.g. virtio-mmio).<br/>
+        The relationship between the PCI addresses configured in the domain
+        XML and those seen by the guest OS can sometime seem confusing: a
+        separate document describes <a href="pci-addresses.html">how PCI
+        addresses work</a> in more detail.
       </dd>
       <dt><code>drive</code></dt>
       <dd>Drive addresses have the following additional
