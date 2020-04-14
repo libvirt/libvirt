@@ -592,6 +592,13 @@ xenParseCPUFeatures(virConfPtr conf,
 
             def->clock.timers[def->clock.ntimers - 1] = timer;
         }
+    } else {
+        if (xenConfigGetBool(conf, "e820_host", &val, 0) < 0) {
+            return -1;
+        } else if (val) {
+            def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_ON;
+            def->xen_features[VIR_DOMAIN_XEN_E820_HOST] = VIR_TRISTATE_SWITCH_ON;
+        }
     }
 
     return 0;
@@ -2138,6 +2145,12 @@ xenFormatCPUFeatures(virConfPtr conf, virDomainDefPtr def)
                             (def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] ==
                              VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
             return -1;
+    } else {
+        if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
+            if (def->xen_features[VIR_DOMAIN_XEN_E820_HOST] == VIR_TRISTATE_SWITCH_ON)
+                if (xenConfigSetInt(conf, "e820_host", 1) < 0)
+                    return -1;
+        }
     }
 
     for (i = 0; i < def->clock.ntimers; i++) {
