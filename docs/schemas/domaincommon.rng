@@ -6349,6 +6349,18 @@
             <ref name="featurestate"/>
           </element>
         </optional>
+        <optional>
+          <element name="passthrough">
+            <ref name="featurestate"/>
+            <optional>
+              <attribute name="mode">
+                <data type="string">
+                  <param name='pattern'>(sync_pt|share_pt)</param>
+                </data>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

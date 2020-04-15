@@ -1862,9 +1862,18 @@ typedef enum {
 
 typedef enum {
     VIR_DOMAIN_XEN_E820_HOST = 0,
+    VIR_DOMAIN_XEN_PASSTHROUGH,
 
     VIR_DOMAIN_XEN_LAST
 } virDomainXen;
+
+typedef enum {
+    VIR_DOMAIN_XEN_PASSTHROUGH_MODE_DEFAULT = 0,
+    VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SYNC_PT,
+    VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SHARE_PT,
+
+    VIR_DOMAIN_XEN_PASSTHROUGH_MODE_LAST
+} virDomainXenPassthroughMode;
 
 typedef enum {
     VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT = 0,
@@ -2492,6 +2501,7 @@ struct _virDomainDef {
     int kvm_features[VIR_DOMAIN_KVM_LAST];
     int msrs_features[VIR_DOMAIN_MSRS_LAST];
     int xen_features[VIR_DOMAIN_XEN_LAST];
+    int xen_passthrough_mode;
     unsigned int hyperv_spinlocks;
     int hyperv_stimer_direct;
     virGICVersion gic_version;
@@ -3538,6 +3548,7 @@ VIR_ENUM_DECL(virDomainGraphicsVNCSharePolicy);
 VIR_ENUM_DECL(virDomainHyperv);
 VIR_ENUM_DECL(virDomainKVM);
 VIR_ENUM_DECL(virDomainXen);
+VIR_ENUM_DECL(virDomainXenPassthroughMode);
 VIR_ENUM_DECL(virDomainMsrsUnknown);
 VIR_ENUM_DECL(virDomainRNGModel);
 VIR_ENUM_DECL(virDomainRNGBackend);

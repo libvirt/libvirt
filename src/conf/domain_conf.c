@@ -209,7 +209,15 @@ VIR_ENUM_IMPL(virDomainKVM,
 
 VIR_ENUM_IMPL(virDomainXen,
               VIR_DOMAIN_XEN_LAST,
-              "e820_host"
+              "e820_host",
+              "passthrough",
+);
+
+VIR_ENUM_IMPL(virDomainXenPassthroughMode,
+              VIR_DOMAIN_XEN_PASSTHROUGH_MODE_LAST,
+              "default",
+              "sync_pt",
+              "share_pt",
 );
 
 VIR_ENUM_IMPL(virDomainMsrsUnknown,
@@ -21182,6 +21190,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
         int value;
+        g_autofree char *ptval = NULL;
+
         if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
             goto error;
 
@@ -21194,27 +21204,53 @@ virDomainDefParseXML(xmlDocPtr xml,
                 goto error;
             }
 
+            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("missing 'state' attribute for "
+                                 "Xen feature '%s'"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid value of state argument "
+                                 "for Xen feature '%s'"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            VIR_FREE(tmp);
+            def->xen_features[feature] = value;
+
             switch ((virDomainXen) feature) {
                 case VIR_DOMAIN_XEN_E820_HOST:
-                    if (!(tmp = virXMLPropString(nodes[i], "state"))) {
-                        virReportError(VIR_ERR_XML_ERROR,
-                                       _("missing 'state' attribute for "
-                                         "Xen feature '%s'"),
-                                       nodes[i]->name);
-                        goto error;
-                    }
-
-                    if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("invalid value of state argument "
-                                         "for Xen feature '%s'"),
-                                       nodes[i]->name);
-                        goto error;
-                    }
-
-                    VIR_FREE(tmp);
-                    def->xen_features[feature] = value;
                     break;
+
+            case VIR_DOMAIN_XEN_PASSTHROUGH:
+                if (value != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                if ((ptval = virXMLPropString(nodes[i], "mode"))) {
+                    int mode = virDomainXenPassthroughModeTypeFromString(ptval);
+
+                    if (mode < 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("unsupported mode '%s' for Xen passthrough feature"),
+                                       ptval);
+                        goto error;
+                    }
+
+                    if (mode != VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SYNC_PT &&
+                        mode != VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SHARE_PT) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("'mode' attribute for Xen feature "
+                                         "'passthrough' must be 'sync_pt' or 'share_pt'"));
+                        goto error;
+                    }
+                    def->xen_passthrough_mode = mode;
+                }
+                break;
 
                 /* coverity[dead_error_begin] */
                 case VIR_DOMAIN_XEN_LAST:
@@ -23400,18 +23436,28 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
     /* xen */
     if (src->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
         for (i = 0; i < VIR_DOMAIN_XEN_LAST; i++) {
+            if (src->xen_features[i] != dst->xen_features[i]) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("State of Xen feature '%s' differs: "
+                                 "source: '%s', destination: '%s'"),
+                               virDomainXenTypeToString(i),
+                               virTristateSwitchTypeToString(src->xen_features[i]),
+                               virTristateSwitchTypeToString(dst->xen_features[i]));
+                return false;
+            }
             switch ((virDomainXen) i) {
             case VIR_DOMAIN_XEN_E820_HOST:
-                if (src->xen_features[i] != dst->xen_features[i]) {
+                break;
+
+            case VIR_DOMAIN_XEN_PASSTHROUGH:
+                if (src->xen_passthrough_mode != dst->xen_passthrough_mode) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("State of Xen feature '%s' differs: "
+                                   _("'mode' of Xen passthrough feature differs: "
                                      "source: '%s', destination: '%s'"),
-                                   virDomainXenTypeToString(i),
-                                   virTristateSwitchTypeToString(src->xen_features[i]),
-                                   virTristateSwitchTypeToString(dst->xen_features[i]));
+                                   virDomainXenPassthroughModeTypeToString(src->xen_passthrough_mode),
+                                   virDomainXenPassthroughModeTypeToString(dst->xen_passthrough_mode));
                     return false;
                 }
-
                 break;
 
             /* coverity[dead_error_begin] */
@@ -29047,13 +29093,30 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             virBufferAddLit(&childBuf, "<xen>\n");
             virBufferAdjustIndent(&childBuf, 2);
             for (j = 0; j < VIR_DOMAIN_XEN_LAST; j++) {
+                if (def->xen_features[j] == VIR_TRISTATE_SWITCH_ABSENT)
+                    continue;
+
+                virBufferAsprintf(&childBuf, "<%s state='%s'",
+                                      virDomainXenTypeToString(j),
+                                      virTristateSwitchTypeToString(
+                                          def->xen_features[j]));
+
                 switch ((virDomainXen) j) {
                 case VIR_DOMAIN_XEN_E820_HOST:
-                    if (def->xen_features[j])
-                        virBufferAsprintf(&childBuf, "<%s state='%s'/>\n",
-                                          virDomainXenTypeToString(j),
-                                          virTristateSwitchTypeToString(
-                                              def->xen_features[j]));
+                    virBufferAddLit(&childBuf, "/>\n");
+                    break;
+                case VIR_DOMAIN_XEN_PASSTHROUGH:
+                    if (def->xen_features[j] != VIR_TRISTATE_SWITCH_ON) {
+                        virBufferAddLit(&childBuf, "/>\n");
+                        break;
+                    }
+                    if (def->xen_passthrough_mode == VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SYNC_PT ||
+                        def->xen_passthrough_mode == VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SHARE_PT) {
+                        virBufferEscapeString(&childBuf, " mode='%s'/>\n",
+                                              virDomainXenPassthroughModeTypeToString(def->xen_passthrough_mode));
+                    } else {
+                        virBufferAddLit(&childBuf, "/>\n");
+                    }
                     break;
 
                 /* coverity[dead_error_begin] */

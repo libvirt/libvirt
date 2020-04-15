@@ -2063,6 +2063,7 @@
   &lt;/kvm&gt;
   &lt;xen&gt;
     &lt;e820_host state='on'/&gt;
+    &lt;passthrough state='on' mode='share_pt'/&gt;
   &lt;/xen&gt;
   &lt;pvspinlock state='on'/&gt;
   &lt;gic version='2'/&gt;
@@ -2258,6 +2259,12 @@
           <td>e820_host</td>
           <td>Expose the host e820 to the guest (PV only)</td>
           <td>on, off</td>
+          <td><span class="since">6.3.0</span></td>
+        </tr>
+        <tr>
+          <td>passthrough</td>
+          <td>Enable IOMMU mappings allowing PCI passthrough)</td>
+          <td>on, off; mode - optional string sync_pt or share_pt</td>
           <td><span class="since">6.3.0</span></td>
         </tr>
       </table>
