@@ -6226,6 +6226,7 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     unsigned long long value;
     unsigned int flags = 0;
     int ivalue;
+    const char *svalue;
     int op;
     int rc;
     size_t i;
@@ -6504,6 +6505,13 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     } else if (rc) {
         val = vshPrettyCapacity(value, &unit);
         vshPrint(ctl, "%-17s %-.3lf %s\n", _("Temporary disk space total:"), val, unit);
+    }
+
+    if ((rc = virTypedParamsGetString(params, nparams, VIR_DOMAIN_JOB_ERRMSG,
+                                      &svalue)) < 0) {
+        goto save_error;
+    } else if (rc == 1) {
+        vshPrint(ctl, "%-17s %s\n", _("Error message:"), svalue);
     }
 
     ret = true;

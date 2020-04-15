@@ -3613,6 +3613,15 @@ typedef enum {
 # define VIR_DOMAIN_JOB_SUCCESS "success"
 
 /**
+ * VIR_DOMAIN_JOB_ERRMSG:
+ *
+ * virDomainGetJobStats field: Present only in statistics for a completed job.
+ * Optional error message for a failed job.
+ */
+# define VIR_DOMAIN_JOB_ERRMSG "errmsg"
+
+
+/**
  * VIR_DOMAIN_JOB_DISK_TEMP_USED:
  * virDomainGetJobStats field: current usage of temporary disk space for the
  * job in bytes as VIR_TYPED_PARAM_ULLONG.
