@@ -204,25 +204,6 @@ will result in the exactly same view in the guest, as the addresses there
 are generated from the information provided via the ``zpci`` element (in
 fact, from the ``uid``).
 
-Therefore, replacing the virtio-net device definition with the following XML
-snippet
-
-::
-
-  <interface type='bridge'>
-    <source bridge='virbr0'/>
-    <model type='virtio'/>
-    <address type='pci' domain='0x0000' bus='0x01' slot='0x07' function='0x3'>
-      <zpci uid='0x0007' fid='0x00000003'/>
-    </address>
-  </interface>
-
-will yield the following result in a Linux guest:
-
-::
-
-  0007:00:00.0 Ethernet controller: Red Hat, Inc. Virtio network device
-
 
 Device assignment
 =================
