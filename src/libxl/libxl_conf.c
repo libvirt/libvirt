@@ -158,6 +158,27 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
         c_info->type = LIBXL_DOMAIN_TYPE_PV;
     }
 
+#ifdef LIBXL_HAVE_CREATEINFO_PASSTHROUGH
+    if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
+        switch ((virTristateSwitch) def->xen_features[VIR_DOMAIN_XEN_PASSTHROUGH]) {
+        case VIR_TRISTATE_SWITCH_ON:
+            if (def->xen_passthrough_mode == VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SYNC_PT)
+                c_info->passthrough = LIBXL_PASSTHROUGH_SYNC_PT;
+            else if (def->xen_passthrough_mode == VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SHARE_PT)
+                c_info->passthrough = LIBXL_PASSTHROUGH_SHARE_PT;
+            else
+                c_info->passthrough = LIBXL_PASSTHROUGH_ENABLED;
+            break;
+        case VIR_TRISTATE_SWITCH_OFF:
+            c_info->passthrough = LIBXL_PASSTHROUGH_DISABLED;
+            break;
+        case VIR_TRISTATE_SWITCH_ABSENT:
+        case VIR_TRISTATE_SWITCH_LAST:
+            break;
+        }
+    }
+#endif
+
     c_info->name = g_strdup(def->name);
 
     if (def->nseclabels &&
