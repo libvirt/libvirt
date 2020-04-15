@@ -4,7 +4,7 @@ PCI addresses in domain XML and guest OS
 
 .. contents::
 
-When discussing PCI addresses, it's important to understand the the
+When discussing PCI addresses, it's important to understand the
 relationship between the addresses that can be seen in the domain XML
 and those that are visible inside the guest OS.
 
