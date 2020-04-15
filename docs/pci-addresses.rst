@@ -177,7 +177,6 @@ In the simplest case, the following XML snippet
     </address>
   </controller>
   <interface type='bridge'>
-    <mac address='02:ca:fe:fa:ce:04'/>
     <source bridge='virbr0'/>
     <model type='virtio'/>
     <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'>
@@ -211,7 +210,6 @@ snippet
 ::
 
   <interface type='bridge'>
-    <mac address='02:ca:fe:fa:ce:04'/>
     <source bridge='virbr0'/>
     <model type='virtio'/>
     <address type='pci' domain='0x0000' bus='0x01' slot='0x07' function='0x3'>
