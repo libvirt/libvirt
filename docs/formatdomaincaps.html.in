@@ -562,6 +562,7 @@
     <p>Reports whether the hypervisor will obey the &lt;backingStore&gt;
     elements configured for a &lt;disk&gt; when booting the guest, hotplugging
     the disk to a running guest, or similar.
+    <span class="since">(Since 5.10)</span>
     </p>
 
     <h4><a id="featureBackup">backup</a></h4>
