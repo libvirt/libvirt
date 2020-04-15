@@ -158,36 +158,8 @@ Once again, while the PCI addresses seen in the domain XML and those
 seen by the guest OS do not match, the relationships between the
 various devices are preserved.
 
-
-Device assignment
-=================
-
-When using VFIO to assign host devices to a guest, an additional
-caveat to keep in mind that the guest OS will base its decisions upon
-the *target address* (guest side) rather than the *source address*
-(host side).
-
-For example, the domain XML snippet
-
-::
-
-  <hostdev mode='subsystem' type='pci' managed='yes'>
-    <driver name='vfio'/>
-    <source>
-      <address domain='0x0001' bus='0x08' slot='0x00' function='0x0'/>
-    </source>
-    <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
-  </hostdev>
-
-will result in the device showing up as ``0000:00:01.0`` in the
-guest OS rather than as ``0001:08:00.1``, which is the address of the
-device on the host.
-
-Of course, all the rules and behaviors described above still apply.
-
-
 zPCI addresses
-==============
+--------------
 
 For s390x machines, PCI addresses are handled yet differently. No
 topology information is relayed in the PCI addresses; instead, the
@@ -252,3 +224,30 @@ will yield the following result in a Linux guest:
 ::
 
   0007:00:00.0 Ethernet controller: Red Hat, Inc. Virtio network device
+
+
+Device assignment
+=================
+
+When using VFIO to assign host devices to a guest, an additional
+caveat to keep in mind that the guest OS will base its decisions upon
+the *target address* (guest side) rather than the *source address*
+(host side).
+
+For example, the domain XML snippet
+
+::
+
+  <hostdev mode='subsystem' type='pci' managed='yes'>
+    <driver name='vfio'/>
+    <source>
+      <address domain='0x0001' bus='0x08' slot='0x00' function='0x0'/>
+    </source>
+    <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+  </hostdev>
+
+will result in the device showing up as ``0000:00:01.0`` in the
+guest OS rather than as ``0001:08:00.1``, which is the address of the
+device on the host.
+
+Of course, all the rules and behaviors described above still apply.
