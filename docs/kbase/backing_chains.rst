@@ -38,13 +38,13 @@ image of the backing chain.
 This configuration will prompt libvirt to detect the backing image of the source
 image and recursively do the same thing until the end of the chain.
 
-Importance of properly setup backing chain
-------------------------------------------
+Importance of proper backing chain setup
+----------------------------------------
 
-The disk image locations are used by libvirt to properly setup the security
-system used on the host so that the hypervisor can access the files and possibly
-also directly to configure the hypervisor to use the appropriate images. Thus
-it's important to properly setup the formats and paths of the backing images.
+The disk image locations are used by libvirt to properly set up the security
+system used on the host so that the hypervisor can access the files; it can
+also be used to configure the hypervisor to use the appropriate images. Thus
+it's important to properly set up the formats and paths of the backing images.
 
 Any externally created image should always use the -F switch of ``qemu-img``
 to specify the format of the backing file to avoid probing.
@@ -60,7 +60,7 @@ explicitly in the XML or the overlay image itself.
 
 Libvirt also might lack support for a network disk storage technology and thus
 may be unable to visit and detect backing chains on such storage. This may
-result in the backing chain present in the live XML to look incomplete or some
+result in the backing chain in the live XML looking incomplete or some
 operations not being possible. To prevent this it's possible to specify the
 image metadata explicitly in the XML.
 
@@ -104,7 +104,7 @@ An empty ``<backingStore/>`` element signals the end of the chain. Using this
 will prevent libvirt or qemu from probing the backing chain.
 
 Note that it's also possible to partially specify the chain in the XML but omit
-the terminating element. This will result into probing from the last specified
+the terminating element. This will result in probing from the last specified
 ``<backingStore>``
 
 Any image specified explicitly will not be probed for backing file or format.
@@ -120,10 +120,10 @@ means that the **-F** parameter of ``qemu-img`` must always be used.
 
 ::
 
-  qemu-img -f qcow2 -F qcow2 -b /path/to/backing /path/to/overlay
+  qemu-img -f qcow2 -F qcow2 -b $BACKING_IMAGE_PATH $IMAGE_PATH
 
-Note that if '/path/to/backing' is relative the path is considered relative to
-the location of '/path/to/overlay'.
+Note that if ``$BACKING_IMAGE_PATH`` is relative the path is considered relative to
+the location of ``$IMAGE_PATH``.
 
 Troubleshooting
 ===============
@@ -164,7 +164,7 @@ the image has a backing image format specified:
      refcount bits: 16
      corrupt: false
 
-If the ``backing file format:`` field is missing above the format was not
+If the ``backing file format`` field is missing above the format was not
 specified properly. The image can be fixed by the following command:
 
 ::
@@ -177,22 +177,22 @@ If relative referencing of the backing image is desired, the path must be
 relative to the location of image described by ``$IMAGE_PATH``.
 
 **Important:** If the ``$BACKING_IMAGE_FORMAT`` is not known it can be queried
-using ``qemu-img info $BACKING_IMAGE_PATH`` and looking for the ``file format:``
-field, but for security reasons should be used *only* if at least one of the
-following criteria is met:
+using ``qemu-img info $BACKING_IMAGE_PATH`` and looking for the ``file format``
+field, but for security reasons the value should be used *only* if at least one
+of the following criteria is met:
 
 - ``file format`` is ``raw``
 - ``backing file`` is NOT present
 - ``backing file`` is present AND is correct/trusted
 
-Note that the last criteria may require manual inspection and thus should not
+Note that the last criterion may require manual inspection and thus should not
 be scripted unless the trust for the image can be expressed programatically.
 
 Also note that the above steps may need to be repeated recursively for any
 subsequent backing images.
 
-Missing images reported after after moving disk images into a different path
-----------------------------------------------------------------------------
+Missing images reported after moving disk images into a different path
+----------------------------------------------------------------------
 
 The path to the backing image which is recorded in the image metadata often
 contains a full path to the backing image. This is the default libvirt-created
