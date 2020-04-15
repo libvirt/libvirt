@@ -196,24 +196,26 @@ In the simplest case, the following XML snippet
 
 ::
 
-      <controller type='pci' index='0' model='pci-root'/>
-      <controller type='pci' index='1' model='pci-bridge'>
-        <model name='pci-bridge'/>
-        <target chassisNr='1'/>
-        <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'>
-          <zpci uid='0x0002' fid='0x00000001'/>
-        </address>
-      </controller>
-      <interface type='bridge'>
-        <mac address='02:ca:fe:fa:ce:04'/>
-        <source bridge='virbr0'/>
-        <model type='virtio'/>
-        <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'>
-          <zpci uid='0x0001' fid='0x00000000'/>
-        </address>
-      </interface>
+  <controller type='pci' index='0' model='pci-root'/>
+  <controller type='pci' index='1' model='pci-bridge'>
+    <model name='pci-bridge'/>
+    <target chassisNr='1'/>
+    <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'>
+      <zpci uid='0x0002' fid='0x00000001'/>
+    </address>
+  </controller>
+  <interface type='bridge'>
+    <mac address='02:ca:fe:fa:ce:04'/>
+    <source bridge='virbr0'/>
+    <model type='virtio'/>
+    <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'>
+      <zpci uid='0x0001' fid='0x00000000'/>
+    </address>
+  </interface>
 
-will result in the following in a Linux guest::
+will result in the following in a Linux guest:
+
+::
 
   0001:00:00.0 Ethernet controller: Red Hat, Inc. Virtio network device
 
@@ -221,7 +223,7 @@ Note that the PCI bridge is not visible in the guest; s390x always has a flat
 topology.
 
 Neither are any changes in the PCI address visible in the guest; replacing
-the PCI address for the virtio-net device with
+the PCI address for the ``virtio-net`` device with
 
 ::
 
@@ -236,15 +238,17 @@ snippet
 
 ::
 
-      <interface type='bridge'>
-        <mac address='02:ca:fe:fa:ce:04'/>
-        <source bridge='virbr0'/>
-        <model type='virtio'/>
-        <address type='pci' domain='0x0000' bus='0x01' slot='0x07' function='0x3'>
-          <zpci uid='0x0007' fid='0x00000003'/>
-        </address>
-      </interface>
+  <interface type='bridge'>
+    <mac address='02:ca:fe:fa:ce:04'/>
+    <source bridge='virbr0'/>
+    <model type='virtio'/>
+    <address type='pci' domain='0x0000' bus='0x01' slot='0x07' function='0x3'>
+      <zpci uid='0x0007' fid='0x00000003'/>
+    </address>
+  </interface>
 
-will yield the following result in a Linux guest::
+will yield the following result in a Linux guest:
+
+::
 
   0007:00:00.0 Ethernet controller: Red Hat, Inc. Virtio network device
