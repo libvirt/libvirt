@@ -649,6 +649,8 @@ virDomainWatchdogActionTypeToString;
 virDomainWatchdogDefFree;
 virDomainWatchdogModelTypeFromString;
 virDomainWatchdogModelTypeToString;
+virDomainXenPassthroughModeTypeFromString;
+virDomainXenPassthroughModeTypeToString;
 virDomainXMLOptionGetNamespace;
 virDomainXMLOptionGetSaveCookie;
 virDomainXMLOptionNew;
