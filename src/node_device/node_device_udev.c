@@ -1499,6 +1499,11 @@ udevHandleOneDevice(struct udev_device *device)
     if (STREQ(action, "remove"))
         return udevRemoveOneDevice(device);
 
+    if (STREQ(action, "move")) {
+        /* TODO: implement a way of finding and removing the old device */
+        return udevAddOneDevice(device);
+    }
+
     return 0;
 }
 
