@@ -630,7 +630,6 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
     if (migParams->compMethods == 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE &&
         !migParams->params[QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE].set) {
         *flags |= VIR_MIGRATE_COMPRESSED;
-        return 0;
     }
 
     for (i = 0; i < QEMU_MIGRATION_COMPRESS_LAST; ++i) {
