@@ -38,6 +38,7 @@ void
 qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
                             virDomainDiskDefPtr disk,
                             qemuBlockjobState state,
+                            const char *errmsg,
                             unsigned long long cur,
                             unsigned long long end,
                             int asyncJob);

@@ -836,6 +836,10 @@ qemuDomainBackupJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                                     VIR_DOMAIN_JOB_SUCCESS) < 0)
         return -1;
 
+    if (jobInfo->errmsg &&
+        virTypedParamListAddString(par, jobInfo->errmsg, VIR_DOMAIN_JOB_ERRMSG) < 0)
+        return -1;
+
     *nparams = virTypedParamListStealParams(par, params);
     *type = qemuDomainJobStatusToType(jobInfo->status);
     return 0;

@@ -650,6 +650,7 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
     priv->job.completed->stats.backup.tmp_total = priv->backup->pull_tmp_total;
 
     priv->job.completed->status = jobstatus;
+    priv->job.completed->errmsg = g_strdup(priv->backup->errmsg);
 
     qemuDomainEventEmitJobCompleted(priv->driver, vm);
 
@@ -951,6 +952,7 @@ void
 qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
                             virDomainDiskDefPtr disk,
                             qemuBlockjobState state,
+                            const char *errmsg,
                             unsigned long long cur,
                             unsigned long long end,
                             int asyncJob)
@@ -964,8 +966,8 @@ qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
     virDomainBackupDefPtr backup = priv->backup;
     size_t i;
 
-    VIR_DEBUG("vm: '%s', disk:'%s', state:'%d'",
-              vm->def->name, disk->dst, state);
+    VIR_DEBUG("vm: '%s', disk:'%s', state:'%d' errmsg:'%s'",
+              vm->def->name, disk->dst, state, NULLSTR(errmsg));
 
     if (!backup)
         return;
@@ -984,6 +986,10 @@ qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
         backup->push_transferred += cur;
         backup->push_total += end;
     }
+
+    /* record first error message */
+    if (!backup->errmsg)
+        backup->errmsg = g_strdup(errmsg);
 
     for (i = 0; i < backup->ndisks; i++) {
         virDomainBackupDiskDefPtr backupdisk = backup->disks + i;

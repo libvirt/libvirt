@@ -65,6 +65,7 @@ virDomainBackupDefFree(virDomainBackupDefPtr def)
         return;
 
     g_free(def->incremental);
+    g_free(def->errmsg);
     virStorageNetHostDefFree(1, def->server);
 
     for (i = 0; i < def->ndisks; i++) {
