@@ -5505,7 +5505,7 @@ remoteDispatchDomainGetJobStats(virNetServerPtr server G_GNUC_UNUSED,
                                 REMOTE_DOMAIN_JOB_STATS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
-                                0) < 0)
+                                VIR_TYPED_PARAM_STRING_OKAY) < 0)
         goto cleanup;
 
     rv = 0;
