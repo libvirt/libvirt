@@ -145,7 +145,7 @@ Libvirt ships a number of unit files for controlling ``libvirtd``:
   UNIX socket ``/var/run/libvirt/libvirt-sock``. This socket is recommended to
   be started on boot by default.
 
-* ``libvirtd-ro.socket`` - the unit file corresponding to the main read-write
+* ``libvirtd-ro.socket`` - the unit file corresponding to the main read-only
   UNIX socket ``/var/run/libvirt/libvirt-sock-ro``. This socket is recommended
   to be started on boot by default.
 
@@ -316,7 +316,7 @@ Libvirt ships a number of unit files for controlling ``virt${DRIVER}d``:
   recommended to be started on boot by default.
 
 * ``virt${DRIVER}d-ro.socket`` - the unit file corresponding to the main
-  read-write UNIX socket ``/var/run/libvirt/virt${DRIVER}d-sock-ro``. This
+  read-only UNIX socket ``/var/run/libvirt/virt${DRIVER}d-sock-ro``. This
   socket is recommended to be started on boot by default.
 
 * ``virt${DRIVER}d-admin.socket`` - the unit file corresponding to the
@@ -471,7 +471,7 @@ Libvirt ships a number of unit files for controlling ``virtproxyd``:
   UNIX socket ``/var/run/libvirt/libvirt-sock``. This socket is recommended to
   be started on boot by default.
 
-* ``virtproxyd-ro.socket`` - the unit file corresponding to the main read-write
+* ``virtproxyd-ro.socket`` - the unit file corresponding to the main read-only
   UNIX socket ``/var/run/libvirt/libvirt-sock-ro``. This socket is recommended
   to be started on boot by default.
 
