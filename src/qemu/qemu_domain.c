@@ -308,6 +308,7 @@ qemuDomainDisableNamespace(virDomainObjPtr vm,
 void
 qemuDomainJobInfoFree(qemuDomainJobInfoPtr info)
 {
+    g_free(info->errmsg);
     g_free(info);
 }
 
@@ -318,6 +319,8 @@ qemuDomainJobInfoCopy(qemuDomainJobInfoPtr info)
     qemuDomainJobInfoPtr ret = g_new0(qemuDomainJobInfo, 1);
 
     memcpy(ret, info, sizeof(*info));
+
+    ret->errmsg = g_strdup(info->errmsg);
 
     return ret;
 }

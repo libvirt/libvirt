@@ -175,6 +175,8 @@ struct _qemuDomainJobInfo {
         qemuDomainBackupStats backup;
     } stats;
     qemuDomainMirrorStats mirrorStats;
+
+    char *errmsg; /* optional error message for failed completed jobs */
 };
 
 void
