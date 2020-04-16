@@ -20,7 +20,9 @@
 
 #include <config.h>
 
+#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdbool.h>
@@ -30,8 +32,6 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "viralloc.h"
-#include "virprocess.h"
-#include "vircommand.h"
 
 #include "configmake.h"
 
@@ -44,7 +44,7 @@ virDaemonForkIntoBackground(const char *argv0)
     if (virPipeQuiet(statuspipe) < 0)
         return -1;
 
-    pid_t pid = virFork();
+    pid_t pid = fork();
     switch (pid) {
     case 0:
         {
@@ -73,7 +73,7 @@ virDaemonForkIntoBackground(const char *argv0)
             if (setsid() < 0)
                 goto cleanup;
 
-            nextpid = virFork();
+            nextpid = fork();
             switch (nextpid) {
             case 0: /* grandchild */
                 return statuspipe[1];
@@ -97,14 +97,15 @@ virDaemonForkIntoBackground(const char *argv0)
     default:
         {
             /* parent */
-            int exitstatus = 0;
+            int got, exitstatus = 0;
             int ret;
             char status;
 
             VIR_FORCE_CLOSE(statuspipe[1]);
 
             /* We wait to make sure the first child forked successfully */
-            if (virProcessWait(pid, &exitstatus, 0) < 0 ||
+            if ((got = waitpid(pid, &exitstatus, 0)) < 0 ||
+                got != pid ||
                 exitstatus != 0) {
                 goto error;
             }
