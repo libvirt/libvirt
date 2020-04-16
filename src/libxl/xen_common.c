@@ -493,15 +493,12 @@ xenParsePCIList(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseCPUFeatures(virConfPtr conf,
-                    virDomainDefPtr def,
-                    virDomainXMLOptionPtr xmlopt)
+xenParseCPU(virConfPtr conf,
+            virDomainDefPtr def,
+            virDomainXMLOptionPtr xmlopt)
 {
     unsigned long count = 0;
     g_autofree char *cpus = NULL;
-    g_autofree char *tsc_mode = NULL;
-    int val = 0;
-    virDomainTimerDefPtr timer;
 
     if (xenConfigGetULong(conf, "vcpus", &count, 1) < 0)
         return -1;
@@ -525,6 +522,17 @@ xenParseCPUFeatures(virConfPtr conf,
 
     if (cpus && (virBitmapParse(cpus, &def->cpumask, 4096) < 0))
         return -1;
+
+    return 0;
+}
+
+
+static int
+xenParseHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
+{
+    g_autofree char *tsc_mode = NULL;
+    virDomainTimerDefPtr timer;
+    int val = 0;
 
     if (xenConfigGetString(conf, "tsc_mode", &tsc_mode, NULL) < 0)
         return -1;
@@ -552,27 +560,26 @@ xenParseCPUFeatures(virConfPtr conf,
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (xenConfigGetBool(conf, "pae", &val, 1) < 0)
             return -1;
-
         else if (val)
             def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
+
         if (xenConfigGetBool(conf, "acpi", &val, 1) < 0)
             return -1;
-
         else if (val)
             def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
+
         if (xenConfigGetBool(conf, "apic", &val, 1) < 0)
             return -1;
-
         else if (val)
             def->features[VIR_DOMAIN_FEATURE_APIC] = VIR_TRISTATE_SWITCH_ON;
+
         if (xenConfigGetBool(conf, "hap", &val, 1) < 0)
             return -1;
-
         else if (!val)
             def->features[VIR_DOMAIN_FEATURE_HAP] = VIR_TRISTATE_SWITCH_OFF;
+
         if (xenConfigGetBool(conf, "viridian", &val, 0) < 0)
             return -1;
-
         else if (val)
             def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] = VIR_TRISTATE_SWITCH_ON;
 
@@ -1483,7 +1490,10 @@ xenParseConfigCommon(virConfPtr conf,
     if (xenParseEventsActions(conf, def) < 0)
         return -1;
 
-    if (xenParseCPUFeatures(conf, def, xmlopt) < 0)
+    if (xenParseCPU(conf, def, xmlopt) < 0)
+        return -1;
+
+    if (xenParseHypervisorFeatures(conf, def) < 0)
         return -1;
 
     if (xenParseTimeOffset(conf, def) < 0)
@@ -2115,7 +2125,7 @@ xenFormatCPUAllocation(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatCPUFeatures(virConfPtr conf, virDomainDefPtr def)
+xenFormatHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
 {
     size_t i;
     bool hvm = !!(def->os.type == VIR_DOMAIN_OSTYPE_HVM);
@@ -2423,7 +2433,7 @@ xenFormatConfigCommon(virConfPtr conf,
     if (xenFormatCPUAllocation(conf, def) < 0)
         return -1;
 
-    if (xenFormatCPUFeatures(conf, def) < 0)
+    if (xenFormatHypervisorFeatures(conf, def) < 0)
         return -1;
 
     if (xenFormatTimeOffset(conf, def) < 0)
