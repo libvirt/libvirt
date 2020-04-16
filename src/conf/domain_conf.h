@@ -2084,7 +2084,7 @@ struct _virDomainTimerDef {
     virDomainTimerCatchupDef catchup;
 
     /* track is only valid for name='platform|rtc' */
-    int track;  /* host|guest */
+    int track;  /* boot|guest|wall */
 
     /* frequency & mode are only valid for name='tsc' */
     unsigned long frequency; /* in Hz, unspecified = 0 */
