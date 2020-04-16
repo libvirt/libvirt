@@ -48,7 +48,7 @@ vpathhack:
 	do \
 	  test -e $$dir || ln -s $(srcdir)/$$dir $$dir ; \
 	done
-	@for file in $(css); \
+	@for file in $(assets); \
 	do \
 	  test -e $$file || ln -s $(srcdir)/$$file $$file ; \
 	done
@@ -58,7 +58,7 @@ clean-local:
 	do \
 	  rm -f $$dir ; \
 	done
-	for file in $(css); \
+	for file in $(assets); \
 	do \
 	  rm -f $$file ; \
 	done
@@ -103,12 +103,6 @@ apipng = \
 
 apirefdir = $(HTML_DIR)/html
 apiref_DATA = $(apihtml) $(apiadminhtml) $(apiqemuhtml) $(apilxchtml) $(apipng)
-
-css = \
-  generic.css \
-  libvirt.css \
-  mobile.css \
-  main.css
 
 javascript = \
   js/main.js \
@@ -156,20 +150,23 @@ logofiles = \
 logofilesdir = $(HTML_DIR)/logos
 logofiles_DATA = $(logofiles)
 
-png = \
+assets = \
   32favicon.png \
+  architecture.gif \
+  generic.css \
+  libvirt.css \
   libvirt-daemon-arch.png \
   libvirt-driver-arch.png \
   libvirt-object-model.png \
+  main.css \
   migration-managed-direct.png \
   migration-managed-p2p.png \
   migration-native.png \
   migration-tunnel.png \
-  migration-unmanaged-direct.png
-
-gif = \
-  architecture.gif \
-  node.gif
+  migration-unmanaged-direct.png \
+  mobile.css \
+  node.gif \
+  $(NULL)
 
 internals_html_in = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
@@ -326,7 +323,7 @@ dot_html = \
   $(dot_rst_html_in:%.html.in=%.html)
 
 htmldir = $(HTML_DIR)
-html_DATA = $(css) $(png) $(gif) $(dot_html)
+html_DATA = $(assets) $(dot_html)
 
 apidir = $(pkgdatadir)/api
 api_DATA = \
@@ -351,8 +348,8 @@ schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 EXTRA_DIST= \
   site.xsl subsite.xsl newapi.xsl page.xsl \
   wrapstring.xsl \
-  $(dot_html_in) $(dot_rst) $(gif) $(apipng) \
-  $(fig) $(png) $(css) \
+  $(dot_html_in) $(dot_rst) $(apipng) \
+  $(fig) $(assets) \
   $(javascript) $(logofiles) \
   $(internals_html_in) $(internals_rst) $(fonts) \
   $(kbase_html_in) $(kbase_rst) \
