@@ -4973,6 +4973,14 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (!def->os.machine) {
         const char *machine = virQEMUCapsGetPreferredMachine(qemuCaps,
                                                              def->virtType);
+        if (!machine) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("could not get preferred machine for %s type=%s"),
+                           def->emulator,
+                           virDomainVirtTypeToString(def->virtType));
+            return -1;
+        }
+
         def->os.machine = g_strdup(machine);
     }
 
