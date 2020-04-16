@@ -71,7 +71,8 @@ bhyveDomainPCIAddressSetCreate(virDomainDefPtr def, unsigned int nbuses)
         return NULL;
 
     if (virDomainPCIAddressBusSetModel(&addrs->buses[0],
-                                       VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
+                                       VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT,
+                                       true) < 0)
         goto error;
 
     if (virDomainDeviceInfoIterate(def, bhyveCollectPCIAddress, addrs) < 0)
