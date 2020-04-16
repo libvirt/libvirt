@@ -24,6 +24,18 @@ Whitespace
 
 Blocks should be indented with 3 spaces, and no tabs
 
+Code blocks
+===========
+
+Code blocks should be created using
+
+::
+
+   This is regular text.
+
+   ::
+
+      This is a code block.
 
 Headings
 ========
