@@ -151,7 +151,6 @@ logofilesdir = $(HTML_DIR)/logos
 logofiles_DATA = $(logofiles)
 
 assets = \
-  32favicon.png \
   android-chrome-192x192.png \
   android-chrome-256x256.png \
   apple-touch-icon.png \
