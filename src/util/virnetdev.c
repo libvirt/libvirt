@@ -2360,6 +2360,17 @@ virNetDevGetLinkInfo(const char *ifname,
     if (virNetDevSysfsFile(&path, ifname, "operstate") < 0)
         return -1;
 
+    /* The device may have been removed or moved by the time we got here.
+     * Obviously attempting to get LinkInfo on a no longer existing device
+     * is useless, so stop processing. If we got here via the udev monitor
+     * a remove or move event will follow and we will be able to get valid
+     * LinkInfo at that time */
+    if (!virFileExists(path)) {
+        VIR_INFO("The interface '%s' was removed before we could query it.",
+                 ifname);
+        return -1;
+    }
+
     if (virFileReadAll(path, 1024, &buf) < 0) {
         virReportSystemError(errno,
                              _("unable to read: %s"),
