@@ -53,6 +53,8 @@
 # include "vbox_CAPI_v5_2.h"
 #elif VBOX_API_VERSION == 6000000
 # include "vbox_CAPI_v6_0.h"
+#elif VBOX_API_VERSION == 6001000
+# include "vbox_CAPI_v6_1.h"
 #else
 # error "Unsupported VBOX_API_VERSION"
 #endif
@@ -753,8 +755,14 @@ _machineLaunchVMProcess(vboxDriverPtr data,
                         PRUnichar *sessionType, PRUnichar *env,
                         IProgress **progress)
 {
+#if VBOX_API_VERSION >= 6001000
+    PRUnichar *envlist[] = { env };
+    return machine->vtbl->LaunchVMProcess(machine, data->vboxSession,
+                                          sessionType, 1, envlist, progress);
+#else
     return machine->vtbl->LaunchVMProcess(machine, data->vboxSession,
                                           sessionType, env, progress);
+#endif
 }
 
 static nsresult
@@ -914,51 +922,123 @@ _machineSetBootOrder(IMachine *machine, PRUint32 position, PRUint32 device)
 static nsresult
 _machineGetVRAMSize(IMachine *machine, PRUint32 *VRAMSize)
 {
+#if VBOX_API_VERSION >= 6001000
+    IGraphicsAdapter *ga;
+    nsresult ret;
+    ret = machine->vtbl->GetGraphicsAdapter(machine, &ga);
+    if (NS_FAILED(ret))
+        return ret;
+    return ga->vtbl->GetVRAMSize(ga, VRAMSize);
+#else
     return machine->vtbl->GetVRAMSize(machine, VRAMSize);
+#endif
 }
 
 static nsresult
 _machineSetVRAMSize(IMachine *machine, PRUint32 VRAMSize)
 {
+#if VBOX_API_VERSION >= 6001000
+    IGraphicsAdapter *ga;
+    nsresult ret;
+    ret = machine->vtbl->GetGraphicsAdapter(machine, &ga);
+    if (NS_FAILED(ret))
+        return ret;
+    return ga->vtbl->SetVRAMSize(ga, VRAMSize);
+#else
     return machine->vtbl->SetVRAMSize(machine, VRAMSize);
+#endif
 }
 
 static nsresult
 _machineGetMonitorCount(IMachine *machine, PRUint32 *monitorCount)
 {
+#if VBOX_API_VERSION >= 6001000
+    IGraphicsAdapter *ga;
+    nsresult ret;
+    ret = machine->vtbl->GetGraphicsAdapter(machine, &ga);
+    if (NS_FAILED(ret))
+        return ret;
+    return ga->vtbl->GetMonitorCount(ga, monitorCount);
+#else
     return machine->vtbl->GetMonitorCount(machine, monitorCount);
+#endif
 }
 
 static nsresult
 _machineSetMonitorCount(IMachine *machine, PRUint32 monitorCount)
 {
+#if VBOX_API_VERSION >= 6001000
+    IGraphicsAdapter *ga;
+    nsresult ret;
+    ret = machine->vtbl->GetGraphicsAdapter(machine, &ga);
+    if (NS_FAILED(ret))
+        return ret;
+    return ga->vtbl->SetMonitorCount(ga, monitorCount);
+#else
     return machine->vtbl->SetMonitorCount(machine, monitorCount);
+#endif
 }
 
 static nsresult
 _machineGetAccelerate3DEnabled(IMachine *machine, PRBool *accelerate3DEnabled)
 {
+#if VBOX_API_VERSION >= 6001000
+    IGraphicsAdapter *ga;
+    nsresult ret;
+    ret = machine->vtbl->GetGraphicsAdapter(machine, &ga);
+    if (NS_FAILED(ret))
+        return ret;
+    return ga->vtbl->GetAccelerate3DEnabled(ga, accelerate3DEnabled);
+#else
     return machine->vtbl->GetAccelerate3DEnabled(machine, accelerate3DEnabled);
+#endif
 }
 
 static nsresult
 _machineSetAccelerate3DEnabled(IMachine *machine, PRBool accelerate3DEnabled)
 {
+#if VBOX_API_VERSION >= 6001000
+    IGraphicsAdapter *ga;
+    nsresult ret;
+    ret = machine->vtbl->GetGraphicsAdapter(machine, &ga);
+    if (NS_FAILED(ret))
+        return ret;
+    return ga->vtbl->SetAccelerate3DEnabled(ga, accelerate3DEnabled);
+#else
     return machine->vtbl->SetAccelerate3DEnabled(machine, accelerate3DEnabled);
+#endif
 }
 
 static nsresult
 _machineGetAccelerate2DVideoEnabled(IMachine *machine,
                                     PRBool *accelerate2DVideoEnabled)
 {
+#if VBOX_API_VERSION >= 6001000
+    IGraphicsAdapter *ga;
+    nsresult ret;
+    ret = machine->vtbl->GetGraphicsAdapter(machine, &ga);
+    if (NS_FAILED(ret))
+        return ret;
+    return ga->vtbl->GetAccelerate2DVideoEnabled(ga, accelerate2DVideoEnabled);
+#else
     return machine->vtbl->GetAccelerate2DVideoEnabled(machine, accelerate2DVideoEnabled);
+#endif
 }
 
 static nsresult
 _machineSetAccelerate2DVideoEnabled(IMachine *machine,
                                     PRBool accelerate2DVideoEnabled)
 {
+#if VBOX_API_VERSION >= 6001000
+    IGraphicsAdapter *ga;
+    nsresult ret;
+    ret = machine->vtbl->GetGraphicsAdapter(machine, &ga);
+    if (NS_FAILED(ret))
+        return ret;
+    return ga->vtbl->SetAccelerate2DVideoEnabled(ga, accelerate2DVideoEnabled);
+#else
     return machine->vtbl->SetAccelerate2DVideoEnabled(machine, accelerate2DVideoEnabled);
+#endif
 }
 
 static nsresult
@@ -2058,11 +2138,16 @@ _dhcpServerSetConfiguration(IDHCPServer *dhcpServer, PRUnichar *IPAddress,
 }
 
 static nsresult
-_dhcpServerStart(IDHCPServer *dhcpServer, PRUnichar *networkName,
+_dhcpServerStart(IDHCPServer *dhcpServer, PRUnichar *networkName G_GNUC_UNUSED,
                  PRUnichar *trunkName, PRUnichar *trunkType)
 {
+#if VBOX_API_VERSION >= 6001000
+    return dhcpServer->vtbl->Start(dhcpServer,
+                                   trunkName, trunkType);
+#else
     return dhcpServer->vtbl->Start(dhcpServer, networkName,
                                    trunkName, trunkType);
+#endif
 }
 
 static nsresult

@@ -9,6 +9,8 @@ VBOX_DRIVER_SOURCES = \
 	vbox/vbox_CAPI_v5_2.h \
 	vbox/vbox_CAPI_v6_0.h \
 	vbox/vbox_V6_0.c \
+	vbox/vbox_CAPI_v6_1.h \
+	vbox/vbox_V6_1.c \
 	vbox/vbox_common.c \
 	vbox/vbox_common.h \
 	vbox/vbox_uniformed_api.h \
