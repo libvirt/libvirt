@@ -456,7 +456,6 @@ qemuCheckpointPrepare(virQEMUDriverPtr driver,
 static int
 qemuCheckpointAddActions(virDomainObjPtr vm,
                          virJSONValuePtr actions,
-                         virDomainMomentObjPtr old_current,
                          virDomainCheckpointDefPtr def)
 {
     size_t i;
@@ -464,7 +463,6 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
     for (i = 0; i < def->ndisks; i++) {
         virDomainCheckpointDiskDef *chkdisk = &def->disks[i];
         virDomainDiskDefPtr domdisk = virDomainDiskByTarget(vm->def, chkdisk->name);
-        virDomainCheckpointDiskDef *parentchkdisk = NULL;
 
         /* checkpoint definition validator mandates that the corresponding
          * domdisk should exist */
@@ -475,23 +473,6 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
         if (qemuMonitorTransactionBitmapAdd(actions, domdisk->src->nodeformat,
                                             chkdisk->bitmap, true, false, 0) < 0)
             return -1;
-
-        /* We only want one active bitmap for a disk along the
-         * checkpoint chain, then later differential backups will
-         * merge the bitmaps (only one active) between the bounding
-         * checkpoint and the leaf checkpoint.  If the same disks are
-         * involved in each checkpoint, this search terminates in one
-         * iteration; but it is also possible to have to search
-         * further than the immediate parent to find another
-         * checkpoint with a bitmap on the same disk.  */
-        if ((parentchkdisk = qemuCheckpointFindActiveDiskInParent(vm, old_current,
-                                                                  chkdisk->name))) {
-
-            if (qemuMonitorTransactionBitmapDisable(actions,
-                                                    domdisk->src->nodeformat,
-                                                    parentchkdisk->bitmap) < 0)
-                return -1;
-        }
     }
     return 0;
 }
@@ -540,7 +521,7 @@ qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
 
     tmpactions = virJSONValueNewArray();
 
-    if (qemuCheckpointAddActions(vm, tmpactions, parent, *def) < 0)
+    if (qemuCheckpointAddActions(vm, tmpactions, *def) < 0)
         return -1;
 
     if (!(*chk = virDomainCheckpointAssignDef(vm->checkpoints, *def)))
