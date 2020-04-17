@@ -429,9 +429,7 @@ typedef nsISupports IKeyboard;
 #define installUniformedAPI(gVBoxAPI, result) \
     do { \
         result = 0; \
-        if (uVersion >= 5000000 && uVersion < 5000051) { \
-            vbox50InstallUniformedAPI(&gVBoxAPI); \
-        } else if (uVersion >= 5000051 && uVersion < 5001051) { \
+        if (uVersion >= 5000051 && uVersion < 5001051) { \
             vbox51InstallUniformedAPI(&gVBoxAPI); \
         } else if (uVersion >= 5001051 && uVersion < 5002051) { \
             vbox52InstallUniformedAPI(&gVBoxAPI); \

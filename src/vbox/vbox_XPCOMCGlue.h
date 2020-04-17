@@ -30,7 +30,7 @@
 # define ___VBoxXPCOMC_cglue_h
 
 /* This has to be the oldest version we support. */
-# include "vbox_CAPI_v5_0.h"
+# include "vbox_CAPI_v5_1.h"
 
 /** Pointer to VBoxGetXPCOMCFunctions for the loaded VBoxXPCOMC so/dylib/dll. */
 extern PFNVBOXGETXPCOMCFUNCTIONS g_pfnGetFunctions;
