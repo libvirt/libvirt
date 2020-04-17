@@ -445,6 +445,9 @@ qemuCheckpointPrepare(virQEMUDriverPtr driver,
                                vm->def->disks[i]->src->format));
             return -1;
         }
+
+        if (!qemuDomainDiskBlockJobIsSupported(vm, vm->def->disks[i]))
+            return -1;
     }
 
     return 0;

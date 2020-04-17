@@ -315,6 +315,9 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
         return -1;
     }
 
+    if (!qemuDomainDiskBlockJobIsSupported(vm, dd->domdisk))
+        return -1;
+
     if (!dd->store->format)
         dd->store->format = VIR_STORAGE_FILE_QCOW2;
 

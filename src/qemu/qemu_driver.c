@@ -14603,7 +14603,8 @@ qemuDomainSnapshotPrepareDiskExternalInactive(virDomainSnapshotDiskDefPtr snapdi
 
 
 static int
-qemuDomainSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDefPtr snapdisk,
+qemuDomainSnapshotPrepareDiskExternalActive(virDomainObjPtr vm,
+                                            virDomainSnapshotDiskDefPtr snapdisk,
                                             virDomainDiskDefPtr domdisk,
                                             bool blockdev)
 {
@@ -14615,6 +14616,9 @@ qemuDomainSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDefPtr snapdisk
                          "passthrough devices"));
         return -1;
     }
+
+    if (!qemuDomainDiskBlockJobIsSupported(vm, domdisk))
+        return -1;
 
     switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -14671,7 +14675,8 @@ qemuDomainSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDefPtr snapdisk
 
 
 static int
-qemuDomainSnapshotPrepareDiskExternal(virDomainDiskDefPtr disk,
+qemuDomainSnapshotPrepareDiskExternal(virDomainObjPtr vm,
+                                      virDomainDiskDefPtr disk,
                                       virDomainSnapshotDiskDefPtr snapdisk,
                                       bool active,
                                       bool reuse,
@@ -14698,7 +14703,7 @@ qemuDomainSnapshotPrepareDiskExternal(virDomainDiskDefPtr disk,
         if (qemuDomainSnapshotPrepareDiskExternalInactive(snapdisk, disk) < 0)
             return -1;
     } else {
-        if (qemuDomainSnapshotPrepareDiskExternalActive(snapdisk, disk, blockdev) < 0)
+        if (qemuDomainSnapshotPrepareDiskExternalActive(vm, snapdisk, disk, blockdev) < 0)
             return -1;
     }
 
@@ -14857,7 +14862,7 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
                 return -1;
             }
 
-            if (qemuDomainSnapshotPrepareDiskExternal(dom_disk, disk,
+            if (qemuDomainSnapshotPrepareDiskExternal(vm, dom_disk, disk,
                                                       active, reuse, blockdev) < 0)
                 return -1;
 
@@ -17444,6 +17449,9 @@ qemuDomainBlockPullCommon(virDomainObjPtr vm,
     if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
 
+    if (!qemuDomainDiskBlockJobIsSupported(vm, disk))
+        goto endjob;
+
     if (base &&
         (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
          !(baseSource = virStorageFileChainLookup(disk->src, disk->src,
@@ -18002,6 +18010,9 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
 
+    if (!qemuDomainDiskBlockJobIsSupported(vm, disk))
+        goto endjob;
+
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN &&
         qemuDomainDefValidateDiskLunSource(mirror) < 0)
         goto endjob;
@@ -18481,6 +18492,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (!qemuDomainDiskBlockJobIsSupported(vm, disk))
         goto endjob;
 
     blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
