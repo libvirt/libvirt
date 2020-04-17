@@ -4,9 +4,12 @@ PCI addresses in domain XML and guest OS
 
 .. contents::
 
-When discussing PCI addresses, it's important to understand the
-relationship between the addresses that can be seen in the domain XML
-and those that are visible inside the guest OS.
+Looking at the configuration for a guest, it would be reasonable
+to expect that each PCI device would show up in the guest OS with
+a PCI address that matches the one present in the corresponding
+``<address>`` element of the domain XML, but that's not guaranteed
+to happen and will in fact not be the case in all but the simplest
+scenarios.
 
 
 Simple cases
