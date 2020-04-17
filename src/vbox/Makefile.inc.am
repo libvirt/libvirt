@@ -1,8 +1,6 @@
 # vim: filetype=automake
 
 VBOX_DRIVER_SOURCES = \
-	vbox/vbox_glue.c \
-	vbox/vbox_glue.h \
 	vbox/vbox_driver.c \
 	vbox/vbox_driver.h \
 	vbox/vbox_snapshot_conf.c \
@@ -15,15 +13,13 @@ VBOX_DRIVER_SOURCES = \
 	vbox/vbox_get_driver.h \
 	vbox/vbox_network.c \
 	vbox/vbox_storage.c \
+	vbox/vbox_XPCOMCGlue.c \
+	vbox/vbox_XPCOMCGlue.h \
 	$(NULL)
 
 VBOX_DRIVER_EXTRA_DIST = \
 	vbox/vbox_tmpl.c \
 	vbox/README \
-	vbox/vbox_MSCOMGlue.c \
-	vbox/vbox_MSCOMGlue.h \
-	vbox/vbox_XPCOMCGlue.c \
-	vbox/vbox_XPCOMCGlue.h \
 	$(NULL)
 
 DRIVER_SOURCE_FILES += \

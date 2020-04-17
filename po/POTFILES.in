@@ -315,7 +315,6 @@
 @SRCDIR@/src/util/virvhba.c
 @SRCDIR@/src/util/virvsock.c
 @SRCDIR@/src/util/virxml.c
-@SRCDIR@/src/vbox/vbox_MSCOMGlue.c
 @SRCDIR@/src/vbox/vbox_XPCOMCGlue.c
 @SRCDIR@/src/vbox/vbox_common.c
 @SRCDIR@/src/vbox/vbox_driver.c

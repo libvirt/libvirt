@@ -50,7 +50,7 @@
  *
  * In conclusion:
  *  * In vbox_tmpl.c, this file is included after vbox_CAPI_v*.h
- *  * In vbox_driver.c, this file is included after vbox_glue.h
+ *  * In vbox_driver.c, this file is included after vbox_XPCOMCGlue.h
  *  * In vbox_common.c, this file is included after vbox_common.h
  *
  */

@@ -56,7 +56,7 @@
 #endif
 
 /* Include this *last* or we'll get the wrong vbox_CAPI_*.h. */
-#include "vbox_glue.h"
+#include "vbox_XPCOMCGlue.h"
 
 typedef IUSBDeviceFilters IUSBCommon;
 

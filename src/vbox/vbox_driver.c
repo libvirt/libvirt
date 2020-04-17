@@ -36,7 +36,7 @@
 #include "datatypes.h"
 #include "virlog.h"
 #include "vbox_driver.h"
-#include "vbox_glue.h"
+#include "vbox_XPCOMCGlue.h"
 #include "virerror.h"
 #include "domain_event.h"
 #include "domain_conf.h"
