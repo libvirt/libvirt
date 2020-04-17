@@ -928,12 +928,11 @@ testQemuBlockBitmapBlockcommit(const void *opaque)
 
     g_autofree char *actual = NULL;
     g_autofree char *expectpath = NULL;
-    g_autoptr(virJSONValue) actionsDisable = NULL;
     g_autoptr(virJSONValue) actionsMerge = NULL;
     g_autoptr(virJSONValue) nodedatajson = NULL;
     g_autoptr(virHashTable) nodedata = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOSTRINGLIST bitmapsDisable = NULL;
+    bool active = data->top == data->chain;
 
     expectpath = g_strdup_printf("%s/%s%s", abs_srcdir,
                                  blockcommitPrefix, data->name);
@@ -947,20 +946,10 @@ testQemuBlockBitmapBlockcommit(const void *opaque)
         return -1;
     }
 
-    if (qemuBlockBitmapsHandleCommitStart(data->top, data->base, nodedata,
-                                          &actionsDisable, &bitmapsDisable) < 0)
-        return -1;
-
-    virBufferAddLit(&buf, "pre job bitmap disable:\n");
-
-    if (actionsDisable &&
-        virJSONValueToBuffer(actionsDisable, &buf, true) < 0)
-        return -1;
-
     virBufferAddLit(&buf, "merge bitmpas:\n");
 
-    if (qemuBlockBitmapsHandleCommitFinish(data->top, data->base, nodedata,
-                                           &actionsMerge, bitmapsDisable) < 0)
+    if (qemuBlockBitmapsHandleCommitFinish(data->top, data->base, active, nodedata,
+                                           &actionsMerge) < 0)
         return -1;
 
     if (actionsMerge &&
@@ -1357,6 +1346,7 @@ mymain(void)
 #define TEST_BITMAP_BLOCKCOMMIT(testname, topimg, baseimg, ndf) \
     do {\
         blockbitmapblockcommitdata.name = testname; \
+        blockbitmapblockcommitdata.chain = bitmapSourceChain; \
         blockbitmapblockcommitdata.top = testQemuBitmapGetFakeChainEntry(bitmapSourceChain, topimg); \
         blockbitmapblockcommitdata.base = testQemuBitmapGetFakeChainEntry(bitmapSourceChain, baseimg); \
         blockbitmapblockcommitdata.nodedatafile = ndf; \
