@@ -11,6 +11,7 @@
   <features>
     <xen>
       <e820_host state='on'/>
+      <passthrough state='on'/>
     </xen>
   </features>
   <clock offset='utc' adjustment='reset'/>

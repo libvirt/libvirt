@@ -301,6 +301,9 @@ mymain(void)
     DO_TEST("usb");
     DO_TEST("usbctrl");
     DO_TEST("paravirt-e820_host");
+#ifdef LIBXL_HAVE_CREATEINFO_PASSTHROUGH
+    DO_TEST("fullvirt-hypervisor-features");
+#endif
 
     testXLFreeDriver(driver);
 
