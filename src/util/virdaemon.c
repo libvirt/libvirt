@@ -22,7 +22,9 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
+#ifndef WIN32
+# include <sys/wait.h>
+#endif
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdbool.h>
