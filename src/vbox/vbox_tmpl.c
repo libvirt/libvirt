@@ -51,8 +51,10 @@
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 5002000
 # include "vbox_CAPI_v5_2.h"
+#elif VBOX_API_VERSION == 6000000
+# include "vbox_CAPI_v6_0.h"
 #else
-# error "Unsupport VBOX_API_VERSION"
+# error "Unsupported VBOX_API_VERSION"
 #endif
 
 /* Include this *last* or we'll get the wrong vbox_CAPI_*.h. */
@@ -729,8 +731,13 @@ _machineCreateSharedFolder(IMachine *machine, PRUnichar *name,
                            PRUnichar *hostPath, PRBool writable,
                            PRBool automount G_GNUC_UNUSED)
 {
+#if VBOX_API_VERSION >= 6000000
+    return machine->vtbl->CreateSharedFolder(machine, name, hostPath,
+                                             writable, automount, NULL);
+#else
     return machine->vtbl->CreateSharedFolder(machine, name, hostPath,
                                              writable, automount);
+#endif
 }
 
 static nsresult

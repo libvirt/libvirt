@@ -431,6 +431,8 @@ typedef nsISupports IKeyboard;
         result = 0; \
         if (uVersion >= 5001051 && uVersion < 5002051) { \
             vbox52InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 6000000 && uVersion < 6000051) { \
+            vbox60InstallUniformedAPI(&gVBoxAPI); \
         } else { \
             result = -1; \
         } \
