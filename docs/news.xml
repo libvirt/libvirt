@@ -56,10 +56,32 @@
           hotplug/unplug attempts, but this is often undesireable).
         </description>
       </change>
+      <change>
+        <summary>
+          vbox: added support for version 6.0 and 6.1 APIs
+        </summary>
+        <description>
+          libvirt can now support use of the VirtualBox 6.0 and 6.1
+          APIs. This is compile tested only, so we are looking for
+          feedback from users on how well it works in practice.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
+    </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          vbox: removed support for version 5.0 and 5.1 APIs
+        </summary>
+        <description>
+          libvirt no longer supports use of VirtualBox 5.0 and 5.1
+          since these versions reached their end of life on 2017/05
+          and 2018/04 respectively.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v6.2.0" date="2020-04-02">
