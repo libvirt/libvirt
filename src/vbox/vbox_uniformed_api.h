@@ -555,5 +555,4 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
                                     const unsigned char *uuid);
 
 /* Version specified functions for installing uniformed API */
-void vbox51InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox52InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
