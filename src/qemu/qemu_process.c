@@ -7729,7 +7729,7 @@ qemuProcessRefreshDisks(virQEMUDriverPtr driver,
         struct qemuDomainDiskInfo *info;
         const char *entryname = disk->info.alias;
 
-        if (blockdev)
+        if (blockdev && diskpriv->qomName)
             entryname = diskpriv->qomName;
 
         if (!(info = virHashLookup(table, entryname)))
