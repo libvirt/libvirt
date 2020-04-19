@@ -3146,9 +3146,7 @@ virNetDevSwitchdevFeature(const char *ifname,
     int is_vf = -1;
     int ret = -1;
     uint32_t family_id;
-
-    if (virNetDevGetFamilyId(DEVLINK_GENL_NAME, &family_id) <= 0)
-        return ret;
+    int rv;
 
     if ((is_vf = virNetDevIsVirtualFunction(ifname)) < 0)
         return ret;
@@ -3167,6 +3165,9 @@ virNetDevSwitchdevFeature(const char *ifname,
         ret = 0;
         goto cleanup;
     }
+
+    if ((rv = virNetDevGetFamilyId(DEVLINK_GENL_NAME, &family_id)) <= 0)
+        return rv;
 
     if (!(nl_msg = nlmsg_alloc_simple(family_id,
                                       NLM_F_REQUEST | NLM_F_ACK))) {
