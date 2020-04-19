@@ -3057,11 +3057,15 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
  * This function supplies the devlink family id
  *
  * @family_name: the name of the family to query
+ * @family_id: family ID
  *
- * Returns family id or 0 on failure.
+ * Returns: 0 if no family was found,
+ *          1 if family was found (@family_id is set),
+ *         -1 otherwise
  */
-static uint32_t
-virNetDevGetFamilyId(const char *family_name)
+static int
+virNetDevGetFamilyId(const char *family_name,
+                     uint32_t *family_id)
 {
     struct nl_msg *nl_msg = NULL;
     struct nlmsghdr *resp = NULL;
@@ -3072,7 +3076,7 @@ virNetDevGetFamilyId(const char *family_name)
     };
     struct nlattr *tb[CTRL_ATTR_MAX + 1] = {NULL, };
     unsigned int recvbuflen;
-    uint32_t family_id = 0;
+    int ret = -1;
 
     if (!(nl_msg = nlmsg_alloc_simple(GENL_ID_CTRL,
                                       NLM_F_REQUEST | NLM_F_ACK))) {
@@ -3098,15 +3102,18 @@ virNetDevGetFamilyId(const char *family_name)
         goto cleanup;
     }
 
-    if (tb[CTRL_ATTR_FAMILY_ID] == NULL)
+    if (tb[CTRL_ATTR_FAMILY_ID] == NULL) {
+        ret = 0;
         goto cleanup;
+    }
 
-    family_id = *(uint32_t *)RTA_DATA(tb[CTRL_ATTR_FAMILY_ID]);
+    *family_id = *(uint32_t *)RTA_DATA(tb[CTRL_ATTR_FAMILY_ID]);
+    ret = 1;
 
  cleanup:
     nlmsg_free(nl_msg);
     VIR_FREE(resp);
-    return family_id;
+    return ret;
 }
 
 
@@ -3140,7 +3147,7 @@ virNetDevSwitchdevFeature(const char *ifname,
     int ret = -1;
     uint32_t family_id;
 
-    if ((family_id = virNetDevGetFamilyId(DEVLINK_GENL_NAME)) <= 0)
+    if (virNetDevGetFamilyId(DEVLINK_GENL_NAME, &family_id) <= 0)
         return ret;
 
     if ((is_vf = virNetDevIsVirtualFunction(ifname)) < 0)
