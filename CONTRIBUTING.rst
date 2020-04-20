@@ -17,3 +17,22 @@ your git clone run:
   $ make
 
 You'll find the freshly-built document in ``docs/contribute.html``.
+
+If ``configure`` fails because of missing dependencies, you can set
+up your system by calling
+
+::
+
+  $ sudo dnf builddep libvirt
+
+if you're on a RHEL-based distribution or
+
+::
+
+  $ sudo apt-get build-dep libvirt
+
+if you're on a Debian-based one.
+
+You might still be missing some dependencies if your distribution is
+shipping an old libvirt version, but that will get you much closer to
+where you need to be to build successfully from source.
