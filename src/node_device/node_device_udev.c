@@ -1507,7 +1507,14 @@ udevHandleOneDevice(struct udev_device *device)
         return udevRemoveOneDevice(device);
 
     if (STREQ(action, "move")) {
-        /* TODO: implement a way of finding and removing the old device */
+        const char *devpath_old = udevGetDeviceProperty(device, "DEVPATH_OLD");
+
+        if (devpath_old) {
+            g_autofree char *devpath_old_fixed = g_strdup_printf("/sys%s", devpath_old);
+
+            udevRemoveOneDeviceSysPath(devpath_old_fixed);
+        }
+
         return udevAddOneDevice(device);
     }
 
@@ -1872,7 +1879,7 @@ nodeStateInitialize(bool privileged,
 
     virObjectLock(priv);
 
-    priv->udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
+    priv->udev_monitor = udev_monitor_new_from_netlink(udev, "kernel");
     if (!priv->udev_monitor) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("udev_monitor_new_from_netlink returned NULL"));
