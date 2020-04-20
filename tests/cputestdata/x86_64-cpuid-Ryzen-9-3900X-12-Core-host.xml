@@ -1,0 +1,29 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>EPYC-IBPB</model>
+  <vendor>AMD</vendor>
+  <feature name='ht'/>
+  <feature name='osxsave'/>
+  <feature name='cmt'/>
+  <feature name='clwb'/>
+  <feature name='umip'/>
+  <feature name='xsaves'/>
+  <feature name='mbm_total'/>
+  <feature name='mbm_local'/>
+  <feature name='cmp_legacy'/>
+  <feature name='extapic'/>
+  <feature name='ibs'/>
+  <feature name='skinit'/>
+  <feature name='wdt'/>
+  <feature name='tce'/>
+  <feature name='topoext'/>
+  <feature name='perfctr_core'/>
+  <feature name='perfctr_nb'/>
+  <feature name='invtsc'/>
+  <feature name='clzero'/>
+  <feature name='wbnoinvd'/>
+  <feature name='amd-ssbd'/>
+  <feature name='rdctl-no'/>
+  <feature name='skip-l1dfl-vmentry'/>
+  <feature name='mds-no'/>
+</cpu>
