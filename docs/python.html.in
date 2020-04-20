@@ -38,24 +38,24 @@ specificities in their argument conversions:</p>
     is replaced by <code>virDomain::info()</code> which returns a list of
     <ol><li>state: one of the state values (virDomainState)</li><li>maxMemory: the maximum memory used by the domain</li><li>memory: the current amount of memory used by the domain</li><li>nbVirtCPU: the number of virtual CPU</li><li>cpuTime: the time used by the domain in nanoseconds</li></ol></li>
     </ul>
-    <p>So let's look at a simple example inspired from the <code>basic.py</code>
-test found in <code>python/tests/</code> in the source tree:</p>
+    <p>So let's look at a simple example:</p>
     <pre>import <span style="color: #0071FF; background-color: #FFFFFF">libvirt</span>
 import sys
 
-conn = <span style="color: #0071FF; background-color: #FFFFFF">libvirt</span>.openReadOnly(None)
-if conn == None:
-    print 'Failed to open connection to the hypervisor'
+try:
+    conn = <span style="color: #0071FF; background-color: #FFFFFF">libvirt</span>.openReadOnly(None)
+except <span style="color: #0071FF; background-color: #FFFFFF">libvirt</span>.libvirtError:
+    print('Failed to open connection to the hypervisor')
     sys.exit(1)
 
 try:
     dom0 = conn.<span style="color: #007F00; background-color: #FFFFFF">lookupByName</span>("Domain-0")
-except:
-    print 'Failed to find the main domain'
+except <span style="color: #0071FF; background-color: #FFFFFF">libvirt</span>.libvirtError:
+    print('Failed to find the main domain')
     sys.exit(1)
 
-print "Domain 0: id %d running %s" % (dom0.<span style="color: #FF0080; background-color: #FFFFFF">ID</span>(), dom0.<span style="color: #FF0080; background-color: #FFFFFF">OSType</span>())
-print dom0.<span style="color: #FF0080; background-color: #FFFFFF">info</span>()</pre>
+print("Domain 0: id %d running %s" % (dom0.<span style="color: #FF0080; background-color: #FFFFFF">ID</span>(), dom0.<span style="color: #FF0080; background-color: #FFFFFF">OSType</span>()))
+print(dom0.<span style="color: #FF0080; background-color: #FFFFFF">info</span>())</pre>
     <p>There is not much to comment about it, it really is a straight mapping
 from the C API, the only points to notice are:</p>
     <ul>
