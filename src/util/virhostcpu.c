@@ -1430,8 +1430,10 @@ virHostCPUReadSignature(virArch arch,
     g_autofree char *model = NULL;
     g_autofree char *stepping = NULL;
     g_autofree char *revision = NULL;
+    g_autofree char *proc = NULL;
+    g_autofree char *facilities = NULL;
 
-    if (!ARCH_IS_X86(arch) && !ARCH_IS_PPC64(arch))
+    if (!ARCH_IS_X86(arch) && !ARCH_IS_PPC64(arch) && !ARCH_IS_S390(arch))
         return 0;
 
     while (fgets(line, lineLen, cpuinfo)) {
@@ -1477,6 +1479,23 @@ virHostCPUReadSignature(virArch arch,
 
             if (name && revision) {
                 *signature = g_strdup_printf("%s, rev %s", name, revision);
+                return 0;
+            }
+        } else if (ARCH_IS_S390(arch)) {
+            if (STREQ(parts[0], "vendor_id")) {
+                if (!vendor)
+                    vendor = g_steal_pointer(&parts[1]);
+            } else if (STREQ(parts[0], "processor 0")) {
+                if (!proc)
+                    proc = g_steal_pointer(&parts[1]);
+            } else if (STREQ(parts[0], "facilities")) {
+                if (!facilities)
+                    facilities = g_steal_pointer(&parts[1]);
+            }
+
+            if (vendor && proc && facilities) {
+                *signature = g_strdup_printf("%s, %s, facilities: %s",
+                                             vendor, proc, facilities);
                 return 0;
             }
         }
