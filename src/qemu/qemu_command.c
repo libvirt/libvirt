@@ -1435,6 +1435,14 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk,
                            _("detect_zeroes is not supported by this QEMU binary"));
             return -1;
         }
+
+        if (disk->iomode == VIR_DOMAIN_DISK_IO_URING) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AIO_IO_URING)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("io uring is not supported by this QEMU binary"));
+                return -1;
+            }
+        }
     }
 
     if (disk->serial &&
