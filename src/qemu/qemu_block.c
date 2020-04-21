@@ -2850,41 +2850,49 @@ qemuBlockGetNamedNodeData(virDomainObjPtr vm,
 /**
  * qemuBlockBitmapChainIsValid:
  *
- * Validates that the backing chain of @src contains proper consistent bitmap
- * data for a chain of bitmaps named @bitmapname.
+ * Validates that the backing chain of @src contains bitmaps which libvirt will
+ * consider as properly corresponding to a checkpoint named @bitmapname.
  *
- * A valid chain:
- * 1) bitmaps of same name are in a consecutive subset of images without gap
- * 2) don't have any inconsistent bitmaps
+ * The bitmaps need to:
+ * 1) start from the top image @src
+ * 2) must be present in consecutive layers
+ * 3) all must be active, persistent and not inconsistent
  */
 bool
 qemuBlockBitmapChainIsValid(virStorageSourcePtr src,
                             const char *bitmapname,
                             virHashTablePtr blockNamedNodeData)
 {
-    qemuBlockNamedNodeDataBitmapPtr bitmap;
     virStorageSourcePtr n;
-    bool chain_started = false;
+    bool found = false;
     bool chain_ended = false;
 
-    for (n = src; n; n = n->backingStore) {
-        if (!(bitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData, n, bitmapname))) {
-            if (chain_started)
-                chain_ended = true;
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        qemuBlockNamedNodeDataBitmapPtr bitmap;
+
+        if (!(bitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData,
+                                                             n, bitmapname))) {
+            /* rule 1, must start from top */
+            if (!found)
+                return false;
+
+            chain_ended = true;
 
             continue;
         }
 
+        /* rule 2, no-gaps */
         if (chain_ended)
             return false;
 
-        chain_started = true;
-
-        if (bitmap->inconsistent)
+        /* rule 3 */
+        if (bitmap->inconsistent || !bitmap->persistent || !bitmap->recording)
             return false;
+
+        found = true;
     }
 
-    return chain_started;
+    return found;
 }
 
 
