@@ -2263,7 +2263,7 @@
         </tr>
         <tr>
           <td>passthrough</td>
-          <td>Enable IOMMU mappings allowing PCI passthrough)</td>
+          <td>Enable IOMMU mappings allowing PCI passthrough</td>
           <td>on, off; mode - optional string sync_pt or share_pt</td>
           <td><span class="since">6.3.0</span></td>
         </tr>
