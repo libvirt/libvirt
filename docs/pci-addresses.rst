@@ -235,3 +235,53 @@ guest OS rather than as ``0001:08:00.1``, which is the address of the
 device on the host.
 
 Of course, all the rules and behaviors described above still apply.
+
+
+Reserved addresses
+==================
+
+Due to some historical reasons hypervisors might expect some PCI
+devices to appear at certain addresses instead of 'random' ones.
+For QEMU this is machine type and guest architecture dependant.
+But to give you at least a gist here is list of reserved PCI
+addresses:
+
+For the x86_64 architecture's ``I440FX``-based machine types the following
+devices are hard coded into QEMU and can't be moved or eliminated:
+
+============  ======================
+0000:00:00.0  Host bridge
+0000:00:01.0  ISA bridge
+0000:00:01.1  primary IDE controller
+0000:00:01.2  PIIX3 USB controller
+0000:00:01.3  ACPI (power management) and SMBus controller
+============  ======================
+
+The following addresses will be used as default ones for the corresponding
+devices (if the address is free or a different address wasn't provided for the
+device). It is okay to use this address for any other device.
+
+============  ==================
+0000:00:02.0  primary video card
+============  ==================
+
+
+For the x86_64 architecture's ``Q35``-based machine types the following
+devices are hard coded into QEMU and can't be moved or eliminated:
+
+============  =======================
+0000:00:00.0  Host bridge
+0000:00:1f.2  primary SATA controller
+0000:00:1f.0  ISA bridge
+0000:00:1f.3  SMBus
+============  =======================
+
+The following addresses will be used as default ones for the corresponding
+devices (if the address is free or a different address wasn't provided for the
+device) because that's how real ``Q35`` would do it:
+
+============  ===============
+0000:00:1a.0  USB2 controller
+0000:00:1b.0  ICH9 sound chip
+0000:00:1d.0  USB2 controller
+============  ===============
