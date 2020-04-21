@@ -66,6 +66,28 @@
           feedback from users on how well it works in practice.
         </description>
       </change>
+      <change>
+        <summary>
+          xen: Add support for 'e820_host' hypervisor feature
+        </summary>
+        <description>
+          <code>e820_host</code> is a Xen-specific option only available for
+          PV guests. When enabled it provides the guest with a virtual e820
+          memory map based on the host one. It must be enabled to allow
+          hotplugging PCI devices to PV guests, particularly when memory
+          ballooning is enabled.
+        </description>
+      </change>
+      <change>
+        <summary>
+          xen: Add support for 'passthrough' hypervisor feature
+        </summary>
+        <description>
+          <code>passthrough</code> is a Xen-specific option new to Xen 4.13
+          that enables PCI passthrough for guests. It must be enabled to allow
+          hotplugging PCI devices.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
