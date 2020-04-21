@@ -347,15 +347,12 @@ vmwareStopVM(struct vmware_driver *driver,
              virDomainObjPtr vm,
              virDomainShutoffReason reason)
 {
-    const char *cmd[] = {
-        driver->vmrun, "-T", PROGRAM_SENTINEL, "stop",
-        PROGRAM_SENTINEL, "soft", NULL
-    };
+    g_autoptr(virCommand) cmd = virCommandNew(driver->vmrun);
 
-    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
-    vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
+    virCommandAddArgList(cmd, "-T", vmwareDriverTypeToString(driver->type),
+        "stop", ((vmwareDomainPtr) vm->privateData)->vmxPath, "soft", NULL);
 
-    if (virRun(cmd, NULL) < 0)
+    if (virCommandRun(cmd, NULL) < 0)
         return -1;
 
     vm->def->id = -1;
@@ -367,11 +364,11 @@ vmwareStopVM(struct vmware_driver *driver,
 static int
 vmwareStartVM(struct vmware_driver *driver, virDomainObjPtr vm)
 {
-    const char *cmd[] = {
-        driver->vmrun, "-T", PROGRAM_SENTINEL, "start",
-        PROGRAM_SENTINEL, PROGRAM_SENTINEL, NULL
-    };
+    g_autoptr(virCommand) cmd = virCommandNew(driver->vmrun);
     const char *vmxPath = ((vmwareDomainPtr) vm->privateData)->vmxPath;
+
+    virCommandAddArgList(cmd, "-T", vmwareDriverTypeToString(driver->type),
+                         "start", vmxPath, NULL);
 
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_SHUTOFF) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -379,14 +376,10 @@ vmwareStartVM(struct vmware_driver *driver, virDomainObjPtr vm)
         return -1;
     }
 
-    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
-    vmwareSetSentinal(cmd, vmxPath);
     if (!((vmwareDomainPtr) vm->privateData)->gui)
-        vmwareSetSentinal(cmd, NOGUI);
-    else
-        vmwareSetSentinal(cmd, NULL);
+        virCommandAddArg(cmd, NOGUI);
 
-    if (virRun(cmd, NULL) < 0)
+    if (virCommandRun(cmd, NULL) < 0)
         return -1;
 
     if ((vm->def->id = vmwareExtractPid(vmxPath)) < 0) {
@@ -543,12 +536,9 @@ static int
 vmwareDomainSuspend(virDomainPtr dom)
 {
     struct vmware_driver *driver = dom->conn->privateData;
+    g_autoptr(virCommand) cmd = virCommandNew(driver->vmrun);
 
     virDomainObjPtr vm;
-    const char *cmd[] = {
-      driver->vmrun, "-T", PROGRAM_SENTINEL, "pause",
-      PROGRAM_SENTINEL, NULL
-    };
     int ret = -1;
 
     if (driver->type == VMWARE_DRIVER_PLAYER) {
@@ -561,15 +551,17 @@ vmwareDomainSuspend(virDomainPtr dom)
     if (!(vm = vmwareDomObjFromDomain(driver, dom->uuid)))
         return -1;
 
-    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
-    vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domain is not in running state"));
         goto cleanup;
     }
 
-    if (virRun(cmd, NULL) < 0)
+    virCommandAddArgList(cmd, "-T", vmwareDriverTypeToString(driver->type),
+                         "pause", ((vmwareDomainPtr) vm->privateData)->vmxPath,
+                         NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
@@ -584,12 +576,9 @@ static int
 vmwareDomainResume(virDomainPtr dom)
 {
     struct vmware_driver *driver = dom->conn->privateData;
+    g_autoptr(virCommand) cmd = virCommandNew(driver->vmrun);
 
     virDomainObjPtr vm;
-    const char *cmd[] = {
-        driver->vmrun, "-T", PROGRAM_SENTINEL, "unpause", PROGRAM_SENTINEL,
-        NULL
-    };
     int ret = -1;
 
     if (driver->type == VMWARE_DRIVER_PLAYER) {
@@ -602,15 +591,17 @@ vmwareDomainResume(virDomainPtr dom)
     if (!(vm = vmwareDomObjFromDomain(driver, dom->uuid)))
         return -1;
 
-    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
-    vmwareSetSentinal(cmd, ((vmwareDomainPtr) vm->privateData)->vmxPath);
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domain is not in suspend state"));
         goto cleanup;
     }
 
-    if (virRun(cmd, NULL) < 0)
+    virCommandAddArgList(cmd, "-T", vmwareDriverTypeToString(driver->type),
+                         "unpause", ((vmwareDomainPtr) vm->privateData)->vmxPath,
+                         NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNPAUSED);
@@ -625,22 +616,14 @@ static int
 vmwareDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     struct vmware_driver *driver = dom->conn->privateData;
-    const char * vmxPath = NULL;
+    g_autoptr(virCommand) cmd = virCommandNew(driver->vmrun);
     virDomainObjPtr vm;
-    const char *cmd[] = {
-        driver->vmrun, "-T", PROGRAM_SENTINEL,
-        "reset", PROGRAM_SENTINEL, "soft", NULL
-    };
     int ret = -1;
 
     virCheckFlags(0, -1);
 
     if (!(vm = vmwareDomObjFromDomain(driver, dom->uuid)))
         return -1;
-
-    vmxPath = ((vmwareDomainPtr) vm->privateData)->vmxPath;
-    vmwareSetSentinal(cmd, vmwareDriverTypeToString(driver->type));
-    vmwareSetSentinal(cmd, vmxPath);
 
     if (vmwareUpdateVMStatus(driver, vm) < 0)
         goto cleanup;
@@ -651,7 +634,11 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    if (virRun(cmd, NULL) < 0)
+    virCommandAddArgList(cmd, "-T", vmwareDriverTypeToString(driver->type),
+                         "reset", ((vmwareDomainPtr) vm->privateData)->vmxPath,
+                         "soft", NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     ret = 0;

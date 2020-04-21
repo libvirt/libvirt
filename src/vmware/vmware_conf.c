@@ -436,8 +436,7 @@ vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
 int
 vmwareMoveFile(char *srcFile, char *dstFile)
 {
-    const char *cmdmv[] =
-        { "mv", PROGRAM_SENTINEL, PROGRAM_SENTINEL, NULL };
+    g_autoptr(virCommand) cmd = NULL;
 
     if (!virFileExists(srcFile)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("file %s does not exist"),
@@ -448,9 +447,9 @@ vmwareMoveFile(char *srcFile, char *dstFile)
     if (STREQ(srcFile, dstFile))
         return 0;
 
-    vmwareSetSentinal(cmdmv, srcFile);
-    vmwareSetSentinal(cmdmv, dstFile);
-    if (virRun(cmdmv, NULL) < 0) {
+    cmd = virCommandNewArgList("mv", srcFile, dstFile, NULL);
+
+    if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to move file to %s "), dstFile);
         return -1;
