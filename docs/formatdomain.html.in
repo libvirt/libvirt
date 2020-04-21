@@ -3774,7 +3774,8 @@
           <li>
             The optional <code>io</code> attribute controls specific
             policies on I/O; qemu guests support "threads" and
-            "native". <span class="since">Since 0.8.8</span>
+            "native" <span class="since">Since 0.8.8</span>, io_uring
+            <span class="since">Since 6.3.0 (QEMU 5.0)</span>.
           </li>
           <li>
             The optional <code>ioeventfd</code> attribute allows users to

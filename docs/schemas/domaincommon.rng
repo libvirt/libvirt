@@ -2278,6 +2278,7 @@
       <choice>
         <value>threads</value>
         <value>native</value>
+        <value>io_uring</value>
       </choice>
     </attribute>
   </define>
