@@ -5436,7 +5436,6 @@ static const vshCmdOptDef opts_dump[] = {
 static void
 doDump(void *opaque)
 {
-    char ret = '1';
     virshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
     const vshCmd *cmd = data->cmd;
@@ -5508,7 +5507,7 @@ doDump(void *opaque)
         }
     }
 
-    ret = '0';
+    data->ret = 0;
  out:
 #ifndef WIN32
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
@@ -5516,7 +5515,6 @@ doDump(void *opaque)
 #endif /* !WIN32 */
     if (dom)
         virshDomainFree(dom);
-    data->ret = ret;
     g_main_loop_quit(data->eventLoop);
 }
 
@@ -10722,7 +10720,6 @@ static const vshCmdOptDef opts_migrate[] = {
 static void
 doMigrate(void *opaque)
 {
-    char ret = '1';
     virDomainPtr dom = NULL;
     const char *desturi = NULL;
     const char *opt = NULL;
@@ -11001,14 +10998,14 @@ doMigrate(void *opaque)
 
     if (flags & VIR_MIGRATE_PEER2PEER || vshCommandOptBool(cmd, "direct")) {
         if (virDomainMigrateToURI3(dom, desturi, params, nparams, flags) == 0)
-            ret = '0';
+            data->ret = 0;
     } else {
         /* For traditional live migration, connect to the destination host directly. */
         virDomainPtr ddom = NULL;
 
         if ((ddom = virDomainMigrate3(dom, dconn, params, nparams, flags))) {
             virshDomainFree(ddom);
-            ret = '0';
+            data->ret = 0;
         }
     }
 
@@ -11019,7 +11016,6 @@ doMigrate(void *opaque)
 #endif /* !WIN32 */
     virTypedParamsFree(params, nparams);
     virshDomainFree(dom);
-    data->ret = ret;
     g_main_loop_quit(data->eventLoop);
     return;
 
