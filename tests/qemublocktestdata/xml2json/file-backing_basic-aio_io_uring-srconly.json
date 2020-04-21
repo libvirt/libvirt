@@ -1,0 +1,44 @@
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/a"
+  }
+  backing store string:
+  /var/lib/libvirt/images/a
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/b"
+  }
+  backing store string:
+  /var/lib/libvirt/images/b
+)
+(
+  source only properties:
+  {
+    "driver": "gluster",
+    "volume": "images",
+    "path": "c",
+    "server": [
+      {
+        "type": "inet",
+        "host": "test.org",
+        "port": "24007"
+      }
+    ]
+  }
+  backing store string:
+  gluster://test.org:24007/images/c
+)
+(
+  source only properties:
+  {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/d"
+  }
+  backing store string:
+  /var/lib/libvirt/images/d
+)

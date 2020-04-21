@@ -1199,6 +1199,7 @@ mymain(void)
     TEST_DISK_TO_JSON("dir-fat-floppy");
     TEST_DISK_TO_JSON("file-raw-aio_native");
     TEST_DISK_TO_JSON("file-backing_basic-aio_threads");
+    TEST_DISK_TO_JSON("file-backing_basic-aio_io_uring");
     TEST_DISK_TO_JSON("file-raw-luks");
     TEST_DISK_TO_JSON("file-qcow2-backing-chain-noopts");
     TEST_DISK_TO_JSON("file-qcow2-backing-chain-unterminated");

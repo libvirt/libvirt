@@ -312,6 +312,7 @@ mymain(void)
     DO_TEST("migrate", NONE);
     DO_TEST("qemu-ns-no-env", NONE);
     DO_TEST("disk-aio", NONE);
+    DO_TEST_CAPS_LATEST("disk-aio-io_uring");
     DO_TEST("disk-cdrom", NONE);
     DO_TEST_CAPS_LATEST("disk-cdrom-empty-network-invalid");
     DO_TEST("disk-cdrom-bus-other", NONE);

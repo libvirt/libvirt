@@ -1,0 +1,47 @@
+<disk type='file' device='disk'>
+  <driver name='qemu' type='qcow' io='io_uring'/>
+  <source file='/var/lib/libvirt/images/a'>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='node-a-s'/>
+        <nodename type='format' name='node-a-f'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <backingStore type='file' index='1'>
+    <format type='qed'/>
+    <source file='/var/lib/libvirt/images/b'>
+      <privateData>
+        <nodenames>
+          <nodename type='storage' name='node-b-s'/>
+          <nodename type='format' name='node-b-f'/>
+        </nodenames>
+      </privateData>
+    </source>
+    <backingStore type='network' index='2'>
+      <format type='vmdk'/>
+      <source protocol='gluster' name='images/c'>
+        <host name='test.org'/>
+        <privateData>
+          <nodenames>
+            <nodename type='storage' name='node-c-s'/>
+            <nodename type='format' name='node-c-f'/>
+          </nodenames>
+        </privateData>
+      </source>
+      <backingStore type='file' index='3'>
+        <format type='raw'/>
+        <source file='/var/lib/libvirt/images/d'>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='node-d-s'/>
+              <nodename type='format' name='node-d-f'/>
+            </nodenames>
+          </privateData>
+        </source>
+        <backingStore/>
+      </backingStore>
+    </backingStore>
+  </backingStore>
+  <target dev='vda'/>
+</disk>

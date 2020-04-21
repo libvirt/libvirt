@@ -1127,6 +1127,7 @@ mymain(void)
     DO_TEST("disk-aio", NONE);
     DO_TEST_CAPS_VER("disk-aio", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-aio");
+    DO_TEST_CAPS_LATEST("disk-aio-io_uring");
     DO_TEST("disk-source-pool", NONE);
     DO_TEST("disk-source-pool-mode", NONE);
     DO_TEST("disk-ioeventfd",
