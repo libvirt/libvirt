@@ -830,7 +830,6 @@ struct testQemuCheckpointDeleteMergeData {
     const char *name;
     virStorageSourcePtr chain;
     const char *deletebitmap;
-    const char *parentbitmap;
     const char *nodedatafile;
 };
 
@@ -864,7 +863,6 @@ testQemuCheckpointDeleteMerge(const void *opaque)
     if (qemuCheckpointDiscardDiskBitmaps(data->chain,
                                          nodedata,
                                          data->deletebitmap,
-                                         data->parentbitmap,
                                          actions,
                                          "testdisk",
                                          &reopenimages) >= 0) {
@@ -1319,19 +1317,18 @@ mymain(void)
 
     TEST_BACKUP_BITMAP_CALCULATE("empty", bitmapSourceChain, "a", "empty");
 
-#define TEST_CHECKPOINT_DELETE_MERGE(testname, delbmp, parbmp, named) \
+#define TEST_CHECKPOINT_DELETE_MERGE(testname, delbmp, named) \
     do { \
         checkpointdeletedata.name = testname; \
         checkpointdeletedata.chain = bitmapSourceChain; \
         checkpointdeletedata.deletebitmap = delbmp; \
-        checkpointdeletedata.parentbitmap = parbmp; \
         checkpointdeletedata.nodedatafile = named; \
         if (virTestRun("checkpoint delete " testname, \
                        testQemuCheckpointDeleteMerge, &checkpointdeletedata) < 0) \
         ret = -1; \
     } while (0)
 
-    TEST_CHECKPOINT_DELETE_MERGE("empty", "a", NULL, "empty");
+    TEST_CHECKPOINT_DELETE_MERGE("empty", "a", "empty");
 
 #define TEST_BITMAP_VALIDATE(testname, bitmap, rc) \
     do { \

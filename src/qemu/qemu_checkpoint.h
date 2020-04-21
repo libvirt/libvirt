@@ -76,7 +76,6 @@ int
 qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
                                  virHashTablePtr blockNamedNodeData,
                                  const char *delbitmap,
-                                 const char *parentbitmap,
                                  virJSONValuePtr actions,
                                  const char *diskdst,
                                  GSList **reopenimages);
