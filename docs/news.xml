@@ -88,6 +88,17 @@
           hotplugging PCI devices.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: support async IO mode 'io_uring'
+        </summary>
+        <description>
+          Linux 5.1 introduces a fast and efficient async IO interface
+          io_uring, then qemu implements that in version 5.0. It could be used
+          in file, host device and host cdrom backend by
+          <code>io='io_uring'</code> of disk XML.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
