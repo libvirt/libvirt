@@ -19181,6 +19181,498 @@ virDomainResourceDefParse(xmlNodePtr node,
     return NULL;
 }
 
+
+static int
+virDomainFeaturesDefParse(virDomainDefPtr def,
+                          xmlXPathContextPtr ctxt)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_autofree char *tmp = NULL;
+    xmlNodePtr node = NULL;
+    int gic_version;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./features/*", ctxt, &nodes)) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        int val = virDomainFeatureTypeFromString((const char *)nodes[i]->name);
+        if (val < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unexpected feature '%s'"), nodes[i]->name);
+            goto error;
+        }
+
+        switch ((virDomainFeature) val) {
+        case VIR_DOMAIN_FEATURE_APIC:
+            if ((tmp = virXPathString("string(./features/apic/@eoi)", ctxt))) {
+                int eoi;
+                if ((eoi = virTristateSwitchTypeFromString(tmp)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown value for attribute eoi: '%s'"),
+                                   tmp);
+                    goto error;
+                }
+                def->apic_eoi = eoi;
+                VIR_FREE(tmp);
+            }
+            G_GNUC_FALLTHROUGH;
+        case VIR_DOMAIN_FEATURE_ACPI:
+        case VIR_DOMAIN_FEATURE_PAE:
+        case VIR_DOMAIN_FEATURE_VIRIDIAN:
+        case VIR_DOMAIN_FEATURE_PRIVNET:
+        case VIR_DOMAIN_FEATURE_HYPERV:
+        case VIR_DOMAIN_FEATURE_KVM:
+        case VIR_DOMAIN_FEATURE_MSRS:
+        case VIR_DOMAIN_FEATURE_XEN:
+            def->features[val] = VIR_TRISTATE_SWITCH_ON;
+            break;
+
+        case VIR_DOMAIN_FEATURE_CAPABILITIES:
+            if ((tmp = virXMLPropString(nodes[i], "policy"))) {
+                if ((def->features[val] = virDomainCapabilitiesPolicyTypeFromString(tmp)) == -1) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown policy attribute '%s' of feature '%s'"),
+                                   tmp, virDomainFeatureTypeToString(val));
+                    goto error;
+                }
+                VIR_FREE(tmp);
+            } else {
+                def->features[val] = VIR_TRISTATE_SWITCH_ABSENT;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_VMCOREINFO:
+        case VIR_DOMAIN_FEATURE_HAP:
+        case VIR_DOMAIN_FEATURE_PMU:
+        case VIR_DOMAIN_FEATURE_PVSPINLOCK:
+        case VIR_DOMAIN_FEATURE_VMPORT:
+        case VIR_DOMAIN_FEATURE_SMM:
+            if ((tmp = virXMLPropString(nodes[i], "state"))) {
+                if ((def->features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown state attribute '%s' of feature '%s'"),
+                                   tmp, virDomainFeatureTypeToString(val));
+                    goto error;
+                }
+                VIR_FREE(tmp);
+            } else {
+                def->features[val] = VIR_TRISTATE_SWITCH_ON;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_GIC:
+            if ((tmp = virXMLPropString(nodes[i], "version"))) {
+                gic_version = virGICVersionTypeFromString(tmp);
+                if (gic_version < 0 || gic_version == VIR_GIC_VERSION_NONE) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("malformed gic version: %s"), tmp);
+                    goto error;
+                }
+                def->gic_version = gic_version;
+                VIR_FREE(tmp);
+            }
+            def->features[val] = VIR_TRISTATE_SWITCH_ON;
+            break;
+
+        case VIR_DOMAIN_FEATURE_IOAPIC:
+            tmp = virXMLPropString(nodes[i], "driver");
+            if (tmp) {
+                int value = virDomainIOAPICTypeFromString(tmp);
+                if (value < 0 || value == VIR_DOMAIN_IOAPIC_NONE) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Unknown driver mode: %s"),
+                                   tmp);
+                    goto error;
+                }
+                def->features[val] = value;
+                VIR_FREE(tmp);
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_HPT:
+            tmp = virXMLPropString(nodes[i], "resizing");
+            if (tmp) {
+                int value = virDomainHPTResizingTypeFromString(tmp);
+                if (value < 0 || value == VIR_DOMAIN_HPT_RESIZING_NONE) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Unknown HPT resizing setting: %s"),
+                                   tmp);
+                    goto error;
+                }
+                def->hpt_resizing = (virDomainHPTResizing) value;
+                VIR_FREE(tmp);
+            }
+
+            if (virDomainParseScaledValue("./features/hpt/maxpagesize",
+                                          NULL,
+                                          ctxt,
+                                          &def->hpt_maxpagesize,
+                                          1024,
+                                          ULLONG_MAX,
+                                          false) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s",
+                               _("Unable to parse HPT maxpagesize setting"));
+                goto error;
+            }
+            def->hpt_maxpagesize = VIR_DIV_UP(def->hpt_maxpagesize, 1024);
+
+            if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE ||
+                def->hpt_maxpagesize > 0) {
+                def->features[val] = VIR_TRISTATE_SWITCH_ON;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_HTM:
+        case VIR_DOMAIN_FEATURE_NESTED_HV:
+        case VIR_DOMAIN_FEATURE_CCF_ASSIST:
+            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("missing state attribute '%s' of feature '%s'"),
+                               tmp, virDomainFeatureTypeToString(val));
+                goto error;
+            }
+            if ((def->features[val] = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown state attribute '%s' of feature '%s'"),
+                               tmp, virDomainFeatureTypeToString(val));
+                goto error;
+            }
+            VIR_FREE(tmp);
+            break;
+
+        /* coverity[dead_error_begin] */
+        case VIR_DOMAIN_FEATURE_LAST:
+            break;
+        }
+    }
+    VIR_FREE(nodes);
+
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
+        int feature;
+        int value;
+        node = ctxt->node;
+        if ((n = virXPathNodeSet("./features/hyperv/*", ctxt, &nodes)) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            feature = virDomainHypervTypeFromString((const char *)nodes[i]->name);
+            if (feature < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported HyperV Enlightenment feature: %s"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            ctxt->node = nodes[i];
+
+            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("missing 'state' attribute for "
+                                 "HyperV Enlightenment feature '%s'"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid value of state argument "
+                                 "for HyperV Enlightenment feature '%s'"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            VIR_FREE(tmp);
+            def->hyperv_features[feature] = value;
+
+            switch ((virDomainHyperv) feature) {
+            case VIR_DOMAIN_HYPERV_RELAXED:
+            case VIR_DOMAIN_HYPERV_VAPIC:
+            case VIR_DOMAIN_HYPERV_VPINDEX:
+            case VIR_DOMAIN_HYPERV_RUNTIME:
+            case VIR_DOMAIN_HYPERV_SYNIC:
+            case VIR_DOMAIN_HYPERV_STIMER:
+            case VIR_DOMAIN_HYPERV_RESET:
+            case VIR_DOMAIN_HYPERV_FREQUENCIES:
+            case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
+            case VIR_DOMAIN_HYPERV_TLBFLUSH:
+            case VIR_DOMAIN_HYPERV_IPI:
+            case VIR_DOMAIN_HYPERV_EVMCS:
+                break;
+
+            case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                if (value != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                if (virXPathUInt("string(./@retries)", ctxt,
+                             &def->hyperv_spinlocks) < 0) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("invalid HyperV spinlock retry count"));
+                    goto error;
+                }
+
+                if (def->hyperv_spinlocks < 0xFFF) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("HyperV spinlock retry count must be "
+                                     "at least 4095"));
+                    goto error;
+                }
+                break;
+
+            case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                if (value != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                if (!(def->hyperv_vendor_id = virXMLPropString(nodes[i],
+                                                               "value"))) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("missing 'value' attribute for "
+                                     "HyperV feature 'vendor_id'"));
+                    goto error;
+                }
+
+                if (strlen(def->hyperv_vendor_id) > VIR_DOMAIN_HYPERV_VENDOR_ID_MAX) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("HyperV vendor_id value must not be more "
+                                     "than %d characters."),
+                                   VIR_DOMAIN_HYPERV_VENDOR_ID_MAX);
+                    goto error;
+                }
+
+                /* ensure that the string can be passed to qemu */
+                if (strchr(def->hyperv_vendor_id, ',')) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("HyperV vendor_id value is invalid"));
+                    goto error;
+                }
+
+            /* coverity[dead_error_begin] */
+            case VIR_DOMAIN_HYPERV_LAST:
+                break;
+            }
+        }
+        VIR_FREE(nodes);
+        ctxt->node = node;
+    }
+
+    if (def->features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
+        int value;
+        if ((n = virXPathNodeSet("./features/hyperv/stimer/*", ctxt, &nodes)) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            if (STRNEQ((const char *)nodes[i]->name, "direct")) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported Hyper-V stimer feature: %s"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("missing 'state' attribute for "
+                                 "Hyper-V stimer '%s' feature"), "direct");
+                        goto error;
+            }
+
+            if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid value of state argument "
+                                 "for Hyper-V stimer '%s' feature"), "direct");
+                goto error;
+            }
+
+            VIR_FREE(tmp);
+            def->hyperv_stimer_direct = value;
+        }
+        VIR_FREE(nodes);
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
+        int feature;
+        int value;
+        if ((n = virXPathNodeSet("./features/kvm/*", ctxt, &nodes)) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            feature = virDomainKVMTypeFromString((const char *)nodes[i]->name);
+            if (feature < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported KVM feature: %s"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            switch ((virDomainKVM) feature) {
+                case VIR_DOMAIN_KVM_HIDDEN:
+                case VIR_DOMAIN_KVM_DEDICATED:
+                    if (!(tmp = virXMLPropString(nodes[i], "state"))) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("missing 'state' attribute for "
+                                         "KVM feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("invalid value of state argument "
+                                         "for KVM feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    VIR_FREE(tmp);
+                    def->kvm_features[feature] = value;
+                    break;
+
+                /* coverity[dead_error_begin] */
+                case VIR_DOMAIN_KVM_LAST:
+                    break;
+            }
+        }
+        VIR_FREE(nodes);
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
+        int feature;
+        int value;
+        g_autofree char *ptval = NULL;
+
+        if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            feature = virDomainXenTypeFromString((const char *)nodes[i]->name);
+            if (feature < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported Xen feature: %s"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("missing 'state' attribute for "
+                                 "Xen feature '%s'"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid value of state argument "
+                                 "for Xen feature '%s'"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            VIR_FREE(tmp);
+            def->xen_features[feature] = value;
+
+            switch ((virDomainXen) feature) {
+                case VIR_DOMAIN_XEN_E820_HOST:
+                    break;
+
+            case VIR_DOMAIN_XEN_PASSTHROUGH:
+                if (value != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                if ((ptval = virXMLPropString(nodes[i], "mode"))) {
+                    int mode = virDomainXenPassthroughModeTypeFromString(ptval);
+
+                    if (mode < 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("unsupported mode '%s' for Xen passthrough feature"),
+                                       ptval);
+                        goto error;
+                    }
+
+                    if (mode != VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SYNC_PT &&
+                        mode != VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SHARE_PT) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("'mode' attribute for Xen feature "
+                                         "'passthrough' must be 'sync_pt' or 'share_pt'"));
+                        goto error;
+                    }
+                    def->xen_passthrough_mode = mode;
+                }
+                break;
+
+                /* coverity[dead_error_begin] */
+                case VIR_DOMAIN_XEN_LAST:
+                    break;
+            }
+        }
+        VIR_FREE(nodes);
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_SMM] == VIR_TRISTATE_SWITCH_ON) {
+        int rv = virDomainParseScaledValue("string(./features/smm/tseg)",
+                                           "string(./features/smm/tseg/@unit)",
+                                           ctxt,
+                                           &def->tseg_size,
+                                           1024 * 1024, /* Defaults to mebibytes */
+                                           ULLONG_MAX,
+                                           false);
+        if (rv < 0)
+            goto error;
+        def->tseg_specified = rv;
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_MSRS] == VIR_TRISTATE_SWITCH_ON) {
+        if ((node = virXPathNode("./features/msrs", ctxt)) == NULL)
+            goto error;
+
+        if (!(tmp = virXMLPropString(node, "unknown"))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("missing 'unknown' attribute for feature '%s'"),
+                           virDomainFeatureTypeToString(VIR_DOMAIN_FEATURE_MSRS));
+            goto error;
+        }
+
+        if ((def->msrs_features[VIR_DOMAIN_MSRS_UNKNOWN] = virDomainMsrsUnknownTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown 'unknown' value '%s'"),
+                           tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
+    if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        int val = virDomainProcessCapsFeatureTypeFromString((const char *)nodes[i]->name);
+        if (val < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unexpected capability feature '%s'"), nodes[i]->name);
+            goto error;
+        }
+
+        if ((tmp = virXMLPropString(nodes[i], "state"))) {
+            if ((def->caps_features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown state attribute '%s' of feature capability '%s'"),
+                               tmp, virDomainProcessCapsFeatureTypeToString(val));
+                goto error;
+            }
+            VIR_FREE(tmp);
+        } else {
+            def->caps_features[val] = VIR_TRISTATE_SWITCH_ON;
+        }
+    }
+    VIR_FREE(nodes);
+    return 0;
+
+ error:
+    return -1;
+}
+
+
 static int
 virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDefPtr def)
 {
@@ -20366,7 +20858,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 {
     xmlNodePtr node = NULL;
     size_t i, j;
-    int n, gic_version;
+    int n;
     long id = -1;
     virDomainDefPtr def;
     bool uuid_generated = false;
@@ -20844,479 +21336,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./features/*", ctxt, &nodes)) < 0)
+    if (virDomainFeaturesDefParse(def, ctxt) < 0)
         goto error;
-
-    for (i = 0; i < n; i++) {
-        int val = virDomainFeatureTypeFromString((const char *)nodes[i]->name);
-        if (val < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unexpected feature '%s'"), nodes[i]->name);
-            goto error;
-        }
-
-        switch ((virDomainFeature) val) {
-        case VIR_DOMAIN_FEATURE_APIC:
-            if ((tmp = virXPathString("string(./features/apic/@eoi)", ctxt))) {
-                int eoi;
-                if ((eoi = virTristateSwitchTypeFromString(tmp)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown value for attribute eoi: '%s'"),
-                                   tmp);
-                    goto error;
-                }
-                def->apic_eoi = eoi;
-                VIR_FREE(tmp);
-            }
-            G_GNUC_FALLTHROUGH;
-        case VIR_DOMAIN_FEATURE_ACPI:
-        case VIR_DOMAIN_FEATURE_PAE:
-        case VIR_DOMAIN_FEATURE_VIRIDIAN:
-        case VIR_DOMAIN_FEATURE_PRIVNET:
-        case VIR_DOMAIN_FEATURE_HYPERV:
-        case VIR_DOMAIN_FEATURE_KVM:
-        case VIR_DOMAIN_FEATURE_MSRS:
-        case VIR_DOMAIN_FEATURE_XEN:
-            def->features[val] = VIR_TRISTATE_SWITCH_ON;
-            break;
-
-        case VIR_DOMAIN_FEATURE_CAPABILITIES:
-            if ((tmp = virXMLPropString(nodes[i], "policy"))) {
-                if ((def->features[val] = virDomainCapabilitiesPolicyTypeFromString(tmp)) == -1) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown policy attribute '%s' of feature '%s'"),
-                                   tmp, virDomainFeatureTypeToString(val));
-                    goto error;
-                }
-                VIR_FREE(tmp);
-            } else {
-                def->features[val] = VIR_TRISTATE_SWITCH_ABSENT;
-            }
-            break;
-
-        case VIR_DOMAIN_FEATURE_VMCOREINFO:
-        case VIR_DOMAIN_FEATURE_HAP:
-        case VIR_DOMAIN_FEATURE_PMU:
-        case VIR_DOMAIN_FEATURE_PVSPINLOCK:
-        case VIR_DOMAIN_FEATURE_VMPORT:
-        case VIR_DOMAIN_FEATURE_SMM:
-            if ((tmp = virXMLPropString(nodes[i], "state"))) {
-                if ((def->features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown state attribute '%s' of feature '%s'"),
-                                   tmp, virDomainFeatureTypeToString(val));
-                    goto error;
-                }
-                VIR_FREE(tmp);
-            } else {
-                def->features[val] = VIR_TRISTATE_SWITCH_ON;
-            }
-            break;
-
-        case VIR_DOMAIN_FEATURE_GIC:
-            if ((tmp = virXMLPropString(nodes[i], "version"))) {
-                gic_version = virGICVersionTypeFromString(tmp);
-                if (gic_version < 0 || gic_version == VIR_GIC_VERSION_NONE) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("malformed gic version: %s"), tmp);
-                    goto error;
-                }
-                def->gic_version = gic_version;
-                VIR_FREE(tmp);
-            }
-            def->features[val] = VIR_TRISTATE_SWITCH_ON;
-            break;
-
-        case VIR_DOMAIN_FEATURE_IOAPIC:
-            tmp = virXMLPropString(nodes[i], "driver");
-            if (tmp) {
-                int value = virDomainIOAPICTypeFromString(tmp);
-                if (value < 0 || value == VIR_DOMAIN_IOAPIC_NONE) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unknown driver mode: %s"),
-                                   tmp);
-                    goto error;
-                }
-                def->features[val] = value;
-                VIR_FREE(tmp);
-            }
-            break;
-
-        case VIR_DOMAIN_FEATURE_HPT:
-            tmp = virXMLPropString(nodes[i], "resizing");
-            if (tmp) {
-                int value = virDomainHPTResizingTypeFromString(tmp);
-                if (value < 0 || value == VIR_DOMAIN_HPT_RESIZING_NONE) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unknown HPT resizing setting: %s"),
-                                   tmp);
-                    goto error;
-                }
-                def->hpt_resizing = (virDomainHPTResizing) value;
-                VIR_FREE(tmp);
-            }
-
-            if (virDomainParseScaledValue("./features/hpt/maxpagesize",
-                                          NULL,
-                                          ctxt,
-                                          &def->hpt_maxpagesize,
-                                          1024,
-                                          ULLONG_MAX,
-                                          false) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s",
-                               _("Unable to parse HPT maxpagesize setting"));
-                goto error;
-            }
-            def->hpt_maxpagesize = VIR_DIV_UP(def->hpt_maxpagesize, 1024);
-
-            if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE ||
-                def->hpt_maxpagesize > 0) {
-                def->features[val] = VIR_TRISTATE_SWITCH_ON;
-            }
-            break;
-
-        case VIR_DOMAIN_FEATURE_HTM:
-        case VIR_DOMAIN_FEATURE_NESTED_HV:
-        case VIR_DOMAIN_FEATURE_CCF_ASSIST:
-            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("missing state attribute '%s' of feature '%s'"),
-                               tmp, virDomainFeatureTypeToString(val));
-                goto error;
-            }
-            if ((def->features[val] = virTristateSwitchTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown state attribute '%s' of feature '%s'"),
-                               tmp, virDomainFeatureTypeToString(val));
-                goto error;
-            }
-            VIR_FREE(tmp);
-            break;
-
-        /* coverity[dead_error_begin] */
-        case VIR_DOMAIN_FEATURE_LAST:
-            break;
-        }
-    }
-    VIR_FREE(nodes);
-
-    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
-        int feature;
-        int value;
-        node = ctxt->node;
-        if ((n = virXPathNodeSet("./features/hyperv/*", ctxt, &nodes)) < 0)
-            goto error;
-
-        for (i = 0; i < n; i++) {
-            feature = virDomainHypervTypeFromString((const char *)nodes[i]->name);
-            if (feature < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported HyperV Enlightenment feature: %s"),
-                               nodes[i]->name);
-                goto error;
-            }
-
-            ctxt->node = nodes[i];
-
-            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("missing 'state' attribute for "
-                                 "HyperV Enlightenment feature '%s'"),
-                               nodes[i]->name);
-                goto error;
-            }
-
-            if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("invalid value of state argument "
-                                 "for HyperV Enlightenment feature '%s'"),
-                               nodes[i]->name);
-                goto error;
-            }
-
-            VIR_FREE(tmp);
-            def->hyperv_features[feature] = value;
-
-            switch ((virDomainHyperv) feature) {
-            case VIR_DOMAIN_HYPERV_RELAXED:
-            case VIR_DOMAIN_HYPERV_VAPIC:
-            case VIR_DOMAIN_HYPERV_VPINDEX:
-            case VIR_DOMAIN_HYPERV_RUNTIME:
-            case VIR_DOMAIN_HYPERV_SYNIC:
-            case VIR_DOMAIN_HYPERV_STIMER:
-            case VIR_DOMAIN_HYPERV_RESET:
-            case VIR_DOMAIN_HYPERV_FREQUENCIES:
-            case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
-            case VIR_DOMAIN_HYPERV_TLBFLUSH:
-            case VIR_DOMAIN_HYPERV_IPI:
-            case VIR_DOMAIN_HYPERV_EVMCS:
-                break;
-
-            case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                if (virXPathUInt("string(./@retries)", ctxt,
-                             &def->hyperv_spinlocks) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("invalid HyperV spinlock retry count"));
-                    goto error;
-                }
-
-                if (def->hyperv_spinlocks < 0xFFF) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("HyperV spinlock retry count must be "
-                                     "at least 4095"));
-                    goto error;
-                }
-                break;
-
-            case VIR_DOMAIN_HYPERV_VENDOR_ID:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                if (!(def->hyperv_vendor_id = virXMLPropString(nodes[i],
-                                                               "value"))) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("missing 'value' attribute for "
-                                     "HyperV feature 'vendor_id'"));
-                    goto error;
-                }
-
-                if (strlen(def->hyperv_vendor_id) > VIR_DOMAIN_HYPERV_VENDOR_ID_MAX) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("HyperV vendor_id value must not be more "
-                                     "than %d characters."),
-                                   VIR_DOMAIN_HYPERV_VENDOR_ID_MAX);
-                    goto error;
-                }
-
-                /* ensure that the string can be passed to qemu */
-                if (strchr(def->hyperv_vendor_id, ',')) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("HyperV vendor_id value is invalid"));
-                    goto error;
-                }
-
-            /* coverity[dead_error_begin] */
-            case VIR_DOMAIN_HYPERV_LAST:
-                break;
-            }
-        }
-        VIR_FREE(nodes);
-        ctxt->node = node;
-    }
-
-    if (def->features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
-        int value;
-        if ((n = virXPathNodeSet("./features/hyperv/stimer/*", ctxt, &nodes)) < 0)
-            goto error;
-
-        for (i = 0; i < n; i++) {
-            if (STRNEQ((const char *)nodes[i]->name, "direct")) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported Hyper-V stimer feature: %s"),
-                               nodes[i]->name);
-                goto error;
-            }
-
-            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("missing 'state' attribute for "
-                                 "Hyper-V stimer '%s' feature"), "direct");
-                        goto error;
-            }
-
-            if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("invalid value of state argument "
-                                 "for Hyper-V stimer '%s' feature"), "direct");
-                goto error;
-            }
-
-            VIR_FREE(tmp);
-            def->hyperv_stimer_direct = value;
-        }
-        VIR_FREE(nodes);
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
-        int feature;
-        int value;
-        if ((n = virXPathNodeSet("./features/kvm/*", ctxt, &nodes)) < 0)
-            goto error;
-
-        for (i = 0; i < n; i++) {
-            feature = virDomainKVMTypeFromString((const char *)nodes[i]->name);
-            if (feature < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported KVM feature: %s"),
-                               nodes[i]->name);
-                goto error;
-            }
-
-            switch ((virDomainKVM) feature) {
-                case VIR_DOMAIN_KVM_HIDDEN:
-                case VIR_DOMAIN_KVM_DEDICATED:
-                    if (!(tmp = virXMLPropString(nodes[i], "state"))) {
-                        virReportError(VIR_ERR_XML_ERROR,
-                                       _("missing 'state' attribute for "
-                                         "KVM feature '%s'"),
-                                       nodes[i]->name);
-                        goto error;
-                    }
-
-                    if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("invalid value of state argument "
-                                         "for KVM feature '%s'"),
-                                       nodes[i]->name);
-                        goto error;
-                    }
-
-                    VIR_FREE(tmp);
-                    def->kvm_features[feature] = value;
-                    break;
-
-                /* coverity[dead_error_begin] */
-                case VIR_DOMAIN_KVM_LAST:
-                    break;
-            }
-        }
-        VIR_FREE(nodes);
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
-        int feature;
-        int value;
-        g_autofree char *ptval = NULL;
-
-        if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
-            goto error;
-
-        for (i = 0; i < n; i++) {
-            feature = virDomainXenTypeFromString((const char *)nodes[i]->name);
-            if (feature < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported Xen feature: %s"),
-                               nodes[i]->name);
-                goto error;
-            }
-
-            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("missing 'state' attribute for "
-                                 "Xen feature '%s'"),
-                               nodes[i]->name);
-                goto error;
-            }
-
-            if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("invalid value of state argument "
-                                 "for Xen feature '%s'"),
-                               nodes[i]->name);
-                goto error;
-            }
-
-            VIR_FREE(tmp);
-            def->xen_features[feature] = value;
-
-            switch ((virDomainXen) feature) {
-                case VIR_DOMAIN_XEN_E820_HOST:
-                    break;
-
-            case VIR_DOMAIN_XEN_PASSTHROUGH:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                if ((ptval = virXMLPropString(nodes[i], "mode"))) {
-                    int mode = virDomainXenPassthroughModeTypeFromString(ptval);
-
-                    if (mode < 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unsupported mode '%s' for Xen passthrough feature"),
-                                       ptval);
-                        goto error;
-                    }
-
-                    if (mode != VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SYNC_PT &&
-                        mode != VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SHARE_PT) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("'mode' attribute for Xen feature "
-                                         "'passthrough' must be 'sync_pt' or 'share_pt'"));
-                        goto error;
-                    }
-                    def->xen_passthrough_mode = mode;
-                }
-                break;
-
-                /* coverity[dead_error_begin] */
-                case VIR_DOMAIN_XEN_LAST:
-                    break;
-            }
-        }
-        VIR_FREE(nodes);
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_SMM] == VIR_TRISTATE_SWITCH_ON) {
-        int rv = virDomainParseScaledValue("string(./features/smm/tseg)",
-                                           "string(./features/smm/tseg/@unit)",
-                                           ctxt,
-                                           &def->tseg_size,
-                                           1024 * 1024, /* Defaults to mebibytes */
-                                           ULLONG_MAX,
-                                           false);
-        if (rv < 0)
-            goto error;
-        def->tseg_specified = rv;
-    }
-
-    if (def->features[VIR_DOMAIN_FEATURE_MSRS] == VIR_TRISTATE_SWITCH_ON) {
-        if ((node = virXPathNode("./features/msrs", ctxt)) == NULL)
-            goto error;
-
-        if (!(tmp = virXMLPropString(node, "unknown"))) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("missing 'unknown' attribute for feature '%s'"),
-                           virDomainFeatureTypeToString(VIR_DOMAIN_FEATURE_MSRS));
-            goto error;
-        }
-
-        if ((def->msrs_features[VIR_DOMAIN_MSRS_UNKNOWN] = virDomainMsrsUnknownTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown 'unknown' value '%s'"),
-                           tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-    }
-
-    if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
-        goto error;
-
-    for (i = 0; i < n; i++) {
-        int val = virDomainProcessCapsFeatureTypeFromString((const char *)nodes[i]->name);
-        if (val < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unexpected capability feature '%s'"), nodes[i]->name);
-            goto error;
-        }
-
-        if ((tmp = virXMLPropString(nodes[i], "state"))) {
-            if ((def->caps_features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown state attribute '%s' of feature capability '%s'"),
-                               tmp, virDomainProcessCapsFeatureTypeToString(val));
-                goto error;
-            }
-            VIR_FREE(tmp);
-        } else {
-            def->caps_features[val] = VIR_TRISTATE_SWITCH_ON;
-        }
-    }
-    VIR_FREE(nodes);
 
     if (virDomainEventActionParseXML(ctxt, "on_reboot",
                                      "string(./on_reboot[1])",
