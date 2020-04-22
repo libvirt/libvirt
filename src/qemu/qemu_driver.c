@@ -6691,6 +6691,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                         bool unlink_corrupt)
 {
     int fd = -1;
+    int ret = -1;
     virQEMUSaveDataPtr data = NULL;
     virQEMUSaveHeaderPtr header;
     virDomainDefPtr def = NULL;
@@ -6726,7 +6727,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                                      _("cannot remove corrupt file: %s"),
                                      path);
             } else {
-                fd = -3;
+                ret = -3;
             }
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
@@ -6747,7 +6748,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                                          _("cannot remove corrupt file: %s"),
                                          path);
                 } else {
-                    fd = -3;
+                    ret = -3;
                 }
                 goto error;
             }
@@ -6816,7 +6817,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     virDomainDefFree(def);
     virQEMUSaveDataFree(data);
     VIR_FORCE_CLOSE(fd);
-    return -1;
+    return ret;
 }
 
 static int ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6)
