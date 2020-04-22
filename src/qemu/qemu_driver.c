@@ -6705,17 +6705,18 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         if (directFlag < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("bypass cache unsupported by this system"));
-            goto error;
+            return -1;
         }
         oflags |= directFlag;
     }
 
     if ((fd = qemuOpenFile(driver, NULL, path, oflags, NULL)) < 0)
-        goto error;
+        return -1;
+
     if (bypass_cache &&
         !(*wrapperFd = virFileWrapperFdNew(&fd, path,
                                            VIR_FILE_WRAPPER_BYPASS_CACHE)))
-        goto error;
+        return -1;
 
     data = g_new0(virQEMUSaveData, 1);
 
@@ -6726,35 +6727,38 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                 virReportSystemError(errno,
                                      _("cannot remove corrupt file: %s"),
                                      path);
+                return -1;
             } else {
-                ret = -3;
+                return -3;
             }
-        } else {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           "%s", _("failed to read qemu header"));
         }
-        goto error;
+
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("failed to read qemu header"));
+        return -1;
     }
 
     if (memcmp(header->magic, QEMU_SAVE_MAGIC, sizeof(header->magic)) != 0) {
-        const char *msg = _("image magic is incorrect");
-
-        if (memcmp(header->magic, QEMU_SAVE_PARTIAL,
-                   sizeof(header->magic)) == 0) {
-            msg = _("save image is incomplete");
+        if (memcmp(header->magic, QEMU_SAVE_PARTIAL, sizeof(header->magic)) == 0) {
             if (unlink_corrupt) {
                 if (unlink(path) < 0) {
                     virReportSystemError(errno,
                                          _("cannot remove corrupt file: %s"),
                                          path);
+                    return -1;
                 } else {
-                    ret = -3;
+                    return -3;
                 }
-                goto error;
             }
+
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("save image is incomplete"));
+            return -1;
         }
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s", msg);
-        goto error;
+
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("image magic is incorrect"));
+        return -1;
     }
 
     if (header->version > QEMU_SAVE_VERSION) {
@@ -6766,13 +6770,13 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("image version is not supported (%d > %d)"),
                        header->version, QEMU_SAVE_VERSION);
-        goto error;
+        return -1;
     }
 
     if (header->data_len <= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("invalid header data length: %d"), header->data_len);
-        goto error;
+        return -1;
     }
 
     if (header->cookieOffset)
@@ -6787,7 +6791,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     if (saferead(fd, data->xml, xml_len) != xml_len) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("failed to read domain XML"));
-        goto error;
+        return -1;
     }
 
     if (cookie_len > 0) {
@@ -6796,7 +6800,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         if (saferead(fd, data->cookie, cookie_len) != cookie_len) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("failed to read cookie"));
-            goto error;
+            return -1;
         }
     }
 
@@ -6804,7 +6808,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     if (!(def = virDomainDefParseString(data->xml, driver->xmlopt, qemuCaps,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
-        goto error;
+        return -1;
 
     *ret_def = g_steal_pointer(&def);
     *ret_data = g_steal_pointer(&data);
@@ -6812,9 +6816,6 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     ret = fd;
     fd = -1;
 
-    return ret;
-
- error:
     return ret;
 }
 
