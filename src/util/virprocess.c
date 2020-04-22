@@ -129,7 +129,7 @@ VIR_ENUM_IMPL(virProcessSchedPolicy,
  * @status: child exit status to translate
  *
  * Translate an exit status into a malloc'd string.  Generic helper
- * for virCommandRun(), virCommandWait(), virRun(), and virProcessWait()
+ * for virCommandRun(), virCommandWait() and virProcessWait()
  * status argument, as well as raw waitpid().
  */
 char *
@@ -1190,7 +1190,7 @@ virProcessRunInForkHelper(int errfd,
  * particular no mutexes should be used in @cb, unless steps were
  * taken before forking to guarantee a predictable state. @cb
  * must not exec any external binaries, instead
- * virCommand/virExec should be used for that purpose.
+ * virCommand should be used for that purpose.
  *
  * On return, the returned value is either -1 with error message
  * reported if something went bad in the parent, if child has
