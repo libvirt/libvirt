@@ -2856,6 +2856,7 @@ virQEMUSaveDataFree(virQEMUSaveDataPtr data)
     VIR_FREE(data);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virQEMUSaveData, virQEMUSaveDataFree);
 
 /**
  * This function steals @domXML on success.
@@ -6692,7 +6693,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
 {
     int fd = -1;
     int ret = -1;
-    virQEMUSaveDataPtr data = NULL;
+    g_autoptr(virQEMUSaveData) data = NULL;
     virQEMUSaveHeaderPtr header;
     virDomainDefPtr def = NULL;
     int oflags = open_write ? O_RDWR : O_RDONLY;
@@ -6809,13 +6810,12 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         goto error;
 
     *ret_def = def;
-    *ret_data = data;
+    *ret_data = g_steal_pointer(&data);
 
     return fd;
 
  error:
     virDomainDefFree(def);
-    virQEMUSaveDataFree(data);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
