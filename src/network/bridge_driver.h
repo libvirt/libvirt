@@ -46,5 +46,6 @@ int
 networkDnsmasqConfContents(virNetworkObjPtr obj,
                            const char *pidfile,
                            char **configstr,
+                           char **hostsfilestr,
                            dnsmasqContext *dctx,
                            dnsmasqCapsPtr caps);

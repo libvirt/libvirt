@@ -607,4 +607,12 @@
     </element>
   </define>
 
+  <define name="leaseUnit">
+    <choice>
+      <value>seconds</value>
+      <value>minutes</value>
+      <value>hours</value>
+    </choice>
+  </define>
+
 </grammar>

@@ -379,6 +379,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     virNetworkIPDefPtr ipdef = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     vboxIID vboxnetiid;
+    virSocketAddrRange addr;
     virSocketAddr netmask;
     IHost *host = NULL;
     virNetworkPtr ret = NULL;
@@ -440,9 +441,10 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     /* Currently support only one dhcp server per network
      * with contigious address space from start to end
      */
+    addr = ipdef->ranges[0].addr;
     if ((ipdef->nranges >= 1) &&
-        VIR_SOCKET_ADDR_VALID(&ipdef->ranges[0].start) &&
-        VIR_SOCKET_ADDR_VALID(&ipdef->ranges[0].end)) {
+        VIR_SOCKET_ADDR_VALID(&addr.start) &&
+        VIR_SOCKET_ADDR_VALID(&addr.end)) {
         IDHCPServer *dhcpServer = NULL;
 
         gVBoxAPI.UIVirtualBox.FindDHCPServerByNetworkName(data->vboxObj,
@@ -464,8 +466,8 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
 
             ipAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->address);
             networkMaskUtf16 = vboxSocketFormatAddrUtf16(data, &netmask);
-            fromIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->ranges[0].start);
-            toIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &ipdef->ranges[0].end);
+            fromIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &addr.start);
+            toIPAddressUtf16 = vboxSocketFormatAddrUtf16(data, &addr.end);
 
             if (ipAddressUtf16 == NULL || networkMaskUtf16 == NULL ||
                 fromIPAddressUtf16 == NULL || toIPAddressUtf16 == NULL) {
@@ -770,6 +772,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
     vboxIID vboxnet0IID;
     IHost *host = NULL;
     char *ret = NULL;
+    virSocketAddrRange addr;
     nsresult rc;
 
     if (!data->vboxObj)
@@ -833,14 +836,15 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
             /* Currently virtualbox supports only one dhcp server per network
              * with contigious address space from start to end
              */
+            addr = ipdef->ranges[0].addr;
             if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
                                          &ipdef->address) < 0 ||
                 vboxSocketParseAddrUtf16(data, networkMaskUtf16,
                                          &ipdef->netmask) < 0 ||
                 vboxSocketParseAddrUtf16(data, fromIPAddressUtf16,
-                                         &ipdef->ranges[0].start) < 0 ||
+                                         &addr.start) < 0 ||
                 vboxSocketParseAddrUtf16(data, toIPAddressUtf16,
-                                         &ipdef->ranges[0].end) < 0) {
+                                         &addr.end) < 0) {
                 errorOccurred = true;
             }
 

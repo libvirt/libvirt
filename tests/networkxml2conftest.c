@@ -18,7 +18,8 @@
 static int
 testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr caps)
 {
-    char *actual = NULL;
+    char *confactual = NULL;
+    char *hostsfileactual = NULL;
     int ret = -1;
     virNetworkDefPtr def = NULL;
     virNetworkObjPtr obj = NULL;
@@ -43,28 +44,30 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     if (dctx == NULL)
         goto fail;
 
-    if (networkDnsmasqConfContents(obj, pidfile, &actual, dctx, caps) < 0)
+    if (networkDnsmasqConfContents(obj, pidfile, &confactual,
+                                   &hostsfileactual, dctx, caps) < 0)
         goto fail;
 
     /* Any changes to this function ^^ should be reflected here too. */
 #ifndef __linux__
     char * tmp;
 
-    if (!(tmp = virStringReplace(actual,
+    if (!(tmp = virStringReplace(confactual,
                                  "except-interface=lo0\n",
                                  "except-interface=lo\n")))
         goto fail;
-    VIR_FREE(actual);
+    VIR_FREE(confactual);
     actual = g_steal_pointer(&tmp);
 #endif
 
-    if (virTestCompareToFile(actual, outconf) < 0)
+    if (virTestCompareToFile(confactual, outconf) < 0)
         goto fail;
 
     ret = 0;
 
  fail:
-    VIR_FREE(actual);
+    VIR_FREE(confactual);
+    VIR_FREE(hostsfileactual);
     VIR_FREE(pidfile);
     virCommandFree(cmd);
     virObjectUnref(xmlopt);

@@ -296,11 +296,14 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
              virSocketAddr *ip,
              const char *name,
              const char *id,
+             const char *leasetime,
              bool ipv6)
 {
-    char *ipstr = NULL;
+    g_autofree char *ipstr = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
     if (VIR_REALLOC_N(hostsfile->hosts, hostsfile->nhosts + 1) < 0)
-        goto error;
+        return -1;
 
     if (!(ipstr = virSocketAddrFormat(ip)))
         return -1;
@@ -308,34 +311,30 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
     /* the first test determines if it is a dhcpv6 host */
     if (ipv6) {
         if (name && id) {
-            hostsfile->hosts[hostsfile->nhosts].host = g_strdup_printf("id:%s,%s,[%s]",
-                                                                       id, name, ipstr);
+            virBufferAsprintf(&buf, "id:%s,%s", id, name);
         } else if (name && !id) {
-            hostsfile->hosts[hostsfile->nhosts].host = g_strdup_printf("%s,[%s]",
-                                                                       name, ipstr);
+            virBufferAsprintf(&buf, "%s", name);
         } else if (!name && id) {
-            hostsfile->hosts[hostsfile->nhosts].host = g_strdup_printf("id:%s,[%s]",
-                                                                       id, ipstr);
+            virBufferAsprintf(&buf, "id:%s", id);
         }
+        virBufferAsprintf(&buf, ",[%s]", ipstr);
     } else if (name && mac) {
-        hostsfile->hosts[hostsfile->nhosts].host = g_strdup_printf("%s,%s,%s",
-                                                                   mac, ipstr, name);
+        virBufferAsprintf(&buf, "%s,%s,%s", mac, ipstr, name);
     } else if (name && !mac) {
-        hostsfile->hosts[hostsfile->nhosts].host = g_strdup_printf("%s,%s", name,
-                                                                   ipstr);
+        virBufferAsprintf(&buf, "%s,%s", name, ipstr);
     } else {
-        hostsfile->hosts[hostsfile->nhosts].host = g_strdup_printf("%s,%s", mac,
-                                                                   ipstr);
+        virBufferAsprintf(&buf, "%s,%s", mac, ipstr);
     }
-    VIR_FREE(ipstr);
+
+    if (leasetime)
+        virBufferAsprintf(&buf, ",%s", leasetime);
+
+    if (!(hostsfile->hosts[hostsfile->nhosts].host = virBufferContentAndReset(&buf)))
+        return -1;
 
     hostsfile->nhosts++;
 
     return 0;
-
- error:
-    VIR_FREE(ipstr);
-    return -1;
 }
 
 static dnsmasqHostsfile *
@@ -501,9 +500,10 @@ dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                    virSocketAddr *ip,
                    const char *name,
                    const char *id,
+                   const char *leasetime,
                    bool ipv6)
 {
-    return hostsfileAdd(ctx->hostsfile, mac, ip, name, id, ipv6);
+    return hostsfileAdd(ctx->hostsfile, mac, ip, name, id, leasetime, ipv6);
 }
 
 /*
@@ -861,4 +861,24 @@ bool
 dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag)
 {
     return caps && virBitmapIsBitSet(caps->flags, flag);
+}
+
+
+/** dnsmasqDhcpHostsToString:
+ *
+ *   Turns a vector of dnsmasqDhcpHost into the string that is ought to be
+ *   stored in the hostsfile, this functionality is split to make hostsfiles
+ *   testable. Returs NULL if nhosts is 0.
+ */
+char *
+dnsmasqDhcpHostsToString(dnsmasqDhcpHost *hosts,
+                         unsigned int nhosts)
+{
+    size_t i;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    for (i = 0; i < nhosts; i++)
+        virBufferAsprintf(&buf, "%s\n", hosts[i].host);
+
+    return virBufferContentAndReset(&buf);
 }

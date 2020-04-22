@@ -5025,7 +5025,7 @@ testDomainInterfaceAddressFromNet(testDriverPtr driver,
                                                       net_def->ips->prefix);
 
     if (net_def->ips->nranges > 0)
-        addr = net_def->ips->ranges[0].start;
+        addr = net_def->ips->ranges[0].addr.start;
     else
         addr = net_def->ips->address;
 
