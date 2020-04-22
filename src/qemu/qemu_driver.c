@@ -6717,8 +6717,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                                            VIR_FILE_WRAPPER_BYPASS_CACHE)))
         goto error;
 
-    if (VIR_ALLOC(data) < 0)
-        goto error;
+    data = g_new0(virQEMUSaveData, 1);
 
     header = &data->header;
     if (saferead(fd, header, sizeof(*header)) != sizeof(*header)) {
@@ -6783,8 +6782,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
 
     cookie_len = header->data_len - xml_len;
 
-    if (VIR_ALLOC_N(data->xml, xml_len) < 0)
-        goto error;
+    data->xml = g_new0(char, xml_len);
 
     if (saferead(fd, data->xml, xml_len) != xml_len) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -6793,8 +6791,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     }
 
     if (cookie_len > 0) {
-        if (VIR_ALLOC_N(data->cookie, cookie_len) < 0)
-            goto error;
+        data->cookie = g_new0(char, cookie_len);
 
         if (saferead(fd, data->cookie, cookie_len) != cookie_len) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
