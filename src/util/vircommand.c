@@ -893,42 +893,7 @@ virExec(virCommandPtr cmd)
 }
 
 
-/**
- * virRun:
- * @argv NULL terminated argv to run
- * @status optional variable to return exit status in
- *
- * Run a command without using the shell.
- *
- * If status is NULL, then return 0 if the command run and
- * exited with 0 status; Otherwise return -1
- *
- * If status is not-NULL, then return 0 if the command ran.
- * The status variable is filled with the command exit status
- * and should be checked by caller for success. Return -1
- * only if the command could not be run.
- */
-int
-virRun(const char *const*argv, int *status)
-{
-    g_autoptr(virCommand) cmd = virCommandNewArgs(argv);
-
-    return virCommandRun(cmd, status);
-}
-
 #else /* WIN32 */
-
-int
-virRun(const char *const *argv G_GNUC_UNUSED,
-       int *status)
-{
-    if (status)
-        *status = ENOTSUP;
-    else
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("virRun is not implemented for WIN32"));
-    return -1;
-}
 
 pid_t
 virFork(void)

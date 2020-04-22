@@ -1876,7 +1876,6 @@ virCommandToString;
 virCommandWait;
 virCommandWriteArgLog;
 virFork;
-virRun;
 
 
 # util/virconf.h

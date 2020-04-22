@@ -34,8 +34,6 @@ typedef int (*virExecHook)(void *data);
 
 pid_t virFork(void) G_GNUC_WARN_UNUSED_RESULT;
 
-int virRun(const char *const*argv, int *status) G_GNUC_WARN_UNUSED_RESULT;
-
 virCommandPtr virCommandNew(const char *binary) ATTRIBUTE_NONNULL(1);
 
 virCommandPtr virCommandNewArgs(const char *const*args) ATTRIBUTE_NONNULL(1);
