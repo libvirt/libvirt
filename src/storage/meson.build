@@ -109,6 +109,14 @@ if conf.has('WITH_STORAGE')
     ],
     'install_dir': storage_file_install_dir,
   }
+
+  virt_daemons += {
+    'name': 'virtstoraged',
+    'c_args': [
+      '-DDAEMON_NAME="virtstoraged"',
+      '-DMODULE_NAME="storage"',
+    ],
+  }
 endif
 
 if conf.has('WITH_STORAGE_DISK')

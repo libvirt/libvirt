@@ -9,21 +9,9 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 
 if WITH_STORAGE
-sbin_PROGRAMS += virtstoraged
-
 nodist_conf_DATA += storage/virtstoraged.conf
 augeas_DATA += storage/virtstoraged.aug
 augeastest_DATA += storage/test_virtstoraged.aug
-
-virtstoraged_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtstoraged_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtstoraged_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtstoraged\"" \
-       -DMODULE_NAME="\"storage\"" \
-       $(NULL)
-virtstoraged_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtstoraged_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 SYSCONF_FILES += storage/virtstoraged.sysconf
 
