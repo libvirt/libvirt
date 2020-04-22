@@ -642,6 +642,8 @@ int virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
                               bool migratable,
                               char ***features);
 
+virDomainVirtType virQEMUCapsGetVirtType(virQEMUCapsPtr qemuCaps);
+
 bool virQEMUCapsIsArchSupported(virQEMUCapsPtr qemuCaps,
                                 virArch arch);
 bool virQEMUCapsIsVirtTypeSupported(virQEMUCapsPtr qemuCaps,
