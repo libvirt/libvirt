@@ -481,30 +481,11 @@ static char *openvzDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 }
 
 
-/*
- * Convenient helper to target a command line argv
- * and fill in an empty slot with the supplied
- * key value. This lets us declare the argv on the
- * stack and just splice in the domain name after
- */
-#define PROGRAM_SENTINEL ((char *)0x1)
-static void openvzSetProgramSentinal(const char **prog, const char *key)
-{
-    const char **tmp = prog;
-    while (tmp && *tmp) {
-        if (*tmp == PROGRAM_SENTINEL) {
-            *tmp = key;
-            break;
-        }
-        tmp++;
-    }
-}
-
 static int openvzDomainSuspend(virDomainPtr dom)
 {
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "chkpnt", NULL);
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINEL, "--suspend", NULL};
     int ret = -1;
 
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
@@ -514,8 +495,8 @@ static int openvzDomainSuspend(virDomainPtr dom)
         goto cleanup;
 
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
-        openvzSetProgramSentinal(prog, vm->def->name);
-        if (virRun(prog, NULL) < 0)
+        virCommandAddArgList(cmd, vm->def->name, "--suspend", NULL);
+        if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
     }
@@ -529,9 +510,9 @@ static int openvzDomainSuspend(virDomainPtr dom)
 
 static int openvzDomainResume(virDomainPtr dom)
 {
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "chkpnt", NULL);
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINEL, "--resume", NULL};
     int ret = -1;
 
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
@@ -541,8 +522,8 @@ static int openvzDomainResume(virDomainPtr dom)
         goto cleanup;
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
-        openvzSetProgramSentinal(prog, vm->def->name);
-        if (virRun(prog, NULL) < 0)
+        virCommandAddArgList(cmd, vm->def->name, "--resume", NULL);
+        if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNPAUSED);
     }
@@ -558,9 +539,9 @@ static int
 openvzDomainShutdownFlags(virDomainPtr dom,
                           unsigned int flags)
 {
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "stop", NULL);
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = {VZCTL, "--quiet", "stop", PROGRAM_SENTINEL, NULL};
     int ret = -1;
     int status;
 
@@ -572,14 +553,15 @@ openvzDomainShutdownFlags(virDomainPtr dom,
     if (openvzGetVEStatus(vm, &status, NULL) == -1)
         goto cleanup;
 
-    openvzSetProgramSentinal(prog, vm->def->name);
     if (status != VIR_DOMAIN_RUNNING) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domain is not in running state"));
         goto cleanup;
     }
 
-    if (virRun(prog, NULL) < 0)
+    virCommandAddArg(cmd, vm->def->name);
+
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     vm->def->id = -1;
@@ -613,9 +595,9 @@ openvzDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
 static int openvzDomainReboot(virDomainPtr dom,
                               unsigned int flags)
 {
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "restart", NULL);
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = {VZCTL, "--quiet", "restart", PROGRAM_SENTINEL, NULL};
     int ret = -1;
     int status;
 
@@ -627,15 +609,16 @@ static int openvzDomainReboot(virDomainPtr dom,
     if (openvzGetVEStatus(vm, &status, NULL) == -1)
         goto cleanup;
 
-    openvzSetProgramSentinal(prog, vm->def->name);
     if (status != VIR_DOMAIN_RUNNING) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domain is not in running state"));
         goto cleanup;
     }
 
-    if (virRun(prog, NULL) < 0)
+    virCommandAddArg(cmd, vm->def->name);
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
+
     ret = 0;
 
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
@@ -935,11 +918,11 @@ static virDomainPtr
 openvzDomainCreateXML(virConnectPtr conn, const char *xml,
                       unsigned int flags)
 {
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "start", NULL);
     struct openvz_driver *driver =  conn->privateData;
     virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    const char *progstart[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINEL, NULL};
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     virCheckFlags(VIR_DOMAIN_START_VALIDATE, NULL);
@@ -986,9 +969,9 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     if (openvzDomainSetNetworkConfig(conn, vm->def) < 0)
         goto cleanup;
 
-    openvzSetProgramSentinal(progstart, vm->def->name);
+    virCommandAddArg(cmd, vm->def->name);
 
-    if (virRun(progstart, NULL) < 0)
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     vm->pid = strtoI(vm->def->name);
@@ -1016,9 +999,9 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 static int
 openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "start", NULL);
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINEL, NULL };
     int ret = -1;
     int status;
 
@@ -1043,8 +1026,9 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0)
+    virCommandAddArg(cmd, vm->def->name);
+
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     vm->pid = strtoI(vm->def->name);
@@ -1068,9 +1052,9 @@ static int
 openvzDomainUndefineFlags(virDomainPtr dom,
                           unsigned int flags)
 {
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "start", "destroy", NULL);
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = { VZCTL, "--quiet", "destroy", PROGRAM_SENTINEL, NULL };
     int ret = -1;
     int status;
 
@@ -1083,8 +1067,9 @@ openvzDomainUndefineFlags(virDomainPtr dom,
     if (openvzGetVEStatus(vm, &status, NULL) == -1)
         goto cleanup;
 
-    openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0)
+    virCommandAddArg(cmd, vm->def->name);
+
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     if (virDomainObjIsActive(vm))
@@ -1110,17 +1095,19 @@ openvzDomainSetAutostart(virDomainPtr dom, int autostart)
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINEL,
-                           "--onboot", autostart ? "yes" : "no",
-                           "--save", NULL };
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", NULL);
     int ret = -1;
 
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
         return -1;
 
-    openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0)
+    virCommandAddArgList(cmd, "set", vm->def->name,
+                         "--onboot", autostart ? "yes" : "no",
+                         "--save", NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
+
     ret = 0;
 
  cleanup:
@@ -1191,9 +1178,8 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
                                         unsigned int nvcpus,
                                         virDomainXMLOptionPtr xmlopt)
 {
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", NULL);
     char        str_vcpus[32];
-    const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINEL,
-                           "--cpus", str_vcpus, "--save", NULL };
     unsigned int pcpus;
     pcpus = virHostCPUGetCount();
     if (pcpus > 0 && pcpus < nvcpus)
@@ -1201,8 +1187,10 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
 
     g_snprintf(str_vcpus, sizeof(str_vcpus), "%d", nvcpus);
 
-    openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0)
+    virCommandAddArgList(cmd, "set", vm->def->name,
+                         "--cpus", str_vcpus, "--save", NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
         return -1;
 
     if (virDomainDefSetVcpusMax(vm->def, nvcpus, xmlopt) < 0)
@@ -1544,16 +1532,16 @@ static int
 openvzDomainSetMemoryInternal(virDomainObjPtr vm,
                               unsigned long long mem)
 {
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", NULL);
     char str_mem[16];
-    const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINEL,
-        "--kmemsize", str_mem, "--save", NULL
-    };
 
     /* memory has to be changed its format from kbyte to byte */
     g_snprintf(str_mem, sizeof(str_mem), "%llu", mem * 1024);
 
-    openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(prog, NULL) < 0)
+    virCommandAddArgList(cmd, "set", vm->def->name,
+                         "--kmemsize", str_mem, "--save", NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
         return -1;
 
     return 0;
