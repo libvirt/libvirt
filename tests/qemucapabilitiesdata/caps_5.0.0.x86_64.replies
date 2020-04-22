@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 91,
+      "micro": 93,
       "minor": 2,
       "major": 4
     },
-    "package": "v5.0.0-rc1"
+    "package": "v5.0.0-rc3-8-g3119154db0"
   },
   "id": "libvirt-2"
 }
@@ -883,6 +883,10 @@
       "parent": "tpm-backend"
     },
     {
+      "name": "Icelake-Server-v3-x86_64-cpu",
+      "parent": "x86_64-cpu"
+    },
+    {
       "name": "pentium3-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
@@ -1291,8 +1295,8 @@
       "parent": "base-xhci"
     },
     {
-      "name": "pc-i440fx-2.6-machine",
-      "parent": "generic-pc-machine"
+      "name": "mioe3680_pci",
+      "parent": "pci-device"
     },
     {
       "name": "i82551",
@@ -1315,11 +1319,11 @@
       "parent": "pci-ide"
     },
     {
-      "name": "nvme",
-      "parent": "pci-device"
+      "name": "pc-i440fx-2.6-machine",
+      "parent": "generic-pc-machine"
     },
     {
-      "name": "vmxnet3",
+      "name": "nvme",
       "parent": "pci-device"
     },
     {
@@ -1327,7 +1331,7 @@
       "parent": "object"
     },
     {
-      "name": "mioe3680_pci",
+      "name": "vmxnet3",
       "parent": "pci-device"
     },
     {
@@ -9052,6 +9056,39 @@
       "unavailable-features": [
       ],
       "alias-of": "IvyBridge-v1",
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Server-v3",
+      "typename": "Icelake-Server-v3-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "la57",
+        "wbnoinvd",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "rdctl-no",
+        "ibrs-all",
+        "mds-no",
+        "taa-no"
+      ],
       "static": false,
       "migration-safe": true
     },
@@ -22244,7 +22281,8 @@
       "meta-type": "enum",
       "values": [
         "threads",
-        "native"
+        "native",
+        "io_uring"
       ]
     },
     {
@@ -26524,6 +26562,49 @@
         "f16c"
       ],
       "alias-of": "IvyBridge-v1",
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Server-v3",
+      "typename": "Icelake-Server-v3-x86_64-cpu",
+      "unavailable-features": [
+        "fma",
+        "pcid",
+        "x2apic",
+        "tsc-deadline",
+        "avx",
+        "f16c",
+        "avx2",
+        "invpcid",
+        "avx512f",
+        "avx512dq",
+        "rdseed",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "avx512vbmi",
+        "umip",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "spec-ctrl",
+        "arch-capabilities",
+        "ssbd",
+        "3dnowprefetch",
+        "wbnoinvd",
+        "xsavec",
+        "rdctl-no",
+        "ibrs-all",
+        "skip-l1dfl-vmentry",
+        "mds-no",
+        "pschange-mc-no",
+        "taa-no"
+      ],
       "static": false,
       "migration-safe": true
     },

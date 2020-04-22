@@ -230,10 +230,10 @@
   <flag name='fsdev.multidevs'/>
   <flag name='virtio.packed'/>
   <flag name='pcie-root-port.hotplug'/>
-  <version>4002091</version>
+  <version>4002093</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100241</microcodeVersion>
-  <package>v5.0.0-rc1</package>
+  <package>v5.0.0-rc3-8-g3119154db0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -780,6 +780,33 @@
   <cpu type='kvm' name='IvyBridge-v1' typename='IvyBridge-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='IvyBridge-IBRS' typename='IvyBridge-IBRS-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='IvyBridge' typename='IvyBridge-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Icelake-Server-v3' typename='Icelake-Server-v3-x86_64-cpu' usable='no'>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='clwb'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vbmi'/>
+    <blocker name='pku'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vaes'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='la57'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='pku'/>
+    <blocker name='rdctl-no'/>
+    <blocker name='ibrs-all'/>
+    <blocker name='mds-no'/>
+    <blocker name='taa-no'/>
+  </cpu>
   <cpu type='kvm' name='Icelake-Server-v2' typename='Icelake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='avx512f'/>
     <blocker name='avx512dq'/>
@@ -1977,6 +2004,43 @@
     <blocker name='tsc-deadline'/>
     <blocker name='avx'/>
     <blocker name='f16c'/>
+  </cpu>
+  <cpu type='tcg' name='Icelake-Server-v3' typename='Icelake-Server-v3-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='rdseed'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vbmi'/>
+    <blocker name='umip'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vaes'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='arch-capabilities'/>
+    <blocker name='ssbd'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='xsavec'/>
+    <blocker name='rdctl-no'/>
+    <blocker name='ibrs-all'/>
+    <blocker name='skip-l1dfl-vmentry'/>
+    <blocker name='mds-no'/>
+    <blocker name='pschange-mc-no'/>
+    <blocker name='taa-no'/>
   </cpu>
   <cpu type='tcg' name='Icelake-Server-v2' typename='Icelake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='fma'/>
