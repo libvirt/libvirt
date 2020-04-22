@@ -578,7 +578,7 @@ mount -t cgroup none /dev/cgroup -o devices
       typically, the namespace is given the name
       of <code>qemu</code>.  With the namespace in place, it is then
       possible to add an element <code>&lt;qemu:commandline&gt;</code>
-      under <code>driver</code>, with the following sub-elements
+      under <code>domain</code>, with the following sub-elements
       repeated as often as needed:
     </p>
       <dl>
