@@ -6695,7 +6695,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     int ret = -1;
     g_autoptr(virQEMUSaveData) data = NULL;
     virQEMUSaveHeaderPtr header;
-    virDomainDefPtr def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     int oflags = open_write ? O_RDWR : O_RDONLY;
     size_t xml_len;
     size_t cookie_len;
@@ -6809,13 +6809,12 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
 
-    *ret_def = def;
+    *ret_def = g_steal_pointer(&def);
     *ret_data = g_steal_pointer(&data);
 
     return fd;
 
  error:
-    virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
