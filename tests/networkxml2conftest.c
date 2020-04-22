@@ -16,7 +16,8 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static int
-testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr caps)
+testCompareXMLToConfFiles(const char *inxml, const char *outconf,
+                          char *outhostsfile, dnsmasqCapsPtr caps)
 {
     char *confactual = NULL;
     char *hostsfileactual = NULL;
@@ -63,6 +64,20 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     if (virTestCompareToFile(confactual, outconf) < 0)
         goto fail;
 
+    if (virFileExists(outhostsfile)) {
+        if (!hostsfileactual) {
+            VIR_TEST_DEBUG("%s: hostsfile exists but the configuration did "
+                           "not specify any host", outhostsfile);
+            goto fail;
+        } else if (virTestCompareToFile(hostsfileactual, outhostsfile) < 0) {
+            goto fail;
+        }
+    } else if (hostsfileactual) {
+        VIR_TEST_DEBUG("%s: file does not exist but actual data was expected",
+                       outhostsfile);
+        goto fail;
+    }
+
     ret = 0;
 
  fail:
@@ -88,14 +103,17 @@ testCompareXMLToConfHelper(const void *data)
     const testInfo *info = data;
     char *inxml = NULL;
     char *outconf = NULL;
+    char *outhostsfile = NULL;
 
     inxml = g_strdup_printf("%s/networkxml2confdata/%s.xml", abs_srcdir, info->name);
     outconf = g_strdup_printf("%s/networkxml2confdata/%s.conf", abs_srcdir, info->name);
+    outhostsfile = g_strdup_printf("%s/networkxml2confdata/%s.hostsfile", abs_srcdir, info->name);
 
-    result = testCompareXMLToConfFiles(inxml, outconf, info->caps);
+    result = testCompareXMLToConfFiles(inxml, outconf, outhostsfile, info->caps);
 
     VIR_FREE(inxml);
     VIR_FREE(outconf);
+    VIR_FREE(outhostsfile);
 
     return result;
 }
@@ -145,6 +163,10 @@ mymain(void)
     DO_TEST("dhcp6host-routed-network", dhcpv6);
     DO_TEST("ptr-domains-auto", dhcpv6);
     DO_TEST("dnsmasq-options", dhcpv6);
+    DO_TEST("leasetime-seconds", full);
+    DO_TEST("leasetime-minutes", full);
+    DO_TEST("leasetime-hours", full);
+    DO_TEST("leasetime-infinite", full);
 
     virObjectUnref(dhcpv6);
     virObjectUnref(full);

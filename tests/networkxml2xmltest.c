@@ -160,6 +160,10 @@ mymain(void)
     DO_TEST("metadata");
     DO_TEST("set-mtu");
     DO_TEST("dnsmasq-options");
+    DO_TEST("leasetime-seconds");
+    DO_TEST("leasetime-minutes");
+    DO_TEST("leasetime-hours");
+    DO_TEST("leasetime-infinite");
     DO_TEST("isolated-ports");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
