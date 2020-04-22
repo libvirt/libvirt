@@ -7553,20 +7553,20 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
                                   bool try_all,
                                   int ndisks)
 {
-    const char *qemuimgarg[] = { NULL, "snapshot", NULL, NULL, NULL, NULL };
+    const char *qemuimgbin;
     size_t i;
     bool skipped = false;
 
-    qemuimgarg[0] = qemuFindQemuImgBinary(driver);
-    if (qemuimgarg[0] == NULL) {
+    qemuimgbin = qemuFindQemuImgBinary(driver);
+    if (qemuimgbin == NULL) {
         /* qemuFindQemuImgBinary set the error */
         return -1;
     }
 
-    qemuimgarg[2] = op;
-    qemuimgarg[3] = name;
-
     for (i = 0; i < ndisks; i++) {
+        g_autoptr(virCommand) cmd = virCommandNewArgList(qemuimgbin, "snapshot",
+                                                         op, name, NULL);
+
         /* FIXME: we also need to handle LVM here */
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
             int format = virDomainDiskGetFormat(def->disks[i]);
@@ -7593,9 +7593,9 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
                 return -1;
             }
 
-            qemuimgarg[4] = virDomainDiskGetSource(def->disks[i]);
+            virCommandAddArg(cmd, virDomainDiskGetSource(def->disks[i]));
 
-            if (virRun(qemuimgarg, NULL) < 0) {
+            if (virCommandRun(cmd, NULL) < 0) {
                 if (try_all) {
                     VIR_WARN("skipping snapshot action on %s",
                              def->disks[i]->dst);

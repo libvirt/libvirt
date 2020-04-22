@@ -1423,10 +1423,11 @@ lxcDomainDestroy(virDomainPtr dom)
 
 static int lxcCheckNetNsSupport(void)
 {
-    const char *argv[] = {"ip", "link", "set", "lo", "netns", "-1", NULL};
+    g_autoptr(virCommand) cmd = virCommandNewArgList("ip", "link", "set", "lo",
+                                                     "netns", "-1", NULL);
     int ip_rc;
 
-    if (virRun(argv, &ip_rc) < 0 || ip_rc == 255)
+    if (virCommandRun(cmd, &ip_rc) < 0 || ip_rc == 255)
         return 0;
 
     if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_NET) < 0)

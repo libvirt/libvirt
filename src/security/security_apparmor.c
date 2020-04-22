@@ -203,15 +203,10 @@ load_profile(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 static int
 remove_profile(const char *profile)
 {
-    int rc = -1;
-    const char * const argv[] = {
-        VIRT_AA_HELPER, "-D", "-u", profile, NULL
-    };
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VIRT_AA_HELPER, "-D", "-u",
+                                                     profile, NULL);
 
-    if (virRun(argv, NULL) == 0)
-        rc = 0;
-
-    return rc;
+    return virCommandRun(cmd, NULL);
 }
 
 static char *

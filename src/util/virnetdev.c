@@ -508,6 +508,7 @@ int virNetDevSetNamespace(const char *ifname, pid_t pidInNs)
     g_autofree char *pid = NULL;
     g_autofree char *phy = NULL;
     g_autofree char *phy_path = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int len;
 
     pid = g_strdup_printf("%lld", (long long) pidInNs);
@@ -518,27 +519,18 @@ int virNetDevSetNamespace(const char *ifname, pid_t pidInNs)
 
     if ((len = virFileReadAllQuiet(phy_path, 1024, &phy)) <= 0) {
         /* Not a wireless device. */
-        const char *argv[] = {
-            "ip", "link", "set", ifname, "netns", NULL, NULL
-        };
-
-        argv[5] = pid;
-        if (virRun(argv, NULL) < 0)
-            return -1;
-
+        cmd = virCommandNewArgList("ip", "link",
+                                   "set", ifname, "netns", pid, NULL);
     } else {
-        const char *argv[] = {
-            "iw", "phy", NULL, "set", "netns", NULL, NULL
-        };
-
         /* Remove a line break. */
         phy[len - 1] = '\0';
 
-        argv[2] = phy;
-        argv[5] = pid;
-        if (virRun(argv, NULL) < 0)
-            return -1;
+        cmd = virCommandNewArgList("iw", "phy", phy,
+                                   "set", "netns", pid, NULL);
     }
+
+    if (virCommandRun(cmd, NULL) < 0)
+        return -1;
 
     return 0;
 }
