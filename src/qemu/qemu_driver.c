@@ -6691,7 +6691,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                         bool open_write,
                         bool unlink_corrupt)
 {
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
     int ret = -1;
     g_autoptr(virQEMUSaveData) data = NULL;
     virQEMUSaveHeaderPtr header;
@@ -6723,7 +6723,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     header = &data->header;
     if (saferead(fd, header, sizeof(*header)) != sizeof(*header)) {
         if (unlink_corrupt) {
-            if (VIR_CLOSE(fd) < 0 || unlink(path) < 0) {
+            if (unlink(path) < 0) {
                 virReportSystemError(errno,
                                      _("cannot remove corrupt file: %s"),
                                      path);
@@ -6744,7 +6744,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                    sizeof(header->magic)) == 0) {
             msg = _("save image is incomplete");
             if (unlink_corrupt) {
-                if (VIR_CLOSE(fd) < 0 || unlink(path) < 0) {
+                if (unlink(path) < 0) {
                     virReportSystemError(errno,
                                          _("cannot remove corrupt file: %s"),
                                          path);
@@ -6812,10 +6812,12 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     *ret_def = g_steal_pointer(&def);
     *ret_data = g_steal_pointer(&data);
 
-    return fd;
+    ret = fd;
+    fd = -1;
+
+    return ret;
 
  error:
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
