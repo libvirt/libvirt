@@ -763,7 +763,8 @@ mymain(void)
                    "human-monitor-command", HMP(""));
     DO_TEST_DETACH("base-live", "disk-scsi-multipath", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-0") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "human-monitor-command", HMP(""),
+                   "object-del", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "qemu-agent", false, true,
                    "chardev-add", QMP_OK,
