@@ -900,6 +900,7 @@ sc_flake8:
 sc_prohibit_exit_in_tests:
 	@prohibit='\<exit *\(' \
 	in_vc_files='tests/.*\.c$$' \
+	exclude='exempt from syntax-check' \
 	halt='use return, not exit(), in tests' \
 	  $(_sc_search_regexp)
 
