@@ -268,6 +268,7 @@ subdir('security')
 subdir('storage')
 
 subdir('bhyve')
+subdir('jailhouse')
 subdir('esx')
 subdir('hyperv')
 subdir('libxl')

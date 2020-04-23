@@ -17,6 +17,7 @@
 %define with_lxc           0%{!?_without_lxc:1}
 %define with_libxl         0%{!?_without_libxl:1}
 %define with_vbox          0%{!?_without_vbox:1}
+%define with_jailhouse     0%{!?_without_jailhouse:1}
 
 %define with_qemu_tcg      %{with_qemu}
 
@@ -1043,6 +1044,12 @@ exit 1
     %define arg_vmware -Ddriver_vmware=enabled
 %else
     %define arg_vmware -Ddriver_vmware=disabled
+%endif
+
+%if %{with_jailhouse}
+    %define arg_jailhouse --with-jailhouse
+%else
+    %define arg_jailhouse --without-jailhouse
 %endif
 
 %if %{with_storage_rbd}

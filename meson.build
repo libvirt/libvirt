@@ -1889,6 +1889,10 @@ elif get_option('secdriver_selinux').enabled()
   error('You must install the libselinux development package in order to compile libvirt.')
 endif
 
+if get_option('driver_jailhouse').enabled()
+  conf.set('WITH_JAILHOUSE', 1)
+endif
+
 if conf.has('WITH_QEMU') or conf.has('WITH_LXC') or conf.has('WITH_NETWORK')
   conf.set('WITH_BRIDGE', 1)
 endif

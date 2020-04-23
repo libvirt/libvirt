@@ -1,0 +1,21 @@
+# vim: filetype=automake
+
+JAILHOUSE_DRIVER_SOURCES = \
+	jailhouse/jailhouse_driver.c \
+	jailhouse/jailhouse_driver.h \
+	$(NULL)
+
+
+DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(JAILHOUSE_DRIVER_SOURCES))
+
+EXTRA_DIST += $(JAILHOUSE_DRIVER_SOURCES)
+
+if WITH_JAILHOUSE
+noinst_LTLIBRARIES += libvirt_driver_jailhouse.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_jailhouse.la
+libvirt_driver_jailhouse_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_jailhouse_la_SOURCES = $(JAILHOUSE_DRIVER_SOURCES)
+endif WITH_JAILHOUSE

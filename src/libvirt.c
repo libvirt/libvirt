@@ -75,6 +75,9 @@
 #ifdef WITH_BHYVE
 # include "bhyve/bhyve_driver.h"
 #endif
+#ifdef WITH_JAILHOUSE
+# include "jailhouse/jailhouse_driver.h"
+#endif
 #include "access/viraccessmanager.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -269,6 +272,10 @@ virGlobalInit(void)
 #endif
 #ifdef WITH_HYPERV
     if (hypervRegister() == -1)
+        goto error;
+#endif
+#ifdef WITH_JAILHOUSE
+    if (jailhouseRegister() == -1)
         goto error;
 #endif
 #ifdef WITH_REMOTE
@@ -1003,6 +1010,9 @@ virConnectOpenInternal(const char *name,
 #endif
 #ifndef WITH_VZ
              STRCASEEQ(ret->uri->scheme, "parallels") ||
+#endif
+#ifndef WITH_JAILHOUSE
+             STRCASEEQ(ret->uri->scheme, "jailhouse") ||
 #endif
              false)) {
             virReportErrorHelper(VIR_FROM_NONE, VIR_ERR_CONFIG_UNSUPPORTED,
