@@ -715,8 +715,7 @@ mymain(void)
                    "human-monitor-command", HMP("OK\\r\\n"),
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-virtio", true, true,
-                   "device_del", QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "device_del", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-virtio", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
                    "human-monitor-command", HMP(""));
@@ -725,8 +724,7 @@ mymain(void)
                    "human-monitor-command", HMP("OK\\r\\n"),
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-usb", true, true,
-                   "device_del", QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "device_del", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-usb", false, false,
                    "device_del", QMP_DEVICE_DELETED("usb-disk16") QMP_OK,
                    "human-monitor-command", HMP(""));
@@ -735,8 +733,7 @@ mymain(void)
                    "human-monitor-command", HMP("OK\\r\\n"),
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-scsi", true, true,
-                   "device_del", QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "device_del", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-scsi", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-5") QMP_OK,
                    "human-monitor-command", HMP(""));
