@@ -58,7 +58,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
                                  "except-interface=lo\n")))
         goto fail;
     VIR_FREE(confactual);
-    actual = g_steal_pointer(&tmp);
+    confactual = g_steal_pointer(&tmp);
 #endif
 
     if (virTestCompareToFile(confactual, outconf) < 0)
