@@ -99,6 +99,16 @@
           <code>io='io_uring'</code> of disk XML.
         </description>
       </change>
+      <change>
+        <summary>
+          Lease time option included for network DHCP settings
+        </summary>
+        <description>
+          Users can now configure expiry time for leases for networks where
+          libvirt manages DHCP. The time can be specified for whole range
+          and/or fine tuned per individual host.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
