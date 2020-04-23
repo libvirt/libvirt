@@ -47,7 +47,7 @@ int qemuMonitorTestAddInvalidCommandResponse(qemuMonitorTestPtr test,
 
 void *qemuMonitorTestItemGetPrivateData(qemuMonitorTestItemPtr item);
 
-int qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...);
+int qemuMonitorTestAddErrorResponse(qemuMonitorTestPtr test, const char *errmsg, ...);
 
 int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                            const char *command_name,

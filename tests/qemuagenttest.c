@@ -413,7 +413,7 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
         return -1;
 
     if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
-        ret = qemuMonitorReportError(test, "Missing command name in %s", cmdstr);
+        ret = qemuMonitorTestAddErrorResponse(test, "Missing command name in %s", cmdstr);
         goto cleanup;
     }
 
@@ -424,20 +424,20 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
     }
 
     if (!(args = virJSONValueObjectGet(val, "arguments"))) {
-        ret = qemuMonitorReportError(test,
-                                     "Missing arguments section");
+        ret = qemuMonitorTestAddErrorResponse(test,
+                                              "Missing arguments section");
         goto cleanup;
     }
 
     if (!(mode = virJSONValueObjectGetString(args, "mode"))) {
-        ret = qemuMonitorReportError(test, "Missing shutdown mode");
+        ret = qemuMonitorTestAddErrorResponse(test, "Missing shutdown mode");
         goto cleanup;
     }
 
     if (STRNEQ(mode, data->mode)) {
-        ret = qemuMonitorReportError(test,
-                                     "expected shutdown mode '%s' got '%s'",
-                                     data->mode, mode);
+        ret = qemuMonitorTestAddErrorResponse(test,
+                                              "expected shutdown mode '%s' got '%s'",
+                                              data->mode, mode);
         goto cleanup;
     }
 
