@@ -886,7 +886,6 @@ mymain(void)
     DO_TEST_CPU_INDIVIDUAL("x86-modern-individual-add", "7", true, true, false);
     DO_TEST_CPU_INDIVIDUAL("x86-modern-individual-add", "6,7", true, true, true);
     DO_TEST_CPU_INDIVIDUAL("x86-modern-individual-add", "7", false, true, true);
-    DO_TEST_CPU_INDIVIDUAL("x86-modern-individual-add", "7", true, false, true);
 
     DO_TEST_CPU_INDIVIDUAL("ppc64-modern-individual", "16-23", true, true, false);
     DO_TEST_CPU_INDIVIDUAL("ppc64-modern-individual", "16-22", true, true, true);
