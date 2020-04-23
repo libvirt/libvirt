@@ -471,7 +471,8 @@ testQemuAgentShutdown(const void *data)
     priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
     priv.mode = "halt";
 
-    if (qemuMonitorTestAddHandler(test, qemuAgentShutdownTestMonitorHandler,
+    if (qemuMonitorTestAddHandler(test, "guest-shutdown",
+                                  qemuAgentShutdownTestMonitorHandler,
                                   &priv, NULL) < 0)
         goto cleanup;
 
@@ -485,7 +486,8 @@ testQemuAgentShutdown(const void *data)
     priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
     priv.mode = "powerdown";
 
-    if (qemuMonitorTestAddHandler(test, qemuAgentShutdownTestMonitorHandler,
+    if (qemuMonitorTestAddHandler(test, "guest-shutdown",
+                                  qemuAgentShutdownTestMonitorHandler,
                                   &priv, NULL) < 0)
         goto cleanup;
 
@@ -499,7 +501,9 @@ testQemuAgentShutdown(const void *data)
     priv.event = QEMU_AGENT_EVENT_RESET;
     priv.mode = "reboot";
 
-    if (qemuMonitorTestAddHandler(test, qemuAgentShutdownTestMonitorHandler,
+    if (qemuMonitorTestAddHandler(test,
+                                  "guest-shutdown",
+                                  qemuAgentShutdownTestMonitorHandler,
                                   &priv, NULL) < 0)
         goto cleanup;
 
@@ -720,7 +724,8 @@ testQemuAgentTimeout(const void *data)
         goto cleanup;
     }
 
-    if (qemuMonitorTestAddHandler(test, qemuAgentTimeoutTestMonitorHandler,
+    if (qemuMonitorTestAddHandler(test, NULL,
+                                  qemuAgentTimeoutTestMonitorHandler,
                                   NULL, NULL) < 0)
         goto cleanup;
 
@@ -734,7 +739,9 @@ testQemuAgentTimeout(const void *data)
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         goto cleanup;
 
-    if (qemuMonitorTestAddHandler(test, qemuAgentTimeoutTestMonitorHandler,
+    if (qemuMonitorTestAddHandler(test,
+                                  NULL,
+                                  qemuAgentTimeoutTestMonitorHandler,
                                   NULL, NULL) < 0)
         goto cleanup;
 

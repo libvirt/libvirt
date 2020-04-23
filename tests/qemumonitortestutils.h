@@ -34,6 +34,7 @@ typedef int (*qemuMonitorTestResponseCallback)(qemuMonitorTestPtr test,
                                                const char *message);
 
 int qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
+                              const char *identifier,
                               qemuMonitorTestResponseCallback cb,
                               void *opaque,
                               virFreeCallback freecb);

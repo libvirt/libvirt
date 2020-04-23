@@ -43,6 +43,7 @@
 VIR_LOG_INIT("tests.qemumonitortestutils");
 
 struct _qemuMonitorTestItem {
+    char *identifier;
     qemuMonitorTestResponseCallback cb;
     void *opaque;
     virFreeCallback freecb;
@@ -87,6 +88,8 @@ qemuMonitorTestItemFree(qemuMonitorTestItemPtr item)
 {
     if (!item)
         return;
+
+    g_free(item->identifier);
 
     if (item->freecb)
         (item->freecb)(item->opaque);
@@ -434,6 +437,7 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
 
 int
 qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
+                          const char *identifier,
                           qemuMonitorTestResponseCallback cb,
                           void *opaque,
                           virFreeCallback freecb)
@@ -443,6 +447,7 @@ qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
     if (VIR_ALLOC(item) < 0)
         goto error;
 
+    item->identifier = g_strdup(identifier);
     item->cb = cb;
     item->freecb = freecb;
     item->opaque = opaque;
@@ -615,6 +620,7 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
     data->response = g_strdup(response);
 
     return qemuMonitorTestAddHandler(test,
+                                     command_name,
                                      qemuMonitorTestProcessCommandDefault,
                                      data, qemuMonitorTestHandlerDataFree);
 }
@@ -698,6 +704,7 @@ qemuMonitorTestAddItemVerbatim(qemuMonitorTestPtr test,
         goto error;
 
     return qemuMonitorTestAddHandler(test,
+                                     command,
                                      qemuMonitorTestProcessCommandVerbatim,
                                      data, qemuMonitorTestHandlerDataFree);
 
@@ -764,6 +771,7 @@ qemuMonitorTestAddAgentSyncResponse(qemuMonitorTestPtr test)
     }
 
     return qemuMonitorTestAddHandler(test,
+                                     "agent-sync",
                                      qemuMonitorTestProcessGuestAgentSync,
                                      NULL, NULL);
 }
@@ -882,6 +890,7 @@ qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
     va_end(args);
 
     return qemuMonitorTestAddHandler(test,
+                                     cmdname,
                                      qemuMonitorTestProcessCommandWithArgs,
                                      data, qemuMonitorTestHandlerDataFree);
 
@@ -986,6 +995,7 @@ qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
     }
 
     return qemuMonitorTestAddHandler(test,
+                                     cmdname,
                                      qemuMonitorTestProcessCommandWithArgStr,
                                      data, qemuMonitorTestHandlerDataFree);
 
