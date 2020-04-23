@@ -3034,6 +3034,72 @@ mymain(void)
                         QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
 
     DO_TEST_CAPS_LATEST("virtio-options");
+    DO_TEST_CAPS_LATEST("virtio-options-controller-iommu");
+    DO_TEST_CAPS_LATEST("virtio-options-disk-iommu");
+    DO_TEST_CAPS_LATEST("virtio-options-fs-iommu");
+    DO_TEST_CAPS_LATEST("virtio-options-input-iommu");
+    DO_TEST_CAPS_LATEST("virtio-options-memballoon-iommu");
+    DO_TEST_CAPS_LATEST("virtio-options-net-iommu");
+    DO_TEST_CAPS_LATEST("virtio-options-rng-iommu");
+    DO_TEST_CAPS_LATEST("virtio-options-video-iommu");
+    DO_TEST_CAPS_LATEST("virtio-options-controller-ats");
+    DO_TEST_CAPS_LATEST("virtio-options-disk-ats");
+    DO_TEST_CAPS_LATEST("virtio-options-fs-ats");
+    DO_TEST_CAPS_LATEST("virtio-options-input-ats");
+    DO_TEST_CAPS_LATEST("virtio-options-memballoon-ats");
+    DO_TEST_CAPS_LATEST("virtio-options-net-ats");
+    DO_TEST_CAPS_LATEST("virtio-options-rng-ats");
+    DO_TEST_CAPS_LATEST("virtio-options-video-ats");
+    DO_TEST_CAPS_LATEST("virtio-options-controller-packed");
+    DO_TEST_CAPS_LATEST("virtio-options-disk-packed");
+    DO_TEST_CAPS_LATEST("virtio-options-fs-packed");
+    DO_TEST_CAPS_LATEST("virtio-options-input-packed");
+    DO_TEST_CAPS_LATEST("virtio-options-memballoon-packed");
+    DO_TEST_CAPS_LATEST("virtio-options-net-packed");
+    DO_TEST_CAPS_LATEST("virtio-options-rng-packed");
+    DO_TEST_CAPS_LATEST("virtio-options-video-packed");
+    DO_TEST_FAILURE("virtio-options-controller-iommu", QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_FAILURE("virtio-options-disk-iommu", NONE);
+    DO_TEST_FAILURE("virtio-options-fs-iommu", NONE);
+    DO_TEST_FAILURE("virtio-options-input-iommu", QEMU_CAPS_VIRTIO_MOUSE,
+                    QEMU_CAPS_VIRTIO_KEYBOARD);
+    DO_TEST_FAILURE("virtio-options-memballoon-iommu", NONE);
+    DO_TEST_FAILURE("virtio-options-net-iommu", NONE);
+    DO_TEST_FAILURE("virtio-options-rng-iommu", QEMU_CAPS_DEVICE_VIRTIO_RNG,
+                    QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST_FAILURE("virtio-options-video-iommu", QEMU_CAPS_DEVICE_VIRTIO_GPU,
+                    QEMU_CAPS_DEVICE_VIRTIO_GPU,
+                    QEMU_CAPS_VIRTIO_GPU_VIRGL,
+                    QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+                    QEMU_CAPS_DEVICE_VHOST_USER_GPU);
+    DO_TEST_FAILURE("virtio-options-controller-ats", QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_FAILURE("virtio-options-disk-ats", NONE);
+    DO_TEST_FAILURE("virtio-options-fs-ats", NONE);
+    DO_TEST_FAILURE("virtio-options-input-ats", QEMU_CAPS_VIRTIO_MOUSE,
+                    QEMU_CAPS_VIRTIO_KEYBOARD);
+    DO_TEST_FAILURE("virtio-options-memballoon-ats", NONE);
+    DO_TEST_FAILURE("virtio-options-net-ats", NONE);
+    DO_TEST_FAILURE("virtio-options-rng-ats", QEMU_CAPS_DEVICE_VIRTIO_RNG,
+                    QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST_FAILURE("virtio-options-video-ats", QEMU_CAPS_DEVICE_VIRTIO_GPU,
+                    QEMU_CAPS_DEVICE_VIRTIO_GPU,
+                    QEMU_CAPS_VIRTIO_GPU_VIRGL,
+                    QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+                    QEMU_CAPS_DEVICE_VHOST_USER_GPU);
+    DO_TEST_FAILURE("virtio-options-controller-packed", QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_FAILURE("virtio-options-disk-packed", NONE);
+    DO_TEST_FAILURE("virtio-options-fs-packed", NONE);
+    DO_TEST_FAILURE("virtio-options-input-packed", QEMU_CAPS_VIRTIO_MOUSE,
+                    QEMU_CAPS_VIRTIO_KEYBOARD);
+    DO_TEST_FAILURE("virtio-options-memballoon-packed", NONE);
+    DO_TEST_FAILURE("virtio-options-net-packed", NONE);
+    DO_TEST_FAILURE("virtio-options-rng-packed", QEMU_CAPS_DEVICE_VIRTIO_RNG,
+                    QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST_FAILURE("virtio-options-video-packed", QEMU_CAPS_DEVICE_VIRTIO_GPU,
+                    QEMU_CAPS_DEVICE_VIRTIO_GPU,
+                    QEMU_CAPS_VIRTIO_GPU_VIRGL,
+                    QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+                    QEMU_CAPS_DEVICE_VHOST_USER_GPU);
 
     DO_TEST("fd-memory-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);
