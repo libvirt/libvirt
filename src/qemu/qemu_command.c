@@ -588,39 +588,20 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
 
 static int
 qemuBuildVirtioOptionsStr(virBufferPtr buf,
-                          virDomainVirtioOptionsPtr virtio,
-                          virQEMUCapsPtr qemuCaps)
+                          virDomainVirtioOptionsPtr virtio)
 {
     if (!virtio)
         return 0;
 
     if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the iommu setting is not supported "
-                             "with this QEMU binary"));
-            return -1;
-        }
         virBufferAsprintf(buf, ",iommu_platform=%s",
                           virTristateSwitchTypeToString(virtio->iommu));
     }
     if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_ATS)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the ats setting is not supported with this "
-                             "QEMU binary"));
-            return -1;
-        }
         virBufferAsprintf(buf, ",ats=%s",
                           virTristateSwitchTypeToString(virtio->ats));
     }
     if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PACKED_QUEUES)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the packed setting is not supported with this "
-                             "QEMU binary"));
-            return -1;
-        }
         virBufferAsprintf(buf, ",packed=%s",
                           virTristateSwitchTypeToString(virtio->packed));
     }
@@ -2158,7 +2139,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             virBufferAsprintf(&opt, ",num-queues=%u", disk->queues);
         }
 
-        if (qemuBuildVirtioOptionsStr(&opt, disk->virtio, qemuCaps) < 0)
+        if (qemuBuildVirtioOptionsStr(&opt, disk->virtio) < 0)
             return NULL;
 
         if (qemuBuildDeviceAddressStr(&opt, def, &disk->info, qemuCaps) < 0)
@@ -2623,7 +2604,7 @@ qemuBuildVHostUserFsCommandLine(virCommandPtr cmd,
         virBufferAsprintf(&opt, ",queue-size=%llu", fs->queue_size);
     virBufferAddLit(&opt, ",tag=");
     virQEMUBuildBufferEscapeComma(&opt, fs->dst);
-    if (qemuBuildVirtioOptionsStr(&opt, fs->virtio, priv->qemuCaps) < 0)
+    if (qemuBuildVirtioOptionsStr(&opt, fs->virtio) < 0)
         return -1;
 
     if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, priv->qemuCaps) < 0)
@@ -2693,7 +2674,7 @@ qemuBuildFSDevStr(const virDomainDef *def,
     virBufferAddLit(&opt, ",mount_tag=");
     virQEMUBuildBufferEscapeComma(&opt, fs->dst);
 
-    if (qemuBuildVirtioOptionsStr(&opt, fs->virtio, qemuCaps) < 0)
+    if (qemuBuildVirtioOptionsStr(&opt, fs->virtio) < 0)
         return NULL;
 
     if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, qemuCaps) < 0)
@@ -2925,7 +2906,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                                   def->iothread);
             }
 
-            if (qemuBuildVirtioOptionsStr(&buf, def->virtio, qemuCaps) < 0)
+            if (qemuBuildVirtioOptionsStr(&buf, def->virtio) < 0)
                 return -1;
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
@@ -2972,7 +2953,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             virBufferAsprintf(&buf, ",vectors=%d",
                               def->opts.vioserial.vectors);
         }
-        if (qemuBuildVirtioOptionsStr(&buf, def->virtio, qemuCaps) < 0)
+        if (qemuBuildVirtioOptionsStr(&buf, def->virtio) < 0)
             return -1;
         break;
 
@@ -3924,7 +3905,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     if (bootindex)
         virBufferAsprintf(&buf, ",bootindex=%u", bootindex);
     if (usingVirtio &&
-        qemuBuildVirtioOptionsStr(&buf, net->virtio, qemuCaps) < 0)
+        qemuBuildVirtioOptionsStr(&buf, net->virtio) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -4166,7 +4147,7 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
                           virTristateSwitchTypeToString(def->memballoon->autodeflate));
     }
 
-    if (qemuBuildVirtioOptionsStr(&buf, def->memballoon->virtio, qemuCaps) < 0)
+    if (qemuBuildVirtioOptionsStr(&buf, def->memballoon->virtio) < 0)
         return -1;
 
     if (qemuCommandAddExtDevice(cmd, &def->memballoon->info) < 0)
@@ -4258,7 +4239,7 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildVirtioOptionsStr(&buf, dev->virtio, qemuCaps) < 0)
+    if (qemuBuildVirtioOptionsStr(&buf, dev->virtio) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -4569,7 +4550,7 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     if (qemuBuildDeviceAddressStr(&buf, def, &video->info, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildVirtioOptionsStr(&buf, video->virtio, qemuCaps) < 0)
+    if (qemuBuildVirtioOptionsStr(&buf, video->virtio) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -5785,7 +5766,7 @@ qemuBuildRNGDevStr(const virDomainDef *def,
             virBufferAddLit(&buf, ",period=1000");
     }
 
-    if (qemuBuildVirtioOptionsStr(&buf, dev->virtio, qemuCaps) < 0)
+    if (qemuBuildVirtioOptionsStr(&buf, dev->virtio) < 0)
         return NULL;
 
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)

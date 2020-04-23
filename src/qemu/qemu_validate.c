@@ -1079,6 +1079,40 @@ qemuValidateNetSupportsCoalesce(virDomainNetType type)
 
 
 static int
+qemuValidateDomainVirtioOptions(const virDomainVirtioOptions *virtio,
+                                virQEMUCapsPtr qemuCaps)
+{
+    if (!virtio)
+        return 0;
+
+    if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("the iommu setting is not supported "
+                         "with this QEMU binary"));
+        return -1;
+    }
+
+    if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_ATS)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("the ats setting is not supported with this "
+                         "QEMU binary"));
+        return -1;
+    }
+
+    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PACKED_QUEUES)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the packed setting is not supported with this "
+                             "QEMU binary"));
+            return -1;
+        }
+    return 0;
+}
+
+
+static int
 qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                                    virQEMUCapsPtr qemuCaps)
 {
@@ -1155,6 +1189,8 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                            _("tx_queue_size has to be a power of two"));
             return -1;
         }
+        if (qemuValidateDomainVirtioOptions(net->virtio, qemuCaps) < 0)
+            return -1;
     }
 
     if (net->mtu &&
@@ -1502,10 +1538,13 @@ qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
 
 static int
 qemuValidateDomainRNGDef(const virDomainRNGDef *def,
-                         virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
+                         virQEMUCapsPtr qemuCaps)
 {
     if (def->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
         qemuValidateDomainChrSourceDef(def->source.chardev, qemuCaps) < 0)
+        return -1;
+
+    if (qemuValidateDomainVirtioOptions(def->virtio, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -1851,6 +1890,9 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
         }
     }
 
+    if (qemuValidateDomainVirtioOptions(video->virtio, qemuCaps) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -1947,6 +1989,11 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (qemuDomainValidateStorageSource(n, qemuCaps) < 0)
             return -1;
+    }
+
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO &&
+        qemuValidateDomainVirtioOptions(disk->virtio, qemuCaps) < 0) {
+        return -1;
     }
 
     return 0;
@@ -2179,7 +2226,8 @@ virValidateControllerPCIModelNameToQEMUCaps(int modelName)
 
 
 static int
-qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *controller)
+qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *controller,
+                                                virQEMUCapsPtr qemuCaps)
 {
     if (!(controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
           (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI ||
@@ -2210,6 +2258,13 @@ qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *co
                            _("'iothread' is only supported for virtio-scsi controller"));
             return -1;
         }
+        if (qemuValidateDomainVirtioOptions(controller->virtio, qemuCaps) < 0)
+            return -1;
+    }
+
+    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL &&
+        qemuValidateDomainVirtioOptions(controller->virtio, qemuCaps) < 0) {
+        return -1;
     }
 
     return 0;
@@ -2752,7 +2807,7 @@ qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
         !qemuValidateCheckSCSIControllerModel(qemuCaps, controller->model))
         return -1;
 
-    if (qemuValidateDomainDeviceDefControllerAttributes(controller) < 0)
+    if (qemuValidateDomainDeviceDefControllerAttributes(controller, qemuCaps) < 0)
         return -1;
 
     switch ((virDomainControllerType)controller->type) {
@@ -3089,6 +3144,9 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
         return -1;
     }
 
+    if (qemuValidateDomainVirtioOptions(fs->virtio, qemuCaps) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -3357,6 +3415,9 @@ qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
         return -1;
     }
 
+    if (qemuValidateDomainVirtioOptions(input->virtio, qemuCaps) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -3385,6 +3446,9 @@ qemuValidateDomainDeviceDefMemballoon(const virDomainMemballoonDef *memballoon,
                        _("deflate-on-oom is not supported by this QEMU binary"));
         return -1;
     }
+
+    if (qemuValidateDomainVirtioOptions(memballoon->virtio, qemuCaps) < 0)
+        return -1;
 
     return 0;
 }
