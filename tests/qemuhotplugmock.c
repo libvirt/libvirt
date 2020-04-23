@@ -45,8 +45,8 @@ qemuDomainGetUnplugTimeout(virDomainObjPtr vm)
      * timeout in case of PSeries guest to be consistent with the
      * original logic. */
     if (qemuDomainIsPSeries(vm->def))
-        return 200;
-    return 100;
+        return 20;
+    return 10;
 }
 
 
