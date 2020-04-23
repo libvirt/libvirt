@@ -482,6 +482,8 @@ cpuTestMakeQEMUCaps(const struct data *data)
     if (!(testMon = qemuMonitorTestNewFromFile(json, driver.xmlopt, true)))
         goto error;
 
+    qemuMonitorTestAllowUnusedCommands(testMon);
+
     cpu = virCPUDefNew();
 
     cpu->model = g_strdup("host");

@@ -796,6 +796,8 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
     if (!(data.test = qemuMonitorTestNewSchema(xmlopt, schema)))
         goto cleanup;
 
+    qemuMonitorTestAllowUnusedCommands(data.test);
+
     if (qemuMonitorTestAddItemExpect(data.test, "chardev-add",
                                      expectargs, true, jsonreply) < 0)
         goto cleanup;

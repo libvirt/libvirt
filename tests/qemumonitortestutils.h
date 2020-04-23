@@ -50,6 +50,8 @@ void *qemuMonitorTestItemGetPrivateData(qemuMonitorTestItemPtr item);
 
 int qemuMonitorTestAddErrorResponse(qemuMonitorTestPtr test, const char *errmsg, ...);
 
+void qemuMonitorTestAllowUnusedCommands(qemuMonitorTestPtr test);
+
 int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                            const char *command_name,
                            const char *response);

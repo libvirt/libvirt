@@ -57,6 +57,8 @@ struct _qemuMonitorTest {
     bool running;
     bool started;
 
+    bool allowUnusedCommands;
+
     char *incoming;
     size_t incomingLength;
     size_t incomingCapacity;
@@ -421,14 +423,26 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
     VIR_FREE(test->incoming);
     VIR_FREE(test->outgoing);
 
-    for (i = 0; i < test->nitems; i++)
+    for (i = 0; i < test->nitems; i++) {
+        if (!test->allowUnusedCommands) {
+            g_fprintf(stderr,
+                      "\nunused test monitor item '%s'",
+                      NULLSTR(test->items[i]->identifier));
+        }
+
         qemuMonitorTestItemFree(test->items[i]);
+    }
     VIR_FREE(test->items);
 
     if (test->tmpdir && rmdir(test->tmpdir) < 0)
         VIR_WARN("Failed to remove tempdir: %s", g_strerror(errno));
 
     VIR_FREE(test->tmpdir);
+
+    if (!test->allowUnusedCommands &&
+        test->nitems != 0) {
+        qemuMonitorTestError("unused test monitor items are not allowed for this test\n");
+    }
 
     virMutexDestroy(&test->lock);
     VIR_FREE(test);
@@ -1285,6 +1299,21 @@ qemuMonitorTestNewFromFile(const char *fileName,
     qemuMonitorTestFree(test);
     test = NULL;
     goto cleanup;
+}
+
+
+/**
+ * qemuMonitorTestAllowUnusedCommands:
+ * @test: test monitor object
+ *
+ * By default all test items/commands must be used by the test. This function
+ * allows to override the requirement for individual tests e.g. if it's necessary
+ * to test some negative scenarios which would not use all commands.
+ */
+void
+qemuMonitorTestAllowUnusedCommands(qemuMonitorTestPtr test)
+{
+    test->allowUnusedCommands = true;
 }
 
 

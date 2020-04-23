@@ -453,6 +453,8 @@ testQemuHotplugCpuPrepare(const char *test,
                                                      &driver, data->vm, qmpschema)))
         goto error;
 
+    qemuMonitorTestAllowUnusedCommands(data->mon);
+
     priv->mon = qemuMonitorTestGetMonitor(data->mon);
     virObjectUnlock(priv->mon);
 
