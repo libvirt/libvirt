@@ -1806,13 +1806,6 @@ virSecuritySELinuxRestoreImageLabelInt(virSecurityManagerPtr mgr,
     if (virSecuritySELinuxRestoreImageLabelSingle(mgr, def, src, migrated) < 0)
         return -1;
 
-    if (src->externalDataStore &&
-        virSecuritySELinuxRestoreImageLabelSingle(mgr,
-                                                  def,
-                                                  src->externalDataStore,
-                                                  migrated) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -1880,7 +1873,7 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
             return 0;
 
         use_label = parent_seclabel->label;
-    } else if (parent == src || parent->externalDataStore == src) {
+    } else if (parent == src) {
         if (src->shared) {
             use_label = data->file_context;
         } else if (src->readonly) {
@@ -1940,14 +1933,6 @@ virSecuritySELinuxSetImageLabelRelative(virSecurityManagerPtr mgr,
         const bool isChainTop = flags & VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP;
 
         if (virSecuritySELinuxSetImageLabelInternal(mgr, def, n, parent, isChainTop) < 0)
-            return -1;
-
-        if (n->externalDataStore &&
-            virSecuritySELinuxSetImageLabelRelative(mgr,
-                                                    def,
-                                                    n->externalDataStore,
-                                                    parent,
-                                                    flags) < 0)
             return -1;
 
         if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))

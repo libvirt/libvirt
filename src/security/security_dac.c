@@ -983,14 +983,6 @@ virSecurityDACSetImageLabelRelative(virSecurityManagerPtr mgr,
         if (virSecurityDACSetImageLabelInternal(mgr, def, n, parent, isChainTop) < 0)
             return -1;
 
-        if (n->externalDataStore &&
-            virSecurityDACSetImageLabelRelative(mgr,
-                                                def,
-                                                n->externalDataStore,
-                                                parent,
-                                                flags) < 0)
-            return -1;
-
         if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))
             break;
 
@@ -1088,13 +1080,6 @@ virSecurityDACRestoreImageLabelInt(virSecurityManagerPtr mgr,
                                    bool migrated)
 {
     if (virSecurityDACRestoreImageLabelSingle(mgr, def, src, migrated) < 0)
-        return -1;
-
-    if (src->externalDataStore &&
-        virSecurityDACRestoreImageLabelSingle(mgr,
-                                              def,
-                                              src->externalDataStore,
-                                              migrated) < 0)
         return -1;
 
     return 0;

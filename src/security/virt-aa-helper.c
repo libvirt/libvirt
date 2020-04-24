@@ -898,10 +898,6 @@ storage_source_add_files(virStorageSourcePtr src,
         if (add_file_path(tmp, depth, buf) < 0)
             return -1;
 
-        if (tmp->externalDataStore &&
-            storage_source_add_files(tmp->externalDataStore, buf, depth) < 0)
-            return -1;
-
         depth++;
     }
 
