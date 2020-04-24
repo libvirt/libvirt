@@ -3072,59 +3072,77 @@ static int
 virStorageSourceParseNBDColonString(const char *nbdstr,
                                     virStorageSourcePtr src)
 {
-    VIR_AUTOSTRINGLIST backing = NULL;
-    const char *exportname;
+    g_autofree char *nbd = g_strdup(nbdstr);
+    char *export_name;
+    char *host_spec;
+    char *unixpath;
+    char *port;
 
-    if (!(backing = virStringSplit(nbdstr, ":", 0)))
-        return -1;
-
-    /* we know that backing[0] now equals to "nbd" */
-
-    if (VIR_ALLOC_N(src->hosts, 1) < 0)
-        return -1;
-
+    src->hosts = g_new0(virStorageNetHostDef, 1);
     src->nhosts = 1;
-    src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+
+    /* We extract the parameters in a similar way qemu does it */
 
     /* format: [] denotes optional sections, uppercase are variable strings
      * nbd:unix:/PATH/TO/SOCKET[:exportname=EXPORTNAME]
      * nbd:HOSTNAME:PORT[:exportname=EXPORTNAME]
      */
-    if (!backing[1]) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing remote information in '%s' for protocol nbd"),
-                       nbdstr);
-        return -1;
-    } else if (STREQ(backing[1], "unix")) {
-        if (!backing[2]) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing unix socket path in nbd backing string %s"),
-                           nbdstr);
-            return -1;
-        }
 
-        src->hosts->socket = g_strdup(backing[2]);
-        src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_UNIX;
-   } else {
-        src->hosts->name = g_strdup(backing[1]);
-
-        if (!backing[2]) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing port in nbd string '%s'"),
-                           nbdstr);
-            return -1;
-        }
-
-        if (virStringParsePort(backing[2], &src->hosts->port) < 0)
-            return -1;
+    /* first look for ':exportname=' and cut it off */
+    if ((export_name = strstr(nbd, ":exportname="))) {
+        src->path = g_strdup(export_name + strlen(":exportname="));
+        export_name[0] = '\0';
     }
 
-    if ((exportname = strstr(nbdstr, "exportname="))) {
-        exportname += strlen("exportname=");
-        src->path = g_strdup(exportname);
+    /* Verify the prefix and contents. Note that we require a
+     * "host_spec" part to be present. */
+    if (!(host_spec = STRSKIP(nbd, "nbd:")) || host_spec[0] == '\0')
+        goto malformed;
+
+    if ((unixpath = STRSKIP(host_spec, "unix:"))) {
+        src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_UNIX;
+
+        if (unixpath[0] == '\0')
+            goto malformed;
+
+        src->hosts->socket = g_strdup(unixpath);
+    } else {
+        src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+
+        if (host_spec[0] == ':') {
+            /* no host given */
+            goto malformed;
+        } else if (host_spec[0] == '[') {
+            host_spec++;
+            /* IPv6 addr */
+            if (!(port = strstr(host_spec, "]:")))
+                goto malformed;
+
+            port[0] = '\0';
+            port += 2;
+
+            if (host_spec[0] == '\0')
+                goto malformed;
+        } else {
+            if (!(port = strchr(host_spec, ':')))
+                goto malformed;
+
+            port[0] = '\0';
+            port++;
+        }
+
+        if (virStringParsePort(port, &src->hosts->port) < 0)
+            return -1;
+
+        src->hosts->name = g_strdup(host_spec);
     }
 
     return 0;
+
+ malformed:
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("malformed nbd string '%s'"), nbdstr);
+    return -1;
 }
 
 

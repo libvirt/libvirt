@@ -1261,9 +1261,25 @@ mymain(void)
                        "<source protocol='nbd' name=':test'>\n"
                        "  <host name='example.org' port='6000'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("nbd:[::1]:6000:exportname=:test",
+                       "<source protocol='nbd' name=':test'>\n"
+                       "  <host name='::1' port='6000'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd:127.0.0.1:6000:exportname=:test",
+                       "<source protocol='nbd' name=':test'>\n"
+                       "  <host name='127.0.0.1' port='6000'/>\n"
+                       "</source>\n");
     TEST_BACKING_PARSE("nbd:unix:/tmp/sock:exportname=/",
                        "<source protocol='nbd' name='/'>\n"
                        "  <host transport='unix' socket='/tmp/sock'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd:unix:/tmp/sock:",
+                       "<source protocol='nbd'>\n"
+                       "  <host transport='unix' socket='/tmp/sock:'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd:unix:/tmp/sock::exportname=:",
+                       "<source protocol='nbd' name=':'>\n"
+                       "  <host transport='unix' socket='/tmp/sock:'/>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("nbd://example.org:1234",
                        "<source protocol='nbd'>\n"
