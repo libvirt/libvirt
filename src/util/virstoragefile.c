@@ -1022,12 +1022,6 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
         fileTypeInfo[meta->format].getFeatures(&meta->features, meta->format, buf, len) < 0)
         return -1;
 
-    VIR_FREE(meta->externalDataStoreRaw);
-    if (meta->format == VIR_STORAGE_FILE_QCOW2 &&
-        qcow2GetExtensions(buf, len, NULL, &meta->externalDataStoreRaw) < 0) {
-        return -1;
-    }
-
     VIR_FREE(meta->compat);
     if (meta->format == VIR_STORAGE_FILE_QCOW2 && meta->features)
         meta->compat = g_strdup("1.1");
@@ -2410,7 +2404,6 @@ virStorageSourceCopy(const virStorageSource *src,
     def->relPath = g_strdup(src->relPath);
     def->backingStoreRaw = g_strdup(src->backingStoreRaw);
     def->backingStoreRawFormat = src->backingStoreRawFormat;
-    def->externalDataStoreRaw = g_strdup(src->externalDataStoreRaw);
     def->snapshot = g_strdup(src->snapshot);
     def->configFile = g_strdup(src->configFile);
     def->nodeformat = g_strdup(src->nodeformat);
@@ -2702,7 +2695,6 @@ virStorageSourceClear(virStorageSourcePtr def)
     virStorageSourceSeclabelsClear(def);
     virStoragePermsFree(def->perms);
     VIR_FREE(def->timestamps);
-    VIR_FREE(def->externalDataStoreRaw);
 
     virStorageSourceSliceFree(def->sliceStorage);
 
@@ -5298,13 +5290,11 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         return -1;
 
     /* If we probed the format we MUST ensure that nothing else than the current
-     * image (this includes both backing files and external data store) is
-     * considered for security labelling and/or recursion. */
+     * image is considered for security labelling and/or recursion. */
     if (orig_format == VIR_STORAGE_FILE_AUTO) {
-        if (src->backingStoreRaw || src->externalDataStoreRaw) {
+        if (src->backingStoreRaw) {
             src->format = VIR_STORAGE_FILE_RAW;
             VIR_FREE(src->backingStoreRaw);
-            VIR_FREE(src->externalDataStoreRaw);
             return -2;
         }
     }

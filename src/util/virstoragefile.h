@@ -345,8 +345,6 @@ struct _virStorageSource {
      * current file.  */
     char *backingStoreRaw;
     virStorageFileFormat backingStoreRawFormat;
-    /* Name of the child data file recorded in metadata of the current file. */
-    char *externalDataStoreRaw;
 
     /* metadata that allows identifying given storage source */
     char *nodeformat;  /* name of the format handler object */
