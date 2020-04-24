@@ -16,6 +16,7 @@ addons:
       - yajl
       - glib
       - docutils
+      - gnutls
 
 matrix:
   include:
