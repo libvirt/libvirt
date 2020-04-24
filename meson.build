@@ -1879,6 +1879,15 @@ if conf.has('WITH_QEMU') or conf.has('WITH_LXC') or conf.has('WITH_NETWORK')
 endif
 
 
+# check for storage drivers
+
+use_storage = false
+
+if use_storage
+  conf.set('WITH_STORAGE', 1)
+endif
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')

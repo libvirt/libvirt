@@ -184,19 +184,6 @@ LIBVIRT_STORAGE_CHECK_GLUSTER
 LIBVIRT_STORAGE_CHECK_ZFS
 LIBVIRT_STORAGE_CHECK_VSTORAGE
 
-with_storage=no
-for backend in dir fs lvm iscsi iscsi_direct scsi mpath rbd disk; do
-    if eval test \$with_storage_$backend = yes; then
-        with_storage=yes
-        break
-    fi
-done
-if test $with_storage = yes; then
-    AC_DEFINE([WITH_STORAGE], [1],
-      [Define to 1 if at least one storage backend is in use])
-fi
-AM_CONDITIONAL([WITH_STORAGE], [test "$with_storage" = "yes"])
-
 dnl Python3 < 3.7 treats the C locale as 7-bit only.
 dnl We must force env vars so it treats it as UTF-8
 dnl regardless of the user's locale.
