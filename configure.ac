@@ -860,17 +860,6 @@ if test $with_freebsd = yes; then
                  )
 fi
 
-# FreeBSD 10-STABLE requires _IFI_OQDROPS to be defined for if_data.ifi_oqdrops
-# field be available
-old_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS -D_IFI_OQDROPS"
-
-AC_CHECK_MEMBERS([struct if_data.ifi_oqdrops],
-		 [],
-		 [CFLAGS="$old_CFLAGS"],
-		 [#include <net/if.h>
-		 ])
-
 AC_CHECK_DECLS([clock_serv_t, host_get_clock_service, clock_get_time],
                [AC_DEFINE([HAVE_MACH_CLOCK_ROUTINES],
                           [1],
