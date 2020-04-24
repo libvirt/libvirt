@@ -200,6 +200,8 @@
               <attribute name='exportname'>
                 <text/>
               </attribute>
+            </optional>
+            <optional>
               <attribute name='exportbitmap'>
                 <text/>
               </attribute>
