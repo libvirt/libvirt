@@ -2475,12 +2475,6 @@ virStorageSourceCopy(const virStorageSource *src,
             return NULL;
     }
 
-    if (src->externalDataStore) {
-        if (!(def->externalDataStore = virStorageSourceCopy(src->externalDataStore,
-                                                            true)))
-            return NULL;
-    }
-
     /* ssh config passthrough for libguestfs */
     def->ssh_host_key_check_disabled = src->ssh_host_key_check_disabled;
     def->ssh_user = g_strdup(src->ssh_user);
@@ -2711,9 +2705,6 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->externalDataStoreRaw);
 
     virStorageSourceSliceFree(def->sliceStorage);
-
-    virObjectUnref(def->externalDataStore);
-    def->externalDataStore = NULL;
 
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageAuthDefFree(def->auth);
@@ -4125,24 +4116,6 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent,
 }
 
 
-static int
-virStorageSourceNewFromExternalData(virStorageSourcePtr parent,
-                                    virStorageSourcePtr *externalDataStore)
-{
-    int rc;
-
-    if ((rc = virStorageSourceNewFromChild(parent,
-                                           parent->externalDataStoreRaw,
-                                           externalDataStore)) < 0)
-        return rc;
-
-    /* qcow2 data_file can only be raw */
-    (*externalDataStore)->format = VIR_STORAGE_FILE_RAW;
-    (*externalDataStore)->readonly = parent->readonly;
-    return rc;
-}
-
-
 /**
  * @src: disk source definition structure
  * @fd: file descriptor
@@ -5367,20 +5340,6 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         /* add terminator */
         if (!(src->backingStore = virStorageSourceNew()))
             return -1;
-    }
-
-    if (src->externalDataStoreRaw) {
-        g_autoptr(virStorageSource) externalDataStore = NULL;
-
-        if ((rv = virStorageSourceNewFromExternalData(src,
-                                                      &externalDataStore)) < 0)
-            return -1;
-
-        /* the file would not be usable for VM usage */
-        if (rv == 1)
-            return 0;
-
-        src->externalDataStore = g_steal_pointer(&externalDataStore);
     }
 
     return 0;
