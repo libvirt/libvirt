@@ -969,7 +969,6 @@ static int networkConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 static char *
 networkBuildDnsmasqLeaseTime(virNetworkDHCPLeaseTimeDefPtr lease)
 {
-    char *leasetime = NULL;
     const char *unit;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -984,9 +983,7 @@ networkBuildDnsmasqLeaseTime(virNetworkDHCPLeaseTimeDefPtr lease)
         virBufferAsprintf(&buf, "%lu%c", lease->expiry, unit[0]);
     }
 
-    leasetime = virBufferContentAndReset(&buf);
-
-    return leasetime;
+    return virBufferContentAndReset(&buf);
 }
 
 
@@ -999,14 +996,13 @@ networkBuildDnsmasqDhcpHostsList(dnsmasqContext *dctx,
 {
     size_t i;
     bool ipv6 = false;
-    g_autofree char *leasetime = NULL;
 
     if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
         ipv6 = true;
     for (i = 0; i < ipdef->nhosts; i++) {
         virNetworkDHCPHostDefPtr host = &(ipdef->hosts[i]);
+        g_autofree char *leasetime = networkBuildDnsmasqLeaseTime(host->lease);
 
-        leasetime = networkBuildDnsmasqLeaseTime(host->lease);
         if (VIR_SOCKET_ADDR_VALID(&host->ip))
             if (dnsmasqAddDhcpHost(dctx, host->mac, &host->ip,
                                    host->name, host->id, leasetime,

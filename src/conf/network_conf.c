@@ -412,44 +412,44 @@ static int
 virNetworkDHCPLeaseTimeDefParseXML(virNetworkDHCPLeaseTimeDefPtr *lease,
                                    xmlNodePtr node)
 {
-    virNetworkDHCPLeaseTimeDefPtr new_lease = *lease;
-    g_autofree char *expiry = NULL;
-    g_autofree char *unit = NULL;
-    int unitInt;
+    virNetworkDHCPLeaseTimeDefPtr new_lease = NULL;
+    g_autofree char *expirystr = NULL;
+    g_autofree char *unitstr = NULL;
+    unsigned long expiry;
+    int unit = VIR_NETWORK_DHCP_LEASETIME_UNIT_MINUTES;
 
-    if (!(expiry = virXMLPropString(node, "expiry")))
+    if (!(expirystr = virXMLPropString(node, "expiry")))
         return 0;
 
-    if (VIR_ALLOC(new_lease) < 0)
-        return -1;
-    new_lease->unit = VIR_NETWORK_DHCP_LEASETIME_UNIT_MINUTES;
-
-    if (virStrToLong_ul(expiry, NULL, 10, &new_lease->expiry) < 0)
+    if (virStrToLong_ul(expirystr, NULL, 10, &expiry) < 0)
         return -1;
 
-    if ((unit = virXMLPropString(node, "unit"))) {
-        if ((unitInt = virNetworkDHCPLeaseTimeUnitTypeFromString(unit)) < 0) {
+    if ((unitstr = virXMLPropString(node, "unit"))) {
+        if ((unit = virNetworkDHCPLeaseTimeUnitTypeFromString(unitstr)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid unit: %s"), unit);
+                           _("Invalid unit: %s"), unitstr);
             return -1;
         }
-        new_lease->unit = unitInt;
     }
 
     /* infinite */
-    if (new_lease->expiry > 0) {
+    if (expiry > 0) {
         /* This boundary check is related to dnsmasq man page settings:
          * "The minimum lease time is two minutes." */
-        if ((new_lease->unit == VIR_NETWORK_DHCP_LEASETIME_UNIT_SECONDS &&
-             new_lease->expiry < 120) ||
-            (new_lease->unit == VIR_NETWORK_DHCP_LEASETIME_UNIT_MINUTES &&
-             new_lease->expiry < 2)) {
+        if ((unit == VIR_NETWORK_DHCP_LEASETIME_UNIT_SECONDS && expiry < 120) ||
+            (unit == VIR_NETWORK_DHCP_LEASETIME_UNIT_MINUTES && expiry < 2)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("The minimum lease time should be greater "
                              "than 2 minutes"));
             return -1;
         }
     }
+
+    if (VIR_ALLOC(new_lease) < 0)
+        return -1;
+
+    new_lease->expiry = expiry;
+    new_lease->unit = unit;
 
     *lease = new_lease;
 
