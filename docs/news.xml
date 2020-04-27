@@ -109,6 +109,16 @@
           and/or fine tuned per individual host.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Implement pSeries Spectre mitigation features
+        </summary>
+        <description>
+          Users can now setup the following capabilities of pSeries guests:
+          CFPC (Cache Flush on Privilege Change), SBBC (Speculation Barrier
+          Bounds Checking) and IBS (Indirect Branch Speculation).
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
