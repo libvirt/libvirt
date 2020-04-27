@@ -147,6 +147,16 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
         }
 
         break;
+
+    case VIR_DOMAIN_FEATURE_SBBC:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("sbbc configuration is not supported by "
+                             "this QEMU binary"));
+            return -1;
+        }
+
+        break;
     }
 
     return 0;
@@ -205,6 +215,7 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
         case VIR_DOMAIN_FEATURE_NESTED_HV:
         case VIR_DOMAIN_FEATURE_CCF_ASSIST:
         case VIR_DOMAIN_FEATURE_CFPC:
+        case VIR_DOMAIN_FEATURE_SBBC:
             if (qemuValidateDomainDefPSeriesFeature(def, qemuCaps, i) < 0)
                 return -1;
             break;

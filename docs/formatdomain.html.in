@@ -2079,6 +2079,7 @@
   &lt;ccf-assist state='on'/&gt;
   &lt;msrs unknown='ignore'/&gt;
   &lt;cfpc value='workaround'/&gt;
+  &lt;sbbc value='workaround'/&gt;
 &lt;/features&gt;
 ...</pre>
 
@@ -2409,6 +2410,16 @@
       </dd>
       <dt><code>cfpc</code></dt>
       <dd>Configure cfpc (Cache Flush on Privilege Change) availability for
+          pSeries guests.
+          Possible values for the <code>value</code> attribute
+          are <code>broken</code> (no protection), <code>workaround</code>
+          (software workaround available) and <code>fixed</code> (fixed in
+          hardware). If the attribute is not defined, the hypervisor
+          default will be used.
+          <span class="since">Since 6.3.0</span> (QEMU/KVM only)
+      </dd>
+      <dt><code>sbbc</code></dt>
+      <dd>Configure sbbc (Speculation Barrier Bounds Checking) availability for
           pSeries guests.
           Possible values for the <code>value</code> attribute
           are <code>broken</code> (no protection), <code>workaround</code>

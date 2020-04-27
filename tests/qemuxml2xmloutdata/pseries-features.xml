@@ -16,6 +16,7 @@
     <nested-hv state='off'/>
     <ccf-assist state='on'/>
     <cfpc value='fixed'/>
+    <sbbc value='broken'/>
   </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

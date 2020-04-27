@@ -1817,6 +1817,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_CCF_ASSIST,
     VIR_DOMAIN_FEATURE_XEN,
     VIR_DOMAIN_FEATURE_CFPC,
+    VIR_DOMAIN_FEATURE_SBBC,
 
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;
@@ -1998,6 +1999,17 @@ typedef enum {
 } virDomainCFPC;
 
 VIR_ENUM_DECL(virDomainCFPC);
+
+typedef enum {
+    VIR_DOMAIN_SBBC_NONE = 0,
+    VIR_DOMAIN_SBBC_BROKEN,
+    VIR_DOMAIN_SBBC_WORKAROUND,
+    VIR_DOMAIN_SBBC_FIXED,
+
+    VIR_DOMAIN_SBBC_LAST
+} virDomainSBBC;
+
+VIR_ENUM_DECL(virDomainSBBC);
 
 /* Operating system configuration data & machine / arch */
 struct _virDomainOSEnv {
