@@ -235,6 +235,8 @@ virDomainBlockIoTuneInfoHasMaxLength;
 virDomainBootTypeFromString;
 virDomainBootTypeToString;
 virDomainCapabilitiesPolicyTypeToString;
+virDomainCFPCTypeFromString;
+virDomainCFPCTypeToString;
 virDomainChrConsoleTargetTypeFromString;
 virDomainChrConsoleTargetTypeToString;
 virDomainChrDefForeach;

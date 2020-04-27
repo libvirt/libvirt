@@ -13,6 +13,7 @@
     <htm state='on'/>
     <nested-hv state='off'/>
     <ccf-assist state='on'/>
+    <cfpc value='fixed'/>
   </features>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>

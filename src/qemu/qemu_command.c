@@ -7171,6 +7171,11 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         virBufferAsprintf(&buf, ",cap-ccf-assist=%s", str);
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_CFPC] != VIR_DOMAIN_CFPC_NONE) {
+        const char *str = virDomainCFPCTypeToString(def->features[VIR_DOMAIN_FEATURE_CFPC]);
+        virBufferAsprintf(&buf, ",cap-cfpc=%s", str);
+    }
+
     if (cpu && cpu->model &&
         cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
         qemuDomainIsPSeries(def) &&

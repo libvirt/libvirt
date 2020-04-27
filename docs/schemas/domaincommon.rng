@@ -5434,6 +5434,9 @@
               <ref name="featurestate"/>
             </element>
           </optional>
+          <optional>
+            <ref name="cfpc"/>
+          </optional>
         </interleave>
       </element>
     </optional>
@@ -5688,6 +5691,18 @@
         <choice>
           <value>ignore</value>
           <value>fault</value>
+        </choice>
+      </attribute>
+    </element>
+  </define>
+
+  <define name="cfpc">
+    <element name="cfpc">
+      <attribute name="value">
+        <choice>
+          <value>broken</value>
+          <value>workaround</value>
+          <value>fixed</value>
         </choice>
       </attribute>
     </element>
