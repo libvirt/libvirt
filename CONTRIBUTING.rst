@@ -33,6 +33,14 @@ if you're on a RHEL-based distribution or
 
 if you're on a Debian-based one.
 
+Note that, for the RHEL-based case, if you're on a machine where you
+haven't done any C development before, you will probably also need
+to run
+
+::
+
+   $ sudo dnf install gcc make libtool autoconf automake rpm-build
+
 You might still be missing some dependencies if your distribution is
 shipping an old libvirt version, but that will get you much closer to
 where you need to be to build successfully from source.
