@@ -194,6 +194,7 @@
   <flag name='virtio.packed'/>
   <flag name='machine.pseries.cap-cfpc'/>
   <flag name='machine.pseries.cap-sbbc'/>
+  <flag name='machine.pseries.cap-ibs'/>
   <version>4002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900241</microcodeVersion>

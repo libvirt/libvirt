@@ -578,6 +578,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 365 */
               "machine.pseries.cap-sbbc",
+              "machine.pseries.cap-ibs",
     );
 
 
@@ -1623,6 +1624,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsPSeries[] = {
     { "cap-ccf-assist", QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST },
     { "cap-cfpc", QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC },
     { "cap-sbbc", QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC },
+    { "cap-ibs", QEMU_CAPS_MACHINE_PSERIES_CAP_IBS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {

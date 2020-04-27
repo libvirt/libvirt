@@ -559,6 +559,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 365 */
     QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC, /* -machine pseries.cap-sbbc */
+    QEMU_CAPS_MACHINE_PSERIES_CAP_IBS, /* -machine pseries.cap-ibs */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

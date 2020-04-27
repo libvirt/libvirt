@@ -158,6 +158,7 @@
   <flag name='i8042'/>
   <flag name='machine.pseries.cap-cfpc'/>
   <flag name='machine.pseries.cap-sbbc'/>
+  <flag name='machine.pseries.cap-ibs'/>
   <version>2012050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900239</microcodeVersion>
