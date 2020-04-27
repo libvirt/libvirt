@@ -12,9 +12,9 @@ your git clone run:
 
 ::
 
-  $ mkdir build && cd build
-  $ ../autogen.sh
-  $ make
+   $ mkdir build && cd build
+   $ ../autogen.sh
+   $ make
 
 You'll find the freshly-built document in ``docs/contribute.html``.
 
@@ -23,13 +23,13 @@ up your system by calling
 
 ::
 
-  $ sudo dnf builddep libvirt
+   $ sudo dnf builddep libvirt
 
 if you're on a RHEL-based distribution or
 
 ::
 
-  $ sudo apt-get build-dep libvirt
+   $ sudo apt-get build-dep libvirt
 
 if you're on a Debian-based one.
 
