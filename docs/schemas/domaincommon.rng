@@ -5440,6 +5440,9 @@
           <optional>
             <ref name="sbbc"/>
           </optional>
+          <optional>
+            <ref name="ibs"/>
+          </optional>
         </interleave>
       </element>
     </optional>
@@ -5718,6 +5721,20 @@
           <value>broken</value>
           <value>workaround</value>
           <value>fixed</value>
+        </choice>
+      </attribute>
+    </element>
+  </define>
+
+  <define name="ibs">
+    <element name="ibs">
+      <attribute name="value">
+        <choice>
+          <value>broken</value>
+          <value>workaround</value>
+          <value>fixed-ibs</value>
+          <value>fixed-ccd</value>
+          <value>fixed-na</value>
         </choice>
       </attribute>
     </element>

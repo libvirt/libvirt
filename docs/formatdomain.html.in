@@ -2080,6 +2080,7 @@
   &lt;msrs unknown='ignore'/&gt;
   &lt;cfpc value='workaround'/&gt;
   &lt;sbbc value='workaround'/&gt;
+  &lt;ibs value='fixed-na'/&gt;
 &lt;/features&gt;
 ...</pre>
 
@@ -2425,6 +2426,19 @@
           are <code>broken</code> (no protection), <code>workaround</code>
           (software workaround available) and <code>fixed</code> (fixed in
           hardware). If the attribute is not defined, the hypervisor
+          default will be used.
+          <span class="since">Since 6.3.0</span> (QEMU/KVM only)
+      </dd>
+      <dt><code>ibs</code></dt>
+      <dd>Configure ibs (Indirect Branch Speculation) availability for
+          pSeries guests.
+          Possible values for the <code>value</code> attribute
+          are <code>broken</code> (no protection), <code>workaround</code>
+          (count cache flush), <code>fixed-ibs</code> (fixed by
+          serializing indirect branches), <code>fixed-ccd</code> (fixed by
+          disabling the cache count) and <code>fixed-na (fixed in
+          hardware - no longer applicable)</code>.
+          If the attribute is not defined, the hypervisor
           default will be used.
           <span class="since">Since 6.3.0</span> (QEMU/KVM only)
       </dd>

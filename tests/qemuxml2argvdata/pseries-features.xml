@@ -15,6 +15,7 @@
     <ccf-assist state='on'/>
     <cfpc value='fixed'/>
     <sbbc value='broken'/>
+    <ibs value='fixed-ccd'/>
   </features>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>

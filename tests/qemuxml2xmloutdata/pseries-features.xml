@@ -17,6 +17,7 @@
     <ccf-assist state='on'/>
     <cfpc value='fixed'/>
     <sbbc value='broken'/>
+    <ibs value='fixed-ccd'/>
   </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
