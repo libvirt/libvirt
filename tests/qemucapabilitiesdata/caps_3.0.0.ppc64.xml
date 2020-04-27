@@ -156,6 +156,7 @@
   <flag name='ramfb'/>
   <flag name='drive-nvme'/>
   <flag name='i8042'/>
+  <flag name='machine.pseries.cap-cfpc'/>
   <version>2012050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900239</microcodeVersion>

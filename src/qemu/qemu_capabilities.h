@@ -555,6 +555,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VIRTIO_PACKED_QUEUES, /* virtio.packed */
     QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG, /* pcie-root-port.hotplug */
     QEMU_CAPS_AIO_IO_URING, /* -blockdev {...,"aio":"io_uring",...} */
+    QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC, /* -machine pseries.cap-cfpc */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
