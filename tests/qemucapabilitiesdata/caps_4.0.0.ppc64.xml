@@ -176,6 +176,7 @@
   <flag name='i8042'/>
   <flag name='storage.werror'/>
   <flag name='machine.pseries.cap-cfpc'/>
+  <flag name='machine.pseries.cap-sbbc'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900240</microcodeVersion>

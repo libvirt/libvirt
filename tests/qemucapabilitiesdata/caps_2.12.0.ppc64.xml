@@ -155,6 +155,7 @@
   <flag name='drive-nvme'/>
   <flag name='i8042'/>
   <flag name='machine.pseries.cap-cfpc'/>
+  <flag name='machine.pseries.cap-sbbc'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900289</microcodeVersion>

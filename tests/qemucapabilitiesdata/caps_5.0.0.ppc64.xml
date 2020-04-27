@@ -193,6 +193,7 @@
   <flag name='fsdev.multidevs'/>
   <flag name='virtio.packed'/>
   <flag name='machine.pseries.cap-cfpc'/>
+  <flag name='machine.pseries.cap-sbbc'/>
   <version>4002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900241</microcodeVersion>

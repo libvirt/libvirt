@@ -181,6 +181,7 @@
   <flag name='rng-builtin'/>
   <flag name='storage.werror'/>
   <flag name='machine.pseries.cap-cfpc'/>
+  <flag name='machine.pseries.cap-sbbc'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900242</microcodeVersion>
