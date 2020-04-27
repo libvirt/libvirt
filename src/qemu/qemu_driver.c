@@ -2922,19 +2922,22 @@ virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
 
     len = xml_len + cookie_len;
 
-    if (header->data_len > 0) {
+    if (header->data_len == 0) {
+        /* This 64kb padding allows the user to edit the XML in
+         * a saved state image and have the new XML be larger
+         * that what was originally saved
+         */
+        header->data_len = len + (64 * 1024);
+    } else {
         if (len > header->data_len) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("new xml too large to fit in file"));
             return -1;
         }
-
-        zerosLen = header->data_len - len;
-        if (VIR_ALLOC_N(zeros, zerosLen) < 0)
-            return -1;
-    } else {
-        header->data_len = len;
     }
+
+    zerosLen = header->data_len - len;
+    zeros = g_new0(char, zerosLen);
 
     if (data->cookie)
         header->cookieOffset = xml_len;
