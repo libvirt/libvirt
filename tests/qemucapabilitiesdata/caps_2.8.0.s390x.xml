@@ -96,6 +96,7 @@
   <flag name='query-cpu-model-baseline'/>
   <flag name='query-cpu-model-comparison'/>
   <flag name='storage.werror'/>
+  <flag name='tcg'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100246</microcodeVersion>

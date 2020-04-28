@@ -231,6 +231,7 @@
   <flag name='virtio.packed'/>
   <flag name='pcie-root-port.hotplug'/>
   <flag name='aio.io_uring'/>
+  <flag name='tcg'/>
   <version>4002093</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100241</microcodeVersion>

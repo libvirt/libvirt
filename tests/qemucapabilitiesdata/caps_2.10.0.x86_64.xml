@@ -183,6 +183,7 @@
   <flag name='iothread.poll-max-ns'/>
   <flag name='x86-max-cpu'/>
   <flag name='i8042'/>
+  <flag name='tcg'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100287</microcodeVersion>

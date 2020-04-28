@@ -579,6 +579,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 365 */
               "machine.pseries.cap-sbbc",
               "machine.pseries.cap-ibs",
+              "tcg",
     );
 
 
@@ -1296,6 +1297,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "rng-builtin", QEMU_CAPS_OBJECT_RNG_BUILTIN },
     { "tpm-spapr", QEMU_CAPS_DEVICE_TPM_SPAPR },
     { "vhost-user-fs-device", QEMU_CAPS_DEVICE_VHOST_USER_FS },
+    { "tcg-accel", QEMU_CAPS_TCG },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
@@ -4869,6 +4871,10 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCapsPtr qemuCaps)
         ARCH_IS_PPC64(qemuCaps->arch)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT);
     }
+
+    /* TCG couldn't be disabled nor queried until QEMU 2.10 */
+    if (qemuCaps->version < 2010000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_TCG);
 }
 
 

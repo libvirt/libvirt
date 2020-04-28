@@ -85,6 +85,7 @@
   <flag name='hda-output'/>
   <flag name='mch'/>
   <flag name='i8042'/>
+  <flag name='tcg'/>
   <version>1005003</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100245</microcodeVersion>

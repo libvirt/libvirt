@@ -345,6 +345,7 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
                                       0,
                                       false,
                                       false);
+                virQEMUCapsSet(tmpCaps, QEMU_CAPS_TCG);
             }
             for (j = 0; kvm_machines[i][j] != NULL; j++) {
                 virQEMUCapsAddMachine(tmpCaps,

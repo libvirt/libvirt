@@ -126,6 +126,7 @@
   <flag name='query-cpu-model-comparison'/>
   <flag name='drive-nvme'/>
   <flag name='storage.werror'/>
+  <flag name='tcg'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100289</microcodeVersion>
