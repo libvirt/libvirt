@@ -1617,6 +1617,12 @@ elif get_option('driver_hyperv').enabled()
   error('openwsman is required for the Hyper-V driver')
 endif
 
+if not get_option('driver_interface').disabled() and conf.has('WITH_LIBVIRTD') and (udev_dep.found() or netcf_dep.found())
+  conf.set('WITH_INTERFACE', 1)
+elif get_option('driver_interface').enabled()
+  error('Requested the Interface driver without netcf or udev and libvirtd support')
+endif
+
 if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
   libxl_version = '4.6.0'
   libxl_dep = dependency('xenlight', version: '>=' + libxl_version, required: get_option('driver_libxl'))
@@ -1898,6 +1904,7 @@ driver_summary = {
   'Remote': conf.has('WITH_REMOTE'),
   'Network': conf.has('WITH_NETWORK'),
   'Libvirtd': conf.has('WITH_LIBVIRTD'),
+  'Interface': conf.has('WITH_INTERFACE'),
 }
 summary(driver_summary, section: 'Drivers', bool_yn: true)
 

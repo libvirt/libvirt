@@ -92,16 +92,6 @@ LIBVIRT_CHECK_NWFILTER
 LIBVIRT_CHECK_PM_UTILS
 
 
-
-dnl
-dnl Virtualization drivers check
-dnl
-
-LIBVIRT_DRIVER_ARG_INTERFACE
-
-LIBVIRT_DRIVER_CHECK_INTERFACE
-
-
 dnl
 dnl in case someone want to build static binaries
 dnl STATIC_BINARIES="-static"
@@ -280,10 +270,6 @@ AC_OUTPUT
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Configuration summary])
 AC_MSG_NOTICE([=====================])
-AC_MSG_NOTICE([])
-AC_MSG_NOTICE([Drivers])
-AC_MSG_NOTICE([])
-LIBVIRT_DRIVER_RESULT_INTERFACE
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])
