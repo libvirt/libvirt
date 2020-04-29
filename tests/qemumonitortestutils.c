@@ -529,8 +529,7 @@ qemuMonitorTestHandlerDataFree(void *opaque)
 }
 
 
-/* Returns -1 on error, 0 if validation was successful/not necessary, 1 if
- * the validation has failed, and the reply was properly constructed */
+/* Returns -1 on error, 0 if validation was successful/not necessary */
 static int
 qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
                                              const char *cmdname,
@@ -585,7 +584,6 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
     g_autoptr(virJSONValue) val = NULL;
     virJSONValuePtr cmdargs = NULL;
     const char *cmdname;
-    int rc;
 
     if (!(val = virJSONValueFromString(cmdstr)))
         return -1;
@@ -596,10 +594,8 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
     }
 
     cmdargs = virJSONValueObjectGet(val, "arguments");
-    if ((rc = qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs)) < 0)
+    if (qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs) < 0)
         return -1;
-    if (rc == 1)
-        return 0;
 
     if (data->command_name && STRNEQ(data->command_name, cmdname)) {
         qemuMonitorTestErrorInvalidCommand(data->command_name, cmdname);
@@ -641,7 +637,6 @@ qemuMonitorTestProcessCommandVerbatim(qemuMonitorTestPtr test,
     virJSONValuePtr cmdargs;
     const char *cmdname;
     int ret = -1;
-    int rc;
 
     /* JSON strings will be reformatted to simplify checking */
     if (!(json = virJSONValueFromString(cmdstr)) ||
@@ -653,12 +648,8 @@ qemuMonitorTestProcessCommandVerbatim(qemuMonitorTestPtr test,
     /* in this case we do a best-effort schema check if we can find the command */
     if ((cmdname = virJSONValueObjectGetString(json, "execute"))) {
         cmdargs = virJSONValueObjectGet(json, "arguments");
-
-        if ((rc = qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs)) < 0)
+        if (qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs) < 0)
             return -1;
-
-        if (rc == 1)
-            return 0;
     }
 
     if (STREQ(data->command_name, cmdstr)) {
