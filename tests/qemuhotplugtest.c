@@ -409,6 +409,7 @@ testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
 static struct testQemuHotplugCpuData *
 testQemuHotplugCpuPrepare(const char *test,
                           bool modern,
+                          bool fail,
                           virHashTablePtr qmpschema)
 {
     qemuDomainObjPrivatePtr priv = NULL;
@@ -453,7 +454,8 @@ testQemuHotplugCpuPrepare(const char *test,
                                                      &driver, data->vm, qmpschema)))
         goto error;
 
-    qemuMonitorTestAllowUnusedCommands(data->mon);
+    if (fail)
+        qemuMonitorTestAllowUnusedCommands(data->mon);
 
     priv->mon = qemuMonitorTestGetMonitor(data->mon);
     virObjectUnlock(priv->mon);
@@ -528,7 +530,7 @@ testQemuHotplugCpuGroup(const void *opaque)
     int rc;
 
     if (!(data = testQemuHotplugCpuPrepare(params->test, params->modern,
-                                           params->schema)))
+                                           params->fail, params->schema)))
         return -1;
 
     rc = qemuDomainSetVcpusInternal(&driver, data->vm, data->vm->def,
@@ -565,7 +567,7 @@ testQemuHotplugCpuIndividual(const void *opaque)
     int rc;
 
     if (!(data = testQemuHotplugCpuPrepare(params->test, params->modern,
-                                           params->schema)))
+                                           params->fail, params->schema)))
         return -1;
 
     if (virBitmapParse(params->cpumap, &map, 128) < 0)
