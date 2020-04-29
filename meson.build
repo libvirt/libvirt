@@ -1099,6 +1099,17 @@ else
   libnl_dep = dependency('', required: false)
 endif
 
+libparted_version = '1.8.0'
+libparted_dep = dependency('libparted', version: '>=' + libparted_version, required: false)
+if libparted_dep.found()
+  parted_prog = find_program('parted', required: false, dirs: libvirt_sbin_path)
+  if parted_prog.found()
+    conf.set_quoted('PARTED', parted_prog.path())
+  else
+    libparted_dep = dependency('', required: false)
+  endif
+endif
+
 use_macvtap = false
 if not get_option('macvtap').disabled()
   if (cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_BRIDGE') and
