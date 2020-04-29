@@ -1589,6 +1589,21 @@ if not get_option('driver_libvirtd').disabled()
   endif
 endif
 
+if not get_option('driver_bhyve').disabled() and host_machine.system() == 'freebsd'
+  bhyve_prog = find_program('bhyve', required: get_option('driver_bhyve'))
+  bhyvectl_prog = find_program('bhyvectl', required: get_option('driver_bhyve'))
+  bhyveload_prog = find_program('bhyveload', required: get_option('driver_bhyve'))
+
+  if bhyve_prog.found() and bhyvectl_prog.found() and bhyveload_prog.found()
+    conf.set('WITH_BHYVE', 1)
+    conf.set_quoted('BHYVE', bhyve_prog.path())
+    conf.set_quoted('BHYVECTL', bhyvectl_prog.path())
+    conf.set_quoted('BHYVELOAD', bhyveload_prog.path())
+  endif
+elif get_option('driver_bhyve').enabled()
+  error('The bhyve driver cannot be enabled')
+endif
+
 
 # define top include directory
 
@@ -1609,6 +1624,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 # print configuration summary
 
 driver_summary = {
+  'Bhyve': conf.has('WITH_BHYVE'),
   'Remote': conf.has('WITH_REMOTE'),
   'Libvirtd': conf.has('WITH_LIBVIRTD'),
 }
