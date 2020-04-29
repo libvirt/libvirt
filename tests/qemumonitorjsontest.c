@@ -1435,10 +1435,6 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *opaque)
             {2, 17626, (char *) "/machine/unattached/device[2]", true},
             {3, 17628, NULL, true},
     };
-    struct qemuMonitorQueryCpusEntry expect_fast[] = {
-            {0, 17629, (char *) "/machine/unattached/device[0]", false},
-            {1, 17630, (char *) "/machine/unattached/device[1]", false},
-    };
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
@@ -1483,6 +1479,29 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *opaque)
                                "}") < 0)
         return -1;
 
+    /* query-cpus */
+    if (testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(test, expect_slow,
+                                                          false, 4))
+        return -1;
+
+    return 0;
+}
+
+
+static int
+testQemuMonitorJSONqemuMonitorJSONQueryCPUsFast(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    struct qemuMonitorQueryCpusEntry expect_fast[] = {
+            {0, 17629, (char *) "/machine/unattached/device[0]", false},
+            {1, 17630, (char *) "/machine/unattached/device[1]", false},
+    };
+    g_autoptr(qemuMonitorTest) test = NULL;
+
+    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
+        return -1;
+
     if (qemuMonitorTestAddItem(test, "query-cpus-fast",
                                "{"
                                "    \"return\": ["
@@ -1499,11 +1518,6 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *opaque)
                                "    ],"
                                "    \"id\": \"libvirt-8\""
                                "}") < 0)
-        return -1;
-
-    /* query-cpus */
-    if (testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(test, expect_slow,
-                                                          false, 4))
         return -1;
 
     /* query-cpus-fast */
@@ -3236,6 +3250,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetTargetArch);
     DO_TEST(qemuMonitorJSONGetMigrationCapabilities);
     DO_TEST(qemuMonitorJSONQueryCPUs);
+    DO_TEST(qemuMonitorJSONQueryCPUsFast);
     DO_TEST(qemuMonitorJSONGetVirtType);
     DO_TEST(qemuMonitorJSONSendKey);
     DO_TEST(qemuMonitorJSONGetDumpGuestMemoryCapability);
