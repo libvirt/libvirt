@@ -1440,6 +1440,8 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *opaque)
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
         return -1;
 
+    qemuMonitorTestSkipDeprecatedValidation(test, true);
+
     if (qemuMonitorTestAddItem(test, "query-cpus",
                                "{"
                                "    \"return\": ["
@@ -2696,10 +2698,12 @@ testQemuMonitorCPUInfo(const void *opaque)
                                queryHotpluggableStr) < 0)
         goto cleanup;
 
-    if (data->fast)
+    if (data->fast) {
         queryCpusFunction = "query-cpus-fast";
-    else
+    } else {
         queryCpusFunction = "query-cpus";
+        qemuMonitorTestSkipDeprecatedValidation(test, true);
+    }
 
     if (qemuMonitorTestAddItem(test, queryCpusFunction, queryCpusStr) < 0)
         goto cleanup;
