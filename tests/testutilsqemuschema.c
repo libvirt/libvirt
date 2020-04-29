@@ -21,16 +21,21 @@
 #include "testutilsqemuschema.h"
 #include "qemu/qemu_qapi.h"
 
+struct testQEMUSchemaValidateCtxt {
+    virHashTablePtr schema;
+    virBufferPtr debug;
+};
+
+
 static int
 testQEMUSchemaValidateRecurse(virJSONValuePtr obj,
                               virJSONValuePtr root,
-                              virHashTablePtr schema,
-                              virBufferPtr debug);
+                              struct testQEMUSchemaValidateCtxt *ctxt);
 
 static int
 testQEMUSchemaValidateBuiltin(virJSONValuePtr obj,
                               virJSONValuePtr root,
-                              virBufferPtr debug)
+                              struct testQEMUSchemaValidateCtxt *ctxt)
 {
     const char *t = virJSONValueObjectGetString(root, "json-type");
     const char *s = NULL;
@@ -81,17 +86,16 @@ testQEMUSchemaValidateBuiltin(virJSONValuePtr obj,
 
  cleanup:
     if (ret == 0)
-        virBufferAsprintf(debug, "'%s': OK", s);
+        virBufferAsprintf(ctxt->debug, "'%s': OK", s);
     else
-        virBufferAsprintf(debug, "ERROR: expected type '%s', actual type %d",
+        virBufferAsprintf(ctxt->debug, "ERROR: expected type '%s', actual type %d",
                           t, virJSONValueGetType(obj));
     return ret;
 }
 
 struct testQEMUSchemaValidateObjectMemberData {
     virJSONValuePtr rootmembers;
-    virHashTablePtr schema;
-    virBufferPtr debug;
+    struct testQEMUSchemaValidateCtxt *ctxt;
     bool missingMandatory;
 };
 
@@ -128,27 +132,26 @@ testQEMUSchemaValidateObjectMember(const char *key,
     virJSONValuePtr keyschema = NULL;
     int rc;
 
-    virBufferStrcat(data->debug, key, ": ", NULL);
+    virBufferStrcat(data->ctxt->debug, key, ": ", NULL);
 
     /* lookup 'member' entry for key */
     if (!(keymember = testQEMUSchemaStealObjectMemberByName(key, data->rootmembers))) {
-        virBufferAddLit(data->debug, "ERROR: attribute not in schema\n");
+        virBufferAddLit(data->ctxt->debug, "ERROR: attribute not in schema\n");
         return -1;
     }
 
     /* lookup schema entry for keytype */
     if (!(keytype = virJSONValueObjectGetString(keymember, "type")) ||
-        !(keyschema = virHashLookup(data->schema, keytype))) {
-        virBufferAsprintf(data->debug, "ERROR: can't find schema for type '%s'\n",
+        !(keyschema = virHashLookup(data->ctxt->schema, keytype))) {
+        virBufferAsprintf(data->ctxt->debug, "ERROR: can't find schema for type '%s'\n",
                           NULLSTR(keytype));
         return -2;
     }
 
     /* recurse */
-    rc = testQEMUSchemaValidateRecurse(value, keyschema, data->schema,
-                                       data->debug);
+    rc = testQEMUSchemaValidateRecurse(value, keyschema, data->ctxt);
 
-    virBufferAddLit(data->debug, "\n");
+    virBufferAddLit(data->ctxt->debug, "\n");
     return rc;
 }
 
@@ -181,8 +184,7 @@ static int
 testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
                                          const char *variantfield,
                                          const char *variantname,
-                                         virHashTablePtr schema,
-                                         virBufferPtr debug)
+                                         struct testQEMUSchemaValidateCtxt *ctxt)
 {
     size_t i;
     g_autoptr(virJSONValue) variants = NULL;
@@ -193,7 +195,7 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
     const char *varianttype = NULL;
 
     if (!(variants = virJSONValueObjectStealArray(root, "variants"))) {
-        virBufferAddLit(debug, "ERROR: missing 'variants' in schema\n");
+        virBufferAddLit(ctxt->debug, "ERROR: missing 'variants' in schema\n");
         return -2;
     }
 
@@ -208,14 +210,14 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
     }
 
     if (!varianttype) {
-        virBufferAsprintf(debug, "ERROR: variant '%s' for discriminator '%s' not found\n",
+        virBufferAsprintf(ctxt->debug, "ERROR: variant '%s' for discriminator '%s' not found\n",
                           variantname, variantfield);
         return -1;
     }
 
-    if (!(variantschema = virHashLookup(schema, varianttype)) ||
+    if (!(variantschema = virHashLookup(ctxt->schema, varianttype)) ||
         !(variantschemamembers = virJSONValueObjectGetArray(variantschema, "members"))) {
-        virBufferAsprintf(debug,
+        virBufferAsprintf(ctxt->debug,
                           "ERROR: missing schema or schema members for variant '%s'(%s)\n",
                           variantname, varianttype);
         return -2;
@@ -241,7 +243,7 @@ testQEMUSchemaValidateObjectMandatoryMember(size_t pos G_GNUC_UNUSED,
     struct testQEMUSchemaValidateObjectMemberData *data = opaque;
 
     if (virJSONValueObjectHasKey(item, "default") != 1) {
-        virBufferAsprintf(data->debug, "ERROR: missing mandatory attribute '%s'\n",
+        virBufferAsprintf(data->ctxt->debug, "ERROR: missing mandatory attribute '%s'\n",
                           NULLSTR(virJSONValueObjectGetString(item, "name")));
         data->missingMandatory = true;
     }
@@ -253,22 +255,20 @@ testQEMUSchemaValidateObjectMandatoryMember(size_t pos G_GNUC_UNUSED,
 static int
 testQEMUSchemaValidateObject(virJSONValuePtr obj,
                              virJSONValuePtr root,
-                             virHashTablePtr schema,
-                             virBufferPtr debug)
+                             struct testQEMUSchemaValidateCtxt *ctxt)
 {
-    struct testQEMUSchemaValidateObjectMemberData data = { NULL, schema,
-                                                           debug, false };
+    struct testQEMUSchemaValidateObjectMemberData data = { NULL, ctxt, false };
     g_autoptr(virJSONValue) localroot = NULL;
     const char *variantfield;
     const char *variantname;
 
     if (virJSONValueGetType(obj) != VIR_JSON_TYPE_OBJECT) {
-        virBufferAddLit(debug, "ERROR: not an object");
+        virBufferAddLit(ctxt->debug, "ERROR: not an object");
         return -1;
     }
 
-    virBufferAddLit(debug, "{\n");
-    virBufferAdjustIndent(debug, 3);
+    virBufferAddLit(ctxt->debug, "{\n");
+    virBufferAdjustIndent(ctxt->debug, 3);
 
     /* copy schema */
     if (!(localroot = virJSONValueCopy(root)))
@@ -277,14 +277,13 @@ testQEMUSchemaValidateObject(virJSONValuePtr obj,
     /* remove variant */
     if ((variantfield = virJSONValueObjectGetString(localroot, "tag"))) {
         if (!(variantname = virJSONValueObjectGetString(obj, variantfield))) {
-            virBufferAsprintf(debug, "ERROR: missing variant discriminator attribute '%s'\n",
+            virBufferAsprintf(ctxt->debug, "ERROR: missing variant discriminator attribute '%s'\n",
                               variantfield);
             return -1;
         }
 
         if (testQEMUSchemaValidateObjectMergeVariant(localroot, variantfield,
-                                                     variantname,
-                                                     schema, debug) < 0)
+                                                     variantname, ctxt) < 0)
             return -1;
     }
 
@@ -306,8 +305,8 @@ testQEMUSchemaValidateObject(virJSONValuePtr obj,
     if (data.missingMandatory)
         return -1;
 
-    virBufferAdjustIndent(debug, -3);
-    virBufferAddLit(debug, "} OK");
+    virBufferAdjustIndent(ctxt->debug, -3);
+    virBufferAddLit(ctxt->debug, "} OK");
     return 0;
 }
 
@@ -315,7 +314,7 @@ testQEMUSchemaValidateObject(virJSONValuePtr obj,
 static int
 testQEMUSchemaValidateEnum(virJSONValuePtr obj,
                            virJSONValuePtr root,
-                           virBufferPtr debug)
+                           struct testQEMUSchemaValidateCtxt *ctxt)
 {
     const char *objstr;
     virJSONValuePtr values = NULL;
@@ -323,14 +322,14 @@ testQEMUSchemaValidateEnum(virJSONValuePtr obj,
     size_t i;
 
     if (virJSONValueGetType(obj) != VIR_JSON_TYPE_STRING) {
-        virBufferAddLit(debug, "ERROR: not a string");
+        virBufferAddLit(ctxt->debug, "ERROR: not a string");
         return -1;
     }
 
     objstr = virJSONValueGetString(obj);
 
     if (!(values = virJSONValueObjectGetArray(root, "values"))) {
-        virBufferAsprintf(debug, "ERROR: missing enum values in schema '%s'",
+        virBufferAsprintf(ctxt->debug, "ERROR: missing enum values in schema '%s'",
                           NULLSTR(virJSONValueObjectGetString(root, "name")));
         return -2;
     }
@@ -339,12 +338,12 @@ testQEMUSchemaValidateEnum(virJSONValuePtr obj,
         value = virJSONValueArrayGet(values, i);
 
         if (STREQ_NULLABLE(objstr, virJSONValueGetString(value))) {
-            virBufferAsprintf(debug, "'%s' OK", NULLSTR(objstr));
+            virBufferAsprintf(ctxt->debug, "'%s' OK", NULLSTR(objstr));
             return 0;
         }
     }
 
-    virBufferAsprintf(debug, "ERROR: enum value '%s' is not in schema",
+    virBufferAsprintf(ctxt->debug, "ERROR: enum value '%s' is not in schema",
                       NULLSTR(objstr));
     return -1;
 }
@@ -353,8 +352,7 @@ testQEMUSchemaValidateEnum(virJSONValuePtr obj,
 static int
 testQEMUSchemaValidateArray(virJSONValuePtr objs,
                             virJSONValuePtr root,
-                            virHashTablePtr schema,
-                            virBufferPtr debug)
+                            struct testQEMUSchemaValidateCtxt *ctxt)
 {
     const char *elemtypename = virJSONValueObjectGetString(root, "element-type");
     virJSONValuePtr elementschema;
@@ -362,29 +360,29 @@ testQEMUSchemaValidateArray(virJSONValuePtr objs,
     size_t i;
 
     if (virJSONValueGetType(objs) != VIR_JSON_TYPE_ARRAY) {
-        virBufferAddLit(debug, "ERROR: not an array\n");
+        virBufferAddLit(ctxt->debug, "ERROR: not an array\n");
         return -1;
     }
 
     if (!elemtypename ||
-        !(elementschema = virHashLookup(schema, elemtypename))) {
-        virBufferAsprintf(debug, "ERROR: missing schema for array element type '%s'",
+        !(elementschema = virHashLookup(ctxt->schema, elemtypename))) {
+        virBufferAsprintf(ctxt->debug, "ERROR: missing schema for array element type '%s'",
                          NULLSTR(elemtypename));
         return -2;
     }
 
-    virBufferAddLit(debug, "[\n");
-    virBufferAdjustIndent(debug, 3);
+    virBufferAddLit(ctxt->debug, "[\n");
+    virBufferAdjustIndent(ctxt->debug, 3);
 
     for (i = 0; i < virJSONValueArraySize(objs); i++) {
         obj = virJSONValueArrayGet(objs, i);
 
-        if (testQEMUSchemaValidateRecurse(obj, elementschema, schema, debug) < 0)
+        if (testQEMUSchemaValidateRecurse(obj, elementschema, ctxt) < 0)
             return -1;
-        virBufferAddLit(debug, ",\n");
+        virBufferAddLit(ctxt->debug, ",\n");
     }
-    virBufferAddLit(debug, "] OK");
-    virBufferAdjustIndent(debug, -3);
+    virBufferAddLit(ctxt->debug, "] OK");
+    virBufferAdjustIndent(ctxt->debug, -3);
 
     return 0;
 }
@@ -392,8 +390,7 @@ testQEMUSchemaValidateArray(virJSONValuePtr objs,
 static int
 testQEMUSchemaValidateAlternate(virJSONValuePtr obj,
                                 virJSONValuePtr root,
-                                virHashTablePtr schema,
-                                virBufferPtr debug)
+                                struct testQEMUSchemaValidateCtxt *ctxt)
 {
     virJSONValuePtr members;
     virJSONValuePtr member;
@@ -405,44 +402,44 @@ testQEMUSchemaValidateAlternate(virJSONValuePtr obj,
     int rc;
 
     if (!(members = virJSONValueObjectGetArray(root, "members"))) {
-        virBufferAddLit(debug, "ERROR: missing 'members' for alternate schema");
+        virBufferAddLit(ctxt->debug, "ERROR: missing 'members' for alternate schema");
         return -2;
     }
 
-    virBufferAddLit(debug, "(\n");
-    virBufferAdjustIndent(debug, 3);
-    indent = virBufferGetIndent(debug);
+    virBufferAddLit(ctxt->debug, "(\n");
+    virBufferAdjustIndent(ctxt->debug, 3);
+    indent = virBufferGetIndent(ctxt->debug);
 
     n = virJSONValueArraySize(members);
     for (i = 0; i < n; i++) {
         membertype = NULL;
 
         /* P != NP */
-        virBufferAsprintf(debug, "(alternate %zu/%zu)\n", i + 1, n);
-        virBufferAdjustIndent(debug, 3);
+        virBufferAsprintf(ctxt->debug, "(alternate %zu/%zu)\n", i + 1, n);
+        virBufferAdjustIndent(ctxt->debug, 3);
 
         if (!(member = virJSONValueArrayGet(members, i)) ||
             !(membertype = virJSONValueObjectGetString(member, "type")) ||
-            !(memberschema = virHashLookup(schema, membertype))) {
-            virBufferAsprintf(debug, "ERROR: missing schema for alternate type '%s'",
+            !(memberschema = virHashLookup(ctxt->schema, membertype))) {
+            virBufferAsprintf(ctxt->debug, "ERROR: missing schema for alternate type '%s'",
                               NULLSTR(membertype));
             return -2;
         }
 
-        rc = testQEMUSchemaValidateRecurse(obj, memberschema, schema, debug);
+        rc = testQEMUSchemaValidateRecurse(obj, memberschema, ctxt);
 
-        virBufferAddLit(debug, "\n");
-        virBufferSetIndent(debug, indent);
-        virBufferAsprintf(debug, "(/alternate %zu/%zu)\n", i + 1, n);
+        virBufferAddLit(ctxt->debug, "\n");
+        virBufferSetIndent(ctxt->debug, indent);
+        virBufferAsprintf(ctxt->debug, "(/alternate %zu/%zu)\n", i + 1, n);
 
         if (rc == 0) {
-            virBufferAdjustIndent(debug, -3);
-            virBufferAddLit(debug, ") OK");
+            virBufferAdjustIndent(ctxt->debug, -3);
+            virBufferAddLit(ctxt->debug, ") OK");
             return 0;
         }
     }
 
-    virBufferAddLit(debug, "ERROR: no alternate type was matched");
+    virBufferAddLit(ctxt->debug, "ERROR: no alternate type was matched");
     return -1;
 }
 
@@ -450,25 +447,24 @@ testQEMUSchemaValidateAlternate(virJSONValuePtr obj,
 static int
 testQEMUSchemaValidateRecurse(virJSONValuePtr obj,
                               virJSONValuePtr root,
-                              virHashTablePtr schema,
-                              virBufferPtr debug)
+                              struct testQEMUSchemaValidateCtxt *ctxt)
 {
     const char *n = virJSONValueObjectGetString(root, "name");
     const char *t = virJSONValueObjectGetString(root, "meta-type");
 
     if (STREQ_NULLABLE(t, "builtin")) {
-        return testQEMUSchemaValidateBuiltin(obj, root, debug);
+        return testQEMUSchemaValidateBuiltin(obj, root, ctxt);
     } else if (STREQ_NULLABLE(t, "object")) {
-        return testQEMUSchemaValidateObject(obj, root, schema, debug);
+        return testQEMUSchemaValidateObject(obj, root, ctxt);
     } else if (STREQ_NULLABLE(t, "enum")) {
-        return testQEMUSchemaValidateEnum(obj, root, debug);
+        return testQEMUSchemaValidateEnum(obj, root, ctxt);
     } else if (STREQ_NULLABLE(t, "array")) {
-        return testQEMUSchemaValidateArray(obj, root, schema, debug);
+        return testQEMUSchemaValidateArray(obj, root, ctxt);
     } else if (STREQ_NULLABLE(t, "alternate")) {
-        return testQEMUSchemaValidateAlternate(obj, root, schema, debug);
+        return testQEMUSchemaValidateAlternate(obj, root, ctxt);
     }
 
-    virBufferAsprintf(debug,
+    virBufferAsprintf(ctxt->debug,
                       "qapi schema meta-type '%s' of type '%s' not handled\n",
                       NULLSTR(t), NULLSTR(n));
     return -2;
@@ -494,7 +490,9 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
                        virHashTablePtr schema,
                        virBufferPtr debug)
 {
-    return testQEMUSchemaValidateRecurse(obj, root, schema, debug);
+    struct testQEMUSchemaValidateCtxt ctxt = { .schema = schema,
+                                               .debug = debug };
+    return testQEMUSchemaValidateRecurse(obj, root, &ctxt);
 }
 
 
@@ -518,6 +516,8 @@ testQEMUSchemaValidateCommand(const char *command,
                               virHashTablePtr schema,
                               virBufferPtr debug)
 {
+    struct testQEMUSchemaValidateCtxt ctxt = { .schema = schema,
+                                               .debug = debug };
     g_autofree char *schemapatharguments = g_strdup_printf("%s/arg-type", command);
     g_autoptr(virJSONValue) emptyargs = NULL;
     virJSONValuePtr schemarootcommand;
@@ -538,7 +538,7 @@ testQEMUSchemaValidateCommand(const char *command,
         return -1;
     }
 
-    return testQEMUSchemaValidateRecurse(arguments, schemarootarguments, schema, debug);
+    return testQEMUSchemaValidateRecurse(arguments, schemarootarguments, &ctxt);
 }
 
 
