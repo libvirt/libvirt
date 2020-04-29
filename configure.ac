@@ -90,11 +90,9 @@ dnl Miscellaneous checks
 dnl
 
 LIBVIRT_ARG_TLS_PRIORITY
-LIBVIRT_ARG_SYSCTL_CONFIG
 
 
 LIBVIRT_CHECK_TLS_PRIORITY
-LIBVIRT_CHECK_SYSCTL_CONFIG
 
 
 dnl Need to test if pkg-config exists

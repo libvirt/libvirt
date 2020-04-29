@@ -100,3 +100,4 @@ option('login_shell', type: 'feature', value: 'auto', description: 'build virt-l
 option('nss', type: 'feature', value: 'auto', description: 'enable Name Service Switch plugin for resolving guest IP addresses')
 option('numad', type: 'feature', value: 'auto', description: 'use numad to manage CPU placement dynamically')
 option('pm_utils', type: 'feature', value: 'auto', description: 'use pm-utils for power management')
+option('sysctl_config', type: 'feature', value: 'auto', description: 'Whether to install sysctl configs')

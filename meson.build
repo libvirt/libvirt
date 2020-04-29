@@ -2193,6 +2193,12 @@ if not get_option('pm_utils').disabled()
   endif
 endif
 
+if not get_option('sysctl_config').disabled() and host_machine.system() == 'linux'
+  conf.set('WITH_SYSCTL', 1)
+elif get_option('sysctl_config').enabled()
+  error('sysctl configuration is supported only on linux')
+endif
+
 
 # define top include directory
 
