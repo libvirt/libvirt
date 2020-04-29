@@ -1084,6 +1084,21 @@ endif
 libiscsi_version = '1.18.0'
 libiscsi_dep = dependency('libiscsi', version: '>=' + libiscsi_version, required: get_option('libiscsi'))
 
+libnl_version = '3.0'
+if host_machine.system() == 'linux'
+  libnl_dep = dependency('libnl-3.0', version: '>=' + libnl_version, required: false)
+  libnl_route_dep = dependency('libnl-route-3.0', version: '>=' + libnl_version, required: false)
+
+  if libnl_dep.found() and libnl_route_dep.found()
+    libnl_dep = declare_dependency(
+      dependencies: [ libnl_dep, libnl_route_dep ],
+    )
+    conf.set('HAVE_LIBNL', 1)
+  endif
+else
+  libnl_dep = dependency('', required: false)
+endif
+
 use_macvtap = false
 if not get_option('macvtap').disabled()
   if (cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_BRIDGE') and
@@ -1206,6 +1221,10 @@ elif get_option('firewalld_zone').enabled()
   error('You must have firewalld support enabled to enable firewalld_zone')
 endif
 
+if conf.has('WITH_MACVTAP') and not conf.has('HAVE_LIBNL')
+  error('libnl3-devel is required for macvtap support')
+endif
+
 
 # define top include directory
 
@@ -1244,6 +1263,7 @@ libs_summary = {
   'gnutls': gnutls_dep.found(),
   'hal': hal_dep.found(),
   'libiscsi': libiscsi_dep.found(),
+  'libnl': libnl_dep.found(),
   'macvtap': conf.has('WITH_MACVTAP'),
   'readline': readline_dep.found(),
 }
