@@ -1084,6 +1084,25 @@ endif
 libiscsi_version = '1.18.0'
 libiscsi_dep = dependency('libiscsi', version: '>=' + libiscsi_version, required: get_option('libiscsi'))
 
+use_macvtap = false
+if not get_option('macvtap').disabled()
+  if (cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_BRIDGE') and
+      cc.has_header_symbol('linux/if_link.h', 'IFLA_VF_MAX'))
+    use_macvtap = true
+  endif
+
+  if get_option('macvtap').enabled() and not use_macvtap
+    error('Installed linux headers don\'t show support for macvtap device.')
+  endif
+endif
+if use_macvtap
+  conf.set('WITH_MACVTAP', 1)
+
+  if cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_PASSTHRU')
+    conf.set('HAVE_DECL_MACVLAN_MODE_PASSTHRU', 1)
+  endif
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1225,6 +1244,7 @@ libs_summary = {
   'gnutls': gnutls_dep.found(),
   'hal': hal_dep.found(),
   'libiscsi': libiscsi_dep.found(),
+  'macvtap': conf.has('WITH_MACVTAP'),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
