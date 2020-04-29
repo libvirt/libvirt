@@ -1701,6 +1701,12 @@ elif get_option('driver_lxc').enabled()
   error('linux and remote_driver are required for LXC')
 endif
 
+if not get_option('driver_openvz').disabled() and host_machine.system() == 'linux'
+  conf.set('WITH_OPENVZ', 1)
+elif get_option('driver_openvz').enabled()
+  error('OpenVZ driver can be enabled on Linux only')
+endif
+
 
 # define top include directory
 
@@ -1721,6 +1727,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 # print configuration summary
 
 driver_summary = {
+  'OpenVZ': conf.has('WITH_OPENVZ'),
   'libxl': conf.has('WITH_LIBXL'),
   'LXC': conf.has('WITH_LXC'),
   'ESX': conf.has('WITH_ESX'),
