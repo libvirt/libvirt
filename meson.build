@@ -1364,6 +1364,24 @@ if selinux_dep.found()
   conf.set('WITH_SELINUX', 1)
 endif
 
+thread_dep = dependency('threads', required: true)
+pthread_sigmask_code = '''
+  #include <sys/types.h>
+  #include <signal.h>
+
+  int main() {
+      #ifdef pthread_sigmask
+      int (*foo)(int, const sigset_t *, sigset_t *) = &pthread_sigmask;
+      return !foo;
+      #endif
+
+      return 0;
+  }
+'''
+if not cc.compiles(pthread_sigmask_code)
+  conf.set('FUNC_PTHREAD_SIGMASK_BROKEN', 1)
+endif
+
 
 # generic build dependencies checks
 
