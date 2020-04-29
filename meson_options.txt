@@ -34,6 +34,7 @@ option('nls', type: 'feature', value: 'auto', description: 'nls support')
 option('numactl', type: 'feature', value: 'auto', description: 'numactl support')
 option('openwsman', type: 'feature', value: 'auto', description: 'openwsman support')
 option('pciaccess', type: 'feature', value: 'auto', description: 'pciaccess support')
+option('polkit', type: 'feature', value: 'auto', description: 'use PolicyKit for UNIX socket access checks')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 
 

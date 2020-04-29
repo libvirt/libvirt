@@ -1244,6 +1244,12 @@ parallels_sdk_dep = dependency('parallels-sdk', version: '>=' + parallels_sdk_ve
 pciaccess_version = '0.10.0'
 pciaccess_dep = dependency('pciaccess', version: '>=' + pciaccess_version, required: get_option('pciaccess'))
 
+if not get_option('polkit').disabled() and host_machine.system() != 'windows'
+  pkcheck_prog = find_program('pkcheck', required: false, dirs: libvirt_sbin_path)
+else
+  pkcheck_prog = dependency('', required: false)
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1351,6 +1357,12 @@ if conf.has('WITH_MACVTAP') and not conf.has('HAVE_LIBNL')
   error('libnl3-devel is required for macvtap support')
 endif
 
+if (pkcheck_prog.found() or get_option('polkit').enabled()) and dbus_dep.found()
+  conf.set('WITH_POLKIT', 1)
+elif get_option('polkit').enabled()
+  error('You must install dbus to compile libvirt with polkit-1')
+endif
+
 
 # define top include directory
 
@@ -1400,6 +1412,7 @@ libs_summary = {
   'numaclt': numactl_dep.found(),
   'openwsman': openwsman_dep.found(),
   'pciaccess': pciaccess_dep.found(),
+  'polkit': conf.has('WITH_POLKIT'),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
