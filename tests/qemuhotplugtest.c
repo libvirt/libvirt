@@ -457,6 +457,9 @@ testQemuHotplugCpuPrepare(const char *test,
     if (fail)
         qemuMonitorTestAllowUnusedCommands(data->mon);
 
+    if (!data->modern)
+        qemuMonitorTestSkipDeprecatedValidation(data->mon, true);
+
     priv->mon = qemuMonitorTestGetMonitor(data->mon);
     virObjectUnlock(priv->mon);
 
