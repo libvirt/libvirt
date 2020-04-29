@@ -27,6 +27,7 @@ option('hal', type: 'feature', value: 'auto', description: 'hal support')
 option('libiscsi', type: 'feature', value: 'auto', description: 'libiscsi support')
 option('libpcap', type: 'feature', value: 'auto', description: 'libpcap support')
 option('libssh', type: 'feature', value: 'auto', description: 'libssh support')
+option('libssh2', type: 'feature', value: 'auto', description: 'libssh2 support')
 option('macvtap', type: 'feature', value: 'auto', description: 'enable macvtap device')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 

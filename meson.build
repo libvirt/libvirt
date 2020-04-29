@@ -1150,6 +1150,16 @@ else
   libssh_dep = dependency('', required: false)
 endif
 
+libssh2_version = '1.3'
+if get_option('driver_remote').enabled()
+  libssh2_dep = dependency('libssh2', version: '>=' + libssh2_version, required: get_option('libssh2'))
+  if libssh2_dep.found()
+    conf.set('WITH_SSH2', 1)
+  endif
+else
+  libssh2_dep = dependency('', required: false)
+endif
+
 use_macvtap = false
 if not get_option('macvtap').disabled()
   if (cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_BRIDGE') and
@@ -1317,6 +1327,7 @@ libs_summary = {
   'libnl': libnl_dep.found(),
   'libpcap': libpcap_dep.found(),
   'libssh': libssh_dep.found(),
+  'libssh2': libssh2_dep.found(),
   'macvtap': conf.has('WITH_MACVTAP'),
   'readline': readline_dep.found(),
 }
