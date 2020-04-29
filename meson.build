@@ -1822,6 +1822,10 @@ if not get_option('driver_qemu').disabled()
   endif
 endif
 
+if get_option('driver_test').enabled()
+  conf.set('WITH_TEST', 1)
+endif
+
 
 # define top include directory
 
@@ -1849,6 +1853,7 @@ driver_summary = {
   'ESX': conf.has('WITH_ESX'),
   'Hyper-V': conf.has('WITH_HYPERV'),
   'Bhyve': conf.has('WITH_BHYVE'),
+  'Test': conf.has('WITH_TEST'),
   'Remote': conf.has('WITH_REMOTE'),
   'Libvirtd': conf.has('WITH_LIBVIRTD'),
 }

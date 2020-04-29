@@ -60,3 +60,4 @@ option('qemu_user', type: 'string', value: '', description: 'username to run QEM
 option('qemu_group', type: 'string', value: '', description: 'groupname to run QEMU system instance as')
 option('driver_remote', type: 'feature', value: 'enabled', description: 'remote driver')
 option('remote_default_mode', type: 'combo', choices: ['legacy', 'direct'], value: 'legacy', description: 'remote driver default mode')
+option('driver_test', type: 'feature', value: 'enabled', description: 'test driver')
