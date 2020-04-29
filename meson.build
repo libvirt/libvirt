@@ -1235,6 +1235,9 @@ if numactl_dep.found()
   endif
 endif
 
+openwsman_version = '2.2.3'
+openwsman_dep = dependency('openwsman', version: '>=' + openwsman_version, required: get_option('openwsman'))
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1389,6 +1392,7 @@ libs_summary = {
   'netcf': netcf_dep.found(),
   'NLS': have_gnu_gettext_tools,
   'numaclt': numactl_dep.found(),
+  'openwsman': openwsman_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
