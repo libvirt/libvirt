@@ -1226,6 +1226,15 @@ if not get_option('nls').disabled()
   endif
 endif
 
+numactl_dep = cc.find_library('numa', required: get_option('numactl'))
+if numactl_dep.found()
+  conf.set('WITH_NUMACTL', 1)
+
+  if cc.has_function('numa_bitmask_isbitset', dependencies: [ numactl_dep ])
+    conf.set('HAVE_NUMA_BITMASK_ISBITSET', 1)
+  endif
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1379,6 +1388,7 @@ libs_summary = {
   'macvtap': conf.has('WITH_MACVTAP'),
   'netcf': netcf_dep.found(),
   'NLS': have_gnu_gettext_tools,
+  'numaclt': numactl_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
