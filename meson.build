@@ -1388,6 +1388,11 @@ if udev_dep.found()
   conf.set('WITH_UDEV', 1)
 endif
 
+util_dep = cc.find_library('util', required: false)
+if util_dep.found()
+  add_project_link_arguments('-lutil', language: 'c')
+endif
+
 
 # generic build dependencies checks
 

@@ -121,8 +121,6 @@ LIBVIRT_CHECK_XDR
 LIBVIRT_CHECK_YAJL
 
 
-AC_CHECK_LIB([util],[openpty],[])
-
 
 dnl
 dnl Virtualization drivers check
