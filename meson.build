@@ -1831,6 +1831,11 @@ if not get_option('driver_vbox').disabled() and conf.has('WITH_LIBVIRTD')
   conf.set_quoted('VBOX_XPCOMC_DIR', get_option('vbox_xpcomc_dir'))
 endif
 
+if get_option('driver_vmware').enabled()
+  conf.set('WITH_VMWARE', 1)
+  conf.set('WITH_VMX', 1)
+endif
+
 
 # define top include directory
 
@@ -1853,6 +1858,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 driver_summary = {
   'QEMU': conf.has('WITH_QEMU'),
   'OpenVZ': conf.has('WITH_OPENVZ'),
+  'VMware': conf.has('WITH_VMWARE'),
   'VBox': conf.has('WITH_VBOX'),
   'libxl': conf.has('WITH_LIBXL'),
   'LXC': conf.has('WITH_LXC'),
