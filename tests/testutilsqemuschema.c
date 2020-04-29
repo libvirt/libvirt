@@ -123,36 +123,33 @@ testQEMUSchemaValidateObjectMember(const char *key,
                                    void *opaque)
 {
     struct testQEMUSchemaValidateObjectMemberData *data = opaque;
-    virJSONValuePtr keymember = NULL;
+    g_autoptr(virJSONValue) keymember = NULL;
     const char *keytype;
     virJSONValuePtr keyschema = NULL;
-    int ret = -1;
+    int rc;
 
     virBufferStrcat(data->debug, key, ": ", NULL);
 
     /* lookup 'member' entry for key */
     if (!(keymember = testQEMUSchemaStealObjectMemberByName(key, data->rootmembers))) {
-        virBufferAddLit(data->debug, "ERROR: attribute not in schema");
-        goto cleanup;
+        virBufferAddLit(data->debug, "ERROR: attribute not in schema\n");
+        return -1;
     }
 
     /* lookup schema entry for keytype */
     if (!(keytype = virJSONValueObjectGetString(keymember, "type")) ||
         !(keyschema = virHashLookup(data->schema, keytype))) {
-        virBufferAsprintf(data->debug, "ERROR: can't find schema for type '%s'",
+        virBufferAsprintf(data->debug, "ERROR: can't find schema for type '%s'\n",
                           NULLSTR(keytype));
-        ret = -2;
-        goto cleanup;
+        return -2;
     }
 
     /* recurse */
-    ret = testQEMUSchemaValidateRecurse(value, keyschema, data->schema,
-                                        data->debug);
+    rc = testQEMUSchemaValidateRecurse(value, keyschema, data->schema,
+                                       data->debug);
 
- cleanup:
     virBufferAddLit(data->debug, "\n");
-    virJSONValueFree(keymember);
-    return ret;
+    return rc;
 }
 
 
@@ -188,13 +185,12 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
                                          virBufferPtr debug)
 {
     size_t i;
-    virJSONValuePtr variants = NULL;
+    g_autoptr(virJSONValue) variants = NULL;
     virJSONValuePtr variant;
     virJSONValuePtr variantschema;
     virJSONValuePtr variantschemamembers;
     virJSONValuePtr rootmembers;
     const char *varianttype = NULL;
-    int ret = -1;
 
     if (!(variants = virJSONValueObjectStealArray(root, "variants"))) {
         virBufferAddLit(debug, "ERROR: missing 'variants' in schema\n");
@@ -214,8 +210,7 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
     if (!varianttype) {
         virBufferAsprintf(debug, "ERROR: variant '%s' for discriminator '%s' not found\n",
                           variantname, variantfield);
-        goto cleanup;
-
+        return -1;
     }
 
     if (!(variantschema = virHashLookup(schema, varianttype)) ||
@@ -223,8 +218,7 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
         virBufferAsprintf(debug,
                           "ERROR: missing schema or schema members for variant '%s'(%s)\n",
                           variantname, varianttype);
-        ret = -2;
-        goto cleanup;
+        return -2;
     }
 
     rootmembers = virJSONValueObjectGetArray(root, "members");
@@ -232,15 +226,10 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
     if (virJSONValueArrayForeachSteal(variantschemamembers,
                                       testQEMUSchemaValidateObjectMergeVariantMember,
                                       rootmembers) < 0) {
-        ret = -2;
-        goto cleanup;
+        return -2;
     }
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(variants);
-    return ret;
+    return 0;
 }
 
 
@@ -269,10 +258,9 @@ testQEMUSchemaValidateObject(virJSONValuePtr obj,
 {
     struct testQEMUSchemaValidateObjectMemberData data = { NULL, schema,
                                                            debug, false };
-    virJSONValuePtr localroot = NULL;
+    g_autoptr(virJSONValue) localroot = NULL;
     const char *variantfield;
     const char *variantname;
-    int ret = -1;
 
     if (virJSONValueGetType(obj) != VIR_JSON_TYPE_OBJECT) {
         virBufferAddLit(debug, "ERROR: not an object");
@@ -283,23 +271,21 @@ testQEMUSchemaValidateObject(virJSONValuePtr obj,
     virBufferAdjustIndent(debug, 3);
 
     /* copy schema */
-    if (!(localroot = virJSONValueCopy(root))) {
-        ret = -2;
-        goto cleanup;
-    }
+    if (!(localroot = virJSONValueCopy(root)))
+        return -2;
 
     /* remove variant */
     if ((variantfield = virJSONValueObjectGetString(localroot, "tag"))) {
         if (!(variantname = virJSONValueObjectGetString(obj, variantfield))) {
             virBufferAsprintf(debug, "ERROR: missing variant discriminator attribute '%s'\n",
                               variantfield);
-            goto cleanup;
+            return -1;
         }
 
         if (testQEMUSchemaValidateObjectMergeVariant(localroot, variantfield,
                                                      variantname,
                                                      schema, debug) < 0)
-            goto cleanup;
+            return -1;
     }
 
 
@@ -308,26 +294,21 @@ testQEMUSchemaValidateObject(virJSONValuePtr obj,
     if (virJSONValueObjectForeachKeyValue(obj,
                                           testQEMUSchemaValidateObjectMember,
                                           &data) < 0)
-        goto cleanup;
+        return -1;
 
     /* check missing mandatory values */
     if (virJSONValueArrayForeachSteal(data.rootmembers,
                                       testQEMUSchemaValidateObjectMandatoryMember,
                                       &data) < 0) {
-        ret = -2;
-        goto cleanup;
+        return -2;
     }
 
     if (data.missingMandatory)
-        goto cleanup;
+        return -1;
 
     virBufferAdjustIndent(debug, -3);
     virBufferAddLit(debug, "} OK");
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(localroot);
-    return ret;
+    return 0;
 }
 
 
@@ -570,11 +551,11 @@ testQEMUSchemaValidateCommand(const char *command,
 virJSONValuePtr
 testQEMUSchemaGetLatest(const char* arch)
 {
-    char *capsLatestFile = NULL;
-    char *capsLatest = NULL;
+    g_autofree char *capsLatestFile = NULL;
+    g_autofree char *capsLatest = NULL;
     char *schemaReply;
     char *end;
-    virJSONValuePtr reply = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr schema = NULL;
 
     if (!(capsLatestFile = testQemuGetLatestCapsForArch(arch, "replies"))) {
@@ -585,14 +566,14 @@ testQEMUSchemaGetLatest(const char* arch)
     VIR_TEST_DEBUG("replies file: '%s'", capsLatestFile);
 
     if (virTestLoadFile(capsLatestFile, &capsLatest) < 0)
-        goto cleanup;
+        return NULL;
 
     if (!(schemaReply = strstr(capsLatest, "\"execute\": \"query-qmp-schema\"")) ||
         !(schemaReply = strstr(schemaReply, "\n\n")) ||
         !(end = strstr(schemaReply + 2, "\n\n"))) {
         VIR_TEST_VERBOSE("failed to find reply to 'query-qmp-schema' in '%s'",
                          capsLatestFile);
-        goto cleanup;
+        return NULL;
     }
 
     schemaReply += 2;
@@ -601,19 +582,15 @@ testQEMUSchemaGetLatest(const char* arch)
     if (!(reply = virJSONValueFromString(schemaReply))) {
         VIR_TEST_VERBOSE("failed to parse 'query-qmp-schema' reply from '%s'",
                          capsLatestFile);
-        goto cleanup;
+        return NULL;
     }
 
     if (!(schema = virJSONValueObjectStealArray(reply, "return"))) {
         VIR_TEST_VERBOSE("missing qapi schema data in reply in '%s'",
                          capsLatestFile);
-        goto cleanup;
+        return NULL;
     }
 
- cleanup:
-    VIR_FREE(capsLatestFile);
-    VIR_FREE(capsLatest);
-    virJSONValueFree(reply);
     return schema;
 }
 
