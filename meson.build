@@ -1040,6 +1040,15 @@ if devmapper_dep.found()
   conf.set('WITH_DEVMAPPER', 1)
 endif
 
+dlopen_use = host_machine.system() != 'windows'
+dlopen_dep = cc.find_library('dl', required: dlopen_use)
+if dlopen_dep.found()
+  if not cc.has_header('dlfcn.h')
+    error('Unable to find dlfcn.h')
+  endif
+  conf.set('HAVE_DLFCN_H', 1)
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1158,6 +1167,7 @@ libs_summary = {
   'capng': capng_dep.found(),
   'curl': curl_dep.found(),
   'dbus': dbus_dep.found(),
+  'dlopen': dlopen_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
