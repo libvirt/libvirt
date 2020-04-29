@@ -1055,6 +1055,14 @@ if fuse_dep.found()
   conf.set('WITH_FUSE', 1)
 endif
 
+glib_version = '2.48.0'
+glib_dep = dependency('glib-2.0', version: '>=' + glib_version)
+gobject_dep = dependency('gobject-2.0', version: '>=' + glib_version)
+gio_dep = dependency('gio-2.0', version: '>=' + glib_version)
+glib_dep = declare_dependency(
+  dependencies: [ glib_dep, gobject_dep, gio_dep ],
+)
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1191,6 +1199,7 @@ libs_summary = {
   'firewalld': conf.has('WITH_FIREWALLD'),
   'firewalld-zone': conf.has('WITH_FIREWALLD_ZONE'),
   'fuse': fuse_dep.found(),
+  'glib_dep': glib_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
