@@ -3214,9 +3214,9 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONSetPassword);
     DO_TEST_GEN(qemuMonitorJSONExpirePassword);
     DO_TEST_GEN(qemuMonitorJSONSetBalloon);
-    DO_TEST_GEN(qemuMonitorJSONSetCPU);
+    DO_TEST_GEN_DEPRECATED(qemuMonitorJSONSetCPU, true);
     DO_TEST_GEN(qemuMonitorJSONEjectMedia);
-    DO_TEST_GEN(qemuMonitorJSONChangeMedia);
+    DO_TEST_GEN_DEPRECATED(qemuMonitorJSONChangeMedia, true);
     DO_TEST_GEN(qemuMonitorJSONSaveVirtualMemory);
     DO_TEST_GEN(qemuMonitorJSONSavePhysicalMemory);
     DO_TEST_GEN(qemuMonitorJSONSetMigrationSpeed);
