@@ -86,7 +86,7 @@ testBackingXMLjsonXML(const void *args)
 
     if (!data->legacy) {
         if (testQEMUSchemaValidate(backendprops, data->schemaroot,
-                                   data->schema, &debug) < 0) {
+                                   data->schema, false, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             g_autofree char *debugprops = virJSONValueToString(backendprops, true);
 
@@ -168,7 +168,7 @@ testJSONtoJSON(const void *args)
         return -1;
 
     if (testQEMUSchemaValidate(jsonsrcout, data->schemaroot,
-                               data->schema, &debug) < 0) {
+                               data->schema, false, &debug) < 0) {
         g_autofree char *debugmsg = virBufferContentAndReset(&debug);
 
         VIR_TEST_VERBOSE("json does not conform to QAPI schema");
@@ -341,7 +341,7 @@ testQemuDiskXMLToPropsValidateSchema(const void *opaque)
         g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
 
         if (testQEMUSchemaValidate(data->images[i].formatprops, data->schemaroot,
-                                   data->schema, &debug) < 0) {
+                                   data->schema, false, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             g_autofree char *propsstr = virJSONValueToString(data->images[i].formatprops, true);
             VIR_TEST_VERBOSE("json does not conform to QAPI schema");
@@ -353,7 +353,7 @@ testQemuDiskXMLToPropsValidateSchema(const void *opaque)
         virBufferFreeAndReset(&debug);
 
         if (testQEMUSchemaValidate(data->images[i].storageprops, data->schemaroot,
-                                   data->schema, &debug) < 0) {
+                                   data->schema, false, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             g_autofree char *propsstr = virJSONValueToString(data->images[i].storageprops, true);
             VIR_TEST_VERBOSE("json does not conform to QAPI schema");
@@ -365,7 +365,7 @@ testQemuDiskXMLToPropsValidateSchema(const void *opaque)
         virBufferFreeAndReset(&debug);
 
         if (testQEMUSchemaValidate(data->images[i].storagepropssrc, data->schemaroot,
-                                   data->schema, &debug) < 0) {
+                                   data->schema, false, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             g_autofree char *propsstr = virJSONValueToString(data->images[i].storagepropssrc, true);
             VIR_TEST_VERBOSE("json does not conform to QAPI schema");
@@ -543,7 +543,7 @@ testQemuImageCreate(const void *opaque)
             return -1;
 
         if (testQEMUSchemaValidate(formatprops, data->schemaroot, data->schema,
-                                   &debug) < 0) {
+                                   false, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             VIR_TEST_VERBOSE("blockdev-create format json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
@@ -558,7 +558,7 @@ testQemuImageCreate(const void *opaque)
             return -1;
 
         if (testQEMUSchemaValidate(protocolprops, data->schemaroot, data->schema,
-                                   &debug) < 0) {
+                                   false, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             VIR_TEST_VERBOSE("blockdev-create protocol json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",

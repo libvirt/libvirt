@@ -2842,7 +2842,8 @@ testQAPISchemaValidate(const void *opaque)
     if (!(json = virJSONValueFromString(data->json)))
         goto cleanup;
 
-    if ((testQEMUSchemaValidate(json, schemaroot, data->schema, &debug) == 0) != data->success) {
+    if ((testQEMUSchemaValidate(json, schemaroot, data->schema, false,
+                                &debug) == 0) != data->success) {
         if (!data->success)
             VIR_TEST_VERBOSE("\nschema validation should have failed");
     } else {

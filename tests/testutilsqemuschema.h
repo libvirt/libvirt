@@ -26,12 +26,15 @@ int
 testQEMUSchemaValidate(virJSONValuePtr obj,
                        virJSONValuePtr root,
                        virHashTablePtr schema,
+                       bool allowDeprecated,
                        virBufferPtr debug);
 
 int
 testQEMUSchemaValidateCommand(const char *command,
                               virJSONValuePtr arguments,
                               virHashTablePtr schema,
+                              bool allowDeprecated,
+                              bool allowRemoved,
                               virBufferPtr debug);
 
 virJSONValuePtr

@@ -24,6 +24,7 @@
 struct testQEMUSchemaValidateCtxt {
     virHashTablePtr schema;
     virBufferPtr debug;
+    bool allowDeprecated;
 };
 
 
@@ -488,10 +489,13 @@ int
 testQEMUSchemaValidate(virJSONValuePtr obj,
                        virJSONValuePtr root,
                        virHashTablePtr schema,
+                       bool allowDeprecated,
                        virBufferPtr debug)
 {
     struct testQEMUSchemaValidateCtxt ctxt = { .schema = schema,
-                                               .debug = debug };
+                                               .debug = debug,
+                                               .allowDeprecated = allowDeprecated };
+
     return testQEMUSchemaValidateRecurse(obj, root, &ctxt);
 }
 
@@ -501,6 +505,9 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
  * @command: command to validate
  * @arguments: arguments of @command to validate
  * @schema: hash table containing schema entries
+ * @allowDeprecated: don't fails schema validation if @command or one of @arguments
+ *                   is deprecated
+ * @allowRemoved: skip validation fully if @command was not found
  * @debug: a virBuffer which will be filled with debug information if provided
  *
  * Validates whether @command and its @arguments conform to the QAPI schema
@@ -508,16 +515,22 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
  * -1 if it does not and -2 if there is a problem with the schema or with
  *  internals.
  *
+ * @allowRemoved should generally be used only if it's certain that there's a
+ * replacement of @command in place.
+ *
  * @debug is filled with information regarding the validation process
  */
 int
 testQEMUSchemaValidateCommand(const char *command,
                               virJSONValuePtr arguments,
                               virHashTablePtr schema,
+                              bool allowDeprecated,
+                              bool allowRemoved G_GNUC_UNUSED,
                               virBufferPtr debug)
 {
     struct testQEMUSchemaValidateCtxt ctxt = { .schema = schema,
-                                               .debug = debug };
+                                               .debug = debug,
+                                               .allowDeprecated = allowDeprecated };
     g_autofree char *schemapatharguments = g_strdup_printf("%s/arg-type", command);
     g_autoptr(virJSONValue) emptyargs = NULL;
     virJSONValuePtr schemarootcommand;
