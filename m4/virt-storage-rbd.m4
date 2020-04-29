@@ -25,18 +25,6 @@ AC_DEFUN([LIBVIRT_STORAGE_ARG_RBD], [
 AC_DEFUN([LIBVIRT_STORAGE_CHECK_RBD], [
   LIBRBD_LIBS=
   if test "$with_storage_rbd" = "yes" || test "$with_storage_rbd" = "check"; then
-    AC_CHECK_HEADER([rbd/librbd.h], [LIBRBD_FOUND=yes; break;])
-
-    if test "$LIBRBD_FOUND" = "yes"; then
-      LIBRBD_LIBS="-lrbd -lrados"
-
-      old_LIBS="$LIBS"
-      LIBS="$LIBS $LIBRBD_LIBS"
-      AC_CHECK_FUNCS([rbd_get_features],[],[LIBRBD_FOUND=no])
-      AC_CHECK_FUNCS([rbd_list2])
-      LIBS="$old_LIBS"
-    fi
-
     if test "$LIBRBD_FOUND" = "yes"; then
       with_storage_rbd=yes
       AC_DEFINE_UNQUOTED([WITH_STORAGE_RBD], [1],

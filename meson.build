@@ -1250,6 +1250,21 @@ else
   pkcheck_prog = dependency('', required: false)
 endif
 
+rbd_dep = cc.find_library('rbd', required: false)
+rados_dep = cc.find_library('rados', required: false)
+if rbd_dep.found() and not cc.has_function('rbd_get_features', dependencies: rbd_dep)
+  rbd_dep = dependency('', required: false)
+endif
+if rbd_dep.found() and rados_dep.found()
+  if cc.has_function('rbd_list2', dependencies: rbd_dep)
+    conf.set('HAVE_RBD_LIST2', 1)
+  endif
+
+  rbd_dep = declare_dependency(dependencies: [ rbd_dep, rados_dep ])
+else
+  rbd_dep = dependency('', required: false)
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1413,6 +1428,7 @@ libs_summary = {
   'openwsman': openwsman_dep.found(),
   'pciaccess': pciaccess_dep.found(),
   'polkit': conf.has('WITH_POLKIT'),
+  'rbd': rbd_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
