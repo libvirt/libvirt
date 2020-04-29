@@ -46,6 +46,8 @@ struct _testQemuMonitorJSONSimpleFuncData {
     virDomainXMLOptionPtr xmlopt;
     const char *reply;
     virHashTablePtr schema;
+    bool allowDeprecated;
+    bool allowRemoved;
 };
 
 typedef struct _testGenericData testGenericData;
@@ -1278,6 +1280,9 @@ testQemuMonitorJSON ## funcName(const void *opaque) \
  \
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema))) \
         return -1; \
+ \
+    if (data->allowDeprecated) \
+        qemuMonitorTestSkipDeprecatedValidation(test, data->allowRemoved); \
  \
     if (!reply) \
         reply = "{\"return\":{}}"; \
@@ -3121,12 +3126,18 @@ mymain(void)
     if (virTestRun(# FNC, testQemuMonitorJSONSimpleFunc, &simpleFunc) < 0) \
         ret = -1
 
-#define DO_TEST_GEN(name, ...) \
+#define DO_TEST_GEN_FULL(name, dpr, rmvd, ...) \
     simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.xmlopt = driver.xmlopt, \
+                                                      .allowDeprecated = dpr, \
+                                                      .allowRemoved = rmvd, \
                                                       .schema = qapiData.schema \
                                                      __VA_ARGS__ }; \
     if (virTestRun(# name, testQemuMonitorJSON ## name, &simpleFunc) < 0) \
         ret = -1
+
+#define DO_TEST_GEN(name, ...) DO_TEST_GEN_FULL(name, false, false, __VA_ARGS__)
+#define DO_TEST_GEN_DEPRECATED(name, removed, ...) \
+    DO_TEST_GEN_FULL(name, true, removed, __VA_ARGS__)
 
 #define DO_TEST_CPU_DATA(name) \
     do { \
