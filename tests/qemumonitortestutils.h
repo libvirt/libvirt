@@ -51,6 +51,8 @@ void *qemuMonitorTestItemGetPrivateData(qemuMonitorTestItemPtr item);
 int qemuMonitorTestAddErrorResponse(qemuMonitorTestPtr test, const char *errmsg, ...);
 
 void qemuMonitorTestAllowUnusedCommands(qemuMonitorTestPtr test);
+void qemuMonitorTestSkipDeprecatedValidation(qemuMonitorTestPtr test,
+                                             bool allowRemoved);
 
 int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                            const char *command_name,

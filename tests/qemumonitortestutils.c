@@ -59,6 +59,9 @@ struct _qemuMonitorTest {
 
     bool allowUnusedCommands;
 
+    bool skipValidationDeprecated;
+    bool skipValidationRemoved;
+
     char *incoming;
     size_t incomingLength;
     size_t incomingCapacity;
@@ -1295,6 +1298,31 @@ void
 qemuMonitorTestAllowUnusedCommands(qemuMonitorTestPtr test)
 {
     test->allowUnusedCommands = true;
+}
+
+
+/**
+ * qemuMonitorTestSkipDeprecatedValidation:
+ * @test: test monitor object
+ * @allowRemoved: don't produce errors if command was removed from QMP schema
+ *
+ * By default if the QMP schema is provided all test items/commands are
+ * validated against the schema. This function allows to override the validation
+ * and additionally if @allowRemoved is true and if such a command is no longer
+ * present in the QMP, only a warning is printed.
+ *
+ * '@allowRemoved' must be used only if a suitable replacement is already in
+ * use and the code tests legacy interactions.
+ *
+ * Note that currently '@allowRemoved' influences only removed commands. If an
+ * argument is removed it will still fail validation.
+ */
+void
+qemuMonitorTestSkipDeprecatedValidation(qemuMonitorTestPtr test,
+                                        bool allowRemoved)
+{
+    test->skipValidationDeprecated = true;
+    test->skipValidationRemoved = allowRemoved;
 }
 
 
