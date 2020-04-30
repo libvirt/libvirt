@@ -2176,6 +2176,12 @@ elif get_option('numad').enabled()
   error('You must have numactl enabled for numad support.')
 endif
 
+# nwfilter should only be compiled for linux, and only if the
+# libvirt daemon is also being compiled
+if conf.has('WITH_LIBVIRTD') and host_machine.system() == 'linux'
+  conf.set('WITH_NWFILTER', 1)
+endif
+
 
 # define top include directory
 
