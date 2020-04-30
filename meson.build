@@ -1668,6 +1668,39 @@ elif get_option('driver_libxl').enabled()
   error('libvirtd is required for libxenlight')
 endif
 
+if not get_option('driver_lxc').disabled() and host_machine.system() == 'linux' and conf.has('WITH_LIBVIRTD')
+  lxc_support_code = '''
+#include <sched.h>
+#include <linux/loop.h>
+#include <sys/epoll.h>
+
+void main(void) {
+    unshare(!(LO_FLAGS_AUTOCLEAR + EPOLL_CLOEXEC));
+}
+  '''
+  if cc.compiles(lxc_support_code, name: 'lxc support', args: '-D_GNU_SOURCE')
+    conf.set('WITH_LXC', 1)
+    conf.set('HAVE_DECL_LO_FLAGS_AUTOCLEAR', 1)
+  elif get_option('driver_lxc').enabled()
+    error('Required kernel features for LXC were not found')
+  endif
+
+  lxc_get_free_code = '''
+#include <sched.h>
+#include <linux/loop.h>
+#include <sys/epoll.h>
+
+void main(void) {
+    unshare(!(LOOP_CTL_GET_FREE));
+}
+  '''
+  if cc.compiles(lxc_get_free_code)
+    conf.set('HAVE_DECL_LOOP_CTL_GET_FREE', 1)
+  endif
+elif get_option('driver_lxc').enabled()
+  error('linux and remote_driver are required for LXC')
+endif
+
 
 # define top include directory
 
@@ -1689,6 +1722,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 
 driver_summary = {
   'libxl': conf.has('WITH_LIBXL'),
+  'LXC': conf.has('WITH_LXC'),
   'ESX': conf.has('WITH_ESX'),
   'Hyper-V': conf.has('WITH_HYPERV'),
   'Bhyve': conf.has('WITH_BHYVE'),
