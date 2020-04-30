@@ -1617,6 +1617,57 @@ elif get_option('driver_hyperv').enabled()
   error('openwsman is required for the Hyper-V driver')
 endif
 
+if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
+  libxl_version = '4.6.0'
+  libxl_dep = dependency('xenlight', version: '>=' + libxl_version, required: get_option('driver_libxl'))
+
+  if libxl_dep.found()
+    libxl_firmware_dir = libxl_dep.get_pkgconfig_variable('xenfirmwaredir')
+    libxl_execbin = libxl_dep.get_pkgconfig_variable('libexec_bin')
+    if libxl_firmware_dir != ''
+      conf.set_quoted('LIBXL_FIRMWARE_DIR', libxl_firmware_dir)
+    endif
+    if libxl_execbin != ''
+      conf.set_quoted('LIBXL_EXECBIN_DIR', libxl_execbin)
+    endif
+
+    # If building with libxl, use the libxl utility header and lib too
+    if cc.has_header('libxlutil.h')
+      conf.set('HAVE_LIBXLUTIL_H', 1)
+    endif
+    xl_util_dep = cc.find_library('xlutil')
+
+    xen_store_dep = cc.find_library('xenstore')
+
+    # xtl_* infrastructure is in libxentoollog since Xen 4.7 previously
+    # it was in libxenctrl.
+    if libxl_dep.version().version_compare('>=4.7.0')
+      xtl_link_dep = cc.find_library('xentoollog')
+    else
+      xtl_link_dep = cc.find_library('xenctrl')
+    endif
+
+    libxl_dep = declare_dependency(
+      compile_args: '-DLIBXL_API_VERSION=0x040500',
+      dependencies: [
+        libxl_dep,
+        xtl_link_dep,
+        xl_util_dep,
+        xen_store_dep,
+      ],
+    )
+
+    # Check if Xen has support for PVH
+    if cc.has_header_symbol('libxl.h', 'LIBXL_DOMAIN_TYPE_PVH')
+      conf.set('HAVE_XEN_PVH', 1)
+    endif
+
+    conf.set('WITH_LIBXL', 1)
+  endif
+elif get_option('driver_libxl').enabled()
+  error('libvirtd is required for libxenlight')
+endif
+
 
 # define top include directory
 
@@ -1637,6 +1688,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 # print configuration summary
 
 driver_summary = {
+  'libxl': conf.has('WITH_LIBXL'),
   'ESX': conf.has('WITH_ESX'),
   'Hyper-V': conf.has('WITH_HYPERV'),
   'Bhyve': conf.has('WITH_BHYVE'),
