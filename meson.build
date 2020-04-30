@@ -1611,6 +1611,12 @@ elif get_option('driver_esx').enabled()
   error('Curl is required for the ESX driver')
 endif
 
+if not get_option('driver_hyperv').disabled() and openwsman_dep.found()
+  conf.set('WITH_HYPERV', 1)
+elif get_option('driver_hyperv').enabled()
+  error('openwsman is required for the Hyper-V driver')
+endif
+
 
 # define top include directory
 
@@ -1632,6 +1638,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 
 driver_summary = {
   'ESX': conf.has('WITH_ESX'),
+  'Hyper-V': conf.has('WITH_HYPERV'),
   'Bhyve': conf.has('WITH_BHYVE'),
   'Remote': conf.has('WITH_REMOTE'),
   'Libvirtd': conf.has('WITH_LIBVIRTD'),
