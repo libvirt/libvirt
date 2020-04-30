@@ -131,6 +131,7 @@ module Libvirtd_qemu =
 
    let debug_level_entry = int_entry "gluster_debug_level"
                  | bool_entry "virtiofsd_debug"
+                 | str_entry "deprecation_behavior"
 
    let memory_entry = str_entry "memory_backing_dir"
 

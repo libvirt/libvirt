@@ -380,6 +380,8 @@ static void virQEMUDriverConfigDispose(void *obj)
     g_free(cfg->swtpmStorageDir);
 
     g_strfreev(cfg->capabilityfilters);
+
+    g_free(cfg->deprecationBehavior);
 }
 
 
@@ -868,6 +870,8 @@ virQEMUDriverConfigLoadDebugEntry(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueUInt(conf, "gluster_debug_level", &cfg->glusterDebugLevel) < 0)
         return -1;
     if (virConfGetValueBool(conf, "virtiofsd_debug", &cfg->virtiofsdDebug) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "deprecation_behavior", &cfg->deprecationBehavior) < 0)
         return -1;
 
     return 0;

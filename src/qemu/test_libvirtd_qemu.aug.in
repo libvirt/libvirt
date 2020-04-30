@@ -115,3 +115,4 @@ module Test_libvirtd_qemu =
 { "capability_filters"
     { "1" = "capname" }
 }
+{ "deprecation_behavior" = "none" }
