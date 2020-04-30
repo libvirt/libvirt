@@ -128,18 +128,6 @@ dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
 
 
-dnl
-dnl Storage driver checks
-dnl
-
-LIBVIRT_STORAGE_ARG_ZFS
-
-if test "$with_libvirtd" = "no"; then
-  with_storage_zfs=no
-fi
-
-LIBVIRT_STORAGE_CHECK_ZFS
-
 dnl Python3 < 3.7 treats the C locale as 7-bit only.
 dnl We must force env vars so it treats it as UTF-8
 dnl regardless of the user's locale.
@@ -193,10 +181,6 @@ AC_OUTPUT
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Configuration summary])
 AC_MSG_NOTICE([=====================])
-AC_MSG_NOTICE([])
-AC_MSG_NOTICE([Storage Drivers])
-AC_MSG_NOTICE([])
-LIBVIRT_STORAGE_RESULT_ZFS
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Driver Loadable Modules])
 AC_MSG_NOTICE([])

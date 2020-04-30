@@ -2039,6 +2039,27 @@ if conf.has('WITH_LIBVIRTD')
       endforeach
     endif
   endif
+
+  if not get_option('storage_zfs').disabled()
+    zfs_enable = true
+    foreach name : ['zfs', 'zpool']
+      set_variable(
+        '@0@_prog'.format(name),
+        find_program(name, required: get_option('storage_zfs'), dirs: libvirt_sbin_path)
+      )
+      if not get_variable('@0@_prog'.format(name)).found()
+        zfs_enable = false
+      endif
+    endforeach
+
+    if zfs_enable
+      use_storage = true
+      conf.set('WITH_STORAGE_ZFS', 1)
+      foreach name : ['zfs', 'zpool']
+        conf.set_quoted(name.to_upper(), get_variable('@0@_prog'.format(name)).path())
+      endforeach
+    endif
+  endif
 endif
 
 if use_storage
@@ -2096,6 +2117,7 @@ storagedriver_summary = {
   'RBD': conf.has('WITH_STORAGE_RBD'),
   'Sheepdog': conf.has('WITH_STORAGE_SHEEPDOG'),
   'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
+  'ZFS': conf.has('WITH_STORAGE_ZFS'),
   'Virtuozzo storage': conf.has('WITH_STORAGE_VSTORAGE'),
 }
 summary(storagedriver_summary, section: 'Storage Drivers', bool_yn: true)
