@@ -614,23 +614,6 @@ if test -z "$PERL"; then
          AC_MSG_ERROR(['perl' binary is required to build libvirt])
 fi
 
-LIBVIRT_ARG_ENABLE([TEST_COVERAGE], [turn on code coverage instrumentation], [no])
-case "$enable_test_coverage" in
-  yes|no) ;;
-  *) AC_MSG_ERROR([bad value ${enable_test_coverga} for test-coverage option]) ;;
-esac
-
-if test "$enable_test_coverage" = yes; then
-  save_WARN_CFLAGS=$WARN_CFLAGS
-  WARN_CFLAGS=
-  gl_WARN_ADD([-fprofile-arcs])
-  gl_WARN_ADD([-ftest-coverage])
-  COVERAGE_FLAGS=$WARN_CFLAGS
-  AC_SUBST([COVERAGE_CFLAGS], [$COVERAGE_FLAGS])
-  AC_SUBST([COVERAGE_LDFLAGS], [$COVERAGE_FLAGS])
-  WARN_CFLAGS=$save_WARN_CFLAGS
-fi
-
 dnl MinGW checks
 LIBVIRT_WIN_CHECK_COMMON
 LIBVIRT_WIN_CHECK_MINGW
@@ -875,10 +858,6 @@ AC_MSG_NOTICE([Windows])
 AC_MSG_NOTICE([])
 LIBVIRT_WIN_RESULT_COMMON
 LIBVIRT_WIN_RESULT_WINDRES
-AC_MSG_NOTICE([])
-AC_MSG_NOTICE([Test suite])
-AC_MSG_NOTICE([])
-LIBVIRT_RESULT([Coverage], [$enable_test_coverage])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])

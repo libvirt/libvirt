@@ -137,6 +137,14 @@ else
   use_expensive_tests = get_option('expensive_tests').enabled()
 endif
 
+coverage_flags = []
+if get_option('test_coverage')
+  coverage_flags = [
+    '-fprofile-arcs',
+    '-ftest-coverage',
+  ]
+endif
+
 
 # figure out libvirt version strings
 
@@ -190,3 +198,11 @@ top_inc_dir = include_directories('.')
 
 # generate meson-config.h file
 configure_file(output: 'meson-config.h', configuration: conf)
+
+
+# print configuration summary
+
+test_summary = {
+  'Coverage': coverage_flags.length() > 0,
+}
+summary(test_summary, section: 'Test suite', bool_yn: true)
