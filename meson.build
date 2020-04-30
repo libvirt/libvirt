@@ -1987,6 +1987,13 @@ if conf.has('WITH_LIBVIRTD')
       endforeach
     endif
   endif
+
+  if not get_option('storage_mpath').disabled() and host_machine.system() == 'linux' and devmapper_dep.found()
+    use_storage = true
+    conf.set('WITH_STORAGE_MPATH', 1)
+  elif get_option('storage_mpath').enabled()
+    error('mpath storage driver is supported only on Linux and you must install libdevmapper')
+  endif
 endif
 
 if use_storage
@@ -2038,6 +2045,7 @@ storagedriver_summary = {
   'LVM': conf.has('WITH_STORAGE_LVM'),
   'iSCSI': conf.has('WITH_STORAGE_ISCSI'),
   'iscsi-direct': conf.has('WITH_STORAGE_ISCSI_DIRECT'),
+  'mpath': conf.has('WITH_STORAGE_MPATH'),
   'Disk': conf.has('WITH_STORAGE_DISK'),
   'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
 }

@@ -82,3 +82,4 @@ option('storage_gluster', type: 'feature', value: 'auto', description: 'Gluster 
 option('storage_iscsi', type: 'feature', value: 'auto', description: 'iscsi backend for the storage driver')
 option('storage_iscsi_direct', type: 'feature', value: 'auto', description: 'iscsi-direct backend for the storage driver')
 option('storage_lvm', type: 'feature', value: 'auto', description: 'LVM backend for the storage driver')
+option('storage_mpath', type: 'feature', value: 'auto', description: 'mpath backend for the storage driver')
