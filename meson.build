@@ -1241,6 +1241,9 @@ openwsman_dep = dependency('openwsman', version: '>=' + openwsman_version, requi
 parallels_sdk_version = '7.0.22'
 parallels_sdk_dep = dependency('parallels-sdk', version: '>=' + parallels_sdk_version, required: false)
 
+pciaccess_version = '0.10.0'
+pciaccess_dep = dependency('pciaccess', version: '>=' + pciaccess_version, required: get_option('pciaccess'))
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1396,6 +1399,7 @@ libs_summary = {
   'NLS': have_gnu_gettext_tools,
   'numaclt': numactl_dep.found(),
   'openwsman': openwsman_dep.found(),
+  'pciaccess': pciaccess_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
