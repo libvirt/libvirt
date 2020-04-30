@@ -232,10 +232,10 @@
   <flag name='pcie-root-port.hotplug'/>
   <flag name='aio.io_uring'/>
   <flag name='tcg'/>
-  <version>4002093</version>
+  <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100241</microcodeVersion>
-  <package>v5.0.0-rc3-8-g3119154db0</package>
+  <package>v5.0.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
