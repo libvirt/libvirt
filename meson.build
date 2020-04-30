@@ -1959,6 +1959,34 @@ if conf.has('WITH_LIBVIRTD')
   elif get_option('storage_iscsi_direct').enabled()
     error('Need libiscsi for iscsi-direct storage driver')
   endif
+
+  if not get_option('storage_lvm').disabled()
+    lvm_enable = true
+    lvm_progs = [
+      'pvcreate', 'vgcreate', 'lvcreate',
+      'pvremove', 'vgremove', 'lvremove',
+      'lvchange', 'vgchange', 'vgscan',
+      'pvs', 'vgs', 'lvs',
+    ]
+    foreach name : lvm_progs
+      set_variable(
+        '@0@_prog'.format(name),
+        find_program(name, required: get_option('storage_lvm'), dirs: libvirt_sbin_path)
+      )
+      if not get_variable('@0@_prog'.format(name)).found()
+        lvm_enable = false
+      endif
+    endforeach
+
+    if lvm_enable
+      use_storage = true
+      conf.set('WITH_STORAGE_LVM', 1)
+
+      foreach name : lvm_progs
+        conf.set_quoted(name.to_upper(), get_variable('@0@_prog'.format(name)).path())
+      endforeach
+    endif
+  endif
 endif
 
 if use_storage
@@ -2007,6 +2035,7 @@ storagedriver_summary = {
   'Dir': conf.has('WITH_STORAGE_DIR'),
   'FS': conf.has('WITH_STORAGE_FS'),
   'NetFS': conf.has('WITH_STORAGE_FS'),
+  'LVM': conf.has('WITH_STORAGE_LVM'),
   'iSCSI': conf.has('WITH_STORAGE_ISCSI'),
   'iscsi-direct': conf.has('WITH_STORAGE_ISCSI_DIRECT'),
   'Disk': conf.has('WITH_STORAGE_DISK'),
