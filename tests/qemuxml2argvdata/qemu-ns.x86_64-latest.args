@@ -10,6 +10,7 @@ NS=ns \
 BAR='' \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
+-compat deprecated-output=hide,deprecated-input=crash \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
 "file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \

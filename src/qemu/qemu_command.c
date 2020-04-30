@@ -10328,6 +10328,84 @@ qemuBuildVsockCommandLine(virCommandPtr cmd,
 }
 
 
+typedef enum {
+    QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE = 0,
+    QEMU_COMMAND_DEPRECATION_BEHAVIOR_OMIT,
+    QEMU_COMMAND_DEPRECATION_BEHAVIOR_REJECT,
+    QEMU_COMMAND_DEPRECATION_BEHAVIOR_CRASH,
+
+    QEMU_COMMAND_DEPRECATION_BEHAVIOR_LAST
+} qemuCommnadDeprecationBehavior;
+
+
+VIR_ENUM_DECL(qemuCommnadDeprecationBehavior);
+VIR_ENUM_IMPL(qemuCommnadDeprecationBehavior,
+              QEMU_COMMAND_DEPRECATION_BEHAVIOR_LAST,
+              "none",
+              "omit",
+              "reject",
+              "crash");
+
+static void
+qemuBuildCompatDeprecatedCommandLine(virCommand *cmd,
+                                     virQEMUDriverConfig *cfg,
+                                     virDomainDef *def,
+                                     virQEMUCaps *qemuCaps)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    qemuDomainXmlNsDefPtr nsdata = def->namespaceData;
+    qemuCommnadDeprecationBehavior behavior = QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE;
+    const char *behaviorStr = cfg->deprecationBehavior;
+    int tmp;
+
+    if (nsdata && nsdata->deprecationBehavior)
+        behaviorStr = nsdata->deprecationBehavior;
+
+    if ((tmp = qemuCommnadDeprecationBehaviorTypeFromString(behaviorStr)) < 0) {
+        VIR_WARN("Unsupported deprecation behavior '%s' for VM '%s'",
+                 behaviorStr, def->name);
+        return;
+    }
+
+    behavior = tmp;
+
+    if (behavior == QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE)
+        return;
+
+    /* we don't try to enable this feature at all if qemu doesn't support it,
+     * so that a downgrade of qemu version doesn't impact startup of the VM */
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_COMPAT_DEPRECATED)) {
+        VIR_DEBUG("-compat not supported for VM '%s'", def->name);
+        return;
+    }
+
+    /* all active options hide output fields from qemu */
+    virBufferAddLit(&buf, "deprecated-output=hide,");
+
+    switch (behavior) {
+    case QEMU_COMMAND_DEPRECATION_BEHAVIOR_OMIT:
+    case QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE:
+    case QEMU_COMMAND_DEPRECATION_BEHAVIOR_LAST:
+    default:
+        /* output field hiding is default for all cases */
+        break;
+
+    case QEMU_COMMAND_DEPRECATION_BEHAVIOR_REJECT:
+        virBufferAddLit(&buf, "deprecated-input=reject,");
+        break;
+
+    case QEMU_COMMAND_DEPRECATION_BEHAVIOR_CRASH:
+        virBufferAddLit(&buf, "deprecated-input=crash,");
+        break;
+    }
+
+    virBufferTrim(&buf, ",");
+
+    virCommandAddArg(cmd, "-compat");
+    virCommandAddArgBuffer(cmd, &buf);
+}
+
+
 /*
  * Constructs a argv suitable for launching qemu with config defined
  * for a given virtual machine.
@@ -10387,6 +10465,8 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 
     if (qemuBuildNameCommandLine(cmd, cfg, def, qemuCaps) < 0)
         return NULL;
+
+    qemuBuildCompatDeprecatedCommandLine(cmd, cfg, def, qemuCaps);
 
     if (!standalone)
         virCommandAddArg(cmd, "-S"); /* freeze CPU */
