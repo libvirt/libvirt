@@ -1701,6 +1701,12 @@ elif get_option('driver_lxc').enabled()
   error('linux and remote_driver are required for LXC')
 endif
 
+# there's no use compiling the network driver without the libvirt
+# daemon, nor compiling it for macOS, where it breaks the compile
+if not get_option('driver_network').disabled() and conf.has('WITH_LIBVIRTD') and host_machine.system() != 'darwin'
+  conf.set('WITH_NETWORK', 1)
+endif
+
 if not get_option('driver_openvz').disabled() and host_machine.system() == 'linux'
   conf.set('WITH_OPENVZ', 1)
 elif get_option('driver_openvz').enabled()
@@ -1854,6 +1860,10 @@ elif get_option('secdriver_selinux').enabled()
   error('You must install the libselinux development package in order to compile libvirt.')
 endif
 
+if conf.has('WITH_QEMU') or conf.has('WITH_LXC') or conf.has('WITH_NETWORK')
+  conf.set('WITH_BRIDGE', 1)
+endif
+
 
 # define top include directory
 
@@ -1886,6 +1896,7 @@ driver_summary = {
   'Bhyve': conf.has('WITH_BHYVE'),
   'Test': conf.has('WITH_TEST'),
   'Remote': conf.has('WITH_REMOTE'),
+  'Network': conf.has('WITH_NETWORK'),
   'Libvirtd': conf.has('WITH_LIBVIRTD'),
 }
 summary(driver_summary, section: 'Drivers', bool_yn: true)
