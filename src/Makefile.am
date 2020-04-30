@@ -70,7 +70,6 @@ COMMON_UNIT_VARS = \
 lib_LTLIBRARIES += libvirt.la libvirt-qemu.la libvirt-lxc.la
 
 include util/Makefile.inc.am
-include conf/Makefile.inc.am
 include cpu/Makefile.inc.am
 include cpu_map/Makefile.inc.am
 include security/Makefile.inc.am
