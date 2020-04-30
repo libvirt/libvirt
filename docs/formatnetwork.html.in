@@ -1124,9 +1124,11 @@
     <h3><a id="elementsNamespaces">Network namespaces</a></h3>
 
     <p>
-      A special XML namespace is available for passing options directly to the
-      underlying dnsmasq configuration file. Usage of XML namespaces comes with no
-      support guarantees, so use at your own risk.
+      A special XML namespace is available for passing options
+      directly to the underlying dnsmasq configuration
+      file <span class="since">since 5.6.0</span>. Usage of XML
+      namespaces comes with no support guarantees, so use at your own
+      risk.
     </p>
 
     <p>
