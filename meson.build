@@ -2016,6 +2016,29 @@ if conf.has('WITH_LIBVIRTD')
       conf.set_quoted('SHEEPDOGCLI', sheepdogcli_prog.path())
     endif
   endif
+
+  if not get_option('storage_vstorage').disabled()
+    vstorage_enable = true
+
+    foreach name : ['vstorage', 'vstorage-mount', 'umount']
+      set_variable(
+        '@0@_prog'.format(name.underscorify()),
+        find_program(name, required: get_option('storage_vstorage'), dirs: libvirt_sbin_path)
+      )
+      if not get_variable('@0@_prog'.format(name.underscorify())).found()
+        vstorage_enable = false
+      endif
+    endforeach
+
+    if vstorage_enable
+      use_storage = true
+      conf.set('WITH_STORAGE_VSTORAGE', 1)
+      foreach name : ['vstorage', 'vstorage-mount', 'umount']
+        path = get_variable('@0@_prog'.format(name.underscorify())).path()
+        conf.set_quoted(name.to_upper(), path)
+      endforeach
+    endif
+  endif
 endif
 
 if use_storage
@@ -2073,6 +2096,7 @@ storagedriver_summary = {
   'RBD': conf.has('WITH_STORAGE_RBD'),
   'Sheepdog': conf.has('WITH_STORAGE_SHEEPDOG'),
   'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
+  'Virtuozzo storage': conf.has('WITH_STORAGE_VSTORAGE'),
 }
 summary(storagedriver_summary, section: 'Storage Drivers', bool_yn: true)
 
