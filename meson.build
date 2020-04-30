@@ -1945,6 +1945,13 @@ if conf.has('WITH_LIBVIRTD')
   elif get_option('storage_gluster').enabled()
     error('Need glusterfs (libgfapi) for gluster storage driver')
   endif
+
+  if not get_option('storage_iscsi').disabled() and iscsiadm_prog.found()
+    use_storage = true
+    conf.set('WITH_STORAGE_ISCSI', 1)
+  elif get_option('storage_iscsi').enabled()
+    error('We need iscsiadm for iSCSI storage driver')
+  endif
 endif
 
 if use_storage
@@ -1993,6 +2000,7 @@ storagedriver_summary = {
   'Dir': conf.has('WITH_STORAGE_DIR'),
   'FS': conf.has('WITH_STORAGE_FS'),
   'NetFS': conf.has('WITH_STORAGE_FS'),
+  'iSCSI': conf.has('WITH_STORAGE_ISCSI'),
   'Disk': conf.has('WITH_STORAGE_DISK'),
   'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
 }
