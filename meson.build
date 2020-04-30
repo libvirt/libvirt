@@ -1238,6 +1238,9 @@ endif
 openwsman_version = '2.2.3'
 openwsman_dep = dependency('openwsman', version: '>=' + openwsman_version, required: get_option('openwsman'))
 
+parallels_sdk_version = '7.0.22'
+parallels_sdk_dep = dependency('parallels-sdk', version: '>=' + parallels_sdk_version, required: false)
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
