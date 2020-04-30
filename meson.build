@@ -1952,6 +1952,13 @@ if conf.has('WITH_LIBVIRTD')
   elif get_option('storage_iscsi').enabled()
     error('We need iscsiadm for iSCSI storage driver')
   endif
+
+  if not get_option('storage_iscsi_direct').disabled() and libiscsi_dep.found()
+    use_storage = true
+    conf.set('WITH_STORAGE_ISCSI_DIRECT', 1)
+  elif get_option('storage_iscsi_direct').enabled()
+    error('Need libiscsi for iscsi-direct storage driver')
+  endif
 endif
 
 if use_storage
@@ -2001,6 +2008,7 @@ storagedriver_summary = {
   'FS': conf.has('WITH_STORAGE_FS'),
   'NetFS': conf.has('WITH_STORAGE_FS'),
   'iSCSI': conf.has('WITH_STORAGE_ISCSI'),
+  'iscsi-direct': conf.has('WITH_STORAGE_ISCSI_DIRECT'),
   'Disk': conf.has('WITH_STORAGE_DISK'),
   'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
 }
