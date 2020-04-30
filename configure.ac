@@ -132,17 +132,14 @@ dnl
 dnl Storage driver checks
 dnl
 
-LIBVIRT_STORAGE_ARG_SHEEPDOG
 LIBVIRT_STORAGE_ARG_ZFS
 LIBVIRT_STORAGE_ARG_VSTORAGE
 
 if test "$with_libvirtd" = "no"; then
-  with_storage_sheepdog=no
   with_storage_zfs=no
   with_storage_vstorage=no
 fi
 
-LIBVIRT_STORAGE_CHECK_SHEEPDOG
 LIBVIRT_STORAGE_CHECK_ZFS
 LIBVIRT_STORAGE_CHECK_VSTORAGE
 
@@ -202,7 +199,6 @@ AC_MSG_NOTICE([=====================])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])
-LIBVIRT_STORAGE_RESULT_SHEEPDOG
 LIBVIRT_STORAGE_RESULT_ZFS
 LIBVIRT_STORAGE_RESULT_VSTORAGE
 AC_MSG_NOTICE([])
