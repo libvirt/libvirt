@@ -1938,6 +1938,13 @@ if conf.has('WITH_LIBVIRTD')
       conf.set_quoted('SHOWMOUNT', showmount_path)
     endif
   endif
+
+  if not get_option('storage_gluster').disabled() and glusterfs_dep.found()
+    use_storage = true
+    conf.set('WITH_STORAGE_GLUSTER', 1)
+  elif get_option('storage_gluster').enabled()
+    error('Need glusterfs (libgfapi) for gluster storage driver')
+  endif
 endif
 
 if use_storage
@@ -1987,6 +1994,7 @@ storagedriver_summary = {
   'FS': conf.has('WITH_STORAGE_FS'),
   'NetFS': conf.has('WITH_STORAGE_FS'),
   'Disk': conf.has('WITH_STORAGE_DISK'),
+  'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
 }
 summary(storagedriver_summary, section: 'Storage Drivers', bool_yn: true)
 
