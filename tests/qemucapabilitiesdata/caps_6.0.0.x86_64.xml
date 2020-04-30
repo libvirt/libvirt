@@ -261,6 +261,7 @@
   <flag name='blockdev-backup'/>
   <flag name='object.qapified'/>
   <flag name='rotation-rate'/>
+  <flag name='compat-deprecated'/>
   <version>5002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

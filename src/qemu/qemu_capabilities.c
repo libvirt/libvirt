@@ -625,6 +625,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "blockdev-backup",
               "object.qapified",
               "rotation-rate",
+
+              /* 400 */
+              "compat-deprecated",
     );
 
 
@@ -5188,6 +5191,13 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCapsPtr qemuCaps)
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI);
+
+    /* The -compat qemu command line argument is implemented using a newer
+     * method which doesn't show up in query-command-line-options. As we'll use
+     * it only for development and testing purposes we can base the capability
+     * on a not entirely related witness. */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_QAPIFIED))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_COMPAT_DEPRECATED);
 }
 
 
