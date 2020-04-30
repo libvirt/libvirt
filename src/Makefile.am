@@ -431,13 +431,9 @@ libvirt_la_LDFLAGS = \
 		-version-info $(LIBVIRT_VERSION_INFO) \
 		$(LIBVIRT_NODELETE) \
 		$(NO_UNDEFINED_LDFLAGS) \
-		$(AM_LDFLAGS)
-if WITH_MACOS
-# macOS has two-level namespaces by default.
-# Override it to allow symbol replacement with DYLD_INSERT_LIBRARIES
-libvirt_la_LDFLAGS += -Wl,-flat_namespace
-endif WITH_MACOS
-libvirt_la_LDFLAGS += $(NULL)
+		$(FLAT_NAMESPACE_FLAGS) \
+		$(AM_LDFLAGS) \
+		$(NULL)
 libvirt_la_LIBADD += \
 		    $(DLOPEN_LIBS)
 libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)

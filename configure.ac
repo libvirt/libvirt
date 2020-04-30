@@ -189,6 +189,19 @@ esac
 AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
 AC_SUBST([VERSION_SCRIPT_FLAGS])
 
+dnl macOS has two-level namespaces by default.
+dnl Override it to allow symbol replacement with DYLD_INSERT_LIBRARIES
+case "$host" in
+  *-*-darwin*)
+    FLAT_NAMESPACE_FLAGS=-Wl,-flat_namespace
+    ;;
+  * )
+    FLAT_NAMESPACE_FLAGS=""
+    ;;
+esac
+AC_MSG_RESULT([$FLAT_NAMESPACE_FLAGS])
+AC_SUBST([FLAT_NAMESPACE_FLAGS])
+
 dnl Specify if we rely on ifconfig instead of iproute2 (e.g. in case
 dnl we're working on BSD)
 want_ifconfig=no

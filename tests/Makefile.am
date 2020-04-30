@@ -55,10 +55,9 @@ MOCKLIBS_LDFLAGS = -avoid-version \
 DRIVERLIB_LDFLAGS = \
 	-avoid-version \
 	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
-	$(MINGW_EXTRA_LDFLAGS)
-if WITH_MACOS
-DRIVERLIB_LDFLAGS += -Wl,-flat_namespace
-endif WITH_MACOS
+	$(MINGW_EXTRA_LDFLAGS) \
+	$(FLAT_NAMESPACE_FLAGS) \
+	$(NULL)
 
 PROBES_O =
 if WITH_DTRACE_PROBES
