@@ -134,7 +134,6 @@ dnl
 dnl Storage driver checks
 dnl
 
-LIBVIRT_STORAGE_ARG_FS
 LIBVIRT_STORAGE_ARG_LVM
 LIBVIRT_STORAGE_ARG_ISCSI
 LIBVIRT_STORAGE_ARG_ISCSI_DIRECT
@@ -147,7 +146,6 @@ LIBVIRT_STORAGE_ARG_ZFS
 LIBVIRT_STORAGE_ARG_VSTORAGE
 
 if test "$with_libvirtd" = "no"; then
-  with_storage_fs=no
   with_storage_lvm=no
   with_storage_iscsi=no
   with_storage_iscsi_direct=no
@@ -160,13 +158,6 @@ if test "$with_libvirtd" = "no"; then
   with_storage_vstorage=no
 fi
 
-dnl storage-fs does not work on macOS
-
-if test "$with_macos" = "yes"; then
-  with_storage_fs=no
-fi
-
-LIBVIRT_STORAGE_CHECK_FS
 LIBVIRT_STORAGE_CHECK_LVM
 LIBVIRT_STORAGE_CHECK_ISCSI
 LIBVIRT_STORAGE_CHECK_ISCSI_DIRECT
@@ -234,7 +225,6 @@ AC_MSG_NOTICE([=====================])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])
-LIBVIRT_STORAGE_RESULT_FS
 LIBVIRT_STORAGE_RESULT_LVM
 LIBVIRT_STORAGE_RESULT_ISCSI
 LIBVIRT_STORAGE_RESULT_ISCSI_DIRECT

@@ -1895,6 +1895,49 @@ if conf.has('WITH_LIBVIRTD')
   elif get_option('storage_disk').enabled()
     error('You must install libparted and libdevmapper to compile libvirt with disk storage driver')
   endif
+
+  if not get_option('storage_fs').disabled()
+    fs_enable = true
+
+    # storage-fs does not work on macOS
+    if host_machine.system() == 'darwin'
+      fs_enable = false
+    endif
+
+    if fs_enable and not cc.has_header('mntent.h')
+      if get_option('storage_fs').enabled()
+        error('<mntent.h> is required for the FS storage driver')
+      else
+        fs_enable = false
+      endif
+    endif
+
+    if fs_enable
+      mount_prog = find_program('mount', required: get_option('storage_fs'), dirs: libvirt_sbin_path)
+      umount_prog = find_program('umount', required: get_option('storage_fs'), dirs: libvirt_sbin_path)
+      mkfs_prog = find_program('mkfs', required: get_option('storage_fs'), dirs: libvirt_sbin_path)
+
+      if not mount_prog.found() or not umount_prog.found() or not mkfs_prog.found()
+        fs_enable = false
+      endif
+    endif
+
+    if fs_enable
+      use_storage = true
+
+      conf.set('WITH_STORAGE_FS', 1)
+      conf.set_quoted('MOUNT', mount_prog.path())
+      conf.set_quoted('UMOUNT', umount_prog.path())
+      conf.set_quoted('MKFS', mkfs_prog.path())
+
+      showmount_prog = find_program('showmount', required: false, dirs: libvirt_sbin_path)
+      showmount_path = ''
+      if showmount_prog.found()
+        showmount_path = showmount_prog.path()
+      endif
+      conf.set_quoted('SHOWMOUNT', showmount_path)
+    endif
+  endif
 endif
 
 if use_storage
@@ -1941,6 +1984,8 @@ summary(driver_summary, section: 'Drivers', bool_yn: true)
 
 storagedriver_summary = {
   'Dir': conf.has('WITH_STORAGE_DIR'),
+  'FS': conf.has('WITH_STORAGE_FS'),
+  'NetFS': conf.has('WITH_STORAGE_FS'),
   'Disk': conf.has('WITH_STORAGE_DISK'),
 }
 summary(storagedriver_summary, section: 'Storage Drivers', bool_yn: true)
