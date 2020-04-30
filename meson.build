@@ -1883,6 +1883,13 @@ endif
 
 use_storage = false
 
+if conf.has('WITH_LIBVIRTD')
+  if not get_option('storage_dir').disabled()
+    use_storage = true
+    conf.set('WITH_STORAGE_DIR', 1)
+  endif
+endif
+
 if use_storage
   conf.set('WITH_STORAGE', 1)
 endif
@@ -1924,6 +1931,11 @@ driver_summary = {
   'Interface': conf.has('WITH_INTERFACE'),
 }
 summary(driver_summary, section: 'Drivers', bool_yn: true)
+
+storagedriver_summary = {
+  'Dir': conf.has('WITH_STORAGE_DIR'),
+}
+summary(storagedriver_summary, section: 'Storage Drivers', bool_yn: true)
 
 secdriver_summary = {
   'SELinux': conf.has('WITH_SECDRIVER_SELINUX'),

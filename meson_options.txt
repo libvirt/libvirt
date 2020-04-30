@@ -72,3 +72,7 @@ option('driver_vz', type: 'feature', value: 'auto', description: 'Virtuozzo driv
 option('secdriver_apparmor', type: 'feature', value: 'auto', description: 'use AppArmor security driver')
 option('apparmor_profiles', type: 'boolean', value: false, description: 'install apparmor profiles')
 option('secdriver_selinux', type: 'feature', value: 'auto', description: 'use SELinux security driver')
+
+
+# storage driver options
+option('storage_dir', type: 'feature', value: 'auto', description: 'directory backand for the storage driver')
