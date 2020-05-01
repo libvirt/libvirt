@@ -221,18 +221,15 @@ potfile:
       - libvirt.pot
 
 
-# Check that all commits are signed-off for the DCO. Skip
-# on master branch and -maint branches, since we only need
-# to test developer's personal branches.
-dco:
+# Check that all commits are signed-off for the DCO.
+# Skip on "libvirt" namespace, since we only need to run
+# this test on developer's personal forks from which
+# merge requests are submitted
+check-dco:
   stage: prebuild
-  image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
-  before_script:
-    - *script_variables
+  image: registry.gitlab.com/libvirt/libvirt-ci/check-dco:master
   script:
-    - ./scripts/require-dco.py
-  only:
-    - branches
+    - /check-dco
   except:
-    - /^v.*-maint$/
-    - master
+    variables:
+      - $CI_PROJECT_NAMESPACE == 'libvirt'
