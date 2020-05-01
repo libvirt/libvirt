@@ -6567,8 +6567,8 @@ secret-set-value
 
 Set the value associated with *secret* (specified by its UUID) to the value
 Base64-encoded value *base64* or Base-64-encoded contents of file named
-*filename*. Using the *--plain* flag is together with *--file* allows to use
-the file contents directly as the secret value.
+*filename*. Using the *--plain* flag is together with *--file* allows one to
+use the file contents directly as the secret value.
 
 If *--interactive* flag is used the secret value is read as a password from the
 terminal.
@@ -6752,7 +6752,7 @@ xml.  Each <diskspec> is in the
 form ``disk[,snapshot=type][,driver=type][,stype=type][,file=name]``.
 A *diskspec* must be provided for disks backed by block devices as libvirt
 doesn't auto-generate file names for those.  The optional ``stype`` parameter
-allows to control the type of the source file. Supported values are 'file'
+allows one to control the type of the source file. Supported values are 'file'
 (default) and 'block'. To exclude a disk from an external snapshot use
 ``--diskspec disk,snapshot=no``.
 
