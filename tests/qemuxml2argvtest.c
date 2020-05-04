@@ -1135,11 +1135,8 @@ mymain(void)
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST_CAPS_VER("disk-copy_on_read", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-copy_on_read");
-    DO_TEST("disk-discard",
-            QEMU_CAPS_DRIVE_DISCARD);
-    DO_TEST("disk-detect-zeroes",
-            QEMU_CAPS_DRIVE_DISCARD,
-            QEMU_CAPS_DRIVE_DETECT_ZEROES);
+    DO_TEST_CAPS_VER("disk-discard", "4.1.0");
+    DO_TEST_CAPS_LATEST("disk-discard");
     DO_TEST_CAPS_VER("disk-detect-zeroes", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-detect-zeroes");
     DO_TEST("disk-snapshot", NONE);

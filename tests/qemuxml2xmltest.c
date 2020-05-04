@@ -638,8 +638,8 @@ mymain(void)
     DO_TEST("disk-source-pool", NONE);
     DO_TEST("disk-source-pool-mode", NONE);
 
-    DO_TEST("disk-discard", NONE);
-    DO_TEST("disk-detect-zeroes", NONE);
+    DO_TEST_CAPS_LATEST("disk-discard");
+    DO_TEST_CAPS_LATEST("disk-detect-zeroes");
 
     DO_TEST("disk-serial", NONE);
 

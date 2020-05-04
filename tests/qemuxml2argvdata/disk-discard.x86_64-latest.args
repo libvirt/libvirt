@@ -12,10 +12,10 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-test/master-key.aes \
--machine pc-i440fx-2.12,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc,accel=tcg,usb=off,dump-guest-core=off \
 -cpu qemu64 \
 -m 1024 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 92d7a226-cfae-425b-a6d3-00bbf9ec5c9e \
 -display none \
@@ -28,14 +28,19 @@ file=/tmp/lib/domain--1-test/master-key.aes \
 -no-acpi \
 -boot menu=on,strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive file=/var/lib/libvirt/images/f14.img,format=qcow2,if=none,\
-id=drive-virtio-disk0,discard=unmap,detect-zeroes=unmap \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/f14.img",\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"discard":"unmap",\
+"driver":"qcow2","file":"libvirt-2-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-2-format,\
 id=virtio-disk0,bootindex=2 \
--drive file=/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso,format=raw,if=none,\
-id=drive-ide0-1-0,readonly=on,discard=ignore,detect-zeroes=on \
--device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
+-blockdev '{"driver":"file",\
+"filename":"/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":true,"discard":"ignore",\
+"driver":"raw","file":"libvirt-1-storage"}' \
+-device ide-cd,bus=ide.1,unit=0,drive=libvirt-1-format,id=ide0-1-0,bootindex=1 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on
