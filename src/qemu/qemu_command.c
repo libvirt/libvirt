@@ -1141,7 +1141,7 @@ qemuCheckFips(void)
 
 
 /**
- * qemuDiskBusNeedsDriveArg:
+ * qemuDiskBusIsSD:
  * @bus: disk bus
  *
  * Unfortunately it is not possible to use -device for SD devices.
@@ -1149,7 +1149,7 @@ qemuCheckFips(void)
  * without -device.
  */
 bool
-qemuDiskBusNeedsDriveArg(int bus)
+qemuDiskBusIsSD(int bus)
 {
     return bus == VIR_DOMAIN_DISK_BUS_SD;
 }
@@ -1441,7 +1441,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (qemuBuildDriveSourceStr(disk, qemuCaps, &opt) < 0)
         return NULL;
 
-    if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
+    if (!qemuDiskBusIsSD(disk->bus)) {
         g_autofree char *drivealias = qemuAliasDiskDriveFromDisk(disk);
         if (!drivealias)
             return NULL;
@@ -2158,7 +2158,7 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
     if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps) < 0)
         return -1;
 
-    if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
+    if (!qemuDiskBusIsSD(disk->bus)) {
         if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC ||
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
             if (qemuCommandAddExtDevice(cmd, &disk->info) < 0)

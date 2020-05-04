@@ -5499,7 +5499,7 @@ qemuProcessPrepareQEMUCaps(virDomainObjPtr vm,
 
     /* clear the 'blockdev' capability for VMs which have disks that need -drive */
     for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuDiskBusNeedsDriveArg(vm->def->disks[i]->bus)) {
+        if (qemuDiskBusIsSD(vm->def->disks[i]->bus)) {
             virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
             break;
         }
