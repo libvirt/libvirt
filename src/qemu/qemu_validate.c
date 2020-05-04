@@ -1897,40 +1897,9 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
 }
 
 
-int
-qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
-                                virQEMUCapsPtr qemuCaps)
+static int
+qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk)
 {
-    const char *driverName = virDomainDiskGetDriver(disk);
-    virStorageSourcePtr n;
-    int idx;
-    int partition;
-
-    if (disk->src->shared && !disk->src->readonly &&
-        !qemuBlockStorageSourceSupportsConcurrentAccess(disk->src)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("shared access for disk '%s' requires use of "
-                         "supported storage format"), disk->dst);
-        return -1;
-    }
-
-    if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
-        if (disk->src->readonly) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("copy_on_read is not compatible with read-only disk '%s'"),
-                           disk->dst);
-            return -1;
-        }
-
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
-            disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("copy_on_read is not supported with removable disk '%s'"),
-                           disk->dst);
-            return -1;
-        }
-    }
-
     if (disk->geometry.cylinders > 0 &&
         disk->geometry.heads > 0 &&
         disk->geometry.sectors > 0) {
@@ -1958,18 +1927,59 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
         return -1;
     }
 
-    if (driverName && STRNEQ(driverName, "qemu")) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported driver name '%s' for disk '%s'"),
-                       driverName, disk->dst);
-        return -1;
-    }
-
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
         disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk type 'virtio' of '%s' does not support ejectable media"),
                        disk->dst);
+        return -1;
+    }
+
+    if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
+        if (disk->src->readonly) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("copy_on_read is not compatible with read-only disk '%s'"),
+                           disk->dst);
+            return -1;
+        }
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
+            disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("copy_on_read is not supported with removable disk '%s'"),
+                           disk->dst);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+int
+qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
+                                virQEMUCapsPtr qemuCaps)
+{
+    const char *driverName = virDomainDiskGetDriver(disk);
+    virStorageSourcePtr n;
+    int idx;
+    int partition;
+
+    if (qemuValidateDomainDeviceDefDiskFrontend(disk) < 0)
+        return -1;
+
+    if (disk->src->shared && !disk->src->readonly &&
+        !qemuBlockStorageSourceSupportsConcurrentAccess(disk->src)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("shared access for disk '%s' requires use of "
+                         "supported storage format"), disk->dst);
+        return -1;
+    }
+
+    if (driverName && STRNEQ(driverName, "qemu")) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported driver name '%s' for disk '%s'"),
+                       driverName, disk->dst);
         return -1;
     }
 
