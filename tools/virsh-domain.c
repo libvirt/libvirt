@@ -5522,7 +5522,6 @@ static bool
 cmdDump(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    bool ret = false;
     bool verbose = false;
     const char *name = NULL;
     const char *to = NULL;
@@ -5556,12 +5555,12 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
 
     virThreadJoin(&workerThread);
 
-    if (!ret)
+    if (!data.ret)
         vshPrintExtra(ctl, _("\nDomain %s dumped to %s\n"), name, to);
 
  cleanup:
     virshDomainFree(dom);
-    return !ret;
+    return !data.ret;
 }
 
 static const vshCmdInfo info_screenshot[] = {
