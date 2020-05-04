@@ -73,21 +73,6 @@
 
 VIR_LOG_INIT("qemu.qemu_command");
 
-VIR_ENUM_DECL(virDomainDiskQEMUBus);
-VIR_ENUM_IMPL(virDomainDiskQEMUBus,
-              VIR_DOMAIN_DISK_BUS_LAST,
-              "ide",
-              "floppy",
-              "scsi",
-              "virtio",
-              "xen",
-              "usb",
-              "uml",
-              "sata",
-              "sd",
-);
-
-
 VIR_ENUM_DECL(qemuDiskCacheV2);
 
 VIR_ENUM_IMPL(qemuDiskCacheV2,
