@@ -1449,17 +1449,8 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virBufferAddLit(&opt, "if=none");
         virBufferAsprintf(&opt, ",id=%s", drivealias);
     } else {
-        int idx = virDiskNameToIndex(disk->dst);
-
-        if (idx < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unsupported disk type '%s'"), disk->dst);
-            return NULL;
-        }
-
-        virBufferAsprintf(&opt, "if=%s",
-                          virDomainDiskQEMUBusTypeToString(disk->bus));
-        virBufferAsprintf(&opt, ",index=%d", idx);
+        virBufferAsprintf(&opt, "if=sd,index=%d",
+                          virDiskNameToIndex(disk->dst));
     }
 
     /* werror/rerror are really frontend attributes, but older
