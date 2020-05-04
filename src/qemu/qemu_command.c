@@ -1581,7 +1581,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                        virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
-    const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     const char *contAlias;
     g_autofree char *backendAlias = NULL;
     g_autofree char *scsiVPDDeviceId = NULL;
@@ -1838,7 +1837,8 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     case VIR_DOMAIN_DISK_BUS_LAST:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported disk bus '%s' with device setup"), bus);
+                       _("unsupported disk bus '%s' with device setup"),
+                       NULLSTR(virDomainDiskBusTypeToString(disk->bus)));
         return NULL;
     }
 
