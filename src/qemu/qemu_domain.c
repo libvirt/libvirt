@@ -6837,15 +6837,12 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
                   virDomainDefPtr src,
                   unsigned int flags)
 {
-    virDomainDefPtr ret = NULL;
     g_autofree char *xml = NULL;
 
     if (!(xml = qemuDomainDefFormatXML(driver, qemuCaps, src, flags)))
         return NULL;
 
-    ret = qemuDomainDefFromXML(driver, qemuCaps, xml);
-
-    return ret;
+    return qemuDomainDefFromXML(driver, qemuCaps, xml);
 }
 
 
@@ -13364,11 +13361,8 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
 char *
 qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivatePtr priv)
 {
-    char *ret = NULL;
-
-    ret = g_strdup_printf("%s/%s.sock", priv->libDir, qemuDomainGetManagedPRAlias());
-
-    return ret;
+    return g_strdup_printf("%s/%s.sock", priv->libDir,
+                           qemuDomainGetManagedPRAlias());
 }
 
 

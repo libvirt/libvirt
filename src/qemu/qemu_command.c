@@ -251,7 +251,6 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
 static char *
 qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
 {
-    char *result = NULL;
     int idx = virCommandPassFDGetFDIndex(cmd, fd);
 
     if (idx < 0) {
@@ -260,8 +259,7 @@ qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
         return NULL;
     }
 
-    result = g_strdup_printf("set=%d,fd=%d", idx, fd);
-    return result;
+    return g_strdup_printf("set=%d,fd=%d", idx, fd);
 }
 
 
@@ -278,7 +276,6 @@ qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
 static char *
 qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
 {
-    char *result = NULL;
     int idx = virCommandPassFDGetFDIndex(cmd, fd);
 
     if (idx < 0) {
@@ -287,8 +284,7 @@ qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
         return NULL;
     }
 
-    result = g_strdup_printf("/dev/fdset/%d", idx);
-    return result;
+    return g_strdup_printf("/dev/fdset/%d", idx);
 }
 
 

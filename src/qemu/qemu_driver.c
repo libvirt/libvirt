@@ -7439,31 +7439,25 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 static int qemuConnectListDefinedDomains(virConnectPtr conn,
                                          char **const names, int nnames) {
     virQEMUDriverPtr driver = conn->privateData;
-    int ret = -1;
 
     if (virConnectListDefinedDomainsEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainObjListGetInactiveNames(driver->domains, names, nnames,
-                                           virConnectListDefinedDomainsCheckACL,
-                                           conn);
-
-    return ret;
+    return virDomainObjListGetInactiveNames(driver->domains, names, nnames,
+                                            virConnectListDefinedDomainsCheckACL,
+                                            conn);
 }
 
 static int qemuConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    int ret = -1;
 
     if (virConnectNumOfDefinedDomainsEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainObjListNumOfDomains(driver->domains, false,
-                                       virConnectNumOfDefinedDomainsCheckACL,
-                                       conn);
-
-    return ret;
+    return virDomainObjListNumOfDomains(driver->domains, false,
+                                        virConnectNumOfDefinedDomainsCheckACL,
+                                        conn);
 }
 
 

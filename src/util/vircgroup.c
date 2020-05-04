@@ -423,7 +423,6 @@ virCgroupDetect(virCgroupPtr group,
 char *
 virCgroupGetBlockDevString(const char *path)
 {
-    char *ret = NULL;
     struct stat sb;
 
     if (stat(path, &sb) < 0) {
@@ -442,9 +441,7 @@ virCgroupGetBlockDevString(const char *path)
 
     /* Automatically append space after the string since all callers
      * use it anyway */
-    ret = g_strdup_printf("%d:%d ", major(sb.st_rdev), minor(sb.st_rdev));
-
-    return ret;
+    return g_strdup_printf("%d:%d ", major(sb.st_rdev), minor(sb.st_rdev));
 }
 
 

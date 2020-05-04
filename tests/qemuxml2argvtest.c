@@ -185,11 +185,7 @@ fakeStorageVolGetInfo(virStorageVolPtr vol,
 static char *
 fakeStorageVolGetPath(virStorageVolPtr vol)
 {
-    char *ret = NULL;
-
-    ret = g_strdup_printf("/some/%s/device/%s", vol->key, vol->name);
-
-    return ret;
+    return g_strdup_printf("/some/%s/device/%s", vol->key, vol->name);
 }
 
 

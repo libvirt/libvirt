@@ -92,9 +92,8 @@ virSecurityGetRefCountAttrName(const char *name G_GNUC_UNUSED)
 static char *
 virSecurityGetTimestampAttrName(const char *name)
 {
-    char *ret = NULL;
-    ret = g_strdup_printf(XATTR_NAMESPACE ".libvirt.security.timestamp_%s", name);
-    return ret;
+    return g_strdup_printf(XATTR_NAMESPACE ".libvirt.security.timestamp_%s",
+                           name);
 }
 #else /* !XATTR_NAMESPACE */
 static char *
@@ -112,7 +111,6 @@ static char *
 virSecurityGetTimestamp(void)
 {
     unsigned long long boottime = 0;
-    char *ret = NULL;
 
     if (virHostGetBootTime(&boottime) < 0) {
         virReportSystemError(errno, "%s",
@@ -120,8 +118,7 @@ virSecurityGetTimestamp(void)
         return NULL;
     }
 
-    ret = g_strdup_printf("%llu", boottime);
-    return ret;
+    return g_strdup_printf("%llu", boottime);
 }
 
 

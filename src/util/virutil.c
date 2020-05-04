@@ -1420,7 +1420,6 @@ virGetUnprivSGIOSysfsPath(const char *path,
                           const char *sysfs_dir)
 {
     int maj, min;
-    char *sysfs_path = NULL;
     int rc;
 
     if ((rc = virGetDeviceID(path, &maj, &min)) < 0) {
@@ -1430,10 +1429,9 @@ virGetUnprivSGIOSysfsPath(const char *path,
         return NULL;
     }
 
-    sysfs_path = g_strdup_printf("%s/%d:%d/queue/unpriv_sgio",
-                                 sysfs_dir ? sysfs_dir : SYSFS_DEV_BLOCK_PATH,
-                                 maj, min);
-    return sysfs_path;
+    return g_strdup_printf("%s/%d:%d/queue/unpriv_sgio",
+                           sysfs_dir ? sysfs_dir : SYSFS_DEV_BLOCK_PATH, maj,
+                           min);
 }
 
 int

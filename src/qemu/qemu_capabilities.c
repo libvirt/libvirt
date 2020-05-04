@@ -4467,7 +4467,6 @@ char *
 virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *ret = NULL;
     size_t i;
 
     virBufferAddLit(&buf, "<qemuCaps>\n");
@@ -4537,9 +4536,7 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</qemuCaps>\n");
 
-    ret = virBufferContentAndReset(&buf);
-
-    return ret;
+    return virBufferContentAndReset(&buf);
 }
 
 

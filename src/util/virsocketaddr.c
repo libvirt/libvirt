@@ -578,7 +578,6 @@ char *
 virSocketAddrGetPath(virSocketAddrPtr addr G_GNUC_UNUSED)
 {
 #ifndef WIN32
-    char *path = NULL;
     if (addr == NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("No socket address provided"));
@@ -591,9 +590,7 @@ virSocketAddrGetPath(virSocketAddrPtr addr G_GNUC_UNUSED)
         return NULL;
     }
 
-    path = g_strndup(addr->data.un.sun_path, sizeof(addr->data.un.sun_path));
-
-    return path;
+    return g_strndup(addr->data.un.sun_path, sizeof(addr->data.un.sun_path));
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("UNIX sockets not supported on this platform"));

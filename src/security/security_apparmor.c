@@ -213,12 +213,9 @@ static char *
 get_profile_name(virDomainDefPtr def)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *name = NULL;
 
     virUUIDFormat(def->uuid, uuidstr);
-    name = g_strdup_printf("%s%s", AA_PREFIX, uuidstr);
-
-    return name;
+    return g_strdup_printf("%s%s", AA_PREFIX, uuidstr);
 }
 
 /* returns -1 on error or profile for libvirtd is unconfined, 0 if complain

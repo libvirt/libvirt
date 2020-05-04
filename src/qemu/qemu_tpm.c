@@ -171,11 +171,7 @@ static char *
 qemuTPMCreateEmulatorSocket(const char *swtpmStateDir,
                             const char *shortName)
 {
-    char *path = NULL;
-
-    path = g_strdup_printf("%s/%s-swtpm.sock", swtpmStateDir, shortName);
-
-    return path;
+    return g_strdup_printf("%s/%s-swtpm.sock", swtpmStateDir, shortName);
 }
 
 
@@ -213,14 +209,11 @@ static char *
 qemuTPMEmulatorCreatePidFilename(const char *swtpmStateDir,
                                  const char *shortName)
 {
-    char *pidfile = NULL;
     g_autofree char *devicename = NULL;
 
     devicename = g_strdup_printf("%s-swtpm", shortName);
 
-    pidfile = virPidFileBuildPath(swtpmStateDir, devicename);
-
-    return pidfile;
+    return virPidFileBuildPath(swtpmStateDir, devicename);
 }
 
 

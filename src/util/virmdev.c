@@ -209,7 +209,6 @@ virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
     g_autofree char *result_file = NULL;
     g_autofree char *iommu_path = NULL;
     g_autofree char *dev_path = virMediatedDeviceGetSysfsPath(uuidstr);
-    char *vfio_path = NULL;
 
     if (!dev_path)
         return NULL;
@@ -228,9 +227,7 @@ virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
 
     result_file = g_path_get_basename(result_path);
 
-    vfio_path = g_strdup_printf("/dev/vfio/%s", result_file);
-
-    return vfio_path;
+    return g_strdup_printf("/dev/vfio/%s", result_file);
 }
 
 
@@ -422,10 +419,7 @@ virMediatedDeviceIsUsed(virMediatedDevicePtr dev,
 char *
 virMediatedDeviceGetSysfsPath(const char *uuidstr)
 {
-    char *ret = NULL;
-
-    ret = g_strdup_printf(MDEV_SYSFS_DEVICES "%s", uuidstr);
-    return ret;
+    return g_strdup_printf(MDEV_SYSFS_DEVICES "%s", uuidstr);
 }
 
 

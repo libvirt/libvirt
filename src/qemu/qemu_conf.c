@@ -1429,7 +1429,6 @@ char *
 qemuGetSharedDeviceKey(const char *device_path)
 {
     int maj, min;
-    char *key = NULL;
     int rc;
 
     if ((rc = virGetDeviceID(device_path, &maj, &min)) < 0) {
@@ -1439,9 +1438,7 @@ qemuGetSharedDeviceKey(const char *device_path)
         return NULL;
     }
 
-    key = g_strdup_printf("%d:%d", maj, min);
-
-    return key;
+    return g_strdup_printf("%d:%d", maj, min);
 }
 
 /*
@@ -1706,7 +1703,6 @@ qemuGetHostdevPath(virDomainHostdevDefPtr hostdev)
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
     g_autofree char *dev_name = NULL;
-    char *dev_path = NULL;
 
     if (!(dev_name = virSCSIDeviceGetDevName(NULL,
                                              scsihostsrc->adapter,
@@ -1715,8 +1711,7 @@ qemuGetHostdevPath(virDomainHostdevDefPtr hostdev)
                                              scsihostsrc->unit)))
         return NULL;
 
-    dev_path = g_strdup_printf("/dev/%s", dev_name);
-    return dev_path;
+    return g_strdup_printf("/dev/%s", dev_name);
 }
 
 

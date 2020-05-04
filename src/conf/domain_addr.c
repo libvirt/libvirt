@@ -1392,13 +1392,7 @@ virDomainPCIAddressSetAllMulti(virDomainDefPtr def)
 static char*
 virDomainCCWAddressAsString(virDomainDeviceCCWAddressPtr addr)
 {
-    char *addrstr = NULL;
-
-    addrstr = g_strdup_printf("%x.%x.%04x",
-                              addr->cssid,
-                              addr->ssid,
-                              addr->devno);
-    return addrstr;
+    return g_strdup_printf("%x.%x.%04x", addr->cssid, addr->ssid, addr->devno);
 }
 
 static int

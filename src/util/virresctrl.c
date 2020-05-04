@@ -2308,8 +2308,6 @@ virResctrlDeterminePath(const char *parentpath,
                         const char *prefix,
                         const char *id)
 {
-    char *path = NULL;
-
     if (!id) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Resctrl ID must be set before determining resctrl "
@@ -2317,9 +2315,7 @@ virResctrlDeterminePath(const char *parentpath,
         return NULL;
     }
 
-    path = g_strdup_printf("%s/%s-%s", parentpath, prefix, id);
-
-    return path;
+    return g_strdup_printf("%s/%s-%s", parentpath, prefix, id);
 }
 
 

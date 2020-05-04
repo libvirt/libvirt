@@ -2892,10 +2892,7 @@ char *
 virNetworkConfigFile(const char *dir,
                      const char *name)
 {
-    char *ret = NULL;
-
-    ret = g_strdup_printf("%s/%s.xml", dir, name);
-    return ret;
+    return g_strdup_printf("%s/%s.xml", dir, name);
 }
 
 

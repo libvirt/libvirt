@@ -31317,7 +31317,6 @@ virDomainDefGetShortName(const virDomainDef *def)
 {
     wchar_t wshortname[VIR_DOMAIN_SHORT_NAME_MAX + 1] = {0};
     size_t len = 0;
-    char *ret = NULL;
     g_autofree char *shortname = NULL;
 
     /* No need to do the whole conversion thing when there are no multibyte
@@ -31326,8 +31325,8 @@ virDomainDefGetShortName(const virDomainDef *def)
     len = mbstowcs(NULL, def->name, 0);
     if ((len == (size_t) -1 && errno == EILSEQ) ||
         len == strlen(def->name)) {
-        ret = g_strdup_printf("%d-%.*s", def->id, VIR_DOMAIN_SHORT_NAME_MAX, def->name);
-        return ret;
+        return g_strdup_printf("%d-%.*s", def->id, VIR_DOMAIN_SHORT_NAME_MAX,
+                               def->name);
     }
 
     if (len == (size_t) -1) {
@@ -31362,8 +31361,7 @@ virDomainDefGetShortName(const virDomainDef *def)
         return NULL;
     }
 
-    ret = g_strdup_printf("%d-%s", def->id, shortname);
-    return ret;
+    return g_strdup_printf("%d-%s", def->id, shortname);
 }
 
 #undef VIR_DOMAIN_SHORT_NAME_MAX

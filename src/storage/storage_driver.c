@@ -2839,11 +2839,8 @@ virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr obj,
 
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
-    char *tmp = NULL;
-
-    tmp = g_strdup_printf("%s/%s.%s.secret.XXXXXX",
-                          driver->stateDir, def->name, voldef->name);
-    return tmp;
+    return g_strdup_printf("%s/%s.%s.secret.XXXXXX", driver->stateDir,
+                           def->name, voldef->name);
 }
 
 
