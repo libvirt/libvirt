@@ -105,7 +105,6 @@ bool qemuDiskBusNeedsDriveArg(int bus);
 
 qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                         const virDomainDef *def,
                                          virQEMUCapsPtr qemuCaps);
 int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
@@ -115,7 +114,6 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
 
 qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                              const virDomainDef *def,
                                               virQEMUCapsPtr qemuCaps);
 
 
@@ -200,9 +198,6 @@ int qemuGetDriveSourceString(virStorageSourcePtr src,
 bool
 qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDefPtr disk);
 
-int qemuCheckDiskConfig(virDomainDiskDefPtr disk,
-                        const virDomainDef *def,
-                        virQEMUCapsPtr qemuCaps);
 
 bool
 qemuCheckFips(void);

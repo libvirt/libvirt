@@ -713,7 +713,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
                                                                       priv->qemuCaps)))
             goto cleanup;
     } else {
-        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk, vm->def,
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk,
                                                                    priv->qemuCaps)))
             goto cleanup;
     }

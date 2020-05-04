@@ -1114,23 +1114,6 @@ qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDefPtr disk)
 }
 
 
-/**
- * qemuCheckDiskConfig:
- * @disk: disk definition
- * @qemuCaps: qemu capabilities, may be NULL for cold-plug check
- *
- * Perform disk definition config validity checks. Returns -1 on error with
- * error reported.
- */
-int
-qemuCheckDiskConfig(virDomainDiskDefPtr disk G_GNUC_UNUSED,
-                    const virDomainDef *def G_GNUC_UNUSED,
-                    virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
-{
-    return 0;
-}
-
-
 /* QEMU 1.2 and later have a binary flag -enable-fips that must be
  * used for VNC auth to obey FIPS settings; but the flag only
  * exists on Linux, and with no way to probe for it via QMP.  Our
@@ -1449,7 +1432,6 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
 
 static char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
-                  const virDomainDef *def,
                   virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
@@ -1474,10 +1456,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
                            _("unsupported disk type '%s'"), disk->dst);
             return NULL;
         }
-
-        /* if we are using -device this will be checked elsewhere */
-        if (qemuCheckDiskConfig(disk, def, qemuCaps) < 0)
-            return NULL;
 
         virBufferAsprintf(&opt, "if=%s",
                           virDomainDiskQEMUBusTypeToString(disk->bus));
@@ -1617,9 +1595,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     g_autofree char *backendAlias = NULL;
     g_autofree char *scsiVPDDeviceId = NULL;
     int controllerModel;
-
-    if (qemuCheckDiskConfig(disk, def, qemuCaps) < 0)
-        return NULL;
 
     if (!qemuDomainCheckCCWS390AddressSupport(def, &disk->info, qemuCaps, disk->dst))
         return NULL;
@@ -2131,7 +2106,6 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
 static int
 qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
                                virDomainDiskDefPtr disk,
-                               const virDomainDef *def,
                                virQEMUCapsPtr qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
@@ -2151,7 +2125,7 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
             !(copyOnReadProps = qemuBlockStorageGetCopyOnReadProps(disk)))
             return -1;
     } else {
-        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk, def, qemuCaps)))
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk, qemuCaps)))
             return -1;
     }
 
@@ -2181,7 +2155,7 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
 {
     g_autofree char *optstr = NULL;
 
-    if (qemuBuildDiskSourceCommandLine(cmd, disk, def, qemuCaps) < 0)
+    if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps) < 0)
         return -1;
 
     if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
@@ -9979,7 +9953,6 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
  */
 qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                         const virDomainDef *def,
                                          virQEMUCapsPtr qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
@@ -9987,7 +9960,7 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(data->driveCmd = qemuBuildDriveStr(disk, def, qemuCaps)) ||
+    if (!(data->driveCmd = qemuBuildDriveStr(disk, qemuCaps)) ||
         !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk)))
         return NULL;
 
@@ -10049,7 +10022,6 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
  */
 qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                              const virDomainDef *def,
                                               virQEMUCapsPtr qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) elem = NULL;
@@ -10058,7 +10030,7 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(elem = qemuBuildStorageSourceAttachPrepareDrive(disk, def, qemuCaps)))
+    if (!(elem = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
         return NULL;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, elem, qemuCaps) < 0)

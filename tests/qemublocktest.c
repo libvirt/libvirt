@@ -283,8 +283,7 @@ testQemuDiskXMLToProps(const void *opaque)
         virDomainDiskInsert(vmdef, disk) < 0)
         return -1;
 
-    if (qemuCheckDiskConfig(disk, vmdef, data->qemuCaps) < 0 ||
-        qemuValidateDomainDeviceDefDisk(disk, vmdef, data->qemuCaps) < 0) {
+    if (qemuValidateDomainDeviceDefDisk(disk, vmdef, data->qemuCaps) < 0) {
         VIR_TEST_VERBOSE("invalid configuration for disk");
         return -1;
     }
