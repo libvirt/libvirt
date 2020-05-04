@@ -38,6 +38,7 @@
 #include "libxl_capabilities.h"
 #include "libxl_logger.h"
 
+#define LIBXL_DRIVER_EXTERNAL_NAME "Xen"
 #define LIBXL_DRIVER_NAME "xenlight"
 #define LIBXL_VNC_PORT_MIN  5900
 #define LIBXL_VNC_PORT_MAX  65535

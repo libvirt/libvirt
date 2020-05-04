@@ -911,7 +911,7 @@ libxlConnectGetType(virConnectPtr conn)
     if (virConnectGetTypeEnsureACL(conn) < 0)
         return NULL;
 
-    return "Xen";
+    return LIBXL_DRIVER_EXTERNAL_NAME;
 }
 
 static int
@@ -6608,7 +6608,7 @@ libxlDomainGetMetadata(virDomainPtr dom,
 }
 
 static virHypervisorDriver libxlHypervisorDriver = {
-    .name = LIBXL_DRIVER_NAME,
+    .name = LIBXL_DRIVER_EXTERNAL_NAME,
     .connectURIProbe = libxlConnectURIProbe,
     .connectOpen = libxlConnectOpen, /* 0.9.0 */
     .connectClose = libxlConnectClose, /* 0.9.0 */
@@ -6732,7 +6732,7 @@ static virConnectDriver libxlConnectDriver = {
 };
 
 static virStateDriver libxlStateDriver = {
-    .name = "LIBXL",
+    .name = LIBXL_DRIVER_EXTERNAL_NAME,
     .stateInitialize = libxlStateInitialize,
     .stateCleanup = libxlStateCleanup,
     .stateReload = libxlStateReload,
