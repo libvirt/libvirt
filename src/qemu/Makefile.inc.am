@@ -103,7 +103,6 @@ libvirt_driver_qemu_impl_la_CFLAGS = \
 	-I$(srcdir)/access \
 	-I$(builddir)/access \
 	-I$(srcdir)/conf \
-	-I$(srcdir)/secret \
 	-I$(srcdir)/hypervisor \
 	$(AM_CFLAGS) \
 	$(NULL)

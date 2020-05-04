@@ -123,7 +123,6 @@ libvirt_driver_storage_impl_la_CFLAGS = \
 	-I$(srcdir)/access \
 	-I$(builddir)/access \
 	-I$(srcdir)/conf \
-	-I$(srcdir)/secret \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
@@ -269,7 +268,6 @@ if WITH_STORAGE_ISCSI
 libvirt_storage_backend_iscsi_la_SOURCES = $(STORAGE_DRIVER_ISCSI_SOURCES)
 libvirt_storage_backend_iscsi_la_CFLAGS = \
 	-I$(srcdir)/conf \
-	-I$(srcdir)/secret \
 	$(AM_CFLAGS) \
 	$(NULL)
 
@@ -286,7 +284,6 @@ libvirt_storage_backend_iscsi_direct_la_SOURCES = \
 	$(STORAGE_DRIVER_ISCSI_DIRECT_SOURCES)
 libvirt_storage_backend_iscsi_direct_la_CFLAGS = \
 	-I$(srcdir)/conf \
-	-I$(srcdir)/secret \
 	$(LIBISCSI_CFLAGS) \
 	$(AM_CFLAGS) \
 	$(NULL)
@@ -356,7 +353,6 @@ libvirt_storage_backend_rbd_la_LIBADD = \
 	$(NULL)
 libvirt_storage_backend_rbd_la_CFLAGS = \
 	-I$(srcdir)/conf \
-	-I$(srcdir)/secret \
 	$(AM_CFLAGS) \
 	$(NULL)
 
