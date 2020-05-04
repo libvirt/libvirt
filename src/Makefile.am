@@ -439,7 +439,7 @@ libvirt_la_LDFLAGS += -Wl,-flat_namespace
 endif WITH_MACOS
 libvirt_la_LDFLAGS += $(NULL)
 libvirt_la_LIBADD += \
-		    $(DRIVER_MODULES_LIBS)
+		    $(DLOPEN_LIBS)
 libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
 # Because we specify libvirt_la_DEPENDENCIES for $(LIBVIRT_SYMBOL_FILE), we
 # lose automake's automatic dependencies on an appropriate subset of
