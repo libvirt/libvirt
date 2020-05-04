@@ -1115,7 +1115,7 @@ mymain(void)
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-scsi-disk-vpd",
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
-    DO_TEST_FAILURE("disk-scsi-disk-vpd-build-error",
+    DO_TEST_PARSE_ERROR("disk-scsi-disk-vpd-build-error",
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST("disk-sata-device",
