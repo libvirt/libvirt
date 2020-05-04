@@ -2533,8 +2533,8 @@
             The <code>name</code> attribute selects which timer is
             being modified, and can be one of
             "platform" (currently unsupported),
-            "hpet" (libxl, xen, qemu, lxc), "kvmclock" (qemu),
-            "pit" (qemu), "rtc" (qemu, lxc), "tsc" (libxl, qemu -
+            "hpet" (xen, qemu, lxc), "kvmclock" (qemu),
+            "pit" (qemu), "rtc" (qemu, lxc), "tsc" (xen, qemu -
             <span class="since">since 3.2.0</span>), "hypervclock"
             (qemu - <span class="since">since 1.2.2</span>) or
             "armvtimer" (qemu - <span class="since">since 6.1.0</span>).
@@ -7518,7 +7518,7 @@ qemu-kvm -net nic,model=? /dev/null
         <p>
           You can provide the amount of video memory in kibibytes (blocks of
           1024 bytes) using <code>vram</code>. This is supported only for guest
-          type of "libxl", "vz", "qemu", "vbox", "vmx" and "xen". If no
+          type of "vz", "qemu", "vbox", "vmx" and "xen". If no
           value is provided the default is used. If the size is not a power of
           two it will be rounded to closest one.
         </p>

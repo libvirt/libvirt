@@ -342,8 +342,8 @@
           <td>interface</td>
         </tr>
         <tr>
-          <td>libxl</td>
-          <td>xenlight</td>
+          <td>xen</td>
+          <td>Xen</td>
         </tr>
         <tr>
           <td>lxc</td>
