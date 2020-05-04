@@ -2158,20 +2158,26 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
     if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps) < 0)
         return -1;
 
-    if (!qemuDiskBusIsSD(disk->bus)) {
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC ||
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-            if (qemuCommandAddExtDevice(cmd, &disk->info) < 0)
-                return -1;
+    /* SD cards are currently instantiated via -drive if=sd, so the -device
+     * part must be skipped */
+    if (qemuDiskBusIsSD(disk->bus))
+        return 0;
 
-            virCommandAddArg(cmd, "-device");
+    /* floppy devices are instantiated via -drive ...,if=none and bound to the
+     * controller via -global isa-fdc.driveA/B options in the pre-blockdev era */
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
+        return 0;
 
-            if (!(optstr = qemuBuildDiskDeviceStr(def, disk, bootindex,
-                                                  qemuCaps)))
-                return -1;
-            virCommandAddArg(cmd, optstr);
-        }
-    }
+    if (qemuCommandAddExtDevice(cmd, &disk->info) < 0)
+        return -1;
+
+    virCommandAddArg(cmd, "-device");
+
+    if (!(optstr = qemuBuildDiskDeviceStr(def, disk, bootindex,
+                                          qemuCaps)))
+        return -1;
+    virCommandAddArg(cmd, optstr);
 
     return 0;
 }
