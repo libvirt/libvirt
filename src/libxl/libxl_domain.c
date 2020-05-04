@@ -873,7 +873,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
         VIR_FREE(xml);
     }
 
-    virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                     vm->def, hostdev_flags, NULL);
 
     VIR_FREE(priv->lockState);
@@ -1370,7 +1370,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
     if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0)
         goto cleanup_dom;
 
-    if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                        vm->def, hostdev_flags) < 0)
         goto cleanup_dom;
 

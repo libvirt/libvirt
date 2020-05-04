@@ -431,7 +431,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
     libxlLoggerOpenFile(cfg->logger, vm->def->id, vm->def->name, NULL);
 
     /* Update hostdev state */
-    if (virHostdevUpdateActiveDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    if (virHostdevUpdateActiveDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                             vm->def, hostdev_flags) < 0)
         goto error;
 
@@ -3127,7 +3127,7 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
         goto cleanup;
 
-    if (virHostdevPreparePCIDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    if (virHostdevPreparePCIDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                     vm->def->name, vm->def->uuid,
                                     &hostdev, 1, 0) < 0)
         goto cleanup;
@@ -3149,7 +3149,7 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
     goto cleanup;
 
  error:
-    virHostdevReAttachPCIDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    virHostdevReAttachPCIDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                  vm->def->name, &hostdev, 1, NULL);
 
  cleanup:
@@ -3264,7 +3264,7 @@ libxlDomainAttachHostUSBDevice(libxlDriverPrivatePtr driver,
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
         goto cleanup;
 
-    if (virHostdevPrepareUSBDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    if (virHostdevPrepareUSBDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                     vm->def->name, &hostdev, 1, 0) < 0)
         goto cleanup;
 
@@ -3284,7 +3284,7 @@ libxlDomainAttachHostUSBDevice(libxlDriverPrivatePtr driver,
     goto cleanup;
 
  reattach:
-    virHostdevReAttachUSBDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    virHostdevReAttachUSBDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                  vm->def->name, &hostdev, 1);
 
  cleanup:
@@ -3689,7 +3689,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
 
     virDomainHostdevRemove(vm->def, idx);
 
-    virHostdevReAttachPCIDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    virHostdevReAttachPCIDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                  vm->def->name, &hostdev, 1, NULL);
 
     ret = 0;
@@ -3811,7 +3811,7 @@ libxlDomainDetachHostUSBDevice(libxlDriverPrivatePtr driver,
 
     virDomainHostdevRemove(vm->def, idx);
 
-    virHostdevReAttachUSBDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    virHostdevReAttachUSBDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                  vm->def->name, &hostdev, 1);
 
     ret = 0;
