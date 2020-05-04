@@ -142,6 +142,9 @@
         <dt><a href="strategy.html">Project strategy</a></dt>
         <dd>Sets a vision for future direction &amp; technical choices</dd>
 
+        <dt><a href="ci.html">CI Testing</a></dt>
+        <dd>Details of the Continuous Integration testing strategy</dd>
+
         <dt><a href="bugs.html">Bug reports</a></dt>
         <dd>How and where to report bugs and request features</dd>
 

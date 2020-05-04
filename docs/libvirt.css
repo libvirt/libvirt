@@ -592,3 +592,8 @@ td.gitmirror {
 td.gitmirror a {
     color: inherit;
 }
+
+th p, td p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
