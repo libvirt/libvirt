@@ -121,8 +121,82 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Allow checkpoint redefine for offline VMs
+        </summary>
+        <description>
+          Skip the liveness and capability checks when redefining checkpoints as
+          we don't need QEMU interactions to update the metadata.
+        </description>
+      </change>
+      <change>
+        <summary>
+          daemons: Improve timeout handling
+        </summary>
+        <description>
+          Daemons now support <code>--timeout 0 </code> which suppresses daemon
+          killing after given time of inactivity.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Add support for 'multidevs' option
+        </summary>
+        <description>
+          This option prevents misbehaviours on guest if a QEMU 9pfs export
+          contains multiple devices, due to the potential file ID collisions
+          this otherwise may cause.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Various embed driver fixes
+        </summary>
+        <description>
+          When using shared resources from embed driver (e.g. hugepages,
+          machined, etc.) libvirt now generates an unique handler that is not
+          conflicting with other embed drivers or system or session daemons.
+        </description>
+      </change>
+      <change>
+        <summary>
+          cpu: Distinguish Cascadelake-Server from Skylake-Server
+        </summary>
+        <description>
+          Libvirt now properly detects Cascadelake-Server and Skylake-Server
+          processors which differ only in stepping.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Fix domain restore from a block device
+        </summary>
+        <description>
+          When using namespaces, libvirt was unable to restore a domain from a
+          block device because libvirt tried to relabel the device inside the
+          namespace while QEMU was given FD to the block device in the host.
+        </description>
+      </change>
+      <change>
+        <summary>
+          node_device_udev: Handle move events
+        </summary>
+        <description>
+          Libvirt now handles <code>move</code> event which is emitted on a NIC rename.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Fix capabilities probing with TCG
+        </summary>
+        <description>
+          Libvirt no long assumes TCG is always available. It now detects
+          whether QEMU supports TCG and reports it accordingly.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
