@@ -2111,7 +2111,7 @@ remoteDispatchConnectOpen(virNetServerPtr server G_GNUC_UNUSED,
 
     VIR_DEBUG("Primary driver type is '%s'", type);
     if (STREQ(type, "QEMU") ||
-        STREQ(type, "LIBXL") ||
+        STREQ(type, "Xen") ||
         STREQ(type, "LXC") ||
         STREQ(type, "VBOX") ||
         STREQ(type, "bhyve") ||
