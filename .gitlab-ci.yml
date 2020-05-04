@@ -172,7 +172,7 @@ website:
     - $MAKE -C docs install
     - cd ..
     - mv vroot/share/doc/libvirt/html/ website
-  image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
+  image: quay.io/libvirt/buildenv-libvirt-centos-8:latest
   artifacts:
     expose_as: 'Website'
     name: 'website'
@@ -191,7 +191,7 @@ codestyle:
     - cd build
     - ../autogen.sh || (cat config.log && exit 1)
     - $MAKE syntax-check
-  image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
+  image: quay.io/libvirt/buildenv-libvirt-centos-8:latest
 
 
 # This artifact published by this job is downloaded to push to Weblate
@@ -211,7 +211,7 @@ potfile:
     - $MAKE -C po libvirt.pot
     - cd ..
     - mv build/po/libvirt.pot libvirt.pot
-  image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
+  image: quay.io/libvirt/buildenv-libvirt-centos-8:latest
   artifacts:
     expose_as: 'Potfile'
     name: 'potfile'
