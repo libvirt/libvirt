@@ -28,6 +28,7 @@
 
 int qemuValidateDomainDef(const virDomainDef *def, void *opaque);
 int qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
+                                    const virDomainDef *def,
                                     virQEMUCapsPtr qemuCaps);
 int qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                                 const virDomainDef *def,
