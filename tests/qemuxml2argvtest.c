@@ -1826,14 +1826,12 @@ mymain(void)
     DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
     DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement", NONE);
     DO_TEST("numad-static-memory-auto-vcpu", NONE);
-    DO_TEST("blkdeviotune-max",
-            QEMU_CAPS_DRIVE_IOTUNE_MAX);
-    DO_TEST("blkdeviotune-group-num",
-            QEMU_CAPS_DRIVE_IOTUNE_MAX,
-            QEMU_CAPS_DRIVE_IOTUNE_GROUP);
-    DO_TEST("blkdeviotune-max-length",
-            QEMU_CAPS_DRIVE_IOTUNE_MAX,
-            QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH);
+    DO_TEST_CAPS_VER("blkdeviotune-max", "4.1.0");
+    DO_TEST_CAPS_LATEST("blkdeviotune-max");
+    DO_TEST_CAPS_VER("blkdeviotune-group-num", "4.1.0");
+    DO_TEST_CAPS_LATEST("blkdeviotune-group-num");
+    DO_TEST_CAPS_VER("blkdeviotune-max-length", "4.1.0");
+    DO_TEST_CAPS_LATEST("blkdeviotune-max-length");
 
     DO_TEST("multifunction-pci-device",
             QEMU_CAPS_SCSI_LSI);
