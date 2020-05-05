@@ -617,7 +617,7 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
         /* If IO process resulted in an error & we have a message,
          * then wakeup that waiter */
         if (mon->msg && !mon->msg->finished) {
-            mon->msg->finished = 1;
+            mon->msg->finished = true;
             virCondSignal(&mon->notify);
         }
     }
@@ -880,7 +880,7 @@ qemuMonitorClose(qemuMonitorPtr mon)
             else
                 virResetLastError();
         }
-        mon->msg->finished = 1;
+        mon->msg->finished = true;
         virCondSignal(&mon->notify);
     }
 

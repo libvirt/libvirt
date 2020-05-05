@@ -840,9 +840,9 @@ virVMXGetConfigBoolean(virConfPtr conf, const char *name, bool *boolean_,
         return rc;
 
     if (STRCASEEQ(string, "true")) {
-        *boolean_ = 1;
+        *boolean_ = true;
     } else if (STRCASEEQ(string, "false")) {
-        *boolean_ = 0;
+        *boolean_ = false;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Config entry '%s' must represent a boolean value "

@@ -386,7 +386,7 @@ virTimeBackOffWait(virTimeBackOffVar *var)
     VIR_DEBUG("t=%llu, limit=%llu", t, var->limit_t);
 
     if (t > var->limit_t)
-        return 0;               /* ends the while loop */
+        return false;               /* ends the while loop */
 
     /* Compute next wait time. Cap at VIR_TIME_BACKOFF_CAP
      * to avoid long useless sleeps. */
@@ -406,5 +406,5 @@ virTimeBackOffWait(virTimeBackOffVar *var)
     VIR_DEBUG("sleeping for %llu ms", next);
 
     g_usleep(next * 1000);
-    return 1;
+    return true;
 }

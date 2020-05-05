@@ -48,7 +48,7 @@ virURIParamAppend(virURIPtr uri,
 
     uri->params[uri->paramsCount].name = pname;
     uri->params[uri->paramsCount].value = pvalue;
-    uri->params[uri->paramsCount].ignore = 0;
+    uri->params[uri->paramsCount].ignore = false;
     uri->paramsCount++;
 
     return 0;

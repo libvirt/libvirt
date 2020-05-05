@@ -781,7 +781,7 @@ int main(int argc, char **argv) {
 # endif /* ! LIBVIRTD */
 #endif /* ! WITH_IP */
     struct daemonConfig *config;
-    bool privileged = geteuid() == 0 ? true : false;
+    bool privileged = geteuid() == 0;
     bool implicit_conf = false;
     char *run_dir = NULL;
     mode_t old_umask;

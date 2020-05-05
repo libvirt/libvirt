@@ -1340,7 +1340,7 @@ int virNetlinkEventServiceStart(unsigned int protocol G_GNUC_UNUSED,
 bool virNetlinkEventServiceIsRunning(unsigned int protocol G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
-    return 0;
+    return false;
 }
 
 int virNetlinkEventServiceLocalPid(unsigned int protocol G_GNUC_UNUSED)

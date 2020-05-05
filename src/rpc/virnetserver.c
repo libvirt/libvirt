@@ -1231,7 +1231,7 @@ virNetServerUpdateTlsFiles(virNetServerPtr srv)
 {
     int ret = -1;
     virNetTLSContextPtr ctxt = NULL;
-    bool privileged = geteuid() == 0 ? true : false;
+    bool privileged = geteuid() == 0;
 
     ctxt = virNetServerGetTLSContext(srv);
     if (!ctxt) {

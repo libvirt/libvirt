@@ -1848,7 +1848,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 
             att_datatypes = att[idx].datatype;
 
-            while (datatype <= DATATYPE_LAST && found == 0 && rc == 0) {
+            while (datatype <= DATATYPE_LAST && !found && rc == 0) {
                 if ((att_datatypes & datatype)) {
 
                     att_datatypes ^= datatype;
@@ -2881,14 +2881,14 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                     matchShown = MATCH_NO;
                 } else if (matchShown == MATCH_YES) {
                     virBufferAddLit(buf, "/>\n");
-                    typeShown = 0;
+                    typeShown = false;
                     matchShown = MATCH_NONE;
                     continue;
                 }
             } else {
                 if (matchShown == MATCH_NO) {
                     virBufferAddLit(buf, "/>\n");
-                    typeShown = 0;
+                    typeShown = false;
                     matchShown = MATCH_NONE;
                     continue;
                 }

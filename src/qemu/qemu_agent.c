@@ -267,7 +267,7 @@ qemuAgentIOProcessLine(qemuAgentPtr agent,
         /* receiving garbage on first sync is regular situation */
         if (msg && msg->sync && msg->first) {
             VIR_DEBUG("Received garbage on sync");
-            msg->finished = 1;
+            msg->finished = true;
             return 0;
         }
 
@@ -306,7 +306,7 @@ qemuAgentIOProcessLine(qemuAgentPtr agent,
                 }
             }
             msg->rxObject = obj;
-            msg->finished = 1;
+            msg->finished = true;
             obj = NULL;
         } else {
             /* we are out of sync */
@@ -627,7 +627,7 @@ qemuAgentIO(GSocket *socket G_GNUC_UNUSED,
         /* If IO process resulted in an error & we have a message,
          * then wakeup that waiter */
         if (agent->msg && !agent->msg->finished) {
-            agent->msg->finished = 1;
+            agent->msg->finished = true;
             virCondSignal(&agent->notify);
         }
     }
@@ -751,7 +751,7 @@ qemuAgentNotifyCloseLocked(qemuAgentPtr agent)
         /* If there is somebody waiting for a message
          * wake him up. No message will arrive anyway. */
         if (agent->msg && !agent->msg->finished) {
-            agent->msg->finished = 1;
+            agent->msg->finished = true;
             virCondSignal(&agent->notify);
         }
     }
@@ -1209,7 +1209,7 @@ void qemuAgentNotifyEvent(qemuAgentPtr agent,
         agent->await_event = QEMU_AGENT_EVENT_NONE;
         /* somebody waiting for this event, wake him up. */
         if (agent->msg && !agent->msg->finished) {
-            agent->msg->finished = 1;
+            agent->msg->finished = true;
             virCondSignal(&agent->notify);
         }
     }

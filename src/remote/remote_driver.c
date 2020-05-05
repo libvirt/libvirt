@@ -1133,7 +1133,7 @@ doRemoteOpen(virConnectPtr conn,
             goto failed;
 
         priv->tls = virNetTLSContextNewClientPath(pkipath,
-                                                  geteuid() != 0 ? true : false,
+                                                  geteuid() != 0,
                                                   tls_priority,
                                                   sanity, verify);
         if (!priv->tls)

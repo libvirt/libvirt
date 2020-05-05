@@ -326,7 +326,7 @@ virNWFilterSnoopIsActive(char *threadKey)
     void *entry;
 
     if (threadKey == NULL)
-        return 0;
+        return false;
 
     virNWFilterSnoopActiveLock();
 

@@ -1512,7 +1512,7 @@ static int lxcStateInitialize(bool privileged,
     if (!(lxc_driver->config = cfg = virLXCDriverConfigNew()))
         goto cleanup;
 
-    cfg->log_libvirtd = 0; /* by default log to container logfile */
+    cfg->log_libvirtd = false; /* by default log to container logfile */
     cfg->have_netns = lxcCheckNetNsSupport();
 
     /* Call function to load lxc driver configuration information */

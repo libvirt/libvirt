@@ -332,7 +332,7 @@ bool
 virStoragePoolObjIsAutostart(virStoragePoolObjPtr obj)
 {
     if (!obj->configFile)
-        return 0;
+        return false;
 
     return obj->autostart;
 }
