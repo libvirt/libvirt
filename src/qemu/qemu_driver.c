@@ -22597,7 +22597,8 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
     if (!(src = qemuDomainGetStorageSourceByDevstr(dev, vm->def)))
         goto endjob;
 
-    if (!src->nodestorage &&
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+        !src->nodestorage &&
         qemuBlockNodeNamesDetect(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         goto endjob;
 
