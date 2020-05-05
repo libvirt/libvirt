@@ -3569,6 +3569,8 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
     } else if (ARCH_IS_X86(qemuCaps->arch)) {
         ret = virQEMUCapsInitCPUModelX86(qemuCaps, type, modelInfo,
                                          cpu, migratable);
+    } else if (ARCH_IS_ARM(qemuCaps->arch)) {
+        ret = 2;
     }
 
     if (ret == 0)
