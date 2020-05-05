@@ -35,8 +35,8 @@ typedef enum {
     VIR_NET_LIBSSH_HOSTKEY_VERIFY_IGNORE
 } virNetLibsshHostkeyVerify;
 
-int virNetLibsshSessionSetChannelCommand(virNetLibsshSessionPtr sess,
-                                         const char *command);
+void virNetLibsshSessionSetChannelCommand(virNetLibsshSessionPtr sess,
+                                          const char *command);
 
 int virNetLibsshSessionAuthSetCallback(virNetLibsshSessionPtr sess,
                                        virConnectAuthPtr auth);

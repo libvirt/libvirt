@@ -1082,11 +1082,10 @@ virNetLibsshSessionAuthAddKeyboardAuth(virNetLibsshSessionPtr sess,
 
 }
 
-int
+void
 virNetLibsshSessionSetChannelCommand(virNetLibsshSessionPtr sess,
                                       const char *command)
 {
-    int ret = 0;
     virObjectLock(sess);
 
     VIR_FREE(sess->channelCommand);
@@ -1094,7 +1093,6 @@ virNetLibsshSessionSetChannelCommand(virNetLibsshSessionPtr sess,
     sess->channelCommand = g_strdup(command);
 
     virObjectUnlock(sess);
-    return ret;
 }
 
 int

@@ -1132,11 +1132,10 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
 
 }
 
-int
+void
 virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
                                   const char *command)
 {
-    int ret = 0;
     virObjectLock(sess);
 
     VIR_FREE(sess->channelCommand);
@@ -1144,7 +1143,6 @@ virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
     sess->channelCommand = g_strdup(command);
 
     virObjectUnlock(sess);
-    return ret;
 }
 
 int

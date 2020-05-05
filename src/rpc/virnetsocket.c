@@ -969,8 +969,7 @@ virNetSocketNewConnectLibSSH2(const char *host,
                                                VIR_NET_SSH_HOSTKEY_FILE_CREATE) != 0)
         goto error;
 
-    if (virNetSSHSessionSetChannelCommand(sess, command) != 0)
-        goto error;
+    virNetSSHSessionSetChannelCommand(sess, command);
 
     if (!(authMethodList = virStringSplit(authMethods, ",", 0)))
         goto error;
@@ -1101,8 +1100,7 @@ virNetSocketNewConnectLibssh(const char *host,
                                                   verify) != 0)
         goto error;
 
-    if (virNetLibsshSessionSetChannelCommand(sess, command) != 0)
-        goto error;
+    virNetLibsshSessionSetChannelCommand(sess, command);
 
     if (!(authMethodList = virStringSplit(authMethods, ",", 0)))
         goto error;

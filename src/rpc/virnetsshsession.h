@@ -40,8 +40,8 @@ typedef enum {
     VIR_NET_SSH_HOSTKEY_FILE_CREATE   = 1 << 1,
 } virNetSSHHostKeyFileFlags;
 
-int virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
-                                      const char *command);
+void virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
+                                       const char *command);
 
 void virNetSSHSessionAuthReset(virNetSSHSessionPtr sess);
 
