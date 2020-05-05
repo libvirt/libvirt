@@ -5137,10 +5137,14 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
 
 int
 qemuDomainValidateStorageSource(virStorageSourcePtr src,
-                                virQEMUCapsPtr qemuCaps)
+                                virQEMUCapsPtr qemuCaps,
+                                bool maskBlockdev)
 {
     int actualType = virStorageSourceGetActualType(src);
     bool blockdev = virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV);
+
+    if (maskBlockdev)
+        blockdev = false;
 
     if (src->format == VIR_STORAGE_FILE_COW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -8290,7 +8294,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         if (n->format == VIR_STORAGE_FILE_ISO)
             n->format = VIR_STORAGE_FILE_RAW;
 
-        if (qemuDomainValidateStorageSource(n, priv->qemuCaps) < 0)
+        if (qemuDomainValidateStorageSource(n, priv->qemuCaps, false) < 0)
             return -1;
 
         qemuDomainPrepareStorageSourceConfig(n, cfg, priv->qemuCaps);
@@ -13133,7 +13137,7 @@ qemuDomainPrepareDiskSourceLegacy(virDomainDiskDefPtr disk,
                                   qemuDomainObjPrivatePtr priv,
                                   virQEMUDriverConfigPtr cfg)
 {
-    if (qemuDomainValidateStorageSource(disk->src, priv->qemuCaps) < 0)
+    if (qemuDomainValidateStorageSource(disk->src, priv->qemuCaps, true) < 0)
         return -1;
 
     qemuDomainPrepareStorageSourceConfig(disk->src, cfg, priv->qemuCaps);
@@ -13169,7 +13173,7 @@ qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDefPtr disk,
     if (qemuBlockStorageSourceNeedsStorageSliceLayer(src))
         src->sliceStorage->nodename = g_strdup_printf("libvirt-%u-slice-sto", src->id);
 
-    if (qemuDomainValidateStorageSource(src, priv->qemuCaps) < 0)
+    if (qemuDomainValidateStorageSource(src, priv->qemuCaps, false) < 0)
         return -1;
 
     qemuDomainPrepareStorageSourceConfig(src, cfg, priv->qemuCaps);

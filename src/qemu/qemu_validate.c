@@ -2297,7 +2297,7 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
     }
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (qemuDomainValidateStorageSource(n, qemuCaps) < 0)
+        if (qemuDomainValidateStorageSource(n, qemuCaps, false) < 0)
             return -1;
     }
 
