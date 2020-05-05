@@ -1599,7 +1599,7 @@ virNetServerClientInitKeepAlive(virNetServerClientPtr client,
     virObjectRef(client);
 
     client->keepalive = ka;
-
+    ret = 0;
  cleanup:
     virObjectUnlock(client);
 

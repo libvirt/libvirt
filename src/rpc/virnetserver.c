@@ -306,8 +306,9 @@ int virNetServerAddClient(virNetServerPtr srv,
                                     virNetServerDispatchNewMessage,
                                     srv);
 
-    virNetServerClientInitKeepAlive(client, srv->keepaliveInterval,
-                                    srv->keepaliveCount);
+    if (virNetServerClientInitKeepAlive(client, srv->keepaliveInterval,
+                                        srv->keepaliveCount) < 0)
+        goto error;
 
     virObjectUnlock(srv);
     return 0;
