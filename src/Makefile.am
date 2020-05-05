@@ -19,28 +19,11 @@
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
 # that actually use them.
-AM_CPPFLAGS =	-I$(top_srcdir) \
-		-I../include \
-		-I$(top_srcdir)/include \
+AM_CPPFLAGS = \
 		-I$(srcdir)/util \
 		-I./util \
-		-DIN_LIBVIRT \
-		-Dabs_top_builddir="\"$(abs_top_builddir)\"" \
-		-Dabs_top_srcdir="\"$(abs_top_srcdir)\"" \
 		$(NULL)
 
-AM_CFLAGS =	$(LIBXML_CFLAGS) \
-		$(GLIB_CFLAGS) \
-		$(WARN_CFLAGS) \
-		$(WIN32_EXTRA_CFLAGS) \
-		$(COVERAGE_CFLAGS) \
-		$(NULL)
-AM_LDFLAGS =	$(DRIVER_MODULES_LDFLAGS) \
-		$(COVERAGE_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
-		$(NO_INDIRECT_LDFLAGS) \
-		$(MINGW_EXTRA_LDFLAGS) \
-		$(NULL)
 AM_LDFLAGS_MOD = \
 	-module \
 	-avoid-version \
