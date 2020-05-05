@@ -243,7 +243,6 @@ virStorageBackendMpathCheckPool(virStoragePoolObjPtr pool G_GNUC_UNUSED,
 static int
 virStorageBackendMpathRefreshPool(virStoragePoolObjPtr pool)
 {
-    int retval = 0;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
     VIR_DEBUG("pool=%p", pool);
@@ -254,7 +253,7 @@ virStorageBackendMpathRefreshPool(virStoragePoolObjPtr pool)
 
     virStorageBackendGetMaps(pool);
 
-    return retval;
+    return 0;
 }
 
 

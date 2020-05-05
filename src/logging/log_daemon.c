@@ -524,7 +524,6 @@ virLogDaemonPreExecRestart(const char *state_file,
 {
     virJSONValuePtr child;
     char *state = NULL;
-    int ret = -1;
     virJSONValuePtr object = virJSONValueNewObject();
     char *magic;
     virHashKeyValuePairPtr pairs = NULL;
@@ -581,7 +580,7 @@ virLogDaemonPreExecRestart(const char *state_file,
     VIR_FREE(pairs);
     VIR_FREE(state);
     virJSONValueFree(object);
-    return ret;
+    return -1;
 }
 
 
