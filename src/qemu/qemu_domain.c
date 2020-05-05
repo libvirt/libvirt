@@ -8032,18 +8032,14 @@ qemuDomainCleanupRun(virQEMUDriverPtr driver,
                      virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    size_t i;
 
     VIR_DEBUG("driver=%p, vm=%s", driver, vm->def->name);
 
     /* run cleanup callbacks in reverse order */
-    for (i = 0; i < priv->ncleanupCallbacks; i++) {
-        if (priv->cleanupCallbacks[priv->ncleanupCallbacks - (i + 1)])
-            priv->cleanupCallbacks[i](driver, vm);
-    }
+    while (priv->ncleanupCallbacks)
+        priv->cleanupCallbacks[--priv->ncleanupCallbacks](driver, vm);
 
     VIR_FREE(priv->cleanupCallbacks);
-    priv->ncleanupCallbacks = 0;
     priv->ncleanupCallbacks_max = 0;
 }
 
