@@ -26,17 +26,6 @@
       <target dev='sdb' bus='usb'/>
       <readonly/>
     </disk>
-    <disk type='file' device='cdrom'>
-      <driver name='qemu' type='raw'/>
-      <source file='/root/boot2.iso'/>
-      <target dev='sdc' bus='sd'/>
-      <readonly/>
-    </disk>
-    <disk type='file' device='cdrom'>
-      <driver name='qemu' type='raw'/>
-      <target dev='sdd' bus='sd'/>
-      <readonly/>
-    </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
