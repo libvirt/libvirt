@@ -28,6 +28,7 @@
   <flag name='blockio'/>
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
+  <flag name='seccomp-sandbox'/>
   <flag name='reboot-timeout'/>
   <flag name='vnc'/>
   <flag name='VGA'/>
@@ -139,6 +140,7 @@
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>
   <flag name='pcie-pci-bridge'/>
+  <flag name='seccomp-blacklist'/>
   <flag name='query-cpus-fast'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
@@ -192,23 +194,24 @@
   <flag name='storage.werror'/>
   <flag name='fsdev.multidevs'/>
   <flag name='virtio.packed'/>
+  <flag name='pcie-root-port.hotplug'/>
   <flag name='machine.pseries.cap-cfpc'/>
   <flag name='machine.pseries.cap-sbbc'/>
   <flag name='machine.pseries.cap-ibs'/>
   <flag name='tcg'/>
-  <version>4002050</version>
+  <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900241</microcodeVersion>
-  <package>v4.2.0-2387-g3189e9d38c</package>
+  <package>v5.0.0</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc32' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc64' typename='970fx_v3.1-powerpc64-cpu'/>
   <cpu type='kvm' name='power10' typename='power10_v1.0-powerpc64-cpu'/>
-  <cpu type='kvm' name='POWER9' typename='power9_v2.0-powerpc64-cpu'/>
+  <cpu type='kvm' name='POWER9' typename='host-powerpc64-cpu'/>
   <cpu type='kvm' name='power8nvl' typename='power8nvl_v1.0-powerpc64-cpu'/>
-  <cpu type='kvm' name='POWER8' typename='host-powerpc64-cpu'/>
+  <cpu type='kvm' name='POWER8' typename='power8_v2.0-powerpc64-cpu'/>
   <cpu type='kvm' name='power8e' typename='power8e_v2.1-powerpc64-cpu'/>
   <cpu type='kvm' name='power7+' typename='power7+_v2.1-powerpc64-cpu'/>
   <cpu type='kvm' name='POWER7' typename='power7_v2.3-powerpc64-cpu'/>
@@ -612,8 +615,8 @@
   <cpu type='kvm' name='750fx_v2.3'/>
   <cpu type='kvm' name='604'/>
   <cpu type='kvm' name='mpc8541e_v11'/>
-  <cpu type='kvm' name='750fx_v1.0'/>
   <cpu type='kvm' name='405gpr'/>
+  <cpu type='kvm' name='750fx_v1.0'/>
   <cpu type='kvm' name='mpc8343e'/>
   <cpu type='kvm' name='mpc8347eat'/>
   <cpu type='kvm' name='7410_v1.2'/>
@@ -1083,8 +1086,8 @@
   <cpu type='tcg' name='750fx_v2.3'/>
   <cpu type='tcg' name='604'/>
   <cpu type='tcg' name='mpc8541e_v11'/>
-  <cpu type='tcg' name='750fx_v1.0'/>
   <cpu type='tcg' name='405gpr'/>
+  <cpu type='tcg' name='750fx_v1.0'/>
   <cpu type='tcg' name='mpc8343e'/>
   <cpu type='tcg' name='mpc8347eat'/>
   <cpu type='tcg' name='7410_v1.2'/>

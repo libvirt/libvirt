@@ -30,4 +30,6 @@ file=/tmp/lib/domain--1-default-video-type-p/master-key.aes \
 -device usb-mouse,id=input1,bus=usb.0,port=2 \
 -vnc 127.0.0.1:0 \
 -device VGA,id=video0,vgamem_mb=16,bus=pci.0,addr=0x2 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
+resourcecontrol=deny \
 -msg timestamp=on

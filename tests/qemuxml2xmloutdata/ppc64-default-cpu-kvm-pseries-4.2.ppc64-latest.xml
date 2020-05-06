@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <cpu mode='custom' match='exact' check='none'>
-    <model fallback='forbid'>POWER8</model>
+    <model fallback='forbid'>POWER9</model>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

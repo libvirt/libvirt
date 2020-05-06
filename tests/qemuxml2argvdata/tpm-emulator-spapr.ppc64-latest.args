@@ -43,4 +43,6 @@ device_id=drive-scsi1-0-0-0,drive=libvirt-1-format,id=scsi1-0-0-0,bootindex=1 \
 -chardev socket,id=chrtpm,path=/dev/test \
 -device tpm-spapr,tpmdev=tpm-tpm0,id=tpm0,reg=0x00005000 \
 -global spapr-nvram.reg=0x4000 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
+resourcecontrol=deny \
 -msg timestamp=on
