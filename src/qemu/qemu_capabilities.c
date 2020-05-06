@@ -2586,9 +2586,10 @@ virQEMUCapsProbeQMPGenericProps(virQEMUCapsPtr qemuCaps,
     return 0;
 }
 
+
 static int
-virQEMUCapsProbeQMPDevices(virQEMUCapsPtr qemuCaps,
-                           qemuMonitorPtr mon)
+virQEMUCapsProbeQMPObjectTypes(virQEMUCapsPtr qemuCaps,
+                               qemuMonitorPtr mon)
 {
     int nvalues;
     char **values;
@@ -2601,22 +2602,34 @@ virQEMUCapsProbeQMPDevices(virQEMUCapsPtr qemuCaps,
                                   nvalues, values);
     virStringListFreeCount(values, nvalues);
 
-    if (virQEMUCapsProbeQMPGenericProps(qemuCaps,
-                                        mon,
-                                        virQEMUCapsDeviceProps,
-                                        G_N_ELEMENTS(virQEMUCapsDeviceProps),
-                                        qemuMonitorGetDeviceProps) < 0)
-        return -1;
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QOM_LIST_PROPERTIES) &&
-        virQEMUCapsProbeQMPGenericProps(qemuCaps,
-                                        mon,
-                                        virQEMUCapsObjectProps,
-                                        G_N_ELEMENTS(virQEMUCapsObjectProps),
-                                        qemuMonitorGetObjectProps) < 0)
-        return -1;
-
     return 0;
+}
+
+
+static int
+virQEMUCapsProbeQMPDeviceProperties(virQEMUCapsPtr qemuCaps,
+                                    qemuMonitorPtr mon)
+{
+    return virQEMUCapsProbeQMPGenericProps(qemuCaps,
+                                           mon,
+                                           virQEMUCapsDeviceProps,
+                                           G_N_ELEMENTS(virQEMUCapsDeviceProps),
+                                           qemuMonitorGetDeviceProps);
+}
+
+
+static int
+virQEMUCapsProbeQMPObjectProperties(virQEMUCapsPtr qemuCaps,
+                                    qemuMonitorPtr mon)
+{
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QOM_LIST_PROPERTIES))
+        return 0;
+
+    return virQEMUCapsProbeQMPGenericProps(qemuCaps,
+                                           mon,
+                                           virQEMUCapsObjectProps,
+                                           G_N_ELEMENTS(virQEMUCapsObjectProps),
+                                           qemuMonitorGetObjectProps);
 }
 
 
@@ -5061,7 +5074,11 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     if (virQEMUCapsProbeQMPEvents(qemuCaps, mon) < 0)
         return -1;
-    if (virQEMUCapsProbeQMPDevices(qemuCaps, mon) < 0)
+    if (virQEMUCapsProbeQMPObjectTypes(qemuCaps, mon) < 0)
+        return -1;
+    if (virQEMUCapsProbeQMPDeviceProperties(qemuCaps, mon) < 0)
+        return -1;
+    if (virQEMUCapsProbeQMPObjectProperties(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, type, mon) < 0)
         return -1;
