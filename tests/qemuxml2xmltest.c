@@ -126,28 +126,16 @@ testInfoSetStatusPaths(struct testQemuInfo *info)
 }
 
 
-# define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
-
 static int
 mymain(void)
 {
     int ret = 0;
-    char *fakerootdir;
     virQEMUDriverConfigPtr cfg = NULL;
     virHashTablePtr capslatest = NULL;
 
     capslatest = testQemuGetLatestCaps();
     if (!capslatest)
         return EXIT_FAILURE;
-
-    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
-
-    if (!g_mkdtemp(fakerootdir)) {
-        fprintf(stderr, "Cannot create fakerootdir");
-        abort();
-    }
-
-    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
 
     /* Required for tpm-emulator tests
      */
@@ -1478,12 +1466,8 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("virtio-9p-multidevs");
 
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
-        virFileDeleteTree(fakerootdir);
-
     virHashFree(capslatest);
     qemuTestDriverFree(&driver);
-    VIR_FREE(fakerootdir);
     virFileWrapperClearPrefixes();
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

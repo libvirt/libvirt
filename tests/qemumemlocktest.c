@@ -51,28 +51,14 @@ testCompareMemLock(const void *data)
     return ret;
 }
 
-# define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
-
 static int
 mymain(void)
 {
     int ret = 0;
-    char *fakerootdir;
     virQEMUCapsPtr qemuCaps = NULL;
 
-    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
-
-    if (!g_mkdtemp(fakerootdir)) {
-        fprintf(stderr, "Cannot create fakerootdir");
-        abort();
-    }
-
-    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
-
-    if (qemuTestDriverInit(&driver) < 0) {
-        VIR_FREE(fakerootdir);
+    if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
-    }
 
     driver.privileged = true;
 
@@ -150,11 +136,7 @@ mymain(void)
  cleanup:
     virObjectUnref(qemuCaps);
 
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
-        virFileDeleteTree(fakerootdir);
-
     qemuTestDriverFree(&driver);
-    VIR_FREE(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -307,11 +307,10 @@ qemuTestParseCapabilitiesArch(virArch arch,
 
 void qemuTestDriverFree(virQEMUDriver *driver)
 {
+    if (g_getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
+        virFileDeleteTree(driver->embeddedRoot);
+
     virMutexDestroy(&driver->lock);
-    if (driver->config) {
-        virFileDeleteTree(driver->config->stateDir);
-        virFileDeleteTree(driver->config->configDir);
-    }
     virObjectUnref(driver->qemuCapsCache);
     virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->caps);
@@ -370,14 +369,21 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
 }
 
 
-# define STATEDIRTEMPLATE abs_builddir "/qemustatedir-XXXXXX"
-# define CONFIGDIRTEMPLATE abs_builddir "/qemuconfigdir-XXXXXX"
+# define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
 int qemuTestDriverInit(virQEMUDriver *driver)
 {
     virSecurityManagerPtr mgr = NULL;
-    char statedir[] = STATEDIRTEMPLATE;
-    char configdir[] = CONFIGDIRTEMPLATE;
+    g_autofree char *fakerootdir = NULL;
+
+    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
+
+    if (!g_mkdtemp(fakerootdir)) {
+        fprintf(stderr, "Cannot create fakerootdir");
+        abort();
+    }
+
+    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
 
     memset(driver, 0, sizeof(*driver));
 
@@ -391,34 +397,15 @@ int qemuTestDriverInit(virQEMUDriver *driver)
         return -1;
 
     driver->hostarch = virArchFromHost();
-    driver->config = virQEMUDriverConfigNew(false, NULL);
+    driver->config = virQEMUDriverConfigNew(false, fakerootdir);
     if (!driver->config)
         goto error;
-
-    /* Do this early so that qemuTestDriverFree() doesn't see (unlink) the real
-     * dirs. */
-    VIR_FREE(driver->config->stateDir);
-    VIR_FREE(driver->config->configDir);
 
     /* Overwrite some default paths so it's consistent for tests. */
     VIR_FREE(driver->config->libDir);
     VIR_FREE(driver->config->channelTargetDir);
     driver->config->libDir = g_strdup("/tmp/lib");
     driver->config->channelTargetDir = g_strdup("/tmp/channel");
-
-    if (!g_mkdtemp(statedir)) {
-        fprintf(stderr, "Cannot create fake stateDir");
-        goto error;
-    }
-
-    driver->config->stateDir = g_strdup(statedir);
-
-    if (!g_mkdtemp(configdir)) {
-        fprintf(stderr, "Cannot create fake configDir");
-        goto error;
-    }
-
-    driver->config->configDir = g_strdup(configdir);
 
     driver->caps = testQemuCapsInit();
     if (!driver->caps)
