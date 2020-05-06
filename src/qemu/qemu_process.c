@@ -5488,7 +5488,6 @@ qemuProcessPrepareQEMUCaps(virDomainObjPtr vm,
                            unsigned int processStartFlags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    size_t i;
 
     virObjectUnref(priv->qemuCaps);
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(qemuCapsCache,
@@ -5496,14 +5495,6 @@ qemuProcessPrepareQEMUCaps(virDomainObjPtr vm,
                                                       vm->def->emulator,
                                                       vm->def->os.machine)))
         return -1;
-
-    /* clear the 'blockdev' capability for VMs which have disks that need -drive */
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuDiskBusIsSD(vm->def->disks[i]->bus)) {
-            virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-            break;
-        }
-    }
 
     if (processStartFlags & VIR_QEMU_PROCESS_START_STANDALONE)
         virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS);
