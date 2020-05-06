@@ -30,43 +30,43 @@
     <mode name='host-passthrough' supported='yes'/>
     <mode name='host-model' supported='no'/>
     <mode name='custom' supported='yes'>
-      <model usable='unknown'>pxa262</model>
-      <model usable='unknown'>pxa270-a0</model>
-      <model usable='unknown'>arm1136</model>
-      <model usable='unknown'>cortex-a15</model>
-      <model usable='unknown'>pxa260</model>
-      <model usable='unknown'>arm1136-r2</model>
-      <model usable='unknown'>pxa261</model>
-      <model usable='unknown'>pxa255</model>
-      <model usable='unknown'>cortex-a72</model>
-      <model usable='unknown'>cortex-m33</model>
-      <model usable='unknown'>arm926</model>
-      <model usable='unknown'>cortex-r5f</model>
-      <model usable='unknown'>arm11mpcore</model>
-      <model usable='unknown'>pxa250</model>
-      <model usable='unknown'>ti925t</model>
-      <model usable='unknown'>cortex-a57</model>
-      <model usable='unknown'>sa1110</model>
-      <model usable='unknown'>arm1176</model>
-      <model usable='unknown'>cortex-a53</model>
-      <model usable='unknown'>sa1100</model>
-      <model usable='unknown'>pxa270-c5</model>
       <model usable='unknown'>cortex-a9</model>
-      <model usable='unknown'>cortex-m7</model>
-      <model usable='unknown'>cortex-a8</model>
-      <model usable='unknown'>cortex-a7</model>
-      <model usable='unknown'>pxa270-c0</model>
-      <model usable='unknown'>arm1026</model>
-      <model usable='unknown'>pxa270-b1</model>
-      <model usable='unknown'>cortex-m3</model>
-      <model usable='unknown'>max</model>
-      <model usable='unknown'>cortex-m4</model>
-      <model usable='unknown'>pxa270-b0</model>
-      <model usable='unknown'>arm946</model>
-      <model usable='unknown'>cortex-m0</model>
-      <model usable='unknown'>cortex-r5</model>
+      <model usable='unknown'>pxa250</model>
       <model usable='unknown'>pxa270-a1</model>
+      <model usable='unknown'>arm946</model>
+      <model usable='unknown'>pxa270-c0</model>
+      <model usable='unknown'>max</model>
+      <model usable='unknown'>arm1026</model>
+      <model usable='unknown'>pxa260</model>
+      <model usable='unknown'>pxa270-b1</model>
+      <model usable='unknown'>cortex-a57</model>
+      <model usable='unknown'>pxa255</model>
+      <model usable='unknown'>cortex-r5</model>
+      <model usable='unknown'>arm1136</model>
+      <model usable='unknown'>cortex-a7</model>
+      <model usable='unknown'>pxa261</model>
+      <model usable='unknown'>pxa270-c5</model>
+      <model usable='unknown'>cortex-m3</model>
+      <model usable='unknown'>arm1176</model>
+      <model usable='unknown'>sa1100</model>
+      <model usable='unknown'>cortex-a53</model>
+      <model usable='unknown'>ti925t</model>
+      <model usable='unknown'>cortex-m33</model>
+      <model usable='unknown'>cortex-a8</model>
+      <model usable='unknown'>arm926</model>
+      <model usable='unknown'>cortex-a72</model>
       <model usable='unknown'>pxa270</model>
+      <model usable='unknown'>pxa270-a0</model>
+      <model usable='unknown'>cortex-m4</model>
+      <model usable='unknown'>cortex-m7</model>
+      <model usable='unknown'>cortex-a15</model>
+      <model usable='unknown'>arm11mpcore</model>
+      <model usable='unknown'>cortex-r5f</model>
+      <model usable='unknown'>cortex-m0</model>
+      <model usable='unknown'>sa1110</model>
+      <model usable='unknown'>arm1136-r2</model>
+      <model usable='unknown'>pxa270-b0</model>
+      <model usable='unknown'>pxa262</model>
     </mode>
   </cpu>
   <devices>
