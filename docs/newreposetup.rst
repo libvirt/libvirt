@@ -63,13 +63,25 @@ required under the **Settings** page:
 
   * **Protected branches**
 
-    * *Branch*: ``master``
+    * *Branch*: ``master`` and ``v*-maint``
 
     * *Allowed to merge*: Developers + Maintainers
 
     * *Allowed to push*: None (or Developers + Maintainers if MRs not used)
 
     * *Require approval from code owners*: disabled
+
+  * **Protected tags**
+
+    * *Tag*: ``v*`` and any project specific tag formats like ``LIBVIRT_*`` or ``CVE*``
+
+    * *Allowed to create*: Developers + Maintainers
+
+* **CI/CD**
+
+  * **Runners**
+
+    * *Shared runners*: Enable shared runners
 
 GitHub configuration
 ====================
