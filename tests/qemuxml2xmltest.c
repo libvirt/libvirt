@@ -643,6 +643,8 @@ mymain(void)
 
     DO_TEST("disk-serial", NONE);
 
+    DO_TEST_CAPS_ARCH_LATEST("disk-arm-virtio-sd", "aarch64");
+
     DO_TEST("virtio-rng-random",
             QEMU_CAPS_DEVICE_VIRTIO_RNG);
     DO_TEST("virtio-rng-egd",
