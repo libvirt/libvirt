@@ -275,6 +275,7 @@ remote/virtproxyd.conf: remote/libvirtd.conf.in
 	$(AM_V_GEN)sed \
 		-e '/[@]CUT_ENABLE_IP[@]/d' \
 		-e '/[@]END[@]/d' \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's|[@]runstatedir[@]|@runstatedir@|' \
 		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
 		$< > $@
@@ -300,6 +301,7 @@ remote/virtproxyd.aug: remote/libvirtd.aug.in
 	$(AM_V_GEN)$(SED) \
 		-e '/[@]CUT_ENABLE_IP[@]/d' \
 		-e '/[@]END[@]/d' \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtproxyd/' \
 		$< > $@
@@ -324,6 +326,7 @@ remote/test_virtproxyd.aug: remote/test_libvirtd.aug.in \
 		$(SED) \
 		-e '/[@]CUT_ENABLE_IP[@]/d' \
 		-e '/[@]END[@]/d' \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's|[@]runstatedir[@]|@runstatedir@|' \
 		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtproxyd/' \
