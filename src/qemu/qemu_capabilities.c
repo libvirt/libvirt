@@ -1483,10 +1483,6 @@ struct _virQEMUCapsObjectTypeProps {
     int capsCondition;
 };
 
-typedef int (*virQEMUCapsObjectTypePropsCB)(qemuMonitorPtr mon,
-                                            const char *type,
-                                            char ***props);
-
 static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-blk-pci", virQEMUCapsDevicePropsVirtioBlk,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBlk),
@@ -2556,36 +2552,6 @@ virQEMUCapsProbeQMPEvents(virQEMUCapsPtr qemuCaps,
     return 0;
 }
 
-static int
-virQEMUCapsProbeQMPGenericProps(virQEMUCapsPtr qemuCaps,
-                                qemuMonitorPtr mon,
-                                virQEMUCapsObjectTypeProps *props,
-                                size_t nprops,
-                                virQEMUCapsObjectTypePropsCB propsGetCB)
-{
-    int nvalues;
-    char **values;
-    size_t i;
-
-    for (i = 0; i < nprops; i++) {
-        const char *type = props[i].type;
-        int cap = props[i].capsCondition;
-
-        if (cap >= 0 && !virQEMUCapsGet(qemuCaps, cap))
-            continue;
-
-        if ((nvalues = propsGetCB(mon, type, &values)) < 0)
-            return -1;
-        virQEMUCapsProcessStringFlags(qemuCaps,
-                                      props[i].nprops,
-                                      props[i].props,
-                                      nvalues, values);
-        virStringListFreeCount(values, nvalues);
-    }
-
-    return 0;
-}
-
 
 static int
 virQEMUCapsProbeQMPObjectTypes(virQEMUCapsPtr qemuCaps,
@@ -2638,14 +2604,30 @@ static int
 virQEMUCapsProbeQMPObjectProperties(virQEMUCapsPtr qemuCaps,
                                     qemuMonitorPtr mon)
 {
+    size_t i;
+
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QOM_LIST_PROPERTIES))
         return 0;
 
-    return virQEMUCapsProbeQMPGenericProps(qemuCaps,
-                                           mon,
-                                           virQEMUCapsObjectProps,
-                                           G_N_ELEMENTS(virQEMUCapsObjectProps),
-                                           qemuMonitorGetObjectProps);
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsObjectProps); i++) {
+        virQEMUCapsObjectTypeProps *props = virQEMUCapsObjectProps + i;
+        VIR_AUTOSTRINGLIST values = NULL;
+        int nvalues;
+
+        if (props->capsCondition >= 0 &&
+            !virQEMUCapsGet(qemuCaps, props->capsCondition))
+            continue;
+
+        if ((nvalues = qemuMonitorGetObjectProps(mon, props->type, &values)) < 0)
+            return -1;
+
+        virQEMUCapsProcessStringFlags(qemuCaps,
+                                      props->nprops,
+                                      props->props,
+                                      nvalues, values);
+    }
+
+    return 0;
 }
 
 
