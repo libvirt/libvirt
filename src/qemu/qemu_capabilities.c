@@ -2610,11 +2610,27 @@ static int
 virQEMUCapsProbeQMPDeviceProperties(virQEMUCapsPtr qemuCaps,
                                     qemuMonitorPtr mon)
 {
-    return virQEMUCapsProbeQMPGenericProps(qemuCaps,
-                                           mon,
-                                           virQEMUCapsDeviceProps,
-                                           G_N_ELEMENTS(virQEMUCapsDeviceProps),
-                                           qemuMonitorGetDeviceProps);
+    size_t i;
+
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsDeviceProps); i++) {
+        virQEMUCapsObjectTypeProps *device = virQEMUCapsDeviceProps + i;
+        VIR_AUTOSTRINGLIST values = NULL;
+        int nvalues;
+
+        if (device->capsCondition >= 0 &&
+            !virQEMUCapsGet(qemuCaps, device->capsCondition))
+            continue;
+
+        if ((nvalues = qemuMonitorGetDeviceProps(mon, device->type, &values)) < 0)
+            return -1;
+
+        virQEMUCapsProcessStringFlags(qemuCaps,
+                                      device->nprops,
+                                      device->props,
+                                      nvalues, values);
+    }
+
+    return 0;
 }
 
 
