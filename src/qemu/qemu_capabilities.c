@@ -1303,154 +1303,162 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "tcg-accel", QEMU_CAPS_TCG },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
-    { "deflate-on-oom", QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE },
-    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
-    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
-    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES },
+
+struct virQEMUCapsDevicePropsFlags {
+    const char *value;
+    int flag;
+    int (*cb)(virJSONValuePtr props, virQEMUCapsPtr caps);
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBlk[] = {
-    { "ioeventfd", QEMU_CAPS_VIRTIO_IOEVENTFD },
-    { "event_idx", QEMU_CAPS_VIRTIO_BLK_EVENT_IDX },
-    { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI },
-    { "logical_block_size", QEMU_CAPS_BLOCKIO },
-    { "num-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES },
-    { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
-    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
-    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
-    { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
-    { "werror", QEMU_CAPS_STORAGE_WERROR },
-    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES },
+
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
+    { "deflate-on-oom", QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE, NULL },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
+    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioNet[] = {
-    { "tx", QEMU_CAPS_VIRTIO_TX_ALG },
-    { "event_idx", QEMU_CAPS_VIRTIO_NET_EVENT_IDX },
-    { "rx_queue_size", QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE },
-    { "tx_queue_size", QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE },
-    { "host_mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU },
-    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
-    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
-    { "failover", QEMU_CAPS_VIRTIO_NET_FAILOVER },
-    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
+    { "ioeventfd", QEMU_CAPS_VIRTIO_IOEVENTFD, NULL },
+    { "event_idx", QEMU_CAPS_VIRTIO_BLK_EVENT_IDX, NULL },
+    { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI, NULL },
+    { "logical_block_size", QEMU_CAPS_BLOCKIO, NULL },
+    { "num-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, NULL },
+    { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
+    { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
+    { "werror", QEMU_CAPS_STORAGE_WERROR, NULL },
+    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsPCIeRootPort[] = {
-    { "hotplug", QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
+    { "tx", QEMU_CAPS_VIRTIO_TX_ALG, NULL },
+    { "event_idx", QEMU_CAPS_VIRTIO_NET_EVENT_IDX, NULL },
+    { "rx_queue_size", QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE, NULL },
+    { "tx_queue_size", QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE, NULL },
+    { "host_mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU, NULL },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
+    { "failover", QEMU_CAPS_VIRTIO_NET_FAILOVER, NULL },
+    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSpaprPCIHostBridge[] = {
-    { "numa_node", QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPCIeRootPort[] = {
+    { "hotplug", QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
-    { "iothread", QEMU_CAPS_VIRTIO_SCSI_IOTHREAD },
-    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
-    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
-    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSpaprPCIHostBridge[] = {
+    { "numa_node", QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVfioPCI[] = {
-    { "display", QEMU_CAPS_VFIO_PCI_DISPLAY },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
+    { "iothread", QEMU_CAPS_VIRTIO_SCSI_IOTHREAD, NULL },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
+    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSCSIDisk[] = {
-    { "channel", QEMU_CAPS_SCSI_DISK_CHANNEL },
-    { "wwn", QEMU_CAPS_SCSI_DISK_WWN },
-    { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
-    { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
-    { "device_id", QEMU_CAPS_SCSI_DISK_DEVICE_ID },
-    { "werror", QEMU_CAPS_STORAGE_WERROR },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVfioPCI[] = {
+    { "display", QEMU_CAPS_VFIO_PCI_DISPLAY, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsIDEDrive[] = {
-    { "wwn", QEMU_CAPS_IDE_DRIVE_WWN },
-    { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
-    { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {
+    { "channel", QEMU_CAPS_SCSI_DISK_CHANNEL, NULL },
+    { "wwn", QEMU_CAPS_SCSI_DISK_WWN, NULL },
+    { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
+    { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
+    { "device_id", QEMU_CAPS_SCSI_DISK_DEVICE_ID, NULL },
+    { "werror", QEMU_CAPS_STORAGE_WERROR, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsPiix4PM[] = {
-    { "disable_s3", QEMU_CAPS_PIIX_DISABLE_S3 },
-    { "disable_s4", QEMU_CAPS_PIIX_DISABLE_S4 },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIDEDrive[] = {
+    { "wwn", QEMU_CAPS_IDE_DRIVE_WWN, NULL },
+    { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
+    { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBRedir[] = {
-    { "filter", QEMU_CAPS_USB_REDIR_FILTER },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPiix4PM[] = {
+    { "disable_s3", QEMU_CAPS_PIIX_DISABLE_S3, NULL },
+    { "disable_s4", QEMU_CAPS_PIIX_DISABLE_S4, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsI440FXPCIHost[] = {
-    { "pci-hole64-size", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBRedir[] = {
+    { "filter", QEMU_CAPS_USB_REDIR_FILTER, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsQ35PCIHost[] = {
-    { "pci-hole64-size", QEMU_CAPS_Q35_PCI_HOLE64_SIZE },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsI440FXPCIHost[] = {
+    { "pci-hole64-size", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBStorage[] = {
-    { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE },
-    { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
-    { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
-    { "werror", QEMU_CAPS_USB_STORAGE_WERROR },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsQ35PCIHost[] = {
+    { "pci-hole64-size", QEMU_CAPS_Q35_PCI_HOLE64_SIZE, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsKVMPit[] = {
-    { "lost_tick_policy", QEMU_CAPS_KVM_PIT_TICK_POLICY },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBStorage[] = {
+    { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE, NULL },
+    { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
+    { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
+    { "werror", QEMU_CAPS_USB_STORAGE_WERROR, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVGA[] = {
-    { "vgamem_mb", QEMU_CAPS_VGA_VGAMEM },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsKVMPit[] = {
+    { "lost_tick_policy", QEMU_CAPS_KVM_PIT_TICK_POLICY, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVmwareSvga[] = {
-    { "vgamem_mb", QEMU_CAPS_VMWARE_SVGA_VGAMEM },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVGA[] = {
+    { "vgamem_mb", QEMU_CAPS_VGA_VGAMEM, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsQxl[] = {
-    { "vgamem_mb", QEMU_CAPS_QXL_VGAMEM },
-    { "vram64_size_mb", QEMU_CAPS_QXL_VRAM64 },
-    { "max_outputs", QEMU_CAPS_QXL_MAX_OUTPUTS },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVmwareSvga[] = {
+    { "vgamem_mb", QEMU_CAPS_VMWARE_SVGA_VGAMEM, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioGpu[] = {
-    { "virgl", QEMU_CAPS_VIRTIO_GPU_VIRGL },
-    { "max_outputs", QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS },
-    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
-    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
-    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsQxl[] = {
+    { "vgamem_mb", QEMU_CAPS_QXL_VGAMEM, NULL },
+    { "vram64_size_mb", QEMU_CAPS_QXL_VRAM64, NULL },
+    { "max_outputs", QEMU_CAPS_QXL_MAX_OUTPUTS, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsICH9[] = {
-    { "disable_s3", QEMU_CAPS_ICH9_DISABLE_S3 },
-    { "disable_s4", QEMU_CAPS_ICH9_DISABLE_S4 },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioGpu[] = {
+    { "virgl", QEMU_CAPS_VIRTIO_GPU_VIRGL, NULL },
+    { "max_outputs", QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS, NULL },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
+    { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBNECXHCI[] = {
-    { "p3", QEMU_CAPS_NEC_USB_XHCI_PORTS },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsICH9[] = {
+    { "disable_s3", QEMU_CAPS_ICH9_DISABLE_S3, NULL },
+    { "disable_s4", QEMU_CAPS_ICH9_DISABLE_S4, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
-    { "intremap", QEMU_CAPS_INTEL_IOMMU_INTREMAP },
-    { "caching-mode", QEMU_CAPS_INTEL_IOMMU_CACHING_MODE },
-    { "eim", QEMU_CAPS_INTEL_IOMMU_EIM },
-    { "device-iotlb", QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBNECXHCI[] = {
+    { "p3", QEMU_CAPS_NEC_USB_XHCI_PORTS, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtualCSSBridge[] = {
-    { "cssid-unrestricted", QEMU_CAPS_CCW_CSSID_UNRESTRICTED },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
+    { "intremap", QEMU_CAPS_INTEL_IOMMU_INTREMAP, NULL },
+    { "caching-mode", QEMU_CAPS_INTEL_IOMMU_CACHING_MODE, NULL },
+    { "eim", QEMU_CAPS_INTEL_IOMMU_EIM, NULL },
+    { "device-iotlb", QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsMCH[] = {
-    { "extended-tseg-mbytes", QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsObjectPropsVirtualCSSBridge[] = {
+    { "cssid-unrestricted", QEMU_CAPS_CCW_CSSID_UNRESTRICTED, NULL },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsNVDIMM[] = {
-    { "unarmed", QEMU_CAPS_DEVICE_NVDIMM_UNARMED },
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsMCH[] = {
+    { "extended-tseg-mbytes", QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES, NULL },
+};
+
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsNVDIMM[] = {
+    { "unarmed", QEMU_CAPS_DEVICE_NVDIMM_UNARMED, NULL },
 };
 
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
@@ -1483,7 +1491,17 @@ struct _virQEMUCapsObjectTypeProps {
     int capsCondition;
 };
 
-static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
+
+typedef struct _virQEMUCapsDeviceTypeProps virQEMUCapsDeviceTypeProps;
+struct _virQEMUCapsDeviceTypeProps {
+    const char *type;
+    struct virQEMUCapsDevicePropsFlags *props;
+    size_t nprops;
+    int capsCondition;
+};
+
+
+static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-blk-pci", virQEMUCapsDevicePropsVirtioBlk,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBlk),
       -1 },
@@ -2579,7 +2597,7 @@ virQEMUCapsProbeQMPDeviceProperties(virQEMUCapsPtr qemuCaps,
     size_t i;
 
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsDeviceProps); i++) {
-        virQEMUCapsObjectTypeProps *device = virQEMUCapsDeviceProps + i;
+        virQEMUCapsDeviceTypeProps *device = virQEMUCapsDeviceProps + i;
         g_autoptr(virHashTable) qemuprops = NULL;
         size_t j;
 
@@ -2597,6 +2615,10 @@ virQEMUCapsProbeQMPDeviceProperties(virQEMUCapsPtr qemuCaps,
                 continue;
 
             virQEMUCapsSet(qemuCaps, device->props[j].flag);
+
+            if (device->props[j].cb &&
+                device->props[j].cb(entry, qemuCaps) < 0)
+                return -1;
         }
     }
 
