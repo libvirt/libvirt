@@ -55,6 +55,8 @@ main(int argc, char **argv)
 
     VIR_TEST_PRELOAD(mock);
 
+    virFileActivateDirOverrideForProg(argv[0]);
+
     if (argc != 2) {
         fprintf(stderr, "%s QEMU_binary\n", argv[0]);
         return EXIT_FAILURE;
