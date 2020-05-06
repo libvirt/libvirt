@@ -14687,7 +14687,7 @@ qemuDomainSnapshotPrepareDiskExternal(virDomainObjPtr vm,
     int err;
     int rc;
 
-    if (disk->src->readonly) {
+    if (disk->src->readonly && !(reuse || blockdev)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("external snapshot for readonly disk %s "
                          "is not supported"), disk->dst);
