@@ -148,6 +148,16 @@ virt_modules = []
 #   * include = include_directories (optional, default [])
 virt_daemons = []
 
+# virt_helpers:
+#   each entry is a dictionary with following items:
+#   * name - binary name (required)
+#   * sources - binary sources (required)
+#   * c_args - compile arguments (optional, default [])
+#   * include - include_directories (optional, default [])
+#   * deps - dependencies (optional, default [])
+#   * install_dir - installation directory (optional, libexecdir)
+virt_helpers = []
+
 
 # list subdirectories
 
@@ -525,6 +535,34 @@ foreach daemon : virt_daemons
     ],
     install: true,
     install_dir: sbindir,
+    install_rpath: libdir,
+  )
+endforeach
+
+
+# build libvirt helpers
+
+foreach helper : virt_helpers
+  bin = executable(
+    helper['name'],
+    [
+      helper['sources'],
+    ],
+    c_args: [
+      helper.get('c_args', []),
+    ],
+    include_directories: [
+      helper.get('include', []),
+    ],
+    dependencies: [
+      src_dep,
+      helper.get('deps', []),
+    ],
+    link_with: [
+      libvirt_lib,
+    ],
+    install: true,
+    install_dir: helper.get('install_dir', libexecdir),
     install_rpath: libdir,
   )
 endforeach
