@@ -641,6 +641,11 @@ bhyveParsePCIFbuf(virDomainDefPtr def,
             if (virStrToLong_uip(param, NULL, 10, &video->res->y))
                 goto error;
         }
+
+        if (STRPREFIX(param, "password=")) {
+            param += strlen("password=");
+            graphics->data.vnc.auth.passwd = g_strdup(param);
+        }
     }
 
  cleanup:

@@ -107,6 +107,7 @@ mymain(void)
     DO_TEST_DIFFERENT("vnc-vgaconf-io");
     DO_TEST_DIFFERENT("vnc-autoport");
     DO_TEST_DIFFERENT("vnc-resolution");
+    DO_TEST_DIFFERENT("vnc-password");
     DO_TEST_DIFFERENT("commandline");
     DO_TEST_DIFFERENT("msrs");
     DO_TEST_DIFFERENT("sound");

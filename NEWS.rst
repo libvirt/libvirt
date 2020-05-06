@@ -25,6 +25,13 @@ v6.8.0 (unreleased)
     Libvirt can now set the framebuffer's "w" and "h" parameters
     using the ``resolution`` element.
 
+  * bhyve: Support VNC password authentication
+
+    Libvirt can now probe whether the bhyve binary supports
+    VNC password authentication. In case it does, a VNC password
+    can now be passed using the ``passwd`` attribute on
+    the ``<graphics>`` element.
+
 * **Improvements**
 
   * qemu: Allow migration over UNIX sockets
