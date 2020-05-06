@@ -561,6 +561,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC, /* -machine pseries.cap-sbbc */
     QEMU_CAPS_MACHINE_PSERIES_CAP_IBS, /* -machine pseries.cap-ibs */
     QEMU_CAPS_TCG, /* QEMU does support TCG */
+    QEMU_CAPS_VIRTIO_BLK_SCSI_DEFAULT_DISABLED, /* virtio-blk-pci.scsi disabled by default */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

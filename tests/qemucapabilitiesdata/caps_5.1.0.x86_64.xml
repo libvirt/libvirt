@@ -232,6 +232,7 @@
   <flag name='pcie-root-port.hotplug'/>
   <flag name='aio.io_uring'/>
   <flag name='tcg'/>
+  <flag name='virtio-blk-pci.scsi.default.disabled'/>
   <version>5000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

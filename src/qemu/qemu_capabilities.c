@@ -580,6 +580,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "machine.pseries.cap-sbbc",
               "machine.pseries.cap-ibs",
               "tcg",
+              "virtio-blk-pci.scsi.default.disabled",
     );
 
 
@@ -1319,10 +1320,27 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBalloon[] 
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
 };
 
+
+static int
+virQEMUCapsDevicePropsVirtioBlkSCSIDefault(virJSONValuePtr props,
+                                           virQEMUCapsPtr qemuCaps)
+{
+    bool def = false;
+
+    if (virJSONValueObjectGetBoolean(props, "default-value", &def) < 0)
+        return 0;
+
+    if (def == false)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI_DEFAULT_DISABLED);
+
+    return 0;
+}
+
+
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "ioeventfd", QEMU_CAPS_VIRTIO_IOEVENTFD, NULL },
     { "event_idx", QEMU_CAPS_VIRTIO_BLK_EVENT_IDX, NULL },
-    { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI, NULL },
+    { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI, virQEMUCapsDevicePropsVirtioBlkSCSIDefault },
     { "logical_block_size", QEMU_CAPS_BLOCKIO, NULL },
     { "num-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, NULL },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },

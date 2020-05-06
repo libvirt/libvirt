@@ -191,6 +191,7 @@
   <flag name='virtio.packed'/>
   <flag name='pcie-root-port.hotplug'/>
   <flag name='tcg'/>
+  <flag name='virtio-blk-pci.scsi.default.disabled'/>
   <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700241</microcodeVersion>

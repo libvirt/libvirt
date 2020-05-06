@@ -199,6 +199,7 @@
   <flag name='machine.pseries.cap-sbbc'/>
   <flag name='machine.pseries.cap-ibs'/>
   <flag name='tcg'/>
+  <flag name='virtio-blk-pci.scsi.default.disabled'/>
   <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900241</microcodeVersion>
