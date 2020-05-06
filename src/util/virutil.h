@@ -99,7 +99,7 @@ char *virGetUserDirectory(void);
 char *virGetUserDirectoryByUID(uid_t uid);
 char *virGetUserConfigDirectory(void);
 char *virGetUserCacheDirectory(void);
-char *virGetUserRuntimeDirectory(void);
+char *virGetUserRuntimeDirectory(void) G_GNUC_NO_INLINE;
 char *virGetUserShell(uid_t uid);
 char *virGetUserName(uid_t uid) G_GNUC_NO_INLINE;
 char *virGetGroupName(gid_t gid) G_GNUC_NO_INLINE;
