@@ -18120,6 +18120,15 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                                          keepParentLabel) < 0)
         goto endjob;
 
+    if (mirror->readonly) {
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("copy of read-only disks is not supported"));
+            goto endjob;
+        }
+        mirror->readonly = false;
+    }
+
     /* we must initialize XML-provided chain prior to detecting to keep semantics
      * with VM startup */
     if (blockdev) {
