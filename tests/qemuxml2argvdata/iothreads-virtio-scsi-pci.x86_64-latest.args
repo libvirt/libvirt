@@ -41,7 +41,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 "node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
 "file":"libvirt-2-storage"}' \
--device virtio-blk-pci,iothread=iothread1,scsi=off,bus=pci.0,addr=0x4,\
+-device virtio-blk-pci,iothread=iothread1,bus=pci.0,addr=0x4,\
 drive=libvirt-2-format,id=virtio-disk1 \
 -blockdev '{"driver":"file",\
 "filename":"/var/lib/libvirt/images/iothrtest2.img",\

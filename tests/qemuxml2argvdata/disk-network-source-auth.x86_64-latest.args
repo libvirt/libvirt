@@ -37,7 +37,7 @@ keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 "node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
 "file":"libvirt-2-storage"}' \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x2,drive=libvirt-2-format,\
+-device virtio-blk-pci,bus=pci.0,addr=0x2,drive=libvirt-2-format,\
 id=virtio-disk0,bootindex=1 \
 -object secret,id=libvirt-1-storage-auth-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
@@ -50,7 +50,7 @@ keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 "auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
 "file":"libvirt-1-storage"}' \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=libvirt-1-format,\
+-device virtio-blk-pci,bus=pci.0,addr=0x3,drive=libvirt-1-format,\
 id=virtio-disk1 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

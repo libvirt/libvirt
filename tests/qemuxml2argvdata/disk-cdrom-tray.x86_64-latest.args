@@ -32,7 +32,7 @@ file=/tmp/lib/domain--1-test/master-key.aes \
 "node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"qcow2",\
 "file":"libvirt-3-storage"}' \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=libvirt-3-format,\
+-device virtio-blk-pci,bus=pci.0,addr=0x4,drive=libvirt-3-format,\
 id=virtio-disk0,bootindex=2 \
 -blockdev '{"driver":"file",\
 "filename":"/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso",\

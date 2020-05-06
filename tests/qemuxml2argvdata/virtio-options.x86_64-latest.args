@@ -36,8 +36,8 @@ bus=pci.0,addr=0x9 \
 "node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
 "file":"libvirt-1-storage"}' \
--device virtio-blk-pci,scsi=off,iommu_platform=on,ats=on,packed=on,bus=pci.0,\
-addr=0xa,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
+-device virtio-blk-pci,iommu_platform=on,ats=on,packed=on,bus=pci.0,addr=0xa,\
+drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/fs1 \
 -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fs1,iommu_platform=on,\
 ats=on,packed=on,bus=pci.0,addr=0x3 \

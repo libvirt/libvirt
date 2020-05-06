@@ -1766,7 +1766,9 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             virBufferAsprintf(&opt, ",event_idx=%s",
                               virTristateSwitchTypeToString(disk->event_idx));
         }
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI) &&
+            !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI_DEFAULT_DISABLED) &&
+              disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)) {
             /* if sg_io is true but the scsi option isn't supported,
              * that means it's just always on in this version of qemu.
              */

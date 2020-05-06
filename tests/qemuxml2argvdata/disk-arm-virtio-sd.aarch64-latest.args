@@ -37,7 +37,7 @@ file=/tmp/lib/domain--1-armtest/master-key.aes \
 "node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2",\
 "file":"libvirt-1-storage"}' \
--device virtio-blk-device,scsi=off,drive=libvirt-1-format,id=virtio-disk0 \
+-device virtio-blk-device,drive=libvirt-1-format,id=virtio-disk0 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

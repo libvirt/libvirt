@@ -38,7 +38,7 @@ addr=0x1 \
 "node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2",\
 "file":"libvirt-1-storage"}' \
--device virtio-blk-pci,scsi=off,bus=pci.4,addr=0x0,drive=libvirt-1-format,\
+-device virtio-blk-pci,bus=pci.4,addr=0x0,drive=libvirt-1-format,\
 id=virtio-disk0,bootindex=1 \
 -chardev socket,id=chr-vu-fs0,path=/tmp/lib/domain--1-guest/fs0.vhost-fs.sock \
 -device vhost-user-fs-pci,chardev=chr-vu-fs0,tag=mount_tag,bus=pci.1,addr=0x0 \
