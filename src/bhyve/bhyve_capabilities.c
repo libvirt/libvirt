@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2014 Roman Bogorodskiy
  * Copyright (C) 2014 Semihalf
- * Copyright (C) 2016 Fabian Freyer
+ * Copyright (C) 2020 Fabian Freyer
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -334,6 +334,17 @@ bhyveProbeCapsSoundHda(unsigned int *caps, char *binary)
 }
 
 
+static int
+bhyveProbeCapsVNCPassword(unsigned int *caps, char *binary)
+{
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-s",
+                                      "0,fbuf,password=",
+                                      "Invalid fbuf emulation \"password\"",
+                                      BHYVE_CAP_VNC_PASSWORD);
+}
+
+
 int
 virBhyveProbeCaps(unsigned int *caps)
 {
@@ -363,6 +374,9 @@ virBhyveProbeCaps(unsigned int *caps)
         goto out;
 
     if ((ret = bhyveProbeCapsSoundHda(caps, binary)))
+        goto out;
+
+    if ((ret = bhyveProbeCapsVNCPassword(caps, binary)))
         goto out;
 
  out:
