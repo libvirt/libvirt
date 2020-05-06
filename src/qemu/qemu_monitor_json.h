@@ -487,10 +487,9 @@ int qemuMonitorJSONSetObjectProperty(qemuMonitorPtr mon,
                                      qemuMonitorJSONObjectPropertyPtr prop)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
-int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
-                                  const char *device,
-                                  char ***props)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+virHashTablePtr qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
+                                              const char *device)
+    ATTRIBUTE_NONNULL(2);
 int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
                                   const char *object,
                                   char ***props)

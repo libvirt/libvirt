@@ -6745,28 +6745,56 @@ qemuMonitorJSONParsePropsList(virJSONValuePtr cmd,
 }
 
 
-int
-qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
-                              const char *device,
-                              char ***props)
+static int
+qemuMonitorJSONGetDevicePropsWorker(size_t pos G_GNUC_UNUSED,
+                                    virJSONValuePtr item,
+                                    void *opaque)
 {
+    const char *name = virJSONValueObjectGetString(item, "name");
+    virHashTablePtr devices = opaque;
+
+    if (!name) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("reply data was missing 'name'"));
+        return -1;
+    }
+
+    if (virHashAddEntry(devices, name, item) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+virHashTablePtr
+qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
+                              const char *device)
+{
+    g_autoptr(virHashTable) props = virHashNew(virJSONValueHashFree);
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
-
-    *props = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("device-list-properties",
                                            "s:typename", device,
                                            NULL)))
-        return -1;
+        return NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return -1;
+        return NULL;
 
+    /* return empty hash */
     if (qemuMonitorJSONHasError(reply, "DeviceNotFound"))
-        return 0;
+        return g_steal_pointer(&props);
 
-    return qemuMonitorJSONParsePropsList(cmd, reply, NULL, props);
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+        return NULL;
+
+    if (virJSONValueArrayForeachSteal(virJSONValueObjectGetArray(reply, "return"),
+                                      qemuMonitorJSONGetDevicePropsWorker,
+                                      props) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 

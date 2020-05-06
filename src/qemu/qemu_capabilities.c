@@ -2580,20 +2580,24 @@ virQEMUCapsProbeQMPDeviceProperties(virQEMUCapsPtr qemuCaps,
 
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsDeviceProps); i++) {
         virQEMUCapsObjectTypeProps *device = virQEMUCapsDeviceProps + i;
-        VIR_AUTOSTRINGLIST values = NULL;
-        int nvalues;
+        g_autoptr(virHashTable) qemuprops = NULL;
+        size_t j;
 
         if (device->capsCondition >= 0 &&
             !virQEMUCapsGet(qemuCaps, device->capsCondition))
             continue;
 
-        if ((nvalues = qemuMonitorGetDeviceProps(mon, device->type, &values)) < 0)
+        if (!(qemuprops = qemuMonitorGetDeviceProps(mon, device->type)))
             return -1;
 
-        virQEMUCapsProcessStringFlags(qemuCaps,
-                                      device->nprops,
-                                      device->props,
-                                      nvalues, values);
+        for (j = 0; j < device->nprops; j++) {
+            virJSONValuePtr entry = virHashLookup(qemuprops, device->props[j].value);
+
+            if (!entry)
+                continue;
+
+            virQEMUCapsSet(qemuCaps, device->props[j].flag);
+        }
     }
 
     return 0;

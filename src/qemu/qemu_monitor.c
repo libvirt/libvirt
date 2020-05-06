@@ -3764,16 +3764,15 @@ qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
 }
 
 
-int
+virHashTablePtr
 qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
-                          const char *device,
-                          char ***props)
+                          const char *device)
 {
-    VIR_DEBUG("device=%s props=%p", device, props);
+    VIR_DEBUG("device=%s", device);
 
-    QEMU_CHECK_MONITOR(mon);
+    QEMU_CHECK_MONITOR_NULL(mon);
 
-    return qemuMonitorJSONGetDeviceProps(mon, device, props);
+    return qemuMonitorJSONGetDeviceProps(mon, device);
 }
 
 

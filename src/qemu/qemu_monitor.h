@@ -1203,9 +1203,8 @@ int qemuMonitorGetKVMState(qemuMonitorPtr mon,
 
 int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
                               char ***types);
-int qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
-                              const char *device,
-                              char ***props);
+virHashTablePtr qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
+                                          const char *device);
 int qemuMonitorGetObjectProps(qemuMonitorPtr mon,
                               const char *object,
                               char ***props);
