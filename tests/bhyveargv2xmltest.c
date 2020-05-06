@@ -186,6 +186,7 @@ mymain(void)
     DO_TEST("vnc-vga-on");
     DO_TEST("vnc-vga-off");
     DO_TEST("vnc-vga-io");
+    DO_TEST("vnc-resolution");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

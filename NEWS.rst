@@ -20,6 +20,11 @@ v6.8.0 (unreleased)
     attribute of the device's ``<source>`` element can be used to disable the
     filtering and allow all guest writes to the configuration space.
 
+  * bhyve: Support setting the framebuffer resolution
+
+    Libvirt can now set the framebuffer's "w" and "h" parameters
+    using the ``resolution`` element.
+
 * **Improvements**
 
   * qemu: Allow migration over UNIX sockets

@@ -1,0 +1,31 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+    <loader readonly='yes' type='pflash'>/path/to/test.fd</loader>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='isa' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
+    <graphics type='vnc' port='5904' autoport='no' listen='127.0.0.1'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
+    <video>
+      <model type='gop' heads='1' primary='yes'>
+        <resolution x='1920' y='1080'/>
+      </model>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+  </devices>
+</domain>

@@ -1,0 +1,20 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory>219136</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type>hvm</type>
+    <loader readonly="yes" type="pflash">/path/to/test.fd</loader>
+  </os>
+  <devices>
+    <video>
+      <model type='gop' heads='1' primary='yes'>
+        <resolution x="1920" y="1080"/>
+      </model>
+    </video>
+    <graphics type='vnc' port='5904'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
+  </devices>
+</domain>

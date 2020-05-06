@@ -5822,7 +5822,8 @@ A video device.
    :since:`Since 5.9.0` , the ``model`` element may also have an optional
    ``resolution`` sub-element. The ``resolution`` element has attributes ``x``
    and ``y`` to set the minimum resolution for the video device. This
-   sub-element is valid for model types "vga", "qxl", "bochs", and "virtio".
+   sub-element is valid for model types "vga", "qxl", "bochs", "gop",
+   and "virtio".
 
 ``acceleration``
    Configure if video acceleration should be enabled.

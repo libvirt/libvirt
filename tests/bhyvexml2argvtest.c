@@ -197,6 +197,7 @@ mymain(void)
     DO_TEST("vnc-vgaconf-off");
     DO_TEST("vnc-vgaconf-io");
     DO_TEST("vnc-autoport");
+    DO_TEST("vnc-resolution");
     DO_TEST("cputopology");
     DO_TEST_FAILURE("cputopology-nvcpu-mismatch");
     DO_TEST("commandline");

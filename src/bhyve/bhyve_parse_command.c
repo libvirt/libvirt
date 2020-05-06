@@ -621,6 +621,26 @@ bhyveParsePCIFbuf(virDomainDefPtr def,
             if (virStrToLong_i(param, NULL, 10, &graphics->data.vnc.port))
                 goto error;
         }
+
+        if (STRPREFIX(param, "w=")) {
+            param += strlen("w=");
+
+            if (video->res == NULL)
+                video->res = g_new0(virDomainVideoResolutionDef, 1);
+
+            if (virStrToLong_uip(param, NULL, 10, &video->res->x))
+                goto error;
+        }
+
+        if (STRPREFIX(param, "h=")) {
+            param += strlen("h=");
+
+            if (video->res == NULL)
+                video->res = g_new0(virDomainVideoResolutionDef, 1);
+
+            if (virStrToLong_uip(param, NULL, 10, &video->res->y))
+                goto error;
+        }
     }
 
  cleanup:
