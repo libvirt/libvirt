@@ -8212,6 +8212,8 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     virStorageSourcePtr src; /* iterator for the backing chain declared in XML */
     virStorageSourcePtr n; /* iterator for the backing chain detected from disk */
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+    bool isSD = qemuDiskBusIsSD(disk->bus);
     uid_t uid;
     gid_t gid;
 
@@ -8294,13 +8296,14 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         if (n->format == VIR_STORAGE_FILE_ISO)
             n->format = VIR_STORAGE_FILE_RAW;
 
-        if (qemuDomainValidateStorageSource(n, priv->qemuCaps, false) < 0)
+        /* mask-out blockdev for 'sd' disks */
+        if (qemuDomainValidateStorageSource(n, priv->qemuCaps, isSD) < 0)
             return -1;
 
         qemuDomainPrepareStorageSourceConfig(n, cfg, priv->qemuCaps);
         qemuDomainPrepareDiskSourceData(disk, n);
 
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+        if (blockdev && !isSD &&
             qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
             return -1;
     }
@@ -8358,7 +8361,8 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
 {
     *backendAlias = NULL;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV) ||
+        qemuDiskBusIsSD(disk->bus)) {
         if (!(*backendAlias = qemuAliasDiskDriveFromDisk(disk)))
             return -1;
 
@@ -13234,7 +13238,8 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
             disk->src->format = VIR_STORAGE_FILE_RAW;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+        !qemuDiskBusIsSD(disk->bus)) {
         if (qemuDomainPrepareDiskSourceBlockdev(disk, priv, cfg) < 0)
             return -1;
     } else {

@@ -6405,7 +6405,7 @@ qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
             continue;
 
         /* backing chain needs to be redetected if we aren't using blockdev */
-        if (!blockdev)
+        if (!blockdev || qemuDiskBusIsSD(disk->bus))
             virStorageSourceBackingStoreClear(disk->src);
 
         /*
@@ -6633,6 +6633,10 @@ qemuProcessSetupDiskThrottlingBlockdev(virQEMUDriverPtr driver,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+        /* sd-cards are instantiated via -drive */
+        if (qemuDiskBusIsSD(disk->bus))
+            continue;
 
         if (!qemuDiskConfigBlkdeviotuneEnabled(disk))
             continue;

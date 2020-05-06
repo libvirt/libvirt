@@ -2259,6 +2259,7 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
                                 virQEMUCapsPtr qemuCaps)
 {
     const char *driverName = virDomainDiskGetDriver(disk);
+    bool isSD = qemuDiskBusIsSD(disk->bus);
     virStorageSourcePtr n;
     int idx;
     int partition;
@@ -2298,7 +2299,8 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
     }
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (qemuDomainValidateStorageSource(n, qemuCaps, false) < 0)
+        /* blockdev support is masked out for 'sd' disks */
+        if (qemuDomainValidateStorageSource(n, qemuCaps, isSD) < 0)
             return -1;
     }
 

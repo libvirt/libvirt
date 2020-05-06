@@ -4270,7 +4270,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
               disk->info.alias, vm, vm->def->name);
 
 
-    if (blockdev) {
+    if (blockdev &&
+        !qemuDiskBusIsSD(disk->bus)) {
         corAlias = g_strdup(diskPriv->nodeCopyOnRead);
 
         if (diskPriv->blockjob) {
