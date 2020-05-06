@@ -4,7 +4,7 @@
  * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (c) 2011 NetApp, Inc.
- * Copyright (C) 2016 Fabian Freyer
+ * Copyright (C) 2020 Fabian Freyer
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -554,6 +554,93 @@ bhyveParsePCINet(virDomainDefPtr def,
 }
 
 static int
+bhyveParsePCIFbuf(virDomainDefPtr def,
+                  virDomainXMLOptionPtr xmlopt,
+                  unsigned caps G_GNUC_UNUSED,
+                  unsigned bus,
+                  unsigned slot,
+                  unsigned function,
+                  const char *config)
+{
+    /* -s slot,fbuf,wait,vga=on|io|off,rfb=<ip>:port,w=width,h=height */
+
+    virDomainVideoDefPtr video = NULL;
+    virDomainGraphicsDefPtr graphics = NULL;
+    char **params = NULL;
+    char *param = NULL, *separator = NULL;
+    size_t nparams = 0;
+    size_t i = 0;
+
+    if (!(video = virDomainVideoDefNew(xmlopt)))
+        goto cleanup;
+
+    if (!(graphics = virDomainGraphicsDefNew(xmlopt)))
+        goto cleanup;
+
+    graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
+    video->info.addr.pci.bus = bus;
+    video->info.addr.pci.slot = slot;
+    video->info.addr.pci.function = function;
+
+    if (!config)
+        goto error;
+
+    if (!(params = virStringSplitCount(config, ",", 0, &nparams)))
+        goto error;
+
+    for (i = 0; i < nparams; i++) {
+        param = params[i];
+        if (!video->driver && VIR_ALLOC(video->driver) < 0)
+            goto error;
+
+        if (STREQ(param, "vga=on"))
+            video->driver->vgaconf = VIR_DOMAIN_VIDEO_VGACONF_ON;
+
+        if (STREQ(param, "vga=io"))
+            video->driver->vgaconf = VIR_DOMAIN_VIDEO_VGACONF_IO;
+
+        if (STREQ(param, "vga=off"))
+            video->driver->vgaconf = VIR_DOMAIN_VIDEO_VGACONF_OFF;
+
+        if (STRPREFIX(param, "rfb=") || STRPREFIX(param, "tcp=")) {
+            /* fortunately, this is the same length as "tcp=" */
+            param += strlen("rfb=");
+
+            if (!(separator = strchr(param, ':')))
+                goto error;
+
+            *separator = '\0';
+
+            if (separator != param)
+                virDomainGraphicsListenAppendAddress(graphics, param);
+            else
+                /* Default to 127.0.0.1, just like bhyve does */
+                virDomainGraphicsListenAppendAddress(graphics, "127.0.0.1");
+
+            param = ++separator;
+            if (virStrToLong_i(param, NULL, 10, &graphics->data.vnc.port))
+                goto error;
+        }
+    }
+
+ cleanup:
+    if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
+        goto error;
+
+    if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics) < 0)
+        goto error;
+
+    g_strfreev(params);
+    return 0;
+
+ error:
+    virDomainVideoDefFree(video);
+    virDomainGraphicsDefFree(graphics);
+    g_strfreev(params);
+    return -1;
+}
+
+static int
 bhyveParseBhyvePCIArg(virDomainDefPtr def,
                       virDomainXMLOptionPtr xmlopt,
                       unsigned caps,
@@ -615,6 +702,8 @@ bhyveParseBhyvePCIArg(virDomainDefPtr def,
     else if (STREQ(emulation, "e1000"))
         bhyveParsePCINet(def, xmlopt, caps, bus, slot, function,
                          VIR_DOMAIN_NET_MODEL_E1000, conf);
+    else if (STREQ(emulation, "fbuf"))
+        bhyveParsePCIFbuf(def, xmlopt, caps, bus, slot, function, conf);
 
     VIR_FREE(emulation);
     VIR_FREE(slotdef);

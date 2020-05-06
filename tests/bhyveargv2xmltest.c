@@ -181,6 +181,11 @@ mymain(void)
     DO_TEST_FAIL("bhyveload-memsize-fail");
     DO_TEST("bhyveload-bootorder");
     DO_TEST_FAIL("extraargs");
+    DO_TEST("vnc");
+    DO_TEST("vnc-listen");
+    DO_TEST("vnc-vga-on");
+    DO_TEST("vnc-vga-off");
+    DO_TEST("vnc-vga-io");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

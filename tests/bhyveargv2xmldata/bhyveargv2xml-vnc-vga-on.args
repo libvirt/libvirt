@@ -1,0 +1,10 @@
+/usr/sbin/bhyve \
+-c 1 \
+-m 214 \
+-u \
+-H \
+-P \
+-s 0:0,hostbridge \
+-l bootrom,/path/to/test.fd \
+-s 2:0,fbuf,tcp=:5900,vga=on \
+-s 1,lpc bhyve

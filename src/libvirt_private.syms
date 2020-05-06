@@ -418,6 +418,7 @@ virDomainGraphicsAuthConnectedTypeFromString;
 virDomainGraphicsAuthConnectedTypeToString;
 virDomainGraphicsDefFree;
 virDomainGraphicsDefHasOpenGL;
+virDomainGraphicsDefNew;
 virDomainGraphicsGetListen;
 virDomainGraphicsGetRenderNode;
 virDomainGraphicsListenAppendAddress;
