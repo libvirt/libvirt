@@ -6745,13 +6745,13 @@ qemuMonitorJSONParsePropsList(virJSONValuePtr cmd,
 }
 
 
-int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
-                                  const char *device,
-                                  char ***props)
+int
+qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
+                              const char *device,
+                              char ***props)
 {
-    int ret = -1;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     *props = NULL;
 
@@ -6761,18 +6761,12 @@ int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
-    if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (qemuMonitorJSONHasError(reply, "DeviceNotFound"))
+        return 0;
 
-    ret = qemuMonitorJSONParsePropsList(cmd, reply, NULL, props);
- cleanup:
-    virJSONValueFree(reply);
-    virJSONValueFree(cmd);
-    return ret;
+    return qemuMonitorJSONParsePropsList(cmd, reply, NULL, props);
 }
 
 
