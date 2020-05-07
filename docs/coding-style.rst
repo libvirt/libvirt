@@ -547,27 +547,32 @@ Attribute annotations
 Use the following annotations to help the compiler and/or static
 analysis tools understand the code better:
 
-+-------------------------------+------------------------------------------------------------+
-| Macro                         | Meaning                                                    |
-+===============================+============================================================+
-| ``ATTRIBUTE_NONNULL``         | passing NULL for this parameter is not allowed             |
-+-------------------------------+------------------------------------------------------------+
-| ``ATTRIBUTE_PACKED``          | force a structure to be packed                             |
-+-------------------------------+------------------------------------------------------------+
-| ``G_GNUC_FALLTHROUGH``        | allow code reuse by multiple switch cases                  |
-+-------------------------------+------------------------------------------------------------+
-| ``G_GNUC_NO_INLINE``          | the function is mocked in the test suite                   |
-+-------------------------------+------------------------------------------------------------+
-| ``G_GNUC_NORETURN``           | the function never returns                                 |
-+-------------------------------+------------------------------------------------------------+
-| ``G_GNUC_NULL_TERMINATED``    | last parameter must be NULL                                |
-+-------------------------------+------------------------------------------------------------+
-| ``G_GNUC_PRINTF``             | validate that the formatting string matches parameters     |
-+-------------------------------+------------------------------------------------------------+
-| ``G_GNUC_UNUSED``             | parameter is unused in this implementation of the function |
-+-------------------------------+------------------------------------------------------------+
-| ``G_GNUC_WARN_UNUSED_RESULT`` | the return value must be checked                           |
-+-------------------------------+------------------------------------------------------------+
+``ATTRIBUTE_NONNULL``
+   passing NULL for this parameter is not allowed
+
+``ATTRIBUTE_PACKED``
+   force a structure to be packed
+
+``G_GNUC_FALLTHROUGH``
+   allow code reuse by multiple switch cases
+
+``G_GNUC_NO_INLINE``
+   the function is mocked in the test suite
+
+``G_GNUC_NORETURN``
+   the function never returns
+
+``G_GNUC_NULL_TERMINATED``
+   last parameter must be NULL
+
+``G_GNUC_PRINTF``
+   validate that the formatting string matches parameters
+
+``G_GNUC_UNUSED``
+   parameter is unused in this implementation of the function
+
+``G_GNUC_WARN_UNUSED_RESULT``
+   the return value must be checked
 
 File handling
 -------------
