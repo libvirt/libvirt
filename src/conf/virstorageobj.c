@@ -1036,10 +1036,7 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
         return ret;
     }
 
-    if (VIR_ALLOC_N(data.vols, virHashSize(volumes->objsName) + 1) < 0) {
-        virObjectRWUnlock(volumes);
-        return -1;
-    }
+    data.vols = g_new0(virStorageVolPtr, virHashSize(volumes->objsName) + 1);
 
     virHashForEach(volumes->objsName, virStoragePoolObjVolumeListExportCallback, &data);
     virObjectRWUnlock(volumes);
@@ -2077,8 +2074,13 @@ virStoragePoolObjListExport(virConnectPtr conn,
 
     virObjectRWLockRead(poolobjs);
 
-    if (pools && VIR_ALLOC_N(data.pools, virHashSize(poolobjs->objs) + 1) < 0)
-        goto error;
+    if (!pools) {
+        int ret = virHashSize(poolobjs->objs);
+        virObjectRWUnlock(poolobjs);
+        return ret;
+    }
+
+    data.pools = g_new0(virStoragePoolPtr, virHashSize(poolobjs->objs) + 1);
 
     virHashForEach(poolobjs->objs, virStoragePoolObjListExportCallback, &data);
     virObjectRWUnlock(poolobjs);
