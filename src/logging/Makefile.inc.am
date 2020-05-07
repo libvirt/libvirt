@@ -30,7 +30,6 @@ LOG_PROTOCOL = $(srcdir)/logging/log_protocol.x
 EXTRA_DIST += \
 	$(LOG_PROTOCOL) \
 	$(LOG_DAEMON_SOURCES) \
-	$(LOG_DRIVER) \
         logging/virtlogd.aug \
         logging/virtlogd.conf \
         logging/test_virtlogd.aug.in \
