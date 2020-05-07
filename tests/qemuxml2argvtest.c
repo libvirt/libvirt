@@ -609,11 +609,23 @@ testInfoSetPaths(struct testQemuInfo *info,
                                     abs_srcdir, info->name, suffix ? suffix : "");
 }
 
+# define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
+
 static int
 mymain(void)
 {
     int ret = 0;
+    char *fakerootdir;
     virHashTablePtr capslatest = NULL;
+
+    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
+
+    if (!g_mkdtemp(fakerootdir)) {
+        fprintf(stderr, "Cannot create fakerootdir");
+        abort();
+    }
+
+    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
 
     /* Set the timezone because we are mocking the time() function.
      * If we don't do that, then localtime() may return unpredictable
@@ -3220,8 +3232,12 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("virtio-9p-multidevs");
 
+    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
+        virFileDeleteTree(fakerootdir);
+
     VIR_FREE(driver.config->nbdTLSx509certdir);
     qemuTestDriverFree(&driver);
+    VIR_FREE(fakerootdir);
     virHashFree(capslatest);
     virFileWrapperClearPrefixes();
 
