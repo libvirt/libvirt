@@ -349,7 +349,8 @@ virDomainBackupDiskDefFormat(virBufferPtr buf,
                                   virStorageFileFormatTypeToString(disk->store->format));
 
         if (virDomainDiskSourceFormat(&childBuf, disk->store, sourcename,
-                                      0, false, storageSourceFormatFlags, true, NULL) < 0)
+                                      0, false, storageSourceFormatFlags,
+                                      false, false, NULL) < 0)
             return -1;
     }
 

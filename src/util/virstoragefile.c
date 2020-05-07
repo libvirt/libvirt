@@ -2999,7 +2999,6 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
 
             authdef->secrettype = g_strdup(virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_CEPH));
             src->auth = g_steal_pointer(&authdef);
-            src->authInherited = true;
 
             /* Cannot formulate a secretType (eg, usage or uuid) given
              * what is provided.

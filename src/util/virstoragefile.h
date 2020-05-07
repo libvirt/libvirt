@@ -291,9 +291,7 @@ struct _virStorageSource {
     virStorageNetCookieDefPtr *cookies;
     virStorageSourcePoolDefPtr srcpool;
     virStorageAuthDefPtr auth;
-    bool authInherited;
     virStorageEncryptionPtr encryption;
-    bool encryptionInherited;
     virStoragePRDefPtr pr;
     virTristateBool sslverify;
     /* both values below have 0 as default value */

@@ -10469,31 +10469,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             if (virDomainStorageSourceParse(cur, ctxt, def->src, flags, xmlopt) < 0)
                 goto error;
 
-            /* If we've already found an <auth> as a child of <disk> and
-             * we find one as a child of <source>, then force an error to
-             * avoid ambiguity */
-            if (authdef && def->src->auth) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("an <auth> definition already found for "
-                                 "the <disk> definition"));
-                goto error;
-            }
-
-            if (def->src->auth)
-                def->src->authInherited = true;
-
-            /* Similarly for <encryption> - it's a child of <source> too
-             * and we cannot find in both places */
-            if (encryption && def->src->encryption) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("an <encryption> definition already found for "
-                                 "the <disk> definition"));
-                goto error;
-            }
-
-            if (def->src->encryption)
-                def->src->encryptionInherited = true;
-
             source = true;
 
             startupPolicy = virXMLPropString(cur, "startupPolicy");
@@ -10558,17 +10533,9 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
         } else if (!authdef &&
                    virXMLNodeNameEqual(cur, "auth")) {
-            /* If we've already parsed <source> and found an <auth> child,
-             * then generate an error to avoid ambiguity */
-            if (def->src->authInherited) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("an <auth> definition already found for "
-                                 "disk source"));
-                goto error;
-            }
-
             if (!(authdef = virStorageAuthDefParse(cur, ctxt)))
                 goto error;
+            def->diskElementAuth = true;
         } else if (virXMLNodeNameEqual(cur, "iotune")) {
             if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
                 goto error;
@@ -10580,17 +10547,11 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             def->transient = true;
         } else if (!encryption &&
                    virXMLNodeNameEqual(cur, "encryption")) {
-            /* If we've already parsed <source> and found an <encryption> child,
-             * then generate an error to avoid ambiguity */
-            if (def->src->encryptionInherited) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("an <encryption> definition already found for "
-                                 "disk source"));
-                goto error;
-            }
-
             if (!(encryption = virStorageEncryptionParseNode(cur, ctxt)))
                 goto error;
+
+            def->diskElementEnc = true;
+
         } else if (!serial &&
                    virXMLNodeNameEqual(cur, "serial")) {
             serial = (char *)xmlNodeGetContent(cur);
@@ -10783,10 +10744,31 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     def->dst = g_steal_pointer(&target);
-    if (authdef)
+    if (authdef) {
+            /* If we've already parsed <source> and found an <auth> child,
+             * then generate an error to avoid ambiguity */
+            if (def->src->auth) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("an <auth> definition already found for "
+                                 "disk source"));
+                goto error;
+            }
+
         def->src->auth = g_steal_pointer(&authdef);
-    if (encryption)
+    }
+
+    if (encryption) {
+            /* If we've already parsed <source> and found an <encryption> child,
+             * then generate an error to avoid ambiguity */
+            if (def->src->encryption) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("an <encryption> definition already found for "
+                                 "disk source"));
+                goto error;
+            }
+
         def->src->encryption = g_steal_pointer(&encryption);
+    }
     def->domain_name = g_steal_pointer(&domain_name);
     def->serial = g_steal_pointer(&serial);
     def->wwn = g_steal_pointer(&wwn);
@@ -25044,7 +25026,8 @@ virDomainDiskSourceFormatSlices(virBufferPtr buf,
  * @policy: startup policy attribute value, if necessary
  * @attrIndex: the 'index' attribute of <source> is formatted if true
  * @flags: XML formatter flags
- * @formatsecrets: Force formatting of <auth> and <encryption> under <source>
+ * @skipAuth: Skip formatting of <auth>
+ * @skipEnc: Skip formatting of <encryption>
  *                 regardless of the original definition state
  * @xmlopt: XML formatter callbacks
  *
@@ -25058,7 +25041,8 @@ virDomainDiskSourceFormat(virBufferPtr buf,
                           int policy,
                           bool attrIndex,
                           unsigned int flags,
-                          bool formatsecrets,
+                          bool skipAuth,
+                          bool skipEnc,
                           virDomainXMLOptionPtr xmlopt)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
@@ -25117,13 +25101,10 @@ virDomainDiskSourceFormat(virBufferPtr buf,
      * <auth> for a volume source type. The <auth> information is
      * kept in the storage pool and would be overwritten anyway.
      * So avoid formatting it for volumes. */
-    if (src->auth && (src->authInherited || formatsecrets) &&
-        src->type != VIR_STORAGE_TYPE_VOLUME)
+    if (src->auth && !skipAuth && src->type != VIR_STORAGE_TYPE_VOLUME)
         virStorageAuthDefFormat(&childBuf, src->auth);
 
-    /* If we found encryption as a child of <source>, then format it
-     * as we found it. */
-    if (src->encryption && (src->encryptionInherited || formatsecrets) &&
+    if (src->encryption && !skipEnc &&
         virStorageEncryptionFormat(&childBuf, src->encryption) < 0)
         return -1;
 
@@ -25184,7 +25165,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     virBufferAsprintf(&childBuf, "<format type='%s'/>\n",
                       virStorageFileFormatTypeToString(backingStore->format));
     if (virDomainDiskSourceFormat(&childBuf, backingStore, "source", 0, false,
-                                  flags, true, xmlopt) < 0)
+                                  flags, false, false, xmlopt) < 0)
         return -1;
 
     if (virDomainDiskBackingStoreFormat(&childBuf, backingStore, xmlopt, flags) < 0)
@@ -25346,7 +25327,7 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
 
     virBufferEscapeString(&childBuf, "<format type='%s'/>\n", formatStr);
     if (virDomainDiskSourceFormat(&childBuf, disk->mirror, "source", 0, true,
-                                  flags, true, xmlopt) < 0)
+                                  flags, false, false, xmlopt) < 0)
         return -1;
 
     if (virDomainDiskBackingStoreFormat(&childBuf, disk->mirror, xmlopt, flags) < 0)
@@ -25441,11 +25422,13 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     /* Format as child of <disk> if defined there; otherwise,
      * if defined as child of <source>, then format later */
-    if (def->src->auth && !def->src->authInherited)
+    if (def->src->auth && def->diskElementAuth)
         virStorageAuthDefFormat(buf, def->src->auth);
 
     if (virDomainDiskSourceFormat(buf, def->src, "source", def->startupPolicy,
-                                  true, flags, false, xmlopt) < 0)
+                                  true, flags,
+                                  def->diskElementAuth, def->diskElementEnc,
+                                  xmlopt) < 0)
         return -1;
 
     /* Don't format backingStore to inactive XMLs until the code for
@@ -25491,7 +25474,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     /* If originally found as a child of <disk>, then format thusly;
      * otherwise, will be formatted as child of <source> */
-    if (def->src->encryption && !def->src->encryptionInherited &&
+    if (def->src->encryption && def->diskElementEnc &&
         virStorageEncryptionFormat(buf, def->src->encryption) < 0)
         return -1;
     if (virDomainDeviceInfoFormat(buf, &def->info,

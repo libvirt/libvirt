@@ -579,6 +579,9 @@ struct _virDomainDiskDef {
     unsigned int queues;
     int model; /* enum virDomainDiskModel */
     virDomainVirtioOptionsPtr virtio;
+
+    bool diskElementAuth;
+    bool diskElementEnc;
 };
 
 
@@ -3233,7 +3236,8 @@ int virDomainDiskSourceFormat(virBufferPtr buf,
                               int policy,
                               bool attrIndex,
                               unsigned int flags,
-                              bool formatsecrets,
+                              bool skipAuth,
+                              bool skipEnc,
                               virDomainXMLOptionPtr xmlopt);
 
 int
