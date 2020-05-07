@@ -2404,6 +2404,7 @@ libxlMakeVideo(virDomainDefPtr def, libxl_domain_config *d_config)
         b_info->video_memkb = def->videos[0]->vram;
     } else {
         libxl_defbool_set(&b_info->u.hvm.nographic, 1);
+        b_info->u.hvm.vga.kind = LIBXL_VGA_INTERFACE_TYPE_NONE;
     }
 
     return 0;

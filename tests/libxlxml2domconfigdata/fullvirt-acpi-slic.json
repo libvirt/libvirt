@@ -20,6 +20,9 @@
             "acpi": "True",
             "acpi_firmware": "/path/to/slic.dat",
             "nographic": "True",
+            "vga": {
+                "kind": "none"
+            },
             "vnc": {
                 "enable": "False"
             },

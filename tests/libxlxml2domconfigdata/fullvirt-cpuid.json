@@ -27,6 +27,9 @@
             "apic": "True",
             "acpi": "True",
             "nographic": "True",
+            "vga": {
+                "kind": "none"
+            },
             "vnc": {
                 "enable": "False"
             },
