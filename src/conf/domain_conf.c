@@ -10593,6 +10593,13 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
         } else if (virXMLNodeNameEqual(cur, "boot")) {
             /* boot is parsed as part of virDomainDeviceInfoParseXML */
+        } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
+                   virXMLNodeNameEqual(cur, "diskSecretsPlacement")) {
+            g_autofree char *secretAuth = virXMLPropString(cur, "auth");
+            g_autofree char *secretEnc = virXMLPropString(cur, "enc");
+
+            def->diskElementAuth = !!secretAuth;
+            def->diskElementEnc = !!secretEnc;
         }
     }
 
@@ -25484,6 +25491,19 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     if (virDomainDiskDefFormatPrivateData(buf, def, flags, xmlopt) < 0)
         return -1;
+
+    /* format diskElementAuth and diskElementEnc into status XML to preserve
+     * formatting */
+    if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS) {
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+
+        if (def->diskElementAuth)
+            virBufferAddLit(&attrBuf, " auth='true'");
+        if (def->diskElementEnc)
+            virBufferAddLit(&attrBuf, " enc='true'");
+
+        virXMLFormatElement(buf, "diskSecretsPlacement", &attrBuf, NULL);
+    }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</disk>\n");

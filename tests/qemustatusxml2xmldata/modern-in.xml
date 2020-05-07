@@ -308,6 +308,9 @@
       <emulator>/usr/bin/qemu-system-x86_64</emulator>
       <disk type='file' device='disk'>
         <driver name='qemu' type='qcow2' discard='unmap' detect_zeroes='on'/>
+        <auth username='testuser'>
+          <secret type='iscsi' usage='libvirtiscsi'/>
+        </auth>
         <source file='/var/lib/libvirt/images/a.qcow2'/>
         <backingStore type='file' index='1'>
           <format type='qcow2'/>
@@ -348,6 +351,7 @@
             <nodename type='copyOnRead' name='cor-node'/>
           </nodenames>
         </privateData>
+        <diskSecretsPlacement auth='true'/>
       </disk>
       <disk type='file' device='cdrom'>
         <driver name='qemu' type='raw'/>
