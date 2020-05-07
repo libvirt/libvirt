@@ -10487,6 +10487,19 @@ qemuDomainDefValidateDiskLunSource(const virStorageSource *src)
         return -1;
     }
 
+    if (src->sliceStorage) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk device 'lun' doesn't support storage slice"));
+        return -1;
+    }
+
+    if (src->encryption &&
+        src->encryption->format != VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk device 'lun' doesn't support encryption"));
+        return -1;
+    }
+
     return 0;
 }
 

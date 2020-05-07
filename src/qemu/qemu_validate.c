@@ -1997,6 +1997,13 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
             return -1;
         }
 
+        if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("copy_on_read is not compatible with 'lun' disk '%s'"),
+                           disk->dst);
+            return -1;
+        }
+
         if (qemuDomainDefValidateDiskLunSource(disk->src) < 0)
             return -1;
 
