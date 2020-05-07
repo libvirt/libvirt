@@ -10481,6 +10481,12 @@ qemuDomainDefValidateDiskLunSource(const virStorageSource *src)
         return -1;
     }
 
+    if (src->format != VIR_STORAGE_FILE_RAW) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk device 'lun' must use 'raw' format"));
+        return -1;
+    }
+
     return 0;
 }
 

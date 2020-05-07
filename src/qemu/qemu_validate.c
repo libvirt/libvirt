@@ -1997,14 +1997,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
             return -1;
         }
 
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
-            disk->src->format != VIR_STORAGE_FILE_RAW) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk device 'lun' using target 'scsi' must use "
-                             "'raw' format"));
-            return -1;
-        }
-
         if (qemuDomainDefValidateDiskLunSource(disk->src) < 0)
             return -1;
 
