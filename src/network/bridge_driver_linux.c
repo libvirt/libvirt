@@ -48,6 +48,10 @@ static void networkSetupPrivateChains(void)
     VIR_DEBUG("Setting up global firewall chains");
 
     createdChains = false;
+    virFreeError(errInitV4);
+    errInitV4 = NULL;
+    virFreeError(errInitV6);
+    errInitV6 = NULL;
 
     rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV4);
     if (rc < 0) {
@@ -56,8 +60,6 @@ static void networkSetupPrivateChains(void)
         errInitV4 = virSaveLastError();
         virResetLastError();
     } else {
-        virFreeError(errInitV4);
-        errInitV4 = NULL;
         if (rc) {
             VIR_DEBUG("Created global IPv4 chains");
             createdChains = true;
@@ -73,8 +75,6 @@ static void networkSetupPrivateChains(void)
         errInitV6 = virSaveLastError();
         virResetLastError();
     } else {
-        virFreeError(errInitV6);
-        errInitV6 = NULL;
         if (rc) {
             VIR_DEBUG("Created global IPv6 chains");
             createdChains = true;
