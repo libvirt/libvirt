@@ -20,7 +20,8 @@
 #include <config.h>
 
 void networkPreReloadFirewallRules(virNetworkDriverStatePtr driver G_GNUC_UNUSED,
-                                   bool startup G_GNUC_UNUSED)
+                                   bool startup G_GNUC_UNUSED,
+                                   bool force G_GNUC_UNUSED)
 {
 }
 

@@ -36,11 +36,14 @@ VIR_LOG_INIT("network.bridge_driver_linux");
 #define PROC_NET_ROUTE "/proc/net/route"
 
 static virOnceControl createdOnce;
-static bool createdChains;
+static bool chainInitDone; /* true iff networkSetupPrivateChains was ever called */
+static bool createdChains; /* true iff networkSetupPrivateChains created chains during most recent call */
 static virErrorPtr errInitV4;
 static virErrorPtr errInitV6;
 
-/* Only call via virOnce */
+/* Usually only called via virOnce, but can also be called directly in
+ * response to firewalld reload (if chainInitDone == true)
+ */
 static void networkSetupPrivateChains(void)
 {
     int rc;
@@ -82,6 +85,8 @@ static void networkSetupPrivateChains(void)
             VIR_DEBUG("Global IPv6 chains already exist");
         }
     }
+
+    chainInitDone = true;
 }
 
 
@@ -111,7 +116,10 @@ networkHasRunningNetworks(virNetworkDriverStatePtr driver)
 }
 
 
-void networkPreReloadFirewallRules(virNetworkDriverStatePtr driver, bool startup)
+void
+networkPreReloadFirewallRules(virNetworkDriverStatePtr driver,
+                              bool startup,
+                              bool force)
 {
     /*
      * If there are any running networks, we need to
@@ -130,29 +138,42 @@ void networkPreReloadFirewallRules(virNetworkDriverStatePtr driver, bool startup
      * of starting the network though as that makes them
      * more likely to be seen by a human
      */
-    if (!networkHasRunningNetworks(driver)) {
-        VIR_DEBUG("Delayed global rule setup as no networks are running");
-        return;
-    }
+    if (chainInitDone && force) {
+        /* The Private chains have already been initialized once
+         * during this run of libvirtd, so 1) we can't do it again via
+         * virOnce(), and 2) we need to re-add the private chains even
+         * if there are currently no running networks, because the
+         * next time a network is started, libvirt will expect that
+         * the chains have already been added. So we call directly
+         * instead of via virOnce().
+         */
+        networkSetupPrivateChains();
 
-    ignore_value(virOnce(&createdOnce, networkSetupPrivateChains));
+    } else {
+        if (!networkHasRunningNetworks(driver)) {
+            VIR_DEBUG("Delayed global rule setup as no networks are running");
+            return;
+        }
 
-    /*
-     * If this is initial startup, and we just created the
-     * top level private chains we either
-     *
-     *   - upgraded from old libvirt
-     *   - freshly booted from clean state
-     *
-     * In the first case we must delete the old rules from
-     * the built-in chains, instead of our new private chains.
-     * In the second case it doesn't matter, since no existing
-     * rules will be present. Thus we can safely just tell it
-     * to always delete from the builin chain
-     */
-    if (startup && createdChains) {
-        VIR_DEBUG("Requesting cleanup of legacy firewall rules");
-        iptablesSetDeletePrivate(false);
+        ignore_value(virOnce(&createdOnce, networkSetupPrivateChains));
+
+        /*
+         * If this is initial startup, and we just created the
+         * top level private chains we either
+         *
+         *   - upgraded from old libvirt
+         *   - freshly booted from clean state
+         *
+         * In the first case we must delete the old rules from
+         * the built-in chains, instead of our new private chains.
+         * In the second case it doesn't matter, since no existing
+         * rules will be present. Thus we can safely just tell it
+         * to always delete from the builin chain
+         */
+        if (startup && createdChains) {
+            VIR_DEBUG("Requesting cleanup of legacy firewall rules");
+            iptablesSetDeletePrivate(false);
+        }
     }
 }
 
