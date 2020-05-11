@@ -1600,6 +1600,13 @@ struct remote_node_device_create_xml_ret {
 struct remote_node_device_destroy_args {
         remote_nonnull_string      name;
 };
+struct remote_node_device_define_xml_args {
+        remote_nonnull_string      xml_desc;
+        u_int                      flags;
+};
+struct remote_node_device_define_xml_ret {
+        remote_nonnull_node_device dev;
+};
 struct remote_connect_domain_event_register_ret {
         int                        cb_registered;
 };
@@ -3605,4 +3612,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_SET = 425,
         REMOTE_PROC_DOMAIN_GET_MESSAGES = 426,
         REMOTE_PROC_DOMAIN_START_DIRTY_RATE_CALC = 427,
+        REMOTE_PROC_NODE_DEVICE_DEFINE_XML = 428,
 };

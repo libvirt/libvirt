@@ -738,6 +738,48 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
 
 
 /**
+ * virNodeDeviceDefineXML:
+ * @conn: pointer to the hypervisor connection
+ * @xmlDesc: string containing an XML description of the device to be defined
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Define a new device on the VM host machine, for example, a mediated device
+ *
+ * virNodeDeviceFree should be used to free the resources after the
+ * node device object is no longer needed.
+ *
+ * Returns a node device object if successful, NULL in case of failure
+ */
+virNodeDevicePtr
+virNodeDeviceDefineXML(virConnectPtr conn,
+                       const char *xmlDesc,
+                       unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=0x%x", conn, NULLSTR(xmlDesc), flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonNullArgGoto(xmlDesc, error);
+
+    if (conn->nodeDeviceDriver &&
+        conn->nodeDeviceDriver->nodeDeviceDefineXML) {
+        virNodeDevice *dev = conn->nodeDeviceDriver->nodeDeviceDefineXML(conn, xmlDesc, flags);
+        if (!dev)
+            goto error;
+        return dev;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
  * virConnectNodeDeviceEventRegisterAny:
  * @conn: pointer to the connection
  * @dev: pointer to the node device

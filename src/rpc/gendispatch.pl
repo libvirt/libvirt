@@ -567,6 +567,7 @@ elsif ($mode eq "server") {
             if ($argtype =~ m/^remote_node_device_/ and
                 !($argtype =~ m/^remote_node_device_lookup_by_name_/) and
                 !($argtype =~ m/^remote_node_device_create_xml_/) and
+                !($argtype =~ m/^remote_node_device_define_xml_/) and
                 !($argtype =~ m/^remote_node_device_lookup_scsi_host_by_wwn_/)) {
                 $has_node_device = 1;
                 push(@vars_list, "virNodeDevicePtr dev = NULL");

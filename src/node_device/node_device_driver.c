@@ -776,6 +776,27 @@ virMdevctlStart(virNodeDeviceDefPtr def, char **uuid, char **errmsg)
 }
 
 
+static int
+virMdevctlDefine(virNodeDeviceDefPtr def, char **uuid, char **errmsg)
+{
+    int status;
+    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlDefineCommand(def, uuid, errmsg);
+
+    if (!cmd)
+        return -1;
+
+    /* an auto-generated uuid is returned via stdout if no uuid is specified in
+     * the mdevctl args */
+    if (virCommandRun(cmd, &status) < 0 || status != 0)
+        return -1;
+
+    /* remove newline */
+    *uuid = g_strstrip(*uuid);
+
+    return 0;
+}
+
+
 static virNodeDevicePtr
 nodeDeviceCreateXMLMdev(virConnectPtr conn,
                         virNodeDeviceDefPtr def)
@@ -1115,6 +1136,57 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     virNodeDeviceObjEndAPI(&obj);
     return ret;
 }
+
+virNodeDevice*
+nodeDeviceDefineXML(virConnect *conn,
+                    const char *xmlDesc,
+                    unsigned int flags)
+{
+    g_autoptr(virNodeDeviceDef) def = NULL;
+    virNodeDevice *device = NULL;
+    const char *virt_type = NULL;
+    g_autofree char *uuid = NULL;
+    g_autofree char *errmsg = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (nodeDeviceWaitInit() < 0)
+        return NULL;
+
+    virt_type  = virConnectGetType(conn);
+
+    if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type)))
+        return NULL;
+
+    if (virNodeDeviceDefineXMLEnsureACL(conn, def) < 0)
+        return NULL;
+
+    if (!nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unsupported device type"));
+        return NULL;
+    }
+
+    if (!def->parent) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("cannot define a mediated device without a parent"));
+        return NULL;
+    }
+
+    if (virMdevctlDefine(def, &uuid, &errmsg) < 0) {
+        if (errmsg)
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to define mediated device: %s"), errmsg);
+        return NULL;
+    }
+
+    def->caps->data.mdev.uuid = g_strdup(uuid);
+    mdevGenerateDeviceName(def);
+    device = nodeDeviceFindNewMediatedDevice(conn, uuid);
+
+    return device;
+}
+
 
 
 int

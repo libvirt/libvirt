@@ -2325,6 +2325,7 @@ static virNodeDeviceDriver udevNodeDeviceDriver = {
     .nodeDeviceListCaps = nodeDeviceListCaps, /* 0.7.3 */
     .nodeDeviceCreateXML = nodeDeviceCreateXML, /* 0.7.3 */
     .nodeDeviceDestroy = nodeDeviceDestroy, /* 0.7.3 */
+    .nodeDeviceDefineXML = nodeDeviceDefineXML, /* 7.2.0 */
 };
 
 
