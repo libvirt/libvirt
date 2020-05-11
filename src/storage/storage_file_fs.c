@@ -84,13 +84,9 @@ virStorageFileBackendFileInit(virStorageSourcePtr src)
 static int
 virStorageFileBackendFileCreate(virStorageSourcePtr src)
 {
-    mode_t mode = S_IRUSR;
     VIR_AUTOCLOSE fd = -1;
 
-    if (!src->readonly)
-        mode |= S_IWUSR;
-
-    if ((fd = virFileOpenAs(src->path, O_WRONLY | O_TRUNC | O_CREAT, mode,
+    if ((fd = virFileOpenAs(src->path, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR,
                             src->drv->uid, src->drv->gid, 0)) < 0) {
         errno = -fd;
         return -1;
