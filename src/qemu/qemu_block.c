@@ -2671,6 +2671,12 @@ qemuBlockStorageSourceCreate(virDomainObjPtr vm,
         return -1;
     }
 
+    /* grant write access to read-only images during formatting */
+    if (src->readonly &&
+        qemuDomainStorageSourceAccessAllow(priv->driver, vm, src, false,
+                                           false, true) < 0)
+        return -1;
+
     if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
         goto cleanup;
 
@@ -2695,6 +2701,12 @@ qemuBlockStorageSourceCreate(virDomainObjPtr vm,
 
     if (qemuBlockStorageSourceCreateFormat(vm, src, backingStore, chain,
                                            asyncJob) < 0)
+        goto cleanup;
+
+    /* revoke write access to read-only images during formatting */
+    if (src->readonly &&
+        qemuDomainStorageSourceAccessAllow(priv->driver, vm, src, true,
+                                           false, true) < 0)
         goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
