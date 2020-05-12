@@ -44,7 +44,6 @@
 #include "lxc_driver.h"
 #include "lxc_native.h"
 #include "lxc_process.h"
-#include "viralloc.h"
 #include "virnetdevbridge.h"
 #include "virnetdevveth.h"
 #include "virnetdevopenvswitch.h"
@@ -1492,8 +1491,7 @@ static int lxcStateInitialize(bool privileged,
         return VIR_DRV_STATE_INIT_SKIPPED;
     }
 
-    if (VIR_ALLOC(lxc_driver) < 0)
-        return VIR_DRV_STATE_INIT_ERROR;
+    lxc_driver = g_new0(virLXCDriver, 1);
     lxc_driver->lockFD = -1;
     if (virMutexInit(&lxc_driver->lock) < 0) {
         g_free(lxc_driver);
@@ -3398,8 +3396,9 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
                              perms) < 0)
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks + 1) < 0)
-        goto cleanup;
+    vm->def->disks = g_renew(virDomainDiskDefPtr,
+                             vm->def->disks,
+                             vm->def->ndisks + 1);
 
     file = g_strdup_printf("/dev/%s", def->dst);
 
@@ -3451,8 +3450,9 @@ lxcDomainAttachDeviceNetLive(virLXCDriverPtr driver,
        return -1;
 
     /* preallocate new slot for device */
-    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
-        return -1;
+    vm->def->nets = g_renew(virDomainNetDefPtr,
+                            vm->def->nets,
+                            vm->def->nnets + 1);
 
     /* If appropriate, grab a physical device from the configured
      * network's pool of devices, or resolve bridge device name
@@ -3606,8 +3606,9 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
-        goto cleanup;
+    vm->def->hostdevs = g_renew(virDomainHostdevDefPtr,
+                                vm->def->hostdevs,
+                                vm->def->nhostdevs + 1);
 
     if (virUSBDeviceFileIterate(usb,
                                 virLXCSetupHostUSBDeviceCgroup,
@@ -3675,8 +3676,9 @@ lxcDomainAttachDeviceHostdevStorageLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0)
-        goto cleanup;
+    vm->def->hostdevs = g_renew(virDomainHostdevDefPtr,
+                                vm->def->hostdevs,
+                                vm->def->nhostdevs + 1);
 
     if (virCgroupAllowDevice(priv->cgroup,
                              'b',
@@ -3754,8 +3756,9 @@ lxcDomainAttachDeviceHostdevMiscLive(virLXCDriverPtr driver,
                              VIR_CGROUP_DEVICE_RWM) < 0)
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0)
-        goto cleanup;
+    vm->def->hostdevs = g_renew(virDomainHostdevDefPtr,
+                                vm->def->hostdevs,
+                                vm->def->nhostdevs + 1);
 
     if (lxcDomainAttachDeviceMknod(driver,
                                    0700 | S_IFBLK,

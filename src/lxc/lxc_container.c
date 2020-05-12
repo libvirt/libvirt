@@ -156,8 +156,7 @@ int lxcContainerHasReboot(void)
     }
     cmd = v ? LINUX_REBOOT_CMD_CAD_ON : LINUX_REBOOT_CMD_CAD_OFF;
 
-    if (VIR_ALLOC_N(stack, stacksize) < 0)
-        return -1;
+    stack = g_new0(char, stacksize);
 
     childStack = stack + stacksize;
 
@@ -2322,8 +2321,7 @@ int lxcContainerStart(virDomainDefPtr def,
     };
 
     /* allocate a stack for the container */
-    if (VIR_ALLOC_N(stack, stacksize) < 0)
-        return -1;
+    stack = g_new0(char, stacksize);
 
     stacktop = stack + stacksize;
 

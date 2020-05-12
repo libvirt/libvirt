@@ -29,7 +29,6 @@
 #include "lxc_domain.h"
 #include "virerror.h"
 #include "virconf.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "viruuid.h"
 #include "configmake.h"
@@ -145,8 +144,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
                                                VIR_DOMAIN_VIRT_LXC);
         type = virDomainVirtTypeToString(VIR_DOMAIN_VIRT_LXC);
         /* Allocate the primary security driver for LXC. */
-        if (VIR_ALLOC(caps->host.secModels) < 0)
-            goto error;
+        caps->host.secModels = g_new0(virCapsHostSecModel, 1);
         caps->host.nsecModels = 1;
         caps->host.secModels[0].model = g_strdup(model);
         caps->host.secModels[0].doi = g_strdup(doi);

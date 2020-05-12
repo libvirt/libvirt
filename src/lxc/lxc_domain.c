@@ -23,7 +23,6 @@
 
 #include "lxc_domain.h"
 
-#include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "virstring.h"
@@ -153,10 +152,7 @@ virLXCDomainObjEndJob(virLXCDriverPtr driver G_GNUC_UNUSED,
 static void *
 virLXCDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
 {
-    virLXCDomainObjPrivatePtr priv;
-
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
+    virLXCDomainObjPrivatePtr priv = g_new0(virLXCDomainObjPrivate, 1);
 
     if (virLXCDomainObjInitJob(priv) < 0) {
         g_free(priv);
@@ -208,16 +204,13 @@ static int
 lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
                            void **data)
 {
-    lxcDomainDefPtr lxcDef = NULL;
+    lxcDomainDefPtr lxcDef = g_new0(lxcDomainDef, 1);
     g_autofree xmlNodePtr *nodes = NULL;
     bool uses_lxc_ns = false;
     xmlNodePtr node;
     int feature;
     int n;
     size_t i;
-
-    if (VIR_ALLOC(lxcDef) < 0)
-        return -1;
 
     node = ctxt->node;
     if ((n = virXPathNodeSet("./lxc:namespace/*", ctxt, &nodes)) < 0)
@@ -470,9 +463,8 @@ virLXCDomainSetRunlevel(virDomainObjPtr vm,
     for (nfifos = 0; virInitctlFifos[nfifos]; nfifos++)
         ;
 
-    if (VIR_ALLOC_N(data.st, nfifos) < 0 ||
-        VIR_ALLOC_N(data.st_valid, nfifos) < 0)
-        goto cleanup;
+    data.st = g_new0(struct stat, nfifos);
+    data.st_valid = g_new0(bool, nfifos);
 
     for (i = 0; virInitctlFifos[i]; i++) {
         const char *fifo = virInitctlFifos[i];

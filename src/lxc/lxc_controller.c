@@ -189,12 +189,9 @@ virLXCControllerDriverFree(virLXCDriverPtr driver)
 
 static virLXCControllerPtr virLXCControllerNew(const char *name)
 {
-    virLXCControllerPtr ctrl = NULL;
+    virLXCControllerPtr ctrl = g_new0(virLXCController, 1);
     virLXCDriverPtr driver = NULL;
     g_autofree char *configFile = NULL;
-
-    if (VIR_ALLOC(ctrl) < 0)
-        goto error;
 
     ctrl->timerShutdown = -1;
     ctrl->firstClient = true;
@@ -2333,11 +2330,8 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     int rc = -1;
     int control[2] = { -1, -1};
     int containerhandshake[2] = { -1, -1 };
-    char **containerTTYPaths = NULL;
+    char **containerTTYPaths = g_new0(char *, ctrl->nconsoles);
     size_t i;
-
-    if (VIR_ALLOC_N(containerTTYPaths, ctrl->nconsoles) < 0)
-        goto cleanup;
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, control) < 0) {
         virReportSystemError(errno, "%s",
@@ -2530,14 +2524,12 @@ int main(int argc, char *argv[])
             break;
 
         case 'v':
-            if (VIR_REALLOC_N(veths, nveths+1) < 0)
-                goto cleanup;
+            veths = g_renew(char *, veths, nveths+1);
             veths[nveths++] = g_strdup(optarg);
             break;
 
         case 'c':
-            if (VIR_REALLOC_N(ttyFDs, nttyFDs + 1) < 0)
-                goto cleanup;
+            ttyFDs = g_renew(int, ttyFDs, nttyFDs + 1);
             if (virStrToLong_i(optarg, NULL, 10, &ttyFDs[nttyFDs++]) < 0) {
                 fprintf(stderr, "malformed --console argument '%s'", optarg);
                 goto cleanup;
@@ -2545,8 +2537,7 @@ int main(int argc, char *argv[])
             break;
 
         case 'p':
-            if (VIR_REALLOC_N(passFDs, npassFDs + 1) < 0)
-                goto cleanup;
+            passFDs = g_renew(int, passFDs, npassFDs + 1);
             if (virStrToLong_i(optarg, NULL, 10, &passFDs[npassFDs++]) < 0) {
                 fprintf(stderr, "malformed --passfd argument '%s'", optarg);
                 goto cleanup;
@@ -2661,8 +2652,7 @@ int main(int argc, char *argv[])
         if (ns_fd[i] != -1) {
             if (!ctrl->nsFDs) {/*allocate only once */
                 size_t j = 0;
-                if (VIR_ALLOC_N(ctrl->nsFDs, VIR_LXC_DOMAIN_NAMESPACE_LAST) < 0)
-                    goto cleanup;
+                ctrl->nsFDs = g_new0(int, VIR_LXC_DOMAIN_NAMESPACE_LAST);
                 for (j = 0; j < VIR_LXC_DOMAIN_NAMESPACE_LAST; j++)
                     ctrl->nsFDs[j] = -1;
             }

@@ -24,8 +24,6 @@
 #include "lxc_conf.h"
 #include "lxc_monitor_dispatch.h"
 
-#include "viralloc.h"
-
 #include "virerror.h"
 #include "virlog.h"
 #include "virthread.h"

@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include "lxc_hostdev.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "virhostdev.h"

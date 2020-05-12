@@ -550,8 +550,7 @@ virLXCProcessSetupInterfaces(virLXCDriverPtr driver,
     virConnectPtr netconn = NULL;
     virErrorPtr save_err = NULL;
 
-    if (VIR_ALLOC_N(*veths, def->nnets + 1) < 0)
-        return -1;
+    *veths = g_new0(char *, def->nnets + 1);
 
     for (i = 0; i < def->nnets; i++) {
         char *veth = NULL;
@@ -1246,10 +1245,7 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     if (!vm->def->resource) {
-        virDomainResourceDefPtr res;
-
-        if (VIR_ALLOC(res) < 0)
-            goto cleanup;
+        virDomainResourceDefPtr res = g_new0(virDomainResourceDef, 1);
 
         res->partition = g_strdup("/machine");
 
@@ -1298,8 +1294,7 @@ int virLXCProcessStart(virConnectPtr conn,
      * and forward I/O between them.
      */
     nttyFDs = vm->def->nconsoles;
-    if (VIR_ALLOC_N(ttyFDs, nttyFDs) < 0)
-        goto cleanup;
+    ttyFDs = g_new0(int, nttyFDs);
     for (i = 0; i < vm->def->nconsoles; i++)
         ttyFDs[i] = -1;
 

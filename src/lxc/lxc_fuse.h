@@ -50,6 +50,7 @@ struct virLXCFuse {
     struct fuse_chan *ch;
     virMutex lock;
 };
+typedef struct virLXCFuse virLXCFuse;
 typedef struct virLXCFuse *virLXCFusePtr;
 
 int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def);

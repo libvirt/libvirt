@@ -151,9 +151,10 @@ lxcParseFstabLine(char *fstabLine)
     lxcFstabPtr fstab = NULL;
     char **parts;
 
-    if (!fstabLine || VIR_ALLOC(fstab) < 0)
+    if (!fstabLine)
         return NULL;
 
+    fstab = g_new0(lxcFstab, 1);
     if (!(parts = lxcStringSplit(fstabLine)))
         goto error;
 
@@ -561,10 +562,7 @@ lxcNetworkParseDataIPs(const char *name,
 {
     int family = AF_INET;
     char **ipparts = NULL;
-    g_autofree virNetDevIPAddrPtr ip = NULL;
-
-    if (VIR_ALLOC(ip) < 0)
-        return -1;
+    g_autofree virNetDevIPAddrPtr ip = g_new0(virNetDevIPAddr, 1);
 
     if (STREQ(name, "ipv6") || STREQ(name, "ipv6.address"))
         family = AF_INET6;
@@ -820,8 +818,7 @@ lxcCreateConsoles(virDomainDefPtr def, virConfPtr properties)
         return -1;
     }
 
-    if (VIR_ALLOC_N(def->consoles, nbttys) < 0)
-        return -1;
+    def->consoles = g_new0(virDomainChrDefPtr, nbttys);
 
     def->nconsoles = nbttys;
     for (i = 0; i < nbttys; i++) {
