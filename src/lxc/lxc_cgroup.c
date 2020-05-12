@@ -387,16 +387,16 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                                 int *nicindexes)
 {
     virCgroupPtr cgroup = NULL;
-    char *machineName = virLXCDomainGetMachineName(def, 0);
+    g_autofree char *machineName = virLXCDomainGetMachineName(def, 0);
 
     if (!machineName)
-        goto cleanup;
+        return NULL;
 
     if (def->resource->partition[0] != '/') {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Resource partition '%s' must start with '/'"),
                        def->resource->partition);
-        goto cleanup;
+        return NULL;
     }
 
     if (virCgroupNewMachine(machineName,
@@ -410,7 +410,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                             -1,
                             0,
                             &cgroup) < 0)
-        goto cleanup;
+        return NULL;
 
     /* setup control group permissions for user namespace */
     if (def->idmap.uidmap) {
@@ -419,13 +419,9 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                               def->idmap.gidmap[0].target,
                               (1 << VIR_CGROUP_CONTROLLER_SYSTEMD)) < 0) {
             virCgroupFree(&cgroup);
-            cgroup = NULL;
-            goto cleanup;
+            return NULL;
         }
     }
-
- cleanup:
-    VIR_FREE(machineName);
 
     return cgroup;
 }

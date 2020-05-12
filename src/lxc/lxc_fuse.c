@@ -326,10 +326,10 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
     *f = fuse;
     return ret;
  cleanup1:
-    VIR_FREE(fuse->mountpoint);
+    g_free(fuse->mountpoint);
     virMutexDestroy(&fuse->lock);
  cleanup2:
-    VIR_FREE(fuse);
+    g_free(fuse);
     goto cleanup;
 }
 
@@ -356,8 +356,8 @@ void lxcFreeFuse(virLXCFusePtr *f)
             fuse_exit(fuse->fuse);
         virMutexUnlock(&fuse->lock);
 
-        VIR_FREE(fuse->mountpoint);
-        VIR_FREE(*f);
+        g_free(fuse->mountpoint);
+        g_free(*f);
     }
 }
 #else

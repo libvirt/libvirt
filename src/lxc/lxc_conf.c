@@ -62,7 +62,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
     virCapsPtr caps;
     virCapsGuestPtr guest;
     virArch altArch;
-    char *lxc_path = NULL;
+    g_autofree char *lxc_path = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
@@ -135,8 +135,6 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
             goto error;
     }
 
-    VIR_FREE(lxc_path);
-
     if (driver) {
         /* Security driver data */
         const char *doi, *model, *label, *type;
@@ -167,7 +165,6 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
     return caps;
 
  error:
-    VIR_FREE(lxc_path);
     virObjectUnref(caps);
     return NULL;
 }
@@ -290,9 +287,9 @@ virLXCDriverConfigDispose(void *obj)
 {
     virLXCDriverConfigPtr cfg = obj;
 
-    VIR_FREE(cfg->configDir);
-    VIR_FREE(cfg->autostartDir);
-    VIR_FREE(cfg->stateDir);
-    VIR_FREE(cfg->logDir);
-    VIR_FREE(cfg->securityDriverName);
+    g_free(cfg->configDir);
+    g_free(cfg->autostartDir);
+    g_free(cfg->stateDir);
+    g_free(cfg->logDir);
+    g_free(cfg->securityDriverName);
 }

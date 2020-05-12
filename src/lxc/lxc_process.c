@@ -135,14 +135,13 @@ static void
 lxcProcessRemoveDomainStatus(virLXCDriverConfigPtr cfg,
                               virDomainObjPtr vm)
 {
-    char *file = NULL;
-
-    file = g_strdup_printf("%s/%s.xml", cfg->stateDir, vm->def->name);
+    g_autofree char *file = g_strdup_printf("%s/%s.xml",
+                                            cfg->stateDir,
+                                            vm->def->name);
 
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
         VIR_WARN("Failed to remove domain XML for %s: %s",
                  vm->def->name, g_strerror(errno));
-    VIR_FREE(file);
 }
 
 
@@ -170,13 +169,12 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
+        g_autofree char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
                     VIR_HOOK_LXC_OP_STOPPED, VIR_HOOK_SUBOP_END,
                     NULL, xml, NULL);
-        VIR_FREE(xml);
     }
 
     virSecurityManagerRestoreAllLabel(driver->securityManager,
@@ -185,9 +183,12 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     /* Clear out dynamically assigned labels */
     if (vm->def->nseclabels &&
         vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        VIR_FREE(vm->def->seclabels[0]->model);
-        VIR_FREE(vm->def->seclabels[0]->label);
-        VIR_FREE(vm->def->seclabels[0]->imagelabel);
+        g_free(vm->def->seclabels[0]->model);
+        g_free(vm->def->seclabels[0]->label);
+        g_free(vm->def->seclabels[0]->imagelabel);
+        vm->def->seclabels[0]->model = NULL;
+        vm->def->seclabels[0]->label = NULL;
+        vm->def->seclabels[0]->imagelabel = NULL;
     }
 
     /* Stop autodestroy in case guest is restarted */
@@ -243,17 +244,17 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
      * the bug we are working around here.
      */
     virCgroupTerminateMachine(priv->machineName);
-    VIR_FREE(priv->machineName);
+    g_free(priv->machineName);
+    priv->machineName = NULL;
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
+        g_autofree char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
                     VIR_HOOK_LXC_OP_RELEASE, VIR_HOOK_SUBOP_END,
                     NULL, xml, NULL);
-        VIR_FREE(xml);
     }
 
     virDomainObjRemoveTransientDef(vm);
@@ -442,12 +443,9 @@ static int virLXCProcessSetupNamespaceName(virLXCDriverPtr driver,
 
 static int virLXCProcessSetupNamespacePID(int ns_type, const char *name)
 {
-    int fd;
-    char *path;
-
-    path = g_strdup_printf("/proc/%s/ns/%s", name, nsInfoLocal[ns_type]);
-    fd = open(path, O_RDONLY);
-    VIR_FREE(path);
+    g_autofree char *path = g_strdup_printf("/proc/%s/ns/%s",
+                                            name, nsInfoLocal[ns_type]);
+    int fd = open(path, O_RDONLY);
     if (fd < 0) {
         virReportSystemError(errno,
                              _("failed to open ns %s"),
@@ -460,7 +458,7 @@ static int virLXCProcessSetupNamespacePID(int ns_type, const char *name)
 
 static int virLXCProcessSetupNamespaceNet(int ns_type, const char *name)
 {
-    char *path;
+    g_autofree char *path = NULL;
     int fd;
     if (ns_type != VIR_LXC_DOMAIN_NAMESPACE_SHARENET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -471,7 +469,6 @@ static int virLXCProcessSetupNamespaceNet(int ns_type, const char *name)
 
     path = g_strdup_printf("%s/netns/%s", RUNSTATEDIR, name);
     fd = open(path, O_RDONLY);
-    VIR_FREE(path);
     if (fd < 0) {
         virReportSystemError(errno,
                              _("failed to open netns %s"), name);
@@ -669,7 +666,8 @@ virLXCProcessCleanInterfaces(virDomainDefPtr def)
     size_t i;
 
     for (i = 0; i < def->nnets; i++) {
-        VIR_FREE(def->nets[i]->ifname_guest_actual);
+        g_free(def->nets[i]->ifname_guest_actual);
+        def->nets[i]->ifname_guest_actual = NULL;
         VIR_DEBUG("Cleared net names: %s", def->nets[i]->ifname_guest);
     }
 }
@@ -757,24 +755,20 @@ virLXCProcessGetNsInode(pid_t pid,
                         const char *nsname,
                         ino_t *inode)
 {
-    char *path = NULL;
+    g_autofree char *path = NULL;
     struct stat sb;
-    int ret = -1;
 
     path = g_strdup_printf("/proc/%lld/ns/%s", (long long)pid, nsname);
 
     if (stat(path, &sb) < 0) {
         virReportSystemError(errno,
                              _("Unable to stat %s"), path);
-        goto cleanup;
+        return -1;
     }
 
     *inode = sb.st_ino;
-    ret = 0;
 
- cleanup:
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }
 
 
@@ -929,8 +923,8 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
                                 const char *pidfile)
 {
     size_t i;
-    char *filterstr;
-    char *outputstr;
+    g_autofree char *filterstr = NULL;
+    g_autofree char *outputstr = NULL;
     virCommandPtr cmd;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
@@ -950,7 +944,6 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
         }
 
         virCommandAddEnvPair(cmd, "LIBVIRT_LOG_FILTERS", filterstr);
-        VIR_FREE(filterstr);
     }
 
     if (cfg->log_libvirtd) {
@@ -962,7 +955,6 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
             }
 
             virCommandAddEnvPair(cmd, "LIBVIRT_LOG_OUTPUTS", outputstr);
-            VIR_FREE(outputstr);
         }
     } else {
         virCommandAddEnvFormat(cmd,
@@ -985,12 +977,11 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
 
     for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++) {
         if (nsInheritFDs[i] > 0) {
-            char *tmp = NULL;
-            tmp = g_strdup_printf("--share-%s", nsInfoLocal[i]);
+            g_autofree char *tmp = g_strdup_printf("--share-%s",
+                                                   nsInfoLocal[i]);
             virCommandAddArg(cmd, tmp);
             virCommandAddArgFormat(cmd, "%d", nsInheritFDs[i]);
             virCommandPassFD(cmd, nsInheritFDs[i], 0);
-            VIR_FREE(tmp);
         }
     }
 
@@ -1188,15 +1179,15 @@ int virLXCProcessStart(virConnectPtr conn,
 {
     int rc = -1, r;
     size_t nttyFDs = 0;
-    int *ttyFDs = NULL;
+    g_autofree int *ttyFDs = NULL;
     size_t i;
-    char *logfile = NULL;
+    g_autofree char *logfile = NULL;
     int logfd = -1;
     VIR_AUTOSTRINGLIST veths = NULL;
     int handshakefds[2] = { -1, -1 };
     off_t pos = -1;
     char ebuf[1024];
-    char *timestamp;
+    g_autofree char *timestamp = NULL;
     int nsInheritFDs[VIR_LXC_DOMAIN_NAMESPACE_LAST];
     virCommandPtr cmd = NULL;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
@@ -1205,7 +1196,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     virCgroupPtr selfcgroup;
     int status;
-    char *pidfile = NULL;
+    g_autofree char *pidfile = NULL;
 
     if (virCgroupNewSelf(&selfcgroup) < 0)
         return -1;
@@ -1283,18 +1274,14 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
-                              VIR_HOOK_LXC_OP_PREPARE, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        VIR_FREE(xml);
+        g_autofree char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
 
         /*
          * If the script raised an error abort the launch
          */
-        if (hookret < 0)
+        if (virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
+                        VIR_HOOK_LXC_OP_PREPARE, VIR_HOOK_SUBOP_BEGIN,
+                        NULL, xml, NULL) < 0)
             goto cleanup;
     }
 
@@ -1348,10 +1335,10 @@ int virLXCProcessStart(virConnectPtr conn,
             goto cleanup;
         }
 
-        VIR_FREE(vm->def->consoles[i]->source->data.file.path);
+        g_free(vm->def->consoles[i]->source->data.file.path);
         vm->def->consoles[i]->source->data.file.path = ttyPath;
 
-        VIR_FREE(vm->def->consoles[i]->info.alias);
+        g_free(vm->def->consoles[i]->info.alias);
         vm->def->consoles[i]->info.alias = g_strdup_printf("console%zu", i);
     }
 
@@ -1388,18 +1375,14 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* now that we know it is about to start call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
-                              VIR_HOOK_LXC_OP_START, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        VIR_FREE(xml);
+        g_autofree char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
 
         /*
          * If the script raised an error abort the launch
          */
-        if (hookret < 0)
+        if (virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
+                        VIR_HOOK_LXC_OP_START, VIR_HOOK_SUBOP_BEGIN,
+                        NULL, xml, NULL) < 0)
             goto cleanup;
     }
 
@@ -1411,7 +1394,6 @@ int virLXCProcessStart(virConnectPtr conn,
         VIR_WARN("Unable to write timestamp to logfile: %s",
                  g_strerror(errno));
     }
-    VIR_FREE(timestamp);
 
     /* Log generated command line */
     virCommandWriteArgLog(cmd, logfd);
@@ -1530,18 +1512,14 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* finally we can call the 'started' hook script if any */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
-                              VIR_HOOK_LXC_OP_STARTED, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        VIR_FREE(xml);
+        g_autofree char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
 
         /*
          * If the script raised an error abort the launch
          */
-        if (hookret < 0)
+        if (virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
+                        VIR_HOOK_LXC_OP_STARTED, VIR_HOOK_SUBOP_BEGIN,
+                        NULL, xml, NULL) < 0)
             goto cleanup;
     }
 
@@ -1559,11 +1537,8 @@ int virLXCProcessStart(virConnectPtr conn,
     virCommandFree(cmd);
     for (i = 0; i < nttyFDs; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
-    VIR_FREE(ttyFDs);
     VIR_FORCE_CLOSE(handshakefds[0]);
     VIR_FORCE_CLOSE(handshakefds[1]);
-    VIR_FREE(pidfile);
-    VIR_FREE(logfile);
     virObjectUnref(cfg);
     virObjectUnref(caps);
 
@@ -1710,15 +1685,12 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
 
         /* now that we know it's reconnected call the hook if present */
         if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-            char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-            int hookret;
+            g_autofree char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
 
             /* we can't stop the operation even if the script raised an error */
-            hookret = virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
-                                  VIR_HOOK_LXC_OP_RECONNECT, VIR_HOOK_SUBOP_BEGIN,
-                                  NULL, xml, NULL);
-            VIR_FREE(xml);
-            if (hookret < 0)
+            if (virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
+                            VIR_HOOK_LXC_OP_RECONNECT, VIR_HOOK_SUBOP_BEGIN,
+                            NULL, xml, NULL) < 0)
                 goto error;
         }
 

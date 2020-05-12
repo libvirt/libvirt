@@ -136,8 +136,8 @@ int lxcContainerHasReboot(void)
         CLONE_NEWIPC|SIGCHLD;
     int cpid;
     char *childStack;
-    char *stack;
-    char *buf;
+    g_autofree char *stack = NULL;
+    g_autofree char *buf = NULL;
     int cmd, v;
     int status;
     char *tmp;
@@ -152,10 +152,8 @@ int lxcContainerHasReboot(void)
     if (virStrToLong_i(buf, NULL, 10, &v) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Malformed ctrl-alt-del setting '%s'"), buf);
-        VIR_FREE(buf);
         return -1;
     }
-    VIR_FREE(buf);
     cmd = v ? LINUX_REBOOT_CMD_CAD_ON : LINUX_REBOOT_CMD_CAD_OFF;
 
     if (VIR_ALLOC_N(stack, stacksize) < 0)
@@ -164,7 +162,6 @@ int lxcContainerHasReboot(void)
     childStack = stack + stacksize;
 
     cpid = clone(lxcContainerRebootChild, childStack, flags, &cmd);
-    VIR_FREE(stack);
     if (cpid < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to clone to check reboot support"));
@@ -638,7 +635,7 @@ static int lxcContainerResolveSymlinks(virDomainFSDefPtr fs, bool gentle)
 
     VIR_DEBUG("Resolved '%s' to %s", fs->src->path, newroot);
 
-    VIR_FREE(fs->src->path);
+    g_free(fs->src->path);
     fs->src->path = newroot;
 
     return 0;
@@ -648,7 +645,7 @@ static int lxcContainerPrepareRoot(virDomainDefPtr def,
                                    virDomainFSDefPtr root,
                                    const char *sec_mount_options)
 {
-    char *dst;
+    g_autofree char *dst = NULL;
     char *tmp;
 
     VIR_DEBUG("Prepare root %d", root->type);
@@ -679,24 +676,21 @@ static int lxcContainerPrepareRoot(virDomainDefPtr def,
 
     if (lxcContainerMountFSBlock(root, "", sec_mount_options) < 0) {
         root->dst = tmp;
-        VIR_FREE(dst);
         return -1;
     }
 
     root->dst = tmp;
     root->type = VIR_DOMAIN_FS_TYPE_MOUNT;
-    VIR_FREE(root->src->path);
-    root->src->path = dst;
+    g_free(root->src->path);
+    root->src->path = g_steal_pointer(&dst);
 
     return 0;
 }
 
 static int lxcContainerPivotRoot(virDomainFSDefPtr root)
 {
-    int ret;
-    char *oldroot = NULL, *newroot = NULL;
-
-    ret = -1;
+    g_autofree char *oldroot = NULL;
+    g_autofree char *newroot = NULL;
 
     VIR_DEBUG("Pivot via %s", root->src->path);
 
@@ -704,7 +698,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     if (mount("", "/", "none", MS_PRIVATE|MS_REC, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to make root private"));
-        goto err;
+        return -1;
     }
 
     oldroot = g_strdup_printf("%s/.oldroot", root->src->path);
@@ -713,7 +707,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         virReportSystemError(errno,
                              _("Failed to create %s"),
                              oldroot);
-        goto err;
+        return -1;
     }
 
     /* Create a tmpfs root since old and new roots must be
@@ -722,7 +716,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         virReportSystemError(errno,
                              _("Failed to mount empty tmpfs at %s"),
                              oldroot);
-        goto err;
+        return -1;
     }
 
     /* Create a directory called 'new' in tmpfs */
@@ -732,7 +726,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         virReportSystemError(errno,
                              _("Failed to create %s"),
                              newroot);
-        goto err;
+        return -1;
     }
 
     /* ... and mount our root onto it */
@@ -740,7 +734,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         virReportSystemError(errno,
                              _("Failed to bind %s to new root %s"),
                              root->src->path, newroot);
-        goto err;
+        return -1;
     }
 
     if (root->readonly) {
@@ -748,7 +742,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
             virReportSystemError(errno,
                                  _("Failed to make new root %s readonly"),
                                  root->src->path);
-            goto err;
+            return -1;
         }
     }
 
@@ -757,7 +751,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     if (chdir(newroot) < 0) {
         virReportSystemError(errno,
                              _("Failed to chdir into %s"), newroot);
-        goto err;
+        return -1;
     }
 
     /* The old root directory will live at /.oldroot after
@@ -765,20 +759,14 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     if (pivot_root(".", ".oldroot") < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to pivot root"));
-        goto err;
+        return -1;
     }
 
     /* CWD is undefined after pivot_root, so go to / */
     if (chdir("/") < 0)
-        goto err;
+        return -1;
 
-    ret = 0;
-
- err:
-    VIR_FREE(oldroot);
-    VIR_FREE(newroot);
-
-    return ret;
+    return 0;
 }
 
 
@@ -845,7 +833,7 @@ static int lxcContainerSetReadOnly(void)
         tmp = g_strdup(mntent.mnt_dir);
 
         if (VIR_APPEND_ELEMENT(mounts, nmounts, tmp) < 0) {
-            VIR_FREE(tmp);
+            g_free(tmp);
             goto cleanup;
         }
     }
@@ -881,13 +869,12 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
                                     bool netns_disabled)
 {
     size_t i;
-    int rc = -1;
-    char* mnt_src = NULL;
     int mnt_mflags;
 
     VIR_DEBUG("Mounting basic filesystems");
 
     for (i = 0; i < G_N_ELEMENTS(lxcBasicMounts); i++) {
+        g_autofree char *mnt_src = NULL;
         bool bindOverReadonly;
         virLXCBasicMountInfo const *mnt = &lxcBasicMounts[i];
 
@@ -908,27 +895,23 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
                   mnt_src, mnt->dst);
 
         if (mnt->skipUnmounted) {
-            char *hostdir;
             int ret;
-
-            hostdir = g_strdup_printf("/.oldroot%s", mnt->dst);
+            g_autofree char *hostdir = g_strdup_printf("/.oldroot%s",
+                                                       mnt->dst);
 
             ret = virFileIsMountPoint(hostdir);
-            VIR_FREE(hostdir);
             if (ret < 0)
-                goto cleanup;
+                return -1;
 
             if (ret == 0) {
                 VIR_DEBUG("Skipping '%s' which isn't mounted in host",
                           mnt->dst);
-                VIR_FREE(mnt_src);
                 continue;
             }
         }
 
         if (mnt->skipUserNS && userns_enabled) {
             VIR_DEBUG("Skipping due to user ns enablement");
-            VIR_FREE(mnt_src);
             continue;
         }
 
@@ -936,13 +919,11 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
          * missing folder in /proc due to the absence of a kernel feature */
         if (STRPREFIX(mnt_src, "/") && !virFileExists(mnt_src)) {
             VIR_DEBUG("Skipping due to missing source: %s", mnt_src);
-            VIR_FREE(mnt_src);
             continue;
         }
 
         if (mnt->skipNoNetns && netns_disabled) {
             VIR_DEBUG("Skipping due to absence of network namespace");
-            VIR_FREE(mnt_src);
             continue;
         }
 
@@ -950,7 +931,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
             virReportSystemError(errno,
                                  _("Failed to mkdir %s"),
                                  mnt->dst);
-            goto cleanup;
+            return -1;
         }
 
         /*
@@ -969,7 +950,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
                                  _("Failed to mount %s on %s type %s flags=0x%x"),
                                  mnt_src, mnt->dst, NULLSTR(mnt->type),
                                  mnt_mflags & ~MS_RDONLY);
-            goto cleanup;
+            return -1;
         }
 
         if (bindOverReadonly &&
@@ -979,26 +960,18 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
                                  _("Failed to re-mount %s on %s flags=0x%x"),
                                  mnt_src, mnt->dst,
                                  MS_BIND|MS_REMOUNT|MS_RDONLY);
-            goto cleanup;
+            return -1;
         }
-
-        VIR_FREE(mnt_src);
     }
 
-    rc = 0;
-
- cleanup:
-    VIR_FREE(mnt_src);
-    VIR_DEBUG("rc=%d", rc);
-    return rc;
+    return 0;
 }
 
 #if WITH_FUSE
 static int lxcContainerMountProcFuse(virDomainDefPtr def,
                                      const char *stateDir)
 {
-    int ret;
-    char *meminfo_path = NULL;
+    g_autofree char *meminfo_path = NULL;
 
     VIR_DEBUG("Mount /proc/meminfo stateDir=%s", stateDir);
 
@@ -1006,15 +979,15 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def,
                                    stateDir,
                                    def->name);
 
-    if ((ret = mount(meminfo_path, "/proc/meminfo",
-                     NULL, MS_BIND, NULL)) < 0) {
+    if (mount(meminfo_path, "/proc/meminfo",
+              NULL, MS_BIND, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount %s on /proc/meminfo"),
                              meminfo_path);
+        return -1;
     }
 
-    VIR_FREE(meminfo_path);
-    return ret;
+    return 0;
 }
 #else
 static int lxcContainerMountProcFuse(virDomainDefPtr def G_GNUC_UNUSED,
@@ -1027,8 +1000,7 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def G_GNUC_UNUSED,
 static int lxcContainerMountFSDev(virDomainDefPtr def,
                                   const char *stateDir)
 {
-    int ret = -1;
-    char *path = NULL;
+    g_autofree char *path = NULL;
     int flags = def->idmap.nuidmap ? MS_BIND : MS_MOVE;
 
     VIR_DEBUG("Mount /dev/ stateDir=%s", stateDir);
@@ -1038,7 +1010,7 @@ static int lxcContainerMountFSDev(virDomainDefPtr def,
     if (virFileMakePath("/dev") < 0) {
         virReportSystemError(errno, "%s",
                              _("Cannot create /dev"));
-        goto cleanup;
+        return -1;
     }
 
     VIR_DEBUG("Trying to %s %s to /dev", def->idmap.nuidmap ?
@@ -1048,21 +1020,16 @@ static int lxcContainerMountFSDev(virDomainDefPtr def,
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev"),
                              path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }
 
 static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
                                      const char *stateDir)
 {
-    int ret = -1;
-    char *path = NULL;
+    g_autofree char *path = NULL;
     int flags = def->idmap.nuidmap ? MS_BIND : MS_MOVE;
 
     VIR_DEBUG("Mount /dev/pts stateDir=%s", stateDir);
@@ -1072,7 +1039,7 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
     if (virFileMakePath("/dev/pts") < 0) {
         virReportSystemError(errno, "%s",
                              _("Cannot create /dev/pts"));
-        goto cleanup;
+        return -1;
     }
 
     VIR_DEBUG("Trying to %s %s to /dev/pts", def->idmap.nuidmap ?
@@ -1082,13 +1049,10 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev/pts"),
                              path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }
 
 static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
@@ -1118,15 +1082,10 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
         return -1;
 
     for (i = 0; i < nttyPaths; i++) {
-        char *tty;
-        tty = g_strdup_printf("/dev/tty%zu", i + 1);
+        g_autofree char *tty = g_strdup_printf("/dev/tty%zu", i + 1);
 
-        if (virFileBindMountDevice(ttyPaths[i], tty) < 0) {
-            VIR_FREE(tty);
+        if (virFileBindMountDevice(ttyPaths[i], tty) < 0)
             return -1;
-        }
-
-        VIR_FREE(tty);
 
         if (i == 0 &&
             virFileBindMountDevice(ttyPaths[i], "/dev/console") < 0)
@@ -1139,8 +1098,7 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
 static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
                                    const char *srcprefix)
 {
-    char *src = NULL;
-    int ret = -1;
+    g_autofree char *src = NULL;
     struct stat st;
 
     VIR_DEBUG("src=%s dst=%s", fs->src->path, fs->dst);
@@ -1151,20 +1109,20 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
         if (errno != ENOENT) {
             virReportSystemError(errno, _("Unable to stat bind target %s"),
                                  fs->dst);
-            goto cleanup;
+            return -1;
         }
         /* ENOENT => create the target dir or file */
         if (stat(src, &st) < 0) {
             virReportSystemError(errno, _("Unable to stat bind source %s"),
                                  src);
-            goto cleanup;
+            return -1;
         }
         if (S_ISDIR(st.st_mode)) {
             if (virFileMakePath(fs->dst) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to create %s"),
                                      fs->dst);
-                goto cleanup;
+                return -1;
             }
         } else {
             /* Create Empty file for target mount point */
@@ -1174,14 +1132,14 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
                     virReportSystemError(errno,
                                          _("Failed to create bind target %s"),
                                          fs->dst);
-                    goto cleanup;
+                    return -1;
                 }
             }
             if (VIR_CLOSE(fd) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to close bind target %s"),
                                      fs->dst);
-                goto cleanup;
+                return -1;
             }
         }
     }
@@ -1190,7 +1148,7 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
         virReportSystemError(errno,
                              _("Failed to bind mount directory %s to %s"),
                              src, fs->dst);
-        goto cleanup;
+        return -1;
     }
 
     if (fs->readonly) {
@@ -1202,11 +1160,7 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
         }
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(src);
-    return ret;
+    return 0;
 }
 
 
@@ -1307,14 +1261,14 @@ static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
     int ret = -1;
     bool tryProc = false;
     bool gotStar = false;
-    char *fslist = NULL;
-    char *line = NULL;
+    g_autofree char *fslist = NULL;
     const char *type;
 
     VIR_DEBUG("src=%s dst=%s srcprefix=%s", src, fs->dst, srcprefix);
 
     /* First time around we use /etc/filesystems */
  retry:
+    g_free(fslist);
     fslist = g_strdup_printf("%s%s", srcprefix,
                              tryProc ? "/proc/filesystems" : "/etc/filesystems");
 
@@ -1326,7 +1280,6 @@ static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
         if (errno == ENOENT &&
             !tryProc) {
             tryProc = true;
-            VIR_FREE(fslist);
             goto retry;
         }
 
@@ -1337,8 +1290,8 @@ static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
     }
 
     while (!feof(fp)) {
+        g_autofree char *line = NULL;
         size_t n;
-        VIR_FREE(line);
         if (getline(&line, &n, fp) <= 0) {
             if (feof(fp))
                 break;
@@ -1401,7 +1354,6 @@ static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
         !tryProc &&
         gotStar) {
         tryProc = true;
-        VIR_FREE(fslist);
         VIR_FORCE_FCLOSE(fp);
         goto retry;
     }
@@ -1415,8 +1367,6 @@ static int lxcContainerMountFSBlockAuto(virDomainFSDefPtr fs,
     VIR_DEBUG("Done mounting filesystem ret=%d tryProc=%d", ret, tryProc);
 
  cleanup:
-    VIR_FREE(line);
-    VIR_FREE(fslist);
     VIR_FORCE_FCLOSE(fp);
     return ret;
 }
@@ -1432,8 +1382,7 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
                                           const char *sec_mount_options)
 {
     int fsflags = 0;
-    int ret = -1;
-    char *format = NULL;
+    g_autofree char *format = NULL;
 
     if (fs->readonly)
         fsflags |= MS_RDONLY;
@@ -1442,11 +1391,11 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
         virReportSystemError(errno,
                              _("Failed to create %s"),
                              fs->dst);
-        goto cleanup;
+        return -1;
     }
 
     if (lxcContainerMountDetectFilesystem(src, &format) < 0)
-        goto cleanup;
+        return -1;
 
     if (format) {
         VIR_DEBUG("Mount '%s' on '%s' with detected format '%s' opts '%s'",
@@ -1455,16 +1404,12 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
             virReportSystemError(errno,
                                  _("Failed to mount device %s to %s as %s"),
                                  src, fs->dst, format);
-            goto cleanup;
+            return -1;
         }
-        ret = 0;
+        return 0;
     } else {
-        ret = lxcContainerMountFSBlockAuto(fs, fsflags, src, srcprefix, sec_mount_options);
+        return lxcContainerMountFSBlockAuto(fs, fsflags, src, srcprefix, sec_mount_options);
     }
-
- cleanup:
-    VIR_FREE(format);
-    return ret;
 }
 
 
@@ -1472,7 +1417,7 @@ static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
                                     const char *srcprefix,
                                     const char *sec_mount_options)
 {
-    char *src = NULL;
+    g_autofree char *src = NULL;
     int ret = -1;
 
     VIR_DEBUG("src=%s dst=%s", fs->src->path, fs->dst);
@@ -1483,7 +1428,6 @@ static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
 
     VIR_DEBUG("Done mounting filesystem ret=%d", ret);
 
-    VIR_FREE(src);
     return ret;
 }
 
@@ -1491,8 +1435,7 @@ static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
 static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
                                     char *sec_mount_options)
 {
-    int ret = -1;
-    char *data = NULL;
+    g_autofree char *data = NULL;
 
     VIR_DEBUG("usage=%lld sec=%s", fs->usage, sec_mount_options);
 
@@ -1502,14 +1445,14 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
         virReportSystemError(errno,
                              _("Failed to create %s"),
                              fs->dst);
-        goto cleanup;
+        return -1;
     }
 
     if (mount("tmpfs", fs->dst, "tmpfs", MS_NOSUID|MS_NODEV, data) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount directory %s as tmpfs"),
                              fs->dst);
-        goto cleanup;
+        return -1;
     }
 
     if (fs->readonly) {
@@ -1518,15 +1461,11 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
             virReportSystemError(errno,
                                  _("Failed to make directory %s readonly"),
                                  fs->dst);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(data);
-    return ret;
+    return 0;
 }
 
 
@@ -1600,8 +1539,8 @@ static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
 
 int lxcContainerSetupHostdevCapsMakePath(const char *dev)
 {
-    int ret = -1;
-    char *dir, *tmp;
+    g_autofree char *dir = NULL;
+    char *tmp;
 
     dir = g_strdup(dev);
 
@@ -1611,30 +1550,25 @@ int lxcContainerSetupHostdevCapsMakePath(const char *dev)
             virReportSystemError(errno,
                                  _("Failed to create directory for '%s' dev '%s'"),
                                  dir, dev);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(dir);
-    return ret;
+    return 0;
 }
 
 
 static int lxcContainerUnmountForSharedRoot(const char *stateDir,
                                             const char *domain)
 {
-    int ret = -1;
-    char *tmp = NULL;
+    g_autofree char *tmp = NULL;
 
 #if WITH_SELINUX
     /* Some versions of Linux kernel don't let you overmount
      * the selinux filesystem, so make sure we kill it first
      */
     if (lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
-        goto cleanup;
+        return -1;
 #endif
 
     /* These filesystems are created by libvirt temporarily, they
@@ -1642,20 +1576,20 @@ static int lxcContainerUnmountForSharedRoot(const char *stateDir,
     tmp = g_strdup_printf("%s/%s.dev", stateDir, domain);
 
     if (lxcContainerUnmountSubtree(tmp, false) < 0)
-        goto cleanup;
+        return -1;
 
-    VIR_FREE(tmp);
+    g_free(tmp);
     tmp = g_strdup_printf("%s/%s.devpts", stateDir, domain);
 
     if (lxcContainerUnmountSubtree(tmp, false) < 0)
-        goto cleanup;
+        return -1;
 
 #if WITH_FUSE
-    VIR_FREE(tmp);
+    g_free(tmp);
     tmp = g_strdup_printf("%s/%s.fuse", stateDir, domain);
 
     if (lxcContainerUnmountSubtree(tmp, false) < 0)
-        goto cleanup;
+        return -1;
 #endif
 
     /* If we have the root source being '/', then we need to
@@ -1665,13 +1599,9 @@ static int lxcContainerUnmountForSharedRoot(const char *stateDir,
     if (lxcContainerUnmountSubtree("/sys", false) < 0 ||
         lxcContainerUnmountSubtree("/dev", false) < 0 ||
         lxcContainerUnmountSubtree("/proc", false) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(tmp);
-    return ret;
+    return 0;
 }
 
 
@@ -1704,8 +1634,8 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 {
     virCgroupPtr cgroup = NULL;
     int ret = -1;
-    char *sec_mount_options;
-    char *stateDir = NULL;
+    g_autofree char *sec_mount_options = NULL;
+    g_autofree char *stateDir = NULL;
 
     VIR_DEBUG("Setup pivot root");
 
@@ -1776,9 +1706,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     ret = 0;
 
  cleanup:
-    VIR_FREE(stateDir);
     virCgroupFree(&cgroup);
-    VIR_FREE(sec_mount_options);
     return ret;
 }
 
@@ -2128,9 +2056,8 @@ static const char hostname_validchars[] =
 
 static int lxcContainerSetHostname(virDomainDefPtr def)
 {
-    int ret = -1;
-    char *name = NULL;
-    char *hostname = NULL;
+    g_autofree char *name = NULL;
+    const char *hostname = NULL;
 
     /* Filter the VM name to get a valid hostname */
     name = g_strdup(def->name);
@@ -2143,13 +2070,10 @@ static int lxcContainerSetHostname(virDomainDefPtr def)
 
     if (sethostname(hostname, strlen(hostname)) < 0) {
         virReportSystemError(errno, "%s", _("Failed to set hostname"));
-        goto cleanup;
+        return -1;
     }
-    ret = 0;
 
- cleanup:
-    VIR_FREE(name);
-    return ret;
+    return 0;
 }
 
 /**
@@ -2170,11 +2094,11 @@ static int lxcContainerChild(void *data)
     virDomainDefPtr vmDef = argv->config;
     int ttyfd = -1;
     int ret = -1;
-    char *ttyPath = NULL;
+    g_autofree char *ttyPath = NULL;
     virDomainFSDefPtr root;
     virCommandPtr cmd = NULL;
     int hasReboot;
-    gid_t *groups = NULL;
+    g_autofree gid_t *groups = NULL;
     int ngroups;
 
     if (NULL == vmDef) {
@@ -2303,7 +2227,6 @@ static int lxcContainerChild(void *data)
 
     ret = 0;
  cleanup:
-    VIR_FREE(ttyPath);
     VIR_FORCE_CLOSE(ttyfd);
     VIR_FORCE_CLOSE(argv->monitor);
     VIR_FORCE_CLOSE(argv->handshakefd);
@@ -2321,7 +2244,6 @@ static int lxcContainerChild(void *data)
                 virGetLastErrorMessage());
     }
 
-    VIR_FREE(groups);
     virCommandFree(cmd);
     return ret;
 }
@@ -2383,7 +2305,8 @@ int lxcContainerStart(virDomainDefPtr def,
     pid_t pid;
     int cflags;
     int stacksize = getpagesize() * 4;
-    char *stack, *stacktop;
+    g_autofree char *stack = NULL;
+    char *stacktop;
     lxc_child_argv_t args = {
         .config = def,
         .securityDriver = securityDriver,
@@ -2410,7 +2333,6 @@ int lxcContainerStart(virDomainDefPtr def,
         if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_USER) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Kernel doesn't support user namespace"));
-            VIR_FREE(stack);
             return -1;
         }
         VIR_DEBUG("Enable user namespace");
@@ -2426,7 +2348,6 @@ int lxcContainerStart(virDomainDefPtr def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Config asks for inherit net namespace "
                              "as well as private network interfaces"));
-            VIR_FREE(stack);
             return -1;
         }
         VIR_DEBUG("Inheriting a net namespace");
@@ -2446,7 +2367,6 @@ int lxcContainerStart(virDomainDefPtr def,
 
     VIR_DEBUG("Cloning container init process");
     pid = clone(lxcContainerChild, stacktop, cflags, &args);
-    VIR_FREE(stack);
     VIR_DEBUG("clone() completed, new container PID is %d", pid);
 
     if (pid < 0) {

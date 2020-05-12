@@ -1496,7 +1496,8 @@ static int lxcStateInitialize(bool privileged,
         return VIR_DRV_STATE_INIT_ERROR;
     lxc_driver->lockFD = -1;
     if (virMutexInit(&lxc_driver->lock) < 0) {
-        VIR_FREE(lxc_driver);
+        g_free(lxc_driver);
+        lxc_driver = NULL;
         return VIR_DRV_STATE_INIT_ERROR;
     }
 
@@ -1633,7 +1634,8 @@ static int lxcStateCleanup(void)
 
     virObjectUnref(lxc_driver->config);
     virMutexDestroy(&lxc_driver->lock);
-    VIR_FREE(lxc_driver);
+    g_free(lxc_driver);
+    lxc_driver = NULL;
 
     return 0;
 }
@@ -2473,7 +2475,8 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    char *configFile = NULL, *autostartLink = NULL;
+    g_autofree char *configFile = NULL;
+    g_autofree char *autostartLink = NULL;
     int ret = -1;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
@@ -2538,8 +2541,6 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
     virLXCDomainObjEndJob(driver, vm);
 
  cleanup:
-    VIR_FREE(configFile);
-    VIR_FREE(autostartLink);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
@@ -2551,8 +2552,7 @@ static int lxcFreezeContainer(virDomainObjPtr vm)
     int check_interval = 1; /* In milliseconds */
     int exp = 10;
     int waited_time = 0;
-    int ret = -1;
-    char *state = NULL;
+    g_autofree char *state = NULL;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
 
     while (waited_time < timeout) {
@@ -2599,10 +2599,8 @@ static int lxcFreezeContainer(virDomainObjPtr vm)
         }
         VIR_DEBUG("Read freezer.state: %s", state);
 
-        if (STREQ(state, "FROZEN")) {
-            ret = 0;
-            goto cleanup;
-        }
+        if (STREQ(state, "FROZEN"))
+            return 0;
 
         waited_time += check_interval;
         /*
@@ -2614,7 +2612,6 @@ static int lxcFreezeContainer(virDomainObjPtr vm)
          * In that case, eager polling will just waste CPU time.
          */
         check_interval *= exp;
-        VIR_FREE(state);
     }
     VIR_DEBUG("lxcFreezeContainer timeout");
  error:
@@ -2624,11 +2621,7 @@ static int lxcFreezeContainer(virDomainObjPtr vm)
      * This is likely to fall the group back again gracefully.
      */
     virCgroupSetFreezerState(priv->cgroup, "THAWED");
-    ret = -1;
-
- cleanup:
-    VIR_FREE(state);
-    return ret;
+    return -1;
 }
 
 static int lxcDomainSuspend(virDomainPtr dom)
@@ -3345,7 +3338,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
     virDomainDiskDefPtr def = dev->data.disk;
     int ret = -1;
     struct stat sb;
-    char *file = NULL;
+    g_autofree char *file = NULL;
     int perms;
     const char *src = NULL;
 
@@ -3433,7 +3426,6 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
  cleanup:
     if (src)
         virDomainAuditDisk(vm, NULL, def->src, "attach", ret == 0);
-    VIR_FREE(file);
     return ret;
 }
 
@@ -3584,7 +3576,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevDefPtr def = dev->data.hostdev;
     int ret = -1;
-    char *src = NULL;
+    g_autofree char *src = NULL;
     struct stat sb;
     virUSBDevicePtr usb = NULL;
     virDomainHostdevSubsysUSBPtr usbsrc;
@@ -3643,7 +3635,6 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
  cleanup:
     virDomainAuditHostdev(vm, def, "attach", ret == 0);
     virUSBDeviceFree(usb);
-    VIR_FREE(src);
     return ret;
 }
 
@@ -3910,14 +3901,14 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainDiskDefPtr def = NULL;
-    int idx, ret = -1;
-    char *dst = NULL;
+    int idx;
+    g_autofree char *dst = NULL;
     const char *src;
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Cannot attach disk until init PID is known"));
-        goto cleanup;
+        return -1;
     }
 
     if ((idx = virDomainDiskIndexByName(vm->def,
@@ -3925,7 +3916,7 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
                                         false)) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("disk %s not found"), dev->data.disk->dst);
-        goto cleanup;
+        return -1;
     }
 
     def = vm->def->disks[idx];
@@ -3936,12 +3927,12 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("devices cgroup isn't mounted"));
-        goto cleanup;
+        return -1;
     }
 
     if (lxcDomainAttachDeviceUnlink(vm, dst) < 0) {
         virDomainAuditDisk(vm, def->src, NULL, "detach", false);
-        goto cleanup;
+        return -1;
     }
     virDomainAuditDisk(vm, def->src, NULL, "detach", true);
 
@@ -3953,11 +3944,7 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
     virDomainDiskRemove(vm->def, idx);
     virDomainDiskDefFree(def);
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(dst);
-    return ret;
+    return 0;
 }
 
 
@@ -4055,7 +4042,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevDefPtr def = NULL;
     int idx, ret = -1;
-    char *dst = NULL;
+    g_autofree char *dst = NULL;
     virUSBDevicePtr usb = NULL;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     virDomainHostdevSubsysUSBPtr usbsrc;
@@ -4103,7 +4090,6 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
 
  cleanup:
     virUSBDeviceFree(usb);
-    VIR_FREE(dst);
     return ret;
 }
 
@@ -4948,8 +4934,6 @@ lxcDomainGetHostname(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     g_autoptr(virConnect) conn = NULL;
-    virNetworkDHCPLeasePtr *leases = NULL;
-    int n_leases;
     size_t i, j;
     char *hostname = NULL;
 
@@ -4973,6 +4957,8 @@ lxcDomainGetHostname(virDomainPtr dom,
     for (i = 0; i < vm->def->nnets; i++) {
         g_autoptr(virNetwork) network = NULL;
         virDomainNetDefPtr net = vm->def->nets[i];
+        g_autofree virNetworkDHCPLeasePtr *leases = NULL;
+        int n_leases;
 
         if (net->type != VIR_DOMAIN_NET_TYPE_NETWORK)
             continue;
@@ -4995,8 +4981,6 @@ lxcDomainGetHostname(virDomainPtr dom,
 
             virNetworkDHCPLeaseFree(lease);
         }
-
-        VIR_FREE(leases);
 
         if (hostname)
             goto endjob;

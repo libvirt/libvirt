@@ -159,7 +159,7 @@ virLXCDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
         return NULL;
 
     if (virLXCDomainObjInitJob(priv) < 0) {
-        VIR_FREE(priv);
+        g_free(priv);
         return NULL;
     }
 
@@ -174,7 +174,7 @@ virLXCDomainObjPrivateFree(void *data)
 
     virCgroupFree(&priv->cgroup);
     virLXCDomainObjFreeJob(priv);
-    VIR_FREE(priv);
+    g_free(priv);
 }
 
 
@@ -200,8 +200,8 @@ lxcDomainDefNamespaceFree(void *nsdata)
     size_t i;
     lxcDomainDefPtr lxcDef = nsdata;
     for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++)
-        VIR_FREE(lxcDef->ns_val[i]);
-    VIR_FREE(nsdata);
+        g_free(lxcDef->ns_val[i]);
+    g_free(nsdata);
 }
 
 static int
@@ -209,12 +209,11 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
                            void **data)
 {
     lxcDomainDefPtr lxcDef = NULL;
-    xmlNodePtr *nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     bool uses_lxc_ns = false;
     xmlNodePtr node;
     int feature;
     int n;
-    char *tmp = NULL;
     size_t i;
 
     if (VIR_ALLOC(lxcDef) < 0)
@@ -226,6 +225,7 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     uses_lxc_ns |= n > 0;
 
     for (i = 0; i < n; i++) {
+        g_autofree char *tmp = NULL;
         if ((feature = virLXCDomainNamespaceTypeFromString(
                  (const char *)nodes[i]->name)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -246,10 +246,8 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown LXC namespace source '%s'"),
                            tmp);
-            VIR_FREE(tmp);
             goto error;
         }
-        VIR_FREE(tmp);
 
         if (!(lxcDef->ns_val[feature] =
               virXMLPropString(nodes[i], "value"))) {
@@ -258,15 +256,13 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
             goto error;
         }
     }
-    VIR_FREE(nodes);
     ctxt->node = node;
     if (uses_lxc_ns)
         *data = lxcDef;
     else
-        VIR_FREE(lxcDef);
+        g_free(lxcDef);
     return 0;
  error:
-    VIR_FREE(nodes);
     lxcDomainDefNamespaceFree(lxcDef);
     return -1;
 }
@@ -496,7 +492,9 @@ virLXCDomainSetRunlevel(virDomainObjPtr vm,
                                         lxcDomainInitctlCallback,
                                         &data);
  cleanup:
-    VIR_FREE(data.st);
-    VIR_FREE(data.st_valid);
+    g_free(data.st);
+    data.st = NULL;
+    g_free(data.st_valid);
+    data.st_valid = NULL;
     return ret;
 }
