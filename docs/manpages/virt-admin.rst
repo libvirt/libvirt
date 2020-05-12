@@ -455,7 +455,8 @@ Update tls context on *server*.
 
 - *server*
 
-  Available servers on a daemon. Currently only supports 'libvirtd'.
+  Available servers on a daemon. Currently only supports 'libvirtd' or
+  'virtproxyd'.
 
 
 CLIENT COMMANDS

@@ -978,7 +978,7 @@ static const vshCmdOptDef opts_srv_update_tls_file[] = {
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("Available servers on a daemon. "
-                "Currently only supports 'libvirtd'.")
+                "Currently only supports 'libvirtd' or 'virtproxyd'.")
     },
     {.name = NULL}
 };
