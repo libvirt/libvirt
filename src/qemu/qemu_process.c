@@ -6992,8 +6992,6 @@ qemuProcessLaunch(virConnectPtr conn,
     ret = 0;
 
  cleanup:
-    if (ret < 0)
-        qemuExtDevicesStop(driver, vm);
     qemuDomainSecretDestroy(vm);
     return ret;
 }
