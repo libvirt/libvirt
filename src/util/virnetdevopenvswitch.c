@@ -71,7 +71,6 @@ static int
 virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtVlan)
 {
     int ret = -1;
-    size_t i = 0;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!virtVlan || !virtVlan->nTags)
@@ -92,6 +91,8 @@ virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtV
     }
 
     if (virtVlan->trunk) {
+        size_t i;
+
         virBufferAddLit(&buf, "trunk=");
 
         /*
@@ -100,7 +101,7 @@ virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtV
          * start of the for loop if there are more than one VLANs
          * on this trunk port.
          */
-        virBufferAsprintf(&buf, "%d", virtVlan->tag[i]);
+        virBufferAsprintf(&buf, "%d", virtVlan->tag[0]);
 
         for (i = 1; i < virtVlan->nTags; i++) {
             virBufferAddLit(&buf, ",");
