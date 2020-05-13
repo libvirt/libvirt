@@ -46,15 +46,6 @@
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
-    <disk type='network' device='cdrom'>
-      <driver name='qemu' type='raw'/>
-      <source protocol='tftp' name='/url/path/file.iso'>
-        <host name='host.name' port='69'/>
-      </source>
-      <target dev='hdd' bus='ide'/>
-      <readonly/>
-      <address type='drive' controller='0' bus='1' target='0' unit='1'/>
-    </disk>
     <controller type='usb' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
     <controller type='ide' index='0'/>

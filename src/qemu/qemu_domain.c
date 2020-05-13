@@ -5319,6 +5319,16 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         return -1;
     }
 
+    /* TFTP protocol was not supported for some time, lock it out at least with
+     * -blockdev */
+    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_TFTP &&
+        blockdev) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'tftp' protocol is not supported with this QEMU binary"));
+        return -1;
+    }
+
     return 0;
 }
 
