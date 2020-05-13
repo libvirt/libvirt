@@ -21,6 +21,10 @@
  */
 
 #include <config.h>
+#if defined(__aarch64__)
+# include <asm/hwcap.h>
+# include <sys/auxv.h>
+#endif
 
 #include "viralloc.h"
 #include "cpu.h"
@@ -31,6 +35,13 @@
 #include "virxml.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
+#if defined(__aarch64__)
+/* Shift bit mask for parsing cpu flags */
+# define BIT_SHIFTS(n) (1UL << (n))
+/* The current max number of cpu flags on ARM is 32 */
+# define MAX_CPU_FLAGS 32
+#endif
+
 
 VIR_LOG_INIT("cpu.cpu_arm");
 
@@ -291,6 +302,22 @@ virCPUarmModelFind(virCPUarmMapPtr map,
     return NULL;
 }
 
+#if defined(__aarch64__)
+static virCPUarmModelPtr
+virCPUarmModelFindByPVR(virCPUarmMapPtr map,
+                        unsigned long pvr)
+{
+    size_t i;
+
+    for (i = 0; i < map->nmodels; i++) {
+        if (map->models[i]->data.pvr == pvr)
+            return map->models[i];
+    }
+
+    return NULL;
+}
+#endif
+
 static int
 virCPUarmModelParse(xmlXPathContextPtr ctxt,
                     const char *name,
@@ -469,11 +496,148 @@ virCPUarmValidateFeatures(virCPUDefPtr cpu)
     return 0;
 }
 
+#if defined(__aarch64__)
+/* Generate human readable flag list according to the order of */
+/* AT_HWCAP bit map */
+const char *aarch64_cpu_flags[MAX_CPU_FLAGS] = {
+    "fp", "asimd", "evtstrm", "aes", "pmull", "sha1", "sha2",
+    "crc32", "atomics", "fphp", "asimdhp", "cpuid", "asimdrdm",
+    "jscvt", "fcma", "lrcpc", "dcpop", "sha3", "sm3", "sm4",
+    "asimddp", "sha512", "sve", "asimdfhm", "dit", "uscat",
+    "ilrcpc", "flagm", "ssbs", "sb", "paca", "pacg"};
+/**
+ * virCPUarmCpuDataFromRegs:
+ *
+ * @data: 64-bit arm CPU specific data
+ *
+ * Fetches CPU vendor_id and part_id from MIDR_EL1 register, parse CPU
+ * flags from AT_HWCAP. There are currently 32 valid flags  on ARM arch
+ * represented by each bit.
+ */
+static int
+virCPUarmCpuDataFromRegs(virCPUarmData *data)
+{
+    unsigned long cpuid;
+    unsigned long hwcaps;
+    VIR_AUTOSTRINGLIST features = NULL;
+    int cpu_feature_index = 0;
+    size_t i;
+
+    if (!(getauxval(AT_HWCAP) & HWCAP_CPUID)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("CPUID registers unavailable"));
+            return -1;
+    }
+
+    /* read the cpuid data from MIDR_EL1 register */
+    asm("mrs %0, MIDR_EL1" : "=r" (cpuid));
+    VIR_DEBUG("CPUID read from register:  0x%016lx", cpuid);
+
+    /* parse the coresponding part_id bits */
+    data->pvr = (cpuid >> 4) & 0xfff;
+    /* parse the coresponding vendor_id bits */
+    data->vendor_id = (cpuid >> 24) & 0xff;
+
+    hwcaps = getauxval(AT_HWCAP);
+    VIR_DEBUG("CPU flags read from register:  0x%016lx", hwcaps);
+
+    features = g_new0(char *, MAX_CPU_FLAGS + 1);
+
+    /* shift bit map mask to parse for CPU flags */
+    for (i = 0; i < MAX_CPU_FLAGS; i++) {
+        if (hwcaps & BIT_SHIFTS(i)) {
+            features[cpu_feature_index] = g_strdup(aarch64_cpu_flags[i]);
+            cpu_feature_index++;
+        }
+    }
+
+    if (cpu_feature_index > 0)
+        data->features = g_steal_pointer(&features);
+
+    return 0;
+}
+
+static int
+virCPUarmDecode(virCPUDefPtr cpu,
+                const virCPUarmData *cpuData,
+                virDomainCapsCPUModelsPtr models)
+{
+    size_t i;
+    virCPUarmMapPtr map;
+    virCPUarmModelPtr model;
+    virCPUarmVendorPtr vendor = NULL;
+
+    if (!cpuData || !(map = virCPUarmGetMap()))
+        return -1;
+
+    if (!(model = virCPUarmModelFindByPVR(map, cpuData->pvr))) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Cannot find CPU model with PVR 0x%03lx"),
+                       cpuData->pvr);
+        return -1;
+    }
+
+    if (!virCPUModelIsAllowed(model->name, models)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("CPU model %s is not supported by hypervisor"),
+                       model->name);
+        return -1;
+    }
+
+    cpu->model = g_strdup(model->name);
+
+    if (cpuData->vendor_id &&
+        !(vendor = virCPUarmVendorFindByID(map, cpuData->vendor_id))) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Cannot find CPU vendor with vendor id 0x%02lx"),
+                       cpuData->vendor_id);
+        return -1;
+    }
+
+    if (vendor)
+        cpu->vendor = g_strdup(vendor->name);
+
+    if (cpuData->features) {
+        cpu->nfeatures = virStringListLength((const char **)cpuData->features);
+        cpu->features = g_new0(virCPUFeatureDef, cpu->nfeatures);
+
+        for (i = 0; i < cpu->nfeatures; i++) {
+            cpu->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
+            cpu->features[i].name = g_strdup(cpuData->features[i]);
+        }
+    }
+
+    return 0;
+}
+
+static int
+virCPUarmGetHost(virCPUDefPtr cpu,
+                 virDomainCapsCPUModelsPtr models)
+{
+    g_autoptr(virCPUData) cpuData = NULL;
+
+    if (virCPUarmDriverInitialize() < 0)
+        return -1;
+
+    if (!(cpuData = virCPUDataNew(archs[0])))
+        return -1;
+
+    if (virCPUarmCpuDataFromRegs(&cpuData->data.arm) < 0)
+        return -1;
+
+    return virCPUarmDecode(cpu, &cpuData->data.arm, models);
+}
+#endif
+
+
 struct cpuArchDriver cpuDriverArm = {
     .name = "arm",
     .arch = archs,
     .narch = G_N_ELEMENTS(archs),
     .compare = virCPUarmCompare,
+#if defined(__aarch64__)
+    .getHost = virCPUarmGetHost,
+#endif
     .decode = NULL,
     .encode = NULL,
     .dataFree = virCPUarmDataFree,
