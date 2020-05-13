@@ -485,7 +485,6 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
 {
     const char *tmpIfname = NULL;
     int status;
-    int ret = -1;
     g_autoptr(virCommand) cmd = NULL;
 
     /* Openvswitch vhostuser path are hardcoded to
@@ -495,10 +494,8 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
      * so we pick the filename and check it's a openvswitch interface
      */
     if (!path ||
-        !(tmpIfname = strrchr(path, '/'))) {
-        ret = 0;
-        goto cleanup;
-    }
+        !(tmpIfname = strrchr(path, '/')))
+        return 0;
 
     tmpIfname++;
     cmd = virCommandNew(OVSVSCTL);
@@ -507,15 +504,11 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     if (virCommandRun(cmd, &status) < 0 ||
         status) {
         /* it's not a openvswitch vhostuser interface. */
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     *ifname = g_strdup(tmpIfname);
-    ret = 1;
-
- cleanup:
-    return ret;
+    return 1;
 }
 
 /**
