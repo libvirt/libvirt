@@ -72,7 +72,7 @@ virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtV
 {
     int ret = -1;
     size_t i = 0;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!virtVlan || !virtVlan->nTags)
         return 0;
@@ -113,7 +113,6 @@ virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtV
     }
 
     ret = 0;
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
