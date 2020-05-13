@@ -2132,6 +2132,29 @@ virCommandToString(virCommandPtr cmd, bool linebreaks)
 }
 
 
+int
+virCommandGetArgList(virCommandPtr cmd,
+                     char ***args,
+                     size_t *nargs)
+{
+    size_t i;
+
+    if (cmd->has_error) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid use of command API"));
+        return -1;
+    }
+
+    *args = g_new0(char *, cmd->nargs);
+    *nargs = cmd->nargs - 1;
+
+    for (i = 1; i < cmd->nargs; i++)
+        (*args)[i - 1] = g_strdup(cmd->args[i]);
+
+    return 0;
+}
+
+
 #ifndef WIN32
 /*
  * Manage input and output to the child process.
