@@ -9,6 +9,7 @@ CPU_SOURCES = \
 	cpu/cpu_s390.h \
 	cpu/cpu_s390.c \
 	cpu/cpu_arm.h \
+	cpu/cpu_arm_data.h \
 	cpu/cpu_arm.c \
 	cpu/cpu_ppc64.h \
 	cpu/cpu_ppc64.c \
