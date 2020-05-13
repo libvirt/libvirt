@@ -491,8 +491,6 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
                                        char **ifname)
 {
     char *tmpIfname = NULL;
-    char **tokens = NULL;
-    size_t ntokens = 0;
     int status;
     int ret = -1;
     g_autoptr(virCommand) cmd = NULL;
@@ -524,7 +522,6 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     ret = 1;
 
  cleanup:
-    virStringListFreeCount(tokens, ntokens);
     return ret;
 }
 
