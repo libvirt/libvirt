@@ -483,7 +483,7 @@ int
 virNetDevOpenvswitchGetVhostuserIfname(const char *path,
                                        char **ifname)
 {
-    char *tmpIfname = NULL;
+    const char *tmpIfname = NULL;
     int status;
     int ret = -1;
     g_autoptr(virCommand) cmd = NULL;
