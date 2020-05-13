@@ -2,7 +2,14 @@
 
 cpumapdir = $(pkgdatadir)/cpu_map
 cpumap_DATA = \
+	cpu_map/arm_cortex-a53.xml \
+	cpu_map/arm_cortex-a57.xml \
+	cpu_map/arm_cortex-a72.xml \
 	cpu_map/arm_features.xml \
+	cpu_map/arm_Kunpeng-920.xml \
+	cpu_map/arm_ThunderX299xx.xml \
+	cpu_map/arm_Falkor.xml \
+	cpu_map/arm_vendors.xml \
 	cpu_map/index.xml \
 	cpu_map/ppc64_vendors.xml \
 	cpu_map/ppc64_POWER7.xml \

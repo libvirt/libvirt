@@ -85,6 +85,21 @@
   </arch>
 
   <arch name='arm'>
+    <include filename="arm_vendors.xml"/>
     <include filename='arm_features.xml'/>
+
+    <!-- ARM-based CPU models -->
+    <include filename="arm_cortex-a53.xml"/>
+    <include filename="arm_cortex-a57.xml"/>
+    <include filename="arm_cortex-a72.xml"/>
+
+    <!-- Qualcomm-based CPU models -->
+    <include filename='arm_Falkor.xml'/>
+
+    <!-- Cavium-based CPU models -->
+    <include filename='arm_ThunderX299xx.xml'/>
+
+    <!-- Hisilicon-based CPU models -->
+    <include filename="arm_Kunpeng-920.xml"/>
   </arch>
 </cpus>
