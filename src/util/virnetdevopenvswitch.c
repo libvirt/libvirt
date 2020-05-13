@@ -64,17 +64,14 @@ virNetDevOpenvswitchAddTimeout(virCommandPtr cmd)
  *
  * Construct the VLAN configuration parameters to be passed to
  * ovs-vsctl command.
- *
- * Returns 0 in case of success or -1 in case of failure.
  */
-static int
+static void
 virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtVlan)
 {
-    int ret = -1;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!virtVlan || !virtVlan->nTags)
-        return 0;
+        return;
 
     switch (virtVlan->nativeMode) {
     case VIR_NATIVE_VLAN_MODE_TAGGED:
@@ -112,9 +109,6 @@ virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtV
     } else if (virtVlan->nTags) {
         virCommandAddArgFormat(cmd, "tag=%d", virtVlan->tag[0]);
     }
-
-    ret = 0;
-    return ret;
 }
 
 /**
@@ -162,8 +156,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     virCommandAddArgList(cmd, "--", "--if-exists", "del-port",
                          ifname, "--", "add-port", brname, ifname, NULL);
 
-    if (virNetDevOpenvswitchConstructVlans(cmd, virtVlan) < 0)
-        return -1;
+    virNetDevOpenvswitchConstructVlans(cmd, virtVlan);
 
     if (ovsport->profileID[0] == '\0') {
         virCommandAddArgList(cmd,
@@ -547,8 +540,7 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
                          "--", "--if-exists", "clear", "Port", ifname, "vlan_mode",
                          "--", "--if-exists", "set", "Port", ifname, NULL);
 
-    if (virNetDevOpenvswitchConstructVlans(cmd, virtVlan) < 0)
-        return -1;
+    virNetDevOpenvswitchConstructVlans(cmd, virtVlan);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
