@@ -133,6 +133,7 @@
   <flag name='iothread.poll-max-ns'/>
   <flag name='i8042'/>
   <flag name='tcg'/>
+  <flag name='pvscsi'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900247</microcodeVersion>

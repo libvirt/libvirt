@@ -178,6 +178,7 @@
   <flag name='x86-max-cpu'/>
   <flag name='i8042'/>
   <flag name='tcg'/>
+  <flag name='pvscsi'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100247</microcodeVersion>

@@ -208,6 +208,7 @@
   <flag name='i8042'/>
   <flag name='storage.werror'/>
   <flag name='tcg'/>
+  <flag name='pvscsi'/>
   <version>3000092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100240</microcodeVersion>

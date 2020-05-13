@@ -109,6 +109,7 @@
   <flag name='mch'/>
   <flag name='i8042'/>
   <flag name='tcg'/>
+  <flag name='pvscsi'/>
   <version>2001001</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100240</microcodeVersion>

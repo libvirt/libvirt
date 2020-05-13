@@ -184,6 +184,7 @@
   <flag name='machine.pseries.cap-sbbc'/>
   <flag name='machine.pseries.cap-ibs'/>
   <flag name='tcg'/>
+  <flag name='pvscsi'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900242</microcodeVersion>

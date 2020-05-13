@@ -141,6 +141,7 @@
   <flag name='egl-headless'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='tcg'/>
+  <flag name='pvscsi'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700287</microcodeVersion>

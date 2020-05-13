@@ -172,6 +172,7 @@
   <flag name='drive-nvme'/>
   <flag name='storage.werror'/>
   <flag name='tcg'/>
+  <flag name='pvscsi'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

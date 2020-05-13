@@ -120,6 +120,7 @@
   <flag name='hda-output'/>
   <flag name='i8042'/>
   <flag name='tcg'/>
+  <flag name='pvscsi'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900244</microcodeVersion>
