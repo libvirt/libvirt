@@ -604,16 +604,15 @@ qemuMonitorJSONParseKeywordsFree(int nkeywords,
 /*
  * Takes a string containing a set of key=value,key=value,key...
  * parameters and splits them up, returning two arrays with
- * the individual keys and values. If allowEmptyValue is nonzero,
- * the "=value" part is optional and if a key with no value is found,
- * NULL is be placed into corresponding place in retvalues.
+ * the individual keys and values.
+ * The "=value" part is optional and if a key with no value is found,
+ * NULL will be placed into corresponding place in retvalues.
  */
 static int
 qemuMonitorJSONParseKeywords(const char *str,
                              char ***retkeywords,
                              char ***retvalues,
-                             int *retnkeywords,
-                             int allowEmptyValue)
+                             int *retnkeywords)
 {
     int keywordCount = 0;
     int keywordAlloc = 0;
@@ -645,14 +644,8 @@ qemuMonitorJSONParseKeywords(const char *str,
         if (!(separator = strchr(start, '=')))
             separator = end;
 
-        if (separator >= endmark) {
-            if (!allowEmptyValue) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("malformed keyword arguments in '%s'"), str);
-                goto error;
-            }
+        if (separator >= endmark)
             separator = endmark;
-        }
 
         keyword = g_strndup(start, separator - start);
 
@@ -708,7 +701,7 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
     int nkeywords = 0;
     size_t i;
 
-    if (qemuMonitorJSONParseKeywords(str, &keywords, &values, &nkeywords, 1) < 0)
+    if (qemuMonitorJSONParseKeywords(str, &keywords, &values, &nkeywords) < 0)
         goto error;
 
     for (i = 0; i < nkeywords; i++) {
