@@ -41,12 +41,18 @@
       <target dev='sdd' bus='scsi'/>
       <address type='drive' controller='3' bus='0' target='0' unit='0'/>
     </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/scsidisk5.img'/>
+      <target dev='sde' bus='scsi'/>
+      <address type='drive' controller='4' bus='0' target='0' unit='0'/>
+    </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <controller type='scsi' index='0' model='lsilogic'/>
     <controller type='scsi' index='1' model='lsisas1078'/>
     <controller type='scsi' index='2' model='lsisas1068'/>
     <controller type='scsi' index='3' model='ibmvscsi'/>
+    <controller type='scsi' index='4' model='vmpvscsi'/>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
