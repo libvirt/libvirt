@@ -2362,9 +2362,16 @@ qemuValidateCheckSCSIControllerModel(virQEMUCapsPtr qemuCaps,
             return false;
         }
         break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_PVSCSI)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support "
+                             "the pvscsi (VMware paravirtual SCSI) controller"));
+            return false;
+        }
+        break;
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
-    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported controller model: %s"),
                        virDomainControllerModelSCSITypeToString(model));

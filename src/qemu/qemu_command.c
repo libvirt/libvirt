@@ -2573,9 +2573,11 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
             virBufferAddLit(&buf, "megasas");
             break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
+            virBufferAddLit(&buf, "pvscsi");
+            break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported controller model: %s"),
                            virDomainControllerModelSCSITypeToString(def->model));
