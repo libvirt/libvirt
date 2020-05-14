@@ -27,6 +27,7 @@ server,nowait \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--netdev user,net=172.17.2.0/24,ipv6-net=2001:db8:ac10:fd01::/64,id=hostnet0 \
+-netdev user,net=172.17.2.0/24,ipv6-prefix=2001:db8:ac10:fd01::,\
+ipv6-prefixlen=64,id=hostnet0 \
 -device rtl8139,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,\
 addr=0x3

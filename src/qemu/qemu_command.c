@@ -3645,20 +3645,20 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
             for (i = 0; i < net->guestIP.nips; i++) {
                 const virNetDevIPAddr *ip = net->guestIP.ips[i];
                 g_autofree char *addr = NULL;
-                const char *prefix = "";
 
                 if (!(addr = virSocketAddrFormat(&ip->address)))
                     return NULL;
 
-                if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET))
-                    prefix = "net=";
-                if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6))
-                    prefix = "ipv6-net=";
-
-                virBufferAsprintf(&buf, "%s%s", prefix, addr);
-                if (ip->prefix)
-                    virBufferAsprintf(&buf, "/%u", ip->prefix);
-                virBufferAddChar(&buf, ',');
+                if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
+                    virBufferAsprintf(&buf, "net=%s", addr);
+                    if (ip->prefix)
+                        virBufferAsprintf(&buf, "/%u", ip->prefix);
+                    virBufferAddChar(&buf, ',');
+                } else if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
+                    virBufferAsprintf(&buf, "ipv6-prefix=%s,", addr);
+                    if (ip->prefix)
+                        virBufferAsprintf(&buf, "ipv6-prefixlen=%u,", ip->prefix);
+                }
             }
         }
         break;
