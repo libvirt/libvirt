@@ -49,6 +49,9 @@ int virQEMUBuildCommandLineJSON(virJSONValuePtr value,
                                 bool onOff,
                                 virQEMUBuildCommandLineJSONArrayFormatFunc array);
 
+char *
+virQEMUBuildNetdevCommandlineFromJSON(virJSONValuePtr props);
+
 int virQEMUBuildObjectCommandlineFromJSON(virBufferPtr buf,
                                           virJSONValuePtr objprops);
 

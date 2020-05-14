@@ -252,6 +252,28 @@ virQEMUBuildCommandLineJSON(virJSONValuePtr value,
 }
 
 
+/**
+ * virQEMUBuildNetdevCommandlineFromJSON:
+ * @props: JSON properties describing a netdev
+ *
+ * Converts @props into arguments for -netdev including all the quirks and
+ * differences between the monitor and command line syntax.
+ */
+char *
+virQEMUBuildNetdevCommandlineFromJSON(virJSONValuePtr props)
+{
+    const char *type = virJSONValueObjectGetString(props, "type");
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf, "%s,", type);
+
+    if (virQEMUBuildCommandLineJSON(props, &buf, "type", true, NULL) < 0)
+        return NULL;
+
+    return virBufferContentAndReset(&buf);
+}
+
+
 static int
 virQEMUBuildObjectCommandlineFromJSONInternal(virBufferPtr buf,
                                               const char *type,
