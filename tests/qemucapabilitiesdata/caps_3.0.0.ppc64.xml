@@ -604,32 +604,32 @@
   <cpu type='kvm' name='750_v3.1'/>
   <cpu type='kvm' name='power5+_v2.1'/>
   <cpu type='kvm' name='mpc8568e'/>
-  <machine type='kvm' name='pseries-3.0' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes'/>
-  <machine type='kvm' name='ref405ep' maxCpus='1'/>
-  <machine type='kvm' name='sam460ex' maxCpus='1'/>
-  <machine type='kvm' name='virtex-ml507' maxCpus='1'/>
-  <machine type='kvm' name='powernv' maxCpus='2048'/>
-  <machine type='kvm' name='ppce500' maxCpus='32'/>
-  <machine type='kvm' name='mpc8544ds' maxCpus='15'/>
-  <machine type='kvm' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='kvm' name='bamboo' maxCpus='1'/>
-  <machine type='kvm' name='g3beige' maxCpus='1'/>
-  <machine type='kvm' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='kvm' name='prep' maxCpus='1'/>
-  <machine type='kvm' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='kvm' name='pseries-2.12' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='kvm' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='kvm' name='mac99' maxCpus='1'/>
-  <machine type='kvm' name='pseries-2.6' maxCpus='1024'/>
-  <machine type='kvm' name='pseries-2.7' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='kvm' name='pseries-2.8' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='kvm' name='pseries-2.4' maxCpus='1024'/>
-  <machine type='kvm' name='pseries-2.5' maxCpus='1024'/>
-  <machine type='kvm' name='pseries-2.2' maxCpus='1024'/>
-  <machine type='kvm' name='taihu' maxCpus='1'/>
-  <machine type='kvm' name='pseries-2.3' maxCpus='1024'/>
-  <machine type='kvm' name='pseries-2.1' maxCpus='1024'/>
-  <machine type='kvm' name='40p' maxCpus='1'/>
+  <machine type='kvm' name='pseries-3.0' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes' numaMemSupported='yes'/>
+  <machine type='kvm' name='ref405ep' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='sam460ex' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='virtex-ml507' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='powernv' maxCpus='2048' numaMemSupported='yes'/>
+  <machine type='kvm' name='ppce500' maxCpus='32' numaMemSupported='yes'/>
+  <machine type='kvm' name='mpc8544ds' maxCpus='15' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='bamboo' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='g3beige' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='prep' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.12' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='mac99' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.6' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.7' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.8' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.4' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.5' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.2' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='taihu' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.3' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.1' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='kvm' name='40p' maxCpus='1' numaMemSupported='yes'/>
   <cpu type='tcg' name='default' typename='604-powerpc64-cpu'/>
   <cpu type='tcg' name='ppc' typename='604-powerpc64-cpu'/>
   <cpu type='tcg' name='ppc32' typename='604-powerpc64-cpu'/>
@@ -1067,30 +1067,30 @@
   <cpu type='tcg' name='750_v3.1'/>
   <cpu type='tcg' name='power5+_v2.1'/>
   <cpu type='tcg' name='mpc8568e'/>
-  <machine type='tcg' name='pseries-3.0' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes'/>
-  <machine type='tcg' name='ref405ep' maxCpus='1'/>
-  <machine type='tcg' name='sam460ex' maxCpus='1'/>
-  <machine type='tcg' name='virtex-ml507' maxCpus='1'/>
-  <machine type='tcg' name='powernv' maxCpus='2048'/>
-  <machine type='tcg' name='ppce500' maxCpus='32'/>
-  <machine type='tcg' name='mpc8544ds' maxCpus='15'/>
-  <machine type='tcg' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='tcg' name='bamboo' maxCpus='1'/>
-  <machine type='tcg' name='g3beige' maxCpus='1'/>
-  <machine type='tcg' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='tcg' name='prep' maxCpus='1'/>
-  <machine type='tcg' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='tcg' name='pseries-2.12' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='tcg' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='tcg' name='mac99' maxCpus='1'/>
-  <machine type='tcg' name='pseries-2.6' maxCpus='1024'/>
-  <machine type='tcg' name='pseries-2.7' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='tcg' name='pseries-2.8' hotplugCpus='yes' maxCpus='1024'/>
-  <machine type='tcg' name='pseries-2.4' maxCpus='1024'/>
-  <machine type='tcg' name='pseries-2.5' maxCpus='1024'/>
-  <machine type='tcg' name='pseries-2.2' maxCpus='1024'/>
-  <machine type='tcg' name='taihu' maxCpus='1'/>
-  <machine type='tcg' name='pseries-2.3' maxCpus='1024'/>
-  <machine type='tcg' name='pseries-2.1' maxCpus='1024'/>
-  <machine type='tcg' name='40p' maxCpus='1'/>
+  <machine type='tcg' name='pseries-3.0' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes' numaMemSupported='yes'/>
+  <machine type='tcg' name='ref405ep' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='sam460ex' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='virtex-ml507' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='powernv' maxCpus='2048' numaMemSupported='yes'/>
+  <machine type='tcg' name='ppce500' maxCpus='32' numaMemSupported='yes'/>
+  <machine type='tcg' name='mpc8544ds' maxCpus='15' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='bamboo' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='g3beige' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='prep' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.12' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='mac99' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.6' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.7' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.8' hotplugCpus='yes' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.4' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.5' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.2' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='taihu' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.3' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.1' maxCpus='1024' numaMemSupported='yes'/>
+  <machine type='tcg' name='40p' maxCpus='1' numaMemSupported='yes'/>
 </qemuCaps>

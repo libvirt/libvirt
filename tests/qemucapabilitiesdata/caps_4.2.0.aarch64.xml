@@ -252,7 +252,7 @@
   <machine type='kvm' name='mps2-an511' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
   <machine type='kvm' name='mps2-an505' maxCpus='1' defaultCPU='cortex-m33-arm-cpu'/>
   <machine type='kvm' name='verdex' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
-  <machine type='kvm' name='virt-3.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-3.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='ast2500-evb' maxCpus='2'/>
   <machine type='kvm' name='smdkc210' maxCpus='2'/>
   <machine type='kvm' name='collie' maxCpus='1' defaultCPU='sa1110-arm-cpu'/>
@@ -265,26 +265,26 @@
   <machine type='kvm' name='versatilepb' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
   <machine type='kvm' name='realview-pb-a8' maxCpus='1' defaultCPU='cortex-a8-arm-cpu'/>
   <machine type='kvm' name='emcraft-sf2' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
-  <machine type='kvm' name='virt-2.9' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-2.9' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='musicpal' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
-  <machine type='kvm' name='sbsa-ref' maxCpus='512' defaultCPU='cortex-a57-arm-cpu'/>
+  <machine type='kvm' name='sbsa-ref' maxCpus='512' defaultCPU='cortex-a57-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='z2' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu'/>
   <machine type='kvm' name='akita' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
-  <machine type='kvm' name='virt-2.7' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-2.7' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='kzm' maxCpus='1'/>
   <machine type='kvm' name='swift-bmc' maxCpus='2'/>
-  <machine type='kvm' name='virt-2.8' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-2.8' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu'/>
   <machine type='kvm' name='musca-a' maxCpus='2' defaultCPU='cortex-m33-arm-cpu'/>
   <machine type='kvm' name='mcimx7d-sabre' maxCpus='2'/>
   <machine type='kvm' name='sx1' maxCpus='1' defaultCPU='ti925t-arm-cpu'/>
-  <machine type='kvm' name='virt-4.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-4.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='sx1-v1' maxCpus='1' defaultCPU='ti925t-arm-cpu'/>
-  <machine type='kvm' name='virt-2.6' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-2.6' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='cubieboard' maxCpus='1' defaultCPU='cortex-a9-arm-cpu'/>
-  <machine type='kvm' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='highbank' maxCpus='4'/>
-  <machine type='kvm' name='virt-4.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-4.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='raspi2' maxCpus='4'/>
   <machine type='kvm' name='raspi3' maxCpus='4'/>
   <machine type='kvm' name='netduino2' maxCpus='1'/>
@@ -301,10 +301,10 @@
   <machine type='kvm' name='versatileab' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
   <machine type='kvm' name='lm3s6965evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
   <machine type='kvm' name='n800' maxCpus='1' defaultCPU='arm1136-r2-arm-cpu'/>
-  <machine type='kvm' name='virt-2.10' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
-  <machine type='kvm' name='virt-2.11' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-2.10' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
+  <machine type='kvm' name='virt-2.11' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='connex' maxCpus='1'/>
-  <machine type='kvm' name='virt-2.12' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-2.12' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='microbit' maxCpus='1'/>
   <machine type='kvm' name='witherspoon-bmc' maxCpus='2'/>
   <machine type='kvm' name='xilinx-zynq-a9' maxCpus='1' defaultCPU='cortex-a9-arm-cpu'/>
@@ -315,7 +315,7 @@
   <machine type='kvm' name='mcimx6ul-evk' maxCpus='1'/>
   <machine type='kvm' name='vexpress-a15' maxCpus='4' defaultCPU='cortex-a15-arm-cpu'/>
   <machine type='kvm' name='xlnx-zcu102' maxCpus='6'/>
-  <machine type='kvm' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='kvm' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='canon-a1100' maxCpus='1'/>
   <machine type='kvm' name='lm3s811evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
   <hostCPU type='tcg' model='max' migratability='no'>
@@ -381,7 +381,7 @@
   <machine type='tcg' name='mps2-an511' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
   <machine type='tcg' name='mps2-an505' maxCpus='1' defaultCPU='cortex-m33-arm-cpu'/>
   <machine type='tcg' name='verdex' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
-  <machine type='tcg' name='virt-3.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-3.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='ast2500-evb' maxCpus='2'/>
   <machine type='tcg' name='smdkc210' maxCpus='2'/>
   <machine type='tcg' name='collie' maxCpus='1' defaultCPU='sa1110-arm-cpu'/>
@@ -394,26 +394,26 @@
   <machine type='tcg' name='versatilepb' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
   <machine type='tcg' name='realview-pb-a8' maxCpus='1' defaultCPU='cortex-a8-arm-cpu'/>
   <machine type='tcg' name='emcraft-sf2' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
-  <machine type='tcg' name='virt-2.9' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-2.9' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='musicpal' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
-  <machine type='tcg' name='sbsa-ref' maxCpus='512' defaultCPU='cortex-a57-arm-cpu'/>
+  <machine type='tcg' name='sbsa-ref' maxCpus='512' defaultCPU='cortex-a57-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='z2' maxCpus='1' defaultCPU='pxa270-c5-arm-cpu'/>
   <machine type='tcg' name='akita' maxCpus='1' defaultCPU='pxa270-c0-arm-cpu'/>
-  <machine type='tcg' name='virt-2.7' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-2.7' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='kzm' maxCpus='1'/>
   <machine type='tcg' name='swift-bmc' maxCpus='2'/>
-  <machine type='tcg' name='virt-2.8' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-2.8' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='realview-eb-mpcore' maxCpus='4' defaultCPU='arm11mpcore-arm-cpu'/>
   <machine type='tcg' name='musca-a' maxCpus='2' defaultCPU='cortex-m33-arm-cpu'/>
   <machine type='tcg' name='mcimx7d-sabre' maxCpus='2'/>
   <machine type='tcg' name='sx1' maxCpus='1' defaultCPU='ti925t-arm-cpu'/>
-  <machine type='tcg' name='virt-4.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-4.2' alias='virt' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='sx1-v1' maxCpus='1' defaultCPU='ti925t-arm-cpu'/>
-  <machine type='tcg' name='virt-2.6' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-2.6' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='cubieboard' maxCpus='1' defaultCPU='cortex-a9-arm-cpu'/>
-  <machine type='tcg' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-4.0' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='highbank' maxCpus='4'/>
-  <machine type='tcg' name='virt-4.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-4.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='raspi2' maxCpus='4'/>
   <machine type='tcg' name='raspi3' maxCpus='4'/>
   <machine type='tcg' name='netduino2' maxCpus='1'/>
@@ -430,10 +430,10 @@
   <machine type='tcg' name='versatileab' maxCpus='1' defaultCPU='arm926-arm-cpu'/>
   <machine type='tcg' name='lm3s6965evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
   <machine type='tcg' name='n800' maxCpus='1' defaultCPU='arm1136-r2-arm-cpu'/>
-  <machine type='tcg' name='virt-2.10' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
-  <machine type='tcg' name='virt-2.11' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-2.10' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
+  <machine type='tcg' name='virt-2.11' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='connex' maxCpus='1'/>
-  <machine type='tcg' name='virt-2.12' maxCpus='255' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-2.12' maxCpus='255' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='microbit' maxCpus='1'/>
   <machine type='tcg' name='witherspoon-bmc' maxCpus='2'/>
   <machine type='tcg' name='xilinx-zynq-a9' maxCpus='1' defaultCPU='cortex-a9-arm-cpu'/>
@@ -443,7 +443,7 @@
   <machine type='tcg' name='mcimx6ul-evk' maxCpus='1'/>
   <machine type='tcg' name='vexpress-a15' maxCpus='4' defaultCPU='cortex-a15-arm-cpu'/>
   <machine type='tcg' name='xlnx-zcu102' maxCpus='6'/>
-  <machine type='tcg' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu'/>
+  <machine type='tcg' name='virt-3.1' maxCpus='512' defaultCPU='cortex-a15-arm-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='canon-a1100' maxCpus='1'/>
   <machine type='tcg' name='lm3s811evb' maxCpus='1' defaultCPU='cortex-m3-arm-cpu'/>
   <gic version='3' kernel='yes' emulated='yes'/>

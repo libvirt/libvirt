@@ -119,4 +119,5 @@ virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
                       const char *defaultCPU,
                       int maxCpus,
                       bool hotplugCpus,
-                      bool isDefault);
+                      bool isDefault,
+                      bool numaMemSupported);

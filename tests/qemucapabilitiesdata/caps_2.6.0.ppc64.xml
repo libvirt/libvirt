@@ -558,21 +558,21 @@
   <cpu type='kvm' name='MPC8544E_v11'/>
   <cpu type='kvm' name='405GPb'/>
   <cpu type='kvm' name='MPC8541E_v11'/>
-  <machine type='kvm' name='pseries-2.6' alias='pseries' maxCpus='255' default='yes'/>
-  <machine type='kvm' name='ref405ep' maxCpus='1'/>
-  <machine type='kvm' name='virtex-ml507' maxCpus='1'/>
-  <machine type='kvm' name='ppce500' maxCpus='32'/>
-  <machine type='kvm' name='mpc8544ds' maxCpus='15'/>
-  <machine type='kvm' name='bamboo' maxCpus='1'/>
-  <machine type='kvm' name='g3beige' maxCpus='1'/>
-  <machine type='kvm' name='prep' maxCpus='1'/>
-  <machine type='kvm' name='mac99' maxCpus='1'/>
-  <machine type='kvm' name='pseries-2.4' maxCpus='255'/>
-  <machine type='kvm' name='pseries-2.5' maxCpus='255'/>
-  <machine type='kvm' name='pseries-2.2' maxCpus='255'/>
-  <machine type='kvm' name='taihu' maxCpus='1'/>
-  <machine type='kvm' name='pseries-2.3' maxCpus='255'/>
-  <machine type='kvm' name='pseries-2.1' maxCpus='255'/>
+  <machine type='kvm' name='pseries-2.6' alias='pseries' maxCpus='255' default='yes' numaMemSupported='yes'/>
+  <machine type='kvm' name='ref405ep' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='virtex-ml507' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='ppce500' maxCpus='32' numaMemSupported='yes'/>
+  <machine type='kvm' name='mpc8544ds' maxCpus='15' numaMemSupported='yes'/>
+  <machine type='kvm' name='bamboo' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='g3beige' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='prep' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='mac99' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.4' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.5' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.2' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='taihu' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.3' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pseries-2.1' maxCpus='255' numaMemSupported='yes'/>
   <cpu type='tcg' name='default'/>
   <cpu type='tcg' name='ppc'/>
   <cpu type='tcg' name='ppc32'/>
@@ -1003,19 +1003,19 @@
   <cpu type='tcg' name='MPC8544E_v11'/>
   <cpu type='tcg' name='405GPb'/>
   <cpu type='tcg' name='MPC8541E_v11'/>
-  <machine type='tcg' name='pseries-2.6' alias='pseries' maxCpus='255' default='yes'/>
-  <machine type='tcg' name='ref405ep' maxCpus='1'/>
-  <machine type='tcg' name='virtex-ml507' maxCpus='1'/>
-  <machine type='tcg' name='ppce500' maxCpus='32'/>
-  <machine type='tcg' name='mpc8544ds' maxCpus='15'/>
-  <machine type='tcg' name='bamboo' maxCpus='1'/>
-  <machine type='tcg' name='g3beige' maxCpus='1'/>
-  <machine type='tcg' name='prep' maxCpus='1'/>
-  <machine type='tcg' name='mac99' maxCpus='1'/>
-  <machine type='tcg' name='pseries-2.4' maxCpus='255'/>
-  <machine type='tcg' name='pseries-2.5' maxCpus='255'/>
-  <machine type='tcg' name='pseries-2.2' maxCpus='255'/>
-  <machine type='tcg' name='taihu' maxCpus='1'/>
-  <machine type='tcg' name='pseries-2.3' maxCpus='255'/>
-  <machine type='tcg' name='pseries-2.1' maxCpus='255'/>
+  <machine type='tcg' name='pseries-2.6' alias='pseries' maxCpus='255' default='yes' numaMemSupported='yes'/>
+  <machine type='tcg' name='ref405ep' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='virtex-ml507' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='ppce500' maxCpus='32' numaMemSupported='yes'/>
+  <machine type='tcg' name='mpc8544ds' maxCpus='15' numaMemSupported='yes'/>
+  <machine type='tcg' name='bamboo' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='g3beige' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='prep' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='mac99' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.4' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.5' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.2' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='taihu' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.3' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pseries-2.1' maxCpus='255' numaMemSupported='yes'/>
 </qemuCaps>

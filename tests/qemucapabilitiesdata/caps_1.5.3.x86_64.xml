@@ -116,21 +116,21 @@
   <cpu type='kvm' name='core2duo'/>
   <cpu type='kvm' name='phenom'/>
   <cpu type='kvm' name='qemu64'/>
-  <machine type='kvm' name='pc-i440fx-1.5' alias='pc' maxCpus='255' default='yes'/>
-  <machine type='kvm' name='pc-q35-1.4' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-1.5' alias='q35' maxCpus='255'/>
-  <machine type='kvm' name='isapc' maxCpus='1'/>
-  <machine type='kvm' name='pc-0.10' maxCpus='255'/>
-  <machine type='kvm' name='pc-0.11' maxCpus='255'/>
-  <machine type='kvm' name='pc-0.12' maxCpus='255'/>
-  <machine type='kvm' name='pc-0.13' maxCpus='255'/>
-  <machine type='kvm' name='pc-0.14' maxCpus='255'/>
-  <machine type='kvm' name='pc-0.15' maxCpus='255'/>
-  <machine type='kvm' name='pc-1.0' maxCpus='255'/>
-  <machine type='kvm' name='pc-1.1' maxCpus='255'/>
-  <machine type='kvm' name='pc-1.2' maxCpus='255'/>
-  <machine type='kvm' name='pc-1.3' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-1.4' maxCpus='255'/>
+  <machine type='kvm' name='pc-i440fx-1.5' alias='pc' maxCpus='255' default='yes' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-1.4' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-1.5' alias='q35' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='isapc' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.10' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.11' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.12' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.13' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.14' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.15' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-1.0' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-1.1' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-1.2' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-1.3' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-1.4' maxCpus='255' numaMemSupported='yes'/>
   <cpu type='tcg' name='Opteron_G5'/>
   <cpu type='tcg' name='Opteron_G4'/>
   <cpu type='tcg' name='Opteron_G3'/>
@@ -155,19 +155,19 @@
   <cpu type='tcg' name='core2duo'/>
   <cpu type='tcg' name='phenom'/>
   <cpu type='tcg' name='qemu64'/>
-  <machine type='tcg' name='pc-i440fx-1.5' alias='pc' maxCpus='255' default='yes'/>
-  <machine type='tcg' name='pc-q35-1.4' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-1.5' alias='q35' maxCpus='255'/>
-  <machine type='tcg' name='isapc' maxCpus='1'/>
-  <machine type='tcg' name='pc-0.10' maxCpus='255'/>
-  <machine type='tcg' name='pc-0.11' maxCpus='255'/>
-  <machine type='tcg' name='pc-0.12' maxCpus='255'/>
-  <machine type='tcg' name='pc-0.13' maxCpus='255'/>
-  <machine type='tcg' name='pc-0.14' maxCpus='255'/>
-  <machine type='tcg' name='pc-0.15' maxCpus='255'/>
-  <machine type='tcg' name='pc-1.0' maxCpus='255'/>
-  <machine type='tcg' name='pc-1.1' maxCpus='255'/>
-  <machine type='tcg' name='pc-1.2' maxCpus='255'/>
-  <machine type='tcg' name='pc-1.3' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-1.4' maxCpus='255'/>
+  <machine type='tcg' name='pc-i440fx-1.5' alias='pc' maxCpus='255' default='yes' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-1.4' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-1.5' alias='q35' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='isapc' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.10' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.11' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.12' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.13' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.14' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.15' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-1.0' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-1.1' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-1.2' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-1.3' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-1.4' maxCpus='255' numaMemSupported='yes'/>
 </qemuCaps>

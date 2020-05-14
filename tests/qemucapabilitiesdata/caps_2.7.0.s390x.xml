@@ -98,13 +98,13 @@
   <package></package>
   <arch>s390x</arch>
   <cpu type='kvm' name='host'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.7' alias='s390-ccw-virtio' maxCpus='248' default='yes'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.5' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.4' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.6' maxCpus='248'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.7' alias='s390-ccw-virtio' maxCpus='248' default='yes' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.5' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.4' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.6' maxCpus='248' numaMemSupported='yes'/>
   <cpu type='tcg' name='host'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.7' alias='s390-ccw-virtio' maxCpus='248' default='yes'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.5' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.4' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.6' maxCpus='248'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.7' alias='s390-ccw-virtio' maxCpus='248' default='yes' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.5' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.4' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.6' maxCpus='248' numaMemSupported='yes'/>
 </qemuCaps>

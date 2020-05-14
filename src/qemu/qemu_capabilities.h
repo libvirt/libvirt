@@ -671,6 +671,9 @@ bool virQEMUCapsGetMachineHotplugCpus(virQEMUCapsPtr qemuCaps,
 const char *virQEMUCapsGetMachineDefaultCPU(virQEMUCapsPtr qemuCaps,
                                             const char *name,
                                             virDomainVirtType type);
+bool virQEMUCapsGetMachineNumaMemSupported(virQEMUCapsPtr qemuCaps,
+                                           virDomainVirtType virtType,
+                                           const char *name);
 
 void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
                                     virDomainVirtType virtType,

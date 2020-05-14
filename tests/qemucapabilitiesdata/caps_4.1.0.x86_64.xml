@@ -846,50 +846,50 @@
   <cpu type='kvm' name='Broadwell' typename='Broadwell-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='486-v1' typename='486-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='486' typename='486-x86_64-cpu' usable='yes'/>
-  <machine type='kvm' name='pc-i440fx-4.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes'/>
-  <machine type='kvm' name='pc-0.15' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-1.5' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-2.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-0.12' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-1.1' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='kvm' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-0.14' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='kvm' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='kvm' name='pc-q35-4.1' alias='q35' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='kvm' name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-1.3' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='isapc' hotplugCpus='yes' maxCpus='1'/>
-  <machine type='kvm' name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='kvm' name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-1.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='kvm' name='pc-i440fx-1.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-0.13' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='kvm' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='kvm' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='kvm' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-1.2' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='kvm' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288'/>
+  <machine type='kvm' name='pc-i440fx-4.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.15' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-1.5' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-2.7' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.12' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-1.1' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.14' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-4.1' alias='q35' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-1.3' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='isapc' hotplugCpus='yes' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-1.0' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-1.6' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-0.13' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-1.2' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
   <hostCPU type='tcg' model='base' migratability='yes'>
     <property name='cmov' type='boolean' value='true' migratable='yes'/>
     <property name='ia64' type='boolean' value='false'/>
@@ -1950,48 +1950,48 @@
   </cpu>
   <cpu type='tcg' name='486-v1' typename='486-v1-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='486' typename='486-x86_64-cpu' usable='yes'/>
-  <machine type='tcg' name='pc-i440fx-4.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes'/>
-  <machine type='tcg' name='pc-0.15' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-1.5' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-2.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-0.12' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-1.1' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='tcg' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-0.14' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='tcg' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='tcg' name='pc-q35-4.1' alias='q35' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='tcg' name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-1.3' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='isapc' hotplugCpus='yes' maxCpus='1'/>
-  <machine type='tcg' name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='tcg' name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-1.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='tcg' name='pc-i440fx-1.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-0.13' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='tcg' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='tcg' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288'/>
-  <machine type='tcg' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-1.2' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288'/>
+  <machine type='tcg' name='pc-i440fx-4.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.15' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-1.5' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-2.7' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.12' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-1.1' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.14' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-4.1' alias='q35' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-1.3' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='isapc' hotplugCpus='yes' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-1.0' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-1.6' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-0.13' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-1.2' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' numaMemSupported='yes'/>
 </qemuCaps>

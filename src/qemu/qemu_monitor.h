@@ -1095,6 +1095,7 @@ struct _qemuMonitorMachineInfo {
     unsigned int maxCpus;
     bool hotplugCpus;
     char *defaultCPU;
+    bool numaMemSupported;
 };
 
 int qemuMonitorGetMachines(qemuMonitorPtr mon,

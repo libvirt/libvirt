@@ -102,9 +102,9 @@
   <microcodeVersion>0</microcodeVersion>
   <package></package>
   <arch>riscv32</arch>
-  <machine type='tcg' name='spike_v1.10' maxCpus='1' default='yes'/>
-  <machine type='tcg' name='spike_v1.9.1' maxCpus='1'/>
-  <machine type='tcg' name='sifive_e' maxCpus='1'/>
-  <machine type='tcg' name='virt' maxCpus='8'/>
-  <machine type='tcg' name='sifive_u' maxCpus='1'/>
+  <machine type='tcg' name='spike_v1.10' maxCpus='1' default='yes' numaMemSupported='yes'/>
+  <machine type='tcg' name='spike_v1.9.1' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='sifive_e' maxCpus='1' numaMemSupported='yes'/>
+  <machine type='tcg' name='virt' maxCpus='8' numaMemSupported='yes'/>
+  <machine type='tcg' name='sifive_u' maxCpus='1' numaMemSupported='yes'/>
 </qemuCaps>

@@ -229,15 +229,15 @@
   <cpu type='kvm' name='z9BC' typename='z9BC-s390x-cpu' usable='yes'/>
   <cpu type='kvm' name='z10EC.3-base' typename='z10EC.3-base-s390x-cpu' usable='yes'/>
   <cpu type='kvm' name='z990.3-base' typename='z990.3-base-s390x-cpu' usable='yes'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.12' alias='s390-ccw-virtio' hotplugCpus='yes' maxCpus='248' default='yes'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.7' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.6' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.11' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.10' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.4' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.9' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.12' alias='s390-ccw-virtio' hotplugCpus='yes' maxCpus='248' default='yes' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.7' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.6' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.11' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.10' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.4' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.9' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
   <cpu type='tcg' name='z890.2' typename='z890.2-s390x-cpu' usable='no'>
     <blocker name='klmd-sha-1'/>
     <blocker name='kimd-sha-1'/>
@@ -2477,13 +2477,13 @@
     <blocker name='kmac-dea'/>
     <blocker name='hfpm'/>
   </cpu>
-  <machine type='tcg' name='s390-ccw-virtio-2.12' alias='s390-ccw-virtio' hotplugCpus='yes' maxCpus='248' default='yes'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.7' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.6' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.11' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.10' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.4' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.9' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.12' alias='s390-ccw-virtio' hotplugCpus='yes' maxCpus='248' default='yes' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.7' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.6' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.11' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.10' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.4' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.9' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248' numaMemSupported='yes'/>
 </qemuCaps>
