@@ -84,6 +84,11 @@ qemuBlockJobDataDisposeJobdata(qemuBlockJobDataPtr job)
         virObjectUnref(job->data.backup.store);
         g_free(job->data.backup.bitmap);
     }
+
+    if (job->type == QEMU_BLOCKJOB_TYPE_COMMIT ||
+        job->type == QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT) {
+        virStringListFree(job->data.commit.disabledBitmapsBase);
+    }
 }
 
 
