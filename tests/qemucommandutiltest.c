@@ -47,7 +47,7 @@ testQemuCommandBuildFromJSON(const void *opaque)
         return -1;
     }
 
-    if (virQEMUBuildCommandLineJSON(val, &buf, NULL, data->arrayfunc) < 0) {
+    if (virQEMUBuildCommandLineJSON(val, &buf, NULL, false, data->arrayfunc) < 0) {
         fprintf(stderr,
                 "\nvirQEMUBuildCommandlineJSON failed process JSON:\n%s\n",
                 data->props);
