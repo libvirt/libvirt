@@ -127,6 +127,8 @@ int virJSONValueObjectGetBoolean(virJSONValuePtr object, const char *key, bool *
 int virJSONValueObjectIsNull(virJSONValuePtr object, const char *key);
 
 int virJSONValueObjectAppendString(virJSONValuePtr object, const char *key, const char *value);
+int virJSONValueObjectAppendStringPrintf(virJSONValuePtr object, const char *key, const char *fmt, ...)
+    G_GNUC_PRINTF(3, 4);
 int virJSONValueObjectPrependString(virJSONValuePtr object, const char *key, const char *value);
 int virJSONValueObjectAppendNumberInt(virJSONValuePtr object, const char *key, int number);
 int virJSONValueObjectAppendNumberUint(virJSONValuePtr object, const char *key, unsigned int number);

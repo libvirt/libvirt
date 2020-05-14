@@ -650,6 +650,23 @@ virJSONValueObjectAppendString(virJSONValuePtr object,
 
 
 int
+virJSONValueObjectAppendStringPrintf(virJSONValuePtr object,
+                                     const char *key,
+                                     const char *fmt,
+                                     ...)
+{
+    va_list ap;
+    g_autofree char *str = NULL;
+
+    va_start(ap, fmt);
+    str = g_strdup_vprintf(fmt, ap);
+    va_end(ap);
+
+    return virJSONValueObjectInsertString(object, key, str, false);
+}
+
+
+int
 virJSONValueObjectPrependString(virJSONValuePtr object,
                                 const char *key,
                                 const char *value)
