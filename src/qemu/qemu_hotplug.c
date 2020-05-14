@@ -5891,6 +5891,36 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
         return -1;
     }
 
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+
+        virDomainControllerDefPtr controller;
+        int controllerIdx = virDomainControllerFind(vm->def,
+                                                    VIR_DOMAIN_CONTROLLER_TYPE_PCI,
+                                                    info->addr.pci.bus);
+        if (controllerIdx < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("cannot hot unplug %s device with PCI guest address: "
+                             VIR_PCI_DEVICE_ADDRESS_FMT
+                             " - controller not found"),
+                           virDomainDeviceTypeToString(detach.type),
+                           info->addr.pci.domain, info->addr.pci.bus,
+                           info->addr.pci.slot, info->addr.pci.function);
+            return -1;
+        }
+
+        controller = vm->def->controllers[controllerIdx];
+        if (controller->opts.pciopts.hotplug == VIR_TRISTATE_SWITCH_OFF) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("cannot hot unplug %s device with PCI guest address: "
+                             VIR_PCI_DEVICE_ADDRESS_FMT
+                             " - not allowed by controller"),
+                           virDomainDeviceTypeToString(detach.type),
+                           info->addr.pci.domain, info->addr.pci.bus,
+                           info->addr.pci.slot, info->addr.pci.function);
+            return -1;
+        }
+    }
+
     /*
      * Issue the qemu monitor command to delete the device (based on
      * its alias), and optionally wait a short time in case the
