@@ -182,6 +182,7 @@ virCPUDataNew(virArch arch);
 
 void
 virCPUDataFree(virCPUDataPtr data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUData, virCPUDataFree);
 
 bool
 virCPUGetHostIsSupported(virArch arch);

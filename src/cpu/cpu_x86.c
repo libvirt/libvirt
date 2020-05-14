@@ -495,7 +495,6 @@ virCPUx86DataFree(virCPUDataPtr data)
     virCPUx86DataClear(&data->data.x86);
     VIR_FREE(data);
 }
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUData, virCPUx86DataFree);
 
 
 static void
