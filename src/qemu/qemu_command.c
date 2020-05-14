@@ -8531,37 +8531,27 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
 
     for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
-        char *devstr;
+        g_autofree char *chardevstr = NULL;
+        g_autofree char *netdevstr = NULL;
+
+        if (!(chardevstr = qemuBuildChrChardevStr(logManager, secManager,
+                                                  cmd, cfg, def,
+                                                  channel->source,
+                                                  channel->info.alias,
+                                                  qemuCaps, cdevflags)))
+            return -1;
+
+        virCommandAddArg(cmd, "-chardev");
+        virCommandAddArg(cmd, chardevstr);
 
         switch ((virDomainChrChannelTargetType) channel->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
-            if (!(devstr = qemuBuildChrChardevStr(logManager, secManager,
-                                                  cmd, cfg, def,
-                                                  channel->source,
-                                                  channel->info.alias,
-                                                  qemuCaps, cdevflags)))
+            if (qemuBuildChrDeviceStr(&netdevstr, def, channel, qemuCaps) < 0)
                 return -1;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
-            if (qemuBuildChrDeviceStr(&devstr, def, channel, qemuCaps) < 0)
-                return -1;
-            virCommandAddArgList(cmd, "-netdev", devstr, NULL);
-            VIR_FREE(devstr);
+            virCommandAddArgList(cmd, "-netdev", netdevstr, NULL);
             break;
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-            if (!(devstr = qemuBuildChrChardevStr(logManager, secManager,
-                                                  cmd, cfg, def,
-                                                  channel->source,
-                                                  channel->info.alias,
-                                                  qemuCaps, cdevflags)))
-                return -1;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
             if (qemuBuildChrDeviceCommandLine(cmd, def, channel, qemuCaps) < 0)
                 return -1;
             break;
