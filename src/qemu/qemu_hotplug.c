@@ -54,6 +54,7 @@
 #include "virstoragefile.h"
 #include "virstring.h"
 #include "virtime.h"
+#include "virqemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1157,6 +1158,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     size_t vhostfdSize = 0;
     size_t queueSize = 0;
     g_autofree char *nicstr = NULL;
+    g_autoptr(virJSONValue) netprops = NULL;
     g_autofree char *netstr = NULL;
     int ret = -1;
     bool releaseaddr = false;
@@ -1382,10 +1384,13 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     for (i = 0; i < vhostfdSize; i++)
         vhostfdName[i] = g_strdup_printf("vhostfd-%s%zu", net->info.alias, i);
 
-    if (!(netstr = qemuBuildHostNetStr(net,
-                                       tapfdName, tapfdSize,
-                                       vhostfdName, vhostfdSize,
-                                       slirpfdName)))
+    if (!(netprops = qemuBuildHostNetStr(net,
+                                         tapfdName, tapfdSize,
+                                         vhostfdName, vhostfdSize,
+                                         slirpfdName)))
+        goto cleanup;
+
+    if (!(netstr = virQEMUBuildNetdevCommandlineFromJSON(netprops)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);

@@ -89,12 +89,12 @@ qemuBuildChrDeviceStr(char **deviceStr,
 char *
 qemuBuildChannelGuestfwdNetdevProps(virDomainChrDefPtr chr);
 
-char *qemuBuildHostNetStr(virDomainNetDefPtr net,
-                          char **tapfd,
-                          size_t tapfdSize,
-                          char **vhostfd,
-                          size_t vhostfdSize,
-                          const char *slirpfd);
+virJSONValuePtr qemuBuildHostNetStr(virDomainNetDefPtr net,
+                                    char **tapfd,
+                                    size_t tapfdSize,
+                                    char **vhostfd,
+                                    size_t vhostfdSize,
+                                    const char *slirpfd);
 
 /* Current, best practice */
 char *qemuBuildNicDevStr(virDomainDefPtr def,

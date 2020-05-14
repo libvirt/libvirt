@@ -3564,7 +3564,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
 }
 
 
-char *
+virJSONValuePtr
 qemuBuildHostNetStr(virDomainNetDefPtr net,
                     char **tapfd,
                     size_t tapfdSize,
@@ -3573,9 +3573,10 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                     const char *slirpfd)
 {
     bool is_tap = false;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainNetType netType = virDomainNetGetActualType(net);
     size_t i;
+
+    g_autoptr(virJSONValue) netprops = NULL;
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3594,54 +3595,75 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        virBufferAddLit(&buf, "tap,");
+        if (virJSONValueObjectCreate(&netprops, "s:type", "tap", NULL) < 0)
+            return NULL;
+
         /* for one tapfd 'fd=' shall be used,
          * for more than one 'fds=' is the right choice */
         if (tapfdSize == 1) {
-            virBufferAsprintf(&buf, "fd=%s,", tapfd[0]);
+            if (virJSONValueObjectAdd(netprops, "s:fd", tapfd[0], NULL) < 0)
+                return NULL;
         } else {
-            virBufferAddLit(&buf, "fds=");
-            for (i = 0; i < tapfdSize; i++) {
-                if (i)
-                    virBufferAddChar(&buf, ':');
-                virBufferAdd(&buf, tapfd[i], -1);
-            }
-            virBufferAddChar(&buf, ',');
+            g_auto(virBuffer) fdsbuf = VIR_BUFFER_INITIALIZER;
+
+            for (i = 0; i < tapfdSize; i++)
+                virBufferAsprintf(&fdsbuf, "%s:", tapfd[i]);
+
+            virBufferTrim(&fdsbuf, ":");
+
+            if (virJSONValueObjectAdd(netprops,
+                                      "s:fds", virBufferCurrentContent(&fdsbuf),
+                                      NULL) < 0)
+                return NULL;
         }
+
         is_tap = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
-        virBufferAsprintf(&buf, "socket,connect=%s:%d,",
-                          net->data.socket.address,
-                          net->data.socket.port);
+        if (virJSONValueObjectCreate(&netprops, "s:type", "socket", NULL) < 0 ||
+            virJSONValueObjectAppendStringPrintf(netprops, "connect", "%s:%d",
+                                                 net->data.socket.address,
+                                                 net->data.socket.port) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
-        virBufferAsprintf(&buf, "socket,listen=%s:%d,",
-                          NULLSTR_EMPTY(net->data.socket.address),
-                          net->data.socket.port);
+        if (virJSONValueObjectCreate(&netprops, "s:type", "socket", NULL) < 0 ||
+            virJSONValueObjectAppendStringPrintf(netprops, "listen", "%s:%d",
+                                                 NULLSTR_EMPTY(net->data.socket.address),
+                                                 net->data.socket.port) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_MCAST:
-        virBufferAsprintf(&buf, "socket,mcast=%s:%d,",
-                          net->data.socket.address,
-                          net->data.socket.port);
+        if (virJSONValueObjectCreate(&netprops, "s:type", "socket", NULL) < 0 ||
+            virJSONValueObjectAppendStringPrintf(netprops, "mcast", "%s:%d",
+                                                 net->data.socket.address,
+                                                 net->data.socket.port) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_UDP:
-        virBufferAsprintf(&buf, "socket,udp=%s:%d,localaddr=%s:%d,",
-                          net->data.socket.address,
-                          net->data.socket.port,
-                          net->data.socket.localaddr,
-                          net->data.socket.localport);
+        if (virJSONValueObjectCreate(&netprops, "s:type", "socket", NULL) < 0 ||
+            virJSONValueObjectAppendStringPrintf(netprops, "udp", "%s:%d",
+                                                 net->data.socket.address,
+                                                 net->data.socket.port) < 0 ||
+            virJSONValueObjectAppendStringPrintf(netprops, "localaddr", "%s:%d",
+                                                 net->data.socket.localaddr,
+                                                 net->data.socket.localport) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
         if (slirpfd) {
-            virBufferAsprintf(&buf, "socket,fd=%s,", slirpfd);
+            if (virJSONValueObjectCreate(&netprops, "s:type", "socket", NULL) < 0 ||
+                virJSONValueObjectAppendString(netprops, "fd", slirpfd) < 0)
+                return NULL;
         } else {
-            virBufferAddLit(&buf, "user,");
+            if (virJSONValueObjectCreate(&netprops, "s:type", "user", NULL) < 0)
+                return NULL;
+
             for (i = 0; i < net->guestIP.nips; i++) {
                 const virNetDevIPAddr *ip = net->guestIP.ips[i];
                 g_autofree char *addr = NULL;
@@ -3650,29 +3672,40 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                     return NULL;
 
                 if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
-                    virBufferAsprintf(&buf, "net=%s", addr);
+                    g_autofree char *ipv4netaddr = NULL;
+
                     if (ip->prefix)
-                        virBufferAsprintf(&buf, "/%u", ip->prefix);
-                    virBufferAddChar(&buf, ',');
+                        ipv4netaddr = g_strdup_printf("%s/%u", addr, ip->prefix);
+                    else
+                        ipv4netaddr = g_strdup(addr);
+
+                    if (virJSONValueObjectAppendString(netprops, "net", ipv4netaddr) < 0)
+                        return NULL;
                 } else if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
-                    virBufferAsprintf(&buf, "ipv6-prefix=%s,", addr);
-                    if (ip->prefix)
-                        virBufferAsprintf(&buf, "ipv6-prefixlen=%u,", ip->prefix);
+                    if (virJSONValueObjectAppendString(netprops, "ipv6-prefix", addr) < 0)
+                        return NULL;
+                    if (ip->prefix &&
+                        virJSONValueObjectAppendNumberUlong(netprops, "ipv6-prefixlen",
+                                                            ip->prefix) < 0)
+                        return NULL;
                 }
             }
         }
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        virBufferAddLit(&buf, "user,");
+        if (virJSONValueObjectCreate(&netprops, "s:type", "user", NULL) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        virBufferAsprintf(&buf, "vhost-user,chardev=char%s,",
-                          net->info.alias);
-        if (net->driver.virtio.queues > 1)
-            virBufferAsprintf(&buf, "queues=%u,",
-                              net->driver.virtio.queues);
+        if (virJSONValueObjectCreate(&netprops, "s:type", "vhost-user", NULL) < 0 ||
+            virJSONValueObjectAppendStringPrintf(netprops, "chardev", "char%s", net->info.alias) < 0)
+            return NULL;
+
+        if (net->driver.virtio.queues > 1 &&
+            virJSONValueObjectAppendNumberUlong(netprops, "queues", net->driver.virtio.queues) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
@@ -3681,31 +3714,38 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         break;
     }
 
-    virBufferAsprintf(&buf, "id=host%s,", net->info.alias);
+    if (virJSONValueObjectAppendStringPrintf(netprops, "id", "host%s", net->info.alias) < 0)
+        return NULL;
 
     if (is_tap) {
         if (vhostfdSize) {
-            virBufferAddLit(&buf, "vhost=on,");
+            if (virJSONValueObjectAppendBoolean(netprops, "vhost", true) < 0)
+                return NULL;
+
             if (vhostfdSize == 1) {
-                virBufferAsprintf(&buf, "vhostfd=%s,", vhostfd[0]);
+                if (virJSONValueObjectAdd(netprops, "s:vhostfd", vhostfd[0], NULL) < 0)
+                    return NULL;
             } else {
-                virBufferAddLit(&buf, "vhostfds=");
-                for (i = 0; i < vhostfdSize; i++) {
-                    if (i)
-                        virBufferAddChar(&buf, ':');
-                    virBufferAdd(&buf, vhostfd[i], -1);
-                }
-                virBufferAddChar(&buf, ',');
+                g_auto(virBuffer) fdsbuf = VIR_BUFFER_INITIALIZER;
+
+                for (i = 0; i < vhostfdSize; i++)
+                    virBufferAsprintf(&fdsbuf, "%s:", vhostfd[i]);
+
+                virBufferTrim(&fdsbuf, ":");
+
+                if (virJSONValueObjectAdd(netprops,
+                                          "s:vhostfds", virBufferCurrentContent(&fdsbuf),
+                                          NULL) < 0)
+                    return NULL;
             }
         }
-        if (net->tune.sndbuf_specified)
-            virBufferAsprintf(&buf, "sndbuf=%lu,", net->tune.sndbuf);
+
+        if (net->tune.sndbuf_specified &&
+            virJSONValueObjectAppendNumberUlong(netprops, "sndbuf", net->tune.sndbuf) < 0)
+            return NULL;
     }
 
-
-    virBufferTrim(&buf, ",");
-
-    return virBufferContentAndReset(&buf);
+    return g_steal_pointer(&netprops);
 }
 
 
@@ -7680,6 +7720,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     bool requireNicdev = false;
     qemuSlirpPtr slirp;
     size_t i;
+    g_autoptr(virJSONValue) hostnetprops = NULL;
 
 
     if (!bootindex)
@@ -7883,11 +7924,15 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     if (chardev)
         virCommandAddArgList(cmd, "-chardev", chardev, NULL);
 
-    if (!(host = qemuBuildHostNetStr(net,
-                                     tapfdName, tapfdSize,
-                                     vhostfdName, vhostfdSize,
-                                     slirpfdName)))
+    if (!(hostnetprops = qemuBuildHostNetStr(net,
+                                             tapfdName, tapfdSize,
+                                             vhostfdName, vhostfdSize,
+                                             slirpfdName)))
         goto cleanup;
+
+    if (!(host = virQEMUBuildNetdevCommandlineFromJSON(hostnetprops)))
+        goto cleanup;
+
     virCommandAddArgList(cmd, "-netdev", host, NULL);
 
     /* Possible combinations:
