@@ -8546,7 +8546,7 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
 
         switch ((virDomainChrChannelTargetType) channel->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
-            if (qemuBuildChrDeviceStr(&netdevstr, def, channel, qemuCaps) < 0)
+            if (!(netdevstr = qemuBuildChannelGuestfwdNetdevProps(channel)))
                 return -1;
             virCommandAddArgList(cmd, "-netdev", netdevstr, NULL);
             break;
@@ -9814,36 +9814,40 @@ qemuBuildParallelChrDeviceStr(char **deviceStr,
     return 0;
 }
 
+
+char *
+qemuBuildChannelGuestfwdNetdevProps(virDomainChrDefPtr chr)
+{
+    g_autofree char *addr = NULL;
+    int port;
+
+    if (!(addr = virSocketAddrFormat(chr->target.addr)))
+        return NULL;
+
+    port = virSocketAddrGetPort(chr->target.addr);
+
+    return g_strdup_printf("user,guestfwd=tcp:%s:%i-chardev:char%s,id=%s",
+                           addr, port, chr->info.alias, chr->info.alias);
+}
+
+
 static int
 qemuBuildChannelChrDeviceStr(char **deviceStr,
                              const virDomainDef *def,
                              virDomainChrDefPtr chr)
 {
-    int ret = -1;
-    g_autofree char *addr = NULL;
-    int port;
-
     switch ((virDomainChrChannelTargetType)chr->targetType) {
-    case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
-
-        addr = virSocketAddrFormat(chr->target.addr);
-        if (!addr)
-            return ret;
-        port = virSocketAddrGetPort(chr->target.addr);
-
-        *deviceStr = g_strdup_printf("user,guestfwd=tcp:%s:%i-chardev:char%s,id=%s",
-                                     addr, port, chr->info.alias, chr->info.alias);
-        break;
-
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
         if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(def, chr)))
             return -1;
         break;
 
+    case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
+        /* guestfwd is as a netdev handled separately */
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_NONE:
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST:
-        return ret;
+        return -1;
     }
 
     return 0;

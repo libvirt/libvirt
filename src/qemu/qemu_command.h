@@ -86,6 +86,9 @@ qemuBuildChrDeviceStr(char **deviceStr,
                       virDomainChrDefPtr chr,
                       virQEMUCapsPtr qemuCaps);
 
+char *
+qemuBuildChannelGuestfwdNetdevProps(virDomainChrDefPtr chr);
+
 char *qemuBuildHostNetStr(virDomainNetDefPtr net,
                           char **tapfd,
                           size_t tapfdSize,

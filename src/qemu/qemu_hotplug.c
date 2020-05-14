@@ -2108,6 +2108,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     virErrorPtr orig_err;
     virDomainDefPtr vmdef = vm->def;
     g_autofree char *devstr = NULL;
+    g_autofree char *netdevstr = NULL;
     virDomainChrSourceDefPtr dev = chr->source;
     g_autofree char *charAlias = NULL;
     bool chardevAttached = false;
@@ -2146,8 +2147,13 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         goto cleanup;
     teardowncgroup = true;
 
-    if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
-        goto cleanup;
+    if (guestfwd) {
+        if (!(netdevstr = qemuBuildChannelGuestfwdNetdevProps(chr)))
+            goto cleanup;
+    } else {
+        if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
+            goto cleanup;
+    }
 
     if (!(charAlias = qemuAliasChardevFromDevAlias(chr->info.alias)))
         goto cleanup;
@@ -2166,11 +2172,13 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         goto exit_monitor;
     chardevAttached = true;
 
-    if (guestfwd) {
-        if (qemuMonitorAddNetdev(priv->mon, devstr,
+    if (netdevstr) {
+        if (qemuMonitorAddNetdev(priv->mon, netdevstr,
                                  NULL, NULL, 0, NULL, NULL, 0, -1, NULL) < 0)
             goto exit_monitor;
-    } else {
+    }
+
+    if (devstr) {
         if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
             goto exit_monitor;
     }
