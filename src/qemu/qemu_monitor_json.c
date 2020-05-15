@@ -3984,13 +3984,13 @@ int qemuMonitorJSONCloseFileHandle(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
-                             const char *netdevstr)
+int
+qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
+                         const char *netdevstr)
 {
-    int ret = -1;
-    virJSONValuePtr cmd = NULL;
-    virJSONValuePtr reply = NULL;
-    virJSONValuePtr args = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) args = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("netdev_add", NULL);
     if (!cmd)
@@ -3998,49 +3998,41 @@ int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
 
     args = qemuMonitorJSONKeywordStringToJSON(netdevstr, "type");
     if (!args)
-        goto cleanup;
+        return -1;
 
     if (virJSONValueObjectAppend(cmd, "arguments", args) < 0)
-        goto cleanup;
+        return -1;
     args = NULL; /* obj owns reference to args now */
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virJSONValueFree(args);
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return 0;
 }
 
 
-int qemuMonitorJSONRemoveNetdev(qemuMonitorPtr mon,
-                                const char *alias)
+int
+qemuMonitorJSONRemoveNetdev(qemuMonitorPtr mon,
+                            const char *alias)
 {
-    int ret = -1;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("netdev_del",
-                                                     "s:id", alias,
-                                                     NULL);
-    virJSONValuePtr reply = NULL;
+    g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("netdev_del",
+                                                             "s:id", alias,
+                                                             NULL);
+    g_autoptr(virJSONValue) reply = NULL;
+
     if (!cmd)
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return 0;
 }
 
 
