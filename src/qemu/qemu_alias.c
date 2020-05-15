@@ -390,7 +390,7 @@ qemuAssignDeviceSmartcardAlias(virDomainSmartcardDefPtr smartcard,
 
 
 static int
-qemuAssingDeviceMemballoonAlias(virDomainMemballoonDefPtr memballoon,
+qemuAssignDeviceMemballoonAlias(virDomainMemballoonDefPtr memballoon,
                                 int idx)
 {
     if (memballoon->info.alias)
@@ -662,7 +662,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
     }
     if (def->memballoon &&
         def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
-        if (qemuAssingDeviceMemballoonAlias(def->memballoon, 0) < 0)
+        if (qemuAssignDeviceMemballoonAlias(def->memballoon, 0) < 0)
             return -1;
     }
     for (i = 0; i < def->nrngs; i++) {
