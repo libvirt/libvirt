@@ -3124,7 +3124,7 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-    if (!(qapiData.schema = testQEMUSchemaLoad("x86_64"))) {
+    if (!(qapiData.schema = testQEMUSchemaLoadLatest("x86_64"))) {
         VIR_TEST_VERBOSE("failed to load qapi schema");
         ret = -1;
         goto cleanup;
@@ -3394,7 +3394,7 @@ mymain(void)
 #undef DO_TEST_QUERY_JOBS
 
     virHashFree(qapiData.schema);
-    if (!(qapiData.schema = testQEMUSchemaLoad("s390x"))) {
+    if (!(qapiData.schema = testQEMUSchemaLoadLatest("s390x"))) {
         VIR_TEST_VERBOSE("failed to load qapi schema for s390x");
         ret = -1;
         goto cleanup;

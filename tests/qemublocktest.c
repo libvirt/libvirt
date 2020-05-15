@@ -1056,7 +1056,7 @@ mymain(void)
     diskxmljsondata.qemuCaps = caps_x86_64;
     imagecreatedata.qemuCaps = caps_x86_64;
 
-    if (!(qmp_schema_x86_64 = testQEMUSchemaLoad("x86_64"))) {
+    if (!(qmp_schema_x86_64 = testQEMUSchemaLoadLatest("x86_64"))) {
         ret = -1;
         goto cleanup;
     }

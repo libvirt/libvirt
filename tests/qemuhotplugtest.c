@@ -636,7 +636,7 @@ mymain(void)
     if (!(driver.domainEventState = virObjectEventStateNew()))
         return EXIT_FAILURE;
 
-    if (!(qmpschema = testQEMUSchemaLoad("x86_64"))) {
+    if (!(qmpschema = testQEMUSchemaLoadLatest("x86_64"))) {
         VIR_TEST_VERBOSE("failed to load qapi schema\n");
         return EXIT_FAILURE;
     }

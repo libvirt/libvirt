@@ -661,7 +661,7 @@ testQEMUSchemaGetLatest(const char* arch)
 
 
 virHashTablePtr
-testQEMUSchemaLoad(const char* arch)
+testQEMUSchemaLoadLatest(const char *arch)
 {
     virJSONValuePtr schema;
 
