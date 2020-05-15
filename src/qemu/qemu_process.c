@@ -307,7 +307,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon,
     processEvent->vm = virObjectRef(vm);
 
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        ignore_value(virObjectUnref(vm));
+        virObjectUnref(vm);
         qemuProcessEventFree(processEvent);
         goto cleanup;
     }
@@ -840,15 +840,13 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon G_GNUC_UNUSED,
              */
             processEvent->vm = virObjectRef(vm);
             if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-                if (!virObjectUnref(vm))
-                    vm = NULL;
+                virObjectUnref(vm);
                 qemuProcessEventFree(processEvent);
             }
         }
     }
 
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, watchdogEvent);
     virObjectEventStateQueue(driver->domainEventState, lifecycleEvent);
 
@@ -977,7 +975,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon G_GNUC_UNUSED,
         processEvent->status = status;
 
         if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-            ignore_value(virObjectUnref(vm));
+            virObjectUnref(vm);
             goto cleanup;
         }
 
@@ -1039,7 +1037,7 @@ qemuProcessHandleJobStatusChange(qemuMonitorPtr mon G_GNUC_UNUSED,
         processEvent->data = virObjectRef(job);
 
         if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-            ignore_value(virObjectUnref(vm));
+            virObjectUnref(vm);
             goto cleanup;
         }
 
@@ -1342,14 +1340,12 @@ qemuProcessHandleGuestPanic(qemuMonitorPtr mon G_GNUC_UNUSED,
     processEvent->vm = virObjectRef(vm);
 
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        if (!virObjectUnref(vm))
-            vm = NULL;
+        virObjectUnref(vm);
         qemuProcessEventFree(processEvent);
     }
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
 
     return 0;
 }
@@ -1383,7 +1379,7 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon G_GNUC_UNUSED,
     processEvent->vm = virObjectRef(vm);
 
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        ignore_value(virObjectUnref(vm));
+        virObjectUnref(vm);
         goto error;
     }
 
@@ -1554,7 +1550,7 @@ qemuProcessHandleNicRxFilterChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
     processEvent->vm = virObjectRef(vm);
 
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        ignore_value(virObjectUnref(vm));
+        virObjectUnref(vm);
         goto error;
     }
 
@@ -1593,7 +1589,7 @@ qemuProcessHandleSerialChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
     processEvent->vm = virObjectRef(vm);
 
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        ignore_value(virObjectUnref(vm));
+        virObjectUnref(vm);
         goto error;
     }
 
@@ -1873,14 +1869,12 @@ qemuProcessHandleGuestCrashloaded(qemuMonitorPtr mon G_GNUC_UNUSED,
     processEvent->vm = virObjectRef(vm);
 
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        if (!virObjectUnref(vm))
-            vm = NULL;
+        virObjectUnref(vm);
         qemuProcessEventFree(processEvent);
     }
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
 
     return 0;
 }
