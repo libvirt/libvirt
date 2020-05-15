@@ -12550,13 +12550,13 @@ int virDomainGetLaunchSecurityInfo(virDomainPtr domain,
  * Set how long to wait for a response from guest agent commands. By default,
  * agent commands block forever waiting for a response.
  *
- * @timeout must be a value from virDomainAgentCommandTimeoutValues or
+ * @timeout must be a value from virDomainAgentResponseTimeoutValues or
  * positive:
  *
- *   VIR_DOMAIN_AGENT_COMMAND_TIMEOUT_BLOCK(-2): meaning to block forever
+ *   VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK(-2): meaning to block forever
  *      waiting for a result.
- *   VIR_DOMAIN_AGENT_COMMAND_TIMEOUT_DEFAULT(-1): use default timeout value.
- *   VIR_DOMAIN_AGENT_COMMAND_TIMEOUT_NOWAIT(0): does not wait.
+ *   VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_DEFAULT(-1): use default timeout value.
+ *   VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_NOWAIT(0): does not wait.
  *   positive value: wait for @timeout seconds
  *
  * Returns 0 on success, -1 on failure
