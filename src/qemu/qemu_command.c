@@ -8577,6 +8577,7 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
     for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
         g_autofree char *chardevstr = NULL;
+        g_autoptr(virJSONValue) netdevprops = NULL;
         g_autofree char *netdevstr = NULL;
 
         if (!(chardevstr = qemuBuildChrChardevStr(logManager, secManager,
@@ -8591,8 +8592,12 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
 
         switch ((virDomainChrChannelTargetType) channel->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
-            if (!(netdevstr = qemuBuildChannelGuestfwdNetdevProps(channel)))
+            if (!(netdevprops = qemuBuildChannelGuestfwdNetdevProps(channel)))
                 return -1;
+
+            if (!(netdevstr = virQEMUBuildNetdevCommandlineFromJSON(netdevprops)))
+                return -1;
+
             virCommandAddArgList(cmd, "-netdev", netdevstr, NULL);
             break;
 
@@ -9860,19 +9865,39 @@ qemuBuildParallelChrDeviceStr(char **deviceStr,
 }
 
 
-char *
+virJSONValuePtr
 qemuBuildChannelGuestfwdNetdevProps(virDomainChrDefPtr chr)
 {
+    g_autoptr(virJSONValue) guestfwdarr = virJSONValueNewArray();
+    g_autoptr(virJSONValue) guestfwdstrobj = virJSONValueNewObject();
     g_autofree char *addr = NULL;
-    int port;
+    virJSONValuePtr ret = NULL;
 
     if (!(addr = virSocketAddrFormat(chr->target.addr)))
         return NULL;
 
-    port = virSocketAddrGetPort(chr->target.addr);
+    /* this may seem weird, but qemu indeed decided that 'guestfwd' parameter
+     * is an array of objects which have just one member named 'str' which
+     * contains the description */
+    if (virJSONValueObjectAppendStringPrintf(guestfwdstrobj, "str",
+                                             "tcp:%s:%i-chardev:char%s",
+                                             addr,
+                                             virSocketAddrGetPort(chr->target.addr),
+                                             chr->info.alias) < 0)
+        return NULL;
 
-    return g_strdup_printf("user,guestfwd=tcp:%s:%i-chardev:char%s,id=%s",
-                           addr, port, chr->info.alias, chr->info.alias);
+    if (virJSONValueArrayAppend(guestfwdarr, guestfwdstrobj) < 0)
+        return NULL;
+    guestfwdstrobj = NULL;
+
+    if (virJSONValueObjectCreate(&ret,
+                                 "s:type", "user",
+                                 "a:guestfwd", &guestfwdarr,
+                                 "s:id", chr->info.alias,
+                                 NULL) < 0)
+        return NULL;
+
+    return ret;
 }
 
 

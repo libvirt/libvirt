@@ -86,7 +86,7 @@ qemuBuildChrDeviceStr(char **deviceStr,
                       virDomainChrDefPtr chr,
                       virQEMUCapsPtr qemuCaps);
 
-char *
+virJSONValuePtr
 qemuBuildChannelGuestfwdNetdevProps(virDomainChrDefPtr chr);
 
 virJSONValuePtr qemuBuildHostNetStr(virDomainNetDefPtr net,

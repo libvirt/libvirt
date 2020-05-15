@@ -2113,6 +2113,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     virErrorPtr orig_err;
     virDomainDefPtr vmdef = vm->def;
     g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) netdevprops = NULL;
     g_autofree char *netdevstr = NULL;
     virDomainChrSourceDefPtr dev = chr->source;
     g_autofree char *charAlias = NULL;
@@ -2153,7 +2154,10 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     teardowncgroup = true;
 
     if (guestfwd) {
-        if (!(netdevstr = qemuBuildChannelGuestfwdNetdevProps(chr)))
+        if (!(netdevprops = qemuBuildChannelGuestfwdNetdevProps(chr)))
+            goto cleanup;
+
+        if (!(netdevstr = virQEMUBuildNetdevCommandlineFromJSON(netdevprops)))
             goto cleanup;
     } else {
         if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
