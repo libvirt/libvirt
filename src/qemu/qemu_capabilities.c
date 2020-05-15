@@ -669,6 +669,7 @@ struct _virQEMUCaps {
     unsigned int kvmVersion;
     unsigned int libvirtVersion;
     unsigned int microcodeVersion;
+    char *hostCPUSignature;
     char *package;
     char *kernelVersion;
 
@@ -1908,6 +1909,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     ret->version = qemuCaps->version;
     ret->kvmVersion = qemuCaps->kvmVersion;
     ret->microcodeVersion = qemuCaps->microcodeVersion;
+    ret->hostCPUSignature = g_strdup(qemuCaps->hostCPUSignature);
 
     ret->package = g_strdup(qemuCaps->package);
     ret->kernelVersion = g_strdup(qemuCaps->kernelVersion);
@@ -1964,6 +1966,7 @@ void virQEMUCapsDispose(void *obj)
     VIR_FREE(qemuCaps->package);
     VIR_FREE(qemuCaps->kernelVersion);
     VIR_FREE(qemuCaps->binary);
+    VIR_FREE(qemuCaps->hostCPUSignature);
 
     VIR_FREE(qemuCaps->gicCapabilities);
 
@@ -4093,6 +4096,7 @@ struct _virQEMUCapsCachePriv {
     virArch hostArch;
     unsigned int microcodeVersion;
     char *kernelVersion;
+    char *hostCPUSignature;
 
     /* cache whether /dev/kvm is usable as runUid:runGuid */
     virTristateBool kvmUsable;
@@ -4109,6 +4113,7 @@ virQEMUCapsCachePrivFree(void *privData)
 
     VIR_FREE(priv->libDir);
     VIR_FREE(priv->kernelVersion);
+    VIR_FREE(priv->hostCPUSignature);
     VIR_FREE(priv);
 }
 
@@ -4285,6 +4290,8 @@ virQEMUCapsLoadCache(virArch hostArch,
                        _("missing microcode version in QEMU capabilities cache"));
         goto cleanup;
     }
+
+    qemuCaps->hostCPUSignature = virXPathString("string(./hostCPUSignature)", ctxt);
 
     if (virXPathBoolean("boolean(./package)", ctxt) > 0) {
         qemuCaps->package = virXPathString("string(./package)", ctxt);
@@ -4587,6 +4594,8 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
 
     virBufferAsprintf(&buf, "<microcodeVersion>%u</microcodeVersion>\n",
                       qemuCaps->microcodeVersion);
+    virBufferEscapeString(&buf, "<hostCPUSignature>%s</hostCPUSignature>\n",
+                          qemuCaps->hostCPUSignature);
 
     if (qemuCaps->package)
         virBufferAsprintf(&buf, "<package>%s</package>\n",
@@ -4814,6 +4823,15 @@ virQEMUCapsIsValid(void *data,
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
+        if (STRNEQ_NULLABLE(priv->hostCPUSignature, qemuCaps->hostCPUSignature)) {
+            VIR_DEBUG("Outdated capabilities for '%s': host CPU changed "
+                      "('%s' vs '%s')",
+                      qemuCaps->binary,
+                      priv->hostCPUSignature,
+                      qemuCaps->hostCPUSignature);
+            return false;
+        }
+
         if (priv->microcodeVersion != qemuCaps->microcodeVersion) {
             VIR_DEBUG("Outdated capabilities for '%s': microcode version "
                       "changed (%u vs %u)",
@@ -5286,6 +5304,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *libDir,
                                 uid_t runUid,
                                 gid_t runGid,
+                                const char *hostCPUSignature,
                                 unsigned int microcodeVersion,
                                 const char *kernelVersion)
 {
@@ -5324,6 +5343,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_QEMU);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
+        qemuCaps->hostCPUSignature = g_strdup(hostCPUSignature);
         qemuCaps->microcodeVersion = microcodeVersion;
 
         qemuCaps->kernelVersion = g_strdup(kernelVersion);
@@ -5349,6 +5369,7 @@ virQEMUCapsNewData(const char *binary,
                                            priv->libDir,
                                            priv->runUid,
                                            priv->runGid,
+                                           priv->hostCPUSignature,
                                            virHostCPUGetMicrocodeVersion(),
                                            priv->kernelVersion);
 }
@@ -5447,6 +5468,9 @@ virQEMUCapsCacheNew(const char *libDir,
     priv->libDir = g_strdup(libDir);
 
     priv->hostArch = virArchFromHost();
+
+    if (virHostCPUGetSignature(&priv->hostCPUSignature) < 0)
+        goto error;
 
     priv->runUid = runUid;
     priv->runGid = runGid;

@@ -33,6 +33,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *libDir,
                                 uid_t runUid,
                                 gid_t runGid,
+                                const char *hostCPUSignature,
                                 unsigned int microcodeVersion,
                                 const char *kernelVersion);
 
