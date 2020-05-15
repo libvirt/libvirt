@@ -179,14 +179,14 @@
             <a href="https://libvirt.org/sources/ruby/">libvirt</a>
           </td>
           <td>
-            <a href="https://gitlab.com/libvirt/ruby-libvirt">gitlab</a>
+            <a href="https://gitlab.com/libvirt/libvirt-ruby">gitlab</a>
           </td>
           <td>
-            <a href="https://gitlab.com/libvirt/ruby-libvirt/-/issues">issues</a>
+            <a href="https://gitlab.com/libvirt/libvirt-ruby/-/issues">issues</a>
           </td>
           <td class="gitmirror">
-            <a href="https://libvirt.org/git/?p=ruby-libvirt.git;a=summary">libvirt</a>
-            <a href="https://github.com/libvirt/ruby-libvirt">github</a>
+            <a href="https://libvirt.org/git/?p=libvirt-ruby.git;a=summary">libvirt</a>
+            <a href="https://github.com/libvirt/libvirt-ruby">github</a>
           </td>
           <td></td>
         </tr>

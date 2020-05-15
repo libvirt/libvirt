@@ -76,15 +76,15 @@ Language bindings
           :target: https://gitlab.com/libvirt/libvirt-python/pipelines
           :alt: libvirt-python pipeline status
 
+   * - libvirt-ruby
+     - .. image:: https://gitlab.com/libvirt/libvirt-ruby/badges/master/pipeline.svg
+          :target: https://gitlab.com/libvirt/libvirt-ruby/pipelines
+          :alt: libvirt-ruby pipeline status
+
    * - libvirt-rust
      - .. image:: https://gitlab.com/libvirt/libvirt-rust/badges/master/pipeline.svg
           :target: https://gitlab.com/libvirt/libvirt-rust/pipelines
           :alt: libvirt-rust pipeline status
-
-   * - ruby-libvirt
-     - .. image:: https://gitlab.com/libvirt/ruby-libvirt/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/ruby-libvirt/pipelines
-          :alt: ruby-libvirt pipeline status
 
 
 Object mappings
