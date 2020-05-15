@@ -325,7 +325,6 @@ virCPUarmModelParse(xmlXPathContextPtr ctxt,
 {
     virCPUarmMapPtr map = data;
     g_autoptr(virCPUarmModel) model = NULL;
-    g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *vendor = NULL;
 
     model = g_new0(virCPUarmModel, 1);
