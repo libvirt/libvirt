@@ -109,6 +109,43 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
 }
 
 
+/**
+ * This array convertor is for quirky cases where the QMP schema mandates an
+ * array of objects with only one attribute 'str' which needs to be formatted as
+ * repeated key-value pairs without the 'str' being printed:
+ *
+ * 'guestfwd': [
+ *                  { "str": "tcp:10.0.2.1:4600-chardev:charchannel0" },
+ *                  { "str": "...."},
+ *             ]
+ *
+ *  guestfwd=tcp:10.0.2.1:4600-chardev:charchannel0,guestfwd=...
+ */
+static int
+virQEMUBuildCommandLineJSONArrayObjectsStr(const char *key,
+                                           virJSONValuePtr array,
+                                           virBufferPtr buf,
+                                           const char *skipKey G_GNUC_UNUSED,
+                                           bool onOff G_GNUC_UNUSED)
+{
+    g_auto(virBuffer) tmp = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    for (i = 0; i < virJSONValueArraySize(array); i++) {
+        virJSONValuePtr member = virJSONValueArrayGet(array, i);
+        const char *str = virJSONValueObjectGetString(member, "str");
+
+        if (!str)
+            return -1;
+
+        virBufferAsprintf(&tmp, "%s=%s,", key, str);
+    }
+
+    virBufferAddBuffer(buf, &tmp);
+    return 0;
+}
+
+
 /* internal iterator to handle nested object formatting */
 static int
 virQEMUBuildCommandLineJSONIterate(const char *key,
@@ -267,7 +304,8 @@ virQEMUBuildNetdevCommandlineFromJSON(virJSONValuePtr props)
 
     virBufferAsprintf(&buf, "%s,", type);
 
-    if (virQEMUBuildCommandLineJSON(props, &buf, "type", true, NULL) < 0)
+    if (virQEMUBuildCommandLineJSON(props, &buf, "type", true,
+                                    virQEMUBuildCommandLineJSONArrayObjectsStr) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
