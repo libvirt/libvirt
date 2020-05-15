@@ -451,7 +451,7 @@ virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
  * If @dst is NULL then metadata is removed from @src and not
  * stored anywhere.
  *
- * If @pid is not -1 enther the @pid mount namespace (usually
+ * If @pid is not -1 enter the @pid mount namespace (usually
  * @pid refers to a domain) and perform the move from there. If
  * @pid is -1 then the move is performed from the caller's
  * namespace.
