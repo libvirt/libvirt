@@ -101,6 +101,7 @@ virCommandPtr qemuProcessCreatePretendCmd(virQEMUDriverPtr driver,
                                           const char *migrateURI,
                                           bool enableFips,
                                           bool standalone,
+                                          bool jsonPropsValidation,
                                           unsigned int flags);
 
 int qemuProcessInit(virQEMUDriverPtr driver,

@@ -43,6 +43,10 @@
 VIR_ENUM_DECL(qemuVideo);
 VIR_ENUM_DECL(qemuSoundCodec);
 
+typedef enum {
+    QEMU_BUILD_COMMANDLINE_VALIDATE_KEEP_JSON = 1 << 0,
+} qemuBuildCommandLineFlags;
+
 virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    virLogManagerPtr logManager,
                                    virSecurityManagerPtr secManager,
@@ -53,7 +57,8 @@ virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    bool standalone,
                                    bool enableFips,
                                    size_t *nnicindexes,
-                                   int **nicindexes);
+                                   int **nicindexes,
+                                   unsigned int flags);
 
 /* Generate the object properties for pr-manager */
 virJSONValuePtr qemuBuildPRManagerInfoProps(virStorageSourcePtr src);
