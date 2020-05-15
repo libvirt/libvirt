@@ -210,7 +210,7 @@ int qemuMonitorJSONCloseFileHandle(qemuMonitorPtr mon,
                                    const char *fdname);
 
 int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
-                             const char *netdevstr);
+                             virJSONValuePtr *props);
 
 int qemuMonitorJSONRemoveNetdev(qemuMonitorPtr mon,
                                 const char *alias);

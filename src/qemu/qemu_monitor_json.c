@@ -3986,23 +3986,14 @@ int qemuMonitorJSONCloseFileHandle(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
-                         const char *netdevstr)
+                         virJSONValuePtr *props)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
-    g_autoptr(virJSONValue) args = NULL;
+    virJSONValuePtr pr = g_steal_pointer(props);
 
-    cmd = qemuMonitorJSONMakeCommand("netdev_add", NULL);
-    if (!cmd)
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("netdev_add", pr)))
         return -1;
-
-    args = qemuMonitorJSONKeywordStringToJSON(netdevstr, "type");
-    if (!args)
-        return -1;
-
-    if (virJSONValueObjectAppend(cmd, "arguments", args) < 0)
-        return -1;
-    args = NULL; /* obj owns reference to args now */
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;

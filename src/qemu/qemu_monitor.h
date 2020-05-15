@@ -881,7 +881,7 @@ int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
                                const char *fdname);
 
 int qemuMonitorAddNetdev(qemuMonitorPtr mon,
-                         const char *netdevstr,
+                         virJSONValuePtr *props,
                          int *tapfd, char **tapfdName, int tapfdSize,
                          int *vhostfd, char **vhostfdName, int vhostfdSize,
                          int slirpfd, char *slirpfdName);

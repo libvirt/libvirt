@@ -1159,7 +1159,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     size_t queueSize = 0;
     g_autofree char *nicstr = NULL;
     g_autoptr(virJSONValue) netprops = NULL;
-    g_autofree char *netstr = NULL;
     int ret = -1;
     bool releaseaddr = false;
     bool iface_connected = false;
@@ -1390,9 +1389,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                                          slirpfdName)))
         goto cleanup;
 
-    if (!(netstr = virQEMUBuildNetdevCommandlineFromJSON(netprops)))
-        goto cleanup;
-
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
@@ -1404,7 +1400,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         charDevPlugged = true;
     }
 
-    if (qemuMonitorAddNetdev(priv->mon, netstr,
+    if (qemuMonitorAddNetdev(priv->mon, &netprops,
                              tapfd, tapfdName, tapfdSize,
                              vhostfd, vhostfdName, vhostfdSize,
                              slirpfd, slirpfdName) < 0) {
@@ -2114,7 +2110,6 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     virDomainDefPtr vmdef = vm->def;
     g_autofree char *devstr = NULL;
     g_autoptr(virJSONValue) netdevprops = NULL;
-    g_autofree char *netdevstr = NULL;
     virDomainChrSourceDefPtr dev = chr->source;
     g_autofree char *charAlias = NULL;
     bool chardevAttached = false;
@@ -2156,9 +2151,6 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     if (guestfwd) {
         if (!(netdevprops = qemuBuildChannelGuestfwdNetdevProps(chr)))
             goto cleanup;
-
-        if (!(netdevstr = virQEMUBuildNetdevCommandlineFromJSON(netdevprops)))
-            goto cleanup;
     } else {
         if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
             goto cleanup;
@@ -2181,8 +2173,8 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         goto exit_monitor;
     chardevAttached = true;
 
-    if (netdevstr) {
-        if (qemuMonitorAddNetdev(priv->mon, netdevstr,
+    if (netdevprops) {
+        if (qemuMonitorAddNetdev(priv->mon, &netdevprops,
                                  NULL, NULL, 0, NULL, NULL, 0, -1, NULL) < 0)
             goto exit_monitor;
     }
