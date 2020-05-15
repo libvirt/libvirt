@@ -331,17 +331,14 @@ virObjectRWLockableDispose(void *anyobj)
  * it hits zero, runs the "dispose" callbacks associated
  * with the object class and its parents before freeing
  * @anyobj.
- *
- * Returns true if the remaining reference count is
- * non-zero, false if the object was disposed of
  */
-bool
+void
 virObjectUnref(void *anyobj)
 {
     virObjectPtr obj = anyobj;
 
     if (VIR_OBJECT_NOTVALID(obj))
-        return false;
+        return;
 
     bool lastRef = !!g_atomic_int_dec_and_test(&obj->u.s.refs);
     PROBE(OBJECT_UNREF, "obj=%p", obj);
@@ -360,8 +357,6 @@ virObjectUnref(void *anyobj)
         obj->klass = (void*)0xDEADBEEF;
         VIR_FREE(obj);
     }
-
-    return !lastRef;
 }
 
 

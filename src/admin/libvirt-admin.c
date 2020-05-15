@@ -295,7 +295,9 @@ virAdmConnectClose(virAdmConnectPtr conn)
 
     virCheckAdmConnectReturn(conn, -1);
 
-    if (!virObjectUnref(conn))
+    virAdmConnectWatchDispose();
+    virObjectUnref(conn);
+    if (virAdmConnectWasDisposed())
         return 0;
     return 1;
 }

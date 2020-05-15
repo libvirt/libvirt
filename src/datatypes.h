@@ -843,6 +843,12 @@ virAdmClientPtr virAdmGetClient(virAdmServerPtr srv,
                                 unsigned long long timestamp,
                                 unsigned int transport);
 
+/* Thread local to watch if an ObjectUnref causes a Dispoe */
+void virConnectWatchDispose(void);
+bool virConnectWasDisposed(void);
+void virAdmConnectWatchDispose(void);
+bool virAdmConnectWasDisposed(void);
+
 virConnectCloseCallbackDataPtr virNewConnectCloseCallbackData(void);
 void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr close,
                                          virConnectPtr conn,

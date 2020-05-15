@@ -148,12 +148,7 @@ netcfStateCleanup(void)
     if (!driver)
         return -1;
 
-    if (virObjectUnref(driver)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Attempt to close netcf state driver "
-                         "with open connections"));
-        return -1;
-    }
+    virObjectUnref(driver);
     driver = NULL;
     return 0;
 }

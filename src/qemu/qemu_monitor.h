@@ -387,6 +387,9 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                void *opaque)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
+void qemuMonitorWatchDispose(void);
+bool qemuMonitorWasDisposed(void);
+
 void qemuMonitorRegister(qemuMonitorPtr mon)
     ATTRIBUTE_NONNULL(1);
 void qemuMonitorUnregister(qemuMonitorPtr mon)

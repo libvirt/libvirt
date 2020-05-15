@@ -112,6 +112,7 @@ struct virFDStreamData {
 };
 
 static virClassPtr virFDStreamDataClass;
+static __thread bool virFDStreamDataDisposed;
 
 static void virFDStreamMsgQueueFree(virFDStreamMsgPtr *queue);
 
@@ -121,6 +122,7 @@ virFDStreamDataDispose(void *obj)
     virFDStreamDataPtr fdst = obj;
 
     VIR_DEBUG("obj=%p", fdst);
+    virFDStreamDataDisposed = true;
     virFreeError(fdst->threadErr);
     virFDStreamMsgQueueFree(&fdst->msg);
 }
@@ -631,7 +633,9 @@ virFDStreamThread(void *opaque)
  cleanup:
     fdst->threadQuit = true;
     virObjectUnlock(fdst);
-    if (!virObjectUnref(fdst))
+    virFDStreamDataDisposed = false;
+    virObjectUnref(fdst);
+    if (virFDStreamDataDisposed)
         st->privateData = NULL;
     VIR_FORCE_CLOSE(fdin);
     VIR_FORCE_CLOSE(fdout);

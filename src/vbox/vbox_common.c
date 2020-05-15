@@ -61,6 +61,7 @@ static virClassPtr vboxDriverClass;
 static virMutex vbox_driver_lock = VIR_MUTEX_INITIALIZER;
 static vboxDriverPtr vbox_driver;
 static vboxDriverPtr vboxDriverObjNew(void);
+static __thread bool vboxDriverDisposed;
 
 static int
 vboxDomainDevicesDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
@@ -124,6 +125,7 @@ vboxDriverDispose(void *obj)
 {
     vboxDriverPtr driver = obj;
 
+    vboxDriverDisposed = true;
     virObjectUnref(driver->caps);
     virObjectUnref(driver->xmlopt);
 }
@@ -250,7 +252,9 @@ vboxGetDriverConnection(void)
     if (vboxSdkInitialize() < 0 || vboxExtractVersion() < 0) {
         gVBoxAPI.UPFN.Uninitialize(vbox_driver);
         /* make sure to clear the pointer when last reference was released */
-        if (!virObjectUnref(vbox_driver))
+        vboxDriverDisposed = false;
+        virObjectUnref(vbox_driver);
+        if (vboxDriverDisposed)
             vbox_driver = NULL;
 
         virMutexUnlock(&vbox_driver_lock);
@@ -277,7 +281,9 @@ vboxDestroyDriverConnection(void)
 
     vboxSdkUninitialize();
 
-    if (!virObjectUnref(vbox_driver))
+    vboxDriverDisposed = false;
+    virObjectUnref(vbox_driver);
+    if (vboxDriverDisposed)
         vbox_driver = NULL;
 
  cleanup:

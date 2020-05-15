@@ -128,6 +128,7 @@ static testDriverPtr defaultPrivconn;
 static virMutex defaultLock = VIR_MUTEX_INITIALIZER;
 
 static virClassPtr testDriverClass;
+static __thread bool testDriverDisposed;
 static void testDriverDispose(void *obj);
 static int testDriverOnceInit(void)
 {
@@ -171,6 +172,8 @@ testDriverDispose(void *obj)
         g_free(driver->auths[i].password);
     }
     g_free(driver->auths);
+
+    testDriverDisposed = true;
 }
 
 typedef struct _testDomainNamespaceDef testDomainNamespaceDef;
@@ -1446,8 +1449,9 @@ static void
 testDriverCloseInternal(testDriverPtr driver)
 {
     virMutexLock(&defaultLock);
-    bool disposed = !virObjectUnref(driver);
-    if (disposed && driver == defaultPrivconn)
+    testDriverDisposed = false;
+    virObjectUnref(driver);
+    if (testDriverDisposed && driver == defaultPrivconn)
         defaultPrivconn = NULL;
     virMutexUnlock(&defaultLock);
 }

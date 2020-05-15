@@ -1277,7 +1277,9 @@ virConnectClose(virConnectPtr conn)
 
     virCheckConnectReturn(conn, -1);
 
-    if (!virObjectUnref(conn))
+    virConnectWatchDispose();
+    virObjectUnref(conn);
+    if (virConnectWasDisposed())
         return 0;
     return 1;
 }

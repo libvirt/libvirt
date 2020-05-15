@@ -106,7 +106,7 @@ void *
 virObjectNew(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);
 
-bool
+void
 virObjectUnref(void *obj);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virObject, virObjectUnref);

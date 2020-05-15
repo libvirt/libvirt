@@ -76,6 +76,9 @@ virClassPtr virAdmClientClass;
 static void virAdmServerDispose(void *obj);
 static void virAdmClientDispose(void *obj);
 
+static __thread bool connectDisposed;
+static __thread bool admConnectDisposed;
+
 static int
 virDataTypesOnceInit(void)
 {
@@ -133,6 +136,27 @@ virGetConnect(void)
     return virObjectLockableNew(virConnectClass);
 }
 
+
+void virConnectWatchDispose(void)
+{
+    connectDisposed = false;
+}
+
+bool virConnectWasDisposed(void)
+{
+    return connectDisposed;
+}
+
+void virAdmConnectWatchDispose(void)
+{
+    admConnectDisposed = false;
+}
+
+bool virAdmConnectWasDisposed(void)
+{
+    return admConnectDisposed;
+}
+
 /**
  * virConnectDispose:
  * @obj: the hypervisor connection to release
@@ -145,6 +169,7 @@ virConnectDispose(void *obj)
 {
     virConnectPtr conn = obj;
 
+    connectDisposed = true;
     if (conn->driver)
         conn->driver->connectClose(conn);
 
@@ -1092,6 +1117,7 @@ virAdmConnectDispose(void *obj)
 {
     virAdmConnectPtr conn = obj;
 
+    admConnectDisposed = true;
     if (conn->privateDataFreeFunc)
         conn->privateDataFreeFunc(conn);
 

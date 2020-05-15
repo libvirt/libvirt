@@ -6691,8 +6691,10 @@ qemuDomainObjExitMonitorInternal(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = obj->privateData;
     bool hasRefs;
 
-    hasRefs = virObjectUnref(priv->mon);
+    qemuMonitorWatchDispose();
+    virObjectUnref(priv->mon);
 
+    hasRefs = !qemuMonitorWasDisposed();
     if (hasRefs)
         virObjectUnlock(priv->mon);
 

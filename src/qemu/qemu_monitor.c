@@ -146,6 +146,7 @@ struct _qemuMonitor {
     QEMU_CHECK_MONITOR_FULL(mon, goto label)
 
 static virClassPtr qemuMonitorClass;
+static __thread bool qemuMonitorDisposed;
 static void qemuMonitorDispose(void *obj);
 
 static int qemuMonitorOnceInit(void)
@@ -222,6 +223,7 @@ qemuMonitorDispose(void *obj)
     qemuMonitorPtr mon = obj;
 
     VIR_DEBUG("mon=%p", mon);
+    qemuMonitorDisposed = true;
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm, mon->callbackOpaque);
     virObjectUnref(mon->vm);
@@ -796,6 +798,18 @@ qemuMonitorOpen(virDomainObjPtr vm,
         VIR_FORCE_CLOSE(fd);
     virObjectUnref(vm);
     return ret;
+}
+
+
+void qemuMonitorWatchDispose(void)
+{
+    qemuMonitorDisposed = false;
+}
+
+
+bool qemuMonitorWasDisposed(void)
+{
+    return qemuMonitorDisposed;
 }
 
 
