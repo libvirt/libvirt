@@ -570,7 +570,7 @@ qemuxml2argvtest_SOURCES = \
 	testutils.c testutils.h \
 	virfilewrapper.c virfilewrapper.h \
 	$(NULL)
-qemuxml2argvtest_LDADD = libqemutestdriver.la \
+qemuxml2argvtest_LDADD = libqemutestdriver.la libqemumonitortestutils.la \
 	$(LDADDS) $(LIBXML_LIBS)
 
 libqemuxml2argvmock_la_SOURCES = \

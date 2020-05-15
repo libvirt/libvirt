@@ -18,6 +18,7 @@
 # include "qemu/qemu_migration.h"
 # include "qemu/qemu_process.h"
 # include "qemu/qemu_slirp.h"
+# include "qemu/qemu_qapi.h"
 # include "datatypes.h"
 # include "conf/storage_conf.h"
 # include "cpu/cpu_map.h"
@@ -26,6 +27,8 @@
 # include "virmock.h"
 # include "virfilewrapper.h"
 # include "configmake.h"
+# include "testutilsqemuschema.h"
+# include "qemu/qemu_monitor_json.h"
 
 # define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 # include "qemu/qemu_capspriv.h"
@@ -478,6 +481,76 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
 
 
 static int
+testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
+                                   virDomainObjPtr vm,
+                                   const char *migrateURI,
+                                   struct testQemuInfo *info,
+                                   unsigned int flags)
+{
+    VIR_AUTOSTRINGLIST args = NULL;
+    size_t nargs = 0;
+    size_t i;
+    g_autoptr(virHashTable) schema = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+
+    if (info->schemafile)
+        schema = testQEMUSchemaLoad(info->schemafile);
+
+    /* comment out with line comment to enable schema checking for non _CAPS tests
+    if (!schema)
+        schema = testQEMUSchemaLoadLatest(virArchToString(info->arch));
+    // */
+
+    if (!schema)
+        return 0;
+
+    if (!(cmd = testCompareXMLToArgvCreateArgs(drv, vm, migrateURI, info, flags,
+                                               true)))
+        return -1;
+
+    if (virCommandGetArgList(cmd, &args, &nargs) < 0)
+        return -1;
+
+    for (i = 0; i < nargs; i++) {
+        g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+        g_autoptr(virJSONValue) jsonargs = NULL;
+
+        if (STREQ(args[i], "-blockdev")) {
+            if (!(jsonargs = virJSONValueFromString(args[i + 1])))
+                return -1;
+
+            if (testQEMUSchemaValidateCommand("blockdev-add", jsonargs,
+                                              schema, false, false, &debug) < 0) {
+                VIR_TEST_VERBOSE("failed to validate -blockdev '%s' against QAPI schema: %s",
+                                 args[i + 1], virBufferCurrentContent(&debug));
+                return -1;
+            }
+
+            i++;
+        } else if (STREQ(args[i], "-netdev")) {
+            if (!(jsonargs = virJSONValueFromString(args[i + 1])))
+                return -1;
+
+            /* skip the validation for pre-QAPIfication cases */
+            if (virQEMUQAPISchemaPathExists("netdev_add/arg-type/type/!string", schema))
+                continue;
+
+            if (testQEMUSchemaValidateCommand("netdev_add", jsonargs,
+                                              schema, false, false, &debug) < 0) {
+                VIR_TEST_VERBOSE("failed to validate -netdev '%s' against QAPI schema: %s",
+                                 args[i + 1], virBufferCurrentContent(&debug));
+                return -1;
+            }
+
+            i++;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 testCompareXMLToArgv(const void *data)
 {
     struct testQemuInfo *info = (void *) data;
@@ -577,6 +650,9 @@ testCompareXMLToArgv(const void *data)
         VIR_TEST_DEBUG("passed instead of expected failure");
         goto cleanup;
     }
+
+    if (testCompareXMLToArgvValidateSchema(&driver, vm, migrateURI, info, flags) < 0)
+        goto cleanup;
 
     if (!(actualargv = virCommandToString(cmd, false)))
         goto cleanup;

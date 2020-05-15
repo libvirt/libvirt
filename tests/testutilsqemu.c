@@ -770,6 +770,10 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
         if (stripmachinealiases)
             virQEMUCapsStripMachineAliases(qemuCaps);
         info->flags |= FLAG_REAL_CAPS;
+
+        /* provide path to the replies file for schema testing */
+        capsfile[strlen(capsfile) - 3] = '\0';
+        info->schemafile = g_strdup_printf("%sreplies", capsfile);
     }
 
     if (!qemuCaps) {
@@ -796,5 +800,6 @@ testQemuInfoClear(struct testQemuInfo *info)
 {
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);
+    VIR_FREE(info->schemafile);
     virObjectUnref(info->qemuCaps);
 }
