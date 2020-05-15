@@ -607,37 +607,23 @@ testQEMUSchemaValidateCommand(const char *command,
 }
 
 
-/**
- * testQEMUSchemaGetLatest:
- *
- * Returns the schema data as the qemu monitor would reply from the latest
- * replies file used for qemucapabilitiestest for the x86_64 architecture.
- */
-virJSONValuePtr
-testQEMUSchemaGetLatest(const char* arch)
+static virJSONValuePtr
+testQEMUSchemaLoadReplies(const char *filename)
 {
-    g_autofree char *capsLatestFile = NULL;
-    g_autofree char *capsLatest = NULL;
+    g_autofree char *caps = NULL;
     char *schemaReply;
     char *end;
     g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr schema = NULL;
 
-    if (!(capsLatestFile = testQemuGetLatestCapsForArch(arch, "replies"))) {
-        VIR_TEST_VERBOSE("failed to find latest caps replies");
-        return NULL;
-    }
-
-    VIR_TEST_DEBUG("replies file: '%s'", capsLatestFile);
-
-    if (virTestLoadFile(capsLatestFile, &capsLatest) < 0)
+    if (virTestLoadFile(filename, &caps) < 0)
         return NULL;
 
-    if (!(schemaReply = strstr(capsLatest, "\"execute\": \"query-qmp-schema\"")) ||
+    if (!(schemaReply = strstr(caps, "\"execute\": \"query-qmp-schema\"")) ||
         !(schemaReply = strstr(schemaReply, "\n\n")) ||
         !(end = strstr(schemaReply + 2, "\n\n"))) {
         VIR_TEST_VERBOSE("failed to find reply to 'query-qmp-schema' in '%s'",
-                         capsLatestFile);
+                         filename);
         return NULL;
     }
 
@@ -646,17 +632,39 @@ testQEMUSchemaGetLatest(const char* arch)
 
     if (!(reply = virJSONValueFromString(schemaReply))) {
         VIR_TEST_VERBOSE("failed to parse 'query-qmp-schema' reply from '%s'",
-                         capsLatestFile);
+                         filename);
         return NULL;
     }
 
     if (!(schema = virJSONValueObjectStealArray(reply, "return"))) {
         VIR_TEST_VERBOSE("missing qapi schema data in reply in '%s'",
-                         capsLatestFile);
+                         filename);
         return NULL;
     }
 
     return schema;
+}
+
+
+/**
+ * testQEMUSchemaGetLatest:
+ *
+ * Returns the schema data as the qemu monitor would reply from the latest
+ * replies file used for qemucapabilitiestest for the x86_64 architecture.
+ */
+virJSONValuePtr
+testQEMUSchemaGetLatest(const char *arch)
+{
+    g_autofree char *capsLatestFile = NULL;
+
+    if (!(capsLatestFile = testQemuGetLatestCapsForArch(arch, "replies"))) {
+        VIR_TEST_VERBOSE("failed to find latest caps replies");
+        return NULL;
+    }
+
+    VIR_TEST_DEBUG("replies file: '%s'", capsLatestFile);
+
+    return testQEMUSchemaLoadReplies(capsLatestFile);
 }
 
 
@@ -666,6 +674,18 @@ testQEMUSchemaLoadLatest(const char *arch)
     virJSONValuePtr schema;
 
     if (!(schema = testQEMUSchemaGetLatest(arch)))
+        return NULL;
+
+    return virQEMUQAPISchemaConvert(schema);
+}
+
+
+virHashTablePtr
+testQEMUSchemaLoad(const char *filename)
+{
+    virJSONValuePtr schema;
+
+    if (!(schema = testQEMUSchemaLoadReplies(filename)))
         return NULL;
 
     return virQEMUQAPISchemaConvert(schema);

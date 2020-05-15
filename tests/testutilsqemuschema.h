@@ -42,3 +42,6 @@ testQEMUSchemaGetLatest(const char* arch);
 
 virHashTablePtr
 testQEMUSchemaLoadLatest(const char *arch);
+
+virHashTablePtr
+testQEMUSchemaLoad(const char *filename);
