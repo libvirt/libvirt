@@ -14,7 +14,7 @@ POTFILE := $(DOMAIN).pot
 POFILES := $(LANGS:%=%.po)
 GMOFILES := $(LANGS:%=%.gmo)
 
-CLEANFILES = $(POTFILE) $(GMOFILES) POTFILES
+CLEANFILES = $(GMOFILES) POTFILES
 
 EXTRA_DIST = \
 	LINGUAS \
@@ -68,10 +68,10 @@ pull-po: $(POTFILE)
 	$(MAKE) update-po
 	$(MAKE) update-gmo
 
-$(POTFILE): POTFILES $(POTFILE_DEPS)
+$(POTFILE): POTFILES
 	$(XGETTEXT) -o $@-t $(XGETTEXT_ARGS) \
 	  --files-from=$(abs_builddir)/POTFILES
-	$(SED) $(SED_PO_FIXUP_ARGS) < $@-t > $@
+	$(SED) $(SED_PO_FIXUP_ARGS) < $@-t > $(srcdir)/$@
 	rm -f $@-t
 
 %.gmo: %.po
@@ -79,7 +79,7 @@ $(POTFILE): POTFILES $(POTFILE_DEPS)
 	$(MSGFMT) -c -o $@-t $<
 	mv $@-t $@
 
-.PRECIOUS: $(POTFILE)
+.PHONY: $(POTFILE)
 
 endif HAVE_GNU_GETTEXT_TOOLS
 
