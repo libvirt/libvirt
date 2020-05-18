@@ -977,7 +977,7 @@ virQEMUDriverConfigLoadMemoryEntry(virQEMUDriverConfigPtr cfg,
     } else if (rc > 0) {
         VIR_FREE(cfg->memoryBackingDir);
         cfg->memoryBackingDir = g_strdup_printf("%s/libvirt/qemu", dir);
-        return 1;
+        return 0;
     }
 
     return 0;
