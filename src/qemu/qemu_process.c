@@ -7597,8 +7597,10 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         for (i = 0; i < def->ndisks; i++) {
             virDomainDiskDefPtr disk = def->disks[i];
 
-            if (disk->mirror)
-                qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->mirror);
+            if (disk->mirror) {
+                if (qemuSecurityRestoreImageLabel(driver, vm, disk->mirror, false) < 0)
+                    VIR_WARN("Unable to restore security label on %s", disk->dst);
+            }
 
             qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->src);
         }
