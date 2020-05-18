@@ -11,16 +11,15 @@ POTFILES: $(POTFILES_IN)
 		$(SED) 's|[@]BUILDDIR[@]|$(top_builddir)|' > $@
 POTFILE_DEPS = $(shell cat POTFILES)
 POTFILE := $(DOMAIN).pot
-POMINIFILES := $(LANGS:%=%.mini.po)
 POFILES := $(LANGS:%=%.po)
 GMOFILES := $(LANGS:%=%.gmo)
 
-CLEANFILES = $(POTFILE) $(POFILES) $(GMOFILES) POTFILES
+CLEANFILES = $(POTFILE) $(GMOFILES) POTFILES
 
 EXTRA_DIST = \
 	LINGUAS \
 	$(POTFILES_IN) \
-	$(POMINIFILES)
+	$(POFILES)
 
 if HAVE_GNU_GETTEXT_TOOLS
 
@@ -35,33 +34,23 @@ XGETTEXT_ARGS = \
 	--msgid-bugs-address="$(MSGID_BUGS_ADDRESS)" \
 	$(NULL)
 
-POT_CREATION_DATE = $(shell \
-	if test -n "$$SOURCE_DATE_EPOCH"; \
-	then \
-		date --date="@$$SOURCE_DATE_EPOCH" +"%F %R%z"; \
-	else \
-		date +'%F %R%z'; \
-	fi)
-
 SED_PO_FIXUP_ARGS = \
 	-e "s|text/plain; charset=CHARSET|text/plain; charset=UTF-8|g" \
 	-e "s|SOME DESCRIPTIVE TITLE|Libvirt package strings|g" \
 	-e "s|Copyright (C) YEAR|Copyright (C) $$(date +'%Y')|" \
-	-e "s|POT-Creation-Date:[^\]*|POT-Creation-Date: $(POT_CREATION_DATE)|" \
 	$(NULL)
-
-update-po: $(POFILES)
 
 update-gmo: $(GMOFILES)
 
-update-mini-po: $(POTFILE)
+update-po: $(POTFILE)
 	for lang in $(LANGS); do \
 	  echo "Minimizing $$lang content" && \
 	  $(MSGMERGE) --no-location --no-fuzzy-matching --sort-output \
 	    $$lang.po $(POTFILE) | \
 	  $(SED) $(SED_PO_FIXUP_ARGS) | \
 	  $(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/minimize-po.py > \
-	    $(srcdir)/$$lang.mini.po ; \
+	    $(srcdir)/$$lang.po-t && \
+	  mv $$lang.po-t $$lang.po
 	done
 
 push-pot: $(POTFILE)
@@ -77,7 +66,7 @@ pull-po: $(POTFILE)
 		--create-skeletons \
 		--transdir $(builddir) \
 		--srcdir $(srcdir)
-	$(MAKE) update-mini-po
+	$(MAKE) update-po
 	$(MAKE) update-gmo
 
 $(POTFILE): POTFILES $(POTFILE_DEPS)
@@ -86,16 +75,12 @@ $(POTFILE): POTFILES $(POTFILE_DEPS)
 	$(SED) $(SED_PO_FIXUP_ARGS) < $@-t > $@
 	rm -f $@-t
 
-%.po: %.mini.po $(POTFILE)
-	$(MSGMERGE) --no-fuzzy-matching $< $(POTFILE) | \
-	  $(SED) $(SED_PO_FIXUP_ARGS) > $@
-
 %.gmo: %.po
 	rm -f $@ $@-t
 	$(MSGFMT) -c -o $@-t $<
 	mv $@-t $@
 
-.PRECIOUS: $(POTFILE) $(POFILES)
+.PRECIOUS: $(POTFILE)
 
 endif HAVE_GNU_GETTEXT_TOOLS
 
