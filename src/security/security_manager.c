@@ -473,8 +473,7 @@ virSecurityManagerMoveImageMetadata(virSecurityManagerPtr mgr,
         return ret;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return 0;
 }
 
 
