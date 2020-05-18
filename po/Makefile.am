@@ -32,6 +32,7 @@ XGETTEXT_ARGS = \
 	--package-name="$(PACKAGE_NAME)" \
 	--package-version="$(PACKAGE_VERSION)" \
 	--msgid-bugs-address="$(MSGID_BUGS_ADDRESS)" \
+	--sort-output \
 	$(NULL)
 
 SED_PO_FIXUP_ARGS = \
