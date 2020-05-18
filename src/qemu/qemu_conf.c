@@ -969,7 +969,7 @@ static int
 virQEMUDriverConfigLoadMemoryEntry(virQEMUDriverConfigPtr cfg,
                                    virConfPtr conf)
 {
-    char *dir = NULL;
+    g_autofree char *dir = NULL;
     int rc;
 
     if ((rc = virConfGetValueString(conf, "memory_backing_dir", &dir)) < 0) {
