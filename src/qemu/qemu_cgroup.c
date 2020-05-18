@@ -47,7 +47,6 @@ const char *const defaultDeviceACL[] = {
     "/dev/null", "/dev/full", "/dev/zero",
     "/dev/random", "/dev/urandom",
     "/dev/ptmx", "/dev/kvm",
-    "/dev/rtc", "/dev/hpet",
     NULL,
 };
 #define DEVICE_PTY_MAJOR 136

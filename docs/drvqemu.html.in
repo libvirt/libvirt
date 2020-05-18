@@ -484,7 +484,6 @@ chmod o+x /path/to/directory
 /dev/null, /dev/full, /dev/zero,
 /dev/random, /dev/urandom,
 /dev/ptmx, /dev/kvm,
-/dev/rtc, /dev/hpet
 </pre>
 
     <p>

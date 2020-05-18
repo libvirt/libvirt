@@ -61,8 +61,6 @@ module Test_libvirtd_qemu =
     { "5" = "/dev/urandom" }
     { "6" = "/dev/ptmx" }
     { "7" = "/dev/kvm" }
-    { "8" = "/dev/rtc" }
-    { "9" = "/dev/hpet" }
 }
 { "save_image_format" = "raw" }
 { "dump_image_format" = "raw" }
