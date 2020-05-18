@@ -66,7 +66,6 @@ EXTRA_DIST = \
   scripts/header-ifdef.py \
   scripts/hvsupport.py \
   scripts/hyperv_wmi_generator.py \
-  scripts/minimize-po.py \
   scripts/mock-noinline.py \
   scripts/prohibit-duplicate-header.py \
   scripts/reformat-news.py \

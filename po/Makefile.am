@@ -48,9 +48,7 @@ update-po: $(POTFILE)
 	  echo "Minimizing $$lang content" && \
 	  $(MSGMERGE) --no-location --no-fuzzy-matching --sort-output \
 	    $$lang.po $(POTFILE) | \
-	  $(SED) $(SED_PO_FIXUP_ARGS) | \
-	  $(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/minimize-po.py > \
-	    $(srcdir)/$$lang.po-t && \
+	  $(SED) $(SED_PO_FIXUP_ARGS) > $(srcdir)/$$lang.po-t && \
 	  mv $$lang.po-t $$lang.po
 	done
 
