@@ -46,6 +46,7 @@
       <feature policy='require' name='pdpe1gb'/>
       <feature policy='require' name='invtsc'/>
       <feature policy='require' name='skip-l1dfl-vmentry'/>
+      <feature policy='require' name='pschange-mc-no'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes'>qemu64</model>

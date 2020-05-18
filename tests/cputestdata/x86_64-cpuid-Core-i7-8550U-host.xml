@@ -27,4 +27,5 @@
   <feature name='pdpe1gb'/>
   <feature name='invtsc'/>
   <feature name='skip-l1dfl-vmentry'/>
+  <feature name='pschange-mc-no'/>
 </cpu>

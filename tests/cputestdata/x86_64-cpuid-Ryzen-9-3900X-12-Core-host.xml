@@ -26,4 +26,5 @@
   <feature name='rdctl-no'/>
   <feature name='skip-l1dfl-vmentry'/>
   <feature name='mds-no'/>
+  <feature name='pschange-mc-no'/>
 </cpu>

@@ -20,5 +20,6 @@
   <feature policy='require' name='rdctl-no'/>
   <feature policy='require' name='skip-l1dfl-vmentry'/>
   <feature policy='require' name='mds-no'/>
+  <feature policy='require' name='pschange-mc-no'/>
   <feature policy='disable' name='monitor'/>
 </cpu>

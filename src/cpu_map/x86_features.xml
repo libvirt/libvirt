@@ -509,6 +509,9 @@
   <feature name='mds-no'>
     <msr index='0x10a' edx='0x00000000' eax='0x00000020'/>
   </feature>
+  <feature name='pschange-mc-no'>
+    <msr index='0x10a' edx='0x00000000' eax='0x00000040'/>
+  </feature>
   <feature name='tsx-ctrl'>
     <msr index='0x10a' edx='0x00000000' eax='0x00000080'/>
   </feature>

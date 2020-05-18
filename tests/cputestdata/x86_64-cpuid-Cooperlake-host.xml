@@ -36,6 +36,7 @@
   <feature name='ibrs-all'/>
   <feature name='skip-l1dfl-vmentry'/>
   <feature name='mds-no'/>
+  <feature name='pschange-mc-no'/>
   <feature name='tsx-ctrl'/>
   <feature name='taa-no'/>
 </cpu>
