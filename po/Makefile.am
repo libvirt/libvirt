@@ -2,18 +2,7 @@ DOMAIN = $(PACKAGE_NAME)
 COPYRIGHT_HOLDER = The Libvirt authors
 MSGID_BUGS_ADDRESS = https://libvirt.org/bugs.html
 
-LANGS := \
-	af am anp ar as ast bal be bg bn_IN \
-	bn bo br brx bs ca cs cy da de_CH \
-	de el en_GB eo es et eu fa fil fi \
-	fr fur ga gl gu he hi hr hu ia \
-	id ilo is it ja ka kk km kn ko \
-	kw_GB kw@kkcor kw kw@uccor ky lt lv mai mk ml \
-	mn mr ms my nb nds ne nl nn nso \
-	or pa pl pt_BR pt ro ru si sk sl \
-	sq sr@latin sr sv ta te tg th tr tw \
-	uk ur vi wba yo zh_CN zh_HK zh_TW zu
-
+LANGS := $(shell cat $(srcdir)/LINGUAS)
 
 POTFILES_IN = $(srcdir)/POTFILES.in
 POTFILES: $(POTFILES_IN)
@@ -29,6 +18,7 @@ GMOFILES := $(LANGS:%=%.gmo)
 CLEANFILES = $(POTFILE) $(POFILES) $(GMOFILES) POTFILES
 
 EXTRA_DIST = \
+	LINGUAS \
 	$(POTFILES_IN) \
 	$(POMINIFILES)
 
