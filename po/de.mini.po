@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2016-04-01 11:32+0000\n"
 "Last-Translator: Florian H. <postfuerflo@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/libvirt/language/"
@@ -390,10 +390,6 @@ msgstr ""
 "%s"
 
 #, c-format
-msgid "%s:%zu: %s '%s'"
-msgstr "%s:%zu: %s '%s'"
-
-#, c-format
 msgid "'%s' controller cannot be hot plugged."
 msgstr "Controller '%s' kann nicht im laufenden Betrieb entfernt werden."
 
@@ -670,16 +666,9 @@ msgstr "Aktive Konsol-Sitzung existiert für diese Domain"
 msgid "Active:"
 msgstr "Aktiv:"
 
-msgid "Address family for hostname not supported"
-msgstr "Adressenfamilie für Hostnamen nicht unterstützt"
-
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "Konnte nach Core Dump Domain '%d' nicht mit libxenlight fortsetzen"
-
-#, c-format
-msgid "Agent path %s too big for destination"
-msgstr "Agenten-Pfad %s zu gross für Ziel"
 
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr ""
@@ -691,9 +680,6 @@ msgid ""
 msgstr ""
 "Alle bereitgestellten Authentifizierungsmethoden mit Credentials wurden vom "
 "Server abgelehnt"
-
-msgid "All requests done"
-msgstr "Alle Anforderungen erledigt"
 
 msgid "Allocation"
 msgstr "Zuordnung"
@@ -717,9 +703,6 @@ msgstr "Ein anderer Close Callback ist bereits für Domain %s definert"
 
 msgid "AnyType is missing 'type' property"
 msgstr "AnyType fehlt die 'type' Eigenschaft"
-
-msgid "Argument buffer too small"
-msgstr "Argument Buffer zu klein"
 
 msgid "Arguments must be non null"
 msgstr "Argumente müssen Nicht-Null sein"
@@ -776,9 +759,6 @@ msgstr "NAT '%s' wurde versucht. NAT ist nur für IPv4 unterstützt."
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "Attribut-Modus ist nur für Gäste CPU erlaubt"
 
-msgid "Authentication failed"
-msgstr "Authentifizierung gescheitert"
-
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
@@ -816,9 +796,6 @@ msgstr ""
 msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
 msgstr ""
 "Fehlerhafte Ipv4 Start Adresse '%s' in <nat> in <forward> in Netzwerk %s"
-
-msgid "Bad value for ai_flags"
-msgstr "Falscher Wert für ai_flags"
 
 msgid "Bad value for nativeMode"
 msgstr "Falscher Wert für nativeMode"
@@ -1106,17 +1083,11 @@ msgstr "Kann den pid Datei-Pfad nicht bestimmen."
 msgid "Can't determine socket paths"
 msgstr "Kann die Socket-Pfade nicht bestimmen."
 
-msgid "Can't determine user directory"
-msgstr "Konnte Benutzer-Vverzeichnis nicht ermitteln"
-
 msgid "Can't find prlctl command in the PATH env"
 msgstr "Kann prlctl Befehl nicht im PATH env finden"
 
 msgid "Can't initialize access manager"
 msgstr "Kann Zugriffs-Manager nicht initialisieren"
-
-msgid "Can't initialize logging"
-msgstr "Kann Logging nicht initialisieren"
 
 #, c-format
 msgid "Can't load config file: %s: %s"
@@ -1236,9 +1207,6 @@ msgstr "Datei '%s' kann nicht gelöscht werden"
 
 msgid "Cannot determine balloon device path"
 msgstr "Kann Ballon-Einheit Pfad nicht bestimmen"
-
-msgid "Cannot determine free memory"
-msgstr "Kann freien Speicher nicht bestimmen"
 
 msgid "Cannot determine system clock HZ"
 msgstr "Kann Systemuhr Hz nicht bestimmen"
@@ -1434,10 +1402,6 @@ msgid "Cannot parse mode string"
 msgstr "Kann Modus String nicht analysieren"
 
 #, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "Ziffer von '%s' kann nicht verarbeitet werden"
-
-#, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "Socket-Adresse »%s« kann nicht verarbeitet werden: %s"
 
@@ -1620,9 +1584,6 @@ msgstr "Kann Daten nicht schreiben"
 
 msgid "Capacity"
 msgstr "Kapazität"
-
-msgid "Capacity cannot be empty."
-msgstr "Kapazität kann nicht leer sein."
 
 msgid "Capacity:"
 msgstr "Kapazität:"
@@ -1906,10 +1867,6 @@ msgstr "Speicherparameter konnten nicht geändert werden: %s"
 msgid "Could not change scheduler parameters: %s"
 msgstr "Scheduler-Parameter konnten nicht verändert werden: %s"
 
-#, c-format
-msgid "Could not close %s"
-msgstr "%s konnte nicht geschlossen werden"
-
 msgid "Could not configure network"
 msgstr "Netzwerk konnte nicht konfiguriert werden"
 
@@ -1929,14 +1886,6 @@ msgstr "Standardkonfiguration konnte nicht kopiert werden"
 #, c-format
 msgid "Could not copy volume: %s"
 msgstr "Datenträger konnte nicht kopiert werden: %s"
-
-#, c-format
-msgid "Could not create Session instance, rc = 0x%08x"
-msgstr "CKonnte Session Instanz nicht erstellen, rc = 0x%08x"
-
-#, c-format
-msgid "Could not create VirtualBox instance, rc = 0x%08x"
-msgstr "Konnte VirtualBox Instanz nicht erstellen, rc = 0x%08x"
 
 msgid "Could not create filter"
 msgstr "Filter konnte nicht erstellt werden"
@@ -1975,9 +1924,6 @@ msgstr "Konnte nicht Pull Response Begriff entserialisieren"
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Domain konnte nicht gelöscht werden: %s"
-
-msgid "Could not determine home directory"
-msgstr "Konnte Basisverzeichnis nicht ermitteln"
 
 #, c-format
 msgid "Could not determine kernel version from string %s"
@@ -2350,10 +2296,6 @@ msgid "Could not parse 'bridge/stp_state' '%s' for '%s'"
 msgstr "Konnte 'bridge/stp_state' '%s' für '%s' nicht analysieren"
 
 #, c-format
-msgid "Could not parse IID from '%s', rc = 0x%08x"
-msgstr "IID von '%s', rc = 0x%08x konnte nicht verarbeitet werden"
-
-#, c-format
 msgid "Could not parse MTU value '%s'"
 msgstr "konnte MTU Wert '%s' nicht analysieren"
 
@@ -2399,14 +2341,6 @@ msgstr "Konnte USB-Datei %s nicht parsen"
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
 msgstr "Konnte nicht gültigen Disk-Index von '%s' analysieren"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "Versionsnummer von »%s« konnte nicht verarbeitet werden"
-
-#, c-format
-msgid "Could not query registry value '%s\\%s'"
-msgstr "Konnte Registry-Wert '%s\\%s' nicht abfragen"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -2563,9 +2497,6 @@ msgstr "Konnte Disk-Adresse nicht verifizieren"
 #, c-format
 msgid "Could not wipe volume: %s"
 msgstr "Datenträger konnte nicht bereinigt werden: %s"
-
-msgid "Could not write to stream"
-msgstr "Konnte nicht auf Stream schreiben"
 
 #, c-format
 msgid "Couldn't create lock file for device '%s' in path '%s'"
@@ -3027,9 +2958,6 @@ msgstr ""
 "Domain-XML enthält keine dateibasierten Festplatten, Datenspeicher und Pfad "
 "für VMX-Datei kann nicht abgeleitet werden"
 
-msgid "Domain XML must contain at least one <disk> element."
-msgstr "Domain XML muss zumindest ein <disk> Element enthalten."
-
 msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr ""
 "Domain existiert bereits, das Bearbeiten vorhandener Domains wird derzeit "
@@ -3265,12 +3193,6 @@ msgstr "Fehler-Benachrichtigung Callback muss angegeben werden"
 msgid "Error opening file %s"
 msgstr "Fehler beim Öffnen der Datei %s"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "Fehler beim Parsen von 'Pfad'. Ungültige Zeichen."
-
-msgid "Error parsing volume XML."
-msgstr "Fehler bei Verarbeitung der Datenträger-XML."
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "Fehler beim Lesen von Secret: %s"
@@ -3281,13 +3203,6 @@ msgstr "Fehler beim Aufbau des Firewall"
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "Fehler beim Aufbau des Firewall: %s"
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "Fehler beim Erhalt der %s Adressinformationen"
-
-msgid "Error while opening SSH session."
-msgstr "Fehler beim Öffnen der SSH-Sitzung."
 
 msgid "Error while processing command's IO"
 msgstr "Fehler während der Verarbeitung von IO des Befehls "
@@ -3300,10 +3215,6 @@ msgstr "Fehler beim Lesen von /proc/cgroups"
 
 msgid "Error while reading the domain name"
 msgstr "Fehler beim Lesen des Domainnamens"
-
-#, c-format
-msgid "Escape character is %s\n"
-msgstr "Escape-Zeichen ist %s\n"
 
 #, c-format
 msgid "Ethernet controller index %d out of [0..3] range"
@@ -3682,10 +3593,6 @@ msgid "Failed to connect socket to '%s'"
 msgstr "Socket-Erstellung zu '%s' fehlgeschlagen"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "Verbindung zu %s fehlgeschlagen"
-
-#, c-format
 msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "Verbindung mit entfernter libvirt-URI %s: %s fehlgeschlagen"
 
@@ -3782,9 +3689,6 @@ msgstr "Fehler beim Erstellen des Netzwerks von %s"
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "Erstellen eines Knoten-Geräts aus %s fehlgeschlagen"
-
-msgid "Failed to create pipe"
-msgstr "Erstellen der Pipe fehlgeschlagen"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -4485,10 +4389,6 @@ msgstr "Lesen des PCI-Konfigurationsplatzes für %s fehlgeschlagen"
 msgid "Failed to read file '%s'"
 msgstr "Konnte Datei '%s' nicht lesen"
 
-#, c-format
-msgid "Failed to read from %s"
-msgstr "Lesen von %s fehlgeschlagen"
-
 msgid "Failed to read from signal pipe"
 msgstr "Lesen von der Signal-Pipe fehlgeschlagen"
 
@@ -4927,9 +4827,6 @@ msgstr "Fehlgeschlagen."
 msgid "Failure action %s is not supported by sanlock"
 msgstr "Fehler Aktion %s wird nicht von sanlock unterstützt"
 
-msgid "Failure establishing SSH session."
-msgstr "Starten der SSH-Sitzung fehlgeschlagen."
-
 msgid "Failure to mask address"
 msgstr "Adresse konnte nicht maskiert werden"
 
@@ -4944,9 +4841,6 @@ msgstr ""
 #, c-format
 msgid "Feature %s required by CPU model %s not found"
 msgstr "Das von CPU-Modell %s benötigte Feature %s wurde nicht gefunden"
-
-msgid "Field <src> under <disk> on the domain XML file is missing."
-msgstr "Feld <src> unter <disk> auf der Domäne XML-Datei fehlt."
 
 msgid "Field kernel memory too long for destination"
 msgstr "Feld kernel memory zu lang für Ziel"
@@ -5065,9 +4959,6 @@ msgstr "GET-Operation schlug fehl: %s"
 
 msgid "GNUTLS call error"
 msgstr "GNUTLS Aufruffehler"
-
-msgid "GNUTLS support not available in this build"
-msgstr "GNUTLS Unterstützung in dieser Generierung nicht verfügbar"
 
 msgid "Get block device size info for a domain."
 msgstr "Block-Einheit Größen-Informationen für eine Domain abrufen."
@@ -5485,9 +5376,6 @@ msgid ""
 msgstr ""
 "Schnittstellentyp hostdev ist derzeit nur auf SR-IOV Virtuellen Funktionen "
 "unterstützt"
-
-msgid "Interrupted by a signal"
-msgstr "Unterbrochen durch ein Signal"
 
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
@@ -5994,10 +5882,6 @@ msgstr "Kernel unterstützt nicht Private devpts"
 msgid "Kernel doesn't support user namespace"
 msgstr "Kernel unterstützt Benutzer-Namespace nicht"
 
-msgid "Key must be empty, Power Hypervisor will create one for you."
-msgstr ""
-"Schlüssel muss leer sein, Power Hypervisor wird einen für Sie erstellen."
-
 msgid "Key of the current session differs from the key at last login"
 msgstr ""
 "Schlüssel der aktuellen Sitzung stimmt nicht mit Schlüssel der letzten "
@@ -6131,10 +6015,6 @@ msgstr ""
 "'alias=uri://host/path'"
 
 #, c-format
-msgid "Malformed TLS whitelist regular expression '%s'"
-msgstr "Ungültiger TLS Positivliste Regulärer Ausdruck '%s'"
-
-#, c-format
 msgid "Malformed ctrl-alt-del setting '%s'"
 msgstr "Fehlerhafte ctrl-alt-del Einstellung '%s'"
 
@@ -6189,9 +6069,6 @@ msgstr "Max Speicher:"
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
 msgstr "Speicher '%llu' muss kleiner sein als %llu"
-
-msgid "Memory allocation failure"
-msgstr "Fehler bei Speicherzuweisung"
 
 #, c-format
 msgid ""
@@ -6610,9 +6487,6 @@ msgstr "Modell %s zu groß für Ziel"
 msgid "Model name contains invalid characters"
 msgstr "Modellname enthält ungültige Zeichen"
 
-msgid "Monitor does not support sending of file descriptors"
-msgstr "Monitor unterstützt nicht das Senden von Datei-Deskriptoren"
-
 #, c-format
 msgid "Monitor path %s too big for destination"
 msgstr "Monitor-Pfad %s zu groß für Ziel"
@@ -6706,9 +6580,6 @@ msgstr "Name"
 #, c-format
 msgid "Name of chain is longer than %u characters"
 msgstr "Name der Kette ist länger als %u Zeichen"
-
-msgid "Name or service not known"
-msgstr "Name oder Service unbekannt"
 
 msgid "Name:"
 msgstr "Name:"
@@ -6887,9 +6758,6 @@ msgstr "Keine PCI-Busse verfügbar"
 msgid "No active operation on device: %s"
 msgstr "Keine aktive Operation auf Einheit: %s"
 
-msgid "No address associated with hostname"
-msgstr "Keine Adresse mit dem Hostnamen verbunden"
-
 #, c-format
 msgid "No args present for signature %s"
 msgstr "Keine Argumente für Signatur %s vorhanden"
@@ -7064,9 +6932,6 @@ msgstr ""
 msgid "Non-empty feature list specified without CPU model"
 msgstr "Die Liste mit erforderlichen Features wurde ohne CPU-Modell angegeben"
 
-msgid "Non-recoverable failure in name resolution"
-msgstr "Nicht korrigierbarer Fehler bei der Namensauflösung"
-
 msgid "None"
 msgstr "Kein"
 
@@ -7152,12 +7017,6 @@ msgstr "Nur %d CPUs zur Anzeige zur Verfügung\n"
 #, c-format
 msgid "Only '%s' filesystem type is supported"
 msgstr "Nur '%s' Dateisystem-Typ ist unterstützt"
-
-msgid "Only 'credit' scheduler is supported"
-msgstr "Nur 'credit' Scheduler wird unterstützt"
-
-msgid "Only 'scsi_host' adapter is supported"
-msgstr "Nur 'scsi_host' Adapter ist unterstützt"
 
 msgid "Only IPv4 or IPv6 addresses can be used with iptables"
 msgstr "Nur IPv4- oder IPv6-Adressesn können mit iptables verwendet werden"
@@ -7338,9 +7197,6 @@ msgstr ""
 msgid "PCI device %s is not assignable"
 msgstr "PCI Einheit %s kann nicht zugeordnet werden"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "PCI-Host-Geräte müssen den 'pci'-Adresstyp verwenden"
-
 msgid "POST operation failed"
 msgstr "POST-Operation schlug fehl"
 
@@ -7362,9 +7218,6 @@ msgstr "Parameter '%s' ist kein String"
 #, c-format
 msgid "Parameter '%s' is not supported by this kernel"
 msgstr "Parameter '%s' wird von diesem Kernel nicht unterstützt"
-
-msgid "Parameter string not correctly encoded"
-msgstr "Parameter-String nicht korrekt codiert"
 
 msgid "Parent"
 msgstr "Übergeordnet"
@@ -7535,22 +7388,6 @@ msgstr "Füllen Sie einen Datenträger von seinem Sicherungs-Image."
 msgid "Port profile Associate failed for %s"
 msgstr "Port Profile Associate für %s gescheitert"
 
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr ""
-"Möglicherweise haben Sie keine IBM-Tools in Ihrer LPAR installiert. Setzen "
-"Sie sich mit Ihrem Kundendienst in Verbindung, um dieses Feature zu "
-"aktivieren."
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"Möglicherweise haben Sie keine IBM-Tools in Ihrer LPAR installiert. Setzen "
-"Sie sich mit Ihrem Kundendienst in Verbindung, um dieses Feature zu "
-"aktivieren."
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel aufgerufen, jedoch kein TUNNELLED-Flag gesetzt"
 
@@ -7603,9 +7440,6 @@ msgstr "Prozess %zu %p %p [[[%s]]][[[%s]]]"
 
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "Prozeß-CPU-Affinität wird auf dieser Plattform nicht unterstützt"
-
-msgid "Processing request in progress"
-msgstr "Bearbeitung der Anforderung läuft"
 
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
@@ -7755,14 +7589,6 @@ msgstr ""
 "undefine verweigert während Domain-Verwaltetes Sicherungs-Image existiert"
 
 #, c-format
-msgid "Registry value '%s\\%s' has unexpected type"
-msgstr "Registry-Wert '%s\\%s' hat unerwarteten Typ"
-
-#, c-format
-msgid "Registry value '%s\\%s' is too short"
-msgstr "Registry-Wert '%s\\%s' ist zu kurz"
-
-#, c-format
 msgid "Remote command terminated with non-zero code: %d"
 msgstr "Remote-Befehl mit Nicht-Null Code beendet: %d"
 
@@ -7792,12 +7618,6 @@ msgstr "Umbenennen von Domains bei Migration wird nicht unterstützt"
 msgid "Replace the domain XML associated with a saved state file"
 msgstr ""
 "Ersetzen der Domain XML die mit einer Status-Sicherungs-Datei verknüpft ist"
-
-msgid "Request canceled"
-msgstr "Anforderung abgebrochen"
-
-msgid "Request not canceled"
-msgstr "Anforderung nicht abgebrochen"
 
 #, c-format
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
@@ -8171,9 +7991,6 @@ msgstr "Senden Datei-Deskriptoren ist auf diesem Socket nicht unterstützt"
 msgid "Serial port index %d out of [0..3] range"
 msgstr "Serieller Port index %d außerhalb dem [0..3] Bereich"
 
-msgid "Servname not supported for ai_socktype"
-msgstr "Servname nicht unterstützt für ai_socktype"
-
 msgid "Set a secret value."
 msgstr "Einen Secret-Wert setzen."
 
@@ -8480,9 +8297,6 @@ msgstr "Speicher-Datenträger nicht gefunden"
 msgid "Storage volume not found: %s"
 msgstr "Speicher-Datenträger nicht gefunden: %s"
 
-msgid "StoragePool name already exists."
-msgstr "Speicherpool-Name existiert bereits."
-
 #, c-format
 msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr ""
@@ -8537,9 +8351,6 @@ msgstr ""
 "Unterbricht eine laufende Domain unter Verwendung des Gast OS Power-"
 "Management. (Hinweis: Dies erfordert einen Gast-Agent der auf dem Gast OS "
 "konfiguriert ist und dort läuft)."
-
-msgid "System error"
-msgstr "Systemfehler"
 
 msgid "System is in use"
 msgstr "System ist in Gebrauch"
@@ -8947,9 +8758,6 @@ msgstr "Ziel Video-Karten vram %u stimmt nicht mit der Quelle %u überein"
 msgid "Target watchdog model %s does not match source %s"
 msgstr "Ziel Überwachungs-Modell %s stimmt nicht mit der Quelle %s überein"
 
-msgid "Temporary failure in name resolution"
-msgstr "Temporärer Fehler bei der Namensauflösung"
-
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -9265,9 +9073,6 @@ msgstr ""
 "       'quit' zum Beenden\n"
 "\n"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr "UNIX Domäne Sockets werden auf dieser Plattform nicht unterstützt"
-
 msgid "UNIX sockets are not supported on this platform"
 msgstr "UNIX Sockets werden auf dieser Plattform nicht unterstützt"
 
@@ -9327,19 +9132,12 @@ msgstr "Kann nicht auf Stream für %s zugreifen"
 msgid "Unable to acquire lock on '%s'"
 msgstr "Konnte Sperre auf '%s' nicht erlangen"
 
-msgid "Unable to add LPAR to the table"
-msgstr "LPAR konnte nicht zur Tabelle hinzugefügt werden"
-
 #, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "Kann Bridge %s Port %s nicht "
 
 msgid "Unable to add epoll fd"
 msgstr "Kann nicht epoll fd hinzufügen"
-
-#, c-format
-msgid "Unable to add handle %d to event loop"
-msgstr "Kann nicht Handle %d zur Ereignis-Schleife hinzufügen."
 
 #, c-format
 msgid "Unable to add lockspace %s"
@@ -9474,20 +9272,8 @@ msgstr "JSON Formatter kann nicht erstellt werden"
 msgid "Unable to create JSON parser"
 msgstr "JSON Parser kann nicht erstellt werden"
 
-#, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "LPAR konnte nicht erstellt werden. Grund: »%s«"
-
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "Speicherpool kann nicht erstellt werden: %s"
-
 msgid "Unable to create TAP devices on this platform"
 msgstr "Kann TAP Einheiten auf dieser Plattform nicht erstellen"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "Datenträger kann nicht erstellt werden: %s"
 
 msgid "Unable to create blkid library handle"
 msgstr "Kann blkid Bibliothek Handle nicht erstellen"
@@ -9524,15 +9310,6 @@ msgstr ""
 
 msgid "Unable to create migration thread"
 msgstr "Migrations-Thread kann nicht erstellt werden"
-
-msgid "Unable to create new virtual adapter"
-msgstr "Neuer virtueller Adapter konnte nicht erstellt werden"
-
-msgid "Unable to create pipe"
-msgstr "Kann Pipe nicht erstellen"
-
-msgid "Unable to create signal pipe"
-msgstr "Kann Signal-Pipe nicht erstellen"
 
 msgid "Unable to create socket"
 msgstr "Socket kann nicht erstellt werden"
@@ -9578,57 +9355,8 @@ msgid "Unable to delete port %s from OVS"
 msgstr "Kann Port %s nicht von OVS löschen"
 
 #, c-format
-msgid "Unable to destroy Storage Pool: %s"
-msgstr " Konnte Speicher-Pool %s nicht zerstören"
-
-#, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "Datei-System für %s kann nicht ermittelt werden"
-
-msgid "Unable to determine config directory"
-msgstr "Kann Konfigurations-Verzeichnis nicht ermitteln"
-
-msgid "Unable to determine domain's CPU."
-msgstr "CPU der Domain konnte nicht festgestellt werden."
-
-msgid "Unable to determine domain's max memory."
-msgstr "Maximaler Speicher der Domain konnte nicht festgestellt werden."
-
-msgid "Unable to determine domain's memory."
-msgstr "Speicher der Domain konnte nicht festgestellt werden."
-
-msgid "Unable to determine domain's name."
-msgstr "Domainname kann nicht bestimmt werden."
-
-msgid "Unable to determine home directory"
-msgstr "Kann Basis-Verzeichnis nicht ermitteln"
-
-msgid "Unable to determine number of domains."
-msgstr "Anzahl der Domains kann nicht festgestellt werden"
-
-msgid "Unable to determine storage pool's name."
-msgstr "Name des Speicherpools kann nicht bestimmt werden."
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "UUID des Speicherpools kann nicht bestimmt werden."
-
-msgid "Unable to determine storage pools's size."
-msgstr "Größe des Speicherpools kann nicht bestimmt werden."
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "Quelladapter des Speicherpools kann nicht bestimmt werden."
-
-msgid "Unable to determine storage sp's name."
-msgstr "Name des Speicher-Sp's kann nicht bestimmt werden."
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "UUID des Speicher-Sp's kann nicht bestimmt werden."
-
-msgid "Unable to determine storage sps's size."
-msgstr "Größe des Speicher-Sp's kann nicht bestimmt werden."
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "Quelladapter des Speicher-Sp's kann nicht bestimmt werden."
 
 msgid "Unable to disable nagle algorithm"
 msgstr "Kann nagle Algorithmus nicht deaktivieren"
@@ -9705,9 +9433,6 @@ msgstr "Kann Zeit nicht formatieren"
 msgid "Unable to generate diffie-hellman parameters: %s"
 msgstr "Kann Diffie-Hellman Parameters nicht generieren: %s"
 
-msgid "Unable to generate random uuid."
-msgstr "Zufällige UUID kann nicht generiert werden."
-
 #, c-format
 msgid "Unable to get DBus session bus connection: %s"
 msgstr "Kann DBus Session-Bus Verbindung nicht erhalten: %s"
@@ -9731,12 +9456,6 @@ msgstr "Kann STP Verzögerung auf %s auf dieser Plattform nicht erhalten"
 #, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "Kann STP auf %s auf dieser Plattform nicht erhalten"
-
-msgid "Unable to get VIOS name"
-msgstr "VIOS-Name konnte nicht abgerufen werden"
-
-msgid "Unable to get VIOS profile name."
-msgstr "VIOS-Profilname konnte nicht abgerufen werden."
 
 #, c-format
 msgid "Unable to get VLAN for interface %s"
@@ -9770,9 +9489,6 @@ msgstr "Kann Einheiten-ID '%s' nicht erhalten"
 
 msgid "Unable to get domain status"
 msgstr "Kann Domain-Status nicht abrufen"
-
-msgid "Unable to get free slot number"
-msgstr "Kann keine freie Slot Nummer erhalten"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -9910,9 +9626,6 @@ msgstr "Kann nicht SELinux Prozess Kontext suchen"
 msgid "Unable to make TAP device non-persistent"
 msgstr "Kann TAP Einheit nicht auf nicht-dauerhaft setzen"
 
-msgid "Unable to make pipe"
-msgstr "Kann keine Pipe erstellen"
-
 msgid "Unable to mark loop device as autoclear"
 msgstr "Kann Loop Einheit nicht als Autoclear markieren"
 
@@ -9962,10 +9675,6 @@ msgstr "Kann Datei-System %s nicht öffnen"
 #, c-format
 msgid "Unable to open log file %s"
 msgstr "Protokolldatei %s kann nicht geöffnet werden"
-
-#, c-format
-msgid "Unable to open monitor path %s"
-msgstr "Kann Monitor-Pfad %s nicht öffnen"
 
 #, c-format
 msgid "Unable to open resource %s"
@@ -10022,9 +9731,6 @@ msgstr "Quote konnte nicht analysiert werden"
 msgid "Unable to parse string parameter"
 msgstr "String Parameter konnte nicht analysiert werden"
 
-msgid "Unable to poll on file handles"
-msgstr "Konnte nicht auf Dateihandles abfragen"
-
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "Chardev Datei '%s' konnte nicht vor-erstellt werden"
@@ -10032,9 +9738,6 @@ msgstr "Chardev Datei '%s' konnte nicht vor-erstellt werden"
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "Kann Datei mit Flags %d nicht verarbeiten"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "Kann Monitor nicht in Non-Blocking-Modus versetzen"
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -10269,9 +9972,6 @@ msgstr "Kann x509 Zertifikats-Widerruf Liste nicht festlegen: %s: %s"
 msgid "Unable to set x509 key and certificate: %s, %s: %s"
 msgstr "Kann x509 Schlüssel und Zertifikat nicht laden: %s, %s: %s"
 
-msgid "Unable to setup wakeup pipe"
-msgstr "Kann Wakeup-Pipe nicht einrichten"
-
 #, c-format
 msgid "Unable to split FD list '%s'"
 msgstr "Kann FD Liste '%s' nicht aufteilen"
@@ -10313,9 +10013,6 @@ msgstr ""
 msgid "Unable to wait for child process"
 msgstr "Kann auf untergeordneten Prozesses nicht warten"
 
-msgid "Unable to wait on agent monitor condition"
-msgstr "Kann auf Agent Monitor-Kondition nicht warten"
-
 msgid "Unable to wait on epoll"
 msgstr "Kann nicht auf epoll warten"
 
@@ -10334,9 +10031,6 @@ msgstr "Kann Host Konsol PTY nicht beobachten"
 #, c-format
 msgid "Unable to write %s"
 msgstr "Kann %s nicht schreiben"
-
-msgid "Unable to write information to local file."
-msgstr "Daten konnten nicht in lokale Datei geschrieben werden."
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -10473,10 +10167,6 @@ msgstr "Unerwartete Signatur '%s'"
 #, c-format
 msgid "Unexpected volume path format: %s"
 msgstr "Unerwartetes Datenträger-Pfad Format: %s"
-
-#, c-format
-msgid "Unhandled event %d for monitor fd %d"
-msgstr "Nicht bearbeitetes Ereignis %d für Monitor fd %d"
 
 msgid "Unknown"
 msgstr "Unbekannt"
@@ -11066,10 +10756,6 @@ msgstr "XML-Knoten enthält keinen Text, erwartete einen xsd:dateTime Wert"
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "XPath-Evaluierung der Antwort für Aufruf von »%s« fehlgeschlagen"
 
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr ""
-"Sie versuchen, eine höhere CPU-Anzahl als maximal zulässig einzustellen."
-
 msgid "You must map the root user of container"
 msgstr "Sie müssen den root-Benutzer des Containers zuordnen"
 
@@ -11184,12 +10870,6 @@ msgstr "nach dem Zurücksetzen Zustand auf Pause ändern"
 
 msgid "after reverting, change state to running"
 msgstr "nach dem Zurücksetzen Zustand auf laufen ändern"
-
-msgid "ai_family not supported"
-msgstr "ai_family nicht unterstützt"
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype nicht unterstützt"
 
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "Zuweisung der neuen Kapazitäten, anstatt sie zerstreut zu lassen"
@@ -11761,9 +11441,6 @@ msgstr "Kann Log-Verzechnis %s nicht erstellen"
 msgid "cannot create path '%s'"
 msgstr "Kann Pfad '%s' nicht erstellen"
 
-msgid "cannot create pipe"
-msgstr "Kann Pipe nicht erstellen"
-
 msgid "cannot create pipe for tunnelled migration"
 msgstr "Kann Pipe nicht für getunnelte Migration erstellen"
 
@@ -11906,10 +11583,6 @@ msgstr "Kann Eigenschaften-Flags auf macvtap-Tap nicht abrufen"
 #, c-format
 msgid "cannot get file context of '%s'"
 msgstr "Kann keinen Datei-Kontext von '%s' ermitteln"
-
-#, c-format
-msgid "cannot get group list for '%s'"
-msgstr "Gruppen-Liste für '%s' kann nicht erhalten werden"
 
 msgid "cannot get host CPU capabilities"
 msgstr "Kann CPU-Fähigkeiten des Hostes nicht abrufen"
@@ -12958,10 +12631,6 @@ msgid "could not use Xen hypervisor entry %s"
 msgstr "konnte Xen-Hypervisoreintrag %s nicht verwenden"
 
 #, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "Konnte pidfile %s für %d nicht schreiben"
-
-#, c-format
 msgid "couldn't find IFLA_VF_INFO for VF %d in netlink response"
 msgstr "Konnte IFLA_VF_INFO für VF %d in netlink Antwort nicht finden"
 
@@ -13581,9 +13250,6 @@ msgstr "Domänen-Anzeige Verbindungs-URI"
 msgid "domain event %d not registered"
 msgstr "Domainereignis %d nicht registriert"
 
-msgid "domain has assigned non-USB host devices"
-msgstr "Der Domain wurden non-USB Host-Einheiten zugewiesen"
-
 msgid "domain has no snapshots"
 msgstr "Domain hat keine Snapshots"
 
@@ -14071,9 +13737,6 @@ msgstr "Dekodierung der SASL-Daten fehlgeschlagen: %d (%s)"
 msgid "failed to destroy (stop) interface %s: %s%s%s"
 msgstr "Löschen (Anhalten) der Schnittstelle %s gescheitert: %s%s%s"
 
-msgid "failed to determine host name"
-msgstr "Bestimmen des Host-Namens fehlgeschlagen"
-
 msgid "failed to enable IP forwarding"
 msgstr "Aktivieren der IP-Weiterleitung fehlgeschlagen"
 
@@ -14426,9 +14089,6 @@ msgstr "Prüfung des SSH-Hostschlüssels ist fehlgeschlagen: %s"
 msgid "failed to wait on condition"
 msgstr "Warten auf Bedingung fehlgeschlagen"
 
-msgid "failed to wake up polling thread"
-msgstr "scheiterte den Abfrage-Thread aufzuwecken"
-
 msgid "failed to wakeup migration tunnel"
 msgstr "Aufwecken des Migration Tunnel gescheitert"
 
@@ -14672,9 +14332,6 @@ msgstr "Erhalten/Erstellen Wert von laufender Domain"
 msgid "get/set value to be used on next boot"
 msgstr ""
 "Erhalten/Erstellen Wert der bei nächstem Systemstart verwendet werden soll"
-
-msgid "getting time of day"
-msgstr "Tageszeit ermitteln"
 
 msgid "given uuid does not match XML uuid"
 msgstr "Angegebene UUID stimmt nicht mit XML-UUID überein"
@@ -16750,10 +16407,6 @@ msgid "no device found with alias %s"
 msgstr "Keine Einheit gefunden mit Alias %s"
 
 #, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "kein Datenträger-Format für %s und Sondieren ist deaktiviert"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "Keine Disk namens '%s'"
 
@@ -17341,9 +16994,6 @@ msgstr "pmsuspended"
 msgid "poll failed in migration tunnel"
 msgstr "Abstimmung scheiterte im Migration Tunnel"
 
-msgid "poll on socket failed"
-msgstr "Anfrage auf Socket fehlgeschlagen"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "Pool »%s« existiert bereits mit UUID %s"
@@ -17473,20 +17123,12 @@ msgstr "XML passend für Migrationen bereitstellen"
 msgid "ps2 bus does not support %s input device"
 msgstr "PS/2-Bus unterstützt %s-Eingabegerät nicht"
 
-#, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: Kann aktuelles Verzeichnis nicht ermitteln: %s"
-
 msgid "qemu does not support SGA"
 msgstr "qemu unterstützt nicht SGA"
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "Qemu-Emulator '%s' unterstützt kein Xen"
-
-#, c-format
-msgid "qemu is not using a unix socket monitor, cannot send fd %s"
-msgstr "qemu benutzt keinen Unix-Socket-Monitor, kann nicht senden fd %s"
 
 msgid "qemu state driver is not active"
 msgstr "qemu-Status-Treiber nicht aktiv"
@@ -17579,9 +17221,6 @@ msgstr "Lese i/O-Operationen Grenze in Bytes pro Sekunde"
 
 msgid "read error on pipe"
 msgstr "Lesefehler in Pipe"
-
-msgid "read on wakeup fd failed"
-msgstr "lesen nach erwachen der fd fehlgeschlagen"
 
 msgid "read-only connection"
 msgstr "Schreibgeschützte Verbindung"
@@ -18524,9 +18163,6 @@ msgstr "Diese QEMU unterstützt das rng-egd Backend nicht"
 msgid "this qemu doesn't support the rng-random backend"
 msgstr "Diese QEMU unterstützt das rng-random Backend nicht"
 
-msgid "time_t overflow"
-msgstr "time_t Überlauf"
-
 msgid "timeout must be positive"
 msgstr "Zeitüberschreitung muss positiv sein"
 
@@ -18709,10 +18345,6 @@ msgid "unable to create hugepage path %s"
 msgstr "Kann Hugepage-Pfad %s nicht erstellen"
 
 #, c-format
-msgid "unable to create pipe for %s"
-msgstr "Pipe für %s konnte nicht erstellt werden"
-
-#, c-format
 msgid "unable to create rundir %s: %s"
 msgstr "rundir %s kann nicht erzeugt werden: %s"
 
@@ -18800,12 +18432,6 @@ msgstr "Kann VirtualBox-Treiber-API nicht initialisieren"
 msgid "unable to load knownhosts file '%s': %s"
 msgstr "Kann nicht Knownhosts-Datei '%s': %s laden"
 
-msgid "unable to make pipe"
-msgstr "Kann keine Pipe erstellen"
-
-msgid "unable to open pipe"
-msgstr "Pipe kann nicht geöffnet werden"
-
 msgid "unable to open stream"
 msgstr "Kann Stream nicht öffnen"
 
@@ -18843,12 +18469,6 @@ msgstr "Kann Server-Zertifikat %s nicht lesen"
 
 msgid "unable to read vmware log file"
 msgstr "Konnte vmware Log Datei nicht lesen"
-
-#, c-format
-msgid "unable to recover former state by adding port to bridge %s"
-msgstr ""
-"kann früheren Zustand durch Hinzufügen Port zur Brücke %s nicht "
-"wiederherstellen"
 
 msgid "unable to register monitor events"
 msgstr "Kann Monitor-Ereignisse nicht registrieren"
@@ -18917,9 +18537,6 @@ msgstr "Kann nicht auf Prozess %lld warten"
 
 msgid "unable to wait on console condition"
 msgstr "Kann auf Konsol-Kondition nicht warten"
-
-msgid "unable to wait on libssh2 socket"
-msgstr "Kann nicht auf das libssh2 Socket warten"
 
 #, c-format
 msgid "unable to write data to '%s'"
@@ -19911,10 +19528,6 @@ msgid "unsupported disk type %s"
 msgstr "Nicht unterstützter Laufwerkstyp %s"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "Nicht unterstützter Laufwerkstyp '%s'"
-
-#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "Nicht unterstützter Treibername '%s' für Laufwerk '%s'"
 
@@ -20151,9 +19764,6 @@ msgstr "virDomainGetXMLDesc mit sicherem Flag"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc mit sicherer Flag"
 
-msgid "virExec is not implemented for WIN32"
-msgstr "virExec ist nicht implementiert auf Win32"
-
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs ist nicht implementiert auf Win32"
 
@@ -20166,12 +19776,6 @@ msgstr "virGetGroupID ist nicht verfügbar"
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupName ist nicht verfügbar"
 
-msgid "virGetUserCacheDirectory is not available"
-msgstr "virGetUserCacheDirectory ist nicht verfügbar"
-
-msgid "virGetUserConfigDirectory is not available"
-msgstr "virGetUserConfigDirectory ist nicht verfügbar"
-
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory ist nicht verfügbar"
 
@@ -20180,9 +19784,6 @@ msgstr "virGetUserID ist nicht verfügbar"
 
 msgid "virGetUserName is not available"
 msgstr "virGetUserName ist nicht verfügbar"
-
-msgid "virGetUserRuntimeDirectory is not available"
-msgstr "virGetUserRuntimeDirectory ist nicht verfügbar"
 
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
@@ -20227,9 +19828,6 @@ msgstr "virNWFilterSnoopListDel fehlgeschlagen"
 msgid "virNWFilterSnoopReqNew called with invalid key \"%s\" (%zu)"
 msgstr ""
 "virNWFilterSnoopReqNew mit ungültigem Schlüssel \"%s\" (%zu) aufgerufen"
-
-msgid "virRun is not implemented for WIN32"
-msgstr "virRun ist nicht implementiert auf Win32"
 
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID ist nicht verfügbar"
@@ -20421,10 +20019,6 @@ msgstr "XML Änderung nicht unterstützt"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime Wert '%s' hat unerwartetes Format"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "xsd:dateTime Wert '%s' zu lang für Ziel"
 
 msgid "y - yes, start editor again"
 msgstr "y - ja, starten Editor wieder"

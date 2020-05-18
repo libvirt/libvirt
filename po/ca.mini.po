@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2018-02-24 11:19+0000\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/libvirt/language/"
@@ -610,9 +610,6 @@ msgstr "Estat:"
 msgid "Suspend a running domain."
 msgstr "Suspèn un domini en execució."
 
-msgid "System error"
-msgstr "Error de sistema"
-
 msgid "Thread(s) per core:"
 msgstr "Fluxos per nucli:"
 
@@ -665,15 +662,8 @@ msgstr "No es pot obtenir la informació sobre el pid: %d"
 msgid "Unable to open Machine, rc=%08x"
 msgstr "No es pot obrir la màquina, rc=%08x"
 
-#, c-format
-msgid "Unable to open monitor path %s"
-msgstr "No es pot obrir el camí al monitor %s"
-
 msgid "Unable to parse the xml"
 msgstr "No es pot analitzar sintàcticament l'xml"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "No es pot posar el monitor en mode no blocant"
 
 msgid "Unable to serialize the machine description"
 msgstr "No es pot serialitzar la descripció de la màquina."
@@ -1033,9 +1023,6 @@ msgstr "obté les estadístiques d'un dispositiu de blocs referits a un domini"
 
 msgid "get network interface stats for a domain"
 msgstr "obté les estadístiques d'una interfície de xarxa referits a un domini"
-
-msgid "getting time of day"
-msgstr "obtenció de la data i hora"
 
 msgid "gracefully shutdown a domain"
 msgstr "apaga un domini"

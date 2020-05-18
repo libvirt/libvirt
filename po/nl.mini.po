@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -234,9 +234,6 @@ msgstr "Koppel nieuwe netwerk interface aan."
 msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 msgstr "Geprobeerd om NAT '%s'. NAT wordt alleen ondersteund voor IPv4."
 
-msgid "Authentication failed"
-msgstr "Authenticatie mislukte"
-
 msgid "Autostart"
 msgstr "Automatisch starten"
 
@@ -452,10 +449,6 @@ msgid "Cannot parse controller index %s"
 msgstr "Kan controller index %s niet ontleden"
 
 #, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "Kan getal niet ontleden uit '%s'"
-
-#, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "Kan socket adres '%s' niet oplossen: %s"
 
@@ -479,9 +472,6 @@ msgstr "Kan deling van aankoppel naam ruimte niet opheffen"
 
 msgid "Capacity"
 msgstr "Capaciteit"
-
-msgid "Capacity cannot be empty."
-msgstr "Capaciteit mag niet leeg zijn."
 
 msgid "Capacity:"
 msgstr "Capaciteit:"
@@ -582,10 +572,6 @@ msgstr "Kan geheugen parameters niet wijzigen: %s"
 msgid "Could not change scheduler parameters: %s"
 msgstr "Kan scheduler parameters niet wijzigen: %s"
 
-#, c-format
-msgid "Could not close %s"
-msgstr "Kon %s niet sluiten"
-
 msgid "Could not configure network"
 msgstr "Kon geen netwerk configureren"
 
@@ -605,14 +591,6 @@ msgstr "Kon standaard config niet kopiëren"
 #, c-format
 msgid "Could not copy volume: %s"
 msgstr "Kon volume niet kopiëren: %s"
-
-#, c-format
-msgid "Could not create Session instance, rc = 0x%08x"
-msgstr "Kon Sessie aanhaling niet aanmaken, rc = 0x%08x"
-
-#, c-format
-msgid "Could not create VirtualBox instance, rc = 0x%08x"
-msgstr "Kon VirtualBox aanhaling niet aanmaken, rc = 0x%08x"
 
 #, c-format
 msgid "Could not create snapshot: %s"
@@ -774,10 +752,6 @@ msgid "Could not open /proc/net/dev"
 msgstr "Kan /proc/net/dev niet openen"
 
 #, c-format
-msgid "Could not parse IID from '%s', rc = 0x%08x"
-msgstr "Kon IID niet ontleden uit '%s', rc = 0x%08x"
-
-#, c-format
 msgid "Could not parse UUID from '%s'"
 msgstr "Kon UUID niet ontleden uit '%s'"
 
@@ -800,10 +774,6 @@ msgstr "Kan usb bestand %s niet ontleden"
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
 msgstr "Kon geen geldige schijf index ontleden uit '%s'"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "Kan versie nummer niet ontleden uit '%s'"
 
 #, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
@@ -1289,12 +1259,6 @@ msgstr "Fout van kind proces tijdens aanmaken van '%s'"
 msgid "Error opening file %s"
 msgstr "Fout bij openen van bestand %s"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "Fout bij het ontleden van 'pad'. Ongeldige karakters."
-
-msgid "Error parsing volume XML."
-msgstr "Fout bij het ontleden van volume XML."
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "Fout bij lezen van geheim: %s"
@@ -1305,13 +1269,6 @@ msgstr "Fout bij bouwen van firewall"
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "Fout bij bouwen van firewall: %s"
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "Fout bij het verkrijgen van %s adres info"
-
-msgid "Error while opening SSH session."
-msgstr "Fout tijdens openen van SSH sessie."
 
 msgid "Error while reading the domain name"
 msgstr "Fout tijdens het lezen van de domein naam"
@@ -1548,10 +1505,6 @@ msgid "Failed to compile regex %s"
 msgstr "Compileren van regex %s mislukte"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "Verbinden met %s mislukte"
-
-#, c-format
 msgid "Failed to convert '%s' to int"
 msgstr "'%s' converteren naar geheel getal mislukte "
 
@@ -1600,9 +1553,6 @@ msgstr "Aanmaken van netwerk uit %s mislukte"
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "Aanmaken van node apparaat uit %s mislukte"
-
-msgid "Failed to create pipe"
-msgstr "Aanmaken van pipe mislukte"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -1967,10 +1917,6 @@ msgid "Failed to read file '%s'"
 msgstr "Lezen van bestand '%s' mislukte"
 
 #, c-format
-msgid "Failed to read from %s"
-msgstr "Lezen van %s mislukte"
-
-#, c-format
 msgid "Failed to read product/vendor ID for %s"
 msgstr "Lezen van product/leverancier ID voor %s mislukte"
 
@@ -2171,9 +2117,6 @@ msgstr "Schrijven van %zu bytes naar opslag volume met pad '%s' mislukte"
 #, c-format
 msgid "Failed to write vmx file '%s'"
 msgstr "Schrijven naar vmx bestand '%s' mislukte"
-
-msgid "Failure establishing SSH session."
-msgstr "SSH sessie opzetten mislukte."
 
 msgid "Failure to mask address"
 msgstr "Adres maskeren mislukte"
@@ -2619,9 +2562,6 @@ msgstr "Ongeldige vport operatie (%d)"
 
 msgid "Job type:"
 msgstr "Taak type:"
-
-msgid "Key must be empty, Power Hypervisor will create one for you."
-msgstr "Sleutel moet leeg zijn, Power Hypervisor zal er een voor jou aanmaken."
 
 msgid "Key of the current session differs from the key at last login"
 msgstr ""
@@ -3080,9 +3020,6 @@ msgstr "Output de pool informatie als een XML dump naar stdout."
 msgid "Output the vol information as an XML dump to stdout."
 msgstr "Output de volume informatie als een XML dump naar stdout."
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "PCI host apparaten moeten 'pci' adres type gebruiken"
-
 msgid "POST operation failed"
 msgstr "POST operatie mislukte"
 
@@ -3195,20 +3132,6 @@ msgstr "Pool %s is gestart\n"
 #, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Pool %s gemarkeerd om niet automatisch te starten\n"
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr ""
-"Mogelijk heb je geen IBM Tools geïnstalleerd in jouw LPAR. Neem contact met "
-"jouw ondersteuning om dit aan te laten zetten."
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"Mogelijk heb je geen IBM Tools geïnstalleerd in jouw LPAR. Neem contact met "
-"jouw ondersteuning om dit aan te laten zetten."
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel aangeroepen, maar geen TUNNELLED vlag ingesteld"
@@ -3600,9 +3523,6 @@ msgstr "Opslag volume niet gevonden"
 msgid "Storage volume not found: %s"
 msgstr "Opslag volume niet gevonden: %s"
 
-msgid "StoragePool name already exists."
-msgstr "StoragePool naam bestaat al."
-
 msgid "Suspend a running domain."
 msgstr "Een actief domein opschorten."
 
@@ -3720,9 +3640,6 @@ msgstr ""
 "       'quit' om af te sluiten\n"
 "\n"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr "INUX domein sockets worden op dit platform niet ondersteund"
-
 msgid "USB host device is missing bus/device information"
 msgstr "USB host apparaat ontbreekt bus/apparaat informatie"
 
@@ -3742,9 +3659,6 @@ msgstr "UUID:"
 msgid "Unable to access stream for '%s'"
 msgstr "Kan geen toegang tot stream krijgen voor '%s'"
 
-msgid "Unable to add LPAR to the table"
-msgstr "Kan LPAR niet aan de tabel toevoegen"
-
 msgid "Unable to become session leader"
 msgstr "Kan geen sessie leider worden"
 
@@ -3757,77 +3671,11 @@ msgstr "Kan geheugen parameters niet veranderen"
 msgid "Unable to change to root dir"
 msgstr "Kan niet veranderen naar root map"
 
-#, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "Kan LPAR niet aanmaken. Reden: '%s'"
-
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "Kan opslag pool niet aanmaken: %s"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "Kan volume niet aanmaken: %s"
-
-msgid "Unable to create new virtual adapter"
-msgstr "Kan geen nieuwe virtuele adapter aanmaken"
-
-msgid "Unable to determine domain's CPU."
-msgstr "Kan de CPU van domein niet bepalen."
-
-msgid "Unable to determine domain's max memory."
-msgstr "Kan max geheugen van domein niet bepalen."
-
-msgid "Unable to determine domain's memory."
-msgstr "Kan geheugen van domein niet bepalen."
-
-msgid "Unable to determine domain's name."
-msgstr "Kan de naam van domein niet bepalen."
-
-msgid "Unable to determine number of domains."
-msgstr "Kon aantal domeinen niet bepalen."
-
-msgid "Unable to determine storage pool's name."
-msgstr "Kan de naam van opslag pool niet bepalen."
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "Kan de uuid van opslag pool niet bepalen."
-
-msgid "Unable to determine storage pools's size."
-msgstr "Kan de grootte van opslag pool niet bepalen."
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "Kan de bron adapter van opslag pool niet bepalen."
-
-msgid "Unable to determine storage sp's name."
-msgstr "Kan de naam van opslag sp niet bepalen."
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "Kan de uuid van opslag sp niet bepalen."
-
-msgid "Unable to determine storage sps's size."
-msgstr "Kan de grootte van opslag sps niet bepalen."
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "Kan de bron adapter van opslag sps niet bepalen."
-
 msgid "Unable to format guestfwd port"
 msgstr "Kan guestfwd poort niet formatteren"
 
-msgid "Unable to generate random uuid."
-msgstr "Kan geen willekeurige uuid genereren"
-
-msgid "Unable to get VIOS name"
-msgstr "Kan VIOS naam niet krijgen"
-
-msgid "Unable to get VIOS profile name."
-msgstr "Kan VIOS profiel naam niet krijgen."
-
 msgid "Unable to get domain status"
 msgstr "Kan domein status niet krijgen"
-
-msgid "Unable to get free slot number"
-msgstr "Kan geen vrije sleuf nummer krijgen"
 
 msgid "Unable to get memory parameters"
 msgstr "Kan geheugen parameters niet verkrijgen"
@@ -3862,19 +3710,12 @@ msgid "Unable to open UNIX socket"
 msgstr "Kan UNIX socket niet openen"
 
 #, c-format
-msgid "Unable to open monitor path %s"
-msgstr "Kon monitor pad %s niet openen"
-
-#, c-format
 msgid "Unable to open stream for '%s'"
 msgstr "Kan stream niet openen voor '%s'"
 
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "kan chardev bestand '%s' niet voor-aanmaken"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "Kan monitor niet in niet-blokkeren mode zetten"
 
 #, c-format
 msgid "Unable to remove %s (%d)"
@@ -3889,9 +3730,6 @@ msgstr "Kan container vervolg boodschap niet sturen"
 
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Kan monitor vlag close-on-exec niet instellen"
-
-msgid "Unable to write information to local file."
-msgstr "Kan informatie niet naar lokaal bestand schrijven."
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -4199,10 +4037,6 @@ msgstr "XML node bevat geen tekst, verwacht een xsd:dateTime waarde"
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "XPath evaluatie van antwoord van aanroep naar '%s' mislukte"
 
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr ""
-"Je probeert het aantal CPU's groter in te stellen dan het maximaal mogelijke."
-
 #, c-format
 msgid "[--%s <number>]"
 msgstr "[--%s <nummer>]"
@@ -4482,9 +4316,6 @@ msgstr "kan log map %s niet aanmaken"
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "kan pad '%s' niet aanmaken"
-
-msgid "cannot create pipe"
-msgstr "kan pipe niet aanmaken"
 
 #, c-format
 msgid "cannot create snapshot directory '%s'"
@@ -5219,10 +5050,6 @@ msgid "could not use Xen hypervisor entry %s"
 msgstr "kon Xen hypervisor ingang %s niet gebruiken"
 
 #, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "kan niet schrijven naad pid bestand %s voor %d"
-
-#, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "kan niet schrijven radvd configuratie bestand '%s' niet schrijven"
 
@@ -5719,9 +5546,6 @@ msgstr "aanmaken profiel mislukte"
 msgid "failed to create socket"
 msgstr "aanmaken socket faalde"
 
-msgid "failed to determine host name"
-msgstr "bepalen van host naam mislukte"
-
 msgid "failed to enable IP forwarding"
 msgstr "IP doorsturen aanzetten mislukte"
 
@@ -5899,9 +5723,6 @@ msgstr "autostart markering van pool %s verwijderen mislukte"
 msgid "failed to wait on condition"
 msgstr "wachten op conditie mislukte"
 
-msgid "failed to wake up polling thread"
-msgstr "wakker maken van poll thread mislukte"
-
 msgid "failed to write configuration file"
 msgstr "schrijven naar configuratie bestand mislukte"
 
@@ -6009,9 +5830,6 @@ msgstr "verkrijg waarde van een draaiend domein"
 
 msgid "get value to be used on next boot"
 msgstr "verkrijg waarde te gebruiken bij volgende keer opstarten"
-
-msgid "getting time of day"
-msgstr "tijd van de dag verkrijgen"
 
 msgid "given uuid does not match XML uuid"
 msgstr "opgegeven uuid komt niet overeen met XML uuid"
@@ -6969,10 +6787,6 @@ msgstr "geen verbinding driver beschikbaar voor %s"
 msgid "no device capabilities for '%s'"
 msgstr "geen apparaat mogelijkheden voor '%s'"
 
-#, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "geen schijf formaat voor %s en onderzoeken is uitgezet"
-
 msgid "no domain XML passed"
 msgstr "geen domein XML doorgegeven"
 
@@ -7216,9 +7030,6 @@ msgstr "Voer een live core dump uit als dit ondersteund wordt"
 msgid "persist VM on destination"
 msgstr "permanente VM op bestemming"
 
-msgid "poll on socket failed"
-msgstr "poll op socket mislukte"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "pool '%s' bestaat al met uuid %s"
@@ -7295,10 +7106,6 @@ msgid "ps2 bus does not support %s input device"
 msgstr "ps2 bus ondersteunt %s input apparaat niet"
 
 #, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: kan huidige map niet verkrijgen: %s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu emulator '%s' heeft geen ondersteuning voor xen"
 
@@ -7307,9 +7114,6 @@ msgstr "qemu toestand driver is niet actief"
 
 msgid "quit this interactive terminal"
 msgstr "sluit deze interactieve terminal"
-
-msgid "read on wakeup fd failed"
-msgstr "lezen van wakeup fd mislukte"
 
 msgid "read-only connection"
 msgstr "alleen-lezen verbinding"
@@ -7835,12 +7639,6 @@ msgstr "kan monitor type niet afhandelen: %s"
 
 msgid "unable to initialize VirtualBox driver API"
 msgstr "kan VirtualBox driver API niet initialiseren"
-
-msgid "unable to make pipe"
-msgstr "kan pipe niet maken"
-
-msgid "unable to open pipe"
-msgstr "kan pipe niet openen"
 
 #, c-format
 msgid "unable to parse mac address '%s'"
@@ -8474,10 +8272,6 @@ msgid "unsupported disk type %s"
 msgstr "niet-ondersteund schijf type %s"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "niet-ondersteund schijf type '%s'"
-
-#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "niet-ondersteunde driver naam '%s' voor schijf '%s'"
 
@@ -8620,9 +8414,6 @@ msgstr "virDomainGetXMLDesc met secure flag"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc met secure flag"
 
-msgid "virExec is not implemented for WIN32"
-msgstr "virExec is niet geïmplementeerd voor WIN32"
-
 msgid "virGetGroupID is not available"
 msgstr "virGetGroupID is niet beschikbaar"
 
@@ -8732,10 +8523,6 @@ msgstr "xml data bestand waarnaar te exporteren"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime waarde '%s' heeft onverwacht formaat"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "xsd:dateTime waarde '%s' is te lang voor bestemming"
 
 msgid "yes"
 msgstr "ja"

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -367,10 +367,6 @@ msgstr ""
 "%s"
 
 #, c-format
-msgid "%s:%zu: %s '%s'"
-msgstr "%s:%zu: %s '%s'"
-
-#, c-format
 msgid "'%s' controller cannot be hot plugged."
 msgstr "'%s' ਨਿਯੰਤਰਕ ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
 
@@ -628,16 +624,9 @@ msgstr "ਇਸ ਡੋਮੇਨ ਲਈ ਸਰਗਰਮ ਕੰਸੋਲ ਸੈਸ਼�
 msgid "Active:"
 msgstr "ਸਰਗਰਮ:"
 
-msgid "Address family for hostname not supported"
-msgstr "ਮੇਜ਼ਬਾਨ ਲਈ ਐਡਰੈੱਸ ਫੈਮਲੀ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "ਕੋਰ ਨੂੰ ਸੁੱਟਣ ਤੋਂ ਬਾਅਦ, libxenlight ਨਾਲ ਡੋਮੇਨ '%d' ਨੂੰ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
-
-#, c-format
-msgid "Agent path %s too big for destination"
-msgstr "ਸਾਕਟ ਮਾਰਗ %s ਨੀਯਤ ਟਿਕਾਣੇ ਲਈ ਬਹੁਤ ਵੱਡਾ ਹੈ"
 
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "SSH ਏਜੰਟ ਦੁਆਰਾ ਮੁਹੱਈਆ ਕਰਵਾਈਆਂ ਗਈਆਂ ਸਾਰੀਆਂ ਸ਼ਨਾਖਤਾਂ ਨਾਂਮਨਜੂਰ ਹੋਈਆਂ"
@@ -648,9 +637,6 @@ msgid ""
 msgstr ""
 "ਕਰੀਡੈਂਸ਼ੀਅਲਾਂ ਨਾਲ ਦਿੱਤੇ ਗਏ ਸਾਰੇ ਮੁਹੱਈਆ ਕਰਵਾਏ ਗਏ ਪ੍ਰਮਾਣਿਕਤਾ ਤਰੀਕੇ ਸਰਵਰ ਦੁਆਰਾ ਨਾਂਮਨਜ਼ੂਰ ਕਰ "
 "ਦਿੱਤੇ ਗਏ ਸਨ"
-
-msgid "All requests done"
-msgstr "ਸਭ ਬੇਨਤੀਆਂ ਮੁਕੰਮਲ"
 
 msgid "Allocation"
 msgstr "ਨਿਰਧਾਰਨ:"
@@ -674,9 +660,6 @@ msgstr "ਡੋਮੇਨ %s ਲਈ ਇੱਕ ਹੋਰ ਕਾਲਬੈਕ ਬੰ�
 
 msgid "AnyType is missing 'type' property"
 msgstr "AnyType ਵਿੱਚ 'type' ਗੁਣ ਗੁੰਮ ਹੈ"
-
-msgid "Argument buffer too small"
-msgstr "ਆਰਗੂਮੈਂਟ ਬਫਰ ਬਹਤੁ ਛੋਟਾ ਹੈ"
 
 msgid "Arguments must be non null"
 msgstr "ਅਾਰਗੂਮੈਂਟ non null ਹੋਣੇ ਜਰੂਰੀ ਹਨ"
@@ -726,9 +709,6 @@ msgstr "'%s' ਨੂੰ NAT ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ। NAT 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "ਐਟਰੀਬਿਊਟ ਮੋਡ ਸਿਰਫ ਗਿਸਟ CPU ਲਈ ਮਨਜੂਰ ਹੈ"
 
-msgid "Authentication failed"
-msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਫੇਲ ਹੋਈ"
-
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
@@ -764,9 +744,6 @@ msgstr "ipv4 ਅੰਤ ਪਤਾ '%s' <nat> ਵਿੱਚ <forward> ਵਿੱਚ 
 #, c-format
 msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
 msgstr "ipv4 ਸ਼ੁਰੂਆਤ ਪਤਾ '%s' <nat> ਵਿੱਚ <forward> ਵਿੱਚ ਨੈੱਟਵਰਕ %s ਵਿੱਚ ਗਲਤ"
-
-msgid "Bad value for ai_flags"
-msgstr "ai_flags ਲਈ ਗਲਤ ਮੁੱਲ"
 
 msgid "Bad value for nativeMode"
 msgstr "nativeMode ਲਈ ਬੁਰਾ ਮੁੱਲ"
@@ -1035,17 +1012,11 @@ msgstr "pid ਫਾਇਲ ਮਾਰਗ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ
 msgid "Can't determine socket paths"
 msgstr "ਸਾਕਟ ਮਾਰਗ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-msgid "Can't determine user directory"
-msgstr "ਯੂਜ਼ਰ ਡਾਇਰੈਕਟਰੀ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
 msgid "Can't find prlctl command in the PATH env"
 msgstr "PATH env ਵਿੱਚ prlctl ਕਮਾਂਡ ਨਹੀਂ ਲੱਭੀ"
 
 msgid "Can't initialize access manager"
 msgstr "ਦਖਲ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-msgid "Can't initialize logging"
-msgstr "ਲਾਗਿੰਗ ਚਾਲੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #, c-format
 msgid "Can't load config file: %s: %s"
@@ -1156,9 +1127,6 @@ msgstr "ਫਾਈਲ '%s' ਮਿਟਾ ਨਹੀਂ ਸਕਦਾ"
 
 msgid "Cannot determine balloon device path"
 msgstr "ਬੈਲੂਨ ਯੰਤਰ ਰਾਹ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-msgid "Cannot determine free memory"
-msgstr "ਖਾਲੀ ਮੈਮੋਰੀ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 msgid "Cannot determine system clock HZ"
 msgstr "ਸਿਸਟਮ ਘੜੀ ਦੇ HZ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -1350,10 +1318,6 @@ msgid "Cannot parse mode string"
 msgstr "ਮੋਡ ਸਤਰ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "ਵੀਡੀਓ ਰੈਮ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "ਸਾਕਟ ਐਡਰੈੱਸ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ: %s"
 
@@ -1527,9 +1491,6 @@ msgstr "ਡਾਟਾ ਨਹੀਂ ਭੇਜ ਸਕਦਾ"
 
 msgid "Capacity"
 msgstr "ਸਮਰੱਥਾ"
-
-msgid "Capacity cannot be empty."
-msgstr "ਸਮਰੱਥਾ ਖਾਲੀ ਨਹੀਂ ਹੋ ਸਕਦੀ।"
 
 msgid "Capacity:"
 msgstr "ਸਮਰੱਥਾ:"
@@ -1789,10 +1750,6 @@ msgstr "ਮੈਮੋਰੀ  ਖੇਤਰ ਨੂੰ ਤੇ ਸੰਭਾਲ ਨਹ
 msgid "Could not change scheduler parameters: %s"
 msgstr "ਸਮਾਂ-ਤਹਿ ਪੈਰਾਮੀਟਰ ਵੇਖਾਓ/ਸੈੱਟ-ਕਰੋ: %s"
 
-#, c-format
-msgid "Could not close %s"
-msgstr "%s ਨੂੰ ਚਲਾ ਨਹੀਂ ਸਕਦਾ"
-
 msgid "Could not configure network"
 msgstr "ਨੈੱਟਵਰਕ ਨੂੰ ਸੰਰਚਿਤ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
@@ -1812,14 +1769,6 @@ msgstr "ਮੂਲ ਸੰਰਨਚਾ ਦੀ ਨਕਲ ਨਹੀਂ ਕਰ ਸਕ
 #, c-format
 msgid "Could not copy volume: %s"
 msgstr "ਵਾਲੀਅਮ ਕਾਪੀ ਨਹੀਂ ਕਰ ਸਕਿਆ: %s"
-
-#, c-format
-msgid "Could not create Session instance, rc = 0x%08x"
-msgstr "ਸੈਸ਼ਨ ਨਮੂਨਾ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਿਆ, rc = 0x%08x"
-
-#, c-format
-msgid "Could not create VirtualBox instance, rc = 0x%08x"
-msgstr "VirtualBox ਨਮੂਨਾ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਿਆ, rc = 0x%08x"
 
 msgid "Could not create filter"
 msgstr "ਫਿਲਟਰ ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
@@ -1856,9 +1805,6 @@ msgstr "pull ਹੁੰਗਾਰਾ ਆਈਟਮ ਨੂੰ ਗੈਰ-ਲੜੀਬ
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "ਡੋਮੇਨ ਖਤਮ ਕਰਨ ਲਈ ਫੇਲ: %s"
-
-msgid "Could not determine home directory"
-msgstr "ਘਰੇਲੂ ਡਾਇਰੈਕਟਰੀ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #, c-format
 msgid "Could not determine kernel version from string %s"
@@ -2218,10 +2164,6 @@ msgid "Could not parse 'bridge/stp_state' '%s' for '%s'"
 msgstr "'%s' ਨੂੰ '%s' ਲਈ 'bridge/stp_state' ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
 #, c-format
-msgid "Could not parse IID from '%s', rc = 0x%08x"
-msgstr "IID ਨੂੰ '%s' ਤੋਂ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ, rc = 0x%08x"
-
-#, c-format
 msgid "Could not parse MTU value '%s'"
 msgstr "MTU ਮੁੱਲ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
@@ -2264,14 +2206,6 @@ msgstr "usb ਫਾਇਲ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦ
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
 msgstr "'%s' ਤੋਂ ਯੋਗ ਡਿਸਕ ਸੂਚੀ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "'%s' ਤੋਂ ਵਰਜਨ ਨੰਬਰ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
-msgid "Could not query registry value '%s\\%s'"
-msgstr "ਰਜਿਸਟਰੀ ਮੁੱਲ '%s\\%s' ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -2424,9 +2358,6 @@ msgstr "ਡਿਸਕ ਐਡਰੈੱਸ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ 
 #, c-format
 msgid "Could not wipe volume: %s"
 msgstr "ਵਾਲੀਅਮ ਵਾਈਪ ਨਹੀਂ ਕਰ ਸਕਿਆ: %s"
-
-msgid "Could not write to stream"
-msgstr "ਸਟਰੀਮ ਤੇ ਲਿਖ ਨਹੀਂ ਸਕਿਆ"
 
 #, c-format
 msgid "Couldn't create lock file for device '%s' in path '%s'"
@@ -2852,9 +2783,6 @@ msgstr ""
 "ਡੋਮੇਨ XML ਵਿੱਚ ਕੋਈ ਫਾਇਲ-ਅਧਾਰਿਤ ਹਾਰਡਡਿਸਕ ਨਹੀਂ ਹੈ, VMX ਫਾਇਲ ਲਈ ਡਾਟਾਸਟੋਰ ਅਤੇ ਮਾਰਗ ਹਟਾ "
 "ਨਹੀਂ ਸਕਦਾ"
 
-msgid "Domain XML must contain at least one <disk> element."
-msgstr "XML ਡੋਮੇਨ ਵਿੱਚ ਘੱਟੋ-ਘੱਟ ਇੱਕ <disk> ਤੱਤ ਹੋਣਾ ਜਰੂਰੀ ਹੈ।"
-
 msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ, ਮੌਜੂਦਾ ਡੋਮੇਨਾਂ ਦੀ ਸੋਧ ਹਾਲੇ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
@@ -3078,12 +3006,6 @@ msgstr "ਗਲਤੀ ਸੂਚਨਾ ਕਾਲਬੈਕ ਮੁਹੱਈਆ ਕ�
 msgid "Error opening file %s"
 msgstr "ਫਾਇਲ %s ਖੋਲਣ ਵਿੱਚ ਫੇਲ"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "'path' ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਗਲਤੀ। ਗਲਤ ਅੱਖਰ।"
-
-msgid "Error parsing volume XML."
-msgstr "ਵਾਲੀਅਮ XML ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਗਲਤੀ।"
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "ਸੀਕਰੇਟ ਪੜਨ ਦੌਰਾਨ ਗਲਤੀ: %s"
@@ -3094,13 +3016,6 @@ msgstr "ਫਾਇਰਵਾਲ ਬਣਾਉਣ ਵੇਲੇ ਗਲਤੀ"
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "ਫਾਇਰਵਾਲ ਬਣਾਉਣ ਵੇਲੇ ਗਲਤੀ: %s"
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "%s ਐਡਰੈੱਸ ਜਾਣਕਾਰੀ ਲੈਣ ਦੌਰਾਨ ਗਲਤੀ"
-
-msgid "Error while opening SSH session."
-msgstr "SSH ਸ਼ੈਸ਼ਨ ਖੋਲਣ ਦੌਰਾਨ ਗਲਤੀ।"
 
 msgid "Error while processing command's IO"
 msgstr "ਕਮਾਂਡ ਦੇ IO ਤੇ ਕਾਰਵਾਈ ਕਰਨ ਦੌਰਾਨ ਗਲਤੀ"
@@ -3113,10 +3028,6 @@ msgstr "/proc/cgroups ਪੜ੍ਹਨ ਦੌਰਾਨ ਗਲਤੀ"
 
 msgid "Error while reading the domain name"
 msgstr "ਡਰਾਈਵਰ ਮੁੜ-ਲੋਡ ਕਰਨ ਵਿੱਚ ਗਲਤੀ"
-
-#, c-format
-msgid "Escape character is %s\n"
-msgstr "ਅਸਕੇਪ ਅੱਖਰ ਹੈ %s\n"
 
 #, c-format
 msgid "Ethernet controller index %d out of [0..3] range"
@@ -3477,10 +3388,6 @@ msgid "Failed to connect socket to '%s'"
 msgstr "'%s' ਨਾਲ ਜੁੜਨ ਵਿੱਚ ਅਸਫਲ"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "%s ਨਾਲ ਜੁੜਨ ਵਿੱਚ ਅਸਫਲ"
-
-#, c-format
 msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "ਦੁਰੇਡੇ libvirt URI %s ਨਾਲ ਜੁੜਨ ਵਿੱਚ ਅਸਮਰੱਥ: %s"
 
@@ -3575,9 +3482,6 @@ msgstr "%s ਤੋਂ ਨੈੱਟਵਰਕ ਬਣਾਉਣ ਲਈ ਫੇਲ"
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "%s ਤੋਂ ਨੋਡ ਜੰਤਰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
-
-msgid "Failed to create pipe"
-msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -4263,10 +4167,6 @@ msgstr "%s ਲਈ PCI ਸੰਰਚਨਾ ਸਪੇਸ ਪੜ੍ਹਨ ਵਿੱ�
 msgid "Failed to read file '%s'"
 msgstr "ਫਾਇਲ '%s' ਨੂੰ ਪੜਨ ਵਿੱਚ ਫੇਲ"
 
-#, c-format
-msgid "Failed to read from %s"
-msgstr "%s ਤੋਂ ਪੜਨ ਵਿੱਚ ਫੇਲ"
-
 msgid "Failed to read from signal pipe"
 msgstr "ਸਿਗਨਲ ਪਾਈਪ ਤੋਂ ਪੜ੍ਹਨ ਲਈ ਅਸਫ਼ਲ"
 
@@ -4687,9 +4587,6 @@ msgstr "ਫੇਲ੍ਹ।"
 msgid "Failure action %s is not supported by sanlock"
 msgstr "ਅਸਫਲਤਾ ਕਾਰਵਾਈ %s sanlock ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
-msgid "Failure establishing SSH session."
-msgstr "SSH ਸ਼ੈਸ਼ਨ ਖੋਲਣ ਦੌਰਾਨ ਗਲਤੀ।"
-
 msgid "Failure to mask address"
 msgstr "ਸਾਕ ਐਡਰੈੱਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
@@ -4703,9 +4600,6 @@ msgstr "'ipv6' ਪਰਿਵਾਰ ਨੂੰ ਗੈਰ-IPv6 ਪਤੇ '%s' ਲਈ
 #, c-format
 msgid "Feature %s required by CPU model %s not found"
 msgstr "CPU ਮਾਡਲ %s ਲਈ ਵਿਸ਼ੇਸ਼ਤਾ %s ਨਹੀਂ ਲੱਭੀ"
-
-msgid "Field <src> under <disk> on the domain XML file is missing."
-msgstr "XML ਡੋਮੇਨ ਫਾਈਲ ਉੱਤੇ <src> ਖੇਤਰ <disk> ਵਿੱਚ ਗੁੰਮ ਹੈ। "
 
 msgid "Field kernel memory too long for destination"
 msgstr "ਨੀਯਤ ਟਿਕਾਣੇ ਲਈ ਫੀਲਡ cpu_shares ਬਹੁਤ ਲੰਬਾ ਹੈ"
@@ -4818,9 +4712,6 @@ msgstr "GET ਕਾਰਵਾਈ ਫੇਲ: %s"
 
 msgid "GNUTLS call error"
 msgstr "GNUTLS ਕਾਲ ਗਲਤੀ"
-
-msgid "GNUTLS support not available in this build"
-msgstr "ਇਸ ਉਸਾਰੀ ਵਿੱਚ GNUTLS ਸਮਰਥਨ ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 
 msgid "Get block device size info for a domain."
 msgstr "ਡੋਮੇਨ ਲਈ ਜੰਤਰ ਬਲਾਕ ਅਕਾਰ ਜਾਣਕਾਰੀ ਪਤਾ ਕਰੋ।"
@@ -5220,9 +5111,6 @@ msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
 "only"
 msgstr "ਇੰਟਰਫੇਸ ਕਿਸਮ hostdev ਹਾਲੇ SR-IOV ਆਭਾਸੀ ਫੰਕਸ਼ਨਾਂ ਉੱਤੇ ਹੀ ਸਮਰਥਿਤ ਹੈ"
-
-msgid "Interrupted by a signal"
-msgstr "ਸਿਗਨਲ ਕਰਕੇ ਰੁਕਾਵਟ"
 
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
@@ -5673,9 +5561,6 @@ msgstr "ਕਰਨਲ ਨਿੱਜੀ devpts ਦਾ ਸਮਰਥਨ ਨਹੀਂ 
 msgid "Kernel doesn't support user namespace"
 msgstr "ਕਰਨਲ ਯੂਜ਼ਰ ਨਾਂ ਥਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ"
 
-msgid "Key must be empty, Power Hypervisor will create one for you."
-msgstr "ਕੁੰਜੀ ਖਾਲੀ ਹੋਣੀ ਜਰੂਰੀ ਹੈ, ਪਾਵਰ ਹਾਈਪਰਵਾਈਸਰ ਤੁਹਾਡੇ ਲਈ ਇੱਕ ਬਣਾਏਗਾ।"
-
 msgid "Key of the current session differs from the key at last login"
 msgstr "ਵਰਤਮਾਨ ਸੈਸ਼ਨ ਦੀ ਚਾਬੀ ਪਿਛਲੇ ਸੈਸ਼ਨ ਦੀ ਚਾਬੀ ਨਾਲੋਂ ਵੱਖਰੀ ਹੈ"
 
@@ -5801,10 +5686,6 @@ msgstr ""
 "ਕੀਤੀ ਸੀ"
 
 #, c-format
-msgid "Malformed TLS whitelist regular expression '%s'"
-msgstr "ਗਲਤ ਬਣਤਰ ਵਾਲਾ TLS whitelist ਨਿਯਮਿਤ ਲਹਿਜਾ '%s'"
-
-#, c-format
 msgid "Malformed ctrl-alt-del setting '%s'"
 msgstr "ਗਲਤ ਮੈਕ ਐਡਰੈੱਸ '%s'"
 
@@ -5858,9 +5739,6 @@ msgstr "ਵੱਧੋ-ਵੱਧ ਮੈਮੋਰੀ:"
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
 msgstr "ਮੈਮੋਰੀ '%llu' ਲਾਜਮੀ %llu ਤੋਂ ਘੱਟ ਹੋਵੇ"
-
-msgid "Memory allocation failure"
-msgstr "ਮੈਮੋਰੀ ਨਿਰਧਾਰਨ ਫੇਲ"
 
 #, c-format
 msgid ""
@@ -6267,9 +6145,6 @@ msgstr "ਮਾਡਲ %s ਨੀਯਤ ਟਿਕਾਣੇ ਲਈ ਬਹੁਤ ਵ�
 msgid "Model name contains invalid characters"
 msgstr "ਮਾਡਲ ਨਾਂ ਵਿੱਚ ਗਲਤ ਅੱਖਰ ਹਨ"
 
-msgid "Monitor does not support sending of file descriptors"
-msgstr "ਮਾਨੀਟਰ ਫਾਇਲ ਵੇਰਵਾ ਭੇਜਣ ਲਈ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
-
 #, c-format
 msgid "Monitor path %s too big for destination"
 msgstr "ਨੀਯਤ ਟਿਕਾਣੇ ਲਈ ਮਾਨੀਟਰ ਟਿਕਾਣਾ %s ਬਹੁਤ ਲੰਬਾ ਹੈ"
@@ -6355,9 +6230,6 @@ msgstr "ਨਾਂ"
 #, c-format
 msgid "Name of chain is longer than %u characters"
 msgstr "ਚੇਨ ਦਾ ਨਾਂ %u ਅੱਖਰਾਂ ਤੋਂ ਲੰਬਾ ਹੈ"
-
-msgid "Name or service not known"
-msgstr "ਨਾਂ ਜਾਂ ਸਰਵਿਸ ਅਣਜਾਣ ਹਨ"
 
 msgid "Name:"
 msgstr "ਨਾਂ:"
@@ -6528,9 +6400,6 @@ msgstr "ਕੋਈ PCI ਬਸਾਂ ਉਪਲੱਬਧ ਨਹੀਂ ਹਨ"
 msgid "No active operation on device: %s"
 msgstr "ਜੰਤਰ ਲਈ ਕੋਈ ਸਰਗਰਮ ਕਾਰਵਾਈ ਨਹੀਂ: %s"
 
-msgid "No address associated with hostname"
-msgstr "ਮੇਜ਼ਬਾਨ ਲਈ ਕੋਈ ਐਡਰੈੱਸ ਸੰਬੰਧਿਤ ਨਹੀਂ"
-
 #, c-format
 msgid "No args present for signature %s"
 msgstr "ਦਸਤਖਤ %s ਲਈ ਕੋਈ args ਮੌਜੂਦ ਨਹੀਂ"
@@ -6697,9 +6566,6 @@ msgstr "ਨਾ-ਰੱਦਹੋਣਯੋਗ ਕਾਰਜ ਨਾ-ਜਾਵਬ ਦ�
 msgid "Non-empty feature list specified without CPU model"
 msgstr "ਨਾ-ਖਾਲੀ ਵਿਸ਼ੇਸ਼ਤਾ ਸੂਚੀ ਨਿਰਧਾਰਤ ਬਿਨਾਂ CPU ਮਾਡਲ"
 
-msgid "Non-recoverable failure in name resolution"
-msgstr "ਨਾਂ ਰੈਜ਼ੋਲੂਸ਼ਨ ਵਿੱਚ ਨਾ-ਪ੍ਰਾਪਤੀ ਯੋਗ ਅਸਫਲਤਾ"
-
 msgid "None"
 msgstr "ਕੋਈ ਨਹੀਂ"
 
@@ -6782,12 +6648,6 @@ msgstr "ਵਿਖਾਉਣ ਲਈ ਸਿਰਫ਼ %d CPU ਉਪਲੱਬਧ\n"
 #, c-format
 msgid "Only '%s' filesystem type is supported"
 msgstr "ਸਿਰਫ '%s' ਫਾਇਲਸਿਸਟਮ ਕਿਸਮ ਨੂੰ ਸਹਿਯੋਗ ਹੈ"
-
-msgid "Only 'credit' scheduler is supported"
-msgstr "ਸਿਰਫ 1 ਕੰਟਰੋਲਰ ਸਹਿਯੋਗੀ ਹੈ"
-
-msgid "Only 'scsi_host' adapter is supported"
-msgstr "ਸਿਰਫ 'scsi_host' ਅਡਾਪਟਰ ਸਮਰਥਿਤ ਹੈ"
 
 msgid "Only IPv4 or IPv6 addresses can be used with iptables"
 msgstr "iptables ਨਾਲ ਸਿਰਫ IPv4 ਜਾਂ IPv6 ਪਤੇ ਹੀ ਵਰਤੇ ਜਾ ਸਕਦੇ ਹਨ"
@@ -6954,9 +6814,6 @@ msgstr ""
 msgid "PCI device %s is not assignable"
 msgstr "ਜੰਤਰ %s ਇੱਕ PCI ਜੰਤਰ ਨਹੀਂ ਹੈ"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "PCI ਹੋਸਟ ਜੰਤਰਾਂ ਨੂੰ 'pci' ਐਡਰੈੱਸ ਕਿਸਮ ਵਰਤਣੀ ਚਾਹੀਦੀ ਹੈ"
-
 msgid "POST operation failed"
 msgstr "POST ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
 
@@ -6975,9 +6832,6 @@ msgstr "ਪੈਰਾਮੀਟਰ '%s' ਸਤਰ ਨਹੀਂ ਹੈ"
 #, c-format
 msgid "Parameter '%s' is not supported by this kernel"
 msgstr "ਪੈਰਾਮੀਟਰ '%s' ਇਸ ਕਰਨਲ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
-msgid "Parameter string not correctly encoded"
-msgstr "ਪੈਰਾਮੀਟਰ ਸਤਰ ਠੀਕ ਤਰਾਂ ਇਨਕੋਡ ਨਹੀਂ ਕੀਤੀ"
 
 msgid "Parent"
 msgstr "ਮੁੱਢਲਾ"
@@ -7148,20 +7002,6 @@ msgstr "ਇਸਦੀ ਸੰਭਾਲੀ ਹੋਈ ਨਕਲ ਤੋਂ ਇੱਕ 
 msgid "Port profile Associate failed for %s"
 msgstr "%s ਲਈ ਪੋਰਟ ਪਰੋਫਾਈਲ ਸੰਜੋਗ ਫੇਲ ਹੋਇਆ ਹੈ"
 
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr ""
-"ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਕੋਲ LPAR ਵਿੱਚ IBM ਟੂਲ ਇੰਸਟਾਲ ਨਹੀਂ ਕੀਤੇ ਹਨ। ਇਸ ਫੀਚਰ ਨੂੰ ਯੋਗ ਕਰਨ ਲਈ "
-"ਆਪਣੀ ਸਪੋਰਟ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਕੋਲ LPAR ਵਿੱਚ IBM ਟੂਲ ਇੰਸਟਾਲ ਨਹੀਂ ਕੀਤੇ ਹਨ। ਇਸ ਫੀਚਰ ਨੂੰ ਯੋਗ ਕਰਨ ਲਈ "
-"ਆਪਣੀ ਸਪੋਰਟ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel ਕਾਲ ਕੀਤੀ ਗਈ ਪਰ ਕੋਈ TUNNELLED ਫਲੈਗ ਸੈੱਟ ਨਹੀਂ"
 
@@ -7206,9 +7046,6 @@ msgstr "%zu %p %p [[[%s]]][[[%s]]] ਕਾਰਵਾਈ"
 
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਕਾਰਜ CPU affinity ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
-msgid "Processing request in progress"
-msgstr "ਕਾਰਜ ਬੇਨਤੀ ਤੇ ਕਾਰਵਾਈ ਚੱਲ ਰਹੀ ਹੈ"
 
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
@@ -7336,14 +7173,6 @@ msgid "Refusing to undefine while domain managed save image exists"
 msgstr "ਡੋਮੇਨ ਪ੍ਰਬੰਧਿਤ save image ਦੀ ਹੋਂਦ ਹੁੰਦੇ ਹੋਏ ਵੀ ਗੈਰ-ਪ੍ਰਭਾਸ਼ਿਤ ਕਰਨ ਤੋਂ ਇਨਕਾਰ ਹੋ ਰਿਹਾ"
 
 #, c-format
-msgid "Registry value '%s\\%s' has unexpected type"
-msgstr "ਪੰਜੀਕਰਣ ਮੁੱਲ '%s\\%s' ਦੀ ਕਿਸਮ ਅਣਕਿਆਸੀ ਹੈ"
-
-#, c-format
-msgid "Registry value '%s\\%s' is too short"
-msgstr "ਪੰਜੀਕਰਣ ਮੁੱਲ '%s\\%s' ਬਹੁਤ ਛੋਟਾ ਹੈ"
-
-#, c-format
 msgid "Remote command terminated with non-zero code: %d"
 msgstr "ਕਮਾਂਡ ਨਾਨ-ਜ਼ੀਰੋ ਨਤੀਜੇ ਨਾਲ ਬੰਦ ਹੋ ਗਈ: %d"
 
@@ -7370,12 +7199,6 @@ msgstr "ਮਾਈਗਰੇਸ਼ ਦੌਰਾਨ ਡੋਮੇਨ ਨੂੰ ਨਵ�
 
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "ਇੱਕ ਫਾਇਲ ਵਿੱਚ ਇੱਕ ਸੰਭਾਲੀ ਹਾਲਤ ਤੋਂ ਇੱਕ ਡੋਮੇਨ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰੋ"
-
-msgid "Request canceled"
-msgstr "ਬੇਨਤੀ ਰੱਦ ਕੀਤੀ ਹੈ"
-
-msgid "Request not canceled"
-msgstr "ਬੇਨਤੀ ਰੱਦ ਨਹੀਂ ਕੀਤੀ ਹੈ"
 
 #, c-format
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
@@ -7738,9 +7561,6 @@ msgstr "ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਕਾਰਜ CPU affinity ਨੂ�
 msgid "Serial port index %d out of [0..3] range"
 msgstr "ਸੀਰੀਅਲ ਪੋਰਟ ਸੂਚੀ %d [0..3] ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ"
 
-msgid "Servname not supported for ai_socktype"
-msgstr "Servname ਨੂੰ ai_socktype ਲਈ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
 msgid "Set a secret value."
 msgstr "ਇੱਕ ਸੀਕਰੇਟ ਮੁੱਲ ਸੈੱਟ ਕਰੋ।"
 
@@ -8024,9 +7844,6 @@ msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਨਹੀਂ ਲੱਭਿਆ"
 msgid "Storage volume not found: %s"
 msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
-msgid "StoragePool name already exists."
-msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
-
 #, c-format
 msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr "ਧਾਰਾ ਪ੍ਰਵਾਹ ਡਾਟਾ ਭੇਜਣ ਲਈ ਬਹੁਤ ਲੰਬਾ (%zu ਬਾਈਟਾਂ ਚਾਹੀਦੀਆਂ, %zu ਬਾਈਟਾਂ ਉਪਲੱਬਧ)"
@@ -8078,9 +7895,6 @@ msgid ""
 msgstr ""
 "ਪ੍ਰਾਹੁਣਾ OS ਦਾ ਪਾਵਰ ਪ੍ਰਬੰਧਨ ਵਰਤ ਕੇ ਕਿਸੇ ਚੱਲਦੀ ਹੋਈ ਡੋਮੇਨ ਨੂੰ ਮੁਲਤਵੀ ਕਰੋ। (ਟਿੱਪਣੀ: ਅਜਿਹਾ ਕਰਨ "
 "ਲਈ ਇੱਕ ਸੰਰਚਿਤ ਪ੍ਰਾਹੁਣਾ ਏਜੰਟ ਅਤੇ ਪ੍ਰਾਹੁਣੇ OS ਤੋਂ ਚਾਲੂ ਹੋਣਾ ਲੋੜੀਂਦਾ ਹੈ)।"
-
-msgid "System error"
-msgstr "ਸਿਸਟਮ ਗਲਤੀ"
 
 msgid "System is in use"
 msgstr "ਸਟਰੀਮ ਖੁੱਲੀ ਨਹੀਂ ਹੈ"
@@ -8459,9 +8273,6 @@ msgstr "ਟਾਰਗਿਟ ਵੀਡੀਓ ਕਾਰਡ vram %u ਸਰੋਤ %u 
 msgid "Target watchdog model %s does not match source %s"
 msgstr "ਟਾਰਗਿਟ watchdog ਮਾਡਲ %s ਸੋਰਸ %s ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ"
 
-msgid "Temporary failure in name resolution"
-msgstr "ਨਾਂ ਰੈਜ਼ੋਲੂਸ਼ਨ ਵਿੱਚ ਆਰਜੀ ਗਲਤੀ ਹੈ"
-
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -8738,9 +8549,6 @@ msgstr ""
 "       ਬਾਹਰ ਜਾਣ ਲਈ 'quit'\n"
 "\n"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr "ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਕਾਰਜ CPU affinity ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
 msgid "UNIX sockets are not supported on this platform"
 msgstr "ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਕਾਰਜ ਯੂਨਿਕਸ ਸਾਕਟਾਂ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
@@ -8799,19 +8607,12 @@ msgstr "ਜੰਤਰ '%s' ਨੂੰ ਮਨਜੂਰ ਕਰਨ ਤੋਂ ਫੇ�
 msgid "Unable to acquire lock on '%s'"
 msgstr "'%s' ਤੇ ਤਾਲਾ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
 
-msgid "Unable to add LPAR to the table"
-msgstr "ਕੁਨੈਕਸ਼ਨ ਹੈਸ਼ ਸਾਰਣੀ ਵਿੱਚ ਸੀਕਰੇਟ ਜੋੜਨ ਲਈ ਫੇਲ ਹੈ"
-
 #, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "ਬਰਿੱਜ %s ਪੋਰਟ %s ਜੋੜਨ ਤੋਂ ਫੇਲ"
 
 msgid "Unable to add epoll fd"
 msgstr "epoll fd ਜੋੜਨ ਵਿੱਚ ਅਸਮਰਥ"
-
-#, c-format
-msgid "Unable to add handle %d to event loop"
-msgstr "ਡੋਮੇਨ ਕਾਰਜ %d ਵਿੱਚ ਸ਼ਾਮਿਲ ਕਰਨ ਲਈ ਫੇਲ ਹੋਇਆ"
 
 #, c-format
 msgid "Unable to add lockspace %s"
@@ -8938,20 +8739,8 @@ msgstr "JSON ਫਾਰਮੈਟਰ ਬਣਾਉਣ ਤੋਂ ਅਸਮਰਥ"
 msgid "Unable to create JSON parser"
 msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
-#, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "LPAR ਬਣਾਉਣ ਤੋਂ ਫੇਲ। ਕਾਰਨ: '%s'"
-
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਬਣਾਉਣ ਤੋਂ ਫੇਲ: %s"
-
 msgid "Unable to create TAP devices on this platform"
 msgstr "ਇਸ ਪਲੇਟ ਫਾਰਮ ਤੇ ਹੋਸਟ ਜੰਤਰ ਮਲਕੀਅਤ ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "ਵਾਲੀਅਮ ਬਣਾਉਣ ਤੋਂ ਫੇਲ: %s"
 
 msgid "Unable to create blkid library handle"
 msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
@@ -8986,15 +8775,6 @@ msgstr "ਲਾਕਸਪੇਸ %s ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰੱਥ
 
 msgid "Unable to create migration thread"
 msgstr "ਮਾਈਗਰੇਸ਼ ਥਰਿੱਡ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
-
-msgid "Unable to create new virtual adapter"
-msgstr "ਨਵਾਂ ਵਰਚੁਅਲ ਅਡਾਪਟਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
-
-msgid "Unable to create pipe"
-msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
-
-msgid "Unable to create signal pipe"
-msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
 msgid "Unable to create socket"
 msgstr "ਸਾਕਟ ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ"
@@ -9040,57 +8820,8 @@ msgid "Unable to delete port %s from OVS"
 msgstr "ਪੋਰਟ %s ਨੂੰ OVS ਤੋਂ ਹਟਾਉਣ ਤੇ ਅਸਮਰਥ"
 
 #, c-format
-msgid "Unable to destroy Storage Pool: %s"
-msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਖਤਮ ਕਰਨ ਲਈ ਫੇਲ: %s"
-
-#, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "%s ਤੋਂ ਸਭ ਜੰਤਰ ਹਟਾਉਣ ਲਈ ਫੇਲ"
-
-msgid "Unable to determine config directory"
-msgstr "ਸੰਰਚਨਾ ਡਾਇਰੈਕਟਰੀ ਪਤਾ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
-
-msgid "Unable to determine domain's CPU."
-msgstr "ਡੋਮੇਨ ਦਾ CPU ਪਤਾ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ।"
-
-msgid "Unable to determine domain's max memory."
-msgstr "ਮੇਜ਼ਬਾਨ ਨਾਂ ਪਤਾ ਕਰਨ ਲਈ ਫੇਲ"
-
-msgid "Unable to determine domain's memory."
-msgstr "ਡੋਮੇਨ ਦੀ ਮੈਮੋਰੀ ਪਤਾ ਕਰਨ ਲਈ ਫੇਲ।"
-
-msgid "Unable to determine domain's name."
-msgstr "ਮੇਜ਼ਬਾਨ ਨਾਂ ਪਤਾ ਕਰਨ ਲਈ ਫੇਲ"
-
-msgid "Unable to determine home directory"
-msgstr "ਘਰੇਲੂ ਡਾਇਰੈਕਟਰੀ ਪਤਾ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
-
-msgid "Unable to determine number of domains."
-msgstr "ਡੋਮੇਨਾਂ ਦੀ ਗਿਣਤੀ ਪਤਾ ਕਰਨ ਤੋਂ ਫੇਲ"
-
-msgid "Unable to determine storage pool's name."
-msgstr "ਮੇਜ਼ਬਾਨ ਨਾਂ ਪਤਾ ਕਰਨ ਲਈ ਫੇਲ"
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਦਾ uuid ਪਤਾ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।"
-
-msgid "Unable to determine storage pools's size."
-msgstr "ਅਸਲੀ VLAN ਪਤਾ ਕਰਨ ਲਈ ਅਸਮਰਥ"
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਸੋਰਸ ਅਡਾਪਟਰ ਨਾਂ ਗੁੰਮ ਹੈ"
-
-msgid "Unable to determine storage sp's name."
-msgstr "ਮੇਜ਼ਬਾਨ ਨਾਂ ਪਤਾ ਕਰਨ ਲਈ ਫੇਲ"
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "ਸਟੋਰੇਜ਼ sp's uuid ਪਤਾ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।"
-
-msgid "Unable to determine storage sps's size."
-msgstr "ਅਸਲੀ VLAN ਪਤਾ ਕਰਨ ਲਈ ਅਸਮਰਥ"
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "ਸਟੋਰੇਜ਼ sps's ਸਰੋਤ ਅਡਾਪਟਰ ਪਤਾ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।"
 
 msgid "Unable to disable nagle algorithm"
 msgstr "nagle ਐਲਗੋਰਿਥਮ ਅਯੋਗ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
@@ -9163,9 +8894,6 @@ msgstr "ਸਮਾਂ ਫਾਰਮੈਟ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 msgid "Unable to generate diffie-hellman parameters: %s"
 msgstr " devaddr ਪੈਰਾਮੀਟਰ '%s' ਨੂੰ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ"
 
-msgid "Unable to generate random uuid."
-msgstr "ਲਗਾਤਾਰ uuid ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ।"
-
 #, c-format
 msgid "Unable to get DBus session bus connection: %s"
 msgstr "DBus ਸੈਸ਼ਨ ਬਸ ਸੰਪਰਕ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ: %s"
@@ -9189,12 +8917,6 @@ msgstr "STP ਅਤਰਾਲ %s ਉੱਪਰ ਇਸ ਪਲੇਟਫਾਰਮ ਤ�
 #, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "STP ਨੂੰ %s ਉੱਪਰ ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
-
-msgid "Unable to get VIOS name"
-msgstr "VIOS ਨਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
-
-msgid "Unable to get VIOS profile name."
-msgstr "VIOS ਪਰੋਫਾਈਲ ਨਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ।"
 
 #, c-format
 msgid "Unable to get VLAN for interface %s"
@@ -9228,9 +8950,6 @@ msgstr "ਯੰਤਰ ID '%s' ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰ
 
 msgid "Unable to get domain status"
 msgstr "ਡੋਮੇਨ ਸਥਿਤੀ ਲੈਣ ਲਈ ਫੇਲ"
-
-msgid "Unable to get free slot number"
-msgstr "ਫਰੀ ਸਲਾਟ ਗਿਣਤੀ ਪਤਾ ਕਰਨ ਤੋਂ ਫੇਲ"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -9361,9 +9080,6 @@ msgstr "SELinux ਕਾਰਵਾਈ ਪ੍ਰਸੰਗ ਦਾ ਵਿਸ਼ਲੇਸ�
 msgid "Unable to make TAP device non-persistent"
 msgstr "TAP ਜੰਤਰ ਨੂੰ ਗੈਰ-ਰਾਖਵਾਂ ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
 
-msgid "Unable to make pipe"
-msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
-
 msgid "Unable to mark loop device as autoclear"
 msgstr "ਲੂਪ ਜੰਤਰ ਨੂੰ ਆਟੋਕਲੀਅਰ ਮਾਰਕ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
@@ -9413,10 +9129,6 @@ msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
 #, c-format
 msgid "Unable to open log file %s"
 msgstr "ਲਾਗ ਫਾਈਲ %s ਖੋਲਣ ਤੋਂ ਅਸਮਰੱਥ"
-
-#, c-format
-msgid "Unable to open monitor path %s"
-msgstr "ਮਾਨੀਟਰ ਮਾਰਗ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ %s"
 
 #, c-format
 msgid "Unable to open resource %s"
@@ -9473,9 +9185,6 @@ msgstr "ਕੋਟਾ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 msgid "Unable to parse string parameter"
 msgstr "ਸਤਰ ਪੈਰਾਮੀਟਰ ਨੂੰ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ"
 
-msgid "Unable to poll on file handles"
-msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਹੈਂਡਲ ਸੰਭਾਲਣ ਲਈ ਅਸਫਲ"
-
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "ਫਾਇਲ '%s' ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
@@ -9483,9 +9192,6 @@ msgstr "ਫਾਇਲ '%s' ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "ਫਲੈਗ %d ਵਾਲੀ ਫਾਇਲ ਵਰਤਣ ਤੋਂ ਅਸਮਰਥ"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "ਮਾਨੀਟਰ ਨੂੰ ਨਾਨ-ਬਲਾਕਿੰਗ ਮੋਡ ਵਿੱਚ ਪਾਉਣ ਤੋਂ ਅਸਫਲ"
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -9715,9 +9421,6 @@ msgstr "x509 ਸਾਰਟੀਫਿਕੇਟ ਰੈਵੋਕੇਸ਼ਂ ਲਿਸ�
 msgid "Unable to set x509 key and certificate: %s, %s: %s"
 msgstr "x509 ਕੁੰਜੀ ਅਤੇ ਸਾਰਟੀਫਿਕੇਟ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ: %s, %s: %s"
 
-msgid "Unable to setup wakeup pipe"
-msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
-
 #, c-format
 msgid "Unable to split FD list '%s'"
 msgstr "FD ਸੂਚੀ '%s' ਨੂੰ ਵੱਖ-ਵੱਖ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
@@ -9757,9 +9460,6 @@ msgstr "ਸਰਵਰ %s ਸਾਰਟੀਫਿਕੇਟ CA ਸਾਰਟੀਫਿ�
 msgid "Unable to wait for child process"
 msgstr "ਅਧੀਨ ਕਾਰਜ ਨੂੰ ਫੈਲਾਅ ਨਹੀਂ ਸਕਦਾ"
 
-msgid "Unable to wait on agent monitor condition"
-msgstr "ਏਜੰਟ ਮੌਨੀਟਰ ਸਥਿਤੀ ਤੇ ਉਡੀਕ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
-
 msgid "Unable to wait on epoll"
 msgstr "ਪਾਈਪ ਵਿੱਚ ਲਿਖਣ ਲਈ ਫੇਲ "
 
@@ -9778,9 +9478,6 @@ msgstr "ਗੈੱਸਟ ਕੰਸੋਲ ਨਾਲ ਜੁੜੋ"
 #, c-format
 msgid "Unable to write %s"
 msgstr "%s ਵਿੱਚ ਲਿਖਣ ਤੋਂ ਅਸਮਰਥ"
-
-msgid "Unable to write information to local file."
-msgstr "ਲੋਕਲ ਫਾਇਲ ਵਿੱਚ ਜਾਣਕਾਰੀ ਲਿਖਣ ਤੋਂ ਫੇਲ੍ਹ"
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -9915,10 +9612,6 @@ msgstr "ਅਣਕਿਆਸਿਆ ਦਸਤਖਤ '%s'"
 #, c-format
 msgid "Unexpected volume path format: %s"
 msgstr "ਅਣਕਿਆਸਿਆ ਆਇਤਨ ਰਾਹ ਫਾਰਮੈਟ: %s"
-
-#, c-format
-msgid "Unhandled event %d for monitor fd %d"
-msgstr "ਨਾ-ਪਰਬੰਧਤ ਘਟਨਾ %d fd %d ਨਿਗਰਾਨੀ ਲਈ"
 
 msgid "Unknown"
 msgstr "ਅਚਾਨਕ"
@@ -10487,9 +10180,6 @@ msgstr "XML ਨੋਡ ਵਿੱਚ ਪਾਠ ਨਹੀਂ ਹੁੰਦਾ, ਇ�
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "XPath evaluation of response for call to '%s' failed"
 
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr "ਤੁਸੀਂ CPUs ਦੀ ਗਿਣਤੀ ਵੱਧ ਤੋਂ ਵੱਧ ਸੰਭਵ ਗਿਣਤੀ ਤੋਂ ਵੱਧ ਰੱਖਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ।"
-
 msgid "You must map the root user of container"
 msgstr "ਤੁਹਾਨੂੰ ਕੰਟੇਨਰ ਦੇ ਰੂਟ ਯੂਜ਼ਰ ਨੂੰ ਮੈਪ ਕਰਨਾ ਜਰੂਰੀ ਹੈ"
 
@@ -10600,12 +10290,6 @@ msgstr "ਮੁੜ ਪਰਤਾਉਣ ਤੋਂ ਬਾਅਦ, ਹਾਲਾਤ ਨ
 
 msgid "after reverting, change state to running"
 msgstr "ਮੁੜ ਪਰਤਾਉਣ ਤੋਂ ਬਾਅਦ, ਹਾਲਾਤ ਨੂੰ ਚਾਲੂ ਵਿੱਚ ਬਦਲੋ"
-
-msgid "ai_family not supported"
-msgstr "ai_family ਨੂੰ ਸਪੋਰਟ ਨਹੀਂ ਹੈ"
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "ਨਵੀਂ ਵਿੱਤ ਅਨੁਸਾਰ ਵੰਡੋ, ਇਸ ਨੂੰ ਪਤਲਾ ਛੱਡ ਦੇਣ ਦੀ ਬਜਾਏ"
@@ -11155,9 +10839,6 @@ msgstr "ਲਾਗ ਡਾਇਰੈਕਟਰੀ %s ਬਣਾ ਨਹੀਂ ਸਕ�
 msgid "cannot create path '%s'"
 msgstr "ਮਾਰਗ '%s' ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
 
-msgid "cannot create pipe"
-msgstr "ਪਾਈਪ ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
-
 msgid "cannot create pipe for tunnelled migration"
 msgstr "ਟੰਨਲਡ ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਪਾਈਪ ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
 
@@ -11299,10 +10980,6 @@ msgstr "macvtap ਟੈਪ ਉੱਪਰ ਇੰਟਰਫੇਸ ਫਲੈਗ ਪ੍
 #, c-format
 msgid "cannot get file context of '%s'"
 msgstr "'%s' ਦਾ ਫਾਇਲ ਪ੍ਰਸੰਗ ਵੇਖ ਨਹੀਂ ਸਕਦਾ"
-
-#, c-format
-msgid "cannot get group list for '%s'"
-msgstr "'%s' ਲਈ ਸਮੂਹ ਸੂਚੀ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 msgid "cannot get host CPU capabilities"
 msgstr "ਹੋਸਟ CPU ਅਨੁਕੂਲਤਾ ਲੈ ਨਹੀਂ ਸਕਦਾ"
@@ -12332,10 +12009,6 @@ msgid "could not use Xen hypervisor entry %s"
 msgstr "ਜ਼ੈੱਨ ਹਾਈਪਰਵੀਜ਼ਰ ਇੰਦਰਾਜ਼ %s ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਿਆ"
 
 #, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "pidfile %s ਨੂੰ %d ਲਈ ਲਿਖ ਨਹੀਂ ਸਕਦਾ"
-
-#, c-format
 msgid "couldn't find IFLA_VF_INFO for VF %d in netlink response"
 msgstr "ਨੈੱਟਲਿੰਕ ਹੁੰਗਾਰੇ ਵਿੱਚ VF %d ਲਈ IFLA_VF_INFO ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
 
@@ -12913,9 +12586,6 @@ msgstr "ਡੋਮੇਨ ਕੁਨੈਕਸ਼ਨ URI ਨੂੰ ਵੇਖਾਉਂ�
 msgid "domain event %d not registered"
 msgstr "ਡੋਮੇਨ ਈਵੈਂਟ %d ਰਜਿਸਟਰ ਨਹੀਂ ਕੀਤਾ ਹੈ"
 
-msgid "domain has assigned non-USB host devices"
-msgstr "ਡੋਮੇਨ ਨੇ ਗੈਰ-USB ਮੇਜਬਾਨ ਯੰਤਰ ਨਿਰਧਾਰਤ ਕੀਤੇ ਹਨ"
-
 msgid "domain has no snapshots"
 msgstr "ਡੋਮੇਨ ਦਾ ਕੋਈ ਸਨੈਪਸ਼ਾਟ ਨਹੀਂ ਹੈ"
 
@@ -13397,9 +13067,6 @@ msgstr "SASL ਡਾਟਾ ਡੀਕੋਡ ਕਰਨ ਵਿੱਚ ਫੇਲ: %d (
 msgid "failed to destroy (stop) interface %s: %s%s%s"
 msgstr "ਇੰਟਰਫੇਸ %s ਖਤਮ ਕਰਨ ਲਈ ਫੇਲ: %s%s%s"
 
-msgid "failed to determine host name"
-msgstr "ਮੇਜ਼ਬਾਨ ਨਾਂ ਪਤਾ ਕਰਨ ਲਈ ਫੇਲ"
-
 msgid "failed to enable IP forwarding"
 msgstr "IP ਫਾਰਵਰਡਿੰਗ ਯੋਗ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
@@ -13743,9 +13410,6 @@ msgstr "SSH ਹੋਸਟ ਕੁੰਜੀ ਪ੍ਰਮਾਣਿਤ ਕਰਨ ਤ�
 msgid "failed to wait on condition"
 msgstr "ਹਾਲਤ ਦੀ ਉਡੀਕ ਵਿੱਚ ਫੇਲ"
 
-msgid "failed to wake up polling thread"
-msgstr "ਪੂਲਿੰਗ ਥਰਿੱਡ ਚਾਲੂ ਕਰਨ ਤੋਂ ਫੇਲ ਹੋਇਆ"
-
 msgid "failed to wakeup migration tunnel"
 msgstr "ਮਾਈਗਰੇਸ਼ਨ ਟੰਨਲ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
@@ -13981,9 +13645,6 @@ msgstr "ਚੱਲ ਰਹੇ ਡੋਮੇਨ ਤੋਂ ਮੁੱਲ ਲਵੋ/ਸ
 
 msgid "get/set value to be used on next boot"
 msgstr "ਅਗਲੀ ਸ਼ੁਰੂਆਤ ਉੱਪਰ ਵਰਤਣ ਲਈ ਮੁੱਲ ਪ੍ਰਾਪਤ/ਪੱਕਾ ਕਰੋ"
-
-msgid "getting time of day"
-msgstr "ਦਿਨ ਦਾ ਸਮਾਂ ਲਿਆ ਜਾ ਰਿਹਾ ਹੈ"
 
 msgid "given uuid does not match XML uuid"
 msgstr "ਜੋ uuid ਦਿੱਤਾ ਗਿਆ ਹੈ ਉਹ XML uuid ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ"
@@ -15981,10 +15642,6 @@ msgid "no device found with alias %s"
 msgstr "ਉਪਨਾਮ %s ਨਾਲ ਕੋਈ ਵੀ ਯੰਤਰ ਨਹੀਂ ਲੱਭਾ"
 
 #, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "%s ਲਈ ਕੋਈ ਡਿਸਕ ਫਾਰਮੈਟ ਨਹੀਂ ਹੈ ਅਤੇ ਪੜਤਾਲ ਅਯੋਗ ਕੀਤੀ ਹੈ"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "'%s' ਨਾਂ ਵਾਲੀ ਕੋਈ ਡਿਸਕ ਨਹੀਂ"
 
@@ -16544,9 +16201,6 @@ msgstr "pmsuspended"
 msgid "poll failed in migration tunnel"
 msgstr "ਤਬਾਦਲਾ ਸੁਰੰਗ ਵਿੱਚ poll ਅਸਫਲ ਹੋਈ"
 
-msgid "poll on socket failed"
-msgstr "poll on socket failed"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "ਪੂਲ '%s' ਪਹਿਲਾਂ ਹੀ uuid %s ਨਾਲ ਮੌਜੂਦ ਹੈ"
@@ -16674,20 +16328,12 @@ msgstr "ਪ੍ਰਵਾਸਾਂ ਲਈ ਢੁਕਵਾਂ XML ਮੁਹੱਈ�
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 ਬੱਸ %s ਇੰਪੁੱਟ ਜੰਤਰ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
 
-#, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: ਮੌਜੂਦਾ ਡਾਇਰੈਕਟਰੀ ਨਹੀਂ ਪ੍ਰਾਪਤ ਕਰ ਸਕਿਆ: %s"
-
 msgid "qemu does not support SGA"
 msgstr "qemu SGA ਲਈ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu ਇੰਮੂਲੇਟਰ '%s' xen ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
-
-#, c-format
-msgid "qemu is not using a unix socket monitor, cannot send fd %s"
-msgstr "qemu ਕੋਈ unix ਸਾਕੇਟ ਮੌਨੀਟਰ ਨਹੀਂ ਵਰਤ ਰਿਹਾ ਹੈ, fd %s ਨਹੀਂ ਭੇਜ ਸਕਦਾ"
 
 msgid "qemu state driver is not active"
 msgstr "qemu ਸਟੇਟ ਡਰਾਈਵਰ ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
@@ -16780,9 +16426,6 @@ msgstr "ਪੜ੍ਹਣ I/O ਕਾਰਵਾਈਆਂ ਦੀ ਹੱਦ ਪ੍ਰ�
 
 msgid "read error on pipe"
 msgstr "ਪੜਨ ਵੇਲੇ ਪਾਈਪ ਗਲਤੀ"
-
-msgid "read on wakeup fd failed"
-msgstr "ਵੇਕਅੱਪ fd ਨੂੰ ਪੜਨ ਵਿੱਚ ਫੇਲ"
 
 msgid "read-only connection"
 msgstr "ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ ਕੁਨੈਕਸ਼ਨ"
@@ -17672,9 +17315,6 @@ msgstr "ਇਸ ਮੰਚ ਵਿੱਚੋਂ dlopen ਗੁੰਮ ਹੈ"
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "ਇਹ qemu rng-egd  ਬੈਕਐੰਡ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ"
 
-msgid "time_t overflow"
-msgstr "time_t ਭਰ ਕੇ ਛਲਕਿਆ"
-
 msgid "timeout must be positive"
 msgstr "ਸਮਾਂ ਮਿਆਦ ਜਰੂਰੀ ਧਨਾਤਮਕ ਹੋਵੇ"
 
@@ -17846,10 +17486,6 @@ msgid "unable to create hugepage path %s"
 msgstr "hugepage ਟਿਕਾਣਾ %s ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
 
 #, c-format
-msgid "unable to create pipe for %s"
-msgstr "%s ਲਈ ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
-
-#, c-format
 msgid "unable to create rundir %s: %s"
 msgstr "rundir %s ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ: %s"
 
@@ -17937,12 +17573,6 @@ msgstr "ਵਰਚੁਅਲ-ਬਾਕਸ ਡਰਾਈਵਰ API ਨੂੰ ਸ਼ੁ�
 msgid "unable to load knownhosts file '%s': %s"
 msgstr "ਮੇਜ਼ਬਾਨ-ਨਾਂ '%s' ਰਿਜ਼ੌਲਵ ਕਰਨ ਵਿੱਚ ਫੇਲ: %s"
 
-msgid "unable to make pipe"
-msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
-
-msgid "unable to open pipe"
-msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
-
 msgid "unable to open stream"
 msgstr "ਸਟਰੀਮ ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
 
@@ -17980,10 +17610,6 @@ msgstr "ਸਰਵਰ ਸਾਰਟੀਫਿਕੇਟ ਦੀ ਜਾਂਚ ਕਰ�
 
 msgid "unable to read vmware log file"
 msgstr "vmware ਲਾਗ ਫਾਇਲ ਪੜਨ ਵਿੱਚ ਅਸਮਰਥ"
-
-#, c-format
-msgid "unable to recover former state by adding port to bridge %s"
-msgstr "ਬਰਿੱਜ %s ਵਿੱਚ ਪੋਰਟ ਜੋੜ ਕੇ ਪਿਛਲੀ ਹਾਲਤ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ"
 
 msgid "unable to register monitor events"
 msgstr "ਮਾਨੀਟਰ ਈਵੈਂਟ ਰਜਿਸਟਰ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
@@ -18052,9 +17678,6 @@ msgstr "ਕਾਰਜ %lld ਦੀ ਉਡੀਕ ਕਰਨ ਤੋਂ ਅਸਮਰ�
 
 msgid "unable to wait on console condition"
 msgstr "ਹਾਲਤ ਦੀ ਉਡੀਕ ਵਿੱਚ ਫੇਲ"
-
-msgid "unable to wait on libssh2 socket"
-msgstr "libssh2 ਸਾਕੇਟ ਤੇ ਉਡੀਕ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
 
 #, c-format
 msgid "unable to write data to '%s'"
@@ -19026,10 +18649,6 @@ msgid "unsupported disk type %s"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਡਿਸਕ ਕਿਸਮ %s"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਡਿਸਕ ਕਿਸਮ '%s'"
-
-#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਡਰਾਈਵਰ ਨਾਂ '%s' ਡਿਸਕ '%s' ਲਈ"
 
@@ -19263,9 +18882,6 @@ msgstr "ਸੁਰੱਖਿਅਤ ਫਲੈਗ ਨਾਲ virDomainGetXMLDesc"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc with secure flag"
 
-msgid "virExec is not implemented for WIN32"
-msgstr "virExec ਨੂੰ WIN32 ਲਈ ਲਾਗੂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ"
-
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs ਨੂੰ WIN32 ਵਿੱਚ ਲਾਗੂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ"
 
@@ -19278,12 +18894,6 @@ msgstr "virGetGroupID ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupName ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 
-msgid "virGetUserCacheDirectory is not available"
-msgstr "virGetUserCacheDirectory ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
-
-msgid "virGetUserConfigDirectory is not available"
-msgstr "virGetUserConfigDirectory ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
-
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 
@@ -19292,9 +18902,6 @@ msgstr "virGetUserID ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 
 msgid "virGetUserName is not available"
 msgstr "virGetUserName ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
-
-msgid "virGetUserRuntimeDirectory is not available"
-msgstr "virGetUserRuntimeDirectory ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
@@ -19333,9 +18940,6 @@ msgstr "virNWFilterSnoopListDel ਅਸਫਲ"
 #, c-format
 msgid "virNWFilterSnoopReqNew called with invalid key \"%s\" (%zu)"
 msgstr "virNWFilterSnoopReqNew ਅਯੋਗ ਚਾਬੀ \"%s\" (%zu) ਨਾਲ ਬੁਲਾਈ ਗਈ"
-
-msgid "virRun is not implemented for WIN32"
-msgstr "virRun ਨੂੰ WIN32 ਲਈ ਲਾਗੂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ"
 
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
@@ -19523,10 +19127,6 @@ msgstr "xml ਨਵੀਨੀਕਰਣ ਅਸਮਰਥਿਤ"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime ਮੁੱਲ '%s' ਦਾ ਫਾਰਮੈਟ ਅਣਜਾਣ ਹੈ"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "xsd:dateTime ਮੁੱਲ '%s' ਨੀਯਤ ਲਈ ਬਹੁਤ ਲੰਬਾ ਹੈ"
 
 msgid "y - yes, start editor again"
 msgstr "y - ਹਾਂ, ਸੰਪਾਦਕ ਫਿਰ ਸ਼ੁਰੂ ਕਰੋ"

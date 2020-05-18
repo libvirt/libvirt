@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2016-09-16 11:27+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
@@ -249,9 +249,6 @@ msgstr "Podłącza nowy interfejs sieciowy."
 msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 msgstr "Spróbowano NAT „%s”. NAT jest obsługiwane tylko dla IPv4."
 
-msgid "Authentication failed"
-msgstr "Uwierzytelnienie się nie powiodło"
-
 msgid "Autostart"
 msgstr "Automatyczne uruchamianie"
 
@@ -267,9 +264,6 @@ msgstr "Dostępne:"
 #, c-format
 msgid "Bad $%s value."
 msgstr "Błędna wartość $%s."
-
-msgid "Bad value for ai_flags"
-msgstr "Błędna wartość ai_flags"
 
 #, c-format
 msgid ""
@@ -476,10 +470,6 @@ msgid "Cannot parse controller index %s"
 msgstr "Nie można przetworzyć indeksu kontrolera %s"
 
 #, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "Nie można przetworzyć liczby z „%s”"
-
-#, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "Nie można przetworzyć adresu gniazda „%s”: %s"
 
@@ -503,9 +493,6 @@ msgstr "Nie można usunąć współdzielenia przestrzeni nazw montowania"
 
 msgid "Capacity"
 msgstr "Pojemność"
-
-msgid "Capacity cannot be empty."
-msgstr "Pojemność nie może być pusta."
 
 msgid "Capacity:"
 msgstr "Pojemność:"
@@ -605,10 +592,6 @@ msgstr "Nie można zmienić parametrów pamięci: %s"
 msgid "Could not change scheduler parameters: %s"
 msgstr "Nie można zmienić parametrów planisty: %s"
 
-#, c-format
-msgid "Could not close %s"
-msgstr "Nie można zamknąć %s"
-
 msgid "Could not configure network"
 msgstr "Nie można skonfigurować sieci"
 
@@ -628,14 +611,6 @@ msgstr "Nie można skopiować domyślnej konfiguracji"
 #, c-format
 msgid "Could not copy volume: %s"
 msgstr "Nie można skopiować woluminu: %s"
-
-#, c-format
-msgid "Could not create Session instance, rc = 0x%08x"
-msgstr "Nie można utworzyć instancji sesji, rc = 0x%08x"
-
-#, c-format
-msgid "Could not create VirtualBox instance, rc = 0x%08x"
-msgstr "Nie można utworzyć instancji VirtualBox, rc = 0x%08x"
 
 #, c-format
 msgid "Could not create snapshot: %s"
@@ -799,10 +774,6 @@ msgid "Could not open /proc/net/dev"
 msgstr "Nie można otworzyć /proc/net/dev"
 
 #, c-format
-msgid "Could not parse IID from '%s', rc = 0x%08x"
-msgstr "Nie można przetworzyć IID z „%s”, rc = 0x%08x"
-
-#, c-format
 msgid "Could not parse UUID from '%s'"
 msgstr "Nie można przetworzyć UUID z „%s”"
 
@@ -825,10 +796,6 @@ msgstr "Nie można przetworzyć pliku USB %s"
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
 msgstr "Nie można przetworzyć prawidłowego indeksu dysku z „%s”"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "Nie można przetworzyć numeru wersji z „%s”"
 
 #, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
@@ -1319,12 +1286,6 @@ msgstr "Błąd z procesu potomka tworzącego „%s”"
 msgid "Error opening file %s"
 msgstr "Błąd podczas otwierania pliku %s"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "Błąd podczas przetwarzania „ścieżki”. Nieprawidłowe znaki."
-
-msgid "Error parsing volume XML."
-msgstr "Błąd podczas przetwarzania XML woluminu."
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "Błąd podczas odczytywania sekretu: %s"
@@ -1335,13 +1296,6 @@ msgstr "Błąd podczas budowania zapory sieciowej"
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "Błąd podczas budowania zapory sieciowej: %s"
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "Błąd podczas uzyskiwania informacji o adresie %s"
-
-msgid "Error while opening SSH session."
-msgstr "Błąd podczas otwierania sesji SSH."
 
 msgid "Error while reading the domain name"
 msgstr "Błąd podczas odczytywania nazwy domeny"
@@ -1591,10 +1545,6 @@ msgid "Failed to compile regex %s"
 msgstr "Skompilowanie wyrażenia regularnego %s się nie powiodło"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "Połączenie się z %s się nie powiodło"
-
-#, c-format
 msgid "Failed to convert '%s' to int"
 msgstr "Przekonwertowanie „%s” na liczbę całkowitą się nie powiodło"
 
@@ -1646,9 +1596,6 @@ msgstr "Utworzenie sieci z %s się nie powiodło"
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "Utworzenie urządzenia węzła z %s się nie powiodło"
-
-msgid "Failed to create pipe"
-msgstr "Utworzenie potoku się nie powiodło"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -2034,10 +1981,6 @@ msgid "Failed to read file '%s'"
 msgstr "Odczytanie pliku „%s” się nie powiodło"
 
 #, c-format
-msgid "Failed to read from %s"
-msgstr "Odczytanie z %s się nie powiodło"
-
-#, c-format
 msgid "Failed to read product/vendor ID for %s"
 msgstr "Odczytanie identyfikatora produktu/producenta dla %s się nie powiodło"
 
@@ -2247,9 +2190,6 @@ msgstr ""
 #, c-format
 msgid "Failed to write vmx file '%s'"
 msgstr "Zapisanie pliku VMX „%s” się nie powiodło"
-
-msgid "Failure establishing SSH session."
-msgstr "Błąd podczas ustanawiania sesji SSH."
 
 msgid "Failure to mask address"
 msgstr "Maskowanie adresu się nie powiodło"
@@ -2715,9 +2655,6 @@ msgstr "Nieprawidłowe działanie wirtualnego portu (%d)"
 msgid "Job type:"
 msgstr "Typ zadania:"
 
-msgid "Key must be empty, Power Hypervisor will create one for you."
-msgstr "Klucz musi być pusty, program Power Hypervisor go utworzy."
-
 msgid "Key of the current session differs from the key at last login"
 msgstr "Klucz bieżącej sesji różni się od klucza ostatniego logowania"
 
@@ -2881,9 +2818,6 @@ msgstr "Wolna pamięć NUMA"
 
 msgid "Name"
 msgstr "Nazwa"
-
-msgid "Name or service not known"
-msgstr "Nieznana nazwa usługi"
 
 msgid "Name:"
 msgstr "Nazwa:"
@@ -3190,9 +3124,6 @@ msgid "Output the vol information as an XML dump to stdout."
 msgstr ""
 "Przekazuje informacje o woluminie jako zrzut XML na standardowe wyjście."
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "Urządzenia gospodarza PCI muszą używać typu adresu „pci”"
-
 msgid "POST operation failed"
 msgstr "działanie POST się nie powiodło"
 
@@ -3304,20 +3235,6 @@ msgstr "Uruchomiono pulę %s\n"
 #, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Pula %s została odznaczona jako automatycznie uruchamiana\n"
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr ""
-"Prawdopodobnie nie zainstalowano narzędzi firmy IBM w LPAR. Proszę "
-"skontaktować się ze wsparciem, aby włączyć tę funkcję."
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"Prawdopodobnie nie zainstalowano narzędzi firmy IBM w LPAR. Proszę "
-"skontaktować się ze wsparciem, aby włączyć tę funkcję."
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "Wywołano PrepareTunnel, ale nie ustawiono flagi TUNNELLED"
@@ -3712,9 +3629,6 @@ msgstr "Nie odnaleziono woluminu pamięci masowej"
 msgid "Storage volume not found: %s"
 msgstr "Nie odnaleziono woluminu pamięci masowej: %s"
 
-msgid "StoragePool name already exists."
-msgstr "Nazwa puli pamięci masowej już istnieje."
-
 msgid "Suspend a running domain."
 msgstr "Usypia uruchomioną domenę."
 
@@ -3842,9 +3756,6 @@ msgstr ""
 "               „quit”, aby zakończyć\n"
 "\n"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr "Gniazda domen uniksowych są nieobsługiwane na tej platformie"
-
 msgid "USB host device is missing bus/device information"
 msgstr "Brak informacji o magistrali/urządzeniu dla urządzenia USB gospodarza"
 
@@ -3863,13 +3774,6 @@ msgstr "UUID:"
 #, c-format
 msgid "Unable to access stream for '%s'"
 msgstr "Nie można uzyskać dostępu do strumienia dla „%s”"
-
-msgid "Unable to add LPAR to the table"
-msgstr "Nie można dodać LPAR do tablicy"
-
-#, c-format
-msgid "Unable to add handle %d to event loop"
-msgstr "Nie można dodać obsługi %d do pętli zdarzeń"
 
 msgid "Unable to become session leader"
 msgstr "Nie można przełączyć na przywódcę sesji"
@@ -3891,63 +3795,6 @@ msgid "Unable to close %s"
 msgstr "Nie można zamknąć %s"
 
 #, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "Nie można utworzyć LPAR. Przyczyna: „%s”"
-
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "Nie można utworzyć puli pamięci masowej: %s"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "Nie można utworzyć woluminu: %s"
-
-msgid "Unable to create new virtual adapter"
-msgstr "Nie można utworzyć nowego adaptera wirtualnego"
-
-msgid "Unable to create pipe"
-msgstr "Nie można utworzyć potoku"
-
-msgid "Unable to determine domain's CPU."
-msgstr "Nie można ustalić procesora domeny."
-
-msgid "Unable to determine domain's max memory."
-msgstr "Nie można ustalić maksymalnej pamięci domeny."
-
-msgid "Unable to determine domain's memory."
-msgstr "Nie można ustalić pamięci domeny."
-
-msgid "Unable to determine domain's name."
-msgstr "Nie można ustalić nazwy domeny."
-
-msgid "Unable to determine number of domains."
-msgstr "Nie można ustalić liczby domen."
-
-msgid "Unable to determine storage pool's name."
-msgstr "Nie można ustalić nazwy puli pamięci masowej."
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "Nie można ustalić UUID puli pamięci masowej."
-
-msgid "Unable to determine storage pools's size."
-msgstr "Nie można ustalić rozmiaru puli pamięci masowej."
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "Nie można ustalić adaptera źródłowego puli pamięci masowej."
-
-msgid "Unable to determine storage sp's name."
-msgstr "Nie można ustalić nazwy sp pamięci masowej."
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "Nie można ustalić UUID sp pamięci masowej."
-
-msgid "Unable to determine storage sps's size."
-msgstr "Nie można ustalić rozmiaru sps pamięci masowej."
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "Nie można ustalić adaptera źródłowego sps pamięci masowej."
-
-#, c-format
 msgid "Unable to exec shell %s"
 msgstr "Nie można wykonać powłoki %s"
 
@@ -3963,15 +3810,6 @@ msgstr "Nie można odnaleźć punktu montowania kontrolera cgroups „memory”"
 msgid "Unable to format guestfwd port"
 msgstr "Nie można sformatować portu guestfwd"
 
-msgid "Unable to generate random uuid."
-msgstr "Nie można utworzyć losowego UUID."
-
-msgid "Unable to get VIOS name"
-msgstr "Nie można uzyskać nazwy VIOS"
-
-msgid "Unable to get VIOS profile name."
-msgstr "Nie można uzyskać nazwy profilu VIOS."
-
 msgid "Unable to get blkio parameters"
 msgstr "Nie można uzyskać parametrów blkio"
 
@@ -3980,9 +3818,6 @@ msgstr "Nie można uzyskać bieżącego czasu"
 
 msgid "Unable to get domain status"
 msgstr "Nie można uzyskać stanu domeny"
-
-msgid "Unable to get free slot number"
-msgstr "Nie można uzyskać numeru wolnego gniazda"
 
 msgid "Unable to get memory parameters"
 msgstr "Nie można uzyskać parametrów pamięci"
@@ -4023,25 +3858,15 @@ msgid "Unable to open UNIX socket"
 msgstr "Nie można otworzyć gniazda uniksowego"
 
 #, c-format
-msgid "Unable to open monitor path %s"
-msgstr "Nie można otworzyć ścieżki do monitora %s"
-
-#, c-format
 msgid "Unable to open stream for '%s'"
 msgstr "Nie można otworzyć strumienia dla „%s”"
 
 msgid "Unable to parse integer parameter"
 msgstr "Nie można przetworzyć parametru liczby całkowitej"
 
-msgid "Unable to poll on file handles"
-msgstr "Nie można odpytać obsługi plików"
-
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "Nie można utworzyć pliku urządzenia znakowego „%s” z wyprzedzeniem"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "Nie można umieścić monitora w trybie nie blokowania"
 
 #, c-format
 msgid "Unable to read %s"
@@ -4065,15 +3890,9 @@ msgstr "Nie można wysłać komunikatu kontynuacji kontenera"
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Nie można ustawić flagi monitora close-on-exec"
 
-msgid "Unable to setup wakeup pipe"
-msgstr "Nie można ustawić potoku przebudzeń"
-
 #, c-format
 msgid "Unable to write %s"
 msgstr "Nie można zapisać %s"
-
-msgid "Unable to write information to local file."
-msgstr "Nie można zapisać informacji do lokalnego pliku."
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -4389,11 +4208,6 @@ msgstr "Węzeł XML nie zawiera tekstu, oczekiwano wartości xsd:dateTime"
 #, c-format
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "Sprawdzenie XPath odpowiedzi na wywołanie do „%s” się nie powiodło"
-
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr ""
-"Nastąpiła próba ustawienia liczby procesorów na większą niż maksymalnie "
-"możliwa."
 
 #, c-format
 msgid "[--%s <number>]"
@@ -4711,9 +4525,6 @@ msgstr "nie można utworzyć katalogu dziennika %s"
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "nie można utworzyć ścieżki „%s”"
-
-msgid "cannot create pipe"
-msgstr "nie można utworzyć potoku"
 
 msgid "cannot create pipe for tunnelled migration"
 msgstr "nie można utworzyć potoku dla tunelowanej migracji"
@@ -5476,10 +5287,6 @@ msgid "could not use Xen hypervisor entry %s"
 msgstr "nie można użyć wpisu nadzorcy Xen %s"
 
 #, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "nie można zapisać pliku PID %s dla %d"
-
-#, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "nie można zapisać pliku konfiguracji radvd „%s”"
 
@@ -5983,9 +5790,6 @@ msgstr "utworzenie profilu się nie powiodło"
 msgid "failed to create socket"
 msgstr "utworzenie gniazda się nie powiodło"
 
-msgid "failed to determine host name"
-msgstr "ustalenie nazwy gospodarza się nie powiodło"
-
 msgid "failed to enable IP forwarding"
 msgstr "włączenie przekierowywania IP się nie powiodło"
 
@@ -6175,9 +5979,6 @@ msgstr "odznaczenie puli %s jako automatycznie uruchamianej się nie powiodło"
 msgid "failed to wait on condition"
 msgstr "oczekiwanie na warunek się nie powiodło"
 
-msgid "failed to wake up polling thread"
-msgstr "obudzenie wątku wyliczania się nie powiodło"
-
 msgid "failed to write configuration file"
 msgstr "zapisanie pliku konfiguracji się nie powiodło"
 
@@ -6285,9 +6086,6 @@ msgstr "uzyskuje wartość z uruchomionej domeny"
 
 msgid "get value to be used on next boot"
 msgstr "uzyskuje wartość do użycia podczas następnego uruchomienia"
-
-msgid "getting time of day"
-msgstr "uzyskiwanie bieżącego czasu"
 
 msgid "given uuid does not match XML uuid"
 msgstr "podany UUID nie zgadza się z UUID z XML"
@@ -7291,10 +7089,6 @@ msgstr "brak dostępnego sterownika połączenia dla %s"
 msgid "no device capabilities for '%s'"
 msgstr "brak możliwości urządzenia „%s”"
 
-#, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "brak formatu dysku dla %s, a wykrywanie jest wyłączone"
-
 msgid "no domain XML passed"
 msgstr "nie przekazano XML domeny"
 
@@ -7566,9 +7360,6 @@ msgstr "wykonuje zrzut core na żywo, jeśli jest obsługiwane"
 msgid "persist VM on destination"
 msgstr "ustawia trwałość maszyny wirtualnej na celu"
 
-msgid "poll on socket failed"
-msgstr "sondaż na gnieździe się nie powiódł"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "pula „%s” już istnieje za pomocą UUID %s"
@@ -7648,25 +7439,14 @@ msgid "ps2 bus does not support %s input device"
 msgstr "magistrala PS/2 nie obsługuje urządzenia wejściowego %s"
 
 #, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: nie można uzyskać bieżącego katalogu: %s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "emulator QEMU „%s” nie obsługuje Xena"
-
-#, c-format
-msgid "qemu is not using a unix socket monitor, cannot send fd %s"
-msgstr "QEMU nie używa monitora gniazd Uniksa, nie można wysłać fd %s"
 
 msgid "qemu state driver is not active"
 msgstr "sterownik stanu QEMU jest nieaktywny"
 
 msgid "quit this interactive terminal"
 msgstr "kończy pracę tego terminala interaktywnego"
-
-msgid "read on wakeup fd failed"
-msgstr "odczytanie podczas przebudzenia fd się nie powiodło"
 
 msgid "read-only connection"
 msgstr "połączenie tylko do odczytu"
@@ -8196,12 +7976,6 @@ msgstr "nie można obsłużyć typu monitora: %s"
 
 msgid "unable to initialize VirtualBox driver API"
 msgstr "nie można zainicjować API sterownika VirtualBox"
-
-msgid "unable to make pipe"
-msgstr "nie można utworzyć potoku"
-
-msgid "unable to open pipe"
-msgstr "nie można otworzyć potoku"
 
 msgid "unable to open stream"
 msgstr "nie można otworzyć strumienia"
@@ -8837,10 +8611,6 @@ msgid "unsupported disk type %s"
 msgstr "nieobsługiwany typ dysku %s"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "nieobsługiwany typ dysku „%s”"
-
-#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "nieobsługiwana nazwa sterownika „%s” dla dysku „%s”"
 
@@ -8988,9 +8758,6 @@ msgstr "virDomainGetXMLDesc z flagą bezpieczeństwa"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc z flagą bezpieczeństwa"
 
-msgid "virExec is not implemented for WIN32"
-msgstr "virExec jest niezaimplementowane w systemach Win32"
-
 msgid "virGetGroupID is not available"
 msgstr "virGetGroupID jest niedostępne"
 
@@ -9107,10 +8874,6 @@ msgstr "plik danych XML do wyeksportowania"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "Wartość „%s” xsd:dateTime ma nieoczekiwany format"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "Wartość „%s” xsd:dateTime jest za długa dla celu"
 
 msgid "yes"
 msgstr "tak"

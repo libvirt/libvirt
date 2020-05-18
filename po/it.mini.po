@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-02-27 05:14+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -160,9 +160,6 @@ msgstr "Collegamento di un nuovo dispositivo disco."
 
 msgid "Attach new network interface."
 msgstr "Collegamento di una nuova interfaccia di rete."
-
-msgid "Authentication failed"
-msgstr "Autenticazione fallita"
 
 msgid "Autostart"
 msgstr "Avvio automatico"
@@ -341,10 +338,6 @@ msgstr "Errore nel parsing dell'indirizzo MAC '%s' della rete '%s'"
 msgid "Cannot parse controller index %s"
 msgstr "Errore nel parsing del controller indice %s"
 
-#, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "Impossibile analizzare il numero da '%s'"
-
 msgid "Cannot read cputime for domain"
 msgstr "Impossibile leggere cputime per il dominio"
 
@@ -423,10 +416,6 @@ msgstr "Impossibile modificare i parametri della memoria: %s"
 #, c-format
 msgid "Could not change scheduler parameters: %s"
 msgstr "Impossibile modificare i parametri dello scheduler: %s"
-
-#, c-format
-msgid "Could not close %s"
-msgstr "Impossibile chiudere %s"
 
 msgid "Could not configure network"
 msgstr "Impossibile configurare la rete"
@@ -580,10 +569,6 @@ msgstr "Impossibile analizzare l'ID VPS %s"
 #, c-format
 msgid "Could not parse positive integer from '%s'"
 msgstr "Errore nel parsing di un intero positivo da '%s'"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "Errore nel parsing del numero di versione da '%s'"
 
 #, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
@@ -911,19 +896,6 @@ msgstr "Modifica la configurazione XML per uno storage pool."
 msgid "Error creating initial configuration"
 msgstr "Errore nella creazione della configurazione iniziale"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "Errore nel parsing di 'path'. Caratteri non validi."
-
-msgid "Error parsing volume XML."
-msgstr "Errore nel parsing dell'XML del volume."
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "Errore durante l'acquisizione delle informazioni sull'indirizzo %s"
-
-msgid "Error while opening SSH session."
-msgstr "Errore nell'apertura della sessione SSH."
-
 #, c-format
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%s'"
 msgstr ""
@@ -985,10 +957,6 @@ msgid "Failed to compile regex %s"
 msgstr "Compilazione regex %s fallita"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "Connessione a %s fallita"
-
-#, c-format
 msgid "Failed to convert '%s' to int"
 msgstr "Impossibile convertire '%s' a int"
 
@@ -1021,9 +989,6 @@ msgstr "Impossibile creare il dominio da %s"
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "Impossibile creare la rete da %s"
-
-msgid "Failed to create pipe"
-msgstr "Impossibile creare la pipe"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -1239,10 +1204,6 @@ msgstr "Impossibile riassegnare il dispositivo PCI: %s"
 msgid "Failed to read /proc/mounts"
 msgstr "Impossibile leggere /proc/mounts"
 
-#, c-format
-msgid "Failed to read from %s"
-msgstr "Impossibile eseguire la lettura da %s"
-
 msgid "Failed to read the container continue message"
 msgstr "Impossibile leggere il mesaggio di continua contenitore"
 
@@ -1347,9 +1308,6 @@ msgstr "Impossibile disabilitare l'avvio automatico del dominio %s"
 
 msgid "Failed! Volume not removed."
 msgstr "Fallito! Volume non rimosso."
-
-msgid "Failure establishing SSH session."
-msgstr "Errore nella creazione della sessione SSH."
 
 #, c-format
 msgid "Feature %s required by CPU model %s not found"
@@ -1946,9 +1904,6 @@ msgstr "Mostrare le informazioni sul vol in XML su stdout."
 msgid "PASS"
 msgstr "PASS"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "I dispositivi host PCI devono usare il tipo di indirizzo 'pci'"
-
 msgid "POST operation failed"
 msgstr "operazione POST fallita"
 
@@ -2048,20 +2003,6 @@ msgstr "Pool %s avviato\n"
 #, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Marcatura di avvio automatico del pool %s rimossa\n"
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr ""
-"Probabilmente non hai installato IBM Tools in LPAR. Contattare il supporto "
-"per abilitare questa funzione."
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"Probabilmente non hai installato IBM Tool nel tuo LPAR. Contatta il servizio "
-"di supporto per abilitare questa funzione."
 
 msgid "Primary IDE controller must have PCI address 0:0:1.1"
 msgstr "Il controller IDE primario deve avere indirizzo PCI 0:0:1.1"
@@ -2278,9 +2219,6 @@ msgstr "Volume di storage non trovato"
 msgid "Storage volume not found: %s"
 msgstr "Volume di storage non trovato: %s"
 
-msgid "StoragePool name already exists."
-msgstr "Nome dello storage pool già esistente."
-
 msgid "Suspend a running domain."
 msgstr "Sospendere un dominio in esecuzione."
 
@@ -2343,9 +2281,6 @@ msgstr ""
 "       'quit' per uscire\n"
 "\n"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr "Gli UNIX domain socket non sono supportati su questa piattaforma"
-
 #, c-format
 msgid "USB device %s is already in use"
 msgstr "Il dispositivo USB %s è già in uso"
@@ -2367,9 +2302,6 @@ msgstr "UUID:"
 msgid "Unable to access stream for '%s'"
 msgstr "Impossibile accedere allo stream per '%s'"
 
-msgid "Unable to add LPAR to the table"
-msgstr "Impossibile aggiungere LPAR alla tabella"
-
 msgid "Unable to become session leader"
 msgstr "impossibile diventare il leader della sessione"
 
@@ -2382,71 +2314,8 @@ msgstr "Impossibile cambiare i parametri numa"
 msgid "Unable to change to root dir"
 msgstr "Impossibile cambiare la root dir"
 
-#, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "Impossibile creare LPAR. Motivo: '%s'"
-
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "Impossibile creare lo storage pool: %s"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "Impossibile creare il volume: %s"
-
-msgid "Unable to create new virtual adapter"
-msgstr "Impossibile creare un nuovo adattatore virtuale"
-
-msgid "Unable to determine domain's CPU."
-msgstr "Impossibile determinare la CPU del dominio."
-
-msgid "Unable to determine domain's max memory."
-msgstr "Impossibile determinare la memoria massima del dominio."
-
-msgid "Unable to determine domain's memory."
-msgstr "Impossibile determinare la memoria del dominio."
-
-msgid "Unable to determine domain's name."
-msgstr "Impossibile determinare il nome del dominio."
-
-msgid "Unable to determine number of domains."
-msgstr "Impossibile determinare il numero di domini."
-
-msgid "Unable to determine storage pool's name."
-msgstr "Impossibile determinare il nome degli storage pool."
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "Impossibile determinare l'uuid degli storage pool."
-
-msgid "Unable to determine storage pools's size."
-msgstr "Impossibile determinare la dimensione degli storage pool."
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "Impossibile determinare l'adattatore del sorgente del pool di storage."
-
-msgid "Unable to determine storage sp's name."
-msgstr "Impossibile determinare il nome di sp per lo storage."
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "Impossibile determinare l'uuid di sp per lo storage."
-
-msgid "Unable to determine storage sps's size."
-msgstr "Impossibile determinare la dimensione di sps per lo storage."
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "Impossibile determinare l'adattatore del sorgente di sps di storage."
-
 msgid "Unable to format guestfwd port"
 msgstr "Impossibile formattare la porta guestfwd"
-
-msgid "Unable to generate random uuid."
-msgstr "Impossibile generare un uuid random."
-
-msgid "Unable to get VIOS name"
-msgstr "Impossibile ottenere il nome VIOS"
-
-msgid "Unable to get VIOS profile name."
-msgstr "Impossibile ottenere il nome del profilo VIOS."
 
 msgid "Unable to get interface parameters"
 msgstr "Impossibile determinare i parametri dell'interfaccia"
@@ -2471,15 +2340,8 @@ msgid "Unable to open UNIX socket"
 msgstr "Impossibile aprire il socket UNIX"
 
 #, c-format
-msgid "Unable to open monitor path %s"
-msgstr "Impossibile aprire il percorso %s del monitor"
-
-#, c-format
 msgid "Unable to open stream for '%s'"
 msgstr "Impossibile aprire uno stream per '%s'"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "Impossibile impostare il monitor in modalità non-blocking"
 
 msgid "Unable to send container continue message"
 msgstr "impossibile inviare il messaggio di continua contenitore"
@@ -2489,9 +2351,6 @@ msgstr "Impossibile impostare i parametri dell'interfaccia"
 
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Impossibile impostare il flag close-on-exec del monitor"
-
-msgid "Unable to write information to local file."
-msgstr "Impossibile scrivere le informazioni sul file locale"
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -2688,11 +2547,6 @@ msgstr "Il nodo XML non contiene testo, era atteso un valore xsd:dateTime"
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "Valutazione XPath della risposta per la chiamata su '%s' fallita"
 
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr ""
-"Stai cercando di impostare un numero di CPU maggiore del numero massimo "
-"permesso."
-
 #, c-format
 msgid "[--%s <number>]"
 msgstr "[--%s <number>]"
@@ -2854,9 +2708,6 @@ msgstr "impossibile creare la directory di log %s"
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "impossibile creare il percorso '%s'"
-
-msgid "cannot create pipe"
-msgstr "impossibile creare la pipe"
 
 #, c-format
 msgid "cannot create snapshot directory '%s'"
@@ -3578,9 +3429,6 @@ msgstr "errore nella creazione del file di log %s"
 msgid "failed to create socket"
 msgstr "impossibile creare il socket"
 
-msgid "failed to determine host name"
-msgstr "impossibile determinare il nome host"
-
 msgid "failed to enable IP forwarding"
 msgstr "errore nell'abilitazione dell'IP forwarding"
 
@@ -3781,9 +3629,6 @@ msgstr "ottieni statistiche dei blocchi del dispositivo per un dominio"
 
 msgid "get network interface stats for a domain"
 msgstr "ottieni statistiche interfaccia di rete per un dominio"
-
-msgid "getting time of day"
-msgstr "acquisizione ora del giorno in corso"
 
 msgid "gracefully shutdown a domain"
 msgstr "arrestare un dominio (graceful shutdown)"
@@ -4541,10 +4386,6 @@ msgstr "nessun file di configurazione per %s"
 msgid "no device capabilities for '%s'"
 msgstr "nessuna funzionalità del dispositivo per '%s'"
 
-#, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "nessun formato disco per %s e il probing è disabilitato"
-
 msgid "no domain XML passed"
 msgstr "nessun dominio XML fornito"
 
@@ -4732,9 +4573,6 @@ msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr ""
 "gli elementi boot per-dispositivo non possono essere usati insieme agli "
 "elementi os/boot"
-
-msgid "poll on socket failed"
-msgstr "poll sul socket fallito"
 
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
@@ -5131,9 +4969,6 @@ msgstr "impossibile generare uuid"
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "impossibile gestire il tipo di monitor: %s"
-
-msgid "unable to make pipe"
-msgstr "impossibile generare pipe"
 
 #, c-format
 msgid "unable to parse mac address '%s'"
@@ -5672,10 +5507,6 @@ msgid "unsupported disk bus '%s' with device setup"
 msgstr "bus del disco '%s' non supportato con l'impostazione del dispositivo"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "tipo di disco '%s' non supportato"
-
-#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "nome di volume non supportato '%s' per il disco '%s'"
 
@@ -5856,7 +5687,3 @@ msgstr "il bus di xen non supporta il dispositivo di input %s"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "Il valore '%s' di xsd:dateTime ha un formato non atteso"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "Il valore '%s' di xsd:dateTime è troppo lungo per la destinazione"

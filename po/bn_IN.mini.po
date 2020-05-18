@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-02-26 07:10+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.com/projects/p/libvirt/"
@@ -262,21 +262,12 @@ msgstr ""
 msgid "Active:"
 msgstr "সক্রিয়:"
 
-msgid "Address family for hostname not supported"
-msgstr "হোস্টনামের জন্য ঠিকানা ফ্যামিলি সমর্থিত নয়"
-
-msgid "All requests done"
-msgstr "সকল অনুরোধ সম্পন্ন"
-
 msgid "Allocation:"
 msgstr "বরাদ্দকরণ:"
 
 #, c-format
 msgid "Ancestor model %s not found for CPU model %s"
 msgstr "%s পূর্ববর্তী মডেলটি CPU মডেল %s-র জন্য পাওয়া যায়নি"
-
-msgid "Argument buffer too small"
-msgstr "অার্গুমেন্ট বাফার অত্যন্ত সংক্ষিপ্ত"
 
 #, c-format
 msgid ""
@@ -298,9 +289,6 @@ msgstr "একটি নতুন নেটওয়ার্ক ইন্টার
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "অ্যাট্রিবিউট মোড শুধুমাত্র গেস্ট CPU'র জন্য অনুমোদিত"
 
-msgid "Authentication failed"
-msgstr "অনুমোদন বিফল"
-
 msgid "Autostart"
 msgstr "স্বয়ংক্রিয় প্রারম্ভকরণ"
 
@@ -320,9 +308,6 @@ msgstr "বাজে ipv4 সমাপ্তি ঠিকানা '%s' <nat> �
 #, c-format
 msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
 msgstr "বাজে ipv4 সূচনা ঠিকানা '%s' <nat> এ <forward> এ '%s' নেটওয়ার্কে"
-
-msgid "Bad value for ai_flags"
-msgstr "ai_flags এর জন্য বাজে মান"
 
 msgid "Bad value for nativeMode"
 msgstr "nativeMode এর ক্ষেত্রে মান ঠিক নেই"
@@ -454,14 +439,8 @@ msgstr "পিড ফাইল পাথ নির্ধারণ করা য�
 msgid "Can't determine socket paths"
 msgstr "সকেট পাথ নির্ধারণ করা যায় না"
 
-msgid "Can't determine user directory"
-msgstr "ব্যবহারকারী ডিরেক্টরি নির্ধারণ করা যায় না"
-
 msgid "Can't initialize access manager"
 msgstr "অ্যাক্সেস ম্যানেজার আরম্ভ করা যায় না"
-
-msgid "Can't initialize logging"
-msgstr "লগিং প্রারম্ভ করা যায় না"
 
 #, c-format
 msgid "Can't load config file: %s: %s"
@@ -766,10 +745,6 @@ msgstr "চেন অগ্রাধিকার '%s' পার্জ করা 
 #, c-format
 msgid "Could not parse usb file %s"
 msgstr "usb ফাইল %s পার্স করতে ব্যর্থ"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "সংস্করণ নম্বর '%s' থেকে পার্জ করা যায়নি"
 
 #, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
@@ -1133,19 +1108,9 @@ msgstr "'%s' নির্মাণকারী চাইল্ড প্রস�
 msgid "Error opening file %s"
 msgstr "ফাইল %s লোড করতে সমস্যা"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "'path' পার্স করতে ব্যর্থ। অবৈধ অক্ষর।"
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "গোপনীয় তথ্য পড়তে সমস্যা: %s"
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "%s ঠিকানার তথ্য প্রাপ্ত করতে ত্রুটি"
-
-msgid "Error while opening SSH session."
-msgstr "SSH সেশান খুলতে ত্রুটি।"
 
 #, c-format
 msgid "Exceeded max iface limit %d"
@@ -1201,10 +1166,6 @@ msgid "Failed to compile regex %s"
 msgstr "regex %s কম্পাইল করতে ব্যর্থ"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "%s-র সাথে সংযোগ করতে ব্যর্থ"
-
-#, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "%s ডোমেইন %s-এ সংরক্ষণ করতে ব্যর্থ"
 
@@ -1241,9 +1202,6 @@ msgstr "%s থেকে নেটওয়ার্ক নির্মাণ কর
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "%s থেকে নোড ডিভাইস নির্মাণ করতে ব্যর্থ"
-
-msgid "Failed to create pipe"
-msgstr "পাইপ নির্মাণ করতে ব্যর্থ"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -1690,9 +1648,6 @@ msgstr "ভলিউম %s মুছে ফেলতে ব্যর্থ"
 msgid "Failed to write %zu bytes to storage volume with path '%s'"
 msgstr "%zu অবস্থানটি, '%s' পাথ সহ সংরক্ষণের ভলিউমের মধ্যে লিখতে ব্যর্থ"
 
-msgid "Failure establishing SSH session."
-msgstr "SSH সেশান খুলতে ত্রুটি।"
-
 #, c-format
 msgid "Family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"
 msgstr ""
@@ -1823,9 +1778,6 @@ msgstr "ইন্টারফেস পাওয়া যায়নি"
 #, c-format
 msgid "Interface not found: %s"
 msgstr "ইন্টারফেস পাওয়া যায়নি: %s"
-
-msgid "Interrupted by a signal"
-msgstr "একটি সংকেত দ্বারা বাধাপ্রাপ্ত"
 
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
@@ -2113,9 +2065,6 @@ msgstr "ত্রুটিপূর্ণ মাপ %s"
 msgid "Max memory:"
 msgstr "সর্বোচ্চ মেমরি:"
 
-msgid "Memory allocation failure"
-msgstr "মেমরি নির্দিষ্টকরণ ব্যর্থ হয়েছে"
-
 msgid "Memory processed:"
 msgstr "প্রক্রিয়াভুক্ত মেমরি:"
 
@@ -2310,9 +2259,6 @@ msgstr "নাম"
 msgid "Name of chain is longer than %u characters"
 msgstr "চেনের নাম %u অক্ষরের থেকে বড়"
 
-msgid "Name or service not known"
-msgstr "নাম বা পরিষেবা অজানা"
-
 msgid "Name:"
 msgstr "নাম:"
 
@@ -2403,9 +2349,6 @@ msgstr "সকেট ইন্টার-ফেসের সাথে <source> 'p
 msgid "No JSON parser implementation is available"
 msgstr "কোনো JSON পার্সারের বাস্তবায়ন উপলব্ধ নেই"
 
-msgid "No address associated with hostname"
-msgstr "হোস্টনামের সংগে কোনো ঠিকানা সংশ্লিষ্ট নেই"
-
 msgid "No data supplied for <initarg> element"
 msgstr "<initarg> উপাদানের জন্য কোনো ডেটা সরবরাহ করা হয়নি"
 
@@ -2443,9 +2386,6 @@ msgstr "নোড ডিভাইস পাওয়া যায়নি: %s"
 
 msgid "Non-empty feature list specified without CPU model"
 msgstr "CPU-র মডেল উল্লেখ না করে তথ্য বিশিষ্ট বৈশিষ্ট্যের তালিকা নির্ধারিত হয়েছে"
-
-msgid "Non-recoverable failure in name resolution"
-msgstr "নাম রিজোলিউশনে অপুনরুদ্ধারযোগ্য ব্যর্থতা"
 
 msgid "None"
 msgstr "শূণ্য"
@@ -2547,18 +2487,12 @@ msgstr "XML ডাম্প রূপে stdout-র মধ্যে পুল �
 msgid "Output the vol information as an XML dump to stdout."
 msgstr "XML ডাম্প রূপে stdout-র মধ্যে ভলিউম সংক্রান্ত তথ্য প্রদর্শন করা হবে।"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "PCI হোস্ট ডিভাইসের ক্ষেত্রে 'pci' ধরনের ঠিকানা ব্যবহার করা আবশ্যক"
-
 msgid "POST operation failed"
 msgstr "POST কর্ম বিফল"
 
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST কর্ম বিফল: %s"
-
-msgid "Parameter string not correctly encoded"
-msgstr "প্যারামিটার স্ট্রীং সঠিক ভাবে এনকোড করা হয়নি"
 
 #, c-format
 msgid "Parent device %s is not capable of vport operations"
@@ -2651,9 +2585,6 @@ msgstr "অগ্রাধিকার '%d' [%d,%d] এর মানের র�
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "এই প্ল্যাটফর্মের মধ্যে CPU অ্যাফিনিটি সমর্থন করা হয় না"
 
-msgid "Processing request in progress"
-msgstr "প্রক্রিয়া অনুরোধের কাজ চলছে"
-
 #, c-format
 msgid "QueryPerf returned object with unexpected type '%s'"
 msgstr "QueryPerf অপ্রত্যাশিত ধরন '%s' সমেত অবজেক্ট ফেরত পাঠিয়েছে"
@@ -2678,12 +2609,6 @@ msgstr "চিহ্নিত পুল নতুন করে নির্ম�
 #, c-format
 msgid "Removable media not supported for %s device"
 msgstr "%s ডিভাইসের জন্য অপসারণযোগ্য মিডিয়া সমর্থিত নয়"
-
-msgid "Request canceled"
-msgstr "অনুরোধ বাতিল করা হয়েছে"
-
-msgid "Request not canceled"
-msgstr "অনুরোধ বাতিল করা হয়নি"
 
 #, c-format
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
@@ -2828,9 +2753,6 @@ msgstr "নিরাপত্তার মডেল পাওয়া যায়ন
 msgid "Security model:"
 msgstr "নিরাপত্তার মডেল:"
 
-msgid "Servname not supported for ai_socktype"
-msgstr "Servname ai_socktype এর ক্ষেত্রে সমর্থিত নয়"
-
 msgid "Set a secret value."
 msgstr "গোপনীয় মান নির্ধারণ করুন।"
 
@@ -2912,9 +2834,6 @@ msgstr "ডোমেইন সাসপেন্ড অবস্থায় স্
 
 msgid "Suspend operation failed"
 msgstr "স্থগিত করার কর্ম বিফল"
-
-msgid "System error"
-msgstr "সিস্টেম সংক্রান্ত সমস্যা"
 
 msgid "System lacks NETNS support"
 msgstr "সিস্টেমের মধ্যে NETNS সমর্থন অনুপস্থিত"
@@ -3263,9 +3182,6 @@ msgstr "টার্গেট ভিডিও কার্ড vram %u সোর�
 msgid "Target watchdog model %s does not match source %s"
 msgstr "টার্গেট watchdog মডেল %s %s সোর্সের সংগে মেলে না"
 
-msgid "Temporary failure in name resolution"
-msgstr "নাম রিজোলিউশনে অস্থায়ী ব্যর্থতা"
-
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -3389,15 +3305,8 @@ msgid "Unable to open %s"
 msgstr "%s খুলতে ব্যর্থ"
 
 #, c-format
-msgid "Unable to open monitor path %s"
-msgstr "মনিটর পাথ %s খুলতে ব্যর্থ"
-
-#, c-format
 msgid "Unable to parse class id '%s'"
 msgstr "ক্লাস অাইডি পার্জ করতে ব্যর্থ '%s'"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "নন-ব্লকিং মোডে মনিটর স্থাপন করতে ব্যর্থ"
 
 #, c-format
 msgid "Unable to reset PCI device %s: %s"
@@ -3708,12 +3617,6 @@ msgstr "সক্রিয়"
 msgid "address type='%s' not supported in hostdev interfaces"
 msgstr "ঠিকানা ধরন='%s' hostdev ইন্টারফেসে সমর্থিত নয়"
 
-msgid "ai_family not supported"
-msgstr "ai_family সমর্থিত নয়"
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype সমর্থিত নয়"
-
 #, c-format
 msgid "argument key '%s' is too short, missing type prefix"
 msgstr "আর্গুমেন্ট-কি '%s' অত্যাধিক ছোট, ধরনের প্রে-ফিক্স অনুপস্থিত"
@@ -3920,9 +3823,6 @@ msgstr "লগ ডিরেক্টরি %s নির্মাণ করতে
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "পাথ '%s' নির্মাণ করতে ব্যর্থ"
-
-msgid "cannot create pipe"
-msgstr "পাইপ নির্মাণ করতে ব্যর্থ"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
@@ -4488,10 +4388,6 @@ msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen হাইপার-ভাইসর এন্ট্রি %s ব্যবহার করতে ব্যর্থ"
 
 #, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "pidfile %s, %d-র জন্য লিখতে ব্যর্থ"
-
-#, c-format
 msgid ""
 "couldn't find a portgroup entry in network '%s' matching <portgroup "
 "name='%s'>"
@@ -4907,9 +4803,6 @@ msgstr "%s লগ-ফাইল নির্মাণ করতে ব্যর�
 msgid "failed to create socket"
 msgstr "সকেট নির্মাণ করতে ব্যর্থ"
 
-msgid "failed to determine host name"
-msgstr "হোস্ট-নেম নির্ধারণ করতে ব্যর্থ"
-
 msgid "failed to enable IP forwarding"
 msgstr "IP ফরওয়ার্ডিং সক্রিয় করতে ব্যর্থ"
 
@@ -5151,9 +5044,6 @@ msgstr "কোনো ডোমেইনের জন্য পরিসংখ্
 
 msgid "get network interface stats for a domain"
 msgstr "ডোমেইনের জন্যা নেটওয়ার্ক ইন্টারফকে পরিসংখ্যান প্রাপ্ত করুন"
-
-msgid "getting time of day"
-msgstr "দিনের বর্তমান সময় সংগ্রহ"
 
 msgid "gracefully shutdown a domain"
 msgstr "সঠিক পদ্ধতিতে ডোমেইন বন্ধ করুন"
@@ -6498,9 +6388,6 @@ msgstr "সমর্থিত হলে লাইভ কোর ডাম্প �
 msgid "persist VM on destination"
 msgstr "গন্তব্যস্থলে ভার্চুয়াল মেশিন স্থায়ী হবে"
 
-msgid "poll on socket failed"
-msgstr "সকেটের পোল করতে ব্যর্থ"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "পুল '%s' uuid %s এর সংগে ইতিমধ্যেই উপস্থিত"
@@ -6567,10 +6454,6 @@ msgstr "প্রোটোকলের মধ্যে family attribute অন�
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 bus দ্বারা %s ইনপুট ডিভাইস সমর্থিত হবে না"
-
-#, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: বর্তমান ডিরেক্টরি প্রাপ্ত করতে ব্যর্থ: %s"
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
@@ -7101,9 +6984,6 @@ msgstr "mutex আরম্ভ করতে ব্যর্থ"
 
 msgid "unable to initialize VirtualBox driver API"
 msgstr "VirtualBox ড্রাইভার API আরম্ভ করতে ব্যর্থ"
-
-msgid "unable to make pipe"
-msgstr "পাইপ নির্মাণ করতে ব্যর্থ"
 
 #, c-format
 msgid "unable to parse mac address '%s'"
@@ -7936,10 +7816,6 @@ msgstr "ডিভাইস প্রস্তুতির সাথে অসম
 #, c-format
 msgid "unsupported disk type %s"
 msgstr "%s ধরনের ডিস্ক সমর্থিত নয়"
-
-#, c-format
-msgid "unsupported disk type '%s'"
-msgstr "'%s' ধরনের ডিস্ক সমর্থিত নয়"
 
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"

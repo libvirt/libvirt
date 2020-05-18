@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-03-03 06:01+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/projects/p/fedora/"
@@ -856,13 +856,6 @@ msgstr "UUID:"
 msgid "Unable to change MaxMemorySize"
 msgstr "Ne mogu da izmenim najveću količinu memorije"
 
-#, c-format
-msgid "Unable to open monitor path %s"
-msgstr "Nije moguće otvoriti putanju nadgledanja %s"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "Nije moguće postaviti nadgledanje u neblokirajući režim"
-
 msgid "Unable to set monitor close-on-exec flag"
 msgstr ""
 "Nije moguće postaviti zastavicu za nadgledanje zatvaranja-pri-izvršavanju"
@@ -1348,9 +1341,6 @@ msgstr "dobavi statistiku blok uređaja za domen"
 
 msgid "get network interface stats for a domain"
 msgstr "dobavi statistiku mrežne sprege za domen"
-
-msgid "getting time of day"
-msgstr "dobavljam vreme dana"
 
 msgid "gracefully shutdown a domain"
 msgstr "ljubazno ugasi domen"
@@ -1943,10 +1933,6 @@ msgstr "nepoznata vrsta „%s“"
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "nepodržana vrsta autentifikacije %d"
-
-#, c-format
-msgid "unsupported disk type '%s'"
-msgstr "nije podržana vrsta diska „%s“"
 
 #, c-format
 msgid "unsupported input bus %s"

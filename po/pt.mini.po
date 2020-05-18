@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-02-24 02:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Portuguese <trans-pt@lists.fedoraproject.org>\n"
@@ -839,9 +839,6 @@ msgstr "obter as estatísticas do bloco do dispositivo para um domínio"
 
 msgid "get network interface stats for a domain"
 msgstr "obter a interface de rede de um domínio"
-
-msgid "getting time of day"
-msgstr "a obter a data de hoje"
 
 msgid "gracefully shutdown a domain"
 msgstr "terminar um domínio ordeiramente"

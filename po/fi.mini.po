@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2017-03-26 10:24+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish (http://www.transifex.com/projects/p/fedora/language/"
@@ -414,9 +414,6 @@ msgstr "Puuttuva CPU mallinimi"
 msgid "Name"
 msgstr "Nimi"
 
-msgid "Name or service not known"
-msgstr "Nimi tai palvelu ei ole tunnettu"
-
 msgid "Name:"
 msgstr "Nimi:"
 
@@ -493,12 +490,6 @@ msgstr ""
 msgid "RPC error"
 msgstr "RPC-virhe"
 
-msgid "Request canceled"
-msgstr "Pyyntö peruttu"
-
-msgid "Request not canceled"
-msgstr "Pyyntöä ei peruttu"
-
 msgid "Restore a domain."
 msgstr "Palauta toimialue."
 
@@ -550,12 +541,6 @@ msgstr "Tila:"
 
 msgid "Suspend a running domain."
 msgstr "Aseta suorituksessa oleva toimialue keskeytystilaan."
-
-msgid "System error"
-msgstr "Järjestelmä virhe"
-
-msgid "Temporary failure in name resolution"
-msgstr "Tiapäinen vrihe nimenselvityksessä"
 
 msgid "Thread(s) per core:"
 msgstr "Säikeitä per ydin:"
@@ -618,12 +603,6 @@ msgstr "XML-tiedosto"
 
 msgid "active"
 msgstr "aktiivinen"
-
-msgid "ai_family not supported"
-msgstr "ai_family ei tuettu"
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype ei tuettu"
 
 msgid "attach device from an XML file"
 msgstr "liitä laite XML-tiedostosta"
@@ -893,9 +872,6 @@ msgstr "hae toimialueen laitelohkotilastot"
 
 msgid "get network interface stats for a domain"
 msgstr "hae toimialueen verkkoliitäntätilastot"
-
-msgid "getting time of day"
-msgstr "haetaan kellonaika"
 
 msgid "gracefully shutdown a domain"
 msgstr "sammuta toimialue siististi"

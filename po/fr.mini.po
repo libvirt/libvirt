@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2019-08-30 08:18+0000\n"
 "Last-Translator: Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>\n"
 "Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
@@ -181,10 +181,6 @@ msgid ""
 msgstr ""
 "%s:%d: %s%s\n"
 "%s"
-
-#, c-format
-msgid "%s:%zu: %s '%s'"
-msgstr "%s:%zu: %s '%s'"
 
 #, c-format
 msgid "'%s' denied access"
@@ -345,20 +341,11 @@ msgstr ""
 "élément <virtualport> non pris en charge pour type='%s' dans l'élément "
 "<actual> de l'interface"
 
-msgid "Address family for hostname not supported"
-msgstr "Famille d'adresse pour le nom d'hôte non prise en charge"
-
-msgid "All requests done"
-msgstr "Toutes les requêtes sont achevées"
-
 msgid "Allocation"
 msgstr "Allocation"
 
 msgid "Allocation:"
 msgstr "Allocation :"
-
-msgid "Argument buffer too small"
-msgstr "Tampon des arguments trop petit"
 
 msgid "Attach device from an XML <file>."
 msgstr "Attacher un périphérique depuis un fichier XML <file>."
@@ -407,9 +394,6 @@ msgstr "Disponible"
 
 msgid "Available:"
 msgstr "Disponible :"
-
-msgid "Bad value for ai_flags"
-msgstr "Valeur invalide pour ai_flags"
 
 #, c-format
 msgid "Block device '%s' is resized"
@@ -484,14 +468,8 @@ msgstr "Impossible de déterminer le chemin du fichier pid."
 msgid "Can't determine socket paths"
 msgstr "Impossible de déterminer les chemins de socket"
 
-msgid "Can't determine user directory"
-msgstr "Impossible de déterminer le répertoire de l'utilisateur"
-
 msgid "Can't initialize access manager"
 msgstr "Impossible d'initialiser le gestionnaire d'accès"
-
-msgid "Can't initialize logging"
-msgstr "Impossible d'initialiser la journalisation"
 
 #, c-format
 msgid "Can't load config file: %s: %s"
@@ -1130,9 +1108,6 @@ msgstr "ID"
 msgid "Id:"
 msgstr "ID :"
 
-msgid "Interrupted by a signal"
-msgstr "Interruption par un signal"
-
 msgid "Invalid BIOS 'date' format"
 msgstr "Format « date » du BIOS invalide"
 
@@ -1271,9 +1246,6 @@ msgstr "Taille %s non conforme"
 msgid "Max memory:"
 msgstr "Mémoire Max :"
 
-msgid "Memory allocation failure"
-msgstr "Échec d'allocation de mémoire"
-
 msgid "Memory size:"
 msgstr "Taille mémoire :"
 
@@ -1362,9 +1334,6 @@ msgstr "Topologie NUMA définie sans cellules NUMA"
 msgid "Name"
 msgstr "Nom"
 
-msgid "Name or service not known"
-msgstr "Nom ou service inconu"
-
 msgid "Name:"
 msgstr "Nom :"
 
@@ -1442,9 +1411,6 @@ msgstr "Aucun attribut <source> « port » spécifié avec l'interface du sock
 msgid "No UNIX caller UID available"
 msgstr "Aucun ID d'appelant UNIX n'est disponible"
 
-msgid "No address associated with hostname"
-msgstr "Aucune adresse associée avec le nom d'hôte"
-
 msgid "No data supplied for <initarg> element"
 msgstr "Aucune donnée fournie à l'élément <initarg>"
 
@@ -1471,9 +1437,6 @@ msgstr "Aucun type spécifié pour l'adresse de pérphérique"
 
 msgid "Non-empty feature list specified without CPU model"
 msgstr "Liste de fonctions non-vide spécifiée sans le modèle de CPU"
-
-msgid "Non-recoverable failure in name resolution"
-msgstr "Échec non récupérable dans la résolution de nom"
 
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr "Le nombre de CPU dans <numa> dépasse le compte <vcpu>"
@@ -1523,18 +1486,12 @@ msgstr "Afficher les informations du volume comme flux XML vers stdout."
 msgid "PASS"
 msgstr "PASS"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "Les périphériques hôte PCI doivent utiliser le type d'adresse « pci »"
-
 msgid "POST operation failed"
 msgstr "opération POST échouée"
 
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "opération POST échouée : %s"
-
-msgid "Parameter string not correctly encoded"
-msgstr "Encodage de la chaîne de paramètres invalide"
 
 msgid "Path"
 msgstr "Chemin"
@@ -1594,9 +1551,6 @@ msgstr "Pool %s démarré\n"
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Le pool %s ne démarrera plus automatiquement\n"
 
-msgid "Processing request in progress"
-msgstr "Traitement de la requête en cours"
-
 msgid "RPC error"
 msgstr "erreur RPC"
 
@@ -1606,12 +1560,6 @@ msgstr "Rafraichir le pool indiqué."
 #, c-format
 msgid "Release %s %o failed"
 msgstr "La version %s %o a échoué"
-
-msgid "Request canceled"
-msgstr "Requête annulée"
-
-msgid "Request not canceled"
-msgstr "Requête non annulée"
 
 msgid "Resize block device of domain."
 msgstr "Modifie la taille d'un périphérique bloc de domaine."
@@ -1679,9 +1627,6 @@ msgstr ""
 msgid "Server to retrieve threadpool attributes from."
 msgstr "Serveur de récupération des attributs du groupe d'unités d'exécution."
 
-msgid "Servname not supported for ai_socktype"
-msgstr "Servname n'est pas pris en charge pour ai_socktype"
-
 msgid "Setting startupPolicy is only allowed for USB devices"
 msgstr ""
 "La définition de startupPolicy est uniquement autorisée pour les "
@@ -1726,9 +1671,6 @@ msgstr "Volume de stockage introuvable : %s"
 
 msgid "Suspend a running domain."
 msgstr "Suspendre un domaine en cours d'exécution"
-
-msgid "System error"
-msgstr "Erreur système"
 
 #, c-format
 msgid "Target CPU arch %s does not match source %s"
@@ -1988,9 +1930,6 @@ msgstr "La carte vidéo cible vram %u ne correspond pas à la source %u"
 msgid "Target watchdog model %s does not match source %s"
 msgstr "Le modèle de surveillance cible %s ne correspond pas à la source %s"
 
-msgid "Temporary failure in name resolution"
-msgstr "Échec temporaire dans la résolution de nom"
-
 msgid "The certificate has no peers"
 msgstr "Le certificat n'a pas de pair"
 
@@ -2036,9 +1975,6 @@ msgstr "Impossible de créer la kqueue"
 
 msgid "Unable to format guestfwd port"
 msgstr "Impossible de formater le port guestfwd"
-
-msgid "Unable to generate random uuid."
-msgstr "Impossible de générer un UUID aléatoire."
 
 msgid "Unable to get Capabilities"
 msgstr "Impossible d'obtenir les capacités"
@@ -2229,12 +2165,6 @@ msgstr "actif"
 #, c-format
 msgid "address type='%s' not supported in hostdev interfaces"
 msgstr "address type='%s' n'est pas pris en charge sur les interfaces hostdev"
-
-msgid "ai_family not supported"
-msgstr "ai_family non pris en charge"
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype non pris en charge"
 
 msgid "allow the resize to shrink the volume"
 msgstr "permet à l'opération de modification de taille de réduire le volume"
@@ -2853,9 +2783,6 @@ msgstr ""
 
 msgid "get network interface stats for a domain"
 msgstr "obtenir les statistiques d'une interface réseau pour un domaine"
-
-msgid "getting time of day"
-msgstr "récupération de l'heure du jour"
 
 msgid "gracefully shutdown a domain"
 msgstr "arrêter un domaine proprement"

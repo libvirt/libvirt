@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -177,9 +177,6 @@ msgstr "Gắn thiết bị đĩa mới"
 
 msgid "Attach new network interface."
 msgstr "Gắn giao diện mạng mới"
-
-msgid "Authentication failed"
-msgstr "Xác thực thất bại"
 
 msgid "Autostart"
 msgstr "Tự khởi chạy"
@@ -371,10 +368,6 @@ msgid "Cannot parse controller index %s"
 msgstr "Không thể phân tích chỉ mục bộ điều khiển %s"
 
 #, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "Không thể phân tích số từ '%s'"
-
-#, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "Không thể phân tích địa chỉ socket '%s': %s"
 
@@ -398,9 +391,6 @@ msgstr "Không thể tắt chia sẻ không gian tên lắp"
 
 msgid "Capacity"
 msgstr "Dung lượng"
-
-msgid "Capacity cannot be empty."
-msgstr "Dung lượng không được để trống."
 
 msgid "Capacity:"
 msgstr "Dung lượng:"
@@ -633,10 +623,6 @@ msgstr "Không thể phân tích tập tin usb %s"
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
 msgstr "Không thể phân tích chỉ mục đĩa hợp lệ từ '%s'"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "Không thể phân tích số phiên bản từ '%s'"
 
 #, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
@@ -1061,12 +1047,6 @@ msgstr "Lỗi từ tiến trình con tạo '%s'"
 msgid "Error opening file %s"
 msgstr "Lỗi mở tập tin %s"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "Lỗi phân tích 'path'. Ký tự không hợp lệ."
-
-msgid "Error parsing volume XML."
-msgstr "Lỗi phân tích XML ổ."
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "Lỗi đọc bí mật: %s"
@@ -1077,13 +1057,6 @@ msgstr "Lỗi khi dựng tường lửa"
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "Lỗi khi dựng tường lửa: %s"
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "Lỗi khi lấy thông tin địa chỉ %s"
-
-msgid "Error while opening SSH session."
-msgstr "Lỗi khi mở phiên SSH."
 
 msgid "Error while reading the domain name"
 msgstr "Lỗi khi đang đọc tên miền"
@@ -1319,10 +1292,6 @@ msgid "Failed to compile regex %s"
 msgstr "Thất bại khi biên dịch regex %s"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "Thất bại khi kết nối tới %s"
-
-#, c-format
 msgid "Failed to convert '%s' to int"
 msgstr "Thất bại khi chuyển đổi '%s' sang kiểu int"
 
@@ -1371,9 +1340,6 @@ msgstr "Thất bại khi tạo mạng từ %s"
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "Thất bại khi tạo thiết bị nút từ %s"
-
-msgid "Failed to create pipe"
-msgstr "Thất bại khi tạo ống"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -1721,10 +1687,6 @@ msgid "Failed to read file '%s'"
 msgstr "Thất bại khi đọc tập tin '%s'"
 
 #, c-format
-msgid "Failed to read from %s"
-msgstr "Thất bại khi đọc từ %s"
-
-#, c-format
 msgid "Failed to read product/vendor ID for %s"
 msgstr "Thất bại khi đọc ID sản phẩm/nhà cung cấp cho %s"
 
@@ -1910,9 +1872,6 @@ msgstr "Thất bại khi dọn sạch ổ %s"
 #, c-format
 msgid "Failed to write %zu bytes to storage volume with path '%s'"
 msgstr "Thất bại khi ghi %zu byte vào ổ lưu trữ với đường dẫn '%s'"
-
-msgid "Failure establishing SSH session."
-msgstr "Thành lập phiên SSH thất bại."
 
 #, c-format
 msgid "Feature %s required by CPU model %s not found"
@@ -2306,10 +2265,6 @@ msgstr "Thao tác vport không hợp lệ (%d)"
 
 msgid "Job type:"
 msgstr "Kiểu công việc"
-
-msgid "Key must be empty, Power Hypervisor will create one for you."
-msgstr ""
-"Khóa phải để trống, Trình quản lý máy ảo cấp Power sẽ tạo một cái cho bạn."
 
 msgid "Key of the current session differs from the key at last login"
 msgstr "Khóa của phiên làm việc hiện tại khác với khóa lần đăng nhập trước"
@@ -2739,9 +2694,6 @@ msgstr "Xuất thông tin pool như một dump XML tới stdout."
 msgid "Output the vol information as an XML dump to stdout."
 msgstr "Xuất thông tin ổ như một dump XML tới stdout."
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "Các thiết bị chủ PCI phải sử dụng kiểu địa chỉ 'pci'"
-
 msgid "POST operation failed"
 msgstr "thao tác POST thất bại"
 
@@ -2853,20 +2805,6 @@ msgstr "Pool %s đã bắt đầu\n"
 #, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Pool %s đã bỏ đánh dấu tự khởi động\n"
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr ""
-"Có thể bạn không có IBM Tools cài đặt trong LPAR của bạn. Liên lạc hỗ trợ để "
-"bật tính năng này."
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"Có thể bạn không có IBM Tools cài đặt trong LPAR của bạn. Liên lạc hỗ trợ để "
-"bật tính năng này."
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel đã gọi như không có cờ TUNNELLED được đặt"
@@ -3210,9 +3148,6 @@ msgstr "Ổ lưu trữ không tìm thấy"
 msgid "Storage volume not found: %s"
 msgstr "Ổ lưu trữ không tìm thấy: %s"
 
-msgid "StoragePool name already exists."
-msgstr "Tên StoragePool đã tồn tại."
-
 msgid "Suspend a running domain."
 msgstr "Ngừng một miền đang chạy."
 
@@ -3317,9 +3252,6 @@ msgstr "UUID trên tập tin cấu hình sai dạng thức"
 msgid "UUID:"
 msgstr "UUID:"
 
-msgid "Unable to add LPAR to the table"
-msgstr "Không thể thêm LPAR vào bảng"
-
 msgid "Unable to become session leader"
 msgstr "Không thể trở thành lãnh đạo phiên làm việc"
 
@@ -3332,77 +3264,11 @@ msgstr "Không thể thay đổi các thông số bộ nhớ"
 msgid "Unable to change to root dir"
 msgstr "Không thể thay đổi thư mục gốc"
 
-#, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "Không thể tạo Lý do LPAR: '%s'"
-
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "Không thể tạo Pool Lưu trữ: %s"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "Không thể tạo Ổ: %s"
-
-msgid "Unable to create new virtual adapter"
-msgstr "Không thể tạo bộ tiếp hợp ảo mới"
-
-msgid "Unable to determine domain's CPU."
-msgstr "Không thể quyết định CPU miền."
-
-msgid "Unable to determine domain's max memory."
-msgstr "Không thể quyết định bộ nhớ lớn nhất của miền."
-
-msgid "Unable to determine domain's memory."
-msgstr "Không thể quyết định bộ nhớ miền."
-
-msgid "Unable to determine domain's name."
-msgstr "Không thể quyết định tên miền."
-
-msgid "Unable to determine number of domains."
-msgstr "Không thể quyết định số miền"
-
-msgid "Unable to determine storage pool's name."
-msgstr "Không thể quyết định tên pool lưu trữ."
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "Không thể quyết định uuid pool lưu trữ."
-
-msgid "Unable to determine storage pools's size."
-msgstr "Không thể quyết định kích thước pool lưu trữ."
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "Không thể quyết định bộ tiếp hợp nguồn của pool lưu trữ."
-
-msgid "Unable to determine storage sp's name."
-msgstr "Không thể quyết định tên sp lưu trữ"
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "Không thể quyết định uuid sp lưu trữ."
-
-msgid "Unable to determine storage sps's size."
-msgstr "Không thể quyết định kích thước sp lưu trữ."
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "Không thể quyết định bộ tiếp hợp nguồn của sp lưu trữ."
-
 msgid "Unable to format guestfwd port"
 msgstr "Không thể định dạng cổng guestfwd"
 
-msgid "Unable to generate random uuid."
-msgstr "Không thể tạo uuid ngẫu nhiên."
-
-msgid "Unable to get VIOS name"
-msgstr "Không thể lấy tên VIOS"
-
-msgid "Unable to get VIOS profile name."
-msgstr "Không thể lấy tên hồ sơ VIOS."
-
 msgid "Unable to get domain status"
 msgstr "Không thể lấy trạng thái miền"
-
-msgid "Unable to get free slot number"
-msgstr "Không thể lấy số khe rảnh"
 
 msgid "Unable to get memory parameters"
 msgstr "Không thể lấy các thông số bộ nhớ"
@@ -3431,15 +3297,8 @@ msgid "Unable to open /proc/mounts"
 msgstr "Không thể mở /proc/mounts"
 
 #, c-format
-msgid "Unable to open monitor path %s"
-msgstr "Không thể mở đường dẫn bộ theo dõi %s"
-
-#, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "Không thể pre-create tập tin chardev '%s'"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "Không thể đặt bộ theo dõi vào chế độ không-chặn"
 
 #, c-format
 msgid "Unable to remove %s (%d)"
@@ -3454,9 +3313,6 @@ msgstr "Không thể gửi tin nhắn tiếp tục của bộ chứa"
 
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Không thể đặt cờ close-on-exec cho bộ theo dõi"
-
-msgid "Unable to write information to local file."
-msgstr "Không thể ghi thông tin vào tập tin cục bộ"
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -3725,9 +3581,6 @@ msgstr "Nút XML không chứa chữ, mong đợi một giá trị xsd:dateTime"
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "Đánh giá XPath của đáp ứng cho cuộc gọi tới '%s' thất bại"
 
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr "Bạn đang cố gắng đặt số CPU cao hơn lớn nhất có thể."
-
 #, c-format
 msgid "[--%s <number>]"
 msgstr "[--%s <số>]"
@@ -3958,9 +3811,6 @@ msgstr "không thể tạo thư mục bản ghi %s"
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "không thể tạo đường dẫn '%s'"
-
-msgid "cannot create pipe"
-msgstr "không thể tạo ống"
 
 #, c-format
 msgid "cannot create snapshot directory '%s'"
@@ -4583,10 +4433,6 @@ msgstr "không thể sử dụng mục quản lý máy ảo Xen"
 msgid "could not use Xen hypervisor entry %s"
 msgstr "không thể sử dụng mục quản lý máy ảo Xen %s"
 
-#, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "không thể ghi tập tin pid %s cho %d"
-
 msgid "cpu affinity is not supported"
 msgstr "ái lực cpu không được hỗ trợ"
 
@@ -5010,9 +4856,6 @@ msgstr "thất bại khi tạo tập tin bản ghi %s"
 msgid "failed to create socket"
 msgstr "thất bại khi tạo socket"
 
-msgid "failed to determine host name"
-msgstr "thất bại khi quyết định tên máy chủ"
-
 msgid "failed to enable IP forwarding"
 msgstr "thất bại khi bật chuyển tiếp IP"
 
@@ -5177,9 +5020,6 @@ msgstr "thất bại khi bỏ đánh dấu tự khởi động pool %s"
 msgid "failed to wait on condition"
 msgstr "thất bại khi đợi trên điều kiện"
 
-msgid "failed to wake up polling thread"
-msgstr "thất bại khi đánh thức luồng poll"
-
 msgid "failed to write configuration file"
 msgstr "ghi tập tin cấu hình thất bại"
 
@@ -5274,9 +5114,6 @@ msgstr "lấy giá trị từ miền đang chạy"
 
 msgid "get value to be used on next boot"
 msgstr "lấy giá trị được sử dụng lần khởi động tiếp theo"
-
-msgid "getting time of day"
-msgstr "lấy giờ của ngày"
 
 msgid "gracefully shutdown a domain"
 msgstr "tắt đúng kiểu một miền "
@@ -6149,10 +5986,6 @@ msgstr "không có trình điều khiển kết nối sẵn có cho %s"
 msgid "no device capabilities for '%s'"
 msgstr "không có các khả năng thiết bị cho '%s'"
 
-#, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "không có định dạng đĩa cho %s và thăm dò bị tắt"
-
 msgid "no domain XML passed"
 msgstr "không có miền XML vượt qua"
 
@@ -6357,9 +6190,6 @@ msgstr "thực hiện một dump nhân trực tiếp nếu được hỗ trợ"
 msgid "persist VM on destination"
 msgstr "cố định may áo trên chỗ ghi"
 
-msgid "poll on socket failed"
-msgstr "poll trên socket thất bại"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "pool '%s' đã tồn tại với uuid %s"
@@ -6427,10 +6257,6 @@ msgid "ps2 bus does not support %s input device"
 msgstr "tuyến ps2 không hỗ trợ thiết bị nhập %s"
 
 #, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: không thể lấy thư mục hiện tại: %s"
-
-#, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "giả lập qemu '%s' không hỗ trợ xen"
 
@@ -6439,9 +6265,6 @@ msgstr "trình điều khiển trạng thái qemu không hoạt động"
 
 msgid "quit this interactive terminal"
 msgstr "thoát trình cuối tương tác này"
-
-msgid "read on wakeup fd failed"
-msgstr "đọc trên fd wakeup thất bại"
 
 msgid "read-only connection"
 msgstr "kết nổi chỉ đọc"
@@ -6907,9 +6730,6 @@ msgstr "không thể giải quyết kiểu bộ theo dõi: %s"
 
 msgid "unable to initialize VirtualBox driver API"
 msgstr "không thể khởi chạy API trình điều khiển VirtualBox"
-
-msgid "unable to make pipe"
-msgstr "không thể tạo ống"
 
 #, c-format
 msgid "unable to parse mac address '%s'"
@@ -7446,10 +7266,6 @@ msgid "unsupported disk type %s"
 msgstr "kiểu đĩa %s không hỗ trợ"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "kiểu đĩa không hỗ trợ '%s'"
-
-#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "tên trình điều khiển không hỗ trợ '%s' cho đĩa '%s'"
 
@@ -7569,9 +7385,6 @@ msgstr "virDomainGetXMLDesc với cờ bảo mật"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc với cờ bảo mật"
 
-msgid "virExec is not implemented for WIN32"
-msgstr "virExec không chấp nhận cho WIN32"
-
 msgid "virGetGroupID is not available"
 msgstr "virGetGroupID không có sẵn"
 
@@ -7662,10 +7475,6 @@ msgstr "tập tin dữ liệu xml để xuất từ"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "giá trị xsd:dateTime '%s' có định dạng không mong đợi"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "giá trị xsd:dateTime '%s' quá dài cho chỗ ghi"
 
 msgid "yes"
 msgstr "có"

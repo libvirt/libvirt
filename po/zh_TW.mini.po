@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2018-09-10 04:24+0000\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/libvirt/"
@@ -442,10 +442,6 @@ msgstr ""
 msgid "UUID:"
 msgstr "UUID："
 
-#, c-format
-msgid "Unable to destroy Storage Pool: %s"
-msgstr "無法消止儲藏集池：%s"
-
 msgid "Unable to initialize certificate"
 msgstr "無法初始化憑證"
 
@@ -722,9 +718,6 @@ msgstr "無法寫入設定檔：%s"
 
 msgid "file containing an XML network description"
 msgstr "包含 XML 網路描述的檔案"
-
-msgid "getting time of day"
-msgstr "讀取當天的時間"
 
 msgid "gracefully shutdown a domain"
 msgstr "以正確方法讓區域停機"

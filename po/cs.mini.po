@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2019-12-16 05:00+0000\n"
 "Last-Translator: Daniel Berrange <dan-zanata@berrange.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
@@ -1037,14 +1037,6 @@ msgstr ""
 "%s"
 
 #, c-format
-msgid "%s:%zu: %s '%s'"
-msgstr "%s:%zu: %s „%s“"
-
-#, c-format
-msgid "%s; try using '%s-noTSX' CPU model"
-msgstr "%s; zkuste použít model procesoru „%s-noTSX“"
-
-#, c-format
 msgid "%s_DEBUG not set with a valid numeric value"
 msgstr "%s_DEBUG nenastaveno s platnou číselnou hodnotou"
 
@@ -1686,10 +1678,6 @@ msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 "Po vypsání obsahu paměti se nepodařilo obnovit chod domény „%d“ s libxenlight"
 
-#, c-format
-msgid "Agent path %s too big for destination"
-msgstr "Popis umístění agenta %s je pro cíl příliš dlouhý"
-
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "Všechny identity poskytnuté SSH agentem byly odmítnuty"
 
@@ -1699,9 +1687,6 @@ msgid ""
 msgstr ""
 "Všechny poskytnuté ověřovací metody s přihlašovacími údaji byly serverem "
 "odmítnuty"
-
-msgid "All requests done"
-msgstr "Všechny požadavky dokončeny"
 
 msgid "Allocate or free some pages in the pool for NUMA cell."
 msgstr "Přiřadit nebo uvolnit nějaké stránky ve fondu pro NUMA buňku."
@@ -1745,9 +1730,6 @@ msgstr ""
 #, c-format
 msgid "Argument 'node' %zu outranges defined number of NUMA nodes"
 msgstr "Argument 'node' %zu outranges definovaný počet NUMA uzlů"
-
-msgid "Argument buffer too small"
-msgstr "Vyrovnávací paměť argumentu je příliš malá"
 
 msgid "Arguments must be non null"
 msgstr "Argumenty nemohou být prázdné"
@@ -1858,9 +1840,6 @@ msgstr "Režim atributu je možný pouze pro procesor hosta"
 msgid "Audit is not supported by the kernel"
 msgstr "Audit není podporován jádrem"
 
-msgid "Authentication failed"
-msgstr "Ověření totožnosti se nezdařilo"
-
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
@@ -1909,9 +1888,6 @@ msgstr "Nesprávná počáteční ipv4 adresa „%s“ v <nat> v <forward> v sí
 #, c-format
 msgid "Bad prefix name '%s' for resctrl monitor"
 msgstr "Chybný název předpony „%s“ pro resctrl monitor"
-
-msgid "Bad value for ai_flags"
-msgstr "Chybná hodnota pro ai_flags"
 
 msgid "Bad value for nativeMode"
 msgstr "Chybná hodnota pro nativeMode"
@@ -2360,9 +2336,6 @@ msgstr "Nedaří se zjistit umístění souboru se stavem restartu"
 msgid "Can't determine socket paths"
 msgstr "Nedaří se zjistit popisy umístění soketu"
 
-msgid "Can't determine user directory"
-msgstr "Nedaří se zjistit složku uživatele"
-
 #, c-format
 msgid "Can't find boot device of type: %d, device index: %d"
 msgstr ""
@@ -2396,9 +2369,6 @@ msgstr "Nedaří se inicializovat Parallels SDK"
 
 msgid "Can't initialize access manager"
 msgstr "Nedaří se inicializovat správu přístupů"
-
-msgid "Can't initialize logging"
-msgstr "Nedaří se inicializovat zaznamenávání událostí"
 
 #, c-format
 msgid "Can't load config file: %s: %s"
@@ -2610,9 +2580,6 @@ msgstr "Nedaří se vytvořit složku „%s“ pro záznam událostí (log)"
 msgid "Cannot create macvlan devices on this platform"
 msgstr "Na této platformě není možné vytvářet macvlan zařízení"
 
-msgid "Cannot create pipe for child"
-msgstr "Nedaří se vytvořit rouru pro podřízené"
-
 #, c-format
 msgid "Cannot create resctrl directory '%s'"
 msgstr "Nedaří se vytvořit resctrl složku „%s“"
@@ -2641,13 +2608,6 @@ msgstr "Není možné odpojit zařízení %s bez alternativního názvu"
 
 msgid "Cannot determine balloon device path"
 msgstr "Nedaří se zjistit popis umístění zařízení výplně v operační paměti"
-
-#, c-format
-msgid "Cannot determine basename for binary '%s'"
-msgstr "Nedaří se zjistit základní název pro binárku „%s“"
-
-msgid "Cannot determine free memory"
-msgstr "Nedaří se zjistit volnou paměť"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "Nedaří se vypnout příznak close-on-exec"
@@ -2865,9 +2825,6 @@ msgstr "Nelze otevřít /dev/urandom"
 msgid "Cannot open /proc/cgroups"
 msgstr "Nedaří se otevřít /proc/cgroups"
 
-msgid "Cannot open fifo pipe"
-msgstr "Nedaří se otevřít fifo rouru"
-
 #, c-format
 msgid "Cannot open init control %s"
 msgstr "Nedaří se otevřít init řízení %s"
@@ -2997,10 +2954,6 @@ msgstr "Nedaří se zpracovat pořadové číslo (index) %s řadiče"
 
 msgid "Cannot parse mode string"
 msgstr "Nedaří se zpracovat řetězec režimu"
-
-#, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "Nedaří se zpracovat číslo z „%s“"
 
 #, c-format
 msgid "Cannot parse resctrl schema level '%s'"
@@ -3284,9 +3237,6 @@ msgstr "Není možné zapsat identifikátor procesu do souboru úloh „%s“"
 
 msgid "Capacity"
 msgstr "Kapacita"
-
-msgid "Capacity cannot be empty."
-msgstr "Kapacita nemůže být prázdná."
 
 msgid "Capacity:"
 msgstr "Kapacita:"
@@ -3770,10 +3720,6 @@ msgid "Could not change scheduler parameters: %s"
 msgstr "Nelze změnit parametry plánovače: %s"
 
 #, c-format
-msgid "Could not close %s"
-msgstr "Nelze zavřít %s"
-
-#, c-format
 msgid "Could not complete transfer: %s (%d)"
 msgstr "Nedaří se dokončit přenos: %s (%d)"
 
@@ -3799,14 +3745,6 @@ msgstr "Nelze zkopírovat svazek: %s"
 
 msgid "Could not create CDATA element"
 msgstr "Nedaří se vytvořit prvek CDATA"
-
-#, c-format
-msgid "Could not create Session instance, rc = 0x%08x"
-msgstr "Nedaří se vytvořit instanci relace, rc = 0x%08x"
-
-#, c-format
-msgid "Could not create VirtualBox instance, rc = 0x%08x"
-msgstr "Nedaří se vytvořit VirtualBox instanci, rc = 0x%08x"
 
 msgid "Could not create WQL filter"
 msgstr "Nedaří se vytvořit WQL filtr"
@@ -3872,9 +3810,6 @@ msgstr "Nedaří se zrušit serializaci položky pull odpovědi"
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Nepodařilo se zlikvidovat doménu: %s"
-
-msgid "Could not determine home directory"
-msgstr "Nedaří se zjistit domovskou složku"
 
 #, c-format
 msgid "Could not determine kernel version from string %s"
@@ -4381,10 +4316,6 @@ msgid "Could not parse 'bridge/stp_state' '%s' for '%s'"
 msgstr "Nedaří se zpracovat 'bridge/stp_state' „%s“ pro „%s“"
 
 #, c-format
-msgid "Could not parse IID from '%s', rc = 0x%08x"
-msgstr "Nedaří se zpracovat IID z „%s“, rc = 0x%08x"
-
-#, c-format
 msgid "Could not parse MTU value '%s'"
 msgstr "Nedaří se zpracovat MTU hodnotu „%s“"
 
@@ -4438,16 +4369,8 @@ msgid "Could not parse valid disk index from '%s'"
 msgstr "Nedaří se zpracovat platné pořadové číslo disku z „%s“"
 
 #, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "Nedaří se vyhodnotit číslo verze z „%s“"
-
-#, c-format
 msgid "Could not press key %d"
 msgstr "Nedaří se stisknout klávesu %d"
-
-#, c-format
-msgid "Could not query registry value '%s\\%s'"
-msgstr "Nedaří se dotázat na hodnotu z registrů „%s\\%s“"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -4635,15 +4558,8 @@ msgstr "Nedaří se přenést data: %s (%d)"
 msgid "Could not translate keycode"
 msgstr "Nedaří se přeložit kód klávesy"
 
-#, c-format
-msgid "Could not trigger socket action: %s (%d)"
-msgstr "Nepodařilo se spustit akci soketu: %s (%d)"
-
 msgid "Could not verify disk address"
 msgstr "Nedaří se ověřit adresu disku"
-
-msgid "Could not wait for transfer"
-msgstr "Nedaří se čekat na přenos"
 
 #, c-format
 msgid "Could not wait for transfer: %s (%d)"
@@ -4652,9 +4568,6 @@ msgstr "Nedaří se čekat na přenos: %s (%d)"
 #, c-format
 msgid "Could not wipe volume: %s"
 msgstr "Nelze vymazat svazek: %s"
-
-msgid "Could not write to stream"
-msgstr "Do proudu se nedaří zapsat"
 
 #, c-format
 msgid "Couldn't create lock file for device '%s' in path '%s'"
@@ -5321,9 +5234,6 @@ msgstr ""
 "XML domény neobsahuje žádné disky založené na souborech, není možné odvodit "
 "úložiště dat a popis umístění VMX souboru"
 
-msgid "Domain XML must contain at least one <disk> element."
-msgstr "Je třeba, aby XML domény obsahovalo alespoň jeden prvek <disk>."
-
 msgid "Domain already contains a device with the same address"
 msgstr "Doména už obsahuje zařízení se stejnou adresou"
 
@@ -5574,9 +5484,6 @@ msgstr "Duplicitní USB rozbočovač na sběrnici %u port %s"
 msgid "Duplicate cache type in resctrl for level %u"
 msgstr "Duplicitní typ mezipaměti v resctrl pro úroveň %u"
 
-msgid "Duplicate key"
-msgstr "Duplikovat klíč"
-
 #, c-format
 msgid "Duplicate security driver %s"
 msgstr "Duplicitní ovladač zabezpečení %s"
@@ -5658,9 +5565,6 @@ msgstr "Prázdná odpověď v průběhu %s"
 msgid "Enabled"
 msgstr "Zapnuto"
 
-msgid "End of file from agent monitor"
-msgstr "Konec souboru z monitoru agenta"
-
 msgid "End of file from qemu monitor"
 msgstr "Konec souboru (EOF) od qemu monitoru"
 
@@ -5737,12 +5641,6 @@ msgstr "Je třeba dodat zpětné volání oznámení chyby"
 msgid "Error opening file %s"
 msgstr "Chyba otevírání souboru %s"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "Chyba při zpracování „path“ (popisu umístění). Neplatné znaky."
-
-msgid "Error parsing volume XML."
-msgstr "Chyba při zpracovávání XML daného svazku."
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "Chyba při čtení tajemství: %s"
@@ -5766,13 +5664,6 @@ msgstr "Chyba při zavírání média, rc=%08x"
 msgid "Error while creating diff storage, rc=%08x"
 msgstr "Chyba při vytváření úložiště rozdílů, rc=%08x"
 
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "Chyb při získávání informace o adrese %s"
-
-msgid "Error while opening SSH session."
-msgstr "Chyba při otevírání SSH relace."
-
 msgid "Error while processing command's IO"
 msgstr "Chyba při zpracovávání vst./výstupu příkazu"
 
@@ -5790,10 +5681,6 @@ msgid "Error while removing hostonly network interface, rc=%08x"
 msgstr ""
 "Chyba při odebírání síťového rozhraní pro komunikaci pouze s hostitelem, rc="
 "%08x"
-
-#, c-format
-msgid "Escape character is %s\n"
-msgstr "Únikový znak je %s\n"
 
 #, c-format
 msgid "Ethernet controller index %d out of [0..3] range"
@@ -6349,10 +6236,6 @@ msgid "Failed to connect socket to '%s'"
 msgstr "Nedaří se připojit soket na „%s“"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "Nepodařilo se připojit k %s"
-
-#, c-format
 msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "Nepodařilo se připojit k libvirt URI %s na protějšku: %s"
 
@@ -6504,12 +6387,6 @@ msgstr "Nepodařilo se vytvořit zařízení uzlu z %s"
 #, c-format
 msgid "Failed to create nvram dir %s"
 msgstr "Nepodařilo se vytvořit složku nvram %s"
-
-msgid "Failed to create pipe"
-msgstr "Nepodařilo se vytvořit rouru"
-
-msgid "Failed to create pipe for migration"
-msgstr "Nepodařilo se vytvořit rouru pro migraci"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -7500,10 +7377,6 @@ msgstr "Nepodařilo se číst soubor kontrolního bodu %s"
 msgid "Failed to read file '%s'"
 msgstr "Nezdařilo se čtení souboru '%s'"
 
-#, c-format
-msgid "Failed to read from %s"
-msgstr "Nepodařilo se čtení z %s"
-
 msgid "Failed to read from signal pipe"
 msgstr "Nepodařilo se číst ze signální roury"
 
@@ -8112,9 +7985,6 @@ msgstr "Nezdařilo se."
 msgid "Failure action %s is not supported by sanlock"
 msgstr "Akce nezdaru %s není podporována sanlock"
 
-msgid "Failure establishing SSH session."
-msgstr "Nepodařilo se navázat SSH relaci."
-
 #, c-format
 msgid "Failure in libvirt_lxc startup: %s\n"
 msgstr "Nezdař při spouštění libvirt_lxc: %s\n"
@@ -8136,17 +8006,6 @@ msgstr "Vlastnost %s požadovaná modelem procesoru %s nebyla nalezena"
 #, c-format
 msgid "Field '%s' too long for destination"
 msgstr "Kolonka „%s“ je pro cíl příliš dlouhá"
-
-msgid ""
-"Field <currentMemory> on the domain XML file is missing or has invalid value"
-msgstr ""
-"Kolonka <currentMemory> XML souboru domény chybí nebo nemá správnou hodnotu"
-
-msgid "Field <memory> on the domain XML file is missing or has invalid value"
-msgstr "Kolonka <memory> XML souboru domény chybí nebo nemá správnou hodnotu"
-
-msgid "Field <src> under <disk> on the domain XML file is missing."
-msgstr "V XML souboru domény, pod <disk>, chybí kolonka <src>."
 
 msgid "Field kernel memory too long for destination"
 msgstr "Kolonka paměť jádra je pro cíl příliš dlouhá"
@@ -8350,9 +8209,6 @@ msgstr "operace GET se nezdařila: %s"
 
 msgid "GNUTLS call error"
 msgstr "chyba volání GNUTLS"
-
-msgid "GNUTLS support not available in this build"
-msgstr "V tomto sestavení není podpora pro GNUTLS k dispozici"
 
 msgid "Get block device size info for a domain."
 msgstr "Získat informace o velikosti blokového zařízení pro doménu."
@@ -9031,9 +8887,6 @@ msgid ""
 "only"
 msgstr ""
 "Typ rozhraní hostdev je zatím podporován pouze na SR-IOV Virtual Functions"
-
-msgid "Interrupted by a signal"
-msgstr "Přerušeno signálem"
 
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
@@ -10101,9 +9954,6 @@ msgid "Key file path must be provided for private key authentication"
 msgstr ""
 "Pro ověřování se soukromým klíčem je třeba zadat popis umístění souboru s ním"
 
-msgid "Key must be empty, Power Hypervisor will create one for you."
-msgstr "Je třeba, aby klíč byl prázdný, Power Hypervizor ho vytvoří."
-
 msgid "Key of the current session differs from the key at last login"
 msgstr "Klíč stávající relace se liší od klíče minulého přihlášení"
 
@@ -10306,10 +10156,6 @@ msgstr ""
 "Chybně formulovaná položka nastavení 'uri_aliases' „%s“, očekáváno "
 "'alias=uri://host/path'"
 
-#, c-format
-msgid "Malformed TLS whitelist regular expression '%s'"
-msgstr "Nesprávně formulovaný regulární výraz seznamu umožněných pro TLS „%s“"
-
 msgid "Malformed auth_pending field in JSON state document"
 msgstr ""
 "V JSON stavovém dokumentu je nesprávně formulovaná kolonka auth_pending "
@@ -10507,9 +10353,6 @@ msgstr "Šířka pásma paměti už definována pro uzel %u"
 
 msgid "Memory Bandwidth value exceeding 100 is invalid."
 msgstr "Hodnota šíře pásma paměti překračující 100 není platná."
-
-msgid "Memory allocation failure"
-msgstr "Nezdar při přidělování paměti"
 
 #, c-format
 msgid ""
@@ -11267,9 +11110,6 @@ msgstr "Název modelu obsahuje neplatné znaky"
 msgid "Modifies an existing IOThread of the guest domain."
 msgstr "Změní stávající vlákno vstupu/výstupu domény hosta."
 
-msgid "Monitor does not support sending of file descriptors"
-msgstr "Monitor nepodporuje posílání popisovačů souborů"
-
 #, c-format
 msgid "Monitor path %s too big for destination"
 msgstr "Popis umístění monitoru %s je pro cíl příliš velký"
@@ -11445,9 +11285,6 @@ msgstr "Název"
 msgid "Name of chain is longer than %u characters"
 msgstr "Název řetězce je delší než %u znaků"
 
-msgid "Name or service not known"
-msgstr "Neznámý název nebo služba"
-
 msgid "Name:"
 msgstr "Název:"
 
@@ -11535,9 +11372,6 @@ msgstr "Nastavení síťového rozhraní není na této platformě podporováno"
 
 msgid "Network device type is not supported"
 msgstr "Typ síťového zařízení není podporován"
-
-msgid "Network driver does not support DHCP lease query"
-msgstr "Ovladač sítě nepodporuje dotaz na DHCP zápůjčku"
 
 #, c-format
 msgid "Network filter %s XML configuration edited.\n"
@@ -11720,9 +11554,6 @@ msgstr "Žádná aktivní bloková úloha „%s“"
 msgid "No active operation on device: %s"
 msgstr "Žádná aktivní operace na zařízení: %s"
 
-msgid "No address associated with hostname"
-msgstr "S názvem stroje není spojená žádná adresa"
-
 msgid "No addresses to bind to"
 msgstr "Žádná adresa na kterou navázat"
 
@@ -11764,10 +11595,6 @@ msgstr "Žádný klient, který by měl identifikátor „%llu“"
 #, c-format
 msgid "No complete agent response found in %d bytes"
 msgstr "V %d bajtech nenalezena úplná odpověď klienta"
-
-#, c-format
-msgid "No complete monitor response found in %d bytes"
-msgstr "V %d bajtech se neobjevila úplná odpověď od monitoru"
 
 #, c-format
 msgid "No current block job for %s"
@@ -12077,9 +11904,6 @@ msgid "Non-endpoint PCI devices cannot be assigned to guests"
 msgstr ""
 "PCI zařízení, která nejsou koncovými body, není možné přiřazovat hostům"
 
-msgid "Non-recoverable failure in name resolution"
-msgstr "Nezotavitelný nezdar v překladu názvu"
-
 msgid "None"
 msgstr "Žádné"
 
@@ -12218,12 +12042,6 @@ msgstr "Pro zobrazení pouze %d procesorů k dispozici\n"
 #, c-format
 msgid "Only '%s' filesystem type is supported"
 msgstr "Je podporován pouze souborový systém typu „%s“"
-
-msgid "Only 'credit' scheduler is supported"
-msgstr "Je podporován pouze plánovač 'credit'"
-
-msgid "Only 'scsi_host' adapter is supported"
-msgstr "Je podporován pouze adaptér 'scsi_host'"
 
 msgid "Only 1 IDE controller is supported"
 msgstr "Je podporován pouze jeden IDE řadič"
@@ -12588,9 +12406,6 @@ msgstr "PCI zařízení %s je používáno ovladačem %s, doménou %s"
 msgid "PCI device %s is not assignable"
 msgstr "PCI zařízení %s není přiřaditelné"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "Je třeba, aby PCI zařízení hostitele používaly typ adresy „pci“"
-
 msgid "PID file (unless overridden by -p):"
 msgstr "PID soubor (pokud není přepsáno pomocí -p)"
 
@@ -12649,9 +12464,6 @@ msgstr "Parametr „%s“ není tímto jádrem systému podporován"
 
 msgid "Parameter 'min_guarantee' not supported by QEMU."
 msgstr "Parametr 'min_guarantee' nepodporován QEMU."
-
-msgid "Parameter string not correctly encoded"
-msgstr "Řetězec parametru není ve správném kódování"
 
 msgid "Parent"
 msgstr "Nadřazené"
@@ -12867,20 +12679,6 @@ msgstr "Není vyžádáno uvolnění portu ale typ zásuvky není none (žádný
 msgid "Port reclaim requested but plug type is none"
 msgstr "Je vyžádáno uvolnění portu ale typ zásuvky je none (žádný)"
 
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr ""
-"Nejspíš nemáte v LPAR nainstalovány IBM Tools. Obraťte se na podporu, aby "
-"tuto funkci zapnuli."
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"Nejspíš nemáte v LPAR nainstalované IBM Tools. Obraťte se na podporu, aby "
-"tuto funkci zapnuli."
-
 msgid "Post-copy Error"
 msgstr "Chyba post-copy"
 
@@ -12957,9 +12755,6 @@ msgstr "Proces skončil před vykonáním"
 #, c-format
 msgid "Processes %d refused to die"
 msgstr "Nepodařilo se vynutit ukončení procesu %d"
-
-msgid "Processing request in progress"
-msgstr "Probíhá zpracování požadavku"
 
 #, c-format
 msgid "Processor mask of target NUMA node %zu doesn't match source"
@@ -13209,14 +13004,6 @@ msgstr ""
 msgid "Refusing to undefine while snapshots exist"
 msgstr "Pokud existuje zachycený stav, odmítá se zrušit definováni"
 
-#, c-format
-msgid "Registry value '%s\\%s' has unexpected type"
-msgstr "Hodnota z registrů „%s\\%s“ má neočekávaný typ"
-
-#, c-format
-msgid "Registry value '%s\\%s' is too short"
-msgstr "Hodnota z registrů „%s\\%s“ je příliš krátká"
-
 msgid "Relative backing during copy not supported yet"
 msgstr ""
 "Relativní na čem je založené v průběhu kopírování zatím není podporováno"
@@ -13265,12 +13052,6 @@ msgstr "Nahradit XML domény související se souborem s uloženým stavem"
 
 msgid "Reply message incorrect"
 msgstr "Neplatná zpráva odpovědi"
-
-msgid "Request canceled"
-msgstr "Požadavek zrušen"
-
-msgid "Request not canceled"
-msgstr "Požadavek nezrušen"
 
 #, c-format
 msgid ""
@@ -13879,9 +13660,6 @@ msgstr "Server ze kterého obdržet limity klientů."
 msgid "Server to retrieve threadpool attributes from."
 msgstr "Server ze kterého získat threadpool atributy."
 
-msgid "Servname not supported for ai_socktype"
-msgstr "Název serveru (servname) nepodporován pro ai_socktype"
-
 msgid "Set a secret value."
 msgstr "Nastavit hodnotu tajemství."
 
@@ -14401,9 +14179,6 @@ msgstr "Svazek nenalezen"
 msgid "Storage volume not found: %s"
 msgstr "Svazek nenalezen: %s"
 
-msgid "StoragePool name already exists."
-msgstr "Název StoragePool už existuje."
-
 #, c-format
 msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr ""
@@ -14499,9 +14274,6 @@ msgid ""
 msgstr ""
 "Přepnout probíhající stěhování z pre-copy na post-copy. Je třeba, aby "
 "stěhování bylo spuštěno s volbou --postcopy"
-
-msgid "System error"
-msgstr "Systémová chyba"
 
 msgid "System is in use"
 msgstr "Systém je používán"
@@ -15196,9 +14968,6 @@ msgstr "vram64 %u cílové grafické karty se neshoduje se zdrojovou %u"
 msgid "Target watchdog model %s does not match source %s"
 msgstr "Cílový model resetátoru %s neodpovídá zdrojovému %s"
 
-msgid "Temporary failure in name resolution"
-msgstr "Dočasný nezdar v překladu názvu"
-
 msgid "Thaw domain's mounted filesystems."
 msgstr "Rozmrazit připojené souborové systémy domény."
 
@@ -15567,9 +15336,6 @@ msgstr "Parametr časový limit nepodporován"
 msgid "Timeout waiting for %s invocation"
 msgstr "Překročen časový limit při čekání na vyvolání %s"
 
-msgid "Timestamp string conversion failed"
-msgstr "Převod řetězce časového razítka se nezdařil"
-
 msgid "Title"
 msgstr "Nadpis"
 
@@ -15832,9 +15598,6 @@ msgstr "Type='%s' nepodporován pro <interface type='vhostuser'>"
 msgid "UEFI requires ACPI on this architecture"
 msgstr "UEFI na této architektuře potřebuje ACPI"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr "unixové doménové sokety nejsou na této platformě podporované"
-
 msgid "UNIX socket address is required"
 msgstr "Je třeba adresy unixového soketu"
 
@@ -15941,9 +15704,6 @@ msgstr "Nedaří se přistoupit k proudu pro „%s“"
 msgid "Unable to acquire lock on '%s'"
 msgstr "Nedaří se získat zámek na „%s“"
 
-msgid "Unable to add LPAR to the table"
-msgstr "Nedaří se přidat LPAR do tabulky"
-
 msgid "Unable to add address to interface multicast list on this platform"
 msgstr ""
 "Nedaří se přidat adresu na seznam vícesměrového vysílání (multicast) "
@@ -15958,10 +15718,6 @@ msgstr "Nedaří se přidat epoll popisovač souboru"
 
 msgid "Unable to add extra data"
 msgstr "Nedaří se přidat další data"
-
-#, c-format
-msgid "Unable to add handle %d to event loop"
-msgstr "Nedaří se přidat obsluhu %d do smyčky události"
 
 msgid "Unable to add hard disk to media Registry"
 msgstr "Nedaří se přidat disk do rejstříku médií"
@@ -16227,10 +15983,6 @@ msgstr ""
 "(TSC)"
 
 #, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "Nedaří se vytvořit LPAR. Důvod: „%s“"
-
-#, c-format
 msgid "Unable to create RNG parser for %s"
 msgstr "Nepodařilo se vytvořit zpracovávání generátoru náhodných čísel pro %s"
 
@@ -16240,19 +15992,11 @@ msgstr ""
 "Nepodařilo se vytvořit kontext ověřování správnosti generátoru náhodných "
 "čísel %s"
 
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "Nedaří se vytvořit fond úložiště: %s"
-
 msgid "Unable to create TAP devices on this platform"
 msgstr "Na této platformě není možné vytvářet TAP rozhraní"
 
 msgid "Unable to create UNIX socket"
 msgstr "Nedaří se vytvořit unixový soket"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "Nelze vytvořit Svazek: %s"
 
 msgid "Unable to create blkid library handle"
 msgstr "Nepodařilo se vytvořit obsluhu blkid knihovny"
@@ -16300,17 +16044,8 @@ msgstr "Nedaří se vytvořit rejstřík médií"
 msgid "Unable to create migration thread"
 msgstr "Nedaří se vytvořit vlákno migrace"
 
-msgid "Unable to create new virtual adapter"
-msgstr "Nedaří se vytvořit nový virtuální adaptér"
-
-msgid "Unable to create pipe"
-msgstr "Nedaří se vytvořit rouru"
-
 msgid "Unable to create rule"
 msgstr "Nedaří se vytvořit pravidlo"
-
-msgid "Unable to create signal pipe"
-msgstr "Nedaří se vytvořit signální rouru"
 
 msgid "Unable to create socket"
 msgstr "Nedaří se vytvořit soket"
@@ -16376,18 +16111,11 @@ msgid "Unable to delete port %s from OVS"
 msgstr "Nedaří se smazat port %s z OVS"
 
 #, c-format
-msgid "Unable to destroy Storage Pool: %s"
-msgstr "Nedaří se zlikvidovat fond úložiště: %s"
-
-#, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "Nedaří se zjistit souborové systémy na %s"
 
 msgid "Unable to determine Partition Type, requires build --overwrite"
 msgstr "Nedaří se zjistit typ oddílu, vyžaduje sestavení --overwrite"
-
-msgid "Unable to determine config directory"
-msgstr "Nedaří se zjistit složku s nastaveními"
 
 #, c-format
 msgid "Unable to determine current file inode: %s"
@@ -16397,54 +16125,12 @@ msgstr "Nedaří se zjistit i-uzel stávajícího souboru: %s"
 msgid "Unable to determine current file offset: %s"
 msgstr "Nedaří se zjistit stávající posun souboru: %s"
 
-msgid "Unable to determine domain's CPU."
-msgstr "Nedaří se zjistit procesor domény."
-
-msgid "Unable to determine domain's max memory."
-msgstr "Nedaří se zjistit maximum paměti domény"
-
-msgid "Unable to determine domain's memory."
-msgstr "Nedaří se zjistit paměť domény."
-
-msgid "Unable to determine domain's name."
-msgstr "Nedaří se zjistit název domény."
-
-msgid "Unable to determine home directory"
-msgstr "Nedaří se zjistit domovskou složku"
-
 #, c-format
 msgid "Unable to determine model for SCSI controller idx=%d"
 msgstr "Nedaří se zjsitit model pro SCSI řadič idx=%d"
 
 msgid "Unable to determine mount table on this platform"
 msgstr "Na této platformě se nedaří zjistit tabulku připojení (mount)"
-
-msgid "Unable to determine number of domains."
-msgstr "Nedaří se zjistit počet domén."
-
-msgid "Unable to determine storage pool's name."
-msgstr "Nedaří se zjistit název fondu úložiště."
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "Nedaří se zjistit nikde se neopakující identifikátor fondu úložiště."
-
-msgid "Unable to determine storage pools's size."
-msgstr "Nedaří se zjistit velikost fondu úložiště."
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "Nedaří se zjistit zdrojový adaptér fondu úložiště."
-
-msgid "Unable to determine storage sp's name."
-msgstr "Nedaří se zjistit název fondu úložiště."
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "Nedaří se zjistit nikde se neopakující identifikátor fondu úložiště."
-
-msgid "Unable to determine storage sps's size."
-msgstr "Nedaří se zjistit velikost fondu úložiště."
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "Nedaří se zjistit zdrojový adaptér sps úložiště"
 
 msgid "Unable to disable nagle algorithm"
 msgstr "Nedaří se vypnout nagle algoritmus"
@@ -16553,10 +16239,6 @@ msgid "Unable to find filesystem type for %s"
 msgstr "Nedaří se nalézt typ souborového systému pro %s"
 
 #, c-format
-msgid "Unable to find security driver for model %s"
-msgstr "Nedaří se najít ovladač zabezpečení pro model %s"
-
-#, c-format
 msgid "Unable to find the hard disk with uuid %s"
 msgstr "Nedaří se nalézt pevný disk s nikde se neopakujícím identifikátorem %s"
 
@@ -16586,9 +16268,6 @@ msgstr "Nedaří se zmrazit souborové systémy"
 #, c-format
 msgid "Unable to generate diffie-hellman parameters: %s"
 msgstr "Nedaří se vytvořit diffie-hellman parametry: %s"
-
-msgid "Unable to generate random uuid."
-msgstr "Nedaří se vytvořit náhodné uuid."
 
 #, c-format
 msgid "Unable to get ACLs on %s"
@@ -16639,12 +16318,6 @@ msgstr "Na této platformě není možné získat prodlevu STP na %s"
 #, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "Na této platformě není možné získat STP na %s"
-
-msgid "Unable to get VIOS name"
-msgstr "Nedaří se získat VIOS název"
-
-msgid "Unable to get VIOS profile name."
-msgstr "Nedaří se získat název VIOS profilu."
 
 #, c-format
 msgid "Unable to get VLAN for interface %s"
@@ -16749,9 +16422,6 @@ msgstr "Nedaří se získat informace o souborovém systému"
 
 msgid "Unable to get free loop device via ioctl"
 msgstr "Nedaří se získat volné loop zařízení prostřednictvím ioctl"
-
-msgid "Unable to get free slot number"
-msgstr "Nedaří se získat číslo volného slotu"
 
 msgid "Unable to get hard disk format"
 msgstr "Nepodařilo se získat formát pevného disku"
@@ -16987,12 +16657,6 @@ msgstr "Nedaří se vyhledat SELinux kontext procesu"
 msgid "Unable to make TAP device non-persistent"
 msgstr "Nedaří se učinit TAP zařízení netrvalým"
 
-msgid "Unable to make pipe"
-msgstr "Nedaří se vytvořit rouru"
-
-msgid "Unable to make pipes"
-msgstr "Nedaří se vytvořit roury"
-
 msgid "Unable to mark loop device as autoclear"
 msgstr "Nedaří se označit zařízení zpětné smyčky jako autoclear"
 
@@ -17073,10 +16737,6 @@ msgstr "Nedaří se otevřít souborový systém %s"
 #, c-format
 msgid "Unable to open log file %s"
 msgstr "Nedaří se otevřít soubor se záznamem událostí %s"
-
-#, c-format
-msgid "Unable to open monitor path %s"
-msgstr "Nedaří se otevřít popis umístění monitoru %s"
 
 #, c-format
 msgid "Unable to open resource %s"
@@ -17188,9 +16848,6 @@ msgstr "Nedaří se zpracovat xml"
 msgid "Unable to parse: %s"
 msgstr "Nedaří se zpracovat: %s"
 
-msgid "Unable to poll on file handles"
-msgstr "Nedaří se dotazovat na obsluhách souborů"
-
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "Nedaří se předvytvořit soubor znakového zařízení „%s“"
@@ -17210,9 +16867,6 @@ msgstr "Nedaří se zkoumat frekvenci čítače časového razítka (TSC)"
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "Nedaří se zpracovat soubor s příznaky %d"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "Nedaří se přepnout monitor do neblokujícího režimu"
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -17356,10 +17010,6 @@ msgstr "Nedaří se odebrat metadata %d zachycených stavů"
 #, c-format
 msgid "Unable to remove snapshot %s"
 msgstr "Nedaří se odebrat zachycený stav %s"
-
-#, c-format
-msgid "Unable to remove stale pidfile %s"
-msgstr "Nedaří se odebrat zaseklý soubor s identifikátorem procesu %s"
 
 #, c-format
 msgid "Unable to remove stale socket path: %s"
@@ -17638,9 +17288,6 @@ msgstr "Nedaří se nastavit x509 seznam zneplatněných certifikátů: %s: %s"
 msgid "Unable to set x509 key and certificate: %s, %s: %s"
 msgstr "Nedaří se nastavit x509 klíč a certifikát: %s, %s: %s"
 
-msgid "Unable to setup wakeup pipe"
-msgstr "Nedaří se nastavit rouru probouzení"
-
 #, c-format
 msgid "Unable to split FD list '%s'"
 msgstr "Nedaří se rozdělit seznam popisovače souboru „%s“"
@@ -17719,9 +17366,6 @@ msgstr "Nedaří se čekat na IPv6 DAD na této platformě"
 msgid "Unable to wait for child process"
 msgstr "Nedaří se čekat na podřízený proces"
 
-msgid "Unable to wait on agent monitor condition"
-msgstr "Nedaří se čekat na stav monitoru agenta"
-
 msgid "Unable to wait on epoll"
 msgstr "Nedaří se čekat na epoll popisovač souboru"
 
@@ -17740,9 +17384,6 @@ msgstr "Nedaří se hlídat pty konzole hostitele"
 #, c-format
 msgid "Unable to write %s"
 msgstr "Nedaří se zapsat %s"
-
-msgid "Unable to write information to local file."
-msgstr "Nedaří se zapsat informaci do místního souboru"
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -18002,10 +17643,6 @@ msgstr "Neočekávaně obdržen síťový port bez síťového mostu"
 
 msgid "Unexpectedly got a network port without a plug"
 msgstr "Neočekávaně získán síťový port bez zapojení"
-
-#, c-format
-msgid "Unhandled event %d for monitor fd %d"
-msgstr "Neošetřená událost %d z monitoru fd %d"
 
 msgid "Unknown"
 msgstr "Neznámý"
@@ -19131,9 +18768,6 @@ msgstr "Xen podporuje pouze stroje 'xenpv', 'xenpvh' a 'xenfv'"
 msgid "You are trying to remove a snapshot which does not exists"
 msgstr "Pokoušíte se odebrat zachycený stav, který neexistuje"
 
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr "Pokoušíte se nastavit počet procesorů na vyšší, než je možné."
-
 msgid "You must map the root user of container"
 msgstr "Je třeba namapovat uživatele-správce (root) kontejneru"
 
@@ -19344,12 +18978,6 @@ msgstr "po navrácení, nastavit stav na pozastavený"
 msgid "after reverting, change state to running"
 msgstr "po navrácení, nastavit stav na spuštěný"
 
-msgid "ai_family not supported"
-msgstr "ai_family nepodporováno"
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype nepodporováno"
-
 #, c-format
 msgid "algorithm=%d is not supported"
 msgstr "algorithm=%d není podporováno"
@@ -19407,17 +19035,11 @@ msgstr "množství dat které nahrát"
 msgid "an <auth> definition already found for disk source"
 msgstr "pro zdroj disku už nalezena definice <auth>"
 
-msgid "an <auth> definition already found for the <disk> definition"
-msgstr "pro definici <disk> už nalezena definice <auth>"
-
 msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
 msgstr "definice <auth> už nalezena pro <hostdev> iSCSI definici"
 
 msgid "an <encryption> definition already found for disk source"
 msgstr "pro zdroj disku už nalezena definice <encryption>"
-
-msgid "an <encryption> definition already found for the <disk> definition"
-msgstr "pro definici <disk> už nalezena definice <encryption>"
 
 #, c-format
 msgid "an IOThread is already using iothread_id '%u'"
@@ -20395,9 +20017,6 @@ msgstr ""
 msgid "cannot create path '%s'"
 msgstr "nedaří se vytvořit umístění „%s“"
 
-msgid "cannot create pipe"
-msgstr "nedaří se vytvořit rouru"
-
 msgid "cannot create pipe for tunnelled migration"
 msgstr "nedaří se vytvořit rouru pro tunelovanou migraci"
 
@@ -20670,10 +20289,6 @@ msgstr "nedaří se získat příznaky funkcí na macvtap tap"
 #, c-format
 msgid "cannot get file context of '%s'"
 msgstr "nedaří se získat souborový kontext „%s“"
-
-#, c-format
-msgid "cannot get group list for '%s'"
-msgstr "nedaří se získat seznam skupin pro „%s“"
 
 msgid "cannot get host CPU capabilities"
 msgstr "nedaří se získat schopnosti procesoru"
@@ -22339,10 +21954,6 @@ msgstr "nelze použít položku Xen hypervizoru"
 msgid "could not use Xen hypervisor entry %s"
 msgstr "nelze použít položku Xen hypervizoru %s"
 
-#, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "nedaří se zapsat pid soubor %s pro %d"
-
 msgid "couldn't fetch array of leases"
 msgstr "nedaří se získat pole zápůjček"
 
@@ -22600,9 +22211,6 @@ msgstr "datové výlevky není možné použít pro neblokující proudy"
 
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "datové prostředky není možné použít pro neblokující proudy"
-
-msgid "dbus-vmstate object is not supported by this QEMU binary"
-msgstr "objekt dbus-vmstate není tímto sestavením QEMU podporován"
 
 msgid "debug"
 msgstr "ladění"
@@ -23025,11 +22633,6 @@ msgstr "diskovou sběrnici „%s“ není možné připojovat za chodu."
 msgid "disk bus '%s' cannot be updated."
 msgstr "diskovou sběrnici „%s“ není možné aktualizovat."
 
-msgid "disk device 'lun' using target 'scsi' must use 'raw' format"
-msgstr ""
-"je třeba, aby diskové zařízení 'lun', používající cíl 'scsi', mělo formát "
-"'raw'"
-
 #, c-format
 msgid "disk device type '%s' cannot be detached"
 msgstr "diskové zařízení typu „%s“ nelze odpojovat"
@@ -23120,10 +22723,6 @@ msgstr "zdrojový popis umístění pro disk chybí"
 #, c-format
 msgid "disk target %s not found"
 msgstr "disk cíl %s nenalezen"
-
-#, c-format
-msgid "disk type 'virtio' of '%s' does not support ejectable media"
-msgstr "disk typu 'virtio' od „%s“ nepodporuje vyjímatelná média"
 
 msgid "disk vendor is more than 8 characters"
 msgstr "výrobce disku je delší než 8 znaků"
@@ -23329,9 +22928,6 @@ msgstr "doména má aktivní blokovou úlohu"
 msgid "domain has assigned host devices"
 msgstr "doména má přiřazená zařízení hostitele"
 
-msgid "domain has assigned non-USB host devices"
-msgstr "doména má přiřazená zařízení, která nejsou USB"
-
 msgid "domain has no snapshots"
 msgstr "doména nemá zachycené stavy"
 
@@ -23402,9 +22998,6 @@ msgstr "nikde se neopakující identifikátor názvu domény"
 
 msgid "domain name, id or uuid"
 msgstr "jméno, id nebo uuid domény"
-
-msgid "domain requires dbus-vmstate support"
-msgstr "doména vyžaduje podporu dbus-vmstate"
 
 msgid "domain save job"
 msgstr "úloha uložení domény"
@@ -23690,11 +23283,6 @@ msgstr "šifrované VNC TLS klíče nejsou tímto sestavením QEMU podporovány"
 
 msgid "encrypted ploop volumes are not supported with ploop init"
 msgstr "šifrované ploop svazky nejsou podporovány s ploop init"
-
-msgid "encrypted secret alias requires valid source alias"
-msgstr ""
-"alternativní název šifrovaného tajemství vyžaduje platný zdrojový "
-"alternativní název"
 
 msgid "encrypted secrets are not supported"
 msgstr "zašifrovaná tajemství nejsou podporována"
@@ -24366,10 +23954,6 @@ msgstr "nepodařilo se vytvořit složku pro záznam událostí „%s“: %s"
 msgid "failed to create logfile %s"
 msgstr "nezdařilo se vytvoření souboru pro záznam událostí (log) %s"
 
-#, c-format
-msgid "failed to create pipe: %s"
-msgstr "nepodařilo se vytvořit rouru: %s"
-
 msgid "failed to create profile"
 msgstr "nepodařilo se vytvořit profil"
 
@@ -24419,9 +24003,6 @@ msgstr "nepodařilo se smazat root.hds svazku „%s“"
 #, c-format
 msgid "failed to destroy (stop) interface %s: %s%s%s"
 msgstr "nepodařilo se zlikvidovat (zastavit) rozhraní %s: %s%s%s"
-
-msgid "failed to determine host name"
-msgstr "nepodařilo se získat název hostitele"
 
 #, c-format
 msgid "failed to determine loop exit status: %s"
@@ -24519,9 +24100,6 @@ msgstr "nepodařilo se zjistit schopnosti"
 
 msgid "failed to get cmt scaling factor"
 msgstr "nepodařilo získat měřítko cmt"
-
-msgid "failed to get current system time"
-msgstr "nepodařilo se získat aktuální čas systému"
 
 msgid "failed to get current time"
 msgstr "nepodařilo se získat aktuální čas"
@@ -25147,9 +24725,6 @@ msgstr "nepodařilo se čekat až se objeví soubor „%s“"
 msgid "failed to wait on condition"
 msgstr "nepodařilo se čekat na podmínku"
 
-msgid "failed to wake up polling thread"
-msgstr "nepodařilo se probudit dotazovací (polling) vlákno"
-
 msgid "failed to wakeup migration tunnel"
 msgstr "nepodařilo se probudit migrační tunel"
 
@@ -25603,9 +25178,6 @@ msgstr "získat/nastavit hodnotu spuštěné domény"
 msgid "get/set value to be used on next boot"
 msgstr "získat/nastavit hodnotu, kterou použít při příštím zavádění systému"
 
-msgid "getting time of day"
-msgstr "získávání denní doby"
-
 msgid "gic-version option is not available with this QEMU binary"
 msgstr "volba gic-version není s touto QEMU binárkou k dispozici"
 
@@ -25619,9 +25191,6 @@ msgstr "název gluster fondu „%s“ nemůže obsahovat /"
 #, c-format
 msgid "gluster pool path '%s' must start with /"
 msgstr "je třeba, aby popis umístění gluster fondu „%s“ začínalo na /"
-
-msgid "gmtime_r failed"
-msgstr "gmtime_r se nezdařilo"
 
 #, c-format
 msgid "got unexpected RPC call prog %d vers %d proc %d type %d"
@@ -28961,19 +28530,11 @@ msgstr "fond úložiště postrádá atribut zdroj"
 msgid "missing port attribute in migration data"
 msgstr "v migračních datech chybí atribut port"
 
-#, c-format
-msgid "missing port in nbd string '%s'"
-msgstr "chybí port v nbd řetězci „%s“"
-
 msgid "missing product"
 msgstr "chybí produkt"
 
 msgid "missing qemuctime in QEMU capabilities XML"
 msgstr "v XML se schopnostmi QEMU chybí qemuctime"
-
-#, c-format
-msgid "missing remote information in '%s' for protocol nbd"
-msgstr "v „%s“ pro protokol nbd chybí vzdálená informace"
 
 msgid "missing remote server specification in JSON backing volume definition"
 msgstr ""
@@ -29185,10 +28746,6 @@ msgstr "chybí atribut identifikátor typu pro „%s“"
 msgid "missing type in redirdev"
 msgstr "chybí typ v redirdev"
 
-#, c-format
-msgid "missing unix socket path in nbd backing string %s"
-msgstr "v nbd backing řetězci %s chybí popis umístění unixového soketu"
-
 msgid "missing username for auth"
 msgstr "chybí uživatelské jméno pro ovření"
 
@@ -29261,9 +28818,6 @@ msgid ""
 msgstr ""
 "mkfs není na této platformě podporováno: Nepodařilo se vytvořit souborový "
 "systém typu „%s“ na zařízení “%s“"
-
-msgid "mktime failed"
-msgstr "mktime se nezdařilo"
 
 msgid "mode of device reading and writing"
 msgstr "režim čtení a zápisu zařízení"
@@ -29948,10 +29502,6 @@ msgstr "nenalezeno žádné zařízení s MAC adresou %s"
 #, c-format
 msgid "no device matching MAC address %s found on "
 msgstr "žádné zařízení s MAC adresou %s nenalezeno na"
-
-#, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "žádný diskový formát pro %s a sondování je vypnuto"
 
 #, c-format
 msgid "no disk found with alias '%s' or id '%s'"
@@ -31087,9 +30637,6 @@ msgstr "fond se nezdařil v libxlTunnel3MigrationSrcFunc"
 msgid "poll failed in migration tunnel"
 msgstr "fond v migračním tunelu selhal"
 
-msgid "poll on socket failed"
-msgstr "dotazování (poll) na soketu se nezdařilo"
-
 #, c-format
 msgid "poll-grow (%u) must be less than or equal to %d"
 msgstr "je třeba, aby poll-grow (%u) bylo nižší nebo rovno %d"
@@ -31351,10 +30898,6 @@ msgid "ps2 bus does not support %s input device"
 msgstr "sběrnice ps2 nepodporuje vstupní zařízení %s"
 
 #, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: nelze číst aktuální složku: %s"
-
-#, c-format
 msgid "qemu agent didn't provide 'ip-address' field for interface '%s'"
 msgstr "qemu agent neposkytl kolonku 'ip-address' pro rozhraní „%s“"
 
@@ -31409,12 +30952,6 @@ msgstr ""
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu emulátor „%s“ nepodporuje xen"
-
-#, c-format
-msgid "qemu is not using a unix socket monitor, cannot send fd %s"
-msgstr ""
-"qemu nepoužívá monitor unixového soketu, není možné poslat popisovač souboru "
-"%s"
 
 #, c-format
 msgid "qemu monitor event callback %d not registered"
@@ -31634,9 +31171,6 @@ msgid "read max, as scaled integer (default bytes)"
 msgstr ""
 "maximum pro čtení, jako škálované celé číslo (bez udání jednotek se rozumí "
 "bajty)"
-
-msgid "read on wakeup fd failed"
-msgstr "čtení popisovače souboru probuzení se nezdařilo"
 
 #, c-format
 msgid "read only access prevents %s"
@@ -33410,9 +32944,6 @@ msgstr "práh v tuto chvíli není možné nastavit pro blokové zařízení „
 msgid "time to set"
 msgstr "čas který nastavit"
 
-msgid "time_t overflow"
-msgstr "přetečení time_t"
-
 #, c-format
 msgid "timed out waiting to open tray of '%s'"
 msgstr "překročen časový limit při čekání na vysunutí média „%s“"
@@ -33820,10 +33351,6 @@ msgstr "spustit dvoufázové aktivní odesílání nejvrchnějšího souboru"
 msgid "try harder on risky reverts"
 msgstr "snažit se více při riskantních návratech"
 
-#, c-format
-msgid "try using '%s-noTSX' CPU model"
-msgstr "zkuste použít model procesoru „%s-noTSX“"
-
 msgid "tty console"
 msgstr "tty konzole"
 
@@ -33936,14 +33463,6 @@ msgstr "nedaří se připojit k serveru na „%s:%s“"
 #, c-format
 msgid "unable to create hugepage path %s"
 msgstr "nedaří se vytvořit hugepages umístění %s"
-
-#, c-format
-msgid "unable to create memory backing path %s"
-msgstr "nedaří se vytvořit paměťové umístění %s"
-
-#, c-format
-msgid "unable to create pipe for %s"
-msgstr "nedaří se vytvořit rouru pro %s"
 
 #, c-format
 msgid "unable to create rundir %s: %s"
@@ -34116,9 +33635,6 @@ msgstr "nedaří se načíst soubor knownhosts „%s“: %s"
 msgid "unable to lock %s for metadata change"
 msgstr "nedaří se zamknout %s vůči změnám metadat"
 
-msgid "unable to make pipe"
-msgstr "nedaří se vytvořit rouru"
-
 msgid "unable to make terminal raw: console isn't a tty"
 msgstr "nedaří se učinit terminál holým: konzole není tty"
 
@@ -34129,9 +33645,6 @@ msgstr "nedaří se otevřít %s"
 #, c-format
 msgid "unable to open host cpu perf event for %s"
 msgstr "nedaří se otevřít událost výkonnosti pro procesor hostitele %s"
-
-msgid "unable to open pipe"
-msgstr "nedaří se otevřít rouru"
 
 msgid "unable to open stream"
 msgstr "nedaří se otevřít proud"
@@ -34210,10 +33723,6 @@ msgid "unable to read domain master key file"
 msgstr "nedaří se číst soubor s hlavním klíčem domény"
 
 #, c-format
-msgid "unable to read from %s"
-msgstr "nedaří se číst z %s"
-
-#, c-format
 msgid "unable to read server cert %s"
 msgstr "nedaří se číst certifikát serveru %s"
 
@@ -34223,10 +33732,6 @@ msgstr "nedaří se číst soubor se záznamem událostí ve vmware"
 #, c-format
 msgid "unable to read: %s"
 msgstr "nedaří se číst: %s"
-
-#, c-format
-msgid "unable to recover former state by adding port to bridge %s"
-msgstr "nedaří se obnovit předešlý stav přidáním portu do mostu %s"
 
 msgid "unable to register monitor events"
 msgstr "nedaří se zaregistrovat události monitoru"
@@ -34346,9 +33851,6 @@ msgstr "nedaří se čekat na podmínky konzole"
 
 msgid "unable to wait on dhcp snoop thread"
 msgstr "nedaří se čekat na vlákno dhcp snoop"
-
-msgid "unable to wait on libssh2 socket"
-msgstr "nedaří se čekat na soketu libssh2"
 
 #, c-format
 msgid "unable to write data to '%s'"
@@ -35900,10 +35402,6 @@ msgid "unsupported disk type %s"
 msgstr "nepodporovaný typ disku %s"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "nepodporovaný typ disku „%s“"
-
-#, c-format
 msgid "unsupported driver name '%s'"
 msgstr "nepodporovaný název ovladače „%s“"
 
@@ -36480,9 +35978,6 @@ msgstr "virDomainManagedSaveGetXMLDesc s příznakem zabezpečení"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc s příznakem zabezpečení"
 
-msgid "virExec is not implemented for WIN32"
-msgstr "virExec není pro WIN32 implementováno"
-
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs není pro WIN32 implementováno"
 
@@ -36495,12 +35990,6 @@ msgstr "virGetGroupID není k dispozici"
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupName není k dispozici"
 
-msgid "virGetUserCacheDirectory is not available"
-msgstr "virGetUserCacheDirectory není k dispozici"
-
-msgid "virGetUserConfigDirectory is not available"
-msgstr "virGetUserConfigDirectory není k dispozici"
-
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory není k dispozici"
 
@@ -36509,9 +35998,6 @@ msgstr "virGetUserID není k dispozici"
 
 msgid "virGetUserName is not available"
 msgstr "virGetUserName není k dispozici"
-
-msgid "virGetUserRuntimeDirectory is not available"
-msgstr "virGetUserRuntimeDirectory není k dispozici"
 
 msgid "virGetUserShell is not available"
 msgstr "virGetUserShell není k dispozici"
@@ -36554,9 +36040,6 @@ msgstr "virNWFilterSnoopListDel se nezdařilo"
 #, c-format
 msgid "virNWFilterSnoopReqNew called with invalid key \"%s\" (%zu)"
 msgstr "virNWFilterSnoopReqNew zavoláno s neplatným klíčem „%s“ (%zu)"
-
-msgid "virRun is not implemented for WIN32"
-msgstr "virRun není pro WIN32 implementováno"
 
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID není k dispozici"
@@ -37002,10 +36485,6 @@ msgstr "modifikace xml nepodporována"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime hodnota „%s“ má neočekávaný formát"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "xsd:dateTime hodnota „%s“ je pro cíl příliš dlouhá"
 
 msgid "y - yes, start editor again"
 msgstr "y – ano, spustit editor znovu"

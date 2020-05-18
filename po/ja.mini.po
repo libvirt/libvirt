@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -406,10 +406,6 @@ msgstr ""
 "%s"
 
 #, c-format
-msgid "%s:%zu: %s '%s'"
-msgstr "%s:%zu: %s '%s'"
-
-#, c-format
 msgid "'%s'"
 msgstr "'%s'"
 
@@ -693,16 +689,9 @@ msgstr "使用中のコンソールセッションがこのドメインに対し
 msgid "Active:"
 msgstr "起動中:"
 
-msgid "Address family for hostname not supported"
-msgstr "ホスト名に対するアドレスファミリーはサポートされません"
-
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "コアのダンプ後、libxenlight を用いたドメイン '%d' の再開に失敗しました"
-
-#, c-format
-msgid "Agent path %s too big for destination"
-msgstr "エージェントのパス %s が宛先に対して大きすぎます"
 
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "SSH エージェントにより提供された識別情報はすべて拒否されました"
@@ -711,9 +700,6 @@ msgid ""
 "All provided authentication methods with credentials were rejected by the "
 "server"
 msgstr "指定された認証情報と持つ認証方式はすべてサーバーに拒否されました"
-
-msgid "All requests done"
-msgstr "すべての要求が完了しました"
 
 msgid "Allocation"
 msgstr "割り当て"
@@ -737,9 +723,6 @@ msgstr "他のクローズコールバックがすでにドメイン %s に対�
 
 msgid "AnyType is missing 'type' property"
 msgstr "AnyType は 'type' プロパティがありません"
-
-msgid "Argument buffer too small"
-msgstr "引数バッファーが小さすぎます"
 
 msgid "Arguments must be non null"
 msgstr "引数は空白以外でなければいけません"
@@ -793,9 +776,6 @@ msgstr "NAT '%s' を試行しました。NAT は IPv4 に対してのみサポ�
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "mode 属性はゲストの CPU に対してのみ許可されます。"
 
-msgid "Authentication failed"
-msgstr "認証に失敗しました"
-
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
@@ -837,9 +817,6 @@ msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
 msgstr ""
 "不正な IPv4 開始アドレス '%s' がネットワーク '%s' において <forward> にある "
 "<nat> の中にあります"
-
-msgid "Bad value for ai_flags"
-msgstr "ai_flags に対する不正な値"
 
 msgid "Bad value for nativeMode"
 msgstr "nativeMode に対する不正な値"
@@ -1128,17 +1105,11 @@ msgstr "PID ファイルのパスを決定できません"
 msgid "Can't determine socket paths"
 msgstr "ソケットのパスを決定できません"
 
-msgid "Can't determine user directory"
-msgstr "ユーザーのディレクトリーを決定できません"
-
 msgid "Can't find prlctl command in the PATH env"
 msgstr "PATH 環境において prlctl コマンドを見つけられません"
 
 msgid "Can't initialize access manager"
 msgstr "アクセスマネージャーを初期化できません"
-
-msgid "Can't initialize logging"
-msgstr "ロギングを初期化できません"
 
 #, c-format
 msgid "Can't load config file: %s: %s"
@@ -1254,9 +1225,6 @@ msgstr "ファイル '%s' を削除できません"
 
 msgid "Cannot determine balloon device path"
 msgstr "バルーンデバイスパスがわかりませんでした"
-
-msgid "Cannot determine free memory"
-msgstr "空きメモリーがわかりません"
 
 msgid "Cannot determine system clock HZ"
 msgstr "システムのクロック周波数がわかりません"
@@ -1452,10 +1420,6 @@ msgid "Cannot parse mode string"
 msgstr "mode 文字列を構文解析できません"
 
 #, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "'%s' から番号を構文解析できません"
-
-#, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "socket address '%s': %s を構文解析できません"
 
@@ -1636,9 +1600,6 @@ msgstr "データを書き込みできません"
 
 msgid "Capacity"
 msgstr "容量"
-
-msgid "Capacity cannot be empty."
-msgstr "容量が空白ではいけません。"
 
 msgid "Capacity:"
 msgstr "容量:"
@@ -1906,10 +1867,6 @@ msgstr "メモリーのパラメーターを変更できませんでした: %s"
 msgid "Could not change scheduler parameters: %s"
 msgstr "スケジューラーのパラメーターを変更できませんでした: %s"
 
-#, c-format
-msgid "Could not close %s"
-msgstr "%s をクローズできませんでした"
-
 msgid "Could not configure network"
 msgstr "ネットワークを設定できませんでした"
 
@@ -1929,14 +1886,6 @@ msgstr "デフォルト設定をコピーできません"
 #, c-format
 msgid "Could not copy volume: %s"
 msgstr "ボリュームをコピーできませんでした: %s"
-
-#, c-format
-msgid "Could not create Session instance, rc = 0x%08x"
-msgstr "セッションのインスタンスを作成できませんでした, rc = 0x%08x"
-
-#, c-format
-msgid "Could not create VirtualBox instance, rc = 0x%08x"
-msgstr "VirtualBox のインスタンスを作成できませんでした, rc = 0x%08x"
 
 msgid "Could not create filter"
 msgstr "フィルターを作成できませんでした"
@@ -1973,9 +1922,6 @@ msgstr "取り出し応答項目をシリアライズ解除できませんでし
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "ドメインを強制停止できません: %s"
-
-msgid "Could not determine home directory"
-msgstr "ホームディレクトリーが決定できませんでした"
 
 #, c-format
 msgid "Could not determine kernel version from string %s"
@@ -2344,10 +2290,6 @@ msgid "Could not parse 'bridge/stp_state' '%s' for '%s'"
 msgstr "'bridge/stp_state' '%s' ('%s' 向け) を構文解析できませんでした"
 
 #, c-format
-msgid "Could not parse IID from '%s', rc = 0x%08x"
-msgstr "'%s' から IID を解析できませんでした, rc = 0x%08x"
-
-#, c-format
 msgid "Could not parse MTU value '%s'"
 msgstr "MTU 値 '%s' を構文解析できませんでした"
 
@@ -2390,14 +2332,6 @@ msgstr "USB ファイル %s を構文解析できませんでした"
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
 msgstr "'%s' から有効なディスクインデックスを構文解析できませんでした"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "'%s' からバージョン番号を構文解析できませんでした"
-
-#, c-format
-msgid "Could not query registry value '%s\\%s'"
-msgstr "レジストリ値 '%s\\%s' を問い合わせできませんでした"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -2551,9 +2485,6 @@ msgstr "ディスクアドレスを検証できませんでした"
 #, c-format
 msgid "Could not wipe volume: %s"
 msgstr "ボリュームを完全消去できませんでした: %s"
-
-msgid "Could not write to stream"
-msgstr "ストリームに書き込みできません"
 
 #, c-format
 msgid "Couldn't create lock file for device '%s' in path '%s'"
@@ -2994,9 +2925,6 @@ msgstr ""
 "ドメイン XML がファイルベースのハードディスクを何も含んでいません、VMX ファイ"
 "ルのデータストアおよびパスを推論できません。"
 
-msgid "Domain XML must contain at least one <disk> element."
-msgstr "ドメイン XML は少なくとも1つの <disk> 要素を含まなければいけません。"
-
 msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr ""
 "ドメインが存在します、既存のドメインを編集することはまだサポートされていませ"
@@ -3228,12 +3156,6 @@ msgstr "エラー通知のコールバックが提供される必要がありま
 msgid "Error opening file %s"
 msgstr "ファイル %s を開くときにエラーが発生しました"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "'path' の構文解析でエラー、無効な文字があります。"
-
-msgid "Error parsing volume XML."
-msgstr "ボリューム XML の構文解析中にエラーが発生しました"
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "シークレットの読み込み中にエラーが発生しました: %s"
@@ -3244,13 +3166,6 @@ msgstr "ファイアウォールの構築中にエラーが発生しました"
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "ファイアウォールの構築中にエラーが発生しました: %s"
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "%s のアドレス情報を取得中にエラーが発生しました"
-
-msgid "Error while opening SSH session."
-msgstr "SSH セッションを開く時にエラー"
 
 msgid "Error while processing command's IO"
 msgstr "コマンドの IO 処理中にエラーが発生しました"
@@ -3263,10 +3178,6 @@ msgstr "/proc/cgroups の読み込み中にエラー"
 
 msgid "Error while reading the domain name"
 msgstr "ドメイン名の読み込み中にエラーが発生しました"
-
-#, c-format
-msgid "Escape character is %s\n"
-msgstr "エスケープ文字は %s です\n"
 
 #, c-format
 msgid "Ethernet controller index %d out of [0..3] range"
@@ -3651,10 +3562,6 @@ msgid "Failed to connect socket to '%s'"
 msgstr "ソケットの '%s' への接続に失敗しました"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "%s への接続に失敗しました"
-
-#, c-format
 msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "リモート libvirt URI %s への接続に失敗しました: %s"
 
@@ -3759,9 +3666,6 @@ msgstr "%s からのネットワーク作成に失敗しました"
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "%s からのノードデバイス作成に失敗しました"
-
-msgid "Failed to create pipe"
-msgstr "パイプの作成に失敗しました"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -4486,10 +4390,6 @@ msgstr "%s の PCI 設定空間の読み込みに失敗しました"
 msgid "Failed to read file '%s'"
 msgstr "ファイル '%s' を読み込めません"
 
-#, c-format
-msgid "Failed to read from %s"
-msgstr "%s からの読み込みに失敗しました"
-
 msgid "Failed to read from signal pipe"
 msgstr "シグナルのパイプからの読み込みに失敗しました"
 
@@ -4934,9 +4834,6 @@ msgstr "失敗しました。"
 msgid "Failure action %s is not supported by sanlock"
 msgstr "失敗時アクション %s は sanlock によりサポートされません"
 
-msgid "Failure establishing SSH session."
-msgstr "SSH セッションの確立に失敗"
-
 msgid "Failure to mask address"
 msgstr "アドレスのマスクに失敗しました"
 
@@ -4952,9 +4849,6 @@ msgstr ""
 #, c-format
 msgid "Feature %s required by CPU model %s not found"
 msgstr "機能 %s （CPU モデル %s により要求）がありませんでした"
-
-msgid "Field <src> under <disk> on the domain XML file is missing."
-msgstr "ドメイン XML ファイルにおいて <disk> 内に <src> 項目がありません。"
 
 msgid "Field kernel memory too long for destination"
 msgstr "kernel memory の項目が宛先に対して長すぎます"
@@ -5078,9 +4972,6 @@ msgstr "GET 操作は失敗しました: %s"
 
 msgid "GNUTLS call error"
 msgstr "GNUTLS 呼び出しエラー"
-
-msgid "GNUTLS support not available in this build"
-msgstr "GNUTLS サポートがこのビルドにおいて利用できません"
 
 msgid "Get block device size info for a domain."
 msgstr "ドメインのブロックデバイスの容量情報を取得します。"
@@ -5497,9 +5388,6 @@ msgid ""
 msgstr ""
 "インターフェース形式 hostdev は現在 SR-IOV 仮想ファンクションにおいてのみサ"
 "ポートされます"
-
-msgid "Interrupted by a signal"
-msgstr "シグナルにより割り込まれました"
 
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
@@ -5999,9 +5887,6 @@ msgstr "カーネルがプライベート devpts をサポートしません"
 msgid "Kernel doesn't support user namespace"
 msgstr "カーネルがユーザー名前空間をサポートしません"
 
-msgid "Key must be empty, Power Hypervisor will create one for you."
-msgstr "キーが空である必要があります。 POWER Hypervisor が新しく作成します。"
-
 msgid "Key of the current session differs from the key at last login"
 msgstr "カレントセッションのキーが前回ログイン時のキーと異なります"
 
@@ -6131,10 +6016,6 @@ msgstr ""
 "待されます"
 
 #, c-format
-msgid "Malformed TLS whitelist regular expression '%s'"
-msgstr "不正な形式の TLS ホワイトリスト正規表現 '%s'"
-
-#, c-format
 msgid "Malformed ctrl-alt-del setting '%s'"
 msgstr "不正な形式の ctrl-alt-del 設定 '%s'"
 
@@ -6188,9 +6069,6 @@ msgstr "最大メモリー:"
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
 msgstr "メモリ '%llu' は %llu より小さくなければいけません"
-
-msgid "Memory allocation failure"
-msgstr "メモリーの割り当てに失敗しました"
 
 #, c-format
 msgid ""
@@ -6623,9 +6501,6 @@ msgstr "モデル %s が宛先に対して大きすぎます"
 msgid "Model name contains invalid characters"
 msgstr "モデル名は無効な文字を含んでいます"
 
-msgid "Monitor does not support sending of file descriptors"
-msgstr "モニターはファイルディスクリプターの送信をサポートしません"
-
 #, c-format
 msgid "Monitor path %s too big for destination"
 msgstr "モニターのパス %s は宛先に対して長すぎます"
@@ -6725,9 +6600,6 @@ msgstr "名前"
 #, c-format
 msgid "Name of chain is longer than %u characters"
 msgstr "チェイン名が %u 文字よりも長いです"
-
-msgid "Name or service not known"
-msgstr "不明な名前またはサービス"
 
 msgid "Name:"
 msgstr "名前:"
@@ -6906,9 +6778,6 @@ msgstr "利用可能な PCI バスがありません"
 #, c-format
 msgid "No active operation on device: %s"
 msgstr "デバイスにおいて動作中の操作がありません: %s"
-
-msgid "No address associated with hostname"
-msgstr "ホスト名と関連づけられたアドレスがありません"
 
 #, c-format
 msgid "No args present for signature %s"
@@ -7092,9 +6961,6 @@ msgstr "取り消しできないタスクが応答しない質問によりブロ
 msgid "Non-empty feature list specified without CPU model"
 msgstr "CPU モデルなしで CPU 機能リストが指定されました"
 
-msgid "Non-recoverable failure in name resolution"
-msgstr "名前解決において修復不能な障害"
-
 msgid "None"
 msgstr "なし"
 
@@ -7177,12 +7043,6 @@ msgstr "%d CPU のみが表示するために利用可能です\n"
 #, c-format
 msgid "Only '%s' filesystem type is supported"
 msgstr "'%s' ファイルシステム形式のみがサポートされます"
-
-msgid "Only 'credit' scheduler is supported"
-msgstr "'credit' スケジューラーのみがサポートされます"
-
-msgid "Only 'scsi_host' adapter is supported"
-msgstr "'scsi_host' アダプターのみがサポートされます"
 
 msgid "Only IPv4 or IPv6 addresses can be used with iptables"
 msgstr "IPv4 または IPv6 アドレスのみが iptables とともに使用できます"
@@ -7364,9 +7224,6 @@ msgstr ""
 msgid "PCI device %s is not assignable"
 msgstr "PCI デバイス %s は割り当てできません"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "PCI ホストデバイスは 'pci' アドレス形式を使用しなければいけません"
-
 msgid "POST operation failed"
 msgstr "POST 操作は失敗しました"
 
@@ -7388,9 +7245,6 @@ msgstr "パラメーター '%s' が文字列ではありません"
 #, c-format
 msgid "Parameter '%s' is not supported by this kernel"
 msgstr "パラメーター '%s' がこのカーネルによりサポートされません"
-
-msgid "Parameter string not correctly encoded"
-msgstr "正しくエンコードされていないパラメーター文字列"
 
 msgid "Parent"
 msgstr "親"
@@ -7561,20 +7415,6 @@ msgstr "バッキング・イメージからのディスクの配置"
 msgid "Port profile Associate failed for %s"
 msgstr "%s に対するポートプロファイルの関連付けに失敗しました"
 
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr ""
-"IBM Tools が LPAR にインストールされていないかもしれません。この機能を有効に"
-"するには、あなたのサポートに連絡してください。"
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"おそらく、LPAR に IBM Tools がインストールされていません。この機能を有効にす"
-"るには、あなたのサポートに連絡してください。"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr ""
 "PrepareTunnel が呼び出されましたが、TUNNELLED フラグが設定されていません"
@@ -7634,9 +7474,6 @@ msgstr "プロセス %zu %p %p [[[%s]]][[[%s]]]"
 
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "処理 CPU アフィニティはこのプラットフォームにおいてサポートされません"
-
-msgid "Processing request in progress"
-msgstr "進行中の要求を処理しています"
 
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
@@ -7781,14 +7618,6 @@ msgid "Refusing to undefine while domain managed save image exists"
 msgstr "ドメインの管理保存イメージが存在する間は定義解除が拒否されます"
 
 #, c-format
-msgid "Registry value '%s\\%s' has unexpected type"
-msgstr "レジストリ値 '%s\\%s' は予期しない形式です"
-
-#, c-format
-msgid "Registry value '%s\\%s' is too short"
-msgstr "レジストリ値 '%s\\%s' は短すぎます"
-
-#, c-format
 msgid "Remote command terminated with non-zero code: %d"
 msgstr "リモートコマンドが 0 以外のコードで終了しました: %d"
 
@@ -7819,12 +7648,6 @@ msgstr "状態保存ファイルと関連づけられたドメインの XML を�
 
 msgid "Reply message incorrect"
 msgstr "応答メッセージが不正です"
-
-msgid "Request canceled"
-msgstr "要求が取り消されました"
-
-msgid "Request not canceled"
-msgstr "要求が取り消されていません"
 
 #, c-format
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
@@ -8197,9 +8020,6 @@ msgstr "ファイルディスクリプターの送信はこのソケットにお
 msgid "Serial port index %d out of [0..3] range"
 msgstr "シリアルポートのインデックス %d が [0..3] の範囲にありません"
 
-msgid "Servname not supported for ai_socktype"
-msgstr "Servname は ai_socktype に対してサポートされません"
-
 msgid "Set a secret value."
 msgstr "シークレット値を設定します。"
 
@@ -8502,9 +8322,6 @@ msgstr "ストレージボリュームが見つかりません"
 msgid "Storage volume not found: %s"
 msgstr "ストレージボリュームが見つかりません: %s "
 
-msgid "StoragePool name already exists."
-msgstr "ストレージプール名がすでに存在します"
-
 #, c-format
 msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr ""
@@ -8557,9 +8374,6 @@ msgstr ""
 "ゲスト OS の電源管理を使用して実行中のドメインを一時停止します（注：これは、"
 "ゲストエージェントが設定され、ゲスト OS において実行されている必要がありま"
 "す）。"
-
-msgid "System error"
-msgstr "システムエラー"
 
 msgid "System is in use"
 msgstr "システムは使用中です"
@@ -8959,9 +8773,6 @@ msgstr "ターゲットのビデオカードの VRAM  %u がソースの %u と�
 msgid "Target watchdog model %s does not match source %s"
 msgstr "ターゲットの watchdog モデル %s がソースの %s と一致しません"
 
-msgid "Temporary failure in name resolution"
-msgstr "名前解決において一時的なエラーが発生しました"
-
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -9267,10 +9078,6 @@ msgstr ""
 "      'quit' 終了\n"
 "\n"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr ""
-"UNIX ドメインソケットはこのプラットフォームにおいてサポートされていません"
-
 msgid "UNIX sockets are not supported on this platform"
 msgstr "UNIX ソケットはこのプラットフォームにおいてサポートされていません"
 
@@ -9334,19 +9141,12 @@ msgstr "'%s' に対するストリームにアクセスできません"
 msgid "Unable to acquire lock on '%s'"
 msgstr "'%s' のロック状態を検知できません"
 
-msgid "Unable to add LPAR to the table"
-msgstr "LPAR を表に追加できません"
-
 #, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "ブリッジ %s ポート %s を追加できません"
 
 msgid "Unable to add epoll fd"
 msgstr "epoll ファイルディスクリプターを追加できません"
-
-#, c-format
-msgid "Unable to add handle %d to event loop"
-msgstr "ハンドル %d をイベントループに追加できません"
 
 #, c-format
 msgid "Unable to add lockspace %s"
@@ -9479,20 +9279,8 @@ msgstr "JSON フォーマッターを作成できません"
 msgid "Unable to create JSON parser"
 msgstr "JSON パーサーを作成できません"
 
-#, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "LPAR を作成できません。理由: '%s'"
-
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "ストレージプールを作成できません: %s"
-
 msgid "Unable to create TAP devices on this platform"
 msgstr "このプラットフォームにおいて TAP デバイスを作成できません"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "ボリュームを作成できません: %s"
 
 msgid "Unable to create blkid library handle"
 msgstr "blkid ライブラリーハンドルを作成できません"
@@ -9529,15 +9317,6 @@ msgstr ""
 
 msgid "Unable to create migration thread"
 msgstr "マイグレーションのスレッドを作成できません"
-
-msgid "Unable to create new virtual adapter"
-msgstr "新規仮想アダプターを作成できません"
-
-msgid "Unable to create pipe"
-msgstr "パイプを作成できません"
-
-msgid "Unable to create signal pipe"
-msgstr "シグナルのパイプを作成できません"
 
 msgid "Unable to create socket"
 msgstr "ソケットを作成できません"
@@ -9583,60 +9362,11 @@ msgid "Unable to delete port %s from OVS"
 msgstr "ポート %s を OVS から削除できません"
 
 #, c-format
-msgid "Unable to destroy Storage Pool: %s"
-msgstr "ストレージプールを削除できません: %s"
-
-#, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "%s のファイルシステムを検知できません"
 
-msgid "Unable to determine config directory"
-msgstr "設定ディレクトリーを決定できません"
-
-msgid "Unable to determine domain's CPU."
-msgstr "ドメインの CPU を決定できません"
-
-msgid "Unable to determine domain's max memory."
-msgstr "ドメインの最大メモリーを決定できません"
-
-msgid "Unable to determine domain's memory."
-msgstr "ドメインのメモリーを決定できません"
-
-msgid "Unable to determine domain's name."
-msgstr "ドメインの名前を決定できません"
-
-msgid "Unable to determine home directory"
-msgstr "ホームディレクトリーを決定できません"
-
 msgid "Unable to determine mount table on this platform"
 msgstr "このプラットフォームのマウントテーブルがわかりません"
-
-msgid "Unable to determine number of domains."
-msgstr "ドメインの数を決定できません"
-
-msgid "Unable to determine storage pool's name."
-msgstr "ストレージプールの名前を決定できません。"
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "ストレージプールの UUID を決定できません"
-
-msgid "Unable to determine storage pools's size."
-msgstr "ストレージプールの容量を決定できません。"
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "ストレージプールのソースアダプターを決定できません。"
-
-msgid "Unable to determine storage sp's name."
-msgstr "ストレージ SP の名前を決定できません"
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "ストレージ SP の UUID を決定できません"
-
-msgid "Unable to determine storage sps's size."
-msgstr "ストレージ SPS の容量を決定できません"
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "ストレージ SPS のソースアダプターを決定できません"
 
 msgid "Unable to disable nagle algorithm"
 msgstr "nagle アルゴリズムを無効化できません"
@@ -9717,9 +9447,6 @@ msgstr "時刻をフォーマットできません"
 msgid "Unable to generate diffie-hellman parameters: %s"
 msgstr "Diffie-Hellman のパラメーターを生成できませんでした: %s"
 
-msgid "Unable to generate random uuid."
-msgstr "ランダムな UUID を生成できません"
-
 #, c-format
 msgid "Unable to get DBus session bus connection: %s"
 msgstr "DBus セッションのバス接続を取得できません: %s"
@@ -9743,12 +9470,6 @@ msgstr "このプラットフォームにおいて %s における STP 遅延を
 #, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "このプラットフォームにおいて %s における STP を取得できません"
-
-msgid "Unable to get VIOS name"
-msgstr "VIOS 名を取得できません"
-
-msgid "Unable to get VIOS profile name."
-msgstr "VIOS プロファイル名を取得できません"
 
 #, c-format
 msgid "Unable to get VLAN for interface %s"
@@ -9785,9 +9506,6 @@ msgstr "ドメインの状態が得られません"
 
 msgid "Unable to get free loop device via ioctl"
 msgstr "ioctl 経由で空き loop デバイスを取得できません"
-
-msgid "Unable to get free slot number"
-msgstr "空いているスロット番号を取得できません"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -9923,9 +9641,6 @@ msgstr "SELinux プロセスコンテキストを参照できません"
 msgid "Unable to make TAP device non-persistent"
 msgstr "TAP デバイスを非永続化できません"
 
-msgid "Unable to make pipe"
-msgstr "パイプを作成できません"
-
 msgid "Unable to mark loop device as autoclear"
 msgstr "loop デバイスを自動削除として印をつけられません"
 
@@ -9978,10 +9693,6 @@ msgstr "ファイルシステム %s を開けません"
 #, c-format
 msgid "Unable to open log file %s"
 msgstr "ログファイル %s を開けません"
-
-#, c-format
-msgid "Unable to open monitor path %s"
-msgstr "モニターパス %s を開くことができません"
 
 #, c-format
 msgid "Unable to open resource %s"
@@ -10038,9 +9749,6 @@ msgstr "クォータを構文解析できません"
 msgid "Unable to parse string parameter"
 msgstr "文字列パラメーターを構文解析できません"
 
-msgid "Unable to poll on file handles"
-msgstr "ファイルハンドルにおいてポーリングできません"
-
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "キャラクターデバイスファイル '%s' を事前作成できません"
@@ -10048,9 +9756,6 @@ msgstr "キャラクターデバイスファイル '%s' を事前作成できま
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "フラグ %d を持つファイルを処理できません"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "モニターを non-blocking モードにできません"
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -10283,9 +9988,6 @@ msgstr "X.509 証明書の失効リストを設定できません: %s: %s"
 msgid "Unable to set x509 key and certificate: %s, %s: %s"
 msgstr "X.509 のキーと証明書を設定できません: %s, %s: %s"
 
-msgid "Unable to setup wakeup pipe"
-msgstr "開始パイプを設定できません"
-
 #, c-format
 msgid "Unable to split FD list '%s'"
 msgstr "ファイル記述子の一覧 '%s' を分割できません"
@@ -10325,9 +10027,6 @@ msgstr "サーバー証明書 %s を CA 証明書 %s に対して検証できま
 msgid "Unable to wait for child process"
 msgstr "子プロセスに対して待機できません"
 
-msgid "Unable to wait on agent monitor condition"
-msgstr "エージェントのモニター条件を待機できません"
-
 msgid "Unable to wait on epoll"
 msgstr "epoll を待てません"
 
@@ -10346,9 +10045,6 @@ msgstr "ホストコンソール PTY を監視できません"
 #, c-format
 msgid "Unable to write %s"
 msgstr "%s を書き込めません"
-
-msgid "Unable to write information to local file."
-msgstr "情報をローカルファイルに書き込みできません"
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -10488,12 +10184,6 @@ msgstr "機能 '%s' の予期しない状態"
 #, c-format
 msgid "Unexpected volume path format: %s"
 msgstr "予期しないボリュームパス形式: %s"
-
-#, c-format
-msgid "Unhandled event %d for monitor fd %d"
-msgstr ""
-"処理できないイベント %d がモニターファイルディスクリプター %d に対してありま"
-"した"
 
 msgid "Unknown"
 msgstr "不明"
@@ -11081,9 +10771,6 @@ msgstr "XML ノードがテキストを含んでいません、xsd:dateTime 値�
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "'%s' への呼び出しに対する応答の XPath 評価が失敗しました"
 
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr "可能である最大よりも大きな CPU 数を設定しようとしています。"
-
 msgid "You must map the root user of container"
 msgstr "コンテナーの root ユーザーを対応付ける必要があります"
 
@@ -11197,12 +10884,6 @@ msgstr "復帰後、一時停止状態への変更"
 
 msgid "after reverting, change state to running"
 msgstr "復帰後、実行状態への変更"
-
-msgid "ai_family not supported"
-msgstr "ai_family はサポートされません"
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype はサポートされません"
 
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "スパースにせず、新しい容量を割り当てる"
@@ -11776,9 +11457,6 @@ msgstr "libxenlight のロガーを作成できません。ドライバーを無
 msgid "cannot create path '%s'"
 msgstr "パス '%s' を作成できません"
 
-msgid "cannot create pipe"
-msgstr "パイプを作成できません"
-
 msgid "cannot create pipe for tunnelled migration"
 msgstr "トンネルマイグレーションのパイプを"
 
@@ -11926,10 +11604,6 @@ msgstr "macvtap タップにおいて機能フラグを取得できません"
 #, c-format
 msgid "cannot get file context of '%s'"
 msgstr "%s のファイルコンテキストを取得できません"
-
-#, c-format
-msgid "cannot get group list for '%s'"
-msgstr "'%s' のグループ一覧を取得できません"
 
 msgid "cannot get host CPU capabilities"
 msgstr "ホスト CPU ケイパビリティを取得できません"
@@ -12975,10 +12649,6 @@ msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen ハイパーバイザーエントリー %s を使用できませんでした"
 
 #, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "PID ファイル %s (%d) を書き込みできませんでした"
-
-#, c-format
 msgid "couldn't find IFLA_VF_INFO for VF %d in netlink response"
 msgstr "netlink 応答に VF %d 向け IFLA_VF_INFO を見つけられませんでした"
 
@@ -13591,9 +13261,6 @@ msgstr "ドメインのディスプレイ接続 URI"
 msgid "domain event %d not registered"
 msgstr "ドメインイベント %d が登録されていません"
 
-msgid "domain has assigned non-USB host devices"
-msgstr "ドメインに割り当てられた非 USB ホストデバイスがあります"
-
 msgid "domain has no snapshots"
 msgstr "ドメインはスナップショットがありません"
 
@@ -14124,9 +13791,6 @@ msgstr "SASL データのデコードに失敗しました: %d (%s)"
 msgid "failed to destroy (stop) interface %s: %s%s%s"
 msgstr "インターフェース %s の削除（停止）に失敗しました: %s%s%s"
 
-msgid "failed to determine host name"
-msgstr "ホスト名の決定に失敗しました"
-
 msgid "failed to enable IP forwarding"
 msgstr "IP ホワーディングを有効にするのに失敗"
 
@@ -14494,9 +14158,6 @@ msgstr "SSH ホスト鍵の検証に失敗しました: %s"
 msgid "failed to wait on condition"
 msgstr "条件の待機に失敗しました"
 
-msgid "failed to wake up polling thread"
-msgstr "スレッドのポーリングの起動に失敗しました"
-
 msgid "failed to wakeup migration tunnel"
 msgstr "マイグレーショントンネルの起動に失敗しました"
 
@@ -14737,9 +14398,6 @@ msgstr "実行中のドメインから値の取得・設定"
 
 msgid "get/set value to be used on next boot"
 msgstr "次回起動時に使用される値の取得・設定"
-
-msgid "getting time of day"
-msgstr "現在の時刻を取得中"
 
 msgid "given uuid does not match XML uuid"
 msgstr "与えられた UUID が XML の UUID と一致しませんでした"
@@ -16883,10 +16541,6 @@ msgid "no device found with alias %s"
 msgstr "エイリアス %s を持つディスクが見つかりません"
 
 #, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "%s のディスクフォーマットがなく、かつプローブが無効です"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "'%s' という名前のディスクがありません"
 
@@ -17468,9 +17122,6 @@ msgstr "サスペンドしました"
 msgid "poll failed in migration tunnel"
 msgstr "マイグレーショントンネルにおいてポーリングが失敗しました"
 
-msgid "poll on socket failed"
-msgstr "ソケット上の投票のは失敗しました"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "プール '%s' はすでに UUID %s を持って定義されています"
@@ -17598,22 +17249,12 @@ msgstr "マイグレーションのために適切な XML を提供します"
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 バスは %s 入力デバイスをサポートしません"
 
-#, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: カレントディレクトリーを取得できません: %s"
-
 msgid "qemu does not support SGA"
 msgstr "QEMU は SGA をサポートしません"
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "QEMU エミュレーター '%s' が Xen をサポートしません"
-
-#, c-format
-msgid "qemu is not using a unix socket monitor, cannot send fd %s"
-msgstr ""
-"QEMU が unix ソケットモニターを使用していません、ファイル記述子 %s を送信でき"
-"ません"
 
 msgid "qemu state driver is not active"
 msgstr "QEMU 状態ドライバーが活動中ではありません"
@@ -17699,9 +17340,6 @@ msgstr "秒あたりの読み込み I/O 回数制限"
 
 msgid "read error on pipe"
 msgstr "パイプにおいて読み込みエラー"
-
-msgid "read on wakeup fd failed"
-msgstr "起動ファイル記述子において読み込みに失敗しました"
 
 msgid "read-only connection"
 msgstr "読み込み専用の接続"
@@ -18632,9 +18270,6 @@ msgstr "この QEMU は rng-random バックエンドをサポートしません
 msgid "this storage volume exists already"
 msgstr "このストレージボリュームはすでに存在します"
 
-msgid "time_t overflow"
-msgstr "time_t オーバーフロー"
-
 msgid "timeout must be positive"
 msgstr "タイムアウトは正の数である必要があります"
 
@@ -18812,10 +18447,6 @@ msgid "unable to create hugepage path %s"
 msgstr "hugepage パス %s を作成できません"
 
 #, c-format
-msgid "unable to create pipe for %s"
-msgstr "%s のパイプを作成できません"
-
-#, c-format
 msgid "unable to create rundir %s: %s"
 msgstr "実行ディレクトリー %s を作成できません: %s"
 
@@ -18903,12 +18534,6 @@ msgstr "VirtualBox ドライバー API の初期化ができません"
 msgid "unable to load knownhosts file '%s': %s"
 msgstr "known hosts ファイル '%s' を読み込めません: %s"
 
-msgid "unable to make pipe"
-msgstr "パイプを作成できません"
-
-msgid "unable to open pipe"
-msgstr "パイプを開けません"
-
 msgid "unable to open stream"
 msgstr "ストリームを開けません"
 
@@ -18954,10 +18579,6 @@ msgstr "サーバー証明書 %s を読み込めません"
 
 msgid "unable to read vmware log file"
 msgstr "VMware ログファイルを"
-
-#, c-format
-msgid "unable to recover former state by adding port to bridge %s"
-msgstr "ブリッジ %s にポートを追加することにより、以前の状態を復元できません"
 
 msgid "unable to register monitor events"
 msgstr "モニターイベントを登録できません"
@@ -19030,9 +18651,6 @@ msgstr "プロセス %lld を待ち合わせできません"
 
 msgid "unable to wait on console condition"
 msgstr "コンソールの条件を待てません"
-
-msgid "unable to wait on libssh2 socket"
-msgstr "libssh2 ソケットを待機できません"
 
 #, c-format
 msgid "unable to write data to '%s'"
@@ -20045,10 +19663,6 @@ msgid "unsupported disk type %s"
 msgstr "サポートされないディスク形式 %s です"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "サポートのないディスクタイプ '%s'"
-
-#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "ディスク '%s' 用のドライバー名 '%s' にはサポートがありません"
 
@@ -20285,9 +19899,6 @@ msgstr "セキュアフラグのある virDomainGetXMLDesc"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "secure フラグのある virDomainSnapshotGetXMLDesc"
 
-msgid "virExec is not implemented for WIN32"
-msgstr "virExec は WIN32 に対して実装されていません"
-
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs は WIN32 に対して実装されていません"
 
@@ -20300,12 +19911,6 @@ msgstr "virGetGroupID が利用できません"
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupName が利用できません"
 
-msgid "virGetUserCacheDirectory is not available"
-msgstr "virGetUserCacheDirectory が利用可能ではありません"
-
-msgid "virGetUserConfigDirectory is not available"
-msgstr "virGetUserConfigDirectory が利用可能ではありません"
-
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory が利用できません"
 
@@ -20314,9 +19919,6 @@ msgstr "virGetUserID が利用できません"
 
 msgid "virGetUserName is not available"
 msgstr "virGetUserName が利用できません"
-
-msgid "virGetUserRuntimeDirectory is not available"
-msgstr "virGetUserRuntimeDirectory が利用可能ではありません"
 
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat が NULL 定義です"
@@ -20363,9 +19965,6 @@ msgstr "virNWFilterSnoopListDel に失敗しました"
 msgid "virNWFilterSnoopReqNew called with invalid key \"%s\" (%zu)"
 msgstr ""
 "virNWFilterSnoopReqNew が無効なキー \"%s\" (%zu) とともに呼び出されました"
-
-msgid "virRun is not implemented for WIN32"
-msgstr "virRun は WIN32 に対して実装されていません"
 
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID が利用できません"
@@ -20568,10 +20167,6 @@ msgstr "XML 修正はサポートされません"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime 値 '%s' が予期しない形式です"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "xsd:dateTime 値 '%s' が宛先に対して長すぎます"
 
 msgid "y - yes, start editor again"
 msgstr "y - はい、再びエディターを起動します"

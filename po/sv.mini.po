@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2017-02-26 05:02+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -122,15 +122,6 @@ msgstr "--%s <sträng>"
 msgid "--format only works with --memory-only"
 msgstr "--format fungerar endast med --memory-only"
 
-msgid "Address family for hostname not supported"
-msgstr "Adressfamiljen för värdnamnet stödjs inte"
-
-msgid "All requests done"
-msgstr "Alla begäran klara"
-
-msgid "Argument buffer too small"
-msgstr "Argumentbufferten är för liten"
-
 msgid "Attach device from an XML <file>."
 msgstr "Anslut enhet från en XML <fil>."
 
@@ -140,14 +131,8 @@ msgstr "Anslut ny diskenhet."
 msgid "Attach new network interface."
 msgstr "Anslut nytt nätverksgränssnitt."
 
-msgid "Authentication failed"
-msgstr "Autentisering misslyckades"
-
 msgid "Autostart"
 msgstr "Autostart"
-
-msgid "Bad value for ai_flags"
-msgstr "Felaktigt värde för ai_flags"
 
 msgid "CPU Affinity:"
 msgstr "CPU-släktskap:"
@@ -356,12 +341,6 @@ msgstr "Domän återställd från %s\n"
 
 msgid "Driver state initialization failed"
 msgstr "Initiering av drivrutinstillstånd misslyckades"
-
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "Fel vid tolkning av ”path”.  Ogiltiga tecken."
-
-msgid "Error while opening SSH session."
-msgstr "Fel när SSH-session öppnades."
 
 msgid "Error while reading the domain name"
 msgstr "Fel när domännamnet lästes"
@@ -584,9 +563,6 @@ msgstr "Gränssnittet %s förstört\n"
 msgid "Interface %s started\n"
 msgstr "Gränssnitt %s startat\n"
 
-msgid "Interrupted by a signal"
-msgstr "Avbröts av en signal"
-
 msgid "Invalid CPU feature name"
 msgstr "Ogiltigt CPU-funktionsnamn"
 
@@ -651,9 +627,6 @@ msgstr "Felaktig målförskjutning för hyra %s"
 msgid "Max memory:"
 msgstr "Max minne:"
 
-msgid "Memory allocation failure"
-msgstr "Minnesallokeringsfel"
-
 msgid "Memory size:"
 msgstr "Minnesstorlek:"
 
@@ -700,9 +673,6 @@ msgstr "Källtjänstattribut saknas för teckenenhet"
 msgid "Model name contains invalid characters"
 msgstr "Modellnamnet innehåller ogiltiga tecken"
 
-msgid "Monitor does not support sending of file descriptors"
-msgstr "Övervakningen stödjer inte att skicka filidentifierare"
-
 msgid "NUMA cell number"
 msgstr "NUMA-cellnummer:"
 
@@ -714,9 +684,6 @@ msgstr "NUMA oanvänt minne"
 
 msgid "Name"
 msgstr "Namn"
-
-msgid "Name or service not known"
-msgstr "Namnet eller tjänsten inte känd"
 
 msgid "Name:"
 msgstr "Namn:"
@@ -780,9 +747,6 @@ msgstr ""
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "Inget <source> ”port”-attribut angivet med uttagsgränssnitt"
 
-msgid "No address associated with hostname"
-msgstr "Ingen adress associerad med värdnamnet"
-
 msgid "No error message provided"
 msgstr "Inget felmeddelande gavs"
 
@@ -797,9 +761,6 @@ msgstr "Icke annullerbar uppgift blockeras av en obesvarad fråga"
 
 msgid "Non-empty feature list specified without CPU model"
 msgstr "Icke-tom lista över funktioner angiven utan CPU-modell"
-
-msgid "Non-recoverable failure in name resolution"
-msgstr "Irreparabelt misslyckande i namnuppslagning"
 
 msgid "OS Type:"
 msgstr "OS-typ:"
@@ -819,18 +780,12 @@ msgstr "Skriv ut domäninformationen som en XML-dump till stdout."
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Skriv ut nätverksinformationen som en XML-dump till stdout."
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "PCI-värdenheter måste använda adresstypen ”pci”"
-
 msgid "POST operation failed"
 msgstr "POST-operation misslyckades"
 
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST-operation misslyckades: %s"
-
-msgid "Parameter string not correctly encoded"
-msgstr "Parametersträngen är inte korrekt kodad"
 
 #, c-format
 msgid "Path %s too long for unix socket"
@@ -851,19 +806,9 @@ msgstr "Sätt fast domän VCPU:er till värdens fysiska CPU:er."
 msgid "Pool %s has been undefined\n"
 msgstr "Pool %s har blivit odefinierad\n"
 
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"Kanske har du inte IBM Tools installerat på din LPAR.  Kontakta din support "
-"för att aktivera denna funktion."
-
 #, c-format
 msgid "Process %d %p %p [[[[%s]]][[[%s]]]"
 msgstr "Process %d %p %p [[[[%s]]][[[%s]]]"
-
-msgid "Processing request in progress"
-msgstr "Behandling av begäran pågår"
 
 #, c-format
 msgid "QueryPerf returned object with unexpected type '%s'"
@@ -871,12 +816,6 @@ msgstr "QueryPerf returnerade objektet med oväntade typ ”%s”"
 
 msgid "RPC error"
 msgstr "RPC-fel"
-
-msgid "Request canceled"
-msgstr "Begäran avbröts"
-
-msgid "Request not canceled"
-msgstr "Begäran avbröts inte"
 
 #, c-format
 msgid ""
@@ -926,9 +865,6 @@ msgstr "Kör hypervisor: %s %d.%d.%d\n"
 msgid "Scheduler"
 msgstr "Schemaläggare"
 
-msgid "Servname not supported for ai_socktype"
-msgstr "Servernamnet stödjs inte för ai_socktype"
-
 msgid "Show maximum number of virtual CPUs for guests on this connection."
 msgstr ""
 "Visa maximala antalet virtuella processorer för gästerna på denna anslutning."
@@ -947,9 +883,6 @@ msgstr "Tillstånd:"
 
 msgid "Suspend a running domain."
 msgstr "Suspendera en körande domän."
-
-msgid "System error"
-msgstr "Systemfel"
 
 #, c-format
 msgid "Target CPU arch %s does not match source %s"
@@ -1005,9 +938,6 @@ msgstr "Mål-sysinfo %s matchar inte källan %s"
 msgid "Target sysinfo does not match source"
 msgstr "Mål-sysinfo matchar inte källan"
 
-msgid "Temporary failure in name resolution"
-msgstr "Tillfälliga fel i namnuppslagning"
-
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Denna typ av disk kan inte tas bort under drift"
 
@@ -1043,22 +973,6 @@ msgstr "UUID:"
 msgid "Unable to change MaxMemorySize"
 msgstr "Kan inte ändra MaxMemorySize"
 
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "Kan inte skapa volym: %s"
-
-msgid "Unable to create new virtual adapter"
-msgstr "Kan inte skapa en nya virtuell adapter"
-
-msgid "Unable to get VIOS name"
-msgstr "Kan inte få tag i VIOS-namn"
-
-msgid "Unable to get VIOS profile name."
-msgstr "Kan inte få tag i VIOS-profilnamn."
-
-msgid "Unable to get free slot number"
-msgstr "Kan inte få fram antal fria platser"
-
 msgid "Unable to get local socket name"
 msgstr "Kan inte få lokalt uttagsnamn"
 
@@ -1070,10 +984,6 @@ msgstr "Kan inte initiera certifikat"
 
 msgid "Unable to load certificate"
 msgstr "Kan inte ladda certfikat"
-
-#, c-format
-msgid "Unable to open monitor path %s"
-msgstr "Ken inte öppna övervakningssökvägen %s"
 
 msgid "Unable to query kqueue"
 msgstr "Kan inte fråga kqueue"
@@ -1097,10 +1007,6 @@ msgstr "Oväntad CPU-funktionspolicy %d"
 #, c-format
 msgid "Unexpected CPU match policy %d"
 msgstr "Oväntad CPU-matchningspolicy %d"
-
-#, c-format
-msgid "Unhandled event %d for monitor fd %d"
-msgstr "Ohanterat händelse %d för att övervaknings-fb %d"
 
 msgid "Unknown"
 msgstr "Okänd"
@@ -1170,12 +1076,6 @@ msgstr "XML-fil"
 
 msgid "active"
 msgstr "aktiv"
-
-msgid "ai_family not supported"
-msgstr "ai_family stödjs inte"
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype stödjs inte"
 
 msgid "attach device from an XML file"
 msgstr "anslut enhet från en XML-fil"
@@ -1616,9 +1516,6 @@ msgstr "hämta enhetsblocks-statistik för en domän"
 
 msgid "get network interface stats for a domain"
 msgstr "hämta nätverksgränssnitt-statistik för en domän"
-
-msgid "getting time of day"
-msgstr "hämtar tid på dygnet"
 
 msgid "gracefully shutdown a domain"
 msgstr "stäng snällt ned en domän"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-02-26 07:12+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bosnian (http://www.transifex.com/projects/p/fedora/language/"
@@ -497,9 +497,6 @@ msgstr "zapisivanje konfiguracijske datoteke nije uspjelo"
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "zapisivanje konfiguracijske datoteke %s nije uspjelo"
-
-msgid "getting time of day"
-msgstr "dohvaćanje vremena dana"
 
 msgid "gracefully shutdown a domain"
 msgstr "dostojanstveno ugasi domenu"

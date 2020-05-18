@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2019-03-29 03:37+0000\n"
 "Last-Translator: Di Wei <dwlinux@outlook.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -670,10 +670,6 @@ msgstr ""
 "%s"
 
 #, c-format
-msgid "%s:%zu: %s '%s'"
-msgstr "%s:%zu: %s '%s'"
-
-#, c-format
 msgid "%s_DEBUG not set with a valid numeric value"
 msgstr "%s_DEBUG 的值无效"
 
@@ -993,19 +989,12 @@ msgstr "这个域有活跃控制台会话"
 msgid "Active:"
 msgstr "活跃："
 
-msgid "Address family for hostname not supported"
-msgstr "不支持主机名所属的地址族"
-
 msgid "Advice from numad is needed in case of automatic numa placement"
 msgstr "进行自动 numa 分配时需要来自 numad 的提示"
 
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "转储 core 后，使用 libxenlight 恢复域 '%d' 失败"
-
-#, c-format
-msgid "Agent path %s too big for destination"
-msgstr "对于目的地来说代理路径 %s 太大"
 
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "SSH 代理提供的所有身份都被拒绝"
@@ -1014,9 +1003,6 @@ msgid ""
 "All provided authentication methods with credentials were rejected by the "
 "server"
 msgstr "所有提供的认证方法及证书都被该服务器拒绝"
-
-msgid "All requests done"
-msgstr "所有的请求已完成"
 
 msgid "Allocation"
 msgstr "分配"
@@ -1045,9 +1031,6 @@ msgid ""
 "Argument 'cellid' in memnode element must correspond to existing guest's "
 "NUMA cell"
 msgstr "memnode 元素中的参数 'cellid' 必须与现有虚拟机 NUMA 单元格对应"
-
-msgid "Argument buffer too small"
-msgstr "存储变量的空间太小"
 
 msgid "Arguments must be non null"
 msgstr "参数不能为空"
@@ -1118,9 +1101,6 @@ msgstr "尝试 NAT '%s'。只有 IPv4 支持 NAT。"
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "只有在虚拟机 CPU 中方可使用的属性模式"
 
-msgid "Authentication failed"
-msgstr "验证失败"
-
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
@@ -1158,9 +1138,6 @@ msgstr "网络 '%s' 中 <forward> 的 <nat> 中的坏 ipv4 结束地址 '%s'"
 #, c-format
 msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
 msgstr "网络 '%s' 中 <forward> 的 <nat> 中的坏 ipv4 起始地址 '%s'"
-
-msgid "Bad value for ai_flags"
-msgstr "错误的 ai_flags 值"
 
 msgid "Bad value for nativeMode"
 msgstr "nativeMode 的不良值"
@@ -1451,9 +1428,6 @@ msgstr "无法决定重启 state 文件路径"
 msgid "Can't determine socket paths"
 msgstr "无法确定插槽路径"
 
-msgid "Can't determine user directory"
-msgstr "无法确定用户目录"
-
 msgid "Can't find prlctl command in the PATH env"
 msgstr "无法在 PATH env 中找到 prlctl 命令"
 
@@ -1462,9 +1436,6 @@ msgstr "无法初始化平行 SDK"
 
 msgid "Can't initialize access manager"
 msgstr "无法初始化访问管理器"
-
-msgid "Can't initialize logging"
-msgstr "无法初始化日志"
 
 #, c-format
 msgid "Can't load config file: %s: %s"
@@ -1584,9 +1555,6 @@ msgstr "无法删除文件 '%s'"
 
 msgid "Cannot determine balloon device path"
 msgstr "无法确定布尔值设备路径"
-
-msgid "Cannot determine free memory"
-msgstr "无法确定剩余内存"
 
 msgid "Cannot determine system clock HZ"
 msgstr "无法确定系统时钟 HZ"
@@ -1790,10 +1758,6 @@ msgid "Cannot parse mode string"
 msgstr "无法解析模式字符串"
 
 #, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "无法解析 '%s' 中的数字 "
-
-#, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "无法解析插槽地址 '%s': %s "
 
@@ -1982,9 +1946,6 @@ msgstr "无法写入 device.map '%s'"
 
 msgid "Capacity"
 msgstr "容量"
-
-msgid "Capacity cannot be empty."
-msgstr "容量不能为空。"
 
 msgid "Capacity:"
 msgstr "容量："
@@ -2292,10 +2253,6 @@ msgid "Could not change scheduler parameters: %s"
 msgstr "无法更改调度程序参数：%s"
 
 #, c-format
-msgid "Could not close %s"
-msgstr "无法关闭 %s"
-
-#, c-format
 msgid "Could not complete transfer: %s (%d)"
 msgstr "无法完成传输：%s (%d)"
 
@@ -2318,14 +2275,6 @@ msgstr "无法复制默认 config"
 #, c-format
 msgid "Could not copy volume: %s"
 msgstr "无法复制卷：%s"
-
-#, c-format
-msgid "Could not create Session instance, rc = 0x%08x"
-msgstr "无法生成绘话实例，rc = 0x%08x"
-
-#, c-format
-msgid "Could not create VirtualBox instance, rc = 0x%08x"
-msgstr "无法生成 VirtualBox 实例，rc = 0x%08x"
 
 msgid "Could not create filter"
 msgstr "无法生产过滤器"
@@ -2362,9 +2311,6 @@ msgstr "无法反序列化 pull 响应项目"
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "无法删除域：%s"
-
-msgid "Could not determine home directory"
-msgstr "无法获取主目录"
 
 #, c-format
 msgid "Could not determine kernel version from string %s"
@@ -2728,10 +2674,6 @@ msgid "Could not parse 'bridge/stp_state' '%s' for '%s'"
 msgstr "无法为 '%s' 解析 'bonding/stp_state' '%s'"
 
 #, c-format
-msgid "Could not parse IID from '%s', rc = 0x%08x"
-msgstr "无法在 '%s', rc = 0x%08x 中解析 ID"
-
-#, c-format
 msgid "Could not parse MTU value '%s'"
 msgstr "无法解析 MTU 值 '%s'"
 
@@ -2782,14 +2724,6 @@ msgstr "无法解析 usb 文件 %s"
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
 msgstr "无法在 '%s' 中解析有效磁盘索引"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "无法从 '%s' 中解析版本号"
-
-#, c-format
-msgid "Could not query registry value '%s\\%s'"
-msgstr "无法查询注册值 '%s\\%s'"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -2938,15 +2872,8 @@ msgstr "无法挂起域：%s"
 msgid "Could not transfer data: %s (%d)"
 msgstr "无法传输数据：%s (%d)"
 
-#, c-format
-msgid "Could not trigger socket action: %s (%d)"
-msgstr "无法触发套接字动作：%s (%d)"
-
 msgid "Could not verify disk address"
 msgstr "无法确认磁盘地址"
-
-msgid "Could not wait for transfer"
-msgstr "无法等待传输"
 
 #, c-format
 msgid "Could not wait for transfer: %s (%d)"
@@ -2955,9 +2882,6 @@ msgstr "无法等待传输：%s (%d)"
 #, c-format
 msgid "Could not wipe volume: %s"
 msgstr "无法擦除卷：%s"
-
-msgid "Could not write to stream"
-msgstr "无法写入流"
 
 #, c-format
 msgid "Couldn't create lock file for device '%s' in path '%s'"
@@ -3423,9 +3347,6 @@ msgid ""
 "and path for VMX file"
 msgstr "域 XML 不包含任何基于文件的硬盘，无法为 VMX 文件推导出数据中心和路径"
 
-msgid "Domain XML must contain at least one <disk> element."
-msgstr "域 XML 必须包含至少一个 <disk> 元素"
-
 msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr "域已存在，还不支持编辑已存在的域。"
 
@@ -3670,12 +3591,6 @@ msgstr "错误：必须指定通知回叫"
 msgid "Error opening file %s"
 msgstr "打开文件 %s 出错"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "解析 'path' 出错。无效字符。"
-
-msgid "Error parsing volume XML."
-msgstr "解析卷 XML 出错。"
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "读取 secret 出错：%s"
@@ -3686,13 +3601,6 @@ msgstr "构建防火墙出错"
 #, c-format
 msgid "Error while building firewall: %s"
 msgstr "构建防火墙出错：%s"
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "获取 %s 地址信息时出错"
-
-msgid "Error while opening SSH session."
-msgstr "打开 SSH 会话时出错。"
 
 msgid "Error while processing command's IO"
 msgstr "处理命令 IO 时出错"
@@ -3705,12 +3613,6 @@ msgstr "读取 /proc/cgroups 时出错"
 
 msgid "Error while reading the domain name"
 msgstr "读取域名时出错"
-
-#, c-format
-msgid "Escape character is %s\n"
-msgstr ""
-"换码符为 %s\n"
-"\n"
 
 #, c-format
 msgid "Ethernet controller index %d out of [0..3] range"
@@ -4090,10 +3992,6 @@ msgid "Failed to connect socket to '%s'"
 msgstr "将插槽连接到 '%s' 失败"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "连接到 %s 失败 "
-
-#, c-format
 msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "连接到远程 libvirt URI %s 失败：%s"
 
@@ -4191,9 +4089,6 @@ msgstr "从 %s 创建网络失败"
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "使用 %s 生成的节点设备失败"
-
-msgid "Failed to create pipe"
-msgstr "创建管道失败"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -4904,10 +4799,6 @@ msgstr "读取 %s 的 PCI 配置空间失败"
 msgid "Failed to read file '%s'"
 msgstr "读取文件 '%s' 失败"
 
-#, c-format
-msgid "Failed to read from %s"
-msgstr "读取 %s 失败"
-
 msgid "Failed to read from signal pipe"
 msgstr "读取信号管道失败"
 
@@ -5360,9 +5251,6 @@ msgstr "失败的。"
 msgid "Failure action %s is not supported by sanlock"
 msgstr "sanlock 不支持失败的操作 %s"
 
-msgid "Failure establishing SSH session."
-msgstr "建立 SSH 会话失败"
-
 msgid "Failure to mask address"
 msgstr "为地址添加掩码失败"
 
@@ -5380,16 +5268,6 @@ msgstr "未找到 CPU 型号 %s 需要的 %s 特性"
 #, c-format
 msgid "Field '%s' too long for destination"
 msgstr "目标字段 '%s' 太长"
-
-msgid ""
-"Field <currentMemory> on the domain XML file is missing or has invalid value"
-msgstr "域 XML 文件中缺少字段 <currentMemory> 或者有无效值"
-
-msgid "Field <memory> on the domain XML file is missing or has invalid value"
-msgstr "域 XML 文件中缺少字段 <memory> 或者有无效值"
-
-msgid "Field <src> under <disk> on the domain XML file is missing."
-msgstr "域 XML 文件中 <disk> 项下的 <src> 字段缺失"
 
 msgid "Field kernel memory too long for destination"
 msgstr "对于目的地来说内核内存字段太长"
@@ -5502,9 +5380,6 @@ msgstr "GET操作失败: %s"
 
 msgid "GNUTLS call error"
 msgstr "GNUTLS调用错误"
-
-msgid "GNUTLS support not available in this build"
-msgstr "这个构建中不能使用 GNUTLS 支持"
 
 msgid "Get block device size info for a domain."
 msgstr "获取域块设备大小信息"
@@ -5911,9 +5786,6 @@ msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
 "only"
 msgstr "只有 SR-IOV Virtual Functions 目前支持接口类型 hostdev"
-
-msgid "Interrupted by a signal"
-msgstr "被信号中断"
 
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
@@ -6463,9 +6335,6 @@ msgstr "内核不支持专用 devpts"
 msgid "Kernel doesn't support user namespace"
 msgstr "内核不支持用户名称空间"
 
-msgid "Key must be empty, Power Hypervisor will create one for you."
-msgstr "密钥必须为空。Power Hypervisor 会为您生成一个。"
-
 msgid "Key of the current session differs from the key at last login"
 msgstr "当前会话密钥与上次登录时的密钥不同"
 
@@ -6611,10 +6480,6 @@ msgid ""
 msgstr "不正常的 'uri_aliases' 配置条目 '%s'，应为 'alias=uri://host/path'。"
 
 #, c-format
-msgid "Malformed TLS whitelist regular expression '%s'"
-msgstr "受损的 TLS 白列表正则表达式 '%s'"
-
-#, c-format
 msgid "Malformed ctrl-alt-del setting '%s'"
 msgstr "不正常 ctrl-alt-del 设置 '%s'"
 
@@ -6668,9 +6533,6 @@ msgstr "最大内存："
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
 msgstr "内存 '%llu' 大小必须小于 %llu"
-
-msgid "Memory allocation failure"
-msgstr "内存分配失败"
 
 #, c-format
 msgid ""
@@ -7123,9 +6985,6 @@ msgstr "对于目的地来说型号 %s 太大"
 msgid "Model name contains invalid characters"
 msgstr "模块名称中含有无效字符"
 
-msgid "Monitor does not support sending of file descriptors"
-msgstr "监控程序不支持发送文件描述符"
-
 #, c-format
 msgid "Monitor path %s too big for destination"
 msgstr "对于目的地址来说监控程序路径 %s 太大"
@@ -7222,9 +7081,6 @@ msgstr "名称"
 #, c-format
 msgid "Name of chain is longer than %u characters"
 msgstr "链名称长度超过 %u 个字符"
-
-msgid "Name or service not known"
-msgstr "未知名称或者服务"
 
 msgid "Name:"
 msgstr "名称："
@@ -7408,9 +7264,6 @@ msgstr "没有可用 UNIX 主叫方 UID"
 msgid "No active operation on device: %s"
 msgstr "设备中没有活跃操作：%s"
 
-msgid "No address associated with hostname"
-msgstr "没有与主机名关联的地址"
-
 #, c-format
 msgid "No args present for signature %s"
 msgstr "没有为签名 %s 显示参数"
@@ -7592,9 +7445,6 @@ msgstr "非不可取消的任务被一个没有回答的问题阻碍。"
 msgid "Non-empty feature list specified without CPU model"
 msgstr "未指定 CPU 型号的非空功能列表"
 
-msgid "Non-recoverable failure in name resolution"
-msgstr "解析名称时出现不可恢复的错误"
-
 msgid "None"
 msgstr "无"
 
@@ -7703,12 +7553,6 @@ msgstr "只能显示 %d CPU\n"
 #, c-format
 msgid "Only '%s' filesystem type is supported"
 msgstr "只支持文件系统类型 '%s'"
-
-msgid "Only 'credit' scheduler is supported"
-msgstr "只支持 'credit' 调度程序"
-
-msgid "Only 'scsi_host' adapter is supported"
-msgstr "只支持 'scsi_host' 适配器"
 
 msgid "Only IPv4 or IPv6 addresses can be used with iptables"
 msgstr "iptables 中只能使用 IPv4 或者 IPv6 地址"
@@ -7886,9 +7730,6 @@ msgstr "PCI 设备 %04x:%02x:%02x.%x 是为网络 %s 分配，但已被域 %s �
 msgid "PCI device %s is not assignable"
 msgstr "PCI 设备 %s 不可分配"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "PCI 主机设备必须使用 ‘pci’ 地址类型"
-
 msgid "PID namespace support is required"
 msgstr "需要PID namespace功能"
 
@@ -7913,9 +7754,6 @@ msgstr "参数 '%s' 不是字符串"
 #, c-format
 msgid "Parameter '%s' is not supported by this kernel"
 msgstr "这个内核不支持参数 '%s'"
-
-msgid "Parameter string not correctly encoded"
-msgstr "参数字符串没有被正确编码"
 
 msgid "Parent"
 msgstr "上级"
@@ -8084,16 +7922,6 @@ msgstr "使用其后端映像填充磁盘。"
 msgid "Port profile Associate failed for %s"
 msgstr "%s 的端口侧写关联失败"
 
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr "您可能没有在 LPAR 中安装 IBM 根据。请联络支持服务启用该功能。"
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr "您可能没有在您的 LAPR 中安装 IBM 工具。联系支持服务启用此功能。"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "调用 PrepareTunnel 但没有设置 TUNNELLED 标签"
 
@@ -8148,9 +7976,6 @@ msgstr "这个平台不支持进程 CPU 亲和性"
 #, c-format
 msgid "Processes %d refused to die"
 msgstr "进程 %d 拒绝停止"
-
-msgid "Processing request in progress"
-msgstr "正在处理请求"
 
 #, c-format
 msgid "Processor mask of target NUMA node %zu doesn't match source"
@@ -8283,14 +8108,6 @@ msgid "Refusing to undefine while domain managed save image exists"
 msgstr "域管理的保存映像存在时拒绝取消定义"
 
 #, c-format
-msgid "Registry value '%s\\%s' has unexpected type"
-msgstr "注册值 '%s\\%s' 包含意外类型"
-
-#, c-format
-msgid "Registry value '%s\\%s' is too short"
-msgstr "注册值 '%s\\%s' 太短"
-
-#, c-format
 msgid "Remote command terminated with non-zero code: %d"
 msgstr "使用非零代码终止的远程命令：%d"
 
@@ -8317,12 +8134,6 @@ msgstr "不支持在迁移时重命名域"
 
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "替换与域 XML 关联的保存的状态文件"
-
-msgid "Request canceled"
-msgstr "请求已被取消"
-
-msgid "Request not canceled"
-msgstr "请求没有被取消"
 
 #, c-format
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
@@ -8722,9 +8533,6 @@ msgstr "指明要查询哪个server的可接入的client的数量"
 msgid "Server to retrieve threadpool attributes from."
 msgstr "指明需要获取哪个server的线程池属性"
 
-msgid "Servname not supported for ai_socktype"
-msgstr "ai_socktype 不支持的服务名称"
-
 msgid "Set a secret value."
 msgstr "设定 secret 值"
 
@@ -9024,9 +8832,6 @@ msgstr "未找到存储卷"
 msgid "Storage volume not found: %s"
 msgstr "未找到存储卷: %s"
 
-msgid "StoragePool name already exists."
-msgstr "存储池名称已存在。"
-
 #, c-format
 msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr "流数据太长无法发送（需要 %zu 字节，只有 %zu 字节可用）"
@@ -9086,9 +8891,6 @@ msgid ""
 msgstr ""
 "使用虚拟机 OS 电源管理挂起运行的域。（注：中需要配置虚拟机代理并在虚拟机 OS "
 "中运行）。"
-
-msgid "System error"
-msgstr "系统错误"
 
 msgid "System is in use"
 msgstr "系统使用中"
@@ -9529,9 +9331,6 @@ msgstr "目标显卡 vram %u 与源 %u 不匹配"
 msgid "Target watchdog model %s does not match source %s"
 msgstr "目标监控程序型号 %s 与源 %s 不匹配"
 
-msgid "Temporary failure in name resolution"
-msgstr "名称解析暂时不可用"
-
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -9709,9 +9508,6 @@ msgstr "关闭域超时"
 msgid "Timeout parameter not supported"
 msgstr "还不支持 timeout 参数"
 
-msgid "Timestamp string conversion failed"
-msgstr "将时间戳转换成字符串失败"
-
 msgid "Title"
 msgstr "标题"
 
@@ -9882,9 +9678,6 @@ msgstr ""
 msgid "Type='%s' unsupported for <interface type='vhostuser'>"
 msgstr "<interface type='vhostuser'> 不支持 Type='%s'"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr "这个平台不支持 UNIX 域插槽"
-
 msgid "UNIX sockets are not supported on this platform"
 msgstr "这个平台不支持 UNIX 插槽"
 
@@ -9950,19 +9743,12 @@ msgstr "无法为 '%s' 访问流"
 msgid "Unable to acquire lock on '%s'"
 msgstr "无法请求在 '%s' 中加锁"
 
-msgid "Unable to add LPAR to the table"
-msgstr "无法在表格中添加 LPAR"
-
 #, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "无法添加桥接 %s 端口 %s"
 
 msgid "Unable to add epoll fd"
 msgstr "无法添加 epoll fd"
-
-#, c-format
-msgid "Unable to add handle %d to event loop"
-msgstr "无法在事件循环中添加句柄 %d"
 
 #, c-format
 msgid "Unable to add lockspace %s"
@@ -10106,20 +9892,8 @@ msgstr "无法生成 JSON 格式化程序"
 msgid "Unable to create JSON parser"
 msgstr "无法生成 JSON 解析程序"
 
-#, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "无法生成 LPAR。原因：'%s'"
-
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "无法创建存储池：%s"
-
 msgid "Unable to create TAP devices on this platform"
 msgstr "无法在这个平台中生成 TAP 设备"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "无法生成卷：%s"
 
 msgid "Unable to create blkid library handle"
 msgstr "无法创建 blkid 库句柄"
@@ -10161,15 +9935,6 @@ msgstr "无法生成锁空间 %s：上级目录不存在或者不是一个目录
 
 msgid "Unable to create migration thread"
 msgstr "无法生成迁移线程"
-
-msgid "Unable to create new virtual adapter"
-msgstr "无法生产新的虚拟适配器"
-
-msgid "Unable to create pipe"
-msgstr "无法创建管道"
-
-msgid "Unable to create signal pipe"
-msgstr "无法生成信号管道"
 
 msgid "Unable to create socket"
 msgstr "无法生成插槽"
@@ -10215,57 +9980,8 @@ msgid "Unable to delete port %s from OVS"
 msgstr "无法从 OVS 中删除端口 %s"
 
 #, c-format
-msgid "Unable to destroy Storage Pool: %s"
-msgstr "无法销毁存储池：%s"
-
-#, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "无法为 %s 探测文件系统"
-
-msgid "Unable to determine config directory"
-msgstr "无法确定配置目录"
-
-msgid "Unable to determine domain's CPU."
-msgstr "无法确定域的 CPU。"
-
-msgid "Unable to determine domain's max memory."
-msgstr "无法确定域的最大内存。"
-
-msgid "Unable to determine domain's memory."
-msgstr "无法确定域的内存。"
-
-msgid "Unable to determine domain's name."
-msgstr "无法确定域的名称。"
-
-msgid "Unable to determine home directory"
-msgstr "无法确定主目录"
-
-msgid "Unable to determine number of domains."
-msgstr "无法确定域的数目。"
-
-msgid "Unable to determine storage pool's name."
-msgstr "无法确定存储池的名称"
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "无法确定存储池的 uuid。"
-
-msgid "Unable to determine storage pools's size."
-msgstr "无法确定存储池的大小。"
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "无法确定存储池的源适配器。"
-
-msgid "Unable to determine storage sp's name."
-msgstr "无法确定存储 sp 的名称。"
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "无法确定存储 sp 的 uuid。"
-
-msgid "Unable to determine storage sps's size."
-msgstr "无法确定存储 sp 的大小。"
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "无法确定存储 sp 的源适配器。"
 
 msgid "Unable to disable nagle algorithm"
 msgstr "无法禁用 nagle 算法"
@@ -10342,9 +10058,6 @@ msgstr "无法格式化时间"
 msgid "Unable to generate diffie-hellman parameters: %s"
 msgstr "无法生成 diffie-hellman 参数：%s"
 
-msgid "Unable to generate random uuid."
-msgstr "无法生成随机 uuid。"
-
 msgid "Unable to get Capabilities"
 msgstr "无法获取 Capabilities 信息"
 
@@ -10371,12 +10084,6 @@ msgstr "无法在这个平台中为 %s 获取 STP 延迟"
 #, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "无法在这个平台中为 %s 获取 STP"
-
-msgid "Unable to get VIOS name"
-msgstr "无法获得 VIOS 名称"
-
-msgid "Unable to get VIOS profile name."
-msgstr "无法获得 VIOS 配置文件名称。"
 
 #, c-format
 msgid "Unable to get VLAN for interface %s"
@@ -10416,9 +10123,6 @@ msgstr "无法获取设备 ID '%s'"
 
 msgid "Unable to get domain status"
 msgstr "无法获取域状态"
-
-msgid "Unable to get free slot number"
-msgstr "无法获得剩余插槽数"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -10559,9 +10263,6 @@ msgstr "无法查询 SELinux 进程上下文"
 msgid "Unable to make TAP device non-persistent"
 msgstr "无法让 TAP 设备设定为不持久"
 
-msgid "Unable to make pipe"
-msgstr "无法生成管道"
-
 msgid "Unable to mark loop device as autoclear"
 msgstr "无法将回路设备标记为 autoclear"
 
@@ -10615,10 +10316,6 @@ msgstr "无法打开文件系统 %s"
 #, c-format
 msgid "Unable to open log file %s"
 msgstr "无法打开日志文件：%s"
-
-#, c-format
-msgid "Unable to open monitor path %s"
-msgstr "无法打开监控器路径 %s"
 
 #, c-format
 msgid "Unable to open resource %s"
@@ -10683,9 +10380,6 @@ msgstr "无法解析配额"
 msgid "Unable to parse string parameter"
 msgstr "无法解析字符串参数"
 
-msgid "Unable to poll on file handles"
-msgstr "无法提取文件句柄"
-
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "无法预先生成 chardev 文件 '%s' "
@@ -10693,9 +10387,6 @@ msgstr "无法预先生成 chardev 文件 '%s' "
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "无法使用标签 %d 处理文件"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "无法将监视器置于无阻塞模式"
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -10937,9 +10628,6 @@ msgstr "无法设定 x509 证书取消列表：%s：%s"
 msgid "Unable to set x509 key and certificate: %s, %s: %s"
 msgstr "无法设定 x509 密钥和证书：%s，%s: %s"
 
-msgid "Unable to setup wakeup pipe"
-msgstr "无法设定唤醒管道"
-
 #, c-format
 msgid "Unable to split FD list '%s'"
 msgstr "无法分割 FD 列表 '%s'"
@@ -10982,9 +10670,6 @@ msgstr "无法根据 CA 证书 %s 确认证书 %s"
 msgid "Unable to wait for child process"
 msgstr "无法等待子进程"
 
-msgid "Unable to wait on agent monitor condition"
-msgstr "无法在代理监控程序环境中等待"
-
 msgid "Unable to wait on epoll"
 msgstr "无法等待 epoll fd"
 
@@ -11003,9 +10688,6 @@ msgstr "无法观察主机控制器 PTY"
 #, c-format
 msgid "Unable to write %s"
 msgstr "无法写入 %s"
-
-msgid "Unable to write information to local file."
-msgstr "无法向本地文件中写入信息"
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -11167,10 +10849,6 @@ msgstr "意外的功能状态 '%s'"
 #, c-format
 msgid "Unexpected volume path format: %s"
 msgstr "意外卷路径格式：%s"
-
-#, c-format
-msgid "Unhandled event %d for monitor fd %d"
-msgstr "监控程序 fd %d 的未处理事件 %d"
 
 msgid "Unknown"
 msgstr "未知"
@@ -11859,9 +11537,6 @@ msgstr "XML 节点不包含稳步，应为 xsd:dateTime 值"
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "用来调用 '%s' 的响应的 XPath 评估失败"
 
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr "您要设定大于最多 CPU 数的 CPU 数。"
-
 msgid "You must map the root user of container"
 msgstr "您必须匹配容器的 root 用户"
 
@@ -11970,12 +11645,6 @@ msgstr "转换后将状态改为 paused"
 
 msgid "after reverting, change state to running"
 msgstr "转换后将状态改为 running"
-
-msgid "ai_family not supported"
-msgstr "不支持的 ai_family值"
-
-msgid "ai_socktype not supported"
-msgstr "不支持的 ai_socktype类型"
 
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "分配新容量而不是稀释它"
@@ -12539,9 +12208,6 @@ msgstr "无法为 libxenlight 创建记录器，正在禁用驱动器"
 msgid "cannot create path '%s'"
 msgstr "无法创建路径 '%s'"
 
-msgid "cannot create pipe"
-msgstr "无法创建管道"
-
 msgid "cannot create pipe for tunnelled migration"
 msgstr "无法为管道迁移生成通道"
 
@@ -12707,10 +12373,6 @@ msgstr "无法在 macvtap tap 中获得功能标签"
 #, c-format
 msgid "cannot get file context of '%s'"
 msgstr "无法获得 '%s' 的文件上下文"
-
-#, c-format
-msgid "cannot get group list for '%s'"
-msgstr "无法从 '%s' 获取组列表"
 
 msgid "cannot get host CPU capabilities"
 msgstr "无法获取主机 CPU 功能"
@@ -13807,10 +13469,6 @@ msgstr "不能使用Xen管理程序登录"
 msgid "could not use Xen hypervisor entry %s"
 msgstr "不能使用Xen管理程序登录 %s"
 
-#, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "无法为 %s 写入 pid 文件 %d"
-
 msgid "couldn't fetch array of leases"
 msgstr "无法提取租用阵列"
 
@@ -14420,9 +14078,6 @@ msgstr "域事件回叫 %d 未注册"
 msgid "domain has assigned host devices"
 msgstr "已分配主机设备的域"
 
-msgid "domain has assigned non-USB host devices"
-msgstr "域已分配非 USB 主机设备"
-
 msgid "domain has no snapshots"
 msgstr "域没有快照"
 
@@ -14943,10 +14598,6 @@ msgstr "创建 log 目录 '%s' 失败：%s"
 msgid "failed to create logfile %s"
 msgstr "生成日志文件 %s 失败"
 
-#, c-format
-msgid "failed to create pipe: %s"
-msgstr "无法创建pipe: %s"
-
 msgid "failed to create profile"
 msgstr "生成侧写失败"
 
@@ -14986,9 +14637,6 @@ msgstr "解码 SASL 数据失败：%d (%s)"
 #, c-format
 msgid "failed to destroy (stop) interface %s: %s%s%s"
 msgstr "销毁（停止）接口 %s 失败：%s%s%s"
-
-msgid "failed to determine host name"
-msgstr "决定主机名失败"
 
 #, c-format
 msgid "failed to determine loop exit status: %s"
@@ -15406,9 +15054,6 @@ msgstr "验证 ssh 主机密钥失败：%s"
 msgid "failed to wait on condition"
 msgstr "等待命令失败：%s"
 
-msgid "failed to wake up polling thread"
-msgstr "叫醒投票线程失败"
-
 msgid "failed to wakeup migration tunnel"
 msgstr "唤醒迁移管道失败"
 
@@ -15689,9 +15334,6 @@ msgstr "运行域的 get/set 值"
 
 msgid "get/set value to be used on next boot"
 msgstr "下一次引导时要使用的 get/set 值"
-
-msgid "getting time of day"
-msgstr "正在获得一天当中的时间"
 
 msgid "given uuid does not match XML uuid"
 msgstr "给定 uuid 与 XML uuid 不符"
@@ -17999,10 +17641,6 @@ msgid "no device found with alias %s"
 msgstr "没有找到别名为 %s 的设备"
 
 #, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "没有可用于 %s 的磁盘格式，并禁用探测。"
-
-#, c-format
 msgid "no disk named '%s'"
 msgstr "没有名为 '%s' 的磁盘"
 
@@ -18610,9 +18248,6 @@ msgstr "pmsuspended"
 msgid "poll failed in migration tunnel"
 msgstr "迁移管道中的轮循失败"
 
-msgid "poll on socket failed"
-msgstr "poll on 套接字失败"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "池 ‘%s’ 已存在 uuid %s"
@@ -18747,20 +18382,12 @@ msgstr "为迁移提供 XML 可用性"
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 总线不支持 %s 输入设备"
 
-#, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: 无法获取当前目录: %s"
-
 msgid "qemu does not support SGA"
 msgstr "qemu 不支持 SGA"
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu 模拟器 '%s' 不支持 xen"
-
-#, c-format
-msgid "qemu is not using a unix socket monitor, cannot send fd %s"
-msgstr "qemu 不使用 unix 插槽监控程序，无法发送 fd %s"
 
 #, c-format
 msgid "qemu monitor event callback %d not registered"
@@ -18860,9 +18487,6 @@ msgstr "以每秒字节数位单位的读取 I/O 操作限制"
 
 msgid "read error on pipe"
 msgstr "管道中的读取错误"
-
-msgid "read on wakeup fd failed"
-msgstr "读取叫醒 fd 失败"
 
 #, c-format
 msgid "read only access prevents %s"
@@ -19822,9 +19446,6 @@ msgstr "这个 qumu 不支持 rng-egd 后端"
 msgid "this version of libxenlight does not support backend domain name"
 msgstr "libxenlight 的这个版本不支持后端域名"
 
-msgid "time_t overflow"
-msgstr "time_t 溢出"
-
 msgid "timeout must be positive"
 msgstr "超时必须是正数"
 
@@ -20028,10 +19649,6 @@ msgid "unable to create hugepage path %s"
 msgstr "无法生成超大页面路径 %s"
 
 #, c-format
-msgid "unable to create pipe for %s"
-msgstr "无法为 %s 生成管道"
-
-#, c-format
 msgid "unable to create rundir %s: %s"
 msgstr "无法生成 rundir %s：%s"
 
@@ -20121,14 +19738,8 @@ msgstr "无法初始化 VirtualBox 驱动程序 API"
 msgid "unable to load knownhosts file '%s': %s"
 msgstr "无法载入 knownhosts 文件 '%s': %s"
 
-msgid "unable to make pipe"
-msgstr "无法生成管道"
-
 msgid "unable to make terminal raw: console isn't a tty"
 msgstr "无法将终端配置为raw模式：终端不是tty设备"
-
-msgid "unable to open pipe"
-msgstr "无法打开管道"
 
 msgid "unable to open stream"
 msgstr "无法打开流"
@@ -20171,10 +19782,6 @@ msgstr "无法读取服务器证书 %s"
 
 msgid "unable to read vmware log file"
 msgstr "读取 vmware 日志文件失败"
-
-#, c-format
-msgid "unable to recover former state by adding port to bridge %s"
-msgstr "无法通过在桥接 %s 中添加端口恢复之前的状态"
 
 msgid "unable to register monitor events"
 msgstr "无法注册监控程序事件"
@@ -20243,9 +19850,6 @@ msgstr "无法等待进程 %lld"
 
 msgid "unable to wait on console condition"
 msgstr "无法在控制台环境中等待"
-
-msgid "unable to wait on libssh2 socket"
-msgstr "无法在 libssh2 插槽中等待"
 
 #, c-format
 msgid "unable to write data to '%s'"
@@ -21380,10 +20984,6 @@ msgid "unsupported disk type %s"
 msgstr "不支持的磁盘类型 %s"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "不支持的磁盘类型 '%s'"
-
-#, c-format
 msgid "unsupported driver name '%s'"
 msgstr "不支持的驱动程序名称 '%s'"
 
@@ -21656,9 +21256,6 @@ msgstr "带安全标志的 virDomainGetXMLDesc"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "使用 secure 标签的 virDomainSnapshotGetXMLDesc"
 
-msgid "virExec is not implemented for WIN32"
-msgstr "没有为 WIN32 采用virExec"
-
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "没有为 WIN32 采用virFileOpenAs"
 
@@ -21671,12 +21268,6 @@ msgstr "virGetGroupID 不可用"
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupName 不可用"
 
-msgid "virGetUserCacheDirectory is not available"
-msgstr "virGetUserCacheDirectory 不可用"
-
-msgid "virGetUserConfigDirectory is not available"
-msgstr "virGetUserConfigDirectory 不可用"
-
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory 不可用"
 
@@ -21685,9 +21276,6 @@ msgstr "virGetUserID 不可用"
 
 msgid "virGetUserName is not available"
 msgstr "virGetUserName 不可用"
-
-msgid "virGetUserRuntimeDirectory is not available"
-msgstr "virGetUserRuntimeDirectory 不可用"
 
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
@@ -21725,9 +21313,6 @@ msgstr "virNWFilterSnoopListDel 失败"
 #, c-format
 msgid "virNWFilterSnoopReqNew called with invalid key \"%s\" (%zu)"
 msgstr "与无效密钥 \"%s\" (%zu) 调用的 virNWFilterSnoopReqNew"
-
-msgid "virRun is not implemented for WIN32"
-msgstr "WIN32 中未采用 virRun"
 
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID 不可用"
@@ -21916,10 +21501,6 @@ msgstr "不支持 xml 修改"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime 值 '%s' 使用意外的格式"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "xsd:dateTime 值 '%s' 对目标系统来说太长"
 
 msgid "y - yes, start editor again"
 msgstr "y - 是，再次编辑"

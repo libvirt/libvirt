@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -213,10 +213,6 @@ msgstr ""
 "%s"
 
 #, c-format
-msgid "%s:%zu: %s '%s'"
-msgstr "%s:%zu: %s '%s'"
-
-#, c-format
 msgid "'%s' does not exist"
 msgstr "'%s'가 존재하지 않습니다"
 
@@ -376,12 +372,6 @@ msgstr "%s 활성화된 장치가 %s 버스에 있습니다. 버스를 리셋하
 msgid "Active:"
 msgstr "활성화:"
 
-msgid "Address family for hostname not supported"
-msgstr "호스트 이름의 주소 제품군이 지원되지 않음 "
-
-msgid "All requests done"
-msgstr "모든 요청이 완료됨"
-
 msgid "Allocation"
 msgstr "할당 "
 
@@ -394,9 +384,6 @@ msgstr "선조 모델 %s를 CPU 모델 %s에 대해 찾을 수 없음"
 
 msgid "AnyType is missing 'type' property"
 msgstr "AnyType에 'type' 속성이 누락되어 있음 "
-
-msgid "Argument buffer too small"
-msgstr "인수 버퍼가 너무 작음 "
 
 #, c-format
 msgid ""
@@ -422,9 +409,6 @@ msgstr "모드를 지정하지 않고 %s를 생성하려 합니다 "
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "모드 속성은 게스트 CPU에 대해서만 허용됨"
 
-msgid "Authentication failed"
-msgstr "인증이 실패했습니다"
-
 msgid "Autostart"
 msgstr "자동 시작"
 
@@ -444,9 +428,6 @@ msgstr "네트워크 '%s'의 <forward>에서 <nat>에 있는 잘못된 ipv4 종�
 #, c-format
 msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
 msgstr "네트워크 '%s'의 <forward>에서 <nat>에 있는 잘못된 ipv4 시작 주소 '%s'"
-
-msgid "Bad value for ai_flags"
-msgstr "ai_flags에 대해 잘못된 값 "
 
 msgid "Bad value for nativeMode"
 msgstr "nativeMode의 잘못된 값 "
@@ -652,14 +633,8 @@ msgstr "pid 파일 경로를 지정할 수 없습니다."
 msgid "Can't determine socket paths"
 msgstr "소켓 경로를 지정할 수 없음 "
 
-msgid "Can't determine user directory"
-msgstr "사용자 디렉토리를 지정할 수 없음 "
-
 msgid "Can't initialize access manager"
 msgstr "액세스 관리자를 초기화할 수 없음"
-
-msgid "Can't initialize logging"
-msgstr "로깅을 초기화할 수 없음 "
 
 #, c-format
 msgid "Can't load config file: %s: %s"
@@ -730,9 +705,6 @@ msgstr "디렉토리 '%s'를 삭제할 수 없음"
 #, c-format
 msgid "Cannot delete file '%s'"
 msgstr "파일 '%s'을 삭제할 수 없음 "
-
-msgid "Cannot determine free memory"
-msgstr "여유 메모리를 지정할 수 없음"
 
 msgid "Cannot enable general autostart option without affecting other domains"
 msgstr ""
@@ -865,10 +837,6 @@ msgid "Cannot parse mode string"
 msgstr "모드 문자열을 구문 분석할 수 없습니다"
 
 #, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "'%s'에서 숫자를 구문 분석할 수 없습니다 "
-
-#, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "소켓 주소 '%s'를 구문 분석할 수 없음: %s"
 
@@ -992,9 +960,6 @@ msgstr "사전 지정된 UUID를 사용할 수 없음 "
 msgid "Capacity"
 msgstr "용량 "
 
-msgid "Capacity cannot be empty."
-msgstr "용량을 비워둘 수 없습니다."
-
 msgid "Capacity:"
 msgstr "용량:"
 
@@ -1102,10 +1067,6 @@ msgstr "메모리 매개 변수를 변경할 수 없음: %s"
 #, c-format
 msgid "Could not change scheduler parameters: %s"
 msgstr "스케줄러 매개 변수를 변경할 수 없음: %s"
-
-#, c-format
-msgid "Could not close %s"
-msgstr "%s을 종료할 수 없음"
 
 msgid "Could not configure network"
 msgstr "네트워크를 설정할 수 없음"
@@ -1458,10 +1419,6 @@ msgstr "'%s'에서 반환 코드를 분석할 수 없습니다 "
 #, c-format
 msgid "Could not parse usb file %s"
 msgstr "usb 파일 %s를 구문분석 할 수 없음"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "'%s'에서 버전 번호를 구문 분석할 수 없습니다"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -2052,22 +2009,9 @@ msgstr "'%s' 자식 프로세스 생성시 오류 발생"
 msgid "Error opening file %s"
 msgstr "파일 %s을(를) 읽어들이는데 오류"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "'path' 구문 분석 올. 잘못된 문자."
-
-msgid "Error parsing volume XML."
-msgstr "볼륨 XML을 구문 분석하는데 실패했습니다. "
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "비밀정보 읽기 오류: %s"
-
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "%s 주소 정보를 얻는 중 오류 발생"
-
-msgid "Error while opening SSH session."
-msgstr "SSH 세션을 여는 중 오류 발생"
 
 msgid ""
 "Exactly one 'cell' element per guest NUMA cell allowed, non-contiguous "
@@ -2193,10 +2137,6 @@ msgid "Failed to compile regex %s"
 msgstr "정규식 %s를 컴파일하는 데 실패"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "%s에 연결하는 데 실패"
-
-#, c-format
 msgid "Failed to convert '%s' to int"
 msgstr "'%s'를 정수로 변환하는데 실패"
 
@@ -2259,9 +2199,6 @@ msgstr "%s에서 네트워크 생성하기 실패"
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "%s로부터 노드 장치를 생성하는 데 실패"
-
-msgid "Failed to create pipe"
-msgstr "파이프 생성에 실패"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -2701,10 +2638,6 @@ msgid "Failed to read file '%s'"
 msgstr "'%s' 파일 읽기 실패"
 
 #, c-format
-msgid "Failed to read from %s"
-msgstr "%s에서 읽기 실패 "
-
-#, c-format
 msgid "Failed to read product/vendor ID for %s"
 msgstr "%s의 벤더/생산자 ID를 읽는 데 실패했습니다"
 
@@ -2930,9 +2863,6 @@ msgstr "%zu 바이트를 저장소 볼륨(경로 '%s')에 쓰는 데 실패했�
 #, c-format
 msgid "Failure action %s is not supported by sanlock"
 msgstr "실패 동작 %s은 sanlock에 의해 지원되지 않습니다 "
-
-msgid "Failure establishing SSH session."
-msgstr "SSH 세션 설정 중 실패"
 
 #, c-format
 msgid "Family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"
@@ -3204,9 +3134,6 @@ msgstr "인터페이스를 찾을 수 없음"
 #, c-format
 msgid "Interface not found: %s"
 msgstr "인터페이스를 찾을 수 없음: %s"
-
-msgid "Interrupted by a signal"
-msgstr "시그널에 의해 중단됨"
 
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
@@ -3567,9 +3494,6 @@ msgstr "ManagedObjectReference에 'type' 속성이 누락되어 있음 "
 msgid "Max memory:"
 msgstr "최대 메모리:"
 
-msgid "Memory allocation failure"
-msgstr "메모리 할당 실패 "
-
 #, c-format
 msgid ""
 "Memory balloon device type '%s' is not supported by this version of qemu"
@@ -3850,9 +3774,6 @@ msgstr "이름"
 msgid "Name of chain is longer than %u characters"
 msgstr "체인 이름이 %u 문자 보다 깁니다 "
 
-msgid "Name or service not known"
-msgstr "이름이나 서비스를 알 수 없음 "
-
 msgid "Name:"
 msgstr "이름:"
 
@@ -3968,9 +3889,6 @@ msgstr "호스트 '%s'의 IP 주소를 찾을 수 없음: %s"
 msgid "No JSON parser implementation is available"
 msgstr "구현된 JSON 구문분석기가 없습니다"
 
-msgid "No address associated with hostname"
-msgstr "호스트 이름과 연관된 주소가 없음 "
-
 msgid "No bridge node in xml document"
 msgstr "xml 문서에 브리지 노드가 없습니다 "
 
@@ -4048,9 +3966,6 @@ msgstr "취소할 수 없는 작업이 응답하지 않는 질문에 의해 차�
 
 msgid "Non-empty feature list specified without CPU model"
 msgstr "CPU 모델이 빠진 상태에서 특징 목록이 지정되었습니다"
-
-msgid "Non-recoverable failure in name resolution"
-msgstr "이름 확인에서 복구할 수 없는 오류가 발생했습니다"
 
 msgid "None"
 msgstr "없음"
@@ -4172,18 +4087,12 @@ msgstr "통과 "
 msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
 msgstr "PCI 버스 0 슬롯 1은 암시적 LPC PCI-ISA 브릿지에 예약되어 있습니다"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "PIC 호스트 장치는 'pci' 주소 유형을 사용해야만 합니다."
-
 msgid "POST operation failed"
 msgstr "POST 작업 실패"
 
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST 작업 실패: %s"
-
-msgid "Parameter string not correctly encoded"
-msgstr "매개 변수 문자열이 올바르게 인코딩되지 않음"
 
 msgid "Parent"
 msgstr "부모 "
@@ -4303,9 +4212,6 @@ msgstr "우선 순위 '%d'가 유효한 범위 [%d,%d] 밖에 있습니다 "
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
 
-msgid "Processing request in progress"
-msgstr "요청 처리 중 "
-
 #, c-format
 msgid ""
 "Query parameter 'auto_answer' has unexpected value '%s' (should be 0 or 1)"
@@ -4376,12 +4282,6 @@ msgstr "%s 장치에 대해 이동식 미디어가 지원되지 않음"
 
 msgid "Renaming domains on migration not supported"
 msgstr "마이그레이션에서 도메인 이름을 다시 지정하는 것은 지원되지 않습니다"
-
-msgid "Request canceled"
-msgstr "요청 취소 "
-
-msgid "Request not canceled"
-msgstr "요청이 취소되지 않음"
 
 #, c-format
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
@@ -4561,9 +4461,6 @@ msgstr "보안 모델 찾을 수 없음: %s"
 msgid "Security model:"
 msgstr "모안 모델:"
 
-msgid "Servname not supported for ai_socktype"
-msgstr "ai_socktype에 대해 Servname이 지원되지 않음"
-
 msgid "Set a secret value."
 msgstr "비밀정보 값을 설정."
 
@@ -4682,9 +4579,6 @@ msgstr "저장소 볼륨을 찾을 수 없음"
 msgid "Storage volume not found: %s"
 msgstr "저장소 볼륨을 찾을 수 없음: %s"
 
-msgid "StoragePool name already exists."
-msgstr "저장소 풀 이름이 이미 존재합니다. "
-
 msgid "Support for SELinux is not enabled"
 msgstr "SELinux 지원이 활성화되어 있지 않습니다 "
 
@@ -4693,9 +4587,6 @@ msgstr "실행중인 도메인 중지."
 
 msgid "Suspend operation failed"
 msgstr "일시정지 동작이 실패했습니다"
-
-msgid "System error"
-msgstr "시스템 오류 "
 
 msgid "System is in use"
 msgstr "시스템이 사용중입니다 "
@@ -5056,9 +4947,6 @@ msgstr "대상 비디오 카드 vram %u이 소스 %u와 일치하지 않음"
 msgid "Target watchdog model %s does not match source %s"
 msgstr "대상 와치독 모델 %s이 소스 %s와 일치하지 않음"
 
-msgid "Temporary failure in name resolution"
-msgstr "이름 확인에 일시적인 오류가 발생했습니다 "
-
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -5190,9 +5078,6 @@ msgstr ""
 "      종료하기 위해 'quit'입력\n"
 "\n"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr "UNIX 도메인 소켓이 이 플랫폼에서 지원되지 않습니다 "
-
 msgid "URI is missing the server part"
 msgstr "URI에 서버 부분이 누락되어 있습니다 "
 
@@ -5231,9 +5116,6 @@ msgstr "파일 설명자 %d에 액세스할 수 없습니다 "
 msgid "Unable to access stream for '%s'"
 msgstr "'%s'의 스트림을 액세스할 수 없음 "
 
-msgid "Unable to add LPAR to the table"
-msgstr "LPAR를 테이블에 추가할 수 없음 "
-
 msgid "Unable to add epoll fd"
 msgstr "epoll fd를 추가할 수 없습니다 "
 
@@ -5266,18 +5148,6 @@ msgstr "루트 디렉터리로 cd하기 실패"
 msgid "Unable to create %s"
 msgstr "%s을 생성할 수 없음 "
 
-#, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "LPAR를 생성할 수 없습니다. 원인: '%s'"
-
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "저장소 풀을 생성할 수 없음: %s"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "볼륨을 생성할 수 없음: %s"
-
 msgid "Unable to create blkid library handle"
 msgstr "blkid 라이브러리 핸들을 생성할 수 없습니다 "
 
@@ -5285,57 +5155,12 @@ msgstr "blkid 라이브러리 핸들을 생성할 수 없습니다 "
 msgid "Unable to create device %s"
 msgstr "장치 %s을 생성할 수 없음 "
 
-msgid "Unable to create new virtual adapter"
-msgstr "새 가상 어댑터를 생성할 수 없음 "
-
-msgid "Unable to create pipe"
-msgstr "파이프를 생성할 수 없습니다 "
-
 msgid "Unable to create socket"
 msgstr "소켓을 만들 수 없습니다"
 
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "%s의 파일 시스템을 감지할 수 없습니다 "
-
-msgid "Unable to determine domain's CPU."
-msgstr "도메인의 CPU를 지정할 수 없습니다. "
-
-msgid "Unable to determine domain's max memory."
-msgstr "도메인의 최대 메모리를 지정할 수 없습니다. "
-
-msgid "Unable to determine domain's memory."
-msgstr "도메인의 메모리를 지정할 수 없습니다. "
-
-msgid "Unable to determine domain's name."
-msgstr "도메인의 이름을 지정할 수 없습니다. "
-
-msgid "Unable to determine number of domains."
-msgstr "도메인 수를 지정할 수 없습니다. "
-
-msgid "Unable to determine storage pool's name."
-msgstr "저장소 풀의 이름을 지정할 수 없습니다. "
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "저장소 풀의 uuid를 지정할 수 없습니다. "
-
-msgid "Unable to determine storage pools's size."
-msgstr "저장소 풀의 크기를 지정할 수 없습니다. "
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "저장소 풀의 소스 어댑터를 지정할 수 없습니다. "
-
-msgid "Unable to determine storage sp's name."
-msgstr "저장소 sp의 이름을 지정할 수 없습니다. "
-
-msgid "Unable to determine storage sp's uuid."
-msgstr "저장소 sp의 uuid를 지정할 수 없습니다. "
-
-msgid "Unable to determine storage sps's size."
-msgstr "저장소 sp의 크기를 지정할 수 없습니다. "
-
-msgid "Unable to determine storage sps's source adapter."
-msgstr "저장소 sp의 소스 어댑터를 지정할 수 없습니다. "
 
 #, c-format
 msgid "Unable to find correct value in 'bonding/arp_validate' for '%s'"
@@ -5352,17 +5177,8 @@ msgstr "%s의 파일 시스템 유형을 찾을 수 없습니다 "
 msgid "Unable to format guestfwd port"
 msgstr "guestfwd 포트를 초기화할 수 없음"
 
-msgid "Unable to generate random uuid."
-msgstr "임의의 uuid를 생성할 수 없습니다. "
-
 msgid "Unable to get Capabilities"
 msgstr "기능을 가져올 수 없습니다"
-
-msgid "Unable to get VIOS name"
-msgstr "VIOS 이름을 구할 수 없음 "
-
-msgid "Unable to get VIOS profile name."
-msgstr "VIOS 프로파일 이름을 구할 수 없습니다. "
 
 msgid "Unable to get cpu map"
 msgstr "cpu map을 얻을 수 없음"
@@ -5414,10 +5230,6 @@ msgid "Unable to open filesystem %s"
 msgstr "파일 시스템 %s을 여는데 실패했습니다 "
 
 #, c-format
-msgid "Unable to open monitor path %s"
-msgstr "모니터 경로 %s를 열 수 없음"
-
-#, c-format
 msgid "Unable to open stream for '%s'"
 msgstr "'%s'의 스트림을 열 수 없음 "
 
@@ -5442,9 +5254,6 @@ msgstr "잠금 상태 %s를 구문 분석할 수 없습니다 "
 
 msgid "Unable to parse quota"
 msgstr "쿼타를 구문 분석할 수 없습니다"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "모니터를 비-블로킹 모드로 설정할 수 없음"
 
 #, c-format
 msgid "Unable to read %s"
@@ -5482,9 +5291,6 @@ msgstr "사용자 '%s'의 SELinux 문맥을 설정할 수 없음"
 
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "모니터의 close-on-exec 플래그를 설정할 수 없음"
-
-msgid "Unable to write information to local file."
-msgstr "로컬 파일에 정보를 쓸 수 없습니다. "
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -5919,12 +5725,6 @@ msgstr "부모 스냅샷을 표시하는 칼럼 추가 "
 msgid "address type='%s' not supported in hostdev interfaces"
 msgstr "hostdev 인터페이스에서 주소 형식 ='%s'은 지원되지 않습니다"
 
-msgid "ai_family not supported"
-msgstr "ai_family가 지원되지 않음 "
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype이 지원되지 않음 "
-
 msgid "allow cloning to new name"
 msgstr "새 이름으로 복제하는 것을 허용"
 
@@ -6175,9 +5975,6 @@ msgstr "로그 디렉터리 %s를 생성할 수 없음"
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "경로 %s를 생성할 수 없음"
-
-msgid "cannot create pipe"
-msgstr "파이프를 생성할 수 없음"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
@@ -6808,10 +6605,6 @@ msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen 하이퍼바이저 항목 %s을 사용할 수 없음"
 
 #, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "pidfile %s(%d에 대한)에 쓸 수 없음"
-
-#, c-format
 msgid ""
 "couldn't find a portgroup entry in network '%s' matching <portgroup "
 "name='%s'>"
@@ -7414,9 +7207,6 @@ msgstr "볼륨 '%s/%s' 생성 실패"
 msgid "failed to destroy (stop) interface %s: %s%s%s"
 msgstr "인터페이스 %s 삭제 (중지) 실패: %s%s%s"
 
-msgid "failed to determine host name"
-msgstr "호스트 이름을 결정하는 데 실패"
-
 msgid "failed to enable IP forwarding"
 msgstr "IP 포워딩을 활성화하는 데 실패"
 
@@ -7792,9 +7582,6 @@ msgstr "도메인에 대한 메모리 통계를 얻음"
 
 msgid "get network interface stats for a domain"
 msgstr "도메인의 네트워크 인터페이스 상태 보기"
-
-msgid "getting time of day"
-msgstr "시간 읽어오는 중"
 
 msgid "gracefully shutdown a domain"
 msgstr "도메인을 종료"
@@ -9449,9 +9236,6 @@ msgstr "pid"
 msgid "pid_value in %s is too large"
 msgstr "%s에 있는 pid_value가 너무 큽니다 "
 
-msgid "poll on socket failed"
-msgstr "소켓 폴링이 실패했습니다"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "풀 '%s'이 이미 uuid %s로 존재합니다"
@@ -9539,10 +9323,6 @@ msgstr "프로토콜에 패밀리 특성이 빠졌습니다"
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
-
-#, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: 현재 디렉터리를 얻을 수 없음: %s"
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
@@ -10265,10 +10045,6 @@ msgid "unable to create hugepage path %s"
 msgstr "hugepage 경로 %s를 만들 수 없음"
 
 #, c-format
-msgid "unable to create pipe for %s"
-msgstr "%s의 파이프를 생성할 수 없음"
-
-#, c-format
 msgid "unable to create rundir %s: %s"
 msgstr "rundir %s를 생성할 수 없습니다: %s"
 
@@ -10329,12 +10105,6 @@ msgstr "뮤텍스를 초기화할 수 없음 "
 
 msgid "unable to initialize VirtualBox driver API"
 msgstr "VirtualBox 드라이버 API를 초기화할 수 없습니다"
-
-msgid "unable to make pipe"
-msgstr "파이프를 만들 수 없음"
-
-msgid "unable to open pipe"
-msgstr "파이프를 열 수 없음"
 
 msgid "unable to open stream"
 msgstr "스트림을 열 수 없음"
@@ -11313,10 +11083,6 @@ msgid "unsupported disk type %s"
 msgstr "지원되지 않는 디스크 유형 %s"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "지원되지 않는 디스크 유형 '%s'"
-
-#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "드라이버 이름 '%s'가 디스크 '%s'에 대해 지원되지 않음"
 
@@ -11623,10 +11389,6 @@ msgstr "xml 수정은 지원되지 않음"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime 값 '%s' 에 예상치 않는 형식이 있음 "
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "xsd:dateTime 값 '%s' 이 목적지에 대해 너무 김 "
 
 msgid "y - yes, start editor again"
 msgstr "y - 예, 편집기를 다시 시작합니다"

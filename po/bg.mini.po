@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-02-26 07:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bulgarian (http://www.transifex.com/projects/p/fedora/"
@@ -809,9 +809,6 @@ msgstr "извличане състоянието на блоковете на �
 
 msgid "get network interface stats for a domain"
 msgstr "извличане състоянието на мрежов интерфейс за домейн"
-
-msgid "getting time of day"
-msgstr "вземане на времето"
 
 msgid "gracefully shutdown a domain"
 msgstr "внимателно изключване на домейн"

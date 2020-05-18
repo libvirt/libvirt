@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2015-02-27 04:56+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hungarian (http://www.transifex.com/projects/p/fedora/"
@@ -657,9 +657,6 @@ msgstr "egy XML-tartományleírást tartalmazó fájl"
 
 msgid "file containing an XML network description"
 msgstr "egy XML-hálózatleírást tartalmazó fájl"
-
-msgid "getting time of day"
-msgstr "aktuális idő beolvasása"
 
 msgid "gracefully shutdown a domain"
 msgstr "egy tartomány elegáns leállítása"

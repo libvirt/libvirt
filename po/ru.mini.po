@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"POT-Creation-Date: 2020-05-18 17:34+0100\n"
 "PO-Revision-Date: 2016-03-31 11:42+0000\n"
 "Last-Translator: yuliya <ypoyarko@redhat.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -452,10 +452,6 @@ msgstr ""
 "%s"
 
 #, c-format
-msgid "%s:%zu: %s '%s'"
-msgstr "%s:%zu: %s «%s»"
-
-#, c-format
 msgid "'%s' controller cannot be hot plugged."
 msgstr "Контроллер «%s»  не может быть подключен в режиме горячей замены."
 
@@ -746,21 +742,11 @@ msgstr "Активное блочное сведение началось"
 msgid "Active:"
 msgstr "Активен:"
 
-msgid "Address family for hostname not supported"
-msgstr "Семейство адресов для этого имени узла не поддерживается"
-
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 "Не удалось возобновить работу домена «%d» при помощи libxenlight после "
 "создания дампа"
-
-#, c-format
-msgid "Agent path %s too big for destination"
-msgstr "Слишком длинный путь агента: %s"
-
-msgid "All requests done"
-msgstr "Все запросы обработаны"
 
 msgid "Allocation"
 msgstr "Распределение"
@@ -780,9 +766,6 @@ msgstr "Не найдена предшествующая модель %s для 
 
 msgid "AnyType is missing 'type' property"
 msgstr "Отсутствует свойство «type» для AnyType"
-
-msgid "Argument buffer too small"
-msgstr "Слишком маленький буфер аргументов"
 
 msgid "Arguments must be non null"
 msgstr "Аргументы не могут быть пустыми"
@@ -835,9 +818,6 @@ msgstr "Попытка преобразования «%s». NAT поддержи
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "Атрибут «mode» может использоваться только с гостевыми процессорами"
 
-msgid "Authentication failed"
-msgstr "Ошибка аутентификации"
-
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
@@ -868,9 +848,6 @@ msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
 msgstr ""
 "Недействительный адрес IPv4 в строке <address start='%s'> в описании <nat> "
 "в  секции <forward> для сети %s"
-
-msgid "Bad value for ai_flags"
-msgstr "Недопустимое значение ai_flags"
 
 msgid "Bad value for nativeMode"
 msgstr "Недопустимое значение атрибута «nativeMode»"
@@ -1148,17 +1125,11 @@ msgstr "Не удалось определить путь к файлу PID. "
 msgid "Can't determine socket paths"
 msgstr "Не удалось определить пути к сокетам."
 
-msgid "Can't determine user directory"
-msgstr "Не удалось определить каталог пользователя"
-
 msgid "Can't find prlctl command in the PATH env"
 msgstr "Команда prlctl не определена в переменной PATH"
 
 msgid "Can't initialize access manager"
 msgstr "Не удалось инициализировать менеджер доступа"
-
-msgid "Can't initialize logging"
-msgstr "Не удалось инициализировать функции ведения журнала"
 
 #, c-format
 msgid "Can't load config file: %s: %s"
@@ -1259,9 +1230,6 @@ msgstr "Не удалось удалить файл «%s»"
 
 msgid "Cannot determine balloon device path"
 msgstr "Не удалось определить путь к устройству дополнительной памяти"
-
-msgid "Cannot determine free memory"
-msgstr "Не удалось определить размер свободной памяти"
 
 msgid "Cannot determine system clock HZ"
 msgstr "Не удалось определить частоту системных часов"
@@ -1488,10 +1456,6 @@ msgid "Cannot parse mode string"
 msgstr "Не удалось обработать строку режима"
 
 #, c-format
-msgid "Cannot parse number from '%s'"
-msgstr "Не удалось получить число из «%s»"
-
-#, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "Не удалось выполнить разбор адреса сокета «%s»: %s"
 
@@ -1644,9 +1608,6 @@ msgstr "Ошибка записи данных"
 #, c-format
 msgid "Cannot write device.map '%s'"
 msgstr "Не удалось записать device.map «%s»"
-
-msgid "Capacity cannot be empty."
-msgstr "Необходимо определить емкость."
 
 msgid "Capacity:"
 msgstr "Размер:"
@@ -1856,10 +1817,6 @@ msgstr "Не удалось изменить параметры памяти: %s
 msgid "Could not change scheduler parameters: %s"
 msgstr "Не удалось изменить параметры планировщика: %s"
 
-#, c-format
-msgid "Could not close %s"
-msgstr "Не удалось закрыть %s"
-
 msgid "Could not configure network"
 msgstr "Не удалось настроить сеть"
 
@@ -1879,14 +1836,6 @@ msgstr "Не удалось скопировать текущую конфигу
 #, c-format
 msgid "Could not copy volume: %s"
 msgstr "Не удалось скопировать том: %s"
-
-#, c-format
-msgid "Could not create Session instance, rc = 0x%08x"
-msgstr "Не удалось создать экземпляр Session (rc = 0x%08x)"
-
-#, c-format
-msgid "Could not create VirtualBox instance, rc = 0x%08x"
-msgstr "Не удалось создать экземпляр VirtualBox (rc = 0x%08x)"
 
 #, c-format
 msgid "Could not create base storage, rc=%08x"
@@ -1932,9 +1881,6 @@ msgstr "Не удалось выполнить десериализацию эл
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Не удалось разрушить домен: %s"
-
-msgid "Could not determine home directory"
-msgstr "Не удалось определить домашний каталог"
 
 #, c-format
 msgid "Could not determine kernel version from string %s"
@@ -2294,10 +2240,6 @@ msgid "Could not parse 'bridge/stp_state' '%s' for '%s'"
 msgstr "Не удалось разобрать «bridge/stp_state» «%s» для «%s»"
 
 #, c-format
-msgid "Could not parse IID from '%s', rc = 0x%08x"
-msgstr "Не удалось извлечь IID из «%s», rc = 0x%08x"
-
-#, c-format
 msgid "Could not parse MTU value '%s'"
 msgstr "Не удалось обработать значение MTU «%s»"
 
@@ -2340,14 +2282,6 @@ msgstr "Не удалось разобрать файл USB %s"
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
 msgstr "Не удалось извлечь индекс диска из «%s»"
-
-#, c-format
-msgid "Could not parse version number from '%s'"
-msgstr "Не удалось извлечь номер версии из «%s»"
-
-#, c-format
-msgid "Could not query registry value '%s\\%s'"
-msgstr "Не удалось опросить значение реестра «%s\\%s»"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -2494,9 +2428,6 @@ msgstr "Не удалось передать данные: %s (%d)"
 msgid "Could not verify disk address"
 msgstr "Не удалось проверить адрес диска"
 
-msgid "Could not wait for transfer"
-msgstr "Не удалось дождаться передачи"
-
 #, c-format
 msgid "Could not wait for transfer: %s (%d)"
 msgstr "Не удалось дождаться передачи:  %s (%d)"
@@ -2504,9 +2435,6 @@ msgstr "Не удалось дождаться передачи:  %s (%d)"
 #, c-format
 msgid "Could not wipe volume: %s"
 msgstr "Не удалось освободить том: %s"
-
-msgid "Could not write to stream"
-msgstr "Ошибка записи в поток"
 
 #, c-format
 msgid "Couldn't create lock file for device '%s' in path '%s'"
@@ -2935,9 +2863,6 @@ msgstr ""
 "XML домена не содержит файловые определения дисков. Не удалось получить "
 "сведения о хранилище и путь к файлу VMX."
 
-msgid "Domain XML must contain at least one <disk> element."
-msgstr "XML домена должен содержать как минимум один элемент <disk>."
-
 msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr ""
 "Домен уже существует. Изменение существующих доменов не поддерживается."
@@ -3177,12 +3102,6 @@ msgstr "Необходимо предоставить обратный вызо�
 msgid "Error opening file %s"
 msgstr "Не удалось открыть файл %s"
 
-msgid "Error parsing 'path'. Invalid characters."
-msgstr "Ошибка разбора «path». Недопустимые символы."
-
-msgid "Error parsing volume XML."
-msgstr "Ошибка разбора XML тома."
-
 #, c-format
 msgid "Error reading secret: %s"
 msgstr "Ошибка при чтении секрета: %s"
@@ -3206,13 +3125,6 @@ msgstr "Ошибка при попытке закрыть носитель, rc=%
 msgid "Error while creating diff storage, rc=%08x"
 msgstr "Не удалось создать разностный диск, rc=%08x"
 
-#, c-format
-msgid "Error while getting %s address info"
-msgstr "Ошибка при получении сведений адреса %s"
-
-msgid "Error while opening SSH session."
-msgstr "Ошибка при открытии сеанса SSH."
-
 msgid "Error while processing command's IO"
 msgstr "Ошибка при обработке ввода-вывода команд"
 
@@ -3229,10 +3141,6 @@ msgstr "Ошибка при чтении имени домена"
 msgid "Error while removing hostonly network interface, rc=%08x"
 msgstr ""
 "Ошибка при попытке удаления внутрисистемного сетевого интерфейса, rc=%08x"
-
-#, c-format
-msgid "Escape character is %s\n"
-msgstr "Символ экранирования: %s\n"
 
 #, c-format
 msgid "Ethernet controller index %d out of [0..3] range"
@@ -3566,10 +3474,6 @@ msgid "Failed to complete tree listing"
 msgstr "Не удалось завершить построение иерархии"
 
 #, c-format
-msgid "Failed to connect to %s"
-msgstr "Не удалось подключиться к %s"
-
-#, c-format
 msgid "Failed to connect to remote libvirt URI %s: %s"
 msgstr "Не удалось подключиться к удаленному libvirt по адресу %s: %s"
 
@@ -3659,9 +3563,6 @@ msgstr "Не удалось создать сеть из %s"
 #, c-format
 msgid "Failed to create node device from %s"
 msgstr "Не удалось создать устройство из %s"
-
-msgid "Failed to create pipe"
-msgstr "Не удалось создать канал"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -4326,10 +4227,6 @@ msgid "Failed to read file '%s'"
 msgstr "Ошибка чтения файла «%s»"
 
 #, c-format
-msgid "Failed to read from %s"
-msgstr "Ошибка чтения из %s"
-
-#, c-format
 msgid "Failed to read product/vendor ID for %s"
 msgstr "Ошибка чтения идентификатора продукта/производителя для %s"
 
@@ -4721,9 +4618,6 @@ msgstr "Не удалось удалить том."
 msgid "Failed."
 msgstr "Ошибка."
 
-msgid "Failure establishing SSH session."
-msgstr "Не удалось создать сеанс SSH."
-
 msgid "Failure to mask address"
 msgstr "Ошибка при маскировании адреса"
 
@@ -4739,9 +4633,6 @@ msgstr ""
 #, c-format
 msgid "Feature %s required by CPU model %s not found"
 msgstr "Не найдена функция %s, необходимая для модели %s"
-
-msgid "Field <src> under <disk> on the domain XML file is missing."
-msgstr "Поле <src> в секции <disk>  в XML домена не определено."
 
 #, c-format
 msgid "Field name '%s' too long"
@@ -5255,9 +5146,6 @@ msgstr "Интерфейс не найден"
 msgid "Interface not found: %s"
 msgstr "Интерфейс не найден: %s"
 
-msgid "Interrupted by a signal"
-msgstr "Прервано по сигналу"
-
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
 msgstr "Недопустимое выражение «nativeMode='%s'» в элементе <tag> vlan"
@@ -5759,9 +5647,6 @@ msgstr "Ядро не поддерживает закрытые devpts"
 msgid "Kernel doesn't support user namespace"
 msgstr "Ядро не поддерживает пользовательское пространство имен"
 
-msgid "Key must be empty, Power Hypervisor will create one for you."
-msgstr "Возможно, пустой ключ. Гипервизор Power создаст ключ автоматически."
-
 msgid "Key of the current session differs from the key at last login"
 msgstr "Ключ текущего сеанса отличается от предыдущего"
 
@@ -5937,9 +5822,6 @@ msgstr "Реестр носителей не определен"
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
 msgstr "Размер памяти «%llu» должен быть меньше %llu"
-
-msgid "Memory allocation failure"
-msgstr "Ошибка распределения памяти"
 
 msgid "Memory bandwidth:"
 msgstr "Пропускная способность памяти:"
@@ -6299,9 +6181,6 @@ msgstr "Длина модели %s превышает допустимую"
 msgid "Model name contains invalid characters"
 msgstr "Имя модели содержит недопустимые символы"
 
-msgid "Monitor does not support sending of file descriptors"
-msgstr "Монитор не поддерживает отправку дескрипторов файлов"
-
 #, c-format
 msgid "Monitor path %s too big for destination"
 msgstr "Слишком длинный путь к монитору: %s"
@@ -6405,9 +6284,6 @@ msgstr "Имя"
 #, c-format
 msgid "Name of chain is longer than %u characters"
 msgstr "Имя цепочки содержит больше %u знаков"
-
-msgid "Name or service not known"
-msgstr "Неизвестное имя или служба"
 
 msgid "Name:"
 msgstr "Имя:"
@@ -6571,9 +6447,6 @@ msgstr "Нет доступных реализаций для разбора JSO
 msgid "No PCI buses available"
 msgstr "Нет шин PCI"
 
-msgid "No address associated with hostname"
-msgstr "С этим именем узла не связан ни один адрес"
-
 #, c-format
 msgid "No args present for signature %s"
 msgstr "Нет аргументов для подписи %s"
@@ -6725,9 +6598,6 @@ msgstr "Неотвеченный вопрос блокирует задачу, �
 msgid "Non-empty feature list specified without CPU model"
 msgstr "Указан непустой список функций без модели процессора"
 
-msgid "Non-recoverable failure in name resolution"
-msgstr "Критическая ошибка при разрешении имен"
-
 msgid "None"
 msgstr "Нет"
 
@@ -6807,12 +6677,6 @@ msgstr "Всего доступно до %d процессоров\n"
 #, c-format
 msgid "Only '%s' filesystem type is supported"
 msgstr "Поддерживаются только файловые системы «%s»"
-
-msgid "Only 'credit' scheduler is supported"
-msgstr "Поддерживается только планировщик «credit»"
-
-msgid "Only 'scsi_host' adapter is supported"
-msgstr "Поддерживается только адаптер «scsi_host»"
 
 msgid "Only IPv4 or IPv6 addresses can be used with iptables"
 msgstr "Правила iptables должны содержать адреса IPv4 или IPv6"
@@ -6979,9 +6843,6 @@ msgstr ""
 msgid "PCI device %s is not assignable"
 msgstr "Устройство PCI %s не может быть назначено"
 
-msgid "PCI host devices must use 'pci' address type"
-msgstr "Адрес PCI-устройств узла должен иметь тип «pci»"
-
 msgid "POST operation failed"
 msgstr "Ошибка POST"
 
@@ -7000,9 +6861,6 @@ msgstr "Параметр «%s» должен содержать строку"
 #, c-format
 msgid "Parameter '%s' is not supported by this kernel"
 msgstr "Ядро не поддерживает параметр «%s»"
-
-msgid "Parameter string not correctly encoded"
-msgstr "Строка параметров зашифрована неверно"
 
 #, c-format
 msgid "Parent device %s is not capable of vport operations"
@@ -7164,20 +7022,6 @@ msgstr "Удалена метка автоматического запуска 
 msgid "Populate a disk from its backing image."
 msgstr "Заполнить диск данными из резервного образа."
 
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR. Contact your "
-"support to enable this feature."
-msgstr ""
-"Для доступа к этим функциям необходимо установить IBM Tools в LPAR. "
-"Обратитесь в службу поддержки."
-
-msgid ""
-"Possibly you don't have IBM Tools installed in your LPAR.Contact your "
-"support to enable this feature."
-msgstr ""
-"Для доступа к этим функциям необходимо установить IBM Tools в LPAR. "
-"Обратитесь в службу поддержки."
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "Вызван PrepareTunnel, но флаг TUNNELLED не установлен"
 
@@ -7221,9 +7065,6 @@ msgstr "Процесс %zu %p %p [[[%s]]][[[%s]]]"
 
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "Эта платформа не поддерживает сопоставление процессоров процессам"
-
-msgid "Processing request in progress"
-msgstr "Выполняется обработка запроса"
 
 msgid "Protocol"
 msgstr "Протокол"
@@ -7329,14 +7170,6 @@ msgstr ""
 "Отказ удаления определения при наличии существующего служебного образа домена"
 
 #, c-format
-msgid "Registry value '%s\\%s' has unexpected type"
-msgstr "Недопустимый тип значения «%s\\%s»"
-
-#, c-format
-msgid "Registry value '%s\\%s' is too short"
-msgstr "Недостаточная длина значения «%s\\%s»"
-
-#, c-format
 msgid "Removable media not supported for %s device"
 msgstr "Съёмные носители не поддерживаются для устройства %s"
 
@@ -7355,12 +7188,6 @@ msgstr "Переименование доменов при миграции не
 
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "Заменить существующий файл состояния домена указанным файлом XML"
-
-msgid "Request canceled"
-msgstr "Запрос отменен"
-
-msgid "Request not canceled"
-msgstr "Запрос не отменен"
 
 #, c-format
 msgid "Requested device '%s' is locked by lock file '%s' held by process %lld"
@@ -7681,9 +7508,6 @@ msgstr "Позволяет отправить сигналы процессам 
 msgid "Serial port index %d out of [0..3] range"
 msgstr "Индекс последовательного порта %d выходит за пределы диапазона [0...3]"
 
-msgid "Servname not supported for ai_socktype"
-msgstr "ai_socktype не поддерживает servname"
-
 msgid "Set a secret value."
 msgstr "Установить значение секрета."
 
@@ -7933,9 +7757,6 @@ msgstr "Том не найден"
 msgid "Storage volume not found: %s"
 msgstr "Том не найден: %s"
 
-msgid "StoragePool name already exists."
-msgstr "Имя StoragePool уже существует."
-
 msgid "Successfully copied"
 msgstr "Копирование завершено"
 
@@ -7979,9 +7800,6 @@ msgstr ""
 "Переводит домен в спящий режим, используя функции программного управления "
 "энергопотреблением гостевой операционной системы. Примечание. Агент гостевой "
 "системы должен быть заранее настроен и активирован в гостевой системе."
-
-msgid "System error"
-msgstr "Системная ошибка"
 
 msgid "System is in use"
 msgstr "Система используется"
@@ -8350,9 +8168,6 @@ msgstr "%u не соответствует исходному размеру в�
 msgid "Target watchdog model %s does not match source %s"
 msgstr "%s не соответствует исходной модели watchdog %s"
 
-msgid "Temporary failure in name resolution"
-msgstr "Временная ошибка при разрешении имен"
-
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
@@ -8649,9 +8464,6 @@ msgstr ""
 "         «quit», чтобы завершить работу и выйти.\n"
 "\n"
 
-msgid "UNIX domain sockets are not supported on this platform"
-msgstr "Эта платформа не поддерживает сокеты доменов UNIX"
-
 msgid "URI is missing the server part"
 msgstr "Адрес не содержит определение сервера"
 
@@ -8707,9 +8519,6 @@ msgstr "Не удалось получить доступ к потоку для
 msgid "Unable to acquire lock on '%s'"
 msgstr "Не удалось установить блокировку для «%s»"
 
-msgid "Unable to add LPAR to the table"
-msgstr "Не удалось добавить LPAR в таблицу"
-
 #, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "Не удалось добавить мост %s (порт %s)"
@@ -8719,10 +8528,6 @@ msgstr "Не удалось добавить дескриптор epoll"
 
 msgid "Unable to add extra data"
 msgstr "Не удалось добавить ExtraData"
-
-#, c-format
-msgid "Unable to add handle %d to event loop"
-msgstr "Не удалось добавить обработчик %d в цикл событий"
 
 msgid "Unable to add hard disk to media Registry"
 msgstr "Не удалось добавить жесткий диск в реестр носителей"
@@ -8883,10 +8688,6 @@ msgid "Unable to create JSON parser"
 msgstr "Не удалось создать обработчик JSON"
 
 #, c-format
-msgid "Unable to create LPAR. Reason: '%s'"
-msgstr "Не удалось создать LPAR. Причина: «%s»"
-
-#, c-format
 msgid "Unable to create RNG parser for %s"
 msgstr "Не удалось создать обработчик RNG для %s"
 
@@ -8894,16 +8695,8 @@ msgstr "Не удалось создать обработчик RNG для %s"
 msgid "Unable to create RNG validation context %s"
 msgstr "Не удалось создать контекст валидации RNG: %s"
 
-#, c-format
-msgid "Unable to create Storage Pool: %s"
-msgstr "Не удалось создать пул носителей: %s"
-
 msgid "Unable to create TAP devices on this platform"
 msgstr "Создание устройств TAP на этой платформе невозможно"
-
-#, c-format
-msgid "Unable to create Volume: %s"
-msgstr "Не удалось создать том: %s"
 
 msgid "Unable to create blkid library handle"
 msgstr "Не удалось создать обработчик библиотеки blkid"
@@ -8943,12 +8736,6 @@ msgstr ""
 
 msgid "Unable to create migration thread"
 msgstr "Не удалось создать поток миграции"
-
-msgid "Unable to create new virtual adapter"
-msgstr "Не удалось создать виртуальный адаптер."
-
-msgid "Unable to create pipe"
-msgstr "Не удалось создать канал"
 
 msgid "Unable to create socket"
 msgstr "Не удалось создать сокет"
@@ -8996,45 +8783,8 @@ msgid "Unable to delete port %s from OVS"
 msgstr "Не удалось удалить порт %s из OVS"
 
 #, c-format
-msgid "Unable to destroy Storage Pool: %s"
-msgstr "Не удалось разрушить пул: %s"
-
-#, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "Не удалось определить файловую систему для %s"
-
-msgid "Unable to determine config directory"
-msgstr "Не удалось определить каталог конфигурации"
-
-msgid "Unable to determine domain's CPU."
-msgstr "Не удалось определить CPU домена."
-
-msgid "Unable to determine domain's max memory."
-msgstr "Не удалось определить максимальную память для домена."
-
-msgid "Unable to determine domain's memory."
-msgstr "Не удалось определить память для домена."
-
-msgid "Unable to determine domain's name."
-msgstr "Не удалось определить имя домена."
-
-msgid "Unable to determine home directory"
-msgstr "Не удалось определить домашний каталог"
-
-msgid "Unable to determine number of domains."
-msgstr "Не удалось определить число доменов."
-
-msgid "Unable to determine storage pool's name."
-msgstr "Не удалось определить имя пула носителей."
-
-msgid "Unable to determine storage pool's uuid."
-msgstr "Не удалось определить UUID пула носителей."
-
-msgid "Unable to determine storage pools's size."
-msgstr "Не удалось определить размер пула носителей."
-
-msgid "Unable to determine storage pools's source adapter."
-msgstr "Не удалось определить исходный адаптер пула носителей."
 
 msgid "Unable to disable nagle algorithm"
 msgstr "Не удалось отключить алгоритм nagle"
@@ -9106,9 +8856,6 @@ msgstr "Ошибка форматирования контекста SELinux"
 msgid "Unable to format guestfwd port"
 msgstr "Ошибка форматирования порта guestfwd"
 
-msgid "Unable to generate random uuid."
-msgstr "Не удалось выполнить генерацию случайного uuid."
-
 msgid "Unable to get Capabilities"
 msgstr "Не удалось получить список возможностей"
 
@@ -9131,12 +8878,6 @@ msgstr "Не удалось получить ключ SCSI для %s"
 #, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "Невозможно определить STP для %s на этой платформе"
-
-msgid "Unable to get VIOS name"
-msgstr "Не удалось получить имя VIOS."
-
-msgid "Unable to get VIOS profile name."
-msgstr "Не удалось получить имя профиля VIOS."
 
 #, c-format
 msgid "Unable to get VLAN for interface %s"
@@ -9198,9 +8939,6 @@ msgstr "Не удалось определить статус домена"
 
 msgid "Unable to get filesystem information"
 msgstr "Не удалось получить информацию о файловой системе"
-
-msgid "Unable to get free slot number"
-msgstr "Не удалось получить номер свободного слота."
 
 msgid "Unable to get hard disk format"
 msgstr "Не удалось получить формат жесткого диска"
@@ -9364,9 +9102,6 @@ msgstr "Не удалось загрузить сертификат"
 msgid "Unable to lookup SELinux process context"
 msgstr "Не удалось найти контекст SELinux процесса"
 
-msgid "Unable to make pipe"
-msgstr "Не удалось создать канал"
-
 msgid "Unable to mark loop device as autoclear"
 msgstr "Не удалось установить флаг autoclear для петлевого устройства"
 
@@ -9428,10 +9163,6 @@ msgstr "Не удалось открыть файловую систему %s"
 #, c-format
 msgid "Unable to open log file %s"
 msgstr "Не удалось открыть журнал %s"
-
-#, c-format
-msgid "Unable to open monitor path %s"
-msgstr "Не удалось открыть путь %s"
 
 #, c-format
 msgid "Unable to open resource %s"
@@ -9507,9 +9238,6 @@ msgstr "Не удалось предварительно создать файл
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "Не удалось обработать файл с флагами %d"
-
-msgid "Unable to put monitor into non-blocking mode"
-msgstr "Не удалось перевести монитор в неблокирующий режим"
 
 msgid "Unable to query kqueue"
 msgstr "Не удалось опросить kqueue"
@@ -9708,9 +9436,6 @@ msgstr "Не удалось определить список отзыва се�
 msgid "Unable to set x509 key and certificate: %s, %s: %s"
 msgstr "Не удалось установить ключ и сертификат x509: %s, %s: %s"
 
-msgid "Unable to setup wakeup pipe"
-msgstr "Не удалось создать канал пробуждений"
-
 #, c-format
 msgid "Unable to split FD list '%s'"
 msgstr "Не удалось выделить элементы из списка дескрипторов «%s»"
@@ -9765,9 +9490,6 @@ msgstr "Наблюдение за PTY-консолью хоста невозмо
 #, c-format
 msgid "Unable to write %s"
 msgstr "Не удалось записать %s"
-
-msgid "Unable to write information to local file."
-msgstr "Не удалось сохранить данные в локальный файл."
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -9890,10 +9612,6 @@ msgstr "Непредвиденная подпись «%s»"
 #, c-format
 msgid "Unexpected volume path format: %s"
 msgstr "Недопустимый формат пути к тому: %s"
-
-#, c-format
-msgid "Unhandled event %d for monitor fd %d"
-msgstr "Необработанное событие %d для дескриптора монитора %d"
 
 msgid "Unknown"
 msgstr "Неизвестен"
@@ -10477,9 +10195,6 @@ msgstr "Не удалось вычислить XPath ответа для выз�
 msgid "You are trying to remove a snapshot which does not exists"
 msgstr "Вы пытаетесь удалить несуществующий снимок"
 
-msgid "You are trying to set a number of CPUs bigger than the max possible."
-msgstr "Запрошенное число процессоров превышает максимально допустимое"
-
 msgid "You must map the root user of container"
 msgstr "Необходимо создать сопоставление для пользователя root контейнера."
 
@@ -10589,12 +10304,6 @@ msgstr "после восстановления изменить состоян�
 
 msgid "after reverting, change state to running"
 msgstr "после восстановления изменить состояние на рабочее"
-
-msgid "ai_family not supported"
-msgstr "ai_family не поддерживается"
-
-msgid "ai_socktype not supported"
-msgstr "ai_socktype не поддерживается"
 
 msgid "allocated netlink buffer is too small"
 msgstr "недостаточный размер выделенного буфера netlink"
@@ -11076,9 +10785,6 @@ msgstr "не удалось создать каталог журналов %s"
 msgid "cannot create path '%s'"
 msgstr "не удалось создать путь «%s»"
 
-msgid "cannot create pipe"
-msgstr "не удалось создать канал"
-
 msgid "cannot create pipe for tunnelled migration"
 msgstr "не удалось создать канал для туннельной миграции"
 
@@ -11214,10 +10920,6 @@ msgstr "не удалось получить информацию о распо�
 #, c-format
 msgid "cannot get file context of '%s'"
 msgstr "не удалось получить контекст файла «%s»"
-
-#, c-format
-msgid "cannot get group list for '%s'"
-msgstr "не удалось получить список групп для «%s»"
 
 msgid "cannot get host CPU capabilities"
 msgstr "не удалось получить возможности процессора узла"
@@ -12178,10 +11880,6 @@ msgid "could not use Xen hypervisor entry %s"
 msgstr "невозможно использовать запись Xen %s "
 
 #, c-format
-msgid "could not write pidfile %s for %d"
-msgstr "не удалось записать файл pid %s для %d"
-
-#, c-format
 msgid "couldn't find IFLA_VF_INFO for VF %d in netlink response"
 msgstr "ответ netlink не содержит  IFLA_VF_INFO для VF %d"
 
@@ -12750,9 +12448,6 @@ msgstr "обратный вызов %d для события домена не �
 msgid "domain has active block job"
 msgstr "в домене есть активное задание блокирования"
 
-msgid "domain has assigned non-USB host devices"
-msgstr "домену назначены устройства, не являющиеся устройствами USB"
-
 msgid "domain has no snapshots"
 msgstr "у домена нет снимков"
 
@@ -13213,10 +12908,6 @@ msgstr "не удалось создать файл для включения"
 msgid "failed to create logfile %s"
 msgstr "не удалось создать журнал %s"
 
-#, c-format
-msgid "failed to create pipe: %s"
-msgstr "не удалось создать очередь: %s "
-
 msgid "failed to create profile"
 msgstr "не удалось создать профиль"
 
@@ -13241,9 +12932,6 @@ msgstr "не удалось расшифровать данные SASL: %d (%s)"
 #, c-format
 msgid "failed to destroy (stop) interface %s: %s%s%s"
 msgstr "Не удалось уничтожить (остановить) интерфейс %s: %s%s%s"
-
-msgid "failed to determine host name"
-msgstr "не удалось определить имя узла"
 
 #, c-format
 msgid "failed to determine loop exit status: %s"
@@ -13283,9 +12971,6 @@ msgstr "не удалось получить URI"
 
 msgid "failed to get capabilities"
 msgstr "не удалось получить характеристики"
-
-msgid "failed to get current system time"
-msgstr "не удалось получить системное время"
 
 #, c-format
 msgid "failed to get domain '%s'"
@@ -13856,14 +13541,8 @@ msgstr "получить/изменить значения рабочего до
 msgid "get/set value to be used on next boot"
 msgstr "получить/изменить параметры после перезагрузки домена"
 
-msgid "getting time of day"
-msgstr "получение времени дня"
-
 msgid "given uuid does not match XML uuid"
 msgstr "UUID не соответствует UUID XML"
-
-msgid "gmtime_r failed"
-msgstr "ошибка gmtime_r"
 
 msgid "gracefully shutdown a domain"
 msgstr "безопасно завершить работу домена"
@@ -15541,9 +15220,6 @@ msgstr ""
 "Не удалось создать файловую систему  «%s» на «%s»: mkfs не поддерживается на "
 "этой платформе."
 
-msgid "mktime failed"
-msgstr "ошибка mktime"
-
 msgid "mode of device reading and writing"
 msgstr "режим доступа"
 
@@ -15948,10 +15624,6 @@ msgstr "нет возможностей устройства для «%s»"
 #, c-format
 msgid "no device found with alias %s"
 msgstr "устройство %s не найдено"
-
-#, c-format
-msgid "no disk format for %s and probing is disabled"
-msgstr "для диска %s не указан формат, и автообнаружение отключено"
 
 #, c-format
 msgid "no disk named '%s'"
@@ -16532,9 +16204,6 @@ msgstr "pid_value в %s превышает допустимое значение
 msgid "pmsuspended"
 msgstr "спящий режим"
 
-msgid "poll on socket failed"
-msgstr "ошибка опроса сокета"
-
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "пул «%s» уже существует (UUID: %s)"
@@ -16653,10 +16322,6 @@ msgstr "в протоколе отсутствует атрибут family"
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "шина ps2 не поддерживает устройство ввода %s"
-
-#, c-format
-msgid "pwd: cannot get current directory: %s"
-msgstr "pwd: не удалось получить текущий каталог: %s"
 
 msgid "qemu does not support SGA"
 msgstr "QEMU не поддерживает SGA"
@@ -17612,9 +17277,6 @@ msgstr "QEMU не поддерживает rng-random"
 msgid "time to set"
 msgstr "установить заданное время"
 
-msgid "time_t overflow"
-msgstr "переполнение time_t"
-
 msgid "timeout seconds"
 msgstr "время ожидания в секундах"
 
@@ -17778,10 +17440,6 @@ msgid "unable to create hugepage path %s"
 msgstr "ошибка создания пути для очень больших страниц: %s"
 
 #, c-format
-msgid "unable to create pipe for %s"
-msgstr "не удалось создать канал для %s"
-
-#, c-format
 msgid "unable to create rundir %s: %s"
 msgstr "не удалось создать rundir %s: %s"
 
@@ -17871,14 +17529,8 @@ msgstr "Не удалось инициализировать мьютекс"
 msgid "unable to initialize VirtualBox driver API"
 msgstr "не удалось инициализировать API драйвера VirtualBox"
 
-msgid "unable to make pipe"
-msgstr "не удалось создать канал"
-
 msgid "unable to make terminal raw: console isn't a tty"
 msgstr "не удалось создать raw терминала: это не консоль tty"
-
-msgid "unable to open pipe"
-msgstr "не удалось открыть канал"
 
 msgid "unable to open stream"
 msgstr "не удалось открыть поток"
@@ -17993,9 +17645,6 @@ msgstr "невозможно выгрузить уже выгруженный п
 
 msgid "unable to wait on console condition"
 msgstr "не удалось дождаться выполнения условия в консоли"
-
-msgid "unable to wait on libssh2 socket"
-msgstr "ожидание сокета libssh2 невозможно"
 
 #, c-format
 msgid "unable to write data to '%s'"
@@ -18983,10 +18632,6 @@ msgid "unsupported disk type %s"
 msgstr "тип диска %s не поддерживается"
 
 #, c-format
-msgid "unsupported disk type '%s'"
-msgstr "тип диска «%s» не поддерживается"
-
-#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "имя драйвера «%s» для диска «%s» не поддерживается"
 
@@ -19223,9 +18868,6 @@ msgstr "virDomainGetXMLDesc с безопасным флагом"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc c безопасным флагом"
 
-msgid "virExec is not implemented for WIN32"
-msgstr "функции virExec в WIN32 недоступны"
-
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "Функции virFileOpenAs не реализованы в WIN32"
 
@@ -19238,12 +18880,6 @@ msgstr "virGetGroupID недоступен"
 msgid "virGetGroupName is not available"
 msgstr "virGetGroupName недоступно"
 
-msgid "virGetUserCacheDirectory is not available"
-msgstr "virGetUserCacheDirectory недоступен"
-
-msgid "virGetUserConfigDirectory is not available"
-msgstr "virGetUserConfigDirectory недоступен"
-
 msgid "virGetUserDirectory is not available"
 msgstr "virGetUserDirectory недоступен"
 
@@ -19252,9 +18888,6 @@ msgstr "virGetUserID недоступен"
 
 msgid "virGetUserName is not available"
 msgstr "virGetUserName недоступно"
-
-msgid "virGetUserRuntimeDirectory is not available"
-msgstr "virGetUserRuntimeDirectory недоступен"
 
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat: NULL def"
@@ -19297,9 +18930,6 @@ msgstr "Ошбика virNWFilterSnoopListDel"
 #, c-format
 msgid "virNWFilterSnoopReqNew called with invalid key \"%s\" (%zu)"
 msgstr "virNWFilterSnoopReqNew вызван с неверным ключом «%s» (%zu)"
-
-msgid "virRun is not implemented for WIN32"
-msgstr "функции virRun в WIN32 недоступны"
 
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID недоступен"
@@ -19482,10 +19112,6 @@ msgstr "изменение XML не поддерживается"
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "Недопустимый формат xsd:dateTime: «%s»"
-
-#, c-format
-msgid "xsd:dateTime value '%s' too long for destination"
-msgstr "Слишком длинное значение  xsd:dateTime: «%s»"
 
 msgid "y - yes, start editor again"
 msgstr "y (yes) — да, запустить редактор"
