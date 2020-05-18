@@ -277,6 +277,18 @@ driver_sources = [
   'libvirt-stream.c',
 ]
 
+driver_headers = [
+  'driver-hypervisor.h',
+  'driver-interface.h',
+  'driver-network.h',
+  'driver-nodedev.h',
+  'driver-nwfilter.h',
+  'driver-secret.h',
+  'driver-state.h',
+  'driver-storage.h',
+  'driver-stream.h',
+]
+
 driver_lib = static_library(
   'virt_driver',
   [
@@ -839,6 +851,16 @@ test(
     check_symsorting_prog.path(),
     meson.current_source_dir(),
     files(sym_files, used_sym_files),
+  ],
+  env: runutf8,
+)
+
+test(
+  'check-drivername',
+  python3_prog,
+  args: [
+    check_drivername_prog.path(), files(driver_headers),
+    files('libvirt_public.syms'), libvirt_qemu_syms, libvirt_lxc_syms,
   ],
   env: runutf8,
 )

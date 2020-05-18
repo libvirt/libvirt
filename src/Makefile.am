@@ -100,25 +100,6 @@ else !WITH_REMOTE
 check-protocol:
 endif !WITH_REMOTE
 
-DRIVERS = \
-	$(srcdir)/driver-hypervisor.h \
-	$(srcdir)/driver-interface.h \
-	$(srcdir)/driver-network.h \
-	$(srcdir)/driver-nodedev.h \
-	$(srcdir)/driver-nwfilter.h \
-	$(srcdir)/driver-secret.h \
-	$(srcdir)/driver-state.h \
-	$(srcdir)/driver-storage.h \
-	$(srcdir)/driver-stream.h \
-	$(NULL)
-
-check-drivername:
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-drivername.py \
-		$(DRIVERS) \
-		$(srcdir)/libvirt_public.syms \
-		$(srcdir)/libvirt_qemu.syms \
-		$(srcdir)/libvirt_lxc.syms
-
 check-driverimpls:
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-driverimpls.py \
 		$(DRIVER_SOURCE_FILES)
@@ -134,7 +115,7 @@ check-aclperms:
 		$(srcdir)/access/viraccessperm.c
 
 check-local: check-protocol \
-	check-drivername check-driverimpls check-aclrules \
+	check-driverimpls check-aclrules \
 	check-aclperms check-admin
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
