@@ -1013,10 +1013,12 @@ class CParser:
                        token[1][0] != '#'):
                     lst.append(token[1])
                     token = self.lexer.token()
-                try:
-                    name = name.split('(')[0]
-                except Exception:
-                    pass
+
+                paramStart = name.find("(")
+                params = None
+                if paramStart != -1:
+                    params = name[paramStart+1:-1]
+                    name = name[0:paramStart]
 
                 # skip hidden macros
                 if name in hidden_macros:
@@ -1029,7 +1031,7 @@ class CParser:
                     strValue = lst[0][1:-1]
                 (args, desc) = self.parseMacroComment(name, not self.is_header)
                 self.index_add(name, self.filename, not self.is_header,
-                               "macro", (args, desc, strValue))
+                               "macro", (args, desc, params, strValue))
                 return token
 
         #
@@ -2174,10 +2176,13 @@ class docBuilder:
         if id.info is None:
             args = []
             desc = None
+            params = None
             strValue = None
         else:
-            (args, desc, strValue) = id.info
+            (args, desc, params, strValue) = id.info
 
+        if params is not None:
+            output.write(" params='%s'" % params)
         if strValue is not None:
             output.write(" string='%s'" % strValue)
         output.write(">\n")
