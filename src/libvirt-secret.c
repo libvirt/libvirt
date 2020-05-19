@@ -658,8 +658,7 @@ virSecretUndefine(virSecretPtr secret)
 int
 virSecretRef(virSecretPtr secret)
 {
-    VIR_DEBUG("secret=%p refs=%d", secret,
-              secret ? secret->parent.u.s.refs : 0);
+    VIR_DEBUG("secret=%p", secret);
 
     virResetLastError();
 

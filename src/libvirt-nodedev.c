@@ -477,7 +477,7 @@ virNodeDeviceFree(virNodeDevicePtr dev)
 int
 virNodeDeviceRef(virNodeDevicePtr dev)
 {
-    VIR_DEBUG("dev=%p refs=%d", dev, dev ? dev->parent.u.s.refs : 0);
+    VIR_DEBUG("dev=%p", dev);
 
     virResetLastError();
 

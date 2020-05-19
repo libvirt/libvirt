@@ -51,7 +51,7 @@ VIR_LOG_INIT("libvirt.host");
 int
 virConnectRef(virConnectPtr conn)
 {
-    VIR_DEBUG("conn=%p refs=%d", conn, conn ? conn->parent.parent.u.s.refs : 0);
+    VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
 

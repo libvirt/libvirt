@@ -503,8 +503,7 @@ virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
 int
 virNWFilterRef(virNWFilterPtr nwfilter)
 {
-    VIR_DEBUG("nwfilter=%p refs=%d", nwfilter,
-              nwfilter ? nwfilter->parent.u.s.refs : 0);
+    VIR_DEBUG("nwfilter=%p", nwfilter);
 
     virResetLastError();
 
@@ -820,8 +819,7 @@ virNWFilterBindingGetXMLDesc(virNWFilterBindingPtr binding, unsigned int flags)
 int
 virNWFilterBindingRef(virNWFilterBindingPtr binding)
 {
-    VIR_DEBUG("binding=%p refs=%d", binding,
-              binding ? binding->parent.u.s.refs : 0);
+    VIR_DEBUG("binding=%p", binding);
 
     virResetLastError();
 

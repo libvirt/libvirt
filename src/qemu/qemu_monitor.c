@@ -714,9 +714,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     virObjectLock(mon);
     qemuMonitorRegister(mon);
 
-    PROBE(QEMU_MONITOR_NEW,
-          "mon=%p refs=%d fd=%d",
-          mon, mon->parent.parent.u.s.refs, mon->fd);
+    PROBE(QEMU_MONITOR_NEW, "mon=%p fd=%d", mon, mon->fd);
     virObjectUnlock(mon);
 
     return mon;
@@ -865,8 +863,7 @@ qemuMonitorClose(qemuMonitorPtr mon)
         return;
 
     virObjectLock(mon);
-    PROBE(QEMU_MONITOR_CLOSE,
-          "mon=%p refs=%d", mon, mon->parent.parent.u.s.refs);
+    PROBE(QEMU_MONITOR_CLOSE, "mon=%p", mon);
 
     qemuMonitorSetDomainLogLocked(mon, NULL, NULL, NULL);
 

@@ -679,8 +679,7 @@ virNetworkFree(virNetworkPtr network)
 int
 virNetworkRef(virNetworkPtr network)
 {
-    VIR_DEBUG("network=%p refs=%d", network,
-              network ? network->parent.u.s.refs : 0);
+    VIR_DEBUG("network=%p", network);
 
     virResetLastError();
 
@@ -1714,8 +1713,7 @@ virNetworkPortFree(virNetworkPortPtr port)
 int
 virNetworkPortRef(virNetworkPortPtr port)
 {
-    VIR_DEBUG("port=%p refs=%d", port,
-              port ? port->parent.u.s.refs : 0);
+    VIR_DEBUG("port=%p", port);
 
     virResetLastError();
 

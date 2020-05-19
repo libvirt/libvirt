@@ -4,10 +4,10 @@ provider libvirt {
         # binary: libvirtd
         # module: libvirt/connection-driver/libvirt_driver_qemu.so
         # Monitor lifecycle
-        probe qemu_monitor_new(void *mon, int refs, int fd);
-        probe qemu_monitor_ref(void *mon, int refs);
-        probe qemu_monitor_unref(void *mon, int refs);
-        probe qemu_monitor_close(void *monm, int refs);
+        probe qemu_monitor_new(void *mon, int fd);
+        probe qemu_monitor_ref(void *mon);
+        probe qemu_monitor_unref(void *mon);
+        probe qemu_monitor_close(void *monm);
 
         # High level monitor message processing
         probe qemu_monitor_send_msg(void *mon, const char *msg, int fd);

@@ -590,7 +590,7 @@ virDomainFree(virDomainPtr domain)
 int
 virDomainRef(virDomainPtr domain)
 {
-    VIR_DOMAIN_DEBUG(domain, "refs=%d", domain ? domain->parent.u.s.refs : 0);
+    VIR_DOMAIN_DEBUG(domain);
 
     virResetLastError();
 

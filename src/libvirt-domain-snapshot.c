@@ -1080,8 +1080,7 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 int
 virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
 {
-    VIR_DEBUG("snapshot=%p, refs=%d", snapshot,
-              snapshot ? snapshot->parent.u.s.refs : 0);
+    VIR_DEBUG("snapshot=%p", snapshot);
 
     virResetLastError();
 

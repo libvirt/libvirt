@@ -85,8 +85,7 @@ virStreamNew(virConnectPtr conn,
 int
 virStreamRef(virStreamPtr stream)
 {
-    VIR_DEBUG("stream=%p refs=%d", stream,
-              stream ? stream->parent.u.s.refs : 0);
+    VIR_DEBUG("stream=%p", stream);
 
     virResetLastError();
 
