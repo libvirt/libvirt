@@ -2333,7 +2333,7 @@ class docBuilder:
         if not quiet:
             print("Saving XML description %s" % (filename))
         output = open(filename, "w")
-        output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
+        output.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         output.write("<api name='%s'>\n" % self.name)
         output.write("  <files>\n")
         headers = sorted(self.headers.keys())
