@@ -124,7 +124,7 @@ x:name</pre>
        priority level, messages that match that filter will still be logged,
        while others will not. In order to see those messages, you must also have
        an output defined that includes the priority level of your filter.</p>
-    <p>The format for an output can be one of those 3 forms:</p>
+    <p>The format for an output can be one of the following forms:</p>
     <ul>
       <li><code>x:stderr</code> output goes to stderr</li>
       <li><code>x:syslog:name</code> use syslog for the output and use the
