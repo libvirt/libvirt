@@ -102,7 +102,7 @@ struct _testDriver {
     virStoragePoolObjListPtr pools;
     virNodeDeviceObjListPtr devs;
     int numCells;
-    testCell cells[MAX_CELLS];
+    testCell *cells;
     size_t numAuths;
     testAuthPtr auths;
 
@@ -171,6 +171,7 @@ testDriverDispose(void *obj)
         g_free(driver->auths[i].username);
         g_free(driver->auths[i].password);
     }
+    g_free(driver->cells);
     g_free(driver->auths);
 
     testDriverDisposed = true;
@@ -1353,6 +1354,7 @@ testOpenDefault(virConnectPtr conn)
 
     /* Numa setup */
     privconn->numCells = 2;
+    privconn->cells = g_new0(testCell, privconn->numCells);
     for (i = 0; i < privconn->numCells; i++) {
         privconn->cells[i].numCpus = 8;
         privconn->cells[i].mem = (i + 1) * 2048 * 1024;
