@@ -752,10 +752,7 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
  error:
     if (isServer)
         gnutls_dh_params_deinit(ctxt->dhParams);
-    if (ctxt->x509cred)
-        gnutls_certificate_free_credentials(ctxt->x509cred);
-    VIR_FREE(ctxt->priority);
-    VIR_FREE(ctxt);
+    virObjectUnref(ctxt);
     return NULL;
 }
 
