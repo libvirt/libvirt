@@ -1,5 +1,5 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>Cascadelake-Server</model>
+  <model fallback='forbid'>Cooperlake</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='ds'/>
   <feature policy='require' name='acpi'/>
@@ -20,22 +20,13 @@
   <feature policy='require' name='osxsave'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='cmt'/>
+  <feature policy='require' name='mpx'/>
   <feature policy='require' name='intel-pt'/>
-  <feature policy='require' name='pku'/>
   <feature policy='require' name='ospke'/>
   <feature policy='require' name='md-clear'/>
-  <feature policy='require' name='stibp'/>
-  <feature policy='require' name='arch-capabilities'/>
-  <feature policy='require' name='avx512-bf16'/>
   <feature policy='require' name='xsaves'/>
   <feature policy='require' name='mbm_total'/>
   <feature policy='require' name='mbm_local'/>
   <feature policy='require' name='invtsc'/>
-  <feature policy='require' name='rdctl-no'/>
-  <feature policy='require' name='ibrs-all'/>
-  <feature policy='require' name='skip-l1dfl-vmentry'/>
-  <feature policy='require' name='mds-no'/>
-  <feature policy='require' name='pschange-mc-no'/>
   <feature policy='require' name='tsx-ctrl'/>
-  <feature policy='require' name='taa-no'/>
 </cpu>

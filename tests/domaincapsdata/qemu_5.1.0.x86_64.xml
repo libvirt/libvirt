@@ -99,6 +99,7 @@
       <model usable='yes'>EPYC-IBPB</model>
       <model usable='yes'>EPYC</model>
       <model usable='yes'>Dhyana</model>
+      <model usable='no'>Cooperlake</model>
       <model usable='yes'>Conroe</model>
       <model usable='no'>Cascadelake-Server-noTSX</model>
       <model usable='no'>Cascadelake-Server</model>

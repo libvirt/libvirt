@@ -54,6 +54,7 @@
     <include filename="x86_Icelake-Client-noTSX.xml"/>
     <include filename="x86_Icelake-Server.xml"/>
     <include filename="x86_Icelake-Server-noTSX.xml"/>
+    <include filename="x86_Cooperlake.xml"/>
 
     <!-- AMD CPUs -->
     <include filename="x86_athlon.xml"/>

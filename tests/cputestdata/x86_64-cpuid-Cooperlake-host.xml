@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Cascadelake-Server</model>
+  <model>Cooperlake</model>
   <vendor>Intel</vendor>
   <feature name='ds'/>
   <feature name='acpi'/>
@@ -21,22 +21,13 @@
   <feature name='osxsave'/>
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
+  <feature name='mpx'/>
   <feature name='intel-pt'/>
-  <feature name='pku'/>
   <feature name='ospke'/>
   <feature name='md-clear'/>
-  <feature name='stibp'/>
-  <feature name='arch-capabilities'/>
-  <feature name='avx512-bf16'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>
   <feature name='invtsc'/>
-  <feature name='rdctl-no'/>
-  <feature name='ibrs-all'/>
-  <feature name='skip-l1dfl-vmentry'/>
-  <feature name='mds-no'/>
-  <feature name='pschange-mc-no'/>
   <feature name='tsx-ctrl'/>
-  <feature name='taa-no'/>
 </cpu>
