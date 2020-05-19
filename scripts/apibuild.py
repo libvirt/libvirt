@@ -494,6 +494,28 @@ class CLexer:
                 if self.tokens[0][1] == "#":
                     self.tokens[0] = ('preproc', "#" + self.tokens[1][1])
                     del self.tokens[1]
+
+                if self.tokens[0][1] == "#define" and "(" in self.tokens[1][1]:
+                    newtokens = [self.tokens[0]]
+
+                    endArg = self.tokens[1][1].find(")")
+                    if endArg != -1:
+                        extra = self.tokens[1][1][endArg+1:]
+                        name = self.tokens[1][1][0:endArg+1]
+                        newtokens.append(('preproc', name))
+                        if extra != "":
+                            newtokens.append(('preproc', extra))
+                    else:
+                        name = self.tokens[1][1]
+                        for token in self.tokens[2:]:
+                            if name is not None:
+                                name = name + token[1]
+                                if ")" in token[1]:
+                                    newtokens.append(('preproc', name))
+                                    name = None
+                            else:
+                                newtokens.append(token)
+                    self.tokens = newtokens
                 break
             nline = len(line)
             if line[0] == '"' or line[0] == "'":
