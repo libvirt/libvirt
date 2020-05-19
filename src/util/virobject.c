@@ -39,6 +39,7 @@ static unsigned int magicCounter = 0xCAFE0000;
 struct _virClass {
     virClassPtr parent;
 
+    GType type;
     unsigned int magic;
     char *name;
     size_t objectSize;
@@ -46,25 +47,28 @@ struct _virClass {
     virObjectDisposeCallback dispose;
 };
 
-#define VIR_OBJECT_NOTVALID(obj) (!obj || ((obj->u.s.magic & 0xFFFF0000) != 0xCAFE0000))
+typedef struct _virObjectPrivate virObjectPrivate;
+struct _virObjectPrivate {
+    virClassPtr klass;
+};
+
+
+G_DEFINE_TYPE_WITH_PRIVATE(virObject, vir_object, G_TYPE_OBJECT)
+
+#define VIR_OBJECT_NOTVALID(obj) (!obj || !VIR_IS_OBJECT(obj))
 
 #define VIR_OBJECT_USAGE_PRINT_WARNING(anyobj, objclass) \
     do { \
         virObjectPtr obj = anyobj; \
-        if (VIR_OBJECT_NOTVALID(obj)) { \
-            if (!obj) \
-                VIR_WARN("Object cannot be NULL"); \
-            else \
-                VIR_WARN("Object %p has a bad magic number %X", \
-                         obj, obj->u.s.magic); \
-        } else { \
+        if (!obj) \
+            VIR_WARN("Object cannot be NULL"); \
+        if (VIR_OBJECT_NOTVALID(obj)) \
             VIR_WARN("Object %p (%s) is not a %s instance", \
-                     anyobj, obj->klass->name, #objclass); \
-        } \
+                     anyobj, g_type_name_from_instance((void*)anyobj), #objclass); \
     } while (0)
 
 
-static virClassPtr virObjectClass;
+static virClassPtr virObjectClassImpl;
 static virClassPtr virObjectLockableClass;
 static virClassPtr virObjectRWLockableClass;
 
@@ -74,17 +78,17 @@ static void virObjectRWLockableDispose(void *anyobj);
 static int
 virObjectOnceInit(void)
 {
-    if (!(virObjectClass = virClassNew(NULL,
-                                       "virObject",
-                                       sizeof(virObject),
-                                       0,
-                                       NULL)))
+    if (!(virObjectClassImpl = virClassNew(NULL,
+                                           "virObject",
+                                           sizeof(virObject),
+                                           0,
+                                           NULL)))
         return -1;
 
-    if (!VIR_CLASS_NEW(virObjectLockable, virObjectClass))
+    if (!VIR_CLASS_NEW(virObjectLockable, virObjectClassImpl))
         return -1;
 
-    if (!VIR_CLASS_NEW(virObjectRWLockable, virObjectClass))
+    if (!VIR_CLASS_NEW(virObjectRWLockable, virObjectClassImpl))
         return -1;
 
     return 0;
@@ -104,7 +108,7 @@ virClassForObject(void)
     if (virObjectInitialize() < 0)
         return NULL;
 
-    return virObjectClass;
+    return virObjectClassImpl;
 }
 
 
@@ -137,6 +141,14 @@ virClassForObjectRWLockable(void)
     return virObjectRWLockableClass;
 }
 
+
+static void virClassDummyInit(void *klass G_GNUC_UNUSED)
+{
+}
+
+static void virObjectDummyInit(void *obj G_GNUC_UNUSED)
+{
+}
 
 /**
  * virClassNew:
@@ -177,25 +189,26 @@ virClassNew(virClassPtr parent,
         return NULL;
     }
 
-    if (VIR_ALLOC(klass) < 0)
-        goto error;
-
+    klass = g_new0(virClass, 1);
     klass->parent = parent;
     klass->magic = g_atomic_int_add(&magicCounter, 1);
-    if (klass->magic > 0xCAFEFFFF) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("too many object classes defined"));
-        goto error;
-    }
     klass->name = g_strdup(name);
     klass->objectSize = objectSize;
+    if (parent == NULL) {
+        klass->type = vir_object_get_type();
+    } else {
+        klass->type =
+            g_type_register_static_simple(parent->type,
+                                          name,
+                                          sizeof(virObjectClass),
+                                          (GClassInitFunc)virClassDummyInit,
+                                          objectSize,
+                                          (GInstanceInitFunc)virObjectDummyInit,
+                                          0);
+    }
     klass->dispose = dispose;
 
     return klass;
-
- error:
-    VIR_FREE(klass);
-    return NULL;
 }
 
 
@@ -237,17 +250,13 @@ void *
 virObjectNew(virClassPtr klass)
 {
     virObjectPtr obj = NULL;
+    virObjectPrivate *priv;
 
-    if (VIR_ALLOC_VAR(obj,
-                      char,
-                      klass->objectSize - sizeof(virObject)) < 0)
-        return NULL;
+    obj = g_object_new(klass->type, NULL);
 
-    obj->u.s.magic = klass->magic;
-    obj->klass = klass;
-    g_atomic_int_set(&obj->u.s.refs, 1);
-
-    PROBE(OBJECT_NEW, "obj=%p classname=%s", obj, obj->klass->name);
+    priv = vir_object_get_instance_private(obj);
+    priv->klass = klass;
+    PROBE(OBJECT_NEW, "obj=%p classname=%s", obj, priv->klass->name);
 
     return obj;
 }
@@ -304,6 +313,33 @@ virObjectRWLockableNew(virClassPtr klass)
     return obj;
 }
 
+static void vir_object_finalize(GObject *gobj)
+{
+    PROBE(OBJECT_DISPOSE, "obj=%p", gobj);
+    virObjectPtr obj = VIR_OBJECT(gobj);
+    virObjectPrivate *priv = vir_object_get_instance_private(obj);
+
+    virClassPtr klass = priv->klass;
+    while (klass) {
+        if (klass->dispose)
+            klass->dispose(obj);
+        klass = klass->parent;
+    }
+
+    G_OBJECT_CLASS(vir_object_parent_class)->finalize(gobj);
+}
+
+static void vir_object_init(virObject *obj G_GNUC_UNUSED)
+{
+}
+
+
+static void vir_object_class_init(virObjectClass *klass)
+{
+    GObjectClass *obj = G_OBJECT_CLASS(klass);
+
+    obj->finalize = vir_object_finalize;
+}
 
 static void
 virObjectLockableDispose(void *anyobj)
@@ -340,23 +376,8 @@ virObjectUnref(void *anyobj)
     if (VIR_OBJECT_NOTVALID(obj))
         return;
 
-    bool lastRef = !!g_atomic_int_dec_and_test(&obj->u.s.refs);
+    g_object_unref(anyobj);
     PROBE(OBJECT_UNREF, "obj=%p", obj);
-    if (lastRef) {
-        PROBE(OBJECT_DISPOSE, "obj=%p", obj);
-        virClassPtr klass = obj->klass;
-        while (klass) {
-            if (klass->dispose)
-                klass->dispose(obj);
-            klass = klass->parent;
-        }
-
-        /* Clear & poison object */
-        memset(obj, 0, obj->klass->objectSize);
-        obj->u.s.magic = 0xDEADBEEF;
-        obj->klass = (void*)0xDEADBEEF;
-        VIR_FREE(obj);
-    }
 }
 
 
@@ -376,7 +397,8 @@ virObjectRef(void *anyobj)
 
     if (VIR_OBJECT_NOTVALID(obj))
         return NULL;
-    g_atomic_int_add(&obj->u.s.refs, 1);
+
+    g_object_ref(obj);
     PROBE(OBJECT_REF, "obj=%p", obj);
     return anyobj;
 }
@@ -539,10 +561,13 @@ virObjectIsClass(void *anyobj,
                  virClassPtr klass)
 {
     virObjectPtr obj = anyobj;
+    virObjectPrivate *priv;
+
     if (VIR_OBJECT_NOTVALID(obj))
         return false;
 
-    return virClassIsDerivedFrom(obj->klass, klass);
+    priv = vir_object_get_instance_private(obj);
+    return virClassIsDerivedFrom(priv->klass, klass);
 }
 
 
