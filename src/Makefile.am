@@ -228,25 +228,25 @@ $(srcdir)/remote_protocol-struct \
 	$(srcdir)/lxc_protocol-struct: \
 		$(srcdir)/%-struct: remote/libvirt_driver_remote_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 $(srcdir)/virnetprotocol-struct $(srcdir)/virkeepaliveprotocol-struct: \
 		$(srcdir)/%-struct: rpc/libvirt_net_rpc_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 if WITH_LXC
 $(srcdir)/lxc_monitor_protocol-struct: \
 		$(srcdir)/%-struct: lxc/libvirt_driver_lxc_impl_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 endif WITH_LXC
 $(srcdir)/lock_protocol-struct: \
 		$(srcdir)/%-struct: locking/lockd_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 $(srcdir)/admin_protocol-struct: \
 		$(srcdir)/%-struct: admin/libvirt_admin_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 
 else !WITH_REMOTE
 # The $(PROTOCOL_STRUCTS) files must live in git, because they cannot be
