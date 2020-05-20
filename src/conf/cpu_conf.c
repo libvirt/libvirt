@@ -526,39 +526,33 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     if (virXPathNode("./topology[1]", ctxt)) {
-        unsigned long ul;
-
-        if (virXPathULong("string(./topology[1]/@sockets)", ctxt, &ul) < 0) {
+        if (virXPathUInt("string(./topology[1]/@sockets)", ctxt, &def->sockets) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing 'sockets' attribute in CPU topology"));
             return -1;
         }
-        def->sockets = (unsigned int) ul;
 
         if (virXPathNode("./topology[1]/@dies", ctxt)) {
-            if (virXPathULong("string(./topology[1]/@dies)", ctxt, &ul) < 0) {
+            if (virXPathUInt("string(./topology[1]/@dies)", ctxt, &def->dies) < 0) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("Malformed 'dies' attribute in CPU topology"));
                 return -1;
             }
-            def->dies = (unsigned int) ul;
         } else {
             def->dies = 1;
         }
 
-        if (virXPathULong("string(./topology[1]/@cores)", ctxt, &ul) < 0) {
+        if (virXPathUInt("string(./topology[1]/@cores)", ctxt, &def->cores) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing 'cores' attribute in CPU topology"));
             return -1;
         }
-        def->cores = (unsigned int) ul;
 
-        if (virXPathULong("string(./topology[1]/@threads)", ctxt, &ul) < 0) {
+        if (virXPathUInt("string(./topology[1]/@threads)", ctxt, &def->threads) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing 'threads' attribute in CPU topology"));
             return -1;
         }
-        def->threads = (unsigned int) ul;
 
         if (!def->sockets || !def->cores || !def->threads || !def->dies) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
