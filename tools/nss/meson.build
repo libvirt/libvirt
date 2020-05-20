@@ -48,3 +48,23 @@ nss_libvirt_guest_impl = static_library(
     yajl_dep,
   ],
 )
+
+nss_libvirt_syms = '@0@@1@'.format(
+  version_script_flags,
+  meson.current_source_dir() / nss_sym_file,
+)
+
+nss_libvirt_lib = shared_module(
+  'nss_libvirt',
+  name_prefix: nss_prefix,
+  name_suffix: 'so.@0@'.format(nss_so_ver),
+  link_args: [
+    nss_libvirt_syms,
+    libvirt_export_dynamic,
+  ],
+  link_whole: [
+    nss_libvirt_impl,
+  ],
+  install: true,
+  install_dir: libdir,
+)
