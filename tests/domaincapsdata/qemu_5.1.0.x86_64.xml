@@ -1,7 +1,7 @@
 <domainCapabilities>
   <path>/usr/bin/qemu-system-x86_64</path>
   <domain>kvm</domain>
-  <machine>pc-i440fx-5.0</machine>
+  <machine>pc-i440fx-5.1</machine>
   <arch>x86_64</arch>
   <vcpu max='255'/>
   <iothreads supported='yes'/>
