@@ -78,3 +78,20 @@ if conf.has('WITH_HOST_VALIDATE')
     install_rpath: libdir,
   )
 endif
+
+if conf.has('WITH_LOGIN_SHELL')
+  # virt-login-shell will be setuid, and must not link to anything
+  # except glibc. It wil scrub the environment and then invoke the
+  # real virt-login-shell-helper binary.
+  executable(
+    'virt-login-shell',
+    [
+      'virt-login-shell.c',
+    ],
+    include_directories: [
+      top_inc_dir,
+    ],
+    install: true,
+    install_dir: bindir,
+  )
+endif

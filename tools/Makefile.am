@@ -41,7 +41,6 @@ endif WITH_SANLOCK
 
 if WITH_LOGIN_SHELL
 conf_DATA += virt-login-shell.conf
-bin_PROGRAMS += virt-login-shell
 libexec_PROGRAMS = virt-login-shell-helper
 endif WITH_LOGIN_SHELL
 
@@ -61,14 +60,6 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	    || (rm $@ && exit 1) && chmod +x $@
 
 noinst_LTLIBRARIES =
-
-# virt-login-shell will be setuid, and must not link to anything
-# except glibc. It wil scrub the environment and then invoke the
-# real virt-login-shell-helper binary.
-virt_login_shell_SOURCES = \
-		virt-login-shell.c
-
-virt_login_shell_CPPFLAGS = $(STANDALONE_CPPFLAGS)
 
 virt_login_shell_helper_SOURCES = \
 		virt-login-shell-helper.c
