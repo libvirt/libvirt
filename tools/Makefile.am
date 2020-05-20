@@ -19,10 +19,6 @@
 # dir or public API dir. Specific files can
 # still be included via their path relative to the root if
 # needed
-STANDALONE_CPPFLAGS = -I$(top_srcdir)
-
-noinst_LTLIBRARIES =
-
 if WITH_WIRESHARK_DISSECTOR
 
 ws_plugin_LTLIBRARIES = wireshark/src/libvirt.la
@@ -70,25 +66,6 @@ nss_libnss_libvirt_la_LIBADD = \
 nss_libnss_libvirt_la_DEPENDENCIES = \
 	$(nss_libnss_libvirt_la_LIBADD) \
 	$(LIBVIRT_NSS_SYMBOL_FILE)
-
-noinst_LTLIBRARIES += nss/libnss_libvirt_guest_impl.la
-nss_libnss_libvirt_guest_impl_la_SOURCES = \
-	$(LIBVIRT_NSS_SOURCES) \
-	nss/libvirt_nss_macs.h \
-	nss/libvirt_nss_macs.c \
-	$(NULL)
-
-nss_libnss_libvirt_guest_impl_la_CPPFLAGS = $(STANDALONE_CPPFLAGS)
-nss_libnss_libvirt_guest_impl_la_CFLAGS = \
-	-DLIBVIRT_NSS \
-	-DLIBVIRT_NSS_GUEST \
-	$(YAJL_CFLAGS) \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-nss_libnss_libvirt_guest_impl_la_LIBADD = \
-	$(YAJL_LIBS) \
-	$(NULL)
 
 nss_libnss_libvirt_guest_la_SOURCES =
 nss_libnss_libvirt_guest_la_LDFLAGS = \

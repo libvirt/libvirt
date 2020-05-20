@@ -15,6 +15,10 @@ nss_sources = [
   'libvirt_nss_leases.c',
 ]
 
+nss_guest_sources = [
+  'libvirt_nss_macs.c',
+]
+
 nss_libvirt_impl = static_library(
   'nss_libvirt_impl',
   [
@@ -22,6 +26,22 @@ nss_libvirt_impl = static_library(
   ],
   c_args: [
     '-DLIBVIRT_NSS'
+  ],
+  dependencies: [
+    tools_dep,
+    yajl_dep,
+  ],
+)
+
+nss_libvirt_guest_impl = static_library(
+  'nss_libvirt_guest_impl',
+  [
+    nss_sources,
+    nss_guest_sources,
+  ],
+  c_args: [
+    '-DLIBVIRT_NSS',
+    '-DLIBVIRT_NSS_GUEST',
   ],
   dependencies: [
     tools_dep,
