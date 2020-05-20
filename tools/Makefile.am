@@ -53,29 +53,7 @@ wireshark/src/libvirt/protocol.h: wireshark/util/genxdrstub.pl \
 
 endif WITH_WIRESHARK_DISSECTOR
 
-LIBVIRT_NSS_SOURCES = \
-	nss/libvirt_nss.c \
-	nss/libvirt_nss.h \
-	nss/libvirt_nss_leases.c \
-	nss/libvirt_nss_leases.h \
-	$(NULL)
-
 if WITH_NSS
-noinst_LTLIBRARIES += nss/libnss_libvirt_impl.la
-nss_libnss_libvirt_impl_la_SOURCES = \
-	$(LIBVIRT_NSS_SOURCES)
-
-nss_libnss_libvirt_impl_la_CPPFLAGS = $(STANDALONE_CPPFLAGS)
-nss_libnss_libvirt_impl_la_CFLAGS = \
-	-DLIBVIRT_NSS \
-	$(YAJL_CFLAGS) \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-nss_libnss_libvirt_impl_la_LIBADD = \
-	$(YAJL_LIBS) \
-	$(NULL)
-
 nss_libnss_libvirt_la_SOURCES =
 nss_libnss_libvirt_la_LDFLAGS = \
 	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_NSS_SYMBOL_FILE) \
