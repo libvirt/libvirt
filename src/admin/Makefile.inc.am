@@ -2,14 +2,6 @@
 
 ADMIN_SYM_FILES = $(srcdir)/admin/libvirt_admin_private.syms
 
-if WITH_LINUX
-check-admin-symfile: admin/libvirt_admin.syms libvirt-admin.la
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-symfile.py \
-		admin/libvirt_admin.syms .libs/libvirt-admin.so
-else ! WITH_LINUX
-check-admin-symfile:
-endif ! WITH_LINUX
-
 check-admin-symsorting:
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-symsorting.py \
 		$(srcdir) $(ADMIN_SYM_FILES)
@@ -18,4 +10,4 @@ check-admin-drivername:
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-drivername.py \
 		$(srcdir)/admin/libvirt_admin_public.syms
 
-check-admin: check-admin-symfile check-admin-symsorting check-admin-drivername
+check-admin: check-admin-symsorting check-admin-drivername

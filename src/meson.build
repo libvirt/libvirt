@@ -880,6 +880,13 @@ if host_machine.system() == 'linux'
     args: [ check_symfile_prog.path(), libvirt_syms, libvirt_lib ],
     env: runutf8,
   )
+
+  test(
+    'check-admin-symfile',
+    python3_prog,
+    args: [ check_symfile_prog.path(), libvirt_admin_syms, libvirt_admin_lib ],
+    env: runutf8,
+  )
 endif
 
 test(
