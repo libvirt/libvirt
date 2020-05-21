@@ -33,9 +33,23 @@
         to provide more specific names, such as
         "net_eth1_00_27_13_6a_fe_00".
       </dd>
+      <dt><code>path</code></dt>
+      <dd>
+        Fully qualified sysfs path to the device.
+      </dd>
       <dt><code>parent</code></dt>
-      <dd>If this element is present, it names the parent device (that
-        is, a controller to which this node belongs).
+      <dd>
+        This element identifies the parent node in the device hierarchy. The
+        value of the element will correspond with the device parent's
+        <code>name</code> element or <code>computer</code> if the device does
+        not have any parent.
+      </dd>
+      <dt><code>driver</code></dt>
+      <dd>
+        This elements reports the driver in use for this device. The presence
+        of this element in the output XML depends on whether the underlying
+        device manager (most likely udev) exposes information about the
+        driver.
       </dd>
       <dt><code>devnode</code></dt>
       <dd>This node appears for each associated <code>/dev</code>
@@ -138,8 +152,40 @@
                     means such device cannot be used for PCI passthrough.
                     <span class="since">Since 1.3.3</span>
                   </dd>
+                  <dt><code><a id="MDEVCap">mdev_types</a></code></dt>
+                  <dd>
+                    This device is capable of creating mediated devices, and
+                    the capability will contain a list of <code>type</code>
+                    elements, which list all mdev types supported on the
+                    physical device. <span class="since">Since 3.4.0</span>
+                    Each <code>type</code> element has a single <code>id</code>
+                    attribute that holds an official vendor-supplied identifier
+                    for the type. It supports the following sub-elements:
+                      <dl>
+                        <dt><code>name</code></dt>
+                        <dd>
+                          The <code>name</code> element holds a vendor-supplied
+                          code name for the given mediated device type. This is
+                          an optional element.
+                      </dd>
+                      <dt><code>deviceAPI</code></dt>
+                      <dd>
+                        The value of this element describes how an instance of
+                        the given type will be presented to the guest by the
+                        VFIO framework.
+                      </dd>
+                      <dt><code>availableInstances</code></dt>
+                      <dd>
+                        This element reports the current state of resource
+                        allocation. In other words, how many instances of the
+                        given type can still be successfully created on the
+                        physical device.
+                    </dd>
+                  </dl>
+                </dd>
                 </dl>
               </dd>
+
               <dt><code>numa</code></dt>
               <dd>
                 This optional element contains information on the PCI device
@@ -327,6 +373,26 @@
               <dd>The type of DRM device. Could be
               <code>primary</code>, <code>control</code> or
               <code>render</code>.</dd>
+            </dl>
+          </dd>
+          <dt><a id="mdev"><code>mdev</code></a></dt>
+          <dd>Describes a mediated device.  <span class="since">Since
+            3.4.0</span> Sub-elements include:
+            <dl>
+              <dt><code>type</code></dt>
+              <dd>
+                Describes a mediated device type which acts as an abstract
+                template defining a resource allocation for instances
+                of this device type. The element has one attribute
+                <code>id</code> which holds an official vendor-supplied
+                identifier for the type.
+              </dd>
+              <dt><code>iommuGroup</code></dt>
+              <dd>
+                This element supports a single attribute <code>number</code>
+                which holds the IOMMU group number the mediated device belongs
+                  to.
+              </dd>
             </dl>
           </dd>
           <dt><code>ccw</code></dt>
