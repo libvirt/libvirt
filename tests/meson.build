@@ -1,0 +1,30 @@
+tests_dep = declare_dependency(
+  compile_args: [
+    '-Dabs_builddir="@0@"'.format(meson.current_build_dir()),
+    '-Dabs_top_builddir="@0@"'.format(meson.build_root()),
+    '-Dabs_srcdir="@0@"'.format(meson.current_source_dir()),
+    '-Dabs_top_srcdir="@0@"'.format(meson.source_root()),
+  ] + coverage_flags + cc_flags_relaxed_frame_limit,
+  dependencies: [
+    apparmor_dep,
+    dlopen_dep,
+    glib_dep,
+    gnutls_dep,
+    libnl_dep,
+    libxml_dep,
+    rpc_dep,
+    sasl_dep,
+    selinux_dep,
+    xdr_dep,
+    yajl_dep,
+  ],
+  include_directories: [
+    conf_inc_dir,
+    hypervisor_inc_dir,
+    libvirt_inc,
+    src_inc_dir,
+    top_inc_dir,
+    util_inc_dir,
+  ],
+  link_args: libvirt_export_dynamic,
+)

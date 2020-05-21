@@ -16,38 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-AM_CPPFLAGS = \
-	-I$(top_builddir) -I$(top_srcdir) \
-	-I$(top_builddir)/include -I$(top_srcdir)/include \
-	-I$(top_builddir)/src -I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/util \
-	-I$(top_srcdir)/src/conf \
-	-I$(top_srcdir)/src/hypervisor \
-	-I$(top_builddir)/src/rpc \
-	$(NULL)
-
-WARN_CFLAGS += $(RELAXED_FRAME_LIMIT_CFLAGS)
-
-AM_CFLAGS = \
-	-Dabs_builddir="\"$(abs_builddir)\"" \
-	-Dabs_top_builddir="\"$(abs_top_builddir)\"" \
-	-Dabs_srcdir="\"$(abs_srcdir)\"" \
-	-Dabs_top_srcdir="\"$(abs_top_srcdir)\"" \
-	$(LIBXML_CFLAGS) \
-	$(GLIB_CFLAGS) \
-	$(LIBNL_CFLAGS) \
-	$(GNUTLS_CFLAGS) \
-	$(SASL_CFLAGS) \
-	$(SELINUX_CFLAGS) \
-	$(APPARMOR_CFLAGS) \
-	$(YAJL_CFLAGS) \
-	$(COVERAGE_CFLAGS) \
-	$(XDR_CFLAGS) \
-	$(WARN_CFLAGS)
-
-AM_LDFLAGS = \
-	-export-dynamic
-
 MOCKLIBS_LDFLAGS = -avoid-version \
 	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
 	$(MINGW_EXTRA_LDFLAGS)
