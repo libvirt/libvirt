@@ -482,16 +482,17 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
 
 static int
 testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
-                                   virDomainObjPtr vm,
                                    const char *migrateURI,
                                    struct testQemuInfo *info,
                                    unsigned int flags)
 {
     VIR_AUTOSTRINGLIST args = NULL;
+    g_autoptr(virDomainObj) vm = NULL;
     size_t nargs = 0;
     size_t i;
     g_autoptr(virHashTable) schema = NULL;
     g_autoptr(virCommand) cmd = NULL;
+    unsigned int parseFlags = info->parseFlags;
 
     if (info->schemafile)
         schema = testQEMUSchemaLoad(info->schemafile);
@@ -503,6 +504,15 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
 
     if (!schema)
         return 0;
+
+    if (!(vm = virDomainObjNew(driver.xmlopt)))
+        return -1;
+
+    parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    if (!(vm->def = virDomainDefParseFile(info->infile,
+                                          driver.xmlopt,
+                                          NULL, parseFlags)))
+        return -1;
 
     if (!(cmd = testCompareXMLToArgvCreateArgs(drv, vm, migrateURI, info, flags,
                                                true)))
@@ -651,7 +661,7 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
     }
 
-    if (testCompareXMLToArgvValidateSchema(&driver, vm, migrateURI, info, flags) < 0)
+    if (testCompareXMLToArgvValidateSchema(&driver, migrateURI, info, flags) < 0)
         goto cleanup;
 
     if (!(actualargv = virCommandToString(cmd, false)))
