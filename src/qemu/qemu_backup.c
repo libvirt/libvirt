@@ -240,6 +240,30 @@ qemuBackupDiskPrepareOneBitmapsChain(virDomainMomentDefPtr *incremental,
     for (incridx = 0; incremental[incridx]; incridx++) {
         g_autoptr(virJSONValue) tmp = virJSONValueNewArray();
         virStorageSourcePtr tmpsrc = NULL;
+        virDomainCheckpointDefPtr chkdef = (virDomainCheckpointDefPtr) incremental[incridx];
+        bool checkpoint_has_disk = false;
+        size_t i;
+
+        for (i = 0; i < chkdef->ndisks; i++) {
+            if (STRNEQ_NULLABLE(diskdst, chkdef->disks[i].name))
+                continue;
+
+            if (chkdef->disks[i].type == VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+                checkpoint_has_disk = true;
+
+            break;
+        }
+
+        if (!checkpoint_has_disk) {
+            if (!incremental[incridx + 1]) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("disk '%s' not found in checkpoint '%s'"),
+                               diskdst, incremental[incridx]->name);
+                return NULL;
+            }
+
+            continue;
+        }
 
         if (qemuBackupGetBitmapMergeRange(n, incremental[incridx]->name,
                                           &tmp, &tmpsrc, diskdst,

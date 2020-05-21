@@ -727,6 +727,12 @@ testQemuBackupGetIncrementalMoment(const char *name)
     if (!(checkpoint = virDomainCheckpointDefNew()))
         abort();
 
+    checkpoint->disks = g_new0(virDomainCheckpointDiskDef, 1);
+    checkpoint->ndisks = 1;
+
+    checkpoint->disks[0].name = g_strdup("testdisk");
+    checkpoint->disks[0].type = VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP;
+
     checkpoint->parent.name = g_strdup(name);
 
     return (virDomainMomentDefPtr) checkpoint;
