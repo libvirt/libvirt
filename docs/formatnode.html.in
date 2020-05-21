@@ -109,7 +109,7 @@
                 exists, it has a mandatory <code>type</code> attribute
                 which will be set to:
                 <dl>
-                  <dt><code>physical_function</code></dt>
+                  <dt><code>phys_function</code></dt>
                   <dd>
                     That means there will be a single <code>address</code>
                     subelement which contains the PCI address of the SRIOV
@@ -117,7 +117,7 @@
                     (and this device is, by implication, an SRIOV Virtual
                     Function (VF)).
                   </dd>
-                  <dt><code>virtual_function</code></dt>
+                  <dt><code>virt_functions</code></dt>
                   <dd>
                     In this case this device is an SRIOV PF, and the capability
                     element will have a list of <code>address</code>
