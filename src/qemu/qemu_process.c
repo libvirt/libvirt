@@ -4187,8 +4187,8 @@ qemuProcessFetchGuestCPU(virQEMUDriverPtr driver,
                          virCPUDataPtr *disabled)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCPUDataPtr dataEnabled = NULL;
-    virCPUDataPtr dataDisabled = NULL;
+    g_autoptr(virCPUData) dataEnabled = NULL;
+    g_autoptr(virCPUData) dataDisabled = NULL;
     bool generic;
     int rc;
 
@@ -4201,7 +4201,7 @@ qemuProcessFetchGuestCPU(virQEMUDriverPtr driver,
         return 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto error;
+        return -1;
 
     if (generic) {
         rc = qemuMonitorGetGuestCPU(priv->mon,
@@ -4213,19 +4213,14 @@ qemuProcessFetchGuestCPU(virQEMUDriverPtr driver,
     }
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto error;
+        return -1;
 
     if (rc == -1)
-        goto error;
+        return -1;
 
-    *enabled = dataEnabled;
-    *disabled = dataDisabled;
+    *enabled = g_steal_pointer(&dataEnabled);
+    *disabled = g_steal_pointer(&dataDisabled);
     return 0;
-
- error:
-    virCPUDataFree(dataEnabled);
-    virCPUDataFree(dataDisabled);
-    return -1;
 }
 
 
@@ -4261,9 +4256,8 @@ qemuProcessUpdateLiveGuestCPU(virDomainObjPtr vm,
 {
     virDomainDefPtr def = vm->def;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCPUDefPtr orig = NULL;
+    g_autoptr(virCPUDef) orig = NULL;
     int rc;
-    int ret = -1;
 
     if (!enabled)
         return 0;
@@ -4274,10 +4268,10 @@ qemuProcessUpdateLiveGuestCPU(virDomainObjPtr vm,
         return 0;
 
     if (!(orig = virCPUDefCopy(def->cpu)))
-        goto cleanup;
+        return -1;
 
     if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, enabled, disabled)) < 0) {
-        goto cleanup;
+        return -1;
     } else if (rc == 0) {
         /* Store the original CPU in priv if QEMU changed it and we didn't
          * get the original CPU via migration, restore, or snapshot revert.
@@ -4288,11 +4282,7 @@ qemuProcessUpdateLiveGuestCPU(virDomainObjPtr vm,
         def->cpu->check = VIR_CPU_CHECK_FULL;
     }
 
-    ret = 0;
-
- cleanup:
-    virCPUDefFree(orig);
-    return ret;
+    return 0;
 }
 
 
@@ -4351,10 +4341,9 @@ qemuProcessUpdateCPU(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      qemuDomainAsyncJob asyncJob)
 {
-    virCPUDataPtr cpu = NULL;
-    virCPUDataPtr disabled = NULL;
+    g_autoptr(virCPUData) cpu = NULL;
+    g_autoptr(virCPUData) disabled = NULL;
     g_autoptr(virDomainCapsCPUModels) models = NULL;
-    int ret = -1;
 
     /* The host CPU model comes from host caps rather than QEMU caps so
      * fallback must be allowed no matter what the user specified in the XML.
@@ -4362,21 +4351,16 @@ qemuProcessUpdateCPU(virQEMUDriverPtr driver,
     vm->def->cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
 
     if (qemuProcessFetchGuestCPU(driver, vm, asyncJob, &cpu, &disabled) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessUpdateLiveGuestCPU(vm, cpu, disabled) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessFetchCPUDefinitions(driver, vm, asyncJob, &models) < 0 ||
         virCPUTranslate(vm->def->os.arch, vm->def->cpu, models) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virCPUDataFree(cpu);
-    virCPUDataFree(disabled);
-    return ret;
+    return 0;
 }
 
 
