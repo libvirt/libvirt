@@ -415,8 +415,7 @@ static int
 virCPUarmUpdate(virCPUDefPtr guest,
                 const virCPUDef *host)
 {
-    int ret = -1;
-    virCPUDefPtr updated = NULL;
+    g_autoptr(virCPUDef) updated = NULL;
 
     if (guest->mode != VIR_CPU_MODE_HOST_MODEL)
         return 0;
@@ -424,24 +423,21 @@ virCPUarmUpdate(virCPUDefPtr guest,
     if (!host) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unknown host CPU model"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(updated = virCPUDefCopyWithoutModel(guest)))
-        goto cleanup;
+        return -1;
 
     updated->mode = VIR_CPU_MODE_CUSTOM;
     if (virCPUDefCopyModel(updated, host, true) < 0)
-        goto cleanup;
+        return -1;
 
     virCPUDefStealModel(guest, updated, false);
     guest->mode = VIR_CPU_MODE_CUSTOM;
     guest->match = VIR_CPU_MATCH_EXACT;
-    ret = 0;
 
- cleanup:
-    virCPUDefFree(updated);
-    return ret;
+    return 0;
 }
 
 
