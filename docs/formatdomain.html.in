@@ -7039,7 +7039,7 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;input type='keyboard' bus='virtio'/&gt;
   &lt;input type='tablet' bus='virtio'/&gt;
   &lt;input type='passthrough' bus='virtio'&gt;
-    &lt;source evdev='/dev/input/event1/&gt;
+    &lt;source evdev='/dev/input/event1'/&gt;
   &lt;/input&gt;
 &lt;/devices&gt;
 ...</pre>
