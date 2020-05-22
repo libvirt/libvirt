@@ -173,6 +173,50 @@ qemuBackupDiskDataCleanup(virDomainObjPtr vm,
 }
 
 
+/**
+ * qemuBackupBeginCollectIncrementalCheckpoints:
+ * @vm: domain object
+ * @incrFrom: name of checkpoint representing starting point of incremental backup
+ *
+ * Returns a NULL terminated list of pointers to checkpoint definitions in
+ * chronological order starting from the 'current' checkpoint until reaching
+ * @incrFrom.
+ */
+static virDomainMomentDefPtr *
+qemuBackupBeginCollectIncrementalCheckpoints(virDomainObjPtr vm,
+                                             const char *incrFrom)
+{
+    virDomainMomentObjPtr n = virDomainCheckpointGetCurrent(vm->checkpoints);
+    g_autofree virDomainMomentDefPtr *incr = NULL;
+    size_t nincr = 0;
+
+    while (n) {
+        virDomainMomentDefPtr def = n->def;
+
+        if (VIR_APPEND_ELEMENT_COPY(incr, nincr, def) < 0)
+            return NULL;
+
+        if (STREQ(def->name, incrFrom)) {
+            def = NULL;
+            if (VIR_APPEND_ELEMENT_COPY(incr, nincr, def) < 0)
+                return NULL;
+
+            return g_steal_pointer(&incr);
+        }
+
+        if (!n->def->parent_name)
+            break;
+
+        n = virDomainCheckpointFindByName(vm->checkpoints, n->def->parent_name);
+    }
+
+    virReportError(VIR_ERR_OPERATION_INVALID,
+                   _("could not locate checkpoint '%s' for incremental backup"),
+                   incrFrom);
+    return NULL;
+}
+
+
 static int
 qemuBackupGetBitmapMergeRange(virStorageSourcePtr from,
                               const char *bitmapname,
@@ -334,11 +378,11 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
                              struct qemuBackupDiskData *dd,
                              virJSONValuePtr actions,
                              bool pull,
-                             virDomainMomentDefPtr *incremental,
                              virHashTablePtr blockNamedNodeData,
                              virQEMUDriverConfigPtr cfg)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autofree virDomainMomentDefPtr *incremental = NULL;
 
     /* set data structure */
     dd->backupdisk = backupdisk;
@@ -363,7 +407,8 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
      * pull mode:
      *   both: original disk
      */
-    if (pull || (incremental && dd->store->format >= VIR_STORAGE_FILE_BACKING)) {
+    if (pull || (dd->backupdisk->incremental &&
+                 dd->store->format >= VIR_STORAGE_FILE_BACKING)) {
         dd->backingStore = dd->domdisk->src;
     } else {
         dd->backingStore = dd->terminator = virStorageSourceNew();
@@ -375,7 +420,10 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
     if (qemuDomainPrepareStorageSourceBlockdev(NULL, dd->store, priv, cfg) < 0)
         return -1;
 
-    if (incremental) {
+    if (dd->backupdisk->incremental) {
+        if (!(incremental = qemuBackupBeginCollectIncrementalCheckpoints(vm, dd->backupdisk->incremental)))
+            return -1;
+
         if (dd->backupdisk->exportbitmap)
             dd->incrementalBitmap = g_strdup(dd->backupdisk->exportbitmap);
         else
@@ -444,7 +492,6 @@ qemuBackupDiskPrepareDataOnePull(virJSONValuePtr actions,
 static ssize_t
 qemuBackupDiskPrepareData(virDomainObjPtr vm,
                           virDomainBackupDefPtr def,
-                          virDomainMomentDefPtr *incremental,
                           virHashTablePtr blockNamedNodeData,
                           virJSONValuePtr actions,
                           virQEMUDriverConfigPtr cfg,
@@ -467,8 +514,7 @@ qemuBackupDiskPrepareData(virDomainObjPtr vm,
         ndisks++;
 
         if (qemuBackupDiskPrepareDataOne(vm, backupdisk, dd, actions, pull,
-                                         incremental, blockNamedNodeData,
-                                         cfg) < 0)
+                                         blockNamedNodeData, cfg) < 0)
             goto error;
 
         if (pull) {
@@ -625,50 +671,6 @@ qemuBackupBeginPullExportDisks(virDomainObjPtr vm,
 }
 
 
-/**
- * qemuBackupBeginCollectIncrementalCheckpoints:
- * @vm: domain object
- * @incrFrom: name of checkpoint representing starting point of incremental backup
- *
- * Returns a NULL terminated list of pointers to checkpoint definitions in
- * chronological order starting from the 'current' checkpoint until reaching
- * @incrFrom.
- */
-static virDomainMomentDefPtr *
-qemuBackupBeginCollectIncrementalCheckpoints(virDomainObjPtr vm,
-                                             const char *incrFrom)
-{
-    virDomainMomentObjPtr n = virDomainCheckpointGetCurrent(vm->checkpoints);
-    g_autofree virDomainMomentDefPtr *incr = NULL;
-    size_t nincr = 0;
-
-    while (n) {
-        virDomainMomentDefPtr def = n->def;
-
-        if (VIR_APPEND_ELEMENT_COPY(incr, nincr, def) < 0)
-            return NULL;
-
-        if (STREQ(def->name, incrFrom)) {
-            def = NULL;
-            if (VIR_APPEND_ELEMENT_COPY(incr, nincr, def) < 0)
-                return NULL;
-
-            return g_steal_pointer(&incr);
-        }
-
-        if (!n->def->parent_name)
-            break;
-
-        n = virDomainCheckpointFindByName(vm->checkpoints, n->def->parent_name);
-    }
-
-    virReportError(VIR_ERR_OPERATION_INVALID,
-                   _("could not locate checkpoint '%s' for incremental backup"),
-                   incrFrom);
-    return NULL;
-}
-
-
 void
 qemuBackupJobTerminate(virDomainObjPtr vm,
                        qemuDomainJobStatus jobstatus)
@@ -802,7 +804,6 @@ qemuBackupBegin(virDomainObjPtr vm,
     bool pull = false;
     virDomainMomentObjPtr chk = NULL;
     g_autoptr(virDomainCheckpointDef) chkdef = NULL;
-    g_autofree virDomainMomentDefPtr *incremental = NULL;
     g_autoptr(virJSONValue) actions = NULL;
     struct qemuBackupDiskData *dd = NULL;
     ssize_t ndd = 0;
@@ -870,10 +871,6 @@ qemuBackupBegin(virDomainObjPtr vm,
     if (virDomainBackupAlignDisks(def, vm->def, suffix) < 0)
         goto endjob;
 
-    if (def->incremental &&
-        !(incremental = qemuBackupBeginCollectIncrementalCheckpoints(vm, def->incremental)))
-        goto endjob;
-
     actions = virJSONValueNewArray();
 
     /* The 'chk' checkpoint must be rolled back if the transaction command
@@ -887,7 +884,7 @@ qemuBackupBegin(virDomainObjPtr vm,
     if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_BACKUP)))
         goto endjob;
 
-    if ((ndd = qemuBackupDiskPrepareData(vm, def, incremental, blockNamedNodeData,
+    if ((ndd = qemuBackupDiskPrepareData(vm, def, blockNamedNodeData,
                                          actions, cfg, &dd)) <= 0) {
         if (ndd == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
