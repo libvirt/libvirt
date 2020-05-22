@@ -227,7 +227,7 @@ virCPUDefStealModel(virCPUDefPtr dst,
 virCPUDefPtr
 virCPUDefCopyWithoutModel(const virCPUDef *cpu)
 {
-    virCPUDefPtr copy;
+    g_autoptr(virCPUDef) copy = NULL;
 
     if (!cpu)
         return NULL;
@@ -246,42 +246,34 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
 
     if (cpu->cache) {
         if (VIR_ALLOC(copy->cache) < 0)
-            goto error;
+            return NULL;
 
         *copy->cache = *cpu->cache;
     }
 
     if (cpu->tsc) {
         if (VIR_ALLOC(copy->tsc) < 0)
-            goto error;
+            return NULL;
 
         *copy->tsc = *cpu->tsc;
     }
 
-    return copy;
-
- error:
-    virCPUDefFree(copy);
-    return NULL;
+    return g_steal_pointer(&copy);
 }
 
 
 virCPUDefPtr
 virCPUDefCopy(const virCPUDef *cpu)
 {
-    virCPUDefPtr copy;
+    g_autoptr(virCPUDef) copy = NULL;
 
     if (!(copy = virCPUDefCopyWithoutModel(cpu)))
         return NULL;
 
     if (virCPUDefCopyModel(copy, cpu, false) < 0)
-        goto error;
+        return NULL;
 
-    return copy;
-
- error:
-    virCPUDefFree(copy);
-    return NULL;
+    return g_steal_pointer(&copy);
 }
 
 
