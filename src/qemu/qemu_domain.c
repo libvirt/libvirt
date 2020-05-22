@@ -570,6 +570,16 @@ qemuDomainStorageSourcePrivateDispose(void *obj)
 }
 
 
+qemuDomainStorageSourcePrivatePtr
+qemuDomainStorageSourcePrivateFetch(virStorageSourcePtr src)
+{
+    if (!src->privateData)
+        src->privateData = qemuDomainStorageSourcePrivateNew();
+
+    return QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+}
+
+
 static virClassPtr qemuDomainVcpuPrivateClass;
 static void qemuDomainVcpuPrivateDispose(void *obj);
 

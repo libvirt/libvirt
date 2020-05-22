@@ -320,6 +320,8 @@ struct _qemuDomainStorageSourcePrivate {
 };
 
 virObjectPtr qemuDomainStorageSourcePrivateNew(void);
+qemuDomainStorageSourcePrivatePtr
+qemuDomainStorageSourcePrivateFetch(virStorageSourcePtr src);
 
 typedef struct _qemuDomainVcpuPrivate qemuDomainVcpuPrivate;
 typedef qemuDomainVcpuPrivate *qemuDomainVcpuPrivatePtr;
