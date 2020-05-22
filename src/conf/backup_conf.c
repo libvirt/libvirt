@@ -72,6 +72,7 @@ virDomainBackupDefFree(virDomainBackupDefPtr def)
         virDomainBackupDiskDefPtr disk = def->disks + i;
 
         g_free(disk->name);
+        g_free(disk->incremental);
         g_free(disk->exportname);
         g_free(disk->exportbitmap);
         virObjectUnref(disk->store);
@@ -503,6 +504,13 @@ virDomainBackupAlignDisks(virDomainBackupDefPtr def,
         } else {
             backupdisk->backup = VIR_TRISTATE_BOOL_NO;
         }
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainBackupDiskDefPtr backupdisk = &def->disks[i];
+
+        if (def->incremental && !backupdisk->incremental)
+            backupdisk->incremental = g_strdup(def->incremental);
     }
 
     return 0;
