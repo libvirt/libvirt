@@ -716,65 +716,6 @@ testQemuBitmapGetFakeChainEntry(virStorageSourcePtr src,
 }
 
 
-typedef virDomainMomentDefPtr testMomentList;
-
-static void
-testMomentListFree(testMomentList *list)
-{
-    testMomentList *tmp = list;
-
-    if (!list)
-        return;
-
-    while (*tmp) {
-        virObjectUnref(*tmp);
-        tmp++;
-    }
-
-    g_free(list);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(testMomentList, testMomentListFree);
-
-static virDomainMomentDefPtr
-testQemuBackupGetIncrementalMoment(const char *name)
-{
-    virDomainCheckpointDefPtr checkpoint = NULL;
-
-    if (!(checkpoint = virDomainCheckpointDefNew()))
-        abort();
-
-    checkpoint->disks = g_new0(virDomainCheckpointDiskDef, 1);
-    checkpoint->ndisks = 1;
-
-    checkpoint->disks[0].name = g_strdup("testdisk");
-    checkpoint->disks[0].type = VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP;
-
-    checkpoint->parent.name = g_strdup(name);
-
-    return (virDomainMomentDefPtr) checkpoint;
-}
-
-
-static virDomainMomentDefPtr *
-testQemuBackupGetIncremental(const char *incFrom)
-{
-    const char *checkpoints[] = {"current", "d", "c", "b", "a"};
-    virDomainMomentDefPtr *incr;
-    size_t i;
-
-    incr = g_new0(virDomainMomentDefPtr, G_N_ELEMENTS(checkpoints) + 1);
-
-    for (i = 0; i < G_N_ELEMENTS(checkpoints); i++) {
-        incr[i] = testQemuBackupGetIncrementalMoment(checkpoints[i]);
-
-        if (STREQ(incFrom, checkpoints[i]))
-            break;
-    }
-
-    return incr;
-}
-
 static const char *backupDataPrefix = "qemublocktestdata/backupmerge/";
 
 struct testQemuBackupIncrementalBitmapCalculateData {
@@ -791,10 +732,10 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
     const struct testQemuBackupIncrementalBitmapCalculateData *data = opaque;
     g_autoptr(virJSONValue) nodedatajson = NULL;
     g_autoptr(virHashTable) nodedata = NULL;
-    g_autoptr(virJSONValue) mergebitmaps = NULL;
-    g_autofree char *actual = NULL;
+    g_autoptr(virJSONValue) actions = virJSONValueNewArray();
     g_autofree char *expectpath = NULL;
-    g_autoptr(testMomentList) incremental = NULL;
+    g_autoptr(virStorageSource) target = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
                                  backupDataPrefix, data->name);
@@ -808,19 +749,24 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
         return -1;
     }
 
-    incremental = testQemuBackupGetIncremental(data->incremental);
+    if (!(target = virStorageSourceNew()))
+        return -1;
 
-    if ((mergebitmaps = qemuBackupDiskPrepareOneBitmapsChain(incremental,
-                                                             data->chain,
-                                                             nodedata,
-                                                             "testdisk"))) {
-        if (!(actual = virJSONValueToString(mergebitmaps, true)))
+    target->nodeformat = g_strdup_printf("target_node");
+
+    if (qemuBackupDiskPrepareOneBitmapsChain(data->chain,
+                                             target,
+                                             "target-bitmap-name",
+                                             data->incremental,
+                                             actions,
+                                             nodedata) >= 0) {
+        if (virJSONValueToBuffer(actions, &buf, true) < 0)
             return -1;
     } else {
-        actual = g_strdup("NULL\n");
+        virBufferAddLit(&buf, "NULL\n");
     }
 
-    return virTestCompareToFile(actual, expectpath);
+    return virTestCompareToFile(virBufferCurrentContent(&buf), expectpath);
 }
 
 
