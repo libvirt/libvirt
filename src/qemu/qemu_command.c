@@ -3098,10 +3098,13 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
         backendType = "memory-backend-memfd";
 
-        if (useHugepage &&
-            (virJSONValueObjectAdd(props, "b:hugetlb", useHugepage, NULL) < 0 ||
-             virJSONValueObjectAdd(props, "U:hugetlbsize", pagesize << 10, NULL) < 0)) {
-            return -1;
+        if (useHugepage) {
+            if (virJSONValueObjectAdd(props, "b:hugetlb", useHugepage, NULL) < 0 ||
+                virJSONValueObjectAdd(props, "U:hugetlbsize", pagesize << 10, NULL) < 0) {
+                return -1;
+            }
+
+            prealloc = true;
         }
 
         if (qemuBuildMemoryBackendPropsShare(props, memAccess) < 0)
