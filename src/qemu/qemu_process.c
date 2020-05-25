@@ -7775,6 +7775,15 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
      * running domain.
      */
     if (vm->def->cpu->mode == VIR_CPU_MODE_HOST_MODEL) {
+        /*
+         * PSeries domains are able to run with host-model CPU by design,
+         * even on Libvirt newer than 2.3, never replacing host-model with
+         * custom in the virCPUUpdate() call. It is not needed to call
+         * virCPUUpdate() and qemuProcessUpdateCPU() in this case.
+         */
+        if (qemuDomainIsPSeries(vm->def))
+            return 0;
+
         if (!(hostmig = virCPUCopyMigratable(host->arch, host)))
             return -1;
 
