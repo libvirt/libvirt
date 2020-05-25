@@ -16,8 +16,9 @@ QEMU_AUDIO_DRV=none \
 -smp 2,sockets=2,cores=1,threads=1 \
 -object memory-backend-ram,id=ram-node0,size=268435456 \
 -numa node,nodeid=0,cpus=0,memdev=ram-node0 \
--object memory-backend-file,id=ram-node1,prealloc=yes,\
-mem-path=/dev/hugepages1G/libvirt/qemu/-1-SomeDummyHugepagesGu,size=805306368 \
+-object memory-backend-file,id=ram-node1,\
+mem-path=/dev/hugepages1G/libvirt/qemu/-1-SomeDummyHugepagesGu,prealloc=yes,\
+size=805306368 \
 -numa node,nodeid=1,cpus=1,memdev=ram-node1 \
 -uuid ef1bdff4-27f3-4e85-a807-5fb4d58463cc \
 -display none \

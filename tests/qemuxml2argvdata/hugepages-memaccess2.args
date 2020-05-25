@@ -18,9 +18,9 @@ QEMU_AUDIO_DRV=none \
 mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node0,share=no,\
 size=1073741824,host-nodes=0-3,policy=bind \
 -numa node,nodeid=0,cpus=0,memdev=ram-node0 \
--object memory-backend-file,id=ram-node1,prealloc=yes,\
-mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,share=yes,size=1073741824,\
-host-nodes=0-3,policy=bind \
+-object memory-backend-file,id=ram-node1,\
+mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,share=yes,prealloc=yes,\
+size=1073741824,host-nodes=0-3,policy=bind \
 -numa node,nodeid=1,cpus=1,memdev=ram-node1 \
 -object memory-backend-file,id=ram-node2,\
 mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node2,share=no,\
@@ -30,9 +30,9 @@ size=1073741824,host-nodes=0-3,policy=bind \
 mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node3,share=no,\
 size=1073741824,host-nodes=3,policy=bind \
 -numa node,nodeid=3,cpus=3,memdev=ram-node3 \
--object memory-backend-file,id=memdimm0,prealloc=yes,\
-mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,share=yes,size=536870912,\
-host-nodes=0-3,policy=bind \
+-object memory-backend-file,id=memdimm0,\
+mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,share=yes,prealloc=yes,\
+size=536870912,host-nodes=0-3,policy=bind \
 -device pc-dimm,node=1,memdev=memdimm0,id=dimm0,slot=0,addr=4294967296 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \

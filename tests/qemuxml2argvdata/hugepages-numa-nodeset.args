@@ -14,17 +14,21 @@ QEMU_AUDIO_DRV=none \
 -m 4096 \
 -realtime mlock=off \
 -smp 4,sockets=4,cores=1,threads=1 \
--object memory-backend-file,id=ram-node0,prealloc=yes,\
-mem-path=/dev/hugepages1G/libvirt/qemu/-1-QEMUGuest1,size=1073741824 \
+-object memory-backend-file,id=ram-node0,\
+mem-path=/dev/hugepages1G/libvirt/qemu/-1-QEMUGuest1,prealloc=yes,\
+size=1073741824 \
 -numa node,nodeid=0,cpus=0,memdev=ram-node0 \
--object memory-backend-file,id=ram-node1,prealloc=yes,\
-mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,size=1073741824 \
+-object memory-backend-file,id=ram-node1,\
+mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,prealloc=yes,\
+size=1073741824 \
 -numa node,nodeid=1,cpus=1,memdev=ram-node1 \
--object memory-backend-file,id=ram-node2,prealloc=yes,\
-mem-path=/dev/hugepages1G/libvirt/qemu/-1-QEMUGuest1,size=1073741824 \
+-object memory-backend-file,id=ram-node2,\
+mem-path=/dev/hugepages1G/libvirt/qemu/-1-QEMUGuest1,prealloc=yes,\
+size=1073741824 \
 -numa node,nodeid=2,cpus=2,memdev=ram-node2 \
--object memory-backend-file,id=ram-node3,prealloc=yes,\
-mem-path=/dev/hugepages1G/libvirt/qemu/-1-QEMUGuest1,size=1073741824 \
+-object memory-backend-file,id=ram-node3,\
+mem-path=/dev/hugepages1G/libvirt/qemu/-1-QEMUGuest1,prealloc=yes,\
+size=1073741824 \
 -numa node,nodeid=3,cpus=3,memdev=ram-node3 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \
