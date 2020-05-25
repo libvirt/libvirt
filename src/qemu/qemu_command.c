@@ -2977,8 +2977,8 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                             const char *alias,
                             virQEMUDriverConfigPtr cfg,
                             qemuDomainObjPrivatePtr priv,
-                            virDomainDefPtr def,
-                            virDomainMemoryDefPtr mem,
+                            const virDomainDef *def,
+                            const virDomainMemoryDef *mem,
                             bool force)
 {
     const char *backendType = "memory-backend-file";
