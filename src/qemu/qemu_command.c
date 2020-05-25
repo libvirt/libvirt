@@ -6829,6 +6829,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
     virTristateSwitch smm = def->features[VIR_DOMAIN_FEATURE_SMM];
     virCPUDefPtr cpu = def->cpu;
+    const char *defaultRAMid = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
@@ -7045,6 +7046,12 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     if (virDomainNumaHasHMAT(def->numa))
         virBufferAddLit(&buf, ",hmat=on");
 
+    defaultRAMid = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
+                                                     def->virtType,
+                                                     def->os.machine);
+    if (defaultRAMid)
+        virBufferAsprintf(&buf, ",memory-backend=%s", defaultRAMid);
+
     virCommandAddArgBuffer(cmd, &buf);
 
     return 0;
@@ -7155,11 +7162,41 @@ qemuBuildMemPathStr(const virDomainDef *def,
 
 
 static int
+qemuBuildMemCommandLineMemoryDefaultBackend(virCommandPtr cmd,
+                                            const virDomainDef *def,
+                                            qemuDomainObjPrivatePtr priv,
+                                            const char *defaultRAMid)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+    g_autoptr(virJSONValue) props = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    virDomainMemoryDef mem = { 0 };
+
+    mem.size = virDomainDefGetMemoryInitial(def);
+    mem.targetNode = -1;
+    mem.info.alias = (char *) defaultRAMid;
+
+    if (qemuBuildMemoryBackendProps(&props, defaultRAMid, cfg,
+                                    priv, def, &mem, false) < 0)
+        return -1;
+
+    if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
+        return -1;
+
+    virCommandAddArg(cmd, "-object");
+    virCommandAddArgBuffer(cmd, &buf);
+    return 0;
+}
+
+
+static int
 qemuBuildMemCommandLine(virCommandPtr cmd,
                         const virDomainDef *def,
                         virQEMUCapsPtr qemuCaps,
                         qemuDomainObjPrivatePtr priv)
 {
+    const char *defaultRAMid = NULL;
+
     virCommandAddArg(cmd, "-m");
 
     if (virDomainDefHasMemoryHotplug(def)) {
@@ -7174,18 +7211,26 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
                               virDomainDefGetMemoryInitial(def) / 1024);
     }
 
-    if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE) {
-        virCommandAddArgList(cmd, "-mem-prealloc", NULL);
-        priv->memPrealloc = true;
-    }
+    defaultRAMid = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
+                                                     def->virtType,
+                                                     def->os.machine);
 
-    /*
-     * Add '-mem-path' (and '-mem-prealloc') parameter here if
-     * the hugepages and no numa node is specified.
-     */
-    if (!virDomainNumaGetNodeCount(def->numa) &&
-        qemuBuildMemPathStr(def, cmd, priv) < 0)
-        return -1;
+    if (defaultRAMid) {
+        qemuBuildMemCommandLineMemoryDefaultBackend(cmd, def, priv, defaultRAMid);
+    } else {
+        if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE) {
+            virCommandAddArgList(cmd, "-mem-prealloc", NULL);
+            priv->memPrealloc = true;
+        }
+
+        /*
+         * Add '-mem-path' (and '-mem-prealloc') parameter here if
+         * the hugepages and no numa node is specified.
+         */
+        if (!virDomainNumaGetNodeCount(def->numa) &&
+            qemuBuildMemPathStr(def, cmd, priv) < 0)
+            return -1;
+    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OVERCOMMIT)) {
         virCommandAddArg(cmd, "-overcommit");

@@ -12,10 +12,12 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pc-q35-2.10,accel=tcg,usb=off,smm=on,dump-guest-core=off \
+-machine pc-q35-2.10,accel=tcg,usb=off,smm=on,dump-guest-core=off,\
+memory-backend=pc.ram \
 -global mch.extended-tseg-mbytes=48 \
 -cpu qemu64 \
 -m 214 \
+-object memory-backend-ram,id=pc.ram,size=224395264 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
