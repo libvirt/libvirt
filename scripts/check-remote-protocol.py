@@ -92,8 +92,8 @@ if out == "" or pdwtagsproc.returncode != 0:
     else:
         print("WARNING: exit code %d, pdwtags appears broken:" %
               pdwtagsproc.returncode, file=sys.stderr)
-    for l in err.strip().split("\n"):
-        print("WARNING: %s" % l, file=sys.stderr)
+    for line in err.strip().split("\n"):
+        print("WARNING: %s" % line, file=sys.stderr)
     print("WARNING: skipping the remote protocol test", file=sys.stderr)
     sys.exit(0)
 
