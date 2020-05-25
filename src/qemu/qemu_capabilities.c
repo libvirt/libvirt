@@ -613,6 +613,7 @@ struct _virQEMUCapsMachineType {
     bool qemuDefault;
     char *defaultCPU;
     bool numaMemSupported;
+    char *defaultRAMid;
 };
 
 typedef struct _virQEMUCapsHostCPUData virQEMUCapsHostCPUData;
@@ -1898,6 +1899,7 @@ virQEMUCapsAccelCopyMachineTypes(virQEMUCapsAccelPtr dst,
         dst->machineTypes[i].hotplugCpus = src->machineTypes[i].hotplugCpus;
         dst->machineTypes[i].qemuDefault = src->machineTypes[i].qemuDefault;
         dst->machineTypes[i].numaMemSupported = src->machineTypes[i].numaMemSupported;
+        dst->machineTypes[i].defaultRAMid = g_strdup(src->machineTypes[i].defaultRAMid);
     }
 }
 
@@ -1975,6 +1977,7 @@ virQEMUCapsAccelClear(virQEMUCapsAccelPtr caps)
         VIR_FREE(caps->machineTypes[i].name);
         VIR_FREE(caps->machineTypes[i].alias);
         VIR_FREE(caps->machineTypes[i].defaultCPU);
+        VIR_FREE(caps->machineTypes[i].defaultRAMid);
     }
     VIR_FREE(caps->machineTypes);
 
@@ -2561,6 +2564,25 @@ virQEMUCapsGetMachineNumaMemSupported(virQEMUCapsPtr qemuCaps,
 }
 
 
+const char *
+virQEMUCapsGetMachineDefaultRAMid(virQEMUCapsPtr qemuCaps,
+                                  virDomainVirtType virtType,
+                                  const char *name)
+{
+    virQEMUCapsAccelPtr accel;
+    size_t i;
+
+    accel = virQEMUCapsGetAccel(qemuCaps, virtType);
+
+    for (i = 0; i < accel->nmachineTypes; i++) {
+        if (STREQ(accel->machineTypes[i].name, name))
+            return accel->machineTypes[i].defaultRAMid;
+    }
+
+    return NULL;
+}
+
+
 /**
  * virQEMUCapsSetGICCapabilities:
  * @qemuCaps: QEMU capabilities
@@ -2797,7 +2819,8 @@ virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
                       int maxCpus,
                       bool hotplugCpus,
                       bool isDefault,
-                      bool numaMemSupported)
+                      bool numaMemSupported,
+                      const char *defaultRAMid)
 {
     virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, virtType);
     virQEMUCapsMachineTypePtr mach;
@@ -2818,6 +2841,8 @@ virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
     mach->qemuDefault = isDefault;
 
     mach->numaMemSupported = numaMemSupported;
+
+    mach->defaultRAMid = g_strdup(defaultRAMid);
 }
 
 /**
@@ -2864,7 +2889,8 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
                               machines[i]->maxCpus,
                               machines[i]->hotplugCpus,
                               machines[i]->isDefault,
-                              machines[i]->numaMemSupported);
+                              machines[i]->numaMemSupported,
+                              machines[i]->defaultRAMid);
 
         if (preferredMachine &&
             (STREQ_NULLABLE(machines[i]->alias, preferredMachine) ||
@@ -4091,6 +4117,7 @@ virQEMUCapsLoadMachines(virQEMUCapsAccelPtr caps,
         VIR_FREE(str);
 
         caps->machineTypes[i].defaultCPU = virXMLPropString(nodes[i], "defaultCPU");
+        caps->machineTypes[i].defaultRAMid = virXMLPropString(nodes[i], "defaultRAMid");
     }
 
     return 0;
@@ -4579,6 +4606,8 @@ virQEMUCapsFormatMachines(virQEMUCapsAccelPtr caps,
                               caps->machineTypes[i].defaultCPU);
         if (caps->machineTypes[i].numaMemSupported)
             virBufferAddLit(buf, " numaMemSupported='yes'");
+        virBufferEscapeString(buf, " defaultRAMid='%s'",
+                              caps->machineTypes[i].defaultRAMid);
         virBufferAddLit(buf, "/>\n");
     }
 }
@@ -6388,7 +6417,7 @@ virQEMUCapsStripMachineAliasesForVirtType(virQEMUCapsPtr qemuCaps,
         if (name) {
             virQEMUCapsAddMachine(qemuCaps, virtType, name, NULL, mach->defaultCPU,
                                   mach->maxCpus, mach->hotplugCpus, mach->qemuDefault,
-                                  mach->numaMemSupported);
+                                  mach->numaMemSupported, mach->defaultRAMid);
         }
     }
 }

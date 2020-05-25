@@ -5641,6 +5641,17 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
         } else {
             info->numaMemSupported = true;
         }
+
+        if (virJSONValueObjectHasKey(child, "default-ram-id")) {
+            if (!(tmp = virJSONValueObjectGetString(child, "default-ram-id"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("query-machines reply has malformed "
+                                 "'default-ram-id' data"));
+                goto cleanup;
+            }
+
+            info->defaultRAMid = g_strdup(tmp);
+        }
     }
 
     ret = n;
