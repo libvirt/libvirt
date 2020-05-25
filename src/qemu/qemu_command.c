@@ -3028,6 +3028,9 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     if (discard == VIR_TRISTATE_BOOL_ABSENT)
         discard = def->mem.discard;
 
+    if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE)
+        prealloc = true;
+
     if (virDomainNumatuneGetMode(def->numa, mem->targetNode, &mode) < 0 &&
         virDomainNumatuneGetMode(def->numa, -1, &mode) < 0)
         mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
