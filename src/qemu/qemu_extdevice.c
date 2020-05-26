@@ -230,10 +230,13 @@ qemuExtDevicesStop(virQEMUDriverPtr driver,
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
+        virDomainNetType actualType = virDomainNetGetActualType(net);
         qemuSlirpPtr slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
 
         if (slirp)
             qemuSlirpStop(slirp, vm, driver, net);
+        if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET && net->downscript)
+            virNetDevRunEthernetScript(net->ifname, net->downscript);
     }
 
     for (i = 0; i < def->nfss; i++) {

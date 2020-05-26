@@ -4672,6 +4672,9 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
             virDomainNetReleaseActualDevice(conn, vm->def, net);
         else
             VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
+    } else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        if (net->script)
+           virNetDevRunEthernetScript(net->ifname, net->downscript);
     }
     virDomainNetDefFree(net);
     return 0;
