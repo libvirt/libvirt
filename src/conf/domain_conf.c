@@ -2520,6 +2520,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     VIR_FREE(def->teaming.persistent);
     VIR_FREE(def->virtPortProfile);
     VIR_FREE(def->script);
+    VIR_FREE(def->downscript);
     VIR_FREE(def->domain_name);
     VIR_FREE(def->ifname);
     VIR_FREE(def->ifname_guest);
@@ -11977,6 +11978,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     g_autofree char *ifname_guest = NULL;
     g_autofree char *ifname_guest_actual = NULL;
     g_autofree char *script = NULL;
+    g_autofree char *downscript = NULL;
     g_autofree char *address = NULL;
     g_autofree char *port = NULL;
     g_autofree char *localaddr = NULL;
@@ -12149,6 +12151,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             } else if (!script &&
                        virXMLNodeNameEqual(cur, "script")) {
                 script = virXMLPropString(cur, "path");
+            } else if (!downscript &&
+                       virXMLNodeNameEqual(cur, "downscript")) {
+                downscript = virXMLPropString(cur, "path");
             } else if (!domain_name &&
                        virXMLNodeNameEqual(cur, "backenddomain")) {
                 domain_name = virXMLPropString(cur, "name");
@@ -12482,6 +12487,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     if (script != NULL)
         def->script = g_steal_pointer(&script);
+    if (downscript != NULL)
+        def->downscript = g_steal_pointer(&downscript);
     if (domain_name != NULL)
         def->domain_name = g_steal_pointer(&domain_name);
     if (ifname != NULL)
@@ -26567,6 +26574,8 @@ virDomainNetDefFormat(virBufferPtr buf,
 
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);
+    virBufferEscapeString(buf, "<downscript path='%s'/>\n",
+                          def->downscript);
     virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);
 
     if (def->ifname &&

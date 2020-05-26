@@ -1055,6 +1055,7 @@ struct _virDomainNetDef {
         unsigned long sndbuf;
     } tune;
     char *script;
+    char *downscript;
     char *domain_name; /* backend domain name */
     char *ifname; /* interface name on the host (<target dev='x'/>) */
     int managed_tap; /* enum virTristateBool - ABSENT == YES */

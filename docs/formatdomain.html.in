@@ -5879,8 +5879,13 @@
     <p>
       After creating/opening the tap device, an optional shell script
       (given in the <code>path</code> attribute of
-      the <code>&lt;script&gt;</code> element) will be run; this can
-      be used to do whatever extra host network integration is
+      the <code>&lt;script&gt;</code> element) will be run.
+      <span class="since">Since 0.2.1</span>
+      Also, after detaching/closing the tap device, an optional shell
+      script (given in the <code>path</code> attribute of
+      the <code>&lt;downscript&gt;</code> element) will be run.
+      <span class="since">Since 5.1.0</span>
+      These can be used to do whatever extra host network integration is
       required.
     </p>
 
@@ -5889,6 +5894,7 @@
 &lt;devices&gt;
   &lt;interface type='ethernet'&gt;
     &lt;script path='/etc/qemu-ifup-mynet'/&gt;
+    &lt;downscript path='/etc/qemu-ifdown-mynet'/&gt;
   &lt;/interface&gt;
   ...
   &lt;interface type='ethernet'&gt;
