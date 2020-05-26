@@ -315,6 +315,7 @@ qemuMigrationDstPrecreateStorage(virDomainObjPtr vm,
     for (i = 0; i < nbd->ndisks; i++) {
         virDomainDiskDefPtr disk;
         const char *diskSrcPath;
+        g_autofree char *nvmePath = NULL;
 
         VIR_DEBUG("Looking up disk target '%s' (capacity=%llu)",
                   nbd->disks[i].target, nbd->disks[i].capacity);
@@ -326,7 +327,12 @@ qemuMigrationDstPrecreateStorage(virDomainObjPtr vm,
             goto cleanup;
         }
 
-        diskSrcPath = virDomainDiskGetSource(disk);
+        if (disk->src->type == VIR_STORAGE_TYPE_NVME) {
+            virPCIDeviceAddressGetSysfsFile(&disk->src->nvme->pciAddr, &nvmePath);
+            diskSrcPath = nvmePath;
+        } else {
+            diskSrcPath = virDomainDiskGetSource(disk);
+        }
 
         /* Skip disks we don't want to migrate and already existing disks. */
         if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks) ||
