@@ -1975,6 +1975,12 @@ virSecuritySELinuxMoveImageMetadataHelper(pid_t pid G_GNUC_UNUSED,
 
     ret = virSecurityMoveRememberedLabel(SECURITY_SELINUX_NAME, data->src, data->dst);
     virSecurityManagerMetadataUnlock(data->mgr, &state);
+
+    if (ret == -2) {
+        /* Libvirt built without XATTRS */
+        ret = 0;
+    }
+
     return ret;
 }
 
