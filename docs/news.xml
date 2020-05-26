@@ -54,6 +54,16 @@
     <section title="New features">
       <change>
         <summary>
+          qemu: support network interface downscript
+        </summary>
+        <description>
+          QEMU has the ability to run a script when a NIC is brought up
+          and down. Libvirt only enables use of the up script.
+          Now add support for postscript when NIC is down/detached.
+        </description>
+      </change>
+      <change>
+        <summary>
           qemu: support disabling hotplug/unplug of PCIe devices
         </summary>
         <description>
