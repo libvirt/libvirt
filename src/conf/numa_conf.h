@@ -155,9 +155,9 @@ size_t virDomainNumaSetNodeDistanceCount(virDomainNumaPtr numa,
                                          size_t ndistances)
     ATTRIBUTE_NONNULL(1);
 
-virBitmapPtr virDomainNumaSetNodeCpumask(virDomainNumaPtr numa,
-                                         size_t node,
-                                         virBitmapPtr cpumask)
+void  virDomainNumaSetNodeCpumask(virDomainNumaPtr numa,
+                                  size_t node,
+                                  virBitmapPtr cpumask)
     ATTRIBUTE_NONNULL(1);
 
 /*

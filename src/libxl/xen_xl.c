@@ -508,10 +508,10 @@ xenParseXLVnuma(virConfPtr conf,
                             goto cleanup;
                         }
 
-                        if ((virBitmapParse(vtoken, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) ||
-                            (virDomainNumaSetNodeCpumask(numa, vnodeCnt, cpumask) == NULL))
+                        if (virBitmapParse(vtoken, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
                             goto cleanup;
 
+                        virDomainNumaSetNodeCpumask(numa, vnodeCnt, cpumask);
                         vcpus += virBitmapCountBits(cpumask);
 
                     } else if (STRPREFIX(str, "vdistances")) {

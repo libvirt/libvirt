@@ -1317,14 +1317,12 @@ virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
 }
 
 
-virBitmapPtr
+void
 virDomainNumaSetNodeCpumask(virDomainNumaPtr numa,
                             size_t node,
                             virBitmapPtr cpumask)
 {
     numa->mem_nodes[node].cpumask = cpumask;
-
-    return numa->mem_nodes[node].cpumask;
 }
 
 
