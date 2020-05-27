@@ -1840,6 +1840,8 @@
       consistent across qemu and libvirt versions.
       <code>memory</code> specifies the node memory
       in kibibytes (i.e. blocks of 1024 bytes).
+      <span class="since">Since 6.6.0</span> the <code>cpus</code> attribute
+      is optional and if omitted a CPU-less NUMA node is created.
       <span class="since">Since 1.2.11</span> one can use an additional <a
           href="#elementsMemoryAllocation"><code>unit</code></a> attribute to
       define units in which <code>memory</code> is specified.

@@ -889,32 +889,28 @@ virDomainNumaDefParseXML(virDomainNumaPtr def,
         }
         VIR_FREE(tmp);
 
-        if (def->mem_nodes[cur_cell].cpumask) {
+        if (def->mem_nodes[cur_cell].mem) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Duplicate NUMA cell info for cell id '%u'"),
                            cur_cell);
             goto cleanup;
         }
 
-        if (!(tmp = virXMLPropString(nodes[i], "cpus"))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing 'cpus' attribute in NUMA cell"));
-            goto cleanup;
-        }
+        if ((tmp = virXMLPropString(nodes[i], "cpus"))) {
+            g_autoptr(virBitmap) cpumask = NULL;
 
-        if (virBitmapParse(tmp, &def->mem_nodes[cur_cell].cpumask,
-                           VIR_DOMAIN_CPUMASK_LEN) < 0)
-            goto cleanup;
+            if (virBitmapParse(tmp, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+                goto cleanup;
 
-        if (virBitmapIsAllClear(def->mem_nodes[cur_cell].cpumask)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                          _("NUMA cell %d has no vCPUs assigned"), cur_cell);
-            goto cleanup;
+            if (!virBitmapIsAllClear(cpumask))
+                def->mem_nodes[cur_cell].cpumask = g_steal_pointer(&cpumask);
+            VIR_FREE(tmp);
         }
-        VIR_FREE(tmp);
 
         for (j = 0; j < n; j++) {
-            if (j == cur_cell || !def->mem_nodes[j].cpumask)
+            if (j == cur_cell ||
+                !def->mem_nodes[j].cpumask ||
+                !def->mem_nodes[cur_cell].cpumask)
                 continue;
 
             if (virBitmapOverlaps(def->mem_nodes[j].cpumask,
@@ -975,7 +971,6 @@ virDomainNumaDefFormatXML(virBufferPtr buf,
 {
     virDomainMemoryAccess memAccess;
     virTristateBool discard;
-    char *cpustr;
     size_t ncells = virDomainNumaGetNodeCount(def);
     size_t i;
 
@@ -985,17 +980,22 @@ virDomainNumaDefFormatXML(virBufferPtr buf,
     virBufferAddLit(buf, "<numa>\n");
     virBufferAdjustIndent(buf, 2);
     for (i = 0; i < ncells; i++) {
+        virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(def, i);
         int ndistances;
 
         memAccess = virDomainNumaGetNodeMemoryAccessMode(def, i);
         discard = virDomainNumaGetNodeDiscard(def, i);
 
-        if (!(cpustr = virBitmapFormat(virDomainNumaGetNodeCpumask(def, i))))
-            return -1;
-
         virBufferAddLit(buf, "<cell");
         virBufferAsprintf(buf, " id='%zu'", i);
-        virBufferAsprintf(buf, " cpus='%s'", cpustr);
+
+        if (cpumask) {
+            g_autofree char *cpustr = virBitmapFormat(cpumask);
+
+            if (!cpustr)
+                return -1;
+            virBufferAsprintf(buf, " cpus='%s'", cpustr);
+        }
         virBufferAsprintf(buf, " memory='%llu'",
                           virDomainNumaGetNodeMemorySize(def, i));
         virBufferAddLit(buf, " unit='KiB'");
@@ -1031,8 +1031,6 @@ virDomainNumaDefFormatXML(virBufferPtr buf,
             virBufferAdjustIndent(buf, -2);
             virBufferAddLit(buf, "</cell>\n");
         }
-
-        VIR_FREE(cpustr);
     }
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</numa>\n");
@@ -1047,8 +1045,12 @@ virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa)
     size_t i;
     unsigned int ret = 0;
 
-    for (i = 0; i < numa->nmem_nodes; i++)
-        ret += virBitmapCountBits(virDomainNumaGetNodeCpumask(numa, i));
+    for (i = 0; i < numa->nmem_nodes; i++) {
+        virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(numa, i);
+
+        if (cpumask)
+            ret += virBitmapCountBits(cpumask);
+    }
 
     return ret;
 }
@@ -1060,11 +1062,14 @@ virDomainNumaGetMaxCPUID(virDomainNumaPtr numa)
     unsigned int ret = 0;
 
     for (i = 0; i < numa->nmem_nodes; i++) {
+        virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(numa, i);
         int bit;
 
-        bit = virBitmapLastSetBit(virDomainNumaGetNodeCpumask(numa, i));
-        if (bit > ret)
-            ret = bit;
+        if (cpumask) {
+            bit = virBitmapLastSetBit(cpumask);
+            if (bit > ret)
+                ret = bit;
+        }
     }
 
     return ret;

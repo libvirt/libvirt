@@ -115,9 +115,11 @@
           <ref name="unsignedInt"/>
         </attribute>
       </optional>
-      <attribute name="cpus">
-        <ref name="cpuset"/>
-      </attribute>
+      <optional>
+        <attribute name="cpus">
+          <ref name="cpuset"/>
+        </attribute>
+      </optional>
       <attribute name="memory">
         <ref name="memoryKB"/>
       </attribute>

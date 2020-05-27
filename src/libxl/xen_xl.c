@@ -1444,18 +1444,20 @@ xenFormatXLVnuma(virConfValuePtr list,
 {
     int ret = -1;
     size_t i;
-
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr numaVnode, tmp;
-
+    virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(numa, node);
     size_t nodeSize = virDomainNumaGetNodeMemorySize(numa, node) / 1024;
-    char *nodeVcpus = virBitmapFormat(virDomainNumaGetNodeCpumask(numa, node));
+    g_autofree char *nodeVcpus = NULL;
 
-    if (VIR_ALLOC(numaVnode) < 0)
+    if (!cpumask ||
+        VIR_ALLOC(numaVnode) < 0)
         goto cleanup;
 
     numaVnode->type = VIR_CONF_LIST;
     numaVnode->list = NULL;
+
+    nodeVcpus = virBitmapFormat(cpumask);
 
     /* pnode */
     virBufferAsprintf(&buf, "pnode=%zu", node);

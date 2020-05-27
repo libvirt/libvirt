@@ -654,7 +654,7 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
     }
 
     for (i = 0; i < ncells; i++) {
-        g_autofree char * cpumask = NULL;
+        virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(def->numa, i);
 
         if (!hasMemoryCap &&
             virDomainNumaGetNodeMemoryAccessMode(def->numa, i)) {
@@ -664,17 +664,19 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
             return -1;
         }
 
-        if (!(cpumask = virBitmapFormat(virDomainNumaGetNodeCpumask(def->numa, i))))
-            return -1;
+        if (cpumask) {
+            g_autofree char * cpumaskStr = NULL;
+            if (!(cpumaskStr = virBitmapFormat(cpumask)))
+                return -1;
 
-        if (strchr(cpumask, ',') &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disjoint NUMA cpu ranges are not supported "
-                             "with this QEMU"));
-            return -1;
+            if (strchr(cpumaskStr, ',') &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("disjoint NUMA cpu ranges are not supported "
+                                 "with this QEMU"));
+                return -1;
+            }
         }
-
     }
 
     if (virDomainNumaNodesDistancesAreBeingSet(def->numa) &&
