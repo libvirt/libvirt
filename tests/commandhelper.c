@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
             fprintf(log, "FD:%zu\n", i);
     }
 
-    fprintf(log, "DAEMON:%s\n", getpgrp() == getsid(0) ? "yes" : "no");
+    fprintf(log, "DAEMON:%s\n", getpgrp() != getppid() ? "yes" : "no");
     if (!(cwd = getcwd(NULL, 0)))
         goto cleanup;
     if (strlen(cwd) > strlen(".../commanddata") &&
