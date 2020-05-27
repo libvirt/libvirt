@@ -59,8 +59,36 @@ VIR_ENUM_IMPL(virDomainMemoryAccess,
               "private",
 );
 
+VIR_ENUM_IMPL(virDomainCacheAssociativity,
+              VIR_DOMAIN_CACHE_ASSOCIATIVITY_LAST,
+              "none",
+              "direct",
+              "full",
+);
+
+VIR_ENUM_IMPL(virDomainCachePolicy,
+              VIR_DOMAIN_CACHE_POLICY_LAST,
+              "none",
+              "writeback",
+              "writethrough",
+);
+
+VIR_ENUM_IMPL(virDomainMemoryLatency,
+              VIR_DOMAIN_MEMORY_LATENCY_LAST,
+              "none",
+              "access",
+              "read",
+              "write"
+);
+
 typedef struct _virDomainNumaDistance virDomainNumaDistance;
 typedef virDomainNumaDistance *virDomainNumaDistancePtr;
+
+typedef struct _virDomainNumaCache virDomainNumaCache;
+typedef virDomainNumaCache *virDomainNumaCachePtr;
+
+typedef struct _virDomainNumaInterconnect virDomainNumaInterconnect;
+typedef virDomainNumaInterconnect *virDomainNumaInterconnectPtr;
 
 typedef struct _virDomainNumaNode virDomainNumaNode;
 typedef virDomainNumaNode *virDomainNumaNodePtr;
@@ -86,8 +114,29 @@ struct _virDomainNuma {
             unsigned int cellid;
         } *distances;           /* remote node distances */
         size_t ndistances;
+
+        struct _virDomainNumaCache {
+            unsigned int level; /* cache level */
+            unsigned int size;  /* cache size */
+            unsigned int line;  /* line size, !!! in bytes !!! */
+            virDomainCacheAssociativity associativity; /* cache associativity */
+            virDomainCachePolicy policy; /* cache policy */
+        } *caches;
+        size_t ncaches;
     } *mem_nodes;           /* guest node configuration */
     size_t nmem_nodes;
+
+    struct _virDomainNumaInterconnect {
+        virDomainNumaInterconnectType type;  /* whether structure describes latency
+                                                or bandwidth */
+        unsigned int initiator; /* the initiator NUMA node */
+        unsigned int target;    /* the target NUMA node */
+        unsigned int cache;     /* the target cache on @target; if 0 then the
+                                   memory on @target */
+        virDomainMemoryLatency accessType;  /* what type of access is defined */
+        unsigned long value;    /* value itself */
+    } *interconnects;
+    size_t ninterconnects;
 
     /* Future NUMA tuning related stuff should go here. */
 };
@@ -368,8 +417,12 @@ virDomainNumaFree(virDomainNumaPtr numa)
 
         if (numa->mem_nodes[i].ndistances > 0)
             VIR_FREE(numa->mem_nodes[i].distances);
+
+        VIR_FREE(numa->mem_nodes[i].caches);
     }
     VIR_FREE(numa->mem_nodes);
+
+    VIR_FREE(numa->interconnects);
 
     VIR_FREE(numa);
 }
@@ -841,12 +894,102 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNumaPtr def,
     return ret;
 }
 
+
+static int
+virDomainNumaDefNodeCacheParseXML(virDomainNumaPtr def,
+                                  xmlXPathContextPtr ctxt,
+                                  unsigned int cur_cell)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    int n;
+    size_t i;
+
+    if ((n = virXPathNodeSet("./cache", ctxt, &nodes)) < 0)
+        return -1;
+
+    def->mem_nodes[cur_cell].caches = g_new0(virDomainNumaCache, n);
+
+    for (i = 0; i < n; i++) {
+        VIR_XPATH_NODE_AUTORESTORE(ctxt);
+        virDomainNumaCachePtr cache = &def->mem_nodes[cur_cell].caches[i];
+        g_autofree char *tmp = NULL;
+        unsigned int level;
+        int associativity;
+        int policy;
+        unsigned long long size;
+        unsigned long long line;
+
+        if (!(tmp = virXMLPropString(nodes[i], "level"))) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing 'level' attribute in cache "
+                             "element for NUMA node %d"),
+                           cur_cell);
+            return -1;
+        }
+
+        if (virStrToLong_uip(tmp, NULL, 10, &level) < 0 ||
+            level == 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid 'level' attribute in cache "
+                             "element for NUMA node %d"),
+                           cur_cell);
+            return -1;
+        }
+        VIR_FREE(tmp);
+
+        if (!(tmp = virXMLPropString(nodes[i], "associativity"))) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing 'associativity' attribute in cache "
+                             "element for NUMA node %d"),
+                           cur_cell);
+            return -1;
+        }
+
+        if ((associativity = virDomainCacheAssociativityTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid cache associativity '%s'"),
+                           tmp);
+            return -1;
+        }
+        VIR_FREE(tmp);
+
+        if (!(tmp = virXMLPropString(nodes[i], "policy"))) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing 'policy' attribute in cache "
+                             "element for NUMA node %d"),
+                           cur_cell);
+        }
+
+        if ((policy = virDomainCachePolicyTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid cache policy '%s'"),
+                           tmp);
+            return -1;
+        }
+        VIR_FREE(tmp);
+
+        ctxt->node = nodes[i];
+        if (virDomainParseMemory("./size/@value", "./size/unit",
+                                 ctxt, &size, true, false) < 0)
+            return -1;
+
+        if (virParseScaledValue("./line/@value", "./line/unit",
+                                ctxt, &line, 1, ULLONG_MAX, true) < 0)
+            return -1;
+
+        *cache = (virDomainNumaCache){level, size, line, associativity, policy};
+        def->mem_nodes[cur_cell].ncaches++;
+    }
+
+    return 0;
+}
+
+
 int
 virDomainNumaDefParseXML(virDomainNumaPtr def,
                          xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     char *tmp = NULL;
     int n;
     size_t i, j;
@@ -867,6 +1010,7 @@ virDomainNumaDefParseXML(virDomainNumaPtr def,
     def->nmem_nodes = n;
 
     for (i = 0; i < n; i++) {
+        VIR_XPATH_NODE_AUTORESTORE(ctxt);
         int rc;
         unsigned int cur_cell = i;
 
@@ -953,7 +1097,109 @@ virDomainNumaDefParseXML(virDomainNumaPtr def,
 
         /* Parse NUMA distances info */
         if (virDomainNumaDefNodeDistanceParseXML(def, ctxt, cur_cell) < 0)
+            goto cleanup;
+
+        /* Parse cache info */
+        if (virDomainNumaDefNodeCacheParseXML(def, ctxt, cur_cell) < 0)
+            goto cleanup;
+    }
+
+    VIR_FREE(nodes);
+    if ((n = virXPathNodeSet("./cpu/numa[1]/interconnects[1]/latency|"
+                             "./cpu/numa[1]/interconnects[1]/bandwidth", ctxt, &nodes)) < 0)
+        goto cleanup;
+
+    def->interconnects = g_new0(virDomainNumaInterconnect, n);
+    for (i = 0; i < n; i++) {
+        virDomainNumaInterconnectType type;
+        unsigned int initiator;
+        unsigned int target;
+        unsigned int cache = 0;
+        int accessType;
+        unsigned long long value;
+
+        if (virXMLNodeNameEqual(nodes[i], "latency")) {
+            type = VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY;
+
+            if (!(tmp = virXMLPropString(nodes[i], "value"))) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Missing 'value' attribute in NUMA interconnects"));
                 goto cleanup;
+            }
+
+            if (virStrToLong_ullp(tmp, NULL, 10, &value) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Invalid 'value' attribute in NUMA interconnects"));
+                goto cleanup;
+            }
+            VIR_FREE(tmp);
+        } else if (virXMLNodeNameEqual(nodes[i], "bandwidth")) {
+            VIR_XPATH_NODE_AUTORESTORE(ctxt);
+            type = VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH;
+
+            ctxt->node = nodes[i];
+
+            if (virDomainParseMemory("./@value", "./@unit", ctxt, &value, true, false) < 0)
+                goto cleanup;
+        } else {
+            /* Ignore yet unknown child elements. */
+            continue;
+        }
+
+        if (!(tmp = virXMLPropString(nodes[i], "initiator"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing 'initiator' attribute in NUMA interconnects"));
+            goto cleanup;
+        }
+
+        if (virStrToLong_uip(tmp, NULL, 10, &initiator) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Invalid 'initiator' attribute in NUMA interconnects"));
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+
+        if (!(tmp = virXMLPropString(nodes[i], "target"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing 'target' attribute in NUMA interconnects"));
+            goto cleanup;
+        }
+
+        if (virStrToLong_uip(tmp, NULL, 10, &target) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Invalid 'target' attribute in NUMA interconnects"));
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+
+
+        /* cache attribute is optional */
+        if ((tmp = virXMLPropString(nodes[i], "cache"))) {
+            if (virStrToLong_uip(tmp, NULL, 10, &cache) < 0 ||
+                cache == 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Invalid 'cache' attribute in NUMA interconnects"));
+                goto cleanup;
+            }
+        }
+        VIR_FREE(tmp);
+
+        if (!(tmp = virXMLPropString(nodes[i], "type"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing 'type' attribute in NUMA interconnects"));
+            goto cleanup;
+        }
+
+        if ((accessType = virDomainMemoryLatencyTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Invalid 'type' attribute in NUMA interconnects"));
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+
+        def->interconnects[i] = (virDomainNumaInterconnect) {type, initiator, target,
+                                                             cache, accessType, value};
+        def->ninterconnects++;
     }
 
     ret = 0;
@@ -982,6 +1228,7 @@ virDomainNumaDefFormatXML(virBufferPtr buf,
     for (i = 0; i < ncells; i++) {
         virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(def, i);
         int ndistances;
+        size_t ncaches;
 
         memAccess = virDomainNumaGetNodeMemoryAccessMode(def, i);
         discard = virDomainNumaGetNodeDiscard(def, i);
@@ -1008,30 +1255,107 @@ virDomainNumaDefFormatXML(virBufferPtr buf,
                               virTristateBoolTypeToString(discard));
 
         ndistances = def->mem_nodes[i].ndistances;
-        if (ndistances == 0) {
+        ncaches = def->mem_nodes[i].ncaches;
+        if (ndistances == 0 && ncaches == 0) {
             virBufferAddLit(buf, "/>\n");
         } else {
             size_t j;
-            virDomainNumaDistancePtr distances = def->mem_nodes[i].distances;
 
             virBufferAddLit(buf, ">\n");
             virBufferAdjustIndent(buf, 2);
-            virBufferAddLit(buf, "<distances>\n");
-            virBufferAdjustIndent(buf, 2);
-            for (j = 0; j < ndistances; j++) {
-                if (distances[j].value) {
-                    virBufferAddLit(buf, "<sibling");
-                    virBufferAsprintf(buf, " id='%d'", distances[j].cellid);
-                    virBufferAsprintf(buf, " value='%d'", distances[j].value);
-                    virBufferAddLit(buf, "/>\n");
+
+            if (ndistances) {
+                virDomainNumaDistancePtr distances = def->mem_nodes[i].distances;
+
+                virBufferAddLit(buf, "<distances>\n");
+                virBufferAdjustIndent(buf, 2);
+                for (j = 0; j < ndistances; j++) {
+                    if (distances[j].value) {
+                        virBufferAddLit(buf, "<sibling");
+                        virBufferAsprintf(buf, " id='%d'", distances[j].cellid);
+                        virBufferAsprintf(buf, " value='%d'", distances[j].value);
+                        virBufferAddLit(buf, "/>\n");
+                    }
                 }
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</distances>\n");
             }
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</distances>\n");
+
+            for (j = 0; j < ncaches; j++) {
+                virDomainNumaCachePtr cache = &def->mem_nodes[i].caches[j];
+
+                virBufferAsprintf(buf, "<cache level='%u'", cache->level);
+                if (cache->associativity) {
+                    virBufferAsprintf(buf, " associativity='%s'",
+                                      virDomainCacheAssociativityTypeToString(cache->associativity));
+                }
+
+                if (cache->policy) {
+                    virBufferAsprintf(buf, " policy='%s'",
+                                      virDomainCachePolicyTypeToString(cache->policy));
+                }
+                virBufferAddLit(buf, ">\n");
+
+                virBufferAdjustIndent(buf, 2);
+                virBufferAsprintf(buf,
+                                  "<size value='%u' unit='KiB'/>\n",
+                                  cache->size);
+
+                if (cache->line) {
+                    virBufferAsprintf(buf,
+                                      "<line value='%u' unit='B'/>\n",
+                                      cache->line);
+                }
+
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</cache>\n");
+            }
             virBufferAdjustIndent(buf, -2);
             virBufferAddLit(buf, "</cell>\n");
         }
     }
+
+    if (def->ninterconnects) {
+        virBufferAddLit(buf, "<interconnects>\n");
+        virBufferAdjustIndent(buf, 2);
+    }
+
+    for (i = 0; i < def->ninterconnects; i++) {
+        virDomainNumaInterconnectPtr l = &def->interconnects[i];
+
+        switch (l->type) {
+        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY:
+            virBufferAddLit(buf, "<latency");
+            break;
+        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
+            virBufferAddLit(buf, "<bandwidth");
+        }
+
+        virBufferAsprintf(buf,
+                          " initiator='%u' target='%u'",
+                          l->initiator, l->target);
+
+        if (l->cache > 0) {
+            virBufferAsprintf(buf,
+                              " cache='%u'",
+                              l->cache);
+        }
+
+        virBufferAsprintf(buf,
+                          " type='%s' value='%lu'",
+                          virDomainMemoryLatencyTypeToString(l->accessType),
+                          l->value);
+
+        if (l->type == VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH)
+            virBufferAddLit(buf, " unit='KiB'");
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    if (def->ninterconnects) {
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</interconnects>\n");
+    }
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</numa>\n");
 

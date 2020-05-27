@@ -1931,6 +1931,113 @@
       using 10 for local and 20 for remote distances.
     </p>
 
+    <h4><a id="hmat">ACPI Heterogeneous Memory Attribute Table</a></h4>
+
+<pre>
+...
+&lt;cpu&gt;
+  ...
+  &lt;numa&gt;
+    &lt;cell id='0' cpus='0-3' memory='512000' unit='KiB' discard='yes'/&gt;
+    &lt;cell id='1' cpus='4-7' memory='512000' unit='KiB' memAccess='shared'/&gt;
+    &lt;cell id='3' cpus='0-3' memory='2097152' unit='KiB'&gt;
+      &lt;cache level='1' associativity='direct' policy='writeback'&gt;
+        &lt;size value='10' unit='KiB'/&gt;
+        &lt;line value='8' unit='B'/&gt;
+      &lt;/cache&gt;
+    &lt;/cell&gt;
+    &lt;interconnects&gt;
+      &lt;latency initiator='0' target='0' type='access' value='5'/&gt;
+      &lt;latency initiator='0' target='0' cache='1' type='access' value='10'/&gt;
+      &lt;bandwidth initiator='0' target='0' type='access' value='204800' unit='KiB'/&gt;
+    &lt;/interconnects&gt;
+  &lt;/numa&gt;
+  ...
+&lt;/cpu&gt;
+...</pre>
+
+    <p>
+      <span class='since'>Since 6.6.0</span> the <code>cell</code> element can
+      have a <code>cache</code> child element which describes memory side cache
+      for memory proximity domains. The <code>cache</code> element has a
+      <code>level</code> attribute describing the cache level and thus the
+      element can be repeated multiple times to describe different levels of
+      the cache.
+    </p>
+
+    <p>
+      The <code>cache</code> element then has following mandatory attributes:
+    </p>
+
+    <dl>
+      <dt><code>level</code></dt>
+      <dd>
+        Level of the cache this description refers to.
+      </dd>
+
+      <dt><code>associativity</code></dt>
+      <dd>
+        Describes cache associativity (accepted values are <code>none</code>,
+        <code>direct</code> and <code>full</code>).
+      </dd>
+
+      <dt><code>policy</code></dt>
+      <dd>
+        Describes cache write associativity (accepted values are
+        <code>none</code>, <code>writeback</code> and
+        <code>writethrough</code>).
+      </dd>
+    </dl>
+
+    <p>
+      The <code>cache</code> element has two mandatory child elements then:
+      <code>size</code> and <code>line</code> which describe cache size and
+      cache line size. Both elements accept two attributes: <code>value</code>
+      and <code>unit</code> which set the value of corresponding cache
+      attribute.
+    </p>
+
+    <p>
+      The NUMA description has an optional <code>interconnects</code> element that
+      describes the normalized memory read/write latency, read/write bandwidth
+      between Initiator Proximity Domains (Processor or I/O) and Target
+      Proximity Domains (Memory).
+    </p>
+
+    <p>
+      The <code>interconnects</code> element can have zero or more
+      <code>latency</code> child elements to describe latency between two
+      memory nodes and zero or more <code>bandwidth</code> child elements to
+      describe bandwidth between two memory nodes. Both these have the
+      following mandatory attributes:
+    </p>
+
+    <dl>
+      <dt><code>initiator</code></dt>
+      <dd>Refers to the source NUMA node</dd>
+
+      <dt><code>target</code></dt>
+      <dd>Refers to the target NUMA node</dd>
+
+      <dt><code>type</code></dt>
+      <dd>The type of the access. Accepted values: <code>access</code>,
+      <code>read</code>, <code>write</code></dd>
+
+      <dt><code>value</code></dt>
+      <dd>The actual value. For latency this is delay in nanoseconds, for
+      bandwidth this value is in kibibytes per second. Use additional
+      <code>unit</code> attribute to change the units.</dd>
+    </dl>
+
+    <p>
+      To describe latency from one NUMA node to a cache of another NUMA node
+      the <code>latency</code> element has optional <code>cache</code>
+      attribute which in combination with <code>target</code> attribute creates
+      full reference to distant NUMA node's cache level. For instance,
+      <code>target='0' cache='1'</code> refers to the first level cache of NUMA
+      node 0.
+    </p>
+
     <h3><a id="elementsEvents">Events configuration</a></h3>
 
     <p>

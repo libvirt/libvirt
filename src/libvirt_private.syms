@@ -830,8 +830,14 @@ virNodeDeviceDeleteVport;
 virNodeDeviceGetParentName;
 
 # conf/numa_conf.h
+virDomainCacheAssociativityTypeFromString;
+virDomainCacheAssociativityTypeToString;
+virDomainCachePolicyTypeFromString;
+virDomainCachePolicyTypeToString;
 virDomainMemoryAccessTypeFromString;
 virDomainMemoryAccessTypeToString;
+virDomainMemoryLatencyTypeFromString;
+virDomainMemoryLatencyTypeToString;
 virDomainNumaCheckABIStability;
 virDomainNumaEquals;
 virDomainNumaFillCPUsInNode;

@@ -51,6 +51,39 @@ typedef enum {
 } virDomainMemoryAccess;
 VIR_ENUM_DECL(virDomainMemoryAccess);
 
+typedef enum {
+    VIR_DOMAIN_CACHE_ASSOCIATIVITY_NONE,    /* No associativity */
+    VIR_DOMAIN_CACHE_ASSOCIATIVITY_DIRECT,  /* Direct mapped cache */
+    VIR_DOMAIN_CACHE_ASSOCIATIVITY_FULL,    /* Fully associative cache */
+
+    VIR_DOMAIN_CACHE_ASSOCIATIVITY_LAST
+} virDomainCacheAssociativity;
+VIR_ENUM_DECL(virDomainCacheAssociativity);
+
+typedef enum {
+    VIR_DOMAIN_CACHE_POLICY_NONE,           /* No policy */
+    VIR_DOMAIN_CACHE_POLICY_WRITEBACK,      /* Write-back policy */
+    VIR_DOMAIN_CACHE_POLICY_WRITETHROUGH,   /* Write-through policy */
+
+    VIR_DOMAIN_CACHE_POLICY_LAST
+} virDomainCachePolicy;
+VIR_ENUM_DECL(virDomainCachePolicy);
+
+typedef enum {
+    VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY,
+    VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH,
+} virDomainNumaInterconnectType;
+
+typedef enum {
+    VIR_DOMAIN_MEMORY_LATENCY_NONE = 0, /* No memory latency defined */
+    VIR_DOMAIN_MEMORY_LATENCY_ACCESS,   /* Access latency */
+    VIR_DOMAIN_MEMORY_LATENCY_READ,     /* Read latency */
+    VIR_DOMAIN_MEMORY_LATENCY_WRITE,    /* Write latency */
+
+    VIR_DOMAIN_MEMORY_LATENCY_LAST
+} virDomainMemoryLatency;
+VIR_ENUM_DECL(virDomainMemoryLatency);
+
 
 virDomainNumaPtr virDomainNumaNew(void);
 void virDomainNumaFree(virDomainNumaPtr numa);
