@@ -46,8 +46,31 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: stricter validation for disk type='lun'
+        </summary>
+        <description>
+          The 'lun' type is meant for SCSI command passthrough, which can't be
+          achieved if qemu's block layer features are used. Disk type='lun' is now
+          allowed only when the format is 'raw' and no other block layer features
+          are requested.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: fixed regression in network device hotplug with new qemu versions
+        </summary>
+        <description>
+          Starting from QEMU-5.0 it's required to conform to strict schema when
+          hotplugging network devices. Libvirt didn't conform to the schema so
+          in versions prior to 6.4.0 network device hotplug fails in certain
+          cases. This version fixes it and adds stricter testing to prevent
+          further issues.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v6.3.0" date="2020-05-05">
