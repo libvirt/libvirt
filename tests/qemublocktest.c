@@ -1312,14 +1312,6 @@ mymain(void)
 
     TEST_BACKUP_BITMAP_CALCULATE("empty", bitmapSourceChain, "a", "empty");
 
-    TEST_BACKUP_BITMAP_CALCULATE("basic-flat", bitmapSourceChain, "current", "basic");
-    TEST_BACKUP_BITMAP_CALCULATE("basic-intermediate", bitmapSourceChain, "d", "basic");
-    TEST_BACKUP_BITMAP_CALCULATE("basic-deep", bitmapSourceChain, "a", "basic");
-
-    TEST_BACKUP_BITMAP_CALCULATE("snapshot-flat", bitmapSourceChain, "current", "snapshots");
-    TEST_BACKUP_BITMAP_CALCULATE("snapshot-intermediate", bitmapSourceChain, "d", "snapshots");
-    TEST_BACKUP_BITMAP_CALCULATE("snapshot-deep", bitmapSourceChain, "a", "snapshots");
-
 #define TEST_CHECKPOINT_DELETE_MERGE(testname, delbmp, parbmp, named) \
     do { \
         checkpointdeletedata.name = testname; \
@@ -1334,24 +1326,6 @@ mymain(void)
 
     TEST_CHECKPOINT_DELETE_MERGE("empty", "a", NULL, "empty");
 
-    TEST_CHECKPOINT_DELETE_MERGE("basic-noparent", "a", NULL, "basic");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate1", "b", "a", "basic");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate2", "c", "b", "basic");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate3", "d", "c", "basic");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-current", "current", "d", "basic");
-
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-noparent", "a", NULL, "snapshots");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate1", "b", "a", "snapshots");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate2", "c", "b", "snapshots");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate3", "d", "c", "snapshots");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-current", "current", "d", "snapshots");
-
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-noparent", "a", NULL, "snapshots-synthetic-checkpoint");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate1", "b", "a", "snapshots-synthetic-checkpoint");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate2", "c", "b", "snapshots-synthetic-checkpoint");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate3", "d", "c", "snapshots-synthetic-checkpoint");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-current", "current", "d", "snapshots-synthetic-checkpoint");
-
 #define TEST_BITMAP_VALIDATE(testname, bitmap, rc) \
     do { \
         blockbitmapvalidatedata.name = testname; \
@@ -1365,36 +1339,6 @@ mymain(void)
     } while (0)
 
     TEST_BITMAP_VALIDATE("empty", "a", false);
-
-    TEST_BITMAP_VALIDATE("basic", "a", true);
-    TEST_BITMAP_VALIDATE("basic", "b", true);
-    TEST_BITMAP_VALIDATE("basic", "c", true);
-    TEST_BITMAP_VALIDATE("basic", "d", true);
-    TEST_BITMAP_VALIDATE("basic", "current", true);
-
-    TEST_BITMAP_VALIDATE("snapshots", "a", true);
-    TEST_BITMAP_VALIDATE("snapshots", "b", true);
-    TEST_BITMAP_VALIDATE("snapshots", "c", true);
-    TEST_BITMAP_VALIDATE("snapshots", "d", true);
-    TEST_BITMAP_VALIDATE("snapshots", "current", true);
-
-    TEST_BITMAP_VALIDATE("synthetic", "a", false);
-    TEST_BITMAP_VALIDATE("synthetic", "b", true);
-    TEST_BITMAP_VALIDATE("synthetic", "c", true);
-    TEST_BITMAP_VALIDATE("synthetic", "d", true);
-    TEST_BITMAP_VALIDATE("synthetic", "current", true);
-
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "a", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "b", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "c", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "d", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "current", true);
-
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "a", false);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "b", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "c", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "d", false);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "current", true);
 
 #define TEST_BITMAP_BLOCKCOPY(testname, shllw, ndf) \
     do { \
@@ -1411,12 +1355,6 @@ mymain(void)
     TEST_BITMAP_BLOCKCOPY("empty-shallow", true, "empty");
     TEST_BITMAP_BLOCKCOPY("empty-deep", false, "empty");
 
-    TEST_BITMAP_BLOCKCOPY("basic-shallow", true, "basic");
-    TEST_BITMAP_BLOCKCOPY("basic-deep", false, "basic");
-
-    TEST_BITMAP_BLOCKCOPY("snapshots-shallow", true, "snapshots");
-    TEST_BITMAP_BLOCKCOPY("snapshots-deep", false, "snapshots");
-
 
 #define TEST_BITMAP_BLOCKCOMMIT(testname, topimg, baseimg, ndf) \
     do {\
@@ -1431,38 +1369,6 @@ mymain(void)
     } while (0)
 
     TEST_BITMAP_BLOCKCOMMIT("empty", 1, 2, "empty");
-
-    TEST_BITMAP_BLOCKCOMMIT("basic-1-2", 1, 2, "basic");
-    TEST_BITMAP_BLOCKCOMMIT("basic-1-3", 1, 3, "basic");
-    TEST_BITMAP_BLOCKCOMMIT("basic-2-3", 2, 3, "basic");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-1-2", 1, 2, "snapshots");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-1-3", 1, 3, "snapshots");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-1-4", 1, 4, "snapshots");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-1-5", 1, 5, "snapshots");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-2-3", 2, 3, "snapshots");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-2-4", 2, 4, "snapshots");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-2-5", 2, 5, "snapshots");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-3-4", 3, 4, "snapshots");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-3-5", 3, 5, "snapshots");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-4-5", 4, 5, "snapshots");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-2", 1, 2, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-3", 1, 3, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-4", 1, 4, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-5", 1, 5, "snapshots-synthetic-broken");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-2-3", 2, 3, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-2-4", 2, 4, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-2-5", 2, 5, "snapshots-synthetic-broken");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-3-4", 3, 4, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-3-5", 3, 5, "snapshots-synthetic-broken");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-4-5", 4, 5, "snapshots-synthetic-broken");
 
  cleanup:
     qemuTestDriverFree(&driver);
