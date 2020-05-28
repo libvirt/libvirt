@@ -1292,6 +1292,8 @@ mymain(void)
             ret = -1; \
     } while (0)
 
+    TEST_BITMAP_DETECT("empty");
+
     TEST_BITMAP_DETECT("basic");
     TEST_BITMAP_DETECT("synthetic");
     TEST_BITMAP_DETECT("snapshots");
@@ -1359,6 +1361,8 @@ mymain(void)
                        &blockbitmapvalidatedata) < 0) \
             ret = -1; \
     } while (0)
+
+    TEST_BITMAP_VALIDATE("empty", "a", false);
 
     TEST_BITMAP_VALIDATE("basic", "a", true);
     TEST_BITMAP_VALIDATE("basic", "b", true);
