@@ -1408,6 +1408,9 @@ mymain(void)
             ret = -1; \
     } while (0)
 
+    TEST_BITMAP_BLOCKCOPY("empty-shallow", true, "empty");
+    TEST_BITMAP_BLOCKCOPY("empty-deep", false, "empty");
+
     TEST_BITMAP_BLOCKCOPY("basic-shallow", true, "basic");
     TEST_BITMAP_BLOCKCOPY("basic-deep", false, "basic");
 
