@@ -158,7 +158,7 @@ mymain(void)
 }
 
 #if WITH_SELINUX
-VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libsecurityselinuxhelper.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/libsecurityselinuxhelper.so")
 #else
 VIR_TEST_MAIN(mymain)
 #endif

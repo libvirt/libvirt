@@ -4,7 +4,7 @@
 
 prefix=@abs_top_builddir@
 exec_prefix=@abs_top_builddir@
-libdir=@abs_top_builddir@/src/.libs
+libdir=@abs_top_builddir@/src
 includedir=@abs_top_builddir@/include
 source_includedir=@abs_top_srcdir@/include
 datarootdir=@abs_top_builddir@

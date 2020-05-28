@@ -15,7 +15,7 @@ fi
 
 output="/dev/null"
 use_valgrind=""
-ld_library_path="../src/.libs/"
+ld_library_path="../src/"
 if [ ! -z "$1" ] && [ "$1" = "-d" ]; then
     output="/dev/stdout"
     shift

@@ -140,7 +140,7 @@ int virTestMain(int argc,
         return virTestMain(argc, argv, func, __VA_ARGS__, NULL); \
     }
 
-#define VIR_TEST_MOCK(mock) (abs_builddir "/.libs/lib" mock "mock" MOCK_EXT)
+#define VIR_TEST_MOCK(mock) (abs_builddir "/lib" mock "mock" MOCK_EXT)
 
 virCapsPtr virTestGenericCapsInit(void);
 virCapsHostNUMAPtr virTestCapsBuildNUMATopology(int seq);

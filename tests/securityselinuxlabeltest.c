@@ -374,4 +374,4 @@ mymain(void)
 
 VIR_TEST_MAIN_PRELOAD(mymain,
                       VIR_TEST_MOCK("domaincaps"),
-                      abs_builddir "/.libs/libsecurityselinuxhelper.so")
+                      abs_builddir "/libsecurityselinuxhelper.so")

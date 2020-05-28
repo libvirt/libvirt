@@ -105,8 +105,8 @@ int main(int argc G_GNUC_UNUSED, char **argv)
     fprintf(stderr, "      .%*s 1   ", 39, "");
     signal(SIGSEGV, sigHandler);
 
-    if (!(lib = dlopen("./.libs/libshunload.so", RTLD_LAZY))) {
-        fprintf(stderr, "Cannot load ./.libs/libshunload.so %s\n", dlerror());
+    if (!(lib = dlopen(abs_builddir "/libshunload.so", RTLD_LAZY))) {
+        fprintf(stderr, "Cannot load ./libshunload.so %s\n", dlerror());
         return 1;
     }
     if (!(startup = dlsym(lib, "shunloadStart"))) {

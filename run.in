@@ -50,7 +50,7 @@ prepend()
 # Find this script.
 b=@abs_builddir@
 
-prepend LD_LIBRARY_PATH "$b/src/.libs"
+prepend LD_LIBRARY_PATH "$b/src"
 export LD_LIBRARY_PATH
 
 prepend PKG_CONFIG_PATH "$b/src"

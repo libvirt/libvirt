@@ -12,7 +12,7 @@
 # source git directory, it should be only slight modification to the following:
 #
 #     ./run stap --ldd -c src/libvirtd -d src/libvirtd
-#       examples/systemtap/lock-debug.stp src/.libs/libvirt.so
+#       examples/systemtap/lock-debug.stp src/libvirt.so
 #
 # Debug RWLock mechanisms as well.
 #

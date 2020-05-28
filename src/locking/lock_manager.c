@@ -139,7 +139,7 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
         if (!(modfile = virFileFindResourceFull(name,
                                                 NULL,
                                                 ".so",
-                                                abs_top_builddir "/src/.libs",
+                                                abs_top_builddir "/src",
                                                 LIBDIR "/libvirt/lock-driver",
                                                 "LIBVIRT_LOCK_MANAGER_PLUGIN_DIR")))
             goto cleanup;
