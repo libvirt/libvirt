@@ -181,8 +181,8 @@ bool virDomainNumatuneNodesetIsAvailable(virDomainNumaPtr numatune,
 bool virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
                                     int cellid);
 
-int virDomainNumaDefCPUParseXML(virDomainNumaPtr def, xmlXPathContextPtr ctxt);
-int virDomainNumaDefCPUFormatXML(virBufferPtr buf, virDomainNumaPtr def);
+int virDomainNumaDefParseXML(virDomainNumaPtr def, xmlXPathContextPtr ctxt);
+int virDomainNumaDefFormatXML(virBufferPtr buf, virDomainNumaPtr def);
 
 unsigned int virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa);
 

@@ -842,8 +842,8 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNumaPtr def,
 }
 
 int
-virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
-                            xmlXPathContextPtr ctxt)
+virDomainNumaDefParseXML(virDomainNumaPtr def,
+                         xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
@@ -970,8 +970,8 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
 
 
 int
-virDomainNumaDefCPUFormatXML(virBufferPtr buf,
-                             virDomainNumaPtr def)
+virDomainNumaDefFormatXML(virBufferPtr buf,
+                          virDomainNumaPtr def)
 {
     virDomainMemoryAccess memAccess;
     virTristateBool discard;

@@ -21391,7 +21391,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST, &def->cpu) < 0)
         goto error;
 
-    if (virDomainNumaDefCPUParseXML(def->numa, ctxt) < 0)
+    if (virDomainNumaDefParseXML(def->numa, ctxt) < 0)
         goto error;
 
     if (virDomainNumaGetCPUCountTotal(def->numa) > virDomainDefGetVcpusMax(def)) {
