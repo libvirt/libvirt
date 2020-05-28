@@ -216,6 +216,7 @@ bool virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
 
 int virDomainNumaDefParseXML(virDomainNumaPtr def, xmlXPathContextPtr ctxt);
 int virDomainNumaDefFormatXML(virBufferPtr buf, virDomainNumaPtr def);
+int virDomainNumaDefValidate(const virDomainNuma *def);
 
 unsigned int virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa);
 

@@ -1363,6 +1363,105 @@ virDomainNumaDefFormatXML(virBufferPtr buf,
 }
 
 
+int
+virDomainNumaDefValidate(const virDomainNuma *def)
+{
+    size_t i;
+    size_t j;
+
+    if (!def)
+        return 0;
+
+    for (i = 0; i < def->nmem_nodes; i++) {
+        const virDomainNumaNode *node = &def->mem_nodes[i];
+        g_autoptr(virBitmap) levelsSeen = virBitmapNewEmpty();
+
+        for (j = 0; j < node->ncaches; j++) {
+            const virDomainNumaCache *cache = &node->caches[j];
+
+            /* Relax this if there's ever fourth layer of cache */
+            if (cache->level > 3) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Ain't nobody heard of that much cache level"));
+                return -1;
+            }
+
+            if (virBitmapIsBitSet(levelsSeen, cache->level)) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Cache level '%u' already defined"),
+                               cache->level);
+                return -1;
+            }
+
+            if (virBitmapSetBitExpand(levelsSeen, cache->level))
+                return -1;
+        }
+    }
+
+    for (i = 0; i < def->ninterconnects; i++) {
+        const virDomainNumaInterconnect *l = &def->interconnects[i];
+
+        if (l->initiator >= def->nmem_nodes) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'initiator' refers to a non-existent NUMA node"));
+            return -1;
+        }
+
+        if (l->target >= def->nmem_nodes) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'target' refers to a non-existent NUMA node"));
+            return -1;
+        }
+
+        if (!def->mem_nodes[l->initiator].cpumask) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("NUMA nodes without CPUs can't be initiator"));
+            return -1;
+        }
+
+        if (l->cache > 0) {
+            for (j = 0; j < def->mem_nodes[l->target].ncaches; j++) {
+                const virDomainNumaCache *cache = def->mem_nodes[l->target].caches;
+
+                if (l->cache == cache->level)
+                    break;
+            }
+
+            if (j == def->mem_nodes[l->target].ncaches) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("'cache' refers to a non-existent NUMA node cache"));
+                return -1;
+            }
+        }
+
+        for (j = 0; j < i; j++) {
+            const virDomainNumaInterconnect *ll = &def->interconnects[j];
+
+            if (l->type == ll->type &&
+                l->initiator == ll->initiator &&
+                l->target == ll->target &&
+                l->cache == ll->cache &&
+                l->accessType == ll->accessType) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Duplicate info for NUMA latencies"));
+                return -1;
+            }
+
+
+            if (l->initiator != l->target &&
+                l->initiator == ll->target &&
+                l->target == ll->initiator) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Link already defined"));
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 unsigned int
 virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa)
 {

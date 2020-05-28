@@ -7321,6 +7321,9 @@ virDomainDefValidateInternal(const virDomainDef *def,
     if (virDomainDefCputuneValidate(def) < 0)
         return -1;
 
+    if (virDomainNumaDefValidate(def->numa) < 0)
+        return -1;
+
     return 0;
 }
 
