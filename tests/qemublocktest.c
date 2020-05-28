@@ -793,16 +793,15 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
 
     incremental = testQemuBackupGetIncremental(data->incremental);
 
-    if (!(mergebitmaps = qemuBackupDiskPrepareOneBitmapsChain(incremental,
-                                                              data->chain,
-                                                              nodedata,
-                                                              "testdisk"))) {
-        VIR_TEST_VERBOSE("failed to calculate merged bitmaps");
-        return -1;
+    if ((mergebitmaps = qemuBackupDiskPrepareOneBitmapsChain(incremental,
+                                                             data->chain,
+                                                             nodedata,
+                                                             "testdisk"))) {
+        if (!(actual = virJSONValueToString(mergebitmaps, true)))
+            return -1;
+    } else {
+        actual = g_strdup("NULL\n");
     }
-
-    if (!(actual = virJSONValueToString(mergebitmaps, true)))
-        return -1;
 
     return virTestCompareToFile(actual, expectpath);
 }
@@ -1311,6 +1310,8 @@ mymain(void)
                        &backupbitmapcalcdata) < 0) \
             ret = -1; \
     } while (0)
+
+    TEST_BACKUP_BITMAP_CALCULATE("empty", bitmapSourceChain, "a", "empty");
 
     TEST_BACKUP_BITMAP_CALCULATE("basic-flat", bitmapSourceChain, "current", "basic");
     TEST_BACKUP_BITMAP_CALCULATE("basic-intermediate", bitmapSourceChain, "d", "basic");
