@@ -851,13 +851,12 @@ testQemuCheckpointDeleteMerge(const void *opaque)
                                          data->parentbitmap,
                                          actions,
                                          "testdisk",
-                                         &reopenimages) < 0) {
-        VIR_TEST_VERBOSE("failed to generate checkpoint delete transaction\n");
-        return -1;
+                                         &reopenimages) >= 0) {
+        if (virJSONValueToBuffer(actions, &buf, true) < 0)
+            return -1;
+    } else {
+        virBufferAddLit(&buf, "NULL\n");
     }
-
-    if (virJSONValueToBuffer(actions, &buf, true) < 0)
-        return -1;
 
     if (reopenimages) {
         virBufferAddLit(&buf, "reopen nodes:\n");
@@ -1332,6 +1331,8 @@ mymain(void)
                        testQemuCheckpointDeleteMerge, &checkpointdeletedata) < 0) \
         ret = -1; \
     } while (0)
+
+    TEST_CHECKPOINT_DELETE_MERGE("empty", "a", NULL, "empty");
 
     TEST_CHECKPOINT_DELETE_MERGE("basic-noparent", "a", NULL, "basic");
     TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate1", "b", "a", "basic");
