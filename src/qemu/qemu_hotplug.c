@@ -3770,15 +3770,15 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
          * where this can only require a minor (or even no) change,
          * but in most cases we need to do a full reconnection.
          *
-         * If we switch (in either direction) between type='bridge'
-         * and type='network' (for a traditional managed virtual
-         * network that uses a host bridge, i.e. forward
-         * mode='route|nat'), we just need to change the bridge.
+         * As long as both the new and old types use a tap device
+         * connected to a host bridge (ie VIR_DOMAIN_NET_TYPE_NETWORK
+         * or VIR_DOMAIN_NET_TYPE_BRIDGE), we just need to connect to
+         * the new bridge.
          */
-        if ((oldType == VIR_DOMAIN_NET_TYPE_NETWORK &&
-             newType == VIR_DOMAIN_NET_TYPE_BRIDGE) ||
-            (oldType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-             newType == VIR_DOMAIN_NET_TYPE_NETWORK)) {
+        if ((oldType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+             oldType == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
+            (newType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+             newType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
 
             needBridgeChange = true;
 
