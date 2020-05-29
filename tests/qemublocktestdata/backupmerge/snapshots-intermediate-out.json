@@ -1,0 +1,29 @@
+[
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "target_node",
+      "name": "target-bitmap-name",
+      "persistent": false,
+      "disabled": true,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "target_node",
+      "target": "target-bitmap-name",
+      "bitmaps": [
+        {
+          "node": "libvirt-1-format",
+          "name": "d"
+        },
+        {
+          "node": "libvirt-2-format",
+          "name": "d"
+        }
+      ]
+    }
+  }
+]

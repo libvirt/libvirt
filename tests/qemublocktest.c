@@ -1267,6 +1267,10 @@ mymain(void)
     TEST_BACKUP_BITMAP_CALCULATE("basic-intermediate", bitmapSourceChain, "d", "basic");
     TEST_BACKUP_BITMAP_CALCULATE("basic-deep", bitmapSourceChain, "a", "basic");
 
+    TEST_BACKUP_BITMAP_CALCULATE("snapshots-flat", bitmapSourceChain, "current", "snapshots");
+    TEST_BACKUP_BITMAP_CALCULATE("snapshots-intermediate", bitmapSourceChain, "d", "snapshots");
+    TEST_BACKUP_BITMAP_CALCULATE("snapshots-deep", bitmapSourceChain, "a", "snapshots");
+
 #define TEST_CHECKPOINT_DELETE(testname, delbmp, named) \
     do { \
         checkpointdeletedata.name = testname; \
