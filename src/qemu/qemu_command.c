@@ -7123,10 +7123,10 @@ qemuBuildIOThreadCommandLine(virCommandPtr cmd,
 
 
 static int
-qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
-                    virDomainDefPtr def,
-                    virCommandPtr cmd,
-                    qemuDomainObjPrivatePtr priv)
+qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
+                         virDomainDefPtr def,
+                         virCommandPtr cmd,
+                         qemuDomainObjPrivatePtr priv)
 {
     size_t i, j;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
@@ -9726,7 +9726,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         return NULL;
 
     if (virDomainNumaGetNodeCount(def->numa) &&
-        qemuBuildNumaArgStr(cfg, def, cmd, priv) < 0)
+        qemuBuildNumaCommandLine(cfg, def, cmd, priv) < 0)
         return NULL;
 
     if (qemuBuildMemoryDeviceCommandLine(cmd, cfg, def, priv) < 0)
