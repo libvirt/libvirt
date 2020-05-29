@@ -143,5 +143,5 @@ More optional elements can be specified
   <driver type='virtiofs' queue='1024'/>
   <binary path='/usr/libexec/virtiofsd' xattr='on'>
     <cache mode='always'/>
-    <lock posix_lock='on' flock='on'/>
+    <lock posix='on' flock='on'/>
   </binary>
