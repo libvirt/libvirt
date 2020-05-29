@@ -1362,6 +1362,20 @@ mymain(void)
     TEST_BITMAP_BLOCKCOMMIT("basic-1-3", 1, 3, "basic");
     TEST_BITMAP_BLOCKCOMMIT("basic-2-3", 2, 3, "basic");
 
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-1-2", 1, 2, "snapshots");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-1-3", 1, 3, "snapshots");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-1-4", 1, 4, "snapshots");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-1-5", 1, 5, "snapshots");
+
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-2-3", 2, 3, "snapshots");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-2-4", 2, 4, "snapshots");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-2-5", 2, 5, "snapshots");
+
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-3-4", 3, 4, "snapshots");
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-3-5", 3, 5, "snapshots");
+
+    TEST_BITMAP_BLOCKCOMMIT("snapshots-4-5", 4, 5, "snapshots");
+
  cleanup:
     qemuTestDriverFree(&driver);
     VIR_FREE(capslatest_x86_64);

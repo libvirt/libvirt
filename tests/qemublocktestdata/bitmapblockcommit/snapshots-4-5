@@ -1,0 +1,16 @@
+merge bitmpas:
+[
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-5-format",
+      "target": "a",
+      "bitmaps": [
+        {
+          "node": "libvirt-4-format",
+          "name": "a"
+        }
+      ]
+    }
+  }
+]
