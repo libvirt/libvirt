@@ -17381,14 +17381,15 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         if (blockdev && !job->jobflagsmissing) {
             bool shallow = job->jobflags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
             bool reuse = job->jobflags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT;
-            g_autoptr(virHashTable) blockNamedNodeData = NULL;
 
-            if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
-                return -1;
+            actions = virJSONValueNewArray();
 
-            if (qemuBlockBitmapsHandleBlockcopy(disk->src, disk->mirror,
-                                                blockNamedNodeData,
-                                                shallow, &actions) < 0)
+            if (qemuMonitorTransactionBitmapAdd(actions,
+                                                disk->mirror->nodeformat,
+                                                "libvirt-tmp-activewrite",
+                                                false,
+                                                false,
+                                                0) < 0)
                 return -1;
 
             /* Open and install the backing chain of 'mirror' late if we can use
