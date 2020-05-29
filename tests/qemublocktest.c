@@ -1358,6 +1358,10 @@ mymain(void)
 
     TEST_BITMAP_BLOCKCOMMIT("empty", 1, 2, "empty");
 
+    TEST_BITMAP_BLOCKCOMMIT("basic-1-2", 1, 2, "basic");
+    TEST_BITMAP_BLOCKCOMMIT("basic-1-3", 1, 3, "basic");
+    TEST_BITMAP_BLOCKCOMMIT("basic-2-3", 2, 3, "basic");
+
  cleanup:
     qemuTestDriverFree(&driver);
     VIR_FREE(capslatest_x86_64);
