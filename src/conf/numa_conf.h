@@ -222,3 +222,31 @@ unsigned int virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa);
 
 int virDomainNumaFillCPUsInNode(virDomainNumaPtr numa, size_t node,
                                 unsigned int maxCpus);
+
+bool virDomainNumaHasHMAT(const virDomainNuma *numa);
+
+size_t virDomainNumaGetNodeCacheCount(const virDomainNuma *numa,
+                                       size_t node);
+
+int virDomainNumaGetNodeCache(const virDomainNuma *numa,
+                              size_t node,
+                              size_t cache,
+                              unsigned int *level,
+                              unsigned int *size,
+                              unsigned int *line,
+                              virDomainCacheAssociativity *associativity,
+                              virDomainCachePolicy *policy);
+
+ssize_t virDomainNumaGetNodeInitiator(const virDomainNuma *numa,
+                                      size_t node);
+
+size_t virDomainNumaGetInterconnectsCount(const virDomainNuma *numa);
+
+int virDomainNumaGetInterconnect(const virDomainNuma *numa,
+                                 size_t i,
+                                 virDomainNumaInterconnectType *type,
+                                 unsigned int *initiator,
+                                 unsigned int *target,
+                                 unsigned int *cache,
+                                 virDomainMemoryLatency *accessType,
+                                 unsigned long *value);

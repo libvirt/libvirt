@@ -1829,3 +1829,142 @@ virDomainNumaFillCPUsInNode(virDomainNumaPtr numa,
 
     return 0;
 }
+
+
+bool
+virDomainNumaHasHMAT(const virDomainNuma *numa)
+{
+    size_t i;
+
+    if (!numa)
+        return false;
+
+    if (numa->ninterconnects)
+        return true;
+
+    for (i = 0; i < numa->nmem_nodes; i++) {
+        if (numa->mem_nodes[i].ncaches)
+            return true;
+    }
+
+    return false;
+}
+
+
+size_t
+virDomainNumaGetNodeCacheCount(const virDomainNuma *numa,
+                               size_t node)
+{
+    if (!numa || node >= numa->nmem_nodes)
+        return 0;
+
+    return numa->mem_nodes[node].ncaches;
+}
+
+
+int
+virDomainNumaGetNodeCache(const virDomainNuma *numa,
+                          size_t node,
+                          size_t cache,
+                          unsigned int *level,
+                          unsigned int *size,
+                          unsigned int *line,
+                          virDomainCacheAssociativity *associativity,
+                          virDomainCachePolicy *policy)
+{
+    const virDomainNumaNode *cell;
+
+    if (!numa || node >= numa->nmem_nodes)
+        return -1;
+
+    cell = &numa->mem_nodes[node];
+
+    if (cache >= cell->ncaches)
+        return -1;
+
+    *level = cell->caches[cache].level;
+    *size = cell->caches[cache].size;
+    *line = cell->caches[cache].line;
+    *associativity = cell->caches[cache].associativity;
+    *policy = cell->caches[cache].policy;
+    return 0;
+}
+
+
+ssize_t
+virDomainNumaGetNodeInitiator(const virDomainNuma *numa,
+                              size_t node)
+{
+    size_t i;
+    unsigned int maxBandwidth = 0;
+    ssize_t candidateBandwidth = -1;
+    unsigned int minLatency = UINT_MAX;
+    ssize_t candidateLatency = -1;
+
+    if (!numa || node >= numa->nmem_nodes)
+        return -1;
+
+    for (i = 0; i < numa->ninterconnects; i++) {
+        const virDomainNumaInterconnect *l = &numa->interconnects[i];
+
+        if (l->target != node)
+            continue;
+
+        switch (l->type) {
+        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY:
+            if (l->value < minLatency) {
+                minLatency = l->value;
+                candidateLatency = l->initiator;
+            }
+            break;
+
+        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
+            if (l->value > maxBandwidth) {
+                maxBandwidth = l->value;
+                candidateBandwidth = l->initiator;
+            }
+            break;
+        }
+    }
+
+    if (candidateLatency >= 0)
+        return candidateLatency;
+
+    return candidateBandwidth;
+}
+
+
+size_t
+virDomainNumaGetInterconnectsCount(const virDomainNuma *numa)
+{
+    if (!numa)
+        return 0;
+
+    return numa->ninterconnects;
+}
+
+
+int
+virDomainNumaGetInterconnect(const virDomainNuma *numa,
+                             size_t i,
+                             virDomainNumaInterconnectType *type,
+                             unsigned int *initiator,
+                             unsigned int *target,
+                             unsigned int *cache,
+                             virDomainMemoryLatency *accessType,
+                             unsigned long *value)
+{
+    const virDomainNumaInterconnect *l;
+
+    if (!numa || i >= numa->ninterconnects)
+        return -1;
+
+    l = &numa->interconnects[i];
+    *type = l->type;
+    *initiator = l->initiator;
+    *target = l->target;
+    *cache = l->cache;
+    *accessType = l->accessType;
+    *value = l->value;
+    return 0;
+}
