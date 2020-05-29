@@ -243,10 +243,6 @@
       <base node='libvirt-19-format'/>
       <top node='libvirt-17-format'/>
       <deleteCommittedImages/>
-      <disabledBaseBitmaps>
-        <bitmap name='test'/>
-        <bitmap name='test1'/>
-      </disabledBaseBitmaps>
     </blockjob>
     <blockjob name='create-libvirt-1337-storage' type='create' state='running'>
       <create mode='storage'/>
