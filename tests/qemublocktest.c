@@ -826,7 +826,7 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
 
 static const char *checkpointDeletePrefix = "qemublocktestdata/checkpointdelete/";
 
-struct testQemuCheckpointDeleteMergeData {
+struct testQemuCheckpointDeleteData {
     const char *name;
     virStorageSourcePtr chain;
     const char *deletebitmap;
@@ -835,9 +835,9 @@ struct testQemuCheckpointDeleteMergeData {
 
 
 static int
-testQemuCheckpointDeleteMerge(const void *opaque)
+testQemuCheckpointDelete(const void *opaque)
 {
-    const struct testQemuCheckpointDeleteMergeData *data = opaque;
+    const struct testQemuCheckpointDeleteData *data = opaque;
     g_autofree char *actual = NULL;
     g_autofree char *expectpath = NULL;
     g_autoptr(virJSONValue) actions = NULL;
@@ -1037,7 +1037,7 @@ mymain(void)
     struct testJSONtoJSONData jsontojsondata;
     struct testQemuImageCreateData imagecreatedata;
     struct testQemuBackupIncrementalBitmapCalculateData backupbitmapcalcdata;
-    struct testQemuCheckpointDeleteMergeData checkpointdeletedata;
+    struct testQemuCheckpointDeleteData checkpointdeletedata;
     struct testQemuBlockBitmapValidateData blockbitmapvalidatedata;
     struct testQemuBlockBitmapBlockcopyData blockbitmapblockcopydata;
     struct testQemuBlockBitmapBlockcommitData blockbitmapblockcommitdata;
@@ -1317,18 +1317,18 @@ mymain(void)
 
     TEST_BACKUP_BITMAP_CALCULATE("empty", bitmapSourceChain, "a", "empty");
 
-#define TEST_CHECKPOINT_DELETE_MERGE(testname, delbmp, named) \
+#define TEST_CHECKPOINT_DELETE(testname, delbmp, named) \
     do { \
         checkpointdeletedata.name = testname; \
         checkpointdeletedata.chain = bitmapSourceChain; \
         checkpointdeletedata.deletebitmap = delbmp; \
         checkpointdeletedata.nodedatafile = named; \
         if (virTestRun("checkpoint delete " testname, \
-                       testQemuCheckpointDeleteMerge, &checkpointdeletedata) < 0) \
+                       testQemuCheckpointDelete, &checkpointdeletedata) < 0) \
         ret = -1; \
     } while (0)
 
-    TEST_CHECKPOINT_DELETE_MERGE("empty", "a", "empty");
+    TEST_CHECKPOINT_DELETE("empty", "a", "empty");
 
 #define TEST_BITMAP_VALIDATE(testname, bitmap, rc) \
     do { \
