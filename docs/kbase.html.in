@@ -36,6 +36,9 @@
 
         <dt><a href="kbase/virtiofs.html">Virtio-FS</a></dt>
         <dd>Share a filesystem between the guest and the host</dd>
+
+        <dt><a href="kbase/kvm-realtime.html">KVM real time</a></dt>
+        <dd>Run real time workloads in guests on a KVM hypervisor</dd>
       </dl>
     </div>
 
