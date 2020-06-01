@@ -4,7 +4,6 @@ Sharing files with Virtio-FS
 
 .. contents::
 
-=========
 Virtio-FS
 =========
 
@@ -14,7 +13,6 @@ is designed to offer local file system semantics and performance.
 
 See https://virtio-fs.gitlab.io/
 
-==========
 Host setup
 ==========
 
@@ -45,7 +43,6 @@ Either of the following:
 
       # virsh allocpages 2M 1024
 
-===========
 Guest setup
 ===========
 
@@ -132,7 +129,6 @@ Guest setup
 
    Note: this requires virtiofs support in the guest kernel (Linux v5.4 or later)
 
-===================
 Optional parameters
 ===================
 
