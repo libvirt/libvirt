@@ -1,0 +1,42 @@
+[
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-1-format",
+      "name": "a"
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-2-format",
+      "name": "a"
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-3-format",
+      "name": "a"
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-4-format",
+      "name": "a"
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-5-format",
+      "name": "a"
+    }
+  }
+]
+reopen nodes:
+libvirt-5-format
+libvirt-4-format
+libvirt-3-format
+libvirt-2-format

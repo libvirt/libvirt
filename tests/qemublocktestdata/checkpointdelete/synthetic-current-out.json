@@ -1,0 +1,9 @@
+[
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-1-format",
+      "name": "current"
+    }
+  }
+]

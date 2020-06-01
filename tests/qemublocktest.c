@@ -1330,6 +1330,24 @@ mymain(void)
 
     TEST_CHECKPOINT_DELETE("empty", "a", "empty");
 
+    TEST_CHECKPOINT_DELETE("basic-noparent", "a", "basic");
+    TEST_CHECKPOINT_DELETE("basic-intermediate1", "b", "basic");
+    TEST_CHECKPOINT_DELETE("basic-intermediate2", "c", "basic");
+    TEST_CHECKPOINT_DELETE("basic-intermediate3", "d", "basic");
+    TEST_CHECKPOINT_DELETE("basic-current", "current", "basic");
+
+    TEST_CHECKPOINT_DELETE("snapshots-noparent", "a", "snapshots");
+    TEST_CHECKPOINT_DELETE("snapshots-intermediate1", "b", "snapshots");
+    TEST_CHECKPOINT_DELETE("snapshots-intermediate2", "c", "snapshots");
+    TEST_CHECKPOINT_DELETE("snapshots-intermediate3", "d", "snapshots");
+    TEST_CHECKPOINT_DELETE("snapshots-current", "current", "snapshots");
+
+    TEST_CHECKPOINT_DELETE("synthetic-noparent", "a", "synthetic");
+    TEST_CHECKPOINT_DELETE("synthetic-intermediate1", "b", "synthetic");
+    TEST_CHECKPOINT_DELETE("synthetic-intermediate2", "c", "synthetic");
+    TEST_CHECKPOINT_DELETE("synthetic-intermediate3", "d", "synthetic");
+    TEST_CHECKPOINT_DELETE("synthetic-current", "current", "synthetic");
+
 #define TEST_BITMAP_VALIDATE(testname, bitmap, rc) \
     do { \
         blockbitmapvalidatedata.name = testname; \

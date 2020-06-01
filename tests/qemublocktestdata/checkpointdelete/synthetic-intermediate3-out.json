@@ -1,0 +1,19 @@
+[
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-2-format",
+      "name": "d"
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-3-format",
+      "name": "d"
+    }
+  }
+]
+reopen nodes:
+libvirt-3-format
+libvirt-2-format
