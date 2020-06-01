@@ -1,0 +1,144 @@
+[
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "mirror-format-node",
+      "name": "a",
+      "persistent": true,
+      "disabled": false,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "mirror-format-node",
+      "target": "a",
+      "bitmaps": [
+        {
+          "node": "libvirt-1-format",
+          "name": "a"
+        },
+        {
+          "node": "mirror-format-node",
+          "name": "libvirt-tmp-activewrite"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "mirror-format-node",
+      "name": "b",
+      "persistent": true,
+      "disabled": false,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "mirror-format-node",
+      "target": "b",
+      "bitmaps": [
+        {
+          "node": "libvirt-1-format",
+          "name": "b"
+        },
+        {
+          "node": "mirror-format-node",
+          "name": "libvirt-tmp-activewrite"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "mirror-format-node",
+      "name": "c",
+      "persistent": true,
+      "disabled": false,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "mirror-format-node",
+      "target": "c",
+      "bitmaps": [
+        {
+          "node": "libvirt-1-format",
+          "name": "c"
+        },
+        {
+          "node": "mirror-format-node",
+          "name": "libvirt-tmp-activewrite"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "mirror-format-node",
+      "name": "d",
+      "persistent": true,
+      "disabled": false,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "mirror-format-node",
+      "target": "d",
+      "bitmaps": [
+        {
+          "node": "libvirt-1-format",
+          "name": "d"
+        },
+        {
+          "node": "mirror-format-node",
+          "name": "libvirt-tmp-activewrite"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "mirror-format-node",
+      "name": "current",
+      "persistent": true,
+      "disabled": false,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "mirror-format-node",
+      "target": "current",
+      "bitmaps": [
+        {
+          "node": "libvirt-1-format",
+          "name": "current"
+        },
+        {
+          "node": "mirror-format-node",
+          "name": "libvirt-tmp-activewrite"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "mirror-format-node",
+      "name": "libvirt-tmp-activewrite"
+    }
+  }
+]

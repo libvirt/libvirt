@@ -1346,6 +1346,11 @@ mymain(void)
     TEST_BITMAP_BLOCKCOPY("empty-shallow", true, "empty");
     TEST_BITMAP_BLOCKCOPY("empty-deep", false, "empty");
 
+    TEST_BITMAP_BLOCKCOPY("basic-shallow", true, "basic");
+    TEST_BITMAP_BLOCKCOPY("basic-deep", false, "basic");
+
+    TEST_BITMAP_BLOCKCOPY("snapshots-shallow", true, "snapshots");
+    TEST_BITMAP_BLOCKCOPY("snapshots-deep", false, "snapshots");
 
 #define TEST_BITMAP_BLOCKCOMMIT(testname, topimg, baseimg, ndf) \
     do {\
