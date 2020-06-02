@@ -58,7 +58,7 @@ AC_DEFUN([LIBVIRT_CHECK_NSS],[
     fi
 
     if test "x$with_nss_plugin" = "xyes" ; then
-      AC_DEFINE_UNQUOTED([NSS], 1, [whether nss plugin is enabled])
+      AC_DEFINE_UNQUOTED([WITH_NSS], 1, [whether nss plugin is enabled])
 
       AC_CHECK_TYPE([struct gaih_addrtuple],
         [AC_DEFINE([HAVE_STRUCT_GAIH_ADDRTUPLE], [1],
