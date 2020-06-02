@@ -579,3 +579,37 @@ foreach data : tests
   )
   test(data['name'], test_bin, env: tests_env)
 endforeach
+
+
+# helpers:
+#   each entry is a dictionary with following items:
+#   * name - name of the test which is also used as default source file name (required)
+#   * sources - override default sources based on name (optional, default [ '$name.c' ])
+#   * c_args - args used by test (optional, default [])
+#   * include - include_directories (optional, default [])
+#   * link_with - compiled libraries to link with (optional, default [])
+
+helpers = []
+
+foreach data : helpers
+  helper_sources = '@0@.c'.format(data['name'])
+  helper_bin = executable(
+    data['name'],
+    [
+      data.get('sources', helper_sources),
+    ],
+    c_args: [
+      data.get('c_args', []),
+    ],
+    dependencies: [
+      tests_dep,
+    ],
+    include_directories: [
+      data.get('include', []),
+    ],
+    link_with: [
+      data['link_with'],
+    ],
+    export_dynamic: true,
+  )
+endforeach
