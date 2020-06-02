@@ -6254,6 +6254,21 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
             }
             virBufferAddLit(buf, ",aarch64=off");
         }
+
+        if (cpu->migratable) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE)) {
+                virBufferAsprintf(buf, ",migratable=%s",
+                                  virTristateSwitchTypeToString(cpu->migratable));
+            } else if (ARCH_IS_X86(def->os.arch) &&
+                       cpu->migratable == VIR_TRISTATE_SWITCH_OFF) {
+                /* This is the default on x86 */
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Migratable attribute for host-passthrough "
+                                 "CPU is not supported by QEMU binary"));
+                return -1;
+            }
+        }
         break;
 
     case VIR_CPU_MODE_HOST_MODEL:
