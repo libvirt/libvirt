@@ -1303,6 +1303,7 @@ mymain(void)
 
     TEST_BITMAP_DETECT("basic");
     TEST_BITMAP_DETECT("snapshots");
+    TEST_BITMAP_DETECT("synthetic");
 
 #define TEST_BACKUP_BITMAP_CALCULATE(testname, source, incrbackup, named) \
     do { \
@@ -1357,6 +1358,16 @@ mymain(void)
     TEST_BITMAP_VALIDATE("snapshots", "c", true);
     TEST_BITMAP_VALIDATE("snapshots", "d", true);
     TEST_BITMAP_VALIDATE("snapshots", "current", true);
+
+    TEST_BITMAP_VALIDATE("synthetic", "a", false);
+    TEST_BITMAP_VALIDATE("synthetic", "b", false);
+    TEST_BITMAP_VALIDATE("synthetic", "c", false);
+    TEST_BITMAP_VALIDATE("synthetic", "d", false);
+    TEST_BITMAP_VALIDATE("synthetic", "current", false);
+    TEST_BITMAP_VALIDATE("synthetic", "top-ok", true);
+    TEST_BITMAP_VALIDATE("synthetic", "top-inactive", false);
+    TEST_BITMAP_VALIDATE("synthetic", "top-transient", false);
+    TEST_BITMAP_VALIDATE("synthetic", "top-inactive-transient", false);
 
 #define TEST_BITMAP_BLOCKCOPY(testname, shllw, ndf) \
     do { \
