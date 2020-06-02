@@ -1490,7 +1490,7 @@
 ...</pre>
 
 <pre>
-&lt;cpu mode='host-passthrough'&gt;
+&lt;cpu mode='host-passthrough' migratable='off'&gt;
   &lt;cache mode='passthrough'/&gt;
   &lt;feature policy='disable' name='lahf_lm'/&gt;
 ...</pre>
@@ -1639,7 +1639,17 @@
           using host-passthrough is dangerous if the source and destination hosts
           are not identical in both hardware, QEMU version, microcode version
           and configuration. If such a migration is attempted then the guest may
-          hang or crash upon resuming execution on the destination host.</dd>
+          hang or crash upon resuming execution on the destination host.
+          Depending on hypervisor version the virtual CPU may or may not
+          contain features which may block migration even to an identical host.
+          <span class="since">Since 6.5.0</span> optional
+          <code>migratable</code> attribute may be used to explicitly request
+          such features to be removed from (<code>on</code>) or kept in
+          (<code>off</code>) the virtual CPU. This attribute does not make
+          migration to another host safer: even with
+          <code>migratable='on'</code> migration will be dangerous unless both
+          hosts are identical as described above.
+        </dd>
         </dl>
 
         Both <code>host-model</code> and <code>host-passthrough</code> modes

@@ -5469,6 +5469,11 @@
       <optional>
         <ref name="cpuCheck"/>
       </optional>
+      <optional>
+        <attribute name="migratable">
+          <ref name="virOnOff"/>
+        </attribute>
+      </optional>
       <interleave>
         <optional>
           <ref name="cpuModel"/>

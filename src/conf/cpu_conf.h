@@ -141,6 +141,7 @@ struct _virCPUDef {
     virCPUFeatureDefPtr features;
     virCPUCacheDefPtr cache;
     virHostCPUTscInfoPtr tsc;
+    virTristateSwitch migratable; /* for host-passthrough mode */
 };
 
 virCPUDefPtr virCPUDefNew(void);

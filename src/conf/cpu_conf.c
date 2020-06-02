@@ -243,6 +243,7 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
     copy->cores = cpu->cores;
     copy->threads = cpu->threads;
     copy->arch = cpu->arch;
+    copy->migratable = cpu->migratable;
 
     if (cpu->cache) {
         if (VIR_ALLOC(copy->cache) < 0)
@@ -333,6 +334,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     g_autofree char *fallback = NULL;
     g_autofree char *vendor_id = NULL;
     g_autofree char *tscScaling = NULL;
+    g_autofree char *migratable = NULL;
     virHostCPUTscInfoPtr tsc = NULL;
 
     *cpu = NULL;
@@ -384,6 +386,26 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             def->mode = -1;
         else
             def->mode = VIR_CPU_MODE_CUSTOM;
+    }
+
+    if ((migratable = virXMLPropString(ctxt->node, "migratable"))) {
+        int val;
+
+        if (def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Attribute migratable is only allowed for "
+                             "host-passthrough CPU"));
+            return -1;
+        }
+
+        if ((val = virTristateSwitchTypeFromString(migratable)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid value in migratable attribute: '%s'"),
+                           migratable);
+            return -1;
+        }
+
+        def->migratable = val;
     }
 
     if (def->type == VIR_CPU_TYPE_GUEST) {
@@ -697,6 +719,11 @@ virCPUDefFormatBufFull(virBufferPtr buf,
         if (def->check) {
             virBufferAsprintf(&attributeBuf, " check='%s'",
                               virCPUCheckTypeToString(def->check));
+        }
+
+        if (def->mode == VIR_CPU_MODE_HOST_PASSTHROUGH && def->migratable) {
+            virBufferAsprintf(&attributeBuf, " migratable='%s'",
+                              virTristateSwitchTypeToString(def->migratable));
         }
     }
 
