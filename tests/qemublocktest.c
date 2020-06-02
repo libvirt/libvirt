@@ -647,6 +647,23 @@ testQemuDetectBitmaps(const void *opaque)
 }
 
 
+static void
+testQemuBitmapListPrint(const char *title,
+                        GSList *next,
+                        virBufferPtr buf)
+{
+    if (!next)
+        return;
+
+    virBufferAsprintf(buf, "%s\n", title);
+
+    for (; next; next = next->next) {
+        virStorageSourcePtr src = next->data;
+        virBufferAsprintf(buf, "%s\n", src->nodeformat);
+    }
+}
+
+
 static virStorageSourcePtr
 testQemuBackupIncrementalBitmapCalculateGetFakeImage(size_t idx)
 {
@@ -829,7 +846,6 @@ testQemuCheckpointDeleteMerge(const void *opaque)
     g_autoptr(virHashTable) nodedata = NULL;
     g_autoptr(GSList) reopenimages = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    GSList *tmp;
 
     expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
                                  checkpointDeletePrefix, data->name);
@@ -858,14 +874,7 @@ testQemuCheckpointDeleteMerge(const void *opaque)
         virBufferAddLit(&buf, "NULL\n");
     }
 
-    if (reopenimages) {
-        virBufferAddLit(&buf, "reopen nodes:\n");
-
-        for (tmp = reopenimages; tmp; tmp = tmp->next) {
-            virStorageSourcePtr src = tmp->data;
-            virBufferAsprintf(&buf, "%s\n", src->nodeformat);
-        }
-    }
+    testQemuBitmapListPrint("reopen nodes:", reopenimages, &buf);
 
     actual = virBufferContentAndReset(&buf);
 
