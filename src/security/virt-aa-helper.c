@@ -1175,6 +1175,18 @@ get_files(vahControl * ctl)
         }
     }
 
+    for (i = 0; i < ctl->def->nsysinfo; i++) {
+        size_t j;
+
+        for (j = 0; j < ctl->def->sysinfo[i]->nfw_cfgs; j++) {
+            virSysinfoFWCfgDefPtr f = &ctl->def->sysinfo[i]->fw_cfgs[j];
+
+            if (f->file &&
+                vah_add_file(&buf, f->file, "r") != 0)
+                goto cleanup;
+        }
+    }
+
     for (i = 0; i < ctl->def->nshmems; i++) {
         virDomainShmemDef *shmem = ctl->def->shmems[i];
         /* explicit server paths can be on any model to overwrites defaults.
