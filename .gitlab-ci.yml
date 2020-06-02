@@ -3,6 +3,7 @@ variables:
 
 stages:
   - sanity_checks
+  - containers
   - builds
 
 .script_variables: &script_variables |
@@ -14,10 +15,43 @@ stages:
 
 # Common templates
 
+# Containers that are necessary for the default pipeline
+.container_default_job_template: &container_default_job_definition
+  image: docker:stable
+  stage: containers
+  services:
+    - docker:dind
+  before_script:
+    - export TAG="$CI_REGISTRY_IMAGE/ci-$NAME:latest"
+    - export COMMON_TAG="$CI_REGISTRY/libvirt/libvirt/ci-$NAME:latest"
+    - docker info
+    - docker login registry.gitlab.com -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+  script:
+    - docker pull "$TAG" || docker pull "$COMMON_TAG" || true
+    - docker build --cache-from "$TAG" --cache-from "$COMMON_TAG" --tag "$TAG" -f "ci/containers/libvirt-$NAME.Dockerfile" ci/containers
+    - docker push "$TAG"
+  after_script:
+    - docker logout
+
+# Containers that are only needed for the full pipeline
+.container_extra_job_template: &container_extra_job_definition
+  <<: *container_default_job_definition
+  only:
+    - master
+    - /^ci-full-.*$/
+
+# We build many containers which can be useful to debug problems but are not
+# needed for the pipeline itself to complete: those sometimes fail, and when
+# that happens it's mostly because of temporary issues with Debian sid. We
+# don't want those failures to affect the overall pipeline status
+.container_optional_job_template: &container_optional_job_definition
+  <<: *container_extra_job_definition
+  allow_failure: true
+
 # Default native build jobs that are always run
 .native_build_default_job_template: &native_build_default_job_definition
   stage: builds
-  image: quay.io/libvirt/buildenv-libvirt-$NAME:latest
+  image: $CI_REGISTRY_IMAGE/ci-$NAME:latest
   cache:
     paths:
       - ccache/
@@ -65,7 +99,7 @@ stages:
 # Default cross build jobs that are always run
 .cross_build_default_job_template: &cross_build_default_job_definition
   stage: builds
-  image: quay.io/libvirt/buildenv-libvirt-$NAME-cross-$CROSS:latest
+  image: $CI_REGISTRY_IMAGE/ci-$NAME-cross-$CROSS:latest
   cache:
     paths:
       - ccache/
@@ -85,6 +119,212 @@ stages:
   only:
     - master
     - /^ci-full-.*$/
+
+
+# Native container build jobs
+
+x64-centos-7-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: centos-7
+
+x64-centos-8-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: centos-8
+
+x64-centos-stream-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: centos-stream
+
+x64-debian-9-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: debian-9
+
+x64-debian-10-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: debian-10
+
+x64-debian-sid-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: debian-sid
+
+x64-fedora-31-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: fedora-31
+
+x64-fedora-32-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: fedora-32
+
+x64-fedora-rawhide-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: fedora-rawhide
+
+x64-opensuse-151-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: opensuse-151
+
+x64-ubuntu-1804-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: ubuntu-1804
+
+x64-ubuntu-2004-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: ubuntu-2004
+
+
+# Cross-build containers build jobs
+
+aarch64-debian-9-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-9-cross-aarch64
+
+armv6l-debian-9-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: debian-9-cross-armv6l
+
+armv7l-debian-9-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-9-cross-armv7l
+
+mips-debian-9-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: debian-9-cross-mips
+
+mips64el-debian-9-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: debian-9-cross-mips64el
+
+mipsel-debian-9-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-9-cross-mipsel
+
+ppc64le-debian-9-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-9-cross-ppc64le
+
+s390x-debian-9-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-9-cross-s390x
+
+aarch64-debian-10-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: debian-10-cross-aarch64
+
+armv6l-debian-10-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-10-cross-armv6l
+
+armv7-ldebian-10-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-10-cross-armv7l
+
+i686-debian-10-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-10-cross-i686
+
+mips-debian-10-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-10-cross-mips
+
+mips64el-debian-10-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-10-cross-mips64el
+
+mipsel-debian-10-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-10-cross-mipsel
+
+ppc64le-debian-10-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: debian-10-cross-ppc64le
+
+s390x-debian-10-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: debian-10-cross-s390x
+
+aarch64-debian-sid-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-sid-cross-aarch64
+
+armv6l-debian-sid-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-sid-cross-armv6l
+
+armv7-ldebian-sid-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: debian-sid-cross-armv7l
+
+i686-debian-sid-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: debian-sid-cross-i686
+
+mips-debian-sid-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-sid-cross-mips
+
+mips64el-debian-sid-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-sid-cross-mips64el
+
+mipsel-debian-sid-container:
+  <<: *container_extra_job_definition
+  variables:
+    NAME: debian-sid-cross-mipsel
+
+ppc64le-debian-sid-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-sid-cross-ppc64le
+
+s390x-debian-sid-container:
+  <<: *container_optional_job_definition
+  variables:
+    NAME: debian-sid-cross-s390x
+
+mingw32-fedora-rawhide-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: fedora-rawhide-cross-mingw32
+
+mingw64-fedora-rawhide-container:
+  <<: *container_default_job_definition
+  variables:
+    NAME: fedora-rawhide-cross-mingw64
 
 
 # Native architecture build + test jobs
@@ -113,6 +353,11 @@ x64-centos-8:
   <<: *native_build_extra_job_definition
   variables:
     NAME: centos-8
+
+x64-centos-stream:
+  <<: *native_build_extra_job_definition
+  variables:
+    NAME: centos-stream
 
 x64-fedora-31:
   <<: *native_build_extra_job_definition
@@ -229,6 +474,7 @@ mingw64-fedora-rawhide:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=website
 website:
   stage: builds
+  image: $CI_REGISTRY_IMAGE/ci-centos-8:latest
   before_script:
     - *script_variables
   script:
@@ -239,7 +485,6 @@ website:
     - $MAKE -C docs install
     - cd ..
     - mv vroot/share/doc/libvirt/html/ website
-  image: quay.io/libvirt/buildenv-libvirt-centos-8:latest
   artifacts:
     expose_as: 'Website'
     name: 'website'
@@ -251,6 +496,7 @@ website:
 
 codestyle:
   stage: builds
+  image: $CI_REGISTRY_IMAGE/ci-centos-8:latest
   before_script:
     - *script_variables
   script:
@@ -258,7 +504,6 @@ codestyle:
     - cd build
     - ../autogen.sh || (cat config.log && exit 1)
     - $MAKE syntax-check
-  image: quay.io/libvirt/buildenv-libvirt-centos-8:latest
 
 
 # This artifact published by this job is downloaded to push to Weblate
@@ -266,6 +511,7 @@ codestyle:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=potfile
 potfile:
   stage: builds
+  image: $CI_REGISTRY_IMAGE/ci-centos-8:latest
   only:
     - master
   before_script:
@@ -278,7 +524,6 @@ potfile:
     - $MAKE -C po libvirt.pot
     - cd ..
     - cp po/libvirt.pot libvirt.pot
-  image: quay.io/libvirt/buildenv-libvirt-centos-8:latest
   artifacts:
     expose_as: 'Potfile'
     name: 'potfile'

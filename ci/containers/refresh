@@ -1,0 +1,41 @@
+#!/bin/sh
+
+if test -z "$1"
+then
+    echo "syntax: $0 PATH-TO-LCITOOL"
+    exit 1
+fi
+
+LCITOOL=$1
+
+if ! test -x "$LCITOOL"
+then
+    echo "$LCITOOL is not executable"
+    exit 1
+fi
+
+HOSTS=$($LCITOOL hosts | grep -v freebsd)
+
+for host in $HOSTS
+do
+    case "$host" in
+    libvirt-fedora-rawhide)
+        for cross in mingw32 mingw64
+        do
+            $LCITOOL dockerfile $host libvirt --cross $cross >$host-cross-$cross.Dockerfile
+        done
+        ;;
+    libvirt-debian-*)
+        for cross in aarch64 armv6l armv7l i686 mips mips64el mipsel ppc64le s390x
+        do
+            if test "$host" = "libvirt-debian-9" && test "$cross" = "i686"
+            then
+                continue
+            fi
+            $LCITOOL dockerfile $host libvirt --cross $cross >$host-cross-$cross.Dockerfile
+        done
+        ;;
+    esac
+
+    $LCITOOL dockerfile $host libvirt >$host.Dockerfile
+done
