@@ -5857,8 +5857,17 @@ virQEMUCapsFillDomainCPUCaps(virQEMUCapsPtr qemuCaps,
 {
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
                                       VIR_CPU_MODE_HOST_PASSTHROUGH,
-                                      domCaps->machine))
+                                      domCaps->machine)) {
         domCaps->cpu.hostPassthrough = true;
+
+        domCaps->cpu.hostPassthroughMigratable.report = true;
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE)) {
+            VIR_DOMAIN_CAPS_ENUM_SET(domCaps->cpu.hostPassthroughMigratable,
+                                     VIR_TRISTATE_SWITCH_ON);
+        }
+        VIR_DOMAIN_CAPS_ENUM_SET(domCaps->cpu.hostPassthroughMigratable,
+                                 VIR_TRISTATE_SWITCH_OFF);
+    }
 
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
                                       VIR_CPU_MODE_HOST_MODEL,

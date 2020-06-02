@@ -25,7 +25,11 @@
     </loader>
   </os>
   <cpu>
-    <mode name='host-passthrough' supported='yes'/>
+    <mode name='host-passthrough' supported='yes'>
+      <enum name='hostPassthroughMigratable'>
+        <value>off</value>
+      </enum>
+    </mode>
     <mode name='host-model' supported='no'/>
     <mode name='custom' supported='yes'>
       <model usable='unknown'>cortex-a9</model>

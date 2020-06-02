@@ -28,7 +28,11 @@
     </loader>
   </os>
   <cpu>
-    <mode name='host-passthrough' supported='yes'/>
+    <mode name='host-passthrough' supported='yes'>
+      <enum name='hostPassthroughMigratable'>
+        <value>off</value>
+      </enum>
+    </mode>
     <mode name='host-model' supported='yes'>
       <model fallback='forbid'>Haswell-noTSX</model>
       <vendor>Intel</vendor>
