@@ -4792,7 +4792,8 @@ qemuDomainDefSetDefaultCPU(virDomainDefPtr def,
 
 
 static int
-qemuDomainDefCPUPostParse(virDomainDefPtr def)
+qemuDomainDefCPUPostParse(virDomainDefPtr def,
+                          virQEMUCapsPtr qemuCaps)
 {
     virCPUFeatureDefPtr sveFeature = NULL;
     bool sveVectorLengthsProvided = false;
@@ -4886,6 +4887,15 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def)
 
             def->cpu->nfeatures++;
         }
+    }
+
+    if (qemuCaps &&
+        def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH &&
+        !def->cpu->migratable) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE))
+            def->cpu->migratable = VIR_TRISTATE_SWITCH_ON;
+        else if (ARCH_IS_X86(def->os.arch))
+            def->cpu->migratable = VIR_TRISTATE_SWITCH_OFF;
     }
 
     /* Nothing to be done if only CPU topology is specified. */
@@ -5033,7 +5043,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (qemuDomainDefVcpusPostParse(def) < 0)
         return -1;
 
-    if (qemuDomainDefCPUPostParse(def) < 0)
+    if (qemuDomainDefCPUPostParse(def, qemuCaps) < 0)
         return -1;
 
     if (qemuDomainDefTsegPostParse(def, qemuCaps) < 0)
