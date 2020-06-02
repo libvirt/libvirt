@@ -325,7 +325,7 @@ dot_html_in = \
 dot_rst = \
   $(notdir $(wildcard $(srcdir)/*.rst))
 dot_rst_html_in = \
-  $(dot_rst:%.rst=%.html)
+  $(dot_rst:%.rst=%.html.in)
 dot_html = \
   $(dot_html_generated_in:%.html.in=%.html) \
   $(dot_html_in:%.html.in=%.html) \
