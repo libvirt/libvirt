@@ -582,6 +582,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "tcg",
               "virtio-blk-pci.scsi.default.disabled",
               "pvscsi",
+
+              /* 370 */
+              "cpu.migratable",
     );
 
 
@@ -1641,6 +1644,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendMemfd[] 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMaxCPU[] = {
     { "unavailable-features", QEMU_CAPS_CPU_UNAVAILABLE_FEATURES },
     { "kvm-no-adjvtime", QEMU_CAPS_CPU_KVM_NO_ADJVTIME },
+    { "migratable", QEMU_CAPS_CPU_MIGRATABLE },
 };
 
 static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {

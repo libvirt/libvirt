@@ -200,6 +200,7 @@
   <flag name='i8042'/>
   <flag name='tcg'/>
   <flag name='pvscsi'/>
+  <flag name='cpu.migratable'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100289</microcodeVersion>
