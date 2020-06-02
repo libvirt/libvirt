@@ -17,6 +17,7 @@ stages:
 # Default native build jobs that are always run
 .native_build_default_job_template: &native_build_default_job_definition
   stage: builds
+  image: quay.io/libvirt/buildenv-libvirt-$NAME:latest
   cache:
     paths:
       - ccache/
@@ -64,6 +65,7 @@ stages:
 # Default cross build jobs that are always run
 .cross_build_default_job_template: &cross_build_default_job_definition
   stage: builds
+  image: quay.io/libvirt/buildenv-libvirt-$NAME-cross-$CROSS:latest
   cache:
     paths:
       - ccache/
@@ -89,47 +91,58 @@ stages:
 
 x64-debian-9:
   <<: *native_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-9:latest
+  variables:
+    NAME: debian-9
 
 x64-debian-10:
   <<: *native_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-10:latest
+  variables:
+    NAME: debian-10
 
 x64-debian-sid:
   <<: *native_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-sid:latest
+  variables:
+    NAME: debian-sid
 
 x64-centos-7:
   <<: *native_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-centos-7:latest
+  variables:
+    NAME: centos-7
 
 x64-centos-8:
   <<: *native_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-centos-8:latest
+  variables:
+    NAME: centos-8
 
 x64-fedora-31:
   <<: *native_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-fedora-31:latest
+  variables:
+    NAME: fedora-31
 
 x64-fedora-32:
   <<: *native_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-fedora-32:latest
+  variables:
+    NAME: fedora-32
 
 x64-fedora-rawhide:
   <<: *native_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-fedora-rawhide:latest
+  variables:
+    NAME: fedora-rawhide
 
 x64-opensuse-151:
   <<: *native_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-opensuse-151:latest
+  variables:
+    NAME: opensuse-151
 
 x64-ubuntu-1804:
   <<: *native_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-ubuntu-1804:latest
+  variables:
+    NAME: ubuntu-1804
 
 x64-ubuntu-2004:
   <<: *native_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-ubuntu-2004:latest
+  variables:
+    NAME: ubuntu-2004
 
 x64-freebsd-12-build:
   <<: *cirrus_build_default_job_definition
@@ -146,47 +159,69 @@ x64-macos-1015-build:
 
 armv6l-debian-9:
   <<: *cross_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-armv6l:latest
+  variables:
+    NAME: debian-9
+    CROSS: armv6l
 
 mips64el-debian-9:
   <<: *cross_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-mips64el:latest
+  variables:
+    NAME: debian-9
+    CROSS: mips64el
 
 mips-debian-9:
   <<: *cross_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-mips:latest
+  variables:
+    NAME: debian-9
+    CROSS: mips
 
 aarch64-debian-10:
   <<: *cross_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-10-cross-aarch64:latest
+  variables:
+    NAME: debian-10
+    CROSS: aarch64
 
 ppc64le-debian-10:
   <<: *cross_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-10-cross-ppc64le:latest
+  variables:
+    NAME: debian-10
+    CROSS: ppc64le
 
 s390x-debian-10:
   <<: *cross_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-10-cross-s390x:latest
+  variables:
+    NAME: debian-10
+    CROSS: s390x
 
 armv7l-debian-sid:
   <<: *cross_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-armv7l:latest
+  variables:
+    NAME: debian-sid
+    CROSS: armv7l
 
 i686-debian-sid:
   <<: *cross_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-i686:latest
+  variables:
+    NAME: debian-sid
+    CROSS: i686
 
 mipsel-debian-sid:
   <<: *cross_build_extra_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-mipsel:latest
+  variables:
+    NAME: debian-sid
+    CROSS: mipsel
 
 mingw32-fedora-rawhide:
   <<: *cross_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-fedora-rawhide-cross-mingw32:latest
+  variables:
+    NAME: fedora-rawhide
+    CROSS: mingw32
 
 mingw64-fedora-rawhide:
   <<: *cross_build_default_job_definition
-  image: quay.io/libvirt/buildenv-libvirt-fedora-rawhide-cross-mingw64:latest
+  variables:
+    NAME: fedora-rawhide
+    CROSS: mingw64
 
 
 # This artifact published by this job is downloaded by libvirt.org to
