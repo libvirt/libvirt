@@ -15271,28 +15271,6 @@
 }
 
 {
-  "execute": "query-cpu-model-expansion",
-  "arguments": {
-    "type": "static",
-    "model": {
-      "name": "host",
-      "props": {
-        "migratable": false
-      }
-    }
-  },
-  "id": "libvirt-37"
-}
-
-{
-  "id": "libvirt-37",
-  "error": {
-    "class": "GenericError",
-    "desc": "Property '.migratable' not found"
-  }
-}
-
-{
   "execute": "qmp_capabilities",
   "id": "libvirt-1"
 }

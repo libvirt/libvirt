@@ -18339,28 +18339,6 @@
 }
 
 {
-  "execute": "query-cpu-model-expansion",
-  "arguments": {
-    "type": "static",
-    "model": {
-      "name": "host",
-      "props": {
-        "migratable": false
-      }
-    }
-  },
-  "id": "libvirt-40"
-}
-
-{
-  "id": "libvirt-40",
-  "error": {
-    "class": "GenericError",
-    "desc": "Property '.migratable' not found"
-  }
-}
-
-{
   "execute": "qmp_capabilities",
   "id": "libvirt-1"
 }
@@ -21476,30 +21454,8 @@
 }
 
 {
-  "execute": "query-cpu-model-expansion",
-  "arguments": {
-    "type": "static",
-    "model": {
-      "name": "max",
-      "props": {
-        "migratable": false
-      }
-    }
-  },
-  "id": "libvirt-4"
-}
-
-{
-  "id": "libvirt-4",
-  "error": {
-    "class": "GenericError",
-    "desc": "Property '.migratable' not found"
-  }
-}
-
-{
   "execute": "query-machines",
-  "id": "libvirt-5"
+  "id": "libvirt-4"
 }
 
 {
@@ -21572,5 +21528,5 @@
       "cpu-max": 248
     }
   ],
-  "id": "libvirt-5"
+  "id": "libvirt-4"
 }

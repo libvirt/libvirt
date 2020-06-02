@@ -21377,28 +21377,6 @@
 }
 
 {
-  "execute": "query-cpu-model-expansion",
-  "arguments": {
-    "type": "full",
-    "model": {
-      "name": "host",
-      "props": {
-        "migratable": false
-      }
-    }
-  },
-  "id": "libvirt-44"
-}
-
-{
-  "id": "libvirt-44",
-  "error": {
-    "class": "GenericError",
-    "desc": "Parameter 'migratable' is unexpected"
-  }
-}
-
-{
   "execute": "qmp_capabilities",
   "id": "libvirt-1"
 }
@@ -21647,30 +21625,8 @@
 }
 
 {
-  "execute": "query-cpu-model-expansion",
-  "arguments": {
-    "type": "full",
-    "model": {
-      "name": "max",
-      "props": {
-        "migratable": false
-      }
-    }
-  },
-  "id": "libvirt-4"
-}
-
-{
-  "id": "libvirt-4",
-  "error": {
-    "class": "GenericError",
-    "desc": "Parameter 'migratable' is unexpected"
-  }
-}
-
-{
   "execute": "query-machines",
-  "id": "libvirt-5"
+  "id": "libvirt-4"
 }
 
 {
@@ -22221,5 +22177,5 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-5"
+  "id": "libvirt-4"
 }

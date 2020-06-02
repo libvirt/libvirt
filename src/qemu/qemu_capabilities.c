@@ -3061,6 +3061,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
 
     /* Try to check migratability of each feature. */
     if (modelInfo &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE) &&
         qemuMonitorGetCPUModelExpansion(mon, type, cpu, false, fail_no_props,
                                         &nonMigratable) < 0)
         goto cleanup;
