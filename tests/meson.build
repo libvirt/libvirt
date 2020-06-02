@@ -427,6 +427,13 @@ if conf.has('WITH_NSS')
   ]
 endif
 
+if conf.has('WITH_NWFILTER')
+  tests += [
+    { 'name': 'nwfilterebiptablestest', 'link_with': [ nwfilter_driver_impl ] },
+    { 'name': 'nwfilterxml2firewalltest', 'link_with': [ nwfilter_driver_impl ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

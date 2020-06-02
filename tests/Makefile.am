@@ -77,11 +77,6 @@ if WITH_STORAGE_SHEEPDOG
 test_programs += storagebackendsheepdogtest
 endif WITH_STORAGE_SHEEPDOG
 
-if WITH_NWFILTER
-test_programs += nwfilterebiptablestest
-test_programs += nwfilterxml2firewalltest
-endif WITH_NWFILTER
-
 if WITH_STORAGE
 test_programs += storagevolxml2argvtest
 test_programs += storagepoolxml2argvtest
@@ -329,19 +324,6 @@ storagebackendsheepdogtest_LDADD = \
 	../src/libvirt_driver_storage_impl.la \
 	$(LDADDS)
 endif WITH_STORAGE_SHEEPDOG
-
-if WITH_NWFILTER
-nwfilterebiptablestest_SOURCES = \
-	nwfilterebiptablestest.c \
-	testutils.c testutils.h
-nwfilterebiptablestest_LDADD = ../src/libvirt_driver_nwfilter_impl.la $(LDADDS)
-
-nwfilterxml2firewalltest_SOURCES = \
-	nwfilterxml2firewalltest.c \
-	testutils.c testutils.h
-nwfilterxml2firewalltest_LDADD = \
-	../src/libvirt_driver_nwfilter_impl.la $(LDADDS)
-endif WITH_NWFILTER
 
 if WITH_STORAGE
 virstorageutiltest_SOURCES = \
