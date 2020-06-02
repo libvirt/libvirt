@@ -50,7 +50,7 @@ CI_BUILD_SCRIPT = $(CI_ROOTDIR)/build.sh
 # Location of the container images we're going to pull
 # Can be useful to overridde to use a locally built
 # image instead
-CI_IMAGE_PREFIX = quay.io/libvirt/buildenv-libvirt-
+CI_IMAGE_PREFIX = registry.gitlab.com/libvirt/libvirt/ci-
 
 # The default tag is ':latest' but if the container
 # repo above uses different conventions this can override it
@@ -243,11 +243,11 @@ ci-list-images:
 	@echo
 	@echo "Available x86 container images:"
 	@echo
-	@sh list-images.sh "$(CI_ENGINE)" "$(CI_IMAGE_PREFIX)" | grep -v cross
+	@sh list-images.sh "$(CI_IMAGE_PREFIX)" | grep -v cross
 	@echo
 	@echo "Available cross-compiler container images:"
 	@echo
-	@sh list-images.sh "$(CI_ENGINE)" "$(CI_IMAGE_PREFIX)" | grep cross
+	@sh list-images.sh "$(CI_IMAGE_PREFIX)" | grep cross
 	@echo
 
 ci-help:
