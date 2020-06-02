@@ -507,6 +507,12 @@ if conf.has('WITH_STORAGE')
   ]
 endif
 
+if conf.has('WITH_STORAGE_FS')
+  tests += [
+    { 'name': 'virstoragetest', 'link_with': [ storage_driver_impl_lib ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

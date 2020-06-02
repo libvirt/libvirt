@@ -40,10 +40,6 @@ if WITH_STORAGE_SHEEPDOG
 test_programs += storagebackendsheepdogtest
 endif WITH_STORAGE_SHEEPDOG
 
-if WITH_STORAGE_FS
-test_programs += virstoragetest
-endif WITH_STORAGE_FS
-
 if WITH_NSS
 test_helpers += nsslinktest nssguestlinktest
 endif WITH_NSS
@@ -145,13 +141,6 @@ storagebackendsheepdogtest_LDADD = \
 	../src/libvirt_driver_storage_impl.la \
 	$(LDADDS)
 endif WITH_STORAGE_SHEEPDOG
-
-virstoragetest_SOURCES = \
-	virstoragetest.c testutils.h testutils.c
-virstoragetest_LDADD = $(LDADDS) \
-	../src/libvirt.la \
-	../src/libvirt_driver_storage_impl.la \
-	$(NULL)
 
 if WITH_NSS
 ## Intentionaly not linking with anything else.
