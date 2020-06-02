@@ -61,22 +61,22 @@ def reformat(line):
     # on the first character
     marker = line[0]
 
-    # Release
-    if marker == '#':
+    # Section
+    if marker == '*':
         initial_indent = 0
         indent = 2
-    # Section
-    elif marker == '*':
-        initial_indent = 2
-        indent = 4
     # Change summary
     elif marker == '-':
-        initial_indent = 4
-        indent = 6
+        initial_indent = 2
+        indent = 4
+        # We use different markers to be able to tell apart the various
+        # possible indentation levels, but we want to always output the
+        # same marker in the generated file
+        line = '*' + line[1:]
     # Change description
     elif marker == '|':
-        initial_indent = 8
-        indent = 8
+        initial_indent = 4
+        indent = 4
         # In this one case, the marker should not ultimately show
         # up in the output file, so we strip it before moving on
         line = line[1:]
