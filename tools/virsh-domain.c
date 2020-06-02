@@ -6818,7 +6818,6 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr *nodes = NULL;
-    xmlNodePtr old;
     int nnodes;
     size_t i;
     unsigned int curvcpus = 0;
@@ -6853,8 +6852,6 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
         goto cleanup;
     }
 
-    old = ctxt->node;
-
     for (i = 0; i < nnodes; i++) {
         ctxt->node = nodes[i];
 
@@ -6867,8 +6864,6 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
 
         VIR_FREE(online);
     }
-
-    ctxt->node = old;
 
     if (virBitmapCountBits(ret) != curvcpus) {
         vshError(ctl, "%s", _("Failed to retrieve vcpu state bitmap"));

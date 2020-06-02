@@ -13265,16 +13265,14 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
             /* Check for an optional seclabel override in <source/>. */
             if (chr_def) {
-                xmlNodePtr saved_node = ctxt->node;
+                VIR_XPATH_NODE_AUTORESTORE(ctxt);
                 ctxt->node = cur;
                 if (virSecurityDeviceLabelDefParseXML(&def->seclabels,
                                                       &def->nseclabels,
                                                       ctxt,
                                                       flags) < 0) {
-                    ctxt->node = saved_node;
                     goto error;
                 }
-                ctxt->node = saved_node;
             }
         } else if (virXMLNodeNameEqual(cur, "log")) {
             if (logParsed) {
@@ -22181,11 +22179,10 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     if ((node = virXPathNode("./sysinfo[1]", ctxt)) != NULL) {
-        xmlNodePtr oldnode = ctxt->node;
+        VIR_XPATH_NODE_AUTORESTORE(ctxt);
         ctxt->node = node;
         def->sysinfo = virSysinfoParseXML(node, ctxt,
                                           def->uuid, uuid_generated);
-        ctxt->node = oldnode;
 
         if (def->sysinfo == NULL)
             goto error;

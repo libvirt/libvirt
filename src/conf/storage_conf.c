@@ -727,7 +727,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
 {
     long long val;
     int ret = -1;
-    xmlNodePtr relnode;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr node;
     g_autofree char *mode = NULL;
 
@@ -741,7 +741,6 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
         return 0;
     }
 
-    relnode = ctxt->node;
     ctxt->node = node;
 
     if ((mode = virXPathString("string(./mode)", ctxt))) {
@@ -791,7 +790,6 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
 
     ret = 0;
  error:
-    ctxt->node = relnode;
     return ret;
 }
 

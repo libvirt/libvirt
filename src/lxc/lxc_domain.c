@@ -207,12 +207,11 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     lxcDomainDefPtr lxcDef = g_new0(lxcDomainDef, 1);
     g_autofree xmlNodePtr *nodes = NULL;
     bool uses_lxc_ns = false;
-    xmlNodePtr node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     int feature;
     int n;
     size_t i;
 
-    node = ctxt->node;
     if ((n = virXPathNodeSet("./lxc:namespace/*", ctxt, &nodes)) < 0)
         goto error;
     uses_lxc_ns |= n > 0;
@@ -249,7 +248,6 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
             goto error;
         }
     }
-    ctxt->node = node;
     if (uses_lxc_ns)
         *data = lxcDef;
     else

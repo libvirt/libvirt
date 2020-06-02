@@ -178,7 +178,7 @@ virStorageAdapterParseXML(virStorageAdapterPtr adapter,
                           xmlXPathContextPtr ctxt)
 {
     int ret = -1;
-    xmlNodePtr relnode = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     char *adapter_type = NULL;
 
     ctxt->node = node;
@@ -208,7 +208,6 @@ virStorageAdapterParseXML(virStorageAdapterPtr adapter,
     ret = 0;
 
  cleanup:
-    ctxt->node = relnode;
     VIR_FREE(adapter_type);
     return ret;
 }

@@ -1486,7 +1486,7 @@ x86ModelParseSignatures(virCPUx86ModelPtr model,
                         xmlXPathContextPtr ctxt)
 {
     g_autofree xmlNodePtr *nodes = NULL;
-    xmlNodePtr root = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     size_t i;
     int n;
 
@@ -1527,7 +1527,6 @@ x86ModelParseSignatures(virCPUx86ModelPtr model,
             return -1;
     }
 
-    ctxt->node = root;
     return 0;
 }
 

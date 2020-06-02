@@ -846,7 +846,7 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
                             xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
-    xmlNodePtr oldNode = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     char *tmp = NULL;
     int n;
     size_t i, j;
@@ -963,7 +963,6 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
     ret = 0;
 
  cleanup:
-    ctxt->node = oldNode;
     VIR_FREE(nodes);
     VIR_FREE(tmp);
     return ret;

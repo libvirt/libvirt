@@ -800,7 +800,7 @@ virNetworkDNSSrvDefParseXML(const char *networkName,
                             bool partialOkay)
 {
     int ret;
-    xmlNodePtr save_ctxt = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     ctxt->node = node;
 
@@ -895,12 +895,10 @@ virNetworkDNSSrvDefParseXML(const char *networkName,
         goto error;
     }
 
-    ctxt->node = save_ctxt;
     return 0;
 
  error:
     virNetworkDNSSrvDefClear(def);
-    ctxt->node = save_ctxt;
     return -1;
 }
 
@@ -961,7 +959,7 @@ virNetworkDNSDefParseXML(const char *networkName,
     int nhosts, nsrvs, ntxts, nfwds;
     size_t i;
     int ret = -1;
-    xmlNodePtr save = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     ctxt->node = node;
 
@@ -1100,7 +1098,6 @@ virNetworkDNSDefParseXML(const char *networkName,
     VIR_FREE(hostNodes);
     VIR_FREE(srvNodes);
     VIR_FREE(txtNodes);
-    ctxt->node = save;
     return ret;
 }
 
@@ -1116,7 +1113,7 @@ virNetworkIPDefParseXML(const char *networkName,
      * On failure clear it out, but don't free it.
      */
 
-    xmlNodePtr save;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr dhcp;
     char *address = NULL, *netmask = NULL;
     unsigned long prefix = 0;
@@ -1124,7 +1121,6 @@ virNetworkIPDefParseXML(const char *networkName,
     int result = -1;
     char *localPtr = NULL;
 
-    save = ctxt->node;
     ctxt->node = node;
 
     /* grab raw data from XML */
@@ -1256,7 +1252,6 @@ virNetworkIPDefParseXML(const char *networkName,
     VIR_FREE(netmask);
     VIR_FREE(localPtr);
 
-    ctxt->node = save;
     return result;
 }
 
@@ -1291,7 +1286,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
      * On failure clear it out, but don't free it.
      */
 
-    xmlNodePtr save;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr virtPortNode;
     xmlNodePtr vlanNode;
     xmlNodePtr bandwidth_node;
@@ -1300,7 +1295,6 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     int result = -1;
 
-    save = ctxt->node;
     ctxt->node = node;
 
     /* grab raw data from XML */
@@ -1348,7 +1342,6 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
     VIR_FREE(isDefault);
     VIR_FREE(trustGuestRxFilters);
 
-    ctxt->node = save;
     return result;
 }
 
@@ -1365,7 +1358,7 @@ virNetworkForwardNatDefParseXML(const char *networkName,
     int nNatAddrs, nNatPorts;
     char *addrStart = NULL;
     char *addrEnd = NULL;
-    xmlNodePtr save = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     ctxt->node = node;
 
@@ -1477,7 +1470,6 @@ virNetworkForwardNatDefParseXML(const char *networkName,
     VIR_FREE(addrEnd);
     VIR_FREE(natAddrNodes);
     VIR_FREE(natPortNodes);
-    ctxt->node = save;
     return ret;
 }
 
@@ -1499,7 +1491,7 @@ virNetworkForwardDefParseXML(const char *networkName,
     char *forwardManaged = NULL;
     char *forwardDriverName = NULL;
     char *type = NULL;
-    xmlNodePtr save = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     ctxt->node = node;
 
@@ -1726,7 +1718,6 @@ virNetworkForwardDefParseXML(const char *networkName,
     VIR_FREE(forwardIfNodes);
     VIR_FREE(forwardAddrNodes);
     VIR_FREE(forwardNatNodes);
-    ctxt->node = save;
     return ret;
 }
 
@@ -1747,7 +1738,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr forwardNode = NULL;
     char *ipv6nogwStr = NULL;
     char *trustGuestRxFilters = NULL;
-    xmlNodePtr save = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr bandwidthNode = NULL;
     xmlNodePtr vlanNode;
     xmlNodePtr metadataNode = NULL;
@@ -2164,7 +2155,6 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
             goto error;
     }
 
-    ctxt->node = save;
     return def;
 
  error:
@@ -2176,7 +2166,6 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
     VIR_FREE(portGroupNodes);
     VIR_FREE(ipv6nogwStr);
     VIR_FREE(trustGuestRxFilters);
-    ctxt->node = save;
     return NULL;
 }
 

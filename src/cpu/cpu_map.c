@@ -40,13 +40,11 @@ loadData(const char *mapfile,
          void *data)
 {
     int ret = -1;
-    xmlNodePtr ctxt_node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr *nodes = NULL;
     int n;
     size_t i;
     int rv;
-
-    ctxt_node = ctxt->node;
 
     if ((n = virXPathNodeSet(element, ctxt, &nodes)) < 0)
         goto cleanup;
@@ -58,7 +56,6 @@ loadData(const char *mapfile,
     }
 
     for (i = 0; i < n; i++) {
-        xmlNodePtr old = ctxt->node;
         char *name = virXMLPropString(nodes[i], "name");
         if (!name) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -68,7 +65,6 @@ loadData(const char *mapfile,
         VIR_DEBUG("Load %s name %s", element, name);
         ctxt->node = nodes[i];
         rv = callback(ctxt, name, data);
-        ctxt->node = old;
         VIR_FREE(name);
         if (rv < 0)
             goto cleanup;
@@ -77,7 +73,6 @@ loadData(const char *mapfile,
     ret = 0;
 
  cleanup:
-    ctxt->node = ctxt_node;
     VIR_FREE(nodes);
 
     return ret;
@@ -135,12 +130,10 @@ loadIncludes(xmlXPathContextPtr ctxt,
              void *data)
 {
     int ret = -1;
-    xmlNodePtr ctxt_node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr *nodes = NULL;
     int n;
     size_t i;
-
-    ctxt_node = ctxt->node;
 
     n = virXPathNodeSet("include", ctxt, &nodes);
     if (n < 0)
@@ -164,7 +157,6 @@ loadIncludes(xmlXPathContextPtr ctxt,
     ret = 0;
 
  cleanup:
-    ctxt->node = ctxt_node;
     VIR_FREE(nodes);
 
     return ret;

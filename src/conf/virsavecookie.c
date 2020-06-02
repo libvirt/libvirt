@@ -57,7 +57,7 @@ virSaveCookieParse(xmlXPathContextPtr ctxt,
                    virObjectPtr *obj,
                    virSaveCookieCallbacksPtr saveCookie)
 {
-    xmlNodePtr node = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     int ret = -1;
 
     *obj = NULL;
@@ -70,7 +70,6 @@ virSaveCookieParse(xmlXPathContextPtr ctxt,
     ret = virSaveCookieParseNode(ctxt, obj, saveCookie);
 
  cleanup:
-    ctxt->node = node;
     return ret;
 }
 

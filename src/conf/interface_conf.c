@@ -262,12 +262,11 @@ static int
 virInterfaceDefParseDhcp(virInterfaceProtocolDefPtr def,
                          xmlNodePtr dhcp, xmlXPathContextPtr ctxt)
 {
-    xmlNodePtr save;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     char *tmp;
     int ret = 0;
 
     def->dhcp = 1;
-    save = ctxt->node;
     ctxt->node = dhcp;
     def->peerdns = -1;
     /* Not much to do in the current version */
@@ -284,7 +283,6 @@ virInterfaceDefParseDhcp(virInterfaceProtocolDefPtr def,
         VIR_FREE(tmp);
     }
 
-    ctxt->node = save;
     return ret;
 }
 
@@ -426,12 +424,10 @@ static int
 virInterfaceDefParseIfAdressing(virInterfaceDefPtr def,
                                 xmlXPathContextPtr ctxt)
 {
-    xmlNodePtr save;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr *protoNodes = NULL;
     int nProtoNodes, pp, ret = -1;
     char *tmp;
-
-    save = ctxt->node;
 
     nProtoNodes = virXPathNodeSet("./protocol", ctxt, &protoNodes);
     if (nProtoNodes < 0)
@@ -487,7 +483,6 @@ virInterfaceDefParseIfAdressing(virInterfaceDefPtr def,
 
  error:
     VIR_FREE(protoNodes);
-    ctxt->node = save;
     return ret;
 
 }
@@ -558,7 +553,7 @@ virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
                              xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *interfaces = NULL;
-    xmlNodePtr bond = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     virInterfaceDefPtr itf;
     int nbItf;
     size_t i;
@@ -591,7 +586,6 @@ virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
     ret = 0;
  cleanup:
     VIR_FREE(interfaces);
-    ctxt->node = bond;
     return ret;
 }
 
@@ -698,7 +692,7 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
     virInterfaceDefPtr def;
     int type;
     char *tmp;
-    xmlNodePtr cur = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr lnk;
 
 
@@ -804,11 +798,9 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
 
     }
 
-    ctxt->node = cur;
     return def;
 
  error:
-    ctxt->node = cur;
     virInterfaceDefFree(def);
     return NULL;
 }

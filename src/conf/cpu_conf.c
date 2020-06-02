@@ -326,7 +326,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
 {
     virCPUDefPtr def = NULL;
     xmlNodePtr *nodes = NULL;
-    xmlNodePtr oldnode = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     int n;
     size_t i;
     char *cpuMode;
@@ -662,7 +662,6 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     ret = 0;
 
  cleanup:
-    ctxt->node = oldnode;
     VIR_FREE(fallback);
     VIR_FREE(vendor_id);
     VIR_FREE(nodes);

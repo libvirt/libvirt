@@ -33,7 +33,7 @@ int
 virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr def)
 {
     int ret = -1;
-    xmlNodePtr save = ctxt->node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     char *trunk = NULL;
     char *nativeMode = NULL;
     xmlNodePtr *tagNodes = NULL;
@@ -128,7 +128,6 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr de
 
     ret = 0;
  cleanup:
-    ctxt->node = save;
     VIR_FREE(tagNodes);
     VIR_FREE(trunk);
     VIR_FREE(nativeMode);
