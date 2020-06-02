@@ -179,6 +179,7 @@
   <flag name='i8042'/>
   <flag name='tcg'/>
   <flag name='pvscsi'/>
+  <flag name='query-cpu-model-expansion.migratable'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100247</microcodeVersion>

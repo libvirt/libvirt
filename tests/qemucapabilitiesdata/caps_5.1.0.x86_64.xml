@@ -235,6 +235,7 @@
   <flag name='virtio-blk-pci.scsi.default.disabled'/>
   <flag name='pvscsi'/>
   <flag name='cpu.migratable'/>
+  <flag name='query-cpu-model-expansion.migratable'/>
   <version>5000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

@@ -207,6 +207,7 @@
   <flag name='tcg'/>
   <flag name='pvscsi'/>
   <flag name='cpu.migratable'/>
+  <flag name='query-cpu-model-expansion.migratable'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100239</microcodeVersion>

@@ -585,6 +585,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 370 */
               "cpu.migratable",
+              "query-cpu-model-expansion.migratable",
     );
 
 
@@ -5041,8 +5042,17 @@ virQEMUCapsInitProcessCaps(virQEMUCapsPtr qemuCaps)
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM);
 
     if (ARCH_IS_X86(qemuCaps->arch) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);
+
+        /* Old x86 QEMU supported migratable:false property in
+         * query-cpu-model-expansion arguments even though it was not properly
+         * advertised as a CPU property.
+         */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE) ||
+            qemuCaps->version < 2012000)
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE);
+    }
 
     if (ARCH_IS_S390(qemuCaps->arch)) {
         /* Legacy assurance for QEMU_CAPS_CCW */
