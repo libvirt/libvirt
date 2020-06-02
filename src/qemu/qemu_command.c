@@ -5801,6 +5801,47 @@ qemuBuildSmbiosCommandLine(virCommandPtr cmd,
 
 
 static int
+qemuBuildSysinfoCommandLine(virCommandPtr cmd,
+                            virQEMUCapsPtr qemuCaps,
+                            const virDomainDef *def)
+{
+    size_t i;
+
+    /* We need to handle VIR_SYSINFO_FWCFG here, because
+     * VIR_SYSINFO_SMBIOS is handled in qemuBuildSmbiosCommandLine() */
+    for (i = 0; i < def->nsysinfo; i++) {
+        size_t j;
+
+        if (def->sysinfo[i]->type != VIR_SYSINFO_FWCFG)
+            continue;
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_FW_CFG)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("fw_cfg is not supported with this QEMU"));
+            return -1;
+        }
+
+        for (j = 0; j < def->sysinfo[i]->nfw_cfgs; j++) {
+            const virSysinfoFWCfgDef *f = &def->sysinfo[i]->fw_cfgs[j];
+            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+            virBufferAsprintf(&buf, "name=%s", f->name);
+
+            if (f->value)
+                virBufferEscapeString(&buf, ",string=%s", f->value);
+            else
+                virBufferEscapeString(&buf, ",file=%s", f->file);
+
+            virCommandAddArg(cmd, "-fw_cfg");
+            virCommandAddArgBuffer(cmd, &buf);
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildVMGenIDCommandLine(virCommandPtr cmd,
                             const virDomainDef *def)
 {
@@ -9653,6 +9694,9 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     virCommandAddArgList(cmd, "-uuid", uuid, NULL);
 
     if (qemuBuildSmbiosCommandLine(cmd, driver, def) < 0)
+        return NULL;
+
+    if (qemuBuildSysinfoCommandLine(cmd, qemuCaps, def) < 0)
         return NULL;
 
     if (qemuBuildVMGenIDCommandLine(cmd, def) < 0)

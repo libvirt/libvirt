@@ -1684,6 +1684,7 @@ mymain(void)
     DO_TEST("smbios", NONE);
     DO_TEST_PARSE_ERROR("smbios-date", NONE);
     DO_TEST_PARSE_ERROR("smbios-uuid-match", NONE);
+    DO_TEST("smbios-type-fwcfg", QEMU_CAPS_FW_CFG);
 
     DO_TEST("watchdog", NONE);
     DO_TEST("watchdog-device", NONE);
