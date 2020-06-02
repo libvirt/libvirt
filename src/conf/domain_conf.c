@@ -29877,15 +29877,15 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     for (n = 0; n < def->nseclabels; n++)
         virSecurityLabelDefFormat(buf, def->seclabels[n], flags);
 
-    if (def->namespaceData && def->ns.format) {
-        if ((def->ns.format)(buf, def->namespaceData) < 0)
-            goto error;
-    }
-
     if (def->keywrap)
         virDomainKeyWrapDefFormat(buf, def->keywrap);
 
     virDomainSEVDefFormat(buf, def->sev);
+
+    if (def->namespaceData && def->ns.format) {
+        if ((def->ns.format)(buf, def->namespaceData) < 0)
+            goto error;
+    }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAsprintf(buf, "</%s>\n", rootname);
