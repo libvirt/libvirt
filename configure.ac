@@ -16,7 +16,7 @@ dnl You should have received a copy of the GNU Lesser General Public
 dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
-AC_INIT([libvirt], [6.4.0], [libvir-list@redhat.com], [], [https://libvirt.org])
+AC_INIT([libvirt], [6.5.0], [libvir-list@redhat.com], [], [https://libvirt.org])
 
 if test $srcdir = "."
 then
