@@ -1,5 +1,10 @@
 #!/bin/sh
 # Run this to generate all the initial makefiles, etc.
+#
+# THe following options must come first.  All other or subsequent
+# arguments are passed to configure:
+#   --no-git   skip `git submodule update --init`
+
 test -n "$srcdir" || srcdir=$(dirname "$0")
 test -n "$srcdir" || srcdir=.
 
@@ -13,7 +18,11 @@ cd "$srcdir"
     exit 1
 }
 
-git submodule update --init || exit 1
+if [ "x$1" = x--no-git ]; then
+    shift
+else
+    git submodule update --init || exit 1
+fi
 
 autoreconf --verbose --force --install || exit 1
 
