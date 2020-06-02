@@ -762,6 +762,33 @@ qemuValidateDefGetVcpuHotplugGranularity(const virDomainDef *def)
 }
 
 
+static int
+qemuValidateDomainDefSysinfo(const virSysinfoDef *def,
+                             virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
+{
+    size_t i;
+
+    for (i = 0; i < def->nfw_cfgs; i++) {
+        const virSysinfoFWCfgDef *f = &def->fw_cfgs[i];
+
+        if (!STRPREFIX(f->name, "opt/")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid firmware name"));
+            return -1;
+        }
+
+        if (STRPREFIX(f->name, "opt/ovmf/") ||
+            STRPREFIX(f->name, "opt/org.qemu/")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("That firmware name is reserved"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 int
 qemuValidateDomainDef(const virDomainDef *def,
                       void *opaque)
@@ -976,6 +1003,11 @@ qemuValidateDomainDef(const virDomainDef *def,
                 return -1;
             }
         }
+    }
+
+    for (i = 0; i < def->nsysinfo; i++) {
+        if (qemuValidateDomainDefSysinfo(def->sysinfo[i], qemuCaps) < 0)
+            return -1;
     }
 
     return 0;
