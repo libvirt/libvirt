@@ -1346,6 +1346,18 @@ mymain(void)
 
     TEST_BITMAP_VALIDATE("empty", "a", false);
 
+    TEST_BITMAP_VALIDATE("basic", "a", true);
+    TEST_BITMAP_VALIDATE("basic", "b", true);
+    TEST_BITMAP_VALIDATE("basic", "c", true);
+    TEST_BITMAP_VALIDATE("basic", "d", true);
+    TEST_BITMAP_VALIDATE("basic", "current", true);
+
+    TEST_BITMAP_VALIDATE("snapshots", "a", true);
+    TEST_BITMAP_VALIDATE("snapshots", "b", true);
+    TEST_BITMAP_VALIDATE("snapshots", "c", true);
+    TEST_BITMAP_VALIDATE("snapshots", "d", true);
+    TEST_BITMAP_VALIDATE("snapshots", "current", true);
+
 #define TEST_BITMAP_BLOCKCOPY(testname, shllw, ndf) \
     do { \
         blockbitmapblockcopydata.name = testname; \
