@@ -99,6 +99,9 @@
         <value>host-passthrough</value>
       </attribute>
       <ref name='supported'/>
+      <optional>
+        <ref name='enum'/>
+      </optional>
     </element>
   </define>
 

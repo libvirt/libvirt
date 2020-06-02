@@ -201,7 +201,12 @@
 &lt;domainCapabilities&gt;
   ...
   &lt;cpu&gt;
-    &lt;mode name='host-passthrough' supported='yes'/&gt;
+    &lt;mode name='host-passthrough' supported='yes'&gt;
+      &lt;enum name='hostPassthroughMigratable'&gt;
+        &lt;value&gt;on&lt;/value&gt;
+        &lt;value&gt;off&lt;/value&gt;
+      &lt;/enum&gt;
+    &lt;/mode&gt;
     &lt;mode name='host-model' supported='yes'&gt;
       &lt;model fallback='allow'&gt;Broadwell&lt;/model&gt;
       &lt;vendor&gt;Intel&lt;/vendor&gt;
@@ -227,7 +232,11 @@
 
     <dl>
       <dt><code>host-passthrough</code></dt>
-      <dd>No mode specific details are provided.</dd>
+      <dd>
+        The <code>hostPassthroughMigratable</code> enum shows possible values
+        of the <code>migratable</code> attribute for the &lt;cpu&gt; element
+        with <code>mode='host-passthrough'</code> in the domain XML.
+      </dd>
 
       <dt><code>host-model</code></dt>
       <dd>

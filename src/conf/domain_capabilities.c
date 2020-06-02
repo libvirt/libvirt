@@ -412,9 +412,20 @@ virDomainCapsCPUFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<cpu>\n");
     virBufferAdjustIndent(buf, 2);
 
-    virBufferAsprintf(buf, "<mode name='%s' supported='%s'/>\n",
+    virBufferAsprintf(buf, "<mode name='%s' supported='%s'",
                       virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH),
                       cpu->hostPassthrough ? "yes" : "no");
+
+    if (cpu->hostPassthrough && cpu->hostPassthroughMigratable.report) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
+        ENUM_PROCESS(cpu, hostPassthroughMigratable,
+                     virTristateSwitchTypeToString);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</mode>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
 
     virBufferAsprintf(buf, "<mode name='%s' ",
                       virCPUModeTypeToString(VIR_CPU_MODE_HOST_MODEL));

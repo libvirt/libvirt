@@ -145,6 +145,7 @@ typedef struct _virDomainCapsCPU virDomainCapsCPU;
 typedef virDomainCapsCPU *virDomainCapsCPUPtr;
 struct _virDomainCapsCPU {
     bool hostPassthrough;
+    virDomainCapsEnum hostPassthroughMigratable;
     virCPUDefPtr hostModel;
     virDomainCapsCPUModelsPtr custom;
 };
