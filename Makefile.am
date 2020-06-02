@@ -46,6 +46,7 @@ EXTRA_DIST = \
   README.rst \
   AUTHORS.in \
   CONTRIBUTING.rst \
+  NEWS.rst \
   scripts/apibuild.py \
   scripts/augeas-gentest.py \
   build-aux/check-spacing.pl \
@@ -68,7 +69,6 @@ EXTRA_DIST = \
   scripts/hyperv_wmi_generator.py \
   scripts/mock-noinline.py \
   scripts/prohibit-duplicate-header.py \
-  scripts/reformat-news.py \
   scripts/test-wrap-argv.py \
   build-aux/syntax-check.mk \
   build-aux/useless-if-before-free \
@@ -81,26 +81,6 @@ EXTRA_DIST = \
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvirt.pc libvirt-qemu.pc libvirt-lxc.pc libvirt-admin.pc
-
-NEWS: \
-	  $(srcdir)/docs/news.xml \
-	  $(srcdir)/docs/news-ascii.xsl \
-	  $(top_srcdir)/scripts/reformat-news.py
-	$(AM_V_GEN) \
-	if [ -x $(XSLTPROC) ]; then \
-	  $(XSLTPROC) --nonet \
-	    $(srcdir)/docs/news-ascii.xsl \
-	    $(srcdir)/docs/news.xml \
-	  >$@-tmp \
-	    || { rm -f $@-tmp; exit 1; }; \
-	  $(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/reformat-news.py $@-tmp >$@ \
-	    || { rm -f $@-tmp; exit 1; }; \
-	  rm -f $@-tmp; \
-	fi
-EXTRA_DIST += \
-	$(srcdir)/docs/news.xml \
-	$(srcdir)/docs/news-ascii.xsl \
-	$(NULL)
 
 rpm: clean
 	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.xz)

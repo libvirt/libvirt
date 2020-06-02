@@ -316,16 +316,18 @@ manpages/virkeyname-%.rst: $(top_srcdir)/src/keycodemapdb/data/keymaps.csv \
 manpagesdir = $(HTML_DIR)/manpages
 manpages_DATA = $(manpages_html)
 
-# Generate hvsupport.html and news.html first, since they take one extra step.
+# Generate hvsupport.html first, since it takes one extra step.
 dot_html_generated_in = \
   hvsupport.html.in \
-  news.html.in
+  $(NULL)
 dot_html_in = \
   $(notdir $(wildcard $(srcdir)/*.html.in))
 dot_rst = \
   $(notdir $(wildcard $(srcdir)/*.rst))
 dot_rst_html_in = \
-  $(dot_rst:%.rst=%.html.in)
+  $(dot_rst:%.rst=%.html.in) \
+  news.html.in \
+  $(NULL)
 dot_html = \
   $(dot_html_generated_in:%.html.in=%.html) \
   $(dot_html_in:%.html.in=%.html) \
@@ -405,19 +407,6 @@ hvsupport.html.in: $(top_srcdir)/scripts/hvsupport.py $(api_DATA) \
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/hvsupport.py \
 		$(top_srcdir) $(top_builddir) > $@ || { rm $@ && exit 1; }
 
-news.html.in: \
-	  $(srcdir)/news.xml \
-	  $(srcdir)/news-html.xsl
-	$(AM_V_GEN)$(XSLTPROC) --nonet \
-	    $(srcdir)/news-html.xsl \
-	    $(srcdir)/news.xml \
-	  >$@ \
-	    || { rm -f $@; exit 1; };
-EXTRA_DIST += \
-	$(srcdir)/news.xml \
-	$(srcdir)/news.rng \
-	$(srcdir)/news-html.xsl
-
 %.png: %.fig
 	convert -rotate 90 $< $@
 
@@ -427,6 +416,12 @@ manpages/%.html.in: manpages/%.rst
 	  sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
 	     -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
 	  $(RST2HTML) --strict > $@ || { rm $@ && exit 1; }
+
+news.html.in: $(top_srcdir)/NEWS.rst
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
+	  $(RST2HTML) --strict $< > $@ || { rm $@ && exit 1; }
+
+CLEANFILES += news.html.in
 
 %.html.in: %.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \

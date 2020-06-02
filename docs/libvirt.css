@@ -560,21 +560,6 @@ td.enumvalue {
     color: darkred;
 }
 
-ul.news-section-content {
-    margin-top: 0.5em;
-}
-
-ul.news-section-content li dl dt {
-    margin: 0;
-}
-
-ul.news-section-content li dl dd {
-    margin-left: 1em;
-    margin-right: 0;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-}
-
 .literal, code {
     font-family: monospace;
     background: #eeeeee;
