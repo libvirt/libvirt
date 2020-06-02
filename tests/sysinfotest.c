@@ -56,10 +56,29 @@ testDMIDecodeDryRun(const char *const*args G_GNUC_UNUSED,
 {
     const char *sysinfo = opaque;
 
-    if (virFileReadAll(sysinfo, 10 * 1024 * 1024, output) < 0) {
-        *error = g_strdup(virGetLastErrorMessage());
-        *status = EXIT_FAILURE;
-        return;
+    if (STREQ_NULLABLE(args[1], "--dump") &&
+        STREQ_NULLABLE(args[2], "--oem-string")) {
+        if (!args[3]) {
+            *error = g_strdup("dmidecode: option '--oem-string' requires an argument");
+            *status = EXIT_FAILURE;
+            return;
+        }
+
+        if (STREQ(args[3], "3")) {
+            *output = g_strdup("Ha ha ha try parsing\\n\n"
+                               "      String 3: this correctly\n"
+                               "      String 4:then");
+        } else {
+            *error = g_strdup_printf("No OEM string number %s", args[3]);
+            *status = EXIT_FAILURE;
+            return;
+        }
+    } else {
+        if (virFileReadAll(sysinfo, 10 * 1024 * 1024, output) < 0) {
+            *error = g_strdup(virGetLastErrorMessage());
+            *status = EXIT_FAILURE;
+            return;
+        }
     }
 
     *error = g_strdup("");

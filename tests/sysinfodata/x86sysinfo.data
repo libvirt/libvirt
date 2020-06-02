@@ -81,3 +81,9 @@ Memory Device
 	Serial Number: 29057112
 	Asset Tag: 0839
 	Part Number: IMSH2GS13A1F1C-10F
+
+OEM Strings
+        String 1: Hello
+        String 2: World
+        String 3: Ha ha ha try parsing\n.      String 3: this correctly.      String 4:then
+        String 4: This is, more tricky value=escaped

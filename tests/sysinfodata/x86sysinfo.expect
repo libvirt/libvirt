@@ -50,4 +50,12 @@
     <entry name='serial_number'>29057112</entry>
     <entry name='part_number'>IMSH2GS13A1F1C-10F</entry>
   </memory_device>
+  <oemStrings>
+    <entry>Hello</entry>
+    <entry>World</entry>
+    <entry>Ha ha ha try parsing\n
+      String 3: this correctly
+      String 4:then</entry>
+    <entry>This is, more tricky value=escaped</entry>
+  </oemStrings>
 </sysinfo>

@@ -916,6 +916,103 @@ virSysinfoParseX86Chassis(const char *base,
 
 
 static int
+virSysinfoDMIDecodeOEMString(size_t i,
+                             char **str)
+{
+    g_autofree char *err = NULL;
+    g_autoptr(virCommand) cmd = virCommandNewArgList(DMIDECODE, "--dump",
+                                                     "--oem-string", NULL);
+    virCommandAddArgFormat(cmd, "%zu", i);
+    virCommandSetOutputBuffer(cmd, str);
+    virCommandSetErrorBuffer(cmd, &err);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        return -1;
+
+    /* Unfortunately, dmidecode returns 0 even if OEM String index is out
+     * of bounds, but it prints an error message in that case. Check stderr
+     * and return success/failure accordingly. */
+
+    if (err && *err != '\0')
+        return -1;
+
+    return 0;
+}
+
+
+static int
+virSysinfoParseOEMStrings(const char *base,
+                          virSysinfoOEMStringsDefPtr *stringsRet)
+{
+    virSysinfoOEMStringsDefPtr strings = NULL;
+    size_t i = 1;
+    int ret = -1;
+    const char *cur;
+
+    if (!(cur = strstr(base, "OEM Strings")))
+        return 0;
+
+    if (VIR_ALLOC(strings) < 0)
+        return -1;
+
+    while ((cur = strstr(cur, "String "))) {
+        char *eol;
+
+        cur += 7;
+
+        if (!(eol = strchr(cur, '\n'))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed output of dmidecode"));
+            goto cleanup;
+        }
+
+        while (g_ascii_isdigit(*cur))
+            cur++;
+
+        if (*cur != ':') {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed output of dmidecode"));
+            goto cleanup;
+        }
+
+        cur += 2;
+
+        virSkipSpacesBackwards(cur, &eol);
+        if (!eol)
+            continue;
+
+        if (VIR_EXPAND_N(strings->values, strings->nvalues, 1) < 0)
+            goto cleanup;
+
+        /* If OEM String contains newline, dmidecode escapes it as a dot.
+         * If this is the case then run dmidecode again to get raw string.
+         * Unfortunately, we can't dinstinguish betwen dot an new line at
+         * this level. */
+        if (memchr(cur, '.', eol - cur)) {
+            char *str;
+
+            if (virSysinfoDMIDecodeOEMString(i, &str) < 0)
+                goto cleanup;
+
+            strings->values[strings->nvalues - 1] = g_steal_pointer(&str);
+        } else {
+            strings->values[strings->nvalues - 1] = g_strndup(cur, eol - cur);
+        }
+
+        i++;
+        cur = eol;
+    }
+
+    *stringsRet = g_steal_pointer(&strings);
+    ret = 0;
+
+ cleanup:
+    virSysinfoOEMStringsDefFree(strings);
+    return ret;
+}
+
+
+static int
 virSysinfoParseX86Processor(const char *base, virSysinfoDefPtr ret)
 {
     const char *cur, *tmp_base;
@@ -1119,7 +1216,7 @@ virSysinfoReadDMI(void)
     g_autofree char *outbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = virCommandNewArgList(DMIDECODE, "-q", "-t", "0,1,2,3,4,17", NULL);
+    cmd = virCommandNewArgList(DMIDECODE, "-q", "-t", "0,1,2,3,4,11,17", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
         return NULL;
@@ -1139,6 +1236,9 @@ virSysinfoReadDMI(void)
         return NULL;
 
     if (virSysinfoParseX86Chassis(outbuf, &ret->chassis) < 0)
+        return NULL;
+
+    if (virSysinfoParseOEMStrings(outbuf, &ret->oemStrings) < 0)
         return NULL;
 
     ret->nprocessor = 0;
