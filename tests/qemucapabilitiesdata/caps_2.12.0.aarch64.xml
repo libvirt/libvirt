@@ -158,6 +158,7 @@
   <flag name='drive-nvme'/>
   <flag name='tcg'/>
   <flag name='pvscsi'/>
+  <flag name='fw_cfg'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700289</microcodeVersion>

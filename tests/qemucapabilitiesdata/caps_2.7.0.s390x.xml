@@ -92,6 +92,7 @@
   <flag name='zpci'/>
   <flag name='storage.werror'/>
   <flag name='tcg'/>
+  <flag name='fw_cfg'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100245</microcodeVersion>

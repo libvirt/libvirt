@@ -180,6 +180,7 @@
   <flag name='machine.pseries.cap-ibs'/>
   <flag name='tcg'/>
   <flag name='pvscsi'/>
+  <flag name='fw_cfg'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900240</microcodeVersion>

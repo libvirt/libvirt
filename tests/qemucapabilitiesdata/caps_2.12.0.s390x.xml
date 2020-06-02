@@ -127,6 +127,7 @@
   <flag name='drive-nvme'/>
   <flag name='storage.werror'/>
   <flag name='tcg'/>
+  <flag name='fw_cfg'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100289</microcodeVersion>

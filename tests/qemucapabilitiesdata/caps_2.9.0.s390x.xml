@@ -102,6 +102,7 @@
   <flag name='query-cpu-model-comparison'/>
   <flag name='storage.werror'/>
   <flag name='tcg'/>
+  <flag name='fw_cfg'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100247</microcodeVersion>
