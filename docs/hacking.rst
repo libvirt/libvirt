@@ -9,9 +9,9 @@ Repositories and external resources
 ===================================
 
 The official upstream repository is kept in git
-(``https://libvirt.org/git/libvirt.git``) and is browsable
+(``https://gitlab.com/libvirt/libvirt``) and is browsable
 along with other libvirt-related repositories (e.g.
-libvirt-python) `online <https://libvirt.org/git/>`__.
+libvirt-python) `online <https://gitlab.com/libvirt>`__.
 
 Patches to translations are maintained via the `zanata
 project <https://fedora.zanata.org/>`__. If you want to fix a

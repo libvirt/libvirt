@@ -28,7 +28,7 @@
            and test scenarios.</li>
     </ul>
     <p> Libvirt-test-API is maintained using
-        <a href="https://libvirt.org/git/?p=libvirt-test-API.git">a GIT
+        <a href="https://gitlab.com/libvirt/libvirt-test-API">a GIT
         repository</a>, and comment, patches and reviews are carried
         on the <a href="contact.html">libvir-list</a> development list.</p>
   </body>

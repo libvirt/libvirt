@@ -11,16 +11,10 @@
 <h2>Getting the source</h2>
 <p> The PHP bindings code source is now maintained in a <a
 href="http://git-scm.com/">git</a> repository available on
-<a href="https://libvirt.org/git/">libvirt.org</a>:
+<a href="https://gitlab.com/libvirt/libvirt-php">gitlab.com</a>:
 </p>
 <pre>
-git clone https://libvirt.org/git/libvirt-php.git
-</pre>
-<p>
-It can also be browsed at
-</p>
-<pre>
-<a href="https://libvirt.org/git/?p=libvirt-php.git;a=summary">https://libvirt.org/git/?p=libvirt-php.git;a=summary</a>
+git clone https://gitlab.com/libvirt/libvirt-php.git
 </pre>
 
 <p></p>

@@ -7,9 +7,9 @@ archives.
 If you're interested in the full list of changes made to libvirt since
 the project was started, you can clone the git repository from
 
-  https://libvirt.org/git/libvirt.git
+  https://gitlab.com/libvirt/libvirt/
 
 and browse them locally using your favorite git history viewer or,
 alternatively, browse them online at
 
-  https://libvirt.org/git/?p=libvirt.git;a=log
+  https://gitlab.com/libvirt/libvirt/-/commits/master

@@ -26,19 +26,11 @@ which you can use to include this in your maven projects.</p>
 <h2>GIT source repository</h2>
 <p> The Java bindings code source is now maintained in a <a
 href="http://git-scm.com/">git</a> repository available on
-<a href="https://libvirt.org/git/">libvirt.org</a>:
+<a href="https://gitlab.com/libvirt/libvirt-java/">gitlab.com</a>:
 </p>
 <pre>
-git clone https://libvirt.org/git/libvirt-java.git
+git clone https://gitlab.com/libvirt/libvirt-java.git
 </pre>
-<p>
-It can also be browsed at
-</p>
-<pre>
-
-<a href="https://libvirt.org/git/?p=libvirt-java.git;a=summary">https://libvirt.org/git/?p=libvirt-java.git;a=summary</a>
-</pre>
-
 
 <h2>Building</h2>
 <p>The code is built using ant, and assumes that you have the jna jar installed. Once you have downloaded

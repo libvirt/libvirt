@@ -23,7 +23,7 @@
           <a href="ftp://libvirt.org/libvirt/tck/">download</a>, as a
           <a href="http://rpmfind.net/linux/rpm2html/search.php?query=libvirt-tck">package</a>
           in Fedora distributions, but best is probably to get
-          the <a href="https://libvirt.org/git/?p=libvirt-tck.git">version
+          the <a href="https://gitlab.com/libvirt/libvirt-tck">version
           from GIT</a>.
       </li>
       <li>the <a href="testapi.html">libvirt-test-API</a> is also a functional
@@ -32,7 +32,7 @@
           of libvirt. It is available separately as a
           <a href="ftp://libvirt.org/libvirt/libvirt-test-API/">download</a>,
           or directly get
-          the <a href="https://libvirt.org/git/?p=libvirt-test-API.git">version
+          the <a href="https://gitlab.com/libvirt/libvirt-test-API/">version
           from GIT</a>.
       </li>
     </ul>

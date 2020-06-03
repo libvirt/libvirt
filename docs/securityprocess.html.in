@@ -42,7 +42,7 @@
     <p>
       Information for all historical security issues is maintained in
       machine parsable format in the
-      <a href="https://libvirt.org/git/?p=libvirt-security-notice.git;a=log">libvirt-security-notice GIT repository</a> and
+      <a href="https://gitlab.com/libvirt/libvirt-security-notice">libvirt-security-notice GIT repository</a> and
       <a href="https://security.libvirt.org">published online</a>
       in text, HTML and XML formats. Security notices are published
       on the <a href="https://libvirt.org/contact.html#email">libvirt-announce mailing list</a>

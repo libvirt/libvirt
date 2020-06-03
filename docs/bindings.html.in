@@ -49,7 +49,7 @@
       <li>
         <p>
           <strong>Python</strong>: Libvirt's python bindings are split to a
-          separate <a href="https://libvirt.org/git/?p=libvirt-python.git">package</a>
+          separate <a href="https://gitlab.com/libvirt/libvirt-python">package</a>
           since version 1.2.0, older versions came with direct support for the
           Python language.
         </p>

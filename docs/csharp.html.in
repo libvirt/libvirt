@@ -33,19 +33,11 @@
     <p>
       The C# bindings source code is maintained in a <a
       href="http://git-scm.com/">git</a> repository available on
-      <a href="https://libvirt.org/git/">libvirt.org</a>:
+      <a href="https://gitlab.com/libvirt/libvirt-csharp">gitlab.com</a>:
     </p>
 
 <pre>
-git clone https://libvirt.org/git/libvirt-csharp.git
-</pre>
-
-    <p>
-      They can also be browsed online:
-    </p>
-
-<pre>
-<a href="https://libvirt.org/git/?p=libvirt-csharp.git;a=summary">https://libvirt.org/git/?p=libvirt-csharp.git;a=summary</a>
+git clone https://gitlab.com/libvirt/libvirt-csharp.git
 </pre>
 
     <h2><a id="usage">Usage</a></h2>
