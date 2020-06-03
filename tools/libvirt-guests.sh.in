@@ -444,7 +444,7 @@ stop() {
     # last stop was not followed by start
     [ -f "$LISTFILE" ] && return 0
 
-    if [ "/x$ON_SHUTDOWN" = xshutdown ]; then
+    if [ "x$ON_SHUTDOWN" = xshutdown ]; then
         suspending=false
         if [ $SHUTDOWN_TIMEOUT -lt 0 ]; then
             gettext "SHUTDOWN_TIMEOUT must be equal or greater than 0"
