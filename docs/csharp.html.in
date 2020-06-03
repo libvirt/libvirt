@@ -29,19 +29,6 @@
       compiling libvirt for windows.
     </p>
 
-<!-- 2010-10-19 JC: Commented out until we have C# tarballs to download
-    <h2><a id="getting">Getting them</a></h2>
-
-    <p>
-      The latest versions of the libvirt C# bindings can be downloaded from:
-    </p>
-
-    <ul>
-      <li><a href="ftp://libvirt.org/libvirt/csharp/">libvirt.org FTP server</a></li>
-      <li><a href="https://libvirt.org/sources/csharp/">libvirt.org HTTP server</a></li>
-    </ul>
--->
-
     <h2><a id="git">GIT source repository</a></h2>
     <p>
       The C# bindings source code is maintained in a <a
