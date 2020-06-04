@@ -7,6 +7,9 @@
 .. image:: https://bestpractices.coreinfrastructure.org/projects/355/badge
      :target: https://bestpractices.coreinfrastructure.org/projects/355
      :alt: CII Best Practices
+.. image:: https://translate.fedoraproject.org/widgets/libvirt/-/libvirt/svg-badge.svg
+     :target: https://translate.fedoraproject.org/engage/libvirt/
+     :alt: Translation status
 
 ==============================
 Libvirt API for virtualization

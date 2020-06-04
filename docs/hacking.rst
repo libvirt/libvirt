@@ -13,11 +13,11 @@ The official upstream repository is kept in git
 along with other libvirt-related repositories (e.g.
 libvirt-python) `online <https://gitlab.com/libvirt>`__.
 
-Patches to translations are maintained via the `zanata
-project <https://fedora.zanata.org/>`__. If you want to fix a
-translation in a .po file, join the appropriate language team.
-The libvirt release process automatically pulls the latest
-version of each translation file from zanata.
+Patches to translations are maintained via the `Fedora Weblate
+service <https://translate.fedoraproject.org/projects/libvirt/libvirt>`__.
+If you want to contirbute to translations of libvirt, join the appropriate
+language team in Weblate.  Translation updates to libvirt will be merged
+during the feature freeze window.
 
 Preparing patches
 =================

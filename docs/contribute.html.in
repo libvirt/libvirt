@@ -42,8 +42,8 @@
       <li><strong>Translation</strong>. All the libvirt modules aim to support
         translations where appropriate. All translation is
         handling outside of the normal libvirt review process,
-        using the <a href="http://fedora.zanata.org">Fedora
-        instance</a> of the Zanata tool. Thus people wishing
+        using the <a href="https://translate.fedoraproject.org/projects/libvirt/libvirt">Fedora
+        instance</a> of the Weblate tool. Thus people wishing
         to contribute to translation should join the Fedora
         translation team</li>
       <li><strong>Documentation</strong>. There are docbook guides on various
