@@ -3890,6 +3890,13 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                          "with this QEMU binary"));
         return -1;
     }
+    if (iommu->aw_bits > 0 &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_AW_BITS)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu: aw_bits is not supported "
+                         "with this QEMU binary"));
+        return -1;
+    }
 
     return 0;
 }

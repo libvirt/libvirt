@@ -593,6 +593,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 375 */
               "migration-param.xbzrle-cache-size",
+              "intel-iommu.aw-bits",
     );
 
 
@@ -1481,6 +1482,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
     { "caching-mode", QEMU_CAPS_INTEL_IOMMU_CACHING_MODE, NULL },
     { "eim", QEMU_CAPS_INTEL_IOMMU_EIM, NULL },
     { "device-iotlb", QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB, NULL },
+    { "aw-bits", QEMU_CAPS_INTEL_IOMMU_AW_BITS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsObjectPropsVirtualCSSBridge[] = {
