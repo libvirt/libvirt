@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-05-18 17:34+0100\n"
+"POT-Creation-Date: 2020-06-04 10:39+0100\n"
 "PO-Revision-Date: 2019-12-16 05:00+0000\n"
 "Last-Translator: Daniel Berrange <dan-zanata@berrange.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
@@ -258,6 +258,27 @@ msgstr ""
 "(výchozí je short)\n"
 "  příkazy (neinteraktivní režim):\n"
 "\n"
+
+#, c-format
+msgid ""
+"\n"
+"%s mode [options] [extra file] [< def.xml]\n"
+"\n"
+"  Modes:\n"
+"    -a | --add                     load profile\n"
+"    -c | --create                  create profile from template\n"
+"    -D | --delete                  unload and delete profile\n"
+"    -r | --replace                 reload profile\n"
+"    -R | --remove                  unload profile\n"
+"  Options:\n"
+"    -d | --dryrun                  dry run\n"
+"    -u | --uuid <uuid>             uuid (profile name)\n"
+"    -h | --help                    this help\n"
+"  Extra File:\n"
+"    -f | --add-file <file>         add file to a profile generated from XML\n"
+"    -F | --append-file <file>      append file to an existing profile\n"
+"\n"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -508,6 +529,26 @@ msgstr "%s nemůže být prázdné"
 #, c-format
 msgid "%s cannot be set higher than %s "
 msgstr "%s nemůže být nastaveno výše než %s"
+
+#, fuzzy, c-format
+msgid "%s cannot parse GID '%s'"
+msgstr "Nedaří se zpracovat nikde se neopakující identifikátor „%s“"
+
+#, fuzzy, c-format
+msgid "%s cannot parse UID '%s'"
+msgstr "Nedaří se zpracovat nikde se neopakující identifikátor „%s“"
+
+#, c-format
+msgid "%s does not support passing a passphrase using a file descriptor"
+msgstr ""
+
+#, c-format
+msgid "%s does not support passing passphrase via file descriptor"
+msgstr ""
+
+#, fuzzy, c-format
+msgid "%s expects UID and GID parameters"
+msgstr "%s: očekáván řetězec pro parametr „%s“"
 
 #, c-format
 msgid "%s failed new mode for target '%s' with status '%d'"
@@ -804,6 +845,12 @@ msgid ""
 msgstr ""
 "%s: Zadání masky sítě není platné pro IPv6 adresu „%s“ v definici trasy"
 
+#, fuzzy, c-format
+msgid ""
+"%s: Starting external device: %s\n"
+"%s\n"
+msgstr "žádné cílové zařízení %s"
+
 #, c-format
 msgid "%s: Unrecognized family '%s' in route definition"
 msgstr "%s: Nerozpoznaná generace „%s“ v definici trasy"
@@ -923,6 +970,14 @@ msgstr ""
 #, c-format
 msgid "%s: migration_port_min: port must be greater than 0"
 msgstr "%s: migration_port_min: je třeba, aby číslo portu bylo vyšší než 0"
+
+#, fuzzy, c-format
+msgid "%s: must be run as root\n"
+msgstr "je třeba, aby popisovač souboru %d byl soket"
+
+#, fuzzy, c-format
+msgid "%s: must not be run setuid root\n"
+msgstr "je třeba, aby %s v %s nebylo nula"
 
 #, c-format
 msgid "%s: nvdimm without a path"
@@ -1083,6 +1138,10 @@ msgstr "„%s“ není známé rozhraní"
 msgid "'%s' is not a suitable bridge helper"
 msgstr "„%s“ není použitelné pomocné pro most"
 
+#, fuzzy, c-format
+msgid "'%s' is not a suitable dbus-daemon"
+msgstr "„%s“ není použitelné pomocné pro most"
+
 #, c-format
 msgid "'%s' is not a suitable pr helper"
 msgstr "„%s“ není použitelné pro pr helper"
@@ -1195,6 +1254,16 @@ msgstr "'max_sectors' je podporováno pouze řadičem virtio-scsi"
 msgid "'max_workers' must be greater than 0"
 msgstr "'max_workers' nemůže být vyšší než 0"
 
+msgid ""
+"'mode' attribute for Xen feature 'passthrough' must be 'sync_pt' or "
+"'share_pt'"
+msgstr ""
+
+#, fuzzy, c-format
+msgid ""
+"'mode' of Xen passthrough feature differs: source: '%s', destination: '%s'"
+msgstr "Stav funkce „%s“ se liší: zdroj: „%s“, cíl: „%s“"
+
 #, c-format
 msgid "'model' attribute in <hostdev> is only supported when type='%s'"
 msgstr "atribut 'model' v <hostdev> je podporováno pouze pokud type='%s'"
@@ -1217,6 +1286,9 @@ msgstr "v odpovědi quest-get-osinfo chybí 'offset'"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "v odpovědi guest-get-vcpus chybí 'online'"
+
+msgid "'parent' for vHBA not specified, and cannot find one on this host"
+msgstr ""
 
 msgid "'pci-controller' missing in guest-get-fsinfo 'disk' data"
 msgstr "v guest-get-fsinfo datech 'disk' chybí 'pci-controller'"
@@ -1263,6 +1335,10 @@ msgstr "protokol „ssh“ zatím ještě není podporován"
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' je platné pouze pro svazek typu 'file'"
 
+#, fuzzy
+msgid "'tftp' protocol is not supported with this QEMU binary"
+msgstr "VxHS protokol není touto binárkou QEMU podporován"
+
 msgid "'trim' algorithm not supported"
 msgstr "algoritmus „trim“ není podporován"
 
@@ -1287,6 +1363,10 @@ msgstr "'value %d' není platná pro 'sibling id %d' pod NUMA 'cell id %d'"
 #, c-format
 msgid "'value %s' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
 msgstr "'value %s' není platná pro 'sibling id %d' pod NUMA 'cell id %d'"
+
+#, fuzzy
+msgid "'vhostuser' driver is only supported with 'virtio' device"
+msgstr "volba ats ovladač je podporovaná pouze pro virtio zařízení"
 
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "pro adaptér typu 'fchost' je třeba zadat 'wwnn' a 'wwpn'"
@@ -1315,6 +1395,10 @@ msgstr "(definice_disku)"
 msgid "(domainCapabilities)"
 msgstr "(schopnostiDomeny)"
 
+#, fuzzy
+msgid "(domain_backup)"
+msgstr "(kontrolni_bod_domeny)"
+
 msgid "(domain_checkpoint)"
 msgstr "(kontrolni_bod_domeny)"
 
@@ -1336,6 +1420,10 @@ msgstr "(definice rozhraní)"
 msgid "(interface_definition)"
 msgstr "(definice_rozhraní)"
 
+#, fuzzy
+msgid "(libxl_migration_cookie)"
+msgstr "(_cookie_stehovani)"
+
 msgid "(metadata_xml)"
 msgstr "(xml_metadata)"
 
@@ -1345,6 +1433,10 @@ msgstr "(stav sítě)"
 msgid "(network_definition)"
 msgstr "(definice_sítě)"
 
+#, fuzzy
+msgid "(networkport_definition)"
+msgstr "(definice_sítě)"
+
 msgid "(node_device_definition)"
 msgstr "(definice_zarizeni_uzlu)"
 
@@ -1352,6 +1444,14 @@ msgid "(none)"
 msgstr "(žádný)"
 
 msgid "(nwfilter_definition)"
+msgstr "(definice_nwfiltru)"
+
+#, fuzzy
+msgid "(nwfilterbinding_definition)"
+msgstr "(definice_nwfiltru)"
+
+#, fuzzy
+msgid "(nwfilterbinding_status)"
 msgstr "(definice_nwfiltru)"
 
 msgid "(pool state)"
@@ -1492,6 +1592,9 @@ msgstr ""
 
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "prvek <config> je zatím podporován pouze s 'rbd' disky"
+
+msgid "<domainbackup> must specify TCP port for now"
+msgstr ""
 
 #, c-format
 msgid "<forward dev='%s'> must match first <interface dev='%s'/> in network %s"
@@ -1702,6 +1805,9 @@ msgstr "Umožňuje nastavení nebo změnu popisu či názvu domény."
 msgid "An error occurred, but the cause is unknown"
 msgstr "Došlo k chybě, ale příčina není známa"
 
+msgid "An event loop implementation must be registered"
+msgstr ""
+
 msgid "An explicit disk format must be specified"
 msgstr "Je třeba zadat výslovný formát disku"
 
@@ -1795,9 +1901,6 @@ msgstr ""
 "Připojení zařízení paměti s velikostí „%llu“ by překročilo nastavenou "
 "velikost maxMemory „%llu“"
 
-msgid "Attempt to close netcf state driver with open connections"
-msgstr "Pokus o zavření ovladače stavu netcf při otevřených spojeních"
-
 #, c-format
 msgid "Attempt to create %s without specifying mode"
 msgstr "Pokus o vytvoření %s bez zadání režimu"
@@ -1866,8 +1969,24 @@ msgstr "Automatické spuštění"
 msgid "Available"
 msgstr "Dostupný"
 
+msgid ""
+"Available servers on a daemon. Currently only supports 'libvirtd' or "
+"'virtproxyd'."
+msgstr ""
+
 msgid "Available:"
 msgstr "Dostupný:"
+
+msgid "Backup"
+msgstr ""
+
+#, fuzzy
+msgid "Backup Dump XML"
+msgstr "XML výpis kontrolního bodu"
+
+#, fuzzy
+msgid "Backup started\n"
+msgstr "Bloková kopie zahájena"
 
 #, c-format
 msgid "Bad $%s value."
@@ -2191,6 +2310,10 @@ msgstr "Výrobce procesoru %s modelu %s se liší od výrobce %s"
 msgid "CPU vendor specified without CPU model"
 msgstr "Výrobce procesoru specifikován bez modelu procesoru"
 
+#, fuzzy, c-format
+msgid "CPU vendor value 0x%2lx already defined"
+msgstr "Název výrobce procesoru %s už je definován"
+
 msgid "CPU vendors do not match"
 msgstr "Výrobci procesorů si neodpovídají"
 
@@ -2199,6 +2322,10 @@ msgstr "Procesor(y):"
 
 msgid "CPU:"
 msgstr "procesor:"
+
+#, fuzzy
+msgid "CPUID registers unavailable"
+msgstr "Nejsou k dispozici žádné PCI sběrnice"
 
 msgid "CPUs are incompatible"
 msgstr "procesory nejsou kompatibilní"
@@ -2608,6 +2735,10 @@ msgstr "Není možné odpojit zařízení %s bez alternativního názvu"
 msgid "Cannot determine balloon device path"
 msgstr "Nedaří se zjistit popis umístění zařízení výplně v operační paměti"
 
+#, fuzzy
+msgid "Cannot determine system clock HZ"
+msgstr "nedaří se zjistit souborový systém pro „%s“"
+
 msgid "Cannot disable close-on-exec flag"
 msgstr "Nedaří se vypnout příznak close-on-exec"
 
@@ -2658,6 +2789,10 @@ msgstr "Nedaří se vytáhnout verzi spuštěného hypervizoru %s\n"
 msgid "Cannot find %s - Possibly the package isn't installed"
 msgstr "Nedaří se nalézt %s – možná není nainstalovaný balíček"
 
+#, fuzzy, c-format
+msgid "Cannot find '%s' in node device database"
+msgstr "V popisu umístění se nedaří nalézt „%s“"
+
 #, c-format
 msgid "Cannot find '%s' in path"
 msgstr "V popisu umístění se nedaří nalézt „%s“"
@@ -2666,8 +2801,16 @@ msgstr "V popisu umístění se nedaří nalézt „%s“"
 msgid "Cannot find 'iothread' : %u"
 msgstr "Nedaří se nalézt „iothread“: %u"
 
+#, fuzzy, c-format
+msgid "Cannot find CPU model with PVR 0x%03lx"
+msgstr "Nedaří se nalézt model procesoru s PVR 0x%08x"
+
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
+msgstr "Nedaří se nalézt model procesoru s PVR 0x%08x"
+
+#, fuzzy, c-format
+msgid "Cannot find CPU vendor with vendor id 0x%02lx"
 msgstr "Nedaří se nalézt model procesoru s PVR 0x%08x"
 
 #, c-format
@@ -2676,9 +2819,33 @@ msgstr ""
 "Nedaří se nalézt zařízení pro zavádění systému, které by mělo požadovaný typ "
 "%s"
 
+#, fuzzy, c-format
+msgid "Cannot find byte %sstats for block device '%s'"
+msgstr "nedaří se najít statistiky pro zařízení „%s“"
+
+#, fuzzy, c-format
+msgid "Cannot find byte '%s' stats for block device '%s'"
+msgstr "nedaří se najít statistiky pro zařízení „%s“"
+
+#, fuzzy, c-format
+msgid "Cannot find byte stats for block device '%s'"
+msgstr "nedaří se najít statistiky pro zařízení „%s“"
+
+#, fuzzy, c-format
+msgid "Cannot find name for FD %d socket family %d"
+msgstr "Nedaří se nalézt program %d verze %d"
+
 #, c-format
 msgid "Cannot find program %d version %d"
 msgstr "Nedaří se nalézt program %d verze %d"
+
+#, fuzzy, c-format
+msgid "Cannot find request %sstats for block device '%s'"
+msgstr "nedaří se najít statistiky pro zařízení „%s“"
+
+#, fuzzy, c-format
+msgid "Cannot find request stats for block device '%s'"
+msgstr "nedaří se najít statistiky pro zařízení „%s“"
 
 #, c-format
 msgid "Cannot find security driver '%s'"
@@ -2825,6 +2992,10 @@ msgid "Cannot open /proc/cgroups"
 msgstr "Nedaří se otevřít /proc/cgroups"
 
 #, c-format
+msgid "Cannot open embedded driver at path '%s', already open with path '%s'"
+msgstr ""
+
+#, c-format
 msgid "Cannot open init control %s"
 msgstr "Nedaří se otevřít init řízení %s"
 
@@ -2837,6 +3008,22 @@ msgstr "Nedaří se otevřít řídící soket síťového rozhraní"
 
 msgid "Cannot open resctrl"
 msgstr "Nedaří se otevrít resctrl"
+
+#, fuzzy, c-format
+msgid "Cannot parse %srequest stat '%s'"
+msgstr "Nedaří se zpracovat řetězec verze „%s“"
+
+#, fuzzy, c-format
+msgid "Cannot parse %sstat '%s'"
+msgstr "nedaří se zpracovat cíl „%s“"
+
+#, fuzzy, c-format
+msgid "Cannot parse '%s' stat '%s'"
+msgstr "nedaří se zpracovat cíl „%s“"
+
+#, fuzzy
+msgid "Cannot parse 'memory.stat' cgroup file."
+msgstr "Nedaří se zpracovat atribut <master> 'startport'"
 
 msgid "Cannot parse <HardDisk> 'format' attribute"
 msgstr "Nedaří se zpracovat <HardDisk> atribut 'format'"
@@ -2889,7 +3076,31 @@ msgstr "Nedaří se zpracovat uzel <Snapshot> <StorageControllers>"
 msgid "Cannot parse <VirtualBox> <Machine> node"
 msgstr "Nedaří se zpracovat uzel <VirtualBox> <Machine>"
 
+#, fuzzy
+msgid "Cannot parse <address> 'bus' attribute"
+msgstr "Nedaří se zpracovat atribut „uid“ <address>"
+
+#, fuzzy
+msgid "Cannot parse <address> 'controller' attribute"
+msgstr "Nedaří se zpracovat <address> atribut 'irg'"
+
+#, fuzzy
+msgid "Cannot parse <address> 'cssid' attribute"
+msgstr "Nedaří se zpracovat atribut „fid“ <address>"
+
+#, fuzzy
+msgid "Cannot parse <address> 'devno' attribute"
+msgstr "Nedaří se zpracovat atribut „fid“ <address>"
+
+#, fuzzy
+msgid "Cannot parse <address> 'domain' attribute"
+msgstr "Nedaří se zpracovat atribut „fid“ <address>"
+
 msgid "Cannot parse <address> 'fid' attribute"
+msgstr "Nedaří se zpracovat atribut „fid“ <address>"
+
+#, fuzzy
+msgid "Cannot parse <address> 'function' attribute"
 msgstr "Nedaří se zpracovat atribut „fid“ <address>"
 
 msgid "Cannot parse <address> 'iobase' attribute"
@@ -2898,7 +3109,31 @@ msgstr "Nedaří se zpracovat atribut <address> 'iobase'"
 msgid "Cannot parse <address> 'irq' attribute"
 msgstr "Nedaří se zpracovat <address> atribut 'irg'"
 
+#, fuzzy
+msgid "Cannot parse <address> 'port' attribute"
+msgstr "Nedaří se zpracovat <address> atribut 'irg'"
+
+#, fuzzy
+msgid "Cannot parse <address> 'reg' attribute"
+msgstr "Nedaří se zpracovat <address> atribut 'irg'"
+
+#, fuzzy
+msgid "Cannot parse <address> 'slot' attribute"
+msgstr "Nedaří se zpracovat atribut „fid“ <address>"
+
+#, fuzzy
+msgid "Cannot parse <address> 'ssid' attribute"
+msgstr "Nedaří se zpracovat atribut „fid“ <address>"
+
+#, fuzzy
+msgid "Cannot parse <address> 'target' attribute"
+msgstr "Nedaří se zpracovat <address> atribut 'irg'"
+
 msgid "Cannot parse <address> 'uid' attribute"
+msgstr "Nedaří se zpracovat atribut „uid“ <address>"
+
+#, fuzzy
+msgid "Cannot parse <address> 'unit' attribute"
 msgstr "Nedaří se zpracovat atribut „uid“ <address>"
 
 msgid "Cannot parse <local> 'port' attribute with socket interface"
@@ -2938,6 +3173,14 @@ msgstr "Nedaří se zpracovat nikde se neopakující identifikátor „%s“"
 msgid "Cannot parse adapter '%s'"
 msgstr "Nedaří se zpracovat adaptér „%s“"
 
+#, fuzzy, c-format
+msgid "Cannot parse byte %sstat '%s'"
+msgstr "nedaří se zpracovat sběrnici „%s“"
+
+#, fuzzy, c-format
+msgid "Cannot parse byte '%s' stat '%s'"
+msgstr "Nedaří se zpracovat řetězec verze „%s“"
+
 #, c-format
 msgid "Cannot parse category in %s"
 msgstr "Nedaří se zpracovat kategorii v %s"
@@ -2969,6 +3212,14 @@ msgstr "Nedaří se zpracovat službu soketu „%s“: %s"
 #, c-format
 msgid "Cannot parse start time %s in %s"
 msgstr "Nedaří se zpracovat čas startu %s v %s"
+
+#, fuzzy, c-format
+msgid "Cannot parse sys stat '%s'"
+msgstr "nedaří se zpracovat cíl „%s“"
+
+#, fuzzy, c-format
+msgid "Cannot parse user stat '%s'"
+msgstr "nedaří se zpracovat sběrnici „%s“"
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr ""
@@ -3168,6 +3419,10 @@ msgstr "Není možné sdílet neinicializovanou obsluhu CURL"
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "Není možná zadat štítek pokud je přeštítkovávání vypnuto. model=%s"
 
+#, fuzzy, c-format
+msgid "Cannot stat %s"
+msgstr "Nedaří se zjistit stav „%s“"
+
 #, c-format
 msgid "Cannot stat '%s'"
 msgstr "Nedaří se zjistit stav „%s“"
@@ -3280,6 +3535,10 @@ msgstr "Využití certifikátu %s nedovoluje šifrování klíče"
 #, c-format
 msgid "Certificate failed validation: %s"
 msgstr "Ověření certifikátu se nezdařilo: %s"
+
+#, fuzzy, c-format
+msgid "Cgroup backend '%s' already registered."
+msgstr "Zpětné volání uzavření už je zaregistrováno"
 
 msgid "Chain name contains invalid characters"
 msgstr "Název řetězce obsahuje neplatné znaky"
@@ -3586,6 +3845,17 @@ msgstr "Nastavit síť tak, aby byla automaticky spouštěna při startu."
 msgid "Configure a pool to be automatically started at boot."
 msgstr "Nastavit úložiště tak, aby bylo automaticky spouštěno při startu."
 
+#, fuzzy, c-format
+msgid ""
+"Configuring the '%s' timer is not supported for virtType=%s arch=%s machine="
+"%s guests"
+msgstr ""
+"Funkce „%s“ není pro architekturu „%s“ nebo typ stroje „%s“ podporována"
+
+#, fuzzy, c-format
+msgid "Configuring the '%s' timer is not supported with this QEMU binary"
+msgstr "nastavení ats není touto binárkou QEMU podporováno"
+
 msgid ""
 "Configuring the page size for HPT guests is not supported by this QEMU binary"
 msgstr ""
@@ -3718,6 +3988,10 @@ msgstr "Nelze změnit parametry paměti: %s"
 msgid "Could not change scheduler parameters: %s"
 msgstr "Nelze změnit parametry plánovače: %s"
 
+#, fuzzy, c-format
+msgid "Could not chown on swtpm logfile %s"
+msgstr "nelze zavřít logovací soubor"
+
 #, c-format
 msgid "Could not complete transfer: %s (%d)"
 msgstr "Nedaří se dokončit přenos: %s (%d)"
@@ -3745,6 +4019,10 @@ msgstr "Nelze zkopírovat svazek: %s"
 msgid "Could not create CDATA element"
 msgstr "Nedaří se vytvořit prvek CDATA"
 
+#, fuzzy, c-format
+msgid "Could not create TPM directory %s"
+msgstr "Nedaří se vytvořit složku „%s“"
+
 msgid "Could not create WQL filter"
 msgstr "Nedaří se vytvořit WQL filtr"
 
@@ -3754,6 +4032,10 @@ msgstr "Nedaří se vytvořit XML dokument"
 #, c-format
 msgid "Could not create base storage, rc=%08x"
 msgstr "Nedaří se vytvořit základní úložiště, rc=%08x"
+
+#, fuzzy, c-format
+msgid "Could not create directory %s as %u:%d"
+msgstr "Nedaří se vytvořit složku „%s“"
 
 msgid "Could not create filter"
 msgstr "Nedaří se vytvořit filtr"
@@ -3885,6 +4167,10 @@ msgstr "Ve stavovém souboru se nedaří nalézt žádný prvek „network“ (s
 msgid "Could not find any 'pool' element in state file"
 msgstr "Ve stavovém souboru se nedaří najít žádný prvek „pool“"
 
+#, fuzzy
+msgid "Could not find any mounted v1 controllers"
+msgstr "Nedaří se nalézt automaticky přidaný řadič %s s pořadovým číslem %zu"
+
 msgid "Could not find any vport capable device"
 msgstr "Nedaří se najít žádné zařízení schopné vport"
 
@@ -3906,6 +4192,10 @@ msgstr "Nepodařilo se najít úložiště obsahující úplný popis umístěn�
 
 #, c-format
 msgid "Could not find datastore with name '%s'"
+msgstr "Nepodařilo se najít úložiště nazvané „%s“"
+
+#, fuzzy, c-format
+msgid "Could not find directory separator in %s"
 msgstr "Nepodařilo se najít úložiště nazvané „%s“"
 
 #, c-format
@@ -3949,6 +4239,14 @@ msgstr "Nedaří se najít fyzické síťové rozhraní s MAC adresou „%s“"
 #, c-format
 msgid "Could not find physical NIC with name '%s'"
 msgstr "Nedaří se najít žádné fyzické síťové rozhraní s názvem „%s“"
+
+#, fuzzy, c-format
+msgid "Could not find placement for v1 controller %s at %s"
+msgstr "Nedaří se najít hodnotu pro proměnnou „%s“"
+
+#, fuzzy
+msgid "Could not find placement for v2 controller"
+msgstr "Nedaří se najít hodnotu pro proměnnou „%s“"
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -4130,6 +4428,14 @@ msgstr "Nedaří se získat počet Defined Domains, rc=%08x"
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "Nepodařilo se získat počet domén, rc=%08x"
+
+#, fuzzy
+msgid "Could not get process id of swtpm"
+msgstr "Nedaří se získat položky odpovědi"
+
+#, fuzzy
+msgid "Could not get process id of vhost-user-gpu"
+msgstr "Nedaří se získat položky odpovědi"
 
 #, c-format
 msgid "Could not get read only state, rc=%08x"
@@ -4477,6 +4783,10 @@ msgid "Could not revert to snapshot '%s': %s"
 msgstr "Nepodařilo se navrátit k zachycenému stavu „%s“: %s"
 
 #, c-format
+msgid "Could not run '%s'. exitstatus: %d; Check error log '%s' for details."
+msgstr ""
+
+#, c-format
 msgid "Could not search in datastore '%s': %s"
 msgstr "Nedaří se hledat v úložišti dat „%s“: %s"
 
@@ -4538,6 +4848,26 @@ msgstr "Nedaří se nastavit zdrojovou složku pro souborový systém"
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr "Nedaří se nastavit adresu jmenného prostoru vsman pro xmlNodeParam"
 
+#, fuzzy, c-format
+msgid "Could not start 'slirp'. exitstatus: %d"
+msgstr "Nepodařilo se spustit doménu: %s"
+
+#, c-format
+msgid "Could not start 'swtpm'. exitstatus: %d, error: %s"
+msgstr ""
+
+#, c-format
+msgid "Could not start 'vhost-user-gpu'. exitstatus: %d"
+msgstr ""
+
+#, fuzzy
+msgid "Could not start 'virtiofsd'"
+msgstr "Nepodařilo se zjistit stav „%s“"
+
+#, fuzzy, c-format
+msgid "Could not start dbus-daemon. exitstatus: %d"
+msgstr "Nepodařilo se spustit doménu: %s"
+
 #, c-format
 msgid "Could not start domain: %s"
 msgstr "Nepodařilo se spustit doménu: %s"
@@ -4590,6 +4920,10 @@ msgid "Cpu '%u' in node '%zu' is out of range of the provided bitmap"
 msgstr "Procesor „%u“ v uzlu „%zu“ je mimo rozsah poskytnuté bitové mapy"
 
 msgid "Crashed"
+msgstr "Zhavarovalo"
+
+#, fuzzy
+msgid "Crashloaded"
 msgstr "Zhavarovalo"
 
 msgid "Create a checkpoint from XML"
@@ -4683,6 +5017,10 @@ msgstr "nepodařilo se zjistit DAC imagelabel"
 
 msgid "DAC seclabel couldn't be determined"
 msgstr "nepodařilo se zjistit DAC seclabel"
+
+#, fuzzy, c-format
+msgid "DBus daemon %s didn't show up"
+msgstr "Doména %s se neukázala"
 
 msgid "DBus matches could not be installed. Disabling nwfilter driver"
 msgstr "DBus shody se nepodařilo nainstalovat. Vypíná se ovladač nwfilter"
@@ -4967,6 +5305,11 @@ msgstr "Slovníková položka v „%s“ má nesprávnou velikost"
 msgid "Dict entry in signature '%s' must be a basic type"
 msgstr "Je třeba, aby slovníková položka v signatuře „%s“ byla základního typu"
 
+msgid ""
+"Did not create EK and certificates since this requires privileged mode for a "
+"TPM 1.2\n"
+msgstr ""
+
 #, c-format
 msgid "Did not find USB device %04x:%04x"
 msgstr "Nenalezeno USB zařízení %04x:%04x"
@@ -4987,6 +5330,9 @@ msgstr ""
 
 msgid "Different inbound and outbound bandwidth is unsupported"
 msgstr "Rozdílné příchozí a odchozí rychlosti nejsou podporovány"
+
+msgid "Dirty rate:"
+msgstr ""
 
 msgid "Disabled"
 msgstr "Vypnuto"
@@ -5242,6 +5588,10 @@ msgstr "Doména už disk s takovouto adresou obsahuje"
 msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr "Doména už existuje. Úprava existujících domén není zatím podporována"
 
+#, fuzzy
+msgid "Domain autodestroy not supported for embedded drivers yet"
+msgstr "Doména-0 nepodporuje požadovanou operaci"
+
 msgid "Domain autodestroy requires a connection handle"
 msgstr "Automatické zlikvidování domény vyžaduje obsluhu připojení"
 
@@ -5433,6 +5783,14 @@ msgstr "Stáhnout obsah svazku do souboru"
 msgid "Downtime w/o network:"
 msgstr "Doba výpadku bez sítě:"
 
+#, c-format
+msgid "Driver %s cannot be used in embedded mode"
+msgstr ""
+
+#, fuzzy
+msgid "Driver does not support embedded mode"
+msgstr "ovladač nepodporuje net model „%s“"
+
 msgid "Driver does not support setting multiple IP addresses"
 msgstr "Ovladač nepodporuje nastavení vícero IP adres"
 
@@ -5447,6 +5805,10 @@ msgstr "Vypsat XML pro kontrolní bod domény"
 
 msgid "Dump XML for a domain snapshot"
 msgstr "Vypsat XML pro zachycený stav domény"
+
+#, fuzzy
+msgid "Dump XML for an ongoing domain block backup job"
+msgstr "Vypsat XML pro kontrolní bod domény"
 
 msgid "Dump XML of domain information for a managed save state file to stdout."
 msgstr ""
@@ -5482,6 +5844,10 @@ msgstr "Duplicitní USB rozbočovač na sběrnici %u port %s"
 #, c-format
 msgid "Duplicate cache type in resctrl for level %u"
 msgstr "Duplicitní typ mezipaměti v resctrl pro úroveň %u"
+
+#, fuzzy, c-format
+msgid "Duplicate hash table key '%s'"
+msgstr "duplicitní klíč „%s“"
 
 #, c-format
 msgid "Duplicate security driver %s"
@@ -5561,8 +5927,28 @@ msgstr "Prázdný název předpony pro resctrl monitor"
 msgid "Empty response during %s"
 msgstr "Prázdná odpověď v průběhu %s"
 
+#, fuzzy, c-format
+msgid "Emulator '%s' does not support arch '%s'"
+msgstr "qemu emulátor „%s“ nepodporuje xen"
+
+#, fuzzy, c-format
+msgid "Emulator '%s' does not support machine type '%s'"
+msgstr "qemu emulátor „%s“ nepodporuje xen"
+
+#, fuzzy, c-format
+msgid "Emulator '%s' does not support os type '%s'"
+msgstr "qemu emulátor „%s“ nepodporuje xen"
+
+#, fuzzy, c-format
+msgid "Emulator '%s' does not support virt type '%s'"
+msgstr "qemu emulátor „%s“ nepodporuje xen"
+
 msgid "Enabled"
 msgstr "Zapnuto"
+
+#, fuzzy
+msgid "End of file from agent socket"
+msgstr "Konec souboru (EOF) od qemu monitoru"
 
 msgid "End of file from qemu monitor"
 msgstr "Konec souboru (EOF) od qemu monitoru"
@@ -5584,6 +5970,10 @@ msgstr ""
 #, c-format
 msgid "Enter %s's password for %s"
 msgstr "Zadejte heslo %s pro %s"
+
+#, fuzzy
+msgid "Enter new value for secret:"
+msgstr "Zadejte uživatelské jméno pro %s"
 
 #, c-format
 msgid "Enter username for %s"
@@ -5633,6 +6023,10 @@ msgstr "Chyba v xmlAddPrevSibling"
 msgid "Error in xmlNewProp"
 msgstr "Chyba v xmlNewProp"
 
+#, fuzzy
+msgid "Error message:"
+msgstr "Výřečnější zprávy"
+
 msgid "Error notify callback must be supplied"
 msgstr "Je třeba dodat zpětné volání oznámení chyby"
 
@@ -5663,6 +6057,10 @@ msgstr "Chyba při zavírání média, rc=%08x"
 msgid "Error while creating diff storage, rc=%08x"
 msgstr "Chyba při vytváření úložiště rozdílů, rc=%08x"
 
+#, fuzzy
+msgid "Error while processing agent IO"
+msgstr "Chyba při zpracovávání vstup./výstupu monitoru"
+
 msgid "Error while processing command's IO"
 msgstr "Chyba při zpracovávání vst./výstupu příkazu"
 
@@ -5681,9 +6079,17 @@ msgstr ""
 "Chyba při odebírání síťového rozhraní pro komunikaci pouze s hostitelem, rc="
 "%08x"
 
+#, fuzzy, c-format
+msgid "Escape character is %s"
+msgstr "nedaří se nalézt znakové zařízení %s"
+
 #, c-format
 msgid "Ethernet controller index %d out of [0..3] range"
 msgstr "Pořadové číslo (index) řadiče ethernet %d je mimo rozsah 0 až 3"
+
+#, fuzzy
+msgid "Event thread is already running"
+msgstr "rozhraní už je spuštěné"
 
 msgid "Event wakeup"
 msgstr "Událost probuzení"
@@ -5724,11 +6130,19 @@ msgstr "Očekáváno rozhraní typu „network“ (síť), nikoli „%s“"
 msgid "Expected at least one file descriptor"
 msgstr "Očekáván přinejmenším jeden popisovač souboru"
 
+#, fuzzy, c-format
+msgid "Expected caps for '%s' but saw '%s'"
+msgstr "Očekáván typ „%s“, ale nalezen „%s“"
+
 msgid "Expected downtime:"
 msgstr "Očekávaná doba nedostupnosti:"
 
 msgid "Expected exactly 1 host for the storage pool"
 msgstr "Očekáván právě jeden hostitel pro fond úložiště"
+
+#, fuzzy, c-format
+msgid "Expecting %d FD names but got %zu"
+msgstr "očekáváno %zu veths, ale obdrženo %zu"
 
 #, c-format
 msgid "Expecting '%s' to be a %s host but found a %s host"
@@ -5947,6 +6361,10 @@ msgstr "Očekáváno, že typ virtualizace bude „%s“, ale nalezeno „%s“"
 msgid "Expiry Time"
 msgstr "Čas skončení platnosti"
 
+#, fuzzy
+msgid "Extended attributes are not supported on this system"
+msgstr "Na tomto systému nejsou podporována zařízení s více frontami"
+
 #, c-format
 msgid "Extra data in disabled network '%s'"
 msgstr "Další data ve vypnuté síti „%s“"
@@ -5985,6 +6403,10 @@ msgstr "Nepodařilo se nový režim uzlu pro cíl „%s“"
 #, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "Nepodařilo se nastavit TLS x509 přihlašovací údaje: %s"
+
+#, fuzzy, c-format
+msgid "Failed testunitready: %s"
+msgstr "Nepodařilo se číst %s"
 
 msgid "Failed to accept migration connection"
 msgstr "Nepodařilo se přijmout migrační spojení"
@@ -6073,6 +6495,10 @@ msgstr "Nepodařilo se přidělit štítek zabezpečení"
 msgid "Failed to allocate security model"
 msgstr "Nepodařilo se přidělit model zabezpečení"
 
+#, fuzzy, c-format
+msgid "Failed to allocate slirp for '%s'"
+msgstr "Nepodařilo se předpřidělit prostor pro soubor „%s“"
+
 msgid "Failed to allocate tty"
 msgstr "Nezdařilo se přiřazení tty"
 
@@ -6123,6 +6549,14 @@ msgstr "Nepodařilo se navázat %s na %s"
 #, c-format
 msgid "Failed to bind %s to new root %s"
 msgstr "Nepodařilo se navázat %s na nový kořen %s"
+
+#, fuzzy, c-format
+msgid "Failed to bind cgroup '%s' on '%s'"
+msgstr "Nepodařilo se navázat %s na %s"
+
+#, fuzzy, c-format
+msgid "Failed to bind mount directory %s to %s"
+msgstr "Nedaří se připojit složku %s jako tmpfs"
 
 #, c-format
 msgid "Failed to bind socket to '%s'"
@@ -6244,6 +6678,10 @@ msgstr "Nepodařilo se připojit ssh agenta"
 msgid "Failed to connect to the admin server"
 msgstr "Nepodařilo se připojit ke správnímu serveru"
 
+#, fuzzy, c-format
+msgid "Failed to connect: %s"
+msgstr "nepodařilo se připojit k %s"
+
 #, c-format
 msgid "Failed to convert '%s' to int"
 msgstr "Nepodařilo se převést „%s“ na celočíselný typ"
@@ -6363,6 +6801,10 @@ msgstr "Nepodařilo se vytvořit sondu souborového systému pro zařízení %s"
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr "V xml dokumentu se pod uzlem mostu nepodařilo vytvořit uzel rozhraní"
 
+#, fuzzy, c-format
+msgid "Failed to create iscsi context for %s"
+msgstr "nedaří se vytvořit selinux kontext pro: %s"
+
 #, c-format
 msgid "Failed to create lib dir %s"
 msgstr "Nepodařilo se vytvořit složku knihoven %s"
@@ -6454,6 +6896,14 @@ msgid "Failed to create unique directory with template '%s' for probing QEMU"
 msgstr ""
 "Nepodařilo se vytvořit neopakující se složku s šablonou „%s“ pro sondování "
 "QEMU"
+
+#, fuzzy, c-format
+msgid "Failed to create v1 controller %s for group"
+msgstr "Nepodařilo se vytvořit svazek %s"
+
+#, fuzzy, c-format
+msgid "Failed to create v2 cgroup '%s'"
+msgstr "Nepodařilo se vytvořit svazek %s"
 
 msgid "Failed to create vbox driver object."
 msgstr "Nepodařilo se vytvořit objekt ovladače vbox."
@@ -6622,12 +7072,28 @@ msgstr "Nepodařilo se odpojit od správního serveru"
 msgid "Failed to disconnect from the hypervisor"
 msgstr "Nepodařilo se odpojit od hypervizoru"
 
+#, fuzzy, c-format
+msgid "Failed to disconnect: %s"
+msgstr "nepodařilo se připojit k %s"
+
+#, fuzzy, c-format
+msgid "Failed to discover session: %s"
+msgstr "Nepodařilo se inicializovat TLS relaci: %s"
+
 #, c-format
 msgid "Failed to dump core of domain '%d' with libxenlight"
 msgstr "Nepodařilo se vypsat paměť domény „%d“ s libxenlight"
 
+#, fuzzy, c-format
+msgid "Failed to enable controller '%s' for '%s'"
+msgstr "Nepodařilo se uložit „%s“ pro „%s“"
+
 msgid "Failed to escape password for XML"
 msgstr "Nepodařilo se zbavit heslo významu (escape) pro XML"
+
+#, fuzzy, c-format
+msgid "Failed to execute symbol '%s' in module '%s'"
+msgstr "Nepodařilo se vytvořit symbolický odkaz „%s“, vedoucí na „%s“"
 
 msgid "Failed to extract interface information"
 msgstr "Nepodařilo se vytáhnout informace o rozhraní"
@@ -6668,9 +7134,17 @@ msgstr "Nepodařilo se najít ovladač úložiště: %s"
 msgid "Failed to find any %s pool sources"
 msgstr "Nepodařilo se najít žádné %s zdroje fondu"
 
+#, fuzzy, c-format
+msgid "Failed to find fc_host for wwnn='%s' and wwpn='%s'"
+msgstr "Nepodařilo se najít SCSI hostitele s wwnn=„%s“, wwpn=„%s“"
+
 #, c-format
 msgid "Failed to find group record for gid '%u'"
 msgstr "Nepodařilo se najít záznam skupiny pro identifikátor skupiny %u"
+
+#, fuzzy, c-format
+msgid "Failed to find module '%s'"
+msgstr "nepodařilo se najít disk „%s“"
 
 #, c-format
 msgid "Failed to find parent device for %s"
@@ -6683,6 +7157,10 @@ msgstr "Nepodařilo se najít umístění binárky %s"
 #, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr "Nepodařilo se najít scsi_host pomocí PCI „%s“ a unique_id='%u'"
+
+#, fuzzy, c-format
+msgid "Failed to find symbol '%s' in module '%s': %s"
+msgstr "Nepodařilo se vytvořit symbolický odkaz „%s“, vedoucí na „%s“"
 
 msgid "Failed to find the interface"
 msgstr "Nepodařilo se najít rozhraní"
@@ -6766,6 +7244,10 @@ msgstr "Nepodařilo se získat názvy schopností zařízení"
 
 msgid "Failed to get capability numbers of the device"
 msgstr "Nepodařilo se získat čísla schopností zařízení"
+
+#, fuzzy, c-format
+msgid "Failed to get capacity of lun: %s"
+msgstr "Nepodařilo se získat volbu „%s“: %s"
 
 #, c-format
 msgid "Failed to get certificate %s distinguished name: %s"
@@ -6890,6 +7372,10 @@ msgstr "Nepodařilo se získat platné skupiny identity soketu klienta"
 msgid "Failed to get version info from libxenlight"
 msgstr "Nepodařilo se získat z libxenlight informace o verzi"
 
+#, fuzzy, c-format
+msgid "Failed to init transport: %s"
+msgstr "Pořízení zachyceného stavu se nezdařilo: %s"
+
 #, c-format
 msgid "Failed to initialize TLS session: %s"
 msgstr "Nepodařilo se inicializovat TLS relaci: %s"
@@ -6897,6 +7383,10 @@ msgstr "Nepodařilo se inicializovat TLS relaci: %s"
 msgid "Failed to initialize a valid firewall backend"
 msgstr ""
 "Nepodařilo se inicializovat platnou podpůrnou vrstvu pro bránu firewall"
+
+#, fuzzy
+msgid "Failed to initialize cgroup backend."
+msgstr "mutex se nepodařilo inicializovat"
 
 msgid "Failed to initialize libpciaccess"
 msgstr "Nepodařilo se inicializovat libpciaccess"
@@ -7024,9 +7514,17 @@ msgstr "Nepodařilo se načíst pahýl PCI modulu %s"
 msgid "Failed to load PCI stub module %s: administratively prohibited"
 msgstr "Nepodařilo se načíst pahýl PCI modulu %s: administrativně zakázáno"
 
+#, fuzzy, c-format
+msgid "Failed to load config for binding '%s'"
+msgstr "Nepodařilo se načíst nastavení pro doménu „%s“"
+
 #, c-format
 msgid "Failed to load config for domain '%s'"
 msgstr "Nepodařilo se načíst nastavení pro doménu „%s“"
+
+#, fuzzy, c-format
+msgid "Failed to load module '%s': %s"
+msgstr "Nepodařilo se načíst zásuvný modul %s: %s"
 
 msgid "Failed to load nbd module"
 msgstr "Nepodařilo se načíst modul nbd"
@@ -7041,6 +7539,14 @@ msgstr "Nepodařilo se načíst zásuvný modul %s: %s"
 #, c-format
 msgid "Failed to load snapshot: %s"
 msgstr "Zachycený stav se nepodařilo načíst: %s"
+
+#, fuzzy, c-format
+msgid "Failed to login: %s"
+msgstr "Nepodařilo se otevřít %s"
+
+#, fuzzy, c-format
+msgid "Failed to logout: %s"
+msgstr "Nepodařilo se aktualizovat %s"
 
 msgid "Failed to loop over IPv6 routes"
 msgstr "Nepodařilo se udělat smyčku nad IPv6 trasami"
@@ -7091,6 +7597,10 @@ msgstr "Nepodařilo se označit doménu %s jako automaticky spouštěnou"
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "Vytvoření složky (mkdir) %s se nezdařilo"
+
+#, fuzzy, c-format
+msgid "Failed to mount %s on %s type %s"
+msgstr "Nepodařilo se připojit (mount) devfs na %s typ %s (%s)"
 
 #, c-format
 msgid "Failed to mount %s on %s type %s flags=0x%x"
@@ -7153,6 +7663,10 @@ msgstr "Nepodařilo se otevřít „%s“"
 #, c-format
 msgid "Failed to open config space file '%s'"
 msgstr "Nedaří se otevřít soubor prostoru nastavení „%s“"
+
+#, fuzzy, c-format
+msgid "Failed to open cpuinfo file '%s'"
+msgstr "Nepodařilo se otevřít soubor „%s“ identifikátoru procesu (pid)"
 
 #, c-format
 msgid "Failed to open domain image file '%s'"
@@ -7234,6 +7748,10 @@ msgstr "Nezdařilo se zpracování názvu složky „%s“"
 msgid "Failed to parse domain description xml"
 msgstr "Nepodařilo se zpracovat xml popisu domény"
 
+#, fuzzy, c-format
+msgid "Failed to parse firewalld version '%s'"
+msgstr "Nepodařilo se zpracovat rychlost „%s“"
+
 #, c-format
 msgid "Failed to parse group '%s'"
 msgstr "Nepodařilo se zpracovat skupinu „%s“"
@@ -7292,6 +7810,14 @@ msgstr "Nepodařilo se zpracovat uživatele „%s“"
 #, c-format
 msgid "Failed to parse users from '%s'"
 msgstr "Nepodařilo se zpracovat uživatele z „%s“"
+
+#, fuzzy, c-format
+msgid "Failed to parse value '%s' as number."
+msgstr "Nepodařilo se zpracovat rychlost „%s“"
+
+#, fuzzy, c-format
+msgid "Failed to parse value '%s' from cpu.max."
+msgstr "Nepodařilo se zpracovat rychlost „%s“"
 
 #, c-format
 msgid "Failed to parse value of URI component %s"
@@ -7391,6 +7917,10 @@ msgstr "Nepodařilo se číst pidfile %s"
 msgid "Failed to read product/vendor ID for %s"
 msgstr "Nepodařilo se načíst identifikátor produktu/výrobce pro %s"
 
+#, fuzzy
+msgid "Failed to read secret"
+msgstr "Nepodařilo se číst %s"
+
 #, c-format
 msgid "Failed to read snapshot file %s"
 msgstr "Nepodařilo se číst soubor se zachyceným stavem %s"
@@ -7401,6 +7931,10 @@ msgstr "Nepodařilo se číst zprávu pokračování kontejneru"
 #, c-format
 msgid "Failed to readdir for %s (%d)"
 msgstr "Nepodařilo se readdir pro %s (%d)"
+
+#, fuzzy, c-format
+msgid "Failed to reattach NVMe for disk target: %s"
+msgstr "Nepodařilo se vytvořit cíl navázání %s"
 
 #, c-format
 msgid "Failed to reboot domain %s"
@@ -7432,6 +7966,10 @@ msgstr "Nepodařilo se zaregistrovat akci selhání zámku: %s"
 
 msgid "Failed to register shutdown timeout"
 msgstr "Nepodařilo se zaregistrovat časový limit pro vypnutí"
+
+#, fuzzy
+msgid "Failed to register slirp migration"
+msgstr "Nepodařilo se zaregistrovat akci selhání zámku"
 
 #, c-format
 msgid "Failed to register xml namespace '%s'"
@@ -7472,6 +8010,10 @@ msgstr "Nepodařilo se odebrat obraz spravovaného uložení domény %s"
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
 msgstr "Nepodařilo se odebrat svazek úložiště „%s“(%s)"
+
+#, fuzzy, c-format
+msgid "Failed to reportluns: %s"
+msgstr "Nepodařilo se vytvořit fond %s"
 
 msgid "Failed to request maximum NUMA node id"
 msgstr ""
@@ -7632,6 +8174,10 @@ msgstr "Nepodařilo se poslat řadiči signál pokračovat"
 msgid "Failed to send file descriptor %d"
 msgstr "Nepodařilo se poslat popisovač souboru %d"
 
+#, fuzzy, c-format
+msgid "Failed to send inquiry command: %s"
+msgstr "Nepodařilo se získat zámek: %s"
+
 msgid "Failed to send migration data to destination host"
 msgstr "Nepodařilo se poslat migrační data na cílového hostitele"
 
@@ -7675,6 +8221,10 @@ msgstr "Nepodařilo se nastavit příznak close-on-exec „%s“"
 #, c-format
 msgid "Failed to set com port %s: does not start with '/dev/nmdm'."
 msgstr "Nepodařilo se nastavit com port %s: nezačíná na „/dev/nmdm“."
+
+#, fuzzy, c-format
+msgid "Failed to set credential: %s"
+msgstr "Nepodařilo se vytvořit přihlašovací údaje pro ověření se"
 
 msgid "Failed to set hostname"
 msgstr "Nepodařilo se nastavit název stroje"
@@ -7749,6 +8299,10 @@ msgstr "Nepodařilo se nastavit kontext zabezpečení pro agenta pro %s"
 msgid "Failed to set security context for monitor for %s"
 msgstr "Nepodařilo se nastavit kontext zabezpečení pro monitor pro %s"
 
+#, fuzzy, c-format
+msgid "Failed to set session type: %s"
+msgstr "Nepodařilo se nastavit prioritu TLS relace na %s: %s"
+
 #, c-format
 msgid "Failed to set slave for %s: last letter not 'A' or 'B'"
 msgstr ""
@@ -7756,6 +8310,10 @@ msgstr ""
 
 msgid "Failed to set stp attribute in xml document"
 msgstr "Nepodařilo se v xml dokumentu nastavit atribut stp"
+
+#, fuzzy, c-format
+msgid "Failed to set target name: %s"
+msgstr "Nepodařilo se zpracovat cíl „%s“"
 
 #, c-format
 msgid "Failed to set vcpus for domain '%d' with libxenlight"
@@ -7859,6 +8417,10 @@ msgstr "Pořízení zachyceného stavu se nezdařilo: %s"
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "Nepodařilo se ukončit proces %lld a SIG%s"
 
+#, fuzzy, c-format
+msgid "Failed to translate bridge '%s' prefix %d to netmask"
+msgstr "Nedaří se nastavit mostu %s port %s %s na %s"
+
 #, c-format
 msgid "Failed to trigger a probe for PCI device '%s'"
 msgstr "Nepodařilo se spustit sondu pro PCI zařízení „%s“"
@@ -7915,6 +8477,14 @@ msgstr ""
 msgid "Failed to unmark domain %s as autostarted"
 msgstr "Nepodařilo se odoznačit doménu %s jako automaticky spouštěnou"
 
+#, fuzzy, c-format
+msgid "Failed to unmarshall reply: %s"
+msgstr "Nepodařilo se zpracovat rychlost „%s“"
+
+#, fuzzy, c-format
+msgid "Failed to unmarshall reportluns: %s"
+msgstr "Nepodařilo se načíst zásuvný modul %s: %s"
+
 #, c-format
 msgid "Failed to unmount '%s' and could not detach subtree '%s'"
 msgstr "Nepodařilo se odpojit „%s“ a nedaří se odpojit podstrom „%s“"
@@ -7959,6 +8529,10 @@ msgstr "Nezdařilo se vymazání svazku %s"
 #, c-format
 msgid "Failed to write %zu bytes to storage volume with path '%s'"
 msgstr "Nepodařilo se zapsat %zu bajtů do svazku úložiště v umístění „%s“"
+
+#, fuzzy, c-format
+msgid "Failed to write '%s'"
+msgstr "Nepodařilo se číst „%s“"
 
 msgid "Failed to write save file header"
 msgstr "Nepodařilo se zapsat hlavičku souboru, do kterého se ukládá"
@@ -8059,6 +8633,10 @@ msgstr "Zpracováno souborů:"
 
 msgid "File remaining:"
 msgstr "Zbývá souborů:"
+
+#, fuzzy
+msgid "File streams are not supported on this platform"
+msgstr "Jmenné prostory nejsou na této platformě podporovány."
 
 msgid "File total:"
 msgstr "Souborů celkem:"
@@ -8562,6 +9140,12 @@ msgstr ""
 "Je třeba, aby hodnota HyperV vendori_id (identif. výrobce) nebyla delší, než "
 "%d znaků."
 
+#, fuzzy, c-format
+msgid ""
+"Hyperv features are not supported for architecture '%s' or machine type '%s'"
+msgstr ""
+"Funkce „%s“ není pro architekturu „%s“ nebo typ stroje „%s“ podporována"
+
 msgid "I/O APIC tuning is not supported by this QEMU binary"
 msgstr "ladění I/O APCI není touto QEMU binárkou podporováno"
 
@@ -8760,6 +9344,9 @@ msgstr "Nesprávný datový typ"
 msgid "Incorrect disk format"
 msgstr "Nesprávný formát disku"
 
+msgid "Incorrect number of cells in a table row"
+msgstr ""
+
 #, c-format
 msgid "Incorrect xpath '%s'"
 msgstr "neplatné xpath „%s“"
@@ -8797,6 +9384,10 @@ msgstr "Vpravit do domény hosta nemaskovatelné přerušení"
 
 msgid "Input devices are not supported by this virtualization driver."
 msgstr "Vstupní zařízení nejsou tímto ovladačem virtualizace podporována"
+
+#, fuzzy
+msgid "Input secret value is missing"
+msgstr "chybí štítek zabezpečení"
 
 msgid "Insert the media"
 msgstr "Vložit médium"
@@ -8898,6 +9489,10 @@ msgstr "Neplatná 'vcpus' hodnota „%s“ atributu %s"
 #, c-format
 msgid "Invalid %s image format specified in configuration file"
 msgstr "V souboru s nastaveními zadán neplatný formát obrazu %s"
+
+#, fuzzy
+msgid "Invalid 'cpu.max' data."
+msgstr "Neplatné cpuNum v %s"
 
 #, c-format
 msgid "Invalid 'discard' attribute value '%s'"
@@ -9158,6 +9753,10 @@ msgstr "Neplatná hodnota autoGenerated (vytvořeno automaticky): %s"
 msgid "Invalid bandwidth %u"
 msgstr "Neplatná šíře pásma %u"
 
+#, fuzzy, c-format
+msgid "Invalid boolean value for field '%s'"
+msgstr "Neplatná hodnota pro kolonku „%s“: očekáváno celé číslo"
+
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "Neplatná mac adresa síťového mostu „%s“ v síti „%s“"
@@ -9387,6 +9986,10 @@ msgstr ""
 msgid "Invalid fallback attribute"
 msgstr "Neplatný náhradní atribut"
 
+#, fuzzy
+msgid "Invalid file descriptor while waiting for agent"
+msgstr "Neplatný popisovač souboru při čekání na monitor"
+
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr "Neplatný popisovač souboru při čekání na monitor"
 
@@ -9414,6 +10017,10 @@ msgstr ""
 #, c-format
 msgid "Invalid fromConfig value: %s"
 msgstr "Neplatná hodnota fromConfig (z nastavení): %s"
+
+#, fuzzy, c-format
+msgid "Invalid guest rx filters trust setting '%s' "
+msgstr "Neplatné nastavení trustGuestRxFilters „%s“ v portgroup"
 
 #, c-format
 msgid "Invalid harddisk device name: %s"
@@ -9497,12 +10104,24 @@ msgstr ""
 msgid "Invalid macTableManager setting '%s' in network '%s'"
 msgstr "Neplatné nastavení macTableManager „%s“ v síti „%s“"
 
+#, fuzzy, c-format
+msgid "Invalid macTableManager setting '%s' in network port"
+msgstr "Neplatné nastavení macTableManager „%s“ v síti „%s“"
+
+#, fuzzy, c-format
+msgid "Invalid managed setting '%s' in network port"
+msgstr "Neplatné nastavení macTableManager „%s“ v síti „%s“"
+
 msgid "Invalid match attribute for CPU specification"
 msgstr "Neplatný atribut shody pro specifikaci procesoru"
 
 #, c-format
 msgid "Invalid match string '%s'"
 msgstr "Neplatný řetězec shody „%s“"
+
+#, fuzzy, c-format
+msgid "Invalid maxEventChannels: %s"
+msgstr "Neplatné maxGrantFrames: %s"
 
 #, c-format
 msgid "Invalid maxGrantFrames: %s"
@@ -9537,6 +10156,10 @@ msgstr "Neplatný atribut režimu „%s“"
 
 msgid "Invalid mode attribute in memnode element"
 msgstr "Neplatný atribut režim v memnode prvku"
+
+#, fuzzy, c-format
+msgid "Invalid mode setting '%s' in network port"
+msgstr "Neplatné ipv6 nastavení „%s“ v síti „%s“"
 
 #, c-format
 msgid "Invalid mode: %s"
@@ -9596,6 +10219,10 @@ msgstr "Neplatný ukazatel síťového portu"
 msgid "Invalid network port pointer: %s"
 msgstr "Neplatný ukazatel síťového portu: %s"
 
+#, fuzzy, c-format
+msgid "Invalid network prt plug type '%s'"
+msgstr "Neplatný ukazatel síťového portu: %s"
+
 #, c-format
 msgid "Invalid node id %u "
 msgstr "Neplatný identifikátor uzlu %u"
@@ -9650,6 +10277,10 @@ msgstr "Neplatná částečné zadání pro virtio ccw adresu"
 
 msgid "Invalid partition type"
 msgstr "Neplatný typ oddílu"
+
+#, fuzzy, c-format
+msgid "Invalid passthrough mode %s"
+msgstr "neplatný typ předávání PCI „%s“"
 
 #, c-format
 msgid "Invalid peer '%s' in <ip>"
@@ -9803,14 +10434,31 @@ msgstr "Neplatné nastavení trustGuestRxFilters „%s“ v portgroup"
 msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
 msgstr "Neplatný typ „%s“ požadován pro parametr „%s“, skutečný typ je „%s“"
 
+#, fuzzy, c-format
+msgid "Invalid unit: %s"
+msgstr "Neplatné porty: %s"
+
 #, c-format
 msgid "Invalid unsigned integer value '%s' in file '%s'"
+msgstr "Neplatná celočíselná hodnota bez znaménka „%s“ v souboru „%s“"
+
+#, fuzzy, c-format
+msgid "Invalid unsigned long long value '%s' in file '%s'"
 msgstr "Neplatná celočíselná hodnota bez znaménka „%s“ v souboru „%s“"
 
 #, c-format
 msgid "Invalid unsigned scaled integer value '%s' in file '%s'"
 msgstr ""
 "Neplatná hodnota škálovaného celého čísla bez znaménka „%s“ v souboru „%s“"
+
+#, fuzzy, c-format
+msgid ""
+"Invalid use of 'floor' on interface with MAC address %s - 'floor' is only "
+"supported for interface type 'network' with forward type 'nat', 'route', "
+"'open' or none"
+msgstr ""
+"Neplatné použití 'floor' na rozhraní s MAC adresou %s – síť „%s“ nemá "
+"nastaveno žádné QoS pro příchozí"
 
 #, c-format
 msgid ""
@@ -9835,12 +10483,24 @@ msgstr "Neplatná hodnota „%s“ pro prvek nebo atribut „%s“"
 msgid "Invalid value for element priority"
 msgstr "Neplatná hodnota pro prioritu prvku"
 
+#, fuzzy, c-format
+msgid "Invalid value for field '%s': expected double"
+msgstr "Neplatná hodnota pro kolonku „%s“: očekáváno celé číslo"
+
 #, c-format
 msgid "Invalid value for field '%s': expected int"
 msgstr "Neplatná hodnota pro kolonku „%s“: očekáváno celé číslo"
 
+#, fuzzy, c-format
+msgid "Invalid value for field '%s': expected long long"
+msgstr "Neplatná hodnota pro kolonku „%s“: očekáváno celé číslo"
+
 #, c-format
 msgid "Invalid value for field '%s': expected unsigned int"
+msgstr "Neplatná hodnota pro kolonku „%s“: očekáváno celé číslo bez znaménka"
+
+#, fuzzy, c-format
+msgid "Invalid value for field '%s': expected unsigned long long"
 msgstr "Neplatná hodnota pro kolonku „%s“: očekáváno celé číslo bez znaménka"
 
 msgid "Invalid value for number of CPUs to show"
@@ -9890,6 +10550,10 @@ msgstr "Neplatné virNetSSHSessionPtr"
 msgid "Invalid vnuma configuration for vnode %zu"
 msgstr "Neplatné vnuma nastavení pro vnode %zu"
 
+#, fuzzy, c-format
+msgid "Invalid volume name %s"
+msgstr "Neplatné cpuNum v %s"
+
 #, c-format
 msgid "Invalid vport operation (%d)"
 msgstr "Neplatný vport operace (%d)"
@@ -9916,6 +10580,11 @@ msgstr ""
 
 #, c-format
 msgid "JSON backing volume definition '%s' lacks driver name"
+msgstr ""
+"JSON definice svazku „%s“, na kterém je zalotené, postrádá název ovladače"
+
+#, fuzzy, c-format
+msgid "JSON backing volume definition '%s' must not have nested format drivers"
 msgstr ""
 "JSON definice svazku „%s“, na kterém je zalotené, postrádá název ovladače"
 
@@ -10025,6 +10694,9 @@ msgstr "Naslouchat událostem QEMU monitoru"
 msgid "Listen for TCP/IP connections"
 msgstr "Očekávat TCP/IP spojení"
 
+msgid "Load kvm_hv for better performance"
+msgstr ""
+
 msgid "Load the 'fuse' module to enable /proc/ overrides"
 msgstr "Pro zapnutí přebití /proc/ načtěte modul „fuse“"
 
@@ -10117,6 +10789,10 @@ msgstr "Nesprávně formátovaná proměnná"
 #, c-format
 msgid "Malformed 'cmd_per_lun' value '%s'"
 msgstr "Nesprávně formulovaná 'cmd_per_lun' hodnota „%s“"
+
+#, fuzzy
+msgid "Malformed 'dies' attribute in CPU topology"
+msgstr "V topologii procesoru chybí atribut „cores“ (jádra)"
 
 msgid "Malformed 'domuuid' in JSON document"
 msgstr "Nesprávně formulované 'domuuid' v JSON dokumentu"
@@ -10335,6 +11011,10 @@ msgstr ""
 msgid "Memory"
 msgstr "Paměť"
 
+#, fuzzy, c-format
+msgid "Memory '%llu' must be less than %llu"
+msgstr "je třeba, aby velikost byla větší než %llu"
+
 #, c-format
 msgid ""
 "Memory Bandwidth allocation of size %u is not divisible by granularity %u"
@@ -10514,6 +11194,10 @@ msgstr ""
 "Chybějící vlastnost „%s“ při hledání ManagedEntityStatus (stav spravované "
 "entity)"
 
+#, fuzzy, c-format
+msgid "Missing '/' separator in cgroup mount '%s'"
+msgstr "Chybí oddělovač v informaci o plánovači „%s“"
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "V topologii procesoru chybí atribut „cores“ (jádra)"
 
@@ -10621,6 +11305,10 @@ msgstr "Chybí název funkce procesoru"
 msgid "Missing CPU model name"
 msgstr "Chybí název modelu procesoru"
 
+#, fuzzy
+msgid "Missing CPU vendor value"
+msgstr "Chybí název funkce procesoru"
+
 msgid "Missing ID parameter for domain object"
 msgstr "Chybí parametr identifikátor pro objekt domény"
 
@@ -10642,6 +11330,10 @@ msgstr "Chybí SCSI řadič pro rejstřík %d"
 
 msgid "Missing TPM device path"
 msgstr "Chybí popis umístění TPM zařízení"
+
+#, fuzzy, c-format
+msgid "Missing URI parameter '%s'"
+msgstr "Neznámý URI parametr „%s“"
 
 #, c-format
 msgid "Missing USB bus %u"
@@ -10669,6 +11361,10 @@ msgstr "Chybí adresa"
 
 msgid "Missing address in 'phys_function' capability"
 msgstr "Chybí adresa ve schopnosti 'phys_function'"
+
+#, fuzzy
+msgid "Missing agent reply object"
+msgstr "Chybějící objekt odpovědi monitoru"
 
 msgid "Missing allow attribute for USB redirection filter"
 msgstr "Chybí atribut allow (povolit) pro filtr přesměrování USB"
@@ -10830,6 +11526,22 @@ msgstr "Chybějící objekt odpovědi monitoru"
 
 msgid "Missing name parameter for domain object"
 msgstr "Chybí parametr název pro objekt domény"
+
+#, fuzzy
+msgid "Missing network port PCI address"
+msgstr "vypsat síťové porty"
+
+#, fuzzy
+msgid "Missing network port bridge name"
+msgstr "Chybí název síťového mostu"
+
+#, fuzzy
+msgid "Missing network port driver name"
+msgstr "chybí název funkce síťového rozhraní"
+
+#, fuzzy
+msgid "Missing network port link device name"
+msgstr "chybí název funkce síťového rozhraní"
 
 msgid "Missing nrequests_client_max field in JSON state document"
 msgstr "V JSON stavovém dokumentu chybí kolonka nrequests_client_max"
@@ -11178,6 +11890,10 @@ msgstr "Vícero starých USB řadičů není podporováno"
 msgid "Multiple memnode elements with cellid %u"
 msgstr "Vícero prvků memnode s cellid %u"
 
+#, fuzzy, c-format
+msgid "Multiple panic devices with model '%s'"
+msgstr "Vícero definic modelu procesoru „%s“"
+
 msgid "Multiple serial devices are not supported by xen-xm"
 msgstr "Vícero sériových zařízení není xen-xm podporováno"
 
@@ -11216,6 +11932,10 @@ msgstr "Prázdný argument - %p %p"
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "prázdný parametr řetězce „%s“"
+
+#, fuzzy, c-format
+msgid "NULL value for field '%s'"
+msgstr "Neplatná hodnota pro kolonku „%s“: očekáváno celé číslo"
 
 #, c-format
 msgid "NUMA cell %d has no vCPUs assigned"
@@ -11277,6 +11997,35 @@ msgstr "NUMA topologie definována bez NUMA buněk"
 msgid "NUMA tuning is not available in session mode"
 msgstr "ladění NUMA není v režimu relace k dispozici"
 
+#, fuzzy
+msgid ""
+"NUMA without specified memory backing is not supported with this QEMU binary"
+msgstr "nastavení iommu není touto binárkou QEMU podporováno"
+
+#, fuzzy, c-format
+msgid "NVMe device %s already in use by driver %s domain %s"
+msgstr "PCI zařízení %s je používáno ovladačem %s, doménou %s"
+
+#, fuzzy, c-format
+msgid "NVMe device %s namespace %u is already on the list"
+msgstr "síťové zařízení s mac adresou %s už existuje"
+
+#, fuzzy, c-format
+msgid "NVMe device %s namespace %u not found"
+msgstr "Zařízení uzlu nenalezeno"
+
+#, fuzzy
+msgid "NVMe disk source is missing address"
+msgstr "zdrojový popis umístění pro disk chybí"
+
+#, fuzzy
+msgid "NVMe disks are not supported with this QEMU binary"
+msgstr "SATA není touto binárkou QEMU podporováno"
+
+#, fuzzy
+msgid "NVMe namespace can't be zero"
+msgstr "velikost hugepages nemůže být nula"
+
 msgid "Name"
 msgstr "Název"
 
@@ -11286,6 +12035,10 @@ msgstr "Název řetězce je delší než %u znaků"
 
 msgid "Name:"
 msgstr "Název:"
+
+#, fuzzy
+msgid "Namespaces are not supported on this platform"
+msgstr "Jmenné prostory nejsou na této platformě podporovány."
 
 msgid "Namespaces are not supported on this platform."
 msgstr "Jmenné prostory nejsou na této platformě podporovány."
@@ -11545,6 +12298,10 @@ msgstr "Není k dispozici unixový identifikátor uživatele, který zavolal"
 msgid "No URI scheme specified"
 msgstr "Nezadáno URI schéma"
 
+#, fuzzy
+msgid "No access manager registered"
+msgstr "registrováno příliš mnoho ovladačů"
+
 #, c-format
 msgid "No active block job '%s'"
 msgstr "Žádná aktivní bloková úloha „%s“"
@@ -11652,6 +12409,10 @@ msgstr "Žádná doména, která by měla nikde se neopakují identifikátor „
 #, c-format
 msgid "No domain with name %s"
 msgstr "Žádná doména s názvem %s"
+
+#, fuzzy, c-format
+msgid "No emulator found for arch '%s'"
+msgstr "Pro „%s“ nenalezeny žádné adresy soketů"
 
 msgid "No error message from child failure"
 msgstr "Žádné chybové hlášení ze selhání podřízeného"
@@ -12042,8 +12803,16 @@ msgstr "Pro zobrazení pouze %d procesorů k dispozici\n"
 msgid "Only '%s' filesystem type is supported"
 msgstr "Je podporován pouze souborový systém typu „%s“"
 
+#, fuzzy
+msgid "Only 'credit' and 'credit2' schedulers are supported"
+msgstr "jsou podporována pouze vstupní zařízení typu tablet"
+
 msgid "Only 1 IDE controller is supported"
 msgstr "Je podporován pouze jeden IDE řadič"
+
+#, fuzzy
+msgid "Only 1 die per socket is supported"
+msgstr "Je podporováno pouze jedno vlákno na jádro"
 
 msgid "Only 1 fdc bus is supported"
 msgstr "Je podporována pouze jedna sběrnice disket"
@@ -12251,6 +13020,10 @@ msgstr "Volba --%s je vyžadována volbou --%s"
 msgid "Option argument is empty"
 msgstr "Argument volby je prázdný"
 
+#, fuzzy
+msgid "Optional flags or --rawstats are not supported by the daemon"
+msgstr "kousky typů statistiky 0x%x nejsou tímto procesem služby podporovány"
+
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "Volby --%s a --%s není možné použít naráz"
@@ -12386,6 +13159,10 @@ msgstr ""
 "rozsahu 0-30"
 
 #, c-format
+msgid "PCI controller unrecognized hotplug setting '%s'"
+msgstr ""
+
+#, c-format
 msgid ""
 "PCI device %04x:%02x:%02x.%x allocated from network %s is already in use by "
 "domain %s"
@@ -12405,6 +13182,15 @@ msgstr "PCI zařízení %s je používáno ovladačem %s, doménou %s"
 msgid "PCI device %s is not assignable"
 msgstr "PCI zařízení %s není přiřaditelné"
 
+#, fuzzy, c-format
+msgid "PCI device '%04x:%02x:%02x.%x' can only be listed once in network %s"
+msgstr "v síti %s může být rozhraní „%s“ uvedeno pouze jedenkrát"
+
+#, fuzzy
+msgid "PCI host devices must use 'pci' or 'unassigned' address type"
+msgstr ""
+"je třeba, aby SCSI_host host zařízení používalo typ adresy 'pci' nebo 'ccw'"
+
 msgid "PID file (unless overridden by -p):"
 msgstr "PID soubor (pokud není přepsáno pomocí -p)"
 
@@ -12421,6 +13207,10 @@ msgstr "PMSuspend typu %d není podporován ovladačem libxenlight"
 
 msgid "PMSuspended"
 msgstr "Uspáno správou napájení"
+
+#, c-format
+msgid "PMU is always enabled for architecture '%s'"
+msgstr ""
 
 msgid "POST operation failed"
 msgstr "operace POST se nezdařila"
@@ -12489,6 +13279,10 @@ msgstr "Zpracovaná JSON odpověď „%s“ není objekt"
 #, c-format
 msgid "Partition path '%s' must start with '/'"
 msgstr "Je třeba, aby popis umístění oddílu „%s“ začínal na „/“"
+
+#, fuzzy
+msgid "Passing secret value as command-line argument is insecure!"
+msgstr "Nezadán žádný argument příkazového řádku pro qemu"
 
 #, c-format
 msgid "Passphrase for key '%s'"
@@ -12678,6 +13472,10 @@ msgstr "Není vyžádáno uvolnění portu ale typ zásuvky není none (žádný
 msgid "Port reclaim requested but plug type is none"
 msgstr "Je vyžádáno uvolnění portu ale typ zásuvky je none (žádný)"
 
+#, fuzzy
+msgid "Post-copy"
+msgstr "Chyba post-copy"
+
 msgid "Post-copy Error"
 msgstr "Chyba post-copy"
 
@@ -12750,6 +13548,10 @@ msgstr "Plánování procesoru pro proces není na této platformě podporováno
 
 msgid "Process exited prior to exec"
 msgstr "Proces skončil před vykonáním"
+
+#, fuzzy
+msgid "Process spawning is not supported on this platform"
+msgstr "Plánování procesoru pro proces není na této platformě podporováno"
 
 #, c-format
 msgid "Processes %d refused to die"
@@ -12850,8 +13652,16 @@ msgstr "QEMU agent v hostovi není nastaven"
 msgid "QEMU guest agent is not connected"
 msgstr "QEMU agent v hostovi není připojen"
 
+#, c-format
+msgid "QEMU monitor reply exceeds buffer size (%d bytes)"
+msgstr ""
+
 msgid "QEMU monitor was closed"
 msgstr "QEMU monitor byl ukončen"
+
+msgid ""
+"QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
+msgstr ""
 
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
@@ -13002,6 +13812,10 @@ msgstr ""
 
 msgid "Refusing to undefine while snapshots exist"
 msgstr "Pokud existuje zachycený stav, odmítá se zrušit definováni"
+
+#, c-format
+msgid "Regular expression '%s' must have exactly 1 match group, not %d"
+msgstr ""
 
 msgid "Relative backing during copy not supported yet"
 msgstr ""
@@ -13453,6 +14267,9 @@ msgid ""
 "STP filtering in %s direction with source MAC address set is not supported"
 msgstr "STP filtrování ve směru %s se zdrojovou MAC adresou není podporováno"
 
+msgid "SVE disabled, but SVE vector lengths provided"
+msgstr ""
+
 #, c-format
 msgid "Sanlock helper arguments are longer than %d: '%s'"
 msgstr "Argumenty sanlock helper jsou delší než %d: „%s“"
@@ -13566,6 +14383,10 @@ msgstr "Ovladač zabezpečení %s není zapnutý"
 #, c-format
 msgid "Security driver %s not found"
 msgstr "Ovladač zabezpečení %s nenalezen"
+
+#, fuzzy, c-format
+msgid "Security driver model '%s' is not available"
+msgstr "Ovladač zabezpečení %s není zapnutý"
 
 msgid "Security label:"
 msgstr "Štítek zabezpečení:"
@@ -13685,6 +14506,10 @@ msgstr ""
 "Nastavit nebo dotázat parametry vstupu/výstupu disku jako například blokové "
 "přiškrcování"
 
+#, fuzzy
+msgid "Set the guest agent timeout"
+msgstr "uspat hosta po překročení časového limitu"
+
 msgid "Set the maximum migration bandwidth"
 msgstr "Nastavit maximální šířku pásma, kterou migrace může využít"
 
@@ -13694,6 +14519,9 @@ msgid ""
 msgstr ""
 "Nastavit limit využití šířky přenosového pásma (v MiB/s) pro doménu která je "
 "stěhována na jiného hostitele."
+
+msgid "Set the number of seconds to wait for a response from the guest agent."
+msgstr ""
 
 msgid "Setting TSEG size is not supported with this QEMU binary"
 msgstr "Nastavení velikost TSEG není tímto sestavením QEMU podporováno"
@@ -13870,6 +14698,10 @@ msgstr "Vypnutí hosta $name se nepodařilo dokončit v časovém limitu."
 msgid "Shutting down guests on $uri URI..."
 msgstr "Vypínání hostů na URI $uri…"
 
+#, fuzzy
+msgid "Signal handling not available on this platform"
+msgstr "numad není na tomto stroji k dispozici"
+
 #, c-format
 msgid "Signature '%s' too deeply nested"
 msgstr "Signatura „%s“ je vnořená příliš hluboko"
@@ -13943,8 +14775,16 @@ msgstr "Pro 'pool' (fond) svazky zatím nejsou zachycené stavy podporovány"
 msgid "Snapshots have inconsistent relations for domain %s"
 msgstr "Zachycené stavy mají nejednotné vztahy k doméně %s"
 
+#, fuzzy, c-format
+msgid "Socket path %s too big for destination"
+msgstr "Statistiky %s jsou pro cíl příliš objemné"
+
 msgid "Sockets:"
 msgstr "Patice:"
+
+#, fuzzy
+msgid "Some activation file descriptors are unclaimed"
+msgstr "obdrženo příliš mnoho popisovačů souborů"
 
 #, c-format
 msgid "Some features cannot be reliably used with this QEMU: %s"
@@ -14010,6 +14850,10 @@ msgstr "Zahájit operaci odeslání bloku."
 msgid "Start a block copy operation."
 msgstr "Spustit operací blokového kopírování."
 
+#, fuzzy
+msgid "Start a disk backup of a live domain"
+msgstr "nedaří se vypsat virt. procesory pro neaktivní doménu"
+
 msgid ""
 "Start a domain, either from the last managedsave\n"
 "    state, or via a fresh boot if no managedsave state\n"
@@ -14058,6 +14902,10 @@ msgstr "Stav HyperV stimer direct funkce se liší: zdroj: „%s“, cíl: „%s
 #, c-format
 msgid "State of KVM feature '%s' differs: source: '%s', destination: '%s'"
 msgstr "Stav funkce KVM „%s“ se liší: zdroj: „%s“, cíl: „%s“"
+
+#, fuzzy, c-format
+msgid "State of Xen feature '%s' differs: source: '%s', destination: '%s'"
+msgstr "Stav funkce „%s“ se liší: zdroj: „%s“, cíl: „%s“"
 
 #, c-format
 msgid "State of feature '%s' differs: source: '%s', destination: '%s'"
@@ -14205,6 +15053,18 @@ msgstr "Pivot úspěšné"
 msgid "Successfully updated media."
 msgstr "Médium úspěšně aktualizováno."
 
+#, c-format
+msgid "Sum of %srequest stat overflows"
+msgstr ""
+
+#, c-format
+msgid "Sum of byte %sstat overflows"
+msgstr ""
+
+#, c-format
+msgid "Sum of byte '%s' stat overflows"
+msgstr ""
+
 msgid "Support for AppArmor is not enabled"
 msgstr "Podpora pro AppArmor není zapnutá"
 
@@ -14267,6 +15127,12 @@ msgstr ""
 "(poznamenejme, že toto vyžaduje nastavený a spuštěný agent v operačním "
 "systému hosta)."
 
+#, fuzzy
+msgid "Switch running migration from pre-copy to post-copy"
+msgstr ""
+"Přepnout probíhající stěhování z pre-copy na post-copy. Je třeba, aby "
+"stěhování bylo spuštěno s volbou --postcopy"
+
 msgid ""
 "Switch running migration from pre-copy to post-copy. The migration must have "
 "been started with --postcopy option."
@@ -14304,6 +15170,10 @@ msgstr "TLS:"
 msgid "TPM device path %s is invalid"
 msgstr "Popis umístění TPM zařízení %s není platný"
 
+#, fuzzy
+msgid "Table row cannot be empty"
+msgstr "%s nemůže být prázdné"
+
 msgid "Target"
 msgstr "Cíl"
 
@@ -14320,6 +15190,10 @@ msgstr "Cílová kontrola procesoru %s se neshoduje se zdrojovou %s"
 
 #, c-format
 msgid "Target CPU cores %d does not match source %d"
+msgstr "Cílový počet jader procesoru %d neodpovídá zdrojovému %d"
+
+#, fuzzy, c-format
+msgid "Target CPU dies %d does not match source %d"
 msgstr "Cílový počet jader procesoru %d neodpovídá zdrojovému %d"
 
 msgid "Target CPU does not match source"
@@ -14528,6 +15402,10 @@ msgstr "Volba iommu „%s“ cílového zařízení se neshoduje se zdrojovou �
 #, c-format
 msgid "Target device isa address %d:%d does not match source %d:%d"
 msgstr "isa adresa %d:%d cílového zařízení neodpovídá zdrojové %d:%d"
+
+#, fuzzy, c-format
+msgid "Target device packed option '%s' does not match source '%s'"
+msgstr "Volba ats „%s“ cílového zařízení se neshoduje se zdrojovou „%s“"
 
 #, c-format
 msgid ""
@@ -14967,6 +15845,13 @@ msgstr "vram64 %u cílové grafické karty se neshoduje se zdrojovou %u"
 msgid "Target watchdog model %s does not match source %s"
 msgstr "Cílový model resetátoru %s neodpovídá zdrojovému %s"
 
+#, fuzzy
+msgid "Temporary disk space total:"
+msgstr "Paměti celkem:"
+
+msgid "Temporary disk space use:"
+msgstr ""
+
 msgid "Thaw domain's mounted filesystems."
 msgstr "Rozmrazit připojené souborové systémy domény."
 
@@ -14981,6 +15866,21 @@ msgstr "Zařízení „%s“ není touto binárkou QEMU podporováno"
 #, c-format
 msgid ""
 "The '%s' feature is not supported for architecture '%s' or machine type '%s'"
+msgstr ""
+"Funkce „%s“ není pro architekturu „%s“ nebo typ stroje „%s“ podporována"
+
+#, fuzzy, c-format
+msgid "The '%s' timer can't be disabled"
+msgstr "výplňové zařízení paměti není možné vypnout"
+
+#, fuzzy, c-format
+msgid "The '%s' timer does not support tickpolicy '%s'"
+msgstr "ovladač nepodporuje net model „%s“"
+
+#, fuzzy, c-format
+msgid ""
+"The 'eoi' attribute of the '%s' feature is not supported for architecture "
+"'%s' or machine type '%s'"
 msgstr ""
 "Funkce „%s“ není pro architekturu „%s“ nebo typ stroje „%s“ podporována"
 
@@ -15119,6 +16019,14 @@ msgstr ""
 "Zařízení na PCI adrese %s vyžaduje schopnost připojování za chodu, ale řadič "
 "PCI s index='%d' to nepodporuje"
 
+#, fuzzy, c-format
+msgid ""
+"The device at PCI address %s was auto-assigned this address, but the PCI "
+"controller with index='%d' doesn't allow auto-assignment"
+msgstr ""
+"Zařízení na PCI adrese %s vyžaduje schopnost připojování za chodu, ale řadič "
+"PCI s index='%d' to nepodporuje"
+
 #, c-format
 msgid "The disk device '%s' already has media"
 msgstr "Diskové zařízení „%s“ už má médium"
@@ -15143,6 +16051,9 @@ msgstr "v tomto sestavení QEMU není řadič zvuku ich9-intel-hd_audio podporov
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "Stroj nemá žádné zachycené stavy a přitom by měl mít"
+
+msgid "The minimum lease time should be greater than 2 minutes"
+msgstr ""
 
 msgid ""
 "The overall maximum number of clients must be greater than the maximum "
@@ -15176,6 +16087,10 @@ msgstr "Server přesměrovává z „%s“"
 #, c-format
 msgid "The server redirects from '%s' to '%s'"
 msgstr "Server přesměrovává z „%s“ na „%s“"
+
+#, fuzzy
+msgid "The slirp-helper doesn't support migration"
+msgstr "slirp-helper není možné přestěhovat"
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -15246,6 +16161,11 @@ msgstr "Toto QEMU nepodporuje řadič LSI SAS1068 (MPT Fusion)"
 
 msgid "This QEMU doesn't support the LSI SAS1078 (MegaRAID) controller"
 msgstr "Toto QEMU nepodporuje řadič LSI SAS1078 (MegaRAID)"
+
+#, fuzzy
+msgid ""
+"This QEMU doesn't support the pvscsi (VMware paravirtual SCSI) controller"
+msgstr "Toto QEMU nepodporuje SCSI řadič LSI 53C895A"
 
 msgid "This QEMU doesn't support vhost-scsi devices"
 msgstr "Toto QEMU nepodporuje vhost-scsi zařízení"
@@ -15617,8 +16537,18 @@ msgstr "URI „%s“ neobsahuje název ovladače"
 msgid "URI is missing the server part"
 msgstr "URI postrádá serverovou část"
 
+msgid "URI must be qemu:///embed"
+msgstr ""
+
+msgid "URI must be secret:///embed"
+msgstr ""
+
 msgid "URI of the namespace"
 msgstr "URI jmenného prostoru"
+
+#, c-format
+msgid "URI scheme '%s' for embedded driver is not valid"
+msgstr ""
 
 #, c-format
 msgid "USB bus %u requested but no controller with that index is present"
@@ -15694,6 +16624,10 @@ msgstr "Nedaří se přistupovat k souboru s nastaveními %s"
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "Nedaří se přistupovat k popisovači souboru %d"
+
+#, fuzzy
+msgid "Unable to access kernel32.dll"
+msgstr "Nedaří se přistoupit k %s"
 
 #, c-format
 msgid "Unable to access stream for '%s'"
@@ -16011,6 +16945,10 @@ msgstr "Nedaří se vytvořit zařízení mostu"
 msgid "Unable to create device %s"
 msgstr "Nedaří se vytvořit zařízení %s"
 
+#, fuzzy, c-format
+msgid "Unable to create directory %s"
+msgstr "Nedaří se vytvořit složku „%s“"
+
 #, c-format
 msgid "Unable to create directory '%s'"
 msgstr "Nedaří se vytvořit složku „%s“"
@@ -16043,10 +16981,18 @@ msgstr "Nedaří se vytvořit rejstřík médií"
 msgid "Unable to create migration thread"
 msgstr "Nedaří se vytvořit vlákno migrace"
 
+#, fuzzy
+msgid "Unable to create pipes"
+msgstr "Nedaří se vytvořit %s"
+
 msgid "Unable to create rule"
 msgstr "Nedaří se vytvořit pravidlo"
 
 msgid "Unable to create socket"
+msgstr "Nedaří se vytvořit soket"
+
+#, fuzzy, c-format
+msgid "Unable to create socket object: %s"
 msgstr "Nedaří se vytvořit soket"
 
 #, c-format
@@ -16080,6 +17026,10 @@ msgstr "Nedaří se dekódovat obsah, který zpráva nese"
 
 msgid "Unable to decode number of FDs"
 msgstr "Nedaří se dekódovat počet popisovačů souborů"
+
+#, fuzzy, c-format
+msgid "Unable to delete %s"
+msgstr "Nedaří se smazat soubor %s"
 
 msgid "Unable to delete TAP devices on this platform"
 msgstr "Na této platformě není možné mazat TAP rozhraní"
@@ -16179,6 +17129,10 @@ msgstr "Nedaří se spustit shell %s"
 msgid "Unable to find '%s' binary in $PATH"
 msgstr "Nedaří se nalézt v $PATH spustitelný soubor „%s“"
 
+#, fuzzy, c-format
+msgid "Unable to find '%s' limit for block device '%s'"
+msgstr "Nedaří se získat minor (vedlejší) číslo zařízení „%s“"
+
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "Nedaří se nalézt 'cpuacct' připojení (mount) řadiče cgroups"
 
@@ -16209,12 +17163,24 @@ msgstr "Nedaří se nalézt volný port na řadiči virtio-serial %u"
 msgid "Unable to find a free virtio-serial port"
 msgstr "Nedaří se najít volný virtio-serial prot"
 
+#, fuzzy
+msgid "Unable to find a satisfying vhost-user-gpu"
+msgstr "Nedaří se najít zachycený stav %s"
+
+#, fuzzy
+msgid "Unable to find a satisfying virtiofsd"
+msgstr "Nedaří se najít volný virtio-serial prot"
+
 #, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr "Nedaří se najít volný port v rozsahu „%s“ (%d-%d)"
 
 msgid "Unable to find any /dev mount"
 msgstr "Nedaří se nalézt žádné /dev připojení"
+
+#, fuzzy, c-format
+msgid "Unable to find any firmware to satisfy '%s'"
+msgstr "Nedaří se nalézt nikde se neopakující identifikátor pro umístění %s"
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %llu KiB"
@@ -16349,6 +17315,10 @@ msgstr "Nedaří se získat most %s přes %s"
 msgid "Unable to get bridge %s port %s %s"
 msgstr "Nedaří se získat mostu %s port %s %s"
 
+#, fuzzy
+msgid "Unable to get bridge port isolated on this platform"
+msgstr "Nedaří se získat učení portu mostu na této platformě"
+
 msgid "Unable to get bridge port learning on this platform"
 msgstr "Nedaří se získat učení portu mostu na této platformě"
 
@@ -16435,6 +17405,10 @@ msgstr "Nedaří se získat identifikátor pevného disku, rc=%08x"
 #, c-format
 msgid "Unable to get hardDisk Id, rc=%08x"
 msgstr "Nedaří se získat identifikátor hardDisk, rc=%08x"
+
+#, fuzzy
+msgid "Unable to get host boot time"
+msgstr "Nedaří se získat aktuální čas"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -16585,6 +17559,10 @@ msgstr "Nedaří se inicializovat auditní vrstvu"
 msgid "Unable to initialize certificate"
 msgstr "Nepodařilo se inicializovat certifikát"
 
+#, fuzzy
+msgid "Unable to initialize condition variable"
+msgstr "nedaří se inicializovat proměnnou podmínky"
+
 #, c-format
 msgid "Unable to initialize diffie-hellman parameters: %s"
 msgstr "Nedaří se inicializovat diffie-hellman parametry: %s"
@@ -16655,6 +17633,10 @@ msgstr "Nedaří se vyhledat SELinux kontext procesu"
 
 msgid "Unable to make TAP device non-persistent"
 msgstr "Nedaří se učinit TAP zařízení netrvalým"
+
+#, fuzzy, c-format
+msgid "Unable to make dir %s"
+msgstr "Nedaří se číst %s"
 
 msgid "Unable to mark loop device as autoclear"
 msgstr "Nedaří se označit zařízení zpětné smyčky jako autoclear"
@@ -16772,12 +17754,20 @@ msgstr ""
 "Nedaří se zpracovat nastavení HPT maxpagesize (nejvyšší možná velikost "
 "stránky)"
 
+#, fuzzy, c-format
+msgid "Unable to parse MAC '%s'"
+msgstr "Nedaří se zpracovat %s %s"
+
 #, c-format
 msgid "Unable to parse RNG %s: %s"
 msgstr "Nedaří se zpracovat RNG %s: %s"
 
 #, c-format
 msgid "Unable to parse URI %s"
+msgstr "Nedaří se zpracovat URI %s"
+
+#, fuzzy, c-format
+msgid "Unable to parse UUID '%s'"
 msgstr "Nedaří se zpracovat URI %s"
 
 #, c-format
@@ -16843,6 +17833,10 @@ msgstr "Nedaří se zpracovat parametr řetězec"
 msgid "Unable to parse the xml"
 msgstr "Nedaří se zpracovat xml"
 
+#, fuzzy, c-format
+msgid "Unable to parse uptime value '%s'"
+msgstr "Nedaří se zpracovat hodnotu informace o plánovači „%s“"
+
 #, c-format
 msgid "Unable to parse: %s"
 msgstr "Nedaří se zpracovat: %s"
@@ -16881,6 +17875,18 @@ msgstr "Nedaří se dotázat na využití klíče %s %s"
 
 msgid "Unable to query kqueue"
 msgstr "Nedaří se dotázat rozhraní kqueue"
+
+#, fuzzy
+msgid "Unable to query memory available"
+msgstr "Nedaří se dotázat na velikost sektoru %s"
+
+#, fuzzy
+msgid "Unable to query memory page size"
+msgstr "Nedaří se dotázat na velikost sektoru %s"
+
+#, fuzzy
+msgid "Unable to query memory total"
+msgstr "Nedaří se získat statistiky paměti"
 
 msgid "Unable to query peer security context"
 msgstr "Nedaří se dotázat kontext zabezpečení protějšku"
@@ -16927,6 +17933,10 @@ msgstr "Nedaří se číst z %s"
 msgid "Unable to read from '%s'"
 msgstr "Nedaří se číst z „%s“"
 
+#, fuzzy
+msgid "Unable to read from agent"
+msgstr "Nedaří se číst z %s"
+
 #, c-format
 msgid "Unable to read from file %s"
 msgstr "Nedaří se číst ze souboru %s"
@@ -16950,6 +17960,18 @@ msgstr "Nedaří se číst soubor se zápůjčkami: %s"
 
 msgid "Unable to read net device config on this platform"
 msgstr "Na této platformě není možné načíst nastavení síťového rozhraní"
+
+#, fuzzy, c-format
+msgid "Unable to read slirp pidfile '%s'"
+msgstr "Nedaří se číst ze souboru „%s“"
+
+#, fuzzy, c-format
+msgid "Unable to read vhost-user-gpu pidfile '%s'"
+msgstr "Nedaří se číst ze souboru „%s“"
+
+#, fuzzy, c-format
+msgid "Unable to read virtiofsd pidfile '%s'"
+msgstr "Nedaří se číst ze souboru „%s“"
 
 #, c-format
 msgid "Unable to register Machine, rc=%08x"
@@ -17013,6 +18035,10 @@ msgstr "Nedaří se odebrat zachycený stav %s"
 #, c-format
 msgid "Unable to remove stale socket path: %s"
 msgstr "Nedaří se odebrat popis umístění zaseknutého soketu: %s"
+
+#, fuzzy, c-format
+msgid "Unable to remove status '%s' for nwfilter binding %s'"
+msgstr "nepodařilo se získat nwfilter navázání „%s“"
 
 #, c-format
 msgid "Unable to remove symlink %s"
@@ -17205,6 +18231,10 @@ msgstr "Na této platformě není možné nastavit STP na %s"
 msgid "Unable to set XATTR %s on %s"
 msgstr "Nedaří se nastavit XATTR %s na %s"
 
+#, fuzzy
+msgid "Unable to set agent close-on-exec flag"
+msgstr "Nedaří se nastavit příznak close-on-exec (zavřít při vykonání)"
+
 #, c-format
 msgid "Unable to set backing file %s"
 msgstr "Nedaří se nastavit soubor %s, na kterém je založeno"
@@ -17220,6 +18250,10 @@ msgstr "Nedaří se nastavit most %s %s přes ioctl"
 #, c-format
 msgid "Unable to set bridge %s port %s %s to %s"
 msgstr "Nedaří se nastavit mostu %s port %s %s na %s"
+
+#, fuzzy
+msgid "Unable to set bridge port isolated on this platform"
+msgstr "Nedaří se nastavit učení portu mostu na této platformě"
 
 msgid "Unable to set bridge port learning on this platform"
 msgstr "Nedaří se nastavit učení portu mostu na této platformě"
@@ -17253,6 +18287,10 @@ msgid "Unable to set network bandwidth on direct interfaces"
 msgstr "Nedaří se nastavit propustnost sítě na přímých rozhraních"
 
 msgid "Unable to set non-blocking mode"
+msgstr "Nedaří se nastavit do neblokujícího režimu"
+
+#, fuzzy
+msgid "Unable to set pipes to non-blocking"
 msgstr "Nedaří se nastavit do neblokujícího režimu"
 
 msgid "Unable to set port profile on direct interfaces"
@@ -17291,6 +18329,10 @@ msgstr "Nedaří se nastavit x509 klíč a certifikát: %s, %s: %s"
 msgid "Unable to split FD list '%s'"
 msgstr "Nedaří se rozdělit seznam popisovače souboru „%s“"
 
+#, fuzzy, c-format
+msgid "Unable to start event thread: %s"
+msgstr "Nedaří se zjistit stav cíle %s navázání"
+
 #, c-format
 msgid "Unable to stat %s"
 msgstr "Nedaří se zjistit stav %s"
@@ -17306,6 +18348,10 @@ msgstr "Nedaří se zjistit stav cíle %s navázání"
 #, c-format
 msgid "Unable to stat: %s"
 msgstr "Nedaří se zjistit stav: %s"
+
+#, fuzzy, c-format
+msgid "Unable to symlink directory %s to %s"
+msgstr "Nedaří se vytvořit symbolický odkaz zařízení %s na %s"
 
 msgid "Unable to thaw all processes"
 msgstr "Nedaří se thaw všech procesů"
@@ -17337,6 +18383,10 @@ msgstr "Nedaří se odlinkovat popis umístění „%s“"
 msgid "Unable to unregister machine, rc=%08x"
 msgstr "Nedaří se zrušit registraci stroje, rc=%08x"
 
+#, fuzzy
+msgid "Unable to update server's tls related files."
+msgstr "Nedaří se změnit limity nastavení serveru související s klienty"
+
 #, c-format
 msgid ""
 "Unable to validate doc against %s\n"
@@ -17364,6 +18414,10 @@ msgstr "Nedaří se čekat na IPv6 DAD na této platformě"
 
 msgid "Unable to wait for child process"
 msgstr "Nedaří se čekat na podřízený proces"
+
+#, fuzzy
+msgid "Unable to wait on agent socket condition"
+msgstr "Nedaří se čekat na podmínky monitoru"
 
 msgid "Unable to wait on epoll"
 msgstr "Nedaří se čekat na epoll popisovač souboru"
@@ -17395,6 +18449,10 @@ msgstr "Nedaří se zapsat do %s"
 #, c-format
 msgid "Unable to write to '%s'"
 msgstr "Nedaří se zapsat do „%s“"
+
+#, fuzzy
+msgid "Unable to write to agent"
+msgstr "Nedaří se zapsat do %s"
 
 msgid "Unable to write to container pty"
 msgstr "Nedaří se zapsat na pseudoterminál kontejneru"
@@ -17542,6 +18600,12 @@ msgstr "Otevřen neočekávaný typ ovladače „%s“"
 msgid "Unexpected element '%s' in CPU map '%s'"
 msgstr "Neočekávaný prvek „%s“ v mapě procesoru „%s“"
 
+#, fuzzy
+msgid "Unexpected event thread still active during domain deletion"
+msgstr ""
+"V průběhu mazání domény neočekávaně přišlo k tomu, že QEMU agent je stále "
+"ještě aktivní"
+
 #, c-format
 msgid "Unexpected filesystem type %s"
 msgstr "Neočekávaný typ souborového systému %s"
@@ -17625,6 +18689,10 @@ msgstr "Obdržen neočekávaný signál: %d"
 #, c-format
 msgid "Unexpected signature '%s'"
 msgstr "Neočekávaná signatura „%s“"
+
+#, fuzzy, c-format
+msgid "Unexpected socket family %d"
+msgstr "neočekávaný režim zdroje %d"
 
 #, c-format
 msgid "Unexpected state of feature '%s'"
@@ -17984,6 +19052,10 @@ msgstr "Pro PCI zařízení %s je nastaven neznámý pahýl ovladače"
 msgid "Unknown suspend target: %u"
 msgstr "Neznámý cíl uspání: %u"
 
+#, fuzzy, c-format
+msgid "Unknown taint flag %s"
+msgstr "Neznámý příznak %s schopností qemu"
+
 #, c-format
 msgid "Unknown type '%c' in signature '%s'"
 msgstr "Neznámý typ „%c“ v signatuře „%s“"
@@ -18004,6 +19076,10 @@ msgstr "Neznámá hodnota „%s“ pro %s"
 msgid "Unknown value '%s' for %s 'type' property"
 msgstr "Neznámá hodnota „%s“ pro vlastnosti %s 'type'"
 
+#, fuzzy, c-format
+msgid "Unknown value '%s' for <address> 'multifunction' attribute"
+msgstr "neznámá hodnota „%s“ pro <hostdev> atribut 'display'"
+
 #, c-format
 msgid "Unknown value '%s' for AnyType 'type' property"
 msgstr "Neznámá hodnota '%s' pro vlastnost AnyType 'type'"
@@ -18011,6 +19087,10 @@ msgstr "Neznámá hodnota '%s' pro vlastnost AnyType 'type'"
 #, c-format
 msgid "Unknown value '%s' for xsd:boolean"
 msgstr "Neznámá hodnota „%s“ pro xsd:boolean"
+
+#, fuzzy, c-format
+msgid "Unknown value: %s"
+msgstr "neznámá hodnota eim: %s"
 
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
@@ -18033,6 +19113,10 @@ msgstr "Nalezen nerozpoznaný štítek disku, vyžaduje sestavení"
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
 msgstr "Nerozpoznaná generace „%s“ v síti „%s“"
+
+#, fuzzy, c-format
+msgid "Unrecognized firewalld backend type: %s"
+msgstr "Nerozpoznaná hodnota v %s: %s"
 
 #, c-format
 msgid "Unrecognized value in %s: %s"
@@ -18367,6 +19451,12 @@ msgstr "Použití"
 msgid "Usage:"
 msgstr "Použití:"
 
+#, sh-format
+msgid ""
+"Usage: $program_name {start|stop|status|restart|condrestart|try-restart|"
+"reload|force-reload|gueststatus|shutdown}"
+msgstr ""
+
 #, c-format
 msgid "Usage: %s FILENAME FD"
 msgstr "Použití: %s SOUBOR POPISOVAČ_SOUBORU"
@@ -18380,6 +19470,11 @@ msgstr ""
 "Použití: %s add|old|del|init mac|clientid ip [nazev_stroje]\n"
 "Navrženo pro použití s 'dnsmasq --dhcp-script'\n"
 "Více informací viz manuálová stránka k dnsmasq'\n"
+
+msgid ""
+"Use XML to start a full or incremental disk backup of a live domain, "
+"optionally creating a checkpoint"
+msgstr ""
 
 msgid "Use of 'parentaddr' element requires use of the adapter 'type'"
 msgstr "Použití prvku 'parentaddr' vyžaduje použití 'type' (typu) adaptéru"
@@ -18435,6 +19530,10 @@ msgstr "S použitím knihovny: libvirt %d.%d.%d\n"
 
 msgid "Uuid is null"
 msgstr "Nikde se neopakující identifikátor je prázdný"
+
+#, c-format
+msgid "V1 controller '%s' is not wanted, but '%s' is co-mounted"
+msgstr ""
 
 msgid "VCPU"
 msgstr "virt. procesor"
@@ -18906,6 +20005,12 @@ msgstr ""
 "fabric_wwpn scsi_hostN nadřazeného adaptéru, které použít pro vHBA úložiště, "
 "na kterém se toto nachází"
 
+#, fuzzy
+msgid "adapter parent scsi_hostN to be used for underlying vHBA storage"
+msgstr ""
+"nadřazeného adaptéru scsi_hostN wwnn, které použít pro vHBA úložiště, na "
+"kterém se toto nachází"
+
 msgid "adapter parent scsi_hostN wwnn to be used for underlying vHBA storage"
 msgstr ""
 "nadřazeného adaptéru scsi_hostN wwnn, které použít pro vHBA úložiště, na "
@@ -18939,6 +20044,10 @@ msgstr "dále zobrazovat hodnoty type a device"
 
 msgid "address of disk device"
 msgstr "adresa diskového zařízení"
+
+#, fuzzy
+msgid "address source: 'lease' or 'agent'"
+msgstr "zdroj adresy: 'lease', 'agent', nebo 'arp'"
 
 msgid "address source: 'lease', 'agent', or 'arp'"
 msgstr "zdroj adresy: 'lease', 'agent', nebo 'arp'"
@@ -19046,6 +20155,10 @@ msgstr "IOThread už používá iothread_id „%u“"
 
 msgid "an os <type> must be specified"
 msgstr "je třeba zadat <type> (typ) operačního systému"
+
+#, fuzzy
+msgid "another backup job is already running"
+msgstr "rozhraní už je spuštěné"
 
 msgid "any configuration"
 msgstr "libovolné nastavení"
@@ -19302,6 +20415,23 @@ msgid ""
 "sense"
 msgstr "backingStore zrcadla bez VIR_DOMAIN_BLOCK_COPY_SHALLOW nedává smysl"
 
+#, fuzzy
+msgid "backup job"
+msgstr "úloha na pozadí"
+
+msgid "backup job data missing"
+msgstr ""
+
+#, fuzzy, c-format
+msgid "backup of readonly disk '%s' makes no sense"
+msgstr "Disk pouze pro čtení nemá žádný nadřazený"
+
+#, fuzzy, c-format
+msgid "backup socket path '%s' must be absolute"
+msgstr ""
+"je třeba, aby byl uveden úplný popis umístění obrazu se zachyceným stavem "
+"disku „%s“"
+
 msgid "bad command"
 msgstr "chybný příkaz"
 
@@ -19317,6 +20447,10 @@ msgstr "chybná předpona %d pro síť %s při kontrole rozsahu %s - %s"
 
 msgid "balloon device cannot be disabled"
 msgstr "výplňové zařízení paměti není možné vypnout"
+
+#, fuzzy
+msgid "balloon memory must contain model name"
+msgstr "je třeba, aby resetátor (watchdog) obsahoval název modelu"
 
 #, c-format
 msgid "bandwidth %llu cannot be represented in result"
@@ -19361,11 +20495,40 @@ msgstr "hodnota v kódování base64"
 msgid "bhyve state driver is not active"
 msgstr "stavový ovladač pro bhyve není aktivní"
 
+#, fuzzy, c-format
+msgid "binding '%s' already exists"
+msgstr "Zachycený stav „%s“ už existuje"
+
+#, fuzzy, c-format
+msgid "binding '%s' is already being removed"
+msgstr "doména „%s“ už je odebírána"
+
+#, c-format
+msgid "bitmap '%s' for image '%s%u' is inconsistent"
+msgstr ""
+
+#, fuzzy, c-format
+msgid "bitmap '%s' not found in backing chain of '%s'"
+msgstr "základ „%s“ není bezprostředně pod „%s“ v řetězu pro „%s“"
+
+#, fuzzy, c-format
+msgid "bitmap for disk '%s' must match checkpoint name '%s'"
+msgstr "je třeba, aby proud v %s se shodoval se spojením svazku „%s“"
+
 msgid "blkio cgroup isn't mounted"
 msgstr "blkio cgroup není připojeno (mount)"
 
+msgid "blkio device weight is valid only for bfq or cfq scheduler"
+msgstr ""
+
+msgid "blkio device weight is valid only for cfq scheduler"
+msgstr ""
+
 msgid "blkio parameters are not supported by vz driver"
 msgstr "blkio parametry nejsou ovladačem vz podporovány"
+
+msgid "blkio weight is valid only for bfq or cfq scheduler"
+msgstr ""
 
 msgid "block"
 msgstr "blok"
@@ -19406,6 +20569,10 @@ msgstr "bloková úloha „%s“ zatím není připravena pro pivot"
 #, c-format
 msgid "block job on disk '%s' is still being ended"
 msgstr "bloková úloha na disku „%s“ je pořád ještě ukončována"
+
+#, fuzzy, c-format
+msgid "block jobs are not supported on disk '%s' using bus 'sd'"
+msgstr "vnější aktivní zachycené stavy nejsou na „%s“ discích podporovány"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
@@ -19615,6 +20782,10 @@ msgstr ""
 "nedaří se přidat podpůrnou vrstvu paměti pro uzel hosta „%d“, protože host "
 "má nastaveno pouze „%zu“ NUMA"
 
+#, fuzzy, c-format
+msgid "can't canonicalize path '%s'"
+msgstr "Nepodařilo se převést popis umístění „%s“ na kánonický tvar"
+
 msgid "can't change link state: device alias not found"
 msgstr "není možné změnit stav linky: alternativní název zařízení nenalezen"
 
@@ -19649,6 +20820,10 @@ msgstr "vytvořený zachycený stav se nedaří nalézt"
 #, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "nedaří se uvolnit název %s%d – mimo rozsah 0-%d"
+
+#, c-format
+msgid "can't handle bitmaps on unterminated backing image '%s'"
+msgstr ""
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -19696,6 +20871,9 @@ msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr ""
 "není možné pivot sdílení disk na úložný svazek, který nepodporuje sdílení"
 
+msgid "can't reopen image with unknown presence of backing store"
+msgstr ""
+
 #, c-format
 msgid "can't resize empty or readonly disk '%s'"
 msgstr "nedaří se změnit prázdný nebo pouze pro čtení disk „%s“"
@@ -19730,6 +20908,11 @@ msgstr "zrušeno"
 
 msgid "canceled by client"
 msgstr "zrušeno klientem"
+
+#, fuzzy
+msgid "cannot abort VM start; use virDomainDestroy instead"
+msgstr ""
+"nedaří se přerušit příchozí migraci; použijte namísto toho virDomainDestroy"
 
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
@@ -19978,6 +21161,10 @@ msgstr "není možné vytvořit složku automatického spouštění „%s“"
 msgid "cannot create capabilities for libxenlight"
 msgstr "nedaří se vytvořit schopnosti pro libxenlight"
 
+#, fuzzy, c-format
+msgid "cannot create checkpoint directory '%s'"
+msgstr "nedaří se vytvořit složku s nastaveními „%s“"
+
 msgid "cannot create checkpoint for inactive domain"
 msgstr "není možné vytvořit kontrolní bod pro neaktivní doménu"
 
@@ -20033,6 +21220,10 @@ msgstr "nedaří se vytvořit stavovou složku „%s“"
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "není možné dekódovat data procesoru pro architekturu %s"
+
+#, fuzzy
+msgid "cannot delete checkpoint for inactive domain"
+msgstr "není možné vytvořit kontrolní bod pro neaktivní doménu"
 
 msgid "cannot delete domain snapshot for running domain"
 msgstr "není možné smazat zachycený stav spuštěné domény"
@@ -20213,6 +21404,14 @@ msgstr "nedaří se nalézt nově vytvořený svazek „%s“"
 msgid "cannot find parent '%s' definition"
 msgstr "nedaří se nalézt definici nadřazeného „%s“"
 
+#, fuzzy
+msgid "cannot find parent using provided fabric_wwn"
+msgstr "nedaří se nalézt definici nadřazeného „%s“"
+
+#, fuzzy
+msgid "cannot find parent using provided wwnn/wwpn"
+msgstr "nedaří se nalézt definici nadřazeného „%s“"
+
 msgid "cannot find pid in vmware log file"
 msgstr "nedaří se nalézt pid v souboru se záznamem událostí ve vmware"
 
@@ -20348,6 +21547,12 @@ msgstr "není možné zastavit po zachycení stavu přechodné domény"
 msgid "cannot halt after transient domain snapshot"
 msgstr "není možné zastavit po zachyceném stavu přechodné domény"
 
+#, fuzzy, c-format
+msgid "cannot hot unplug %s device with PCI guest address: "
+msgstr ""
+"není možné odpojit za chodu zařízení %s s adresou složeného PCI zařízení "
+"hosta:"
+
 #, c-format
 msgid "cannot hot unplug %s device with multifunction PCI guest address: "
 msgstr ""
@@ -20356,6 +21561,10 @@ msgstr ""
 
 msgid "cannot hot unplug multifunction PCI device: "
 msgstr "není možné odpojit za chodu složené PCI zařízení:"
+
+#, fuzzy
+msgid "cannot initialize agent condition"
+msgstr "nedaří se inicializovat podmínku monitoru"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -20438,12 +21647,24 @@ msgid "cannot lookup default selinux label for tap fd %d"
 msgstr ""
 "nedaří se vyhledat výchozí selinux štítek pro tap popisovač souboru tap %d"
 
+#, fuzzy
+msgid "cannot migrate a domain with <hostdev mode='capabilities'>"
+msgstr "není možné migrovat doménu s %d zachycenými stavy"
+
+#, fuzzy, c-format
+msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
+msgstr "není možné migrovat doménu s %d zachycenými stavy"
+
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
 msgstr "není možné migrovat doménu s %d zachycenými stavy"
 
 msgid "cannot migrate domain with I/O error"
 msgstr "není možné migrovat doménu s chybou vst./výstupu"
+
+#, fuzzy
+msgid "cannot migrate this domain without dbus-vmstate support"
+msgstr "není možné migrovat doménu s %d zachycenými stavy"
 
 msgid "cannot mix caller fds with blocking execution"
 msgstr "není možné kombinovat popisovače souborů s blokujícím vykonáváním"
@@ -20558,8 +21779,24 @@ msgstr "nedaří se zpracovat sběrnici %s"
 msgid "cannot parse bus '%s'"
 msgstr "nedaří se zpracovat sběrnici „%s“"
 
+#, fuzzy, c-format
+msgid "cannot parse cache mode '%s' for virtiofs"
+msgstr "nedaří se zpracovat pci adresu „%s“ pro síťové rozhraní"
+
 #, c-format
 msgid "cannot parse cipher size: '%s'"
+msgstr "nedaří se zpracovat délku šifry: „%s“"
+
+#, fuzzy, c-format
+msgid "cannot parse cpu sys stat '%s'"
+msgstr "nedaří se zpracovat sběrnici „%s“"
+
+#, fuzzy, c-format
+msgid "cannot parse cpu usage stat '%s'"
+msgstr "nedaří se zpracovat cíl „%s“"
+
+#, fuzzy, c-format
+msgid "cannot parse cpu user stat '%s'"
 msgstr "nedaří se zpracovat délku šifry: „%s“"
 
 #, c-format
@@ -20606,6 +21843,10 @@ msgstr "nedaří se zpracovat pid v souboru se záznamem událostí ve vmware"
 msgid "cannot parse product %s"
 msgstr "nedaří se zpracovat produkt %s"
 
+#, fuzzy, c-format
+msgid "cannot parse queue size '%s' for virtiofs"
+msgstr "nedaří se zpracovat délku šifry: „%s“"
+
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "nedaří se zpracovat rdp port %s"
@@ -20634,6 +21875,10 @@ msgstr "nedaří se zpracovat jednotku „%s“"
 msgid "cannot parse usage '%s' for RAM filesystem"
 msgstr ""
 "nedaří se zpracovat využití „%s“ pro souborový systém v operační paměti"
+
+#, fuzzy, c-format
+msgid "cannot parse value '%s' for coalesce parameter"
+msgstr "nedaří se zpracovat hodnotu parametru typeid"
 
 msgid "cannot parse value of managerid parameter"
 msgstr "nedaří se zpracovat hodnotu parametru managerid"
@@ -20697,6 +21942,10 @@ msgstr "nedaří se předat rouru pro tunelovanou migraci"
 
 msgid "cannot perform block operations while checkpoint exists"
 msgstr "pokud existuje kontrolní bod, není možné provádět blokové operace"
+
+#, fuzzy
+msgid "cannot perform disk backup for inactive domain"
+msgstr "nedaří se vypsat virt. procesory pro neaktivní doménu"
 
 msgid "cannot perform tunnelled migration without using peer2peer flag"
 msgstr "bez použití peer2peer příznaku není možné provést tunelovanou migraci"
@@ -20799,6 +22048,10 @@ msgstr "IOThread %u není možné odebrat, protože je používán diskem „%s�
 msgid "cannot remove IOThread '%u' since it is being used by controller"
 msgstr "IOThread %u není možné odebrat, protože je používán řadičem"
 
+#, fuzzy
+msgid "cannot remove checkpoint from inactive domain"
+msgstr "není možné vytvořit kontrolní bod pro neaktivní doménu"
+
 #, c-format
 msgid "cannot remove config %s"
 msgstr "nedaří se odebrat nastavení %s"
@@ -20897,6 +22150,10 @@ msgstr "nedaří se uložit soubor „%s“"
 msgid "cannot seek in '%s'"
 msgstr "nedaří se posunout v „%s“"
 
+#, fuzzy, c-format
+msgid "cannot seek into '%s'"
+msgstr "nedaří se posunout v „%s“"
+
 #, c-format
 msgid "cannot seek to beginning of file '%s'"
 msgstr "nedaří se přesunout na začátek souboru „%s“"
@@ -20950,6 +22207,10 @@ msgstr "není možné nastavit paměť výše než maximum"
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "nedaří se nastavit režim „%s“ na %04o"
+
+#, fuzzy, c-format
+msgid "cannot set moment %s as its own parent"
+msgstr "není možné resetovat „%s“ když je „%s“ nastavené"
 
 msgid "cannot set netlink socket buffer size to 128k"
 msgstr "není možné nastavit velikost vyrovnávací paměti netlink soketu na 128k"
@@ -21171,6 +22432,20 @@ msgstr "je třeba, aby cellNum v %s bylo nižší nebo rovno %d"
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "cellNum v %s přijímá pouze %d jako zápornou hodnotu"
 
+#, fuzzy
+msgid "cfpc configuration is not supported by this QEMU binary"
+msgstr "Nastavování HTM není touto binárkou QEMU podporováno"
+
+#, fuzzy, c-format
+msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+msgstr ""
+"Je třeba, aby hodnota cputune „%s“ byla v rozsahu 1000 až 1000000 (sto tisíc)"
+
+#, fuzzy, c-format
+msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+msgstr ""
+"Je třeba, aby hodnota cputune „%s“ byla v rozsahu 1000 až 1000000 (sto tisíc)"
+
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup řadič procesoru není připojen"
 
@@ -21185,6 +22460,10 @@ msgstr "cgroup cpuset řadič není připojen"
 
 msgid "cgroup memory controller is not mounted"
 msgstr "cgroup řadič paměti není připojen"
+
+#, fuzzy
+msgid "cgroups v2 BPF devices not supported with this kernel"
+msgstr "unpriv_sgio není tímto jádrem systému podporováno"
 
 msgid "change lifecycle actions"
 msgstr "změnit akce životního cyklu"
@@ -21300,11 +22579,19 @@ msgstr "kontrolní bod „%s“ nemá nadřazeného"
 msgid "checkpoint '%s' has no parent"
 msgstr "kontrolní bod „%s“ nemá nadřazené"
 
+#, fuzzy, c-format
+msgid "checkpoint for disk %s unsupported for storage type %s"
+msgstr "vnitřní zachycený stav pro disk %s nepodporován pro typ úložiště %s"
+
 msgid "checkpoint information"
 msgstr "informace o kontrolním bodu"
 
 msgid "checkpoint name"
 msgstr "název kontrolního bodu"
+
+#, fuzzy, c-format
+msgid "child didn't write error (status=%d)"
+msgstr "podřízené nahlásilo (status=%d): %s"
 
 #, c-format
 msgid "child failed to create directory '%s'"
@@ -21647,11 +22934,29 @@ msgstr "převést MAC adresu rozhraní na jeho název"
 msgid "convert an interface name to interface MAC address"
 msgstr "převést název rozhraní na jeho MAC adresu"
 
+#, fuzzy, c-format
+msgid "cookie name '%s' contains invalid characters"
+msgstr "Název modelu obsahuje neplatné znaky"
+
+#, fuzzy
+msgid "cookie name must not be empty"
+msgstr "je třeba, aby řetězec %s v %s nebyl prázdný"
+
 msgid "copy destination is block device instead of regular file"
 msgstr "cíl kopie je blokové zařízení namísto běžného souboru"
 
+#, fuzzy
+msgid "copy of read-only disks is not supported"
+msgstr "ide disky pouze pro čtení nejsou podporovány"
+
 msgid "copy-on-write ploop volumes are not yet supported"
 msgstr "copy-on-write ploop svazky zatím nejsou podporovány"
+
+#, fuzzy, c-format
+msgid "copy_on_read is not compatible with 'lun' disk '%s'"
+msgstr ""
+"copy_on_read (kopírování při čtení) není slučitelné s diskem pouze pro čtení "
+"„%s“"
 
 #, c-format
 msgid "copy_on_read is not compatible with read-only disk '%s'"
@@ -21746,6 +23051,10 @@ msgstr "nedaří se odpojit sdílenou složku „%s“, rc=%08x"
 msgid "could not determine max vcpus for the domain"
 msgstr "nedaří se zjistit horní hranici počtu virt. procesorů pro domény"
 
+#, fuzzy, c-format
+msgid "could not find backing store index %u in chain for '%s'"
+msgstr "nedaří se nalézt základní obraz v řetězci pro „%s“"
+
 #, c-format
 msgid "could not find base image in chain for '%s'"
 msgstr "nedaří se nalézt základní obraz v řetězci pro „%s“"
@@ -21838,6 +23147,10 @@ msgstr "nepodařilo se získat stav zapnuto zachyceného stavu %s"
 msgid "could not get parent of snapshot %s"
 msgstr "nedaří se získat nadřazeného zachyceného stavu %s"
 
+#, fuzzy, c-format
+msgid "could not get preferred machine for %s type=%s"
+msgstr "nedaří se získat stav domény"
+
 #, c-format
 msgid "could not get root snapshot for domain %s"
 msgstr "nedaří se získat zachycený stav kořene pro doménu %s"
@@ -21864,6 +23177,11 @@ msgstr "nedaří se získat seznam svazků ve fondu: %s, rc=%08x"
 
 msgid "could not initialize domain event timer"
 msgstr "nedaří se inicializovat časovač událostí domény"
+
+#, fuzzy, c-format
+msgid "could not locate checkpoint '%s' for incremental backup"
+msgstr ""
+"Vytvořit kontrolní bod z XML pro použití v budoucích přírůstkových zálohách"
 
 #, c-format
 msgid "could not open VirtualBox session with domain %s"
@@ -22133,8 +23451,17 @@ msgstr "vytvořit svazek za použití jiného svazku jako vstupních dat"
 msgid "create a volume from a set of args"
 msgstr "vytvořit svazek z daných argumentů"
 
+msgid ""
+"creating a new group/updating existing with all tune parameters zero is not "
+"supported"
+msgstr ""
+
 msgid "creating snapshot"
 msgstr "pořizování zachyceného stavu"
+
+#, fuzzy
+msgid "creation of images with slice type='storage' is not supported"
+msgstr "vytvoření šifrovaného qcow2 obrazu není podporováno"
 
 msgid "creation of non-raw file images is not supported without qemu-img."
 msgstr "vytváření ne-holých souborových obrazů není podporováno bez qemu-img."
@@ -22210,6 +23537,18 @@ msgstr "datové výlevky není možné použít pro neblokující proudy"
 
 msgid "data sources cannot be used for non-blocking streams"
 msgstr "datové prostředky není možné použít pro neblokující proudy"
+
+#, fuzzy, c-format
+msgid "dbus-daemon %s didn't show up"
+msgstr "Doména %s se neukázala"
+
+#, fuzzy, c-format
+msgid "dbus-daemon %s died unexpectedly"
+msgstr "pr helper %s neočekávaně skončilo"
+
+#, fuzzy, c-format
+msgid "dbus-daemon died and reported: %s"
+msgstr "pr helper neočekávaně skončilo a nahlásilo: %s"
 
 msgid "debug"
 msgstr "ladění"
@@ -22327,6 +23666,10 @@ msgstr "smazat zadaný síťový port"
 #, c-format
 msgid "deleting %s drive failed: %s"
 msgstr "mazání disku %s se nezdařilo: %s"
+
+#, fuzzy
+msgid "deleting committed images is not supported by this VM"
+msgstr "Nastavení wwwn pro ide disk není tímto QEMU podporováno"
 
 msgid ""
 "deleting drive is not supported.  This may leak data if disk is reassigned"
@@ -22501,6 +23844,10 @@ msgstr "dhcp je podporováno pouze pro jednu %s adresu na každé síti"
 msgid "dhcp ranges cannot be modified, only added or deleted"
 msgstr "dhcp rozsahy není možné upravovat – pouze přidávat nebo mazat"
 
+#, fuzzy, c-format
+msgid "different iotunes for disks %s and %s"
+msgstr "migrace disku %s se nezdařila: %s"
+
 msgid "dimm memory info data is missing 'id'"
 msgstr "v informacích o dimm paměti  chybí „id“ (identifikátor)"
 
@@ -22585,8 +23932,20 @@ msgid "disk '%s' already in active block job"
 msgstr "disk „%s“ už se nachází v aktivní blokové úloze"
 
 #, c-format
+msgid "disk '%s' backup state wrong or missing'"
+msgstr ""
+
+#, c-format
 msgid "disk '%s' does not currently have a source assigned"
 msgstr "disk „%s“ v tuto chvíli nemá přiřazený prostředek"
+
+#, fuzzy, c-format
+msgid "disk '%s' has a blockjob assigned"
+msgstr "disk „%s“ už se nachází v aktivní blokové úloze"
+
+#, fuzzy, c-format
+msgid "disk '%s' has no media"
+msgstr "ifkey „%s“ nemá žádné req"
 
 #, c-format
 msgid "disk '%s' improperly configured for a device='lun'"
@@ -22599,6 +23958,14 @@ msgstr "disk „%s“ je prázdný nebo pouze pro čtení"
 #, c-format
 msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "je třeba, aby disk „%s“ používal režim zachycování stavu „%s“"
+
+#, fuzzy, c-format
+msgid "disk '%s' not found"
+msgstr "disk %s nenalezen"
+
+#, fuzzy, c-format
+msgid "disk '%s' not found in domain"
+msgstr "disk „%s“ nebyl nalezen v nastavení domény"
 
 #, c-format
 msgid "disk '%s' specified twice"
@@ -22631,6 +23998,18 @@ msgstr "diskovou sběrnici „%s“ není možné připojovat za chodu."
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "diskovou sběrnici „%s“ není možné aktualizovat."
+
+#, fuzzy
+msgid "disk device 'lun' doesn't support encryption"
+msgstr "Diskové zařízení „%s“ nepodporuje pořizování zachycených stavů"
+
+#, fuzzy
+msgid "disk device 'lun' doesn't support storage slice"
+msgstr "Diskové zařízení „%s“ nepodporuje pořizování zachycených stavů"
+
+#, fuzzy
+msgid "disk device 'lun' must use 'raw' format"
+msgstr "disk device='lun' není podporováno pro usb sběrnici"
 
 #, c-format
 msgid "disk device type '%s' cannot be detached"
@@ -22722,6 +24101,10 @@ msgstr "zdrojový popis umístění pro disk chybí"
 #, c-format
 msgid "disk target %s not found"
 msgstr "disk cíl %s nenalezen"
+
+#, fuzzy, c-format
+msgid "disk type of '%s' does not support ejectable media"
+msgstr "úloha typu „%s“ nepodporuje pivot"
 
 msgid "disk vendor is more than 8 characters"
 msgstr "výrobce disku je delší než 8 znaků"
@@ -22815,6 +24198,10 @@ msgstr "výpis paměti domény „%s“: nepodařilo se zapsat hlavičku do %s"
 msgid "domain '%s' coredump: write failed: %s"
 msgstr "výpis paměti domény „%s“: zápis se nezdařil: %s"
 
+#, fuzzy, c-format
+msgid "domain '%s' has no capabilities recorded"
+msgstr "doména „%s“ není pozastavena"
+
 #, c-format
 msgid "domain '%s' has no current snapshot"
 msgstr "doména „%s“ nemá aktuální zachycený stav"
@@ -22875,6 +24262,10 @@ msgstr "doména už má resetátor"
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr "architektura domény (/domain/os/type/@arch)"
 
+#, fuzzy
+msgid "domain backup XML"
+msgstr "XML kontrolního bodu domény"
+
 msgid "domain block device size information"
 msgstr "informace o velikosti blokového zařízení domény"
 
@@ -22920,6 +24311,9 @@ msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
 msgstr ""
 "doména má funkci procesoru 'invtsc', ale nebyla zadána frekvence čítače "
 "časového razítka (TSC)"
+
+msgid "domain has SMM turned off but chosen firmware requires it"
+msgstr ""
 
 msgid "domain has active block job"
 msgstr "doména má aktivní blokovou úlohu"
@@ -22988,6 +24382,15 @@ msgstr "informace o úloze domény"
 msgid "domain master key file doesn't exist in %s"
 msgstr "soubor s hlavním klíčem domény v %s neexistuje"
 
+#, fuzzy, c-format
+msgid "domain moment %s already exists"
+msgstr "doména s názvem „%s“ už existuje"
+
+#, fuzzy
+msgid "domain must have at least one disk to perform backup"
+msgstr ""
+"pro provedení kontrolních bodů je třeba, aby doména měla alespoň jeden disk"
+
 msgid "domain must have at least one disk to perform checkpoints"
 msgstr ""
 "pro provedení kontrolních bodů je třeba, aby doména měla alespoň jeden disk"
@@ -23049,12 +24452,28 @@ msgstr "domainMigratePrepare2 nenastavilo uri"
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare3 nenastavilo uri"
 
+#, fuzzy
+msgid "domainbackup"
+msgstr "typ domény"
+
+#, fuzzy
+msgid "domaincheckpoint"
+msgstr "(kontrolni_bod_domeny)"
+
 msgid "domains in 'doms' array must belong to a single connection"
 msgstr "je třeba, aby domény v poli 'doms' náležely do stejného spojení"
+
+#, fuzzy
+msgid "domainsnapshot"
+msgstr "(zachyceny_stav_domeny)"
 
 #, c-format
 msgid "doms array in %s must contain at least one domain"
 msgstr "je třeba, aby doms pole v %s obsahovalo alespoň jednu doménu"
+
+#, fuzzy
+msgid "don't destroy statistics of a recently completed job when reading"
+msgstr "vrátí statistiky nedávno dokončené úlohy"
 
 #, c-format
 msgid "don't know how to remove a %s device"
@@ -23125,6 +24544,10 @@ msgstr "v „%s“ nalezen duplicitní identifikátor"
 #, c-format
 msgid "duplicate blkio device path '%s'"
 msgstr "duplicitní popis umístění blkio zařízení „%s“"
+
+#, fuzzy, c-format
+msgid "duplicate cookie '%s'"
+msgstr "duplicitní klíč „%s“"
 
 #, c-format
 msgid "duplicate iothread id '%u' found"
@@ -23760,6 +25183,9 @@ msgstr "formát externího zachyceného stavu pro disk %s není podporován: %s"
 msgid "extra %s unsupported in <virtualport type='%s'>"
 msgstr "další %s nepodporováno v <virtualport type='%s'>"
 
+msgid "extract the value of the 'return' key from the returned string"
+msgstr ""
+
 msgid "f - force, try to redefine again"
 msgstr "f – vynutit, pokusit se znovu definovat"
 
@@ -23797,8 +25223,16 @@ msgstr "nedaří se přerušit úlohu pro disk „%s“"
 msgid "failed to access '%s'"
 msgstr "nepodařilo se přistoupit k „%s“"
 
+#, fuzzy
+msgid "failed to acquire guest cid"
+msgstr "Nepodařilo se získat zámek"
+
 #, c-format
 msgid "failed to add chardev '%s' info"
+msgstr "nepodařilo se přidat informace o znakovém zařízení „%s“"
+
+#, fuzzy
+msgid "failed to add device into new map"
 msgstr "nepodařilo se přidat informace o znakovém zařízení „%s“"
 
 #, c-format
@@ -23814,6 +25248,10 @@ msgstr "nepodařilo se přidat filtr podsystému"
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "nepodařilo se uplatnit schopnosti: %d"
+
+#, fuzzy
+msgid "failed to attach cgroup BPF prog"
+msgstr "Nepodařilo se připojit k procesu s identifikátorem %u"
 
 msgid "failed to attach the namespace"
 msgstr "nepodařilo se připojit jmenný prostor"
@@ -23873,6 +25311,10 @@ msgstr "nepodařilo se zkompilovat regulární výraz „%s“: %s"
 msgid "failed to connect to %s"
 msgstr "nepodařilo se připojit k %s"
 
+#, fuzzy
+msgid "failed to connect to agent socket"
+msgstr "nepodařilo se připojit k soketu monitoru"
+
 msgid "failed to connect to monitor socket"
 msgstr "nepodařilo se připojit k soketu monitoru"
 
@@ -23896,6 +25338,14 @@ msgstr "nepodařilo se zkonvertovat strom XML uzlu"
 
 msgid "failed to copy 'vcpus'"
 msgstr "nepodařilo se zkopírovat 'vcpus'"
+
+#, fuzzy
+msgid "failed to copy all device rules"
+msgstr "Nepodařilo se zkopírovat ACL seznamy na zařízení %s"
+
+#, fuzzy
+msgid "failed to count cgroup BPF map items"
+msgstr "Nepodařilo se spočítat tajemství"
 
 #, c-format
 msgid "failed to create %s"
@@ -23966,6 +25416,10 @@ msgstr "nepodařilo se vytvořit soket"
 #, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr "nepodařilo se vytvořit soket potřebný pro „%s“"
+
+#, fuzzy
+msgid "failed to create socketpair"
+msgstr "nepodařilo se vytvořit soket"
 
 #, c-format
 msgid "failed to create state dir '%s': %s"
@@ -24043,6 +25497,10 @@ msgstr ""
 "nepodařilo se nalézt příslušné virt. procesory, připojitelné za chodu, pro "
 "dosažení požadovaného cílového počtu virt. procesorů"
 
+#, fuzzy, c-format
+msgid "failed to find bitmap '%s' in image '%s%u'"
+msgstr "nepodařilo se formátovat obraz: „%s“"
+
 #, c-format
 msgid "failed to find disk '%s'"
 msgstr "nepodařilo se najít disk „%s“"
@@ -24097,6 +25555,26 @@ msgstr "nepodařilo se získat URI"
 msgid "failed to get capabilities"
 msgstr "nepodařilo se zjistit schopnosti"
 
+#, fuzzy
+msgid "failed to get cgroup BPF map FD"
+msgstr "nepodařilo se získat nikde se neopakující identifikátor domény"
+
+#, fuzzy
+msgid "failed to get cgroup BPF map info"
+msgstr "nepodařilo se získat systémové informace"
+
+#, fuzzy
+msgid "failed to get cgroup BPF prog FD"
+msgstr "nepodařilo se získat nikde se neopakující identifikátor fondu"
+
+#, fuzzy
+msgid "failed to get cgroup BPF prog info"
+msgstr "nepodařilo se získat systémové informace"
+
+#, fuzzy, c-format
+msgid "failed to get cgroup backend for '%s'"
+msgstr "nepodařilo se vytvořit soket potřebný pro „%s“"
+
 msgid "failed to get cmt scaling factor"
 msgstr "nepodařilo získat měřítko cmt"
 
@@ -24116,6 +25594,10 @@ msgstr "nepodařilo se získat xml domény"
 msgid "failed to get emulator capabilities"
 msgstr "nepodařilo se zjistit schopnosti emulátoru"
 
+#, fuzzy, c-format
+msgid "failed to get features from '%s'"
+msgstr "nepodařilo se naklonovat soubory z „%s“"
+
 #, c-format
 msgid "failed to get free memory for NUMA node number: %lu"
 msgstr "nepodařilo se získat volnou paměť pro NUMA uzel číslo: %lu"
@@ -24128,6 +25610,10 @@ msgstr "nepodařilo se získat typ hypervizoru"
 
 #, c-format
 msgid "failed to get interface '%s'"
+msgstr "nepodařilo se získat rozhraní '%s'"
+
+#, fuzzy, c-format
+msgid "failed to get interface-types from '%s'"
 msgstr "nepodařilo se získat rozhraní '%s'"
 
 msgid "failed to get launch security cbitpos"
@@ -24207,6 +25693,10 @@ msgstr "nepodařilo se získat počet proužků RBD obrazu %s"
 msgid "failed to get sysinfo"
 msgstr "nepodařilo se získat systémové informace"
 
+#, fuzzy, c-format
+msgid "failed to get targets from '%s'"
+msgstr "nepodařilo se získat tajemství „%s“"
+
 msgid "failed to get the daemon version"
 msgstr "nepodařilo se získat verzi procesu služby"
 
@@ -24258,6 +25748,18 @@ msgstr "nepodařilo se zinicializovat SASL knihovnu: %d (%s)"
 msgid "failed to initialize cipher: '%s'"
 msgstr "nedaří se inicializovat šifru: „%s“"
 
+#, fuzzy
+msgid "failed to initialize device BPF map"
+msgstr "nepodařilo se inicializovat netcf"
+
+#, fuzzy
+msgid "failed to initialize domain condition"
+msgstr "nepodařilo se čekat na podmínku"
+
+#, fuzzy, c-format
+msgid "failed to initialize gluster connection (src=%p priv=%p)"
+msgstr "Nepodařilo se inicializovat fond úložiště „%s“: %s"
+
 msgid "failed to initialize libssh"
 msgstr "nepodařilo se inicializovat libssh"
 
@@ -24275,6 +25777,14 @@ msgstr "nepodařilo se iterovat RBD zachycený stav %s@%s"
 #, c-format
 msgid "failed to list host interfaces: %s%s%s"
 msgstr "nepodařilo se vypsat rozhraní hostitele: %s%s%s"
+
+#, fuzzy
+msgid "failed to load cgroup BPF prog"
+msgstr "nepodařilo se číst cookie"
+
+#, fuzzy
+msgid "failed to lookup device in old map"
+msgstr "Nepodařilo se připojit (mount) zařízení %s na %s"
 
 #, c-format
 msgid "failed to lookup interface with MAC address '%s'"
@@ -24367,6 +25877,10 @@ msgstr "nepodařilo se zpracovat blokátory procesoru ve schopnostech QEMU"
 msgid "failed to parse SCSI host '%s'"
 msgstr "nepodařilo se zpracovat SCSI host „%s“"
 
+#, fuzzy
+msgid "failed to parse agent timeout"
+msgstr "nepodařilo se získat aktuální čas"
+
 #, c-format
 msgid "failed to parse backing file location '%s'"
 msgstr "nepodařilo se zpracovat umístění souboru, na kterém je založeno „%s“"
@@ -24431,6 +25945,14 @@ msgstr "nepodařilo se vyhodnotit stroje schopností qemu"
 msgid "failed to parse qemu device list"
 msgstr "nepodařilo se zpracovat seznam qemu zařízení"
 
+#, fuzzy, c-format
+msgid "failed to parse read_bps_device: '%s'"
+msgstr "nepodařilo se zpracovat blokové zařízení „%s“"
+
+#, fuzzy, c-format
+msgid "failed to parse read_iops_device: '%s'"
+msgstr "nepodařilo se zpracovat blokové zařízení „%s“"
+
 msgid "failed to parse slirp helper list"
 msgstr "nepodařilo se zpracovat slirp helper seznam"
 
@@ -24456,6 +25978,14 @@ msgstr "nepodařilo se zpracovat pořadové číslo VMX klíče „%s“"
 #, c-format
 msgid "failed to parse value of %s"
 msgstr "nepodařilo se zpracovat hodnotu %s"
+
+#, fuzzy, c-format
+msgid "failed to parse write_bps_device: '%s'"
+msgstr "nepodařilo se zpracovat blokové zařízení „%s“"
+
+#, fuzzy, c-format
+msgid "failed to parse write_iops_device: '%s'"
+msgstr "nepodařilo se zpracovat blokové zařízení „%s“"
 
 #, c-format
 msgid "failed to parse xml document '%s'"
@@ -24517,6 +26047,10 @@ msgstr "nepodařilo se číst z wakeup popisovače souboru"
 msgid "failed to read libxl header"
 msgstr "nepodařilo se číst záhlaví libxl"
 
+#, fuzzy, c-format
+msgid "failed to read link of gluster file '%s'"
+msgstr "nepodařilo se čtení ze souboru „%s“"
+
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "nepodařilo se načíst délku metadat v „%s“"
@@ -24536,6 +26070,10 @@ msgstr "nepodařilo se regenerovat genid"
 
 msgid "failed to register udev interface driver"
 msgstr "nepodařilo se zaregistrovat ovladač udev rozhraní"
+
+#, fuzzy
+msgid "failed to remove device from BPF cgroup map"
+msgstr "nepodařilo se obdržet zařízení od udev monitoru"
 
 #, c-format
 msgid "failed to remove nvram: %s"
@@ -24566,6 +26104,10 @@ msgid ""
 msgstr ""
 "nepodařilo se přeložit relativní název, na kterém je založeno: základní "
 "obraz není v řetězci toho, na čem je založené"
+
+#, fuzzy, c-format
+msgid "failed to resolve symlink %s: %s"
+msgstr "Nepodařilo se přeložit symbolický odkaz na %s"
 
 msgid "failed to resume domain"
 msgstr "nepodařilo se obnovit chod domény"
@@ -24628,6 +26170,10 @@ msgstr "nepodařilo se nastavit %s"
 msgid "failed to set RADOS option: %s"
 msgstr "nepodařilo se nastavit RADOS volbu: %s"
 
+#, fuzzy, c-format
+msgid "failed to set checkpoint '%s' as current"
+msgstr "nepodařilo se nastavit zachycený stav „%s“ jako aktuální"
+
 #, c-format
 msgid "failed to set close-on-exec flag on %s"
 msgstr "na %s se nepodařilo nastavit příznak zavřít při vykonání"
@@ -24638,6 +26184,14 @@ msgstr "nepodařilo se nastavit cpuset.cpus v cgroup pro vlákna emulátoru"
 #, c-format
 msgid "failed to set cpuset.cpus in cgroup for iothread %d"
 msgstr "nepodařilo se nastavit cpuset.cpus v cgroup pro iothread %d"
+
+#, fuzzy, c-format
+msgid "failed to set gluster volfile server '%s'"
+msgstr "nepodařilo se zjistit stav souboru „%s“ na protějšku"
+
+#, fuzzy
+msgid "failed to set guest cid"
+msgstr "nepodařilo se nastavit %s"
 
 #, c-format
 msgid "failed to set snapshot '%s' as current"
@@ -24651,6 +26205,10 @@ msgstr "nepodařilo se nastavit obsluhu souboru standardního vstupu"
 
 msgid "failed to setup stdout file handle"
 msgstr "nepodařilo se nastavit obsluhu souboru standardního výstupu"
+
+#, fuzzy, c-format
+msgid "failed to stat gluster path '%s'"
+msgstr "nepodařilo se zjistit stav RBD obrazu „%s“"
 
 #, c-format
 msgid "failed to stat remote file '%s'"
@@ -24702,6 +26260,10 @@ msgstr "nepodařilo se zrušit ochranu zachyceného stavu „%s/%s@%s“"
 msgid "failed to update capacity data for block node '%s'"
 msgstr "nepodařilo se aktualizovat data o kapacitě pro blokový uzel „%s“"
 
+#, fuzzy
+msgid "failed to update device in BPF cgroup map"
+msgstr "Nepodařilo se aktualizovat zařízení z %s"
+
 #, c-format
 msgid "failed to validate SSH host key: %s"
 msgstr "nepodařilo se ověřit SSH klíč hostitele: %s"
@@ -24716,6 +26278,10 @@ msgstr "nepodařilo se ověřit zda je RBD zachycený stav %s@%s chráněn"
 #, c-format
 msgid "failed to verify if snapshot '%s/%s@%s' is protected"
 msgstr "nepodařilo se zjistit zda je zachycený stav „%s/%s@%s“ je chráněný"
+
+#, fuzzy
+msgid "failed to wait for domain condition"
+msgstr "nepodařilo se čekat na podmínku"
 
 #, c-format
 msgid "failed to wait for file '%s' to appear"
@@ -24774,6 +26340,10 @@ msgstr "nepodařilo se zapsat soubor s tajemstvím"
 
 msgid "failed to write the log file"
 msgstr "nezdařil se zápis do souboru se záznamem událostí"
+
+#, fuzzy, c-format
+msgid "failed to write to LUN %d: %s"
+msgstr "Nedaří se zapsat do: %s"
 
 msgid "failed to write to profile"
 msgstr "nepodařilo se zapsat do profilu"
@@ -24892,6 +26462,33 @@ msgstr "filtr „%s“ už existuje s nikde se neopakujícím identifikátorem %
 msgid "filter '%s' learning value '%s' invalid."
 msgstr "filtru „%s“ učící hodnota „%s“ není platná"
 
+#, fuzzy
+msgid "filter binding has no MAC address"
+msgstr "název nebo MAC adresa rozhraní"
+
+#, fuzzy
+msgid "filter binding has no filter reference"
+msgstr "ponechat řetězec, na kterém je založeno, relativně odkazovaný"
+
+#, fuzzy
+msgid "filter binding has no link dev name"
+msgstr "filtr nemá název"
+
+#, fuzzy
+msgid "filter binding has no owner UUID"
+msgstr "filtr nemá název"
+
+#, fuzzy
+msgid "filter binding has no owner name"
+msgstr "filtr nemá název"
+
+#, fuzzy
+msgid "filter binding has no port dev name"
+msgstr "žádné nwfilter navázání pro port zařízení „%s“"
+
+msgid "filter binding status missing content"
+msgstr ""
+
 msgid "filter by disk-only snapshots"
 msgstr "filtrovat podle zachycených stavů pouze disků"
 
@@ -25005,6 +26602,9 @@ msgstr "pro modul %s"
 msgid "for Linux >= %d.%d.%d"
 msgstr "pro Linux >= %d.%d.%d"
 
+msgid "for PowerPC KVM module loaded"
+msgstr ""
+
 msgid "for device assignment IOMMU support"
 msgstr "pro podporu IOMMU zařízení přiřazení"
 
@@ -25051,6 +26651,13 @@ msgstr "funkce formátování jsou k dispozici pouze s qcow2"
 
 msgid "format for underlying storage"
 msgstr "formát pro úložiště, na kterém se nachází"
+
+#, c-format
+msgid ""
+"format of backing image '%s' of image '%s' was not specified in the image "
+"metadata (See https://libvirt.org/kbase/backing_chains.html for "
+"troubleshooting)"
+msgstr ""
 
 msgid "format of backing volume if taking a snapshot"
 msgstr "formát svazku, na kterém se nachází, pokud pořízen zachycený stav"
@@ -25108,6 +26715,14 @@ msgstr "úplný popis umístění zdrojového disku"
 msgid "fuse_loop failed"
 msgstr "fuse_loop se nezdařilo"
 
+#, c-format
+msgid "g_mkstemp(\"%s\") failed"
+msgstr ""
+
+#, fuzzy, c-format
+msgid "g_mkstemp_full: failed to create temporary file: %s"
+msgstr "%s: nezdařilo se čtení dočasného souboru: %s"
+
 msgid "get active job information for the specified disk"
 msgstr "získat informace o aktivní úloze pro zadaný disk"
 
@@ -25158,6 +26773,9 @@ msgstr "získat hodnotu ze spuštěné domény"
 
 msgid "get value to be used on next boot"
 msgstr "získat hodnotu kterou použít při příštím zavádění"
+
+msgid "get value without converting to base64"
+msgstr ""
 
 msgid "get/set bandwidth in bytes rather than MiB/s"
 msgstr "získat/nastavit rychlost v bajtech namísto MiB/s"
@@ -25372,6 +26990,10 @@ msgstr "USB zařízení hostitele Busnum: %3x, Devnum: %3x nenalezeno"
 msgid "host USB device already exists"
 msgstr "USB zařízení hostitele už existuje"
 
+#, fuzzy, c-format
+msgid "host arch %s is too big for destination"
+msgstr "Slot %s je pro cíl příliš velký"
+
 msgid "host cpu counting not implemented on this platform"
 msgstr "spočítání procesorů hostitele není na této platformě implementováno"
 
@@ -25518,6 +27140,13 @@ msgstr "připojení resetátoru modelu %s za chodu není podporováno"
 msgid "hpet timer is not supported"
 msgstr "hpet časovač není podporován"
 
+#, fuzzy
+msgid "http cookies are not supported by this QEMU binary"
+msgstr "%s není podporováno touto binárkou QEMU"
+
+msgid "http cookies are supported only with HTTP(S) protocol"
+msgstr ""
+
 #, c-format
 msgid "hub type %s not supported"
 msgstr "hub typu %s není podporován"
@@ -25571,6 +27200,10 @@ msgstr "iSCSI fond úložiště nepodporuje vymazání obsahu svazku"
 
 msgid "iSCSI usage specified, but target is missing"
 msgstr "zadáno využití iSCSI, ale chybí cíl"
+
+#, fuzzy
+msgid "ibs configuration is not supported by this QEMU binary"
+msgstr "Nastavování HTM není touto binárkou QEMU podporováno"
 
 msgid "idle"
 msgstr "nečinné"
@@ -25682,6 +27315,10 @@ msgstr "nekompletní záhlaví uložení v „%s“"
 msgid "incorrect boot order '%s', expecting positive integer"
 msgstr "nesprávné pořadí zavádění „%s“, očekáváno kladné celé číslo"
 
+#, fuzzy
+msgid "incremental backup is not supported yet"
+msgstr "přechodné disky zatím nejsou podporovány"
+
 msgid "individual CPU state configuration is not supported"
 msgstr "nastavování stavu pro jednotlivé procesory není podporováno"
 
@@ -25761,6 +27398,60 @@ msgid ""
 msgstr ""
 "přetečení celočíselného typu na %s. Obraťte se na vývojový tým libvirt na "
 "libvir-list@redhat.com"
+
+#, fuzzy, c-format
+msgid ""
+"interface %s - <port isolated='yes'/> is not supported for network "
+"interfaces with type='%s'"
+msgstr "nespravované cílové zařízení není podporováno pro rozhraní typu „%s“"
+
+#, fuzzy, c-format
+msgid ""
+"interface %s - <port isolated='yes'/> is not supported for network "
+"interfaces with virtualport type='%s'"
+msgstr "nespravované cílové zařízení není podporováno pro rozhraní typu „%s“"
+
+#, fuzzy, c-format
+msgid ""
+"interface %s - bandwidth settings are not supported for hostdev interfaces"
+msgstr "adresa type='%s' nepodporována v hostdev rozhraních"
+
+#, fuzzy, c-format
+msgid ""
+"interface %s - custom tap device path is not supported for network "
+"interfaces of type %s"
+msgstr "nespravované cílové zařízení není podporováno pro rozhraní typu „%s“"
+
+#, fuzzy, c-format
+msgid ""
+"interface %s - filterref is not supported for network interfaces of type %s"
+msgstr "filtry nepodporované na zařízení typu %s"
+
+#, fuzzy, c-format
+msgid ""
+"interface %s - filterref is not supported for network interfaces with "
+"virtualport type %s"
+msgstr "filtry nepodporované na zařízení typu %s"
+
+#, fuzzy, c-format
+msgid ""
+"interface %s - multiqueue is not supported for network interfaces of type %s"
+msgstr "filtry nepodporované na zařízení typu %s"
+
+#, c-format
+msgid ""
+"interface %s - multiqueue is not supported for network interfaces of type "
+"vhost-user with this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid ""
+"interface %s - teaming transient device must be type='hostdev', not '%s'"
+msgstr ""
+
+#, fuzzy, c-format
+msgid "interface %s - vlan tag not supported for this connection type"
+msgstr "předávání popisovače souboru není tímto spojením podporováno"
 
 #, c-format
 msgid "interface '%s' can only be listed once in network %s"
@@ -26134,6 +27825,18 @@ msgstr "neplatná velikost mezipaměti v odpovědi na query-migrate-cache-size"
 msgid "invalid capability_filters capability '%s'"
 msgstr "neplatná schopnost capability_filters „%s“"
 
+#, fuzzy
+msgid "invalid catchup limit"
+msgstr "neplatný argument"
+
+#, fuzzy
+msgid "invalid catchup slew"
+msgstr "neplatná cesta: %s"
+
+#, fuzzy
+msgid "invalid catchup threshold"
+msgstr "neplatná cesta: %s"
+
 #, c-format
 msgid "invalid channel state value '%s'"
 msgstr "Neplatná hodnota stavu kanálu „%s“"
@@ -26191,6 +27894,10 @@ msgstr "neplatná základní adresa dimm „%s“"
 #, c-format
 msgid "invalid discard value '%s'"
 msgstr "neplatná hodnota discard „%s“"
+
+#, fuzzy, c-format
+msgid "invalid disk 'backup' state '%s'"
+msgstr "neplatný stav linky „%s“"
 
 #, c-format
 msgid "invalid disk index '%s'"
@@ -26264,6 +27971,14 @@ msgstr "neplatná délka dat záhlaví: %d"
 #, c-format
 msgid "invalid host UUID: %s"
 msgstr "neplatné hostitelské UUID: %s"
+
+#, fuzzy
+msgid "invalid hostdev mode"
+msgstr "neplatný režim"
+
+#, fuzzy
+msgid "invalid hostdev subsystem type"
+msgstr "neplatný typ statistik úlohy"
 
 msgid "invalid idmap start/target/count settings"
 msgstr "neplatné nastavení idmap start/target/count"
@@ -26459,9 +28174,21 @@ msgstr ""
 "neplatná číselná hodnota pro „%s“ vlastnost modelu procesoru hostitele v "
 "mezipaměti schopností QEMU"
 
+#, fuzzy, c-format
+msgid "invalid or missing decode/guest attribute in CPU model %s"
+msgstr "V topologii procesoru chybí atribut „cores“ (jádra)"
+
+#, fuzzy, c-format
+msgid "invalid or missing decode/host attribute in CPU model %s"
+msgstr "V topologii procesoru chybí atribut „cores“ (jádra)"
+
 #, c-format
 msgid "invalid or missing dimm slot id '%s'"
 msgstr "neplatný nebo chybějící identifikátor dimm slotu „%s“"
+
+#, fuzzy
+msgid "invalid packed value"
+msgstr "neplatná ats hodnota"
 
 #, c-format
 msgid "invalid part_separator setting '%s'"
@@ -26507,6 +28234,10 @@ msgstr "neplatný typ transportního protokolu „%s“"
 #, c-format
 msgid "invalid qemu namespace capability '%s'"
 msgstr "neplatná schopnost qemu jmenného prostoru „%s“"
+
+#, fuzzy
+msgid "invalid readahead size or timeout"
+msgstr "neplatná hodnota časového limitu"
 
 #, c-format
 msgid "invalid reconnect enabled value: '%s'"
@@ -26580,6 +28311,10 @@ msgstr ""
 #, c-format
 msgid "invalid ssid value '%s' for '%s'"
 msgstr "neplatná hodnota ssid „%s“ pro „%s“"
+
+#, fuzzy, c-format
+msgid "invalid ssl verify mode '%s'"
+msgstr "neplatný model paměti „%s“"
 
 #, c-format
 msgid "invalid state '%s' of perf event '%s'"
@@ -26704,6 +28439,10 @@ msgstr ""
 msgid "invalid value of state argument for KVM feature '%s'"
 msgstr "Neplatná hodnota stavového argumentu pro KVM funkci „%s“"
 
+#, fuzzy, c-format
+msgid "invalid value of state argument for Xen feature '%s'"
+msgstr "Neplatná hodnota stavového argumentu pro KVM funkci „%s“"
+
 #, c-format
 msgid "invalid vcpu 'enabled' value '%s'"
 msgstr "neplatná hodnota vcpu 'enabled' (zapnuto) „%s“"
@@ -26728,6 +28467,10 @@ msgstr "neplatná akce watchdogu"
 
 msgid "io policy of disk device"
 msgstr "zásada vst./výstupu diskového zařízení"
+
+#, fuzzy
+msgid "io uring is not supported by this QEMU binary"
+msgstr "HTP změna velikosti není touto QEMU binárkou podporována"
 
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "volba iommu ovladače je podporovaná pouze pro virtio zařízení"
@@ -26777,6 +28520,10 @@ msgid "is not active"
 msgstr "není aktivní"
 
 msgid "iscsi pool only supports 'chap' auth type"
+msgstr "iscsi fond podporuje pouze typ ověřování 'chap'"
+
+#, fuzzy
+msgid "iscsi-direct pool only supports 'chap' auth type"
 msgstr "iscsi fond podporuje pouze typ ověřování 'chap'"
 
 msgid "ivgen element found, but cipher is missing"
@@ -26836,6 +28583,10 @@ msgstr ""
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr ""
 "přepsání štítku vyžaduje, aby bylo zapnuto přeštítkovávání na úrovni domény"
+
+#, fuzzy
+msgid "label size is required for NVDIMM device"
+msgstr "je třeba, aby štítek byl menší než velikost NVDIMM"
 
 msgid "label size must be smaller than NVDIMM size"
 msgstr "je třeba, aby štítek byl menší než velikost NVDIMM"
@@ -27396,6 +29147,9 @@ msgstr "učinit změnu za chodu trvalou"
 msgid "make the copy share a backing chain"
 msgstr "učinit kopírovací sdílení řetězcem na kterém je založeno"
 
+msgid "malformed 'offset' property of 'raw' driver"
+msgstr ""
+
 #, c-format
 msgid "malformed 'port' attribute: %s"
 msgstr "nesprávně formulovaný atribut „port“: %s"
@@ -27403,9 +29157,30 @@ msgstr "nesprávně formulovaný atribut „port“: %s"
 msgid "malformed 'prefix' field"
 msgstr "nesprávně formulovaná kolonka 'prefix'"
 
+#, fuzzy, c-format
+msgid "malformed 'readahead' field in backing store definition '%s'"
+msgstr ""
+"V JSON definici svazku, na kterém je založené, chybí kolonka "
+"'filename' (název souboru)"
+
+msgid "malformed 'size' property of 'raw' driver"
+msgstr ""
+
 #, c-format
 msgid "malformed 'speed' attribute: %s"
 msgstr "nesprávně formulovaný atribut „speed“ (rychlost): %s"
+
+#, fuzzy, c-format
+msgid "malformed 'sslverify' field in backing store definition '%s'"
+msgstr ""
+"V JSON definici svazku, na kterém je založené, chybí kolonka "
+"'filename' (název souboru)"
+
+#, fuzzy, c-format
+msgid "malformed 'timeout' field in backing store definition '%s'"
+msgstr ""
+"V JSON definici svazku, na kterém je založené, chybí kolonka "
+"'filename' (název souboru)"
 
 msgid "malformed 'wwpn' value"
 msgstr "nesprávně formulovaná hodnota 'wwpn'"
@@ -27464,6 +29239,10 @@ msgstr ""
 "nesprávně formulovaný prvek hostuuid (nikde se neopakující identifikátor "
 "hostitele) v datech stěhování"
 
+#, c-format
+msgid "malformed http cookie '%s' in backing store definition '%s'"
+msgstr ""
+
 msgid "malformed hyperv panic data"
 msgstr "nesprávně formulovaná data hyperv paniky"
 
@@ -27475,10 +29254,6 @@ msgid "malformed ipset flags"
 msgstr "nesprávně formulované ipset příznaky"
 
 #, c-format
-msgid "malformed keyword arguments in '%s'"
-msgstr "nesprávně formulované argumenty klíčového slova v „%s”"
-
-#, c-format
 msgid "malformed mac address '%s'"
 msgstr "chybný zápis mac adresy „%s“"
 
@@ -27486,12 +29261,24 @@ msgid "malformed machine cpu count in QEMU capabilities cache"
 msgstr ""
 "nesprávně formulovaný počet procesorů stroje v mezipaměti schopností qemu"
 
+#, fuzzy, c-format
+msgid "malformed managed value '%s'"
+msgstr "neplatná „managed“ (spravováno) hodnota „%s“"
+
 msgid "malformed mtu size"
 msgstr "nesprávně formulovaná velikost mtu"
+
+#, fuzzy, c-format
+msgid "malformed namespace '%s'"
+msgstr "nesprávně formulovaný název jmenného prostoru: %s"
 
 #, c-format
 msgid "malformed namespace name: %s"
 msgstr "nesprávně formulovaný název jmenného prostoru: %s"
+
+#, fuzzy, c-format
+msgid "malformed nbd string '%s'"
+msgstr "Nesprávně formulovaný nbd port „%s“"
 
 msgid "malformed netlink response message"
 msgstr "nesprávně formulovaná zpráva odpovědi netlink"
@@ -27515,6 +29302,10 @@ msgstr "nesprávně formulovaná odpověď qemu-current-machine"
 msgid "malformed query string"
 msgstr "chybně formátovaný řetězec dotazu"
 
+#, fuzzy, c-format
+msgid "malformed refcount %s on %s"
+msgstr "chybně formátovaný výstup %s: %s"
+
 msgid "malformed refreservation reported"
 msgstr "hlášena nesprávně formulovaná rezervace"
 
@@ -27534,6 +29325,14 @@ msgstr "nesprávně formulovaný prvek uuid (nikde se neopakující identifikát
 #, c-format
 msgid "malformed uuid element for '%s'"
 msgstr "nesmyslný uuid element pro '%s'"
+
+#, fuzzy, c-format
+msgid "malformed value '%s' of 'offset' attribute of slice"
+msgstr "nesprávně formulovaný atribut „port“: %s"
+
+#, fuzzy, c-format
+msgid "malformed value '%s' of 'size' attribute of slice"
+msgstr "nesprávně formulovaný atribut „speed“ (rychlost): %s"
 
 msgid "malformed volsize reported"
 msgstr "hlášena nesprávně formulovaná velikost svazku (volsize)"
@@ -27907,6 +29706,10 @@ msgstr ""
 msgid "migration with shmem device is not supported"
 msgstr "migrace se zařízením sdílené paměti není podporována"
 
+#, fuzzy
+msgid "migration with virtiofs device is not supported"
+msgstr "migrace se zařízením sdílené paměti není podporována"
+
 #, c-format
 msgid "migration_address must not be the address of the local machine: %s"
 msgstr ""
@@ -27921,6 +29724,9 @@ msgstr ""
 
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr "minWorkers nemůže být vyšší než maxWorkers"
+
+msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
+msgstr ""
 
 msgid "mirror requires file name"
 msgstr "zrcadlo vyžaduje název souboru"
@@ -27956,6 +29762,10 @@ msgstr "chybí %s v <virtualport type='%s'>"
 msgid "missing 'DateTime' element"
 msgstr "chybí prvek 'DateTime'"
 
+#, fuzzy, c-format
+msgid "missing 'architecture' in '%s'"
+msgstr "Chybí architektura procesoru"
+
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%s'"
 msgstr "v souboru „%s“ selinux lxc kontextu chybí hodnota 'content'"
@@ -27966,6 +29776,10 @@ msgid ""
 "network %s"
 msgstr "v síti %s, v prvku <address> v <nat>, ve <forward> chybí atribut 'end'"
 
+#, fuzzy, c-format
+msgid "missing 'executable' in '%s'"
+msgstr "chybí hodnota cssid pro „%s“"
+
 #, c-format
 msgid "missing 'file' value in selinux lxc contexts file '%s'"
 msgstr "v souboru „%s“ selinux lxc kontextu chybí hodnota 'file'"
@@ -27975,6 +29789,14 @@ msgstr ""
 "V JSON definici svazku, na kterém je založené, chybí kolonka "
 "'filename' (název souboru)"
 
+#, fuzzy, c-format
+msgid "missing 'filename' in '%s'"
+msgstr "chybí název rport pro „%s“"
+
+#, fuzzy, c-format
+msgid "missing 'format' in '%s'"
+msgstr "chybí informace o názvu v %s"
+
 msgid "missing 'guid' attribute"
 msgstr "chybí atribut „guid“"
 
@@ -27983,12 +29805,24 @@ msgstr ""
 "chybí atribut 'id' (identifikátor) pro prvek <type> zprostředkovaného "
 "zařízení"
 
+#, fuzzy, c-format
+msgid "missing 'machines' in '%s'"
+msgstr "v zachyceném stavu chybí doména"
+
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
 "v mezipaměti schopností QEMU chybí atribut 'name' (název) pro vlastnost "
 "model procesoru hostitele"
+
+#, fuzzy
+msgid "missing 'namespace' attribute to disk source"
+msgstr "chybí název zdroje disku"
+
+#, fuzzy, c-format
+msgid "missing 'nvram-template' in '%s'"
+msgstr "chybí informace o názvu v %s"
 
 msgid "missing 'portal' address in iSCSI backing definition"
 msgstr ""
@@ -28019,11 +29853,19 @@ msgstr "chybí atribut 'state' pro HyperV Enlightenment funkci „%s“"
 msgid "missing 'state' attribute for KVM feature '%s'"
 msgstr "chybí atribut „state“ (stav) pro KVM funkci „%s“"
 
+#, fuzzy, c-format
+msgid "missing 'state' attribute for Xen feature '%s'"
+msgstr "chybí atribut „state“ (stav) pro KVM funkci „%s“"
+
 msgid "missing 'target' in iSCSI backing definition"
 msgstr "v definici iSCSI, na kterém je založeno, chybí cíl ('target')"
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "chybí atribut 'timezone' (časová zóna) pro hodiny s offset='timezone'"
+
+#, fuzzy
+msgid "missing 'type' attribute to disk source"
+msgstr "chybí název zdroje disku"
 
 #, c-format
 msgid "missing 'type'(%s) or 'alias'(%s) field of QOM 'object'"
@@ -28170,6 +30012,10 @@ msgstr "chybí režim připojení pro <reservations/>"
 msgid "missing connection type for <reservations/>"
 msgstr "chybí typ spojení pro <reservations/>"
 
+#, fuzzy
+msgid "missing cookie name"
+msgstr "chybí název časovače"
+
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr "v mezipaměti schopností QEMU chybí název procesoru"
 
@@ -28206,6 +30052,10 @@ msgstr "chybí atribut dev (zařízení) v prvku <interface>"
 msgid "missing device API for mediated device type '%s'"
 msgstr ""
 "chybí aplikační programové rozhraní pro zprostředkované zařízení typu „%s“"
+
+#, fuzzy, c-format
+msgid "missing device type in '%s'"
+msgstr "chybí typ zařízení rozbočovače"
 
 msgid "missing devices information"
 msgstr "chybí informace o zařízení"
@@ -28262,6 +30112,10 @@ msgstr "chybí emulovaná GIC informace"
 msgid "missing emulated GIC information in QEMU capabilities cache"
 msgstr "v mezipaměti schopností QEMU chybí informace o emulovaném GIC"
 
+#, fuzzy
+msgid "missing emulator in QEMU capabilities cache"
+msgstr "v mezipaměti schopností QEMU chybí architektura"
+
 msgid "missing encryption description"
 msgstr "chybí popis šifrování"
 
@@ -28286,6 +30140,10 @@ msgstr "chybí tabulka parametru filtru"
 
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "chybí název příznaku v mezipaměti schopností QEMU"
+
+#, fuzzy, c-format
+msgid "missing gluster volume name for path '%s'"
+msgstr "Chybí název svazku úložiště pro „%s“"
 
 msgid "missing graphics device type"
 msgstr "chybí typ grafického zařízení"
@@ -28426,6 +30284,10 @@ msgstr "chybí název zdroje disku"
 msgid "missing name for host"
 msgstr "chybí název pro hostitele"
 
+#, fuzzy
+msgid "missing name from disk backup element"
+msgstr "v prvku zachyceného stavu chybí název"
+
 msgid "missing name from disk snapshot element"
 msgstr "v prvku zachyceného stavu chybí název"
 
@@ -28447,6 +30309,10 @@ msgid "missing number of available instances for mediated device type '%s'"
 msgstr ""
 "chybí počet instancí, které jsou k dispozici pro zprostředkované zařízení "
 "typu „%s“"
+
+#, fuzzy
+msgid "missing offset or size attribute of slice"
+msgstr "chybí atribut pořadí zavádění (boot order)"
 
 msgid "missing operating system information"
 msgstr "chybí informace o operačním systému"
@@ -28474,6 +30340,14 @@ msgstr "chybí identifikátor virt. procesoru nebo není platný"
 
 msgid "missing or invalid vlan tag id attribute"
 msgstr "chybějící nebo neplatný atribut identifikátor štítku vlan"
+
+#, fuzzy
+msgid "missing or malformed 'device' field of 'nvme' storage"
+msgstr "chybí podpůrná vrstva úložiště pro úložiště „%s“"
+
+#, fuzzy
+msgid "missing or malformed 'namespace' field of 'nvme' storage"
+msgstr "chybí podpůrná vrstva úložiště pro úložiště „%s“"
 
 msgid "missing or malformed SEV cbitpos information in QEMU capabilities cache"
 msgstr ""
@@ -28581,6 +30455,10 @@ msgstr "chybí název rport pro „%s“"
 #, c-format
 msgid "missing scheme in migration URI: %s"
 msgstr "chybí schéma v URI migrace: %s"
+
+#, fuzzy
+msgid "missing secret info for 'luks' driver"
+msgstr "chybí uuid tajemství nebo atribut využití"
 
 msgid "missing secret uuid or usage attribute"
 msgstr "chybí uuid tajemství nebo atribut využití"
@@ -28754,9 +30632,21 @@ msgstr "chybějící kolonka uživatelské jméno v /node/auth/user"
 msgid "missing uuid element in migration data"
 msgstr "v datech migrace chybí prvek nikde se neopakující identifikátor"
 
+#, fuzzy, c-format
+msgid "missing value for cookie '%s'"
+msgstr "chybí hodnota ssid pro „%s“"
+
 #, c-format
 msgid "missing value for migration parameter '%s'"
 msgstr "chybí hodnota pro parametr stěhování „%s“"
+
+#, fuzzy
+msgid "missing values for acceleration"
+msgstr "chybí popis umístění pro <reservations/>"
+
+#, fuzzy
+msgid "missing values for resolution"
+msgstr "chybí popis umístění pro <reservations/>"
 
 msgid "missing vcpu enabled state"
 msgstr "chybí stav virt. procesoru zapnuto"
@@ -28809,6 +30699,10 @@ msgstr ""
 msgid "mixing nested objects and values is forbidden in JSON deflattening"
 msgstr ""
 "kombinace vnořených objektů a hodnot není v odzplošťování JSON dovolena"
+
+#, c-format
+msgid "mkdir(\"%s\")"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -28921,6 +30815,10 @@ msgid ""
 msgstr ""
 "velikost mtu je povolena pouze v režimu open, route, nat a isolated, ne v %s "
 "(síť „%s“)"
+
+#, fuzzy
+msgid "multidevs is not supported with this QEMU binary"
+msgstr "iommu: eim není tímto sestavením QEMU podporováno"
 
 #, c-format
 msgid "multiple <portgroup> elements with the same name (%s) in network '%s'"
@@ -29265,6 +31163,22 @@ msgstr "název nebo nikde se neopakující identifikátor sítě"
 msgid "network port %s exists already"
 msgstr "síťový port %s už existuje"
 
+#, fuzzy
+msgid "network port has no mac"
+msgstr "síťový port nenalezen"
+
+#, fuzzy
+msgid "network port has no owner UUID"
+msgstr "síťový port nenalezen"
+
+#, fuzzy
+msgid "network port has no owner name"
+msgstr "síťový port nenalezen"
+
+#, fuzzy
+msgid "network port has no uuid"
+msgstr "síťový port nenalezen"
+
 msgid "network port information in XML"
 msgstr "informace o síťovém portu v XML"
 
@@ -29502,6 +31416,10 @@ msgstr "nenalezeno žádné zařízení s MAC adresou %s"
 msgid "no device matching MAC address %s found on "
 msgstr "žádné zařízení s MAC adresou %s nenalezeno na"
 
+#, fuzzy, c-format
+msgid "no disk format for %s was specified"
+msgstr "Je třeba zadat výslovný formát disku"
+
 #, c-format
 msgid "no disk found with alias '%s' or id '%s'"
 msgstr ""
@@ -29512,8 +31430,16 @@ msgstr ""
 msgid "no disk named '%s'"
 msgstr "žádný disk nazvaný „%s“"
 
+#, fuzzy
+msgid "no disks selected for backup"
+msgstr "nebylo vybráno nic pro pořízení zachyceného stavu"
+
 msgid "no domain XML passed"
 msgstr "nepředáno žádné XML domény"
+
+#, fuzzy
+msgid "no domain backup job present"
+msgstr "Identifikátor úlohy zálohy nenalezen"
 
 #, c-format
 msgid "no domain checkpoint with matching name '%s'"
@@ -29571,6 +31497,18 @@ msgstr "nebyl zadán model procesoru hosta"
 msgid "no host device manager defined"
 msgstr "není definován žádný správce host zařízení"
 
+#, fuzzy
+msgid "no hostname found"
+msgstr "nenalezeny žádné procesory"
+
+#, fuzzy, c-format
+msgid "no hostname found for domain %s"
+msgstr "Žádný nadpis pro doménu: %s"
+
+#, fuzzy, c-format
+msgid "no hostname found: %s"
+msgstr "Klient nenalezen: %s"
+
 #, c-format
 msgid "no iSCSI interface defined for IQN %s"
 msgstr "pro IQN %s není definováno žádné iSCSI rozhraní"
@@ -29598,6 +31536,9 @@ msgstr "bez limitu"
 msgid "no loader path specified and firmware auto selection disabled"
 msgstr ""
 "není zadán žádný popis zavaděče a automatický výběr firmware je vypnutý"
+
+msgid "no map for cgroup BPF prog"
+msgstr ""
 
 msgid "no matching RNG device was found"
 msgstr "nenalezeno odpovídající zařízení generátoru náhodných čísel"
@@ -29804,6 +31745,12 @@ msgstr "nezadán název cíle pro „%s“"
 msgid "no threads found"
 msgstr "nenalezena žádná vlákna"
 
+#, fuzzy
+msgid "no tls service found, unable to update tls files"
+msgstr ""
+"Nepodařilo se připojit (mount) zařízení %s na %s, nedaří se zjistit "
+"souborový systém"
+
 msgid "no transaction running, nothing to be committed."
 msgstr "neprobíhá žádná transakce, není nic k odeslání."
 
@@ -29878,6 +31825,10 @@ msgstr "node-name „%s“ je pro qemu příliš dlouhý"
 msgid "nodedev state driver is not active"
 msgstr "stavový ovladač nodedev není aktivní"
 
+#, c-format
+msgid "nodeset attribute of hugepages of sizes %llu and %llu intersect"
+msgstr ""
+
 msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
 msgstr ""
 "pokud je 'placement' (rozmístění) 'static' je třeba, aby bylo nastavené "
@@ -29896,6 +31847,10 @@ msgstr "žádné"
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "nenulové ncpus neodpovídá NULL cpus"
 
+#, fuzzy
+msgid "nonzero ncpus doesn't match with NULL xmlCPUs"
+msgstr "nenulové ncpus neodpovídá NULL cpus"
+
 #, c-format
 msgid "not a hugetlbfs mount: '%s'"
 msgstr "nejedná se o hugetlbfs připojení (mount): „%s“"
@@ -29908,6 +31863,17 @@ msgstr "podporováno jen na linux platformách"
 
 msgid "nothing selected for snapshot"
 msgstr "nebylo vybráno nic pro pořízení zachyceného stavu"
+
+msgid "notify server to update TLS related files online."
+msgstr ""
+
+#, fuzzy
+msgid ""
+"notify server to update the CA cert, CA CRL, server cert / key without "
+"restarts. See OPTIONS for currently supported attributes."
+msgstr ""
+"Vyladit threadpool atributy na serveru. Viz OPTIONS pro právě podporované "
+"atributy."
 
 #, c-format
 msgid "nparams count exceeds maximum: %u > %u"
@@ -30127,6 +32093,12 @@ msgstr "je podporováno pouze jediné vsock zařízení"
 msgid "only a single watchdog device is supported"
 msgstr "je podporováno pouze jediné zařízení resetátoru (watchdog)"
 
+#, fuzzy
+msgid "only bus 'virtio' is supported for 'passthrough' input devices"
+msgstr ""
+"nastavení zdrojového umístění evdev je podporováno pouze pro passthrough "
+"vstupní zařízení"
+
 msgid "only connect if safe console handling is supported"
 msgstr "připojit pouze pokud je podporována bezpečná obsluha konzole"
 
@@ -30153,6 +32125,10 @@ msgstr ""
 
 msgid "only one TPM backend is supported"
 msgstr "je podporována pouze jedna TPM podpůrná vrstva"
+
+#, fuzzy
+msgid "only one backup job is supported"
+msgstr "Je podporovaná pouze jedna acpi tabulka"
 
 msgid "only one emulatorpin is supported"
 msgstr "je podporován pouze jeden emulatorpin"
@@ -30228,12 +32204,20 @@ msgstr "otevřít editor pro úpravu popisu"
 msgid "open disk image file failed"
 msgstr "otevření obrazu disku se nezdařilo"
 
+#, c-format
+msgid "open(\"%s\")"
+msgstr ""
+
 msgid "opened"
 msgstr "otevřeno"
 
 #, c-format
 msgid "openwsman: %s"
 msgstr "openwsman: %s"
+
+#, fuzzy, c-format
+msgid "operation '%s' not supported"
+msgstr "Operace nepodporována"
 
 msgid "operation aborted"
 msgstr "operace přerušena"
@@ -30260,6 +32244,10 @@ msgstr "operace zakázána: %s"
 msgid "operation type %d not supported"
 msgstr "operace typu %d nepodporována"
 
+#, fuzzy
+msgid "optdata"
+msgstr "Metadata:"
+
 #, c-format
 msgid "option %s requires a positive integer argument"
 msgstr "volba %s vyžaduje argument v podobě celého kladného čísla"
@@ -30279,6 +32267,10 @@ msgstr "Volba „-%c“/„--%s“ vyžaduje argument"
 #, c-format
 msgid "option --%s already seen"
 msgstr "volba --%s už viděna"
+
+#, fuzzy
+msgid "optional CPU features are not supported"
+msgstr "operace typu %d nepodporována"
 
 msgid "optional file of source xml to query for pools"
 msgstr "volitelný soubor zdrojového xml pro dotázání ohledně fondů"
@@ -30334,6 +32326,9 @@ msgstr "výstup na standardní chybový"
 msgid "overflow in converting %ld MiB/s to bytes\n"
 msgstr "přetečení v převodu %ld MiB/s na bajty\n"
 
+msgid "override the destination host name used for TLS verification"
+msgstr ""
+
 msgid "overwrite any existing data"
 msgstr "přepsat všechna existující data"
 
@@ -30343,6 +32338,10 @@ msgstr "vlastník %lld nedrží zámek prostředku"
 
 msgid "p2p migration is not supported by the source host"
 msgstr "p2p přestěhovávání není podporované zdrojovým hostitelem"
+
+#, fuzzy
+msgid "packed driver option is only supported for virtio devices"
+msgstr "volba ats ovladač je podporovaná pouze pro virtio zařízení"
 
 #, c-format
 msgid "packet %d bytes received from server too large, want %d"
@@ -30409,6 +32408,10 @@ msgstr "parametr „%s“ se vyskytuje vícekrát"
 msgid "parameter=value"
 msgstr "parametr=hodnota"
 
+#, fuzzy, c-format
+msgid "parent %s for moment %s not found"
+msgstr "Fond úložiště „%s“ pro svazek „%s“ nenalezen."
+
 #, c-format
 msgid "parent %s would create cycle to %s"
 msgstr "nadřazený %s by vytvořil smyčku pro %s"
@@ -30421,6 +32424,10 @@ msgstr "nadřazené „%s“ není fc_host pro wwnn/wwpn"
 msgid "parent '%s' is not properly formatted"
 msgstr "nadřazené „%s“ není správně formátováno"
 
+#, fuzzy, c-format
+msgid "parent '%s' specified for vHBA does not exist"
+msgstr "managed='no' cíle, ale zadané zařízení neexistuje"
+
 msgid "parser error"
 msgstr "chyba vyhodnocovače"
 
@@ -30432,6 +32439,10 @@ msgstr "předat popisovače souborů N,M,... hostovi"
 
 msgid "passphrase is too long for the buffer"
 msgstr "heslová fráze je pro vyrovnávací paměť příliš dlouhá"
+
+#, fuzzy
+msgid "passthrough mode requires a character device type attribute"
+msgstr "uzlu pravidlo vyžaduje atribut action (akce)"
 
 #, c-format
 msgid "path '%s' doesn't reference a file"
@@ -30624,6 +32635,9 @@ msgstr "připnout veškerou paměť před zahájením RDMA stěhování za chodu
 msgid "platform unsupported"
 msgstr "platforma nepodporována"
 
+msgid "ploop"
+msgstr ""
+
 msgid "pmsuspended"
 msgstr "uspáno správou napájení"
 
@@ -30714,6 +32728,10 @@ msgstr "port-profile setlink překročen časový limit"
 
 msgid "possible loop in QMP schema"
 msgstr "možná smyčka v QMP schématu"
+
+#, fuzzy
+msgid "post-copy"
+msgstr "post-copy se nezdařilo"
 
 msgid "post-copy can only be started while outgoing migration is in progress"
 msgstr "post-copy je možné spustit pouze když odchozí stěhování probíhá"
@@ -30831,6 +32849,9 @@ msgstr "vypsat nápovědu k této funkci"
 msgid "print lease info for a given network"
 msgstr "vypsat informace o zápůjčkách dané sítě"
 
+msgid "print statistics for any kind of job (even failed ones)"
+msgstr ""
+
 msgid "print the admin server URI"
 msgstr "vypsat URI adresu správního serveru"
 
@@ -30840,11 +32861,18 @@ msgstr "zobrazí název složky, ve které se právě nacházíte"
 msgid "print the domain's hostname"
 msgstr "vypsat název stroje domény"
 
+#, fuzzy
+msgid "print the hypervisor canonical URI"
+msgstr "vypsat název stroje, na kterém se hypervizor nachází"
+
 msgid "print the hypervisor hostname"
 msgstr "vypsat název stroje, na kterém se hypervizor nachází"
 
 msgid "print the hypervisor sysinfo"
 msgstr "vypsat systémové informace (sysinfo) o hypervizoru"
+
+msgid "print the raw data returned by libvirt"
+msgstr ""
 
 msgid "prints by percentage during 1 second."
 msgstr "vypíše procenty během jedné sekundy."
@@ -30895,6 +32923,10 @@ msgstr "poskytnout XML použitelné pro migrace"
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "sběrnice ps2 nepodporuje vstupní zařízení %s"
+
+#, c-format
+msgid "pull mode requires qcow2 driver, not '%s'"
+msgstr ""
 
 #, c-format
 msgid "qemu agent didn't provide 'ip-address' field for interface '%s'"
@@ -30970,6 +33002,10 @@ msgstr "ovladač stavu qemu není aktivní"
 msgid "qemu unexpectedly closed the monitor"
 msgstr "qemu neočekávaně ukončilo monitor"
 
+#, fuzzy
+msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
+msgstr "odpověď query-machines má nesprávně formulovaná data 'cpu-max'"
+
 #, c-format
 msgid "qom-get invalid object property type %d"
 msgstr "qom-get neplatný typ vlastnosti objektu %d"
@@ -30995,6 +33031,10 @@ msgstr "v návratových datech dotazu -rx-filtr chybí prvek pole"
 
 msgid "query information about the guest (via agent)"
 msgstr "dotázat se na informace o hostovi (prostřednictvím agenta)"
+
+#, fuzzy
+msgid "query is supported only with HTTP(S) protocols"
+msgstr "panika je podporována pouze s typem adresy ISA"
 
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr ""
@@ -31065,6 +33105,10 @@ msgstr "odpověď na query-machines má nesprávně formulovaná data 'alias'"
 msgid "query-machines reply has malformed 'cpu-max' data"
 msgstr "odpověď query-machines má nesprávně formulovaná data 'cpu-max'"
 
+#, fuzzy
+msgid "query-machines reply has malformed 'default-cpu-type' data"
+msgstr "odpověď na query-machines má chybně formátovaná data 'is-default'"
+
 msgid "query-machines reply has malformed 'is-default' data"
 msgstr "odpověď na query-machines má chybně formátovaná data 'is-default'"
 
@@ -31125,6 +33169,9 @@ msgstr ""
 "atribut queues (fronty) v prvku ovladače disku je podporován pouze pro "
 "virtio-blk"
 
+msgid "quiesce guest's file systems"
+msgstr ""
+
 msgid "quit this interactive terminal"
 msgstr "ukončit tento interaktivní terminál"
 
@@ -31175,6 +33222,17 @@ msgstr ""
 msgid "read only access prevents %s"
 msgstr "přístup pouze pro čtení brání %s"
 
+#, fuzzy
+msgid "read secret from file"
+msgstr "odpojit zařízení z XML souboru"
+
+msgid "read the secret from file without converting from base64"
+msgstr ""
+
+#, fuzzy
+msgid "read the secret from the terminal"
+msgstr "Nepodařilo se odpojit od hypervizoru"
+
 msgid "read throughput limit, as scaled integer (default bytes)"
 msgstr ""
 "limit propustnosti čtení, jako škálované celé číslo (bez udání jednotek se "
@@ -31182,6 +33240,13 @@ msgstr ""
 
 msgid "read-only connection"
 msgstr "spojení pouze pro čtení"
+
+msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgstr ""
+
+#, fuzzy
+msgid "readahead setting is not supported with this QEMU binary"
+msgstr "nastavení ats není touto binárkou QEMU podporováno"
 
 msgid "readonly ide disks are not supported"
 msgstr "ide disky pouze pro čtení nejsou podporovány"
@@ -31247,6 +33312,10 @@ msgstr "znovu načíst fond"
 
 msgid "refresh ploop failed: unable to delete DiskDescriptor.xml"
 msgstr "znovunačtení ploop se nezdařilo: nedaří se smazat DiskDescriptor.xml"
+
+#, fuzzy, c-format
+msgid "refusing to generate file name for disk '%s'"
+msgstr "Chybí název svazku úložiště pro „%s“"
 
 msgid "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
 msgstr "remoteDomainBlockStatsFlags: vrácený počet statistik překračuje limit"
@@ -31316,6 +33385,10 @@ msgstr "přejmenovat doménu"
 msgid "rename to new name during migration (if supported)"
 msgstr "při přesouvání přejmenovat na nový název (pokud je podporováno)"
 
+#, c-format
+msgid "rename(\"%s\", \"%s\")"
+msgstr ""
+
 msgid "reply data was missing 'name'"
 msgstr "v datech odpovědi chyběl „název“"
 
@@ -31339,6 +33412,10 @@ msgstr "hlásit statistiky výplně v paměti domény"
 
 msgid "report domain block device statistics"
 msgstr "hlásit statistiky blokového zařízení domény"
+
+#, fuzzy
+msgid "report domain memory usage"
+msgstr "hlásit stav domény"
 
 msgid "report domain network interface information"
 msgstr "hlásit informace o síťovém rozhraní domény"
@@ -31541,6 +33618,10 @@ msgstr "znovu využít jakékoli existující externí soubory"
 msgid "reuse existing destination"
 msgstr "znovu využít existující cíl"
 
+#, fuzzy
+msgid "reuse files provided by caller"
+msgstr "zápis do souboru se zápůjčkami se nezdařil"
+
 msgid "reused mirror destination format must be specified"
 msgstr "je třeba zadat formát znovuvyužitého cíle zrcadlení"
 
@@ -31645,6 +33726,10 @@ msgstr "ukládání domény „%s“ na „%s“: nepodařilo se otevřít"
 msgid "saving domain '%s' to '%s': write failed"
 msgstr "ukládání domény „%s“ na „%s“: nepodařilo se zapsat"
 
+#, fuzzy
+msgid "sbbc configuration is not supported by this QEMU binary"
+msgstr "Nastavování HTM není touto binárkou QEMU podporováno"
+
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %s"
 msgstr "schéma a stroj jsou povinné vz URI stěhování: %s"
@@ -31702,6 +33787,12 @@ msgstr "tajemství je soukromé"
 msgid "secret state driver is not active"
 msgstr "stavový ovladač tajemství není aktivní"
 
+#, fuzzy, c-format
+msgid "secret with uuid %s is of type '%s' not expected '%s' type"
+msgstr ""
+"nastavování šíře přenosového pásma na rozhraní typu „%s“ zatím není "
+"implementováno"
+
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "DOI řetězec zabezpečení překračuje maximum %d bajtů"
@@ -31712,6 +33803,10 @@ msgstr "doi zabezpečení překračuje maximum: %zu"
 
 msgid "security image label already defined for VM"
 msgstr "štítek zabezpečení obrazu už je pro virt. stroj definován"
+
+#, fuzzy
+msgid "security imagelabel is missing"
+msgstr "chybí štítek zabezpečení"
 
 msgid "security label already defined for VM"
 msgstr "štítek zabezpečení už je pro virt. stroj definován"
@@ -31877,10 +33972,20 @@ msgstr ""
 "nastavování šíře přenosového pásma na rozhraní typu „%s“ zatím není "
 "implementováno"
 
+msgid ""
+"setting of timer catchup policies is only supported with tickpolicy='catchup'"
+msgstr ""
+
 msgid "setting source evdev path only supported for passthrough input devices"
 msgstr ""
 "nastavení zdrojového umístění evdev je podporováno pouze pro passthrough "
 "vstupní zařízení"
+
+#, fuzzy, c-format
+msgid ""
+"setting the hotplug property on a '%s' device is not supported by this QEMU "
+"binary"
+msgstr "Zařízení „%s“ není touto binárkou QEMU podporováno"
 
 msgid "setting the panic device address is not supported for model 'hyperv'"
 msgstr "pro model 'hyperv' není podporováno nastavování adresy zařízení paniky"
@@ -32087,6 +34192,11 @@ msgstr "úloha pořízení zachyceného stavu"
 msgid "snapshot name"
 msgstr "název zachyceného stavu"
 
+msgid ""
+"snapshot without memory state, removal of existing managed saved state "
+"strongly recommended to avoid corruption"
+msgstr ""
+
 msgid "snapshotName is null"
 msgstr "Název zachyceného stavu není vyplněn"
 
@@ -32255,6 +34365,13 @@ msgstr "rozdělené APIC vstupu/výstupu není tímto sestavením QEMU podporov�
 msgid "splitting StorageUrl failed %s"
 msgstr "rozdělení StorageUrl se nezdařilo %s"
 
+msgid "ssl verification is supported only with HTTPS/FTPS protocol"
+msgstr ""
+
+#, fuzzy
+msgid "ssl verification setting is not supported by this QEMU binary"
+msgstr "nastavení ats není touto binárkou QEMU podporováno"
+
 msgid "start a (previously defined) inactive domain"
 msgstr "spustit (dříve definovanou) neaktivní doménu"
 
@@ -32414,6 +34531,14 @@ msgid "storage pool protocol ver unsupported for pool type '%s'"
 msgstr ""
 "pro fond typu „%s“ není podporována verze (ver) protokolu fondu úložiště"
 
+#, fuzzy
+msgid "storage slice is not supported by this QEMU binary"
+msgstr "nvram zařízení není touto QEMU binárkou podporováno"
+
+#, fuzzy, c-format
+msgid "storage source pool '%s' volume '%s' is not translated"
+msgstr "fond úložiště „%s“ obsahující svazek „%s“ není aktivní"
+
 msgid "storage state driver is not active"
 msgstr "ovladač stavu úložiště není aktivní"
 
@@ -32433,6 +34558,10 @@ msgstr "svazek úložiště %s už existuje"
 #, c-format
 msgid "storage volume name '%s' already in use."
 msgstr "název svazku úložiště „%s“ už je používán."
+
+#, c-format
+msgid "store '%s' for backup of '%s' exists"
+msgstr ""
 
 msgid "stream aborted by another thread"
 msgstr "proud přerušen jiným vláknem"
@@ -32512,6 +34641,10 @@ msgid ""
 msgstr ""
 "přepnutí na post-copy vyžaduje, aby migrace byla spouštěna s příznakem "
 "VIR_MIGRATE_POSTCOPY"
+
+#, fuzzy
+msgid "swtpm failed to start"
+msgstr "hosta se nepodařilo spustit: %s"
 
 #, c-format
 msgid "syntax: %s DEVICE [-g]|[-p]\n"
@@ -32625,6 +34758,13 @@ msgstr ""
 
 msgid "tcp"
 msgstr "tcp"
+
+msgid "teaming persistent attribute must be set if teaming type is 'transient'"
+msgstr ""
+
+#, c-format
+msgid "teaming persistent attribute not allowed if teaming type is '%s'"
+msgstr ""
 
 #, c-format
 msgid "template '%s' does not exist"
@@ -32745,6 +34885,10 @@ msgstr "stroj nemá žádný zachycený stav"
 msgid "the new password"
 msgstr "nové heslo"
 
+#, fuzzy
+msgid "the packed setting is not supported with this QEMU binary"
+msgstr "nastavení ats není touto binárkou QEMU podporováno"
+
 msgid "the password is already encrypted"
 msgstr "heslo už je šifrované"
 
@@ -32769,6 +34913,10 @@ msgstr "doba (v milisekundách) po kterou budou klávesy stisknuté"
 
 msgid "the username"
 msgstr "uživatelské jméno"
+
+#, fuzzy, c-format
+msgid "the virtiofs export directory '%s' does not exist"
+msgstr "chardev_tls_x509_cert_dir složka „%s“ neexistuje"
 
 #, c-format
 msgid "the wwnn/wwpn for '%s' are assigned to an HBA"
@@ -32917,6 +35065,10 @@ msgstr "toto qemu nepodporuje objekt memory-backend-memfd"
 msgid "this qemu doesn't support the memory-backend-ram object"
 msgstr "toto qemu nepodporuje objekt memory-backend-ram"
 
+#, fuzzy
+msgid "this qemu doesn't support the rng-builtin backend"
+msgstr "toto qemu nepodporuje podpůrnou vrstvu mg-egd"
+
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "toto qemu nepodporuje podpůrnou vrstvu mg-egd"
 
@@ -32947,14 +35099,25 @@ msgstr "čas který nastavit"
 msgid "timed out waiting to open tray of '%s'"
 msgstr "překročen časový limit při čekání na vysunutí média „%s“"
 
+msgid "timeout is supported only with HTTP(S)/FTP(s) protocols"
+msgstr ""
+
 msgid "timeout must be positive"
 msgstr "je třeba, aby časový limit bylo kladné číslo"
 
 msgid "timeout seconds"
 msgstr "sekund časového limitu"
 
+#, fuzzy
+msgid "timeout seconds."
+msgstr "sekund časového limitu"
+
 msgid "timeout seconds. must be positive."
 msgstr "je třeba, aby počet sekund časového limitu bylo kladné číslo."
+
+#, fuzzy
+msgid "timeout setting is not supported with this QEMU binary"
+msgstr "nastavení iommu není touto binárkou QEMU podporováno"
 
 msgid "timeout, async and block options are exclusive"
 msgstr "volby timeout, async a block není možné použít současně"
@@ -32965,6 +35128,14 @@ msgstr "časovač %s nepodporuje nastavení frekvence časovače"
 
 #, c-format
 msgid "timer %s doesn't support setting of timer mode"
+msgstr "časovač %s nepodporuje nastavení režimu časovače"
+
+#, fuzzy, c-format
+msgid "timer %s doesn't support setting of timer tickpolicy"
+msgstr "časovač %s nepodporuje nastavení režimu časovače"
+
+#, fuzzy, c-format
+msgid "timer %s doesn't support setting of timer track"
 msgstr "časovač %s nepodporuje nastavení režimu časovače"
 
 msgid "title"
@@ -33012,9 +35183,6 @@ msgstr "příliš mnoho kódu kláves"
 msgid "too many memory stats requested: %d > %d"
 msgstr "vyžádáno příliš mnoho statistik paměti: %d > %d"
 
-msgid "too many object classes defined"
-msgstr "definováno příliš mnoho tříd objektu"
-
 #, c-format
 msgid "too many parameters '%d' for limit '%d'"
 msgstr "příliš mnoho parametrů „%d“ pro limit „%d“"
@@ -33026,6 +35194,14 @@ msgstr "příliš mnoho parametrů „%u“ pro limit „%d“"
 #, c-format
 msgid "too many parameters '%u' for nparams '%d'"
 msgstr "příliš mnoho parametrů „%u“ pro nparams „%d“"
+
+#, fuzzy, c-format
+msgid ""
+"too many remote clients: %d > %d,in parameter 'clients' for "
+"'virServerListClients'"
+msgstr ""
+"příliš mnoho tajemství na protějšku: %d > %d, v parametru 'secrets' pro "
+"'virConnectListAllSecrets'"
 
 #, c-format
 msgid ""
@@ -33119,6 +35295,14 @@ msgstr ""
 msgid ""
 "too many remote secrets: %d > %d,in parameter 'secrets' for "
 "'virConnectListAllSecrets'"
+msgstr ""
+"příliš mnoho tajemství na protějšku: %d > %d, v parametru 'secrets' pro "
+"'virConnectListAllSecrets'"
+
+#, fuzzy, c-format
+msgid ""
+"too many remote servers: %d > %d,in parameter 'servers' for "
+"'virConnectListServers'"
 msgstr ""
 "příliš mnoho tajemství na protějšku: %d > %d, v parametru 'secrets' pro "
 "'virConnectListAllSecrets'"
@@ -33331,6 +35515,14 @@ msgstr "transportní metody unix, ssh a ext nejsou pod Windows podporovány"
 #, c-format
 msgid "transport protocol '%s' is not yet supported"
 msgstr "transportní protokol „%s“ zatím ještě není podporován"
+
+#, fuzzy
+msgid "transport rdma is not supported for <server>"
+msgstr "TLS transport není podporován pro protokol disku „%s“"
+
+#, fuzzy
+msgid "tray is only valid for cdrom and floppy"
+msgstr "vyjímatelné je platné pouze pro usb disky"
 
 msgid "tray status 'open' is invalid for block type disk"
 msgstr "stav držáku média (tray) 'open' není platný pro disk blokového typu"
@@ -33604,6 +35796,10 @@ msgstr "nedaří se získat rozlišení obrazovky"
 msgid "unable to get selinux context range"
 msgstr "nedaří se získat rozsah selinux kontextu"
 
+#, fuzzy, c-format
+msgid "unable to get size of '%s'"
+msgstr "Nedaří se získat identifikátor zařízení „%s“"
+
 #, c-format
 msgid "unable to get tty attributes: %s"
 msgstr "nedaří se získat tty atributy: %s"
@@ -33611,6 +35807,10 @@ msgstr "nedaří se získat tty atributy: %s"
 #, c-format
 msgid "unable to get uid and gid for PID %d via procfs"
 msgstr "nedaří se získat prostřednictvím procfs uid a gid pro PID %d"
+
+#, fuzzy, c-format
+msgid "unable to handle agent type: %s"
+msgstr "nedaří se ošetřit typ monitoru: %s"
 
 msgid "unable to handle disk requests in snapshot"
 msgstr "nedaří se obsloužit požadavky na disk v zachyceném stavu"
@@ -33640,6 +35840,10 @@ msgstr "nedaří se učinit terminál holým: konzole není tty"
 #, c-format
 msgid "unable to open %s"
 msgstr "nedaří se otevřít %s"
+
+#, fuzzy, c-format
+msgid "unable to open '%s'"
+msgstr "Nedaří se otevřít „%s“"
 
 #, c-format
 msgid "unable to open host cpu perf event for %s"
@@ -33675,6 +35879,14 @@ msgstr "nedaří se vyhodnotit blkio zařízení „%s“ „%s“"
 msgid "unable to parse diskspec: %s"
 msgstr "nedaří se zpracovat diskspec (specifikace disku): %s"
 
+#, fuzzy, c-format
+msgid "unable to parse json capabilities '%s'"
+msgstr "nedaří se zpracovat schopnosti"
+
+#, fuzzy, c-format
+msgid "unable to parse json file '%s'"
+msgstr "Nedaří se zpracovat číslo portu „%s“"
+
 #, c-format
 msgid "unable to parse mac address '%s'"
 msgstr "nedaří se zpracovat MAC adresu „%s“"
@@ -33707,6 +35919,10 @@ msgstr "nedaří se provést filtrování zachycených stavů"
 
 msgid "unable to poll on child"
 msgstr "nedaří se dotazovat na potomkovi"
+
+#, fuzzy
+msgid "unable to query cgroup BPF progs"
+msgstr "Nedaří se dotázat na velikost sektoru %s"
 
 #, c-format
 msgid "unable to read '%s'"
@@ -33744,6 +35960,10 @@ msgstr "nedaří se přeložit symbolický odkaz „%s“"
 
 msgid "unable to restore position in file"
 msgstr "nedaří se obnovit pozici v souboru"
+
+#, fuzzy, c-format
+msgid "unable to save metadata for checkpoint %s"
+msgstr "nedaří se uložit metadata pro zachycený stav %s"
 
 #, c-format
 msgid "unable to save metadata for snapshot %s"
@@ -33805,6 +36025,10 @@ msgstr "nedaří se získat kontext zabezpečení soketu „%s“"
 #, c-format
 msgid "unable to set tty attributes: %s"
 msgstr "Nepodařilo se spustit doménu %s"
+
+#, fuzzy, c-format
+msgid "unable to set user and group to '%ld:%ld' on '%s'"
+msgstr "nedaří se nastavit kontext zabezpečení „%s“ na „%s“"
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "na macvtap se nedaří nastavit příznaky vnet nebo multiqeue"
@@ -33962,6 +36186,10 @@ msgstr "neočekávaný typ adresy pro usb disk"
 #, c-format
 msgid "unexpected async job %d type expected %d"
 msgstr "neočekávaný typ asynchronní úlohy %d, očekáváno %d"
+
+#, fuzzy, c-format
+msgid "unexpected binding %s already exists"
+msgstr "neočekávaná situace – doména %s už existuje"
 
 #, c-format
 msgid "unexpected boot device type %d"
@@ -34129,6 +36357,10 @@ msgstr "neočekávaná hodnota názvu modelu %d"
 msgid "unexpected model type %d"
 msgstr "neočekávaný typ modelu %d"
 
+#, fuzzy, c-format
+msgid "unexpected multidevs %d"
+msgstr "neočekávaný typ modelu %d"
+
 #, c-format
 msgid "unexpected name value %d"
 msgstr "neočekávaný název hodnoty %d"
@@ -34270,6 +36502,10 @@ msgstr "neočekávaná tickpolicy časovače %d"
 #, c-format
 msgid "unexpected timer track %d"
 msgstr "neočekávaná stopa časovače %d"
+
+#, fuzzy
+msgid "unexpected transport in <domainbackup>"
+msgstr "neočekávaný kořenový prvek, očekáváno <domain>"
 
 #, c-format
 msgid "unexpected type %d for field %s"
@@ -34435,6 +36671,10 @@ msgstr "neznámý typ adresy „%s“ v síti %s"
 msgid "unknown arch %s in QEMU capabilities cache"
 msgstr "neznámá architektura %s v mezipaměti schopností QEMU"
 
+#, fuzzy, c-format
+msgid "unknown architecture '%s'"
+msgstr "neznámá architektura: %s"
+
 #, c-format
 msgid "unknown architecture: %s"
 msgstr "neznámá architektura: %s"
@@ -34454,6 +36694,10 @@ msgstr "neznámý typ ověřování %s"
 #, c-format
 msgid "unknown backend type '%s' for egd"
 msgstr "neznámý typ podpůrné vrstvy „%s“ pro egd"
+
+#, fuzzy, c-format
+msgid "unknown backup mode '%s'"
+msgstr "neznámý model paniky „%s“"
 
 #, c-format
 msgid "unknown block IO status: %s"
@@ -34534,6 +36778,10 @@ msgstr "neznámý výchozí režim spice kanálu %s"
 msgid "unknown device type '%s'"
 msgstr "neznámý typ zařízení „%s“"
 
+#, fuzzy, c-format
+msgid "unknown device type in '%s'"
+msgstr "neznámý typ zařízení „%s“"
+
 #, c-format
 msgid "unknown devnode type '%s'"
 msgstr "neznámý devnode typ „%s“"
@@ -34541,6 +36789,14 @@ msgstr "neznámý devnode typ „%s“"
 #, c-format
 msgid "unknown dhcp peerdns value %s"
 msgstr "neznámá hodnota dhcp peerdns %s"
+
+#, fuzzy, c-format
+msgid "unknown disk backup driver '%s'"
+msgstr "neznámý ovladač zachyceného stavu disku „%s“"
+
+#, fuzzy, c-format
+msgid "unknown disk backup type '%s'"
+msgstr "neznámý typ sběrnice disku „%s“"
 
 #, c-format
 msgid "unknown disk bus type '%s'"
@@ -34614,6 +36870,10 @@ msgstr "neznámý typ zachyceného stavu disku „%s“"
 msgid "unknown disk source 'tls' setting '%s'"
 msgstr "neznámé nastavení zdroje disku 'tls' „%s“"
 
+#, fuzzy, c-format
+msgid "unknown disk tray status '%s'"
+msgstr "neznámý stav vyjímatelnosti disku „%s“"
+
 #, c-format
 msgid "unknown disk type '%s'"
 msgstr "neznámý typ disku '%s'"
@@ -34661,6 +36921,10 @@ msgstr "neznámý typ události %s"
 msgid "unknown fc_host managed setting '%s'"
 msgstr "neznámé nastavení fc_host spravované „%s“"
 
+#, fuzzy, c-format
+msgid "unknown feature %s"
+msgstr "neznámá funkce procesoru %s"
+
 #, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "neznámý typ souborového systému „%s“"
@@ -34672,6 +36936,10 @@ msgstr "neznámá zásada zápisu souborového systému „%s“"
 #, c-format
 msgid "unknown firmware value %s"
 msgstr "neznámá hodnota firmware %s"
+
+#, fuzzy, c-format
+msgid "unknown flock value '%s'"
+msgstr "neznámá hodnota fullscreen (celá obrazovka) „%s“"
 
 #, c-format
 msgid "unknown forwarding type '%s'"
@@ -34818,6 +37086,10 @@ msgstr "neznámý typ rozhraní %s"
 msgid "unknown interface type '%s'"
 msgstr "neznámý typ rozhraní „%s“"
 
+#, fuzzy, c-format
+msgid "unknown interface type: '%s'"
+msgstr "neznámý typ rozhraní „%s“"
+
 #, c-format
 msgid "unknown intremap value: %s"
 msgstr "neznámá hodnota intremap: %s"
@@ -34891,6 +37163,10 @@ msgstr "neznámý model „%s“"
 msgid "unknown mouse mode value '%s'"
 msgstr "neznámá hodnota režimu myši „%s“"
 
+#, fuzzy, c-format
+msgid "unknown multidevs '%s'"
+msgstr "neznámý model „%s“"
+
 #, c-format
 msgid "unknown network device feature '%s'"
 msgstr "neznámá funkce síťového zařízení „%s“"
@@ -34933,6 +37209,14 @@ msgstr "neznámé číslo formátu fondu %d"
 msgid "unknown pool format type %s"
 msgstr "neznámý typ formátu fondu %s"
 
+#, fuzzy, c-format
+msgid "unknown port isolated value '%s'"
+msgstr "neznámá hodnota rom enabled „%s“"
+
+#, fuzzy, c-format
+msgid "unknown posix lock value '%s'"
+msgstr "neznámá hodnota režimu myši „%s“"
+
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "neznámá procedura: %d"
@@ -34968,7 +37252,19 @@ msgstr "neznámá hodnota rom bar „%s“"
 msgid "unknown rom enabled value '%s'"
 msgstr "neznámá hodnota rom enabled „%s“"
 
+#, fuzzy, c-format
+msgid "unknown root element '%s' for filter binding"
+msgstr "neznámý kořenový prvek pro nw filtr"
+
+#, fuzzy
+msgid "unknown root element for network port"
+msgstr "neznámý kořenový prvek pro nw filtr"
+
 msgid "unknown root element for nw filter"
+msgstr "neznámý kořenový prvek pro nw filtr"
+
+#, fuzzy
+msgid "unknown root element for nwfilter binding"
 msgstr "neznámý kořenový prvek pro nw filtr"
 
 msgid "unknown rule action attribute value"
@@ -35105,6 +37401,10 @@ msgstr "pro znakové zařízení zadán neznámý model cíle „%s“"
 msgid "unknown target type '%s' specified for character device"
 msgstr "pro znakové zařízení zadán neznámý typ cíle „%s“"
 
+#, fuzzy, c-format
+msgid "unknown teaming type '%s'"
+msgstr "neznámý typ přesměrovávání „%s“"
+
 #, c-format
 msgid "unknown timer mode '%s'"
 msgstr "neznámý režim časovače „%s“"
@@ -35116,6 +37416,14 @@ msgstr "neznámý název časovače „%s“"
 #, c-format
 msgid "unknown timer present value '%s'"
 msgstr "neznámá hodnota přítomnosti časovače „%s“"
+
+#, fuzzy, c-format
+msgid "unknown timer tickpolicy '%s'"
+msgstr "neznámá zásada chyb „%s“ disku"
+
+#, fuzzy, c-format
+msgid "unknown timer track '%s'"
+msgstr "neznámý název časovače „%s“"
 
 #, c-format
 msgid "unknown trustGuestRxFilters value '%s'"
@@ -35145,6 +37453,10 @@ msgstr "neznámý typ „%s“ pro zdroj usb"
 msgid "unknown value '%s' for <hostdev> attribute 'display'"
 msgstr "neznámá hodnota „%s“ pro <hostdev> atribut 'display'"
 
+#, fuzzy, c-format
+msgid "unknown value '%s' for <hostdev> attribute 'ramfb'"
+msgstr "neznámá hodnota „%s“ pro <hostdev> atribut 'display'"
+
 #, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "neznámá hodnota „%s“ v atributu 'usable' (využitelné)"
@@ -35156,6 +37468,10 @@ msgstr "neznámá hodnota pro atribut eoi: „%s“"
 #, c-format
 msgid "unknown vgaconf value '%s'"
 msgstr "neznámá hodnota vgaconf „%s“"
+
+#, fuzzy, c-format
+msgid "unknown vhost-user type: '%s'"
+msgstr "neznámý typ svazku „%s“"
 
 #, c-format
 msgid "unknown video driver '%s'"
@@ -35218,8 +37534,16 @@ msgstr "neznámá akce resetátoru (watchdog) „%s“"
 msgid "unknown watchdog model '%s'"
 msgstr "neznámý model resetátoru (watchdog) „%s“"
 
+#, fuzzy, c-format
+msgid "unknown xattr value '%s'"
+msgstr "neznámá hodnota rom bar „%s“"
+
 msgid "unlimited"
 msgstr "neomezené"
+
+#, c-format
+msgid "unlink(\"%s\")"
+msgstr ""
 
 #, c-format
 msgid "unmanaged target dev is not supported on interfaces of type '%s'"
@@ -35297,6 +37621,10 @@ msgstr "nepodporovaný model PCI řadiče: podporován pouze PCI root"
 
 msgid "unsupported SSH key type"
 msgstr "nepodporovaný typ SSH klíče"
+
+#, fuzzy, c-format
+msgid "unsupported Xen feature: %s"
+msgstr "nepodporovaná funkce %s"
 
 #, c-format
 msgid "unsupported address family for range %s - %s, must be ipv4 or ipv6"
@@ -35382,6 +37710,10 @@ msgstr "nepodporovaný typ zařízení %s 0%o"
 msgid "unsupported device type in network %s interface pool"
 msgstr "nepodporovaný typ zařízení ve fondu síťového rozhraní %s"
 
+#, fuzzy, c-format
+msgid "unsupported disk backup type '%s'"
+msgstr "Nepodporovaný typ sběrnice disku %s"
+
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "nepodporovaná sběrnice disků „%s“ s nastavením zařízení"
@@ -35444,6 +37776,10 @@ msgstr "nepodporované příznaky (0x%x)"
 msgid "unsupported flags: (0x%x)"
 msgstr "nepodporované příznaky: (0x%x)"
 
+#, fuzzy, c-format
+msgid "unsupported flash format '%s'"
+msgstr "nepodporovaný formát %s"
+
 #, c-format
 msgid "unsupported format %s"
 msgstr "nepodporovaný formát %s"
@@ -35454,6 +37790,10 @@ msgstr "nepodporované hledání gluster"
 #, c-format
 msgid "unsupported graphics type '%s'"
 msgstr "nepodporovaný typ grafiky „%s“"
+
+#, fuzzy, c-format
+msgid "unsupported guest information types '0x%x'"
+msgstr "nepodporovaný typ ověření se %d"
 
 #, c-format
 msgid "unsupported input bus %s"
@@ -35474,6 +37814,10 @@ msgstr "nepodporovaný typ zařízení %s"
 msgid "unsupported launch security type '%s'"
 msgstr "nepodporovaný typ zabezpečení spouštění „%s“"
 
+#, fuzzy, c-format
+msgid "unsupported mode '%s' for Xen passthrough feature"
+msgstr "nepodporovaný prvek „%s“ 'origstates'"
+
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "nepodporovaný typ monitoru „%s“"
@@ -35493,6 +37837,10 @@ msgstr "nepodporovaný identifikátor události zařízení uzlu %d"
 #, c-format
 msgid "unsupported numatune mode: '%d'"
 msgstr "nepodporovaný režim numatune: „%d“"
+
+#, fuzzy, c-format
+msgid "unsupported nvram template format '%s'"
+msgstr "Nepodporovaný formát svazku „%s“"
 
 msgid "unsupported option"
 msgstr "nepodporovaná volba"
@@ -35537,6 +37885,10 @@ msgstr "nepodporované schéma %s v migrační URI %s"
 #, c-format
 msgid "unsupported secret event ID %d"
 msgstr "nepodporovaný identifikátor události tajemství %d"
+
+#, fuzzy, c-format
+msgid "unsupported source type '%s'"
+msgstr "nepodporovaný typ monitoru „%s“"
 
 msgid "unsupported state value"
 msgstr "nepodporovaná stavová hodnota"
@@ -35588,6 +37940,10 @@ msgstr "aktualizace zařízení typu „%s“ není podporována"
 
 msgid "upload file contents to a volume"
 msgstr "nahrát obsah souboru do svazku"
+
+#, fuzzy, c-format
+msgid "uptime file has unexpected format '%s'"
+msgstr "xsd:dateTime hodnota „%s“ má neočekávaný formát"
 
 msgid "usage:"
 msgstr "použití:"
@@ -35643,6 +37999,10 @@ msgstr ""
 msgid "use multifunction pci under specified address"
 msgstr "použít multifunkční pci pod zadanou adresou"
 
+#, fuzzy
+msgid "use of <server> requires pull mode backup"
+msgstr "použití příznaků vyžaduje úlohu kopírování"
+
 msgid "use of flags requires a copy job"
 msgstr "použití příznaků vyžaduje úlohu kopírování"
 
@@ -35680,6 +38040,18 @@ msgstr "použití unixového soketu a vzdáleného serveru „%s“ není podpor
 msgid "uuidstr in %s must be a valid UUID"
 msgstr ""
 "je třeba, aby uuidstr v %s byl platný nikde se neopakující identifikátor"
+
+#, fuzzy, c-format
+msgid "v1 controller '%s' is not enabled for group"
+msgstr "virtio řadič sériového portu %u nemá port %u"
+
+#, fuzzy, c-format
+msgid "v1 controller '%s' is not mounted"
+msgstr "cgroup řadič procesoru není připojen"
+
+#, fuzzy, c-format
+msgid "v2 controller '%s' is not available"
+msgstr "řadič virtio-serial %u není k dispozici"
 
 #, c-format
 msgid "vCPU '%u' is not offlinable"
@@ -35728,6 +38100,10 @@ msgid "validate the XML against the schema"
 msgstr "ověřit XML vůči schématu"
 
 #, c-format
+msgid "value '%llu' is too big for coalesce parameter, maximum is '%lu'"
+msgstr ""
+
+#, c-format
 msgid "value '%s' cannot be set if '%s' is not set"
 msgstr "hodnotu „%s“ není možné nastavit pokud není nastaveno „%s“"
 
@@ -35764,6 +38140,10 @@ msgstr "hodnota „%s“ je mimo rozsah %lld až %lld"
 #, c-format
 msgid "value of '%s' is too large"
 msgstr "hodnota „%s“ je příliš velká"
+
+#, fuzzy, c-format
+msgid "value of cookie '%s' contains invalid characters"
+msgstr "Název řetězce obsahuje neplatné znaky"
 
 msgid "value of managerid out of range"
 msgstr "hodnota managerid je mimo rozsah"
@@ -35823,6 +38203,10 @@ msgstr ""
 msgid "vcpu '%zd' is already in requested state"
 msgstr "virt. procesor „%zd“ se už nachází v požadovaném stavu"
 
+#, fuzzy, c-format
+msgid "vcpu '%zu' is both offline and not hotpluggable"
+msgstr "virt. procesor „%u“ není možné vypnout"
+
 #, c-format
 msgid "vcpu '%zu' is missing hotplug data"
 msgstr "virt. procesor „%zu“ postrádá data o připojování za chodu"
@@ -35861,6 +38245,11 @@ msgstr "počet virt. procesorů"
 #, c-format
 msgid "vcpu order '%u' exceeds vcpu count"
 msgstr "pořadí virt. procesoru „%u“ překračuje počet virt. procesorů"
+
+msgid ""
+"vcpu unplug request timed out. Unplug result must be manually inspected in "
+"the domain"
+msgstr ""
 
 msgid "vcpu0 can't be hotpluggable"
 msgstr "virt. procesor 0 (nula) nemůže být připojitelný za chodu"
@@ -35935,6 +38324,14 @@ msgstr "soubor vhost-scsi zařízení „%s“ se nedaří nalézt"
 #, c-format
 msgid "vhost-user type '%s' not supported"
 msgstr "vhost-user typu „%s“ není podporováno"
+
+#, fuzzy
+msgid "vhost-user-gpu failed to start"
+msgstr "hosta se nepodařilo spustit: %s"
+
+#, fuzzy
+msgid "video resolution values must be greater than 0"
+msgstr "je třeba, aby %s v %s bylo vyšší než nula"
 
 #, c-format
 msgid "video type %s is not supported by libxl"
@@ -36096,6 +38493,20 @@ msgstr "virtio sériový port %u na řadiči %u už je zabrán"
 msgid "virtio tx_queue_size option is not supported with this QEMU binary"
 msgstr "volba virtio tx_queue_size není s touto binárkou QEMU podporována"
 
+#, fuzzy
+msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
+msgstr "nastavení iommu není touto binárkou QEMU podporováno"
+
+#, c-format
+msgid ""
+"virtio-net teaming persistent interface must be <model type='virtio'/>, not "
+"'%s'"
+msgstr ""
+
+#, c-format
+msgid "virtio-net teaming transient interface must be type='hostdev', not '%s'"
+msgstr ""
+
 msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
 msgstr "volba virtio-net-pci 'tx' není tímto sestavením QEMU"
 
@@ -36115,6 +38526,49 @@ msgstr ""
 #, c-format
 msgid "virtio-serial controller %u not available"
 msgstr "řadič virtio-serial %u není k dispozici"
+
+#, fuzzy
+msgid "virtiofs does not support format"
+msgstr "Daná verze Bhyve nepodporuje typ zobrazení framebuffer"
+
+#, fuzzy
+msgid "virtiofs does not support model"
+msgstr "ovladač nepodporuje net model „%s“"
+
+#, fuzzy
+msgid "virtiofs does not support multidevs"
+msgstr "Jádro nepodporuje soukromé devpts"
+
+#, fuzzy
+msgid "virtiofs does not support wrpolicy"
+msgstr "fond nepodporuje mazání fondu"
+
+#, fuzzy
+msgid "virtiofs does not yet support read-only mode"
+msgstr "ovladač nepodporuje net model „%s“"
+
+#, fuzzy
+msgid "virtiofs is not supported with this QEMU binary"
+msgstr "TLS přestěhovávání není touto binárkou QEMU podporováno"
+
+#, fuzzy
+msgid "virtiofs is not yet supported in session mode"
+msgstr "%s není názvem podporované šifry"
+
+#, fuzzy
+msgid "virtiofs only supports passthrough accessmode"
+msgstr "podporuje pouze režim přístupu (accessmode) průchodu"
+
+msgid "virtiofs requires one or more NUMA nodes"
+msgstr ""
+
+#, fuzzy
+msgid "virtiofs requires shared memory"
+msgstr "zrcadlo vyžaduje prvek zdroj"
+
+#, fuzzy
+msgid "virtiofsd died unexpectedly"
+msgstr "pr helper %s neočekávaně skončilo"
 
 msgid "virtual FAT storage can't be accessed in read-write mode"
 msgstr ""
@@ -36198,6 +38652,12 @@ msgid ""
 msgstr ""
 "nastavení vnuma obsahuje %zu virt. procesorů, což je více než %zu maximum "
 "virt. procesorů"
+
+#, c-format
+msgid ""
+"vnuma pnode %d configured '%s' (count %zu) doesn't fit the number of "
+"specified vnodes %zu"
+msgstr ""
 
 #, c-format
 msgid "vnuma sibling %zu missing vcpus set"
@@ -36465,6 +38925,12 @@ msgstr "write: %s: nezdařil se zápis do dočasného souboru: %s"
 msgid "writing %llu bytes failed on RBD image %s at offset %llu"
 msgstr "zápis %llu bajtů se nezdařil na RBD obrazu %s na posunu %llu"
 
+#, fuzzy, c-format
+msgid "wrong format of 'cookie' field in backing store definition '%s'"
+msgstr ""
+"V JSON definici svazku, na kterém je založené, chybí kolonka "
+"'filename' (název souboru)"
+
 msgid "wrong nlmsg len"
 msgstr "nesprávná délka nlmsg"
 
@@ -36505,3 +38971,12 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "Attempt to close netcf state driver with open connections"
+#~ msgstr "Pokus o zavření ovladače stavu netcf při otevřených spojeních"
+
+#~ msgid "malformed keyword arguments in '%s'"
+#~ msgstr "nesprávně formulované argumenty klíčového slova v „%s”"
+
+#~ msgid "too many object classes defined"
+#~ msgstr "definováno příliš mnoho tříd objektu"
