@@ -15714,9 +15714,12 @@ virSysinfoParseXML(xmlNodePtr node,
                   unsigned char *domUUID,
                   bool uuid_generated)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
     virSysinfoDefPtr def;
     xmlNodePtr tmpnode;
     g_autofree char *type = NULL;
+
+    ctxt->node = node;
 
     if (!virXMLNodeNameEqual(node, "sysinfo")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -22179,8 +22182,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     if ((node = virXPathNode("./sysinfo[1]", ctxt)) != NULL) {
-        VIR_XPATH_NODE_AUTORESTORE(ctxt);
-        ctxt->node = node;
         def->sysinfo = virSysinfoParseXML(node, ctxt,
                                           def->uuid, uuid_generated);
 
