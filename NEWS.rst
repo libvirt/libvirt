@@ -13,6 +13,14 @@ v6.5.0 (unreleased)
 
 * **New features**
 
+  * Allow firmware blobs configuration
+
+    QEMU offers a way to tweak how firmware configures itself
+    and/or provide new configuration blobs. New ``<sysinfo/>``
+    type is introduced that will hold these new blobs.
+    It's possible to either specify new value as a string or
+    provide a filename which contents then serve as the value.
+
 * **Improvements**
 
 * **Bug fixes**
