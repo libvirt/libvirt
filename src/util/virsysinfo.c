@@ -43,6 +43,7 @@ VIR_LOG_INIT("util.sysinfo");
 VIR_ENUM_IMPL(virSysinfo,
               VIR_SYSINFO_LAST,
               "smbios",
+              "fwcfg"
 );
 
 static const char *sysinfoSysinfo = "/proc/sysinfo";
@@ -1513,6 +1514,40 @@ virSysinfoOEMStringsFormat(virBufferPtr buf, virSysinfoOEMStringsDefPtr def)
     virBufferAddLit(buf, "</oemStrings>\n");
 }
 
+
+static void
+virSysinfoFormatSMBIOS(virBufferPtr buf,
+                       virSysinfoDefPtr def)
+{
+    virSysinfoBIOSFormat(buf, def->bios);
+    virSysinfoSystemFormat(buf, def->system);
+    virSysinfoBaseBoardFormat(buf, def->baseBoard, def->nbaseBoard);
+    virSysinfoChassisFormat(buf, def->chassis);
+    virSysinfoProcessorFormat(buf, def);
+    virSysinfoMemoryFormat(buf, def);
+    virSysinfoOEMStringsFormat(buf, def->oemStrings);
+}
+
+
+static void
+virSysinfoFormatFWCfg(virBufferPtr buf,
+                      virSysinfoDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nfw_cfgs; i++) {
+        const virSysinfoFWCfgDef *f = &def->fw_cfgs[i];
+
+        virBufferAsprintf(buf, "<entry name='%s'", f->name);
+
+        if (f->file)
+            virBufferEscapeString(buf, " file='%s'/>\n", f->file);
+        else
+            virBufferEscapeString(buf, ">%s</entry>\n", f->value);
+    }
+}
+
+
 /**
  * virSysinfoFormat:
  * @buf: buffer to append output to (may use auto-indentation)
@@ -1535,13 +1570,16 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
         return -1;
     }
 
-    virSysinfoBIOSFormat(&childrenBuf, def->bios);
-    virSysinfoSystemFormat(&childrenBuf, def->system);
-    virSysinfoBaseBoardFormat(&childrenBuf, def->baseBoard, def->nbaseBoard);
-    virSysinfoChassisFormat(&childrenBuf, def->chassis);
-    virSysinfoProcessorFormat(&childrenBuf, def);
-    virSysinfoMemoryFormat(&childrenBuf, def);
-    virSysinfoOEMStringsFormat(&childrenBuf, def->oemStrings);
+    switch (def->type) {
+    case VIR_SYSINFO_SMBIOS:
+        virSysinfoFormatSMBIOS(&childrenBuf, def);
+        break;
+    case VIR_SYSINFO_FWCFG:
+        virSysinfoFormatFWCfg(&childrenBuf, def);
+        break;
+    case VIR_SYSINFO_LAST:
+        break;
+    }
 
     virBufferAsprintf(&attrBuf, " type='%s'", type);
 

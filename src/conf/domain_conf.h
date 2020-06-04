@@ -2624,13 +2624,15 @@ struct _virDomainDef {
     size_t npanics;
     virDomainPanicDefPtr *panics;
 
+    size_t nsysinfo;
+    virSysinfoDefPtr *sysinfo;
+
     /* Only 1 */
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
     virDomainNVRAMDefPtr nvram;
     virDomainTPMDefPtr tpm;
     virCPUDefPtr cpu;
-    virSysinfoDefPtr sysinfo;
     virDomainRedirFilterDefPtr redirfilter;
     virDomainIOMMUDefPtr iommu;
     virDomainVsockDefPtr vsock;

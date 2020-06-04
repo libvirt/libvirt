@@ -27,6 +27,7 @@
 
 typedef enum {
     VIR_SYSINFO_SMBIOS,
+    VIR_SYSINFO_FWCFG,
 
     VIR_SYSINFO_LAST
 } virSysinfoType;
@@ -112,11 +113,20 @@ struct _virSysinfoOEMStringsDef {
     char **values;
 };
 
+typedef struct _virSysinfoFWCfgDef virSysinfoFWCfgDef;
+typedef virSysinfoFWCfgDef *virSysinfoFWCfgDefPtr;
+struct _virSysinfoFWCfgDef {
+    char *name;
+    char *value;
+    char *file;
+};
+
 typedef struct _virSysinfoDef virSysinfoDef;
 typedef virSysinfoDef *virSysinfoDefPtr;
 struct _virSysinfoDef {
-    int type;
+    virSysinfoType type;
 
+    /* The following members are valid for type == VIR_SYSINFO_SMBIOS */
     virSysinfoBIOSDefPtr bios;
     virSysinfoSystemDefPtr system;
 
@@ -132,6 +142,10 @@ struct _virSysinfoDef {
     virSysinfoMemoryDefPtr memory;
 
     virSysinfoOEMStringsDefPtr oemStrings;
+
+    /* The following members are valid for type == VIR_SYSINFO_FWCFG */
+    size_t nfw_cfgs;
+    virSysinfoFWCfgDefPtr fw_cfgs;
 };
 
 virSysinfoDefPtr virSysinfoRead(void);

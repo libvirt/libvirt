@@ -3551,7 +3551,9 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainNumaFree(def->numa);
 
-    virSysinfoDefFree(def->sysinfo);
+    for (i = 0; i < def->nsysinfo; i++)
+        virSysinfoDefFree(def->sysinfo[i]);
+    VIR_FREE(def->sysinfo);
 
     virDomainRedirFilterDefFree(def->redirfilter);
 
@@ -15708,16 +15710,115 @@ virSysinfoChassisParseXML(xmlNodePtr node,
 }
 
 
+static int
+virSysinfoParseSMBIOSDef(virSysinfoDefPtr def,
+                         xmlXPathContextPtr ctxt,
+                         unsigned char *domUUID,
+                         bool uuid_generated)
+{
+    xmlNodePtr tmpnode;
+
+    /* Extract BIOS related metadata */
+    if ((tmpnode = virXPathNode("./bios[1]", ctxt)) != NULL) {
+        if (virSysinfoBIOSParseXML(tmpnode, ctxt, &def->bios) < 0)
+            return -1;
+    }
+
+    /* Extract system related metadata */
+    if ((tmpnode = virXPathNode("./system[1]", ctxt)) != NULL) {
+        if (virSysinfoSystemParseXML(tmpnode, ctxt, &def->system,
+                                     domUUID, uuid_generated) < 0)
+            return -1;
+    }
+
+    /* Extract system base board metadata */
+    if (virSysinfoBaseBoardParseXML(ctxt, &def->baseBoard, &def->nbaseBoard) < 0)
+        return -1;
+
+    /* Extract chassis related metadata */
+    if ((tmpnode = virXPathNode("./chassis[1]", ctxt)) != NULL) {
+        if (virSysinfoChassisParseXML(tmpnode, ctxt, &def->chassis) < 0)
+            return -1;
+    }
+
+    /* Extract system related metadata */
+    if ((tmpnode = virXPathNode("./oemStrings[1]", ctxt)) != NULL) {
+        if (virSysinfoOEMStringsParseXML(tmpnode, ctxt, &def->oemStrings) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virSysinfoParseFWCfgDef(virSysinfoDefPtr def,
+                        xmlNodePtr node,
+                        xmlXPathContextPtr ctxt)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    g_autofree xmlNodePtr *nodes = NULL;
+    int n;
+    size_t i;
+
+    ctxt->node = node;
+
+    if ((n = virXPathNodeSet("./entry", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+    def->fw_cfgs = g_new0(virSysinfoFWCfgDef, n);
+
+    for (i = 0; i < n; i++) {
+        g_autofree char *name = NULL;
+        g_autofree char *value = NULL;
+        g_autofree char *file = NULL;
+        g_autofree char *sanitizedFile = NULL;
+
+        if (!(name = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Firmware entry is missing 'name' attribute"));
+            return -1;
+        }
+
+        value = virXMLNodeContentString(nodes[i]);
+        file = virXMLPropString(nodes[i], "file");
+
+        if (virStringIsEmpty(value))
+            VIR_FREE(value);
+
+        if (!value && !file) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Firmware entry must have either value or "
+                             "'file' attribute"));
+            return -1;
+        }
+
+        if (file)
+            sanitizedFile = virFileSanitizePath(file);
+
+        def->fw_cfgs[i].name = g_steal_pointer(&name);
+        def->fw_cfgs[i].value = g_steal_pointer(&value);
+        def->fw_cfgs[i].file = g_steal_pointer(&sanitizedFile);
+        def->nfw_cfgs++;
+    }
+
+    return 0;
+}
+
+
 static virSysinfoDefPtr
 virSysinfoParseXML(xmlNodePtr node,
-                  xmlXPathContextPtr ctxt,
-                  unsigned char *domUUID,
-                  bool uuid_generated)
+                   xmlXPathContextPtr ctxt,
+                   unsigned char *domUUID,
+                   bool uuid_generated)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     virSysinfoDefPtr def;
-    xmlNodePtr tmpnode;
-    g_autofree char *type = NULL;
+    g_autofree char *typeStr = NULL;
+    int type;
 
     ctxt->node = node;
 
@@ -15730,45 +15831,32 @@ virSysinfoParseXML(xmlNodePtr node,
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    type = virXMLPropString(node, "type");
-    if (type == NULL) {
+    typeStr = virXMLPropString(node, "type");
+    if (typeStr == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("sysinfo must contain a type attribute"));
         goto error;
     }
-    if ((def->type = virSysinfoTypeFromString(type)) < 0) {
+    if ((type = virSysinfoTypeFromString(typeStr)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown sysinfo type '%s'"), type);
+                       _("unknown sysinfo type '%s'"), typeStr);
         goto error;
     }
+    def->type = type;
 
-    /* Extract BIOS related metadata */
-    if ((tmpnode = virXPathNode("./bios[1]", ctxt)) != NULL) {
-        if (virSysinfoBIOSParseXML(tmpnode, ctxt, &def->bios) < 0)
+    switch (def->type) {
+    case VIR_SYSINFO_SMBIOS:
+        if (virSysinfoParseSMBIOSDef(def, ctxt, domUUID, uuid_generated) < 0)
             goto error;
-    }
+        break;
 
-    /* Extract system related metadata */
-    if ((tmpnode = virXPathNode("./system[1]", ctxt)) != NULL) {
-        if (virSysinfoSystemParseXML(tmpnode, ctxt, &def->system,
-                                     domUUID, uuid_generated) < 0)
+    case VIR_SYSINFO_FWCFG:
+        if (virSysinfoParseFWCfgDef(def, node, ctxt) < 0)
             goto error;
-    }
+        break;
 
-    /* Extract system base board metadata */
-    if (virSysinfoBaseBoardParseXML(ctxt, &def->baseBoard, &def->nbaseBoard) < 0)
-        goto error;
-
-    /* Extract chassis related metadata */
-    if ((tmpnode = virXPathNode("./chassis[1]", ctxt)) != NULL) {
-        if (virSysinfoChassisParseXML(tmpnode, ctxt, &def->chassis) < 0)
-            goto error;
-    }
-
-    /* Extract system related metadata */
-    if ((tmpnode = virXPathNode("./oemStrings[1]", ctxt)) != NULL) {
-        if (virSysinfoOEMStringsParseXML(tmpnode, ctxt, &def->oemStrings) < 0)
-            goto error;
+    case VIR_SYSINFO_LAST:
+        break;
     }
 
     return def;
@@ -22173,6 +22261,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         def->idmap.ngidmap = n;
     }
+    VIR_FREE(nodes);
 
     if ((def->idmap.uidmap && !def->idmap.gidmap) ||
         (!def->idmap.uidmap && def->idmap.gidmap)) {
@@ -22181,13 +22270,21 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
     }
 
-    if ((node = virXPathNode("./sysinfo[1]", ctxt)) != NULL) {
-        def->sysinfo = virSysinfoParseXML(node, ctxt,
-                                          def->uuid, uuid_generated);
+    if ((n = virXPathNodeSet("./sysinfo", ctxt, &nodes)) < 0)
+        goto error;
 
-        if (def->sysinfo == NULL)
+    def->sysinfo = g_new0(virSysinfoDefPtr, n);
+
+    for (i = 0; i < n; i++) {
+        virSysinfoDefPtr sysinfo = virSysinfoParseXML(nodes[i], ctxt,
+                                                      def->uuid, uuid_generated);
+
+        if (!sysinfo)
             goto error;
+
+        def->sysinfo[def->nsysinfo++] = sysinfo;
     }
+    VIR_FREE(nodes);
 
     if ((tmp = virXPathString("string(./os/smbios/@mode)", ctxt))) {
         int mode;
@@ -24072,8 +24169,16 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
     if (!virCPUDefIsEqual(src->cpu, dst->cpu, true))
         goto error;
 
-    if (!virSysinfoIsEqual(src->sysinfo, dst->sysinfo))
-        goto error;
+    if (src->nsysinfo != dst->nsysinfo) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target domain count of sysinfo does not match source"));
+            goto error;
+    }
+
+    for (i = 0; i < src->nsysinfo; i++) {
+        if (!virSysinfoIsEqual(src->sysinfo[i], dst->sysinfo[i]))
+            goto error;
+    }
 
     if (src->ndisks != dst->ndisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -29507,8 +29612,8 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     if (def->resource)
         virDomainResourceDefFormat(buf, def->resource);
 
-    if (def->sysinfo)
-        ignore_value(virSysinfoFormat(buf, def->sysinfo));
+    for (i = 0; i < def->nsysinfo; i++)
+        virSysinfoFormat(buf, def->sysinfo[i]);
 
     if (def->os.bootloader) {
         virBufferEscapeString(buf, "<bootloader>%s</bootloader>\n",

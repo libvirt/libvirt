@@ -479,6 +479,10 @@
     &lt;entry&gt;otherappname:more arbitrary data&lt;/entry&gt;
   &lt;/oemStrings&gt;
 &lt;/sysinfo&gt;
+&lt;sysinfo type='fwcfg'&gt;
+  &lt;entry name='opt/com.example/name'&gt;example value&lt;/entry&gt;
+  &lt;entry name='opt/com.coreos/config' file='/tmp/provision.ign'/&gt;
+&lt;/sysinfo&gt;
 ...</pre>
 
     <p>
@@ -592,6 +596,34 @@
             the application name as a prefix in the string. (<span class="since">Since 4.1.0</span>)
           </dd>
         </dl>
+      </dd>
+
+      <dt><code>fwcfg</code></dt>
+      <dd>
+       Some hypervisors provide unified way to tweak how firmware configures
+       itself, or may contain tables to be installed for the guest OS, for
+       instance boot order, ACPI, SMBIOS, etc. It even allows users to define
+       their own config blobs. In case of QEMU, these then appear under domain's
+       sysfs, under <code>/sys/firmware/qemu_fw_cfg</code>. Note, that these
+       values apply regardless the &lt;smbios/&gt; mode under &lt;os/&gt;.
+       <span class="since">Since 6.5.0</span>
+
+<pre>
+  &lt;smbios type='fwcfg'&gt;
+    &lt;entry name='opt/com.example/name'&gt;example value&lt;/entry&gt;
+    &lt;entry name='opt/com.coreos/config' file='/tmp/provision.ign'/&gt;
+  &lt;/smbios&gt;
+</pre>
+
+       The <code>smbios</code> element can have multiple <code>entry</code>
+       child elements. Each element then has mandatory <code>name</code>
+       attribute, which defines the name of the blob and must begin with
+       <code>"opt/"</code> and to avoid clashing with other names is advised to
+       be in form <code>"opt/$RFQDN/$name"</code> where <code>$RFQDN</code> is a
+       reverse fully qualified domain name you control.
+       Then, the element can either contain the value (to set the blob value
+       directly), or <code>file</code> attribute (to set the blob value from
+       the file).
       </dd>
     </dl>
 

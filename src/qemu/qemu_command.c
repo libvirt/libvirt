@@ -5736,13 +5736,19 @@ qemuBuildSmbiosCommandLine(virCommandPtr cmd,
         /* Host and guest uuid must differ, by definition of UUID. */
         skip_uuid = true;
     } else if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_SYSINFO) {
-        if (def->sysinfo == NULL) {
+        for (i = 0; i < def->nsysinfo; i++) {
+            if (def->sysinfo[i]->type == VIR_SYSINFO_SMBIOS) {
+                source = def->sysinfo[i];
+                break;
+            }
+        }
+
+        if (!source) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Domain '%s' sysinfo are not available"),
                            def->name);
             return -1;
         }
-        source = def->sysinfo;
         /* domain_conf guaranteed that system_uuid matches guest uuid. */
     }
     if (source != NULL) {

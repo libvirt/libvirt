@@ -46,9 +46,9 @@
         <optional>
           <ref name="cpu"/>
         </optional>
-        <optional>
+        <zeroOrMore>
           <ref name="sysinfo"/>
-        </optional>
+        </zeroOrMore>
         <ref name="os"/>
         <ref name="clock"/>
         <ref name="resources"/>
@@ -5511,68 +5511,95 @@
       -->
   <define name="sysinfo">
     <element name="sysinfo">
-      <attribute name="type">
-        <value>smbios</value>
-      </attribute>
-      <interleave>
-        <optional>
-          <element name="bios">
-            <oneOrMore>
-              <element name="entry">
-                <attribute name="name">
-                  <ref name="sysinfo-bios-name"/>
-                </attribute>
-                <ref name="sysinfo-value"/>
+      <choice>
+        <group>
+          <attribute name="type">
+            <value>smbios</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <element name="bios">
+                <oneOrMore>
+                  <element name="entry">
+                    <attribute name="name">
+                      <ref name="sysinfo-bios-name"/>
+                    </attribute>
+                    <ref name="sysinfo-value"/>
+                  </element>
+                </oneOrMore>
               </element>
-            </oneOrMore>
-          </element>
-        </optional>
-        <optional>
-          <element name="system">
-            <oneOrMore>
-              <element name="entry">
-                <attribute name="name">
-                  <ref name="sysinfo-system-name"/>
-                </attribute>
-                <ref name="sysinfo-value"/>
+            </optional>
+            <optional>
+              <element name="system">
+                <oneOrMore>
+                  <element name="entry">
+                    <attribute name="name">
+                      <ref name="sysinfo-system-name"/>
+                    </attribute>
+                    <ref name="sysinfo-value"/>
+                  </element>
+                </oneOrMore>
               </element>
-            </oneOrMore>
-          </element>
-        </optional>
-        <zeroOrMore>
-          <element name="baseBoard">
-            <oneOrMore>
-              <element name="entry">
-                <attribute name="name">
-                  <ref name="sysinfo-baseBoard-name"/>
-                </attribute>
-                <ref name="sysinfo-value"/>
+            </optional>
+            <zeroOrMore>
+              <element name="baseBoard">
+                <oneOrMore>
+                  <element name="entry">
+                    <attribute name="name">
+                      <ref name="sysinfo-baseBoard-name"/>
+                    </attribute>
+                    <ref name="sysinfo-value"/>
+                  </element>
+                </oneOrMore>
               </element>
-            </oneOrMore>
-          </element>
-        </zeroOrMore>
-        <optional>
-          <element name="chassis">
-            <oneOrMore>
-              <element name="entry">
-                <attribute name="name">
-                  <ref name="sysinfo-chassis-name"/>
-                </attribute>
-                <ref name="sysinfo-value"/>
+            </zeroOrMore>
+            <optional>
+              <element name="chassis">
+                <oneOrMore>
+                  <element name="entry">
+                    <attribute name="name">
+                      <ref name="sysinfo-chassis-name"/>
+                    </attribute>
+                    <ref name="sysinfo-value"/>
+                  </element>
+                </oneOrMore>
               </element>
-            </oneOrMore>
-          </element>
-        </optional>
-        <optional>
-          <element name="oemStrings">
-            <oneOrMore>
-              <element name="entry">
-                <ref name="sysinfo-value"/>
+            </optional>
+            <optional>
+              <element name="oemStrings">
+                <oneOrMore>
+                  <element name="entry">
+                    <ref name="sysinfo-value"/>
+                  </element>
+                </oneOrMore>
               </element>
-            </oneOrMore>
-          </element>
-        </optional>
-      </interleave>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>fwcfg</value>
+          </attribute>
+          <zeroOrMore>
+            <element name="entry">
+              <attribute name="name">
+                <data type="string"/>
+              </attribute>
+              <choice>
+                <group>
+                  <attribute name="file">
+                    <data type="string"/>
+                  </attribute>
+                  <empty/>
+                </group>
+                <group>
+                  <ref name="sysinfo-value"/>
+                </group>
+              </choice>
+            </element>
+          </zeroOrMore>
+        </group>
+      </choice>
     </element>
   </define>
 
