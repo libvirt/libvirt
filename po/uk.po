@@ -8,25 +8,26 @@
 # Maxim Dziumanenko <dziumanenko@gmail.com>, 2007
 # Rax Garfield <admin@dvizho.ks.ua>, 2012
 # Sergey <dmytserg@gmail.com>, 2011
-# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
+# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
 # Данило Коростіль <ted.korostiled@gmail.com>, 2011
 # Daniel Berrange <dan-zanata@berrange.com>, 2018
+
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-05-18 17:34+0100\n"
-"PO-Revision-Date: 2019-10-18 05:36+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Ukrainian (http://www.transifex.com/projects/p/libvirt/"
-"language/uk/)\n"
+"PO-Revision-Date: 2020-06-04 17:14+0000\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
+"Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
+"libvirt/libvirt/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.0.4\n"
 
 msgid ""
 "\n"
@@ -1094,7 +1095,7 @@ msgstr "Доступ заборонено «%s»"
 
 #, c-format
 msgid "'%s' does not exist"
-msgstr "«%s» не існує."
+msgstr "«%s» не існує"
 
 #, c-format
 msgid "'%s' file does not fit in memory"
@@ -1301,7 +1302,7 @@ msgstr "у відповіді guest-get-fsinfo пропущено «type»"
 
 #, c-format
 msgid "'unsupported perf event '%s'"
-msgstr "непідтримувана подія  perf «%s»"
+msgstr "непідтримувана подія perf «%s»"
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "у відповіді guest-get-users пропущено «user»"
@@ -1811,7 +1812,7 @@ msgid ""
 "definition in network '%s' "
 msgstr ""
 "Для визначення статичного вузла у мережі «%s» слід вказати принаймні один з "
-"таких атрибутів: name, mac або ip"
+"таких атрибутів: name, mac або ip "
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
@@ -1824,7 +1825,7 @@ msgid ""
 "mandatory "
 msgstr ""
 "Обов’язково слід вказати принаймні один із параметрів --min-workers, --max-"
-"workers, --priority-workers"
+"workers, --priority-workers "
 
 msgid "At least one tty is required"
 msgstr "Потрібно вказати принаймні один tty"
@@ -1833,7 +1834,7 @@ msgid "Attach device from an XML <file>."
 msgstr "Приєднати пристрій з файла XML <файл>."
 
 msgid "Attach new disk device."
-msgstr "Приєднати дисковий пристрій"
+msgstr "Приєднати дисковий пристрій."
 
 msgid "Attach new network interface."
 msgstr "Приєднати новий мережний пристрій."
@@ -2383,7 +2384,7 @@ msgid "Can't change domain configuration in managed save state"
 msgstr "Не можна змінювати налаштування у стані керованого збереження"
 
 msgid "Can't change domain state."
-msgstr "Не вдалося змінити стан домену"
+msgstr "Не вдалося змінити стан домену."
 
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
@@ -3286,7 +3287,7 @@ msgid "Cannot set memory higher than max memory"
 msgstr "Не можна визначати об’єм пам’яті, що перевищує максимальний"
 
 msgid "Cannot set min_workers data in JSON document"
-msgstr "Не можна встановлювати дані  min_workers у документі JSON"
+msgstr "Не можна встановлювати дані min_workers у документі JSON"
 
 msgid "Cannot set next_client_id data in JSON document"
 msgstr "Не вдалося встановити дані next_client_id у документі JSON"
@@ -5085,10 +5086,10 @@ msgstr ""
 "Від'єднати пристрій, вказаний за заданою альтернативною назвою з домену"
 
 msgid "Detach disk device."
-msgstr "Від'єднати дисковий пристрій"
+msgstr "Від'єднати дисковий пристрій."
 
 msgid "Detach network interface."
-msgstr "Від'єднати мережний пристрій"
+msgstr "Від'єднати мережний пристрій."
 
 msgid "Detach node device from its device driver before assigning to a domain."
 msgstr ""
@@ -5311,7 +5312,7 @@ msgid "Display the system and also the daemon version information."
 msgstr "Показати інформацію про версію системи та фонової служби."
 
 msgid "Display the system version information."
-msgstr "Показати інформацію про версію системи"
+msgstr "Показати інформацію про версію системи."
 
 msgid "Display version information"
 msgstr "Показати інформацію щодо версії"
