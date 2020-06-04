@@ -3,14 +3,10 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Amitakhya Phukan <aphukan@fedoraproject.org>, 2007-2010
-# Amitakhya Phukan <aphukan@redhat.com>, 2007-2008,2010
+# Amitakhya Phukan <aphukan@fedoraproject.org>, 2007, 2008, 2009, 2010
+# Amitakhya Phukan <aphukan@redhat.com>, 2007, 2008, 2010
 # Daniel <veillard@redhat.com>, 2011
-# Daniel <veillard@redhat.com>, 2011
-# Nilamdyuti Goswami <ngoswami@redhat.com>, 2012
-# Nilamdyuti Goswami <ngoswami@redhat.com>, 2012
-# Nilamdyuti Goswami <ngoswami@redhat.com>, 2012-2014
-# Nilamdyuti Goswami <ngoswami@redhat.com>, 2014
+# Nilamdyuti Goswami <ngoswami@redhat.com>, 2012, 2013, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

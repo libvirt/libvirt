@@ -3,8 +3,8 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Abigail Brady <morwen@evilmagic.org>, Bastien Nocera <hadess@hadess.net>, 2007
-# Daniel <veillard@redhat.com>, 2011
+# Abigail Brady <morwen@evilmagic.org>, 2007
+# Bastien Nocera <hadess@hadess.net>, 2007
 # Daniel <veillard@redhat.com>, 2011
 # readmanr <robert_readman@hotmail.com>, 2013
 msgid ""

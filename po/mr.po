@@ -4,11 +4,8 @@
 #
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
-# Daniel <veillard@redhat.com>, 2011
 # Sandeep Shedmake <sandeep.shedmake@gmail.com>, 2009
-# sandeeps <sshedmak@redhat.com>, 2009-2010,2012
-# sandeeps <sshedmak@redhat.com>, 2013
-# sandeeps <sshedmak@redhat.com>, 2013-2014
+# sandeeps <sshedmak@redhat.com>, 2009, 2010, 2012, 2013, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

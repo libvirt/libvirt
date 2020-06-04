@@ -3,9 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Daniel  <veillard@redhat.com>, 2011.
-# Jiri Grönroos <jiri.gronroos@iki.fi>, 2017. #zanata
-# Toni Rantala <trantalafilo@gmail.com>, 2017. #zanata
+# Daniel  <veillard@redhat.com>, 2011
+# Jiri Grönroos <jiri.gronroos@iki.fi>, 2017
+# Toni Rantala <trantalafilo@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

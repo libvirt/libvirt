@@ -3,10 +3,10 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Daniel  <veillard@redhat.com>, 2011.
-# Keld Simonsen <keld@rap.dk>, 2007.
-# Keld Smonsen <keld@dkuug.dk>, 2006.
-# Magnus Larsson <fedoratrans@gmail.com>, 2006.
+# Daniel  <veillard@redhat.com>, 2011
+# Keld Simonsen <keld@rap.dk>, 2007
+# Keld Smonsen <keld@dkuug.dk>, 2006
+# Magnus Larsson <fedoratrans@gmail.com>, 2006
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

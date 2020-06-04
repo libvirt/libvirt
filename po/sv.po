@@ -7,8 +7,7 @@
 # denka <dennis@dennis.se>, 2014
 # Göran Uddeborg <goeran@uddeborg.se, 2011
 # Magnus Larsson <fedoratrans@gmail.com>, 2006, 2007, 2008
-# Göran Uddeborg <goeran@uddeborg.se>, 2015. #zanata
-# Göran Uddeborg <goeran@uddeborg.se>, 2017. #zanata
+# Göran Uddeborg <goeran@uddeborg.se>, 2015, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

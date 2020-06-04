@@ -6,10 +6,9 @@
 # Daniel <veillard@redhat.com>, 2011
 # dibalaj <dibalaj@dibalaj.cz>, 2013
 # Milan Kerslager <kerslage@linux.cz>, 2007
-# Zdenek <chmelarz@gmail.com>, 2016. #zanata
-# Pavel Borecki <pavel.borecki@gmail.com>, 2018. #zanata
-# Daniel Berrange <dan-zanata@berrange.com>, 2019. #zanata
-# Pavel Borecki <pavel.borecki@gmail.com>, 2019. #zanata
+# Zdenek <chmelarz@gmail.com>, 2016
+# Pavel Borecki <pavel.borecki@gmail.com>, 2018, 2019
+# Daniel Berrange <dan-zanata@berrange.com>, 2019
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

@@ -3,8 +3,8 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Daniel  <veillard@redhat.com>, 2011.
-# Marko Mijatovic <jomi86@gmail.com>, 2008.
+# Daniel  <veillard@redhat.com>, 2011
+# Marko Mijatovic <jomi86@gmail.com>, 2008
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

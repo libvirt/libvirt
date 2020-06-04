@@ -4,24 +4,19 @@
 #
 # Translators:
 # Adolfo Jayme Barrientos <fito@libreoffice.org>, 2013
-# Adolfo Jayme Barrientos <fito@libreoffice.org>, 2013
 # Alicia Perez <artema91@hotmail.com>, 2011
 # Daniel Cabrera <logan@fedoraproject.org>, 2011
-# Daniel <veillard@redhat.com>, 2011
 # Daniel <veillard@redhat.com>, 2011
 # Dennis Tobar <dennis.tobar@gmail.com>, 2011
 # beckerde <domingobecker@gmail.com>, 2010
 # Eduardo Villagrán M <gotencool@gmail.com>, 2013
-# Gladys Guerrero <gguerrer@redhat.com>, 2009,2012-2013
-# Gladys Guerrero <gguerrer@redhat.com>, 2009
-# Daniel Cabrera <logan@fedoraproject.org>, 2011
+# Gladys Guerrero <gguerrer@redhat.com>, 2009, 2012, 2013
 # Jose Linares <JOSE.LINARES.1993@gmail.com>, 2013
-# Jose Linares <JOSE.LINARES.1993@gmail.com>, 2013
-# Armando Rubio <arlrubio@gmail.com>, 2015. #zanata
-# Brian Curtich <bcurtich@gmail.com>, 2016. #zanata
-# Eduardo Villagrán  <evillagr@fedoraproject.org>, 2016. #zanata
-# William  Moreno Reyes <williamjmorenor@gmail.com>, 2016. #zanata
-# Javier Blanco <javi.deb@gmail.com>, 2018. #zanata
+# Armando Rubio <arlrubio@gmail.com>, 2015
+# Brian Curtich <bcurtich@gmail.com>, 2016
+# Eduardo Villagrán  <evillagr@fedoraproject.org>, 2016
+# William  Moreno Reyes <williamjmorenor@gmail.com>, 2016
+# Javier Blanco <javi.deb@gmail.com>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"

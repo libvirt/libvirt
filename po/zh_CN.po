@@ -5,17 +5,14 @@
 # Translators:
 # Christopher Meng <cickumqt@gmail.com>, 2013
 # Daniel <veillard@redhat.com>, 2011
-# Daniel <veillard@redhat.com>, 2011
-# Leah Liu <lliu@redhat.com>, 2007-2009
+# Leah Liu <lliu@redhat.com>, 2007, 2008, 2009, 2016
 # liutao <liutao_free@sohu.com>, 2006
 # pingman <pingman@fedoraproject.org>, 2009
-# Tony Fu <tfu@redhat.com>, 2006-2007
-# Wei Liu <LLIU@REDHAT.COM>, 2012-2013
-# Daniel Berrange <dan-zanata@berrange.com>, 2016. #zanata
-# Leah Liu <lliu@redhat.com>, 2016. #zanata
-# n0vad3v <jonasguo@fedoraproject.org>, 2016. #zanata
-# Daniel Berrange <dan-zanata@berrange.com>, 2018. #zanata
-# Di Wei <dwlinux@outlook.com>, 2019. #zanata
+# Tony Fu <tfu@redhat.com>, 2006, 2007
+# Wei Liu <LLIU@REDHAT.COM>, 2012, 2013
+# Daniel Berrange <dan-zanata@berrange.com>, 2016, 2018
+# n0vad3v <jonasguo@fedoraproject.org>, 2016
+# Di Wei <dwlinux@outlook.com>, 2019
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

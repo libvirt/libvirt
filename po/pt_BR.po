@@ -4,20 +4,17 @@
 #
 # Translators:
 # Alberto Silva <alberto.junior@gmail.com>, 2012
-# Alberto Silva <alberto.junior@gmail.com>, 2012
-# Daniel <veillard@redhat.com>, 2011
 # Daniel <veillard@redhat.com>, 2011
 # Fábio Olivé Leite <fabio.olive@gmail.com>, 2013
-# Glaucia Freitas <gcintra@redhat.com>, 2008
-# Glaucia Freitas <gcintra@redhat.com>, 2008,2013
+# Glaucia Freitas <gcintra@redhat.com>, 2008, 2013
 # Herli Joaquim de Menezes <herlimenezes@gmail.com>, 2008
-# Igor Pires Soares <igor@projetofedora.org>, 2006-2008
+# Igor Pires Soares <igor@projetofedora.org>, 2006, 2007, 2008
 # Marcelo Barbosa <firemanxbr@fedoraproject.org>, 2013
-# marioitalo <marioitalo@yahoo.com.br>, 2008-2009
+# marioitalo <marioitalo@yahoo.com.br>, 2008, 2009
 # Paulo Sergio Klaus <klauspaulo@gmail.com>, 2013
 # Rafael Ferreira <rafael.f.f1@gmail.com>, 2012
-# Frederico Henrique Gonçalves Lima <fred@fredericolima.com.br>, 2016. #zanata
-# Filipe Rosset <rosset.filipe@gmail.com>, 2017. #zanata
+# Frederico Henrique Gonçalves Lima <fred@fredericolima.com.br>, 2016
+# Filipe Rosset <rosset.filipe@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

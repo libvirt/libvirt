@@ -3,10 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Cheng-Chia Tseng <pswo10680@gmail.com>, 2012.
-# Chester Cheng <ccheng@redhat.com>, 2006, 2007.
-# Daniel  <veillard@redhat.com>, 2011.
-# Cheng-Chia Tseng <pswo10680@gmail.com>, 2018. #zanata
+# Cheng-Chia Tseng <pswo10680@gmail.com>, 2012, 2018
+# Chester Cheng <ccheng@redhat.com>, 2006, 2007
+# Daniel  <veillard@redhat.com>, 2011
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

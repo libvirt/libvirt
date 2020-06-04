@@ -3,9 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Arangel Angov <arangel@linux.net.mk>, 2007.
-# Bozidar Proevski <bobibobi@freemail.com.mk>, 2007.
-# Daniel  <veillard@redhat.com>, 2011.
+# Arangel Angov <arangel@linux.net.mk>, 2007
+# Bozidar Proevski <bobibobi@freemail.com.mk>, 2007
+# Daniel  <veillard@redhat.com>, 2011
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

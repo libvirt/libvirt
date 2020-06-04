@@ -3,9 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Daniel  <veillard@redhat.com>, 2011.
-# Espen Stefansen <espenas@gmail.com>, 2007.
-# Kjartan Maraas <kmaraas@gnome.org>, 2007.
+# Daniel  <veillard@redhat.com>, 2011
+# Espen Stefansen <espenas@gmail.com>, 2007
+# Kjartan Maraas <kmaraas@gnome.org>, 2007
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

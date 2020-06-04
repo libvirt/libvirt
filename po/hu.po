@@ -3,9 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Arpad Biro <biro_arpad@yahoo.com>, 2007.
-# Daniel  <veillard@redhat.com>, 2011.
-# Gabor Egry <gaba@freemail.hu>, 2007.
+# Arpad Biro <biro_arpad@yahoo.com>, 2007
+# Daniel  <veillard@redhat.com>, 2011
+# Gabor Egry <gaba@freemail.hu>, 2007
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

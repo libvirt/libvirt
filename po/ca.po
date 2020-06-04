@@ -6,9 +6,7 @@
 # Daniel <veillard@redhat.com>, 2011
 # jordimash <jmas@softcatala.org>, 2014
 # Xavier Conde Rueda <xavi.conde@gmail.com>, 2006
-# Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2015. #zanata
-# Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2016. #zanata
-# Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2018. #zanata
+# Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2015, 2016, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

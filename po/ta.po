@@ -4,13 +4,10 @@
 #
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
-# Daniel <veillard@redhat.com>, 2011
 # Felix <ifelix@redhat.com>, 2006
 # I felix <ifelix@redhat.com>, 2007
-# I. Felix <ifelix@redhat.com>, 2008-2010
-# shkumar <shkumar@redhat.com>, 2012-2013
-# shkumar <shkumar@redhat.com>, 2012
-# shkumar <shkumar@redhat.com>, 2012,2014
+# I. Felix <ifelix@redhat.com>, 2008, 2009, 2010
+# shkumar <shkumar@redhat.com>, 2012, 2013, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

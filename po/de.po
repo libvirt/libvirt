@@ -4,19 +4,15 @@
 #
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
-# Daniel <veillard@redhat.com>, 2011
 # Fabian Affolter <fab@fedoraproject.org>, 2008
-# hpeters <hpeters@redhat.com>, 2009
-# hpeters <hpeters@redhat.com>, 2009,2012
-# hpeters <hpeters@redhat.com>, 2012
+# hpeters <hpeters@redhat.com>, 2009, 2012
 # Michael Schönitzer <michael@schoenitzer.de>, 2007
-# Rainer Gromansperg <rgromans@redhat.com>, 2013
 # Rainer Gromansperg <rgromans@redhat.com>, 2013
 # Robert Scheck <redhat@linuxnetz.de>, 2007
 # sknirT omiT <moc.tahder@sknirtt>, 2010
 # Timo Trinks <ttrinks@redhat.com>, 2007
 # noxin <transifex.com@davidmainzer.com>, 2013
-# Florian H. <postfuerflo@gmail.com>, 2016. #zanata
+# Florian H. <postfuerflo@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

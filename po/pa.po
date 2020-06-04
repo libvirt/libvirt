@@ -4,13 +4,11 @@
 #
 # Translators:
 # Amandeep Singh Saini <asaini@redhat.com>, 2013
-# Amandeep Singh Saini <asaini@redhat.com>, 2013
 # A S Alam <aalam@users.sf.net>, 2007
 # A S Alam <apbrar@gmail.com>, 2006
 # A S Alam <apreet.alam@gmail.com>, 2011
 # Daniel <veillard@redhat.com>, 2011
-# Daniel <veillard@redhat.com>, 2011
-# Jaswinder Singh <jsingh@redhat.com>, 2007,2009-2010,2012
+# Jaswinder Singh <jsingh@redhat.com>, 2007, 2009, 2010, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"

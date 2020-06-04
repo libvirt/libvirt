@@ -4,12 +4,7 @@
 #
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
-# Daniel <veillard@redhat.com>, 2011
-# eukim <eukim@redhat.com>, 2013
-# eukim <eukim@redhat.com>, 2013
-# eukim <eukim@redhat.com>, 2013-2014
-# eukim <eukim@redhat.com>, 2006-2007,2009,2012
-# eukim <eukim@redhat.com>, 2013
+# eukim <eukim@redhat.com>, 2006, 2007, 2009, 2012, 2013, 2014
 # Seong-ho Cho <darkcircle.0426@gmail.com>, 2014
 msgid ""
 msgstr ""

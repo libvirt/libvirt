@@ -5,15 +5,11 @@
 # Translators:
 # Alexander Savchenko, 2014
 # Daniel <veillard@redhat.com>, 2011
-# Daniel <veillard@redhat.com>, 2011
 # Mikhail Zholobov <legal90@gmail.com>, 2013
 # Stanislav Hanzhin <hanzhin.stas@gmail.com>, 2013
 # Yulia <ypoyarko@redhat.com>, 2010
-# Yulia <yulia.poyarkova@redhat.com>, 2012-2014
-# Yulia <yulia.poyarkova@redhat.com>, 2012
-# Mikhail Zholobov <legal90@gmail.com>, 2013
-# yuliya <ypoyarko@redhat.com>, 2015. #zanata
-# yuliya <ypoyarko@redhat.com>, 2016. #zanata
+# Yulia <yulia.poyarkova@redhat.com>, 2012, 2013, 2014
+# yuliya <ypoyarko@redhat.com>, 2015, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
