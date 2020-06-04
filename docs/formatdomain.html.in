@@ -9377,6 +9377,15 @@ qemu-kvm -net nic,model=? /dev/null
               <span class="since">Since 3.5.0</span> (QEMU/KVM only)
             </p>
           </dd>
+          <dt><code>aw_bits</code></dt>
+          <dd>
+            <p>
+              The <code>aw_bits</code> attribute can be used to set
+              the address width to allow mapping larger iova addresses
+              in the guest.
+              <span class="since">Since 6.5.0</span> (QEMU/KVM only)
+            </p>
+          </dd>
         </dl>
       </dd>
     </dl>

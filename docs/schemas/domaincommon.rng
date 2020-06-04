@@ -4749,6 +4749,11 @@
               <ref name="virOnOff"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="aw_bits">
+              <ref name="uint8"/>
+            </attribute>
+          </optional>
         </element>
       </optional>
     </element>

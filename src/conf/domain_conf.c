@@ -16905,6 +16905,15 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
             }
             iommu->eim = val;
         }
+
+        VIR_FREE(tmp);
+        if ((tmp = virXMLPropString(driver, "aw_bits"))) {
+            if (virStrToLong_ui(tmp, NULL, 10, &iommu->aw_bits) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, _("unknown aw_bits value: %s"), tmp);
+                return NULL;
+            }
+        }
+
     }
 
     return g_steal_pointer(&iommu);
@@ -23989,6 +23998,14 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDefPtr src,
                        virTristateSwitchTypeToString(src->iotlb));
         return false;
     }
+    if (src->aw_bits != dst->aw_bits) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device aw_bits value '%d' "
+                         "does not match source '%d'"),
+                       dst->aw_bits, src->aw_bits);
+        return false;
+    }
+
     return true;
 }
 
@@ -28991,6 +29008,10 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
     if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&driverAttrBuf, " iotlb='%s'",
                           virTristateSwitchTypeToString(iommu->iotlb));
+    }
+    if (iommu->aw_bits > 0) {
+        virBufferAsprintf(&driverAttrBuf, " aw_bits='%d'",
+                          iommu->aw_bits);
     }
 
     virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);

@@ -2454,6 +2454,7 @@ struct _virDomainIOMMUDef {
     virTristateSwitch caching_mode;
     virTristateSwitch eim;
     virTristateSwitch iotlb;
+    unsigned int aw_bits;
 };
 
 typedef enum {
