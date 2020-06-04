@@ -42,7 +42,7 @@ typedef void
                               virConnectObjectEventGenericCallback cb,
                               void *cbopaque);
 
-struct  __attribute__((aligned(4))) _virObjectEvent {
+struct  __attribute__((aligned(8))) _virObjectEvent {
     virObject parent;
     int eventID;
     virObjectMeta meta;
