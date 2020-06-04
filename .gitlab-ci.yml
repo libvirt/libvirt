@@ -210,7 +210,7 @@ potfile:
     - $MAKE -C src generated-sources
     - $MAKE -C po libvirt.pot
     - cd ..
-    - mv build/po/libvirt.pot libvirt.pot
+    - cp po/libvirt.pot libvirt.pot
   image: quay.io/libvirt/buildenv-libvirt-centos-8:latest
   artifacts:
     expose_as: 'Potfile'
