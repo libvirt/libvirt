@@ -43,13 +43,16 @@ SED_PO_FIXUP_ARGS = \
 
 update-gmo: $(GMOFILES)
 
+# The results of this target should not be committed to Git. The Weblate
+# service is responsible for updating .po files when the .pot is changed.
 update-po: $(POTFILE)
+	cd $(srcdir) && \
 	for lang in $(LANGS); do \
 	  echo "Minimizing $$lang content" && \
 	  $(MSGMERGE) --no-location --no-fuzzy-matching --sort-output \
 	    $$lang.po $(POTFILE) | \
-	  $(SED) $(SED_PO_FIXUP_ARGS) > $(srcdir)/$$lang.po-t && \
-	  mv $$lang.po-t $$lang.po
+	  $(SED) $(SED_PO_FIXUP_ARGS) > $$lang.po-t && \
+	  mv $$lang.po-t $$lang.po ; \
 	done
 
 $(POTFILE): POTFILES
