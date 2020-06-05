@@ -18504,9 +18504,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (!qemuDomainDiskBlockJobIsSupported(vm, disk))
-        goto endjob;
-
     blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     /* Convert bandwidth MiB to bytes, if necessary */
@@ -18521,6 +18518,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
     }
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
+        goto endjob;
+
+    if (!qemuDomainDiskBlockJobIsSupported(vm, disk))
         goto endjob;
 
     if (virStorageSourceIsEmpty(disk->src)) {
