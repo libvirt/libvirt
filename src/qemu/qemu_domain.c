@@ -5281,7 +5281,7 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
              src->protocol != VIR_STORAGE_NET_PROTOCOL_FTP &&
              src->protocol != VIR_STORAGE_NET_PROTOCOL_FTPS)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("readaehad is supported only with HTTP(S)/FTP(s) protocols"));
+                           _("readahead is supported only with HTTP(S)/FTP(s) protocols"));
             return -1;
         }
 
