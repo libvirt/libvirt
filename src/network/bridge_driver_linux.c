@@ -91,28 +91,55 @@ static void networkSetupPrivateChains(void)
 
 
 static int
-networkHasRunningNetworksHelper(virNetworkObjPtr obj,
+networkHasRunningNetworksWithFWHelper(virNetworkObjPtr obj,
                                 void *opaque)
 {
-    bool *running = opaque;
+    bool *activeWithFW = opaque;
 
     virObjectLock(obj);
-    if (virNetworkObjIsActive(obj))
-        *running = true;
+    if (virNetworkObjIsActive(obj)) {
+        virNetworkDefPtr def = virNetworkObjGetDef(obj);
+
+        switch ((virNetworkForwardType) def->forward.type) {
+        case VIR_NETWORK_FORWARD_NONE:
+        case VIR_NETWORK_FORWARD_NAT:
+        case VIR_NETWORK_FORWARD_ROUTE:
+            *activeWithFW = true;
+            break;
+
+        case VIR_NETWORK_FORWARD_OPEN:
+        case VIR_NETWORK_FORWARD_BRIDGE:
+        case VIR_NETWORK_FORWARD_PRIVATE:
+        case VIR_NETWORK_FORWARD_VEPA:
+        case VIR_NETWORK_FORWARD_PASSTHROUGH:
+        case VIR_NETWORK_FORWARD_HOSTDEV:
+        case VIR_NETWORK_FORWARD_LAST:
+            break;
+        }
+    }
+
     virObjectUnlock(obj);
+
+    /*
+     * terminate ForEach early once we find an active network that
+     * adds Firewall rules (return status is ignored)
+     */
+    if (*activeWithFW)
+        return -1;
 
     return 0;
 }
 
 
 static bool
-networkHasRunningNetworks(virNetworkDriverStatePtr driver)
+networkHasRunningNetworksWithFW(virNetworkDriverStatePtr driver)
 {
-    bool running = false;
+    bool activeWithFW = false;
+
     virNetworkObjListForEach(driver->networks,
-                             networkHasRunningNetworksHelper,
-                             &running);
-    return running;
+                             networkHasRunningNetworksWithFWHelper,
+                             &activeWithFW);
+    return activeWithFW;
 }
 
 
@@ -150,8 +177,8 @@ networkPreReloadFirewallRules(virNetworkDriverStatePtr driver,
         networkSetupPrivateChains();
 
     } else {
-        if (!networkHasRunningNetworks(driver)) {
-            VIR_DEBUG("Delayed global rule setup as no networks are running");
+        if (!networkHasRunningNetworksWithFW(driver)) {
+            VIR_DEBUG("Delayed global rule setup as no networks with firewall rules are running");
             return;
         }
 
