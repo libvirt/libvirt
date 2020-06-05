@@ -38,6 +38,29 @@ stages:
     - master
     - /^ci-full-.*$/
 
+# Jobs that we delegate to Cirrus CI because they require an operating
+# system other than Linux. These jobs will only run if the required
+# setup has been performed on the GitLab account (see ci/README.rst).
+.cirrus_build_default_job_template: &cirrus_build_default_job_definition
+  stage: native_build
+  image: registry.gitlab.com/libvirt/libvirt-ci/cirrus-run:master
+  script:
+    - cirrus-run ci/cirrus/$NAME.yml.j2
+  only:
+    variables:
+      - $CIRRUS_GITHUB_REPO
+      - $CIRRUS_API_TOKEN
+
+.cirrus_build_extra_job_template: &cirrus_build_extra_job_definition
+  <<: *cirrus_build_default_job_definition
+  only:
+    variables:
+      - $CIRRUS_GITHUB_REPO
+      - $CIRRUS_API_TOKEN
+    refs:
+      - master
+      - /^ci-full-.*$/
+
 
 # Default cross build jobs that are always run
 .cross_build_default_job_template: &cross_build_default_job_definition
@@ -108,6 +131,16 @@ x64-ubuntu-1804:
 x64-ubuntu-2004:
   <<: *native_build_default_job_definition
   image: quay.io/libvirt/buildenv-libvirt-ubuntu-2004:latest
+
+x64-freebsd-12-build:
+  <<: *cirrus_build_default_job_definition
+  variables:
+    NAME: freebsd-12
+
+x64-macos-1015-build:
+  <<: *cirrus_build_default_job_definition
+  variables:
+    NAME: macos-1015
 
 
 # Cross compiled build jobs
