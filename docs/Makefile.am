@@ -358,7 +358,6 @@ schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
 EXTRA_DIST= \
   site.xsl subsite.xsl newapi.xsl page.xsl \
-  wrapstring.xsl \
   $(dot_html_in) $(dot_rst) $(apipng) \
   $(fig) $(assets) \
   $(javascript) $(logofiles) \
