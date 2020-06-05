@@ -476,13 +476,7 @@ check-html:
 
 check-local: check-html
 
-python_generated_files = \
-		html/libvirt-libvirt-lxc.html \
-		html/libvirt-libvirt-qemu.html \
-		html/libvirt-libvirt-admin.html \
-		html/libvirt-virterror.html \
-		$(api_DATA) \
-		$(NULL)
+python_generated_files = $(api_DATA)
 
 APIBUILD=$(top_srcdir)/scripts/apibuild.py
 APIBUILD_STAMP=apibuild.py.stamp
