@@ -120,7 +120,7 @@ means that the **-F** parameter of ``qemu-img`` must always be used.
 
 ::
 
-  qemu-img -f qcow2 -F qcow2 -b $BACKING_IMAGE_PATH $IMAGE_PATH
+  qemu-img create -f qcow2 -F qcow2 -b $BACKING_IMAGE_PATH $IMAGE_PATH
 
 Note that if ``$BACKING_IMAGE_PATH`` is relative the path is considered relative to
 the location of ``$IMAGE_PATH``.
