@@ -33,8 +33,7 @@ int virStateInitialize(bool privileged,
                        bool mandatory,
                        const char *root,
                        virStateInhibitCallback inhibit,
-                       void *opaque)
-    ATTRIBUTE_NONNULL(2);
+                       void *opaque);
 int virStateCleanup(void);
 int virStateReload(void);
 int virStateStop(void);
