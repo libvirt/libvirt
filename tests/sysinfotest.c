@@ -37,25 +37,33 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 struct testSysinfoData {
+    const char *name; /* test name, also base name for result files */
     virSysinfoDefPtr (*func)(void); /* sysinfo gathering function */
-    char *decoder; /* name of dmi decoder binary/script */
-    char *sysinfo; /* name of /proc/sysinfo substitute file */
-    char *cpuinfo; /* name of /proc/cpuinfo substitute file */
-    char *expected; /* (required) file containing output of virSysinfoFormat */
+    const char *decoder; /* name of dmi decoder binary/script */
 };
 
 static int
 testSysinfo(const void *data)
 {
+    const struct testSysinfoData *testdata = data;
     const char *sysfsActualData;
     g_auto(virSysinfoDefPtr) ret = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    const struct testSysinfoData *testdata = data;
+    g_autofree char *sysinfo = NULL;
+    g_autofree char *cpuinfo = NULL;
+    g_autofree char *expected = NULL;
+    g_autofree char *decoder = NULL;
 
-    virSysinfoSetup(testdata->decoder, testdata->sysinfo, testdata->cpuinfo);
+    sysinfo = g_strdup_printf("%s/sysinfodata/%ssysinfo.data", abs_srcdir, testdata->name);
+    cpuinfo = g_strdup_printf("%s/sysinfodata/%scpuinfo.data", abs_srcdir, testdata->name);
+    expected = g_strdup_printf("%s/sysinfodata/%ssysinfo.expect", abs_srcdir, testdata->name);
 
-    if (!testdata->expected ||
-        !(ret = testdata->func()))
+    if (testdata->decoder)
+        decoder = g_strdup_printf("%s/%s", abs_srcdir, testdata->decoder);
+
+    virSysinfoSetup(decoder, sysinfo, cpuinfo);
+
+    if (!(ret = testdata->func()))
         return -1;
 
     if (virSysinfoFormat(&buf, ret) < 0)
@@ -64,50 +72,16 @@ testSysinfo(const void *data)
     if (!(sysfsActualData = virBufferCurrentContent(&buf)))
         return -1;
 
-    return virTestCompareToFile(sysfsActualData, testdata->expected);
+    return virTestCompareToFile(sysfsActualData, expected);
 }
 
-static int
-sysinfotest_run(const char *test,
-                virSysinfoDefPtr (*func)(void),
-                const char *decoder,
-                const char *sysinfo,
-                const char *cpuinfo,
-                const char *expected)
-{
-    struct testSysinfoData testdata = { 0 };
-    int ret = EXIT_FAILURE;
-
-    testdata.func = func;
-
-    if (decoder)
-        testdata.decoder = g_strdup_printf("%s/%s", abs_srcdir, decoder);
-    if (sysinfo)
-        testdata.sysinfo = g_strdup_printf("%s/%s", abs_srcdir, sysinfo);
-    if (cpuinfo)
-        testdata.cpuinfo = g_strdup_printf("%s/%s", abs_srcdir, cpuinfo);
-    if (expected)
-        testdata.expected = g_strdup_printf("%s/%s", abs_srcdir, expected);
-
-    if (virTestRun(test, testSysinfo, &testdata) < 0)
-        goto error;
-
-    ret = EXIT_SUCCESS;
-
- error:
-    VIR_FREE(testdata.decoder);
-    VIR_FREE(testdata.sysinfo);
-    VIR_FREE(testdata.cpuinfo);
-    VIR_FREE(testdata.expected);
-    return ret;
-}
 
 #define TEST_FULL(name, func, decoder) \
-    if (sysinfotest_run(name " sysinfo", func, decoder, \
-                        "/sysinfodata/" name "sysinfo.data", \
-                        "/sysinfodata/" name "cpuinfo.data", \
-                        "/sysinfodata/" name "sysinfo.expect") != EXIT_SUCCESS) \
-        ret = EXIT_FAILURE
+    do { \
+        struct testSysinfoData data = { name, func, decoder }; \
+        if (virTestRun(name " sysinfo", testSysinfo, &data) < 0) \
+            ret = EXIT_FAILURE; \
+    } while (0)
 
 
 #define TEST(name, func) \
