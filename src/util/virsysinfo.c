@@ -1119,20 +1119,12 @@ virSysinfoParseX86Memory(const char *base, virSysinfoDefPtr ret)
 virSysinfoDefPtr
 virSysinfoReadDMI(void)
 {
-    g_autofree char *path = NULL;
     g_auto(virSysinfoDefPtr) ret = NULL;
     g_autofree char *outbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
-    path = virFindFileInPath(SYSINFO_SMBIOS_DECODER);
-    if (path == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to find path for %s binary"),
-                       SYSINFO_SMBIOS_DECODER);
-        return NULL;
-    }
-
-    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,2,3,4,17", NULL);
+    cmd = virCommandNewArgList(SYSINFO_SMBIOS_DECODER,
+                               "-q", "-t", "0,1,2,3,4,17", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
         return NULL;
