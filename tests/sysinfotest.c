@@ -34,13 +34,38 @@
 #define LIBVIRT_VIRSYSINFOPRIV_H_ALLOW
 #include "virsysinfopriv.h"
 
+#define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
+#include "vircommandpriv.h"
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 struct testSysinfoData {
     const char *name; /* test name, also base name for result files */
     virSysinfoDefPtr (*func)(void); /* sysinfo gathering function */
-    const char *decoder; /* name of dmi decoder binary/script */
 };
+
+
+static void
+testDMIDecodeDryRun(const char *const*args G_GNUC_UNUSED,
+                    const char *const*env G_GNUC_UNUSED,
+                    const char *input G_GNUC_UNUSED,
+                    char **output,
+                    char **error,
+                    int *status,
+                    void *opaque)
+{
+    const char *sysinfo = opaque;
+
+    if (virFileReadAll(sysinfo, 10 * 1024 * 1024, output) < 0) {
+        *error = g_strdup(virGetLastErrorMessage());
+        *status = EXIT_FAILURE;
+        return;
+    }
+
+    *error = g_strdup("");
+    *status = 0;
+}
+
 
 static int
 testSysinfo(const void *data)
@@ -52,18 +77,19 @@ testSysinfo(const void *data)
     g_autofree char *sysinfo = NULL;
     g_autofree char *cpuinfo = NULL;
     g_autofree char *expected = NULL;
-    g_autofree char *decoder = NULL;
 
     sysinfo = g_strdup_printf("%s/sysinfodata/%ssysinfo.data", abs_srcdir, testdata->name);
     cpuinfo = g_strdup_printf("%s/sysinfodata/%scpuinfo.data", abs_srcdir, testdata->name);
     expected = g_strdup_printf("%s/sysinfodata/%ssysinfo.expect", abs_srcdir, testdata->name);
 
-    if (testdata->decoder)
-        decoder = g_strdup_printf("%s/%s", abs_srcdir, testdata->decoder);
+    virCommandSetDryRun(NULL, testDMIDecodeDryRun, sysinfo);
 
-    virSysinfoSetup(decoder, sysinfo, cpuinfo);
+    virSysinfoSetup(NULL, sysinfo, cpuinfo);
 
-    if (!(ret = testdata->func()))
+    ret = testdata->func();
+    virCommandSetDryRun(NULL, NULL, NULL);
+
+    if (!ret)
         return -1;
 
     if (virSysinfoFormat(&buf, ret) < 0)
@@ -76,16 +102,12 @@ testSysinfo(const void *data)
 }
 
 
-#define TEST_FULL(name, func, decoder) \
+#define TEST(name, func) \
     do { \
-        struct testSysinfoData data = { name, func, decoder }; \
+        struct testSysinfoData data = { name, func }; \
         if (virTestRun(name " sysinfo", testSysinfo, &data) < 0) \
             ret = EXIT_FAILURE; \
     } while (0)
-
-
-#define TEST(name, func) \
-        TEST_FULL(name, func, NULL)
 
 static int
 mymain(void)
@@ -95,13 +117,12 @@ mymain(void)
     TEST("s390", virSysinfoReadS390);
     TEST("s390-freq", virSysinfoReadS390);
     TEST("ppc", virSysinfoReadPPC);
-    TEST_FULL("x86", virSysinfoReadDMI, "/sysinfodata/x86dmidecode.sh");
+    TEST("x86", virSysinfoReadDMI);
     TEST("arm", virSysinfoReadARM);
     TEST("arm-rpi2", virSysinfoReadARM);
     TEST("aarch64", virSysinfoReadARM);
     TEST("aarch64-moonshot", virSysinfoReadARM);
-    TEST_FULL("aarch64-gigabyte", virSysinfoReadARM,
-              "/sysinfodata/aarch64-gigabytedmidecode.sh");
+    TEST("aarch64-gigabyte", virSysinfoReadARM);
 
     return ret;
 }

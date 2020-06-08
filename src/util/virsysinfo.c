@@ -60,7 +60,8 @@ virSysinfoSetup(const char *dmidecode,
                 const char *sysinfo,
                 const char *cpuinfo)
 {
-    sysinfoDmidecode = dmidecode;
+    if (dmidecode)
+        sysinfoDmidecode = dmidecode;
     sysinfoSysinfo = sysinfo;
     sysinfoCpuinfo = cpuinfo;
 }
