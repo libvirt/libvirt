@@ -52,22 +52,6 @@ update-po: $(POTFILE)
 	  mv $$lang.po-t $$lang.po
 	done
 
-push-pot: $(POTFILE)
-	zanata push \
-		--project-config $(srcdir)/zanata.xml \
-		--push-type=source \
-		--transdir $(builddir) \
-		--srcdir $(srcdir)
-
-pull-po: $(POTFILE)
-	zanata pull \
-		--project-config $(srcdir)/zanata.xml \
-		--create-skeletons \
-		--transdir $(builddir) \
-		--srcdir $(srcdir)
-	$(MAKE) update-po
-	$(MAKE) update-gmo
-
 $(POTFILE): POTFILES
 	$(XGETTEXT) -o $@-t $(XGETTEXT_ARGS) \
 	  --files-from=$(abs_builddir)/POTFILES
