@@ -171,6 +171,7 @@ mymain(void)
     DO_TEST("nat-many-ips");
     DO_TEST("nat-no-dhcp");
     DO_TEST("nat-ipv6");
+    DO_TEST("nat-ipv6-masquerade");
     DO_TEST("route-default");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
