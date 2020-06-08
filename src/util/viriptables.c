@@ -854,29 +854,24 @@ iptablesForwardMasquerade(virFirewallPtr fw,
     g_autofree char *portRangeStr = NULL;
     g_autofree char *natRangeStr = NULL;
     virFirewallRulePtr rule;
+    int af = VIR_SOCKET_ADDR_FAMILY(netaddr);
+    virFirewallLayer layer = af == AF_INET ?
+        VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
 
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
 
-    if (!VIR_SOCKET_ADDR_IS_FAMILY(netaddr, AF_INET)) {
-        /* Higher level code *should* guaranteee it's impossible to get here. */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Attempted to NAT '%s'. NAT is only supported for IPv4."),
-                       networkstr);
-        return -1;
-    }
-
-    if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->start, AF_INET)) {
+    if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->start, af)) {
         if (!(addrStartStr = virSocketAddrFormat(&addr->start)))
             return -1;
-        if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->end, AF_INET)) {
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->end, af)) {
             if (!(addrEndStr = virSocketAddrFormat(&addr->end)))
                 return -1;
         }
     }
 
     if (protocol && protocol[0]) {
-        rule = virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
+        rule = virFirewallAddRule(fw, layer,
                                   "--table", "nat",
                                   action == ADD ? "--insert" : "--delete",
                                   pvt ? "LIBVIRT_PRT" : "POSTROUTING",
@@ -885,7 +880,7 @@ iptablesForwardMasquerade(virFirewallPtr fw,
                                   "!", "--destination", networkstr,
                                   NULL);
     } else {
-        rule = virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
+        rule = virFirewallAddRule(fw, layer,
                                   "--table", "nat",
                                   action == ADD ? "--insert" : "--delete",
                                   pvt ? "LIBVIRT_PRT" : "POSTROUTING",
@@ -1004,20 +999,14 @@ iptablesForwardDontMasquerade(virFirewallPtr fw,
                               int action)
 {
     g_autofree char *networkstr = NULL;
+    virFirewallLayer layer = VIR_SOCKET_ADDR_FAMILY(netaddr) == AF_INET ?
+        VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
 
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
 
-    if (!VIR_SOCKET_ADDR_IS_FAMILY(netaddr, AF_INET)) {
-        /* Higher level code *should* guaranteee it's impossible to get here. */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Attempted to NAT '%s'. NAT is only supported for IPv4."),
-                       networkstr);
-        return -1;
-    }
-
     if (physdev && physdev[0])
-        virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
+        virFirewallAddRule(fw, layer,
                            "--table", "nat",
                            action == ADD ? "--insert" : "--delete",
                            pvt ? "LIBVIRT_PRT" : "POSTROUTING",
@@ -1027,7 +1016,7 @@ iptablesForwardDontMasquerade(virFirewallPtr fw,
                            "--jump", "RETURN",
                            NULL);
     else
-        virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
+        virFirewallAddRule(fw, layer,
                            "--table", "nat",
                            action == ADD ? "--insert" : "--delete",
                            pvt ? "LIBVIRT_PRT" : "POSTROUTING",
