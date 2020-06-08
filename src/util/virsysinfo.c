@@ -1119,10 +1119,10 @@ virSysinfoParseX86Memory(const char *base, virSysinfoDefPtr ret)
 virSysinfoDefPtr
 virSysinfoReadDMI(void)
 {
-    char *path;
-    virSysinfoDefPtr ret = NULL;
-    char *outbuf = NULL;
-    virCommandPtr cmd;
+    g_autofree char *path = NULL;
+    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_autofree char *outbuf = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     path = virFindFileInPath(SYSINFO_SMBIOS_DECODER);
     if (path == NULL) {
@@ -1133,48 +1133,38 @@ virSysinfoReadDMI(void)
     }
 
     cmd = virCommandNewArgList(path, "-q", "-t", "0,1,2,3,4,17", NULL);
-    VIR_FREE(path);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return NULL;
 
     if (VIR_ALLOC(ret) < 0)
-        goto error;
+        return NULL;
 
     ret->type = VIR_SYSINFO_SMBIOS;
 
     if (virSysinfoParseBIOS(outbuf, &ret->bios) < 0)
-        goto error;
+        return NULL;
 
     if (virSysinfoParseX86System(outbuf, &ret->system) < 0)
-        goto error;
+        return NULL;
 
     if (virSysinfoParseX86BaseBoard(outbuf, &ret->baseBoard, &ret->nbaseBoard) < 0)
-        goto error;
+        return NULL;
 
     if (virSysinfoParseX86Chassis(outbuf, &ret->chassis) < 0)
-        goto error;
+        return NULL;
 
     ret->nprocessor = 0;
     ret->processor = NULL;
     if (virSysinfoParseX86Processor(outbuf, ret) < 0)
-        goto error;
+        return NULL;
 
     ret->nmemory = 0;
     ret->memory = NULL;
     if (virSysinfoParseX86Memory(outbuf, ret) < 0)
-        goto error;
+        return NULL;
 
- cleanup:
-    VIR_FREE(outbuf);
-    virCommandFree(cmd);
-
-    return ret;
-
- error:
-    virSysinfoDefFree(ret);
-    ret = NULL;
-    goto cleanup;
+    return g_steal_pointer(&ret);
 }
 
 
