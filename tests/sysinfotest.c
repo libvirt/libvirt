@@ -47,34 +47,24 @@ struct testSysinfoData {
 static int
 testSysinfo(const void *data)
 {
-    int result = -1;
     const char *sysfsActualData;
-    virSysinfoDefPtr ret = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const struct testSysinfoData *testdata = data;
 
     virSysinfoSetup(testdata->decoder, testdata->sysinfo, testdata->cpuinfo);
 
     if (!testdata->expected ||
         !(ret = testdata->func()))
-        goto cleanup;
+        return -1;
 
     if (virSysinfoFormat(&buf, ret) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(sysfsActualData = virBufferCurrentContent(&buf)))
-        goto cleanup;
+        return -1;
 
-    if (virTestCompareToFile(sysfsActualData, testdata->expected) < 0)
-        goto cleanup;
-
-    result = 0;
-
- cleanup:
-    virSysinfoDefFree(ret);
-    virBufferFreeAndReset(&buf);
-
-    return result;
+    return virTestCompareToFile(sysfsActualData, testdata->expected);
 }
 
 static int
