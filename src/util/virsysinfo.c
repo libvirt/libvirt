@@ -45,23 +45,18 @@ VIR_ENUM_IMPL(virSysinfo,
               "smbios",
 );
 
-static const char *sysinfoDmidecode = DMIDECODE;
 static const char *sysinfoSysinfo = "/proc/sysinfo";
 static const char *sysinfoCpuinfo = "/proc/cpuinfo";
 
-#define SYSINFO_SMBIOS_DECODER sysinfoDmidecode
 #define SYSINFO sysinfoSysinfo
 #define CPUINFO sysinfoCpuinfo
 #define CPUINFO_FILE_LEN (1024*1024)    /* 1MB limit for /proc/cpuinfo file */
 
 
 void
-virSysinfoSetup(const char *dmidecode,
-                const char *sysinfo,
+virSysinfoSetup(const char *sysinfo,
                 const char *cpuinfo)
 {
-    if (dmidecode)
-        sysinfoDmidecode = dmidecode;
     sysinfoSysinfo = sysinfo;
     sysinfoCpuinfo = cpuinfo;
 }
@@ -1124,8 +1119,7 @@ virSysinfoReadDMI(void)
     g_autofree char *outbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = virCommandNewArgList(SYSINFO_SMBIOS_DECODER,
-                               "-q", "-t", "0,1,2,3,4,17", NULL);
+    cmd = virCommandNewArgList(DMIDECODE, "-q", "-t", "0,1,2,3,4,17", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
         return NULL;

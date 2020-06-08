@@ -84,7 +84,7 @@ testSysinfo(const void *data)
 
     virCommandSetDryRun(NULL, testDMIDecodeDryRun, sysinfo);
 
-    virSysinfoSetup(NULL, sysinfo, cpuinfo);
+    virSysinfoSetup(sysinfo, cpuinfo);
 
     ret = testdata->func();
     virCommandSetDryRun(NULL, NULL, NULL);

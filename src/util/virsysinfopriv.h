@@ -24,8 +24,7 @@
 #pragma once
 
 void
-virSysinfoSetup(const char *dmidecode,
-                const char *sysinfo,
+virSysinfoSetup(const char *sysinfo,
                 const char *cpuinfo);
 
 virSysinfoDefPtr
