@@ -244,6 +244,8 @@ struct _virNetworkForwardDef {
     /* ranges for NAT */
     virSocketAddrRange addr;
     virPortRange port;
+
+    virTristateBool natIPv6;
 };
 
 typedef struct _virPortGroupDef virPortGroupDef;

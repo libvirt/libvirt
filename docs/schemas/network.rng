@@ -181,6 +181,11 @@
               </optional>
               <optional>
                 <element name='nat'>
+                  <optional>
+                    <attribute name="ipv6">
+                      <ref name="virYesNo"/>
+                    </attribute>
+                  </optional>
                   <interleave>
                     <optional>
                       <element name='address'>

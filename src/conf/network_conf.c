@@ -1358,6 +1358,7 @@ virNetworkForwardNatDefParseXML(const char *networkName,
     int nNatAddrs, nNatPorts;
     char *addrStart = NULL;
     char *addrEnd = NULL;
+    char *ipv6 = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     ctxt->node = node;
@@ -1367,6 +1368,21 @@ virNetworkForwardNatDefParseXML(const char *networkName,
                        _("The <nat> element can only be used when <forward> 'mode' is 'nat' in network %s"),
                        networkName);
         goto cleanup;
+    }
+
+    ipv6 = virXMLPropString(node, "ipv6");
+    if (ipv6) {
+        int natIPv6;
+        if ((natIPv6 = virTristateBoolTypeFromString(ipv6)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid ipv6 setting '%s' "
+                             "in network '%s' NAT"),
+                           ipv6, networkName);
+            VIR_FREE(ipv6);
+            goto cleanup;
+        }
+        def->natIPv6 = natIPv6;
+        VIR_FREE(ipv6);
     }
 
     /* addresses for SNAT */
@@ -2516,10 +2532,18 @@ virNetworkForwardNatDefFormat(virBufferPtr buf,
             goto cleanup;
     }
 
-    if (!addrEnd && !addrStart && !fwd->port.start && !fwd->port.end)
+    if (!addrEnd && !addrStart && !fwd->port.start && !fwd->port.end && !fwd->natIPv6)
         return 0;
 
-    virBufferAddLit(buf, "<nat>\n");
+    virBufferAddLit(buf, "<nat");
+    if (fwd->natIPv6)
+        virBufferAsprintf(buf, " ipv6='%s'", virTristateBoolTypeToString(fwd->natIPv6));
+
+    if (!addrEnd && !addrStart && !fwd->port.start && !fwd->port.end) {
+        virBufferAddLit(buf, "/>\n");
+        return 0;
+    }
+    virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
     if (addrStart) {
@@ -2627,7 +2651,8 @@ virNetworkDefFormatBuf(virBufferPtr buf,
                          || def->forward.port.start
                          || def->forward.port.end
                          || (def->forward.driverName
-                             != VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT));
+                             != VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT)
+                         || def->forward.natIPv6);
         virBufferAsprintf(buf, "%s>\n", shortforward ? "/" : "");
         virBufferAdjustIndent(buf, 2);
 

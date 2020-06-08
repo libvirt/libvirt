@@ -1,0 +1,10 @@
+<network>
+  <name>default</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <forward mode='nat'>
+    <nat ipv6='yes'/>
+  </forward>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <ip family='ipv6' address='2001:db8:ac10:fe01::1' prefix='64'>
+  </ip>
+</network>

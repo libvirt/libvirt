@@ -276,6 +276,20 @@
     &lt;/nat&gt;
   &lt;/forward&gt;
 ...</pre>
+
+            <p>
+              <span class="since">Since 6.5.0</span> it is possible to
+              enable NAT with IPv6 networking. As noted above, IPv6
+              has historically done plain forwarding and thus to avoid
+              breaking historical compatibility, IPv6 NAT must be
+              explicitly requested.
+            </p>
+            <pre>
+...
+  &lt;forward mode='nat'&gt;
+    &lt;nat ipv6='yes'/&gt;
+  &lt;/forward&gt;
+...</pre>
           </dd>
 
           <dt><code>route</code></dt>
