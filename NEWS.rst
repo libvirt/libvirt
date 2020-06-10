@@ -28,6 +28,19 @@ v6.5.0 (unreleased)
     schema for node devices was expanded to support attributes for mediated
     devices.
 
+  * QEMU: add TPM Proxy device support
+
+    libvirt can now create guests using a new device type called
+    "TPM Proxy". The TPM Proxy connects to a TPM Resource Manager
+    present in the host, enabling the guest to run in secure virtual
+    machine mode with the help of an Ultravisor. Adding a TPM Proxy to
+    a pSeries guest brings no security benefits unless the guest is
+    running on a PPC64 host that has Ultravisor and TPM Resource Manager
+    support. Only one TPM Proxy is allowed per guest. A guest using
+    a TPM Proxy device can instantiate another TPM device at the same
+    time. This device is supported only for pSeries guests via the new
+    'spapr-tpm-proxy' model of the TPM 'passthrough' backend.
+
 * **Improvements**
 
 * **Bug fixes**
