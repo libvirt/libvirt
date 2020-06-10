@@ -2,9 +2,8 @@ variables:
   GIT_DEPTH: 100
 
 stages:
-  - prebuild
-  - native_build
-  - cross_build
+  - sanity_checks
+  - builds
 
 .script_variables: &script_variables |
   export MAKEFLAGS="-j$(getconf _NPROCESSORS_ONLN)"
@@ -17,7 +16,7 @@ stages:
 
 # Default native build jobs that are always run
 .native_build_default_job_template: &native_build_default_job_definition
-  stage: native_build
+  stage: builds
   cache:
     paths:
       - ccache/
@@ -42,7 +41,7 @@ stages:
 # system other than Linux. These jobs will only run if the required
 # setup has been performed on the GitLab account (see ci/README.rst).
 .cirrus_build_default_job_template: &cirrus_build_default_job_definition
-  stage: native_build
+  stage: builds
   image: registry.gitlab.com/libvirt/libvirt-ci/cirrus-run:master
   script:
     - cirrus-run ci/cirrus/$NAME.yml.j2
@@ -64,7 +63,7 @@ stages:
 
 # Default cross build jobs that are always run
 .cross_build_default_job_template: &cross_build_default_job_definition
-  stage: cross_build
+  stage: builds
   cache:
     paths:
       - ccache/
@@ -194,7 +193,7 @@ mingw64-fedora-rawhide:
 # be deployed to the web root:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=website
 website:
-  stage: prebuild
+  stage: builds
   before_script:
     - *script_variables
   script:
@@ -216,7 +215,7 @@ website:
 
 
 codestyle:
-  stage: prebuild
+  stage: builds
   before_script:
     - *script_variables
   script:
@@ -231,7 +230,7 @@ codestyle:
 # for translation usage:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=potfile
 potfile:
-  stage: prebuild
+  stage: builds
   only:
     - master
   before_script:
@@ -259,7 +258,7 @@ potfile:
 # this test on developer's personal forks from which
 # merge requests are submitted
 check-dco:
-  stage: prebuild
+  stage: sanity_checks
   image: registry.gitlab.com/libvirt/libvirt-ci/check-dco:master
   script:
     - /check-dco
