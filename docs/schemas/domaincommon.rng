@@ -4618,6 +4618,7 @@
             <value>tpm-tis</value>
             <value>tpm-crb</value>
             <value>tpm-spapr</value>
+            <value>spapr-tpm-proxy</value>
           </choice>
         </attribute>
       </optional>

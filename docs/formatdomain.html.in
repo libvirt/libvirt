@@ -8849,6 +8849,18 @@ qemu-kvm -net nic,model=? /dev/null
           backend device is a TPM 2.0. <span class="since">Since 6.1.0</span>,
           pSeries guests on PPC64 are supported and the default is
           <code>tpm-spapr</code>.
+
+          <span class="since">Since 6.5.0</span>, a new model called
+          <code>spapr-tpm-proxy</code> was added for pSeries guests. This model
+          only works with the <code>passthrough</code> backend. It creates a
+          TPM Proxy device that communicates with an existing TPM Resource Manager
+          in the host, for example <code>/dev/tpmrm0</code>, enabling the guest to
+          run in secure virtual machine mode with the help of an Ultravisor. Adding
+          a TPM Proxy to a pSeries guest brings no security benefits unless the guest
+          is running on a PPC64 host that has an Ultravisor and a TPM Resource Manager.
+          Only one TPM Proxy device is allowed per guest, but a TPM Proxy device can
+          be added together with
+          other TPM devices.
         </p>
       </dd>
       <dt><code>backend</code></dt>
@@ -8861,7 +8873,7 @@ qemu-kvm -net nic,model=? /dev/null
           <dt><code>passthrough</code></dt>
           <dd>
             <p>
-              Use the host's TPM device.
+              Use the host's TPM or TPM Resource Manager device.
             </p>
             <p>
               This backend type requires exclusive access to a TPM device on
@@ -8869,6 +8881,11 @@ qemu-kvm -net nic,model=? /dev/null
               qualified file name is specified by path attribute of the
               <code>source</code> element. If no file name is specified then
               /dev/tpm0 is automatically used.
+
+              <span class="since">Since 6.5.0</span>, when choosing the
+              <code>spapr-tpm-proxy</code> model, the file name specified is
+              expected to be a TPM Resource Manager device, e.g.
+              <code>/dev/tpmrm0</code>.
             </p>
           </dd>
         </dl>
