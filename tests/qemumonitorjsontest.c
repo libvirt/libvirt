@@ -1888,7 +1888,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCacheSize(const void *opaque)
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
         return -1;
 
-    qemuMonitorTestSkipDeprecatedValidation(test, false);
+    qemuMonitorTestSkipDeprecatedValidation(test, true);
 
     if (qemuMonitorTestAddItem(test, "query-migrate-cache-size",
                                "{"
