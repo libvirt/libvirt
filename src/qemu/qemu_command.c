@@ -9104,6 +9104,26 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
 
 
 static int
+qemuBuildTPMProxyCommandLine(virCommandPtr cmd,
+                             virDomainTPMDefPtr tpm)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char *filePath = NULL;
+
+    filePath = tpm->data.passthrough.source.data.file.path;
+
+    virCommandAddArg(cmd, "-device");
+    virBufferAsprintf(&buf, "%s,id=%s,host-path=",
+                      virDomainTPMModelTypeToString(tpm->model),
+                      tpm->info.alias);
+    virQEMUBuildBufferEscapeComma(&buf, filePath);
+    virCommandAddArgBuffer(cmd, &buf);
+
+    return 0;
+}
+
+
+static int
 qemuBuildTPMsCommandLine(virCommandPtr cmd,
                          const virDomainDef *def,
                          virQEMUCapsPtr qemuCaps)
@@ -9111,8 +9131,13 @@ qemuBuildTPMsCommandLine(virCommandPtr cmd,
     size_t i;
 
     for (i = 0; i < def->ntpms; i++) {
-        if (qemuBuildTPMCommandLine(cmd, def, def->tpms[i], qemuCaps) < 0)
+        if (def->tpms[i]->model == VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY) {
+            if (qemuBuildTPMProxyCommandLine(cmd, def->tpms[i]) < 0)
+                return -1;
+        } else if (qemuBuildTPMCommandLine(cmd, def,
+                                           def->tpms[i], qemuCaps) < 0) {
             return -1;
+        }
     }
 
     return 0;
