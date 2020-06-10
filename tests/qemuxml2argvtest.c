@@ -3044,6 +3044,18 @@ mymain(void)
                  QEMU_CAPS_NEC_USB_XHCI,
                  QEMU_CAPS_DEVICE_QEMU_XHCI);
 
+    DO_TEST_PARSE_ERROR("ppc64-tpmproxy-double",
+                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+                        QEMU_CAPS_PCI_OHCI,
+                        QEMU_CAPS_DEVICE_TPM_PASSTHROUGH,
+                        QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY);
+
+    DO_TEST_PARSE_ERROR("ppc64-tpm-double",
+                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+                        QEMU_CAPS_PCI_OHCI,
+                        QEMU_CAPS_DEVICE_TPM_PASSTHROUGH,
+                        QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY);
+
     DO_TEST("aarch64-usb-controller-qemu-xhci",
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_NEC_USB_XHCI,
