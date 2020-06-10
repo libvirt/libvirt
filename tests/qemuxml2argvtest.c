@@ -438,15 +438,10 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
     }
 
     if (vm->def->tpm) {
-        switch (vm->def->tpm->type) {
-        case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (vm->def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
             VIR_FREE(vm->def->tpm->data.emulator.source.data.file.path);
             vm->def->tpm->data.emulator.source.data.file.path = g_strdup("/dev/test");
             vm->def->tpm->data.emulator.source.type = VIR_DOMAIN_CHR_TYPE_FILE;
-            break;
-        case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        case VIR_DOMAIN_TPM_TYPE_LAST:
-            break;
        }
     }
 

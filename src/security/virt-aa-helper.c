@@ -1222,8 +1222,7 @@ get_files(vahControl * ctl)
         char *shortName = NULL;
         const char *tpmpath = NULL;
 
-        switch (ctl->def->tpm->type) {
-        case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (ctl->def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
             shortName = virDomainDefGetShortName(ctl->def);
 
             switch (ctl->def->tpm->version) {
@@ -1256,10 +1255,6 @@ get_files(vahControl * ctl)
                 RUNSTATEDIR, shortName);
 
             VIR_FREE(shortName);
-            break;
-        case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        case VIR_DOMAIN_TPM_TYPE_LAST:
-            break;
         }
     }
 

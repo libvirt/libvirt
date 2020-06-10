@@ -680,14 +680,9 @@ qemuExtTPMInitPaths(virQEMUDriverPtr driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
-    switch (def->tpm->type) {
-    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+    if (def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR)
         return qemuTPMEmulatorInitPaths(def->tpm, cfg->swtpmStorageDir,
                                         def->uuid);
-    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-    case VIR_DOMAIN_TPM_TYPE_LAST:
-        break;
-    }
 
     return 0;
 }
@@ -700,8 +695,7 @@ qemuExtTPMPrepareHost(virQEMUDriverPtr driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = NULL;
 
-    switch (def->tpm->type) {
-    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+    if (def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
         shortName = virDomainDefGetShortName(def);
         if (!shortName)
             return -1;
@@ -711,9 +705,6 @@ qemuExtTPMPrepareHost(virQEMUDriverPtr driver,
                                           cfg->swtpm_group,
                                           cfg->swtpmStateDir, cfg->user,
                                           shortName);
-    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-    case VIR_DOMAIN_TPM_TYPE_LAST:
-        break;
     }
 
     return 0;
@@ -723,15 +714,8 @@ qemuExtTPMPrepareHost(virQEMUDriverPtr driver,
 void
 qemuExtTPMCleanupHost(virDomainDefPtr def)
 {
-    switch (def->tpm->type) {
-    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+    if (def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR)
         qemuTPMDeleteEmulatorStorage(def->tpm);
-        break;
-    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-    case VIR_DOMAIN_TPM_TYPE_LAST:
-        /* nothing to do */
-        break;
-    }
 }
 
 
@@ -825,14 +809,8 @@ qemuExtTPMStart(virQEMUDriverPtr driver,
 {
     virDomainTPMDefPtr tpm = vm->def->tpm;
 
-    switch (tpm->type) {
-    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+    if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR)
         return qemuExtTPMStartEmulator(driver, vm, incomingMigration);
-
-    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-    case VIR_DOMAIN_TPM_TYPE_LAST:
-        break;
-    }
 
     return 0;
 }
@@ -845,18 +823,13 @@ qemuExtTPMStop(virQEMUDriverPtr driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = NULL;
 
-    switch (vm->def->tpm->type) {
-    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+    if (vm->def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
         shortName = virDomainDefGetShortName(vm->def);
         if (!shortName)
             return;
 
         qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
         qemuSecurityCleanupTPMEmulator(driver, vm);
-        break;
-    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-    case VIR_DOMAIN_TPM_TYPE_LAST:
-        break;
     }
 
     return;
@@ -873,8 +846,7 @@ qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
     int rc;
     pid_t pid;
 
-    switch (def->tpm->type) {
-    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+    if (def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
         shortName = virDomainDefGetShortName(def);
         if (!shortName)
             return -1;
@@ -886,10 +858,6 @@ qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
         }
         if (virCgroupAddProcess(cgroup, pid) < 0)
             return -1;
-        break;
-    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-    case VIR_DOMAIN_TPM_TYPE_LAST:
-        break;
     }
 
     return 0;
