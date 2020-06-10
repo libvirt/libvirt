@@ -321,6 +321,7 @@ typedef enum {
 } virNetworkTaintFlags;
 
 void virNetworkDefFree(virNetworkDefPtr def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetworkDef, virNetworkDefFree);
 
 enum {
     VIR_NETWORK_OBJ_LIST_ADD_LIVE = (1 << 0),
