@@ -1829,7 +1829,16 @@
     <p>
       Each <code>cell</code> element specifies a NUMA cell or a NUMA node.
       <code>cpus</code> specifies the CPU or range of CPUs that are
-      part of the node. <code>memory</code> specifies the node memory
+      part of the node. <span class="since">Since 6.5.0</span> For the qemu
+      driver, if the emulator binary supports disjointed <code>cpus</code> ranges
+      in each <code>cell</code>, the sum of all CPUs declared in each <code>cell</code>
+      will be matched with the maximum number of virtual CPUs declared in the
+      <code>vcpu</code> element. This is done by filling any remaining CPUs
+      into the first NUMA <code>cell</code>. Users are encouraged to supply a
+      complete NUMA topology, where the sum of the NUMA CPUs matches the maximum
+      virtual CPUs number declared in <code>vcpus</code>, to make the domain
+      consistent across qemu and libvirt versions.
+      <code>memory</code> specifies the node memory
       in kibibytes (i.e. blocks of 1024 bytes).
       <span class="since">Since 1.2.11</span> one can use an additional <a
           href="#elementsMemoryAllocation"><code>unit</code></a> attribute to
