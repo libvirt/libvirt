@@ -4963,6 +4963,50 @@ qemuDomainDefTsegPostParse(virDomainDefPtr def,
 }
 
 
+/**
+ * qemuDomainDefNumaCPUsRectify:
+ * @numa: pointer to numa definition
+ * @maxCpus: number of CPUs this numa is supposed to have
+ *
+ * This function emulates the (to be deprecated) behavior of filling
+ * up in node0 with the remaining CPUs, in case of an incomplete NUMA
+ * setup, up to getVcpusMax.
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+qemuDomainDefNumaCPUsRectify(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
+{
+    unsigned int vcpusMax, numacpus;
+
+    /* QEMU_CAPS_NUMA tells us if QEMU is able to handle disjointed
+     * NUMA CPU ranges. The filling process will create a disjointed
+     * setup in node0 most of the time. Do not proceed if QEMU
+     * can't handle it.*/
+    if (virDomainNumaGetNodeCount(def->numa) == 0 ||
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA))
+        return 0;
+
+    vcpusMax = virDomainDefGetVcpusMax(def);
+    numacpus = virDomainNumaGetCPUCountTotal(def->numa);
+
+    if (numacpus < vcpusMax) {
+        if (virDomainNumaFillCPUsInNode(def->numa, 0, vcpusMax) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainDefNumaCPUsPostParse(virDomainDefPtr def,
+                               virQEMUCapsPtr qemuCaps)
+{
+    return qemuDomainDefNumaCPUsRectify(def, qemuCaps);
+}
+
+
 static int
 qemuDomainDefPostParseBasic(virDomainDefPtr def,
                             void *opaque G_GNUC_UNUSED)
@@ -5047,6 +5091,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         return -1;
 
     if (qemuDomainDefTsegPostParse(def, qemuCaps) < 0)
+        return -1;
+
+    if (qemuDomainDefNumaCPUsPostParse(def, qemuCaps) < 0)
         return -1;
 
     return 0;

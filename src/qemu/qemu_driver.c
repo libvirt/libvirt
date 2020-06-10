@@ -4994,11 +4994,13 @@ qemuDomainSetVcpusAgent(virDomainObjPtr vm,
 
 static int
 qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
                       virDomainDefPtr def,
                       virDomainDefPtr persistentDef,
                       unsigned int nvcpus)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned int topologycpus;
 
     if (def) {
@@ -5027,6 +5029,9 @@ qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
     virDomainDefVcpuOrderClear(persistentDef);
 
     if (virDomainDefSetVcpusMax(persistentDef, nvcpus, driver->xmlopt) < 0)
+        return -1;
+
+    if (qemuDomainDefNumaCPUsRectify(persistentDef, priv->qemuCaps) < 0)
         return -1;
 
     if (virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir) < 0)
@@ -5076,7 +5081,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
     if (useAgent)
         ret = qemuDomainSetVcpusAgent(vm, nvcpus);
     else if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
-        ret = qemuDomainSetVcpusMax(driver, def, persistentDef, nvcpus);
+        ret = qemuDomainSetVcpusMax(driver, vm, def, persistentDef, nvcpus);
     else
         ret = qemuDomainSetVcpusInternal(driver, vm, def, persistentDef,
                                          nvcpus, hotpluggable);
