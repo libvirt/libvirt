@@ -73,12 +73,10 @@ static int
 qemuExtDevicesInitPaths(virQEMUDriverPtr driver,
                         virDomainDefPtr def)
 {
-    int ret = 0;
-
     if (def->tpm)
-        ret = qemuExtTPMInitPaths(driver, def);
+        return qemuExtTPMInitPaths(driver, def);
 
-    return ret;
+    return 0;
 }
 
 
