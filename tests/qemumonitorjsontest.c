@@ -3221,7 +3221,7 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONSaveVirtualMemory);
     DO_TEST_GEN(qemuMonitorJSONSavePhysicalMemory);
     DO_TEST_GEN_DEPRECATED(qemuMonitorJSONSetMigrationSpeed, true);
-    DO_TEST_GEN_DEPRECATED(qemuMonitorJSONSetMigrationDowntime, false);
+    DO_TEST_GEN_DEPRECATED(qemuMonitorJSONSetMigrationDowntime, true);
     DO_TEST_GEN(qemuMonitorJSONMigrate);
     DO_TEST_GEN(qemuMonitorJSONDump);
     DO_TEST_GEN(qemuMonitorJSONGraphicsRelocate);
