@@ -834,6 +834,7 @@ virDomainMemoryAccessTypeFromString;
 virDomainMemoryAccessTypeToString;
 virDomainNumaCheckABIStability;
 virDomainNumaEquals;
+virDomainNumaFillCPUsInNode;
 virDomainNumaFree;
 virDomainNumaGetCPUCountTotal;
 virDomainNumaGetMaxCPUID;

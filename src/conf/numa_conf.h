@@ -185,3 +185,6 @@ int virDomainNumaDefCPUParseXML(virDomainNumaPtr def, xmlXPathContextPtr ctxt);
 int virDomainNumaDefCPUFormatXML(virBufferPtr buf, virDomainNumaPtr def);
 
 unsigned int virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa);
+
+int virDomainNumaFillCPUsInNode(virDomainNumaPtr numa, size_t node,
+                                unsigned int maxCpus);
