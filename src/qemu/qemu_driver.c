@@ -14032,7 +14032,9 @@ qemuDomainMigrateSetCompressionCache(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     int ret = -1;
+    int rc;
 
     virCheckFlags(0, -1);
 
@@ -14057,13 +14059,27 @@ qemuDomainMigrateSetCompressionCache(virDomainPtr dom,
         goto endjob;
     }
 
-    qemuDomainObjEnterMonitor(driver, vm);
-
     VIR_DEBUG("Setting compression cache to %llu B", cacheSize);
-    ret = qemuMonitorSetMigrationCacheSize(priv->mon, cacheSize);
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE)) {
+        if (!(migParams = qemuMigrationParamsNew()))
+            goto endjob;
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
+        if (qemuMigrationParamsSetULL(migParams,
+                                      QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE,
+                                      cacheSize) < 0)
+            goto endjob;
+
+        if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_NONE,
+                                     migParams) < 0)
+            goto endjob;
+    } else {
+        qemuDomainObjEnterMonitor(driver, vm);
+        rc = qemuMonitorSetMigrationCacheSize(priv->mon, cacheSize);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+            goto endjob;
+    }
+
+    ret = 0;
 
  endjob:
     qemuDomainObjEndJob(driver, vm);

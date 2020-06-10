@@ -869,8 +869,7 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
      * qemuMonitorSetMigrationParams to ignore this parameter.
      */
     if (migParams->params[xbzrle].set &&
-        (!priv->job.migParams ||
-         !priv->job.migParams->params[xbzrle].set)) {
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE)) {
         if (qemuMonitorSetMigrationCacheSize(priv->mon,
                                              migParams->params[xbzrle].value.ull) < 0)
             goto cleanup;
