@@ -109,6 +109,8 @@
   <flag name='storage.werror'/>
   <flag name='tcg'/>
   <flag name='fw_cfg'/>
+  <flag name='migration-param.bandwidth'/>
+  <flag name='migration-param.downtime'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100287</microcodeVersion>

@@ -163,6 +163,8 @@
   <flag name='tcg'/>
   <flag name='pvscsi'/>
   <flag name='fw_cfg'/>
+  <flag name='migration-param.bandwidth'/>
+  <flag name='migration-param.downtime'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100246</microcodeVersion>

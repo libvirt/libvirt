@@ -116,6 +116,9 @@
   <flag name='storage.werror'/>
   <flag name='tcg'/>
   <flag name='fw_cfg'/>
+  <flag name='migration-param.bandwidth'/>
+  <flag name='migration-param.downtime'/>
+  <flag name='migration-param.xbzrle-cache-size'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100288</microcodeVersion>

@@ -212,6 +212,9 @@
   <flag name='cpu.migratable'/>
   <flag name='query-cpu-model-expansion.migratable'/>
   <flag name='fw_cfg'/>
+  <flag name='migration-param.bandwidth'/>
+  <flag name='migration-param.downtime'/>
+  <flag name='migration-param.xbzrle-cache-size'/>
   <version>3000092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100240</microcodeVersion>
