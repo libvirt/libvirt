@@ -12,11 +12,6 @@
     %define supported_platform 0
 %endif
 
-# Default to skipping autoreconf.  Distros can change just this one line
-# (or provide a command-line override) if they backport any patches that
-# touch configure.ac or Makefile.am.
-%{!?enable_autotools:%global enable_autotools 0}
-
 # The hypervisor drivers that run in libvirtd
 %define with_qemu          0%{!?_without_qemu:1}
 %define with_lxc           0%{!?_without_lxc:1}
@@ -203,9 +198,9 @@
 # compiler warning into errors without being worried about frequent
 # changes in reported warnings
 %if 0%{?rhel}
-    %define enable_werror --enable-werror
+    %define enable_werror -Dwerror=true
 %else
-    %define enable_werror --disable-werror
+    %define enable_werror -Dwerror=false
 %endif
 
 %if 0%{?rhel} == 7
@@ -257,18 +252,15 @@ Requires: libvirt-libs = %{version}-%{release}
 
 # All build-time requirements. Run-time requirements are
 # listed against each sub-RPM
-%if 0%{?enable_autotools}
-BuildRequires: autoconf
-BuildRequires: automake
 BuildRequires: gettext-devel
-BuildRequires: libtool
-%endif
 %if 0%{?rhel} == 7
 BuildRequires: python36-docutils
 %else
 BuildRequires: python3-docutils
 %endif
 BuildRequires: gcc
+BuildRequires: meson >= 0.54.0
+BuildRequires: ninja-build
 BuildRequires: make
 BuildRequires: git
 %if 0%{?fedora} || 0%{?rhel} > 7
@@ -1006,219 +998,209 @@ exit 1
 %endif
 
 %if %{with_qemu}
-    %define arg_qemu --with-qemu
+    %define arg_qemu -Ddriver_qemu=enabled
 %else
-    %define arg_qemu --without-qemu
+    %define arg_qemu -Ddriver_qemu=disabled
 %endif
 
 %if %{with_openvz}
-    %define arg_openvz --with-openvz
+    %define arg_openvz -Ddriver_openvz=enabled
 %else
-    %define arg_openvz --without-openvz
+    %define arg_openvz -Ddriver_openvz=disabled
 %endif
 
 %if %{with_lxc}
-    %define arg_lxc --with-lxc
-    %define arg_login_shell --with-login-shell
+    %define arg_lxc -Ddriver_lxc=enabled
+    %define arg_login_shell -Dlogin_shell=enabled
 %else
-    %define arg_lxc --without-lxc
-    %define arg_login_shell --without-login-shell
+    %define arg_lxc -Ddriver_lxc=disabled
+    %define arg_login_shell -Dlogin_shell=disabled
 %endif
 
 %if %{with_vbox}
-    %define arg_vbox --with-vbox
+    %define arg_vbox -Ddriver_vbox=enabled
 %else
-    %define arg_vbox --without-vbox
+    %define arg_vbox -Ddriver_vbox=disabled
 %endif
 
 %if %{with_libxl}
-    %define arg_libxl --with-libxl
+    %define arg_libxl -Ddriver_libxl=enabled
 %else
-    %define arg_libxl --without-libxl
+    %define arg_libxl -Ddriver_libxl=disabled
 %endif
 
 %if %{with_esx}
-    %define arg_esx --with-esx
+    %define arg_esx -Ddriver_esx=enabled
 %else
-    %define arg_esx --without-esx
+    %define arg_esx -Ddriver_esx=disabled
 %endif
 
 %if %{with_hyperv}
-    %define arg_hyperv --with-hyperv
+    %define arg_hyperv -Ddriver_hyperv=enabled
 %else
-    %define arg_hyperv --without-hyperv
+    %define arg_hyperv -Ddriver_hyperv=disabled
 %endif
 
 %if %{with_vmware}
-    %define arg_vmware --with-vmware
+    %define arg_vmware -Ddriver_vmware=enabled
 %else
-    %define arg_vmware --without-vmware
+    %define arg_vmware -Ddriver_vmware=disabled
 %endif
 
 %if %{with_storage_rbd}
-    %define arg_storage_rbd --with-storage-rbd
+    %define arg_storage_rbd -Dstorage_rbd=enabled
 %else
-    %define arg_storage_rbd --without-storage-rbd
+    %define arg_storage_rbd -Dstorage_rbd=disabled
 %endif
 
 %if %{with_storage_sheepdog}
-    %define arg_storage_sheepdog --with-storage-sheepdog
+    %define arg_storage_sheepdog -Dstorage_sheepdog=enabled
 %else
-    %define arg_storage_sheepdog --without-storage-sheepdog
+    %define arg_storage_sheepdog -Dstorage_sheepdog=disabled
 %endif
 
 %if %{with_storage_gluster}
-    %define arg_storage_gluster --with-storage-gluster
+    %define arg_storage_gluster -Dstorage_gluster=enabled
 %else
-    %define arg_storage_gluster --without-storage-gluster
+    %define arg_storage_gluster -Dstorage_gluster=disabled
 %endif
 
 %if %{with_storage_zfs}
-    %define arg_storage_zfs --with-storage-zfs
+    %define arg_storage_zfs -Dstorage_zfs=enabled
 %else
-    %define arg_storage_zfs --without-storage-zfs
+    %define arg_storage_zfs -Dstorage_zfs=disabled
 %endif
 
 %if %{with_numactl}
-    %define arg_numactl --with-numactl
+    %define arg_numactl -Dnumactl=enabled
 %else
-    %define arg_numactl --without-numactl
+    %define arg_numactl -Dnumactl=disabled
 %endif
 
 %if %{with_numad}
-    %define arg_numad --with-numad
+    %define arg_numad -Dnumad=enabled
 %else
-    %define arg_numad --without-numad
+    %define arg_numad -Dnumad=disabled
 %endif
 
 %if %{with_fuse}
-    %define arg_fuse --with-fuse
+    %define arg_fuse -Dfuse=enabled
 %else
-    %define arg_fuse --without-fuse
+    %define arg_fuse -Dfuse=disabled
 %endif
 
 %if %{with_sanlock}
-    %define arg_sanlock --with-sanlock
+    %define arg_sanlock -Dsanlock=enabled
 %else
-    %define arg_sanlock --without-sanlock
+    %define arg_sanlock -Dsanlock=disabled
 %endif
 
 %if %{with_firewalld}
-    %define arg_firewalld --with-firewalld
+    %define arg_firewalld -Dfirewalld=enabled
 %else
-    %define arg_firewalld --without-firewalld
+    %define arg_firewalld -Dfirewalld=disabled
 %endif
 
 %if %{with_firewalld_zone}
-    %define arg_firewalld_zone --with-firewalld-zone
+    %define arg_firewalld_zone -Dfirewalld_zone=enabled
 %else
-    %define arg_firewalld_zone --without-firewalld-zone
+    %define arg_firewalld_zone -Dfirewalld_zone=disabled
 %endif
 
 %if %{with_wireshark}
-    %define arg_wireshark --with-wireshark-dissector
+    %define arg_wireshark -Dwireshark_dissector=enabled
 %else
-    %define arg_wireshark --without-wireshark-dissector
+    %define arg_wireshark -Dwireshark_dissector=disabled
 %endif
 
 %if %{with_storage_iscsi_direct}
-    %define arg_storage_iscsi_direct --with-storage-iscsi-direct
+    %define arg_storage_iscsi_direct -Dstorage_iscsi_direct=enabled
 %else
-    %define arg_storage_iscsi_direct --without-storage-iscsi-direct
+    %define arg_storage_iscsi_direct -Dstorage_iscsi_direct=disabled
 %endif
 
 %define when  %(date +"%%F-%%T")
 %define where %(hostname)
 %define who   %{?packager}%{!?packager:Unknown}
-%define arg_packager --with-packager="%{who}, %{when}, %{where}"
-%define arg_packager_version --with-packager-version="%{release}"
+%define arg_packager -Dpackager="%{who}, %{when}, %{where}"
+%define arg_packager_version -Dpackager_version="%{release}"
 
-%define arg_selinux_mount --with-selinux-mount="/sys/fs/selinux"
+%define arg_selinux_mount -Dselinux_mount="/sys/fs/selinux"
 
 # place macros above and build commands below this comment
 
 export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 
-%if 0%{?enable_autotools}
- autoreconf -if
-%endif
-
-rm -f po/stamp-po
-
-%define _configure ../configure
-mkdir %{_vpath_builddir}
-cd %{_vpath_builddir}
-
-%configure --enable-dependency-tracking \
-           --with-runstatedir=%{_rundir} \
+%meson \
+           -Drunstatedir=%{_rundir} \
            %{?arg_qemu} \
            %{?arg_openvz} \
            %{?arg_lxc} \
            %{?arg_vbox} \
            %{?arg_libxl} \
-           --with-sasl \
-           --with-polkit \
-           --with-libvirtd \
+           -Dsasl=enabled \
+           -Dpolkit=enabled \
+           -Ddriver_libvirtd=enabled \
            %{?arg_esx} \
            %{?arg_hyperv} \
            %{?arg_vmware} \
-           --without-vz \
-           --without-bhyve \
-           --with-remote-default-mode=legacy \
-           --with-interface \
-           --with-network \
-           --with-storage-fs \
-           --with-storage-lvm \
-           --with-storage-iscsi \
+           -Ddriver_vz=disabled \
+           -Ddriver_bhyve=disabled \
+           -Dremote_default_mode=legacy \
+           -Ddriver_interface=enabled \
+           -Ddriver_network=enabled \
+           -Dstorage_fs=enabled \
+           -Dstorage_lvm=enabled \
+           -Dstorage_iscsi=enabled \
            %{?arg_storage_iscsi_direct} \
-           --with-storage-scsi \
-           --with-storage-disk \
-           --with-storage-mpath \
+           -Dstorage_scsi=enabled \
+           -Dstorage_disk=enabled \
+           -Dstorage_mpath=enabled \
            %{?arg_storage_rbd} \
            %{?arg_storage_sheepdog} \
            %{?arg_storage_gluster} \
            %{?arg_storage_zfs} \
-           --without-storage-vstorage \
+           -Dstorage_vstorage=disabled \
            %{?arg_numactl} \
            %{?arg_numad} \
-           --with-capng \
+           -Dcapng=enabled \
            %{?arg_fuse} \
-           --with-netcf \
-           --with-selinux \
+           -Dnetcf=enabled \
+           -Dselinux=enabled \
            %{?arg_selinux_mount} \
-           --without-apparmor \
-           --without-hal \
-           --with-udev \
-           --with-yajl \
+           -Dapparmor=disabled \
+           -Dsecdriver_apparmor=disabled \
+           -Dhal=disabled \
+           -Dudev=enabled \
+           -Dyajl=enabled \
            %{?arg_sanlock} \
-           --with-libpcap \
-           --with-macvtap \
-           --with-audit \
-           --with-dtrace \
-           --with-driver-modules \
+           -Dlibpcap=enabled \
+           -Dmacvtap=enabled \
+           -Daudit=enabled \
+           -Ddtrace=enabled \
            %{?arg_firewalld} \
            %{?arg_firewalld_zone} \
            %{?arg_wireshark} \
-           --without-pm-utils \
-           --with-nss-plugin \
+           -Dpm_utils=disabled \
+           -Dnss=enabled \
            %{arg_packager} \
            %{arg_packager_version} \
-           --with-qemu-user=%{qemu_user} \
-           --with-qemu-group=%{qemu_group} \
-           --with-tls-priority=%{tls_priority} \
+           -Dqemu_user=%{qemu_user} \
+           -Dqemu_group=%{qemu_group} \
+           -Dtls_priority=%{tls_priority} \
            %{?enable_werror} \
-           --enable-expensive-tests \
-           --with-init-script=systemd \
+           -Dexpensive_tests=enabled \
+           -Dinit_script=systemd \
            %{?arg_login_shell}
-make %{?_smp_mflags} V=1
+
+%meson_build
 
 %install
 rm -fr %{buildroot}
 
 export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 
-cd %{_vpath_builddir}
-%make_install %{?_smp_mflags} SYSTEMD_UNIT_DIR=%{_unitdir} V=1
+%meson_install
 
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
@@ -1299,12 +1281,7 @@ mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
 %endif
 
 %check
-cd %{_vpath_builddir}
-if ! make %{?_smp_mflags} check VIR_TEST_DEBUG=1
-then
-  cat tests/test-suite.log || true
-  exit 1
-fi
+VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check
 
 %post libs
 %if 0%{?rhel} == 7
@@ -1511,7 +1488,7 @@ exit 0
 
 %files docs
 %doc AUTHORS ChangeLog NEWS.rst README README.rst
-%doc %{_vpath_builddir}/libvirt-docs/*
+%doc libvirt-docs/*
 
 %files daemon
 
@@ -1884,7 +1861,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirt-guests
 %attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 
-%files libs -f %{_vpath_builddir}/%{name}.lang
+%files libs -f %{name}.lang
 %license COPYING COPYING.LESSER
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt-admin.conf

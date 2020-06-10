@@ -2300,7 +2300,6 @@ if git
   # Using return values from configure_file in add_dist_script is possible since 0.55.0
   dist_files = [
     'libvirt.spec',
-    'mingw-libvirt.spec',
     'AUTHORS',
   ]
 
