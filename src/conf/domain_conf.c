@@ -1165,6 +1165,7 @@ VIR_ENUM_IMPL(virDomainTPMModel,
               "tpm-tis",
               "tpm-crb",
               "tpm-spapr",
+              "spapr-tpm-proxy",
 );
 
 VIR_ENUM_IMPL(virDomainTPMBackend,
@@ -3480,7 +3481,9 @@ void virDomainDefFree(virDomainDefPtr def)
         virDomainMemoryDefFree(def->mems[i]);
     VIR_FREE(def->mems);
 
-    virDomainTPMDefFree(def->tpm);
+    for (i = 0; i < def->ntpms; i++)
+        virDomainTPMDefFree(def->tpms[i]);
+    VIR_FREE(def->tpms);
 
     for (i = 0; i < def->npanics; i++)
         virDomainPanicDefFree(def->panics[i]);
@@ -4315,10 +4318,10 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
         if ((rc = cb(def, &device, &def->shmems[i]->info, opaque)) != 0)
             return rc;
     }
-    if (def->tpm) {
-        device.type = VIR_DOMAIN_DEVICE_TPM;
-        device.data.tpm = def->tpm;
-        if ((rc = cb(def, &device, &def->tpm->info, opaque)) != 0)
+    device.type = VIR_DOMAIN_DEVICE_TPM;
+    for (i = 0; i < def->ntpms; i++) {
+        device.data.tpm = def->tpms[i];
+        if ((rc = cb(def, &device, &def->tpms[i]->info, opaque)) != 0)
             return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_PANIC;
@@ -22069,15 +22072,23 @@ virDomainDefParseXML(xmlDocPtr xml,
     if ((n = virXPathNodeSet("./devices/tpm", ctxt, &nodes)) < 0)
         goto error;
 
-    if (n > 1) {
+    if (n > 2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("only a single TPM device is supported"));
+                       _("a maximum of two TPM devices is supported, one of "
+                         "them being a TPM Proxy device"));
         goto error;
     }
 
-    if (n > 0) {
-        if (!(def->tpm = virDomainTPMDefParseXML(xmlopt, nodes[0], ctxt, flags)))
+    if (n && VIR_ALLOC_N(def->tpms, n) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        virDomainTPMDefPtr tpm = virDomainTPMDefParseXML(xmlopt, nodes[i],
+                                                         ctxt, flags);
+        if (!tpm)
             goto error;
+
+        def->tpms[def->ntpms++] = tpm;
     }
     VIR_FREE(nodes);
 
@@ -24461,14 +24472,17 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
             goto error;
     }
 
-    if (src->tpm && dst->tpm) {
-        if (!virDomainTPMDefCheckABIStability(src->tpm, dst->tpm))
-            goto error;
-    } else if (src->tpm || dst->tpm) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Either both target and source domains or none of "
-                         "them must have TPM device present"));
+    if (src->ntpms != dst->ntpms) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain TPM device count %zu "
+                         "does not match source %zu"),
+                       dst->ntpms, src->ntpms);
         goto error;
+    }
+
+    for (i = 0; i < src->ntpms; i++) {
+        if (!virDomainTPMDefCheckABIStability(src->tpms[i], dst->tpms[i]))
+            goto error;
     }
 
     if (src->nmems != dst->nmems) {
@@ -29917,8 +29931,8 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
             goto error;
     }
 
-    if (def->tpm) {
-        if (virDomainTPMDefFormat(buf, def->tpm, flags) < 0)
+    for (n = 0; n < def->ntpms; n++) {
+        if (virDomainTPMDefFormat(buf, def->tpms[n], flags) < 0)
             goto error;
     }
 

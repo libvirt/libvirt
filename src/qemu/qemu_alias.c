@@ -669,8 +669,8 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
         if (qemuAssignDeviceRNGAlias(def, def->rngs[i]) < 0)
             return -1;
     }
-    if (def->tpm) {
-        if (qemuAssignDeviceTPMAlias(def->tpm, 0) < 0)
+    for (i = 0; i < def->ntpms; i++) {
+        if (qemuAssignDeviceTPMAlias(def->tpms[i], i) < 0)
             return -1;
     }
     for (i = 0; i < def->nmems; i++) {

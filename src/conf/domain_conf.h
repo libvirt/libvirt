@@ -1294,6 +1294,7 @@ typedef enum {
     VIR_DOMAIN_TPM_MODEL_TIS,
     VIR_DOMAIN_TPM_MODEL_CRB,
     VIR_DOMAIN_TPM_MODEL_SPAPR,
+    VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY,
 
     VIR_DOMAIN_TPM_MODEL_LAST
 } virDomainTPMModel;
@@ -2628,11 +2629,14 @@ struct _virDomainDef {
     size_t nsysinfo;
     virSysinfoDefPtr *sysinfo;
 
+    /* At maximum 2 TPMs on the domain if a TPM Proxy is present. */
+    size_t ntpms;
+    virDomainTPMDefPtr *tpms;
+
     /* Only 1 */
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
     virDomainNVRAMDefPtr nvram;
-    virDomainTPMDefPtr tpm;
     virCPUDefPtr cpu;
     virDomainRedirFilterDefPtr redirfilter;
     virDomainIOMMUDefPtr iommu;

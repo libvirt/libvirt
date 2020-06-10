@@ -1218,14 +1218,17 @@ get_files(vahControl * ctl)
     }
 
 
-    if (ctl->def->tpm) {
+    if (ctl->def->ntpms > 0) {
         char *shortName = NULL;
         const char *tpmpath = NULL;
 
-        if (ctl->def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
+        for (i = 0; i < ctl->def->ntpms; i++) {
+            if (ctl->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
+                continue;
+
             shortName = virDomainDefGetShortName(ctl->def);
 
-            switch (ctl->def->tpm->version) {
+            switch (ctl->def->tpms[i]->version) {
             case VIR_DOMAIN_TPM_VERSION_1_2:
                 tpmpath = "tpm1.2";
                 break;

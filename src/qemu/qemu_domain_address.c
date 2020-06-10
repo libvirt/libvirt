@@ -268,10 +268,13 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
             return -1;
     }
 
-    if (def->tpm) {
-        if (qemuDomainIsPSeries(def))
-            def->tpm->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
-        if (qemuDomainAssignSpaprVIOAddress(def, &def->tpm->info,
+    for (i = 0; i < def->ntpms; i++) {
+        virDomainTPMDefPtr tpm = def->tpms[i];
+
+        if (tpm->model != VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY &&
+            qemuDomainIsPSeries(def))
+            tpm->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
+        if (qemuDomainAssignSpaprVIOAddress(def, &tpm->info,
                                             VIO_ADDR_TPM) < 0)
             return -1;
     }

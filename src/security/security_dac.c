@@ -1997,10 +1997,10 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
                                &chardevData) < 0)
         rc = -1;
 
-    if (def->tpm) {
+    for (i = 0; i < def->ntpms; i++) {
         if (virSecurityDACRestoreTPMFileLabel(mgr,
                                               def,
-                                              def->tpm) < 0)
+                                              def->tpms[i]) < 0)
             rc = -1;
     }
 
@@ -2203,10 +2203,10 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
                                &chardevData) < 0)
         return -1;
 
-    if (def->tpm) {
+    for (i = 0; i < def->ntpms; i++) {
         if (virSecurityDACSetTPMFileLabel(mgr,
                                           def,
-                                          def->tpm) < 0)
+                                          def->tpms[i]) < 0)
             return -1;
     }
 

@@ -437,12 +437,13 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
         vsockPriv->vhostfd = 6789;
     }
 
-    if (vm->def->tpm) {
-        if (vm->def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
-            VIR_FREE(vm->def->tpm->data.emulator.source.data.file.path);
-            vm->def->tpm->data.emulator.source.data.file.path = g_strdup("/dev/test");
-            vm->def->tpm->data.emulator.source.type = VIR_DOMAIN_CHR_TYPE_FILE;
-       }
+    for (i = 0; i < vm->def->ntpms; i++) {
+        if (vm->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
+            continue;
+
+        VIR_FREE(vm->def->tpms[i]->data.emulator.source.data.file.path);
+        vm->def->tpms[i]->data.emulator.source.data.file.path = g_strdup("/dev/test");
+        vm->def->tpms[i]->data.emulator.source.type = VIR_DOMAIN_CHR_TYPE_FILE;
     }
 
     for (i = 0; i < vm->def->nvideos; i++) {
