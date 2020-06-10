@@ -3056,6 +3056,9 @@ mymain(void)
                         QEMU_CAPS_DEVICE_TPM_PASSTHROUGH,
                         QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY);
 
+    DO_TEST_CAPS_LATEST_PPC64("ppc64-tpmproxy-single");
+    DO_TEST_CAPS_LATEST_PPC64("ppc64-tpmproxy-with-tpm");
+
     DO_TEST("aarch64-usb-controller-qemu-xhci",
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_NEC_USB_XHCI,
