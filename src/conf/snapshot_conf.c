@@ -231,7 +231,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     xmlNodePtr inactiveDomNode = NULL;
     size_t i;
     int n;
-    char *creation = NULL, *state = NULL;
+    char *state = NULL;
     int active;
     char *tmp;
     char *memorySnapshot = NULL;
@@ -404,7 +404,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     ret = g_steal_pointer(&def);
 
  cleanup:
-    VIR_FREE(creation);
     VIR_FREE(state);
     VIR_FREE(nodes);
     VIR_FREE(memorySnapshot);
