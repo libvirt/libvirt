@@ -8977,7 +8977,6 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
 {
     testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
-    char *xml = NULL;
     virDomainMomentObjPtr chk = NULL;
     virDomainCheckpointPtr checkpoint = NULL;
     virDomainMomentObjPtr current = NULL;
@@ -9064,7 +9063,6 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
     }
 
     virDomainObjEndAPI(&vm);
-    VIR_FREE(xml);
     return checkpoint;
 }
 

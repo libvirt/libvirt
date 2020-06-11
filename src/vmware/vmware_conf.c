@@ -132,8 +132,6 @@ vmwareLoadDomains(struct vmware_driver *driver)
     char *vmxPath = NULL;
     char *vmx = NULL;
     vmwareDomainPtr pDomain;
-    char *directoryName = NULL;
-    char *fileName = NULL;
     int ret = -1;
     virVMXContext ctx;
     char *outbuf = NULL;
@@ -197,8 +195,6 @@ vmwareLoadDomains(struct vmware_driver *driver)
     virCommandFree(cmd);
     VIR_FREE(outbuf);
     virDomainDefFree(vmdef);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
     VIR_FREE(vmx);
     virObjectUnref(vm);
     return ret;

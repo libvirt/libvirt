@@ -3368,7 +3368,6 @@ ebiptablesApplyNewRules(const char *ifname,
     bool haveEbtables = false;
     bool haveIptables = false;
     bool haveIp6tables = false;
-    char *errmsg = NULL;
     struct ebtablesSubChainInst **subchains = NULL;
     size_t nsubchains = 0;
     int ret = -1;
@@ -3568,7 +3567,6 @@ ebiptablesApplyNewRules(const char *ifname,
     virHashFree(chains_in_set);
     virHashFree(chains_out_set);
 
-    VIR_FREE(errmsg);
     return ret;
 }
 

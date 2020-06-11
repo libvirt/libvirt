@@ -61,7 +61,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,
                                      const char *baseargs)
 {
-    char *expectargv = NULL;
     char *actualargv = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virNetworkDefPtr def = NULL;
@@ -94,7 +93,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
  cleanup:
     virBufferFreeAndReset(&buf);
-    VIR_FREE(expectargv);
     VIR_FREE(actualargv);
     virNetworkDefFree(def);
     return ret;

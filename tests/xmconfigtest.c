@@ -129,7 +129,6 @@ testCompareHelper(const void *data)
     const struct testInfo *info = data;
     char *xml = NULL;
     char *cfg = NULL;
-    char *cfgout = NULL;
 
     xml = g_strdup_printf("%s/xmconfigdata/test-%s.xml", abs_srcdir, info->name);
     cfg = g_strdup_printf("%s/xmconfigdata/test-%s.cfg", abs_srcdir, info->name);
@@ -141,7 +140,6 @@ testCompareHelper(const void *data)
 
     VIR_FREE(xml);
     VIR_FREE(cfg);
-    VIR_FREE(cfgout);
 
     return result;
 }

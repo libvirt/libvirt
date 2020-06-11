@@ -812,7 +812,6 @@ virSecuritySELinuxGenLabel(virSecurityManagerPtr mgr,
 {
     int rc = -1;
     char *mcs = NULL;
-    char *scontext = NULL;
     context_t ctx = NULL;
     const char *range;
     virSecurityLabelDefPtr seclabel;
@@ -949,7 +948,6 @@ virSecuritySELinuxGenLabel(virSecurityManagerPtr mgr,
 
     if (ctx)
         context_free(ctx);
-    VIR_FREE(scontext);
     VIR_FREE(mcs);
     VIR_FREE(sens);
 

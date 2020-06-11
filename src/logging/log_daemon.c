@@ -526,7 +526,6 @@ virLogDaemonPreExecRestart(const char *state_file,
     char *state = NULL;
     virJSONValuePtr object = virJSONValueNewObject();
     char *magic;
-    virHashKeyValuePairPtr pairs = NULL;
 
     VIR_DEBUG("Running pre-restart exec");
 
@@ -577,7 +576,6 @@ virLogDaemonPreExecRestart(const char *state_file,
     abort(); /* This should be impossible to reach */
 
  cleanup:
-    VIR_FREE(pairs);
     VIR_FREE(state);
     virJSONValueFree(object);
     return -1;

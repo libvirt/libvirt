@@ -770,7 +770,6 @@ virSysinfoParseX86BaseBoard(const char *base,
     char *eol = NULL;
     virSysinfoBaseBoardDefPtr boards = NULL;
     size_t nboards = 0;
-    char *board_type = NULL;
 
     while (base && (cur = strstr(base, "Base Board Information"))) {
         virSysinfoBaseBoardDefPtr def;
@@ -845,7 +844,6 @@ virSysinfoParseX86BaseBoard(const char *base,
     while (nboards--)
         virSysinfoBaseBoardDefClear(&boards[nboards]);
     VIR_FREE(boards);
-    VIR_FREE(board_type);
     return ret;
 }
 

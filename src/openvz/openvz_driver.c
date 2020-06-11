@@ -145,7 +145,6 @@ static int openvzSetInitialConfig(virDomainDefPtr vmdef)
 {
     int ret = -1;
     int vpsid;
-    char * confdir = NULL;
     virCommandPtr cmd = NULL;
 
     if (vmdef->nfss > 1) {
@@ -194,7 +193,6 @@ static int openvzSetInitialConfig(virDomainDefPtr vmdef)
     ret = 0;
 
  cleanup:
-    VIR_FREE(confdir);
     virCommandFree(cmd);
 
     return ret;

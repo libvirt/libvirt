@@ -50,7 +50,6 @@ main(int argc, char **argv)
     const char *uri;
     const char *uuid;
     virDomainLockFailureAction action;
-    char *xml = NULL;
     virConnectPtr conn = NULL;
     virDomainPtr dom = NULL;
     int ret = EXIT_FAILURE;
@@ -102,7 +101,6 @@ main(int argc, char **argv)
     virObjectUnref(dom);
     if (conn)
         virConnectClose(conn);
-    VIR_FREE(xml);
 
     return ret;
 }

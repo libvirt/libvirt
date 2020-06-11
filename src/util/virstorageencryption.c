@@ -146,8 +146,6 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     virStorageEncryptionSecretPtr ret;
     char *type_str = NULL;
-    char *uuidstr = NULL;
-    char *usagestr = NULL;
 
     if (VIR_ALLOC(ret) < 0)
         return NULL;
@@ -177,8 +175,6 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
  cleanup:
     VIR_FREE(type_str);
     virStorageEncryptionSecretFree(ret);
-    VIR_FREE(uuidstr);
-    VIR_FREE(usagestr);
     return NULL;
 }
 

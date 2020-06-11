@@ -400,8 +400,6 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     char *vmx = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
     char *vmxPath = NULL;
     vmwareDomainPtr pDomain = NULL;
     virVMXContext ctx;
@@ -461,8 +459,6 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
  cleanup:
     virDomainDefFree(vmdef);
     VIR_FREE(vmx);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
     VIR_FREE(vmxPath);
     if (vm)
         virObjectUnlock(vm);
