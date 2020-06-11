@@ -202,11 +202,8 @@ testVirFindSCSIHostByPCI(const void *data G_GNUC_UNUSED)
     unsigned int unique_id2 = 2;
     const char *pci_addr1 = "0000:00:1f.1";
     const char *pci_addr2 = "0000:00:1f.2";
-    char *path_addr = NULL;
     char *ret_host = NULL;
     int ret = -1;
-
-    path_addr = g_strdup_printf("%s/%s", abs_srcdir, "sysfs/class/scsi_host");
 
     if (!(ret_host = virSCSIHostFindByPCI(TEST_SCSIHOST_CLASS_PATH,
                                           pci_addr1, unique_id1)) ||
@@ -236,7 +233,6 @@ testVirFindSCSIHostByPCI(const void *data G_GNUC_UNUSED)
 
  cleanup:
     VIR_FREE(ret_host);
-    VIR_FREE(path_addr);
     return ret;
 }
 
