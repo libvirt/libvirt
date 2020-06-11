@@ -257,12 +257,12 @@ mips64el-debian-10-container:
     NAME: debian-10-cross-mips64el
 
 mipsel-debian-10-container:
-  <<: *container_optional_job_definition
+  <<: *container_extra_job_definition
   variables:
     NAME: debian-10-cross-mipsel
 
 ppc64le-debian-10-container:
-  <<: *container_extra_job_definition
+  <<: *container_optional_job_definition
   variables:
     NAME: debian-10-cross-ppc64le
 
@@ -302,12 +302,12 @@ mips64el-debian-sid-container:
     NAME: debian-sid-cross-mips64el
 
 mipsel-debian-sid-container:
-  <<: *container_extra_job_definition
+  <<: *container_optional_job_definition
   variables:
     NAME: debian-sid-cross-mipsel
 
 ppc64le-debian-sid-container:
-  <<: *container_optional_job_definition
+  <<: *container_extra_job_definition
   variables:
     NAME: debian-sid-cross-ppc64le
 
@@ -426,11 +426,11 @@ aarch64-debian-10:
     NAME: debian-10
     CROSS: aarch64
 
-ppc64le-debian-10:
+mipsel-debian-10:
   <<: *cross_build_extra_job_definition
   variables:
     NAME: debian-10
-    CROSS: ppc64le
+    CROSS: mipsel
 
 s390x-debian-10:
   <<: *cross_build_default_job_definition
@@ -450,11 +450,11 @@ i686-debian-sid:
     NAME: debian-sid
     CROSS: i686
 
-mipsel-debian-sid:
+ppc64le-debian-sid:
   <<: *cross_build_extra_job_definition
   variables:
     NAME: debian-sid
-    CROSS: mipsel
+    CROSS: ppc64le
 
 mingw32-fedora-rawhide:
   <<: *cross_build_default_job_definition
