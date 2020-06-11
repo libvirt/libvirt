@@ -7418,7 +7418,7 @@ vboxDomainScreenshot(virDomainPtr dom,
             if (display) {
                 PRUint32 width, height, bitsPerPixel;
                 PRUint32 screenDataSize;
-                PRUint8 *screenData;
+                PRUint8 *screenData = NULL;
                 PRInt32 xOrigin, yOrigin;
 
                 rc = gVBoxAPI.UIDisplay.GetScreenResolution(display, screen,
