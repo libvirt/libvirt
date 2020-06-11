@@ -160,7 +160,7 @@ main(int argc, char **argv)
     pid_file = g_strdup(RUNSTATEDIR "/leaseshelper.pid");
 
     /* Try to claim the pidfile, exiting if we can't */
-    if ((pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0)
+    if ((pid_file_fd = virPidFileAcquirePath(pid_file, true, getpid())) < 0)
         goto cleanup;
 
     /* Since interfaces can be hot plugged, we need to make sure that the
