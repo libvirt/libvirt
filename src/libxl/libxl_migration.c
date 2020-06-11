@@ -449,7 +449,6 @@ libxlDomainMigrationDstPrepareDef(libxlDriverPrivatePtr driver,
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainDefPtr def;
-    char *name = NULL;
 
     if (!dom_xml) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -464,13 +463,12 @@ libxlDomainMigrationDstPrepareDef(libxlDriverPrivatePtr driver,
         goto cleanup;
 
     if (dname) {
-        name = def->name;
+        VIR_FREE(def->name);
         def->name = g_strdup(dname);
     }
 
  cleanup:
     virObjectUnref(cfg);
-    VIR_FREE(name);
     return def;
 }
 
