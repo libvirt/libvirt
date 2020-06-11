@@ -997,10 +997,8 @@ mymain(void)
             flags, result \
         }; \
         char *testLabel; \
-        char *tmp; \
  \
-        tmp = virTestLogContentAndReset(); \
-        VIR_FREE(tmp); \
+        g_free(virTestLogContentAndReset());\
  \
         testLabel = g_strdup_printf("%s(%s): %s", #api, \
                                     virArchToString(arch), name); \
