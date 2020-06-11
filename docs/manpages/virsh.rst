@@ -3395,6 +3395,14 @@ If *--live* is specified, set scheduler information of a running guest.
 If *--config* is specified, affect the next boot of a persistent guest.
 If *--current* is specified, affect the current guest state.
 
+For running guests in Linux hosts, the changes made in the domain's
+numa parameters does not imply that the guest memory will be moved to a
+different nodeset immediately. The memory migration depends on the
+guest activity, and the memory of an idle guest will remain in its
+previous nodeset for longer. The presence of VFIO devices will also
+lock parts of the guest memory in the same nodeset used to start the
+guest, regardless of nodeset changes.
+
 
 perf
 ----
