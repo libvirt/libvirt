@@ -114,8 +114,6 @@ bool virDoesUserExist(const char *name);
 bool virDoesGroupExist(const char *name);
 
 
-bool virIsDevMapperDevice(const char *dev_name) ATTRIBUTE_NONNULL(1);
-
 bool virValidateWWN(const char *wwn);
 
 int virGetDeviceID(const char *path,

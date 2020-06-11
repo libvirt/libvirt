@@ -32,6 +32,7 @@
 #include "virutil.h"
 #include "configmake.h"
 #include "virstring.h"
+#include "virdevmapper.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

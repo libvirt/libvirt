@@ -37,10 +37,6 @@
 
 #include <sys/types.h>
 
-#if WITH_DEVMAPPER
-# include <libdevmapper.h>
-#endif
-
 #ifdef HAVE_GETPWUID_R
 # include <pwd.h>
 # include <grp.h>
@@ -1339,26 +1335,6 @@ void virWaitForDevices(void)
      */
     ignore_value(virCommandRun(cmd, &exitstatus));
 }
-
-#if WITH_DEVMAPPER
-bool
-virIsDevMapperDevice(const char *dev_name)
-{
-    struct stat buf;
-
-    if (!stat(dev_name, &buf) &&
-        S_ISBLK(buf.st_mode) &&
-        dm_is_dm_major(major(buf.st_rdev)))
-            return true;
-
-    return false;
-}
-#else
-bool virIsDevMapperDevice(const char *dev_name G_GNUC_UNUSED)
-{
-    return false;
-}
-#endif
 
 bool
 virValidateWWN(const char *wwn)

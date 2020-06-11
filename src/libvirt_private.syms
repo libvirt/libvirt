@@ -1943,6 +1943,7 @@ virDBusSetSharedBus;
 
 # util/virdevmapper.h
 virDevMapperGetTargets;
+virIsDevMapperDevice;
 
 
 # util/virdnsmasq.h
@@ -3432,7 +3433,6 @@ virGetUserShell;
 virHostGetDRMRenderNode;
 virHostHasIOMMU;
 virIndexToDiskName;
-virIsDevMapperDevice;
 virMemoryLimitIsSet;
 virMemoryLimitTruncate;
 virMemoryMaxValue;

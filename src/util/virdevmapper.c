@@ -212,3 +212,27 @@ virDevMapperGetTargets(const char *path G_GNUC_UNUSED,
     return -1;
 }
 #endif /* ! WITH_DEVMAPPER */
+
+
+#if WITH_DEVMAPPER
+bool
+virIsDevMapperDevice(const char *dev_name)
+{
+    struct stat buf;
+
+    if (!stat(dev_name, &buf) &&
+        S_ISBLK(buf.st_mode) &&
+        dm_is_dm_major(major(buf.st_rdev)))
+            return true;
+
+    return false;
+}
+
+#else /* ! WITH_DEVMAPPER */
+
+bool
+virIsDevMapperDevice(const char *dev_name G_GNUC_UNUSED)
+{
+    return false;
+}
+#endif /* ! WITH_DEVMAPPER */

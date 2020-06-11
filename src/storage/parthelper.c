@@ -36,10 +36,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "virutil.h"
 #include "virfile.h"
 #include "virstring.h"
 #include "virgettext.h"
+#include "virdevmapper.h"
 
 /* we don't need to include the full internal.h just for this */
 #define STREQ(a, b) (strcmp(a, b) == 0)
