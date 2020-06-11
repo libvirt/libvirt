@@ -64,7 +64,6 @@ virDevMapperGetTargetsImpl(const char *path,
                            char ***devPaths_ret,
                            unsigned int ttl)
 {
-    struct stat sb;
     struct dm_task *dmt = NULL;
     struct dm_deps *deps;
     struct dm_info info;
@@ -83,13 +82,7 @@ virDevMapperGetTargetsImpl(const char *path,
         return ret;
     }
 
-    if (stat(path, &sb) < 0) {
-        if (errno == ENOENT)
-            return 0;
-        return -1;
-    }
-
-    if (!dm_is_dm_major(major(sb.st_dev)))
+    if (!virIsDevMapperDevice(path))
         return 0;
 
     if (!(dmt = dm_task_create(DM_DEVICE_DEPS))) {
