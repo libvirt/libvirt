@@ -1901,6 +1901,7 @@ mymain(void)
     DO_TEST("vcpu-placement-static",
             QEMU_CAPS_KVM,
             QEMU_CAPS_OBJECT_IOTHREAD);
+    DO_TEST_CAPS_LATEST("cputune-cpuset-big-id");
 
     DO_TEST("numatune-memory", NONE);
     DO_TEST_PARSE_ERROR("numatune-memory-invalid-nodeset", NONE);
