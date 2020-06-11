@@ -9702,6 +9702,10 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
         virCgroupFree(&cgroup_temp);
     }
 
+    /* set nodeset for root cgroup */
+    if (virCgroupSetCpusetMems(priv->cgroup, nodeset_str) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     virCgroupFree(&cgroup_temp);
