@@ -290,7 +290,6 @@ virTPMEmulatorInit(void)
         g_autofree char *path = NULL;
         bool findit = *prgs[i].path == NULL;
         struct stat statbuf;
-        char *tmp;
 
         if (!findit) {
             /* has executables changed? */
@@ -303,9 +302,7 @@ virTPMEmulatorInit(void)
         }
 
         if (findit) {
-            tmp = *prgs[i].path;
-            VIR_FREE(tmp);
-            *prgs[i].path = NULL;
+            VIR_FREE(*prgs[i].path);
 
             path = virFindFileInPath(prgs[i].name);
             if (!path) {
