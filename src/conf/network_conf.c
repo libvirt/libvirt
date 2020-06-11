@@ -617,12 +617,9 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
         cur = cur->next;
     }
 
-    host->mac = mac;
-    mac = NULL;
-    host->id = id;
-    id = NULL;
-    host->name = name;
-    name = NULL;
+    host->mac = g_steal_pointer(&mac);
+    host->id = g_steal_pointer(&id);
+    host->name = g_steal_pointer(&name);
     if (ip)
         host->ip = inaddr;
 
@@ -681,8 +678,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
                 goto cleanup;
             }
 
-            def->bootfile = file;
-            file = NULL;
+            def->bootfile = g_steal_pointer(&file);
             def->bootserver = inaddr;
         }
 
@@ -1556,9 +1552,8 @@ virNetworkForwardDefParseXML(const char *networkName,
             return -1;
 
         if (forwardDev) {
-            def->ifs[0].device.dev = forwardDev;
+            def->ifs[0].device.dev = g_steal_pointer(&forwardDev);
             def->ifs[0].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
-            forwardDev = NULL;
             def->nifs++;
         }
 
@@ -1599,8 +1594,7 @@ virNetworkForwardDefParseXML(const char *networkName,
                 }
             }
 
-            def->ifs[i].device.dev = forwardDevi;
-            forwardDevi = NULL;
+            def->ifs[i].device.dev = g_steal_pointer(&forwardDevi);
             def->ifs[i].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
             def->nifs++;
         }
@@ -1676,8 +1670,7 @@ virNetworkForwardDefParseXML(const char *networkName,
             return -1;
         }
 
-        def->pfs->dev = forwardDev;
-        forwardDev = NULL;
+        def->pfs->dev = g_steal_pointer(&forwardDev);
         def->npfs++;
     }
 
