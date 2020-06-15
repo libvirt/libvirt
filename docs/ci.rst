@@ -138,11 +138,6 @@ Testing
           :target: https://gitlab.com/libvirt/libvirt-ci/pipelines
           :alt: libvirt-ci pipeline status
 
-   * - libvirt-dockerfiles
-     - .. image:: https://gitlab.com/libvirt/libvirt-dockerfiles/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-dockerfiles/pipelines
-          :alt: libvirt-dockerfiles pipeline status
-
    * - libvirt-test-API
      - .. image:: https://gitlab.com/libvirt/libvirt-test-API/badges/master/pipeline.svg
           :target: https://gitlab.com/libvirt/libvirt-test-API/pipelines
