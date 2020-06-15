@@ -14,6 +14,9 @@
         <dt><a href="kbase/secureusage.html">Secure usage</a></dt>
         <dd>Secure usage of the libvirt APIs</dd>
 
+        <dt><a href="kbase/s390_protected_virt.html">Protected virtualization on s390</a></dt>
+        <dd>Running secure s390 guests with IBM Secure Execution</dd>
+
         <dt><a href="kbase/launch_security_sev.html">Launch security</a></dt>
         <dd>Securely launching VMs with AMD SEV</dd>
 
