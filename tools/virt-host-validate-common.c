@@ -41,7 +41,8 @@ VIR_ENUM_IMPL(virHostValidateCPUFlag,
               "vmx",
               "svm",
               "sie",
-              "158");
+              "158",
+              "sev");
 
 static bool quiet;
 
@@ -448,14 +449,18 @@ int virHostValidateSecureGuests(const char *hvname,
 {
     virBitmapPtr flags;
     bool hasFac158 = false;
+    bool hasAMDSev = false;
     virArch arch = virArchFromHost();
     g_autofree char *cmdline = NULL;
     static const char *kIBMValues[] = {"y", "Y", "on", "ON", "oN", "On", "1"};
+    g_autofree char *mod_value = NULL;
 
     flags = virHostValidateGetCPUFlags();
 
     if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_FACILITY_158))
         hasFac158 = true;
+    else if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SEV))
+        hasAMDSev = true;
 
     virBitmapFree(flags);
 
@@ -490,6 +495,29 @@ int virHostValidateSecureGuests(const char *hvname,
         } else {
             virHostMsgFail(level, "Hardware or firmware does not provide "
                                   "support for IBM Secure Execution");
+        }
+    } else if (hasAMDSev) {
+        if (virFileReadValueString(&mod_value, "/sys/module/kvm_amd/parameters/sev") < 0) {
+            virHostMsgFail(level, "AMD Secure Encrypted Virtualization not "
+                                  "supported by the currently used kernel");
+            return 0;
+        }
+
+        if (mod_value[0] != '1') {
+            virHostMsgFail(level,
+                           "AMD Secure Encrypted Virtualization appears to be "
+                           "disabled in kernel. Add kvm_amd.sev=1 "
+                           "to the kernel cmdline arguments");
+            return 0;
+        }
+
+        if (virFileExists("/dev/sev")) {
+            virHostMsgPass();
+            return 1;
+        } else {
+            virHostMsgFail(level,
+                           "AMD Secure Encrypted Virtualization appears to be "
+                           "disabled in firemare.");
         }
     } else {
         virHostMsgFail(level,
