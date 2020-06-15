@@ -23,6 +23,7 @@
 
 #include "qemu_capabilities.h"
 #include "viralloc.h"
+#include "virarch.h"
 #include "vircrypto.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -662,6 +663,7 @@ struct _virQEMUCaps {
     virObject parent;
 
     bool kvmSupportsNesting;
+    bool kvmSupportsSecureGuest;
 
     char *binary;
     time_t ctime;
@@ -1907,6 +1909,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 
     ret->invalidation = qemuCaps->invalidation;
     ret->kvmSupportsNesting = qemuCaps->kvmSupportsNesting;
+    ret->kvmSupportsSecureGuest = qemuCaps->kvmSupportsSecureGuest;
 
     ret->ctime = qemuCaps->ctime;
 
@@ -4404,6 +4407,9 @@ virQEMUCapsLoadCache(virArch hostArch,
     if (virXPathBoolean("boolean(./kvmSupportsNesting)", ctxt) > 0)
         qemuCaps->kvmSupportsNesting = true;
 
+    if (virXPathBoolean("boolean(./kvmSupportsSecureGuest)", ctxt) > 0)
+        qemuCaps->kvmSupportsSecureGuest = true;
+
     ret = 0;
  cleanup:
     VIR_FREE(str);
@@ -4641,6 +4647,9 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
     if (qemuCaps->kvmSupportsNesting)
         virBufferAddLit(&buf, "<kvmSupportsNesting/>\n");
 
+    if (qemuCaps->kvmSupportsSecureGuest)
+        virBufferAddLit(&buf, "<kvmSupportsSecureGuest/>\n");
+
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</qemuCaps>\n");
 
@@ -4675,6 +4684,49 @@ virQEMUCapsSaveFile(void *data,
  cleanup:
     VIR_FREE(xml);
     return ret;
+}
+
+
+/*
+ * Check whether IBM Secure Execution (S390) is enabled
+ */
+static bool
+virQEMUCapsKVMSupportsSecureGuestS390(void)
+{
+
+    g_autofree char *cmdline = NULL;
+    static const char *kValues[] = {"y", "Y", "on", "ON", "oN", "On", "1"};
+
+    if (!virFileIsDir("/sys/firmware/uv"))
+        return false;
+
+    if (virFileReadValueString(&cmdline, "/proc/cmdline") < 0)
+        return false;
+
+    /* we're prefix matching rather than equality matching here, because kernel
+     * would treat even something like prot_virt='yFOO' as enabled */
+    if (virKernelCmdlineMatchParam(cmdline, "prot_virt", kValues,
+                                   G_N_ELEMENTS(kValues),
+                                   VIR_KERNEL_CMDLINE_FLAGS_SEARCH_FIRST |
+                                   VIR_KERNEL_CMDLINE_FLAGS_CMP_PREFIX))
+        return true;
+
+    return false;
+}
+
+
+/*
+ * Check whether the secure guest functionality is enabled.
+ * See the specific architecture function for details on the verifications made.
+ */
+static bool
+virQEMUCapsKVMSupportsSecureGuest(void)
+{
+    virArch arch = virArchFromHost();
+
+    if (ARCH_IS_S390(arch))
+        return virQEMUCapsKVMSupportsSecureGuestS390();
+    return false;
 }
 
 
@@ -4863,6 +4915,13 @@ virQEMUCapsIsValid(void *data,
             VIR_DEBUG("Outdated capabilities for '%s': kvm kernel nested "
                       "value changed from %d",
                      qemuCaps->binary, qemuCaps->kvmSupportsNesting);
+            return false;
+        }
+
+        if (virQEMUCapsKVMSupportsSecureGuest() != qemuCaps->kvmSupportsSecureGuest) {
+            VIR_DEBUG("Outdated capabilities for '%s': kvm kernel secure guest "
+                      "value changed from %d",
+                      qemuCaps->binary, qemuCaps->kvmSupportsSecureGuest);
             return false;
         }
     }
@@ -5366,6 +5425,8 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
         qemuCaps->kernelVersion = g_strdup(kernelVersion);
 
         qemuCaps->kvmSupportsNesting = virQEMUCapsKVMSupportsNesting();
+
+        qemuCaps->kvmSupportsSecureGuest = virQEMUCapsKVMSupportsSecureGuest();
     }
 
     return qemuCaps;
