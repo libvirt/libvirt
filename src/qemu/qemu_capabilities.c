@@ -4716,6 +4716,27 @@ virQEMUCapsKVMSupportsSecureGuestS390(void)
 
 
 /*
+ * Check whether AMD Secure Encrypted Virtualization (x86) is enabled
+ */
+static bool
+virQEMUCapsKVMSupportsSecureGuestAMD(void)
+{
+    g_autofree char *modValue = NULL;
+
+    if (virFileReadValueString(&modValue, "/sys/module/kvm_amd/parameters/sev") < 0)
+        return false;
+
+    if (modValue[0] != '1')
+        return false;
+
+    if (virFileExists(QEMU_DEV_SEV))
+        return true;
+
+    return false;
+}
+
+
+/*
  * Check whether the secure guest functionality is enabled.
  * See the specific architecture function for details on the verifications made.
  */
@@ -4726,6 +4747,10 @@ virQEMUCapsKVMSupportsSecureGuest(void)
 
     if (ARCH_IS_S390(arch))
         return virQEMUCapsKVMSupportsSecureGuestS390();
+
+    if (ARCH_IS_X86(arch))
+        return virQEMUCapsKVMSupportsSecureGuestAMD();
+
     return false;
 }
 
