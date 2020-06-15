@@ -3433,6 +3433,8 @@ virGetUserShell;
 virHostGetDRMRenderNode;
 virHostHasIOMMU;
 virIndexToDiskName;
+virKernelCmdlineMatchParam;
+virKernelCmdlineNextParam;
 virMemoryLimitIsSet;
 virMemoryLimitTruncate;
 virMemoryMaxValue;

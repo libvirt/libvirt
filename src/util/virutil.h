@@ -145,6 +145,40 @@ bool virHostHasIOMMU(void);
 
 char *virHostGetDRMRenderNode(void) G_GNUC_NO_INLINE;
 
+/* Kernel cmdline match and comparison strategy for arg=value pairs */
+typedef enum {
+    /* substring comparison of argument values */
+    VIR_KERNEL_CMDLINE_FLAGS_CMP_PREFIX = 1,
+
+    /* strict string comparison of argument values */
+    VIR_KERNEL_CMDLINE_FLAGS_CMP_EQ = 2,
+
+    /* look for any occurrence of the argument with the expected value,
+     * this should be used when an argument set to the expected value overrides
+     * all the other occurrences of the argument, e.g. when looking for 'arg=1'
+     * in 'arg=0 arg=1 arg=0' the search would succeed with this flag
+     */
+    VIR_KERNEL_CMDLINE_FLAGS_SEARCH_FIRST = 4,
+
+    /* look for the last occurrence of argument with the expected value,
+     * this should be used when the last occurrence of the argument overrides
+     * all the other ones, e.g. when looking for 'arg=1' in 'arg=0 arg=1' the
+     * search would succeed with this flag, but in 'arg=1 arg=0' it would not,
+     * because 'arg=0' overrides all the previous occurrences of 'arg'
+     */
+    VIR_KERNEL_CMDLINE_FLAGS_SEARCH_LAST = 8,
+} virKernelCmdlineFlags;
+
+const char *virKernelCmdlineNextParam(const char *cmdline,
+                                      char **param,
+                                      char **val);
+
+bool virKernelCmdlineMatchParam(const char *cmdline,
+                                const char *arg,
+                                const char **values,
+                                size_t len_values,
+                                virKernelCmdlineFlags flags);
+
 /**
  * VIR_ASSIGN_IS_OVERFLOW:
  * @rvalue: value that is checked (evaluated twice)
