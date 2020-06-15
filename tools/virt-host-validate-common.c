@@ -40,7 +40,8 @@ VIR_ENUM_IMPL(virHostValidateCPUFlag,
               VIR_HOST_VALIDATE_CPU_FLAG_LAST,
               "vmx",
               "svm",
-              "sie");
+              "sie",
+              "158");
 
 static bool quiet;
 
@@ -210,7 +211,8 @@ virBitmapPtr virHostValidateGetCPUFlags(void)
          * on the architecture, so check possible prefixes */
         if (!STRPREFIX(line, "flags") &&
             !STRPREFIX(line, "Features") &&
-            !STRPREFIX(line, "features"))
+            !STRPREFIX(line, "features") &&
+            !STRPREFIX(line, "facilities"))
             continue;
 
         /* fgets() includes the trailing newline in the output buffer,
@@ -438,4 +440,62 @@ bool virHostKernelModuleIsLoaded(const char *module)
     VIR_FORCE_FCLOSE(fp);
 
     return ret;
+}
+
+
+int virHostValidateSecureGuests(const char *hvname,
+                                virHostValidateLevel level)
+{
+    virBitmapPtr flags;
+    bool hasFac158 = false;
+    virArch arch = virArchFromHost();
+    g_autofree char *cmdline = NULL;
+    static const char *kIBMValues[] = {"y", "Y", "on", "ON", "oN", "On", "1"};
+
+    flags = virHostValidateGetCPUFlags();
+
+    if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_FACILITY_158))
+        hasFac158 = true;
+
+    virBitmapFree(flags);
+
+    virHostMsgCheck(hvname, "%s", _("for secure guest support"));
+    if (ARCH_IS_S390(arch)) {
+        if (hasFac158) {
+            if (!virFileIsDir("/sys/firmware/uv")) {
+                virHostMsgFail(level, "IBM Secure Execution not supported by "
+                                      "the currently used kernel");
+                return 0;
+            }
+
+            if (virFileReadValueString(&cmdline, "/proc/cmdline") < 0)
+                return -1;
+
+            /* we're prefix matching rather than equality matching here, because
+             * kernel would treat even something like prot_virt='yFOO' as
+             * enabled
+             */
+            if (virKernelCmdlineMatchParam(cmdline, "prot_virt", kIBMValues,
+                                           G_N_ELEMENTS(kIBMValues),
+                                           VIR_KERNEL_CMDLINE_FLAGS_SEARCH_FIRST |
+                                           VIR_KERNEL_CMDLINE_FLAGS_CMP_PREFIX)) {
+                virHostMsgPass();
+                return 1;
+            } else {
+                virHostMsgFail(level,
+                               "IBM Secure Execution appears to be disabled "
+                               "in kernel. Add prot_virt=1 to kernel cmdline "
+                               "arguments");
+            }
+        } else {
+            virHostMsgFail(level, "Hardware or firmware does not provide "
+                                  "support for IBM Secure Execution");
+        }
+    } else {
+        virHostMsgFail(level,
+                       "Unknown if this platform has Secure Guest support");
+        return -1;
+    }
+
+    return 0;
 }
