@@ -5634,6 +5634,11 @@ virQEMUCapsCacheLookup(virFileCachePtr cache,
     priv->microcodeVersion = virHostCPUGetMicrocodeVersion();
 
     ret = virFileCacheLookup(cache, binary);
+    if (!ret) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no capabilities available for %s"), binary);
+        return NULL;
+    }
 
     VIR_DEBUG("Returning caps %p for %s", ret, binary);
     return ret;
@@ -5779,6 +5784,12 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
     if (!binary) {
         probedbinary = virQEMUCapsGetDefaultEmulator(hostarch, arch);
         binary = probedbinary;
+    }
+    if (!binary) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unable to find any emulator to serve '%s' architecture"),
+                       archStr);
+        return NULL;
     }
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(cache, binary)))

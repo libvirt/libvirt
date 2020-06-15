@@ -6131,8 +6131,10 @@ qemuDomainPostParseDataAlloc(const virDomainDef *def,
     virQEMUDriverPtr driver = opaque;
 
     if (!(*parseOpaque = virQEMUCapsCacheLookup(driver->qemuCapsCache,
-                                                def->emulator)))
+                                                def->emulator))) {
+        virResetLastError();
         return 1;
+    }
 
     return 0;
 }
