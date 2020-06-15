@@ -131,8 +131,10 @@ main(int argc, char **argv)
      * events for expired leases. So, libvirtd sets another env var for this
      * purpose */
     if (!interface &&
-        !(interface = getenv("VIR_BRIDGE_NAME")))
-        goto cleanup;
+        !(interface = getenv("VIR_BRIDGE_NAME"))) {
+        fprintf(stderr, _("interface not set\n"));
+        exit(EXIT_FAILURE);
+    }
 
     ip = argv[3];
     mac = argv[2];
@@ -160,13 +162,21 @@ main(int argc, char **argv)
     pid_file = g_strdup(RUNSTATEDIR "/leaseshelper.pid");
 
     /* Try to claim the pidfile, exiting if we can't */
-    if ((pid_file_fd = virPidFileAcquirePath(pid_file, true, getpid())) < 0)
+    if ((pid_file_fd = virPidFileAcquirePath(pid_file, true, getpid())) < 0) {
+        fprintf(stderr,
+                _("Unable to acquire PID file: %s\n errno=%d"),
+                pid_file, errno);
         goto cleanup;
+    }
 
     /* Since interfaces can be hot plugged, we need to make sure that the
      * corresponding custom lease file exists. If not, 'touch' it */
-    if (virFileTouch(custom_lease_file, 0644) < 0)
+    if (virFileTouch(custom_lease_file, 0644) < 0) {
+        fprintf(stderr,
+                _("Unable to create: %s\n errno=%d"),
+                custom_lease_file, errno);
         goto cleanup;
+    }
 
     switch ((enum virLeaseActionFlags) action) {
     case VIR_LEASE_ACTION_ADD:
