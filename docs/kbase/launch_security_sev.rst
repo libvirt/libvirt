@@ -30,8 +30,11 @@ Enabling SEV on the host
 ========================
 
 Before VMs can make use of the SEV feature you need to make sure your
-AMD CPU does support SEV. You can check whether SEV is among the CPU
-flags with:
+AMD CPU does support SEV. You can run ``libvirt-host-validate``
+(libvirt >= 6.5.0) to check if your host supports secure guests or you
+can follow the manual checks below.
+
+You can manually check whether SEV is among the CPU flags with:
 
 ::
 
@@ -109,7 +112,7 @@ following:
      </features>
    </domainCapabilities>
 
-Note that if libvirt was already installed and libvirtd running before
+Note that if libvirt (<6.5.0) was already installed and libvirtd running before
 enabling SEV in the kernel followed by the host reboot you need to force
 libvirtd to re-probe both the host and QEMU capabilities. First stop
 libvirtd:
