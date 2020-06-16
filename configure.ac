@@ -87,16 +87,6 @@ AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
 AM_CONDITIONAL([WITH_MACOS], [test "$with_macos" = "yes"])
 
-if test "$with_win" = "yes" ; then
-  # We don't support the daemon yet
-  with_libvirtd=no
-fi
-
-# The daemon requires remote support.  Likewise, if we are not using
-# RPC, we don't need several libraries.
-if test "$with_remote" = "no" ; then
-  with_libvirtd=no
-fi
 # Stateful drivers are useful only when building the daemon.
 if test "$with_libvirtd" = "no" ; then
   with_qemu=no
@@ -130,7 +120,6 @@ LIBVIRT_DRIVER_ARG_BHYVE
 LIBVIRT_DRIVER_ARG_ESX
 LIBVIRT_DRIVER_ARG_HYPERV
 LIBVIRT_DRIVER_ARG_TEST
-LIBVIRT_DRIVER_ARG_LIBVIRTD
 LIBVIRT_DRIVER_ARG_NETWORK
 LIBVIRT_DRIVER_ARG_INTERFACE
 
@@ -145,7 +134,6 @@ LIBVIRT_DRIVER_CHECK_BHYVE
 LIBVIRT_DRIVER_CHECK_ESX
 LIBVIRT_DRIVER_CHECK_HYPERV
 LIBVIRT_DRIVER_CHECK_TEST
-LIBVIRT_DRIVER_CHECK_LIBVIRTD
 LIBVIRT_DRIVER_CHECK_NETWORK
 LIBVIRT_DRIVER_CHECK_INTERFACE
 
@@ -351,7 +339,6 @@ LIBVIRT_DRIVER_RESULT_VZ
 LIBVIRT_DRIVER_RESULT_BHYVE
 LIBVIRT_DRIVER_RESULT_TEST
 LIBVIRT_DRIVER_RESULT_NETWORK
-LIBVIRT_DRIVER_RESULT_LIBVIRTD
 LIBVIRT_DRIVER_RESULT_INTERFACE
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])

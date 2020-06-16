@@ -1567,6 +1567,28 @@ endif
 remote_default_mode = get_option('remote_default_mode').to_upper()
 conf.set('REMOTE_DRIVER_MODE_DEFAULT', 'REMOTE_DRIVER_MODE_@0@'.format(remote_default_mode))
 
+if not get_option('driver_libvirtd').disabled()
+  use_libvirtd = true
+
+  if host_machine.system() == 'windows'
+    use_libvirtd = false
+    if get_option('driver_libvirtd').enabled()
+      error('libvirtd daemon is not supported on windows')
+    endif
+  endif
+
+  if not conf.has('WITH_REMOTE')
+    use_libvirtd = false
+    if get_option('driver_libvirtd').enabled()
+      error('remote driver is required for libvirtd daemon')
+    endif
+  endif
+
+  if use_libvirtd
+    conf.set('WITH_LIBVIRTD', 1)
+  endif
+endif
+
 
 # define top include directory
 
@@ -1588,6 +1610,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 
 driver_summary = {
   'Remote': conf.has('WITH_REMOTE'),
+  'Libvirtd': conf.has('WITH_LIBVIRTD'),
 }
 summary(driver_summary, section: 'Drivers', bool_yn: true)
 
