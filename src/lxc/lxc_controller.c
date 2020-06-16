@@ -1474,7 +1474,6 @@ static int virLXCControllerSetupDev(virLXCControllerPtr ctrl)
 static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
 {
     size_t i;
-    g_autofree char *path = NULL;
     const struct {
         int maj;
         int min;
@@ -1494,6 +1493,8 @@ static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
 
     /* Populate /dev/ with a few important bits */
     for (i = 0; i < G_N_ELEMENTS(devs); i++) {
+        g_autofree char *path = NULL;
+
         path = g_strdup_printf("/%s/%s.dev/%s", LXC_STATE_DIR, ctrl->def->name,
                                devs[i].path);
 
