@@ -58,25 +58,6 @@ doRmmod(const char *module, char **errbuf)
     return 0;
 }
 
-/**
- * virKModConfig:
- *
- * Get the current kernel module configuration
- *
- * Returns NULL on failure or a pointer to the output which
- * must be VIR_FREE()'d by the caller
- */
-char *
-virKModConfig(void)
-{
-    char *outbuf = NULL;
-
-    if (doModprobe("-c", NULL, &outbuf, NULL) < 0)
-        return NULL;
-
-    return outbuf;
-}
-
 
 /**
  * virKModLoad:
