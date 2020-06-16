@@ -781,7 +781,7 @@ testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
 {
     xmlNodePtr ret = NULL;
     xmlDocPtr doc = NULL;
-    char *absFile = NULL;
+    g_autofree char *absFile = NULL;
     g_autofree char *relFile = NULL;
 
     if ((relFile = virXMLPropString(node, "file"))) {
