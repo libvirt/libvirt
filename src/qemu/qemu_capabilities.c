@@ -2252,8 +2252,8 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
 
 static virDomainCapsCPUModelsPtr
 virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefsPtr defs,
-                           const char **modelWhitelist,
-                           const char **modelBlacklist)
+                           const char **modelAllowed,
+                           const char **modelForbidden)
 {
     g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
     size_t i;
@@ -2264,10 +2264,10 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefsPtr defs,
     for (i = 0; i < defs->ncpus; i++) {
         qemuMonitorCPUDefInfoPtr cpu = defs->cpus + i;
 
-        if (modelWhitelist && !virStringListHasString(modelWhitelist, cpu->name))
+        if (modelAllowed && !virStringListHasString(modelAllowed, cpu->name))
             continue;
 
-        if (modelBlacklist && virStringListHasString(modelBlacklist, cpu->name))
+        if (modelForbidden && virStringListHasString(modelForbidden, cpu->name))
             continue;
 
         if (virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
@@ -2282,15 +2282,15 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefsPtr defs,
 virDomainCapsCPUModelsPtr
 virQEMUCapsGetCPUModels(virQEMUCapsPtr qemuCaps,
                         virDomainVirtType type,
-                        const char **modelWhitelist,
-                        const char **modelBlacklist)
+                        const char **modelAllowed,
+                        const char **modelForbidden)
 {
     qemuMonitorCPUDefsPtr defs;
 
     if (!(defs = virQEMUCapsGetAccel(qemuCaps, type)->cpuModels))
         return NULL;
 
-    return virQEMUCapsCPUDefsToModels(defs, modelWhitelist, modelBlacklist);
+    return virQEMUCapsCPUDefsToModels(defs, modelAllowed, modelForbidden);
 }
 
 
@@ -6005,14 +6005,14 @@ virQEMUCapsFillDomainCPUCaps(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
                                       VIR_CPU_MODE_CUSTOM,
                                       domCaps->machine)) {
-        const char *blacklist[] = { "host", NULL };
+        const char *forbidden[] = { "host", NULL };
         VIR_AUTOSTRINGLIST models = NULL;
 
         if (virCPUGetModels(domCaps->arch, &models) >= 0) {
             domCaps->cpu.custom = virQEMUCapsGetCPUModels(qemuCaps,
                                                           domCaps->virttype,
                                                           (const char **)models,
-                                                          blacklist);
+                                                          forbidden);
         } else {
             domCaps->cpu.custom = NULL;
         }
