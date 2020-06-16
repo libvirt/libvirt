@@ -253,11 +253,11 @@
 # will be rejected.
 #
 # Default is to always verify. Uncommenting this will disable
-# verification - make sure an IP whitelist is set
+# verification.
 #tls_no_verify_certificate = 1
 
 
-# A whitelist of allowed x509 Distinguished Names
+# An access control list of allowed x509 Distinguished Names
 # This list may contain wildcards such as
 #
 #    "C=GB,ST=London,L=London,O=Red Hat,CN=*"
@@ -282,7 +282,7 @@
 
 
 @END@
-# A whitelist of allowed SASL usernames. The format for username
+# An access control list of allowed SASL usernames. The format for username
 # depends on the SASL authentication mechanism. Kerberos usernames
 # look like username@REALM
 #

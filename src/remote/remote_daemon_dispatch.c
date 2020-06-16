@@ -3861,7 +3861,7 @@ remoteDispatchAuthSaslStart(virNetServerPtr server,
     if (err == VIR_NET_SASL_CONTINUE) {
         ret->complete = 0;
     } else {
-        /* Check username whitelist ACL */
+        /* Check username ACL */
         if ((err = remoteSASLFinish(server, client)) < 0) {
             if (err == -2)
                 goto authdeny;
@@ -3957,7 +3957,7 @@ remoteDispatchAuthSaslStep(virNetServerPtr server,
     if (err == VIR_NET_SASL_CONTINUE) {
         ret->complete = 0;
     } else {
-        /* Check username whitelist ACL */
+        /* Check username ACL */
         if ((err = remoteSASLFinish(server, client)) < 0) {
             if (err == -2)
                 goto authdeny;

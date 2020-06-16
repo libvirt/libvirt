@@ -38,7 +38,7 @@ enum {
 };
 
 virNetSASLContextPtr virNetSASLContextNewClient(void);
-virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitelist);
+virNetSASLContextPtr virNetSASLContextNewServer(const char *const *usernameACL);
 
 int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
                                    const char *identity);
