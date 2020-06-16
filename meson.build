@@ -37,6 +37,12 @@ conf.set_quoted('PACKAGE_NAME', meson.project_name())
 conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 conf.set_quoted('VERSION', meson.project_version())
 
+if host_machine.system() == 'windows'
+  # For AI_ADDRCONFIG
+  conf.set('_WIN32_WINNT', '0x0600') # Win Vista / Server 2008
+  conf.set('WINVER', '0x0600') # Win Vista / Server 2008
+endif
+
 
 # set various paths
 

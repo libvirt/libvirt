@@ -154,10 +154,6 @@ AM_CONDITIONAL([WITH_MACOS], [test "$with_macos" = "yes"])
 if test "$with_win" = "yes" ; then
   # We don't support the daemon yet
   with_libvirtd=no
-
-  # For AI_ADDRCONFIG
-  AC_DEFINE([_WIN32_WINNT], [0x0600], [Win Vista / Server 2008])
-  AC_DEFINE([WINVER], [0x0600], [Win Vista / Server 2008])
 fi
 
 # The daemon requires remote support.  Likewise, if we are not using
