@@ -26008,7 +26008,8 @@ static int
 virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 virDomainHostdevDefPtr def,
                                 unsigned int flags,
-                                bool includeTypeInAddr)
+                                bool includeTypeInAddr,
+                                virDomainXMLOptionPtr xmlopt)
 {
     bool closedSource = false;
     virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
@@ -26107,6 +26108,10 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
             if (iscsisrc->src->hosts[0].port)
                 virBufferAsprintf(buf, " port='%u'", iscsisrc->src->hosts[0].port);
             virBufferAddLit(buf, "/>\n");
+
+            if (virDomainDiskSourceFormatPrivateData(buf, iscsisrc->src,
+                                                     flags, xmlopt) < 0)
+                return -1;
         } else {
             virBufferAsprintf(buf, "<adapter name='%s'/>\n",
                               scsihostsrc->adapter);
@@ -26188,13 +26193,14 @@ static int
 virDomainActualNetDefContentsFormat(virBufferPtr buf,
                                     virDomainNetDefPtr def,
                                     bool inSubelement,
-                                    unsigned int flags)
+                                    unsigned int flags,
+                                    virDomainXMLOptionPtr xmlopt)
 {
     virDomainNetType actualType = virDomainNetGetActualType(def);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         if (virDomainHostdevDefFormatSubsys(buf, virDomainNetGetActualHostdev(def),
-                                            flags, true) < 0) {
+                                            flags, true, xmlopt) < 0) {
             return -1;
         }
     } else {
@@ -26274,7 +26280,8 @@ virDomainActualNetDefContentsFormat(virBufferPtr buf,
 static int
 virDomainActualNetDefFormat(virBufferPtr buf,
                             virDomainNetDefPtr def,
-                            unsigned int flags)
+                            unsigned int flags,
+                            virDomainXMLOptionPtr xmlopt)
 {
     virDomainNetType type;
     const char *typeStr;
@@ -26302,7 +26309,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 2);
-    if (virDomainActualNetDefContentsFormat(buf, def, true, flags) < 0)
+    if (virDomainActualNetDefContentsFormat(buf, def, true, flags, xmlopt) < 0)
        return -1;
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</actual>\n");
@@ -26503,7 +26510,7 @@ virDomainNetDefFormat(virBufferPtr buf,
          * the standard place...  (this is for public reporting of
          * interface status)
          */
-        if (virDomainActualNetDefContentsFormat(buf, def, false, flags) < 0)
+        if (virDomainActualNetDefContentsFormat(buf, def, false, flags, xmlopt) < 0)
             return -1;
     } else {
         /* ...but if we've asked for the inactive XML (rather than
@@ -26605,7 +26612,7 @@ virDomainNetDefFormat(virBufferPtr buf,
 
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
             if (virDomainHostdevDefFormatSubsys(buf, &def->data.hostdev.def,
-                                                flags, true) < 0) {
+                                                flags, true, xmlopt) < 0) {
                 return -1;
             }
             break;
@@ -26651,7 +26658,7 @@ virDomainNetDefFormat(virBufferPtr buf,
          */
         if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
             (flags & VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET) &&
-            (virDomainActualNetDefFormat(buf, def, flags) < 0))
+            (virDomainActualNetDefFormat(buf, def, flags, xmlopt) < 0))
             return -1;
 
     }
@@ -28228,7 +28235,8 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 static int
 virDomainHostdevDefFormat(virBufferPtr buf,
                           virDomainHostdevDefPtr def,
-                          unsigned int flags)
+                          unsigned int flags,
+                          virDomainXMLOptionPtr xmlopt)
 {
     const char *mode = virDomainHostdevModeTypeToString(def->mode);
     virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
@@ -28307,7 +28315,7 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 
     switch (def->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-        if (virDomainHostdevDefFormatSubsys(buf, def, flags, false) < 0)
+        if (virDomainHostdevDefFormatSubsys(buf, def, flags, false, xmlopt) < 0)
             return -1;
         break;
     case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
@@ -29917,7 +29925,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
          * and will have already been formatted there.
          */
         if (!def->hostdevs[n]->parentnet &&
-            virDomainHostdevDefFormat(buf, def->hostdevs[n], flags) < 0) {
+            virDomainHostdevDefFormat(buf, def->hostdevs[n], flags, xmlopt) < 0) {
             return -1;
         }
     }
@@ -31040,7 +31048,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         rc = virDomainVideoDefFormat(&buf, src->data.video, flags);
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        rc = virDomainHostdevDefFormat(&buf, src->data.hostdev, flags);
+        rc = virDomainHostdevDefFormat(&buf, src->data.hostdev, flags, xmlopt);
         break;
     case VIR_DOMAIN_DEVICE_WATCHDOG:
         rc = virDomainWatchdogDefFormat(&buf, src->data.watchdog, flags);
