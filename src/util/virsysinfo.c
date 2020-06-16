@@ -131,6 +131,19 @@ void virSysinfoOEMStringsDefFree(virSysinfoOEMStringsDefPtr def)
     VIR_FREE(def);
 }
 
+
+static void
+virSysinfoFWCfgDefClear(virSysinfoFWCfgDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->name);
+    VIR_FREE(def->value);
+    VIR_FREE(def->file);
+}
+
+
 /**
  * virSysinfoDefFree:
  * @def: a sysinfo structure
@@ -183,6 +196,10 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
     VIR_FREE(def->memory);
 
     virSysinfoOEMStringsDefFree(def->oemStrings);
+
+    for (i = 0; i < def->nfw_cfgs; i++)
+        virSysinfoFWCfgDefClear(&def->fw_cfgs[i]);
+    VIR_FREE(def->fw_cfgs);
 
     VIR_FREE(def);
 }
