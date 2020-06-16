@@ -1013,7 +1013,7 @@ virPCIProbeStubDriver(virPCIStubDriver driver)
     if (!probed) {
         g_autofree char *errbuf = NULL;
         probed = true;
-        if ((errbuf = virKModLoad(drvname, true))) {
+        if ((errbuf = virKModLoad(drvname))) {
             VIR_WARN("failed to load driver %s: %s", drvname, errbuf);
             goto cleanup;
         }

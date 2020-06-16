@@ -905,7 +905,7 @@ virFileNBDLoadDriver(void)
     } else {
         g_autofree char *errbuf = NULL;
 
-        if ((errbuf = virKModLoad(NBD_DRIVER, true))) {
+        if ((errbuf = virKModLoad(NBD_DRIVER))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to load nbd module"));
             return false;

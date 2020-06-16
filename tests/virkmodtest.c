@@ -27,11 +27,7 @@
 # include "virkmod.h"
 # include "virstring.h"
 
-struct testInfo {
-    const char *module;
-    const char *exp_cmd;
-    bool useBlacklist;
-};
+# define MODNAME "vfio-pci"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -87,24 +83,21 @@ checkOutput(virBufferPtr buf, const char *exp_cmd)
 
 
 static int
-testKModLoad(const void *args)
+testKModLoad(const void *args G_GNUC_UNUSED)
 {
     int ret = -1;
     char *errbuf = NULL;
-    const struct testInfo *info = args;
-    const char *module = info->module;
-    bool useBlacklist = info->useBlacklist;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virCommandSetDryRun(&buf, NULL, NULL);
 
-    errbuf = virKModLoad(module, useBlacklist);
+    errbuf = virKModLoad(MODNAME);
     if (errbuf) {
         fprintf(stderr, "Failed to load, error: %s\n", errbuf);
         goto cleanup;
     }
 
-    if (checkOutput(&buf, info->exp_cmd) < 0)
+    if (checkOutput(&buf, MODPROBE " -b " MODNAME "\n") < 0)
         goto cleanup;
 
     ret = 0;
@@ -117,23 +110,21 @@ testKModLoad(const void *args)
 
 
 static int
-testKModUnload(const void *args)
+testKModUnload(const void *args G_GNUC_UNUSED)
 {
     int ret = -1;
     char *errbuf = NULL;
-    const struct testInfo *info = args;
-    const char *module = info->module;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virCommandSetDryRun(&buf, NULL, NULL);
 
-    errbuf = virKModUnload(module);
+    errbuf = virKModUnload(MODNAME);
     if (errbuf) {
         fprintf(stderr, "Failed to unload, error: %s\n", errbuf);
         goto cleanup;
     }
 
-    if (checkOutput(&buf, info->exp_cmd) < 0)
+    if (checkOutput(&buf, RMMOD " " MODNAME "\n") < 0)
         goto cleanup;
 
     ret = 0;
@@ -152,23 +143,10 @@ mymain(void)
 
     if (virTestRun("config", testKModConfig, NULL) < 0)
         ret = -1;
-
-    /* Although we cannot run the command on the host, we can compare
-     * the output of the created command against what we'd expect to be
-     * created. So let's at least do that.
-     */
-# define DO_TEST(_name, _cb, _blkflag, _exp_cmd) \
-    do { \
-        struct testInfo data = {.module = "vfio-pci", \
-                                .exp_cmd = _exp_cmd, \
-                                .useBlacklist = _blkflag}; \
-        if (virTestRun(_name, _cb,  &data) < 0) \
-            ret = -1; \
-    } while (0)
-
-    DO_TEST("load", testKModLoad, false, MODPROBE " vfio-pci\n");
-    DO_TEST("unload", testKModUnload, false, RMMOD " vfio-pci\n");
-    DO_TEST("blklist", testKModLoad, true, MODPROBE " -b vfio-pci\n");
+    if (virTestRun("load", testKModLoad, NULL) < 0)
+        ret = -1;
+    if (virTestRun("unload", testKModUnload, NULL) < 0)
+        ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 

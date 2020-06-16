@@ -30,9 +30,7 @@ doModprobe(const char *opts, const char *module, char **outbuf, char **errbuf)
 {
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = virCommandNew(MODPROBE);
-    if (opts)
-        virCommandAddArg(cmd, opts);
+    cmd = virCommandNewArgList(MODPROBE, opts, NULL);
     if (module)
         virCommandAddArg(cmd, module);
     if (outbuf)
@@ -83,7 +81,6 @@ virKModConfig(void)
 /**
  * virKModLoad:
  * @module: Name of the module to load
- * @useBlacklist: True if honoring blacklist
  *
  * Attempts to load a kernel module
  *
@@ -92,11 +89,11 @@ virKModConfig(void)
  * by the caller
  */
 char *
-virKModLoad(const char *module, bool useBlacklist)
+virKModLoad(const char *module)
 {
     char *errbuf = NULL;
 
-    if (doModprobe(useBlacklist ? "-b" : NULL, module, NULL, &errbuf) < 0)
+    if (doModprobe("-b", module, NULL, &errbuf) < 0)
         return errbuf;
 
     VIR_FREE(errbuf);
