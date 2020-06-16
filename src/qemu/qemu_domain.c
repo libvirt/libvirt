@@ -5831,6 +5831,7 @@ qemuDomainDeviceNetDefPostParse(virDomainNetDefPtr net,
                                 virQEMUCapsPtr qemuCaps)
 {
     if (net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+        virDomainNetResolveActualType(net) != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         !virDomainNetGetModelString(net))
         net->model = qemuDomainDefaultNetModel(def, qemuCaps);
 
