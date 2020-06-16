@@ -1018,6 +1018,7 @@ virPCIProbeStubDriver(virPCIStubDriver driver)
             goto cleanup;
         }
 
+        VIR_FREE(drvpath);
         goto recheck;
     }
 
