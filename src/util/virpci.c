@@ -1023,10 +1023,10 @@ virPCIProbeStubDriver(virPCIStubDriver driver)
     }
 
  cleanup:
-    /* If we know failure was because of blacklist, let's report that;
+    /* If we know failure was because of admin config, let's report that;
      * otherwise, report a more generic failure message
      */
-    if (virKModIsBlacklisted(drvname)) {
+    if (virKModIsProhibited(drvname)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to load PCI stub module %s: "
                          "administratively prohibited"),

@@ -112,32 +112,32 @@ virKModUnload(const char *module)
 
 
 /**
- * virKModIsBlacklisted:
- * @module: Name of the module to check for on the blacklist
+ * virKModIsProhibited:
+ * @module: Name of the module to check
  *
- * Search the output of the configuration data for the module being
- * blacklisted.
+ * Determine if loading of @module is prohibited by admin
+ * configuration.
  *
- * returns true when found blacklisted, false otherwise.
+ * returns true when found prohibited, false otherwise.
  */
 bool
-virKModIsBlacklisted(const char *module)
+virKModIsProhibited(const char *module)
 {
     size_t i;
-    g_autofree char *drvblklst = NULL;
+    g_autofree char *drvmatch = NULL;
     g_autofree char *outbuf = NULL;
 
-    drvblklst = g_strdup_printf("blacklist %s\n", module);
+    drvmatch = g_strdup_printf("blacklist %s\n", module);
 
     /* modprobe will convert all '-' into '_', so we need to as well */
-    for (i = 0; i < drvblklst[i]; i++)
-        if (drvblklst[i] == '-')
-            drvblklst[i] = '_';
+    for (i = 0; i < drvmatch[i]; i++)
+        if (drvmatch[i] == '-')
+            drvmatch[i] = '_';
 
     if (doModprobe("-c", NULL, &outbuf, NULL) < 0)
         return false;
 
-    if (strstr(outbuf, drvblklst))
+    if (strstr(outbuf, drvmatch))
         return true;
 
     return false;

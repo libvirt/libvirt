@@ -897,7 +897,7 @@ virFileNBDDeviceFindUnused(void)
 static bool
 virFileNBDLoadDriver(void)
 {
-    if (virKModIsBlacklisted(NBD_DRIVER)) {
+    if (virKModIsProhibited(NBD_DRIVER)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to load nbd module: "
                          "administratively prohibited"));
