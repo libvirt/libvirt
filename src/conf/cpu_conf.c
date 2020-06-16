@@ -335,7 +335,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     g_autofree char *vendor_id = NULL;
     g_autofree char *tscScaling = NULL;
     g_autofree char *migratable = NULL;
-    virHostCPUTscInfoPtr tsc = NULL;
+    g_autofree virHostCPUTscInfoPtr tsc = NULL;
 
     *cpu = NULL;
 
