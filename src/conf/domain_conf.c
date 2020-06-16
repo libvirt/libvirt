@@ -8290,7 +8290,9 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
 static int
 virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
                                            virDomainHostdevSubsysSCSIPtr def,
-                                           xmlXPathContextPtr ctxt)
+                                           xmlXPathContextPtr ctxt,
+                                           unsigned int flags,
+                                           virDomainXMLOptionPtr xmlopt)
 {
     int auth_secret_usage = -1;
     xmlNodePtr cur;
@@ -8355,13 +8357,27 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
         }
         cur = cur->next;
     }
+
+    if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
+        xmlopt && xmlopt->privateData.storageParse) {
+        VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
+        ctxt->node = sourcenode;
+
+        if ((ctxt->node = virXPathNode("./privateData", ctxt)) &&
+            xmlopt->privateData.storageParse(ctxt, iscsisrc->src) < 0)
+            return -1;
+    }
+
     return 0;
 }
 
 static int
 virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
                                       virDomainHostdevSubsysSCSIPtr scsisrc,
-                                      xmlXPathContextPtr ctxt)
+                                      xmlXPathContextPtr ctxt,
+                                      unsigned int flags,
+                                      virDomainXMLOptionPtr xmlopt)
 {
     g_autofree char *protocol = NULL;
 
@@ -8377,7 +8393,8 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
     }
 
     if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
-        return virDomainHostdevSubsysSCSIiSCSIDefParseXML(sourcenode, scsisrc, ctxt);
+        return virDomainHostdevSubsysSCSIiSCSIDefParseXML(sourcenode, scsisrc, ctxt,
+                                                          flags, xmlopt);
 
     return virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, scsisrc);
 }
@@ -8468,7 +8485,8 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                                   xmlXPathContextPtr ctxt,
                                   const char *type,
                                   virDomainHostdevDefPtr def,
-                                  unsigned int flags)
+                                  unsigned int flags,
+                                  virDomainXMLOptionPtr xmlopt)
 {
     xmlNodePtr sourcenode;
     int backend;
@@ -8640,7 +8658,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        if (virDomainHostdevSubsysSCSIDefParseXML(sourcenode, scsisrc, ctxt) < 0)
+        if (virDomainHostdevSubsysSCSIDefParseXML(sourcenode, scsisrc, ctxt, flags, xmlopt) < 0)
             return -1;
         break;
 
@@ -11652,7 +11670,8 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
                               xmlXPathContextPtr ctxt,
                               virDomainNetDefPtr parent,
                               virDomainActualNetDefPtr *def,
-                              unsigned int flags)
+                              unsigned int flags,
+                              virDomainXMLOptionPtr xmlopt)
 {
     virDomainActualNetDefPtr actual = NULL;
     int ret = -1;
@@ -11757,7 +11776,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
             addrtype = g_strdup("usb");
         hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
-                                              hostdev, flags) < 0) {
+                                              hostdev, flags, xmlopt) < 0) {
             goto error;
         }
     } else if (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
@@ -12133,7 +12152,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                        def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
                        virXMLNodeNameEqual(cur, "actual")) {
                 if (virDomainActualNetDefParseXML(cur, ctxt, def,
-                                                  &actual, flags) < 0) {
+                                                  &actual, flags, xmlopt) < 0) {
                     goto error;
                 }
             } else if (virXMLNodeNameEqual(cur, "bandwidth")) {
@@ -12409,7 +12428,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             addrtype = g_strdup("usb");
         hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
-                                              hostdev, flags) < 0) {
+                                              hostdev, flags, xmlopt) < 0) {
             goto error;
         }
         break;
@@ -16161,7 +16180,7 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
     switch (def->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         /* parse managed/mode/type, and the <source> element */
-        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, type, def, flags) < 0)
+        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, type, def, flags, xmlopt) < 0)
             goto error;
         break;
     case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
