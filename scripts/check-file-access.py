@@ -25,16 +25,16 @@ import re
 import sys
 
 if len(sys.argv) != 3:
-    print("syntax: %s ACCESS-FILE ACCESS-WHITELIST")
+    print("syntax: %s ACCESS-FILE PERMITTED-ACCESS-FILE")
     sys.exit(1)
 
 access_file = sys.argv[1]
-whitelist_file = sys.argv[2]
+permitted_file = sys.argv[2]
 
 known_actions = ["open", "fopen", "access", "stat", "lstat", "connect"]
 
 files = []
-whitelist = []
+permitted = []
 
 with open(access_file, "r") as fh:
     for line in fh:
@@ -52,7 +52,7 @@ with open(access_file, "r") as fh:
         else:
             raise Exception("Malformed line %s" % line)
 
-with open(whitelist_file, "r") as fh:
+with open(permitted_file, "r") as fh:
     for line in fh:
         line = line.rstrip("\n")
 
@@ -70,7 +70,7 @@ with open(whitelist_file, "r") as fh:
                 "progname": m.group(4),
                 "testname": m.group(6),
             }
-            whitelist.append(rec)
+            permitted.append(rec)
         else:
             m = re.search(r'''^(\S*)(:\s*(\S*)(\s*:\s*(.*))?)?$''', line)
             if m is not None:
@@ -81,18 +81,18 @@ with open(whitelist_file, "r") as fh:
                     "progname": m.group(3),
                     "testname": m.group(5),
                 }
-                whitelist.append(rec)
+                permitted.append(rec)
             else:
                 raise Exception("Malformed line %s" % line)
 
 
-# Now we should check if %traces is included in $whitelist. For
+# Now we should check if %traces is included in $permitted. For
 # now checking just keys is sufficient
 err = False
 for file in files:
     match = False
 
-    for rule in whitelist:
+    for rule in permitted:
         if not re.match("^" + rule["path"] + "$", file["path"]):
             continue
 

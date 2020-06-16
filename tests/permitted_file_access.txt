@@ -1,6 +1,6 @@
-# This is a whitelist that allows accesses to files not in our
-# build directory nor source directory. The records are in the
-# following formats:
+# This is a list of files not in our build directory nor source
+# directory which are permitted to be accessed by tests. The
+# records are in the following formats:
 #
 #  $path: $progname: $testname
 #  $path: $action: $progname: $testname

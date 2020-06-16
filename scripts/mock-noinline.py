@@ -23,7 +23,6 @@ noninlined = {}
 mocked = {}
 
 # Functions in public header don't get the noinline annotation
-# so whitelist them here
 noninlined["virEventAddTimeout"] = True
 # This one confuses the script as its defined in the mock file
 # but is actually just a local helper
