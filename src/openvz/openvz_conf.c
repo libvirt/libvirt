@@ -330,7 +330,7 @@ openvzReadFSConf(virDomainDefPtr def,
 {
     int ret;
     virDomainFSDefPtr fs = NULL;
-    char *veid_str = NULL;
+    g_autofree char *veid_str = NULL;
     char *temp = NULL;
     const char *param;
     unsigned long long barrier, limit;
@@ -365,8 +365,6 @@ openvzReadFSConf(virDomainDefPtr def,
         fs->type = VIR_DOMAIN_FS_TYPE_MOUNT;
         if (!(fs->src->path = virStringReplace(temp, "$VEID", veid_str)))
             goto error;
-
-        VIR_FREE(veid_str);
     }
 
     fs->dst = g_strdup("/");
