@@ -616,7 +616,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
 static int
 openvzWriteConfigParam(const char * conf_file, const char *param, const char *value)
 {
-    char * temp_file = NULL;
+    g_autofree char *temp_file = NULL;
     int temp_fd = -1;
     FILE *fp;
     char *line = NULL;
@@ -666,7 +666,6 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
     VIR_FORCE_CLOSE(temp_fd);
     if (temp_file)
         unlink(temp_file);
-    VIR_FREE(temp_file);
     return -1;
 }
 
