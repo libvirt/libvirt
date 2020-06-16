@@ -745,7 +745,7 @@ qemuSetupDevicesCgroup(virDomainObjPtr vm)
     if (rv < 0) {
         if (virLastErrorIsSystemErrno(EPERM)) {
             virResetLastError();
-            VIR_WARN("Group devices ACL is not accessible, disabling whitelisting");
+            VIR_WARN("Group devices ACL is not accessible, disabling filtering");
             return 0;
         }
 
