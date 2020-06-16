@@ -42,7 +42,7 @@ struct ConfigLookupData {
 static int testAuthLookup(const void *args)
 {
     const struct ConfigLookupData *data = args;
-    const char *actual = NULL;
+    g_autofree char *actual = NULL;
     int rv;
 
     rv = virAuthConfigLookup(data->config,

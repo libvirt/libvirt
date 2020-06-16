@@ -37,6 +37,6 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
                         const char *service,
                         const char *hostname,
                         const char *credname,
-                        const char **value);
+                        char **value);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virAuthConfig, virAuthConfigFree);

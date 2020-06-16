@@ -99,7 +99,7 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
                         const char *service,
                         const char *hostname,
                         const char *credname,
-                        const char **value)
+                        char **value)
 {
     g_autofree char *authgroup = NULL;
     g_autofree char *credgroup = NULL;

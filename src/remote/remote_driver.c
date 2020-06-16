@@ -4097,7 +4097,7 @@ static int remoteAuthFillFromConfig(virConnectPtr conn,
     }
 
     for (ninteract = 0; state->interact[ninteract].id != 0; ninteract++) {
-        const char *value = NULL;
+        char *value = NULL;
 
         switch (state->interact[ninteract].id) {
         case SASL_CB_USER:

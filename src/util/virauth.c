@@ -107,7 +107,6 @@ virAuthGetCredential(const char *servicename,
                      char **value)
 {
     g_autoptr(virAuthConfig) config = NULL;
-    const char *tmp;
 
     *value = NULL;
 
@@ -121,10 +120,8 @@ virAuthGetCredential(const char *servicename,
                             servicename,
                             hostname,
                             credname,
-                            &tmp) < 0)
+                            value) < 0)
         return -1;
-
-    *value = g_strdup(tmp);
 
     return 0;
 }
