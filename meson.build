@@ -1401,6 +1401,27 @@ if not get_option('virtualport').disabled()
   endif
 endif
 
+if host_machine.system() == 'windows'
+  ole32_dep = cc.find_library('ole32')
+  oleaut32_dep = cc.find_library('oleaut32')
+  win32_dep = declare_dependency(
+    dependencies: [
+      ole32_dep,
+      oleaut32_dep,
+    ],
+  )
+  if get_option('default_library') == 'static'
+    win32_flags = [ '-DLIBVIRT_STATIC' ]
+  else
+    win32_flags = []
+  endif
+  win32_link_flags = [ '-Wl,-no-undefined' ]
+else
+  win32_dep = dependency('', required: false)
+  win32_flags = []
+  win32_link_flags = []
+endif
+
 
 # generic build dependencies checks
 
@@ -1518,6 +1539,11 @@ libs_summary = {
   'virtualport': conf.has('WITH_VIRTUALPORT'),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
+
+win_summary = {
+  'MinGW': host_machine.system() == 'windows',
+}
+summary(win_summary, section: 'Windows', bool_yn: true)
 
 test_summary = {
   'Coverage': coverage_flags.length() > 0,
