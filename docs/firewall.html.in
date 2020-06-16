@@ -311,7 +311,7 @@ f5c78134-9da4-0c60-a9f0-fb37bc21ac1f  no-other-rarp-traffic
     <p>To associate the clean-traffic filter with a guest, edit the
        guest XML config and change the <code>&lt;interface&gt;</code> element
        to include a <code>&lt;filterref&gt;</code> and also specify the
-       whitelisted <code>&lt;ip address/&gt;</code> the guest is allowed to
+       <code>&lt;ip address/&gt;</code> that the guest is allowed to
        use:
     </p>
     <pre>
