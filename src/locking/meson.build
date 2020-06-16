@@ -30,6 +30,10 @@ lock_protocol_generated += custom_target(
   ],
 )
 
+sanlock_sources = [
+  'lock_driver_sanlock.c',
+]
+
 lock_driver_lib = static_library(
   'virt_lock_driver',
   [
@@ -79,4 +83,21 @@ if conf.has('WITH_LIBVIRTD')
     ],
     'install_dir': lockdriver_dir,
   }
+
+  if conf.has('WITH_SANLOCK')
+    virt_modules += {
+      'name': 'sanlock',
+      'name_prefix': '',
+      'sources': [
+        files(sanlock_sources),
+      ],
+      'deps': [
+        sanlock_dep,
+      ],
+      'link_args': [
+        libvirt_no_undefined,
+      ],
+      'install_dir': lockdriver_dir,
+    }
+  endif
 endif

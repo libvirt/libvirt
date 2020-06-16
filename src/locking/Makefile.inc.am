@@ -1,8 +1,5 @@
 # vim: filetype=automake
 
-LOCK_DRIVER_SANLOCK_SOURCES = \
-	locking/lock_driver_sanlock.c
-
 LOCK_DRIVER_SANLOCK_HELPER_SOURCES = \
 	locking/sanlock_helper.c
 
@@ -41,8 +38,6 @@ OPENRC_INIT_FILES += \
 OPENRC_INIT_FILES_IN += \
 	locking/virtlockd.init.in \
 	$(NULL)
-
-lockdriver_LTLIBRARIES =
 
 if WITH_LIBVIRTD
 augeas_DATA += locking/libvirt_lockd.aug
@@ -93,16 +88,6 @@ virtlockd_CFLAGS += \
 endif WITH_SASL
 
 if WITH_SANLOCK
-lockdriver_LTLIBRARIES += sanlock.la
-sanlock_la_SOURCES = $(LOCK_DRIVER_SANLOCK_SOURCES)
-sanlock_la_CFLAGS = -I$(srcdir)/conf $(AM_CFLAGS)
-sanlock_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-sanlock_la_LIBADD = \
-	-lsanlock_client \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-
 augeas_DATA += locking/libvirt_sanlock.aug
 
 if WITH_QEMU
