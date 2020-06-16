@@ -103,7 +103,7 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
 {
     g_autofree char *authgroup = NULL;
     g_autofree char *credgroup = NULL;
-    const char *authcred;
+    g_autofree char *authcred = NULL;
 
     *value = NULL;
 
