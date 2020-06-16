@@ -234,7 +234,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged,
      * directory doesn't exist (although we don't check if this exists).
      */
     if (root == NULL) {
-        cfg->defaultTLSx509certdir = g_strdup(SYSCONFDIR "pki/qemu");
+        cfg->defaultTLSx509certdir = g_strdup(SYSCONFDIR "/pki/qemu");
     } else {
         cfg->defaultTLSx509certdir = g_strdup_printf("%s/etc/pki/qemu", root);
     }
