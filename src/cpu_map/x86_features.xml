@@ -293,6 +293,9 @@
   <feature name='ospke'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000010'/>
   </feature>
+  <feature name='waitpkg'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000020'/>
+  </feature>
   <feature name='avx512vbmi2'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000040'/>
   </feature>
@@ -317,8 +320,17 @@
   <feature name='la57'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00010000'/>
   </feature>
+  <feature name='rdpid'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00400000'/>
+  </feature>
   <feature name='cldemote'>
     <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x02000000'/>
+  </feature>
+  <feature name='movdiri'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x08000000'/>
+  </feature>
+  <feature name='movdir64b'>
+    <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x10000000'/>
   </feature>
 
   <feature name='avx512-4vnniw'>

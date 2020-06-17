@@ -6,6 +6,7 @@
   <feature policy='require' name='cmt'/>
   <feature policy='require' name='clwb'/>
   <feature policy='require' name='umip'/>
+  <feature policy='require' name='rdpid'/>
   <feature policy='require' name='xsaves'/>
   <feature policy='require' name='mbm_total'/>
   <feature policy='require' name='mbm_local'/>

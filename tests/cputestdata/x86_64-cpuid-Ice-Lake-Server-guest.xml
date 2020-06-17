@@ -23,6 +23,7 @@
   <feature policy='require' name='avx512ifma'/>
   <feature policy='require' name='sha-ni'/>
   <feature policy='require' name='ospke'/>
+  <feature policy='require' name='rdpid'/>
   <feature policy='require' name='stibp'/>
   <feature policy='require' name='arch-capabilities'/>
   <feature policy='require' name='xsaves'/>

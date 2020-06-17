@@ -24,6 +24,7 @@
   <feature name='avx512ifma'/>
   <feature name='sha-ni'/>
   <feature name='ospke'/>
+  <feature name='rdpid'/>
   <feature name='stibp'/>
   <feature name='arch-capabilities'/>
   <feature name='xsaves'/>
