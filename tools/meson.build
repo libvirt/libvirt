@@ -223,10 +223,20 @@ executable(
 tools_conf = configuration_data()
 tools_conf.set('VERSION', meson.project_version())
 tools_conf.set('schemadir', pkgdatadir / 'schemas')
+tools_conf.set('sysconfdir', sysconfdir)
 
 configure_file(
   input: 'virt-xml-validate.in',
   output: 'virt-xml-validate',
+  configuration: tools_conf,
+  install: true,
+  install_dir: bindir,
+  install_mode: 'rwxrwxr-x',
+)
+
+configure_file(
+  input: 'virt-pki-validate.in',
+  output: 'virt-pki-validate',
   configuration: tools_conf,
   install: true,
   install_dir: bindir,
