@@ -515,6 +515,38 @@
     <cpuid eax_in='0x80000008' ebx='0x04000000'/>
   </feature>
 
+  <!-- SVM features -->
+  <feature name='npt'>
+    <cpuid eax_in='0x8000000a' edx='0x00000001'/>
+  </feature>
+  <feature name='lbrv'>
+    <cpuid eax_in='0x8000000a' edx='0x00000002'/>
+  </feature>
+  <feature name='svm-lock'>
+    <cpuid eax_in='0x8000000a' edx='0x00000004'/>
+  </feature>
+  <feature name='nrip-save'>
+    <cpuid eax_in='0x8000000a' edx='0x00000008'/>
+  </feature>
+  <feature name='tsc-scale'>
+    <cpuid eax_in='0x8000000a' edx='0x00000010'/>
+  </feature>
+  <feature name='vmcb-clean'>
+    <cpuid eax_in='0x8000000a' edx='0x00000020'/>
+  </feature>
+  <feature name='flushbyasid'>
+    <cpuid eax_in='0x8000000a' edx='0x00000040'/>
+  </feature>
+  <feature name='decodeassists'>
+    <cpuid eax_in='0x8000000a' edx='0x00000080'/>
+  </feature>
+  <feature name='pause-filter'>
+    <cpuid eax_in='0x8000000a' edx='0x00000400'/>
+  </feature>
+  <feature name='pfthreshold'>
+    <cpuid eax_in='0x8000000a' edx='0x00001000'/>
+  </feature>
+
   <!-- IA32_ARCH_CAPABILITIES features -->
   <feature name='rdctl-no'>
     <msr index='0x10a' edx='0x00000000' eax='0x00000001'/>

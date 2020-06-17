@@ -20,4 +20,14 @@
   <feature policy='require' name='perfctr_core'/>
   <feature policy='require' name='perfctr_nb'/>
   <feature policy='require' name='invtsc'/>
+  <feature policy='require' name='npt'/>
+  <feature policy='require' name='lbrv'/>
+  <feature policy='require' name='svm-lock'/>
+  <feature policy='require' name='nrip-save'/>
+  <feature policy='require' name='tsc-scale'/>
+  <feature policy='require' name='vmcb-clean'/>
+  <feature policy='require' name='flushbyasid'/>
+  <feature policy='require' name='decodeassists'/>
+  <feature policy='require' name='pause-filter'/>
+  <feature policy='require' name='pfthreshold'/>
 </cpu>

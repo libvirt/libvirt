@@ -23,4 +23,14 @@
   <feature name='perfctr_core'/>
   <feature name='perfctr_nb'/>
   <feature name='invtsc'/>
+  <feature name='npt'/>
+  <feature name='lbrv'/>
+  <feature name='svm-lock'/>
+  <feature name='nrip-save'/>
+  <feature name='tsc-scale'/>
+  <feature name='vmcb-clean'/>
+  <feature name='flushbyasid'/>
+  <feature name='decodeassists'/>
+  <feature name='pause-filter'/>
+  <feature name='pfthreshold'/>
 </cpu>

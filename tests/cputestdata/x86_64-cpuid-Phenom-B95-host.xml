@@ -28,4 +28,8 @@
   <feature name='skinit'/>
   <feature name='wdt'/>
   <feature name='invtsc'/>
+  <feature name='npt'/>
+  <feature name='lbrv'/>
+  <feature name='svm-lock'/>
+  <feature name='nrip-save'/>
 </cpu>

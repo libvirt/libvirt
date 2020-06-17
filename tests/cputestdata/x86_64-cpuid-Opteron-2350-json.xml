@@ -14,6 +14,7 @@
   <feature policy='require' name='cr8legacy'/>
   <feature policy='require' name='3dnowprefetch'/>
   <feature policy='require' name='osvw'/>
+  <feature policy='require' name='npt'/>
   <feature policy='disable' name='monitor'/>
   <feature policy='disable' name='rdtscp'/>
 </cpu>

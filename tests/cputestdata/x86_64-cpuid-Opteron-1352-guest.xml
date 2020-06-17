@@ -15,4 +15,7 @@
   <feature policy='require' name='osvw'/>
   <feature policy='require' name='ibs'/>
   <feature policy='require' name='invtsc'/>
+  <feature policy='require' name='npt'/>
+  <feature policy='require' name='lbrv'/>
+  <feature policy='require' name='svm-lock'/>
 </cpu>
