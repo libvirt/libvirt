@@ -23,10 +23,6 @@ STANDALONE_CPPFLAGS = -I$(top_srcdir)
 
 noinst_LTLIBRARIES =
 
-install-data-local: install-nss
-
-uninstall-local: uninstall-nss
-
 if WITH_WIRESHARK_DISSECTOR
 
 ws_plugin_LTLIBRARIES = wireshark/src/libvirt.la
@@ -56,35 +52,6 @@ wireshark/src/libvirt/protocol.h: wireshark/util/genxdrstub.pl \
 		  $(WS_DISSECTOR_PROTO_FILES)
 
 endif WITH_WIRESHARK_DISSECTOR
-
-if WITH_BSD_NSS
-LIBVIRT_NSS_SYMBOL_FILE = \
-	$(srcdir)/nss/libvirt_nss_bsd.syms
-LIBVIRT_GUEST_NSS_SYMBOL_FILE = \
-	$(LIBVIRT_NSS_SYMBOL_FILE)
-NSS_SO_VER = 1
-
-install-nss:
-	( cd $(DESTDIR)$(libdir) && \
-	  rm -f nss_libvirt.so.$(NSS_SO_VER) && \
-	  $(LN_S) libnss_libvirt.so.$(NSS_SO_VER) nss_libvirt.so.$(NSS_SO_VER) && \
-	  rm -f nss_libvirt_guest.so.$(NSS_SO_VER) && \
-	  $(LN_S) libnss_libvirt_guest.so.$(NSS_SO_VER) \
-	  nss_libvirt_guest.so.$(NSS_SO_VER))
-
-uninstall-nss:
-	-rm -f $(DESTDIR)$(libdir)/nss_libvirt.so.$(NSS_SO_VER)
-	-rm -f $(DESTDIR)$(libdir)/nss_libvirt_guest.so.$(NSS_SO_VER)
-else ! WITH_BSD_NSS
-LIBVIRT_NSS_SYMBOL_FILE = \
-	$(srcdir)/nss/libvirt_nss.syms
-LIBVIRT_GUEST_NSS_SYMBOL_FILE = \
-	$(srcdir)/nss/libvirt_guest_nss.syms
-NSS_SO_VER = 2
-
-install-nss:
-uninstall-nss:
-endif ! WITH_BSD_NSS
 
 LIBVIRT_NSS_SOURCES = \
 	nss/libvirt_nss.c \

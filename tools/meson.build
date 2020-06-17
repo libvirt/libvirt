@@ -290,3 +290,7 @@ endif
 if bash_completion_dep.found()
   subdir('bash-completion')
 endif
+
+if conf.has('WITH_NSS')
+  subdir('nss')
+endif
