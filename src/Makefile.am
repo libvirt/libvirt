@@ -57,7 +57,6 @@ OPENRC_CONF_FILES =
 SYSCONF_FILES =
 sbin_PROGRAMS =
 bin_PROGRAMS =
-DRIVER_SOURCES =
 
 COMMON_UNIT_VARS = \
 	-e 's|[@]runstatedir[@]|$(runstatedir)|g' \
@@ -105,36 +104,6 @@ BUILT_SOURCES += $(nodist_conf_DATA)
 augeasdir = $(datadir)/augeas/lenses
 
 augeastestdir = $(datadir)/augeas/lenses/tests
-
-DRIVER_SOURCES += \
-		driver.c driver.h \
-		driver-hypervisor.h \
-		driver-interface.h \
-		driver-network.h \
-		driver-nodedev.h \
-		driver-nwfilter.h \
-		driver-secret.h \
-		driver-state.h \
-		driver-storage.h \
-		driver-stream.h \
-		internal.h \
-		$(DATATYPES_SOURCES) \
-		libvirt.c libvirt_internal.h \
-		libvirt-domain.c \
-		libvirt-domain-checkpoint.c \
-		libvirt-domain-snapshot.c \
-		libvirt-host.c \
-		libvirt-interface.c \
-		libvirt-network.c \
-		libvirt-nodedev.c \
-		libvirt-nwfilter.c \
-		libvirt-secret.c \
-		libvirt-storage.c \
-		libvirt-stream.c \
-		$(NULL)
-
-
-
 
 # .libs/libvirt.so is built by libtool as a side-effect of the Makefile
 # rule for libvirt.la.  However, checking symbols relies on Linux ELF layout
@@ -248,16 +217,6 @@ check-local: check-protocol check-symfile check-symsorting \
 #
 # First deal with sources usable in non-daemon context
 
-
-noinst_LTLIBRARIES += libvirt_driver.la
-libvirt_la_BUILT_LIBADD += libvirt_driver.la
-libvirt_driver_la_SOURCES = $(DRIVER_SOURCES)
-
-libvirt_driver_la_CFLAGS = \
-		$(GNUTLS_CFLAGS) $(CURL_CFLAGS) $(XDR_CFLAGS) \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_driver_la_LIBADD = \
-		$(GNUTLS_LIBS) $(CURL_LIBS) $(DLOPEN_LIBS)
 
 # All .syms files should be placed in exactly one of these three lists,
 # depending on whether they are stored in git and/or used in the build.

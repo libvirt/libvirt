@@ -114,3 +114,39 @@ subdir('hyperv')
 subdir('openvz')
 subdir('test')
 subdir('vmware')
+
+
+driver_sources = [
+  'driver.c',
+  'libvirt.c',
+  'libvirt-domain.c',
+  'libvirt-domain-checkpoint.c',
+  'libvirt-domain-snapshot.c',
+  'libvirt-host.c',
+  'libvirt-interface.c',
+  'libvirt-network.c',
+  'libvirt-nodedev.c',
+  'libvirt-nwfilter.c',
+  'libvirt-secret.c',
+  'libvirt-storage.c',
+  'libvirt-stream.c',
+]
+
+driver_lib = static_library(
+  'virt_driver',
+  [
+    driver_sources,
+    datatypes_sources,
+  ],
+  dependencies: [
+    curl_dep,
+    dlopen_dep,
+    gnutls_dep,
+    rpc_dep,
+    src_dep,
+    xdr_dep,
+  ],
+  include_directories: [
+    conf_inc_dir,
+  ],
+)
