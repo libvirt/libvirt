@@ -20,6 +20,10 @@ storage_backend_iscsi_sources = [
   'storage_backend_iscsi.c',
 ]
 
+storage_backend_iscsi_direct_sources = [
+  'storage_backend_iscsi_direct.c',
+]
+
 storage_lvm_backend_sources = [
   'storage_backend_logical.c',
 ]
@@ -76,6 +80,19 @@ if conf.has('WITH_STORAGE_ISCSI')
     'name': 'virt_storage_backend_iscsi',
     'sources': [
       files(storage_backend_iscsi_sources),
+    ],
+    'install_dir': storage_backend_install_dir,
+  }
+endif
+
+if conf.has('WITH_STORAGE_ISCSI_DIRECT')
+  virt_modules += {
+    'name': 'virt_storage_backend_iscsi-direct',
+    'sources': [
+      files(storage_backend_iscsi_direct_sources),
+    ],
+    'deps': [
+      libiscsi_dep
     ],
     'install_dir': storage_backend_install_dir,
   }
