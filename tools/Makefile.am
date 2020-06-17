@@ -26,18 +26,9 @@ conf_DATA =
 
 libexec_SCRIPTS = libvirt-guests.sh
 
-if WITH_SANLOCK
-sbin_SCRIPTS = virt-sanlock-cleanup
-endif WITH_SANLOCK
-
 if WITH_LOGIN_SHELL
 conf_DATA += virt-login-shell.conf
 endif WITH_LOGIN_SHELL
-
-virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
-	$(AM_V_GEN)sed -e 's|[@]sysconfdir@|$(sysconfdir)|' \
-	    -e 's|[@]localstatedir@|$(localstatedir)|' < $< > $@ \
-	    || (rm $@ && exit 1) && chmod +x $@
 
 noinst_LTLIBRARIES =
 
