@@ -1,4 +1,5 @@
 genprotocol_prog = find_program('genprotocol.pl')
+gendispatch_prog = find_program('gendispatch.pl')
 
 rpc_sources = [
   'virnetmessage.c',
