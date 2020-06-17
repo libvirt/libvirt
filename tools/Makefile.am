@@ -33,18 +33,5 @@ wireshark_src_libvirt_la_SOURCES = \
 wireshark/src/packet-libvirt.c: wireshark/src/packet-libvirt.h \
 		wireshark/src/libvirt/protocol.h
 
-WS_DISSECTOR_PROTO_FILES  = \
-  $(abs_top_srcdir)/src/remote/remote_protocol.x \
-  $(abs_top_srcdir)/src/remote/qemu_protocol.x \
-  $(abs_top_srcdir)/src/remote/lxc_protocol.x \
-  $(abs_top_srcdir)/src/rpc/virkeepaliveprotocol.x
-
-wireshark/src/libvirt/protocol.h: wireshark/util/genxdrstub.pl \
-		$(WS_DISSECTOR_PROTO_FILES)
-	$(AM_V_GEN)$(MKDIR_P) wireshark/src/libvirt && \
-	cd wireshark/src && \
-	LIBVIRT_VERSION=$(LIBVIRT_VERSION) \
-		  $(PERL) $(abs_top_srcdir)/tools/wireshark/util/genxdrstub.pl \
-		  $(WS_DISSECTOR_PROTO_FILES)
 
 endif WITH_WIRESHARK_DISSECTOR
