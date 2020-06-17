@@ -152,6 +152,7 @@ subdir('remote')
 subdir('admin')
 subdir('locking')
 subdir('logging')
+subdir('network')
 subdir('security')
 
 subdir('bhyve')

@@ -1,17 +1,5 @@
 # vim: filetype=automake
 
-NETWORK_DRIVER_SOURCES = \
-	network/bridge_driver.h \
-	network/bridge_driver.c \
-	network/bridge_driver_platform.h \
-	network/bridge_driver_platform.c \
-	$(NULL)
-
-NETWORK_DRIVER_PLATFORM_INC = \
-	network/bridge_driver_linux.c \
-	network/bridge_driver_nop.c \
-	$(NULL)
-
 NETWORK_LEASES_HELPER_SOURCES = \
 	network/leaseshelper.c \
 	$(NULL)
@@ -34,17 +22,6 @@ libvirt_driver_network_la_LIBADD = \
 	$(NULL)
 mod_LTLIBRARIES += libvirt_driver_network.la
 libvirt_driver_network_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_network_impl_la_CFLAGS = \
-	$(LIBNL_CFLAGS) \
-	$(DBUS_CFLAGS) \
-	-I$(srcdir)/access \
-	-I$(builddir)/access \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-libvirt_driver_network_impl_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
-libvirt_driver_network_impl_la_LIBADD  = $(DBUS_LIBS) $(LIBXML_LIBS)
 
 sbin_PROGRAMS += virtnetworkd
 
