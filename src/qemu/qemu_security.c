@@ -615,37 +615,6 @@ qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecuritySetSavedStateLabel(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
-                                   const char *savefile)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    pid_t pid = -1;
-    int ret = -1;
-
-    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        pid = vm->pid;
-
-    if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerSetSavedStateLabel(driver->securityManager,
-                                             vm->def,
-                                             savefile) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerTransactionCommit(driver->securityManager,
-                                            pid, priv->rememberOwner) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virSecurityManagerTransactionAbort(driver->securityManager);
-    return ret;
-}
-
-
-int
 qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        const char *savefile)
