@@ -635,6 +635,11 @@ libvirt_export_dynamic = cc.first_supported_link_argument([
 top_inc_dir = include_directories('.')
 
 
+# include remaining subdirs
+
+subdir('scripts')
+
+
 # generate meson-config.h file
 configure_file(output: 'meson-config.h', configuration: conf)
 
