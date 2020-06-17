@@ -493,11 +493,17 @@
   <feature name='clzero'>
     <cpuid eax_in='0x80000008' ebx='0x00000001'/>
   </feature>
+  <feature name='xsaveerptr'>
+    <cpuid eax_in='0x80000008' ebx='0x00000004'/>
+  </feature>
   <feature name='wbnoinvd'>
     <cpuid eax_in='0x80000008' ebx='0x00000200'/>
   </feature>
   <feature name='ibpb'>
     <cpuid eax_in='0x80000008' ebx='0x00001000'/>
+  </feature>
+  <feature name='amd-stibp'>
+    <cpuid eax_in='0x80000008' ebx='0x00008000'/>
   </feature>
   <feature name='amd-ssbd'>
     <cpuid eax_in='0x80000008' ebx='0x01000000'/>

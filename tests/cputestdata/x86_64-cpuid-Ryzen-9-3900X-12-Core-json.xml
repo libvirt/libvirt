@@ -15,6 +15,7 @@
   <feature policy='require' name='cmp_legacy'/>
   <feature policy='require' name='perfctr_core'/>
   <feature policy='require' name='clzero'/>
+  <feature policy='require' name='xsaveerptr'/>
   <feature policy='require' name='wbnoinvd'/>
   <feature policy='require' name='amd-ssbd'/>
   <feature policy='require' name='virt-ssbd'/>

@@ -22,7 +22,9 @@
   <feature name='perfctr_nb'/>
   <feature name='invtsc'/>
   <feature name='clzero'/>
+  <feature name='xsaveerptr'/>
   <feature name='wbnoinvd'/>
+  <feature name='amd-stibp'/>
   <feature name='amd-ssbd'/>
   <feature name='rdctl-no'/>
   <feature name='skip-l1dfl-vmentry'/>

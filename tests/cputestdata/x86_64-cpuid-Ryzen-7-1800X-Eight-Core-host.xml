@@ -15,4 +15,5 @@
   <feature name='perfctr_nb'/>
   <feature name='invtsc'/>
   <feature name='clzero'/>
+  <feature name='xsaveerptr'/>
 </cpu>
