@@ -32,6 +32,8 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -drive file=/dev/sg0,if=none,format=raw,id=drive-hostdev0 \
 -device scsi-generic,bus=scsi0.0,scsi-id=7,drive=drive-hostdev0,id=hostdev0 \
+-drive file=/dev/sg0,if=none,format=raw,id=drive-hostdev1,readonly=on \
+-device scsi-generic,bus=scsi0.0,scsi-id=6,drive=drive-hostdev1,id=hostdev1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
