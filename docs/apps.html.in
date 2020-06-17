@@ -138,7 +138,7 @@
     </dl>
 
     <dl>
-      <dt><a href="https://wiki.jenkins-ci.org/display/JENKINS/Libvirt+Slaves+Plugin">Jenkins</a></dt>
+      <dt><a href="https://plugins.jenkins.io/libvirt-slave/">Jenkins</a></dt>
       <dd>
         This plugin for Jenkins adds a way to control guest domains hosted
         on Xen or QEMU/KVM.  You configure a Jenkins Slave,
