@@ -1,10 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_MPATH_SOURCES = \
-	storage/storage_backend_mpath.h \
-	storage/storage_backend_mpath.c \
-	$(NULL)
-
 STORAGE_DRIVER_DISK_SOURCES = \
 	storage/storage_backend_disk.h \
 	storage/storage_backend_disk.c \
@@ -132,23 +127,6 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 
 
 endif WITH_STORAGE
-
-if WITH_STORAGE_MPATH
-libvirt_storage_backend_mpath_la_SOURCES = $(STORAGE_DRIVER_MPATH_SOURCES)
-libvirt_storage_backend_mpath_la_LIBADD = \
-	libvirt.la \
-	$(DEVMAPPER_LIBS) \
-	$(GLIB_LIBS) \
-	$(NULL)
-libvirt_storage_backend_mpath_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(DEVMAPPER_CFLAGS) \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-storagebackend_LTLIBRARIES += libvirt_storage_backend_mpath.la
-libvirt_storage_backend_mpath_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-endif WITH_STORAGE_MPATH
 
 if WITH_STORAGE_DISK
 libvirt_storage_backend_disk_la_SOURCES = $(STORAGE_DRIVER_DISK_SOURCES)

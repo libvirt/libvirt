@@ -28,6 +28,10 @@ storage_lvm_backend_sources = [
   'storage_backend_logical.c',
 ]
 
+storage_backend_mpath_sources = [
+  'storage_backend_mpath.c',
+]
+
 storage_backend_scsi_sources = [
   'storage_backend_scsi.c',
 ]
@@ -107,6 +111,19 @@ if conf.has('WITH_STORAGE_LVM')
     'name': 'virt_storage_backend_logical',
     'sources': [
       files(storage_lvm_backend_sources),
+    ],
+    'install_dir': storage_backend_install_dir,
+  }
+endif
+
+if conf.has('WITH_STORAGE_MPATH')
+  virt_modules += {
+    'name': 'virt_storage_backend_mpath',
+    'sources': [
+      files(storage_backend_mpath_sources),
+    ],
+    'deps': [
+      devmapper_dep
     ],
     'install_dir': storage_backend_install_dir,
   }
