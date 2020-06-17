@@ -28,6 +28,10 @@ storage_lvm_backend_sources = [
   'storage_backend_logical.c',
 ]
 
+storage_backend_scsi_sources = [
+  'storage_backend_scsi.c',
+]
+
 storage_backend_install_dir = libdir / 'libvirt' / 'storage-backend'
 storage_file_install_dir = libdir / 'libvirt' / 'storage-file'
 
@@ -103,6 +107,16 @@ if conf.has('WITH_STORAGE_LVM')
     'name': 'virt_storage_backend_logical',
     'sources': [
       files(storage_lvm_backend_sources),
+    ],
+    'install_dir': storage_backend_install_dir,
+  }
+endif
+
+if conf.has('WITH_STORAGE_SCSI')
+  virt_modules += {
+    'name': 'virt_storage_backend_scsi',
+    'sources': [
+      files(storage_backend_scsi_sources),
     ],
     'install_dir': storage_backend_install_dir,
   }
