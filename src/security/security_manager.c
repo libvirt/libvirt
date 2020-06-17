@@ -597,23 +597,6 @@ virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
 
 
 int
-virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
-                                     virDomainDefPtr vm,
-                                     const char *savefile)
-{
-    if (mgr->drv->domainSetSavedStateLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSavedStateLabel(mgr, vm, savefile);
-        virObjectUnlock(mgr);
-        return ret;
-    }
-
-    virReportUnsupportedError();
-    return -1;
-}
-
-int
 virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
                                          virDomainDefPtr vm,
                                          const char *savefile)

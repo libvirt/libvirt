@@ -67,9 +67,6 @@ typedef int (*virSecurityDomainSetHostdevLabel) (virSecurityManagerPtr mgr,
                                                  virDomainDefPtr def,
                                                  virDomainHostdevDefPtr dev,
                                                  const char *vroot);
-typedef int (*virSecurityDomainSetSavedStateLabel) (virSecurityManagerPtr mgr,
-                                                    virDomainDefPtr def,
-                                                    const char *savefile);
 typedef int (*virSecurityDomainRestoreSavedStateLabel) (virSecurityManagerPtr mgr,
                                                         virDomainDefPtr def,
                                                         const char *savefile);
@@ -203,7 +200,6 @@ struct _virSecurityDriver {
     virSecurityDomainSetHostdevLabel domainSetSecurityHostdevLabel;
     virSecurityDomainRestoreHostdevLabel domainRestoreSecurityHostdevLabel;
 
-    virSecurityDomainSetSavedStateLabel domainSetSavedStateLabel;
     virSecurityDomainRestoreSavedStateLabel domainRestoreSavedStateLabel;
 
     virSecurityDomainSetImageFDLabel domainSetSecurityImageFDLabel;

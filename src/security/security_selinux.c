@@ -2859,21 +2859,6 @@ virSecuritySELinuxReleaseLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxSetSavedStateLabel(virSecurityManagerPtr mgr,
-                                     virDomainDefPtr def,
-                                     const char *savefile)
-{
-    virSecurityLabelDefPtr secdef;
-
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (!secdef || !secdef->relabel)
-        return 0;
-
-    return virSecuritySELinuxSetFilecon(mgr, savefile, secdef->imagelabel, true);
-}
-
-
-static int
 virSecuritySELinuxRestoreSavedStateLabel(virSecurityManagerPtr mgr,
                                          virDomainDefPtr def,
                                          const char *savefile)
@@ -3635,7 +3620,6 @@ virSecurityDriver virSecurityDriverSELinux = {
     .domainSetSecurityHostdevLabel      = virSecuritySELinuxSetHostdevLabel,
     .domainRestoreSecurityHostdevLabel  = virSecuritySELinuxRestoreHostdevLabel,
 
-    .domainSetSavedStateLabel           = virSecuritySELinuxSetSavedStateLabel,
     .domainRestoreSavedStateLabel       = virSecuritySELinuxRestoreSavedStateLabel,
 
     .domainSetSecurityImageFDLabel      = virSecuritySELinuxSetImageFDLabel,

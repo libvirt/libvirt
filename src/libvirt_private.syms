@@ -1570,7 +1570,6 @@ virSecurityManagerSetImageLabel;
 virSecurityManagerSetInputLabel;
 virSecurityManagerSetMemoryLabel;
 virSecurityManagerSetProcessLabel;
-virSecurityManagerSetSavedStateLabel;
 virSecurityManagerSetSocketLabel;
 virSecurityManagerSetTapFDLabel;
 virSecurityManagerSetTPMLabels;

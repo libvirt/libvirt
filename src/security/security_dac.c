@@ -2258,25 +2258,6 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACSetSavedStateLabel(virSecurityManagerPtr mgr,
-                                 virDomainDefPtr def,
-                                 const char *savefile)
-{
-    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    virSecurityLabelDefPtr secdef;
-    uid_t user;
-    gid_t group;
-
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
-
-    if (virSecurityDACGetImageIds(secdef, priv, &user, &group) < 0)
-        return -1;
-
-    return virSecurityDACSetOwnership(mgr, NULL, savefile, user, group, true);
-}
-
-
-static int
 virSecurityDACRestoreSavedStateLabel(virSecurityManagerPtr mgr,
                                      virDomainDefPtr def G_GNUC_UNUSED,
                                      const char *savefile)
@@ -2635,7 +2616,6 @@ virSecurityDriver virSecurityDriverDAC = {
     .domainSetSecurityHostdevLabel      = virSecurityDACSetHostdevLabel,
     .domainRestoreSecurityHostdevLabel  = virSecurityDACRestoreHostdevLabel,
 
-    .domainSetSavedStateLabel           = virSecurityDACSetSavedStateLabel,
     .domainRestoreSavedStateLabel       = virSecurityDACRestoreSavedStateLabel,
 
     .domainSetSecurityImageFDLabel      = virSecurityDACSetImageFDLabel,

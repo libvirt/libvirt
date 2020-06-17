@@ -104,9 +104,6 @@ int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       virDomainHostdevDefPtr dev,
                                       const char *vroot);
-int virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
-                                         virDomainDefPtr def,
-                                         const char *savefile);
 int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
                                              virDomainDefPtr def,
                                              const char *savefile);
