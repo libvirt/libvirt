@@ -38,6 +38,14 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -device scsi-generic,bus=scsi0.0,scsi-id=7,drive=drive-hostdev0,id=hostdev0 \
 -drive file=/dev/sg0,if=none,format=raw,id=drive-hostdev1,readonly=on \
 -device scsi-generic,bus=scsi0.0,scsi-id=6,drive=drive-hostdev1,id=hostdev1 \
+-drive file.driver=iscsi,file.portal=example.org:3260,\
+file.target=iqn.1992-01.com.example,file.lun=0,file.transport=tcp,if=none,\
+format=raw,id=drive-hostdev2 \
+-device scsi-generic,bus=scsi0.0,scsi-id=4,drive=drive-hostdev2,id=hostdev2 \
+-drive file.driver=iscsi,file.portal=example.org:3260,\
+file.target=iqn.1992-01.com.example,file.lun=1,file.transport=tcp,if=none,\
+format=raw,id=drive-hostdev3 \
+-device scsi-generic,bus=scsi0.0,scsi-id=5,drive=drive-hostdev3,id=hostdev3 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
