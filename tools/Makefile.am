@@ -23,32 +23,9 @@ STANDALONE_CPPFLAGS = -I$(top_srcdir)
 
 noinst_LTLIBRARIES =
 
-install-data-local: install-nss \
-	install-bash-completion
+install-data-local: install-nss
 
-uninstall-local: uninstall-nss \
-	uninstall-bash-completion
-
-if WITH_BASH_COMPLETION
-install-bash-completion:
-	$(MKDIR_P) "$(DESTDIR)$(BASH_COMPLETIONS_DIR)"
-	$(INSTALL_DATA) $(srcdir)/bash-completion/vsh \
-		"$(DESTDIR)$(BASH_COMPLETIONS_DIR)/vsh"
-	( cd $(DESTDIR)$(BASH_COMPLETIONS_DIR) && \
-		rm -f virsh virt-admin && \
-		$(LN_S) vsh virsh && \
-		$(LN_S) vsh virt-admin )
-
-uninstall-bash-completion:
-	rm -f $(DESTDIR)$(BASH_COMPLETIONS_DIR)/vsh \
-		$(DESTDIR)$(BASH_COMPLETIONS_DIR)/virsh \
-		$(DESTDIR)$(BASH_COMPLETIONS_DIR)/virt-admin
-	rmdir $(DESTDIR)$(BASH_COMPLETIONS_DIR) ||:
-else ! WITH_BASH_COMPLETION
-install-bash-completion:
-uninstall-bash-completion:
-endif ! WITH_BASH_COMPLETION
-
+uninstall-local: uninstall-nss
 
 if WITH_WIRESHARK_DISSECTOR
 
