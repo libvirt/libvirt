@@ -5785,11 +5785,11 @@
     <p>
       Provides a bridge from the VM directly to the LAN. This assumes
       there is a bridge device on the host which has one or more of the hosts
-      physical NICs enslaved. The guest VM will have an associated tun device
+      physical NICs attached. The guest VM will have an associated tun device
       created with a name of vnetN, which can also be overridden with the
       &lt;target&gt; element (see
       <a href="#elementsNICSTargetOverride">overriding the target element</a>).
-      The tun device will be enslaved to the bridge. The IP range / network
+      The tun device will be attached to the bridge. The IP range / network
       configuration is whatever is used on the LAN. This provides the guest VM
       full incoming &amp; outgoing net access just like a physical machine.
     </p>
