@@ -1,15 +1,5 @@
 # vim: filetype=automake
 
-LOCK_DRIVER_SOURCES = \
-	locking/lock_manager.c \
-	locking/lock_manager.h \
-	locking/lock_driver.h \
-	locking/lock_driver_nop.h \
-	locking/lock_driver_nop.c \
-	locking/domain_lock.h \
-	locking/domain_lock.c \
-	$(NULL)
-
 LOCK_DRIVER_SANLOCK_SOURCES = \
 	locking/lock_driver_sanlock.c
 
@@ -63,17 +53,6 @@ OPENRC_INIT_FILES += \
 	$(NULL)
 OPENRC_INIT_FILES_IN += \
 	locking/virtlockd.init.in \
-	$(NULL)
-
-noinst_LTLIBRARIES += libvirt_driver_lock.la
-
-libvirt_la_BUILT_LIBADD += libvirt_driver_lock.la
-libvirt_driver_lock_la_SOURCES = \
-	$(LOCK_DRIVER_SOURCES) \
-	$(NULL)
-libvirt_driver_lock_la_CFLAGS = \
-	$(AM_CFLAGS) \
-	-I$(srcdir)/conf \
 	$(NULL)
 
 lockdriverdir = $(libdir)/libvirt/lock-driver
