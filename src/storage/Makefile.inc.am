@@ -1,10 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_ZFS_SOURCES = \
-	storage/storage_backend_zfs.h \
-	storage/storage_backend_zfs.c \
-	$(NULL)
-
 STORAGE_DRIVER_VSTORAGE_SOURCES = \
 	storage/storage_backend_vstorage.h \
 	storage/storage_backend_vstorage.c \
@@ -99,22 +94,6 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 
 
 endif WITH_STORAGE
-
-if WITH_STORAGE_ZFS
-libvirt_storage_backend_zfs_la_SOURCES = \
-	$(STORAGE_DRIVER_ZFS_SOURCES)
-libvirt_storage_backend_zfs_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-storagebackend_LTLIBRARIES += libvirt_storage_backend_zfs.la
-libvirt_storage_backend_zfs_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-libvirt_storage_backend_zfs_la_LIBADD = \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-endif WITH_STORAGE_ZFS
 
 if WITH_STORAGE_VSTORAGE
 libvirt_storage_backend_vstorage_la_SOURCES = \
