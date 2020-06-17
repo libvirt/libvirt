@@ -5063,6 +5063,43 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 }
 
+
+static int
+qemuBuildHostdevSCSICommandLine(virCommandPtr cmd,
+                                const virDomainDef *def,
+                                virDomainHostdevDefPtr hostdev,
+                                virQEMUCapsPtr qemuCaps)
+{
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    g_autofree char *devstr = NULL;
+    g_autofree char *drvstr = NULL;
+
+    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+        virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc =
+            &scsisrc->u.iscsi;
+        qemuDomainStorageSourcePrivatePtr srcPriv =
+            QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
+
+        if (qemuBuildDiskSecinfoCommandLine(cmd, srcPriv ?
+                                            srcPriv->secinfo :
+                                            NULL) < 0)
+            return -1;
+    }
+
+    virCommandAddArg(cmd, "-drive");
+    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
+        return -1;
+    virCommandAddArg(cmd, drvstr);
+
+    virCommandAddArg(cmd, "-device");
+    if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev)))
+        return -1;
+    virCommandAddArg(cmd, devstr);
+
+    return 0;
+}
+
+
 static int
 qemuBuildHostdevCommandLine(virCommandPtr cmd,
                             const virDomainDef *def,
@@ -5074,10 +5111,8 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
         virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
-        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
         virDomainHostdevSubsysMediatedDevPtr mdevsrc = &subsys->u.mdev;
         g_autofree char *devstr = NULL;
-        g_autofree char *drvstr = NULL;
         g_autofree char *vhostfdName = NULL;
         unsigned int bootIndex = hostdev->info->bootIndex;
         int vhostfd = -1;
@@ -5123,28 +5158,8 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
 
         /* SCSI */
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-                virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc =
-                    &scsisrc->u.iscsi;
-                qemuDomainStorageSourcePrivatePtr srcPriv =
-                    QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
-
-                if (qemuBuildDiskSecinfoCommandLine(cmd, srcPriv ?
-                                                    srcPriv->secinfo :
-                                                    NULL) < 0)
-                    return -1;
-            }
-
-            virCommandAddArg(cmd, "-drive");
-            if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
+            if (qemuBuildHostdevSCSICommandLine(cmd, def, hostdev, qemuCaps) < 0)
                 return -1;
-            virCommandAddArg(cmd, drvstr);
-
-            virCommandAddArg(cmd, "-device");
-            if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev)))
-                return -1;
-            virCommandAddArg(cmd, devstr);
-
             break;
 
         /* SCSI_host */
