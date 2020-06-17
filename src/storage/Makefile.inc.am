@@ -1,10 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_RBD_SOURCES = \
-	storage/storage_backend_rbd.h \
-	storage/storage_backend_rbd.c \
-	$(NULL)
-
 STORAGE_DRIVER_SHEEPDOG_SOURCES = \
 	storage/storage_backend_sheepdog.h \
 	storage/storage_backend_sheepdog.c \
@@ -122,22 +117,6 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 
 
 endif WITH_STORAGE
-
-if WITH_STORAGE_RBD
-libvirt_storage_backend_rbd_la_SOURCES = $(STORAGE_DRIVER_RBD_SOURCES)
-libvirt_storage_backend_rbd_la_LIBADD = \
-	libvirt.la \
-	$(LIBRBD_LIBS) \
-	$(GLIB_LIBS) \
-	$(NULL)
-libvirt_storage_backend_rbd_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-storagebackend_LTLIBRARIES += libvirt_storage_backend_rbd.la
-libvirt_storage_backend_rbd_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-endif WITH_STORAGE_RBD
 
 if WITH_STORAGE_SHEEPDOG
 libvirt_storage_backend_sheepdog_la_SOURCES = \

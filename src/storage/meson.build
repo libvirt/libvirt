@@ -36,6 +36,10 @@ storage_backend_mpath_sources = [
   'storage_backend_mpath.c',
 ]
 
+storage_backend_rbd_sources = [
+  'storage_backend_rbd.c',
+]
+
 storage_backend_scsi_sources = [
   'storage_backend_scsi.c',
 ]
@@ -138,6 +142,19 @@ if conf.has('WITH_STORAGE_MPATH')
     ],
     'deps': [
       devmapper_dep
+    ],
+    'install_dir': storage_backend_install_dir,
+  }
+endif
+
+if conf.has('WITH_STORAGE_RBD')
+  virt_modules += {
+    'name': 'virt_storage_backend_rbd',
+    'sources': [
+      files(storage_backend_rbd_sources),
+    ],
+    'deps': [
+      rbd_dep
     ],
     'install_dir': storage_backend_install_dir,
   }
