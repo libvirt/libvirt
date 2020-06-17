@@ -47,6 +47,18 @@
       <readonly/>
       <address type='drive' controller='0' bus='0' target='4' unit='7'/>
     </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source protocol='iscsi' name='iqn.1992-01.com.example/0'>
+        <host name='example.org' port='3260'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='2' unit='4'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source protocol='iscsi' name='iqn.1992-01.com.example/1'>
+        <host name='example.org' port='3260'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='2' unit='5'/>
+    </hostdev>
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </memballoon>
