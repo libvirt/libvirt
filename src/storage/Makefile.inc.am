@@ -1,10 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_VSTORAGE_SOURCES = \
-	storage/storage_backend_vstorage.h \
-	storage/storage_backend_vstorage.c \
-	$(NULL)
-
 STORAGE_HELPER_DISK_SOURCES = \
 	storage/parthelper.c \
 	$(NULL)
@@ -12,8 +7,6 @@ STORAGE_HELPER_DISK_SOURCES = \
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
-
-storagebackend_LTLIBRARIES =
 
 if WITH_STORAGE
 sbin_PROGRAMS += virtstoraged
@@ -94,22 +87,6 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 
 
 endif WITH_STORAGE
-
-if WITH_STORAGE_VSTORAGE
-libvirt_storage_backend_vstorage_la_SOURCES = \
-	$(STORAGE_DRIVER_VSTORAGE_SOURCES)
-libvirt_storage_backend_vstorage_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-storagebackend_LTLIBRARIES += libvirt_storage_backend_vstorage.la
-libvirt_storage_backend_vstorage_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-libvirt_storage_backend_vstorage_la_LIBADD = \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-endif WITH_STORAGE_VSTORAGE
 
 if WITH_STORAGE_DISK
 libexec_PROGRAMS += libvirt_parthelper

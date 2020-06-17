@@ -56,6 +56,10 @@ storage_backend_sheepdog_sources = [
   'storage_backend_sheepdog.c',
 ]
 
+storage_backend_vstorage_sources = [
+  'storage_backend_vstorage.c',
+]
+
 storage_backend_zfs_sources = [
   'storage_backend_zfs.c',
 ]
@@ -226,6 +230,16 @@ if conf.has('WITH_STORAGE_SHEEPDOG')
     'name': 'virt_storage_backend_sheepdog',
     'link_whole': [
       storage_backend_sheepdog_priv_lib,
+    ],
+    'install_dir': storage_backend_install_dir,
+  }
+endif
+
+if conf.has('WITH_STORAGE_VSTORAGE')
+  virt_modules += {
+    'name': 'virt_storage_backend_vstorage',
+    'sources': [
+      files(storage_backend_vstorage_sources),
     ],
     'install_dir': storage_backend_install_dir,
   }
