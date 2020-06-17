@@ -16,3 +16,5 @@ if conf.has('WITH_VMX')
     ],
   )
 endif
+
+vmx_inc_dir = include_directories('.')
