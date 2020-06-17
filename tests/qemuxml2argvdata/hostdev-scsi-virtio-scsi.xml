@@ -52,6 +52,24 @@
       </source>
       <address type='drive' controller='0' bus='0' target='2' unit='5'/>
     </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:storage/1'>
+        <host name='example.org' port='3260'/>
+        <auth username='myname'>
+          <secret type='iscsi' usage='mycluster_myname'/>
+        </auth>
+      </source>
+      <address type='drive' controller='0' bus='0' target='3' unit='4'/>
+    </hostdev>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:storage/2'>
+        <host name='example.org' port='3260'/>
+        <auth username='myname'>
+          <secret type='iscsi' usage='mycluster_myname'/>
+        </auth>
+      </source>
+      <address type='drive' controller='0' bus='0' target='3' unit='5'/>
+    </hostdev>
     <memballoon model='virtio'/>
   </devices>
 </domain>
