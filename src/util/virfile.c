@@ -3127,20 +3127,20 @@ virFileBuildPath(const char *dir, const char *name, const char *ext)
     return path;
 }
 
-/* Open a non-blocking master side of a pty.  If ttyName is not NULL,
- * then populate it with the name of the slave.  If rawmode is set,
- * also put the master side into raw mode before returning.  */
+/* Open a non-blocking primary side of a pty. If ttyName is not NULL,
+ * then populate it with the name of the secondary peer. If rawmode is
+ * set, also put the primary side into raw mode before returning.  */
 #ifndef WIN32
 int
-virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
+virFileOpenTty(int *ttyprimary, char **ttyName, int rawmode)
 {
     /* XXX A word of caution - on some platforms (Solaris and HP-UX),
-     * additional ioctl() calls are needs after opening the slave
+     * additional ioctl() calls are needs after opening the secondary
      * before it will cause isatty() to return true.  Should we make
-     * virFileOpenTty also return the opened slave fd, so the caller
+     * virFileOpenTty also return the opened secondary fd, so the caller
      * doesn't have to worry about that mess?  */
     int ret = -1;
-    int slave = -1;
+    int secondary = -1;
     g_autofree char *name = NULL;
 
     /* Unfortunately, we can't use the name argument of openpty, since
@@ -3148,31 +3148,31 @@ virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
      * Likewise, we can't use the termios argument: we have to use
      * read-modify-write since there is no portable way to initialize
      * a struct termios without use of tcgetattr.  */
-    if (openpty(ttymaster, &slave, NULL, NULL, NULL) < 0)
+    if (openpty(ttyprimary, &secondary, NULL, NULL, NULL) < 0)
         return -1;
 
     /* What a shame that openpty cannot atomically set FD_CLOEXEC, but
      * that using posix_openpt/grantpt/unlockpt/ptsname is not
      * thread-safe, and that ptsname_r is not portable.  */
-    if (virSetNonBlock(*ttymaster) < 0 ||
-        virSetCloseExec(*ttymaster) < 0)
+    if (virSetNonBlock(*ttyprimary) < 0 ||
+        virSetCloseExec(*ttyprimary) < 0)
         goto cleanup;
 
-    /* While Linux supports tcgetattr on either the master or the
-     * slave, Solaris requires it to be on the slave.  */
+    /* While Linux supports tcgetattr on either the primary or the
+     * secondary, Solaris requires it to be on the secondary.  */
     if (rawmode) {
         struct termios ttyAttr;
-        if (tcgetattr(slave, &ttyAttr) < 0)
+        if (tcgetattr(secondary, &ttyAttr) < 0)
             goto cleanup;
 
         cfmakeraw(&ttyAttr);
 
-        if (tcsetattr(slave, TCSADRAIN, &ttyAttr) < 0)
+        if (tcsetattr(secondary, TCSADRAIN, &ttyAttr) < 0)
             goto cleanup;
     }
 
-    /* ttyname_r on the slave is required by POSIX, while ptsname_r on
-     * the master is a glibc extension, and the POSIX ptsname is not
+    /* ttyname_r on the secondary is required by POSIX, while ptsname_r on
+     * the primary is a glibc extension, and the POSIX ptsname is not
      * thread-safe.  Since openpty gave us both descriptors, guess
      * which way we will determine the name?  :)  */
     if (ttyName) {
@@ -3184,7 +3184,7 @@ virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
         if (VIR_ALLOC_N(name, len) < 0)
             goto cleanup;
 
-        while ((rc = ttyname_r(slave, name, len)) == ERANGE) {
+        while ((rc = ttyname_r(secondary, name, len)) == ERANGE) {
             if (VIR_RESIZE_N(name, len, len, len) < 0)
                 goto cleanup;
         }
@@ -3200,14 +3200,14 @@ virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
 
  cleanup:
     if (ret != 0)
-        VIR_FORCE_CLOSE(*ttymaster);
-    VIR_FORCE_CLOSE(slave);
+        VIR_FORCE_CLOSE(*ttyprimary);
+    VIR_FORCE_CLOSE(secondary);
 
     return ret;
 }
 #else /* WIN32 */
 int
-virFileOpenTty(int *ttymaster G_GNUC_UNUSED,
+virFileOpenTty(int *ttyprimary G_GNUC_UNUSED,
                char **ttyName G_GNUC_UNUSED,
                int rawmode G_GNUC_UNUSED)
 {
