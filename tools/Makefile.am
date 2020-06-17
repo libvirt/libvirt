@@ -24,7 +24,7 @@ STANDALONE_CPPFLAGS = -I$(top_srcdir)
 confdir = $(sysconfdir)/libvirt
 conf_DATA =
 
-bin_SCRIPTS = virt-xml-validate virt-pki-validate
+bin_SCRIPTS = virt-pki-validate
 libexec_SCRIPTS = libvirt-guests.sh
 
 if WITH_SANLOCK
@@ -34,11 +34,6 @@ endif WITH_SANLOCK
 if WITH_LOGIN_SHELL
 conf_DATA += virt-login-shell.conf
 endif WITH_LOGIN_SHELL
-
-virt-xml-validate: virt-xml-validate.in Makefile
-	$(AM_V_GEN)sed -e 's|[@]schemadir@|$(pkgdatadir)/schemas|g' \
-		       -e 's|[@]VERSION@|$(VERSION)|g' \
-	  < $< > $@ || (rm $@ && exit 1) && chmod +x $@
 
 virt-pki-validate: virt-pki-validate.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]sysconfdir@|$(sysconfdir)|g' \
