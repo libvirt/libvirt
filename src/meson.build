@@ -130,6 +130,8 @@ libvirt_libs = []
 
 # list subdirectories
 
+subdir('cpu_map')
+
 subdir('util')
 
 src_dep = declare_dependency(
