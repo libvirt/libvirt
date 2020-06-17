@@ -5089,6 +5089,51 @@ qemuDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 }
 
 
+/**
+ * qemuDomainDeviceHostdevDefPostParseRestoreSecAlias:
+ *
+ * Re-generate aliases for objects related to the storage source if they
+ * were not stored in the status XML by an older libvirt.
+ *
+ * Note that qemuCaps should be always present for a status XML.
+ */
+static int
+qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(virDomainHostdevDefPtr hostdev,
+                                                   virQEMUCapsPtr qemuCaps,
+                                                   unsigned int parseFlags)
+{
+    qemuDomainStorageSourcePrivatePtr priv;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+    g_autofree char *authalias = NULL;
+
+    if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS) ||
+        !qemuCaps ||
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_SECRET))
+        return 0;
+
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+        hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI ||
+        scsisrc->protocol != VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI ||
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET) ||
+        !qemuDomainStorageSourceHasAuth(iscsisrc->src))
+        return 0;
+
+    if (!(priv = qemuDomainStorageSourcePrivateFetch(iscsisrc->src)))
+        return -1;
+
+    if (priv->secinfo)
+        return 0;
+
+    authalias = g_strdup_printf("%s-secret0", hostdev->info->alias);
+
+    if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->secinfo, &authalias) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 qemuDomainHostdevDefMdevPostParse(virDomainHostdevSubsysMediatedDevPtr mdevsrc,
                                   virQEMUCapsPtr qemuCaps)
@@ -5106,9 +5151,14 @@ qemuDomainHostdevDefMdevPostParse(virDomainHostdevSubsysMediatedDevPtr mdevsrc,
 
 static int
 qemuDomainHostdevDefPostParse(virDomainHostdevDefPtr hostdev,
-                              virQEMUCapsPtr qemuCaps)
+                              virQEMUCapsPtr qemuCaps,
+                              unsigned int parseFlags)
 {
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
+
+    if (qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(hostdev, qemuCaps,
+                                                           parseFlags) < 0)
+        return -1;
 
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
         hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
@@ -5184,7 +5234,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        ret = qemuDomainHostdevDefPostParse(dev->data.hostdev, qemuCaps);
+        ret = qemuDomainHostdevDefPostParse(dev->data.hostdev, qemuCaps, parseFlags);
         break;
 
     case VIR_DOMAIN_DEVICE_TPM:
