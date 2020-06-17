@@ -4064,7 +4064,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     }
     unlink_tmp = true;
 
-    qemuSecuritySetSavedStateLabel(driver, vm, tmp);
+    qemuSecurityDomainSetPathLabel(driver, vm, tmp, false);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorScreendump(priv->mon, videoAlias, screen, tmp) < 0) {
@@ -11671,7 +11671,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
         goto endjob;
     }
 
-    qemuSecuritySetSavedStateLabel(driver, vm, tmp);
+    qemuSecurityDomainSetPathLabel(driver, vm, tmp, false);
 
     priv = vm->privateData;
     qemuDomainObjEnterMonitor(driver, vm);
