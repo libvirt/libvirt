@@ -166,6 +166,7 @@ subdir('lxc')
 subdir('openvz')
 subdir('qemu')
 subdir('test')
+subdir('vbox')
 subdir('vmware')
 
 

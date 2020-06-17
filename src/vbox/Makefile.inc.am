@@ -1,26 +1,5 @@
 # vim: filetype=automake
 
-VBOX_DRIVER_SOURCES = \
-	vbox/vbox_driver.c \
-	vbox/vbox_driver.h \
-	vbox/vbox_snapshot_conf.c \
-	vbox/vbox_snapshot_conf.h \
-	vbox/vbox_V5_2.c \
-	vbox/vbox_CAPI_v5_2.h \
-	vbox/vbox_CAPI_v6_0.h \
-	vbox/vbox_V6_0.c \
-	vbox/vbox_CAPI_v6_1.h \
-	vbox/vbox_V6_1.c \
-	vbox/vbox_common.c \
-	vbox/vbox_common.h \
-	vbox/vbox_uniformed_api.h \
-	vbox/vbox_get_driver.h \
-	vbox/vbox_network.c \
-	vbox/vbox_storage.c \
-	vbox/vbox_XPCOMCGlue.c \
-	vbox/vbox_XPCOMCGlue.h \
-	$(NULL)
-
 DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(VBOX_DRIVER_SOURCES)) \
 	$(srcdir)/vbox/vbox_tmpl.c \
@@ -36,19 +15,6 @@ libvirt_driver_vbox_la_LIBADD = \
 	$(NULL)
 mod_LTLIBRARIES += libvirt_driver_vbox.la
 libvirt_driver_vbox_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_vbox_impl_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	-DVBOX_DRIVER \
-	$(NULL)
-libvirt_driver_vbox_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_vbox_impl_la_LIBADD = \
-	$(DLOPEN_LIBS) \
-	$(WIN32_EXTRA_LIBS) \
-	$(LIBXML_LIBS) \
-	$(NULL)
-libvirt_driver_vbox_impl_la_SOURCES = $(VBOX_DRIVER_SOURCES)
 
 sbin_PROGRAMS += virtvboxd
 
