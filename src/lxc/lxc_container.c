@@ -527,23 +527,6 @@ lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 /*_syscall2(int, pivot_root, char *, newroot, const char *, oldroot)*/
 extern int pivot_root(const char * new_root, const char * put_old);
 
-#ifndef MS_REC
-# define MS_REC          16384
-#endif
-
-#ifndef MNT_DETACH
-# define MNT_DETACH      0x00000002
-#endif
-
-#ifndef MS_PRIVATE
-# define MS_PRIVATE              (1<<18)
-#endif
-
-#ifndef MS_SLAVE
-# define MS_SLAVE                (1<<19)
-#endif
-
-
 static int lxcContainerUnmountSubtree(const char *prefix,
                                       bool isOldRootFS)
 {

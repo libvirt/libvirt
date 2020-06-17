@@ -2053,14 +2053,6 @@ static int lxcSetPersonality(virDomainDefPtr def)
     return 0;
 }
 
-#ifndef MS_REC
-# define MS_REC          16384
-#endif
-
-#ifndef MS_SLAVE
-# define MS_SLAVE              (1<<19)
-#endif
-
 /* Create a private tty using the private devpts at PTMX, returning
  * the master in *TTYMASTER and the name of the slave, _from the
  * perspective of the guest after remounting file systems_, in
