@@ -31,24 +31,15 @@ install-data-local: install-systemd install-nss \
 uninstall-local: uninstall-systemd uninstall-nss \
 	uninstall-bash-completion
 
-install-sysconfig:
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
-	$(INSTALL_DATA) $(srcdir)/libvirt-guests.sysconf \
-	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
-
-uninstall-sysconfig:
-	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
-	rmdir $(DESTDIR)$(sysconfdir)/sysconfig ||:
-
 SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
 
 if LIBVIRT_INIT_SCRIPT_SYSTEMD
-install-systemd: libvirt-guests.service install-sysconfig libvirt-guests.sh
+install-systemd: libvirt-guests.service libvirt-guests.sh
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL_DATA) libvirt-guests.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirt-guests.service
 
-uninstall-systemd: uninstall-sysconfig
+uninstall-systemd:
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirt-guests.service
 	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) ||:
 

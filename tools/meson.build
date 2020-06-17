@@ -269,3 +269,11 @@ configure_file(
   install_dir: libexecdir,
   install_mode: 'rwxrwxr-x',
 )
+
+if init_script == 'systemd'
+  install_data(
+    'libvirt-guests.sysconf',
+    install_dir: sysconfdir / 'sysconfig',
+    rename: 'libvirt-guests',
+  )
+endif
