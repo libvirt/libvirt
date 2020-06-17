@@ -1,18 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_BACKEND_SOURCES = \
-	storage/storage_backend.h \
-	storage/storage_backend.c \
-	$(NULL)
-
-STORAGE_DRIVER_SOURCES = \
-	storage/storage_driver.h \
-	storage/storage_driver.c \
-	$(STORAGE_DRIVER_BACKEND_SOURCES) \
-	storage/storage_util.h \
-	storage/storage_util.c \
-	$(NULL)
-
 STORAGE_DRIVER_FS_SOURCES = \
 	storage/storage_backend_fs.h \
 	storage/storage_backend_fs.c \
@@ -98,23 +85,7 @@ storagebackend_LTLIBRARIES =
 storagefiledir = $(libdir)/libvirt/storage-file
 storagefile_LTLIBRARIES =
 
-# Needed to keep automake quiet about conditionals
-libvirt_driver_storage_impl_la_SOURCES =
-libvirt_driver_storage_impl_la_CFLAGS = \
-	-I$(srcdir)/access \
-	-I$(builddir)/access \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-libvirt_driver_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_storage_impl_la_LIBADD = $(SECDRIVER_LIBS) $(LIBXML_LIBS)
-if WITH_BLKID
-libvirt_driver_storage_impl_la_CFLAGS += $(BLKID_CFLAGS)
-libvirt_driver_storage_impl_la_LIBADD += $(BLKID_LIBS)
-endif WITH_BLKID
-
 if WITH_STORAGE
-noinst_LTLIBRARIES += libvirt_driver_storage_impl.la
 libvirt_driver_storage_la_SOURCES =
 libvirt_driver_storage_la_LIBADD = \
 	libvirt_driver_storage_impl.la \
@@ -123,7 +94,6 @@ libvirt_driver_storage_la_LIBADD = \
 	$(NULL)
 mod_LTLIBRARIES += libvirt_driver_storage.la
 libvirt_driver_storage_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
 
 sbin_PROGRAMS += virtstoraged
 
