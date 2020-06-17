@@ -1,3 +1,10 @@
+<!--
+  After adding new features, update existing test files with
+
+    for json in tests/cputestdata/x86_64-cpuid-*.json; do
+      tests/cputestdata/cpu-cpuid.py diff $json
+    done
+-->
 <cpus>
   <!-- standard features, EDX -->
   <feature name='fpu'>
