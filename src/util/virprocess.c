@@ -1288,7 +1288,7 @@ virProcessSetupPrivateMountNS(void)
 
     if (mount("", "/", "none", MS_SLAVE|MS_REC, NULL) < 0) {
         virReportSystemError(errno, "%s",
-                             _("Failed to switch root mount into slave mode"));
+                             _("Failed disable mount propagation out of the root filesystem"));
         return -1;
     }
 

@@ -2116,9 +2116,9 @@ virLXCControllerSetupPrivateNS(void)
      *
      * Thus we call unshare(CLONE_NS) so that we can see
      * the guest's new /dev/pts, without it becoming
-     * visible to the host OS. We also put the root FS
-     * into slave mode, just in case it was currently
-     * marked as shared
+     * visible to the host OS. We also disable mount
+     * propagation out of the root FS, in case it was
+     * currently allowing bi-directional propagation.
      */
 
     return virProcessSetupPrivateMountNS();
