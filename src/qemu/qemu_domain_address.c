@@ -737,6 +737,14 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         if (net->model == VIR_DOMAIN_NET_MODEL_E1000E)
             return pcieFlags;
 
+        /* the only time model can be "unknown" is for type='hostdev'
+         * or for type='network' where the network is a pool of
+         * hostdev devices. These will always be pcie on the host, and
+         * should be pcie in the guest if it supports pcie.
+         */
+        if (net->model == VIR_DOMAIN_NET_MODEL_UNKNOWN)
+            return pcieFlags;
+
         return pciFlags;
     }
 
