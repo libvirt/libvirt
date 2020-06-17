@@ -1734,8 +1734,8 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
     char *tmp;
     int order = 1;
     size_t totalvcpus = 0;
-    size_t mastervcpu; /* this iterator is used for iterating hotpluggable entities */
-    size_t slavevcpu; /* this corresponds to subentries of a hotpluggable entry */
+    size_t mainvcpu; /* this iterator is used for iterating hotpluggable entities */
+    size_t subvcpu; /* this corresponds to subentries of a hotpluggable entry */
     size_t anyvcpu; /* this iterator is used for any vcpu entry in the result */
     size_t i;
     size_t j;
@@ -1777,31 +1777,31 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
     /* transfer appropriate data from the hotpluggable list to corresponding
      * entries. the entries returned by qemu may in fact describe multiple
      * logical vcpus in the guest */
-    mastervcpu = 0;
+    mainvcpu = 0;
     for (i = 0; i < nhotplugvcpus; i++) {
-        vcpus[mastervcpu].online = !!hotplugvcpus[i].qom_path;
-        vcpus[mastervcpu].hotpluggable = !!hotplugvcpus[i].alias ||
-                                         !vcpus[mastervcpu].online;
-        vcpus[mastervcpu].socket_id = hotplugvcpus[i].socket_id;
-        vcpus[mastervcpu].die_id = hotplugvcpus[i].die_id;
-        vcpus[mastervcpu].core_id = hotplugvcpus[i].core_id;
-        vcpus[mastervcpu].thread_id = hotplugvcpus[i].thread_id;
-        vcpus[mastervcpu].node_id = hotplugvcpus[i].node_id;
-        vcpus[mastervcpu].vcpus = hotplugvcpus[i].vcpus;
-        vcpus[mastervcpu].qom_path = g_steal_pointer(&hotplugvcpus[i].qom_path);
-        vcpus[mastervcpu].alias = g_steal_pointer(&hotplugvcpus[i].alias);
-        vcpus[mastervcpu].type = g_steal_pointer(&hotplugvcpus[i].type);
-        vcpus[mastervcpu].props = g_steal_pointer(&hotplugvcpus[i].props);
-        vcpus[mastervcpu].id = hotplugvcpus[i].enable_id;
+        vcpus[mainvcpu].online = !!hotplugvcpus[i].qom_path;
+        vcpus[mainvcpu].hotpluggable = !!hotplugvcpus[i].alias ||
+                                         !vcpus[mainvcpu].online;
+        vcpus[mainvcpu].socket_id = hotplugvcpus[i].socket_id;
+        vcpus[mainvcpu].die_id = hotplugvcpus[i].die_id;
+        vcpus[mainvcpu].core_id = hotplugvcpus[i].core_id;
+        vcpus[mainvcpu].thread_id = hotplugvcpus[i].thread_id;
+        vcpus[mainvcpu].node_id = hotplugvcpus[i].node_id;
+        vcpus[mainvcpu].vcpus = hotplugvcpus[i].vcpus;
+        vcpus[mainvcpu].qom_path = g_steal_pointer(&hotplugvcpus[i].qom_path);
+        vcpus[mainvcpu].alias = g_steal_pointer(&hotplugvcpus[i].alias);
+        vcpus[mainvcpu].type = g_steal_pointer(&hotplugvcpus[i].type);
+        vcpus[mainvcpu].props = g_steal_pointer(&hotplugvcpus[i].props);
+        vcpus[mainvcpu].id = hotplugvcpus[i].enable_id;
 
-        /* copy state information to slave vcpus */
-        for (slavevcpu = mastervcpu + 1; slavevcpu < mastervcpu + hotplugvcpus[i].vcpus; slavevcpu++) {
-            vcpus[slavevcpu].online = vcpus[mastervcpu].online;
-            vcpus[slavevcpu].hotpluggable = vcpus[mastervcpu].hotpluggable;
+        /* copy state information to sub vcpus */
+        for (subvcpu = mainvcpu + 1; subvcpu < mainvcpu + hotplugvcpus[i].vcpus; subvcpu++) {
+            vcpus[subvcpu].online = vcpus[mainvcpu].online;
+            vcpus[subvcpu].hotpluggable = vcpus[mainvcpu].hotpluggable;
         }
 
         /* calculate next master vcpu (hotpluggable unit) entry */
-        mastervcpu += hotplugvcpus[i].vcpus;
+        mainvcpu += hotplugvcpus[i].vcpus;
     }
 
     /* match entries from query cpus to the output array taking into account
