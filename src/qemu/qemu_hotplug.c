@@ -4474,7 +4474,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree char *drivealias = NULL;
-    g_autofree char *objAlias = NULL;
+    const char *secretObjAlias = NULL;
 
     VIR_DEBUG("Removing host device %s from domain %p %s",
               hostdev->info->alias, vm, vm->def->name);
@@ -4486,22 +4486,17 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
         if (!(drivealias = qemuAliasFromHostdev(hostdev)))
             return -1;
 
-        /* Look for the markers that the iSCSI hostdev was added with a
-         * secret object to manage the username/password. If present, let's
-         * attempt to remove the object as well. */
-        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET) &&
-            qemuDomainStorageSourceHasAuth(iscsisrc->src)) {
-            if (!(objAlias = qemuAliasForSecret(hostdev->info->alias, NULL)))
-                return -1;
+        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+            qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
+            if (srcPriv && srcPriv->secinfo)
+                secretObjAlias = srcPriv->secinfo->s.aes.alias;
         }
 
         qemuDomainObjEnterMonitor(driver, vm);
         qemuMonitorDriveDel(priv->mon, drivealias);
 
-        /* If it fails, then so be it - it was a best shot */
-        if (objAlias)
-            ignore_value(qemuMonitorDelObject(priv->mon, objAlias, false));
+        if (secretObjAlias)
+            ignore_value(qemuMonitorDelObject(priv->mon, secretObjAlias, false));
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             return -1;
