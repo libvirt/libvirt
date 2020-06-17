@@ -48,7 +48,7 @@ CI_PREPARE_SCRIPT = $(CI_ROOTDIR)/prepare.sh
 CI_BUILD_SCRIPT = $(CI_ROOTDIR)/build.sh
 
 # Location of the container images we're going to pull
-# Can be useful to overridde to use a locally built
+# Can be useful to override to use a locally built
 # image instead
 CI_IMAGE_PREFIX = registry.gitlab.com/libvirt/libvirt/ci-
 
