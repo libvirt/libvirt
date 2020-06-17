@@ -271,3 +271,53 @@ libvirt_lib = shared_library(
   version: libvirt_lib_version,
   soversion: libvirt_so_version,
 )
+
+
+# libvirt-qemu.syms symbol files
+
+libvirt_qemu_syms = meson.current_source_dir() / 'libvirt_qemu.syms'
+libvirt_qemu_syms_file = libvirt_qemu_syms
+libvirt_qemu_syms_path = libvirt_qemu_syms
+if host_machine.system() == 'windows'
+  libvirt_qemu_def = custom_target(
+    'libvirt_qemu.def',
+    input: libvirt_qemu_syms,
+    output: 'libvirt_qemu.def',
+    command: [
+      meson_python_prog, python3_prog.path(), meson_gen_def_prog.path(),
+      '@INPUT@', '@OUTPUT@',
+    ],
+  )
+  libvirt_qemu_syms_file = libvirt_qemu_def
+  libvirt_qemu_syms_path = libvirt_qemu_def.full_path()
+endif
+
+
+# libvirt-qemu.so
+
+libvirt_qemu_syms_flags = '@0@@1@'.format(
+  version_script_flags,
+  libvirt_qemu_syms_path,
+)
+
+libvirt_qemu_lib = shared_library(
+  'virt-qemu',
+  'libvirt-qemu.c',
+  dependencies: [
+    src_dep,
+  ],
+  link_args: [
+    libvirt_nodelete,
+    libvirt_qemu_syms_flags,
+  ],
+  link_with: [
+    libvirt_lib,
+  ],
+  link_depends: [
+    libvirt_qemu_syms_file,
+  ],
+  install: true,
+  install_rpath: libdir,
+  version: libvirt_lib_version,
+  soversion: libvirt_so_version,
+)

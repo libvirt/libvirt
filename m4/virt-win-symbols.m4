@@ -20,7 +20,6 @@ dnl
 AC_DEFUN([LIBVIRT_WIN_CHECK_SYMBOLS], [
   LIBVIRT_ADMIN_SYMBOL_FILE=admin/libvirt_admin.syms
   LIBVIRT_LXC_SYMBOL_FILE='$(srcdir)/libvirt_lxc.syms'
-  LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
   case "$host" in
     *-*-mingw* )
       # Also set the symbol file to .def, so src/Makefile generates libvirt.def
@@ -28,10 +27,8 @@ AC_DEFUN([LIBVIRT_WIN_CHECK_SYMBOLS], [
       # linker
       LIBVIRT_ADMIN_SYMBOL_FILE=admin/libvirt_admin.def
       LIBVIRT_LXC_SYMBOL_FILE=libvirt_lxc.def
-      LIBVIRT_QEMU_SYMBOL_FILE=libvirt_qemu.def
       ;;
   esac
   AC_SUBST([LIBVIRT_ADMIN_SYMBOL_FILE])
   AC_SUBST([LIBVIRT_LXC_SYMBOL_FILE])
-  AC_SUBST([LIBVIRT_QEMU_SYMBOL_FILE])
 ])

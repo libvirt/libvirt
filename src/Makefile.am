@@ -65,7 +65,7 @@ COMMON_UNIT_VARS = \
 
 # Set these variables before we include any of the subdirs as libvirt-admin.la
 # has to be installed after libvirt.la.
-lib_LTLIBRARIES += libvirt-qemu.la libvirt-lxc.la
+lib_LTLIBRARIES += libvirt-lxc.la
 
 include util/Makefile.inc.am
 include security/Makefile.inc.am
@@ -209,7 +209,7 @@ check-local: check-protocol check-symfile check-symsorting \
 # depending on whether they are stored in git and/or used in the build.
 SYM_FILES += $(USED_SYM_FILES)
 GENERATED_SYM_FILES += \
-	libvirt_qemu.def libvirt_lxc.def \
+	libvirt_lxc.def \
 	$(NULL)
 
 
@@ -252,16 +252,6 @@ libvirt_functions.stp: $(RPC_PROBE_FILES) $(top_srcdir)/scripts/gensystemtap.py
 	  $(RPC_PROBE_FILES) > $@
 
 endif WITH_DTRACE_PROBES
-
-libvirt_qemu_la_SOURCES = libvirt-qemu.c
-libvirt_qemu_la_LDFLAGS = \
-		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
-		-version-info $(LIBVIRT_VERSION_INFO) \
-		$(LIBVIRT_NODELETE) \
-		$(AM_LDFLAGS) \
-		$(NULL)
-libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
-libvirt_qemu_la_LIBADD = libvirt.la
 
 libvirt_lxc_la_SOURCES = libvirt-lxc.c
 libvirt_lxc_la_LDFLAGS = \
