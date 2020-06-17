@@ -639,6 +639,8 @@ top_inc_dir = include_directories('.')
 
 subdir('scripts')
 
+subdir('include')
+
 
 # generate meson-config.h file
 configure_file(output: 'meson-config.h', configuration: conf)
