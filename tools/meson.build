@@ -114,6 +114,8 @@ if conf.has('WITH_LOGIN_SHELL')
     install_dir: libexecdir,
     install_rpath: libdir,
   )
+
+  install_data('virt-login-shell.conf', install_dir: sysconfdir / 'libvirt')
 endif
 
 if host_machine.system() == 'windows'

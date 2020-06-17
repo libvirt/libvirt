@@ -21,13 +21,6 @@
 # needed
 STANDALONE_CPPFLAGS = -I$(top_srcdir)
 
-confdir = $(sysconfdir)/libvirt
-conf_DATA =
-
-if WITH_LOGIN_SHELL
-conf_DATA += virt-login-shell.conf
-endif WITH_LOGIN_SHELL
-
 noinst_LTLIBRARIES =
 
 BUILT_SOURCES =
