@@ -1,32 +1,5 @@
 # vim: filetype=automake
 
-if WITH_LIBVIRTD
-
-if WITH_POLKIT
-polkitdir = $(datadir)/polkit-1
-polkitactionsdir = $(polkitdir)/actions
-polkitrulesdir = $(polkitdir)/rules.d
-
-install-polkit:
-	$(MKDIR_P) $(DESTDIR)$(polkitactionsdir)
-	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.policy \
-		$(DESTDIR)$(polkitactionsdir)/org.libvirt.unix.policy
-	$(MKDIR_P) $(DESTDIR)$(polkitrulesdir)
-	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.rules \
-		$(DESTDIR)$(polkitrulesdir)/50-libvirt.rules
-
-uninstall-polkit:
-	rm -f $(DESTDIR)$(polkitactionsdir)/org.libvirt.unix.policy
-	rmdir $(DESTDIR)$(polkitactionsdir) || :
-	rm -f $(DESTDIR)$(polkitrulesdir)/50-libvirt.rules
-	rmdir $(DESTDIR)$(polkitrulesdir) || :
-
-INSTALL_DATA_LOCAL += install-polkit
-UNINSTALL_LOCAL += uninstall-polkit
-endif WITH_POLKIT
-
-endif WITH_LIBVIRTD
-
 # This is needed for clients too, so can't wrap in
 # the WITH_LIBVIRTD conditional
 if WITH_SASL

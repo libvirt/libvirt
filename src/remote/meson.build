@@ -246,6 +246,20 @@ if conf.has('WITH_REMOTE')
         rename: [ '60-libvirtd.conf' ],
       )
     endif
+
+    if conf.has('WITH_POLKIT')
+      polkitdir = datadir / 'polkit-1'
+      install_data(
+        'libvirtd.policy',
+        install_dir: polkitdir / 'actions',
+        rename: [ 'org.libvirt.unix.policy' ],
+      )
+      install_data(
+        'libvirtd.rules',
+        install_dir: polkitdir / 'rules.d',
+        rename: [ '50-libvirt.rules' ],
+      )
+    endif
   endif
 endif
 
