@@ -1021,9 +1021,6 @@ mymain(void)
     DO_TEST("hostdev-scsi-virtio-scsi",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_LSI);
-    DO_TEST("hostdev-scsi-readonly",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_LSI);
 
     DO_TEST("hostdev-scsi-shareable",
             QEMU_CAPS_VIRTIO_SCSI,
