@@ -2054,25 +2054,25 @@ static int lxcSetPersonality(virDomainDefPtr def)
 }
 
 /* Create a private tty using the private devpts at PTMX, returning
- * the master in *TTYMASTER and the name of the slave, _from the
+ * the primary in @ttyprimary and the name of the secondary, _from the
  * perspective of the guest after remounting file systems_, in
- * *TTYNAME.  Heavily borrowed from glibc, but doesn't require that
+ * @ttyName.  Heavily borrowed from glibc, but doesn't require that
  * devpts == "/dev/pts" */
 static int
-lxcCreateTty(virLXCControllerPtr ctrl, int *ttymaster,
+lxcCreateTty(virLXCControllerPtr ctrl, int *ttyprimary,
              char **ttyName, char **ttyHostPath)
 {
     int ret = -1;
     int ptyno;
     int unlock = 0;
 
-    if ((*ttymaster = open(ctrl->devptmx, O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
+    if ((*ttyprimary = open(ctrl->devptmx, O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
         goto cleanup;
 
-    if (ioctl(*ttymaster, TIOCSPTLCK, &unlock) < 0)
+    if (ioctl(*ttyprimary, TIOCSPTLCK, &unlock) < 0)
         goto cleanup;
 
-    if (ioctl(*ttymaster, TIOCGPTN, &ptyno) < 0)
+    if (ioctl(*ttyprimary, TIOCGPTN, &ptyno) < 0)
         goto cleanup;
 
     /* If mount() succeeded at honoring newinstance, then the kernel
@@ -2088,7 +2088,7 @@ lxcCreateTty(virLXCControllerPtr ctrl, int *ttymaster,
 
  cleanup:
     if (ret != 0) {
-        VIR_FORCE_CLOSE(*ttymaster);
+        VIR_FORCE_CLOSE(*ttyprimary);
         g_free(*ttyName);
         *ttyName = NULL;
     }
