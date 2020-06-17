@@ -395,24 +395,6 @@ virSecurityStackRestoreAllLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityStackRestoreSavedStateLabel(virSecurityManagerPtr mgr,
-                                       virDomainDefPtr vm,
-                                       const char *savefile)
-{
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
-
-    for (; item; item = item->next) {
-        if (virSecurityManagerRestoreSavedStateLabel(item->securityManager, vm, savefile) < 0)
-            rc = -1;
-    }
-
-    return rc;
-}
-
-
-static int
 virSecurityStackSetProcessLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr vm)
 {
@@ -815,6 +797,25 @@ virSecurityStackDomainSetPathLabelRO(virSecurityManagerPtr mgr,
 
 
 static int
+virSecurityStackDomainRestorePathLabel(virSecurityManagerPtr mgr,
+                                       virDomainDefPtr vm,
+                                       const char *path)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerDomainRestorePathLabel(item->securityManager,
+                                                     vm, path) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+
+static int
 virSecurityStackDomainSetChardevLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       virDomainChrSourceDefPtr dev_source,
@@ -963,8 +964,6 @@ virSecurityDriver virSecurityDriverStack = {
     .domainSetSecurityHostdevLabel      = virSecurityStackSetHostdevLabel,
     .domainRestoreSecurityHostdevLabel  = virSecurityStackRestoreHostdevLabel,
 
-    .domainRestoreSavedStateLabel       = virSecurityStackRestoreSavedStateLabel,
-
     .domainSetSecurityImageFDLabel      = virSecurityStackSetImageFDLabel,
     .domainSetSecurityTapFDLabel        = virSecurityStackSetTapFDLabel,
 
@@ -974,6 +973,7 @@ virSecurityDriver virSecurityDriverStack = {
 
     .domainSetPathLabel                 = virSecurityStackDomainSetPathLabel,
     .domainSetPathLabelRO               = virSecurityStackDomainSetPathLabelRO,
+    .domainRestorePathLabel             = virSecurityStackDomainRestorePathLabel,
 
     .domainSetSecurityChardevLabel      = virSecurityStackDomainSetChardevLabel,
     .domainRestoreSecurityChardevLabel  = virSecurityStackDomainRestoreChardevLabel,

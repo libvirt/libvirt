@@ -95,14 +95,6 @@ virSecurityDomainSetHostdevLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 }
 
 static int
-virSecurityDomainRestoreSavedStateLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                           virDomainDefPtr vm G_GNUC_UNUSED,
-                                           const char *savefile G_GNUC_UNUSED)
-{
-    return 0;
-}
-
-static int
 virSecurityDomainGenLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                              virDomainDefPtr sec G_GNUC_UNUSED)
 {
@@ -307,8 +299,6 @@ virSecurityDriver virSecurityDriverNop = {
 
     .domainSetSecurityHostdevLabel      = virSecurityDomainSetHostdevLabelNop,
     .domainRestoreSecurityHostdevLabel  = virSecurityDomainRestoreHostdevLabelNop,
-
-    .domainRestoreSavedStateLabel       = virSecurityDomainRestoreSavedStateLabelNop,
 
     .domainSetSecurityImageFDLabel      = virSecurityDomainSetFDLabelNop,
     .domainSetSecurityTapFDLabel        = virSecurityDomainSetFDLabelNop,

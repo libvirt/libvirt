@@ -1535,6 +1535,7 @@ virSecurityDriverLookup;
 # security/security_manager.h
 virSecurityManagerCheckAllLabel;
 virSecurityManagerClearSocketLabel;
+virSecurityManagerDomainRestorePathLabel;
 virSecurityManagerDomainSetPathLabel;
 virSecurityManagerDomainSetPathLabelRO;
 virSecurityManagerGenLabel;
@@ -1558,7 +1559,6 @@ virSecurityManagerRestoreHostdevLabel;
 virSecurityManagerRestoreImageLabel;
 virSecurityManagerRestoreInputLabel;
 virSecurityManagerRestoreMemoryLabel;
-virSecurityManagerRestoreSavedStateLabel;
 virSecurityManagerRestoreTPMLabels;
 virSecurityManagerSetAllLabel;
 virSecurityManagerSetChardevLabel;

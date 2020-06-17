@@ -2258,20 +2258,6 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACRestoreSavedStateLabel(virSecurityManagerPtr mgr,
-                                     virDomainDefPtr def G_GNUC_UNUSED,
-                                     const char *savefile)
-{
-    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-
-    if (!priv->dynamicOwnership)
-        return 0;
-
-    return virSecurityDACRestoreFileLabel(mgr, savefile);
-}
-
-
-static int
 virSecurityDACSetProcessLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def)
 {
@@ -2570,6 +2556,15 @@ virSecurityDACDomainSetPathLabel(virSecurityManagerPtr mgr,
     return virSecurityDACSetOwnership(mgr, NULL, path, user, group, true);
 }
 
+static int
+virSecurityDACDomainRestorePathLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr def G_GNUC_UNUSED,
+                                     const char *path)
+{
+    return virSecurityDACRestoreFileLabel(mgr, path);
+}
+
+
 virSecurityDriver virSecurityDriverDAC = {
     .privateDataLen                     = sizeof(virSecurityDACData),
     .name                               = SECURITY_DAC_NAME,
@@ -2616,8 +2611,6 @@ virSecurityDriver virSecurityDriverDAC = {
     .domainSetSecurityHostdevLabel      = virSecurityDACSetHostdevLabel,
     .domainRestoreSecurityHostdevLabel  = virSecurityDACRestoreHostdevLabel,
 
-    .domainRestoreSavedStateLabel       = virSecurityDACRestoreSavedStateLabel,
-
     .domainSetSecurityImageFDLabel      = virSecurityDACSetImageFDLabel,
     .domainSetSecurityTapFDLabel        = virSecurityDACSetTapFDLabel,
 
@@ -2626,6 +2619,7 @@ virSecurityDriver virSecurityDriverDAC = {
     .getBaseLabel                       = virSecurityDACGetBaseLabel,
 
     .domainSetPathLabel                 = virSecurityDACDomainSetPathLabel,
+    .domainRestorePathLabel             = virSecurityDACDomainRestorePathLabel,
 
     .domainSetSecurityChardevLabel      = virSecurityDACSetChardevLabel,
     .domainRestoreSecurityChardevLabel  = virSecurityDACRestoreChardevLabel,

@@ -629,7 +629,7 @@ qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
     if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
         goto cleanup;
 
-    if (virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
+    if (virSecurityManagerDomainRestorePathLabel(driver->securityManager,
                                                  vm->def,
                                                  savefile) < 0)
         goto cleanup;

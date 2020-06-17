@@ -2859,21 +2859,6 @@ virSecuritySELinuxReleaseLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxRestoreSavedStateLabel(virSecurityManagerPtr mgr,
-                                         virDomainDefPtr def,
-                                         const char *savefile)
-{
-    virSecurityLabelDefPtr secdef;
-
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (!secdef || !secdef->relabel)
-        return 0;
-
-    return virSecuritySELinuxRestoreFileLabel(mgr, savefile, true);
-}
-
-
-static int
 virSecuritySELinuxVerify(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                          virDomainDefPtr def)
 {
@@ -3428,6 +3413,21 @@ virSecuritySELinuxDomainSetPathLabelRO(virSecurityManagerPtr mgr,
     return virSecuritySELinuxSetFilecon(mgr, path, data->content_context, false);
 }
 
+static int
+virSecuritySELinuxDomainRestorePathLabel(virSecurityManagerPtr mgr,
+                                         virDomainDefPtr def,
+                                         const char *path)
+{
+    virSecurityLabelDefPtr secdef;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (!secdef || !secdef->relabel)
+        return 0;
+
+    return virSecuritySELinuxRestoreFileLabel(mgr, path, true);
+}
+
+
 /*
  * virSecuritySELinuxSetFileLabels:
  *
@@ -3620,8 +3620,6 @@ virSecurityDriver virSecurityDriverSELinux = {
     .domainSetSecurityHostdevLabel      = virSecuritySELinuxSetHostdevLabel,
     .domainRestoreSecurityHostdevLabel  = virSecuritySELinuxRestoreHostdevLabel,
 
-    .domainRestoreSavedStateLabel       = virSecuritySELinuxRestoreSavedStateLabel,
-
     .domainSetSecurityImageFDLabel      = virSecuritySELinuxSetImageFDLabel,
     .domainSetSecurityTapFDLabel        = virSecuritySELinuxSetTapFDLabel,
 
@@ -3630,6 +3628,7 @@ virSecurityDriver virSecurityDriverSELinux = {
 
     .domainSetPathLabel                 = virSecuritySELinuxDomainSetPathLabel,
     .domainSetPathLabelRO               = virSecuritySELinuxDomainSetPathLabelRO,
+    .domainRestorePathLabel             = virSecuritySELinuxDomainRestorePathLabel,
 
     .domainSetSecurityChardevLabel      = virSecuritySELinuxSetChardevLabel,
     .domainRestoreSecurityChardevLabel  = virSecuritySELinuxRestoreChardevLabel,

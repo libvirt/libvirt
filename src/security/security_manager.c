@@ -597,24 +597,6 @@ virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
 
 
 int
-virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
-                                         virDomainDefPtr vm,
-                                         const char *savefile)
-{
-    if (mgr->drv->domainRestoreSavedStateLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSavedStateLabel(mgr, vm, savefile);
-        virObjectUnlock(mgr);
-        return ret;
-    }
-
-    virReportUnsupportedError();
-    return -1;
-}
-
-
-int
 virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                            virDomainDefPtr vm)
 {
@@ -1086,6 +1068,34 @@ virSecurityManagerDomainSetPathLabelRO(virSecurityManagerPtr mgr,
 
     return 0;
 }
+
+/**
+ * virSecurityManagerDomainRestorePathLabel:
+ * @mgr: security manager object
+ * @vm: domain definition object
+ * @path: path to restore labels one
+ *
+ * This function is a counterpart to virSecurityManagerDomainSetPathLabel() and
+ * virSecurityManagerDomainSetPathLabelRO() as it restores any labels set by them.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+virSecurityManagerDomainRestorePathLabel(virSecurityManagerPtr mgr,
+                                         virDomainDefPtr vm,
+                                         const char *path)
+{
+    if (mgr->drv->domainRestorePathLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestorePathLabel(mgr, vm, path);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    return 0;
+}
+
 
 
 /**
