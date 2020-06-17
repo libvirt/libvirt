@@ -2656,9 +2656,8 @@ mymain(void)
                         QEMU_CAPS_DEVICE_IOH3420,
                         QEMU_CAPS_DEVICE_PXB_PCIE);
 
-    DO_TEST("hostdev-scsi-lsi",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_LSI);
+    DO_TEST_CAPS_VER("hostdev-scsi-lsi", "4.1.0");
+
     DO_TEST("hostdev-scsi-virtio-scsi",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_LSI);
