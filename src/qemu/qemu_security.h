@@ -101,9 +101,9 @@ int qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
                                    const char *path,
                                    bool allowSubtree);
 
-int qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
+int qemuSecurityDomainRestorePathLabel(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
-                                       const char *savefile);
+                                       const char *path);
 
 int qemuSecurityCommandRun(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,

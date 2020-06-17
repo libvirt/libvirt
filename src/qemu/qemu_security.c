@@ -615,9 +615,9 @@ qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
-                                       virDomainObjPtr vm,
-                                       const char *savefile)
+qemuSecurityDomainRestorePathLabel(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   const char *path)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pid_t pid = -1;
@@ -631,7 +631,7 @@ qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
 
     if (virSecurityManagerDomainRestorePathLabel(driver->securityManager,
                                                  vm->def,
-                                                 savefile) < 0)
+                                                 path) < 0)
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
