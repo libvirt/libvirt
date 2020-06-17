@@ -1,15 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_GLUSTER_SOURCES = \
-	storage/storage_backend_gluster.h \
-	storage/storage_backend_gluster.c \
-	$(NULL)
-
-STORAGE_FILE_GLUSTER_SOURCES = \
-	storage/storage_file_gluster.h \
-	storage/storage_file_gluster.c \
-	$(NULL)
-
 STORAGE_DRIVER_ZFS_SOURCES = \
 	storage/storage_backend_zfs.h \
 	storage/storage_backend_zfs.c \
@@ -29,8 +19,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 
 storagebackend_LTLIBRARIES =
-
-storagefile_LTLIBRARIES =
 
 if WITH_STORAGE
 sbin_PROGRAMS += virtstoraged
@@ -111,41 +99,6 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 
 
 endif WITH_STORAGE
-
-if WITH_STORAGE_GLUSTER
-libvirt_storage_backend_gluster_la_SOURCES = \
-	$(STORAGE_DRIVER_GLUSTER_SOURCES)
-libvirt_storage_backend_gluster_la_LIBADD = \
-	libvirt.la \
-	$(GLUSTERFS_LIBS) \
-	$(GLIB_LIBS) \
-	$(NULL)
-libvirt_storage_backend_gluster_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(GLUSTERFS_CFLAGS) \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-storagebackend_LTLIBRARIES += libvirt_storage_backend_gluster.la
-libvirt_storage_backend_gluster_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-
-
-libvirt_storage_file_gluster_la_SOURCES = \
-	$(STORAGE_FILE_GLUSTER_SOURCES)
-libvirt_storage_file_gluster_la_LIBADD = \
-	libvirt.la \
-	$(GLUSTERFS_LIBS) \
-	$(GLIB_LIBS) \
-	$(NULL)
-libvirt_storage_file_gluster_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(GLUSTERFS_CFLAGS) \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-storagefile_LTLIBRARIES += libvirt_storage_file_gluster.la
-libvirt_storage_file_gluster_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-endif WITH_STORAGE_GLUSTER
 
 if WITH_STORAGE_ZFS
 libvirt_storage_backend_zfs_la_SOURCES = \

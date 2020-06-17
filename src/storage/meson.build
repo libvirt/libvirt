@@ -20,6 +20,14 @@ storage_backend_disk_sources = [
   'storage_backend_disk.c',
 ]
 
+storage_backend_gluster_sources = [
+  'storage_backend_gluster.c',
+]
+
+storage_file_gluster_sources = [
+  'storage_file_gluster.c',
+]
+
 storage_backend_iscsi_sources = [
   'storage_backend_iscsi.c',
 ]
@@ -102,6 +110,30 @@ if conf.has('WITH_STORAGE_DISK')
       files(storage_backend_disk_sources),
     ],
     'install_dir': storage_backend_install_dir,
+  }
+endif
+
+if conf.has('WITH_STORAGE_GLUSTER')
+  virt_modules += {
+    'name': 'virt_storage_backend_gluster',
+    'sources': [
+      files(storage_backend_gluster_sources),
+    ],
+    'deps': [
+      glusterfs_dep,
+    ],
+    'install_dir': storage_backend_install_dir,
+  }
+
+  virt_modules += {
+    'name': 'virt_storage_file_gluster',
+    'sources': [
+      files(storage_file_gluster_sources),
+    ],
+    'dependenciec': [
+      glusterfs_dep,
+    ],
+    'install_dir': storage_file_install_dir,
   }
 endif
 
