@@ -1,0 +1,1 @@
+$MDEVCTL_BINARY$ start -p 0000:00:02.0 --jsonfile /dev/stdin

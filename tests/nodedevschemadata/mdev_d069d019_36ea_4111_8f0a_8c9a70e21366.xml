@@ -1,0 +1,7 @@
+<device>
+  <name>mdev_d069d019_36ea_4111_8f0a_8c9a70e21366</name>
+  <parent>pci_0000_00_02_0</parent>
+  <capability type='mdev'>
+    <type id='i915-GVTg_V5_8'/>
+  </capability>
+</device>

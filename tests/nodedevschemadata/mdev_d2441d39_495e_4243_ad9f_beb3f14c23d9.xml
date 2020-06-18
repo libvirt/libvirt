@@ -1,0 +1,9 @@
+<device>
+  <name>mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9</name>
+  <parent>pci_0000_00_02_0</parent>
+  <capability type='mdev'>
+    <type id='i915-GVTg_V5_8'/>
+    <attr name='example-attribute-1' value='attribute-value-1'/>
+    <attr name='example-attribute-2' value='attribute-value-2'/>
+  </capability>
+</device>
