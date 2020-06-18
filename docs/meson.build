@@ -294,6 +294,7 @@ endforeach
 subdir('fonts')
 subdir('html')
 subdir('internals')
+subdir('js')
 
 
 # This hack enables us to view the web pages

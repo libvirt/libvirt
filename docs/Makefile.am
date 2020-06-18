@@ -21,17 +21,10 @@ all: vpathhack
 # This hack enables us to view the web pages
 # from within the uninstalled build tree
 vpathhack:
-	@for dir in js logos; \
+	@for dir in logos; \
 	do \
 	  test -e $$dir || ln -s $(srcdir)/$$dir $$dir ; \
 	done
-
-javascript = \
-  js/main.js \
-  $(NULL)
-
-javascriptdir = $(HTML_DIR)/js
-javascript_DATA = $(javascript)
 
 logofiles = \
   logos/logo-base.svg \
