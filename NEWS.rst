@@ -50,6 +50,14 @@ v6.4.0 (2020-06-02)
     allowed only when the format is 'raw' and no other block layer features are
     requested.
 
+  * qemu: auto-fill of incomplete NUMA topologies
+
+    Domains with incomplete NUMA topologies, where the sum of vCPUs in all NUMA
+    cells is less than the total of vCPUs, will get their first NUMA cell to
+    be auto-filled with the remaining vCPUs. This behavior reproduces what QEMU
+    already does in these cases. Users are encouraged to provide complete NUMA
+    topologies to avoid unexpected changes in the domain XML.
+
 * **Bug fixes**
 
   * qemu: fixed regression in network device hotplug with new qemu versions
