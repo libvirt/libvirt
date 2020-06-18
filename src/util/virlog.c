@@ -421,13 +421,6 @@ virLogFormatString(char **msg,
                    virLogPriority priority,
                    const char *str)
 {
-    /*
-     * Be careful when changing the following log message formatting, we rely
-     * on it when stripping libvirt debug messages from qemu log files. So when
-     * changing this, you might also need to change the code there.
-     * virLogFormatString() function name is mentioned there so it's sufficient
-     * to just grep for it to find the right place.
-     */
     if ((funcname != NULL)) {
         *msg = g_strdup_printf("%llu: %s : %s:%d : %s\n",
                                virThreadSelfID(), virLogPriorityString(priority),
