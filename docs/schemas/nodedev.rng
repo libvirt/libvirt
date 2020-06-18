@@ -636,6 +636,12 @@
         </attribute>
       </element>
     </optional>
+    <zeroOrMore>
+      <element name="attr">
+        <attribute name="name"/>
+        <attribute name="value"/>
+      </element>
+    </zeroOrMore>
   </define>
 
   <define name='capccwdev'>

@@ -512,3 +512,15 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
 
     return 0;
 }
+
+virMediatedDeviceAttrPtr virMediatedDeviceAttrNew(void)
+{
+    return g_new0(virMediatedDeviceAttr, 1);
+}
+
+void virMediatedDeviceAttrFree(virMediatedDeviceAttrPtr attr)
+{
+    g_free(attr->name);
+    g_free(attr->value);
+    g_free(attr);
+}

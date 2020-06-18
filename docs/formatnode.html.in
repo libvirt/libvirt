@@ -394,6 +394,13 @@
                 belongs. This is a read-only field that is reported by the
                 device driver.
               </dd>
+              <dt><code>attr</code></dt>
+              <dd>
+                This optional element can occur multiple times. It represents a
+                vendor-specific attribute that is used to configure this
+                mediated device. It has two required attributes:
+                <code>name</code> and <code>value</code>.
+              </dd>
             </dl>
           </dd>
           <dt><code>ccw</code></dt>

@@ -141,6 +141,8 @@ typedef virNodeDevCapMdev *virNodeDevCapMdevPtr;
 struct _virNodeDevCapMdev {
     char *type;
     unsigned int iommuGroupNumber;
+    virMediatedDeviceAttrPtr *attributes;
+    size_t nattributes;
 };
 
 typedef struct _virNodeDevCapPCIDev virNodeDevCapPCIDev;
