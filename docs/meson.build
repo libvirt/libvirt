@@ -288,6 +288,8 @@ foreach data : docs_html_in_gen
   )
 endforeach
 
+subdir('fonts')
+
 
 # This hack enables us to view the web pages
 # from within the uninstalled build tree

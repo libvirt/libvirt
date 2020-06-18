@@ -42,7 +42,7 @@ all: vpathhack
 # This hack enables us to view the web pages
 # from within the uninstalled build tree
 vpathhack:
-	@for dir in fonts js logos; \
+	@for dir in js logos; \
 	do \
 	  test -e $$dir || ln -s $(srcdir)/$$dir $$dir ; \
 	done
@@ -94,23 +94,6 @@ javascript = \
 
 javascriptdir = $(HTML_DIR)/js
 javascript_DATA = $(javascript)
-
-fonts = \
-  fonts/LICENSE.rst \
-  fonts/stylesheet.css \
-  fonts/overpass-bold-italic.woff \
-  fonts/overpass-bold.woff \
-  fonts/overpass-italic.woff \
-  fonts/overpass-light-italic.woff \
-  fonts/overpass-light.woff \
-  fonts/overpass-mono-bold.woff \
-  fonts/overpass-mono-light.woff \
-  fonts/overpass-mono-regular.woff \
-  fonts/overpass-mono-semibold.woff \
-  fonts/overpass-regular.woff
-
-fontsdir = $(HTML_DIR)/fonts
-fonts_DATA = $(fonts)
 
 logofiles = \
   logos/logo-base.svg \
