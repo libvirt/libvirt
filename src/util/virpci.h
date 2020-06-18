@@ -254,7 +254,6 @@ int virPCIDeviceAddressParse(char *address, virPCIDeviceAddressPtr bdf);
 
 bool virZPCIDeviceAddressIsIncomplete(const virZPCIDeviceAddress *addr);
 bool virZPCIDeviceAddressIsPresent(const virZPCIDeviceAddress *addr);
-bool virZPCIDeviceAddressIsValid(virZPCIDeviceAddressPtr zpci);
 
 int virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
                                  int pfNetDevIdx,
