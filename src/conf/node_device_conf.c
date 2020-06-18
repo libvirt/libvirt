@@ -1775,13 +1775,15 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
         goto out;
     }
 
-    if (virNodeDevCapsDefParseULong("number(./iommuGroup[1]/@number)", ctxt,
-                                    &mdev->iommuGroupNumber, def,
-                                    _("missing iommuGroup number attribute for "
-                                      "'%s'"),
-                                    _("invalid iommuGroup number attribute for "
-                                      "'%s'")) < 0)
+    /* 'iommuGroup' is optional, only report an error if the supplied value is
+     * invalid (-2), not if it's missing (-1) */
+    if (virXPathUInt("number(./iommuGroup[1]/@number)",
+                     ctxt, &mdev->iommuGroupNumber) < -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid iommuGroup number attribute for '%s'"),
+                       def->name);
         goto out;
+    }
 
     ret = 0;
  out:

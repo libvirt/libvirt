@@ -629,11 +629,13 @@
         <data type='string'/>
       </attribute>
     </element>
-    <element name='iommuGroup'>
-      <attribute name='number'>
-        <ref name='unsignedInt'/>
-      </attribute>
-    </element>
+    <optional>
+      <element name='iommuGroup'>
+        <attribute name='number'>
+          <ref name='unsignedInt'/>
+        </attribute>
+      </element>
+    </optional>
   </define>
 
   <define name='capccwdev'>

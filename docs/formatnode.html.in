@@ -390,8 +390,9 @@
               <dt><code>iommuGroup</code></dt>
               <dd>
                 This element supports a single attribute <code>number</code>
-                which holds the IOMMU group number the mediated device belongs
-                  to.
+                which holds the IOMMU group number to which the mediated device
+                belongs. This is a read-only field that is reported by the
+                device driver.
               </dd>
             </dl>
           </dd>
