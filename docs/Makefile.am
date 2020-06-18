@@ -281,10 +281,7 @@ manpages_DATA = $(manpages_html)
 dot_html_generated_in = \
   hvsupport.html.in \
   $(NULL)
-dot_rst = \
-  $(notdir $(wildcard $(srcdir)/*.rst))
 dot_rst_html_in = \
-  $(dot_rst:%.rst=%.html.in) \
   news.html.in \
   $(NULL)
 dot_html = \
