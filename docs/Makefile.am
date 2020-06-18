@@ -16,23 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-modules = \
-	libvirt-common \
-	libvirt-domain \
-	libvirt-domain-checkpoint \
-	libvirt-domain-snapshot \
-	libvirt-event \
-	libvirt-host \
-	libvirt-interface \
-	libvirt-network \
-	libvirt-nodedev \
-	libvirt-nwfilter \
-	libvirt-secret \
-	libvirt-storage \
-	libvirt-stream \
-	virterror \
-	$(NULL)
-
 modules_admin = libvirt-admin
 modules_qemu = libvirt-qemu
 modules_lxc = libvirt-lxc
@@ -46,14 +29,6 @@ vpathhack:
 	do \
 	  test -e $$dir || ln -s $(srcdir)/$$dir $$dir ; \
 	done
-
-apihtml = \
-  html/index.html \
-  $(apihtml_generated)
-
-apihtml_generated = \
-	$(addprefix html/libvirt-,$(addsuffix .html,$(modules))) \
-	$(NULL)
 
 apiadminhtml = \
   html/index-admin.html \
@@ -79,14 +54,8 @@ apilxchtml_generated = \
 	$(addprefix html/libvirt-,$(addsuffix .html,$(modules_lxc))) \
 	$(NULL)
 
-apipng = \
-  html/left.png \
-  html/up.png \
-  html/home.png \
-  html/right.png
-
 apirefdir = $(HTML_DIR)/html
-apiref_DATA = $(apihtml) $(apiadminhtml) $(apiqemuhtml) $(apilxchtml) $(apipng)
+apiref_DATA = $(apihtml) $(apiadminhtml) $(apiqemuhtml) $(apilxchtml)
 
 javascript = \
   js/main.js \
@@ -270,12 +239,6 @@ $(apihtml_generated): html/index.html
 $(apiadminhtml_generated): html/index-admin.html
 $(apiqemuhtml_generated): html/index-qemu.html
 $(apilxchtml_generated): html/index-lxc.html
-
-html/index.html: libvirt-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
-	$(AM_V_GEN)$(XSLTPROC) --nonet -o ./ \
-	  --stringparam builddir '$(abs_top_builddir)' \
-	  --stringparam timestamp $(timestamp) \
-	  $(srcdir)/newapi.xsl libvirt-api.xml
 
 html/index-%.html: libvirt-%-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
 	$(AM_V_GEN)$(XSLTPROC) --nonet -o ./ \

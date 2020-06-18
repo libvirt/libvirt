@@ -1,5 +1,8 @@
 docs_html_dir = docdir / 'html'
 
+# xsltproc requires that the -o path ends with '/'
+docs_builddir = meson.current_build_dir() / ''
+
 docs_assets = [
   'android-chrome-192x192.png',
   'android-chrome-256x256.png',
@@ -289,6 +292,7 @@ foreach data : docs_html_in_gen
 endforeach
 
 subdir('fonts')
+subdir('html')
 
 
 # This hack enables us to view the web pages
