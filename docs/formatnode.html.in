@@ -31,11 +31,16 @@
         name is just the bus type and address, as in
         "pci_0000_00_02_1" or "usb_1_5_3", but some devices are able
         to provide more specific names, such as
-        "net_eth1_00_27_13_6a_fe_00".
+        "net_eth1_00_27_13_6a_fe_00". This is a read-only field that is
+        reported by the device driver. If this element is set when defining a
+        new device, it will be ignored.
+
       </dd>
       <dt><code>path</code></dt>
       <dd>
-        Fully qualified sysfs path to the device.
+        Fully qualified sysfs path to the device. This is a read-only field
+        that is reported by the device driver. If this element is set when
+        defining a new device, it will be ignored.
       </dd>
       <dt><code>parent</code></dt>
       <dd>
