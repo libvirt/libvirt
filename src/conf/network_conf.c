@@ -2508,7 +2508,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
 
     if (def->metadata) {
-        xmlBufferPtr xmlbuf;
+        g_autoptr(xmlBuffer) xmlbuf = NULL;
         int oldIndentTreeOutput = xmlIndentTreeOutput;
 
         /* Indentation on output requires that we previously set
@@ -2525,12 +2525,10 @@ virNetworkDefFormatBuf(virBufferPtr buf,
 
         if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
                         virBufferGetIndent(buf) / 2, 1) < 0) {
-            xmlBufferFree(xmlbuf);
             xmlIndentTreeOutput = oldIndentTreeOutput;
             return -1;
         }
         virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
-        xmlBufferFree(xmlbuf);
         xmlIndentTreeOutput = oldIndentTreeOutput;
     }
 

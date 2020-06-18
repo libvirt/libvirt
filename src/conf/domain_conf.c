@@ -29579,7 +29579,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
                           def->description);
 
     if (def->metadata) {
-        xmlBufferPtr xmlbuf;
+        g_autoptr(xmlBuffer) xmlbuf = NULL;
         int oldIndentTreeOutput = xmlIndentTreeOutput;
 
         /* Indentation on output requires that we previously set
@@ -29596,12 +29596,10 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
 
         if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
                         virBufferGetIndent(buf) / 2, 1) < 0) {
-            xmlBufferFree(xmlbuf);
             xmlIndentTreeOutput = oldIndentTreeOutput;
             goto error;
         }
         virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
-        xmlBufferFree(xmlbuf);
         xmlIndentTreeOutput = oldIndentTreeOutput;
     }
 

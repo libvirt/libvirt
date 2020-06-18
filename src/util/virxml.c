@@ -953,8 +953,7 @@ char *
 virXMLNodeToString(xmlDocPtr doc,
                    xmlNodePtr node)
 {
-    xmlBufferPtr xmlbuf = NULL;
-    char *ret = NULL;
+    g_autoptr(xmlBuffer) xmlbuf = NULL;
 
     if (!(xmlbuf = xmlBufferCreate())) {
         virReportOOMError();
@@ -964,15 +963,10 @@ virXMLNodeToString(xmlDocPtr doc,
     if (xmlNodeDump(xmlbuf, doc, node, 0, 1) == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to convert the XML node tree"));
-        goto cleanup;
+        return NULL;
     }
 
-    ret = g_strdup((const char *)xmlBufferContent(xmlbuf));
-
- cleanup:
-    xmlBufferFree(xmlbuf);
-
-    return ret;
+    return g_strdup((const char *)xmlBufferContent(xmlbuf));
 }
 
 

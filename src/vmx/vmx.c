@@ -697,8 +697,8 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
 {
     char *result = NULL;
     xmlCharEncodingHandlerPtr handler;
-    xmlBufferPtr input = NULL;
-    xmlBufferPtr utf8 = NULL;
+    g_autoptr(xmlBuffer) input = NULL;
+    g_autoptr(xmlBuffer) utf8 = NULL;
 
     handler = xmlFindCharEncodingHandler(encoding);
 
@@ -720,14 +720,10 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
         goto cleanup;
     }
 
-    result = (char *)utf8->content;
-    utf8->content = NULL;
+    result = (char *)g_steal_pointer(&utf8->content);
 
  cleanup:
     xmlCharEncCloseFunc(handler);
-    xmlBufferFree(input);
-    xmlBufferFree(utf8);
-
     return result;
 }
 
