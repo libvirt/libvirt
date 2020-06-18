@@ -110,6 +110,41 @@ testMdevctlStartHelper(const void *data)
                             jsonfile);
 }
 
+static int
+testMdevctlStop(const void *data)
+{
+    const char *uuid = data;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *actualCmdline = NULL;
+    int ret = -1;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *cmdlinefile =
+        g_strdup_printf("%s/nodedevmdevctldata/mdevctl-stop.argv",
+                        abs_srcdir);
+
+    cmd = nodeDeviceGetMdevctlStopCommand(uuid);
+
+    if (!cmd)
+        goto cleanup;
+
+    virCommandSetDryRun(&buf, NULL, NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (!(actualCmdline = virBufferCurrentContent(&buf)))
+        goto cleanup;
+
+    if (nodedevCompareToFile(actualCmdline, cmdlinefile) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    virCommandSetDryRun(NULL, NULL, NULL);
+    return ret;
+}
+
 static void
 nodedevTestDriverFree(virNodeDeviceDriverStatePtr drv)
 {
@@ -248,10 +283,16 @@ mymain(void)
 #define DO_TEST_START(filename) \
     DO_TEST_START_FULL("QEMU", CREATE_DEVICE, filename)
 
+#define DO_TEST_STOP(uuid) \
+    DO_TEST_FULL("mdevctl stop " uuid, testMdevctlStop, uuid)
+
     /* Test mdevctl start commands */
     DO_TEST_START("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
     DO_TEST_START("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
     DO_TEST_START("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
+
+    /* Test mdevctl stop command, pass an arbitrary uuid */
+    DO_TEST_STOP("e2451f73-c95b-4124-b900-e008af37c576");
 
  done:
     nodedevTestDriverFree(driver);
