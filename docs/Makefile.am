@@ -16,10 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-modules_admin = libvirt-admin
-modules_qemu = libvirt-qemu
-modules_lxc = libvirt-lxc
-
 all: vpathhack
 
 # This hack enables us to view the web pages
@@ -29,33 +25,6 @@ vpathhack:
 	do \
 	  test -e $$dir || ln -s $(srcdir)/$$dir $$dir ; \
 	done
-
-apiadminhtml = \
-  html/index-admin.html \
-  $(apiadminhtml_generated)
-
-apiadminhtml_generated = \
-	$(addprefix html/libvirt-,$(addsuffix .html,$(modules_admin))) \
-	$(NULL)
-
-apiqemuhtml = \
-  html/index-qemu.html \
-  $(apiqemuhtml_generated)
-
-apiqemuhtml_generated = \
-	$(addprefix html/libvirt-,$(addsuffix .html,$(modules_qemu))) \
-	$(NULL)
-
-apilxchtml = \
-  html/index-lxc.html \
-  $(apilxchtml_generated)
-
-apilxchtml_generated = \
-	$(addprefix html/libvirt-,$(addsuffix .html,$(modules_lxc))) \
-	$(NULL)
-
-apirefdir = $(HTML_DIR)/html
-apiref_DATA = $(apihtml) $(apiadminhtml) $(apiqemuhtml) $(apilxchtml)
 
 javascript = \
   js/main.js \
@@ -234,18 +203,6 @@ manpages/%.html.in: manpages/%.rst
 	  sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
 	     -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
 	  $(RST2HTML) --strict > $@ || { rm $@ && exit 1; }
-
-$(apihtml_generated): html/index.html
-$(apiadminhtml_generated): html/index-admin.html
-$(apiqemuhtml_generated): html/index-qemu.html
-$(apilxchtml_generated): html/index-lxc.html
-
-html/index-%.html: libvirt-%-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
-	$(AM_V_GEN)$(XSLTPROC) --nonet -o ./ \
-	  --stringparam builddir '$(abs_top_builddir)' \
-	  --stringparam timestamp $(timestamp) \
-	  --stringparam indexfile $(@:html/%=%) \
-	  $(srcdir)/newapi.xsl $<
 
 check-html:
 	$(XMLLINT) --nonet --noout html/*.html

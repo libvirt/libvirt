@@ -42,3 +42,29 @@ custom_target(
     page_xsl,
   ],
 )
+
+foreach name : [ 'admin', 'lxc', 'qemu' ]
+  custom_target(
+    'index-@0@-api'.format(name),
+    input: [
+      newapi_xsl,
+      get_variable('docs_@0@_api_xml'.format(name)),
+    ],
+    output: [
+      'index-@0@.html'.format(name),
+      'libvirt-libvirt-@0@.html'.format(name),
+    ],
+    command: [
+      xsltproc_prog, '--nonet', '-o', docs_builddir,
+      '--stringparam', 'builddir', meson.build_root(),
+      '--stringparam', 'timestamp', docs_timestamp,
+      '--stringparam', 'indexfile', 'index-@0@.html'.format(name),
+      '@INPUT@',
+    ],
+    install: true,
+    install_dir: docs_html_dir / 'html',
+    depend_files: [
+      page_xsl,
+    ],
+  )
+endforeach
