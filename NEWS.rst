@@ -21,6 +21,13 @@ v6.5.0 (unreleased)
     It's possible to either specify new value as a string or
     provide a filename which contents then serve as the value.
 
+  * nodedev: Add ability to create mediated devices
+
+    Mediated devices can now be created with ``virNodeDeviceCreateXML()``. This
+    functionality requires the ``mdevctl`` utility to be installed. The XML
+    schema for node devices was expanded to support attributes for mediated
+    devices.
+
 * **Improvements**
 
 * **Bug fixes**
