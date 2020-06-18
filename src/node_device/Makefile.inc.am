@@ -34,34 +34,37 @@ EXTRA_DIST += \
 
 if WITH_NODE_DEVICES
 # Needed to keep automake quiet about conditionals
+noinst_LTLIBRARIES += libvirt_driver_nodedev_impl.la
+libvirt_driver_nodedev_la_SOURCES =
+libvirt_driver_nodedev_la_LIBADD = libvirt_driver_nodedev_impl.la
 mod_LTLIBRARIES += libvirt_driver_nodedev.la
-libvirt_driver_nodedev_la_SOURCES = $(NODE_DEVICE_DRIVER_SOURCES)
+libvirt_driver_nodedev_impl_la_SOURCES = $(NODE_DEVICE_DRIVER_SOURCES)
 
-libvirt_driver_nodedev_la_CFLAGS = \
+libvirt_driver_nodedev_impl_la_CFLAGS = \
 	-I$(srcdir)/access \
 	-I$(builddir)/access \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS) \
 	$(LIBNL_CFLAGS) \
 	$(NULL)
-libvirt_driver_nodedev_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_nodedev_la_LIBADD = \
+libvirt_driver_nodedev_impl_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+libvirt_driver_nodedev_impl_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
 	$(NULL)
 
 if WITH_HAL
-libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_HAL_SOURCES)
-libvirt_driver_nodedev_la_CFLAGS += $(HAL_CFLAGS)
-libvirt_driver_nodedev_la_LIBADD += $(HAL_LIBS)
+libvirt_driver_nodedev_impl_la_SOURCES += $(NODE_DEVICE_DRIVER_HAL_SOURCES)
+libvirt_driver_nodedev_impl_la_CFLAGS += $(HAL_CFLAGS)
+libvirt_driver_nodedev_impl_la_LIBADD += $(HAL_LIBS)
 endif WITH_HAL
 if WITH_UDEV
-libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_UDEV_SOURCES)
-libvirt_driver_nodedev_la_CFLAGS += \
+libvirt_driver_nodedev_impl_la_SOURCES += $(NODE_DEVICE_DRIVER_UDEV_SOURCES)
+libvirt_driver_nodedev_impl_la_CFLAGS += \
 	$(UDEV_CFLAGS) \
 	$(PCIACCESS_CFLAGS) \
 	$(NULL)
-libvirt_driver_nodedev_la_LIBADD += \
+libvirt_driver_nodedev_impl_la_LIBADD += \
 	$(UDEV_LIBS) \
 	$(PCIACCESS_LIBS) \
 	$(NULL)
