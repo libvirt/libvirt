@@ -2218,6 +2218,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         break;
     case VIR_NODE_DEV_CAP_MDEV:
         VIR_FREE(data->mdev.type);
+        VIR_FREE(data->mdev.uuid);
         for (i = 0; i < data->mdev.nattributes; i++)
             virMediatedDeviceAttrFree(data->mdev.attributes[i]);
         VIR_FREE(data->mdev.attributes);

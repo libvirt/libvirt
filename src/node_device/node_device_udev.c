@@ -1013,7 +1013,6 @@ udevProcessMediatedDevice(struct udev_device *dev,
                           virNodeDeviceDefPtr def)
 {
     int ret = -1;
-    const char *uuidstr = NULL;
     int iommugrp = -1;
     char *linkpath = NULL;
     char *canonicalpath = NULL;
@@ -1041,8 +1040,8 @@ udevProcessMediatedDevice(struct udev_device *dev,
 
     data->type = g_path_get_basename(canonicalpath);
 
-    uuidstr = udev_device_get_sysname(dev);
-    if ((iommugrp = virMediatedDeviceGetIOMMUGroupNum(uuidstr)) < 0)
+    data->uuid = g_strdup(udev_device_get_sysname(dev));
+    if ((iommugrp = virMediatedDeviceGetIOMMUGroupNum(data->uuid)) < 0)
         goto cleanup;
 
     if (udevGenerateDeviceName(dev, def, NULL) != 0)
