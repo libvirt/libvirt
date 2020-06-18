@@ -43,6 +43,11 @@ docs_timestamp = run_command(
   python3_prog, meson_timestamp_prog.path(), env: runutf8
 ).stdout().strip()
 
+site_xsl = files('site.xsl')
+subsite_xsl = files('subsite.xsl')
+page_xsl = files('page.xsl')
+newapi_xsl = files('newapi.xsl')
+
 docs_api_generated = custom_target(
   'generate-api',
   output: [
