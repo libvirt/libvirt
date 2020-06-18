@@ -65,6 +65,7 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
   AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([SCRUB], [scrub], [scrub], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([ADDR2LINE], [addr2line], [addr2line], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([MDEVCTL], [mdevctl], [mdevctl], [$LIBVIRT_SBIN_PATH])
 
   AC_DEFINE_UNQUOTED([DMIDECODE], ["$DMIDECODE"],
                      [Location or name of the dmidecode program])
@@ -88,6 +89,8 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
                      [Location or name of the scrub program (for wiping algorithms)])
   AC_DEFINE_UNQUOTED([ADDR2LINE], ["$ADDR2LINE"],
                      [Location of addr2line program])
+  AC_DEFINE_UNQUOTED([MDEVCTL], ["$MDEVCTL"],
+                     [Location or name of the mdevctl program])
 
   AC_PATH_PROG([IP_PATH], [ip], [/sbin/ip], [$LIBVIRT_SBIN_PATH])
   AC_DEFINE_UNQUOTED([IP_PATH], ["$IP_PATH"], [path to ip binary])

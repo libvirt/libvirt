@@ -118,3 +118,6 @@ virNodeDeviceObjListExport(virConnectPtr conn,
 void
 virNodeDeviceObjSetSkipUpdateCaps(virNodeDeviceObjPtr obj,
                                   bool skipUpdateCaps);
+virNodeDeviceObjPtr
+virNodeDeviceObjListFindMediatedDeviceByUUID(virNodeDeviceObjListPtr devs,
+                                             const char *uuid);

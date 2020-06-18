@@ -522,6 +522,8 @@ Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 # needed for device enumeration
 Requires: systemd >= 185
+# For managing persistent mediated devices
+Requires: mdevctl
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing

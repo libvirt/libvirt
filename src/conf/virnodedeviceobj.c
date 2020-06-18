@@ -399,6 +399,40 @@ virNodeDeviceObjListFindSCSIHostByWWNs(virNodeDeviceObjListPtr devs,
                                       &data);
 }
 
+static int
+virNodeDeviceObjListFindMediatedDeviceByUUIDCallback(const void *payload,
+                                                     const void *name G_GNUC_UNUSED,
+                                                     const void *opaque)
+{
+    virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
+    const char *uuid = (const char *) opaque;
+    virNodeDevCapsDefPtr cap;
+    int want = 0;
+
+    virObjectLock(obj);
+
+    for (cap = obj->def->caps; cap != NULL; cap = cap->next) {
+        if (cap->data.type == VIR_NODE_DEV_CAP_MDEV) {
+            if (STREQ(cap->data.mdev.uuid, uuid)) {
+                want = 1;
+                break;
+            }
+        }
+     }
+
+    virObjectUnlock(obj);
+    return want;
+}
+
+
+virNodeDeviceObjPtr
+virNodeDeviceObjListFindMediatedDeviceByUUID(virNodeDeviceObjListPtr devs,
+                                             const char *uuid)
+{
+    return virNodeDeviceObjListSearch(devs,
+                                      virNodeDeviceObjListFindMediatedDeviceByUUIDCallback,
+                                      uuid);
+}
 
 static void
 virNodeDeviceObjListDispose(void *obj)
