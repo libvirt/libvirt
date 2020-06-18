@@ -137,7 +137,7 @@ test_programs += qemuxml2argvtest qemuxml2xmltest \
 	qemuvhostusertest \
 	$(NULL)
 test_helpers += qemucapsprobe
-test_libraries += libqemumonitortestutils.la \
+test_libraries += \
 		libqemutestdriver.la \
 		$(NULL)
 endif WITH_QEMU
@@ -352,15 +352,7 @@ libxlxml2domconfigtest_LDADD = libxltestdriver.la \
 	$(libxl_LDADDS) $(LIBXML_LIBS)
 endif WITH_LIBXL
 
-QEMUMONITORTESTUTILS_SOURCES = \
-	qemumonitortestutils.c \
-	qemumonitortestutils.h \
-	testutilsqemuschema.h testutilsqemuschema.c \
-	$(NULL)
-
 if WITH_QEMU
-
-libqemumonitortestutils_la_SOURCES = $(QEMUMONITORTESTUTILS_SOURCES)
 
 qemu_LDADDS = ../src/libvirt_driver_qemu_impl.la
 if WITH_DTRACE_PROBES

@@ -117,3 +117,56 @@ foreach mock : mock_libs
     ],
   )
 endforeach
+
+
+# build libraries used by tests
+
+test_utils_lib = static_library(
+  'test_utils',
+  [ 'testutils.c' ],
+  dependencies: [ tests_dep ],
+)
+
+if conf.has('WITH_LIBXL')
+  test_utils_xen_lib = static_library(
+    'test_utils_xen',
+    [ 'testutilsxen.c' ],
+    dependencies: [ tests_dep ],
+  )
+
+else
+  test_utils_xen_lib = []
+endif
+
+if conf.has('WITH_LXC')
+  test_utils_lxc_lib = static_library(
+    'test_utils_lxc',
+    [ 'testutilslxc.c' ],
+    dependencies: [ tests_dep ],
+  )
+else
+  test_utils_lxc_lib = []
+endif
+
+if conf.has('WITH_QEMU')
+  test_utils_qemu_lib = static_library(
+    'test_utils_qemu',
+    [ 'testutilsqemu.c' ],
+    dependencies: [ tests_dep ],
+  )
+
+  test_utils_qemu_monitor_lib = static_library(
+    'test_utils_qemu_monitor',
+    [ 'qemumonitortestutils.c', 'testutilsqemuschema.c' ],
+    dependencies: [ tests_dep ],
+  )
+else
+  test_utils_qemu_lib = []
+  test_utils_qemu_monitor_lib = []
+endif
+
+test_file_wrapper_lib = static_library(
+  'test_file_wrapper',
+  [ 'virfilewrapper.c' ],
+  dependencies: [ tests_dep ],
+)

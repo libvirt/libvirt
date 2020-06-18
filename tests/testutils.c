@@ -340,7 +340,7 @@ virTestRewrapFile(const char *filename)
 
     script = g_strdup_printf("%s/scripts/test-wrap-argv.py", abs_top_srcdir);
 
-    cmd = virCommandNewArgList(PYTHON, script, "--in-place", filename, NULL);
+    cmd = virCommandNewArgList(PYTHON3, script, "--in-place", filename, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         return -1;
 
