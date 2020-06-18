@@ -1745,11 +1745,22 @@ mymain(void)
     DO_TEST("hostdev-vfio-zpci",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-autogenerate-fids",
+                        QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-invalid-uid-valid-fid",
+                        QEMU_CAPS_DEVICE_VFIO_PCI,
+                        QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-vfio-zpci-multidomain-many",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-vfio-zpci-autogenerate",
+            QEMU_CAPS_DEVICE_VFIO_PCI,
+            QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST("hostdev-vfio-zpci-autogenerate-uids",
+            QEMU_CAPS_DEVICE_VFIO_PCI,
+            QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST("hostdev-vfio-zpci-autogenerate-fids",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-uid-set-zero",
@@ -1761,6 +1772,13 @@ mymain(void)
             QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST_PARSE_ERROR("hostdev-vfio-zpci",
                         QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-duplicate",
+                        QEMU_CAPS_DEVICE_VFIO_PCI,
+                        QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-set-zero",
+                        QEMU_CAPS_DEVICE_VFIO_PCI,
+                        QEMU_CAPS_DEVICE_ZPCI);
+
     DO_TEST("pci-rom", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pci-rom-disabled", NONE);
     DO_TEST("pci-rom-disabled-invalid", NONE);

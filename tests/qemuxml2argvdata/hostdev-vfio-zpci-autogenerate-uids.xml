@@ -1,0 +1,29 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory>219100</memory>
+  <os>
+    <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-s390x</emulator>
+    <hostdev mode='subsystem' type='pci'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0000' bus='0x00' slot='0x00' function='0x0'/>
+      </source>
+      <address type='pci'>
+        <zpci fid='0x00000000'/>
+      </address>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+      </source>
+      <address type='pci'>
+        <zpci fid='0x0000001f'/>
+      </address>
+    </hostdev>
+  </devices>
+</domain>
