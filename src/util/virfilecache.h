@@ -62,15 +62,20 @@ typedef void *
  * @filename: name of a file with cached data
  * @name: name of the cached data
  * @priv: private data created together with cache
+ * @outdated: set to true if data was outdated
  *
- * Loads the cached data from a file @filename.
+ * Loads the cached data from a file @filename. If
+ * NULL is returned, then @oudated indicates whether
+ * this was due to the data being outdated, or an
+ * error loading the cache.
  *
- * Returns cached data object or NULL on error.
+ * Returns cached data object or NULL on outdated data or error.
  */
 typedef void *
 (*virFileCacheLoadFilePtr)(const char *filename,
                            const char *name,
-                           void *priv);
+                           void *priv,
+                           bool *outdated);
 
 /**
  * virFileCacheSaveFilePtr:

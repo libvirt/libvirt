@@ -110,7 +110,8 @@ testFileCacheNewData(const char *name G_GNUC_UNUSED,
 static void *
 testFileCacheLoadFile(const char *filename,
                       const char *name G_GNUC_UNUSED,
-                      void *priv G_GNUC_UNUSED)
+                      void *priv G_GNUC_UNUSED,
+                      bool *outdated G_GNUC_UNUSED)
 {
     testFileCacheObjPtr obj;
     char *data;

@@ -1811,14 +1811,6 @@ virQEMUCapsNewBinary(const char *binary)
 }
 
 
-void
-virQEMUCapsSetInvalidation(virQEMUCapsPtr qemuCaps,
-                           bool enabled)
-{
-    qemuCaps->invalidation = enabled;
-}
-
-
 static int
 virQEMUCapsHostCPUDataCopy(virQEMUCapsHostCPUDataPtr dst,
                            virQEMUCapsHostCPUDataPtr src)
@@ -4209,11 +4201,14 @@ virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
  *   <machine name='pc-1.0' alias='pc' hotplugCpus='yes' maxCpus='4' default='yes' numaMemSupported='yes'/>
  *   ...
  * </qemuCaps>
+ *
+ * Returns 0 on success, 1 if outdated, -1 on error
  */
 int
 virQEMUCapsLoadCache(virArch hostArch,
                      virQEMUCapsPtr qemuCaps,
-                     const char *filename)
+                     const char *filename,
+                     bool skipInvalidation)
 {
     xmlDocPtr doc = NULL;
     int ret = -1;
@@ -4241,6 +4236,31 @@ virQEMUCapsLoadCache(virArch hostArch,
         goto cleanup;
     }
 
+    if (virXPathLongLong("string(./selfctime)", ctxt, &l) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing selfctime in QEMU capabilities XML"));
+        goto cleanup;
+    }
+    qemuCaps->libvirtCtime = (time_t)l;
+
+    qemuCaps->libvirtVersion = 0;
+    if (virXPathULong("string(./selfvers)", ctxt, &lu) == 0)
+        qemuCaps->libvirtVersion = lu;
+
+    if (!skipInvalidation &&
+        (qemuCaps->libvirtCtime != virGetSelfLastChanged() ||
+         qemuCaps->libvirtVersion != LIBVIR_VERSION_NUMBER)) {
+        VIR_DEBUG("Outdated capabilities in %s: libvirt changed "
+                  "(%lld vs %lld, %lu vs %lu), stopping load",
+                  qemuCaps->binary,
+                  (long long)qemuCaps->libvirtCtime,
+                  (long long)virGetSelfLastChanged(),
+                  (unsigned long)qemuCaps->libvirtVersion,
+                  (unsigned long)LIBVIR_VERSION_NUMBER);
+        ret = 1;
+        goto cleanup;
+    }
+
     if (!(str = virXPathString("string(./emulator)", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing emulator in QEMU capabilities cache"));
@@ -4259,17 +4279,6 @@ virQEMUCapsLoadCache(virArch hostArch,
         goto cleanup;
     }
     qemuCaps->ctime = (time_t)l;
-
-    if (virXPathLongLong("string(./selfctime)", ctxt, &l) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing selfctime in QEMU capabilities XML"));
-        goto cleanup;
-    }
-    qemuCaps->libvirtCtime = (time_t)l;
-
-    qemuCaps->libvirtVersion = 0;
-    if (virXPathULong("string(./selfvers)", ctxt, &lu) == 0)
-        qemuCaps->libvirtVersion = lu;
 
     if ((n = virXPathNodeSet("./flag", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4421,6 +4430,9 @@ virQEMUCapsLoadCache(virArch hostArch,
 
     if (virXPathBoolean("boolean(./kvmSupportsSecureGuest)", ctxt) > 0)
         qemuCaps->kvmSupportsSecureGuest = true;
+
+    if (skipInvalidation)
+        qemuCaps->invalidation = false;
 
     ret = 0;
  cleanup:
@@ -5493,16 +5505,23 @@ virQEMUCapsNewData(const char *binary,
 static void *
 virQEMUCapsLoadFile(const char *filename,
                     const char *binary,
-                    void *privData)
+                    void *privData,
+                    bool *outdated)
 {
     virQEMUCapsPtr qemuCaps = virQEMUCapsNewBinary(binary);
     virQEMUCapsCachePrivPtr priv = privData;
+    int ret;
 
     if (!qemuCaps)
         return NULL;
 
-    if (virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename) < 0)
+    ret = virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename, false);
+    if (ret < 0)
         goto error;
+    if (ret == 1) {
+        *outdated = true;
+        goto error;
+    }
 
     return qemuCaps;
 
