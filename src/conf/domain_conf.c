@@ -7522,11 +7522,15 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                               virTristateSwitchTypeToString(info->addr.pci.multi));
         }
 
-        if (!virZPCIDeviceAddressIsEmpty(&info->addr.pci.zpci)) {
+        if (virZPCIDeviceAddressIsIncomplete(&info->addr.pci.zpci)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing uid or fid attribute of zPCI address"));
+        }
+        if (virZPCIDeviceAddressIsPresent(&info->addr.pci.zpci)) {
             virBufferAsprintf(&childBuf,
                               "<zpci uid='0x%.4x' fid='0x%.8x'/>\n",
-                              info->addr.pci.zpci.uid,
-                              info->addr.pci.zpci.fid);
+                              info->addr.pci.zpci.uid.value,
+                              info->addr.pci.zpci.fid.value);
         }
         break;
 

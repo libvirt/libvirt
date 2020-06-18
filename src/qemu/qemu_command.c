@@ -1902,10 +1902,10 @@ qemuBuildZPCIDevStr(virDomainDeviceInfoPtr dev)
 
     virBufferAsprintf(&buf,
                       "zpci,uid=%u,fid=%u,target=%s,id=zpci%u",
-                      dev->addr.pci.zpci.uid,
-                      dev->addr.pci.zpci.fid,
+                      dev->addr.pci.zpci.uid.value,
+                      dev->addr.pci.zpci.fid.value,
                       dev->alias,
-                      dev->addr.pci.zpci.uid);
+                      dev->addr.pci.zpci.uid.value);
 
     return virBufferContentAndReset(&buf);
 }

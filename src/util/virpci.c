@@ -2173,12 +2173,13 @@ virZPCIDeviceAddressIsValid(virZPCIDeviceAddressPtr zpci)
     /* We don't need to check fid because fid covers
      * all range of uint32 type.
      */
-    if (zpci->uid > VIR_DOMAIN_DEVICE_ZPCI_MAX_UID ||
-        zpci->uid == 0) {
+    if (zpci->uid.isSet &&
+        (zpci->uid.value > VIR_DOMAIN_DEVICE_ZPCI_MAX_UID ||
+         zpci->uid.value == 0)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Invalid PCI address uid='0x%.4x', "
                          "must be > 0x0000 and <= 0x%.4x"),
-                       zpci->uid,
+                       zpci->uid.value,
                        VIR_DOMAIN_DEVICE_ZPCI_MAX_UID);
         return false;
     }
@@ -2187,10 +2188,18 @@ virZPCIDeviceAddressIsValid(virZPCIDeviceAddressPtr zpci)
 }
 
 bool
-virZPCIDeviceAddressIsEmpty(const virZPCIDeviceAddress *addr)
+virZPCIDeviceAddressIsIncomplete(const virZPCIDeviceAddress *addr)
 {
-    return !(addr->uid || addr->fid);
+    return !addr->uid.isSet || !addr->fid.isSet;
 }
+
+
+bool
+virZPCIDeviceAddressIsPresent(const virZPCIDeviceAddress *addr)
+{
+    return addr->uid.isSet || addr->fid.isSet;
+}
+
 
 #ifdef __linux__
 

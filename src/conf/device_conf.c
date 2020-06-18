@@ -52,29 +52,32 @@ static int
 virZPCIDeviceAddressParseXML(xmlNodePtr node,
                              virPCIDeviceAddressPtr addr)
 {
-    virZPCIDeviceAddress def = { 0 };
+    virZPCIDeviceAddress def = { .uid = { 0 }, .fid = { 0 } };
     g_autofree char *uid = NULL;
     g_autofree char *fid = NULL;
 
     uid = virXMLPropString(node, "uid");
     fid = virXMLPropString(node, "fid");
 
-    if (uid &&
-        virStrToLong_uip(uid, NULL, 0, &def.uid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'uid' attribute"));
-        return -1;
+    if (uid) {
+        if (virStrToLong_uip(uid, NULL, 0, &def.uid.value) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot parse <address> 'uid' attribute"));
+            return -1;
+        }
+        def.uid.isSet = true;
     }
 
-    if (fid &&
-        virStrToLong_uip(fid, NULL, 0, &def.fid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'fid' attribute"));
-        return -1;
+    if (fid) {
+        if (virStrToLong_uip(fid, NULL, 0, &def.fid.value) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot parse <address> 'fid' attribute"));
+            return -1;
+        }
+        def.fid.isSet = true;
     }
 
-    if (!virZPCIDeviceAddressIsEmpty(&def) &&
-        !virZPCIDeviceAddressIsValid(&def))
+    if (!virZPCIDeviceAddressIsValid(&def))
         return -1;
 
     addr->zpci = def;
@@ -190,21 +193,19 @@ virDeviceInfoPCIAddressIsPresent(const virDomainDeviceInfo *info)
            !virPCIDeviceAddressIsEmpty(&info->addr.pci);
 }
 
-
 bool
 virDeviceInfoPCIAddressExtensionIsWanted(const virDomainDeviceInfo *info)
 {
     return (info->addr.pci.extFlags & VIR_PCI_ADDRESS_EXTENSION_ZPCI) &&
-           virZPCIDeviceAddressIsEmpty(&info->addr.pci.zpci);
+           virZPCIDeviceAddressIsIncomplete(&info->addr.pci.zpci);
 }
 
 bool
 virDeviceInfoPCIAddressExtensionIsPresent(const virDomainDeviceInfo *info)
 {
     return (info->addr.pci.extFlags & VIR_PCI_ADDRESS_EXTENSION_ZPCI) &&
-           !virZPCIDeviceAddressIsEmpty(&info->addr.pci.zpci);
+           virZPCIDeviceAddressIsPresent(&info->addr.pci.zpci);
 }
-
 
 int
 virPCIDeviceAddressParseXML(xmlNodePtr node,

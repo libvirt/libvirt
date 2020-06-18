@@ -1752,6 +1752,9 @@ mymain(void)
     DO_TEST("hostdev-vfio-zpci-autogenerate",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-uid-set-zero",
+                        QEMU_CAPS_DEVICE_VFIO_PCI,
+                        QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-vfio-zpci-boundaries",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,

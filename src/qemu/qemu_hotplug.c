@@ -157,7 +157,7 @@ qemuDomainDetachZPCIDevice(qemuMonitorPtr mon,
 {
     g_autofree char *zpciAlias = NULL;
 
-    zpciAlias = g_strdup_printf("zpci%d", info->addr.pci.zpci.uid);
+    zpciAlias = g_strdup_printf("zpci%d", info->addr.pci.zpci.uid.value);
 
     if (qemuMonitorDelDevice(mon, zpciAlias) < 0)
         return -1;

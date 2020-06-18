@@ -2839,7 +2839,8 @@ virPCIHeaderTypeToString;
 virPCIIsVirtualFunction;
 virPCIStubDriverTypeFromString;
 virPCIStubDriverTypeToString;
-virZPCIDeviceAddressIsEmpty;
+virZPCIDeviceAddressIsIncomplete;
+virZPCIDeviceAddressIsPresent;
 virZPCIDeviceAddressIsValid;
 
 

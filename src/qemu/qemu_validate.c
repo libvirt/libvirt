@@ -1018,7 +1018,7 @@ static int
 qemuValidateDomainDeviceDefZPCIAddress(virDomainDeviceInfoPtr info,
                                        virQEMUCapsPtr qemuCaps)
 {
-    if (!virZPCIDeviceAddressIsEmpty(&info->addr.pci.zpci) &&
+    if (virZPCIDeviceAddressIsPresent(&info->addr.pci.zpci) &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_ZPCI)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s",
