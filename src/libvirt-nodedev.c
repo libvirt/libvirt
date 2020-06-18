@@ -816,6 +816,41 @@ virNodeDeviceUndefine(virNodeDevicePtr dev)
 
 
 /**
+ * virNodeDeviceCreate:
+ * @dev: a device object
+ *
+ * Start a defined node device:
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNodeDeviceCreate(virNodeDevicePtr dev)
+{
+    VIR_DEBUG("dev=%p", dev);
+
+    virResetLastError();
+
+    virCheckNodeDeviceReturn(dev, -1);
+    virCheckReadOnlyGoto(dev->conn->flags, error);
+
+    if (dev->conn->nodeDeviceDriver &&
+        dev->conn->nodeDeviceDriver->nodeDeviceCreate) {
+        int retval = dev->conn->nodeDeviceDriver->nodeDeviceCreate(dev);
+        if (retval < 0)
+            goto error;
+
+        return 0;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dev->conn);
+    return -1;
+}
+
+
+/**
  * virConnectNodeDeviceEventRegisterAny:
  * @conn: pointer to the connection
  * @dev: pointer to the node device

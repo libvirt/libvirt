@@ -903,6 +903,18 @@ nodeDeviceGetMdevctlUndefineCommand(const char *uuid, char **errmsg)
     return cmd;
 }
 
+virCommand*
+nodeDeviceGetMdevctlCreateCommand(const char *uuid, char **errmsg)
+{
+    virCommand *cmd = virCommandNewArgList(MDEVCTL,
+                                           "start",
+                                           "-u",
+                                           uuid,
+                                           NULL);
+    virCommandSetErrorBuffer(cmd, errmsg);
+    return cmd;
+}
+
 static int
 virMdevctlStop(virNodeDeviceDefPtr def, char **errmsg)
 {
@@ -926,6 +938,21 @@ virMdevctlUndefine(virNodeDeviceDef *def, char **errmsg)
 
     cmd = nodeDeviceGetMdevctlUndefineCommand(def->caps->data.mdev.uuid,
                                               errmsg);
+
+    if (virCommandRun(cmd, &status) < 0 || status != 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+virMdevctlCreate(virNodeDeviceDef *def, char **errmsg)
+{
+    int status;
+    g_autoptr(virCommand) cmd = NULL;
+
+    cmd = nodeDeviceGetMdevctlCreateCommand(def->caps->data.mdev.uuid, errmsg);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
@@ -1247,6 +1274,47 @@ nodeDeviceUndefine(virNodeDevice *device)
         if (virMdevctlUndefine(def, &errmsg) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to undefine mediated device: %s"),
+                           errmsg && errmsg[0] ? errmsg : "Unknown Error");
+            goto cleanup;
+        }
+        ret = 0;
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unsupported device type"));
+    }
+
+ cleanup:
+    virNodeDeviceObjEndAPI(&obj);
+    return ret;
+}
+
+
+int
+nodeDeviceCreate(virNodeDevice *device)
+{
+    int ret = -1;
+    virNodeDeviceObj *obj = NULL;
+    virNodeDeviceDef *def = NULL;
+
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
+        return -1;
+
+    if (virNodeDeviceObjIsActive(obj)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Device is already active"));
+        goto cleanup;
+    }
+    def = virNodeDeviceObjGetDef(obj);
+
+    if (virNodeDeviceCreateEnsureACL(device->conn, def) < 0)
+        goto cleanup;
+
+    if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV)) {
+        g_autofree char *errmsg = NULL;
+
+        if (virMdevctlCreate(def, &errmsg) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to create mediated device: %s"),
                            errmsg && errmsg[0] ? errmsg : "Unknown Error");
             goto cleanup;
         }

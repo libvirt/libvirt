@@ -893,6 +893,7 @@ LIBVIRT_7.3.0 {
     global:
         virNodeDeviceDefineXML;
         virNodeDeviceUndefine;
+        virNodeDeviceCreate;
 } LIBVIRT_7.2.0;
 
 # .... define new API here using predicted next version number ....

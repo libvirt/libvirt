@@ -159,3 +159,10 @@ nodeDeviceGenerateName(virNodeDeviceDef *def,
 
 bool nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
                                   virNodeDeviceDef *src);
+
+virCommand*
+nodeDeviceGetMdevctlCreateCommand(const char *uuid,
+                                  char **errmsg);
+
+int
+nodeDeviceCreate(virNodeDevice *dev);
