@@ -170,3 +170,20 @@ test_file_wrapper_lib = static_library(
   [ 'virfilewrapper.c' ],
   dependencies: [ tests_dep ],
 )
+
+
+# build helpers used by tests
+
+# Must not link to any libvirt modules - libc only otherwise external
+# libraries might unexpectedly leak file descriptors into commandhelper
+# invalidating the test logic assumptions.
+executable(
+  'commandhelper',
+  [ 'commandhelper.c' ],
+  dependencies: [
+    tests_dep,
+  ],
+  link_args: [
+    libvirt_no_indirect,
+  ],
+)

@@ -35,7 +35,7 @@ LDADDS = \
 	$(GLIB_LIBS) \
 	$(NULL)
 
-test_helpers = commandhelper ssh
+test_helpers = ssh
 test_programs = virshtest sockettest \
 	virhostcputest virbuftest \
 	commandtest seclabeltest \
@@ -753,18 +753,6 @@ virhostcputest_LDADD = $(LDADDS)
 commandtest_SOURCES = \
 	commandtest.c testutils.h testutils.c
 commandtest_LDADD = $(LDADDS)
-
-# Must not link to any libvirt modules - libc only
-# otherwise external libraries might unexpectedly leak
-# file descriptors into commandhelper invalidating the
-# test logic assumptions
-commandhelper_SOURCES = \
-	commandhelper.c
-commandhelper_LDADD = \
-	$(NO_INDIRECT_LDFLAGS)
-
-commandhelper_LDFLAGS = -static
-
 
 virkmodtest_SOURCES = \
 	virkmodtest.c testutils.h testutils.c
