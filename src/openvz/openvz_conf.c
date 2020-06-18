@@ -357,7 +357,7 @@ openvzReadFSConf(virDomainDefPtr def,
             goto error;
         }
 
-        if (VIR_ALLOC(fs) < 0)
+        if (!(fs = virDomainFSDefNew(NULL)))
             goto error;
 
         veid_str = g_strdup_printf("%d", veid);

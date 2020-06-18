@@ -3626,7 +3626,7 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
         char *hostPath = NULL;
         PRBool writable = PR_FALSE;
 
-        if (VIR_ALLOC(def->fss[i]) < 0)
+        if (!(def->fss[i] = virDomainFSDefNew(data->xmlopt)))
             goto cleanup;
 
         def->fss[i]->type = VIR_DOMAIN_FS_TYPE_MOUNT;
