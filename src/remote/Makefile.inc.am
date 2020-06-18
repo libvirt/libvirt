@@ -64,6 +64,7 @@ REMOTE_DAEMON_LD_ADD = \
 	$(LIBXML_LIBS) \
 	$(GNUTLS_LIBS) \
 	$(SASL_LIBS) \
+	$(XDR_LIBS) \
 	$(DBUS_LIBS) \
 	$(LIBNL_LIBS) \
 	$(NULL)

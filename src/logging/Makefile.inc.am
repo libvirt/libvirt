@@ -98,6 +98,7 @@ virtlogd_CFLAGS = \
 virtlogd_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(XDR_LIBS) \
 		$(NO_UNDEFINED_LDFLAGS) \
 		$(NULL)
 virtlogd_LDADD = \

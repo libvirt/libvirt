@@ -434,7 +434,9 @@ libvirt_la_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(NULL)
 libvirt_la_LIBADD += \
-		    $(DLOPEN_LIBS)
+		$(DLOPEN_LIBS) \
+		$(XDR_LIBS) \
+		$(NULL)
 libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
 # Because we specify libvirt_la_DEPENDENCIES for $(LIBVIRT_SYMBOL_FILE), we
 # lose automake's automatic dependencies on an appropriate subset of
