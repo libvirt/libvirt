@@ -295,6 +295,7 @@ subdir('fonts')
 subdir('html')
 subdir('internals')
 subdir('js')
+subdir('kbase')
 
 
 # This hack enables us to view the web pages

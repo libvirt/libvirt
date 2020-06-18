@@ -48,19 +48,6 @@ logofiles = \
 logofilesdir = $(HTML_DIR)/logos
 logofiles_DATA = $(logofiles)
 
-kbase_html_in = \
-  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/kbase/*.html.in))
-kbase_rst = \
-  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/kbase/*.rst))
-kbase_rst_html_in = \
-  $(kbase_rst:%.rst=%.html.in)
-kbase_html = \
-  $(kbase_html_in:%.html.in=%.html) \
-  $(kbase_rst_html_in:%.html.in=%.html)
-
-kbasedir = $(HTML_DIR)/kbase
-kbase_DATA = $(kbase_html)
-
 # Sync with src/util/
 KEYCODES = linux osx atset1 atset2 atset3 xtkbd usb win32 qnum
 KEYNAMES = linux osx win32
