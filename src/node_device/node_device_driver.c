@@ -447,6 +447,10 @@ nodeDeviceGetTime(time_t *t)
 }
 
 
+typedef virNodeDevicePtr (*nodeDeviceFindNewDeviceFunc)(virConnectPtr conn,
+                                                        const void* opaque);
+
+
 /* When large numbers of devices are present on the host, it's
  * possible for udev not to realize that it has work to do before we
  * get here.  We thus keep trying to find the new device we just
@@ -462,8 +466,8 @@ nodeDeviceGetTime(time_t *t)
  */
 static virNodeDevicePtr
 nodeDeviceFindNewDevice(virConnectPtr conn,
-                        const char *wwnn,
-                        const char *wwpn)
+                        nodeDeviceFindNewDeviceFunc func,
+                        const void *opaque)
 {
     virNodeDevicePtr device = NULL;
     time_t start = 0, now = 0;
@@ -474,7 +478,7 @@ nodeDeviceFindNewDevice(virConnectPtr conn,
 
         virWaitForDevices();
 
-        device = nodeDeviceLookupSCSIHostByWWN(conn, wwnn, wwpn, 0);
+        device = func(conn, opaque);
 
         if (device != NULL)
             break;
@@ -485,6 +489,35 @@ nodeDeviceFindNewDevice(virConnectPtr conn,
     }
 
     return device;
+}
+
+
+typedef struct _NewSCSIHostFuncData NewSCSIHostFuncData;
+struct _NewSCSIHostFuncData
+{
+    const char *wwnn;
+    const char *wwpn;
+};
+
+
+static virNodeDevicePtr
+nodeDeviceFindNewSCSIHostFunc(virConnectPtr conn,
+                              const void *opaque)
+{
+    const NewSCSIHostFuncData *data = opaque;
+
+    return nodeDeviceLookupSCSIHostByWWN(conn, data->wwnn, data->wwpn, 0);
+}
+
+
+static virNodeDevicePtr
+nodeDeviceFindNewSCSIHost(virConnectPtr conn,
+                          const char *wwnn,
+                          const char *wwpn)
+{
+    NewSCSIHostFuncData data = { .wwnn = wwnn, .wwpn = wwpn};
+
+    return nodeDeviceFindNewDevice(conn, nodeDeviceFindNewSCSIHostFunc, &data);
 }
 
 
@@ -538,7 +571,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
         if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_CREATE) < 0)
             return NULL;
 
-        device = nodeDeviceFindNewDevice(conn, wwnn, wwpn);
+        device = nodeDeviceFindNewSCSIHost(conn, wwnn, wwpn);
         /* We don't check the return value, because one way or another,
          * we're returning what we get... */
 
