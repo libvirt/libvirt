@@ -55,19 +55,6 @@ logofiles = \
 logofilesdir = $(HTML_DIR)/logos
 logofiles_DATA = $(logofiles)
 
-internals_html_in = \
-  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
-internals_rst = \
-  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.rst))
-internals_rst_html_in = \
-  $(internals_rst:%.rst=%.html.in)
-internals_html = \
-  $(internals_html_in:%.html.in=%.html) \
-  $(internals_rst_html_in:%.html.in=%.html)
-
-internalsdir = $(HTML_DIR)/internals
-internals_DATA = $(internals_html)
-
 kbase_html_in = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/kbase/*.html.in))
 kbase_rst = \
