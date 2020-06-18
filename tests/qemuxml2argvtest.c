@@ -1778,6 +1778,10 @@ mymain(void)
     DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-set-zero",
                         QEMU_CAPS_DEVICE_VFIO_PCI,
                         QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST("hostdev-vfio-zpci-ccw-memballoon",
+            QEMU_CAPS_CCW,
+            QEMU_CAPS_DEVICE_VFIO_PCI,
+            QEMU_CAPS_DEVICE_ZPCI);
 
     DO_TEST("pci-rom", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pci-rom-disabled", NONE);

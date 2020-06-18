@@ -540,6 +540,10 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST("hostdev-vfio-zpci-ccw-memballoon",
+            QEMU_CAPS_CCW,
+            QEMU_CAPS_DEVICE_VFIO_PCI,
+            QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-mdev-precreated", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-mdev-display",
             QEMU_CAPS_DEVICE_QXL,
