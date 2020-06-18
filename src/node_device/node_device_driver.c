@@ -488,6 +488,21 @@ nodeDeviceFindNewDevice(virConnectPtr conn,
 }
 
 
+static bool
+nodeDeviceHasCapability(virNodeDeviceDefPtr def, virNodeDevCapType type)
+{
+    virNodeDevCapsDefPtr cap = def->caps;
+
+    while (cap != NULL) {
+        if (cap->data.type == type)
+            return true;
+        cap = cap->next;
+    }
+
+    return false;
+}
+
+
 virNodeDevicePtr
 nodeDeviceCreateXML(virConnectPtr conn,
                     const char *xmlDesc,
@@ -513,24 +528,29 @@ nodeDeviceCreateXML(virConnectPtr conn,
     if (virNodeDeviceCreateXMLEnsureACL(conn, def) < 0)
         return NULL;
 
-    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
-        return NULL;
+    if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_SCSI_HOST)) {
+        if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
+            return NULL;
 
-    if ((parent_host = virNodeDeviceObjListGetParentHost(driver->devs, def)) < 0)
-        return NULL;
+        if ((parent_host = virNodeDeviceObjListGetParentHost(driver->devs, def)) < 0)
+            return NULL;
 
-    if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_CREATE) < 0)
-        return NULL;
+        if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_CREATE) < 0)
+            return NULL;
 
-    device = nodeDeviceFindNewDevice(conn, wwnn, wwpn);
-    /* We don't check the return value, because one way or another,
-     * we're returning what we get... */
+        device = nodeDeviceFindNewDevice(conn, wwnn, wwpn);
+        /* We don't check the return value, because one way or another,
+         * we're returning what we get... */
 
-    if (device == NULL)
-        virReportError(VIR_ERR_NO_NODE_DEVICE,
-                       _("no node device for '%s' with matching "
-                         "wwnn '%s' and wwpn '%s'"),
-                       def->name, wwnn, wwpn);
+        if (device == NULL)
+            virReportError(VIR_ERR_NO_NODE_DEVICE,
+                           _("no node device for '%s' with matching "
+                             "wwnn '%s' and wwpn '%s'"),
+                           def->name, wwnn, wwpn);
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unsupported device type"));
+    }
 
     return device;
 }
@@ -557,31 +577,36 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     if (virNodeDeviceDestroyEnsureACL(device->conn, def) < 0)
         goto cleanup;
 
-    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) < 0)
-        goto cleanup;
+    if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_SCSI_HOST)) {
+        if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) < 0)
+            goto cleanup;
 
-    /* Because we're about to release the lock and thus run into a race
-     * possibility (however improbable) with a udevAddOneDevice change
-     * event which would essentially free the existing @def (obj->def) and
-     * replace it with something new, we need to grab the parent field
-     * and then find the parent obj in order to manage the vport */
-    parent = g_strdup(def->parent);
+        /* Because we're about to release the lock and thus run into a race
+         * possibility (however improbable) with a udevAddOneDevice change
+         * event which would essentially free the existing @def (obj->def) and
+         * replace it with something new, we need to grab the parent field
+         * and then find the parent obj in order to manage the vport */
+        parent = g_strdup(def->parent);
 
-    virNodeDeviceObjEndAPI(&obj);
+        virNodeDeviceObjEndAPI(&obj);
 
-    if (!(obj = virNodeDeviceObjListFindByName(driver->devs, parent))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot find parent '%s' definition"), parent);
-        goto cleanup;
+        if (!(obj = virNodeDeviceObjListFindByName(driver->devs, parent))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot find parent '%s' definition"), parent);
+            goto cleanup;
+        }
+
+        if (virSCSIHostGetNumber(parent, &parent_host) < 0)
+            goto cleanup;
+
+        if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_DELETE) < 0)
+            goto cleanup;
+
+        ret = 0;
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unsupported device type"));
     }
-
-    if (virSCSIHostGetNumber(parent, &parent_host) < 0)
-        goto cleanup;
-
-    if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_DELETE) < 0)
-        goto cleanup;
-
-    ret = 0;
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
