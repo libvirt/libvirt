@@ -786,6 +786,32 @@ nodeDeviceCreateXML(virConnectPtr conn,
 }
 
 
+virCommandPtr
+nodeDeviceGetMdevctlStopCommand(const char *uuid)
+{
+    return virCommandNewArgList(MDEVCTL,
+                                "stop",
+                                "-u",
+                                uuid,
+                                NULL);
+
+}
+
+static int
+virMdevctlStop(virNodeDeviceDefPtr def)
+{
+    int status;
+    g_autoptr(virCommand) cmd = NULL;
+
+    cmd = nodeDeviceGetMdevctlStopCommand(def->caps->data.mdev.uuid);
+
+    if (virCommandRun(cmd, &status) < 0 || status != 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 nodeDeviceDestroy(virNodeDevicePtr device)
 {
@@ -832,6 +858,13 @@ nodeDeviceDestroy(virNodeDevicePtr device)
         if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_DELETE) < 0)
             goto cleanup;
 
+        ret = 0;
+    } else if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV)) {
+        if (virMdevctlStop(def) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to stop mediated device"));
+            goto cleanup;
+        }
         ret = 0;
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
