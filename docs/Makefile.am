@@ -320,10 +320,6 @@ news.html.in: $(top_srcdir)/NEWS.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
 	  $(RST2HTML) --strict $< > $@ || { rm $@ && exit 1; }
 
-%.html.in: %.rst
-	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
-	  $(RST2HTML) --strict $< > $@ || { rm $@ && exit 1; }
-
 %.html.tmp: %.html.in site.xsl subsite.xsl page.xsl \
 		$(acl_generated)
 	$(AM_V_GEN)name=`echo $@ | sed -e 's/.tmp//'`; \

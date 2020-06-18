@@ -73,3 +73,10 @@ docs_api_xml = docs_api_generated[0]
 docs_lxc_api_xml = docs_api_generated[1]
 docs_qemu_api_xml = docs_api_generated[2]
 docs_admin_api_xml = docs_api_generated[3]
+
+docs_rst2html_gen = generator(
+  rst2html_prog,
+  output: '@BASENAME@.html.in',
+  arguments: [ '--strict', '@INPUT@' ],
+  capture: true,
+)
