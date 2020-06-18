@@ -46,10 +46,6 @@ vpathhack:
 	do \
 	  test -e $$dir || ln -s $(srcdir)/$$dir $$dir ; \
 	done
-	@for file in $(assets); \
-	do \
-	  test -e $$file || ln -s $(srcdir)/$$file $$file ; \
-	done
 
 apihtml = \
   html/index.html \
