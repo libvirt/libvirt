@@ -187,3 +187,15 @@ executable(
     libvirt_no_indirect,
   ],
 )
+
+# This is a fake SSH we use from virnetsockettest
+executable(
+  'ssh',
+  [ 'ssh.c' ],
+  dependencies: [
+    tests_dep,
+  ],
+  link_args: [
+    coverage_flags,
+  ],
+)

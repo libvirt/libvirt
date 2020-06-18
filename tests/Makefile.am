@@ -35,7 +35,6 @@ LDADDS = \
 	$(GLIB_LIBS) \
 	$(NULL)
 
-test_helpers = ssh
 test_programs = virshtest sockettest \
 	virhostcputest virbuftest \
 	commandtest seclabeltest \
@@ -112,10 +111,6 @@ test_programs += securityselinuxlabeltest
 endif WITH_QEMU
 endif WITH_ATTR
 endif WITH_SECDRIVER_SELINUX
-
-# This is a fake SSH we use from virnetsockettest
-ssh_SOURCES = ssh.c
-ssh_LDADD = $(COVERAGE_LDFLAGS)
 
 if WITH_LIBXL
 test_programs += xlconfigtest \
