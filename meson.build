@@ -92,6 +92,29 @@ docdir = datadir / 'doc' / meson.project_name()
 pkgdatadir = datadir / meson.project_name()
 
 
+# generate configmake.h header
+
+configmake_conf = configuration_data()
+configmake_conf.set_quoted('BINDIR', bindir)
+configmake_conf.set_quoted('DATADIR', datadir)
+configmake_conf.set_quoted('LIBDIR', libdir)
+configmake_conf.set_quoted('LIBEXECDIR', libexecdir)
+configmake_conf.set_quoted('LOCALEDIR', localedir)
+configmake_conf.set_quoted('LOCALSTATEDIR', localstatedir)
+configmake_conf.set_quoted('MANDIR', mandir)
+configmake_conf.set_quoted('PKGDATADIR', pkgdatadir)
+configmake_conf.set_quoted('PREFIX', prefix)
+configmake_conf.set_quoted('RUNSTATEDIR', runstatedir)
+configmake_conf.set_quoted('SBINDIR', sbindir)
+configmake_conf.set_quoted('SYSCONFDIR', sysconfdir)
+
+configure_file(
+  input: 'configmake.h.in',
+  output: 'configmake.h',
+  configuration: configmake_conf,
+)
+
+
 # figure out libvirt version strings
 
 arr_version = meson.project_version().split('.')

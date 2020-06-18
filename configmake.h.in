@@ -1,0 +1,16 @@
+/* DO NOT EDIT! GENERATED AUTOMATICALLY! */
+#if WIN32
+# include <winsock2.h> /* avoid mingw pollution on DATADIR */
+#endif
+#mesondefine BINDIR
+#mesondefine DATADIR
+#mesondefine LIBDIR
+#mesondefine LIBEXECDIR
+#mesondefine LOCALEDIR
+#mesondefine LOCALSTATEDIR
+#mesondefine MANDIR
+#mesondefine PKGDATADIR
+#mesondefine PREFIX
+#mesondefine RUNSTATEDIR
+#mesondefine SBINDIR
+#mesondefine SYSCONFDIR
