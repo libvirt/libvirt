@@ -16,38 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-all: vpathhack
-
-# This hack enables us to view the web pages
-# from within the uninstalled build tree
-vpathhack:
-	@for dir in logos; \
-	do \
-	  test -e $$dir || ln -s $(srcdir)/$$dir $$dir ; \
-	done
-
-logofiles = \
-  logos/logo-base.svg \
-  logos/logo-square.svg \
-  logos/logo-square-powered.svg \
-  logos/logo-banner-dark.svg \
-  logos/logo-banner-light.svg \
-  logos/logo-square-96.png \
-  logos/logo-square-128.png \
-  logos/logo-square-192.png \
-  logos/logo-square-256.png \
-  logos/logo-square-powered-96.png \
-  logos/logo-square-powered-128.png \
-  logos/logo-square-powered-192.png \
-  logos/logo-square-powered-256.png \
-  logos/logo-banner-dark-256.png \
-  logos/logo-banner-dark-800.png \
-  logos/logo-banner-light-256.png \
-  logos/logo-banner-light-800.png
-
-logofilesdir = $(HTML_DIR)/logos
-logofiles_DATA = $(logofiles)
-
 # Sync with src/util/
 KEYCODES = linux osx atset1 atset2 atset3 xtkbd usb win32 qnum
 KEYNAMES = linux osx win32
