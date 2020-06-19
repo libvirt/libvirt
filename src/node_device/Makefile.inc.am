@@ -37,6 +37,7 @@ if WITH_NODE_DEVICES
 noinst_LTLIBRARIES += libvirt_driver_nodedev_impl.la
 libvirt_driver_nodedev_la_SOURCES =
 libvirt_driver_nodedev_la_LIBADD = libvirt_driver_nodedev_impl.la
+libvirt_driver_nodedev_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
 mod_LTLIBRARIES += libvirt_driver_nodedev.la
 libvirt_driver_nodedev_impl_la_SOURCES = $(NODE_DEVICE_DRIVER_SOURCES)
 
@@ -47,7 +48,6 @@ libvirt_driver_nodedev_impl_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(LIBNL_CFLAGS) \
 	$(NULL)
-libvirt_driver_nodedev_impl_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
 libvirt_driver_nodedev_impl_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
