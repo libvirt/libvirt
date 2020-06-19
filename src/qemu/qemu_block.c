@@ -1061,6 +1061,9 @@ qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSourcePtr src,
  *      omit any data which does not identify the image itself
  *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY:
  *      use the auto-read-only feature of qemu
+ *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP:
+ *      don't enable 'discard:unmap' option for passing through discards
+ *      (note that this is disabled also for _LEGACY and _TARGET_ONLY options)
  *
  * Creates a JSON object describing the underlying storage or protocol of a
  * storage source. Returns NULL on error and reports an appropriate error message.
@@ -1202,6 +1205,11 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
             if (virJSONValueObjectAdd(fileprops,
                                       "T:read-only", ro,
                                       "T:auto-read-only", aro,
+                                      NULL) < 0)
+                return NULL;
+
+            if (!(flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP) &&
+                virJSONValueObjectAdd(fileprops,
                                       "s:discard", "unmap",
                                       NULL) < 0)
                 return NULL;
