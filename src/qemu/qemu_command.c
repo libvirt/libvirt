@@ -4641,11 +4641,11 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
 
 char *
 qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
-                           virDomainHostdevDefPtr dev)
+                           virDomainHostdevDefPtr dev,
+                           const char *backendAlias)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int model = -1;
-    g_autofree char *driveAlias = NULL;
     const char *contAlias;
 
     model = qemuDomainFindSCSIControllerModel(def, dev->info);
@@ -4687,9 +4687,7 @@ qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                           dev->info->addr.drive.unit);
     }
 
-    if (!(driveAlias = qemuAliasFromHostdev(dev)))
-        return NULL;
-    virBufferAsprintf(&buf, ",drive=%s,id=%s", driveAlias, dev->info->alias);
+    virBufferAsprintf(&buf, ",drive=%s,id=%s", backendAlias, dev->info->alias);
 
     if (dev->info->bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
@@ -5073,6 +5071,7 @@ qemuBuildHostdevSCSICommandLine(virCommandPtr cmd,
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
     g_autofree char *devstr = NULL;
     g_autofree char *drvstr = NULL;
+    g_autofree char *backendAlias = NULL;
 
     if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
         virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc =
@@ -5091,8 +5090,11 @@ qemuBuildHostdevSCSICommandLine(virCommandPtr cmd,
         return -1;
     virCommandAddArg(cmd, drvstr);
 
+    if (!(backendAlias = qemuAliasFromHostdev(hostdev)))
+        return -1;
+
     virCommandAddArg(cmd, "-device");
-    if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev)))
+    if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev, backendAlias)))
         return -1;
     virCommandAddArg(cmd, devstr);
 

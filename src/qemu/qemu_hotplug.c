@@ -2630,7 +2630,7 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
     if (!(drivealias = qemuAliasFromHostdev(hostdev)))
         goto cleanup;
 
-    if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev)))
+    if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, drivealias)))
         goto cleanup;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
