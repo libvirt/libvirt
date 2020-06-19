@@ -85,6 +85,7 @@ struct qemuBlockStorageSourceAttachData {
 
     virJSONValuePtr storageProps;
     const char *storageNodeName;
+    char *storageNodeNameCopy; /* in some cases we don't have the corresponding storage source */
     bool storageAttached;
 
     virJSONValuePtr storageSliceProps;
