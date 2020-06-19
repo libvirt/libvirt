@@ -1052,26 +1052,32 @@ qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSourcePtr src,
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
- * @legacy: use legacy formatting of attributes (for -drive / old qemus)
- * @onlytarget: omit any data which does not identify the image itself
- * @autoreadonly: use the auto-read-only feature of qemu
+ * @flags: bitwise-or of qemuBlockStorageSourceBackendPropsFlags
+ *
+ * Flags:
+ *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY:
+ *      use legacy formatting of attributes (for -drive / old qemus)
+ *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY:
+ *      omit any data which does not identify the image itself
+ *  QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY:
+ *      use the auto-read-only feature of qemu
  *
  * Creates a JSON object describing the underlying storage or protocol of a
  * storage source. Returns NULL on error and reports an appropriate error message.
  */
 virJSONValuePtr
 qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
-                                      bool legacy,
-                                      bool onlytarget,
-                                      bool autoreadonly)
+                                      unsigned int flags)
 {
     int actualType = virStorageSourceGetActualType(src);
     g_autoptr(virJSONValue) fileprops = NULL;
     const char *driver = NULL;
     virTristateBool aro = VIR_TRISTATE_BOOL_ABSENT;
     virTristateBool ro = VIR_TRISTATE_BOOL_ABSENT;
+    bool onlytarget = flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY;
+    bool legacy = flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY;
 
-    if (autoreadonly) {
+    if (flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY) {
         aro = VIR_TRISTATE_BOOL_YES;
     } else {
         if (src->readonly)
@@ -1576,15 +1582,18 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
                                             bool autoreadonly)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
+    unsigned int backendpropsflags = 0;
+
+    if (autoreadonly)
+        backendpropsflags |= QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
     if (!(data->formatProps = qemuBlockStorageSourceGetBlockdevProps(src,
                                                                      backingStore)) ||
-        !(data->storageProps = qemuBlockStorageSourceGetBackendProps(src, false,
-                                                                     false,
-                                                                     autoreadonly)))
+        !(data->storageProps = qemuBlockStorageSourceGetBackendProps(src,
+                                                                     backendpropsflags)))
         return NULL;
 
     data->storageNodeName = src->nodestorage;
@@ -2108,7 +2117,8 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src,
     }
 
     /* use json: pseudo protocol otherwise */
-    if (!(backingProps = qemuBlockStorageSourceGetBackendProps(src, false, true, false)))
+    if (!(backingProps = qemuBlockStorageSourceGetBackendProps(src,
+                                                               QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY)))
         return NULL;
 
     props = backingProps;

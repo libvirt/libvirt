@@ -56,11 +56,15 @@ qemuBlockGetNodeData(virJSONValuePtr data);
 bool
 qemuBlockStorageSourceSupportsConcurrentAccess(virStorageSourcePtr src);
 
+typedef enum {
+    QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY = 1 << 0,
+    QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY = 1 << 1,
+    QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY = 1 << 2,
+} qemuBlockStorageSourceBackendPropsFlags;
+
 virJSONValuePtr
 qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
-                                      bool legacy,
-                                      bool onlytarget,
-                                      bool autoreadonly);
+                                      unsigned int flags);
 
 virURIPtr
 qemuBlockStorageSourceGetURI(virStorageSourcePtr src);
