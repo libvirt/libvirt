@@ -182,6 +182,14 @@ char *qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                                  virDomainHostdevDefPtr dev,
                                  const char *backendAlias);
 
+qemuBlockStorageSourceAttachData *
+qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDefPtr hostdev,
+                                  const char **backendAlias,
+                                  virQEMUCapsPtr qemuCaps);
+qemuBlockStorageSourceAttachData *
+qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDefPtr hostdev,
+                                  virQEMUCapsPtr qemuCaps);
+
 char *
 qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
                                 virDomainHostdevDefPtr dev,

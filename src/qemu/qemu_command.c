@@ -5062,6 +5062,89 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
 }
 
 
+qemuBlockStorageSourceAttachData *
+qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDefPtr hostdev,
+                                  virQEMUCapsPtr qemuCaps)
+{
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+    g_autoptr(qemuBlockStorageSourceAttachData) ret = g_new0(qemuBlockStorageSourceAttachData, 1);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
+        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+            qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
+
+            ret->storageNodeName = iscsisrc->src->nodestorage;
+
+            if (srcpriv && srcpriv->secinfo &&
+                srcpriv->secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
+                ret->authsecretAlias = g_strdup(srcpriv->secinfo->s.aes.alias);
+        } else {
+            ret->storageNodeNameCopy = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
+            ret->storageNodeName = ret->storageNodeNameCopy;
+        }
+
+        ret->storageAttached = true;
+    } else {
+        ret->driveAlias = qemuAliasFromHostdev(hostdev);
+        ret->driveAdded = true;
+    }
+
+    return g_steal_pointer(&ret);
+}
+
+
+qemuBlockStorageSourceAttachData *
+qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDefPtr hostdev,
+                                  const char **backendAlias,
+                                  virQEMUCapsPtr qemuCaps)
+{
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+    virStorageSourcePtr src;
+    g_autoptr(virStorageSource) localsrc = NULL;
+    g_autoptr(qemuBlockStorageSourceAttachData) ret = g_new0(qemuBlockStorageSourceAttachData, 1);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
+        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+            src = iscsisrc->src;
+        } else {
+            g_autofree char *devstr = qemuBuildSCSIHostHostdevDrvStr(hostdev);
+
+            if (!devstr)
+                return NULL;
+
+            if (!(src = localsrc = virStorageSourceNew()))
+                return NULL;
+
+            src->type = VIR_STORAGE_TYPE_BLOCK;
+            src->readonly = hostdev->readonly;
+            src->path = g_strdup_printf("/dev/%s", devstr);
+        }
+
+        src->nodestorage = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
+        ret->storageNodeNameCopy = g_strdup(src->nodestorage);
+        ret->storageNodeName = ret->storageNodeNameCopy;
+        *backendAlias = ret->storageNodeNameCopy;
+
+        if (!(ret->storageProps = qemuBlockStorageSourceGetBackendProps(src,
+                                                                        QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)))
+            return NULL;
+
+    } else {
+        ret->driveCmd = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps);
+        ret->driveAlias = qemuAliasFromHostdev(hostdev);
+        *backendAlias = ret->driveAlias;
+    }
+
+    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
+        qemuBuildStorageSourceAttachPrepareCommon(iscsisrc->src, ret, qemuCaps) < 0)
+        return NULL;
+
+    return g_steal_pointer(&ret);
+}
+
+
 static int
 qemuBuildHostdevSCSICommandLine(virCommandPtr cmd,
                                 const virDomainDef *def,
