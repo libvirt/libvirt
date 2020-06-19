@@ -4442,31 +4442,17 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     virDomainNetDefPtr net = NULL;
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autofree char *drivealias = NULL;
-    const char *secretObjAlias = NULL;
 
     VIR_DEBUG("Removing host device %s from domain %p %s",
               hostdev->info->alias, vm, vm->def->name);
 
     if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
-        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
-        virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+        g_autoptr(qemuBlockStorageSourceAttachData) detachscsi = NULL;
 
-        if (!(drivealias = qemuAliasFromHostdev(hostdev)))
-            return -1;
-
-        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-            qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
-            if (srcPriv && srcPriv->secinfo)
-                secretObjAlias = srcPriv->secinfo->s.aes.alias;
-        }
+        detachscsi = qemuBuildHostdevSCSIDetachPrepare(hostdev, priv->qemuCaps);
 
         qemuDomainObjEnterMonitor(driver, vm);
-        qemuMonitorDriveDel(priv->mon, drivealias);
-
-        if (secretObjAlias)
-            ignore_value(qemuMonitorDelObject(priv->mon, secretObjAlias, false));
-
+        qemuBlockStorageSourceAttachRollback(priv->mon, detachscsi);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             return -1;
     }
