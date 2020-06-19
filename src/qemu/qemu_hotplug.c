@@ -2567,17 +2567,12 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr orig_err;
+    g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
+    const char *backendalias = NULL;
     g_autofree char *devstr = NULL;
-    g_autofree char *drvstr = NULL;
-    g_autofree char *drivealias = NULL;
-    g_autofree char *secobjAlias = NULL;
     bool teardowncgroup = false;
     bool teardownlabel = false;
     bool teardowndevice = false;
-    bool driveAdded = false;
-    virJSONValuePtr secobjProps = NULL;
-    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
-    qemuDomainSecretInfoPtr secinfo = NULL;
 
     /* Let's make sure the disk has a controller defined and loaded before
      * trying to add it. The controller used by the disk must exist before a
@@ -2612,25 +2607,11 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
     if (qemuDomainSecretHostdevPrepare(priv, hostdev) < 0)
         goto cleanup;
 
-    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-        qemuDomainStorageSourcePrivatePtr srcPriv =
-            QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(scsisrc->u.iscsi.src);
-        if (srcPriv)
-            secinfo = srcPriv->secinfo;
-    }
-
-    if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
-        if (qemuBuildSecretInfoProps(secinfo, &secobjProps) < 0)
-            goto cleanup;
-    }
-
-    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, priv->qemuCaps)))
+    if (!(data = qemuBuildHostdevSCSIAttachPrepare(hostdev, &backendalias,
+                                                   priv->qemuCaps)))
         goto cleanup;
 
-    if (!(drivealias = qemuAliasFromHostdev(hostdev)))
-        goto cleanup;
-
-    if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, drivealias)))
+    if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, backendalias)))
         goto cleanup;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
@@ -2638,13 +2619,8 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (secobjProps &&
-        qemuMonitorAddObject(priv->mon, &secobjProps, &secobjAlias) < 0)
+    if (qemuBlockStorageSourceAttachApply(priv->mon, data) < 0)
         goto exit_monitor;
-
-    if (qemuMonitorAddDrive(priv->mon, drvstr) < 0)
-        goto exit_monitor;
-    driveAdded = true;
 
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
         goto exit_monitor;
@@ -2671,18 +2647,11 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
             VIR_WARN("Unable to remove host device from /dev");
     }
     qemuDomainSecretHostdevDestroy(hostdev);
-    virJSONValueFree(secobjProps);
     return ret;
 
  exit_monitor:
     virErrorPreserveLast(&orig_err);
-    if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
-        VIR_WARN("Unable to remove drive %s (%s) after failed "
-                 "qemuMonitorAddDevice",
-                 drvstr, devstr);
-    }
-    if (secobjAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, secobjAlias, false));
+    qemuBlockStorageSourceAttachRollback(priv->mon, data);
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
     virErrorRestore(&orig_err);
 
