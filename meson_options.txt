@@ -83,3 +83,4 @@ option('storage_iscsi', type: 'feature', value: 'auto', description: 'iscsi back
 option('storage_iscsi_direct', type: 'feature', value: 'auto', description: 'iscsi-direct backend for the storage driver')
 option('storage_lvm', type: 'feature', value: 'auto', description: 'LVM backend for the storage driver')
 option('storage_mpath', type: 'feature', value: 'auto', description: 'mpath backend for the storage driver')
+option('storage_rbd', type: 'feature', value: 'auto', description: 'RADOS Block Device backend for the storage driver')

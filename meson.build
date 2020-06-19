@@ -1994,6 +1994,13 @@ if conf.has('WITH_LIBVIRTD')
   elif get_option('storage_mpath').enabled()
     error('mpath storage driver is supported only on Linux and you must install libdevmapper')
   endif
+
+  if not get_option('storage_rbd').disabled() and rbd_dep.found()
+    use_storage = true
+    conf.set('WITH_STORAGE_RBD', 1)
+  elif get_option('storage_rbd').enabled()
+    error('You must install the librbd library & headers to compile libvirt')
+  endif
 endif
 
 if use_storage
@@ -2047,6 +2054,7 @@ storagedriver_summary = {
   'iscsi-direct': conf.has('WITH_STORAGE_ISCSI_DIRECT'),
   'mpath': conf.has('WITH_STORAGE_MPATH'),
   'Disk': conf.has('WITH_STORAGE_DISK'),
+  'RBD': conf.has('WITH_STORAGE_RBD'),
   'Gluster': conf.has('WITH_STORAGE_GLUSTER'),
 }
 summary(storagedriver_summary, section: 'Storage Drivers', bool_yn: true)
