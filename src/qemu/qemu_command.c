@@ -4589,7 +4589,7 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 }
 
-char *
+static char *
 qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                            virQEMUCapsPtr qemuCaps)
 {
