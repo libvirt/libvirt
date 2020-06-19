@@ -64,3 +64,4 @@ option('driver_test', type: 'feature', value: 'enabled', description: 'test driv
 option('driver_vbox', type: 'feature', value: 'enabled', description: 'VirtualBox XPCOMC driver')
 option('vbox_xpcomc_dir', type: 'string', value: '', description: 'Location of directory containing VirtualBox XPCOMC library')
 option('driver_vmware', type: 'feature', value: 'enabled', description: 'VMware driver')
+option('driver_vz', type: 'feature', value: 'auto', description: 'Virtuozzo driver')

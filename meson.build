@@ -1836,6 +1836,12 @@ if get_option('driver_vmware').enabled()
   conf.set('WITH_VMX', 1)
 endif
 
+if not get_option('driver_vz').disabled() and parallels_sdk_dep.found()
+  conf.set('WITH_VZ', 1)
+elif get_option('driver_vz').enabled()
+  error('Parallels Virtualization SDK is needed to build the Virtuozzo driver.')
+endif
+
 
 # define top include directory
 
@@ -1864,6 +1870,7 @@ driver_summary = {
   'LXC': conf.has('WITH_LXC'),
   'ESX': conf.has('WITH_ESX'),
   'Hyper-V': conf.has('WITH_HYPERV'),
+  'vz': conf.has('WITH_VZ'),
   'Bhyve': conf.has('WITH_BHYVE'),
   'Test': conf.has('WITH_TEST'),
   'Remote': conf.has('WITH_REMOTE'),
