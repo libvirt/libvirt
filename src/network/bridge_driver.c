@@ -1628,6 +1628,7 @@ networkBuildDhcpDaemonCommandLine(virNetworkDriverStatePtr driver,
     virObjectUnref(dnsmasq_caps);
     VIR_FREE(configfile);
     VIR_FREE(configstr);
+    VIR_FREE(hostsfilestr);
     VIR_FREE(leaseshelper_path);
     return ret;
 }
