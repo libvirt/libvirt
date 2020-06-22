@@ -47,4 +47,9 @@ if conf.has('WITH_LIBXL')
 
   virt_conf_files += files('libxl.conf')
   virt_aug_files += files('libvirtd_libxl.aug')
+  virt_test_aug_files += {
+    'name': 'test_libvirtd_libxl.aug',
+    'aug': files('test_libvirtd_libxl.aug.in'),
+    'conf': files('libxl.conf'),
+  }
 endif

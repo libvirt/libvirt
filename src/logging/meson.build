@@ -73,6 +73,11 @@ if conf.has('WITH_LIBVIRTD')
 
   virt_conf_files += files('virtlogd.conf')
   virt_aug_files += files('virtlogd.aug')
+  virt_test_aug_files += {
+    'name': 'test_virtlogd.aug',
+    'aug': files('test_virtlogd.aug.in'),
+    'conf': files('virtlogd.conf'),
+  }
 endif
 
 log_inc_dir = include_directories('.')

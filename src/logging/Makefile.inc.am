@@ -18,15 +18,6 @@ OPENRC_INIT_FILES_IN += \
 	logging/virtlogd.init.in \
 	$(NULL)
 
-if WITH_LIBVIRTD
-augeastest_DATA += logging/test_virtlogd.aug
-
-logging/test_virtlogd.aug: logging/test_virtlogd.aug.in \
-		logging/virtlogd.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/logging/virtlogd.conf $< > $@
-
-endif WITH_LIBVIRTD
-
 virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@
 

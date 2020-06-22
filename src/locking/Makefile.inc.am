@@ -19,18 +19,6 @@ OPENRC_INIT_FILES_IN += \
 	locking/virtlockd.init.in \
 	$(NULL)
 
-if WITH_LIBVIRTD
-if WITH_QEMU
-augeastest_DATA += locking/test_libvirt_lockd.aug
-endif WITH_QEMU
-if WITH_SANLOCK
-if WITH_QEMU
-augeastest_DATA += locking/test_libvirt_sanlock.aug
-endif WITH_QEMU
-endif WITH_SANLOCK
-
-augeastest_DATA += locking/test_virtlockd.aug
-
 INSTALL_DATA_DIRS += locking
 
 install-data-locking:
@@ -48,26 +36,6 @@ uninstall-data-locking:
 if WITH_SANLOCK
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock" ||:
 endif WITH_SANLOCK
-
-if WITH_SANLOCK
-if WITH_QEMU
-locking/test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
-		locking/qemu-sanlock.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-sanlock.conf $< > $@
-
-endif WITH_QEMU
-endif WITH_SANLOCK
-
-if WITH_QEMU
-locking/test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
-		locking/qemu-lockd.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< > $@
-endif WITH_QEMU
-
-locking/test_virtlockd.aug: locking/test_virtlockd.aug.in \
-		locking/virtlockd.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/locking/virtlockd.conf $< > $@
-
 endif WITH_LIBVIRTD
 
 .PHONY: \

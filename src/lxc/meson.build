@@ -131,4 +131,9 @@ if conf.has('WITH_LXC')
 
   virt_conf_files += files('lxc.conf')
   virt_aug_files += files('libvirtd_lxc.aug')
+  virt_test_aug_files += {
+    'name': 'test_libvirtd_lxc.aug',
+    'aug': files('test_libvirtd_lxc.aug.in'),
+    'conf': files('lxc.conf'),
+  }
 endif

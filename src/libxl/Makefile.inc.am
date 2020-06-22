@@ -71,12 +71,6 @@ libxl/test_virtxend.aug: remote/test_libvirtd.aug.in \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtxend/' \
 		> $@ || rm -f $@
 
-augeastest_DATA += libxl/test_libvirtd_libxl.aug
-
-libxl/test_libvirtd_libxl.aug: libxl/test_libvirtd_libxl.aug.in \
-		$(srcdir)/libxl/libxl.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/libxl/libxl.conf $< > $@
-
 INSTALL_DATA_DIRS += libxl
 
 install-data-libxl:

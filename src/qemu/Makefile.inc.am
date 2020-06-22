@@ -66,12 +66,6 @@ qemu/test_virtqemud.aug: remote/test_libvirtd.aug.in \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtqemud/' \
 		> $@ || rm -f $@
 
-augeastest_DATA += qemu/test_libvirtd_qemu.aug
-
-qemu/test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
-		$(srcdir)/qemu/qemu.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/qemu/qemu.conf $< > $@
-
 INSTALL_DATA_DIRS += qemu
 
 install-data-qemu:

@@ -77,12 +77,6 @@ if WITH_DTRACE_PROBES
 RPC_PROBE_FILES += $(srcdir)/lxc/lxc_monitor_protocol.x
 endif
 
-augeastest_DATA += lxc/test_libvirtd_lxc.aug
-
-lxc/test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
-		$(srcdir)/lxc/lxc.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< > $@
-
 INSTALL_DATA_DIRS += lxc
 
 install-data-lxc:

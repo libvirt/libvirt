@@ -155,6 +155,11 @@ if conf.has('WITH_LIBVIRTD')
       copy: true,
     )
     virt_conf_files += qemu_lockd_conf
+    virt_test_aug_files += {
+      'name': 'test_libvirt_lockd.aug',
+      'aug' : files('test_libvirt_lockd.aug.in'),
+      'conf': qemu_lockd_conf,
+    }
   endif
 
   if conf.has('WITH_LIBXL')
@@ -176,6 +181,11 @@ if conf.has('WITH_LIBVIRTD')
         copy: true,
       )
       virt_conf_files += qemu_sanlock_conf
+      virt_test_aug_files += {
+        'name': 'test_libvirt_sanlock.aug',
+        'aug' : files('test_libvirt_sanlock.aug.in'),
+        'conf': qemu_sanlock_conf,
+      }
     endif
 
     if conf.has('WITH_LIBXL')
@@ -190,4 +200,9 @@ if conf.has('WITH_LIBVIRTD')
 
   virt_conf_files += files('virtlockd.conf')
   virt_aug_files += files('virtlockd.aug')
+  virt_test_aug_files += {
+    'name': 'test_virtlockd.aug',
+    'aug': files('test_virtlockd.aug.in'),
+    'conf': files('virtlockd.conf'),
+  }
 endif

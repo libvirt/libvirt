@@ -46,4 +46,9 @@ if conf.has('WITH_BHYVE')
 
   virt_conf_files += files('bhyve.conf')
   virt_aug_files += files('libvirtd_bhyve.aug')
+  virt_test_aug_files += {
+    'name': 'test_libvirtd_bhyve.aug',
+    'aug': files('test_libvirtd_bhyve.aug.in'),
+    'conf': files('bhyve.conf'),
+  }
 endif
