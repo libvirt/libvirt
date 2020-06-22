@@ -109,4 +109,12 @@ if conf.has('WITH_QEMU')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtqemud',
+    'c_args': [
+      '-DDAEMON_NAME="virtqemud"',
+      '-DMODULE_NAME="qemu"',
+    ],
+  }
 endif

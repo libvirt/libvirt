@@ -4,21 +4,9 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))
 
 if WITH_QEMU
-sbin_PROGRAMS += virtqemud
-
 nodist_conf_DATA += qemu/virtqemud.conf
 augeas_DATA += qemu/virtqemud.aug
 augeastest_DATA += qemu/test_virtqemud.aug
-
-virtqemud_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtqemud_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtqemud_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtqemud\"" \
-       -DMODULE_NAME="\"qemu\"" \
-       $(NULL)
-virtqemud_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtqemud_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 SYSCONF_FILES += qemu/virtqemud.sysconf
 
