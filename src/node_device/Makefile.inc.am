@@ -12,21 +12,9 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 
 
 if WITH_NODE_DEVICES
-sbin_PROGRAMS += virtnodedevd
-
 nodist_conf_DATA += node_device/virtnodedevd.conf
 augeas_DATA += node_device/virtnodedevd.aug
 augeastest_DATA += node_device/test_virtnodedevd.aug
-
-virtnodedevd_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtnodedevd_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtnodedevd_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtnodedevd\"" \
-       -DMODULE_NAME="\"nodedev\"" \
-       $(NULL)
-virtnodedevd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtnodedevd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 SYSCONF_FILES += node_device/virtnodedevd.sysconf
 

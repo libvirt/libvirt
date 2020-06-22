@@ -38,4 +38,12 @@ if conf.has('WITH_NODE_DEVICES')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtnodedevd',
+    'c_args': [
+      '-DDAEMON_NAME="virtnodedevd"',
+      '-DMODULE_NAME="nodedev"',
+    ],
+  }
 endif
