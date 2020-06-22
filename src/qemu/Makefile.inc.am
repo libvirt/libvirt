@@ -4,19 +4,6 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))
 
 if WITH_QEMU
-libvirt_driver_qemu_la_SOURCES =
-libvirt_driver_qemu_la_LIBADD = \
-	libvirt_driver_qemu_impl.la \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-mod_LTLIBRARIES += libvirt_driver_qemu.la
-libvirt_driver_qemu_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-if WITH_DTRACE_PROBES
-libvirt_driver_qemu_la_LIBADD += libvirt_qemu_probes.lo
-endif WITH_DTRACE_PROBES
-
 sbin_PROGRAMS += virtqemud
 
 nodist_conf_DATA += qemu/virtqemud.conf

@@ -96,4 +96,17 @@ if conf.has('WITH_QEMU')
       hypervisor_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_qemu',
+    'sources': [
+      qemu_dtrace_gen_objects,
+    ],
+    'link_whole': [
+      qemu_driver_impl,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif
