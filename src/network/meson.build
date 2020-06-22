@@ -19,4 +19,18 @@ if conf.has('WITH_NETWORK')
       conf_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_network',
+    'deps': [
+      dbus_dep,
+      libnl_dep,
+    ],
+    'link_whole': [
+      network_driver_impl,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif

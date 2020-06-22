@@ -10,19 +10,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 
 
 if WITH_NETWORK
-
-noinst_LTLIBRARIES += libvirt_driver_network_impl.la
-libvirt_driver_network_la_SOURCES =
-libvirt_driver_network_la_LIBADD = \
-	libvirt_driver_network_impl.la \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(LIBNL_LIBS) \
-	$(DBUS_LIBS) \
-	$(NULL)
-mod_LTLIBRARIES += libvirt_driver_network.la
-libvirt_driver_network_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
 sbin_PROGRAMS += virtnetworkd
 
 nodist_conf_DATA += network/virtnetworkd.conf
