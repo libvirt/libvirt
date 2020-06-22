@@ -1,10 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_DISK_SOURCES = \
-	storage/storage_backend_disk.h \
-	storage/storage_backend_disk.c \
-	$(NULL)
-
 STORAGE_DRIVER_RBD_SOURCES = \
 	storage/storage_backend_rbd.h \
 	storage/storage_backend_rbd.c \
@@ -127,21 +122,6 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 
 
 endif WITH_STORAGE
-
-if WITH_STORAGE_DISK
-libvirt_storage_backend_disk_la_SOURCES = $(STORAGE_DRIVER_DISK_SOURCES)
-libvirt_storage_backend_disk_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-storagebackend_LTLIBRARIES += libvirt_storage_backend_disk.la
-libvirt_storage_backend_disk_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-libvirt_storage_backend_disk_la_LIBADD = \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-endif WITH_STORAGE_DISK
 
 if WITH_STORAGE_RBD
 libvirt_storage_backend_rbd_la_SOURCES = $(STORAGE_DRIVER_RBD_SOURCES)
