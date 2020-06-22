@@ -35,4 +35,12 @@ if conf.has('WITH_BHYVE')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtbhyved',
+    'c_args': [
+      '-DDAEMON_NAME="virtbhyved"',
+      '-DMODULE_NAME="bhyve"'
+    ],
+  }
 endif

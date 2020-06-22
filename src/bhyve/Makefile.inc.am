@@ -4,21 +4,9 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(BHYVE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(BHYVE_DRIVER_SOURCES))
 
 if WITH_BHYVE
-sbin_PROGRAMS += virtbhyved
-
 nodist_conf_DATA += bhyve/virtbhyved.conf
 augeas_DATA += bhyve/virtbhyved.aug
 augeastest_DATA += bhyve/test_virtbhyved.aug
-
-virtbhyved_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtbhyved_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtbhyved_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtbhyved\"" \
-       -DMODULE_NAME="\"bhyve\"" \
-       $(NULL)
-virtbhyved_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtbhyved_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 bhyve/virtbhyved.conf: remote/libvirtd.conf.in
 	$(AM_V_GEN)$(SED) \
