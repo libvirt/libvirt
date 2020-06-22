@@ -101,17 +101,3 @@ endif WITH_QEMU
 	install-data-qemu \
 	uninstall-data-qemu \
 	$(NULL)
-
-QEMU_SHIM_SOURCES = qemu/qemu_shim.c
-
-if WITH_QEMU
-bin_PROGRAMS += virt-qemu-run
-
-virt_qemu_run_SOURCES = $(QEMU_SHIM_SOURCES)
-
-virt_qemu_run_LDADD = \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-virt_qemu_run_LDFLAGS = -export-dynamic
-endif WITH_QEMU

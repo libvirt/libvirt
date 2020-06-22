@@ -44,7 +44,6 @@ OPENRC_INIT_FILES =
 OPENRC_INIT_FILES_IN =
 OPENRC_CONF_FILES =
 SYSCONF_FILES =
-bin_PROGRAMS =
 
 COMMON_UNIT_VARS = \
 	-e 's|[@]runstatedir[@]|$(runstatedir)|g' \

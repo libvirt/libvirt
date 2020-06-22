@@ -74,6 +74,10 @@ if conf.has('WITH_DTRACE_PROBES')
   )
 endif
 
+qemu_shim_sources = files(
+  'qemu_shim.c',
+)
+
 if conf.has('WITH_QEMU')
   qemu_driver_impl = static_library(
     'virt_driver_qemu_impl',
@@ -116,5 +120,13 @@ if conf.has('WITH_QEMU')
       '-DDAEMON_NAME="virtqemud"',
       '-DMODULE_NAME="qemu"',
     ],
+  }
+
+  virt_helpers += {
+    'name': 'virt-qemu-run',
+    'sources': [
+      qemu_shim_sources
+    ],
+    'install_dir': bindir,
   }
 endif
