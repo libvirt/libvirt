@@ -16,6 +16,10 @@ stoarge_file_fs_sources = [
   'storage_file_fs.c',
 ]
 
+storage_backend_iscsi_sources = [
+  'storage_backend_iscsi.c',
+]
+
 storage_lvm_backend_sources = [
   'storage_backend_logical.c',
 ]
@@ -64,6 +68,16 @@ if conf.has('WITH_STORAGE')
       files(stoarge_file_fs_sources),
     ],
     'install_dir': storage_file_install_dir,
+  }
+endif
+
+if conf.has('WITH_STORAGE_ISCSI')
+  virt_modules += {
+    'name': 'virt_storage_backend_iscsi',
+    'sources': [
+      files(storage_backend_iscsi_sources),
+    ],
+    'install_dir': storage_backend_install_dir,
   }
 endif
 
