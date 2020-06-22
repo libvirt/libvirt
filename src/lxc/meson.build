@@ -64,4 +64,14 @@ if conf.has('WITH_LXC')
       hypervisor_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_lxc',
+    'link_whole': [
+      lxc_driver_impl_lib,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif
