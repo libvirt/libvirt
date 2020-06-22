@@ -5,21 +5,10 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(INTERFACE_DRIVER_SOURCES))
 
 if WITH_INTERFACE
-sbin_PROGRAMS += virtinterfaced
 
 nodist_conf_DATA += interface/virtinterfaced.conf
 augeas_DATA += interface/virtinterfaced.aug
 augeastest_DATA += interface/test_virtinterfaced.aug
-
-virtinterfaced_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtinterfaced_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtinterfaced_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtinterfaced\"" \
-       -DMODULE_NAME="\"interface\"" \
-       $(NULL)
-virtinterfaced_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtinterfaced_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 SYSCONF_FILES += interface/virtinterfaced.sysconf
 

@@ -26,4 +26,12 @@ if conf.has('WITH_INTERFACE')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtinterfaced',
+    'c_args': [
+      '-DDAEMON_NAME="virtinterfaced"',
+      '-DMODULE_NAME="interface"',
+    ],
+  }
 endif
