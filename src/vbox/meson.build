@@ -38,4 +38,12 @@ if conf.has('WITH_VBOX')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtvboxd',
+    'c_args': [
+      '-DDAEMON_NAME="virtvboxd"',
+      '-DMODULE_NAME="vbox"',
+    ],
+  }
 endif
