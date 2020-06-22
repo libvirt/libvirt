@@ -20,4 +20,14 @@ if conf.has('WITH_VZ')
       conf_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_vz',
+    'link_whole': [
+      vz_driver_impl,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif

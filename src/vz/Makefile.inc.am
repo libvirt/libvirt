@@ -5,15 +5,6 @@ STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(VZ_DRIVER_SOURCES))
 
 
 if WITH_VZ
-libvirt_driver_vz_la_SOURCES =
-libvirt_driver_vz_la_LIBADD = \
-	libvirt_driver_vz_impl.la \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-mod_LTLIBRARIES += libvirt_driver_vz.la
-libvirt_driver_vz_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
 sbin_PROGRAMS += virtvzd
 
 nodist_conf_DATA += vz/virtvzd.conf
