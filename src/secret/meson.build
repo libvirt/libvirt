@@ -15,4 +15,12 @@ if conf.has('WITH_SECRETS')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtsecretd',
+    'c_args': [
+      '-DDAEMON_NAME="virtsecretd"',
+      '-DMODULE_NAME="secret"',
+    ],
+  }
 endif
