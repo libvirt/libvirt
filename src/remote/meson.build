@@ -93,6 +93,16 @@ if conf.has('WITH_REMOTE')
         '-DLIBVIRTD',
       ],
     }
+
+    virt_daemons += {
+      'name': 'virtproxyd',
+      'c_args': [
+        '-DSOCK_PREFIX="libvirt"',
+        '-DDAEMON_NAME="virtproxyd"',
+        '-DWITH_IP',
+        '-DVIRTPROXYD',
+      ],
+    }
   endif
 endif
 
