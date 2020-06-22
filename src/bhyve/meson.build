@@ -25,4 +25,14 @@ if conf.has('WITH_BHYVE')
       hypervisor_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_bhyve',
+    'link_whole': [
+      bhyve_driver_impl,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif
