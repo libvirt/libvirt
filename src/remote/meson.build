@@ -82,6 +82,18 @@ if conf.has('WITH_REMOTE')
   )
 
   libvirt_libs += remote_driver_lib
+
+  if conf.has('WITH_LIBVIRTD')
+    virt_daemons += {
+      'name': 'libvirtd',
+      'c_args': [
+        '-DSOCK_PREFIX="libvirt"',
+        '-DDAEMON_NAME="libvirtd"',
+        '-DWITH_IP',
+        '-DLIBVIRTD',
+      ],
+    }
+  endif
 endif
 
 if conf.has('WITH_REMOTE')

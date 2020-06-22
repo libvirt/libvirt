@@ -62,7 +62,7 @@ OPENRC_CONF_FILES += \
 
 if WITH_LIBVIRTD
 
-sbin_PROGRAMS += libvirtd virtproxyd
+sbin_PROGRAMS += virtproxyd
 
 augeas_DATA += \
 	remote/libvirtd.aug \
@@ -78,22 +78,6 @@ nodist_conf_DATA += \
 	remote/libvirtd.conf \
 	remote/virtproxyd.conf \
 	$(NULL)
-
-libvirtd_SOURCES = $(REMOTE_DAEMON_SOURCES)
-
-nodist_libvirtd_SOURCES = $(REMOTE_DAEMON_GENERATED)
-
-libvirtd_CFLAGS = \
-	$(REMOTE_DAEMON_CFLAGS) \
-	-DSOCK_PREFIX="\"libvirt\"" \
-	-DDAEMON_NAME="\"libvirtd\"" \
-	-DWITH_IP \
-	-DLIBVIRTD \
-	$(NULL)
-
-libvirtd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-
-libvirtd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 virtproxyd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtproxyd_SOURCES = $(REMOTE_DAEMON_GENERATED)
