@@ -24,4 +24,14 @@ if conf.has('WITH_STORAGE')
       conf_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_storage',
+    'link_whole': [
+      storage_driver_impl_lib,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif

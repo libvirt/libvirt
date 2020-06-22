@@ -86,15 +86,6 @@ storagefiledir = $(libdir)/libvirt/storage-file
 storagefile_LTLIBRARIES =
 
 if WITH_STORAGE
-libvirt_driver_storage_la_SOURCES =
-libvirt_driver_storage_la_LIBADD = \
-	libvirt_driver_storage_impl.la \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-mod_LTLIBRARIES += libvirt_driver_storage.la
-libvirt_driver_storage_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
 sbin_PROGRAMS += virtstoraged
 
 nodist_conf_DATA += storage/virtstoraged.conf
