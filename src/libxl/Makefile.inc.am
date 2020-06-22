@@ -4,21 +4,10 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(LIBXL_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(LIBXL_DRIVER_SOURCES))
 
 if WITH_LIBXL
-sbin_PROGRAMS += virtxend
 
 nodist_conf_DATA += libxl/virtxend.conf
 augeas_DATA += libxl/virtxend.aug
 augeastest_DATA += libxl/test_virtxend.aug
-
-virtxend_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtxend_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtxend_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtxend\"" \
-       -DMODULE_NAME="\"libxl\"" \
-       $(NULL)
-virtxend_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtxend_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 SYSCONF_FILES += libxl/virtxend.sysconf
 

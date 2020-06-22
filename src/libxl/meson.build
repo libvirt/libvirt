@@ -36,4 +36,12 @@ if conf.has('WITH_LIBXL')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtxend',
+    'c_args': [
+      '-DDAEMON_NAME="virtxend"',
+      '-DMODULE_NAME="libxl"',
+    ],
+  }
 endif
