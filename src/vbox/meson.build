@@ -28,4 +28,14 @@ if conf.has('WITH_VBOX')
       conf_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_vbox',
+    'link_whole': [
+      vbox_driver_impl,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif
