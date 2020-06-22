@@ -33,4 +33,12 @@ if conf.has('WITH_NWFILTER')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtnwfilterd',
+    'c_args': [
+      '-DDAEMON_NAME="virtnwfilterd"',
+      '-DMODULE_NAME="nwfilter"',
+    ],
+  }
 endif

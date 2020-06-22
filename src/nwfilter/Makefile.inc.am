@@ -11,21 +11,9 @@ if WITH_NWFILTER
 nwfilterxmldir = $(sysconfdir)/libvirt/nwfilter
 nwfilterxml_DATA = $(NWFILTER_XML_FILES)
 
-sbin_PROGRAMS += virtnwfilterd
-
 nodist_conf_DATA += nwfilter/virtnwfilterd.conf
 augeas_DATA += nwfilter/virtnwfilterd.aug
 augeastest_DATA += nwfilter/test_virtnwfilterd.aug
-
-virtnwfilterd_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtnwfilterd_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtnwfilterd_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtnwfilterd\"" \
-       -DMODULE_NAME="\"nwfilter\"" \
-       $(NULL)
-virtnwfilterd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtnwfilterd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 SYSCONF_FILES += nwfilter/virtnwfilterd.sysconf
 
