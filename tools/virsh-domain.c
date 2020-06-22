@@ -13559,7 +13559,7 @@ virshEventMetadataChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'metdata-change' for domain %s: %s %s\n"),
+    virBufferAsprintf(&buf, _("event 'metadata-change' for domain %s: %s %s\n"),
                       virDomainGetName(dom),
                       UNKNOWNSTR(virshEventMetadataChangeTypeTypeToString(type)),
                       NULLSTR(nsuri));
