@@ -11,13 +11,6 @@ if WITH_NWFILTER
 nwfilterxmldir = $(sysconfdir)/libvirt/nwfilter
 nwfilterxml_DATA = $(NWFILTER_XML_FILES)
 
-libvirt_driver_nwfilter_la_SOURCES =
-libvirt_driver_nwfilter_la_LIBADD = \
-	libvirt_driver_nwfilter_impl.la \
-	libvirt.la
-mod_LTLIBRARIES += libvirt_driver_nwfilter.la
-libvirt_driver_nwfilter_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
 sbin_PROGRAMS += virtnwfilterd
 
 nodist_conf_DATA += nwfilter/virtnwfilterd.conf

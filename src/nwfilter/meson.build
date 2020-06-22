@@ -23,4 +23,14 @@ if conf.has('WITH_NWFILTER')
       conf_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_nwfilter',
+    'link_whole': [
+      nwfilter_driver_impl,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif
