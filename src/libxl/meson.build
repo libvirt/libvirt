@@ -26,4 +26,14 @@ if conf.has('WITH_LIBXL')
       hypervisor_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_libxl',
+    'link_whole': [
+      libxl_driver_imp,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif

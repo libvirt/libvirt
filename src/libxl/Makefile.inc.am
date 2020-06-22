@@ -4,15 +4,6 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(LIBXL_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(LIBXL_DRIVER_SOURCES))
 
 if WITH_LIBXL
-libvirt_driver_libxl_la_SOURCES =
-libvirt_driver_libxl_la_LIBADD = \
-	libvirt_driver_libxl_impl.la \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-mod_LTLIBRARIES += libvirt_driver_libxl.la
-libvirt_driver_libxl_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
 sbin_PROGRAMS += virtxend
 
 nodist_conf_DATA += libxl/virtxend.conf
