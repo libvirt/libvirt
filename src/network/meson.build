@@ -33,4 +33,12 @@ if conf.has('WITH_NETWORK')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtnetworkd',
+    'c_args': [
+      '-DDAEMON_NAME="virtnetworkd"',
+      '-DMODULE_NAME="network"',
+    ],
+  }
 endif

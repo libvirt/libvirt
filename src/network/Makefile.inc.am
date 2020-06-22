@@ -10,21 +10,9 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 
 
 if WITH_NETWORK
-sbin_PROGRAMS += virtnetworkd
-
 nodist_conf_DATA += network/virtnetworkd.conf
 augeas_DATA += network/virtnetworkd.aug
 augeastest_DATA += network/test_virtnetworkd.aug
-
-virtnetworkd_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtnetworkd_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtnetworkd_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtnetworkd\"" \
-       -DMODULE_NAME="\"network\"" \
-       $(NULL)
-virtnetworkd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtnetworkd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 SYSCONF_FILES += network/virtnetworkd.sysconf
 
