@@ -1,10 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_LVM_SOURCES = \
-	storage/storage_backend_logical.h \
-	storage/storage_backend_logical.c \
-	$(NULL)
-
 STORAGE_DRIVER_ISCSI_SOURCES = \
 	storage/storage_backend_iscsi.h \
 	storage/storage_backend_iscsi.c \
@@ -152,21 +147,6 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 
 
 endif WITH_STORAGE
-
-if WITH_STORAGE_LVM
-libvirt_storage_backend_logical_la_SOURCES = $(STORAGE_DRIVER_LVM_SOURCES)
-libvirt_storage_backend_logical_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-storagebackend_LTLIBRARIES += libvirt_storage_backend_logical.la
-libvirt_storage_backend_logical_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-libvirt_storage_backend_logical_la_LIBADD = \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-endif WITH_STORAGE_LVM
 
 if WITH_STORAGE_ISCSI
 libvirt_storage_backend_iscsi_la_SOURCES = $(STORAGE_DRIVER_ISCSI_SOURCES)
