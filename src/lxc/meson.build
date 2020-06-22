@@ -74,4 +74,12 @@ if conf.has('WITH_LXC')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtlxcd',
+    'c_args': [
+      '-DDAEMON_NAME="virtlxcd"',
+      '-DMODULE_NAME="lxc"',
+    ],
+  }
 endif

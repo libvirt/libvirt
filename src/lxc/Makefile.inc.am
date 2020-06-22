@@ -48,21 +48,9 @@ BUILT_SOURCES += $(LXC_GENERATED)
 
 if WITH_LXC
 
-sbin_PROGRAMS += virtlxcd
-
 nodist_conf_DATA += lxc/virtlxcd.conf
 augeas_DATA += lxc/virtlxcd.aug
 augeastest_DATA += lxc/test_virtlxcd.aug
-
-virtlxcd_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtlxcd_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtlxcd_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtlxcd\"" \
-       -DMODULE_NAME="\"lxc\"" \
-       $(NULL)
-virtlxcd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtlxcd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 SYSCONF_FILES += lxc/virtlxcd.sysconf
 
