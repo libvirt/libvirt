@@ -8,6 +8,12 @@ storage_driver_sources = [
   storage_driver_backend_sources,
 ]
 
+storage_backend_fs_sources = [
+  'storage_backend_fs.c',
+]
+
+storage_backend_install_dir = libdir / 'libvirt' / 'storage-backend'
+
 if conf.has('WITH_STORAGE')
   storage_driver_impl_lib = static_library(
     'virt_storage_driver_impl',
@@ -33,5 +39,13 @@ if conf.has('WITH_STORAGE')
     'link_args': [
       libvirt_no_undefined,
     ],
+  }
+
+  virt_modules += {
+    'name': 'virt_storage_backend_fs',
+    'sources': [
+      files(storage_backend_fs_sources),
+    ],
+    'install_dir': storage_backend_install_dir,
   }
 endif

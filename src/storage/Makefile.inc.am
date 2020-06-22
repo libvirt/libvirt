@@ -1,10 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_FS_SOURCES = \
-	storage/storage_backend_fs.h \
-	storage/storage_backend_fs.c \
-	$(NULL)
-
 STORAGE_FILE_FS_SOURCES = \
 	storage/storage_file_fs.h \
 	storage/storage_file_fs.c \
@@ -79,7 +74,6 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 
-storagebackenddir = $(libdir)/libvirt/storage-backend
 storagebackend_LTLIBRARIES =
 
 storagefiledir = $(libdir)/libvirt/storage-file
@@ -162,19 +156,6 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtstoraged/' \
 		> $@ || rm -f $@
 
-
-libvirt_storage_backend_fs_la_SOURCES = $(STORAGE_DRIVER_FS_SOURCES)
-libvirt_storage_backend_fs_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-storagebackend_LTLIBRARIES += libvirt_storage_backend_fs.la
-libvirt_storage_backend_fs_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-libvirt_storage_backend_fs_la_LIBADD = \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
 
 libvirt_storage_file_fs_la_SOURCES = $(STORAGE_FILE_FS_SOURCES)
 libvirt_storage_file_fs_la_CFLAGS = \
