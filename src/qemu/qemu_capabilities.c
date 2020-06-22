@@ -5737,8 +5737,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
     virArch hostarch = virArchFromHost();
     virArch arch = hostarch;
     virDomainVirtType capsType;
-    virQEMUCapsPtr qemuCaps = NULL;
-    virQEMUCapsPtr ret = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
     virArch arch_from_caps;
     g_autofree char *probedbinary = NULL;
 
@@ -5746,14 +5745,14 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
         (virttype = virDomainVirtTypeFromString(virttypeStr)) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown virttype: %s"), virttypeStr);
-        goto cleanup;
+        return NULL;
     }
 
     if (archStr &&
         (arch = virArchFromString(archStr)) == VIR_ARCH_NONE) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown architecture: %s"), archStr);
-        goto cleanup;
+        return NULL;
     }
 
     if (!binary) {
@@ -5762,7 +5761,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
     }
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(cache, binary)))
-        goto cleanup;
+        return NULL;
 
     arch_from_caps = virQEMUCapsGetArch(qemuCaps);
 
@@ -5776,7 +5775,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
                          "match given architecture '%s'"),
                        virArchToString(arch_from_caps),
                        virArchToString(arch));
-        goto cleanup;
+        return NULL;
     }
 
     capsType = virQEMUCapsGetVirtType(qemuCaps);
@@ -5788,7 +5787,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("KVM is not supported by '%s' on this host"),
                        binary);
-        goto cleanup;
+        return NULL;
     }
 
     if (machine) {
@@ -5799,7 +5798,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("the machine '%s' is not supported by emulator '%s'"),
                            machine, binary);
-            goto cleanup;
+            return NULL;
         }
     } else {
         machine = virQEMUCapsGetPreferredMachine(qemuCaps, virttype);
@@ -5812,11 +5811,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
     if (retMachine)
         *retMachine = machine;
 
-    ret = g_steal_pointer(&qemuCaps);
-
- cleanup:
-    virObjectUnref(qemuCaps);
-    return ret;
+    return g_steal_pointer(&qemuCaps);
 }
 
 bool
