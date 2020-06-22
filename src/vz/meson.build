@@ -30,4 +30,12 @@ if conf.has('WITH_VZ')
       libvirt_no_undefined,
     ],
   }
+
+  virt_daemons += {
+    'name': 'virtvzd',
+    'c_args': [
+      '-DDAEMON_NAME="virtvzd"',
+      '-DMODULE_NAME="vz"',
+    ],
+  }
 endif

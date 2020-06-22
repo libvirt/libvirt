@@ -5,21 +5,9 @@ STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(VZ_DRIVER_SOURCES))
 
 
 if WITH_VZ
-sbin_PROGRAMS += virtvzd
-
 nodist_conf_DATA += vz/virtvzd.conf
 augeas_DATA += vz/virtvzd.aug
 augeastest_DATA += vz/test_virtvzd.aug
-
-virtvzd_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodist_virtvzd_SOURCES = $(REMOTE_DAEMON_GENERATED)
-virtvzd_CFLAGS = \
-       $(REMOTE_DAEMON_CFLAGS) \
-       -DDAEMON_NAME="\"virtvzd\"" \
-       -DMODULE_NAME="\"vz\"" \
-       $(NULL)
-virtvzd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
-virtvzd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 SYSCONF_FILES += vz/virtvzd.sysconf
 
