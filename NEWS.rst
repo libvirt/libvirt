@@ -41,6 +41,12 @@ v6.5.0 (unreleased)
     time. This device is supported only for pSeries guests via the new
     'spapr-tpm-proxy' model of the TPM 'passthrough' backend.
 
+  * virhook: Support hooks placed in several files
+
+    Running all scripts from directory /etc/libvirt/hooks/<driver>.d in
+    alphabetical order. Hook script in old place will be executed
+    as first for backward compatibility.
+
 * **Improvements**
 
 * **Bug fixes**
