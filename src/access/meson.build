@@ -112,3 +112,10 @@ access_dep = declare_dependency(
 )
 
 generated_sym_files += access_gen_sym
+
+test(
+  'check-aclperms',
+  python3_prog,
+  args: [ check_aclperms_prog.path(), access_perm_h, files('viraccessperm.c') ],
+  env: runutf8,
+)

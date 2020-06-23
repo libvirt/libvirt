@@ -87,13 +87,8 @@ else !WITH_REMOTE
 check-protocol:
 endif !WITH_REMOTE
 
-check-aclperms:
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-aclperms.py \
-		$(srcdir)/access/viraccessperm.h \
-		$(srcdir)/access/viraccessperm.c
-
 check-local: check-protocol \
-	check-aclperms check-admin
+	check-admin
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 
