@@ -806,7 +806,7 @@ qemuBackupBegin(virDomainObjPtr vm,
         ignore_value(qemuDomainObjExitMonitor(priv->driver, vm));
     }
 
-    if (ret < 0 && !job_started)
+    if (ret < 0 && !job_started && priv->backup)
         def = g_steal_pointer(&priv->backup);
 
     if (ret == 0)
