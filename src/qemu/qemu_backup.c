@@ -482,7 +482,7 @@ qemuBackupDiskStarted(virDomainObjPtr vm,
     for (i = 0; i < ndd; i++) {
         dd[i].started = true;
         dd[i].backupdisk->state = VIR_DOMAIN_BACKUP_DISK_STATE_RUNNING;
-        qemuBlockJobStarted(dd->blockjob, vm);
+        qemuBlockJobStarted(dd[i].blockjob, vm);
     }
 }
 
