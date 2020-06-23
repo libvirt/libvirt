@@ -22,7 +22,7 @@ AC_DEFUN([LIBVIRT_ARG_SANLOCK],[
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
-  LIBVIRT_CHECK_LIB([SANLOCK], [sanlock_client], [sanlock_init], [sanlock.h])
+  LIBVIRT_CHECK_PKG([SANLOCK], [libsanlock_client], [3.2.4])
 
   if test "x$with_sanlock" = "xyes" ; then
     AC_CHECK_DECLS([SANLK_INQ_WAIT], [sanlock_inq_wait=1], [sanlock_inq_wait=0], [[
