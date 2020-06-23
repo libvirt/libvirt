@@ -53,8 +53,7 @@ static const char *(*real_selinux_lxc_contexts_path)(void);
 #endif
 
 static struct selabel_handle *(*real_selabel_open)(unsigned int backend,
-                                                  VIR_SELINUX_OPEN_CONST
-                                                  struct selinux_opt *opts,
+                                                  const struct selinux_opt *opts,
                                                   unsigned nopts);
 static void (*real_selabel_close)(struct selabel_handle *handle);
 static int (*real_selabel_lookup_raw)(struct selabel_handle *handle,
@@ -288,7 +287,7 @@ const char *selinux_lxc_contexts_path(void)
 
 struct selabel_handle *
 selabel_open(unsigned int backend,
-             VIR_SELINUX_OPEN_CONST struct selinux_opt *opts,
+             const struct selinux_opt *opts,
              unsigned nopts)
 {
     char *fake_handle;
