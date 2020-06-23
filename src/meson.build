@@ -901,6 +901,17 @@ test(
 )
 
 test(
+  'check-admin-symsorting',
+  python3_prog,
+  args: [
+    check_symsorting_prog.path(),
+    meson.current_source_dir(),
+    libvirt_admin_private_syms,
+  ],
+  env: runutf8,
+)
+
+test(
   'check-drivername',
   python3_prog,
   args: [

@@ -1,13 +1,7 @@
 # vim: filetype=automake
 
-ADMIN_SYM_FILES = $(srcdir)/admin/libvirt_admin_private.syms
-
-check-admin-symsorting:
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-symsorting.py \
-		$(srcdir) $(ADMIN_SYM_FILES)
-
 check-admin-drivername:
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-drivername.py \
 		$(srcdir)/admin/libvirt_admin_public.syms
 
-check-admin: check-admin-symsorting check-admin-drivername
+check-admin: check-admin-drivername
