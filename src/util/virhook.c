@@ -222,6 +222,57 @@ virHookPresent(int driver)
 }
 
 /**
+ * virRunScript:
+ * @path: the script path
+ * @id: an id for the object '-' if non available for example on daemon hooks
+ * @op: the operation on the id
+ * @subop: a sub_operation, currently unused
+ * @extra: optional string information
+ * @input: extra input given to the script on stdin
+ * @output: optional address of variable to store malloced result buffer
+ *
+ * Implement a execution of script. This is a synchronous call, we wait for
+ * execution completion. If @output is non-NULL, *output is guaranteed to be
+ * allocated after successful virRunScript, and is best-effort allocated after
+ * failed virRunScript; the caller is responsible for freeing *output.
+ *
+ * Returns: 0 if the execution succeeded, -1 if script returned an error
+ */
+static int
+virRunScript(const char *path,
+             const char *id,
+             const char *op,
+             const char *subop,
+             const char *extra,
+             const char *input,
+             char **output)
+{
+    int ret;
+    g_autoptr(virCommand) cmd = NULL;
+
+    VIR_DEBUG("Calling hook %s id=%s op=%s subop=%s extra=%s",
+              path, id, op, subop, extra);
+
+    cmd = virCommandNewArgList(path, id, op, subop, extra, NULL);
+
+    virCommandAddEnvPassCommon(cmd);
+
+    if (input)
+        virCommandSetInputBuffer(cmd, input);
+    if (output)
+        virCommandSetOutputBuffer(cmd, output);
+
+    ret = virCommandRun(cmd, NULL);
+    if (ret < 0) {
+        /* Convert INTERNAL_ERROR into known error.  */
+        virReportError(VIR_ERR_HOOK_SCRIPT_FAILED, "%s",
+                       virGetLastErrorMessage());
+    }
+
+    return ret;
+}
+
+/**
  * virHookCall:
  * @driver: the driver number (from virHookDriver enum)
  * @id: an id for the object '-' if non available for example on daemon hooks
@@ -249,7 +300,6 @@ virHookCall(int driver,
             const char *input,
             char **output)
 {
-    int ret;
     g_autofree char *path = NULL;
     g_autoptr(virCommand) cmd = NULL;
     const char *drvstr;
@@ -318,24 +368,6 @@ virHookCall(int driver,
         return -1;
     }
 
-    VIR_DEBUG("Calling hook opstr=%s subopstr=%s extra=%s",
-              opstr, subopstr, extra);
-
-    cmd = virCommandNewArgList(path, id, opstr, subopstr, extra, NULL);
-
-    virCommandAddEnvPassCommon(cmd);
-
-    if (input)
-        virCommandSetInputBuffer(cmd, input);
-    if (output)
-        virCommandSetOutputBuffer(cmd, output);
-
-    ret = virCommandRun(cmd, NULL);
-    if (ret < 0) {
-        /* Convert INTERNAL_ERROR into known error.  */
-        virReportError(VIR_ERR_HOOK_SCRIPT_FAILED, "%s",
-                       virGetLastErrorMessage());
-    }
-
-    return ret;
+    return virRunScript(path, id, opstr, subopstr, extra,
+                        input, output);
 }
