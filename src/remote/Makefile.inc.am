@@ -2,24 +2,6 @@
 
 if WITH_LIBVIRTD
 
-if WITH_SYSCTL
-# Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
-# /usr/lib/sysctl.d/ even when libdir is /usr/lib64
-sysctldir = $(prefix)/lib/sysctl.d
-
-install-sysctl:
-	$(MKDIR_P) $(DESTDIR)$(sysctldir)
-	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.sysctl \
-	  $(DESTDIR)$(sysctldir)/60-libvirtd.conf
-
-uninstall-sysctl:
-	rm -f $(DESTDIR)$(sysctldir)/60-libvirtd.conf
-	rmdir $(DESTDIR)$(sysctldir) || :
-
-INSTALL_DATA_LOCAL += install-sysctl
-UNINSTALL_LOCAL += uninstall-sysctl
-endif WITH_SYSCTL
-
 if WITH_POLKIT
 polkitdir = $(datadir)/polkit-1
 polkitactionsdir = $(polkitdir)/actions

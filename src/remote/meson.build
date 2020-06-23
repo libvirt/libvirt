@@ -236,6 +236,16 @@ if conf.has('WITH_REMOTE')
         rename: [ name ],
       )
     endforeach
+
+    if conf.has('WITH_SYSCTL')
+      # Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
+      # /usr/lib/sysctl.d/ even when libdir is /usr/lib64
+      install_data(
+        'libvirtd.sysctl',
+        install_dir: prefix / 'lib' / 'sysctl.d',
+        rename: [ '60-libvirtd.conf' ],
+      )
+    endif
   endif
 endif
 
