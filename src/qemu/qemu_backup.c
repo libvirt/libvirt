@@ -124,25 +124,24 @@ qemuBackupDiskDataCleanupOne(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (dd->started)
-        return;
+    if (!dd->started) {
+        if (dd->added) {
+            qemuDomainObjEnterMonitor(priv->driver, vm);
+            qemuBlockStorageSourceAttachRollback(priv->mon, dd->crdata->srcdata[0]);
+            ignore_value(qemuDomainObjExitMonitor(priv->driver, vm));
+        }
 
-    if (dd->added) {
-        qemuDomainObjEnterMonitor(priv->driver, vm);
-        qemuBlockStorageSourceAttachRollback(priv->mon, dd->crdata->srcdata[0]);
-        ignore_value(qemuDomainObjExitMonitor(priv->driver, vm));
-    }
+        if (dd->created) {
+            if (virStorageFileUnlink(dd->store) < 0)
+                VIR_WARN("Unable to remove just-created %s", NULLSTR(dd->store->path));
+        }
 
-    if (dd->created) {
-        if (virStorageFileUnlink(dd->store) < 0)
-            VIR_WARN("Unable to remove just-created %s", NULLSTR(dd->store->path));
+        if (dd->labelled)
+            qemuDomainStorageSourceAccessRevoke(priv->driver, vm, dd->store);
     }
 
     if (dd->initialized)
         virStorageFileDeinit(dd->store);
-
-    if (dd->labelled)
-        qemuDomainStorageSourceAccessRevoke(priv->driver, vm, dd->store);
 
     if (dd->blockjob)
         qemuBlockJobStartupFinalize(vm, dd->blockjob);
