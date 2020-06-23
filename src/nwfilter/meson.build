@@ -64,4 +64,6 @@ if conf.has('WITH_NWFILTER')
     'name': 'virtnwfilterd',
     'file': files('virtnwfilterd.sysconf'),
   }
+
+  subdir('xml')
 endif
