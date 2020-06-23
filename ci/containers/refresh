@@ -28,7 +28,8 @@ do
     libvirt-debian-*)
         for cross in aarch64 armv6l armv7l i686 mips mips64el mipsel ppc64le s390x
         do
-            if test "$host" = "libvirt-debian-9" && test "$cross" = "i686"
+            if test "$host-cross-$cross" = "libvirt-debian-9-cross-i686" ||
+               test "$host-cross-$cross" = "libvirt-debian-sid-cross-mips"
             then
                 continue
             fi

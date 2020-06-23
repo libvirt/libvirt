@@ -291,11 +291,6 @@ i686-debian-sid-container:
   variables:
     NAME: debian-sid-cross-i686
 
-mips-debian-sid-container:
-  <<: *container_optional_job_definition
-  variables:
-    NAME: debian-sid-cross-mips
-
 mips64el-debian-sid-container:
   <<: *container_optional_job_definition
   variables:
