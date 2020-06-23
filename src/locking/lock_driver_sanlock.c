@@ -361,18 +361,12 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriverPtr driver)
 #endif
     if (rv < 0) {
         if (-rv == EINPROGRESS && --retries) {
-#ifdef HAVE_SANLK_INQ_WAIT
             /* we have this function which blocks until lockspace change the
              * state. It returns 0 if lockspace has been added, -ENOENT if it
              * hasn't. */
             VIR_DEBUG("Inquiring lockspace");
             if (sanlock_inq_lockspace(&ls, SANLK_INQ_WAIT) < 0)
                 VIR_DEBUG("Unable to inquire lockspace");
-#else
-            /* fall back to polling */
-            VIR_DEBUG("Sleeping for %dms", LOCKSPACE_SLEEP);
-            g_usleep(LOCKSPACE_SLEEP * 1000);
-#endif
             VIR_DEBUG("Retrying to add lockspace (left %d)", retries);
             goto retry;
         }

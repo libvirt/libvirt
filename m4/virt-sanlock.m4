@@ -25,15 +25,6 @@ AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
   LIBVIRT_CHECK_PKG([SANLOCK], [libsanlock_client], [3.2.4])
 
   if test "x$with_sanlock" = "xyes" ; then
-    AC_CHECK_DECLS([SANLK_INQ_WAIT], [sanlock_inq_wait=1], [sanlock_inq_wait=0], [[
-      #include <stdint.h>
-      #include <sanlock_admin.h>
-    ]])
-    if test sanlock_inq_wait = 1; then
-      AC_DEFINE_UNQUOTED([HAVE_SANLK_INQ_WAIT], 1,
-        [whether sanlock supports SANLK_INQ_WAIT])
-    fi
-
     old_cppflags="$CPPFLAGS"
     old_libs="$LIBS"
     CPPFLAGS="$CPPFLAGS $SANLOCK_CFLAGS"
