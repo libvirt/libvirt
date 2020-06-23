@@ -6180,7 +6180,7 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
     case VIR_DOMAIN_IOMMU_MODEL_INTEL: {
         g_auto(virBuffer) opts = VIR_BUFFER_INITIALIZER;
 
-        /* qemuDomainDeviceDefValidateIOMMU() already made sure we have
+        /* qemuValidateDomainDeviceDefIOMMU() already made sure we have
          * one of QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU:
          * here we handle the former case, while the latter is taken care
          * of in qemuBuildMachineCommandLine() */
@@ -6833,7 +6833,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     if (def->iommu) {
         switch (def->iommu->model) {
         case VIR_DOMAIN_IOMMU_MODEL_INTEL:
-            /* qemuDomainDeviceDefValidateIOMMU() already made sure we have
+            /* qemuValidateDomainDeviceDefIOMMU() already made sure we have
              * one of QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU:
              * here we handle the latter case, while the former is taken care
              * of in qemuBuildIOMMUCommandLine() */
