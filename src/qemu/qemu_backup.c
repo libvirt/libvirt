@@ -148,6 +148,7 @@ qemuBackupDiskDataCleanupOne(virDomainObjPtr vm,
 
     qemuBlockStorageSourceChainDataFree(dd->crdata);
     virObjectUnref(dd->terminator);
+    g_free(dd->incrementalBitmap);
 }
 
 
