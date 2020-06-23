@@ -36,6 +36,9 @@
       <li>If your installation of libvirt has instead been compiled from
           source, it is likely to be
           <code>/usr/local/etc/libvirt/hooks/</code>.</li>
+      <li><span class="since">Since 6.5.0</span>, you can also place several
+          hook scripts in the directories
+          <code>/etc/libvirt/hooks/&lt;driver&gt;.d/</code>.</li>
     </ul>
     <p>To use hook scripts, you will need to create this <code>hooks</code>
        directory manually, place the desired hook scripts inside, then make
@@ -59,6 +62,10 @@
           Executed when a network is started or stopped or an
           interface is plugged/unplugged to/from the network</li>
     </ul>
+    <p><span class="since">Since 6.5.0</span>, you can also have
+       several scripts with any name in the directories
+       <code>/etc/libvirt/hooks/&lt;driver&gt;.d/</code>. They are
+       executed in alphabetical order after main script.</p>
     <br/>
 
     <h2><a id="structure">Script structure</a></h2>
@@ -191,6 +198,16 @@
         script returns failure or the output XML is not valid, restore of the
         image will be aborted. This hook may be used, e.g., to change
         location of disk images for restored domains.</li>
+      <li><span class="since">Since 6.5.0</span>, you can also place several
+        hook scripts in the directory
+        <code>/etc/libvirt/hooks/qemu.d/</code>. They are executed in
+        alphabetical order after main script. In this case each script also
+        acts as filter and can modify the domain XML and print it out on
+        its standart output. This script output is passed to standard input
+        next script in order. Empty output from any script is also identical
+        to copying the input XML without changing it.
+        In case any script returns failure common process will be aborted,
+        but all scripts from the directory will are executed.</li>
       <li><span class="since">Since 0.9.13</span>, the qemu hook script
         is also called when the libvirtd daemon restarts and reconnects
         to previously running QEMU processes. If the script fails, the
@@ -274,6 +291,16 @@
         script returns failure or the output XML is not valid, incoming
         migration will be canceled. This hook may be used, e.g., to change
         location of disk images for incoming domains.</li>
+      <li><span class="since">Since 6.5.0</span>, you can also place several
+        hook scripts in the directory
+        <code>/etc/libvirt/hooks/libxl.d/</code>. They are executed in
+        alphabetical order after main script. In this case each script also
+        acts as filter and can modify the domain XML and print it out on
+        its standart output. This script output is passed to standard input
+        next script in order. Empty output from any script is also identical
+        to copying the input XML without changing it.
+        In case any script returns failure common process will be aborted,
+        but all scripts from the directory will are executed.</li>
       <li><span class="since">Since 2.1.0</span>, the libxl hook script
         is also called when the libvirtd daemon restarts and reconnects
         to previously running Xen domains. If the script fails, the
