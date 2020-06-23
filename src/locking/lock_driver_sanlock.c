@@ -178,20 +178,10 @@ virLockManagerSanlockInitLockspace(virLockManagerSanlockDriverPtr driver,
 {
     int ret;
 
-#ifdef HAVE_SANLOCK_IO_TIMEOUT
     const int max_hosts = 0; /* defaults used in sanlock_init() implementation */
     const unsigned int lockspaceFlags = 0;
 
     ret = sanlock_write_lockspace(ls, max_hosts, lockspaceFlags, driver->io_timeout);
-#else
-    if (driver->io_timeout) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("unable to use io_timeout with this version of sanlock"));
-        return -ENOTSUP;
-    }
-
-    ret = sanlock_init(ls, NULL, 0, 0);
-#endif
     return ret;
 }
 
@@ -349,16 +339,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriverPtr driver)
      * or we can fallback to polling.
      */
  retry:
-#ifdef HAVE_SANLOCK_IO_TIMEOUT
     rv = sanlock_add_lockspace_timeout(&ls, 0, driver->io_timeout);
-#else
-    if (driver->io_timeout) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("unable to use io_timeout with this version of sanlock"));
-        goto error;
-    }
-    rv = sanlock_add_lockspace(&ls, 0);
-#endif
     if (rv < 0) {
         if (-rv == EINPROGRESS && --retries) {
             /* we have this function which blocks until lockspace change the
