@@ -30,13 +30,6 @@ AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
     CPPFLAGS="$CPPFLAGS $SANLOCK_CFLAGS"
     LIBS="$LIBS $SANLOCK_LIBS"
 
-    AC_CHECK_LIB([sanlock_client], [sanlock_killpath],
-                 [sanlock_killpath=yes], [sanlock_killpath=no])
-    if test "x$sanlock_killpath" = "xyes" ; then
-      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_KILLPATH], 1,
-        [whether Sanlock supports sanlock_killpath])
-    fi
-
     dnl Ideally, we would check for sanlock_add_lockspace_timeout here too, but
     dnl sanlock_write_lockspace has been introduced 2 releases after
     dnl sanlock_add_lockspace_timeout therefore if sanlock_write_lockspace is found
