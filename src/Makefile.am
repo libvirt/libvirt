@@ -49,7 +49,6 @@ include nwfilter/Makefile.inc.am
 include node_device/Makefile.inc.am
 include secret/Makefile.inc.am
 include storage/Makefile.inc.am
-include remote/Makefile.inc.am
 
 
 BUILT_SOURCES += $(nodist_conf_DATA)

@@ -269,4 +269,14 @@ else
   sym_files += 'libvirt_remote.syms'
 endif
 
+# This is needed for clients too, so can't wrap in
+# the WITH_LIBVIRTD conditional
+if conf.has('WITH_SASL')
+  install_data(
+    'libvirtd.sasl',
+    install_dir: sysconfdir / 'sasl2',
+    rename: [ 'libvirt.conf' ],
+  )
+endif
+
 remote_inc_dir = include_directories('.')
