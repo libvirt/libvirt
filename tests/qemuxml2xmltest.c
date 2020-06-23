@@ -529,6 +529,7 @@ mymain(void)
             QEMU_CAPS_VFIO_PCI_DISPLAY,
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_VNC);
+    DO_TEST_CAPS_LATEST("hostdev-mdev-display-ramfb");
     DO_TEST("pci-rom", NONE);
     DO_TEST("pci-rom-disabled", NONE);
     DO_TEST("pci-rom-disabled-invalid", NONE);
