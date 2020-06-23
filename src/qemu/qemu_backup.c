@@ -272,9 +272,6 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
         dd->backingStore = dd->terminator = virStorageSourceNew();
     }
 
-    if (qemuDomainStorageFileInit(priv->driver, vm, dd->store, dd->domdisk->src) < 0)
-        return -1;
-
     if (qemuDomainPrepareStorageSourceBlockdev(NULL, dd->store, priv, cfg) < 0)
         return -1;
 
@@ -410,7 +407,7 @@ qemuBackupDiskPrepareOneStorage(virDomainObjPtr vm,
             return -1;
         }
 
-        if (qemuDomainStorageFileInit(priv->driver, vm, dd->store, NULL) < 0)
+        if (qemuDomainStorageFileInit(priv->driver, vm, dd->store, dd->domdisk->src) < 0)
             return -1;
 
         dd->initialized = true;
