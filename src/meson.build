@@ -154,6 +154,7 @@ subdir('locking')
 subdir('logging')
 subdir('network')
 subdir('node_device')
+subdir('nwfilter')
 subdir('security')
 
 subdir('bhyve')
