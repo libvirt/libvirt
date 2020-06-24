@@ -32,28 +32,8 @@ AC_DEFUN([LIBVIRT_SECDRIVER_CHECK_SELINUX], [
       AC_MSG_ERROR([You must install the libselinux development package and enable SELinux with the --with-selinux=yes in order to compile libvirt --with-secdriver-selinux=yes])
     fi
   elif test "$with_secdriver_selinux" != "no"; then
-    old_CFLAGS="$CFLAGS"
-    old_LIBS="$LIBS"
-    CFLAGS="$CFLAGS $SELINUX_CFLAGS"
-    LIBS="$CFLAGS $SELINUX_LIBS"
-
-    fail=0
-    AC_CHECK_FUNC([selinux_virtual_domain_context_path], [], [fail=1])
-    AC_CHECK_FUNC([selinux_virtual_image_context_path], [], [fail=1])
-    AC_CHECK_FUNCS([selinux_lxc_contexts_path])
-    CFLAGS="$old_CFLAGS"
-    LIBS="$old_LIBS"
-
-    if test "$fail" = "1" ; then
-      if test "$with_secdriver_selinux" = "check" ; then
-        with_secdriver_selinux=no
-      else
-        AC_MSG_ERROR([You must install libselinux development package >= 2.0.82 in order to compile libvirt --with-secdriver-selinux=yes])
-      fi
-    else
-      with_secdriver_selinux=yes
-      AC_DEFINE_UNQUOTED([WITH_SECDRIVER_SELINUX], 1, [whether SELinux security driver is available])
-    fi
+    with_secdriver_selinux=yes
+    AC_DEFINE_UNQUOTED([WITH_SECDRIVER_SELINUX], 1, [whether SELinux security driver is available])
   fi
   AM_CONDITIONAL([WITH_SECDRIVER_SELINUX], [test "$with_secdriver_selinux" != "no"])
 ])

@@ -48,9 +48,7 @@ static int (*real_is_selinux_enabled)(void);
 static const char *(*real_selinux_virtual_domain_context_path)(void);
 static const char *(*real_selinux_virtual_image_context_path)(void);
 
-#ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
 static const char *(*real_selinux_lxc_contexts_path)(void);
-#endif
 
 static struct selabel_handle *(*real_selabel_open)(unsigned int backend,
                                                   const struct selinux_opt *opts,
@@ -73,9 +71,7 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT(selinux_virtual_domain_context_path);
     VIR_MOCK_REAL_INIT(selinux_virtual_image_context_path);
 
-#ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
     VIR_MOCK_REAL_INIT(selinux_lxc_contexts_path);
-#endif
 
     VIR_MOCK_REAL_INIT(selabel_open);
     VIR_MOCK_REAL_INIT(selabel_close);
@@ -273,7 +269,6 @@ const char *selinux_virtual_image_context_path(void)
     return abs_srcdir "/securityselinuxhelperdata/virtual_image_context";
 }
 
-#ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
 const char *selinux_lxc_contexts_path(void)
 {
     init_syms();
@@ -283,7 +278,6 @@ const char *selinux_lxc_contexts_path(void)
 
     return abs_srcdir "/securityselinuxhelperdata/lxc_contexts";
 }
-#endif
 
 struct selabel_handle *
 selabel_open(unsigned int backend,

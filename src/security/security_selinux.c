@@ -639,7 +639,6 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
 }
 
 
-#ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
 static int
 virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
 {
@@ -702,15 +701,6 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     virHashFree(data->mcs);
     return -1;
 }
-#else
-static int
-virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr G_GNUC_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("libselinux does not support LXC contexts path"));
-    return -1;
-}
-#endif
 
 
 static int
@@ -1018,11 +1008,9 @@ virSecuritySELinuxDriverProbe(const char *virtDriver)
     if (is_selinux_enabled() <= 0)
         return SECURITY_DRIVER_DISABLE;
 
-    if (virtDriver && STREQ(virtDriver, "LXC")) {
-#if HAVE_SELINUX_LXC_CONTEXTS_PATH
-        if (!virFileExists(selinux_lxc_contexts_path()))
-#endif
-            return SECURITY_DRIVER_DISABLE;
+    if (virtDriver && STREQ(virtDriver, "LXC") &&
+        !virFileExists(selinux_lxc_contexts_path())) {
+        return SECURITY_DRIVER_DISABLE;
     }
 
     return SECURITY_DRIVER_ENABLE;
