@@ -190,6 +190,20 @@ It's recommended to use ``--output=json`` parameter to work with a machine
 readable output rather than trying to process the human readable output by
 scripts. For processing JSON in shell the ``jq`` tool can be used.
 
+The ``qemu-img bitmap`` command allows modification of block-dirty-bitmaps of an
+offline image. It supports the following operations relevant to this document
+(see man page for full list of operations):
+
+``--add NAME``
+    Creates a new bitmap named ``NAME``. Optionally ``-g`` can be used to
+    specify granularity.
+
+``--remove NAME``
+    Deletes bitmap ``NAME``.
+
+``--merge SRCBITMAP -b SRCFILE -F SRCFILEFMT DSTBITMAP``
+    Merges bitmap ``SRCBITMAP`` from ``SRCFILE`` into ``DSTBITMAP``.
+
 Checking bitmap health
 ----------------------
 
