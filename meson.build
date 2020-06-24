@@ -1160,6 +1160,9 @@ else
   libssh2_dep = dependency('', required: false)
 endif
 
+libxml_version = '2.9.1'
+libxml_dep = dependency('libxml-2.0', version: '>=' + libxml_version)
+
 use_macvtap = false
 if not get_option('macvtap').disabled()
   if (cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_BRIDGE') and
@@ -1328,6 +1331,7 @@ libs_summary = {
   'libpcap': libpcap_dep.found(),
   'libssh': libssh_dep.found(),
   'libssh2': libssh2_dep.found(),
+  'libxml': libxml_dep.found(),
   'macvtap': conf.has('WITH_MACVTAP'),
   'readline': readline_dep.found(),
 }
