@@ -2223,6 +2223,8 @@ subdir('include')
 
 subdir('src')
 
+subdir('tools')
+
 
 # generate meson-config.h file
 configure_file(output: 'meson-config.h', configuration: conf)

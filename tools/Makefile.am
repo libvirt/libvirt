@@ -15,31 +15,11 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-AM_CPPFLAGS = \
-	-I$(top_builddir)/include -I$(top_srcdir)/include \
-	-I$(top_builddir)/src -I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/util \
-	-I$(top_srcdir) \
-	$(NULL)
-
 # We do not want to accidentally include stuff from src/
 # dir or public API dir. Specific files can
 # still be included via their path relative to the root if
 # needed
 STANDALONE_CPPFLAGS = -I$(top_srcdir)
-
-AM_CFLAGS = \
-	$(WARN_CFLAGS) \
-	$(COVERAGE_CFLAGS) \
-	$(LIBXML_CFLAGS) \
-	$(GLIB_CFLAGS) \
-	$(NULL)
-
-AM_LDFLAGS = \
-	$(RELRO_LDFLAGS) \
-	$(NO_INDIRECT_LDFLAGS) \
-	$(NO_UNDEFINED_LDFLAGS) \
-	$(NULL)
 
 ICON_FILES = \
 	libvirt_win_icon_16x16.ico \
