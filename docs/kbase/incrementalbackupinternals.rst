@@ -228,42 +228,20 @@ following rules:
 Creating external snapshots manually
 --------------------------------------
 
-To create the same topology outside of libvirt (e.g when doing snapshots offline)
-a new ``qemu-img`` which supports the ``bitmap`` subcommand is recommended. The
-following algorithm then ensures that the new image after snapshot will work
-with backups (note that ``jq`` is a JSON processor):
+To create the same topology outside of libvirt (e.g when doing snapshots
+offline) the following pseudo-algorithm ensures that the new image after
+snapshot will work with backups. ``OVERLAY`` corresponds to the new overlay
+image, ``ACTIVE`` corresponds to the topmost image of the active chain prior to
+the snapshot.
 
 ::
 
-  #!/bin/bash
+    create image OVERLAY on top of ACTIVE
 
-  # arguments
-  SNAP_IMG="vda-2.qcow2"
-  BACKING_IMG="vda-1.qcow2"
+    for each BITMAP in ACTIVE:
+        let GRANULARITY = granularity of BITMAP in ACTIVE
 
-  # constants - snapshots and bitmaps work only with qcow2
-  SNAP_FMT="qcow2"
-  BACKING_IMG_FMT="qcow2"
+        if BITMAP isn't RECORDING or is INCONSISTENT:
+            continue
 
-  # create snapshot overlay
-  qemu-img create -f "$SNAP_FMT" -F "$BACKING_IMG_FMT" -b "$BACKING_IMG" "$SNAP_IMG"
-
-  BACKING_IMG_INFO=$(qemu-img info --output=json -f "$BACKING_IMG_FMT" "$BACKING_IMG")
-  BACKING_BITMAPS=$(jq '."format-specific".data.bitmaps' <<< "$BACKING_IMG_INFO")
-
-  if [ "x$BACKING_BITMAPS" = "xnull" ]; then
-      exit 0
-  fi
-
-  for BACKING_BITMAP_ in $(jq -c '.[]' <<< "$BACKING_BITMAPS"); do
-      BITMAP_FLAGS=$(jq -c -r '.flags[]' <<< "$BACKING_BITMAP_")
-      BITMAP_NAME=$(jq -r '.name' <<< "$BACKING_BITMAP_")
-
-      if grep 'in-use' <<< "$BITMAP_FLAGS" ||
-         grep -v 'auto' <<< "$BITMAP_FLAGS"; then
-         continue
-      fi
-
-      qemu-img bitmap -f "$SNAP_FMT" "$SNAP_IMG" --add "$BITMAP_NAME"
-
-  done
+        create RECORDING bitmap named BITMAP in OVERLAY with GRANULARITY
