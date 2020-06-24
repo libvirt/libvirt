@@ -404,6 +404,12 @@ if conf.has('WITH_NETWORK')
   ]
 endif
 
+if conf.has('WITH_NODE_DEVICES')
+  tests += [
+    { 'name': 'nodedevmdevctltest', 'link_with': [ node_device_driver_impl ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

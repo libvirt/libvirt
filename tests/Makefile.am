@@ -99,10 +99,6 @@ test_helpers += nsslinktest nssguestlinktest
 test_programs += nsstest nssguesttest
 endif WITH_NSS
 
-if WITH_NODE_DEVICES
-test_programs += nodedevmdevctltest
-endif WITH_NODE_DEVICES
-
 test_scripts =
 libvirtd_test_scripts = \
 	libvirtd-fail \
@@ -387,16 +383,6 @@ storagepoolcapstest_SOURCES = \
         storagepoolcapstest.c testutils.h testutils.c
 storagepoolcapstest_LDADD = $(LDADDS)
 endif WITH_STORAGE
-
-if WITH_NODE_DEVICES
-nodedevmdevctltest_SOURCES = \
-	nodedevmdevctltest.c \
-	testutils.c testutils.h
-
-nodedevmdevctltest_LDADD = \
-	../src/libvirt_driver_nodedev_impl.la \
-	$(LDADDS)
-endif WITH_NODE_DEVICES
 
 virnetmessagetest_SOURCES = \
 	virnetmessagetest.c testutils.h testutils.c
