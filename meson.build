@@ -1146,6 +1146,12 @@ if host_machine.system() != 'freebsd'
   endif
 endif
 
+if not get_option('firewalld_zone').disabled() and conf.has('WITH_FIREWALLD')
+  conf.set('WITH_FIREWALLD_ZONE', 1)
+elif get_option('firewalld_zone').enabled()
+  error('You must have firewalld support enabled to enable firewalld_zone')
+endif
+
 
 # define top include directory
 
@@ -1177,6 +1183,7 @@ libs_summary = {
   'dbus': dbus_dep.found(),
   'dlopen': dlopen_dep.found(),
   'firewalld': conf.has('WITH_FIREWALLD'),
+  'firewalld-zone': conf.has('WITH_FIREWALLD_ZONE'),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
