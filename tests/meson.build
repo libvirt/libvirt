@@ -410,6 +410,23 @@ if conf.has('WITH_NODE_DEVICES')
   ]
 endif
 
+if conf.has('WITH_NSS')
+  tests += [
+    {
+      'name': 'nsstest',
+      'include': [ nss_inc_dir ],
+      'link_with': [ nss_libvirt_impl ],
+    },
+    {
+      'name': 'nssguesttest',
+      'sources': [ 'nsstest.c' ],
+      'c_args': [ '-DLIBVIRT_NSS_GUEST' ],
+      'include': [ nss_inc_dir ],
+      'link_with': [ nss_libvirt_guest_impl ],
+    },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

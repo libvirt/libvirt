@@ -96,7 +96,6 @@ endif WITH_STORAGE_FS
 
 if WITH_NSS
 test_helpers += nsslinktest nssguestlinktest
-test_programs += nsstest nssguesttest
 endif WITH_NSS
 
 test_scripts =
@@ -436,25 +435,6 @@ viridentitytest_DEPENDENCIES = libsecurityselinuxhelper.la \
 endif WITH_SELINUX
 
 if WITH_NSS
-nsstest_SOURCES = \
-	nsstest.c testutils.h testutils.c
-nsstest_CFLAGS = \
-	$(AM_CFLAGS) \
-	-I$(top_srcdir)/tools/nss
-nsstest_LDADD = \
-	$(LDADDS) \
-	../tools/nss/libnss_libvirt_impl.la
-
-nssguesttest_SOURCES = \
-	nsstest.c testutils.h testutils.c
-nssguesttest_CFLAGS = \
-	-DLIBVIRT_NSS_GUEST \
-	$(AM_CFLAGS) \
-	-I$(top_srcdir)/tools/nss
-nssguesttest_LDADD = \
-	$(LDADDS) \
-	../tools/nss/libnss_libvirt_guest_impl.la
-
 ## Intentionaly not linking with anything else.
 ## See the test source for more detailed explanation.
 nsslinktest_SOURCES = nsslinktest.c

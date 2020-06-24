@@ -88,3 +88,5 @@ nss_libvirt_guest_lib = shared_library(
   install: true,
   install_dir: libdir,
 )
+
+nss_inc_dir = include_directories('.')
