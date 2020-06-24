@@ -146,3 +146,54 @@ if host_machine.system() == 'windows'
 else
   virsh_icon_res = []
 endif
+
+executable(
+  'virsh',
+  [
+    'virsh.c',
+    'virsh-backup.c',
+    'virsh-checkpoint.c',
+    'virsh-completer.c',
+    'virsh-completer-domain.c',
+    'virsh-completer-checkpoint.c',
+    'virsh-completer-host.c',
+    'virsh-completer-interface.c',
+    'virsh-completer-network.c',
+    'virsh-completer-nodedev.c',
+    'virsh-completer-nwfilter.c',
+    'virsh-completer-pool.c',
+    'virsh-completer-secret.c',
+    'virsh-completer-snapshot.c',
+    'virsh-completer-volume.c',
+    'virsh-console.c',
+    'virsh-domain.c',
+    'virsh-domain-monitor.c',
+    'virsh-host.c',
+    'virsh-interface.c',
+    'virsh-network.c',
+    'virsh-nodedev.c',
+    'virsh-nwfilter.c',
+    'virsh-pool.c',
+    'virsh-secret.c',
+    'virsh-snapshot.c',
+    'virsh-util.c',
+    'virsh-volume.c',
+    virsh_icon_res,
+  ],
+  dependencies: [
+    tools_dep,
+    readline_dep,
+    thread_dep,
+  ],
+  link_args: [
+    coverage_flags,
+  ],
+  link_with: [
+    libvirt_lxc_lib,
+    libvirt_qemu_lib,
+    libvirt_shell_lib,
+  ],
+  install: true,
+  install_dir: bindir,
+  install_rpath: libdir,
+)

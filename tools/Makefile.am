@@ -25,7 +25,7 @@ confdir = $(sysconfdir)/libvirt
 conf_DATA =
 
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
-bin_PROGRAMS = virsh virt-admin
+bin_PROGRAMS = virt-admin
 libexec_SCRIPTS = libvirt-guests.sh
 
 if WITH_SANLOCK
@@ -53,50 +53,6 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 
 noinst_LTLIBRARIES =
 
-virsh_SOURCES = \
-		virsh.c virsh.h \
-		virsh-backup.c virsh-backup.h \
-		virsh-checkpoint.c virsh-checkpoint.h \
-		virsh-completer.c virsh-completer.h \
-		virsh-completer-domain.c virsh-completer-domain.h \
-		virsh-completer-checkpoint.c virsh-completer-checkpoint.h \
-		virsh-completer-host.c virsh-completer-host.h \
-		virsh-completer-interface.c virsh-completer-interface.h \
-		virsh-completer-network.c virsh-completer-network.h \
-		virsh-completer-nodedev.c virsh-completer-nodedev.h \
-		virsh-completer-nwfilter.c virsh-completer-nwfilter.h \
-		virsh-completer-pool.c virsh-completer-pool.h \
-		virsh-completer-secret.c virsh-completer-secret.h \
-		virsh-completer-snapshot.c virsh-completer-snapshot.h \
-		virsh-completer-volume.c virsh-completer-volume.h \
-		virsh-console.c virsh-console.h \
-		virsh-domain.c virsh-domain.h \
-		virsh-domain-monitor.c virsh-domain-monitor.h \
-		virsh-host.c virsh-host.h \
-		virsh-interface.c virsh-interface.h \
-		virsh-network.c virsh-network.h \
-		virsh-nodedev.c virsh-nodedev.h \
-		virsh-nwfilter.c virsh-nwfilter.h \
-		virsh-pool.c virsh-pool.h \
-		virsh-secret.c virsh-secret.h \
-		virsh-snapshot.c virsh-snapshot.h \
-		virsh-util.c virsh-util.h \
-		virsh-volume.c virsh-volume.h \
-		$(NULL)
-
-virsh_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(COVERAGE_LDFLAGS) \
-		$(NULL)
-virsh_LDADD = \
-		$(STATIC_BINARIES) \
-		../src/libvirt-lxc.la \
-		../src/libvirt-qemu.la \
-		libvirt_shell.la
-virsh_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(READLINE_CFLAGS)
-
 virt_admin_SOURCES = \
 		virt-admin.c virt-admin.h \
 		virt-admin-completer.c virt-admin-completer.h \
@@ -116,10 +72,6 @@ virt_admin_CFLAGS = \
 		$(AM_CFLAGS) \
 		$(READLINE_CFLAGS)
 BUILT_SOURCES =
-
-if WITH_WIN_ICON
-virsh_LDADD += virsh_win_icon.$(OBJEXT)
-endif WITH_WIN_ICON
 
 install-data-local: install-systemd install-nss \
 	install-bash-completion
