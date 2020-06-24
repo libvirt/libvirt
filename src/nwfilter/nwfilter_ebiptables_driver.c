@@ -3269,7 +3269,9 @@ ebtablesRuleInstCommand(virFirewallPtr fw,
     return ret;
 }
 
-struct ebtablesSubChainInst {
+typedef struct _ebtablesSubChainInst ebtablesSubChainInst;
+typedef ebtablesSubChainInst *ebtablesSubChainInstPtr;
+struct _ebtablesSubChainInst {
     virNWFilterChainPriority priority;
     bool incoming;
     enum l3_proto_idx protoidx;
@@ -3280,8 +3282,8 @@ struct ebtablesSubChainInst {
 static int
 ebtablesSubChainInstSort(const void *a, const void *b)
 {
-    const struct ebtablesSubChainInst **insta = (const struct ebtablesSubChainInst **)a;
-    const struct ebtablesSubChainInst **instb = (const struct ebtablesSubChainInst **)b;
+    const ebtablesSubChainInst **insta = (const ebtablesSubChainInst **)a;
+    const ebtablesSubChainInst **instb = (const ebtablesSubChainInst **)b;
 
     /* priorities are limited to range [-1000, 1000] */
     return (*insta)->priority - (*instb)->priority;
@@ -3291,7 +3293,7 @@ ebtablesSubChainInstSort(const void *a, const void *b)
 static int
 ebtablesGetSubChainInsts(virHashTablePtr chains,
                          bool incoming,
-                         struct ebtablesSubChainInst ***insts,
+                         ebtablesSubChainInstPtr **insts,
                          size_t *ninsts)
 {
     virHashKeyValuePairPtr filter_names;
@@ -3304,7 +3306,7 @@ ebtablesGetSubChainInsts(virHashTablePtr chains,
         return -1;
 
     for (i = 0; filter_names[i].key; i++) {
-        struct ebtablesSubChainInst *inst;
+        ebtablesSubChainInstPtr inst;
         enum l3_proto_idx idx = ebtablesGetProtoIdxByFiltername(
                                   filter_names[i].key);
 
@@ -3344,7 +3346,7 @@ ebiptablesApplyNewRules(const char *ifname,
     bool haveEbtables = false;
     bool haveIptables = false;
     bool haveIp6tables = false;
-    struct ebtablesSubChainInst **subchains = NULL;
+    ebtablesSubChainInstPtr *subchains = NULL;
     size_t nsubchains = 0;
     int ret = -1;
 
