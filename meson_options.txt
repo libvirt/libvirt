@@ -24,6 +24,7 @@ option('firewalld_zone', type: 'feature', value: 'auto', description: 'whether t
 option('fuse', type: 'feature', value: 'auto', description: 'fuse support')
 option('glusterfs', type: 'feature', value: 'auto', description: 'glusterfs support')
 option('hal', type: 'feature', value: 'auto', description: 'hal support')
+option('libiscsi', type: 'feature', value: 'auto', description: 'libiscsi support')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 
 

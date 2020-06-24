@@ -1081,6 +1081,9 @@ if host_machine.system() == 'freebsd'
   add_project_link_arguments('-lkvm', language: 'c')
 endif
 
+libiscsi_version = '1.18.0'
+libiscsi_dep = dependency('libiscsi', version: '>=' + libiscsi_version, required: get_option('libiscsi'))
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1221,6 +1224,7 @@ libs_summary = {
   'glusterfs': glusterfs_dep.found(),
   'gnutls': gnutls_dep.found(),
   'hal': hal_dep.found(),
+  'libiscsi': libiscsi_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
