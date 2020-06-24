@@ -18,3 +18,21 @@ tools_dep = declare_dependency(
     + libvirt_no_undefined
   ),
 )
+
+libvirt_shell_lib = static_library(
+  'virt_shell',
+  [
+    'vsh.c',
+    'vsh-table.c',
+  ],
+  dependencies: [
+    tools_dep,
+    readline_dep,
+  ],
+  link_with: [
+    libvirt_lib,
+  ],
+  link_args: [
+    coverage_flags,
+  ],
+)

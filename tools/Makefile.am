@@ -64,24 +64,7 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	    -e 's|[@]localstatedir@|$(localstatedir)|' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
 
-noinst_LTLIBRARIES = libvirt_shell.la
-libvirt_shell_la_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(READLINE_CFLAGS) \
-		$(NULL)
-libvirt_shell_la_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(COVERAGE_LDFLAGS) \
-		$(NULL)
-libvirt_shell_la_LIBADD = \
-		../src/libvirt.la \
-		$(LIBXML_LIBS) \
-		$(READLINE_LIBS) \
-		$(GLIB_LIBS) \
-		$(NULL)
-libvirt_shell_la_SOURCES = \
-		vsh.c vsh.h \
-		vsh-table.c vsh-table.h
+noinst_LTLIBRARIES =
 
 virt_host_validate_SOURCES = \
 		virt-host-validate.c \
