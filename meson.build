@@ -1182,6 +1182,12 @@ if use_macvtap
   endif
 endif
 
+netcf_version = '0.1.8'
+netcf_dep = dependency('netcf', version: '>=' + netcf_version, required: get_option('netcf'))
+if netcf_dep.found()
+  conf.set('WITH_NETCF', 1)
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1333,6 +1339,7 @@ libs_summary = {
   'libssh2': libssh2_dep.found(),
   'libxml': libxml_dep.found(),
   'macvtap': conf.has('WITH_MACVTAP'),
+  'netcf': netcf_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
