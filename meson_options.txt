@@ -76,3 +76,4 @@ option('secdriver_selinux', type: 'feature', value: 'auto', description: 'use SE
 
 # storage driver options
 option('storage_dir', type: 'feature', value: 'auto', description: 'directory backand for the storage driver')
+option('storage_disk', type: 'feature', value: 'auto', description: 'GPartd Disk backend for the storage driver')
