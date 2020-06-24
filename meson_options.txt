@@ -16,6 +16,7 @@ option('audit', type: 'feature', value: 'auto', description: 'audit support')
 option('bash_completion', type: 'feature', value: 'auto', description: 'bash-completion support')
 option('bash_completion_dir', type: 'string', value: '', description: 'directory containing bash completion scripts')
 option('blkid', type: 'feature', value: 'auto', description: 'blkid support')
+option('capng', type: 'feature', value: 'auto', description: 'cap-ng support')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 
 

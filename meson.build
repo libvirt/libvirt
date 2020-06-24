@@ -990,6 +990,11 @@ if blkid_dep.found()
   conf.set('WITH_BLKID', 1)
 endif
 
+capng_dep = cc.find_library('cap-ng', required: get_option('capng'))
+if capng_dep.found()
+  conf.set('WITH_CAPNG', 1)
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1105,6 +1110,7 @@ libs_summary = {
   'audit': audit_dep.found(),
   'bash_completion': bash_completion_dep.found(),
   'blkid': blkid_dep.found(),
+  'capng': capng_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
