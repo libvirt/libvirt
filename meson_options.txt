@@ -26,6 +26,7 @@ option('glusterfs', type: 'feature', value: 'auto', description: 'glusterfs supp
 option('hal', type: 'feature', value: 'auto', description: 'hal support')
 option('libiscsi', type: 'feature', value: 'auto', description: 'libiscsi support')
 option('libpcap', type: 'feature', value: 'auto', description: 'libpcap support')
+option('libssh', type: 'feature', value: 'auto', description: 'libssh support')
 option('macvtap', type: 'feature', value: 'auto', description: 'enable macvtap device')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 

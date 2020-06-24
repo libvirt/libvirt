@@ -98,7 +98,6 @@ if test "$with_remote" = "no" ; then
   with_libvirtd=no
   with_ssh2=no
   with_sasl=no
-  with_libssh=no
 fi
 # Stateful drivers are useful only when building the daemon.
 if test "$with_libvirtd" = "no" ; then
@@ -110,7 +109,6 @@ fi
 
 # Check for compiler and library settings.
 
-LIBVIRT_ARG_LIBSSH
 LIBVIRT_ARG_LIBXML
 LIBVIRT_ARG_NETCF
 LIBVIRT_ARG_NLS
@@ -129,7 +127,6 @@ LIBVIRT_ARG_VIRTUALPORT
 LIBVIRT_ARG_WIRESHARK
 LIBVIRT_ARG_YAJL
 
-LIBVIRT_CHECK_LIBSSH
 LIBVIRT_CHECK_LIBXML
 LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NLS
@@ -426,7 +423,6 @@ LIBVIRT_RESULT_DRIVER_MODULES
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
-LIBVIRT_RESULT_LIBSSH
 LIBVIRT_RESULT_LIBXL
 LIBVIRT_RESULT_LIBXML
 LIBVIRT_RESULT_NETCF

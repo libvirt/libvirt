@@ -1127,6 +1127,29 @@ if libpcap_dep.found()
   conf.set('HAVE_LIBPCAP', 1)
 endif
 
+libssh_version = '0.7'
+if get_option('driver_remote').enabled()
+  libssh_dep = dependency('libssh', version: '>=' + libssh_version, required: get_option('libssh'))
+  if libssh_dep.found()
+    conf.set('WITH_LIBSSH', 1)
+
+    # Check if new functions exists, if not redefine them with old deprecated ones.
+    # List of [ new_function, deprecated_function ].
+    functions = [
+      [ 'ssh_get_server_publickey', 'ssh_get_publickey' ],
+      [ 'ssh_session_is_known_server', 'ssh_is_server_known' ],
+      [ 'ssh_session_update_known_hosts', 'ssh_write_knownhost' ],
+    ]
+    foreach name : functions
+      if not cc.has_function(name[0], dependencies: libssh_dep)
+        conf.set(name[0], name[1])
+      endif
+    endforeach
+  endif
+else
+  libssh_dep = dependency('', required: false)
+endif
+
 use_macvtap = false
 if not get_option('macvtap').disabled()
   if (cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_BRIDGE') and
@@ -1293,6 +1316,7 @@ libs_summary = {
   'libiscsi': libiscsi_dep.found(),
   'libnl': libnl_dep.found(),
   'libpcap': libpcap_dep.found(),
+  'libssh': libssh_dep.found(),
   'macvtap': conf.has('WITH_MACVTAP'),
   'readline': readline_dep.found(),
 }
