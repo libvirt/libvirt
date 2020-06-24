@@ -109,17 +109,18 @@ as ``base image``.
 The topmost overlay is the image which is being written to by the VM and is also
 described as the ``active`` layer or image.
 
-Handling of bitmaps
--------------------
+Handling of bitmaps during snapshots
+------------------------------------
 
-Creating an external snapshot involves adding a new layer to the backing chain
-on top of the previous chain. In this step there are no new bitmaps created by
-default, which would mean that backups become impossible after this step.
+Creating an external snapshot involves adding a overlay on top of the previously
+active image. Libvirt requires that all ``block-dirty-bitmaps`` which correspond
+to the checkpoint must be created in the new overlay before any write from the
+guest reaches the overlay to continue tracking which blocks are dirtied.
 
-To prevent this from happening we need to re-create the active bitmaps in the
-new top/active layer of the backing chain which allows us to continue tracking
-the changes with same granularity as before and also allows libvirt to stitch
-together all the corresponding bitmaps to do a backup across snapshots.
+Since there are no new bitmaps created by ``qemu`` or ``qemu-img`` by default
+when creating an overlay, we need to re-create the appropriate bitmaps
+(see below) in the new overlay based on the previously active bitmaps in the
+active image. The new bitmaps are created with the same granularity.
 
 After taking a snapshot of the ``vda`` disk from the example above placed into
 ``vda-2.qcow2`` the following topology will be created:
