@@ -1110,6 +1110,23 @@ if libparted_dep.found()
   endif
 endif
 
+libpcap_version = '1.5.0'
+libpcap_dep = dependency('libpcap', version: '>=' + libpcap_version, required: false)
+if not libpcap_dep.found()
+  pcap_config_prog = find_program('pcap-config', required: get_option('libpcap'))
+  if pcap_config_prog.found()
+    pcap_args = run_command(pcap_config_prog, '--cflags').stdout().strip().split()
+    pcap_libs = run_command(pcap_config_prog, '--libs').stdout().strip().split()
+    libpcap_dep = declare_dependency(
+      compile_args: pcap_args,
+      link_args: pcap_libs,
+    )
+  endif
+endif
+if libpcap_dep.found()
+  conf.set('HAVE_LIBPCAP', 1)
+endif
+
 use_macvtap = false
 if not get_option('macvtap').disabled()
   if (cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_BRIDGE') and
@@ -1275,6 +1292,7 @@ libs_summary = {
   'hal': hal_dep.found(),
   'libiscsi': libiscsi_dep.found(),
   'libnl': libnl_dep.found(),
+  'libpcap': libpcap_dep.found(),
   'macvtap': conf.has('WITH_MACVTAP'),
   'readline': readline_dep.found(),
 }
