@@ -1188,6 +1188,44 @@ if netcf_dep.found()
   conf.set('WITH_NETCF', 1)
 endif
 
+have_gnu_gettext_tools = false
+if not get_option('nls').disabled()
+  have_gettext = cc.has_function('gettext')
+  if not have_gettext
+    intl_lib = cc.find_library('intl', required: false)
+    have_gettext = intl_lib.found()
+    if have_gettext
+      add_project_link_arguments('-lintl', language: 'c')
+    endif
+  endif
+  if not have_gettext and get_option('nls').enabled()
+    error('gettext() is required to build libvirt')
+  endif
+
+  if cc.has_header('libintl.h')
+    conf.set('HAVE_LIBINTL_H', 1)
+  elif get_option('nls').enabled()
+    error('libintl.h is required to build libvirt')
+  endif
+
+  gettext_progs = [
+    'xgettext',
+    'msgfmt',
+    'msgmerge',
+  ]
+  foreach name : gettext_progs
+    prog = find_program(name, required: false)
+    set_variable('@0@_prog'.format(name), prog)
+  endforeach
+
+  if xgettext_prog.found() and msgfmt_prog.found() and msgmerge_prog.found()
+    rc = run_command(msgfmt_prog, '--version')
+    if rc.returncode() == 0 and rc.stdout().contains('GNU gettext')
+      have_gnu_gettext_tools = true
+    endif
+  endif
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1340,6 +1378,7 @@ libs_summary = {
   'libxml': libxml_dep.found(),
   'macvtap': conf.has('WITH_MACVTAP'),
   'netcf': netcf_dep.found(),
+  'NLS': have_gnu_gettext_tools,
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
