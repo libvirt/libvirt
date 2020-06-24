@@ -152,6 +152,7 @@
 @SRCDIR@/src/qemu/qemu_conf.c
 @SRCDIR@/src/qemu/qemu_dbus.c
 @SRCDIR@/src/qemu/qemu_domain.c
+@SRCDIR@/src/qemu/qemu_domainjob.c
 @SRCDIR@/src/qemu/qemu_domain_address.c
 @SRCDIR@/src/qemu/qemu_driver.c
 @SRCDIR@/src/qemu/qemu_extdevice.c

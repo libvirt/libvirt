@@ -17,6 +17,8 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_dbus.h \
 	qemu/qemu_domain.c \
 	qemu/qemu_domain.h \
+	qemu/qemu_domainjob.c \
+	qemu/qemu_domainjob.h \
 	qemu/qemu_domain_address.c \
 	qemu/qemu_domain_address.h \
 	qemu/qemu_cgroup.c \
