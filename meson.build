@@ -1011,6 +1011,22 @@ if curl_dep.found()
   conf.set('WITH_CURL', 1)
 endif
 
+dbus_version = '1.0.0'
+dbus_dep = dependency('dbus-1', version: '>=' + dbus_version, required: get_option('dbus'))
+if dbus_dep.found()
+  conf.set('WITH_DBUS', 1)
+
+  function = 'dbus_watch_get_unix_fd'
+  if cc.has_function(function, dependencies: dbus_dep)
+    conf.set('HAVE_@0@'.format(function.to_upper()), 1)
+  endif
+
+  type = 'DBusBasicValue'
+  if cc.has_type(type, dependencies: dbus_dep, prefix: '#include <dbus/dbus.h>')
+    conf.set('HAVE_@0@'.format(type.to_upper()), 1)
+  endif
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1128,6 +1144,7 @@ libs_summary = {
   'blkid': blkid_dep.found(),
   'capng': capng_dep.found(),
   'curl': curl_dep.found(),
+  'dbus': dbus_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
