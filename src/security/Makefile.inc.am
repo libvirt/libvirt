@@ -76,7 +76,6 @@ virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
 virt_aa_helper_LDFLAGS = \
 	$(AM_LDFLAGS) \
-	$(PIE_LDFLAGS) \
 	$(NULL)
 virt_aa_helper_LDADD = \
 	libvirt.la \
@@ -91,7 +90,6 @@ virt_aa_helper_CFLAGS = \
 	-I$(top_srcdir)/src/hypervisor \
 	-I$(srcdir)/security \
 	$(AM_CFLAGS) \
-	$(PIE_CFLAGS) \
 	$(NULL)
 endif WITH_LIBVIRTD
 endif WITH_SECDRIVER_APPARMOR

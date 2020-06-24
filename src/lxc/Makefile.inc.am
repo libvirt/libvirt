@@ -198,7 +198,6 @@ nodist_libvirt_lxc_SOURCES = \
 	$(NULL)
 libvirt_lxc_LDFLAGS = \
 	$(AM_LDFLAGS) \
-	$(PIE_LDFLAGS) \
 	$(CAPNG_LIBS) \
 	$(LIBXML_LIBS) \
 	$(GLIB_LIBS) \
@@ -218,7 +217,6 @@ libvirt_lxc_CFLAGS = \
 	-I$(builddir)/rpc \
 	-I$(srcdir)/hypervisor \
 	$(AM_CFLAGS) \
-	$(PIE_CFLAGS) \
 	$(CAPNG_CFLAGS) \
 	$(LIBXML_CFLAGS) \
 	$(GLIB_CFLAGS) \

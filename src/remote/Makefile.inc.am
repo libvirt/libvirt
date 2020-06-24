@@ -41,7 +41,6 @@ REMOTE_DAEMON_CFLAGS = \
 	$(XDR_CFLAGS) \
 	$(DBUS_CFLAGS) \
 	$(LIBNL_CFLAGS) \
-	$(PIE_CFLAGS) \
 	-I$(srcdir)/access \
 	-I$(builddir)/access \
 	-I$(srcdir)/conf \
@@ -52,7 +51,6 @@ REMOTE_DAEMON_CFLAGS = \
 
 REMOTE_DAEMON_LD_FLAGS = \
 	$(AM_LDFLAGS) \
-	$(PIE_LDFLAGS) \
 	$(NO_UNDEFINED_LDFLAGS) \
 	$(NULL)
 

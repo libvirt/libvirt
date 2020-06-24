@@ -126,7 +126,6 @@ libexec_PROGRAMS += libvirt_leaseshelper
 libvirt_leaseshelper_SOURCES = $(NETWORK_LEASES_HELPER_SOURCES)
 libvirt_leaseshelper_LDFLAGS = \
 	$(AM_LDFLAGS) \
-	$(PIE_LDFLAGS) \
 	$(NULL)
 libvirt_leaseshelper_LDADD = \
 	libvirt.la \
@@ -138,7 +137,6 @@ endif WITH_DTRACE_PROBES
 
 libvirt_leaseshelper_CFLAGS = \
 	$(AM_CFLAGS) \
-	$(PIE_CFLAGS) \
 	$(NULL)
 
 INSTALL_DATA_DIRS += network

@@ -5,6 +5,7 @@ project(
     meson_version: '>= 0.54.0',
     default_options: [
         'buildtype=debugoptimized',
+        'b_pie=true',
         'c_std=gnu99',
     ],
 )

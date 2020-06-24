@@ -617,7 +617,6 @@ libexec_PROGRAMS += libvirt_iohelper
 libvirt_iohelper_SOURCES = $(UTIL_IO_HELPER_SOURCES)
 libvirt_iohelper_LDFLAGS = \
 		$(AM_LDFLAGS) \
-		$(PIE_LDFLAGS) \
 		$(NULL)
 libvirt_iohelper_LDADD = \
 		libvirt.la \
@@ -629,7 +628,6 @@ endif WITH_DTRACE_PROBES
 
 libvirt_iohelper_CFLAGS = \
 		$(AM_CFLAGS) \
-		$(PIE_CFLAGS) \
 		$(NULL)
 
 

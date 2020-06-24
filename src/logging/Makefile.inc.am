@@ -81,12 +81,10 @@ virtlogd_CFLAGS = \
 		-I$(builddir)/logging \
 		-I$(builddir)/rpc \
 		$(AM_CFLAGS) \
-		$(PIE_CFLAGS) \
 		$(XDR_CFLAGS) \
 		$(NULL)
 virtlogd_LDFLAGS = \
 		$(AM_LDFLAGS) \
-		$(PIE_LDFLAGS) \
 		$(XDR_LIBS) \
 		$(NO_UNDEFINED_LDFLAGS) \
 		$(NULL)

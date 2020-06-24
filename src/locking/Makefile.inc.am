@@ -135,12 +135,10 @@ virtlockd_CFLAGS = \
 	-I$(builddir)/locking \
 	-I$(builddir)/rpc \
 	$(AM_CFLAGS) \
-	$(PIE_CFLAGS) \
 	$(XDR_CFLAGS) \
 	$(NULL)
 virtlockd_LDFLAGS = \
 	$(AM_LDFLAGS) \
-	$(PIE_LDFLAGS) \
 	$(XDR_LIBS) \
 	$(NO_UNDEFINED_LDFLAGS) \
 	$(NULL)
@@ -187,11 +185,9 @@ libvirt_sanlock_helper_SOURCES = $(LOCK_DRIVER_SANLOCK_HELPER_SOURCES)
 libvirt_sanlock_helper_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS) \
-	$(PIE_CFLAGS) \
 	$(NULL)
 libvirt_sanlock_helper_LDFLAGS = \
 	$(AM_LDFLAGS) \
-	$(PIE_LDFLAGS) \
 	$(NULL)
 libvirt_sanlock_helper_LDADD = \
 	libvirt.la \
