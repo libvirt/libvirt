@@ -1,13 +1,8 @@
 # vim: filetype=automake
 
-NETWORK_LEASES_HELPER_SOURCES = \
-	network/leaseshelper.c \
-	$(NULL)
-
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(NETWORK_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(NETWORK_DRIVER_SOURCES))
-
 
 if WITH_NETWORK
 nodist_conf_DATA += network/virtnetworkd.conf
@@ -73,23 +68,6 @@ network/test_virtnetworkd.aug: remote/test_libvirtd.aug.in \
 		-e 's/[@]DAEMON_NAME[@]/virtnetworkd/' \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtnetworkd/' \
 		> $@ || rm -f $@
-
-libexec_PROGRAMS += libvirt_leaseshelper
-libvirt_leaseshelper_SOURCES = $(NETWORK_LEASES_HELPER_SOURCES)
-libvirt_leaseshelper_LDFLAGS = \
-	$(AM_LDFLAGS) \
-	$(NULL)
-libvirt_leaseshelper_LDADD = \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-if WITH_DTRACE_PROBES
-libvirt_leaseshelper_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-libvirt_leaseshelper_CFLAGS = \
-	$(AM_CFLAGS) \
-	$(NULL)
 
 INSTALL_DATA_DIRS += network
 

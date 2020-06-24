@@ -3,6 +3,10 @@ network_driver_sources = [
   'bridge_driver_platform.c',
 ]
 
+network_leases_helper_sources = files(
+  'leaseshelper.c',
+)
+
 if conf.has('WITH_NETWORK')
   network_driver_impl = static_library(
     'virt_driver_network_impl',
@@ -39,6 +43,14 @@ if conf.has('WITH_NETWORK')
     'c_args': [
       '-DDAEMON_NAME="virtnetworkd"',
       '-DMODULE_NAME="network"',
+    ],
+  }
+
+  virt_helpers += {
+    'name': 'libvirt_leaseshelper',
+    'sources': [
+      network_leases_helper_sources,
+      dtrace_gen_objects,
     ],
   }
 endif
