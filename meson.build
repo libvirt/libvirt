@@ -587,6 +587,49 @@ cc_flags_relaxed_frame_limit = [
 ]
 
 
+# various linker checks
+
+libvirt_relro = cc.get_supported_link_arguments([
+  '-Wl,-z,relro',
+  '-Wl,-z,now',
+])
+
+libvirt_nodelete = cc.get_supported_link_arguments([
+  '-Wl,-z,nodelete',
+])
+
+libvirt_no_undefined = cc.get_supported_link_arguments([
+  '-Wl,-z,defs',
+])
+
+libvirt_no_indirect = cc.get_supported_link_arguments([
+  '-Wl,--no-copy-dt-needed-entries',
+])
+
+if host_machine.system() == 'windows'
+  version_script_flags = '-Wl,'
+else
+  test_file = '@0@/src/libvirt_qemu.syms'.format(meson.source_root())
+  if cc.has_link_argument('-Wl,--version-script=@0@'.format(test_file))
+    version_script_flags = '-Wl,--version-script='
+  elif cc.has_link_argument('-Wl,-M,')
+    version_script_flags = '-Wl,-M,'
+  else
+    error('No supported version script link argument found.')
+  endif
+endif
+
+libvirt_flat_namespace = []
+if host_machine.system() == 'darwin'
+  libvirt_flat_namespace = '-Wl,-flat_namespace'
+endif
+
+libvirt_export_dynamic = cc.first_supported_link_argument([
+  '-Wl,-export-dynamic',
+  '-Wl,-export_dynamic',
+])
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')

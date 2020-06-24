@@ -64,43 +64,6 @@ m4_ifndef([LT_INIT], [
 AM_PROG_CC_C_O
 AM_PROG_LD
 
-AC_MSG_CHECKING([for how to mark DSO non-deletable at runtime])
-LIBVIRT_NODELETE=
-`$LD --help 2>&1 | grep -- "-z nodelete" >/dev/null` && \
-    LIBVIRT_NODELETE="-Wl,-z -Wl,nodelete"
-AC_MSG_RESULT([$LIBVIRT_NODELETE])
-AC_SUBST([LIBVIRT_NODELETE])
-
-AC_MSG_CHECKING([for how to set DSO symbol versions])
-case "$host" in
-  *-*-mingw* | *-*-msvc* )
-    # mingw's ld has the --version-script parameter, but it requires a .def file
-    # instead to work properly, therefore clear --version-script here and use
-    # -Wl, to pass the .def file to the linker
-    VERSION_SCRIPT_FLAGS="-Wl,"
-    ;;
-  * )
-    VERSION_SCRIPT_FLAGS=-Wl,--version-script=
-      `$LD --help 2>&1 | grep -- --version-script >/dev/null` || \
-        VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
-    ;;
-esac
-AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
-AC_SUBST([VERSION_SCRIPT_FLAGS])
-
-dnl macOS has two-level namespaces by default.
-dnl Override it to allow symbol replacement with DYLD_INSERT_LIBRARIES
-case "$host" in
-  *-*-darwin*)
-    FLAT_NAMESPACE_FLAGS=-Wl,-flat_namespace
-    ;;
-  * )
-    FLAT_NAMESPACE_FLAGS=""
-    ;;
-esac
-AC_MSG_RESULT([$FLAT_NAMESPACE_FLAGS])
-AC_SUBST([FLAT_NAMESPACE_FLAGS])
-
 dnl Specify if we rely on ifconfig instead of iproute2 (e.g. in case
 dnl we're working on BSD)
 want_ifconfig=no
@@ -160,10 +123,6 @@ if test "$with_libvirtd" = "no" ; then
 fi
 
 # Check for compiler and library settings.
-
-LIBVIRT_LINKER_RELRO
-LIBVIRT_LINKER_NO_INDIRECT
-LIBVIRT_LINKER_NO_UNDEFINED
 
 LIBVIRT_ARG_APPARMOR
 LIBVIRT_ARG_ATTR
