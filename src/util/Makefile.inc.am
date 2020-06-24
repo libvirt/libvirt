@@ -289,7 +289,6 @@ libvirt_util_la_LIBADD = \
 	$(THREAD_LIBS) \
 	$(AUDIT_LIBS) \
 	$(DEVMAPPER_LIBS) \
-	$(LIB_CLOCK_GETTIME) \
 	$(DBUS_LIBS) \
 	$(WIN32_EXTRA_LIBS) \
 	$(LIBXML_LIBS) \

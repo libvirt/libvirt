@@ -1511,7 +1511,7 @@ endif WITH_LIBVIRTD
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
 	eventtest.c testutils.h testutils.c
-eventtest_LDADD = $(LIB_CLOCK_GETTIME) $(LDADDS)
+eventtest_LDADD = $(LDADDS)
 endif WITH_LIBVIRTD
 
 libshunload_la_SOURCES = shunloadhelper.c
