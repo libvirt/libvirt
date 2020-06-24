@@ -94,6 +94,21 @@ so, even if we obviously can't guarantee that.
 Integration with external snapshots
 ===================================
 
+External snapshot terminology
+-----------------------------
+
+External snapshots on a disk level consist of layered chains of disk images. An
+image in the chain can have a ``backing image`` placed below. Any chunk in the
+current image which was not written explicitly is transparent and if read the
+data from the backing image is passed through. An image placed on top of the
+current image is called ``overlay``.
+
+The bottommost backing image at the end of the chain is also usually described
+as ``base image``.
+
+The topmost overlay is the image which is being written to by the VM and is also
+described as the ``active`` layer or image.
+
 Handling of bitmaps
 -------------------
 
