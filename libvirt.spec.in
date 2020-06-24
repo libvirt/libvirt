@@ -269,6 +269,7 @@ BuildRequires: python36-docutils
 BuildRequires: python3-docutils
 %endif
 BuildRequires: gcc
+BuildRequires: make
 BuildRequires: git
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: perl-interpreter
