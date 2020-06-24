@@ -158,7 +158,7 @@ networkDnsmasqDefNamespaceFree(void *nsdata)
 
     virStringListFreeCount(def->options, def->noptions);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(networkDnsmasqXmlNsDef, networkDnsmasqDefNamespaceFree);
 
@@ -707,7 +707,7 @@ networkStateInitialize(bool privileged,
 
     network_driver->lockFD = -1;
     if (virMutexInit(&network_driver->lock) < 0) {
-        VIR_FREE(network_driver);
+        g_clear_pointer(&network_driver, g_free);
         goto error;
     }
 
@@ -875,18 +875,18 @@ networkStateCleanup(void)
         virPidFileRelease(network_driver->stateDir, "driver",
                           network_driver->lockFD);
 
-    VIR_FREE(network_driver->networkConfigDir);
-    VIR_FREE(network_driver->networkAutostartDir);
-    VIR_FREE(network_driver->stateDir);
-    VIR_FREE(network_driver->pidDir);
-    VIR_FREE(network_driver->dnsmasqStateDir);
-    VIR_FREE(network_driver->radvdStateDir);
+    g_free(network_driver->networkConfigDir);
+    g_free(network_driver->networkAutostartDir);
+    g_free(network_driver->stateDir);
+    g_free(network_driver->pidDir);
+    g_free(network_driver->dnsmasqStateDir);
+    g_free(network_driver->radvdStateDir);
 
     virObjectUnref(network_driver->dnsmasqCaps);
 
     virMutexDestroy(&network_driver->lock);
 
-    VIR_FREE(network_driver);
+    g_clear_pointer(&network_driver, g_free);
 
     return 0;
 }
@@ -2718,19 +2718,19 @@ networkCreateInterfacePool(virNetworkDefPtr netdef)
         for (i = 0; i < netdef->forward.nifs; i++) {
             if (netdef->forward.ifs[i].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV)
-                VIR_FREE(netdef->forward.ifs[i].device.dev);
+                g_free(netdef->forward.ifs[i].device.dev);
         }
         netdef->forward.nifs = 0;
     }
     if (netdef->forward.nifs == 0)
-        VIR_FREE(netdef->forward.ifs);
+        g_clear_pointer(&netdef->forward.ifs, g_free);
 
     for (i = 0; i < numVirtFns; i++) {
-        VIR_FREE(vfNames[i]);
-        VIR_FREE(virtFns[i]);
+        g_free(vfNames[i]);
+        g_free(virtFns[i]);
     }
-    VIR_FREE(vfNames);
-    VIR_FREE(virtFns);
+    g_free(vfNames);
+    g_free(virtFns);
     return ret;
 }
 
@@ -3166,7 +3166,7 @@ networkFindUnusedBridgeName(virNetworkObjListPtr nets,
          */
         if (!(virNetworkObjBridgeInUse(nets, newname, def->name) ||
               virNetDevExists(newname) == 1)) {
-            VIR_FREE(def->bridge); /*could contain template */
+            g_free(def->bridge); /*could contain template */
             def->bridge = g_steal_pointer(&newname);
             return 0;
         }
@@ -4276,7 +4276,7 @@ networkGetDHCPLeases(virNetworkPtr net,
     if (leases_ret) {
         for (i = 0; i < nleases; i++)
             virNetworkDHCPLeaseFree(leases_ret[i]);
-        VIR_FREE(leases_ret);
+        g_free(leases_ret);
     }
     goto cleanup;
 }
@@ -4400,7 +4400,7 @@ networkAllocatePort(virNetworkObjPtr obj,
                 return -1;
     }
     if (portprofile) {
-        VIR_FREE(port->virtPortProfile);
+        g_free(port->virtPortProfile);
         port->virtPortProfile = portprofile;
     }
 
@@ -5517,9 +5517,10 @@ networkPortSetParameters(virNetworkPortPtr port,
      * So if no average or floor is given, we free inbound/outbound
      * here which causes inbound/outbound to not be set. */
     if (!bandwidth->in->average && !bandwidth->in->floor)
-        VIR_FREE(bandwidth->in);
+        g_clear_pointer(&bandwidth->in, g_free);
+
     if (!bandwidth->out->average)
-        VIR_FREE(bandwidth->out);
+        g_clear_pointer(&bandwidth->out, g_free);
 
     if (networkUpdatePortBandwidth(obj,
                                    &portdef->mac,
