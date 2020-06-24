@@ -40,6 +40,26 @@ lxc_monitor_generated = custom_target(
   capture: true,
 )
 
+lxc_controller_sources = files(
+  'lxc_conf.c',
+  'lxc_container.c',
+  'lxc_cgroup.c',
+  'lxc_domain.c',
+  'lxc_fuse.c',
+  'lxc_controller.c',
+)
+
+lxc_controller_generated = custom_target(
+  'lxc_controller_dispatch_h',
+  input: lxc_monitor_protocol,
+  output: 'lxc_controller_dispatch.h',
+  command: [
+    gendispatch_prog, '--mode=server',
+    'virLXCMonitor', 'VIR_LXC_MONITOR', '@INPUT@'
+  ],
+  capture: true,
+)
+
 if conf.has('WITH_LXC')
   lxc_driver_impl_lib = static_library(
     'virt_driver_lxc_impl',
@@ -80,6 +100,32 @@ if conf.has('WITH_LXC')
     'c_args': [
       '-DDAEMON_NAME="virtlxcd"',
       '-DMODULE_NAME="lxc"',
+    ],
+  }
+
+  virt_helpers += {
+    'name': 'libvirt_lxc',
+    'sources': [
+      lxc_controller_sources,
+      lxc_monitor_protocol_generated,
+      lxc_controller_generated,
+      datatypes_sources,
+      dtrace_gen_objects,
+    ],
+    'include': [
+      conf_inc_dir,
+      hypervisor_inc_dir,
+      include_directories('.'),
+    ],
+    'deps': [
+      blkid_dep,
+      capng_dep,
+      dbus_dep,
+      fuse_dep,
+      libnl_dep,
+      rpc_dep,
+      secdriver_dep,
+      xdr_dep,
     ],
   }
 endif
