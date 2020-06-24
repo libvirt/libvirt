@@ -94,4 +94,24 @@ if conf.has('WITH_LOGIN_SHELL')
     install: true,
     install_dir: bindir,
   )
+
+  executable(
+    'virt-login-shell-helper',
+    [
+      'virt-login-shell-helper.c',
+    ],
+    dependencies: [
+      tools_dep,
+    ],
+    link_args: [
+      coverage_flags,
+    ],
+    link_with: [
+      libvirt_lib,
+      libvirt_lxc_lib,
+    ],
+    install: true,
+    install_dir: libexecdir,
+    install_rpath: libdir,
+  )
 endif

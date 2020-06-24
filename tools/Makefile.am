@@ -41,7 +41,6 @@ endif WITH_SANLOCK
 
 if WITH_LOGIN_SHELL
 conf_DATA += virt-login-shell.conf
-libexec_PROGRAMS = virt-login-shell-helper
 endif WITH_LOGIN_SHELL
 
 virt-xml-validate: virt-xml-validate.in Makefile
@@ -60,23 +59,6 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	    || (rm $@ && exit 1) && chmod +x $@
 
 noinst_LTLIBRARIES =
-
-virt_login_shell_helper_SOURCES = \
-		virt-login-shell-helper.c
-
-virt_login_shell_helper_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(COVERAGE_LDFLAGS) \
-		$(NULL)
-virt_login_shell_helper_LDADD = \
-		../src/libvirt.la \
-		../src/libvirt-lxc.la \
-		$(GLIB_LIBS) \
-		$(NULL)
-
-virt_login_shell_helper_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(NULL)
 
 virsh_SOURCES = \
 		virsh.c virsh.h \
