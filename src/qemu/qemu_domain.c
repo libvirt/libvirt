@@ -350,15 +350,15 @@ qemuDomainEventEmitJobCompleted(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainObjInitJob(qemuDomainObjPrivatePtr priv)
+qemuDomainObjInitJob(qemuDomainJobObjPtr job)
 {
-    memset(&priv->job, 0, sizeof(priv->job));
+    memset(job, 0, sizeof(*job));
 
-    if (virCondInit(&priv->job.cond) < 0)
+    if (virCondInit(&job->cond) < 0)
         return -1;
 
-    if (virCondInit(&priv->job.asyncCond) < 0) {
-        virCondDestroy(&priv->job.cond);
+    if (virCondInit(&job->asyncCond) < 0) {
+        virCondDestroy(&job->cond);
         return -1;
     }
 
@@ -366,10 +366,8 @@ qemuDomainObjInitJob(qemuDomainObjPrivatePtr priv)
 }
 
 static void
-qemuDomainObjResetJob(qemuDomainObjPrivatePtr priv)
+qemuDomainObjResetJob(qemuDomainJobObjPtr job)
 {
-    qemuDomainJobObjPtr job = &priv->job;
-
     job->active = QEMU_JOB_NONE;
     job->owner = 0;
     job->ownerAPI = NULL;
@@ -378,10 +376,8 @@ qemuDomainObjResetJob(qemuDomainObjPrivatePtr priv)
 
 
 static void
-qemuDomainObjResetAgentJob(qemuDomainObjPrivatePtr priv)
+qemuDomainObjResetAgentJob(qemuDomainJobObjPtr job)
 {
-    qemuDomainJobObjPtr job = &priv->job;
-
     job->agentActive = QEMU_AGENT_JOB_NONE;
     job->agentOwner = 0;
     job->agentOwnerAPI = NULL;
@@ -390,10 +386,8 @@ qemuDomainObjResetAgentJob(qemuDomainObjPrivatePtr priv)
 
 
 static void
-qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
+qemuDomainObjResetAsyncJob(qemuDomainJobObjPtr job)
 {
-    qemuDomainJobObjPtr job = &priv->job;
-
     job->asyncJob = QEMU_ASYNC_JOB_NONE;
     job->asyncOwner = 0;
     job->asyncOwnerAPI = NULL;
@@ -426,19 +420,19 @@ qemuDomainObjRestoreJob(virDomainObjPtr obj,
     job->migParams = g_steal_pointer(&priv->job.migParams);
     job->apiFlags = priv->job.apiFlags;
 
-    qemuDomainObjResetJob(priv);
-    qemuDomainObjResetAsyncJob(priv);
+    qemuDomainObjResetJob(&priv->job);
+    qemuDomainObjResetAsyncJob(&priv->job);
 }
 
 static void
-qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
+qemuDomainObjFreeJob(qemuDomainJobObjPtr job)
 {
-    qemuDomainObjResetJob(priv);
-    qemuDomainObjResetAsyncJob(priv);
-    g_clear_pointer(&priv->job.current, qemuDomainJobInfoFree);
-    g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
-    virCondDestroy(&priv->job.cond);
-    virCondDestroy(&priv->job.asyncCond);
+    qemuDomainObjResetJob(job);
+    qemuDomainObjResetAsyncJob(job);
+    g_clear_pointer(&job->current, qemuDomainJobInfoFree);
+    g_clear_pointer(&job->completed, qemuDomainJobInfoFree);
+    virCondDestroy(&job->cond);
+    virCondDestroy(&job->asyncCond);
 }
 
 static bool
@@ -2231,7 +2225,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
     if (VIR_ALLOC(priv) < 0)
         return NULL;
 
-    if (qemuDomainObjInitJob(priv) < 0) {
+    if (qemuDomainObjInitJob(&priv->job) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to init qemu driver mutexes"));
         goto error;
@@ -2342,7 +2336,7 @@ qemuDomainObjPrivateFree(void *data)
     qemuDomainObjPrivateDataClear(priv);
 
     virObjectUnref(priv->monConfig);
-    qemuDomainObjFreeJob(priv);
+    qemuDomainObjFreeJob(&priv->job);
     VIR_FREE(priv->lockState);
     VIR_FREE(priv->origname);
 
@@ -6254,8 +6248,8 @@ qemuDomainObjDiscardAsyncJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     if (priv->job.active == QEMU_JOB_ASYNC_NESTED)
-        qemuDomainObjResetJob(priv);
-    qemuDomainObjResetAsyncJob(priv);
+        qemuDomainObjResetJob(&priv->job);
+    qemuDomainObjResetAsyncJob(&priv->job);
     qemuDomainObjSaveStatus(driver, obj);
 }
 
@@ -6276,28 +6270,28 @@ qemuDomainObjReleaseAsyncJob(virDomainObjPtr obj)
 }
 
 static bool
-qemuDomainNestedJobAllowed(qemuDomainObjPrivatePtr priv, qemuDomainJob job)
+qemuDomainNestedJobAllowed(qemuDomainJobObjPtr jobs, qemuDomainJob newJob)
 {
-    return !priv->job.asyncJob ||
-           job == QEMU_JOB_NONE ||
-           (priv->job.mask & JOB_MASK(job)) != 0;
+    return !jobs->asyncJob ||
+           newJob == QEMU_JOB_NONE ||
+           (jobs->mask & JOB_MASK(newJob)) != 0;
 }
 
 bool
-qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, qemuDomainJob job)
+qemuDomainJobAllowed(qemuDomainJobObjPtr jobs, qemuDomainJob newJob)
 {
-    return !priv->job.active && qemuDomainNestedJobAllowed(priv, job);
+    return !jobs->active && qemuDomainNestedJobAllowed(jobs, newJob);
 }
 
 static bool
-qemuDomainObjCanSetJob(qemuDomainObjPrivatePtr priv,
-                       qemuDomainJob job,
-                       qemuDomainAgentJob agentJob)
+qemuDomainObjCanSetJob(qemuDomainJobObjPtr job,
+                       qemuDomainJob newJob,
+                       qemuDomainAgentJob newAgentJob)
 {
-    return ((job == QEMU_JOB_NONE ||
-             priv->job.active == QEMU_JOB_NONE) &&
-            (agentJob == QEMU_AGENT_JOB_NONE ||
-             priv->job.agentActive == QEMU_AGENT_JOB_NONE));
+    return ((newJob == QEMU_JOB_NONE ||
+             job->active == QEMU_JOB_NONE) &&
+            (newAgentJob == QEMU_AGENT_JOB_NONE ||
+             job->agentActive == QEMU_AGENT_JOB_NONE));
 }
 
 /* Give up waiting for mutex after 30 seconds */
@@ -6369,7 +6363,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
         goto error;
     }
 
-    while (!nested && !qemuDomainNestedJobAllowed(priv, job)) {
+    while (!nested && !qemuDomainNestedJobAllowed(&priv->job, job)) {
         if (nowait)
             goto cleanup;
 
@@ -6378,7 +6372,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
             goto error;
     }
 
-    while (!qemuDomainObjCanSetJob(priv, job, agentJob)) {
+    while (!qemuDomainObjCanSetJob(&priv->job, job, agentJob)) {
         if (nowait)
             goto cleanup;
 
@@ -6389,13 +6383,13 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
 
     /* No job is active but a new async job could have been started while obj
      * was unlocked, so we need to recheck it. */
-    if (!nested && !qemuDomainNestedJobAllowed(priv, job))
+    if (!nested && !qemuDomainNestedJobAllowed(&priv->job, job))
         goto retry;
 
     ignore_value(virTimeMillisNow(&now));
 
     if (job) {
-        qemuDomainObjResetJob(priv);
+        qemuDomainObjResetJob(&priv->job);
 
         if (job != QEMU_JOB_ASYNC) {
             VIR_DEBUG("Started job: %s (async=%s vm=%p name=%s)",
@@ -6410,7 +6404,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
             VIR_DEBUG("Started async job: %s (vm=%p name=%s)",
                       qemuDomainAsyncJobTypeToString(asyncJob),
                       obj, obj->def->name);
-            qemuDomainObjResetAsyncJob(priv);
+            qemuDomainObjResetAsyncJob(&priv->job);
             priv->job.current = g_new0(qemuDomainJobInfo, 1);
             priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
             priv->job.asyncJob = asyncJob;
@@ -6422,7 +6416,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     }
 
     if (agentJob) {
-        qemuDomainObjResetAgentJob(priv);
+        qemuDomainObjResetAgentJob(&priv->job);
 
         VIR_DEBUG("Started agent job: %s (vm=%p name=%s job=%s async=%s)",
                   qemuDomainAgentJobTypeToString(agentJob),
@@ -6467,7 +6461,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
              duration / 1000, agentDuration / 1000, asyncDuration / 1000);
 
     if (job) {
-        if (nested || qemuDomainNestedJobAllowed(priv, job))
+        if (nested || qemuDomainNestedJobAllowed(&priv->job, job))
             blocker = priv->job.ownerAPI;
         else
             blocker = priv->job.asyncOwnerAPI;
@@ -6656,7 +6650,7 @@ qemuDomainObjEndJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
               qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
               obj, obj->def->name);
 
-    qemuDomainObjResetJob(priv);
+    qemuDomainObjResetJob(&priv->job);
     if (qemuDomainTrackJob(job))
         qemuDomainObjSaveStatus(driver, obj);
     /* We indeed need to wake up ALL threads waiting because
@@ -6677,7 +6671,7 @@ qemuDomainObjEndAgentJob(virDomainObjPtr obj)
               qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
               obj, obj->def->name);
 
-    qemuDomainObjResetAgentJob(priv);
+    qemuDomainObjResetAgentJob(&priv->job);
     /* We indeed need to wake up ALL threads waiting because
      * grabbing a job requires checking more variables. */
     virCondBroadcast(&priv->job.cond);
@@ -6694,7 +6688,7 @@ qemuDomainObjEndAsyncJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
               qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
               obj, obj->def->name);
 
-    qemuDomainObjResetAsyncJob(priv);
+    qemuDomainObjResetAsyncJob(&priv->job);
     qemuDomainObjSaveStatus(driver, obj);
     virCondBroadcast(&priv->job.asyncCond);
 }

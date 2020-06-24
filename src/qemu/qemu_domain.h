@@ -860,8 +860,8 @@ void qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              bool value);
 
-bool qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv,
-                          qemuDomainJob job);
+bool qemuDomainJobAllowed(qemuDomainJobObjPtr jobs,
+                          qemuDomainJob newJob);
 
 int qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
