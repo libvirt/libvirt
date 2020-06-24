@@ -1138,6 +1138,14 @@ if bash_completion_dep.found()
   endif
 endif
 
+if host_machine.system() != 'freebsd'
+  if not get_option('firewalld').disabled() and dbus_dep.found()
+    conf.set('WITH_FIREWALLD', 1)
+  elif get_option('firewalld').enabled()
+    error('You must have dbus enabled for firewalld support')
+  endif
+endif
+
 
 # define top include directory
 
@@ -1168,6 +1176,7 @@ libs_summary = {
   'curl': curl_dep.found(),
   'dbus': dbus_dep.found(),
   'dlopen': dlopen_dep.found(),
+  'firewalld': conf.has('WITH_FIREWALLD'),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)

@@ -19,6 +19,7 @@ option('blkid', type: 'feature', value: 'auto', description: 'blkid support')
 option('capng', type: 'feature', value: 'auto', description: 'cap-ng support')
 option('curl', type: 'feature', value: 'auto', description: 'curl support')
 option('dbus', type: 'feature', value: 'auto', description: 'dbus-1 support')
+option('firewalld', type: 'feature', value: 'auto', description: 'firewalld support')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 
 
