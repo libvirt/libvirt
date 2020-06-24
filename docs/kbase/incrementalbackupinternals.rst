@@ -139,29 +139,17 @@ After taking a snapshot of the ``vda`` disk from the example above placed into
    |                |    |                |
    +----------------+    +----------------+
 
-Checking bitmap health
-----------------------
+Manipulating bitmaps in shell
+-----------------------------
 
-QEMU optimizes disk writes by only updating the bitmaps in certain cases. This
-also can cause problems in cases when e.g. QEMU crashes.
+**NOTE:** Any of the examples expect that the full image chain isn't used by any
+running VM at the time.
 
-For a chain of corresponding bitmaps in a backing chain to be considered valid
-and eligible for use with ``virDomainBackupBegin`` it must conform to the
-following rules:
-
-1) Top image must contain the bitmap
-2) If any of the backing images in the chain contain the bitmap too, all
-   contiguous images must have the bitmap (no gaps)
-3) all of the above bitmaps must be marked as active
-   (``auto`` flag in ``qemu-img`` output, ``recording`` in qemu)
-4) none of the above bitmaps can be inconsistent
-   (``in-use`` flag in ``qemu-img`` provided that it's not used on image which
-   is currently in use by a qemu instance, or ``inconsistent`` in qemu)
+``qemu-img info`` command reports information about dirty bitmaps in an image:
 
 ::
 
- # check that image has bitmaps
-  $ qemu-img info vda-1.qcow2
+  $ qemu-img info -f qcow2 vda-1.qcow2
    image: vda-1.qcow2
    file format: qcow2
    virtual size: 100 MiB (104857600 bytes)
@@ -185,6 +173,40 @@ following rules:
                granularity: 65536
        refcount bits: 16
        corrupt: false
+
+The ``flags`` have following meanings:
+
+``auto`` - **recording**
+
+    The bitmap is automatically activated when the image is opened for writing
+    and thus it's actively recording writes.
+
+``in-use`` - **inconsistent**
+
+    The bitmap was not properly saved when the qemu process was shut down last
+    time thus didn't consistently record all the changed sectors.
+
+It's recommended to use ``--output=json`` parameter to work with a machine
+readable output rather than trying to process the human readable output by
+scripts. For processing JSON in shell the ``jq`` tool can be used.
+
+Checking bitmap health
+----------------------
+
+QEMU optimizes disk writes by only updating the bitmaps in certain cases. This
+also can cause problems in cases when e.g. QEMU crashes.
+
+For a chain of corresponding bitmaps in a backing chain images to be considered
+valid and eligible for use for an incremental backup with
+``virDomainBackupBegin`` the bitmaps intended to be used must conform to the
+following rules:
+
+1) active/topmost image must contain the bitmap
+2) if a bitmap with the same name is contained in one of the backing images it
+   must be a contiguous subchain starting from the topmost image which contains
+   the bitmaps (no gaps)
+3) all of the above bitmaps must be marked as **recording**
+4) all of the above bitmaps must not be **inconsistent**
 
 (See also the ``qemuBlockBitmapChainIsValid`` helper method in
 ``src/qemu/qemu_block.c``)
