@@ -51,6 +51,10 @@ sanlock_sources = [
   'lock_driver_sanlock.c',
 ]
 
+sanlock_helper_sources = files(
+  'sanlock_helper.c',
+)
+
 lock_driver_lib = static_library(
   'virt_lock_driver',
   [
@@ -129,4 +133,16 @@ if conf.has('WITH_LIBVIRTD')
       include_directories('.'),
     ],
   }
+
+  if conf.has('WITH_SANLOCK')
+    virt_helpers += {
+      'name': 'libvirt_sanlock_helper',
+      'sources': [
+        sanlock_helper_sources,
+      ],
+      'include': [
+        conf_inc_dir,
+      ],
+    }
+  endif
 endif

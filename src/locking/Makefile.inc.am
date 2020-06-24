@@ -1,8 +1,5 @@
 # vim: filetype=automake
 
-LOCK_DRIVER_SANLOCK_HELPER_SOURCES = \
-	locking/sanlock_helper.c
-
 RPC_PROBE_FILES += $(srcdir)/locking/lock_protocol.x
 SYSCONF_FILES += locking/virtlockd.sysconf
 
@@ -46,20 +43,6 @@ if WITH_LIBXL
 nodist_conf_DATA += locking/libxl-sanlock.conf
 endif WITH_LIBXL
 
-libexec_PROGRAMS += libvirt_sanlock_helper
-
-libvirt_sanlock_helper_SOURCES = $(LOCK_DRIVER_SANLOCK_HELPER_SOURCES)
-libvirt_sanlock_helper_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-libvirt_sanlock_helper_LDFLAGS = \
-	$(AM_LDFLAGS) \
-	$(NULL)
-libvirt_sanlock_helper_LDADD = \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
 endif WITH_SANLOCK
 
 conf_DATA += locking/virtlockd.conf
