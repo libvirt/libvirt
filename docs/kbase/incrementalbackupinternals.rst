@@ -245,3 +245,40 @@ the snapshot.
             continue
 
         create RECORDING bitmap named BITMAP in OVERLAY with GRANULARITY
+
+Committing external snapshots manually
+--------------------------------------
+
+``block commit`` refers to an operation where data from a subchain of the
+backing chain is merged down into the backing image of the subchain removing all
+images in the subchain.
+
+``COMMIT_TOP`` refers to the top of the subchain to merge into ``COMMIT_BASE``
+(which stays in the new chain).
+
+It's strongly advised to use ``virDomainBlockCommit`` API in libvirt directly if
+possible. Inactive VMs can be started with ``VIR_DOMAIN_START_PAUSED`` flag
+(``virsh start --paused``) to prevent OS from running.
+
+Otherwise the following pseudo-algorithm can be used:
+
+Note: A ``valid`` bitmap chain is a set of images containing bitmaps which
+conform to the rules about valid bitmaps mentioned above.
+
+::
+
+    commit data from COMMIT_TOP to COMMIT_BASE
+
+    let BITMAPS = valid bitmap chains in COMMIT_TOP
+
+    for each BITMAP in BITMAPS
+        let GRANULARITY = granularity of BITMAP in ACTIVE
+
+        if BITMAP is not present in COMMIT_BASE:
+            create RECORDING bitmap named BITMAP in COMMIT_BASE with GRANULARITY
+
+        for each IMAGE between COMMIT_TOP(inclusive) and COMMIT_BASE(exclusive):
+            if BITMAP is not present in IMAGE:
+                break
+
+            merge BITMAP in IMAGE into BITMAP in COMMIT_BASE
