@@ -1069,6 +1069,12 @@ glusterfs_dep = dependency('glusterfs-api', version: '>=' + glusterfs_version, r
 gnutls_version = '3.2.0'
 gnutls_dep = dependency('gnutls', version: '>=' + gnutls_version)
 
+hal_version = '0.5.0'
+hal_dep = dependency('hal', version: '>=' + hal_version, required: get_option('hal'))
+if hal_dep.found()
+  conf.set('WITH_HAL', 1)
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1208,6 +1214,7 @@ libs_summary = {
   'glib_dep': glib_dep.found(),
   'glusterfs': glusterfs_dep.found(),
   'gnutls': gnutls_dep.found(),
+  'hal': hal_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
