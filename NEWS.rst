@@ -13,6 +13,11 @@ v6.6.0 (unreleased)
 
 * **New features**
 
+  * Allow configuring of ACPI NUMA HMAT
+
+    Libvirt allows configuring ACPI Heterogeneous Memory Attribute Table to
+    hint software running inside the guest on optimization.
+
 * **Improvements**
 
 * **Bug fixes**
