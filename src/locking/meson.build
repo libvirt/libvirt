@@ -62,4 +62,21 @@ if conf.has('WITH_LIBVIRTD')
       xdr_dep,
     ],
   )
+
+  lockdriver_dir = libdir / 'libvirt' / 'lock-driver'
+
+  virt_modules += {
+    'name': 'lockd',
+    'name_prefix': '',
+    'sources': [
+      dtrace_gen_objects,
+    ],
+    'link_whole': [
+      lockd_lib_impl,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+    'install_dir': lockdriver_dir,
+  }
 endif

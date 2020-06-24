@@ -42,23 +42,10 @@ OPENRC_INIT_FILES_IN += \
 	locking/virtlockd.init.in \
 	$(NULL)
 
-lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES =
 
 if WITH_LIBVIRTD
-lockdriver_LTLIBRARIES += lockd.la
-lockd_la_SOURCES =
-lockd_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-lockd_la_LIBADD = \
-	libvirt.la \
-	libvirt_lockd_impl.la \
-	$(GLIB_LIBS) \
-	$(XDR_LIBS) \
-	$(NULL)
 augeas_DATA += locking/libvirt_lockd.aug
-if WITH_DTRACE_PROBES
-lockd_la_LIBADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
 
 if WITH_QEMU
 augeastest_DATA += locking/test_libvirt_lockd.aug
