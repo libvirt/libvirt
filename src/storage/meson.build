@@ -20,6 +20,10 @@ storage_backend_disk_sources = [
   'storage_backend_disk.c',
 ]
 
+storage_helper_disk_sources = [
+  'parthelper.c',
+]
+
 storage_backend_gluster_sources = [
   'storage_backend_gluster.c',
 ]
@@ -126,6 +130,17 @@ if conf.has('WITH_STORAGE_DISK')
       files(storage_backend_disk_sources),
     ],
     'install_dir': storage_backend_install_dir,
+  }
+
+  virt_helpers += {
+    'name': 'libvirt_parthelper',
+    'sources': [
+      files(storage_helper_disk_sources),
+      dtrace_gen_objects,
+    ],
+    'deps': [
+      libparted_dep,
+    ],
   }
 endif
 

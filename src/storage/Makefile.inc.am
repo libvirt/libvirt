@@ -1,9 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_HELPER_DISK_SOURCES = \
-	storage/parthelper.c \
-	$(NULL)
-
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
@@ -75,25 +71,3 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 
 
 endif WITH_STORAGE
-
-if WITH_STORAGE_DISK
-libexec_PROGRAMS += libvirt_parthelper
-
-libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
-libvirt_parthelper_LDFLAGS = \
-	$(AM_LDFLAGS) \
-	$(NULL)
-libvirt_parthelper_LDADD = \
-	$(LIBPARTED_LIBS) \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-if WITH_DTRACE_PROBES
-libvirt_parthelper_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-libvirt_parthelper_CFLAGS = \
-	$(LIBPARTED_CFLAGS) \
-	$(AM_CFLAGS) \
-	$(NULL)
-endif WITH_STORAGE_DISK
