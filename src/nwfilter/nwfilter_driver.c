@@ -193,8 +193,7 @@ nwfilterStateInitialize(bool privileged,
         !(sysbus = virDBusGetSystemBus()))
         return VIR_DRV_STATE_INIT_ERROR;
 
-    if (VIR_ALLOC(driver) < 0)
-        return VIR_DRV_STATE_INIT_ERROR;
+    driver = g_new0(virNWFilterDriverState, 1);
 
     driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0)

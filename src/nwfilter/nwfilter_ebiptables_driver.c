@@ -3312,8 +3312,7 @@ ebtablesGetSubChainInsts(virHashTablePtr chains,
         if ((int)idx < 0)
             continue;
 
-        if (VIR_ALLOC(inst) < 0)
-            goto cleanup;
+        inst = g_new0(ebtablesSubChainInst, 1);
         inst->priority = *(const virNWFilterChainPriority *)filter_names[i].value;
         inst->incoming = incoming;
         inst->protoidx = idx;

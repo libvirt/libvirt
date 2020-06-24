@@ -562,8 +562,7 @@ virNWFilterSnoopReqNew(const char *ifkey)
         return NULL;
     }
 
-    if (VIR_ALLOC(req) < 0)
-        return NULL;
+    req = g_new0(virNWFilterSnoopReq, 1);
 
     req->threadStatus = THREAD_STATUS_NONE;
 
@@ -737,8 +736,7 @@ virNWFilterSnoopReqLeaseAdd(virNWFilterSnoopReqPtr req,
 
     virNWFilterSnoopReqUnlock(req);
 
-    if (VIR_ALLOC(pl) < 0)
-        return -1;
+    pl = g_new0(virNWFilterSnoopIPLease, 1);
     *pl = *plnew;
 
     /* protect req->threadkey */
@@ -1160,8 +1158,7 @@ virNWFilterSnoopDHCPDecodeJobSubmit(virThreadPoolPtr pool,
     if (len <= MIN_VALID_DHCP_PKT_SIZE || len > sizeof(job->packet))
         return 0;
 
-    if (VIR_ALLOC(job) < 0)
-        return -1;
+    job = g_new0(virNWFilterDHCPDecodeJob, 1);
 
     memcpy(job->packet, pep, len);
     job->caplen = len;

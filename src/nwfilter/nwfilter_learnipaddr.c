@@ -151,8 +151,7 @@ virNWFilterLockIface(const char *ifname)
 
     ifaceLock = virHashLookup(ifaceLockMap, ifname);
     if (!ifaceLock) {
-        if (VIR_ALLOC(ifaceLock) < 0)
-            goto error;
+        ifaceLock = g_new0(virNWFilterIfaceLock, 1);
 
         if (virMutexInitRecursive(&ifaceLock->lock) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -718,8 +717,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
         return -1;
     }
 
-    if (VIR_ALLOC(req) < 0)
-        return -1;
+    req = g_new0(virNWFilterIPAddrLearnReq, 1);
 
     if (!(req->binding = virNWFilterBindingDefCopy(binding)))
         goto err_free_req;
