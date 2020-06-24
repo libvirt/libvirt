@@ -153,6 +153,7 @@ subdir('admin')
 subdir('locking')
 subdir('logging')
 subdir('network')
+subdir('node_device')
 subdir('security')
 
 subdir('bhyve')
