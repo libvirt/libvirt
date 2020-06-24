@@ -981,6 +981,9 @@ if audit_dep.found()
   conf.set('WITH_AUDIT', 1)
 endif
 
+bash_completion_version = '2.0'
+bash_completion_dep = dependency('bash-completion', version: '>=' + bash_completion_version, required: get_option('bash_completion'))
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1045,6 +1048,32 @@ if readline_dep.found()
 endif
 
 
+# generic build dependencies checks
+
+if bash_completion_dep.found() and not readline_dep.found()
+  if get_option('bash_completion').enabled()
+    error('readline is required for bash completion support')
+  else
+    bash_completion_dep = dependency('', required: false)
+  endif
+endif
+if bash_completion_dep.found()
+  bash_completion_dir = get_option('bash_completion_dir')
+  if bash_completion_dir == ''
+    bash_completion_dir = bash_completion_dep.get_pkgconfig_variable('completionsdir')
+    bash_completion_prefix = bash_completion_dep.get_pkgconfig_variable('prefix')
+    rc = run_command(
+      'python3', '-c',
+      'print("@0@".replace("@1@", "@2@"))'.format(
+        bash_completion_dir, bash_completion_prefix, prefix,
+      ),
+      check: true,
+    )
+    bash_completion_dir = rc.stdout().strip()
+  endif
+endif
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
@@ -1068,6 +1097,7 @@ libs_summary = {
   'apparmor': apparmor_dep.found(),
   'attr': attr_dep.found(),
   'audit': audit_dep.found(),
+  'bash_completion': bash_completion_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)

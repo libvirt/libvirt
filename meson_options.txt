@@ -13,6 +13,8 @@ option('git_werror', type: 'feature', value: 'auto', description: 'use -Werror i
 option('apparmor', type: 'feature', value: 'auto', description: 'apparmor support')
 option('attr', type: 'feature', value: 'auto', description: 'attr support')
 option('audit', type: 'feature', value: 'auto', description: 'audit support')
+option('bash_completion', type: 'feature', value: 'auto', description: 'bash-completion support')
+option('bash_completion_dir', type: 'string', value: '', description: 'directory containing bash completion scripts')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 
 
