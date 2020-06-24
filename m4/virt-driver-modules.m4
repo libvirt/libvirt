@@ -17,25 +17,10 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_ARG_DRIVER_MODULES], [
-  LIBVIRT_ARG_WITH([DRIVER_MODULES], [build drivers as loadable modules],
-                   [yes])
-])
-
 AC_DEFUN([LIBVIRT_CHECK_DRIVER_MODULES], [
   AC_REQUIRE([LIBVIRT_CHECK_DLOPEN])
 
-  if test "$with_libvirtd" = "no" ; then
-    with_driver_modules=no
-  else
-    if test "$with_driver_modules" = "no"; then
-      AC_MSG_ERROR([Building without driver modules is not supported anymore])
-    fi
-
-    if test "$with_driver_modules" = "check"; then
-      with_driver_modules=yes
-    fi
-  fi
+  with_driver_modules=$with_libvirtd
 
   DRIVER_MODULES_CFLAGS=
   if test "$with_driver_modules" = "yes"; then
