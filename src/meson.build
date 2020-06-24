@@ -140,6 +140,14 @@ libvirt_libs = []
 #   * install_dir - installation directory (optional, default libdir / 'libvirt' / 'connection-driver'
 virt_modules = []
 
+# virt_daemons:
+#   each entry is a dictionary with following items:
+#   * name - binary name (required)
+#   * sources - binary sources (optional, default remote_daemon_sources)
+#   * c_args - compile arguments (optional, default [])
+#   * include = include_directories (optional, default [])
+virt_daemons = []
+
 
 # list subdirectories
 
@@ -475,4 +483,48 @@ foreach module : virt_modules
     install_rpath: libdir,
   )
   set_variable('@0@_module'.format(module['name'].underscorify()), mod)
+endforeach
+
+
+# build libvirt daemons
+
+foreach daemon : virt_daemons
+  bin = executable(
+    daemon['name'],
+    [
+      daemon.get('sources', [ remote_daemon_sources, remote_daemon_generated ]),
+      dtrace_gen_objects,
+    ],
+    c_args: [
+      daemon.get('c_args', []),
+    ],
+    include_directories: [
+      conf_inc_dir,
+      remote_inc_dir,
+      daemon.get('include', []),
+    ],
+    dependencies: [
+      admin_dep,
+      access_dep,
+      dbus_dep,
+      gnutls_dep,
+      libnl_dep,
+      rpc_dep,
+      src_dep,
+      sasl_dep,
+      xdr_dep,
+    ],
+    link_with: [
+      admin_driver_lib,
+      libvirt_lib,
+      libvirt_lxc_lib,
+      libvirt_qemu_lib,
+    ],
+    link_args: [
+      libvirt_no_undefined,
+    ],
+    install: true,
+    install_dir: sbindir,
+    install_rpath: libdir,
+  )
 endforeach

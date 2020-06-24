@@ -7,7 +7,7 @@ admin_driver_protocol = files('admin_protocol.x')
 
 admin_driver_generated = []
 
-admin_driver_generated += custom_target(
+admin_protocol_h = custom_target(
   'admin_protocol.h',
   input: admin_driver_protocol,
   output: 'admin_protocol.h',
@@ -15,6 +15,7 @@ admin_driver_generated += custom_target(
     genprotocol_prog, rpcgen_prog, '-h', '@INPUT@', '@OUTPUT@',
   ],
 )
+admin_driver_generated += admin_protocol_h
 
 admin_driver_generated += custom_target(
   'admin_protocol.c',
@@ -95,3 +96,8 @@ admin_driver_lib = static_library(
 )
 
 admin_inc_dir = include_directories('.')
+
+admin_dep = declare_dependency(
+  include_directories: admin_inc_dir,
+  sources: [ admin_protocol_h ],
+)

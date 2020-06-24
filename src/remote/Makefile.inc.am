@@ -1,46 +1,5 @@
 # vim: filetype=automake
 
-REMOTE_DAEMON_CFLAGS = \
-	$(AM_CFLAGS) \
-	$(GNUTLS_CFLAGS) \
-	$(SASL_CFLAGS) \
-	$(XDR_CFLAGS) \
-	$(DBUS_CFLAGS) \
-	$(LIBNL_CFLAGS) \
-	-I$(srcdir)/access \
-	-I$(builddir)/access \
-	-I$(srcdir)/conf \
-	-I$(srcdir)/rpc \
-	-I$(builddir)/rpc \
-	-I$(builddir)/remote \
-	$(NULL)
-
-REMOTE_DAEMON_LD_FLAGS = \
-	$(AM_LDFLAGS) \
-	$(NO_UNDEFINED_LDFLAGS) \
-	$(NULL)
-
-REMOTE_DAEMON_LD_ADD = \
-	libvirt_driver_admin.la \
-	libvirt-lxc.la \
-	libvirt-qemu.la \
-	libvirt.la \
-	$(LIBXML_LIBS) \
-	$(GNUTLS_LIBS) \
-	$(SASL_LIBS) \
-	$(XDR_LIBS) \
-	$(DBUS_LIBS) \
-	$(LIBNL_LIBS) \
-	$(NULL)
-
-if WITH_DTRACE_PROBES
-REMOTE_DAEMON_LD_ADD += ../src/libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-REMOTE_DAEMON_LD_ADD += \
-	$(GLIB_LIBS) \
-	$(NULL)
-
 LOGROTATE_FILES_IN += \
 	remote/libvirtd.qemu.logrotate.in \
 	remote/libvirtd.lxc.logrotate.in \
