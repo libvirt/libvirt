@@ -139,6 +139,16 @@ networkDnsmasqCapsRefresh(virNetworkDriverStatePtr driver)
 }
 
 
+extern virXMLNamespace networkDnsmasqXMLNamespace;
+
+typedef struct _networkDnsmasqXmlNsDef networkDnsmasqXmlNsDef;
+typedef networkDnsmasqXmlNsDef *networkDnsmasqXmlNsDefPtr;
+struct _networkDnsmasqXmlNsDef {
+    size_t noptions;
+    char **options;
+};
+
+
 static void
 networkDnsmasqDefNamespaceFree(void *nsdata)
 {
