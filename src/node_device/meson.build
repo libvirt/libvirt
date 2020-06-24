@@ -28,4 +28,14 @@ if conf.has('WITH_NODE_DEVICES')
       conf_inc_dir,
     ],
   )
+
+  virt_modules += {
+    'name': 'virt_driver_nodedev',
+    'link_whole': [
+      node_device_driver_impl,
+    ],
+    'link_args': [
+      libvirt_no_undefined,
+    ],
+  }
 endif

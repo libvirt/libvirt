@@ -12,11 +12,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 
 
 if WITH_NODE_DEVICES
-libvirt_driver_nodedev_la_SOURCES =
-libvirt_driver_nodedev_la_LIBADD = libvirt_driver_nodedev_impl.la
-libvirt_driver_nodedev_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-mod_LTLIBRARIES += libvirt_driver_nodedev.la
-
 sbin_PROGRAMS += virtnodedevd
 
 nodist_conf_DATA += node_device/virtnodedevd.conf
