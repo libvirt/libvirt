@@ -275,7 +275,6 @@ libvirt_util_la_CFLAGS = \
 	$(AUDIT_CFLAGS) \
 	$(DEVMAPPER_CFLAGS) \
 	$(DBUS_CFLAGS) \
-	$(LDEXP_LIBM) \
 	$(NUMACTL_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(ACL_CFLAGS) \
