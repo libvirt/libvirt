@@ -1842,6 +1842,18 @@ elif get_option('driver_vz').enabled()
   error('Parallels Virtualization SDK is needed to build the Virtuozzo driver.')
 endif
 
+if not get_option('secdriver_apparmor').disabled() and apparmor_dep.found()
+  conf.set('WITH_SECDRIVER_APPARMOR', 1)
+elif get_option('secdriver_apparmor').enabled()
+  error('You must install the AppArmor development package in order to compile libvirt.')
+endif
+
+if not get_option('secdriver_selinux').disabled() and selinux_dep.found()
+  conf.set('WITH_SECDRIVER_SELINUX', 1)
+elif get_option('secdriver_selinux').enabled()
+  error('You must install the libselinux development package in order to compile libvirt.')
+endif
+
 
 # define top include directory
 
@@ -1877,6 +1889,12 @@ driver_summary = {
   'Libvirtd': conf.has('WITH_LIBVIRTD'),
 }
 summary(driver_summary, section: 'Drivers', bool_yn: true)
+
+secdriver_summary = {
+  'SELinux': conf.has('WITH_SECDRIVER_SELINUX'),
+  'AppArmor': conf.has('WITH_SECDRIVER_APPARMOR'),
+}
+summary(secdriver_summary, section: 'Security Drivers', bool_yn: true)
 
 libs_summary = {
   'acl': acl_dep.found(),

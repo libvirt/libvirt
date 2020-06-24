@@ -65,3 +65,7 @@ option('driver_vbox', type: 'feature', value: 'enabled', description: 'VirtualBo
 option('vbox_xpcomc_dir', type: 'string', value: '', description: 'Location of directory containing VirtualBox XPCOMC library')
 option('driver_vmware', type: 'feature', value: 'enabled', description: 'VMware driver')
 option('driver_vz', type: 'feature', value: 'auto', description: 'Virtuozzo driver')
+
+option('secdriver_apparmor', type: 'feature', value: 'auto', description: 'use AppArmor security driver')
+option('apparmor_profiles', type: 'boolean', value: false, description: 'install apparmor profiles')
+option('secdriver_selinux', type: 'feature', value: 'auto', description: 'use SELinux security driver')
