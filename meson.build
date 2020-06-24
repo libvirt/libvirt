@@ -2126,6 +2126,46 @@ elif get_option('login_shell').enabled()
   error('virt-login-shell is supported on Linux only')
 endif
 
+if not get_option('nss').disabled()
+  use_nss = true
+  if not yajl_dep.found()
+    if get_option('nss').enabled()
+      error('Can\'t build nss plugin without yajl')
+    else
+      use_nss = false
+    endif
+  endif
+
+  if use_nss and not conf.has('WITH_NETWORK')
+    if get_option('nss').enabled()
+      error('Can\'t build nss plugin without network')
+    else
+      use_nss = false
+    endif
+  endif
+
+  if use_nss and not cc.has_header('nss.h')
+    if get_option('nss').enabled()
+      error('Can\'t build nss plugin without nss.h')
+    else
+      use_nss = false
+    endif
+  endif
+
+  if use_nss
+    conf.set('WITH_NSS', 1)
+
+    if cc.has_type('struct gaih_addrtuple', prefix: '#include <nss.h>')
+      conf.set('HAVE_STRUCT_GAIH_ADDRTUPLE', 1)
+    endif
+
+    if (cc.has_type('ns_mtab', prefix: '#include <nsswitch.h>') and
+        cc.has_type('nss_module_unregister_fn', prefix: '#include <nsswitch.h>'))
+      conf.set('WITH_BSD_NSS', 1)
+    endif
+  endif
+endif
+
 
 # define top include directory
 
@@ -2220,6 +2260,7 @@ libs_summary = {
   'macvtap': conf.has('WITH_MACVTAP'),
   'netcf': netcf_dep.found(),
   'NLS': have_gnu_gettext_tools,
+  'nss': conf.has('WITH_NSS'),
   'numaclt': numactl_dep.found(),
   'openwsman': openwsman_dep.found(),
   'pciaccess': pciaccess_dep.found(),
