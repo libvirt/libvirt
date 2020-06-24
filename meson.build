@@ -995,6 +995,22 @@ if capng_dep.found()
   conf.set('WITH_CAPNG', 1)
 endif
 
+curl_version = '7.18.0'
+curl_dep = dependency('libcurl', version: '>=' + curl_version, required: get_option('curl'))
+if curl_dep.found()
+  # XXX as of libcurl-devel-7.20.1-3.fc13.x86_64, curl ships a version
+  # of <curl/curl.h> that #defines several wrapper macros around underlying
+  # functions to add type safety for gcc only.  However, these macros
+  # spuriously trip gcc's -Wlogical-op warning.  Avoid the warning by
+  # disabling the wrappers; even if it removes some type-check safety.
+  curl_dep = declare_dependency(
+    compile_args: [ '-DCURL_DISABLE_TYPECHECK' ],
+    dependencies: [ curl_dep ],
+  )
+
+  conf.set('WITH_CURL', 1)
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1111,6 +1127,7 @@ libs_summary = {
   'bash_completion': bash_completion_dep.found(),
   'blkid': blkid_dep.found(),
   'capng': capng_dep.found(),
+  'curl': curl_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)

@@ -17,6 +17,7 @@ option('bash_completion', type: 'feature', value: 'auto', description: 'bash-com
 option('bash_completion_dir', type: 'string', value: '', description: 'directory containing bash completion scripts')
 option('blkid', type: 'feature', value: 'auto', description: 'blkid support')
 option('capng', type: 'feature', value: 'auto', description: 'cap-ng support')
+option('curl', type: 'feature', value: 'auto', description: 'curl support')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 
 
