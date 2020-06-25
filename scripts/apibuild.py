@@ -12,6 +12,7 @@ import os
 import sys
 import glob
 import re
+import argparse
 
 quiet = True
 warnings = 0
@@ -2404,13 +2405,11 @@ class app:
         warnings = warnings + 1
         print(msg)
 
-    def rebuild(self, name):
+    def rebuild(self, name, srcdir, builddir):
         if name not in ["libvirt", "libvirt-qemu", "libvirt-lxc", "libvirt-admin"]:
             self.warning("rebuild() failed, unknown module %s" % name)
             return None
         builder = None
-        srcdir = os.path.abspath((os.environ["srcdir"]))
-        builddir = os.path.abspath((os.environ["builddir"]))
         if glob.glob(srcdir + "/../src/libvirt.c") != []:
             if not quiet:
                 print("Rebuilding API description for %s" % name)
@@ -2438,15 +2437,24 @@ class app:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="XML API builder")
+    parser.add_argument("srcdir", type=str, help="path to docs source dir")
+    parser.add_argument("builddir", type=str, help="path to docs build dir")
+    parser.add_argument("-d", "--debug", type=str, help="path to source file")
+
+    args = parser.parse_args()
+
     app = app()
-    if len(sys.argv) > 1:
+
+    if args.debug:
         debug = 1
-        app.parse(sys.argv[1])
+        app.parse(args.debug)
     else:
-        app.rebuild("libvirt")
-        app.rebuild("libvirt-qemu")
-        app.rebuild("libvirt-lxc")
-        app.rebuild("libvirt-admin")
+        app.rebuild("libvirt", args.srcdir, args.builddir)
+        app.rebuild("libvirt-qemu", args.srcdir, args.builddir)
+        app.rebuild("libvirt-lxc", args.srcdir, args.builddir)
+        app.rebuild("libvirt-admin", args.srcdir, args.builddir)
+
     if warnings > 0:
         sys.exit(2)
     else:

@@ -277,7 +277,7 @@ subdir('vmware')
 subdir('vz')
 
 
-driver_sources = [
+driver_sources = files(
   'driver.c',
   'libvirt.c',
   'libvirt-domain.c',
@@ -291,7 +291,7 @@ driver_sources = [
   'libvirt-secret.c',
   'libvirt-storage.c',
   'libvirt-stream.c',
-]
+  )
 
 driver_headers = [
   'driver-hypervisor.h',
@@ -428,9 +428,13 @@ libvirt_qemu_syms_flags = '@0@@1@'.format(
   libvirt_qemu_syms_path,
 )
 
+libvirt_qemu_sources = files(
+  'libvirt-qemu.c',
+)
+
 libvirt_qemu_lib = shared_library(
   'virt-qemu',
-  'libvirt-qemu.c',
+  libvirt_qemu_sources,
   dependencies: [
     src_dep,
   ],
@@ -478,9 +482,13 @@ libvirt_lxc_syms_flags = '@0@@1@'.format(
   libvirt_lxc_syms_path,
 )
 
+libvirt_lxc_sources = files(
+  'libvirt-lxc.c',
+)
+
 libvirt_lxc_lib = shared_library(
   'virt-lxc',
-  'libvirt-lxc.c',
+  libvirt_lxc_sources,
   dependencies: [
     apparmor_dep,
     selinux_dep,

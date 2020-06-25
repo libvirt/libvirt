@@ -297,13 +297,6 @@ dot_html = \
 htmldir = $(HTML_DIR)
 html_DATA = $(dot_html)
 
-apidir = $(pkgdatadir)/api
-api_DATA = \
-       libvirt-api.xml \
-       libvirt-qemu-api.xml \
-       libvirt-lxc-api.xml \
-       libvirt-admin-api.xml
-
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
@@ -392,51 +385,3 @@ check-html:
 	$(XMLLINT) --nonet --noout html/*.html
 
 check-local: check-html
-
-python_generated_files = $(api_DATA)
-
-APIBUILD=$(top_srcdir)/scripts/apibuild.py
-APIBUILD_STAMP=apibuild.py.stamp
-
-$(python_generated_files): $(APIBUILD_STAMP)
-
-$(APIBUILD_STAMP): $(top_srcdir)/scripts/apibuild.py \
-		$(top_srcdir)/include/libvirt/libvirt.h \
-		$(top_srcdir)/include/libvirt/libvirt-common.h.in \
-		$(top_srcdir)/include/libvirt/libvirt-domain-checkpoint.h \
-		$(top_srcdir)/include/libvirt/libvirt-domain-snapshot.h \
-		$(top_srcdir)/include/libvirt/libvirt-domain.h \
-		$(top_srcdir)/include/libvirt/libvirt-event.h \
-		$(top_srcdir)/include/libvirt/libvirt-host.h \
-		$(top_srcdir)/include/libvirt/libvirt-interface.h \
-		$(top_srcdir)/include/libvirt/libvirt-network.h \
-		$(top_srcdir)/include/libvirt/libvirt-nodedev.h \
-		$(top_srcdir)/include/libvirt/libvirt-nwfilter.h \
-		$(top_srcdir)/include/libvirt/libvirt-secret.h \
-		$(top_srcdir)/include/libvirt/libvirt-storage.h \
-		$(top_srcdir)/include/libvirt/libvirt-stream.h \
-		$(top_srcdir)/include/libvirt/libvirt-lxc.h \
-		$(top_srcdir)/include/libvirt/libvirt-qemu.h \
-		$(top_srcdir)/include/libvirt/libvirt-admin.h \
-		$(top_srcdir)/include/libvirt/virterror.h \
-		$(top_srcdir)/src/libvirt.c \
-		$(top_srcdir)/src/libvirt-domain-checkpoint.c \
-		$(top_srcdir)/src/libvirt-domain-snapshot.c \
-		$(top_srcdir)/src/libvirt-domain.c \
-		$(top_srcdir)/src/libvirt-host.c \
-		$(top_srcdir)/src/libvirt-interface.c \
-		$(top_srcdir)/src/libvirt-network.c \
-		$(top_srcdir)/src/libvirt-nodedev.c \
-		$(top_srcdir)/src/libvirt-nwfilter.c \
-		$(top_srcdir)/src/libvirt-secret.c \
-		$(top_srcdir)/src/libvirt-storage.c \
-		$(top_srcdir)/src/libvirt-stream.c \
-		$(top_srcdir)/src/libvirt-lxc.c \
-		$(top_srcdir)/src/libvirt-qemu.c \
-		$(top_srcdir)/src/admin/libvirt-admin.c \
-		$(top_srcdir)/src/util/virerror.c \
-		$(top_srcdir)/src/util/virevent.c \
-		$(top_srcdir)/src/util/virtypedparam-public.c
-	$(AM_V_GEN)srcdir=$(srcdir) builddir=$(builddir) \
-		$(RUNUTF8) $(PYTHON) $(APIBUILD)
-	touch $@
