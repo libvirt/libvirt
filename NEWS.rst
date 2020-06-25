@@ -51,6 +51,11 @@ v6.5.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: fixed crash in ``qemuDomainBlockCommit``
+
+    This release fixes a regression which was introduced in libvirt v6.4.0
+    where libvirtd always crashes when a block commit of a disk is requested.
+
 
 v6.4.0 (2020-06-02)
 ===================
