@@ -152,13 +152,13 @@ virNWFilterLockIface(const char *ifname)
     ifaceLock = virHashLookup(ifaceLockMap, ifname);
     if (!ifaceLock) {
         if (VIR_ALLOC(ifaceLock) < 0)
-            goto err_exit;
+            goto error;
 
         if (virMutexInitRecursive(&ifaceLock->lock) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("mutex initialization failed"));
             VIR_FREE(ifaceLock);
-            goto err_exit;
+            goto error;
         }
 
         if (virStrcpyStatic(ifaceLock->ifname, ifname) < 0) {
@@ -167,12 +167,12 @@ virNWFilterLockIface(const char *ifname)
                              "buffer "),
                            ifaceLock->ifname);
             VIR_FREE(ifaceLock);
-            goto err_exit;
+            goto error;
         }
 
         while (virHashAddEntry(ifaceLockMap, ifname, ifaceLock)) {
             VIR_FREE(ifaceLock);
-            goto err_exit;
+            goto error;
         }
 
         ifaceLock->refctr = 0;
@@ -186,7 +186,7 @@ virNWFilterLockIface(const char *ifname)
 
     return 0;
 
- err_exit:
+ error:
     virMutexUnlock(&ifaceMapLock);
 
     return -1;
@@ -414,7 +414,7 @@ learnIPAddressThread(void *arg)
     if (virNetDevValidateConfig(req->binding->portdevname, NULL, req->ifindex) <= 0) {
         virResetLastError();
         req->status = ENODEV;
-        goto done;
+        goto cleanup;
     }
 
     handle = pcap_open_live(listen_if, BUFSIZ, 0, PKT_TIMEOUT_MS, errbuf);
@@ -422,7 +422,7 @@ learnIPAddressThread(void *arg)
     if (handle == NULL) {
         VIR_DEBUG("Couldn't open device %s: %s", listen_if, errbuf);
         req->status = ENODEV;
-        goto done;
+        goto cleanup;
     }
 
     fds[0].fd = pcap_fileno(handle);
@@ -436,7 +436,7 @@ learnIPAddressThread(void *arg)
                                            NULL, false) < 0) {
             VIR_DEBUG("Unable to apply DHCP only rules");
             req->status = EINVAL;
-            goto done;
+            goto cleanup;
         }
         virBufferAddLit(&buf, "src port 67 and dst port 68");
     } else {
@@ -444,7 +444,7 @@ learnIPAddressThread(void *arg)
                                         &req->binding->mac) < 0) {
             VIR_DEBUG("Unable to apply basic rules");
             req->status = EINVAL;
-            goto done;
+            goto cleanup;
         }
         virBufferAsprintf(&buf, "ether host %s or ether dst ff:ff:ff:ff:ff:ff",
                           macaddr);
@@ -455,14 +455,14 @@ learnIPAddressThread(void *arg)
     if (pcap_compile(handle, &fp, filter, 1, 0) != 0) {
         VIR_DEBUG("Couldn't compile filter '%s'", filter);
         req->status = EINVAL;
-        goto done;
+        goto cleanup;
     }
 
     if (pcap_setfilter(handle, &fp) != 0) {
         VIR_DEBUG("Couldn't set filter '%s'", filter);
         req->status = EINVAL;
         pcap_freecode(&fp);
-        goto done;
+        goto cleanup;
     }
 
     pcap_freecode(&fp);
@@ -622,7 +622,7 @@ learnIPAddressThread(void *arg)
         }
     } /* while */
 
- done:
+ cleanup:
     VIR_FREE(filter);
 
     if (handle)

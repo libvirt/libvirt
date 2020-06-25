@@ -204,14 +204,14 @@ virNWFilterCreateVarsFrom(virHashTablePtr vars1,
         return NULL;
 
     if (virNWFilterHashTablePutAll(vars1, res) < 0)
-        goto err_exit;
+        goto error;
 
     if (virNWFilterHashTablePutAll(vars2, res) < 0)
-        goto err_exit;
+        goto error;
 
     return res;
 
- err_exit:
+ error:
     virHashFree(res);
     return NULL;
 }
@@ -527,7 +527,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
 
     if (!missing_vars) {
         rc = -1;
-        goto err_exit;
+        goto error;
     }
 
     rc = virNWFilterDetermineMissingVarsRec(filter,
@@ -536,7 +536,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
                                             useNewFilter,
                                             driver);
     if (rc < 0)
-        goto err_exit;
+        goto error;
 
     lv = virHashLookup(binding->filterparams, NWFILTER_VARNAME_CTRL_IP_LEARNING);
     if (lv)
@@ -558,7 +558,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
                 rc = virNWFilterDHCPSnoopReq(techdriver,
                                              binding,
                                              driver);
-                goto err_exit;
+                goto error;
             } else if (STRCASEEQ(learning, "any")) {
                 if (!virNWFilterHasLearnReq(ifindex)) {
                     rc = virNWFilterLearnIPAddress(techdriver,
@@ -567,14 +567,14 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
                                                    driver,
                                                    DETECT_DHCP|DETECT_STATIC);
                 }
-                goto err_exit;
+                goto error;
             } else {
                 rc = -1;
                 virReportError(VIR_ERR_PARSE_FAILED,
                                _("filter '%s' "
                                  "learning value '%s' invalid."),
                                filter->name, learning);
-                goto err_exit;
+                goto error;
             }
         } else {
             goto err_unresolvable_vars;
@@ -583,7 +583,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
         goto err_unresolvable_vars;
     } else if (!forceWithPendingReq &&
                virNWFilterHasLearnReq(ifindex)) {
-        goto err_exit;
+        goto error;
     }
 
     rc = virNWFilterDefToInst(driver,
@@ -593,7 +593,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
                               &inst);
 
     if (rc < 0)
-        goto err_exit;
+        goto error;
 
     switch (useNewFilter) {
     case INSTANTIATE_FOLLOW_NEWFILTER:
@@ -606,7 +606,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
 
     if (instantiate) {
         if (virNWFilterLockIface(binding->portdevname) < 0)
-            goto err_exit;
+            goto error;
 
         rc = techdriver->applyNewRules(binding->portdevname, inst.rules, inst.nrules);
 
@@ -623,7 +623,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
         virNWFilterUnlockIface(binding->portdevname);
     }
 
- err_exit:
+ error:
     virNWFilterInstReset(&inst);
     virHashFree(missing_vars);
 
@@ -640,7 +640,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
     }
 
     rc = -1;
-    goto err_exit;
+    goto error;
 }
 
 
@@ -707,14 +707,14 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
     if (virNWFilterVarHashmapAddStdValue(binding->filterparams,
                                          NWFILTER_STD_VAR_MAC,
                                          vmmacaddr) < 0)
-        goto err_exit;
+        goto error;
 
     ipaddr = virNWFilterIPAddrMapGetIPAddr(binding->portdevname);
     if (ipaddr &&
         virNWFilterVarHashmapAddStdValue(binding->filterparams,
                                          NWFILTER_STD_VAR_IP,
                                          virNWFilterVarValueGetSimple(ipaddr)) < 0)
-        goto err_exit;
+        goto error;
 
 
     filter = virNWFilterObjGetDef(obj);
@@ -737,7 +737,7 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
                                   teardownOld, driver,
                                   forceWithPendingReq);
 
- err_exit:
+ error:
     virNWFilterObjUnlock(obj);
 
     return rc;
