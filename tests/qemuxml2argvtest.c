@@ -2276,6 +2276,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS);
     DO_TEST_CAPS_LATEST("video-bochs-display-device");
     DO_TEST_CAPS_LATEST("video-ramfb-display-device");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("video-ramfb-display-device-pci-address");
     DO_TEST("video-none-device",
             QEMU_CAPS_VNC);
     DO_TEST_PARSE_ERROR("video-invalid-multiple-devices", NONE);

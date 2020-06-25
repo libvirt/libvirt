@@ -1925,6 +1925,14 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
     if (qemuValidateDomainVirtioOptions(video->virtio, qemuCaps) < 0)
         return -1;
 
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_RAMFB &&
+        video->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'address' is not supported for 'ramfb' video devices"));
+        return -1;
+    }
+
+
     return 0;
 }
 
