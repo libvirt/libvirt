@@ -3113,13 +3113,12 @@ virNWFilterRuleInstSort(const void *a, const void *b)
     /* ensure root chain commands appear before all others since
        we will need them to create the child chains */
     if (root_a) {
-        if (root_b)
-            goto normal;
-        return -1; /* a before b */
-    }
-    if (root_b)
+        if (!root_b)
+            return -1; /* a before b */
+    } else if (root_b) {
         return 1; /* b before a */
- normal:
+    }
+
     /* priorities are limited to range [-1000, 1000] */
     return insta->priority - instb->priority;
 }
