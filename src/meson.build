@@ -127,6 +127,19 @@ endif
 
 libvirt_libs = []
 
+# virt_modules:
+#   each entry is a dictionary with following items:
+#   * name - module name (required)
+#   * sources - module sources (optional, default [])
+#   * name_prefix - resulting library prefix (optional, default 'lib')
+#   * include - include_directories (optional, default [])
+#   * deps - dependencies (optional, default [])
+#   * link_with - static libraries to link with (optional, default [])
+#   * link_whole - static libraries to include (optional, default [])
+#   * link_args - arguments for linker (optional, default [])
+#   * install_dir - installation directory (optional, default libdir / 'libvirt' / 'connection-driver'
+virt_modules = []
+
 
 # list subdirectories
 
@@ -427,3 +440,37 @@ libvirt_admin_lib = shared_library(
   version: libvirt_lib_version,
   soversion: libvirt_so_version,
 )
+
+
+# build libvirt shared modules
+
+foreach module : virt_modules
+  mod = shared_module(
+    module['name'],
+    module.get('sources', []),
+    name_prefix: module.get('name_prefix', 'lib'),
+    include_directories: [
+      conf_inc_dir,
+      module.get('include', []),
+    ],
+    dependencies: [
+      src_dep,
+      module.get('deps', []),
+    ],
+    link_with: [
+      libvirt_lib,
+      module.get('link_with', []),
+    ],
+    link_whole: [
+      module.get('link_whole', []),
+    ],
+    link_args: [
+      libvirt_nodelete,
+      module.get('link_args', []),
+    ],
+    install: true,
+    install_dir: module.get('install_dir', libdir / 'libvirt' / 'connection-driver'),
+    install_rpath: libdir,
+  )
+  set_variable('@0@_module'.format(module['name'].underscorify()), mod)
+endforeach

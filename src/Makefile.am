@@ -19,12 +19,6 @@
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
 # that actually use them.
-AM_LDFLAGS_MOD = \
-	-module \
-	-avoid-version \
-	$(LIBVIRT_NODELETE) \
-	$(AM_LDFLAGS)
-AM_LDFLAGS_MOD_NOUNDEF = $(AM_LDFLAGS_MOD) $(NO_UNDEFINED_LDFLAGS)
 
 BUILT_SOURCES =
 nodist_conf_DATA =
@@ -81,8 +75,6 @@ include secret/Makefile.inc.am
 include storage/Makefile.inc.am
 include remote/Makefile.inc.am
 
-
-moddir = $(libdir)/libvirt/connection-driver
 
 confdir = $(sysconfdir)/libvirt
 conf_DATA += libvirt.conf
