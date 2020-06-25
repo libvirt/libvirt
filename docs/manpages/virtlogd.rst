@@ -80,16 +80,16 @@ FILES
 When run as *root*
 ------------------
 
-* ``SYSCONFDIR/libvirt/virtlogd.conf``
+* ``@SYSCONFDIR@/libvirt/virtlogd.conf``
 
 The default configuration file used by ``virtlogd``, unless overridden on the
 command line using the ``-f``  | ``--config`` option.
 
-* ``RUNSTATEDIR/libvirt/virtlogd-sock``
+* ``@RUNSTATEDIR@/libvirt/virtlogd-sock``
 
 The sockets ``virtlogd`` will use.
 
-* ``RUNSTATEDIR/virtlogd.pid``
+* ``@RUNSTATEDIR@/virtlogd.pid``
 
 The PID file to use, unless overridden by the ``-p`` | ``--pid-file`` option.
 
@@ -131,8 +131,8 @@ To start ``virtlogd``, instructing it to daemonize and create a PID file:
 .. code-block::
 
   # virtlogd -d
-  # ls -la RUNSTATEDIR/virtlogd.pid
-  -rw-r--r-- 1 root root 6 Jul  9 02:40 RUNSTATEDIR/virtlogd.pid
+  # ls -la @RUNSTATEDIR@/virtlogd.pid
+  -rw-r--r-- 1 root root 6 Jul  9 02:40 @RUNSTATEDIR@/virtlogd.pid
 
 
 BUGS

@@ -79,16 +79,16 @@ FILES
 When run as *root*
 ------------------
 
-* ``SYSCONFDIR/libvirt/virtlockd.conf``
+* ``@SYSCONFDIR@/libvirt/virtlockd.conf``
 
 The default configuration file used by ``virtlockd``, unless overridden on the
 command line using the ``-f`` | ``--config`` option.
 
-* ``RUNSTATEDIR/libvirt/virtlockd-sock``
+* ``@RUNSTATEDIR@/libvirt/virtlockd-sock``
 
 The sockets ``virtlockd`` will use.
 
-* ``RUNSTATEDIR/virtlockd.pid``
+* ``@RUNSTATEDIR@/virtlockd.pid``
 
 The PID file to use, unless overridden by the ``-p`` | ``--pid-file`` option.
 
@@ -130,8 +130,8 @@ To start ``virtlockd``, instructing it to daemonize and create a PID file:
 .. code-block::
 
   # virtlockd -d
-  # ls -la RUNSTATEDIR/virtlockd.pid
-  -rw-r--r-- 1 root root 6 Jul  9 02:40 RUNSTATEDIR/virtlockd.pid
+  # ls -la @RUNSTATEDIR@/virtlockd.pid
+  -rw-r--r-- 1 root root 6 Jul  9 02:40 @RUNSTATEDIR@/virtlockd.pid
 
 BUGS
 ====

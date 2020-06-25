@@ -131,29 +131,29 @@ FILES
 When run as *root*
 ------------------
 
-* ``SYSCONFDIR/libvirt/libvirtd.conf``
+* ``@SYSCONFDIR@/libvirt/libvirtd.conf``
 
 The default configuration file used by libvirtd, unless overridden on the
 command line using the ``-f`` | ``--config`` option.
 
-* ``RUNSTATEDIR/libvirt/libvirt-sock``
-* ``RUNSTATEDIR/libvirt/libvirt-sock-ro``
+* ``@RUNSTATEDIR@/libvirt/libvirt-sock``
+* ``@RUNSTATEDIR@/libvirt/libvirt-sock-ro``
 
 The sockets libvirtd will use.
 
-* ``SYSCONFDIR/pki/CA/cacert.pem``
+* ``@SYSCONFDIR@/pki/CA/cacert.pem``
 
 The TLS **Certificate Authority** certificate libvirtd will use.
 
-* ``SYSCONFDIR/pki/libvirt/servercert.pem``
+* ``@SYSCONFDIR@/pki/libvirt/servercert.pem``
 
 The TLS **Server** certificate libvirtd will use.
 
-* ``SYSCONFDIR/pki/libvirt/private/serverkey.pem``
+* ``@SYSCONFDIR@/pki/libvirt/private/serverkey.pem``
 
 The TLS **Server** private key libvirtd will use.
 
-* ``RUNSTATEDIR/libvirtd.pid``
+* ``@RUNSTATEDIR@/libvirtd.pid``
 
 The PID file to use, unless overridden by the ``-p`` | ``--pid-file`` option.
 
@@ -210,8 +210,8 @@ To start libvirtd, instructing it to daemonize and create a PID file:
 .. code-block::
 
   # libvirtd -d
-  # ls -la RUNSTATEDIR/libvirtd.pid
-  -rw-r--r-- 1 root root 6 Jul  9 02:40 RUNSTATEDIR/libvirtd.pid
+  # ls -la @RUNSTATEDIR@/libvirtd.pid
+  -rw-r--r-- 1 root root 6 Jul  9 02:40 @RUNSTATEDIR@/libvirtd.pid
 
 
 BUGS
