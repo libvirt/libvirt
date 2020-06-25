@@ -7,7 +7,10 @@ apipng = [
 
 install_data(apipng, install_dir: docs_html_dir / 'html')
 
-custom_target(
+docs_html_gen = []
+docs_html_dep = []
+
+index_api_gen = custom_target(
   'index-api',
   input: [
     newapi_xsl,
@@ -43,8 +46,11 @@ custom_target(
   ],
 )
 
+docs_html_gen += index_api_gen.to_list()
+docs_html_dep += index_api_gen
+
 foreach name : [ 'admin', 'lxc', 'qemu' ]
-  custom_target(
+  index_api_gen = custom_target(
     'index-@0@-api'.format(name),
     input: [
       newapi_xsl,
@@ -67,4 +73,22 @@ foreach name : [ 'admin', 'lxc', 'qemu' ]
       page_xsl,
     ],
   )
+
+  docs_html_gen += index_api_gen.to_list()
+  docs_html_dep += index_api_gen
 endforeach
+
+docs_html_paths = []
+
+foreach file : docs_html_gen
+  docs_html_paths += file.full_path()
+endforeach
+
+test(
+  'check-html',
+  xmllint_prog,
+  args: [
+    '--nonet', '--noout', docs_html_paths,
+  ],
+  depends: docs_html_dep,
+)
