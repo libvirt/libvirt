@@ -45,12 +45,23 @@ typedef enum {
     VIR_DOMAIN_BACKUP_DISK_STATE_LAST
 } virDomainBackupDiskState;
 
+
+typedef enum {
+    VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_DEFAULT = 0,
+    VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_FULL,
+    VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_INCREMENTAL,
+
+    VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_LAST
+} virDomainBackupDiskBackupMode;
+
+
 /* Stores disk-backup information */
 typedef struct _virDomainBackupDiskDef virDomainBackupDiskDef;
 typedef virDomainBackupDiskDef *virDomainBackupDiskDefPtr;
 struct _virDomainBackupDiskDef {
     char *name;     /* name matching the <target dev='...' of the domain */
     virTristateBool backup; /* whether backup is requested */
+    virDomainBackupDiskBackupMode backupmode;
     char *incremental; /* name of the starting point checkpoint of an incremental backup */
     char *exportname; /* name of the NBD export for pull mode backup */
     char *exportbitmap; /* name of the bitmap exposed in NBD for pull mode backup */

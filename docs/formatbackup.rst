@@ -69,6 +69,17 @@ were supplied). The following child elements and attributes are supported:
          should take part in the backup and using ``no`` excludes the disk from
          the backup.
 
+      ``backupmode``
+         This attribute overrides the implied backup mode inherited from the
+         definition of the backup itself. Value ``full`` forces a full backup
+         even if the backup calls for an incremental backup, and ``incremental``
+         coupled with the attribute ``incremental='CHECKPOINTNAME`` for the disk
+         forces an incremental backup from ``CHECKPOINTNAME``.
+
+       ``incremental``
+         An optional attribute giving the name of an existing checkpoint of the
+         domain which overrides the one set by the ``<incremental>`` element.
+
       ``exportname``
          Allows modification of the NBD export name for the given disk. By
          default equal to disk target. Valid only for pull mode backups.
