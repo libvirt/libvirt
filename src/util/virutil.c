@@ -962,7 +962,7 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
     if (uid != (uid_t)-1 &&
         virGetUserEnt(uid, &user, &primary, NULL, NULL, true) >= 0) {
         int nallocgrps = 10;
-        gid_t *grps = g_new(gid_t, nallocgrps);
+        gid_t *grps = g_new0(gid_t, nallocgrps);
 
         while (1) {
             int nprevallocgrps = nallocgrps;

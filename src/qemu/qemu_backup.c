@@ -65,7 +65,7 @@ qemuBackupPrepare(virDomainBackupDefPtr def)
 
     if (def->type == VIR_DOMAIN_BACKUP_TYPE_PULL) {
         if (!def->server) {
-            def->server = g_new(virStorageNetHostDef, 1);
+            def->server = g_new0(virStorageNetHostDef, 1);
 
             def->server->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
             def->server->name = g_strdup("localhost");
