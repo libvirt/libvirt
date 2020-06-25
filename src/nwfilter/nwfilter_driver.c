@@ -303,7 +303,7 @@ nwfilterStateInitialize(bool privileged,
 
  err_free_driverstate:
     virNWFilterObjListFree(driver->nwfilters);
-    VIR_FREE(driver);
+    g_clear_pointer(&driver, g_free);
 
     return VIR_DRV_STATE_INIT_ERROR;
 }
@@ -367,9 +367,9 @@ nwfilterStateCleanup(void)
         if (driver->lockFD != -1)
             virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
 
-        VIR_FREE(driver->stateDir);
-        VIR_FREE(driver->configDir);
-        VIR_FREE(driver->bindingDir);
+        g_free(driver->stateDir);
+        g_free(driver->configDir);
+        g_free(driver->bindingDir);
         nwfilterDriverUnlock();
     }
 
@@ -379,7 +379,7 @@ nwfilterStateCleanup(void)
     virNWFilterObjListFree(driver->nwfilters);
 
     virMutexDestroy(&driver->lock);
-    VIR_FREE(driver);
+    g_clear_pointer(&driver, g_free);
 
     return 0;
 }

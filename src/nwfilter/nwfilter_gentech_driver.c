@@ -122,7 +122,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
         return;
 
     virHashFree(inst->vars);
-    VIR_FREE(inst);
+    g_free(inst);
 }
 
 
@@ -234,12 +234,12 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
 
     for (i = 0; i < inst->nfilters; i++)
         virNWFilterObjUnlock(inst->filters[i]);
-    VIR_FREE(inst->filters);
+    g_free(inst->filters);
     inst->nfilters = 0;
 
     for (i = 0; i < inst->nrules; i++)
         virNWFilterRuleInstFree(inst->rules[i]);
-    VIR_FREE(inst->rules);
+    g_free(inst->rules);
     inst->nrules = 0;
 }
 

@@ -314,7 +314,7 @@ virNWFilterSnoopCancel(char **threadKey)
     virNWFilterSnoopActiveLock();
 
     ignore_value(virHashRemoveEntry(virNWFilterSnoopState.active, *threadKey));
-    VIR_FREE(*threadKey);
+    g_clear_pointer(threadKey, g_free);
 
     virNWFilterSnoopActiveUnlock();
 }
@@ -600,7 +600,7 @@ virNWFilterSnoopReqFree(virNWFilterSnoopReqPtr req)
     virCondDestroy(&req->threadStatusCond);
     virFreeError(req->threadError);
 
-    VIR_FREE(req);
+    g_free(req);
 }
 
 /*
@@ -731,7 +731,7 @@ virNWFilterSnoopReqLeaseAdd(virNWFilterSnoopReqPtr req,
 
     if (req->threadkey && virNWFilterSnoopIPLeaseInstallRule(pl, true) < 0) {
         virNWFilterSnoopReqUnlock(req);
-        VIR_FREE(pl);
+        g_free(pl);
         return -1;
     }
 
@@ -850,7 +850,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
     }
 
  skip_instantiate:
-    VIR_FREE(ipl);
+    g_free(ipl);
 
     ignore_value(!!g_atomic_int_dec_and_test(&virNWFilterSnoopState.nLeases));
 
@@ -1149,7 +1149,7 @@ virNWFilterSnoopDHCPDecodeJobSubmit(virThreadPoolPtr pool,
     if (ret == 0)
         g_atomic_int_add(qCtr, 1);
     else
-        VIR_FREE(job);
+        g_free(job);
 
     return ret;
 }
@@ -1502,7 +1502,7 @@ virNWFilterDHCPSnoopThread(void *req0)
     ignore_value(virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey,
                                     req->binding->portdevname));
 
-    VIR_FREE(req->binding->portdevname);
+    g_clear_pointer(&req->binding->portdevname, g_free);
 
     virNWFilterSnoopReqUnlock(req);
     virNWFilterSnoopUnlock();
@@ -1970,7 +1970,7 @@ virNWFilterSnoopRemAllReqIter(const void *payload,
          */
         virNWFilterIPAddrMapDelIPAddr(req->binding->portdevname, NULL);
 
-        VIR_FREE(req->binding->portdevname);
+        g_clear_pointer(&req->binding->portdevname, g_free);
     }
 
     virNWFilterSnoopReqUnlock(req);
@@ -2079,7 +2079,7 @@ virNWFilterDHCPSnoopEnd(const char *ifname)
         /* keep valid lease req; drop interface association */
         virNWFilterSnoopCancel(&req->threadkey);
 
-        VIR_FREE(req->binding->portdevname);
+        g_clear_pointer(&req->binding->portdevname, g_free);
 
         virNWFilterSnoopReqUnlock(req);
 

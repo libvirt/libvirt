@@ -156,7 +156,7 @@ virNWFilterLockIface(const char *ifname)
         if (virMutexInitRecursive(&ifaceLock->lock) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("mutex initialization failed"));
-            VIR_FREE(ifaceLock);
+            g_free(ifaceLock);
             goto error;
         }
 
@@ -165,12 +165,12 @@ virNWFilterLockIface(const char *ifname)
                            _("interface name %s does not fit into "
                              "buffer "),
                            ifaceLock->ifname);
-            VIR_FREE(ifaceLock);
+            g_free(ifaceLock);
             goto error;
         }
 
         while (virHashAddEntry(ifaceLockMap, ifname, ifaceLock)) {
-            VIR_FREE(ifaceLock);
+            g_free(ifaceLock);
             goto error;
         }
 
@@ -221,7 +221,7 @@ virNWFilterIPAddrLearnReqFree(virNWFilterIPAddrLearnReqPtr req)
 
     virNWFilterBindingDefFree(req->binding);
 
-    VIR_FREE(req);
+    g_free(req);
 }
 
 
