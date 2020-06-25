@@ -21,7 +21,7 @@
 DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 
 SUBDIRS = . docs \
-  tests po examples
+  po examples
 
 XZ_OPT ?= -v -T0
 export XZ_OPT
@@ -34,8 +34,6 @@ rpm: clean
 
 srpm: clean
 	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ts $(distdir).tar.xz)
-
-check-local: all tests
 
 dist-hook: gen-AUTHORS
 

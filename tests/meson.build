@@ -687,3 +687,15 @@ add_test_setup(
   ],
   exe_wrapper: [ python3_prog, check_file_access_prog.path() ],
 )
+
+add_test_setup(
+  'valgrind',
+  exe_wrapper: [
+    'valgrind', '--quiet', '--leak-check=full', '--trace-children=yes',
+    '--trace-children-skip="*/tools/virsh,*/tests/commandhelper,/usr/bin/*"',
+    '--suppressions=@0@'.format(meson.current_source_dir() / '.valgrind.supp'),
+    '--error-exitcode=1',
+  ],
+  # default timeout in meson is 30s
+  timeout_multiplier: 4,
+)
