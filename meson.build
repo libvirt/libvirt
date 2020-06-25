@@ -2233,6 +2233,8 @@ subdir('po')
 
 subdir('docs')
 
+subdir('build-aux')
+
 
 # install pkgconfig files
 pkgconfig_files = [
