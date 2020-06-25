@@ -114,6 +114,5 @@ AC_CONFIG_FILES([\
         libvirt-lxc.pc \
         libvirt-admin.pc \
         libvirt.spec mingw-libvirt.spec \
-        po/Makefile \
-        examples/Makefile])
+        po/Makefile])
 AC_OUTPUT

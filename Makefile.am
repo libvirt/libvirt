@@ -21,7 +21,7 @@
 DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 
 SUBDIRS = . docs \
-  po examples
+  po
 
 XZ_OPT ?= -v -T0
 export XZ_OPT
