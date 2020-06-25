@@ -411,13 +411,6 @@ virDomainBackupDefAssignStore(virDomainBackupDiskDefPtr disk,
                            _("disk '%s' has no media"), disk->name);
             return -1;
         }
-    } else if (src->readonly) {
-        if (disk->store) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("backup of readonly disk '%s' makes no sense"),
-                           disk->name);
-            return -1;
-        }
     } else if (!disk->store) {
         if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_FILE) {
             if (!(disk->store = virStorageSourceNew()))
