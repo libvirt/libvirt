@@ -23,3 +23,14 @@ src_dep = declare_dependency(
     + win32_link_flags
   ),
 )
+
+
+# define secdriver_dep
+
+secdriver_dep = []
+if conf.has('WITH_SECDRIVER_SELINUX')
+  secdriver_dep += selinux_dep
+endif
+if conf.has('WITH_SECDRIVER_APPARMOR')
+  secdriver_dep += apparmor_dep
+endif

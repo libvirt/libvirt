@@ -106,18 +106,6 @@ include storage/Makefile.inc.am
 include remote/Makefile.inc.am
 
 
-SECDRIVER_CFLAGS =
-SECDRIVER_LIBS =
-if WITH_SECDRIVER_SELINUX
-SECDRIVER_CFLAGS += $(SELINUX_CFLAGS)
-SECDRIVER_LIBS += $(SELINUX_LIBS)
-endif WITH_SECDRIVER_SELINUX
-if WITH_SECDRIVER_APPARMOR
-SECDRIVER_CFLAGS += $(APPARMOR_CFLAGS)
-SECDRIVER_LIBS += $(APPARMOR_LIBS)
-endif WITH_SECDRIVER_APPARMOR
-
-
 moddir = $(libdir)/libvirt/connection-driver
 
 confdir = $(sysconfdir)/libvirt
