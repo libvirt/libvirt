@@ -831,3 +831,14 @@ if host_machine.system() == 'linux'
     env: runutf8,
   )
 endif
+
+test(
+  'check-symsorting',
+  python3_prog,
+  args: [
+    check_symsorting_prog.path(),
+    meson.current_source_dir(),
+    files(sym_files, used_sym_files),
+  ],
+  env: runutf8,
+)

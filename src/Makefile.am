@@ -23,8 +23,6 @@
 BUILT_SOURCES =
 DRIVER_SOURCE_FILES =
 STATEFUL_DRIVER_SOURCE_FILES =
-SYM_FILES =
-USED_SYM_FILES =
 augeas_DATA =
 augeastest_DATA =
 if WITH_DTRACE_PROBES
@@ -47,10 +45,6 @@ include node_device/Makefile.inc.am
 include secret/Makefile.inc.am
 include storage/Makefile.inc.am
 
-
-check-symsorting:
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-symsorting.py \
-		$(srcdir) $(SYM_FILES)
 
 # Keep this list synced with RPC_PROBE_FILES
 PROTOCOL_STRUCTS = \
@@ -139,15 +133,10 @@ check-aclperms:
 		$(srcdir)/access/viraccessperm.h \
 		$(srcdir)/access/viraccessperm.c
 
-check-local: check-protocol check-symsorting \
+check-local: check-protocol \
 	check-drivername check-driverimpls check-aclrules \
 	check-aclperms check-admin
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
-
-
-# All .syms files should be placed in exactly one of these three lists,
-# depending on whether they are stored in git and/or used in the build.
-SYM_FILES += $(USED_SYM_FILES)
 
 
 check-local: check-augeas
