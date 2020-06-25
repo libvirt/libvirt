@@ -1,11 +1,5 @@
 # vim: filetype=automake
 
-STORAGE_DRIVER_SHEEPDOG_SOURCES = \
-	storage/storage_backend_sheepdog.h \
-	storage/storage_backend_sheepdog.c \
-	storage/storage_backend_sheepdog_priv.h \
-	$(NULL)
-
 STORAGE_DRIVER_GLUSTER_SOURCES = \
 	storage/storage_backend_gluster.h \
 	storage/storage_backend_gluster.c \
@@ -117,30 +111,6 @@ storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
 
 
 endif WITH_STORAGE
-
-if WITH_STORAGE_SHEEPDOG
-libvirt_storage_backend_sheepdog_la_SOURCES = \
-	$(STORAGE_DRIVER_SHEEPDOG_SOURCES)
-libvirt_storage_backend_sheepdog_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-
-libvirt_storage_backend_sheepdog_priv_la_SOURCES = \
-	$(STORAGE_DRIVER_SHEEPDOG_SOURCES)
-libvirt_storage_backend_sheepdog_priv_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS) \
-	$(NULL)
-noinst_LTLIBRARIES += libvirt_storage_backend_sheepdog_priv.la
-
-storagebackend_LTLIBRARIES += libvirt_storage_backend_sheepdog.la
-libvirt_storage_backend_sheepdog_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-libvirt_storage_backend_sheepdog_la_LIBADD = \
-	libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-endif WITH_STORAGE_SHEEPDOG
 
 if WITH_STORAGE_GLUSTER
 libvirt_storage_backend_gluster_la_SOURCES = \

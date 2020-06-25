@@ -44,6 +44,10 @@ storage_backend_scsi_sources = [
   'storage_backend_scsi.c',
 ]
 
+storage_backend_sheepdog_sources = [
+  'storage_backend_sheepdog.c',
+]
+
 storage_backend_install_dir = libdir / 'libvirt' / 'storage-backend'
 storage_file_install_dir = libdir / 'libvirt' / 'storage-file'
 
@@ -165,6 +169,27 @@ if conf.has('WITH_STORAGE_SCSI')
     'name': 'virt_storage_backend_scsi',
     'sources': [
       files(storage_backend_scsi_sources),
+    ],
+    'install_dir': storage_backend_install_dir,
+  }
+endif
+
+if conf.has('WITH_STORAGE_SHEEPDOG')
+  storage_backend_sheepdog_priv_lib = static_library(
+    'virt_storage_backend_sheepdog_priv',
+    storage_backend_sheepdog_sources,
+    dependencies: [
+      src_dep,
+    ],
+    include_directories: [
+      conf_inc_dir,
+    ],
+  )
+
+  virt_modules += {
+    'name': 'virt_storage_backend_sheepdog',
+    'link_whole': [
+      storage_backend_sheepdog_priv_lib,
     ],
     'install_dir': storage_backend_install_dir,
   }
