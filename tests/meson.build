@@ -228,3 +228,52 @@ executable(
     coverage_flags,
   ],
 )
+
+
+# build and define libvirt tests
+
+# tests:
+#   each entry is a dictionary with following items:
+#   * name - name of the test which is also used as default source file name (required)
+#   * sources - override default sources based on name (optional, default [ '$name.c' ])
+#   * c_args - args used by test (optional, default [])
+#   * deps - additional dependencies (optional, default [])
+#   * include - include_directories (optional, default [])
+#   * link_with - compiled libraries to link with (optional, default [])
+#   * link_whole - compiled libraries to link whole (optional, default [])
+
+tests = []
+
+foreach data : tests
+  test_sources = '@0@.c'.format(data['name'])
+  test_bin = executable(
+    data['name'],
+    [
+      data.get('sources', test_sources),
+      dtrace_gen_objects,
+    ],
+    c_args: [
+      data.get('c_args', []),
+    ],
+    dependencies: [
+      tests_dep,
+      data.get('deps', []),
+    ],
+    include_directories: [
+      data.get('include', []),
+    ],
+    link_args: [
+      libvirt_no_indirect,
+    ],
+    link_with: [
+      libvirt_lib,
+      data.get('link_with', []),
+    ],
+    link_whole: [
+      test_utils_lib,
+      data.get('link_whole', []),
+    ],
+    export_dynamic: true,
+  )
+  test(data['name'], test_bin, env: tests_env)
+endforeach

@@ -16,18 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-PROBES_O =
-if WITH_DTRACE_PROBES
-PROBES_O += ../src/libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-LDADDS = \
-	$(NO_INDIRECT_LDFLAGS) \
-	$(PROBES_O) \
-	../src/libvirt.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-
 test_programs = virshtest sockettest \
 	virhostcputest virbuftest \
 	commandtest seclabeltest \
