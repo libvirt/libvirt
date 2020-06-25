@@ -5,8 +5,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(NETWORK_DRIVER_SOURCES))
 
 if WITH_NETWORK
-SYSCONF_FILES += network/virtnetworkd.sysconf
-
 INSTALL_DATA_DIRS += network
 
 UUID=$(shell uuidgen 2>/dev/null)

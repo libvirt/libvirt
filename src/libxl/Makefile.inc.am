@@ -5,8 +5,6 @@ STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(LIBXL_DRIVER_SOURCES))
 
 if WITH_LIBXL
 
-SYSCONF_FILES += libxl/virtxend.sysconf
-
 INSTALL_DATA_DIRS += libxl
 
 install-data-libxl:

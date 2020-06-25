@@ -3,7 +3,3 @@
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
-
-if WITH_STORAGE
-SYSCONF_FILES += storage/virtstoraged.sysconf
-endif WITH_STORAGE

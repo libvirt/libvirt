@@ -35,11 +35,9 @@ tapset_DATA =
 endif WITH_DTRACE_PROBES
 RPC_PROBE_FILES =
 LOGROTATE_FILES_IN =
-SYSCONF_FILES =
 
 include security/Makefile.inc.am
 include access/Makefile.inc.am
-include logging/Makefile.inc.am
 include locking/Makefile.inc.am
 include admin/Makefile.inc.am
 include vbox/Makefile.inc.am
@@ -204,23 +202,6 @@ libvirt_functions.stp: $(RPC_PROBE_FILES) $(top_srcdir)/scripts/gensystemtap.py
 	  $(RPC_PROBE_FILES) > $@
 
 endif WITH_DTRACE_PROBES
-
-install-sysconfig:
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
-	for f in $(SYSCONF_FILES:%.sysconf=%) ; \
-	do \
-	  tgt=`basename $$f`; \
-	  $(INSTALL_DATA) $(srcdir)/$$f.sysconf \
-	      $(DESTDIR)$(sysconfdir)/sysconfig/$$tgt; \
-	done
-
-uninstall-sysconfig:
-	for f in $(SYSCONF_FILES:%.sysconf=%) ; \
-	do \
-	  tgt=`basename $$f`; \
-	  rm -f $(DESTDIR)$(sysconfdir)/sysconfig/$$tgt; \
-	done
-	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
 LOGROTATE_FILES := $(LOGROTATE_FILES_IN:remote/%.in=%)
 

@@ -7,11 +7,6 @@ LOGROTATE_FILES_IN += \
 	remote/libvirtd.logrotate.in \
 	$(NULL)
 
-SYSCONF_FILES += \
-	remote/libvirtd.sysconf \
-	remote/virtproxyd.sysconf \
-	$(NULL)
-
 if WITH_LIBVIRTD
 
 INSTALL_DATA_DIRS += remote

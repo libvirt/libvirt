@@ -4,7 +4,3 @@ DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(VBOX_DRIVER_SOURCES)) \
 	$(srcdir)/vbox/vbox_tmpl.c \
 	$(NULL)
-
-if WITH_VBOX
-SYSCONF_FILES += vbox/virtvboxd.sysconf
-endif WITH_VBOX

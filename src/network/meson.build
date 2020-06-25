@@ -71,4 +71,9 @@ if conf.has('WITH_NETWORK')
     'name': 'virtnetworkd',
     'in_file': files('virtnetworkd.init.in'),
   }
+
+  sysconf_files += {
+    'name': 'virtnetworkd',
+    'file': files('virtnetworkd.sysconf'),
+  }
 endif

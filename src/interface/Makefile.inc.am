@@ -3,9 +3,3 @@
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(INTERFACE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(INTERFACE_DRIVER_SOURCES))
-
-if WITH_INTERFACE
-
-SYSCONF_FILES += interface/virtinterfaced.sysconf
-
-endif WITH_INTERFACE

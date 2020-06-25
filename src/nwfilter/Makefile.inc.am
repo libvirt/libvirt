@@ -11,6 +11,4 @@ if WITH_NWFILTER
 nwfilterxmldir = $(sysconfdir)/libvirt/nwfilter
 nwfilterxml_DATA = $(NWFILTER_XML_FILES)
 
-SYSCONF_FILES += nwfilter/virtnwfilterd.sysconf
-
 endif WITH_NWFILTER

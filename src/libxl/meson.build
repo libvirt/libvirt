@@ -71,4 +71,9 @@ if conf.has('WITH_LIBXL')
     'name': 'virtxend',
     'in_file': files('virtxend.init.in'),
   }
+
+  sysconf_files += {
+    'name': 'virtxend',
+    'file': files('virtxend.sysconf'),
+  }
 endif

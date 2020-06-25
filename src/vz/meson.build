@@ -56,4 +56,9 @@ if conf.has('WITH_VZ')
     'name': 'virtvzd',
     'in_file': files('virtvzd.init.in'),
   }
+
+  sysconf_files += {
+    'name': 'virtvzd',
+    'file': files('virtvzd.sysconf'),
+  }
 endif

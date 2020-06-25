@@ -155,4 +155,9 @@ if conf.has('WITH_QEMU')
     'name': 'virtqemud',
     'in_file': files('virtqemud.init.in'),
   }
+
+  sysconf_files += {
+    'name': 'virtqemud',
+    'file': files('virtqemud.sysconf'),
+  }
 endif

@@ -154,4 +154,9 @@ if conf.has('WITH_LXC')
     'name': 'virtlxcd',
     'in_file': files('virtlxcd.init.in'),
   }
+
+  sysconf_files += {
+    'name': 'virtlxcd',
+    'file': files('virtlxcd.sysconf'),
+  }
 endif

@@ -2,8 +2,3 @@
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(VZ_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(VZ_DRIVER_SOURCES))
-
-
-if WITH_VZ
-SYSCONF_FILES += vz/virtvzd.sysconf
-endif WITH_VZ

@@ -64,4 +64,9 @@ if conf.has('WITH_VBOX')
     'name': 'virtvboxd',
     'in_file': files('virtvboxd.init.in'),
   }
+
+  sysconf_files += {
+    'name': 'virtvboxd',
+    'file': files('virtvboxd.sysconf'),
+  }
 endif

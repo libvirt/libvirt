@@ -9,8 +9,3 @@ DRIVER_SOURCE_FILES += \
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(NODE_DEVICE_DRIVER_SOURCES)) \
 	$(NULL)
-
-
-if WITH_NODE_DEVICES
-SYSCONF_FILES += node_device/virtnodedevd.sysconf
-endif WITH_NODE_DEVICES

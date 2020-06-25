@@ -11,8 +11,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 
 if WITH_LXC
 
-SYSCONF_FILES += lxc/virtlxcd.sysconf
-
 if WITH_DTRACE_PROBES
 RPC_PROBE_FILES += $(srcdir)/lxc/lxc_monitor_protocol.x
 endif

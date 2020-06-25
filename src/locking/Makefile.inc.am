@@ -1,7 +1,6 @@
 # vim: filetype=automake
 
 RPC_PROBE_FILES += $(srcdir)/locking/lock_protocol.x
-SYSCONF_FILES += locking/virtlockd.sysconf
 
 INSTALL_DATA_DIRS += locking
 
