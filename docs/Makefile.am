@@ -277,17 +277,6 @@ manpages/virkeyname-%.rst: $(top_srcdir)/src/keycodemapdb/data/keymaps.csv \
 manpagesdir = $(HTML_DIR)/manpages
 manpages_DATA = $(manpages_html)
 
-dot_rst_html_in = \
-  news.html.in \
-  $(NULL)
-dot_html = \
-  $(dot_html_generated_in:%.html.in=%.html) \
-  $(dot_html_in:%.html.in=%.html) \
-  $(dot_rst_html_in:%.html.in=%.html)
-
-htmldir = $(HTML_DIR)
-html_DATA = $(dot_html)
-
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
@@ -297,10 +286,6 @@ manpages/%.html.in: manpages/%.rst
 	  sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
 	     -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
 	  $(RST2HTML) --strict > $@ || { rm $@ && exit 1; }
-
-news.html.in: $(top_srcdir)/NEWS.rst
-	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
-	  $(RST2HTML) --strict $< > $@ || { rm $@ && exit 1; }
 
 $(apihtml_generated): html/index.html
 $(apiadminhtml_generated): html/index-admin.html
