@@ -74,6 +74,7 @@ RUN dnf update -y && \
         python3 \
         python3-docutils \
         python3-flake8 \
+        python3-pip \
         python3-setuptools \
         python3-wheel \
         qemu-img \

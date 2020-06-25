@@ -81,6 +81,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             policykit-1 \
             python3 \
             python3-docutils \
+            python3-pip \
             python3-setuptools \
             python3-wheel \
             qemu-utils \
