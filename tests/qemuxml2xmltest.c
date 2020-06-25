@@ -135,6 +135,7 @@ mymain(void)
     char *fakerootdir;
     virQEMUDriverConfigPtr cfg = NULL;
     virHashTablePtr capslatest = NULL;
+    g_autoptr(virConnect) conn = NULL;
 
     capslatest = testQemuGetLatestCaps();
     if (!capslatest)
@@ -163,6 +164,16 @@ mymain(void)
 
     cfg = virQEMUDriverGetConfig(&driver);
     driver.privileged = true;
+
+    if (!(conn = virGetConnect()))
+        goto cleanup;
+
+    virSetConnectInterface(conn);
+    virSetConnectNetwork(conn);
+    virSetConnectNWFilter(conn);
+    virSetConnectNodeDev(conn);
+    virSetConnectSecret(conn);
+    virSetConnectStorage(conn);
 
 # define DO_TEST_INTERNAL(_name, suffix, when, ...) \
     do { \
@@ -1471,6 +1482,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-9p-multidevs");
     DO_TEST("downscript", NONE);
 
+ cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
