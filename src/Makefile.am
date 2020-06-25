@@ -23,7 +23,6 @@
 BUILT_SOURCES =
 DRIVER_SOURCE_FILES =
 STATEFUL_DRIVER_SOURCE_FILES =
-INSTALL_DATA_DIRS =
 INSTALL_DATA_LOCAL =
 UNINSTALL_LOCAL =
 SYM_FILES =
@@ -201,8 +200,6 @@ libvirt_functions.stp: $(RPC_PROBE_FILES) $(top_srcdir)/scripts/gensystemtap.py
 
 endif WITH_DTRACE_PROBES
 
-install-data-local: $(INSTALL_DATA_LOCAL) \
-		$(INSTALL_DATA_DIRS:%=install-data-%)
+install-data-local: $(INSTALL_DATA_LOCAL)
 
-uninstall-local: $(UNINSTALL_LOCAL) \
-		$(INSTALL_DATA_DIRS:%=uninstall-data-%)
+uninstall-local: $(UNINSTALL_LOCAL)

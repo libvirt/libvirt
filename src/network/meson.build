@@ -114,4 +114,12 @@ if conf.has('WITH_NETWORK')
     confdir / 'qemu' / 'networks' / 'autostart',
     '../default.xml', 'default.xml',
   )
+
+  if conf.has('WITH_FIREWALLD_ZONE')
+    install_data(
+      'libvirt.zone',
+      install_dir: prefix / 'lib' / 'firewalld' / 'zones',
+      rename: [ 'libvirt.xml' ],
+    )
+  endif
 endif

@@ -3,25 +3,3 @@
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(NETWORK_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(NETWORK_DRIVER_SOURCES))
-
-if WITH_NETWORK
-INSTALL_DATA_DIRS += network
-
-install-data-network:
-if WITH_FIREWALLD_ZONE
-	$(MKDIR_P) "$(DESTDIR)$(prefix)/lib/firewalld/zones"
-	$(INSTALL_DATA) $(srcdir)/network/libvirt.zone \
-	  $(DESTDIR)$(prefix)/lib/firewalld/zones/libvirt.xml
-endif WITH_FIREWALLD_ZONE
-
-uninstall-data-network:
-if WITH_FIREWALLD_ZONE
-	rm -f  $(DESTDIR)$(prefix)/lib/firewalld/zones/libvirt.xml
-endif WITH_FIREWALLD_ZONE
-
-endif WITH_NETWORK
-
-.PHONY: \
-	install-data-network \
-	uninstall-data-network \
-	$(NULL)
