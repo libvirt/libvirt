@@ -785,14 +785,6 @@ sc_spec_indentation:
 	  echo '$(ME): skipping test $@: cppi not installed' 1>&2; \
 	fi
 
-# Nested conditionals are easier to understand if we enforce that endifs
-# can be paired back to the if
-sc_makefile_conditionals:
-	@prohibit='(else|endif)($$| *#)' \
-	in_vc_files='Makefile\.am' \
-	halt='match "if FOO" with "endif FOO" in Makefiles' \
-	  $(_sc_search_regexp)
-
 # Long lines can be harder to diff; too long, and git send-email chokes.
 # For now, only enforce line length on files where we have intentionally
 # fixed things and don't want to regress.
@@ -800,10 +792,6 @@ sc_prohibit_long_lines:
 	@prohibit='.{90}' \
 	in_vc_files='\.arg[sv]' \
 	halt='Wrap long lines in expected output files' \
-	  $(_sc_search_regexp)
-	@prohibit='.{80}' \
-	in_vc_files='Makefile(\.inc)?\.am' \
-	halt='Wrap long lines in Makefiles' \
 	  $(_sc_search_regexp)
 
 sc_copyright_format:
@@ -1793,40 +1781,6 @@ sc_const_long_option:
 	halt='add "const" to the above declarations'			\
 	  $(_sc_search_regexp)
 
-# Ensure that we use only the standard $(VAR) notation,
-# not @...@ in Makefile.am, now that we can rely on automake
-# to emit a definition for each substituted variable.
-# However, there is still one case in which @VAR@ use is not just
-# legitimate, but actually required: when augmenting an automake-defined
-# variable with a prefix.  For example, gettext uses this:
-# MAKEINFO = env LANG= LC_MESSAGES= LC_ALL= LANGUAGE= @MAKEINFO@
-# otherwise, makeinfo would put German or French (current locale)
-# navigation hints in the otherwise-English documentation.
-#
-# Allow the package to add exceptions via a hook in syntax-check.mk;
-# for example, @PRAGMA_SYSTEM_HEADER@ can be permitted by
-# setting this to ' && !/PRAGMA_SYSTEM_HEADER/'.
-_makefile_at_at_check_exceptions ?=
-sc_makefile_at_at_check:
-	@perl -ne '/\@\w+\@/'						\
-          -e ' && !/(\w+)\s+=.*\@\1\@$$/'				\
-          -e ''$(_makefile_at_at_check_exceptions)			\
-	  -e 'and (print "$$ARGV:$$.: $$_"), $$m=1; END {exit !$$m}'	\
-	    $$($(VC_LIST_EXCEPT) | $(GREP) -E '(^|/)(Makefile\.am|[^/]+\.mk)$$') \
-	  && { echo '$(ME): use $$(...), not @...@' 1>&2; exit 1; } || :
-
-sc_makefile_TAB_only_indentation:
-	@prohibit='^	[ ]{8}'						\
-	in_vc_files='akefile|\.mk$$'					\
-	halt='found TAB-8-space indentation'				\
-	  $(_sc_search_regexp)
-
-sc_m4_quote_check:
-	@prohibit='(AC_DEFINE(_UNQUOTED)?|AC_DEFUN)\([^[]'		\
-	in_vc_files='(^configure\.ac|\.m4)$$'				\
-	halt='quote the first arg to AC_DEF*'				\
-	  $(_sc_search_regexp)
-
 gen_source_files:
 	$(MAKE) -C src generated-sources
 
@@ -1839,8 +1793,8 @@ perl_translatable_files_list_ =						\
   -e 'foreach $$file (@ARGV) {'						\
   -e '	\# Consider only file extensions with one or two letters'	\
   -e '	$$file =~ /\...?$$/ or next;'					\
-  -e '	\# Ignore m4 and mk files'					\
-  -e '	$$file =~ /\.m[4k]$$/ and next;'				\
+  -e '	\# Ignore mk files'						\
+  -e '	$$file =~ /\.mk$$/ and next;'					\
   -e '	\# Ignore a .c or .h file with a corresponding .l or .y file'	\
   -e '	$$file =~ /(.+)\.[ch]$$/ && (-e "$${1}.l" || -e "$${1}.y")'	\
   -e '	  and next;'							\
@@ -1993,12 +1947,6 @@ exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$|tests/
 exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
   ^(build-aux/syntax-check\.mk|include/libvirt/virterror\.h|src/remote/remote_daemon_dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
 
-exclude_file_name_regexp--sc_makefile_TAB_only_indentation = \
-  ^build-aux/syntax-check\.mk$$
-
-exclude_file_name_regexp--sc_makefile_at_at_check = \
-  ^build-aux/syntax-check\.mk$$
-
 exclude_file_name_regexp--sc_prohibit_PATH_MAX = \
 	^build-aux/syntax-check\.mk$$
 
@@ -2075,8 +2023,6 @@ exclude_file_name_regexp--sc_size_of_brackets = build-aux/syntax-check\.mk
 
 exclude_file_name_regexp--sc_correct_id_types = \
   (^src/locking/lock_protocol.x$$)
-
-exclude_file_name_regexp--sc_m4_quote_check = m4/virt-lib.m4
 
 exclude_file_name_regexp--sc_prohibit_include_public_headers_quote = \
   ^(src/internal\.h$$|tools/wireshark/src/packet-libvirt.c$$)
