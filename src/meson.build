@@ -36,6 +36,13 @@ if conf.has('WITH_SECDRIVER_APPARMOR')
 endif
 
 
+# Internal generic driver infrastructure
+
+datatypes_sources = [
+  'datatypes.c',
+]
+
+
 # generate systemtap files
 
 systemtap_dir = datadir / 'systemtap' / 'tapset'

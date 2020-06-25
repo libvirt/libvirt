@@ -106,8 +106,6 @@ augeasdir = $(datadir)/augeas/lenses
 
 augeastestdir = $(datadir)/augeas/lenses/tests
 
-# Internal generic driver infrastructure
-DATATYPES_SOURCES = datatypes.h datatypes.c
 DRIVER_SOURCES += \
 		driver.c driver.h \
 		driver-hypervisor.h \
