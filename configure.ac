@@ -111,7 +111,7 @@ m4_if(m4_version_compare([2.61a.100],
 AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
 AC_CONFIG_FILES([\
-        Makefile src/Makefile docs/Makefile \
+        Makefile docs/Makefile \
         .color_coded \
         .ycm_extra_conf.py \
         libvirt.pc \

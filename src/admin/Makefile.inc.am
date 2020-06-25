@@ -1,7 +1,0 @@
-# vim: filetype=automake
-
-check-admin-drivername:
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-drivername.py \
-		$(srcdir)/admin/libvirt_admin_public.syms
-
-check-admin: check-admin-drivername

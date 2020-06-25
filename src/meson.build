@@ -922,6 +922,15 @@ test(
 )
 
 test(
+  'check-admin-drivername',
+  python3_prog,
+  args: [
+    check_drivername_prog.path(), libvirt_admin_public_syms,
+  ],
+  env: runutf8,
+)
+
+test(
   'check-driverimpls',
   python3_prog,
   args: [ check_driverimpls_prog.path(), driver_source_files ],
