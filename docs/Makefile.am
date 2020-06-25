@@ -406,9 +406,6 @@ hvsupport.html.in: $(top_srcdir)/scripts/hvsupport.py $(api_DATA) \
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/hvsupport.py \
 		$(top_srcdir) $(top_builddir) > $@ || { rm $@ && exit 1; }
 
-%.png: %.fig
-	convert -rotate 90 $< $@
-
 manpages/%.html.in: manpages/%.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
 	 grep -v '^:Manual ' < $< | \
