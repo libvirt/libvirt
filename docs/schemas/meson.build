@@ -1,0 +1,26 @@
+docs_schema_files = [
+  'basictypes.rng',
+  'capability.rng',
+  'cputypes.rng',
+  'domainbackup.rng',
+  'domaincaps.rng',
+  'domaincheckpoint.rng',
+  'domaincommon.rng',
+  'domain.rng',
+  'domainsnapshot.rng',
+  'interface.rng',
+  'networkcommon.rng',
+  'networkport.rng',
+  'network.rng',
+  'nodedev.rng',
+  'nwfilterbinding.rng',
+  'nwfilter_params.rng',
+  'nwfilter.rng',
+  'secret.rng',
+  'storagecommon.rng',
+  'storagepoolcaps.rng',
+  'storagepool.rng',
+  'storagevol.rng',
+]
+
+install_data(docs_schema_files, install_dir: pkgdatadir / 'schemas')

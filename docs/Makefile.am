@@ -16,9 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-schemadir = $(pkgdatadir)/schemas
-schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
-
 check-html:
 	$(XMLLINT) --nonet --noout html/*.html
 
