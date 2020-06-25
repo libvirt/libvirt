@@ -482,6 +482,21 @@ if conf.has('WITH_REMOTE')
   ]
 endif
 
+if conf.has('WITH_SECDRIVER_SELINUX')
+  if conf.has('WITH_ATTR')
+    tests += [
+      { 'name': 'securityselinuxtest' },
+      { 'name': 'viridentitytest' },
+    ]
+
+    if conf.has('WITH_QEMU')
+      tests += [
+        { 'name': 'securityselinuxlabeltest', 'link_whole': [ test_utils_qemu_lib ] },
+      ]
+    endif
+  endif
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

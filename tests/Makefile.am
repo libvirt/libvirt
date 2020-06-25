@@ -16,16 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-if WITH_SECDRIVER_SELINUX
-if WITH_ATTR
-test_programs += securityselinuxtest \
-                 viridentitytest
-if WITH_QEMU
-test_programs += securityselinuxlabeltest
-endif WITH_QEMU
-endif WITH_ATTR
-endif WITH_SECDRIVER_SELINUX
-
 if WITH_QEMU
 test_helpers += qemucapsprobe
 endif WITH_QEMU
@@ -211,15 +201,6 @@ virstoragetest_LDADD = $(LDADDS) \
 	../src/libvirt_driver_storage_impl.la \
 	$(NULL)
 
-viridentitytest_SOURCES = \
-	viridentitytest.c testutils.h testutils.c
-viridentitytest_LDADD = $(LDADDS)
-if WITH_SELINUX
-viridentitytest_LDADD += $(SELINUX_LIBS)
-viridentitytest_DEPENDENCIES = libsecurityselinuxhelper.la \
-	../src/libvirt.la
-endif WITH_SELINUX
-
 if WITH_NSS
 ## Intentionaly not linking with anything else.
 ## See the test source for more detailed explanation.
@@ -252,26 +233,6 @@ test_programs += \
 	virmacmaptest \
 	virnetdevopenvswitchtest
 endif WITH_YAJL
-
-if WITH_SECDRIVER_SELINUX
-if WITH_ATTR
-
-securityselinuxtest_SOURCES = \
-	securityselinuxtest.c testutils.h testutils.c
-securityselinuxtest_LDADD = $(LDADDS) $(SELINUX_LIBS)
-securityselinuxtest_DEPENDENCIES = libsecurityselinuxhelper.la \
-	../src/libvirt.la
-
-if WITH_QEMU
-securityselinuxlabeltest_SOURCES = \
-	securityselinuxlabeltest.c testutils.h testutils.c \
-        testutilsqemu.h testutilsqemu.c
-securityselinuxlabeltest_LDADD = $(qemu_LDADDS) $(SELINUX_LIBS)
-securityselinuxlabeltest_DEPENDENCIES = libsecurityselinuxhelper.la \
-	../src/libvirt.la
-endif WITH_QEMU
-endif WITH_ATTR
-endif WITH_SECDRIVER_SELINUX
 
 virjsontest_SOURCES = \
 	virjsontest.c testutils.h testutils.c
