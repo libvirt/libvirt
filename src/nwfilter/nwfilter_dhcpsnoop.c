@@ -292,18 +292,17 @@ static const unsigned char dhcp_magic[4] = { 99, 130, 83, 99 };
 static char *
 virNWFilterSnoopActivate(virNWFilterSnoopReqPtr req)
 {
-    char *key;
-
-    key = g_strdup_printf("%p-%d", req, req->ifindex);
+    g_autofree char *key = g_strdup_printf("%p-%d", req, req->ifindex);
+    char *ret = NULL;
 
     virNWFilterSnoopActiveLock();
 
-    if (virHashAddEntry(virNWFilterSnoopState.active, key, (void *)0x1) < 0)
-        VIR_FREE(key);
+    if (virHashAddEntry(virNWFilterSnoopState.active, key, (void *)0x1) == 0)
+        ret = g_steal_pointer(&key);
 
     virNWFilterSnoopActiveUnlock();
 
-    return key;
+    return ret;
 }
 
 static void
@@ -442,11 +441,10 @@ static int
 virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
                                    bool instantiate)
 {
-    char *ipaddr;
+    g_autofree char *ipaddr = virSocketAddrFormat(&ipl->ipAddress);
     int rc = -1;
     virNWFilterSnoopReqPtr req;
 
-    ipaddr = virSocketAddrFormat(&ipl->ipAddress);
     if (!ipaddr)
         return -1;
 
@@ -473,9 +471,6 @@ virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
 
  cleanup:
     virNWFilterSnoopReqUnlock(req);
-
-    VIR_FREE(ipaddr);
-
     return rc;
 }
 
@@ -551,7 +546,7 @@ virNWFilterSnoopReqGet(virNWFilterSnoopReqPtr req)
 static virNWFilterSnoopReqPtr
 virNWFilterSnoopReqNew(const char *ifkey)
 {
-    virNWFilterSnoopReqPtr req;
+    g_autofree virNWFilterSnoopReqPtr req = g_new0(virNWFilterSnoopReq, 1);
 
     if (ifkey == NULL || strlen(ifkey) != VIR_IFKEY_LEN - 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -562,28 +557,20 @@ virNWFilterSnoopReqNew(const char *ifkey)
         return NULL;
     }
 
-    req = g_new0(virNWFilterSnoopReq, 1);
-
     req->threadStatus = THREAD_STATUS_NONE;
 
-    if (virStrcpyStatic(req->ifkey, ifkey) < 0||
-        virMutexInitRecursive(&req->lock) < 0)
-        goto err_free_req;
+    if (virStrcpyStatic(req->ifkey, ifkey) < 0 ||
+        virMutexInitRecursive(&req->lock) < 0) {
+        return NULL;
+    }
 
-    if (virCondInit(&req->threadStatusCond) < 0)
-        goto err_destroy_mutex;
+    if (virCondInit(&req->threadStatusCond) < 0) {
+        virMutexDestroy(&req->lock);
+        return NULL;
+    }
 
     virNWFilterSnoopReqGet(req);
-
-    return req;
-
- err_destroy_mutex:
-    virMutexDestroy(&req->lock);
-
- err_free_req:
-    VIR_FREE(req);
-
-    return NULL;
+    return g_steal_pointer(&req);
 }
 
 /*
@@ -815,7 +802,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
 {
     int ret = 0;
     virNWFilterSnoopIPLeasePtr ipl;
-    char *ipstr = NULL;
+    g_autofree char *ipstr = NULL;
 
     /* protect req->start, req->ifname and the lease */
     virNWFilterSnoopReqLock(req);
@@ -868,8 +855,6 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
     ignore_value(!!g_atomic_int_dec_and_test(&virNWFilterSnoopState.nLeases));
 
  lease_not_found:
-    VIR_FREE(ipstr);
-
     virNWFilterSnoopReqUnlock(req);
 
     return ret;
@@ -1045,7 +1030,7 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
     pcap_t *handle = NULL;
     struct bpf_program fp;
     char pcap_errbuf[PCAP_ERRBUF_SIZE];
-    char *ext_filter = NULL;
+    g_autofree char *ext_filter = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
     virMacAddrFormat(mac, macaddr);
@@ -1075,7 +1060,7 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
     if (handle == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("pcap_create failed"));
-        goto cleanup_nohandle;
+        return NULL;
     }
 
     if (pcap_set_snaplen(handle, PCAP_PBUFSIZE) < 0 ||
@@ -1107,17 +1092,12 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
     }
 
     pcap_freecode(&fp);
-    VIR_FREE(ext_filter);
-
     return handle;
 
  cleanup_freecode:
     pcap_freecode(&fp);
  cleanup:
     pcap_close(handle);
- cleanup_nohandle:
-    VIR_FREE(ext_filter);
-
     return NULL;
 }
 
@@ -1128,7 +1108,7 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
 static void virNWFilterDHCPDecodeWorker(void *jobdata, void *opaque)
 {
     virNWFilterSnoopReqPtr req = opaque;
-    virNWFilterDHCPDecodeJobPtr job = jobdata;
+    g_autofree virNWFilterDHCPDecodeJobPtr job = jobdata;
     virNWFilterSnoopEthHdrPtr packet = (virNWFilterSnoopEthHdrPtr)job->packet;
 
     if (virNWFilterSnoopDHCPDecode(req, packet,
@@ -1140,7 +1120,6 @@ static void virNWFilterDHCPDecodeWorker(void *jobdata, void *opaque)
                          "interface '%s'"), req->binding->portdevname);
     }
     ignore_value(!!g_atomic_int_dec_and_test(job->qCtr));
-    VIR_FREE(job);
 }
 
 /*
@@ -1307,7 +1286,7 @@ virNWFilterDHCPSnoopThread(void *req0)
     int errcount = 0;
     int tmp = -1, rv, n, pollTo;
     size_t i;
-    char *threadkey = NULL;
+    g_autofree char *threadkey = NULL;
     virThreadPoolPtr worker = NULL;
     time_t last_displayed = 0, last_displayed_queue = 0;
     virNWFilterSnoopPcapConf pcapConf[] = {
@@ -1533,8 +1512,6 @@ virNWFilterDHCPSnoopThread(void *req0)
 
     virNWFilterSnoopReqPut(req);
 
-    VIR_FREE(threadkey);
-
     for (i = 0; i < G_N_ELEMENTS(pcapConf); i++) {
         if (pcapConf[i].handle)
             pcap_close(pcapConf[i].handle);
@@ -1721,18 +1698,13 @@ static int
 virNWFilterSnoopLeaseFileWrite(int lfd, const char *ifkey,
                                virNWFilterSnoopIPLeasePtr ipl)
 {
-    char *lbuf = NULL;
-    char *ipstr, *dhcpstr;
+    g_autofree char *lbuf = NULL;
+    g_autofree char *ipstr = virSocketAddrFormat(&ipl->ipAddress);
+    g_autofree char *dhcpstr = virSocketAddrFormat(&ipl->ipServer);
     int len;
-    int ret = 0;
 
-    ipstr = virSocketAddrFormat(&ipl->ipAddress);
-    dhcpstr = virSocketAddrFormat(&ipl->ipServer);
-
-    if (!dhcpstr || !ipstr) {
-        ret = -1;
-        goto cleanup;
-    }
+    if (!dhcpstr || !ipstr)
+        return -1;
 
     /* time intf ip dhcpserver */
     lbuf = g_strdup_printf("%u %s %s %s\n", ipl->timeout, ifkey, ipstr, dhcpstr);
@@ -1740,18 +1712,11 @@ virNWFilterSnoopLeaseFileWrite(int lfd, const char *ifkey,
 
     if (safewrite(lfd, lbuf, len) != len) {
         virReportSystemError(errno, "%s", _("lease file write failed"));
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
     ignore_value(g_fsync(lfd));
-
- cleanup:
-    VIR_FREE(lbuf);
-    VIR_FREE(dhcpstr);
-    VIR_FREE(ipstr);
-
-    return ret;
+    return 0;
 }
 
 /*

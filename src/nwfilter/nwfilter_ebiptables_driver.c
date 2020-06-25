@@ -188,10 +188,10 @@ _printDataType(virNWFilterVarCombIterPtr vars,
                bool asHex, bool directionIn)
 {
     bool done;
-    char *data;
+    g_autofree char *data = NULL;
     uint8_t ctr;
     g_auto(virBuffer) vb = VIR_BUFFER_INITIALIZER;
-    char *flags;
+    g_autofree char *flags = NULL;
 
     if (printVar(vars, buf, bufsize, item, &done) < 0)
         return -1;
@@ -207,10 +207,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         if (g_snprintf(buf, bufsize, "%s", data) >= bufsize) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("buffer too small for IP address"));
-            VIR_FREE(data);
             return -1;
         }
-        VIR_FREE(data);
     break;
 
     case DATATYPE_IPV6ADDR:
@@ -221,10 +219,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         if (g_snprintf(buf, bufsize, "%s", data) >= bufsize) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("buffer too small for IPv6 address"));
-            VIR_FREE(data);
             return -1;
         }
-        VIR_FREE(data);
     break;
 
     case DATATYPE_MACADDR:
@@ -308,10 +304,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         if (virStrcpy(buf, flags, bufsize) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Buffer too small for IPSETFLAGS type"));
-            VIR_FREE(flags);
             return -1;
         }
-        VIR_FREE(flags);
     break;
 
     case DATATYPE_STRING:
@@ -1187,19 +1181,19 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
             return -1;
 
         if (HAS_ENTRY_ITEM(&rule->p.tcpHdrFilter.dataTCPFlags)) {
-            char *flags;
+            g_autofree char *mask = NULL;
+            g_autofree char *flags = NULL;
             if (ENTRY_WANT_NEG_SIGN(&rule->p.tcpHdrFilter.dataTCPFlags))
                 virFirewallRuleAddArg(fw, fwrule, "!");
             virFirewallRuleAddArg(fw, fwrule, "--tcp-flags");
 
-            if (!(flags = virNWFilterPrintTCPFlags(rule->p.tcpHdrFilter.dataTCPFlags.u.tcpFlags.mask)))
+            if (!(mask = virNWFilterPrintTCPFlags(rule->p.tcpHdrFilter.dataTCPFlags.u.tcpFlags.mask)))
                 return -1;
-            virFirewallRuleAddArg(fw, fwrule, flags);
-            VIR_FREE(flags);
+            virFirewallRuleAddArg(fw, fwrule, mask);
+
             if (!(flags = virNWFilterPrintTCPFlags(rule->p.tcpHdrFilter.dataTCPFlags.u.tcpFlags.flags)))
                 return -1;
             virFirewallRuleAddArg(fw, fwrule, flags);
-            VIR_FREE(flags);
         }
 
         if (iptablesHandlePortData(fw, fwrule,
@@ -1548,7 +1542,9 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
     bool directionIn = false;
     char chainPrefix[2];
     bool maySkipICMP, inout = false;
-    char *matchState = NULL;
+    g_autofree char *matchState1 = NULL;
+    g_autofree char *matchState2 = NULL;
+    g_autofree char *matchState3 = NULL;
     bool create;
 
     if ((rule->tt == VIR_NWFILTER_RULE_DIRECTION_IN) ||
@@ -1562,7 +1558,6 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
     maySkipICMP = directionIn || inout;
 
     create = true;
-    matchState = NULL;
 
     if (directionIn && !inout) {
         if ((rule->flags & IPTABLES_STATE_FLAGS))
@@ -1570,7 +1565,7 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
     }
 
     if (create && (rule->flags & IPTABLES_STATE_FLAGS)) {
-        if (printStateMatchFlags(rule->flags, &matchState) < 0)
+        if (printStateMatchFlags(rule->flags, &matchState1) < 0)
             return -1;
     }
 
@@ -1583,11 +1578,10 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
                                          rule,
                                          ifname,
                                          vars,
-                                         matchState, false,
+                                         matchState1, false,
                                          "RETURN",
                                          maySkipICMP);
 
-        VIR_FREE(matchState);
         if (rc < 0)
             return rc;
     }
@@ -1601,7 +1595,7 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
     }
 
     if (create && (rule->flags & IPTABLES_STATE_FLAGS)) {
-        if (printStateMatchFlags(rule->flags, &matchState) < 0)
+        if (printStateMatchFlags(rule->flags, &matchState2) < 0)
             return -1;
     }
 
@@ -1614,12 +1608,9 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
                                          rule,
                                          ifname,
                                          vars,
-                                         matchState, false,
+                                         matchState2, false,
                                          "ACCEPT",
                                          maySkipICMP);
-
-        VIR_FREE(matchState);
-
         if (rc < 0)
             return rc;
     }
@@ -1633,7 +1624,7 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
             create = false;
     } else {
         if ((rule->flags & IPTABLES_STATE_FLAGS)) {
-            if (printStateMatchFlags(rule->flags, &matchState) < 0)
+            if (printStateMatchFlags(rule->flags, &matchState3) < 0)
                 return -1;
         }
     }
@@ -1648,10 +1639,9 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
                                          rule,
                                          ifname,
                                          vars,
-                                         matchState, false,
+                                         matchState3, false,
                                          "RETURN",
                                          maySkipICMP);
-        VIR_FREE(matchState);
     }
 
     return rc;
@@ -1797,7 +1787,6 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
     const char *target;
     bool hasMask = false;
     virFirewallRulePtr fwrule;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (STREQ(chainSuffix,
               virNWFilterChainSuffixTypeToString(
@@ -2320,7 +2309,8 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
             HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.dataICMPCodeStart) ||
             HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.dataICMPCodeEnd)) {
             bool lo = false;
-            char *r;
+            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+            g_autofree char *r = NULL;
 
             virFirewallRuleAddArg(fw, fwrule,
                                   "--ip6-icmp-type");
@@ -2385,8 +2375,6 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
             r = virBufferContentAndReset(&buf);
 
             virFirewallRuleAddArg(fw, fwrule, r);
-
-            VIR_FREE(r);
         }
         break;
 
@@ -3295,9 +3283,8 @@ ebtablesGetSubChainInsts(virHashTablePtr chains,
                          ebtablesSubChainInstPtr **insts,
                          size_t *ninsts)
 {
-    virHashKeyValuePairPtr filter_names;
+    g_autofree virHashKeyValuePairPtr filter_names = NULL;
     size_t i;
-    int ret = -1;
 
     filter_names = virHashGetItems(chains,
                                    ebiptablesFilterOrderSort);
@@ -3305,7 +3292,7 @@ ebtablesGetSubChainInsts(virHashTablePtr chains,
         return -1;
 
     for (i = 0; filter_names[i].key; i++) {
-        ebtablesSubChainInstPtr inst;
+        g_autofree ebtablesSubChainInstPtr inst = NULL;
         enum l3_proto_idx idx = ebtablesGetProtoIdxByFiltername(
                                   filter_names[i].key);
 
@@ -3318,18 +3305,11 @@ ebtablesGetSubChainInsts(virHashTablePtr chains,
         inst->protoidx = idx;
         inst->filtername = filter_names[i].key;
 
-        if (VIR_APPEND_ELEMENT(*insts, *ninsts, inst) < 0) {
-            VIR_FREE(inst);
-            goto cleanup;
-        }
+        if (VIR_APPEND_ELEMENT(*insts, *ninsts, inst) < 0)
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(filter_names);
-    return ret;
-
+    return 0;
 }
 
 static int
@@ -3339,12 +3319,12 @@ ebiptablesApplyNewRules(const char *ifname,
 {
     size_t i, j;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    virHashTablePtr chains_in_set  = virHashCreate(10, NULL);
-    virHashTablePtr chains_out_set = virHashCreate(10, NULL);
+    g_autoptr(virHashTable) chains_in_set  = virHashCreate(10, NULL);
+    g_autoptr(virHashTable) chains_out_set = virHashCreate(10, NULL);
     bool haveEbtables = false;
     bool haveIptables = false;
     bool haveIp6tables = false;
-    ebtablesSubChainInstPtr *subchains = NULL;
+    g_autofree ebtablesSubChainInstPtr *subchains = NULL;
     size_t nsubchains = 0;
     int ret = -1;
 
@@ -3538,9 +3518,6 @@ ebiptablesApplyNewRules(const char *ifname,
  cleanup:
     for (i = 0; i < nsubchains; i++)
         VIR_FREE(subchains[i]);
-    VIR_FREE(subchains);
-    virHashFree(chains_in_set);
-    virHashFree(chains_out_set);
 
     return ret;
 }

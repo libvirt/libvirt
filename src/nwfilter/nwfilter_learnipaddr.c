@@ -397,7 +397,7 @@ learnIPAddressThread(void *arg)
     int dhcp_opts_len;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *filter = NULL;
+    g_autofree char *filter = NULL;
     uint16_t etherType;
     bool showError = true;
     enum howDetect howDetected = 0;
@@ -622,8 +622,6 @@ learnIPAddressThread(void *arg)
     } /* while */
 
  cleanup:
-    VIR_FREE(filter);
-
     if (handle)
         pcap_close(handle);
 
@@ -633,7 +631,7 @@ learnIPAddressThread(void *arg)
         sa.len = sizeof(sa.data.inet4);
         sa.data.inet4.sin_family = AF_INET;
         sa.data.inet4.sin_addr.s_addr = vmaddr;
-        char *inetaddr;
+        g_autofree char *inetaddr = NULL;
 
         /* It is necessary to unlock interface here to avoid updateMutex and
          * interface ordering deadlocks. Otherwise we are going to
@@ -656,7 +654,6 @@ learnIPAddressThread(void *arg)
                                                    req->ifindex);
             VIR_DEBUG("Result from applying firewall rules on "
                       "%s with IP addr %s : %d", req->binding->portdevname, inetaddr, ret);
-            VIR_FREE(inetaddr);
         }
     } else {
         if (showError)
