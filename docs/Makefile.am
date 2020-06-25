@@ -277,10 +277,6 @@ manpages/virkeyname-%.rst: $(top_srcdir)/src/keycodemapdb/data/keymaps.csv \
 manpagesdir = $(HTML_DIR)/manpages
 manpages_DATA = $(manpages_html)
 
-# Generate hvsupport.html first, since it takes one extra step.
-dot_html_generated_in = \
-  hvsupport.html.in \
-  $(NULL)
 dot_rst_html_in = \
   news.html.in \
   $(NULL)
@@ -294,15 +290,6 @@ html_DATA = $(dot_html)
 
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
-
-hvsupport.html: hvsupport.html.in
-
-hvsupport.html.in: $(top_srcdir)/scripts/hvsupport.py $(api_DATA) \
-		$(top_srcdir)/src/libvirt_public.syms \
-	$(top_srcdir)/src/libvirt_qemu.syms $(top_srcdir)/src/libvirt_lxc.syms \
-	$(top_srcdir)/src/driver.h
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/hvsupport.py \
-		$(top_srcdir) $(top_builddir) > $@ || { rm $@ && exit 1; }
 
 manpages/%.html.in: manpages/%.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \

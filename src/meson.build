@@ -89,7 +89,7 @@ rpc_probe_files = []
 
 # symbol files
 
-public_sym_file = 'libvirt_public.syms'
+public_sym_file = files('libvirt_public.syms')
 
 used_sym_files = [
   'libvirt_private.syms',
@@ -304,6 +304,8 @@ driver_headers = [
   'driver-storage.h',
   'driver-stream.h',
 ]
+
+driver_header = files('driver.h')
 
 driver_lib = static_library(
   'virt_driver',

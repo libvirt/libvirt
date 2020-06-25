@@ -228,6 +228,32 @@ foreach name : docs_rst_files
   }
 endforeach
 
+hvsupport_html_in = custom_target(
+  'hvsupport.html.in',
+  output: 'hvsupport.html.in',
+  command: [
+    meson_python_prog,
+    python3_prog.path(),
+    hvsupport_prog.path(),
+    meson.source_root(),
+    meson.build_root(),
+  ],
+  capture: true,
+  depend_files: [
+    public_sym_file,
+    libvirt_qemu_syms,
+    libvirt_lxc_syms,
+    driver_header,
+  ],
+  depends: [
+    docs_api_generated,
+  ],
+)
+docs_html_in_gen += {
+  'name': 'hvsupport',
+  'file': hvsupport_html_in,
+}
+
 foreach data : docs_html_in_gen
   html_file = '@0@.html'.format(data['name'])
   rst_in_file = '@0@.rst'.format(data['name'])
