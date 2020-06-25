@@ -608,6 +608,12 @@ testCompareXMLToArgv(const void *data)
     if (!(vm = virDomainObjNew(driver.xmlopt)))
         goto cleanup;
 
+    if (!virFileExists(info->infile)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Input file '%s' not found", info->infile);
+        goto cleanup;
+    }
+
     parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
     if (!(vm->def = virDomainDefParseFile(info->infile,
                                           driver.xmlopt,
