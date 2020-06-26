@@ -5427,7 +5427,7 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     int ret = -1;
     int hostcpus;
     virBitmapPtr cpumask = NULL;
-    virBitmapPtr bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
     virBitmapPtr autoCpuset = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -5468,7 +5468,6 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virBitmapFree(bitmap);
     return ret;
 }
 
