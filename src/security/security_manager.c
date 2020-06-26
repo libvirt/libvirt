@@ -597,6 +597,40 @@ virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
 
 
 int
+virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr vm,
+                                     const char *savefile)
+{
+    if (mgr->drv->domainSetSavedStateLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSavedStateLabel(mgr, vm, savefile);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    return 0;
+}
+
+
+int
+virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
+                                         virDomainDefPtr vm,
+                                         const char *savefile)
+{
+    if (mgr->drv->domainRestoreSavedStateLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSavedStateLabel(mgr, vm, savefile);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    return 0;
+}
+
+
+int
 virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                            virDomainDefPtr vm)
 {

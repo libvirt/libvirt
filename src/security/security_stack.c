@@ -395,6 +395,54 @@ virSecurityStackRestoreAllLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecurityStackSetSavedStateLabel(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr vm,
+                                   const char *savefile)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetSavedStateLabel(item->securityManager, vm, savefile) < 0)
+            goto rollback;
+    }
+
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreSavedStateLabel(item->securityManager,
+                                                     vm,
+                                                     savefile) < 0) {
+            VIR_WARN("Unable to restore saved state label after failed set "
+                     "label call virDriver=%s driver=%s savefile=%s",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     savefile);
+        }
+    }
+    return -1;
+}
+
+
+static int
+virSecurityStackRestoreSavedStateLabel(virSecurityManagerPtr mgr,
+                                       virDomainDefPtr vm,
+                                       const char *savefile)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerRestoreSavedStateLabel(item->securityManager, vm, savefile) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+static int
 virSecurityStackSetProcessLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr vm)
 {
@@ -963,6 +1011,9 @@ virSecurityDriver virSecurityDriverStack = {
 
     .domainSetSecurityHostdevLabel      = virSecurityStackSetHostdevLabel,
     .domainRestoreSecurityHostdevLabel  = virSecurityStackRestoreHostdevLabel,
+
+    .domainSetSavedStateLabel           = virSecurityStackSetSavedStateLabel,
+    .domainRestoreSavedStateLabel       = virSecurityStackRestoreSavedStateLabel,
 
     .domainSetSecurityImageFDLabel      = virSecurityStackSetImageFDLabel,
     .domainSetSecurityTapFDLabel        = virSecurityStackSetTapFDLabel,
