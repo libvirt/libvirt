@@ -56,6 +56,11 @@ v6.5.0 (unreleased)
     This release fixes a regression which was introduced in libvirt v6.4.0
     where libvirtd always crashes when a block commit of a disk is requested.
 
+  * qemu: fixed zPCI address auto generation on s390
+
+    Removes the correlation between the zPCI address attributes uid and fid.
+    Fixes the validation and autogeneration of zPCI address attributes.
+
 
 v6.4.0 (2020-06-02)
 ===================
