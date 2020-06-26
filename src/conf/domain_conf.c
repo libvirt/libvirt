@@ -2089,10 +2089,8 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
     if (hostcpus < 0)
         return -1;
 
-    if (!(allcpumap = virBitmapNew(hostcpus)))
+    if (!(allcpumap = virHostCPUGetAvailableCPUsBitmap()))
         return -1;
-
-    virBitmapSetAll(allcpumap);
 
     for (i = 0; i < maxvcpus && i < ncpumaps; i++) {
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(def, i);
