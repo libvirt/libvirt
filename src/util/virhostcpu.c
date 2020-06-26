@@ -1099,6 +1099,36 @@ virHostCPUGetMap(unsigned char **cpumap,
 }
 
 
+/* virHostCPUGetAvailableCPUsBitmap():
+ *
+ * Returns a virBitmap object with all available host CPUs.
+ *
+ * This is a glorified wrapper of virHostCPUGetOnlineBitmap()
+ * that, instead of returning NULL when 'ifndef __linux__' and
+ * the caller having to handle it outside the function, returns
+ * a virBitmap with all the possible CPUs in the host, up to
+ * virHostCPUGetCount(). */
+virBitmapPtr
+virHostCPUGetAvailableCPUsBitmap(void)
+{
+    g_autoptr(virBitmap) bitmap = NULL;
+
+    if (!(bitmap = virHostCPUGetOnlineBitmap())) {
+        int hostcpus;
+
+        if ((hostcpus = virHostCPUGetCount()) < 0)
+            return NULL;
+
+        if (!(bitmap = virBitmapNew(hostcpus)))
+            return NULL;
+
+        virBitmapSetAll(bitmap);
+    }
+
+    return g_steal_pointer(&bitmap);
+}
+
+
 #if HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT)
 
 /* Get the number of threads per subcore.
