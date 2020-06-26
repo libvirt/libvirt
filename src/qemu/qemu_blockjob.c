@@ -936,6 +936,41 @@ qemuBlockJobClearConfigChain(virDomainObjPtr vm,
 }
 
 
+static int
+qemuBlockJobProcessEventCompletedPullBitmaps(virDomainObjPtr vm,
+                                             qemuBlockJobDataPtr job,
+                                             qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autoptr(virJSONValue) actions = NULL;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
+        return -1;
+
+    if (qemuBlockGetBitmapMergeActions(job->disk->src,
+                                       job->data.pull.base,
+                                       job->disk->src,
+                                       NULL, NULL, NULL,
+                                       &actions,
+                                       blockNamedNodeData) < 0)
+        return -1;
+
+    if (!actions)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        return -1;
+
+    qemuMonitorTransaction(priv->mon, &actions);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuBlockJobProcessEventCompletedPull:
  * @driver: qemu driver object
@@ -975,6 +1010,8 @@ qemuBlockJobProcessEventCompletedPull(virQEMUDriverPtr driver,
 
     if (!cfgdisk)
         qemuBlockJobClearConfigChain(vm, job->disk);
+
+    qemuBlockJobProcessEventCompletedPullBitmaps(vm, job, asyncJob);
 
     /* when pulling if 'base' is right below the top image we don't have to modify it */
     if (job->disk->src->backingStore == job->data.pull.base)
