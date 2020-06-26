@@ -144,6 +144,11 @@ struct _virQEMUDriverConfig {
     bool migrateTLSx509verifyPresent;
     char *migrateTLSx509secretUUID;
 
+    char *backupTLSx509certdir;
+    bool backupTLSx509verify;
+    bool backupTLSx509verifyPresent;
+    char *backupTLSx509secretUUID;
+
     bool vxhsTLS;
     char *vxhsTLSx509certdir;
     char *vxhsTLSx509secretUUID;

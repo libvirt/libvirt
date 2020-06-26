@@ -42,6 +42,10 @@ were supplied). The following child elements and attributes are supported:
    necessary to set up an NBD server that exposes the content of each disk at
    the time the backup is started.
 
+   Note that for the QEMU hypervisor the TLS environment in controlled using
+   ``backup_tls_x509_cert_dir``, ``backup_tls_x509_verify``, and
+   ``backup_tls_x509_secret_uuid`` properties in ``/etc/libvirt/qemu.conf``.
+
 ``disks``
    An optional listing of instructions for disks participating in the backup (if
    omitted, all disks participate and libvirt attempts to generate filenames by

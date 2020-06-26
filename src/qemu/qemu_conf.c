@@ -347,6 +347,9 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->migrateTLSx509certdir);
     VIR_FREE(cfg->migrateTLSx509secretUUID);
 
+    VIR_FREE(cfg->backupTLSx509certdir);
+    VIR_FREE(cfg->backupTLSx509secretUUID);
+
     while (cfg->nhugetlbfs) {
         cfg->nhugetlbfs--;
         VIR_FREE(cfg->hugetlbfs[cfg->nhugetlbfs].mnt_dir);
@@ -510,6 +513,9 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
 
     GET_CONFIG_TLS_CERTINFO_COMMON(migrate);
     GET_CONFIG_TLS_CERTINFO_SERVER(migrate);
+
+    GET_CONFIG_TLS_CERTINFO_COMMON(backup);
+    GET_CONFIG_TLS_CERTINFO_SERVER(backup);
 
     GET_CONFIG_TLS_CERTINFO_COMMON(vxhs);
 
@@ -1154,6 +1160,14 @@ virQEMUDriverConfigValidate(virQEMUDriverConfigPtr cfg)
         return -1;
     }
 
+    if (cfg->backupTLSx509certdir &&
+        !virFileExists(cfg->backupTLSx509certdir)) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("backup_tls_x509_cert_dir directory '%s' does not exist"),
+                       cfg->backupTLSx509certdir);
+        return -1;
+    }
+
     if (cfg->vxhsTLSx509certdir &&
         !virFileExists(cfg->vxhsTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
@@ -1189,6 +1203,7 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
     SET_TLS_SECRET_UUID_DEFAULT(vnc);
     SET_TLS_SECRET_UUID_DEFAULT(chardev);
     SET_TLS_SECRET_UUID_DEFAULT(migrate);
+    SET_TLS_SECRET_UUID_DEFAULT(backup);
     SET_TLS_SECRET_UUID_DEFAULT(vxhs);
     SET_TLS_SECRET_UUID_DEFAULT(nbd);
 
@@ -1216,6 +1231,7 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
     SET_TLS_X509_CERT_DEFAULT(spice);
     SET_TLS_X509_CERT_DEFAULT(chardev);
     SET_TLS_X509_CERT_DEFAULT(migrate);
+    SET_TLS_X509_CERT_DEFAULT(backup);
     SET_TLS_X509_CERT_DEFAULT(vxhs);
     SET_TLS_X509_CERT_DEFAULT(nbd);
 
@@ -1230,6 +1246,7 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
     SET_TLS_VERIFY_DEFAULT(vnc);
     SET_TLS_VERIFY_DEFAULT(chardev);
     SET_TLS_VERIFY_DEFAULT(migrate);
+    SET_TLS_VERIFY_DEFAULT(backup);
 
 #undef SET_TLS_VERIFY_DEFAULT
 
