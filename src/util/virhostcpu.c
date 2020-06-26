@@ -856,33 +856,17 @@ virHostCPUGetStatsLinux(FILE *procstat,
 }
 
 
-/* Determine the number of CPUs (maximum CPU id + 1) from a file containing
- * a list of CPU ids, like the Linux sysfs cpu/present file */
+/* Determine the number of CPUs (maximum CPU id + 1) present in
+ * the host. */
 static int
-virHostCPUParseCountLinux(void)
+virHostCPUCountLinux(void)
 {
-    char *str = NULL;
-    char *tmp;
-    int ret = -1;
+    g_autoptr(virBitmap) present = virHostCPUGetPresentBitmap();
 
-    if (virFileReadValueString(&str, "%s/cpu/present", SYSFS_SYSTEM_PATH) < 0)
+    if (!present)
         return -1;
 
-    tmp = str;
-    do {
-        if (virStrToLong_i(tmp, &tmp, 10, &ret) < 0 ||
-            !strchr(",-", *tmp)) {
-            virReportError(VIR_ERR_NO_SUPPORT,
-                           _("failed to parse %s"), str);
-            ret = -1;
-            goto cleanup;
-        }
-    } while (*tmp++ && *tmp);
-    ret++;
-
- cleanup:
-    VIR_FREE(str);
-    return ret;
+    return virBitmapSize(present);
 }
 #endif
 
@@ -1031,7 +1015,7 @@ int
 virHostCPUGetCount(void)
 {
 #if defined(__linux__)
-    return virHostCPUParseCountLinux();
+    return virHostCPUCountLinux();
 #elif defined(__FreeBSD__) || defined(__APPLE__)
     return virHostCPUGetCountAppleFreeBSD();
 #else
