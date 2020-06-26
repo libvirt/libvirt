@@ -1089,7 +1089,7 @@ virHostCPUGetMap(unsigned char **cpumap,
                  unsigned int *online,
                  unsigned int flags)
 {
-    virBitmapPtr cpus = NULL;
+    g_autoptr(virBitmap) cpus = NULL;
     int ret = -1;
     int dummy;
 
@@ -1111,7 +1111,6 @@ virHostCPUGetMap(unsigned char **cpumap,
  cleanup:
     if (ret < 0 && cpumap)
         VIR_FREE(*cpumap);
-    virBitmapFree(cpus);
     return ret;
 }
 
