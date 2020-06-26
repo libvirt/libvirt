@@ -6928,12 +6928,11 @@ static bool
 cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
-    virDomainPtr dom;
-    virVcpuInfoPtr cpuinfo = NULL;
-    unsigned char *cpumaps = NULL;
+    g_autoptr(virshDomain) dom = NULL;
+    g_autofree virVcpuInfoPtr cpuinfo = NULL;
+    g_autofree unsigned char *cpumaps = NULL;
     int ncpus, maxcpu;
     size_t cpumaplen;
-    bool ret = false;
     bool pretty = vshCommandOptBool(cmd, "pretty");
     int n;
     virshControlPtr priv = ctl->privData;
@@ -6942,10 +6941,10 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if ((maxcpu = virshNodeGetCPUCount(priv->conn)) < 0)
-        goto cleanup;
+        return false;
 
     if (virDomainGetInfo(dom, &info) != 0)
-        goto cleanup;
+        return false;
 
     cpuinfo = vshMalloc(ctl, sizeof(virVcpuInfo)*info.nrVirtCpu);
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
@@ -6955,13 +6954,12 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
                                    cpuinfo, info.nrVirtCpu,
                                    cpumaps, cpumaplen)) < 0) {
         if (info.state != VIR_DOMAIN_SHUTOFF)
-            goto cleanup;
+            return false;
 
         vshResetLibvirtError();
 
         /* for offline VMs we can return pinning information */
-        ret = virshVcpuinfoInactive(ctl, dom, maxcpu, pretty);
-        goto cleanup;
+        return virshVcpuinfoInactive(ctl, dom, maxcpu, pretty);
     }
 
     for (n = 0; n < ncpus; n++) {
@@ -6979,19 +6977,13 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 
         if (virshVcpuinfoPrintAffinity(ctl, VIR_GET_CPUMAP(cpumaps, cpumaplen, n),
                                        maxcpu, pretty) < 0)
-            goto cleanup;
+            return false;
 
         if (n < (ncpus - 1))
             vshPrint(ctl, "\n");
     }
 
-    ret = true;
-
- cleanup:
-    VIR_FREE(cpumaps);
-    VIR_FREE(cpuinfo);
-    virshDomainFree(dom);
-    return ret;
+    return true;
 }
 
 /*
