@@ -6886,16 +6886,15 @@ virshVcpuinfoInactive(vshControl *ctl,
                       int maxcpu,
                       bool pretty)
 {
-    unsigned char *cpumaps = NULL;
+    g_autofree unsigned char *cpumaps = NULL;
     size_t cpumaplen;
     int ncpus;
-    virBitmapPtr vcpus = NULL;
+    g_autoptr(virBitmap) vcpus = NULL;
     ssize_t nextvcpu = -1;
-    bool ret = false;
     bool first = true;
 
     if (!(vcpus = virshDomainGetVcpuBitmap(ctl, dom, true)))
-        goto cleanup;
+        return false;
 
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
     cpumaps = vshMalloc(ctl, virBitmapSize(vcpus) * cpumaplen);
@@ -6903,7 +6902,7 @@ virshVcpuinfoInactive(vshControl *ctl,
     if ((ncpus = virDomainGetVcpuPinInfo(dom, virBitmapSize(vcpus),
                                          cpumaps, cpumaplen,
                                          VIR_DOMAIN_AFFECT_CONFIG)) < 0)
-        goto cleanup;
+        return false;
 
     while ((nextvcpu = virBitmapNextSetBit(vcpus, nextvcpu)) >= 0) {
         if (!first)
@@ -6918,15 +6917,10 @@ virshVcpuinfoInactive(vshControl *ctl,
         if (virshVcpuinfoPrintAffinity(ctl,
                                        VIR_GET_CPUMAP(cpumaps, cpumaplen, nextvcpu),
                                        maxcpu, pretty) < 0)
-            goto cleanup;
+            return false;
     }
 
-    ret = true;
-
- cleanup:
-    virBitmapFree(vcpus);
-    VIR_FREE(cpumaps);
-    return ret;
+    return true;
 }
 
 
