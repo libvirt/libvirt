@@ -7523,10 +7523,6 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         }
 
         if (virZPCIDeviceAddressIsPresent(&info->addr.pci.zpci)) {
-            if (virZPCIDeviceAddressIsIncomplete(&info->addr.pci.zpci))
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Missing uid or fid attribute of zPCI address"));
-
             virBufferAsprintf(&childBuf,
                               "<zpci uid='0x%.4x' fid='0x%.8x'/>\n",
                               info->addr.pci.zpci.uid.value,
