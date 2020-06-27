@@ -6952,8 +6952,6 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
                         asyncJob, VIR_QEMU_PROCESS_STOP_MIGRATED);
     }
-    if (qemuSecurityDomainRestorePathLabel(driver, vm, path, true) < 0)
-        VIR_WARN("failed to restore save state label on %s", path);
     return ret;
 }
 

@@ -7073,6 +7073,7 @@ qemuProcessStart(virConnectPtr conn,
     qemuProcessIncomingDefPtr incoming = NULL;
     unsigned int stopFlags;
     bool relabel = false;
+    bool relabelSavedState = false;
     int ret = -1;
     int rv;
 
@@ -7108,6 +7109,13 @@ qemuProcessStart(virConnectPtr conn,
 
     if (qemuProcessPrepareHost(driver, vm, flags) < 0)
         goto stop;
+
+    if (migratePath) {
+        if (qemuSecuritySetSavedStateLabel(driver->securityManager,
+                                           vm->def, migratePath) < 0)
+            goto cleanup;
+        relabelSavedState = true;
+    }
 
     if ((rv = qemuProcessLaunch(conn, driver, vm, asyncJob, incoming,
                                 snapshot, vmop, flags)) < 0) {
@@ -7145,6 +7153,10 @@ qemuProcessStart(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    if (relabelSavedState &&
+        qemuSecurityRestoreSavedStateLabel(driver->securityManager,
+                                           vm->def, migratePath) < 0)
+        VIR_WARN("failed to restore save state label on %s", migratePath);
     qemuProcessIncomingDefFree(incoming);
     return ret;
 
