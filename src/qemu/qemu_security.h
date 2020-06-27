@@ -96,6 +96,14 @@ int qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
 void qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
                                     virDomainObjPtr vm);
 
+int qemuSecuritySetSavedStateLabel(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   const char *savefile);
+
+int qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       const char *savefile);
+
 int qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    const char *path,
@@ -133,9 +141,11 @@ int qemuSecurityCommandRun(virQEMUDriverPtr driver,
 #define qemuSecurityPreFork virSecurityManagerPreFork
 #define qemuSecurityReleaseLabel virSecurityManagerReleaseLabel
 #define qemuSecurityReserveLabel virSecurityManagerReserveLabel
+#define qemuSecurityRestoreSavedStateLabel virSecurityManagerRestoreSavedStateLabel
 #define qemuSecuritySetChildProcessLabel virSecurityManagerSetChildProcessLabel
 #define qemuSecuritySetDaemonSocketLabel virSecurityManagerSetDaemonSocketLabel
 #define qemuSecuritySetImageFDLabel virSecurityManagerSetImageFDLabel
+#define qemuSecuritySetSavedStateLabel virSecurityManagerSetSavedStateLabel
 #define qemuSecuritySetSocketLabel virSecurityManagerSetSocketLabel
 #define qemuSecuritySetTapFDLabel virSecurityManagerSetTapFDLabel
 #define qemuSecurityStackAddNested virSecurityManagerStackAddNested
