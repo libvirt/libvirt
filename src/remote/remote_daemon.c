@@ -145,6 +145,10 @@ static int daemonInitialize(void)
     if (virDriverLoadModule("interface", "interfaceRegister", false) < 0)
         return -1;
 # endif
+# ifdef WITH_JAILHOUSE
+    if (virDriverLoadModule("jailhouse", "jailhouseRegister", false) < 0)
+        return -1;
+# endif
 # ifdef WITH_SECRETS
     if (virDriverLoadModule("secret", "secretRegister", false) < 0)
         return -1;

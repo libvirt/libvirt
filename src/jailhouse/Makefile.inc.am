@@ -1,8 +1,11 @@
 # vim: filetype=automake
 
+
 JAILHOUSE_DRIVER_SOURCES = \
 	jailhouse/jailhouse_driver.c \
 	jailhouse/jailhouse_driver.h \
+	jailhouse/jailhouse_api.c \
+	jailhouse/jailhouse_api.h \
 	$(NULL)
 
 
@@ -11,11 +14,34 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(JAILHOUSE_DRIVER_SOURCES))
 EXTRA_DIST += $(JAILHOUSE_DRIVER_SOURCES)
 
 if WITH_JAILHOUSE
-noinst_LTLIBRARIES += libvirt_driver_jailhouse.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_jailhouse.la
-libvirt_driver_jailhouse_la_CFLAGS = \
+
+noinst_LTLIBRARIES += libvirt_driver_jailhouse_impl.la
+libvirt_driver_jailhouse_la_SOURCES =
+libvirt_driver_jailhouse_la_LIBADD = \
+	libvirt_driver_jailhouse_impl.la \
+	libvirt.la \
+	$(GLIB_LIBS) \
+	$(NULL)
+mod_LTLIBRARIES += libvirt_driver_jailhouse.la
+libvirt_driver_jailhouse_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+
+libvirt_driver_jailhouse_impl_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS) \
 	$(NULL)
-libvirt_driver_jailhouse_la_SOURCES = $(JAILHOUSE_DRIVER_SOURCES)
+libvirt_driver_jailhouse_impl_la_SOURCES = \
+	$(JAILHOUSE_DRIVER_SOURCES)
+
+sbin_PROGRAMS += virtjailhoused
+
+virtjailhoused_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtjailhoused_SOURCES = $(REMOTE_DAEMON_GENERATED)
+virtjailhoused_CFLAGS = \
+       $(REMOTE_DAEMON_CFLAGS) \
+       -DDAEMON_NAME="\"virtjailhoused\"" \
+       -DMODULE_NAME="\"jailhouse\"" \
+       $(NULL)
+virtjailhoused_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
+virtjailhoused_LDADD = $(REMOTE_DAEMON_LD_ADD)
+
 endif WITH_JAILHOUSE

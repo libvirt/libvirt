@@ -85,6 +85,8 @@
 @SRCDIR@src/interface/interface_backend_netcf.c
 @SRCDIR@src/interface/interface_backend_udev.c
 @SRCDIR@src/internal.h
+@SRCDIR@src/jailhouse/jailhouse_api.c
+@SRCDIR@src/jailhouse/jailhouse_driver.c
 @SRCDIR@src/libvirt-domain-checkpoint.c
 @SRCDIR@src/libvirt-domain-snapshot.c
 @SRCDIR@src/libvirt-domain.c

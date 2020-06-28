@@ -16,43 +16,228 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
+ *
  */
 
 #include <config.h>
+#include <string.h>
 
+#include "configmake.h"
+#include "datatypes.h"
+#include "domain_conf.h"
 #include "jailhouse_driver.h"
 #include "virtypedparam.h"
 #include "virerror.h"
 #include "virstring.h"
 #include "viralloc.h"
-#include "domain_conf.h"
 #include "virfile.h"
-#include "datatypes.h"
+#include "virlog.h"
 #include "vircommand.h"
-#include <string.h>
+#include "virpidfile.h"
 
-#define UNUSED(x) (void)(x)
+#define VIR_FROM_THIS VIR_FROM_JAILHOUSE
+
+VIR_LOG_INIT("jailhouse.jailhouse_driver");
+
+static virClassPtr virJailhouseDriverConfigClass;
+static void virJailhouseDriverConfigDispose(void *obj);
+
+static virJailhouseDriverPtr jailhouse_driver;
+
+static int virJailhouseConfigOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(virJailhouseDriverConfig, virClassForObject()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virJailhouseConfig);
+
+
+static virJailhouseDriverConfigPtr
+virJailhouseDriverConfigNew(void)
+{
+    virJailhouseDriverConfigPtr cfg;
+
+    // TODO: Check if the following has to be uncommented.
+    if (virJailhouseConfigInitialize() < 0)
+        return NULL;
+
+    if (!(cfg = virObjectNew(virJailhouseDriverConfigClass)))
+        return NULL;
+
+    cfg->stateDir = g_strdup(JAILHOUSE_STATE_DIR);
+
+    cfg->sys_config_file_path = g_strdup(DATADIR "/jailhouse/system.cell");
+
+    cfg->cell_config_dir = g_strdup(DATADIR "/jailhouse/cells");
+
+    return cfg;
+}
+
+static void virJailhouseDriverConfigDispose(void *obj)
+{
+
+    virJailhouseDriverConfigPtr cfg = obj;
+
+    VIR_FREE(cfg->stateDir);
+    VIR_FREE(cfg->sys_config_file_path);
+    VIR_FREE(cfg->cell_config_dir);
+}
+
+static int
+jailhouseLoadConf(virJailhouseDriverConfigPtr config)
+{
+    g_autoptr(virConf) conf = NULL;
+
+    if (!virFileExists(JAILHOUSE_CONFIG_FILE))
+        return 0;
+
+    if (!(conf = virConfReadFile(JAILHOUSE_CONFIG_FILE, 0)))
+        return -1;
+
+    if (virConfGetValueString(conf, "system_config",
+                              &config->sys_config_file_path) < 0)
+        return -1;
+
+    if (virConfGetValueString(conf, "non_root_cells_dir",
+                              &config->cell_config_dir) < 0)
+        return -1;
+
+    return 1;
+}
+
+static int
+jailhouseCreateAndLoadCells(virJailhouseDriverPtr driver)
+{
+    if (!driver->config ||
+        !driver->config->cell_config_dir ||
+        strlen(driver->config->cell_config_dir) == 0)
+        return -1;
+
+    // Create all cells in the hypervisor.
+    if (createJailhouseCells(driver->config->cell_config_dir) < 0)
+        return -1;
+
+    // Get all cells created above.
+    driver->cell_info_list = getJailhouseCellsInfo();
+
+    return 0;
+}
+
+static void
+jailhouseFreeDriver(virJailhouseDriverPtr driver)
+{
+    if (!driver)
+        return;
+
+    virMutexDestroy(&driver->lock);
+    virObjectUnref(driver->config);
+    VIR_FREE(driver);
+}
 
 static virDrvOpenStatus
 jailhouseConnectOpen(virConnectPtr conn,
-                     virConnectAuthPtr auth,
-                     virConfPtr conf,
-                     unsigned int flags)
+                     virConnectAuthPtr auth G_GNUC_UNUSED,
+                     virConfPtr conf G_GNUC_UNUSED, unsigned int flags)
 {
-    UNUSED(conn);
-    UNUSED(auth);
-    UNUSED(conf);
-    UNUSED(flags);
-    return 0;
+    uid_t uid = geteuid();
+
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    if (!virConnectValidateURIPath(conn->uri->path, "jailhouse", uid == 0))
+        return VIR_DRV_OPEN_ERROR;
+
+    if (!jailhouse_driver) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Jailhouse driver state is not initialized."));
+        return VIR_DRV_OPEN_ERROR;
+    }
+
+    conn->privateData = jailhouse_driver;
+
+    return VIR_DRV_OPEN_SUCCESS;
 }
+
+#define UNUSED(x) (void)(x)
 
 static int
 jailhouseConnectClose(virConnectPtr conn)
 {
-    UNUSED(conn);
+   conn->privateData = NULL;
+
+   return 0;
+}
+
+static int
+jailhouseStateCleanup(void)
+{
+    if (!jailhouse_driver)
+       return -1;
+
+    if (jailhouse_driver->lockFD != -1)
+        virPidFileRelease(jailhouse_driver->config->stateDir,
+                          "driver", jailhouse_driver->lockFD);
+
+    virMutexDestroy(&jailhouse_driver->lock);
+
+    jailhouseFreeDriver(jailhouse_driver);
     return 0;
 }
 
+static int
+jailhouseStateInitialize(bool privileged G_GNUC_UNUSED,
+                         const char *root G_GNUC_UNUSED,
+                         virStateInhibitCallback callback G_GNUC_UNUSED,
+                         void *opaque G_GNUC_UNUSED)
+{
+    virJailhouseDriverConfigPtr cfg = NULL;
+    int rc;
+
+    jailhouse_driver = g_new0(virJailhouseDriver, 1);
+    jailhouse_driver->lockFD = -1;
+
+    if (virMutexInit(&jailhouse_driver->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot initialize mutex"));
+        VIR_FREE(jailhouse_driver);
+        return VIR_DRV_STATE_INIT_ERROR;
+    }
+
+    if (!(cfg = virJailhouseDriverConfigNew()))
+        goto error;
+
+    jailhouse_driver->config = cfg;
+
+    if (jailhouseLoadConf(cfg) < 0)
+        goto error;
+
+    if (virFileMakePath(cfg->stateDir) < 0) {
+        virReportSystemError(errno, _("Failed to create state dir %s"),
+                             cfg->stateDir);
+        goto error;
+    }
+
+    if ((jailhouse_driver->lockFD = virPidFileAcquire(cfg->stateDir,
+                                                      "driver", false, getpid())) < 0)
+        goto error;
+
+    if ((rc = jailhouseEnable(cfg->sys_config_file_path)) < 0)
+        goto error;
+    else if (rc == 0)
+        return VIR_DRV_STATE_INIT_SKIPPED;
+
+    if (jailhouseCreateAndLoadCells(jailhouse_driver) < 0)
+        goto error;
+
+    return VIR_DRV_STATE_INIT_COMPLETE;
+
+ error:
+    jailhouseStateCleanup();
+    return VIR_DRV_STATE_INIT_ERROR;
+
+}
 static const char *
 jailhouseConnectGetType(virConnectPtr conn)
 {
@@ -69,8 +254,7 @@ jailhouseConnectGetHostname(virConnectPtr conn)
 }
 
 static int
-jailhouseNodeGetInfo(virConnectPtr conn,
-                     virNodeInfoPtr info)
+jailhouseNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 {
     UNUSED(conn);
     UNUSED(info);
@@ -78,27 +262,8 @@ jailhouseNodeGetInfo(virConnectPtr conn,
 }
 
 static int
-jailhouseConnectListDomains(virConnectPtr conn,
-                            int *ids,
-                            int maxids)
-{
-    UNUSED(conn);
-    UNUSED(ids);
-    UNUSED(maxids);
-    return -1;
-}
-
-static int
-jailhouseConnectNumOfDomains(virConnectPtr conn)
-{
-    UNUSED(conn);
-    return -1;
-}
-
-static int
 jailhouseConnectListAllDomains(virConnectPtr conn,
-                               virDomainPtr **domain,
-                               unsigned int flags)
+                               virDomainPtr ** domain, unsigned int flags)
 {
     UNUSED(conn);
     UNUSED(domain);
@@ -107,8 +272,7 @@ jailhouseConnectListAllDomains(virConnectPtr conn,
 }
 
 static virDomainPtr
-jailhouseDomainLookupByID(virConnectPtr conn,
-                          int id)
+jailhouseDomainLookupByID(virConnectPtr conn, int id)
 {
     UNUSED(conn);
     UNUSED(id);
@@ -116,8 +280,7 @@ jailhouseDomainLookupByID(virConnectPtr conn,
 }
 
 static virDomainPtr
-jailhouseDomainLookupByName(virConnectPtr conn,
-                            const char *name)
+jailhouseDomainLookupByName(virConnectPtr conn, const char *name)
 {
     UNUSED(conn);
     UNUSED(name);
@@ -125,8 +288,7 @@ jailhouseDomainLookupByName(virConnectPtr conn,
 }
 
 static virDomainPtr
-jailhouseDomainLookupByUUID(virConnectPtr conn,
-                            const unsigned char *uuid)
+jailhouseDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     UNUSED(conn);
     UNUSED(uuid);
@@ -157,8 +319,7 @@ jailhouseDomainDestroy(virDomainPtr domain)
 }
 
 static int
-jailhouseDomainGetInfo(virDomainPtr domain,
-                       virDomainInfoPtr info)
+jailhouseDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
     UNUSED(domain);
     UNUSED(info);
@@ -167,9 +328,7 @@ jailhouseDomainGetInfo(virDomainPtr domain,
 
 static int
 jailhouseDomainGetState(virDomainPtr domain,
-                        int *state,
-                        int *reason,
-                        unsigned int flags)
+                        int *state, int *reason, unsigned int flags)
 {
     UNUSED(domain);
     UNUSED(state);
@@ -179,8 +338,7 @@ jailhouseDomainGetState(virDomainPtr domain,
 }
 
 static char *
-jailhouseDomainGetXMLDesc(virDomainPtr domain,
-                          unsigned int flags)
+jailhouseDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     UNUSED(domain);
     UNUSED(flags);
@@ -189,31 +347,43 @@ jailhouseDomainGetXMLDesc(virDomainPtr domain,
 
 static virHypervisorDriver jailhouseHypervisorDriver = {
     .name = "JAILHOUSE",
-    .connectOpen = jailhouseConnectOpen, /* 6.3.0 */
-    .connectClose = jailhouseConnectClose, /* 6.3.0 */
-    .connectListDomains = jailhouseConnectListDomains, /* 6.3.0 */
-    .connectNumOfDomains = jailhouseConnectNumOfDomains, /* 6.3.0 */
-    .connectListAllDomains = jailhouseConnectListAllDomains, /* 6.3.0 */
-    .domainLookupByID = jailhouseDomainLookupByID, /* 6.3.0 */
-    .domainLookupByUUID = jailhouseDomainLookupByUUID, /* 6.3.0 */
-    .domainLookupByName = jailhouseDomainLookupByName, /* 6.3.0 */
-    .domainGetXMLDesc = jailhouseDomainGetXMLDesc, /* 6.3.0 */
-    .domainCreate = jailhouseDomainCreate, /* 6.3.0 */
-    .connectGetType = jailhouseConnectGetType, /* 6.3.0 */
-    .connectGetHostname = jailhouseConnectGetHostname, /* 6.3.0 */
-    .nodeGetInfo = jailhouseNodeGetInfo, /* 6.3.0 */
-    .domainShutdown = jailhouseDomainShutdown, /* 6.3.0 */
-    .domainDestroy = jailhouseDomainDestroy, /* 6.3.0 */
-    .domainGetInfo = jailhouseDomainGetInfo, /* 6.3.0 */
-    .domainGetState = jailhouseDomainGetState, /* 6.3.0 */
+    .connectOpen = jailhouseConnectOpen,        /* 6.3.0 */
+    .connectClose = jailhouseConnectClose,      /* 6.3.0 */
+    .connectListAllDomains = jailhouseConnectListAllDomains,    /* 6.3.0 */
+    .domainLookupByID = jailhouseDomainLookupByID,      /* 6.3.0 */
+    .domainLookupByUUID = jailhouseDomainLookupByUUID,  /* 6.3.0 */
+    .domainLookupByName = jailhouseDomainLookupByName,  /* 6.3.0 */
+    .domainGetXMLDesc = jailhouseDomainGetXMLDesc,      /* 6.3.0 */
+    .domainCreate = jailhouseDomainCreate,      /* 6.3.0 */
+    .connectGetType = jailhouseConnectGetType,  /* 6.3.0 */
+    .connectGetHostname = jailhouseConnectGetHostname,  /* 6.3.0 */
+    .nodeGetInfo = jailhouseNodeGetInfo,        /* 6.3.0 */
+    .domainShutdown = jailhouseDomainShutdown,  /* 6.3.0 */
+    .domainDestroy = jailhouseDomainDestroy,    /* 6.3.0 */
+    .domainGetInfo = jailhouseDomainGetInfo,    /* 6.3.0 */
+    .domainGetState = jailhouseDomainGetState,  /* 6.3.0 */
 };
 
+
 static virConnectDriver jailhouseConnectDriver = {
+    .localOnly = true,
+    .uriSchemes = (const char *[]){ "jailhouse", NULL },
     .hypervisorDriver = &jailhouseHypervisorDriver,
+};
+
+
+static virStateDriver jailhouseStateDriver = {
+    .name = "JAILHOUSE",
+    .stateInitialize = jailhouseStateInitialize,
+    .stateCleanup = jailhouseStateCleanup,
 };
 
 int
 jailhouseRegister(void)
 {
-    return virRegisterConnectDriver(&jailhouseConnectDriver, false);
+    if (virRegisterConnectDriver(&jailhouseConnectDriver, false) < 0)
+        return -1;
+    if (virRegisterStateDriver(&jailhouseStateDriver) < 0)
+        return -1;
+    return 0;
 }

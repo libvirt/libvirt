@@ -2115,7 +2115,8 @@ remoteDispatchConnectOpen(virNetServerPtr server G_GNUC_UNUSED,
         STREQ(type, "VBOX") ||
         STREQ(type, "bhyve") ||
         STREQ(type, "vz") ||
-        STREQ(type, "Parallels")) {
+        STREQ(type, "Parallels") ||
+        STREQ(type, "JAILHOUSE")) {
         VIR_DEBUG("Hypervisor driver found, setting URIs for secondary drivers");
         if (getuid() == 0) {
             priv->interfaceURI = "interface:///system";

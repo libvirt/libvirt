@@ -1,5 +1,6 @@
 jailhouse_sources = files(
   'jailhouse_driver.c',
+  'jailhouse_api.c',
 )
 
 driver_source_files += jailhouse_sources
