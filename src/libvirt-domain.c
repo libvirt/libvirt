@@ -11493,6 +11493,11 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                          from virVcpuState enum.
  *     "vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
  *                         as unsigned long long.
+ *     "vcpu.<num>.wait" - time the vCPU <num> wants to run, but the host
+ *                         scheduler has something else running ahead of it.
+ *     "vcpu.<num>.halted" - virtual CPU <num> is halted, may indicate the
+ *                           processor is idle or even disabled, depending
+ *                           on the architecture)
  *
  * VIR_DOMAIN_STATS_INTERFACE:
  *     Return network interface statistics (from domain point of view).
