@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-06-29 11:55+0000\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -996,6 +996,9 @@ msgstr "scsi hostdev 소스의 'adapter' 및 'address'를 지정해야 합니다
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "scsi hostdev 소스의 'adapter'를 지정해야 합니다"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1742,11 +1745,10 @@ msgstr ""
 msgid "Attempted double use of PCI Address %s"
 msgstr ""
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+msgid "Attempting to use unknown stub driver"
 msgstr ""
 
-msgid "Attempting to use unknown stub driver"
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -5747,11 +5749,6 @@ msgstr "이름이 지정된 스냅샷의 도메인 스냅샷 XML 편집 "
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "scsi hostdev 소스의 'adapter' 및 'address'를 지정해야 합니다"
 
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr ""
-
 msgid "Eject the media"
 msgstr "미디어 꺼내기"
 
@@ -6201,6 +6198,9 @@ msgstr "디스크 정보 보기 실패"
 
 msgid "Failed"
 msgstr "실패"
+
+msgid "Failed disable mount propagation out of the root filesystem"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed new node mode for target '%s'"
@@ -6980,10 +6980,6 @@ msgstr "모드 '%s'의 구문분석에 실패했습니다"
 msgid "Failed to find parent device for %s"
 msgstr "%s의 부모 장치를 찾는 데 실패했습니다"
 
-#, fuzzy, c-format
-msgid "Failed to find path for %s binary"
-msgstr "%s의 부모 장치를 찾는 데 실패했습니다"
-
 #, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr ""
@@ -7018,9 +7014,9 @@ msgstr "데몬으로 fork하는 데 실패했습니다: %s"
 msgid "Failed to format new xml document for bridge %s"
 msgstr "브리지 %s의 새로운 xml 문서 포맷 실패"
 
-#, fuzzy, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
-msgstr "브리지 %s의 새로운 xml 문서 포맷 실패"
+#, c-format
+msgid "Failed to format new xml document for detached interface %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to fully read directory %s"
@@ -8136,22 +8132,20 @@ msgstr "도메인에 대한 메모리 설정 실패"
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr "도메인에 대한 메모리 설정 실패"
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 msgid "Failed to set new domain description"
 msgstr "새로운 도메인 설명을 설정하는데 실패"
 
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "새로운 도메인 설명을 설정하는데 실패"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr ""
-"xml 문서에 있는 새로운 슬래이브 인터페이스 이름을 '%s'로 설정하는데 실패"
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr ""
-"xml 문서에 있는 새로운 슬래이브 인터페이스 유형을 '%s'로 설정하는데 실패"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "비-블러킹 파일 디스크립터 플래그를 설정하는 데 실패했습니다"
@@ -8277,9 +8271,6 @@ msgstr "도메인 %s를 중지하기 실패"
 #, fuzzy, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "도메인 %s를 중지하기 실패"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr "루트 마운트를 슬레이브 모드로 전환하는 데 실패"
 
 #, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8563,6 +8554,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -9844,6 +9841,9 @@ msgstr ""
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr ""
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "잘못된 플로피 장치 이름: %s"
@@ -9905,6 +9905,10 @@ msgstr "잘못된 ip 주소 접두어 값"
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "네트워크 '%s'에서 잘못된 ipv6 설정 '%s'"
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid job flags"
@@ -10364,6 +10368,10 @@ msgstr "시간 초과에 대한 값이 잘못됨"
 msgid "Invalid value for timeout"
 msgstr "시간 초과에 대한 값이 잘못됨"
 
+#, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "시간 초과에 대한 값이 잘못됨"
@@ -10766,6 +10774,9 @@ msgstr "JSON 문서에서 max_clients 데이터를 설정할 수 없음"
 msgid "Malformed nbd port '%s'"
 msgstr "잘못된 장치 값 '%s'"
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed ovs-vsctl output"
 msgstr "잘못된 형식의 8진 모드"
@@ -10954,6 +10965,10 @@ msgstr "메타데이터: "
 
 msgid "MethodFault is missing 'type' property"
 msgstr "MethodFault에 'type' 속성이 누락되어 있음  "
+
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "다른 호스트로 도메인 이전. 실시간 이전일 경우 --live 추가."
@@ -12574,6 +12589,10 @@ msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr ""
 
 #, c-format
+msgid "No zPCI %s to reserve"
+msgstr ""
+
+#, c-format
 msgid "Node %d:\n"
 msgstr ""
 
@@ -14093,7 +14112,7 @@ msgid "S4 state is disabled for this domain"
 msgstr "USB 허브를 추가할 수 없음: USB는 이 도메인에 비활성화되어 있음"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
+msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
 
 #, c-format
@@ -15112,6 +15131,14 @@ msgid "TLS:"
 msgstr ""
 
 #, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
+#, c-format
 msgid "TPM device path %s is invalid"
 msgstr ""
 
@@ -15384,6 +15411,11 @@ msgstr "대상 디스크 시리얼 %s이 소스 %s와 일치하지 않음"
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "대상 디스크 %s가 소스 %s와 일치하지 않음"
 
+#, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr "대상 도메인 이름 '%s'이 소스 '%s'와 일치하지 않음"
@@ -15422,6 +15454,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "대상 도메인 SMBIOS 모드 %s가 소스 %s와 일치하지 않음"
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr "대상 도메인 USB 리디렉션 필터 수 %d는 소스 %d와 일치하지 않음 "
 
@@ -15440,6 +15476,9 @@ msgstr "대상 도메인 콘솔 카운트 %zu가 소스 %zu와 일치하지 않�
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr "대상 도메인 컨트롤러 카운트 %zu가 소스 %zu와 일치하지 않음"
+
+msgid "Target domain count of sysinfo does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
@@ -15769,6 +15808,9 @@ msgid "Temporary disk space total:"
 msgstr "전체 메모리:"
 
 msgid "Temporary disk space use:"
+msgstr ""
+
+msgid "That firmware name is reserved"
 msgstr ""
 
 #, fuzzy
@@ -16536,6 +16578,12 @@ msgstr "%s에 액세스할 수 없음 "
 msgid "Unable to access stream for '%s'"
 msgstr "'%s'의 스트림을 액세스할 수 없음 "
 
+#, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "잠금 상태 %s를 구문 분석할 수 없습니다 "
@@ -16942,6 +16990,12 @@ msgstr "현재 프로세스 문맥 '%s'을 얻을 수 없음"
 #, fuzzy
 msgid "Unable to create tunnel migration thread"
 msgstr "blkid 라이브러리 핸들을 생성할 수 없습니다 "
+
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
 
 msgid "Unable to decode header until len is received"
 msgstr ""
@@ -18395,6 +18449,9 @@ msgstr "'%s'에 데이터를 작성할 수 없음"
 msgid "Unable to start event thread: %s"
 msgstr "%s를 읽을 수 없습니다 "
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to stat %s"
 msgstr "%s을 생성할 수 없음 "
@@ -18410,6 +18467,9 @@ msgstr "바인딩 대상 %s을 생성하는데 실패했습니다 "
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "%s을 생성할 수 없음 "
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19348,6 +19408,9 @@ msgstr "지원하지 않는 설정 형식 %s"
 msgid "Unsupported controller type: %s"
 msgstr "지원하지 않는 설정 형식 %s"
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
 msgstr "지원되지 않는 장치 유형 '%s'"
@@ -20014,6 +20077,11 @@ msgstr ""
 "네트워크 '%s'에 다른 포트그룹 항목이 기본값으로 이미 설정되어 있습니다. 하나"
 "의 기본값 포트 그룹 항목만이 허용됩니다."
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 #, fuzzy
 msgid "a redefined checkpoint must have a name"
 msgstr "다시 지정된 스냅샷에는 이름을 지정해야 합니다 "
@@ -20582,10 +20650,6 @@ msgid "binding '%s' is already being removed"
 msgstr "도메인이 '%s'가 이미 실행중입니다"
 
 #, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
-
-#, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
 msgstr ""
 
@@ -20889,10 +20953,6 @@ msgstr "현재 스냅샷 정보"
 #, fuzzy, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "시작 셀 %d 범위 초과 (0-%d)"
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
-msgstr ""
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -21212,6 +21272,9 @@ msgstr "볼륨을 디렉터리 볼륨으로 복사할 수 없습니다"
 #, c-format
 msgid "cannot create %s"
 msgstr "%s을 생성할 수 없음 "
+
+msgid "cannot create a mediated device without a parent"
+msgstr ""
 
 #, fuzzy
 msgid "cannot create a new stream"
@@ -23178,6 +23241,10 @@ msgid "could not find capabilities for %s"
 msgstr "'%s'에 대한 장치 기능이 없음"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr ""
 
@@ -23305,10 +23372,6 @@ msgstr ""
 msgid "could not initialize domain event timer"
 msgstr "도메인 이벤트 타이머를 초기화할 수 없습니다"
 
-#, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "'%s'라는 이름의 HostVirtualSwitch를 찾을 수 없습니다 "
@@ -23399,6 +23462,9 @@ msgstr "Xen 하이퍼바이저 항목을 사용할 수 없음"
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen 하이퍼바이저 항목 %s을 사용할 수 없음"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 msgid "couldn't fetch array of leases"
 msgstr ""
@@ -24636,7 +24702,7 @@ msgstr ""
 msgid "don't start the bridge immediately"
 msgstr ""
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
+msgid "don't start the detached interface immediately (not recommended)"
 msgstr ""
 
 msgid "done"
@@ -25128,7 +25194,7 @@ msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
+msgid "event 'metadata-change' for domain %s: %s %s\n"
 msgstr ""
 
 #, c-format
@@ -25662,10 +25728,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "RBD 이미지 '%s' 열기 실패"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -26802,6 +26864,9 @@ msgstr ""
 msgid "for hardware virtualization"
 msgstr ""
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' 속성에서 금지된 문자 "
 
@@ -26906,6 +26971,9 @@ msgstr ""
 #, fuzzy
 msgid "fuse_loop failed"
 msgstr "sockpair가 실패했습니다"
+
+msgid "fw_cfg is not supported with this QEMU"
+msgstr ""
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -27705,6 +27773,10 @@ msgstr "인터페이스 이름 %s이 버퍼에 맞지 않음 "
 
 msgid "interface name or MAC address"
 msgstr "인터페이스 이름 또는 MAC 주소"
+
+#, c-format
+msgid "interface not set\n"
+msgstr ""
 
 #, fuzzy
 msgid "interface state driver is not active"
@@ -28665,6 +28737,9 @@ msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "vhost-net은 virtio 네트워크 인터페이스에 대해서만 지원됨 "
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
+msgstr ""
 
 #, fuzzy
 msgid "iommu: caching mode is not supported with this QEMU binary"
@@ -29726,6 +29801,9 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -30489,10 +30567,6 @@ msgstr "커널 정보 부재"
 msgid "missing iommuGroup number attribute"
 msgstr "iommuGroup 번호 속성이 누락되어 있습니다 "
 
-#, fuzzy, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "iommuGroup 번호 속성이 누락되어 있습니다 "
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "redirdev에 유형이 누락되어 있음"
@@ -30609,6 +30683,10 @@ msgstr "운영 시스템 정보 부재"
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s의 운영 시스템 정보 부재"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing or invalid CPU cache mode"
@@ -31660,6 +31738,10 @@ msgstr "'%s'에 대한 블럭 장치 경로가 제공되지 않았습니다"
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr ""
 
+#, c-format
+msgid "no capabilities available for %s"
+msgstr ""
+
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "존재하는 콘솔 장치가 없습니다"
@@ -32389,8 +32471,11 @@ msgstr "단일 TPM 장치만 지원됨"
 msgid "only a single IOMMU device is supported"
 msgstr "단일 TPM 장치만 지원됨"
 
-msgid "only a single TPM device is supported"
-msgstr "단일 TPM 장치만 지원됨"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr ""
 
 msgid "only a single memory balloon device is supported"
 msgstr "단일 메모리 부울 장치만이 지원됨"
@@ -33551,7 +33636,7 @@ msgstr ""
 msgid "read-only connection"
 msgstr "읽기 전용 연결"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 #, fuzzy
@@ -36037,6 +36122,10 @@ msgid "unable to execute QEMU command '%s': %s"
 msgstr "QEMU 명령 '%s'를 실행할 수 없음 : %s"
 
 #, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr ""
 
@@ -36439,9 +36528,8 @@ msgstr "네트워크 장치 브리지 해제 "
 msgid "undefine VM on source"
 msgstr "소스의 VM 정의를 없앰"
 
-#, fuzzy
-msgid "undefine a bridge device after detaching its slave device"
-msgstr "브리지 장치를 생성하고 이를 기존 네트워크 장치에 부착"
+msgid "undefine a bridge device after detaching its device(s)"
+msgstr ""
 
 msgid "undefine a domain"
 msgstr "도메인을 정의하지 않음"
@@ -37036,6 +37124,10 @@ msgstr "알려지지 않은 auth 유형 '%s'"
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "알려지지 않은 인증 유형 %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -39307,3 +39399,37 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "%s의 부모 장치를 찾는 데 실패했습니다"
+
+#, fuzzy
+#~ msgid "Failed to format new xml document for un-enslaved interface %s"
+#~ msgstr "브리지 %s의 새로운 xml 문서 포맷 실패"
+
+#~ msgid "Failed to set new slave interface name to '%s' in xml document"
+#~ msgstr ""
+#~ "xml 문서에 있는 새로운 슬래이브 인터페이스 이름을 '%s'로 설정하는데 실패"
+
+#~ msgid "Failed to set new slave interface type to '%s' in xml document"
+#~ msgstr ""
+#~ "xml 문서에 있는 새로운 슬래이브 인터페이스 유형을 '%s'로 설정하는데 실패"
+
+#~ msgid "Failed to switch root mount into slave mode"
+#~ msgstr "루트 마운트를 슬레이브 모드로 전환하는 데 실패"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "RBD 이미지 '%s' 열기 실패"
+
+#, fuzzy
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "iommuGroup 번호 속성이 누락되어 있습니다 "
+
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "단일 TPM 장치만 지원됨"
+
+#, fuzzy
+#~ msgid "undefine a bridge device after detaching its slave device"
+#~ msgstr "브리지 장치를 생성하고 이를 기존 네트워크 장치에 부착"

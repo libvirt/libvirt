@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-06-29 11:55+0000\n"
 "PO-Revision-Date: 2019-03-29 03:37+0000\n"
 "Last-Translator: Di Wei <dwlinux@outlook.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -1151,6 +1151,9 @@ msgstr "必须为 scsi hostdev 源地址指定 'adapter' 和 'address'"
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "必须为 scsi hostdev 源地址指定 'adapter'"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr "'arch' 元素不能在  'cpu'  元素与 'match' 属性一同使用"
@@ -1882,11 +1885,10 @@ msgstr "尝试使用同步回复发送异步信息"
 msgid "Attempted double use of PCI Address %s"
 msgstr "曾尝试重复使用 PCI 地址 %s"
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
-msgstr "尝试 NAT '%s'。只有 IPv4 支持 NAT。"
-
 msgid "Attempting to use unknown stub driver"
+msgstr ""
+
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -5820,11 +5822,6 @@ msgstr "为命名快照编辑域快照 XML"
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "必须为 'scsi_host' 适配器指定 'name' 或者 'parent"
 
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr "目标和源域中的任意一个必须有 TPM 设备，或二者均没有 TPM 设备"
-
 msgid "Eject the media"
 msgstr "弹出介质"
 
@@ -6278,6 +6275,9 @@ msgstr "无法创建套接字用来进行传入迁移"
 
 msgid "Failed"
 msgstr "已失败"
+
+msgid "Failed disable mount propagation out of the root filesystem"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed new node mode for target '%s'"
@@ -7034,10 +7034,6 @@ msgstr "解析模式 '%s' 失败"
 msgid "Failed to find parent device for %s"
 msgstr "查找 %s 的上级设备失败"
 
-#, c-format
-msgid "Failed to find path for %s binary"
-msgstr "查找 %s 二进制路径失败"
-
 #, fuzzy, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr "在 '%s' 中捆绑 cgroup '%s' 失败"
@@ -7073,8 +7069,8 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "为桥接 %s 格式化新的 xml 文档失败"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
-msgstr "为非辅助接口 %s 格式化新 xml 文档失败"
+msgid "Failed to format new xml document for detached interface %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to fully read directory %s"
@@ -8145,20 +8141,20 @@ msgstr "为域设定内存失败"
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr "使用 libxenlight 为域 '%d' 设定内存失败"
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 msgid "Failed to set new domain description"
 msgstr "设定新域描述失败"
 
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "获取域状态失败"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr "在 xml 文档中将新的辅助接口名称设定为 '%s' 失败"
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr "在 xml 文档中将新的辅助接口类型设定为 '%s' 失败"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "设定非块文件描述符标记失败"
@@ -8283,9 +8279,6 @@ msgstr "挂起 %s 域失败"
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "使用 libxenlight 挂起域 '%d' 失败"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr "将 root 挂载切换到从属模式失败"
 
 #, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8553,6 +8546,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -9828,6 +9827,9 @@ msgstr "等待监控程序时的无效文件描述符"
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr "等待监控程序时的无效文件描述符"
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "无效软盘设备名称：%s"
@@ -9890,6 +9892,10 @@ msgstr "无效的 MAC 地址前缀"
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "网络 '%s' 中有无效 ipv6 设置 '%s'"
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid job flags"
@@ -10344,6 +10350,10 @@ msgid "Invalid value for timeout"
 msgstr "超时值无效"
 
 #, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "I/O 加权的无效 %d 值"
 
@@ -10747,6 +10757,9 @@ msgstr "无法在 JSON 文件中设定 max_clients 数据"
 msgid "Malformed nbd port '%s'"
 msgstr "不正常 nbd 端口 '%s'"
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed ovs-vsctl output"
 msgstr "不正常的八进制模式"
@@ -10936,6 +10949,10 @@ msgstr "元数据："
 
 msgid "MethodFault is missing 'type' property"
 msgstr "MethodFault 缺少 'type' 属性"
+
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "将域迁移到另一个主机中。热迁移时添加 --live。"
@@ -12487,6 +12504,10 @@ msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr "VMX 条目 '%s' 尚未处理的值 '%s'"
 
 #, c-format
+msgid "No zPCI %s to reserve"
+msgstr ""
+
+#, c-format
 msgid "Node %d:\n"
 msgstr ""
 
@@ -13986,8 +14007,8 @@ msgid "S4 state is disabled for this domain"
 msgstr "这个域禁用了 S4 状态"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
-msgstr "白名单中不能使用 SASL 客户端身份 '%s'"
+msgid "SASL client identity '%s' not allowed by ACL"
+msgstr ""
 
 #, c-format
 msgid "SASL data length %zu too long, max %zu"
@@ -15015,6 +15036,14 @@ msgid "TLS:"
 msgstr ""
 
 #, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
+#, c-format
 msgid "TPM device path %s is invalid"
 msgstr "TPM 设备路径 %s 无效"
 
@@ -15284,6 +15313,11 @@ msgstr "目标磁盘串口 %s 与源 %s 不匹配"
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "目标磁盘 %s 与源 %s 不匹配"
 
+#, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr "目标域名 '%s' 与源 '%s' 不映射"
@@ -15322,6 +15356,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "目标域 SMBIOS 模式 %s 与源 %s 不匹配"
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr "目标域 USB 重新定向过滤器计数 %d 与源 %d 不匹配"
 
@@ -15340,6 +15378,9 @@ msgstr "目标域控制台卡计数 %zu 与源 %zu 不映射"
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr "目标域控制器计数 %zu 与源 %zu 不映射"
+
+msgid "Target domain count of sysinfo does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
@@ -15666,6 +15707,9 @@ msgid "Temporary disk space total:"
 msgstr "内存总量："
 
 msgid "Temporary disk space use:"
+msgstr ""
+
+msgid "That firmware name is reserved"
 msgstr ""
 
 #, fuzzy
@@ -16428,6 +16472,12 @@ msgid "Unable to access stream for '%s'"
 msgstr "无法为 '%s' 访问流"
 
 #, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
+#, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "无法请求在 '%s' 中加锁"
 
@@ -16815,6 +16865,12 @@ msgstr "无法生成处理任务 IO 的线程"
 #, fuzzy
 msgid "Unable to create tunnel migration thread"
 msgstr "无法生成迁移线程"
+
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
 
 msgid "Unable to decode header until len is received"
 msgstr "收到 len 前无法解码标头"
@@ -18188,6 +18244,9 @@ msgstr "无法分割 FD 列表 '%s'"
 msgid "Unable to start event thread: %s"
 msgstr "无法统计捆绑目标 %s"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, c-format
 msgid "Unable to stat %s"
 msgstr "无法统计 %s"
@@ -18203,6 +18262,9 @@ msgstr "无法统计捆绑目标 %s"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "无法统计 %s"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19130,6 +19192,9 @@ msgstr "不支持的控制器型号：%s"
 msgid "Unsupported controller type: %s"
 msgstr "不支持的控制器型号：%s"
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
 msgstr "不支持的设备类型 '%s'"
@@ -19786,6 +19851,11 @@ msgid ""
 "Only one default is allowed."
 msgstr "网络 '%s' 中不同 portgroup 条目已设定为默认。只允许有一个默认值。"
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 #, fuzzy
 msgid "a redefined checkpoint must have a name"
 msgstr "重新定义的快照必须有名称"
@@ -20341,10 +20411,6 @@ msgstr "快照 '%s' 已存在"
 msgid "binding '%s' is already being removed"
 msgstr "已启用域 '%s'"
 
-#, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
 msgstr "'%s' 在链中的 '%s' 就在基础 '%s' 下面"
@@ -20645,10 +20711,6 @@ msgstr "当前快照信息"
 #, fuzzy, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "启动单元 %d 溢出（0 - %d）"
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
-msgstr ""
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -20965,6 +21027,9 @@ msgstr "无法将卷复制到目录卷"
 #, c-format
 msgid "cannot create %s"
 msgstr "无法生成 %s"
+
+msgid "cannot create a mediated device without a parent"
+msgstr ""
 
 #, fuzzy
 msgid "cannot create a new stream"
@@ -22895,6 +22960,10 @@ msgid "could not find capabilities for %s"
 msgstr "'%s' 没有设备容量"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr "无法找到删除的事件回叫 %d"
 
@@ -23014,10 +23083,6 @@ msgid "could not initialize domain event timer"
 msgstr "无法启动域时间计时器"
 
 #, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-
-#, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "无法在域 %s 中打开 VirtualBox 会话"
 
@@ -23102,6 +23167,9 @@ msgstr "不能使用Xen管理程序登录"
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "不能使用Xen管理程序登录 %s"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 msgid "couldn't fetch array of leases"
 msgstr "无法提取租用阵列"
@@ -24314,8 +24382,8 @@ msgstr "不知道如何删除 %s 设备"
 msgid "don't start the bridge immediately"
 msgstr "不要立即启动桥接"
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
-msgstr "不要立即启动非辅助接口（不推荐）"
+msgid "don't start the detached interface immediately (not recommended)"
+msgstr ""
 
 msgid "done"
 msgstr "完成"
@@ -24797,9 +24865,9 @@ msgstr ""
 msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr "自动启动化存储池 '%s' 失败：%s"
 
-#, fuzzy, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
-msgstr "从域 %s 中删除的 managedsave 映像"
+#, c-format
+msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
@@ -25331,10 +25399,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "在 '%s' 中捆绑 cgroup '%s' 失败"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -26454,6 +26518,9 @@ msgstr "是否支持IOMMU"
 msgid "for hardware virtualization"
 msgstr "硬件是否支持虚拟化"
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' 属性中的禁用字符"
 
@@ -26554,6 +26621,9 @@ msgstr "磁盘的完全限定路径"
 
 msgid "fuse_loop failed"
 msgstr "fuse_loop 失败"
+
+msgid "fw_cfg is not supported with this QEMU"
+msgstr ""
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -27342,6 +27412,10 @@ msgstr "接口名称 %s 不适用于缓存"
 
 msgid "interface name or MAC address"
 msgstr "MAC 地址的接口名称"
+
+#, c-format
+msgid "interface not set\n"
+msgstr ""
 
 #, fuzzy
 msgid "interface state driver is not active"
@@ -28294,6 +28368,9 @@ msgstr "这个 QEMU 二进制不支持弃用"
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "只有 scsi 主机设备支持 rawio"
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
+msgstr ""
 
 #, fuzzy
 msgid "iommu: caching mode is not supported with this QEMU binary"
@@ -29314,6 +29391,9 @@ msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -30066,10 +30146,6 @@ msgstr "缺少接口信息"
 msgid "missing iommuGroup number attribute"
 msgstr "缺少 iommuGroup 数属性"
 
-#, fuzzy, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "缺少 iommuGroup 数属性"
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "iothreadpin 缺少 cpuset"
@@ -30181,6 +30257,10 @@ msgstr "丢失操作系统信息"
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "丢失操作系统信息 %s"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing or invalid CPU cache mode"
@@ -31220,6 +31300,10 @@ msgstr "没有为 '%s' 提供块设备路径"
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "没有 prog %d vers %d serial %d 的调用等待回复"
 
+#, c-format
+msgid "no capabilities available for %s"
+msgstr ""
+
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "没有可用类别范围"
@@ -31936,8 +32020,11 @@ msgstr "只支持单一 TPM 设备"
 msgid "only a single IOMMU device is supported"
 msgstr "只支持单一 TPM 设备"
 
-msgid "only a single TPM device is supported"
-msgstr "只支持单一 TPM 设备"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr ""
 
 msgid "only a single memory balloon device is supported"
 msgstr "只支持单一内存 balloon 设备"
@@ -33099,7 +33186,7 @@ msgstr "卷大小，以整数计（默认为字节）"
 msgid "read-only connection"
 msgstr "只读的连接"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 #, fuzzy
@@ -35546,6 +35633,10 @@ msgstr "无法执行 QEMU 命令 '%s'"
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "无法执行 QEMU 命令 '%s'：%s"
 
+#, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "缺少索引 %d 的 SCSI 控制器"
@@ -35940,8 +36031,8 @@ msgstr "取消定义网络设备"
 msgid "undefine VM on source"
 msgstr "在源中取消定义 VM"
 
-msgid "undefine a bridge device after detaching its slave device"
-msgstr "分离其辅助设备后取消定义桥接设备"
+msgid "undefine a bridge device after detaching its device(s)"
+msgstr ""
 
 msgid "undefine a domain"
 msgstr "取消定义一个域"
@@ -36531,6 +36622,10 @@ msgstr "未知 auth 类型 '%s'"
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "未知验证类型 %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -38794,6 +38889,53 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <字符串>}..."
+
+#~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+#~ msgstr "尝试 NAT '%s'。只有 IPv4 支持 NAT。"
+
+#~ msgid ""
+#~ "Either both target and source domains or none of them must have TPM "
+#~ "device present"
+#~ msgstr "目标和源域中的任意一个必须有 TPM 设备，或二者均没有 TPM 设备"
+
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "查找 %s 二进制路径失败"
+
+#~ msgid "Failed to format new xml document for un-enslaved interface %s"
+#~ msgstr "为非辅助接口 %s 格式化新 xml 文档失败"
+
+#~ msgid "Failed to set new slave interface name to '%s' in xml document"
+#~ msgstr "在 xml 文档中将新的辅助接口名称设定为 '%s' 失败"
+
+#~ msgid "Failed to set new slave interface type to '%s' in xml document"
+#~ msgstr "在 xml 文档中将新的辅助接口类型设定为 '%s' 失败"
+
+#~ msgid "Failed to switch root mount into slave mode"
+#~ msgstr "将 root 挂载切换到从属模式失败"
+
+#~ msgid "SASL client identity '%s' not allowed in whitelist"
+#~ msgstr "白名单中不能使用 SASL 客户端身份 '%s'"
+
+#~ msgid "don't start the un-slaved interface immediately (not recommended)"
+#~ msgstr "不要立即启动非辅助接口（不推荐）"
+
+#, fuzzy
+#~ msgid "event 'metdata-change' for domain %s: %s %s\n"
+#~ msgstr "从域 %s 中删除的 managedsave 映像"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "在 '%s' 中捆绑 cgroup '%s' 失败"
+
+#, fuzzy
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "缺少 iommuGroup 数属性"
+
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "只支持单一 TPM 设备"
+
+#~ msgid "undefine a bridge device after detaching its slave device"
+#~ msgstr "分离其辅助设备后取消定义桥接设备"
 
 #~ msgid "Attempt to close netcf state driver with open connections"
 #~ msgstr "尝试使用打开的连接关闭 netcf 状态驱动程序"

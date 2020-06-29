@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-06-29 11:55+0000\n"
 "PO-Revision-Date: 2019-12-16 05:00+0000\n"
 "Last-Translator: Daniel Berrange <dan-zanata@berrange.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
@@ -1181,6 +1181,9 @@ msgstr "je třeba, aby pro zdroj scsi hostdev bylo zadáno 'adapter' a 'address'
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "je třeba, aby pro zdroj scsi hostdev byl zadán 'adapter'"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1929,12 +1932,11 @@ msgstr "Pokus o odeslání asynchronní zprávy se synchronní odpovědí"
 msgid "Attempted double use of PCI Address %s"
 msgstr "Pokus o použití PCI adresy %s dvakrát"
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
-msgstr "Pokus o NAT „%s“. NAT je podporován pouze pro IPv4."
-
 msgid "Attempting to use unknown stub driver"
 msgstr "Pokus o použití neznámého pahýlového ovladače"
+
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
+msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "Režim atributu je možný pouze pro procesor hosta"
@@ -5901,13 +5903,6 @@ msgstr ""
 "Pro adaptér 'scsi_host' je třeba, aby bylo zadáno buď 'name' (název), nebo "
 "'parent' (nadřazené)"
 
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr ""
-"Je třeba, aby TPM zařízení bylo přítomné v jak cílové, tak zdrojové doméně, "
-"nebo naopak ani v jedné"
-
 msgid "Eject the media"
 msgstr "Vysunout médium"
 
@@ -6395,6 +6390,9 @@ msgstr "Nepodařilo se vytvořit soket pro příchozí migraci"
 
 msgid "Failed"
 msgstr "Nezdařilo se"
+
+msgid "Failed disable mount propagation out of the root filesystem"
+msgstr ""
 
 #, c-format
 msgid "Failed new node mode for target '%s'"
@@ -7151,10 +7149,6 @@ msgid "Failed to find parent device for %s"
 msgstr "Nepodařilo se najít nadřazené zařízení pro %s"
 
 #, c-format
-msgid "Failed to find path for %s binary"
-msgstr "Nepodařilo se najít umístění binárky %s"
-
-#, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr "Nepodařilo se najít scsi_host pomocí PCI „%s“ a unique_id='%u'"
 
@@ -7189,8 +7183,8 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "Nepodařilo se formátovat nový xml dokument pro most %s"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
-msgstr "Nepodařilo se formátovat nový xml dokument pro oproštěné rozhraní %s"
+msgid "Failed to format new xml document for detached interface %s"
+msgstr ""
 
 #, c-format
 msgid "Failed to fully read directory %s"
@@ -8259,21 +8253,19 @@ msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr ""
 "Nepodařilo se nastavit paměť pro doménu „%d“ prostřednictvím libxenlight"
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 msgid "Failed to set new domain description"
 msgstr "Nepodařilo se nastavit nový popis domény"
 
 msgid "Failed to set new domain title"
 msgstr "Nepodařilo se nastavit nový název domény"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr ""
-"Nepodařilo se nastavit název nového podřízeného rozhraní „%s“ v xml dokumentu"
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr ""
-"Nepodařilo se nastavit typ nového podřízeného rozhraní „%s“ v xml dokumentu"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Nepodařilo se nastavit neblokující příznak popisovače souboru"
@@ -8401,9 +8393,6 @@ msgstr "Nepodařilo se uspat doménu „%d“"
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "Nepodařilo se uspat doménu „%d“ s libxenlight"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr "Nepodařilo se přepnout kořenové připojení do podřízeného režimu"
 
 #, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8674,6 +8663,12 @@ msgstr "Dokončeno po požadavku hosta"
 
 msgid "Finished after host request"
 msgstr "Dokončeno po požadavku hostitele"
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -9993,6 +9988,9 @@ msgstr "Neplatný popisovač souboru při čekání na monitor"
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr "Neplatný popisovač souboru při čekání na monitor"
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "Neplatný název zařízení disketové mechaniky: %s"
@@ -10058,6 +10056,10 @@ msgstr "Neplatná předpona IP adresy"
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Neplatné ipv6 nastavení „%s“ v síti „%s“"
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
+msgstr ""
 
 msgid "Invalid job flags"
 msgstr "Neplatné příznaky úlohy"
@@ -10517,6 +10519,10 @@ msgid "Invalid value for timeout"
 msgstr "neplatná hodnota časového limitu"
 
 #, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "Neplatná hodnota %d pro váhu vstupu/výstupu"
 
@@ -10910,6 +10916,9 @@ msgstr "V JSON dokumentu jsou nesprávně formulovaná data max_anonymous_client
 msgid "Malformed nbd port '%s'"
 msgstr "Nesprávně formulovaný nbd port „%s“"
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 msgid "Malformed ovs-vsctl output"
 msgstr "Nesprávně formulovaný výstup ovs-vsctl"
 
@@ -11091,6 +11100,10 @@ msgstr "Metadata:"
 
 msgid "MethodFault is missing 'type' property"
 msgstr "U MethodFault chybí vlastnost 'type'"
+
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
@@ -12630,6 +12643,10 @@ msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr "Ještě neobsloužená hodnota „%s“ pro VMX položku „%s“"
 
 #, c-format
+msgid "No zPCI %s to reserve"
+msgstr ""
+
+#, c-format
 msgid "Node %d:\n"
 msgstr "Uzel %d:\n"
 
@@ -14145,9 +14162,8 @@ msgid "S4 state is disabled for this domain"
 msgstr "Stav S4 je pro tuto doménu vypnutý"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
+msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
-"identita SASL klienta „%s“ není na seznamu těch, kterým je umožněn přístup"
 
 #, c-format
 msgid "SASL data length %zu too long, max %zu"
@@ -15167,6 +15183,14 @@ msgid "TLS:"
 msgstr "TLS:"
 
 #, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
+#, c-format
 msgid "TPM device path %s is invalid"
 msgstr "Popis umístění TPM zařízení %s není platný"
 
@@ -15442,6 +15466,11 @@ msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "wwn „%s“ cílového disku se neshoduje se zdrojovým „%s“"
 
 #, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
+#, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr ""
 "Režim mezipaměti „%s“ IOMMU zařízení cílové domény se neshoduje se zdrojovým "
@@ -15487,6 +15516,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "Režim %s SMBIOS cílové domény se neshoduje se zdrojovým %s"
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr ""
 "Počet filtrů %d přesměrování USB cílové domény se neshoduje se zdrojovým %d "
@@ -15506,6 +15539,9 @@ msgstr "Počet konzolí cílové domény %zu neodpovídá zdrojovému %zu"
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr "Počet řadičů cílové domény %zu neodpovídá zdrojovému %zu"
+
+msgid "Target domain count of sysinfo does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
@@ -15850,6 +15886,9 @@ msgid "Temporary disk space total:"
 msgstr "Paměti celkem:"
 
 msgid "Temporary disk space use:"
+msgstr ""
+
+msgid "That firmware name is reserved"
 msgstr ""
 
 msgid "Thaw domain's mounted filesystems."
@@ -16634,6 +16673,12 @@ msgid "Unable to access stream for '%s'"
 msgstr "Nedaří se přistoupit k proudu pro „%s“"
 
 #, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
+#, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "Nedaří se získat zámek na „%s“"
 
@@ -17011,6 +17056,12 @@ msgstr "Nedaří se vytvořit vlákno pro zpracování vst./výstupu příkazu"
 
 msgid "Unable to create tunnel migration thread"
 msgstr "Nedaří se vytvořit vlákno migračního tunelu"
+
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
 
 msgid "Unable to decode header until len is received"
 msgstr "Záhlaví není možné dekódovat, dokud není obdržena délka"
@@ -18333,6 +18384,9 @@ msgstr "Nedaří se rozdělit seznam popisovače souboru „%s“"
 msgid "Unable to start event thread: %s"
 msgstr "Nedaří se zjistit stav cíle %s navázání"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, c-format
 msgid "Unable to stat %s"
 msgstr "Nedaří se zjistit stav %s"
@@ -18348,6 +18402,9 @@ msgstr "Nedaří se zjistit stav cíle %s navázání"
 #, c-format
 msgid "Unable to stat: %s"
 msgstr "Nedaří se zjistit stav: %s"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19277,6 +19334,9 @@ msgstr "Nepodporovaný typ řadiče %s"
 msgid "Unsupported controller type: %s"
 msgstr "Nepodporovaný typ řadiče: %s"
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, c-format
 msgid "Unsupported device type %d"
 msgstr "Nepodporovaný typ zařízení %d"
@@ -19935,6 +19995,11 @@ msgstr ""
 "v síti „%s“ je už jako výchozí nastavená jiná položka skupiny portu. "
 "Umožněna je pouze jedna výchozí."
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 msgid "a redefined checkpoint must have a name"
 msgstr "je třeba, aby znovu definovaný kontrolní bod měl název"
 
@@ -20503,10 +20568,6 @@ msgstr "Zachycený stav „%s“ už existuje"
 msgid "binding '%s' is already being removed"
 msgstr "doména „%s“ už je odebírána"
 
-#, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
 msgstr "základ „%s“ není bezprostředně pod „%s“ v řetězu pro „%s“"
@@ -20820,10 +20881,6 @@ msgstr "vytvořený zachycený stav se nedaří nalézt"
 #, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "nedaří se uvolnit název %s%d – mimo rozsah 0-%d"
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
-msgstr ""
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -21143,6 +21200,9 @@ msgstr "nedaří se zkopírovat ze svazku do adresářového svazku"
 #, c-format
 msgid "cannot create %s"
 msgstr "nedaří se vytvořit %s"
+
+msgid "cannot create a mediated device without a parent"
+msgstr ""
 
 msgid "cannot create a new stream"
 msgstr "nedaří se vytvořit nový proud"
@@ -23064,6 +23124,10 @@ msgid "could not find capabilities for %s"
 msgstr "nedaří se najít schopnosti pro %s"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr "nedaří se nalézt zpětné volání události %d pro smazání"
 
@@ -23178,11 +23242,6 @@ msgstr "nedaří se získat seznam svazků ve fondu: %s, rc=%08x"
 msgid "could not initialize domain event timer"
 msgstr "nedaří se inicializovat časovač událostí domény"
 
-#, fuzzy, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-"Vytvořit kontrolní bod z XML pro použití v budoucích přírůstkových zálohách"
-
 #, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "nedaří se otevřít VirtualBox relaci s doménou %s"
@@ -23270,6 +23329,9 @@ msgstr "nelze použít položku Xen hypervizoru"
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "nelze použít položku Xen hypervizoru %s"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 msgid "couldn't fetch array of leases"
 msgstr "nedaří se získat pole zápůjček"
@@ -24482,8 +24544,8 @@ msgstr "není známo jako odebrat zařízení %s"
 msgid "don't start the bridge immediately"
 msgstr "nespouštět most okamžitě"
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
-msgstr "nespustit oproštěné zařízení okamžitě (nedoporučováno)"
+msgid "don't start the detached interface immediately (not recommended)"
+msgstr ""
 
 msgid "done"
 msgstr "hotovo"
@@ -24961,8 +25023,8 @@ msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr "event 'lifecycle' (životní cyklus) pro fond úložiště %s: %s\n"
 
 #, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
-msgstr "událost 'metdata-change' (změna metadat) pro doménu %s: %s %s\n"
+msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
@@ -25496,10 +25558,6 @@ msgid ""
 msgstr ""
 "nepodařilo se nalézt příslušné virt. procesory, připojitelné za chodu, pro "
 "dosažení požadovaného cílového počtu virt. procesorů"
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "nepodařilo se formátovat obraz: „%s“"
 
 #, c-format
 msgid "failed to find disk '%s'"
@@ -26611,6 +26669,9 @@ msgstr "pro podporu IOMMU zařízení přiřazení"
 msgid "for hardware virtualization"
 msgstr "pro hardwarovou virtualizaci"
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr "zakázané znaky v atributu „compat“"
 
@@ -26714,6 +26775,9 @@ msgstr "úplný popis umístění zdrojového disku"
 
 msgid "fuse_loop failed"
 msgstr "fuse_loop se nezdařilo"
+
+msgid "fw_cfg is not supported with this QEMU"
+msgstr ""
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -27508,6 +27572,10 @@ msgstr "název rozhraní %s se nevejde do vyrovnávací paměti"
 
 msgid "interface name or MAC address"
 msgstr "název nebo MAC adresa rozhraní"
+
+#, c-format
+msgid "interface not set\n"
+msgstr ""
 
 msgid "interface state driver is not active"
 msgstr "ovladač stavu zařízení není aktivní"
@@ -28474,6 +28542,9 @@ msgstr "HTP změna velikosti není touto QEMU binárkou podporována"
 
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "volba iommu ovladače je podporovaná pouze pro virtio zařízení"
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
+msgstr ""
 
 msgid "iommu: caching mode is not supported with this QEMU binary"
 msgstr ""
@@ -29478,6 +29549,9 @@ msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr "zprostředkované zařízení %s je používáno ovladačem %s, domény %s"
@@ -30215,10 +30289,6 @@ msgstr "chybí informace o rozhraní"
 msgid "missing iommuGroup number attribute"
 msgstr "chybí atribut  číslo iommuGroup"
 
-#, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "chybí číselný atribut iommuGroup pro „%s“"
-
 msgid "missing iothread id in iothreadpin"
 msgstr "v iothreadpin chybí identifikátor iothread"
 
@@ -30320,6 +30390,10 @@ msgstr "chybí informace o operačním systému"
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "chybí informace o operačním systému pro %s"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 msgid "missing or invalid CPU cache mode"
 msgstr "chybějící nebo neplatný režim mezipaměti procesoru"
@@ -31373,6 +31447,10 @@ msgstr "nezadán popis umístění blokového zařízení pro „%s“"
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "žádné volání čekající na odpověď s prog %d vers %d serial %d"
 
+#, c-format
+msgid "no capabilities available for %s"
+msgstr ""
+
 msgid "no cgroup backend available"
 msgstr "není k dispozici podpůrná vrstva cgroup"
 
@@ -32078,8 +32156,11 @@ msgstr "jsou podporována pouze USB vstupní zařízení"
 msgid "only a single IOMMU device is supported"
 msgstr "je podporováno pouze jediné IOMMU zařízení"
 
-msgid "only a single TPM device is supported"
-msgstr "v rámci jednoho stroje je podporováno pouze jedno TPM zařízení"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr ""
 
 msgid "only a single memory balloon device is supported"
 msgstr "je podporováno pouze jediné výplňové zařízení v paměti"
@@ -33241,7 +33322,7 @@ msgstr ""
 msgid "read-only connection"
 msgstr "spojení pouze pro čtení"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 #, fuzzy
@@ -35716,6 +35797,10 @@ msgid "unable to execute QEMU command '%s': %s"
 msgstr "nedaří se vykonat QEMU příkaz „%s“: %s"
 
 #, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "nedaří se najít SCSI řadič pro idx=%d"
 
@@ -36098,8 +36183,8 @@ msgstr "zrušit přemostění síťového zařízení"
 msgid "undefine VM on source"
 msgstr "zrušit definování virt. stroje na zdroji"
 
-msgid "undefine a bridge device after detaching its slave device"
-msgstr "zrušit definování zařízení mostu po odpojení jeho podřízeného rozhraní"
+msgid "undefine a bridge device after detaching its device(s)"
+msgstr ""
 
 msgid "undefine a domain"
 msgstr "zrušit definování domény"
@@ -36690,6 +36775,10 @@ msgstr "neznámý typ ověřování „%s“"
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "neznámý typ ověřování %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -38971,6 +39060,66 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+#~ msgstr "Pokus o NAT „%s“. NAT je podporován pouze pro IPv4."
+
+#~ msgid ""
+#~ "Either both target and source domains or none of them must have TPM "
+#~ "device present"
+#~ msgstr ""
+#~ "Je třeba, aby TPM zařízení bylo přítomné v jak cílové, tak zdrojové "
+#~ "doméně, nebo naopak ani v jedné"
+
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "Nepodařilo se najít umístění binárky %s"
+
+#~ msgid "Failed to format new xml document for un-enslaved interface %s"
+#~ msgstr ""
+#~ "Nepodařilo se formátovat nový xml dokument pro oproštěné rozhraní %s"
+
+#~ msgid "Failed to set new slave interface name to '%s' in xml document"
+#~ msgstr ""
+#~ "Nepodařilo se nastavit název nového podřízeného rozhraní „%s“ v xml "
+#~ "dokumentu"
+
+#~ msgid "Failed to set new slave interface type to '%s' in xml document"
+#~ msgstr ""
+#~ "Nepodařilo se nastavit typ nového podřízeného rozhraní „%s“ v xml "
+#~ "dokumentu"
+
+#~ msgid "Failed to switch root mount into slave mode"
+#~ msgstr "Nepodařilo se přepnout kořenové připojení do podřízeného režimu"
+
+#~ msgid "SASL client identity '%s' not allowed in whitelist"
+#~ msgstr ""
+#~ "identita SASL klienta „%s“ není na seznamu těch, kterým je umožněn přístup"
+
+#, fuzzy
+#~ msgid "could not locate checkpoint '%s' for incremental backup"
+#~ msgstr ""
+#~ "Vytvořit kontrolní bod z XML pro použití v budoucích přírůstkových "
+#~ "zálohách"
+
+#~ msgid "don't start the un-slaved interface immediately (not recommended)"
+#~ msgstr "nespustit oproštěné zařízení okamžitě (nedoporučováno)"
+
+#~ msgid "event 'metdata-change' for domain %s: %s %s\n"
+#~ msgstr "událost 'metdata-change' (změna metadat) pro doménu %s: %s %s\n"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "nepodařilo se formátovat obraz: „%s“"
+
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "chybí číselný atribut iommuGroup pro „%s“"
+
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "v rámci jednoho stroje je podporováno pouze jedno TPM zařízení"
+
+#~ msgid "undefine a bridge device after detaching its slave device"
+#~ msgstr ""
+#~ "zrušit definování zařízení mostu po odpojení jeho podřízeného rozhraní"
 
 #~ msgid "Attempt to close netcf state driver with open connections"
 #~ msgstr "Pokus o zavření ovladače stavu netcf při otevřených spojeních"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-06-29 11:55+0000\n"
 "PO-Revision-Date: 2015-02-26 07:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bulgarian (http://www.transifex.com/projects/p/fedora/"
@@ -984,6 +984,9 @@ msgstr ""
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr ""
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1689,11 +1692,10 @@ msgstr ""
 msgid "Attempted double use of PCI Address %s"
 msgstr ""
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+msgid "Attempting to use unknown stub driver"
 msgstr ""
 
-msgid "Attempting to use unknown stub driver"
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -5527,11 +5529,6 @@ msgstr ""
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr ""
 
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr ""
-
 msgid "Eject the media"
 msgstr ""
 
@@ -5956,6 +5953,9 @@ msgid "Fail to create socket for incoming migration"
 msgstr "Неуспешно получаване на информация за диска"
 
 msgid "Failed"
+msgstr ""
+
+msgid "Failed disable mount propagation out of the root filesystem"
 msgstr ""
 
 #, c-format
@@ -6747,10 +6747,6 @@ msgstr "Не може да бъде намерена мрежата: %s"
 msgid "Failed to find parent device for %s"
 msgstr "Неуспешно откачане на устройство от %s"
 
-#, fuzzy, c-format
-msgid "Failed to find path for %s binary"
-msgstr "Не може да бъде намерена мрежата: %s"
-
 #, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr ""
@@ -6787,7 +6783,7 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "Неуспех при създаване на домейн от %s"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
+msgid "Failed to format new xml document for detached interface %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -7915,6 +7911,14 @@ msgstr "Неуспешно унищожаване на домейн %s"
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr ""
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to set new domain description"
 msgstr "съдържащ XML описание на домейн файл"
@@ -7922,14 +7926,6 @@ msgstr "съдържащ XML описание на домейн файл"
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "Неуспешно приспиване на домейн %s"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr ""
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr ""
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr ""
@@ -8057,9 +8053,6 @@ msgstr "Неуспешно приспиване на домейн %s"
 #, fuzzy, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "Неуспешно приспиване на домейн %s"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8327,6 +8320,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -9560,6 +9559,9 @@ msgstr ""
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr ""
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr ""
@@ -9620,6 +9622,10 @@ msgstr ""
 
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
+msgstr ""
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
 msgstr ""
 
 msgid "Invalid job flags"
@@ -10068,6 +10074,10 @@ msgid "Invalid value for timeout"
 msgstr ""
 
 #, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr ""
 
@@ -10449,6 +10459,9 @@ msgstr ""
 msgid "Malformed nbd port '%s'"
 msgstr ""
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 msgid "Malformed ovs-vsctl output"
 msgstr ""
 
@@ -10625,6 +10638,10 @@ msgid "Metadata:"
 msgstr ""
 
 msgid "MethodFault is missing 'type' property"
+msgstr ""
+
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
 msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
@@ -12121,6 +12138,10 @@ msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr ""
 
 #, c-format
+msgid "No zPCI %s to reserve"
+msgstr ""
+
+#, c-format
 msgid "Node %d:\n"
 msgstr ""
 
@@ -13582,7 +13603,7 @@ msgid "S4 state is disabled for this domain"
 msgstr ""
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
+msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
 
 #, c-format
@@ -14549,6 +14570,14 @@ msgid "TLS:"
 msgstr ""
 
 #, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
+#, c-format
 msgid "TPM device path %s is invalid"
 msgstr ""
 
@@ -14812,6 +14841,11 @@ msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr ""
 
 #, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
+#, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr ""
 
@@ -14848,6 +14882,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr ""
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr ""
 
@@ -14865,6 +14903,9 @@ msgstr ""
 
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
+msgstr ""
+
+msgid "Target domain count of sysinfo does not match source"
 msgstr ""
 
 #, c-format
@@ -15189,6 +15230,9 @@ msgid "Temporary disk space total:"
 msgstr ""
 
 msgid "Temporary disk space use:"
+msgstr ""
+
+msgid "That firmware name is reserved"
 msgstr ""
 
 msgid "Thaw domain's mounted filesystems."
@@ -15938,6 +15982,12 @@ msgid "Unable to access stream for '%s'"
 msgstr ""
 
 #, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
+#, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr ""
 
@@ -16320,6 +16370,12 @@ msgstr ""
 #, fuzzy
 msgid "Unable to create tunnel migration thread"
 msgstr "грешка при четене на конфигурационния файл"
+
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
 
 msgid "Unable to decode header until len is received"
 msgstr ""
@@ -17667,6 +17723,9 @@ msgstr ""
 msgid "Unable to start event thread: %s"
 msgstr "Неуспешно стартиране на мрежа %s"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to stat %s"
 msgstr "Неуспешно стартиране на домейн %s"
@@ -17682,6 +17741,9 @@ msgstr "Неуспешно стартиране на мрежа %s"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "Неуспешно стартиране на домейн %s"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -18605,6 +18667,9 @@ msgstr ""
 msgid "Unsupported controller type: %s"
 msgstr ""
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
 msgstr "тип на целевото устройство"
@@ -19235,6 +19300,11 @@ msgid ""
 "Only one default is allowed."
 msgstr ""
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 msgid "a redefined checkpoint must have a name"
 msgstr ""
 
@@ -19770,10 +19840,6 @@ msgid "binding '%s' is already being removed"
 msgstr "Домейн %s се рестартира\n"
 
 #, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
-
-#, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
 msgstr ""
 
@@ -20065,10 +20131,6 @@ msgstr ""
 
 #, c-format
 msgid "can't free name %s%d - out of range 0-%d"
-msgstr ""
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
 msgstr ""
 
 #, c-format
@@ -20376,6 +20438,9 @@ msgstr ""
 
 #, c-format
 msgid "cannot create %s"
+msgstr ""
+
+msgid "cannot create a mediated device without a parent"
 msgstr ""
 
 msgid "cannot create a new stream"
@@ -22259,6 +22324,10 @@ msgid "could not find capabilities for %s"
 msgstr "неуспешно получаване на възможностите"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr ""
 
@@ -22379,10 +22448,6 @@ msgid "could not initialize domain event timer"
 msgstr ""
 
 #, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-
-#, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr ""
 
@@ -22467,6 +22532,9 @@ msgstr "не може да се ползва елемент от Xen хипер�
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "не може да се ползва елемент %s от Xen хипервайзора"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 msgid "couldn't fetch array of leases"
 msgstr ""
@@ -23669,7 +23737,7 @@ msgstr ""
 msgid "don't start the bridge immediately"
 msgstr ""
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
+msgid "don't start the detached interface immediately (not recommended)"
 msgstr ""
 
 msgid "done"
@@ -24146,7 +24214,7 @@ msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
+msgid "event 'metadata-change' for domain %s: %s %s\n"
 msgstr ""
 
 #, c-format
@@ -24686,10 +24754,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "Неуспешно дефиниране на домейн от %s"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -25833,6 +25897,9 @@ msgstr ""
 msgid "for hardware virtualization"
 msgstr ""
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr ""
 
@@ -25930,6 +25997,9 @@ msgid "fully-qualified path of source disk"
 msgstr ""
 
 msgid "fuse_loop failed"
+msgstr ""
+
+msgid "fw_cfg is not supported with this QEMU"
 msgstr ""
 
 #, c-format
@@ -26692,6 +26762,10 @@ msgid "interface name %s does not fit into buffer "
 msgstr ""
 
 msgid "interface name or MAC address"
+msgstr ""
+
+#, c-format
+msgid "interface not set\n"
 msgstr ""
 
 msgid "interface state driver is not active"
@@ -27632,6 +27706,9 @@ msgid "io uring is not supported by this QEMU binary"
 msgstr ""
 
 msgid "iommu driver option is only supported for virtio devices"
+msgstr ""
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
 
 msgid "iommu: caching mode is not supported with this QEMU binary"
@@ -28634,6 +28711,9 @@ msgstr ""
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr ""
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -29369,10 +29449,6 @@ msgstr "липсва информация за ядрото"
 msgid "missing iommuGroup number attribute"
 msgstr ""
 
-#, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr ""
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "липсва информация за главното устройство"
@@ -29479,6 +29555,10 @@ msgstr "липсва информация за операционна систе
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "липсва информация за операционна система за %s"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 msgid "missing or invalid CPU cache mode"
 msgstr ""
@@ -30507,6 +30587,10 @@ msgstr ""
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr ""
 
+#, c-format
+msgid "no capabilities available for %s"
+msgstr ""
+
 msgid "no cgroup backend available"
 msgstr ""
 
@@ -31191,7 +31275,10 @@ msgstr ""
 msgid "only a single IOMMU device is supported"
 msgstr ""
 
-msgid "only a single TPM device is supported"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
 msgstr ""
 
 msgid "only a single memory balloon device is supported"
@@ -32293,7 +32380,7 @@ msgstr ""
 msgid "read-only connection"
 msgstr "връзка само за четене"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 msgid "readahead setting is not supported with this QEMU binary"
@@ -34644,6 +34731,10 @@ msgid "unable to execute QEMU command '%s': %s"
 msgstr ""
 
 #, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr ""
 
@@ -35033,7 +35124,7 @@ msgstr "източник на мрежовия интерфейс"
 msgid "undefine VM on source"
 msgstr ""
 
-msgid "undefine a bridge device after detaching its slave device"
+msgid "undefine a bridge device after detaching its device(s)"
 msgstr ""
 
 #, fuzzy
@@ -35625,6 +35716,10 @@ msgstr "непознат тип ОС %s"
 #, fuzzy, c-format
 msgid "unknown authentication type %s"
 msgstr "непознат тип ОС %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown backend type '%s' for egd"
@@ -37850,3 +37945,11 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <низ>"
+
+#, fuzzy
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "Не може да бъде намерена мрежата: %s"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "Неуспешно дефиниране на домейн от %s"

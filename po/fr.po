@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-06-29 11:55+0000\n"
 "PO-Revision-Date: 2020-06-22 02:41+0000\n"
 "Last-Translator: Julien Humbert <julroy67@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1060,6 +1060,9 @@ msgstr ""
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "« adaptateur » doit être spécifié pour la source scsi hostdev"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1792,13 +1795,10 @@ msgstr "Tentative d’envoyer un message asynchrone avec une réponse synchrone"
 msgid "Attempted double use of PCI Address %s"
 msgstr ""
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
-msgstr ""
-"Tentative de NAT « %s ». La traduction d’adresse n’est prise en charge que "
-"pour IPv4."
-
 msgid "Attempting to use unknown stub driver"
+msgstr ""
+
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -5725,11 +5725,6 @@ msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr ""
 "« adapter » et « address » doivent être spécifiés pour la source scsi hostdev"
 
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr ""
-
 msgid "Eject the media"
 msgstr ""
 
@@ -6158,6 +6153,9 @@ msgid "Fail to create socket for incoming migration"
 msgstr "Impossible de récupérer les informations relatives au disque"
 
 msgid "Failed"
+msgstr ""
+
+msgid "Failed disable mount propagation out of the root filesystem"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6950,10 +6948,6 @@ msgstr "Impossible d’analyser le mode « %s »"
 msgid "Failed to find parent device for %s"
 msgstr "Impossible de détacher le périphérique depuis %s"
 
-#, fuzzy, c-format
-msgid "Failed to find path for %s binary"
-msgstr "Impossible d’accéder au réseau : %s"
-
 #, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr ""
@@ -6990,7 +6984,7 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "Impossible de créer le domaine depuis %s"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
+msgid "Failed to format new xml document for detached interface %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -8122,6 +8116,14 @@ msgstr "Impossible de détruire le domaine %s"
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr ""
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to set new domain description"
 msgstr "fichier contenant la description XML d’un domaine"
@@ -8129,14 +8131,6 @@ msgstr "fichier contenant la description XML d’un domaine"
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "Impossible de suspendre le domaine %s"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr ""
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr ""
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr ""
@@ -8265,9 +8259,6 @@ msgstr "Impossible de suspendre le domaine %s"
 #, fuzzy, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "Impossible de suspendre le domaine %s"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8540,6 +8531,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -9797,6 +9794,9 @@ msgstr ""
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr ""
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "Nom de périphérique disquette invalide : %s"
@@ -9857,6 +9857,10 @@ msgstr "Valeur du préfixe de l’adresse IP invalide"
 
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
+msgstr ""
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
 msgstr ""
 
 #, fuzzy
@@ -10323,6 +10327,10 @@ msgstr "Valeur invalide pour le délai d’attente"
 msgid "Invalid value for timeout"
 msgstr "Valeur invalide pour le délai d’attente"
 
+#, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "Valeur invalide pour le délai d’attente"
@@ -10724,6 +10732,9 @@ msgstr ""
 msgid "Malformed nbd port '%s'"
 msgstr "Taille %s non conforme"
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed ovs-vsctl output"
 msgstr "mode octal non conforme"
@@ -10910,6 +10921,10 @@ msgstr "(metadata_xml)"
 #, fuzzy
 msgid "MethodFault is missing 'type' property"
 msgstr "Propriété « %s » manquante"
+
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
@@ -12065,14 +12080,16 @@ msgstr ""
 
 #, fuzzy
 msgid "No <local> 'address' attribute specified with socket interface"
-msgstr "Aucun attribut <source> « address » spécifié avec l’interface du socket"
+msgstr ""
+"Aucun attribut <source> « address » spécifié avec l’interface du socket"
 
 #, fuzzy
 msgid "No <local> 'port' attribute specified with socket interface"
 msgstr "Aucun attribut <source> « port » spécifié avec l’interface du socket"
 
 msgid "No <source> 'address' attribute specified with socket interface"
-msgstr "Aucun attribut <source> « address » spécifié avec l’interface du socket"
+msgstr ""
+"Aucun attribut <source> « address » spécifié avec l’interface du socket"
 
 msgid ""
 "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
@@ -12478,6 +12495,10 @@ msgstr "Aucune donnée fournie à l’élément <initarg>"
 
 #, c-format
 msgid "No yet handled value '%s' for VMX entry '%s'"
+msgstr ""
+
+#, c-format
+msgid "No zPCI %s to reserve"
 msgstr ""
 
 #, c-format
@@ -13975,7 +13996,7 @@ msgstr ""
 "Impossible d’ajouter le concentrateur USB : USB désactivé sur ce domaine"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
+msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
 
 #, c-format
@@ -14976,6 +14997,14 @@ msgid "TLS:"
 msgstr ""
 
 #, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
+#, c-format
 msgid "TPM device path %s is invalid"
 msgstr ""
 
@@ -15205,8 +15234,8 @@ msgstr ""
 #, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
 msgstr ""
-"L’adresse ccid du périphérique cible %d:%d ne correspond pas à la source "
-"%d:%d"
+"L’adresse ccid du périphérique cible %d:%d ne correspond pas à la source %d:"
+"%d"
 
 #, fuzzy, c-format
 msgid "Target device dimm base address '%llx' does not match source '%llx'"
@@ -15231,8 +15260,8 @@ msgstr "Le nom de domaine cible « %s » ne correspond pas à la source « %s
 #, fuzzy, c-format
 msgid "Target device isa address %d:%d does not match source %d:%d"
 msgstr ""
-"L’adresse ccid du périphérique cible %d:%d ne correspond pas à la source "
-"%d:%d"
+"L’adresse ccid du périphérique cible %d:%d ne correspond pas à la source %d:"
+"%d"
 
 #, fuzzy, c-format
 msgid "Target device packed option '%s' does not match source '%s'"
@@ -15273,6 +15302,11 @@ msgstr "Le bus du disque cible %s ne correspond pas à la source %s"
 #, fuzzy, c-format
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "Le disque cible %s ne correspond pas à la source %s"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
@@ -15315,6 +15349,10 @@ msgstr ""
 msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "Le mode SMBIOS du domaine cible %s ne correspond pas à la source %s"
 
+#, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr "Le type de domain cible virt %s ne correspond pas à la source %s"
@@ -15338,6 +15376,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr "Les ports de contrôleurs cibles %d ne correspondent pas à la source %d"
+
+msgid "Target domain count of sysinfo does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
@@ -15699,6 +15740,9 @@ msgid "Temporary disk space total:"
 msgstr ""
 
 msgid "Temporary disk space use:"
+msgstr ""
+
+msgid "That firmware name is reserved"
 msgstr ""
 
 msgid "Thaw domain's mounted filesystems."
@@ -16465,6 +16509,12 @@ msgstr "Impossible de créer la kqueue"
 msgid "Unable to access stream for '%s'"
 msgstr "Impossible d’analyser l’ID de classe « %s »"
 
+#, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "Impossible d’analyser l’ID de classe « %s »"
@@ -16864,6 +16914,12 @@ msgstr "Impossible d’enregistrer le processus kevent"
 #, fuzzy
 msgid "Unable to create tunnel migration thread"
 msgstr "Impossible de créer la kqueue"
+
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
 
 msgid "Unable to decode header until len is received"
 msgstr ""
@@ -18276,6 +18332,9 @@ msgstr "Impossible d’analyser l’ID de classe « %s »"
 msgid "Unable to start event thread: %s"
 msgstr "Impossible de récupérer les paramètres groupe d’unités d’exécution"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to stat %s"
 msgstr "Impossible de démarrer le pool %s"
@@ -18291,6 +18350,9 @@ msgstr "Impossible de démarrer le réseau %s"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "Impossible de démarrer le pool %s"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19227,6 +19289,9 @@ msgstr "Le type de configuration %s n’est pas pris en charge"
 msgid "Unsupported controller type: %s"
 msgstr "Le type de configuration %s n’est pas pris en charge"
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
 msgstr "Le type de configuration %s n’est pas pris en charge"
@@ -19874,6 +19939,11 @@ msgid ""
 "Only one default is allowed."
 msgstr ""
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 msgid "a redefined checkpoint must have a name"
 msgstr ""
 
@@ -20423,10 +20493,6 @@ msgid "binding '%s' is already being removed"
 msgstr "Le domaine « %s » est déjà défini avec l’uuid %s"
 
 #, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
-
-#, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
 msgstr ""
 
@@ -20723,10 +20789,6 @@ msgstr ""
 
 #, c-format
 msgid "can't free name %s%d - out of range 0-%d"
-msgstr ""
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
 msgstr ""
 
 #, c-format
@@ -21046,6 +21108,9 @@ msgstr "ne peut pas changer de répertoire racine : %s"
 #, fuzzy, c-format
 msgid "cannot create %s"
 msgstr "impossible d’analyser la cible « %s »"
+
+msgid "cannot create a mediated device without a parent"
+msgstr ""
 
 msgid "cannot create a new stream"
 msgstr ""
@@ -23002,6 +23067,10 @@ msgid "could not find capabilities for %s"
 msgstr "impossible d’obtenir les capacités"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr ""
 
@@ -23126,12 +23195,6 @@ msgstr ""
 msgid "could not initialize domain event timer"
 msgstr "impossible d’initialiser l’horloge d’événements du domaine"
 
-#, fuzzy, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-"Créer un point de passage depuis le XML pour l’utiliser dans les prochaines "
-"sauvegardes incrémentales"
-
 #, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr ""
@@ -23221,6 +23284,9 @@ msgstr "impossible d’utiliser l’entrée de l’hyperviseur Xen"
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "impossible d’utiliser l’entrée de l’hyperviseur Xen %s"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 msgid "couldn't fetch array of leases"
 msgstr ""
@@ -24442,7 +24508,7 @@ msgstr ""
 msgid "don't start the bridge immediately"
 msgstr ""
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
+msgid "don't start the detached interface immediately (not recommended)"
 msgstr ""
 
 msgid "done"
@@ -24927,7 +24993,7 @@ msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
+msgid "event 'metadata-change' for domain %s: %s %s\n"
 msgstr ""
 
 #, c-format
@@ -25468,10 +25534,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "échec de la modification de taille de l’image RBD « %s »"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -26615,6 +26677,9 @@ msgstr ""
 msgid "for hardware virtualization"
 msgstr ""
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr ""
 
@@ -26715,6 +26780,9 @@ msgid "fully-qualified path of source disk"
 msgstr ""
 
 msgid "fuse_loop failed"
+msgstr ""
+
+msgid "fw_cfg is not supported with this QEMU"
 msgstr ""
 
 #, c-format
@@ -27502,6 +27570,10 @@ msgstr "Le nom de canal cible %s ne correspond pas à la source %s"
 #, fuzzy
 msgid "interface name or MAC address"
 msgstr "l’interface n’a pas de nom"
+
+#, c-format
+msgid "interface not set\n"
+msgstr ""
 
 #, fuzzy
 msgid "interface state driver is not active"
@@ -28435,26 +28507,26 @@ msgstr "Valeur invalide pour le délai d’attente"
 #, fuzzy, c-format
 msgid "invalid value of state argument for Hyper-V stimer '%s' feature"
 msgstr ""
-"valeur de l’argument de l’état de la fonctionnalité HyperV Enlightenment « "
-"%s » invalide"
+"valeur de l’argument de l’état de la fonctionnalité HyperV Enlightenment "
+"« %s » invalide"
 
 #, c-format
 msgid "invalid value of state argument for HyperV Enlightenment feature '%s'"
 msgstr ""
-"valeur de l’argument de l’état de la fonctionnalité HyperV Enlightenment « "
-"%s » invalide"
+"valeur de l’argument de l’état de la fonctionnalité HyperV Enlightenment "
+"« %s » invalide"
 
 #, fuzzy, c-format
 msgid "invalid value of state argument for KVM feature '%s'"
 msgstr ""
-"valeur de l’argument de l’état de la fonctionnalité HyperV Enlightenment « "
-"%s » invalide"
+"valeur de l’argument de l’état de la fonctionnalité HyperV Enlightenment "
+"« %s » invalide"
 
 #, fuzzy, c-format
 msgid "invalid value of state argument for Xen feature '%s'"
 msgstr ""
-"valeur de l’argument de l’état de la fonctionnalité HyperV Enlightenment « "
-"%s » invalide"
+"valeur de l’argument de l’état de la fonctionnalité HyperV Enlightenment "
+"« %s » invalide"
 
 #, fuzzy, c-format
 msgid "invalid vcpu 'enabled' value '%s'"
@@ -28491,6 +28563,9 @@ msgstr "Le modèle de CPU « %s » n’est pas pris en charge par l’hypervis
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "sgio est pris en charge pour les périphériques hôtes scsi uniquement"
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
+msgstr ""
 
 msgid "iommu: caching mode is not supported with this QEMU binary"
 msgstr ""
@@ -29536,6 +29611,9 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -30295,10 +30373,6 @@ msgstr "noyau non spécifié"
 msgid "missing iommuGroup number attribute"
 msgstr "attribut ordre de démarrage absent"
 
-#, fuzzy, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "attribut ordre de démarrage absent"
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "type manquant dans redirdev"
@@ -30416,6 +30490,10 @@ msgstr "système d’exploitation non spécifié"
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "système d’exploitation non spécifié pour %s"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing or invalid CPU cache mode"
@@ -31470,6 +31548,10 @@ msgstr "aucun UUID système fourni pour « %s »"
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr ""
 
+#, c-format
+msgid "no capabilities available for %s"
+msgstr ""
+
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "Aucun périphérique console n’est disponible"
@@ -32177,8 +32259,11 @@ msgstr "un seul périphérique TPM est pris en charge"
 msgid "only a single IOMMU device is supported"
 msgstr "un seul périphérique TPM est pris en charge"
 
-msgid "only a single TPM device is supported"
-msgstr "un seul périphérique TPM est pris en charge"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr ""
 
 #, fuzzy
 msgid "only a single memory balloon device is supported"
@@ -33320,7 +33405,7 @@ msgstr ""
 msgid "read-only connection"
 msgstr "connexion en lecture seule"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 msgid "readahead setting is not supported with this QEMU binary"
@@ -35736,6 +35821,10 @@ msgid "unable to execute QEMU command '%s': %s"
 msgstr "Impossible de créer le répertoire d’exécution %s : %s"
 
 #, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr ""
 
@@ -36136,7 +36225,7 @@ msgstr "source d’interface réseau"
 msgid "undefine VM on source"
 msgstr ""
 
-msgid "undefine a bridge device after detaching its slave device"
+msgid "undefine a bridge device after detaching its device(s)"
 msgstr ""
 
 #, fuzzy
@@ -36738,6 +36827,10 @@ msgstr "type auth « %s » inconnu"
 #, fuzzy, c-format
 msgid "unknown authentication type %s"
 msgstr "type auth « %s » inconnu"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown backend type '%s' for egd"
@@ -38996,3 +39089,29 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+#~ msgstr ""
+#~ "Tentative de NAT « %s ». La traduction d’adresse n’est prise en charge "
+#~ "que pour IPv4."
+
+#, fuzzy
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "Impossible d’accéder au réseau : %s"
+
+#, fuzzy
+#~ msgid "could not locate checkpoint '%s' for incremental backup"
+#~ msgstr ""
+#~ "Créer un point de passage depuis le XML pour l’utiliser dans les "
+#~ "prochaines sauvegardes incrémentales"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "échec de la modification de taille de l’image RBD « %s »"
+
+#, fuzzy
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "attribut ordre de démarrage absent"
+
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "un seul périphérique TPM est pris en charge"

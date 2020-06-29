@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-06-29 11:55+0000\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -1055,6 +1055,9 @@ msgstr "scsi hostdev ਸਰੋਤ ਲਈ 'ਅਡਾਪਟਰ' ਅਤੇ 'ਪਤ�
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "scsi hostdev ਸਰੋਤ ਲਈ 'ਅਡਾਪਟਰ' ਦਾ ਦਰਸਾਇਆ ਜਾਣਾ ਜਰੂਰੀ ਹੈ"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1814,11 +1817,10 @@ msgstr "ਸਿੰਕਰੋਨਸ ਉੱਤਰ ਨਾਲ ਇੱਕ ਗੈਰ-ਸ�
 msgid "Attempted double use of PCI Address %s"
 msgstr ""
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
-msgstr "'%s' ਨੂੰ NAT ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ। NAT ਸਿਰਫ IPv4 ਲਈ ਹੀ ਸਮਰਥਿਤ ਹੈ।"
-
 msgid "Attempting to use unknown stub driver"
+msgstr ""
+
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -5777,11 +5779,6 @@ msgstr "ਡੋਮੇਨ ਸਨੈਪਸ਼ਾਟ XML ਨੂੰ ਇੱਕ ਨਾਂ 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "scsi hostdev ਸਰੋਤ ਲਈ 'ਅਡਾਪਟਰ' ਅਤੇ 'ਪਤਾ' ਜਰੂਰ ਦਰਸਾਏ ਜਾਣ"
 
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr ""
-
 msgid "Eject the media"
 msgstr "ਮੀਡੀਆ ਬਾਹਰ ਕੱਢੋ"
 
@@ -6256,6 +6253,9 @@ msgstr "ਟੰਨਲਡ ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਪਾਈਪ ਨਹੀ�
 
 msgid "Failed"
 msgstr "ਫੇਲ੍ਹ"
+
+msgid "Failed disable mount propagation out of the root filesystem"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed new node mode for target '%s'"
@@ -7018,10 +7018,6 @@ msgstr "'%s' ਰੂਪ ਨੂੰ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਅਸਫ�
 msgid "Failed to find parent device for %s"
 msgstr "%s ਲਈ ਅਧਾਰ ਜੰਤਰ ਹਟਾਉਣ ਲਈ ਫੇਲ"
 
-#, c-format
-msgid "Failed to find path for %s binary"
-msgstr "%s ਲਈ ਅਧਾਰ ਜੰਤਰ ਹਟਾਉਣ ਲਈ ਫੇਲ"
-
 #, fuzzy, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr "cgroup '%s' ਨੂੰ '%s'ਉੱਤੇ ਬਾਈਂਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
@@ -7057,8 +7053,8 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "ਨਵੇਂ xml ਡੌਕੂਮੈਂਟ ਨੂੰ ਬਰਿੱਜ %s ਲਈ ਫਾਰਮੈਟ ਕਰਨ ਤੋਂ ਫੇਲ"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
-msgstr "%s ਇੰਟਰਫੇਸ ਨੂੰ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
+msgid "Failed to format new xml document for detached interface %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to fully read directory %s"
@@ -8132,20 +8128,20 @@ msgstr "ਡੋਮੇਨ %s ਲਈ ਮੈਮੋਰੀ ਸੀਮਾ ਸੈੱਟ �
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr "ਡੋਮੇਨ '%d' ਲਈ ਮੈਮੋਰੀ ਸੀਮਾ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 msgid "Failed to set new domain description"
 msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "ਡੋਮੇਨ ਸਥਿਤੀ ਲੈਣ ਲਈ ਫੇਲ"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr "xml ਡੌਕੂਮੈਂਟ ਵਿੱਚ ਨਵੀਂ ਸਲੇਵ ਇੰਟਰਫੇਸ ਨਾਂ '%s' ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr "xml ਡੌਕੂਮੈਂਟ ਵਿੱਚ ਨਵੀਂ ਸਲੇਵ ਇੰਟਰਫੇਸ ਕਿਸਮ '%s' ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "ਨਾਨ-ਬਲਾਕਿੰਗ ਫਾਇਲ ਪਛਾਣਕਾਰ ਫਲੈਗ ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਫੇਲ"
@@ -8270,9 +8266,6 @@ msgstr "ਡੋਮੇਨ %s ਮੁਅੱਤਲ ਕਰਨ ਲਈ ਫੇਲ ਹੈ"
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "ਡੋਮੇਨ '%d' ਮੁਅੱਤਲ ਕਰਨ ਲਈ ਫੇਲ ਹੈ"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr "ਰੂਟ ਮਾਊਂਟ ਨੂੰ ਸਲੇਵ ਮੋਡ ਵਿੱਚ ਤਬਦੀਲ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
 #, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8542,6 +8535,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -9825,6 +9824,9 @@ msgstr "ਮੌਨੀਟਰ ਦੀ ਉਡੀਕ ਕਰਨ ਦੌਰਾਨ ਅਯ�
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr "ਮੌਨੀਟਰ ਦੀ ਉਡੀਕ ਕਰਨ ਦੌਰਾਨ ਅਯੋਗ ਫ਼ਾਈਲ ਵਰਨਣਕਰਤਾ"
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "ਗਲਤ ਫਲਾਪੀ ਜੰਤਰ ਨਾਂ: %s"
@@ -9886,6 +9888,10 @@ msgstr "ਗਲਤ ip ਐਡਰੈੱਸ ਅਗੇਤਰ ਮੁੱਲ"
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "ਅਢੁਕਵੀਂ ipv6 ਸੈਟਿੰਗ '%s' ਨੈੱਟਵਰਕ '%s' ਵਿੱਚ"
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid job flags"
@@ -10344,6 +10350,10 @@ msgid "Invalid value for timeout"
 msgstr "ਟਾਈਮਆਊਟ ਲਈ ਗਲਤ ਮੁੱਲ"
 
 #, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "%d ਦਾ ਗਲਤ ਮੁੱਲ I/O ਭਾਰ ਲਈ"
 
@@ -10749,6 +10759,9 @@ msgstr "JSON ਦਸਤਾਵੇਜ ਵਿੱਚ max_clients ਸੈੱਟ ਨਹ�
 msgid "Malformed nbd port '%s'"
 msgstr "ਗਲਤ ਬਣਤਰ nbd ਪੋਰਟ '%s'"
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed ovs-vsctl output"
 msgstr "ਗਲਤ octal ਮੋਡ"
@@ -10937,6 +10950,10 @@ msgstr "ਮੈਟਾਡਾਟਾ:"
 
 msgid "MethodFault is missing 'type' property"
 msgstr "MethodFault ਵਿੱਚ 'type' ਗੁਣ ਗੁੰਮ ਹੈ"
+
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "ਡੋਮੇਨ ਨੂੰ ਹੋਰ ਹੋਸਟ ਤੇ ਮਾਈਗਰੇਟ ਕਰੋ।  ਲਾਈਵ ਮਾਈਗਰੇਸ਼ਨ ਲਈ --live ਸ਼ਾਮਿਲ ਕਰੋ।"
@@ -12516,6 +12533,10 @@ msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr "ਅਜੇ ਤੱਕ ਵਰਤਿਆ ਨਾ ਗਿਆ '%s' ਮੁੱਲ VMX ਐਂਟਰੀ '%s' ਲਈ"
 
 #, c-format
+msgid "No zPCI %s to reserve"
+msgstr ""
+
+#, c-format
 msgid "Node %d:\n"
 msgstr ""
 
@@ -14033,8 +14054,8 @@ msgid "S4 state is disabled for this domain"
 msgstr "ਇਸ ਡੋਮੇਨ ਲਈ S4 ਹਾਲਤ ਅਯੋਗ ਕੀਤੀ ਗਈ ਹੈ"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
-msgstr "SASL ਕਲਾਈਂਟ ਸ਼ਨਾਖਤ '%s' whitelist ਵਿੱਚ ਮਨਜੂਰ ਨਹੀਂ ਹੈ"
+msgid "SASL client identity '%s' not allowed by ACL"
+msgstr ""
 
 #, c-format
 msgid "SASL data length %zu too long, max %zu"
@@ -15071,6 +15092,14 @@ msgid "TLS:"
 msgstr ""
 
 #, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
+#, c-format
 msgid "TPM device path %s is invalid"
 msgstr "TPM ਯੰਤਰ ਰਾਹ %s ਅਢੁਕਵਾਂ ਹੈ"
 
@@ -15342,6 +15371,11 @@ msgstr "ਟਾਰਗਿਟ ਡਿਸਕ ਸੀਰੀਅਲ %s ਸਰੋਤ %s �
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "ਟਾਰਗਿਟ ਡਿਸਕ %s ਸਰੋਤ %s ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ"
 
+#, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr "ਟਿਕਾਣਾ ਡੋਮੋਨ ਨਾਂ '%s' ਸਰੋਤ '%s' ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ"
@@ -15380,6 +15414,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "ਟਾਰਗਿਟ ਡੋਮੇਨ SMBIOS ਮੋਡ %s ਸਰੋਤ %s ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ"
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr "ਟਿਕਾਣਾ ਡੋਮੇਨ USB ਰੀਡਾਇਰੈਕਸ਼ਨ ਫਿਲਟਰ ਗਿਣਤੀ %d ਸਰੋਤ %d ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ"
 
@@ -15398,6 +15436,9 @@ msgstr "ਟਿਕਾਣਾ ਡੋਮੇਨ ਕੰਸੋਲ ਗਿਣਤੀ %zu �
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr "ਟਿਕਾਣਾ ਡੋਮੇਨ ਕੰਟਰੋਲਰ ਗਿਣਤੀ %zu ਸਰੋਤ %zu ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ"
+
+msgid "Target domain count of sysinfo does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
@@ -15726,6 +15767,9 @@ msgid "Temporary disk space total:"
 msgstr "ਕੁੱਲ ਮੈਮੋਰੀ:"
 
 msgid "Temporary disk space use:"
+msgstr ""
+
+msgid "That firmware name is reserved"
 msgstr ""
 
 #, fuzzy
@@ -16489,6 +16533,12 @@ msgid "Unable to access stream for '%s'"
 msgstr "ਜੰਤਰ '%s' ਨੂੰ ਮਨਜੂਰ ਕਰਨ ਤੋਂ ਫੇਲ"
 
 #, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
+#, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "'%s' ਤੇ ਤਾਲਾ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
 
@@ -16879,6 +16929,12 @@ msgstr "ਕਮਾਂਡ ਦੇ IO ਤੇ ਕਾਰਵਾਈ ਕਰਨ ਲਈ ਥ
 #, fuzzy
 msgid "Unable to create tunnel migration thread"
 msgstr "ਮਾਈਗਰੇਸ਼ ਥਰਿੱਡ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
+
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
 
 msgid "Unable to decode header until len is received"
 msgstr "ਜਦ ਤੱਕ len ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋ ਜਾਂਦਾ ਸਿਰਲੇਖ ਨੂੰ ਡੀਕੋਡ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
@@ -18260,6 +18316,9 @@ msgstr "FD ਸੂਚੀ '%s' ਨੂੰ ਵੱਖ-ਵੱਖ ਕਰਨ ਤੋਂ �
 msgid "Unable to start event thread: %s"
 msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ %s"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, c-format
 msgid "Unable to stat %s"
 msgstr "%s ਨੂੰ stat ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
@@ -18275,6 +18334,9 @@ msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ %s"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "%s ਨੂੰ stat ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19203,6 +19265,9 @@ msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਕੰਟਰੋਲਰ ਮਾਡਲ: %s"
 msgid "Unsupported controller type: %s"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਕੰਟਰੋਲਰ ਮਾਡਲ: %s"
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਜੰਤਰ ਕਿਸਮ '%s'"
@@ -19862,6 +19927,11 @@ msgstr ""
 "ਨੈੱਟਵਰਕ '%s' ਵਿੱਚ ਇੱਕ ਵੱਖਰੀ portgroup ਐਂਟਰੀ ਪਹਿਲਾਂ ਹੀ ਮੂਲ ਵਜੋਂ ਸੈੱਟ ਹੈ। ਸਿਰਫ਼ ਇੱਕ ਮੂਲ ਦੀ ਹੀ "
 "ਮਨਜ਼ੂਰੀ ਹੈ।"
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 #, fuzzy
 msgid "a redefined checkpoint must have a name"
 msgstr "ਕਿਸੇ ਮੁੜ-ਦਰਸਾਏ ਸਨੈੱਪਸ਼ਾਟ ਦਾ ਕੋਈ ਨਾਂ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
@@ -20417,10 +20487,6 @@ msgstr "ਸਨੈਪਸ਼ਾਟ '%s' ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹ
 msgid "binding '%s' is already being removed"
 msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਿਹਾ ਹੈ"
 
-#, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
 msgstr "'%s' ਆਧਾਰ '%s' ਵਿੱਚ '%s' ਲਈ ਲੜੀ ਵਿੱਚ ਇੱਕਦਮ ਨਹੀਂ ਹੈ"
@@ -20721,10 +20787,6 @@ msgstr "ਮੌਜੂਦਾ ਸਨੈਪਸ਼ਾਟ ਤੇ ਜਾਣਕਾਰੀ"
 #, fuzzy, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "ਸਟਾਰਟ ਸੈੱਲ %d ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ (0-%d)"
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
-msgstr ""
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -21041,6 +21103,9 @@ msgstr "ਵਾਲੀਅਮ ਤੋਂ ਡਾਇਰੈਕਟਰੀ ਵਾਲੀਅ
 #, c-format
 msgid "cannot create %s"
 msgstr "%s ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
+
+msgid "cannot create a mediated device without a parent"
+msgstr ""
 
 #, fuzzy
 msgid "cannot create a new stream"
@@ -22984,6 +23049,10 @@ msgid "could not find capabilities for %s"
 msgstr "'%s' ਲਈ ਕੋਈ ਜੰਤਰ ਸਮਰੱਥਾ ਨਹੀਂ ਹੈ"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr ""
 
@@ -23103,10 +23172,6 @@ msgid "could not initialize domain event timer"
 msgstr "ਘਟਨਾ ਸਿਸਟਮ ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
 #, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-
-#, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "VirtualBox ਸ਼ੈਸ਼ਨ ਨੂੰ ਡੋਮੇਨ %s ਨਾਲ ਖੋਲ ਨਹੀਂ ਸਕਿਆ"
 
@@ -23191,6 +23256,9 @@ msgstr "ਜ਼ੈੱਨ (Xen) ਹਾਈਪਰਵੀਜ਼ਰ ਇੰਦਰਾਜ�
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "ਜ਼ੈੱਨ ਹਾਈਪਰਵੀਜ਼ਰ ਇੰਦਰਾਜ਼ %s ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਿਆ"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 #, fuzzy
 msgid "couldn't fetch array of leases"
@@ -24415,8 +24483,8 @@ msgstr "ਪਤਾ ਨਹੀਂ %s ਯੰਤਰ ਨੂੰ ਕਿਵੇਂ ਹਟ�
 msgid "don't start the bridge immediately"
 msgstr "ਬਰਿੱਜ ਨੂੰ ਝੱਟ ਸ਼ੁਰੂ ਨਾ ਕਰਿਓ"
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
-msgstr "ਗੈਰ-ਅਧੀਨ ਕੀਤੇ ਗਏ ਇੰਟਰਫੇਸ ਨੂੰ ਝੱਟ ਸ਼ੁਰੂ ਨਾ ਕਰੋ (ਸਿਫਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਗਈ)"
+msgid "don't start the detached interface immediately (not recommended)"
+msgstr ""
 
 msgid "done"
 msgstr "ਸਮਾਪਤ"
@@ -24898,9 +24966,9 @@ msgstr ""
 msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ '%s' ਨੂੰ ਆਟੋਸਟਾਰਟ ਕਰਨ ਵਿੱਚ ਫੇਲ: %s"
 
-#, fuzzy, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
-msgstr "ਡੋਮੇਨ %s ਲਈ managedsave ਈਮੇਜ਼ ਹਟਾਇਆ ਗਿਆ"
+#, c-format
+msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
@@ -25434,10 +25502,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "cgroup '%s' ਨੂੰ '%s'ਉੱਤੇ ਬਾਈਂਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -26563,6 +26627,9 @@ msgstr ""
 msgid "for hardware virtualization"
 msgstr ""
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' ਐਟਰੀਬਿਊਟ ਵਿੱਚ ਵਰਜਿਤ ਅੱਖਰ"
 
@@ -26663,6 +26730,9 @@ msgstr "ਡਿਸਕ ਦਾ ਪੂਰੀ ਤਰ੍ਹਾਂ ਕਾਬਲ ਰਾ�
 
 msgid "fuse_loop failed"
 msgstr "fuse_loop ਅਸਫਲ"
+
+msgid "fw_cfg is not supported with this QEMU"
+msgstr ""
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -27456,6 +27526,10 @@ msgstr "ਇੰਟਰਫੇਸ %s ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
 
 msgid "interface name or MAC address"
 msgstr "ਇੰਟਰਫੇਸ ਨਾਂ ਜਾਂ MAC ਐਡਰੈੱਸ"
+
+#, c-format
+msgid "interface not set\n"
+msgstr ""
 
 #, fuzzy
 msgid "interface state driver is not active"
@@ -28411,6 +28485,9 @@ msgstr "ਰੱਦ ਕਰਨਾ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ �
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "ਸਕਰਿਪਟ ਐਗਜ਼ੀਕਿਊਸ਼ਨ ਨੂੰ ਈਥਰਨੈੱਟ ਇੰਟਰਫੇਸ ਲਈ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
+msgstr ""
 
 #, fuzzy
 msgid "iommu: caching mode is not supported with this QEMU binary"
@@ -29445,6 +29522,9 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -30207,10 +30287,6 @@ msgstr "ਇੰਟਰਫੇਸ ਜਾਣਕਾਰੀ ਗੁੰਮ"
 msgid "missing iommuGroup number attribute"
 msgstr "iommuGroup ਅੰਕ ਐਟਰੀਬਿਊਟ ਗੁੰਮ"
 
-#, fuzzy, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "iommuGroup ਅੰਕ ਐਟਰੀਬਿਊਟ ਗੁੰਮ"
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "ਇੰਟਰਫੇਸ ਜਾਣਕਾਰੀ ਗੁੰਮ"
@@ -30325,6 +30401,10 @@ msgstr "ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਗੁੰ
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s ਵਿੱਚ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing or invalid CPU cache mode"
@@ -31370,6 +31450,10 @@ msgstr "'%s' ਲਈ ਕੋਈ ਬਲਾਕ ਜੰਤਰ ਨਹੀਂ ਦਿੱ�
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "prog %d vers %d serial %d ਨਾਲ ਰਿਪਲਾਈ ਲਈ ਕੋਈ ਕਾਲ ਵੇਟਿੰਗ ਵਿੱਚ ਨਹੀਂ"
 
+#, c-format
+msgid "no capabilities available for %s"
+msgstr ""
+
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "ਕੋਈ ਸੁਰੱਖਿਆ ਡਰਾਈਵਰ ਉਪਲੱਬਧ ਨਹੀਂ"
@@ -32091,8 +32175,11 @@ msgstr "ਸਿਰਫ ਇੱਕ ਇਕੱਲਾ TPM ਯੰਤਰ ਸਮਰਥਿ�
 msgid "only a single IOMMU device is supported"
 msgstr "ਸਿਰਫ ਇੱਕ ਇਕੱਲਾ TPM ਯੰਤਰ ਸਮਰਥਿਤ ਹੈ"
 
-msgid "only a single TPM device is supported"
-msgstr "ਸਿਰਫ ਇੱਕ ਇਕੱਲਾ TPM ਯੰਤਰ ਸਮਰਥਿਤ ਹੈ"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr ""
 
 msgid "only a single memory balloon device is supported"
 msgstr "ਸਿਰਫ ਇੱਕ ਹੀ ਮੈਮੋਰੀ ਬੈਲੂਨ ਨੂੰ ਸਹਿਯੋਗ ਹੈ ਨੂੰਸਿਰਫ ਇੱਕ ਹੀ ਮੈਮੋਰੀ ਬੈਲੂਨ ਨ"
@@ -33258,7 +33345,7 @@ msgstr "vol ਦਾ ਆਕਾਰ, ਸਕੇਲ ਕੀਤੇ ਪੂਰਨ ਅੰ�
 msgid "read-only connection"
 msgstr "ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ ਕੁਨੈਕਸ਼ਨ"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 #, fuzzy
@@ -35731,6 +35818,10 @@ msgstr "QEMU ਕਮਾਂਡ '%s' ਨੂੰ ਚਲਾਉਣ ਤੋਂ ਅਸਮ�
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "QEMU ਕਮਾਂਡ '%s' ਨੂੰ ਚਲਾਉਣ ਤੋਂ ਅਸਮਰਥ: %s"
 
+#, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "ਗੈਰਮੌਜੂਦ SCSI ਕੰਟਰੋਲਰ %d ਸੂਚੀ ਲਈ ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
@@ -36126,8 +36217,8 @@ msgstr "ਨੈੱਟਵਰਕ ਜੰਤਰ ਤੋਂ ਬਰਿੱਜ ਹਟਾ�
 msgid "undefine VM on source"
 msgstr "ਸਰੋਤ ਤੇ VM ਨੂੰ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਕਰੋ।"
 
-msgid "undefine a bridge device after detaching its slave device"
-msgstr "ਬਰਿੱਜ ਯੰਤਰ ਨੂੰ ਇਸਦੇ ਅਧੀਨ ਯੰਤਰ ਅਲੱਗ ਕਰਨ ਤੋਂ ਬਾਅਦ ਗੈਰ-ਪਰਭਾਸ਼ਿਤ ਕਰ ਦਿਓ"
+msgid "undefine a bridge device after detaching its device(s)"
+msgstr ""
 
 msgid "undefine a domain"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਪਰਿਭਾਸ਼ਾ ਹਟਾਓ"
@@ -36719,6 +36810,10 @@ msgstr "ਅਚਾਨਕ OS ਕਿਸਮ %s"
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "ਅਣਜਾਣ ਪ੍ਰਮਾਣਿਕਤਾ ਕਿਸਮ %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -38986,3 +39081,45 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+#~ msgstr "'%s' ਨੂੰ NAT ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ। NAT ਸਿਰਫ IPv4 ਲਈ ਹੀ ਸਮਰਥਿਤ ਹੈ।"
+
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "%s ਲਈ ਅਧਾਰ ਜੰਤਰ ਹਟਾਉਣ ਲਈ ਫੇਲ"
+
+#~ msgid "Failed to format new xml document for un-enslaved interface %s"
+#~ msgstr "%s ਇੰਟਰਫੇਸ ਨੂੰ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
+
+#~ msgid "Failed to set new slave interface name to '%s' in xml document"
+#~ msgstr "xml ਡੌਕੂਮੈਂਟ ਵਿੱਚ ਨਵੀਂ ਸਲੇਵ ਇੰਟਰਫੇਸ ਨਾਂ '%s' ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
+
+#~ msgid "Failed to set new slave interface type to '%s' in xml document"
+#~ msgstr "xml ਡੌਕੂਮੈਂਟ ਵਿੱਚ ਨਵੀਂ ਸਲੇਵ ਇੰਟਰਫੇਸ ਕਿਸਮ '%s' ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
+
+#~ msgid "Failed to switch root mount into slave mode"
+#~ msgstr "ਰੂਟ ਮਾਊਂਟ ਨੂੰ ਸਲੇਵ ਮੋਡ ਵਿੱਚ ਤਬਦੀਲ ਕਰਨ ਵਿੱਚ ਫੇਲ"
+
+#~ msgid "SASL client identity '%s' not allowed in whitelist"
+#~ msgstr "SASL ਕਲਾਈਂਟ ਸ਼ਨਾਖਤ '%s' whitelist ਵਿੱਚ ਮਨਜੂਰ ਨਹੀਂ ਹੈ"
+
+#~ msgid "don't start the un-slaved interface immediately (not recommended)"
+#~ msgstr "ਗੈਰ-ਅਧੀਨ ਕੀਤੇ ਗਏ ਇੰਟਰਫੇਸ ਨੂੰ ਝੱਟ ਸ਼ੁਰੂ ਨਾ ਕਰੋ (ਸਿਫਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਗਈ)"
+
+#, fuzzy
+#~ msgid "event 'metdata-change' for domain %s: %s %s\n"
+#~ msgstr "ਡੋਮੇਨ %s ਲਈ managedsave ਈਮੇਜ਼ ਹਟਾਇਆ ਗਿਆ"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "cgroup '%s' ਨੂੰ '%s'ਉੱਤੇ ਬਾਈਂਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
+
+#, fuzzy
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "iommuGroup ਅੰਕ ਐਟਰੀਬਿਊਟ ਗੁੰਮ"
+
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "ਸਿਰਫ ਇੱਕ ਇਕੱਲਾ TPM ਯੰਤਰ ਸਮਰਥਿਤ ਹੈ"
+
+#~ msgid "undefine a bridge device after detaching its slave device"
+#~ msgstr "ਬਰਿੱਜ ਯੰਤਰ ਨੂੰ ਇਸਦੇ ਅਧੀਨ ਯੰਤਰ ਅਲੱਗ ਕਰਨ ਤੋਂ ਬਾਅਦ ਗੈਰ-ਪਰਭਾਸ਼ਿਤ ਕਰ ਦਿਓ"

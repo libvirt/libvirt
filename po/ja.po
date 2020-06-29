@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-06-29 11:55+0000\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -1100,6 +1100,9 @@ msgid "'adapter' must be specified for scsi hostdev source"
 msgstr ""
 "'adapter' を SCSI ホストデバイスのソースに対して指定する必要があります。"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1872,11 +1875,10 @@ msgstr "同期応答で非同期メッセージの送信を試行します"
 msgid "Attempted double use of PCI Address %s"
 msgstr "PCI アドレス %s の二重使用が試行されました"
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
-msgstr "NAT '%s' を試行しました。NAT は IPv4 に対してのみサポートされます"
-
 msgid "Attempting to use unknown stub driver"
+msgstr ""
+
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -5901,11 +5903,6 @@ msgstr ""
 "'adapter' および 'address' を SCSI ホストデバイスソースに対して指定する必要が"
 "あります"
 
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr ""
-
 msgid "Eject the media"
 msgstr "メディアの取り出し"
 
@@ -6399,6 +6396,9 @@ msgstr "トンネルマイグレーションのパイプを"
 
 msgid "Failed"
 msgstr "失敗"
+
+msgid "Failed disable mount propagation out of the root filesystem"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed new node mode for target '%s'"
@@ -7177,10 +7177,6 @@ msgstr "モード '%s' の構文解析に失敗しました"
 msgid "Failed to find parent device for %s"
 msgstr "%s の親デバイスを見つけられませんでした"
 
-#, c-format
-msgid "Failed to find path for %s binary"
-msgstr "%s バイナリーのパスを見つけられませんでした"
-
 #, fuzzy, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr "cgroup '%s' を '%s' にバインドできませんでした"
@@ -7216,10 +7212,8 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "ブリッジ %s 用の新規 XML ドキュメントのフォーマットを失敗しました"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
+msgid "Failed to format new xml document for detached interface %s"
 msgstr ""
-"スレーブ化されていないインターフェース %s に対する新規 XML ドキュメントの"
-"フォーマットに失敗しました"
 
 #, fuzzy, c-format
 msgid "Failed to fully read directory %s"
@@ -8306,24 +8300,20 @@ msgstr "ドメインのメモリーの設定に失敗しました"
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr "libxenlight を用いたドメイン '%d' のメモリーの設定に失敗しました"
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 msgid "Failed to set new domain description"
 msgstr "新しいドメインの説明の設定に失敗しました"
 
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "ドメインの状態の取得に失敗しました"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr ""
-"XML ドキュメントにおいて新規スレーブインターフェース名を '%s' に設定できませ"
-"んでした"
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr ""
-"XML ドキュメントにおいて新規スレーブインターフェース形式を '%s' に設定できま"
-"せんでした"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "non-blocking ファイルの記述子フラグの設定に失敗"
@@ -8450,9 +8440,6 @@ msgstr "ドメイン %s の一時停止に失敗しました"
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "libxenlight を用いたドメイン '%d' の一時停止に失敗しました"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr "ルートのマウントをスレーブモードに切り替えできません"
 
 #, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8729,6 +8716,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -10047,6 +10040,9 @@ msgstr "モニターの待機中に無効なファイル記述子がありまし
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr "モニターの待機中に無効なファイル記述子がありました"
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "無効なフロッピーデバイス名: %s"
@@ -10108,6 +10104,10 @@ msgstr "無効な IP アドレスのプレフィックス値"
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "無効な IPv6 設定 '%s' がネットワーク '%s' にあります"
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid job flags"
@@ -10572,6 +10572,10 @@ msgid "Invalid value for timeout"
 msgstr "不正なタイムアウト値です"
 
 #, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "無効な I/O ウェイト値 %d"
 
@@ -10986,6 +10990,9 @@ msgstr "JSON ドキュメントに max_clients データを設定できません
 msgid "Malformed nbd port '%s'"
 msgstr "不正な形式の nbd ポート '%s'"
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed ovs-vsctl output"
 msgstr "不正な形式の 8 進数のモード"
@@ -11174,6 +11181,10 @@ msgstr "メタデータ:"
 
 msgid "MethodFault is missing 'type' property"
 msgstr "MethodFault は 'type' プロパティがありません"
+
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
@@ -12789,6 +12800,10 @@ msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr "まだ処理されていない値 '%s' が VMX エントリー '%s' にありません"
 
 #, c-format
+msgid "No zPCI %s to reserve"
+msgstr ""
+
+#, c-format
 msgid "Node %d:\n"
 msgstr ""
 
@@ -14350,9 +14365,8 @@ msgid "S4 state is disabled for this domain"
 msgstr "このドメインに対して S4 状態が無効化されています"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
+msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
-"SASL クライアント識別子 '%s' がホワイトリストにおいて許可されていません"
 
 #, c-format
 msgid "SASL data length %zu too long, max %zu"
@@ -15409,6 +15423,14 @@ msgid "TLS:"
 msgstr ""
 
 #, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
+#, c-format
 msgid "TPM device path %s is invalid"
 msgstr "TPM デバイスのパス %s は無効です"
 
@@ -15688,6 +15710,11 @@ msgstr "ターゲットディスクのシリアル %s がソースの %s と一�
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "ターゲットのディスク %s がソースの %s と一致しません"
 
+#, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr "ターゲットドメイン名 '%s' がソースの '%s' と一致しません"
@@ -15726,6 +15753,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "ターゲットドメインの SMBIOS モード %s がソースの %s と一致しません"
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr ""
 "ターゲットドメインの USB リダイレクションフィルター数 %d がソースの %d と一致"
@@ -15746,6 +15777,9 @@ msgstr "ターゲットドメインのコンソール数 %zu がソースの %zu
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr "ターゲットドメインのコントローラー数 %zu がソースの %zu と一致しません"
+
+msgid "Target domain count of sysinfo does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
@@ -16083,6 +16117,9 @@ msgid "Temporary disk space total:"
 msgstr "合計メモリー:"
 
 msgid "Temporary disk space use:"
+msgstr ""
+
+msgid "That firmware name is reserved"
 msgstr ""
 
 #, fuzzy
@@ -16854,6 +16891,12 @@ msgid "Unable to access stream for '%s'"
 msgstr "'%s' に対するストリームにアクセスできません"
 
 #, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
+#, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "'%s' のロック状態を検知できません"
 
@@ -17248,6 +17291,12 @@ msgstr "コマンドの IO を処理するスレッドを作成できません"
 #, fuzzy
 msgid "Unable to create tunnel migration thread"
 msgstr "マイグレーションのスレッドを作成できません"
+
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
 
 msgid "Unable to decode header until len is received"
 msgstr "len を受信するまで、ヘッダーをデコードできません"
@@ -18633,6 +18682,9 @@ msgstr "ファイル記述子の一覧 '%s' を分割できません"
 msgid "Unable to start event thread: %s"
 msgstr "バインドターゲット %s の統計を取得できません"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, c-format
 msgid "Unable to stat %s"
 msgstr "%s の統計を取得できません"
@@ -18648,6 +18700,9 @@ msgstr "バインドターゲット %s の統計を取得できません"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "%s の統計を取得できません"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19582,6 +19637,9 @@ msgstr "サポートされないコントローラーモデル: %s"
 msgid "Unsupported controller type: %s"
 msgstr "サポートされないコントローラーモデル: %s"
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
 msgstr "サポートされないデバイス形式 '%s' です"
@@ -20251,6 +20309,11 @@ msgstr ""
 "ネットワーク '%s' にある異なるポートグループがすでに標準設定として設定されて"
 "います。標準設定は一つのみ許可されます。"
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 #, fuzzy
 msgid "a redefined checkpoint must have a name"
 msgstr "再定義されたスナップショットは名前を持たなければいけません"
@@ -20818,10 +20881,6 @@ msgstr "スナップショット '%s' がすでに存在します"
 msgid "binding '%s' is already being removed"
 msgstr "ドメイン '%s' はすでに起動中です"
 
-#, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
 msgstr "ベース '%s' が '%s' 以下 ('%s' のチェイン) すぐではありません"
@@ -21124,10 +21183,6 @@ msgstr "カレントのスナップショットにある情報"
 #, fuzzy, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "セル %d を開始、範囲外です (0-%d)"
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
-msgstr ""
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -21455,6 +21510,9 @@ msgstr "ボリュームからディレクトリーボリュームにコピーで
 #, c-format
 msgid "cannot create %s"
 msgstr "%s を作成できませんでした"
+
+msgid "cannot create a mediated device without a parent"
+msgstr ""
 
 msgid "cannot create a new stream"
 msgstr "新しいストリームを作成できません"
@@ -23407,6 +23465,10 @@ msgid "could not find capabilities for %s"
 msgstr "'%s' に対してデバイスのケイパビリティがありません"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr ""
 
@@ -23526,10 +23588,6 @@ msgid "could not initialize domain event timer"
 msgstr "ドメインのイベントタイマーを初期化できませんでした"
 
 #, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-
-#, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "ドメイン %s の VirtualBox セッションを開けませんでした"
 
@@ -23614,6 +23672,9 @@ msgstr "Xen ハイパーバイザーエントリーを使用できませんで�
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen ハイパーバイザーエントリー %s を使用できませんでした"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 #, fuzzy
 msgid "couldn't fetch array of leases"
@@ -24867,8 +24928,8 @@ msgstr "%s デバイスの削除方法が分かりません"
 msgid "don't start the bridge immediately"
 msgstr "ブリッジをすぐに起動しない"
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
-msgstr "スレーブ解除したインターフェースをすぐに開始しません（非推奨）"
+msgid "don't start the detached interface immediately (not recommended)"
+msgstr ""
 
 msgid "done"
 msgstr "完了"
@@ -25353,9 +25414,9 @@ msgstr ""
 msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr "ストレージプール '%s' の自動起動に失敗しました: %s"
 
-#, fuzzy, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
-msgstr "ドメイン %s の管理保存イメージを削除しました"
+#, c-format
+msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
@@ -25898,10 +25959,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "cgroup '%s' を '%s' にバインドできませんでした"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -27033,6 +27090,9 @@ msgstr ""
 msgid "for hardware virtualization"
 msgstr ""
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' 属性において禁止された文字"
 
@@ -27135,6 +27195,9 @@ msgstr "ディスクの完全修飾パス"
 
 msgid "fuse_loop failed"
 msgstr "fuse_loop に失敗しました"
+
+msgid "fw_cfg is not supported with this QEMU"
+msgstr ""
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -27937,6 +28000,10 @@ msgstr "インターフェース名 %s がバッファーの中に収まりま�
 
 msgid "interface name or MAC address"
 msgstr "インターフェイス名または MAC アドレス"
+
+#, c-format
+msgid "interface not set\n"
+msgstr ""
 
 #, fuzzy
 msgid "interface state driver is not active"
@@ -28909,6 +28976,9 @@ msgstr "破棄はこの QEMU バイナリーによりサポートされません
 msgid "iommu driver option is only supported for virtio devices"
 msgstr ""
 "vhost-net は virtio ネットワークインターフェースに対してのみサポートされます"
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
+msgstr ""
 
 #, fuzzy
 msgid "iommu: caching mode is not supported with this QEMU binary"
@@ -29937,6 +30007,9 @@ msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -30703,10 +30776,6 @@ msgstr "インターフェース情報がありません"
 msgid "missing iommuGroup number attribute"
 msgstr "iommuGroup number 属性がありません"
 
-#, fuzzy, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "iommuGroup number 属性がありません"
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "インターフェース情報がありません"
@@ -30822,6 +30891,10 @@ msgstr "オペレーティングシステム情報が不足しています"
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s のオペレーティングシステム情報が不足しています"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing or invalid CPU cache mode"
@@ -31893,6 +31966,10 @@ msgstr ""
 "プログラム %d バージョン %d シリアル %d を持つ応答に対して待ち合わせている"
 "コールがありません"
 
+#, c-format
+msgid "no capabilities available for %s"
+msgstr ""
+
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "利用可能なカテゴリー範囲がありません"
@@ -32621,8 +32698,11 @@ msgstr "一つの TPM デバイスのみがサポートされます"
 msgid "only a single IOMMU device is supported"
 msgstr "一つの TPM デバイスのみがサポートされます"
 
-msgid "only a single TPM device is supported"
-msgstr "一つの TPM デバイスのみがサポートされます"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr ""
 
 msgid "only a single memory balloon device is supported"
 msgstr "メモリーバルーンデバイスは1つのみサポートされます"
@@ -33803,7 +33883,7 @@ msgstr "ボリュームの容量、単位付き整数 (初期値 バイト)"
 msgid "read-only connection"
 msgstr "読み込み専用の接続"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 #, fuzzy
@@ -36302,6 +36382,10 @@ msgstr "QEMU コマンド '%s' を実行できません"
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "QEMU コマンド '%s' を実行できません: %s"
 
+#, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "インデックス %d の SCSI コントローラーがありません"
@@ -36697,8 +36781,8 @@ msgstr "ネットワークデバイスのブリッジを解除します。"
 msgid "undefine VM on source"
 msgstr "ソースから VM の登録解除"
 
-msgid "undefine a bridge device after detaching its slave device"
-msgstr "スレーブデバイスの切断後、ブリッジデバイスの定義解除"
+msgid "undefine a bridge device after detaching its device(s)"
+msgstr ""
 
 msgid "undefine a domain"
 msgstr "ドメインの定義解除"
@@ -37295,6 +37379,10 @@ msgstr "不明な認証形式 %s"
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "不明な認証形式: %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -39588,3 +39676,52 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+#~ msgstr "NAT '%s' を試行しました。NAT は IPv4 に対してのみサポートされます"
+
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "%s バイナリーのパスを見つけられませんでした"
+
+#~ msgid "Failed to format new xml document for un-enslaved interface %s"
+#~ msgstr ""
+#~ "スレーブ化されていないインターフェース %s に対する新規 XML ドキュメントの"
+#~ "フォーマットに失敗しました"
+
+#~ msgid "Failed to set new slave interface name to '%s' in xml document"
+#~ msgstr ""
+#~ "XML ドキュメントにおいて新規スレーブインターフェース名を '%s' に設定できま"
+#~ "せんでした"
+
+#~ msgid "Failed to set new slave interface type to '%s' in xml document"
+#~ msgstr ""
+#~ "XML ドキュメントにおいて新規スレーブインターフェース形式を '%s' に設定でき"
+#~ "ませんでした"
+
+#~ msgid "Failed to switch root mount into slave mode"
+#~ msgstr "ルートのマウントをスレーブモードに切り替えできません"
+
+#~ msgid "SASL client identity '%s' not allowed in whitelist"
+#~ msgstr ""
+#~ "SASL クライアント識別子 '%s' がホワイトリストにおいて許可されていません"
+
+#~ msgid "don't start the un-slaved interface immediately (not recommended)"
+#~ msgstr "スレーブ解除したインターフェースをすぐに開始しません（非推奨）"
+
+#, fuzzy
+#~ msgid "event 'metdata-change' for domain %s: %s %s\n"
+#~ msgstr "ドメイン %s の管理保存イメージを削除しました"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "cgroup '%s' を '%s' にバインドできませんでした"
+
+#, fuzzy
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "iommuGroup number 属性がありません"
+
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "一つの TPM デバイスのみがサポートされます"
+
+#~ msgid "undefine a bridge device after detaching its slave device"
+#~ msgstr "スレーブデバイスの切断後、ブリッジデバイスの定義解除"
