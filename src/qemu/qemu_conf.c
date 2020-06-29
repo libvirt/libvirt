@@ -339,7 +339,10 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->chardevTLSx509secretUUID);
 
     VIR_FREE(cfg->vxhsTLSx509certdir);
+    VIR_FREE(cfg->vxhsTLSx509secretUUID);
+
     VIR_FREE(cfg->nbdTLSx509certdir);
+    VIR_FREE(cfg->nbdTLSx509secretUUID);
 
     VIR_FREE(cfg->migrateTLSx509certdir);
     VIR_FREE(cfg->migrateTLSx509secretUUID);
@@ -477,11 +480,7 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
 
     if (virConfGetValueBool(conf, "vxhs_tls", &cfg->vxhsTLS) < 0)
         return -1;
-    if (virConfGetValueString(conf, "vxhs_tls_x509_cert_dir", &cfg->vxhsTLSx509certdir) < 0)
-        return -1;
     if (virConfGetValueBool(conf, "nbd_tls", &cfg->nbdTLS) < 0)
-        return -1;
-    if (virConfGetValueString(conf, "nbd_tls_x509_cert_dir", &cfg->nbdTLSx509certdir) < 0)
         return -1;
     if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
         return -1;
@@ -511,6 +510,10 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
 
     GET_CONFIG_TLS_CERTINFO_COMMON(migrate);
     GET_CONFIG_TLS_CERTINFO_SERVER(migrate);
+
+    GET_CONFIG_TLS_CERTINFO_COMMON(vxhs);
+
+    GET_CONFIG_TLS_CERTINFO_COMMON(nbd);
 
 #undef GET_CONFIG_TLS_CERTINFO_COMMON
 #undef GET_CONFIG_TLS_CERTINFO_SERVER
@@ -1186,6 +1189,8 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
     SET_TLS_SECRET_UUID_DEFAULT(vnc);
     SET_TLS_SECRET_UUID_DEFAULT(chardev);
     SET_TLS_SECRET_UUID_DEFAULT(migrate);
+    SET_TLS_SECRET_UUID_DEFAULT(vxhs);
+    SET_TLS_SECRET_UUID_DEFAULT(nbd);
 
 #undef SET_TLS_SECRET_UUID_DEFAULT
 

@@ -146,9 +146,11 @@ struct _virQEMUDriverConfig {
 
     bool vxhsTLS;
     char *vxhsTLSx509certdir;
+    char *vxhsTLSx509secretUUID;
 
     bool nbdTLS;
     char *nbdTLSx509certdir;
+    char *nbdTLSx509secretUUID;
 
     unsigned int remotePortMin;
     unsigned int remotePortMax;

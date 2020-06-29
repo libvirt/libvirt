@@ -61,9 +61,11 @@ module Libvirtd_qemu =
 
    let vxhs_entry = bool_entry "vxhs_tls"
                  | str_entry "vxhs_tls_x509_cert_dir"
+                 | str_entry "vxhs_tls_x509_secret_uuid"
 
    let nbd_entry = bool_entry "nbd_tls"
                  | str_entry "nbd_tls_x509_cert_dir"
+                 | str_entry "nbd_tls_x509_secret_uuid"
 
    let nogfx_entry = bool_entry "nographics_allow_host_audio"
 
