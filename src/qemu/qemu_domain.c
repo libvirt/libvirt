@@ -1102,7 +1102,7 @@ qemuDomainStorageSourceHasAuth(virStorageSourcePtr src)
 }
 
 
-bool
+static bool
 qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
 {
     if (!virStorageSourceIsEmpty(src) && src->encryption &&

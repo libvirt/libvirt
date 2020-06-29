@@ -837,9 +837,6 @@ void qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 bool qemuDomainStorageSourceHasAuth(virStorageSourcePtr src)
     ATTRIBUTE_NONNULL(1);
 
-bool qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
-    ATTRIBUTE_NONNULL(1);
-
 qemuDomainSecretInfoPtr
 qemuDomainSecretInfoTLSNew(qemuDomainObjPrivatePtr priv,
                            const char *srcAlias,
