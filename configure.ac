@@ -118,9 +118,6 @@ AC_CONFIG_FILES([\
         libvirt-qemu.pc \
         libvirt-lxc.pc \
         libvirt-admin.pc \
-        src/libvirt.pc \
-        src/libvirt-qemu.pc \
-        src/libvirt-lxc.pc \
         libvirt.spec mingw-libvirt.spec \
         po/Makefile \
         examples/Makefile \

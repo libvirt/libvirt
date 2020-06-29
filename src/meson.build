@@ -977,3 +977,23 @@ if pdwtags_prog.found() and cc.get_id() != 'clang'
     )
   endforeach
 endif
+
+# configure pkg-config files for run script
+run_pkg_config_files = [
+  'libvirt-lxc.pc.in',
+  'libvirt-qemu.pc.in',
+  'libvirt.pc.in',
+]
+
+run_pkg_config_conf = configuration_data()
+run_pkg_config_conf.set('VERSION', meson.project_version())
+run_pkg_config_conf.set('abs_top_builddir', meson.build_root())
+run_pkg_config_conf.set('abs_top_srcdir', meson.source_root())
+
+foreach file : run_pkg_config_files
+  configure_file(
+    input: file,
+    output: '@BASENAME@',
+    configuration: run_pkg_config_conf,
+  )
+endforeach
