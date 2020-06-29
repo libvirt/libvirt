@@ -113,6 +113,5 @@ AC_CONFIG_FILES([\
         libvirt-qemu.pc \
         libvirt-lxc.pc \
         libvirt-admin.pc \
-        libvirt.spec mingw-libvirt.spec \
-        po/Makefile])
+        libvirt.spec mingw-libvirt.spec])
 AC_OUTPUT
