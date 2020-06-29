@@ -34160,8 +34160,8 @@ msgstr "з'єднання лише для читання"
 
 msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
-"підтримку випереджального читання передбачено лише для протоколів "
-"HTTP(S)/FTP(s)"
+"підтримку випереджального читання передбачено лише для протоколів HTTP(S)/"
+"FTP(s)"
 
 msgid "readahead setting is not supported with this QEMU binary"
 msgstr ""
