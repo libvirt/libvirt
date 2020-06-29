@@ -317,6 +317,9 @@ struct _qemuDomainStorageSourcePrivate {
 
     /* secure passthrough of the http cookie */
     qemuDomainSecretInfoPtr httpcookie;
+
+    /* key for decrypting TLS certificate */
+    qemuDomainSecretInfoPtr tlsKeySecret;
 };
 
 virObjectPtr qemuDomainStorageSourcePrivateNew(void);

@@ -567,6 +567,7 @@ qemuDomainStorageSourcePrivateDispose(void *obj)
     g_clear_pointer(&priv->secinfo, qemuDomainSecretInfoFree);
     g_clear_pointer(&priv->encinfo, qemuDomainSecretInfoFree);
     g_clear_pointer(&priv->httpcookie, qemuDomainSecretInfoFree);
+    g_clear_pointer(&priv->tlsKeySecret, qemuDomainSecretInfoFree);
 }
 
 
@@ -1083,6 +1084,7 @@ qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
         if ((srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(n))) {
             qemuDomainSecretInfoDestroy(srcPriv->secinfo);
             qemuDomainSecretInfoDestroy(srcPriv->encinfo);
+            qemuDomainSecretInfoDestroy(srcPriv->tlsKeySecret);
         }
     }
 }
@@ -1750,6 +1752,7 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     g_autofree char *authalias = NULL;
     g_autofree char *encalias = NULL;
     g_autofree char *httpcookiealias = NULL;
+    g_autofree char *tlskeyalias = NULL;
 
     src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
@@ -1764,8 +1767,9 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     authalias = virXPathString("string(./objects/secret[@type='auth']/@alias)", ctxt);
     encalias = virXPathString("string(./objects/secret[@type='encryption']/@alias)", ctxt);
     httpcookiealias = virXPathString("string(./objects/secret[@type='httpcookie']/@alias)", ctxt);
+    tlskeyalias = virXPathString("string(./objects/secret[@type='tlskey']/@alias)", ctxt);
 
-    if (authalias || encalias || httpcookiealias) {
+    if (authalias || encalias || httpcookiealias || tlskeyalias) {
         if (!src->privateData &&
             !(src->privateData = qemuDomainStorageSourcePrivateNew()))
             return -1;
@@ -1779,6 +1783,9 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
             return -1;
 
         if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->httpcookie, &httpcookiealias) < 0)
+            return -1;
+
+        if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->tlsKeySecret, &tlskeyalias) < 0)
             return -1;
     }
 
@@ -1831,6 +1838,7 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
         qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->secinfo, "auth");
         qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->encinfo, "encryption");
         qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->httpcookie, "httpcookie");
+        qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->tlsKeySecret, "tlskey");
     }
 
     if (src->tlsAlias)

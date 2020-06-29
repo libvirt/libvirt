@@ -336,6 +336,7 @@
                 <secret type='auth' alias='test-auth-alias'/>
                 <secret type='encryption' alias='test-encryption-alias'/>
                 <secret type='httpcookie' alias='http-cookie-alias'/>
+                <secret type='tlskey' alias='tls-certificate-key-alias'/>
                 <TLSx509 alias='transport-alias'/>
               </objects>
             </privateData>
