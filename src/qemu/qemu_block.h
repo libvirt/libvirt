@@ -105,6 +105,8 @@ struct qemuBlockStorageSourceAttachData {
 
     virJSONValuePtr tlsProps;
     char *tlsAlias;
+    virJSONValuePtr tlsKeySecretProps;
+    char *tlsKeySecretAlias;
 };
 
 

@@ -2047,6 +2047,7 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
         qemuBuildObjectCommandline(cmd, data->authsecretProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->encryptsecretProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->httpcookiesecretProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->tlsKeySecretProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->tlsProps) < 0)
         return -1;
 
@@ -10161,6 +10162,7 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
                                           virQEMUCapsPtr qemuCaps)
 {
     qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    const char *tlsKeySecretAlias = NULL;
 
     if (src->pr &&
         !virStoragePRDefIsManaged(src->pr) &&
@@ -10180,11 +10182,18 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
         if (srcpriv->httpcookie &&
             qemuBuildSecretInfoProps(srcpriv->httpcookie, &data->httpcookiesecretProps) < 0)
             return -1;
+
+        if (srcpriv->tlsKeySecret) {
+            if (qemuBuildSecretInfoProps(srcpriv->tlsKeySecret, &data->tlsKeySecretProps) < 0)
+                return -1;
+
+            tlsKeySecretAlias = srcpriv->tlsKeySecret->s.aes.alias;
+        }
     }
 
     if (src->haveTLS == VIR_TRISTATE_BOOL_YES &&
         qemuBuildTLSx509BackendProps(src->tlsCertdir, false, true, src->tlsAlias,
-                                     NULL, qemuCaps, &data->tlsProps) < 0)
+                                     tlsKeySecretAlias, qemuCaps, &data->tlsProps) < 0)
         return -1;
 
     return 0;

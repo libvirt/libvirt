@@ -1542,7 +1542,9 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
     virJSONValueFree(data->httpcookiesecretProps);
     virJSONValueFree(data->encryptsecretProps);
     virJSONValueFree(data->tlsProps);
+    virJSONValueFree(data->tlsKeySecretProps);
     VIR_FREE(data->tlsAlias);
+    VIR_FREE(data->tlsKeySecretAlias);
     VIR_FREE(data->authsecretAlias);
     VIR_FREE(data->encryptsecretAlias);
     VIR_FREE(data->httpcookiesecretAlias);
@@ -1615,6 +1617,11 @@ qemuBlockStorageSourceAttachApplyStorageDeps(qemuMonitorPtr mon,
     if (data->httpcookiesecretProps &&
         qemuMonitorAddObject(mon, &data->httpcookiesecretProps,
                              &data->httpcookiesecretAlias) < 0)
+        return -1;
+
+    if (data->tlsKeySecretProps &&
+        qemuMonitorAddObject(mon, &data->tlsKeySecretProps,
+                             &data->tlsKeySecretAlias) < 0)
         return -1;
 
     if (data->tlsProps &&
@@ -1766,6 +1773,8 @@ qemuBlockStorageSourceAttachRollback(qemuMonitorPtr mon,
     if (data->tlsAlias)
         ignore_value(qemuMonitorDelObject(mon, data->tlsAlias, false));
 
+    if (data->tlsKeySecretAlias)
+        ignore_value(qemuMonitorDelObject(mon, data->tlsKeySecretAlias, false));
 
     virErrorRestore(&orig_err);
 }
@@ -1821,6 +1830,9 @@ qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,
 
         if (srcpriv->httpcookie)
             data->httpcookiesecretAlias = g_strdup(srcpriv->httpcookie->s.aes.alias);
+
+        if (srcpriv->tlsKeySecret)
+            data->tlsKeySecretAlias = g_strdup(srcpriv->tlsKeySecret->s.aes.alias);
     }
 
     return g_steal_pointer(&data);
