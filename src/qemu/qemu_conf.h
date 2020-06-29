@@ -144,6 +144,12 @@ struct _virQEMUDriverConfig {
     bool migrateTLSx509verifyPresent;
     char *migrateTLSx509secretUUID;
 
+    bool vxhsTLS;
+    char *vxhsTLSx509certdir;
+
+    bool nbdTLS;
+    char *nbdTLSx509certdir;
+
     unsigned int remotePortMin;
     unsigned int remotePortMax;
 
@@ -207,12 +213,6 @@ struct _virQEMUDriverConfig {
     bool virtiofsdDebug;
 
     char *memoryBackingDir;
-
-    bool vxhsTLS;
-    char *vxhsTLSx509certdir;
-
-    bool nbdTLS;
-    char *nbdTLSx509certdir;
 
     uid_t swtpm_user;
     gid_t swtpm_group;
