@@ -17,13 +17,14 @@
 # Thomas Canniot <thomas.canniot@laposte.net>, 2007
 # Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>, 2019
 # Julien Humbert <julroy67@gmail.com>, 2020.
+# Daniel P. Berrange <berrange@redhat.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-06-29 11:55+0000\n"
-"PO-Revision-Date: 2020-06-22 02:41+0000\n"
-"Last-Translator: Julien Humbert <julroy67@gmail.com>\n"
+"PO-Revision-Date: 2020-06-29 13:57+0000\n"
+"Last-Translator: Daniel P. Berrange <berrange@redhat.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fr/>\n"
 "Language: fr\n"
@@ -20231,7 +20232,7 @@ msgid ""
 "at line %d: %s%s\n"
 "%s"
 msgstr ""
-"à la ligne %s :%d : %s%s\n"
+"à la ligne %d : %s%s\n"
 "%s"
 
 msgid "at most one CPU cache element may be specified"
