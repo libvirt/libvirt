@@ -23,6 +23,7 @@ scripts = [
   'meson-install-dirs.py',
   'meson-install-symlink.py',
   'meson-python.sh',
+  'meson-timestamp.py',
   'mock-noinline.py',
   'prohibit-duplicate-header.py',
   'test-wrap-argv.py',

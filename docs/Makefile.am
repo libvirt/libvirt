@@ -306,13 +306,6 @@ aclperms.htmlinc: $(top_srcdir)/src/access/viraccessperm.h \
         $(top_srcdir)/scripts/genaclperms.py Makefile.am
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/genaclperms.py $< > $@
 
-timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
-		   then \
-		     date -u --date="@$$SOURCE_DATE_EPOCH"; \
-		   else \
-		     date -u; \
-		   fi)"
-
 hvsupport.html: hvsupport.html.in
 
 hvsupport.html.in: $(top_srcdir)/scripts/hvsupport.py $(api_DATA) \

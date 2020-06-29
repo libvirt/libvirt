@@ -29,6 +29,10 @@ docs_assets = [
 
 install_data(docs_assets, install_dir: docs_html_dir)
 
+docs_timestamp = run_command(
+  python3_prog, meson_timestamp_prog.path(), env: runutf8
+).stdout().strip()
+
 docs_api_generated = custom_target(
   'generate-api',
   output: [
