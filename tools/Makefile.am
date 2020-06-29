@@ -48,26 +48,3 @@ wireshark/src/libvirt/protocol.h: wireshark/util/genxdrstub.pl \
 		  $(WS_DISSECTOR_PROTO_FILES)
 
 endif WITH_WIRESHARK_DISSECTOR
-
-if WITH_NSS
-nss_libnss_libvirt_guest_la_SOURCES =
-nss_libnss_libvirt_guest_la_LDFLAGS = \
-	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_GUEST_NSS_SYMBOL_FILE) \
-	$(AM_LDFLAGS) \
-	-module \
-	-export-dynamic \
-	-avoid-version \
-	-shared \
-	-shrext .so.$(NSS_SO_VER)
-
-nss_libnss_libvirt_guest_la_LIBADD = \
-	nss/libnss_libvirt_guest_impl.la
-
-nss_libnss_libvirt_guest_la_DEPENDENCIES = \
-	$(nss_libnss_libvirt_guest_la_LIBADD) \
-	$(LIBVIRT_GUEST_NSS_SYMBOL_FILE)
-
-lib_LTLIBRARIES = \
-	nss/libnss_libvirt_guest.la
-
-endif WITH_NSS
