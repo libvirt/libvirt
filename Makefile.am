@@ -25,9 +25,6 @@ SUBDIRS = .
 XZ_OPT ?= -v -T0
 export XZ_OPT
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libvirt.pc libvirt-qemu.pc libvirt-lxc.pc libvirt-admin.pc
-
 rpm: clean
 	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.xz)
 

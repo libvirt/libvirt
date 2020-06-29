@@ -109,9 +109,5 @@ AC_CONFIG_FILES([\
         Makefile \
         .color_coded \
         .ycm_extra_conf.py \
-        libvirt.pc \
-        libvirt-qemu.pc \
-        libvirt-lxc.pc \
-        libvirt-admin.pc \
         libvirt.spec mingw-libvirt.spec])
 AC_OUTPUT

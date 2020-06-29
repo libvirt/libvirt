@@ -2234,6 +2234,35 @@ subdir('po')
 subdir('docs')
 
 
+# install pkgconfig files
+pkgconfig_files = [
+  'libvirt.pc.in',
+  'libvirt-qemu.pc.in',
+  'libvirt-lxc.pc.in',
+  'libvirt-admin.pc.in',
+]
+
+pkgconfig_conf = configuration_data()
+pkgconfig_conf.set('VERSION', meson.project_version())
+pkgconfig_conf.set('datadir', datadir)
+pkgconfig_conf.set('datarootdir', datadir)
+pkgconfig_conf.set('exec_prefix', prefix)
+pkgconfig_conf.set('includedir', includedir)
+pkgconfig_conf.set('libdir', libdir)
+pkgconfig_conf.set('prefix', prefix)
+
+pkgconfig_dir = libdir / 'pkgconfig'
+
+foreach file : pkgconfig_files
+  configure_file(
+    input: file,
+    output: '@BASENAME@',
+    configuration: pkgconfig_conf,
+    install: true,
+    install_dir: pkgconfig_dir,
+  )
+endforeach
+
 # generate meson-config.h file
 configure_file(output: 'meson-config.h', configuration: conf)
 
