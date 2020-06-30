@@ -1421,9 +1421,17 @@ udevRemoveOneDeviceSysPath(const char *path)
                                            VIR_NODE_DEVICE_EVENT_DELETED,
                                            0);
 
-    VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
-              def->name, path);
-    virNodeDeviceObjListRemove(driver->devs, obj);
+    /* If the device is a mediated device that has been 'stopped', it may still
+     * be defined by mdevctl and can therefore be started again. Don't drop it
+     * from the list of node devices */
+    if (virNodeDeviceObjIsPersistent(obj)) {
+        VIR_FREE(def->sysfs_path);
+        virNodeDeviceObjSetActive(obj, false);
+    } else {
+        VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
+                  def->name, path);
+        virNodeDeviceObjListRemove(driver->devs, obj);
+    }
     virNodeDeviceObjEndAPI(&obj);
 
     virObjectEventStateQueue(driver->nodeDeviceEventState, event);
@@ -1481,7 +1489,6 @@ udevSetParent(struct udev_device *device,
     return 0;
 }
 
-
 static int
 udevAddOneDevice(struct udev_device *device)
 {
@@ -1491,6 +1498,7 @@ udevAddOneDevice(struct udev_device *device)
     virObjectEventPtr event = NULL;
     bool new_device = true;
     int ret = -1;
+    bool was_persistent = false;
 
     def = g_new0(virNodeDeviceDef, 1);
 
@@ -1514,14 +1522,23 @@ udevAddOneDevice(struct udev_device *device)
         goto cleanup;
 
     if ((obj = virNodeDeviceObjListFindByName(driver->devs, def->name))) {
+        objdef = virNodeDeviceObjGetDef(obj);
+
+        if (def->caps->data.type == VIR_NODE_DEV_CAP_MDEV)
+            nodeDeviceDefCopyFromMdevctl(def, objdef);
+        was_persistent = virNodeDeviceObjIsPersistent(obj);
+        /* If the device was defined by mdevctl and was never instantiated, it
+         * won't have a sysfs path. We need to emit a CREATED event... */
+        new_device = (objdef->sysfs_path == NULL);
+
         virNodeDeviceObjEndAPI(&obj);
-        new_device = false;
     }
 
     /* If this is a device change, the old definition will be freed
      * and the current definition will take its place. */
     if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
         goto cleanup;
+    virNodeDeviceObjSetPersistent(obj, was_persistent);
     objdef = virNodeDeviceObjGetDef(obj);
 
     if (new_device)
@@ -1940,6 +1957,10 @@ nodeStateInitializeEnumerate(void *opaque)
 
     /* Populate with known devices */
     if (udevEnumerateDevices(udev) != 0)
+        goto error;
+    /* Load persistent mdevs (which might not be activated yet) and additional
+     * information about active mediated devices from mdevctl */
+    if (nodeDeviceUpdateMediatedDevices() != 0)
         goto error;
 
     nodeDeviceLock();
