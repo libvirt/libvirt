@@ -51,8 +51,6 @@ AC_PROG_CPP
 dnl get 64-int interfaces on 32-bit platforms
 CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64"
 
-AC_TYPE_UID_T
-
 dnl Support building Win32 DLLs (must appear *before* AM_PROG_LIBTOOL)
 AC_LIBTOOL_WIN32_DLL
 
@@ -206,19 +204,6 @@ LIBVIRT_CHECK_XDR
 LIBVIRT_CHECK_YAJL
 
 AC_CHECK_SIZEOF([long])
-
-AC_CHECK_TYPE([struct ifreq],
-  [AC_DEFINE([HAVE_STRUCT_IFREQ],[1],
-    [Defined if struct ifreq exists in net/if.h])],
-  [], [[#include <sys/socket.h>
-        #include <net/if.h>
-  ]])
-
-AC_CHECK_TYPE([struct sockpeercred],
-  [AC_DEFINE([HAVE_STRUCT_SOCKPEERCRED], [1],
-    [Defined if struct sockpeercred is available])],
-  [], [[#include <sys/socket.h>
-  ]])
 
 
 AC_CHECK_LIB([intl],[gettext],[])

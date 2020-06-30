@@ -821,6 +821,33 @@ if (cc.has_header_symbol('mach/clock.h', 'clock_serv_t') and
 endif
 
 
+# check various types
+
+types = [
+  [ 'struct ifreq', '#include <sys/socket.h>\n#include <net/if.h>'] ,
+  [ 'struct sockpeercred', '#include <sys/socket.h' ],
+]
+
+foreach type : types
+  if cc.has_type(type[0], prefix: type[1])
+    name = type[0].underscorify().to_upper()
+    conf.set('HAVE_@0@'.format(name), 1)
+  endif
+endforeach
+
+if host_machine.system() == 'windows'
+  uid_types = [
+    'uid_t',
+    'gid_t',
+  ]
+  foreach type : uid_types
+    if not cc.has_type(type, prefix: '#include <sys/types.h>')
+      conf.set(type, 'int')
+    endif
+  endforeach
+endif
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
