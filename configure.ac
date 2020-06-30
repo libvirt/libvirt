@@ -359,13 +359,6 @@ fi
 AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
 
 
-# Check for BSD kvm (kernel memory interface)
-if test $with_freebsd = yes; then
-     AC_CHECK_LIB([kvm], [kvm_getprocs], [],
-                  [AC_MSG_ERROR([BSD kernel memory interface library is required to build on FreeBSD])]
-                 )
-fi
-
 GNUmakefile=GNUmakefile
 m4_if(m4_version_compare([2.61a.100],
         m4_defn([m4_PACKAGE_VERSION])), [1], [],

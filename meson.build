@@ -1075,6 +1075,12 @@ if hal_dep.found()
   conf.set('WITH_HAL', 1)
 endif
 
+# Check for BSD kvm (kernel memory interface)
+if host_machine.system() == 'freebsd'
+  kvm_dep = cc.find_library('kvm')
+  add_project_link_arguments('-lkvm', language: 'c')
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
