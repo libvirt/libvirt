@@ -207,9 +207,6 @@ LIBVIRT_CHECK_YAJL
 
 AC_CHECK_SIZEOF([long])
 
-dnl Check whether endian provides handy macros.
-AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
-
 AC_CHECK_TYPE([struct ifreq],
   [AC_DEFINE([HAVE_STRUCT_IFREQ],[1],
     [Defined if struct ifreq exists in net/if.h])],
@@ -222,16 +219,6 @@ AC_CHECK_TYPE([struct sockpeercred],
     [Defined if struct sockpeercred is available])],
   [], [[#include <sys/socket.h>
   ]])
-
-AC_CHECK_DECLS([ETH_FLAG_TXVLAN, ETH_FLAG_NTUPLE, ETH_FLAG_RXHASH, ETH_FLAG_LRO,
-                ETHTOOL_GGSO, ETHTOOL_GGRO, ETHTOOL_GFLAGS, ETHTOOL_GFEATURES,
-                ETHTOOL_SCOALESCE, ETHTOOL_GCOALESCE],
-  [], [], [[#include <linux/ethtool.h>
-  ]])
-
-AC_CHECK_DECLS([SEEK_HOLE], [], [],
-               [#include <sys/types.h>
-                #include <unistd.h>])
 
 
 AC_CHECK_LIB([intl],[gettext],[])
@@ -405,27 +392,6 @@ if test $with_storage = yes; then
 fi
 AM_CONDITIONAL([WITH_STORAGE], [test "$with_storage" = "yes"])
 
-dnl
-dnl check for DEVLINK_CMD_ESWITCH_GET
-dnl
-dnl Assume DEVLINK_ESWITCH_MODE_SWITCHDEV is also
-dnl available, as it was introudced in kernel 4.8
-dnl along with the original spelling of this constant
-dnl (DEVLINK_CMD_ESWITCH_MODE_GET, not supported by libvirt)
-dnl
-if test "$with_linux" = "yes"; then
-    AC_CHECK_DECLS([DEVLINK_CMD_ESWITCH_GET], [], [],
-                   [[#include <linux/devlink.h>]])
-fi
-
-dnl
-dnl check for VHOST_VSOCK_SET_GUEST_CID
-dnl
-if test "$with_linux" = "yes"; then
-    AC_CHECK_DECLS([VHOST_VSOCK_SET_GUEST_CID], [], [],
-                   [[#include <linux/vhost.h>]])
-fi
-
 dnl Allow perl/python overrides
 AC_PATH_PROGS([PYTHON], [python3])
 if test -z "$PYTHON"; then
@@ -476,9 +442,6 @@ then
 fi
 AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
 
-dnl GET_VLAN_VID_CMD is required for virNetDevGetVLanID
-AC_CHECK_DECLS([GET_VLAN_VID_CMD], [], [], [[#include <linux/if_vlan.h>]])
-
 # Check for Linux vs. BSD ifreq members
 AC_CHECK_MEMBERS([struct ifreq.ifr_newname,
                   struct ifreq.ifr_ifindex,
@@ -489,61 +452,11 @@ AC_CHECK_MEMBERS([struct ifreq.ifr_newname,
                   #include <net/if.h>
                  ])
 
-# Check for BSD approach for setting MAC addr
-AC_LINK_IFELSE([AC_LANG_PROGRAM(
-     [[
-        #include <sys/types.h>
-        #include <sys/socket.h>
-        #include <net/if_dl.h>
-     ]],
-     [[
-        link_addr(0, 0)]])],
-     [AC_DEFINE([HAVE_DECL_LINK_ADDR],
-                [1],
-                [whether link_addr is available])])
-
-# Check for BSD approach for bridge management
-AC_CHECK_DECLS([BRDGSFD, BRDGADD, BRDGDEL],
-               [AC_DEFINE([HAVE_BSD_BRIDGE_MGMT],
-                          [1],
-                          [whether BSD style bridge management is available])],
-               [],
-               [#include <stdint.h>
-                #include <net/if.h>
-                #include <net/ethernet.h>
-                #include <net/if_bridgevar.h>
-               ])
-
-# Check for BSD CPU affinity availability
-AC_CHECK_DECLS([cpuset_getaffinity],
-               [AC_DEFINE([HAVE_BSD_CPU_AFFINITY],
-                          [1],
-                          [whether BSD CPU affinity management is available])],
-               [],
-               [#include <sys/param.h>
-                #include <sys/cpuset.h>
-               ])
-
 # Check for BSD kvm (kernel memory interface)
 if test $with_freebsd = yes; then
      AC_CHECK_LIB([kvm], [kvm_getprocs], [],
                   [AC_MSG_ERROR([BSD kernel memory interface library is required to build on FreeBSD])]
                  )
-fi
-
-AC_CHECK_DECLS([clock_serv_t, host_get_clock_service, clock_get_time],
-               [AC_DEFINE([HAVE_MACH_CLOCK_ROUTINES],
-                          [1],
-                          [whether Mach clock routines are available])],
-               [],
-               [#include <mach/clock.h>
-                #include <mach/mach.h>
-               ])
-
-# Check if we have new enough kernel to support BPF devices for cgroups v2
-if test "$with_linux" = "yes"; then
-    AC_CHECK_DECLS([BPF_PROG_QUERY, BPF_CGROUP_DEVICE],
-                   [], [], [#include <linux/bpf.h>])
 fi
 
 # Check if we need to look for ifconfig

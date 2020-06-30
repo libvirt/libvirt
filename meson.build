@@ -749,6 +749,78 @@ if host_machine.system() == 'linux'
 endif
 
 
+# check various symbols
+
+symbols = [
+  # Check whether endian provides handy macros.
+  [ 'endian.h', 'htole64' ],
+
+  [ 'linux/ethtool.h', 'ETH_FLAG_TXVLAN' ],
+  [ 'linux/ethtool.h', 'ETH_FLAG_NTUPLE' ],
+  [ 'linux/ethtool.h', 'ETH_FLAG_RXHASH' ],
+  [ 'linux/ethtool.h', 'ETH_FLAG_LRO' ],
+  [ 'linux/ethtool.h', 'ETHTOOL_GGSO' ],
+  [ 'linux/ethtool.h', 'ETHTOOL_GGRO' ],
+  [ 'linux/ethtool.h', 'ETHTOOL_GFLAGS' ],
+  [ 'linux/ethtool.h', 'ETHTOOL_GFEATURES' ],
+  [ 'linux/ethtool.h', 'ETHTOOL_SCOALESCE' ],
+  [ 'linux/ethtool.h', 'ETHTOOL_GCOALESCE' ],
+
+  # GET_VLAN_VID_CMD is required for virNetDevGetVLanID
+  [ 'linux/if_vlan.h', 'GET_VLAN_VID_CMD' ],
+
+  [ 'unistd.h', 'SEEK_HOLE' ],
+
+  # GET_VLAN_VID_CMD is required for virNetDevGetVLanID
+  [ 'linux/if_vlan.h', 'GET_VLAN_VID_CMD' ],
+
+  # Check for BSD approach for setting MAC addr
+  [ 'net/if_dl.h', 'link_addr' ],
+]
+
+if host_machine.system() == 'linux'
+  symbols += [
+    # check for DEVLINK_CMD_ESWITCH_GET
+    # Assume DEVLINK_ESWITCH_MODE_SWITCHDEV is also available, as it was
+    # introudced in kernel 4.8 along with the original spelling of this
+    # constant (DEVLINK_CMD_ESWITCH_MODE_GET, not supported by libvirt).
+    [ 'linux/devlink.h', 'DEVLINK_CMD_ESWITCH_GET' ],
+
+    # check for VHOST_VSOCK_SET_GUEST_CID
+    [ 'linux/vhost.h', 'VHOST_VSOCK_SET_GUEST_CID' ],
+
+    # Check if we have new enough kernel to support BPF devices for cgroups v2
+    [ 'linux/bpf.h', 'BPF_PROG_QUERY' ],
+    [ 'linux/bpf.h', 'BPF_CGROUP_DEVICE' ],
+  ]
+endif
+
+foreach symbol : symbols
+  if cc.has_header_symbol(symbol[0], symbol[1], args: '-D_GNU_SOURCE')
+    conf.set('HAVE_DECL_@0@'.format(symbol[1].to_upper()), 1)
+  endif
+endforeach
+
+# Check for BSD approach for bridge management
+if (cc.has_header_symbol('net/if_bridgevar.h', 'BRDGSFD') and
+    cc.has_header_symbol('net/if_bridgevar.h', 'BRDGADD') and
+    cc.has_header_symbol('net/if_bridgevar.h', 'BRDGDEL'))
+  conf.set('HAVE_BSD_BRIDGE_MGMT', 1)
+endif
+
+# Check for BSD CPU affinity availability
+if cc.has_header_symbol('sys/cpuset.h', 'cpuset_getaffinity')
+  conf.set('HAVE_BSD_CPU_AFFINITY', 1)
+endif
+
+# whether Mach clock routines are available
+if (cc.has_header_symbol('mach/clock.h', 'clock_serv_t') and
+    cc.has_header_symbol('mach/clock.h', 'host_get_clock_service') and
+    cc.has_header_symbol('mach/clock.h', 'clock_get_time'))
+  conf.set('HAVE_MACH_CLOCK_ROUTINES', 1)
+endif
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
