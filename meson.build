@@ -2202,6 +2202,13 @@ endif
 conf.set_quoted('TLS_PRIORITY', get_option('tls_priority'))
 
 
+# Various definitions
+
+# Python3 < 3.7 treats the C locale as 7-bit only. We must force env vars so
+# it treats it as UTF-8 regardless of the user's locale.
+runutf8 = [ 'LC_ALL=', 'LANG=C', 'LC_CTYPE=en_US.UTF-8' ]
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')

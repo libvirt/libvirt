@@ -18,6 +18,7 @@ scripts = [
   'header-ifdef.py',
   'hvsupport.py',
   'hyperv_wmi_generator.py',
+  'meson-python.sh',
   'mock-noinline.py',
   'prohibit-duplicate-header.py',
   'test-wrap-argv.py',

@@ -90,13 +90,6 @@ dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
 
 
-dnl Python3 < 3.7 treats the C locale as 7-bit only.
-dnl We must force env vars so it treats it as UTF-8
-dnl regardless of the user's locale.
-RUNUTF8="LC_ALL= LANG=C LC_CTYPE=en_US.UTF-8"
-AC_SUBST(RUNUTF8)
-
-
 dnl MinGW checks
 LIBVIRT_WIN_CHECK_SYMBOLS
 LIBVIRT_WIN_CHECK_WINDRES
