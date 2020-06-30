@@ -486,13 +486,8 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
         return -1;
 
-#define GET_CONFIG_TLS_CERTINFO(val) \
+#define GET_CONFIG_TLS_CERTINFO_COMMON(val) \
     do { \
-        if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify", \
-                                      &cfg->val## TLSx509verify)) < 0) \
-            return -1; \
-        if (rv == 1) \
-            cfg->val## TLSx509verifyPresent = true; \
         if (virConfGetValueString(conf, #val "_tls_x509_cert_dir", \
                                   &cfg->val## TLSx509certdir) < 0) \
             return -1; \
@@ -502,11 +497,23 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
             return -1; \
     } while (0)
 
-    GET_CONFIG_TLS_CERTINFO(chardev);
+#define GET_CONFIG_TLS_CERTINFO_SERVER(val) \
+    do { \
+        if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify", \
+                                      &cfg->val## TLSx509verify)) < 0) \
+            return -1; \
+        if (rv == 1) \
+            cfg->val## TLSx509verifyPresent = true; \
+    } while (0)
 
-    GET_CONFIG_TLS_CERTINFO(migrate);
+    GET_CONFIG_TLS_CERTINFO_COMMON(chardev);
+    GET_CONFIG_TLS_CERTINFO_SERVER(chardev);
 
-#undef GET_CONFIG_TLS_CERTINFO
+    GET_CONFIG_TLS_CERTINFO_COMMON(migrate);
+    GET_CONFIG_TLS_CERTINFO_SERVER(migrate);
+
+#undef GET_CONFIG_TLS_CERTINFO_COMMON
+#undef GET_CONFIG_TLS_CERTINFO_SERVER
     return 0;
 }
 
