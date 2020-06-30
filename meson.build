@@ -872,6 +872,88 @@ endforeach
 conf.set('SIZEOF_LONG', cc.sizeof('long'))
 
 
+# Where we look for daemons and admin binaries during configure
+
+libvirt_sbin_path = [
+  '/sbin',
+  '/usr/sbin',
+  '/usr/local/sbin',
+]
+
+
+# required programs check
+
+required_programs = [
+  'perl',
+  'python3',
+  'xmllint',
+  'xsltproc',
+]
+
+required_programs_groups = [
+  {'name':'rpcgen', 'prog':['rpcgen', 'portable-rpcgen']},
+  # Drop the rst2html (aka HTML4) variants once we stop supporting Ubuntu 16.04 (Xenial)
+  {'name':'rst2html', 'prog':['rst2html5', 'rst2html5.py', 'rst2html5-3', 'rst2html', 'rst2html.py', 'rst2html-3']},
+  {'name':'rst2man', 'prog':['rst2man', 'rst2man.py', 'rst2man-3']},
+]
+
+if host_machine.system() == 'freebsd'
+  required_programs += 'ifconfig'
+endif
+
+foreach name : required_programs
+  prog = find_program(name, required: true, dirs: libvirt_sbin_path)
+  varname = name.underscorify()
+  conf.set_quoted(varname.to_upper(), prog.path())
+  set_variable('@0@_prog'.format(varname), prog)
+endforeach
+
+foreach item : required_programs_groups
+  prog = find_program(item.get('prog'), required: true, dirs: libvirt_sbin_path)
+  varname = item.get('name').underscorify()
+  conf.set_quoted(varname.to_upper(), prog.path())
+  set_variable('@0@_prog'.format(varname), prog)
+endforeach
+
+
+# optional programs
+
+optional_programs = [
+  'addr2line',
+  'augparse',
+  'dmidecode',
+  'dnsmasq',
+  'ebtables',
+  'flake8',
+  'ip',
+  'ip6tables',
+  'iptables',
+  'mdevctl',
+  'mm-ctl',
+  'modprobe',
+  'ovs-vsctl',
+  'radvd',
+  'rmmod',
+  'scrub',
+  'tc',
+  'udevadm',
+]
+
+foreach name : optional_programs
+  prog = find_program(name, required: false, dirs: libvirt_sbin_path)
+  varname = name.underscorify()
+  if prog.found()
+    prog_path = prog.path()
+  else
+    prog_path = name
+  endif
+
+  conf.set_quoted(varname.to_upper(), prog_path)
+  conf.set_quoted('@0@_PATH'.format(varname.to_upper()), prog_path)
+  set_variable('@0@_prog'.format(varname), prog)
+endforeach
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')

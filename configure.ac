@@ -40,9 +40,6 @@ m4_ifndef([AM_SILENT_RULES],
 
 AC_CANONICAL_HOST
 
-dnl Where we look for daemons and admin binaries during configure
-LIBVIRT_SBIN_PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
-
 dnl Checks for C compiler.
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -61,10 +58,6 @@ m4_ifndef([LT_INIT], [
 ])
 AM_PROG_CC_C_O
 AM_PROG_LD
-
-dnl Specify if we rely on ifconfig instead of iproute2 (e.g. in case
-dnl we're working on BSD)
-want_ifconfig=no
 
 dnl Make some notes about which OS we're compiling for, as the lxc and qemu
 dnl drivers require linux headers, and storage_mpath, dtrace, and nwfilter
@@ -90,7 +83,6 @@ if test $with_linux = no; then
 fi
 
 if test $with_freebsd = yes; then
-    want_ifconfig=yes
     with_firewalld=no
 fi
 
@@ -207,12 +199,6 @@ LIBVIRT_CHECK_YAJL
 AC_CHECK_LIB([intl],[gettext],[])
 AC_CHECK_LIB([util],[openpty],[])
 
-
-dnl
-dnl Check for external programs
-dnl
-
-LIBVIRT_CHECK_EXTERNAL_PROGRAMS
 
 dnl
 dnl Virtualization drivers check
@@ -375,28 +361,12 @@ if test $with_storage = yes; then
 fi
 AM_CONDITIONAL([WITH_STORAGE], [test "$with_storage" = "yes"])
 
-dnl Allow perl/python overrides
-AC_PATH_PROGS([PYTHON], [python3])
-if test -z "$PYTHON"; then
-    AC_MSG_ERROR(['python3' binary is required to build libvirt])
-fi
-AC_DEFINE_UNQUOTED([PYTHON], "$PYTHON", [path to python binary])
-AC_PATH_PROG([FLAKE8], [flake8])
-if test -z "$FLAKE8"; then
-    AC_MSG_WARN(['flake8' binary is required to check python code style])
-fi
-
 dnl Python3 < 3.7 treats the C locale as 7-bit only.
 dnl We must force env vars so it treats it as UTF-8
 dnl regardless of the user's locale.
 RUNUTF8="LC_ALL= LANG=C LC_CTYPE=en_US.UTF-8"
 AC_SUBST(RUNUTF8)
 
-
-AC_PATH_PROG([PERL], [perl])
-if test -z "$PERL"; then
-         AC_MSG_ERROR(['perl' binary is required to build libvirt])
-fi
 
 dnl MinGW checks
 LIBVIRT_WIN_CHECK_COMMON
@@ -431,15 +401,6 @@ if test $with_freebsd = yes; then
      AC_CHECK_LIB([kvm], [kvm_getprocs], [],
                   [AC_MSG_ERROR([BSD kernel memory interface library is required to build on FreeBSD])]
                  )
-fi
-
-# Check if we need to look for ifconfig
-if test "$want_ifconfig" = "yes"; then
-     AC_PATH_PROG([IFCONFIG_PATH], [ifconfig])
-     if test -z "$IFCONFIG_PATH"; then
-         AC_MSG_ERROR([Failed to find ifconfig.])
-     fi
-     AC_DEFINE_UNQUOTED([IFCONFIG_PATH], "$IFCONFIG_PATH", [path to ifconfig binary])
 fi
 
 GNUmakefile=GNUmakefile
