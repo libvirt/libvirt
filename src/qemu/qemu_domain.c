@@ -9537,7 +9537,9 @@ qemuDomainPrepareChardevSource(virDomainDefPtr def,
 
 static int
 qemuProcessPrepareStorageSourceTLSVxhs(virStorageSourcePtr src,
-                                       virQEMUDriverConfigPtr cfg)
+                                       virQEMUDriverConfigPtr cfg,
+                                       qemuDomainObjPrivatePtr priv,
+                                       const char *parentAlias)
 {
     /* VxHS uses only client certificates and thus has no need for
      * the server-key.pem nor a secret that could be used to decrypt
@@ -9550,8 +9552,18 @@ qemuProcessPrepareStorageSourceTLSVxhs(virStorageSourcePtr src,
         src->tlsFromConfig = true;
     }
 
-    if (src->haveTLS == VIR_TRISTATE_BOOL_YES)
+    if (src->haveTLS == VIR_TRISTATE_BOOL_YES) {
+        src->tlsAlias = qemuAliasTLSObjFromSrcAlias(parentAlias);
         src->tlsCertdir = g_strdup(cfg->vxhsTLSx509certdir);
+
+        if (cfg->vxhsTLSx509secretUUID) {
+            qemuDomainStorageSourcePrivatePtr srcpriv = qemuDomainStorageSourcePrivateFetch(src);
+
+            if (!(srcpriv->tlsKeySecret = qemuDomainSecretInfoTLSNew(priv, src->tlsAlias,
+                                                                     cfg->vxhsTLSx509secretUUID)))
+                return -1;
+        }
+    }
 
     return 0;
 }
@@ -9560,7 +9572,8 @@ qemuProcessPrepareStorageSourceTLSVxhs(virStorageSourcePtr src,
 static int
 qemuProcessPrepareStorageSourceTLSNBD(virStorageSourcePtr src,
                                       virQEMUDriverConfigPtr cfg,
-                                      virQEMUCapsPtr qemuCaps)
+                                      qemuDomainObjPrivatePtr priv,
+                                      const char *parentAlias)
 {
     if (src->haveTLS == VIR_TRISTATE_BOOL_ABSENT) {
         if (cfg->nbdTLS)
@@ -9571,13 +9584,22 @@ qemuProcessPrepareStorageSourceTLSNBD(virStorageSourcePtr src,
     }
 
     if (src->haveTLS == VIR_TRISTATE_BOOL_YES) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NBD_TLS)) {
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_TLS)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu does not support TLS transport for NBD"));
             return -1;
         }
 
+        src->tlsAlias = qemuAliasTLSObjFromSrcAlias(parentAlias);
         src->tlsCertdir = g_strdup(cfg->nbdTLSx509certdir);
+
+        if (cfg->nbdTLSx509secretUUID) {
+            qemuDomainStorageSourcePrivatePtr srcpriv = qemuDomainStorageSourcePrivateFetch(src);
+
+            if (!(srcpriv->tlsKeySecret = qemuDomainSecretInfoTLSNew(priv, src->tlsAlias,
+                                                                     cfg->nbdTLSx509secretUUID)))
+                return -1;
+        }
     }
 
     return 0;
@@ -9599,19 +9621,19 @@ static int
 qemuDomainPrepareStorageSourceTLS(virStorageSourcePtr src,
                                   virQEMUDriverConfigPtr cfg,
                                   const char *parentAlias,
-                                  virQEMUCapsPtr qemuCaps)
+                                  qemuDomainObjPrivatePtr priv)
 {
     if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK)
         return 0;
 
     switch ((virStorageNetProtocol) src->protocol) {
     case VIR_STORAGE_NET_PROTOCOL_VXHS:
-        if (qemuProcessPrepareStorageSourceTLSVxhs(src, cfg) < 0)
+        if (qemuProcessPrepareStorageSourceTLSVxhs(src, cfg, priv, parentAlias) < 0)
             return -1;
         break;
 
     case VIR_STORAGE_NET_PROTOCOL_NBD:
-        if (qemuProcessPrepareStorageSourceTLSNBD(src, cfg, qemuCaps) < 0)
+        if (qemuProcessPrepareStorageSourceTLSNBD(src, cfg, priv, parentAlias) < 0)
             return -1;
         break;
 
@@ -9639,10 +9661,6 @@ qemuDomainPrepareStorageSourceTLS(virStorageSourcePtr src,
         virReportEnumRangeError(virStorageNetProtocol, src->protocol);
         return -1;
     }
-
-    if (src->haveTLS == VIR_TRISTATE_BOOL_YES &&
-        !(src->tlsAlias = qemuAliasTLSObjFromSrcAlias(parentAlias)))
-        return -1;
 
     return 0;
 }
@@ -12128,7 +12146,7 @@ qemuDomainPrepareDiskSourceLegacy(virDomainDiskDefPtr disk,
         return -1;
 
     if (qemuDomainPrepareStorageSourceTLS(disk->src, cfg, disk->info.alias,
-                                          priv->qemuCaps) < 0)
+                                          priv) < 0)
         return -1;
 
     return 0;
@@ -12164,7 +12182,7 @@ qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDefPtr disk,
         return -1;
 
     if (qemuDomainPrepareStorageSourceTLS(src, cfg, src->nodestorage,
-                                          priv->qemuCaps) < 0)
+                                          priv) < 0)
         return -1;
 
     return 0;
