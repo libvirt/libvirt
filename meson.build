@@ -848,6 +848,25 @@ if host_machine.system() == 'windows'
 endif
 
 
+# check various members
+
+members = [
+  # Check for Linux vs. BSD ifreq members
+  [ 'struct ifreq', 'ifr_newname', '#include <sys/socket.h>\n#include <net/if.h>' ],
+  [ 'struct ifreq', 'ifr_ifindex', '#include <sys/socket.h>\n#include <net/if.h>' ],
+  [ 'struct ifreq', 'ifr_index', '#include <sys/socket.h>\n#include <net/if.h>' ],
+  [ 'struct ifreq', 'ifr_hwaddr', '#include <sys/socket.h>\n#include <net/if.h>' ],
+]
+
+foreach member : members
+  if cc.has_member(member[0], member[1], prefix: member[2])
+    type = member[0].underscorify().to_upper()
+    member = member[1].underscorify().to_upper()
+    conf.set('HAVE_@0@_@1@'.format(type, member), 1)
+  endif
+endforeach
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
