@@ -28,8 +28,11 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-object secret,id=objvirtio-disk0_tls0-secret0,\
+data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
+keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -object tls-creds-x509,id=objvirtio-disk0_tls0,dir=/etc/pki/libvirt-vxhs/dummy,\
-,path,endpoint=client,verify-peer=yes \
+,path,endpoint=client,verify-peer=yes,passwordid=objvirtio-disk0_tls0-secret0 \
 -drive file.driver=vxhs,file.tls-creds=objvirtio-disk0_tls0,\
 file.vdisk-id=eb90327c-8302-4725-9e1b-4e85ed4dc251,\
 file.server.host=192.168.0.1,file.server.port=9999,format=raw,if=none,\
@@ -37,8 +40,11 @@ id=drive-virtio-disk0,cache=none \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
 id=virtio-disk0,bootindex=1,write-cache=on,\
 serial=eb90327c-8302-4725-9e1b-4e85ed4dc251 \
+-object secret,id=objvirtio-disk1_tls0-secret0,\
+data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
+keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -object tls-creds-x509,id=objvirtio-disk1_tls0,dir=/etc/pki/libvirt-vxhs/dummy,\
-,path,endpoint=client,verify-peer=yes \
+,path,endpoint=client,verify-peer=yes,passwordid=objvirtio-disk1_tls0-secret0 \
 -drive file.driver=vxhs,file.tls-creds=objvirtio-disk1_tls0,\
 file.vdisk-id=eb90327c-8302-4725-9e1b-4e85ed4dc252,\
 file.server.host=192.168.0.2,file.server.port=9999,format=raw,if=none,\
@@ -50,8 +56,11 @@ file.server.host=192.168.0.3,file.server.port=9999,format=raw,if=none,\
 id=drive-virtio-disk2,cache=none \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=drive-virtio-disk2,\
 id=virtio-disk2,write-cache=on,serial=eb90327c-8302-4725-9e1b-4e85ed4dc252 \
+-object secret,id=objvirtio-disk3_tls0-secret0,\
+data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
+keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -object tls-creds-x509,id=objvirtio-disk3_tls0,dir=/etc/pki/libvirt-nbd/dummy,,\
-path,endpoint=client,verify-peer=yes \
+path,endpoint=client,verify-peer=yes,passwordid=objvirtio-disk3_tls0-secret0 \
 -drive file.driver=nbd,file.server.type=inet,file.server.host=example.com,\
 file.server.port=1234,file.tls-creds=objvirtio-disk3_tls0,format=raw,if=none,\
 id=drive-virtio-disk3,cache=none \

@@ -28,8 +28,12 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-object secret,id=objlibvirt-4-storage_tls0-secret0,\
+data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
+keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -object tls-creds-x509,id=objlibvirt-4-storage_tls0,\
-dir=/etc/pki/libvirt-vxhs/dummy,,path,endpoint=client,verify-peer=yes \
+dir=/etc/pki/libvirt-vxhs/dummy,,path,endpoint=client,verify-peer=yes,\
+passwordid=objlibvirt-4-storage_tls0-secret0 \
 -blockdev '{"driver":"vxhs","tls-creds":"objlibvirt-4-storage_tls0",\
 "vdisk-id":"eb90327c-8302-4725-9e1b-4e85ed4dc251",\
 "server":{"host":"192.168.0.1","port":"9999"},"node-name":"libvirt-4-storage",\
@@ -41,8 +45,12 @@ dir=/etc/pki/libvirt-vxhs/dummy,,path,endpoint=client,verify-peer=yes \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=libvirt-4-format,\
 id=virtio-disk0,bootindex=1,write-cache=on,\
 serial=eb90327c-8302-4725-9e1b-4e85ed4dc251 \
+-object secret,id=objlibvirt-3-storage_tls0-secret0,\
+data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
+keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -object tls-creds-x509,id=objlibvirt-3-storage_tls0,\
-dir=/etc/pki/libvirt-vxhs/dummy,,path,endpoint=client,verify-peer=yes \
+dir=/etc/pki/libvirt-vxhs/dummy,,path,endpoint=client,verify-peer=yes,\
+passwordid=objlibvirt-3-storage_tls0-secret0 \
 -blockdev '{"driver":"vxhs","tls-creds":"objlibvirt-3-storage_tls0",\
 "vdisk-id":"eb90327c-8302-4725-9e1b-4e85ed4dc252",\
 "server":{"host":"192.168.0.2","port":"9999"},"node-name":"libvirt-3-storage",\
@@ -62,8 +70,12 @@ id=virtio-disk1,write-cache=on,serial=eb90327c-8302-4725-9e1b-4e85ed4dc252 \
 "file":"libvirt-2-storage"}' \
 -device virtio-blk-pci,bus=pci.0,addr=0x6,drive=libvirt-2-format,\
 id=virtio-disk2,write-cache=on,serial=eb90327c-8302-4725-9e1b-4e85ed4dc252 \
+-object secret,id=objlibvirt-1-storage_tls0-secret0,\
+data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
+keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -object tls-creds-x509,id=objlibvirt-1-storage_tls0,\
-dir=/etc/pki/libvirt-nbd/dummy,,path,endpoint=client,verify-peer=yes \
+dir=/etc/pki/libvirt-nbd/dummy,,path,endpoint=client,verify-peer=yes,\
+passwordid=objlibvirt-1-storage_tls0-secret0 \
 -blockdev '{"driver":"nbd","server":{"type":"inet","host":"example.com",\
 "port":"1234"},"tls-creds":"objlibvirt-1-storage_tls0",\
 "node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},\
