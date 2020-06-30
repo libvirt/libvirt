@@ -26,7 +26,7 @@
 
 int qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            const char *stdin_path,
+                            const char *incomingPath,
                             bool migrated);
 
 void qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
