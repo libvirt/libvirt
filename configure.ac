@@ -221,15 +221,6 @@ LV_LIBTOOL_OBJDIR=${lt_cv_objdir-.}
 AC_SUBST([LV_LIBTOOL_OBJDIR])
 
 
-with_nodedev=no;
-if test "$with_hal" = "yes" || test "$with_udev" = "yes";
-then
-  with_nodedev=yes
-  AC_DEFINE_UNQUOTED([WITH_NODE_DEVICES], 1, [with node device driver])
-fi
-AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
-
-
 GNUmakefile=GNUmakefile
 m4_if(m4_version_compare([2.61a.100],
         m4_defn([m4_PACKAGE_VERSION])), [1], [],
