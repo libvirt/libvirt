@@ -2502,6 +2502,38 @@ virSecuritySELinuxRestoreHostdevLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecuritySELinuxSetSavedStateLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr def,
+                                     const char *savefile)
+{
+    virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
+    virSecurityLabelDefPtr secdef;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+
+    if (!savefile || !secdef || !secdef->relabel || data->skipAllLabel)
+        return 0;
+
+    return virSecuritySELinuxSetFilecon(mgr, savefile, data->content_context, false);
+}
+
+
+static int
+virSecuritySELinuxRestoreSavedStateLabel(virSecurityManagerPtr mgr,
+                                         virDomainDefPtr def,
+                                         const char *savefile)
+{
+    virSecurityLabelDefPtr secdef;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (!secdef || !secdef->relabel)
+        return 0;
+
+    return virSecuritySELinuxRestoreFileLabel(mgr, savefile, true);
+}
+
+
+static int
 virSecuritySELinuxSetChardevLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr def,
                                   virDomainChrSourceDefPtr dev_source,
@@ -3615,6 +3647,9 @@ virSecurityDriver virSecurityDriverSELinux = {
 
     .domainSetSecurityHostdevLabel      = virSecuritySELinuxSetHostdevLabel,
     .domainRestoreSecurityHostdevLabel  = virSecuritySELinuxRestoreHostdevLabel,
+
+    .domainSetSavedStateLabel           = virSecuritySELinuxSetSavedStateLabel,
+    .domainRestoreSavedStateLabel       = virSecuritySELinuxRestoreSavedStateLabel,
 
     .domainSetSecurityImageFDLabel      = virSecuritySELinuxSetImageFDLabel,
     .domainSetSecurityTapFDLabel        = virSecuritySELinuxSetTapFDLabel,
