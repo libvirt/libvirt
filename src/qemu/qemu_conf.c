@@ -483,6 +483,8 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
         return -1;
     if (virConfGetValueString(conf, "nbd_tls_x509_cert_dir", &cfg->nbdTLSx509certdir) < 0)
         return -1;
+    if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
+        return -1;
 
 #define GET_CONFIG_TLS_CERTINFO(val) \
     do { \
@@ -500,8 +502,6 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
             return -1; \
     } while (0)
 
-    if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
-        return -1;
     GET_CONFIG_TLS_CERTINFO(chardev);
 
     GET_CONFIG_TLS_CERTINFO(migrate);
