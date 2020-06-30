@@ -867,6 +867,11 @@ foreach member : members
 endforeach
 
 
+# check various types sizeof
+
+conf.set('SIZEOF_LONG', cc.sizeof('long'))
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
