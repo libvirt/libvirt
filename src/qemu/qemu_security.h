@@ -111,8 +111,7 @@ int qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
 
 int qemuSecurityDomainRestorePathLabel(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
-                                       const char *path,
-                                       bool ignoreNS);
+                                       const char *path);
 
 int qemuSecurityCommandRun(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,

@@ -610,15 +610,13 @@ qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
 int
 qemuSecurityDomainRestorePathLabel(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
-                                   const char *path,
-                                   bool ignoreNS)
+                                   const char *path)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
 
-    if (!ignoreNS &&
-        qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         pid = vm->pid;
 
     if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
