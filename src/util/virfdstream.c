@@ -512,6 +512,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
 static ssize_t
 virFDStreamThreadDoWrite(virFDStreamDataPtr fdst,
                          bool sparse,
+                         bool isBlock,
                          const int fdin,
                          const int fdout,
                          const char *fdinname,
@@ -519,7 +520,6 @@ virFDStreamThreadDoWrite(virFDStreamDataPtr fdst,
 {
     ssize_t got = 0;
     virFDStreamMsgPtr msg = fdst->msg;
-    off_t off;
     bool pop = false;
 
     switch (msg->type) {
@@ -547,19 +547,48 @@ virFDStreamThreadDoWrite(virFDStreamDataPtr fdst,
         }
 
         got = msg->stream.hole.len;
-        off = lseek(fdout, got, SEEK_CUR);
-        if (off == (off_t) -1) {
-            virReportSystemError(errno,
-                                 _("unable to seek in %s"),
-                                 fdoutname);
-            return -1;
-        }
+        if (isBlock) {
+            g_autofree char * buf = NULL;
+            const size_t buflen = 1 * 1024 * 1024; /* 1MiB */
+            size_t toWrite = got;
 
-        if (ftruncate(fdout, off) < 0) {
-            virReportSystemError(errno,
-                                 _("unable to truncate %s"),
-                                 fdoutname);
-            return -1;
+            /* While for files it's enough to lseek() and ftruncate() to create
+             * a hole which would emulate zeroes on read(), for block devices
+             * we have to write zeroes to read() zeroes. And we have to write
+             * @got bytes of zeroes. Do that in smaller chunks though.*/
+
+            buf = g_new0(char, buflen);
+
+            while (toWrite) {
+                size_t count = MIN(toWrite, buflen);
+                ssize_t r;
+
+                if ((r = safewrite(fdout, buf, count)) < 0) {
+                    virReportSystemError(errno,
+                                         _("Unable to write %s"),
+                                         fdoutname);
+                    return -1;
+                }
+
+                toWrite -= r;
+            }
+        } else {
+            off_t off;
+
+            off = lseek(fdout, got, SEEK_CUR);
+            if (off == (off_t) -1) {
+                virReportSystemError(errno,
+                                     _("unable to seek in %s"),
+                                     fdoutname);
+                return -1;
+            }
+
+            if (ftruncate(fdout, off) < 0) {
+                virReportSystemError(errno,
+                                     _("unable to truncate %s"),
+                                     fdoutname);
+                return -1;
+            }
         }
 
         pop = true;
@@ -625,7 +654,7 @@ virFDStreamThread(void *opaque)
                                           length, total,
                                           &dataLen, buflen);
         else
-            got = virFDStreamThreadDoWrite(fdst, sparse,
+            got = virFDStreamThreadDoWrite(fdst, sparse, isBlock,
                                            fdin, fdout,
                                            fdinname, fdoutname);
 
