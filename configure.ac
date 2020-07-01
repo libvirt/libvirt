@@ -103,8 +103,6 @@ m4_if(m4_version_compare([2.61a.100],
       [AC_CONFIG_LINKS([$GNUmakefile:$GNUmakefile], [],
         [GNUmakefile=$GNUmakefile])])
 
-AC_CONFIG_FILES([run],
-                [chmod +x,-w run])
 AC_CONFIG_FILES([\
         Makefile \
         .color_coded \

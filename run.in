@@ -71,4 +71,4 @@ random_val="$(awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)"
 export MALLOC_PERTURB_=$random_val
 
 # Run the program.
-exec $b/libtool --mode=execute "$@"
+exec "$@"
