@@ -215,6 +215,8 @@ mymain(void)
     DO_TEST_BACKUP("backup-push-seclabel");
     DO_TEST_BACKUP("backup-push-encrypted");
 
+    DO_TEST_BACKUP_FULL("backup-pull-internal-invalid", true);
+
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

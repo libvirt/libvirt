@@ -75,6 +75,11 @@ struct _virDomainBackupDef {
     virDomainBackupDiskDef *disks;
 
     /* internal data */
+
+    /* NBD TLS internals */
+    char *tlsAlias;
+    char *tlsSecretAlias;
+
     /* statistic totals for completed disks */
     unsigned long long push_transferred;
     unsigned long long push_total;

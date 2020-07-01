@@ -79,6 +79,10 @@ virDomainBackupDefFree(virDomainBackupDefPtr def)
     }
 
     g_free(def->disks);
+
+    g_free(def->tlsAlias);
+    g_free(def->tlsSecretAlias);
+
     g_free(def);
 }
 
@@ -192,6 +196,19 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
 }
 
 
+static void
+virDomainBackupDefParsePrivate(virDomainBackupDefPtr def,
+                               xmlXPathContextPtr ctxt,
+                               unsigned int flags)
+{
+    if (!(flags & VIR_DOMAIN_BACKUP_PARSE_INTERNAL))
+        return;
+
+    def->tlsSecretAlias = virXPathString("string(./privateData/objects/secret[@type='tlskey']/@alias)", ctxt);
+    def->tlsAlias = virXPathString("string(./privateData/objects/TLSx509/@alias)", ctxt);
+}
+
+
 static virDomainBackupDefPtr
 virDomainBackupDefParse(xmlXPathContextPtr ctxt,
                         virDomainXMLOptionPtr xmlopt,
@@ -260,6 +277,8 @@ virDomainBackupDefParse(xmlXPathContextPtr ctxt,
                                            flags, xmlopt) < 0)
             return NULL;
     }
+
+    virDomainBackupDefParsePrivate(def, ctxt, flags);
 
     return g_steal_pointer(&def);
 }
@@ -360,6 +379,26 @@ virDomainBackupDiskDefFormat(virBufferPtr buf,
 }
 
 
+static void
+virDomainBackupDefFormatPrivate(virBufferPtr buf,
+                                virDomainBackupDefPtr def,
+                                bool internal)
+{
+    g_auto(virBuffer) privChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) objectsChildBuf = VIR_BUFFER_INIT_CHILD(&privChildBuf);
+
+    if (!internal)
+        return;
+
+    virBufferEscapeString(&objectsChildBuf, "<secret type='tlskey' alias='%s'/>\n",
+                          def->tlsSecretAlias);
+    virBufferEscapeString(&objectsChildBuf, "<TLSx509 alias='%s'/>\n", def->tlsAlias);
+
+    virXMLFormatElement(&privChildBuf, "objects", NULL, &objectsChildBuf);
+    virXMLFormatElement(buf, "privateData", NULL, &privChildBuf);
+}
+
+
 int
 virDomainBackupDefFormat(virBufferPtr buf,
                          virDomainBackupDefPtr def,
@@ -394,6 +433,9 @@ virDomainBackupDefFormat(virBufferPtr buf,
     }
 
     virXMLFormatElement(&childBuf, "disks", NULL, &disksChildBuf);
+
+    virDomainBackupDefFormatPrivate(&childBuf, def, internal);
+
     virXMLFormatElement(buf, "domainbackup", &attrBuf, &childBuf);
 
     return 0;
