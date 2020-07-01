@@ -2326,6 +2326,25 @@ configure_file(
 run_command('chmod', 'a+x', meson.current_build_dir() / 'run')
 
 
+# generate developer tooling files
+tooling_files = [
+  '.color_coded.in',
+  '.ycm_extra_conf.py.in',
+]
+
+tooling_conf = configuration_data()
+tooling_conf.set('abs_top_builddir', meson.build_root())
+tooling_conf.set('abs_top_srcdir', meson.source_root())
+
+foreach file : tooling_files
+  configure_file(
+    input: file,
+    output: '@BASENAME@',
+    configuration: tooling_conf,
+  )
+endforeach
+
+
 # print configuration summary
 
 driver_summary = {

@@ -104,7 +104,5 @@ m4_if(m4_version_compare([2.61a.100],
         [GNUmakefile=$GNUmakefile])])
 
 AC_CONFIG_FILES([\
-        Makefile \
-        .color_coded \
-        .ycm_extra_conf.py])
+        Makefile])
 AC_OUTPUT
