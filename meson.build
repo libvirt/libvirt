@@ -2199,6 +2199,8 @@ elif get_option('sysctl_config').enabled()
   error('sysctl configuration is supported only on linux')
 endif
 
+conf.set_quoted('TLS_PRIORITY', get_option('tls_priority'))
+
 
 # define top include directory
 
@@ -2336,6 +2338,7 @@ misc_summary = {
   'Loader/NVRAM': loader_res,
   'virt-login-shell': conf.has('WITH_LOGIN_SHELL'),
   'virt-host-validate': conf.has('WITH_HOST_VALIDATE'),
+  'TLS priority': conf.get_unquoted('TLS_PRIORITY'),
 }
 summary(misc_summary, section: 'Miscellaneous', bool_yn: true, list_sep: ' ')
 

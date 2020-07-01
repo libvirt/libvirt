@@ -101,3 +101,4 @@ option('nss', type: 'feature', value: 'auto', description: 'enable Name Service 
 option('numad', type: 'feature', value: 'auto', description: 'use numad to manage CPU placement dynamically')
 option('pm_utils', type: 'feature', value: 'auto', description: 'use pm-utils for power management')
 option('sysctl_config', type: 'feature', value: 'auto', description: 'Whether to install sysctl configs')
+option('tls_priority', type: 'string', value: 'NORMAL', description: 'set the default TLS session priority string')
