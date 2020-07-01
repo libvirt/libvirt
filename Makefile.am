@@ -26,8 +26,6 @@ SUBDIRS = . tools docs \
 XZ_OPT ?= -v -T0
 export XZ_OPT
 
-ACLOCAL_AMFLAGS = -I m4
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvirt.pc libvirt-qemu.pc libvirt-lxc.pc libvirt-admin.pc
 

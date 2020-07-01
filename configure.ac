@@ -17,7 +17,6 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_MACRO_DIR([m4])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms
 AM_INIT_AUTOMAKE([
     foreign
@@ -90,10 +89,6 @@ dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
 
 
-dnl MinGW checks
-LIBVIRT_WIN_CHECK_WINDRES
-
-
 # Set LV_LIBTOOL_OBJDIR to "." or $lt_cv_objdir, depending on whether
 # we're building shared libraries.  This is the name of the directory
 # in which .o files will be created.
@@ -124,12 +119,3 @@ AC_CONFIG_FILES([\
         tests/Makefile \
         tools/Makefile])
 AC_OUTPUT
-
-AC_MSG_NOTICE([])
-AC_MSG_NOTICE([Configuration summary])
-AC_MSG_NOTICE([=====================])
-AC_MSG_NOTICE([])
-AC_MSG_NOTICE([Windows])
-AC_MSG_NOTICE([])
-LIBVIRT_WIN_RESULT_WINDRES
-AC_MSG_NOTICE([])
