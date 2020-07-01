@@ -19981,7 +19981,7 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
         if (sched->policy != VIR_PROC_POLICY_NONE) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("%ssched attributes 'vcpus' must not overlap"),
-                           name);
+                           STREQ(name, "vcpus") ? "vcpu" : name);
             return -1;
         }
 
