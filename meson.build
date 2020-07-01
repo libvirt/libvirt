@@ -1707,6 +1707,121 @@ elif get_option('driver_openvz').enabled()
   error('OpenVZ driver can be enabled on Linux only')
 endif
 
+if not get_option('driver_qemu').disabled()
+  use_qemu = true
+
+  if not yajl_dep.found()
+    use_qemu = false
+    if get_option('driver_qemu').enabled()
+      error('YAJL 2 is required to build QEMU driver')
+    endif
+  endif
+
+  if not conf.has('WITH_LIBVIRTD')
+    use_qemu = false
+    if get_option('driver_qemu').enabled()
+      error('libvirtd is required to build QEMU driver')
+    endif
+  endif
+
+  if use_qemu
+    conf.set('WITH_QEMU', 1)
+
+    if host_machine.system() in ['freebsd', 'darwin']
+      default_qemu_user = 'root'
+      default_qemu_group = 'wheel'
+    else
+      os_release = run_command('grep', '^ID=', '/etc/os-release').stdout()
+      if os_release.contains('arch')
+        default_qemu_user = 'nobody'
+        default_qemu_group = 'nobody'
+      elif ( os_release.contains('centos') or
+             os_release.contains('fedora') or
+             os_release.contains('gentoo') or
+             os_release.contains('rhel') or
+             os_release.contains('suse'))
+        default_qemu_user = 'qemu'
+        default_qemu_group = 'qemu'
+      elif os_release.contains('debian')
+        default_qemu_user = 'libvirt-qemu'
+        default_qemu_group = 'libvirt-qemu'
+      elif os_release.contains('ubuntu')
+        default_qemu_user = 'libvirt-qemu'
+        default_qemu_group = 'kvm'
+      else
+        default_qemu_user = 'root'
+        default_qemu_group = 'root'
+      endif
+      # If the expected user and group don't exist, or we haven't hit any
+      # of the cases above bacuse we're running on an unknown OS, the only
+      # sensible fallback is root:root
+      if ( run_command('getent', 'passwd', default_qemu_user).returncode() != 0 and
+           run_command('getent', 'group', default_qemu_group).returncode() != 0 )
+        default_qemu_user = 'root'
+        default_qemu_group = 'root'
+      endif
+    endif
+    qemu_user = get_option('qemu_user')
+    if qemu_user == ''
+      qemu_user = default_qemu_user
+    endif
+    qemu_group = get_option('qemu_group')
+    if qemu_group == ''
+      qemu_group = default_qemu_group
+    endif
+    conf.set_quoted('QEMU_USER', qemu_user)
+    conf.set_quoted('QEMU_GROUP', qemu_group)
+
+    qemu_bridge_prog = find_program(
+      'qemu-bridge-helper',
+      dirs: [ '/usr/libexec', '/usr/lib/qemu', '/usr/lib' ],
+      required: false
+    )
+    if qemu_bridge_prog.found()
+      qemu_bridge_path = qemu_bridge_prog.path()
+    else
+      qemu_bridge_path = '/usr/libexec/qemu-bridge-helper'
+    endif
+    conf.set_quoted('QEMU_BRIDGE_HELPER', qemu_bridge_path)
+
+    qemu_pr_prog = find_program(
+      'qemu-pr-helper',
+      dirs: [ '/usr/bin', '/usr/libexec' ],
+      required: false
+    )
+    if qemu_pr_prog.found()
+      qemu_pr_path = qemu_pr_prog.path()
+    else
+      qemu_pr_path = '/usr/bin/qemu-pr-helper'
+    endif
+    conf.set_quoted('QEMU_PR_HELPER', qemu_pr_path)
+
+    qemu_slirp_prog = find_program(
+      'slirp-helper',
+      dirs: [ '/usr/bin', '/usr/libexec' ],
+      required: false
+    )
+    if qemu_slirp_prog.found()
+      qemu_slirp_path = qemu_slirp_prog.path()
+    else
+      qemu_slirp_path = '/usr/bin/slirp-helper'
+    endif
+    conf.set_quoted('QEMU_SLIRP_HELPER', qemu_slirp_path)
+
+    qemu_dbus_daemon_prog = find_program(
+      'dbus-daemon',
+      dirs: [ '/usr/bin', '/usr/libexec' ],
+      required: false
+    )
+    if qemu_dbus_daemon_prog.found()
+      qemu_dbus_daemon_path = qemu_dbus_daemon_prog.path()
+    else
+      qemu_dbus_daemon_path = '/usr/bin/dbus-daemon'
+    endif
+    conf.set_quoted('QEMU_DBUS_DAEMON', qemu_dbus_daemon_path)
+  endif
+endif
+
 
 # define top include directory
 
@@ -1727,6 +1842,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 # print configuration summary
 
 driver_summary = {
+  'QEMU': conf.has('WITH_QEMU'),
   'OpenVZ': conf.has('WITH_OPENVZ'),
   'libxl': conf.has('WITH_LIBXL'),
   'LXC': conf.has('WITH_LXC'),
@@ -1801,3 +1917,14 @@ devtools_summary = {
   'wireshark_dissector': wireshark_dep.found(),
 }
 summary(devtools_summary, section: 'Developer Tools', bool_yn: true)
+
+if conf.has('WITH_QEMU')
+  qemu_warn = ''
+  if qemu_user == 'root'
+    qemu_warn = ' !!! running QEMU as root is strongly discouraged !!!'
+  endif
+  priv_summary = {
+    'QEMU': '@0@:@1@@2@'.format(qemu_user, qemu_group, qemu_warn),
+  }
+  summary(priv_summary, section: 'Privileges')
+endif

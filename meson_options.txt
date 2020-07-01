@@ -55,5 +55,8 @@ option('driver_libvirtd', type: 'feature', value: 'auto', description: 'libvirtd
 option('driver_libxl', type: 'feature', value: 'auto', description: 'libxenlight driver')
 option('driver_lxc', type: 'feature', value: 'auto', description: 'Linux Container driver')
 option('driver_openvz', type: 'feature', value: 'auto', description: 'OpenVZ driver')
+option('driver_qemu', type: 'feature', value: 'auto', description: 'QEMU/KVM driver')
+option('qemu_user', type: 'string', value: '', description: 'username to run QEMU system instance as')
+option('qemu_group', type: 'string', value: '', description: 'groupname to run QEMU system instance as')
 option('driver_remote', type: 'feature', value: 'enabled', description: 'remote driver')
 option('remote_default_mode', type: 'combo', choices: ['legacy', 'direct'], value: 'legacy', description: 'remote driver default mode')
