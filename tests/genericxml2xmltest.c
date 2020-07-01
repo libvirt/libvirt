@@ -45,16 +45,27 @@ testCompareXMLToXMLHelper(const void *data)
 }
 
 
+struct testCompareBackupXMLData {
+    const char *testname;
+    bool internal;
+};
+
+
 static int
-testCompareBackupXML(const void *data)
+testCompareBackupXML(const void *opaque)
 {
-    const char *testname = data;
+    const struct testCompareBackupXMLData *data = opaque;
+    const char *testname = data->testname;
     g_autofree char *xml_in = NULL;
     g_autofree char *file_in = NULL;
     g_autofree char *file_out = NULL;
     g_autoptr(virDomainBackupDef) backup = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
+    unsigned int parseFlags = 0;
+
+    if (data->internal)
+        parseFlags |= VIR_DOMAIN_BACKUP_PARSE_INTERNAL;
 
     file_in = g_strdup_printf("%s/domainbackupxml2xmlin/%s.xml",
                               abs_srcdir, testname);
@@ -64,12 +75,12 @@ testCompareBackupXML(const void *data)
     if (virFileReadAll(file_in, 1024 * 64, &xml_in) < 0)
         return -1;
 
-    if (!(backup = virDomainBackupDefParseString(xml_in, xmlopt, 0))) {
+    if (!(backup = virDomainBackupDefParseString(xml_in, xmlopt, parseFlags))) {
         VIR_TEST_VERBOSE("failed to parse backup def '%s'", file_in);
         return -1;
     }
 
-    if (virDomainBackupDefFormat(&buf, backup, false) < 0) {
+    if (virDomainBackupDefFormat(&buf, backup, data->internal) < 0) {
         VIR_TEST_VERBOSE("failed to format backup def '%s'", file_in);
         return -1;
     }
@@ -185,9 +196,16 @@ mymain(void)
 
     DO_TEST_DIFFERENT("cputune");
 
+#define DO_TEST_BACKUP_FULL(name, intrnl) \
+    do { \
+        const struct testCompareBackupXMLData data = { .testname = name, \
+                                                       .internal = intrnl }; \
+        if (virTestRun("QEMU BACKUP XML-2-XML " name, testCompareBackupXML, &data) < 0) \
+          ret = -1; \
+    } while (false)
+
 #define DO_TEST_BACKUP(name) \
-    if (virTestRun("QEMU BACKUP XML-2-XML " name, testCompareBackupXML, name) < 0) \
-        ret = -1;
+    DO_TEST_BACKUP_FULL(name, false)
 
     DO_TEST_BACKUP("empty");
     DO_TEST_BACKUP("backup-pull");
