@@ -1590,7 +1590,10 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
  *
  * Download the content of the volume as a stream. If @length
  * is zero, then the remaining contents of the volume after
- * @offset will be downloaded.
+ * @offset will be downloaded. Please note that the stream
+ * transports the volume itself as is, so the downloaded data may
+ * not correspond to guest OS visible state in cases when a
+ * complex storage format such as qcow2 or vmdk is used.
  *
  * If VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM is set in @flags
  * effective transmission of holes is enabled. This assumes using
@@ -1663,7 +1666,10 @@ virStorageVolDownload(virStorageVolPtr vol,
  * will fail if @offset + @length exceeds the size of the
  * volume. Otherwise, if @length is non-zero, an error
  * will be raised if an attempt is made to upload greater
- * than @length bytes of data.
+ * than @length bytes of data. Please note that the stream
+ * transports the volume itself as is, so the downloaded data may
+ * not correspond to guest OS visible state in cases when a
+ * complex storage format such as qcow2 or vmdk is used.
  *
  * If VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM is set in @flags
  * effective transmission of holes is enabled. This assumes using
