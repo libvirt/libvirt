@@ -567,6 +567,142 @@ qemuCheckpointCreateXML(virDomainPtr domain,
 }
 
 
+struct qemuCheckpointDiskMap {
+    virDomainCheckpointDiskDefPtr chkdisk;
+    virDomainDiskDefPtr domdisk;
+};
+
+
+static int
+qemuCheckpointGetXMLDescUpdateSize(virDomainObjPtr vm,
+                                   virDomainCheckpointDefPtr chkdef)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autofree struct qemuCheckpointDiskMap *diskmap = NULL;
+    g_autoptr(virJSONValue) recoveractions = NULL;
+    g_autoptr(virJSONValue) mergeactions = virJSONValueNewArray();
+    g_autoptr(virJSONValue) cleanupactions = virJSONValueNewArray();
+    int rc = 0;
+    size_t ndisks = 0;
+    size_t i;
+    int ret = -1;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+        goto endjob;
+
+    /* enumerate disks relevant for the checkpoint which are also present in the
+     * domain */
+    diskmap = g_new0(struct qemuCheckpointDiskMap, chkdef->ndisks);
+
+    for (i = 0; i < chkdef->ndisks; i++) {
+        virDomainCheckpointDiskDefPtr chkdisk = chkdef->disks + i;
+        virDomainDiskDefPtr domdisk;
+
+        chkdisk->size = 0;
+        chkdisk->sizeValid = false;
+
+        if (chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+            continue;
+
+        if (!(domdisk = virDomainDiskByTarget(vm->def, chkdisk->name)))
+            continue;
+
+        if (!qemuBlockBitmapChainIsValid(domdisk->src, chkdef->parent.name, blockNamedNodeData))
+            continue;
+
+        diskmap[ndisks].chkdisk = chkdisk;
+        diskmap[ndisks].domdisk = domdisk;
+        ndisks++;
+    }
+
+    if (ndisks == 0) {
+        ret = 0;
+        goto endjob;
+    }
+
+    /* we need to calculate the merged bitmap to obtain accurate data */
+    for (i = 0; i < ndisks; i++) {
+        virDomainDiskDefPtr domdisk = diskmap[i].domdisk;
+        g_autoptr(virJSONValue) actions = NULL;
+
+        /* possibly delete leftovers from previous cases */
+        if (qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData, domdisk->src,
+                                                  "libvirt-tmp-size-xml")) {
+            if (!recoveractions)
+                recoveractions = virJSONValueNewArray();
+
+            if (qemuMonitorTransactionBitmapRemove(recoveractions,
+                                                   domdisk->src->nodeformat,
+                                                   "libvirt-tmp-size-xml") < 0)
+                goto endjob;
+        }
+
+        if (qemuBlockGetBitmapMergeActions(domdisk->src, NULL, domdisk->src,
+                                           chkdef->parent.name, "libvirt-tmp-size-xml",
+                                           NULL, &actions, blockNamedNodeData) < 0)
+            goto endjob;
+
+        if (virJSONValueArrayConcat(mergeactions, actions) < 0)
+            goto endjob;
+
+        if (qemuMonitorTransactionBitmapRemove(cleanupactions,
+                                               domdisk->src->nodeformat,
+                                               "libvirt-tmp-size-xml") < 0)
+            goto endjob;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    if (rc == 0 && recoveractions)
+        rc = qemuMonitorTransaction(priv->mon, &recoveractions);
+
+    if (rc == 0)
+        rc = qemuMonitorTransaction(priv->mon, &mergeactions);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto endjob;
+
+    /* now do a final refresh */
+    virHashFree(blockNamedNodeData);
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+        goto endjob;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    rc = qemuMonitorTransaction(priv->mon, &cleanupactions);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto endjob;
+
+    /* update disks */
+    for (i = 0; i < ndisks; i++) {
+        virDomainCheckpointDiskDefPtr chkdisk = diskmap[i].chkdisk;
+        virDomainDiskDefPtr domdisk = diskmap[i].domdisk;
+        qemuBlockNamedNodeDataBitmapPtr bitmap;
+
+        if ((bitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData, domdisk->src,
+                                                            "libvirt-tmp-size-xml"))) {
+            chkdisk->size = bitmap->dirtybytes;
+            chkdisk->sizeValid = true;
+        }
+    }
+
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+    return ret;
+}
+
+
 char *
 qemuCheckpointGetXMLDesc(virDomainObjPtr vm,
                          virDomainCheckpointPtr checkpoint,
@@ -579,12 +715,17 @@ qemuCheckpointGetXMLDesc(virDomainObjPtr vm,
     unsigned int format_flags;
 
     virCheckFlags(VIR_DOMAIN_CHECKPOINT_XML_SECURE |
-                  VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN, NULL);
+                  VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN |
+                  VIR_DOMAIN_CHECKPOINT_XML_SIZE, NULL);
 
     if (!(chk = qemuCheckpointObjFromCheckpoint(vm, checkpoint)))
         return NULL;
 
     chkdef = virDomainCheckpointObjGetDef(chk);
+
+    if (flags & VIR_DOMAIN_CHECKPOINT_XML_SIZE &&
+        qemuCheckpointGetXMLDescUpdateSize(vm, chkdef) < 0)
+        return NULL;
 
     format_flags = virDomainCheckpointFormatConvertXMLFlags(flags);
     return virDomainCheckpointDefFormat(chkdef, driver->xmlopt,
