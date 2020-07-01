@@ -21,6 +21,7 @@ option('curl', type: 'feature', value: 'auto', description: 'curl support')
 option('dbus', type: 'feature', value: 'auto', description: 'dbus-1 support')
 option('firewalld', type: 'feature', value: 'auto', description: 'firewalld support')
 option('firewalld_zone', type: 'feature', value: 'auto', description: 'whether to install firewalld libvirt zone')
+option('fuse', type: 'feature', value: 'auto', description: 'fuse support')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 
 

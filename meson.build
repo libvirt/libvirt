@@ -1049,6 +1049,12 @@ if dlopen_dep.found()
   conf.set('HAVE_DLFCN_H', 1)
 endif
 
+fuse_version = '2.8.6'
+fuse_dep = dependency('fuse', version: '>=' + fuse_version, required: get_option('fuse'))
+if fuse_dep.found()
+  conf.set('WITH_FUSE', 1)
+endif
+
 # readline 7.0 is the first version which includes pkg-config support
 readline_version = '7.0'
 readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
@@ -1184,6 +1190,7 @@ libs_summary = {
   'dlopen': dlopen_dep.found(),
   'firewalld': conf.has('WITH_FIREWALLD'),
   'firewalld-zone': conf.has('WITH_FIREWALLD_ZONE'),
+  'fuse': fuse_dep.found(),
   'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
