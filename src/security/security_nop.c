@@ -119,7 +119,7 @@ virSecurityDomainReleaseLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 static int
 virSecurityDomainSetAllLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                 virDomainDefPtr sec G_GNUC_UNUSED,
-                                const char *stdin_path G_GNUC_UNUSED,
+                                const char *incomingPath G_GNUC_UNUSED,
                                 bool chardevStdioLogd G_GNUC_UNUSED,
                                 bool migrated G_GNUC_UNUSED)
 {

@@ -3169,7 +3169,7 @@ virSecuritySELinuxSetSysinfoLabel(virSecurityManagerPtr mgr,
 static int
 virSecuritySELinuxSetAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
-                              const char *stdin_path G_GNUC_UNUSED,
+                              const char *incomingPath G_GNUC_UNUSED,
                               bool chardevStdioLogd,
                               bool migrated G_GNUC_UNUSED)
 {

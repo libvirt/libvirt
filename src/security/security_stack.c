@@ -341,7 +341,7 @@ virSecurityStackRestoreHostdevLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityStackSetAllLabel(virSecurityManagerPtr mgr,
                             virDomainDefPtr vm,
-                            const char *stdin_path,
+                            const char *incomingPath,
                             bool chardevStdioLogd,
                             bool migrated)
 {
@@ -350,7 +350,7 @@ virSecurityStackSetAllLabel(virSecurityManagerPtr mgr,
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetAllLabel(item->securityManager, vm,
-                                          stdin_path, chardevStdioLogd,
+                                          incomingPath, chardevStdioLogd,
                                           migrated) < 0)
             goto rollback;
     }
