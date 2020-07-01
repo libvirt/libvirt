@@ -273,7 +273,7 @@ mymain(void)
         struct startTestInfo info = { virt_type, create, filename }; \
         DO_TEST_FULL("mdevctl start " filename, testMdevctlStartHelper, info); \
        } \
-    while (0);
+    while (0)
 
 #define DO_TEST_START(filename) \
     DO_TEST_START_FULL("QEMU", CREATE_DEVICE, filename)
