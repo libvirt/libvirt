@@ -77,12 +77,6 @@ AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
 AM_CONDITIONAL([WITH_MACOS], [test "$with_macos" = "yes"])
 
-# Check for compiler and library settings.
-
-LIBVIRT_ARG_PM_UTILS
-
-LIBVIRT_CHECK_PM_UTILS
-
 
 dnl
 dnl in case someone want to build static binaries
@@ -156,10 +150,6 @@ AC_OUTPUT
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Configuration summary])
 AC_MSG_NOTICE([=====================])
-AC_MSG_NOTICE([])
-AC_MSG_NOTICE([Libraries])
-AC_MSG_NOTICE([])
-LIBVIRT_RESULT_PM_UTILS
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Windows])
 AC_MSG_NOTICE([])

@@ -2182,6 +2182,17 @@ if conf.has('WITH_LIBVIRTD') and host_machine.system() == 'linux'
   conf.set('WITH_NWFILTER', 1)
 endif
 
+if not get_option('pm_utils').disabled()
+  use_pm_utils = true
+  if dbus_dep.found() and init_script == 'systemd'
+    use_pm_utils = false
+  endif
+
+  if use_pm_utils
+    conf.set('WITH_PM_UTILS', 1)
+  endif
+endif
+
 
 # define top include directory
 
@@ -2280,6 +2291,7 @@ libs_summary = {
   'numaclt': numactl_dep.found(),
   'openwsman': openwsman_dep.found(),
   'pciaccess': pciaccess_dep.found(),
+  'pm_utils': conf.has('WITH_PM_UTILS'),
   'polkit': conf.has('WITH_POLKIT'),
   'rbd': rbd_dep.found(),
   'readline': readline_dep.found(),

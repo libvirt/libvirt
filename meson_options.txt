@@ -99,3 +99,4 @@ option('loader_nvram', type: 'string', value: '', description: 'Pass list of pai
 option('login_shell', type: 'feature', value: 'auto', description: 'build virt-login-shell')
 option('nss', type: 'feature', value: 'auto', description: 'enable Name Service Switch plugin for resolving guest IP addresses')
 option('numad', type: 'feature', value: 'auto', description: 'use numad to manage CPU placement dynamically')
+option('pm_utils', type: 'feature', value: 'auto', description: 'use pm-utils for power management')
