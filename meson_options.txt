@@ -98,3 +98,4 @@ option('init_script', type: 'combo', choices: ['systemd', 'openrc', 'check', 'no
 option('loader_nvram', type: 'string', value: '', description: 'Pass list of pairs of <loader>:<nvram> paths. Both pairs and list items are separated by a colon.')
 option('login_shell', type: 'feature', value: 'auto', description: 'build virt-login-shell')
 option('nss', type: 'feature', value: 'auto', description: 'enable Name Service Switch plugin for resolving guest IP addresses')
+option('numad', type: 'feature', value: 'auto', description: 'use numad to manage CPU placement dynamically')

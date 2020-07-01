@@ -2166,6 +2166,16 @@ if not get_option('nss').disabled()
   endif
 endif
 
+if not get_option('numad').disabled() and numactl_dep.found()
+  numad_prog = find_program('numad', required: get_option('numad'), dirs: libvirt_sbin_path)
+  if numad_prog.found()
+    conf.set('HAVE_NUMAD', 1)
+    conf.set_quoted('NUMAD', numad_prog.path())
+  endif
+elif get_option('numad').enabled()
+  error('You must have numactl enabled for numad support.')
+endif
+
 
 # define top include directory
 
@@ -2296,6 +2306,7 @@ misc_summary = {
   'Use -Werror': cc_flags.contains('-Werror'),
   'Warning Flags': supported_cc_flags,
   'DTrace': conf.has('WITH_DTRACE_PROBES'),
+  'numad': conf.has('HAVE_NUMAD'),
   'Init script': init_script,
   'Char device locks': chrdev_lock_files,
   'Loader/NVRAM': loader_res,
