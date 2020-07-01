@@ -171,6 +171,12 @@ virHookCheck(int no, const char *driver)
     }
 
     dir_path = g_strdup_printf("%s.d", path);
+
+    if (!virFileIsExecutable(dir_path)) {
+        VIR_DEBUG("Hook dir %s is not accessible", dir_path);
+        return 1;
+    }
+
     if ((ret = virDirOpenIfExists(&dir, dir_path)) < 0)
         return -1;
 
@@ -415,6 +421,10 @@ virHookCall(int driver,
     }
 
     dir_path = g_strdup_printf("%s.d", path);
+
+    if (!virFileIsExecutable(dir_path))
+        return script_ret;
+
     if ((ret = virDirOpenIfExists(&dir, dir_path)) < 0)
         return -1;
 
