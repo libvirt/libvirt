@@ -18,6 +18,7 @@
 
 #include <config.h>
 
+#include "qemu_alias.h"
 #include "qemu_block.h"
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
@@ -642,6 +643,50 @@ qemuBackupJobCancelBlockjobs(virDomainObjPtr vm,
 }
 
 
+#define QEMU_BACKUP_TLS_ALIAS_BASE "libvirt_backup"
+
+static int
+qemuBackupBeginPrepareTLS(virDomainObjPtr vm,
+                          virQEMUDriverConfigPtr cfg,
+                          virDomainBackupDefPtr def,
+                          virJSONValuePtr *tlsProps,
+                          virJSONValuePtr *tlsSecretProps)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autofree char *tlsObjAlias = qemuAliasTLSObjFromSrcAlias(QEMU_BACKUP_TLS_ALIAS_BASE);
+    g_autoptr(qemuDomainSecretInfo) secinfo = NULL;
+    const char *tlsKeySecretAlias = NULL;
+
+    if (def->tls != VIR_TRISTATE_BOOL_YES)
+        return 0;
+
+    if (!cfg->backupTLSx509certdir) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("backup TLS directory not configured"));
+        return -1;
+    }
+
+    if (cfg->backupTLSx509secretUUID) {
+        if (!(secinfo = qemuDomainSecretInfoTLSNew(priv, tlsObjAlias,
+                                                   cfg->backupTLSx509secretUUID)))
+            return -1;
+
+        if (qemuBuildSecretInfoProps(secinfo, tlsSecretProps) < 0)
+            return -1;
+
+        tlsKeySecretAlias = secinfo->s.aes.alias;
+    }
+
+    if (qemuBuildTLSx509BackendProps(cfg->backupTLSx509certdir, true,
+                                     cfg->backupTLSx509verify, tlsObjAlias,
+                                     tlsKeySecretAlias, priv->qemuCaps,
+                                     tlsProps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 qemuBackupBegin(virDomainObjPtr vm,
                 const char *backupXML,
@@ -656,6 +701,10 @@ qemuBackupBegin(virDomainObjPtr vm,
     virDomainMomentObjPtr chk = NULL;
     g_autoptr(virDomainCheckpointDef) chkdef = NULL;
     g_autoptr(virJSONValue) actions = NULL;
+    g_autoptr(virJSONValue) tlsProps = NULL;
+    g_autofree char *tlsAlias = NULL;
+    g_autoptr(virJSONValue) tlsSecretProps = NULL;
+    g_autofree char *tlsSecretAlias = NULL;
     struct qemuBackupDiskData *dd = NULL;
     ssize_t ndd = 0;
     g_autoptr(virHashTable) blockNamedNodeData = NULL;
@@ -719,6 +768,9 @@ qemuBackupBegin(virDomainObjPtr vm,
     if (qemuBackupPrepare(def) < 0)
         goto endjob;
 
+    if (qemuBackupBeginPrepareTLS(vm, cfg, def, &tlsProps, &tlsSecretProps) < 0)
+        goto endjob;
+
     if (virDomainBackupAlignDisks(def, vm->def, suffix) < 0)
         goto endjob;
 
@@ -755,8 +807,16 @@ qemuBackupBegin(virDomainObjPtr vm,
 
     /* TODO: TLS is a must-have for the modern age */
     if (pull) {
-        if ((rc = qemuMonitorNBDServerStart(priv->mon, priv->backup->server, NULL)) == 0)
-            nbd_running = true;
+        if (tlsSecretProps)
+            rc = qemuMonitorAddObject(priv->mon, &tlsSecretProps, &tlsSecretAlias);
+
+        if (rc == 0 && tlsProps)
+            rc = qemuMonitorAddObject(priv->mon, &tlsProps, &tlsAlias);
+
+        if (rc == 0) {
+            if ((rc = qemuMonitorNBDServerStart(priv->mon, priv->backup->server, tlsAlias)) == 0)
+                nbd_running = true;
+        }
     }
 
     if (rc == 0)
@@ -789,6 +849,9 @@ qemuBackupBegin(virDomainObjPtr vm,
         }
     }
 
+    priv->backup->tlsAlias = g_steal_pointer(&tlsAlias);
+    priv->backup->tlsSecretAlias = g_steal_pointer(&tlsSecretAlias);
+
     ret = 0;
 
  endjob:
@@ -797,9 +860,14 @@ qemuBackupBegin(virDomainObjPtr vm,
     /* if 'chk' is non-NULL here it's a failure and it must be rolled back */
     qemuCheckpointRollbackMetadata(vm, chk);
 
-    if (!job_started && nbd_running &&
+    if (!job_started && (nbd_running || tlsAlias || tlsSecretAlias) &&
         qemuDomainObjEnterMonitorAsync(priv->driver, vm, QEMU_ASYNC_JOB_BACKUP) == 0) {
-        ignore_value(qemuMonitorNBDServerStop(priv->mon));
+        if (nbd_running)
+            ignore_value(qemuMonitorNBDServerStop(priv->mon));
+        if (tlsAlias)
+            ignore_value(qemuMonitorDelObject(priv->mon, tlsAlias, false));
+        if (tlsSecretAlias)
+            ignore_value(qemuMonitorDelObject(priv->mon, tlsSecretAlias, false));
         ignore_value(qemuDomainObjExitMonitor(priv->driver, vm));
     }
 
@@ -862,6 +930,10 @@ qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
         if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
             return;
         ignore_value(qemuMonitorNBDServerStop(priv->mon));
+        if (backup->tlsAlias)
+            ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsAlias, false));
+        if (backup->tlsSecretAlias)
+            ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsSecretAlias, false));
         if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
             return;
 
