@@ -70,6 +70,7 @@ struct _virDomainBackupDef {
     int type; /* virDomainBackupType */
     char *incremental;
     virStorageNetHostDefPtr server; /* only when type == PULL */
+    virTristateBool tls; /* use TLS for NBD */
 
     size_t ndisks; /* should not exceed dom->ndisks */
     virDomainBackupDiskDef *disks;

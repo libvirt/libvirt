@@ -239,6 +239,8 @@ virDomainBackupDefParse(xmlXPathContextPtr ctxt,
     def->incremental = virXPathString("string(./incremental)", ctxt);
 
     if ((node = virXPathNode("./server", ctxt))) {
+        g_autofree char *tls = NULL;
+
         if (def->type != VIR_DOMAIN_BACKUP_TYPE_PULL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("use of <server> requires pull mode backup"));
@@ -262,6 +264,19 @@ virDomainBackupDefParse(xmlXPathContextPtr ctxt,
                            _("backup socket path '%s' must be absolute"),
                            def->server->socket);
             return NULL;
+        }
+
+        if ((tls = virXMLPropString(node, "tls"))) {
+            int tmp;
+
+            if ((tmp = virTristateBoolTypeFromString(tls)) <= 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("unknown value '%s' of 'tls' attribute"),\
+                               tls);
+                return NULL;
+            }
+
+            def->tls = tmp;
         }
     }
 
@@ -417,6 +432,8 @@ virDomainBackupDefFormat(virBufferPtr buf,
     if (def->server) {
         virBufferAsprintf(&serverAttrBuf, " transport='%s'",
                           virStorageNetHostTransportTypeToString(def->server->transport));
+        if (def->tls != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&serverAttrBuf, " tls='%s'", virTristateBoolTypeToString(def->tls));
         virBufferEscapeString(&serverAttrBuf, " name='%s'", def->server->name);
         if (def->server->port)
             virBufferAsprintf(&serverAttrBuf, " port='%u'", def->server->port);

@@ -1,6 +1,6 @@
 <domainbackup mode="pull">
   <incremental>1525889631</incremental>
-  <server transport='tcp' name='localhost' port='10809'/>
+  <server transport='tcp' tls='yes' name='localhost' port='10809'/>
   <disks>
     <disk name='vda' type='file' exportname='test-vda' exportbitmap='blah'>
       <driver type='qcow2'/>
