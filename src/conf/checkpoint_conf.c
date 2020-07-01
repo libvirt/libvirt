@@ -430,7 +430,7 @@ virDomainCheckpointDiskDefFormat(virBufferPtr buf,
                           virDomainCheckpointTypeToString(disk->type));
     if (disk->bitmap) {
         virBufferEscapeString(buf, " bitmap='%s'", disk->bitmap);
-        if (flags & VIR_DOMAIN_CHECKPOINT_FORMAT_SIZE)
+        if (flags & VIR_DOMAIN_CHECKPOINT_FORMAT_SIZE && disk->sizeValid)
             virBufferAsprintf(buf, " size='%llu'", disk->size);
     }
     virBufferAddLit(buf, "/>\n");
