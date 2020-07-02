@@ -778,7 +778,7 @@ hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
     char *returnValue = NULL;
     char *instanceID = NULL;
     bool completed = false;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ConcreteJob *job = NULL;
     int jobState = -1;
     hypervParamPtr p = NULL;
@@ -939,7 +939,6 @@ hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
     VIR_FREE(jobcode_instance_xpath);
     VIR_FREE(returnValue);
     VIR_FREE(instanceID);
-    virBufferFreeAndReset(&query);
     hypervFreeObject(priv, (hypervObject *)job);
     hypervFreeInvokeParams(params);
     return result;
@@ -1314,7 +1313,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     char *returnValue = NULL;
     int returnCode;
     char *instanceID = NULL;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ConcreteJob *concreteJob = NULL;
     bool completed = false;
     const char *resourceUri = MSVM_COMPUTERSYSTEM_V2_RESOURCE_URI;
@@ -1553,7 +1552,7 @@ hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
 {
     hypervPrivate *priv = domain->conn->privateData;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 
     if (computerSystem == NULL || *computerSystem != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -1588,7 +1587,7 @@ int
 hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
         const char *uuid_string, Msvm_VirtualSystemSettingData **list)
 {
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&query,
             "associators of "
@@ -1614,7 +1613,7 @@ int
 hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
         const char *vssd_instanceid, Msvm_MemorySettingData **list)
 {
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&query,
             "associators of "

@@ -60,7 +60,7 @@ static int
 hypervInitConnection(virConnectPtr conn, hypervPrivate *priv,
                      char *username, char *password)
 {
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     hypervWqlQuery wqlQuery = HYPERV_WQL_QUERY_INITIALIZER;
     hypervObject *computerSystem = NULL;
     int ret = -1;
@@ -204,7 +204,7 @@ hypervConnectGetHostname(virConnectPtr conn)
 {
     char *hostname = NULL;
     hypervPrivate *priv = conn->privateData;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Win32_ComputerSystem *computerSystem = NULL;
 
     virBufferAddLit(&query, WIN32_COMPUTERSYSTEM_WQL_SELECT);
@@ -234,7 +234,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 {
     int result = -1;
     hypervPrivate *priv = conn->privateData;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Win32_ComputerSystem *computerSystem = NULL;
     Win32_Processor *processorList = NULL;
     Win32_Processor *processor = NULL;
@@ -329,7 +329,7 @@ hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     bool success = false;
     hypervPrivate *priv = conn->privateData;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     int count = 0;
@@ -371,7 +371,7 @@ hypervConnectNumOfDomains(virConnectPtr conn)
 {
     bool success = false;
     hypervPrivate *priv = conn->privateData;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     int count = 0;
@@ -407,7 +407,7 @@ hypervDomainLookupByID(virConnectPtr conn, int id)
 {
     virDomainPtr domain = NULL;
     hypervPrivate *priv = conn->privateData;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_SELECT);
@@ -439,7 +439,7 @@ hypervDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virDomainPtr domain = NULL;
     hypervPrivate *priv = conn->privateData;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     virUUIDFormat(uuid, uuid_string);
@@ -473,7 +473,7 @@ hypervDomainLookupByName(virConnectPtr conn, const char *name)
 {
     virDomainPtr domain = NULL;
     hypervPrivate *priv = conn->privateData;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_SELECT);
@@ -612,7 +612,7 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystem = NULL;
     Msvm_VirtualSystemSettingData *virtualSystemSettingData = NULL;
     Msvm_ProcessorSettingData *processorSettingData = NULL;
@@ -746,7 +746,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     hypervPrivate *priv = domain->conn->privateData;
     virDomainDefPtr def = NULL;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystem = NULL;
     Msvm_VirtualSystemSettingData *virtualSystemSettingData = NULL;
     Msvm_ProcessorSettingData *processorSettingData = NULL;
@@ -851,7 +851,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2 &&
                virtualSystemSettingData->data.v2->Notes.data != NULL) {
         char **notes = (char **)virtualSystemSettingData->data.v2->Notes.data;
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         size_t i = 0;
 
         /* in practice Notes has 1 element */
@@ -906,7 +906,7 @@ hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxn
 {
     bool success = false;
     hypervPrivate *priv = conn->privateData;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     int count = 0;
@@ -958,7 +958,7 @@ hypervConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     bool success = false;
     hypervPrivate *priv = conn->privateData;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     int count = 0;
@@ -1198,7 +1198,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
                             unsigned int flags)
 {
     hypervPrivate *priv = conn->privateData;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ComputerSystem *computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     size_t ndoms;
@@ -1336,7 +1336,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     char *selector = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     Msvm_Keyboard *keyboard = NULL;
-    virBuffer query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     hypervInvokeParamsListPtr params = NULL;
     char keycodeStr[VIR_INT64_STR_BUFLEN];
 
@@ -1437,7 +1437,6 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     VIR_FREE(selector);
     hypervFreeObject(priv, (hypervObject *)keyboard);
     hypervFreeObject(priv, (hypervObject *)computerSystem);
-    virBufferFreeAndReset(&query);
     return result;
 }
 
@@ -1454,7 +1453,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     unsigned long memory_mb = VIR_ROUND_UP(VIR_DIV_UP(memory, 1024), 2);
     Msvm_VirtualSystemSettingData *vssd = NULL;
     Msvm_MemorySettingData *memsd = NULL;
-    virBuffer eprQuery = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
     virHashTablePtr memResource = NULL;
 
     virCheckFlags(0, -1);
@@ -1537,7 +1536,6 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
 
  params_cleanup:
     hypervFreeInvokeParams(params);
-    virBufferFreeAndReset(&eprQuery);
  cleanup:
     VIR_FREE(memory_str);
     hypervFreeObject(priv, (hypervObject *)vssd);
