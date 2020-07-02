@@ -3283,7 +3283,7 @@ qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src)
 char *
 qemuBlockStorageSourceGetCookieString(virStorageSourcePtr src)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     for (i = 0; i < src->ncookies; i++) {

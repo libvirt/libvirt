@@ -178,7 +178,7 @@ qemuMigrationDstPrecreateDisk(virConnectPtr conn,
     virStorageVolPtr vol = NULL;
     char *volName = NULL, *basePath = NULL;
     char *volStr = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *format = NULL;
     unsigned int flags = 0;
 

@@ -5478,7 +5478,7 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
 
     for (i = 0; i < def->nrngs; i++) {
         g_autoptr(virJSONValue) props = NULL;
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         virDomainRNGDefPtr rng = def->rngs[i];
         g_autofree char *chardev = NULL;
         g_autofree char *devstr = NULL;
@@ -6156,7 +6156,7 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
     if (def->os.dtb)
         virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
     if (def->os.slic_table) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         virCommandAddArg(cmd, "-acpitable");
         virBufferAddLit(&buf, "sig=SLIC,file=");
         virQEMUBuildBufferEscapeComma(&buf, def->os.slic_table);

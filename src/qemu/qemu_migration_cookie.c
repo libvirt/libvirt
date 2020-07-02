@@ -869,12 +869,10 @@ qemuMigrationCookieXMLFormatStr(virQEMUDriverPtr driver,
                                 virQEMUCapsPtr qemuCaps,
                                 qemuMigrationCookiePtr mig)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuMigrationCookieXMLFormat(driver, qemuCaps, &buf, mig) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (qemuMigrationCookieXMLFormat(driver, qemuCaps, &buf, mig) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }
