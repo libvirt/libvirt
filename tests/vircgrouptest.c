@@ -184,7 +184,7 @@ testCgroupDetectMounts(const void *args)
     char *parsed = NULL;
     const char *actual;
     virCgroupPtr group = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     g_setenv("VIR_CGROUP_MOCK_FILENAME", data->file, TRUE);
@@ -218,7 +218,6 @@ testCgroupDetectMounts(const void *args)
     g_unsetenv("VIR_CGROUP_MOCK_FILENAME");
     VIR_FREE(parsed);
     virCgroupFree(&group);
-    virBufferFreeAndReset(&buf);
     return result;
 }
 

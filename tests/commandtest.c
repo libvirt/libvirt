@@ -390,7 +390,7 @@ static int test9(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     const char* const args[] = { "arg1", "arg2", NULL };
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCommandAddArg(cmd, "-version");
     virCommandAddArgPair(cmd, "-log", "bar.log");
@@ -402,7 +402,6 @@ static int test9(const void *unused G_GNUC_UNUSED)
 
     if (virBufferUse(&buf)) {
         printf("Buffer not transferred\n");
-        virBufferFreeAndReset(&buf);
         virCommandFree(cmd);
         return -1;
     }

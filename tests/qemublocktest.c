@@ -383,7 +383,7 @@ static int
 testQemuDiskXMLToPropsValidateFile(const void *opaque)
 {
     struct testQemuDiskXMLToJSONData *data = (void *) opaque;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *jsonpath = NULL;
     g_autofree char *actual = NULL;
     size_t i;

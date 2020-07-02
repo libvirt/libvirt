@@ -251,7 +251,7 @@ static char *
 virTestLoadFileGetPath(const char *p,
                        va_list ap)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *path = NULL;
 
     virBufferAddLit(&buf, abs_srcdir "/");

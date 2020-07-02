@@ -17,7 +17,7 @@ struct testBufAddStrData {
 
 static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
 {
-    virBuffer bufinit = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) bufinit = VIR_BUFFER_INITIALIZER;
     virBufferPtr buf = &bufinit;
     const char expected[] =
         "  1\n  2\n  3\n  4\n  5\n  6\n  7\n  &amp;\n  8\n  9\n  10\n  ' 11'\n";
@@ -96,7 +96,7 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
 
 static int testBufTrim(const void *data G_GNUC_UNUSED)
 {
-    virBuffer bufinit = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) bufinit = VIR_BUFFER_INITIALIZER;
     virBufferPtr buf = NULL;
     g_autofree char *result = NULL;
     const char *expected = "a,b";
@@ -126,7 +126,6 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(buf);
     return ret;
 }
 
@@ -134,7 +133,7 @@ static int
 testBufTrimChars(const void *opaque)
 {
     const struct testBufAddStrData *data = opaque;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
 
     virBufferAddStr(&buf, data->data);
@@ -156,9 +155,9 @@ testBufTrimChars(const void *opaque)
 
 static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
 {
-    virBuffer buf1 = VIR_BUFFER_INITIALIZER;
-    virBuffer buf2 = VIR_BUFFER_INITIALIZER;
-    virBuffer buf3 = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf1 = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf2 = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf3 = VIR_BUFFER_INITIALIZER;
     int ret = -1;
     g_autofree char *result = NULL;
     const char *expected = \
@@ -259,8 +258,6 @@ static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&buf1);
-    virBufferFreeAndReset(&buf2);
     return ret;
 }
 
@@ -268,7 +265,7 @@ static int
 testBufAddStr(const void *opaque)
 {
     const struct testBufAddStrData *data = opaque;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
 
     virBufferAddLit(&buf, "<c>\n");
@@ -296,7 +293,7 @@ static int
 testBufEscapeStr(const void *opaque)
 {
     const struct testBufAddStrData *data = opaque;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
 
     virBufferAddLit(&buf, "<c>\n");
@@ -324,7 +321,7 @@ static int
 testBufEscapeRegex(const void *opaque)
 {
     const struct testBufAddStrData *data = opaque;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
 
     virBufferEscapeRegex(&buf, "%s", data->data);
@@ -347,7 +344,7 @@ testBufEscapeRegex(const void *opaque)
 static int
 testBufSetIndent(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
 
     virBufferSetIndent(&buf, 11);

@@ -199,7 +199,7 @@ struct testFirewallData {
 static int
 testFirewallSingleGroup(const void *opaque)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -244,7 +244,6 @@ testFirewallSingleGroup(const void *opaque)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);
@@ -255,7 +254,7 @@ testFirewallSingleGroup(const void *opaque)
 static int
 testFirewallRemoveRule(const void *opaque)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -307,7 +306,6 @@ testFirewallRemoveRule(const void *opaque)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);
@@ -318,7 +316,7 @@ testFirewallRemoveRule(const void *opaque)
 static int
 testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -377,7 +375,6 @@ testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);
@@ -409,7 +406,7 @@ testFirewallRollbackHook(const char *const*args,
 static int
 testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -470,7 +467,6 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);
@@ -481,7 +477,7 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 static int
 testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -541,7 +537,6 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);
@@ -552,7 +547,7 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 static int
 testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -606,7 +601,6 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);
@@ -616,7 +610,7 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 static int
 testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -690,7 +684,6 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);
@@ -700,7 +693,7 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 static int
 testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -777,7 +770,6 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);
@@ -787,7 +779,7 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 static int
 testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -894,7 +886,6 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);
@@ -981,7 +972,7 @@ testFirewallQueryCallback(virFirewallPtr fw,
 static int
 testFirewallQuery(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
     int ret = -1;
     const char *actual = NULL;
@@ -1073,7 +1064,6 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&cmdbuf);
     fwBuf = NULL;
     virCommandSetDryRun(NULL, NULL, NULL);
     virFirewallFree(fw);

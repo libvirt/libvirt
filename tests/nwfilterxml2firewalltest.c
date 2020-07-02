@@ -368,7 +368,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline)
 {
     char *actualargv = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virHashTablePtr vars = virNWFilterHashTableCreate(0);
     virNWFilterInst inst;
     int ret = -1;
@@ -403,7 +403,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     VIR_FREE(actualargv);
     virNWFilterInstReset(&inst);
     virHashFree(vars);

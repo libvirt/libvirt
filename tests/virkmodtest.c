@@ -60,7 +60,7 @@ testKModLoad(const void *args G_GNUC_UNUSED)
 {
     int ret = -1;
     char *errbuf = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCommandSetDryRun(&buf, NULL, NULL);
 
@@ -87,7 +87,7 @@ testKModUnload(const void *args G_GNUC_UNUSED)
 {
     int ret = -1;
     char *errbuf = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCommandSetDryRun(&buf, NULL, NULL);
 

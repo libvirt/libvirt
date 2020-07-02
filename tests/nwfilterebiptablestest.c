@@ -68,7 +68,7 @@
 static int
 testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
         VIR_NWFILTER_NEW_RULES_TEARDOWN
         "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
@@ -120,7 +120,6 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
     ret = 0;
  cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
-    virBufferFreeAndReset(&buf);
     VIR_FREE(actual);
     return ret;
 }
@@ -129,7 +128,7 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
 static int
 testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
         "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
         "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FO-vnet0\n"
@@ -188,7 +187,6 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
     ret = 0;
  cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
-    virBufferFreeAndReset(&buf);
     VIR_FREE(actual);
     return ret;
 }
@@ -197,7 +195,7 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
 static int
 testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
         "ebtables -t nat -D PREROUTING -i vnet0 -j libvirt-I-vnet0\n"
         "ebtables -t nat -D POSTROUTING -o vnet0 -j libvirt-O-vnet0\n"
@@ -234,7 +232,6 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
     ret = 0;
  cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
-    virBufferFreeAndReset(&buf);
     VIR_FREE(actual);
     return ret;
 }
@@ -243,7 +240,7 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
 static int
 testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
         VIR_NWFILTER_NEW_RULES_TEARDOWN;
     char *actual = NULL;
@@ -265,7 +262,6 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
     ret = 0;
  cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
-    virBufferFreeAndReset(&buf);
     VIR_FREE(actual);
     return ret;
 }
@@ -274,7 +270,7 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
 static int
 testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
         VIR_NWFILTER_NEW_RULES_TEARDOWN
         "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
@@ -334,7 +330,6 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
     ret = 0;
  cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
-    virBufferFreeAndReset(&buf);
     VIR_FREE(actual);
     return ret;
 }
@@ -343,7 +338,7 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
 static int
 testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
         VIR_NWFILTER_NEW_RULES_TEARDOWN
         "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
@@ -421,7 +416,6 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
     ret = 0;
  cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
-    virBufferFreeAndReset(&buf);
     VIR_FREE(actual);
     return ret;
 }
@@ -431,7 +425,7 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
 static int
 testNWFilterEBIPTablesApplyDropAllRules(const void *opaque G_GNUC_UNUSED)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
         VIR_NWFILTER_NEW_RULES_TEARDOWN
         "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FO-vnet0\n"
@@ -491,7 +485,6 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque G_GNUC_UNUSED)
     ret = 0;
  cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
-    virBufferFreeAndReset(&buf);
     VIR_FREE(actual);
     return ret;
 }

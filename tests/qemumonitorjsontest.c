@@ -2603,7 +2603,7 @@ static char *
 testQemuMonitorCPUInfoFormat(qemuMonitorCPUInfoPtr vcpus,
                              size_t nvcpus)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     qemuMonitorCPUInfoPtr vcpu;
     size_t i;
 
@@ -2781,7 +2781,7 @@ testBlockNodeNameDetect(const void *opaque)
     virJSONValuePtr namedNodesJson = NULL;
     virJSONValuePtr blockstatsJson = NULL;
     virHashTablePtr nodedata = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     resultFile = g_strdup_printf("%s/%s%s.result", abs_srcdir, pathprefix,
@@ -2855,7 +2855,7 @@ static int
 testQAPISchemaValidate(const void *opaque)
 {
     const struct testQAPISchemaData *data = opaque;
-    virBuffer debug = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
     virJSONValuePtr schemaroot;
     virJSONValuePtr json = NULL;
     int ret = -1;
@@ -2883,7 +2883,6 @@ testQAPISchemaValidate(const void *opaque)
 
 
  cleanup:
-    virBufferFreeAndReset(&debug);
     virJSONValueFree(json);
     return ret;
 }
@@ -2918,7 +2917,7 @@ testQueryJobs(const void *opaque)
     g_autofree char *filenameResult = NULL;
     g_autofree char *actual = NULL;
     qemuMonitorJobInfoPtr *jobs = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t njobs = 0;
     size_t i;
     int ret = -1;
