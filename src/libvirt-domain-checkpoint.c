@@ -191,7 +191,8 @@ virDomainCheckpointCreateXML(virDomainPtr domain,
  * VIR_DOMAIN_CHECKPOINT_XML_SIZE, each <disk> listing adds an additional
  * attribute that shows an estimate of the current size in bytes that
  * have been dirtied between the time the checkpoint was created and the
- * current point in time.
+ * current point in time. Note that updating the size may be expensive and
+ * data will be inaccurate once guest OS writes to the disk.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance or NULL in case
  * of error. The caller must free() the returned value.

@@ -86,6 +86,10 @@ The top-level ``domaincheckpoint`` element may contain the following elements:
          perform a dynamic query of the estimated size in bytes of the changes
          made since the checkpoint was created.
 
+         Note that updating the backup ``size`` may be expensive and
+         the actual required size may increase if the guest OS is actively
+         writing to the disk.
+
 ``creationTime``
    A readonly representation of the time this checkpoint was created. The time
    is specified in seconds since the Epoch, UTC (i.e. Unix time).
