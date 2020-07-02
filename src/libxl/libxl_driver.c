@@ -942,7 +942,7 @@ static char *
 libxlConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(0, NULL);
 

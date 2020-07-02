@@ -1444,7 +1444,7 @@ xenFormatXLVnuma(virConfValuePtr list,
 {
     int ret = -1;
     size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr numaVnode, tmp;
     virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(numa, node);
     size_t nodeSize = virDomainNumaGetNodeMemorySize(numa, node) / 1024;
@@ -1565,7 +1565,7 @@ static char *
 xenFormatXLDiskSrcNet(virStorageSourcePtr src)
 {
     char *ret = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     switch ((virStorageNetProtocol) src->protocol) {
@@ -1622,8 +1622,6 @@ xenFormatXLDiskSrcNet(virStorageSourcePtr src)
     }
 
  cleanup:
-    virBufferFreeAndReset(&buf);
-
     return ret;
 }
 
@@ -1664,7 +1662,7 @@ xenFormatXLDiskSrc(virStorageSourcePtr src, char **srcstr)
 static int
 xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
     int format = virDomainDiskGetFormat(disk);
     const char *driver = virDomainDiskGetDriver(disk);
@@ -1756,7 +1754,6 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
 
  cleanup:
     VIR_FREE(target);
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -1978,7 +1975,7 @@ xenFormatXLUSBController(virConfPtr conf,
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
             virConfValuePtr val, tmp;
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
             if (def->controllers[i]->model != -1) {
                 switch (def->controllers[i]->model) {
@@ -1999,10 +1996,9 @@ xenFormatXLUSBController(virConfPtr conf,
                 virBufferAsprintf(&buf, "ports=%x",
                                   def->controllers[i]->opts.usbopts.ports);
 
-            if (VIR_ALLOC(val) < 0) {
-                virBufferFreeAndReset(&buf);
+            if (VIR_ALLOC(val) < 0)
                 goto error;
-            }
+
             val->type = VIR_CONF_STRING;
             val->str = virBufferContentAndReset(&buf);
             tmp = usbctrlVal->list;
@@ -2100,7 +2096,7 @@ xenFormatXLUSB(virConfPtr conf,
 static int
 xenFormatXLChannel(virConfValuePtr list, virDomainChrDefPtr channel)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int sourceType = channel->source->type;
     virConfValuePtr val, tmp;
 
@@ -2139,7 +2135,6 @@ xenFormatXLChannel(virConfValuePtr list, virDomainChrDefPtr channel)
     return 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return -1;
 }
 

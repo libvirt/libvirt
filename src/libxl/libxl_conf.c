@@ -911,7 +911,7 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
                            const char *secret)
 {
     char *ret = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     switch ((virStorageNetProtocol) src->protocol) {
@@ -978,7 +978,6 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
     }
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -1241,7 +1240,7 @@ libxlMakeNic(virDomainDefPtr def,
     const virNetDevBandwidth *actual_bw;
     const virNetDevVPortProfile *port_profile;
     const virNetDevVlan *virt_vlan;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     const char *script = NULL;
     int ret = -1;
@@ -1434,7 +1433,6 @@ libxlMakeNic(virDomainDefPtr def,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     virObjectUnref(network);
     virObjectUnref(conn);
 

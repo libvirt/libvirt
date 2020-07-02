@@ -117,7 +117,7 @@ libxlMigrationBakeCookie(libxlMigrationCookiePtr mig,
                          char **cookieout,
                          int *cookieoutlen)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!cookieout || !cookieoutlen)

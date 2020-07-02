@@ -290,7 +290,7 @@ static int
 xenFormatXMDisk(virConfValuePtr list,
                 virDomainDiskDefPtr disk)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
     const char *src = virDomainDiskGetSource(disk);
     int format = virDomainDiskGetFormat(disk);
@@ -361,7 +361,6 @@ xenFormatXMDisk(virConfValuePtr list,
     return 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return -1;
 }
 
