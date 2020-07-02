@@ -189,11 +189,33 @@ virshStreamSkip(virStreamPtr st G_GNUC_UNUSED,
     virshStreamCallbackDataPtr cbData = opaque;
     off_t cur;
 
-    if ((cur = lseek(cbData->fd, offset, SEEK_CUR)) == (off_t) -1)
-        return -1;
+    if (cbData->isBlock) {
+        g_autofree char * buf = NULL;
+        const size_t buflen = 1 * 1024 * 1024; /* 1MiB */
 
-    if (ftruncate(cbData->fd, cur) < 0)
-        return -1;
+        /* While for files it's enough to lseek() and ftruncate() to create
+         * a hole which would emulate zeroes on read(), for block devices
+         * we have to write zeroes to read() zeroes. And we have to write
+         * @got bytes of zeroes. Do that in smaller chunks though.*/
+
+        buf = g_new0(char, buflen);
+
+        while (offset) {
+            size_t count = MIN(offset, buflen);
+            ssize_t r;
+
+            if ((r = safewrite(cbData->fd, buf, count)) < 0)
+                return -1;
+
+            offset -= r;
+        }
+    } else {
+        if ((cur = lseek(cbData->fd, offset, SEEK_CUR)) == (off_t) -1)
+            return -1;
+
+        if (ftruncate(cbData->fd, cur) < 0)
+            return -1;
+    }
 
     return 0;
 }
