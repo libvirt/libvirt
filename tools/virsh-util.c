@@ -230,12 +230,25 @@ virshStreamInData(virStreamPtr st G_GNUC_UNUSED,
     virshStreamCallbackDataPtr cbData = opaque;
     vshControl *ctl = cbData->ctl;
     int fd = cbData->fd;
-    int ret;
 
-    if ((ret = virFileInData(fd, inData, offset)) < 0)
-        vshError(ctl, "%s", _("Unable to get current position in stream"));
+    if (cbData->isBlock) {
+        /* Block devices are always in data section by definition. The
+         * @sectionLen is slightly more tricky. While we could try and get
+         * how much bytes is there left until EOF, we can pretend there is
+         * always X bytes left and let the saferead() below hit EOF (which
+         * is then handled gracefully anyway). Worst case scenario, this
+         * branch is called more than once.
+         * X was chosen to be 1MiB but it has ho special meaning. */
+        *inData = 1;
+        *offset = 1 * 1024 * 1024;
+    } else {
+        if (virFileInData(fd, inData, offset) < 0) {
+            vshError(ctl, "%s", _("Unable to get current position in stream"));
+            return -1;
+        }
+    }
 
-    return ret;
+    return 0;
 }
 
 
