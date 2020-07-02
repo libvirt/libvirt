@@ -47,7 +47,29 @@ v6.5.0 (unreleased)
     alphabetical order. Hook script in old place will be executed
     as first for backward compatibility.
 
+  * qemu: Add support for migratable host-passthrough CPU
+
+    QEMU 2.12 made it possible for guests to use a migration-friendly
+    version of the host-passthrough CPU. This feature is now exposed by
+    libvirt.
+
 * **Improvements**
+
+  * network: Support NAT with IPv6
+
+    It's now possible to use ``<nat ipv6="yes"/>`` in a libvirt network.
+
+  * qemu: Auto-fill NUMA information for incomplete topologies
+
+    If the NUMA topology is not fully described in the guest XML, libvirt
+    will complete it by putting all unspecified CPUs in the first NUMA node.
+    This is only done in the QEMU binary itself supports disjointed CPU
+    ranges for NUMA nodes.
+
+  * qemu: Assign hostdev-backed interfaces to PCIe slots
+
+    All SR-IOV capable devices are PCIe, so when their VFs are assigned to
+    guests they should end up in PCIe slots rather than conventional PCI ones.
 
 * **Bug fixes**
 
@@ -60,6 +82,11 @@ v6.5.0 (unreleased)
 
     Removes the correlation between the zPCI address attributes uid and fid.
     Fixes the validation and autogeneration of zPCI address attributes.
+
+  * qemu: Skip pre-creation of NVMe disks during migration
+
+    libvirt has no way to create NVMe devices on the target host, so it now
+    just makes sure they exist and let the migration proceed in that case.
 
 
 v6.4.0 (2020-06-02)
