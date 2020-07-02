@@ -166,14 +166,15 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
                                bhyveConnPtr driver,
                                virCommandPtr cmd)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virBuffer device = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *disk_source;
     size_t i;
     int ret = -1;
 
     for (i = 0; i < def->ndisks; i++) {
+        g_auto(virBuffer) device = VIR_BUFFER_INITIALIZER;
         virDomainDiskDefPtr disk = def->disks[i];
+
         if (disk->bus != VIR_DOMAIN_DISK_BUS_SATA)
             continue;
 
@@ -221,7 +222,6 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
             goto error;
         }
         virBufferAddBuffer(&buf, &device);
-        virBufferFreeAndReset(&device);
     }
 
     virCommandAddArg(cmd, "-s");
@@ -231,7 +231,6 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
 
     ret = 0;
  error:
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -378,7 +377,7 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
                          virCommandPtr cmd,
                          bool dryRun)
 {
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDefPtr glisten = NULL;
     bool escapeAddr;
     unsigned short port;
@@ -478,7 +477,6 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
     return 0;
 
  error:
-    virBufferFreeAndReset(&opt);
     return -1;
 }
 
@@ -765,15 +763,12 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
                                  char **devicesmap_out)
 {
     virDomainDiskDefPtr hdd, cd, userdef, diskdef;
-    virBuffer devicemap;
     virCommandPtr cmd;
     unsigned int best_idx = UINT_MAX;
     size_t i;
 
     if (def->os.bootloaderArgs != NULL)
         return virBhyveProcessBuildCustomLoaderCmd(def);
-
-    devicemap = (virBuffer)VIR_BUFFER_INITIALIZER;
 
     /* Search disk list for CD or HDD device. We'll respect <boot order=''> if
      * present and otherwise pick the first CD or failing that HDD we come
@@ -809,6 +804,8 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
     VIR_DEBUG("grub-bhyve with default arguments");
 
     if (devicesmap_out != NULL) {
+        g_auto(virBuffer) devicemap = VIR_BUFFER_INITIALIZER;
+
         /* Grub device.map (just for boot) */
         if (userdef != NULL) {
             virBhyveFormatGrubDevice(&devicemap, userdef);
