@@ -235,7 +235,7 @@ cmdCheckpointCreateAs(vshControl *ctl,
     char *buffer = NULL;
     const char *name = NULL;
     const char *desc = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
 
@@ -278,7 +278,6 @@ cmdCheckpointCreateAs(vshControl *ctl,
     ret = virshCheckpointCreate(ctl, dom, buffer, flags, NULL);
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     VIR_FREE(buffer);
     virshDomainFree(dom);
 

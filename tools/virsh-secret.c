@@ -585,7 +585,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         int usageType = virSecretGetUsageType(sec);
         const char *usageStr = virSecretUsageTypeToString(usageType);
         char uuid[VIR_UUID_STRING_BUFLEN];
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         g_autofree char *usage = NULL;
 
         if (virSecretGetUUIDString(sec, uuid) < 0) {

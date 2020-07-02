@@ -325,7 +325,7 @@ virshBuildPoolXML(vshControl *ctl,
                *adapterWwnn = NULL, *adapterWwpn = NULL, *secretUUID = NULL,
                *adapterParentWwnn = NULL, *adapterParentWwpn = NULL,
                *adapterParentFabricWwn = NULL, *protoVer = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     VSH_EXCLUSIVE_OPTIONS("secret-usage", "secret-uuid");
 
@@ -421,7 +421,6 @@ virshBuildPoolXML(vshControl *ctl,
     return true;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return false;
 }
 
@@ -1450,11 +1449,10 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
 
     if (host) {
         const char *port = NULL;
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
         if (vshCommandOptStringReq(ctl, cmd, "port", &port) < 0) {
             vshError(ctl, "%s", _("missing argument"));
-            virBufferFreeAndReset(&buf);
             return false;
         }
         virBufferAddLit(&buf, "<source>\n");
