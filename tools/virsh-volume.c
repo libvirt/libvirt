@@ -790,6 +790,7 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     unsigned long long offset = 0, length = 0;
     bool created = false;
     virshControlPtr priv = ctl->privData;
+    virshStreamCallbackData cbData;
     unsigned int flags = 0;
 
     if (vshCommandOptULongLong(ctl, cmd, "offset", &offset) < 0)
@@ -817,6 +818,9 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
         created = true;
     }
 
+    cbData.ctl = ctl;
+    cbData.fd = fd;
+
     if (!(st = virStreamNew(priv->conn, 0))) {
         vshError(ctl, _("cannot create a new stream"));
         goto cleanup;
@@ -827,7 +831,7 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virStreamSparseRecvAll(st, virshStreamSink, virshStreamSkip, &fd) < 0) {
+    if (virStreamSparseRecvAll(st, virshStreamSink, virshStreamSkip, &cbData) < 0) {
         vshError(ctl, _("cannot receive data from volume %s"), name);
         goto cleanup;
     }

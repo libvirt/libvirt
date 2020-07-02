@@ -146,9 +146,9 @@ virshStreamSink(virStreamPtr st G_GNUC_UNUSED,
                 size_t nbytes,
                 void *opaque)
 {
-    int *fd = opaque;
+    virshStreamCallbackDataPtr cbData = opaque;
 
-    return safewrite(*fd, bytes, nbytes);
+    return safewrite(cbData->fd, bytes, nbytes);
 }
 
 
@@ -186,13 +186,13 @@ virshStreamSkip(virStreamPtr st G_GNUC_UNUSED,
                 long long offset,
                 void *opaque)
 {
-    int *fd = opaque;
+    virshStreamCallbackDataPtr cbData = opaque;
     off_t cur;
 
-    if ((cur = lseek(*fd, offset, SEEK_CUR)) == (off_t) -1)
+    if ((cur = lseek(cbData->fd, offset, SEEK_CUR)) == (off_t) -1)
         return -1;
 
-    if (ftruncate(*fd, cur) < 0)
+    if (ftruncate(cbData->fd, cur) < 0)
         return -1;
 
     return 0;
