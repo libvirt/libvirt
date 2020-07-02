@@ -1378,7 +1378,7 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
                                int num,
                                char *path)
 {
-    virBuffer map_value = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) map_value = VIR_BUFFER_INITIALIZER;
     size_t i;
     int ret = -1;
 
@@ -1402,7 +1402,6 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&map_value);
     return ret;
 }
 

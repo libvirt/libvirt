@@ -174,7 +174,7 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virCommandPtr cmd;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     /* 'container_ptys' must exclude the PTY associated with
@@ -185,7 +185,6 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expected a /dev path for '%s'"),
                            ttyPaths[i]);
-            virBufferFreeAndReset(&buf);
             return NULL;
         }
         virBufferAdd(&buf, ttyPaths[i] + 5, -1);
@@ -219,7 +218,6 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef,
                                   vmDef->os.initenv[i]->value);
     }
 
-    virBufferFreeAndReset(&buf);
     return cmd;
 }
 
