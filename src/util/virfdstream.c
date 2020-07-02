@@ -398,6 +398,7 @@ struct _virFDStreamThreadData {
     size_t length;
     bool doRead;
     bool sparse;
+    bool isBlock;
     int fdin;
     char *fdinname;
     int fdout;
@@ -421,6 +422,7 @@ virFDStreamThreadDataFree(virFDStreamThreadDataPtr data)
 static ssize_t
 virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
                         bool sparse,
+                        bool isBlock,
                         const int fdin,
                         const int fdout,
                         const char *fdinname,
@@ -437,8 +439,20 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
     ssize_t got;
 
     if (sparse && *dataLen == 0) {
-        if (virFileInData(fdin, &inData, &sectionLen) < 0)
-            return -1;
+        if (isBlock) {
+            /* Block devices are always in data section by definition. The
+             * @sectionLen is slightly more tricky. While we could try and get
+             * how much bytes is there left until EOF, we can pretend there is
+             * always X bytes left and let the saferead() below hit EOF (which
+             * is then handled gracefully anyway). Worst case scenario, this
+             * branch is called more than once.
+             * X was chosen to be 1MiB but it has ho special meaning. */
+            inData = 1;
+            sectionLen = 1 * 1024 * 1024;
+        } else {
+            if (virFileInData(fdin, &inData, &sectionLen) < 0)
+                return -1;
+        }
 
         if (length &&
             sectionLen > length - total)
@@ -568,6 +582,7 @@ virFDStreamThread(void *opaque)
     virStreamPtr st = data->st;
     size_t length = data->length;
     bool sparse = data->sparse;
+    bool isBlock = data->isBlock;
     VIR_AUTOCLOSE fdin = data->fdin;
     char *fdinname = data->fdinname;
     VIR_AUTOCLOSE fdout = data->fdout;
@@ -604,7 +619,7 @@ virFDStreamThread(void *opaque)
         }
 
         if (doRead)
-            got = virFDStreamThreadDoRead(fdst, sparse,
+            got = virFDStreamThreadDoRead(fdst, sparse, isBlock,
                                           fdin, fdout,
                                           fdinname, fdoutname,
                                           length, total,
@@ -1271,6 +1286,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         threadData->st = virObjectRef(st);
         threadData->length = length;
         threadData->sparse = sparse;
+        threadData->isBlock = !!S_ISBLK(sb.st_mode);
 
         if ((oflags & O_ACCMODE) == O_RDONLY) {
             threadData->fdin = fd;
