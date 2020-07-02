@@ -210,6 +210,11 @@ v6.3.0 (2020-05-05)
     (Cache Flush on Privilege Change), SBBC (Speculation Barrier Bounds
     Checking) and IBS (Indirect Branch Speculation).
 
+  * qemu: Add support for virtio packed option
+
+    The ``packed`` attribute controls if QEMU should try to use packed
+    virtqueues. Possible values are ``on`` or ``off``.
+
 * **Improvements**
 
   * qemu: Allow checkpoint redefine for offline VMs
@@ -401,6 +406,19 @@ v6.1.0 (2020-03-03)
 
     This device, available starting from QEMU 5.0, is limited to pSeries
     guests.
+
+  * qemu: support Panic Crashloaded event handling
+
+    The pvpanic device now supports a 'crashloaded' event, which is emitted
+    when a guest panic has occurred but has already been handled by the guest
+    itself.
+
+  * qemu: Implement virDomainGetHostnameFlags
+
+    The ``--source`` argument to ``virsh domhostname`` can be used to specify
+    what data source to use for the domain hostnames. Currently, in addition
+    to the 'agent', libvirt can also use 'lease' information from dnsmasq to
+    get the hostname.
 
 * **Improvements**
 
