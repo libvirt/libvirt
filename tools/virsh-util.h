@@ -72,6 +72,7 @@ typedef virshStreamCallbackData *virshStreamCallbackDataPtr;
 struct _virshStreamCallbackData {
     vshControl *ctl;
     int fd;
+    bool isBlock;
 };
 
 int
