@@ -780,6 +780,42 @@ virNodeDeviceDefineXML(virConnectPtr conn,
 
 
 /**
+ * virNodeDeviceUndefine:
+ * @dev: a device object
+ *
+ * Undefine the device object. The virtual device  is removed from the host
+ * operating system.  This function may require privileged access.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNodeDeviceUndefine(virNodeDevicePtr dev)
+{
+    VIR_DEBUG("dev=%p", dev);
+
+    virResetLastError();
+
+    virCheckNodeDeviceReturn(dev, -1);
+    virCheckReadOnlyGoto(dev->conn->flags, error);
+
+    if (dev->conn->nodeDeviceDriver &&
+        dev->conn->nodeDeviceDriver->nodeDeviceUndefine) {
+        int retval = dev->conn->nodeDeviceDriver->nodeDeviceUndefine(dev);
+        if (retval < 0)
+            goto error;
+
+        return 0;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dev->conn);
+    return -1;
+}
+
+
+/**
  * virConnectNodeDeviceEventRegisterAny:
  * @conn: pointer to the connection
  * @dev: pointer to the node device

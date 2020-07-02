@@ -70,7 +70,7 @@ VIR_ENUM_IMPL(virAccessPermNodeDevice,
               VIR_ACCESS_PERM_NODE_DEVICE_LAST,
               "getattr", "read", "write",
               "start", "stop",
-              "detach",
+              "detach", "delete",
 );
 
 VIR_ENUM_IMPL(virAccessPermNWFilter,

@@ -500,6 +500,12 @@ typedef enum {
      */
     VIR_ACCESS_PERM_NODE_DEVICE_DETACH,
 
+    /**
+     * @desc: Delete node device
+     * @message: Deleting node device driver requires authorization
+     */
+    VIR_ACCESS_PERM_NODE_DEVICE_DELETE,
+
     VIR_ACCESS_PERM_NODE_DEVICE_LAST
 } virAccessPermNodeDevice;
 

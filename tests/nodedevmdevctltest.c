@@ -185,6 +185,9 @@ testMdevctlUuidCommandHelper(const void *data)
     if (info->command == MDEVCTL_CMD_STOP) {
         cmd = "stop";
         func = nodeDeviceGetMdevctlStopCommand;
+    } else if (info->command == MDEVCTL_CMD_UNDEFINE) {
+        cmd = "undefine";
+        func = nodeDeviceGetMdevctlUndefineCommand;
     } else {
         return -1;
     }
@@ -423,6 +426,9 @@ mymain(void)
 #define DO_TEST_STOP(uuid) \
     DO_TEST_UUID_COMMAND_FULL("mdevctl stop " uuid, uuid, MDEVCTL_CMD_STOP)
 
+#define DO_TEST_UNDEFINE(uuid) \
+    DO_TEST_UUID_COMMAND_FULL("mdevctl undefine " uuid, uuid, MDEVCTL_CMD_UNDEFINE)
+
 #define DO_TEST_LIST_DEFINED() \
     DO_TEST_FULL("mdevctl list --defined", testMdevctlListDefined, NULL)
 
@@ -444,6 +450,8 @@ mymain(void)
     DO_TEST_DEFINE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
     DO_TEST_DEFINE("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
     DO_TEST_DEFINE("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
+
+    DO_TEST_UNDEFINE("d76a6b78-45ed-4149-a325-005f9abc5281");
 
  done:
     nodedevTestDriverFree(driver);
