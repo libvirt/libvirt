@@ -370,7 +370,7 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
                     unsigned long long offset, unsigned long long *length)
 {
     char *range = NULL;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     int responseCode = 0;
 
     ESX_VI_CHECK_ARG_LIST(content);
@@ -421,10 +421,8 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
  cleanup:
     VIR_FREE(range);
 
-    if (!(*content)) {
-        virBufferFreeAndReset(&buffer);
+    if (!(*content))
         return -1;
-    }
 
     return 0;
 }
@@ -1025,7 +1023,7 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
     char *saveptr = NULL;
     char *previousItem = NULL;
     char *item = NULL;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     esxVI_ManagedObjectReference *root = NULL;
     esxVI_Folder *folder = NULL;
 
@@ -1184,9 +1182,6 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
     result = 0;
 
  cleanup:
-    if (result < 0)
-        virBufferFreeAndReset(&buffer);
-
     if (root != ctx->service->rootFolder &&
         (!ctx->datacenter || root != ctx->datacenter->hostFolder)) {
         esxVI_ManagedObjectReference_Free(&root);
@@ -1248,7 +1243,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
                       esxVI_Occurrence occurrence)
 {
     int result = -1;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     esxVI_Fault *fault = NULL;
     char *xpathExpression = NULL;
     xmlXPathContextPtr xpathContext = NULL;
@@ -1408,7 +1403,6 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
 
  cleanup:
     if (result < 0) {
-        virBufferFreeAndReset(&buffer);
         esxVI_Response_Free(response);
         esxVI_Fault_Free(&fault);
     }
@@ -4130,7 +4124,7 @@ esxVI_HandleVirtualMachineQuestion
 {
     int result = -1;
     esxVI_ElementDescription *elementDescription = NULL;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     esxVI_ElementDescription *answerChoice = NULL;
     int answerIndex = 0;
     char *possibleAnswers = NULL;
@@ -4212,9 +4206,6 @@ esxVI_HandleVirtualMachineQuestion
     result = 0;
 
  cleanup:
-    if (result < 0)
-        virBufferFreeAndReset(&buffer);
-
     VIR_FREE(possibleAnswers);
 
     return result;

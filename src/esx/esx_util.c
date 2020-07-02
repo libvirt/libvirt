@@ -357,7 +357,7 @@ esxUtil_EscapeBase64(const char *string)
     static const char *base64 =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,";
 
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     const char *tmp1 = string;
     size_t length;
     unsigned char c1, c2, c3;
@@ -456,7 +456,7 @@ esxUtil_EscapeDatastoreItem(const char *string)
 char *
 esxUtil_EscapeForXml(const char *string)
 {
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
 
     virBufferEscapeString(&buffer, "%s", string);
 
