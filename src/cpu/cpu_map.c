@@ -171,7 +171,7 @@ int cpuMapLoad(const char *arch,
 {
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *xpath = NULL;
     int ret = -1;
     char *mapfile;
