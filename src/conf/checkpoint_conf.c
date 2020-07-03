@@ -476,7 +476,7 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
         for (i = 0; i < def->ndisks; i++) {
             if (virDomainCheckpointDiskDefFormat(buf, &def->disks[i],
                                                  flags) < 0)
-                goto error;
+                return -1;
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</disks>\n");
@@ -485,16 +485,14 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
     if (!(flags & VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN) &&
         virDomainDefFormatInternal(def->parent.dom, xmlopt,
                                    buf, domainflags) < 0)
-        goto error;
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</domaincheckpoint>\n");
 
     return 0;
-
- error:
-    return -1;
 }
+
 
 char *
 virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,

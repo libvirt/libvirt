@@ -820,7 +820,7 @@ virNetworkObjFormat(virNetworkObjPtr obj,
     size_t i;
 
     if (!classIdStr)
-        goto error;
+        return NULL;
 
     virBufferAddLit(&buf, "<networkstatus>\n");
     virBufferAdjustIndent(&buf, 2);
@@ -835,15 +835,12 @@ virNetworkObjFormat(virNetworkObjPtr obj,
     }
 
     if (virNetworkDefFormatBuf(&buf, obj->def, xmlopt, flags) < 0)
-        goto error;
+        return NULL;
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</networkstatus>");
 
     return virBufferContentAndReset(&buf);
-
- error:
-    return NULL;
 }
 
 

@@ -671,12 +671,9 @@ virCPUDefFormat(virCPUDefPtr def,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virCPUDefFormatBufFull(&buf, def, numa) < 0)
-        goto cleanup;
+        return NULL;
 
     return virBufferContentAndReset(&buf);
-
- cleanup:
-    return NULL;
 }
 
 
@@ -685,7 +682,6 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                        virCPUDefPtr def,
                        virDomainNumaPtr numa)
 {
-    int ret = -1;
     g_auto(virBuffer) attributeBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
 
@@ -701,7 +697,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
         if (!(tmp = virCPUModeTypeToString(def->mode))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unexpected CPU mode %d"), def->mode);
-            goto cleanup;
+            return -1;
         }
         virBufferAsprintf(&attributeBuf, " mode='%s'", tmp);
 
@@ -710,7 +706,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected CPU match policy %d"),
                                def->match);
-                goto cleanup;
+                return -1;
             }
             virBufferAsprintf(&attributeBuf, " match='%s'", tmp);
         }
@@ -731,10 +727,10 @@ virCPUDefFormatBufFull(virBufferPtr buf,
         virBufferAsprintf(&childrenBuf, "<arch>%s</arch>\n",
                           virArchToString(def->arch));
     if (virCPUDefFormatBuf(&childrenBuf, def) < 0)
-        goto cleanup;
+        return -1;
 
     if (virDomainNumaDefFormatXML(&childrenBuf, numa) < 0)
-        goto cleanup;
+        return -1;
 
     /* Put it all together */
     if (virBufferUse(&attributeBuf) || virBufferUse(&childrenBuf)) {
@@ -752,9 +748,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 int

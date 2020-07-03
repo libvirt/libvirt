@@ -29475,7 +29475,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected domain type %d"), def->virtType);
-        goto error;
+        return -1;
     }
 
     if (def->id == -1)
@@ -29520,13 +29520,13 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
         xmlIndentTreeOutput = 1;
         if (!(xmlbuf = xmlBufferCreate())) {
             virReportOOMError();
-            goto error;
+            return -1;
         }
 
         if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
                         virBufferGetIndent(buf) / 2, 1) < 0) {
             xmlIndentTreeOutput = oldIndentTreeOutput;
-            goto error;
+            return -1;
         }
         virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
         xmlIndentTreeOutput = oldIndentTreeOutput;
@@ -29549,13 +29549,13 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
                       def->mem.cur_balloon);
 
     if (virDomainDefFormatBlkiotune(buf, def) < 0)
-        goto error;
+        return -1;
 
     virDomainMemtuneFormat(buf, &def->mem);
     virDomainMemorybackingFormat(buf, &def->mem);
 
     if (virDomainCpuDefFormat(buf, def) < 0)
-        goto error;
+        return -1;
 
     if (def->niothreadids > 0) {
         virBufferAsprintf(buf, "<iothreads>%zu</iothreads>\n",
@@ -29573,17 +29573,17 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     }
 
     if (virDomainCputuneDefFormat(buf, def, flags) < 0)
-        goto error;
+        return -1;
 
     if (virDomainNumatuneFormatXML(buf, def->numa) < 0)
-        goto error;
+        return -1;
 
     if (def->resource)
         virDomainResourceDefFormat(buf, def->resource);
 
     for (i = 0; i < def->nsysinfo; i++) {
         if (virSysinfoFormat(buf, def->sysinfo[i]) < 0)
-            goto error;
+            return -1;
     }
 
     if (def->os.bootloader) {
@@ -29663,7 +29663,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unexpected boot device type %d"),
                                def->os.bootDevs[n]);
-                goto error;
+                return -1;
             }
             virBufferAsprintf(buf, "<boot dev='%s'/>\n", boottype);
         }
@@ -29695,7 +29695,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
         if (mode == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected smbios mode %d"), def->os.smbios_mode);
-            goto error;
+            return -1;
         }
         virBufferAsprintf(buf, "<smbios mode='%s'/>\n", mode);
     }
@@ -29726,10 +29726,10 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     }
 
     if (virDomainDefFormatFeatures(buf, def) < 0)
-        goto error;
+        return -1;
 
     if (virCPUDefFormatBufFull(buf, def->cpu, def->numa) < 0)
-        goto error;
+        return -1;
 
     virBufferAsprintf(buf, "<clock offset='%s'",
                       virDomainClockOffsetTypeToString(def->clock.offset));
@@ -29760,7 +29760,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
         virBufferAdjustIndent(buf, 2);
         for (n = 0; n < def->clock.ntimers; n++) {
             if (virDomainTimerDefFormat(buf, def->clock.timers[n]) < 0)
-                goto error;
+                return -1;
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</clock>\n");
@@ -29769,20 +29769,20 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     if (virDomainEventActionDefFormat(buf, def->onPoweroff,
                                       "on_poweroff",
                                       virDomainLifecycleActionTypeToString) < 0)
-        goto error;
+        return -1;
     if (virDomainEventActionDefFormat(buf, def->onReboot,
                                       "on_reboot",
                                       virDomainLifecycleActionTypeToString) < 0)
-        goto error;
+        return -1;
     if (virDomainEventActionDefFormat(buf, def->onCrash,
                                       "on_crash",
                                       virDomainLifecycleActionTypeToString) < 0)
-        goto error;
+        return -1;
     if (def->onLockFailure != VIR_DOMAIN_LOCK_FAILURE_DEFAULT &&
         virDomainEventActionDefFormat(buf, def->onLockFailure,
                                       "on_lockfailure",
                                       virDomainLockFailureTypeToString) < 0)
-        goto error;
+        return -1;
 
     if (def->pm.s3 || def->pm.s4) {
         virBufferAddLit(buf, "<pm>\n");
@@ -29809,35 +29809,35 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
 
     for (n = 0; n < def->ndisks; n++)
         if (virDomainDiskDefFormat(buf, def->disks[n], flags, xmlopt) < 0)
-            goto error;
+            return -1;
 
     for (n = 0; n < def->ncontrollers; n++)
         if (virDomainControllerDefFormat(buf, def->controllers[n], flags) < 0)
-            goto error;
+            return -1;
 
     for (n = 0; n < def->nleases; n++)
         if (virDomainLeaseDefFormat(buf, def->leases[n]) < 0)
-            goto error;
+            return -1;
 
     for (n = 0; n < def->nfss; n++)
         if (virDomainFSDefFormat(buf, def->fss[n], flags) < 0)
-            goto error;
+            return -1;
 
     for (n = 0; n < def->nnets; n++)
         if (virDomainNetDefFormat(buf, def->nets[n], xmlopt, flags) < 0)
-            goto error;
+            return -1;
 
     for (n = 0; n < def->nsmartcards; n++)
         if (virDomainSmartcardDefFormat(buf, def->smartcards[n], flags) < 0)
-            goto error;
+            return -1;
 
     for (n = 0; n < def->nserials; n++)
         if (virDomainChrDefFormat(buf, def->serials[n], flags) < 0)
-            goto error;
+            return -1;
 
     for (n = 0; n < def->nparallels; n++)
         if (virDomainChrDefFormat(buf, def->parallels[n], flags) < 0)
-            goto error;
+            return -1;
 
     for (n = 0; n < def->nconsoles; n++) {
         virDomainChrDef console;
@@ -29855,36 +29855,36 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
             memcpy(&console, def->consoles[n], sizeof(console));
         }
         if (virDomainChrDefFormat(buf, &console, flags) < 0)
-            goto error;
+            return -1;
     }
 
     for (n = 0; n < def->nchannels; n++)
         if (virDomainChrDefFormat(buf, def->channels[n], flags) < 0)
-            goto error;
+            return -1;
 
     for (n = 0; n < def->ninputs; n++) {
         if (virDomainInputDefFormat(buf, def->inputs[n], flags) < 0)
-            goto error;
+            return -1;
     }
 
     for (n = 0; n < def->ntpms; n++) {
         if (virDomainTPMDefFormat(buf, def->tpms[n], flags) < 0)
-            goto error;
+            return -1;
     }
 
     for (n = 0; n < def->ngraphics; n++) {
         if (virDomainGraphicsDefFormat(buf, def->graphics[n], flags) < 0)
-            goto error;
+            return -1;
     }
 
     for (n = 0; n < def->nsounds; n++) {
         if (virDomainSoundDefFormat(buf, def->sounds[n], flags) < 0)
-            goto error;
+            return -1;
     }
 
     for (n = 0; n < def->nvideos; n++) {
         if (virDomainVideoDefFormat(buf, def->videos[n], flags) < 0)
-            goto error;
+            return -1;
     }
 
     for (n = 0; n < def->nhostdevs; n++) {
@@ -29894,13 +29894,13 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
          */
         if (!def->hostdevs[n]->parentnet &&
             virDomainHostdevDefFormat(buf, def->hostdevs[n], flags) < 0) {
-            goto error;
+            return -1;
         }
     }
 
     for (n = 0; n < def->nredirdevs; n++) {
         if (virDomainRedirdevDefFormat(buf, def->redirdevs[n], flags) < 0)
-            goto error;
+            return -1;
     }
 
     if (def->redirfilter)
@@ -29908,7 +29908,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
 
     for (n = 0; n < def->nhubs; n++) {
         if (virDomainHubDefFormat(buf, def->hubs[n], flags) < 0)
-            goto error;
+            return -1;
     }
 
     if (def->watchdog)
@@ -29919,7 +29919,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
 
     for (n = 0; n < def->nrngs; n++) {
         if (virDomainRNGDefFormat(buf, def->rngs[n], flags))
-            goto error;
+            return -1;
     }
 
     if (def->nvram)
@@ -29927,26 +29927,26 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
 
     for (n = 0; n < def->npanics; n++) {
         if (virDomainPanicDefFormat(buf, def->panics[n]) < 0)
-            goto error;
+            return -1;
     }
 
     for (n = 0; n < def->nshmems; n++) {
         if (virDomainShmemDefFormat(buf, def->shmems[n], flags) < 0)
-            goto error;
+            return -1;
     }
 
     for (n = 0; n < def->nmems; n++) {
         if (virDomainMemoryDefFormat(buf, def->mems[n], def, flags) < 0)
-            goto error;
+            return -1;
     }
 
     if (def->iommu &&
         virDomainIOMMUDefFormat(buf, def->iommu) < 0)
-        goto error;
+        return -1;
 
     if (def->vsock &&
         virDomainVsockDefFormat(buf, def->vsock) < 0)
-        goto error;
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</devices>\n");
@@ -29961,17 +29961,15 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
 
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)
-            goto error;
+            return -1;
     }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAsprintf(buf, "</%s>\n", rootname);
 
     return 0;
-
- error:
-    return -1;
 }
+
 
 /* Converts VIR_DOMAIN_XML_COMMON_FLAGS into VIR_DOMAIN_DEF_FORMAT_*
  * flags, and silently ignores any other flags.  Note that the caller

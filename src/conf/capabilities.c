@@ -1340,7 +1340,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     virBufferAdjustIndent(&buf, 2);
 
     if (virCapabilitiesFormatHostXML(&caps->host, &buf) < 0)
-        goto error;
+        return NULL;
 
     virCapabilitiesFormatGuestXML(caps->guests, caps->nguests, &buf);
 
@@ -1350,9 +1350,6 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     virBufferAddLit(&buf, "</capabilities>\n");
 
     return virBufferContentAndReset(&buf);
-
- error:
-    return NULL;
 }
 
 /* get the maximum ID of cpus in the host */

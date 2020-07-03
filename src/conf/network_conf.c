@@ -2721,12 +2721,9 @@ virNetworkDefFormat(const virNetworkDef *def,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virNetworkDefFormatBuf(&buf, def, xmlopt, flags) < 0)
-        goto error;
+        return NULL;
 
     return virBufferContentAndReset(&buf);
-
- error:
-    return NULL;
 }
 
 

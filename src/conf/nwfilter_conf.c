@@ -3062,16 +3062,13 @@ virNWFilterDefFormat(const virNWFilterDef *def)
 
     for (i = 0; i < def->nentries; i++) {
         if (virNWFilterEntryFormat(&buf, def->filterEntries[i]) < 0)
-            goto err_exit;
+            return NULL;
     }
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</filter>\n");
 
     return virBufferContentAndReset(&buf);
-
- err_exit:
-    return NULL;
 }
 
 static virNWFilterTriggerRebuildCallback rebuildCallback;

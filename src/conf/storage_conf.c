@@ -1226,12 +1226,9 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virStoragePoolDefFormatBuf(&buf, def) < 0)
-        goto error;
+        return NULL;
 
     return virBufferContentAndReset(&buf);
-
- error:
-    return NULL;
 }
 
 
@@ -1648,21 +1645,18 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
 
     if (virStorageVolTargetDefFormat(options, &buf,
                                      &def->target, "target") < 0)
-        goto cleanup;
+        return NULL;
 
     if (virStorageSourceHasBacking(&def->target) &&
         virStorageVolTargetDefFormat(options, &buf,
                                      def->target.backingStore,
                                      "backingStore") < 0)
-        goto cleanup;
+        return NULL;
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</volume>\n");
 
     return virBufferContentAndReset(&buf);
-
- cleanup:
-    return NULL;
 }
 
 
@@ -1753,7 +1747,7 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unexpected pool type"));
-        goto cleanup;
+        return NULL;
     }
 
     virBufferAddLit(&buf, "<sources>\n");
@@ -1766,7 +1760,4 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
     virBufferAddLit(&buf, "</sources>\n");
 
     return virBufferContentAndReset(&buf);
-
- cleanup:
-    return NULL;
 }

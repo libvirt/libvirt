@@ -294,12 +294,9 @@ virSecretDefFormat(const virSecretDef *def)
                               def->description);
     if (def->usage_type != VIR_SECRET_USAGE_TYPE_NONE &&
         virSecretDefFormatUsage(&buf, def) < 0)
-        goto error;
+        return NULL;
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</secret>\n");
 
     return virBufferContentAndReset(&buf);
-
- error:
-    return NULL;
 }
