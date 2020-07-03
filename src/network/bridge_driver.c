@@ -332,7 +332,7 @@ networkRunHook(virNetworkObjPtr obj,
                int sub_op)
 {
     virNetworkDefPtr def;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *xml = NULL;
     int hookret;
     int ret = -1;
@@ -370,7 +370,6 @@ networkRunHook(virNetworkObjPtr obj,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&buf);
     VIR_FREE(xml);
     return ret;
 }
@@ -1093,7 +1092,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                            dnsmasqCapsPtr caps G_GNUC_UNUSED)
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
-    virBuffer configbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) configbuf = VIR_BUFFER_INITIALIZER;
     int r, ret = -1;
     int nbleases = 0;
     size_t i;
@@ -1577,7 +1576,6 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
  cleanup:
     VIR_FREE(saddr);
     VIR_FREE(eaddr);
-    virBufferFreeAndReset(&configbuf);
     return ret;
 }
 
@@ -1843,7 +1841,7 @@ networkRadvdConfContents(virNetworkObjPtr obj,
                          char **configstr)
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
-    virBuffer configbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) configbuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
     size_t i;
     virNetworkIPDefPtr ipdef;
@@ -1907,7 +1905,6 @@ networkRadvdConfContents(virNetworkObjPtr obj,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&configbuf);
     return ret;
 }
 
