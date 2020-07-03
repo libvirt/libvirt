@@ -1380,13 +1380,12 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
 {
     g_auto(virBuffer) map_value = VIR_BUFFER_INITIALIZER;
     size_t i;
-    int ret = -1;
 
     /* The kernel supports up to 340 lines in /proc/<pid>/{g,u}id_map */
     if (num > 340) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Too many id mappings defined."));
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < num; i++)
@@ -1397,12 +1396,10 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
 
     if (virFileWriteStr(path, virBufferCurrentContent(&map_value), 0) < 0) {
         virReportSystemError(errno, _("unable write to %s"), path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /**
