@@ -717,7 +717,7 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
                                 char **opts,
                                 struct _virStorageBackendQemuImgInfo *info)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (info->backingPath)
         virBufferAsprintf(&buf, "backing_fmt=%s,",
@@ -761,7 +761,6 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
     return 0;
 
  error:
-    virBufferFreeAndReset(&buf);
     return -1;
 }
 
@@ -934,7 +933,7 @@ storageBackendCreateQemuImgSecretObject(virCommandPtr cmd,
                                         const char *secretPath,
                                         const char *secretAlias)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *commandStr = NULL;
 
     virBufferAsprintf(&buf, "secret,id=%s,file=", secretAlias);
@@ -958,7 +957,7 @@ storageBackendResizeQemuImgImageOpts(virCommandPtr cmd,
                                      const char *path,
                                      const char *secretAlias)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *commandStr = NULL;
 
     virBufferAsprintf(&buf, "driver=luks,key-secret=%s,file.filename=",
@@ -4058,7 +4057,7 @@ virStorageBackendFileSystemMountAddOptions(virCommandPtr cmd,
                                            const char *providedOpts)
 {
     g_autofree char *mountOpts = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (*default_mount_opts != '\0')
         virBufferAsprintf(&buf, "%s,", default_mount_opts);

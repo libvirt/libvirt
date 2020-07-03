@@ -86,7 +86,7 @@ virDomainDriverGenerateMachineName(const char *drivername,
                                    const char *name,
                                    bool privileged)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (root) {
         g_autofree char *hash = NULL;
@@ -100,10 +100,9 @@ virDomainDriverGenerateMachineName(const char *drivername,
         if (!privileged) {
 
             g_autofree char *username = NULL;
-            if (!(username = virGetUserName(geteuid()))) {
-                virBufferFreeAndReset(&buf);
+            if (!(username = virGetUserName(geteuid())))
                 return NULL;
-            }
+
             virBufferAsprintf(&buf, "%s-", username);
         }
     }

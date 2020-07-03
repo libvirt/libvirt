@@ -825,7 +825,7 @@ virLockManagerSanlockRegisterKillscript(int sock,
                                         const char *uuidstr,
                                         virDomainLockFailureAction action)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *path;
     char *args = NULL;
     int ret = -1;

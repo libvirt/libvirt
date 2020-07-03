@@ -907,7 +907,7 @@ storage_source_add_files(virStorageSourcePtr src,
 static int
 get_files(vahControl * ctl)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int rc = -1;
     size_t i;
     char *uuid;
@@ -1448,7 +1448,6 @@ int
 main(int argc, char **argv)
 {
     vahControl _ctl, *ctl = &_ctl;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
     int rc = -1;
     char *profile = NULL;
     char *include_file = NULL;
@@ -1496,6 +1495,7 @@ main(int argc, char **argv)
         }
     } else if (ctl->cmd == 'c' || ctl->cmd == 'r') {
         char *included_files = NULL;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
         if (ctl->cmd == 'c' && virFileExists(profile))
             vah_error(ctl, 1, _("profile exists"));

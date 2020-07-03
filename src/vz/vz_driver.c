@@ -456,7 +456,7 @@ vzConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
     vzConnPtr privconn = conn->privateData;
     vzDriverPtr driver = privconn->driver;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(0, NULL);
 
@@ -2741,7 +2741,7 @@ vzBakeCookie(vzDriverPtr driver,
              unsigned int flags)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!cookieout || !cookieoutlen) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

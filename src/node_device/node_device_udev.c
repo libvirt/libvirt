@@ -294,7 +294,7 @@ udevGenerateDeviceName(struct udev_device *device,
                        const char *s)
 {
     size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, "%s_%s",
                       udev_device_get_subsystem(device),

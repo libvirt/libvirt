@@ -3060,7 +3060,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     size_t i;
     int sched_cpu_affinity_length;
     unsigned char zero[VIR_UUID_BUFLEN];
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     char *preliminaryDisplayName = NULL;
     char *displayName = NULL;
     char *annotation = NULL;
@@ -3445,9 +3445,6 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     vmx = virBufferContentAndReset(&buffer);
 
  cleanup:
-    if (vmx == NULL)
-        virBufferFreeAndReset(&buffer);
-
     VIR_FREE(preliminaryDisplayName);
     VIR_FREE(displayName);
     VIR_FREE(annotation);
