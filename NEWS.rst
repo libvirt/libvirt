@@ -8,7 +8,7 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v6.5.0 (unreleased)
+v6.5.0 (2020-07-03)
 ===================
 
 * **New features**
