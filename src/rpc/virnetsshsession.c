@@ -287,7 +287,7 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
     int keyType;
     size_t keyLength;
     char *errmsg;
-    virBuffer buff = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buff = VIR_BUFFER_INITIALIZER;
     virConnectCredential askKey;
     struct libssh2_knownhost *knownHostEntry = NULL;
     size_t i;

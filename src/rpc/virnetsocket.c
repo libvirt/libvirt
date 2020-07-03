@@ -849,7 +849,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
 {
     char *quoted;
     virCommandPtr cmd;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     *retsock = NULL;
 

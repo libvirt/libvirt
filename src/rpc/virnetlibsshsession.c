@@ -664,7 +664,7 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSessionPtr sess,
     while (ret == SSH_AUTH_INFO) {
         const char *name, *instruction;
         int nprompts, iprompt;
-        virBuffer buff = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buff = VIR_BUFFER_INITIALIZER;
 
         name = ssh_userauth_kbdint_getname(sess->session);
         instruction = ssh_userauth_kbdint_getinstruction(sess->session);
@@ -706,7 +706,7 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSessionPtr sess,
              * buffer if specified
              */
             if (virBufferUse(&buff) > 0) {
-                virBuffer prompt_buff = VIR_BUFFER_INITIALIZER;
+                g_auto(virBuffer) prompt_buff = VIR_BUFFER_INITIALIZER;
 
                 virBufferAddBuffer(&prompt_buff, &buff);
                 virBufferAdd(&prompt_buff, promptStr, promptStrLen);
@@ -750,11 +750,8 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSessionPtr sess,
 
          prompt_error:
             VIR_FREE(prompt);
-            virBufferFreeAndReset(&buff);
             return SSH_AUTH_ERROR;
         }
-
-        virBufferFreeAndReset(&buff);
 
         ret = ssh_userauth_kbdint(sess->session, NULL, NULL);
         ++try;
