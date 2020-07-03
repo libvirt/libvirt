@@ -1272,19 +1272,15 @@ int
 virXMLValidatorValidate(virXMLValidatorPtr validator,
                         xmlDocPtr doc)
 {
-    int ret = -1;
-
     if (xmlRelaxNGValidateDoc(validator->rngValid, doc) != 0) {
         virReportError(VIR_ERR_XML_INVALID_SCHEMA,
                        _("Unable to validate doc against %s\n%s"),
                        validator->schemafile,
                        virBufferCurrentContent(&validator->buf));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

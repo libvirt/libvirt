@@ -361,16 +361,12 @@ char *
 virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr srcdef)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *ret = NULL;
 
     if (virQEMUBuildCommandLineJSON(srcdef, &buf, NULL, false,
                                     virQEMUBuildCommandLineJSONArrayNumbered) < 0)
-        goto cleanup;
+        return NULL;
 
-    ret = virBufferContentAndReset(&buf);
-
- cleanup:
-    return ret;
+    return virBufferContentAndReset(&buf);
 }
 
 
