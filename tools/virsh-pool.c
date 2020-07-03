@@ -330,9 +330,10 @@ virshBuildPoolXML(vshControl *ctl,
     VSH_EXCLUSIVE_OPTIONS("secret-usage", "secret-uuid");
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
-        goto cleanup;
+        return false;
+
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
-        goto cleanup;
+        return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "source-host", &srcHost) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "source-path", &srcPath) < 0 ||
@@ -351,8 +352,9 @@ virshBuildPoolXML(vshControl *ctl,
         vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwnn", &adapterParentWwnn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwpn", &adapterParentWwpn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-parent-fabric-wwn", &adapterParentFabricWwn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "source-protocol-ver", &protoVer) < 0)
-        goto cleanup;
+        vshCommandOptStringReq(ctl, cmd, "source-protocol-ver", &protoVer) < 0) {
+        return false;
+    }
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
     virBufferAdjustIndent(&buf, 2);
@@ -419,9 +421,6 @@ virshBuildPoolXML(vshControl *ctl,
     *xml = virBufferContentAndReset(&buf);
     *retname = name;
     return true;
-
- cleanup:
-    return false;
 }
 
 /*
