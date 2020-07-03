@@ -1842,7 +1842,6 @@ networkRadvdConfContents(virNetworkObjPtr obj,
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     g_auto(virBuffer) configbuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
     size_t i;
     virNetworkIPDefPtr ipdef;
     bool v6present = false, dhcp6 = false;
@@ -1859,10 +1858,8 @@ networkRadvdConfContents(virNetworkObjPtr obj,
     }
 
     /* If there are no IPv6 addresses, then we are done */
-    if (!v6present) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!v6present)
+        return 0;
 
     /* create radvd config file appropriate for this network;
      * IgnoreIfMissing allows radvd to start even when the bridge is down
@@ -1887,10 +1884,11 @@ networkRadvdConfContents(virNetworkObjPtr obj,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("bridge '%s' has an invalid prefix"),
                            def->bridge);
-            goto cleanup;
+            return -1;
         }
         if (!(netaddr = virSocketAddrFormat(&ipdef->address)))
-            goto cleanup;
+            return -1;
+
         virBufferAsprintf(&configbuf,
                           "  prefix %s/%d\n"
                           "  {\n%s  };\n",
@@ -1903,9 +1901,7 @@ networkRadvdConfContents(virNetworkObjPtr obj,
 
     *configstr = virBufferContentAndReset(&configbuf);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
