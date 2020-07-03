@@ -25264,7 +25264,7 @@ static int
 virDomainDiskDefFormatIotune(virBufferPtr buf,
                              virDomainDiskDefPtr disk)
 {
-    virBuffer childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     FORMAT_IOTUNE(total_bytes_sec);
     FORMAT_IOTUNE(read_bytes_sec);
@@ -25309,7 +25309,7 @@ static int
 virDomainDiskDefFormatDriver(virBufferPtr buf,
                              virDomainDiskDefPtr disk)
 {
-    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) driverBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferEscapeString(&driverBuf, " name='%s'", virDomainDiskGetDriver(disk));
 
@@ -26293,7 +26293,7 @@ static int
 virDomainVirtioNetGuestOptsFormat(char **outstr,
                                   virDomainNetDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     if (def->driver.virtio.guest.csum) {
         virBufferAsprintf(&buf, "csum='%s' ",
                           virTristateSwitchTypeToString(def->driver.virtio.guest.csum));
@@ -26325,7 +26325,7 @@ static int
 virDomainVirtioNetHostOptsFormat(char **outstr,
                                  virDomainNetDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     if (def->driver.virtio.host.csum) {
         virBufferAsprintf(&buf, "csum='%s' ",
                           virTristateSwitchTypeToString(def->driver.virtio.host.csum));
@@ -26365,7 +26365,7 @@ static int
 virDomainVirtioNetDriverFormat(char **outstr,
                                virDomainNetDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     if (def->driver.virtio.name) {
         virBufferAsprintf(&buf, " name='%s'",
                           virDomainNetBackendTypeToString(def->driver.virtio.name));
@@ -29997,7 +29997,7 @@ virDomainDefFormat(virDomainDefPtr def,
                    virDomainXMLOptionPtr xmlopt,
                    unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS, NULL);
     if (virDomainDefFormatInternal(def, xmlopt, &buf, flags) < 0)

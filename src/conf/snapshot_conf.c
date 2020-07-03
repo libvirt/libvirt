@@ -927,7 +927,7 @@ virDomainSnapshotDefFormat(const char *uuidstr,
                            virDomainXMLOptionPtr xmlopt,
                            unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE |
                   VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL |

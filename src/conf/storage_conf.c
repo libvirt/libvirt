@@ -1223,7 +1223,7 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
 char *
 virStoragePoolDefFormat(virStoragePoolDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virStoragePoolDefFormatBuf(&buf, def) < 0)
         goto error;
@@ -1231,7 +1231,6 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def)
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -1594,7 +1593,7 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
                        virStorageVolDefPtr def)
 {
     virStorageVolOptionsPtr options;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     options = virStorageVolOptionsForPoolType(pool->type);
     if (options == NULL)
@@ -1663,7 +1662,6 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
     return virBufferContentAndReset(&buf);
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -1686,7 +1684,7 @@ int
 virStoragePoolSaveState(const char *stateFile,
                         virStoragePoolDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *xml = NULL;
 
     virBufferAddLit(&buf, "<poolstate>\n");
@@ -1743,7 +1741,7 @@ char *
 virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
 {
     virStoragePoolOptionsPtr options;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *type;
     size_t i;
 
@@ -1770,6 +1768,5 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
     return virBufferContentAndReset(&buf);
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }

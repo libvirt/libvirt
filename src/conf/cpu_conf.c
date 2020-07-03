@@ -668,7 +668,7 @@ char *
 virCPUDefFormat(virCPUDefPtr def,
                 virDomainNumaPtr numa)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virCPUDefFormatBufFull(&buf, def, numa) < 0)
         goto cleanup;
@@ -676,7 +676,6 @@ virCPUDefFormat(virCPUDefPtr def,
     return virBufferContentAndReset(&buf);
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -687,8 +686,8 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                        virDomainNumaPtr numa)
 {
     int ret = -1;
-    virBuffer attributeBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attributeBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (!def)
         return 0;
@@ -755,8 +754,6 @@ virCPUDefFormatBufFull(virBufferPtr buf,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&attributeBuf);
-    virBufferFreeAndReset(&childrenBuf);
     return ret;
 }
 

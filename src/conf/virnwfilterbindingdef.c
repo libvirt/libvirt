@@ -223,12 +223,10 @@ virNWFilterBindingDefParseFile(const char *filename)
 char *
 virNWFilterBindingDefFormat(const virNWFilterBindingDef *def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (virNWFilterBindingDefFormatBuf(&buf, def) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virNWFilterBindingDefFormatBuf(&buf, def) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }

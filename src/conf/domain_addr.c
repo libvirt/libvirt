@@ -1941,7 +1941,7 @@ virDomainUSBAddressPortFormatBuf(virBufferPtr buf,
 static char * ATTRIBUTE_NONNULL(1)
 virDomainUSBAddressPortFormat(unsigned int *port)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainUSBAddressPortFormatBuf(&buf, port);
     return virBufferContentAndReset(&buf);
 }

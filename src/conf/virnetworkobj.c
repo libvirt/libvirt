@@ -815,7 +815,7 @@ virNetworkObjFormat(virNetworkObjPtr obj,
                     virNetworkXMLOptionPtr xmlopt,
                     unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *classIdStr = virBitmapFormat(obj->classIdMap);
     size_t i;
 
@@ -843,7 +843,6 @@ virNetworkObjFormat(virNetworkObjPtr obj,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 

@@ -277,7 +277,7 @@ virSecretDefFormatUsage(virBufferPtr buf,
 char *
 virSecretDefFormat(const virSecretDef *def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -301,6 +301,5 @@ virSecretDefFormat(const virSecretDef *def)
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }

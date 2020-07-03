@@ -502,7 +502,7 @@ virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
                              virDomainXMLOptionPtr xmlopt,
                              unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(VIR_DOMAIN_CHECKPOINT_FORMAT_SECURE |
                   VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN |
