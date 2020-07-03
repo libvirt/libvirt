@@ -369,7 +369,7 @@ int
 esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
                     unsigned long long offset, unsigned long long *length)
 {
-    char *range = NULL;
+    g_autofree char *range = NULL;
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     int responseCode = 0;
 
@@ -405,21 +405,18 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
     virMutexUnlock(&curl->lock);
 
     if (responseCode < 0) {
-        goto cleanup;
+        return -1;
     } else if (responseCode != 200 && responseCode != 206) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("HTTP response code %d for download from '%s'"),
                        responseCode, url);
-        goto cleanup;
+        return -1;
     }
 
     if (length)
         *length = virBufferUse(&buffer);
 
     *content = virBufferContentAndReset(&buffer);
-
- cleanup:
-    VIR_FREE(range);
 
     if (!(*content))
         return -1;
