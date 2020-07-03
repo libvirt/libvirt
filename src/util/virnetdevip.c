@@ -660,7 +660,7 @@ virNetDevIPCheckIPv6Forwarding(void)
     }
 
     if (!valid) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         for (i = 0; i < data.ndevices; i++) {
             virBufferAdd(&buf, data.devices[i], -1);
             if (i < data.ndevices - 1)
@@ -672,7 +672,6 @@ virNetDevIPCheckIPv6Forwarding(void)
                          "RA routes without accept_ra set to 2 is likely to cause "
                          "routes loss. Interfaces to look at: %s"),
                        virBufferCurrentContent(&buf));
-        virBufferFreeAndReset(&buf);
     }
 
  cleanup:

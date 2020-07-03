@@ -641,7 +641,7 @@ static char *
 virFirewallRuleToString(virFirewallRulePtr rule)
 {
     const char *bin = virFirewallLayerCommandTypeToString(rule->layer);
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     virBufferAdd(&buf, bin, -1);

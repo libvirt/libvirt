@@ -360,7 +360,7 @@ virQEMUBuildObjectCommandlineFromJSON(virBufferPtr buf,
 char *
 virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr srcdef)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;
 
     if (virQEMUBuildCommandLineJSON(srcdef, &buf, NULL, false,
@@ -370,7 +370,6 @@ virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr srcdef)
     ret = virBufferContentAndReset(&buf);
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 

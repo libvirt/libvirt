@@ -1071,7 +1071,7 @@ char *
 virLogGetFilters(void)
 {
     size_t i;
-    virBuffer filterbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) filterbuf = VIR_BUFFER_INITIALIZER;
 
     virLogLock();
     for (i = 0; i < virLogNbFilters; i++) {
@@ -1098,7 +1098,7 @@ char *
 virLogGetOutputs(void)
 {
     size_t i;
-    virBuffer outputbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) outputbuf = VIR_BUFFER_INITIALIZER;
 
     virLogLock();
     for (i = 0; i < virLogNbOutputs; i++) {
@@ -1131,7 +1131,6 @@ virLogGetOutputs(void)
 
  error:
     virLogUnlock();
-    virBufferFreeAndReset(&outputbuf);
     return NULL;
 }
 

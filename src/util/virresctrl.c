@@ -1587,20 +1587,16 @@ virResctrlAllocFormatCache(virResctrlAllocPtr alloc,
 char *
 virResctrlAllocFormat(virResctrlAllocPtr alloc)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!alloc)
         return NULL;
 
-    if (virResctrlAllocFormatCache(alloc, &buf) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virResctrlAllocFormatCache(alloc, &buf) < 0)
         return NULL;
-    }
 
-    if (virResctrlAllocMemoryBandwidthFormat(alloc, &buf) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virResctrlAllocMemoryBandwidthFormat(alloc, &buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }

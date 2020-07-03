@@ -139,7 +139,7 @@ addnhostsNew(const char *name,
              const char *config_dir)
 {
     dnsmasqAddnHostsfile *addnhostsfile;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (VIR_ALLOC(addnhostsfile) < 0)
         return NULL;
@@ -157,7 +157,6 @@ addnhostsNew(const char *name,
     return addnhostsfile;
 
  error:
-    virBufferFreeAndReset(&buf);
     addnhostsFree(addnhostsfile);
     return NULL;
 }
@@ -342,7 +341,7 @@ hostsfileNew(const char *name,
              const char *config_dir)
 {
     dnsmasqHostsfile *hostsfile;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (VIR_ALLOC(hostsfile) < 0)
         return NULL;
@@ -359,7 +358,6 @@ hostsfileNew(const char *name,
     return hostsfile;
 
  error:
-    virBufferFreeAndReset(&buf);
     hostsfileFree(hostsfile);
     return NULL;
 }

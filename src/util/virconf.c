@@ -1419,7 +1419,7 @@ int virConfWalk(virConfPtr conf,
 int
 virConfWriteFile(const char *filename, virConfPtr conf)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virConfEntryPtr cur;
     int ret;
     int fd;
@@ -1437,7 +1437,6 @@ virConfWriteFile(const char *filename, virConfPtr conf)
 
     fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     if (fd < 0) {
-        virBufferFreeAndReset(&buf);
         virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to open file"));
         return -1;
     }
@@ -1471,7 +1470,7 @@ virConfWriteFile(const char *filename, virConfPtr conf)
 int
 virConfWriteMem(char *memory, int *len, virConfPtr conf)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virConfEntryPtr cur;
     char *content;
     unsigned int use;

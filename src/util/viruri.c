@@ -252,7 +252,7 @@ virURIFormat(virURIPtr uri)
 
 char *virURIFormatParams(virURIPtr uri)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     bool amp = false;
 

@@ -101,7 +101,7 @@ virFileCacheGetFileName(virFileCachePtr cache,
                         const char *name)
 {
     g_autofree char *namehash = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &namehash) < 0)
         return NULL;

@@ -1573,8 +1573,8 @@ virSysinfoFormatFWCfg(virBufferPtr buf,
 int
 virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
     const char *type = virSysinfoTypeToString(def->type);
 
     if (!type) {

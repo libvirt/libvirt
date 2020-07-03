@@ -1263,7 +1263,7 @@ virSocketAddrPTRDomain(const virSocketAddr *addr,
                        unsigned int prefix,
                        char **ptr)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     int ret = -1;
 
@@ -1303,7 +1303,6 @@ virSocketAddrPTRDomain(const virSocketAddr *addr,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return ret;
 
  unsupported:

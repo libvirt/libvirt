@@ -4255,7 +4255,7 @@ virStorageFileCanonicalizeFormatPath(char **components,
                                      bool beginSlash,
                                      bool beginDoubleSlash)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     char *ret = NULL;
 

@@ -345,7 +345,7 @@ virBitmapToString(virBitmapPtr bitmap,
                   bool prefix,
                   bool trim)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t sz;
     size_t len;
     size_t diff;
@@ -404,7 +404,7 @@ virBitmapToString(virBitmapPtr bitmap,
 char *
 virBitmapFormat(virBitmapPtr bitmap)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool first = true;
     int start, cur, prev;
 

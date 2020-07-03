@@ -1303,7 +1303,7 @@ int
 virBuildPathInternal(char **path, ...)
 {
     char *path_component = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     va_list ap;
     int ret = 0;
 
