@@ -397,7 +397,7 @@ learnIPAddressThread(void *arg)
                        req->binding->portdevname);
     int dhcp_opts_len;
     char macaddr[VIR_MAC_STRING_BUFLEN];
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *filter = NULL;
     uint16_t etherType;
     bool showError = true;

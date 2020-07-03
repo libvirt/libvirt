@@ -426,15 +426,13 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                 if (!virNWFilterVarAccessIsAvailable(rule->varAccess[j],
                                                      vars)) {
                     char *varAccess;
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
+                    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
                     virNWFilterVarAccessPrint(rule->varAccess[j], &buf);
 
                     val = virNWFilterVarValueCreateSimpleCopyValue("1");
-                    if (!val) {
-                        virBufferFreeAndReset(&buf);
+                    if (!val)
                         return -1;
-                    }
 
                     varAccess = virBufferContentAndReset(&buf);
                     rc = virHashUpdateEntry(missing_vars, varAccess, val);

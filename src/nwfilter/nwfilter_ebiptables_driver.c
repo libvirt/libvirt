@@ -190,7 +190,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
     bool done;
     char *data;
     uint8_t ctr;
-    virBuffer vb = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) vb = VIR_BUFFER_INITIALIZER;
     char *flags;
 
     if (printVar(vars, buf, bufsize, item, &done) < 0)
@@ -1528,7 +1528,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
 static int
 printStateMatchFlags(int32_t flags, char **bufptr)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virNWFilterPrintStateMatchFlags(&buf,
                                     "",
                                     flags,
@@ -1798,7 +1798,7 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
     bool hasMask = false;
     virFirewallRulePtr fwrule;
     int ret = -1;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (STREQ(chainSuffix,
               virNWFilterChainSuffixTypeToString(
@@ -2423,8 +2423,6 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&buf);
-
     return ret;
 }
 
