@@ -322,7 +322,7 @@ xenFormatXMDisk(virConfValuePtr list,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported disk type %s"),
                                virStorageTypeToString(virDomainDiskGetType(disk)));
-                goto cleanup;
+                return -1;
             }
         }
         virBufferAdd(&buf, src, -1);
@@ -346,7 +346,7 @@ xenFormatXMDisk(virConfValuePtr list,
     }
 
     if (VIR_ALLOC(val) < 0)
-        goto cleanup;
+        return -1;
 
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
@@ -359,9 +359,6 @@ xenFormatXMDisk(virConfValuePtr list,
         list->list = val;
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 

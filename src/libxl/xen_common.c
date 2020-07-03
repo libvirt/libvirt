@@ -1640,13 +1640,13 @@ xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
     if (serial) {
         ret = xenFormatSxprChr(serial, &buf);
         if (ret < 0)
-            goto cleanup;
+            return -1;
     } else {
         virBufferAddLit(&buf, "none");
     }
 
     if (VIR_ALLOC(val) < 0)
-        goto cleanup;
+        return -1;
 
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
@@ -1659,9 +1659,6 @@ xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
         list->list = val;
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 char *
@@ -1781,12 +1778,12 @@ xenFormatNet(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_USER:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%s'"),
                        virDomainNetTypeToString(net->type));
-        goto cleanup;
+        return -1;
 
     case VIR_DOMAIN_NET_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainNetType, net->type);
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainNetGetModelString(net)) {
@@ -1810,7 +1807,7 @@ xenFormatNet(virConnectPtr conn,
         virBufferAsprintf(&buf, ",rate=%lluKB/s", net->bandwidth->out->average);
 
     if (VIR_ALLOC(val) < 0)
-        goto cleanup;
+        return -1;
 
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
@@ -1823,9 +1820,6 @@ xenFormatNet(virConnectPtr conn,
         list->list = val;
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 

@@ -910,7 +910,6 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
                            const char *username,
                            const char *secret)
 {
-    char *ret = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
@@ -931,14 +930,14 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("Unsupported network block protocol '%s'"),
                        virStorageNetProtocolTypeToString(src->protocol));
-        goto cleanup;
+        return NULL;
 
     case VIR_STORAGE_NET_PROTOCOL_RBD:
         if (strchr(src->path, ':')) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("':' not allowed in RBD source volume name '%s'"),
                            src->path);
-            goto cleanup;
+            return NULL;
         }
 
         virBufferStrcat(&buf, "rbd:", src->volume, "/", src->path, NULL);
@@ -973,12 +972,10 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
         if (src->configFile)
             virBufferEscape(&buf, '\\', ":", ":conf=%s", src->configFile);
 
-        ret = virBufferContentAndReset(&buf);
-        break;
+        return virBufferContentAndReset(&buf);
     }
 
- cleanup:
-    return ret;
+    return NULL;
 }
 
 static int
