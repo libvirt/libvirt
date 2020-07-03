@@ -100,7 +100,6 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
     virBufferPtr buf = NULL;
     g_autofree char *result = NULL;
     const char *expected = "a,b";
-    int ret = -1;
 
     virBufferTrim(buf, "");
     buf = &bufinit;
@@ -120,13 +119,10 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
     result = virBufferContentAndReset(buf);
     if (!result || STRNEQ(result, expected)) {
         virTestDifference(stderr, expected, result);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -158,7 +154,6 @@ static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
     g_auto(virBuffer) buf1 = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) buf2 = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) buf3 = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
     g_autofree char *result = NULL;
     const char *expected = \
 "  A long time ago, in a galaxy far,\n" \
@@ -178,17 +173,17 @@ static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
 
     if (virBufferUse(&buf1)) {
         VIR_TEST_DEBUG("buf1 already in use");
-        goto cleanup;
+        return -1;
     }
 
     if (virBufferUse(&buf2)) {
         VIR_TEST_DEBUG("buf2 already in use");
-        goto cleanup;
+        return -1;
     }
 
     if (virBufferUse(&buf3)) {
         VIR_TEST_DEBUG("buf3 already in use");
-        goto cleanup;
+        return -1;
     }
 
     virBufferAdjustIndent(&buf1, 2);
@@ -213,52 +208,50 @@ static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
 
     if (!virBufferUse(&buf1)) {
         VIR_TEST_DEBUG("Error adding to buf1");
-        goto cleanup;
+        return -1;
     }
 
     if (!virBufferUse(&buf2)) {
         VIR_TEST_DEBUG("Error adding to buf2");
-        goto cleanup;
+        return -1;
     }
 
     if (!virBufferUse(&buf3)) {
         VIR_TEST_DEBUG("Error adding to buf3");
-        goto cleanup;
+        return -1;
     }
 
     virBufferAddBuffer(&buf2, &buf3);
 
     if (!virBufferUse(&buf2)) {
         VIR_TEST_DEBUG("buf2 cleared mistakenly");
-        goto cleanup;
+        return -1;
     }
 
     if (virBufferUse(&buf3)) {
         VIR_TEST_DEBUG("buf3 is not clear even though it should be");
-        goto cleanup;
+        return -1;
     }
 
     virBufferAddBuffer(&buf1, &buf2);
 
     if (!virBufferUse(&buf1)) {
         VIR_TEST_DEBUG("buf1 cleared mistakenly");
-        goto cleanup;
+        return -1;
     }
 
     if (virBufferUse(&buf2)) {
         VIR_TEST_DEBUG("buf2 is not clear even though it should be");
-        goto cleanup;
+        return -1;
     }
 
     result = virBufferContentAndReset(&buf1);
     if (STRNEQ_NULLABLE(result, expected)) {
         virTestDifference(stderr, expected, result);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
