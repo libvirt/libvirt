@@ -749,7 +749,7 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
                                _("lazy_refcounts not supported with compat"
                                  " level %s"),
                                info->compat);
-                goto error;
+                return -1;
             }
             virBufferAddLit(&buf, "lazy_refcounts,");
         }
@@ -759,9 +759,6 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
 
     *opts = virBufferContentAndReset(&buf);
     return 0;
-
- error:
-    return -1;
 }
 
 
