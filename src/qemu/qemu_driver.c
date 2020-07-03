@@ -22823,8 +22823,10 @@ qemuNodeGetSEVInfo(virConnectPtr conn,
     if (virNodeGetSevInfoEnsureACL(conn) < 0)
         return -1;
 
-    qemucaps = virQEMUCapsCacheLookupByArch(driver->qemuCapsCache,
-                                            virArchFromHost());
+    qemucaps = virQEMUCapsCacheLookupDefault(driver->qemuCapsCache,
+                                             NULL, NULL, NULL, NULL,
+                                             NULL, NULL, NULL);
+
     if (!qemucaps)
         return -1;
 
