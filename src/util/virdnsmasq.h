@@ -78,10 +78,14 @@ typedef enum {
 typedef struct _dnsmasqCaps dnsmasqCaps;
 typedef dnsmasqCaps *dnsmasqCapsPtr;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(dnsmasqCaps, virObjectUnref);
+
 
 dnsmasqContext * dnsmasqContextNew(const char *network_name,
                                    const char *config_dir);
 void             dnsmasqContextFree(dnsmasqContext *ctx);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(dnsmasqContext, dnsmasqContextFree);
+
 int              dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                                     const char *mac,
                                     virSocketAddr *ip,
