@@ -29581,8 +29581,10 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     if (def->resource)
         virDomainResourceDefFormat(buf, def->resource);
 
-    for (i = 0; i < def->nsysinfo; i++)
-        virSysinfoFormat(buf, def->sysinfo[i]);
+    for (i = 0; i < def->nsysinfo; i++) {
+        if (virSysinfoFormat(buf, def->sysinfo[i]) < 0)
+            goto error;
+    }
 
     if (def->os.bootloader) {
         virBufferEscapeString(buf, "<bootloader>%s</bootloader>\n",
