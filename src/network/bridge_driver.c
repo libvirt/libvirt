@@ -197,18 +197,14 @@ networkDnsmasqDefNamespaceParse(xmlXPathContextPtr ctxt,
                                 void **data)
 {
     g_autoptr(networkDnsmasqXmlNsDef) nsdata = g_new0(networkDnsmasqXmlNsDef, 1);
-    int ret = -1;
 
     if (networkDnsmasqDefNamespaceParseOptions(nsdata, ctxt))
-        goto cleanup;
+        return -1;
 
     if (nsdata->noptions > 0)
         *data = g_steal_pointer(&nsdata);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -331,22 +327,20 @@ networkRunHook(virNetworkObjPtr obj,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *xml = NULL;
     int hookret;
-    int ret = -1;
 
     if (virHookPresent(VIR_HOOK_DRIVER_NETWORK)) {
         if (!obj) {
             VIR_DEBUG("Not running hook as @obj is NULL");
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
         def = virNetworkObjGetDef(obj);
 
         virBufferAddLit(&buf, "<hookData>\n");
         virBufferAdjustIndent(&buf, 2);
         if (virNetworkDefFormatBuf(&buf, def, network_driver->xmlopt, 0) < 0)
-            goto cleanup;
+            return -1;
         if (port && virNetworkPortDefFormatBuf(&buf, port) < 0)
-            goto cleanup;
+            return -1;
 
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</hookData>");
@@ -359,14 +353,12 @@ networkRunHook(virNetworkObjPtr obj,
          * If the script raised an error, pass it to the callee.
          */
         if (hookret < 0)
-            goto cleanup;
+            return -1;
 
         networkNetworkObjTaint(obj, VIR_NETWORK_TAINT_HOOK);
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -440,34 +432,32 @@ networkRemoveInactive(virNetworkDriverStatePtr driver,
     g_autoptr(dnsmasqContext) dctx = NULL;
     virNetworkDefPtr def = virNetworkObjGetPersistentDef(obj);
 
-    int ret = -1;
-
     /* remove the (possibly) existing dnsmasq and radvd files */
     if (!(dctx = dnsmasqContextNew(def->name,
                                    driver->dnsmasqStateDir))) {
-        goto cleanup;
+        return -1;
     }
 
     if (!(leasefile = networkDnsmasqLeaseFileNameDefault(driver, def->name)))
-        goto cleanup;
+        return -1;
 
     if (!(customleasefile = networkDnsmasqLeaseFileNameCustom(driver, def->bridge)))
-        goto cleanup;
+        return -1;
 
     if (!(radvdconfigfile = networkRadvdConfigFileName(driver, def->name)))
-        goto cleanup;
+        return -1;
 
     if (!(radvdpidbase = networkRadvdPidfileBasename(def->name)))
-        goto cleanup;
+        return -1;
 
     if (!(configfile = networkDnsmasqConfigFileName(driver, def->name)))
-        goto cleanup;
+        return -1;
 
     if (!(statusfile = virNetworkConfigFile(driver->stateDir, def->name)))
-        goto cleanup;
+        return -1;
 
     if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir, def->bridge)))
-        goto cleanup;
+        return -1;
 
     /* dnsmasq */
     dnsmasqDelete(dctx);
@@ -488,10 +478,7 @@ networkRemoveInactive(virNetworkDriverStatePtr driver,
     /* remove the network definition */
     virNetworkObjRemoveInactive(driver->networks, obj);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -703,7 +690,6 @@ networkStateInitialize(bool privileged,
                        virStateInhibitCallback callback G_GNUC_UNUSED,
                        void *opaque G_GNUC_UNUSED)
 {
-    int ret = VIR_DRV_STATE_INIT_ERROR;
     g_autofree char *configdir = NULL;
     g_autofree char *rundir = NULL;
     bool autostart = true;
@@ -831,13 +817,12 @@ networkStateInitialize(bool privileged,
     }
 #endif
 
-    ret = VIR_DRV_STATE_INIT_COMPLETE;
- cleanup:
-    return ret;
+    return VIR_DRV_STATE_INIT_COMPLETE;
+
 
  error:
     networkStateCleanup();
-    goto cleanup;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 
@@ -1074,7 +1059,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     g_auto(virBuffer) configbuf = VIR_BUFFER_INITIALIZER;
-    int r, ret = -1;
+    int r;
     int nbleases = 0;
     size_t i;
     virNetworkDNSDefPtr dns = &def->dns;
@@ -1138,7 +1123,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                 g_autofree char *addr = virSocketAddrFormat(&fwd->addr);
 
                 if (!addr)
-                    goto cleanup;
+                    return -1;
                 virBufferAsprintf(&configbuf, "%s\n", addr);
                 if (!fwd->domain)
                     addNoResolv = true;
@@ -1165,7 +1150,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
 
     if (wantDNS &&
         networkDnsmasqConfLocalPTRs(&configbuf, def) < 0)
-        goto cleanup;
+        return -1;
 
     if (wantDNS && def->dns.forwardPlainNames == VIR_TRISTATE_BOOL_NO) {
         virBufferAddLit(&configbuf, "domain-needed\n");
@@ -1215,7 +1200,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
             g_autofree char *ipaddr = virSocketAddrFormat(&tmpipdef->address);
 
             if (!ipaddr)
-                goto cleanup;
+                return -1;
 
             /* also part of CVE 2012-3411 - if the host's version of
              * dnsmasq doesn't have bind-dynamic, only allow listening on
@@ -1238,7 +1223,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                                  "(as described in RFC1918/RFC3484/RFC4193)."),
                                ipaddr, (int)version / 1000000,
                                (int)(version % 1000000) / 1000);
-                goto cleanup;
+                return -1;
             }
             virBufferAsprintf(&configbuf, "listen-address=%s\n", ipaddr);
         }
@@ -1279,14 +1264,14 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                                _("Missing required 'service' "
                                  "attribute in SRV record of network '%s'"),
                                def->name);
-                goto cleanup;
+                return -1;
             }
             if (!dns->srvs[i].protocol) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Missing required 'service' "
                                  "attribute in SRV record of network '%s'"),
                                def->name);
-                goto cleanup;
+                return -1;
             }
             /* RFC2782 requires that service and protocol be preceded by
              * an underscore.
@@ -1335,7 +1320,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("For IPv4, multiple DHCP definitions "
                                      "cannot be specified."));
-                    goto cleanup;
+                    return -1;
                 } else {
                     ipv4def = ipdef;
                 }
@@ -1355,13 +1340,13 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                                    (int)(version % 1000000) / 1000,
                                    DNSMASQ_DHCPv6_MAJOR_REQD,
                                    DNSMASQ_DHCPv6_MINOR_REQD);
-                    goto cleanup;
+                    return -1;
                 }
                 if (ipv6def) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("For IPv6, multiple DHCP definitions "
                                      "cannot be specified."));
-                    goto cleanup;
+                    return -1;
                 } else {
                     ipv6def = ipdef;
                 }
@@ -1390,7 +1375,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("bridge '%s' has an invalid prefix"),
                            def->bridge);
-            goto cleanup;
+            return -1;
         }
         for (r = 0; r < ipdef->nranges; r++) {
             int thisRange;
@@ -1401,7 +1386,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
 
             if (!(saddr = virSocketAddrFormat(&range.addr.start)) ||
                 !(eaddr = virSocketAddrFormat(&range.addr.end)))
-                goto cleanup;
+                return -1;
 
             if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
                virBufferAsprintf(&configbuf, "dhcp-range=%s,%s,%d",
@@ -1416,11 +1401,11 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                                    _("Failed to translate bridge '%s' "
                                      "prefix %d to netmask"),
                                    def->bridge, prefix);
-                    goto cleanup;
+                    return -1;
                 }
 
                 if (!(netmaskStr = virSocketAddrFormat(&netmask)))
-                    goto cleanup;
+                    return -1;
                 virBufferAsprintf(&configbuf, "dhcp-range=%s,%s,%s",
                                   saddr, eaddr, netmaskStr);
             }
@@ -1435,7 +1420,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                                               &ipdef->address,
                                               virNetworkIPDefPrefix(ipdef));
             if (thisRange < 0)
-                goto cleanup;
+                return -1;
             nbleases += thisRange;
         }
 
@@ -1448,7 +1433,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
         if (!ipdef->nranges && ipdef->nhosts) {
             g_autofree char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
             if (!bridgeaddr)
-                goto cleanup;
+                return -1;
             virBufferAsprintf(&configbuf, "dhcp-range=%s,static",
                               bridgeaddr);
             if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
@@ -1457,7 +1442,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
         }
 
         if (networkBuildDnsmasqDhcpHostsList(dctx, ipdef) < 0)
-            goto cleanup;
+            return -1;
 
         /* Note: the following is IPv4 only */
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
@@ -1476,7 +1461,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                     g_autofree char *bootserver = virSocketAddrFormat(&ipdef->bootserver);
 
                     if (!bootserver)
-                        goto cleanup;
+                        return -1;
                     virBufferAsprintf(&configbuf, "dhcp-boot=%s%s%s\n",
                                       ipdef->bootfile, ",,", bootserver);
                 } else {
@@ -1492,7 +1477,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
 
     /* this is done once per interface */
     if (networkBuildDnsmasqHostsList(dctx, dns) < 0)
-        goto cleanup;
+        return -1;
 
     /* Even if there are currently no static hosts, if we're
      * listening for DHCP, we should write a 0-length hosts
@@ -1525,7 +1510,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                 if (!(ipdef->nranges || ipdef->nhosts)) {
                     g_autofree char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
                     if (!bridgeaddr)
-                        goto cleanup;
+                        return -1;
                     virBufferAsprintf(&configbuf,
                                       "dhcp-range=%s,ra-only\n", bridgeaddr);
                 }
@@ -1540,15 +1525,12 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
     }
 
     if (!(*configstr = virBufferContentAndReset(&configbuf)))
-        goto cleanup;
+        return -1;
 
     *hostsfilestr = dnsmasqDhcpHostsToString(dctx->hostsfile->hosts,
                                              dctx->hostsfile->nhosts);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1563,7 +1545,6 @@ networkBuildDhcpDaemonCommandLine(virNetworkDriverStatePtr driver,
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     g_autoptr(dnsmasqCaps) dnsmasq_caps = networkGetDnsmasqCaps(driver);
     g_autoptr(virCommand) cmd = NULL;
-    int ret = -1;
     g_autofree char *configfile = NULL;
     g_autofree char *configstr = NULL;
     g_autofree char *hostsfilestr = NULL;
@@ -1573,27 +1554,27 @@ networkBuildDhcpDaemonCommandLine(virNetworkDriverStatePtr driver,
 
     if (networkDnsmasqConfContents(obj, pidfile, &configstr, &hostsfilestr,
                                    dctx, dnsmasq_caps) < 0)
-        goto cleanup;
+        return -1;
     if (!configstr)
-        goto cleanup;
+        return -1;
 
     /* construct the filename */
     if (!(configfile = networkDnsmasqConfigFileName(driver, def->name)))
-        goto cleanup;
+        return -1;
 
     /* Write the file */
     if (virFileWriteStr(configfile, configstr, 0600) < 0) {
         virReportSystemError(errno,
                              _("couldn't write dnsmasq config file '%s'"),
                              configfile);
-        goto cleanup;
+        return -1;
     }
 
     /* This helper is used to create custom leases file for libvirt */
     if (!(leaseshelper_path = virFileFindResource("libvirt_leaseshelper",
                                                   abs_top_builddir "/src",
                                                   LIBEXECDIR)))
-        goto cleanup;
+        return -1;
 
     cmd = virCommandNew(dnsmasqCapsGetBinaryPath(dnsmasq_caps));
     virCommandAddArgFormat(cmd, "--conf-file=%s", configfile);
@@ -1603,9 +1584,7 @@ networkBuildDhcpDaemonCommandLine(virNetworkDriverStatePtr driver,
     virCommandAddEnvPair(cmd, "VIR_BRIDGE_NAME", def->bridge);
 
     *cmdout = g_steal_pointer(&cmd);
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1620,7 +1599,6 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = NULL;
     pid_t dnsmasqPid;
-    int ret = -1;
     g_autoptr(dnsmasqContext) dctx = NULL;
 
     /* see if there are any IP addresses that need a dhcp server */
@@ -1631,53 +1609,46 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
             needDnsmasq = true;
     }
 
-    if (i == 0) {
-        /* no IP addresses at all, so we don't need to run */
-        ret = 0;
-        goto cleanup;
-    }
+    /* no IP addresses at all, so we don't need to run */
+    if (i == 0)
+        return 0;
 
-    if (!needDnsmasq && def->dns.enable == VIR_TRISTATE_BOOL_NO) {
-        /* no DHCP services needed, and user disabled DNS service */
-        ret = 0;
-        goto cleanup;
-    }
+    /* no DHCP services needed, and user disabled DNS service */
+    if (!needDnsmasq && def->dns.enable == VIR_TRISTATE_BOOL_NO)
+        return 0;
 
     if (virFileMakePath(driver->pidDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              driver->pidDir);
-        goto cleanup;
+        return -1;
     }
 
     if (!(pidfile = virPidFileBuildPath(driver->pidDir, def->name)))
-        goto cleanup;
+        return -1;
 
     if (virFileMakePath(driver->dnsmasqStateDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              driver->dnsmasqStateDir);
-        goto cleanup;
+        return -1;
     }
 
     dctx = dnsmasqContextNew(def->name, driver->dnsmasqStateDir);
     if (dctx == NULL)
-        goto cleanup;
+        return -1;
 
     if (networkDnsmasqCapsRefresh(driver) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = networkBuildDhcpDaemonCommandLine(driver, obj, &cmd, pidfile, dctx);
-    if (ret < 0)
-        goto cleanup;
+    if (networkBuildDhcpDaemonCommandLine(driver, obj, &cmd, pidfile, dctx) < 0)
+        return -1;
 
-    ret = dnsmasqSave(dctx);
-    if (ret < 0)
-        goto cleanup;
+    if (dnsmasqSave(dctx) < 0)
+        return -1;
 
-    ret = virCommandRun(cmd, NULL);
-    if (ret < 0)
-        goto cleanup;
+    if (virCommandRun(cmd, NULL) < 0)
+        return -1;
 
     /*
      * There really is no race here - when dnsmasq daemonizes, its
@@ -1687,14 +1658,12 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
      * pid
      */
 
-    ret = virPidFileRead(driver->pidDir, def->name, &dnsmasqPid);
-    if (ret < 0)
-        goto cleanup;
+    if (virPidFileRead(driver->pidDir, def->name, &dnsmasqPid) < 0)
+        return -1;
+
     virNetworkObjSetDnsmasqPid(obj, dnsmasqPid);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1710,7 +1679,6 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
                          virNetworkObjPtr obj)
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
-    int ret = -1;
     size_t i;
     pid_t dnsmasqPid;
     virNetworkIPDefPtr ipdef, ipv4def, ipv6def;
@@ -1726,10 +1694,8 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
         return networkStartDhcpDaemon(driver, obj);
 
     VIR_INFO("Refreshing dnsmasq for network %s", def->bridge);
-    if (!(dctx = dnsmasqContextNew(def->name,
-                                   driver->dnsmasqStateDir))) {
-        goto cleanup;
-    }
+    if (!(dctx = dnsmasqContextNew(def->name, driver->dnsmasqStateDir)))
+        return -1;
 
     /* Look for first IPv4 address that has dhcp defined.
      * We only support dhcp-host config on one IPv4 subnetwork
@@ -1752,21 +1718,20 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
     }
 
     if (ipv4def && (networkBuildDnsmasqDhcpHostsList(dctx, ipv4def) < 0))
-        goto cleanup;
+        return -1;
 
     if (ipv6def && (networkBuildDnsmasqDhcpHostsList(dctx, ipv6def) < 0))
-        goto cleanup;
+        return -1;
 
     if (networkBuildDnsmasqHostsList(dctx, &def->dns) < 0)
-        goto cleanup;
+        return -1;
 
-    if ((ret = dnsmasqSave(dctx)) < 0)
-        goto cleanup;
+    if (dnsmasqSave(dctx) < 0)
+        return -1;
 
     dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
-    ret = kill(dnsmasqPid, SIGHUP);
- cleanup:
-    return ret;
+    return kill(dnsmasqPid, SIGHUP);
+
 }
 
 
@@ -1874,7 +1839,6 @@ networkRadvdConfWrite(virNetworkDriverStatePtr driver,
                       char **configFile)
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
-    int ret = -1;
     g_autofree char *configStr = NULL;
     g_autofree char *myConfigFile = NULL;
 
@@ -1884,27 +1848,24 @@ networkRadvdConfWrite(virNetworkDriverStatePtr driver,
     *configFile = NULL;
 
     if (networkRadvdConfContents(obj, &configStr) < 0)
-        goto cleanup;
+        return -1;
 
-    if (!configStr) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!configStr)
+        return 0;
 
     /* construct the filename */
     if (!(*configFile = networkRadvdConfigFileName(driver, def->name)))
-        goto cleanup;
+        return -1;
+
     /* write the file */
     if (virFileWriteStr(*configFile, configStr, 0600) < 0) {
         virReportSystemError(errno,
                              _("couldn't write radvd config file '%s'"),
                              *configFile);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1919,20 +1880,16 @@ networkStartRadvd(virNetworkDriverStatePtr driver,
     g_autofree char *radvdpidbase = NULL;
     g_autofree char *configfile = NULL;
     g_autoptr(virCommand) cmd = NULL;
-    int ret = -1;
 
     virNetworkObjSetRadvdPid(obj, -1);
 
     /* Is dnsmasq handling RA? */
-    if (DNSMASQ_RA_SUPPORT(dnsmasq_caps)) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (DNSMASQ_RA_SUPPORT(dnsmasq_caps))
+        return 0;
 
     if (!virNetworkDefGetIPByIndex(def, AF_INET6, 0)) {
         /* no IPv6 addresses, so we don't need to run radvd */
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (!virFileIsExecutable(RADVD)) {
@@ -1940,30 +1897,32 @@ networkStartRadvd(virNetworkDriverStatePtr driver,
                              _("Cannot find %s - "
                                "Possibly the package isn't installed"),
                              RADVD);
-        goto cleanup;
+        return -1;
     }
 
     if (virFileMakePath(driver->pidDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              driver->pidDir);
-        goto cleanup;
+        return -1;
     }
+
     if (virFileMakePath(driver->radvdStateDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              driver->radvdStateDir);
-        goto cleanup;
+        return -1;
     }
 
     /* construct pidfile name */
     if (!(radvdpidbase = networkRadvdPidfileBasename(def->name)))
-        goto cleanup;
+        return -1;
+
     if (!(pidfile = virPidFileBuildPath(driver->pidDir, radvdpidbase)))
-        goto cleanup;
+        return -1;
 
     if (networkRadvdConfWrite(driver, obj, &configfile) < 0)
-        goto cleanup;
+        return -1;
 
     /* prevent radvd from daemonizing itself with "--debug 1", and use
      * a dummy pidfile name - virCommand will create the pidfile we
@@ -1983,15 +1942,13 @@ networkStartRadvd(virNetworkDriverStatePtr driver,
     virCommandDaemonize(cmd);
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (virPidFileRead(driver->pidDir, radvdpidbase, &radvdPid) < 0)
-        goto cleanup;
-    virNetworkObjSetRadvdPid(obj, radvdPid);
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    virNetworkObjSetRadvdPid(obj, radvdPid);
+    return 0;
 }
 
 
@@ -2221,8 +2178,7 @@ networkSetIPv6Sysctls(virNetworkObjPtr obj)
         if (!enableIPv6)
             VIR_DEBUG("ipv6 appears to already be disabled on %s",
                       def->bridge);
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (virFileWriteStr(field, enableIPv6 ? "0" : "1", 0) < 0) {
@@ -3191,7 +3147,7 @@ static int
 networkFindUnusedBridgeName(virNetworkObjListPtr nets,
                             virNetworkDefPtr def)
 {
-    int ret = -1, id = 0;
+    int id = 0;
     const char *templ = "virbr%d";
     const char *p;
 
@@ -3212,17 +3168,14 @@ networkFindUnusedBridgeName(virNetworkObjListPtr nets,
               virNetDevExists(newname) == 1)) {
             VIR_FREE(def->bridge); /*could contain template */
             def->bridge = g_steal_pointer(&newname);
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
     } while (++id <= MAX_BRIDGE_ID);
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("Bridge generation exceeded max id %d"),
                    MAX_BRIDGE_ID);
-    ret = 0;
- cleanup:
-    return ret;
+    return -1;
 }
 
 

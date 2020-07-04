@@ -217,7 +217,7 @@ void networkPostReloadFirewallRules(bool startup G_GNUC_UNUSED)
  */
 int networkCheckRouteCollision(virNetworkDefPtr def)
 {
-    int ret = 0, len;
+    int len;
     char *cur;
     g_autofree char *buf = NULL;
     /* allow for up to 100000 routes (each line is 128 bytes) */
@@ -225,7 +225,7 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
 
     /* Read whole routing table into memory */
     if ((len = virFileReadAll(PROC_NET_ROUTE, MAX_ROUTE_SIZE, &buf)) < 0)
-        goto out;
+        return 0;
 
     /* Dropping the last character shouldn't hurt */
     if (len > 0)
@@ -234,7 +234,7 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
     VIR_DEBUG("%s output:\n%s", PROC_NET_ROUTE, buf);
 
     if (!STRPREFIX(buf, "Iface"))
-        goto out;
+        return 0;
 
     /* First line is just headings, skip it */
     cur = strchr(buf, '\n');
@@ -296,8 +296,7 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Network is already in use by interface %s"),
                                iface);
-                ret = -1;
-                goto out;
+                return -1;
             }
         }
 
@@ -323,14 +322,12 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
                                _("Route address '%s' conflicts "
                                  "with IP address for '%s'"),
                                NULLSTR(addr_str), iface);
-                ret = -1;
-                goto out;
+                return -1;
             }
         }
     }
 
- out:
-    return ret;
+    return 0;
 }
 
 static const char networkLocalMulticastIPv4[] = "224.0.0.0/24";
