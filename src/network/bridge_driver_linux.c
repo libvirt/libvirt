@@ -838,7 +838,7 @@ int networkAddFirewallRules(virNetworkDefPtr def)
 {
     size_t i;
     virNetworkIPDefPtr ipdef;
-    virFirewallPtr fw = NULL;
+    g_autoptr(virFirewall) fw = virFirewallNew();
     int ret = -1;
 
     if (virOnce(&createdOnce, networkSetupPrivateChains) < 0)
@@ -925,8 +925,6 @@ int networkAddFirewallRules(virNetworkDefPtr def)
         }
     }
 
-    fw = virFirewallNew();
-
     virFirewallStartTransaction(fw, 0);
 
     networkAddGeneralFirewallRules(fw, def);
@@ -956,7 +954,6 @@ int networkAddFirewallRules(virNetworkDefPtr def)
 
     ret = 0;
  cleanup:
-    virFirewallFree(fw);
     return ret;
 }
 
@@ -965,9 +962,7 @@ void networkRemoveFirewallRules(virNetworkDefPtr def)
 {
     size_t i;
     virNetworkIPDefPtr ipdef;
-    virFirewallPtr fw = NULL;
-
-    fw = virFirewallNew();
+    g_autoptr(virFirewall) fw = virFirewallNew();
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
     networkRemoveChecksumFirewallRules(fw, def);
@@ -985,5 +980,5 @@ void networkRemoveFirewallRules(virNetworkDefPtr def)
     virFirewallApply(fw);
 
  cleanup:
-    virFirewallFree(fw);
+    return;
 }

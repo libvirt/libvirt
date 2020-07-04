@@ -128,7 +128,7 @@ iptablesPrivateChainCreate(virFirewallPtr fw,
 int
 iptablesSetupPrivateChains(virFirewallLayer layer)
 {
-    virFirewallPtr fw = NULL;
+    g_autoptr(virFirewall) fw = virFirewallNew();
     int ret = -1;
     iptablesGlobalChain filter_chains[] = {
         {"INPUT", "LIBVIRT_INP"},
@@ -151,8 +151,6 @@ iptablesSetupPrivateChains(virFirewallLayer layer)
     };
     size_t i;
 
-    fw = virFirewallNew();
-
     virFirewallStartTransaction(fw, 0);
 
     for (i = 0; i < G_N_ELEMENTS(data); i++)
@@ -167,8 +165,6 @@ iptablesSetupPrivateChains(virFirewallLayer layer)
     ret = changed ? 1 : 0;
 
  cleanup:
-
-    virFirewallFree(fw);
     return ret;
 }
 

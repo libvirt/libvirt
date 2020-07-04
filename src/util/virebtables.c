@@ -82,10 +82,9 @@ ebtablesContextFree(ebtablesContext *ctx)
 int
 ebtablesAddForwardPolicyReject(ebtablesContext *ctx)
 {
-    virFirewallPtr fw = NULL;
+    g_autoptr(virFirewall) fw = virFirewallNew();
     int ret = -1;
 
-    fw = virFirewallNew();
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
     virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
                        "--new-chain", ctx->chain,
@@ -104,7 +103,6 @@ ebtablesAddForwardPolicyReject(ebtablesContext *ctx)
 
     ret = 0;
  cleanup:
-    virFirewallFree(fw);
     return ret;
 }
 
@@ -118,10 +116,9 @@ ebtablesForwardAllowIn(ebtablesContext *ctx,
                        const char *macaddr,
                        int action)
 {
-    virFirewallPtr fw = NULL;
+    g_autoptr(virFirewall) fw = virFirewallNew();
     int ret = -1;
 
-    fw = virFirewallNew();
     virFirewallStartTransaction(fw, 0);
     virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
                        action == ADD ? "--insert" : "--delete",
@@ -136,7 +133,6 @@ ebtablesForwardAllowIn(ebtablesContext *ctx,
 
     ret = 0;
  cleanup:
-    virFirewallFree(fw);
     return ret;
 }
 
