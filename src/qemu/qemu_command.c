@@ -9080,7 +9080,6 @@ qemuBuldDomainLoaderPflashCommandLine(virCommandPtr cmd,
     virCommandAddArgBuffer(cmd, &buf);
 
     if (loader->nvram) {
-        virBufferFreeAndReset(&buf);
         virBufferAddLit(&buf, "file=");
         virQEMUBuildBufferEscapeComma(&buf, loader->nvram);
         virBufferAsprintf(&buf, ",if=pflash,format=raw,unit=%d", unit);
