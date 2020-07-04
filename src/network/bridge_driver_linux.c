@@ -218,7 +218,8 @@ void networkPostReloadFirewallRules(bool startup G_GNUC_UNUSED)
 int networkCheckRouteCollision(virNetworkDefPtr def)
 {
     int ret = 0, len;
-    char *cur, *buf = NULL;
+    char *cur;
+    g_autofree char *buf = NULL;
     /* allow for up to 100000 routes (each line is 128 bytes) */
     enum {MAX_ROUTE_SIZE = 128*100000};
 
@@ -315,14 +316,13 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
 
             if ((r_addr.data.inet4.sin_addr.s_addr == addr_val) &&
                 (r_mask.data.inet4.sin_addr.s_addr == mask_val)) {
-                char *addr_str = virSocketAddrFormat(&r_addr);
+                g_autofree char *addr_str = virSocketAddrFormat(&r_addr);
                 if (!addr_str)
                     virResetLastError();
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Route address '%s' conflicts "
                                  "with IP address for '%s'"),
                                NULLSTR(addr_str), iface);
-                VIR_FREE(addr_str);
                 ret = -1;
                 goto out;
             }
@@ -330,7 +330,6 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
     }
 
  out:
-    VIR_FREE(buf);
     return ret;
 }
 
