@@ -1284,7 +1284,6 @@ virXMLValidatorValidate(virXMLValidatorPtr validator,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&validator->buf);
     return ret;
 }
 

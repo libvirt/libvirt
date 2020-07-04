@@ -29970,7 +29970,6 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     return 0;
 
  error:
-    virBufferFreeAndReset(buf);
     return -1;
 }
 

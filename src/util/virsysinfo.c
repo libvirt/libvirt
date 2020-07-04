@@ -1581,7 +1581,6 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected sysinfo type model %d"),
                        def->type);
-        virBufferFreeAndReset(buf);
         return -1;
     }
 

@@ -1432,7 +1432,6 @@ xenFormatXLVnode(virConfValuePtr list,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(buf);
     return ret;
 }
 
