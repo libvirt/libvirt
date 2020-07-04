@@ -83,7 +83,6 @@ int
 ebtablesAddForwardPolicyReject(ebtablesContext *ctx)
 {
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
     virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
@@ -98,12 +97,7 @@ ebtablesAddForwardPolicyReject(ebtablesContext *ctx)
                        "-P", ctx->chain, "DROP",
                        NULL);
 
-    if (virFirewallApply(fw) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    return ret;
+    return virFirewallApply(fw);
 }
 
 
@@ -117,7 +111,6 @@ ebtablesForwardAllowIn(ebtablesContext *ctx,
                        int action)
 {
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
 
     virFirewallStartTransaction(fw, 0);
     virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
@@ -128,12 +121,7 @@ ebtablesForwardAllowIn(ebtablesContext *ctx,
                        "--jump", "ACCEPT",
                        NULL);
 
-    if (virFirewallApply(fw) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    return ret;
+    return virFirewallApply(fw);
 }
 
 /**

@@ -839,7 +839,6 @@ int networkAddFirewallRules(virNetworkDefPtr def)
     size_t i;
     virNetworkIPDefPtr ipdef;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
 
     if (virOnce(&createdOnce, networkSetupPrivateChains) < 0)
         return -1;
@@ -869,11 +868,11 @@ int networkAddFirewallRules(virNetworkDefPtr def)
                            _("zone %s requested for network %s "
                              "but firewalld is not active"),
                            def->bridgeZone, def->name);
-            goto cleanup;
+            return -1;
         }
 
         if (virFirewallDInterfaceSetZone(def->bridge, def->bridgeZone) < 0)
-            goto cleanup;
+            return -1;
 
     } else {
 
@@ -893,13 +892,13 @@ int networkAddFirewallRules(virNetworkDefPtr def)
              */
             if (virFirewallDZoneExists("libvirt")) {
                 if (virFirewallDInterfaceSetZone(def->bridge, "libvirt") < 0)
-                    goto cleanup;
+                    return -1;
             } else {
                 unsigned long version;
                 int vresult = virFirewallDGetVersion(&version);
 
                 if (vresult < 0)
-                    goto cleanup;
+                    return -1;
 
                 /* Support for nftables backend was added in firewalld
                  * 0.6.0. Support for rule priorities (required by the
@@ -919,7 +918,7 @@ int networkAddFirewallRules(virNetworkDefPtr def)
                                      "version supporting rule priorities "
                                      "(0.7.0+) and/or rebuilding "
                                      "libvirt with --with-firewalld-zone"));
-                    goto cleanup;
+                    return -1;
                 }
             }
         }
@@ -933,7 +932,7 @@ int networkAddFirewallRules(virNetworkDefPtr def)
          (ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i));
          i++) {
         if (networkAddIPSpecificFirewallRules(fw, def, ipdef) < 0)
-            goto cleanup;
+            return -1;
     }
 
     virFirewallStartRollback(fw, 0);
@@ -942,19 +941,14 @@ int networkAddFirewallRules(virNetworkDefPtr def)
          (ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i));
          i++) {
         if (networkRemoveIPSpecificFirewallRules(fw, def, ipdef) < 0)
-            goto cleanup;
+            return -1;
     }
     networkRemoveGeneralFirewallRules(fw, def);
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
     networkAddChecksumFirewallRules(fw, def);
 
-    if (virFirewallApply(fw) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    return ret;
+    return virFirewallApply(fw);
 }
 
 /* Remove all rules for all ip addresses (and general rules) on a network */
@@ -973,12 +967,9 @@ void networkRemoveFirewallRules(virNetworkDefPtr def)
          (ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i));
          i++) {
         if (networkRemoveIPSpecificFirewallRules(fw, def, ipdef) < 0)
-            goto cleanup;
+            return;
     }
     networkRemoveGeneralFirewallRules(fw, def);
 
     virFirewallApply(fw);
-
- cleanup:
-    return;
 }
