@@ -240,6 +240,7 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
     for (i = 0; i < inst->nrules; i++)
         virNWFilterRuleInstFree(inst->rules[i]);
     VIR_FREE(inst->rules);
+    inst->nrules = 0;
 }
 
 
