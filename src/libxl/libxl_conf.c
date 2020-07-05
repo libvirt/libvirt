@@ -1335,7 +1335,7 @@ libxlMakeNic(virDomainDefPtr def,
                     }
                 }
             }
-            x_nic->bridge = g_strdup(virBufferCurrentContent(&buf));
+            x_nic->bridge = virBufferContentAndReset(&buf);
             G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             x_nic->script = g_strdup(script);
