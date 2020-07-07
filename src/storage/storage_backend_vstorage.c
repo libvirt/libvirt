@@ -6,10 +6,12 @@
 #include "storage_backend_vstorage.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virutil.h"
 #include <mntent.h>
 #include <paths.h>
 #include <pwd.h>
 #include <grp.h>
+#include <unistd.h>
 #include "storage_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
