@@ -431,7 +431,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
     virFDStreamMsgPtr msg = NULL;
     int inData = 0;
     long long sectionLen = 0;
-    char *buf = NULL;
+    g_autofree char *buf = NULL;
     ssize_t got;
 
     if (sparse && *dataLen == 0) {
@@ -483,9 +483,8 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
         }
 
         msg->type = VIR_FDSTREAM_MSG_TYPE_DATA;
-        msg->stream.data.buf = buf;
+        msg->stream.data.buf = g_steal_pointer(&buf);
         msg->stream.data.len = got;
-        buf = NULL;
         if (sparse)
             *dataLen -= got;
     }
@@ -496,7 +495,6 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
     return got;
 
  error:
-    VIR_FREE(buf);
     virFDStreamMsgFree(msg);
     return -1;
 }
