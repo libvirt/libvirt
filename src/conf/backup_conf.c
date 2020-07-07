@@ -370,7 +370,7 @@ virDomainBackupDiskDefFormat(virBufferPtr buf,
 
     virBufferEscapeString(&attrBuf, " name='%s'", disk->name);
     virBufferAsprintf(&attrBuf, " backup='%s'", virTristateBoolTypeToString(disk->backup));
-    if (internal)
+    if (internal && disk->state != VIR_DOMAIN_BACKUP_DISK_STATE_NONE)
         virBufferAsprintf(&attrBuf, " state='%s'", virDomainBackupDiskStateTypeToString(disk->state));
 
     if (disk->backup == VIR_TRISTATE_BOOL_YES) {
