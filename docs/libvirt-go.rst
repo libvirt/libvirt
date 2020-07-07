@@ -10,4 +10,4 @@ concepts to Go, so the native API documentation should serve as a reference
 for most behaviour.
 
 For details of Go specific behaviour consult the
-`Go package documentation <https://godoc.org/libvirt.org/libvirt-go>`__
+`Go package documentation <https://pkg.go.dev/libvirt.org/libvirt-go>`__.
