@@ -140,7 +140,7 @@ VIR_ONCE_GLOBAL_INIT(virFDStreamData);
 
 static int
 virFDStreamMsgQueuePush(virFDStreamDataPtr fdst,
-                        virFDStreamMsgPtr msg,
+                        virFDStreamMsgPtr *msg,
                         int fd,
                         const char *fdname)
 {
@@ -150,7 +150,7 @@ virFDStreamMsgQueuePush(virFDStreamDataPtr fdst,
     while (*tmp)
         tmp = &(*tmp)->next;
 
-    *tmp = msg;
+    *tmp = g_steal_pointer(msg);
     virCondSignal(&fdst->threadCond);
 
     if (safewrite(fd, &c, sizeof(c)) != sizeof(c)) {
@@ -489,8 +489,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
             *dataLen -= got;
     }
 
-    virFDStreamMsgQueuePush(fdst, msg, fdout, fdoutname);
-    msg = NULL;
+    virFDStreamMsgQueuePush(fdst, &msg, fdout, fdoutname);
 
     return got;
 
@@ -814,8 +813,7 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
         msg->stream.data.buf = buf;
         msg->stream.data.len = nbytes;
 
-        virFDStreamMsgQueuePush(fdst, msg, fdst->fd, "pipe");
-        msg = NULL;
+        virFDStreamMsgQueuePush(fdst, &msg, fdst->fd, "pipe");
         ret = nbytes;
     } else {
      retry:
@@ -1010,8 +1008,7 @@ virFDStreamSendHole(virStreamPtr st,
 
             msg->type = VIR_FDSTREAM_MSG_TYPE_HOLE;
             msg->stream.hole.len = length;
-            virFDStreamMsgQueuePush(fdst, msg, fdst->fd, "pipe");
-            msg = NULL;
+            virFDStreamMsgQueuePush(fdst, &msg, fdst->fd, "pipe");
         }
     } else {
         off = lseek(fdst->fd, length, SEEK_CUR);
