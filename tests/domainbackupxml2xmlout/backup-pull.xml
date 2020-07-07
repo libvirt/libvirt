@@ -6,5 +6,6 @@
       <scratch file='/path/to/file'/>
     </disk>
     <disk name='hda' backup='no'/>
+    <disk name='vdextradisk' backup='no'/>
   </disks>
 </domainbackup>

@@ -14,5 +14,6 @@
         <seclabel model='dac' relabel='no'/>
       </scratch>
     </disk>
+    <disk name='vdextradisk' backup='no'/>
   </disks>
 </domainbackup>

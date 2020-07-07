@@ -51,6 +51,23 @@ struct testCompareBackupXMLData {
 };
 
 
+static virDomainDiskDefPtr
+testCompareBackupXMLGetFakeDomdisk(const char *dst)
+{
+    virDomainDiskDefPtr domdisk = NULL;
+
+    if (!(domdisk = virDomainDiskDefNew(NULL)))
+        abort();
+
+    domdisk->dst = g_strdup(dst);
+    domdisk->src->type = VIR_STORAGE_TYPE_FILE;
+    domdisk->src->format = VIR_STORAGE_FILE_QCOW2;
+    domdisk->src->path = g_strdup_printf("/fake/%s.qcow2", dst);
+
+    return domdisk;
+}
+
+
 static int
 testCompareBackupXML(const void *opaque)
 {
@@ -63,6 +80,8 @@ testCompareBackupXML(const void *opaque)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
     unsigned int parseFlags = 0;
+    g_autoptr(virDomainDef) fakedef = NULL;
+    size_t i;
 
     if (data->internal)
         parseFlags |= VIR_DOMAIN_BACKUP_PARSE_INTERNAL;
@@ -77,6 +96,23 @@ testCompareBackupXML(const void *opaque)
 
     if (!(backup = virDomainBackupDefParseString(xml_in, xmlopt, parseFlags))) {
         VIR_TEST_VERBOSE("failed to parse backup def '%s'", file_in);
+        return -1;
+    }
+
+    /* create a fake definition and fill it with disks */
+    if (!(fakedef = virDomainDefNew()))
+        return -1;
+
+    fakedef->ndisks = backup->ndisks + 1;
+    fakedef->disks = g_new0(virDomainDiskDefPtr, fakedef->ndisks);
+
+    for (i = 0; i < backup->ndisks; i++)
+        fakedef->disks[i] = testCompareBackupXMLGetFakeDomdisk(backup->disks[i].name);
+
+    fakedef->disks[fakedef->ndisks -1 ] = testCompareBackupXMLGetFakeDomdisk("vdextradisk");
+
+    if (virDomainBackupAlignDisks(backup, fakedef, "SUFFIX") < 0) {
+        VIR_TEST_VERBOSE("failed to align backup def '%s'", file_in);
         return -1;
     }
 

@@ -26,5 +26,6 @@
         </encryption>
       </scratch>
     </disk>
+    <disk name='vdextradisk' backup='no'/>
   </disks>
 </domainbackup>

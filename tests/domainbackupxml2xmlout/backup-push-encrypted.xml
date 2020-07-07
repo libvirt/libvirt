@@ -25,5 +25,6 @@
         </encryption>
       </target>
     </disk>
+    <disk name='vdextradisk' backup='no'/>
   </disks>
 </domainbackup>
