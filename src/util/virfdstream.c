@@ -208,6 +208,8 @@ virFDStreamMsgFree(virFDStreamMsgPtr msg)
     VIR_FREE(msg);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virFDStreamMsg, virFDStreamMsgFree);
+
 
 static void
 virFDStreamMsgQueueFree(virFDStreamMsgPtr *queue)
@@ -428,7 +430,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
                         size_t *dataLen,
                         size_t buflen)
 {
-    virFDStreamMsgPtr msg = NULL;
+    g_autoptr(virFDStreamMsg) msg = NULL;
     int inData = 0;
     long long sectionLen = 0;
     g_autofree char *buf = NULL;
@@ -494,7 +496,6 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
     return got;
 
  error:
-    virFDStreamMsgFree(msg);
     return -1;
 }
 
@@ -761,7 +762,7 @@ virFDStreamAbort(virStreamPtr st)
 static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
 {
     virFDStreamDataPtr fdst = st->privateData;
-    virFDStreamMsgPtr msg = NULL;
+    g_autoptr(virFDStreamMsg) msg = NULL;
     int ret = -1;
 
     if (nbytes > INT_MAX) {
@@ -838,7 +839,6 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
 
  cleanup:
     virObjectUnlock(fdst);
-    virFDStreamMsgFree(msg);
     return ret;
 }
 
@@ -960,7 +960,7 @@ virFDStreamSendHole(virStreamPtr st,
                     unsigned int flags)
 {
     virFDStreamDataPtr fdst = st->privateData;
-    virFDStreamMsgPtr msg = NULL;
+    g_autoptr(virFDStreamMsg) msg = NULL;
     off_t off;
     int ret = -1;
 
@@ -1028,7 +1028,6 @@ virFDStreamSendHole(virStreamPtr st,
     ret = 0;
  cleanup:
     virObjectUnlock(fdst);
-    virFDStreamMsgFree(msg);
     return ret;
 }
 
