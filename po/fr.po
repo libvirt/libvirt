@@ -18,13 +18,14 @@
 # Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>, 2019
 # Julien Humbert <julroy67@gmail.com>, 2020.
 # Daniel P. Berrange <berrange@redhat.com>, 2020.
+# Côme Borsoi <fedora@borsoi.fr>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-06-29 11:55+0000\n"
-"PO-Revision-Date: 2020-06-29 13:57+0000\n"
-"Last-Translator: Daniel P. Berrange <berrange@redhat.com>\n"
+"PO-Revision-Date: 2020-07-07 11:15+0000\n"
+"Last-Translator: Côme Borsoi <fedora@borsoi.fr>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fr/>\n"
 "Language: fr\n"
@@ -2163,7 +2164,7 @@ msgstr ""
 
 #, fuzzy
 msgid "CPU vendors do not match"
-msgstr "Le fabriquant %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le fabriquant %s du CPU cible ne correspond pas à la source %s"
 
 msgid "CPU(s):"
 msgstr "CPU :"
@@ -4017,7 +4018,7 @@ msgstr "Aucun domaine avec l’UUID %s"
 
 #, fuzzy, c-format
 msgid "Could not find domain with name '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, c-format
 msgid "Could not find host system specified in '%s'"
@@ -9732,9 +9733,9 @@ msgstr "état du domaine invalide : %d"
 msgid "Invalid domain snapshot: %s"
 msgstr "état du domaine invalide : %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid domain state %s"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, fuzzy
 msgid "Invalid domain supplied"
@@ -13424,7 +13425,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Processor mask of target NUMA node %zu doesn't match source"
-msgstr "Le mode %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le mode %s du CPU cible ne correspond pas à la source %s"
 
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
@@ -14551,7 +14552,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Size of target NUMA node %zu (%llu) doesn't match source (%llu)"
-msgstr "Le mode %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le mode %s du CPU cible ne correspond pas à la source %s"
 
 #, c-format
 msgid "Size of volume '%s' successfully changed by %s\n"
@@ -15017,7 +15018,7 @@ msgstr ""
 
 #, c-format
 msgid "Target CPU arch %s does not match source %s"
-msgstr "L’architecture %s du CPU cible  ne correspond pas à la source %s"
+msgstr "L’architecture %s du CPU cible ne correspond pas à la source %s"
 
 #, fuzzy
 msgid "Target CPU cache does not match source"
@@ -15025,7 +15026,7 @@ msgstr "Le CPU cible ne correspond pas à la source"
 
 #, fuzzy, c-format
 msgid "Target CPU check %s does not match source %s"
-msgstr "L’architecture %s du CPU cible  ne correspond pas à la source %s"
+msgstr "L’architecture %s du CPU cible ne correspond pas à la source %s"
 
 #, c-format
 msgid "Target CPU cores %d does not match source %d"
@@ -15056,31 +15057,31 @@ msgstr ""
 
 #, c-format
 msgid "Target CPU mode %s does not match source %s"
-msgstr "Le mode %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le mode %s du CPU cible ne correspond pas à la source %s"
 
 #, c-format
 msgid "Target CPU model %s does not match source %s"
-msgstr "Le modèle %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le modèle %s du CPU cible ne correspond pas à la source %s"
 
 #, c-format
 msgid "Target CPU sockets %d does not match source %d"
-msgstr "Les %d sockets du CPU cible  ne correspond pas à la source %d"
+msgstr "Les %d sockets du CPU cible ne correspond pas à la source %d"
 
 #, c-format
 msgid "Target CPU threads %d does not match source %d"
-msgstr "Les threads du CPU cible %d  ne correspond pas à la source %d"
+msgstr "Les threads du CPU cible %d ne correspond pas à la source %d"
 
 #, c-format
 msgid "Target CPU type %s does not match source %s"
-msgstr "Le type %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le type %s du CPU cible ne correspond pas à la source %s"
 
 #, c-format
 msgid "Target CPU vendor %s does not match source %s"
-msgstr "Le fabriquant %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le fabriquant %s du CPU cible ne correspond pas à la source %s"
 
 #, fuzzy, c-format
 msgid "Target CPU vendor id %s does not match source %s"
-msgstr "Le fabriquant %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le fabriquant %s du CPU cible ne correspond pas à la source %s"
 
 #, fuzzy, c-format
 msgid "Target NUMA distance from %zu to %zu doesn't match source"
@@ -15104,15 +15105,15 @@ msgstr ""
 
 #, fuzzy
 msgid "Target NVDIMM pmem flag doesn't match source NVDIMM pmem flag"
-msgstr "Le mode %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le mode %s du CPU cible ne correspond pas à la source %s"
 
 #, fuzzy
 msgid "Target NVDIMM readonly flag doesn't match source NVDIMM readonly flag"
-msgstr "Les threads du CPU cible %d  ne correspond pas à la source %d"
+msgstr "Les threads du CPU cible %d ne correspond pas à la source %d"
 
 #, fuzzy, c-format
 msgid "Target RNG model '%s' does not match source '%s'"
-msgstr "Le modèle %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le modèle %s du CPU cible ne correspond pas à la source %s"
 
 #, fuzzy
 msgid "Target TPM device model doesn't match source"
@@ -15169,7 +15170,7 @@ msgstr "Le nom de domaine cible « %s » ne correspond pas à la source « %s
 
 #, fuzzy, c-format
 msgid "Target balloon model %s does not match source %s"
-msgstr "Le modèle %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le modèle %s du CPU cible ne correspond pas à la source %s"
 
 #, fuzzy
 msgid "Target base board does not match source"
@@ -15559,7 +15560,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Target input model %s does not match source %s"
-msgstr "Le modèle %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le modèle %s du CPU cible ne correspond pas à la source %s"
 
 #, fuzzy, c-format
 msgid "Target maximum memory size '%llu' doesn't match source '%llu'"
@@ -15593,7 +15594,7 @@ msgstr "Le nom de domaine cible « %s » ne correspond pas à la source « %s
 
 #, fuzzy, c-format
 msgid "Target model '%s' requires target type '%s'"
-msgstr "Le modèle %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le modèle %s du CPU cible ne correspond pas à la source %s"
 
 #, fuzzy, c-format
 msgid "Target network card MTU %d does not match source %d"
@@ -21330,7 +21331,7 @@ msgstr ""
 
 #, fuzzy
 msgid "cannot find VNC graphics device"
-msgstr "type de périphérique graphique « %s »  inconnu"
+msgstr "type de périphérique graphique « %s » inconnu"
 
 #, c-format
 msgid "cannot find any matching source devices for logical volume group '%s'"
@@ -21358,7 +21359,7 @@ msgstr "impossible d’analyser le périphérique %s"
 
 #, fuzzy, c-format
 msgid "cannot find existing graphics device to modify of type '%s'"
-msgstr "type de périphérique graphique « %s »  inconnu"
+msgstr "type de périphérique graphique « %s » inconnu"
 
 #, c-format
 msgid "cannot find existing graphics type '%s' device to modify"
@@ -27042,11 +27043,11 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "host CPU model does not match required CPU model %s"
-msgstr "Le modèle %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le modèle %s du CPU cible ne correspond pas à la source %s"
 
 #, fuzzy, c-format
 msgid "host CPU vendor does not match required CPU vendor %s"
-msgstr "Le fabriquant %s du CPU cible  ne correspond pas à la source %s"
+msgstr "Le fabriquant %s du CPU cible ne correspond pas à la source %s"
 
 #, c-format
 msgid "host USB device Busnum: %3x, Devnum: %3x not found"
@@ -27754,7 +27755,7 @@ msgstr "aucun UUID système fourni pour « %s »"
 
 #, fuzzy, c-format
 msgid "invalid PCI domain ID supplied for '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, fuzzy, c-format
 msgid "invalid PCI function ID supplied for '%s'"
@@ -27960,15 +27961,15 @@ msgstr "valeur de traduction « %s » invalide "
 
 #, fuzzy, c-format
 msgid "invalid disk 'backup' state '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, fuzzy, c-format
 msgid "invalid disk index '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, fuzzy, c-format
 msgid "invalid disk target '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, c-format
 msgid "invalid disk target '%s', partitions can't appear in disk targets"
@@ -27983,7 +27984,7 @@ msgstr "pointeur de domaine invalide dans %s"
 
 #, c-format
 msgid "invalid domain state '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, c-format
 msgid "invalid domain state reason '%s'"
@@ -28123,7 +28124,7 @@ msgstr "type de secret « %s » invalide"
 
 #, fuzzy, c-format
 msgid "invalid link state '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, c-format
 msgid ""
@@ -28171,7 +28172,7 @@ msgstr "type de secret « %s » invalide"
 
 #, fuzzy, c-format
 msgid "invalid msi ioeventfd setting for shmem: '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, fuzzy, c-format
 msgid "invalid nested value key '%s'"
@@ -28256,7 +28257,7 @@ msgstr "L’attribut « core » est manquant dans la topologie CPU"
 
 #, fuzzy, c-format
 msgid "invalid or missing dimm slot id '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 #, fuzzy
 msgid "invalid packed value"
@@ -37099,7 +37100,7 @@ msgstr "valeur de plein écran « %s » inconnue"
 
 #, c-format
 msgid "unknown graphics device type '%s'"
-msgstr "type de périphérique graphique « %s »  inconnu"
+msgstr "type de périphérique graphique « %s » inconnu"
 
 #, c-format
 msgid "unknown graphics listen type '%s'"
@@ -37107,7 +37108,7 @@ msgstr "type d’écoute des graphismes « %s » inconnu"
 
 #, fuzzy, c-format
 msgid "unknown graphics type %s"
-msgstr "type de périphérique graphique « %s »  inconnu"
+msgstr "type de périphérique graphique « %s » inconnu"
 
 #, fuzzy, c-format
 msgid "unknown guest csum mode '%s'"
@@ -37310,7 +37311,7 @@ msgstr "valeur du mode de la souris « %s » inconnue"
 
 #, fuzzy, c-format
 msgid "unknown multidevs '%s'"
-msgstr "bus redirdev  « %s » inconnu"
+msgstr "bus redirdev « %s » inconnu"
 
 #, fuzzy, c-format
 msgid "unknown network device feature '%s'"
@@ -37382,7 +37383,7 @@ msgstr "valeur de la barre rom « %s » inconnue"
 
 #, c-format
 msgid "unknown redirdev bus '%s'"
-msgstr "bus redirdev  « %s » inconnu"
+msgstr "bus redirdev « %s » inconnu"
 
 #, c-format
 msgid "unknown redirdev character device type '%s'"
@@ -38805,7 +38806,7 @@ msgstr "Le modèle de CPU « %s » est trop long pour la destination"
 
 #, fuzzy, c-format
 msgid "vnuma vnode invalid format '%s'"
-msgstr "état de domaine « %s »  invalide"
+msgstr "état de domaine « %s » invalide"
 
 msgid "vol information in XML"
 msgstr "informations du volume en XML"
