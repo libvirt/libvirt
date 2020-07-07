@@ -438,7 +438,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
 
     if (sparse && *dataLen == 0) {
         if (virFileInData(fdin, &inData, &sectionLen) < 0)
-            goto error;
+            return -1;
 
         if (length &&
             sectionLen > length - total)
@@ -466,7 +466,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
             virReportSystemError(errno,
                                  _("unable to seek in %s"),
                                  fdinname);
-            goto error;
+            return -1;
         }
     } else {
         if (sparse &&
@@ -479,7 +479,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
             virReportSystemError(errno,
                                  _("Unable to read %s"),
                                  fdinname);
-            goto error;
+            return -1;
         }
 
         msg->type = VIR_FDSTREAM_MSG_TYPE_DATA;
@@ -492,9 +492,6 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
     virFDStreamMsgQueuePush(fdst, &msg, fdout, fdoutname);
 
     return got;
-
- error:
-    return -1;
 }
 
 
@@ -1164,22 +1161,22 @@ int virFDStreamConnectUNIX(virStreamPtr st,
     fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (fd < 0) {
         virReportSystemError(errno, "%s", _("Unable to open UNIX socket"));
-        goto error;
+        return -1;
     }
 
     memset(&sa, 0, sizeof(sa));
     sa.sun_family = AF_UNIX;
     if (abstract) {
         if (virStrcpy(sa.sun_path+1, path, sizeof(sa.sun_path)-1) < 0)
-            goto error;
+            return -1;
         sa.sun_path[0] = '\0';
     } else {
         if (virStrcpyStatic(sa.sun_path, path) < 0)
-            goto error;
+            return -1;
     }
 
     if (virTimeBackOffStart(&timeout, 1, 3*1000 /* ms */) < 0)
-        goto error;
+        return -1;
     while (virTimeBackOffWait(&timeout)) {
         ret = connect(fd, (struct sockaddr *)&sa, sizeof(sa));
         if (ret == 0)
@@ -1191,17 +1188,14 @@ int virFDStreamConnectUNIX(virStreamPtr st,
             continue;
         }
 
-        goto error;
+        return -1;
     }
 
     if (virFDStreamOpenInternal(st, fd, NULL, 0) < 0)
-        goto error;
+        return -1;
     fd = -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 
