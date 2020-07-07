@@ -571,9 +571,9 @@ virFDStreamThread(void *opaque)
     virStreamPtr st = data->st;
     size_t length = data->length;
     bool sparse = data->sparse;
-    int fdin = data->fdin;
+    VIR_AUTOCLOSE fdin = data->fdin;
     char *fdinname = data->fdinname;
-    int fdout = data->fdout;
+    VIR_AUTOCLOSE fdout = data->fdout;
     char *fdoutname = data->fdoutname;
     virFDStreamDataPtr fdst = st->privateData;
     bool doRead = fdst->threadDoRead;
@@ -633,8 +633,6 @@ virFDStreamThread(void *opaque)
     virObjectUnref(fdst);
     if (virFDStreamDataDisposed)
         st->privateData = NULL;
-    VIR_FORCE_CLOSE(fdin);
-    VIR_FORCE_CLOSE(fdout);
     virFDStreamThreadDataFree(data);
     return;
 
@@ -1160,9 +1158,10 @@ int virFDStreamConnectUNIX(virStreamPtr st,
 {
     struct sockaddr_un sa;
     virTimeBackOffVar timeout;
+    VIR_AUTOCLOSE fd = -1;
     int ret;
 
-    int fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (fd < 0) {
         virReportSystemError(errno, "%s", _("Unable to open UNIX socket"));
         goto error;
@@ -1197,10 +1196,11 @@ int virFDStreamConnectUNIX(virStreamPtr st,
 
     if (virFDStreamOpenInternal(st, fd, NULL, 0) < 0)
         goto error;
+    fd = -1;
+
     return 0;
 
  error:
-    VIR_FORCE_CLOSE(fd);
     return -1;
 }
 
