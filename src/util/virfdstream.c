@@ -452,8 +452,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
         buflen > length - total)
         buflen = length - total;
 
-    if (VIR_ALLOC(msg) < 0)
-        goto error;
+    msg = g_new0(virFDStreamMsg, 1);
 
     if (sparse && *dataLen == 0) {
         msg->type = VIR_FDSTREAM_MSG_TYPE_HOLE;
@@ -474,8 +473,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
             buflen > *dataLen)
             buflen = *dataLen;
 
-        if (VIR_ALLOC_N(buf, buflen) < 0)
-            goto error;
+        buf = g_new0(char, buflen);
 
         if ((got = saferead(fdin, buf, buflen)) < 0) {
             virReportSystemError(errno,
@@ -805,9 +803,8 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
             goto cleanup;
         }
 
-        if (VIR_ALLOC(msg) < 0 ||
-            VIR_ALLOC_N(buf, nbytes) < 0)
-            goto cleanup;
+        msg = g_new0(virFDStreamMsg, 1);
+        buf = g_new0(char, nbytes);
 
         memcpy(buf, bytes, nbytes);
         msg->type = VIR_FDSTREAM_MSG_TYPE_DATA;
@@ -1003,8 +1000,7 @@ virFDStreamSendHole(virStreamPtr st,
 
             virFDStreamMsgQueuePop(fdst, fdst->fd, "pipe");
         } else {
-            if (VIR_ALLOC(msg) < 0)
-                goto cleanup;
+            msg = g_new0(virFDStreamMsg, 1);
 
             msg->type = VIR_FDSTREAM_MSG_TYPE_HOLE;
             msg->stream.hole.len = length;
@@ -1123,8 +1119,7 @@ static int virFDStreamOpenInternal(virStreamPtr st,
 
         /* Create the thread after fdst and st were initialized.
          * The thread worker expects them to be that way. */
-        if (VIR_ALLOC(fdst->thread) < 0)
-            goto error;
+        fdst->thread = g_new0(virThread, 1);
 
         if (virCondInit(&fdst->threadCond) < 0) {
             virReportSystemError(errno, "%s",
@@ -1277,8 +1272,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         if (virPipe(pipefds) < 0)
             goto error;
 
-        if (VIR_ALLOC(threadData) < 0)
-            goto error;
+        threadData = g_new0(virFDStreamThreadData, 1);
 
         threadData->st = virObjectRef(st);
         threadData->length = length;
