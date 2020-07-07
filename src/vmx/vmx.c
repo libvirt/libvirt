@@ -290,7 +290,7 @@ def->fss[0]...                    <=>   sharedFolder0.present = "true"          
 ################################################################################
 ## nets ########################################################################
 
-                                        ethernet[0..3] -> <controller>
+                                        ethernet[0..9] -> <controller>
 
                                         ethernet0.present = "true"              # defaults to "false"
                                         ethernet0.startConnected = "true"       # defaults to "true"
@@ -3376,7 +3376,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     /* def:nets */
     for (i = 0; i < def->nnets; ++i) {
-        if (virVMXFormatEthernet(def->nets[i], i, &buffer) < 0)
+        if (virVMXFormatEthernet(def->nets[i], i, &buffer, virtualHW_version) < 0)
             goto cleanup;
     }
 
@@ -3732,15 +3732,23 @@ virVMXFormatFileSystem(virDomainFSDefPtr def, int number, virBufferPtr buffer)
 
 int
 virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
-                     virBufferPtr buffer)
+                     virBufferPtr buffer, int virtualHW_version)
 {
     char mac_string[VIR_MAC_STRING_BUFLEN];
     unsigned int prefix, suffix;
 
-    if (controller < 0 || controller > 3) {
+    /*
+     * Machines older than virtualHW.version = 7 (ESXi 4.0) only support up to 4
+     * virtual NICs. New machines support up to 10.
+     */
+    int controller_limit = 3;
+    if (virtualHW_version >= 7)
+        controller_limit = 9;
+
+    if (controller < 0 || controller > controller_limit) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Ethernet controller index %d out of [0..3] range"),
-                       controller);
+                       _("Ethernet controller index %d out of [0..%d] range"),
+                       controller, controller_limit);
         return -1;
     }
 
