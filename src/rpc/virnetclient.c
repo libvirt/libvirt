@@ -444,8 +444,8 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    const char *username,
                                    bool noTTY,
                                    bool noVerify,
-                                   const char *netcatPath,
                                    const char *keyfile,
+                                   const char *netcatPath,
                                    const char *socketPath)
 {
     virNetSocketPtr sock;
