@@ -695,27 +695,6 @@ qemuBuildObjectSecretCommandLine(virCommandPtr cmd,
 }
 
 
-/* qemuBuildDiskSecinfoCommandLine:
- * @cmd: Pointer to the command string
- * @secinfo: Pointer to a possible secinfo
- *
- * Add the secret object for the disks that will be using it to perform
- * their authentication.
- *
- * Returns 0 on success, -1 w/ error on some sort of failure.
- */
-static int
-qemuBuildDiskSecinfoCommandLine(virCommandPtr cmd,
-                                qemuDomainSecretInfoPtr secinfo)
-{
-    /* Not necessary for non AES secrets */
-    if (!secinfo || secinfo->type != VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-        return 0;
-
-    return qemuBuildObjectSecretCommandLine(cmd, secinfo);
-}
-
-
 /* qemuBuildGeneralSecinfoURI:
  * @uri: Pointer to the URI structure to add to
  * @secinfo: Pointer to the secret info data (if present)
@@ -5151,29 +5130,14 @@ qemuBuildHostdevSCSICommandLine(virCommandPtr cmd,
                                 virDomainHostdevDefPtr hostdev,
                                 virQEMUCapsPtr qemuCaps)
 {
-    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
     g_autofree char *devstr = NULL;
-    g_autofree char *drvstr = NULL;
-    g_autofree char *backendAlias = NULL;
+    const char *backendAlias = NULL;
 
-    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-        virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc =
-            &scsisrc->u.iscsi;
-        qemuDomainStorageSourcePrivatePtr srcPriv =
-            QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
-
-        if (qemuBuildDiskSecinfoCommandLine(cmd, srcPriv ?
-                                            srcPriv->secinfo :
-                                            NULL) < 0)
-            return -1;
-    }
-
-    virCommandAddArg(cmd, "-drive");
-    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
+    if (!(data = qemuBuildHostdevSCSIAttachPrepare(hostdev, &backendAlias, qemuCaps)))
         return -1;
-    virCommandAddArg(cmd, drvstr);
 
-    if (!(backendAlias = qemuAliasFromHostdev(hostdev)))
+    if (qemuBuildBlockStorageSourceAttachDataCommandline(cmd, data) < 0)
         return -1;
 
     virCommandAddArg(cmd, "-device");
