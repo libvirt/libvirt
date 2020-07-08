@@ -345,7 +345,9 @@ AC_CHECK_SIZEOF([long])
 dnl Availability of various common functions (non-fatal if missing),
 dnl and various less common threadsafe functions
 AC_CHECK_FUNCS_ONCE([\
+  elf_aux_info \
   fallocate \
+  getauxval \
   getegid \
   geteuid \
   getgid \
@@ -374,6 +376,7 @@ AC_CHECK_FUNCS_ONCE([\
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([\
+  asm/hwcap.h \
   ifaddrs.h \
   libtasn1.h \
   util.h \
