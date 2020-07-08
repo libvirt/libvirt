@@ -5668,69 +5668,6 @@ virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
 }
 
 
-static int
-virQEMUCapsCompareArch(const void *payload,
-                       const void *name G_GNUC_UNUSED,
-                       const void *opaque)
-{
-    struct virQEMUCapsSearchData *data = (struct virQEMUCapsSearchData *)opaque;
-    const virQEMUCaps *qemuCaps = payload;
-
-    if (qemuCaps->arch != data->arch)
-        return false;
-
-    if (data->binaryFilter &&
-        !strstr(qemuCaps->binary, data->binaryFilter)) {
-        return false;
-    }
-
-    return true;
-}
-
-
-virQEMUCapsPtr
-virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
-                             virArch arch)
-{
-    virQEMUCapsCachePrivPtr priv = virFileCacheGetPriv(cache);
-    virQEMUCapsPtr ret = NULL;
-    const char *binaryFilters[] = {
-        "qemu-system-",
-        NULL,
-    };
-    virArch archs[] = {
-        arch,
-        virQEMUCapsFindTarget(virArchFromHost(), arch),
-    };
-    size_t i;
-    size_t j;
-
-    priv->microcodeVersion = virHostCPUGetMicrocodeVersion();
-
-    for (i = 0; i < G_N_ELEMENTS(binaryFilters); i++) {
-        for (j = 0; j < G_N_ELEMENTS(archs); j++) {
-            struct virQEMUCapsSearchData data = {
-                .arch = archs[j],
-                .binaryFilter = binaryFilters[i],
-            };
-
-            ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
-            if (ret)
-                goto done;
-        }
-    }
-
-    virReportError(VIR_ERR_INVALID_ARG,
-                   _("unable to find any emulator to serve '%s' "
-                     "architecture"), virArchToString(arch));
-
- done:
-    VIR_DEBUG("Returning caps %p for arch %s", ret, virArchToString(arch));
-
-    return ret;
-}
-
-
 /**
  * virQEMUCapsCacheLookupDefault:
  * @cache: QEMU capabilities cache

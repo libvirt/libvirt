@@ -703,8 +703,6 @@ virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
                                           virDomainVirtType virtType,
                                           const char *binary,
                                           const char *machineType);
-virQEMUCapsPtr virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
-                                            virArch arch);
 virQEMUCapsPtr virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
                                              const char *binary,
                                              const char *archStr,
