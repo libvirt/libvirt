@@ -57,7 +57,7 @@ or an IBM LinuxONE III (or newer).
 
 It is also necessary that the IBM Secure Execution feature is
 enabled for that system. With libvirt >= 6.5.0 you can run
-``libvirt-host--validate`` or otherwise check for facility '158', e.g.
+``virt-host-validate`` or otherwise check for facility '158', e.g.
 
 ::
 
