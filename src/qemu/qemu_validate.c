@@ -888,6 +888,13 @@ qemuValidateDomainDef(const virDomainDef *def,
         }
     }
 
+    if (virDomainNumaHasHMAT(def->numa) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA_HMAT)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("HMAT is not supported with this QEMU"));
+        return -1;
+    }
+
     if (def->genidRequested &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMGENID)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

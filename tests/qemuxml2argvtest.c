@@ -1946,6 +1946,7 @@ mymain(void)
 
     DO_TEST("numatune-distances", QEMU_CAPS_NUMA, QEMU_CAPS_NUMA_DIST);
     DO_TEST("numatune-no-vcpu", NONE);
+    DO_TEST_CAPS_LATEST("numatune-hmat");
 
     DO_TEST("numatune-auto-nodeset-invalid", NONE);
     DO_TEST("numatune-auto-prefer", QEMU_CAPS_OBJECT_MEMORY_RAM,

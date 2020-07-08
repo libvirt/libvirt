@@ -1904,6 +1904,13 @@ virDomainNumaGetNodeInitiator(const virDomainNuma *numa,
     if (!numa || node >= numa->nmem_nodes)
         return -1;
 
+    /* A NUMA node which has at least one vCPU is initiator to itself by
+     * definition. */
+    if (numa->mem_nodes[node].cpumask)
+        return node;
+
+    /* For the rest, "NUMA node that has best performance (the lowest
+     * latency or largest bandwidth) to this NUMA node." */
     for (i = 0; i < numa->ninterconnects; i++) {
         const virDomainNumaInterconnect *l = &numa->interconnects[i];
 

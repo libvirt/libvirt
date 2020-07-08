@@ -6933,6 +6933,9 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             virBufferAsprintf(&buf, ",pflash1=%s", priv->pflash1->nodeformat);
     }
 
+    if (virDomainNumaHasHMAT(def->numa))
+        virBufferAddLit(&buf, ",hmat=on");
+
     virCommandAddArgBuffer(cmd, &buf);
 
     return 0;
@@ -7116,6 +7119,134 @@ qemuBuildIOThreadCommandLine(virCommandPtr cmd,
 
 
 static int
+qemuBuilNumaCellCache(virCommandPtr cmd,
+                      const virDomainDef *def,
+                      size_t cell)
+{
+    size_t ncaches = virDomainNumaGetNodeCacheCount(def->numa, cell);
+    size_t i;
+
+    if (ncaches == 0)
+        return 0;
+
+    for (i = 0; i < ncaches; i++) {
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+        unsigned int level;
+        unsigned int size;
+        unsigned int line;
+        virDomainCacheAssociativity associativity;
+        virDomainCachePolicy policy;
+
+        if (virDomainNumaGetNodeCache(def->numa, cell, i,
+                                      &level, &size, &line,
+                                      &associativity, &policy) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to format NUMA node cache"));
+            return -1;
+        }
+
+        virBufferAsprintf(&buf,
+                          "hmat-cache,node-id=%zu,size=%uK,level=%u",
+                          cell, size, level);
+
+        switch (associativity) {
+        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_NONE:
+            virBufferAddLit(&buf, ",associativity=none");
+            break;
+        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_DIRECT:
+            virBufferAddLit(&buf, ",associativity=direct");
+            break;
+        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_FULL:
+            virBufferAddLit(&buf, ",associativity=complex");
+            break;
+        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_LAST:
+            break;
+        }
+
+        switch (policy) {
+        case VIR_DOMAIN_CACHE_POLICY_NONE:
+            virBufferAddLit(&buf, ",policy=none");
+            break;
+        case VIR_DOMAIN_CACHE_POLICY_WRITEBACK:
+            virBufferAddLit(&buf, ",policy=write-back");
+            break;
+        case VIR_DOMAIN_CACHE_POLICY_WRITETHROUGH:
+            virBufferAddLit(&buf, ",policy=write-through");
+            break;
+        case VIR_DOMAIN_CACHE_POLICY_LAST:
+            break;
+        }
+
+        if (line > 0)
+            virBufferAsprintf(&buf, ",line=%u", line);
+
+        virCommandAddArg(cmd, "-numa");
+        virCommandAddArgBuffer(cmd, &buf);
+    }
+
+    return 0;
+}
+
+
+VIR_ENUM_DECL(qemuDomainMemoryHierarchy);
+VIR_ENUM_IMPL(qemuDomainMemoryHierarchy,
+              4, /* Maximum level of cache */
+              "memory", /* Special case, whole memory not specific cache */
+              "first-level",
+              "second-level",
+              "third-level");
+
+static int
+qemuBuildNumaHMATCommandLine(virCommandPtr cmd,
+                             const virDomainDef *def)
+{
+    size_t nlatencies;
+    size_t i;
+
+    if (!def->numa)
+        return 0;
+
+    nlatencies = virDomainNumaGetInterconnectsCount(def->numa);
+    for (i = 0; i < nlatencies; i++) {
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+        virDomainNumaInterconnectType type;
+        unsigned int initiator;
+        unsigned int target;
+        unsigned int cache;
+        virDomainMemoryLatency accessType;
+        unsigned long value;
+        const char *hierarchyStr;
+        const char *accessStr;
+
+        if (virDomainNumaGetInterconnect(def->numa, i,
+                                         &type, &initiator, &target,
+                                         &cache, &accessType, &value) < 0)
+            return -1;
+
+        hierarchyStr = qemuDomainMemoryHierarchyTypeToString(cache);
+        accessStr = virDomainMemoryLatencyTypeToString(accessType);
+        virBufferAsprintf(&buf,
+                          "hmat-lb,initiator=%u,target=%u,hierarchy=%s,data-type=%s-",
+                          initiator, target, hierarchyStr, accessStr);
+
+        switch (type) {
+        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY:
+            virBufferAsprintf(&buf, "latency,latency=%lu", value);
+            break;
+        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
+            virBufferAsprintf(&buf, "bandwidth,bandwidth=%luK", value);
+            break;
+        }
+
+        virCommandAddArg(cmd, "-numa");
+        virCommandAddArgBuffer(cmd, &buf);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
                          virDomainDefPtr def,
                          virCommandPtr cmd,
@@ -7127,9 +7258,11 @@ qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
     char *next = NULL;
     virBufferPtr nodeBackends = NULL;
     bool needBackend = false;
+    bool hmat = false;
     int rc;
     int ret = -1;
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
+    ssize_t masterInitiator = -1;
 
     if (!virDomainNumatuneNodesetIsAvailable(def->numa, priv->autoNodeset))
         goto cleanup;
@@ -7138,6 +7271,11 @@ qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
                                                def->virtType,
                                                def->os.machine))
         needBackend = true;
+
+    if (virDomainNumaHasHMAT(def->numa)) {
+        needBackend = true;
+        hmat = true;
+    }
 
     if (VIR_ALLOC_N(nodeBackends, ncells) < 0)
         goto cleanup;
@@ -7168,7 +7306,21 @@ qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     for (i = 0; i < ncells; i++) {
+        if (virDomainNumaGetNodeCpumask(def->numa, i)) {
+            masterInitiator = i;
+            break;
+        }
+    }
+
+    if (masterInitiator) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("At least one NUMA node has to have CPUs"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < ncells; i++) {
         virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(def->numa, i);
+        ssize_t initiator = virDomainNumaGetNodeInitiator(def->numa, i);
 
         if (needBackend) {
             virCommandAddArg(cmd, "-object");
@@ -7193,6 +7345,13 @@ qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
             }
         }
 
+        if (hmat) {
+            if (initiator < 0)
+                initiator = masterInitiator;
+
+            virBufferAsprintf(&buf, ",initiator=%zd", initiator);
+        }
+
         if (needBackend)
             virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
         else
@@ -7215,6 +7374,18 @@ qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
 
                 virCommandAddArgBuffer(cmd, &buf);
             }
+        }
+    }
+
+    if (hmat) {
+        if (qemuBuildNumaHMATCommandLine(cmd, def) < 0)
+            goto cleanup;
+
+        /* This can't be moved into any of the loops above,
+         * because hmat-cache can be specified only after hmat-lb. */
+        for (i = 0; i < ncells; i++) {
+            if (qemuBuilNumaCellCache(cmd, def, i) < 0)
+                goto cleanup;
         }
     }
 
