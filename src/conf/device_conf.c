@@ -208,45 +208,42 @@ int
 virPCIDeviceAddressParseXML(xmlNodePtr node,
                             virPCIDeviceAddressPtr addr)
 {
-    char *domain, *slot, *bus, *function, *multi;
     xmlNodePtr cur;
     xmlNodePtr zpci = NULL;
-    int ret = -1;
+    g_autofree char *domain   = virXMLPropString(node, "domain");
+    g_autofree char *bus      = virXMLPropString(node, "bus");
+    g_autofree char *slot     = virXMLPropString(node, "slot");
+    g_autofree char *function = virXMLPropString(node, "function");
+    g_autofree char *multi    = virXMLPropString(node, "multifunction");
 
     memset(addr, 0, sizeof(*addr));
-
-    domain   = virXMLPropString(node, "domain");
-    bus      = virXMLPropString(node, "bus");
-    slot     = virXMLPropString(node, "slot");
-    function = virXMLPropString(node, "function");
-    multi    = virXMLPropString(node, "multifunction");
 
     if (domain &&
         virStrToLong_uip(domain, NULL, 0, &addr->domain) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'domain' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (bus &&
         virStrToLong_uip(bus, NULL, 0, &addr->bus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'bus' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (slot &&
         virStrToLong_uip(slot, NULL, 0, &addr->slot) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'slot' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (function &&
         virStrToLong_uip(function, NULL, 0, &addr->function) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'function' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (multi &&
@@ -254,11 +251,11 @@ virPCIDeviceAddressParseXML(xmlNodePtr node,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unknown value '%s' for <address> 'multifunction' attribute"),
                        multi);
-        goto cleanup;
+        return -1;
 
     }
     if (!virPCIDeviceAddressIsEmpty(addr) && !virPCIDeviceAddressIsValid(addr, true))
-        goto cleanup;
+        return -1;
 
     cur = node->children;
     while (cur) {
@@ -270,17 +267,9 @@ virPCIDeviceAddressParseXML(xmlNodePtr node,
     }
 
     if (zpci && virZPCIDeviceAddressParseXML(zpci, addr) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(domain);
-    VIR_FREE(bus);
-    VIR_FREE(slot);
-    VIR_FREE(function);
-    VIR_FREE(multi);
-    return ret;
+    return 0;
 }
 
 void
@@ -309,187 +298,149 @@ int
 virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
                                   virDomainDeviceCCWAddressPtr addr)
 {
-    int   ret = -1;
-    char *cssid;
-    char *ssid;
-    char *devno;
+    g_autofree char *cssid = virXMLPropString(node, "cssid");
+    g_autofree char *ssid = virXMLPropString(node, "ssid");
+    g_autofree char *devno = virXMLPropString(node, "devno");
 
     memset(addr, 0, sizeof(*addr));
-
-    cssid = virXMLPropString(node, "cssid");
-    ssid = virXMLPropString(node, "ssid");
-    devno = virXMLPropString(node, "devno");
 
     if (cssid && ssid && devno) {
         if (cssid &&
             virStrToLong_uip(cssid, NULL, 0, &addr->cssid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse <address> 'cssid' attribute"));
-            goto cleanup;
+            return -1;
         }
         if (ssid &&
             virStrToLong_uip(ssid, NULL, 0, &addr->ssid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse <address> 'ssid' attribute"));
-            goto cleanup;
+            return -1;
         }
         if (devno &&
             virStrToLong_uip(devno, NULL, 0, &addr->devno) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse <address> 'devno' attribute"));
-            goto cleanup;
+            return -1;
         }
         if (!virDomainDeviceCCWAddressIsValid(addr)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid specification for virtio ccw"
                              " address: cssid='%s' ssid='%s' devno='%s'"),
                            cssid, ssid, devno);
-            goto cleanup;
+            return -1;
         }
         addr->assigned = true;
     } else if (cssid || ssid || devno) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Invalid partial specification for virtio ccw"
                          " address"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(cssid);
-    VIR_FREE(ssid);
-    VIR_FREE(devno);
-    return ret;
+    return 0;
 }
 
 int
 virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
                                     virDomainDeviceDriveAddressPtr addr)
 {
-    char *bus, *unit, *controller, *target;
-    int ret = -1;
+    g_autofree char *controller = virXMLPropString(node, "controller");
+    g_autofree char *bus = virXMLPropString(node, "bus");
+    g_autofree char *target = virXMLPropString(node, "target");
+    g_autofree char *unit = virXMLPropString(node, "unit");
 
     memset(addr, 0, sizeof(*addr));
-
-    controller = virXMLPropString(node, "controller");
-    bus = virXMLPropString(node, "bus");
-    target = virXMLPropString(node, "target");
-    unit = virXMLPropString(node, "unit");
 
     if (controller &&
         virStrToLong_uip(controller, NULL, 10, &addr->controller) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'controller' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (bus &&
         virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'bus' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (target &&
         virStrToLong_uip(target, NULL, 10, &addr->target) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'target' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (unit &&
         virStrToLong_uip(unit, NULL, 10, &addr->unit) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'unit' attribute"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(controller);
-    VIR_FREE(bus);
-    VIR_FREE(target);
-    VIR_FREE(unit);
-    return ret;
+    return 0;
 }
 
 int
 virDomainDeviceVirtioSerialAddressParseXML(xmlNodePtr node,
                                            virDomainDeviceVirtioSerialAddressPtr addr)
 {
-    char *controller, *bus, *port;
-    int ret = -1;
+    g_autofree char *controller = virXMLPropString(node, "controller");
+    g_autofree char *bus = virXMLPropString(node, "bus");
+    g_autofree char *port = virXMLPropString(node, "port");
 
     memset(addr, 0, sizeof(*addr));
-
-    controller = virXMLPropString(node, "controller");
-    bus = virXMLPropString(node, "bus");
-    port = virXMLPropString(node, "port");
 
     if (controller &&
         virStrToLong_uip(controller, NULL, 10, &addr->controller) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'controller' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (bus &&
         virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'bus' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (port &&
         virStrToLong_uip(port, NULL, 10, &addr->port) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'port' attribute"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(controller);
-    VIR_FREE(bus);
-    VIR_FREE(port);
-    return ret;
+    return 0;
 }
 
 int
 virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
                                    virDomainDeviceCcidAddressPtr addr)
 {
-    char *controller, *slot;
-    int ret = -1;
+    g_autofree char *controller = virXMLPropString(node, "controller");
+    g_autofree char *slot = virXMLPropString(node, "slot");
 
     memset(addr, 0, sizeof(*addr));
-
-    controller = virXMLPropString(node, "controller");
-    slot = virXMLPropString(node, "slot");
 
     if (controller &&
         virStrToLong_uip(controller, NULL, 10, &addr->controller) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'controller' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (slot &&
         virStrToLong_uip(slot, NULL, 10, &addr->slot) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'slot' attribute"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(controller);
-    VIR_FREE(slot);
-    return ret;
+    return 0;
 }
 
 static int
@@ -519,57 +470,41 @@ int
 virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
                                   virDomainDeviceUSBAddressPtr addr)
 {
-    char *port, *bus;
-    int ret = -1;
+    g_autofree char *port = virXMLPropString(node, "port");
+    g_autofree char *bus = virXMLPropString(node, "bus");
 
     memset(addr, 0, sizeof(*addr));
 
-    port = virXMLPropString(node, "port");
-    bus = virXMLPropString(node, "bus");
-
     if (port && virDomainDeviceUSBAddressParsePort(addr, port) < 0)
-        goto cleanup;
+        return -1;
 
     if (bus &&
         virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot parse <address> 'bus' attribute"));
-        goto cleanup;
+        return -1;
     }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(bus);
-    VIR_FREE(port);
-    return ret;
+    return 0;
 }
 
 int
 virDomainDeviceSpaprVioAddressParseXML(xmlNodePtr node,
                                       virDomainDeviceSpaprVioAddressPtr addr)
 {
-    char *reg;
-    int ret;
+    g_autofree char *reg = virXMLPropString(node, "reg");
 
     memset(addr, 0, sizeof(*addr));
 
-    reg = virXMLPropString(node, "reg");
     if (reg) {
         if (virStrToLong_ull(reg, NULL, 16, &addr->reg) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse <address> 'reg' attribute"));
-            ret = -1;
-            goto cleanup;
+            return -1;
         }
 
         addr->has_reg = true;
     }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(reg);
-    return ret;
+    return 0;
 }
 
 bool
@@ -604,19 +539,17 @@ int
 virInterfaceLinkParseXML(xmlNodePtr node,
                          virNetDevIfLinkPtr lnk)
 {
-    int ret = -1;
-    char *stateStr, *speedStr;
     int state;
 
-    stateStr = virXMLPropString(node, "state");
-    speedStr = virXMLPropString(node, "speed");
+    g_autofree char *stateStr = virXMLPropString(node, "state");
+    g_autofree char *speedStr = virXMLPropString(node, "speed");
 
     if (stateStr) {
         if ((state = virNetDevIfStateTypeFromString(stateStr)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown link state: %s"),
                            stateStr);
-            goto cleanup;
+            return -1;
         }
         lnk->state = state;
     }
@@ -626,14 +559,9 @@ virInterfaceLinkParseXML(xmlNodePtr node,
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unable to parse link speed: %s"),
                        speedStr);
-        goto cleanup;
+        return -1;
     }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(stateStr);
-    VIR_FREE(speedStr);
-    return ret;
+    return 0;
 }
 
 int
