@@ -7312,7 +7312,7 @@ qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
         }
     }
 
-    if (masterInitiator) {
+    if (masterInitiator < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("At least one NUMA node has to have CPUs"));
         goto cleanup;
