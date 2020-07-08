@@ -21,6 +21,9 @@
 #include <config.h>
 
 #include "remote_sockets.h"
+#include "virerror.h"
+
+#define VIR_FROM_THIS VIR_FROM_REMOTE
 
 VIR_ENUM_IMPL(remoteDriverTransport,
               REMOTE_DRIVER_TRANSPORT_LAST,
@@ -42,11 +45,9 @@ VIR_ENUM_IMPL(remoteDriverMode,
 int
 remoteSplitURIScheme(virURIPtr uri,
                      char **driver,
-                     char **transport)
+                     remoteDriverTransport *transport)
 {
     char *p = strchr(uri->scheme, '+');
-
-    *driver = *transport = NULL;
 
     if (p)
         *driver = g_strndup(uri->scheme, p - uri->scheme);
@@ -54,13 +55,37 @@ remoteSplitURIScheme(virURIPtr uri,
         *driver = g_strdup(uri->scheme);
 
     if (p) {
-        *transport = g_strdup(p + 1);
+        g_autofree char *tmp = g_strdup(p + 1);
+        int val;
 
-        p = *transport;
+        p = tmp;
         while (*p) {
             *p = g_ascii_tolower(*p);
             p++;
         }
+
+        if ((val = remoteDriverTransportTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("remote_open: transport in URL not recognised "
+                             "(should be tls|unix|ssh|ext|tcp|libssh2|libssh)"));
+            return -1;
+        }
+
+        if (val == REMOTE_DRIVER_TRANSPORT_UNIX &&
+            uri->server) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("using unix socket and remote "
+                             "server '%s' is not supported."),
+                           uri->server);
+            return -1;
+        }
+
+        *transport = val;
+    } else {
+        if (uri->server)
+            *transport = REMOTE_DRIVER_TRANSPORT_TLS;
+        else
+            *transport = REMOTE_DRIVER_TRANSPORT_UNIX;
     }
 
     return 0;

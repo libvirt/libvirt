@@ -863,12 +863,11 @@ static int
 doRemoteOpen(virConnectPtr conn,
              struct private_data *priv,
              const char *driver_str,
-             const char *transport_str,
+             remoteDriverTransport transport,
              virConnectAuthPtr auth G_GNUC_UNUSED,
              virConfPtr conf,
              unsigned int flags)
 {
-    int transport;
 #ifndef WIN32
     g_autofree char *daemonPath = NULL;
 #endif
@@ -903,34 +902,6 @@ doRemoteOpen(virConnectPtr conn,
 
     /* We handle *ALL* URIs here. The caller has rejected any
      * URIs we don't care about */
-
-    if (conn->uri) {
-        if (!transport_str) {
-            if (conn->uri->server)
-                transport = REMOTE_DRIVER_TRANSPORT_TLS;
-            else
-                transport = REMOTE_DRIVER_TRANSPORT_UNIX;
-        } else {
-            if ((transport = remoteDriverTransportTypeFromString(transport_str)) < 0) {
-                virReportError(VIR_ERR_INVALID_ARG, "%s",
-                               _("remote_open: transport in URL not recognised "
-                                 "(should be tls|unix|ssh|ext|tcp|libssh2|libssh)"));
-                return VIR_DRV_OPEN_ERROR;
-            }
-
-            if (transport == REMOTE_DRIVER_TRANSPORT_UNIX &&
-                conn->uri->server) {
-                virReportError(VIR_ERR_INVALID_ARG,
-                               _("using unix socket and remote "
-                                 "server '%s' is not supported."),
-                               conn->uri->server);
-                return VIR_DRV_OPEN_ERROR;
-            }
-        }
-    } else {
-        /* No URI, then must be probing so use UNIX socket */
-        transport = REMOTE_DRIVER_TRANSPORT_UNIX;
-    }
 
     /* Remote server defaults to "localhost" if not specified. */
     if (conn->uri && conn->uri->port != 0) {
@@ -1351,11 +1322,16 @@ remoteConnectOpen(virConnectPtr conn,
     int rflags = 0;
     const char *autostart = getenv("LIBVIRT_AUTOSTART");
     char *driver = NULL;
-    char *transport = NULL;
+    remoteDriverTransport transport;
 
-    if (conn->uri &&
-        remoteSplitURIScheme(conn->uri, &driver, &transport) < 0)
-        goto cleanup;
+    if (conn->uri) {
+        if (remoteSplitURIScheme(conn->uri, &driver, &transport) < 0)
+            goto cleanup;
+    } else {
+        /* No URI, then must be probing so use UNIX socket */
+        transport = REMOTE_DRIVER_TRANSPORT_UNIX;
+    }
+
 
     if (inside_daemon) {
         if (!conn->uri) {
@@ -1401,12 +1377,12 @@ remoteConnectOpen(virConnectPtr conn,
         rflags |= VIR_DRV_OPEN_REMOTE_USER;
 
         /*
-         * Furthermore if no servername is given, and no +XXX
-         * transport is listed, or transport is unix,
+         * Furthermore if no servername is given,
+         * and the transport is unix,
          * and uid is unprivileged then auto-spawn a daemon.
          */
         if (!conn->uri->server &&
-            (transport == NULL || STREQ(transport, "unix")) &&
+            (transport == REMOTE_DRIVER_TRANSPORT_UNIX) &&
             (!autostart ||
              STRNEQ(autostart, "0"))) {
             VIR_DEBUG("Try daemon autostart");
@@ -1441,7 +1417,6 @@ remoteConnectOpen(virConnectPtr conn,
 
  cleanup:
     VIR_FREE(driver);
-    VIR_FREE(transport);
     return ret;
 }
 

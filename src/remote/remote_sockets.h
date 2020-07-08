@@ -53,4 +53,4 @@ VIR_ENUM_DECL(remoteDriverMode);
 int
 remoteSplitURIScheme(virURIPtr uri,
                      char **driver,
-                     char **transport);
+                     remoteDriverTransport *transport);
