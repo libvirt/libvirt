@@ -3187,7 +3187,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                              "with this QEMU binary"));
             return -1;
         }
-        if (virJSONValueObjectAdd(props, "s:pmem", "on", NULL) < 0)
+        if (virJSONValueObjectAdd(props, "b:pmem", true, NULL) < 0)
             return -1;
     }
 
