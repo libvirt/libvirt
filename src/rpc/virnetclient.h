@@ -30,9 +30,22 @@
 #include "virobject.h"
 #include "viruri.h"
 
+typedef enum {
+    VIR_NET_CLIENT_PROXY_AUTO,
+    VIR_NET_CLIENT_PROXY_NETCAT,
+    VIR_NET_CLIENT_PROXY_NATIVE,
+
+    VIR_NET_CLIENT_PROXY_LAST,
+} virNetClientProxy;
+
+VIR_ENUM_DECL(virNetClientProxy);
+
 char *
-virNetClientSSHHelperCommand(const char *netcatPath,
-                             const char *socketPath);
+virNetClientSSHHelperCommand(virNetClientProxy proxy,
+                             const char *netcatPath,
+                             const char *socketPath,
+                             const char *driverURI,
+                             bool readonly);
 
 virNetClientPtr virNetClientNewUNIX(const char *path,
                                     bool spawnDaemon,
@@ -49,8 +62,11 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    bool noTTY,
                                    bool noVerify,
                                    const char *keyfile,
-                                   const char *netcat,
-                                   const char *socketPath);
+                                   virNetClientProxy proxy,
+                                   const char *netcatPath,
+                                   const char *socketPath,
+                                   const char *driverURI,
+                                   bool readonly);
 
 virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *port,
@@ -60,8 +76,11 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *knownHostsPath,
                                        const char *knownHostsVerify,
                                        const char *authMethods,
+                                       virNetClientProxy proxy,
                                        const char *netcatPath,
                                        const char *socketPath,
+                                       const char *driverURI,
+                                       bool readonly,
                                        virConnectAuthPtr authPtr,
                                        virURIPtr uri);
 
@@ -73,8 +92,11 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
                                       const char *knownHostsPath,
                                       const char *knownHostsVerify,
                                       const char *authMethods,
+                                      virNetClientProxy proxy,
                                       const char *netcatPath,
                                       const char *socketPath,
+                                      const char *driverURI,
+                                      bool readonly,
                                       virConnectAuthPtr authPtr,
                                       virURIPtr uri);
 

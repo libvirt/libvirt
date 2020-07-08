@@ -108,14 +108,6 @@ remoteGetUNIXSocketHelper(remoteDriverTransport transport,
     g_autofree char *userdir = NULL;
 
     if (session) {
-        if (transport != REMOTE_DRIVER_TRANSPORT_UNIX) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("Connecting to session instance without "
-                             "socket path is not supported by the %s "
-                             "transport"),
-                           remoteDriverTransportTypeToString(transport));
-            return NULL;
-        }
         userdir = virGetUserRuntimeDirectory();
 
         sockname = g_strdup_printf("%s/%s-sock", userdir, sock_prefix);

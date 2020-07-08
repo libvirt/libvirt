@@ -50,6 +50,10 @@ enum {
     VIR_NET_CLIENT_MODE_COMPLETE,
 };
 
+VIR_ENUM_IMPL(virNetClientProxy,
+              VIR_NET_CLIENT_PROXY_LAST,
+              "auto", "netcat", "native");
+
 struct _virNetClientCall {
     int mode;
 
@@ -414,23 +418,64 @@ virNetClientDoubleEscapeShell(const char *str)
 }
 
 char *
-virNetClientSSHHelperCommand(const char *netcatPath,
-                             const char *socketPath)
+virNetClientSSHHelperCommand(virNetClientProxy proxy,
+                             const char *netcatPath,
+                             const char *socketPath,
+                             const char *driverURI,
+                             bool readonly)
 {
-    g_autofree char *netcatPathSafe = virNetClientDoubleEscapeShell(netcatPath);
+    g_autofree char *netcatPathSafe = virNetClientDoubleEscapeShell(netcatPath ? netcatPath : "nc");
+    g_autofree char *driverURISafe = virNetClientDoubleEscapeShell(driverURI);
+    g_autofree char *nccmd = NULL;
+    g_autofree char *helpercmd = NULL;
 
-    if (!netcatPath)
-        netcatPath = "nc";
+    /* If user gave a 'netcat' path in the URI, we must
+     * assume they want the legacy 'nc' based proxy, not
+     * our new virt-ssh-helper
+     */
+    if (proxy == VIR_NET_CLIENT_PROXY_AUTO &&
+        netcatPath != NULL) {
+        proxy = VIR_NET_CLIENT_PROXY_NETCAT;
+    }
 
-    return g_strdup_printf(
-        "sh -c "
-        "'if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-          "ARG=-q0;"
+    nccmd = g_strdup_printf(
+        "if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+            "ARG=-q0;"
         "else "
-          "ARG=;"
+            "ARG=;"
         "fi;"
-        "'%s' $ARG -U %s'",
+        "'%s' $ARG -U %s",
         netcatPathSafe, netcatPathSafe, socketPath);
+
+    helpercmd = g_strdup_printf("virt-ssh-helper%s'%s'",
+                                readonly ? " -r " : " ",
+                                driverURISafe);
+
+    switch (proxy) {
+    case VIR_NET_CLIENT_PROXY_AUTO:
+        return g_strdup_printf("sh -c 'which virt-nc 1>/dev/null 2>&1; "
+                               "if test $? = 0; then "
+                               "    %s; "
+                               "else"
+                               "    %s; "
+                               "fi'", helpercmd, nccmd);
+
+    case VIR_NET_CLIENT_PROXY_NETCAT:
+        return g_strdup_printf("sh -c '%s'", nccmd);
+
+    case VIR_NET_CLIENT_PROXY_NATIVE:
+        if (netcatPath) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("netcat path not valid with native proxy mode"));
+            return NULL;
+        }
+        return g_strdup_printf("sh -c '%s'", helpercmd);
+
+    case VIR_NET_CLIENT_PROXY_LAST:
+    default:
+        virReportEnumRangeError(virNetClientProxy, proxy);
+        return NULL;
+    }
 }
 
 
@@ -445,15 +490,18 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    bool noTTY,
                                    bool noVerify,
                                    const char *keyfile,
+                                   virNetClientProxy proxy,
                                    const char *netcatPath,
-                                   const char *socketPath)
+                                   const char *socketPath,
+                                   const char *driverURI,
+                                   bool readonly)
 {
     virNetSocketPtr sock;
     g_autofree char *command = NULL;
 
-    DEFAULT_VALUE(netcatPath, "nc");
-
-    command = virNetClientSSHHelperCommand(netcatPath, socketPath);
+    if (!(command = virNetClientSSHHelperCommand(proxy, netcatPath, socketPath,
+                                                 driverURI, readonly)))
+        return NULL;
 
     if (virNetSocketNewConnectSSH(nodename, service, binary, username, noTTY,
                                   noVerify, keyfile, command, &sock) < 0)
@@ -470,8 +518,11 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *knownHostsPath,
                                        const char *knownHostsVerify,
                                        const char *authMethods,
+                                       virNetClientProxy proxy,
                                        const char *netcatPath,
                                        const char *socketPath,
+                                       const char *driverURI,
+                                       bool readonly,
                                        virConnectAuthPtr authPtr,
                                        virURIPtr uri)
 {
@@ -510,7 +561,9 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     DEFAULT_VALUE(username, "root");
     DEFAULT_VALUE(knownHostsVerify, "normal");
 
-    command = virNetClientSSHHelperCommand(netcatPath, socketPath);
+    if (!(command = virNetClientSSHHelperCommand(proxy, netcatPath, socketPath,
+                                                 driverURI, readonly)))
+        return NULL;
 
     if (virNetSocketNewConnectLibSSH2(host, port,
                                       family,
@@ -530,8 +583,11 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
                                       const char *knownHostsPath,
                                       const char *knownHostsVerify,
                                       const char *authMethods,
+                                      virNetClientProxy proxy,
                                       const char *netcatPath,
                                       const char *socketPath,
+                                      const char *driverURI,
+                                      bool readonly,
                                       virConnectAuthPtr authPtr,
                                       virURIPtr uri)
 {
@@ -570,7 +626,9 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
     DEFAULT_VALUE(username, "root");
     DEFAULT_VALUE(knownHostsVerify, "normal");
 
-    command = virNetClientSSHHelperCommand(netcatPath, socketPath);
+    if (!(command = virNetClientSSHHelperCommand(proxy, netcatPath, socketPath,
+                                                 driverURI, readonly)))
+        return NULL;
 
     if (virNetSocketNewConnectLibssh(host, port,
                                      family,

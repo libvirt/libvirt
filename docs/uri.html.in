@@ -261,6 +261,24 @@ Note that parameter values must be
       </tr>
       <tr>
         <td>
+          <code>proxy</code>
+        </td>
+        <td>auto, netcat, native </td>
+        <td>
+          <dl>
+            <dt><code>auto</code></dt><dd>try native, fallback to netcat</dd>
+            <dt><code>netcat</code></dt><dd>only use netcat</dd>
+            <dt><code>native</code></dt><dd>only use native</dd>
+          </dl>
+          Can also be set in <code>libvirt.conf</code> as <code>remote_proxy</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>proxy=native</code> </td>
+      </tr>
+      <tr>
+        <td>
           <code>command</code>
         </td>
         <td> ssh, ext </td>
@@ -296,8 +314,10 @@ Note that parameter values must be
         <td> ssh, libssh2, libssh </td>
         <td>
   The name of the netcat command on the remote machine.
-  The default is <code>nc</code>.  For ssh transport, libvirt
-  constructs an ssh command which looks like:
+  The default is <code>nc</code>. This is not permitted
+  when using the <code>native</code> proxy mode. For ssh
+  transport, libvirt constructs an ssh command which looks
+  like:
 
 <pre><i>command</i> -p <i>port</i> [-l <i>username</i>] <i>hostname</i> <i>netcat</i> -U <i>socket</i>
 </pre>
