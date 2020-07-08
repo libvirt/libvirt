@@ -596,6 +596,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "intel-iommu.aw-bits",
               "spapr-tpm-proxy",
               "numa.hmat",
+              "blockdev-hostdev-scsi"
     );
 
 
