@@ -5124,6 +5124,9 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCapsPtr qemuCaps)
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_WERROR)) {
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_STORAGE_WERROR);
     }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI);
 }
 
 
