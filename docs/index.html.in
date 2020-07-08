@@ -63,6 +63,9 @@
           <a href="formatbackup.html">backup jobs</a></dd>
         <dt><a href="http://wiki.libvirt.org">Wiki</a></dt>
         <dd>Read further community contributed content</dd>
+
+        <dt><a href="https://libvirt.org/kbase.html">Knowledge base</a></dt>
+        <dd>Learn more about libvirt through knowledge base</dd>
       </dl>
     </div>
 
