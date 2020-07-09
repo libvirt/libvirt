@@ -3288,7 +3288,7 @@ static void qemuMigrationSrcIOFunc(void *arg)
     virErrorRestore(&err);
 
  error:
-    /* Let the source qemu know that the transfer cant continue anymore.
+    /* Let the source qemu know that the transfer can't continue anymore.
      * Don't copy the error for EPIPE as destination has the actual error. */
     VIR_FORCE_CLOSE(data->sock);
     if (!virLastErrorIsSystemErrno(EPIPE))

@@ -6426,7 +6426,7 @@ qemuDomainDelIOThread(virDomainPtr dom,
  *
  * Alter the specified @iothread_id with the values provided.
  *
- * Returs 0 on success, -1 on failure
+ * Returns 0 on success, -1 on failure
  */
 static int
 qemuDomainSetIOThreadParams(virDomainPtr dom,
@@ -6764,7 +6764,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     }
 
     if (header->version > QEMU_SAVE_VERSION) {
-        /* convert endianess and try again */
+        /* convert endianness and try again */
         bswap_header(header);
     }
 

@@ -110,7 +110,7 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
 
 
 /**
- * This array convertor is for quirky cases where the QMP schema mandates an
+ * This array converter is for quirky cases where the QMP schema mandates an
  * array of objects with only one attribute 'str' which needs to be formatted as
  * repeated key-value pairs without the 'str' being printed:
  *

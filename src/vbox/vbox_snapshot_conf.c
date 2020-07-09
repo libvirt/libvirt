@@ -877,7 +877,7 @@ virVBoxSnapshotConfRemoveSnapshot(virVBoxSnapshotConfMachinePtr machine,
     if (snapshot->nchildren > 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("This snapshot has children, "
-                         "please delete theses snapshots before"));
+                         "please delete these snapshots before"));
         return -1;
     }
 
@@ -1387,7 +1387,7 @@ virVBoxSnapshotConfHardDiskUuidByLocation(virVBoxSnapshotConfMachinePtr machine,
     return hardDisk->uuid;
 }
 
-/*Retreive the whole ancestry of the vboxSnapshotXmlHardDiskPtr whose location is
+/*Retrieve the whole ancestry of the vboxSnapshotXmlHardDiskPtr whose location is
  *'location', and store them in a newly allocated list of vboxSnapshotXmlHardDiskPtr.
  *This list begins with the requested disk, and ends with the farthest ancestor.
  *return array length on success, -1 on failure.*/

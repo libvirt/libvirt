@@ -4931,7 +4931,7 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
         if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT && qemuCaps) {
             /* Pick a suitable default model for the USB controller if none
              * has been selected by the user and we have the qemuCaps for
-             * figuring out which contollers are supported.
+             * figuring out which controllers are supported.
              *
              * We rely on device availability instead of setting the model
              * unconditionally because, for some machine types, there's a
@@ -8193,7 +8193,7 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
  * @mem: memory device definition object
  *
  * Aligns the size of the memory module as qemu enforces it. The size is updated
- * inplace. Default rounding is now to 1 MiB (qemu requires rouding to page,
+ * inplace. Default rounding is now to 1 MiB (qemu requires rounding to page,
  * size so this should be safe).
  */
 int
@@ -9307,7 +9307,7 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
     if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
         return 0;
 
-    /* The halted state is interresting only on s390(x). On other platforms
+    /* The halted state is interesting only on s390(x). On other platforms
      * the data would be stale at the time when it would be used.
      * Calling qemuMonitorGetCpuHalted() can adversely affect the running
      * VM's performance unless QEMU supports query-cpus-fast.
@@ -9402,7 +9402,7 @@ qemuDomainDiskByName(virDomainDefPtr def,
  *
  * Validate whether the disk source is valid for disk device='lun'.
  *
- * Returns 0 if the configuration is valid -1 and a libvirt error if the soure
+ * Returns 0 if the configuration is valid -1 and a libvirt error if the source
  * is invalid.
  */
 int

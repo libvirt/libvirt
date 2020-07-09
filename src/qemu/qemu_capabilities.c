@@ -615,7 +615,7 @@ typedef struct _virQEMUCapsHostCPUData virQEMUCapsHostCPUData;
 typedef virQEMUCapsHostCPUData *virQEMUCapsHostCPUDataPtr;
 struct _virQEMUCapsHostCPUData {
     /* Only the "info" part is stored in the capabilities cache, the rest is
-     * re-computed from other fields and external data sources everytime we
+     * re-computed from other fields and external data sources every time we
      * probe QEMU or load the cache.
      */
     qemuMonitorCPUModelInfoPtr info;
@@ -5280,7 +5280,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     virQEMUCapsInitQMPBasicArch(qemuCaps);
 
-    /* initiate all capapbilities based on qemu version */
+    /* initiate all capabilities based on qemu version */
     virQEMUCapsInitQMPVersionCaps(qemuCaps);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)

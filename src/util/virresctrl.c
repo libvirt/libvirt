@@ -1412,7 +1412,7 @@ virResctrlAllocGetID(virResctrlAllocPtr alloc)
  *
  *     MB:0=100;1=100
  *
- * which indicates node id 0 has 100 percent bandwith and node id 1
+ * which indicates node id 0 has 100 percent bandwidth and node id 1
  * has 100 percent bandwidth. A trailing semi-colon is not formatted.
  */
 static int

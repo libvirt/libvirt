@@ -1067,7 +1067,7 @@ virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
  *
  * https://www.kernel.org/doc/html/latest/admin-guide/sysfs-rules.html
  *
- * Returns true if devpath's susbsystem is pci, false otherwise.
+ * Returns true if devpath's subsystem is pci, false otherwise.
  */
 static bool
 virNetDevIsPCIDevice(const char *devpath)

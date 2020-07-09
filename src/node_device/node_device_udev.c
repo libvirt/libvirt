@@ -1409,7 +1409,7 @@ udevEnumerateAddMatches(struct udev_enumerate *udev_enumerate)
     for (i = 0; i < G_N_ELEMENTS(subsystem_ignored); i++) {
         const char *s = subsystem_ignored[i];
         if (udev_enumerate_add_nomatch_subsystem(udev_enumerate, s) < 0) {
-            virReportSystemError(errno, "%s", _("failed to add susbsystem filter"));
+            virReportSystemError(errno, "%s", _("failed to add subsystem filter"));
             return -1;
         }
     }

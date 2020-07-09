@@ -4340,7 +4340,7 @@ qemuMonitorSetWatchdogAction(qemuMonitorPtr mon,
  * @jobname: name of the job
  * @props: JSON object describing the blockdev to add
  *
- * Instructs qemu to create/format a new stroage or format layer. Note that
+ * Instructs qemu to create/format a new storage or format layer. Note that
  * the job does not add the created/formatted image into qemu and
  * qemuMonitorBlockdevAdd needs to be called separately with corresponding
  * arguments. Note that the arguments for creating and adding are different.

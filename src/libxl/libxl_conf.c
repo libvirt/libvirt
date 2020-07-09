@@ -1861,7 +1861,7 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
 }
 
 /*
- * dom0's maximum memory can be controled by the user with the 'dom0_mem' Xen
+ * dom0's maximum memory can be controlled by the user with the 'dom0_mem' Xen
  * command line parameter. E.g. to set dom0's initial memory to 4G and max
  * memory to 8G: dom0_mem=4G,max:8G
  * Supported unit suffixes are [bBkKmMgGtT]. If not specified the default

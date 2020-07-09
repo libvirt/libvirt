@@ -1556,7 +1556,7 @@ _vrdeServerGetPorts(vboxDriverPtr data, IVRDEServer *VRDEServer,
     char *portUtf8 = NULL;
 
     /* get active (effective) port - available only when VM is running and has
-     * the VBOX extensions installed (without extenstions RDP server
+     * the VBOX extensions installed (without extensions RDP server
      * functionality is disabled)
      */
     port = vboxGetActiveVRDEServerPort(data->vboxSession, machine);

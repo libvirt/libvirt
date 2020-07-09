@@ -1002,7 +1002,7 @@ virSysinfoParseOEMStrings(const char *base,
 
         /* If OEM String contains newline, dmidecode escapes it as a dot.
          * If this is the case then run dmidecode again to get raw string.
-         * Unfortunately, we can't dinstinguish betwen dot an new line at
+         * Unfortunately, we can't dinstinguish between dot an new line at
          * this level. */
         if (memchr(cur, '.', eol - cur)) {
             char *str;

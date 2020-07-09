@@ -681,7 +681,7 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
     VIR_DEBUG("sess=%p", sess);
 
     if (priv->password) {
-        /* tunelled password authentication */
+        /* tunnelled password authentication */
         if ((rc = libssh2_userauth_password(sess->session,
                                             priv->username,
                                             priv->password)) == 0) {
@@ -705,7 +705,7 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
                                                     sess->hostname)))
                 goto cleanup;
 
-            /* tunelled password authentication */
+            /* tunnelled password authentication */
             if ((rc = libssh2_userauth_password(sess->session,
                                                 priv->username,
                                                 password)) == 0) {

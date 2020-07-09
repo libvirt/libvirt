@@ -888,7 +888,7 @@ virVMXSCSIDiskNameToControllerAndUnit(const char *name, int *controller, int *un
     *controller = idx / 15;
     *unit = idx % 15;
 
-    /* Skip the controller ifself at unit 7 */
+    /* Skip the controller itself at unit 7 */
     if (*unit >= 7)
         ++(*unit);
 

@@ -806,7 +806,7 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
 
 /* qemuBuildTLSx509BackendProps:
  * @tlspath: path to the TLS credentials
- * @listen: boolen listen for client or server setting
+ * @listen: boolean listen for client or server setting
  * @verifypeer: boolean to enable peer verification (form of authorization)
  * @alias: alias for the TLS credentials object
  * @secalias: if one exists, the alias of the security object for passwordid
@@ -847,7 +847,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
 /* qemuBuildTLSx509CommandLine:
  * @cmd: Pointer to command
  * @tlspath: path to the TLS credentials
- * @listen: boolen listen for client or server setting
+ * @listen: boolean listen for client or server setting
  * @verifypeer: boolean to enable peer verification (form of authorization)
  * @certEncSecretAlias: alias of a 'secret' object for decrypting TLS private key
  *                      (optional)

@@ -598,7 +598,7 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
     VIR_DEBUG("sess=%p", sess);
 
     if (priv->password) {
-        /* tunelled password authentication */
+        /* tunnelled password authentication */
         if ((rc = ssh_userauth_password(sess->session, NULL,
                                         priv->password)) == 0)
             return SSH_AUTH_SUCCESS;
@@ -621,7 +621,7 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
                                                     sess->hostname)))
                 return SSH_AUTH_ERROR;
 
-            /* tunelled password authentication */
+            /* tunnelled password authentication */
             if ((rc = ssh_userauth_password(sess->session, NULL,
                                             password)) == 0)
                 return SSH_AUTH_SUCCESS;

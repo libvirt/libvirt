@@ -2399,7 +2399,7 @@ virStorageBackendVolUploadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
     virCheckFlags(VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM, -1);
     /* if volume has target format VIR_STORAGE_FILE_PLOOP
      * we need to restore DiskDescriptor.xml, according to
-     * new contents of volume. This operation will be perfomed
+     * new contents of volume. This operation will be performed
      * when volUpload is fully finished. */
     if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
         /* Fail if the volume contains snapshots or we failed to check it.*/
@@ -2985,7 +2985,7 @@ virStorageBackendBLKIDFindPart(blkid_probe probe,
      * however, the blkid_do_probe for "dvh" returns "sgi" and
      * for "pc98" it returns "dos". Although "bsd" is recognized,
      * it seems that the parted created partition table is not being
-     * properly recogized. Since each of these will cause problems
+     * properly recognized. Since each of these will cause problems
      * with startup comparison, let's just treat them as UNKNOWN causing
      * the caller to fallback to using PARTED */
     if (STREQ(format, "dvh") || STREQ(format, "pc98") || STREQ(format, "bsd"))

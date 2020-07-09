@@ -10016,7 +10016,7 @@ virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
  * @bandwidth: specify bandwidth limit; flags determine the unit
  * @flags: bitwise-OR of virDomainBlockJobSetSpeedFlags
  *
- * Set the maximimum allowable bandwidth that a block job may consume.  If
+ * Set the maximum allowable bandwidth that a block job may consume.  If
  * bandwidth is 0, the limit will revert to the hypervisor default of
  * unlimited.
  *

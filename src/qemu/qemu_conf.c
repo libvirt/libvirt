@@ -1646,7 +1646,7 @@ qemuSharedDeviceEntryRemove(virQEMUDriverPtr driver,
     if (!(entry = virHashLookup(driver->sharedDevices, key)))
         return -1;
 
-    /* Nothing to do if the shared disk is not recored in the table. */
+    /* Nothing to do if the shared disk is not recorded in the table. */
     if (!qemuSharedDeviceEntryDomainExists(entry, name, &idx))
         return 0;
 

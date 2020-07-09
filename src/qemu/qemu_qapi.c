@@ -403,12 +403,12 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  *   '*subattribute': same as above but the selected member must be optional
  *                    (has a property named 'default' in the schema)
  *   '+variant": In the case of unionized objects, select a specific variant of
- *               the prevously selected member
+ *               the previously selected member
  *
  * - Boolean queries - @entry remains NULL, return value indicates success:
  *   '^enumval': returns true if the previously selected enum contains 'enumval'
  *   '!basictype': returns true if previously selected type is of 'basictype'
- *                 JSON type. Spported are 'null', 'string', 'number', 'value',
+ *                 JSON type. Supported are 'null', 'string', 'number', 'value',
  *                 'int' and 'boolean.
  *   '$feature': returns true if the previously selected type supports 'feature'
  *               ('feature' is in the 'features' array of given type)

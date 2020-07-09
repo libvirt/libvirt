@@ -490,7 +490,7 @@ enum {
 #endif
 
 /* Ideally callers would use the g_*printf
- * functions directly but there are alot to
+ * functions directly but there are a lot to
  * convert, so until then...
  */
 #ifndef VIR_NO_GLIB_STDIO

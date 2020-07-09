@@ -89,7 +89,7 @@ virTPMCreateCancelPath(const char *devpath)
 
 /*
  * executables for the swtpm; to be found on the host along with
- * capabilties bitmap
+ * capabilities bitmap
  */
 static virMutex swtpm_tools_lock = VIR_MUTEX_INITIALIZER;
 static char *swtpm_path;

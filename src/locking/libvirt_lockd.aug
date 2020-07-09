@@ -16,7 +16,7 @@ module Libvirt_lockd =
    let int_entry       (kw:string) = [ key kw . value_sep . int_val ]
 
 
-   (* Each enty in the config is one of the following three ... *)
+   (* Each entry in the config is one of the following three ... *)
    let entry = bool_entry "auto_disk_leases"
              | bool_entry "require_lease_for_disks"
              | str_entry "file_lockspace_dir"

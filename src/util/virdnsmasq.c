@@ -866,7 +866,7 @@ dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag)
  *
  *   Turns a vector of dnsmasqDhcpHost into the string that is ought to be
  *   stored in the hostsfile, this functionality is split to make hostsfiles
- *   testable. Returs NULL if nhosts is 0.
+ *   testable. Returns NULL if nhosts is 0.
  */
 char *
 dnsmasqDhcpHostsToString(dnsmasqDhcpHost *hosts,

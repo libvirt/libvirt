@@ -2580,7 +2580,7 @@ qemuDomainAddressFindNewBusNr(virDomainDefPtr def)
      *  never need any additional child buses (probably only a few of the
      *  32 will ever be used). So for pci-expander-bus we find the lowest
      *  existing busNr, and set this one to the current lowest - 2 (one
-     *  for the pxb, one for the intergrated pci-bridge), thus leaving the
+     *  for the pxb, one for the integrated pci-bridge), thus leaving the
      *  maximum possible bus numbers available for other buses plugged
      *  into pci-root (i.e. pci-bridges and other
      *  pci-expander-buses). Anyone who needs more than 32 devices

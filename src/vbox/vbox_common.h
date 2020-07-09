@@ -34,7 +34,7 @@
  * vbox_CAPI_v*.h, or it would cause multiple
  * definitions.
  *
- * You can see the more informations in vbox_api.h
+ * You can see the more information in vbox_api.h
  */
 
 /* Copied definitions from vbox_CAPI_*.h.

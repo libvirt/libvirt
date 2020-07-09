@@ -3410,7 +3410,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
 
     if (STREQ(directoryName, directoryAndFileName)) {
         /*
-         * The <path> part of the datatore path didn't contain a '/', assume
+         * The <path> part of the datastore path didn't contain a '/', assume
          * that the <path> part is actually the file name.
          */
         datastorePathWithoutFileName = g_strdup_printf("[%s]", datastoreName);

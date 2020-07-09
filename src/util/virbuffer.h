@@ -39,7 +39,7 @@ typedef virBuffer *virBufferPtr;
  * VIR_BUFFER_INIT_CHILD:
  * @parentbuf: parent buffer for XML element formatting
  *
- * Intitialize a virBuffer structure and set up the indentation level for
+ * Initialize a virBuffer structure and set up the indentation level for
  * formatting XML subelements of @parentbuf.
  */
 #define VIR_BUFFER_INIT_CHILD(parentbuf) { NULL, (parentbuf)->indent + 2 }

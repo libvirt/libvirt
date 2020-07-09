@@ -916,7 +916,7 @@ virSystemdActivationNew(virSystemdActivationMap *map,
  *
  * Acquire an object for handling systemd activation.
  * If no activation FDs have been provided the returned object
- * will be NULL, indicating normal sevice setup can be performed
+ * will be NULL, indicating normal service setup can be performed
  * If the returned object is non-NULL then at least one file
  * descriptor will be present. No normal service setup should
  * be performed.

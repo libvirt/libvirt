@@ -653,7 +653,7 @@ udevGetIfaceDefBond(struct udev *udev,
 
     /* bonding/mode is in the format: "balance-rr 0" so we find the
      * space and increment the pointer to get the number and convert
-     * it to an interger. libvirt uses 1 through 7 while the raw
+     * it to an integer. libvirt uses 1 through 7 while the raw
      * number is 0 through 6 so increment it by 1.
      */
     tmp_str = udev_device_get_sysattr_value(dev, "bonding/mode");
@@ -684,7 +684,7 @@ udevGetIfaceDefBond(struct udev *udev,
 
     /* bonding/arp_validate is in the format: "none 0" so we find the
      * space and increment the pointer to get the number and convert
-     * it to an interger.
+     * it to an integer.
      */
     tmp_str = udev_device_get_sysattr_value(dev, "bonding/arp_validate");
     if (!tmp_str) {

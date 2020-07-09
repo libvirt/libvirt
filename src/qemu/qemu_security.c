@@ -455,7 +455,7 @@ qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
  * @existstatus: pointer to int returning exit status of process
  * @cmdret: pointer to int returning result of virCommandRun
  *
- * Start the vhost-user-gpu process with approriate labels.
+ * Start the vhost-user-gpu process with appropriate labels.
  * This function returns -1 on security setup error, 0 if all the
  * setup was done properly. In case the virCommand failed to run
  * 0 is returned but cmdret is set appropriately with the process

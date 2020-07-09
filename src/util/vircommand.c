@@ -1426,7 +1426,7 @@ virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
  * @name: the name to look up in current environment
  *
  * Pass an environment variable to the child
- * using current process' value
+ * using current process's value
  */
 void
 virCommandAddEnvPass(virCommandPtr cmd, const char *name)

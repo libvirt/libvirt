@@ -90,7 +90,7 @@ struct _qemuAgentMessage {
     bool finished;
     /* true for sync command */
     bool sync;
-    /* id of the issued sync comand */
+    /* id of the issued sync command */
     unsigned long long id;
     bool first;
 };

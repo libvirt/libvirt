@@ -528,9 +528,9 @@ virCPUarmCpuDataFromRegs(virCPUarmData *data)
     asm("mrs %0, MIDR_EL1" : "=r" (cpuid));
     VIR_DEBUG("CPUID read from register:  0x%016lx", cpuid);
 
-    /* parse the coresponding part_id bits */
+    /* parse the corresponding part_id bits */
     data->pvr = (cpuid >> 4) & 0xfff;
-    /* parse the coresponding vendor_id bits */
+    /* parse the corresponding vendor_id bits */
     data->vendor_id = (cpuid >> 24) & 0xff;
 
     hwcaps = getauxval(AT_HWCAP);

@@ -35,7 +35,7 @@
 VIR_LOG_INIT("util.netdevopenvswitch");
 
 /*
- * Set openvswitch default timout
+ * Set openvswitch default timeout
  */
 static unsigned int virNetDevOpenvswitchTimeout = VIR_NETDEV_OVS_DEFAULT_TIMEOUT;
 
@@ -473,7 +473,7 @@ virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
  * @path: the path of the unix socket
  * @ifname: the retrieved name of the interface
  *
- * Retreives the ovs ifname from vhostuser unix socket path.
+ * Retrieves the ovs ifname from vhostuser unix socket path.
  *
  * Returns: 1 if interface is an openvswitch interface,
  *          0 if it is not, but no other error occurred,

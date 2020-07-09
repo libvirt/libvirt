@@ -519,7 +519,7 @@ qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
         /* try cancelling invalid jobs - this works only if the job is not
          * concluded. In such case it will fail. We'll leave such job linger
          * in qemu and just forget about it in libvirt because there's not much
-         * we coud do besides killing the VM */
+         * we could do besides killing the VM */
         if (job->invalidData) {
 
             qemuBlockJobMarkBroken(job);

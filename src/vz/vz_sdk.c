@@ -2073,7 +2073,7 @@ prlsdkNewStateToEvent(VIRTUAL_MACHINE_STATE domainState,
                       int *lvEventTypeDetails)
 {
     /* We skip all intermediate states here, because
-     * libvirt doesn't have correspoding event types for
+     * libvirt doesn't have corresponding event types for
      * them */
     switch ((int)domainState) {
     case VMS_STOPPED:
@@ -2549,7 +2549,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     /*
      * Though we don't support NUMA configuration at the moment
      * virDomainDefPtr always contain non zero NUMA configuration
-     * So, just make sure this configuration does't differ from auto generated.
+     * So, just make sure this configuration doesn't differ from auto generated.
      */
     if ((virDomainNumatuneGetMode(def->numa, -1, &memMode) == 0 &&
          memMode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) ||

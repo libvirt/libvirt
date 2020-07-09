@@ -62,7 +62,7 @@ VIR_LOG_INIT("qemu.qemu_hotplug");
 
 #define CHANGE_MEDIA_TIMEOUT 5000
 
-/* Timeout in miliseconds for device removal. PPC64 domains
+/* Timeout in milliseconds for device removal. PPC64 domains
  * can experience a bigger delay in unplug operations during
  * heavy guest activity (vcpu being the most notable case), thus
  * the timeout for PPC64 is also bigger. */

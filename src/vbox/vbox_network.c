@@ -439,7 +439,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     VBOX_UTF8_TO_UTF16(networkNameUtf8, &networkNameUtf16);
 
     /* Currently support only one dhcp server per network
-     * with contigious address space from start to end
+     * with contiguous address space from start to end
      */
     addr = ipdef->ranges[0].addr;
     if ((ipdef->nranges >= 1) &&
@@ -834,7 +834,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
             gVBoxAPI.UIDHCPServer.GetLowerIP(dhcpServer, &fromIPAddressUtf16);
             gVBoxAPI.UIDHCPServer.GetUpperIP(dhcpServer, &toIPAddressUtf16);
             /* Currently virtualbox supports only one dhcp server per network
-             * with contigious address space from start to end
+             * with contiguous address space from start to end
              */
             addr = ipdef->ranges[0].addr;
             if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
