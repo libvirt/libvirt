@@ -196,6 +196,8 @@ int virConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
 typedef enum {
     VIR_NODE_DEVICE_EVENT_CREATED = 0,
     VIR_NODE_DEVICE_EVENT_DELETED = 1,
+    VIR_NODE_DEVICE_EVENT_DEFINED = 2,
+    VIR_NODE_DEVICE_EVENT_UNDEFINED = 3,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_NODE_DEVICE_EVENT_LAST
