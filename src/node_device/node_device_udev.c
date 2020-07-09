@@ -19,6 +19,7 @@
  */
 
 #include <config.h>
+#include <gio/gio.h>
 #include <libudev.h>
 #include <pciaccess.h>
 #include <scsi/scsi.h>
@@ -69,6 +70,10 @@ struct _udevEventData {
 
     /* init thread */
     virThread initThread;
+
+    GList *mdevctlMonitors;
+    virMutex mdevctlLock;
+    int mdevctlTimeout;
 };
 
 static virClassPtr udevEventDataClass;
@@ -88,6 +93,11 @@ udevEventDataDispose(void *obj)
     udev = udev_monitor_get_udev(priv->udev_monitor);
     udev_monitor_unref(priv->udev_monitor);
     udev_unref(udev);
+
+    virMutexLock(&priv->mdevctlLock);
+    g_list_free_full(priv->mdevctlMonitors, g_object_unref);
+    virMutexUnlock(&priv->mdevctlLock);
+    virMutexDestroy(&priv->mdevctlLock);
 
     virCondDestroy(&priv->threadCond);
 }
@@ -116,6 +126,11 @@ udevEventDataNew(void)
         return NULL;
 
     if (virCondInit(&ret->threadCond) < 0) {
+        virObjectUnref(ret);
+        return NULL;
+    }
+
+    if (virMutexInit(&ret->mdevctlLock) < 0) {
         virObjectUnref(ret);
         return NULL;
     }
@@ -2004,6 +2019,141 @@ udevPCITranslateInit(bool privileged G_GNUC_UNUSED)
 }
 
 
+static void
+mdevctlHandlerThread(void *opaque G_GNUC_UNUSED)
+{
+    udevEventData *priv = driver->privateData;
+
+    /* ensure only a single thread can query mdevctl at a time */
+    virMutexLock(&priv->mdevctlLock);
+    if (nodeDeviceUpdateMediatedDevices() < 0)
+        VIR_WARN("mdevctl failed to updated mediated devices");
+    virMutexUnlock(&priv->mdevctlLock);
+}
+
+
+static void
+scheduleMdevctlHandler(int timer G_GNUC_UNUSED, void *opaque)
+{
+    udevEventData *priv = opaque;
+    virThread thread;
+
+    if (priv->mdevctlTimeout > 0) {
+        virEventRemoveTimeout(priv->mdevctlTimeout);
+        priv->mdevctlTimeout = -1;
+    }
+
+    if (virThreadCreateFull(&thread, false, mdevctlHandlerThread,
+                            "mdevctl-thread", false, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to create mdevctl thread"));
+    }
+}
+
+
+static void
+mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
+                           GFile *file,
+                           GFile *other_file G_GNUC_UNUSED,
+                           GFileMonitorEvent event_type,
+                           gpointer user_data);
+
+
+/* Recursively monitors a directory and its subdirectories for file changes and
+ * returns a GList of GFileMonitor objects */
+static GList*
+monitorFileRecursively(udevEventData *udev,
+                       GFile *file)
+{
+    GList *monitors = NULL;
+    g_autoptr(GError) error = NULL;
+    g_autoptr(GFileEnumerator) children = NULL;
+    GFileMonitor *mon;
+
+    if (!(children = g_file_enumerate_children(file, "standard::*",
+                                               G_FILE_QUERY_INFO_NONE, NULL, &error)))
+        goto error;
+
+    if (!(mon = g_file_monitor(file, G_FILE_MONITOR_NONE, NULL, &error)))
+        goto error;
+
+    g_signal_connect(mon, "changed",
+                     G_CALLBACK(mdevctlEventHandleCallback), udev);
+
+    monitors = g_list_append(monitors, mon);
+
+    while (true) {
+        GFileInfo *info = NULL;
+        GFile *child = NULL;
+        GList *child_monitors = NULL;
+
+        if (!g_file_enumerator_iterate(children, &info, &child, NULL, &error))
+            goto error;
+
+        if (!info)
+            break;
+
+        if (g_file_query_file_type(child, G_FILE_QUERY_INFO_NONE, NULL) ==
+            G_FILE_TYPE_DIRECTORY) {
+
+            child_monitors = monitorFileRecursively(udev, child);
+            if (child_monitors)
+                monitors = g_list_concat(monitors, child_monitors);
+        }
+    }
+
+    return monitors;
+
+ error:
+    g_list_free_full(monitors, g_object_unref);
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Unable to monitor directory: %s"), error->message);
+    g_clear_error(&error);
+    return NULL;
+}
+
+
+static void
+mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
+                           GFile *file,
+                           GFile *other_file G_GNUC_UNUSED,
+                           GFileMonitorEvent event_type,
+                           gpointer user_data)
+{
+    udevEventData *priv = user_data;
+    /* if a new directory appears, monitor that directory for changes */
+    if (event_type == G_FILE_MONITOR_EVENT_CREATED) {
+        GFileType file_type = g_file_query_file_type(file,
+                                                     G_FILE_QUERY_INFO_NONE,
+                                                     NULL);
+        if (file_type == G_FILE_TYPE_DIRECTORY) {
+            GList *newmonitors = monitorFileRecursively(priv, file);
+
+            virMutexLock(&priv->mdevctlLock);
+            priv->mdevctlMonitors = g_list_concat(priv->mdevctlMonitors, newmonitors);
+            virMutexUnlock(&priv->mdevctlLock);
+        }
+    }
+
+    /* When mdevctl creates a device, it can result in multiple notify events
+     * emitted for a single logical change (e.g. several CHANGED events, or a
+     * CREATED and CHANGED event followed by CHANGES_DONE_HINT). To avoid
+     * spawning a mdevctl thread multiple times for a single logical
+     * configuration change, try to coalesce these changes by waiting for the
+     * CHANGES_DONE_HINT event. As a fallback,  add a timeout to trigger the
+     * signal if that event never comes */
+    if (event_type != G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT) {
+        if (priv->mdevctlTimeout > 0)
+            virEventRemoveTimeout(priv->mdevctlTimeout);
+        priv->mdevctlTimeout = virEventAddTimeout(100, scheduleMdevctlHandler,
+                                                  priv, NULL);
+        return;
+    }
+
+    scheduleMdevctlHandler(-1, priv);
+}
+
+
 static int
 nodeStateInitialize(bool privileged,
                     const char *root,
@@ -2012,6 +2162,7 @@ nodeStateInitialize(bool privileged,
 {
     udevEventDataPtr priv = NULL;
     struct udev *udev = NULL;
+    g_autoptr(GFile) mdevctlConfigDir = g_file_new_for_path("/etc/mdevctl.d");
 
     if (root != NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2112,6 +2263,20 @@ nodeStateInitialize(bool privileged,
                                     udevEventHandleCallback, NULL, NULL);
     if (priv->watch == -1)
         goto unlock;
+
+    /* mdevctl may add notification events in the future:
+     * https://github.com/mdevctl/mdevctl/issues/27. For now, fall back to
+     * monitoring the mdevctl configuration directory for changes.
+     * mdevctl configuration is stored in a directory tree within
+     * /etc/mdevctl.d/. There is a directory for each parent device, which
+     * contains a file defining each mediated device */
+    virMutexLock(&priv->mdevctlLock);
+    if (!(priv->mdevctlMonitors = monitorFileRecursively(priv,
+                                                         mdevctlConfigDir))) {
+        virMutexUnlock(&priv->mdevctlLock);
+        goto cleanup;
+    }
+    virMutexUnlock(&priv->mdevctlLock);
 
     virObjectUnlock(priv);
 
