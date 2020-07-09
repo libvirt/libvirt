@@ -28,9 +28,6 @@ typedef virThreadPool *virThreadPoolPtr;
 
 typedef void (*virThreadPoolJobFunc)(void *jobdata, void *opaque);
 
-#define virThreadPoolNew(min, max, prio, func, opaque) \
-    virThreadPoolNewFull(min, max, prio, func, #func, opaque)
-
 virThreadPoolPtr virThreadPoolNewFull(size_t minWorkers,
                                       size_t maxWorkers,
                                       size_t prioWorkers,
