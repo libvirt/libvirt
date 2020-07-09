@@ -1509,6 +1509,8 @@ virSetSharedStorageDriver;
 virStateCleanup;
 virStateInitialize;
 virStateReload;
+virStateShutdownPrepare;
+virStateShutdownWait;
 virStateStop;
 virStreamInData;
 

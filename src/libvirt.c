@@ -673,6 +673,48 @@ virStateInitialize(bool privileged,
 
 
 /**
+ * virStateShutdownPrepare:
+ *
+ * Run each virtualization driver's shutdown prepare method.
+ *
+ * Returns 0 if all succeed, -1 upon any failure.
+ */
+int
+virStateShutdownPrepare(void)
+{
+    size_t i;
+
+    for (i = 0; i < virStateDriverTabCount; i++) {
+        if (virStateDriverTab[i]->stateShutdownPrepare &&
+            virStateDriverTab[i]->stateShutdownPrepare() < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
+/**
+ * virStateShutdownWait:
+ *
+ * Run each virtualization driver's shutdown wait method.
+ *
+ * Returns 0 if all succeed, -1 upon any failure.
+ */
+int
+virStateShutdownWait(void)
+{
+    size_t i;
+
+    for (i = 0; i < virStateDriverTabCount; i++) {
+        if (virStateDriverTab[i]->stateShutdownWait &&
+            virStateDriverTab[i]->stateShutdownWait() < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
+/**
  * virStateCleanup:
  *
  * Run each virtualization driver's cleanup method.

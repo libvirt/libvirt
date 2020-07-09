@@ -34,6 +34,8 @@ int virStateInitialize(bool privileged,
                        const char *root,
                        virStateInhibitCallback inhibit,
                        void *opaque);
+int virStateShutdownPrepare(void);
+int virStateShutdownWait(void);
 int virStateCleanup(void);
 int virStateReload(void);
 int virStateStop(void);

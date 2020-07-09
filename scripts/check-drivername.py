@@ -50,6 +50,8 @@ for drvfile in drvfiles:
                     "virDrvStateCleanup",
                     "virDrvStateReload",
                     "virDrvStateStop",
+                    "virDrvStateShutdownPrepare",
+                    "virDrvStateShutdownWait",
                     "virDrvConnectSupportsFeature",
                     "virDrvConnectURIProbe",
                     "virDrvDomainMigratePrepare",
