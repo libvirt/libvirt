@@ -56,3 +56,6 @@ int virThreadPoolSetParameters(virThreadPoolPtr pool,
                                long long int minWorkers,
                                long long int maxWorkers,
                                long long int prioWorkers);
+
+void virThreadPoolStop(virThreadPoolPtr pool);
+void virThreadPoolDrain(virThreadPoolPtr pool);

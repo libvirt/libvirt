@@ -3332,6 +3332,7 @@ virThreadJobSetWorker;
 
 
 # util/virthreadpool.h
+virThreadPoolDrain;
 virThreadPoolFree;
 virThreadPoolGetCurrentWorkers;
 virThreadPoolGetFreeWorkers;
@@ -3342,6 +3343,7 @@ virThreadPoolGetPriorityWorkers;
 virThreadPoolNewFull;
 virThreadPoolSendJob;
 virThreadPoolSetParameters;
+virThreadPoolStop;
 
 
 # util/virtime.h
