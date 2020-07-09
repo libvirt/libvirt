@@ -395,7 +395,6 @@ AC_CHECK_HEADERS([\
   linux/magic.h \
   mntent.h \
   net/ethernet.h \
-  net/if.h \
   pty.h \
   pwd.h \
   stdarg.h \
@@ -407,6 +406,7 @@ AC_CHECK_HEADERS([\
   sys/ucred.h \
   xlocale.h \
   ])
+AC_CHECK_HEADERS([net/if.h], [], [], [[#include <sys/socket.h>]])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
 AC_CHECK_FUNCS([stat stat64 __xstat __xstat64 lstat lstat64 __lxstat __lxstat64])
