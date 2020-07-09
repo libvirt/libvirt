@@ -39,6 +39,7 @@ struct _virNodeDeviceObj {
     virNodeDeviceDefPtr def;            /* device definition */
     bool skipUpdateCaps;                /* whether to skip checking host caps,
                                            used by testdriver */
+    bool active;
 };
 
 struct _virNodeDeviceObjList {
@@ -975,4 +976,19 @@ virNodeDeviceObjSetSkipUpdateCaps(virNodeDeviceObjPtr obj,
                                   bool skipUpdateCaps)
 {
     obj->skipUpdateCaps = skipUpdateCaps;
+}
+
+
+bool
+virNodeDeviceObjIsActive(virNodeDeviceObj *obj)
+{
+    return obj->active;
+}
+
+
+void
+virNodeDeviceObjSetActive(virNodeDeviceObj *obj,
+                          bool active)
+{
+    obj->active = active;
 }
