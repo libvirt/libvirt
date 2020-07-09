@@ -3644,10 +3644,6 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
 {
     virQEMUCapsFlags flag;
 
-    /* TPM 1.2 and 2 are not compatible, so we choose a specific version here */
-    if (tpm->version == VIR_DOMAIN_TPM_VERSION_DEFAULT)
-        tpm->version = VIR_DOMAIN_TPM_VERSION_1_2;
-
     switch (tpm->version) {
     case VIR_DOMAIN_TPM_VERSION_1_2:
         /* TPM 1.2 + CRB do not work */
