@@ -20,6 +20,11 @@ v6.6.0 (unreleased)
 
 * **Improvements**
 
+  * esx: Change the NIC limit for recent virtualHW versions
+
+    Specifying a virtualHW version greater or equal to 7 (ESXi 4.0) will allow
+    you to use up to 10 NICs instead of 4 as it was previously.
+
 * **Bug fixes**
 
 
