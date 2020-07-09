@@ -75,7 +75,6 @@ virNetDaemonAddServer;
 virNetDaemonAddShutdownInhibition;
 virNetDaemonAddSignalHandler;
 virNetDaemonAutoShutdown;
-virNetDaemonClose;
 virNetDaemonGetServer;
 virNetDaemonGetServers;
 virNetDaemonHasClients;

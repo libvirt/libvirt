@@ -73,8 +73,6 @@ void virNetDaemonRun(virNetDaemonPtr dmn);
 
 void virNetDaemonQuit(virNetDaemonPtr dmn);
 
-void virNetDaemonClose(virNetDaemonPtr dmn);
-
 bool virNetDaemonHasClients(virNetDaemonPtr dmn);
 
 virNetServerPtr virNetDaemonGetServer(virNetDaemonPtr dmn,

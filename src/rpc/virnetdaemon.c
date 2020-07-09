@@ -967,19 +967,6 @@ daemonServerClose(void *payload,
     return 0;
 }
 
-void
-virNetDaemonClose(virNetDaemonPtr dmn)
-{
-    if (!dmn)
-        return;
-
-    virObjectLock(dmn);
-
-    virHashForEach(dmn->servers, daemonServerClose, NULL);
-
-    virObjectUnlock(dmn);
-}
-
 static int
 daemonServerHasClients(void *payload,
                        const void *key G_GNUC_UNUSED,
