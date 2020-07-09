@@ -1090,6 +1090,36 @@ qemuStateStop(void)
     return ret;
 }
 
+
+static int
+qemuStateShutdownPrepare(void)
+{
+    virThreadPoolStop(qemu_driver->workerPool);
+    return 0;
+}
+
+
+static int
+qemuDomainObjStopWorkerIter(virDomainObjPtr vm,
+                            void *opaque G_GNUC_UNUSED)
+{
+    virObjectLock(vm);
+    qemuDomainObjStopWorker(vm);
+    virObjectUnlock(vm);
+    return 0;
+}
+
+
+static int
+qemuStateShutdownWait(void)
+{
+    virDomainObjListForEach(qemu_driver->domains, false,
+                            qemuDomainObjStopWorkerIter, NULL);
+    virThreadPoolDrain(qemu_driver->workerPool);
+    return 0;
+}
+
+
 /**
  * qemuStateCleanup:
  *
@@ -20336,6 +20366,8 @@ static virStateDriver qemuStateDriver = {
     .stateCleanup = qemuStateCleanup,
     .stateReload = qemuStateReload,
     .stateStop = qemuStateStop,
+    .stateShutdownPrepare = qemuStateShutdownPrepare,
+    .stateShutdownWait = qemuStateShutdownWait,
 };
 
 int qemuRegister(void)
