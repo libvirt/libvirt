@@ -449,6 +449,5 @@ void virNetServerServiceClose(virNetServerServicePtr svc)
     for (i = 0; i < svc->nsocks; i++) {
         virNetSocketRemoveIOCallback(svc->socks[i]);
         virNetSocketClose(svc->socks[i]);
-        virObjectUnref(svc);
     }
 }
