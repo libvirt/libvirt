@@ -4115,8 +4115,12 @@ qemuDomainDefTPMsPostParse(virDomainDefPtr def)
         virDomainTPMDefPtr tpm = def->tpms[i];
 
         /* TPM 1.2 and 2 are not compatible, so we choose a specific version here */
-        if (tpm->version == VIR_DOMAIN_TPM_VERSION_DEFAULT)
-            tpm->version = VIR_DOMAIN_TPM_VERSION_1_2;
+        if (tpm->version == VIR_DOMAIN_TPM_VERSION_DEFAULT) {
+            if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR)
+                tpm->version = VIR_DOMAIN_TPM_VERSION_2_0;
+            else
+                tpm->version = VIR_DOMAIN_TPM_VERSION_1_2;
+        }
 
         if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY) {
             if (proxyTPM) {
