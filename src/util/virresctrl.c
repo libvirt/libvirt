@@ -456,7 +456,7 @@ VIR_ONCE_GLOBAL_INIT(virResctrl);
 static int
 virResctrlLockWrite(void)
 {
-    int fd = open(SYSFS_RESCTRL_PATH, O_RDWR | O_CLOEXEC);
+    int fd = open(SYSFS_RESCTRL_PATH, O_RDONLY | O_CLOEXEC);
 
     if (fd < 0) {
         virReportSystemError(errno, "%s", _("Cannot open resctrl"));
