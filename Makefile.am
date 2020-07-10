@@ -20,7 +20,7 @@
 # so force it explicitly
 DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 
-SUBDIRS = . tools docs \
+SUBDIRS = . docs \
   tests po examples
 
 XZ_OPT ?= -v -T0

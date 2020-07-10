@@ -116,6 +116,5 @@ AC_CONFIG_FILES([\
         libvirt.spec mingw-libvirt.spec \
         po/Makefile \
         examples/Makefile \
-        tests/Makefile \
-        tools/Makefile])
+        tests/Makefile])
 AC_OUTPUT
