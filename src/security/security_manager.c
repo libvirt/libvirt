@@ -1359,6 +1359,11 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
         }
 
         if ((fd = open(p, O_RDWR)) < 0) {
+            if (errno == EROFS) {
+                /* There is nothing we can do for RO filesystem. */
+                continue;
+            }
+
 #ifndef WIN32
             if (S_ISSOCK(sb.st_mode)) {
                 /* Sockets can be opened only if there exists the
