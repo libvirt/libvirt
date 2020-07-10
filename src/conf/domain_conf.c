@@ -26023,6 +26023,40 @@ virDomainNetIPInfoFormat(virBufferPtr buf,
 }
 
 
+static void
+virDomainHostdevDefFormatSubsysUSB(virBufferPtr buf,
+                                   virDomainHostdevDefPtr def,
+                                   unsigned int flags,
+                                   bool includeTypeInAddr)
+{
+    g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
+
+    if (def->startupPolicy)
+        virBufferAsprintf(&sourceAttrBuf, " startupPolicy='%s'",
+                          virDomainStartupPolicyTypeToString(def->startupPolicy));
+
+    if (usbsrc->autoAddress && (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
+        virBufferAddLit(&sourceAttrBuf, " autoAddress='yes'");
+
+    if (def->missing && !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
+        virBufferAddLit(&sourceAttrBuf, " missing='yes'");
+
+    if (usbsrc->vendor) {
+        virBufferAsprintf(&sourceChildBuf, "<vendor id='0x%.4x'/>\n", usbsrc->vendor);
+        virBufferAsprintf(&sourceChildBuf, "<product id='0x%.4x'/>\n", usbsrc->product);
+    }
+
+    if (usbsrc->bus || usbsrc->device)
+        virBufferAsprintf(&sourceChildBuf, "<address %sbus='%d' device='%d'/>\n",
+                          includeTypeInAddr ? "type='usb' " : "",
+                          usbsrc->bus, usbsrc->device);
+
+    virXMLFormatElement(buf, "source", &sourceAttrBuf, &sourceChildBuf);
+}
+
+
 static int
 virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 virDomainHostdevDefPtr def,
@@ -26033,13 +26067,29 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
     g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) origstatesChildBuf = VIR_BUFFER_INIT_CHILD(&sourceChildBuf);
-    virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &def->source.subsys.u.scsi_host;
     virDomainHostdevSubsysMediatedDevPtr mdevsrc = &def->source.subsys.u.mdev;
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+
+    switch ((virDomainHostdevSubsysType) def->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        virDomainHostdevDefFormatSubsysUSB(buf, def, flags, includeTypeInAddr);
+        return 0;
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainHostdevSubsysType, def->source.subsys.type);
+        return -1;
+    }
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
         pcisrc->backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
@@ -26055,18 +26105,6 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         virBufferAsprintf(buf, "<driver name='%s'/>\n", backend);
     }
 
-    if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-        if (def->startupPolicy) {
-            const char *policy;
-            policy = virDomainStartupPolicyTypeToString(def->startupPolicy);
-            virBufferAsprintf(&sourceAttrBuf, " startupPolicy='%s'", policy);
-        }
-        if (usbsrc->autoAddress && (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
-            virBufferAddLit(&sourceAttrBuf, " autoAddress='yes'");
-
-        if (def->missing && !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
-            virBufferAddLit(&sourceAttrBuf, " missing='yes'");
-    }
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
         scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
@@ -26087,15 +26125,6 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
 
     switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        if (usbsrc->vendor) {
-            virBufferAsprintf(&sourceChildBuf, "<vendor id='0x%.4x'/>\n", usbsrc->vendor);
-            virBufferAsprintf(&sourceChildBuf, "<product id='0x%.4x'/>\n", usbsrc->product);
-        }
-        if (usbsrc->bus || usbsrc->device) {
-            virBufferAsprintf(&sourceChildBuf, "<address %sbus='%d' device='%d'/>\n",
-                              includeTypeInAddr ? "type='usb' " : "",
-                              usbsrc->bus, usbsrc->device);
-        }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         virPCIDeviceAddressFormat(&sourceChildBuf, pcisrc->addr,
