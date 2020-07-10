@@ -26148,6 +26148,21 @@ virDomainHostdevDefFormatSubsysSCSI(virBufferPtr buf,
 }
 
 
+static void
+virDomainHostdevDefFormatSubsysSCSIHost(virBufferPtr buf,
+                                        virDomainHostdevDefPtr def)
+{
+    g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
+    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &def->source.subsys.u.scsi_host;
+
+    virBufferAsprintf(&sourceAttrBuf, " protocol='%s' wwpn='%s'",
+                      virDomainHostdevSubsysSCSIHostProtocolTypeToString(hostsrc->protocol),
+                      hostsrc->wwpn);
+
+    virXMLFormatElement(buf, "source", &sourceAttrBuf, NULL);
+}
+
+
 static int
 virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 virDomainHostdevDefPtr def,
@@ -26155,9 +26170,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 bool includeTypeInAddr,
                                 virDomainXMLOptionPtr xmlopt)
 {
-    g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
-    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &def->source.subsys.u.scsi_host;
     virDomainHostdevSubsysMediatedDevPtr mdevsrc = &def->source.subsys.u.mdev;
 
     switch ((virDomainHostdevSubsysType) def->source.subsys.type) {
@@ -26172,6 +26185,9 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         return virDomainHostdevDefFormatSubsysSCSI(buf, def, flags, includeTypeInAddr, xmlopt);
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+        virDomainHostdevDefFormatSubsysSCSIHost(buf, def);
+        return 0;
+
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
         break;
 
@@ -26181,14 +26197,6 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         return -1;
     }
 
-
-    if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
-        const char *protocol =
-            virDomainHostdevSubsysSCSIHostProtocolTypeToString(hostsrc->protocol);
-
-        virBufferAsprintf(&sourceAttrBuf, " protocol='%s' wwpn='%s'",
-                          protocol, hostsrc->wwpn);
-    }
 
     switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
@@ -26210,7 +26218,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         return -1;
     }
 
-    virXMLFormatElement(buf, "source", &sourceAttrBuf, &sourceChildBuf);
+    virXMLFormatElement(buf, "source", NULL, &sourceChildBuf);
 
     return 0;
 }
