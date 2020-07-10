@@ -295,18 +295,6 @@ noinst_LTLIBRARIES = $(test_libraries)
 TESTS = $(test_programs) \
 	$(test_scripts)
 
-VIR_TEST_EXPENSIVE ?= $(VIR_TEST_EXPENSIVE_DEFAULT)
-TESTS_ENVIRONMENT = \
-  abs_top_builddir="$(abs_top_builddir)" \
-  abs_top_srcdir="$(abs_top_srcdir)" \
-  abs_builddir="$(abs_builddir)" \
-  abs_srcdir="$(abs_srcdir)" \
-  LIBVIRT_AUTOSTART=0 \
-  LC_ALL=C \
-  VIR_TEST_EXPENSIVE=$(VIR_TEST_EXPENSIVE) \
-  $(VG)
-
-
 VALGRIND = valgrind --quiet --leak-check=full --trace-children=yes \
 	--trace-children-skip="*/tools/virsh","*/tests/commandhelper","/usr/bin/*" \
 	--suppressions=$(abs_srcdir)/.valgrind.supp

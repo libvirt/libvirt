@@ -29,6 +29,21 @@ tests_dep = declare_dependency(
   link_args: libvirt_export_dynamic,
 )
 
+tests_env = [
+  'abs_builddir=@0@'.format(meson.current_build_dir()),
+  'abs_srcdir=@0@'.format(meson.current_source_dir()),
+  'abs_top_builddir=@0@'.format(meson.build_root()),
+  'abs_top_srcdir=@0@'.format(meson.source_root()),
+  'LC_ALL=C',
+  'LIBVIRT_AUTOSTART=0',
+]
+
+if use_expensive_tests
+  tests_env += 'VIR_TEST_EXPENSIVE=1'
+else
+  tests_env += 'VIR_TEST_EXPENSIVE=0'
+endif
+
 
 # mock_libs:
 #   each entry is a dictionary with following items:
