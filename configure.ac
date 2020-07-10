@@ -207,38 +207,6 @@ LIBVIRT_CHECK_YAJL
 
 AC_CHECK_SIZEOF([long])
 
-dnl Availability of various common functions (non-fatal if missing),
-dnl and various less common threadsafe functions
-AC_CHECK_FUNCS_ONCE([\
-  elf_aux_info \
-  fallocate \
-  getauxval \
-  getegid \
-  geteuid \
-  getgid \
-  getifaddrs \
-  getmntent_r \
-  getpwuid_r \
-  getrlimit \
-  getuid \
-  getutxid \
-  if_indextoname \
-  mmap \
-  newlocale \
-  posix_fallocate \
-  posix_memalign \
-  pipe2 \
-  prlimit \
-  sched_getaffinity \
-  sched_setscheduler \
-  setgroups \
-  setns \
-  setrlimit \
-  symlink \
-  sysctlbyname \
-  unshare \
-  ])
-
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([\
   asm/hwcap.h \
@@ -263,7 +231,6 @@ AC_CHECK_HEADERS([\
 AC_CHECK_HEADERS([net/if.h], [], [], [[#include <sys/socket.h>]])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
-AC_CHECK_FUNCS([stat stat64 __xstat __xstat64 lstat lstat64 __lxstat __lxstat64])
 
 AC_CHECK_TYPE([struct ifreq],
   [AC_DEFINE([HAVE_STRUCT_IFREQ],[1],

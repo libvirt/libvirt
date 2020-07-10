@@ -630,6 +630,53 @@ libvirt_export_dynamic = cc.first_supported_link_argument([
 ])
 
 
+# check availability of various common functions (non-fatal if missing)
+
+functions = [
+  '__lxstat',
+  '__lxstat64',
+  '__xstat',
+  '__xstat64',
+  'elf_aux_info',
+  'fallocate',
+  'getauxval',
+  'getegid',
+  'geteuid',
+  'getgid',
+  'getifaddrs',
+  'getmntent_r',
+  'getpwuid_r',
+  'getrlimit',
+  'getuid',
+  'getutxid',
+  'if_indextoname',
+  'lstat',
+  'lstat64',
+  'mmap',
+  'newlocale',
+  'pipe2',
+  'posix_fallocate',
+  'posix_memalign',
+  'prlimit',
+  'sched_getaffinity',
+  'sched_setscheduler',
+  'setgroups',
+  'setns',
+  'setrlimit',
+  'stat',
+  'stat64',
+  'symlink',
+  'sysctlbyname',
+  'unshare',
+]
+
+foreach function : functions
+  if cc.has_function(function)
+    conf.set('HAVE_@0@'.format(function.to_upper()), 1)
+  endif
+endforeach
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
