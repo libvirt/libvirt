@@ -861,6 +861,149 @@ virMdevctlStop(virNodeDeviceDefPtr def, char **errmsg)
 }
 
 
+static void mdevGenerateDeviceName(virNodeDeviceDef *dev)
+{
+    nodeDeviceGenerateName(dev, "mdev", dev->caps->data.mdev.uuid, NULL);
+}
+
+
+static virNodeDeviceDef*
+nodeDeviceParseMdevctlChildDevice(const char *parent,
+                                  virJSONValue *json)
+{
+    virNodeDevCapMdev *mdev;
+    const char *uuid;
+    virJSONValue *props;
+    virJSONValue *attrs;
+    g_autoptr(virNodeDeviceDef) child = g_new0(virNodeDeviceDef, 1);
+
+    /* the child object should have a single key equal to its uuid.
+     * The value is an object describing the properties of the mdev */
+    if (virJSONValueObjectKeysNumber(json) != 1)
+        return NULL;
+
+    uuid = virJSONValueObjectGetKey(json, 0);
+    props = virJSONValueObjectGetValue(json, 0);
+
+    child->parent = g_strdup(parent);
+    child->caps = g_new0(virNodeDevCapsDef, 1);
+    child->caps->data.type = VIR_NODE_DEV_CAP_MDEV;
+
+    mdev = &child->caps->data.mdev;
+    mdev->uuid = g_strdup(uuid);
+    mdev->type =
+        g_strdup(virJSONValueObjectGetString(props, "mdev_type"));
+
+    attrs = virJSONValueObjectGet(props, "attrs");
+
+    if (attrs && virJSONValueIsArray(attrs)) {
+        size_t i;
+        int nattrs = virJSONValueArraySize(attrs);
+
+        mdev->attributes = g_new0(virMediatedDeviceAttr*, nattrs);
+        mdev->nattributes = nattrs;
+
+        for (i = 0; i < nattrs; i++) {
+            virJSONValue *attr = virJSONValueArrayGet(attrs, i);
+            virMediatedDeviceAttr *attribute;
+            virJSONValue *value;
+
+            if (!virJSONValueIsObject(attr) ||
+                virJSONValueObjectKeysNumber(attr) != 1)
+                return NULL;
+
+            attribute = g_new0(virMediatedDeviceAttr, 1);
+            attribute->name = g_strdup(virJSONValueObjectGetKey(attr, 0));
+            value = virJSONValueObjectGetValue(attr, 0);
+            attribute->value = g_strdup(virJSONValueGetString(value));
+            mdev->attributes[i] = attribute;
+        }
+    }
+    mdevGenerateDeviceName(child);
+
+    return g_steal_pointer(&child);
+}
+
+
+int
+nodeDeviceParseMdevctlJSON(const char *jsonstring,
+                           virNodeDeviceDef ***devs)
+{
+    int n;
+    g_autoptr(virJSONValue) json_devicelist = NULL;
+    virNodeDeviceDef **outdevs = NULL;
+    size_t noutdevs = 0;
+    size_t i;
+    size_t j;
+
+    json_devicelist = virJSONValueFromString(jsonstring);
+
+    if (!json_devicelist || !virJSONValueIsArray(json_devicelist)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("mdevctl JSON response contains no devices"));
+        goto error;
+    }
+
+    n = virJSONValueArraySize(json_devicelist);
+
+    for (i = 0; i < n; i++) {
+        virJSONValue *obj = virJSONValueArrayGet(json_devicelist, i);
+        const char *parent;
+        virJSONValue *child_array;
+        int nchildren;
+
+        if (!virJSONValueIsObject(obj)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Parent device is not an object"));
+            goto error;
+        }
+
+        /* mdevctl returns an array of objects.  Each object is a parent device
+         * object containing a single key-value pair which maps from the name
+         * of the parent device to an array of child devices */
+        if (virJSONValueObjectKeysNumber(obj) != 1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unexpected format for parent device object"));
+            goto error;
+        }
+
+        parent = virJSONValueObjectGetKey(obj, 0);
+        child_array = virJSONValueObjectGetValue(obj, 0);
+
+        if (!virJSONValueIsArray(child_array)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Parent device's JSON object data is not an array"));
+            goto error;
+        }
+
+        nchildren = virJSONValueArraySize(child_array);
+
+        for (j = 0; j < nchildren; j++) {
+            g_autoptr(virNodeDeviceDef) child = NULL;
+            virJSONValue *child_obj = virJSONValueArrayGet(child_array, j);
+
+            if (!(child = nodeDeviceParseMdevctlChildDevice(parent, child_obj))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Unable to parse child device"));
+                goto error;
+            }
+
+            if (VIR_APPEND_ELEMENT(outdevs, noutdevs, child) < 0)
+                goto error;
+        }
+    }
+
+    *devs = outdevs;
+    return noutdevs;
+
+ error:
+    for (i = 0; i < noutdevs; i++)
+        virNodeDeviceDefFree(outdevs[i]);
+    VIR_FREE(outdevs);
+    return -1;
+}
+
+
 int
 nodeDeviceDestroy(virNodeDevicePtr device)
 {

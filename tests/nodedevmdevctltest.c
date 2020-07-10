@@ -145,6 +145,53 @@ testMdevctlStop(const void *data)
     return ret;
 }
 
+
+static int
+testMdevctlParse(const void *data)
+{
+    g_autofree char *buf = NULL;
+    const char *filename = data;
+    g_autofree char *jsonfile = g_strdup_printf("%s/nodedevmdevctldata/%s.json",
+                                                abs_srcdir, filename);
+    g_autofree char *xmloutfile = g_strdup_printf("%s/nodedevmdevctldata/%s.out.xml",
+                                                  abs_srcdir, filename);
+    int ret = -1;
+    int nmdevs = 0;
+    virNodeDeviceDef **mdevs = NULL;
+    virBuffer xmloutbuf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    if (virFileReadAll(jsonfile, 1024*1024, &buf) < 0) {
+        VIR_TEST_DEBUG("Unable to read file %s", jsonfile);
+        return -1;
+    }
+
+    if ((nmdevs = nodeDeviceParseMdevctlJSON(buf, &mdevs)) < 0) {
+        VIR_TEST_DEBUG("Unable to parse json for %s", filename);
+        return -1;
+    }
+
+    for (i = 0; i < nmdevs; i++) {
+        g_autofree char *devxml = virNodeDeviceDefFormat(mdevs[i]);
+        if (!devxml)
+            goto cleanup;
+        virBufferAddStr(&xmloutbuf, devxml);
+    }
+
+    if (nodedevCompareToFile(virBufferCurrentContent(&xmloutbuf), xmloutfile) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&xmloutbuf);
+    for (i = 0; i < nmdevs; i++)
+        virNodeDeviceDefFree(mdevs[i]);
+    g_free(mdevs);
+
+    return ret;
+}
+
 static void
 nodedevTestDriverFree(virNodeDeviceDriverStatePtr drv)
 {
@@ -281,6 +328,9 @@ mymain(void)
 #define DO_TEST_STOP(uuid) \
     DO_TEST_FULL("mdevctl stop " uuid, testMdevctlStop, uuid)
 
+#define DO_TEST_PARSE_JSON(filename) \
+    DO_TEST_FULL("parse mdevctl json " filename, testMdevctlParse, filename)
+
     /* Test mdevctl start commands */
     DO_TEST_START("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
     DO_TEST_START("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
@@ -288,6 +338,8 @@ mymain(void)
 
     /* Test mdevctl stop command, pass an arbitrary uuid */
     DO_TEST_STOP("e2451f73-c95b-4124-b900-e008af37c576");
+
+    DO_TEST_PARSE_JSON("mdevctl-list-multiple");
 
  done:
     nodedevTestDriverFree(driver);

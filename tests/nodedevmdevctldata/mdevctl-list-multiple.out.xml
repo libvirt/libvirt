@@ -1,0 +1,39 @@
+<device>
+  <name>mdev_200f228a_c80a_4d50_bfb7_f5a0e4e34045</name>
+  <parent>0000:00:02.0</parent>
+  <capability type='mdev'>
+    <type id='i915-GVTg_V5_4'/>
+    <iommuGroup number='0'/>
+  </capability>
+</device>
+<device>
+  <name>mdev_de807ffc_1923_4d5f_b6c9_b20ecebc6d4b</name>
+  <parent>0000:00:02.0</parent>
+  <capability type='mdev'>
+    <type id='i915-GVTg_V5_4'/>
+    <iommuGroup number='0'/>
+  </capability>
+</device>
+<device>
+  <name>mdev_435722ea_5f43_468a_874f_da34f1217f13</name>
+  <parent>0000:00:02.0</parent>
+  <capability type='mdev'>
+    <type id='i915-GVTg_V5_8'/>
+    <iommuGroup number='0'/>
+    <attr name='testattr' value='42'/>
+  </capability>
+</device>
+<device>
+  <name>mdev_783e6dbb_ea0e_411f_94e2_717eaad438bf</name>
+  <parent>matrix</parent>
+  <capability type='mdev'>
+    <type id='vfio_ap-passthrough'/>
+    <iommuGroup number='0'/>
+    <attr name='assign_adapter' value='5'/>
+    <attr name='assign_adapter' value='6'/>
+    <attr name='assign_domain' value='0xab'/>
+    <attr name='assign_control_domain' value='0xab'/>
+    <attr name='assign_domain' value='4'/>
+    <attr name='assign_control_domain' value='4'/>
+  </capability>
+</device>
