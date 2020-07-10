@@ -145,6 +145,41 @@ testMdevctlStop(const void *data)
     return ret;
 }
 
+static int
+testMdevctlListDefined(const void *data G_GNUC_UNUSED)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *actualCmdline = NULL;
+    int ret = -1;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *output = NULL;
+    g_autofree char *errmsg = NULL;
+    g_autofree char *cmdlinefile =
+        g_strdup_printf("%s/nodedevmdevctldata/mdevctl-list-defined.argv",
+                        abs_srcdir);
+
+    cmd = nodeDeviceGetMdevctlListCommand(true, &output, &errmsg);
+
+    if (!cmd)
+        goto cleanup;
+
+    virCommandSetDryRun(&buf, NULL, NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (!(actualCmdline = virBufferCurrentContent(&buf)))
+        goto cleanup;
+
+    if (nodedevCompareToFile(actualCmdline, cmdlinefile) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    virCommandSetDryRun(NULL, NULL, NULL);
+    return ret;
+}
 
 static int
 testMdevctlParse(const void *data)
@@ -328,6 +363,9 @@ mymain(void)
 #define DO_TEST_STOP(uuid) \
     DO_TEST_FULL("mdevctl stop " uuid, testMdevctlStop, uuid)
 
+#define DO_TEST_LIST_DEFINED() \
+    DO_TEST_FULL("mdevctl list --defined", testMdevctlListDefined, NULL)
+
 #define DO_TEST_PARSE_JSON(filename) \
     DO_TEST_FULL("parse mdevctl json " filename, testMdevctlParse, filename)
 
@@ -338,6 +376,8 @@ mymain(void)
 
     /* Test mdevctl stop command, pass an arbitrary uuid */
     DO_TEST_STOP("e2451f73-c95b-4124-b900-e008af37c576");
+
+    DO_TEST_LIST_DEFINED();
 
     DO_TEST_PARSE_JSON("mdevctl-list-multiple");
 

@@ -861,6 +861,26 @@ virMdevctlStop(virNodeDeviceDefPtr def, char **errmsg)
 }
 
 
+virCommand*
+nodeDeviceGetMdevctlListCommand(bool defined,
+                                char **output,
+                                char **errmsg)
+{
+    virCommand *cmd = virCommandNewArgList(MDEVCTL,
+                                           "list",
+                                           "--dumpjson",
+                                           NULL);
+
+    if (defined)
+        virCommandAddArg(cmd, "--defined");
+
+    virCommandSetOutputBuffer(cmd, output);
+    virCommandSetErrorBuffer(cmd, errmsg);
+
+    return cmd;
+}
+
+
 static void mdevGenerateDeviceName(virNodeDeviceDef *dev)
 {
     nodeDeviceGenerateName(dev, "mdev", dev->caps->data.mdev.uuid, NULL);
