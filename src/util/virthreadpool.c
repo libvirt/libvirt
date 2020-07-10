@@ -245,6 +245,8 @@ virThreadPoolNewFull(size_t minWorkers,
         goto error;
     if (virCondInit(&pool->cond) < 0)
         goto error;
+    if (virCondInit(&pool->prioCond) < 0)
+        goto error;
     if (virCondInit(&pool->quit_cond) < 0)
         goto error;
 
@@ -255,13 +257,8 @@ virThreadPoolNewFull(size_t minWorkers,
     if (virThreadPoolExpand(pool, minWorkers, false) < 0)
         goto error;
 
-    if (prioWorkers) {
-        if (virCondInit(&pool->prioCond) < 0)
-            goto error;
-
-        if (virThreadPoolExpand(pool, prioWorkers, true) < 0)
-            goto error;
-    }
+    if (virThreadPoolExpand(pool, prioWorkers, true) < 0)
+        goto error;
 
     return pool;
 
@@ -274,7 +271,6 @@ virThreadPoolNewFull(size_t minWorkers,
 void virThreadPoolFree(virThreadPoolPtr pool)
 {
     virThreadPoolJobPtr job;
-    bool priority = false;
 
     if (!pool)
         return;
@@ -283,10 +279,8 @@ void virThreadPoolFree(virThreadPoolPtr pool)
     pool->quit = true;
     if (pool->nWorkers > 0)
         virCondBroadcast(&pool->cond);
-    if (pool->nPrioWorkers > 0) {
-        priority = true;
+    if (pool->nPrioWorkers > 0)
         virCondBroadcast(&pool->prioCond);
-    }
 
     while (pool->nWorkers > 0 || pool->nPrioWorkers > 0)
         ignore_value(virCondWait(&pool->quit_cond, &pool->mutex));
@@ -301,10 +295,8 @@ void virThreadPoolFree(virThreadPoolPtr pool)
     virMutexDestroy(&pool->mutex);
     virCondDestroy(&pool->quit_cond);
     virCondDestroy(&pool->cond);
-    if (priority) {
-        VIR_FREE(pool->prioWorkers);
-        virCondDestroy(&pool->prioCond);
-    }
+    VIR_FREE(pool->prioWorkers);
+    virCondDestroy(&pool->prioCond);
     VIR_FREE(pool);
 }
 
