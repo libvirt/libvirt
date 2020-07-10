@@ -63,12 +63,6 @@ VIR_ENUM_IMPL(qemuDomainAsyncJob,
               "backup",
 );
 
-VIR_ENUM_IMPL(qemuDomainNamespace,
-              QEMU_DOMAIN_NS_LAST,
-              "mount",
-);
-
-
 const char *
 qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
                                 int phase G_GNUC_UNUSED)

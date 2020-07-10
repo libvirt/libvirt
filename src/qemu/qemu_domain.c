@@ -83,6 +83,11 @@
 
 VIR_LOG_INIT("qemu.qemu_domain");
 
+VIR_ENUM_IMPL(qemuDomainNamespace,
+              QEMU_DOMAIN_NS_LAST,
+              "mount",
+);
+
 /**
  * qemuDomainObjFromDomain:
  * @domain: Domain pointer that has to be looked up
