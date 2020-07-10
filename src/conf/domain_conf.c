@@ -8295,9 +8295,12 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
                                            virDomainXMLOptionPtr xmlopt)
 {
     int auth_secret_usage = -1;
-    xmlNodePtr cur;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &def->u.iscsi;
     g_autoptr(virStorageAuthDef) authdef = NULL;
+    xmlNodePtr node;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
+    ctxt->node = sourcenode;
 
     /* For the purposes of command line creation, this needs to look
      * like a disk storage source */
@@ -8328,42 +8331,26 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
         return -1;
     }
 
-    cur = sourcenode->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE &&
-            virXMLNodeNameEqual(cur, "auth")) {
-            if (iscsisrc->src->auth) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("an <auth> definition already found for "
-                                 "the <hostdev> iSCSI definition"));
-                return -1;
-            }
-            if (!(authdef = virStorageAuthDefParse(cur, ctxt)))
-                return -1;
-            if ((auth_secret_usage =
-                 virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("invalid secret type %s"),
-                               authdef->secrettype);
-                return -1;
-            }
-            if (auth_secret_usage != VIR_SECRET_USAGE_TYPE_ISCSI) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("hostdev invalid secret type '%s'"),
-                               authdef->secrettype);
-                return -1;
-            }
-            iscsisrc->src->auth = g_steal_pointer(&authdef);
+    if ((node = virXPathNode("./auth", ctxt))) {
+        if (!(authdef = virStorageAuthDefParse(node, ctxt)))
+            return -1;
+        if ((auth_secret_usage = virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("invalid secret type %s"),
+                           authdef->secrettype);
+            return -1;
         }
-        cur = cur->next;
+        if (auth_secret_usage != VIR_SECRET_USAGE_TYPE_ISCSI) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("hostdev invalid secret type '%s'"),
+                           authdef->secrettype);
+            return -1;
+        }
+        iscsisrc->src->auth = g_steal_pointer(&authdef);
     }
 
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
         xmlopt && xmlopt->privateData.storageParse) {
-        VIR_XPATH_NODE_AUTORESTORE(ctxt);
-
-        ctxt->node = sourcenode;
-
         if ((ctxt->node = virXPathNode("./privateData", ctxt)) &&
             xmlopt->privateData.storageParse(ctxt, iscsisrc->src) < 0)
             return -1;
