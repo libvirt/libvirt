@@ -463,7 +463,7 @@ virResctrlLockWrite(void)
         return -1;
     }
 
-    if (virFileFlock(fd, true, true) < 0) {
+    if (virFileFlock(fd, true, false) < 0) {
         virReportSystemError(errno, "%s", _("Cannot lock resctrl"));
         VIR_FORCE_CLOSE(fd);
         return -1;
