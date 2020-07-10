@@ -21,17 +21,11 @@
 
 test_expensive
 
-# If $abs_top_builddir/tools is not early in $PATH, put it there,
-# so that we can safely invoke "virsh" simply with its name.
-case $PATH in
-  $abs_top_builddir/tools/src:$abs_top_builddir/tools:*) ;;
-  $abs_top_builddir/tools:*) ;;
-  *) PATH=$abs_top_builddir/tools:$PATH; export PATH ;;
-esac
+VIRSH=$abs_top_builddir/tools/virsh
 
 if test "$VERBOSE" = yes; then
   set -x
-  virsh --version
+  $VIRSH --version
 fi
 
 cat <<\EOF > exp-out || framework_failure
@@ -63,7 +57,7 @@ for args in \
     '--count 2 test' \
     '--count=2 test' \
 ; do
-  virsh -k0 -d0 -c $test_url setvcpus $args >out 2>>err || fail=1
+  $VIRSH -k0 -d0 -c $test_url setvcpus $args >out 2>>err || fail=1
   LC_ALL=C sort out | compare exp-out - || fail=1
 done
 
@@ -81,7 +75,7 @@ cat <<\EOF > exp-out || framework_failure
 </domainsnapshot>
 
 EOF
-virsh -q -c $test_url snapshot-create-as --print-xml test \
+$VIRSH -q -c $test_url snapshot-create-as --print-xml test \
   --diskspec 'vda,file=a&b,,c,snapshot=external' --description '1<2' \
   --diskspec vdb --memspec file=d,,e >out 2>>err || fail=1
 compare exp-out out || fail=1
@@ -96,7 +90,7 @@ cat <<\EOF > exp-out || framework_failure
 </domainsnapshot>
 
 EOF
-virsh -q -c $test_url snapshot-create-as  --print-xml test name vda vdb \
+$VIRSH -q -c $test_url snapshot-create-as  --print-xml test name vda vdb \
   >out 2>>err || fail=1
 compare exp-out out || fail=1
 
@@ -120,7 +114,7 @@ for args in \
     '--description desc --name name --domain test vda vdb' \
     '--description desc --diskspec vda --name name --domain test vdb' \
 ; do
-  virsh -q -c $test_url snapshot-create-as --print-xml $args \
+  $VIRSH -q -c $test_url snapshot-create-as --print-xml $args \
     >out 2>>err || fail=1
   compare exp-out out || fail=1
 done
@@ -131,7 +125,7 @@ test -s err && fail=1
 cat <<\EOF > exp-err || framework_failure
 error: this function is not supported by the connection driver: virDomainQemuMonitorCommand
 EOF
-virsh -q -c $test_url qemu-monitor-command test a >out 2>err && fail=1
+$VIRSH -q -c $test_url qemu-monitor-command test a >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -141,7 +135,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value 'abc' for <start> option is malformed or out of range
 EOF
-virsh -q -c $test_url cpu-stats test --start abc >out 2>err && fail=1
+$VIRSH -q -c $test_url cpu-stats test --start abc >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -149,7 +143,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value '42WB' for <start> option is malformed or out of range
 EOF
-virsh -q -c $test_url cpu-stats test --start 42WB >out 2>err && fail=1
+$VIRSH -q -c $test_url cpu-stats test --start 42WB >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -158,7 +152,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value '42MB' for <start> option is malformed or out of range
 EOF
-virsh -q -c $test_url cpu-stats test --start 42MB >out 2>err && fail=1
+$VIRSH -q -c $test_url cpu-stats test --start 42MB >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -166,7 +160,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value '2147483648' for <start> option is malformed or out of range
 EOF
-virsh -q -c $test_url cpu-stats test --start 2147483648 >out 2>err && fail=1
+$VIRSH -q -c $test_url cpu-stats test --start 2147483648 >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -175,7 +169,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Invalid value for start CPU
 EOF
-virsh -q -c $test_url cpu-stats test --start -1 >out 2>err && fail=1
+$VIRSH -q -c $test_url cpu-stats test --start -1 >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -185,7 +179,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Scaled numeric value 'abc' for <size> option is malformed or out of range
 EOF
-virsh -q -c $test_url setmaxmem test abc >out 2>err && fail=1
+$VIRSH -q -c $test_url setmaxmem test abc >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -194,18 +188,18 @@ cat <<\EOF > exp-err || framework_failure
 error: Scaled numeric value '42WB' for <size> option is malformed or out of range
 error: invalid argument: unknown suffix 'WB'
 EOF
-virsh -q -c $test_url setmaxmem test 42WB >out 2>err && fail=1
+$VIRSH -q -c $test_url setmaxmem test 42WB >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
 # Numeric value with valid suffix
-virsh -q -c $test_url setmaxmem test 42MB --config >out 2>err || fail=1
+$VIRSH -q -c $test_url setmaxmem test 42MB --config >out 2>err || fail=1
 test -s out && fail=1
 test -s err && fail=1
 
 # Numeric value bigger than INT_MAX. No failure here because
 # scaled numeric values are unsigned long long
-virsh -q -c $test_url setmaxmem test 2147483648 --config >out 2>err || fail=1
+$VIRSH -q -c $test_url setmaxmem test 2147483648 --config >out 2>err || fail=1
 test -s out && fail=1
 test -s err && fail=1
 
@@ -213,7 +207,7 @@ test -s err && fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Scaled numeric value '-1' for <size> option is malformed or out of range
 EOF
-virsh -q -c $test_url setmaxmem test -1 >out 2>err && fail=1
+$VIRSH -q -c $test_url setmaxmem test -1 >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -223,12 +217,12 @@ cat <<\EOF > exp-err || framework_failure
 error: Unable to change MaxMemorySize
 error: memory in virDomainSetMaxMemory must not be zero
 EOF
-virsh -q -c $test_url setmaxmem test 0 >out 2>err && fail=1
+$VIRSH -q -c $test_url setmaxmem test 0 >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
 # Numeric value
-virsh -q -c $test_url setmaxmem test 42 --config >out 2>err || fail=1
+$VIRSH -q -c $test_url setmaxmem test 42 --config >out 2>err || fail=1
 test -s out && fail=1
 test -s err && fail=1
 
@@ -238,7 +232,7 @@ test -s err && fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value 'abc' for <timeout> option is malformed or out of range
 EOF
-virsh -q -c $test_url event --all --timeout abc >out 2>err && fail=1
+$VIRSH -q -c $test_url event --all --timeout abc >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -247,7 +241,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value '2147484' for <timeout> option is malformed or out of range
 EOF
-virsh -q -c $test_url event --all --timeout 2147484 >out 2>err && fail=1
+$VIRSH -q -c $test_url event --all --timeout 2147484 >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -255,7 +249,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value '42WB' for <timeout> option is malformed or out of range
 EOF
-virsh -q -c $test_url event --all --timeout 42WB >out 2>err && fail=1
+$VIRSH -q -c $test_url event --all --timeout 42WB >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -264,7 +258,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value '42MB' for <timeout> option is malformed or out of range
 EOF
-virsh -q -c $test_url event --all --timeout 42MB >out 2>err && fail=1
+$VIRSH -q -c $test_url event --all --timeout 42MB >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -272,7 +266,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value '-1' for <timeout> option is malformed or out of range
 EOF
-virsh -q -c $test_url event --all --timeout -1 >out 2>err && fail=1
+$VIRSH -q -c $test_url event --all --timeout -1 >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -281,7 +275,7 @@ compare exp-err err || fail=1
 cat <<\EOF > exp-err || framework_failure
 error: Numeric value '0' for <timeout> option is malformed or out of range
 EOF
-virsh -q -c $test_url event --all --timeout 0 >out 2>err && fail=1
+$VIRSH -q -c $test_url event --all --timeout 0 >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
@@ -291,7 +285,7 @@ cat <<\EOF > exp-out || framework_failure
 event loop timed out
 events received: 0
 EOF
-virsh -q -c $test_url event --all --timeout 1 >out 2>err && fail=1
+$VIRSH -q -c $test_url event --all --timeout 1 >out 2>err && fail=1
 test -s err && fail=1
 compare exp-out out || fail=1
 

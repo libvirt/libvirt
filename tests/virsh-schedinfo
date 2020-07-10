@@ -19,17 +19,11 @@
 
 . "$(dirname $0)/test-lib.sh"
 
-# If $abs_top_builddir/tools is not early in $PATH, put it there,
-# so that we can safely invoke "virsh" simply with its name.
-case $PATH in
-  $abs_top_builddir/tools/src:$abs_top_builddir/tools:*) ;;
-  $abs_top_builddir/tools:*) ;;
-  *) PATH=$abs_top_builddir/tools:$PATH; export PATH ;;
-esac
+VIRSH=$abs_top_builddir/tools/virsh
 
 if test "$VERBOSE" = yes; then
   set -x
-  virsh --version
+  $VIRSH --version
 fi
 
 printf 'Scheduler      : fair\n\n' > exp-out || framework_failure
@@ -39,7 +33,7 @@ fail=0
 
 test_url=test:///default
 
-virsh -c $test_url schedinfo 1 --set j=k >out 2>err && fail=1
+$VIRSH -c $test_url schedinfo 1 --set j=k >out 2>err && fail=1
 compare exp-out out || fail=1
 compare exp-err err || fail=1
 
