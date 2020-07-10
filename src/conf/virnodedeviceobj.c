@@ -848,8 +848,10 @@ virNodeDeviceObjListGetNames(virNodeDeviceObjListPtr devs,
 }
 
 
-#define MATCH(FLAG) ((flags & (VIR_CONNECT_LIST_NODE_DEVICES_CAP_ ## FLAG)) && \
-                     virNodeDeviceObjHasCap(obj, VIR_NODE_DEV_CAP_ ## FLAG))
+#define MATCH_CAP(FLAG) ((flags & (VIR_CONNECT_LIST_NODE_DEVICES_CAP_ ## FLAG)) && \
+                         virNodeDeviceObjHasCap(obj, VIR_NODE_DEV_CAP_ ## FLAG))
+#define MATCH(FLAG) (flags & (FLAG))
+
 static bool
 virNodeDeviceObjMatch(virNodeDeviceObjPtr obj,
                       unsigned int flags)
@@ -861,33 +863,42 @@ virNodeDeviceObjMatch(virNodeDeviceObjPtr obj,
 
     /* filter by cap type */
     if (flags & VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP) {
-        if (!(MATCH(SYSTEM)        ||
-              MATCH(PCI_DEV)       ||
-              MATCH(USB_DEV)       ||
-              MATCH(USB_INTERFACE) ||
-              MATCH(NET)           ||
-              MATCH(SCSI_HOST)     ||
-              MATCH(SCSI_TARGET)   ||
-              MATCH(SCSI)          ||
-              MATCH(STORAGE)       ||
-              MATCH(FC_HOST)       ||
-              MATCH(VPORTS)        ||
-              MATCH(SCSI_GENERIC)  ||
-              MATCH(DRM)           ||
-              MATCH(MDEV_TYPES)    ||
-              MATCH(MDEV)          ||
-              MATCH(CCW_DEV)       ||
-              MATCH(CSS_DEV)       ||
-              MATCH(VDPA)          ||
-              MATCH(AP_CARD)       ||
-              MATCH(AP_QUEUE)      ||
-              MATCH(AP_MATRIX)))
+        if (!(MATCH_CAP(SYSTEM)        ||
+              MATCH_CAP(PCI_DEV)       ||
+              MATCH_CAP(USB_DEV)       ||
+              MATCH_CAP(USB_INTERFACE) ||
+              MATCH_CAP(NET)           ||
+              MATCH_CAP(SCSI_HOST)     ||
+              MATCH_CAP(SCSI_TARGET)   ||
+              MATCH_CAP(SCSI)          ||
+              MATCH_CAP(STORAGE)       ||
+              MATCH_CAP(FC_HOST)       ||
+              MATCH_CAP(VPORTS)        ||
+              MATCH_CAP(SCSI_GENERIC)  ||
+              MATCH_CAP(DRM)           ||
+              MATCH_CAP(MDEV_TYPES)    ||
+              MATCH_CAP(MDEV)          ||
+              MATCH_CAP(CCW_DEV)       ||
+              MATCH_CAP(CSS_DEV)       ||
+              MATCH_CAP(VDPA)          ||
+              MATCH_CAP(AP_CARD)       ||
+              MATCH_CAP(AP_QUEUE)      ||
+              MATCH_CAP(AP_MATRIX)))
+            return false;
+    }
+
+    if (flags & (VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_ACTIVE)) {
+        if (!((MATCH(VIR_CONNECT_LIST_NODE_DEVICES_ACTIVE) &&
+              virNodeDeviceObjIsActive(obj)) ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_INACTIVE) &&
+               !virNodeDeviceObjIsActive(obj))))
             return false;
     }
 
     return true;
 }
 #undef MATCH
+#undef MATCH_CAP
 
 
 typedef struct _virNodeDeviceObjListExportData virNodeDeviceObjListExportData;

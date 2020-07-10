@@ -61,10 +61,9 @@ int                     virNodeListDevices      (virConnectPtr conn,
  * virConnectListAllNodeDevices:
  *
  * Flags used to filter the returned node devices. Flags in each group
- * are exclusive. Currently only one group to filter the devices by cap
- * type.
- */
+ * are exclusive.  */
 typedef enum {
+    /* filter the devices by cap type */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        = 1 << 0,  /* System capability */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV       = 1 << 1,  /* PCI device */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV       = 1 << 2,  /* USB device */
@@ -86,6 +85,10 @@ typedef enum {
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_CARD       = 1 << 18, /* s390 AP Card device */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE      = 1 << 19, /* s390 AP Queue */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX     = 1 << 20, /* s390 AP Matrix */
+
+    /* filter the devices by active state */
+    VIR_CONNECT_LIST_NODE_DEVICES_INACTIVE          = 1 << 30, /* Inactive devices */
+    VIR_CONNECT_LIST_NODE_DEVICES_ACTIVE            = 1U << 31, /* Active devices */
 } virConnectListAllNodeDeviceFlags;
 
 int                     virConnectListAllNodeDevices (virConnectPtr conn,
