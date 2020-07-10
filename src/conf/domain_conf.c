@@ -26030,7 +26030,9 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 bool includeTypeInAddr,
                                 virDomainXMLOptionPtr xmlopt)
 {
-    bool closedSource = false;
+    g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) origstatesChildBuf = VIR_BUFFER_INIT_CHILD(&sourceChildBuf);
     virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
@@ -26053,18 +26055,17 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         virBufferAsprintf(buf, "<driver name='%s'/>\n", backend);
     }
 
-    virBufferAddLit(buf, "<source");
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
         if (def->startupPolicy) {
             const char *policy;
             policy = virDomainStartupPolicyTypeToString(def->startupPolicy);
-            virBufferAsprintf(buf, " startupPolicy='%s'", policy);
+            virBufferAsprintf(&sourceAttrBuf, " startupPolicy='%s'", policy);
         }
         if (usbsrc->autoAddress && (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
-            virBufferAddLit(buf, " autoAddress='yes'");
+            virBufferAddLit(&sourceAttrBuf, " autoAddress='yes'");
 
         if (def->missing && !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
-            virBufferAddLit(buf, " missing='yes'");
+            virBufferAddLit(&sourceAttrBuf, " missing='yes'");
     }
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
@@ -26072,69 +26073,59 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         const char *protocol =
             virDomainHostdevSubsysSCSIProtocolTypeToString(scsisrc->protocol);
 
-        virBufferAsprintf(buf, " protocol='%s' name='%s'",
+        virBufferAsprintf(&sourceAttrBuf, " protocol='%s' name='%s'",
                           protocol, iscsisrc->src->path);
     }
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
         const char *protocol =
             virDomainHostdevSubsysSCSIHostProtocolTypeToString(hostsrc->protocol);
-        closedSource = true;
 
-        virBufferAsprintf(buf, " protocol='%s' wwpn='%s'/",
+        virBufferAsprintf(&sourceAttrBuf, " protocol='%s' wwpn='%s'",
                           protocol, hostsrc->wwpn);
     }
 
-    virBufferAddLit(buf, ">\n");
-
-    virBufferAdjustIndent(buf, 2);
     switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         if (usbsrc->vendor) {
-            virBufferAsprintf(buf, "<vendor id='0x%.4x'/>\n", usbsrc->vendor);
-            virBufferAsprintf(buf, "<product id='0x%.4x'/>\n", usbsrc->product);
+            virBufferAsprintf(&sourceChildBuf, "<vendor id='0x%.4x'/>\n", usbsrc->vendor);
+            virBufferAsprintf(&sourceChildBuf, "<product id='0x%.4x'/>\n", usbsrc->product);
         }
         if (usbsrc->bus || usbsrc->device) {
-            virBufferAsprintf(buf, "<address %sbus='%d' device='%d'/>\n",
+            virBufferAsprintf(&sourceChildBuf, "<address %sbus='%d' device='%d'/>\n",
                               includeTypeInAddr ? "type='usb' " : "",
                               usbsrc->bus, usbsrc->device);
         }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        virPCIDeviceAddressFormat(buf, pcisrc->addr,
+        virPCIDeviceAddressFormat(&sourceChildBuf, pcisrc->addr,
                                   includeTypeInAddr);
 
-        if ((flags & VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES) &&
-            (def->origstates.states.pci.unbind_from_stub ||
-             def->origstates.states.pci.remove_slot ||
-             def->origstates.states.pci.reprobe)) {
-            virBufferAddLit(buf, "<origstates>\n");
-            virBufferAdjustIndent(buf, 2);
+        if ((flags & VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES)) {
             if (def->origstates.states.pci.unbind_from_stub)
-                virBufferAddLit(buf, "<unbind/>\n");
+                virBufferAddLit(&origstatesChildBuf, "<unbind/>\n");
             if (def->origstates.states.pci.remove_slot)
-                virBufferAddLit(buf, "<removeslot/>\n");
+                virBufferAddLit(&origstatesChildBuf, "<removeslot/>\n");
             if (def->origstates.states.pci.reprobe)
-                virBufferAddLit(buf, "<reprobe/>\n");
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</origstates>\n");
+                virBufferAddLit(&origstatesChildBuf, "<reprobe/>\n");
+            virXMLFormatElement(&sourceChildBuf, "origstates", NULL, &origstatesChildBuf);
         }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-            virBufferAddLit(buf, "<host");
-            virBufferEscapeString(buf, " name='%s'", iscsisrc->src->hosts[0].name);
+            virBufferAddLit(&sourceChildBuf, "<host");
+            virBufferEscapeString(&sourceChildBuf, " name='%s'", iscsisrc->src->hosts[0].name);
             if (iscsisrc->src->hosts[0].port)
-                virBufferAsprintf(buf, " port='%u'", iscsisrc->src->hosts[0].port);
-            virBufferAddLit(buf, "/>\n");
+                virBufferAsprintf(&sourceChildBuf, " port='%u'", iscsisrc->src->hosts[0].port);
+            virBufferAddLit(&sourceChildBuf, "/>\n");
 
-            if (virDomainDiskSourceFormatPrivateData(buf, iscsisrc->src,
+            if (virDomainDiskSourceFormatPrivateData(&sourceChildBuf, iscsisrc->src,
                                                      flags, xmlopt) < 0)
                 return -1;
         } else {
-            virBufferAsprintf(buf, "<adapter name='%s'/>\n",
+            virBufferAsprintf(&sourceChildBuf, "<adapter name='%s'/>\n",
                               scsihostsrc->adapter);
-            virBufferAsprintf(buf,
+            virBufferAsprintf(&sourceChildBuf,
                               "<address %sbus='%u' target='%u' unit='%llu'/>\n",
                               includeTypeInAddr ? "type='scsi' " : "",
                               scsihostsrc->bus, scsihostsrc->target,
@@ -26144,7 +26135,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
-        virBufferAsprintf(buf, "<address uuid='%s'/>\n",
+        virBufferAsprintf(&sourceChildBuf, "<address uuid='%s'/>\n",
                           mdevsrc->uuidstr);
         break;
     default:
@@ -26157,11 +26148,9 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
         scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
         iscsisrc->src->auth)
-        virStorageAuthDefFormat(buf, iscsisrc->src->auth);
+        virStorageAuthDefFormat(&sourceChildBuf, iscsisrc->src->auth);
 
-    virBufferAdjustIndent(buf, -2);
-    if (!closedSource)
-        virBufferAddLit(buf, "</source>\n");
+    virXMLFormatElement(buf, "source", &sourceAttrBuf, &sourceChildBuf);
 
     return 0;
 }
