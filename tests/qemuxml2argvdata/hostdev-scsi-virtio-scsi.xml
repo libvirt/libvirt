@@ -67,6 +67,9 @@
         <auth username='myname'>
           <secret type='iscsi' usage='mycluster_myname'/>
         </auth>
+        <initiator>
+          <iqn name='iqn.2020-07.com.example:test'/>
+        </initiator>
       </source>
       <address type='drive' controller='0' bus='0' target='3' unit='5'/>
     </hostdev>

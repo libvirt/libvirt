@@ -67,6 +67,7 @@ keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260",\
 "target":"iqn.1992-01.com.example:storage","lun":2,"transport":"tcp",\
 "user":"myname","password-secret":"hostdev5-secret0",\
+"initiator-name":"iqn.2020-07.com.example:test",\
 "node-name":"libvirt-hostdev5-backend","read-only":false}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=3,lun=5,\
 drive=libvirt-hostdev5-backend,id=hostdev5 \

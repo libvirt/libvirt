@@ -5058,6 +5058,9 @@
             <optional>
               <ref name='diskAuth'/>
             </optional>
+            <optional>
+              <ref name="initiatorinfo"/>
+            </optional>
           </interleave>
         </group>
       </choice>

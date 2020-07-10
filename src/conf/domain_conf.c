@@ -8354,6 +8354,8 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
         iscsisrc->src->auth = g_steal_pointer(&authdef);
     }
 
+    virStorageSourceInitiatorParseXML(ctxt, &iscsisrc->src->initiator);
+
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
         xmlopt && xmlopt->privateData.storageParse) {
         if ((ctxt->node = virXPathNode("./privateData", ctxt)) &&
@@ -26164,6 +26166,9 @@ virDomainHostdevDefFormatSubsysSCSI(virBufferPtr buf,
 
         if (iscsisrc->src->auth)
             virStorageAuthDefFormat(&sourceChildBuf, iscsisrc->src->auth);
+
+        virStorageSourceInitiatorFormatXML(&iscsisrc->src->initiator,
+                                           &sourceChildBuf);
     } else {
         virBufferAsprintf(&sourceChildBuf, "<adapter name='%s'/>\n",
                           scsihostsrc->adapter);

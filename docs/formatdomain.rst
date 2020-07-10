@@ -3771,6 +3771,9 @@ or:
          <auth username='myuser'>
            <secret type='iscsi' usage='libvirtiscsi'/>
          </auth>
+         <initiator>
+           <iqn name='iqn.2020-07.com.example:test'/>
+         </initiator>
        </source>
        <address type='drive' controller='0' bus='0' target='0' unit='0'/>
      </hostdev>
@@ -3909,6 +3912,10 @@ or:
       device XML follows the network `disk <#elementsDisks>`__ device using the
       same ``name`` attribute and optionally using the ``auth`` element to
       provide the authentication credentials to the iSCSI server.
+
+      :since:`Since 6.7.0`, the optional ``initiator`` sub-element controls the
+      IQN of the initiator ran by the hypervisor via it's ``<iqn name='iqn...'``
+      subelement.
 
    ``scsi_host``
       :since:`Since 2.5.0` , multiple LUNs behind a single SCSI HBA are

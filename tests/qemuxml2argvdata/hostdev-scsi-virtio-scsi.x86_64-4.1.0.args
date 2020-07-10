@@ -60,7 +60,8 @@ data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -drive file.driver=iscsi,file.portal=example.org:3260,\
 file.target=iqn.1992-01.com.example:storage,file.lun=2,file.transport=tcp,\
-file.user=myname,file.password-secret=hostdev5-secret0,if=none,format=raw,\
+file.user=myname,file.password-secret=hostdev5-secret0,\
+file.initiator-name=iqn.2020-07.com.example:test,if=none,format=raw,\
 id=drive-hostdev5 \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=3,lun=5,\
 drive=drive-hostdev5,id=hostdev5 \
