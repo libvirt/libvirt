@@ -8392,11 +8392,21 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
         }
     }
 
-    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
+    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
+        return virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, scsisrc);
+
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
         return virDomainHostdevSubsysSCSIiSCSIDefParseXML(sourcenode, scsisrc, ctxt,
                                                           flags, xmlopt);
 
-    return virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, scsisrc);
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
+        return -1;
+    }
+
+    return 0;
 }
 
 static int
