@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.7b-dev -->
+<!-- CreationDate: 2020-07-10 10:25:51 -->
+<!-- Magnification: 1 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="150pt" height="159pt"
+	viewBox="963 1488 2490 2649">
+<g fill="none">
+<!-- Line -->
+<rect x="1275" y="1800" width="1275" height="450" rx="105"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="1500" y="2100" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">Domain</text>
+<!-- Line -->
+<rect x="1275" y="2325" width="1275" height="450" rx="105"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="1500" y="2625" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">Domain</text>
+<!-- Line -->
+<rect x="1275" y="2850" width="1275" height="450" rx="105"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="1500" y="3150" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">Domain</text>
+<!-- Line -->
+<rect x="975" y="1500" width="2400" height="2625"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="1125" y="3450" width="2100" height="525" rx="105"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="1500" y="3825" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">Hypervisor</text>
+<!-- Text -->
+<text xml:space="preserve" x="2700" y="2850" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">Node</text>
+</g>
+</svg>

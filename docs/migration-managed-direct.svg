@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.7b-dev -->
+<!-- CreationDate: 2020-07-10 10:25:11 -->
+<!-- Magnification: 1 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="402pt" height="290pt"
+	viewBox="1188 1188 6699 4824">
+<g fill="none">
+<!-- Line -->
+<rect x="2775" y="2400" width="900" height="450"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="2925" y="2700" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">libvirtd</text>
+<!-- Line -->
+<rect x="5400" y="2400" width="900" height="450"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="5550" y="2700" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">libvirtd</text>
+<!-- Line -->
+<rect x="1200" y="1200" width="2625" height="1800"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="5250" y="1200" width="2625" height="1800"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="5400" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="6225" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="3000" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="2175" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="1350" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp0">
+	<path clip-rule="evenodd" d="M 1188,1188 H 7887 V 6012 H 1188 z
+		M 3233,3041 3368,3041 3318,2832 3282,2832z"/>
+</clipPath>
+</defs>
+<polyline points=" 4350,4275 4350,3600 3300,3600 3300,2850" clip-path="url(#cp0)"
+	stroke="#000000" stroke-width="30px"/>
+<!-- Forward arrow to point 3300,2850 -->
+<polygon points=" 3368,3041 3300,2861 3233,3041 3368,3041"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8" fill="#000000"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp1">
+	<path clip-rule="evenodd" d="M 1188,1188 H 7887 V 6012 H 1188 z
+		M 5708,3041 5843,3041 5793,2832 5757,2832z"/>
+</clipPath>
+</defs>
+<polyline points=" 4800,4275 4800,3600 5775,3600 5775,2850" clip-path="url(#cp1)"
+	stroke="#000000" stroke-width="30px"/>
+<!-- Forward arrow to point 5775,2850 -->
+<polygon points=" 5843,3041 5775,2861 5708,3041 5843,3041"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8" fill="#000000"/>
+<!-- Line -->
+<rect x="3225" y="4125" width="2625" height="1875"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="3375" y="5100" width="2325" height="450"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp2">
+	<path clip-rule="evenodd" d="M 1188,1188 H 7887 V 6012 H 1188 z
+		M 3859,4433 3859,4568 4068,4518 4068,4482z"/>
+</clipPath>
+</defs>
+<polyline points=" 3750,5100 3750,4500 4050,4500" clip-path="url(#cp2)"
+	stroke="#000000" stroke-width="30px"/>
+<!-- Forward arrow to point 4050,4500 -->
+<polygon points=" 3859,4568 4039,4500 3859,4433 3859,4568"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8" fill="#000000"/>
+<!-- Line -->
+<rect x="4050" y="4275" width="1050" height="450"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="6825" y="2850" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">Dest Host</text>
+<!-- Text -->
+<text xml:space="preserve" x="1350" y="2850" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">Source Host</text>
+<!-- Text -->
+<text xml:space="preserve" x="1425" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-A</text>
+<!-- Text -->
+<text xml:space="preserve" x="2250" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-B</text>
+<!-- Text -->
+<text xml:space="preserve" x="3075" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-C</text>
+<!-- Text -->
+<text xml:space="preserve" x="5475" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-C</text>
+<!-- Text -->
+<text xml:space="preserve" x="6300" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-D</text>
+<!-- Text -->
+<text xml:space="preserve" x="4725" y="5850" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">Client Host</text>
+<!-- Text -->
+<text xml:space="preserve" x="3525" y="5400" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">management app</text>
+<!-- Text -->
+<text xml:space="preserve" x="4200" y="4575" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">libvirt.so</text>
+</g>
+</svg>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.7b-dev -->
+<!-- CreationDate: 2020-07-10 10:25:03 -->
+<!-- Magnification: 1 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="723pt" height="449pt"
+	viewBox="428 353 12044 7469">
+<g fill="none">
+<!-- Line -->
+<rect x="450" y="375" width="4125" height="1350"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<rect x="1125" y="2475" width="3825" height="1125"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp0">
+	<path clip-rule="evenodd" d="M 428,353 H 12472 V 7822 H 428 z
+		M 2131,2343 2079,2374 2173,2484 2184,2477z"/>
+</clipPath>
+</defs>
+<polyline points=" 1725,1725 2175,2475" clip-path="url(#cp0)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 2175,2475 -->
+<polygon points=" 2079,2374 2167,2461 2131,2343 2079,2374"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<rect x="3150" y="5700" width="3375" height="1200"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="7875" y="6825" width="2250" height="900"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="2550" y="4725" width="7800" height="3075"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<rect x="8850" y="1950" width="2700" height="1410"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp1">
+	<path clip-rule="evenodd" d="M 428,353 H 12472 V 7822 H 428 z
+		M 4936,4317 4899,4364 5026,4434 5034,4424z"/>
+</clipPath>
+</defs>
+<polyline points=" 3975,3600 5025,4425" clip-path="url(#cp1)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 5025,4425 -->
+<polygon points=" 4899,4364 5012,4415 4936,4317 4899,4364"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp2">
+	<path clip-rule="evenodd" d="M 428,353 H 12472 V 7822 H 428 z
+		M 5539,4410 5519,4353 5391,4421 5396,4434z"/>
+</clipPath>
+</defs>
+<polyline points=" 8925,3225 5400,4425" clip-path="url(#cp2)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 5400,4425 -->
+<polygon points=" 5519,4353 5415,4420 5539,4410 5519,4353"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp3">
+	<path clip-rule="evenodd" d="M 428,353 H 12472 V 7822 H 428 z
+		M 7749,7365 7736,7423 7880,7433 7883,7420z"/>
+</clipPath>
+</defs>
+<polyline points=" 5625,6900 7875,7425" clip-path="url(#cp3)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 7875,7425 -->
+<polygon points=" 7736,7423 7859,7421 7749,7365 7736,7423"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp4">
+	<path clip-rule="evenodd" d="M 428,353 H 12472 V 7822 H 428 z
+		M 10261,7605 10261,7545 10118,7568 10118,7582z"/>
+</clipPath>
+</defs>
+<polyline points=" 11400,3375 11400,7575 10125,7575" clip-path="url(#cp4)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 10125,7575 -->
+<polygon points=" 10261,7545 10141,7575 10261,7605 10261,7545"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<rect x="8400" y="975" width="4050" height="3150"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp5">
+	<path clip-rule="evenodd" d="M 428,353 H 12472 V 7822 H 428 z
+		M 8714,2670 8714,2730 8857,2707 8857,2693z"/>
+</clipPath>
+</defs>
+<polyline points=" 10125,7125 10725,7125 10725,4425 7725,4425 7725,2700 8850,2700" clip-path="url(#cp5)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 8850,2700 -->
+<polygon points=" 8714,2730 8834,2700 8714,2670 8714,2730"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Text -->
+<text xml:space="preserve" x="1350" y="2895" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">virConnectOpenReadOnly(uri)</text>
+<!-- Text -->
+<text xml:space="preserve" x="1350" y="3090" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">virConnectOpenAuth(uri, auth, flags)</text>
+<!-- Text -->
+<text xml:space="preserve" x="3300" y="5850" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">virConnectOpen:</text>
+<!-- Text -->
+<text xml:space="preserve" x="3300" y="6045" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">virConnectOpenReadOnly:</text>
+<!-- Text -->
+<text xml:space="preserve" x="3300" y="6240" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">virConnectOpenAuth:</text>
+<!-- Text -->
+<text xml:space="preserve" x="3975" y="6600" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">do_open():</text>
+<!-- Text -->
+<text xml:space="preserve" x="8025" y="7125" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="168" text-anchor="start">Rremote driver</text>
+<!-- Text -->
+<text xml:space="preserve" x="5025" y="4650" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="288" text-anchor="start">libvirt</text>
+<!-- Text -->
+<text xml:space="preserve" x="9000" y="2175" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="168" text-anchor="start">remoteDispatchOpen():</text>
+<!-- Text -->
+<text xml:space="preserve" x="9300" y="2475" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="9300" y="2670" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">virConnectOpen()</text>
+<!-- Text -->
+<text xml:space="preserve" x="9300" y="2865" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">virConnectOpenReadOnly()</text>
+<!-- Text -->
+<text xml:space="preserve" x="9300" y="3060" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="8250" y="7350" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">remoteOpen()</text>
+<!-- Text -->
+<text xml:space="preserve" x="600" y="1050" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="192" text-anchor="start">"virsh -c qemu:///system list --all"</text>
+<!-- Text -->
+<text xml:space="preserve" x="1350" y="2700" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">virConnectOpen(uri)</text>
+<!-- Text -->
+<text xml:space="preserve" x="9750" y="825" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="288" text-anchor="start">libvirtd</text>
+</g>
+</svg>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.7b-dev -->
+<!-- CreationDate: 2020-07-10 10:24:54 -->
+<!-- Magnification: 1 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="546pt" height="348pt"
+	viewBox="1188 1188 9098 5799">
+<g fill="none">
+<!-- Line -->
+<rect x="4500" y="1200" width="2474" height="825"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="4603" y="1613" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">virConnectPtr</text>
+<!-- Line -->
+<rect x="1200" y="3675" width="2475" height="825"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="1303" y="4087" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">virDomainPtr</text>
+<!-- Line -->
+<rect x="1200" y="6150" width="2475" height="825"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="1303" y="6562" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">virNetworkPtr</text>
+<!-- Line -->
+<rect x="7799" y="3675" width="2475" height="825"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="7902" y="4087" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">virStoragePoolPtr</text>
+<!-- Line -->
+<rect x="7799" y="6150" width="2475" height="825"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="7902" y="6562" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">virStorageVolPtr</text>
+<!-- Line -->
+<polyline points=" 4706,2025 4706,2027 4706,2032 4706,2040 4705,2053 4705,2072 4705,2098 4704,2129
+ 4703,2168 4702,2212 4700,2263 4699,2319 4697,2380 4695,2445 4692,2513 4690,2582
+ 4687,2653 4684,2724 4680,2795 4676,2864 4672,2932 4668,2998 4664,3061 4659,3122
+ 4654,3180 4649,3235 4643,3287 4638,3336 4631,3382 4625,3426 4618,3467 4611,3506
+ 4603,3542 4595,3576 4586,3608 4577,3638 4567,3667 4557,3694 4546,3719 4534,3743
+ 4518,3774 4500,3802 4482,3829 4461,3853 4439,3876 4415,3896 4389,3916 4361,3934
+ 4331,3950 4297,3966 4262,3980 4224,3993 4183,4006 4140,4017 4095,4028 4048,4037
+ 4001,4046 3954,4054 3907,4061 3863,4067 3822,4072 3785,4077 3753,4080 3727,4083
+ 3707,4084 3675,4087"
+	stroke="#000000" stroke-width="8px" stroke-linejoin="bevel"/>
+<!-- Forward arrow to point 0,0 -->
+<polygon points=""
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp0">
+	<path clip-rule="evenodd" d="M 1188,1188 H 10286 V 6987 H 1188 z
+		M 4638,2833 4686,2670 4721,2836 4694,2647 4681,2646z"/>
+</clipPath>
+</defs>
+<polyline points=" 6768,2025 6768,2027 6768,2032 6768,2040 6769,2053 6769,2072 6769,2098 6770,2129
+ 6771,2168 6772,2212 6774,2263 6775,2319 6777,2380 6779,2445 6782,2513 6784,2582
+ 6787,2653 6790,2724 6794,2795 6798,2864 6802,2932 6806,2998 6810,3061 6815,3122
+ 6820,3180 6825,3235 6831,3287 6836,3336 6843,3382 6849,3426 6856,3467 6863,3506
+ 6871,3542 6879,3576 6888,3608 6897,3638 6907,3667 6917,3694 6928,3719 6940,3743
+ 6956,3774 6974,3802 6992,3829 7013,3853 7035,3876 7059,3896 7085,3916 7113,3934
+ 7143,3950 7177,3966 7212,3980 7250,3993 7291,4006 7334,4017 7379,4028 7426,4037
+ 7473,4046 7520,4054 7567,4061 7611,4067 7652,4072 7689,4077 7721,4080 7747,4083
+ 7767,4084 7799,4087" clip-path="url(#cp0)"
+	stroke="#000000" stroke-width="8px" stroke-linejoin="bevel"/>
+<!-- Forward arrow to point 4687,2653 -->
+<polyline points=" 4638,2833 4686,2670 4721,2836"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp1">
+	<path clip-rule="evenodd" d="M 1188,1188 H 10286 V 6987 H 1188 z
+		M 4638,2833 4686,2670 4721,2836 4694,2647 4681,2646z"/>
+</clipPath>
+</defs>
+<polyline points=" 6562,2025 6562,2026 6562,2029 6562,2035 6562,2045 6562,2058 6563,2076 6563,2100
+ 6563,2129 6564,2165 6564,2207 6565,2255 6565,2309 6566,2370 6567,2437 6568,2511
+ 6569,2589 6571,2673 6572,2761 6574,2853 6576,2949 6577,3048 6580,3149 6582,3251
+ 6584,3355 6586,3459 6589,3564 6592,3667 6595,3770 6598,3872 6601,3972 6604,4070
+ 6607,4166 6611,4259 6614,4350 6618,4439 6622,4524 6626,4607 6630,4687 6635,4764
+ 6639,4838 6644,4910 6649,4978 6654,5044 6659,5108 6665,5169 6670,5227 6676,5283
+ 6682,5337 6689,5388 6695,5438 6702,5485 6710,5531 6717,5575 6725,5617 6733,5657
+ 6741,5696 6750,5734 6759,5771 6768,5806 6784,5862 6802,5915 6820,5965 6839,6012
+ 6860,6056 6882,6097 6906,6135 6931,6171 6959,6205 6988,6237 7019,6267 7052,6295
+ 7088,6322 7125,6346 7165,6370 7207,6392 7250,6412 7295,6432 7342,6450 7389,6466
+ 7436,6481 7483,6495 7529,6508 7573,6519 7614,6528 7652,6536 7687,6543 7716,6549
+ 7741,6553 7761,6556 7776,6559 7799,6562" clip-path="url(#cp1)"
+	stroke="#000000" stroke-width="8px" stroke-linejoin="bevel"/>
+<!-- Forward arrow to point 0,0 -->
+<polyline points=""
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp2">
+	<path clip-rule="evenodd" d="M 1188,1188 H 10286 V 6987 H 1188 z
+		M 6532,2771 6569,2606 6615,2770 6576,2582 6562,2582z"/>
+</clipPath>
+</defs>
+<polyline points=" 4912,2025 4912,2026 4912,2029 4912,2035 4912,2045 4912,2058 4911,2076 4911,2100
+ 4911,2129 4910,2165 4910,2207 4909,2255 4909,2309 4908,2370 4907,2437 4906,2511
+ 4905,2589 4903,2673 4902,2761 4900,2853 4898,2949 4897,3048 4894,3149 4892,3251
+ 4890,3355 4888,3459 4885,3564 4882,3667 4879,3770 4876,3872 4873,3972 4870,4070
+ 4867,4166 4863,4259 4860,4350 4856,4439 4852,4524 4848,4607 4844,4687 4839,4764
+ 4835,4838 4830,4910 4825,4978 4820,5044 4815,5108 4809,5169 4804,5227 4798,5283
+ 4792,5337 4785,5388 4779,5438 4772,5485 4764,5531 4757,5575 4749,5617 4741,5657
+ 4733,5696 4724,5734 4715,5771 4706,5806 4690,5862 4672,5915 4654,5965 4635,6012
+ 4614,6056 4592,6097 4568,6135 4543,6171 4515,6205 4486,6237 4455,6267 4422,6295
+ 4386,6322 4349,6346 4309,6370 4267,6392 4224,6412 4179,6432 4132,6450 4085,6466
+ 4038,6481 3991,6495 3945,6508 3901,6519 3860,6528 3822,6536 3787,6543 3758,6549
+ 3733,6553 3713,6556 3698,6559 3675,6562" clip-path="url(#cp2)"
+	stroke="#000000" stroke-width="8px" stroke-linejoin="bevel"/>
+<!-- Forward arrow to point 6569,2589 -->
+<polyline points=" 6532,2771 6569,2606 6615,2770"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp3">
+	<path clip-rule="evenodd" d="M 1188,1188 H 10286 V 6987 H 1188 z
+		M 4859,2770 4905,2606 4942,2771 4912,2582 4898,2582z"/>
+</clipPath>
+</defs>
+<polyline points=" 8933,4500 8933,6150" clip-path="url(#cp3)"
+	stroke="#000000" stroke-width="8px" stroke-linejoin="bevel"/>
+<!-- Forward arrow to point 4905,2589 -->
+<polyline points=" 4859,2770 4905,2606 4942,2771"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Text -->
+<text xml:space="preserve" x="3881" y="3985" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">n</text>
+<!-- Text -->
+<text xml:space="preserve" x="3881" y="6459" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">n</text>
+<!-- Text -->
+<text xml:space="preserve" x="7387" y="6459" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">n</text>
+<!-- Text -->
+<text xml:space="preserve" x="7387" y="3985" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">n</text>
+<!-- Text -->
+<text xml:space="preserve" x="8727" y="5944" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="204" text-anchor="start">n</text>
+</g>
+</svg>
