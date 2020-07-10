@@ -343,15 +343,15 @@ api_DATA = \
        libvirt-lxc-api.xml \
        libvirt-admin-api.xml
 
-fig = \
-  libvirt-daemon-arch.fig \
-  libvirt-driver-arch.fig \
-  libvirt-object-model.fig \
-  migration-managed-direct.fig \
-  migration-managed-p2p.fig \
-  migration-native.fig \
-  migration-tunnel.fig \
-  migration-unmanaged-direct.fig
+svg = \
+  libvirt-daemon-arch.svg \
+  libvirt-driver-arch.svg \
+  libvirt-object-model.svg \
+  migration-managed-direct.svg \
+  migration-managed-p2p.svg \
+  migration-native.svg \
+  migration-tunnel.svg \
+  migration-unmanaged-direct.svg
 
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
@@ -359,7 +359,7 @@ schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 EXTRA_DIST= \
   site.xsl subsite.xsl newapi.xsl page.xsl \
   $(dot_html_in) $(dot_rst) $(apipng) \
-  $(fig) $(assets) \
+  $(svg) $(assets) \
   $(javascript) $(logofiles) \
   $(internals_html_in) $(internals_rst) $(fonts) \
   $(kbase_html_in) $(kbase_rst) \
