@@ -26163,6 +26163,19 @@ virDomainHostdevDefFormatSubsysSCSIHost(virBufferPtr buf,
 }
 
 
+static void
+virDomainHostdevDefFormatSubsysMdev(virBufferPtr buf,
+                                    virDomainHostdevDefPtr def)
+{
+    g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &def->source.subsys.u.mdev;
+
+    virBufferAsprintf(&sourceChildBuf, "<address uuid='%s'/>\n", mdevsrc->uuidstr);
+
+    virXMLFormatElement(buf, "source", NULL, &sourceChildBuf);
+}
+
+
 static int
 virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 virDomainHostdevDefPtr def,
@@ -26170,9 +26183,6 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 bool includeTypeInAddr,
                                 virDomainXMLOptionPtr xmlopt)
 {
-    g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
-    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &def->source.subsys.u.mdev;
-
     switch ((virDomainHostdevSubsysType) def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         virDomainHostdevDefFormatSubsysUSB(buf, def, flags, includeTypeInAddr);
@@ -26189,36 +26199,14 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         return 0;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
-        break;
+        virDomainHostdevDefFormatSubsysMdev(buf, def);
+        return 0;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainHostdevSubsysType, def->source.subsys.type);
         return -1;
     }
-
-
-    switch (def->source.subsys.type) {
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        break;
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        break;
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        break;
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
-        break;
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
-        virBufferAsprintf(&sourceChildBuf, "<address uuid='%s'/>\n",
-                          mdevsrc->uuidstr);
-        break;
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected hostdev type %d"),
-                       def->source.subsys.type);
-        return -1;
-    }
-
-    virXMLFormatElement(buf, "source", NULL, &sourceChildBuf);
 
     return 0;
 }
