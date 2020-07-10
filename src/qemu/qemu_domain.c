@@ -1221,8 +1221,8 @@ qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
 
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
             srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
-            if (srcPriv && srcPriv->secinfo)
-                g_clear_pointer(&srcPriv->secinfo, qemuDomainSecretInfoFree);
+            if (srcPriv)
+                qemuDomainSecretInfoDestroy(srcPriv->secinfo);
         }
     }
 }
