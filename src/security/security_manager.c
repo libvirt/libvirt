@@ -1353,7 +1353,8 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
             continue;
 
         if (S_ISDIR(sb.st_mode)) {
-            /* Directories can't be locked */
+            /* We need to open the path for writing because we need exclusive
+             * (write) lock. But directories can't be opened for writing. */
             continue;
         }
 
