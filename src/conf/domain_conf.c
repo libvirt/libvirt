@@ -26058,6 +26058,50 @@ virDomainHostdevDefFormatSubsysUSB(virBufferPtr buf,
 
 
 static int
+virDomainHostdevDefFormatSubsysPCI(virBufferPtr buf,
+                                   virDomainHostdevDefPtr def,
+                                   unsigned int flags,
+                                   bool includeTypeInAddr)
+{
+    g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) origstatesChildBuf = VIR_BUFFER_INIT_CHILD(&sourceChildBuf);
+    virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
+
+    if (pcisrc->backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
+        const char *backend = virDomainHostdevSubsysPCIBackendTypeToString(pcisrc->backend);
+
+        if (!backend) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected pci hostdev driver name type %d"),
+                           pcisrc->backend);
+            return -1;
+        }
+
+        virBufferAsprintf(buf, "<driver name='%s'/>\n", backend);
+    }
+
+    virPCIDeviceAddressFormat(&sourceChildBuf, pcisrc->addr, includeTypeInAddr);
+
+    if ((flags & VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES)) {
+        if (def->origstates.states.pci.unbind_from_stub)
+            virBufferAddLit(&origstatesChildBuf, "<unbind/>\n");
+
+        if (def->origstates.states.pci.remove_slot)
+            virBufferAddLit(&origstatesChildBuf, "<removeslot/>\n");
+
+        if (def->origstates.states.pci.reprobe)
+            virBufferAddLit(&origstatesChildBuf, "<reprobe/>\n");
+
+        virXMLFormatElement(&sourceChildBuf, "origstates", NULL, &origstatesChildBuf);
+    }
+
+    virXMLFormatElement(buf, "source", &sourceAttrBuf, &sourceChildBuf);
+    return 0;
+}
+
+
+static int
 virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 virDomainHostdevDefPtr def,
                                 unsigned int flags,
@@ -26066,8 +26110,6 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
 {
     g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
-    g_auto(virBuffer) origstatesChildBuf = VIR_BUFFER_INIT_CHILD(&sourceChildBuf);
-    virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &def->source.subsys.u.scsi_host;
     virDomainHostdevSubsysMediatedDevPtr mdevsrc = &def->source.subsys.u.mdev;
@@ -26080,6 +26122,8 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         return 0;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        return virDomainHostdevDefFormatSubsysPCI(buf, def, flags, includeTypeInAddr);
+
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
@@ -26089,20 +26133,6 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
     default:
         virReportEnumRangeError(virDomainHostdevSubsysType, def->source.subsys.type);
         return -1;
-    }
-
-    if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-        pcisrc->backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
-        const char *backend =
-            virDomainHostdevSubsysPCIBackendTypeToString(pcisrc->backend);
-
-        if (!backend) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected pci hostdev driver name type %d"),
-                           pcisrc->backend);
-            return -1;
-        }
-        virBufferAsprintf(buf, "<driver name='%s'/>\n", backend);
     }
 
 
@@ -26127,18 +26157,6 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        virPCIDeviceAddressFormat(&sourceChildBuf, pcisrc->addr,
-                                  includeTypeInAddr);
-
-        if ((flags & VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES)) {
-            if (def->origstates.states.pci.unbind_from_stub)
-                virBufferAddLit(&origstatesChildBuf, "<unbind/>\n");
-            if (def->origstates.states.pci.remove_slot)
-                virBufferAddLit(&origstatesChildBuf, "<removeslot/>\n");
-            if (def->origstates.states.pci.reprobe)
-                virBufferAddLit(&origstatesChildBuf, "<reprobe/>\n");
-            virXMLFormatElement(&sourceChildBuf, "origstates", NULL, &origstatesChildBuf);
-        }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
