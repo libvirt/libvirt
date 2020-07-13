@@ -3467,10 +3467,10 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     int ret = -1;
     unsigned int migrate_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMigrationCookiePtr mig = NULL;
-    char *tlsAlias = NULL;
+    g_autoptr(qemuMigrationCookie) mig = NULL;
+    g_autofree char *tlsAlias = NULL;
     qemuMigrationIOThreadPtr iothread = NULL;
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
     unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
     virErrorPtr orig_err = NULL;
     unsigned int cookieFlags = 0;
@@ -3479,8 +3479,8 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     bool bwParam = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH);
     bool cancel = false;
     unsigned int waitFlags;
-    virDomainDefPtr persistDef = NULL;
-    char *timestamp;
+    g_autoptr(virDomainDef) persistDef = NULL;
+    g_autofree char *timestamp = NULL;
     int rc;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
@@ -3642,10 +3642,8 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     }
 
     /* log start of migration */
-    if ((timestamp = virTimeStringNow()) != NULL) {
+    if ((timestamp = virTimeStringNow()) != NULL)
         qemuDomainLogAppendMessage(driver, vm, "%s: initiating migration\n", timestamp);
-        VIR_FREE(timestamp);
-    }
 
     rc = -1;
     switch (spec->destType) {
@@ -3779,11 +3777,6 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(tlsAlias);
-    VIR_FORCE_CLOSE(fd);
-    virDomainDefFree(persistDef);
-    qemuMigrationCookieFree(mig);
-
     if (events)
         priv->signalIOError = false;
 
