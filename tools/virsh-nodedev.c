@@ -1013,6 +1013,58 @@ cmdNodeDeviceEvent(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/*
+ * "nodedev-define" command
+ */
+static const vshCmdInfo info_node_device_define[] = {
+    {.name = "help",
+     .data = N_("Define a device by an xml file on a node")
+    },
+    {.name = "desc",
+     .data = N_("Defines a persistent device on the node that can be "
+                "assigned to a domain. The device must be started before "
+                "it can be assigned to a domain.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_node_device_define[] = {
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML description "
+                             "of the device")),
+    {.name = NULL}
+};
+
+static bool
+cmdNodeDeviceDefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+{
+    virNodeDevice *dev = NULL;
+    const char *from = NULL;
+    bool ret = true;
+    char *buffer;
+    virshControl *priv = ctl->privData;
+
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+        return false;
+
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
+        return false;
+
+    dev = virNodeDeviceDefineXML(priv->conn, buffer, 0);
+    VIR_FREE(buffer);
+
+    if (dev != NULL) {
+        vshPrintExtra(ctl, _("Node device '%s' defined from '%s'\n"),
+                      virNodeDeviceGetName(dev), from);
+        virNodeDeviceFree(dev);
+    } else {
+        vshError(ctl, _("Failed to define node device from '%s'"), from);
+        ret = false;
+    }
+
+    return ret;
+}
+
+
 const vshCmdDef nodedevCmds[] = {
     {.name = "nodedev-create",
      .handler = cmdNodeDeviceCreate,
@@ -1064,6 +1116,12 @@ const vshCmdDef nodedevCmds[] = {
      .handler = cmdNodeDeviceEvent,
      .opts = opts_node_device_event,
      .info = info_node_device_event,
+     .flags = 0
+    },
+    {.name = "nodedev-define",
+     .handler = cmdNodeDeviceDefine,
+     .opts = opts_node_device_define,
+     .info = info_node_device_define,
      .flags = 0
     },
     {.name = NULL}
