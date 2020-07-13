@@ -2726,9 +2726,8 @@ virDomainMigrateVersion1(virDomainPtr domain,
                          const char *uri,
                          unsigned long bandwidth)
 {
-    virDomainPtr ddomain = NULL;
-    char *uri_out = NULL;
-    char *cookie = NULL;
+    g_autofree char *uri_out = NULL;
+    g_autofree char *cookie = NULL;
     int cookielen = 0, ret;
     virDomainInfo info;
     unsigned int destflags;
@@ -2758,12 +2757,12 @@ virDomainMigrateVersion1(virDomainPtr domain,
     if (dconn->driver->domainMigratePrepare
         (dconn, &cookie, &cookielen, uri, &uri_out, destflags, dname,
          bandwidth) == -1)
-        goto done;
+        return NULL;
 
     if (uri == NULL && uri_out == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare did not set uri"));
-        goto done;
+        return NULL;
     }
     if (uri_out)
         uri = uri_out; /* Did domainMigratePrepare change URI? */
@@ -2773,7 +2772,7 @@ virDomainMigrateVersion1(virDomainPtr domain,
      */
     if (domain->conn->driver->domainMigratePerform
         (domain, cookie, cookielen, uri, flags, dname, bandwidth) == -1)
-        goto done;
+        return NULL;
 
     /* Get the destination domain and return it or error.
      * 'domain' no longer actually exists at this point
@@ -2782,15 +2781,10 @@ virDomainMigrateVersion1(virDomainPtr domain,
      */
     dname = dname ? dname : domain->name;
     if (dconn->driver->domainMigrateFinish)
-        ddomain = dconn->driver->domainMigrateFinish
+        return dconn->driver->domainMigrateFinish
             (dconn, dname, cookie, cookielen, uri, destflags);
-    else
-        ddomain = virDomainLookupByName(dconn, dname);
 
- done:
-    VIR_FREE(uri_out);
-    VIR_FREE(cookie);
-    return ddomain;
+    return virDomainLookupByName(dconn, dname);
 }
 
 
