@@ -2306,8 +2306,7 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
                         int fd)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuProcessIncomingDefPtr inc = NULL;
-    char *migrateFrom = NULL;
+    g_autofree char *migrateFrom = NULL;
 
     if (tunnel) {
         migrateFrom = g_strdup("stdio");
@@ -2329,7 +2328,7 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
                 if (!hostIPv6Capable) {
                     virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                                    _("host isn't capable of IPv6"));
-                    goto cleanup;
+                    return NULL;
                 }
                 /* IPv6 address must be escaped in brackets on the cmd line */
                 encloseAddress = true;
@@ -2358,12 +2357,8 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
         migrateFrom = g_strdup_printf(incFormat, protocol, listenAddress, port);
     }
 
-    inc = qemuProcessIncomingDefNew(priv->qemuCaps, listenAddress,
-                                    migrateFrom, fd, NULL);
-
- cleanup:
-    VIR_FREE(migrateFrom);
-    return inc;
+    return qemuProcessIncomingDefNew(priv->qemuCaps, listenAddress,
+                                     migrateFrom, fd, NULL);
 }
 
 static int
