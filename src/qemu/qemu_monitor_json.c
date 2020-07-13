@@ -8405,9 +8405,8 @@ int
 qemuMonitorJSONMigrateIncoming(qemuMonitorPtr mon,
                                const char *uri)
 {
-    int ret = -1;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("migrate-incoming",
                                            "s:uri", uri,
@@ -8415,14 +8414,9 @@ qemuMonitorJSONMigrateIncoming(qemuMonitorPtr mon,
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = qemuMonitorJSONCheckError(cmd, reply);
-
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return qemuMonitorJSONCheckError(cmd, reply);
 }
 
 
