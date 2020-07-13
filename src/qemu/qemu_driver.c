@@ -12634,7 +12634,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -12658,7 +12658,6 @@ qemuDomainMigratePerform3(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    qemuMigrationParamsFree(migParams);
     return ret;
 }
 
@@ -12682,10 +12681,10 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     const char *graphicsuri = NULL;
     const char *listenAddress = NULL;
     int nmigrate_disks;
-    const char **migrate_disks = NULL;
+    g_autofree const char **migrate_disks = NULL;
     unsigned long long bandwidth = 0;
     int nbdPort = 0;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -12743,8 +12742,6 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                   flags, dname, bandwidth, true);
  cleanup:
     virDomainObjEndAPI(&vm);
-    qemuMigrationParamsFree(migParams);
-    VIR_FREE(migrate_disks);
     return ret;
 }
 
