@@ -12444,21 +12444,20 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
 {
     virQEMUDriverPtr driver = dconn->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    virDomainDefPtr def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     const char *dom_xml = NULL;
     const char *dname = NULL;
     const char *uri_in = NULL;
     const char *listenAddress = cfg->migrationAddress;
     int nbdPort = 0;
     int nmigrate_disks;
-    const char **migrate_disks = NULL;
+    g_autofree const char **migrate_disks = NULL;
     g_autofree char *origname = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
-    int ret = -1;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
 
-    virCheckFlagsGoto(QEMU_MIGRATION_FLAGS, cleanup);
+    virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
     if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
-        goto cleanup;
+        return -1;
 
     if (virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_DEST_XML,
@@ -12475,18 +12474,18 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         virTypedParamsGetInt(params, nparams,
                              VIR_MIGRATE_PARAM_DISKS_PORT,
                              &nbdPort) < 0)
-        goto cleanup;
+        return -1;
 
     nmigrate_disks = virTypedParamsGetStringList(params, nparams,
                                                  VIR_MIGRATE_PARAM_MIGRATE_DISKS,
                                                  &migrate_disks);
 
     if (nmigrate_disks < 0)
-        goto cleanup;
+        return -1;
 
     if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
-        goto cleanup;
+        return -1;
 
     if (flags & VIR_MIGRATE_TUNNELLED) {
         /* this is a logical error; we never should have gotten here with
@@ -12495,28 +12494,22 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Tunnelled migration requested but invalid "
                          "RPC method called"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        goto cleanup;
+        return -1;
 
     if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = qemuMigrationDstPrepareDirect(driver, dconn,
-                                        cookiein, cookieinlen,
-                                        cookieout, cookieoutlen,
-                                        uri_in, uri_out,
-                                        &def, origname, listenAddress,
-                                        nmigrate_disks, migrate_disks, nbdPort,
-                                        migParams, flags);
-
- cleanup:
-    qemuMigrationParamsFree(migParams);
-    VIR_FREE(migrate_disks);
-    virDomainDefFree(def);
-    return ret;
+    return qemuMigrationDstPrepareDirect(driver, dconn,
+                                         cookiein, cookieinlen,
+                                         cookieout, cookieoutlen,
+                                         uri_in, uri_out,
+                                         &def, origname, listenAddress,
+                                         nmigrate_disks, migrate_disks, nbdPort,
+                                         migParams, flags);
 }
 
 
