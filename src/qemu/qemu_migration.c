@@ -2389,7 +2389,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = NULL;
     qemuMigrationCookiePtr mig = NULL;
     bool tunnel = !!st;
-    char *xmlout = NULL;
+    g_autofree char *xmlout = NULL;
     unsigned int cookieFlags;
     unsigned int startFlags;
     qemuProcessIncomingDefPtr incoming = NULL;
@@ -2397,7 +2397,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     bool stopProcess = false;
     bool relabel = false;
     int rv;
-    char *tlsAlias = NULL;
+    g_autofree char *tlsAlias = NULL;
 
     virNWFilterReadLockFilterUpdates();
 
@@ -2447,7 +2447,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
 
     /* Let migration hook filter domain XML */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml;
+        g_autofree char *xml = NULL;
         int hookret;
 
         if (!(xml = qemuDomainDefFormatXML(driver, NULL, *def,
@@ -2458,7 +2458,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, (*def)->name,
                               VIR_HOOK_QEMU_OP_MIGRATE, VIR_HOOK_SUBOP_BEGIN,
                               NULL, xml, &xmlout);
-        VIR_FREE(xml);
 
         if (hookret < 0) {
             goto cleanup;
@@ -2467,7 +2466,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                 VIR_DEBUG("Migrate hook filter returned nothing; using the"
                           " original XML");
             } else {
-                virDomainDefPtr newdef;
+                g_autoptr(virDomainDef) newdef = NULL;
 
                 VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
                 newdef = virDomainDefParseString(xmlout, driver->xmlopt, NULL,
@@ -2476,13 +2475,11 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                 if (!newdef)
                     goto cleanup;
 
-                if (!qemuDomainDefCheckABIStability(driver, NULL, *def, newdef)) {
-                    virDomainDefFree(newdef);
+                if (!qemuDomainDefCheckABIStability(driver, NULL, *def, newdef))
                     goto cleanup;
-                }
 
                 virDomainDefFree(*def);
-                *def = newdef;
+                *def = g_steal_pointer(&newdef);
                 /* We should taint the domain here. However, @vm and therefore
                  * privateData too are still NULL, so just notice the fact and
                  * taint it later. */
@@ -2694,9 +2691,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
 
  cleanup:
     virErrorPreserveLast(&origErr);
-    VIR_FREE(tlsAlias);
     qemuProcessIncomingDefFree(incoming);
-    VIR_FREE(xmlout);
     VIR_FORCE_CLOSE(dataFD[0]);
     VIR_FORCE_CLOSE(dataFD[1]);
     if (ret < 0 && priv) {
