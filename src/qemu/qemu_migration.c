@@ -4976,11 +4976,11 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
                        bool v3proto)
 {
     virDomainPtr dom = NULL;
-    qemuMigrationCookiePtr mig = NULL;
+    g_autoptr(qemuMigrationCookie) mig = NULL;
     virErrorPtr orig_err = NULL;
     int cookie_flags = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned short port;
     unsigned long long timeReceived = 0;
     virObjectEventPtr event;
@@ -5246,9 +5246,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
     VIR_FREE(priv->origname);
     virDomainObjEndAPI(&vm);
-    qemuMigrationCookieFree(mig);
     virErrorRestore(&orig_err);
-    virObjectUnref(cfg);
 
     /* Set a special error if Finish is expected to return NULL as a result of
      * successful call with retcode != 0
