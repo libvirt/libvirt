@@ -2810,10 +2810,10 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
 {
     unsigned short port = 0;
     bool autoPort = true;
-    char *hostname = NULL;
+    g_autofree char *hostname = NULL;
     int ret = -1;
-    virURIPtr uri = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virURI) uri = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *migrateHost = cfg->migrateHost;
 
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
@@ -2928,9 +2928,6 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
                                      nmigrate_disks, migrate_disks, nbdPort,
                                      migParams, flags);
  cleanup:
-    virURIFree(uri);
-    VIR_FREE(hostname);
-    virObjectUnref(cfg);
     if (ret != 0) {
         VIR_FREE(*uri_out);
         if (autoPort)
