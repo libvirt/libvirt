@@ -3732,6 +3732,7 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
                      virBufferPtr buffer, int virtualHW_version)
 {
     char mac_string[VIR_MAC_STRING_BUFLEN];
+    const bool staticMac = def->mac_type == VIR_DOMAIN_NET_MAC_TYPE_STATIC;
     unsigned int prefix, suffix;
 
     /*
@@ -3829,19 +3830,19 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
     prefix = (def->mac.addr[0] << 16) | (def->mac.addr[1] << 8) | def->mac.addr[2];
     suffix = (def->mac.addr[3] << 16) | (def->mac.addr[4] << 8) | def->mac.addr[5];
 
-    if (prefix == 0x000c29) {
+    if (prefix == 0x000c29 && !staticMac) {
         virBufferAsprintf(buffer, "ethernet%d.addressType = \"generated\"\n",
                           controller);
         virBufferAsprintf(buffer, "ethernet%d.generatedAddress = \"%s\"\n",
                           controller, mac_string);
         virBufferAsprintf(buffer, "ethernet%d.generatedAddressOffset = \"0\"\n",
                           controller);
-    } else if (prefix == 0x005056 && suffix <= 0x3fffff) {
+    } else if (prefix == 0x005056 && suffix <= 0x3fffff && !staticMac) {
         virBufferAsprintf(buffer, "ethernet%d.addressType = \"static\"\n",
                           controller);
         virBufferAsprintf(buffer, "ethernet%d.address = \"%s\"\n",
                           controller, mac_string);
-    } else if (prefix == 0x005056 && suffix >= 0x800000 && suffix <= 0xbfffff) {
+    } else if (prefix == 0x005056 && suffix >= 0x800000 && suffix <= 0xbfffff && !staticMac) {
         virBufferAsprintf(buffer, "ethernet%d.addressType = \"vpx\"\n",
                           controller);
         virBufferAsprintf(buffer, "ethernet%d.generatedAddress = \"%s\"\n",

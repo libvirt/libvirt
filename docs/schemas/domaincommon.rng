@@ -3179,6 +3179,14 @@
           <attribute name="address">
             <ref name="uniMacAddr"/>
           </attribute>
+          <optional>
+            <attribute name="type">
+              <choice>
+                <value>generated</value>
+                <value>static</value>
+              </choice>
+            </attribute>
+          </optional>
           <empty/>
         </element>
       </optional>

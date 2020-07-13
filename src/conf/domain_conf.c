@@ -611,6 +611,13 @@ VIR_ENUM_IMPL(virDomainChrDeviceState,
               "disconnected",
 );
 
+VIR_ENUM_IMPL(virDomainNetMacType,
+              VIR_DOMAIN_NET_MAC_TYPE_LAST,
+              "",
+              "generated",
+              "static",
+);
+
 VIR_ENUM_IMPL(virDomainChrSerialTarget,
               VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST,
               "none",
@@ -11904,6 +11911,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     virDomainChrSourceReconnectDef reconnect = {0};
     int rv, val;
     g_autofree char *macaddr = NULL;
+    g_autofree char *macaddr_type = NULL;
     g_autofree char *type = NULL;
     g_autofree char *network = NULL;
     g_autofree char *portgroup = NULL;
@@ -11984,6 +11992,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
             if (!macaddr && virXMLNodeNameEqual(cur, "mac")) {
                 macaddr = virXMLPropString(cur, "address");
+                macaddr_type = virXMLPropString(cur, "type");
             } else if (!network &&
                        def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
                        virXMLNodeNameEqual(cur, "source")) {
@@ -12171,6 +12180,18 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     } else {
         virDomainNetGenerateMAC(xmlopt, &def->mac);
         def->mac_generated = true;
+    }
+
+    if (macaddr_type) {
+        int tmp;
+        if ((tmp = virDomainNetMacTypeTypeFromString(macaddr_type)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid mac address check value: '%s'. Valid "
+                             "values are \"generated\" and \"static\"."),
+                           macaddr_type);
+            goto error;
+        }
+        def->mac_type = tmp;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info,
@@ -26468,8 +26489,11 @@ virDomainNetDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 2);
-    virBufferAsprintf(buf, "<mac address='%s'/>\n",
+    virBufferAsprintf(buf, "<mac address='%s'",
                       virMacAddrFormat(&def->mac, macstr));
+    if (def->mac_type)
+        virBufferAsprintf(buf, " type='%s'", virDomainNetMacTypeTypeToString(def->mac_type));
+    virBufferAddLit(buf, "/>\n");
 
     if (publicActual) {
         /* when there is a virDomainActualNetDef, and we haven't been
