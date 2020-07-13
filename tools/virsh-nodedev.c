@@ -1008,6 +1008,59 @@ cmdNodeDeviceEvent(vshControl *ctl, const vshCmd *cmd)
 
 
 /*
+ * "nodedev-undefine" command
+ */
+static const vshCmdInfo info_node_device_undefine[] = {
+    {.name = "help",
+     .data = N_("Undefine an inactive node device")
+    },
+    {.name = "desc",
+     .data = N_("Undefines the configuration for an inactive node device")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_node_device_undefine[] = {
+    {.name = "device",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("device name or wwn pair in 'wwnn,wwpn' format"),
+     .completer = virshNodeDeviceNameCompleter,
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdNodeDeviceUndefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+{
+    virNodeDevice *dev = NULL;
+    bool ret = false;
+    const char *device_value = NULL;
+
+    if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
+        return false;
+
+    dev = vshFindNodeDevice(ctl, device_value);
+
+    if (!dev)
+        goto cleanup;
+
+    if (virNodeDeviceUndefine(dev) == 0) {
+        vshPrintExtra(ctl, _("Undefined node device '%s'\n"), device_value);
+    } else {
+        vshError(ctl, _("Failed to undefine node device '%s'"), device_value);
+        goto cleanup;
+    }
+
+    ret = true;
+ cleanup:
+    if (dev)
+        virNodeDeviceFree(dev);
+    return ret;
+}
+
+
+/*
  * "nodedev-define" command
  */
 static const vshCmdInfo info_node_device_define[] = {
@@ -1116,6 +1169,12 @@ const vshCmdDef nodedevCmds[] = {
      .handler = cmdNodeDeviceDefine,
      .opts = opts_node_device_define,
      .info = info_node_device_define,
+     .flags = 0
+    },
+    {.name = "nodedev-undefine",
+     .handler = cmdNodeDeviceUndefine,
+     .opts = opts_node_device_undefine,
+     .info = info_node_device_undefine,
      .flags = 0
     },
     {.name = NULL}
