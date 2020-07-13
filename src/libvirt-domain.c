@@ -2816,9 +2816,9 @@ virDomainMigrateVersion2(virDomainPtr domain,
                          unsigned long bandwidth)
 {
     virDomainPtr ddomain = NULL;
-    char *uri_out = NULL;
-    char *cookie = NULL;
-    char *dom_xml = NULL;
+    g_autofree char *uri_out = NULL;
+    g_autofree char *cookie = NULL;
+    g_autofree char *dom_xml = NULL;
     int cookielen = 0, ret;
     virDomainInfo info;
     virErrorPtr orig_err = NULL;
@@ -2873,7 +2873,6 @@ virDomainMigrateVersion2(virDomainPtr domain,
     ret = dconn->driver->domainMigratePrepare2
         (dconn, &cookie, &cookielen, uri, &uri_out, destflags, dname,
          bandwidth, dom_xml);
-    VIR_FREE(dom_xml);
     if (ret == -1)
         goto done;
 
@@ -2918,8 +2917,6 @@ virDomainMigrateVersion2(virDomainPtr domain,
 
  done:
     virErrorRestore(&orig_err);
-    VIR_FREE(uri_out);
-    VIR_FREE(cookie);
     return ddomain;
 }
 
@@ -2965,10 +2962,10 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
                              unsigned int flags)
 {
     virDomainPtr ddomain = NULL;
-    char *uri_out = NULL;
-    char *cookiein = NULL;
-    char *cookieout = NULL;
-    char *dom_xml = NULL;
+    g_autofree char *uri_out = NULL;
+    g_autofree char *cookiein = NULL;
+    g_autofree char *cookieout = NULL;
+    g_autofree char *dom_xml = NULL;
     int cookieinlen = 0;
     int cookieoutlen = 0;
     int ret;
@@ -3242,10 +3239,6 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
 
  done:
     virErrorRestore(&orig_err);
-    VIR_FREE(dom_xml);
-    VIR_FREE(uri_out);
-    VIR_FREE(cookiein);
-    VIR_FREE(cookieout);
     virTypedParamsFree(params, nparams);
     return ddomain;
 }
