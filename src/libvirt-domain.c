@@ -3553,7 +3553,7 @@ virDomainMigrate(virDomainPtr domain,
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
-            char *dstURI = NULL;
+            g_autofree char *dstURI = NULL;
             if (uri == NULL) {
                 dstURI = virConnectGetURI(dconn);
                 if (!dstURI)
@@ -3562,11 +3562,8 @@ virDomainMigrate(virDomainPtr domain,
 
             VIR_DEBUG("Using peer2peer migration");
             if (virDomainMigrateUnmanaged(domain, NULL, flags, dname,
-                                          uri ? uri : dstURI, NULL, bandwidth) < 0) {
-                VIR_FREE(dstURI);
+                                          uri ? uri : dstURI, NULL, bandwidth) < 0)
                 goto error;
-            }
-            VIR_FREE(dstURI);
 
             ddomain = virDomainLookupByName(dconn, dname ? dname : domain->name);
         } else {
@@ -3712,17 +3709,14 @@ virDomainMigrate2(virDomainPtr domain,
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
-            char *dstURI = virConnectGetURI(dconn);
+            g_autofree char *dstURI = virConnectGetURI(dconn);
             if (!dstURI)
                 return NULL;
 
             VIR_DEBUG("Using peer2peer migration");
             if (virDomainMigrateUnmanaged(domain, dxml, flags, dname,
-                                          dstURI, uri, bandwidth) < 0) {
-                VIR_FREE(dstURI);
+                                          dstURI, uri, bandwidth) < 0)
                 goto error;
-            }
-            VIR_FREE(dstURI);
 
             ddomain = virDomainLookupByName(dconn, dname ? dname : domain->name);
         } else {
