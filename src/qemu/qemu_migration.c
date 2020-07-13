@@ -2054,9 +2054,8 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
                            const char **migrate_disks,
                            unsigned long flags)
 {
-    char *rv = NULL;
-    qemuMigrationCookiePtr mig = NULL;
-    virDomainDefPtr def = NULL;
+    g_autoptr(qemuMigrationCookie) mig = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned int cookieFlags = QEMU_MIGRATION_COOKIE_LOCKSTATE;
 
@@ -2075,12 +2074,12 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
         qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_BEGIN3);
 
     if (!qemuMigrationSrcIsAllowed(driver, vm, true, flags))
-        goto cleanup;
+        return NULL;
 
     if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
         !qemuMigrationSrcIsSafe(vm->def, priv->qemuCaps,
                                 nmigrate_disks, migrate_disks, flags))
-        goto cleanup;
+        return NULL;
 
     if (flags & VIR_MIGRATE_POSTCOPY &&
         (!(flags & VIR_MIGRATE_LIVE) ||
@@ -2088,13 +2087,13 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("post-copy migration is not supported with non-live "
                          "or paused migration"));
-        goto cleanup;
+        return NULL;
     }
 
     if (flags & VIR_MIGRATE_POSTCOPY && flags & VIR_MIGRATE_TUNNELLED) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("post-copy is not supported with tunnelled migration"));
-        goto cleanup;
+        return NULL;
     }
 
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
@@ -2111,7 +2110,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
                     virReportError(VIR_ERR_INVALID_ARG,
                                    _("disk target %s not found"),
                                    migrate_disks[i]);
-                    goto cleanup;
+                    return NULL;
                 }
             }
 
@@ -2119,7 +2118,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                                _("Selecting disks to migrate is not "
                                  "implemented for tunnelled migration"));
-                goto cleanup;
+                return NULL;
             }
         }
 
@@ -2152,13 +2151,13 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
 
     if (!(mig = qemuMigrationEatCookie(driver, vm->def,
                                        priv->origname, priv, NULL, 0, 0)))
-        goto cleanup;
+        return NULL;
 
     if (qemuMigrationBakeCookie(mig, driver, vm,
                                 QEMU_MIGRATION_SOURCE,
                                 cookieout, cookieoutlen,
                                 cookieFlags) < 0)
-        goto cleanup;
+        return NULL;
 
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (flags & (VIR_MIGRATE_NON_SHARED_DISK |
@@ -2166,19 +2165,19 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("offline migration cannot handle "
                              "non-shared storage"));
-            goto cleanup;
+            return NULL;
         }
         if (!(flags & VIR_MIGRATE_PERSIST_DEST)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("offline migration must be specified with "
                              "the persistent flag set"));
-            goto cleanup;
+            return NULL;
         }
         if (flags & VIR_MIGRATE_TUNNELLED) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("tunnelled offline migration does not "
                              "make sense"));
-            goto cleanup;
+            return NULL;
         }
     }
 
@@ -2186,21 +2185,16 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
         if (!(def = virDomainDefParseString(xmlin, driver->xmlopt, priv->qemuCaps,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
-            goto cleanup;
+            return NULL;
 
         if (!qemuDomainCheckABIStability(driver, vm, def))
-            goto cleanup;
+            return NULL;
 
-        rv = qemuDomainDefFormatLive(driver, priv->qemuCaps, def, NULL, false, true);
+        return qemuDomainDefFormatLive(driver, priv->qemuCaps, def, NULL, false, true);
     } else {
-        rv = qemuDomainDefFormatLive(driver, priv->qemuCaps, vm->def, priv->origCPU,
-                                     false, true);
+        return qemuDomainDefFormatLive(driver, priv->qemuCaps, vm->def, priv->origCPU,
+                                       false, true);
     }
-
- cleanup:
-    qemuMigrationCookieFree(mig);
-    virDomainDefFree(def);
-    return rv;
 }
 
 char *
