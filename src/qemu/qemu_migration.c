@@ -4485,12 +4485,12 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
                                  bool *v3proto)
 {
     int ret = -1;
-    virConnectPtr dconn = NULL;
+    g_autoptr(virConnect) dconn = NULL;
     bool p2p;
     virErrorPtr orig_err = NULL;
     bool offline = !!(flags & VIR_MIGRATE_OFFLINE);
     bool dstOffline = false;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     bool useParams;
 
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, uri=%s, "
@@ -4536,7 +4536,6 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to connect to remote libvirt URI %s: %s"),
                        dconnuri, virGetLastErrorMessage());
-        virObjectUnref(cfg);
         return -1;
     }
 
@@ -4611,10 +4610,8 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
     virErrorPreserveLast(&orig_err);
     qemuDomainObjEnterRemote(vm);
     virConnectUnregisterCloseCallback(dconn, qemuMigrationSrcConnectionClosed);
-    virObjectUnref(dconn);
     ignore_value(qemuDomainObjExitRemote(vm, false));
     virErrorRestore(&orig_err);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -4650,7 +4647,7 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
     virObjectEventPtr event = NULL;
     int ret = -1;
     virErrorPtr orig_err = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
@@ -4726,7 +4723,6 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
 
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
-    virObjectUnref(cfg);
     return ret;
 }
 
