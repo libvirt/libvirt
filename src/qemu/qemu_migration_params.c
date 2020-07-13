@@ -1092,28 +1092,23 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
                          qemuMigrationParamsPtr *migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virJSONValuePtr jsonParams = NULL;
-    int ret = -1;
+    g_autoptr(virJSONValue) jsonParams = NULL;
     int rc;
 
     *migParams = NULL;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto cleanup;
+        return -1;
 
     rc = qemuMonitorGetMigrationParams(priv->mon, &jsonParams);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-        goto cleanup;
+        return -1;
 
     if (!(*migParams = qemuMigrationParamsFromJSON(jsonParams)))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(jsonParams);
-    return ret;
+    return 0;
 }
 
 
