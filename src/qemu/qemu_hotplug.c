@@ -1115,6 +1115,7 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
             return -1;
 
         disk->src = NULL;
+        virDomainDiskDefFree(disk);
         return 0;
     }
 
