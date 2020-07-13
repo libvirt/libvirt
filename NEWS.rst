@@ -18,6 +18,12 @@ v6.6.0 (unreleased)
     Libvirt allows configuring ACPI Heterogeneous Memory Attribute Table to
     hint software running inside the guest on optimization.
 
+  * esx: Add a ``type`` attribute for mac addresses.
+
+    This attribute allows (when set to ``static``) ignoring VMWare checks of the
+    MAC addresses that would generate a new one if they were in its OUI
+    (00:0c:29).
+
 * **Improvements**
 
   * esx: Change the NIC limit for recent virtualHW versions
