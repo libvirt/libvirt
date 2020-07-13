@@ -2224,11 +2224,11 @@ qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
 
 static int
 qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
-                                 virDomainObjPtr vm,
-                                 qemuDomainObjPrivatePtr priv)
+                                 virDomainObjPtr vm)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJob job = priv->job.active;
 
     if (!qemuDomainTrackJob(job))
@@ -2399,7 +2399,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     if (priv->lockState)
         virBufferAsprintf(buf, "<lockstate>%s</lockstate>\n", priv->lockState);
 
-    if (qemuDomainObjPrivateXMLFormatJob(buf, vm, priv) < 0)
+    if (qemuDomainObjPrivateXMLFormatJob(buf, vm) < 0)
         return -1;
 
     if (priv->fakeReboot)
@@ -2948,9 +2948,9 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
 
 static int
 qemuDomainObjPrivateXMLParseJobNBD(virDomainObjPtr vm,
-                                   qemuDomainObjPrivatePtr priv,
                                    xmlXPathContextPtr ctxt)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree xmlNodePtr *nodes = NULL;
     size_t i;
     int n;
@@ -2986,9 +2986,9 @@ qemuDomainObjPrivateXMLParseJobNBD(virDomainObjPtr vm,
 
 static int
 qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
-                                qemuDomainObjPrivatePtr priv,
                                 xmlXPathContextPtr ctxt)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     g_autofree char *tmp = NULL;
 
@@ -3034,7 +3034,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
         return -1;
     }
 
-    if (qemuDomainObjPrivateXMLParseJobNBD(vm, priv, ctxt) < 0)
+    if (qemuDomainObjPrivateXMLParseJobNBD(vm, ctxt) < 0)
         return -1;
 
     if (qemuMigrationParamsParse(ctxt, &priv->job.migParams) < 0)
@@ -3203,7 +3203,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     priv->lockState = virXPathString("string(./lockstate)", ctxt);
 
-    if (qemuDomainObjPrivateXMLParseJob(vm, priv, ctxt) < 0)
+    if (qemuDomainObjPrivateXMLParseJob(vm, ctxt) < 0)
         goto error;
 
     priv->fakeReboot = virXPathBoolean("boolean(./fakereboot)", ctxt) == 1;
