@@ -4926,13 +4926,12 @@ qemuMigrationDstPersist(virQEMUDriverPtr driver,
                         qemuMigrationCookiePtr mig,
                         bool ignoreSaveError)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr vmdef;
-    virDomainDefPtr oldDef = NULL;
+    g_autoptr(virDomainDef) oldDef = NULL;
     unsigned int oldPersist = vm->persistent;
     virObjectEventPtr event;
-    int ret = -1;
 
     vm->persistent = 1;
     oldDef = vm->newDef;
@@ -4953,19 +4952,14 @@ qemuMigrationDstPersist(virQEMUDriverPtr driver,
                                               VIR_DOMAIN_EVENT_DEFINED_ADDED);
     virObjectEventStateQueue(driver->domainEventState, event);
 
-    ret = 0;
-
- cleanup:
-    virDomainDefFree(oldDef);
-    virObjectUnref(cfg);
-    return ret;
+    return 0;
 
  error:
     virDomainDefFree(vm->newDef);
     vm->persistent = oldPersist;
     vm->newDef = oldDef;
     oldDef = NULL;
-    goto cleanup;
+    return -1;
 }
 
 
