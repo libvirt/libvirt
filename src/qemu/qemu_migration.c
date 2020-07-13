@@ -2975,10 +2975,9 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
                              unsigned int flags,
                              int retcode)
 {
-    qemuMigrationCookiePtr mig;
+    g_autoptr(qemuMigrationCookie) mig = NULL;
     virObjectEventPtr event;
-    int rv = -1;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = NULL;
 
@@ -2997,7 +2996,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
     if (!(mig = qemuMigrationEatCookie(driver, vm->def, priv->origname, priv,
                                        cookiein, cookieinlen,
                                        QEMU_MIGRATION_COOKIE_STATS)))
-        goto cleanup;
+        return -1;
 
     if (retcode == 0)
         jobInfo = priv->job.completed;
@@ -3026,7 +3025,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
     }
 
     if (flags & VIR_MIGRATE_OFFLINE)
-        goto done;
+        return 0;
 
     /* Did the migration go as planned?  If yes, kill off the domain object.
      * If something failed, resume CPUs, but only if we didn't use post-copy.
@@ -3071,13 +3070,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
     }
 
- done:
-    qemuMigrationCookieFree(mig);
-    rv = 0;
-
- cleanup:
-    virObjectUnref(cfg);
-    return rv;
+    return 0;
 }
 
 int
