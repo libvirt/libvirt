@@ -3844,7 +3844,7 @@ qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
                               qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virURIPtr uribits = NULL;
+    g_autoptr(virURI) uribits = NULL;
     int ret = -1;
     qemuMigrationSpec spec;
 
@@ -3862,7 +3862,7 @@ qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing scheme in migration URI: %s"),
                        uri);
-        goto cleanup;
+        return -1;
     }
 
     if (STREQ(uribits->scheme, "rdma")) {
@@ -3870,13 +3870,13 @@ qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("outgoing RDMA migration is not supported "
                              "with this QEMU binary"));
-            goto cleanup;
+            return -1;
         }
         if (!virMemoryLimitIsSet(vm->def->mem.hard_limit)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot start RDMA migration with no memory hard "
                              "limit set"));
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -3899,9 +3899,6 @@ qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
 
     if (spec.destType == MIGRATION_DEST_FD)
         VIR_FORCE_CLOSE(spec.dest.fd.qemu);
-
- cleanup:
-    virURIFree(uribits);
 
     return ret;
 }
