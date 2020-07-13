@@ -12397,10 +12397,9 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                           const char *dom_xml)
 {
     virQEMUDriverPtr driver = dconn->privateData;
-    virDomainDefPtr def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     g_autofree char *origname = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
-    int ret = -1;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
@@ -12411,30 +12410,25 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Tunnelled migration requested but invalid "
                          "RPC method called"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
-        goto cleanup;
+        return -1;
 
     if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        goto cleanup;
+        return -1;
 
     if (virDomainMigratePrepare3EnsureACL(dconn, def) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = qemuMigrationDstPrepareDirect(driver, dconn,
-                                        cookiein, cookieinlen,
-                                        cookieout, cookieoutlen,
-                                        uri_in, uri_out,
-                                        &def, origname, NULL, 0, NULL, 0,
-                                        migParams, flags);
-
- cleanup:
-    qemuMigrationParamsFree(migParams);
-    virDomainDefFree(def);
-    return ret;
+    return qemuMigrationDstPrepareDirect(driver, dconn,
+                                         cookiein, cookieinlen,
+                                         cookieout, cookieoutlen,
+                                         uri_in, uri_out,
+                                         &def, origname, NULL, 0, NULL, 0,
+                                         migParams, flags);
 }
 
 static int
