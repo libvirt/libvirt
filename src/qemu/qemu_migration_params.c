@@ -836,8 +836,8 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool xbzrleCacheSize_old = false;
-    virJSONValuePtr params = NULL;
-    virJSONValuePtr caps = NULL;
+    g_autoptr(virJSONValue) params = NULL;
+    g_autoptr(virJSONValue) caps = NULL;
     qemuMigrationParam xbzrle = QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE;
     int ret = -1;
     int rc;
@@ -895,9 +895,6 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
 
     if (xbzrleCacheSize_old)
         migParams->params[xbzrle].set = true;
-
-    virJSONValueFree(params);
-    virJSONValueFree(caps);
 
     return ret;
 }
