@@ -2638,6 +2638,14 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         goto cleanup;
     }
 
+    if (checkMACAddress) {
+        if (STREQ(checkMACAddress, "true")) {
+            (*def)->mac_check = VIR_TRISTATE_BOOL_YES;
+        } else {
+            (*def)->mac_check = VIR_TRISTATE_BOOL_NO;
+        }
+    }
+
     /* vmx:virtualDev, vmx:features -> def:model */
     if (virVMXGetConfigString(conf, virtualDev_name, &virtualDev, true) < 0 ||
         virVMXGetConfigLong(conf, features_name, &features, 0, true) < 0) {
@@ -3864,6 +3872,9 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
         if (mac_type == VIR_DOMAIN_NET_MAC_TYPE_GENERATED)
             mac_check = VIR_TRISTATE_BOOL_ABSENT;
     }
+
+    if (def->mac_check != VIR_TRISTATE_BOOL_ABSENT)
+        mac_check = def->mac_check;
 
     if (mac_type == VIR_DOMAIN_NET_MAC_TYPE_GENERATED) {
         virBufferAsprintf(buffer, "ethernet%d.addressType = \"%s\"\n",

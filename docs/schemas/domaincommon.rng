@@ -3187,6 +3187,11 @@
               </choice>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="check">
+              <ref name="virYesNo"/>
+            </attribute>
+          </optional>
           <empty/>
         </element>
       </optional>
