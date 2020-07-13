@@ -953,23 +953,22 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                              qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virJSONValuePtr tlsProps = NULL;
-    virJSONValuePtr secProps = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virJSONValue) tlsProps = NULL;
+    g_autoptr(virJSONValue) secProps = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *secAlias = NULL;
-    int ret = -1;
 
     if (!cfg->migrateTLSx509certdir) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("host migration TLS directory not configured"));
-        goto error;
+        return -1;
     }
 
     if (!priv->job.migParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("TLS migration is not supported with this "
                          "QEMU binary"));
-        goto error;
+        return -1;
     }
 
     /* If there's a secret, then grab/store it now using the connection */
@@ -977,18 +976,18 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
         if (!(priv->migSecinfo =
               qemuDomainSecretInfoTLSNew(priv, QEMU_MIGRATION_TLS_ALIAS_BASE,
                                          cfg->migrateTLSx509secretUUID)))
-            goto error;
+            return -1;
         secAlias = priv->migSecinfo->s.aes.alias;
     }
 
     if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(QEMU_MIGRATION_TLS_ALIAS_BASE)))
-        goto error;
+        return -1;
 
     if (qemuDomainGetTLSObjects(priv->qemuCaps, priv->migSecinfo,
                                 cfg->migrateTLSx509certdir, tlsListen,
                                 cfg->migrateTLSx509verify,
                                 *tlsAlias, &tlsProps, &secProps) < 0)
-        goto error;
+        return -1;
 
     /* Ensure the domain doesn't already have the TLS objects defined...
      * This should prevent any issues just in case some cleanup wasn't
@@ -997,29 +996,20 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, *tlsAlias);
 
     if (qemuDomainAddTLSObjects(driver, vm, asyncJob, &secProps, &tlsProps) < 0)
-        goto error;
+        return -1;
 
     if (qemuMigrationParamsSetString(migParams,
                                      QEMU_MIGRATION_PARAM_TLS_CREDS,
                                      *tlsAlias) < 0)
-        goto error;
+        return -1;
 
     if (!migParams->params[QEMU_MIGRATION_PARAM_TLS_HOSTNAME].set &&
         qemuMigrationParamsSetString(migParams,
                                      QEMU_MIGRATION_PARAM_TLS_HOSTNAME,
                                      NULLSTR_EMPTY(hostname)) < 0)
-        goto error;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virObjectUnref(cfg);
-    return ret;
-
- error:
-    virJSONValueFree(tlsProps);
-    virJSONValueFree(secProps);
-    goto cleanup;
+    return 0;
 }
 
 
