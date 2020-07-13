@@ -267,3 +267,11 @@ void qemuDomainObjFreeJob(qemuDomainJobObjPtr job);
 int qemuDomainObjInitJob(qemuDomainJobObjPtr job);
 
 bool qemuDomainJobAllowed(qemuDomainJobObjPtr jobs, qemuDomainJob newJob);
+
+int
+qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
+                                 virDomainObjPtr vm);
+
+int
+qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
+                                xmlXPathContextPtr ctxt);

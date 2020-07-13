@@ -1184,3 +1184,244 @@ qemuDomainObjAbortAsyncJob(virDomainObjPtr obj)
     priv->job.abortJob = true;
     virDomainObjBroadcast(obj);
 }
+
+
+static int
+qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
+                                                virStorageSourcePtr src,
+                                                virDomainXMLOptionPtr xmlopt)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    virBufferAsprintf(&attrBuf, " type='%s' format='%s'",
+                      virStorageTypeToString(src->type),
+                      virStorageFileFormatTypeToString(src->format));
+
+    if (virDomainDiskSourceFormat(&childBuf, src, "source", 0, false,
+                                  VIR_DOMAIN_DEF_FORMAT_STATUS,
+                                  false, false, xmlopt) < 0)
+        return -1;
+
+    virXMLFormatElement(buf, "migrationSource", &attrBuf, &childBuf);
+
+    return 0;
+}
+
+
+static int
+qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
+                                          virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
+    virDomainDiskDefPtr disk;
+    qemuDomainDiskPrivatePtr diskPriv;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+        disk = vm->def->disks[i];
+        diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+        virBufferAsprintf(&attrBuf, " dev='%s' migrating='%s'",
+                          disk->dst, diskPriv->migrating ? "yes" : "no");
+
+        if (diskPriv->migrSource &&
+            qemuDomainObjPrivateXMLFormatNBDMigrationSource(&childBuf,
+                                                            diskPriv->migrSource,
+                                                            priv->driver->xmlopt) < 0)
+            return -1;
+
+        virXMLFormatElement(buf, "disk", &attrBuf, &childBuf);
+    }
+
+    return 0;
+}
+
+
+int
+qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
+                                 virDomainObjPtr vm)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJob job = priv->job.active;
+
+    if (!qemuDomainTrackJob(job))
+        job = QEMU_JOB_NONE;
+
+    if (job == QEMU_JOB_NONE &&
+        priv->job.asyncJob == QEMU_ASYNC_JOB_NONE)
+        return 0;
+
+    virBufferAsprintf(&attrBuf, " type='%s' async='%s'",
+                      qemuDomainJobTypeToString(job),
+                      qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+
+    if (priv->job.phase) {
+        virBufferAsprintf(&attrBuf, " phase='%s'",
+                          qemuDomainAsyncJobPhaseToString(priv->job.asyncJob,
+                                                          priv->job.phase));
+    }
+
+    if (priv->job.asyncJob != QEMU_ASYNC_JOB_NONE)
+        virBufferAsprintf(&attrBuf, " flags='0x%lx'", priv->job.apiFlags);
+
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT &&
+        qemuDomainObjPrivateXMLFormatNBDMigration(&childBuf, vm) < 0)
+        return -1;
+
+    if (priv->job.migParams)
+        qemuMigrationParamsFormat(&childBuf, priv->job.migParams);
+
+    virXMLFormatElement(buf, "job", &attrBuf, &childBuf);
+
+    return 0;
+}
+
+
+static int
+qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
+                                         xmlXPathContextPtr ctxt,
+                                         virDomainDiskDefPtr disk,
+                                         virDomainXMLOptionPtr xmlopt)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    g_autofree char *format = NULL;
+    g_autofree char *type = NULL;
+    g_autoptr(virStorageSource) migrSource = NULL;
+    xmlNodePtr sourceNode;
+
+    ctxt->node = node;
+
+    if (!(ctxt->node = virXPathNode("./migrationSource", ctxt)))
+        return 0;
+
+    if (!(type = virXMLPropString(ctxt->node, "type"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing storage source type"));
+        return -1;
+    }
+
+    if (!(format = virXMLPropString(ctxt->node, "format"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing storage source format"));
+        return -1;
+    }
+
+    if (!(migrSource = virDomainStorageSourceParseBase(type, format, NULL)))
+        return -1;
+
+    /* newer libvirt uses the <source> subelement instead of formatting the
+     * source directly into <migrationSource> */
+    if ((sourceNode = virXPathNode("./source", ctxt)))
+        ctxt->node = sourceNode;
+
+    if (virDomainStorageSourceParse(ctxt->node, ctxt, migrSource,
+                                    VIR_DOMAIN_DEF_PARSE_STATUS, xmlopt) < 0)
+        return -1;
+
+    diskPriv->migrSource = g_steal_pointer(&migrSource);
+    return 0;
+}
+
+
+static int
+qemuDomainObjPrivateXMLParseJobNBD(virDomainObjPtr vm,
+                                   xmlXPathContextPtr ctxt)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autofree xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./disk[@migrating='yes']", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (n > 0) {
+        if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
+            VIR_WARN("Found disks marked for migration but we were not "
+                     "migrating");
+            n = 0;
+        }
+        for (i = 0; i < n; i++) {
+            virDomainDiskDefPtr disk;
+            g_autofree char *dst = NULL;
+
+            if ((dst = virXMLPropString(nodes[i], "dev")) &&
+                (disk = virDomainDiskByTarget(vm->def, dst))) {
+                QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating = true;
+
+                if (qemuDomainObjPrivateXMLParseJobNBDSource(nodes[i], ctxt,
+                                                             disk,
+                                                             priv->driver->xmlopt) < 0)
+                    return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+int
+qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
+                                xmlXPathContextPtr ctxt)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    g_autofree char *tmp = NULL;
+
+    if (!(ctxt->node = virXPathNode("./job[1]", ctxt)))
+        return 0;
+
+    if ((tmp = virXPathString("string(@type)", ctxt))) {
+        int type;
+
+        if ((type = qemuDomainJobTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown job type %s"), tmp);
+            return -1;
+        }
+        VIR_FREE(tmp);
+        priv->job.active = type;
+    }
+
+    if ((tmp = virXPathString("string(@async)", ctxt))) {
+        int async;
+
+        if ((async = qemuDomainAsyncJobTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown async job type %s"), tmp);
+            return -1;
+        }
+        VIR_FREE(tmp);
+        priv->job.asyncJob = async;
+
+        if ((tmp = virXPathString("string(@phase)", ctxt))) {
+            priv->job.phase = qemuDomainAsyncJobPhaseFromString(async, tmp);
+            if (priv->job.phase < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unknown job phase %s"), tmp);
+                return -1;
+            }
+            VIR_FREE(tmp);
+        }
+    }
+
+    if (virXPathULongHex("string(@flags)", ctxt, &priv->job.apiFlags) == -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid job flags"));
+        return -1;
+    }
+
+    if (qemuDomainObjPrivateXMLParseJobNBD(vm, ctxt) < 0)
+        return -1;
+
+    if (qemuMigrationParamsParse(ctxt, &priv->job.migParams) < 0)
+        return -1;
+
+    return 0;
+}
