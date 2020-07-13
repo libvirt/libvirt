@@ -3286,22 +3286,17 @@ virDomainMigrateVersion3Params(virDomainPtr domain,
 static int
 virDomainMigrateCheckNotLocal(const char *dconnuri)
 {
-    virURIPtr tempuri = NULL;
-    int ret = -1;
+    g_autoptr(virURI) tempuri = NULL;
 
     if (!(tempuri = virURIParse(dconnuri)))
-        goto cleanup;
+        return -1;
     if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
         virReportInvalidArg(dconnuri, "%s",
                             _("Attempt to migrate guest to the same host"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virURIFree(tempuri);
-    return ret;
+    return 0;
 }
 
 
