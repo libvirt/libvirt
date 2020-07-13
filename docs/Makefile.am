@@ -53,16 +53,6 @@ vpathhack:
 	  test -e $$file || ln -s $(srcdir)/$$file $$file ; \
 	done
 
-clean-local:
-	for dir in fonts js logos; \
-	do \
-	  rm -f $$dir ; \
-	done
-	for file in $(assets); \
-	do \
-	  rm -f $$file ; \
-	done
-
 apihtml = \
   html/index.html \
   $(apihtml_generated)
@@ -343,52 +333,14 @@ api_DATA = \
        libvirt-lxc-api.xml \
        libvirt-admin-api.xml
 
-svg = \
-  libvirt-daemon-arch.svg \
-  libvirt-driver-arch.svg \
-  libvirt-object-model.svg \
-  migration-managed-direct.svg \
-  migration-managed-p2p.svg \
-  migration-native.svg \
-  migration-tunnel.svg \
-  migration-unmanaged-direct.svg
-
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
-
-EXTRA_DIST= \
-  site.xsl subsite.xsl newapi.xsl page.xsl \
-  $(dot_html_in) $(dot_rst) $(apipng) \
-  $(svg) $(assets) \
-  $(javascript) $(logofiles) \
-  $(internals_html_in) $(internals_rst) $(fonts) \
-  $(kbase_html_in) $(kbase_rst) \
-  $(manpages_rst) \
-  aclperms.htmlinc \
-  $(schema_DATA)
 
 acl_generated = aclperms.htmlinc
 
 aclperms.htmlinc: $(top_srcdir)/src/access/viraccessperm.h \
         $(top_srcdir)/scripts/genaclperms.py Makefile.am
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/genaclperms.py $< > $@
-
-CLEANFILES = \
-  $(dot_html) \
-  $(apihtml) \
-  $(apiadminhtml) \
-  $(apiqemuhtml) \
-  $(apilxchtml) \
-  $(internals_html) \
-  $(kbase_html) \
-  $(manpages_html) \
-  $(man1_MANS) \
-  $(man7_MANS) \
-  $(manpages7_rst) \
-  $(man8_MANS) \
-  $(api_DATA) \
-  $(dot_html_generated_in) \
-  aclperms.htmlinc
 
 timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
 		   then \
@@ -416,8 +368,6 @@ manpages/%.html.in: manpages/%.rst
 news.html.in: $(top_srcdir)/NEWS.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
 	  $(RST2HTML) --strict $< > $@ || { rm $@ && exit 1; }
-
-CLEANFILES += news.html.in
 
 %.html.in: %.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
@@ -476,7 +426,6 @@ python_generated_files = $(api_DATA)
 
 APIBUILD=$(top_srcdir)/scripts/apibuild.py
 APIBUILD_STAMP=apibuild.py.stamp
-CLEANFILES += $(APIBUILD_STAMP)
 
 $(python_generated_files): $(APIBUILD_STAMP)
 

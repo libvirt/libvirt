@@ -150,30 +150,11 @@ DRIVER_SOURCE_FILES += \
 	$(REMOTE_DRIVER_GENERATED) \
 	$(addprefix $(srcdir)/,$(REMOTE_DRIVER_SOURCES))
 
-EXTRA_DIST += \
-	$(REMOTE_DRIVER_PROTOCOL) \
-	$(REMOTE_DRIVER_SOURCES) \
-	$(REMOTE_DAEMON_SOURCES) \
-	remote/test_libvirtd.aug.in \
-	remote/libvirtd.aug.in \
-	remote/libvirtd.conf.in \
-	remote/libvirtd.policy \
-	remote/libvirtd.rules \
-	remote/libvirtd.sasl \
-	remote/libvirtd.sysctl \
-	$(NULL)
-
 # Needed to build libvirt.pot, so must be listed outside
 # the WITH_REMOTE/WITH_LIBVIRTD conditionals
 BUILT_SOURCES += \
 	$(REMOTE_DRIVER_GENERATED) \
 	$(REMOTE_DAEMON_GENERATED) \
-	$(NULL)
-CLEANFILES += \
-	$(REMOTE_DRIVER_GENERATED) \
-	$(REMOTE_DAEMON_GENERATED) \
-	remote/libvirtd.conf \
-	remote/virtproxyd.conf \
 	$(NULL)
 
 if WITH_REMOTE
@@ -228,11 +209,6 @@ augeastest_DATA += \
 nodist_conf_DATA += \
 	remote/libvirtd.conf \
 	remote/virtproxyd.conf \
-	$(NULL)
-
-CLEANFILES += \
-	remote/libvirtd.aug \
-	remote/virtproxyd.aug \
 	$(NULL)
 
 libvirtd_SOURCES = $(REMOTE_DAEMON_SOURCES)

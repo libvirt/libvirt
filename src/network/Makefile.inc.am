@@ -20,12 +20,6 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(NETWORK_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(NETWORK_DRIVER_SOURCES))
 
-EXTRA_DIST += \
-	$(NETWORK_DRIVER_SOURCES) \
-	$(NETWORK_DRIVER_PLATFORM_INC) \
-	$(NETWORK_LEASES_HELPER_SOURCES) \
-	$(NULL)
-
 
 if WITH_NETWORK
 
@@ -57,7 +51,6 @@ sbin_PROGRAMS += virtnetworkd
 nodist_conf_DATA += network/virtnetworkd.conf
 augeas_DATA += network/virtnetworkd.aug
 augeastest_DATA += network/test_virtnetworkd.aug
-CLEANFILES += network/virtnetworkd.aug
 
 virtnetworkd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtnetworkd_SOURCES = $(REMOTE_DAEMON_GENERATED)
@@ -188,8 +181,6 @@ if WITH_FIREWALLD_ZONE
 endif WITH_FIREWALLD_ZONE
 
 endif WITH_NETWORK
-
-EXTRA_DIST += network/default.xml network/libvirt.zone
 
 .PHONY: \
 	install-data-network \

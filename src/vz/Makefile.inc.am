@@ -12,7 +12,6 @@ VZ_DRIVER_SOURCES = \
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(VZ_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(VZ_DRIVER_SOURCES))
-EXTRA_DIST += $(VZ_DRIVER_SOURCES)
 
 
 if WITH_VZ
@@ -44,7 +43,6 @@ sbin_PROGRAMS += virtvzd
 nodist_conf_DATA += vz/virtvzd.conf
 augeas_DATA += vz/virtvzd.aug
 augeastest_DATA += vz/test_virtvzd.aug
-CLEANFILES += vz/virtvzd.aug
 
 virtvzd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtvzd_SOURCES = $(REMOTE_DAEMON_GENERATED)

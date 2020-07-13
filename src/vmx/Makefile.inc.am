@@ -5,8 +5,6 @@ VMX_SOURCES = \
 	vmx/vmx.h \
 	$(NULL)
 
-EXTRA_DIST += $(VMX_SOURCES)
-
 if WITH_VMX
 noinst_LTLIBRARIES += libvirt_vmx.la
 libvirt_la_BUILT_LIBADD += libvirt_vmx.la

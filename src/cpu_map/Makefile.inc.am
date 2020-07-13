@@ -76,5 +76,3 @@ cpumap_DATA = \
 	cpu_map/x86_Westmere.xml \
 	cpu_map/x86_Westmere-IBRS.xml \
 	$(NULL)
-
-EXTRA_DIST += $(cpumap_DATA)

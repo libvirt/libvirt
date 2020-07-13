@@ -31,54 +31,6 @@ export XZ_OPT
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = \
-  config-post.h \
-  libvirt.spec libvirt.spec.in \
-  mingw-libvirt.spec.in \
-  libvirt.pc.in \
-  libvirt-qemu.pc.in \
-  libvirt-lxc.pc.in \
-  libvirt-admin.pc.in \
-  Makefile.nonreentrant \
-  autogen.sh \
-  GNUmakefile \
-  run.in \
-  README.rst \
-  AUTHORS.in \
-  CONTRIBUTING.rst \
-  NEWS.rst \
-  scripts/apibuild.py \
-  scripts/augeas-gentest.py \
-  build-aux/check-spacing.pl \
-  scripts/check-aclperms.py \
-  scripts/check-aclrules.py \
-  scripts/check-drivername.py \
-  scripts/check-driverimpls.py \
-  scripts/check-file-access.py \
-  scripts/check-remote-protocol.py \
-  scripts/check-symfile.py \
-  scripts/check-symsorting.py \
-  scripts/dtrace2systemtap.py \
-  scripts/esx_vi_generator.py \
-  scripts/genaclperms.py \
-  scripts/genpolkit.py \
-  scripts/gensystemtap.py \
-  scripts/group-qemu-caps.py \
-  scripts/header-ifdef.py \
-  scripts/hvsupport.py \
-  scripts/hyperv_wmi_generator.py \
-  scripts/mock-noinline.py \
-  scripts/prohibit-duplicate-header.py \
-  scripts/test-wrap-argv.py \
-  build-aux/syntax-check.mk \
-  build-aux/useless-if-before-free \
-  build-aux/vc-list-files \
-  ci/Makefile \
-  ci/build.sh \
-  ci/list-images.sh \
-  ci/prepare.sh \
-  $(NULL)
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvirt.pc libvirt-qemu.pc libvirt-lxc.pc libvirt-admin.pc
 
@@ -93,7 +45,7 @@ check-local: all tests
 check-access: all
 	@($(MAKE) $(AM_MAKEFLAGS) -C tests check-access)
 
-cov: clean-cov
+cov:
 	$(MKDIR_P) $(top_builddir)/coverage
 	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp \
 	  -d $(top_builddir)/src \
@@ -104,17 +56,7 @@ cov: clean-cov
 	$(GENHTML) --show-details -t "libvirt" -o $(top_builddir)/coverage \
 	  --legend $(top_builddir)/coverage/libvirt.info
 
-clean-cov:
-	rm -rf $(top_builddir)/coverage
-
-MAINTAINERCLEANFILES = .git-module-status
-
 BUILT_SOURCES = configmake.h
-CLEANFILES = configmake.h
-
-distclean-local: clean-GNUmakefile
-clean-GNUmakefile:
-	test '$(srcdir)' = . || rm -f $(top_builddir)/GNUmakefile
 
 dist-hook: gen-AUTHORS
 

@@ -48,14 +48,6 @@ TEST_XML_EXAMPLES = \
 	$(wildcard $(srcdir)/xml/test/*.xml) \
 	$(NULL)
 
-EXTRA_DIST = \
-	$(POLKIT_EXAMPLES) \
-	$(SH_EXAMPLES) \
-	$(STORAGE_XML_EXAMPLES) \
-	$(SYSTEMTAP_EXAMPLES) \
-	$(TEST_XML_EXAMPLES) \
-	$(NULL)
-
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/include \

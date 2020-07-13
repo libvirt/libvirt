@@ -11,8 +11,6 @@ OPENVZ_DRIVER_SOURCES = \
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(OPENVZ_DRIVER_SOURCES))
 
-EXTRA_DIST += $(OPENVZ_DRIVER_SOURCES)
-
 if WITH_OPENVZ
 noinst_LTLIBRARIES += libvirt_driver_openvz.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_openvz.la

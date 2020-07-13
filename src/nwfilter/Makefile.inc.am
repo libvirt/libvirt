@@ -2,8 +2,6 @@
 
 NWFILTER_XML_FILES = $(wildcard $(srcdir)/nwfilter/xml/*.xml)
 
-EXTRA_DIST += $(NWFILTER_XML_FILES)
-
 NWFILTER_DRIVER_SOURCES = \
 	nwfilter/nwfilter_driver.h \
 	nwfilter/nwfilter_driver.c \
@@ -21,8 +19,6 @@ NWFILTER_DRIVER_SOURCES = \
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(NWFILTER_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(NWFILTER_DRIVER_SOURCES))
-
-EXTRA_DIST += $(NWFILTER_DRIVER_SOURCES)
 
 if WITH_NWFILTER
 
@@ -58,7 +54,6 @@ sbin_PROGRAMS += virtnwfilterd
 nodist_conf_DATA += nwfilter/virtnwfilterd.conf
 augeas_DATA += nwfilter/virtnwfilterd.aug
 augeastest_DATA += nwfilter/test_virtnwfilterd.aug
-CLEANFILES += nwfilter/virtnwfilterd.aug
 
 virtnwfilterd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtnwfilterd_SOURCES = $(REMOTE_DAEMON_GENERATED)

@@ -27,18 +27,7 @@ LOG_DAEMON_SOURCES = \
 
 LOG_PROTOCOL = $(srcdir)/logging/log_protocol.x
 
-EXTRA_DIST += \
-	$(LOG_PROTOCOL) \
-	$(LOG_DAEMON_SOURCES) \
-        logging/virtlogd.aug \
-        logging/virtlogd.conf \
-        logging/test_virtlogd.aug.in \
-	$(NULL)
 BUILT_SOURCES += \
-	$(LOG_PROTOCOL_GENERATED) \
-	$(LOG_DAEMON_GENERATED) \
-	$(NULL)
-CLEANFILES += \
 	$(LOG_PROTOCOL_GENERATED) \
 	$(LOG_DAEMON_GENERATED) \
 	$(NULL)

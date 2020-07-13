@@ -82,7 +82,6 @@ QEMU_DRIVER_SOURCES = \
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))
-EXTRA_DIST += $(QEMU_DRIVER_SOURCES)
 
 if WITH_QEMU
 noinst_LTLIBRARIES += libvirt_driver_qemu_impl.la
@@ -123,13 +122,6 @@ BUILT_SOURCES += libvirt_qemu_probes.h
 
 tapset_DATA += libvirt_qemu_probes.stp
 
-CLEANFILES += \
-	libvirt_qemu_probes.h \
-	libvirt_qemu_probes.o \
-	libvirt_qemu_probes.lo \
-	libvirt_qemu_probes.stp \
-	$(NULL)
-
 endif WITH_DTRACE_PROBES
 
 sbin_PROGRAMS += virtqemud
@@ -137,7 +129,6 @@ sbin_PROGRAMS += virtqemud
 nodist_conf_DATA += qemu/virtqemud.conf
 augeas_DATA += qemu/virtqemud.aug
 augeastest_DATA += qemu/test_virtqemud.aug
-CLEANFILES += qemu/virtqemud.aug
 
 virtqemud_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtqemud_SOURCES = $(REMOTE_DAEMON_GENERATED)
@@ -243,17 +234,7 @@ endif WITH_QEMU
 	uninstall-data-qemu \
 	$(NULL)
 
-EXTRA_DIST += \
-	qemu/qemu.conf \
-	qemu/libvirtd_qemu.aug \
-	qemu/test_libvirtd_qemu.aug.in \
-	qemu/THREADS.txt \
-	libvirt_qemu_probes.d \
-	$(NULL)
-
 QEMU_SHIM_SOURCES = qemu/qemu_shim.c
-
-EXTRA_DIST += $(QEMU_SHIM_SOURCES)
 
 if WITH_QEMU
 bin_PROGRAMS += virt-qemu-run

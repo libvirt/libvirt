@@ -92,25 +92,6 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 
-EXTRA_DIST += \
-	$(STORAGE_DRIVER_SOURCES) \
-	$(STORAGE_DRIVER_FS_SOURCES) \
-	$(STORAGE_FILE_FS_SOURCES) \
-	$(STORAGE_DRIVER_LVM_SOURCES) \
-	$(STORAGE_DRIVER_ISCSI_SOURCES) \
-	$(STORAGE_DRIVER_ISCSI_DIRECT_SOURCES) \
-	$(STORAGE_DRIVER_SCSI_SOURCES) \
-	$(STORAGE_DRIVER_MPATH_SOURCES) \
-	$(STORAGE_DRIVER_DISK_SOURCES) \
-	$(STORAGE_DRIVER_RBD_SOURCES) \
-	$(STORAGE_DRIVER_SHEEPDOG_SOURCES) \
-	$(STORAGE_DRIVER_GLUSTER_SOURCES) \
-	$(STORAGE_FILE_GLUSTER_SOURCES) \
-	$(STORAGE_DRIVER_ZFS_SOURCES) \
-	$(STORAGE_DRIVER_VSTORAGE_SOURCES) \
-	$(STORAGE_HELPER_DISK_SOURCES) \
-	$(NULL)
-
 storagebackenddir = $(libdir)/libvirt/storage-backend
 storagebackend_LTLIBRARIES =
 
@@ -149,7 +130,6 @@ sbin_PROGRAMS += virtstoraged
 nodist_conf_DATA += storage/virtstoraged.conf
 augeas_DATA += storage/virtstoraged.aug
 augeastest_DATA += storage/test_virtstoraged.aug
-CLEANFILES += storage/virtstoraged.aug
 
 virtstoraged_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtstoraged_SOURCES = $(REMOTE_DAEMON_GENERATED)

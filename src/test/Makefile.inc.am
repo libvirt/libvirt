@@ -8,11 +8,6 @@ TEST_DRIVER_ASSETS = test/test-screenshot.png
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(TEST_DRIVER_SOURCES))
 
-EXTRA_DIST += \
-	$(TEST_DRIVER_SOURCES) \
-	$(TEST_DRIVER_ASSETS) \
-	$(NULL)
-
 if WITH_TEST
 
 driver_test_asset_DATA = $(TEST_DRIVER_ASSETS)

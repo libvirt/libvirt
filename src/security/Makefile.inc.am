@@ -49,18 +49,6 @@ security/apparmor/%: $(srcdir)/security/apparmor/%.in
 		$< > $@
 
 BUILT_SOURCES += $(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES)
-CLEANFILES += $(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES)
-
-EXTRA_DIST += \
-	$(SECURITY_DRIVER_SELINUX_SOURCES) \
-	$(SECURITY_DRIVER_APPARMOR_SOURCES) \
-	$(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES) \
-	$(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES_IN) \
-	security/apparmor/TEMPLATE.qemu \
-	security/apparmor/TEMPLATE.lxc \
-	security/apparmor/libvirt-qemu \
-	security/apparmor/libvirt-lxc \
-	$(NULL)
 
 libvirt_security_manager_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
 noinst_LTLIBRARIES += libvirt_security_manager.la

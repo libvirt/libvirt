@@ -25,8 +25,6 @@ BHYVE_DRIVER_SOURCES = \
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(BHYVE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(BHYVE_DRIVER_SOURCES))
 
-EXTRA_DIST += $(BHYVE_DRIVER_SOURCES)
-
 
 if WITH_BHYVE
 noinst_LTLIBRARIES += libvirt_driver_bhyve_impl.la
@@ -54,7 +52,6 @@ sbin_PROGRAMS += virtbhyved
 nodist_conf_DATA += bhyve/virtbhyved.conf
 augeas_DATA += bhyve/virtbhyved.aug
 augeastest_DATA += bhyve/test_virtbhyved.aug
-CLEANFILES += bhyve/virtbhyved.aug
 
 virtbhyved_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtbhyved_SOURCES = $(REMOTE_DAEMON_GENERATED)
@@ -98,9 +95,3 @@ bhyve/test_libvirtd_bhyve.aug: bhyve/test_libvirtd_bhyve.aug.in \
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/bhyve/bhyve.conf $< > $@
 
 endif WITH_BHYVE
-
-EXTRA_DIST += \
-	bhyve/bhyve.conf \
-	bhyve/libvirtd_bhyve.aug \
-	bhyve/test_libvirtd_bhyve.aug.in \
-	$(NULL)

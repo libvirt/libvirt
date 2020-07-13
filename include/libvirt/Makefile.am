@@ -22,7 +22,5 @@ allheaders = $(wildcard $(srcdir)/*.h)
 virinc_HEADERS = $(filter-out $(srcdir)/libvirt-common.h, $(allheaders))
 nodist_virinc_HEADERS = libvirt-common.h
 
-EXTRA_DIST = libvirt-common.h.in
-
 install-exec-hook:
 	$(mkinstalldirs) $(DESTDIR)$(virincdir)

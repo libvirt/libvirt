@@ -9,8 +9,6 @@ VMWARE_DRIVER_SOURCES = \
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(VMWARE_DRIVER_SOURCES))
 
-EXTRA_DIST += $(VMWARE_DRIVER_SOURCES)
-
 if WITH_VMWARE
 noinst_LTLIBRARIES += libvirt_driver_vmware.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_vmware.la

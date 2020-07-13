@@ -9,9 +9,7 @@ ADMIN_PROTOCOL_GENERATED = \
 	admin/admin_server_dispatch_stubs.h \
 	$(NULL)
 
-EXTRA_DIST += $(ADMIN_PROTOCOL)
 BUILT_SOURCES += $(ADMIN_PROTOCOL_GENERATED)
-CLEANFILES += $(ADMIN_PROTOCOL_GENERATED)
 
 admin/admin_server_dispatch.c: admin/admin_server_dispatch_stubs.h
 
@@ -43,14 +41,6 @@ endif WITH_SASL
 GENERATED_SYM_FILES += admin/libvirt_admin.syms admin/libvirt_admin.def
 
 ADMIN_SYM_FILES = $(srcdir)/admin/libvirt_admin_private.syms
-
-# admin/admin_remote.c is being included in admin/libvirt-admin.c, so we
-# need to include it in the dist
-EXTRA_DIST += \
-	admin/admin_remote.c \
-	admin/libvirt_admin_public.syms \
-	$(ADMIN_SYM_FILES) \
-	$(NULL)
 
 conf_DATA += admin/libvirt-admin.conf
 

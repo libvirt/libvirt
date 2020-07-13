@@ -21,16 +21,7 @@ HYPERV_DRIVER_GENERATED = \
 
 HYPERV_GENERATED_STAMP = .hyperv_wmi_generator.stamp
 
-HYPERV_DRIVER_EXTRA_DIST = \
-	hyperv/hyperv_wmi_generator.input \
-	$(NULL)
-
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(HYPERV_DRIVER_SOURCES))
-
-EXTRA_DIST += \
-	$(HYPERV_DRIVER_SOURCES) \
-	$(HYPERV_DRIVER_EXTRA_DIST) \
-	$(NULL)
 
 BUILT_SOURCES += $(HYPERV_DRIVER_GENERATED)
 
@@ -41,8 +32,6 @@ $(HYPERV_GENERATED_STAMP): $(srcdir)/hyperv/hyperv_wmi_generator.input \
 	$(AM_V_GEN) $(RUNUTF8) $(PYTHON) \
 	  $(top_srcdir)/scripts/hyperv_wmi_generator.py $(srcdir) $(builddir) \
 	  && touch $@
-
-CLEANFILES += $(HYPERV_DRIVER_GENERATED) $(HYPERV_GENERATED_STAMP)
 
 if WITH_HYPERV
 noinst_LTLIBRARIES += libvirt_driver_hyperv.la

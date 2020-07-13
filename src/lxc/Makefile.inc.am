@@ -66,14 +66,7 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(LXC_MONITOR_PROTOCOL_GENERATED) \
 	$(LXC_MONITOR_GENERATED) \
 	$(addprefix $(srcdir)/,$(LXC_DRIVER_SOURCES))
-EXTRA_DIST += \
-	$(LXC_DRIVER_SOURCES) \
-	$(LXC_MONITOR_PROTOCOL) \
-	$(LXC_CONTROLLER_SOURCES) \
-	$(NULL)
-
 BUILT_SOURCES += $(LXC_GENERATED)
-CLEANFILES += $(LXC_GENERATED)
 
 
 if WITH_LXC
@@ -124,7 +117,6 @@ sbin_PROGRAMS += virtlxcd
 nodist_conf_DATA += lxc/virtlxcd.conf
 augeas_DATA += lxc/virtlxcd.aug
 augeastest_DATA += lxc/test_virtlxcd.aug
-CLEANFILES += lxc/virtlxcd.aug
 
 virtlxcd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtlxcd_SOURCES = $(REMOTE_DAEMON_GENERATED)
@@ -284,10 +276,4 @@ lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 .PHONY: \
 	install-data-lxc \
 	uninstall-data-lxc \
-	$(NULL)
-
-EXTRA_DIST += \
-	lxc/lxc.conf \
-	lxc/libvirtd_lxc.aug \
-	lxc/test_libvirtd_lxc.aug.in \
 	$(NULL)

@@ -1,12 +1,5 @@
 # vim: filetype=automake
 
-EXTRA_DIST += \
-	rpc/gendispatch.pl \
-	rpc/genprotocol.pl \
-	rpc/virnetprotocol.x \
-	rpc/virkeepaliveprotocol.x \
-	$(NULL)
-
 VIR_NET_RPC_GENERATED = \
 	rpc/virnetprotocol.h \
 	rpc/virnetprotocol.c \
@@ -15,7 +8,6 @@ VIR_NET_RPC_GENERATED = \
 	$(NULL)
 
 BUILT_SOURCES += $(VIR_NET_RPC_GENERATED)
-CLEANFILES += $(VIR_NET_RPC_GENERATED)
 
 noinst_LTLIBRARIES += \
 	libvirt-net-rpc.la \
@@ -49,36 +41,21 @@ libvirt_net_rpc_la_SOURCES += \
 	rpc/virnetsshsession.h \
 	rpc/virnetsshsession.c \
 	$(NULL)
-else ! WITH_SSH2
-EXTRA_DIST += \
-	rpc/virnetsshsession.h \
-	rpc/virnetsshsession.c \
-	$(NULL)
-endif ! WITH_SSH2
+endif WITH_SSH2
 
 if WITH_SASL
 libvirt_net_rpc_la_SOURCES += \
 	rpc/virnetsaslcontext.h \
 	rpc/virnetsaslcontext.c \
 	$(NULL)
-else ! WITH_SASL
-EXTRA_DIST += \
-	rpc/virnetsaslcontext.h \
-	rpc/virnetsaslcontext.c \
-	$(NULL)
-endif ! WITH_SASL
+endif WITH_SASL
 
 if WITH_LIBSSH
 libvirt_net_rpc_la_SOURCES += \
 	rpc/virnetlibsshsession.h \
 	rpc/virnetlibsshsession.c \
 	$(NULL)
-else ! WITH_LIBSSH
-EXTRA_DIST += \
-	rpc/virnetlibsshsession.h \
-	rpc/virnetlibsshsession.c \
-	$(NULL)
-endif ! WITH_LIBSSH
+endif WITH_LIBSSH
 
 libvirt_net_rpc_la_CFLAGS = \
 	-I$(builddir)/rpc \

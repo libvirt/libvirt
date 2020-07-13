@@ -21,19 +21,9 @@ VBOX_DRIVER_SOURCES = \
 	vbox/vbox_XPCOMCGlue.h \
 	$(NULL)
 
-VBOX_DRIVER_EXTRA_DIST = \
-	vbox/vbox_tmpl.c \
-	vbox/README \
-	$(NULL)
-
 DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(VBOX_DRIVER_SOURCES)) \
 	$(srcdir)/vbox/vbox_tmpl.c \
-	$(NULL)
-
-EXTRA_DIST += \
-	$(VBOX_DRIVER_SOURCES) \
-	$(VBOX_DRIVER_EXTRA_DIST) \
 	$(NULL)
 
 if WITH_VBOX
@@ -65,7 +55,6 @@ sbin_PROGRAMS += virtvboxd
 nodist_conf_DATA += vbox/virtvboxd.conf
 augeas_DATA += vbox/virtvboxd.aug
 augeastest_DATA += vbox/test_virtvboxd.aug
-CLEANFILES += vbox/virtvboxd.aug
 
 virtvboxd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtvboxd_SOURCES = $(REMOTE_DAEMON_GENERATED)

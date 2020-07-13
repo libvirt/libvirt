@@ -12,12 +12,6 @@ DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(INTERFACE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(INTERFACE_DRIVER_SOURCES))
 
-EXTRA_DIST += \
-	$(INTERFACE_DRIVER_SOURCES) \
-	$(INTERFACE_DRIVER_NETCF_SOURCES) \
-	$(INTERFACE_DRIVER_UDEV_SOURCES) \
-	$(NULL)
-
 if WITH_INTERFACE
 mod_LTLIBRARIES += libvirt_driver_interface.la
 libvirt_driver_interface_la_CFLAGS = \
@@ -49,7 +43,6 @@ sbin_PROGRAMS += virtinterfaced
 nodist_conf_DATA += interface/virtinterfaced.conf
 augeas_DATA += interface/virtinterfaced.aug
 augeastest_DATA += interface/test_virtinterfaced.aug
-CLEANFILES += interface/virtinterfaced.aug
 
 virtinterfaced_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtinterfaced_SOURCES = $(REMOTE_DAEMON_GENERATED)

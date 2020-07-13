@@ -25,12 +25,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(NODE_DEVICE_DRIVER_SOURCES)) \
 	$(NULL)
 
-EXTRA_DIST += \
-	$(NODE_DEVICE_DRIVER_SOURCES) \
-	$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
-	$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
-	$(NULL)
-
 
 if WITH_NODE_DEVICES
 # Needed to keep automake quiet about conditionals
@@ -75,7 +69,6 @@ sbin_PROGRAMS += virtnodedevd
 nodist_conf_DATA += node_device/virtnodedevd.conf
 augeas_DATA += node_device/virtnodedevd.aug
 augeastest_DATA += node_device/test_virtnodedevd.aug
-CLEANFILES += node_device/virtnodedevd.aug
 
 virtnodedevd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtnodedevd_SOURCES = $(REMOTE_DAEMON_GENERATED)

@@ -24,9 +24,6 @@ LIBXL_DRIVER_SOURCES = \
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(LIBXL_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(LIBXL_DRIVER_SOURCES))
-EXTRA_DIST += \
-	$(LIBXL_DRIVER_SOURCES) \
-	$(NULL)
 
 if WITH_LIBXL
 noinst_LTLIBRARIES += libvirt_driver_libxl_impl.la
@@ -60,7 +57,6 @@ sbin_PROGRAMS += virtxend
 nodist_conf_DATA += libxl/virtxend.conf
 augeas_DATA += libxl/virtxend.aug
 augeastest_DATA += libxl/test_virtxend.aug
-CLEANFILES += libxl/virtxend.aug
 
 virtxend_SOURCES = $(REMOTE_DAEMON_SOURCES)
 nodist_virtxend_SOURCES = $(REMOTE_DAEMON_GENERATED)
@@ -155,9 +151,3 @@ uninstall-data-libxl:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/libxl" ||:
 
 endif WITH_LIBXL
-
-EXTRA_DIST += \
-	libxl/libxl.conf \
-	libxl/libvirtd_libxl.aug \
-	libxl/test_libvirtd_libxl.aug.in \
-	$(NULL)

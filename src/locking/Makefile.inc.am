@@ -41,28 +41,7 @@ LOCK_DAEMON_SOURCES = \
 	locking/lock_daemon_dispatch.h \
 	$(NULL)
 
-EXTRA_DIST += \
-	$(LOCK_PROTOCOL) \
-	$(LOCK_DAEMON_SOURCES) \
-	$(LOCK_DRIVER_LOCKD_SOURCES) \
-	$(LOCK_DRIVER_SOURCES) \
-	locking/sanlock.conf \
-	locking/libvirt_sanlock.aug \
-	locking/test_libvirt_sanlock.aug.in \
-	locking/lockd.conf \
-	locking/libvirt_lockd.aug \
-	locking/test_libvirt_lockd.aug.in \
-        locking/virtlockd.aug \
-        locking/virtlockd.conf \
-        locking/test_virtlockd.aug.in \
-	$(NULL)
-
 BUILT_SOURCES += \
-	$(LOCK_PROTOCOL_GENERATED) \
-	$(LOCK_DAEMON_GENERATED) \
-	$(NULL)
-
-CLEANFILES += \
 	$(LOCK_PROTOCOL_GENERATED) \
 	$(LOCK_DAEMON_GENERATED) \
 	$(NULL)
