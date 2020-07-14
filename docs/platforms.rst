@@ -36,46 +36,27 @@ distros listed below.
 * `qemu on Repology`_
 * `qemu-kvm on Repology`_
 
-Linux OS
---------
+Linux, FreeBSD and macOS
+------------------------
 
-For distributions with frequent, short-lifetime releases, the project will aim
-to support all versions that are not end of life by their respective vendors.
-For the purposes of identifying supported software versions, the project will
-look at Fedora, Ubuntu, and openSUSE distros.  Other short-lifetime distros
-will be assumed to ship similar software versions.
+The project aims to support the most recent major version at all times. Support
+for the previous major version will be dropped 2 years after the new major
+version is released or when the vendor itself drops support, whichever comes
+first.
 
-For distributions with long-lifetime releases, the project will aim to support
-the most recent major version at all times. Support for the previous major
-version will be dropped 2 years after the new major version is released. For
-the purposes of identifying supported software versions, the project will look
-at RHEL, Debian, Ubuntu LTS, and SLES distros. Other long-lifetime distros will
-be assumed to ship similar software versions.
+For the purposes of identifying supported software versions available on Linux,
+the project will look at CentOS, Debian, Fedora, openSUSE, RHEL, SLES and
+Ubuntu LTS. Other distros will be assumed to ship similar software versions.
+
+For FreeBSD, decisions will be made based on the contents of the ports tree;
+for macOS, `HomeBrew`_ will be used, although `MacPorts`_ is expected to carry
+similar versions.
 
 Windows
 -------
 
 The project supports building with current versions of the MinGW toolchain,
 hosted on Linux.
-
-macOS
------
-
-The project aims to support the most recent major version at all times. Support
-for the previous major version will be dropped 2 years after the new major
-version is released.
-
-Note that to compile libvirt will require extra packages to be made available
-on the macOS host. It is recommended to use `HomeBrew`_ since this is what
-libvirt CI tests with, however, `MacPorts`_ is an alternative option that is
-likely to work.
-
-FreeBSD
--------
-
-The project aims to support the most recent major version at all times. Support
-for the previous major version will be dropped 2 years after the new major
-version is released.
 
 
 Virtualization platforms
