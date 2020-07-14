@@ -14,7 +14,7 @@ then
     exit 1
 fi
 
-HOSTS=$($LCITOOL hosts | grep -v freebsd)
+HOSTS=$($LCITOOL hosts | grep -Ev 'freebsd|macos')
 
 for host in $HOSTS
 do
