@@ -6,12 +6,16 @@
 
     <ul id="toc"></ul>
 
+    <p>
+      Libvirt aims to support building and executing on multiple host OS
+      platforms, as well as working with multiple hypervisors. This document
+      outlines which platforms are targeted for each of these areas.
+    </p>
+
     <h2>Build targets</h2>
 
     <p>
-      Libvirt drivers aim to support building and executing on multiple
-      host OS platforms. This document outlines which platforms are the
-      major build targets. These platforms are used as the basis for deciding
+      These platforms are used as the basis for deciding
       upon the minimum required versions of 3rd party software libvirt depends
       on. If a platform is not listed here, it does not imply that libvirt
       won't work. If an unlisted platform has comparable software versions
