@@ -55,13 +55,14 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
         return -1;
 
     for (i = 0; i < 50; i++) {
-        int only = 1;
         if (*hasIPv4) {
             if ((s4 = socket(AF_INET, SOCK_STREAM, 0)) < 0)
                 goto cleanup;
         }
 
         if (*hasIPv6) {
+            int only = 1;
+
             if ((s6 = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
                 goto cleanup;
 
