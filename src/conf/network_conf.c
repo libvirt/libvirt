@@ -722,7 +722,10 @@ virNetworkDNSHostDefParseXML(const char *networkName,
               if (cur->children != NULL) {
                   g_autofree char *name = virXMLNodeContentString(cur);
 
-                  if (!name) {
+                  if (!name)
+                      goto error;
+
+                  if (!name[0]) {
                       virReportError(VIR_ERR_XML_DETAIL,
                                      _("Missing hostname in network '%s' DNS HOST record"),
                                      networkName);

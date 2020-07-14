@@ -1986,10 +1986,12 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
 
         switch ((virNodeDevDevnodeType)val) {
         case VIR_NODE_DEV_DEVNODE_DEV:
-            def->devnode = virXMLNodeContentString(node);
+            if (!(def->devnode = virXMLNodeContentString(node)))
+                goto error;
             break;
         case VIR_NODE_DEV_DEVNODE_LINK:
-            def->devlinks[m++] = virXMLNodeContentString(node);
+            if (!(def->devlinks[m++] = virXMLNodeContentString(node)))
+                goto error;
             break;
         case VIR_NODE_DEV_DEVNODE_LAST:
             break;

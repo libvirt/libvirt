@@ -1650,7 +1650,8 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
         if (node->type != XML_ELEMENT_NODE)
             continue;
 
-        c = virXMLNodeContentString(node);
+        if (!(c = virXMLNodeContentString(node)))
+            return -1;
 
         if (virXMLNodeNameEqual(node, "path")) {
             /* To avoid the need for explicit cleanup on failure,
@@ -9377,10 +9378,12 @@ virDomainLeaseDefParseXML(xmlNodePtr node)
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (!key && virXMLNodeNameEqual(cur, "key")) {
-                key = virXMLNodeContentString(cur);
+                if (!(key = virXMLNodeContentString(cur)))
+                    goto error;
             } else if (!lockspace &&
                        virXMLNodeNameEqual(cur, "lockspace")) {
-                lockspace = virXMLNodeContentString(cur);
+                if (!(lockspace = virXMLNodeContentString(cur)))
+                    goto error;
             } else if (!path &&
                        virXMLNodeNameEqual(cur, "target")) {
                 path = virXMLPropString(cur, "path");
@@ -10599,16 +10602,19 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
         } else if (!serial &&
                    virXMLNodeNameEqual(cur, "serial")) {
-            serial = virXMLNodeContentString(cur);
+            if (!(serial = virXMLNodeContentString(cur)))
+                goto error;
         } else if (!wwn &&
                    virXMLNodeNameEqual(cur, "wwn")) {
-            wwn = virXMLNodeContentString(cur);
+            if (!(wwn = virXMLNodeContentString(cur)))
+                goto error;
 
             if (!virValidateWWN(wwn))
                 goto error;
         } else if (!vendor &&
                    virXMLNodeNameEqual(cur, "vendor")) {
-            vendor = virXMLNodeContentString(cur);
+            if (!(vendor = virXMLNodeContentString(cur)))
+                goto error;
 
             if (strlen(vendor) > VENDOR_LEN) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -10623,7 +10629,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
         } else if (!product &&
                    virXMLNodeNameEqual(cur, "product")) {
-            product = virXMLNodeContentString(cur);
+            if (!(product = virXMLNodeContentString(cur)))
+                goto error;
 
             if (strlen(product) > PRODUCT_LEN) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -13529,20 +13536,16 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
                                      "exactly three certificates"));
                     goto error;
                 }
-                def->data.cert.file[i] = virXMLNodeContentString(cur);
-                if (!def->data.cert.file[i]) {
-                    virReportOOMError();
+                if (!(def->data.cert.file[i] = virXMLNodeContentString(cur)))
                     goto error;
-                }
+
                 i++;
             } else if (cur->type == XML_ELEMENT_NODE &&
                        virXMLNodeNameEqual(cur, "database") &&
                        !def->data.cert.database) {
-                def->data.cert.database = virXMLNodeContentString(cur);
-                if (!def->data.cert.database) {
-                    virReportOOMError();
+                if (!(def->data.cert.database = virXMLNodeContentString(cur)))
                     goto error;
-                }
+
                 if (*def->data.cert.database != '/') {
                     virReportError(VIR_ERR_XML_ERROR,
                                    _("expecting absolute path: %s"),
@@ -15667,8 +15670,10 @@ virSysinfoOEMStringsParseXML(xmlNodePtr node,
         goto cleanup;
 
     def->nvalues = nstrings;
-    for (i = 0; i < nstrings; i++)
-        def->values[i] = virXMLNodeContentString(strings[i]);
+    for (i = 0; i < nstrings; i++) {
+        if (!(def->values[i] = virXMLNodeContentString(strings[i])))
+            goto cleanup;
+    }
 
     *oem = g_steal_pointer(&def);
     ret = 0;
@@ -15796,7 +15801,9 @@ virSysinfoParseFWCfgDef(virSysinfoDefPtr def,
             return -1;
         }
 
-        value = virXMLNodeContentString(nodes[i]);
+        if (!(value = virXMLNodeContentString(nodes[i])))
+            return -1;
+
         file = virXMLPropString(nodes[i], "file");
 
         if (virStringIsEmpty(value))
@@ -19904,8 +19911,10 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
     if (!fwAutoSelect) {
         readonly_str = virXMLPropString(node, "readonly");
         type_str = virXMLPropString(node, "type");
-        loader->path = virXMLNodeContentString(node);
-        if (STREQ_NULLABLE(loader->path, ""))
+        if (!(loader->path = virXMLNodeContentString(node)))
+            return -1;
+
+        if (STREQ(loader->path, ""))
             VIR_FREE(loader->path);
     }
 
@@ -20129,14 +20138,15 @@ virDomainVcpuParse(virDomainDefPtr def,
     vcpus = maxvcpus = 1;
 
     if ((vcpuNode = virXPathNode("./vcpu[1]", ctxt))) {
-        if ((tmp = virXMLNodeContentString(vcpuNode))) {
-            if (virStrToLong_ui(tmp, NULL, 10, &maxvcpus) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("maximum vcpus count must be an integer"));
-                return -1;
-            }
-            VIR_FREE(tmp);
+        if (!(tmp = virXMLNodeContentString(vcpuNode)))
+            return -1;
+
+        if (virStrToLong_ui(tmp, NULL, 10, &maxvcpus) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("maximum vcpus count must be an integer"));
+            return -1;
         }
+        VIR_FREE(tmp);
 
         if ((tmp = virXMLPropString(vcpuNode, "current"))) {
             if (virStrToLong_ui(tmp, NULL, 10, &vcpus) < 0) {
@@ -20397,7 +20407,9 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
 
             if (STREQ_NULLABLE(tmp, "slic")) {
                 VIR_FREE(tmp);
-                tmp = virXMLNodeContentString(nodes[0]);
+                if (!(tmp = virXMLNodeContentString(nodes[0])))
+                    return -1;
+
                 def->os.slic_table = virFileSanitizePath(tmp);
             } else {
                 virReportError(VIR_ERR_XML_ERROR,
