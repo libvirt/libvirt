@@ -743,6 +743,13 @@ qemuStateInitialize(bool privileged,
         goto error;
     }
 
+    if (virDirCreate(cfg->dbusStateDir, 0770, cfg->user, cfg->group,
+                     VIR_DIR_CREATE_ALLOW_EXIST) < 0) {
+        virReportSystemError(errno, _("Failed to create dbus state dir %s"),
+                             cfg->dbusStateDir);
+        goto error;
+    }
+
     if ((qemu_driver->lockFD =
          virPidFileAcquire(cfg->stateDir, "driver", false, getpid())) < 0)
         goto error;

@@ -33,16 +33,6 @@
 VIR_LOG_INIT("qemu.dbus");
 
 
-int
-qemuDBusPrepareHost(virQEMUDriverPtr driver)
-{
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
-    return virDirCreate(cfg->dbusStateDir, 0770, cfg->user, cfg->group,
-                        VIR_DIR_CREATE_ALLOW_EXIST);
-}
-
-
 static char *
 qemuDBusCreatePidFilename(virQEMUDriverConfigPtr cfg,
                           const char *shortName)

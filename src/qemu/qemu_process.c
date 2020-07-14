@@ -6466,9 +6466,6 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
-    if (qemuDBusPrepareHost(driver) < 0)
-        return -1;
-
     if (qemuPrepareNVRAM(cfg, vm) < 0)
         return -1;
 
