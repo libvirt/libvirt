@@ -125,11 +125,6 @@ x64-centos-stream-container:
   variables:
     NAME: centos-stream
 
-x64-debian-9-container:
-  <<: *container_job_definition
-  variables:
-    NAME: debian-9
-
 x64-debian-10-container:
   <<: *container_job_definition
   variables:
@@ -173,53 +168,13 @@ x64-ubuntu-2004-container:
 
 # Cross-build containers build jobs
 
-aarch64-debian-9-container:
-  <<: *container_optional_job_definition
-  variables:
-    NAME: debian-9-cross-aarch64
-
-armv6l-debian-9-container:
-  <<: *container_job_definition
-  variables:
-    NAME: debian-9-cross-armv6l
-
-armv7l-debian-9-container:
-  <<: *container_optional_job_definition
-  variables:
-    NAME: debian-9-cross-armv7l
-
-mips-debian-9-container:
-  <<: *container_job_definition
-  variables:
-    NAME: debian-9-cross-mips
-
-mips64el-debian-9-container:
-  <<: *container_job_definition
-  variables:
-    NAME: debian-9-cross-mips64el
-
-mipsel-debian-9-container:
-  <<: *container_optional_job_definition
-  variables:
-    NAME: debian-9-cross-mipsel
-
-ppc64le-debian-9-container:
-  <<: *container_optional_job_definition
-  variables:
-    NAME: debian-9-cross-ppc64le
-
-s390x-debian-9-container:
-  <<: *container_optional_job_definition
-  variables:
-    NAME: debian-9-cross-s390x
-
 aarch64-debian-10-container:
   <<: *container_job_definition
   variables:
     NAME: debian-10-cross-aarch64
 
 armv6l-debian-10-container:
-  <<: *container_optional_job_definition
+  <<: *container_job_definition
   variables:
     NAME: debian-10-cross-armv6l
 
@@ -234,12 +189,12 @@ i686-debian-10-container:
     NAME: debian-10-cross-i686
 
 mips-debian-10-container:
-  <<: *container_optional_job_definition
+  <<: *container_job_definition
   variables:
     NAME: debian-10-cross-mips
 
 mips64el-debian-10-container:
-  <<: *container_optional_job_definition
+  <<: *container_job_definition
   variables:
     NAME: debian-10-cross-mips64el
 
@@ -254,7 +209,7 @@ ppc64le-debian-10-container:
     NAME: debian-10-cross-ppc64le
 
 s390x-debian-10-container:
-  <<: *container_job_definition
+  <<: *container_optional_job_definition
   variables:
     NAME: debian-10-cross-s390x
 
@@ -310,11 +265,6 @@ mingw64-fedora-rawhide-container:
 
 
 # Native architecture build + test jobs
-
-x64-debian-9:
-  <<: *native_build_job_definition
-  variables:
-    NAME: debian-9
 
 x64-debian-10:
   <<: *native_build_job_definition
@@ -394,22 +344,22 @@ x64-macos-1015-build:
 
 # Cross compiled build jobs
 
-armv6l-debian-9:
+armv6l-debian-10:
   <<: *cross_build_job_definition
   variables:
-    NAME: debian-9
+    NAME: debian-10
     CROSS: armv6l
 
-mips64el-debian-9:
+mips64el-debian-10:
   <<: *cross_build_job_definition
   variables:
-    NAME: debian-9
+    NAME: debian-10
     CROSS: mips64el
 
-mips-debian-9:
+mips-debian-10:
   <<: *cross_build_job_definition
   variables:
-    NAME: debian-9
+    NAME: debian-10
     CROSS: mips
 
 aarch64-debian-10:
@@ -424,10 +374,10 @@ mipsel-debian-10:
     NAME: debian-10
     CROSS: mipsel
 
-s390x-debian-10:
+s390x-debian-sid:
   <<: *cross_build_job_definition
   variables:
-    NAME: debian-10
+    NAME: debian-sid
     CROSS: s390x
 
 armv7l-debian-sid:
