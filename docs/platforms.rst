@@ -59,6 +59,9 @@ Windows
 The project supports building with current versions of the MinGW toolchain,
 hosted on Linux.
 
+The version of the Windows API that's currently targeted is Vista / Server
+2008.
+
 
 Virtualization platforms
 ========================
