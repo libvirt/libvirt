@@ -538,7 +538,23 @@ virXMLPropStringLimit(xmlNodePtr node,
 char *
 virXMLNodeContentString(xmlNodePtr node)
 {
-    return (char *)xmlNodeGetContent(node);
+    char *ret = (char *)xmlNodeGetContent(node);
+
+    if (node->type !=  XML_ELEMENT_NODE) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("node '%s' has unexpected type %d"),
+                       node->name, node->type);
+        return NULL;
+    }
+
+    if (!ret) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("node '%s' has unexpected NULL content. This could be caused by malformed input, or a memory allocation failure"),
+                       node->name);
+        return NULL;
+    }
+
+    return ret;
 }
 
 
