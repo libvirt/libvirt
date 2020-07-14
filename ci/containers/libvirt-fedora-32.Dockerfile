@@ -69,6 +69,7 @@ RUN dnf update -y && \
         parted-devel \
         patch \
         perl \
+        perl-App-cpanminus \
         pkgconfig \
         polkit \
         python3 \
@@ -93,6 +94,7 @@ RUN dnf update -y && \
         wireshark-devel \
         xen-devel \
         xfsprogs-devel \
+        xz \
         yajl-devel \
         zfs-fuse && \
     dnf autoremove -y && \

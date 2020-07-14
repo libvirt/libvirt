@@ -39,6 +39,7 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         parted \
         patch \
         perl \
+        perl-App-cpanminus \
         polkit \
         python3 \
         python3-docutils \
@@ -56,6 +57,7 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         strace \
         sudo \
         vim \
+        xz \
         zfs-fuse && \
     dnf autoremove -y && \
     dnf clean all -y && \

@@ -71,6 +71,7 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         parted-devel \
         patch \
         perl \
+        perl-App-cpanminus \
         pkgconfig \
         polkit \
         python3 \
@@ -93,6 +94,7 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         vim \
         wireshark-devel \
         xfsprogs-devel \
+        xz \
         yajl-devel && \
     dnf autoremove -y && \
     dnf clean all -y && \

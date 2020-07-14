@@ -72,6 +72,7 @@ RUN dnf install -y centos-release-stream && \
         parted-devel \
         patch \
         perl \
+        perl-App-cpanminus \
         pkgconfig \
         polkit \
         python3 \
@@ -94,6 +95,7 @@ RUN dnf install -y centos-release-stream && \
         vim \
         wireshark-devel \
         xfsprogs-devel \
+        xz \
         yajl-devel && \
     dnf autoremove -y && \
     dnf clean all -y && \

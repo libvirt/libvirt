@@ -70,6 +70,7 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         parted-devel \
         patch \
         perl \
+        perl-App-cpanminus \
         pkgconfig \
         polkit \
         python3 \
@@ -94,6 +95,7 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         wireshark-devel \
         xen-devel \
         xfsprogs-devel \
+        xz \
         yajl-devel \
         zfs-fuse && \
     dnf autoremove -y && \

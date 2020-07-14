@@ -14,6 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             ca-certificates \
             ccache \
             chrony \
+            cpanminus \
             dnsmasq-base \
             dwarves \
             ebtables \
@@ -56,6 +57,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             sudo \
             vim \
             xsltproc \
+            xz-utils \
             zfs-fuse && \
     apt-get autoremove -y && \
     apt-get autoclean -y && \
