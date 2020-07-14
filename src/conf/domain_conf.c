@@ -26134,11 +26134,13 @@ virDomainHostdevDefFormatSubsysSCSI(virBufferPtr buf,
     } else {
         virBufferAsprintf(&sourceChildBuf, "<adapter name='%s'/>\n",
                           scsihostsrc->adapter);
-        virBufferAsprintf(&sourceChildBuf,
-                          "<address %sbus='%u' target='%u' unit='%llu'/>\n",
-                          includeTypeInAddr ? "type='scsi' " : "",
-                          scsihostsrc->bus, scsihostsrc->target,
-                          scsihostsrc->unit);
+
+        virBufferAddLit(&sourceChildBuf, "<address");
+        if (includeTypeInAddr)
+            virBufferAddLit(&sourceChildBuf, " type='scsi'");
+        virBufferAsprintf(&sourceChildBuf, " bus='%u' target='%u' unit='%llu'",
+                          scsihostsrc->bus, scsihostsrc->target, scsihostsrc->unit);
+        virBufferAddLit(&sourceChildBuf, "/>\n");
     }
 
     virXMLFormatElement(buf, "source", &sourceAttrBuf, &sourceChildBuf);
