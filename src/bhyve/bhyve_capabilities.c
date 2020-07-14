@@ -323,6 +323,17 @@ bhyveProbeCapsXHCIController(unsigned int *caps, char *binary)
 }
 
 
+static int
+bhyveProbeCapsSoundHda(unsigned int *caps, char *binary)
+{
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-s",
+                                      "0,hda",
+                                      "pci slot 0:0: unknown device \"hda\"",
+                                      BHYVE_CAP_SOUND_HDA);
+}
+
+
 int
 virBhyveProbeCaps(unsigned int *caps)
 {
@@ -349,6 +360,9 @@ virBhyveProbeCaps(unsigned int *caps)
         goto out;
 
     if ((ret = bhyveProbeCapsXHCIController(caps, binary)))
+        goto out;
+
+    if ((ret = bhyveProbeCapsSoundHda(caps, binary)))
         goto out;
 
  out:

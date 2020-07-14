@@ -154,6 +154,15 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
             return -1;
     }
 
+    for (i = 0; i < def->nsounds; i++) {
+        if (!virDeviceInfoPCIAddressIsWanted(&def->sounds[i]->info))
+            continue;
+        if (virDomainPCIAddressReserveNextAddr(addrs,
+                                               &def->sounds[i]->info,
+                                               VIR_PCI_CONNECT_TYPE_PCI_DEVICE,
+                                               -1) < 0)
+            return -1;
+    }
 
     return 0;
 }

@@ -49,6 +49,7 @@ typedef enum {
     BHYVE_CAP_FBUF = 1 << 4,
     BHYVE_CAP_XHCI = 1 << 5,
     BHYVE_CAP_CPUTOPOLOGY = 1 << 6,
+    BHYVE_CAP_SOUND_HDA = 1 << 7,
 } virBhyveCapsFlags;
 
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);

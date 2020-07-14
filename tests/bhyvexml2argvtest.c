@@ -166,7 +166,7 @@ mymain(void)
     driver.bhyvecaps = BHYVE_CAP_RTC_UTC | BHYVE_CAP_AHCI32SLOT | \
                        BHYVE_CAP_NET_E1000 | BHYVE_CAP_LPC_BOOTROM | \
                        BHYVE_CAP_FBUF | BHYVE_CAP_XHCI | \
-                       BHYVE_CAP_CPUTOPOLOGY;
+                       BHYVE_CAP_CPUTOPOLOGY | BHYVE_CAP_SOUND_HDA;
 
     DO_TEST("base");
     DO_TEST("wired");
@@ -201,6 +201,7 @@ mymain(void)
     DO_TEST_FAILURE("cputopology-nvcpu-mismatch");
     DO_TEST("commandline");
     DO_TEST("msrs");
+    DO_TEST("sound");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");
@@ -239,6 +240,9 @@ mymain(void)
 
     driver.bhyvecaps &= ~BHYVE_CAP_CPUTOPOLOGY;
     DO_TEST_FAILURE("cputopology");
+
+    driver.bhyvecaps &= ~BHYVE_CAP_SOUND_HDA;
+    DO_TEST_FAILURE("sound");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

@@ -108,6 +108,7 @@ mymain(void)
     DO_TEST_DIFFERENT("vnc-autoport");
     DO_TEST_DIFFERENT("commandline");
     DO_TEST_DIFFERENT("msrs");
+    DO_TEST_DIFFERENT("sound");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");

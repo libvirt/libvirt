@@ -475,6 +475,34 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
 
 }
 
+static int
+bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
+                      virDomainSoundDefPtr sound,
+                      bhyveConnPtr driver,
+                      virCommandPtr cmd)
+{
+    if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_SOUND_HDA)) {
+        /* Currently, bhyve only supports "hda" sound devices, so
+           if it's not supported, sound devices are not supported at all */
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Sound devices emulation is not supported "
+                         "by given bhyve binary"));
+        return -1;
+    }
+
+    if (sound->model != VIR_DOMAIN_SOUND_MODEL_ICH7) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Sound device model is not supported"));
+        return -1;
+    }
+
+    virCommandAddArg(cmd, "-s");
+    virCommandAddArgFormat(cmd, "%d:%d,hda,play=/dev/dsp0",
+                           sound->info.addr.pci.slot,
+                           sound->info.addr.pci.function);
+    return 0;
+}
+
 virCommandPtr
 virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
                              bool dryRun)
@@ -617,6 +645,11 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
                            _("Multiple graphics devices are not supported"));
              goto error;
         }
+    }
+
+    for (i = 0; i < def->nsounds; i++) {
+        if (bhyveBuildSoundArgStr(def, def->sounds[i], driver, cmd) < 0)
+            goto error;
     }
 
     if (bhyveDomainDefNeedsISAController(def))
