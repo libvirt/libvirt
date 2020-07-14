@@ -720,7 +720,7 @@ virNetworkDNSHostDefParseXML(const char *networkName,
         if (cur->type == XML_ELEMENT_NODE &&
             virXMLNodeNameEqual(cur, "hostname")) {
               if (cur->children != NULL) {
-                  g_autofree char *name = (char *) xmlNodeGetContent(cur);
+                  g_autofree char *name = virXMLNodeContentString(cur);
 
                   if (!name) {
                       virReportError(VIR_ERR_XML_DETAIL,
