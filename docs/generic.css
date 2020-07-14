@@ -25,7 +25,7 @@ dt {
   margin-right: 2em;
 }
 
-dt code {
+dt code, dt .literal {
   font-weight: bold;
 }
 
