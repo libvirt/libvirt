@@ -5640,11 +5640,6 @@ virQEMUCapsCacheLookup(virFileCachePtr cache,
     priv->microcodeVersion = virHostCPUGetMicrocodeVersion();
 
     ret = virFileCacheLookup(cache, binary);
-    if (!ret) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("no capabilities available for %s"), binary);
-        return NULL;
-    }
 
     VIR_DEBUG("Returning caps %p for %s", ret, binary);
     return ret;
