@@ -4054,9 +4054,13 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def,
         }
     }
 
-    if (qemuCaps &&
+    /* Running domains were either started before QEMU_CAPS_CPU_MIGRATABLE was
+     * introduced and thus we can't rely on it or they already have the
+     * migratable default set. */
+    if (def->id == -1 &&
+        qemuCaps &&
         def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH &&
-        !def->cpu->migratable) {
+        def->cpu->migratable == VIR_TRISTATE_SWITCH_ABSENT) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE))
             def->cpu->migratable = VIR_TRISTATE_SWITCH_ON;
         else if (ARCH_IS_X86(def->os.arch))
