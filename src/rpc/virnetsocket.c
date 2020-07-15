@@ -206,7 +206,8 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
     freeifaddrs(ifaddr);
 
 
-    if (virNetSocketCheckProtocolByLookup("::1", AF_INET6, hasIPv6) < 0)
+    if (hasIPv6 &&
+        virNetSocketCheckProtocolByLookup("::1", AF_INET6, hasIPv6) < 0)
         return -1;
 
     VIR_DEBUG("Protocols: v4 %d v6 %d", *hasIPv4, *hasIPv6);
