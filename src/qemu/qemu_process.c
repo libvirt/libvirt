@@ -1497,10 +1497,10 @@ qemuProcessHandleBlockThreshold(qemuMonitorPtr mon G_GNUC_UNUSED,
                                 void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virObjectEventPtr event = NULL;
+    virObjectEventPtr eventSource = NULL;
+    virObjectEventPtr eventDevice = NULL;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr src;
-    unsigned int idx;
     const char *path = NULL;
 
     virObjectLock(vm);
@@ -1509,18 +1509,28 @@ qemuProcessHandleBlockThreshold(qemuMonitorPtr mon G_GNUC_UNUSED,
               "threshold '%llu' exceeded by '%llu'",
               nodename, vm, vm->def->name, threshold, excess);
 
-    if ((disk = qemuDomainDiskLookupByNodename(vm->def, nodename, &src, &idx))) {
-        g_autofree char *dev = NULL;
+    if ((disk = qemuDomainDiskLookupByNodename(vm->def, nodename, &src, NULL))) {
         if (virStorageSourceIsLocalStorage(src))
             path = src->path;
 
-        if ((dev = qemuDomainDiskBackingStoreGetName(disk, idx)))
-            event = virDomainEventBlockThresholdNewFromObj(vm, dev, path,
-                                                           threshold, excess);
+        if (src == disk->src) {
+            g_autofree char *dev = qemuDomainDiskBackingStoreGetName(disk, 0);
+
+            eventDevice = virDomainEventBlockThresholdNewFromObj(vm, dev, path,
+                                                                 threshold, excess);
+        }
+
+        if (src->id != 0) {
+            g_autofree char *dev = qemuDomainDiskBackingStoreGetName(disk, src->id);
+
+            eventSource = virDomainEventBlockThresholdNewFromObj(vm, dev, path,
+                                                                 threshold, excess);
+        }
     }
 
     virObjectUnlock(vm);
-    virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, eventDevice);
+    virObjectEventStateQueue(driver->domainEventState, eventSource);
 
     return 0;
 }
