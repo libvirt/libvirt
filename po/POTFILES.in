@@ -172,6 +172,7 @@
 @SRCDIR@src/qemu/qemu_qapi.c
 @SRCDIR@src/qemu/qemu_saveimage.c
 @SRCDIR@src/qemu/qemu_slirp.c
+@SRCDIR@src/qemu/qemu_snapshot.c
 @SRCDIR@src/qemu/qemu_tpm.c
 @SRCDIR@src/qemu/qemu_validate.c
 @SRCDIR@src/qemu/qemu_vhost_user.c
