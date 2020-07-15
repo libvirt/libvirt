@@ -9388,3 +9388,30 @@ qemuMonitorJSONGetJobInfo(qemuMonitorPtr mon,
 
     return 0;
 }
+
+
+int
+qemuMonitorJSONGetCPUMigratable(qemuMonitorPtr mon,
+                                bool *migratable)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
+                                           "s:path", QOM_CPU_PATH,
+                                           "s:property", "migratable",
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONHasError(reply, "GenericError"))
+        return 1;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_BOOLEAN) < 0)
+        return -1;
+
+    return virJSONValueGetBoolean(virJSONValueObjectGet(reply, "return"),
+                                  migratable);
+}

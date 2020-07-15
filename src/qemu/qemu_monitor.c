@@ -4526,6 +4526,24 @@ qemuMonitorGetJobInfo(qemuMonitorPtr mon,
 }
 
 
+/* qemuMonitorGetCPUMigratable:
+ *
+ * Get the migratable property of the CPU object.
+ *
+ * Returns -1 on error,
+ *          1 when the property is not supported,
+ *          0 on success (@migratable is set accordingly).
+ */
+int
+qemuMonitorGetCPUMigratable(qemuMonitorPtr mon,
+                            bool *migratable)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONGetCPUMigratable(mon, migratable);
+}
+
+
 int
 qemuMonitorTransactionBitmapAdd(virJSONValuePtr actions,
                                 const char *node,

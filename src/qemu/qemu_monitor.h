@@ -1378,6 +1378,10 @@ int qemuMonitorGetJobInfo(qemuMonitorPtr mon,
                           size_t *njobs);
 
 int
+qemuMonitorGetCPUMigratable(qemuMonitorPtr mon,
+                            bool *migratable);
+
+int
 qemuMonitorTransactionBitmapAdd(virJSONValuePtr actions,
                                 const char *node,
                                 const char *name,
