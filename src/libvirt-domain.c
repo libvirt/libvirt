@@ -12381,6 +12381,9 @@ int virDomainGetGuestInfo(virDomainPtr domain,
  * live VM XML for 'backingStore' or 'source' elements of a disk. If index is
  * given the threshold is set for the corresponding image.
  *
+ * Note that the threshold event can be registered also for destinations of a
+ * 'virDomainBlockCopy' destination by using the 'index' of the 'mirror' source.
+ *
  * Hypervisors report the last written sector of an image in the bulk stats API
  * (virConnectGetAllDomainStats/virDomainListGetStats) as
  * "block.<num>.allocation" in the VIR_DOMAIN_STATS_BLOCK group. The current
