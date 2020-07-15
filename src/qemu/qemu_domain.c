@@ -11633,14 +11633,10 @@ char *
 qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
                                   unsigned int idx)
 {
-    char *ret = NULL;
-
     if (idx)
-        ret = g_strdup_printf("%s[%d]", disk->dst, idx);
-    else
-        ret = g_strdup(disk->dst);
+        return g_strdup_printf("%s[%d]", disk->dst, idx);
 
-    return ret;
+    return g_strdup(disk->dst);
 }
 
 
