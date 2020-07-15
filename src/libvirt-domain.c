@@ -12371,6 +12371,12 @@ int virDomainGetGuestInfo(virDomainPtr domain,
  * level is unset once the event fires. The event might not be delivered at all
  * if libvirtd was not running at the moment when the threshold was reached.
  *
+ * @dev can either be a disk target name (vda, sda) or disk target with index (
+ * vda[4]). Without the index the top image in the backing chain will have the
+ * threshold set. The index corresponds to the 'index' attribute reported in the
+ * live VM XML for 'backingStore' or 'source' elements of a disk. If index is
+ * given the threshold is set for the corresponding image.
+ *
  * Hypervisors report the last written sector of an image in the bulk stats API
  * (virConnectGetAllDomainStats/virDomainListGetStats) as
  * "block.<num>.allocation" in the VIR_DOMAIN_STATS_BLOCK group. The current
