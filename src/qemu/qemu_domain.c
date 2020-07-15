@@ -11608,6 +11608,14 @@ qemuDomainDiskLookupByNodename(virDomainDefPtr def,
 
             return def->disks[i];
         }
+
+        if (def->disks[i]->mirror &&
+            (tmp = virStorageSourceFindByNodeName(def->disks[i]->mirror, nodename))) {
+            if (src)
+                *src = tmp;
+
+            return def->disks[i];
+        }
     }
 
     return NULL;
