@@ -120,7 +120,7 @@ static int testIdentityGetSystem(const void *data)
 static int testSetFakeSELinuxContext(const void *data G_GNUC_UNUSED)
 {
 #if WITH_SELINUX
-    return setcon_raw((security_context_t)data);
+    return setcon_raw(data);
 #else
     VIR_DEBUG("libvirt not compiled with SELinux, skipping this test");
     return EXIT_AM_SKIP;

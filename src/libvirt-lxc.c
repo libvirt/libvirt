@@ -204,7 +204,7 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
     if (STREQ(model->model, "selinux")) {
 #ifdef WITH_SELINUX
         if (oldlabel) {
-            security_context_t ctx;
+            char *ctx;
 
             if (getcon(&ctx) < 0) {
                 virReportSystemError(errno,

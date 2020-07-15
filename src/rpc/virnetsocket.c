@@ -1593,7 +1593,7 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock G_GNUC_UNUSED,
 int virNetSocketGetSELinuxContext(virNetSocketPtr sock,
                                   char **context)
 {
-    security_context_t seccon = NULL;
+    char *seccon = NULL;
     int ret = -1;
 
     *context = NULL;

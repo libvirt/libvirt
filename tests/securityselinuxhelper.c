@@ -55,7 +55,7 @@ static struct selabel_handle *(*real_selabel_open)(unsigned int backend,
                                                   unsigned nopts);
 static void (*real_selabel_close)(struct selabel_handle *handle);
 static int (*real_selabel_lookup_raw)(struct selabel_handle *handle,
-                                     security_context_t *con,
+                                     char **con,
                                      const char *key,
                                      int type);
 
@@ -89,7 +89,7 @@ static void init_syms(void)
  * the virt_use_nfs bool is set.
  */
 
-int getcon_raw(security_context_t *context)
+int getcon_raw(char **context)
 {
     if (!is_selinux_enabled()) {
         errno = EINVAL;
@@ -104,12 +104,12 @@ int getcon_raw(security_context_t *context)
     return 0;
 }
 
-int getcon(security_context_t *context)
+int getcon(char **context)
 {
     return getcon_raw(context);
 }
 
-int getpidcon_raw(pid_t pid, security_context_t *context)
+int getpidcon_raw(pid_t pid, char **context)
 {
     if (!is_selinux_enabled()) {
         errno = EINVAL;
@@ -129,7 +129,7 @@ int getpidcon_raw(pid_t pid, security_context_t *context)
     return 0;
 }
 
-int getpidcon(pid_t pid, security_context_t *context)
+int getpidcon(pid_t pid, char **context)
 {
     return getpidcon_raw(pid, context);
 }
@@ -165,7 +165,7 @@ int setfilecon(const char *path, const char *con)
     return setfilecon_raw(path, con);
 }
 
-int getfilecon_raw(const char *path, security_context_t *con)
+int getfilecon_raw(const char *path, char **con)
 {
     char *constr = NULL;
     ssize_t len = getxattr(path, "user.libvirt.selinux",
@@ -189,7 +189,7 @@ int getfilecon_raw(const char *path, security_context_t *con)
 }
 
 
-int getfilecon(const char *path, security_context_t *con)
+int getfilecon(const char *path, char **con)
 {
     return getfilecon_raw(path, con);
 }
@@ -308,7 +308,7 @@ void selabel_close(struct selabel_handle *handle)
 }
 
 int selabel_lookup_raw(struct selabel_handle *handle,
-                       security_context_t *con,
+                       char **con,
                        const char *key,
                        int type)
 {

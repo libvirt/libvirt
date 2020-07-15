@@ -157,7 +157,7 @@ virIdentityPtr virIdentityGetSystem(void)
     unsigned long long startTime;
     g_autoptr(virIdentity) ret = NULL;
 #if WITH_SELINUX
-    security_context_t con;
+    char *con;
 #endif
 
     if (!(ret = virIdentityNew()))

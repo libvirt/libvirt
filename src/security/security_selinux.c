@@ -198,7 +198,7 @@ virSecuritySELinuxTransactionAppend(const char *path,
 
 static int
 virSecuritySELinuxRememberLabel(const char *path,
-                                const security_context_t con)
+                                const char *con)
 {
     return virSecuritySetRememberedLabel(SECURITY_SELINUX_NAME,
                                          path, con);
@@ -207,7 +207,7 @@ virSecuritySELinuxRememberLabel(const char *path,
 
 static int
 virSecuritySELinuxRecallLabel(const char *path,
-                              security_context_t *con)
+                              char **con)
 {
     int rv;
 
@@ -431,7 +431,7 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
                                      int *catMin,
                                      int *catMax)
 {
-    security_context_t ourSecContext = NULL;
+    char *ourSecContext = NULL;
     context_t ourContext = NULL;
     char *cat = NULL;
     char *tmp;
@@ -530,8 +530,8 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
 }
 
 static char *
-virSecuritySELinuxContextAddRange(security_context_t src,
-                                  security_context_t dst)
+virSecuritySELinuxContextAddRange(char *src,
+                                  char *dst)
 {
     char *str = NULL;
     char *ret = NULL;
@@ -575,7 +575,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
     context_t context = NULL;
     char *ret = NULL;
     char *str;
-    security_context_t ourSecContext = NULL;
+    char *ourSecContext = NULL;
     context_t ourContext = NULL;
 
     VIR_DEBUG("basecontext=%s mcs=%s isObjectContext=%d",
@@ -955,7 +955,7 @@ virSecuritySELinuxReserveLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr def,
                                pid_t pid)
 {
-    security_context_t pctx;
+    char *pctx;
     context_t ctx = NULL;
     const char *mcs;
     int rv;
@@ -1203,7 +1203,7 @@ virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                   pid_t pid,
                                   virSecurityLabelPtr sec)
 {
-    security_context_t ctx;
+    char *ctx;
 
     if (getpidcon_raw(pid, &ctx) == -1) {
         virReportSystemError(errno,
@@ -1316,7 +1316,7 @@ virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
                              bool remember)
 {
     bool privileged = virSecurityManagerGetPrivileged(mgr);
-    security_context_t econ = NULL;
+    char *econ = NULL;
     int refcount;
     int rc;
     bool rollback = false;
@@ -1426,7 +1426,7 @@ virSecuritySELinuxFSetFilecon(int fd, char *tcon)
 /* Set fcon to the appropriate label for path and mode, or return -1.  */
 static int
 getContext(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-           const char *newpath, mode_t mode, security_context_t *fcon)
+           const char *newpath, mode_t mode, char **fcon)
 {
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
@@ -1443,7 +1443,7 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
 {
     bool privileged = virSecurityManagerGetPrivileged(mgr);
     struct stat buf;
-    security_context_t fcon = NULL;
+    char *fcon = NULL;
     char *newpath = NULL;
     int rc;
     int ret = -1;
@@ -2974,7 +2974,7 @@ virSecuritySELinuxSetDaemonSocketLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 {
     /* TODO: verify DOI */
     virSecurityLabelDefPtr secdef;
-    security_context_t scon = NULL;
+    char *scon = NULL;
     char *str = NULL;
     int rc = -1;
 
@@ -3283,7 +3283,7 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr,
                                 int fd)
 {
     struct stat buf;
-    security_context_t fcon = NULL;
+    char *fcon = NULL;
     virSecurityLabelDefPtr secdef;
     char *str = NULL, *proc = NULL, *fd_path = NULL;
     int rc = -1;
