@@ -11631,7 +11631,6 @@ qemuDomainDiskLookupByNodename(virDomainDefPtr def,
  */
 char *
 qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
-                                  virStorageSourcePtr src G_GNUC_UNUSED,
                                   unsigned int idx)
 {
     char *ret = NULL;

@@ -973,7 +973,6 @@ virDomainDiskDefPtr qemuDomainDiskLookupByNodename(virDomainDefPtr def,
                                                    unsigned int *idx);
 
 char *qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
-                                        virStorageSourcePtr src,
                                         unsigned int idx);
 
 virStorageSourcePtr qemuDomainGetStorageSourceByDevstr(const char *devstr,

@@ -1514,7 +1514,7 @@ qemuProcessHandleBlockThreshold(qemuMonitorPtr mon G_GNUC_UNUSED,
         if (virStorageSourceIsLocalStorage(src))
             path = src->path;
 
-        if ((dev = qemuDomainDiskBackingStoreGetName(disk, src, idx)))
+        if ((dev = qemuDomainDiskBackingStoreGetName(disk, idx)))
             event = virDomainEventBlockThresholdNewFromObj(vm, dev, path,
                                                            threshold, excess);
     }
