@@ -11669,11 +11669,16 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
     }
 
     if (idx == 0)
-        src = disk->src;
-    else
-        src = virStorageFileChainLookup(disk->src, NULL, NULL, idx, NULL);
+        return disk->src;
 
-    return src;
+    if ((src = virStorageFileChainLookup(disk->src, NULL, NULL, idx, NULL)))
+        return src;
+
+    if (disk->mirror &&
+        (src = virStorageFileChainLookup(disk->mirror, NULL, NULL, idx, NULL)))
+        return src;
+
+    return NULL;
 }
 
 
