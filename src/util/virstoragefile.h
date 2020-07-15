@@ -526,8 +526,7 @@ bool virStorageSourceIsRelative(virStorageSourcePtr src);
 
 virStorageSourcePtr
 virStorageSourceFindByNodeName(virStorageSourcePtr top,
-                               const char *nodeName,
-                               unsigned int *index)
+                               const char *nodeName)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void

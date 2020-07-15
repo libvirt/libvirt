@@ -2566,15 +2566,15 @@ qemuDomainObjPrivateXMLParseBlockjobNodename(qemuBlockJobDataPtr job,
         return;
 
     if (job->disk &&
-        (*src = virStorageSourceFindByNodeName(job->disk->src, nodename, NULL)))
+        (*src = virStorageSourceFindByNodeName(job->disk->src, nodename)))
         return;
 
     if (job->chain &&
-        (*src = virStorageSourceFindByNodeName(job->chain, nodename, NULL)))
+        (*src = virStorageSourceFindByNodeName(job->chain, nodename)))
         return;
 
     if (job->mirrorChain &&
-        (*src = virStorageSourceFindByNodeName(job->mirrorChain, nodename, NULL)))
+        (*src = virStorageSourceFindByNodeName(job->mirrorChain, nodename)))
         return;
 
     /* the node was in the XML but was not found in the job definitions */
@@ -11602,8 +11602,7 @@ qemuDomainDiskLookupByNodename(virDomainDefPtr def,
         *src = NULL;
 
     for (i = 0; i < def->ndisks; i++) {
-        if ((tmp = virStorageSourceFindByNodeName(def->disks[i]->src,
-                                                  nodename, NULL))) {
+        if ((tmp = virStorageSourceFindByNodeName(def->disks[i]->src, nodename))) {
             if (src)
                 *src = tmp;
 
