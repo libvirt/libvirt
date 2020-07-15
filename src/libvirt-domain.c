@@ -12370,6 +12370,10 @@ int virDomainGetGuestInfo(virDomainPtr domain,
  * described by @dev is written beyond the set threshold level. The threshold
  * level is unset once the event fires. The event might not be delivered at all
  * if libvirtd was not running at the moment when the threshold was reached.
+ * Note that if the threshold level is reached for a top level image, the event
+ * is emitted for @dev corresponding to the disk target, and may also be reported
+ * with @dev corresponding to the disk target with an index corresponding to the
+ * 'index' attribute of 'source' in the live VM XML if the attribute is present.
  *
  * @dev can either be a disk target name (vda, sda) or disk target with index (
  * vda[4]). Without the index the top image in the backing chain will have the
