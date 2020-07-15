@@ -11585,7 +11585,6 @@ qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
  * @def: domain definition to look for the disk
  * @nodename: block backend node name to find
  * @src: filled with the specific backing store element if provided
- * @idx: index of @src in the backing chain, if provided
  *
  * Looks up the disk in the domain via @nodename and returns its definition.
  * Optionally fills @src and @idx if provided with the specific backing chain
@@ -11594,24 +11593,17 @@ qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
 virDomainDiskDefPtr
 qemuDomainDiskLookupByNodename(virDomainDefPtr def,
                                const char *nodename,
-                               virStorageSourcePtr *src,
-                               unsigned int *idx)
+                               virStorageSourcePtr *src)
 {
     size_t i;
-    unsigned int srcindex;
     virStorageSourcePtr tmp = NULL;
-
-    if (!idx)
-        idx = &srcindex;
 
     if (src)
         *src = NULL;
 
-    *idx = 0;
-
     for (i = 0; i < def->ndisks; i++) {
         if ((tmp = virStorageSourceFindByNodeName(def->disks[i]->src,
-                                                  nodename, idx))) {
+                                                  nodename, NULL))) {
             if (src)
                 *src = tmp;
 

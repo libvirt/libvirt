@@ -969,8 +969,7 @@ int qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
 
 virDomainDiskDefPtr qemuDomainDiskLookupByNodename(virDomainDefPtr def,
                                                    const char *nodename,
-                                                   virStorageSourcePtr *src,
-                                                   unsigned int *idx);
+                                                   virStorageSourcePtr *src);
 
 char *qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
                                         unsigned int idx);

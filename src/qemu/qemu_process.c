@@ -880,7 +880,7 @@ qemuProcessHandleIOError(qemuMonitorPtr mon G_GNUC_UNUSED,
     if (diskAlias)
         disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL);
     else if (nodename)
-        disk = qemuDomainDiskLookupByNodename(vm->def, nodename, NULL, NULL);
+        disk = qemuDomainDiskLookupByNodename(vm->def, nodename, NULL);
     else
         disk = NULL;
 
@@ -1509,7 +1509,7 @@ qemuProcessHandleBlockThreshold(qemuMonitorPtr mon G_GNUC_UNUSED,
               "threshold '%llu' exceeded by '%llu'",
               nodename, vm, vm->def->name, threshold, excess);
 
-    if ((disk = qemuDomainDiskLookupByNodename(vm->def, nodename, &src, NULL))) {
+    if ((disk = qemuDomainDiskLookupByNodename(vm->def, nodename, &src))) {
         if (virStorageSourceIsLocalStorage(src))
             path = src->path;
 
