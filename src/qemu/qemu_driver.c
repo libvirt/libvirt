@@ -3021,46 +3021,6 @@ qemuCompressGetCommand(virQEMUSaveFormat compression)
     return ret;
 }
 
-/**
- * qemuOpenFile:
- * @driver: driver object
- * @vm: domain object
- * @path: path to file to open
- * @oflags: flags for opening/creation of the file
- * @needUnlink: set to true if file was created by this function
- *
- * Internal function to properly create or open existing files, with
- * ownership affected by qemu driver setup and domain DAC label.
- *
- * Returns the file descriptor on success and negative errno on failure.
- *
- * This function should not be used on storage sources. Use
- * qemuDomainStorageFileInit and storage driver APIs if possible.
- **/
-static int
-qemuOpenFile(virQEMUDriverPtr driver,
-             virDomainObjPtr vm,
-             const char *path,
-             int oflags,
-             bool *needUnlink)
-{
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    uid_t user = cfg->user;
-    gid_t group = cfg->group;
-    bool dynamicOwnership = cfg->dynamicOwnership;
-    virSecurityLabelDefPtr seclabel;
-
-    /* TODO: Take imagelabel into account? */
-    if (vm &&
-        (seclabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")) != NULL &&
-        seclabel->label != NULL &&
-        (virParseOwnershipIds(seclabel->label, &user, &group) < 0))
-        return -1;
-
-    return virQEMUFileOpenAs(user, group, dynamicOwnership,
-                             path, oflags, needUnlink);
-}
-
 
 static int
 qemuFileWrapperFDClose(virDomainObjPtr vm,
@@ -3154,7 +3114,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
         goto cleanup;
 
-    if ((fd = qemuOpenFile(driver, vm, path, O_WRONLY, NULL)) < 0 ||
+    if ((fd = qemuDomainOpenFile(driver, vm, path, O_WRONLY, NULL)) < 0 ||
         virQEMUSaveDataFinish(data, &fd, path) < 0)
         goto cleanup;
 
@@ -6593,7 +6553,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         oflags |= directFlag;
     }
 
-    if ((fd = qemuOpenFile(driver, NULL, path, oflags, NULL)) < 0)
+    if ((fd = qemuDomainOpenFile(driver, NULL, path, oflags, NULL)) < 0)
         return -1;
 
     if (bypass_cache &&
@@ -11593,7 +11553,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
  * @ret_sb: pointer to return stat buffer (local or remote)
  * @skipInaccessible: Don't report error if files are not accessible
  *
- * For local storage, open the file using qemuOpenFile and then use
+ * For local storage, open the file using qemuDomainOpenFile and then use
  * fstat() to grab the stat struct data for the caller.
  *
  * For remote storage, attempt to access the file and grab the stat
@@ -11616,8 +11576,8 @@ qemuDomainStorageOpenStat(virQEMUDriverPtr driver,
         if (skipInaccessible && !virFileExists(src->path))
             return 0;
 
-        if ((*ret_fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
-                                    NULL)) < 0)
+        if ((*ret_fd = qemuDomainOpenFile(driver, vm, src->path, O_RDONLY,
+                                          NULL)) < 0)
             return -1;
 
         if (fstat(*ret_fd, ret_sb) < 0) {

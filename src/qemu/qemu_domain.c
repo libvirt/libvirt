@@ -64,6 +64,7 @@
 #include "virdomaincheckpointobjlist.h"
 #include "backup_conf.h"
 #include "virutil.h"
+#include "virqemu.h"
 
 #include <sys/time.h>
 #include <fcntl.h>
@@ -10824,4 +10825,45 @@ qemuDomainDiskBlockJobIsSupported(virDomainObjPtr vm,
     }
 
     return true;
+}
+
+
+/**
+ * qemuDomainOpenFile:
+ * @driver: driver object
+ * @vm: domain object
+ * @path: path to file to open
+ * @oflags: flags for opening/creation of the file
+ * @needUnlink: set to true if file was created by this function
+ *
+ * Internal function to properly create or open existing files, with
+ * ownership affected by qemu driver setup and domain DAC label.
+ *
+ * Returns the file descriptor on success and negative errno on failure.
+ *
+ * This function should not be used on storage sources. Use
+ * qemuDomainStorageFileInit and storage driver APIs if possible.
+ **/
+int
+qemuDomainOpenFile(virQEMUDriverPtr driver,
+                   virDomainObjPtr vm,
+                   const char *path,
+                   int oflags,
+                   bool *needUnlink)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    uid_t user = cfg->user;
+    gid_t group = cfg->group;
+    bool dynamicOwnership = cfg->dynamicOwnership;
+    virSecurityLabelDefPtr seclabel;
+
+    /* TODO: Take imagelabel into account? */
+    if (vm &&
+        (seclabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")) != NULL &&
+        seclabel->label != NULL &&
+        (virParseOwnershipIds(seclabel->label, &user, &group) < 0))
+        return -1;
+
+    return virQEMUFileOpenAs(user, group, dynamicOwnership,
+                             path, oflags, needUnlink);
 }
