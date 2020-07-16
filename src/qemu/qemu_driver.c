@@ -17387,11 +17387,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         break;
 
     case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
-        /* we technically don't need reopen here, but we couldn't prepare
-         * the bitmaps if it wasn't present thus must skip this */
-        if (blockdev &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN)) {
-
+        if (blockdev) {
             actions = virJSONValueNewArray();
 
             if (qemuMonitorTransactionBitmapAdd(actions,

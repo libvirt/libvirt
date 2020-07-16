@@ -1101,7 +1101,8 @@ qemuBlockJobProcessEventCompletedCommitBitmaps(virDomainObjPtr vm,
     g_autoptr(virJSONValue) actions = NULL;
     bool active = job->type == QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
+    if (!active &&
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
         return 0;
 
     if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
