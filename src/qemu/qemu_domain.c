@@ -10867,3 +10867,31 @@ qemuDomainOpenFile(virQEMUDriverPtr driver,
     return virQEMUFileOpenAs(user, group, dynamicOwnership,
                              path, oflags, needUnlink);
 }
+
+
+int
+qemuDomainFileWrapperFDClose(virDomainObjPtr vm,
+                             virFileWrapperFdPtr fd)
+{
+    int ret;
+
+    /* virFileWrapperFd uses iohelper to write data onto disk.
+     * However, iohelper calls fdatasync() which may take ages to
+     * finish. Therefore, we shouldn't be waiting with the domain
+     * object locked. */
+
+    /* XXX Currently, this function is intended for *Save() only
+     * as restore needs some reworking before it's ready for
+     * this. */
+
+    virObjectUnlock(vm);
+    ret = virFileWrapperFdClose(fd);
+    virObjectLock(vm);
+    if (!virDomainObjIsActive(vm)) {
+        if (virGetLastErrorCode() == VIR_ERR_OK)
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("domain is no longer running"));
+        ret = -1;
+    }
+    return ret;
+}

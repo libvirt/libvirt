@@ -3022,34 +3022,6 @@ qemuCompressGetCommand(virQEMUSaveFormat compression)
 }
 
 
-static int
-qemuFileWrapperFDClose(virDomainObjPtr vm,
-                       virFileWrapperFdPtr fd)
-{
-    int ret;
-
-    /* virFileWrapperFd uses iohelper to write data onto disk.
-     * However, iohelper calls fdatasync() which may take ages to
-     * finish. Therefore, we shouldn't be waiting with the domain
-     * object locked. */
-
-    /* XXX Currently, this function is intended for *Save() only
-     * as restore needs some reworking before it's ready for
-     * this. */
-
-    virObjectUnlock(vm);
-    ret = virFileWrapperFdClose(fd);
-    virObjectLock(vm);
-    if (!virDomainObjIsActive(vm)) {
-        if (virGetLastErrorCode() == VIR_ERR_OK)
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("domain is no longer running"));
-        ret = -1;
-    }
-    return ret;
-}
-
-
 /* Helper function to execute a migration to file with a correct save header
  * the caller needs to make sure that the processors are stopped and do all other
  * actions besides saving memory */
@@ -3111,7 +3083,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
+    if (qemuDomainFileWrapperFDClose(vm, wrapperFd) < 0)
         goto cleanup;
 
     if ((fd = qemuDomainOpenFile(driver, vm, path, O_WRONLY, NULL)) < 0 ||
@@ -3122,7 +3094,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
-    if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
+    if (qemuDomainFileWrapperFDClose(vm, wrapperFd) < 0)
         ret = -1;
     virFileWrapperFdFree(wrapperFd);
 
@@ -3704,14 +3676,14 @@ doCoreDump(virQEMUDriverPtr driver,
                              path);
         goto cleanup;
     }
-    if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
+    if (qemuDomainFileWrapperFDClose(vm, wrapperFd) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
-    if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
+    if (qemuDomainFileWrapperFDClose(vm, wrapperFd) < 0)
         ret = -1;
     virFileWrapperFdFree(wrapperFd);
     if (ret != 0)
