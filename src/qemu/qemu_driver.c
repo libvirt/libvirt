@@ -17320,7 +17320,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-    g_autoptr(virJSONValue) actions = NULL;
+    g_autoptr(virJSONValue) bitmapactions = NULL;
     g_autoptr(virJSONValue) reopenactions = NULL;
 
     if (job->state != QEMU_BLOCKJOB_STATE_READY) {
@@ -17353,9 +17353,9 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
             bool shallow = job->jobflags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
             bool reuse = job->jobflags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT;
 
-            actions = virJSONValueNewArray();
+            bitmapactions = virJSONValueNewArray();
 
-            if (qemuMonitorTransactionBitmapAdd(actions,
+            if (qemuMonitorTransactionBitmapAdd(bitmapactions,
                                                 disk->mirror->nodeformat,
                                                 "libvirt-tmp-activewrite",
                                                 false,
@@ -17388,9 +17388,9 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 
     case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
         if (blockdev) {
-            actions = virJSONValueNewArray();
+            bitmapactions = virJSONValueNewArray();
 
-            if (qemuMonitorTransactionBitmapAdd(actions,
+            if (qemuMonitorTransactionBitmapAdd(bitmapactions,
                                                 job->data.commit.base->nodeformat,
                                                 "libvirt-tmp-activewrite",
                                                 false,
@@ -17414,8 +17414,8 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
             }
         }
 
-        if (actions && rc == 0)
-            rc = qemuMonitorTransaction(priv->mon, &actions);
+        if (bitmapactions && rc == 0)
+            rc = qemuMonitorTransaction(priv->mon, &bitmapactions);
 
         if (rc == 0)
             ret = qemuMonitorJobComplete(priv->mon, job->name);
