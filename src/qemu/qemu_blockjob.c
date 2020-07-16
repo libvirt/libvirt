@@ -1416,8 +1416,10 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriverPtr driver,
 static void
 qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriverPtr driver,
                                            virDomainObjPtr vm,
-                                           qemuBlockJobDataPtr job)
+                                           qemuBlockJobDataPtr job,
+                                           qemuDomainAsyncJob asyncJob)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virJSONValue) actions = virJSONValueNewArray();
     virDomainDiskDefPtr disk = job->disk;
 
@@ -1429,6 +1431,13 @@ qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriverPtr driver,
     ignore_value(qemuMonitorTransactionBitmapRemove(actions, disk->mirror->nodeformat,
                                                     "libvirt-tmp-activewrite"));
 
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        return;
+
+    qemuMonitorTransaction(priv->mon, &actions);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
+        return;
 
     /* Ideally, we would make the backing chain read only again (yes, SELinux
      * can do that using different labels). But that is not implemented yet and
@@ -1553,7 +1562,7 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
         if (success) {
             qemuBlockJobProcessEventCompletedActiveCommit(driver, vm, job, asyncJob);
         } else {
-            qemuBlockJobProcessEventFailedActiveCommit(driver, vm, job);
+            qemuBlockJobProcessEventFailedActiveCommit(driver, vm, job, asyncJob);
         }
         break;
 
