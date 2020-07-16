@@ -384,6 +384,12 @@ armv6l-debian-10:
     NAME: debian-10
     CROSS: armv6l
 
+armv7l-debian-10:
+  <<: *cross_build_job_definition
+  variables:
+    NAME: debian-10
+    CROSS: armv7l
+
 mips64el-debian-10:
   <<: *cross_build_job_definition
   variables:
@@ -413,12 +419,6 @@ s390x-debian-sid:
   variables:
     NAME: debian-sid
     CROSS: s390x
-
-armv7l-debian-sid:
-  <<: *cross_build_job_definition
-  variables:
-    NAME: debian-sid
-    CROSS: armv7l
 
 i686-debian-sid:
   <<: *cross_build_job_definition
