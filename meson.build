@@ -2120,6 +2120,12 @@ if loader_nvram != ''
   conf.set_quoted('DEFAULT_LOADER_NVRAM', loader_nvram)
 endif
 
+if not get_option('login_shell').disabled() and host_machine.system() == 'linux'
+  conf.set('WITH_LOGIN_SHELL', 1)
+elif get_option('login_shell').enabled()
+  error('virt-login-shell is supported on Linux only')
+endif
+
 
 # define top include directory
 
@@ -2252,6 +2258,7 @@ misc_summary = {
   'Init script': init_script,
   'Char device locks': chrdev_lock_files,
   'Loader/NVRAM': loader_res,
+  'virt-login-shell': conf.has('WITH_LOGIN_SHELL'),
   'virt-host-validate': conf.has('WITH_HOST_VALIDATE'),
 }
 summary(misc_summary, section: 'Miscellaneous', bool_yn: true, list_sep: ' ')
