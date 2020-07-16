@@ -17415,7 +17415,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         }
 
         if (bitmapactions && rc == 0)
-            rc = qemuMonitorTransaction(priv->mon, &bitmapactions);
+            ignore_value(qemuMonitorTransaction(priv->mon, &bitmapactions));
 
         if (rc == 0)
             ret = qemuMonitorJobComplete(priv->mon, job->name);
