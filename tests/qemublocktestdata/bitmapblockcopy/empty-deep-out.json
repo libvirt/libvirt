@@ -1,0 +1,9 @@
+[
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "mirror-format-node",
+      "name": "libvirt-tmp-activewrite"
+    }
+  }
+]

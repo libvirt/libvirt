@@ -2981,7 +2981,7 @@ qemuBlockGetBitmapMergeActions(virStorageSourcePtr topsrc,
 
     if (!(bitmaps = qemuBlockGetBitmapMergeActionsGetBitmaps(topsrc, bitmapname,
                                                              blockNamedNodeData)))
-        return 0;
+        goto done;
 
     for (next = bitmaps; next; next = next->next) {
         const char *curbitmap = next->data;
@@ -3038,6 +3038,7 @@ qemuBlockGetBitmapMergeActions(virStorageSourcePtr topsrc,
             return -1;
     }
 
+ done:
     if (writebitmapsrc &&
         qemuMonitorTransactionBitmapRemove(act, writebitmapsrc->nodeformat,
                                            "libvirt-tmp-activewrite") < 0)
