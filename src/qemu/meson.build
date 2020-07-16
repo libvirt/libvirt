@@ -29,6 +29,7 @@ qemu_driver_sources = [
   'qemu_namespace.c',
   'qemu_process.c',
   'qemu_qapi.c',
+  'qemu_saveimage.c',
   'qemu_security.c',
   'qemu_slirp.c',
   'qemu_tpm.c',

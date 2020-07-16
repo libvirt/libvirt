@@ -170,6 +170,7 @@
 @SRCDIR@src/qemu/qemu_namespace.c
 @SRCDIR@src/qemu/qemu_process.c
 @SRCDIR@src/qemu/qemu_qapi.c
+@SRCDIR@src/qemu/qemu_saveimage.c
 @SRCDIR@src/qemu/qemu_slirp.c
 @SRCDIR@src/qemu/qemu_tpm.c
 @SRCDIR@src/qemu/qemu_validate.c
