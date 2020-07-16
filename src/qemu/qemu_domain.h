@@ -492,6 +492,16 @@ struct _qemuDomainXmlNsDef {
     char **capsdel;
 };
 
+typedef struct _qemuDomainJobPrivate qemuDomainJobPrivate;
+typedef qemuDomainJobPrivate *qemuDomainJobPrivatePtr;
+struct _qemuDomainJobPrivate {
+    bool spiceMigration;                /* we asked for spice migration and we
+                                         * should wait for it to finish */
+    bool spiceMigrated;                 /* spice migration completed */
+    bool dumpCompleted;                 /* dump completed */
+    qemuMigrationParamsPtr migParams;
+};
+
 int qemuDomainObjStartWorker(virDomainObjPtr dom);
 void qemuDomainObjStopWorker(virDomainObjPtr dom);
 

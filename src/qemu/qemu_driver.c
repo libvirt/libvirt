@@ -3701,9 +3701,10 @@ static int
 qemuDumpWaitForCompletion(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
 
     VIR_DEBUG("Waiting for dump completion");
-    while (!priv->job.dumpCompleted && !priv->job.abortJob) {
+    while (!jobPriv->dumpCompleted && !priv->job.abortJob) {
         if (virDomainObjWait(vm) < 0)
             return -1;
     }

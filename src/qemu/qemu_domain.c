@@ -88,6 +88,74 @@ VIR_ENUM_IMPL(qemuDomainNamespace,
               "mount",
 );
 
+
+static void *
+qemuJobAllocPrivate(void)
+{
+    return g_new0(qemuDomainJobPrivate, 1);
+}
+
+
+static void
+qemuJobFreePrivate(void *opaque)
+{
+    qemuDomainJobPrivatePtr priv = opaque;
+
+    if (!priv)
+        return;
+
+    qemuMigrationParamsFree(priv->migParams);
+    VIR_FREE(priv);
+}
+
+
+static void
+qemuJobResetPrivate(void *opaque)
+{
+    qemuDomainJobPrivatePtr priv = opaque;
+
+    priv->spiceMigration = false;
+    priv->spiceMigrated = false;
+    priv->dumpCompleted = false;
+    qemuMigrationParamsFree(priv->migParams);
+    priv->migParams = NULL;
+}
+
+
+static int
+qemuDomainFormatJobPrivate(virBufferPtr buf,
+                           qemuDomainJobObjPtr job)
+{
+    qemuDomainJobPrivatePtr priv = job->privateData;
+
+    if (priv->migParams)
+        qemuMigrationParamsFormat(buf, priv->migParams);
+
+    return 0;
+}
+
+
+static int
+qemuDomainParseJobPrivate(xmlXPathContextPtr ctxt,
+                          qemuDomainJobObjPtr job)
+{
+    qemuDomainJobPrivatePtr priv = job->privateData;
+
+    if (qemuMigrationParamsParse(ctxt, &priv->migParams) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static qemuDomainObjPrivateJobCallbacks qemuPrivateJobCallbacks = {
+    .allocJobPrivate = qemuJobAllocPrivate,
+    .freeJobPrivate = qemuJobFreePrivate,
+    .resetJobPrivate = qemuJobResetPrivate,
+    .formatJob = qemuDomainFormatJobPrivate,
+    .parseJob = qemuDomainParseJobPrivate,
+};
+
 /**
  * qemuDomainObjFromDomain:
  * @domain: Domain pointer that has to be looked up
@@ -1585,7 +1653,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
     if (VIR_ALLOC(priv) < 0)
         return NULL;
 
-    if (qemuDomainObjInitJob(&priv->job) < 0) {
+    if (qemuDomainObjInitJob(&priv->job, &qemuPrivateJobCallbacks) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to init qemu driver mutexes"));
         goto error;

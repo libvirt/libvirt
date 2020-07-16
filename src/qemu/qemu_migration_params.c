@@ -950,6 +950,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                              qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
     g_autoptr(virJSONValue) tlsProps = NULL;
     g_autoptr(virJSONValue) secProps = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -961,7 +962,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (!priv->job.migParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set) {
+    if (!jobPriv->migParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("TLS migration is not supported with this "
                          "QEMU binary"));
@@ -1025,8 +1026,9 @@ qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
                               qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
 
-    if (!priv->job.migParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set)
+    if (!jobPriv->migParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set)
         return 0;
 
     if (qemuMigrationParamsSetString(migParams,
@@ -1150,6 +1152,7 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
                          virBitmapPtr remoteCaps)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
     qemuMigrationCapability cap;
     qemuMigrationParty party;
     size_t i;
@@ -1203,7 +1206,7 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
      * to ask QEMU for their current settings.
      */
 
-    return qemuMigrationParamsFetch(driver, vm, asyncJob, &priv->job.migParams);
+    return qemuMigrationParamsFetch(driver, vm, asyncJob, &jobPriv->migParams);
 }
 
 
