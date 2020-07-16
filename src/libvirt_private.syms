@@ -2939,6 +2939,7 @@ virQEMUBuildDriveCommandlineFromJSON;
 virQEMUBuildNetdevCommandlineFromJSON;
 virQEMUBuildObjectCommandlineFromJSON;
 virQEMUBuildQemuImgKeySecretOpts;
+virQEMUFileOpenAs;
 
 
 # util/virrandom.h
