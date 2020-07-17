@@ -1111,7 +1111,6 @@ qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
                                _("domain has SMM turned off "
                                  "but chosen firmware requires it"));
                 return -1;
-                break;
             case VIR_TRISTATE_SWITCH_ABSENT:
                 VIR_DEBUG("Enabling SMM feature");
                 def->features[VIR_DOMAIN_FEATURE_SMM] = VIR_TRISTATE_SWITCH_ON;
