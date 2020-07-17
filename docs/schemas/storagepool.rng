@@ -37,6 +37,7 @@
     <interleave>
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcedir'/>
       <ref name='target'/>
     </interleave>
@@ -49,6 +50,7 @@
     <interleave>
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcefs'/>
       <ref name='target'/>
     </interleave>
@@ -64,6 +66,7 @@
     <interleave>
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcenetfs'/>
       <ref name='target'/>
     </interleave>
@@ -79,6 +82,7 @@
     <interleave>
       <ref name='commonMetadataNameOptional'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcelogical'/>
       <ref name='targetlogical'/>
     </interleave>
@@ -91,6 +95,7 @@
     <interleave>
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcedisk'/>
       <ref name='target'/>
     </interleave>
@@ -103,6 +108,7 @@
     <interleave>
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourceiscsi'/>
       <ref name='target'/>
     </interleave>
@@ -117,6 +123,7 @@
       <optional>
         <ref name='sizing'/>
       </optional>
+      <ref name='features'/>
       <ref name='sourceiscsidirect'/>
     </interleave>
   </define>
@@ -128,6 +135,7 @@
     <interleave>
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcescsi'/>
       <ref name='target'/>
     </interleave>
@@ -140,6 +148,7 @@
     <interleave>
       <ref name='commonmetadata'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <optional>
         <ref name='sourcempath'/>
       </optional>
@@ -154,6 +163,7 @@
     <interleave>
       <ref name='commonMetadataNameOptional'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcerbd'/>
       <ref name='refresh'/>
     </interleave>
@@ -169,6 +179,7 @@
     <interleave>
       <ref name='commonMetadataNameOptional'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcesheepdog'/>
     </interleave>
   </define>
@@ -180,6 +191,7 @@
     <interleave>
       <ref name='commonMetadataNameOptional'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcegluster'/>
     </interleave>
   </define>
@@ -191,6 +203,7 @@
     <interleave>
       <ref name='commonMetadataNameOptional'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcezfs'/>
       <optional>
         <ref name='target'/>
@@ -205,6 +218,7 @@
     <interleave>
       <ref name='commonMetadataNameOptional'/>
       <ref name='sizing'/>
+      <ref name='features'/>
       <ref name='sourcevstorage'/>
       <ref name='target'/>
     </interleave>
@@ -275,6 +289,22 @@
         </element>
       </optional>
     </interleave>
+  </define>
+
+  <define name='features'>
+    <optional>
+      <element name='features'>
+        <interleave>
+          <optional>
+            <element name='cow'>
+              <attribute name="state">
+                <ref name='virYesNo'/>
+                </attribute>
+            </element>
+          </optional>
+        </interleave>
+      </element>
+    </optional>
   </define>
 
   <define name='target'>

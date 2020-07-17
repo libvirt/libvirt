@@ -67,6 +67,31 @@
         pool. <span class="since">Since 0.4.1</span></dd>
     </dl>
 
+    <h3><a id="StoragePoolFeatures">Features</a></h3>
+
+    <p>
+      Some pools support optional features:
+    </p>
+
+    <pre>
+...
+&lt;features&gt;
+  &lt;cow state='no'&gt;
+&lt;/features&gt;
+...</pre>
+
+    <p>
+      Valid features are:
+    </p>
+    <ul>
+      <dd><code>cow</code></dd>
+      <dt>Controls whether the filesystem performs copy-on-write (COW) for
+        images in the pool. This may only be set for directory / filesystem
+        pools on the <code>btrfs</code> filesystem. If not set then libvirt
+        will attempt to disable COW on any btrfs filesystems.
+        <span class="since">Since 6.6.0</span>.</dt>
+    </ul>
+
     <h3><a id="StoragePoolSource">Source elements</a></h3>
 
     <p>

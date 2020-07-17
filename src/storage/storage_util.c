@@ -2755,7 +2755,7 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
         return -1;
 
     if (virFileSetCOW(def->target.path,
-                      VIR_TRISTATE_BOOL_ABSENT) < 0)
+                      def->features.cow) < 0)
         return -1;
 
     return 0;
