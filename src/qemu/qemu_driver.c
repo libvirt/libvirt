@@ -13148,19 +13148,19 @@ qemuConnectCPUModelComparison(virQEMUCapsPtr qemuCaps,
                               virCPUDefPtr cpu_b,
                               bool failIncompatible)
 {
-    qemuProcessQMPPtr proc = NULL;
-    char *result = NULL;
+    g_autoptr(qemuProcessQMP) proc = NULL;
+    g_autofree char *result = NULL;
     int ret = VIR_CPU_COMPARE_ERROR;
 
     if (!(proc = qemuProcessQMPNew(virQEMUCapsGetBinary(qemuCaps),
                                    libDir, runUid, runGid, false)))
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
 
     if (qemuProcessQMPStart(proc) < 0)
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
 
     if (qemuMonitorGetCPUModelComparison(proc->mon, cpu_a, cpu_b, &result) < 0)
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
 
     if (STREQ(result, "identical"))
         ret = VIR_CPU_COMPARE_IDENTICAL;
@@ -13171,9 +13171,6 @@ qemuConnectCPUModelComparison(virQEMUCapsPtr qemuCaps,
     else
         ret = VIR_CPU_COMPARE_INCOMPATIBLE;
 
- cleanup:
-    VIR_FREE(result);
-    qemuProcessQMPFree(proc);
     return ret;
 }
 
