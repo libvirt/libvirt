@@ -8412,8 +8412,7 @@ qemuProcessQMPNew(const char *binary,
                   gid_t runGid,
                   bool forceTCG)
 {
-    qemuProcessQMPPtr ret = NULL;
-    qemuProcessQMPPtr proc = NULL;
+    g_autoptr(qemuProcessQMP) proc = NULL;
     const char *threadSuffix;
     g_autofree char *threadName = NULL;
 
@@ -8421,7 +8420,7 @@ qemuProcessQMPNew(const char *binary,
               binary, libDir, runUid, runGid, forceTCG);
 
     if (VIR_ALLOC(proc) < 0)
-        goto cleanup;
+        return NULL;
 
     proc->binary = g_strdup(binary);
     proc->libDir = g_strdup(libDir);
@@ -8438,13 +8437,9 @@ qemuProcessQMPNew(const char *binary,
     threadName = g_strdup_printf("qmp-%s", threadSuffix);
 
     if (!(proc->eventThread = virEventThreadNew(threadName)))
-        goto cleanup;
+        return NULL;
 
-    ret = g_steal_pointer(&proc);
-
- cleanup:
-    qemuProcessQMPFree(proc);
-    return ret;
+    return g_steal_pointer(&proc);
 }
 
 
