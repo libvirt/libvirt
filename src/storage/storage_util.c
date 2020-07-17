@@ -2712,6 +2712,7 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
     bool needs_create_as_uid;
     unsigned int dir_create_flags;
     g_autofree char *parent = NULL;
+    int ret;
 
     parent = g_strdup(def->target.path);
     if (!(p = strrchr(parent, '/'))) {
@@ -2745,11 +2746,19 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
     /* Now create the final dir in the path with the uid/gid/mode
      * requested in the config. If the dir already exists, just set
      * the perms. */
-    return virDirCreate(def->target.path,
-                        mode,
-                        def->target.perms.uid,
-                        def->target.perms.gid,
-                        dir_create_flags);
+    ret = virDirCreate(def->target.path,
+                       mode,
+                       def->target.perms.uid,
+                       def->target.perms.gid,
+                       dir_create_flags);
+    if (ret < 0)
+        return -1;
+
+    if (virFileSetCOW(def->target.path,
+                      VIR_TRISTATE_BOOL_ABSENT) < 0)
+        return -1;
+
+    return 0;
 }
 
 
