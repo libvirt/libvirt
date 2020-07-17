@@ -13343,50 +13343,44 @@ qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
                             virCPUDefPtr *cpus,
                             int ncpus)
 {
-    qemuProcessQMPPtr proc;
-    virCPUDefPtr ret = NULL;
-    virCPUDefPtr baseline = NULL;
+    g_autoptr(qemuProcessQMP) proc = NULL;
+    g_autoptr(virCPUDef) baseline = NULL;
     qemuMonitorCPUModelInfoPtr result = NULL;
     size_t i;
 
     if (!(proc = qemuProcessQMPNew(virQEMUCapsGetBinary(qemuCaps),
                                    libDir, runUid, runGid, false)))
-        goto cleanup;
+        return NULL;
 
     if (qemuProcessQMPStart(proc) < 0)
-        goto cleanup;
+        return NULL;
 
     if (VIR_ALLOC(baseline) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virCPUDefCopyModel(baseline, cpus[0], false))
-        goto cleanup;
+        return NULL;
 
     for (i = 1; i < ncpus; i++) {
         if (qemuMonitorGetCPUModelBaseline(proc->mon, baseline,
                                            cpus[i], &result) < 0)
-            goto cleanup;
+            return NULL;
 
         if (qemuConnectStealCPUModelFromInfo(baseline, &result) < 0)
-            goto cleanup;
+            return NULL;
     }
 
     if (expand_features) {
         if (qemuMonitorGetCPUModelExpansion(proc->mon,
                                             QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL,
                                             baseline, true, false, &result) < 0)
-            goto cleanup;
+            return NULL;
 
         if (qemuConnectStealCPUModelFromInfo(baseline, &result) < 0)
-            goto cleanup;
+            return NULL;
     }
 
-    ret = g_steal_pointer(&baseline);
-
- cleanup:
-    qemuProcessQMPFree(proc);
-    virCPUDefFree(baseline);
-    return ret;
+    return g_steal_pointer(&baseline);
 }
 
 
