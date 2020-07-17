@@ -5382,7 +5382,7 @@ virQEMUCapsInitQMPSingle(virQEMUCapsPtr qemuCaps,
                          gid_t runGid,
                          bool onlyTCG)
 {
-    qemuProcessQMPPtr proc = NULL;
+    g_autoptr(qemuProcessQMP) proc = NULL;
     int ret = -1;
 
     if (!(proc = qemuProcessQMPNew(qemuCaps->binary, libDir,
@@ -5401,7 +5401,6 @@ virQEMUCapsInitQMPSingle(virQEMUCapsPtr qemuCaps,
     if (ret < 0)
         virQEMUCapsLogProbeFailure(qemuCaps->binary);
 
-    qemuProcessQMPFree(proc);
     return ret;
 }
 
