@@ -28,9 +28,6 @@
 #ifdef __linux__
 # include <sys/ioctl.h>
 # include <linux/fs.h>
-# ifndef FS_NOCOW_FL
-#  define FS_NOCOW_FL                     0x00800000 /* Do not cow file */
-# endif
 # define default_mount_opts "nodev,nosuid,noexec"
 #elif defined(__FreeBSD__)
 # define default_mount_opts "nosuid,noexec"
@@ -456,25 +453,11 @@ storageBackendCreateRaw(virStoragePoolObjPtr pool,
     }
     created = true;
 
-    if (vol->target.nocow) {
-#ifdef __linux__
-        int attr;
-
-        /* Set NOCOW flag. This is an optimisation for btrfs.
-         * The FS_IOC_SETFLAGS ioctl return value will be ignored since any
-         * failure of this operation should not block the volume creation.
-         */
-        if (ioctl(fd, FS_IOC_GETFLAGS, &attr) < 0) {
-            virReportSystemError(errno, "%s", _("Failed to get fs flags"));
-        } else {
-            attr |= FS_NOCOW_FL;
-            if (ioctl(fd, FS_IOC_SETFLAGS, &attr) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("Failed to set NOCOW flag"));
-            }
-        }
-#endif
-    }
+    /* NB, COW flag can only be toggled when the file is zero-size,
+     * so must go before the createRawFile call allocates payload */
+    if (vol->target.nocow &&
+        virFileSetCOW(vol->target.path, VIR_TRISTATE_BOOL_NO) < 0)
+        goto cleanup;
 
     if ((ret = createRawFile(fd, vol, inputvol, reflink_copy)) < 0)
         /* createRawFile already reported the exact error. */
