@@ -169,10 +169,8 @@ virNWFilterVarValueGetCardinality(const virNWFilterVarValue *val)
     switch (val->valType) {
     case NWFILTER_VALUE_TYPE_SIMPLE:
         return 1;
-        break;
     case NWFILTER_VALUE_TYPE_ARRAY:
         return val->u.array.nValues;
-        break;
     case NWFILTER_VALUE_TYPE_LAST:
         return 0;
     }
@@ -853,10 +851,8 @@ virNWFilterVarAccessEqual(const virNWFilterVarAccess *a,
     case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
         return (a->u.index.idx == b->u.index.idx &&
                 a->u.index.intIterId == b->u.index.intIterId);
-        break;
     case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
         return a->u.iterId == b->u.iterId;
-        break;
     case VIR_NWFILTER_VAR_ACCESS_LAST:
         break;
     }

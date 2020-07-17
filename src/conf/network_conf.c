@@ -3682,48 +3682,36 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
     switch (section) {
     case VIR_NETWORK_SECTION_BRIDGE:
         return virNetworkDefUpdateBridge(def, command, parentIndex, ctxt, flags);
-        break;
 
     case VIR_NETWORK_SECTION_DOMAIN:
         return virNetworkDefUpdateDomain(def, command, parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_IP:
         return virNetworkDefUpdateIP(def, command, parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_IP_DHCP_HOST:
         return virNetworkDefUpdateIPDHCPHost(def, command,
                                              parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_IP_DHCP_RANGE:
         return virNetworkDefUpdateIPDHCPRange(def, command,
                                               parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_FORWARD:
         return virNetworkDefUpdateForward(def, command,
                                           parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_FORWARD_INTERFACE:
         return virNetworkDefUpdateForwardInterface(def, command,
                                                    parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_FORWARD_PF:
         return virNetworkDefUpdateForwardPF(def, command,
                                             parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_PORTGROUP:
         return virNetworkDefUpdatePortGroup(def, command,
                                             parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_DNS_HOST:
         return virNetworkDefUpdateDNSHost(def, command,
                                           parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_DNS_TXT:
         return virNetworkDefUpdateDNSTxt(def, command, parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_DNS_SRV:
         return virNetworkDefUpdateDNSSrv(def, command, parentIndex, ctxt, flags);
-        break;
     default:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("can't update unrecognized section of network"));

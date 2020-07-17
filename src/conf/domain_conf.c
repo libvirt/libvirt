@@ -1840,7 +1840,6 @@ const char *virDomainInputDefGetPath(virDomainInputDefPtr input)
     case VIR_DOMAIN_INPUT_TYPE_KBD:
     case VIR_DOMAIN_INPUT_TYPE_LAST:
         return NULL;
-        break;
 
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
         return input->source.evdev;
@@ -2728,7 +2727,6 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         return STREQ_NULLABLE(src->data.file.path, tgt->data.file.path);
-        break;
     case VIR_DOMAIN_CHR_TYPE_NMDM:
         return STREQ_NULLABLE(src->data.nmdm.master, tgt->data.nmdm.master) &&
             STREQ_NULLABLE(src->data.nmdm.slave, tgt->data.nmdm.slave);
@@ -8439,7 +8437,6 @@ virDomainHostdevSubsysSCSIVHostDefParseXML(xmlNodePtr sourcenode,
                        _("Invalid hostdev protocol '%s'"),
                        virDomainHostdevSubsysSCSIHostProtocolTypeToString(hostsrc->protocol));
         return -1;
-        break;
     }
 
     return 0;
@@ -18155,13 +18152,11 @@ virDomainChrEquals(virDomainChrDefPtr src,
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             return STREQ_NULLABLE(src->target.name, tgt->target.name);
-            break;
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
             if (!src->target.addr || !tgt->target.addr)
                 return src->target.addr == tgt->target.addr;
             return memcmp(src->target.addr, tgt->target.addr,
                           sizeof(*src->target.addr)) == 0;
-            break;
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_NONE:
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST:
@@ -18179,7 +18174,6 @@ virDomainChrEquals(virDomainChrDefPtr src,
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
         return src->target.port == tgt->target.port;
-        break;
     case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
         /* shouldn't happen */
         break;
