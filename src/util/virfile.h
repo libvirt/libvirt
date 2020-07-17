@@ -374,3 +374,6 @@ int virFileRemoveXAttr(const char *path,
     G_GNUC_NO_INLINE;
 
 int virFileDataSync(int fd);
+
+int virFileSetCOW(const char *path,
+                  virTristateBool state);

@@ -71,6 +71,7 @@
 # endif
 # include <sys/ioctl.h>
 # include <linux/cdrom.h>
+# include <linux/fs.h>
 #endif
 
 #if HAVE_LIBATTR
@@ -4503,4 +4504,96 @@ virFileDataSync(int fd)
 #else
     return fdatasync(fd);
 #endif
+}
+
+
+/**
+ * virFileSetCow:
+ * @path: file or directory to control the COW flag on
+ * @state: the desired state of the COW flag
+ *
+ * When @state is VIR_TRISTATE_BOOL_ABSENT, some helpful
+ * default logic will be used. Specifically if the filesystem
+ * containing @path is 'btrfs', then it will attempt to
+ * disable the COW flag, but errors will be ignored. For
+ * any other filesystem no change will be made.
+ *
+ * When @state is VIR_TRISTATE_BOOL_YES or VIR_TRISTATE_BOOL_NO,
+ * it will attempt to set the COW flag state to that explicit
+ * value, and always return an error if it fails. Note this
+ * means it will always return error if the filesystem is not
+ * 'btrfs'.
+ */
+int
+virFileSetCOW(const char *path,
+              virTristateBool state)
+{
+#if __linux__
+    int val = 0;
+    struct statfs buf;
+    VIR_AUTOCLOSE fd = -1;
+
+    VIR_DEBUG("Setting COW flag on '%s' to '%s'",
+              path, virTristateBoolTypeToString(state));
+
+    fd = open(path, O_RDONLY|O_NONBLOCK|O_LARGEFILE);
+    if (fd < 0) {
+        virReportSystemError(errno, _("unable to open '%s'"),
+                             path);
+        return -1;
+    }
+
+    if (fstatfs(fd, &buf) < 0)  {
+        virReportSystemError(errno, _("unable query filesystem type on '%s'"),
+                             path);
+        return -1;
+    }
+
+    if (buf.f_type != BTRFS_SUPER_MAGIC) {
+        if (state == VIR_TRISTATE_BOOL_ABSENT) {
+            virReportSystemError(ENOSYS,
+                                 _("unable to control COW flag on '%s', not btrfs"),
+                                 path);
+            return -1;
+        }
+        return 0;
+    }
+
+    if (ioctl(fd, FS_IOC_GETFLAGS, &val) < 0) {
+        virReportSystemError(errno, _("unable get directory flags on '%s'"),
+                             path);
+        return -1;
+    }
+
+    VIR_DEBUG("Current flags on '%s' are 0x%x", path, val);
+    if (state == VIR_TRISTATE_BOOL_YES) {
+        val &= ~FS_NOCOW_FL;
+    } else {
+        val |= FS_NOCOW_FL;
+    }
+
+    VIR_DEBUG("New flags on '%s' will be 0x%x", path, val);
+    if (ioctl(fd, FS_IOC_SETFLAGS, &val) < 0) {
+        int saved_err = errno;
+        VIR_DEBUG("Failed to set flags on '%s': %s", path, g_strerror(saved_err));
+        if (state != VIR_TRISTATE_BOOL_ABSENT) {
+            virReportSystemError(saved_err,
+                                 _("unable control COW flag on '%s'"),
+                                 path);
+            return -1;
+        } else {
+            VIR_DEBUG("Ignoring failure to set COW");
+        }
+    }
+
+    return 0;
+#else /* ! __linux__ */
+    if (state != VIR_TRISTATE_BOOL_ABSENT) {
+        virReportSystemError(ENOSYS,
+                             _("Unable to set copy-on-write state on '%s' to '%s'"),
+                             path, virTristateBoolTypeToString(state));
+        return -1;
+    }
+    return 0;
+#endif /* ! __linux__ */
 }

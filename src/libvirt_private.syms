@@ -2125,6 +2125,7 @@ virFileRewrite;
 virFileRewriteStr;
 virFileSanitizePath;
 virFileSetACLs;
+virFileSetCOW;
 virFileSetupDev;
 virFileSetXAttr;
 virFileTouch;
