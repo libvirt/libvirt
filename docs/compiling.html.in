@@ -9,28 +9,26 @@
     <h2><a id="compiling">Compiling a release tarball</a></h2>
 
     <p>
-      libvirt uses the standard configure/make/install steps and mandates
+      libvirt uses the standard setup/build/install steps and mandates
       that the build directory is different that the source directory:
     </p>
 
     <pre>
 $ xz -c libvirt-x.x.x.tar.xz | tar xvf -
 $ cd libvirt-x.x.x
-$ mkdir build &amp;&amp; cd build
-$ ../configure</pre>
+$ meson build</pre>
 
     <p>
-      The <i>configure</i> script can be given options to change its default
+      The <i>meson</i> script can be given options to change its default
       behaviour.
     </p>
 
     <p>
-      To get the complete list of the options it can take, pass it the
-      <i>--help</i> option like this:
+      To get the complete list of the options run the following command:
     </p>
 
     <pre>
-$ ../configure <i>--help</i></pre>
+$ meson configure</pre>
 
     <p>
       When you have determined which options you want to use (if any),
@@ -38,7 +36,7 @@ $ ../configure <i>--help</i></pre>
     </p>
 
     <p>
-      Note the use of <b>sudo</b> with the <i>make install</i> command
+      Note the use of <b>sudo</b> with the <i>ninja install</i> command
       below.  Using sudo is only required when installing to a location your
       user does not have write access to.  Installing to a system location
       is a good example of this.
@@ -46,14 +44,14 @@ $ ../configure <i>--help</i></pre>
 
     <p>
       If you are installing to a location that your user <i>does</i> have write
-      access to, then you can instead run the <i>make install</i> command
+      access to, then you can instead run the <i>ninja install</i> command
       without putting <b>sudo</b> before it.
     </p>
 
     <pre>
-$ ../configure <i>[possible options]</i>
-$ make
-$ <b>sudo</b> <i>make install</i></pre>
+$ meson build <i>[possible options]</i>
+$ ninja -C build
+$ <b>sudo</b> <i>ninja -C build install</i></pre>
 
     <p>
       At this point you <b>may</b> have to run ldconfig or a similar utility
@@ -63,12 +61,10 @@ $ <b>sudo</b> <i>make install</i></pre>
     <h2><a id="building">Building from a GIT checkout</a></h2>
 
     <p>
-      The libvirt build process uses GNU autotools, so after obtaining a
-      checkout it is necessary to generate the configure script and Makefile.in
-      templates using the <code>autogen.sh</code> command. By default when
-      the <code>configure</code> script is run from within a GIT checkout, it
+      The libvirt build process uses Meson build system. By default when
+      the <code>meson</code> is run from within a GIT checkout, it
       will turn on -Werror for builds. This can be disabled with
-      --disable-werror, but this is not recommended.
+      --werror=false, but this is not recommended.
     </p>
 
     <p>To build &amp; install libvirt to your home
@@ -76,10 +72,9 @@ $ <b>sudo</b> <i>make install</i></pre>
     </p>
 
     <pre>
-$ mkdir build &amp;&amp; cd build
-$ ../autogen.sh --prefix=$HOME/usr
-$ make
-$ <b>sudo</b> make install</pre>
+$ meson build --prefix=$HOME/usr
+$ ninja -C build
+$ <b>sudo</b> ninja -C build install</pre>
 
     <p>
       Be aware though, that binaries built with a custom prefix will not
@@ -89,9 +84,8 @@ $ <b>sudo</b> make install</pre>
     </p>
 
     <pre>
-$ mkdir build &amp;&amp; cd build
-$ ../autogen.sh --system
-$ make
+$ meson build -Dsystem=true
+$ ninja -C build
     </pre>
 
     <p>

@@ -180,16 +180,14 @@
     </p>
 
 <pre>
-mkdir build &amp;&amp; cd build
-../configure \
-  --without-sasl \
-  --without-polkit \
-  --without-python \
-  --without-libxl \
-  --without-qemu \
-  --without-lxc \
-  --without-openvz \
-  --without-libvirtd
+meson build \
+  -Dsasl=disabled \
+  -Dpolkit=disabled \
+  -Ddriver_libxl=disabled \
+  -Ddriver_qemu=disabled \
+  -Ddriver_lxc=disabled \
+  -Ddriver_openvz=disabled \
+  -Ddriver_libvirtd=disabled
 </pre>
 
   </body>

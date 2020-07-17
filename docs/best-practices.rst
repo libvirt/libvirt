@@ -25,9 +25,8 @@ with minimal back-and-forth.
    self-contained if possible, with an explanation of each patch
    and an explanation of how the sequence of patches fits
    together. Moreover, please keep in mind that it's required to
-   be able to compile cleanly (**including**
-   ``make check`` and ``make syntax-check``) after each
-   patch. A feature does not have to work until the end of a
+   be able to compile cleanly (**including** ``ninja test``) after
+   each patch. A feature does not have to work until the end of a
    series, but intermediate patches must compile and not cause
    test-suite failures (this is to preserve the usefulness of
    ``git bisect``, among other things).

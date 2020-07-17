@@ -12,13 +12,12 @@ your git clone run:
 
 ::
 
-   $ mkdir build && cd build
-   $ ../autogen.sh
-   $ make
+   $ meson build
+   $ ninja -C build
 
 You'll find the freshly-built document in ``docs/contribute.html``.
 
-If ``configure`` fails because of missing dependencies, you can set
+If ``meson setup`` fails because of missing dependencies, you can set
 up your system by calling
 
 ::
@@ -39,7 +38,7 @@ to run
 
 ::
 
-   $ sudo dnf install gcc make libtool autoconf automake rpm-build
+   $ sudo dnf install gcc make ninja-build rpm-build
 
 You might still be missing some dependencies if your distribution is
 shipping an old libvirt version, but that will get you much closer to

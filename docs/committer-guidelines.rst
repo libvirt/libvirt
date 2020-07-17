@@ -12,8 +12,8 @@ objection on the list it should be good to go. If the patch
 touches a part of the code where you're not the main maintainer,
 or where you do not have a very clear idea of how things work,
 it's better to wait for a more authoritative feedback though.
-Before committing, please also rebuild locally, run 'make check
-syntax-check', and make sure you don't raise errors.
+Before committing, please also rebuild locally, run 'ninja test',
+and make sure you don't raise errors.
 
 An exception to 'review and approval on the list first' is fixing
 failures to build:
@@ -21,11 +21,10 @@ failures to build:
 -  if a recently committed patch breaks compilation on a platform
    or for a given driver, then it's fine to commit a minimal fix
    directly without getting the review feedback first
--  if make check or make syntax-check breaks, if there is an
-   obvious fix, it's fine to commit immediately. The patch should
-   still be sent to the list (or tell what the fix was if
-   trivial), and 'make check syntax-check' should pass too, before
-   committing anything
+-  if ninja test breaks, if there is an obvious fix, it's fine to
+   commit immediately. The patch should still be sent to the list
+   (or tell what the fix was if trivial), and 'ninja test' should
+   pass too, before committing anything
 -  fixes for documentation and code comments can be managed in the
    same way, but still make sure they get reviewed if non-trivial.
 -  (ir)regular pulls from other repositories or automated updates,

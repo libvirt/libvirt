@@ -30,8 +30,7 @@ changes. That is:
 
 ::
 
-  $ make check
-  $ make syntax-check
+  $ ninja test
 
 These tests help making sure that your changes don't introduce
 regressions in libvirt, as well as validating that any new code
