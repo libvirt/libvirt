@@ -205,11 +205,11 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
 
     freeifaddrs(ifaddr);
 
-    if (hasIPv4 &&
+    if (*hasIPv4 &&
         virNetSocketCheckProtocolByLookup("127.0.0.1", AF_INET, hasIPv4) < 0)
         return -1;
 
-    if (hasIPv6 &&
+    if (*hasIPv6 &&
         virNetSocketCheckProtocolByLookup("::1", AF_INET6, hasIPv6) < 0)
         return -1;
 
