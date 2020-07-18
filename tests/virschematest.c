@@ -201,7 +201,8 @@ mymain(void)
     DO_TEST_DIR("domain.rng", "domainschemadata",
                 "qemuxml2argvdata", "xmconfigdata",
                 "qemuxml2xmloutdata", "lxcxml2xmldata",
-                "lxcxml2xmloutdata", "bhyvexml2argvdata", "genericxml2xmlindata",
+                "lxcxml2xmloutdata", "bhyvexml2argvdata",
+                "bhyvexml2xmloutdata", "genericxml2xmlindata",
                 "genericxml2xmloutdata", "xlconfigdata", "libxlxml2domconfigdata",
                 "qemuhotplugtestdomains");
     DO_TEST_DIR("domaincaps.rng", "domaincapsdata");
