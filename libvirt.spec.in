@@ -526,7 +526,9 @@ Requires: libvirt-libs = %{version}-%{release}
 # needed for device enumeration
 Requires: systemd >= 185
 # For managing persistent mediated devices
+%if 0%{?fedora} || 0%{?rhel} > 7
 Requires: mdevctl
+%endif
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing
