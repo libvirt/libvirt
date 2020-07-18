@@ -309,6 +309,9 @@ typedef virDomainSoundCodecDef *virDomainSoundCodecDefPtr;
 typedef struct _virDomainSoundDef virDomainSoundDef;
 typedef virDomainSoundDef *virDomainSoundDefPtr;
 
+typedef struct _virDomainAudioDef virDomainAudioDef;
+typedef virDomainAudioDef *virDomainAudioDefPtr;
+
 typedef struct _virDomainTPMDef virDomainTPMDef;
 typedef virDomainTPMDef *virDomainTPMDefPtr;
 

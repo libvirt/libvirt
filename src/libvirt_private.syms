@@ -224,6 +224,8 @@ virDiskNameToBusDeviceIndex;
 virDiskNameToIndex;
 virDomainActualNetDefFree;
 virDomainActualNetDefValidate;
+virDomainAudioTypeTypeFromString;
+virDomainAudioTypeTypeToString;
 virDomainBlockedReasonTypeFromString;
 virDomainBlockedReasonTypeToString;
 virDomainBlockIoTuneInfoCopy;

@@ -4372,9 +4372,44 @@
         <optional>
           <ref name="address"/>
         </optional>
+        <optional>
+          <element name="audio">
+            <attribute name="id">
+              <ref name="uint8"/>
+            </attribute>
+          </element>
+        </optional>
         <zeroOrMore>
           <ref name="codec"/>
         </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <define name="audio">
+    <element name="audio">
+      <attribute name="id">
+        <ref name="uint8"/>
+      </attribute>
+      <attribute name="type">
+        <choice>
+          <value>oss</value>
+        </choice>
+      </attribute>
+      <interleave>
+        <optional>
+          <element name="input">
+            <attribute name="dev">
+              <ref name="deviceName"/>
+            </attribute>
+          </element>
+        </optional>
+        <optional>
+          <element name="output">
+            <attribute name="dev">
+              <ref name="deviceName"/>
+            </attribute>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -5303,6 +5338,7 @@
             <ref name="interface"/>
             <ref name="input"/>
             <ref name="sound"/>
+            <ref name="audio"/>
             <ref name="hostdev"/>
             <ref name="graphic"/>
             <ref name="video"/>

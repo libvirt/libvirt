@@ -688,6 +688,10 @@ virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
         ret = virDomainCapsDeviceVideoDefValidate(caps, dev->data.video);
         break;
 
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        /* TODO: add validation */
+        break;
+
     case VIR_DOMAIN_DEVICE_DISK:
     case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_NET:

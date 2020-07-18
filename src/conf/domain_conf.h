@@ -85,6 +85,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_MEMORY,
     VIR_DOMAIN_DEVICE_IOMMU,
     VIR_DOMAIN_DEVICE_VSOCK,
+    VIR_DOMAIN_DEVICE_AUDIO,
 
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
@@ -116,6 +117,7 @@ struct _virDomainDeviceDef {
         virDomainMemoryDefPtr memory;
         virDomainIOMMUDefPtr iommu;
         virDomainVsockDefPtr vsock;
+        virDomainAudioDefPtr audio;
     } data;
 };
 
@@ -1417,6 +1419,27 @@ struct _virDomainSoundDef {
 
     size_t ncodecs;
     virDomainSoundCodecDefPtr *codecs;
+
+    unsigned int audioId;
+};
+
+typedef enum {
+    VIR_DOMAIN_AUDIO_TYPE_OSS,
+
+    VIR_DOMAIN_AUDIO_TYPE_LAST
+} virDomainAudioType;
+
+struct _virDomainAudioDef {
+    int type;
+
+    unsigned int id;
+
+    union {
+        struct {
+            char *inputDev;
+            char *outputDev;
+        } oss;
+    } backend;
 };
 
 typedef enum {
@@ -2602,6 +2625,9 @@ struct _virDomainDef {
     size_t nsounds;
     virDomainSoundDefPtr *sounds;
 
+    size_t naudios;
+    virDomainAudioDefPtr *audios;
+
     size_t nvideos;
     virDomainVideoDefPtr *videos;
 
@@ -3032,6 +3058,7 @@ ssize_t virDomainSoundDefFind(const virDomainDef *def,
                               const virDomainSoundDef *sound);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
 virDomainSoundDefPtr virDomainSoundDefRemove(virDomainDefPtr def, size_t idx);
+void virDomainAudioDefFree(virDomainAudioDefPtr def);
 void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
 void virDomainNVRAMDefFree(virDomainNVRAMDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
@@ -3591,6 +3618,7 @@ VIR_ENUM_DECL(virDomainChrTcpProtocol);
 VIR_ENUM_DECL(virDomainChrSpicevmc);
 VIR_ENUM_DECL(virDomainSoundCodec);
 VIR_ENUM_DECL(virDomainSoundModel);
+VIR_ENUM_DECL(virDomainAudioType);
 VIR_ENUM_DECL(virDomainKeyWrapCipherName);
 VIR_ENUM_DECL(virDomainMemballoonModel);
 VIR_ENUM_DECL(virDomainSmbiosMode);

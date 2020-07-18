@@ -323,6 +323,7 @@ VIR_ENUM_IMPL(virDomainDevice,
               "memory",
               "iommu",
               "vsock",
+              "audio",
 );
 
 VIR_ENUM_IMPL(virDomainDiskDevice,
@@ -727,6 +728,11 @@ VIR_ENUM_IMPL(virDomainSoundModel,
               "ich9",
               "usb",
               "ich7",
+);
+
+VIR_ENUM_IMPL(virDomainAudioType,
+              VIR_DOMAIN_AUDIO_TYPE_LAST,
+              "oss",
 );
 
 VIR_ENUM_IMPL(virDomainKeyWrapCipherName,
@@ -2864,6 +2870,24 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainAudioDefFree(virDomainAudioDefPtr def)
+{
+    if (!def)
+        return;
+
+    switch ((virDomainAudioType) def->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        VIR_FREE(def->backend.oss.inputDev);
+        VIR_FREE(def->backend.oss.outputDev);
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_LAST:
+        break;
+    }
+
+    VIR_FREE(def);
+}
+
 virDomainSoundDefPtr
 virDomainSoundDefRemove(virDomainDefPtr def, size_t idx)
 {
@@ -3217,6 +3241,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_VSOCK:
         virDomainVsockDefFree(def->data.vsock);
         break;
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        virDomainAudioDefFree(def->data.audio);
+        break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
         break;
@@ -3476,6 +3503,10 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0; i < def->nsounds; i++)
         virDomainSoundDefFree(def->sounds[i]);
     VIR_FREE(def->sounds);
+
+    for (i = 0; i < def->naudios; i++)
+        virDomainAudioDefFree(def->audios[i]);
+    VIR_FREE(def->audios);
 
     for (i = 0; i < def->nvideos; i++)
         virDomainVideoDefFree(def->videos[i]);
@@ -4065,6 +4096,7 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
         break;
@@ -4158,6 +4190,9 @@ virDomainDeviceSetData(virDomainDeviceDefPtr device,
         break;
     case VIR_DOMAIN_DEVICE_LEASE:
         device->data.lease = devicedata;
+        break;
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        device->data.audio = devicedata;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
@@ -4425,6 +4460,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
         break;
     }
 #endif
@@ -5417,6 +5453,7 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_AUDIO:
         ret = 0;
         break;
 
@@ -6806,6 +6843,8 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_SHMEM:
         return virDomainShmemDefValidate(dev->data.shmem);
 
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        /* TODO: validate? */
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -15002,10 +15041,10 @@ virDomainSoundDefParseXML(virDomainXMLOptionPtr xmlopt,
     virDomainSoundDefPtr def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     g_autofree char *model = NULL;
+    xmlNodePtr audioNode;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
-
     ctxt->node = node;
 
     model = virXMLPropString(node, "model");
@@ -15039,6 +15078,18 @@ virDomainSoundDefParseXML(virDomainXMLOptionPtr xmlopt,
                 codec->cad = def->ncodecs; /* that will do for now */
                 def->codecs[def->ncodecs++] = codec;
             }
+        }
+    }
+
+    audioNode = virXPathNode("./audio", ctxt);
+    if (audioNode) {
+        g_autofree char *tmp = NULL;
+        tmp = virXMLPropString(audioNode, "id");
+        if (virStrToLong_ui(tmp, NULL, 10, &def->audioId) < 0 ||
+            def->audioId == 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid audio 'id' value '%s'"), tmp);
+            goto error;
         }
     }
 
@@ -15093,6 +15144,64 @@ virDomainSoundDefFind(const virDomainDef *def,
 }
 
 
+static virDomainAudioDefPtr
+virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
+                          xmlNodePtr node G_GNUC_UNUSED,
+                          xmlXPathContextPtr ctxt G_GNUC_UNUSED)
+{
+    virDomainAudioDefPtr def;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    g_autofree char *tmp = NULL;
+    g_autofree char *type = NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+    ctxt->node = node;
+
+    type = virXMLPropString(node, "type");
+    if ((def->type = virDomainAudioTypeTypeFromString(type)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown audio type '%s'"), type);
+        goto error;
+    }
+
+    tmp = virXMLPropString(node, "id");
+    if (virStrToLong_ui(tmp, NULL, 10, &def->id) < 0 ||
+        def->id == 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid audio 'id' value '%s'"), tmp);
+        goto error;
+    }
+
+    switch ((virDomainAudioType) def->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_OSS: {
+        xmlNodePtr inputDevNode, outputDevNode;
+
+        inputDevNode = virXPathNode("./input", ctxt);
+        outputDevNode = virXPathNode("./output", ctxt);
+
+        if (!inputDevNode || !outputDevNode) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Audio type OSS requires to have <input> "
+                             "and <output> specified"));
+            goto error;
+        }
+
+        def->backend.oss.inputDev = virXMLPropString(inputDevNode, "dev");
+        def->backend.oss.outputDev = virXMLPropString(outputDevNode, "dev");
+        break;
+    }
+
+    case VIR_DOMAIN_AUDIO_TYPE_LAST:
+        break;
+    }
+
+    return def;
+
+ error:
+    virDomainAudioDefFree(def);
+    return NULL;
+}
 static virDomainWatchdogDefPtr
 virDomainWatchdogDefParseXML(virDomainXMLOptionPtr xmlopt,
                              xmlNodePtr node,
@@ -17047,6 +17156,10 @@ virDomainDeviceDefParse(const char *xmlStr,
     case VIR_DOMAIN_DEVICE_SOUND:
         if (!(dev->data.sound = virDomainSoundDefParseXML(xmlopt, node,
                                                           ctxt, flags)))
+            return NULL;
+        break;
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        if (!(dev->data.audio = virDomainAudioDefParseXML(xmlopt, node, ctxt)))
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_WATCHDOG:
@@ -21957,6 +22070,22 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
+    /* analysis of the audio devices */
+    if ((n = virXPathNodeSet("./devices/audio", ctxt, &nodes)) < 0)
+        goto error;
+    if (n && VIR_ALLOC_N(def->audios, n) < 0)
+        goto error;
+    for (i = 0; i < n; i++) {
+        virDomainAudioDefPtr audio = virDomainAudioDefParseXML(xmlopt,
+                                                               nodes[i],
+                                                               ctxt);
+        if (!audio)
+            goto error;
+
+        def->audios[def->naudios++] = audio;
+    }
+    VIR_FREE(nodes);
+
     /* analysis of the video devices */
     if ((n = virXPathNodeSet("./devices/video", ctxt, &nodes)) < 0)
         goto error;
@@ -22471,7 +22600,6 @@ virDomainDefParse(const char *xmlStr,
     virDomainDefPtr def = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
     xmlNodePtr root;
-
     if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"))))
         goto cleanup;
 
@@ -24572,6 +24700,7 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
         break;
     }
 #endif
@@ -27340,6 +27469,9 @@ virDomainSoundDefFormat(virBufferPtr buf,
     for (i = 0; i < def->ncodecs; i++)
         virDomainSoundCodecDefFormat(&childBuf, def->codecs[i]);
 
+    if (def->audioId > 0)
+        virBufferAsprintf(&childBuf, "<audio id='%d'/>\n", def->audioId);
+
     if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
         return -1;
 
@@ -27348,6 +27480,44 @@ virDomainSoundDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, ">\n");
         virBufferAddBuffer(buf, &childBuf);
         virBufferAddLit(buf, "</sound>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainAudioDefFormat(virBufferPtr buf,
+                        virDomainAudioDefPtr def)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    const char *type = virDomainAudioTypeTypeToString(def->type);
+
+    if (!type) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected audio type %d"), def->type);
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "<audio id='%d' type='%s'", def->id, type);
+
+    switch (def->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        if (def->backend.oss.inputDev)
+            virBufferAsprintf(&childBuf, "<input dev='%s'/>\n",
+                              def->backend.oss.inputDev);
+        if (def->backend.oss.outputDev)
+            virBufferAsprintf(&childBuf, "<output dev='%s'/>\n",
+                              def->backend.oss.outputDev);
+        break;
+    }
+
+    if (virBufferUse(&childBuf)) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAddBuffer(buf, &childBuf);
+        virBufferAddLit(buf, "</audio>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
     }
@@ -30035,6 +30205,11 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
             return -1;
     }
 
+    for (n = 0; n < def->naudios; n++) {
+        if (virDomainAudioDefFormat(buf, def->audios[n]) < 0)
+            return -1;
+    }
+
     for (n = 0; n < def->nvideos; n++) {
         if (virDomainVideoDefFormat(buf, def->videos[n], flags) < 0)
             return -1;
@@ -31206,6 +31381,9 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         break;
     case VIR_DOMAIN_DEVICE_VSOCK:
         rc = virDomainVsockDefFormat(&buf, src->data.vsock);
+        break;
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        rc = virDomainAudioDefFormat(&buf, src->data.audio);
         break;
 
     case VIR_DOMAIN_DEVICE_NONE:
