@@ -19,6 +19,12 @@
       <source bridge="virbr0"/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
-    <sound model='ich7'/>
+    <sound model='ich7'>
+      <audio id="1"/>
+    </sound>
+    <audio type="oss" id="1">
+      <input dev="/dev/dsp0"/>
+      <output dev="/dev/dsp0"/>
+    </audio>
   </devices>
 </domain>

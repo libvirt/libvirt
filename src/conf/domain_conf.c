@@ -31493,6 +31493,19 @@ virDomainDefFindDevice(virDomainDefPtr def,
 }
 
 
+virDomainAudioDefPtr
+virDomainDefFindAudioForSound(virDomainDefPtr def,
+                              virDomainSoundDefPtr sound)
+{
+    size_t i;
+    for (i = 0; i < def->naudios; i++)
+        if (def->audios[i]->id == sound->audioId)
+            return def->audios[i];
+
+    return NULL;
+}
+
+
 char *
 virDomainObjGetMetadata(virDomainObjPtr vm,
                         int type,

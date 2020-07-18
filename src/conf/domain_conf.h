@@ -3712,6 +3712,10 @@ int virDomainDefFindDevice(virDomainDefPtr def,
                            virDomainDeviceDefPtr dev,
                            bool reportError);
 
+virDomainAudioDefPtr
+virDomainDefFindAudioForSound(virDomainDefPtr def,
+                              virDomainSoundDefPtr sound);
+
 const char *virDomainChrSourceDefGetPath(virDomainChrSourceDefPtr chr);
 
 void virDomainChrSourceDefClear(virDomainChrSourceDefPtr def);

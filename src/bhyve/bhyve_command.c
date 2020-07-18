@@ -478,9 +478,12 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
 static int
 bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
                       virDomainSoundDefPtr sound,
+                      virDomainAudioDefPtr audio,
                       bhyveConnPtr driver,
                       virCommandPtr cmd)
 {
+    g_auto(virBuffer) params = VIR_BUFFER_INITIALIZER;
+
     if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_SOUND_HDA)) {
         /* Currently, bhyve only supports "hda" sound devices, so
            if it's not supported, sound devices are not supported at all */
@@ -497,9 +500,33 @@ bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
     }
 
     virCommandAddArg(cmd, "-s");
-    virCommandAddArgFormat(cmd, "%d:%d,hda,play=/dev/dsp0",
+
+    if (audio) {
+        switch ((virDomainAudioType) audio->type) {
+        case  VIR_DOMAIN_AUDIO_TYPE_OSS:
+            if (audio->backend.oss.inputDev)
+                virBufferAsprintf(&params, ",play=%s",
+                                  audio->backend.oss.inputDev);
+
+            if (audio->backend.oss.outputDev)
+                virBufferAsprintf(&params, ",rec=%s",
+                                  audio->backend.oss.outputDev);
+
+            break;
+
+        case VIR_DOMAIN_AUDIO_TYPE_LAST:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported audio backend '%s'"),
+                           virDomainAudioTypeTypeToString(audio->type));
+            return -1;
+        }
+    }
+
+    virCommandAddArgFormat(cmd, "%d:%d,hda%s",
                            sound->info.addr.pci.slot,
-                           sound->info.addr.pci.function);
+                           sound->info.addr.pci.function,
+                           virBufferCurrentContent(&params));
+
     return 0;
 }
 
@@ -648,7 +675,9 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
     }
 
     for (i = 0; i < def->nsounds; i++) {
-        if (bhyveBuildSoundArgStr(def, def->sounds[i], driver, cmd) < 0)
+        if (bhyveBuildSoundArgStr(def, def->sounds[i],
+                                  virDomainDefFindAudioForSound(def, def->sounds[i]),
+                                  driver, cmd) < 0)
             goto error;
     }
 

@@ -298,6 +298,7 @@ virDomainDefCheckABIStability;
 virDomainDefCheckABIStabilityFlags;
 virDomainDefCompatibleDevice;
 virDomainDefCopy;
+virDomainDefFindAudioForSound;
 virDomainDefFindDevice;
 virDomainDefFormat;
 virDomainDefFormatConvertXMLFlags;
