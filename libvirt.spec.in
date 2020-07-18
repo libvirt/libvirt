@@ -288,7 +288,6 @@ BuildRequires: readline-devel
 %if %{with_bash_completion}
 BuildRequires: bash-completion >= 2.0
 %endif
-BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: libtasn1-devel
 BuildRequires: gnutls-devel
@@ -903,7 +902,6 @@ capabilities of VirtualBox
 Summary: Client side utilities of the libvirt library
 Requires: %{name}-libs = %{version}-%{release}
 Requires: readline
-Requires: ncurses
 # Needed by /usr/libexec/libvirt-guests.sh script.
 Requires: gettext
 # Needed by virt-pki-validate script.
