@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "qemu_domain.h"
+#include "qemu_namespace.h"
 #include "qemu_security.h"
 #include "virlog.h"
 

@@ -45,6 +45,7 @@
 #include "qemu_block.h"
 #include "qemu_domain.h"
 #include "qemu_domain_address.h"
+#include "qemu_namespace.h"
 #include "qemu_cgroup.h"
 #include "qemu_capabilities.h"
 #include "qemu_monitor.h"

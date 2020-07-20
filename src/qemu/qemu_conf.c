@@ -31,6 +31,7 @@
 #include "qemu_capabilities.h"
 #include "qemu_domain.h"
 #include "qemu_firmware.h"
+#include "qemu_namespace.h"
 #include "qemu_security.h"
 #include "viruuid.h"
 #include "virbuffer.h"

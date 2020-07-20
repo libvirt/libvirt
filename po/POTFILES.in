@@ -167,6 +167,7 @@
 @SRCDIR@src/qemu/qemu_monitor.c
 @SRCDIR@src/qemu/qemu_monitor_json.c
 @SRCDIR@src/qemu/qemu_monitor_text.c
+@SRCDIR@src/qemu/qemu_namespace.c
 @SRCDIR@src/qemu/qemu_process.c
 @SRCDIR@src/qemu/qemu_qapi.c
 @SRCDIR@src/qemu/qemu_slirp.c

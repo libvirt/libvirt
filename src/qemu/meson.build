@@ -26,6 +26,7 @@ qemu_driver_sources = [
   'qemu_monitor.c',
   'qemu_monitor_json.c',
   'qemu_monitor_text.c',
+  'qemu_namespace.c',
   'qemu_process.c',
   'qemu_qapi.c',
   'qemu_security.c',
