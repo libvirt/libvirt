@@ -6640,6 +6640,20 @@ qemuProcessSetupDiskThrottlingBlockdev(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessEnableDomainNamespaces(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
+    if (virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) &&
+        qemuDomainEnableNamespace(vm, QEMU_DOMAIN_NS_MOUNT) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuProcessLaunch:
  *
@@ -6759,7 +6773,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
     VIR_DEBUG("Building mount namespace");
 
-    if (qemuDomainCreateNamespace(driver, vm) < 0)
+    if (qemuProcessEnableDomainNamespaces(driver, vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up raw IO");
