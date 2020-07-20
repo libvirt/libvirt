@@ -1098,7 +1098,7 @@ qemuDomainNamespaceAvailable(qemuDomainNamespace ns G_GNUC_UNUSED)
 }
 
 
-struct qemuDomainAttachDeviceMknodData {
+struct qemuNamespaceMkondData {
     virQEMUDriverPtr driver;
     virDomainObjPtr vm;
     const char *file;
@@ -1117,7 +1117,7 @@ static int
 qemuDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
                                   void *opaque)
 {
-    struct qemuDomainAttachDeviceMknodData *data = opaque;
+    struct qemuNamespaceMkondData *data = opaque;
     int ret = -1;
     bool delDevice = false;
     bool isLink = S_ISLNK(data->sb.st_mode);
@@ -1262,7 +1262,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
                                      unsigned int ttl)
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    struct qemuDomainAttachDeviceMknodData data;
+    struct qemuNamespaceMkondData data;
     int ret = -1;
     g_autofree char *target = NULL;
     bool isLink;
