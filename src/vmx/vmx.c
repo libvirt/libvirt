@@ -3732,7 +3732,9 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
                      virBufferPtr buffer, int virtualHW_version)
 {
     char mac_string[VIR_MAC_STRING_BUFLEN];
-    const bool staticMac = def->mac_type == VIR_DOMAIN_NET_MAC_TYPE_STATIC;
+    virDomainNetMacType mac_type = VIR_DOMAIN_NET_MAC_TYPE_DEFAULT;
+    virTristateBool mac_check = VIR_TRISTATE_BOOL_ABSENT;
+    bool mac_vpx = false;
     unsigned int prefix, suffix;
 
     /*
@@ -3830,31 +3832,48 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
     prefix = (def->mac.addr[0] << 16) | (def->mac.addr[1] << 8) | def->mac.addr[2];
     suffix = (def->mac.addr[3] << 16) | (def->mac.addr[4] << 8) | def->mac.addr[5];
 
-    if (prefix == 0x000c29 && !staticMac) {
-        virBufferAsprintf(buffer, "ethernet%d.addressType = \"generated\"\n",
-                          controller);
+    /*
+     * Historically we've not stored all the MAC related properties
+     * explicitly in the XML, so we must figure out some defaults
+     * based on the address ranges.
+     */
+    if (prefix == 0x000c29) {
+        mac_type = VIR_DOMAIN_NET_MAC_TYPE_GENERATED;
+    } else if (prefix == 0x005056 && suffix <= 0x3fffff) {
+        mac_type = VIR_DOMAIN_NET_MAC_TYPE_STATIC;
+    } else if (prefix == 0x005056 && suffix >= 0x800000 && suffix <= 0xbfffff) {
+        mac_type = VIR_DOMAIN_NET_MAC_TYPE_GENERATED;
+        mac_vpx = true;
+    } else {
+        mac_type = VIR_DOMAIN_NET_MAC_TYPE_STATIC;
+        mac_check = VIR_TRISTATE_BOOL_NO;
+    }
+
+    /* If explicit MAC type is set, ignore the above defaults */
+    if (def->mac_type != VIR_DOMAIN_NET_MAC_TYPE_DEFAULT) {
+        mac_type = def->mac_type;
+        if (mac_type == VIR_DOMAIN_NET_MAC_TYPE_GENERATED)
+            mac_check = VIR_TRISTATE_BOOL_ABSENT;
+    }
+
+    if (mac_type == VIR_DOMAIN_NET_MAC_TYPE_GENERATED) {
+        virBufferAsprintf(buffer, "ethernet%d.addressType = \"%s\"\n",
+                          controller, mac_vpx ? "vpx" : "generated");
         virBufferAsprintf(buffer, "ethernet%d.generatedAddress = \"%s\"\n",
                           controller, mac_string);
-        virBufferAsprintf(buffer, "ethernet%d.generatedAddressOffset = \"0\"\n",
-                          controller);
-    } else if (prefix == 0x005056 && suffix <= 0x3fffff && !staticMac) {
-        virBufferAsprintf(buffer, "ethernet%d.addressType = \"static\"\n",
-                          controller);
-        virBufferAsprintf(buffer, "ethernet%d.address = \"%s\"\n",
-                          controller, mac_string);
-    } else if (prefix == 0x005056 && suffix >= 0x800000 && suffix <= 0xbfffff && !staticMac) {
-        virBufferAsprintf(buffer, "ethernet%d.addressType = \"vpx\"\n",
-                          controller);
-        virBufferAsprintf(buffer, "ethernet%d.generatedAddress = \"%s\"\n",
-                          controller, mac_string);
+        if (!mac_vpx)
+            virBufferAsprintf(buffer, "ethernet%d.generatedAddressOffset = \"0\"\n",
+                              controller);
     } else {
         virBufferAsprintf(buffer, "ethernet%d.addressType = \"static\"\n",
                           controller);
         virBufferAsprintf(buffer, "ethernet%d.address = \"%s\"\n",
                           controller, mac_string);
-        virBufferAsprintf(buffer, "ethernet%d.checkMACAddress = \"false\"\n",
-                          controller);
     }
+    if (mac_check != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(buffer, "ethernet%d.checkMACAddress = \"%s\"\n",
+                          controller,
+                          mac_check == VIR_TRISTATE_BOOL_YES ? "true" : "false");
 
     return 0;
 }
