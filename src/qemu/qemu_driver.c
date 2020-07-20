@@ -18812,14 +18812,17 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
         qemuAgentDiskInfoPtr agentdisk = agent->disks[i];
         virDomainDiskDefPtr diskDef;
 
-        if (!(diskDef = virDomainDiskByAddress(vmdef,
-                                               &agentdisk->pci_controller,
-                                               agentdisk->bus,
-                                               agentdisk->target,
-                                               agentdisk->unit)))
-            continue;
-
-        ret->devAlias[i] = g_strdup(diskDef->dst);
+        diskDef = virDomainDiskByAddress(vmdef,
+                                         &agentdisk->pci_controller,
+                                         agentdisk->bus,
+                                         agentdisk->target,
+                                         agentdisk->unit);
+        if (diskDef != NULL)
+            ret->devAlias[i] = g_strdup(diskDef->dst);
+        else if (agentdisk->devnode != NULL)
+            ret->devAlias[i] = g_strdup(agentdisk->devnode);
+        else
+            VIR_DEBUG("Missing devnode name for '%s'.", ret->mountpoint);
     }
 
     return ret;
