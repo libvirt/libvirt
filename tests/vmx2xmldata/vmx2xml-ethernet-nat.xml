@@ -12,7 +12,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <interface type='user'>
-      <mac address='00:50:56:11:22:33'/>
+      <mac address='00:50:56:11:22:33' type='static'/>
     </interface>
     <video>
       <model type='vmvga' vram='4096' primary='yes'/>

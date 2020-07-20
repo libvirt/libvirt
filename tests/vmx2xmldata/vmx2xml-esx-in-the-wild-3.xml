@@ -31,7 +31,7 @@
     <controller type='fdc' index='0'/>
     <controller type='ide' index='0'/>
     <interface type='bridge'>
-      <mac address='00:0c:29:f5:c3:0c'/>
+      <mac address='00:0c:29:f5:c3:0c' type='generated'/>
       <source bridge='VM Network'/>
     </interface>
     <video>

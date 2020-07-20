@@ -22,11 +22,11 @@
     </disk>
     <controller type='scsi' index='0' model='lsilogic'/>
     <interface type='bridge'>
-      <mac address='00:50:56:91:66:d4'/>
+      <mac address='00:50:56:91:66:d4' type='generated'/>
       <source bridge='VM Network'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:50:56:91:0c:51'/>
+      <mac address='00:50:56:91:0c:51' type='generated'/>
       <source bridge='VM Switch 2'/>
     </interface>
     <serial type='file'>

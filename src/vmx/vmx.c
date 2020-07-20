@@ -2535,6 +2535,9 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     char generatedAddress_name[48] = "";
     char *generatedAddress = NULL;
 
+    char checkMACAddress_name[48] = "";
+    char *checkMACAddress = NULL;
+
     char address_name[48] = "";
     char *address = NULL;
 
@@ -2564,6 +2567,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     VMX_BUILD_NAME(connectionType);
     VMX_BUILD_NAME(addressType);
     VMX_BUILD_NAME(generatedAddress);
+    VMX_BUILD_NAME(checkMACAddress);
     VMX_BUILD_NAME(address);
     VMX_BUILD_NAME(virtualDev);
     VMX_BUILD_NAME(features);
@@ -2598,7 +2602,9 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
                               true) < 0 ||
         virVMXGetConfigString(conf, generatedAddress_name, &generatedAddress,
                               true) < 0 ||
-        virVMXGetConfigString(conf, address_name, &address, true) < 0) {
+        virVMXGetConfigString(conf, address_name, &address, true) < 0 ||
+        virVMXGetConfigString(conf, checkMACAddress_name, &checkMACAddress,
+                              true) < 0) {
         goto cleanup;
     }
 
@@ -2613,6 +2619,8 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
                 goto cleanup;
             }
         }
+        if (addressType != NULL)
+            (*def)->mac_type = VIR_DOMAIN_NET_MAC_TYPE_GENERATED;
     } else if (STRCASEEQ(addressType, "static")) {
         if (address != NULL) {
             if (virMacAddrParse(address, &(*def)->mac) < 0) {
@@ -2622,6 +2630,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
                 goto cleanup;
             }
         }
+        (*def)->mac_type = VIR_DOMAIN_NET_MAC_TYPE_STATIC;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting VMX entry '%s' to be 'generated' or 'static' or "

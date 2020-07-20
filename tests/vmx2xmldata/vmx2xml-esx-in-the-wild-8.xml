@@ -36,52 +36,52 @@
     </disk>
     <controller type='scsi' index='0' model='vmpvscsi'/>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:01:55'/>
+      <mac address='00:1a:4a:16:01:55' type='static'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:21:85'/>
+      <mac address='00:1a:4a:16:21:85' type='generated'/>
       <source bridge='VM Network'/>
       <model type='e1000'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:21:82'/>
+      <mac address='00:1a:4a:16:21:82' type='generated'/>
       <source bridge='VM Network'/>
       <model type='e1000e'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:21:69'/>
+      <mac address='00:1a:4a:16:21:69' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:21:80'/>
+      <mac address='00:1a:4a:16:21:80' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:21:a3'/>
+      <mac address='00:1a:4a:16:21:a3' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:21:a8'/>
+      <mac address='00:1a:4a:16:21:a8' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:21:a9'/>
+      <mac address='00:1a:4a:16:21:a9' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:21:78'/>
+      <mac address='00:1a:4a:16:21:78' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:1a:4a:16:21:81'/>
+      <mac address='00:1a:4a:16:21:81' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
     </interface>

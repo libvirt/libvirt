@@ -19,7 +19,7 @@
     </disk>
     <controller type='ide' index='0'/>
     <interface type='bridge'>
-      <mac address='00:0c:29:c5:e3:5d'/>
+      <mac address='00:0c:29:c5:e3:5d' type='generated'/>
       <source bridge='net2'/>
       <target dev='/dev/vmnet2'/>
     </interface>

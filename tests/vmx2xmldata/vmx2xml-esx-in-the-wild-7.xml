@@ -24,7 +24,7 @@
     </disk>
     <controller type='scsi' index='0' model='vmpvscsi'/>
     <interface type='bridge'>
-      <mac address='00:50:56:9f:08:51'/>
+      <mac address='00:50:56:9f:08:51' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
     </interface>
