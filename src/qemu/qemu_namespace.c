@@ -1102,7 +1102,7 @@ struct qemuDomainAttachDeviceMknodData {
     virQEMUDriverPtr driver;
     virDomainObjPtr vm;
     const char *file;
-    const char *target;
+    char *target;
     GStatBuf sb;
     void *acl;
 #ifdef WITH_SELINUX
@@ -1248,6 +1248,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
     freecon(data->tcon);
 # endif
     virFileFreeACLs(&data->acl);
+    VIR_FREE(data->target);
     return ret;
 }
 
