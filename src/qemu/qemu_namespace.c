@@ -1481,8 +1481,7 @@ qemuDomainNamespaceMknodPaths(virDomainObjPtr vm,
     int ret = -1;
     size_t i;
 
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) ||
-        !npaths)
+    if (!npaths)
         return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -1529,8 +1528,7 @@ qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
     size_t i;
     int ret = -1;
 
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) ||
-        !npaths)
+    if (!npaths)
         return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -1571,6 +1569,9 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
     VIR_AUTOSTRINGLIST paths = NULL;
     size_t npaths = 0;
     bool hasNVMe = false;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
 
     for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
         g_autofree char *tmpPath = NULL;
@@ -1655,6 +1656,9 @@ qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
 {
     g_autofree char *path = NULL;
 
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
     if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
         return -1;
 
@@ -1687,6 +1691,9 @@ qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
 {
     g_autofree char *path = NULL;
 
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
     if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
         return -1;
 
@@ -1706,6 +1713,9 @@ int
 qemuDomainNamespaceSetupMemory(virDomainObjPtr vm,
                                virDomainMemoryDefPtr mem)
 {
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
         return 0;
 
@@ -1720,6 +1730,9 @@ int
 qemuDomainNamespaceTeardownMemory(virDomainObjPtr vm,
                                   virDomainMemoryDefPtr mem)
 {
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
         return 0;
 
@@ -1735,6 +1748,9 @@ qemuDomainNamespaceSetupChardev(virDomainObjPtr vm,
                                 virDomainChrDefPtr chr)
 {
     const char *path;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
 
     if (!(path = virDomainChrSourceDefGetPath(chr->source)))
         return 0;
@@ -1757,6 +1773,9 @@ qemuDomainNamespaceTeardownChardev(virDomainObjPtr vm,
 {
     const char *path = NULL;
 
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
     if (chr->source->type != VIR_DOMAIN_CHR_TYPE_DEV)
         return 0;
 
@@ -1774,6 +1793,9 @@ qemuDomainNamespaceSetupRNG(virDomainObjPtr vm,
                             virDomainRNGDefPtr rng)
 {
     const char *path = NULL;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
 
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
@@ -1799,6 +1821,9 @@ qemuDomainNamespaceTeardownRNG(virDomainObjPtr vm,
 {
     const char *path = NULL;
 
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         path = rng->source.file;
@@ -1823,6 +1848,9 @@ qemuDomainNamespaceSetupInput(virDomainObjPtr vm,
 {
     const char *path = NULL;
 
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
     if (!(path = virDomainInputDefGetPath(input)))
         return 0;
 
@@ -1837,6 +1865,9 @@ qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
                                  virDomainInputDefPtr input)
 {
     const char *path = NULL;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
 
     if (!(path = virDomainInputDefGetPath(input)))
         return 0;
