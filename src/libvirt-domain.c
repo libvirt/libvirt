@@ -11455,6 +11455,34 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                         as unsigned long long.
  *     "balloon.maximum" - the maximum memory in kiB allowed
  *                         as unsigned long long.
+ *     "balloon.swap_in" - the amount of data read from swap space (in KiB)
+ *                         as unsigned long long
+ *     "balloon.swap_out" - the amount of memory written out to swap space
+ *                          (in KiB) as unsigned long long
+ *     "balloon.major_fault" - the number of page faults when disk IO was
+ *                             required as unsigned long long
+ *     "balloon.minor_fault" - the number of other page faults
+ *                             as unsigned long long
+ *     "balloon.unused" - the amount of memory left unused by the system
+ *                        (in KiB) as unsigned long long
+ *     "balloon.available" - the amount of usable memory as seen by the domain
+ *                           (in KiB) as unsigned long long
+ *     "balloon.rss" - Resident Set Size of running domain's process
+ *                     (in KiB) as unsigned long long
+ *     "balloon.usable" - the amount of memory which can be reclaimed by balloon
+ *                        without causing host swapping (in KiB)
+ *                        as unsigned long long
+ *     "balloon.last-update" - timestamp of the last update of statistics
+ *                             (in seconds) as unsigned long long
+ *     "balloon.disk_caches" - the amount of memory that can be reclaimed
+ *                             without additional I/O, typically disk (in KiB)
+ *                             as unsigned long long
+ *     "balloon.hugetlb_pgalloc" - the number of successful huge page allocations
+ *                                 from inside the domain via virtio balloon
+ *                                 as unsigned long long
+ *     "balloon.hugetlb_pgfail" - the number of failed huge page allocations
+ *                                from inside the domain via virtio balloon
+ *                                as unsigned long long
  *
  * VIR_DOMAIN_STATS_VCPU:
  *     Return virtual CPU statistics.
