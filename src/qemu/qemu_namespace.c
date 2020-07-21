@@ -421,7 +421,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
 }
 
 
-static int
+static int G_GNUC_UNUSED
 qemuDomainCreateDevice(const char *device,
                        const struct qemuDomainCreateDeviceData *data,
                        bool allow_noent)
@@ -836,7 +836,7 @@ qemuDomainSetupLoader(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupLaunchSecurity(virDomainObjPtr vm,
-                              const struct qemuDomainCreateDeviceData *data)
+                              char ***paths)
 {
     virDomainSEVDefPtr sev = vm->def->sev;
 
@@ -845,7 +845,7 @@ qemuDomainSetupLaunchSecurity(virDomainObjPtr vm,
 
     VIR_DEBUG("Setting up launch security");
 
-    if (qemuDomainCreateDevice(QEMU_DEV_SEV, data, false) < 0)
+    if (virStringListAdd(paths, QEMU_DEV_SEV) < 0)
         return -1;
 
     VIR_DEBUG("Set up launch security");
@@ -894,6 +894,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainSetupLoader(vm, &paths) < 0)
         return -1;
 
+    if (qemuDomainSetupLaunchSecurity(vm, &paths) < 0)
+        return -1;
+
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
@@ -906,7 +909,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
                            virSecurityManagerPtr mgr,
                            virDomainObjPtr vm)
 {
-    struct qemuDomainCreateDeviceData data;
     const char *devPath = NULL;
     char **devMountsPath = NULL, **devMountsSavePath = NULL;
     size_t ndevMountsPath = 0, i;
@@ -935,17 +937,10 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    data.path = devPath;
-    data.devMountsPath = devMountsPath;
-    data.ndevMountsPath = ndevMountsPath;
-
     if (virProcessSetupPrivateMountNS() < 0)
         goto cleanup;
 
     if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainSetupLaunchSecurity(vm, &data) < 0)
         goto cleanup;
 
     /* Save some mount points because we want to share them with the host */
