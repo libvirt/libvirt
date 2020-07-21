@@ -1567,23 +1567,15 @@ int
 qemuDomainNamespaceTeardownRNG(virDomainObjPtr vm,
                                virDomainRNGDefPtr rng)
 {
-    const char *path = NULL;
+    VIR_AUTOSTRINGLIST paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    switch ((virDomainRNGBackend) rng->backend) {
-    case VIR_DOMAIN_RNG_BACKEND_RANDOM:
-        path = rng->source.file;
-        break;
+    if (qemuDomainSetupRNG(rng, &paths) < 0)
+        return -1;
 
-    case VIR_DOMAIN_RNG_BACKEND_EGD:
-    case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
-    case VIR_DOMAIN_RNG_BACKEND_LAST:
-        break;
-    }
-
-    if (path && qemuNamespaceUnlinkPath(vm, path) < 0)
+    if (qemuNamespaceUnlinkPaths(vm, (const char **) paths) < 0)
         return -1;
 
     return 0;
