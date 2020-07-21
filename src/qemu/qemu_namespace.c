@@ -1282,47 +1282,24 @@ qemuNamespaceMknodPaths(virDomainObjPtr vm G_GNUC_UNUSED,
 
 
 static int
-qemuDomainDetachDeviceUnlinkHelper(pid_t pid G_GNUC_UNUSED,
-                                   void *opaque)
+qemuNamespaceUnlinkHelper(pid_t pid G_GNUC_UNUSED,
+                          void *opaque)
 {
-    const char *path = opaque;
-
-    VIR_DEBUG("Unlinking %s", path);
-    if (unlink(path) < 0 && errno != ENOENT) {
-        virReportSystemError(errno,
-                             _("Unable to remove device %s"), path);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
-qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver G_GNUC_UNUSED,
-                             virDomainObjPtr vm,
-                             const char *file,
-                             char * const *devMountsPath,
-                             size_t ndevMountsPath)
-{
+    char **paths = opaque;
     size_t i;
 
-    if (STRPREFIX(file, QEMU_DEVPREFIX)) {
-        for (i = 0; i < ndevMountsPath; i++) {
-            if (STREQ(devMountsPath[i], "/dev"))
-                continue;
-            if (STRPREFIX(file, devMountsPath[i]))
-                break;
-        }
+    for (i = 0; paths[i]; i++) {
+        const char *path = paths[i];
 
-        if (i == ndevMountsPath) {
-            if (virProcessRunInMountNamespace(vm->pid,
-                                              qemuDomainDetachDeviceUnlinkHelper,
-                                              (void *)file) < 0)
-                return -1;
+        VIR_DEBUG("Unlinking %s", path);
+        if (unlink(path) < 0 && errno != ENOENT) {
+            virReportSystemError(errno,
+                                 _("Unable to remove device %s"), path);
+            return -1;
         }
     }
 
+    g_strfreev(paths);
     return 0;
 }
 
@@ -1335,6 +1312,7 @@ qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    VIR_AUTOSTRINGLIST unlinkPaths = NULL;
     char **devMountsPath = NULL;
     size_t ndevMountsPath = 0;
     size_t i;
@@ -1351,10 +1329,27 @@ qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
         goto cleanup;
 
     for (i = 0; i < npaths; i++) {
-        if (qemuDomainDetachDeviceUnlink(driver, vm, paths[i],
-                                         devMountsPath, ndevMountsPath) < 0)
-            goto cleanup;
+        const char *file = paths[i];
+
+        if (STRPREFIX(file, QEMU_DEVPREFIX)) {
+            for (i = 0; i < ndevMountsPath; i++) {
+                if (STREQ(devMountsPath[i], "/dev"))
+                    continue;
+                if (STRPREFIX(file, devMountsPath[i]))
+                    break;
+            }
+
+            if (i == ndevMountsPath &&
+                virStringListAdd(&unlinkPaths, file) < 0)
+                return -1;
+        }
     }
+
+    if (unlinkPaths &&
+        virProcessRunInMountNamespace(vm->pid,
+                                      qemuNamespaceUnlinkHelper,
+                                      unlinkPaths) < 0)
+        return -1;
 
     ret = 0;
  cleanup:
