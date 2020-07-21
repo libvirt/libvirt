@@ -598,25 +598,25 @@ qemuDomainSetupAllHostdevs(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupMemory(virDomainMemoryDefPtr mem,
-                      const struct qemuDomainCreateDeviceData *data)
+                      char ***paths)
 {
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
         return 0;
 
-    return qemuDomainCreateDevice(mem->nvdimmPath, data, false);
+    return virStringListAdd(paths, mem->nvdimmPath);
 }
 
 
 static int
 qemuDomainSetupAllMemories(virDomainObjPtr vm,
-                           const struct qemuDomainCreateDeviceData *data)
+                           char ***paths)
 {
     size_t i;
 
     VIR_DEBUG("Setting up memories");
     for (i = 0; i < vm->def->nmems; i++) {
         if (qemuDomainSetupMemory(vm->def->mems[i],
-                                  data) < 0)
+                                  paths) < 0)
             return -1;
     }
     VIR_DEBUG("Setup all memories");
@@ -874,6 +874,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainSetupAllHostdevs(vm, &paths) < 0)
         return -1;
 
+    if (qemuDomainSetupAllMemories(vm, &paths) < 0)
+        return -1;
+
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
@@ -923,9 +926,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainSetupAllMemories(vm, &data) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllChardevs(vm, &data) < 0)
@@ -1742,13 +1742,15 @@ int
 qemuDomainNamespaceSetupMemory(virDomainObjPtr vm,
                                virDomainMemoryDefPtr mem)
 {
+    VIR_AUTOSTRINGLIST paths = NULL;
+
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
-        return 0;
+    if (qemuDomainSetupMemory(mem, &paths) < 0)
+        return -1;
 
-    if (qemuDomainNamespaceMknodPath(vm, mem->nvdimmPath) < 0)
+    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
     return 0;
