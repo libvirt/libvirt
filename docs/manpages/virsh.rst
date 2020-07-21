@@ -2374,6 +2374,11 @@ too high will consume too much CPU time per IOThread failing to allow
 other threads running on the CPU to get time. The polling interval is
 not available for statistical purposes.
 
+* ``iothread.count`` - maximum number of IOThreads in the subsequent list
+                       as unsigned int. Each IOThread in the list will
+                       will use it's iothread_id value as the <id>. There
+                       may be fewer <id> entries than the iothread.count
+                       value if the polling values are not supported.
 * ``iothread.<id>.poll-max-ns`` - maximum polling time in nanoseconds used
   by the <id> IOThread. A value of 0 (zero) indicates polling is disabled.
 * ``iothread.<id>.poll-grow`` - polling time grow value. A value of 0 (zero)
