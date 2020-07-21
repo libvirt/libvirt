@@ -170,6 +170,10 @@ v6.4.0 (2020-06-02)
     firewalld resets all iptables rules and chains on restart, and this
     includes deleting those created by libvirt.
 
+  * qemu: reject readonly attribute for virtiofs
+
+    virtiofs does not yet support read-only shares.
+
 
 v6.3.0 (2020-05-05)
 ===================
