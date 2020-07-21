@@ -2265,6 +2265,10 @@ When selecting the *--state* group the following fields are returned:
   (in seconds)
 * ``balloon.disk_caches`` - the amount of memory that can be reclaimed
   without additional I/O, typically disk (in KiB)
+* ``balloon.hugetlb_pgalloc`` - the number of successful huge page allocations
+  from inside the domain via virtio balloon
+* ``balloon.hugetlb_pgfail`` - the number of failed huge page allocations
+  from inside the domain via virtio balloon
 
 
 *--vcpu* returns:
