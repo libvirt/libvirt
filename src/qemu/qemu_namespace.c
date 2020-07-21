@@ -486,13 +486,13 @@ qemuDomainSetupDev(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuDomainSetupDisk(virDomainDiskDefPtr disk,
+qemuDomainSetupDisk(virStorageSourcePtr src,
                     const struct qemuDomainCreateDeviceData *data)
 {
     virStorageSourcePtr next;
     bool hasNVMe = false;
 
-    for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore) {
+    for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
         VIR_AUTOSTRINGLIST targetPaths = NULL;
         size_t i;
 
@@ -531,7 +531,7 @@ qemuDomainSetupDisk(virDomainDiskDefPtr disk,
     }
 
     /* qemu-pr-helper might require access to /dev/mapper/control. */
-    if (disk->src->pr &&
+    if (src->pr &&
         qemuDomainCreateDevice(QEMU_DEVICE_MAPPER_CONTROL_PATH, data, true) < 0)
         return -1;
 
@@ -551,7 +551,7 @@ qemuDomainSetupAllDisks(virDomainObjPtr vm,
     VIR_DEBUG("Setting up disks");
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuDomainSetupDisk(vm->def->disks[i],
+        if (qemuDomainSetupDisk(vm->def->disks[i]->src,
                                 data) < 0)
             return -1;
     }
