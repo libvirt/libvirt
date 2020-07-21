@@ -701,27 +701,27 @@ qemuDomainSetupAllTPMs(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupGraphics(virDomainGraphicsDefPtr gfx,
-                        const struct qemuDomainCreateDeviceData *data)
+                        char ***paths)
 {
     const char *rendernode = virDomainGraphicsGetRenderNode(gfx);
 
     if (!rendernode)
         return 0;
 
-    return qemuDomainCreateDevice(rendernode, data, false);
+    return virStringListAdd(paths, rendernode);
 }
 
 
 static int
 qemuDomainSetupAllGraphics(virDomainObjPtr vm,
-                           const struct qemuDomainCreateDeviceData *data)
+                           char ***paths)
 {
     size_t i;
 
     VIR_DEBUG("Setting up graphics");
     for (i = 0; i < vm->def->ngraphics; i++) {
         if (qemuDomainSetupGraphics(vm->def->graphics[i],
-                                    data) < 0)
+                                    paths) < 0)
             return -1;
     }
 
@@ -882,6 +882,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainSetupAllTPMs(vm, &paths) < 0)
         return -1;
 
+    if (qemuDomainSetupAllGraphics(vm, &paths) < 0)
+        return -1;
+
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
@@ -931,9 +934,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainSetupAllGraphics(vm, &data) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllInputs(vm, &data) < 0)
