@@ -5725,9 +5725,9 @@ virDomainGetInterfaceParameters(virDomainPtr domain,
  *     Memory that can be reclaimed without additional I/O, typically disk
  *     caches (in kb).
  * VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC
- *     The amount of successful huge page allocations from inside the domain
+ *     The number of successful huge page allocations from inside the domain
  * VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL
- *     The amount of failed huge page allocations from inside the domain
+ *     The number of failed huge page allocations from inside the domain
  *
  * Returns: The number of stats provided or -1 in case of failure.
  */
