@@ -482,33 +482,29 @@ qemuDomainSetupDev(virSecurityManagerPtr mgr,
 
 static int
 qemuDomainSetupDisk(virStorageSourcePtr src,
-                    const struct qemuDomainCreateDeviceData *data)
+                    char ***paths)
 {
     virStorageSourcePtr next;
     bool hasNVMe = false;
 
     for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
-        VIR_AUTOSTRINGLIST targetPaths = NULL;
-        size_t i;
+        g_autofree char *tmpPath = NULL;
 
         if (next->type == VIR_STORAGE_TYPE_NVME) {
-            g_autofree char *nvmePath = NULL;
-
             hasNVMe = true;
 
-            if (!(nvmePath = virPCIDeviceAddressGetIOMMUGroupDev(&next->nvme->pciAddr)))
-                return -1;
-
-            if (qemuDomainCreateDevice(nvmePath, data, false) < 0)
+            if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&next->nvme->pciAddr)))
                 return -1;
         } else {
-            if (!next->path || !virStorageSourceIsLocalStorage(next)) {
+            VIR_AUTOSTRINGLIST targetPaths = NULL;
+
+            if (virStorageSourceIsEmpty(next) ||
+                !virStorageSourceIsLocalStorage(next)) {
                 /* Not creating device. Just continue. */
                 continue;
             }
 
-            if (qemuDomainCreateDevice(next->path, data, false) < 0)
-                return -1;
+            tmpPath = g_strdup(next->path);
 
             if (virDevMapperGetTargets(next->path, &targetPaths) < 0 &&
                 errno != ENOSYS) {
@@ -518,20 +514,21 @@ qemuDomainSetupDisk(virStorageSourcePtr src,
                 return -1;
             }
 
-            for (i = 0; targetPaths && targetPaths[i]; i++) {
-                if (qemuDomainCreateDevice(targetPaths[i], data, false) < 0)
-                    return -1;
-            }
+            if (virStringListMerge(paths, &targetPaths) < 0)
+                return -1;
         }
+
+        if (virStringListAdd(paths, tmpPath) < 0)
+            return -1;
     }
 
     /* qemu-pr-helper might require access to /dev/mapper/control. */
     if (src->pr &&
-        qemuDomainCreateDevice(QEMU_DEVICE_MAPPER_CONTROL_PATH, data, true) < 0)
+        virStringListAdd(paths, QEMU_DEVICE_MAPPER_CONTROL_PATH) < 0)
         return -1;
 
     if (hasNVMe &&
-        qemuDomainCreateDevice(QEMU_DEV_VFIO, data, false) < 0)
+        virStringListAdd(paths, QEMU_DEV_VFIO) < 0)
         return -1;
 
     return 0;
@@ -540,14 +537,15 @@ qemuDomainSetupDisk(virStorageSourcePtr src,
 
 static int
 qemuDomainSetupAllDisks(virDomainObjPtr vm,
-                        const struct qemuDomainCreateDeviceData *data)
+                        char ***paths)
 {
     size_t i;
+
     VIR_DEBUG("Setting up disks");
 
     for (i = 0; i < vm->def->ndisks; i++) {
         if (qemuDomainSetupDisk(vm->def->disks[i]->src,
-                                data) < 0)
+                                paths) < 0)
             return -1;
     }
 
@@ -865,6 +863,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainPopulateDevices(cfg, &paths) < 0)
         return -1;
 
+    if (qemuDomainSetupAllDisks(vm, &paths) < 0)
+        return -1;
+
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
@@ -914,9 +915,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainSetupAllDisks(vm, &data) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllHostdevs(vm, &data) < 0)
@@ -1638,55 +1636,12 @@ int
 qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
                              virStorageSourcePtr src)
 {
-    virStorageSourcePtr next;
     VIR_AUTOSTRINGLIST paths = NULL;
-    bool hasNVMe = false;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
-        g_autofree char *tmpPath = NULL;
-
-        if (next->type == VIR_STORAGE_TYPE_NVME) {
-            hasNVMe = true;
-
-            if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&next->nvme->pciAddr)))
-                return -1;
-        } else {
-            VIR_AUTOSTRINGLIST targetPaths = NULL;
-
-            if (virStorageSourceIsEmpty(next) ||
-                !virStorageSourceIsLocalStorage(next)) {
-                /* Not creating device. Just continue. */
-                continue;
-            }
-
-            tmpPath = g_strdup(next->path);
-
-            if (virDevMapperGetTargets(next->path, &targetPaths) < 0 &&
-                errno != ENOSYS) {
-                virReportSystemError(errno,
-                                     _("Unable to get devmapper targets for %s"),
-                                     next->path);
-                return -1;
-            }
-
-            if (virStringListMerge(&paths, &targetPaths) < 0)
-                return -1;
-        }
-
-        if (virStringListAdd(&paths, tmpPath) < 0)
-            return -1;
-    }
-
-    /* qemu-pr-helper might require access to /dev/mapper/control. */
-    if (src->pr &&
-        virStringListAdd(&paths, QEMU_DEVICE_MAPPER_CONTROL_PATH) < 0)
-        return -1;
-
-    if (hasNVMe &&
-        virStringListAdd(&paths, QEMU_DEV_VFIO) < 0)
+    if (qemuDomainSetupDisk(src, &paths) < 0)
         return -1;
 
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
