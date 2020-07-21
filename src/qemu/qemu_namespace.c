@@ -1306,8 +1306,7 @@ qemuNamespaceUnlinkHelper(pid_t pid G_GNUC_UNUSED,
 
 static int
 qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
-                         const char **paths,
-                         size_t npaths)
+                         const char **paths)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
@@ -1315,9 +1314,11 @@ qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
     VIR_AUTOSTRINGLIST unlinkPaths = NULL;
     char **devMountsPath = NULL;
     size_t ndevMountsPath = 0;
+    size_t npaths;
     size_t i;
     int ret = -1;
 
+    npaths = virStringListLength(paths);
     if (!npaths)
         return 0;
 
@@ -1362,9 +1363,9 @@ static int
 qemuNamespaceUnlinkPath(virDomainObjPtr vm,
                         const char *path)
 {
-    const char *paths[] = { path };
+    const char *paths[] = { path, NULL };
 
-    return qemuNamespaceUnlinkPaths(vm, paths, 1);
+    return qemuNamespaceUnlinkPaths(vm, paths);
 }
 
 
