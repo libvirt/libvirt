@@ -2250,7 +2250,7 @@ When selecting the *--state* group the following fields are returned:
 * ``balloon.swap_in`` - the amount of data read from swap space (in KiB)
 * ``balloon.swap_out`` - the amount of memory written out to swap
   space (in KiB)
-* ``balloon.major_fault`` - the number of page faults then disk IO
+* ``balloon.major_fault`` - the number of page faults when disk IO
   was required
 * ``balloon.minor_fault`` - the number of other page faults
 * ``balloon.unused`` - the amount of memory left unused by the
