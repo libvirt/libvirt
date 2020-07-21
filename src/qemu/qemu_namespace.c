@@ -435,8 +435,7 @@ qemuDomainCreateDevice(const char *device,
 
 static int
 qemuDomainPopulateDevices(virQEMUDriverConfigPtr cfg,
-                          virDomainObjPtr vm G_GNUC_UNUSED,
-                          const struct qemuDomainCreateDeviceData *data)
+                          char ***paths)
 {
     const char *const *devices = (const char *const *) cfg->cgroupDeviceACL;
     size_t i;
@@ -445,7 +444,7 @@ qemuDomainPopulateDevices(virQEMUDriverConfigPtr cfg,
         devices = defaultDeviceACL;
 
     for (i = 0; devices[i]; i++) {
-        if (qemuDomainCreateDevice(devices[i], data, true) < 0)
+        if (virStringListAdd(paths, devices[i]) < 0)
             return -1;
     }
 
@@ -454,10 +453,9 @@ qemuDomainPopulateDevices(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuDomainSetupDev(virQEMUDriverConfigPtr cfg,
-                   virSecurityManagerPtr mgr,
+qemuDomainSetupDev(virSecurityManagerPtr mgr,
                    virDomainObjPtr vm,
-                   const struct qemuDomainCreateDeviceData *data)
+                   const char *path)
 {
     g_autofree char *mount_options = NULL;
     g_autofree char *opts = NULL;
@@ -475,10 +473,7 @@ qemuDomainSetupDev(virQEMUDriverConfigPtr cfg,
      */
     opts = g_strdup_printf("mode=755,size=65536%s", mount_options);
 
-    if (virFileSetupDev(data->path, opts) < 0)
-        return -1;
-
-    if (qemuDomainPopulateDevices(cfg, vm, data) < 0)
+    if (virFileSetupDev(path, opts) < 0)
         return -1;
 
     return 0;
@@ -862,9 +857,13 @@ qemuNamespaceMknodPaths(virDomainObjPtr vm,
 
 
 int
-qemuDomainBuildNamespace(virDomainObjPtr vm)
+qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
+                         virDomainObjPtr vm)
 {
     VIR_AUTOSTRINGLIST paths = NULL;
+
+    if (qemuDomainPopulateDevices(cfg, &paths) < 0)
+        return -1;
 
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
@@ -914,7 +913,7 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
     if (virProcessSetupPrivateMountNS() < 0)
         goto cleanup;
 
-    if (qemuDomainSetupDev(cfg, mgr, vm, &data) < 0)
+    if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllDisks(vm, &data) < 0)

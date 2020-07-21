@@ -6832,7 +6832,7 @@ qemuProcessLaunch(virConnectPtr conn,
     }
 
     VIR_DEBUG("Building domain mount namespace (if required)");
-    if (qemuDomainBuildNamespace(vm) < 0)
+    if (qemuDomainBuildNamespace(cfg, vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up domain cgroup (if required)");

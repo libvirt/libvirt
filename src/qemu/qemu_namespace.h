@@ -41,7 +41,8 @@ int qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
                                virSecurityManagerPtr mgr,
                                virDomainObjPtr vm);
 
-int qemuDomainBuildNamespace(virDomainObjPtr vm);
+int qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
+                             virDomainObjPtr vm);
 
 void qemuDomainDestroyNamespace(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm);
