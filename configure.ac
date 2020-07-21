@@ -207,28 +207,6 @@ LIBVIRT_CHECK_YAJL
 
 AC_CHECK_SIZEOF([long])
 
-dnl Availability of various common headers (non-fatal if missing).
-AC_CHECK_HEADERS([\
-  asm/hwcap.h \
-  ifaddrs.h \
-  libtasn1.h \
-  util.h \
-  libutil.h \
-  linux/magic.h \
-  mntent.h \
-  net/ethernet.h \
-  pty.h \
-  pwd.h \
-  stdarg.h \
-  syslog.h \
-  sys/ioctl.h \
-  sys/mount.h \
-  sys/syscall.h \
-  sys/sysctl.h \
-  sys/ucred.h \
-  xlocale.h \
-  ])
-AC_CHECK_HEADERS([net/if.h], [], [], [[#include <sys/socket.h>]])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
 
@@ -255,11 +233,6 @@ AC_CHECK_DECLS([SEEK_HOLE], [], [],
                [#include <sys/types.h>
                 #include <unistd.h>])
 
-
-dnl Our only use of libtasn1.h is in the testsuite, and can be skipped
-dnl if the header is not present.  Assume -ltasn1 is present if the
-dnl header could be found.
-AM_CONDITIONAL([HAVE_LIBTASN1], [test "x$ac_cv_header_libtasn1_h" = "xyes"])
 
 AC_CHECK_LIB([intl],[gettext],[])
 AC_CHECK_LIB([util],[openpty],[])
@@ -340,54 +313,6 @@ LIBVIRT_CHECK_HOST_VALIDATE
 LIBVIRT_CHECK_TLS_PRIORITY
 LIBVIRT_CHECK_SYSCTL_CONFIG
 LIBVIRT_CHECK_NSS
-
-
-
-
-dnl
-dnl check for kvm headers
-dnl
-AC_CHECK_HEADERS([linux/kvm.h])
-
-
-dnl
-dnl check for kernel headers required by src/bridge.c
-dnl
-if test "$with_linux" = "yes"; then
-    # Various kernel versions have headers that are not self-standing, but
-    # yet are incompatible with the corresponding glibc headers.  In order
-    # to guarantee compilation across a wide range of versions (from RHEL 5
-    # to rawhide), we first have to probe whether glibc and kernel can be
-    # used in tandem; and if not, provide workarounds that ensure that
-    # ABI-compatible IPv6 types are present for use by the kernel headers.
-    # These probes mirror the usage in virnetdevbridge.c
-    AC_CACHE_CHECK(
-      [whether <linux/*.h> and <netinet/*.h> headers are compatible],
-      [lv_cv_netinet_linux_compatible],
-      [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-        #include <netinet/in.h>
-        #include <linux/in6.h>
-      ]])],
-      [lv_cv_netinet_linux_compatible=yes],
-      [lv_cv_netinet_linux_compatible=no])])
-    if test "x$lv_cv_netinet_linux_compatible" != xyes; then
-      AC_DEFINE([NETINET_LINUX_WORKAROUND], [1],
-        [define to 1 if Linux kernel headers require a workaround to avoid
-        compilation errors when mixed with glibc netinet headers])
-    fi
-    AC_CHECK_HEADERS([linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h],,
-      [AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt with QEMU or LXC support])],
-      [[#include <netinet/in.h>
-        #if NETINET_LINUX_WORKAROUND
-        # define in6_addr in6_addr_
-        # define sockaddr_in6 sockaddr_in6_
-        # define ipv6_mreq ipv6_mreq_
-        # define in6addr_any in6addr_any_
-        # define in6addr_loopback in6addr_loopback_
-        #endif
-        #include <linux/in6.h>
-      ]])
-fi
 
 
 dnl Need to test if pkg-config exists
@@ -481,20 +406,6 @@ fi
 AM_CONDITIONAL([WITH_STORAGE], [test "$with_storage" = "yes"])
 
 dnl
-dnl check for kernel headers required by btrfs ioctl
-dnl
-if test "$with_linux" = "yes"; then
-    AC_CHECK_HEADERS([linux/btrfs.h])
-fi
-
-dnl
-dnl check for xfs dev headers required by xfs ioctl
-dnl
-if test "$with_linux" = "yes"; then
-    AC_CHECK_HEADERS([xfs/xfs.h])
-fi
-
-dnl
 dnl check for DEVLINK_CMD_ESWITCH_GET
 dnl
 dnl Assume DEVLINK_ESWITCH_MODE_SWITCHDEV is also
@@ -503,7 +414,6 @@ dnl along with the original spelling of this constant
 dnl (DEVLINK_CMD_ESWITCH_MODE_GET, not supported by libvirt)
 dnl
 if test "$with_linux" = "yes"; then
-    AC_CHECK_HEADERS([linux/devlink.h])
     AC_CHECK_DECLS([DEVLINK_CMD_ESWITCH_GET], [], [],
                    [[#include <linux/devlink.h>]])
 fi

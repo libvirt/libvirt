@@ -677,6 +677,78 @@ foreach function : functions
 endforeach
 
 
+# various header checks
+
+headers = [
+  'asm/hwcap.h',
+  'ifaddrs.h',
+  'libtasn1.h',
+  'libutil.h',
+  'linux/kvm.h',
+  'linux/magic.h',
+  'mntent.h',
+  'net/ethernet.h',
+  'net/if.h',
+  'pty.h',
+  'pwd.h',
+  'stdarg.h',
+  'sys/ioctl.h',
+  'sys/mount.h',
+  'sys/syscall.h',
+  'sys/sysctl.h',
+  'sys/ucred.h',
+  'syslog.h',
+  'util.h',
+  'xlocale.h',
+]
+
+if host_machine.system() == 'linux'
+  # check for kernel headers required by btrfs ioctl
+  headers += 'linux/btrfs.h'
+  # check for xfs dev headers required by xfs ioctl
+  headers += 'xfs/xfs.h'
+  # check for DEVLINK_CMD_ESWITCH_GET
+  headers += 'linux/devlink.h'
+endif
+
+foreach name : headers
+  if cc.has_header(name)
+    conf.set('HAVE_@0@'.format(name.underscorify().to_upper()), 1)
+  endif
+endforeach
+
+# check for kernel headers required by src/util/virnetdevbridge.c
+if host_machine.system() == 'linux'
+  # Various kernel versions have headers that are not self-standing, but
+  # yet are incompatible with the corresponding glibc headers.  In order
+  # to guarantee compilation across a wide range of versions (from RHEL 5
+  # to rawhide), we first have to probe whether glibc and kernel can be
+  # used in tandem; and if not, provide workarounds that ensure that
+  # ABI-compatible IPv6 types are present for use by the kernel headers.
+  netinet_workaround_code = '''
+  #include <netinet/in.h>
+  #include <linux/in6.h>
+
+  int main(void) { return 0; }
+  '''
+  if not cc.compiles(netinet_workaround_code)
+    conf.set('NETINET_LINUX_WORKAROUND', 1)
+  endif
+
+  required_headers = [
+    'linux/param.h',
+    'linux/sockios.h',
+    'linux/if_bridge.h',
+    'linux/if_tun.h',
+  ]
+  foreach name : required_headers
+    if not cc.has_header(name)
+      error('You must install kernel-headers in order to compile libvirt with QEMU or LXC support')
+    endif
+  endforeach
+endif
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
