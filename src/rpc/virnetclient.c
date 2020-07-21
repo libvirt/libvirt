@@ -419,6 +419,9 @@ virNetClientSSHHelperCommand(const char *netcatPath,
 {
     g_autofree char *netcatPathSafe = virNetClientDoubleEscapeShell(netcatPath);
 
+    if (!netcatPath)
+        netcatPath = "nc";
+
     return g_strdup_printf(
         "sh -c "
         "'if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
@@ -505,7 +508,6 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     DEFAULT_VALUE(host, "localhost");
     DEFAULT_VALUE(port, "22");
     DEFAULT_VALUE(username, "root");
-    DEFAULT_VALUE(netcatPath, "nc");
     DEFAULT_VALUE(knownHostsVerify, "normal");
 
     command = virNetClientSSHHelperCommand(netcatPath, socketPath);
@@ -566,7 +568,6 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
     DEFAULT_VALUE(host, "localhost");
     DEFAULT_VALUE(port, "22");
     DEFAULT_VALUE(username, "root");
-    DEFAULT_VALUE(netcatPath, "nc");
     DEFAULT_VALUE(knownHostsVerify, "normal");
 
     command = virNetClientSSHHelperCommand(netcatPath, socketPath);
