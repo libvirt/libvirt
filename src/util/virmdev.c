@@ -439,7 +439,7 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
 
         if (virMediatedDeviceIsUsed(mdev, dst) ||
             virMediatedDeviceSetUsedBy(mdev, drvname, domname) < 0)
-            goto cleanup;
+            goto rollback;
 
         /* Copy mdev references to the driver list:
          * - caller is responsible for NOT freeing devices in @src on success
