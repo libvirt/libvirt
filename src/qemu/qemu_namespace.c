@@ -555,19 +555,22 @@ qemuDomainSetupAllDisks(virDomainObjPtr vm,
 
 
 static int
-qemuDomainSetupHostdev(virDomainHostdevDefPtr dev,
-                       const struct qemuDomainCreateDeviceData *data)
+qemuDomainSetupHostdev(virDomainObjPtr vm,
+                       virDomainHostdevDefPtr hostdev,
+                       bool hotplug,
+                       char ***paths)
 {
     g_autofree char *path = NULL;
 
-    if (qemuDomainGetHostdevPath(dev, &path, NULL) < 0)
+    if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
         return -1;
 
-    if (path && qemuDomainCreateDevice(path, data, false) < 0)
+    if (path && virStringListAdd(paths, path) < 0)
         return -1;
 
-    if (qemuHostdevNeedsVFIO(dev) &&
-        qemuDomainCreateDevice(QEMU_DEV_VFIO, data, false) < 0)
+    if (qemuHostdevNeedsVFIO(hostdev) &&
+        (!hotplug || !qemuDomainNeedsVFIO(vm->def)) &&
+        virStringListAdd(paths, QEMU_DEV_VFIO) < 0)
         return -1;
 
     return 0;
@@ -576,14 +579,16 @@ qemuDomainSetupHostdev(virDomainHostdevDefPtr dev,
 
 static int
 qemuDomainSetupAllHostdevs(virDomainObjPtr vm,
-                           const struct qemuDomainCreateDeviceData *data)
+                           char ***paths)
 {
     size_t i;
 
     VIR_DEBUG("Setting up hostdevs");
     for (i = 0; i < vm->def->nhostdevs; i++) {
-        if (qemuDomainSetupHostdev(vm->def->hostdevs[i],
-                                   data) < 0)
+        if (qemuDomainSetupHostdev(vm,
+                                   vm->def->hostdevs[i],
+                                   false,
+                                   paths) < 0)
             return -1;
     }
     VIR_DEBUG("Setup all hostdevs");
@@ -866,6 +871,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainSetupAllDisks(vm, &paths) < 0)
         return -1;
 
+    if (qemuDomainSetupAllHostdevs(vm, &paths) < 0)
+        return -1;
+
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
@@ -915,9 +923,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainSetupAllHostdevs(vm, &data) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllMemories(vm, &data) < 0)
@@ -1680,21 +1685,15 @@ int
 qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
                                 virDomainHostdevDefPtr hostdev)
 {
-    g_autofree char *path = NULL;
     VIR_AUTOSTRINGLIST paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
-        return -1;
-
-    if (path && virStringListAdd(&paths, path) < 0)
-        return -1;
-
-    if (qemuHostdevNeedsVFIO(hostdev) &&
-        !qemuDomainNeedsVFIO(vm->def) &&
-        virStringListAdd(&paths, QEMU_DEV_VFIO) < 0)
+    if (qemuDomainSetupHostdev(vm,
+                               hostdev,
+                               true,
+                               &paths) < 0)
         return -1;
 
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
