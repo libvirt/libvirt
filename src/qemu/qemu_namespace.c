@@ -801,7 +801,7 @@ qemuDomainSetupAllRNGs(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupLoader(virDomainObjPtr vm,
-                      const struct qemuDomainCreateDeviceData *data)
+                      char ***paths)
 {
     virDomainLoaderDefPtr loader = vm->def->os.loader;
 
@@ -810,16 +810,16 @@ qemuDomainSetupLoader(virDomainObjPtr vm,
     if (loader) {
         switch ((virDomainLoader) loader->type) {
         case VIR_DOMAIN_LOADER_TYPE_ROM:
-            if (qemuDomainCreateDevice(loader->path, data, false) < 0)
+            if (virStringListAdd(paths, loader->path) < 0)
                 return -1;
             break;
 
         case VIR_DOMAIN_LOADER_TYPE_PFLASH:
-            if (qemuDomainCreateDevice(loader->path, data, false) < 0)
+            if (virStringListAdd(paths, loader->path) < 0)
                 return -1;
 
             if (loader->nvram &&
-                qemuDomainCreateDevice(loader->nvram, data, false) < 0)
+                virStringListAdd(paths, loader->nvram) < 0)
                 return -1;
             break;
 
@@ -891,6 +891,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainSetupAllRNGs(vm, &paths) < 0)
         return -1;
 
+    if (qemuDomainSetupLoader(vm, &paths) < 0)
+        return -1;
+
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
@@ -940,9 +943,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainSetupLoader(vm, &data) < 0)
         goto cleanup;
 
     if (qemuDomainSetupLaunchSecurity(vm, &data) < 0)
