@@ -1450,20 +1450,18 @@ int
 qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
                                    virDomainHostdevDefPtr hostdev)
 {
-    g_autofree char *path = NULL;
+    VIR_AUTOSTRINGLIST paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
+    if (qemuDomainSetupHostdev(vm,
+                               hostdev,
+                               true,
+                               &paths) < 0)
         return -1;
 
-    if (path && qemuNamespaceUnlinkPath(vm, path) < 0)
-        return -1;
-
-    if (qemuHostdevNeedsVFIO(hostdev) &&
-        !qemuDomainNeedsVFIO(vm->def) &&
-        qemuNamespaceUnlinkPath(vm, QEMU_DEV_VFIO) < 0)
+    if (qemuNamespaceUnlinkPaths(vm, (const char **) paths) < 0)
         return -1;
 
     return 0;
