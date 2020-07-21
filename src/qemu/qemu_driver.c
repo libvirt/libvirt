@@ -13150,7 +13150,6 @@ qemuConnectCPUModelComparison(virQEMUCapsPtr qemuCaps,
 {
     g_autoptr(qemuProcessQMP) proc = NULL;
     g_autofree char *result = NULL;
-    int ret = VIR_CPU_COMPARE_ERROR;
 
     if (!(proc = qemuProcessQMPNew(virQEMUCapsGetBinary(qemuCaps),
                                    libDir, runUid, runGid, false)))
@@ -13163,15 +13162,17 @@ qemuConnectCPUModelComparison(virQEMUCapsPtr qemuCaps,
         return VIR_CPU_COMPARE_ERROR;
 
     if (STREQ(result, "identical"))
-        ret = VIR_CPU_COMPARE_IDENTICAL;
-    else if (STREQ(result, "superset"))
-        ret = VIR_CPU_COMPARE_SUPERSET;
-    else if (failIncompatible)
-        virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
-    else
-        ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+        return VIR_CPU_COMPARE_IDENTICAL;
 
-    return ret;
+    if (STREQ(result, "superset"))
+        return VIR_CPU_COMPARE_SUPERSET;
+
+    if (failIncompatible) {
+        virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
+        return VIR_CPU_COMPARE_ERROR;
+    }
+
+    return VIR_CPU_COMPARE_INCOMPATIBLE;
 }
 
 
