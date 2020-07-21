@@ -1655,6 +1655,8 @@ qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
                                 virDomainHostdevDefPtr hostdev)
 {
     g_autofree char *path = NULL;
+    VIR_AUTOSTRINGLIST paths = NULL;
+    size_t npaths = 0;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1662,12 +1664,16 @@ qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
     if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
         return -1;
 
-    if (path && qemuDomainNamespaceMknodPath(vm, path) < 0)
+    if (path && virStringListAdd(&paths, path) < 0)
         return -1;
 
     if (qemuHostdevNeedsVFIO(hostdev) &&
         !qemuDomainNeedsVFIO(vm->def) &&
-        qemuDomainNamespaceMknodPath(vm, QEMU_DEV_VFIO) < 0)
+        virStringListAdd(&paths, QEMU_DEV_VFIO) < 0)
+        return -1;
+
+    npaths = virStringListLength((const char **) paths);
+    if (qemuDomainNamespaceMknodPaths(vm, (const char **) paths, npaths) < 0)
         return -1;
 
     return 0;
