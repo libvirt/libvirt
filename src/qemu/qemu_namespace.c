@@ -629,7 +629,7 @@ qemuDomainSetupChardev(virDomainDefPtr def G_GNUC_UNUSED,
                        virDomainChrDefPtr dev,
                        void *opaque)
 {
-    const struct qemuDomainCreateDeviceData *data = opaque;
+    char ***paths = opaque;
     const char *path = NULL;
 
     if (!(path = virDomainChrSourceDefGetPath(dev->source)))
@@ -640,20 +640,20 @@ qemuDomainSetupChardev(virDomainDefPtr def G_GNUC_UNUSED,
         dev->source->data.nix.listen)
         return 0;
 
-    return qemuDomainCreateDevice(path, data, true);
+    return virStringListAdd(paths, path);
 }
 
 
 static int
 qemuDomainSetupAllChardevs(virDomainObjPtr vm,
-                           const struct qemuDomainCreateDeviceData *data)
+                           char ***paths)
 {
     VIR_DEBUG("Setting up chardevs");
 
     if (virDomainChrDefForeach(vm->def,
                                true,
                                qemuDomainSetupChardev,
-                               (void *)data) < 0)
+                               paths) < 0)
         return -1;
 
     VIR_DEBUG("Setup all chardevs");
@@ -877,6 +877,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainSetupAllMemories(vm, &paths) < 0)
         return -1;
 
+    if (qemuDomainSetupAllChardevs(vm, &paths) < 0)
+        return -1;
+
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
@@ -926,9 +929,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainSetupAllChardevs(vm, &data) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllTPMs(vm, &data) < 0)
@@ -1778,20 +1778,15 @@ int
 qemuDomainNamespaceSetupChardev(virDomainObjPtr vm,
                                 virDomainChrDefPtr chr)
 {
-    const char *path;
+    VIR_AUTOSTRINGLIST paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (!(path = virDomainChrSourceDefGetPath(chr->source)))
-        return 0;
+    if (qemuDomainSetupChardev(vm->def, chr, &paths) < 0)
+        return -1;
 
-    /* Socket created by qemu. It doesn't exist upfront. */
-    if (chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-        chr->source->data.nix.listen)
-        return 0;
-
-    if (qemuDomainNamespaceMknodPath(vm, path) < 0)
+    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
     return 0;
