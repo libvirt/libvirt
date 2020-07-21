@@ -3164,7 +3164,7 @@ static int qemuProcessHook(void *data)
     if (qemuSecurityClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainBuildNamespace(h->cfg, h->driver->securityManager, h->vm) < 0)
+    if (qemuDomainUnshareNamespace(h->cfg, h->driver->securityManager, h->vm) < 0)
         goto cleanup;
 
     if (virDomainNumatuneGetMode(h->vm->def->numa, -1, &mode) == 0) {
@@ -6830,6 +6830,10 @@ qemuProcessLaunch(virConnectPtr conn,
                                   _("Process exited prior to exec"));
         goto cleanup;
     }
+
+    VIR_DEBUG("Building domain mount namespace (if required)");
+    if (qemuDomainBuildNamespace(vm) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Setting up domain cgroup (if required)");
     if (qemuSetupCgroup(vm, nnicindexes, nicindexes) < 0)
