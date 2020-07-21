@@ -732,11 +732,11 @@ qemuDomainSetupAllGraphics(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupInput(virDomainInputDefPtr input,
-                     const struct qemuDomainCreateDeviceData *data)
+                     char ***paths)
 {
     const char *path = virDomainInputDefGetPath(input);
 
-    if (path && qemuDomainCreateDevice(path, data, false) < 0)
+    if (path && virStringListAdd(paths, path) < 0)
         return -1;
 
     return 0;
@@ -745,14 +745,14 @@ qemuDomainSetupInput(virDomainInputDefPtr input,
 
 static int
 qemuDomainSetupAllInputs(virDomainObjPtr vm,
-                         const struct qemuDomainCreateDeviceData *data)
+                         char ***paths)
 {
     size_t i;
 
     VIR_DEBUG("Setting up inputs");
     for (i = 0; i < vm->def->ninputs; i++) {
         if (qemuDomainSetupInput(vm->def->inputs[i],
-                                 data) < 0)
+                                 paths) < 0)
             return -1;
     }
     VIR_DEBUG("Setup all inputs");
@@ -885,6 +885,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainSetupAllGraphics(vm, &paths) < 0)
         return -1;
 
+    if (qemuDomainSetupAllInputs(vm, &paths) < 0)
+        return -1;
+
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
@@ -934,9 +937,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainSetupAllInputs(vm, &data) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllRNGs(vm, &data) < 0)
@@ -1871,15 +1871,15 @@ int
 qemuDomainNamespaceSetupInput(virDomainObjPtr vm,
                               virDomainInputDefPtr input)
 {
-    const char *path = NULL;
+    VIR_AUTOSTRINGLIST paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (!(path = virDomainInputDefGetPath(input)))
-        return 0;
+    if (qemuDomainSetupInput(input, &paths) < 0)
+        return -1;
 
-    if (path && qemuDomainNamespaceMknodPath(vm, path) < 0)
+    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
     return 0;
 }
