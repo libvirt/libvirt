@@ -1359,16 +1359,6 @@ qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
 }
 
 
-static int
-qemuNamespaceUnlinkPath(virDomainObjPtr vm,
-                        const char *path)
-{
-    const char *paths[] = { path, NULL };
-
-    return qemuNamespaceUnlinkPaths(vm, paths);
-}
-
-
 int
 qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
                              virStorageSourcePtr src)
@@ -1604,15 +1594,15 @@ int
 qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
                                  virDomainInputDefPtr input)
 {
-    const char *path = NULL;
+    VIR_AUTOSTRINGLIST paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (!(path = virDomainInputDefGetPath(input)))
-        return 0;
+    if (qemuDomainSetupInput(input, &paths) < 0)
+        return -1;
 
-    if (path && qemuNamespaceUnlinkPath(vm, path) < 0)
+    if (qemuNamespaceUnlinkPaths(vm, (const char **) paths) < 0)
         return -1;
 
     return 0;
