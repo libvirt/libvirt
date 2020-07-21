@@ -1491,13 +1491,15 @@ int
 qemuDomainNamespaceTeardownMemory(virDomainObjPtr vm,
                                   virDomainMemoryDefPtr mem)
 {
+    VIR_AUTOSTRINGLIST paths = NULL;
+
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
-        return 0;
+    if (qemuDomainSetupMemory(mem, &paths) < 0)
+        return -1;
 
-    if (qemuNamespaceUnlinkPath(vm, mem->nvdimmPath) < 0)
+    if (qemuNamespaceUnlinkPaths(vm, (const char **) paths) < 0)
         return -1;
 
     return 0;
