@@ -663,12 +663,11 @@ qemuDomainSetupAllChardevs(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupTPM(virDomainTPMDefPtr dev,
-                   const struct qemuDomainCreateDeviceData *data)
+                   char ***paths)
 {
     switch (dev->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        if (qemuDomainCreateDevice(dev->data.passthrough.source.data.file.path,
-                                   data, false) < 0)
+        if (virStringListAdd(paths, dev->data.passthrough.source.data.file.path) < 0)
             return -1;
         break;
 
@@ -684,14 +683,14 @@ qemuDomainSetupTPM(virDomainTPMDefPtr dev,
 
 static int
 qemuDomainSetupAllTPMs(virDomainObjPtr vm,
-                       const struct qemuDomainCreateDeviceData *data)
+                       char ***paths)
 {
     size_t i;
 
     VIR_DEBUG("Setting up TPMs");
 
     for (i = 0; i < vm->def->ntpms; i++) {
-        if (qemuDomainSetupTPM(vm->def->tpms[i], data) < 0)
+        if (qemuDomainSetupTPM(vm->def->tpms[i], paths) < 0)
             return -1;
     }
 
@@ -880,6 +879,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainSetupAllChardevs(vm, &paths) < 0)
         return -1;
 
+    if (qemuDomainSetupAllTPMs(vm, &paths) < 0)
+        return -1;
+
     if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
@@ -929,9 +931,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupDev(mgr, vm, devPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainSetupAllTPMs(vm, &data) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllGraphics(vm, &data) < 0)
