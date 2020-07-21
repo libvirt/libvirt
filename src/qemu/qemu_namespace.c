@@ -1434,18 +1434,19 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodDataPtr data,
 
 static int
 qemuNamespaceMknodPaths(virDomainObjPtr vm,
-                        const char **paths,
-                        size_t npaths)
+                        const char **paths)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     char **devMountsPath = NULL;
     size_t ndevMountsPath = 0;
+    size_t npaths = 0;
     qemuNamespaceMknodData data = { 0 };
     size_t i;
     int ret = -1;
 
+    npaths = virStringListLength(paths);
     if (npaths == 0)
         return 0;
 
@@ -1504,8 +1505,7 @@ qemuNamespaceMknodPaths(virDomainObjPtr vm,
 
 static int
 qemuNamespaceMknodPaths(virDomainObjPtr vm G_GNUC_UNUSED,
-                        const char **paths G_GNUC_UNUSED,
-                        size_t npaths G_GNUC_UNUSED)
+                        const char **paths G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Namespaces are not supported on this platform."));
@@ -1566,9 +1566,9 @@ static int
 qemuDomainNamespaceMknodPath(virDomainObjPtr vm,
                              const char *path)
 {
-    const char *paths[] = { path };
+    const char *paths[] = { path, NULL };
 
-    return qemuNamespaceMknodPaths(vm, paths, 1);
+    return qemuNamespaceMknodPaths(vm, paths);
 }
 
 
@@ -1624,7 +1624,6 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
 {
     virStorageSourcePtr next;
     VIR_AUTOSTRINGLIST paths = NULL;
-    size_t npaths = 0;
     bool hasNVMe = false;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
@@ -1674,8 +1673,7 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
         virStringListAdd(&paths, QEMU_DEV_VFIO) < 0)
         return -1;
 
-    npaths = virStringListLength((const char **) paths);
-    if (qemuNamespaceMknodPaths(vm, (const char **) paths, npaths) < 0)
+    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
     return 0;
@@ -1713,7 +1711,6 @@ qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
 {
     g_autofree char *path = NULL;
     VIR_AUTOSTRINGLIST paths = NULL;
-    size_t npaths = 0;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1729,8 +1726,7 @@ qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
         virStringListAdd(&paths, QEMU_DEV_VFIO) < 0)
         return -1;
 
-    npaths = virStringListLength((const char **) paths);
-    if (qemuNamespaceMknodPaths(vm, (const char **) paths, npaths) < 0)
+    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
         return -1;
 
     return 0;
