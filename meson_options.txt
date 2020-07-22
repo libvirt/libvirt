@@ -49,6 +49,7 @@ option('yajl', type: 'feature', value: 'auto', description: 'yajl support')
 
 # build driver options
 option('driver_bhyve', type: 'feature', value: 'auto', description: 'bhyve driver')
+option('driver_esx', type: 'feature', value: 'enabled', description: 'esx driver')
 option('driver_libvirtd', type: 'feature', value: 'auto', description: 'libvirtd driver')
 option('driver_remote', type: 'feature', value: 'enabled', description: 'remote driver')
 option('remote_default_mode', type: 'combo', choices: ['legacy', 'direct'], value: 'legacy', description: 'remote driver default mode')

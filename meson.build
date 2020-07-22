@@ -1604,6 +1604,13 @@ elif get_option('driver_bhyve').enabled()
   error('The bhyve driver cannot be enabled')
 endif
 
+if not get_option('driver_esx').disabled() and curl_dep.found()
+  conf.set('WITH_ESX', 1)
+  conf.set('WITH_VMX', 1)
+elif get_option('driver_esx').enabled()
+  error('Curl is required for the ESX driver')
+endif
+
 
 # define top include directory
 
@@ -1624,6 +1631,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 # print configuration summary
 
 driver_summary = {
+  'ESX': conf.has('WITH_ESX'),
   'Bhyve': conf.has('WITH_BHYVE'),
   'Remote': conf.has('WITH_REMOTE'),
   'Libvirtd': conf.has('WITH_LIBVIRTD'),
