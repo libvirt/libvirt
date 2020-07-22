@@ -192,49 +192,29 @@ docs_rst2html_gen = generator(
   capture: true,
 )
 
-foreach name : docs_html_in_files
-  html_in_file = '@0@.html.in'.format(name)
-  html_file = '@0@.html'.format(name)
-
-  out_file = custom_target(
-    html_file,
-    input: html_in_file,
-    output: html_file,
-    command: [
-      meson_python_prog,
-      python3_prog.path(),
-      meson_html_gen_prog.path(),
-      xsltproc_prog.path(),
-      xmllint_prog.path(),
-      meson.build_root(),
-      docs_timestamp,
-      site_xsl,
-      '@INPUT@',
-      '@OUTPUT@',
-      html_in_file,
-    ],
-    depends: [ aclperms_gen ],
-    depend_files: [ page_xsl ],
-    install: true,
-    install_dir: docs_html_dir,
-  )
-
-  install_web_deps += out_file
-  install_web_files += '@0@:@1@'.format(out_file.full_path(), docs_html_dir)
-endforeach
-
 
 # docs_html_in_gen:
 #   each entry is a dictionary with following items:
 #   name - base file name (required)
 #   file - generated file (required)
+# source - source filename (required)
 docs_html_in_gen = []
+
+foreach name : docs_html_in_files
+  html_in_file = '@0@.html.in'.format(name)
+  docs_html_in_gen += {
+    'name': name,
+    'file': html_in_file,
+    'source': html_in_file,
+  }
+endforeach
 
 foreach name : docs_rst_files
   rst_file = '@0@.rst'.format(name)
   docs_html_in_gen += {
     'name': name,
     'file': docs_rst2html_gen.process(rst_file),
+    'source': rst_file,
   }
 endforeach
 
@@ -262,17 +242,18 @@ hvsupport_html_in = custom_target(
 docs_html_in_gen += {
   'name': 'hvsupport',
   'file': hvsupport_html_in,
+  'source': 'hvsupport.html.in',
 }
 
 news_html_in = docs_rst2html_gen.process(meson.source_root() / 'NEWS.rst')
 docs_html_in_gen += {
   'name': 'news',
   'file': news_html_in,
+  'source': 'NEWS.rst',
 }
 
 foreach data : docs_html_in_gen
   html_file = '@0@.html'.format(data['name'])
-  rst_in_file = '@0@.rst'.format(data['name'])
 
   out_file = custom_target(
     html_file,
@@ -289,7 +270,7 @@ foreach data : docs_html_in_gen
       site_xsl,
       '@INPUT@',
       '@OUTPUT@',
-      rst_in_file,
+      data['source'],
     ],
     depends: [ aclperms_gen ],
     depend_files: [ page_xsl ],
