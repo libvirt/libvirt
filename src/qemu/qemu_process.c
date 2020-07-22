@@ -2653,7 +2653,7 @@ qemuProcessSetupPid(virDomainObjPtr vm,
     virDomainNumatuneMemMode mem_mode;
     virCgroupPtr cgroup = NULL;
     virBitmapPtr use_cpumask = NULL;
-    virBitmapPtr afinity_cpumask = NULL;
+    virBitmapPtr affinity_cpumask = NULL;
     g_autoptr(virBitmap) hostcpumap = NULL;
     g_autofree char *mem_mask = NULL;
     int ret = -1;
@@ -2679,7 +2679,7 @@ qemuProcessSetupPid(virDomainObjPtr vm,
          * its config file */
         if (qemuProcessGetAllCpuAffinity(&hostcpumap) < 0)
             goto cleanup;
-        afinity_cpumask = hostcpumap;
+        affinity_cpumask = hostcpumap;
     }
 
     /*
@@ -2720,11 +2720,11 @@ qemuProcessSetupPid(virDomainObjPtr vm,
 
     }
 
-    if (!afinity_cpumask)
-        afinity_cpumask = use_cpumask;
+    if (!affinity_cpumask)
+        affinity_cpumask = use_cpumask;
 
     /* Setup legacy affinity. */
-    if (afinity_cpumask && virProcessSetAffinity(pid, afinity_cpumask) < 0)
+    if (affinity_cpumask && virProcessSetAffinity(pid, affinity_cpumask) < 0)
         goto cleanup;
 
     /* Set scheduler type and priority, but not for the main thread. */
