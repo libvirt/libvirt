@@ -689,7 +689,7 @@ vshCmddefHelp(vshControl *ctl, const vshCmdDef *def)
     fputc('\n', stdout);
 
     desc = vshCmddefGetInfo(def, "desc");
-    if (*desc) {
+    if (desc && *desc) {
         /* Print the description only if it's not empty.  */
         fputs(_("\n  DESCRIPTION\n"), stdout);
         fprintf(stdout, "    %s\n", _(desc));
