@@ -195,19 +195,7 @@ virDevMapperGetTargets(const char *path,
     return virDevMapperGetTargetsImpl(path, devPaths, ttl);
 }
 
-#else /* ! WITH_DEVMAPPER */
 
-int
-virDevMapperGetTargets(const char *path G_GNUC_UNUSED,
-                       char ***devPaths G_GNUC_UNUSED)
-{
-    errno = ENOSYS;
-    return -1;
-}
-#endif /* ! WITH_DEVMAPPER */
-
-
-#if WITH_DEVMAPPER
 bool
 virIsDevMapperDevice(const char *dev_name)
 {
@@ -222,6 +210,15 @@ virIsDevMapperDevice(const char *dev_name)
 }
 
 #else /* ! WITH_DEVMAPPER */
+
+int
+virDevMapperGetTargets(const char *path G_GNUC_UNUSED,
+                       char ***devPaths G_GNUC_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
 
 bool
 virIsDevMapperDevice(const char *dev_name G_GNUC_UNUSED)
