@@ -7,23 +7,7 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 if WITH_NETWORK
 INSTALL_DATA_DIRS += network
 
-UUID=$(shell uuidgen 2>/dev/null)
-
 install-data-network:
-	$(MKDIR_P) "$(DESTDIR)$(confdir)/qemu/networks/autostart"
-	$(INSTALL_DATA) $(srcdir)/network/default.xml \
-	  $(DESTDIR)$(confdir)/qemu/networks/default.xml
-	test -z "$(UUID)" || \
-	  { sed -e "s,</name>,</name>;  <uuid>$(UUID)</uuid>," \
-	      $(DESTDIR)$(confdir)/qemu/networks/default.xml | \
-	      tr ";" "\n" > \
-	      $(DESTDIR)$(confdir)/qemu/networks/default.xml.t && \
-	    cp $(DESTDIR)$(confdir)/qemu/networks/default.xml.t \
-	      $(DESTDIR)$(confdir)/qemu/networks/default.xml && \
-	    rm $(DESTDIR)$(confdir)/qemu/networks/default.xml.t; }
-	( cd $(DESTDIR)$(confdir)/qemu/networks/autostart && \
-	  rm -f default.xml && \
-	  $(LN_S) ../default.xml default.xml )
 if WITH_FIREWALLD_ZONE
 	$(MKDIR_P) "$(DESTDIR)$(prefix)/lib/firewalld/zones"
 	$(INSTALL_DATA) $(srcdir)/network/libvirt.zone \
@@ -31,10 +15,6 @@ if WITH_FIREWALLD_ZONE
 endif WITH_FIREWALLD_ZONE
 
 uninstall-data-network:
-	rm -f $(DESTDIR)$(confdir)/qemu/networks/autostart/default.xml
-	rm -f $(DESTDIR)$(confdir)/qemu/networks/default.xml
-	rmdir "$(DESTDIR)$(confdir)/qemu/networks/autostart" || :
-	rmdir "$(DESTDIR)$(confdir)/qemu/networks" || :
 if WITH_FIREWALLD_ZONE
 	rm -f  $(DESTDIR)$(prefix)/lib/firewalld/zones/libvirt.xml
 endif WITH_FIREWALLD_ZONE

@@ -82,4 +82,36 @@ if conf.has('WITH_NETWORK')
     localstatedir / 'lib' / 'libvirt' / 'dnsmasq',
     runstatedir / 'libvirt' / 'network',
   ]
+
+  uuidgen_prog = find_program('uuidgen', required: false)
+
+  if uuidgen_prog.found()
+    uuid = run_command(uuidgen_prog).stdout().strip()
+
+    configure_file(
+      input: 'default.xml.in',
+      output: 'default.xml',
+      command: [
+        'sed', '-e', 's|</name>|</name>\\n  <uuid>@0@</uuid>|'.format(uuid),
+        '@INPUT@',
+      ],
+      capture: true,
+      install: true,
+      install_dir: confdir / 'qemu' / 'networks',
+    )
+  else
+    configure_file(
+      input: 'default.xml.in',
+      output: 'default.xml',
+      copy: true,
+      install: true,
+      install_dir: confdir / 'qemu' / 'networks',
+    )
+  endif
+
+  meson.add_install_script(
+    meson_python_prog.path(), python3_prog.path(), meson_install_symlink_prog.path(),
+    confdir / 'qemu' / 'networks' / 'autostart',
+    '../default.xml', 'default.xml',
+  )
 endif

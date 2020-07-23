@@ -21,6 +21,7 @@ scripts = [
   'meson-gen-def.py',
   'meson-gen-sym.py',
   'meson-install-dirs.py',
+  'meson-install-symlink.py',
   'meson-python.sh',
   'mock-noinline.py',
   'prohibit-duplicate-header.py',
