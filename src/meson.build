@@ -211,6 +211,10 @@ openrc_init_files = []
 #   * file - source sysconf file (required)
 sysconf_files = []
 
+# virt_install_dirs:
+#   list of directories to create during installation
+virt_install_dirs = []
+
 
 # list subdirectories
 
@@ -800,3 +804,18 @@ foreach sysconf : sysconf_files
     rename: [ sysconf['name'] ],
   )
 endforeach
+
+
+# Install empty directories
+
+virt_install_dirs += [
+  localstatedir / 'cache' / 'libvirt',
+  localstatedir / 'lib' / 'libvirt' / 'images',
+  localstatedir / 'lib' / 'libvirt' / 'filesystems',
+  localstatedir / 'lib' / 'libvirt' / 'boot',
+]
+
+meson.add_install_script(
+  meson_python_prog.path(), python3_prog.path(), meson_install_dirs_prog.path(),
+  virt_install_dirs,
+)

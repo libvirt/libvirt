@@ -234,15 +234,6 @@ endif WITH_LIBVIRTD
 
 install-data-local: $(INSTALL_DATA_LOCAL) \
 		$(INSTALL_DATA_DIRS:%=install-data-%)
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/images"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/boot"
 
 uninstall-local: $(UNINSTALL_LOCAL) \
 		$(INSTALL_DATA_DIRS:%=uninstall-data-%)
-	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/images" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/boot" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt" ||:

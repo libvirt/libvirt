@@ -9,14 +9,6 @@ LOGROTATE_FILES_IN += \
 
 if WITH_LIBVIRTD
 
-INSTALL_DATA_DIRS += remote
-
-install-data-remote:
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt"
-
-uninstall-data-remote:
-	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt" ||:
-
 if WITH_SYSCTL
 # Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
 # /usr/lib/sysctl.d/ even when libdir is /usr/lib64
@@ -59,11 +51,6 @@ UNINSTALL_LOCAL += uninstall-polkit
 endif WITH_POLKIT
 
 endif WITH_LIBVIRTD
-
-.PHONY: \
-	install-data-remote \
-	uninstall-data-remote \
-	$(NULL)
 
 # This is needed for clients too, so can't wrap in
 # the WITH_LIBVIRTD conditional

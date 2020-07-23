@@ -225,4 +225,16 @@ if conf.has('WITH_LIBVIRTD')
     'aug': files('test_virtlockd.aug.in'),
     'conf': files('virtlockd.conf'),
   }
+
+  virt_install_dirs += [
+    localstatedir / 'lib' / 'libvirt' / 'lockd',
+    localstatedir / 'lib' / 'libvirt' / 'lockd' / 'files',
+    runstatedir / 'libvirt' / 'lockd',
+  ]
+
+  if conf.has('WITH_SANLOCK')
+    virt_install_dirs += [
+      localstatedir / 'lib' / 'libvirt' / 'sanlock',
+    ]
+  endif
 endif

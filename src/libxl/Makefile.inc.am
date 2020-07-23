@@ -2,19 +2,3 @@
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(LIBXL_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(LIBXL_DRIVER_SOURCES))
-
-if WITH_LIBXL
-
-INSTALL_DATA_DIRS += libxl
-
-install-data-libxl:
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl"
-	$(MKDIR_P) "$(DESTDIR)$(runstatedir)/libvirt/libxl"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/libxl"
-
-uninstall-data-libxl:
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl" ||:
-	rmdir "$(DESTDIR)$(runstatedir)/libvirt/libxl" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/libxl" ||:
-
-endif WITH_LIBXL

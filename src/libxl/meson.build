@@ -76,4 +76,10 @@ if conf.has('WITH_LIBXL')
     'name': 'virtxend',
     'file': files('virtxend.sysconf'),
   }
+
+  virt_install_dirs += [
+    localstatedir / 'lib' / 'libvirt' / 'libxl',
+    runstatedir / 'libvirt' / 'libxl',
+    localstatedir / 'log' / 'libvirt' / 'libxl',
+  ]
 endif

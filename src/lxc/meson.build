@@ -159,4 +159,10 @@ if conf.has('WITH_LXC')
     'name': 'virtlxcd',
     'file': files('virtlxcd.sysconf'),
   }
+
+  virt_install_dirs += [
+    localstatedir / 'lib' / 'libvirt' / 'lxc',
+    runstatedir / 'libvirt' / 'lxc',
+    localstatedir / 'log' / 'libvirt' / 'lxc',
+  ]
 endif

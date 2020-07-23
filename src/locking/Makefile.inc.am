@@ -1,27 +1,3 @@
 # vim: filetype=automake
 
 RPC_PROBE_FILES += $(srcdir)/locking/lock_protocol.x
-
-INSTALL_DATA_DIRS += locking
-
-install-data-locking:
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files"
-	$(MKDIR_P) "$(DESTDIR)$(runstatedir)/libvirt/lockd"
-if WITH_SANLOCK
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock"
-endif WITH_SANLOCK
-
-uninstall-data-locking:
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd" ||:
-	rmdir "$(DESTDIR)$(runstatedir)/libvirt/lockd" ||:
-if WITH_SANLOCK
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock" ||:
-endif WITH_SANLOCK
-endif WITH_LIBVIRTD
-
-.PHONY: \
-	install-data-locking \
-	uninstall-data-locking \
-	$(NULL)

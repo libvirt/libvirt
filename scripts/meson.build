@@ -20,6 +20,7 @@ scripts = [
   'hyperv_wmi_generator.py',
   'meson-gen-def.py',
   'meson-gen-sym.py',
+  'meson-install-dirs.py',
   'meson-python.sh',
   'mock-noinline.py',
   'prohibit-duplicate-header.py',

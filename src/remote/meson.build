@@ -209,6 +209,10 @@ if conf.has('WITH_REMOTE')
       'name': 'virtproxyd',
       'file': files('virtproxyd.sysconf'),
     }
+
+    virt_install_dirs += [
+      localstatedir / 'log' / 'libvirt',
+    ]
   endif
 endif
 
