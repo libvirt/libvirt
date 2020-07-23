@@ -300,12 +300,6 @@ html_DATA = $(dot_html)
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
-acl_generated = aclperms.htmlinc
-
-aclperms.htmlinc: $(top_srcdir)/src/access/viraccessperm.h \
-        $(top_srcdir)/scripts/genaclperms.py Makefile.am
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/genaclperms.py $< > $@
-
 hvsupport.html: hvsupport.html.in
 
 hvsupport.html.in: $(top_srcdir)/scripts/hvsupport.py $(api_DATA) \

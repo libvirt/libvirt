@@ -29,6 +29,16 @@ docs_assets = [
 
 install_data(docs_assets, install_dir: docs_html_dir)
 
+aclperms_gen = custom_target(
+  'aclperms.htmlinc',
+  input: access_perm_h,
+  output: 'aclperms.htmlinc',
+  command: [
+    meson_python_prog, python3_prog.path(), genaclperms_prog.path(), '@INPUT@',
+  ],
+  capture: true,
+)
+
 docs_timestamp = run_command(
   python3_prog, meson_timestamp_prog.path(), env: runutf8
 ).stdout().strip()
