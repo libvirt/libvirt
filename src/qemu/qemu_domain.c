@@ -1722,11 +1722,21 @@ void
 qemuDomainObjStopWorker(virDomainObjPtr dom)
 {
     qemuDomainObjPrivatePtr priv = dom->privateData;
+    virEventThread *eventThread;
 
-    if (priv->eventThread) {
-        g_object_unref(priv->eventThread);
-        priv->eventThread = NULL;
-    }
+    if (!priv->eventThread)
+        return;
+
+    /*
+     * We are dropping the only reference here so that the event loop thread
+     * is going to be exited synchronously. In order to avoid deadlocks we
+     * need to unlock the VM so that any handler being called can finish
+     * execution and thus even loop thread be finished too.
+     */
+    eventThread = g_steal_pointer(&priv->eventThread);
+    virObjectUnlock(dom);
+    g_object_unref(eventThread);
+    virObjectLock(dom);
 }
 
 
