@@ -87,7 +87,7 @@ qemuSetupImagePathCgroup(virDomainObjPtr vm,
     }
 
     if (virDevMapperGetTargets(path, &targetPaths) < 0 &&
-        errno != ENOSYS && errno != EBADF) {
+        errno != ENOSYS) {
         virReportSystemError(errno,
                              _("Unable to get devmapper targets for %s"),
                              path);
