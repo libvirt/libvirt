@@ -21,6 +21,5 @@ build_task:
     - mkdir build
     - cd build
     - ../autogen.sh --prefix=$(pwd)/install-root
-    - $MAKE -j3
-    - $MAKE -j3 install
-    - $MAKE -j3 dist
+    - if test "$(uname)" = "FreeBSD"; then $MAKE -j3 distcheck; fi
+    - if test "$(uname)" = "Darwin"; then $MAKE -j3 && $MAKE -j3 install && $MAKE -j3 dist; fi
