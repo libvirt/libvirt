@@ -323,9 +323,6 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon,
     qemuDomainDestroyNamespace(driver, vm);
 
  cleanup:
-    /* Now we got EOF we're not expecting more I/O, so we
-     * can finally kill the event thread */
-    qemuDomainObjStopWorker(vm);
     virObjectUnlock(vm);
 }
 
