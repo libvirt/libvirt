@@ -244,6 +244,95 @@ executable(
 
 tests = []
 
+cputest_link_with = []
+cputest_link_whole = []
+if conf.has('WITH_QEMU')
+  cputest_link_with += [ test_utils_qemu_monitor_lib, test_qemu_driver_lib ]
+  cputest_link_whole += [ test_utils_qemu_lib ]
+endif
+
+domaincapstest_link_with = []
+domaincapstest_link_whole = [ test_file_wrapper_lib ]
+if conf.has('WITH_BHYVE')
+  domaincapstest_link_with += [ bhyve_driver_impl ]
+endif
+if conf.has('WITH_LIBXL')
+  domaincapstest_link_with += [ test_xen_driver_lib ]
+  domaincapstest_link_whole += [ test_utils_xen_lib ]
+endif
+if conf.has('WITH_QEMU')
+  domaincapstest_link_with += [ test_qemu_driver_lib ]
+  domaincapstest_link_whole += [ test_utils_qemu_lib ]
+endif
+
+vircapstest_link_with = []
+vircapstest_link_whole = []
+vircapstest_sources = [ 'vircapstest.c' ]
+if conf.has('WITH_LXC')
+  vircapstest_link_with += [ lxc_driver_impl_lib ]
+  vircapstest_link_whole += [ test_utils_lxc_lib ]
+endif
+if conf.has('WITH_QEMU')
+  vircapstest_link_with += [ qemu_driver_impl ]
+  vircapstest_link_whole += [ test_utils_qemu_lib ]
+  vircapstest_sources += [ qemu_dtrace_gen_objects ]
+endif
+
+tests += [
+  { 'name': 'commandtest' },
+  { 'name': 'cputest', 'link_with': cputest_link_with, 'link_whole': cputest_link_whole },
+  { 'name': 'domaincapstest', 'link_with': domaincapstest_link_with, 'link_whole': domaincapstest_link_whole },
+  { 'name': 'domainconftest' },
+  { 'name': 'genericxml2xmltest' },
+  { 'name': 'interfacexml2xmltest' },
+  { 'name': 'metadatatest' },
+  { 'name': 'networkxml2xmlupdatetest' },
+  { 'name': 'nodedevxml2xmltest' },
+  { 'name': 'nwfilterxml2xmltest' },
+  { 'name': 'objecteventtest' },
+  { 'name': 'seclabeltest' },
+  { 'name': 'secretxml2xmltest' },
+  { 'name': 'shunloadtest', 'deps': [ thread_dep ] },
+  { 'name': 'sockettest' },
+  { 'name': 'storagevolxml2xmltest' },
+  { 'name': 'sysinfotest' },
+  { 'name': 'utiltest' },
+  { 'name': 'viralloctest' },
+  { 'name': 'virauthconfigtest' },
+  { 'name': 'virbitmaptest' },
+  { 'name': 'virbuftest' },
+  { 'name': 'vircapstest', 'sources': vircapstest_sources, 'link_with': vircapstest_link_with, 'link_whole': vircapstest_link_whole },
+  { 'name': 'vircgrouptest' },
+  { 'name': 'virconftest' },
+  { 'name': 'vircryptotest' },
+  { 'name': 'virendiantest' },
+  { 'name': 'virerrortest' },
+  { 'name': 'virfilecachetest' },
+  { 'name': 'virfiletest' },
+  { 'name': 'virfirewalltest', 'deps': [ dbus_dep ] },
+  { 'name': 'virhashtest' },
+  { 'name': 'virhostcputest', 'link_whole': [ test_file_wrapper_lib ] },
+  { 'name': 'virhostdevtest' },
+  { 'name': 'viriscsitest' },
+  { 'name': 'virkeycodetest' },
+  { 'name': 'virkmodtest' },
+  { 'name': 'virlockspacetest' },
+  { 'name': 'virlogtest' },
+  { 'name': 'virnetdevtest' },
+  { 'name': 'virnetworkportxml2xmltest' },
+  { 'name': 'virnwfilterbindingxml2xmltest' },
+  { 'name': 'virpcitest' },
+  { 'name': 'virportallocatortest' },
+  { 'name': 'virrotatingfiletest' },
+  { 'name': 'virschematest' },
+  { 'name': 'virshtest' },
+  { 'name': 'virstringtest' },
+  { 'name': 'virtimetest' },
+  { 'name': 'virtypedparamtest' },
+  { 'name': 'viruritest' },
+  { 'name': 'vshtabletest', 'link_with': [ libvirt_shell_lib ] },
+]
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(
