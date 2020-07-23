@@ -82,3 +82,9 @@ virNetServerPtr virNetDaemonGetServer(virNetDaemonPtr dmn,
 ssize_t virNetDaemonGetServers(virNetDaemonPtr dmn, virNetServerPtr **servers);
 bool virNetDaemonHasServer(virNetDaemonPtr dmn,
                            const char *serverName);
+
+typedef int (*virNetDaemonShutdownCallback)(void);
+
+void virNetDaemonSetShutdownCallbacks(virNetDaemonPtr dmn,
+                                      virNetDaemonShutdownCallback prepareCb,
+                                      virNetDaemonShutdownCallback waitCb);

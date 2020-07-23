@@ -69,6 +69,8 @@ struct _virNetDaemon {
     virHashTablePtr servers;
     virJSONValuePtr srvObject;
 
+    virNetDaemonShutdownCallback shutdownPrepareCb;
+    virNetDaemonShutdownCallback shutdownWaitCb;
     bool quit;
 
     unsigned int autoShutdownTimeout;
@@ -921,4 +923,17 @@ virNetDaemonHasClients(virNetDaemonPtr dmn)
     virHashForEach(dmn->servers, daemonServerHasClients, &ret);
 
     return ret;
+}
+
+void
+virNetDaemonSetShutdownCallbacks(virNetDaemonPtr dmn,
+                                 virNetDaemonShutdownCallback prepareCb,
+                                 virNetDaemonShutdownCallback waitCb)
+{
+    virObjectLock(dmn);
+
+    dmn->shutdownPrepareCb = prepareCb;
+    dmn->shutdownWaitCb = waitCb;
+
+    virObjectUnlock(dmn);
 }

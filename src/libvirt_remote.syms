@@ -87,6 +87,7 @@ virNetDaemonPreExecRestart;
 virNetDaemonQuit;
 virNetDaemonRemoveShutdownInhibition;
 virNetDaemonRun;
+virNetDaemonSetShutdownCallbacks;
 virNetDaemonUpdateServices;
 
 
