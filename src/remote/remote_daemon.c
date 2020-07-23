@@ -1193,6 +1193,9 @@ int main(int argc, char **argv) {
 #endif
 
     /* Run event loop. */
+    virNetDaemonSetShutdownCallbacks(dmn,
+                                     virStateShutdownPrepare,
+                                     virStateShutdownWait);
     virNetDaemonRun(dmn);
 
     ret = 0;
@@ -1201,9 +1204,6 @@ int main(int argc, char **argv) {
                 0, "shutdown", NULL, NULL);
 
  cleanup:
-    /* Keep cleanup order in inverse order of startup */
-    virNetDaemonClose(dmn);
-
     virNetlinkEventServiceStopAll();
 
     if (driversInitialized) {
