@@ -7,6 +7,10 @@ apipng = [
 
 install_data(apipng, install_dir: docs_html_dir / 'html')
 
+foreach file : apipng
+  install_web_files += '@0@:@1@'.format(meson.current_source_dir() / file, docs_html_dir / 'html')
+endforeach
+
 docs_html_gen = []
 docs_html_dep = []
 
@@ -80,8 +84,11 @@ endforeach
 
 docs_html_paths = []
 
+install_web_deps += docs_html_dep
+
 foreach file : docs_html_gen
   docs_html_paths += file.full_path()
+  install_web_files += '@0@:@1@'.format(file.full_path(), docs_html_dir / 'html')
 endforeach
 
 test(

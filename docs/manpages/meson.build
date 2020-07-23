@@ -103,7 +103,7 @@ foreach data : docs_man_files
     capture: true,
   )
 
-  custom_target(
+  out_file = custom_target(
     html_file,
     input: html_in,
     output: html_file,
@@ -125,4 +125,7 @@ foreach data : docs_man_files
     install: true,
     install_dir: docs_html_dir / 'manpages',
   )
+
+  install_web_deps += out_file
+  install_web_files += '@0@:@1@'.format(out_file.full_path(), docs_html_dir / 'manpages')
 endforeach

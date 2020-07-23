@@ -129,6 +129,10 @@ docs_rst_files = [
   'submitting-patches',
 ]
 
+# list of web targets to build for docs/web rule
+install_web_deps = []
+install_web_files = []
+
 install_data(docs_assets, install_dir: docs_html_dir)
 
 aclperms_gen = custom_target(
@@ -192,7 +196,7 @@ foreach name : docs_html_in_files
   html_in_file = '@0@.html.in'.format(name)
   html_file = '@0@.html'.format(name)
 
-  custom_target(
+  out_file = custom_target(
     html_file,
     input: html_in_file,
     output: html_file,
@@ -214,6 +218,9 @@ foreach name : docs_html_in_files
     install: true,
     install_dir: docs_html_dir,
   )
+
+  install_web_deps += out_file
+  install_web_files += '@0@:@1@'.format(out_file.full_path(), docs_html_dir)
 endforeach
 
 
@@ -267,7 +274,7 @@ foreach data : docs_html_in_gen
   html_file = '@0@.html'.format(data['name'])
   rst_in_file = '@0@.rst'.format(data['name'])
 
-  custom_target(
+  out_file = custom_target(
     html_file,
     input: data['file'],
     output: html_file,
@@ -289,6 +296,9 @@ foreach data : docs_html_in_gen
     install: true,
     install_dir: docs_html_dir,
   )
+
+  install_web_deps += out_file
+  install_web_files += '@0@:@1@'.format(out_file.full_path(), docs_html_dir)
 endforeach
 
 subdir('fonts')
@@ -301,8 +311,19 @@ subdir('manpages')
 subdir('schemas')
 
 
-# This hack enables us to view the web pages
-# from within the uninstalled build tree
 foreach file : docs_assets
+  # This hack enables us to view the web pages
+  # from within the uninstalled build tree
   configure_file(input: file, output: file, copy: true)
+
+  install_web_files += '@0@:@1@'.format(meson.current_source_dir() / file, docs_html_dir)
 endforeach
+
+run_target(
+  'install-web',
+  command: [
+    meson_python_prog, python3_prog.path(), meson_install_web_prog.path(),
+    install_web_files,
+  ],
+  depends: install_web_deps,
+)

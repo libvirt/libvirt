@@ -21,7 +21,7 @@ foreach name : docs_kbase_files
 
   html_in = docs_rst2html_gen.process(rst_file)
 
-  custom_target(
+  out_file = custom_target(
     html_file,
     input: html_in,
     output: html_file,
@@ -43,4 +43,7 @@ foreach name : docs_kbase_files
     install: true,
     install_dir: docs_html_dir / 'kbase',
   )
+
+  install_web_deps += out_file
+  install_web_files += '@0@:@1@'.format(out_file.full_path(), docs_html_dir / 'kbase')
 endforeach

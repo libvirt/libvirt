@@ -25,6 +25,7 @@ scripts = [
   'meson-html-gen.py',
   'meson-install-dirs.py',
   'meson-install-symlink.py',
+  'meson-install-web.py',
   'meson-python.sh',
   'meson-timestamp.py',
   'mock-noinline.py',

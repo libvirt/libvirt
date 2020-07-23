@@ -9,7 +9,7 @@ foreach name : internals_in_files
   html_in_file = '@0@.html.in'.format(name)
   html_file = '@0@.html'.format(name)
 
-  custom_target(
+  out_file = custom_target(
     html_file,
     input: html_in_file,
     output: html_file,
@@ -31,4 +31,7 @@ foreach name : internals_in_files
     install: true,
     install_dir: docs_html_dir / 'internals',
   )
+
+  install_web_deps += out_file
+  install_web_files += '@0@:@1@'.format(out_file.full_path(), docs_html_dir / 'internals')
 endforeach

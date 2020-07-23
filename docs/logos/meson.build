@@ -22,8 +22,10 @@ docs_logo_files = [
 
 install_data(docs_logo_files, install_dir: docs_html_dir / 'logos')
 
-# This hack enables us to view the web pages
-# from within the uninstalled build tree
 foreach file : docs_logo_files
+  # This hack enables us to view the web pages
+  # from within the uninstalled build tree
   configure_file(input: file, output: file, copy: true)
+
+  install_web_files += '@0@:@1@'.format(meson.current_source_dir() / file, docs_html_dir / 'logos')
 endforeach
