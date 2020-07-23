@@ -320,32 +320,6 @@ news.html.in: $(top_srcdir)/NEWS.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
 	  $(RST2HTML) --strict $< > $@ || { rm $@ && exit 1; }
 
-%.html.tmp: %.html.in site.xsl subsite.xsl page.xsl \
-		$(acl_generated)
-	$(AM_V_GEN)name=`echo $@ | sed -e 's/.tmp//'`; \
-	  genhtmlin=`echo $@ | sed -e 's/.tmp/.in/'`; \
-	  rst=`echo $@ | sed -e 's/.html.tmp/.rst/'`; \
-	  src="$$genhtmlin"; \
-	  test -f "$$genhtmlin" && src="$$rst"; \
-	  dir=`dirname $@` ; \
-	  if test "$$dir" = "."; \
-	  then \
-	    style=site.xsl; \
-	  else \
-	    $(MKDIR_P) $$dir; \
-	    style=subsite.xsl; \
-	  fi; \
-	  $(XSLTPROC) --stringparam pagename $$name \
-	    --stringparam pagesrc $$src \
-	    --stringparam builddir '$(abs_top_builddir)' \
-	    --stringparam timestamp $(timestamp) --nonet \
-	    $(top_srcdir)/docs/$$style $< > $@ \
-	    || { rm $@ && exit 1; }
-
-%.html: %.html.tmp
-	$(AM_V_GEN)$(XMLLINT) --nonet --format $< > $@ \
-	  || { rm $@ && exit 1; }
-
 $(apihtml_generated): html/index.html
 $(apiadminhtml_generated): html/index-admin.html
 $(apiqemuhtml_generated): html/index-qemu.html

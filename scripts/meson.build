@@ -20,6 +20,7 @@ scripts = [
   'hyperv_wmi_generator.py',
   'meson-gen-def.py',
   'meson-gen-sym.py',
+  'meson-html-gen.py',
   'meson-install-dirs.py',
   'meson-install-symlink.py',
   'meson-python.sh',
