@@ -56,6 +56,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6);
 
 void virNetServerClose(virNetServerPtr srv);
+void virNetServerShutdownWait(virNetServerPtr srv);
 
 virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv);
 

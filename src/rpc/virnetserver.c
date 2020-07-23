@@ -942,7 +942,15 @@ void virNetServerClose(virNetServerPtr srv)
     for (i = 0; i < srv->nclients; i++)
         virNetServerClientClose(srv->clients[i]);
 
+    virThreadPoolStop(srv->workers);
+
     virObjectUnlock(srv);
+}
+
+void
+virNetServerShutdownWait(virNetServerPtr srv)
+{
+    virThreadPoolDrain(srv->workers);
 }
 
 static inline size_t
