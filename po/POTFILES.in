@@ -240,6 +240,7 @@
 @SRCDIR@src/util/vircrypto.c
 @SRCDIR@src/util/virdaemon.c
 @SRCDIR@src/util/virdbus.c
+@SRCDIR@src/util/virdevmapper.c
 @SRCDIR@src/util/virdnsmasq.c
 @SRCDIR@src/util/virerror.c
 @SRCDIR@src/util/virerror.h
