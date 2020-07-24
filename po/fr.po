@@ -15,7 +15,7 @@
 # Sam Friedmann <sam.friedmann@redhat.com>, 2013
 # Stéphane Aulery <lkppo@free.fr>, 2012
 # Thomas Canniot <thomas.canniot@laposte.net>, 2007
-# Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>, 2019
+# Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>, 2019, 2020.
 # Julien Humbert <julroy67@gmail.com>, 2020.
 # Daniel P. Berrange <berrange@redhat.com>, 2020.
 # Côme Borsoi <fedora@borsoi.fr>, 2020.
@@ -24,8 +24,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-06-29 11:55+0000\n"
-"PO-Revision-Date: 2020-07-07 11:15+0000\n"
-"Last-Translator: Côme Borsoi <fedora@borsoi.fr>\n"
+"PO-Revision-Date: 2020-07-20 07:03+0000\n"
+"Last-Translator: Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fr/>\n"
 "Language: fr\n"
@@ -512,9 +512,9 @@ msgstr ""
 msgid "%s is missing 'type' property"
 msgstr "Propriété « %s » manquante"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not a supported cipher name"
-msgstr "%s : nom d’hyperviseur %s non pris en charge\n"
+msgstr "%s n'est pas un nom de chiffrement pris en charge"
 
 #, fuzzy, c-format
 msgid "%s is not a supported cipher state"
@@ -923,9 +923,9 @@ msgstr ""
 msgid "%s: try --help for more details\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: unable to determine access mode of fd %d"
-msgstr "%s : erreur : impossible de déterminer si le daemon fonctionne : %s\n"
+msgstr "%s : impossible de déterminer le mode d'accès de fd %d"
 
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
@@ -1231,9 +1231,9 @@ msgstr ""
 msgid "'trim' algorithm not supported"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "'tx_queue_size' attribute must be positive number: %s"
-msgstr "l’attribut « queues » doit être un nombre positif : %s"
+msgstr "l'attribut « queues » doit être un nombre positif : %s"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr ""
@@ -1292,7 +1292,7 @@ msgid "(domain_backup)"
 msgstr "(domainCapabilities)"
 
 msgid "(domain_checkpoint)"
-msgstr "(domainCapabilities)"
+msgstr "(domain_checkpoint)"
 
 msgid "(domain_definition)"
 msgstr "(domain_definition)"
@@ -1324,9 +1324,8 @@ msgstr "(network status)"
 msgid "(network_definition)"
 msgstr "(network_definition)"
 
-#, fuzzy
 msgid "(networkport_definition)"
-msgstr "(network_definition)"
+msgstr "(networkport_definition)"
 
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
@@ -1772,7 +1771,6 @@ msgstr ""
 msgid "Attempt to create %s without specifying mode"
 msgstr "Tentative de créer %s sans spécifier de mode"
 
-#, fuzzy
 msgid "Attempt to migrate guest to the same host"
 msgstr "Tentative de migrer un invité vers le même hôte %s"
 
@@ -2021,13 +2019,14 @@ msgstr "Affinité CPU :"
 msgid "CPU IDs in <numa> exceed the <vcpu> count"
 msgstr "Le nombre de CPU dans <numa> dépasse le compte <vcpu>"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU Model %s too long for destination"
 msgstr "Le modèle de CPU « %s » est trop long pour la destination"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU arch %s does not match host arch"
-msgstr "L’architecture %s du CPU cible  ne correspond pas à la source %s"
+msgstr ""
+"L’architecture %s du CPU cible ne correspond pas à l’architecture de l’hôte"
 
 msgid "CPU architecture (/domain/os/type/@arch)"
 msgstr ""
@@ -2098,9 +2097,9 @@ msgid ""
 "CPU mode '%s' for %s %s domain on %s host is not supported by hypervisor"
 msgstr "Le modèle de CPU « %s » n’est pas pris en charge par l’hyperviseur"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU model %s already defined"
-msgstr "pool %s défini\n"
+msgstr "Le modèle de CPU %s est déjà défini"
 
 #, c-format
 msgid "CPU model %s is not supported by hypervisor"
@@ -2536,7 +2535,7 @@ msgstr "impossible de créer le répertoire de configuration « %s »"
 msgid "Cannot create directory '%s'"
 msgstr "impossible de créer le répertoire de configuration « %s »"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot create log directory '%s'"
 msgstr "impossible de créer le répertoire de configuration « %s »"
 
@@ -3683,9 +3682,9 @@ msgstr ""
 msgid "Connected since"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Connected to domain %s\n"
-msgstr "Impossible de démarrer le domaine %s"
+msgstr "Connecté au domaine %s\n"
 
 msgid "Connected to the admin server"
 msgstr ""
@@ -4819,9 +4818,9 @@ msgstr "Créer un volume."
 msgid "Created"
 msgstr "Créé"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Created bridge %s with attached device %s\n"
-msgstr "Impossible de réattacher le périphérique %s"
+msgstr "Le pont %s a été créé avec %s en périphérique attaché\n"
 
 #, fuzzy
 msgid "Creating non-file volumes is not supported"
@@ -5010,9 +5009,8 @@ msgid ""
 "the physical host"
 msgstr ""
 
-#, fuzzy
 msgid "Destroyed"
-msgstr "Domaine %s détruit\n"
+msgstr "Détruit"
 
 #, c-format
 msgid "Destroyed node device '%s'\n"
@@ -5272,9 +5270,9 @@ msgstr ""
 msgid "Do not include features that block migration"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s XML configuration edited.\n"
-msgstr "impossible de lire le fichier de configuration"
+msgstr "La configuration XML du domaine %s a été modifiée.\n"
 
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
@@ -5289,9 +5287,9 @@ msgstr ""
 msgid "Domain %s attached to pid %u\n"
 msgstr "Domaine %s créé depuis %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s could not be suspended"
-msgstr "Domaine %s suspendu\n"
+msgstr "Le domaine %s n'a pas pu être suspendu"
 
 #, c-format
 msgid "Domain %s could not be woken up"
@@ -5309,9 +5307,9 @@ msgstr "Domaine %s défini depuis %s\n"
 msgid "Domain %s destroyed\n"
 msgstr "Domaine %s détruit\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s didn't show up"
-msgstr "Le domaine %s est en cours d’arrêt\n"
+msgstr "Le domaine %s n'est pas sorti"
 
 #, c-format
 msgid "Domain %s has been undefined\n"
@@ -5341,9 +5339,9 @@ msgstr "Domaine %s réactivé\n"
 msgid "Domain %s started\n"
 msgstr "Domaine %s démarré\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s successfully suspended"
-msgstr "Domaine %s suspendu\n"
+msgstr "Le domaine %s a bien été suspendu"
 
 #, c-format
 msgid "Domain %s successfully woken up"
@@ -5425,9 +5423,9 @@ msgstr ""
 msgid "Domain checkpoint %s created"
 msgstr "(domainCapabilities)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain checkpoint %s created from '%s'"
-msgstr "Domaine %s créé depuis %s\n"
+msgstr "Le point de contrôle pour le domaine %s a été créé depuis « %s »"
 
 #, fuzzy, c-format
 msgid "Domain checkpoint %s deleted\n"
@@ -5511,13 +5509,11 @@ msgstr "Le domaine n’est pas actif"
 msgid "Domain is not running"
 msgstr "Le domaine n’est pas actif"
 
-#, fuzzy
 msgid "Domain is not suspended"
-msgstr "Domaine %s suspendu\n"
+msgstr "Le domaine n'est pas suspendu"
 
-#, fuzzy
 msgid "Domain is not suspended or powered off"
-msgstr "Domaine %s suspendu\n"
+msgstr "Domaine n'est pas suspendu ou éteint"
 
 #, fuzzy
 msgid "Domain name contains invalid escape sequence"
@@ -5543,21 +5539,20 @@ msgstr ""
 msgid "Domain restored from %s\n"
 msgstr "Domaine restauré depuis %s\n"
 
-#, fuzzy
 msgid "Domain should have at least one disk defined"
-msgstr "Le domaine %s a été supprimé\n"
+msgstr "Le domaine doit avoir un moins un disque de défini"
 
 #, c-format
 msgid "Domain snapshot %s children deleted\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot %s created"
-msgstr "Domaine %s créé depuis %s\n"
+msgstr "L'instantané du domaine %s a été créé"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot %s created from '%s'"
-msgstr "Domaine %s créé depuis %s\n"
+msgstr "L'instantané de domaine %s a été créé depuis « %s »"
 
 #, fuzzy, c-format
 msgid "Domain snapshot %s deleted\n"
@@ -5574,9 +5569,8 @@ msgstr "Domaine non trouvé : %s"
 msgid "Domain title can't contain newlines"
 msgstr "Le titre du domaine ne peut pas contenir de newlines"
 
-#, fuzzy
 msgid "Domain title not changed\n"
-msgstr "Le titre du domaine ne peut pas contenir de newlines"
+msgstr "Le titre du domaine est inchangé\n"
 
 msgid "Domain title updated successfully"
 msgstr ""
@@ -8178,9 +8172,8 @@ msgstr "Impossible de démarrer le réseau %s"
 msgid "Failed to set vcpus for domain '%d' with libxenlight"
 msgstr ""
 
-#, fuzzy
 msgid "Failed to setup keepalive on connection\n"
-msgstr "Impossible de lister les réseaux actifs"
+msgstr "Impossible paramétrer le keepalive sur la connexion\n"
 
 #, c-format
 msgid "Failed to shutdown domain %s"
@@ -9247,9 +9240,9 @@ msgstr ""
 msgid "Interface"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Interface %s XML configuration edited.\n"
-msgstr "impossible de lire le fichier de configuration"
+msgstr "La configuration XML de l'interface %s a été modifiée.\n"
 
 #, c-format
 msgid "Interface %s XML configuration not changed.\n"
@@ -9267,9 +9260,9 @@ msgstr "Réseau %s détruit\n"
 msgid "Interface %s started\n"
 msgstr "Réseau %s démarré\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Interface %s undefined\n"
-msgstr "l’interface n’a pas de nom"
+msgstr "L’interface %s est indéfinie\n"
 
 #, c-format
 msgid "Interface (dev: %s) not found."
@@ -11897,9 +11890,9 @@ msgstr ""
 msgid "Nested HV configuration is not supported by this QEMU binary"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network %s XML configuration edited.\n"
-msgstr "impossible d’analyser le fichier de configuration"
+msgstr "La configuration XML du réseau %s a été modifiée.\n"
 
 #, c-format
 msgid "Network %s XML configuration not changed.\n"
@@ -11941,9 +11934,9 @@ msgstr ""
 msgid "Network '%s' is already running"
 msgstr "Le domaine est déjà actif"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network '%s' is still running"
-msgstr "Le réseau %s n’est plus défini\n"
+msgstr "Le réseau « %s » tourne encore"
 
 #, fuzzy
 msgid "Network Events"
@@ -12063,9 +12056,9 @@ msgstr "le domaine inattendu %s existe déjà"
 msgid "Network port with UUID %s does not exist"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network type %d is not supported"
-msgstr "Réseau %s démarré\n"
+msgstr "Le type de réseau %s n'est pas pris en charge"
 
 #, fuzzy
 msgid "New disk media source was not specified"
@@ -12196,9 +12189,8 @@ msgstr "authentification requise"
 msgid "No available USB controller and port, and failed to attach a new one"
 msgstr ""
 
-#, fuzzy
 msgid "No bhyve command-line argument specified"
-msgstr "%s : trop d’arguments sur la ligne de commande\n"
+msgstr "Aucun paramètre de ligne de commande bhyve n'est renseigné"
 
 #, fuzzy
 msgid "No bridge name specified"
@@ -12293,9 +12285,8 @@ msgstr "Pas de message d’erreur fourni"
 msgid "No error message provided"
 msgstr "Pas de message d’erreur fourni"
 
-#, fuzzy
 msgid "No errors found\n"
-msgstr "Réseau non trouvé"
+msgstr "Aucune erreur trouvée\n"
 
 #, c-format
 msgid "No event expected with procedure 0x%x"
@@ -12392,9 +12383,8 @@ msgstr "Aucun ID d’appelant UNIX n’est disponible"
 msgid "No process start time available"
 msgstr ""
 
-#, fuzzy
 msgid "No qemu command-line argument specified"
-msgstr "%s : trop d’arguments sur la ligne de commande\n"
+msgstr "Aucun paramètre de ligne de commande qemu n'est renseigné"
 
 msgid "No qemu environment name specified"
 msgstr ""
@@ -14487,9 +14477,8 @@ msgstr "Temps CPU :"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr ""
 
-#, fuzzy
 msgid "Shared memory:\n"
-msgstr "Mémoire utilisée :"
+msgstr "Mémoire partagée :\n"
 
 #, c-format
 msgid "Shell '%s' should have absolute path"
@@ -15024,7 +15013,7 @@ msgstr "L’architecture %s du CPU cible ne correspond pas à la source %s"
 msgid "Target CPU cache does not match source"
 msgstr "Le CPU cible ne correspond pas à la source"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target CPU check %s does not match source %s"
 msgstr "L’architecture %s du CPU cible ne correspond pas à la source %s"
 
@@ -16095,12 +16084,9 @@ msgstr ""
 msgid "Time: %lld"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Time: %s"
-msgstr ""
-"\n"
-"(Temps : %.3f ms)\n"
-"\n"
+msgstr "Temps : %s"
 
 #, fuzzy
 msgid "Timed out during operation"
@@ -16154,9 +16140,8 @@ msgstr ""
 msgid "Too many IOThreads in info: %d for limit %d"
 msgstr ""
 
-#, fuzzy
 msgid "Too many bytes to read from stream"
-msgstr "Domaine restauré depuis %s\n"
+msgstr "Trop d'octets à lire depuis le flux"
 
 msgid "Too many bytes to write to stream"
 msgstr ""
@@ -16284,9 +16269,8 @@ msgstr ""
 msgid "Total size of memory devices exceeds the total memory size"
 msgstr ""
 
-#, fuzzy
 msgid "Total:\n"
-msgstr "Total"
+msgstr "Total :\n"
 
 msgid "Transient disks are not supported by vz driver."
 msgstr ""
@@ -16813,13 +16797,13 @@ msgstr ""
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG parser for %s"
-msgstr "Impossible de créer le répertoire d’exécution %s : %s"
+msgstr "Impossible de créer l'analyseur RNG pour %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG validation context %s"
-msgstr "Impossible de créer le domaine depuis %s"
+msgstr "Impossible de créer un contexte de validation RNG %s"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr ""
@@ -16926,16 +16910,14 @@ msgstr ""
 msgid "Unable to decode header until len is received"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to decode message header"
-msgstr "Impossible de créer la kqueue"
+msgstr "Impossible de décoder l'entête du message"
 
-#, fuzzy
 msgid "Unable to decode message length"
-msgstr "Impossible d’enregistrer le processus kevent"
+msgstr "Impossible de décoder la longueur du message"
 
 msgid "Unable to decode message payload"
-msgstr ""
+msgstr "Impossible de décoder le contenu du message"
 
 msgid "Unable to decode number of FDs"
 msgstr ""
@@ -17019,16 +17001,14 @@ msgstr ""
 msgid "Unable to enable/disable perf events"
 msgstr "Impossible d’enregistrer le processus kevent"
 
-#, fuzzy
 msgid "Unable to encode message header"
-msgstr "Impossible de créer la kqueue"
+msgstr "Impossible d'encoder l'entête du message"
 
-#, fuzzy
 msgid "Unable to encode message length"
-msgstr "Impossible d’enregistrer le processus kevent"
+msgstr "Impossible d'encoder la longueur du message"
 
 msgid "Unable to encode message payload"
-msgstr ""
+msgstr "Impossible d'encoder le contenu du message"
 
 msgid "Unable to encode number of FDs"
 msgstr ""
@@ -17642,9 +17622,9 @@ msgstr "Impossible d’obtenir l’UUID de l’hôte"
 msgid "Unable to obtain information about pid: %d"
 msgstr "Renvoyer un résumé des informations à propos du noeud."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s"
-msgstr "impossible d’ouvrir le fichier"
+msgstr "Impossible d'ouvrir %s"
 
 #, fuzzy, c-format
 msgid "Unable to open %s (%d)"
@@ -17890,9 +17870,8 @@ msgstr "Impossible de créer le répertoire d’exécution %s : %s"
 msgid "Unable to query tap interface name"
 msgstr "Impossible d’interroger la kqueue"
 
-#, fuzzy
 msgid "Unable to re-encode message length"
-msgstr "Impossible d’enregistrer le processus kevent"
+msgstr "Impossible de réencoder la longueur du message"
 
 #, fuzzy, c-format
 msgid "Unable to read %s"
@@ -18988,9 +18967,9 @@ msgstr "Type de modèle « %s » inconnu"
 msgid "Unknown namespace: %s"
 msgstr "Architecture %s inconnue"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown parameter %s"
-msgstr "type de paramètre inconnu : %d"
+msgstr "Paramètre inconnu %s"
 
 #, fuzzy
 msgid "Unknown parameter type"
@@ -19207,9 +19186,9 @@ msgstr "Mode de réglage de la mémoire NUMA « %s » non-pris en charge"
 msgid "Unsupported URI scheme '%s'"
 msgstr "Mode de placement du CPU « %s » non-pris en charge"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported action: %s\n"
-msgstr "Le type de configuration %s n’est pas pris en charge"
+msgstr "Action non prise en charge : %s\n"
 
 #, c-format
 msgid "Unsupported address family %d Only IPv4 or IPv6 default gateway"
@@ -19446,9 +19425,9 @@ msgstr ""
 msgid "Updated"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Updated network %s live state"
-msgstr "Réseau %s démarré\n"
+msgstr "Mise à jour du statut du réseau %s"
 
 #, fuzzy, c-format
 msgid "Updated network %s persistent config"
@@ -23707,9 +23686,8 @@ msgstr ""
 msgid "destroy a physical host interface (disable it / \"if-down\")"
 msgstr ""
 
-#, fuzzy
 msgid "destroyed"
-msgstr "Pool %s détruit\n"
+msgstr "détruit"
 
 msgid "detach device from an XML file"
 msgstr "détacher un périphérique depuis un fichier XML"
@@ -23825,9 +23803,9 @@ msgstr "« %s » n’existe pas"
 msgid "device to set threshold for"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "device type '%s' cannot be attached"
-msgstr "Périphérique %s réattaché\n"
+msgstr "Le type de périphérique « %s  » ne peut pas être attaché"
 
 #, c-format
 msgid "device type '%s' cannot be detached"
@@ -24223,9 +24201,9 @@ msgstr ""
 msgid "domain '%s' is already active"
 msgstr "Le domaine est déjà actif"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%s' is already being removed"
-msgstr "Le domaine %s est en cours de redémarrage\n"
+msgstr "Le domaine « %s » est déjà en train d'être enlevé"
 
 #, fuzzy, c-format
 msgid "domain '%s' is already being started"
@@ -24235,9 +24213,9 @@ msgstr "Le domaine « %s » est déjà défini avec l’uuid %s"
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "Le domaine « %s » est déjà défini avec l’uuid %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%s' is not being migrated"
-msgstr "Le domaine %s est en cours de redémarrage\n"
+msgstr "le domaine « %s » n'est pas migré"
 
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
@@ -24361,9 +24339,8 @@ msgstr "informations du domaine en XML"
 msgid "domain is already running"
 msgstr "Le domaine est déjà actif"
 
-#, fuzzy
 msgid "domain is marked for auto destroy"
-msgstr "Domaine %s marqué pour le démarrage automatique\n"
+msgstr "le domaine est marqué pour autodestruction"
 
 #, fuzzy
 msgid "domain is no longer running"
@@ -24377,9 +24354,8 @@ msgstr "le domaine n’est pas actif"
 msgid "domain is not in shutoff state"
 msgstr "le domaine n’est pas actif"
 
-#, fuzzy
 msgid "domain is not in suspend state"
-msgstr "Domaine %s suspendu\n"
+msgstr "le domaine n'est pas au statut suspendu"
 
 msgid "domain is not running"
 msgstr "le domaine n’est pas actif"
@@ -24392,9 +24368,8 @@ msgstr "le domaine n’est pas actif"
 msgid "domain is not transient"
 msgstr "le domaine n’est pas actif"
 
-#, fuzzy
 msgid "domain is pmsuspended"
-msgstr "Domaine %s suspendu\n"
+msgstr "le domaine est pmsuspended"
 
 #, fuzzy
 msgid "domain is transient"
@@ -24909,9 +24884,9 @@ msgstr ""
 msgid "ethtool ioctl error"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "event '%s' for domain %s\n"
-msgstr "Impossible de démarrer le domaine %s"
+msgstr "évènement « %s » pour le domaine %s\n"
 
 #, c-format
 msgid "event '%s' for domain %s: %s for %s %s\n"
@@ -24929,9 +24904,11 @@ msgstr ""
 msgid "event '%s' for storage pool %s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "event 'agent-lifecycle' for domain %s: state: '%s' reason: '%s'\n"
-msgstr "raison de l’état du domaine « %s » invalide"
+msgstr ""
+"évènement « agent-lifecycle » pour le domaine %s : état : « %s » cause : « "
+"%s »\n"
 
 #, c-format
 msgid "event 'balloon-change' for domain %s: %lluKiB\n"
@@ -25464,9 +25441,9 @@ msgstr "Impossible de démarrer automatiquement la VM « %s » : %s"
 msgid "failed to create the RADOS cluster"
 msgstr "impossible d’écrire dans le fichier journal"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create the RBD IoCTX. Does the pool '%s' exist?"
-msgstr "échec de la modification de taille de l’image RBD « %s »"
+msgstr "échec de la création de l'IoCTX RBD. Est-ce que le pool « %s » existe ?"
 
 #, fuzzy
 msgid "failed to create udev context"
