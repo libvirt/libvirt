@@ -4092,7 +4092,8 @@
         contents should be reverted automatically when the guest
         exits.  With some hypervisors, marking a disk transient
         prevents the domain from participating in migration or
-        snapshots. <span class="since">Since 0.9.5</span>
+        snapshots. Only suppported in vmx hypervisor.
+        <span class="since">Since 0.9.5</span>
       </dd>
       <dt><code>serial</code></dt>
       <dd>If present, this specify serial number of virtual hard drive.
