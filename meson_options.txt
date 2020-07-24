@@ -93,3 +93,4 @@ option('storage_zfs', type: 'feature', value: 'auto', description: 'ZFS backend 
 # build feature options
 option('chrdev_lock_files', type: 'string', value: '', description: 'location for UUCP style lock files for character devices (leave empty for default paths on some platforms)')
 option('dtrace', type: 'feature', value: 'auto', description: 'use dtrace for static probing')
+option('host_validate', type: 'feature', value: 'auto', description: 'build virt-host-validate')

@@ -2092,6 +2092,12 @@ if host_machine.system() == 'linux'
   endif
 endif
 
+if not get_option('host_validate').disabled() and host_machine.system() != 'windows'
+  conf.set('WITH_HOST_VALIDATE', 1)
+elif get_option('host_validate').enabled()
+  error('virt-host-validate is not supported on Windows')
+endif
+
 
 # define top include directory
 
@@ -2217,6 +2223,7 @@ misc_summary = {
   'Warning Flags': supported_cc_flags,
   'DTrace': conf.has('WITH_DTRACE_PROBES'),
   'Char device locks': chrdev_lock_files,
+  'virt-host-validate': conf.has('WITH_HOST_VALIDATE'),
 }
 summary(misc_summary, section: 'Miscellaneous', bool_yn: true, list_sep: ' ')
 
