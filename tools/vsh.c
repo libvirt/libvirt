@@ -2396,6 +2396,10 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
 #define ACCEPTED_CHARS \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/_.:@"
 
+/* Hard-code default editor used as a fallback if not configured by
+ * VISUAL or EDITOR environment variables. */
+#define DEFAULT_EDITOR "vi"
+
 int
 vshEditFile(vshControl *ctl, const char *filename)
 {
