@@ -2067,6 +2067,17 @@ if use_storage
 endif
 
 
+# build feature options
+
+chrdev_lock_files = get_option('chrdev_lock_files')
+if chrdev_lock_files == '' and host_machine.system() == 'linux'
+  chrdev_lock_files = '/var/lock'
+endif
+if chrdev_lock_files != ''
+  conf.set_quoted('VIR_CHRDEV_LOCK_FILE_PATH', chrdev_lock_files)
+endif
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
@@ -2184,6 +2195,7 @@ summary(test_summary, section: 'Test suite', bool_yn: true)
 misc_summary = {
   'Use -Werror': cc_flags.contains('-Werror'),
   'Warning Flags': supported_cc_flags,
+  'Char device locks': chrdev_lock_files,
 }
 summary(misc_summary, section: 'Miscellaneous', bool_yn: true, list_sep: ' ')
 

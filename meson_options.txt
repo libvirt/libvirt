@@ -88,3 +88,7 @@ option('storage_scsi', type: 'feature', value: 'auto', description: 'SCSI backen
 option('storage_sheepdog', type: 'feature', value: 'auto', description: 'Sheepdog backend for the storage driver')
 option('storage_vstorage', type: 'feature', value: 'auto', description: 'Virtuozzo storage backend for the storage driver')
 option('storage_zfs', type: 'feature', value: 'auto', description: 'ZFS backend for the storage driver')
+
+
+# build feature options
+option('chrdev_lock_files', type: 'string', value: '', description: 'location for UUCP style lock files for character devices (leave empty for default paths on some platforms)')
