@@ -67,8 +67,7 @@ virDevMapperGetTargetsImpl(const char *path,
     struct dm_task *dmt = NULL;
     struct dm_deps *deps;
     struct dm_info info;
-    char **devPaths = NULL;
-    char **recursiveDevPaths = NULL;
+    VIR_AUTOSTRINGLIST devPaths = NULL;
     size_t i;
     int ret = -1;
 
@@ -133,28 +132,19 @@ virDevMapperGetTargetsImpl(const char *path,
                                       minor(deps->device[i]));
     }
 
-    recursiveDevPaths = NULL;
     for (i = 0; i < deps->count; i++) {
-        char **tmpPaths;
+        VIR_AUTOSTRINGLIST tmpPaths = NULL;
 
         if (virDevMapperGetTargetsImpl(devPaths[i], &tmpPaths, ttl - 1) < 0)
             goto cleanup;
 
-        if (tmpPaths &&
-            virStringListMerge(&recursiveDevPaths, &tmpPaths) < 0) {
-            virStringListFree(tmpPaths);
+        if (virStringListMerge(&devPaths, &tmpPaths) < 0)
             goto cleanup;
-        }
     }
-
-    if (virStringListMerge(&devPaths, &recursiveDevPaths) < 0)
-        goto cleanup;
 
     *devPaths_ret = g_steal_pointer(&devPaths);
     ret = 0;
  cleanup:
-    virStringListFree(recursiveDevPaths);
-    virStringListFree(devPaths);
     dm_task_destroy(dmt);
     return ret;
 }
