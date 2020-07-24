@@ -38,12 +38,13 @@
  *
  * On 32-bit hosts they refer to the 32-bit & 64-bit ABIs respectively.
  *
- * Libvirt uses _FILE_OFFSET_BITS=64 on 32-bit hosts, which causes the
- * C library to transparently rewrite stat() calls to be stat64() calls.
- * Libvirt will never see the 32-bit ABI from the traditional stat()
- * call. We cannot assume this rewriting is done using a macro. It might
- * be, but on GLibC it is done with a magic __asm__ statement to apply
- * the rewrite at link time instead of at preprocessing.
+ * With meson libvirt will have _FILE_OFFSET_BITS=64 always defined.
+ * On 32-bit hosts it causes the C library to transparently rewrite
+ * stat() calls to be stat64() calls. Libvirt will never see the 32-bit
+ * ABI from the traditional stat() call. We cannot assume this rewriting
+ * is done using a macro. It might be, but on GLibC it is done with a
+ * magic __asm__ statement to apply the rewrite at link time instead of
+ * at preprocessing.
  *
  * In GLibC there may be two additional functions exposed by the headers,
  * __xstat() and __xstat64(). When these exist, stat() and stat64() are
@@ -57,14 +58,7 @@
  * With all this in mind the list of functions we have to mock will depend
  * on several factors
  *
- *  - If _FILE_OFFSET_BITS is set, then we are on a 32-bit host, and we
- *    only need to mock stat64 and __xstat64. The other stat / __xstat
- *    functions exist, but we'll never call them so they can be ignored
- *    for mocking.
- *
- *  - If _FILE_OFFSET_BITS is not set, then we are on a 64-bit host and
- *    we should mock stat, stat64, __xstat & __xstat64. Either may be
- *    called by app code.
+ *  - If the stat or __xstat but there is no 64-bit version.
  *
  *  - If __xstat & __xstat64 exist, then stat & stat64 will not exist
  *    as symbols in the library, so the latter should not be mocked.
@@ -74,25 +68,25 @@
 
 
 
-#if defined(HAVE_STAT) && !defined(HAVE___XSTAT) && !defined(_FILE_OFFSET_BITS)
+#if defined(HAVE_STAT) && !defined(HAVE___XSTAT) && !defined(HAVE_STAT64)
 # define MOCK_STAT
 #endif
 #if defined(HAVE_STAT64) && !defined(HAVE___XSTAT64)
 # define MOCK_STAT64
 #endif
-#if defined(HAVE___XSTAT) && !defined(_FILE_OFFSET_BITS)
+#if defined(HAVE___XSTAT) && !defined(HAVE___XSTAT64)
 # define MOCK___XSTAT
 #endif
 #if defined(HAVE___XSTAT64)
 # define MOCK___XSTAT64
 #endif
-#if defined(HAVE_LSTAT) && !defined(HAVE___LXSTAT) && !defined(_FILE_OFFSET_BITS)
+#if defined(HAVE_LSTAT) && !defined(HAVE___LXSTAT) && !defined(HAVE_LSTAT64)
 # define MOCK_LSTAT
 #endif
 #if defined(HAVE_LSTAT64) && !defined(HAVE___LXSTAT64)
 # define MOCK_LSTAT64
 #endif
-#if defined(HAVE___LXSTAT) && !defined(_FILE_OFFSET_BITS)
+#if defined(HAVE___LXSTAT) && !defined(HAVE___LXSTAT64)
 # define MOCK___LXSTAT
 #endif
 #if defined(HAVE___LXSTAT64)

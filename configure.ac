@@ -148,7 +148,7 @@ fi
 
 
 dnl get 64-int interfaces on 32-bit platforms
-AC_SYS_LARGEFILE
+CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64"
 
 AC_TYPE_UID_T
 
