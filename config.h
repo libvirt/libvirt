@@ -1,5 +1,12 @@
 #include <meson-config.h>
 
+/* Enable compile-time and run-time bounds-checking, and some warnings,
+ * without upsetting newer glibc. */
+
+#if !defined _FORTIFY_SOURCE && defined __OPTIMIZE__ && __OPTIMIZE__
+# define _FORTIFY_SOURCE 2
+#endif
+
 #ifndef __GNUC__
 # error "Libvirt requires GCC >= 4.8, or CLang"
 #endif

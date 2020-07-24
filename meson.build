@@ -7,6 +7,7 @@ project(
         'buildtype=debugoptimized',
         'b_pie=true',
         'c_std=gnu99',
+        'warning_level=2',
     ],
 )
 
@@ -208,18 +209,22 @@ libvirt_lib_version = '@0@.@1@.@2@'.format(libvirt_so_version, libvirt_age, libv
 # check compile flags
 
 cc = meson.get_compiler('c')
+cc_flags = []
 
-cc_flags = [
+git_werror = get_option('git_werror')
+if git_werror.enabled() or git_werror.auto() and git
+  cc_flags += [ '-Werror' ]
+endif
+
+cc_flags += [
   '-fno-common',
   '-W',
   '-Wabsolute-value',
   '-Waddress',
   '-Waddress-of-packed-member',
   '-Waggressive-loop-optimizations',
-  '-Wall',
   '-Wattribute-warning',
   '-Wattributes',
-  '-Wbad-function-cast',
   '-Wbool-compare',
   '-Wbool-operation',
   '-Wbuiltin-declaration-mismatch',
@@ -236,27 +241,20 @@ cc_flags = [
   '-Wcpp',
   '-Wdangling-else',
   '-Wdate-time',
-  '-Wdeprecated',
   '-Wdeprecated-declarations',
   '-Wdesignated-init',
-  '-Wdisabled-optimization',
   '-Wdiscarded-array-qualifiers',
   '-Wdiscarded-qualifiers',
   '-Wdiv-by-zero',
-  '-Wdouble-promotion',
-  '-Wduplicated-branches',
   '-Wduplicated-cond',
   '-Wduplicate-decl-specifier',
   '-Wempty-body',
   '-Wendif-labels',
-  '-Wenum-compare',
   '-Wexpansion-to-defined',
-  '-Wextra',
   '-Wformat-contains-nul',
   '-Wformat-extra-args',
   '-Wformat-nonliteral',
   '-Wformat-security',
-  '-Wformat-signedness',
   '-Wformat-y2k',
   '-Wformat-zero-length',
   '-Wframe-address',
@@ -303,9 +301,7 @@ cc_flags = [
   '-Wold-style-definition',
   '-Wopenmp-simd',
   '-Woverflow',
-  '-Woverlength-strings',
   '-Woverride-init',
-  '-Wpacked',
   '-Wpacked-bitfield-compat',
   '-Wpacked-not-aligned',
   '-Wparentheses',
@@ -327,15 +323,12 @@ cc_flags = [
   '-Wsizeof-array-argument',
   '-Wsizeof-pointer-div',
   '-Wsizeof-pointer-memaccess',
-  '-Wstack-protector',
   '-Wstrict-aliasing',
-  '-Wstrict-overflow',
   '-Wstrict-prototypes',
   '-Wstringop-truncation',
   '-Wsuggest-attribute=cold',
   '-Wsuggest-attribute=const',
   '-Wsuggest-attribute=format',
-  '-Wsuggest-attribute=malloc',
   '-Wsuggest-attribute=noreturn',
   '-Wsuggest-attribute=pure',
   '-Wsuggest-final-methods',
@@ -344,21 +337,18 @@ cc_flags = [
   '-Wswitch-bool',
   '-Wswitch-unreachable',
   '-Wsync-nand',
-  '-Wsystem-headers',
   '-Wtautological-compare',
   '-Wtrampolines',
   '-Wtrigraphs',
   '-Wtype-limits',
   '-Wuninitialized',
   '-Wunknown-pragmas',
-  '-Wunsafe-loop-optimizations',
   '-Wunused',
   '-Wunused-but-set-parameter',
   '-Wunused-but-set-variable',
   '-Wunused-function',
   '-Wunused-label',
   '-Wunused-local-typedefs',
-  '-Wunused-macros',
   '-Wunused-parameter',
   '-Wunused-result',
   '-Wunused-value',
@@ -396,6 +386,206 @@ cc_flags += [
   '-Wvla-larger-then=4031',
 ]
 
+cc_flags += [
+  # So we have -W enabled, and then have to explicitly turn off...
+  '-Wno-sign-compare',
+
+  # We do "bad" function casts all the time for event callbacks
+  '-Wno-cast-function-type',
+
+  # CLang incorrectly complains about dup typedefs win gnu99 mode
+  # so use this CLang-specific arg to keep it quiet
+  '-Wno-typedef-redefinition',
+
+  # We don't use -Wc++-compat so we have to enable it explicitly
+  '-Wjump-misses-init',
+
+  # -Wswitch is enabled but that doesn't report missing enums if a default:
+  # is present
+  '-Wswitch-enum',
+
+  # -Wformat=2 implies -Wformat-nonliteral so we need to manually exclude it
+  '-Wno-format-nonliteral',
+
+  # -Wformat enables this by default, and we should keep it,
+  # but need to rewrite various areas of code first
+  '-Wno-format-truncation',
+
+  # This should be < 256 really. Currently we're down to 4096,
+  # but using 1024 bytes sized buffers (mostly for virStrerror)
+  # stops us from going down further
+  '-Wframe-larger-than=4096',
+
+  # extra special flags
+  '-fexceptions',
+  '-fasynchronous-unwind-tables',
+
+  # Need -fipa-pure-const in order to make -Wsuggest-attribute=pure
+  # fire even without -O.
+  '-fipa-pure-const',
+
+  # We should eventually enable this, but right now there are at
+  # least 75 functions triggering warnings.
+  '-Wno-suggest-attribute=pure',
+  '-Wno-suggest-attribute=const',
+]
+
+# on aarch64 error: -fstack-protector not supported for this target
+if host_machine.cpu_family() != 'aarch64'
+  if host_machine.system() in [ 'linux', 'freebsd', 'windows' ]
+    # we prefer -fstack-protector-strong but fallback to -fstack-protector-all
+    fstack_cflags = cc.first_supported_argument([
+      '-fstack-protector-strong',
+      '-fstack-protector-all',
+    ])
+    cc_flags += fstack_cflags
+
+    # When building with mingw using -fstack-protector requires libssp library
+    # which is included by using -fstack-protector with linker.
+    if fstack_cflags.length() == 1 and host_machine.system() == 'windows'
+      add_project_link_arguments(fstack_cflags, language: 'c')
+    endif
+  endif
+endif
+
+if cc.has_argument('-Wlogical-op')
+  # Broken in 6.0 and later
+  #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69602
+  w_logical_op_args = ['-O2', '-Wlogical-op', '-Werror']
+  w_logical_op_code = '''
+    #define TEST1 1
+    #define TEST2 TEST1
+
+    int main(void) {
+      int test = 0;
+      return test == TEST1 || test == TEST2;
+    }
+  '''
+  if not cc.compiles(w_logical_op_code, args: w_logical_op_args)
+    conf.set('BROKEN_GCC_WLOGICALOP_EQUAL_EXPR', 1)
+  endif
+endif
+
+# Check whether clang gives bogus warning for -Wdouble-promotion.
+w_double_promotion_args = ['-O2', '-Wdouble-promotion', '-Werror']
+w_double_promotion_code = '''
+  #include <math.h>
+
+  int main(void) {
+    float f = 0.0;
+    return isnan(f);
+  }
+'''
+if cc.compiles(w_double_promotion_code, args: w_double_promotion_args, name: '-Wdouble-promotion')
+  cc_flags += ['-Wdouble-promotion']
+endif
+
+# Clang complains about unused static inline functions which are common
+# with G_DEFINE_AUTOPTR_CLEANUP_FUNC.
+w_unused_function_args = ['-Wunused-function', '-Werror']
+w_unused_function_code = '''
+  static inline void foo(void) {}
+
+  int main(void) { return 0; }
+'''
+# -Wunused-function is implied by -Wall, we must turn it off explicitly.
+if not cc.compiles(w_unused_function_code, args: w_unused_function_args)
+  cc_flags += ['-Wno-unused-function']
+endif
+
+cc_flags_disabled = [
+  # In meson this is specified using 'c_std=gnu99' in project() function.
+  '-std=gnu99',
+
+  # In meson this is specified using 'warning_level=2' in project() function.
+  '-Wall',
+  '-Wextra',
+
+  # don't care about C++ compiler compat
+  '-Wc++-compat',
+  '-Wabi',
+  '-Wdeprecated',
+
+  # Don't care about ancient C standard compat
+  '-Wtraditional',
+  '-Wtraditional-conversion',
+
+  # Ignore warnings in /usr/include
+  '-Wsystem-headers',
+
+  # Happy for compiler to add struct padding
+  '-Wpadded',
+
+  # GCC very confused with -O2
+  '-Wunreachable-code',
+
+  # Too many to deal with
+  '-Wconversion',
+  '-Wsign-conversion',
+
+  # Need to allow bad cast for execve()
+  '-Wcast-qual',
+
+  # We need to use long long in many places
+  '-Wlong-long',
+
+  # We allow manual list of all enum cases without default
+  '-Wswitch-default',
+
+  # Not a problem since we don't use -fstrict-overflow
+  '-Wstrict-overflow',
+
+  # Not a problem since we don't use -funsafe-loop-optimizations
+  '-Wunsafe-loop-optimizations',
+
+  # gcc 4.4.6 complains this is C++ only; gcc 4.7.0 implies this from -Wall
+  '-Wenum-compare',
+
+  # gcc 5.1 -Wformat-signedness mishandles enums, not ready for prime time
+  '-Wformat-signedness',
+
+  # Several conditionals expand the same on both branches depending on the
+  # particular platform/architecture
+  '-Wduplicated-branches',
+
+  # > This warning does not generally indicate that there is anything wrong
+  # > with your code; it merely indicates that GCC's optimizers are unable
+  # > to handle the code effectively.
+  # Source: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
+  '-Wdisabled-optimization',
+
+  # Various valid glib APIs/macros trigger this warning
+  '-Wbad-function-cast',
+
+  # We might fundamentally need some of these disabled forever, but
+  # ideally we'd turn many of them on
+  '-Wfloat-equal',
+  '-Wdeclaration-after-statement',
+  '-Wpacked',
+  '-Wunused-macros',
+  '-Woverlength-strings',
+  '-Wstack-protector',
+  '-Wsuggest-attribute=malloc',
+]
+
+foreach flag : cc_flags_disabled
+  if cc_flags.contains(flag)
+    error('@0@ is disabled but listed in cc_flags'.format(flag))
+  endif
+endforeach
+
+supported_cc_flags = cc.get_supported_arguments(cc_flags)
+add_project_arguments(supported_cc_flags, language: 'c')
+
+if cc.has_argument('-Wsuggest-attribute=format')
+  conf.set('HAVE_SUGGEST_ATTRIBUTE_FORMAT', 1)
+endif
+
+# used in tests
+cc_flags_relaxed_frame_limit = [
+  '-Wframe-larger-than=262144',
+]
+
 
 # define top include directory
 
@@ -412,3 +602,9 @@ test_summary = {
   'Coverage': coverage_flags.length() > 0,
 }
 summary(test_summary, section: 'Test suite', bool_yn: true)
+
+misc_summary = {
+  'Use -Werror': cc_flags.contains('-Werror'),
+  'Warning Flags': supported_cc_flags,
+}
+summary(misc_summary, section: 'Miscellaneous', bool_yn: true, list_sep: ' ')
