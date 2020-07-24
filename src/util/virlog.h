@@ -78,29 +78,8 @@ struct _virLogSource {
         .serial = 0, \
     }
 
-/*
- * If configured with --enable-debug=yes then library calls
- * are printed to stderr for debugging or to an appropriate channel
- * defined at runtime from the libvirt daemon configuration file
- */
-#ifdef ENABLE_DEBUG
-# define VIR_DEBUG_INT(src, filename, linenr, funcname, ...) \
+#define VIR_DEBUG_INT(src, filename, linenr, funcname, ...) \
     virLogMessage(src, VIR_LOG_DEBUG, filename, linenr, funcname, NULL, __VA_ARGS__)
-#else
-/**
- * virLogEatParams:
- *
- * Do nothing but eat parameters.
- */
-static inline void virLogEatParams(virLogSourcePtr unused, ...)
-{
-    /* Silence gcc */
-    unused = unused;
-}
-# define VIR_DEBUG_INT(src, filename, linenr, funcname, ...) \
-    virLogEatParams(src, filename, linenr, funcname, __VA_ARGS__)
-#endif /* !ENABLE_DEBUG */
-
 #define VIR_INFO_INT(src, filename, linenr, funcname, ...) \
     virLogMessage(src, VIR_LOG_INFO, filename, linenr, funcname, NULL, __VA_ARGS__)
 #define VIR_WARN_INT(src, filename, linenr, funcname, ...) \

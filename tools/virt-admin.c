@@ -1274,9 +1274,7 @@ vshAdmShowVersion(vshControl *ctl G_GNUC_UNUSED)
 #ifdef WITH_LIBVIRTD
     vshPrint(ctl, " Daemon");
 #endif
-#ifdef ENABLE_DEBUG
     vshPrint(ctl, " Debug");
-#endif
 #if WITH_READLINE
     vshPrint(ctl, " Readline");
 #endif

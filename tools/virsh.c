@@ -614,9 +614,7 @@ virshShowVersion(vshControl *ctl G_GNUC_UNUSED)
 #ifdef WITH_SECRETS
     vshPrint(ctl, " Secrets");
 #endif
-#ifdef ENABLE_DEBUG
     vshPrint(ctl, " Debug");
-#endif
 #ifdef WITH_DTRACE_PROBES
     vshPrint(ctl, " DTrace");
 #endif
