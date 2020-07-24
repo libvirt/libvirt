@@ -95,3 +95,4 @@ option('chrdev_lock_files', type: 'string', value: '', description: 'location fo
 option('dtrace', type: 'feature', value: 'auto', description: 'use dtrace for static probing')
 option('host_validate', type: 'feature', value: 'auto', description: 'build virt-host-validate')
 option('init_script', type: 'combo', choices: ['systemd', 'openrc', 'check', 'none'], value: 'check', description: 'Style of init script to install')
+option('loader_nvram', type: 'string', value: '', description: 'Pass list of pairs of <loader>:<nvram> paths. Both pairs and list items are separated by a colon.')

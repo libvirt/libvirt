@@ -2112,6 +2112,14 @@ else
   init_script = get_option('init_script')
 endif
 
+loader_nvram = get_option('loader_nvram')
+if loader_nvram != ''
+  if (loader_nvram.split(':').length() % 2) != 0
+    error('Malformed loader_nvram option')
+  endif
+  conf.set_quoted('DEFAULT_LOADER_NVRAM', loader_nvram)
+endif
+
 
 # define top include directory
 
@@ -2232,12 +2240,18 @@ test_summary = {
 }
 summary(test_summary, section: 'Test suite', bool_yn: true)
 
+if conf.has('DEFAULT_LOADER_NVRAM')
+  loader_res = '@0@ !!! Using this configure option is strongly discouraged !!!'.format(conf.get_unquoted('DEFAULT_LOADER_NVRAM'))
+else
+  loader_res = ''
+endif
 misc_summary = {
   'Use -Werror': cc_flags.contains('-Werror'),
   'Warning Flags': supported_cc_flags,
   'DTrace': conf.has('WITH_DTRACE_PROBES'),
   'Init script': init_script,
   'Char device locks': chrdev_lock_files,
+  'Loader/NVRAM': loader_res,
   'virt-host-validate': conf.has('WITH_HOST_VALIDATE'),
 }
 summary(misc_summary, section: 'Miscellaneous', bool_yn: true, list_sep: ' ')
