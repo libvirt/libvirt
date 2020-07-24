@@ -1325,6 +1325,13 @@ VIR_ENUM_IMPL(virDomainShmemModel,
               "ivshmem-doorbell",
 );
 
+VIR_ENUM_IMPL(virDomainShmemRole,
+              VIR_DOMAIN_SHMEM_ROLE_LAST,
+              "default",
+              "master",
+              "peer",
+);
+
 VIR_ENUM_IMPL(virDomainLaunchSecurity,
               VIR_DOMAIN_LAUNCH_SECURITY_LAST,
               "",
@@ -15366,6 +15373,19 @@ virDomainShmemDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto cleanup;
     }
 
+    if (def->model != VIR_DOMAIN_SHMEM_MODEL_IVSHMEM) {
+        tmp = virXMLPropString(node, "role");
+        if (tmp) {
+            if ((def->role = virDomainShmemRoleTypeFromString(tmp)) <= 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Unknown shmem role type '%s'"), tmp);
+                goto cleanup;
+            }
+
+            VIR_FREE(tmp);
+        }
+    }
+
     if (virParseScaledValue("./size[1]", NULL, ctxt,
                             &def->size, 1, ULLONG_MAX, false) < 0)
         goto cleanup;
@@ -18583,6 +18603,9 @@ virDomainShmemDefEquals(virDomainShmemDefPtr src,
         return false;
 
     if (src->model != dst->model)
+        return false;
+
+    if (src->role != dst->role)
         return false;
 
     if (src->server.enabled != dst->server.enabled)
@@ -23771,6 +23794,15 @@ virDomainShmemDefCheckABIStability(virDomainShmemDefPtr src,
         return false;
     }
 
+    if (src->role != dst->role) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target shared memory role '%s' does not match "
+                         "source role '%s'"),
+                       virDomainShmemRoleTypeToString(dst->role),
+                       virDomainShmemRoleTypeToString(src->role));
+        return false;
+    }
+
     if (src->model != dst->model) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target shared memory model '%s' does not match "
@@ -27423,8 +27455,12 @@ virDomainShmemDefFormat(virBufferPtr buf,
                         virDomainShmemDefPtr def,
                         unsigned int flags)
 {
-    virBufferEscapeString(buf, "<shmem name='%s'>\n", def->name);
+    virBufferEscapeString(buf, "<shmem name='%s'", def->name);
+    if (def->role)
+        virBufferEscapeString(buf, " role='%s'",
+                              virDomainShmemRoleTypeToString(def->role));
 
+    virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
     virBufferAsprintf(buf, "<model type='%s'/>\n",

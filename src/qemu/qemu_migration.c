@@ -1261,10 +1261,22 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
             }
         }
 
-        if (vm->def->nshmems) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("migration with shmem device is not supported"));
-            return false;
+        for (i = 0; i < vm->def->nshmems; i++) {
+            virDomainShmemDefPtr shmem = vm->def->shmems[i];
+
+            if (shmem->model == VIR_DOMAIN_SHMEM_MODEL_IVSHMEM) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("migration with legacy shmem device is not supported"));
+                return false;
+            }
+            if (shmem->role != VIR_DOMAIN_SHMEM_ROLE_MASTER) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("shmem device '%s' cannot be migrated, "
+                                 "only shmem with role='%s' can be migrated"),
+                               shmem->name,
+                               virDomainShmemRoleTypeToString(VIR_DOMAIN_SHMEM_ROLE_MASTER));
+                return false;
+            }
         }
 
         for (i = 0; i < vm->def->nnets; i++) {

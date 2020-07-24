@@ -9142,7 +9142,7 @@ qemu-kvm -net nic,model=? /dev/null
 <pre>
 ...
 &lt;devices&gt;
-  &lt;shmem name='my_shmem0'&gt;
+  &lt;shmem name='my_shmem0' role='peer'&gt;
     &lt;model type='ivshmem-plain'/&gt;
     &lt;size unit='M'&gt;4&lt;/size&gt;
   &lt;/shmem&gt;
@@ -9163,6 +9163,17 @@ qemu-kvm -net nic,model=? /dev/null
       <code>name</code> to identify the shared memory. This attribute cannot
       be directory specific to <code>.</code> or <code>..</code> as well as
       it cannot involve path separator <code>/</code>.
+      The optional <code>role</code> (<span class="since">since 6.6.0</span>)
+      attribute specifies the shared memory is migratable or not. The value can
+      be either "master" or "peer", the former will mean that upon migration,
+      the data in the shared memory is migrated with the domain. There should
+      be only one "master" per shared memory object. Migration with "peer" role
+      is disabled. If migration of such domain is required, the shmem device
+      needs to be unplugged before migration and plugged in at the destination
+      upon successful migration. If the role not specified, the hypervisor
+      default is used. This attribute is currently available only for
+      <code>model</code> type <code>ivshmem-plain</code> and
+      <code>ivshmem-doorbell</code>.
     </dd>
     <dt><code>model</code></dt>
     <dd>

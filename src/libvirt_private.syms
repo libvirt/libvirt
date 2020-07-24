@@ -597,6 +597,8 @@ virDomainShmemDefInsert;
 virDomainShmemDefRemove;
 virDomainShmemModelTypeFromString;
 virDomainShmemModelTypeToString;
+virDomainShmemRoleTypeFromString;
+virDomainShmemRoleTypeToString;
 virDomainShutdownReasonTypeFromString;
 virDomainShutdownReasonTypeToString;
 virDomainShutoffReasonTypeFromString;

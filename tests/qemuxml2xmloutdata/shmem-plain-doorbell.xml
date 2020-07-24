@@ -26,12 +26,12 @@
       <size unit='M'>4</size>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </shmem>
-    <shmem name='shmem1'>
+    <shmem name='shmem1' role='peer'>
       <model type='ivshmem-plain'/>
       <size unit='M'>128</size>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </shmem>
-    <shmem name='shmem2'>
+    <shmem name='shmem2' role='master'>
       <model type='ivshmem-plain'/>
       <size unit='M'>256</size>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>

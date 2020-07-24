@@ -1135,7 +1135,8 @@ mymain(void)
     DO_TEST("tap-vhost", NONE);
     DO_TEST("tap-vhost-incorrect", NONE);
     DO_TEST("shmem", NONE);
-    DO_TEST("shmem-plain-doorbell", NONE);
+    DO_TEST("shmem-plain-doorbell",
+            QEMU_CAPS_DEVICE_IVSHMEM_PLAIN, QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL);
     DO_TEST("smbios", NONE);
     DO_TEST("smbios-multiple-type2", NONE);
     DO_TEST("smbios-type-fwcfg", NONE);

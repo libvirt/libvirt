@@ -8539,10 +8539,23 @@ qemuBuildShmemDevStr(virDomainDefPtr def,
     virBufferAdd(&buf, virDomainShmemModelTypeToString(shmem->model), -1);
     virBufferAsprintf(&buf, ",id=%s", shmem->info.alias);
 
-    if (shmem->server.enabled)
+    if (shmem->server.enabled) {
         virBufferAsprintf(&buf, ",chardev=char%s", shmem->info.alias);
-    else
+    } else {
         virBufferAsprintf(&buf, ",memdev=shmmem-%s", shmem->info.alias);
+
+        switch ((virDomainShmemRole) shmem->role) {
+        case VIR_DOMAIN_SHMEM_ROLE_MASTER:
+            virBufferAddLit(&buf, ",master=on");
+            break;
+        case VIR_DOMAIN_SHMEM_ROLE_PEER:
+            virBufferAddLit(&buf, ",master=off");
+            break;
+        case VIR_DOMAIN_SHMEM_ROLE_DEFAULT:
+        case VIR_DOMAIN_SHMEM_ROLE_LAST:
+            break;
+        }
+    }
 
     if (shmem->msi.vectors)
         virBufferAsprintf(&buf, ",vectors=%u", shmem->msi.vectors);

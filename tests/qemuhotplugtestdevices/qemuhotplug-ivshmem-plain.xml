@@ -1,3 +1,3 @@
-<shmem name='shmem0'>
+<shmem name='shmem0' role='peer'>
   <model type='ivshmem-plain'/>
 </shmem>
