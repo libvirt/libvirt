@@ -362,13 +362,8 @@ file-access-clean:
 	> test_file_access.txt
 endif WITH_LINUX
 
-if WITH_TESTS
 noinst_PROGRAMS = $(test_programs) $(test_helpers)
 noinst_LTLIBRARIES = $(test_libraries)
-else ! WITH_TESTS
-check_PROGRAMS = $(test_programs) $(test_helpers)
-check_LTLIBRARIES = $(test_libraries)
-endif ! WITH_TESTS
 
 TESTS = $(test_programs) \
 	$(test_scripts)
@@ -1256,11 +1251,7 @@ seclabeltest_LDADD = $(LDADDS)
 
 if WITH_SECDRIVER_SELINUX
 if WITH_ATTR
-if WITH_TESTS
 noinst_LTLIBRARIES += libsecurityselinuxhelper.la
-else ! WITH_TESTS
-check_LTLIBRARIES += libsecurityselinuxhelper.la
-endif ! WITH_TESTS
 
 libsecurityselinuxhelper_la_SOURCES = \
 	securityselinuxhelper.c

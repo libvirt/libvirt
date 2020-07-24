@@ -729,23 +729,6 @@ if test -z "$PERL"; then
          AC_MSG_ERROR(['perl' binary is required to build libvirt])
 fi
 
-LIBVIRT_ARG_WITH([TEST_SUITE], [build test suite by default], [check])
-case "$with_test_suite" in
-    yes|no|check) ;;
-    *) AC_MSG_ERROR([bad value ${withval} for tests option]) ;;
-esac
-
-AC_MSG_CHECKING([Whether to build test suite by default])
-if test "$with_test_suite" = "check" ; then
-  if test -d $srcdir/.git ; then
-    with_test_suite=yes
-  else
-    with_test_suite=no
-  fi
-fi
-AC_MSG_RESULT([$with_test_suite])
-AM_CONDITIONAL([WITH_TESTS], [test "$with_test_suite" = "yes"])
-
 LIBVIRT_ARG_ENABLE([EXPENSIVE_TESTS],
                    [set the default for enabling expensive tests ]
                      [(long timeouts), use VIR_TEST_EXPENSIVE to ]
