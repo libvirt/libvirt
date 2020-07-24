@@ -614,27 +614,6 @@ if test -z "$PERL"; then
          AC_MSG_ERROR(['perl' binary is required to build libvirt])
 fi
 
-LIBVIRT_ARG_ENABLE([EXPENSIVE_TESTS],
-                   [set the default for enabling expensive tests ]
-                     [(long timeouts), use VIR_TEST_EXPENSIVE to ]
-                     [override during make],
-                   [check])
-case "$enable_expensive_tests" in
-  0|no) VIR_TEST_EXPENSIVE_DEFAULT=0 ;;
-  1|yes) VIR_TEST_EXPENSIVE_DEFAULT=1 ;;
-  check) ;;
-  *) AC_MSG_ERROR([bad value ${enable_expensive_tests} for enable-expensive-tests option]) ;;
-esac
-if test "$enable_expensive_tests" = check; then
-  if test -d $srcdir/.git ; then
-    VIR_TEST_EXPENSIVE_DEFAULT=0
-  else
-    VIR_TEST_EXPENSIVE_DEFAULT=1
-  fi
-fi
-AC_SUBST([VIR_TEST_EXPENSIVE_DEFAULT])
-AM_CONDITIONAL([WITH_EXPENSIVE_TESTS], [test $VIR_TEST_EXPENSIVE_DEFAULT = 1])
-
 LIBVIRT_ARG_ENABLE([TEST_COVERAGE], [turn on code coverage instrumentation], [no])
 case "$enable_test_coverage" in
   yes|no) ;;

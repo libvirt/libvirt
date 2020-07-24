@@ -129,6 +129,15 @@ if packager_version != ''
 endif
 
 
+# test options
+
+if get_option('expensive_tests').auto()
+  use_expensive_tests = not git
+else
+  use_expensive_tests = get_option('expensive_tests').enabled()
+endif
+
+
 # figure out libvirt version strings
 
 arr_version = meson.project_version().split('.')
