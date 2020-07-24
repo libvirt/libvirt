@@ -138,10 +138,6 @@ LIBVIRT_WIN_CHECK_SYMBOLS
 LIBVIRT_WIN_CHECK_WINDRES
 
 
-dnl Driver-Modules library support
-LIBVIRT_CHECK_DRIVER_MODULES
-
-
 # Set LV_LIBTOOL_OBJDIR to "." or $lt_cv_objdir, depending on whether
 # we're building shared libraries.  This is the name of the directory
 # in which .o files will be created.
@@ -179,10 +175,6 @@ AC_OUTPUT
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Configuration summary])
 AC_MSG_NOTICE([=====================])
-AC_MSG_NOTICE([])
-AC_MSG_NOTICE([Driver Loadable Modules])
-AC_MSG_NOTICE([])
-LIBVIRT_RESULT_DRIVER_MODULES
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
