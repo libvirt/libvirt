@@ -25443,7 +25443,8 @@ msgstr "impossible d’écrire dans le fichier journal"
 
 #, c-format
 msgid "failed to create the RBD IoCTX. Does the pool '%s' exist?"
-msgstr "échec de la création de l'IoCTX RBD. Est-ce que le pool « %s » existe ?"
+msgstr ""
+"échec de la création de l'IoCTX RBD. Est-ce que le pool « %s » existe ?"
 
 #, fuzzy
 msgid "failed to create udev context"

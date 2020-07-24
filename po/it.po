@@ -934,8 +934,8 @@ msgstr ""
 #, c-format
 msgid "%s: value for '%s' parameter must be in range %lld:%lld"
 msgstr ""
-"%s: il valore del parametro '%s' deve essere compreso dell'intervallo "
-"%lld:%lld"
+"%s: il valore del parametro '%s' deve essere compreso dell'intervallo %lld:"
+"%lld"
 
 #, c-format
 msgid "%s: value for '%s' parameter must be in range %zd:%zd"
@@ -2237,7 +2237,8 @@ msgstr ""
 
 #, c-format
 msgid "Call to '%s' returned something, expecting an empty result"
-msgstr "La chiamata a '%s' ha restituito qualcosa, non previsto alcun risultato"
+msgstr ""
+"La chiamata a '%s' ha restituito qualcosa, non previsto alcun risultato"
 
 #, c-format
 msgid "Call to utsname failed: %d"
@@ -3138,7 +3139,8 @@ msgstr "impossibile leggere la lista di mount '%s'"
 
 #, c-format
 msgid "Cannot rename interface '%s' to '%s' on this platform"
-msgstr "Impossibile rinominare l'interfaccia '%s' in '%s' su questa piattaforma"
+msgstr ""
+"Impossibile rinominare l'interfaccia '%s' in '%s' su questa piattaforma"
 
 #, fuzzy
 msgid "Cannot resize the max memory on an active domain"
@@ -3685,8 +3687,8 @@ msgid ""
 "Configuring the '%s' timer is not supported for virtType=%s arch=%s machine="
 "%s guests"
 msgstr ""
-"La configurazione del timer '%s' non è supportata per guest virtType=%s "
-"arch=%s machine=%s"
+"La configurazione del timer '%s' non è supportata per guest virtType=%s arch="
+"%s machine=%s"
 
 #, c-format
 msgid "Configuring the '%s' timer is not supported with this QEMU binary"
@@ -5214,7 +5216,7 @@ msgstr ""
 msgid "Disallowing client %llu with uid %llu"
 msgstr ""
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Disconnected from %s due to I/O error"
 msgstr "Disconnesso da %s per errori di I/O"
 
@@ -8519,8 +8521,8 @@ msgid ""
 "File name '%s' doesn't have expected format '/vmfs/volumes/<datastore>/"
 "<path>'"
 msgstr ""
-"Il nome file '%s' non rispetta il formato atteso '/vmfs/volumes/"
-"<datastore>/<percorso>'"
+"Il nome file '%s' non rispetta il formato atteso '/vmfs/volumes/<datastore>/"
+"<percorso>'"
 
 #, c-format
 msgid "File name '%s' refers to non-existing datastore '%s'"
@@ -9480,7 +9482,8 @@ msgstr ""
 
 #, c-format
 msgid "Invalid PCI address %s. Only PCI buses up to %zu are available"
-msgstr "Indirizzo PCI non valido %s. Sono disponibili i bus PCI solo fino a %zu"
+msgstr ""
+"Indirizzo PCI non valido %s. Sono disponibili i bus PCI solo fino a %zu"
 
 #, c-format
 msgid "Invalid PCI address %s. Only PCI domain 0 is available"
@@ -11036,7 +11039,8 @@ msgstr "Impossibile eseguire una migrazione senza vCenter"
 
 #, c-format
 msgid "Migration option '%s' is not supported by QEMU binary"
-msgstr "L'opzione di migrazione '%s' non è supportato da questo binario di QEMU"
+msgstr ""
+"L'opzione di migrazione '%s' non è supportato da questo binario di QEMU"
 
 msgid "Migration persistent data already present"
 msgstr ""
@@ -12761,7 +12765,8 @@ msgid "Only VNC supported"
 msgstr "È supportato solo VNC"
 
 msgid "Only a single IDE controller is supported for this machine type"
-msgstr "È supportato solo un singolo controller IDE per questo tipo di macchina"
+msgstr ""
+"È supportato solo un singolo controller IDE per questo tipo di macchina"
 
 msgid "Only bridged veth devices can be detached"
 msgstr ""
@@ -13121,7 +13126,8 @@ msgid "PID namespace support is required"
 msgstr ""
 
 msgid "PIIX3 USB controller at index 0 must have PCI address 0:0:1.2"
-msgstr "Il controller USB PIIX3 all'indice 0 deve avere l'indirizzo PCI 0:0:1.2"
+msgstr ""
+"Il controller USB PIIX3 all'indice 0 deve avere l'indirizzo PCI 0:0:1.2"
 
 #, c-format
 msgid "PMSuspend type %d not supported by libxenlight driver"
@@ -37586,7 +37592,7 @@ msgstr "tipo di sorgente pci sconosciuta '%s'"
 msgid "unknown policy attribute '%s' of feature '%s'"
 msgstr "tipo di potenzialità sconosciuta '%d' per '%s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unknown pool format number %d"
 msgstr "formato di contenitore non supportato %d"
 
