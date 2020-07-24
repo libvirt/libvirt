@@ -23787,13 +23787,6 @@ static bool
 virDomainShmemDefCheckABIStability(virDomainShmemDefPtr src,
                                    virDomainShmemDefPtr dst)
 {
-    if (STRNEQ_NULLABLE(src->name, dst->name)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target shared memory name '%s' does not match source "
-                         "'%s'"), dst->name, src->name);
-        return false;
-    }
-
     if (src->role != dst->role) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target shared memory role '%s' does not match "
