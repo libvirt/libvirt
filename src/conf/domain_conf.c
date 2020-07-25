@@ -19965,6 +19965,7 @@ virDomainEmulatorSchedParse(xmlNodePtr node,
 
 static virBitmapPtr
 virDomainSchedulerParse(xmlNodePtr node,
+                        const char *elementName,
                         const char *attributeName,
                         virProcessSchedPolicy *policy,
                         int *priority)
@@ -19974,8 +19975,8 @@ virDomainSchedulerParse(xmlNodePtr node,
 
     if (!(tmp = virXMLPropString(node, attributeName))) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing attribute '%s' in element '%sched'"),
-                       attributeName, attributeName);
+                       _("Missing attribute '%s' in element '%s'"),
+                       attributeName, elementName);
         goto error;
     }
 
@@ -20002,6 +20003,7 @@ virDomainSchedulerParse(xmlNodePtr node,
 
 static int
 virDomainThreadSchedParseHelper(xmlNodePtr node,
+                                const char *elementName,
                                 const char *attributeName,
                                 virDomainThreadSchedParamPtr (*func)(virDomainDefPtr, unsigned int),
                                 virDomainDefPtr def)
@@ -20012,7 +20014,8 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
     int priority = 0;
     g_autoptr(virBitmap) map = NULL;
 
-    if (!(map = virDomainSchedulerParse(node, attributeName, &policy, &priority)))
+    if (!(map = virDomainSchedulerParse(node, elementName, attributeName,
+                                        &policy, &priority)))
         return -1;
 
     while ((next = virBitmapNextSetBit(map, next)) > -1) {
@@ -20021,8 +20024,8 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
 
         if (sched->policy != VIR_PROC_POLICY_NONE) {
             virReportError(VIR_ERR_XML_DETAIL,
-                           _("%ssched attributes 'vcpus' must not overlap"),
-                           STREQ(attributeName, "vcpus") ? "vcpu" : attributeName);
+                           _("'%s' attributes 'vcpus' must not overlap"),
+                           elementName);
             return -1;
         }
 
@@ -20038,7 +20041,9 @@ static int
 virDomainVcpuThreadSchedParse(xmlNodePtr node,
                               virDomainDefPtr def)
 {
-    return virDomainThreadSchedParseHelper(node, "vcpus",
+    return virDomainThreadSchedParseHelper(node,
+                                           "vcpusched",
+                                           "vcpus",
                                            virDomainDefGetVcpuSched,
                                            def);
 }
@@ -20065,7 +20070,9 @@ static int
 virDomainIOThreadSchedParse(xmlNodePtr node,
                             virDomainDefPtr def)
 {
-    return virDomainThreadSchedParseHelper(node, "iothreads",
+    return virDomainThreadSchedParseHelper(node,
+                                           "iothreadsched",
+                                           "iothreads",
                                            virDomainDefGetIOThreadSched,
                                            def);
 }
