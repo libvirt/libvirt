@@ -1305,9 +1305,9 @@ qemuNamespaceUnlinkHelper(pid_t pid G_GNUC_UNUSED,
 
 
 static int
-qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
-                               const char **paths,
-                               size_t npaths)
+qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
+                         const char **paths,
+                         size_t npaths)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
@@ -1359,12 +1359,12 @@ qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
 
 
 static int
-qemuDomainNamespaceUnlinkPath(virDomainObjPtr vm,
-                              const char *path)
+qemuNamespaceUnlinkPath(virDomainObjPtr vm,
+                        const char *path)
 {
     const char *paths[] = { path };
 
-    return qemuDomainNamespaceUnlinkPaths(vm, paths, 1);
+    return qemuNamespaceUnlinkPaths(vm, paths, 1);
 }
 
 
@@ -1457,12 +1457,12 @@ qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
     if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
         return -1;
 
-    if (path && qemuDomainNamespaceUnlinkPath(vm, path) < 0)
+    if (path && qemuNamespaceUnlinkPath(vm, path) < 0)
         return -1;
 
     if (qemuHostdevNeedsVFIO(hostdev) &&
         !qemuDomainNeedsVFIO(vm->def) &&
-        qemuDomainNamespaceUnlinkPath(vm, QEMU_DEV_VFIO) < 0)
+        qemuNamespaceUnlinkPath(vm, QEMU_DEV_VFIO) < 0)
         return -1;
 
     return 0;
@@ -1498,7 +1498,7 @@ qemuDomainNamespaceTeardownMemory(virDomainObjPtr vm,
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
         return 0;
 
-    if (qemuDomainNamespaceUnlinkPath(vm, mem->nvdimmPath) < 0)
+    if (qemuNamespaceUnlinkPath(vm, mem->nvdimmPath) < 0)
         return -1;
 
     return 0;
@@ -1538,7 +1538,7 @@ qemuDomainNamespaceTeardownChardev(virDomainObjPtr vm,
 
     path = chr->source->data.file.path;
 
-    if (qemuDomainNamespaceUnlinkPath(vm, path) < 0)
+    if (qemuNamespaceUnlinkPath(vm, path) < 0)
         return -1;
 
     return 0;
@@ -1584,7 +1584,7 @@ qemuDomainNamespaceTeardownRNG(virDomainObjPtr vm,
         break;
     }
 
-    if (path && qemuDomainNamespaceUnlinkPath(vm, path) < 0)
+    if (path && qemuNamespaceUnlinkPath(vm, path) < 0)
         return -1;
 
     return 0;
@@ -1621,7 +1621,7 @@ qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
     if (!(path = virDomainInputDefGetPath(input)))
         return 0;
 
-    if (path && qemuDomainNamespaceUnlinkPath(vm, path) < 0)
+    if (path && qemuNamespaceUnlinkPath(vm, path) < 0)
         return -1;
 
     return 0;
