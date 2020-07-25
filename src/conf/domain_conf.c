@@ -19965,17 +19965,17 @@ virDomainEmulatorSchedParse(xmlNodePtr node,
 
 static virBitmapPtr
 virDomainSchedulerParse(xmlNodePtr node,
-                        const char *name,
+                        const char *attributeName,
                         virProcessSchedPolicy *policy,
                         int *priority)
 {
     virBitmapPtr ret = NULL;
     g_autofree char *tmp = NULL;
 
-    if (!(tmp = virXMLPropString(node, name))) {
+    if (!(tmp = virXMLPropString(node, attributeName))) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Missing attribute '%s' in element '%sched'"),
-                       name, name);
+                       attributeName, attributeName);
         goto error;
     }
 
@@ -19985,7 +19985,7 @@ virDomainSchedulerParse(xmlNodePtr node,
     if (virBitmapIsAllClear(ret)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("'%s' scheduler bitmap '%s' is empty"),
-                       name, tmp);
+                       attributeName, tmp);
         goto error;
     }
 
@@ -20002,7 +20002,7 @@ virDomainSchedulerParse(xmlNodePtr node,
 
 static int
 virDomainThreadSchedParseHelper(xmlNodePtr node,
-                                const char *name,
+                                const char *attributeName,
                                 virDomainThreadSchedParamPtr (*func)(virDomainDefPtr, unsigned int),
                                 virDomainDefPtr def)
 {
@@ -20012,7 +20012,7 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
     int priority = 0;
     g_autoptr(virBitmap) map = NULL;
 
-    if (!(map = virDomainSchedulerParse(node, name, &policy, &priority)))
+    if (!(map = virDomainSchedulerParse(node, attributeName, &policy, &priority)))
         return -1;
 
     while ((next = virBitmapNextSetBit(map, next)) > -1) {
@@ -20022,7 +20022,7 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
         if (sched->policy != VIR_PROC_POLICY_NONE) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("%ssched attributes 'vcpus' must not overlap"),
-                           STREQ(name, "vcpus") ? "vcpu" : name);
+                           STREQ(attributeName, "vcpus") ? "vcpu" : attributeName);
             return -1;
         }
 
