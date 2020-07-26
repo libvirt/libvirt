@@ -89,44 +89,33 @@ probe begin {
   print_ts("begin");
 }
 
-probe libvirt.event_poll.add_handle {
+probe libvirt.event_glib.add_handle {
   print_ts(sprintf("%d + handle %d %d %d", pid(), watch, fd, events));
 }
-probe libvirt.event_poll.remove_handle {
+probe libvirt.event_glib.remove_handle {
   print_ts(sprintf("%d - handle %d", pid(), watch));
 }
-probe libvirt.event_poll.update_handle {
+probe libvirt.event_glib.update_handle {
   if (showUpdates)
     print_ts(sprintf("%d * handle %d %d", pid(), watch, events));
 }
-probe libvirt.event_poll.purge_handle {
-  print_ts(sprintf("%d ! handle %d", pid(), watch));
-}
-probe libvirt.event_poll.dispatch_handle {
+probe libvirt.event_glib.dispatch_handle {
   if (showDispatch)
     print_ts(sprintf("%d > handle %d %d", pid(), watch, events));
 }
 
-probe libvirt.event_poll.add_timeout {
+probe libvirt.event_glib.add_timeout {
   print_ts(sprintf("%d + timeout %d %d", pid(), timer, frequency));
 }
-probe libvirt.event_poll.remove_timeout {
+probe libvirt.event_glib.remove_timeout {
   print_ts(sprintf("%d - timeout %d", pid(), timer));
 }
-probe libvirt.event_poll.update_timeout {
+probe libvirt.event_glib.update_timeout {
   if (showUpdates)
     print_ts(sprintf("%d * timeout %d %d", pid(), timer, frequency));
 }
-probe libvirt.event_poll.purge_timeout {
-  print_ts(sprintf("%d ! timeout %d", pid(), timer));
-}
 
-probe libvirt.event_poll.dispatch_timeout {
+probe libvirt.event_glib.dispatch_timeout {
   if (showDispatch)
     print_ts(sprintf("%d > timeout %d", pid(), timer));
-}
-
-probe libvirt.event_poll.run {
-  if (showIter)
-    print_ts(sprintf("%d ~ %d %d", pid(), nfds, timeout));
 }
