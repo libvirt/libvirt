@@ -16,3 +16,9 @@ if conf.has('WITH_VMWARE')
     ],
   )
 endif
+
+if conf.has('WITH_VMWARE')
+  used_sym_files += 'libvirt_vmware.syms'
+else
+  sym_files += 'libvirt_vmware.syms'
+endif

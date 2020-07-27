@@ -1,7 +1,0 @@
-# vim: filetype=automake
-
-if WITH_ESX
-USED_SYM_FILES += $(srcdir)/libvirt_esx.syms
-else ! WITH_ESX
-SYM_FILES += $(srcdir)/libvirt_esx.syms
-endif ! WITH_ESX

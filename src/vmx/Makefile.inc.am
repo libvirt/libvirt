@@ -1,7 +1,0 @@
-# vim: filetype=automake
-
-if WITH_VMX
-USED_SYM_FILES += $(srcdir)/libvirt_vmx.syms
-else ! WITH_VMX
-SYM_FILES += $(srcdir)/libvirt_vmx.syms
-endif ! WITH_VMX

@@ -57,3 +57,9 @@ if conf.has('WITH_REMOTE')
     ],
   )
 endif
+
+if conf.has('WITH_REMOTE')
+  used_sym_files += 'libvirt_remote.syms'
+else
+  sym_files += 'libvirt_remote.syms'
+endif

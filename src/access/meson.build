@@ -13,14 +13,17 @@ remote_path = meson.source_root() / 'src' / 'remote'
 
 access_gen_headers = []
 access_gen_sources = []
+access_gen_sym = []
 
 foreach name : [ 'remote', 'qemu', 'lxc' ]
   if name == 'remote'
     header_file = 'viraccessapicheck.h'
     source_file = 'viraccessapicheck.c'
+    syms_file = 'libvirt_access.syms'
   else
     header_file = 'viraccessapicheck@0@.h'.format(name)
     source_file = 'viraccessapicheck@0@.c'.format(name)
+    syms_file = 'libvirt_access_@0@.syms'.format(name)
   endif
   protocol_file = remote_path / '@0@_protocol.x'.format(name)
 
@@ -41,6 +44,15 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
       protocol_file, header_file,
     ],
     capture: true,
+  )
+
+  access_gen_sym += custom_target(
+    syms_file,
+    output: syms_file,
+    capture: true,
+    command: [
+      gendispatch_prog, '--mode=aclsym', name, name.to_upper(), protocol_file,
+    ]
   )
 endforeach
 
@@ -70,3 +82,5 @@ access_dep = declare_dependency(
   include_directories: access_inc_dir,
   sources: access_gen_headers,
 )
+
+generated_sym_files += access_gen_sym

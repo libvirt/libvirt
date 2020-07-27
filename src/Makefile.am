@@ -75,11 +75,7 @@ include access/Makefile.inc.am
 include logging/Makefile.inc.am
 include locking/Makefile.inc.am
 include admin/Makefile.inc.am
-include esx/Makefile.inc.am
-include vmx/Makefile.inc.am
-include vmware/Makefile.inc.am
 include vbox/Makefile.inc.am
-include openvz/Makefile.inc.am
 include qemu/Makefile.inc.am
 include bhyve/Makefile.inc.am
 include libxl/Makefile.inc.am
@@ -221,9 +217,8 @@ check-local: check-protocol check-symfile check-symsorting \
 # All .syms files should be placed in exactly one of these three lists,
 # depending on whether they are stored in git and/or used in the build.
 SYM_FILES += $(USED_SYM_FILES)
-USED_SYM_FILES += $(srcdir)/libvirt_private.syms
 GENERATED_SYM_FILES += \
-	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def \
+	libvirt_qemu.def libvirt_lxc.def \
 	$(NULL)
 
 
@@ -244,52 +239,6 @@ check-augeas: $(augeas_DATA) $(augeastest_DATA)
 
 AUG_GENTEST_SCRIPT = $(top_srcdir)/scripts/augeas-gentest.py
 AUG_GENTEST = $(RUNUTF8) $(PYTHON) $(AUG_GENTEST_SCRIPT)
-
-
-#
-# Build our version script.  This is composed of three parts:
-#
-# 1. libvirt_public.syms - public API.  These functions are always
-# present in the library and should never change incompatibly.
-#
-# 2. libvirt_private.syms - private API.  These symbols are private and
-# semantics may change on every release, hence the version number is
-# spliced in at build time. This ensures that if libvirtd, virsh, or a
-# driver module was built against one libvirt release, it will refuse to
-# load with another where symbols may have same names but different
-# semantics. Such symbols should never be visible in an (installed)
-# public header file.
-#
-# 3. libvirt_*.syms - dynamic private API.  Like libvirt_private.syms,
-# except that build options (such as --enable-debug) can mean these
-# symbols aren't present at all.
-#
-
-USED_SYM_FILES += $(srcdir)/libvirt_driver_modules.syms
-
-if WITH_LINUX
-USED_SYM_FILES += $(srcdir)/libvirt_linux.syms
-else ! WITH_LINUX
-SYM_FILES += $(srcdir)/libvirt_linux.syms
-endif ! WITH_LINUX
-
-if WITH_SASL
-USED_SYM_FILES += $(srcdir)/libvirt_sasl.syms
-else ! WITH_SASL
-SYM_FILES += $(srcdir)/libvirt_sasl.syms
-endif ! WITH_SASL
-
-if WITH_SSH2
-USED_SYM_FILES += $(srcdir)/libvirt_libssh2.syms
-else ! WITH_SSH2
-SYM_FILES += $(srcdir)/libvirt_libssh2.syms
-endif ! WITH_SSH2
-
-if WITH_LIBSSH
-USED_SYM_FILES += $(srcdir)/libvirt_libssh.syms
-else ! WITH_LIBSSH
-SYM_FILES += $(srcdir)/libvirt_libssh.syms
-endif ! WITH_LIBSSH
 
 BUILT_SOURCES += $(GENERATED_SYM_FILES)
 

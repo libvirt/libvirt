@@ -18,3 +18,9 @@ if conf.has('WITH_VMX')
 endif
 
 vmx_inc_dir = include_directories('.')
+
+if conf.has('WITH_VMX')
+  used_sym_files += 'libvirt_vmx.syms'
+else
+  sym_files += 'libvirt_vmx.syms'
+endif

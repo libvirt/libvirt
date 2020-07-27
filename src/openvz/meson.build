@@ -18,3 +18,9 @@ if conf.has('WITH_OPENVZ')
     ],
   )
 endif
+
+if conf.has('WITH_OPENVZ')
+  used_sym_files += 'libvirt_openvz.syms'
+else
+  sym_files += 'libvirt_openvz.syms'
+endif

@@ -85,6 +85,44 @@ if conf.has('WITH_DTRACE_PROBES')
 endif
 
 
+# symbol files
+
+public_sym_file = 'libvirt_public.syms'
+
+used_sym_files = [
+  'libvirt_private.syms',
+  'libvirt_driver_modules.syms',
+]
+
+generated_sym_files = []
+
+sym_files = []
+
+if host_machine.system() == 'linux'
+  used_sym_files += 'libvirt_linux.syms'
+else
+  sym_files += 'libvirt_linux.syms'
+endif
+
+if conf.has('WITH_SASL')
+  used_sym_files += 'libvirt_sasl.syms'
+else
+  sym_files += 'libvirt_sasl.syms'
+endif
+
+if conf.has('WITH_LIBSSH')
+  used_sym_files += 'libvirt_libssh.syms'
+else
+  sym_files += 'libvirt_libssh.syms'
+endif
+
+if conf.has('WITH_SSH2')
+  used_sym_files += 'libvirt_libssh2.syms'
+else
+  sym_files += 'libvirt_libssh2.syms'
+endif
+
+
 # list subdirectories
 
 subdir('util')
@@ -150,3 +188,44 @@ driver_lib = static_library(
     conf_inc_dir,
   ],
 )
+
+
+# symbol files for libvirt.so
+
+# Build our version script.  This is composed of three parts:
+#
+# 1. libvirt_public.syms - public API.  These functions are always
+# present in the library and should never change incompatibly.
+#
+# 2. libvirt_private.syms - private API.  These symbols are private and
+# semantics may change on every release, hence the version number is
+# spliced in at build time. This ensures that if libvirtd, virsh, or a
+# driver module was built against one libvirt release, it will refuse to
+# load with another where symbols may have same names but different
+# semantics. Such symbols should never be visible in an (installed)
+# public header file.
+#
+# 3. libvirt_*.syms - dynamic private API.  Like libvirt_private.syms,
+# except that build options (such as --enable-debug) can mean these
+# symbols aren't present at all.
+
+libvirt_syms = custom_target(
+  'libvirt.syms',
+  input: [ public_sym_file ] + used_sym_files + generated_sym_files,
+  output: 'libvirt.syms',
+  command: [
+    meson_python_prog, python3_prog.path(), meson_gen_sym_prog.path(),
+    '@OUTPUT@', 'LIBVIRT_PRIVATE_' + meson.project_version(), '@INPUT@',
+  ],
+)
+if host_machine.system() == 'windows'
+  libvirt_def = custom_target(
+    'libvirt.def',
+    input: libvirt_syms,
+    output: 'libvirt.def',
+    command: [
+      meson_python_prog, python3_prog.path(), meson_gen_def_prog.path(),
+      '@INPUT@', '@OUTPUT@',
+    ],
+  )
+endif

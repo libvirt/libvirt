@@ -133,12 +133,6 @@ BUILT_SOURCES += \
 	$(REMOTE_DAEMON_GENERATED) \
 	$(NULL)
 
-if WITH_REMOTE
-USED_SYM_FILES += $(srcdir)/libvirt_remote.syms
-else ! WITH_REMOTE
-SYM_FILES += $(srcdir)/libvirt_remote.syms
-endif ! WITH_REMOTE
-
 if WITH_LIBVIRTD
 
 sbin_PROGRAMS += libvirtd virtproxyd

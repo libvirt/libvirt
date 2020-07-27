@@ -1,11 +1,5 @@
 # vim: filetype=automake
 
-ACCESS_DRIVER_SYM_FILES = \
-	libvirt_access.syms \
-	libvirt_access_qemu.syms \
-	libvirt_access_lxc.syms \
-	$(NULL)
-
 ACCESS_DRIVER_API_FILES = \
 	libvirt_access.xml \
 	libvirt_access_qemu.xml \
@@ -13,8 +7,6 @@ ACCESS_DRIVER_API_FILES = \
 	$(NULL)
 
 ACCESS_DRIVER_POLKIT_POLICY = access/org.libvirt.api.policy
-
-GENERATED_SYM_FILES += $(ACCESS_DRIVER_SYM_FILES)
 
 libvirt_la_BUILT_LIBADD += libvirt_driver_access.la
 
@@ -33,23 +25,9 @@ endif WITH_LIBVIRTD
 BUILT_SOURCES += $(ACCESS_DRIVER_POLKIT_POLICY)
 endif WITH_POLKIT
 
-
 BUILT_SOURCES += \
 	$(ACCESS_DRIVER_API_FILES) \
 	$(NULL)
-
-libvirt_access.syms: $(srcdir)/rpc/gendispatch.pl \
-			$(REMOTE_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclsym \
-	  remote REMOTE $(REMOTE_PROTOCOL) > $@
-libvirt_access_qemu.syms: $(srcdir)/rpc/gendispatch.pl \
-			$(QEMU_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclsym \
-	  qemu QEMU $(QEMU_PROTOCOL) > $@
-libvirt_access_lxc.syms: $(srcdir)/rpc/gendispatch.pl \
-			$(LXC_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclsym \
-	  lxc LXC $(LXC_PROTOCOL) > $@
 
 libvirt_access.xml: $(srcdir)/rpc/gendispatch.pl \
 			$(REMOTE_PROTOCOL) Makefile.am
