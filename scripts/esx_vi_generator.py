@@ -1250,12 +1250,7 @@ def is_known_type(type):
             type in enums_by_name)
 
 
-def open_and_print(filename):
-    if filename.startswith("./"):
-        print("  GEN      " + filename[2:])
-    else:
-        print("  GEN      " + filename)
-
+def open_file(filename):
     return open(filename, "wt")
 
 
@@ -1327,17 +1322,17 @@ input_filename = os.path.join(sys.argv[1], "esx/esx_vi_generator.input")
 output_dirname = os.path.join(sys.argv[2], "esx")
 
 
-types_typedef = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typedef"))
-types_typeenum = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typeenum"))
-types_typetostring = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typetostring"))
-types_typefromstring = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typefromstring"))
-types_header = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.h"))
-types_source = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.c"))
-methods_header = open_and_print(os.path.join(output_dirname, "esx_vi_methods.generated.h"))
-methods_source = open_and_print(os.path.join(output_dirname, "esx_vi_methods.generated.c"))
-methods_macro = open_and_print(os.path.join(output_dirname, "esx_vi_methods.generated.macro"))
-helpers_header = open_and_print(os.path.join(output_dirname, "esx_vi.generated.h"))
-helpers_source = open_and_print(os.path.join(output_dirname, "esx_vi.generated.c"))
+types_typedef = open_file(os.path.join(output_dirname, "esx_vi_types.generated.typedef"))
+types_typeenum = open_file(os.path.join(output_dirname, "esx_vi_types.generated.typeenum"))
+types_typetostring = open_file(os.path.join(output_dirname, "esx_vi_types.generated.typetostring"))
+types_typefromstring = open_file(os.path.join(output_dirname, "esx_vi_types.generated.typefromstring"))
+types_header = open_file(os.path.join(output_dirname, "esx_vi_types.generated.h"))
+types_source = open_file(os.path.join(output_dirname, "esx_vi_types.generated.c"))
+methods_header = open_file(os.path.join(output_dirname, "esx_vi_methods.generated.h"))
+methods_source = open_file(os.path.join(output_dirname, "esx_vi_methods.generated.c"))
+methods_macro = open_file(os.path.join(output_dirname, "esx_vi_methods.generated.macro"))
+helpers_header = open_file(os.path.join(output_dirname, "esx_vi.generated.h"))
+helpers_source = open_file(os.path.join(output_dirname, "esx_vi.generated.c"))
 
 
 number = 0

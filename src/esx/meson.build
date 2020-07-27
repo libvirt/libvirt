@@ -1,0 +1,56 @@
+esx_sources = [
+  'esx_driver.c',
+  'esx_interface_driver.c',
+  'esx_network_driver.c',
+  'esx_storage_driver.c',
+  'esx_storage_backend_vmfs.c',
+  'esx_storage_backend_iscsi.c',
+  'esx_stream.c',
+  'esx_util.c',
+  'esx_vi.c',
+  'esx_vi_methods.c',
+  'esx_vi_types.c',
+]
+
+esx_gen_sources = custom_target(
+  'virtesxgen',
+  input: [
+    'esx_vi_generator.input',
+  ],
+  output: [
+    'esx_vi.generated.c',
+    'esx_vi.generated.h',
+    'esx_vi_methods.generated.c',
+    'esx_vi_methods.generated.h',
+    'esx_vi_methods.generated.macro',
+    'esx_vi_types.generated.c',
+    'esx_vi_types.generated.h',
+    'esx_vi_types.generated.typedef',
+    'esx_vi_types.generated.typeenum',
+    'esx_vi_types.generated.typefromstring',
+    'esx_vi_types.generated.typetostring',
+  ],
+  command: [
+    meson_python_prog, python3_prog.path(), esx_vi_generator_prog.path(),
+    meson.source_root() / 'src',
+    meson.build_root() / 'src',
+  ],
+)
+
+if conf.has('WITH_ESX')
+  esx_lib = static_library(
+    'virt_driver_esx',
+    [
+      esx_sources,
+      esx_gen_sources[1],
+    ],
+    dependencies: [
+      curl_dep,
+      src_dep,
+    ],
+    include_directories: [
+      conf_inc_dir,
+      vmx_inc_dir,
+    ],
+  )
+endif
