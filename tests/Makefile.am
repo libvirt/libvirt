@@ -38,18 +38,6 @@ endif WITH_ATTR
 endif WITH_SECDRIVER_SELINUX
 
 if WITH_QEMU
-test_programs += qemuxml2argvtest qemuxml2xmltest \
-	qemudomaincheckpointxml2xmltest qemudomainsnapshotxml2xmltest \
-	qemumonitorjsontest qemuhotplugtest \
-	qemuagenttest qemucapabilitiestest qemucaps2xmltest \
-	qemumemlocktest \
-	qemucommandutiltest \
-	qemublocktest \
-	qemumigparamstest \
-	qemusecuritytest \
-	qemufirmwaretest \
-	qemuvhostusertest \
-	$(NULL)
 test_helpers += qemucapsprobe
 endif WITH_QEMU
 
@@ -144,136 +132,10 @@ valgrind:
 	$(MAKE) check VG="$(LIBTOOL) --mode=execute $(VALGRIND)"
 
 if WITH_QEMU
-
-qemu_LDADDS = ../src/libvirt_driver_qemu_impl.la
-if WITH_DTRACE_PROBES
-qemu_LDADDS += ../src/libvirt_qemu_probes.lo
-endif WITH_DTRACE_PROBES
-qemu_LDADDS += $(LDADDS)
-
-qemuxml2argvtest_SOURCES = \
-	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
-	testutils.c testutils.h \
-	virfilewrapper.c virfilewrapper.h \
-	$(NULL)
-qemuxml2argvtest_LDADD = libqemutestdriver.la libqemumonitortestutils.la \
-	$(LDADDS) $(LIBXML_LIBS)
-
-qemuxml2xmltest_SOURCES = \
-	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \
-	testutils.c testutils.h \
-	virfilewrapper.c virfilewrapper.h
-qemuxml2xmltest_LDADD = $(qemu_LDADDS)
-
-qemumonitorjsontest_SOURCES = \
-	qemumonitorjsontest.c \
-	testutils.c testutils.h \
-	testutilsqemu.c testutilsqemu.h \
-	$(NULL)
-qemumonitorjsontest_LDADD = libqemumonitortestutils.la \
-	$(qemu_LDADDS)
-
-qemucapabilitiestest_SOURCES = \
-	qemucapabilitiestest.c \
-	testutils.c testutils.h \
-	testutilsqemu.c testutilsqemu.h \
-	$(NULL)
-qemucapabilitiestest_LDADD = libqemumonitortestutils.la \
-	$(qemu_LDADDS)
-
 qemucapsprobe_SOURCES = \
 	qemucapsprobe.c
 qemucapsprobe_LDADD = \
 	libqemutestdriver.la $(LDADDS)
-
-qemucommandutiltest_SOURCES = \
-	qemucommandutiltest.c \
-	testutils.c testutils.h \
-	testutilsqemu.c testutilsqemu.h \
-	$(NULL)
-qemucommandutiltest_LDADD = libqemumonitortestutils.la \
-	$(qemu_LDADDS)
-
-qemucaps2xmltest_SOURCES = \
-	qemucaps2xmltest.c \
-	testutils.c testutils.h \
-	testutilsqemu.c testutilsqemu.h \
-	$(NULL)
-qemucaps2xmltest_LDADD = $(qemu_LDADDS)
-
-qemuagenttest_SOURCES = \
-	qemuagenttest.c \
-	testutils.c testutils.h \
-	testutilsqemu.c testutilsqemu.h \
-	$(NULL)
-qemuagenttest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS)
-
-qemuhotplugtest_SOURCES = \
-	qemuhotplugtest.c \
-	testutils.c testutils.h \
-	testutilsqemu.c testutilsqemu.h \
-	$(NULL)
-qemuhotplugtest_LDADD = \
-	libqemutestdriver.la \
-	libqemumonitortestutils.la \
-	$(qemu_LDADDS) \
-	$(NULL)
-
-qemublocktest_SOURCES = \
-	qemublocktest.c \
-	testutils.h testutils.c \
-	testutilsqemu.h testutilsqemu.c \
-	$(NULL)
-qemublocktest_LDADD = \
-	libqemumonitortestutils.la \
-	../src/libvirt.la \
-	$(qemu_LDADDS) \
-	$(NULL)
-
-qemudomaincheckpointxml2xmltest_SOURCES = \
-	qemudomaincheckpointxml2xmltest.c testutilsqemu.c testutilsqemu.h \
-	testutils.c testutils.h
-qemudomaincheckpointxml2xmltest_LDADD = $(qemu_LDADDS)
-
-qemudomainsnapshotxml2xmltest_SOURCES = \
-	qemudomainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
-	testutils.c testutils.h
-qemudomainsnapshotxml2xmltest_LDADD = $(qemu_LDADDS)
-
-qemumemlocktest_SOURCES = \
-	qemumemlocktest.c \
-	testutilsqemu.c testutilsqemu.h \
-	testutils.c testutils.h
-qemumemlocktest_LDADD = $(qemu_LDADDS)
-
-qemumigparamstest_SOURCES = \
-	qemumigparamstest.c \
-	testutils.c testutils.h \
-	testutilsqemu.c testutilsqemu.h \
-	$(NULL)
-qemumigparamstest_LDADD = libqemumonitortestutils.la \
-	$(qemu_LDADDS)
-
-qemusecuritytest_SOURCES = \
-	qemusecuritytest.c qemusecuritytest.h \
-	qemusecuritymock.c \
-	testutils.h testutils.c \
-	testutilsqemu.h testutilsqemu.c
-qemusecuritytest_LDADD = $(qemu_LDADDS)
-
-qemufirmwaretest_SOURCES = \
-	qemufirmwaretest.c \
-	testutils.h testutils.c \
-	virfilewrapper.c virfilewrapper.h \
-	$(NULL)
-qemufirmwaretest_LDADD = $(qemu_LDADDS)
-
-qemuvhostusertest_SOURCES = \
-	qemuvhostusertest.c \
-	testutils.h testutils.c \
-	virfilewrapper.c virfilewrapper.h \
-	$(NULL)
-qemuvhostusertest_LDADD = $(qemu_LDADDS)
 endif WITH_QEMU
 
 if WITH_VBOX
