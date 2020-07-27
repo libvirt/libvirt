@@ -31,15 +31,6 @@ if WITH_LIBVIRTD
 test_programs += fdstreamtest
 endif WITH_LIBVIRTD
 
-if WITH_DBUS
-test_programs += virdbustest \
-                 virsystemdtest \
-                 $(NULL)
-if WITH_POLKIT
-test_programs += virpolkittest
-endif WITH_POLKIT
-endif WITH_DBUS
-
 if WITH_SECDRIVER_SELINUX
 if WITH_ATTR
 test_programs += securityselinuxtest \
@@ -609,23 +600,6 @@ test_programs += \
 	virmacmaptest \
 	virnetdevopenvswitchtest
 endif WITH_YAJL
-
-if WITH_DBUS
-virdbustest_SOURCES = \
-	virdbustest.c testutils.h testutils.c
-virdbustest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
-virdbustest_LDADD = $(LDADDS) $(DBUS_LIBS)
-
-virpolkittest_SOURCES = \
-	virpolkittest.c testutils.h testutils.c
-virpolkittest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
-virpolkittest_LDADD = $(LDADDS) $(DBUS_LIBS)
-
-virsystemdtest_SOURCES = \
-	virsystemdtest.c testutils.h testutils.c
-virsystemdtest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
-virsystemdtest_LDADD = $(LDADDS) $(DBUS_LIBS)
-endif WITH_DBUS
 
 if WITH_SECDRIVER_SELINUX
 if WITH_ATTR

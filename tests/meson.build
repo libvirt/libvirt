@@ -353,6 +353,19 @@ if conf.has('WITH_BHYVE')
   ]
 endif
 
+if conf.has('WITH_DBUS')
+  tests += [
+    { 'name': 'virdbustest', 'deps': [ dbus_dep ] },
+    { 'name': 'virsystemdtest', 'deps': [ dbus_dep ] },
+  ]
+
+  if conf.has('WITH_POLKIT')
+    tests += [
+      { 'name': 'virpolkittest', 'deps': [ dbus_dep ] },
+    ]
+  endif
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(
