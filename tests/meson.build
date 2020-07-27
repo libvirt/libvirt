@@ -461,6 +461,27 @@ if conf.has('WITH_QEMU')
   ]
 endif
 
+if conf.has('WITH_REMOTE')
+  tests += [
+    { 'name': 'virnetdaemontest' },
+    { 'name': 'virnetmessagetest' },
+    { 'name': 'virnetserverclienttest' },
+    { 'name': 'virnetsockettest' },
+  ]
+
+  nettls_sources = [ 'virnettlshelpers.c' ]
+  if conf.has('HAVE_LIBTASN1_H')
+    nettls_sources += 'pkix_asn1_tab.c'
+  endif
+
+  libtasn1_dep = cc.find_library('tasn1', required: false)
+
+  tests += [
+    { 'name': 'virnettlscontexttest', 'sources': [ 'virnettlscontexttest.c', nettls_sources ], 'deps': [ libtasn1_dep, ] },
+    { 'name': 'virnettlssessiontest', 'sources': [ 'virnettlssessiontest.c', nettls_sources ], 'deps': [ libtasn1_dep, ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

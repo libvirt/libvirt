@@ -16,17 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-if WITH_REMOTE
-test_programs += \
-	virnetmessagetest \
-	virnetsockettest \
-	virnetdaemontest \
-	virnetserverclienttest \
-	virnettlscontexttest \
-	virnettlssessiontest \
-	$(NULL)
-endif WITH_REMOTE
-
 if WITH_SECDRIVER_SELINUX
 if WITH_ATTR
 test_programs += securityselinuxtest \
@@ -214,41 +203,6 @@ storagepoolcapstest_SOURCES = \
         storagepoolcapstest.c testutils.h testutils.c
 storagepoolcapstest_LDADD = $(LDADDS)
 endif WITH_STORAGE
-
-virnetmessagetest_SOURCES = \
-	virnetmessagetest.c testutils.h testutils.c
-virnetmessagetest_LDADD = $(LDADDS)
-
-virnetsockettest_SOURCES = \
-	virnetsockettest.c testutils.h testutils.c
-virnetsockettest_LDADD = $(LDADDS)
-
-virnetdaemontest_SOURCES = \
-	virnetdaemontest.c \
-	testutils.h testutils.c
-virnetdaemontest_LDADD = $(LDADDS)
-
-virnetserverclienttest_SOURCES = \
-	virnetserverclienttest.c \
-	testutils.h testutils.c
-virnetserverclienttest_LDADD = $(LDADDS)
-
-virnettlscontexttest_SOURCES = \
-	virnettlscontexttest.c \
-	virnettlshelpers.h virnettlshelpers.c \
-	testutils.h testutils.c
-virnettlscontexttest_LDADD = $(LDADDS) $(GNUTLS_LIBS)
-virnettlssessiontest_SOURCES = \
-	virnettlssessiontest.c \
-	virnettlshelpers.h virnettlshelpers.c \
-	testutils.h testutils.c
-virnettlssessiontest_LDADD = $(LDADDS) $(GNUTLS_LIBS)
-if HAVE_LIBTASN1
-virnettlscontexttest_SOURCES += pkix_asn1_tab.c
-virnettlscontexttest_LDADD += -ltasn1
-virnettlssessiontest_SOURCES += pkix_asn1_tab.c
-virnettlssessiontest_LDADD += -ltasn1
-endif HAVE_LIBTASN1
 
 virstoragetest_SOURCES = \
 	virstoragetest.c testutils.h testutils.c
