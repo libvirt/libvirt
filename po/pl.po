@@ -290,7 +290,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr "    Limit przepustowości: %llu bajtów/s (%-.3lf %s/s)"
 
@@ -336,7 +336,7 @@ msgstr ""
 msgid "$%s value should be between 0 and %d"
 msgstr ""
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "%6s: Checking %-60s: "
 msgstr "%6s: Sprawdzanie %-60s: "
 

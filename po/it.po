@@ -2238,7 +2238,7 @@ msgstr ""
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr ""
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cache level '%u' already defined"
 msgstr "Modello CPU '%s' già definito"
 
@@ -3165,7 +3165,7 @@ msgstr ""
 msgid "Cannot resize the max memory on an active domain"
 msgstr "impossibile collegare le vcpu su di un dominio inattivo"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Cannot resolve %s address: %s"
 msgstr "Impossibile risolvere l'indirizzo ::1: %s"
 
@@ -5951,7 +5951,7 @@ msgstr ""
 msgid "Escape character is %s"
 msgstr "impossibile trovare il dispositivo a caratteri %s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Ethernet controller index %d out of [0..%d] range"
 msgstr "il valore di typeid è fuori dal range"
 
@@ -6614,7 +6614,7 @@ msgstr "Impossibile creare la rete da %s"
 msgid "Failed to create checkpoint dir %s"
 msgstr "Impossibile creare il dominio da %s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to create dbus state dir %s"
 msgstr "Impossibile creare %s"
 
@@ -9441,7 +9441,7 @@ msgstr "Nome del dispositivo del disco fisso non valido: %s"
 msgid "Invalid 'iothread' value '%s'"
 msgstr "Valore non valido '%s' per 'iothread'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid 'level' attribute in cache element for NUMA node %d"
 msgstr "Nome del dispositivo del disco fisso non valido: %s"
 
@@ -9700,7 +9700,7 @@ msgstr "Tipo di bus '%s' invalido per il floppy"
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "busNr '%s' non valido nel controller PCI"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid cache associativity '%s'"
 msgstr "uuid %s non valido"
 
@@ -9708,7 +9708,7 @@ msgstr "uuid %s non valido"
 msgid "Invalid cache id '%s'"
 msgstr "uuid %s non valido"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid cache policy '%s'"
 msgstr "uuid %s non valido"
 
@@ -11147,7 +11147,7 @@ msgstr "Proprietà '%s' mancante durante la ricerca di ManagedEntityStatus"
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr ""
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
 msgstr "Indirizzo IP mancante nella definizione host statico per la rete '%s'"
 
@@ -11186,7 +11186,7 @@ msgstr "Attributo 'cores' mancante nella topologia CPU"
 msgid "Missing 'key' element for lease"
 msgstr "Elemento 'key' mancante per lease"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Missing 'level' attribute in cache element for NUMA node %d"
 msgstr "Attributo 'threads' mancante nella topologia CPU"
 
@@ -11207,7 +11207,7 @@ msgstr "Campo 'path' mancate nel documento JSON"
 msgid "Missing 'pipefd' in JSON document"
 msgstr "'pipefd' mancate nel documento JSON"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Missing 'policy' attribute in cache element for NUMA node %d"
 msgstr "Attributo 'threads' mancante nella topologia CPU"
 
@@ -18431,7 +18431,7 @@ msgstr "Impossibile impostare il flag close-on-exec del monitor"
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "Impossibile impostare il flag non-blocking del file descriptor"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Unable to set copy-on-write state on '%s' to '%s'"
 msgstr "Impostazione contesto di sicurezza fallita del monitor per %s"
 
@@ -22588,7 +22588,7 @@ msgstr "impossibile scrivere il file di configurazione '%s'"
 msgid "cannot write data to file '%s'"
 msgstr "impossibile scrivere il file di configurazione '%s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "cannot write to '%s' on bridge '%s'"
 msgstr "impossibile scrivere il file di configurazione '%s'"
 
@@ -28162,7 +28162,7 @@ msgstr "Protocollo '%s' sconosciuto"
 msgid "invalid backing protocol string '%s'"
 msgstr "puntatore al pool di storage non valido in %s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "invalid backupmode '%s' of disk '%s'"
 msgstr "numero di bus USB fornito non valido per '%s'"
 
@@ -28421,7 +28421,7 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "invalid mac address check value: '%s'"
 msgstr "percorso non valido: %s"
 
@@ -28679,7 +28679,7 @@ msgstr "puntatore al pool di storage non valido in %s"
 msgid "invalid statistics collection period"
 msgstr "puntatore di collegamento non valido in"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "invalid storage pool cow feature state '%s'"
 msgstr "puntatore al pool di storage non valido in %s"
 
@@ -36047,15 +36047,15 @@ msgstr "udev_monitor_new_from_netlink ha ritornato NULL"
 msgid "uid and gid should be mapped both"
 msgstr ""
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unable control COW flag on '%s'"
 msgstr "impossibile aprire '%s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unable get directory flags on '%s'"
 msgstr "Impossibile creare la directory '%s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unable query filesystem type on '%s'"
 msgstr "Impossibile trovare il tipo di filesystem %s"
 
@@ -36111,7 +36111,7 @@ msgstr "impossibile chiudere %s"
 msgid "unable to connect to server at '%s:%s'"
 msgstr "impossibile creare rundir %s: %s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "unable to control COW flag on '%s', not btrfs"
 msgstr "impossibile modificare la configurazione sul tipo di grafici '%s'"
 

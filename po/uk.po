@@ -15667,7 +15667,8 @@ msgid "TLS:"
 msgstr "TLS:"
 
 msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr "Підтримки TPM 1.2 у поєднанні із моделлю пристроїв SPAPR не передбачено"
+msgstr ""
+"Підтримки TPM 1.2 у поєднанні із моделлю пристроїв SPAPR не передбачено"
 
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
