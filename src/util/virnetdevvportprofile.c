@@ -63,10 +63,6 @@ VIR_LOG_INIT("util.netdevvportprofile");
 
 # define MICROSEC_PER_SEC       (1000 * 1000)
 
-# define NLMSGBUF_SIZE  256
-# define RATTBUF_SIZE   64
-
-
 # define STATUS_POLL_TIMEOUT_USEC (10 * MICROSEC_PER_SEC)
 # define STATUS_POLL_INTERVL_USEC (MICROSEC_PER_SEC / 8)
 
