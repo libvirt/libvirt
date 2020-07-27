@@ -6,21 +6,22 @@
 # Daniel  <veillard@redhat.com>, 2011
 # Jiri Grönroos <jiri.gronroos@iki.fi>, 2017
 # Toni Rantala <trantalafilo@gmail.com>, 2017
+# Daniel P. Berrange <berrange@redhat.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-06-29 11:55+0000\n"
-"PO-Revision-Date: 2017-03-26 10:24+0000\n"
-"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
-"Language-Team: Finnish (http://www.transifex.com/projects/p/fedora/language/"
-"fi/)\n"
+"PO-Revision-Date: 2020-07-24 22:53+0000\n"
+"Last-Translator: Daniel P. Berrange <berrange@redhat.com>\n"
+"Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.1.1\n"
 
 msgid ""
 "\n"
@@ -18396,9 +18397,9 @@ msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 msgid "Unknown namespace: %s"
 msgstr "Tuntematon julkaisu: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown parameter %s"
-msgstr "Tuntematon arkkitehtuuri  %s"
+msgstr "Tuntematon parametri %s"
 
 #, fuzzy
 msgid "Unknown parameter type"
