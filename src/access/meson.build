@@ -9,6 +9,8 @@ access_polkit_sources = [
   'viraccessdriverpolkit.c',
 ]
 
+access_perm_h = files('viraccessperm.h')
+
 remote_path = meson.source_root() / 'src' / 'remote'
 
 access_gen_headers = []
@@ -58,6 +60,18 @@ endforeach
 
 if conf.has('WITH_POLKIT')
   access_sources += access_polkit_sources
+
+  if conf.has('WITH_LIBVIRTD')
+    custom_target(
+      'org.libvirt.api.policy',
+      input: access_perm_h,
+      output: 'org.libvirt.api.policy',
+      command: [ meson_python_prog, python3_prog.path(), genpolkit_prog.path(), '@INPUT@' ],
+      capture: true,
+      install: true,
+      install_dir: datadir / 'polkit-1' / 'actions',
+    )
+  endif
 endif
 
 virt_access_lib = static_library(
