@@ -56,4 +56,14 @@ if conf.has('WITH_LIBXL')
   virt_daemon_confs += {
     'name': 'virtxend',
   }
+
+  virt_daemon_units += {
+    'service': 'virtxend',
+    'service_in': files('virtxend.service.in'),
+    'name': 'Libvirt libxl',
+    'sockprefix': 'virtxend',
+    'sockets': [ 'main', 'ro', 'admin' ],
+    'deps': 'ConditionPathExists=/proc/xen/capabilities',
+    'conflicts': true,
+  }
 endif

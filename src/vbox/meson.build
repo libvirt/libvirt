@@ -50,4 +50,13 @@ if conf.has('WITH_VBOX')
   virt_daemon_confs += {
     'name': 'virtvboxd',
   }
+
+  virt_daemon_units += {
+    'service': 'virtvboxd',
+    'service_in': files('virtvboxd.service.in'),
+    'name': 'Libvirt vbox',
+    'sockprefix': 'virtvboxd',
+    'sockets': [ 'main', 'ro', 'admin' ],
+    'conflicts': true,
+  }
 endif

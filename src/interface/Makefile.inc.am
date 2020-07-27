@@ -8,16 +8,6 @@ if WITH_INTERFACE
 
 SYSCONF_FILES += interface/virtinterfaced.sysconf
 
-SYSTEMD_UNIT_FILES += \
-	virtinterfaced.service \
-	virtinterfaced.socket \
-	virtinterfaced-ro.socket \
-	virtinterfaced-admin.socket \
-	$(NULL)
-SYSTEMD_UNIT_FILES_IN += \
-	interface/virtinterfaced.service.in \
-	$(NULL)
-
 OPENRC_INIT_FILES += \
 	virtinterfaced.init \
 	$(NULL)
@@ -25,23 +15,7 @@ OPENRC_INIT_FILES_IN += \
 	interface/virtinterfaced.init.in \
 	$(NULL)
 
-VIRTINTERFACED_UNIT_VARS = \
-	$(VIRTD_UNIT_VARS) \
-	-e 's|[@]name[@]|Libvirt interface|g' \
-	-e 's|[@]service[@]|virtinterfaced|g' \
-	-e 's|[@]sockprefix[@]|virtinterfaced|g' \
-	$(NULL)
-
 virtinterfaced.init: interface/virtinterfaced.init.in \
 		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
-virtinterfaced.service: interface/virtinterfaced.service.in \
-		$(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(VIRTINTERFACED_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-virtinterface%.socket: remote/libvirt%.socket.in \
-		$(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(VIRTINTERFACED_UNIT_VARS) $< > $@-t && mv $@-t $@
-
 endif WITH_INTERFACE

@@ -7,16 +7,6 @@ if WITH_LIBXL
 
 SYSCONF_FILES += libxl/virtxend.sysconf
 
-SYSTEMD_UNIT_FILES += \
-	virtxend.service \
-	virtxend.socket \
-	virtxend-ro.socket \
-	virtxend-admin.socket \
-	$(NULL)
-SYSTEMD_UNIT_FILES_IN += \
-	libxl/virtxend.service.in \
-	$(NULL)
-
 OPENRC_INIT_FILES += \
 	virtxend.init \
 	$(NULL)
@@ -24,25 +14,8 @@ OPENRC_INIT_FILES_IN += \
 	libxl/virtxend.init.in \
 	$(NULL)
 
-LIBXL_UNIT_COND = ConditionPathExists=/proc/xen/capabilities
-LIBXL_UNIT_CONFLICT = Conflicts=$(LIBVIRTD_SOCKET_UNIT_FILES)
-
-VIRTXEND_UNIT_VARS = \
-	$(COMMON_UNIT_VARS) \
-	-e 's|[@]deps[@]|$(LIBXL_UNIT_CONFLICT)\n$(LIBXL_UNIT_COND)|g' \
-	-e 's|[@]name[@]|Libvirt libxl|g' \
-	-e 's|[@]service[@]|virtxend|g' \
-	-e 's|[@]sockprefix[@]|virtxend|g' \
-	$(NULL)
-
 virtxend.init: libxl/virtxend.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
-virtxend.service: libxl/virtxend.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(VIRTXEND_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-virtxen%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(VIRTXEND_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 INSTALL_DATA_DIRS += libxl
 

@@ -45,4 +45,13 @@ if conf.has('WITH_NWFILTER')
   virt_daemon_confs += {
     'name': 'virtnwfilterd',
   }
+
+  virt_daemon_units += {
+    'service': 'virtnwfilterd',
+    'service_in': files('virtnwfilterd.service.in'),
+    'name': 'Libvirt nwfilter',
+    'sockprefix': 'virtnwfilterd',
+    'sockets': [ 'main', 'ro', 'admin' ],
+    'conflicts': true,
+  }
 endif

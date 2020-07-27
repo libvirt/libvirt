@@ -8,16 +8,6 @@ DRIVER_SOURCE_FILES += \
 if WITH_VBOX
 SYSCONF_FILES += vbox/virtvboxd.sysconf
 
-SYSTEMD_UNIT_FILES += \
-	virtvboxd.service \
-	virtvboxd.socket \
-	virtvboxd-ro.socket \
-	virtvboxd-admin.socket \
-	$(NULL)
-SYSTEMD_UNIT_FILES_IN += \
-	vbox/virtvboxd.service.in \
-	$(NULL)
-
 OPENRC_INIT_FILES += \
 	virtvboxd.init \
 	$(NULL)
@@ -25,20 +15,7 @@ OPENRC_INIT_FILES_IN += \
 	vbox/virtvboxd.init.in \
 	$(NULL)
 
-VIRTVBOXD_UNIT_VARS = \
-	$(VIRTD_UNIT_VARS) \
-	-e 's|[@]name[@]|Libvirt vbox|g' \
-	-e 's|[@]service[@]|virtvboxd|g' \
-	-e 's|[@]sockprefix[@]|virtvboxd|g' \
-	$(NULL)
-
 virtvboxd.init: vbox/virtvboxd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
-virtvboxd.service: vbox/virtvboxd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(VIRTVBOXD_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-virtvbox%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(VIRTVBOXD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 endif WITH_VBOX

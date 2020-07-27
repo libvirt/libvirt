@@ -140,4 +140,13 @@ if conf.has('WITH_LXC')
   virt_daemon_confs += {
     'name': 'virtlxcd',
   }
+
+  virt_daemon_units += {
+    'service': 'virtlxcd',
+    'service_in': files('virtlxcd.service.in'),
+    'name': 'Libvirt lxc',
+    'sockprefix': 'virtlxcd',
+    'sockets': [ 'main', 'ro', 'admin' ],
+    'conflicts': true,
+  }
 endif

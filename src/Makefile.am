@@ -35,8 +35,6 @@ tapset_DATA =
 endif WITH_DTRACE_PROBES
 RPC_PROBE_FILES =
 LOGROTATE_FILES_IN =
-SYSTEMD_UNIT_FILES =
-SYSTEMD_UNIT_FILES_IN =
 OPENRC_INIT_FILES =
 OPENRC_INIT_FILES_IN =
 OPENRC_CONF_FILES =
@@ -282,27 +280,6 @@ endif WITH_LIBVIRTD
 
 
 if WITH_LIBVIRTD
-if LIBVIRT_INIT_SCRIPT_SYSTEMD
-
-SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
-
-BUILT_SOURCES += $(SYSTEMD_UNIT_FILES)
-
-install-systemd: $(SYSTEMD_UNIT_FILES) install-sysconfig
-	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	for f in $(SYSTEMD_UNIT_FILES); \
-	do \
-	  $(INSTALL_DATA) $$f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/ ; \
-	done
-
-uninstall-systemd: uninstall-sysconfig
-	rm -f $(SYSTEMD_UNIT_FILES:%=$(DESTDIR)$(SYSTEMD_UNIT_DIR)/%)
-	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) || :
-
-INSTALL_DATA_LOCAL += install-systemd
-UNINSTALL_LOCAL += uninstall-systemd
-endif LIBVIRT_INIT_SCRIPT_SYSTEMD
-
 if LIBVIRT_INIT_SCRIPT_OPENRC
 
 OPENRC_INIT_DIR = $(sysconfdir)/init.d

@@ -78,6 +78,16 @@ if conf.has('WITH_LIBVIRTD')
     'aug': files('test_virtlogd.aug.in'),
     'conf': files('virtlogd.conf'),
   }
+
+  virt_daemon_units += {
+    'service': 'virtlogd',
+    'service_in': files('virtlogd.service.in'),
+    'name': '',
+    'sockprefix': '',
+    'sockets': [ 'main', 'admin' ],
+    'socket_in': files('virtlogd.socket.in'),
+    'socket_admin_in': files('virtlogd-admin.socket.in'),
+  }
 endif
 
 log_inc_dir = include_directories('.')

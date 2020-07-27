@@ -108,6 +108,16 @@ foreach name : libvirt_conf_files
   set_variable(name['virtd'].underscorify(), tmp)
 endforeach
 
+libvirtd_socket_unit_files = [
+  'libvirtd.socket',
+  'libvirtd-ro.socket',
+  'libvirtd-admin.socket',
+  'libvirtd-tcp.socket',
+  'libvirtd-tls.socket',
+]
+
+libvirtd_socket_conflicts = ' '.join(libvirtd_socket_unit_files)
+
 if conf.has('WITH_REMOTE')
   remote_driver_lib = static_library(
     'virt_remote_driver',
@@ -129,6 +139,8 @@ if conf.has('WITH_REMOTE')
   libvirt_libs += remote_driver_lib
 
   if conf.has('WITH_LIBVIRTD')
+    guest_unit_files += files('virt-guest-shutdown.target')
+
     virt_daemons += {
       'name': 'libvirtd',
       'c_args': [
@@ -144,6 +156,14 @@ if conf.has('WITH_REMOTE')
       'with_ip': true,
     }
 
+    virt_daemon_units += {
+      'service': 'libvirtd',
+      'service_in': files('libvirtd.service.in'),
+      'name': 'Libvirt',
+      'sockprefix': 'libvirtd',
+      'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
+    }
+
     virt_daemons += {
       'name': 'virtproxyd',
       'c_args': [
@@ -157,6 +177,15 @@ if conf.has('WITH_REMOTE')
     virt_daemon_confs += {
       'name': 'virtproxyd',
       'with_ip': true,
+    }
+
+    virt_daemon_units += {
+      'service': 'virtproxyd',
+      'service_in': files('virtproxyd.service.in'),
+      'name': 'Libvirt proxy',
+      'sockprefix': 'libvirtd',
+      'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
+      'deps': libvirtd_socket_conflicts,
     }
   endif
 endif

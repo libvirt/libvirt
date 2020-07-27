@@ -12,41 +12,6 @@ SYSCONF_FILES += \
 	remote/virtproxyd.sysconf \
 	$(NULL)
 
-LIBVIRTD_SOCKET_UNIT_FILES_IN = \
-	remote/libvirtd.socket.in \
-	remote/libvirtd-ro.socket.in \
-	remote/libvirtd-admin.socket.in \
-	remote/libvirtd-tcp.socket.in \
-	remote/libvirtd-tls.socket.in \
-	$(NULL)
-
-LIBVIRTD_SOCKET_UNIT_FILES = $(notdir $(LIBVIRTD_SOCKET_UNIT_FILES_IN:%.in=%))
-
-LIBVIRTD_UNIT_FILES_IN = \
-	remote/libvirtd.service.in \
-	$(LIBVIRTD_SOCKET_UNIT_FILES_IN) \
-	$(NULL)
-
-VIRTPROXYD_UNIT_FILES_IN = \
-	remote/virtproxyd.service.in \
-	$(NULL)
-
-GUEST_UNIT_FILES_IN = \
-	remote/virt-guest-shutdown.target.in \
-	$(NULL)
-
-
-SYSTEMD_UNIT_FILES += \
-	$(notdir $(LIBVIRTD_UNIT_FILES_IN:%.in=%)) \
-	$(notdir $(LIBVIRTD_UNIT_FILES_IN:remote/libvirtd%.in=remote/virtproxyd%)) \
-	$(notdir $(GUEST_UNIT_FILES_IN:%.in=%)) \
-	$(NULL)
-SYSTEMD_UNIT_FILES_IN += \
-	$(LIBVIRTD_UNIT_FILES_IN) \
-	$(VIRTPROXYD_UNIT_FILES_IN) \
-	$(GUEST_UNIT_FILES_IN) \
-	$(NULL)
-
 OPENRC_INIT_FILES += \
 	libvirtd.init \
 	virtproxyd.init \
@@ -136,14 +101,6 @@ INSTALL_DATA_LOCAL += install-sasl
 UNINSTALL_LOCAL += uninstall-sasl
 endif WITH_SASL
 
-LIBVIRTD_UNIT_VARS = \
-	$(COMMON_UNIT_VARS) \
-	-e 's|[@]name[@]|Libvirt|g' \
-	-e 's|[@]service[@]|libvirtd|g' \
-	-e 's|[@]sockprefix[@]|libvirt|g' \
-	-e 's|[@]deps[@]||g' \
-	$(NULL)
-
 LIBVIRTD_INIT_VARS = \
 	$(COMMON_UNIT_VARS)
 
@@ -155,36 +112,8 @@ LIBVIRTD_INIT_VARS += \
 	-e 's|[@]NEED_FIREWALLD[@]||g'
 endif ! WITH_FIREWALLD
 
-VIRTD_UNIT_VARS = \
-	$(COMMON_UNIT_VARS) \
-	-e 's|[@]deps[@]|Conflicts=$(LIBVIRTD_SOCKET_UNIT_FILES)|g' \
-	$(NULL)
-
-VIRTPROXYD_UNIT_VARS = \
-	$(VIRTD_UNIT_VARS) \
-	-e 's|[@]name[@]|Libvirt proxy|g' \
-	-e 's|[@]service[@]|virtproxyd|g' \
-	-e 's|[@]sockprefix[@]|libvirt|g' \
-	$(NULL)
-
 libvirtd.init: remote/libvirtd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 
 virtproxyd.init: remote/virtproxyd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
-libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-libvirt%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-virtproxyd.service: remote/virtproxyd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(VIRTPROXYD_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-virtproxy%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(VIRTPROXYD_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-virt-guest-shutdown.target: remote/virt-guest-shutdown.target.in \
-			$(top_builddir)/config.status
-	$(AM_V_GEN)cp $< $@

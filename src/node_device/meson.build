@@ -50,4 +50,13 @@ if conf.has('WITH_NODE_DEVICES')
   virt_daemon_confs += {
     'name': 'virtnodedevd',
   }
+
+  virt_daemon_units += {
+    'service': 'virtnodedevd',
+    'service_in': files('virtnodedevd.service.in'),
+    'name': 'Libvirt nodedev',
+    'sockprefix': 'virtnodedevd',
+    'sockets': [ 'main', 'ro', 'admin' ],
+    'conflicts': true,
+  }
 endif

@@ -183,6 +183,22 @@ virt_daemon_confs = []
 virt_aug_dir = datadir / 'augeas' / 'lenses'
 virt_test_aug_dir = datadir / 'augeas' / 'lenses' / 'tests'
 
+# guest_unit_files:
+#   guest unit files to install
+guest_unit_files = []
+
+# virt_daemon_units:
+#   generate libvirt daemon systemd unit files
+#   * service - name of the service (required)
+#   * service_in - service source file (required)
+#   * name - socket description (required)
+#   * sockprefix - socket prefix name (required)
+#   * sockets - array of additional sockets (optional, default [ 'main', 'ro', 'admin' ])
+#   * socket_$name_in - additional socket source files (optional, default remote/libvirtd.socket.in )
+#   * deps - socket dependencies (optional, default '')
+#   * conflicts - if the service conflicts with libvirtd (optional, true)
+virt_daemon_units = []
+
 
 # list subdirectories
 
@@ -678,3 +694,54 @@ foreach data : virt_daemon_confs
     install_dir: virt_test_aug_dir,
   )
 endforeach
+
+
+if conf.has('WITH_LIBVIRTD')
+  # Generate systemd service and socket unit files
+  if init_script == 'systemd'
+    systemd_unit_dir = prefix / 'lib' / 'systemd' / 'system'
+
+    install_data(
+      guest_unit_files,
+      install_dir: systemd_unit_dir,
+    )
+
+    foreach unit : virt_daemon_units
+      unit_conf = configuration_data()
+      unit_conf.set('runstatedir', runstatedir)
+      unit_conf.set('sbindir', sbindir)
+      unit_conf.set('sysconfdir', sysconfdir)
+      unit_conf.set('name', unit['name'])
+      unit_conf.set('service', unit['service'])
+      unit_conf.set('sockprefix', unit['sockprefix'])
+      unit_conf.set('deps', unit.get('deps', ''))
+
+      configure_file(
+        input: unit['service_in'],
+        output: '@0@.service'.format(unit['service']),
+        configuration: unit_conf,
+        install: true,
+        install_dir: systemd_unit_dir,
+      )
+
+      foreach socket : unit.get('sockets', [ 'main', 'ro', 'admin' ])
+        if socket == 'main'
+          socket_in_def = 'remote' / 'libvirtd.socket.in'
+          socket_in = unit.get('socket_in', socket_in_def)
+          socket_out = '@0@.socket'.format(unit['service'])
+        else
+          socket_in_def = 'remote' / 'libvirtd-@0@.socket.in'.format(socket)
+          socket_in = unit.get('socket_@0@_in'.format(socket), socket_in_def)
+          socket_out = '@0@-@1@.socket'.format(unit['service'], socket)
+        endif
+        configure_file(
+          input: socket_in,
+          output: socket_out,
+          configuration: unit_conf,
+          install: true,
+          install_dir: systemd_unit_dir,
+        )
+      endforeach
+    endforeach
+  endif
+endif

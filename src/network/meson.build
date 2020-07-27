@@ -57,4 +57,13 @@ if conf.has('WITH_NETWORK')
       dtrace_gen_objects,
     ],
   }
+
+  virt_daemon_units += {
+    'service': 'virtnetworkd',
+    'service_in': files('virtnetworkd.service.in'),
+    'name': 'Libvirt network',
+    'sockprefix': 'virtnetworkd',
+    'sockets': [ 'main', 'ro', 'admin' ],
+    'conflicts': true,
+  }
 endif
