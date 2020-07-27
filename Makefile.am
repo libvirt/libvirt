@@ -16,9 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-LCOV = lcov
-GENHTML = genhtml
-
 # when building from tarball -Werror isn't auto enabled
 # so force it explicitly
 DISTCHECK_CONFIGURE_FLAGS = --enable-werror
@@ -44,17 +41,6 @@ check-local: all tests
 
 check-access: all
 	@($(MAKE) $(AM_MAKEFLAGS) -C tests check-access)
-
-cov:
-	$(MKDIR_P) $(top_builddir)/coverage
-	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp \
-	  -d $(top_builddir)/src \
-	  -d $(top_builddir)/tests
-	$(LCOV) -r $(top_builddir)/coverage/libvirt.info.tmp \
-	  -o $(top_builddir)/coverage/libvirt.info
-	rm $(top_builddir)/coverage/libvirt.info.tmp
-	$(GENHTML) --show-details -t "libvirt" -o $(top_builddir)/coverage \
-	  --legend $(top_builddir)/coverage/libvirt.info
 
 BUILT_SOURCES = configmake.h
 
