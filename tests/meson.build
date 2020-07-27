@@ -389,6 +389,13 @@ if conf.has('WITH_LIBXL')
   ]
 endif
 
+if conf.has('WITH_LXC')
+  tests += [
+    { 'name': 'lxcconf2xmltest', 'link_with': [ lxc_driver_impl_lib ], 'link_whole': [ test_utils_lxc_lib ] },
+    { 'name': 'lxcxml2xmltest', 'link_with': [ lxc_driver_impl_lib ], 'link_whole': [ test_utils_lxc_lib ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

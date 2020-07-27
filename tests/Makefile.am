@@ -53,10 +53,6 @@ test_programs += qemuxml2argvtest qemuxml2xmltest \
 test_helpers += qemucapsprobe
 endif WITH_QEMU
 
-if WITH_LXC
-test_programs += lxcxml2xmltest lxcconf2xmltest
-endif WITH_LXC
-
 if WITH_OPENVZ
 test_programs += openvzutilstest
 endif WITH_OPENVZ
@@ -301,24 +297,6 @@ qemuvhostusertest_SOURCES = \
 	$(NULL)
 qemuvhostusertest_LDADD = $(qemu_LDADDS)
 endif WITH_QEMU
-
-if WITH_LXC
-
-lxc_LDADDS = \
-	../src/libvirt_driver_lxc_impl.la \
-	$(LDADDS) \
-	$(NULL)
-
-lxcxml2xmltest_SOURCES = \
-	lxcxml2xmltest.c testutilslxc.c testutilslxc.h \
-	testutils.c testutils.h
-lxcxml2xmltest_LDADD = $(lxc_LDADDS)
-
-lxcconf2xmltest_SOURCES = \
-	lxcconf2xmltest.c testutilslxc.c testutilslxc.h \
-	testutils.c testutils.h
-lxcconf2xmltest_LDADD = $(lxc_LDADDS)
-endif WITH_LXC
 
 if WITH_OPENVZ
 openvzutilstest_SOURCES = \
