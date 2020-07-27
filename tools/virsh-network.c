@@ -1744,9 +1744,6 @@ static const vshCmdOptDef opts_network_port_list[] = {
     {.name = NULL}
 };
 
-#define FILTER(NAME, FLAG) \
-    if (vshCommandOptBool(cmd, NAME)) \
-        flags |= (FLAG)
 static bool
 cmdNetworkPortList(vshControl *ctl, const vshCmd *cmd)
 {
@@ -1802,7 +1799,6 @@ cmdNetworkPortList(vshControl *ctl, const vshCmd *cmd)
     virshNetworkPortListFree(list);
     return ret;
 }
-#undef FILTER
 
 
 const vshCmdDef networkCmds[] = {
