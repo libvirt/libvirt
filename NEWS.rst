@@ -31,6 +31,16 @@ v6.6.0 (unreleased)
     Specifying a virtualHW version greater or equal to 7 (ESXi 4.0) will allow
     you to use up to 10 NICs instead of 4 as it was previously.
 
+  * qemu: Support encrypted TLS keys for NBD disks
+
+    The secret key used for disks can now be encrypted similarly to TLS keys
+    used for migration, chardev and others.
+
+  * qemu: ``VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD`` can now be registered for ``<mirror>``
+
+    The event can now be used also for block copy destinations by using the
+    index of the ``<mirror>`` image.
+
 * **Bug fixes**
 
   * virdevmapper: Don't use libdevmapper to obtain dependencies
@@ -40,6 +50,16 @@ v6.6.0 (unreleased)
     meant that libdevmapper opened ``/dev/mapper/control`` which wasn't closed
     and was leaked to QEMU. CVE-2020-14339
 
+  * qemu: Report correct ``index`` in ``VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD``
+
+    Starting from libvirt 5.10 with QEMU 4.2 the
+    ``VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD`` event would report incorrect device
+    ``index`` when reported for an image from the backing chain of a disk.
+
+  * qemu: Don't fail active layer block commit or block copy in certain cases
+
+    Starting from libvirt-6.5 an active layer block commit or a block copy could
+    fail if the same destination was used more than once.
 
 v6.5.0 (2020-07-03)
 ===================
