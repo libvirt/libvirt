@@ -118,6 +118,13 @@ libvirtd_socket_unit_files = [
 
 libvirtd_socket_conflicts = ' '.join(libvirtd_socket_unit_files)
 
+logrotate_files = [
+  'libvirtd.qemu',
+  'libvirtd.lxc',
+  'libvirtd.libxl',
+  'libvirtd',
+]
+
 if conf.has('WITH_REMOTE')
   remote_driver_lib = static_library(
     'virt_remote_driver',
@@ -213,6 +220,22 @@ if conf.has('WITH_REMOTE')
     virt_install_dirs += [
       localstatedir / 'log' / 'libvirt',
     ]
+
+    logrotate_conf = configuration_data()
+    logrotate_conf.set('localstatedir', localstatedir)
+
+    foreach name : logrotate_files
+      log_file = configure_file(
+        input: '@0@.logrotate.in'.format(name),
+        output: '@0@.logrotate'.format(name),
+        configuration: logrotate_conf,
+      )
+      install_data(
+        log_file,
+        install_dir: sysconfdir / 'logrotate.d',
+        rename: [ name ],
+      )
+    endforeach
   endif
 endif
 

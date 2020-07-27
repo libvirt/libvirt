@@ -34,7 +34,6 @@ if WITH_DTRACE_PROBES
 tapset_DATA =
 endif WITH_DTRACE_PROBES
 RPC_PROBE_FILES =
-LOGROTATE_FILES_IN =
 
 include security/Makefile.inc.am
 include access/Makefile.inc.am
@@ -202,35 +201,6 @@ libvirt_functions.stp: $(RPC_PROBE_FILES) $(top_srcdir)/scripts/gensystemtap.py
 	  $(RPC_PROBE_FILES) > $@
 
 endif WITH_DTRACE_PROBES
-
-LOGROTATE_FILES := $(LOGROTATE_FILES_IN:remote/%.in=%)
-
-BUILT_SOURCES += $(LOGROTATE_FILES)
-
-%.logrotate: remote/%.logrotate.in
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
-	mv $@-t $@
-
-if WITH_LIBVIRTD
-install-logrotate: $(LOGROTATE_FILES)
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/logrotate.d/
-	for f in $(LOGROTATE_FILES) ; \
-	do \
-	  tgt=`echo $$f | sed -e 's/.logrotate//'`; \
-	  $(INSTALL_DATA) $$f \
-		$(DESTDIR)$(sysconfdir)/logrotate.d/$$tgt; \
-	done
-
-uninstall-logrotate:
-	rm -f $(LOGROTATE_FILES:%.logrotate=$(DESTDIR)$(sysconfdir)/logrotate.d/%)
-	rmdir $(DESTDIR)$(sysconfdir)/logrotate.d || :
-
-INSTALL_DATA_LOCAL += install-logrotate
-UNINSTALL_LOCAL += uninstall-logrotate
-endif WITH_LIBVIRTD
-
 
 install-data-local: $(INSTALL_DATA_LOCAL) \
 		$(INSTALL_DATA_DIRS:%=install-data-%)
