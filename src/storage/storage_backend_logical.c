@@ -40,8 +40,6 @@
 
 VIR_LOG_INIT("storage.storage_backend_logical");
 
-#define PV_BLANK_SECTOR_SIZE 512
-
 
 static int
 virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
