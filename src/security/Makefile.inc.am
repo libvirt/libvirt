@@ -1,10 +1,5 @@
 # vim: filetype=automake
 
-SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
-	$(DATATYPES_SOURCES) \
-	security/virt-aa-helper.c \
-	$(NULL)
-
 SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES_IN = \
 	security/apparmor/usr.lib.libvirt.virt-aa-helper.in \
 	security/apparmor/usr.sbin.libvirtd.in \
@@ -24,32 +19,6 @@ security/apparmor/%: $(srcdir)/security/apparmor/%.in
 		$< > $@
 
 BUILT_SOURCES += $(SECURITY_DRIVER_APPARMOR_GENERATED_PROFILES)
-
-if WITH_SECDRIVER_APPARMOR
-if WITH_LIBVIRTD
-libexec_PROGRAMS += virt-aa-helper
-
-virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
-
-virt_aa_helper_LDFLAGS = \
-	$(AM_LDFLAGS) \
-	$(NULL)
-virt_aa_helper_LDADD = \
-	libvirt.la \
-	libvirt_driver_storage_impl.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-if WITH_DTRACE_PROBES
-virt_aa_helper_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-virt_aa_helper_CFLAGS = \
-	-I$(srcdir)/conf \
-	-I$(top_srcdir)/src/hypervisor \
-	-I$(srcdir)/security \
-	$(AM_CFLAGS) \
-	$(NULL)
-endif WITH_LIBVIRTD
-endif WITH_SECDRIVER_APPARMOR
 
 if WITH_APPARMOR_PROFILES
 apparmordir = $(sysconfdir)/apparmor.d/
