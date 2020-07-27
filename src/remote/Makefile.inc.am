@@ -1,22 +1,5 @@
 # vim: filetype=automake
 
-REMOTE_DAEMON_GENERATED = \
-	remote/remote_daemon_dispatch_stubs.h \
-	remote/lxc_daemon_dispatch_stubs.h \
-	remote/qemu_daemon_dispatch_stubs.h \
-	$(NULL)
-
-REMOTE_DAEMON_SOURCES = \
-	remote/remote_daemon.c \
-	remote/remote_daemon.h \
-	remote/remote_daemon_config.c \
-	remote/remote_daemon_config.h \
-	remote/remote_daemon_dispatch.c \
-	remote/remote_daemon_dispatch.h \
-	remote/remote_daemon_stream.c \
-	remote/remote_daemon_stream.h \
-	$(NULL)
-
 REMOTE_DAEMON_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
@@ -116,21 +99,6 @@ OPENRC_INIT_FILES_IN += \
 OPENRC_CONF_FILES += \
 	remote/libvirtd.confd \
 	remote/virtproxyd.confd \
-	$(NULL)
-
-REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
-LXC_PROTOCOL = $(srcdir)/remote/lxc_protocol.x
-QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
-REMOTE_DRIVER_PROTOCOL = \
-	$(REMOTE_PROTOCOL) \
-	$(QEMU_PROTOCOL) \
-	$(LXC_PROTOCOL) \
-	$(NULL)
-
-# Needed to build libvirt.pot, so must be listed outside
-# the WITH_REMOTE/WITH_LIBVIRTD conditionals
-BUILT_SOURCES += \
-	$(REMOTE_DAEMON_GENERATED) \
 	$(NULL)
 
 if WITH_LIBVIRTD
@@ -368,22 +336,3 @@ virtproxy%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
 virt-guest-shutdown.target: remote/virt-guest-shutdown.target.in \
 			$(top_builddir)/config.status
 	$(AM_V_GEN)cp $< $@
-
-
-remote/remote_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server remote REMOTE $(REMOTE_PROTOCOL) \
-	  > remote/remote_daemon_dispatch_stubs.h
-
-remote/lxc_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
-		$(LXC_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server lxc LXC $(LXC_PROTOCOL) \
-	  > remote/lxc_daemon_dispatch_stubs.h
-
-remote/qemu_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
-	  > remote/qemu_daemon_dispatch_stubs.h

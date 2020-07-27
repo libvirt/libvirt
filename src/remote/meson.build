@@ -39,6 +39,30 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
   )
 endforeach
 
+remote_daemon_sources = files(
+  'remote_daemon.c',
+  'remote_daemon_config.c',
+  'remote_daemon_dispatch.c',
+  'remote_daemon_stream.c',
+)
+
+remote_daemon_generated = []
+
+foreach name : [ 'remote', 'qemu', 'lxc' ]
+  protocol_x = '@0@_protocol.x'.format(name)
+  dispatch_h = '@0@_daemon_dispatch_stubs.h'.format(name)
+
+  remote_daemon_generated += custom_target(
+    dispatch_h,
+    input: protocol_x,
+    output: dispatch_h,
+    command: [
+      gendispatch_prog, '--mode=server', name, name.to_upper(), '@INPUT@',
+    ],
+    capture: true,
+  )
+endforeach
+
 if conf.has('WITH_REMOTE')
   remote_driver_lib = static_library(
     'virt_remote_driver',
