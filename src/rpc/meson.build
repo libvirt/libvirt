@@ -107,3 +107,8 @@ virt_rpc_client_lib = static_library(
 )
 
 rpc_inc_dir = include_directories('.')
+
+rpc_dep = declare_dependency(
+  include_directories: [ rpc_inc_dir ],
+  sources: [ rpc_gen_headers ],
+)
