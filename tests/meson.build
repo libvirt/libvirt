@@ -149,8 +149,14 @@ if conf.has('WITH_LIBXL')
     dependencies: [ tests_dep ],
   )
 
+  test_xen_driver_lib = shared_library(
+    'test_xen_driver',
+    link_whole: [ libxl_driver_imp ],
+    link_with: [ libvirt_lib ],
+  )
 else
   test_utils_xen_lib = []
+  test_xen_driver_lib = []
 endif
 
 if conf.has('WITH_LXC')
@@ -175,7 +181,15 @@ if conf.has('WITH_QEMU')
     [ 'qemumonitortestutils.c', 'testutilsqemuschema.c' ],
     dependencies: [ tests_dep ],
   )
+
+  test_qemu_driver_lib = shared_library(
+    'test_qemu_driver',
+    [ qemu_dtrace_gen_objects ],
+    link_whole: [ qemu_driver_impl ],
+    link_with: [ libvirt_lib ],
+  )
 else
+  test_qemu_driver_lib = []
   test_utils_qemu_lib = []
   test_utils_qemu_monitor_lib = []
 endif
