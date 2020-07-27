@@ -345,6 +345,14 @@ if host_machine.system() == 'linux'
   ]
 endif
 
+if conf.has('WITH_BHYVE')
+  tests += [
+    { 'name': 'bhyveargv2xmltest', 'link_with': [ bhyve_driver_impl ] },
+    { 'name': 'bhyvexml2argvtest', 'link_with': [ bhyve_driver_impl ] },
+    { 'name': 'bhyvexml2xmltest', 'link_with': [ bhyve_driver_impl ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

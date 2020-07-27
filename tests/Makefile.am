@@ -95,10 +95,6 @@ if WITH_VMWARE
 test_programs += vmwarevertest
 endif WITH_VMWARE
 
-if WITH_BHYVE
-test_programs += bhyvexml2argvtest bhyvexml2xmltest bhyveargv2xmltest
-endif WITH_BHYVE
-
 if WITH_YAJL
 test_programs += virjsontest
 endif WITH_YAJL
@@ -420,27 +416,6 @@ vmwarevertest_SOURCES = \
     testutils.c testutils.h
 vmwarevertest_LDADD = $(LDADDS)
 endif WITH_VMWARE
-
-if WITH_BHYVE
-bhyve_LDADDS = \
-	../src/libvirt_driver_bhyve_impl.la \
-	$(LDADDS) \
-	$(NULL)
-bhyvexml2argvtest_SOURCES = \
-	bhyvexml2argvtest.c \
-	testutils.c testutils.h
-bhyvexml2argvtest_LDADD = $(bhyve_LDADDS)
-
-bhyvexml2xmltest_SOURCES = \
-	bhyvexml2xmltest.c \
-	testutils.c testutils.h
-bhyvexml2xmltest_LDADD = $(bhyve_LDADDS)
-
-bhyveargv2xmltest_SOURCES = \
-	bhyveargv2xmltest.c \
-	testutils.c testutils.h
-bhyveargv2xmltest_LDADD = $(bhyve_LDADDS)
-endif WITH_BHYVE
 
 if WITH_NETWORK
 networkxml2xmltest_SOURCES = \
