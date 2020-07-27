@@ -10,6 +10,8 @@ libxl_driver_sources = [
   'xen_xm.c',
 ]
 
+driver_source_files += files(libxl_driver_sources)
+
 if conf.has('WITH_LIBXL')
   libxl_driver_imp = static_library(
     'virt_driver_libxl_impl',

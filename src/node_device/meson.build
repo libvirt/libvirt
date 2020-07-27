@@ -10,6 +10,8 @@ if conf.has('WITH_UDEV')
   node_device_driver_sources += 'node_device_udev.c'
 endif
 
+driver_source_files += files(node_device_driver_sources)
+
 if conf.has('WITH_NODE_DEVICES')
   node_device_driver_impl = static_library(
     'virt_driver_nodedev_impl',

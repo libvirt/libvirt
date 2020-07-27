@@ -3,6 +3,8 @@ network_driver_sources = [
   'bridge_driver_platform.c',
 ]
 
+driver_source_files += files(network_driver_sources)
+
 network_leases_helper_sources = files(
   'leaseshelper.c',
 )

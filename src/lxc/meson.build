@@ -40,6 +40,12 @@ lxc_monitor_generated = custom_target(
   capture: true,
 )
 
+driver_source_files += [
+  files(lxc_driver_sources),
+  lxc_monitor_protocol_generated,
+  lxc_monitor_generated,
+]
+
 lxc_controller_sources = files(
   'lxc_conf.c',
   'lxc_container.c',

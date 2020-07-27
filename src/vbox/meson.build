@@ -10,6 +10,11 @@ vbox_driver_sources = [
   'vbox_XPCOMCGlue.c',
 ]
 
+driver_source_files += files(
+  vbox_driver_sources,
+  'vbox_tmpl.c',
+)
+
 if conf.has('WITH_VBOX')
   vbox_driver_impl = static_library(
     'virt_driver_vbox_impl',

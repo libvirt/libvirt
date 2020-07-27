@@ -4,6 +4,8 @@ vz_driver_sources = [
   'vz_sdk.c',
 ]
 
+driver_source_files += files(vz_driver_sources)
+
 if conf.has('WITH_VZ')
   vz_driver_impl = static_library(
     'virt_driver_vz_impl',

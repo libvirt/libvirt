@@ -6,6 +6,8 @@ nwfilter_driver_sources = [
   'nwfilter_learnipaddr.c',
 ]
 
+driver_source_files += files(nwfilter_driver_sources)
+
 if conf.has('WITH_NWFILTER')
   nwfilter_driver_impl = static_library(
     'virt_driver_nwfilter_impl',

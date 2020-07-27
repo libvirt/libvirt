@@ -1,6 +1,0 @@
-# vim: filetype=automake
-
-DRIVER_SOURCE_FILES += \
-	$(addprefix $(srcdir)/,$(VBOX_DRIVER_SOURCES)) \
-	$(srcdir)/vbox/vbox_tmpl.c \
-	$(NULL)

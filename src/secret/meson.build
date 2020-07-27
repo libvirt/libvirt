@@ -2,6 +2,8 @@ secret_driver_sources = [
   'secret_driver.c',
 ]
 
+driver_source_files += files(secret_driver_sources)
+
 if conf.has('WITH_SECRETS')
   virt_modules += {
     'name': 'virt_driver_secret',

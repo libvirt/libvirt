@@ -215,6 +215,10 @@ sysconf_files = []
 #   list of directories to create during installation
 virt_install_dirs = []
 
+# driver_source_files:
+#   driver source files to check
+driver_source_files = []
+
 
 # list subdirectories
 
@@ -862,5 +866,12 @@ test(
     check_drivername_prog.path(), files(driver_headers),
     files('libvirt_public.syms'), libvirt_qemu_syms, libvirt_lxc_syms,
   ],
+  env: runutf8,
+)
+
+test(
+  'check-driverimpls',
+  python3_prog,
+  args: [ check_driverimpls_prog.path(), driver_source_files ],
   env: runutf8,
 )

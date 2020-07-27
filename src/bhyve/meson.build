@@ -10,6 +10,8 @@ bhyve_sources = files(
   'bhyve_process.c',
 )
 
+driver_source_files += bhyve_sources
+
 if conf.has('WITH_BHYVE')
   bhyve_driver_impl = static_library(
     'virt_driver_bhyve_impl',

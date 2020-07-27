@@ -1,5 +1,4 @@
 # vim: filetype=automake
 
-DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(INTERFACE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(INTERFACE_DRIVER_SOURCES))
