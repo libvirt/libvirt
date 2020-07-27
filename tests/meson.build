@@ -396,6 +396,14 @@ if conf.has('WITH_LXC')
   ]
 endif
 
+if conf.has('WITH_NETWORK')
+  tests += [
+    { 'name': 'networkxml2conftest', 'link_with': [ network_driver_impl ] },
+    { 'name': 'networkxml2firewalltest', 'link_with': [ network_driver_impl ] },
+    { 'name': 'networkxml2xmltest', 'link_with': [ network_driver_impl ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

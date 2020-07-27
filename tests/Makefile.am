@@ -73,14 +73,6 @@ if WITH_YAJL
 test_programs += virjsontest
 endif WITH_YAJL
 
-if WITH_NETWORK
-test_programs += \
-		networkxml2xmltest \
-		networkxml2conftest \
-		networkxml2firewalltest \
-		$(NULL)
-endif WITH_NETWORK
-
 if WITH_STORAGE_SHEEPDOG
 test_programs += storagebackendsheepdogtest
 endif WITH_STORAGE_SHEEPDOG
@@ -332,23 +324,6 @@ vmwarevertest_SOURCES = \
     testutils.c testutils.h
 vmwarevertest_LDADD = $(LDADDS)
 endif WITH_VMWARE
-
-if WITH_NETWORK
-networkxml2xmltest_SOURCES = \
-	networkxml2xmltest.c \
-	testutils.c testutils.h
-networkxml2xmltest_LDADD = ../src/libvirt_driver_network_impl.la $(LDADDS)
-
-networkxml2conftest_SOURCES = \
-	networkxml2conftest.c \
-	testutils.c testutils.h
-networkxml2conftest_LDADD = ../src/libvirt_driver_network_impl.la $(LDADDS)
-
-networkxml2firewalltest_SOURCES = \
-	networkxml2firewalltest.c \
-	testutils.c testutils.h
-networkxml2firewalltest_LDADD = ../src/libvirt_driver_network_impl.la $(LDADDS)
-endif WITH_NETWORK
 
 if WITH_STORAGE_SHEEPDOG
 storagebackendsheepdogtest_SOURCES = \
