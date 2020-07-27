@@ -33,6 +33,13 @@ v6.6.0 (unreleased)
 
 * **Bug fixes**
 
+  * virdevmapper: Don't use libdevmapper to obtain dependencies
+
+    When building domain's private ``/dev`` in a namespace, libdevmapper was
+    consulted for getting full dependency tree of domain's disks. However, this
+    meant that libdevmapper opened ``/dev/mapper/control`` which wasn't closed
+    and was leaked to QEMU. CVE-2020-14339
+
 
 v6.5.0 (2020-07-03)
 ===================
