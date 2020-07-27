@@ -100,6 +100,7 @@ subdir('remote')
 subdir('admin')
 subdir('locking')
 subdir('logging')
+subdir('security')
 
 subdir('esx')
 subdir('hyperv')
