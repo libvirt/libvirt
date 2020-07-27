@@ -158,6 +158,31 @@ virt_daemons = []
 #   * install_dir - installation directory (optional, libexecdir)
 virt_helpers = []
 
+# virt_conf_files:
+#   libvirt conf files
+virt_conf_files = []
+
+# virt_aug_files:
+#   libvirt aug files
+virt_aug_files = []
+
+# virt_test_aug_files:
+#   generate libvirt augeas test files
+#   * name - augeas test file name (required)
+#   * aug - augeas test file source (required)
+#   * conf - conf file (required)
+virt_test_aug_files = []
+
+# virt_daemon_confs:
+#   generation libvirt daemon conf files
+#   each entry is a dictionary with following items:
+#   * name - daemon name (required)
+#   * with_ip - only for libvirtd and virtproxyd (optional, default false)
+virt_daemon_confs = []
+
+virt_aug_dir = datadir / 'augeas' / 'lenses'
+virt_test_aug_dir = datadir / 'augeas' / 'lenses' / 'tests'
+
 
 # list subdirectories
 
@@ -564,5 +589,90 @@ foreach helper : virt_helpers
     install: true,
     install_dir: helper.get('install_dir', libexecdir),
     install_rpath: libdir,
+  )
+endforeach
+
+
+# Generate daemon config, augeas and augeas test files
+
+install_data(virt_conf_files, install_dir: confdir)
+install_data(virt_aug_files, install_dir: virt_aug_dir)
+
+foreach data : virt_test_aug_files
+  custom_target(
+    data['name'],
+    input: [ data['conf'], data['aug'] ],
+    output: data['name'],
+    command: [
+      meson_python_prog, python3_prog.path(), augeas_gentest_prog.path(),
+      '@INPUT@',
+    ],
+    capture: true,
+    install: true,
+    install_dir: virt_test_aug_dir,
+  )
+endforeach
+
+foreach data : virt_daemon_confs
+  capitalize_args = [ '-c', 'print("@0@".capitalize())'.format(data['name']) ]
+  name_uc = run_command(python3_prog, capitalize_args, check: true).stdout().strip()
+  daemon_conf = configuration_data()
+  daemon_conf.set('runstatedir', runstatedir)
+  daemon_conf.set('sbindir', sbindir)
+  daemon_conf.set('sysconfdir', sysconfdir)
+  daemon_conf.set('DAEMON_NAME', data['name'])
+  daemon_conf.set('DAEMON_NAME_UC', name_uc)
+  # to silence meson warning about missing 'CONFIG' in the configuration_data
+  daemon_conf.set('CONFIG', '@CONFIG@')
+
+  if data.get('with_ip', false)
+    conf_in = libvirtd_conf_tmp
+  else
+    conf_in = virtd_conf_tmp
+  endif
+  conf_out = configure_file(
+    input: conf_in,
+    output: '@0@.conf'.format(data['name']),
+    configuration: daemon_conf,
+    install: true,
+    install_dir: confdir,
+  )
+
+  if data.get('with_ip', false)
+    aug_in = libvirtd_aug_tmp
+  else
+    aug_in = virtd_aug_tmp
+  endif
+  configure_file(
+    input: aug_in,
+    output: '@0@.aug'.format(data['name']),
+    configuration: daemon_conf,
+    install: true,
+    install_dir: virt_aug_dir,
+  )
+
+  if data.get('with_ip', false)
+    test_aug_in = test_libvirtd_aug_tmp
+  else
+    test_aug_in = test_virtd_aug_tmp
+  endif
+  test_aug_tmp = configure_file(
+    input: test_aug_in,
+    output: 'test_@0@.aug.tmp'.format(data['name']),
+    configuration: daemon_conf,
+  )
+
+  test_aug_out = 'test_@0@.aug'.format(data['name'])
+  custom_target(
+    test_aug_out,
+    input: [ conf_out, test_aug_tmp ],
+    output: test_aug_out,
+    command: [
+      meson_python_prog, python3_prog.path(), augeas_gentest_prog.path(),
+      '@INPUT@',
+    ],
+    capture: true,
+    install: true,
+    install_dir: virt_test_aug_dir,
   )
 endforeach

@@ -63,6 +63,51 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
   )
 endforeach
 
+# libvirt_conf_files:
+#   Generate libvirtd and virtd template files that are used to generate
+#   daemon configuration files.
+#   Each entry is a dictionary with following items:
+#   * input: source config file (required)
+#   * libvirtd: libvirtd config output template file (required)
+#   * virtd: virtd config output template file (required)
+libvirt_conf_files = [
+  {
+    'input':'libvirtd.conf.in',
+    'libvirtd':'libvirtd.conf.tmp',
+    'virtd':'virtd.conf.tmp',
+  },
+  {
+    'input':'libvirtd.aug.in',
+    'libvirtd':'libvirtd.aug.tmp',
+    'virtd':'virtd.aug.tmp',
+  },
+  {
+    'input':'test_libvirtd.aug.in',
+    'libvirtd':'test_libvirtd.aug.tmp',
+    'virtd':'test_virtd.aug.tmp',
+  },
+]
+
+foreach name : libvirt_conf_files
+  tmp = configure_file(
+    input: name['input'],
+    output: name['libvirtd'],
+    command: [ 'sed', '-e', '/[@]CUT_ENABLE_IP[@]/d', '-e', '/[@]END[@]/d', '@INPUT@' ],
+    capture: true,
+  )
+  set_variable(name['libvirtd'].underscorify(), tmp)
+endforeach
+
+foreach name : libvirt_conf_files
+  tmp = configure_file(
+    input: name['input'],
+    output: name['virtd'],
+    command: [ 'sed', '-e', '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d', '@INPUT@' ],
+    capture: true,
+  )
+  set_variable(name['virtd'].underscorify(), tmp)
+endforeach
+
 if conf.has('WITH_REMOTE')
   remote_driver_lib = static_library(
     'virt_remote_driver',

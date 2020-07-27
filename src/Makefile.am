@@ -70,14 +70,9 @@ include storage/Makefile.inc.am
 include remote/Makefile.inc.am
 
 
-confdir = $(sysconfdir)/libvirt
 conf_DATA += libvirt.conf
 
 BUILT_SOURCES += $(nodist_conf_DATA)
-
-augeasdir = $(datadir)/augeas/lenses
-
-augeastestdir = $(datadir)/augeas/lenses/tests
 
 # .libs/libvirt.so is built by libtool as a side-effect of the Makefile
 # rule for libvirt.la.  However, checking symbols relies on Linux ELF layout
