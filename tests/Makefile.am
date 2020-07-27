@@ -20,10 +20,6 @@ if WITH_QEMU
 test_helpers += qemucapsprobe
 endif WITH_QEMU
 
-if WITH_VMX
-test_programs += vmx2xmltest xml2vmxtest
-endif WITH_VMX
-
 if WITH_YAJL
 test_programs += virjsontest
 endif WITH_YAJL
@@ -92,18 +88,6 @@ qemucapsprobe_SOURCES = \
 qemucapsprobe_LDADD = \
 	libqemutestdriver.la $(LDADDS)
 endif WITH_QEMU
-
-if WITH_VMX
-vmx2xmltest_SOURCES = \
-	vmx2xmltest.c \
-	testutils.c testutils.h
-vmx2xmltest_LDADD = $(LDADDS)
-
-xml2vmxtest_SOURCES = \
-	xml2vmxtest.c \
-	testutils.c testutils.h
-xml2vmxtest_LDADD = $(LDADDS)
-endif WITH_VMX
 
 if WITH_NSS
 ## Intentionaly not linking with anything else.

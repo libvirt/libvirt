@@ -531,6 +531,13 @@ if conf.has('WITH_VMWARE')
   ]
 endif
 
+if conf.has('WITH_VMX')
+  tests += [
+    { 'name': 'vmx2xmltest' },
+    { 'name': 'xml2vmxtest' },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(
