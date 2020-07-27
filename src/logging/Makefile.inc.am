@@ -1,32 +1,5 @@
 # vim: filetype=automake
 
-LOG_PROTOCOL_GENERATED = \
-	logging/log_protocol.h \
-	logging/log_protocol.c \
-	$(NULL)
-
-LOG_DAEMON_GENERATED = \
-	logging/log_daemon_dispatch_stubs.h
-	$(NULL)
-
-LOG_DAEMON_SOURCES = \
-	logging/log_daemon.h \
-	logging/log_daemon.c \
-	logging/log_daemon_config.h \
-	logging/log_daemon_config.c \
-	logging/log_daemon_dispatch.c \
-	logging/log_daemon_dispatch.h \
-	logging/log_handler.c \
-	logging/log_handler.h \
-	$(NULL)
-
-LOG_PROTOCOL = $(srcdir)/logging/log_protocol.x
-
-BUILT_SOURCES += \
-	$(LOG_PROTOCOL_GENERATED) \
-	$(LOG_DAEMON_GENERATED) \
-	$(NULL)
-
 SYSCONF_FILES += logging/virtlogd.sysconf
 
 VIRTLOGD_UNIT_FILES_IN = \
@@ -46,42 +19,6 @@ OPENRC_INIT_FILES_IN += \
 	$(NULL)
 
 if WITH_LIBVIRTD
-sbin_PROGRAMS += virtlogd
-
-
-virtlogd_SOURCES = \
-		$(LOG_DAEMON_SOURCES) \
-		$(NULL)
-nodist_virtlogd_SOURCES = \
-		$(LOG_PROTOCOL_GENERATED) \
-		$(LOG_DAEMON_GENERATED) \
-		$(NULL)
-virtlogd_CFLAGS = \
-		-I$(builddir)/logging \
-		-I$(builddir)/rpc \
-		$(AM_CFLAGS) \
-		$(XDR_CFLAGS) \
-		$(NULL)
-virtlogd_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(XDR_LIBS) \
-		$(NO_UNDEFINED_LDFLAGS) \
-		$(NULL)
-virtlogd_LDADD = \
-		libvirt_driver_admin.la \
-		libvirt.la \
-		$(GLIB_LIBS) \
-		$(NULL)
-if WITH_DTRACE_PROBES
-virtlogd_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-if WITH_SASL
-virtlogd_CFLAGS += \
-	$(SASL_CFLAGS) \
-	$(NULL)
-endif WITH_SASL
-
 conf_DATA += logging/virtlogd.conf
 
 augeas_DATA += logging/virtlogd.aug
@@ -92,12 +29,6 @@ logging/test_virtlogd.aug: logging/test_virtlogd.aug.in \
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/logging/virtlogd.conf $< > $@
 
 endif WITH_LIBVIRTD
-
-logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
-		$(srcdir)/rpc/gendispatch.pl Makefile.am
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
-	    virLogManagerProtocol VIR_LOG_MANAGER_PROTOCOL \
-	    $(LOG_PROTOCOL) > logging/log_daemon_dispatch_stubs.h
 
 virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@

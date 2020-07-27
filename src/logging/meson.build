@@ -25,6 +25,13 @@ log_protocol_generated += custom_target(
   ],
 )
 
+log_daemon_sources = files(
+  'log_daemon.c',
+  'log_daemon_config.c',
+  'log_daemon_dispatch.c',
+  'log_handler.c',
+)
+
 log_driver_lib = static_library(
   'virt_log_driver',
   [
@@ -39,6 +46,31 @@ log_driver_lib = static_library(
 )
 
 libvirt_libs += log_driver_lib
+
+if conf.has('WITH_LIBVIRTD')
+  log_daemon_generated = custom_target(
+    'log_daemon_dispatch_stubs.h',
+    input: log_protocol,
+    output: 'log_daemon_dispatch_stubs.h',
+    command: [
+      gendispatch_prog, '--mode=server',
+      'virLogManagerProtocol', 'VIR_LOG_MANAGER_PROTOCOL', '@INPUT@',
+    ],
+    capture: true,
+  )
+
+  virt_daemons += {
+    'name': 'virtlogd',
+    'sources': [
+      log_daemon_sources,
+      log_daemon_generated,
+      log_protocol_generated,
+    ],
+    'include': [
+      include_directories('.'),
+    ],
+  }
+endif
 
 log_inc_dir = include_directories('.')
 
