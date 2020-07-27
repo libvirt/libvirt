@@ -25,7 +25,6 @@ confdir = $(sysconfdir)/libvirt
 conf_DATA =
 
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
-bin_PROGRAMS = virt-admin
 libexec_SCRIPTS = libvirt-guests.sh
 
 if WITH_SANLOCK
@@ -53,24 +52,6 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 
 noinst_LTLIBRARIES =
 
-virt_admin_SOURCES = \
-		virt-admin.c virt-admin.h \
-		virt-admin-completer.c virt-admin-completer.h \
-		$(NULL)
-
-virt_admin_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(COVERAGE_LDFLAGS) \
-		$(STATIC_BINARIES) \
-		$(NULL)
-virt_admin_LDADD = \
-		../src/libvirt-admin.la \
-		libvirt_shell.la \
-		$(LIBXML_LIBS) \
-		$(NULL)
-virt_admin_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(READLINE_CFLAGS)
 BUILT_SOURCES =
 
 install-data-local: install-systemd install-nss \

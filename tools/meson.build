@@ -197,3 +197,25 @@ executable(
   install_dir: bindir,
   install_rpath: libdir,
 )
+
+executable(
+  'virt-admin',
+  [
+    'virt-admin.c',
+    'virt-admin-completer.c',
+  ],
+  dependencies: [
+    tools_dep,
+    readline_dep,
+  ],
+  link_args: [
+    coverage_flags,
+  ],
+  link_with: [
+    libvirt_admin_lib,
+    libvirt_shell_lib,
+  ],
+  install: true,
+  install_dir: bindir,
+  install_rpath: libdir,
+)
