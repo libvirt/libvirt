@@ -185,8 +185,6 @@ virLockManagerSanlockInitLockspace(virLockManagerSanlockDriverPtr driver,
     return ret;
 }
 
-/* How much ms sleep before retrying to add a lockspace? */
-#define LOCKSPACE_SLEEP 100
 /* How many times try adding a lockspace? */
 #define LOCKSPACE_RETRIES 10
 
