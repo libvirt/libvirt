@@ -16,14 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-if WITH_QEMU
-test_helpers += qemucapsprobe
-endif WITH_QEMU
-
-if WITH_NSS
-test_helpers += nsslinktest nssguestlinktest
-endif WITH_NSS
-
 test_scripts =
 libvirtd_test_scripts = \
 	libvirtd-fail \
@@ -67,8 +59,6 @@ file-access-clean:
 	> test_file_access.txt
 endif WITH_LINUX
 
-noinst_PROGRAMS = $(test_helpers)
-
 TESTS = $(test_scripts)
 
 VALGRIND = valgrind --quiet --leak-check=full --trace-children=yes \
@@ -76,29 +66,3 @@ VALGRIND = valgrind --quiet --leak-check=full --trace-children=yes \
 	--suppressions=$(abs_srcdir)/.valgrind.supp
 valgrind:
 	$(MAKE) check VG="$(LIBTOOL) --mode=execute $(VALGRIND)"
-
-if WITH_QEMU
-qemucapsprobe_SOURCES = \
-	qemucapsprobe.c
-qemucapsprobe_LDADD = \
-	libqemutestdriver.la $(LDADDS)
-endif WITH_QEMU
-
-if WITH_NSS
-## Intentionaly not linking with anything else.
-## See the test source for more detailed explanation.
-nsslinktest_SOURCES = nsslinktest.c
-nsslinktest_CFLAGS = \
-	$(AM_CFLAGS) \
-	-I$(top_srcdir)/tools/nss
-nsslinktest_LDADD = ../tools/nss/libnss_libvirt_impl.la
-nsslinktest_LDFLAGS = $(NULL)
-
-nssguestlinktest_SOURCES = nsslinktest.c
-nssguestlinktest_CFLAGS = \
-	-DLIBVIRT_NSS_GUEST \
-	$(AM_CFLAGS) \
-	-I$(top_srcdir)/tools/nss
-nssguestlinktest_LDADD = ../tools/nss/libnss_libvirt_guest_impl.la
-nssguestlinktest_LDFLAGS = $(NULL)
-endif WITH_NSS

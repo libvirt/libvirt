@@ -591,6 +591,34 @@ endforeach
 
 helpers = []
 
+if conf.has('WITH_NSS')
+  helpers += [
+    # Intentionaly not linking with anything else.
+    # See the test source for more detailed explanation.
+    {
+      'name': 'nsslinktest',
+      'include': [ nss_inc_dir ],
+      'link_with': [ nss_libvirt_impl ],
+    },
+    {
+      'name': 'nssguestlinktest',
+      'sources': [ 'nsslinktest.c' ],
+      'c_args': [ '-DLIBVIRT_NSS_GUEST' ],
+      'include': [ nss_inc_dir ],
+      'link_with': [ nss_libvirt_guest_impl ],
+    },
+  ]
+endif
+
+if conf.has('WITH_QEMU')
+  helpers += [
+    {
+      'name': 'qemucapsprobe',
+      'link_with': [ test_qemu_driver_lib, libvirt_lib ],
+    },
+  ]
+endif
+
 foreach data : helpers
   helper_sources = '@0@.c'.format(data['name'])
   helper_bin = executable(
