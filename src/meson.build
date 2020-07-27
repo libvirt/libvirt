@@ -667,6 +667,12 @@ foreach data : virt_test_aug_files
   )
 endforeach
 
+# augeas_test_data:
+#   each entry is a dictionary with following items:
+#   * name: daemon name to run the test for (required)
+#   * file: test file to use (required)
+augeas_test_data = []
+
 foreach data : virt_daemon_confs
   capitalize_args = [ '-c', 'print("@0@".capitalize())'.format(data['name']) ]
   name_uc = run_command(python3_prog, capitalize_args, check: true).stdout().strip()
@@ -717,7 +723,7 @@ foreach data : virt_daemon_confs
   )
 
   test_aug_out = 'test_@0@.aug'.format(data['name'])
-  custom_target(
+  augeas_test_file = custom_target(
     test_aug_out,
     input: [ conf_out, test_aug_tmp ],
     output: test_aug_out,
@@ -729,6 +735,7 @@ foreach data : virt_daemon_confs
     install: true,
     install_dir: virt_test_aug_dir,
   )
+  augeas_test_data += { 'name': data['name'], 'file': augeas_test_file }
 endforeach
 
 
@@ -886,3 +893,17 @@ test(
   args: [ check_aclrules_prog.path(), files('remote/remote_protocol.x'), stateful_driver_source_files ],
   env: runutf8,
 )
+
+if augparse_prog.found()
+  foreach data : augeas_test_data
+    test(
+      'check-augeas-@0@'.format(data['name']),
+      augparse_prog,
+      args: [
+        '-I', meson.current_source_dir(),
+        '-I', meson.current_build_dir(),
+        data['file'].full_path(),
+      ],
+    )
+  endforeach
+endif
