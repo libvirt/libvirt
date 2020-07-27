@@ -163,6 +163,7 @@ subdir('hyperv')
 subdir('libxl')
 subdir('lxc')
 subdir('openvz')
+subdir('qemu')
 subdir('test')
 subdir('vmware')
 

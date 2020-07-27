@@ -6,7 +6,7 @@ log_protocol = 'log_protocol.x'
 
 log_protocol_generated = []
 
-log_protocol_generated += custom_target(
+log_protocol_header_generated = custom_target(
   'log_protocol.h',
   input: log_protocol,
   output: 'log_protocol.h',
@@ -14,6 +14,7 @@ log_protocol_generated += custom_target(
     genprotocol_prog, rpcgen_prog, '-h', '@INPUT@', '@OUTPUT@'
   ],
 )
+log_protocol_generated += log_protocol_header_generated
 
 log_protocol_generated += custom_target(
   'log_protocol.c',
@@ -38,3 +39,10 @@ log_driver_lib = static_library(
 )
 
 libvirt_libs += log_driver_lib
+
+log_inc_dir = include_directories('.')
+
+log_dep = declare_dependency(
+  include_directories: log_inc_dir,
+  sources: log_protocol_header_generated,
+)

@@ -1,90 +1,9 @@
 # vim: filetype=automake
 
-QEMU_DRIVER_SOURCES = \
-	qemu/qemu_agent.c \
-	qemu/qemu_agent.h \
-	qemu/qemu_alias.c \
-	qemu/qemu_alias.h \
-	qemu/qemu_block.c \
-	qemu/qemu_block.h \
-	qemu/qemu_blockjob.c \
-	qemu/qemu_blockjob.h \
-	qemu/qemu_capabilities.c \
-	qemu/qemu_capabilities.h \
-	qemu/qemu_command.c \
-	qemu/qemu_command.h \
-	qemu/qemu_dbus.c \
-	qemu/qemu_dbus.h \
-	qemu/qemu_domain.c \
-	qemu/qemu_domain.h \
-	qemu/qemu_domainjob.c \
-	qemu/qemu_domainjob.h \
-	qemu/qemu_domain_address.c \
-	qemu/qemu_domain_address.h \
-	qemu/qemu_cgroup.c \
-	qemu/qemu_cgroup.h \
-	qemu/qemu_extdevice.c \
-	qemu/qemu_extdevice.h \
-	qemu/qemu_firmware.c \
-	qemu/qemu_firmware.h \
-	qemu/qemu_hostdev.c \
-	qemu/qemu_hostdev.h \
-	qemu/qemu_hotplug.c \
-	qemu/qemu_hotplug.h \
-	qemu/qemu_conf.c \
-	qemu/qemu_conf.h \
-	qemu/qemu_interop_config.c \
-	qemu/qemu_interop_config.h \
-	qemu/qemu_process.c \
-	qemu/qemu_process.h \
-	qemu/qemu_processpriv.h \
-	qemu/qemu_migration.c \
-	qemu/qemu_migration.h \
-	qemu/qemu_migration_cookie.c \
-	qemu/qemu_migration_cookie.h \
-	qemu/qemu_migration_params.c \
-	qemu/qemu_migration_params.h \
-	qemu/qemu_migration_paramspriv.h \
-	qemu/qemu_monitor.c \
-	qemu/qemu_monitor.h \
-	qemu/qemu_monitor_priv.h \
-	qemu/qemu_monitor_text.c \
-	qemu/qemu_monitor_text.h \
-	qemu/qemu_monitor_json.c \
-	qemu/qemu_monitor_json.h \
-	qemu/qemu_driver.c \
-	qemu/qemu_driver.h \
-	qemu/qemu_interface.c \
-	qemu/qemu_interface.h \
-	qemu/qemu_capspriv.h \
-	qemu/qemu_security.c \
-	qemu/qemu_security.h \
-	qemu/qemu_qapi.c \
-	qemu/qemu_qapi.h \
-	qemu/qemu_slirp.c \
-	qemu/qemu_slirp.h \
-	qemu/qemu_tpm.c \
-	qemu/qemu_tpm.h \
-	qemu/qemu_vhost_user.c \
-	qemu/qemu_vhost_user.h \
-	qemu/qemu_vhost_user_gpu.c \
-	qemu/qemu_vhost_user_gpu.h \
-	qemu/qemu_virtiofs.c \
-	qemu/qemu_virtiofs.h \
-	qemu/qemu_checkpoint.c \
-	qemu/qemu_checkpoint.h \
-	qemu/qemu_backup.c \
-	qemu/qemu_backup.h \
-	qemu/qemu_validate.c \
-	qemu/qemu_validate.h \
-	$(NULL)
-
-
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))
 
 if WITH_QEMU
-noinst_LTLIBRARIES += libvirt_driver_qemu_impl.la
 libvirt_driver_qemu_la_SOURCES =
 libvirt_driver_qemu_la_LIBADD = \
 	libvirt_driver_qemu_impl.la \
@@ -94,34 +13,8 @@ libvirt_driver_qemu_la_LIBADD = \
 mod_LTLIBRARIES += libvirt_driver_qemu.la
 libvirt_driver_qemu_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
 
-libvirt_driver_qemu_impl_la_CFLAGS = \
-	$(GNUTLS_CFLAGS) \
-	$(LIBNL_CFLAGS) \
-	$(SELINUX_CFLAGS) \
-	$(XDR_CFLAGS) \
-	-I$(srcdir)/access \
-	-I$(builddir)/access \
-	-I$(srcdir)/conf \
-	-I$(srcdir)/hypervisor \
-	$(AM_CFLAGS) \
-	$(NULL)
-libvirt_driver_qemu_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_qemu_impl_la_LIBADD = \
-	$(CAPNG_LIBS) \
-	$(GNUTLS_LIBS) \
-	$(LIBNL_LIBS) \
-	$(SELINUX_LIBS) \
-	$(LIBXML_LIBS) \
-	$(NULL)
-libvirt_driver_qemu_impl_la_SOURCES = $(QEMU_DRIVER_SOURCES)
-
 if WITH_DTRACE_PROBES
 libvirt_driver_qemu_la_LIBADD += libvirt_qemu_probes.lo
-nodist_libvirt_driver_qemu_la_SOURCES = libvirt_qemu_probes.h
-BUILT_SOURCES += libvirt_qemu_probes.h
-
-tapset_DATA += libvirt_qemu_probes.stp
-
 endif WITH_DTRACE_PROBES
 
 sbin_PROGRAMS += virtqemud
