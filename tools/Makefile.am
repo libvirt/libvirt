@@ -45,10 +45,6 @@ bin_PROGRAMS += virt-login-shell
 libexec_PROGRAMS = virt-login-shell-helper
 endif WITH_LOGIN_SHELL
 
-if WITH_HOST_VALIDATE
-bin_PROGRAMS += virt-host-validate
-endif WITH_HOST_VALIDATE
-
 virt-xml-validate: virt-xml-validate.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]schemadir@|$(pkgdatadir)/schemas|g' \
 		       -e 's|[@]VERSION@|$(VERSION)|g' \
@@ -65,45 +61,6 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	    || (rm $@ && exit 1) && chmod +x $@
 
 noinst_LTLIBRARIES =
-
-virt_host_validate_SOURCES = \
-		virt-host-validate.c \
-		virt-host-validate-common.c virt-host-validate-common.h
-
-VIRT_HOST_VALIDATE_QEMU = \
-		virt-host-validate-qemu.c \
-		virt-host-validate-qemu.h
-VIRT_HOST_VALIDATE_LXC = \
-		virt-host-validate-lxc.c \
-		virt-host-validate-lxc.h
-VIRT_HOST_VALIDATE_BHYVE = \
-		virt-host-validate-bhyve.c \
-		virt-host-validate-bhyve.h
-if WITH_QEMU
-virt_host_validate_SOURCES += $(VIRT_HOST_VALIDATE_QEMU)
-endif WITH_QEMU
-
-if WITH_LXC
-virt_host_validate_SOURCES += $(VIRT_HOST_VALIDATE_LXC)
-endif WITH_LXC
-
-if WITH_BHYVE
-virt_host_validate_SOURCES += $(VIRT_HOST_VALIDATE_BHYVE)
-endif WITH_BHYVE
-
-virt_host_validate_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(COVERAGE_LDFLAGS) \
-		$(NULL)
-
-virt_host_validate_LDADD = \
-		../src/libvirt.la \
-		$(GLIB_LIBS) \
-		$(NULL)
-
-virt_host_validate_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(NULL)
 
 # virt-login-shell will be setuid, and must not link to anything
 # except glibc. It wil scrub the environment and then invoke the

@@ -36,3 +36,45 @@ libvirt_shell_lib = static_library(
     coverage_flags,
   ],
 )
+
+if conf.has('WITH_HOST_VALIDATE')
+  virt_host_validate_sources = [
+    'virt-host-validate.c',
+    'virt-host-validate-common.c',
+  ]
+
+  if conf.has('WITH_QEMU')
+    virt_host_validate_sources += [
+      'virt-host-validate-qemu.c',
+    ]
+  endif
+  if conf.has('WITH_LXC')
+    virt_host_validate_sources += [
+      'virt-host-validate-lxc.c',
+    ]
+  endif
+  if conf.has('WITH_BHYVE')
+    virt_host_validate_sources += [
+      'virt-host-validate-bhyve.c',
+    ]
+  endif
+
+  executable(
+    'virt-host-validate',
+    [
+      virt_host_validate_sources,
+    ],
+    dependencies: [
+      tools_dep,
+    ],
+    link_args: [
+      coverage_flags,
+    ],
+    link_with: [
+      libvirt_lib,
+    ],
+    install: true,
+    install_dir: bindir,
+    install_rpath: libdir,
+  )
+endif
