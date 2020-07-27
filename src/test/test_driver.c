@@ -83,8 +83,6 @@ struct _testCell {
 typedef struct _testCell testCell;
 typedef struct _testCell *testCellPtr;
 
-#define MAX_CELLS 128
-
 struct _testAuth {
     char *username;
     char *password;
