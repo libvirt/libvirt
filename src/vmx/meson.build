@@ -15,6 +15,8 @@ if conf.has('WITH_VMX')
       conf_inc_dir,
     ],
   )
+
+  libvirt_libs += vmx_lib
 endif
 
 vmx_inc_dir = include_directories('.')

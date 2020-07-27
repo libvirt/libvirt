@@ -53,6 +53,8 @@ if conf.has('WITH_ESX')
       vmx_inc_dir,
     ],
   )
+
+  libvirt_libs += esx_lib
 endif
 
 if conf.has('WITH_ESX')

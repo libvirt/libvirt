@@ -8,8 +8,6 @@ ACCESS_DRIVER_API_FILES = \
 
 ACCESS_DRIVER_POLKIT_POLICY = access/org.libvirt.api.policy
 
-libvirt_la_BUILT_LIBADD += libvirt_driver_access.la
-
 $(ACCESS_DRIVER_POLKIT_POLICY): $(srcdir)/access/viraccessperm.h \
     $(top_srcdir)/scripts/genpolkit.py Makefile.am
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) \

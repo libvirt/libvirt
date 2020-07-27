@@ -36,3 +36,5 @@ log_driver_lib = static_library(
     xdr_dep,
   ],
 )
+
+libvirt_libs += log_driver_lib

@@ -17,3 +17,5 @@ cpu_lib = static_library(
     conf_inc_dir,
   ],
 )
+
+libvirt_libs += cpu_lib

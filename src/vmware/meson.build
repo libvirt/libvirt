@@ -15,6 +15,8 @@ if conf.has('WITH_VMWARE')
       vmx_inc_dir,
     ],
   )
+
+  libvirt_libs += vmware_lib
 endif
 
 if conf.has('WITH_VMWARE')

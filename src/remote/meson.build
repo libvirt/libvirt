@@ -56,6 +56,8 @@ if conf.has('WITH_REMOTE')
       conf_inc_dir,
     ],
   )
+
+  libvirt_libs += remote_driver_lib
 endif
 
 if conf.has('WITH_REMOTE')

@@ -105,4 +105,6 @@ virt_conf_lib = static_library(
   ],
 )
 
+libvirt_libs += virt_conf_lib
+
 conf_inc_dir = include_directories('.')

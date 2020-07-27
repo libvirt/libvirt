@@ -193,4 +193,6 @@ virt_util_lib = static_library(
   ],
 )
 
+libvirt_libs += virt_util_lib
+
 util_inc_dir = include_directories('.')

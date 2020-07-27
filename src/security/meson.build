@@ -29,3 +29,5 @@ security_driver_lib = static_library(
     conf_inc_dir,
   ],
 )
+
+libvirt_libs += security_driver_lib

@@ -16,3 +16,5 @@ lock_driver_lib = static_library(
     conf_inc_dir,
   ],
 )
+
+libvirt_libs += lock_driver_lib

@@ -75,6 +75,8 @@ virt_access_lib = static_library(
   ]
 )
 
+libvirt_libs += virt_access_lib
+
 access_inc_dir = include_directories('.')
 
 # Used by others where generated headers are required

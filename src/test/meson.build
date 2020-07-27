@@ -20,5 +20,7 @@ if conf.has('WITH_TEST')
     ],
   )
 
+  libvirt_libs += test_lib
+
   install_data(test_driver_assets, install_dir: pkgdatadir)
 endif

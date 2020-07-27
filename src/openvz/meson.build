@@ -17,6 +17,8 @@ if conf.has('WITH_OPENVZ')
       conf_inc_dir,
     ],
   )
+
+  libvirt_libs += openvz_lib
 endif
 
 if conf.has('WITH_OPENVZ')

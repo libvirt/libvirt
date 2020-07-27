@@ -18,4 +18,6 @@ hypervisor_lib = static_library(
   ],
 )
 
+libvirt_libs += hypervisor_lib
+
 hypervisor_inc_dir = include_directories('.')

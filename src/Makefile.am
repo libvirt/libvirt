@@ -36,7 +36,6 @@ mod_LTLIBRARIES =
 INSTALL_DATA_DIRS =
 INSTALL_DATA_LOCAL =
 UNINSTALL_LOCAL =
-libvirt_la_BUILT_LIBADD =
 SYM_FILES =
 USED_SYM_FILES =
 GENERATED_SYM_FILES =
@@ -66,7 +65,7 @@ COMMON_UNIT_VARS = \
 
 # Set these variables before we include any of the subdirs as libvirt-admin.la
 # has to be installed after libvirt.la.
-lib_LTLIBRARIES += libvirt.la libvirt-qemu.la libvirt-lxc.la
+lib_LTLIBRARIES += libvirt-qemu.la libvirt-lxc.la
 
 include util/Makefile.inc.am
 include cpu_map/Makefile.inc.am
@@ -207,13 +206,6 @@ check-local: check-protocol check-symfile check-symsorting \
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 
-#########################
-#
-# Build up list of libvirt.la source files based on configure conditions
-#
-# First deal with sources usable in non-daemon context
-
-
 # All .syms files should be placed in exactly one of these three lists,
 # depending on whether they are stored in git and/or used in the build.
 SYM_FILES += $(USED_SYM_FILES)
@@ -242,32 +234,7 @@ AUG_GENTEST = $(RUNUTF8) $(PYTHON) $(AUG_GENTEST_SCRIPT)
 
 BUILT_SOURCES += $(GENERATED_SYM_FILES)
 
-# Empty source list - it merely links a bunch of convenience libs together
-libvirt_la_SOURCES =
-libvirt_la_LDFLAGS = \
-		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
-		-version-info $(LIBVIRT_VERSION_INFO) \
-		$(LIBVIRT_NODELETE) \
-		$(NO_UNDEFINED_LDFLAGS) \
-		$(FLAT_NAMESPACE_FLAGS) \
-		$(AM_LDFLAGS) \
-		$(NULL)
-libvirt_la_LIBADD += \
-		$(DLOPEN_LIBS) \
-		$(XDR_LIBS) \
-		$(NULL)
-libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
-# Because we specify libvirt_la_DEPENDENCIES for $(LIBVIRT_SYMBOL_FILE), we
-# lose automake's automatic dependencies on an appropriate subset of
-# $(libvirt_la_LIBADD).  But we were careful to create
-# $(libvirt_la_BUILT_LIBADD) as the subset that automake would have
-# picked out for us.
-libvirt_la_DEPENDENCIES = $(libvirt_la_BUILT_LIBADD) $(LIBVIRT_SYMBOL_FILE)
-
 if WITH_DTRACE_PROBES
-libvirt_la_BUILT_LIBADD += libvirt_probes.lo
-libvirt_la_DEPENDENCIES += libvirt_probes.lo libvirt_probes.o
-nodist_libvirt_la_SOURCES = libvirt_probes.h
 
 BUILT_SOURCES += libvirt_functions.stp
 
