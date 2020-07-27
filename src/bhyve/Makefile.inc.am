@@ -31,8 +31,6 @@ bhyve/test_virtbhyved.aug: remote/test_libvirtd.aug.in \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtbhyved/' \
 		> $@ || rm -f $@
 
-conf_DATA += bhyve/bhyve.conf
-augeas_DATA += bhyve/libvirtd_bhyve.aug
 augeastest_DATA += bhyve/test_libvirtd_bhyve.aug
 
 bhyve/test_libvirtd_bhyve.aug: bhyve/test_libvirtd_bhyve.aug.in \

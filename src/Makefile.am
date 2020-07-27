@@ -70,8 +70,6 @@ include storage/Makefile.inc.am
 include remote/Makefile.inc.am
 
 
-conf_DATA += libvirt.conf
-
 BUILT_SOURCES += $(nodist_conf_DATA)
 
 # .libs/libvirt.so is built by libtool as a side-effect of the Makefile

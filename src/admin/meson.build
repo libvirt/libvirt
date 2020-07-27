@@ -95,6 +95,8 @@ admin_driver_lib = static_library(
   ],
 )
 
+virt_conf_files += files('libvirt-admin.conf')
+
 admin_inc_dir = include_directories('.')
 
 admin_dep = declare_dependency(

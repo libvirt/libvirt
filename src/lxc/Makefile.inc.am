@@ -77,9 +77,6 @@ if WITH_DTRACE_PROBES
 RPC_PROBE_FILES += $(srcdir)/lxc/lxc_monitor_protocol.x
 endif
 
-conf_DATA += lxc/lxc.conf
-
-augeas_DATA += lxc/libvirtd_lxc.aug
 augeastest_DATA += lxc/test_libvirtd_lxc.aug
 
 lxc/test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \

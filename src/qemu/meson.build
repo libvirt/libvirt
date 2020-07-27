@@ -122,6 +122,9 @@ if conf.has('WITH_QEMU')
     ],
   }
 
+  virt_conf_files += files('qemu.conf')
+  virt_aug_files += files('libvirtd_qemu.aug')
+
   virt_helpers += {
     'name': 'virt-qemu-run',
     'sources': [

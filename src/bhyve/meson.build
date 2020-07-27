@@ -43,4 +43,7 @@ if conf.has('WITH_BHYVE')
       '-DMODULE_NAME="bhyve"'
     ],
   }
+
+  virt_conf_files += files('bhyve.conf')
+  virt_aug_files += files('libvirtd_bhyve.aug')
 endif

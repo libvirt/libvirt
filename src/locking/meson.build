@@ -145,4 +145,49 @@ if conf.has('WITH_LIBVIRTD')
       ],
     }
   endif
+
+  virt_aug_files += files('libvirt_lockd.aug')
+
+  if conf.has('WITH_QEMU')
+    qemu_lockd_conf = configure_file(
+      input: 'lockd.conf',
+      output: 'qemu-lockd.conf',
+      copy: true,
+    )
+    virt_conf_files += qemu_lockd_conf
+  endif
+
+  if conf.has('WITH_LIBXL')
+    libxl_lockd_conf = configure_file(
+      input: 'lockd.conf',
+      output: 'libxl-lockd.conf',
+      copy: true,
+    )
+    virt_conf_files += libxl_lockd_conf
+  endif
+
+  if conf.has('WITH_SANLOCK')
+    virt_aug_files += files('libvirt_sanlock.aug')
+
+    if conf.has('WITH_QEMU')
+      qemu_sanlock_conf = configure_file(
+        input: 'sanlock.conf',
+        output: 'qemu-sanlock.conf',
+        copy: true,
+      )
+      virt_conf_files += qemu_sanlock_conf
+    endif
+
+    if conf.has('WITH_LIBXL')
+      libxl_sanlock_conf = configure_file(
+        input: 'sanlock.conf',
+        output: 'libxl-sanlock.conf',
+        copy: true,
+      )
+      virt_conf_files += libxl_sanlock_conf
+    endif
+  endif
+
+  virt_conf_files += files('virtlockd.conf')
+  virt_aug_files += files('virtlockd.aug')
 endif

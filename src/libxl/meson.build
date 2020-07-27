@@ -44,4 +44,7 @@ if conf.has('WITH_LIBXL')
       '-DMODULE_NAME="libxl"',
     ],
   }
+
+  virt_conf_files += files('libxl.conf')
+  virt_aug_files += files('libvirtd_libxl.aug')
 endif

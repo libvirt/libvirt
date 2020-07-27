@@ -2,8 +2,6 @@
 
 ADMIN_SYM_FILES = $(srcdir)/admin/libvirt_admin_private.syms
 
-conf_DATA += admin/libvirt-admin.conf
-
 if WITH_LINUX
 check-admin-symfile: admin/libvirt_admin.syms libvirt-admin.la
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-symfile.py \

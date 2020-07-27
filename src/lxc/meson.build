@@ -128,4 +128,7 @@ if conf.has('WITH_LXC')
       xdr_dep,
     ],
   }
+
+  virt_conf_files += files('lxc.conf')
+  virt_aug_files += files('libvirtd_lxc.aug')
 endif

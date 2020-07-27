@@ -19,9 +19,6 @@ OPENRC_INIT_FILES_IN += \
 	$(NULL)
 
 if WITH_LIBVIRTD
-conf_DATA += logging/virtlogd.conf
-
-augeas_DATA += logging/virtlogd.aug
 augeastest_DATA += logging/test_virtlogd.aug
 
 logging/test_virtlogd.aug: logging/test_virtlogd.aug.in \

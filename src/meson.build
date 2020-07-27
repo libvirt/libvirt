@@ -595,6 +595,8 @@ endforeach
 
 # Generate daemon config, augeas and augeas test files
 
+virt_conf_files += 'libvirt.conf'
+
 install_data(virt_conf_files, install_dir: confdir)
 install_data(virt_aug_files, install_dir: virt_aug_dir)
 

@@ -66,9 +66,6 @@ qemu/test_virtqemud.aug: remote/test_libvirtd.aug.in \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtqemud/' \
 		> $@ || rm -f $@
 
-conf_DATA += qemu/qemu.conf
-
-augeas_DATA += qemu/libvirtd_qemu.aug
 augeastest_DATA += qemu/test_libvirtd_qemu.aug
 
 qemu/test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
