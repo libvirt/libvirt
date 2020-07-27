@@ -246,6 +246,7 @@ cc_flags += [
   '-Wcpp',
   '-Wdangling-else',
   '-Wdate-time',
+  '-Wdeclaration-after-statement',
   '-Wdeprecated-declarations',
   '-Wdesignated-init',
   '-Wdiscarded-array-qualifiers',
@@ -565,7 +566,6 @@ cc_flags_disabled = [
   # We might fundamentally need some of these disabled forever, but
   # ideally we'd turn many of them on
   '-Wfloat-equal',
-  '-Wdeclaration-after-statement',
   '-Wpacked',
   '-Wunused-macros',
   '-Woverlength-strings',
