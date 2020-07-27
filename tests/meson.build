@@ -372,6 +372,15 @@ if conf.has('WITH_ESX')
   ]
 endif
 
+if conf.has('WITH_LIBVIRTD')
+  tests += [
+    { 'name': 'eventtest', 'deps': [ thread_dep ] },
+    { 'name': 'fdstreamtest' },
+    { 'name': 'virdriverconnvalidatetest' },
+    { 'name': 'virdrivermoduletest' },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

@@ -27,10 +27,6 @@ test_programs += \
 	$(NULL)
 endif WITH_REMOTE
 
-if WITH_LIBVIRTD
-test_programs += fdstreamtest
-endif WITH_LIBVIRTD
-
 if WITH_SECDRIVER_SELINUX
 if WITH_ATTR
 test_programs += securityselinuxtest \
@@ -148,11 +144,6 @@ libvirtd_test_scripts = \
 
 if WITH_LIBVIRTD
 test_scripts += $(libvirtd_test_scripts)
-
-test_programs += \
-	eventtest \
-	virdrivermoduletest \
-	virdriverconnvalidatetest
 endif WITH_LIBVIRTD
 
 if WITH_SECDRIVER_APPARMOR
@@ -610,23 +601,3 @@ endif WITH_SECDRIVER_SELINUX
 virjsontest_SOURCES = \
 	virjsontest.c testutils.h testutils.c
 virjsontest_LDADD = $(LDADDS)
-
-if WITH_LIBVIRTD
-virdrivermoduletest_SOURCES = \
-	virdrivermoduletest.c testutils.h testutils.c
-virdrivermoduletest_LDADD = $(LDADDS)
-
-virdriverconnvalidatetest_SOURCES = \
-	virdriverconnvalidatetest.c testutils.h testutils.c
-virdriverconnvalidatetest_LDADD = $(LDADDS)
-endif WITH_LIBVIRTD
-
-if WITH_LIBVIRTD
-eventtest_SOURCES = \
-	eventtest.c testutils.h testutils.c
-eventtest_LDADD = $(LDADDS)
-endif WITH_LIBVIRTD
-
-fdstreamtest_SOURCES = \
-	fdstreamtest.c testutils.h testutils.c
-fdstreamtest_LDADD = $(LDADDS)
