@@ -51,3 +51,7 @@ if conf.has('WITH_LIBVIRTD') and conf.has('WITH_APPARMOR')
     ],
   }
 endif
+
+if conf.has('WITH_APPARMOR_PROFILES')
+  subdir('apparmor')
+endif

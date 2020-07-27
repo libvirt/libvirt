@@ -23,8 +23,6 @@
 BUILT_SOURCES =
 DRIVER_SOURCE_FILES =
 STATEFUL_DRIVER_SOURCE_FILES =
-INSTALL_DATA_LOCAL =
-UNINSTALL_LOCAL =
 SYM_FILES =
 USED_SYM_FILES =
 augeas_DATA =
@@ -34,7 +32,6 @@ tapset_DATA =
 endif WITH_DTRACE_PROBES
 RPC_PROBE_FILES =
 
-include security/Makefile.inc.am
 include locking/Makefile.inc.am
 include admin/Makefile.inc.am
 include vbox/Makefile.inc.am
@@ -198,7 +195,3 @@ libvirt_functions.stp: $(RPC_PROBE_FILES) $(top_srcdir)/scripts/gensystemtap.py
 	  $(RPC_PROBE_FILES) > $@
 
 endif WITH_DTRACE_PROBES
-
-install-data-local: $(INSTALL_DATA_LOCAL)
-
-uninstall-local: $(UNINSTALL_LOCAL)
