@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-07-24 15:35+0000\n"
-"PO-Revision-Date: 2020-07-17 06:10+0000\n"
+"PO-Revision-Date: 2020-07-27 07:34+0000\n"
 "Last-Translator: Pino Toscano <toscano.pino@tiscali.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/it/>\n"
@@ -996,7 +996,7 @@ msgstr "Il controller '%s' supporta solo fino a '%u' porte"
 
 #, c-format
 msgid "'%s' denied access"
-msgstr ""
+msgstr "'%s' ha negato l'accesso"
 
 #, c-format
 msgid "'%s' does not exist"
@@ -1065,6 +1065,8 @@ msgstr "'address' non è supportato da dispositivi video 'ramfb'"
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
+"L'elemento 'arch' non può essere usato dentro l'elemento 'cpu' con attributo "
+"'match'"
 
 #, c-format
 msgid "'auto' attribute can be 'yes' or 'no': %s"
@@ -1537,6 +1539,8 @@ msgid ""
 "<virtualport> element unsupported for type='%s' in interface's <actual> "
 "element"
 msgstr ""
+"elemento <virtualport> non supportato per type='%s' nell'elemento <actual> "
+"dell'interfaccia"
 
 #, c-format
 msgid ""
@@ -1896,7 +1900,7 @@ msgid "Before dumping core, failed to suspend domain '%d' with libxenlight"
 msgstr ""
 
 msgid "Bhyve version does not support framebuffer"
-msgstr ""
+msgstr "La versione di bhyve non supporta il framebuffer"
 
 #, c-format
 msgid ""
@@ -2234,9 +2238,9 @@ msgstr ""
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cache level '%u' already defined"
-msgstr ""
+msgstr "Modello CPU '%s' già definito"
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -2488,9 +2492,9 @@ msgid ""
 "Cannot automatically add a new PCI bus for a device with connect flags %.2x"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot boot from device %s"
-msgstr "dispositivo di avvio '%s' sconosciuto"
+msgstr "Impossibile effettuare il boot dal dispositivo %s"
 
 #, fuzzy, c-format
 msgid "Cannot check NBD device %s pid"
@@ -2676,7 +2680,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot find boot device of requested type %s"
-msgstr ""
+msgstr "Impossibile trovare il dispositivi di boot del tipo richiesto %s"
 
 #, fuzzy, c-format
 msgid "Cannot find byte %sstats for block device '%s'"
@@ -2706,9 +2710,9 @@ msgstr "impossibile trovare le statistiche per il dispositivo '%s'"
 msgid "Cannot find request stats for block device '%s'"
 msgstr "impossibile trovare le statistiche per il dispositivo '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot find security driver '%s'"
-msgstr "impossibile trovare il volume appena creato '%s'"
+msgstr "impossibile trovare driver di sicurezza '%s'"
 
 #, fuzzy, c-format
 msgid "Cannot find start time in %s"
@@ -2960,58 +2964,49 @@ msgid "Cannot parse <address> 'bus' attribute"
 msgstr "Errore nel parsing dell'attributo 'bus' di <address>"
 
 msgid "Cannot parse <address> 'controller' attribute"
-msgstr "Errore nel parsing dell'attributo 'controller' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'controller' di <address>"
 
-#, fuzzy
 msgid "Cannot parse <address> 'cssid' attribute"
-msgstr "Errore nel parsing dell'attributo 'bus' di <address>"
+msgstr "Errore nel parsing dell'attributo 'cssid' di <address>"
 
-#, fuzzy
 msgid "Cannot parse <address> 'devno' attribute"
-msgstr "Errore nel parsing dell'attributo 'domain' di <address>"
+msgstr "Errore nel parsing dell'attributo 'devno' di <address>"
 
 msgid "Cannot parse <address> 'domain' attribute"
 msgstr "Errore nel parsing dell'attributo 'domain' di <address>"
 
-#, fuzzy
 msgid "Cannot parse <address> 'fid' attribute"
-msgstr "Errore nel parsing dell'attributo 'unit' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'fid' di <address>"
 
 msgid "Cannot parse <address> 'function' attribute"
-msgstr "Errore nel parsing dell'attributo 'function' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'function' di <address>"
 
-#, fuzzy
 msgid "Cannot parse <address> 'iobase' attribute"
-msgstr "Errore nel parsing dell'attributo 'bus' di <address>"
+msgstr "Errore nel parsing dell'attributo 'iobase' di <address>"
 
-#, fuzzy
 msgid "Cannot parse <address> 'irq' attribute"
-msgstr "Errore nel parsing dell'attributo 'port' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'irq' di <address>"
 
 msgid "Cannot parse <address> 'port' attribute"
-msgstr "Errore nel parsing dell'attributo 'port' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'port' di <address>"
 
-#, fuzzy
 msgid "Cannot parse <address> 'reg' attribute"
-msgstr "Errore nel parsing dell'attributo 'port' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'reg' di <address>"
 
 msgid "Cannot parse <address> 'slot' attribute"
-msgstr "Errore nel parsing dell'attributo 'slot' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'slot' di <address>"
 
-#, fuzzy
 msgid "Cannot parse <address> 'ssid' attribute"
-msgstr "Errore nel parsing dell'attributo 'bus' di <address>"
+msgstr "Errore nel parsing dell'attributo 'ssid' di <address>"
 
-#, fuzzy
 msgid "Cannot parse <address> 'target' attribute"
-msgstr "Errore nel parsing dell'attributo 'port' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'target' di <address>"
 
-#, fuzzy
 msgid "Cannot parse <address> 'uid' attribute"
-msgstr "Errore nel parsing dell'attributo 'unit' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'uid' di <address>"
 
 msgid "Cannot parse <address> 'unit' attribute"
-msgstr "Errore nel parsing dell'attributo 'unit' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'unit' di <address>"
 
 #, fuzzy
 msgid "Cannot parse <local> 'port' attribute with socket interface"
@@ -3019,9 +3014,8 @@ msgstr ""
 "Impossibile analizzare <source> l'attributo 'port' con l'interfaccia del "
 "socket"
 
-#, fuzzy
 msgid "Cannot parse <master> 'startport' attribute"
-msgstr "Errore nel parsing dell'attributo 'port' del tag <address>"
+msgstr "Errore nel parsing dell'attributo 'startport' di <master>"
 
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr ""
@@ -3104,7 +3098,7 @@ msgid "Cannot parse user stat '%s'"
 msgstr "impossibile analizzare video ram '%s'"
 
 msgid "Cannot parse uuid attribute of element <address>"
-msgstr ""
+msgstr "Errore nel parsing dell'attributo 'uuid' di <address>"
 
 #, fuzzy, c-format
 msgid "Cannot parse version string '%s'"
@@ -3171,9 +3165,9 @@ msgstr ""
 msgid "Cannot resize the max memory on an active domain"
 msgstr "impossibile collegare le vcpu su di un dominio inattivo"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot resolve %s address: %s"
-msgstr ""
+msgstr "Impossibile risolvere l'indirizzo ::1: %s"
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr ""
@@ -3307,7 +3301,7 @@ msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
 msgstr ""
 
 msgid "Cannot undefine transient domain"
-msgstr "impossibile rimuovere la definizione di un dominio transitorio"
+msgstr "impossibile rimuovere la definizione di un dominio temporaneo"
 
 #, fuzzy
 msgid "Cannot unlock resctrl"
@@ -5957,9 +5951,9 @@ msgstr ""
 msgid "Escape character is %s"
 msgstr "impossibile trovare il dispositivo a caratteri %s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Ethernet controller index %d out of [0..%d] range"
-msgstr ""
+msgstr "il valore di typeid è fuori dal range"
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6375,7 +6369,7 @@ msgstr "Errore durante l'autostart della VM '%s': %s"
 
 #, c-format
 msgid "Failed to autostart VM '%s': %s"
-msgstr "Errore durante l'autostart della VM '%s': %s"
+msgstr "Errore durante l'avvio automatico della VM '%s': %s"
 
 #, fuzzy, c-format
 msgid "Failed to autostart storage pool '%s': %s"
@@ -6620,9 +6614,9 @@ msgstr "Impossibile creare la rete da %s"
 msgid "Failed to create checkpoint dir %s"
 msgstr "Impossibile creare il dominio da %s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to create dbus state dir %s"
-msgstr ""
+msgstr "Impossibile creare %s"
 
 #, fuzzy, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -8870,9 +8864,8 @@ msgstr ""
 msgid "Got invalid memory size %d"
 msgstr "Ottenuto una dimensione della memoria %d non valida"
 
-#, fuzzy
 msgid "Graphics are only supported when booting using UEFI"
-msgstr "grafiche spice non supportate con questo QEMU"
+msgstr "La grafica è supportata solo facendo il boot con UEFI"
 
 #, c-format
 msgid "Group %s doesn't exist"
@@ -8902,8 +8895,9 @@ msgstr "L'agente del guest non risponde: %s"
 msgid "Guest agent not available for now"
 msgstr "L'agente del guest al momento non è disponibile"
 
+#, fuzzy
 msgid "HMAT is not supported with this QEMU"
-msgstr ""
+msgstr "SATA non è supportato con questo binario di QEMU"
 
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
@@ -9328,7 +9322,7 @@ msgid "Installed bhyve binary does not support UTC clock"
 msgstr ""
 
 msgid "Installed bhyve binary does not support bootrom"
-msgstr ""
+msgstr "Il binario bhyve installato non supporta bootrom"
 
 msgid "Installed bhyve binary does not support defining CPU topology"
 msgstr ""
@@ -9420,8 +9414,9 @@ msgstr ""
 msgid "Invalid %s image format specified in configuration file"
 msgstr "errore nel parsing del file di configurazione"
 
+#, fuzzy
 msgid "Invalid 'cache' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Attributo match non valido per la specificata CPU"
 
 msgid "Invalid 'cpu.max' data."
 msgstr ""
@@ -9438,29 +9433,33 @@ msgstr ""
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr ""
 
+#, fuzzy
 msgid "Invalid 'initiator' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Nome del dispositivo del disco fisso non valido: %s"
 
 #, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "Valore non valido '%s' per 'iothread'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid 'level' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Nome del dispositivo del disco fisso non valido: %s"
 
 #, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "Valore non valido '%s' per l'attributo 'memAccess'"
 
+#, fuzzy
 msgid "Invalid 'target' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Nome del dispositivo del disco fisso non valido: %s"
 
+#, fuzzy
 msgid "Invalid 'type' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Attributo 'cores' mancante nella topologia CPU"
 
+#, fuzzy
 msgid "Invalid 'value' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Attributo 'cores' mancante nella topologia CPU"
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9494,6 +9493,8 @@ msgid ""
 "Invalid CPU topology: total number of vCPUs must equal the product of "
 "sockets, cores, and threads"
 msgstr ""
+"Topologia di CPU non valida: il numero totale di vCPUs deve essere uguale al "
+"prodotto di sockets per core per thread"
 
 #, c-format
 msgid "Invalid CPU vendor string '%s'"
@@ -9587,9 +9588,9 @@ msgstr ""
 msgid "Invalid ULong value specified for prefix in definition of network '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid URI path '%s', try '/system'"
-msgstr "percorso URI OpenVZ '%s' non previsto, prova openvz:///system"
+msgstr "Percorso dell'URI '%s' non valido, prova '/system'"
 
 #, fuzzy, c-format
 msgid "Invalid USB Class code %s"
@@ -9616,6 +9617,7 @@ msgstr "Indirizzo non valido per un dispositivo USB"
 #, c-format
 msgid "Invalid address type '%s' for the disk '%s' with the bus type '%s'"
 msgstr ""
+"Tipo di indirizzo '%s' non valido per il disco '%s' con il tipo di bus '%s'"
 
 msgid "Invalid address."
 msgstr "Indirizzo non valido."
@@ -9696,19 +9698,19 @@ msgstr "Tipo di bus '%s' invalido per il floppy"
 
 #, c-format
 msgid "Invalid busNr '%s' in PCI controller"
-msgstr ""
+msgstr "busNr '%s' non valido nel controller PCI"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid cache associativity '%s'"
-msgstr ""
+msgstr "uuid %s non valido"
 
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "uuid %s non valido"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid cache policy '%s'"
-msgstr ""
+msgstr "uuid %s non valido"
 
 #, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -9762,11 +9764,10 @@ msgstr ""
 
 #, c-format
 msgid "Invalid chassisNr '%s' in PCI controller"
-msgstr ""
+msgstr "chassisNr '%s' non valido nel controller PCI"
 
-#, fuzzy
 msgid "Invalid check attribute for CPU specification"
-msgstr "Attributo match non valido per la specificata CPU"
+msgstr "Attributo check non valido per la specificata CPU"
 
 #, fuzzy, c-format
 msgid "Invalid class ID %d"
@@ -10229,9 +10230,9 @@ msgstr "Porte non valide: %s"
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "Prefisso o maschera di rete non validi per '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid prefix value '%s' in <ip>"
-msgstr "Prefisso o netmask non valida per '%s'"
+msgstr "Prefisso o maschera di rete '%s' non valido in <ip>"
 
 #, c-format
 msgid "Invalid priority '%s' for filter '%s'"
@@ -10338,7 +10339,7 @@ msgstr "target del dispositivo del disco"
 
 #, c-format
 msgid "Invalid tlsFromConfig value: %s"
-msgstr "Valore di 'iothread' non valido: %s"
+msgstr "Valore di tlsFromConfig non valido: %s"
 
 #, fuzzy, c-format
 msgid ""
@@ -10584,10 +10585,11 @@ msgstr "Libvirt"
 
 #, fuzzy, c-format
 msgid "Lifecycle event '%s' doesn't support '%s' action"
-msgstr "il comando '%s' non supporta l'opzione --%s"
+msgstr "il comando '%s' non supporta l'opzione --%s"
 
+#, fuzzy
 msgid "Link already defined"
-msgstr ""
+msgstr "Produttore CPU '%s' già definito"
 
 msgid "List all manageable clients connected to <server>."
 msgstr "Elenca tutti i client gestibili connessi a <server>."
@@ -10725,7 +10727,7 @@ msgstr "indirizzo mac malformato '%s'"
 
 #, fuzzy
 msgid "Malformed 'dies' attribute in CPU topology"
-msgstr "Attributo 'cores' mancante nella topologia CPU"
+msgstr "Attributo 'dies' mancante nella topologia CPU"
 
 #, fuzzy
 msgid "Malformed 'domuuid' in JSON document"
@@ -11145,9 +11147,9 @@ msgstr "Proprietà '%s' mancante durante la ricerca di ManagedEntityStatus"
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Indirizzo IP mancante nella definizione host statico per la rete '%s'"
 
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "Attributo 'cores' mancante nella topologia CPU"
@@ -11177,15 +11179,16 @@ msgstr "Attributo 'threads' mancante nella topologia CPU"
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr ""
 
+#, fuzzy
 msgid "Missing 'initiator' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Attributo 'cores' mancante nella topologia CPU"
 
 msgid "Missing 'key' element for lease"
-msgstr ""
+msgstr "Elemento 'key' mancante per lease"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Missing 'level' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Attributo 'threads' mancante nella topologia CPU"
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11204,9 +11207,9 @@ msgstr "Campo 'path' mancate nel documento JSON"
 msgid "Missing 'pipefd' in JSON document"
 msgstr "'pipefd' mancate nel documento JSON"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Missing 'policy' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Attributo 'threads' mancante nella topologia CPU"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "Proprietà 'runtime.powerState' mancante"
@@ -11218,18 +11221,19 @@ msgstr "Attributo 'sockets' mancante nella topologia CPU"
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "Indirizzo IP mancante nella definizione host statico per la rete '%s'"
 
-msgid "Missing 'target' attribute in NUMA interconnects"
-msgstr ""
-
 #, fuzzy
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr "Attributo 'cores' mancante nella topologia CPU"
+
 msgid "Missing 'target' element for lease"
-msgstr "informazioni target mancanti per il dispositivo"
+msgstr "Elemento 'target' mancante per lease"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "Attributo 'threads' mancante nella topologia CPU"
 
+#, fuzzy
 msgid "Missing 'type' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Attributo 'cores' mancante nella topologia CPU"
 
 msgid "Missing 'uuid' attribute for element <address>"
 msgstr "Attributo 'uuid' mancante nell'elemento <address>"
@@ -11240,8 +11244,9 @@ msgid ""
 "id %d'"
 msgstr ""
 
+#, fuzzy
 msgid "Missing 'value' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Attributo 'cores' mancante nella topologia CPU"
 
 msgid "Missing <address> element"
 msgstr "Elemento <address> mancante"
@@ -11463,9 +11468,8 @@ msgstr ""
 msgid "Missing keepaliveInterval data in JSON document"
 msgstr ""
 
-#, fuzzy
 msgid "Missing listen element"
-msgstr "elemento radice mancante"
+msgstr "Elemento listen mancante"
 
 #, fuzzy
 msgid "Missing lock driver name in migration cookie"
@@ -11670,7 +11674,7 @@ msgid "Missing required address attribute in network '%s'"
 msgstr "Indirizzo IP mancante nella definizione host statico per la rete '%s'"
 
 msgid "Missing required address in <ip>"
-msgstr ""
+msgstr "Indirizzo richiesto mancante in <ip>"
 
 msgid "Missing required cellid attribute in memnode element"
 msgstr ""
@@ -11775,7 +11779,7 @@ msgid "Missing source path attribute for char device"
 msgstr "Attributo percorso sorgente mancante per il dispositivo a caratteri"
 
 msgid "Missing source service attribute for char device"
-msgstr "Attributo servizio sergente mancante per il dispositivo a caratteri"
+msgstr "Attributo servizio sorgente mancante per il dispositivo a caratteri"
 
 #, fuzzy
 msgid "Missing storage block path"
@@ -11826,15 +11830,19 @@ msgstr ""
 msgid "Multi-head video devices are unsupported"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Multiple '%s' controllers with index '%d'"
-msgstr "Errore nel parsing del controller indice %s"
+msgstr "Controller '%s' multipli con indice '%d'"
 
 msgid "Multiple <model> elements in controller definition not allowed"
 msgstr ""
+"Elementi multipli di <model> non sono permessi nella definizione di un "
+"controller"
 
 msgid "Multiple <target> elements in controller definition not allowed"
 msgstr ""
+"Elementi multipli di <target> non sono permessi nella definizione di un "
+"controller"
 
 msgid ""
 "Multiple IPv4 dhcp sections found -- dhcp is supported only for a single "
@@ -11860,9 +11868,8 @@ msgstr ""
 msgid "Multiple definitions of CPU model '%s'"
 msgstr "Definizioni multiple del modello di CPU '%s'"
 
-#, fuzzy
 msgid "Multiple graphics devices are not supported"
-msgstr "grafiche spice non supportate con questo QEMU"
+msgstr "Dispositivi multipli per la grafica non sono supportati"
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "Interfacce multiple connesse al bridge"
@@ -12237,12 +12244,11 @@ msgstr ""
 "Nessun attributo 'dev' del tag <source> specificato con <interface "
 "type='direct'/>"
 
-#, fuzzy
 msgid ""
 "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
 msgstr ""
-"Nessun <source> attributo 'name' è stato specificato con <interface "
-"type='internal'/>"
+"Nessun attributo 'mode' di <source> è stato specificato per <interface "
+"type='vhostuser'>"
 
 msgid ""
 "No <source> 'name' attribute specified with <interface type='internal'/>"
@@ -12256,23 +12262,21 @@ msgstr ""
 "Nessun <source> attributo 'network' specificato con <interface "
 "type='network'/>"
 
-#, fuzzy
 msgid ""
 "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
 msgstr ""
-"Nessun <source> attributo 'name' è stato specificato con <interface "
-"type='internal'/>"
+"Nessun attributo 'path' di <source> è stato specificato per <interface "
+"type='vhostuser'>"
 
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr ""
 "Nessun <source> attributo 'port' è stato specificato con l'interfaccia del "
 "socket"
 
-#, fuzzy
 msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
 msgstr ""
-"Nessun <source> attributo 'name' è stato specificato con <interface "
-"type='internal'/>"
+"Nessun attributo 'type' di <source> è stato specificato per <interface "
+"type='vhostuser'>"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -12303,7 +12307,7 @@ msgid "No UNIX caller UID available"
 msgstr ""
 
 msgid "No URI scheme specified"
-msgstr ""
+msgstr "Nessuno schema specificato per l'URI"
 
 #, fuzzy
 msgid "No access manager registered"
@@ -12521,7 +12525,7 @@ msgid "No per-CPU stats available"
 msgstr ""
 
 msgid "No process ID available"
-msgstr ""
+msgstr "Nessun ID di processo disponibile."
 
 msgid "No process start time available"
 msgstr ""
@@ -12597,7 +12601,7 @@ msgid "No transaction is set"
 msgstr "Nessuna transazione impostata"
 
 msgid "No type specified for device address"
-msgstr "Nessun tipo specificato per l'indirizzo dispositivo"
+msgstr "Nessun tipo specificato per l'indirizzo del dispositivo"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %s"
@@ -12634,7 +12638,7 @@ msgstr ""
 
 #, c-format
 msgid "No zPCI %s to reserve"
-msgstr ""
+msgstr "Nessun %s zPCI da riservare"
 
 #, c-format
 msgid "Node %d:\n"
@@ -12838,7 +12842,7 @@ msgid "Only PTY console types are supported"
 msgstr "Sono supportati solo i tipi di console PTY"
 
 msgid "Only VNC supported"
-msgstr "È supportato solo VNC"
+msgstr "Solo VNC è supportato"
 
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr ""
@@ -12953,9 +12957,8 @@ msgstr ""
 msgid "Only start address '%s' specified in <nat> in <forward> in network '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "Only tap devices supported"
-msgstr "Sono supportati solo i certificati X509"
+msgstr "Solo i dispositivi TAP sono supportati"
 
 msgid ""
 "Only the PCI controller with index 0 can have target index 0, and vice versa"
@@ -13150,10 +13153,10 @@ msgstr ""
 
 #, c-format
 msgid "PCI controller index %d too high, maximum is 255"
-msgstr ""
+msgstr "L'indice %d del controller PCI è troppo alto, il massimo è 255"
 
 msgid "PCI controller model was not set correctly"
-msgstr ""
+msgstr "Il modello del controller PCI non è stato impostato correttamente"
 
 #, c-format
 msgid "PCI controller port '%s' out of range - must be 0-255"
@@ -13400,7 +13403,7 @@ msgstr ""
 
 #, c-format
 msgid "Policy kit denied action %s from <anonymous>"
-msgstr ""
+msgstr "Policy kit ha negato l'azione %s a <anonimo>"
 
 msgid "Polkit auth attempted, even though polkit is not available"
 msgstr ""
@@ -13506,7 +13509,7 @@ msgstr "La scheda grafica primaria deve avere l'indirizzo PCI 0:0:2.0"
 
 #, fuzzy
 msgid "Print lease info for a given network"
-msgstr "impossibile impostare autostart per una rete transitoria"
+msgstr "impossibile impostare autostart per una rete temporanea"
 
 #, fuzzy
 msgid "Print the current directory."
@@ -15156,8 +15159,9 @@ msgstr "specificato l'uso del volume, ma il percorso del volume è mancante"
 msgid "TLS:"
 msgstr "TLS:"
 
+#, fuzzy
 msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr ""
+msgstr "SATA non è supportato con questo binario di QEMU"
 
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
@@ -16044,6 +16048,9 @@ msgid ""
 "The device at PCI address %s was auto-assigned this address, but the PCI "
 "controller with index='%d' doesn't allow auto-assignment"
 msgstr ""
+"Al dispositivo all'indirizzo PCI %s è stato assegnato automaticamente questo "
+"indirizzo, ma il controller PCI con index='%d' non permette l'assegnazione "
+"automatica"
 
 #, fuzzy, c-format
 msgid "The disk device '%s' already has media"
@@ -16299,7 +16306,7 @@ msgstr ""
 
 #, c-format
 msgid "Too many clients '%d' for limit '%d'"
-msgstr ""
+msgstr "Troppi client '%d' per il limite '%d'"
 
 #, c-format
 msgid "Too many disks in fsinfo: %zd for limit %d"
@@ -16393,7 +16400,7 @@ msgstr ""
 
 #, c-format
 msgid "Too many servers '%d' for limit '%d'"
-msgstr ""
+msgstr "Troppi server '%d' per il limite '%d'"
 
 #, c-format
 msgid "Too many snapshots claiming to be current for domain %s"
@@ -16419,6 +16426,8 @@ msgstr ""
 
 msgid "Total size of memory devices exceeds the total memory size"
 msgstr ""
+"La dimensione totale dei dispositivi di memoria supera la dimensione totale "
+"della memoria"
 
 msgid "Total:\n"
 msgstr "Totale:\n"
@@ -17268,8 +17277,9 @@ msgstr "Impossibile trovare lo snapshot con nome %s"
 msgid "Unable to force bind to IPv6 only"
 msgstr ""
 
+#, fuzzy
 msgid "Unable to format NUMA node cache"
-msgstr ""
+msgstr "Impossibile formattare la porta guestfwd"
 
 msgid "Unable to format SELinux context"
 msgstr "Impossibile formattare il contesto di SELinux"
@@ -18421,9 +18431,9 @@ msgstr "Impossibile impostare il flag close-on-exec del monitor"
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "Impossibile impostare il flag non-blocking del file descriptor"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Unable to set copy-on-write state on '%s' to '%s'"
-msgstr ""
+msgstr "Impostazione contesto di sicurezza fallita del monitor per %s"
 
 msgid "Unable to set interface parameters"
 msgstr "Impossibile impostare i parametri dell'interfaccia"
@@ -18963,9 +18973,9 @@ msgstr "Tipo modello '%s' sconosciuto"
 msgid "Unknown TPM frontend model '%s'"
 msgstr "modello audio sconosciuto '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown URI parameter '%s'"
-msgstr "Tipo modello '%s' sconosciuto"
+msgstr "Parametro sconosciuto '%s' dell'URI"
 
 #, fuzzy, c-format
 msgid "Unknown acpi table type: %s"
@@ -18975,9 +18985,9 @@ msgstr "tipo di interfaccia sconosciuta %s"
 msgid "Unknown adapter type: %X"
 msgstr "Tipo modello '%s' sconosciuto"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown architecture %s"
-msgstr "Feature CPU %s sconosciuta"
+msgstr "Architettura %s sconosciuta"
 
 #, fuzzy, c-format
 msgid "Unknown async job type %s"
@@ -19253,9 +19263,9 @@ msgstr "Valore '%s' sconosciuto per %s"
 msgid "Unknown value '%s' for %s 'type' property"
 msgstr "Valore '%s' sconosciuto per la proprietà 'type' di %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown value '%s' for <address> 'multifunction' attribute"
-msgstr "Errore nel parsing dell'attributo 'function' del tag <address>"
+msgstr "Valore sconosciuto '%s' dell'attributo 'multifunction' di <address>"
 
 #, c-format
 msgid "Unknown value '%s' for AnyType 'type' property"
@@ -19369,9 +19379,9 @@ msgstr "chardev '%s' non supportato"
 msgid "Unsupported TPM version '%s'"
 msgstr "Algoritmo '%s' non supportato"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported URI scheme '%s'"
-msgstr "chardev '%s' non supportato"
+msgstr "Schema non supportato '%s' dell'URI"
 
 #, c-format
 msgid "Unsupported action: %s\n"
@@ -19436,9 +19446,9 @@ msgstr "Algoritmo '%s' non supportato"
 msgid "Unsupported config format '%s'"
 msgstr "Formato configurazione non supportato: '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported config type %s"
-msgstr "tipo di configurazione %s non supportata"
+msgstr "Tipo di configurazione %s non supportata"
 
 #, fuzzy
 msgid "Unsupported configuration"
@@ -19515,9 +19525,8 @@ msgstr "tipo di protocollo non supportato %s"
 msgid "Unsupported interface %s for TPM 1.2"
 msgstr "nome di volume non supportato '%s' per il disco '%s'"
 
-#, fuzzy
 msgid "Unsupported listen type"
-msgstr "tipo di configurazione %s non supportata"
+msgstr "Tipo di listen non supportato"
 
 #, fuzzy, c-format
 msgid "Unsupported migration cookie feature %s"
@@ -19975,9 +19984,8 @@ msgstr "Indirizzo MAC errato"
 msgid "Wrong XML element type %d"
 msgstr "Tipo elemento XML %d errato"
 
-#, fuzzy
 msgid "Wrong address type for USB hub"
-msgstr "tipo di indirizzo non previsto per il disco fdc"
+msgstr "Tipo di indirizzo errato per l'hub USB"
 
 msgid "Wrong length MAC address"
 msgstr "Lunghezza indirizzo MAC non valida"
@@ -20098,6 +20106,8 @@ msgstr "[--%s <string>]"
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
 msgstr ""
+"un tipo di video 'none' deve essere l'unico dispositivo video definito per "
+"il dominio"
 
 #, c-format
 msgid ""
@@ -20351,9 +20361,8 @@ msgstr "il target type deve essere specificato per il dispositivo %s"
 msgid "another backup job is already running"
 msgstr "Il dominio è già in esecuzione"
 
-#, fuzzy
 msgid "any configuration"
-msgstr "informazioni del dominio"
+msgstr "qualsiasi configurazione"
 
 msgid "apparmor_parser exited with error"
 msgstr ""
@@ -20815,7 +20824,7 @@ msgstr "La rete è già utilizzata dall'interfaccia %s"
 
 #, c-format
 msgid "boot order '%s' used for more than one device"
-msgstr ""
+msgstr "ordine di boot '%s' usato in più di un dispositivo"
 
 msgid "booted"
 msgstr ""
@@ -20963,7 +20972,7 @@ msgstr ""
 
 #, fuzzy
 msgid "can't change numatune mode for running domain"
-msgstr "impossibile impostare l'autostart di un dominio transitorio"
+msgstr "impossibile impostare l'autostart di un dominio temporaneo"
 
 #, fuzzy
 msgid "can't connect to virtlogd"
@@ -21054,7 +21063,7 @@ msgstr ""
 
 #, fuzzy
 msgid "can't undefine transient network"
-msgstr "impossibile rimuovere la definizione di un dominio transitorio"
+msgstr "impossibile rimuovere la definizione di un dominio temporaneo"
 
 #, fuzzy, c-format
 msgid "can't update '%s' section of network '%s'"
@@ -21204,7 +21213,7 @@ msgstr "impossibile modificare la configurazione persistente di un dominio"
 
 #, fuzzy
 msgid "cannot change persistent config of a transient network"
-msgstr "impossibile impostare autostart per una rete transitoria"
+msgstr "impossibile impostare autostart per una rete temporanea"
 
 msgid "cannot change port settings on spice graphics"
 msgstr "impossibile modificare le impostazioni della porta sui grafici spice"
@@ -21400,7 +21409,7 @@ msgstr "impossibile collegare le vcpu su di un dominio inattivo"
 
 #, fuzzy
 msgid "cannot delete domain snapshot for running domain"
-msgstr "impossibile impostare l'autostart di un dominio transitorio"
+msgstr "impossibile impostare l'autostart di un dominio temporaneo"
 
 #, c-format
 msgid "cannot delete inactive domain with %d checkpoints"
@@ -21415,7 +21424,7 @@ msgstr ""
 
 #, fuzzy
 msgid "cannot delete snapshots of running domain"
-msgstr "impossibile impostare l'autostart di un dominio transitorio"
+msgstr "impossibile impostare l'autostart di un dominio temporaneo"
 
 #, fuzzy, c-format
 msgid "cannot detect host CPU model for %s architecture"
@@ -21427,7 +21436,7 @@ msgstr "impossibile estendere il file '%s'"
 
 #, fuzzy
 msgid "cannot do managed save for transient domain"
-msgstr "impossibile impostare l'autostart di un dominio transitorio"
+msgstr "impossibile impostare l'autostart di un dominio temporaneo"
 
 #, fuzzy, c-format
 msgid "cannot download from volume %s"
@@ -21723,15 +21732,15 @@ msgstr "impossibile leggere la cputimeper il dominio"
 
 #, fuzzy
 msgid "cannot get vcpupin for transient domain"
-msgstr "impossibile impostare l'autostart di un dominio transitorio"
+msgstr "impossibile impostare l'autostart di un dominio temporaneo"
 
 #, fuzzy
 msgid "cannot halt after snapshot of transient domain"
-msgstr "impossibile impostare l'autostart di un dominio transitorio"
+msgstr "impossibile impostare l'autostart di un dominio temporaneo"
 
 #, fuzzy
 msgid "cannot halt after transient domain snapshot"
-msgstr "impossibile rimuovere la definizione di un dominio transitorio"
+msgstr "impossibile rimuovere la definizione di un dominio temporaneo"
 
 #, c-format
 msgid "cannot hot unplug %s device with PCI guest address: "
@@ -21965,9 +21974,9 @@ msgstr "Errore nel parsing dell'indirizzo MAC '%s' della rete '%s'"
 msgid "cannot parse bus %s"
 msgstr "impossibile analizzare il bus %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse bus '%s'"
-msgstr "impossibile analizzare il bus %s"
+msgstr "impossibile analizzare il bus '%s'"
 
 #, fuzzy, c-format
 msgid "cannot parse cache mode '%s' for virtiofs"
@@ -22068,9 +22077,9 @@ msgstr "impossibile analizzare il bus %s"
 msgid "cannot parse usage '%s' for RAM filesystem"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse value '%s' for coalesce parameter"
-msgstr "errore nel parsing del valore del parametro typeid"
+msgstr "errore nel parsing del valore '%s' del parametro di coalesce"
 
 msgid "cannot parse value of managerid parameter"
 msgstr "errore nel parsing del valore del parametro managerid"
@@ -22286,7 +22295,7 @@ msgstr "impossibile rimuovere il file di configurazione '%s'"
 
 #, fuzzy
 msgid "cannot rename a transient domain"
-msgstr "impossibile rimuovere la definizione di un dominio transitorio"
+msgstr "impossibile rimuovere la definizione di un dominio temporaneo"
 
 #, fuzzy
 msgid "cannot rename active domain"
@@ -22337,7 +22346,7 @@ msgstr ""
 
 #, fuzzy
 msgid "cannot restore domain snapshot for running domain"
-msgstr "impossibile impostare l'autostart di un dominio transitorio"
+msgstr "impossibile impostare l'autostart di un dominio temporaneo"
 
 #, fuzzy
 msgid "cannot retrieve vcpu information for inactive domain"
@@ -22345,7 +22354,7 @@ msgstr "impossibile collegare le vcpu su di un dominio inattivo"
 
 #, fuzzy
 msgid "cannot revert snapshot of running domain"
-msgstr "impossibile impostare l'autostart di un dominio transitorio"
+msgstr "impossibile impostare l'autostart di un dominio temporaneo"
 
 #, fuzzy, c-format
 msgid "cannot save file '%s'"
@@ -22380,10 +22389,10 @@ msgid "cannot set CPU affinity on process %d"
 msgstr "impossibile impostare le proposizioni di sicurezza %d (%s)"
 
 msgid "cannot set autostart for transient domain"
-msgstr "impossibile impostare l'autostart di un dominio transitorio"
+msgstr "impossibile impostare l'avvio automatico di un dominio temporaneo"
 
 msgid "cannot set autostart for transient network"
-msgstr "impossibile impostare autostart per una rete transitoria"
+msgstr "impossibile impostare autostart per una rete temporanea"
 
 #, fuzzy
 msgid "cannot set backing store for raw volume"
@@ -22518,10 +22527,10 @@ msgstr "impossibile sbloccare i segnali"
 
 #, fuzzy
 msgid "cannot undefine domain with nvram"
-msgstr "impossibile rimuovere la definizione di un dominio transitorio"
+msgstr "impossibile rimuovere la definizione di un dominio temporaneo"
 
 msgid "cannot undefine transient domain"
-msgstr "impossibile rimuovere la definizione di un dominio transitorio"
+msgstr "impossibile rimuovere la definizione di un dominio temporaneo"
 
 #, fuzzy, c-format
 msgid "cannot unlink '%s'"
@@ -22579,9 +22588,9 @@ msgstr "impossibile scrivere il file di configurazione '%s'"
 msgid "cannot write data to file '%s'"
 msgstr "impossibile scrivere il file di configurazione '%s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "cannot write to '%s' on bridge '%s'"
-msgstr ""
+msgstr "impossibile scrivere il file di configurazione '%s'"
 
 #, fuzzy
 msgid "cannot write to stdout"
@@ -22618,9 +22627,8 @@ msgstr "%s: %s"
 msgid "cd: command valid only in interactive mode"
 msgstr ""
 
-#, fuzzy
 msgid "cdrom device without source path not supported"
-msgstr "non è supportato il collegamento a caldo dell'unità"
+msgstr "I dispositivi cdrom senza un percorso sorgente non sono supportati"
 
 #, fuzzy
 msgid "cdrom/floppy device hotplug isn't supported"
@@ -24209,7 +24217,7 @@ msgstr ""
 
 #, c-format
 msgid "disk '%s' is empty or readonly"
-msgstr ""
+msgstr "il disco '%s' è vuoto o in sola lettura"
 
 #, c-format
 msgid "disk '%s' must use snapshot mode '%s'"
@@ -24225,7 +24233,7 @@ msgstr "disco %s non trovato"
 
 #, c-format
 msgid "disk '%s' specified twice"
-msgstr ""
+msgstr "il disco '%s' è stato specificato due volte"
 
 #, c-format
 msgid "disk '%s' was not found in the domain config"
@@ -24326,9 +24334,9 @@ msgid "disk migration was active, but 'transferred' data was missing"
 msgstr ""
 "migrazione attiva, ma i dati 'trasferiti\" della RAM risultano mancanti"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk model '%s' not supported for bus '%s'"
-msgstr "modalità hostdev '%s' non supportata"
+msgstr "il modello di disco '%s' non è supportato per il bus '%s'"
 
 msgid "disk port address is not supported by tunnelled migration"
 msgstr ""
@@ -24378,9 +24386,8 @@ msgid ""
 "disk-only snapshots require at least one disk to be selected for snapshot"
 msgstr ""
 
-#, fuzzy
 msgid "display"
-msgstr "vnc display"
+msgstr "display"
 
 msgid "display all block devices info"
 msgstr ""
@@ -25516,8 +25523,9 @@ msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr ""
 
+#, fuzzy
 msgid "failed to add subsystem filter"
-msgstr ""
+msgstr "chiusura del file fallita"
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -27724,12 +27732,16 @@ msgid ""
 "interface %s - <port isolated='yes'/> is not supported for network "
 "interfaces with type='%s'"
 msgstr ""
+"interfaccia %s - <port isolated='yes'/> non è supportato per le interfacce "
+"di rete con type='%s'"
 
 #, c-format
 msgid ""
 "interface %s - <port isolated='yes'/> is not supported for network "
 "interfaces with virtualport type='%s'"
 msgstr ""
+"interfaccia %s - <port isolated='yes'/> non è supportato per le interfacce "
+"di rete con type='%s' di virtualport"
 
 #, c-format
 msgid ""
@@ -28135,9 +28147,8 @@ msgstr "Argomento non valido"
 msgid "invalid argument: %s"
 msgstr "Argomento non valido"
 
-#, fuzzy
 msgid "invalid ats value"
-msgstr "slew catchup non valido"
+msgstr "valore di ats non valido"
 
 #, c-format
 msgid "invalid autodeflate attribute value '%s'"
@@ -28151,9 +28162,9 @@ msgstr "Protocollo '%s' sconosciuto"
 msgid "invalid backing protocol string '%s'"
 msgstr "puntatore al pool di storage non valido in %s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "invalid backupmode '%s' of disk '%s'"
-msgstr ""
+msgstr "numero di bus USB fornito non valido per '%s'"
 
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
@@ -28229,9 +28240,9 @@ msgstr "stato '%s' del dominio non valido"
 msgid "invalid disk 'backup' state '%s'"
 msgstr "stato '%s' del dominio non valido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid disk index '%s'"
-msgstr "stato '%s' del dominio non valido"
+msgstr "indice di disco '%s' non valido"
 
 #, fuzzy, c-format
 msgid "invalid disk target '%s'"
@@ -28326,9 +28337,8 @@ msgstr "puntatore di rete non valido in"
 msgid "invalid interface pointer in %s"
 msgstr "puntatore di rete non valido in %s"
 
-#, fuzzy
 msgid "invalid iommu value"
-msgstr "frequenza del timer non valida"
+msgstr "valore di iommu non valido"
 
 #, fuzzy, c-format
 msgid "invalid iommuGroup number attribute '%s'"
@@ -28411,9 +28421,9 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "invalid mac address check value: '%s'"
-msgstr ""
+msgstr "percorso non valido: %s"
 
 #, c-format
 msgid ""
@@ -28532,9 +28542,8 @@ msgstr "Attributo 'cores' mancante nella topologia CPU"
 msgid "invalid or missing dimm slot id '%s'"
 msgstr "stato '%s' del dominio non valido"
 
-#, fuzzy
 msgid "invalid packed value"
-msgstr "slew catchup non valido"
+msgstr "valore di packed non valido"
 
 #, fuzzy, c-format
 msgid "invalid part_separator setting '%s'"
@@ -28626,9 +28635,9 @@ msgstr "uuid %s non valido"
 msgid "invalid security relabel value %s"
 msgstr "puntatore al volume di storage non valido in %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid security type '%s'"
-msgstr "tipo di dominio non valido %s"
+msgstr "tipi di sicurezza '%s' non valido"
 
 #, fuzzy
 msgid "invalid server address"
@@ -28670,9 +28679,9 @@ msgstr "puntatore al pool di storage non valido in %s"
 msgid "invalid statistics collection period"
 msgstr "puntatore di collegamento non valido in"
 
-#, c-format
+#, c-format, fuzzy
 msgid "invalid storage pool cow feature state '%s'"
-msgstr ""
+msgstr "puntatore al pool di storage non valido in %s"
 
 msgid "invalid storage pool pointer in"
 msgstr "puntatore al pool di storage non valido in"
@@ -29469,10 +29478,10 @@ msgstr "modalità hostdev '%s' non supportata"
 
 #, c-format
 msgid "loadparm '%s' exceeds 8 characters"
-msgstr ""
+msgstr "loadparm '%s' è più lungo di 8 caratteri"
 
 msgid "loadparm cannot be an empty string"
-msgstr ""
+msgstr "loadparm non può essere una stringa vuota"
 
 msgid "lock manager connection has been restricted"
 msgstr ""
@@ -29934,11 +29943,8 @@ msgstr ""
 msgid "memory device total size exceeds hotplug space"
 msgstr ""
 
-#, fuzzy
 msgid "memory devices are not supported by this driver"
-msgstr ""
-"Il tipo di dispositivo balloon della memoria '%s' non è supportato da questa "
-"versione di qemu"
+msgstr "i dispositivi di memoria non sono supportati da questo driver"
 
 #, c-format
 msgid "memory filename '%s' requires external snapshot"
@@ -30310,9 +30316,8 @@ msgstr ""
 msgid "missing CPU data architecture"
 msgstr "Architettura CPU mancante"
 
-#, fuzzy
 msgid "missing CPU definition"
-msgstr "informazioni mancanti sui dispositivi"
+msgstr "definizione mancante della CPU"
 
 #, fuzzy
 msgid "missing EGD backend type"
@@ -30728,7 +30733,7 @@ msgid "missing name for disk source"
 msgstr "nome mancante per il disco sorgente"
 
 msgid "missing name for host"
-msgstr "nome dell'host mancante"
+msgstr "nome mancante dell'host"
 
 #, fuzzy
 msgid "missing name from disk backup element"
@@ -30931,9 +30936,8 @@ msgstr "modalità dispositivo smartcard mancante"
 msgid "missing socket address type in JSON backing volume definition"
 msgstr ""
 
-#, fuzzy
 msgid "missing socket for unix transport"
-msgstr "nome mancante per il disco sorgente"
+msgstr "socket mancante per trasporto unix"
 
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
@@ -30971,9 +30975,9 @@ msgstr "nome dell'host mancante"
 msgid "missing state attribute '%s' of feature '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing state for cipher named %s"
-msgstr "nome timer mancante"
+msgstr "stato mancante per il cifrario %s"
 
 msgid "missing state from existing snapshot"
 msgstr "stato dello snapshot esistente mancante"
@@ -31057,7 +31061,7 @@ msgid "missing tmpfs size, set the size option"
 msgstr ""
 
 msgid "missing type attribute in interface's <actual> element"
-msgstr ""
+msgstr "attributo 'type' mancante nell'elemento <actual> dell'interfaccia"
 
 #, fuzzy
 msgid "missing type attribute in migration data"
@@ -31336,7 +31340,7 @@ msgstr ""
 
 #, c-format
 msgid "name %s cannot contain '/'"
-msgstr ""
+msgstr "il nome %s non può avere '/'"
 
 #, fuzzy
 msgid "name of checkpoint"
@@ -31712,9 +31716,8 @@ msgstr ""
 msgid "no CPUs found"
 msgstr "nessuna CPU trovata"
 
-#, fuzzy
 msgid "no CPUs given"
-msgstr "nessuna CPU trovata"
+msgstr "nessuna CPU specificata"
 
 msgid "no FLR, PM reset or bus reset available"
 msgstr ""
@@ -31835,9 +31838,9 @@ msgstr "Nessun callback per l'autenticazione disponibile"
 msgid "no client username was found"
 msgstr "nessun username client trovato"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no client with matching id '%llu' found"
-msgstr "non ci sono domini con id corrispondente: %d"
+msgstr "nessun client trovato con id corrispondente '%llu'"
 
 #, c-format
 msgid "no config file for %s"
@@ -31852,7 +31855,7 @@ msgid "no connection driver available for %s"
 msgstr "nessun file di configurazione per %s"
 
 msgid "no console devices available"
-msgstr ""
+msgstr "nessun dispositivo di console disponibile"
 
 #, c-format
 msgid "no device capabilities for '%s'"
@@ -31881,9 +31884,9 @@ msgstr ""
 msgid "no disk found with alias '%s' or id '%s'"
 msgstr "non ci sono domini con uuid corrispondente a '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no disk named '%s'"
-msgstr "tipo di disco sconosciuto '%s'"
+msgstr "nessun disco chiamato '%s'"
 
 msgid "no disks selected for backup"
 msgstr ""
@@ -31915,7 +31918,7 @@ msgstr "non ci sono domini con id corrispondente: %d"
 
 #, c-format
 msgid "no domain with matching name '%s'"
-msgstr "nessun dominio con nome corrispondente '%s'"
+msgstr "nessun dominio con nome corrispondente a '%s'"
 
 msgid "no domain with matching uuid"
 msgstr "non ci sono domini con uuid corrispondente"
@@ -31924,9 +31927,9 @@ msgstr "non ci sono domini con uuid corrispondente"
 msgid "no domain with matching uuid '%s'"
 msgstr "non ci sono domini con uuid corrispondente a '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no domain with matching uuid '%s' (%s)"
-msgstr "non ci sono domini con uuid corrispondente a '%s'"
+msgstr "nessun dominio con uuid corrispondente a '%s' (%s)"
 
 msgid "no error"
 msgstr "nessun errore"
@@ -32103,9 +32106,9 @@ msgstr "nessuna rete con nome corrispondente '%s'"
 msgid "no secret with matching uuid '%s'"
 msgstr "non ci sono domini con uuid corrispondente a '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no server with matching name '%s' found"
-msgstr "nessuna rete con nome corrispondente '%s'"
+msgstr "nessun server trovato con nome corrispondente '%s'"
 
 #, c-format
 msgid "no size supplied for '%s'"
@@ -32229,7 +32232,7 @@ msgid "no vcpus selected for modification"
 msgstr ""
 
 msgid "no virtio-serial controllers are available"
-msgstr ""
+msgstr "nessun controller virtio seriale è disponibile"
 
 #, fuzzy
 msgid "no x86 CPU data found"
@@ -32584,9 +32587,8 @@ msgstr ""
 "L'eliminazione degli storage volume è supportata solo su domini non in "
 "esecuzione"
 
-#, fuzzy
 msgid "only nmdm console types are supported"
-msgstr "solo un filesystem supportato"
+msgstr "Solo i tipi di console nmdm sono supportati"
 
 #, fuzzy
 msgid "only one RNG backend is supported"
@@ -32651,9 +32653,8 @@ msgstr ""
 msgid "only sending a signal to pid 1 is supported"
 msgstr "viene supportato un solo dispositivo watchdog"
 
-#, fuzzy
 msgid "only single USB controller is supported"
-msgstr "viene supportato un solo dispositivo watchdog"
+msgstr "solo un singolo controller USB è supportato"
 
 #, fuzzy
 msgid "only single input device is supported"
@@ -32673,9 +32674,8 @@ msgstr "viene supportato un solo dispositivo watchdog"
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr ""
 
-#, fuzzy
 msgid "only two serial ports are supported"
-msgstr "Sono supportati solo i certificati X509"
+msgstr "Solo due porte seriali sono supportate"
 
 #, fuzzy
 msgid "only two source elements are allowed for character device"
@@ -33026,7 +33026,7 @@ msgstr ""
 
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr ""
-"gli elementi boot per-dispositivo non possono essere usati insieme agli "
+"gli elementi boot per dispositivo non possono essere usati insieme agli "
 "elementi os/boot"
 
 msgid ""
@@ -33326,7 +33326,7 @@ msgstr ""
 
 #, fuzzy
 msgid "print lease info for a given network"
-msgstr "impossibile impostare autostart per una rete transitoria"
+msgstr "impossibile impostare autostart per una rete temporanea"
 
 msgid "print statistics for any kind of job (even failed ones)"
 msgstr ""
@@ -33921,7 +33921,7 @@ msgstr "informazioni del dominio"
 
 #, c-format
 msgid "requested USB port %s not present on USB bus %u"
-msgstr ""
+msgstr "porta USB %s richiesta non presente nel bus USB %u"
 
 #, c-format
 msgid "requested authentication type %s rejected"
@@ -34314,8 +34314,9 @@ msgid "security label exceeds maximum: %zu"
 msgstr ""
 "la stringa del modello di sicurezza eccede il valore massimo di byte %d"
 
+#, fuzzy
 msgid "security label is missing"
-msgstr "security label mancante"
+msgstr "l'etichetta di sicurezza è mancante"
 
 #, c-format
 msgid "security label model %s is not supported with selinux"
@@ -34556,14 +34557,13 @@ msgid "shmem name '%s' must not contain '/'"
 msgstr ""
 
 msgid "shmem name cannot be equal to '.'"
-msgstr ""
+msgstr "il nome di shmem non può essere '.'"
 
 msgid "shmem name cannot be equal to '..'"
-msgstr ""
+msgstr "il nome di shmem non può essere '..'"
 
-#, fuzzy
 msgid "shmem name cannot include '/' character"
-msgstr "Il nome del modello contiene dei caratteri non validi"
+msgstr "il nome di shmem non può avere '/'"
 
 msgid "shmem size must be a power of two"
 msgstr ""
@@ -35667,9 +35667,8 @@ msgstr ""
 msgid "too many disk snapshot requests for domain"
 msgstr ""
 
-#, fuzzy
 msgid "too many disks"
-msgstr "troppi driver registrati"
+msgstr "troppi dischi"
 
 msgid "too many drivers registered"
 msgstr "troppi driver registrati"
@@ -35706,6 +35705,8 @@ msgid ""
 "too many remote clients: %d > %d,in parameter 'clients' for "
 "'virServerListClients'"
 msgstr ""
+"troppi client remoti: %d > %d, nel parametro 'clients' di "
+"'virServerListClients'"
 
 #, c-format
 msgid ""
@@ -35784,6 +35785,8 @@ msgid ""
 "too many remote servers: %d > %d,in parameter 'servers' for "
 "'virConnectListServers'"
 msgstr ""
+"troppi server remoti: %d > %d, nel parametro 'servers' di "
+"'virConnectListServers'"
 
 #, c-format
 msgid ""
@@ -35946,13 +35949,12 @@ msgid ""
 msgstr ""
 "questo dominio non possiede alcun dispositivo per eseguire le istantanee"
 
-#, fuzzy
 msgid "transient domains do not have any persistent config"
-msgstr "il dominio non ha alcuna istantanea corrente"
+msgstr "i domini temporanei non hanno una configurazione persistente"
 
-#, fuzzy, c-format
+#, c-format
 msgid "transport '%s' does not support socket attribute"
-msgstr "lo storage pool non supporta la creazione del volume"
+msgstr "il trasporto '%s' non supporta l'attributo socket"
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
@@ -35962,9 +35964,8 @@ msgstr ""
 msgid "transport protocol '%s' is not yet supported"
 msgstr "Tipo di rete %d non supportata"
 
-#, fuzzy
 msgid "transport rdma is not supported for <server>"
-msgstr "il meccanismo SASL %s non è supportato dal server"
+msgstr "il trasporto rdma non è supportato per <server>"
 
 msgid "tray is only valid for cdrom and floppy"
 msgstr ""
@@ -36046,17 +36047,17 @@ msgstr "udev_monitor_new_from_netlink ha ritornato NULL"
 msgid "uid and gid should be mapped both"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "unable control COW flag on '%s'"
-msgstr ""
+msgstr "impossibile aprire '%s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "unable get directory flags on '%s'"
-msgstr ""
+msgstr "Impossibile creare la directory '%s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "unable query filesystem type on '%s'"
-msgstr ""
+msgstr "Impossibile trovare il tipo di filesystem %s"
 
 #, c-format
 msgid "unable to access device %s\n"
@@ -36110,9 +36111,9 @@ msgstr "impossibile chiudere %s"
 msgid "unable to connect to server at '%s:%s'"
 msgstr "impossibile creare rundir %s: %s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "unable to control COW flag on '%s', not btrfs"
-msgstr ""
+msgstr "impossibile modificare la configurazione sul tipo di grafici '%s'"
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36293,9 +36294,8 @@ msgstr ""
 msgid "unable to handle monitor type: %s"
 msgstr "impossibile gestire il tipo di monitor: %s"
 
-#, fuzzy
 msgid "unable to init mutex"
-msgstr "Impossibile inizializzare il mutex"
+msgstr "impossibile inizializzare il mutex"
 
 #, fuzzy
 msgid "unable to initialize VirtualBox driver API"
@@ -36366,7 +36366,7 @@ msgstr "errore nel parsing del mac address '%s'"
 
 #, c-format
 msgid "unable to parse mac address '%s'"
-msgstr "errore nel parsing del mac address '%s'"
+msgstr "errore nel parsing dell'indirizzo mac '%s'"
 
 #, fuzzy, c-format
 msgid "unable to parse memspec: %s"
@@ -36638,7 +36638,7 @@ msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "percorso URI OpenVZ '%s' non previsto, prova openvz:///system"
 
 msgid "unexpected VIR_DOMAIN_DEVICE_NONE"
-msgstr ""
+msgstr "VIR_DOMAIN_DEVICE_NONE non atteso"
 
 #, c-format
 msgid ""
@@ -36683,9 +36683,9 @@ msgstr "il dominio %s non previsto è già esistente"
 msgid "unexpected boot device type %d"
 msgstr "tipo di dispositivo di avvio %d inaspettato"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected bus type '%d'"
-msgstr "tipo di disco %d inaspettato"
+msgstr "tipo di bus %d non atteso"
 
 #, fuzzy, c-format
 msgid "unexpected capability feature '%s'"
@@ -37165,9 +37165,9 @@ msgstr ""
 msgid "unknown architecture '%s'"
 msgstr "tipo di interfaccia sconosciuta '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown architecture: %s"
-msgstr "procedura sconosciuta: %d"
+msgstr "architettura sconosciuta: %s"
 
 #, c-format
 msgid "unknown arp bonding validate %s"
@@ -37422,7 +37422,7 @@ msgstr "Feature CPU %s sconosciuta"
 
 #, c-format
 msgid "unknown filesystem type '%s'"
-msgstr "tipo di filesystem sconosciuto '%s'"
+msgstr "tipo di filesystem '%s' sconosciuto"
 
 #, fuzzy, c-format
 msgid "unknown filesystem write policy '%s'"
@@ -37581,7 +37581,7 @@ msgstr "tipo di interfaccia sconosciuta %s"
 
 #, c-format
 msgid "unknown interface type '%s'"
-msgstr "tipo di interfaccia sconosciuta '%s'"
+msgstr "tipo di interfaccia '%s' sconosciuta"
 
 #, fuzzy, c-format
 msgid "unknown interface type: '%s'"
@@ -37650,9 +37650,9 @@ msgstr "tipo di bus del disco '%s' sconosciuto"
 msgid "unknown mirror ready state %s"
 msgstr "modalità avvio interfaccia sconosciuta %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown model '%s'"
-msgstr "modello audio sconosciuto '%s'"
+msgstr "modello '%s' sconosciuto"
 
 #, fuzzy, c-format
 msgid "unknown mouse mode value '%s'"
@@ -37717,9 +37717,9 @@ msgstr "valore di schermo intero sconosciuto '%s'"
 msgid "unknown procedure: %d"
 msgstr "procedura sconosciuta: %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown protocol transport type '%s'"
-msgstr "tipo protocollo '%s' sconosciuto"
+msgstr "tipo trasporto di protocollo '%s' sconosciuto"
 
 #, c-format
 msgid "unknown protocol type '%s'"
@@ -37923,9 +37923,9 @@ msgstr "tickpolocy timer '%s' sconosciuta"
 msgid "unknown timer track '%s'"
 msgstr "track timer '%s' sconosciuta"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown trustGuestRxFilters value '%s'"
-msgstr "valore di schermo intero sconosciuto '%s'"
+msgstr "valore di trustGuestRxFilters '%s' sconosciuto"
 
 #, c-format
 msgid "unknown type '%s'"
@@ -37933,7 +37933,7 @@ msgstr "tipo '%s' sconosciuto"
 
 #, c-format
 msgid "unknown type '%s' in interface's <actual> element"
-msgstr ""
+msgstr "tipo '%s' sconosciuto nell'elemento <actual> dell'interfaccia"
 
 #, c-format
 msgid "unknown type presented to host for character device: %s"
@@ -37947,13 +37947,13 @@ msgstr "tipo '%s' sconosciuto"
 msgid "unknown usb source type '%s'"
 msgstr "tipo di sorgente usb sconosciuta '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown value '%s' for <hostdev> attribute 'display'"
-msgstr "Valore '%s' sconosciuto per xsd:boolean"
+msgstr "valore '%s' sconosciuto per l'attributo 'display' di <hostdev>"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown value '%s' for <hostdev> attribute 'ramfb'"
-msgstr "Valore '%s' sconosciuto per xsd:boolean"
+msgstr "valore '%s' sconosciuto per l'attributo 'ramfb' di <hostdev>"
 
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
@@ -37961,7 +37961,7 @@ msgstr "valore dell'attributo action del tag rule sconosciuto"
 
 #, c-format
 msgid "unknown value '%s' of 'tls' attribute"
-msgstr ""
+msgstr "valore sconosciuto '%s' dell'attributo 'tls'"
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -37983,9 +37983,9 @@ msgstr "modello video sconosciuto '%s'"
 msgid "unknown video model '%s'"
 msgstr "modello video sconosciuto '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown virttype: %s"
-msgstr "tipo '%s' sconosciuto"
+msgstr "tipo di virtualizzazione sconosciuto: %s"
 
 #, fuzzy
 msgid "unknown virtualization type"
@@ -38143,9 +38143,9 @@ msgstr "Errore nel parsing dell'indirizzo MAC '%s' della rete '%s'"
 msgid "unsupported algorithm %d"
 msgstr "algoritmo %d non supportato"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported architecture: %s"
-msgstr "chardev '%s' non supportato"
+msgstr "architettura non supportata: %s"
 
 #, c-format
 msgid "unsupported authentication type %d"
@@ -38223,17 +38223,15 @@ msgstr "tipo di grafica '%s' non supportata"
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "bus del disco '%s' non supportato con l'impostazione del dispositivo"
 
-#, fuzzy
 msgid "unsupported disk device"
-msgstr "dispositivo disco %d inaspettato"
+msgstr "dispositivo di disco non supportato"
 
 #, fuzzy, c-format
 msgid "unsupported disk driver %s"
 msgstr "tipo di configurazione %s non supportata"
 
-#, fuzzy
 msgid "unsupported disk type"
-msgstr "tipo di configurazione %s non supportata"
+msgstr "tipo di disco non supportato"
 
 #, fuzzy, c-format
 msgid "unsupported disk type %s"
@@ -38251,9 +38249,9 @@ msgstr "nome di volume non supportato '%s' per il disco '%s'"
 msgid "unsupported dumpformat '%s' for this QEMU binary"
 msgstr "SATA non è supportata con questo binario di QEMU"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported element '%s' of 'origstates'"
-msgstr "nome di volume non supportato '%s' per il disco '%s'"
+msgstr "elemento non supportato '%s' di 'origstates'"
 
 #, fuzzy, c-format
 msgid "unsupported element '%s' of scsi hostdev source"
@@ -38412,11 +38410,11 @@ msgstr "tipo di timer (nome) '%s' non supportato"
 
 #, c-format
 msgid "unsupported type '%s' in interface's <actual> element"
-msgstr ""
+msgstr "tipo '%s' non supportato nell'elemento <actual> dell'interfaccia"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported type='%s' to model 'none'"
-msgstr "tipo di dati '%c' non supportati per l'arg '%s'"
+msgstr "type='%s' non supportato per il modello 'none'"
 
 #, fuzzy
 msgid "unsupported usb model"
@@ -38774,15 +38772,14 @@ msgid "vcpus overlaps in resctrl groups"
 msgstr ""
 
 msgid "vendor cannot be 0."
-msgstr "il produttore non può essere 0"
+msgstr "il produttore non può essere 0."
 
-#, fuzzy
 msgid "vendor id is invalid"
-msgstr "è necessario un id per il produttore usb"
+msgstr "l'ID del produttore non è valido"
 
 #, c-format
 msgid "vendor_id must be exactly %d characters long"
-msgstr ""
+msgstr "vendor_id deve avere esattamente %d caratteri"
 
 #, c-format
 msgid "version %s invalid"
@@ -38824,7 +38821,7 @@ msgid "vhost-user-gpu failed to start"
 msgstr ""
 
 msgid "video resolution values must be greater than 0"
-msgstr ""
+msgstr "i valori della risoluzione video devono essere maggiori di 0"
 
 #, fuzzy, c-format
 msgid "video type %s is not supported by libxl"
@@ -38972,7 +38969,7 @@ msgstr ""
 
 #, c-format
 msgid "virtio serial controller %u is missing"
-msgstr ""
+msgstr "il controller virtio seriale %u è mancate"
 
 #, c-format
 msgid ""
@@ -39009,7 +39006,7 @@ msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
 msgstr "vhost-net non è supportato con questo binario di QEMU"
 
 msgid "virtio-s390 bus doesn't have an address"
-msgstr ""
+msgstr "il bus virtio-s390 non ha un indirizzo"
 
 #, fuzzy
 msgid "virtio-s390 net device cannot be hotplugged."
@@ -39022,7 +39019,7 @@ msgstr ""
 
 #, c-format
 msgid "virtio-serial controller %u not available"
-msgstr ""
+msgstr "il controller virtio seriale %u non è disponibile"
 
 #, fuzzy
 msgid "virtiofs does not support format"
@@ -39123,12 +39120,11 @@ msgstr "vnc display"
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "grafiche spice non supportate con questo QEMU"
 
-#, fuzzy
 msgid "vnc password auth not supported"
-msgstr "affinità cpu non supportata"
+msgstr "l'autenticazione con VNC mediante password non è supportata"
 
 msgid "vnc port must be in range [5900,65535]"
-msgstr ""
+msgstr "la porta di VNC deve essere nell'intervallo [5900,65535]"
 
 #, c-format
 msgid "vnc_tls_x509_cert_dir directory '%s' does not exist"
@@ -39450,7 +39446,7 @@ msgstr ""
 
 #, c-format
 msgid "zPCI %s %o is already reserved"
-msgstr ""
+msgstr "%s zPCI %o è già riservato"
 
 msgid "zero is an invalid iothread id value"
 msgstr ""
