@@ -497,6 +497,16 @@ if conf.has('WITH_SECDRIVER_SELINUX')
   endif
 endif
 
+if conf.has('WITH_STORAGE')
+  tests += [
+    { 'name': 'storagepoolcapstest' },
+    { 'name': 'storagepoolxml2argvtest', 'link_with': [ storage_driver_impl_lib ] },
+    { 'name': 'storagepoolxml2xmltest', 'link_with': [ storage_driver_impl_lib ] },
+    { 'name': 'storagevolxml2argvtest', 'link_with': [ storage_driver_impl_lib ] },
+    { 'name': 'virstorageutiltest', 'link_with': [ storage_driver_impl_lib ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

@@ -40,14 +40,6 @@ if WITH_STORAGE_SHEEPDOG
 test_programs += storagebackendsheepdogtest
 endif WITH_STORAGE_SHEEPDOG
 
-if WITH_STORAGE
-test_programs += storagevolxml2argvtest
-test_programs += storagepoolxml2argvtest
-test_programs += virstorageutiltest
-test_programs += storagepoolxml2xmltest
-test_programs += storagepoolcapstest
-endif WITH_STORAGE
-
 if WITH_STORAGE_FS
 test_programs += virstoragetest
 endif WITH_STORAGE_FS
@@ -153,46 +145,6 @@ storagebackendsheepdogtest_LDADD = \
 	../src/libvirt_driver_storage_impl.la \
 	$(LDADDS)
 endif WITH_STORAGE_SHEEPDOG
-
-if WITH_STORAGE
-virstorageutiltest_SOURCES = \
-	virstorageutiltest.c \
-	testutils.c \
-	testutils.h \
-	$(NULL)
-virstorageutiltest_LDADD = \
-	../src/libvirt_driver_storage_impl.la \
-	$(LDADDS) \
-	$(NULL)
-
-storagevolxml2argvtest_SOURCES = \
-    storagevolxml2argvtest.c \
-    testutils.c testutils.h
-storagevolxml2argvtest_LDADD = \
-	$(LIBXML_LIBS) \
-	../src/libvirt_driver_storage_impl.la \
-	../src/libvirt.la \
-	$(LDADDS)
-
-storagepoolxml2argvtest_SOURCES = \
-    storagepoolxml2argvtest.c \
-    testutils.c testutils.h
-storagepoolxml2argvtest_LDADD = \
-	$(LIBXML_LIBS) \
-	../src/libvirt_driver_storage_impl.la \
-	../src/libvirt.la \
-	$(LDADDS)
-
-storagepoolxml2xmltest_SOURCES = \
-	storagepoolxml2xmltest.c \
-	testutils.c testutils.h
-storagepoolxml2xmltest_LDADD = $(LDADDS) \
-	../src/libvirt_driver_storage_impl.la
-
-storagepoolcapstest_SOURCES = \
-        storagepoolcapstest.c testutils.h testutils.c
-storagepoolcapstest_LDADD = $(LDADDS)
-endif WITH_STORAGE
 
 virstoragetest_SOURCES = \
 	virstoragetest.c testutils.h testutils.c
