@@ -62,3 +62,5 @@ if conf.has('WITH_ESX')
 else
   sym_files += 'libvirt_esx.syms'
 endif
+
+esx_inc_dir = include_directories('.')

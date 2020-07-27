@@ -70,10 +70,6 @@ if WITH_OPENVZ
 test_programs += openvzutilstest
 endif WITH_OPENVZ
 
-if WITH_ESX
-test_programs += esxutilstest
-endif WITH_ESX
-
 if WITH_VBOX
 test_programs += vboxsnapshotxmltest
 endif WITH_VBOX
@@ -370,16 +366,6 @@ openvzutilstest_SOURCES = \
 openvzutilstest_LDADD = $(LDADDS) \
 	../src/libvirt_driver_openvz.la
 endif WITH_OPENVZ
-
-if WITH_ESX
-esxutilstest_SOURCES = \
-	esxutilstest.c \
-	testutils.c testutils.h
-esxutilstest_LDADD = $(LDADDS)
-esxutilstest_CFLAGS = \
-	-I$(top_builddir)/src/esx \
-	$(AM_CFLAGS)
-endif WITH_ESX
 
 if WITH_VBOX
 vboxsnapshotxmltest_SOURCES = \
