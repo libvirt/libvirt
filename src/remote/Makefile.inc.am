@@ -1,22 +1,5 @@
 # vim: filetype=automake
 
-REMOTE_DRIVER_GENERATED = \
-	remote/remote_protocol.c \
-	remote/remote_protocol.h \
-	remote/remote_client_bodies.h \
-	remote/lxc_protocol.c \
-	remote/lxc_protocol.h \
-	remote/lxc_client_bodies.h \
-	remote/qemu_protocol.c \
-	remote/qemu_protocol.h \
-	remote/qemu_client_bodies.h \
-	$(NULL)
-
-REMOTE_DRIVER_SOURCES = \
-	remote/remote_driver.c \
-	remote/remote_driver.h \
-	$(NULL)
-
 REMOTE_DAEMON_GENERATED = \
 	remote/remote_daemon_dispatch_stubs.h \
 	remote/lxc_daemon_dispatch_stubs.h \
@@ -144,45 +127,11 @@ REMOTE_DRIVER_PROTOCOL = \
 	$(LXC_PROTOCOL) \
 	$(NULL)
 
-DRIVER_SOURCE_FILES += \
-	$(REMOTE_DRIVER_GENERATED) \
-	$(addprefix $(srcdir)/,$(REMOTE_DRIVER_SOURCES))
-
 # Needed to build libvirt.pot, so must be listed outside
 # the WITH_REMOTE/WITH_LIBVIRTD conditionals
 BUILT_SOURCES += \
-	$(REMOTE_DRIVER_GENERATED) \
 	$(REMOTE_DAEMON_GENERATED) \
 	$(NULL)
-
-if WITH_REMOTE
-noinst_LTLIBRARIES += libvirt_driver_remote.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_remote.la
-libvirt_driver_remote_la_CFLAGS = \
-	$(XDR_CFLAGS) \
-	-I$(srcdir)/conf \
-	-I$(srcdir)/rpc \
-	-I$(builddir)/rpc \
-	-I$(builddir)/remote \
-	$(AM_CFLAGS) \
-	$(NULL)
-libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_remote_la_SOURCES = \
-	$(REMOTE_DRIVER_SOURCES)
-nodist_libvirt_driver_remote_la_SOURCES = \
-	$(REMOTE_DRIVER_GENERATED)
-
-if WITH_DTRACE_PROBES
-nodist_libvirt_driver_remote_la_SOURCES += libvirt_probes.h
-endif WITH_DTRACE_PROBES
-
-if WITH_SASL
-libvirt_driver_remote_la_CFLAGS += \
-	$(SASL_CFLAGS) \
-	$(NULL)
-endif WITH_SASL
-
-endif WITH_REMOTE
 
 if WITH_REMOTE
 USED_SYM_FILES += $(srcdir)/libvirt_remote.syms
@@ -426,24 +375,6 @@ virt-guest-shutdown.target: remote/virt-guest-shutdown.target.in \
 			$(top_builddir)/config.status
 	$(AM_V_GEN)cp $< $@
 
-
-remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  remote REMOTE $(REMOTE_PROTOCOL) \
-	  > remote/remote_client_bodies.h
-
-remote/lxc_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
-		$(LXC_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  lxc LXC $(LXC_PROTOCOL) \
-	  > remote/lxc_client_bodies.h
-
-remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  qemu QEMU $(QEMU_PROTOCOL) \
-	  > remote/qemu_client_bodies.h
 
 remote/remote_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL) Makefile.am
