@@ -1,66 +1,8 @@
 # vim: filetype=automake
 
-ADMIN_PROTOCOL = $(srcdir)/admin/admin_protocol.x
-
-ADMIN_PROTOCOL_GENERATED = \
-	admin/admin_client.h \
-	$(NULL)
-
-BUILT_SOURCES += $(ADMIN_PROTOCOL_GENERATED)
-
-GENERATED_SYM_FILES += admin/libvirt_admin.syms admin/libvirt_admin.def
-
 ADMIN_SYM_FILES = $(srcdir)/admin/libvirt_admin_private.syms
 
 conf_DATA += admin/libvirt-admin.conf
-
-lib_LTLIBRARIES += libvirt-admin.la
-
-libvirt_admin_la_SOURCES = \
-	admin/libvirt-admin.c \
-	$(DATATYPES_SOURCES)
-
-nodist_libvirt_admin_la_SOURCES = \
-	$(ADMIN_PROTOCOL_GENERATED)
-
-libvirt_admin_la_LDFLAGS = \
-	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_ADMIN_SYMBOL_FILE) \
-	-version-info $(LIBVIRT_VERSION_INFO) \
-	$(LIBVIRT_NODELETE) \
-	$(AM_LDFLAGS) \
-	$(NULL)
-
-libvirt_admin_la_LIBADD = \
-	libvirt.la \
-	$(XDR_LIBS) \
-	$(CAPNG_LIBS) \
-	$(YAJL_LIBS) \
-	$(DEVMAPPER_LIBS) \
-	$(LIBXML_LIBS) \
-	$(GLIB_LIBS) \
-	$(SSH2_LIBS) \
-	$(SASL_LIBS) \
-	$(GNUTLS_LIBS) \
-	$(LIBSSH_LIBS)
-
-if WITH_DTRACE_PROBES
-libvirt_admin_la_LIBADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-libvirt_admin_la_CFLAGS = \
-	$(AM_CFLAGS) \
-	-I$(builddir)/admin \
-	-I$(builddir)/access \
-	-I$(srcdir)/remote \
-	-I$(srcdir)/rpc \
-	-I$(builddir)/rpc \
-	$(XDR_CFLAGS) \
-	$(CAPNG_CFLAGS) \
-	$(YAJL_CFLAGS) \
-	$(SSH2_CFLAGS) \
-	$(SASL_CFLAGS) \
-	$(GNUTLS_CFLAGS) \
-	$(LIBSSH_CFLAGS)
 
 if WITH_LINUX
 check-admin-symfile: admin/libvirt_admin.syms libvirt-admin.la
@@ -79,22 +21,3 @@ check-admin-drivername:
 		$(srcdir)/admin/libvirt_admin_public.syms
 
 check-admin: check-admin-symfile check-admin-symsorting check-admin-drivername
-
-admin/admin_client.h: $(srcdir)/rpc/gendispatch.pl \
-		$(ADMIN_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  admin ADMIN $(ADMIN_PROTOCOL) \
-	  > admin/admin_client.h
-
-admin/libvirt_admin.syms: admin/libvirt_admin_public.syms $(ADMIN_SYM_FILES) \
-		$(top_builddir)/config.status
-	$(AM_V_GEN)rm -f $@-tmp $@ ; \
-	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp && \
-	cat $(srcdir)/admin/libvirt_admin_public.syms >>$@-tmp && \
-	printf '\n\n# Private symbols\n\n' >>$@-tmp && \
-	printf 'LIBVIRT_ADMIN_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp && \
-	printf 'global:\n\n' >>$@-tmp && \
-	cat $(ADMIN_SYM_FILES) >>$@-tmp && \
-	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
-	chmod a-w $@-tmp && \
-	mv $@-tmp admin/libvirt_admin.syms

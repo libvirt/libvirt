@@ -65,3 +65,5 @@ if conf.has('WITH_REMOTE')
 else
   sym_files += 'libvirt_remote.syms'
 endif
+
+remote_inc_dir = include_directories('.')

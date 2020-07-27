@@ -35,6 +35,51 @@ admin_driver_generated += custom_target(
   capture: true,
 )
 
+admin_sources = files(
+  'libvirt-admin.c',
+)
+
+admin_client_generated = custom_target(
+  'admin_client.h',
+  input: admin_driver_protocol,
+  output: 'admin_client.h',
+  command: [
+    gendispatch_prog, '--mode=client', 'admin', 'ADMIN', '@INPUT@',
+  ],
+  capture: true,
+)
+
+libvirt_admin_syms = custom_target(
+  'libvirt_admin.syms',
+  input: [
+    'libvirt_admin_public.syms',
+    'libvirt_admin_private.syms',
+  ],
+  output: 'libvirt_admin.syms',
+  command: [
+    meson_python_prog, python3_prog.path(), meson_gen_sym_prog.path(),
+    '@OUTPUT@', 'LIBVIRT_ADMIN_PRIVATE_' + meson.project_version(), '@INPUT@',
+  ],
+)
+libvirt_admin_syms_file = libvirt_admin_syms
+if host_machine.system() == 'windows'
+  libvirt_admin_def = custom_target(
+    'libvirt_admin.def',
+    input: libvirt_admin_syms,
+    output: 'libvirt_admin.def',
+    command: [
+      meson_python_prog, python3_prog.path(), meson_gen_def_prog.path(),
+      '@INPUT@', '@OUTPUT@',
+    ],
+  )
+  libvirt_admin_syms_file = libvirt_admin_def
+endif
+
+libvirt_admin_syms_flags = '@0@@1@'.format(
+  version_script_flags,
+  libvirt_admin_syms_file.full_path(),
+)
+
 admin_driver_lib = static_library(
   'virt_admin_driver',
   [
@@ -48,3 +93,5 @@ admin_driver_lib = static_library(
     xdr_dep,
   ],
 )
+
+admin_inc_dir = include_directories('.')
