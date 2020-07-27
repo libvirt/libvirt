@@ -19,11 +19,6 @@
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
 # that actually use them.
-AM_CPPFLAGS = \
-		-I$(srcdir)/util \
-		-I./util \
-		$(NULL)
-
 AM_LDFLAGS_MOD = \
 	-module \
 	-avoid-version \

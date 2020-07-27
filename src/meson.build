@@ -76,3 +76,13 @@ if conf.has('WITH_DTRACE_PROBES')
     install_dir: systemtap_dir,
   )
 endif
+
+
+# list subdirectories
+
+subdir('util')
+
+src_dep = declare_dependency(
+  dependencies: [ src_dep ],
+  include_directories: [ util_inc_dir ],
+)
