@@ -77,7 +77,6 @@ include access/Makefile.inc.am
 include logging/Makefile.inc.am
 include locking/Makefile.inc.am
 include admin/Makefile.inc.am
-include rpc/Makefile.inc.am
 include test/Makefile.inc.am
 include hypervisor/Makefile.inc.am
 include esx/Makefile.inc.am
@@ -274,15 +273,6 @@ GENERATED_SYM_FILES += \
 	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def \
 	$(NULL)
 
-
-
-%protocol.c: %protocol.x %protocol.h $(srcdir)/rpc/genprotocol.pl
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
-	       $< $(subst $(srcdir)/,,$@)
-
-%protocol.h: %protocol.x $(srcdir)/rpc/genprotocol.pl
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
-	       $< $(subst $(srcdir)/,,$@)
 
 check-local: check-augeas
 
