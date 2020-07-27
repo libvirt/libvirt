@@ -5,15 +5,15 @@
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
 # mmarzantowicz <mmarzantowicz@osdf.com.pl>, 2012, 2013
-# Piotr Drąg <piotrdrag@gmail.com>, 2011, 2012, 2016
+# Piotr Drąg <piotrdrag@gmail.com>, 2011, 2012, 2016, 2020.
 # Szymon Scholz <szymonscholz@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-07-24 15:35+0000\n"
-"PO-Revision-Date: 2020-07-27 14:31+0000\n"
-"Last-Translator: Szymon Scholz <szymonscholz@gmail.com>\n"
+"PO-Revision-Date: 2020-07-27 17:11+0000\n"
+"Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/pl/>\n"
 "Language: pl\n"
@@ -220,7 +220,7 @@ msgid ""
 "Domain %s state saved by libvirt\n"
 msgstr ""
 "\n"
-"Stan domeny %s został zapisany przez libvirt\n"
+"Stan domeny %s został zapisany przez bibliotekę libvirt\n"
 
 #, c-format
 msgid ""
@@ -290,9 +290,9 @@ msgid ""
 "\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
-msgstr "    Limit przepustowości: %llu bajtów/s (%-.3lf %s/s)"
+msgstr "    Limit przepustowości: %llu B/s (%-.3lf %s/s)"
 
 msgid "  NAME\n"
 msgstr "  NAZWA\n"
@@ -334,11 +334,11 @@ msgstr ""
 
 #, c-format
 msgid "$%s value should be between 0 and %d"
-msgstr "Wartość $%s powinna wynosić między 0 i %d"
+msgstr "Wartość $%s powinna wynosić między 0 a %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%6s: Checking %-60s: "
-msgstr "%6s: Sprawdzanie %-60s: "
+msgstr "%6s: sprawdzanie %-60s: "
 
 #, c-format
 msgid "%s\n"
@@ -370,19 +370,19 @@ msgstr ""
 
 #, c-format
 msgid "%s can't be empty"
-msgstr "%s nie może być pusty"
+msgstr "%s nie może być puste"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s cannot be set higher than %s "
-msgstr "%s nie może być ustawiony wyższy niż %s "
+msgstr "%s nie może być ustawione wyższe niż %s "
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s cannot parse GID '%s'"
-msgstr "%s nie można przetworzyć GID '%s'"
+msgstr "%s nie może przetworzyć GID „%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s cannot parse UID '%s'"
-msgstr "%s nie można przetworzyć UID '%s'"
+msgstr "%s nie może przetworzyć UID „%s”"
 
 #, c-format
 msgid "%s does not support passing a passphrase using a file descriptor"
