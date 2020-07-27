@@ -525,6 +525,12 @@ if conf.has('WITH_VBOX')
   ]
 endif
 
+if conf.has('WITH_VMWARE')
+  tests += [
+    { 'name': 'vmwarevertest' },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

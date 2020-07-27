@@ -24,10 +24,6 @@ if WITH_VMX
 test_programs += vmx2xmltest xml2vmxtest
 endif WITH_VMX
 
-if WITH_VMWARE
-test_programs += vmwarevertest
-endif WITH_VMWARE
-
 if WITH_YAJL
 test_programs += virjsontest
 endif WITH_YAJL
@@ -108,13 +104,6 @@ xml2vmxtest_SOURCES = \
 	testutils.c testutils.h
 xml2vmxtest_LDADD = $(LDADDS)
 endif WITH_VMX
-
-if WITH_VMWARE
-vmwarevertest_SOURCES = \
-    vmwarevertest.c \
-    testutils.c testutils.h
-vmwarevertest_LDADD = $(LDADDS)
-endif WITH_VMWARE
 
 if WITH_NSS
 ## Intentionaly not linking with anything else.
