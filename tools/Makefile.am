@@ -23,45 +23,11 @@ STANDALONE_CPPFLAGS = -I$(top_srcdir)
 
 noinst_LTLIBRARIES =
 
-BUILT_SOURCES =
-
-install-data-local: install-systemd install-nss \
+install-data-local: install-nss \
 	install-bash-completion
 
-uninstall-local: uninstall-systemd uninstall-nss \
+uninstall-local: uninstall-nss \
 	uninstall-bash-completion
-
-SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
-
-if LIBVIRT_INIT_SCRIPT_SYSTEMD
-install-systemd: libvirt-guests.service libvirt-guests.sh
-	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL_DATA) libvirt-guests.service \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirt-guests.service
-
-uninstall-systemd:
-	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirt-guests.service
-	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) ||:
-
-BUILT_SOURCES += libvirt-guests.service
-
-else ! LIBVIRT_INIT_SCRIPT_SYSTEMD
-install-systemd:
-uninstall-systemd:
-endif ! LIBVIRT_INIT_SCRIPT_SYSTEMD
-
-libvirt-guests.service: libvirt-guests.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]PACKAGE[@]|$(PACKAGE)|g' \
-	    -e 's|[@]bindir[@]|$(bindir)|g' \
-	    -e 's|[@]localedir[@]|$(localedir)|g' \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    -e 's|[@]libexecdir[@]|$(libexecdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
 
 if WITH_BASH_COMPLETION
 install-bash-completion:
