@@ -72,7 +72,6 @@ VIR_LOG_INIT("util.netdev");
 #define MAX_MCAST_SIZE 50*14336
 #define VIR_MCAST_NAME_LEN (IFNAMSIZ + 1)
 #define VIR_MCAST_TOKEN_DELIMS " \n"
-#define VIR_MCAST_ADDR_LEN (VIR_MAC_HEXLEN + 1)
 
 #if defined(SIOCSIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
 # define VIR_IFF_UP IFF_UP
