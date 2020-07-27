@@ -381,6 +381,14 @@ if conf.has('WITH_LIBVIRTD')
   ]
 endif
 
+if conf.has('WITH_LIBXL')
+  tests += [
+    { 'name': 'libxlxml2domconfigtest', 'link_with': [ test_xen_driver_lib ], 'link_whole': [ test_utils_xen_lib ], 'deps': [ libxl_dep ] },
+    { 'name': 'xlconfigtest', 'link_with': [ test_xen_driver_lib ], 'link_whole': [ test_utils_xen_lib ] },
+    { 'name': 'xmconfigtest', 'link_with': [ test_xen_driver_lib ], 'link_whole': [ test_utils_xen_lib ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

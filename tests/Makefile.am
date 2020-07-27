@@ -37,11 +37,6 @@ endif WITH_QEMU
 endif WITH_ATTR
 endif WITH_SECDRIVER_SELINUX
 
-if WITH_LIBXL
-test_programs += xlconfigtest \
-	xmconfigtest libxlxml2domconfigtest
-endif WITH_LIBXL
-
 if WITH_QEMU
 test_programs += qemuxml2argvtest qemuxml2xmltest \
 	qemudomaincheckpointxml2xmltest qemudomainsnapshotxml2xmltest \
@@ -173,31 +168,6 @@ VALGRIND = valgrind --quiet --leak-check=full --trace-children=yes \
 	--suppressions=$(abs_srcdir)/.valgrind.supp
 valgrind:
 	$(MAKE) check VG="$(LIBTOOL) --mode=execute $(VALGRIND)"
-
-if WITH_LIBXL
-libxl_LDADDS = \
-	../src/libvirt_driver_libxl_impl.la \
-	$(LDADDS) \
-	$(NULL)
-
-xlconfigtest_SOURCES = \
-	xlconfigtest.c testutilsxen.c testutilsxen.h \
-	testutils.c testutils.h
-xlconfigtest_LDADD = libxltestdriver.la \
-	$(libxl_LDADDS)
-
-xmconfigtest_SOURCES = \
-	xmconfigtest.c testutilsxen.c testutilsxen.h \
-	testutils.c testutils.h
-xmconfigtest_LDADD = libxltestdriver.la \
-	$(libxl_LDADDS)
-
-libxlxml2domconfigtest_SOURCES = \
-	libxlxml2domconfigtest.c testutilsxen.c testutilsxen.h \
-	testutils.c testutils.h
-libxlxml2domconfigtest_LDADD = libxltestdriver.la \
-	$(libxl_LDADDS) $(LIBXML_LIBS)
-endif WITH_LIBXL
 
 if WITH_QEMU
 
