@@ -36,10 +36,6 @@ if WITH_YAJL
 test_programs += virjsontest
 endif WITH_YAJL
 
-if WITH_STORAGE_SHEEPDOG
-test_programs += storagebackendsheepdogtest
-endif WITH_STORAGE_SHEEPDOG
-
 if WITH_NSS
 test_helpers += nsslinktest nssguestlinktest
 endif WITH_NSS
@@ -131,16 +127,6 @@ vmwarevertest_SOURCES = \
     testutils.c testutils.h
 vmwarevertest_LDADD = $(LDADDS)
 endif WITH_VMWARE
-
-if WITH_STORAGE_SHEEPDOG
-storagebackendsheepdogtest_SOURCES = \
-	storagebackendsheepdogtest.c \
-	testutils.c testutils.h
-storagebackendsheepdogtest_LDADD = \
-	../src/libvirt_storage_backend_sheepdog_priv.la \
-	../src/libvirt_driver_storage_impl.la \
-	$(LDADDS)
-endif WITH_STORAGE_SHEEPDOG
 
 if WITH_NSS
 ## Intentionaly not linking with anything else.

@@ -513,6 +513,12 @@ if conf.has('WITH_STORAGE_FS')
   ]
 endif
 
+if conf.has('WITH_STORAGE_SHEEPDOG')
+  tests += [
+    { 'name': 'storagebackendsheepdogtest', 'link_with': [ storage_driver_impl_lib, storage_backend_sheepdog_priv_lib ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(
