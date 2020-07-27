@@ -20,10 +20,6 @@ if WITH_QEMU
 test_helpers += qemucapsprobe
 endif WITH_QEMU
 
-if WITH_VBOX
-test_programs += vboxsnapshotxmltest
-endif WITH_VBOX
-
 if WITH_VMX
 test_programs += vmx2xmltest xml2vmxtest
 endif WITH_VMX
@@ -100,14 +96,6 @@ qemucapsprobe_SOURCES = \
 qemucapsprobe_LDADD = \
 	libqemutestdriver.la $(LDADDS)
 endif WITH_QEMU
-
-if WITH_VBOX
-vboxsnapshotxmltest_SOURCES = \
-	vboxsnapshotxmltest.c \
-	testutils.c testutils.h
-vbox_LDADDS = ../src/libvirt_driver_vbox_impl.la
-vboxsnapshotxmltest_LDADD = $(LDADDS) $(vbox_LDADDS)
-endif WITH_VBOX
 
 if WITH_VMX
 vmx2xmltest_SOURCES = \

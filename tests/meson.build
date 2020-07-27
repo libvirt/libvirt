@@ -519,6 +519,12 @@ if conf.has('WITH_STORAGE_SHEEPDOG')
   ]
 endif
 
+if conf.has('WITH_VBOX')
+  tests += [
+    { 'name': 'vboxsnapshotxmltest', 'link_with': [ vbox_driver_impl ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(
