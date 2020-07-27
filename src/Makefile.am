@@ -36,7 +36,6 @@ endif WITH_DTRACE_PROBES
 RPC_PROBE_FILES =
 
 include security/Makefile.inc.am
-include access/Makefile.inc.am
 include locking/Makefile.inc.am
 include admin/Makefile.inc.am
 include vbox/Makefile.inc.am
