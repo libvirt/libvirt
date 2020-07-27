@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-29 11:55+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1014,6 +1014,9 @@ msgid ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
 msgstr "scsi hostdev 소스 주소의 'bus', 'target', 'unit'을 지정해야 합니다"
 
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
+
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr ""
 
@@ -1044,6 +1047,15 @@ msgid "'gluster' command line tool not found"
 msgstr "저장소 풀을 찾을 수 없음"
 
 msgid "'host-name' missing in guest-get-host-name reply"
+msgstr ""
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
 msgstr ""
 
 #, fuzzy
@@ -1153,6 +1165,9 @@ msgstr "fs 포맷 %s은 지원되지 않음"
 #, fuzzy
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "시작 정책 설정은 USB 장치에 대해서만 허용됩니다"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1603,6 +1618,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr ""
 
@@ -1664,6 +1682,9 @@ msgstr ""
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 msgid "At least one PTY console is required"
@@ -2175,6 +2196,10 @@ msgstr ""
 
 #, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cache level '%u' already defined"
 msgstr ""
 
 #, c-format
@@ -3113,9 +3138,9 @@ msgstr "이 플랫폼에서 인터페이스 '%s'를 '%s'로 이름 변경할 수
 msgid "Cannot resize the max memory on an active domain"
 msgstr "비활성 도메인의 vcpus를 설정할 수 없습니다"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "소켓 주소 '%s'를 구문 분석할 수 없음: %s"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr ""
@@ -5696,6 +5721,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "보안 드라이버 '%s'를 찾을 수 없음"
@@ -5919,9 +5947,9 @@ msgstr ""
 msgid "Escape character is %s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "대상 컨트롤러 인덱스 %d가 소스 %d와 일치하지 않음"
+#, c-format
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6585,6 +6613,10 @@ msgid "Failed to create checkpoint dir %s"
 msgstr "%s에서 도메인 생성하기 실패"
 
 #, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "'%s' dev '%s'의 디렉토리를 생성하는데 실패했습니다 "
 
@@ -7116,10 +7148,6 @@ msgstr "도메인 상태를 얻는 데 실패"
 #, fuzzy
 msgid "Failed to get domain's UUID"
 msgstr "도메인 UUID 보기 실패 "
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "디스크 정보 보기 실패"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8066,10 +8094,6 @@ msgstr "스냅샷 %s 삭제 실패 "
 msgid "Failed to set %s for %s: value too large"
 msgstr "비밀정보 값 설정 실패"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "%s 설정 실패 "
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "%s의 모니터에 대한 보안 문맥을 설정하는데 실패 "
@@ -8851,6 +8875,9 @@ msgstr ""
 msgid "Guest agent not available for now"
 msgstr "시스템이 사용 불가능합니다 "
 
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
@@ -9366,6 +9393,9 @@ msgstr "잘못된 모드 속성 '%s'"
 msgid "Invalid %s image format specified in configuration file"
 msgstr "설정 파일 구문 분석 실패"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "잘못된 매개 변수 "
@@ -9382,13 +9412,29 @@ msgstr "잘못된 모드 속성 '%s'"
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "네트워크 '%s'의 dhcp 범위에 'end' 속성이 누락되어 있음 "
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "잘못된 변환 값 '%s'"
 
+#, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "잘못된 메모리 코어 덤프 속성 값 '%s'"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9631,9 +9677,17 @@ msgstr "잘못된 플로피 디스크 버스 유형 '%s'"
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "네트워크 '%s'에서 잘못된 주소 '%s'"
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "잘못된 모드 속성 '%s'"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10516,6 +10570,9 @@ msgstr ""
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "명령 '%s'는 --%s 옵션을 지원하지 않음"
 
+msgid "Link already defined"
+msgstr ""
+
 msgid "List all manageable clients connected to <server>."
 msgstr ""
 
@@ -11068,11 +11125,12 @@ msgstr "ManagedEntityStatus를 검색하는 동안 '%s' 속성이 누락되어 �
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "네트워크 '%s'의 dhcp 범위에 'start' 속성이 누락되어 있음 "
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU 토플로지에 'cores' 특성이 빠져있습니다"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "NUMA 셀에서 'cpus' 속성이 빠짐"
 
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
@@ -11102,8 +11160,15 @@ msgstr "<interface> 요소에 dev 속성이 누락되어 있습니다 "
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "NUMA 셀에서 'cpus' 속성이 빠짐"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "임대의 'key' 요소가 누락되어 있음"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11125,6 +11190,10 @@ msgstr "JSON 문서에서 magic 데이터가 누락되어 있음 "
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON 문서에서 magic 데이터가 누락되어 있음 "
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "'runtime.powerState' 속성이 누락되어 있음 "
 
@@ -11135,11 +11204,17 @@ msgstr "CPU 토플로지에 'sockets' 특성이 빠져있습니다"
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "네트워크 '%s'의 dhcp 범위에 'start' 속성이 누락되어 있음 "
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "임대의 'target' 요소가 누락되어 있음"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "CPU 토플로지에 'threads' 특성이 빠져있습니다"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
@@ -11149,6 +11224,9 @@ msgstr "HyperV Enlightenment 기능 '%s'의 'state' 속성이 누락되어 잇�
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -11875,10 +11953,6 @@ msgstr "NULL 문자열 매개 변수 '%s'"
 msgid "NULL value for field '%s'"
 msgstr "'%s' 파일 읽기 실패"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "NUMA 셀 번호"
 
@@ -11926,6 +12000,9 @@ msgstr "존재하는 콘솔 장치가 없습니다"
 
 msgid "NUMA node selections to set"
 msgstr "설정한 NUMA 노드 선택"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "NUMA 토폴로지는 NUMA 셀 없이 정의되어 있음"
@@ -15130,6 +15207,9 @@ msgstr "Ceph 사용이 지정되어 있으나 이름이 누락되어 있습니�
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
 msgstr ""
@@ -16138,7 +16218,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "이 호스트는 vCenter에 의해 관리되지 않습니다"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 #, fuzzy
@@ -17214,6 +17294,9 @@ msgid "Unable to find the snapshot with name %s"
 msgstr "'%s'라는 이름의 스냅샷을 찾을 수 없음 "
 
 msgid "Unable to force bind to IPv6 only"
+msgstr ""
+
+msgid "Unable to format NUMA node cache"
 msgstr ""
 
 #, fuzzy
@@ -18381,6 +18464,10 @@ msgstr "모니터의 close-on-exec 플래그를 설정할 수 없음"
 #, fuzzy
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "파일 설명자 %d에 액세스할 수 없습니다 "
+
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to set interface parameters"
@@ -20291,9 +20378,6 @@ msgstr "업로드할 데이터 양 "
 msgid "an <auth> definition already found for disk source"
 msgstr ""
 
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr ""
-
 msgid "an <encryption> definition already found for disk source"
 msgstr ""
 
@@ -20567,6 +20651,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "백그라운드 작업"
@@ -20574,13 +20661,13 @@ msgstr "백그라운드 작업"
 msgid "backup job data missing"
 msgstr ""
 
-#, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "경로 '%s'가 절대경로가 아닙니다"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 #, fuzzy
 msgid "bad command"
@@ -21388,10 +21475,6 @@ msgstr "%s 아키텍쳐에 대한 CPU 데이터를 복호화 할 수 없음"
 #, fuzzy, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "%s의 파일 시스템을 감지할 수 없습니다 "
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "%s를 비활성화 할 수 없음"
 
 #, fuzzy
 msgid "cannot do managed save for transient domain"
@@ -22539,7 +22622,7 @@ msgid "cannot write data to file '%s'"
 msgstr "데이터를 파일 '%s'에 동기화할 수 없음"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 #, fuzzy
@@ -23572,6 +23655,9 @@ msgstr "설정 파일 쓰기 실패: %s"
 #, fuzzy, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "설정 파일 쓰기 실패: %s"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
@@ -25463,9 +25549,8 @@ msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr ""
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "파일 종료 실패"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -28086,6 +28171,10 @@ msgstr "알려지지 않은 프로토콜 '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "%s 내부에 잘못된 저장소 포인터"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28343,6 +28432,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "잘못된 메모리 크기 %d를 갖음"
@@ -28583,6 +28682,10 @@ msgstr "%s 내부에 잘못된 저장소 포인터"
 
 msgid "invalid statistics collection period"
 msgstr "통계 수집 기간이 잘못 설정되었습니다"
+
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
 
 msgid "invalid storage pool pointer in"
 msgstr "내부에 잘못된 저장소 포인터"
@@ -28899,10 +29002,6 @@ msgstr "nl_recv 실패"
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "작업 실패: %s"
-
-#, fuzzy
-msgid "libselinux does not support LXC contexts path"
-msgstr "libxenlight는 임시 디스크가 지원되지 않음 "
 
 #, fuzzy
 msgid "libssh transport error"
@@ -31738,10 +31837,6 @@ msgstr "'%s'에 대한 블럭 장치 경로가 제공되지 않았습니다"
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr ""
 
-#, c-format
-msgid "no capabilities available for %s"
-msgstr ""
-
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "존재하는 콘솔 장치가 없습니다"
@@ -34081,9 +34176,6 @@ msgstr ""
 msgid "sanlock error %d"
 msgstr "오류 없음"
 
-msgid "sanlock is too old to support lock failure action"
-msgstr "잠금 오류 동작을 지원하기에 sanlock이 너무 오래되었습니다 "
-
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "sasl start의 응답 데이터가 너무 깁니다 %d"
@@ -36005,6 +36097,18 @@ msgid "uid and gid should be mapped both"
 msgstr "uid와 gid 모두 매핑해야 합니다"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "장치 %s에 액세스할 수 없음\n"
 
@@ -36053,6 +36157,10 @@ msgstr "파이프를 닫을 수 없음"
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "'%s:%s'에 서버를 연결할 수 없음"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36483,9 +36591,6 @@ msgstr "%s을 생성할 수 없음 "
 #, fuzzy
 msgid "unable to unload already unloaded profile"
 msgstr "vmware 로그 파일을 읽을 수 없음"
-
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
@@ -37899,6 +38004,10 @@ msgstr "<address> 'multifunction' 속성에 대해 알 수 없는 값 '%s' "
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "알 수 없는 규칙 작업 속성 값"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39399,6 +39508,39 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "소켓 주소 '%s'를 구문 분석할 수 없음: %s"
+
+#, fuzzy
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "대상 컨트롤러 인덱스 %d가 소스 %d와 일치하지 않음"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "디스크 정보 보기 실패"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "%s 설정 실패 "
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "NUMA 셀에서 'cpus' 속성이 빠짐"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "%s를 비활성화 할 수 없음"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "파일 종료 실패"
+
+#, fuzzy
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "libxenlight는 임시 디스크가 지원되지 않음 "
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr "잠금 오류 동작을 지원하기에 sanlock이 너무 오래되었습니다 "
 
 #, fuzzy
 #~ msgid "Failed to find path for %s binary"

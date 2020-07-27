@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-29 11:55+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2019-12-16 05:00+0000\n"
 "Last-Translator: Daniel Berrange <dan-zanata@berrange.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
@@ -1203,6 +1203,9 @@ msgstr ""
 "je třeba, aby pro scsi hostdev adresu zdroje bylo zadáno 'bus', 'target' a "
 "'unit'"
 
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
+
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "v odpovědi guest-get-vcpus chybí 'can-online'"
 
@@ -1235,6 +1238,15 @@ msgstr "nástroj pro příkazový řádek „gluster“ nenalezen"
 
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "v odpovědi guest-get-host-name chybí 'host-name'"
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
+msgstr ""
 
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
 msgstr "'ioeventfd' je podporováno pouze řadičem virtio-scsi"
@@ -1337,6 +1349,9 @@ msgstr "protokol „ssh“ zatím ještě není podporován"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' je platné pouze pro svazek typu 'file'"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1783,6 +1798,9 @@ msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 "Po vypsání obsahu paměti se nepodařilo obnovit chod domény „%d“ s libxenlight"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "Všechny identity poskytnuté SSH agentem byly odmítnuty"
 
@@ -1847,6 +1865,9 @@ msgid ""
 "cell"
 msgstr ""
 "Argumenty pod prvkem memnode neodpovídají existujícím NUMA buňkám hosta"
+
+msgid "At least one NUMA node has to have CPUs"
+msgstr ""
 
 msgid "At least one PTY console is required"
 msgstr "Je vyžadována alespoň jedna PTY konzole"
@@ -2374,6 +2395,10 @@ msgstr "Úroveň mezipaměti %d nepodporuje ladění pro rozsah typu „%s“"
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr ""
 "Úroveň mezipaměti %d identifikátor %u nepodporuje ladění pro rozsah typu „%s“"
+
+#, c-format
+msgid "Cache level '%u' already defined"
+msgstr ""
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3298,8 +3323,8 @@ msgid "Cannot resize the max memory on an active domain"
 msgstr "Není možné změnit horní hranici přidělení paměti na aktivní doméně"
 
 #, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "Nedaří se přeložit adresu ::1 : %s"
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "Není možné spustit interaktivní konzoli bez ovládání TTY"
@@ -5851,6 +5876,9 @@ msgstr "Duplicitní typ mezipaměti v resctrl pro úroveň %u"
 msgid "Duplicate hash table key '%s'"
 msgstr "duplicitní klíč „%s“"
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, c-format
 msgid "Duplicate security driver %s"
 msgstr "Duplicitní ovladač zabezpečení %s"
@@ -6079,8 +6107,8 @@ msgid "Escape character is %s"
 msgstr "nedaří se nalézt znakové zařízení %s"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "Pořadové číslo (index) řadiče ethernet %d je mimo rozsah 0 až 3"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6761,6 +6789,10 @@ msgid "Failed to create checkpoint dir %s"
 msgstr "Nepodařilo se vytvořit složku kontrolního bodu %s"
 
 #, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "Nepodařilo se vytvořit složku pro zařízení „%s“ „%s“"
 
@@ -7273,9 +7305,6 @@ msgstr "Nepodařilo se získat stav domény"
 
 msgid "Failed to get domain's UUID"
 msgstr "Nepodařilo se získat nikde se neopakující identifikátor domény"
-
-msgid "Failed to get fs flags"
-msgstr "Nepodařilo se zjistit příznaky souborového systému"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8186,9 +8215,6 @@ msgstr "Nepodařilo se serializovat zachycený stav"
 msgid "Failed to set %s for %s: value too large"
 msgstr "Nepodařilo se nastavit %s pro %s: hodnota je příliš velká"
 
-msgid "Failed to set NOCOW flag"
-msgstr "Nepodařilo se nastavit příznak NOCOW"
-
 #, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "Nepodařilo se nastavit prioritu TLS relace na %s: %s"
@@ -8982,6 +9008,9 @@ msgstr "Agent v hostovi neodpovídá: %s"
 msgid "Guest agent not available for now"
 msgstr "Agent hosta nyní není k dispozici"
 
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
+
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr "Nastavování HTM není touto binárkou QEMU podporováno"
 
@@ -9485,6 +9514,9 @@ msgstr "Neplatná 'vcpus' hodnota „%s“ atributu %s"
 msgid "Invalid %s image format specified in configuration file"
 msgstr "V souboru s nastaveními zadán neplatný formát obrazu %s"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "Neplatné cpuNum v %s"
@@ -9501,13 +9533,29 @@ msgstr "Neplatný atribut „id“ (identifikátor) v NUMA buňce: „%s“"
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "Neplatný atribut 'id' v NUMA vzdálenostech pro příbuzné: „%s“"
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "Neplatná 'iothread' hodnota „%s“"
 
 #, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
+#, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "Neplatná hodnota atributu „memAcess“ (přístup do paměti) „%s“"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9769,8 +9817,16 @@ msgid "Invalid busNr '%s' in PCI controller"
 msgstr "Neplatné busNr (číslo sběrnice) „%s“ v PCI řadiči"
 
 #, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid cache id '%s'"
 msgstr "Neplatný identifikátor mezipaměti „%s“"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10667,6 +10723,9 @@ msgstr "Libvirt"
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "Událost životního cyklu „%s“ nepodporuje akci „%s“"
 
+msgid "Link already defined"
+msgstr ""
+
 msgid "List all manageable clients connected to <server>."
 msgstr "Seznam všech spravovatelných klientů připojených k <server>."
 
@@ -11211,11 +11270,12 @@ msgstr ""
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "Chybí oddělovač v informaci o plánovači „%s“"
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "V topologii procesoru chybí atribut „cores“ (jádra)"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "V numa buňce chybí atribut 'cpus'"
 
 msgid "Missing 'domname' in JSON document"
 msgstr "V JSON dokumentu chybí 'domname'"
@@ -11240,8 +11300,15 @@ msgstr "Chybí atribut „id“ v prvku <iothread>"
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "V „cell id %d“ chybí atribut 'id' v NUMA vzdálenosti"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "Chybí prvek pro zápůjčku „key“ (klíč)"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 msgid "Missing 'link' attribute for NIC"
 msgstr "Pro síťové rozhraní chybí atribut „link“"
@@ -11259,6 +11326,10 @@ msgstr "V JSON dokumentu chybí kolonka 'path'"
 msgid "Missing 'pipefd' in JSON document"
 msgstr "V JSON dokumentu chybí 'pipefd'"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "Chybí vlastnost 'runtime.powerState'"
 
@@ -11269,11 +11340,17 @@ msgstr "V topologii procesoru chybí atribut „sockets“ (patice)"
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "Chybí atribut 'start' (začátek) v dhcp rozsahu pro síť „%s“"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "Chybí prvek pro zápůjčku „target“ (cíl)"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "V topologii procesoru chybí atribut „threads“ (vlákna)"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 msgid "Missing 'uuid' attribute for element <address>"
 msgstr ""
@@ -11286,6 +11363,9 @@ msgid ""
 "id %d'"
 msgstr ""
 "Chybí atribut 'value' v NUMA vzdálenosti pod 'cell id %d' pro 'sibling id %d'"
+
+msgid "Missing 'value' attribute in NUMA interconnects"
+msgstr ""
 
 msgid "Missing <address> element"
 msgstr "Chybí prvek <address>"
@@ -11950,10 +12030,6 @@ msgstr "prázdný parametr řetězce „%s“"
 msgid "NULL value for field '%s'"
 msgstr "Neplatná hodnota pro kolonku „%s“: očekáváno celé číslo"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr "NUMA buňka %d nemá přiřazené žádné virt. procesory"
-
 msgid "NUMA cell number"
 msgstr "Číslo buňky NUMA"
 
@@ -12003,6 +12079,9 @@ msgstr "NUMA uzel %zd není dostupný"
 
 msgid "NUMA node selections to set"
 msgstr "Výběr NUMA uzlů, který nastavit"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "NUMA topologie definována bez NUMA buněk"
@@ -15182,6 +15261,9 @@ msgstr "Zadáno využití TLS, ale chybí název"
 msgid "TLS:"
 msgstr "TLS:"
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
 msgstr ""
@@ -16235,8 +16317,8 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Tento hostitel není spravován vCenter"
 
-msgid "This snapshot has children, please delete theses snapshots before"
-msgstr "Tento zachycený stav má podřízené, nejdříve smažte ty"
+msgid "This snapshot has children, please delete these snapshots before"
+msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Tento typ disku nelze odpojovat za chodu"
@@ -17268,6 +17350,9 @@ msgstr "Nedaří se najít zachycený stav nazvaný %s"
 
 msgid "Unable to force bind to IPv6 only"
 msgstr "Nedaří se navázat pouze na IPv6"
+
+msgid "Unable to format NUMA node cache"
+msgstr ""
 
 msgid "Unable to format SELinux context"
 msgstr "Nedaří se formátovat SELinux kontext"
@@ -18324,6 +18409,10 @@ msgstr "Nedaří se nastavit příznak close-on-exec (zavřít při vykonání)"
 
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "Nedaří se nastavit popisovač souboru konzole na neblokující"
+
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
 
 msgid "Unable to set interface parameters"
 msgstr "Nedaří se nastavit parametry rozhraní"
@@ -20208,9 +20297,6 @@ msgstr "množství dat které nahrát"
 msgid "an <auth> definition already found for disk source"
 msgstr "pro zdroj disku už nalezena definice <auth>"
 
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr "definice <auth> už nalezena pro <hostdev> iSCSI definici"
-
 msgid "an <encryption> definition already found for disk source"
 msgstr "pro zdroj disku už nalezena definice <encryption>"
 
@@ -20480,6 +20566,9 @@ msgid ""
 "sense"
 msgstr "backingStore zrcadla bez VIR_DOMAIN_BLOCK_COPY_SHALLOW nedává smysl"
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "úloha na pozadí"
@@ -20488,14 +20577,14 @@ msgid "backup job data missing"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr "Disk pouze pro čtení nemá žádný nadřazený"
-
-#, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr ""
 "je třeba, aby byl uveden úplný popis umístění obrazu se zachyceným stavem "
 "disku „%s“"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr "chybný příkaz"
@@ -21309,10 +21398,6 @@ msgstr "u architektury %s není možné zjišťovat model procesoru hostitele"
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "nedaří se zjistit souborový systém pro „%s“"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "není možné vypnout %s"
 
 msgid "cannot do managed save for transient domain"
 msgstr "není možné udělat spravované uložení pro přechodnou doménu"
@@ -22436,8 +22521,8 @@ msgid "cannot write data to file '%s'"
 msgstr "nedaří se zapsat data do souboru „%s“"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
-msgstr "není možné zapsat %s pro zapnutí/vypnutí IPv6 na mostu %s"
+msgid "cannot write to '%s' on bridge '%s'"
+msgstr ""
 
 msgid "cannot write to stdout"
 msgstr "nedaří se zapsat na standardní výstup"
@@ -23441,6 +23526,9 @@ msgstr "nedaří se zapsat soubor s nastaveními pro dnsmasq „%s“"
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "nedaří se zapsat soubor s nastaveními pro radvd „%s“"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "afinita procesoru není podporována"
@@ -25304,8 +25392,8 @@ msgstr ""
 "nepodařilo se přidat nová filtrovací pravidla do „%s“ – pokus o obnovu "
 "původních pravidel"
 
-msgid "failed to add susbsystem filter"
-msgstr "nepodařilo se přidat filtr podsystému"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -27886,6 +27974,10 @@ msgstr "neplatný protokol „%s“"
 msgid "invalid backing protocol string '%s'"
 msgstr "neplatný řetězec protokolu, na kterém je založeno „%s“"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr "neplatná velikost mezipaměti v odpovědi na query-migrate-cache-size"
 
@@ -28150,6 +28242,16 @@ msgstr ""
 "neplatná mac adresa „%s“ v 'unicast-table' poli v odpovědi query-rx-filter"
 
 #, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
+#, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "neplatné čtení hlavního klíče, (velikost) size=%zd"
 
@@ -28390,6 +28492,10 @@ msgstr "neplatný stav „%s“ události výkonu „%s“"
 
 msgid "invalid statistics collection period"
 msgstr "neplatné období sběru statistik"
+
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
 
 msgid "invalid storage pool pointer in"
 msgstr "neplatný ukazatel na fond úložiště v"
@@ -28701,9 +28807,6 @@ msgstr "volání knihovny se nezdařilo"
 #, c-format
 msgid "library call failed: %s"
 msgstr "volání knihovny se nezdařilo: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr "libselinux nepodporuje popis umístění LXC kontextu"
 
 msgid "libssh transport error"
 msgstr "chyba transportu libssh"
@@ -31447,10 +31550,6 @@ msgstr "nezadán popis umístění blokového zařízení pro „%s“"
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "žádné volání čekající na odpověď s prog %d vers %d serial %d"
 
-#, c-format
-msgid "no capabilities available for %s"
-msgstr ""
-
 msgid "no cgroup backend available"
 msgstr "není k dispozici podpůrná vrstva cgroup"
 
@@ -33757,9 +33856,6 @@ msgstr "je třeba, aby rx_queue_size (délka fronty příjmu) bylo násobkem dvo
 msgid "sanlock error %d"
 msgstr "chyba sanlock %d"
 
-msgid "sanlock is too old to support lock failure action"
-msgstr "sanlock je příliš starý aby podporoval akci selhání zámku"
-
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "příliš mnoho dat v sasl počáteční odpovědi %d"
@@ -35683,6 +35779,18 @@ msgid "uid and gid should be mapped both"
 msgstr "měly by být mapovány jak uid, tak gid identifikátory"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "nedaří se přistoupit k zařízení %s\n"
 
@@ -35731,6 +35839,10 @@ msgstr "nedaří se zavřít rouru"
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "nedaří se připojit k serveru na „%s:%s“"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36139,9 +36251,6 @@ msgstr "nedaří se zkrátit %s"
 
 msgid "unable to unload already unloaded profile"
 msgstr "není možné zrušit nahrání profilu, kterého nahrání už bylo zrušeno"
-
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr "nedaří se použít io_timeout s touto verzí sanlock"
 
 #, c-format
 msgid "unable to use target path '%s' for dev '%s'"
@@ -37549,6 +37658,10 @@ msgstr "neznámá hodnota „%s“ pro <hostdev> atribut 'display'"
 #, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "neznámá hodnota „%s“ v atributu 'usable' (využitelné)"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39060,6 +39173,53 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "Nedaří se přeložit adresu ::1 : %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "Pořadové číslo (index) řadiče ethernet %d je mimo rozsah 0 až 3"
+
+#~ msgid "Failed to get fs flags"
+#~ msgstr "Nepodařilo se zjistit příznaky souborového systému"
+
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "Nepodařilo se nastavit příznak NOCOW"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "V numa buňce chybí atribut 'cpus'"
+
+#~ msgid "NUMA cell %d has no vCPUs assigned"
+#~ msgstr "NUMA buňka %d nemá přiřazené žádné virt. procesory"
+
+#~ msgid "This snapshot has children, please delete theses snapshots before"
+#~ msgstr "Tento zachycený stav má podřízené, nejdříve smažte ty"
+
+#~ msgid ""
+#~ "an <auth> definition already found for the <hostdev> iSCSI definition"
+#~ msgstr "definice <auth> už nalezena pro <hostdev> iSCSI definici"
+
+#, fuzzy
+#~ msgid "backup of readonly disk '%s' makes no sense"
+#~ msgstr "Disk pouze pro čtení nemá žádný nadřazený"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "není možné vypnout %s"
+
+#~ msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+#~ msgstr "není možné zapsat %s pro zapnutí/vypnutí IPv6 na mostu %s"
+
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "nepodařilo se přidat filtr podsystému"
+
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "libselinux nepodporuje popis umístění LXC kontextu"
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr "sanlock je příliš starý aby podporoval akci selhání zámku"
+
+#~ msgid "unable to use io_timeout with this version of sanlock"
+#~ msgstr "nedaří se použít io_timeout s touto verzí sanlock"
 
 #~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 #~ msgstr "Pokus o NAT „%s“. NAT je podporován pouze pro IPv4."

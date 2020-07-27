@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-29 11:55+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1103,6 +1103,9 @@ msgid ""
 msgstr ""
 "scsi hostdev ಆಕರಕ್ಕಾಗಿ 'bus', 'target', ಮತ್ತು 'unit' ಅನ್ನು ಸೂಚಿಸಬೇಕಾಗುತ್ತದೆ"
 
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
+
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus ನ ಪ್ರತ್ಯುತ್ತರದಲ್ಲಿ 'can-offline' ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
@@ -1137,6 +1140,15 @@ msgstr "libvirt %s ನ Virsh ಆಜ್ಞಾಸಾಲಿನ ಉಪಕರಣ\n"
 #, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "guest-get-vcpus ನ ಪ್ರತ್ಯುತ್ತರದಲ್ಲಿ 'online' ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1252,6 +1264,9 @@ msgstr "fs ವಿನ್ಯಾಸ %s ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr ""
 "'startupPolicy' ಎನ್ನುವುದು ಕೇವಲ 'file' ಬಗೆಯ ಪರಿಮಾಣಕ್ಕೆ ಮಾತ್ರ ಮಾನ್ಯವಾಗಿರುತ್ತವೆ"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1717,6 +1732,9 @@ msgstr ""
 "ಕೋರ್ ಅನ್ನು ಡಂಪ್ ಮಾಡಿದ ನಂತರ, libxenlight ನೊಂದಿಗೆ '%d' ಡೊಮೇನ್‌ ಅನ್ನು ಮರಳಿ ಆರಂಭಿಸಲು "
 "ವಿಫಲಗೊಂಡಿದೆ"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "SSH ಮಧ್ಯವರ್ತಿಯಿಂದ ಒದಗಿಸಲಾದ ಎಲ್ಲಾ ಗುರುತುಗಳನ್ನು ತಿರಸ್ಕರಿಸಲಾಗಿದೆ"
 
@@ -1779,6 +1797,9 @@ msgstr "ಆರ್ಗ್ಯುಮೆಂಟ್‌ಗಳು ಶೂನ್ಯವಾ�
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 #, fuzzy
@@ -2307,6 +2328,10 @@ msgstr "QEMU ಎಕ್ಸಿಗ್ಯೂಟೆಬಲ್ %s ಎನ್ನುವು
 #, fuzzy, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr "QEMU ಎಕ್ಸಿಗ್ಯೂಟೆಬಲ್ %s ಎನ್ನುವುದು TPM ಬ್ಯಾಕೆಂಡ್ ಬಗೆ %s ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
+
+#, c-format
+msgid "Cache level '%u' already defined"
+msgstr ""
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3245,9 +3270,9 @@ msgstr ""
 msgid "Cannot resize the max memory on an active domain"
 msgstr "ಒಂದು ಸಕ್ರಿಯ ಡೊಮೇನ್‌ನ ಗರಿಷ್ಟ ಮೆಮೊರಿಯನ್ನು ಮರುಗಾತ್ರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "ಸಾಕೆಟ್ ವಿಳಾಸ '%s' ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ: %s"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "ನಿಯಂತ್ರಿಸುವ ಒಂದು TTY ಇಲ್ಲದೆ ಸಂವಾದಾತ್ಮಕ ಕನ್ಸೋಲ್ ಅನ್ನು ಚಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -5838,6 +5863,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "ಸುರಕ್ಷತಾ ಚಾಲಕ '%s' ಕಂಡುಬಂದಿಲ್ಲ"
@@ -6062,8 +6090,8 @@ msgid "Escape character is %s"
 msgstr "ಕ್ಯಾರೆಕ್ಟರ್ ಸಾಧನ %s ಅನ್ನು ಪತ್ತೆಮಾಡಲಾಗಿಲ್ಲ"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "ಎತರ್ನೆಟ್ ನಿಯಂತ್ರಕ ಸೂಚಿ %d ವ್ಯಾಪ್ತಿಯ [0..3] ಹೊರಗಿದೆ"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6765,6 +6793,10 @@ msgid "Failed to create checkpoint dir %s"
 msgstr "%s ದಿಂದ ಡೊಮೇನ್‌ ಅನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "'%s' dev '%s' ಗಾಗಿ ಕೋಶವನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -7290,10 +7322,6 @@ msgstr "ಡೊಮೇನ್‌ ಸ್ಥಿತಿಗಳನ್ನು ಪಡೆದ�
 
 msgid "Failed to get domain's UUID"
 msgstr "ಡೊಮೇನ್‌ UUID ಅನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "sysinfo ಅನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8214,10 +8242,6 @@ msgstr "%s ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಅಳಿಸ�
 msgid "Failed to set %s for %s: value too large"
 msgstr "%s ಅನ್ನು %s ಗಾಗಿ ಹೊಂದಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: ಮೌಲ್ಯವು ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "PCI SYSFS ಕಡತವನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲತೆ"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "TLS ಅಧಿವೇಶನವನ್ನು ಆರಂಭಿಸಲು ವಿಫಲಗೊಂಡಿದೆ: %s"
@@ -9024,6 +9048,9 @@ msgstr "ಅತಿಥಿ ಮಧ್ಯವರ್ತಿಯು ಪ್ರತಿಸ್�
 msgid "Guest agent not available for now"
 msgstr "ಅತಿಥಿ ಮಧ್ಯವರ್ತಿಯು ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ"
 
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ nvram ಸಾಧನಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
@@ -9542,6 +9569,9 @@ msgstr "ಅಮಾನ್ಯವಾದ ಸ್ಥಿತಿ ವೈಶಿಷ್ಟ್�
 msgid "Invalid %s image format specified in configuration file"
 msgstr "ಸಂರಚನಾ ಕಡತವನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "%s ನಲ್ಲಿ cpuNum ಅಮಾನ್ಯವಾಗಿದೆ"
@@ -9558,13 +9588,29 @@ msgstr "ಅಮಾನ್ಯವಾದ ಸ್ಥಿತಿ ವೈಶಿಷ್ಟ್�
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "ಜಾಲಬಂಧ '%s' ಕ್ಕಾಗಿನ dhcp ವ್ಯಾಪ್ತಿಗಾಗಿ 'end' ಗುಣವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "ಅಮಾನ್ಯವಾದ ಅನುವಾದದ ಮೌಲ್ಯ '%s'"
 
+#, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "ಅಮಾನ್ಯವಾದ ಮೆಮೊರಿ ಕೋರ್ ಡಂಪ್ ವೈಶಿಷ್ಟ್ಯ ಮೌಲ್ಯ '%s'"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9807,9 +9853,17 @@ msgstr "ಫ್ಲಾಪಿ ಡಿಸ್ಕಿಗಾಗಿ ಅಮಾನ್ಯವ�
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "'%s' ಅಮಾನ್ಯವಾದ ವಿಳಾಸ ('%s' ಜಾಲಬಂಧದಲ್ಲಿ)"
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "%s ನಲ್ಲಿ cpuNum ಅಮಾನ್ಯವಾಗಿದೆ"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10699,6 +10753,9 @@ msgstr "Libvirt"
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "'%s' ಎಂಬ ಡಿಸ್ಕ್ ಸಾಧನವು ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಮಾಡುವಿಕೆಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
+msgid "Link already defined"
+msgstr ""
+
 msgid "List all manageable clients connected to <server>."
 msgstr ""
 
@@ -11261,11 +11318,12 @@ msgstr "ManagedEntityStatus ಗಾಗಿ ನೋಡುವಾಗ '%s' ಗುಣವ
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "cgroup ಏರಿಸುವ '%s' ನಲ್ಲಿ '/' ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU ಟೊಪೊಲಜಿಯಲ್ಲಿ 'cores' ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "NUMA ಕೋಶದಲ್ಲಿ 'cpus' ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
@@ -11295,8 +11353,15 @@ msgstr "<interface> ನಲ್ಲಿ dev ಗುಣವೈಶಿಷ್ಟ್ಯವ�
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "NUMA ಕೋಶದಲ್ಲಿ 'cpus' ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "ಲೀಸ್‌ಗಾಗಿ 'key' ಘಟಕವು ಕಾಣುತ್ತಿಲ್ಲ"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11318,6 +11383,10 @@ msgstr "JSON ಸ್ಥಿತಿ ದಸ್ತಾವೇಜಿನಲ್ಲಿ auth 
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON ದಸ್ತಾವೇಜಿನಲ್ಲಿ pid ದತ್ತಾಂಶವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "'runtime.powerState' ಗುಣಲಕ್ಷಣವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
@@ -11328,11 +11397,17 @@ msgstr "CPU ಟೊಪೊಲಜಿಯಲ್ಲಿ 'sockets' ವೈಶಿಷ್ಟ
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "ಜಾಲಬಂಧ '%s' ಕ್ಕಾಗಿನ dhcp ವ್ಯಾಪ್ತಿಗಾಗಿ 'start' ಗುಣವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "ಲೀಸ್‌ಗಾಗಿ 'target' ಘಟಕವು ಕಾಣುತ್ತಿಲ್ಲ"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "CPU ಟೊಪೊಲಜಿಯಲ್ಲಿ 'threads' ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
@@ -11342,6 +11417,9 @@ msgstr "HyperV ಎನ್‌ಲೈಟನ್ಮೆಂಟ್ ಸೌಲಭ್ಯ '%s
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -12040,10 +12118,6 @@ msgstr "NULL ವಾಕ್ಯಾಂಶ ನಿಯತಾಂಕ '%s'"
 msgid "NULL value for field '%s'"
 msgstr "'%s' ಸ್ಥಳಕ್ಕಾಗಿ NULL ಮೌಲ್ಯ"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "NUMA ಕೋಶ ಸಂಖ್ಯೆ"
 
@@ -12092,6 +12166,9 @@ msgstr "ಯಾವುದೆ PCI ಬಸ್‌ಗಳು ಲಭ್ಯವಿರುವ
 
 msgid "NUMA node selections to set"
 msgstr "ಹೊಂದಿಸಬೇಕಿರುವ NUMA ನೋಡ್ ಆಯ್ಕೆಗಳು"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "NUMA ಟೊಪೊಲಜಿಯನ್ನು NUMA ಕೋಶಗಳೊಂದಿಗೆ ವಿವರಿಸಲಾಗಿದೆ"
@@ -15377,6 +15454,9 @@ msgstr "ceph ಬಳಕೆಯನ್ನು ಸೂಚಿಸಲಾಗಿದೆ, ಆ�
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
 msgstr ""
@@ -16411,7 +16491,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "ಆತಿಥೇಯವನ್ನು vCenter ಇಂದ ನೋಡಿಕೊಳ್ಳಲಾಗುತ್ತಿಲ್ಲ"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -17458,6 +17538,9 @@ msgstr "\"%s\" ಎಂಬ ಹೆಸರಿನ ಸ್ನ್ಯಾಪ್‌ಶಾಟ
 
 msgid "Unable to force bind to IPv6 only"
 msgstr "IPv6 ನೊಂದಿಗೆ ಮಾತ್ರ ಬೈಂಡ್ ಆಗುವಂತೆ ಒತ್ತಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+msgid "Unable to format NUMA node cache"
+msgstr ""
 
 msgid "Unable to format SELinux context"
 msgstr "SELinux ಸನ್ನಿವೇಶವನ್ನು ಫಾರ್ಮ್ಯಾಟ್‌ ಮಾಡಲಾಗಿಲ್ಲ"
@@ -18576,6 +18659,10 @@ msgstr "ಫ್ಲಾಗ್‌ ಅನ್ನು close-on-exec ಗೆ ಹೊಂದ�
 
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "ಕನ್ಸೋಲ್ ಕಡತ ವಿವರಣೆಗಾರ ನಾನ್-ಬ್ಲಾಕಿಂಗ್ ಅನ್ನು ಹೊಂದಿಸಲಾಗಿಲ್ಲ"
+
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
 
 msgid "Unable to set interface parameters"
 msgstr "ಸಂಪರ್ಕಸಾಧನ ನಿಯತಾಂಕಗಳನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -20461,9 +20548,6 @@ msgstr "ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕಿರುವ ದತ್ತಾ�
 msgid "an <auth> definition already found for disk source"
 msgstr ""
 
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr ""
-
 msgid "an <encryption> definition already found for disk source"
 msgstr ""
 
@@ -20748,6 +20832,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "ಹಿನ್ನಲೆ ಕೆಲಸ"
@@ -20755,13 +20842,13 @@ msgstr "ಹಿನ್ನಲೆ ಕೆಲಸ"
 msgid "backup job data missing"
 msgstr ""
 
-#, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "ಮಾರ್ಗ '%s' ಪರಿಪೂರ್ಣವಾಗಿಲ್ಲ"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr "ಸರಿಯಲ್ಲದ ಆದೇಶ"
@@ -21568,10 +21655,6 @@ msgstr "%s ಆರ್ಕಿಟೆಕ್ಚರಿಗಾಗಿ CPU ದತ್ತಾ�
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "'%s' ಇದಕ್ಕಾಗಿನ ಕಡತವ್ಯವಸ್ಥೆಯನ್ನು ನಿರ್ಧರಿಸಲಾಗುವುದಿಲ್ಲ"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "%s ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ"
 
 msgid "cannot do managed save for transient domain"
 msgstr "ಅಸ್ಥಿರವಾದ ಡೊಮೇನ್‌ಗಾಗಿ ವ್ಯವಸ್ಥಿತ ಉಳಿಕೆಯನ್ನು ನಡೆಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -22706,7 +22789,7 @@ msgid "cannot write data to file '%s'"
 msgstr "ದತ್ತಾಂಶ ಕಡತ '%s' ಅನ್ನು ಬರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 #, fuzzy
@@ -23722,6 +23805,9 @@ msgstr "dnsmasq ಸಂರಚನಾ ಕಡತ '%s' ಕ್ಕೆ ಬರೆಯಲ�
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "radvd ಸಂರಚನಾ ಕಡತ '%s' ಕ್ಕೆ ಬರೆಯಲಾಗಿಲ್ಲ"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "cpu ಸಂಬಂಧಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
@@ -25612,9 +25698,8 @@ msgstr ""
 "'%s' ಗೆ ಹೊಸ ಫಿಲ್ಟರ್ ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ - ಹಳೆಯ ನಿಯಮಗಳನ್ನು ಮರಳಿ "
 "ಸ್ಥಾಪಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ"
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "ಕಡತವನ್ನು ಮುಚ್ಚುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -28234,6 +28319,10 @@ msgstr "ಅಜ್ಞಾತ ಪ್ರೊಟೊಕಾಲ್ '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "%s ನಲ್ಲಿ ಅಮಾನ್ಯವಾದ ಶೇಖರಣಾ ಪೂಲ್ ಸೂಚಕ"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28494,6 +28583,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "ಅಮಾನ್ಯವಾದ ಮೆಮೊರಿಯ ಗಾತ್ರ %d ಕಂಡುಬಂದಿದೆ"
@@ -28735,6 +28834,10 @@ msgstr "ಅಮಾನ್ಯವಾದ ಮೌಲ್ಯ '%s' (VMX ನಮೂದು '%
 
 msgid "invalid statistics collection period"
 msgstr "ಅಮಾನ್ಯವಾದ ಅಂಕಿಅಂಶಗಳ ಸಂಗ್ರಹ ಅವಧಿ"
+
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
 
 msgid "invalid storage pool pointer in"
 msgstr "ಇಲ್ಲಿ ಅಮಾನ್ಯವಾದ ಶೇಖರಣಾ ಪೂಲ್ ಸೂಚಕ"
@@ -29052,9 +29155,6 @@ msgstr "nl_recv ವಿಫಲಗೊಂಡಿದೆ"
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "ಬರೆಯುವಿಕೆ ವಿಫಲಗೊಂಡಿದೆ: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr "LXC ಸನ್ನಿವೇಶ ಮಾರ್ಗಗಳನ್ನು libselinux ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
 
 #, fuzzy
 msgid "libssh transport error"
@@ -31878,10 +31978,6 @@ msgstr "'%s' ಗಾಗಿ ಯಾವುದೆ ಬ್ಲಾಕ್‌ ಸಾಧನ 
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "%d vers %d ಅನುಕ್ರಮ %d ದೊಂದಿಗೆ ಪ್ರತ್ಯುತ್ತರಕ್ಕಾಗಿ ಕಾಯುವ ಯಾವುದೆ ಕರೆ ಇಲ್ಲ"
 
-#, c-format
-msgid "no capabilities available for %s"
-msgstr ""
-
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "ಯಾವುದೆ ವರ್ಗದ ವ್ಯಾಪ್ತಿಯು ಲಭ್ಯವಿಲ್ಲ"
@@ -34228,9 +34324,6 @@ msgstr ""
 msgid "sanlock error %d"
 msgstr "ಯಾವುದೆ ದೋಷವಿಲ್ಲ"
 
-msgid "sanlock is too old to support lock failure action"
-msgstr "ಲಾಕ್ ವಿಫಲತೆ ಕ್ರಿಯೆಯನ್ನು ಬೆಂಬಲಿಸಲು ಸ್ಯಾನ್‌ಲಾಕ್ ಬಹಳ ಹಳೆಯದಾಗಿದೆ"
-
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "sasl ಆರಂಭದ ಪ್ರತ್ಯುತ್ತರ ದತ್ತಾಂಶವು ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ %d"
@@ -36164,6 +36257,18 @@ msgid "uid and gid should be mapped both"
 msgstr "uid ಮತ್ತು gid ಯ ಎರಡೂ ಸಹ ಮ್ಯಾಪ್ ಆಗಿರಬೇಕು"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "%s ಸಾಧನವನ್ನು ನಿಲುಕಿಸಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ\n"
 
@@ -36212,6 +36317,10 @@ msgstr "ಪೈಪ್ ಅನ್ನು ಮುಚ್ಚಲು ಸಾಧ್ಯವಾ
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "'%s:%s' ನಲ್ಲಿನ ಪೂರೈಕೆಗಣಕದೊಂದಿಗೆ ಸಂಪರ್ಕಿತಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36633,9 +36742,6 @@ msgstr "%s ತುಂಡರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 msgid "unable to unload already unloaded profile"
 msgstr "ಈಗಾಗಲೆ ಅನ್‌ಲೋಡ್ ಮಾಡಲಾದ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಅನ್‌ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ"
-
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
@@ -38048,6 +38154,10 @@ msgstr "<address> 'multifunction ವೈಶಿಷ್ಟ್ಯ'ಕ್ಕಾಗಿ 
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "ಗೊತ್ತಿಲ್ಲದ ನಿಯಮ ಕ್ರಿಯೆಯ ಗುಣವಿಶೇಷದ ಮೌಲ್ಯ"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39557,6 +39667,37 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "ಸಾಕೆಟ್ ವಿಳಾಸ '%s' ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ: %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "ಎತರ್ನೆಟ್ ನಿಯಂತ್ರಕ ಸೂಚಿ %d ವ್ಯಾಪ್ತಿಯ [0..3] ಹೊರಗಿದೆ"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "sysinfo ಅನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "PCI SYSFS ಕಡತವನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲತೆ"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "NUMA ಕೋಶದಲ್ಲಿ 'cpus' ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "%s ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "ಕಡತವನ್ನು ಮುಚ್ಚುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
+
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "LXC ಸನ್ನಿವೇಶ ಮಾರ್ಗಗಳನ್ನು libselinux ಬೆಂಬಲಿಸುವುದಿಲ್ಲ"
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr "ಲಾಕ್ ವಿಫಲತೆ ಕ್ರಿಯೆಯನ್ನು ಬೆಂಬಲಿಸಲು ಸ್ಯಾನ್‌ಲಾಕ್ ಬಹಳ ಹಳೆಯದಾಗಿದೆ"
 
 #~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 #~ msgstr "NAT '%s' ಗೆ ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ. NAT ಅನ್ನು ಕೇವಲ IPv4 ಗಾಗಿ ಬೆಂಬಲಿಸಲಾಗುತ್ತದೆ."

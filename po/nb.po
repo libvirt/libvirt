@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-29 11:55+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2015-02-24 05:43+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Norwegian Bokmål (http://www.transifex.com/projects/p/fedora/"
@@ -994,6 +994,9 @@ msgid ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
 msgstr ""
 
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
+
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr ""
 
@@ -1022,6 +1025,15 @@ msgid "'gluster' command line tool not found"
 msgstr ""
 
 msgid "'host-name' missing in guest-get-host-name reply"
+msgstr ""
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
 msgstr ""
 
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1119,6 +1131,9 @@ msgid "'ssh' protocol is not yet supported"
 msgstr ""
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
+msgstr ""
+
+msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
 
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1544,6 +1559,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr ""
 
@@ -1602,6 +1620,9 @@ msgstr ""
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 msgid "At least one PTY console is required"
@@ -2095,6 +2116,10 @@ msgstr ""
 
 #, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cache level '%u' already defined"
 msgstr ""
 
 #, c-format
@@ -2965,7 +2990,7 @@ msgid "Cannot resize the max memory on an active domain"
 msgstr ""
 
 #, c-format
-msgid "Cannot resolve ::1 address: %s"
+msgid "Cannot resolve %s address: %s"
 msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
@@ -5435,6 +5460,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, c-format
 msgid "Duplicate security driver %s"
 msgstr ""
@@ -5648,7 +5676,7 @@ msgid "Escape character is %s"
 msgstr ""
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
+msgid "Ethernet controller index %d out of [0..%d] range"
 msgstr ""
 
 #, fuzzy
@@ -6296,6 +6324,10 @@ msgstr "Kunne ikke opprette domenet fra %s"
 msgid "Failed to create checkpoint dir %s"
 msgstr "Kunne ikke opprette domenet fra %s"
 
+#, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "Kunne ikke opprette domenet fra %s"
@@ -6833,10 +6865,6 @@ msgstr "Kunne ikke starte domenet %s"
 #, fuzzy
 msgid "Failed to get domain's UUID"
 msgstr "Kunne ikke starte domenet %s"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "kunne ikke åpne fil"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -7780,10 +7808,6 @@ msgstr "Kunne ikke vise inaktive domener"
 msgid "Failed to set %s for %s: value too large"
 msgstr "Kunne ikke lagre domenet %s til %s"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "kunne ikke åpne fil"
-
 #, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr ""
@@ -8535,6 +8559,9 @@ msgstr ""
 msgid "Guest agent not available for now"
 msgstr ""
 
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
+
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr ""
 
@@ -9017,6 +9044,9 @@ msgstr ""
 msgid "Invalid %s image format specified in configuration file"
 msgstr "feil ved lesing av konfigurasjonsfil"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Invalid 'cpu.max' data."
 msgstr ""
 
@@ -9032,12 +9062,28 @@ msgstr ""
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr ""
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr ""
 
 #, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
+#, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
+msgstr ""
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, c-format
@@ -9276,7 +9322,15 @@ msgid "Invalid busNr '%s' in PCI controller"
 msgstr ""
 
 #, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid cache id '%s'"
+msgstr ""
+
+#, c-format
+msgid "Invalid cache policy '%s'"
 msgstr ""
 
 #, c-format
@@ -10124,6 +10178,9 @@ msgstr ""
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "kommando '%s' støtter ikke opsjonen --%s"
 
+msgid "Link already defined"
+msgstr ""
+
 msgid "List all manageable clients connected to <server>."
 msgstr ""
 
@@ -10643,10 +10700,11 @@ msgstr ""
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr ""
 
-msgid "Missing 'cores' attribute in CPU topology"
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
 msgstr ""
 
-msgid "Missing 'cpus' attribute in NUMA cell"
+msgid "Missing 'cores' attribute in CPU topology"
 msgstr ""
 
 msgid "Missing 'domname' in JSON document"
@@ -10672,7 +10730,14 @@ msgstr ""
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr ""
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
+msgstr ""
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
 msgstr ""
 
 msgid "Missing 'link' attribute for NIC"
@@ -10691,6 +10756,10 @@ msgstr ""
 msgid "Missing 'pipefd' in JSON document"
 msgstr ""
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr ""
 
@@ -10701,10 +10770,16 @@ msgstr ""
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr ""
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr ""
 
 msgid "Missing 'threads' attribute in CPU topology"
+msgstr ""
+
+msgid "Missing 'type' attribute in NUMA interconnects"
 msgstr ""
 
 msgid "Missing 'uuid' attribute for element <address>"
@@ -10714,6 +10789,9 @@ msgstr ""
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 msgid "Missing <address> element"
@@ -11365,10 +11443,6 @@ msgstr ""
 msgid "NULL value for field '%s'"
 msgstr ""
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr ""
 
@@ -11413,6 +11487,9 @@ msgid "NUMA node %zd is unavailable"
 msgstr ""
 
 msgid "NUMA node selections to set"
+msgstr ""
+
+msgid "NUMA nodes without CPUs can't be initiator"
 msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
@@ -14431,6 +14508,9 @@ msgstr ""
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
 msgstr ""
@@ -15408,7 +15488,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr ""
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -16418,6 +16498,9 @@ msgid "Unable to find the snapshot with name %s"
 msgstr ""
 
 msgid "Unable to force bind to IPv6 only"
+msgstr ""
+
+msgid "Unable to format NUMA node cache"
 msgstr ""
 
 msgid "Unable to format SELinux context"
@@ -17467,6 +17550,10 @@ msgid "Unable to set close-on-exec flag"
 msgstr ""
 
 msgid "Unable to set console file descriptor non-blocking"
+msgstr ""
+
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
 msgstr ""
 
 #, fuzzy
@@ -19292,9 +19379,6 @@ msgstr ""
 msgid "an <auth> definition already found for disk source"
 msgstr ""
 
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr ""
-
 msgid "an <encryption> definition already found for disk source"
 msgstr ""
 
@@ -19553,6 +19637,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 msgid "backup job"
 msgstr ""
 
@@ -19560,11 +19647,11 @@ msgid "backup job data missing"
 msgstr ""
 
 #, c-format
-msgid "backup of readonly disk '%s' makes no sense"
+msgid "backup socket path '%s' must be absolute"
 msgstr ""
 
 #, c-format
-msgid "backup socket path '%s' must be absolute"
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
 msgstr ""
 
 msgid "bad command"
@@ -20336,10 +20423,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot determine filesystem for '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot disable %s"
 msgstr ""
 
 msgid "cannot do managed save for transient domain"
@@ -21430,7 +21513,7 @@ msgid "cannot write data to file '%s'"
 msgstr ""
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 msgid "cannot write to stdout"
@@ -22397,6 +22480,9 @@ msgstr "kunne ikke skrive til konfigurasjonsfilen: %s"
 #, fuzzy, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "kunne ikke skrive til konfigurasjonsfilen: %s"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr ""
@@ -24229,9 +24315,8 @@ msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr ""
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "kunne ikke åpne fil"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -26776,6 +26861,10 @@ msgstr ""
 msgid "invalid backing protocol string '%s'"
 msgstr ""
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -27026,6 +27115,16 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
+#, c-format
 msgid "invalid master key read, size=%zd"
 msgstr ""
 
@@ -27257,6 +27356,10 @@ msgid "invalid state '%s' of perf event '%s'"
 msgstr ""
 
 msgid "invalid statistics collection period"
+msgstr ""
+
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
 msgstr ""
 
 msgid "invalid storage pool pointer in"
@@ -27554,9 +27657,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "operasjon feilet: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr ""
 
 msgid "libssh transport error"
 msgstr ""
@@ -30257,10 +30357,6 @@ msgstr ""
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr ""
 
-#, c-format
-msgid "no capabilities available for %s"
-msgstr ""
-
 msgid "no cgroup backend available"
 msgstr ""
 
@@ -32464,9 +32560,6 @@ msgstr ""
 msgid "sanlock error %d"
 msgstr ""
 
-msgid "sanlock is too old to support lock failure action"
-msgstr ""
-
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr ""
@@ -34262,6 +34355,18 @@ msgid "uid and gid should be mapped both"
 msgstr ""
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr ""
 
@@ -34310,6 +34415,10 @@ msgstr "kunne ikke åpne fil"
 
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
+msgstr ""
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
 msgstr ""
 
 #, c-format
@@ -34720,9 +34829,6 @@ msgid "unable to truncate %s"
 msgstr ""
 
 msgid "unable to unload already unloaded profile"
-msgstr ""
-
-msgid "unable to use io_timeout with this version of sanlock"
 msgstr ""
 
 #, c-format
@@ -36123,6 +36229,10 @@ msgstr ""
 
 #, c-format
 msgid "unknown value '%s' in attribute 'usable'"
+msgstr ""
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
 msgstr ""
 
 #, c-format
@@ -37570,6 +37680,18 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <streng>"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "kunne ikke åpne fil"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "kunne ikke åpne fil"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "kunne ikke åpne fil"
 
 #, fuzzy
 #~ msgid "Failed to find path for %s binary"

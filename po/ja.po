@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-29 11:55+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -1120,6 +1120,9 @@ msgstr ""
 "'bus', 'target', および 'unit' が SCSI ホストデバイスのソースアドレスに対して"
 "指定される必要があります"
 
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
+
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus の応答に 'can-offline' がありません"
 
@@ -1154,6 +1157,15 @@ msgstr "libvirt の virsh コマンドラインツール %s\n"
 #, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "guest-get-vcpus の応答に 'online' がありません"
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1269,6 +1281,9 @@ msgstr "ファイルシステム形式 %s がサポートされません"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' は 'file' 形式のボリュームのみに対して有効です"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1733,6 +1748,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "コアのダンプ後、libxenlight を用いたドメイン '%d' の再開に失敗しました"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "SSH エージェントにより提供された識別情報はすべて拒否されました"
 
@@ -1793,6 +1811,9 @@ msgstr "引数は空白以外でなければいけません"
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 #, fuzzy
@@ -2319,6 +2340,10 @@ msgstr "QEMU 実行可能形式 %s が TPM バックエンド形式 %s をサポ
 #, fuzzy, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr "QEMU 実行可能形式 %s が TPM バックエンド形式 %s をサポートしません"
+
+#, c-format
+msgid "Cache level '%u' already defined"
+msgstr ""
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3252,9 +3277,9 @@ msgstr "このプラットフォームにおいて '%s' の名前を '%s' に変
 msgid "Cannot resize the max memory on an active domain"
 msgstr "動作中のドメインにおいて最大メモリーの容量を変更できません"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "socket address '%s': %s を構文解析できません"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "TTY を制御せずに対話式コンソールを実行できません"
@@ -5849,6 +5874,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "セキュリティドライバー '%s' を見つけられません"
@@ -6074,9 +6102,8 @@ msgid "Escape character is %s"
 msgstr "キャラクターデバイス %s を見つけられませんでした"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
+msgid "Ethernet controller index %d out of [0..%d] range"
 msgstr ""
-"イーサネットコントローラーのインデックス %d が [0..3] の範囲外にあります"
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6779,6 +6806,10 @@ msgid "Failed to create checkpoint dir %s"
 msgstr "%s からのドメイン作成に失敗しました"
 
 #, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "'%s' dev '%s' 用のディレクトリの作成に失敗しました。"
 
@@ -7305,10 +7336,6 @@ msgstr "ドメインの状態の取得に失敗しました"
 
 msgid "Failed to get domain's UUID"
 msgstr "ドメインの UUID の取得に失敗しました"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "システム情報を取得できませんでした"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8228,10 +8255,6 @@ msgstr "スナップショット %s の削除に失敗しました"
 msgid "Failed to set %s for %s: value too large"
 msgstr "%s を %s に設定できませんでした: 値が大きすぎます"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "PCI SYSFS ファイルの取得に失敗しました"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "TLS セッションの初期化に失敗しました: %s"
@@ -9041,6 +9064,9 @@ msgstr "ゲストエージェントが応答しません: %s"
 msgid "Guest agent not available for now"
 msgstr "ゲストエージェントが今のところ利用できません"
 
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr "nvram デバイスは、この QEMU バイナリーにおいてサポートされません"
@@ -9562,6 +9588,9 @@ msgstr "無効なモード属性 '%s'"
 msgid "Invalid %s image format specified in configuration file"
 msgstr "設定ファイルの解析に失敗しました"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "%s に無効な cpuNum があります"
@@ -9578,13 +9607,29 @@ msgstr "無効なモード属性 '%s'"
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "ネットワーク '%s' の DHCP 範囲に 'end' 属性がありません"
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "無効な変換値 '%s'"
 
+#, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "無効な memory core dump 属性値 '%s'"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9831,9 +9876,17 @@ msgstr "無効なフロッピーディスクのバス形式 '%s'"
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "無効なアドレス '%s' がネットワーク '%s' にあります"
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "%s に無効な cpuNum があります"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10723,6 +10776,9 @@ msgstr "libvirt"
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "ディスクデバイス '%s' がスナップショットをサポートしません"
 
+msgid "Link already defined"
+msgstr ""
+
 msgid "List all manageable clients connected to <server>."
 msgstr ""
 
@@ -11292,11 +11348,12 @@ msgstr "ManagedEntityStatus を検索中に '%s' プロパティがありませ�
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "cgroup のマウント '%s' に区切り文字 '/' がありません"
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU トポロジーに 'cores' 属性がありません"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "NUMA セルに 'cpus' 属性がありません"
 
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
@@ -11326,8 +11383,15 @@ msgstr "<interface> 要素に dev 属性がありません"
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "NUMA セルに 'cpus' 属性がありません"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "リースの 'key' 要素がありません"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11349,6 +11413,10 @@ msgstr "JSON 状態ドキュメントに auth 項目がありません"
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON ドキュメントに pid データがありません"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "'runtime.powerState' プロパティがありません"
 
@@ -11359,11 +11427,17 @@ msgstr "CPU トポロジーに 'sockets' 属性がありません"
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "ネットワーク '%s' の DHCP 範囲に 'start' 属性がありません"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "リースの 'target'要素がありません"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "CPU トポロジーに 'threads' 属性がありません"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
@@ -11373,6 +11447,9 @@ msgstr "Hyper-V エンライト機能 '%s' に 'state' 属性がありません"
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -12073,10 +12150,6 @@ msgstr "NULL 文字列パラメーター '%s'"
 msgid "NULL value for field '%s'"
 msgstr "項目 '%s' の値が空白です"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "NUMA セル番号"
 
@@ -12125,6 +12198,9 @@ msgstr "利用可能な PCI バスがありません"
 
 msgid "NUMA node selections to set"
 msgstr "設定する NUMA ノードのセット"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "NUMA トポロジーが NUMA セルなしで定義されています"
@@ -15422,6 +15498,9 @@ msgstr "Ceph の使用が指定されましたが、名前がありません"
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
 msgstr ""
@@ -16454,7 +16533,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "このホストは vCenter により管理されていません"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -17502,6 +17581,9 @@ msgstr "名前 '%s' を持つスナップショットを見つけられません
 
 msgid "Unable to force bind to IPv6 only"
 msgstr "IPv6 へのバインドのみを強制できません"
+
+msgid "Unable to format NUMA node cache"
+msgstr ""
 
 msgid "Unable to format SELinux context"
 msgstr "SELinux コンテキストをフォーマットできません"
@@ -18619,6 +18701,10 @@ msgstr "close-on-exec フラグを設定できません"
 
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "ファイル記述子を非ブロックに設定できません"
+
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
 
 msgid "Unable to set interface parameters"
 msgstr "インターフェースのパラメーターを設定できません"
@@ -20519,9 +20605,6 @@ msgstr "アップロードするデータの量"
 msgid "an <auth> definition already found for disk source"
 msgstr ""
 
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr ""
-
 msgid "an <encryption> definition already found for disk source"
 msgstr ""
 
@@ -20798,6 +20881,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "バックグラウンドジョブ"
@@ -20805,13 +20891,13 @@ msgstr "バックグラウンドジョブ"
 msgid "backup job data missing"
 msgstr ""
 
-#, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "パス '%s' が絶対パスではありません"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr "不正なコマンドです"
@@ -21623,10 +21709,6 @@ msgstr "%s アーキテクチャーの CPU データをデコードできませ�
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "'%s' のファイルシステムがわかりませんでした"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "%s を無効化できません"
 
 msgid "cannot do managed save for transient domain"
 msgstr "一時ドメインに対して管理保存を実行できません"
@@ -22765,7 +22847,7 @@ msgid "cannot write data to file '%s'"
 msgstr "ファイル '%s' にデータを書き込めません"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 #, fuzzy
@@ -23791,6 +23873,9 @@ msgstr "dnsmasq 設定ファイル '%s' に書き込みできませんでした"
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "radvd 設定ファイル '%s' を書き込みできませんでした"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "cpu アフィニティはサポートされていません"
@@ -25697,9 +25782,8 @@ msgstr ""
 "新しいフィルタールールを '%s' に追加することに失敗しました - 古いルールを復元"
 "しています"
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "ファイルのクローズに失敗しました"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -28319,6 +28403,10 @@ msgstr "不明なプロトコル '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "%s に無効なストレージプールポインターがあります"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28578,6 +28666,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "無効なメモリー容量 %d が与えられました"
@@ -28820,6 +28918,10 @@ msgstr "無効な値 '%s' が VMX エントリー '%s' にあります"
 
 msgid "invalid statistics collection period"
 msgstr "無効な統計情報収集間隔"
+
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
 
 msgid "invalid storage pool pointer in"
 msgstr "無効なストレージプールポインターがあります"
@@ -29138,9 +29240,6 @@ msgstr "nl_recv が失敗しました"
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "書き込みに失敗しました: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr "libselinux は LXC コンテキストパスをサポートしていません"
 
 #, fuzzy
 msgid "libssh transport error"
@@ -31966,10 +32065,6 @@ msgstr ""
 "プログラム %d バージョン %d シリアル %d を持つ応答に対して待ち合わせている"
 "コールがありません"
 
-#, c-format
-msgid "no capabilities available for %s"
-msgstr ""
-
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "利用可能なカテゴリー範囲がありません"
@@ -34327,9 +34422,6 @@ msgstr ""
 msgid "sanlock error %d"
 msgstr "エラーがありません"
 
-msgid "sanlock is too old to support lock failure action"
-msgstr "sanlock がロック失敗時アクションをサポートするには古すぎます"
-
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "SASL 開始の応答データが長すぎます %d"
@@ -36267,6 +36359,18 @@ msgid "uid and gid should be mapped both"
 msgstr "UID と GID をどちらも対応付ける必要があります"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "デバイス %s にアクセスできません\n"
 
@@ -36315,6 +36419,10 @@ msgstr "パイプをクローズできません"
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "'%s:%s' にあるサーバーに接続できません"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36736,9 +36844,6 @@ msgstr "%s を切り詰められません"
 
 msgid "unable to unload already unloaded profile"
 msgstr "すでにアップロードされたプロファイルをアンロードできません"
-
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
@@ -38153,6 +38258,10 @@ msgstr "<address> の 'multifunction' 属性に不明な値 '%s' があります
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "不明なルール action 属性値"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39676,6 +39785,38 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "socket address '%s': %s を構文解析できません"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr ""
+#~ "イーサネットコントローラーのインデックス %d が [0..3] の範囲外にあります"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "システム情報を取得できませんでした"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "PCI SYSFS ファイルの取得に失敗しました"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "NUMA セルに 'cpus' 属性がありません"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "%s を無効化できません"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "ファイルのクローズに失敗しました"
+
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "libselinux は LXC コンテキストパスをサポートしていません"
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr "sanlock がロック失敗時アクションをサポートするには古すぎます"
 
 #~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 #~ msgstr "NAT '%s' を試行しました。NAT は IPv4 に対してのみサポートされます"

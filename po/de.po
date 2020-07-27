@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-29 11:55+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2016-04-01 11:32+0000\n"
 "Last-Translator: Florian H. <postfuerflo@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1112,6 +1112,9 @@ msgstr ""
 "'bus', 'target' und 'unit' muss für SCSI hostdev Quellen-Adresse angegeben "
 "werden"
 
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
+
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "'can-offline' fehlt in Antwort auf guest-get-vcpus"
 
@@ -1146,6 +1149,15 @@ msgstr "Virsh Befehlszeilen Tool von libvirt %s\n"
 #, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "'online' fehlt in Antwort auf guest-get-vcpus"
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1259,6 +1271,9 @@ msgstr "fs Format %s ist nicht unterstützt"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' ist nur gültig für 'file' Typ Datenträger"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1722,6 +1737,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "Konnte nach Core Dump Domain '%d' nicht mit libxenlight fortsetzen"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr ""
 "Alle vom SSH-Agent zur Verfügung gestellten Identitäten wurden abgelehnt"
@@ -1785,6 +1803,9 @@ msgstr "Argumente müssen Nicht-Null sein"
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 #, fuzzy
@@ -2309,6 +2330,10 @@ msgstr "Die QEMU ausführbare Datei %s unterstützt nicht TPM Backend Typ %s"
 #, fuzzy, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr "Die QEMU ausführbare Datei %s unterstützt nicht TPM Backend Typ %s"
+
+#, c-format
+msgid "Cache level '%u' already defined"
+msgstr ""
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3252,9 +3277,9 @@ msgid "Cannot resize the max memory on an active domain"
 msgstr ""
 "Kann nicht die Größe des maximalen Speichers auf einer aktiven Domain ändern"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "Socket-Adresse »%s« kann nicht verarbeitet werden: %s"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "Kann interaktive Konsole ohne kontrollierendem TTY nicht ausführen"
@@ -5901,6 +5926,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "Kann Sicherheits-Treiber '%s' nicht finden"
@@ -6128,8 +6156,8 @@ msgid "Escape character is %s"
 msgstr "Zeichengerät %s kann nicht gefunden werden"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "Ethernet Controller index %d außerhalb dem [0..3] Bereich"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6826,6 +6854,10 @@ msgid "Failed to create checkpoint dir %s"
 msgstr "Fehler beim Erstellen der Domain von %s"
 
 #, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "Fehler beim Anlegen des Verzeichnisses für '%s' dev '%s'"
 
@@ -7350,10 +7382,6 @@ msgstr "Kann Domain-Status nicht abrufen"
 
 msgid "Failed to get domain's UUID"
 msgstr "Abrufen der Domain-UUID scheiterte"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "Abrufen der Systeminformation scheiterte"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8277,10 +8305,6 @@ msgstr "Löschen des Snapshot %s fehlgeschlagen"
 msgid "Failed to set %s for %s: value too large"
 msgstr "Konnte %s für %s nicht setzen: Wert zu groß"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "Konnte PCI SYSFS Datei nicht erhalten"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "Kann TLS-Session nicht initialisieren: %s"
@@ -9088,6 +9112,9 @@ msgstr "Gast-Agent antwortet nicht: %s"
 msgid "Guest agent not available for now"
 msgstr "Gast-Agent derzeit nicht verfügbar"
 
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr "nvram Einheit wird von dieser QEMU-Programmdatei nicht unterstützt"
@@ -9610,6 +9637,9 @@ msgstr "Ungültiges Modus-Attribut: '%s'"
 msgid "Invalid %s image format specified in configuration file"
 msgstr "Konfigurationsdatei konnte nicht analysiert werden"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "ungültige cpuNum in %s"
@@ -9626,13 +9656,29 @@ msgstr "Ungültiges Modus-Attribut: '%s'"
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "Fehlender »end«-Parameter in DHCP-Bereich für Netzwerk »%s«"
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "Ungültiger Umsetzungs-Wert '%s'"
 
+#, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "Ungültiger Speicher Core Dump Attribut Wert '%s'"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9876,9 +9922,17 @@ msgstr "Ungültiger Bus-Typ '%s' oder Floppy-Disk"
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "Ungültige Adresse '%s' im Netzwerk '%s'"
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "ungültige cpuNum in %s"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10780,6 +10834,9 @@ msgstr "Libvirt"
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "Laufwerkgerät »%s« unterstützt keine Snapshot-Erstellung"
 
+msgid "Link already defined"
+msgstr ""
+
 msgid "List all manageable clients connected to <server>."
 msgstr ""
 
@@ -11354,11 +11411,12 @@ msgstr "Fehlende '%s' Eigenschaft bei der Suche nach ManagedEntityStatus"
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "Fehlendes '/' Trennzeichen auf cgroup Anschluss '%s'"
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "Fehlendes 'cores'-Attribut in CPU-Topologie"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "Fehlendes 'cpus' Attribut in NUMA Zelle"
 
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
@@ -11388,8 +11446,15 @@ msgstr "Fehlendes dev Attribut in <interface> Element"
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "Fehlendes 'cpus' Attribut in NUMA Zelle"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "Fehlendes 'key' Element für Leasing"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11411,6 +11476,10 @@ msgstr "Fehlendes auth Feld in JSON Status-Dokument"
 msgid "Missing 'pipefd' in JSON document"
 msgstr "Fehlende pid Daten in JSON Dokument"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "Fehlende »runtime.powerState«-Eigenschaft"
 
@@ -11421,11 +11490,17 @@ msgstr "Fehlendes 'sockets'-Attribut in CPU-Topologie"
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "Fehlender »start«-Parameter in DHCP-Bereich für Netzwerk »%s«"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "Fehlendes 'target' Element für Leasing"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "Fehlendes 'threads'-Attribut in CPU-Topologie"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
@@ -11435,6 +11510,9 @@ msgstr "fehlendes 'state' Attribut für HyperV Erleuchtungs-Funktion % s"
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -12132,10 +12210,6 @@ msgstr "NULL String Parameter '%s'"
 msgid "NULL value for field '%s'"
 msgstr "NULL-Wert für Feld »%s«"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "NUMA-Zell-Nummer"
 
@@ -12185,6 +12259,9 @@ msgstr "Keine PCI-Busse verfügbar"
 
 msgid "NUMA node selections to set"
 msgstr "NUMA-Knoten Selektionen zu setzen"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "NUMA Topologie ohne NUMA Zellen definiert"
@@ -15510,6 +15587,9 @@ msgstr "Ceph Verwendung angegeben, aber Name fehlt"
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
 msgstr ""
@@ -16574,7 +16654,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Dieser Host wird nicht von einem vCenter verwaltet"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -17624,6 +17704,9 @@ msgstr "Snapshot namens »%s« konnte nicht gefunden werden"
 
 msgid "Unable to force bind to IPv6 only"
 msgstr "Kann nicht bind auf nur IPv6 erzwingen"
+
+msgid "Unable to format NUMA node cache"
+msgstr ""
 
 msgid "Unable to format SELinux context"
 msgstr "SELinux Kontext konnte nicht formatiert werden"
@@ -18749,6 +18832,10 @@ msgstr "Kann close-on-exec Flag nicht setzen"
 
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "Kann die Konsol Datei-Beschreibung nicht auf non-blocking setzen"
+
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
 
 msgid "Unable to set interface parameters"
 msgstr "Kann Schnittstellen-Parameter nicht setzen"
@@ -20665,9 +20752,6 @@ msgstr "Datenmenge zum hochladen"
 msgid "an <auth> definition already found for disk source"
 msgstr ""
 
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr ""
-
 msgid "an <encryption> definition already found for disk source"
 msgstr ""
 
@@ -20955,6 +21039,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "Hintergrund Job"
@@ -20962,13 +21049,13 @@ msgstr "Hintergrund Job"
 msgid "backup job data missing"
 msgstr ""
 
-#, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "Pfad '%s' nicht absolut"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr "Fehlerhafter Befehl"
@@ -21781,10 +21868,6 @@ msgstr "CPU-Daten für %s-Architektur können nicht dekodiert werden"
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "Dateisystem für »%s« kann nicht bestimmt werden"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "%s kann nicht deaktiviert werden"
 
 msgid "cannot do managed save for transient domain"
 msgstr "Kann verwaltete Sicherung für Übergangs-Domain nicht durchführen"
@@ -22929,7 +23012,7 @@ msgid "cannot write data to file '%s'"
 msgstr "Kann nicht Daten auf '%s' schreiben"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 #, fuzzy
@@ -23965,6 +24048,9 @@ msgstr "konnte dnsmasq Konfigurationsdatei '%s' nicht schreiben"
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "konnte radvd Konfigurationsdatei '%s' nicht schreiben"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "CPU-Affinität wird nicht unterstützt"
@@ -25870,9 +25956,8 @@ msgstr ""
 "konnte neue Filter-Regeln nicht zu '%s' hinzufügen - versuche jetzt die "
 "alten Regeln wiederherzustellen"
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "Schließen der Datei fehlgeschlagen"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -28498,6 +28583,10 @@ msgstr "Unbekanntes Protokoll '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "Ungültiger Speicher-Pool-Zeiger in %s"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28758,6 +28847,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "Ungültige Speichergröße %d erhalten"
@@ -28999,6 +29098,10 @@ msgstr "Ungültiger Wert '%s' für VMX Eintrag '%s'"
 
 msgid "invalid statistics collection period"
 msgstr "Ungültiger Statistiken Erfassungs-Zeitraum"
+
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
 
 msgid "invalid storage pool pointer in"
 msgstr "Ungültiger Speicher-Pool-Zeiger in"
@@ -29318,9 +29421,6 @@ msgstr "nl_recv fehlgeschlagen"
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "Schreiben schlug fehl: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr "libselinux unterstützt nicht den LXC Kontext-Pfad"
 
 #, fuzzy
 msgid "libssh transport error"
@@ -32149,10 +32249,6 @@ msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr ""
 "Kein Anruf wartet auf Antwort mit Program %d Version %d Seriennummer %d"
 
-#, c-format
-msgid "no capabilities available for %s"
-msgstr ""
-
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "Kein Kategorie-Bereich verfügbar"
@@ -34546,9 +34642,6 @@ msgstr ""
 msgid "sanlock error %d"
 msgstr "kein Fehler"
 
-msgid "sanlock is too old to support lock failure action"
-msgstr "sanlock ist zu alt um Sperren Fehler Aktion zu unterstützen"
-
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "Antwortdaten vom sasl-Start zu lang %d "
@@ -36522,6 +36615,18 @@ msgid "uid and gid should be mapped both"
 msgstr "uid und gid sollten beide zugeordnet werden"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "kann auf Datei %s nicht zugreifen\n"
 
@@ -36571,6 +36676,10 @@ msgstr "Pipe kann nicht geschlossen werden"
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "Kann keine Verbindung herstellen mit Server auf '%s:%s'"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36992,9 +37101,6 @@ msgstr "Kann %s nicht kürzen"
 
 msgid "unable to unload already unloaded profile"
 msgstr "Bereits entladenes Profil kann nicht entladen werden"
-
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
@@ -38409,6 +38515,10 @@ msgstr "Unbekannter Wert '%s' für <address> 'multifunction' Attribut"
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "unbekannter Regel-Aktions Attributwert"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39926,6 +40036,37 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "Socket-Adresse »%s« kann nicht verarbeitet werden: %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "Ethernet Controller index %d außerhalb dem [0..3] Bereich"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "Abrufen der Systeminformation scheiterte"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "Konnte PCI SYSFS Datei nicht erhalten"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "Fehlendes 'cpus' Attribut in NUMA Zelle"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "%s kann nicht deaktiviert werden"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "Schließen der Datei fehlgeschlagen"
+
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "libselinux unterstützt nicht den LXC Kontext-Pfad"
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr "sanlock ist zu alt um Sperren Fehler Aktion zu unterstützen"
 
 #~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 #~ msgstr "NAT '%s' wurde versucht. NAT ist nur für IPv4 unterstützt."

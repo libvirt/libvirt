@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-29 11:55+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1153,6 +1153,9 @@ msgstr ""
 "'bus', 'target', ଏବଂ 'unit' କୁ ନିଶ୍ଚିତ ଭାବରେ scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ଠିକଣା ପାଇଁ ଉଲ୍ଲେଖ "
 "କରିବା ଉଚିତ"
 
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
+
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr ""
 
@@ -1184,6 +1187,15 @@ msgid "'gluster' command line tool not found"
 msgstr "libvirt %s ର Virsh ନିର୍ଦ୍ଦେଶନାମା ସାଧନ\n"
 
 msgid "'host-name' missing in guest-get-host-name reply"
+msgstr ""
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
 msgstr ""
 
 #, fuzzy
@@ -1294,6 +1306,9 @@ msgstr "fs ଶୈଳୀ %s ସମର୍ଥିତ ନୁହଁ"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' ଟି କେବଳ 'ଫାଇଲ' ପ୍ରକାର ଭଲ୍ୟୁମ ପାଇଁ ବୈଧ"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1740,6 +1755,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "କୋରକୁ ଡମ୍ପ କରିବା ପରେ, ଡମେନ '%d' କୁ libxenlight ସହିତ ପୁନଃଚାଳନ କରିବାରେ ବିଫଳ"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr ""
 
@@ -1801,6 +1819,9 @@ msgstr "ସ୍ୱତନ୍ତ୍ରଚର କି '%s' ରେ କୌଣସି ଶ
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 #, fuzzy
@@ -2310,6 +2331,10 @@ msgstr "QEMU ନିଷ୍ପାଦନଯୋଗ୍ୟ %s TPM ପୃଷ୍ଠଭ�
 #, fuzzy, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr "QEMU ନିଷ୍ପାଦନଯୋଗ୍ୟ %s TPM ପୃଷ୍ଠଭୂମି ପ୍ରକାର %s କୁ ସହାୟତା କରିନଥାଏ"
+
+#, c-format
+msgid "Cache level '%u' already defined"
+msgstr ""
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3219,9 +3244,9 @@ msgstr "ଏହି ପ୍ଲାଟଫର୍ମ ଉପରେ macvlan ଉପକର�
 msgid "Cannot resize the max memory on an active domain"
 msgstr "ଗୋଟିଏ ସକ୍ରିୟ ଡମେନ ଉପରେ ସର୍ବାଧିକ ସ୍ମୃତିସ୍ଥାନର ଆକାର ପରିବର୍ତ୍ତନ କରାଯାଇପାରିବ ନାହିଁ"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "ସକେଟ ଠିକଣା '%s' କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ: %s"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "ପାରସ୍ପରିକ କ୍ରିୟାତ୍ମକ କୋନସୋଲକୁ ଏକ ନିୟନ୍ତ୍ରକ TTY ବିନା ଚଲାଇ ପାରିବେ ନାହିଁ"
@@ -5781,6 +5806,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "ସୁରକ୍ଷା ଡ୍ରାଇଭର '%s' କୁ ପାଇପାରିବେ ନାହିଁ"
@@ -6003,8 +6031,8 @@ msgid "Escape character is %s"
 msgstr "ଅକ୍ଷରରୂପ ଉପକରଣ %s କୁ ଖୋଜିପାରିବେ ନାହିଁ"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "ଇଥରନେଟ ନିୟନ୍ତ୍ରକ ଅନୁକ୍ରମଣିକା %d ସୀମା [0..3] ବାହାରେ"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6665,6 +6693,10 @@ msgid "Failed to create checkpoint dir %s"
 msgstr "ଅବସ୍ଥା dir '%s' କୁ ନିର୍ମାଣ କରିବାରେ ବିଫଳ"
 
 #, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "'%s' dev '%s'ପାଇଁ ଡିରେକ୍ଟୋରୀ ନିର୍ମାଣ କରିବାରେ ବିଫଳ"
 
@@ -7184,9 +7216,6 @@ msgstr "ଡମେନ ସ୍ଥିତି ପାଇବାରେ ବିଫଳ"
 
 msgid "Failed to get domain's UUID"
 msgstr "ଡମେନର  UUID କୁ ପାଇବାରେ ବିଫଳ"
-
-msgid "Failed to get fs flags"
-msgstr "fs ସୂଚକକୁ ପାଇବାରେ ବିଫଳ"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8102,9 +8131,6 @@ msgstr "ଆଶୁଚିତ୍ରକୁ କ୍ରମାନ୍ବୟରେ ପ୍�
 msgid "Failed to set %s for %s: value too large"
 msgstr "%s କୁ %s ପାଇଁ ସେଟ କରିବାରେ ବିଫଳ: ମୂଲ୍ୟଟି ଅତିବଡ଼"
 
-msgid "Failed to set NOCOW flag"
-msgstr "NOCOW ସୂଚକକୁ ସେଟ କରିବାରେ ବିଫଳ"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "TLS ଅଧିବେଶନ ଆରମ୍ଭ କରିବାରେ ବିଫଳ: %s"
@@ -8871,6 +8897,9 @@ msgstr "ଅତିଥି ସଦସ୍ୟଟି ଉତ୍ତର ଦେଉ ନା�
 msgid "Guest agent not available for now"
 msgstr "ବର୍ତ୍ତମାନ ଅତିଥି ସଦସ୍ୟ ଉପଲବ୍ଧ ନାହିଁ"
 
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr "nvram ଉପକରଣ ଏହି QEMU ବାଇନାରୀ ଦ୍ୱାରା ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
@@ -9376,6 +9405,9 @@ msgstr "ଅବୈଧ 'memAccess' ବିଶେଷତା ମୂଲ୍ୟ '%s'"
 msgid "Invalid %s image format specified in configuration file"
 msgstr "ବିନ୍ଯାସ ଫାଇଲକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "%s ରେ ଅବୈଧ cpuNum"
@@ -9392,13 +9424,29 @@ msgstr "ଅବୈଧ ଧାରାର ଗୁଣ '%s'"
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr ""
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "ଅବୈଧ iothreads ହିସାବ '%s'"
 
 #, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
+#, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "ଅବୈଧ 'memAccess' ବିଶେଷତା ମୂଲ୍ୟ '%s'"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9639,9 +9687,17 @@ msgstr "ଫ୍ଲପି ଡିସ୍କ ପାଇଁ ଅବୈଧ ବସ ପ୍�
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "ଅବୈଧ ଠିକଣା'%s' ନେଟୱର୍କ '%s' ରେ ଅଛି"
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "%s ରେ ଅବୈଧ cpuNum"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10524,6 +10580,9 @@ msgstr "Libvirt"
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "ଡିସ୍କ ଉପକରଣ '%s' ଆଶୁଚିତ୍ର ନେବାରେ ସହାୟତା କରିନଥାଏ"
 
+msgid "Link already defined"
+msgstr ""
+
 msgid "List all manageable clients connected to <server>."
 msgstr ""
 
@@ -11079,11 +11138,12 @@ msgstr ""
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr ""
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU ଟୋପୋଲୋଜିରେ ଅନୁପସ୍ଥିତ 'cores' ଗୁଣଧର୍ମ"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "NUMA ସେଲରେ 'cpus' ଗୁଣ ନାହିଁ"
 
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
@@ -11113,8 +11173,15 @@ msgstr "<interface> ଉପାଦାନରେ ଅନୁପସ୍ଥିତ dev ଗ
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "NUMA ସେଲରେ 'cpus' ଗୁଣ ନାହିଁ"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "ରାଜିନାମା ପାଇଁ 'ମୂଖ୍ୟ' ଉପାଦାନ ଅନୁପସ୍ଥିତ"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11136,6 +11203,10 @@ msgstr "JSON ଦଲିଲରେ auth ସ୍ଥାନ ଅନୁପସ୍ଥିତ
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON ଦଲିଲରେ pid ତଥ୍ୟ ଅନୁପସ୍ଥିତ"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "ଅନୁପସ୍ଥିତ 'runtime.powerState' ଗୁଣଧର୍ମ"
 
@@ -11146,11 +11217,17 @@ msgstr "CPU ଟୋପୋଲଜିରେ ଅନୁପସ୍ଥିତ 'sockets' �
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "ନେଟୱର୍କ '%s' ର SRV  ବିବରଣୀରେ 'ସର୍ଭିସ' ଗୁଣ ଅନୁପସ୍ଥିତ"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "ରାଜିନାମା ପାଇଁ 'ଲକ୍ଷ୍ଯସ୍ଥଳ' ଉପାଦାନ ଅନୁପସ୍ଥିତ"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "CPU ଟୋପୋଲୋଜିରେ ଅନୁପସ୍ଥିତ 'threads' ଗୁଣଧର୍ମ"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
@@ -11160,6 +11237,9 @@ msgstr "RAM ଫାଇଲତନ୍ତ୍ର ପାଇଁ  ଅନୁପସ୍ଥ�
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -11845,10 +11925,6 @@ msgstr "NULL ବାକ୍ୟଖଣ୍ଡ ପ୍ରାଚଳ '%s'"
 msgid "NULL value for field '%s'"
 msgstr "ସ୍ଥାନ '%s' ପାଇଁ ଶୂନ୍ୟ ମୂଲ୍ୟ"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "NUMA କକ୍ଷ ସଂଖ୍ୟା"
 
@@ -11895,6 +11971,9 @@ msgstr "NUMA ନୋଡ %d ଟି ସୀମା ବାହାରେ"
 
 msgid "NUMA node selections to set"
 msgstr "ସେଟ କରିବା ପାଇଁ NUMA ନୋଡ ଚୟନ"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "NUMA ଟୋପୋଲୋଜି NUMA କୋଷଗୁଡ଼ିକ ବିନା ଉଲ୍ଲେଖ ହୋଇଥାଏ"
@@ -15084,6 +15163,9 @@ msgstr "Ceph ଉପଯୋଗିତା ଉଲ୍ଲେଖ ହୋଇଛି, କି
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
 msgstr ""
@@ -16088,7 +16170,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "ଏହି ହୋଷ୍ଟ କୌଣସି vCenter ଦ୍ୱାରା ପରିଚାଳିତ ହୋଇନଥାଏ"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -17137,6 +17219,9 @@ msgstr "ଆଶୁଚିତ୍ରକୁ ନାମ  %s ସହିତ ଖୋଜି�
 #, fuzzy
 msgid "Unable to force bind to IPv6 only"
 msgstr "ପୋର୍ଟ %d ସହିତ ବାନ୍ଧିବାରେ ଅସମର୍ଥ"
+
+msgid "Unable to format NUMA node cache"
+msgstr ""
 
 msgid "Unable to format SELinux context"
 msgstr "SELinux ପ୍ରସଙ୍ଗକୁ ସଜାଡ଼ିବାରେ ଅସମର୍ଥ"
@@ -18236,6 +18321,10 @@ msgstr "close-on-exec ଫ୍ଲାଗକୁ ବିନ୍ୟାସ କରିବ�
 
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "କୋନସଲ ଫାଇଲ ନିରୂପକ ଫ୍ଲାଗ ବିନ୍ୟାସ କରିବାରେ ବିଫଳ"
+
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
 
 msgid "Unable to set interface parameters"
 msgstr "ଅନ୍ତରାପୃଷ୍ଠ ପ୍ରାଚଳଗୁଡ଼ିକୁ ସେଟ କରିବାରେ ଅସମର୍ଥ"
@@ -20107,9 +20196,6 @@ msgstr "ଧାରଣ କରିବା ପାଇଁ ଥିବା ତଥ୍ୟର �
 msgid "an <auth> definition already found for disk source"
 msgstr ""
 
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr ""
-
 msgid "an <encryption> definition already found for disk source"
 msgstr ""
 
@@ -20379,6 +20465,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "ପୃଷ୍ଠଭୂମି କାର୍ଯ୍ୟ"
@@ -20387,12 +20476,12 @@ msgid "backup job data missing"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr "କେବଳ ପଠନୀୟ ଡିସ୍କର କୌଣସି ମୂଖ୍ୟ ସ୍ତର ନଥାଏ"
-
-#, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "ପଥ '%s' ଟି ସମ୍ପୂର୍ଣ୍ଣ ନୁହଁ"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr "ଖରାପ ନିର୍ଦ୍ଦେଶ"
@@ -21198,10 +21287,6 @@ msgstr "%s ସଂରଚନା ପାଇଁ CPU ତଥ୍ୟକୁ ସଂକେ�
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "'%s' ପାଇଁ ଫାଇଲତନ୍ତ୍ର ନିର୍ଦ୍ଧାରଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "%s କୁ ନିଷ୍କ୍ରିୟ କରିପାରିବେ ନାହିଁ"
 
 msgid "cannot do managed save for transient domain"
 msgstr "ଅସ୍ଥାୟୀ ଡମେନ ପାଇଁ ପରିଚାଳିତ ସଂରକ୍ଷଣ କରିପାରିବେ ନାହିଁ"
@@ -22324,8 +22409,8 @@ msgid "cannot write data to file '%s'"
 msgstr "ତଥ୍ୟକୁ ଫାଇଲ '%s' ରେ ଲେଖି ପାରିବେ ନାହିଁ"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
-msgstr "IPv6 କୁ ବ୍ରିଜ '%s' ଉପରେ ସକ୍ରିୟ/ନିଷ୍କ୍ରିୟ କରିବାକୁ %s ରେ ଲେଖିପାରିବେ ନାହିଁ"
+msgid "cannot write to '%s' on bridge '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "cannot write to stdout"
@@ -23333,6 +23418,9 @@ msgstr "dnsmasq ସଂରଚନା ଫାଇଲ '%s' କୁ ଲେଖିପା�
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "radvd ସଂରଚନା ଫାଇଲ '%s' କୁ ଲେଖିପାରିଲା ନାହିଁ"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "cpu ସାଦୃଶ୍ୟ ସମର୍ଥିତ ନୁହଁ"
@@ -25194,9 +25282,8 @@ msgstr ""
 "'%s' ସହିତ ନୂତନ ଫିଲଟର ନିୟମ ଯୋଗ କରିବାରେ ବିଫଳ - ପୁରୁଣା ନିୟମଗୁଡ଼ିକୁ ପୁନଃସ୍ଥାପନ କରିବା ପାଇଁ ଚେଷ୍ଟା "
 "କରୁଅଛି"
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "ଫାଇଲକୁ ବନ୍ଦ କରିବାରେ ଅସଫଳ"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -27784,6 +27871,10 @@ msgstr "ଅଜଣା ପ୍ରଟୋକଲ '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "%s ରେ ଅବୈଧ ଭଣ୍ଡାର ପୁଲ ସୂଚକ ଅଛି"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28041,6 +28132,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "ଅବୈଧ ସ୍ମୃତି ସ୍ଥାନ ଆକାର %d ପାଇଲା"
@@ -28281,6 +28382,10 @@ msgstr "VMX ନିବେଶ '%s' ପାଇଁ ଅବୈଧ ମୂଲ୍ୟ '%s'"
 
 msgid "invalid statistics collection period"
 msgstr "ଅବୈଧ ପରିସଂଖ୍ଯାନ ସଂଗ୍ରହ  ଅବଧି"
+
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
 
 msgid "invalid storage pool pointer in"
 msgstr "ଏଠାରେ ଅବୈଧ ଭଣ୍ଡାର ପୁଲ ସୂଚକ ଅଛି"
@@ -28594,9 +28699,6 @@ msgstr "nl_recv ବିଫଳ ହୋଇଛି"
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "ଲେଖିବାlibssh2 ବିଫଳ ହୋଇଛି: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr "libselinux LXC ପ୍ରସଙ୍ଗ ପଥକୁ ସହାୟତା କରିନଥାଏ"
 
 #, fuzzy
 msgid "libssh transport error"
@@ -31369,10 +31471,6 @@ msgstr "'%s' ପାଇଁ କୌଣସି ବ୍ଲକ ଯନ୍ତ୍ର ପଥ
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr ""
 
-#, c-format
-msgid "no capabilities available for %s"
-msgstr ""
-
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "କୌଣସି ବିଭାଗ ସୀମା ଉପଲବ୍ଧ ନାହିଁ"
@@ -33694,9 +33792,6 @@ msgstr ""
 msgid "sanlock error %d"
 msgstr "କୌଣସି ତ୍ରୁଟି ନାହିଁ"
 
-msgid "sanlock is too old to support lock failure action"
-msgstr ""
-
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "sasl ଆରମ୍ଭ ଉତ୍ତର ତଥ୍ୟଟି ବହୁତ ବଡ଼ %d"
@@ -35592,6 +35687,18 @@ msgid "uid and gid should be mapped both"
 msgstr "uid ଏବଂ gid ଉଭୟଙ୍କ ସହିତ ମିଶୁଥିବା ଉଚିତ"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "ଉପକରଣ %s କୁ ଅଭିଗମ୍ୟ କରିବାରେ ଅସମର୍ଥ\n"
 
@@ -35640,6 +35747,10 @@ msgstr "ପାଇପ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ"
 #, fuzzy, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "ସର୍ଭର ପ୍ରମାଣପତ୍ର %s କୁ ପଢ଼ିବାରେ ବିଫଳ"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36060,9 +36171,6 @@ msgstr "%s କୁ ଯୋଡ଼ିବାରେ ଅସମର୍ଥ"
 
 msgid "unable to unload already unloaded profile"
 msgstr "ପୂର୍ବରୁ ଧାରଣ ହୋଇଥିବା ରୂପରେଖାକୁ ବାହାର କରିବାରେ ଅସମର୍ଥ"
-
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
@@ -37473,6 +37581,10 @@ msgstr "ଗୁଣ eoi ପାଇଁ ଅଜଣା ମୂଲ୍ୟ: '%s'"
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "ଗୁଣ eoi ପାଇଁ ଅଜଣା ମୂଲ୍ୟ: '%s'"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -38968,6 +39080,39 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "ସକେଟ ଠିକଣା '%s' କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ: %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "ଇଥରନେଟ ନିୟନ୍ତ୍ରକ ଅନୁକ୍ରମଣିକା %d ସୀମା [0..3] ବାହାରେ"
+
+#~ msgid "Failed to get fs flags"
+#~ msgstr "fs ସୂଚକକୁ ପାଇବାରେ ବିଫଳ"
+
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "NOCOW ସୂଚକକୁ ସେଟ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "NUMA ସେଲରେ 'cpus' ଗୁଣ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "backup of readonly disk '%s' makes no sense"
+#~ msgstr "କେବଳ ପଠନୀୟ ଡିସ୍କର କୌଣସି ମୂଖ୍ୟ ସ୍ତର ନଥାଏ"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "%s କୁ ନିଷ୍କ୍ରିୟ କରିପାରିବେ ନାହିଁ"
+
+#~ msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+#~ msgstr "IPv6 କୁ ବ୍ରିଜ '%s' ଉପରେ ସକ୍ରିୟ/ନିଷ୍କ୍ରିୟ କରିବାକୁ %s ରେ ଲେଖିପାରିବେ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "ଫାଇଲକୁ ବନ୍ଦ କରିବାରେ ଅସଫଳ"
+
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "libselinux LXC ପ୍ରସଙ୍ଗ ପଥକୁ ସହାୟତା କରିନଥାଏ"
 
 #, fuzzy
 #~ msgid "Failed to find path for %s binary"

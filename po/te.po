@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-29 11:55+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1071,6 +1071,9 @@ msgstr ""
 "'bus', 'target', మరియు 'unit' అనునవి scsi hostdev మూలపు చిరునామా కొరకు తప్పక "
 "తెలుపవలెను"
 
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
+
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం నందు 'can-offline' దొరకలేదు"
 
@@ -1105,6 +1108,15 @@ msgstr "libvirt %s యొక్క Virsh ఆదేశ వరుస సాధన�
 #, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం నందు 'online' దొరకలేదు"
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1214,6 +1226,9 @@ msgstr "fs ఫార్మాట్ %s తోడ్పాటులేదు"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' అనునది 'file' రకం వాల్యూమ్ కొరకు మాత్రమే చెల్లునది"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1670,6 +1685,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "కోర్ డంప్ చేసిన తరువాత, డొమైన్ '%d' ను libxenlight తో తిరిగికొనసాగించుటకు విఫలమైంది"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "SSH ఏజెంట్ చేత అందించు అన్ని గుర్తింపులు తిరస్కరించబడెను"
 
@@ -1730,6 +1748,9 @@ msgstr "ఆర్గుమెంట్లు null కాకూడదు"
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 #, fuzzy
@@ -2244,6 +2265,10 @@ msgstr "QEMU నిర్వర్తించదగు %s అనునది TP
 #, fuzzy, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr "QEMU నిర్వర్తించదగు %s అనునది TPM బ్యాకెండ్ రకం %s తో తోడ్పాటునీయదు"
+
+#, c-format
+msgid "Cache level '%u' already defined"
+msgstr ""
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3164,9 +3189,9 @@ msgstr "ఈ ప్లాట్‌ఫాం పైన ఇంటర్ఫేస్
 msgid "Cannot resize the max memory on an active domain"
 msgstr "క్రియాశీల డొమైన్ పైన గరిష్ట మెమొరీ పునఃపరిమాణం చేయలేదు"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "సాకెట్ చిరునామా '%s' ను పార్స్ చేయలేదు: %s"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "నియంత్రణ TTY లేకుండా ఇంటరాక్టివ్ కన్సోల్ నడుపలేదు"
@@ -5714,6 +5739,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "రక్షణ డ్రైవర్ '%s' ను కనుగొనలేదు"
@@ -5936,8 +5964,8 @@ msgid "Escape character is %s"
 msgstr "అక్షర పరికరం %s కనుగొనలేదు"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "ఈథర్నెట్ నియంత్రిక విషయసూచి %d అనునది [0..3] విస్తృతి దాటివుంది"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6607,6 +6635,10 @@ msgid "Failed to create checkpoint dir %s"
 msgstr "%s నుండీ క్షేత్రాన్ని సృష్టించటంలో విఫలమైంది"
 
 #, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "'%s' dev '%s' కొరకు సంచయం సృష్టించుటకు విఫలమైంది"
 
@@ -7126,10 +7158,6 @@ msgstr "డొమైన్ స్థితి పొందుటకు విఫ
 
 msgid "Failed to get domain's UUID"
 msgstr "డొమైన్ యొక్క UUID పొందుటకు విఫలమైంది"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "వ్యవస్థసమాచారం పొందుటకు విఫలమైంది"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8042,10 +8070,6 @@ msgstr "స్నాప్‌షాట్ %s తొలగించుటకు �
 msgid "Failed to set %s for %s: value too large"
 msgstr "%s ను %s కొరకు అమర్చుటకు విఫలమైంది: విలువ మరీ పెద్దది"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "PCI SYSFS ఫైల్ పొందుటకు విఫలమైంది"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "TLS సెషన్ సిద్దము చేయుటకు విఫలమైంది: %s"
@@ -8828,6 +8852,9 @@ msgstr "అతిథి ఏజెంట్ స్పందించుటలే�
 msgid "Guest agent not available for now"
 msgstr "ఇప్పుడు అతిథి ఏజెంట్ అందుబాటులోలేదు"
 
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr "ఈ QEMU బైనరీ చేత nvram పరికరం తోడ్పాటునీయదు"
@@ -9331,6 +9358,9 @@ msgstr "చెల్లని మోడ్ యాట్రిబ్యూట్ 
 msgid "Invalid %s image format specified in configuration file"
 msgstr "ఆకృతీకరణ ఫైలును విశ్లేషించటంలో విఫలమైంది"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "చెల్లని cpuNum %s నందు"
@@ -9347,13 +9377,29 @@ msgstr "చెల్లని మోడ్ యాట్రిబ్యూట్ 
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "నెట్వర్కు '%s' కొరకు dhcp విస్తృతి నందు 'end' యాట్రిబ్యూట్ దొరకలేదు"
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "చెల్లని అనువాద విలువ '%s'"
 
+#, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "చెల్లని మెమొరీ కోర్ డంప్ యాట్రిబ్యూట్ విలువ '%s'"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9593,9 +9639,17 @@ msgstr "సరికాని బస్ రకము '%s' ఫ్లాపీ డ
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "చెల్లని చిరునామా '%s' నెట్వర్కు '%s' నందు"
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "చెల్లని cpuNum %s నందు"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10473,6 +10527,9 @@ msgstr "లిబ్‌వర్ట్"
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "డిస్కు పరికరం '%s' స్నాప్‌షాటింగ్ తోడ్పాటునీయలేదు"
 
+msgid "Link already defined"
+msgstr ""
+
 msgid "List all manageable clients connected to <server>."
 msgstr ""
 
@@ -11026,11 +11083,12 @@ msgstr "ManagedEntityStatus స్థితి కొరకు చూచున�
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "cgroup మౌంట్ '%s' నందు '/' విచ్చేదని దొరకలేదు"
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU టోపాలజీ నందలి తప్పిపోయిన 'cores' యాట్రిబ్యూట్"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "NUMA అరనందు తప్పిపోయిన 'cpus' యాట్రిబ్యూట్"
 
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
@@ -11060,8 +11118,15 @@ msgstr "<interface> మూలకం నందు dev ఏట్రిబ్యూ
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "NUMA అరనందు తప్పిపోయిన 'cpus' యాట్రిబ్యూట్"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "లీజ్ కొరకు 'key' మూలకం దొరకట్లేదు"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11083,6 +11148,10 @@ msgstr "JSON స్థితి పత్రము నందు ధృవీక�
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON పత్రము నందు pid దత్తాంశం దొరకలేదు"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "'runtime.powerState' లక్షణం దొరకలేదు"
 
@@ -11093,11 +11162,17 @@ msgstr "CPU టోపాలజీ నందలి తప్పిపోయిన
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "నెట్వర్కు '%s' కొరకు dhcp విస్తృతి నందు 'start' యాట్రిబ్యూట్ దొరకలేదు"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "లీజ్ కొరకు 'target' మూలకం దొరకలేదు"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "CPU టోపాలజీ నందలి తప్పిపోయిన 'threads' యాట్రిబ్యూట్"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
@@ -11107,6 +11182,9 @@ msgstr "HyperV ఎన్‌లైట్మెంట్ విశేషణం '%s
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -11800,10 +11878,6 @@ msgstr "NULL స్ట్రింగ్ పారామితి '%s'"
 msgid "NULL value for field '%s'"
 msgstr "క్షేత్రం '%s' కొరకు NULL విలువ"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "NUMA సెల్ సంఖ్య"
 
@@ -11851,6 +11925,9 @@ msgstr "ఏ PCI బస్‌లు అందుబాటులో లేవు"
 
 msgid "NUMA node selections to set"
 msgstr "అమర్చుటకు NUMA నోడ్ ఎంపికలు"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "NUMA టోపాలజీ NUMA అరలు లేకుండా నిర్వచించబడెను"
@@ -15052,6 +15129,9 @@ msgstr "Ceph వాడుక తెలుపబడింది, అయితే 
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
 msgstr ""
@@ -16062,7 +16142,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "ఈ అతిధేయి vCenter చేత నిర్వహించబడుటలేదు"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -17101,6 +17181,9 @@ msgstr "పేరు '%s' తో స్నాప్‌షాట్ కనుగ�
 
 msgid "Unable to force bind to IPv6 only"
 msgstr "IPv6 కు బందనం చేయుటకు బలవంతం చేయలేదు"
+
+msgid "Unable to format NUMA node cache"
+msgstr ""
 
 msgid "Unable to format SELinux context"
 msgstr "SELinux సందర్భం ఫార్మాట్ చేయలేదు"
@@ -18213,6 +18296,10 @@ msgstr "set close-on-exec ఫ్లాగ్ అమర్చలేదు"
 
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "కన్సోల్ ఫైల్ డిస్క్రిప్టర్ నాన్-బ్లాకింగ్ అమర్చలేదు"
+
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
 
 msgid "Unable to set interface parameters"
 msgstr "ఇంటర్ఫేస్ పారామితులను అమర్చలేదు"
@@ -20087,9 +20174,6 @@ msgstr "అప్‌లోడ్ చేయుటకు దత్తాంశం 
 msgid "an <auth> definition already found for disk source"
 msgstr ""
 
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr ""
-
 msgid "an <encryption> definition already found for disk source"
 msgstr ""
 
@@ -20359,6 +20443,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "బ్యాక్‌గ్రౌండ్ జాబ్"
@@ -20366,13 +20453,13 @@ msgstr "బ్యాక్‌గ్రౌండ్ జాబ్"
 msgid "backup job data missing"
 msgstr ""
 
-#, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "పాత్ '%s' యదార్ధమైంది కాదు"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr "చెడ్డ ఆదేశం"
@@ -21173,10 +21260,6 @@ msgstr "%s ఆకృతి కొరకు CPU డాటాను డీకో�
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "'%s' కొరకు ఫైల్‌సిస్టమ్ నిర్ణయించలేదు"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "%sను అచేతనము చేయలేదు"
 
 msgid "cannot do managed save for transient domain"
 msgstr "అస్థిర డొమైన్ కొరకు నిర్వహించిన దాపు చేయలేదు"
@@ -22308,7 +22391,7 @@ msgid "cannot write data to file '%s'"
 msgstr "దత్తాంశం ఫైల్ '%s' కు వ్రాయలేదు"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 #, fuzzy
@@ -23315,6 +23398,9 @@ msgstr "dnsmasg ఆకృతీకరణ ఫైల్ '%s' వ్రాయలే
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "radvd ఆకృతీకరణ ఫైల్ '%s' వ్రాయలేక పోయింది"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "cpu ఎఫినిటి మద్దతీయుటలేదు"
@@ -25184,9 +25270,8 @@ msgid ""
 msgstr ""
 "'%s' కు కొత్త వడపోత నియమాలను జతచేయుటకు విఫలమైంది - పాత నియమాలను తిరిగివుంచుటకు ప్రయత్నిస్తోంది"
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "ఫైలు మూయుటకు విఫలమైంది"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -27784,6 +27869,10 @@ msgstr "తెలియని నిభందన(ప్రోటోకాల్)
 msgid "invalid backing protocol string '%s'"
 msgstr "%sనందు చెల్లని నిల్వ పూల్ సూచకి"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28041,6 +28130,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "చెల్లని మెమొరీ పరిమాణం %d పొందెను"
@@ -28282,6 +28381,10 @@ msgstr "చెల్లని విలువ '%s' VMX ప్రవేశం '%s
 
 msgid "invalid statistics collection period"
 msgstr "చెల్లని గణాంకాల సంపుటి వ్యవధి"
+
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
 
 msgid "invalid storage pool pointer in"
 msgstr "చెల్లని నిల్వ పూల్ సూచకి వుంది"
@@ -28595,9 +28698,6 @@ msgstr "nl_recv విఫలమైంది"
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "వ్రాయుట విఫలమైంది: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr "libselinux అనునది LXC సందర్భాల పాత్‌కు తోడ్పాటునీయదు"
 
 #, fuzzy
 msgid "libssh transport error"
@@ -31393,10 +31493,6 @@ msgstr "'%s' కొరకు యెటువంటి నిరోధక పర�
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr "prog %d vers %d serial %d తో ప్రత్యుత్తరమునకు కాల్ వెయిటింగ్ లేదు"
 
-#, c-format
-msgid "no capabilities available for %s"
-msgstr ""
-
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "ఏ వర్గపు విస్తృతి అందుబాటులోలేదు"
@@ -33725,9 +33821,6 @@ msgstr ""
 msgid "sanlock error %d"
 msgstr "దోషం లేదు"
 
-msgid "sanlock is too old to support lock failure action"
-msgstr "లాక్ వైఫల్యం చర్యకు తోడ్పాటునిచ్చుటకు సాన్‌లాక్ మరీ పాతది"
-
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "sasl ప్రారంభ ప్రత్యుత్తరం డాటా మరీ పొడవైనది %d"
@@ -35639,6 +35732,18 @@ msgid "uid and gid should be mapped both"
 msgstr "uid మరియు gid రెండూ మాప్ కావాలి"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "పరికరం %s ఏక్సెస్ చేయలేదు\n"
 
@@ -35687,6 +35792,10 @@ msgstr "పైప్ మూయలేదు"
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "దీనివద్ద సేవికకు అనుసంధానమవలేదు '%s:%s'"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36108,9 +36217,6 @@ msgstr "%s ట్రంకేట్ చేయలేకపోయింది"
 
 msgid "unable to unload already unloaded profile"
 msgstr "ఇప్పటికే అన్‌లోడ్ చేసిన ప్రొఫైల్‌ను అన్‌లోడ్ చేయలేదు"
-
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
@@ -37520,6 +37626,10 @@ msgstr "తెలియని విలువ '%s' <address> 'multifunction' య
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "చెల్లని రూల్ చర్య యాట్రిబ్యూట్ విలువ"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39017,6 +39127,37 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "సాకెట్ చిరునామా '%s' ను పార్స్ చేయలేదు: %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "ఈథర్నెట్ నియంత్రిక విషయసూచి %d అనునది [0..3] విస్తృతి దాటివుంది"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "వ్యవస్థసమాచారం పొందుటకు విఫలమైంది"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "PCI SYSFS ఫైల్ పొందుటకు విఫలమైంది"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "NUMA అరనందు తప్పిపోయిన 'cpus' యాట్రిబ్యూట్"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "%sను అచేతనము చేయలేదు"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "ఫైలు మూయుటకు విఫలమైంది"
+
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "libselinux అనునది LXC సందర్భాల పాత్‌కు తోడ్పాటునీయదు"
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr "లాక్ వైఫల్యం చర్యకు తోడ్పాటునిచ్చుటకు సాన్‌లాక్ మరీ పాతది"
 
 #~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 #~ msgstr "NAT '%s' కు యత్నించెను. NAT అనునది IPv4 కొరకు మాత్రమే తోడ్పాటునిచ్చును."

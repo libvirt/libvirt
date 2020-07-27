@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-29 11:55+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2016-03-31 11:42+0000\n"
 "Last-Translator: yuliya <ypoyarko@redhat.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1175,6 +1175,9 @@ msgstr ""
 "Адрес в секции source в определении hostdev SCSI-устройства должен содержать "
 "«bus», «target» и «unit»."
 
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
+
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "Ответ guest-get-vcpus не содержит «can-offline»"
 
@@ -1209,6 +1212,15 @@ msgstr "Утилита командной строки virsh для libvirt %s\n
 #, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "Ответ guest-get-vcpus не содержит «online»"
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1320,6 +1332,9 @@ msgstr "Формат файловых систем %s не поддержива�
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "«startupPolicy» используется только для томов типа «file»"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1777,6 +1792,9 @@ msgstr ""
 "Не удалось возобновить работу домена «%d» при помощи libxenlight после "
 "создания дампа"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr ""
 
@@ -1838,6 +1856,9 @@ msgstr "Аргументы не могут быть пустыми"
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 #, fuzzy
@@ -2364,6 +2385,10 @@ msgstr "nbd не поддерживает протокол «%s»"
 
 #, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cache level '%u' already defined"
 msgstr ""
 
 #, c-format
@@ -3283,9 +3308,9 @@ msgstr "Нельзя переименовать «%s» в «%s» на этой �
 msgid "Cannot resize the max memory on an active domain"
 msgstr "Максимальный размер активного домена не может быть изменен"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "Не удалось выполнить разбор адреса сокета «%s»: %s"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "Запуск интерактивной консоли без управления TTY не возможен"
@@ -5874,6 +5899,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "Драйвер «%s» не найден"
@@ -6101,8 +6129,8 @@ msgid "Escape character is %s"
 msgstr "символьное устройство %s не найдено"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "Индекс контроллера Ethernet %d выходит за пределы диапазона [0...3]"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6788,6 +6816,10 @@ msgid "Failed to create checkpoint dir %s"
 msgstr "Не удалось создать домен из %s"
 
 #, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "Не удалось создать каталог для  «%s», устройства «%s»"
 
@@ -7312,10 +7344,6 @@ msgstr "Не удалось получить статус домена"
 
 msgid "Failed to get domain's UUID"
 msgstr "Не удалось получить UUID домена"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "не удалось получить sysinfo"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8249,10 +8277,6 @@ msgstr "Не удалось сериализовать снимок"
 msgid "Failed to set %s for %s: value too large"
 msgstr "Не удалось установить %s для %s: слишком большое значение"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "Не удалось получить файл SYSFS PCI"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "Не удалось инициализировать сеанс TLS: %s"
@@ -9040,6 +9064,9 @@ msgstr "Агент гостя не отвечает: %s"
 msgid "Guest agent not available for now"
 msgstr "Агент гостя недоступен"
 
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr "Этот QEMU не поддерживает устройство nvram"
@@ -9566,6 +9593,9 @@ msgstr "Недопустимый атрибут режима «%s»"
 msgid "Invalid %s image format specified in configuration file"
 msgstr "ошибка разбора файла конфигурации"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "Недопустимое значение cpuNum в %s"
@@ -9582,13 +9612,29 @@ msgstr "Недопустимый атрибут режима «%s»"
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "Не задан атрибут «end» диапазона dhcp для сети  «%s»"
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "Недопустимое значение трансляции BIOS: «%s»"
 
+#, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "Недопустимое значение атрибута дампа памяти: «%s»"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9828,9 +9874,17 @@ msgstr "Недопустимый тип шины «%s» для дисковод�
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "Недопустимый адрес «%s» в сети «%s»"
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "Недопустимое значение cpuNum в %s"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10722,6 +10776,9 @@ msgstr "Libvirt"
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "Устройство «%s» не поддерживает создание снимков"
 
+msgid "Link already defined"
+msgstr ""
+
 msgid "List all manageable clients connected to <server>."
 msgstr ""
 
@@ -11296,11 +11353,12 @@ msgstr "При получении ManagedEntityStatus не удалось обн
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "Отсутствует разделитель «/» в строке монтирования cgroup «%s»"
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "Отсутствует атрибут «cores» в топологии процессора"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "Отсутствует атрибут «cpus» в ячейке NUMA"
 
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
@@ -11330,8 +11388,15 @@ msgstr "элемент  <interface>  не содержит атрибут «dev�
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "Отсутствует атрибут «cpus» в ячейке NUMA"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "Секция <lease> должна содержать элемент «key»"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11353,6 +11418,10 @@ msgstr "Документ JSON не содержит PID"
 msgid "Missing 'pipefd' in JSON document"
 msgstr "Документ JSON не содержит PID"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "Свойство runtime.powerState отсутствует"
 
@@ -11363,11 +11432,17 @@ msgstr "Отсутствует атрибут «sockets» в топологии 
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "Не задан атрибут «start» диапазона dhcp для сети  «%s»"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "Секция <lease> должна содержать элемент «target»"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "Отсутствует атрибут «threads» в топологии процессора"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
@@ -11378,6 +11453,9 @@ msgstr ""
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -12098,10 +12176,6 @@ msgstr "Параметр «%s» имеет значение NULL."
 msgid "NULL value for field '%s'"
 msgstr "Поле «%s» содержит NULL"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "номер ячейки NUMA"
 
@@ -12150,6 +12224,9 @@ msgstr "консольные устройства недоступны"
 
 msgid "NUMA node selections to set"
 msgstr "список узлов NUMA"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "Топология NUMA определена без ячеек"
@@ -15397,6 +15474,9 @@ msgstr "выбран тип ceph, но имя ключа не определен
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
 msgstr ""
@@ -16431,8 +16511,8 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Этот хост не находится под управлением vCenter"
 
-msgid "This snapshot has children, please delete theses snapshots before"
-msgstr "У снимка есть потомки, которые необходимо удалить в первую очередь"
+msgid "This snapshot has children, please delete these snapshots before"
+msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Этот тип устройства не может быть автоматически подключен."
@@ -17478,6 +17558,9 @@ msgstr "Снимок %s не найден"
 #, fuzzy
 msgid "Unable to force bind to IPv6 only"
 msgstr "Не удалось найти UUID %s"
+
+msgid "Unable to format NUMA node cache"
+msgstr ""
 
 msgid "Unable to format SELinux context"
 msgstr "Ошибка форматирования контекста SELinux"
@@ -18574,6 +18657,10 @@ msgstr "Не удалось установить флаг close-on-exec"
 
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "Не удалось установить неблокирующий режим для дескриптора консоли"
+
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
 
 msgid "Unable to set interface parameters"
 msgstr "Не удалось установить параметры интерфейса"
@@ -20478,9 +20565,6 @@ msgstr "размер отправляемых данных"
 msgid "an <auth> definition already found for disk source"
 msgstr ""
 
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr ""
-
 msgid "an <encryption> definition already found for disk source"
 msgstr ""
 
@@ -20756,6 +20840,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "фоновое задание"
@@ -20764,12 +20851,12 @@ msgid "backup job data missing"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr "Доступный только для чтения диск не имеет родителей"
-
-#, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "путь «%s» не является абсолютным"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr "неверная команда"
@@ -21582,10 +21669,6 @@ msgstr "не удалось расшифровать данные процесс
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "Не удалось определить файловую систему для «%s»"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "не удалось отключить %s"
 
 msgid "cannot do managed save for transient domain"
 msgstr "состояние временного домена не может быть сохранено"
@@ -22738,7 +22821,7 @@ msgid "cannot write data to file '%s'"
 msgstr "не удалось сохранить данные в «%s»"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 #, fuzzy
@@ -23755,6 +23838,9 @@ msgstr "ошибка записи в файл конфигурации dnsmasq: 
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "ошибка записи в файл конфигурации radvd: «%s»"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "сопоставление процессоров не поддерживается"
@@ -25643,9 +25729,8 @@ msgstr ""
 "Не удалось добавить новые правила фильтрования для «%s». Будут восстановлены "
 "старые правила."
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "не удалось закрыть файл"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -28274,6 +28359,10 @@ msgstr "Неизвестный протокол «%s»"
 msgid "invalid backing protocol string '%s'"
 msgstr "недопустимый указатель пула в %s"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28531,6 +28620,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "Получен недопустимый размер памяти %d"
@@ -28773,6 +28872,10 @@ msgstr "Недопустимое значение «%s» для записи VMX
 
 msgid "invalid statistics collection period"
 msgstr "недопустимый интервал сбора статистики в описании <memballoon>"
+
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
 
 msgid "invalid storage pool pointer in"
 msgstr "недопустимый указатель пула в"
@@ -29094,10 +29197,6 @@ msgstr "ошибка nl_recv"
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "ошибка записи: %s"
-
-#, fuzzy
-msgid "libselinux does not support LXC contexts path"
-msgstr "libxenlight не поддерживает временные диски"
 
 #, fuzzy
 msgid "libssh transport error"
@@ -31920,10 +32019,6 @@ msgstr "не указан путь к блочному устройству дл
 msgid "no call waiting for reply with prog %d vers %d serial %d"
 msgstr ""
 
-#, c-format
-msgid "no capabilities available for %s"
-msgstr ""
-
 #, fuzzy
 msgid "no cgroup backend available"
 msgstr "консольные устройства недоступны"
@@ -34312,10 +34407,6 @@ msgstr ""
 msgid "sanlock error %d"
 msgstr "нет ошибки"
 
-msgid "sanlock is too old to support lock failure action"
-msgstr ""
-"эта версия sanlock еще не поддерживает операцию обработки сбоя блокирования"
-
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "слишком длинный ответ запуска SASL %d"
@@ -36248,6 +36339,18 @@ msgid "uid and gid should be mapped both"
 msgstr "необходимо создать сопоставления для UID и GID"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "Не удалось получить доступ к %s\n"
 
@@ -36297,6 +36400,10 @@ msgstr "не удалось закрыть канал"
 #, fuzzy, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "не удалось прочесть сертификат сервера %s"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36718,9 +36825,6 @@ msgstr "Не удалось усечь %s"
 
 msgid "unable to unload already unloaded profile"
 msgstr "невозможно выгрузить уже выгруженный профиль"
-
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
@@ -38136,6 +38240,10 @@ msgstr "Неизвестное значение атрибута «multifunction
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "неизвестный атрибут действия правила"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39652,6 +39760,47 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "Не удалось выполнить разбор адреса сокета «%s»: %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "Индекс контроллера Ethernet %d выходит за пределы диапазона [0...3]"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "не удалось получить sysinfo"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "Не удалось получить файл SYSFS PCI"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "Отсутствует атрибут «cpus» в ячейке NUMA"
+
+#~ msgid "This snapshot has children, please delete theses snapshots before"
+#~ msgstr "У снимка есть потомки, которые необходимо удалить в первую очередь"
+
+#, fuzzy
+#~ msgid "backup of readonly disk '%s' makes no sense"
+#~ msgstr "Доступный только для чтения диск не имеет родителей"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "не удалось отключить %s"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "не удалось закрыть файл"
+
+#, fuzzy
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "libxenlight не поддерживает временные диски"
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr ""
+#~ "эта версия sanlock еще не поддерживает операцию обработки сбоя "
+#~ "блокирования"
 
 #~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
 #~ msgstr "Попытка преобразования «%s». NAT поддерживается только для IPv4."
