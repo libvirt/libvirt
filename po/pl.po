@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-07-24 15:35+0000\n"
-"PO-Revision-Date: 2020-07-27 07:34+0000\n"
+"PO-Revision-Date: 2020-07-27 14:31+0000\n"
 "Last-Translator: Szymon Scholz <szymonscholz@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/pl/>\n"
@@ -334,7 +334,7 @@ msgstr ""
 
 #, c-format
 msgid "$%s value should be between 0 and %d"
-msgstr ""
+msgstr "Wartość $%s powinna wynosić między 0 i %d"
 
 #, fuzzy, c-format
 msgid "%6s: Checking %-60s: "
