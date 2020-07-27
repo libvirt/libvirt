@@ -42,9 +42,6 @@
 
 #define VIRT_ADMIN_PROMPT "virt-admin # "
 
-/* we don't need precision to milliseconds in this module */
-#define VIRT_ADMIN_TIME_BUFLEN VIR_TIME_STRING_BUFLEN - 3
-
 static char *progname;
 
 static const vshCmdGrp cmdGroups[];
