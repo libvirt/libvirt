@@ -221,8 +221,12 @@ executable(
 )
 
 tools_conf = configuration_data()
+tools_conf.set('PACKAGE', meson.project_name())
 tools_conf.set('VERSION', meson.project_version())
+tools_conf.set('bindir', bindir)
+tools_conf.set('localedir', localedir)
 tools_conf.set('localstatedir', localstatedir)
+tools_conf.set('sbindir', sbindir)
 tools_conf.set('schemadir', pkgdatadir / 'schemas')
 tools_conf.set('sysconfdir', sysconfdir)
 
@@ -254,3 +258,12 @@ if conf.has('WITH_SANLOCK')
     install_mode: 'rwxrwxr-x',
   )
 endif
+
+configure_file(
+  input: 'libvirt-guests.sh.in',
+  output: 'libvirt-guests.sh',
+  configuration: tools_conf,
+  install: true,
+  install_dir: libexecdir,
+  install_mode: 'rwxrwxr-x',
+)

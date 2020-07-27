@@ -24,8 +24,6 @@ STANDALONE_CPPFLAGS = -I$(top_srcdir)
 confdir = $(sysconfdir)/libvirt
 conf_DATA =
 
-libexec_SCRIPTS = libvirt-guests.sh
-
 if WITH_LOGIN_SHELL
 conf_DATA += virt-login-shell.conf
 endif WITH_LOGIN_SHELL
@@ -48,19 +46,6 @@ install-sysconfig:
 uninstall-sysconfig:
 	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig ||:
-
-libvirt-guests.sh: libvirt-guests.sh.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]PACKAGE[@]|$(PACKAGE)|g' \
-	    -e 's|[@]bindir[@]|$(bindir)|g' \
-	    -e 's|[@]localedir[@]|$(localedir)|g' \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    chmod a+x $@-t && \
-	    mv $@-t $@
-BUILT_SOURCES += libvirt-guests.sh
 
 SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
 
