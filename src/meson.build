@@ -34,3 +34,45 @@ endif
 if conf.has('WITH_SECDRIVER_APPARMOR')
   secdriver_dep += apparmor_dep
 endif
+
+
+# generate systemtap files
+
+systemtap_dir = datadir / 'systemtap' / 'tapset'
+
+dtrace_gen_headers = []
+dtrace_gen_objects = []
+
+if conf.has('WITH_DTRACE_PROBES')
+  infile = 'libvirt_probes.d'
+  out_h = 'libvirt_probes.h'
+  out_o = 'libvirt_probes.o'
+  out_stp = 'libvirt_probes.stp'
+
+  dtrace_gen_headers += custom_target(
+    out_h,
+    input: infile,
+    output: out_h,
+    command: [ dtrace_prog, '-o', '@OUTPUT@', '-h', '-s', '@INPUT@' ],
+  )
+
+  dtrace_gen_objects += custom_target(
+    out_o,
+    input: infile,
+    output: out_o,
+    command: [ dtrace_prog, '-o', '@OUTPUT@', '-G', '-s', '@INPUT@' ],
+  )
+
+  custom_target(
+    out_stp,
+    input: infile,
+    output: out_stp,
+    command: [
+      meson_python_prog, python3_prog.path(), dtrace2systemtap_prog.path(),
+      bindir, sbindir, libdir, '@INPUT@'
+    ],
+    capture: true,
+    install: true,
+    install_dir: systemtap_dir,
+  )
+endif
