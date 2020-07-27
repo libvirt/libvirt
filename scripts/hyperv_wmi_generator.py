@@ -372,12 +372,7 @@ class Property:
         return '    { "%s", "%s", %s },\n' % (self.name, self.type.lower(), str(self.is_array).lower())
 
 
-def open_and_print(filename):
-    if filename.startswith("./"):
-        print("  GEN      " + filename[2:])
-    else:
-        print("  GEN      " + filename)
-
+def open_file(filename):
     return open(filename, "wt")
 
 
@@ -438,9 +433,9 @@ def main():
     input_filename = os.path.join(sys.argv[1], "hyperv", "hyperv_wmi_generator.input")
     output_dirname = os.path.join(sys.argv[2], "hyperv")
 
-    classes_typedef = open_and_print(os.path.join(output_dirname, "hyperv_wmi_classes.generated.typedef"))
-    classes_header = open_and_print(os.path.join(output_dirname, "hyperv_wmi_classes.generated.h"))
-    classes_source = open_and_print(os.path.join(output_dirname, "hyperv_wmi_classes.generated.c"))
+    classes_typedef = open_file(os.path.join(output_dirname, "hyperv_wmi_classes.generated.typedef"))
+    classes_header = open_file(os.path.join(output_dirname, "hyperv_wmi_classes.generated.h"))
+    classes_source = open_file(os.path.join(output_dirname, "hyperv_wmi_classes.generated.c"))
 
     # parse input file
     number = 0

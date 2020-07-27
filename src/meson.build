@@ -97,4 +97,5 @@ subdir('vmx')
 subdir('admin')
 
 subdir('esx')
+subdir('hyperv')
 subdir('vmware')
