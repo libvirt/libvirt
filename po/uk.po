@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-07-24 15:35+0000\n"
-"PO-Revision-Date: 2020-06-29 15:46+0000\n"
+"PO-Revision-Date: 2020-07-27 07:34+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -1252,7 +1252,7 @@ msgstr ""
 "для адреси джерела scsi hostdev має бути вказано «bus», «target» і «unit»"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
-msgstr ""
+msgstr "«cache» посилається на кеш вузлів NUMA, якого не існує"
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "у відповіді guest-get-vcpus пропущено «can-offline»"
@@ -1291,9 +1291,11 @@ msgid ""
 "'incremental' backup mode of disk '%s' requires setting 'incremental' field "
 "for disk or backup"
 msgstr ""
+"режим резервного копіювання «incremental» для диска «%s» потребує "
+"встановлення поля «incremental» для диска або резервної копії"
 
 msgid "'initiator' refers to a non-existent NUMA node"
-msgstr ""
+msgstr "«initiator» посилається на вузол NUMA, якого не існує"
 
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
 msgstr "підтримку «ioeventfd» передбачено лише для контролерів virtio-scsi"
@@ -1402,7 +1404,7 @@ msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "«startupPolicy» можна використовувати лише для томів типу «file»"
 
 msgid "'target' refers to a non-existent NUMA node"
-msgstr ""
+msgstr "«target» посилається на вузол NUMA, якого не існує"
 
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr ""
@@ -1864,7 +1866,7 @@ msgstr ""
 "допомогою libxenlight"
 
 msgid "Ain't nobody heard of that much cache level"
-msgstr ""
+msgstr "Ніхто не чув про такий високий рівень кешування"
 
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "Всім профілям, наданим агентом SSH, було відмовлено"
@@ -1934,7 +1936,7 @@ msgstr ""
 "системи"
 
 msgid "At least one NUMA node has to have CPUs"
-msgstr ""
+msgstr "Принаймні один з вузлів NUMA повинен мати процесори"
 
 msgid "At least one PTY console is required"
 msgstr "Потрібна принаймні одна консоль PTY"
@@ -2486,7 +2488,7 @@ msgstr ""
 
 #, c-format
 msgid "Cache level '%u' already defined"
-msgstr ""
+msgstr "Рівень кешування «%u» вже визначено"
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3418,7 +3420,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot resolve %s address: %s"
-msgstr ""
+msgstr "Не вдалося обробити адресу %s: %s"
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "Не можна запускати інтерактивну консоль без керування TTY"
@@ -6028,7 +6030,7 @@ msgid "Duplicate hash table key '%s'"
 msgstr "Дублікат хешу ключа таблиці «%s»"
 
 msgid "Duplicate info for NUMA latencies"
-msgstr ""
+msgstr "Дублювання даних для латентностей NUMA"
 
 #, c-format
 msgid "Duplicate security driver %s"
@@ -6255,7 +6257,7 @@ msgstr "Символом екранування є %s"
 
 #, c-format
 msgid "Ethernet controller index %d out of [0..%d] range"
-msgstr ""
+msgstr "Індекс контролера ethernet %d лежить поза межами діапазону [0..%d]"
 
 msgid "Event thread is already running"
 msgstr "Потік обробки подій вже запущено"
@@ -6940,7 +6942,7 @@ msgstr "Не вдалося створити каталог контрольно
 
 #, c-format
 msgid "Failed to create dbus state dir %s"
-msgstr ""
+msgstr "Не вдалося створити каталог станів DBus, %s"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -9203,7 +9205,7 @@ msgid "Guest agent not available for now"
 msgstr "Агент гостьової системи зараз недоступний"
 
 msgid "HMAT is not supported with this QEMU"
-msgstr ""
+msgstr "підтримки HMAT у цьому QEMU не передбачено"
 
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr ""
@@ -9732,7 +9734,7 @@ msgid "Invalid %s image format specified in configuration file"
 msgstr "У файлі налаштування вказано некоректний формат образу %s"
 
 msgid "Invalid 'cache' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Некоректний атрибут «cache» у взаємозв'язках NUMA"
 
 msgid "Invalid 'cpu.max' data."
 msgstr "Некоректні дані «cpu.max»."
@@ -9750,7 +9752,7 @@ msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "Некоректний атрибут «id» у відстанях NUMA для спорідненого вузла: «%s»"
 
 msgid "Invalid 'initiator' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Некоректний атрибут «initiator» у взаємозв'язках NUMA"
 
 #, c-format
 msgid "Invalid 'iothread' value '%s'"
@@ -9758,20 +9760,20 @@ msgstr "Некоректне значення «iothread» «%s»"
 
 #, c-format
 msgid "Invalid 'level' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Некоректний атрибут «level» в елементі кешу для вузла NUMA %d"
 
 #, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "Некоректне значення атрибута «memAccess»,«%s»"
 
 msgid "Invalid 'target' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Некоректний атрибут «target» у взаємозв'язках NUMA"
 
 msgid "Invalid 'type' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Некоректний атрибут «type» у взаємозв'язках NUMA"
 
 msgid "Invalid 'value' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Некоректний атрибут «value» у взаємозв'язках NUMA"
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -10030,7 +10032,7 @@ msgstr "Некоректний номер каналу, «%s», у контро�
 
 #, c-format
 msgid "Invalid cache associativity '%s'"
-msgstr ""
+msgstr "Некоректна асоціативність кешу «%s»"
 
 #, c-format
 msgid "Invalid cache id '%s'"
@@ -10038,7 +10040,7 @@ msgstr "Некоректний ідентифікатор кешу «%s»"
 
 #, c-format
 msgid "Invalid cache policy '%s'"
-msgstr ""
+msgstr "Некоректні правила кешування «%s»"
 
 #, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10940,7 +10942,7 @@ msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "У події життєвого циклу «%s» не передбачено підтримки дії «%s»"
 
 msgid "Link already defined"
-msgstr ""
+msgstr "Посилання вже визначено"
 
 msgid "List all manageable clients connected to <server>."
 msgstr ""
@@ -11500,7 +11502,7 @@ msgstr "У шляху монтування cgroup «%s» пропущено «/�
 
 #, c-format
 msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Пропущено атрибут «associativity» в елементі кешу для вузла NUMA %d"
 
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "Не вказано атрибута «cores» у топології процесора"
@@ -11529,14 +11531,14 @@ msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "Не вказано атрибут «id» у відстанях NUMA під «cell id %d»"
 
 msgid "Missing 'initiator' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Пропущено атрибут «initiator» у взаємозв'язках NUMA"
 
 msgid "Missing 'key' element for lease"
 msgstr "Не вказано елемента «key» для надання"
 
 #, c-format
 msgid "Missing 'level' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Пропущено атрибут «level» в елементі кешу для вузла NUMA %d"
 
 msgid "Missing 'link' attribute for NIC"
 msgstr "Не вистачає атрибута «link» для NIC"
@@ -11556,7 +11558,7 @@ msgstr "У документі JSON не вистачає «pipefd»"
 
 #, c-format
 msgid "Missing 'policy' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Пропущено атрибут «policy» в елементі кешу для вузла NUMA %d"
 
 msgid "Missing 'runtime.powerState' property"
 msgstr "Не вказано властивості «runtime.powerState»"
@@ -11569,7 +11571,7 @@ msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "У діапазоні DHCP мережі «%s» не вистачає атрибута «start»"
 
 msgid "Missing 'target' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Пропущено атрибут «target» у взаємозв'язках NUMA"
 
 msgid "Missing 'target' element for lease"
 msgstr "Не вказано елемента «target» для надання"
@@ -11578,7 +11580,7 @@ msgid "Missing 'threads' attribute in CPU topology"
 msgstr "Не вказано атрибута «threads» у топології процесора"
 
 msgid "Missing 'type' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Пропущено атрибут «type» у взаємозв'язках NUMA"
 
 msgid "Missing 'uuid' attribute for element <address>"
 msgstr "Пропущено атрибут «uuid» елемента <address>"
@@ -11592,7 +11594,7 @@ msgstr ""
 "%d»"
 
 msgid "Missing 'value' attribute in NUMA interconnects"
-msgstr ""
+msgstr "Пропущено атрибут «value» у взаємозв'язках NUMA"
 
 msgid "Missing <address> element"
 msgstr "Пропущено елемент <address>"
@@ -12346,7 +12348,7 @@ msgid "NUMA node selections to set"
 msgstr "Набір вузлів NUMA для встановлення"
 
 msgid "NUMA nodes without CPUs can't be initiator"
-msgstr ""
+msgstr "Вузли NUMA без процесорів не можуть бути ініціаторами"
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "Топологію NUMA визначено без комірок NUMA"
@@ -15665,7 +15667,7 @@ msgid "TLS:"
 msgstr "TLS:"
 
 msgid "TPM 1.2 is not supported with the SPAPR device model"
-msgstr ""
+msgstr "Підтримки TPM 1.2 у поєднанні із моделлю пристроїв SPAPR не передбачено"
 
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
@@ -16881,7 +16883,7 @@ msgid "This host is not managed by a vCenter"
 msgstr "Цією основною системою не керує vCenter"
 
 msgid "This snapshot has children, please delete these snapshots before"
-msgstr ""
+msgstr "У цього знімка є дочірні. Будь ласка, спочатку вилучіть ці знімки"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr "диск такого типу не можна від'єднувати у «гарячому» режимі"
@@ -17915,7 +17917,7 @@ msgid "Unable to force bind to IPv6 only"
 msgstr "Не вдалося обмежити прив'язку лише адресами IPv6"
 
 msgid "Unable to format NUMA node cache"
-msgstr ""
+msgstr "Не вдалося виконати форматування кешу вузлів NUMA"
 
 msgid "Unable to format SELinux context"
 msgstr "Не вдалося виконати форматування контексту SELinux"
@@ -18976,6 +18978,7 @@ msgstr ""
 #, c-format
 msgid "Unable to set copy-on-write state on '%s' to '%s'"
 msgstr ""
+"Не вдалося встановити стан копіювання при записі на «%s» у значення «%s»"
 
 msgid "Unable to set interface parameters"
 msgstr "Не вдалося встановити значення параметрів інтерфейсу"
@@ -21169,7 +21172,7 @@ msgid ""
 msgstr "backingStore дзеркала без VIR_DOMAIN_BLOCK_COPY_SHALLOW не має сенсу"
 
 msgid "backup TLS directory not configured"
-msgstr ""
+msgstr "каталог резервного копіювання TLS не налаштовано"
 
 msgid "backup job"
 msgstr "завдання з резервного копіювання"
@@ -21183,7 +21186,7 @@ msgstr "шлях сокета резервної копії «%s» має бут
 
 #, c-format
 msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
-msgstr ""
+msgstr "каталогу backup_tls_x509_cert_dir «%s» не існує"
 
 msgid "bad command"
 msgstr "помилкова команда"
@@ -23177,7 +23180,7 @@ msgstr "не вдалося записати дані до файла «%s»"
 
 #, c-format
 msgid "cannot write to '%s' on bridge '%s'"
-msgstr ""
+msgstr "не вдалося виконати запис до «%s» на містку «%s»"
 
 msgid "cannot write to stdout"
 msgstr "не вдалося записати дані до stdout"
@@ -24192,7 +24195,7 @@ msgid "couldn't write radvd config file '%s'"
 msgstr "не вдалося виконати запис до файла налаштувань radvd «%s»"
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
-msgstr ""
+msgstr "можливістю cow можна скористатися лише для буферів «fs» і «dir»"
 
 msgid "cpu affinity is not supported"
 msgstr "прив'язка процесорів не підтримується"
@@ -26076,7 +26079,7 @@ msgstr ""
 "старі правила"
 
 msgid "failed to add subsystem filter"
-msgstr ""
+msgstr "не вдалося додати фільтр підсистем"
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -28727,7 +28730,7 @@ msgstr "некоректний рядок протоколу резервува�
 
 #, c-format
 msgid "invalid backupmode '%s' of disk '%s'"
-msgstr ""
+msgstr "некоректний режим резервного копіювання «%s» диска «%s»"
 
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr "некоректний розмір кешу у відповіді query-migrate-cache-size"
@@ -28994,13 +28997,15 @@ msgstr ""
 
 #, c-format
 msgid "invalid mac address check value: '%s'"
-msgstr ""
+msgstr "некоректне значення перевірки MAC-адреси: «%s»"
 
 #, c-format
 msgid ""
 "invalid mac address check value: '%s'. Valid values are \"generated\" and "
 "\"static\"."
 msgstr ""
+"некоректне значення перевірки MAC-адреси: «%s». Коректними значеннями є "
+"«generated» і «static»."
 
 #, c-format
 msgid "invalid master key read, size=%zd"
@@ -29245,7 +29250,7 @@ msgstr "некоректний період збирання статистич�
 
 #, c-format
 msgid "invalid storage pool cow feature state '%s'"
-msgstr ""
+msgstr "некоректний стан можливості cow буфера сховища даних «%s»"
 
 msgid "invalid storage pool pointer in"
 msgstr "некоректний вказівник на буфер даних у"
@@ -36681,15 +36686,15 @@ msgstr "слід пов'язати uid і gid"
 
 #, c-format
 msgid "unable control COW flag on '%s'"
-msgstr ""
+msgstr "не вдалося виконати керування прапорцем COW на «%s»"
 
 #, c-format
 msgid "unable get directory flags on '%s'"
-msgstr ""
+msgstr "не вдалося отримати прапорці каталогів на «%s»"
 
 #, c-format
 msgid "unable query filesystem type on '%s'"
-msgstr ""
+msgstr "не вдалося виконати запит щодо типу файлової системи на «%s»"
 
 #, c-format
 msgid "unable to access device %s\n"
@@ -36743,7 +36748,7 @@ msgstr "не вдалося встановити з'єднання з серве
 
 #, c-format
 msgid "unable to control COW flag on '%s', not btrfs"
-msgstr ""
+msgstr "не вдалося виконати керування прапорцем COW на «%s» — це не BTRFS"
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -38562,7 +38567,7 @@ msgstr "невідоме значення, «%s» у атрибуті «usable»
 
 #, c-format
 msgid "unknown value '%s' of 'tls' attribute"
-msgstr ""
+msgstr "невідоме значення «%s» атрибуту «tls»"
 
 #, c-format
 msgid "unknown value for attribute eoi: '%s'"
