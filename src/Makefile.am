@@ -293,20 +293,6 @@ endif ! WITH_LIBSSH
 
 BUILT_SOURCES += $(GENERATED_SYM_FILES)
 
-libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
-		$(ACCESS_DRIVER_SYM_FILES) \
-		$(top_builddir)/config.status
-	$(AM_V_GEN)rm -f $@-tmp $@ ; \
-	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp && \
-	cat $(srcdir)/libvirt_public.syms >>$@-tmp && \
-	printf '\n\n# Private symbols\n\n' >>$@-tmp && \
-	printf 'LIBVIRT_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp && \
-	printf 'global:\n\n' >>$@-tmp && \
-	cat $(USED_SYM_FILES) $(ACCESS_DRIVER_SYM_FILES) >>$@-tmp && \
-	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
-	chmod a-w $@-tmp && \
-	mv $@-tmp libvirt.syms
-
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =
 libvirt_la_LDFLAGS = \
