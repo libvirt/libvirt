@@ -53,10 +53,6 @@ test_programs += qemuxml2argvtest qemuxml2xmltest \
 test_helpers += qemucapsprobe
 endif WITH_QEMU
 
-if WITH_OPENVZ
-test_programs += openvzutilstest
-endif WITH_OPENVZ
-
 if WITH_VBOX
 test_programs += vboxsnapshotxmltest
 endif WITH_VBOX
@@ -279,14 +275,6 @@ qemuvhostusertest_SOURCES = \
 	$(NULL)
 qemuvhostusertest_LDADD = $(qemu_LDADDS)
 endif WITH_QEMU
-
-if WITH_OPENVZ
-openvzutilstest_SOURCES = \
-	openvzutilstest.c \
-	testutils.c testutils.h
-openvzutilstest_LDADD = $(LDADDS) \
-	../src/libvirt_driver_openvz.la
-endif WITH_OPENVZ
 
 if WITH_VBOX
 vboxsnapshotxmltest_SOURCES = \

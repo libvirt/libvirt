@@ -434,6 +434,12 @@ if conf.has('WITH_NWFILTER')
   ]
 endif
 
+if conf.has('WITH_OPENVZ')
+  tests += [
+    { 'name': 'openvzutilstest', 'link_with': [ openvz_lib ] },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(
