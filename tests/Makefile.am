@@ -27,13 +27,6 @@ test_programs += \
 	$(NULL)
 endif WITH_REMOTE
 
-if WITH_LINUX
-test_programs += fchosttest
-test_programs += scsihosttest
-test_programs += vircaps2xmltest
-test_programs += virresctrltest
-endif WITH_LINUX
-
 if WITH_LIBVIRTD
 test_programs += fdstreamtest
 endif WITH_LIBVIRTD
@@ -139,10 +132,6 @@ if WITH_STORAGE_FS
 test_programs += virstoragetest
 endif WITH_STORAGE_FS
 
-if WITH_LINUX
-test_programs += virscsitest
-endif WITH_LINUX
-
 if WITH_NSS
 test_helpers += nsslinktest nssguestlinktest
 test_programs += nsstest nssguesttest
@@ -151,12 +140,6 @@ endif WITH_NSS
 if WITH_NODE_DEVICES
 test_programs += nodedevmdevctltest
 endif WITH_NODE_DEVICES
-
-if WITH_LINUX
-test_programs += virusbtest \
-	virnetdevbandwidthtest \
-	$(NULL)
-endif WITH_LINUX
 
 test_scripts =
 libvirtd_test_scripts = \
@@ -600,16 +583,6 @@ viridentitytest_DEPENDENCIES = libsecurityselinuxhelper.la \
 	../src/libvirt.la
 endif WITH_SELINUX
 
-if WITH_LINUX
-vircaps2xmltest_SOURCES = \
-	vircaps2xmltest.c testutils.h testutils.c virfilewrapper.h virfilewrapper.c
-vircaps2xmltest_LDADD = $(LDADDS)
-
-virresctrltest_SOURCES = \
-	virresctrltest.c testutils.h testutils.c virfilewrapper.h virfilewrapper.c
-virresctrltest_LDADD = $(LDADDS)
-endif WITH_LINUX
-
 if WITH_NSS
 nsstest_SOURCES = \
 	nsstest.c testutils.h testutils.c
@@ -661,16 +634,6 @@ test_programs += \
 	virmacmaptest \
 	virnetdevopenvswitchtest
 endif WITH_YAJL
-
-if WITH_LINUX
-virusbtest_SOURCES = \
-	virusbtest.c testutils.h testutils.c
-virusbtest_LDADD = $(LDADDS)
-
-virnetdevbandwidthtest_SOURCES = \
-	virnetdevbandwidthtest.c testutils.h testutils.c
-virnetdevbandwidthtest_LDADD = $(LDADDS) $(LIBXML_LIBS)
-endif WITH_LINUX
 
 if WITH_DBUS
 virdbustest_SOURCES = \
@@ -732,19 +695,3 @@ endif WITH_LIBVIRTD
 fdstreamtest_SOURCES = \
 	fdstreamtest.c testutils.h testutils.c
 fdstreamtest_LDADD = $(LDADDS)
-
-if WITH_LINUX
-fchosttest_SOURCES = \
-       fchosttest.c testutils.h testutils.c
-fchosttest_LDADD = $(LDADDS)
-
-scsihosttest_SOURCES = \
-       scsihosttest.c testutils.h testutils.c
-scsihosttest_LDADD = $(LDADDS)
-endif WITH_LINUX
-
-if WITH_LINUX
-virscsitest_SOURCES = \
-       virscsitest.c testutils.h testutils.c
-virscsitest_LDADD = $(LDADDS)
-endif WITH_LINUX

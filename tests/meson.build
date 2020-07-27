@@ -333,6 +333,18 @@ tests += [
   { 'name': 'vshtabletest', 'link_with': [ libvirt_shell_lib ] },
 ]
 
+if host_machine.system() == 'linux'
+  tests += [
+    { 'name': 'fchosttest' },
+    { 'name': 'scsihosttest' },
+    { 'name': 'vircaps2xmltest', 'link_whole': [ test_file_wrapper_lib ] },
+    { 'name': 'virnetdevbandwidthtest' },
+    { 'name': 'virresctrltest', 'link_whole': [ test_file_wrapper_lib ] },
+    { 'name': 'virscsitest' },
+    { 'name': 'virusbtest' },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(
