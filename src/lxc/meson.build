@@ -13,6 +13,8 @@ lxc_driver_sources = [
 
 lxc_monitor_protocol = files('lxc_monitor_protocol.x')
 
+rpc_probe_files += lxc_monitor_protocol
+
 lxc_monitor_protocol_generated = []
 
 lxc_monitor_protocol_generated += custom_target(

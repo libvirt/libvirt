@@ -1,9 +1,0 @@
-# vim: filetype=automake
-
-if WITH_LXC
-
-if WITH_DTRACE_PROBES
-RPC_PROBE_FILES += $(srcdir)/lxc/lxc_monitor_protocol.x
-endif
-
-endif WITH_LXC

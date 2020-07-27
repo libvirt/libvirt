@@ -1,5 +1,7 @@
 lock_protocol = 'lock_protocol.x'
 
+rpc_probe_files += files(lock_protocol)
+
 lock_driver_sources = [
   'lock_manager.c',
   'lock_driver_nop.c',

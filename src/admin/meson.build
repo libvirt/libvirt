@@ -5,6 +5,8 @@ admin_driver_sources = [
 
 admin_driver_protocol = files('admin_protocol.x')
 
+rpc_probe_files += admin_driver_protocol
+
 admin_driver_generated = []
 
 admin_protocol_h = custom_target(

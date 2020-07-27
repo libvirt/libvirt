@@ -45,6 +45,8 @@ foreach name : [ 'virnet', 'virkeepalive' ]
       genprotocol_prog, rpcgen_prog, '-c', '@INPUT@', '@OUTPUT@',
     ],
   )
+
+  rpc_probe_files += protocol_file
 endforeach
 
 rpc_server_sources = [

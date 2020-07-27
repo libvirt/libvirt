@@ -20,15 +20,9 @@
 # here. List them against the individual XXX_la_CFLAGS targets
 # that actually use them.
 
-BUILT_SOURCES =
-if WITH_DTRACE_PROBES
-tapset_DATA =
-endif WITH_DTRACE_PROBES
 RPC_PROBE_FILES =
 
-include locking/Makefile.inc.am
 include admin/Makefile.inc.am
-include lxc/Makefile.inc.am
 
 
 # Keep this list synced with RPC_PROBE_FILES
@@ -88,24 +82,3 @@ endif !WITH_REMOTE
 check-local: check-protocol \
 	check-admin
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
-
-
-if WITH_DTRACE_PROBES
-
-BUILT_SOURCES += libvirt_functions.stp
-
-tapset_DATA += libvirt_functions.stp
-
-# Keep this list synced with PROTOCOL_STRUCTS
-RPC_PROBE_FILES += $(srcdir)/rpc/virnetprotocol.x \
-		  $(srcdir)/rpc/virkeepaliveprotocol.x \
-		  $(srcdir)/remote/remote_protocol.x \
-		  $(srcdir)/remote/lxc_protocol.x \
-		  $(srcdir)/remote/qemu_protocol.x \
-		  $(srcdir)/admin/admin_protocol.x
-
-libvirt_functions.stp: $(RPC_PROBE_FILES) $(top_srcdir)/scripts/gensystemtap.py
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/gensystemtap.py \
-	  $(RPC_PROBE_FILES) > $@
-
-endif WITH_DTRACE_PROBES

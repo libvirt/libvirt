@@ -37,6 +37,8 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
       genprotocol_prog, rpcgen_prog, '-c', '@INPUT@', '@OUTPUT@',
     ],
   )
+
+  rpc_probe_files += files(protocol_x)
 endforeach
 
 remote_daemon_sources = files(
