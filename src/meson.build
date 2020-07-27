@@ -819,3 +819,15 @@ meson.add_install_script(
   meson_python_prog.path(), python3_prog.path(), meson_install_dirs_prog.path(),
   virt_install_dirs,
 )
+
+
+# Check driver files
+
+if host_machine.system() == 'linux'
+  test(
+    'check-symfile',
+    python3_prog,
+    args: [ check_symfile_prog.path(), libvirt_syms, libvirt_lib ],
+    env: runutf8,
+  )
+endif

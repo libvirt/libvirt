@@ -48,17 +48,6 @@ include secret/Makefile.inc.am
 include storage/Makefile.inc.am
 
 
-BUILT_SOURCES += $(nodist_conf_DATA)
-
-# .libs/libvirt.so is built by libtool as a side-effect of the Makefile
-# rule for libvirt.la.  However, checking symbols relies on Linux ELF layout
-if WITH_LINUX
-check-symfile: libvirt.syms libvirt.la
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-symfile.py \
-		libvirt.syms .libs/libvirt.so
-else ! WITH_LINUX
-check-symfile:
-endif ! WITH_LINUX
 check-symsorting:
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-symsorting.py \
 		$(srcdir) $(SYM_FILES)
@@ -150,7 +139,7 @@ check-aclperms:
 		$(srcdir)/access/viraccessperm.h \
 		$(srcdir)/access/viraccessperm.c
 
-check-local: check-protocol check-symfile check-symsorting \
+check-local: check-protocol check-symsorting \
 	check-drivername check-driverimpls check-aclrules \
 	check-aclperms check-admin
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
