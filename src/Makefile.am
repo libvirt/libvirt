@@ -35,7 +35,6 @@ conf_DATA =
 if WITH_DTRACE_PROBES
 tapset_DATA =
 endif WITH_DTRACE_PROBES
-libexec_PROGRAMS =
 RPC_PROBE_FILES =
 LOGROTATE_FILES_IN =
 SYSTEMD_UNIT_FILES =
@@ -51,7 +50,6 @@ COMMON_UNIT_VARS = \
 	-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	$(NULL)
 
-include util/Makefile.inc.am
 include security/Makefile.inc.am
 include access/Makefile.inc.am
 include logging/Makefile.inc.am
@@ -343,28 +341,6 @@ uninstall-openrc: uninstall-openrc-conf
 INSTALL_DATA_LOCAL += install-openrc
 UNINSTALL_LOCAL += uninstall-openrc
 endif LIBVIRT_INIT_SCRIPT_OPENRC
-
-endif WITH_LIBVIRTD
-
-
-if WITH_LIBVIRTD
-libexec_PROGRAMS += libvirt_iohelper
-libvirt_iohelper_SOURCES = $(UTIL_IO_HELPER_SOURCES)
-libvirt_iohelper_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(NULL)
-libvirt_iohelper_LDADD = \
-		libvirt.la \
-		$(GLIB_LIBS) \
-		$(NULL)
-if WITH_DTRACE_PROBES
-libvirt_iohelper_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-libvirt_iohelper_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(NULL)
-
 
 endif WITH_LIBVIRTD
 

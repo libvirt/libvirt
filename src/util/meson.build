@@ -168,6 +168,10 @@ foreach name : keyname_list
   )
 endforeach
 
+io_helper_sources = [
+  'iohelper.c',
+]
+
 virt_util_lib = static_library(
   'virt_util',
   [
@@ -194,5 +198,15 @@ virt_util_lib = static_library(
 )
 
 libvirt_libs += virt_util_lib
+
+if conf.has('WITH_LIBVIRTD')
+  virt_helpers += {
+    'name': 'libvirt_iohelper',
+    'sources': [
+      files(io_helper_sources),
+      dtrace_gen_headers,
+    ],
+  }
+endif
 
 util_inc_dir = include_directories('.')
