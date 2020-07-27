@@ -641,3 +641,40 @@ foreach data : helpers
     export_dynamic: true,
   )
 endforeach
+
+
+# test_scripts:
+#   list of test scripts to run
+test_scripts = []
+
+if conf.has('WITH_LIBVIRTD')
+  test_scripts += [
+    'libvirtd-fail',
+    'libvirtd-pool',
+    'virsh-auth',
+    'virsh-checkpoint',
+    'virsh-cpuset',
+    'virsh-define-dev-segfault',
+    'virsh-int-overflow',
+    'virsh-optparse',
+    'virsh-read-bufsiz',
+    'virsh-read-non-seekable',
+    'virsh-schedinfo',
+    'virsh-self-test',
+    'virsh-snapshot',
+    'virsh-start',
+    'virsh-undefine',
+    'virsh-uriprecedence',
+    'virsh-vcpupin',
+    'virt-admin-self-test',
+  ]
+
+  if conf.has('WITH_SECDRIVER_APPARMOR')
+    test_scripts += 'virt-aa-helper-test'
+  endif
+endif
+
+foreach name : test_scripts
+  script = find_program(name)
+  test(name, script, env: tests_env)
+endforeach

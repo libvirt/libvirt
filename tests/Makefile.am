@@ -16,38 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-test_scripts =
-libvirtd_test_scripts = \
-	libvirtd-fail \
-	libvirtd-pool \
-	virsh-auth \
-	virsh-cpuset \
-	virsh-define-dev-segfault \
-	virsh-int-overflow \
-	virsh-optparse \
-	virsh-read-bufsiz \
-	virsh-read-non-seekable \
-	virsh-schedinfo \
-	virsh-self-test \
-	virt-admin-self-test \
-	virsh-checkpoint \
-	virsh-snapshot \
-	virsh-start \
-	virsh-undefine \
-	virsh-uriprecedence \
-	virsh-vcpupin \
-	$(NULL)
-
-if WITH_LIBVIRTD
-test_scripts += $(libvirtd_test_scripts)
-endif WITH_LIBVIRTD
-
-if WITH_SECDRIVER_APPARMOR
-if WITH_LIBVIRTD
-test_scripts += virt-aa-helper-test
-endif WITH_LIBVIRTD
-endif WITH_SECDRIVER_APPARMOR
-
 if WITH_LINUX
 check-access: file-access-clean
 	VIR_TEST_FILE_ACCESS=1 $(MAKE) $(AM_MAKEFLAGS) check
@@ -58,8 +26,6 @@ check-access: file-access-clean
 file-access-clean:
 	> test_file_access.txt
 endif WITH_LINUX
-
-TESTS = $(test_scripts)
 
 VALGRIND = valgrind --quiet --leak-check=full --trace-children=yes \
 	--trace-children-skip="*/tools/virsh","*/tests/commandhelper","/usr/bin/*" \

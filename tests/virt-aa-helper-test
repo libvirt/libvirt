@@ -15,13 +15,13 @@ fi
 
 output="/dev/null"
 use_valgrind=""
-ld_library_path="../src/"
+ld_library_path="$abs_top_builddir/src/"
 if [ ! -z "$1" ] && [ "$1" = "-d" ]; then
     output="/dev/stdout"
     shift
 fi
 
-exe="../src/virt-aa-helper"
+exe="$abs_top_builddir/src/virt-aa-helper"
 if [ ! -z "$1" ]; then
     if [ "$1" = "-v" ]; then
         use_valgrind="yes"
