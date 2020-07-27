@@ -538,6 +538,14 @@ if conf.has('WITH_VMX')
   ]
 endif
 
+if conf.has('WITH_YAJL')
+  tests += [
+    { 'name': 'virjsontest' },
+    { 'name': 'virmacmaptest' },
+    { 'name': 'virnetdevopenvswitchtest' },
+  ]
+endif
+
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
   test_bin = executable(

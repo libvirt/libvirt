@@ -20,10 +20,6 @@ if WITH_QEMU
 test_helpers += qemucapsprobe
 endif WITH_QEMU
 
-if WITH_YAJL
-test_programs += virjsontest
-endif WITH_YAJL
-
 if WITH_NSS
 test_helpers += nsslinktest nssguestlinktest
 endif WITH_NSS
@@ -71,10 +67,9 @@ file-access-clean:
 	> test_file_access.txt
 endif WITH_LINUX
 
-noinst_PROGRAMS = $(test_programs) $(test_helpers)
+noinst_PROGRAMS = $(test_helpers)
 
-TESTS = $(test_programs) \
-	$(test_scripts)
+TESTS = $(test_scripts)
 
 VALGRIND = valgrind --quiet --leak-check=full --trace-children=yes \
 	--trace-children-skip="*/tools/virsh","*/tests/commandhelper","/usr/bin/*" \
@@ -107,21 +102,3 @@ nssguestlinktest_CFLAGS = \
 nssguestlinktest_LDADD = ../tools/nss/libnss_libvirt_guest_impl.la
 nssguestlinktest_LDFLAGS = $(NULL)
 endif WITH_NSS
-
-if WITH_YAJL
-virmacmaptest_SOURCES = \
-	virmacmaptest.c testutils.h testutils.c
-virmacmaptest_LDADD = $(LDADDS)
-
-virnetdevopenvswitchtest_SOURCES = \
-	virnetdevopenvswitchtest.c testutils.h testutils.c
-virnetdevopenvswitchtest_LDADD = $(LDADDS)
-
-test_programs += \
-	virmacmaptest \
-	virnetdevopenvswitchtest
-endif WITH_YAJL
-
-virjsontest_SOURCES = \
-	virjsontest.c testutils.h testutils.c
-virjsontest_LDADD = $(LDADDS)
