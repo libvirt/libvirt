@@ -99,6 +99,11 @@ if conf.has('WITH_LXC')
     ],
   )
 
+  check_protocols += {
+    'name': 'lxc_monitor_protocol',
+    'lib': lxc_driver_impl_lib,
+  }
+
   virt_modules += {
     'name': 'virt_driver_lxc',
     'link_whole': [

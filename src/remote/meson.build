@@ -145,6 +145,21 @@ if conf.has('WITH_REMOTE')
     ],
   )
 
+  check_protocols += {
+    'name': 'remote_protocol',
+    'lib': remote_driver_lib,
+  }
+
+  check_protocols += {
+    'name': 'qemu_protocol',
+    'lib': remote_driver_lib,
+  }
+
+  check_protocols += {
+    'name': 'lxc_protocol',
+    'lib': remote_driver_lib,
+  }
+
   libvirt_libs += remote_driver_lib
 
   if conf.has('WITH_LIBVIRTD')

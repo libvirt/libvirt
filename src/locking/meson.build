@@ -90,6 +90,11 @@ if conf.has('WITH_LIBVIRTD')
     ],
   )
 
+  check_protocols += {
+    'name': 'lock_protocol',
+    'lib': lockd_lib_impl,
+  }
+
   lockdriver_dir = libdir / 'libvirt' / 'lock-driver'
 
   virt_modules += {

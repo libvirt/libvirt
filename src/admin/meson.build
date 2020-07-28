@@ -97,6 +97,11 @@ admin_driver_lib = static_library(
   ],
 )
 
+check_protocols += {
+  'name': 'admin_protocol',
+  'lib': admin_driver_lib,
+}
+
 virt_conf_files += files('libvirt-admin.conf')
 
 admin_inc_dir = include_directories('.')

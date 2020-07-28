@@ -225,6 +225,12 @@ driver_source_files = []
 #   stateful driver source files to check
 stateful_driver_source_files = []
 
+# check_protocols:
+#   check if $name.x is in sync with $name-structs
+#   name - name of the protocol (required)
+#   lib - library that this test depends on (required)
+check_protocols = []
+
 
 # list subdirectories
 
@@ -921,6 +927,26 @@ if augparse_prog.found()
         '-I', meson.current_build_dir(),
         data['file'].full_path(),
       ],
+    )
+  endforeach
+endif
+
+if pdwtags_prog.found() and cc.get_id() != 'clang'
+  foreach proto : check_protocols
+    lib = proto['lib']
+    test(
+      'check-@0@'.format(proto['name']),
+      python3_prog,
+      args: [
+        check_remote_protocol_prog.path(),
+        proto['name'],
+        lib.name(),
+        lib.full_path(),
+        pdwtags_prog.path(),
+        files('@0@-structs'.format(proto['name'])),
+      ],
+      env: runutf8,
+      depends: [ lib ],
     )
   endforeach
 endif

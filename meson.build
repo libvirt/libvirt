@@ -933,6 +933,7 @@ optional_programs = [
   'mm-ctl',
   'modprobe',
   'ovs-vsctl',
+  'pdwtags',
   'radvd',
   'rmmod',
   'scrub',

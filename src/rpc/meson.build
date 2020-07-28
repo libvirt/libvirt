@@ -81,6 +81,16 @@ virt_rpc_lib = static_library(
   ],
 )
 
+check_protocols += {
+  'name': 'virnetprotocol',
+  'lib': virt_rpc_lib,
+}
+
+check_protocols += {
+  'name': 'virkeepaliveprotocol',
+  'lib': virt_rpc_lib,
+}
+
 virt_rpc_server_lib = static_library(
   'virt_net_rpc_server',
   [
