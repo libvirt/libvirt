@@ -18,6 +18,8 @@ scripts = [
   'header-ifdef.py',
   'hvsupport.py',
   'hyperv_wmi_generator.py',
+  'meson-dist.py',
+  'meson-gen-authors.py',
   'meson-gen-def.py',
   'meson-gen-sym.py',
   'meson-html-gen.py',

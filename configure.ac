@@ -108,6 +108,5 @@ AC_CONFIG_FILES([run],
 AC_CONFIG_FILES([\
         Makefile \
         .color_coded \
-        .ycm_extra_conf.py \
-        libvirt.spec mingw-libvirt.spec])
+        .ycm_extra_conf.py])
 AC_OUTPUT
