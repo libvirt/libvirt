@@ -37,9 +37,6 @@ srpm: clean
 
 check-local: all tests
 
-check-access: all
-	@($(MAKE) $(AM_MAKEFLAGS) -C tests check-access)
-
 dist-hook: gen-AUTHORS
 
 .PHONY: gen-AUTHORS

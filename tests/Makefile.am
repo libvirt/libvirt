@@ -16,17 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-if WITH_LINUX
-check-access: file-access-clean
-	VIR_TEST_FILE_ACCESS=1 $(MAKE) $(AM_MAKEFLAGS) check
-	$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-file-access.py \
-		$(abs_builddir)/test_file_access.txt \
-		$(abs_srcdir)/permitted_file_access.txt | sort -u
-
-file-access-clean:
-	> test_file_access.txt
-endif WITH_LINUX
-
 VALGRIND = valgrind --quiet --leak-check=full --trace-children=yes \
 	--trace-children-skip="*/tools/virsh","*/tests/commandhelper","/usr/bin/*" \
 	--suppressions=$(abs_srcdir)/.valgrind.supp

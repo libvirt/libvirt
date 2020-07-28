@@ -69,7 +69,7 @@ printFile(const char *file,
             output = VIR_FILE_ACCESS_DEFAULT;
     }
 
-    if (!(fp = real_fopen(output, "a"))) {
+    if (!(fp = real_fopen(output, "w"))) {
         fprintf(stderr, "Unable to open %s: %s\n", output, g_strerror(errno));
         abort();
     }
