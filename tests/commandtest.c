@@ -173,8 +173,8 @@ static int test2(const void *unused G_GNUC_UNUSED)
 static int test3(const void *unused G_GNUC_UNUSED)
 {
     g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
-    int newfd1 = dup(STDERR_FILENO);
-    int newfd2 = dup(STDERR_FILENO);
+    VIR_AUTOCLOSE newfd1 = dup(STDERR_FILENO);
+    VIR_AUTOCLOSE newfd2 = dup(STDERR_FILENO);
     int newfd3 = dup(STDERR_FILENO);
     struct stat before, after;
     int ret = -1;
@@ -218,9 +218,6 @@ static int test3(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test3");
 
  cleanup:
-    /* coverity[double_close] */
-    VIR_FORCE_CLOSE(newfd1);
-    VIR_FORCE_CLOSE(newfd2);
     return ret;
 }
 
@@ -580,7 +577,7 @@ static int test16(const void *unused G_GNUC_UNUSED)
     g_autofree char *outactual = NULL;
     const char *outexpect = "A=B C='D  E' true F 'G  H'";
     int ret = -1;
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
 
     virCommandAddEnvPair(cmd, "A", "B");
     virCommandAddEnvPair(cmd, "C", "D  E");
@@ -610,7 +607,6 @@ static int test16(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test16");
 
  cleanup:
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
@@ -1039,7 +1035,7 @@ static int test26(const void *unused G_GNUC_UNUSED)
         "wallop";
 
     int ret = -1;
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
 
     virCommandAddEnvPair(cmd, "A", "B");
     virCommandAddEnvPair(cmd, "C", "D  E");
@@ -1071,7 +1067,6 @@ static int test26(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test26");
 
  cleanup:
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
