@@ -55,8 +55,7 @@ main(void)
 /* Some UNIX lack it in headers & it doesn't hurt to redeclare */
 extern char **environ;
 
-static int checkoutput(const char *testname,
-                       char *prefix)
+static int checkoutput(const char *testname)
 {
     int ret = -1;
     char *expectname = NULL;
@@ -75,15 +74,6 @@ static int checkoutput(const char *testname,
     if (virFileReadAll(actualname, 1024*64, &actuallog) < 0) {
         fprintf(stderr, "cannot read %s\n", actualname);
         goto cleanup;
-    }
-
-    if (prefix) {
-        char *tmp = NULL;
-
-        tmp = g_strdup_printf("%s%s", prefix, expectlog);
-
-        VIR_FREE(expectlog);
-        expectlog = tmp;
     }
 
     if (STRNEQ(expectlog, actuallog)) {
@@ -172,7 +162,7 @@ static int test2(const void *unused G_GNUC_UNUSED)
         return -1;
     }
 
-    if ((ret = checkoutput("test2", NULL)) != 0) {
+    if ((ret = checkoutput("test2")) != 0) {
         virCommandFree(cmd);
         return ret;
     }
@@ -185,7 +175,7 @@ static int test2(const void *unused G_GNUC_UNUSED)
 
     virCommandFree(cmd);
 
-    return checkoutput("test2", NULL);
+    return checkoutput("test2");
 }
 
 /*
@@ -237,7 +227,7 @@ static int test3(const void *unused G_GNUC_UNUSED)
         }
     }
 
-    ret = checkoutput("test3", NULL);
+    ret = checkoutput("test3");
 
  cleanup:
     virCommandFree(cmd);
@@ -279,7 +269,7 @@ static int test4(const void *unused G_GNUC_UNUSED)
     while (kill(pid, 0) != -1)
         g_usleep(100*1000);
 
-    ret = checkoutput("test4", NULL);
+    ret = checkoutput("test4");
 
  cleanup:
     virCommandFree(cmd);
@@ -308,7 +298,7 @@ static int test5(const void *unused G_GNUC_UNUSED)
 
     virCommandFree(cmd);
 
-    return checkoutput("test5", NULL);
+    return checkoutput("test5");
 }
 
 
@@ -331,7 +321,7 @@ static int test6(const void *unused G_GNUC_UNUSED)
 
     virCommandFree(cmd);
 
-    return checkoutput("test6", NULL);
+    return checkoutput("test6");
 }
 
 
@@ -355,7 +345,7 @@ static int test7(const void *unused G_GNUC_UNUSED)
 
     virCommandFree(cmd);
 
-    return checkoutput("test7", NULL);
+    return checkoutput("test7");
 }
 
 /*
@@ -379,7 +369,7 @@ static int test8(const void *unused G_GNUC_UNUSED)
 
     virCommandFree(cmd);
 
-    return checkoutput("test8", NULL);
+    return checkoutput("test8");
 }
 
 
@@ -415,7 +405,7 @@ static int test9(const void *unused G_GNUC_UNUSED)
 
     virCommandFree(cmd);
 
-    return checkoutput("test9", NULL);
+    return checkoutput("test9");
 }
 
 
@@ -440,7 +430,7 @@ static int test10(const void *unused G_GNUC_UNUSED)
 
     virCommandFree(cmd);
 
-    return checkoutput("test10", NULL);
+    return checkoutput("test10");
 }
 
 /*
@@ -463,7 +453,7 @@ static int test11(const void *unused G_GNUC_UNUSED)
 
     virCommandFree(cmd);
 
-    return checkoutput("test11", NULL);
+    return checkoutput("test11");
 }
 
 /*
@@ -484,7 +474,7 @@ static int test12(const void *unused G_GNUC_UNUSED)
 
     virCommandFree(cmd);
 
-    return checkoutput("test12", NULL);
+    return checkoutput("test12");
 }
 
 /*
@@ -518,7 +508,7 @@ static int test13(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    ret = checkoutput("test13", NULL);
+    ret = checkoutput("test13");
 
  cleanup:
     virCommandFree(cmd);
@@ -588,7 +578,7 @@ static int test14(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    ret = checkoutput("test14", NULL);
+    ret = checkoutput("test14");
 
  cleanup:
     virCommandFree(cmd);
@@ -618,7 +608,7 @@ static int test15(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    ret = checkoutput("test15", NULL);
+    ret = checkoutput("test15");
 
  cleanup:
     VIR_FREE(cwd);
@@ -663,7 +653,7 @@ static int test16(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    ret = checkoutput("test16", NULL);
+    ret = checkoutput("test16");
 
  cleanup:
     virCommandFree(cmd);
@@ -836,7 +826,7 @@ static int test20(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    ret = checkoutput("test20", NULL);
+    ret = checkoutput("test20");
  cleanup:
     virCommandFree(cmd);
     VIR_FREE(buf);
@@ -894,7 +884,7 @@ static int test21(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    ret = checkoutput("test21", NULL);
+    ret = checkoutput("test21");
  cleanup:
     VIR_FREE(outbuf);
     VIR_FREE(errbuf);
@@ -1136,7 +1126,7 @@ static int test26(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    ret = checkoutput("test26", NULL);
+    ret = checkoutput("test26");
 
  cleanup:
     virCommandFree(cmd);
@@ -1234,7 +1224,7 @@ static int test27(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    if (checkoutput("test27", NULL) < 0)
+    if (checkoutput("test27") < 0)
         goto cleanup;
 
     ret = 0;
