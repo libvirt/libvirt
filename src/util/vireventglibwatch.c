@@ -233,17 +233,20 @@ GSource *virEventGLibCreateSocketWatch(int fd,
 #endif /* WIN32 */
 
 
-guint virEventGLibAddSocketWatch(int fd,
-                                 GIOCondition condition,
-                                 GMainContext *context,
-                                 virEventGLibSocketFunc func,
-                                 gpointer opaque,
-                                 GDestroyNotify notify)
+GSource *
+virEventGLibAddSocketWatch(int fd,
+                           GIOCondition condition,
+                           GMainContext *context,
+                           virEventGLibSocketFunc func,
+                           gpointer opaque,
+                           GDestroyNotify notify)
 {
-    g_autoptr(GSource) source = NULL;
+    GSource *source = NULL;
 
     source = virEventGLibCreateSocketWatch(fd, condition);
     g_source_set_callback(source, (GSourceFunc)func, opaque, notify);
 
-    return g_source_attach(source, context);
+    g_source_attach(source, context);
+
+    return source;
 }

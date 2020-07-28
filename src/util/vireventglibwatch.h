@@ -40,9 +40,10 @@ typedef gboolean (*virEventGLibSocketFunc)(int fd,
                                            GIOCondition condition,
                                            gpointer data);
 
-guint virEventGLibAddSocketWatch(int fd,
-                                 GIOCondition condition,
-                                 GMainContext *context,
-                                 virEventGLibSocketFunc func,
-                                 gpointer opaque,
-                                 GDestroyNotify notify);
+GSource *virEventGLibAddSocketWatch(int fd,
+                                    GIOCondition condition,
+                                    GMainContext *context,
+                                    virEventGLibSocketFunc func,
+                                    gpointer opaque,
+                                    GDestroyNotify notify)
+    G_GNUC_WARN_UNUSED_RESULT;
