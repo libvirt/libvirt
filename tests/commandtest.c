@@ -96,7 +96,7 @@ static int checkoutput(const char *testname)
  */
 static int test0(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd;
+    g_autoptr(virCommand) cmd = NULL;
     int ret = -1;
 
     cmd = virCommandNew(abs_builddir "/commandhelper-doesnotexist");
@@ -110,7 +110,6 @@ static int test0(const void *unused G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -121,7 +120,7 @@ static int test0(const void *unused G_GNUC_UNUSED)
  */
 static int test1(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd;
+    g_autoptr(virCommand) cmd = NULL;
     int ret = -1;
     int status;
 
@@ -139,7 +138,6 @@ static int test1(const void *unused G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -149,27 +147,21 @@ static int test1(const void *unused G_GNUC_UNUSED)
  */
 static int test2(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
     int ret;
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
 
-    if ((ret = checkoutput("test2")) != 0) {
-        virCommandFree(cmd);
+    if ((ret = checkoutput("test2")) != 0)
         return ret;
-    }
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
-
-    virCommandFree(cmd);
 
     return checkoutput("test2");
 }
@@ -180,7 +172,7 @@ static int test2(const void *unused G_GNUC_UNUSED)
  */
 static int test3(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
     int newfd1 = dup(STDERR_FILENO);
     int newfd2 = dup(STDERR_FILENO);
     int newfd3 = dup(STDERR_FILENO);
@@ -226,7 +218,6 @@ static int test3(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test3");
 
  cleanup:
-    virCommandFree(cmd);
     /* coverity[double_close] */
     VIR_FORCE_CLOSE(newfd1);
     VIR_FORCE_CLOSE(newfd2);
@@ -241,8 +232,8 @@ static int test3(const void *unused G_GNUC_UNUSED)
  */
 static int test4(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNewArgList(abs_builddir "/commandhelper",
-                                             "--check-daemonize", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList(abs_builddir "/commandhelper",
+                                                     "--check-daemonize", NULL);
     g_autofree char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
     pid_t pid;
     int ret = -1;
@@ -268,7 +259,6 @@ static int test4(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test4");
 
  cleanup:
-    virCommandFree(cmd);
     if (pidfile)
         unlink(pidfile);
     return ret;
@@ -281,17 +271,14 @@ static int test4(const void *unused G_GNUC_UNUSED)
  */
 static int test5(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvPassCommon(cmd);
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
-
-    virCommandFree(cmd);
 
     return checkoutput("test5");
 }
@@ -303,18 +290,15 @@ static int test5(const void *unused G_GNUC_UNUSED)
  */
 static int test6(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvPass(cmd, "DISPLAY");
     virCommandAddEnvPass(cmd, "DOESNOTEXIST");
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
-
-    virCommandFree(cmd);
 
     return checkoutput("test6");
 }
@@ -326,7 +310,7 @@ static int test6(const void *unused G_GNUC_UNUSED)
  */
 static int test7(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvPassCommon(cmd);
     virCommandAddEnvPass(cmd, "DISPLAY");
@@ -334,11 +318,8 @@ static int test7(const void *unused G_GNUC_UNUSED)
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
-
-    virCommandFree(cmd);
 
     return checkoutput("test7");
 }
@@ -349,7 +330,7 @@ static int test7(const void *unused G_GNUC_UNUSED)
  */
 static int test8(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvString(cmd, "USER=bogus");
     virCommandAddEnvString(cmd, "LANG=C");
@@ -358,11 +339,8 @@ static int test8(const void *unused G_GNUC_UNUSED)
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
-
-    virCommandFree(cmd);
 
     return checkoutput("test8");
 }
@@ -374,7 +352,7 @@ static int test8(const void *unused G_GNUC_UNUSED)
  */
 static int test9(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
     const char* const args[] = { "arg1", "arg2", NULL };
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -388,17 +366,13 @@ static int test9(const void *unused G_GNUC_UNUSED)
 
     if (virBufferUse(&buf)) {
         printf("Buffer not transferred\n");
-        virCommandFree(cmd);
         return -1;
     }
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
-
-    virCommandFree(cmd);
 
     return checkoutput("test9");
 }
@@ -410,7 +384,7 @@ static int test9(const void *unused G_GNUC_UNUSED)
  */
 static int test10(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
     const char *const args[] = {
         "-version", "-log=bar.log", NULL,
     };
@@ -419,11 +393,8 @@ static int test10(const void *unused G_GNUC_UNUSED)
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
-
-    virCommandFree(cmd);
 
     return checkoutput("test10");
 }
@@ -438,15 +409,12 @@ static int test11(const void *unused G_GNUC_UNUSED)
         abs_builddir "/commandhelper",
         "-version", "-log=bar.log", NULL,
     };
-    virCommandPtr cmd = virCommandNewArgs(args);
+    g_autoptr(virCommand) cmd = virCommandNewArgs(args);
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
-
-    virCommandFree(cmd);
 
     return checkoutput("test11");
 }
@@ -457,17 +425,14 @@ static int test11(const void *unused G_GNUC_UNUSED)
  */
 static int test12(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandSetInputBuffer(cmd, "Hello World\n");
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        virCommandFree(cmd);
         return -1;
     }
-
-    virCommandFree(cmd);
 
     return checkoutput("test12");
 }
@@ -586,7 +551,7 @@ static int test14(const void *unused G_GNUC_UNUSED)
  */
 static int test15(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
     g_autofree char *cwd = NULL;
     int ret = -1;
 
@@ -602,7 +567,6 @@ static int test15(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test15");
 
  cleanup:
-    virCommandFree(cmd);
 
     return ret;
 }
@@ -612,7 +576,7 @@ static int test15(const void *unused G_GNUC_UNUSED)
  */
 static int test16(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew("true");
+    g_autoptr(virCommand) cmd = virCommandNew("true");
     g_autofree char *outactual = NULL;
     const char *outexpect = "A=B C='D  E' true F 'G  H'";
     int ret = -1;
@@ -646,7 +610,6 @@ static int test16(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test16");
 
  cleanup:
-    virCommandFree(cmd);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -656,7 +619,7 @@ static int test16(const void *unused G_GNUC_UNUSED)
  */
 static int test17(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew("true");
+    g_autoptr(virCommand) cmd = virCommandNew("true");
     int ret = -1;
     char *outbuf = NULL;
     g_autofree char *errbuf = NULL;
@@ -698,7 +661,6 @@ static int test17(const void *unused G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virCommandFree(cmd);
     VIR_FREE(outbuf);
     return ret;
 }
@@ -755,7 +717,7 @@ static int test18(const void *unused G_GNUC_UNUSED)
  */
 static int test19(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNewArgList("sleep", "100", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList("sleep", "100", NULL);
     pid_t pid;
     int ret = -1;
 
@@ -782,7 +744,6 @@ static int test19(const void *unused G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -792,8 +753,8 @@ static int test19(const void *unused G_GNUC_UNUSED)
  */
 static int test20(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNewArgList(abs_builddir "/commandhelper",
-                                             "--close-stdin", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList(abs_builddir "/commandhelper",
+                                                     "--close-stdin", NULL);
     g_autofree char *buf = NULL;
     int ret = -1;
 
@@ -815,7 +776,6 @@ static int test20(const void *unused G_GNUC_UNUSED)
 
     ret = checkoutput("test20");
  cleanup:
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -833,7 +793,7 @@ static const char *const newenv[] = {
 
 static int test21(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
     int ret = -1;
     const char *wrbuf = "Hello world\n";
     g_autofree char *outbuf = NULL;
@@ -873,7 +833,6 @@ static int test21(const void *unused G_GNUC_UNUSED)
 
     ret = checkoutput("test21");
  cleanup:
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -993,7 +952,7 @@ static int test25(const void *unused G_GNUC_UNUSED)
     pid_t pid;
     g_autofree gid_t *groups = NULL;
     int ngroups;
-    virCommandPtr cmd = virCommandNew("some/nonexistent/binary");
+    g_autoptr(virCommand) cmd = virCommandNew("some/nonexistent/binary");
 
     if (virPipeQuiet(pipeFD) < 0) {
         fprintf(stderr, "Unable to create pipe\n");
@@ -1053,7 +1012,6 @@ static int test25(const void *unused G_GNUC_UNUSED)
  cleanup:
     VIR_FORCE_CLOSE(pipeFD[0]);
     VIR_FORCE_CLOSE(pipeFD[1]);
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -1063,7 +1021,7 @@ static int test25(const void *unused G_GNUC_UNUSED)
  */
 static int test26(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew("true");
+    g_autoptr(virCommand) cmd = virCommandNew("true");
     g_autofree char *outactual = NULL;
     const char *outexpect =
         "A=B \\\n"
@@ -1113,14 +1071,13 @@ static int test26(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test26");
 
  cleanup:
-    virCommandFree(cmd);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
 static int test27(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
     int pipe1[2];
     int pipe2[2];
     int ret = -1;
@@ -1213,7 +1170,6 @@ static int test27(const void *unused G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
     VIR_FORCE_CLOSE(pipe1[0]);
     VIR_FORCE_CLOSE(pipe2[0]);
     VIR_FORCE_CLOSE(pipe1[1]);
