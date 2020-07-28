@@ -1597,7 +1597,6 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
 {
     virStorageSourcePtr prev;
     const char *start = chain->path;
-    char *parentDir = NULL;
     bool nameIsFile = virStorageIsFile(name);
 
     if (!parent)
@@ -1626,15 +1625,16 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
                 break;
 
             if (nameIsFile && virStorageSourceIsLocalStorage(chain)) {
+                g_autofree char *parentDir = NULL;
+                int result;
+
                 if (*parent && virStorageSourceIsLocalStorage(*parent))
                     parentDir = g_path_get_dirname((*parent)->path);
                 else
                     parentDir = g_strdup(".");
 
-                int result = virFileRelLinkPointsTo(parentDir, name,
-                                                    chain->path);
-
-                VIR_FREE(parentDir);
+                result = virFileRelLinkPointsTo(parentDir, name,
+                                                chain->path);
 
                 if (result < 0)
                     goto error;
