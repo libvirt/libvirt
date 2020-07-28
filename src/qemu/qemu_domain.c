@@ -8468,6 +8468,8 @@ qemuCheckMemoryDimmConflict(const virDomainDef *def,
 
     return false;
 }
+
+
 static int
 qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
                                          const virDomainDef *def)

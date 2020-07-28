@@ -7123,9 +7123,6 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
                         virQEMUCapsPtr qemuCaps,
                         qemuDomainObjPrivatePtr priv)
 {
-    if (qemuDomainDefValidateMemoryHotplug(def, qemuCaps, NULL) < 0)
-        return -1;
-
     virCommandAddArg(cmd, "-m");
 
     if (virDomainDefHasMemoryHotplug(def)) {

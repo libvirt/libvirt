@@ -303,18 +303,21 @@ mymain(void)
 
     DO_TEST("pages-discard", NONE);
     DO_TEST("pages-discard-hugepages", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("pages-dimm-discard", NONE);
+    DO_TEST("pages-dimm-discard", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST("hugepages-default", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-default-system-size", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-nodeset", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-numa-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-numa-default-dimm", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-numa-default-dimm", QEMU_CAPS_DEVICE_PC_DIMM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-numa-nodeset", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-numa-nodeset-part", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-shared", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-memaccess", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-memaccess2", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-memaccess", QEMU_CAPS_DEVICE_PC_DIMM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-memaccess2", QEMU_CAPS_DEVICE_PC_DIMM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-nvdimm", QEMU_CAPS_DEVICE_NVDIMM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("nosharepages", NONE);
@@ -1260,8 +1263,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
 
     DO_TEST("memory-hotplug", NONE);
-    DO_TEST("memory-hotplug-nonuma", NONE);
-    DO_TEST("memory-hotplug-dimm", NONE);
+    DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST("memory-hotplug-nvdimm", QEMU_CAPS_DEVICE_NVDIMM);
     DO_TEST("memory-hotplug-nvdimm-access", QEMU_CAPS_DEVICE_NVDIMM);
     DO_TEST("memory-hotplug-nvdimm-label", QEMU_CAPS_DEVICE_NVDIMM);

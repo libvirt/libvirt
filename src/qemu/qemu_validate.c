@@ -916,6 +916,9 @@ qemuValidateDomainDef(const virDomainDef *def,
         }
     }
 
+    if (qemuDomainDefValidateMemoryHotplug(def, qemuCaps, NULL) < 0)
+        return -1;
+
     if (qemuValidateDomainDefClockTimers(def, qemuCaps) < 0)
         return -1;
 
