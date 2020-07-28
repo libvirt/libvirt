@@ -29,10 +29,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
     g_autofree char *actualargv = NULL;
     g_autofree char *actualld = NULL;
     g_autofree char *actualdm = NULL;
-    virDomainDefPtr vmdef = NULL;
-    virCommandPtr cmd = NULL;
-    virCommandPtr ldcmd = NULL;
-    virConnectPtr conn;
+    g_autoptr(virDomainDef) vmdef = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) ldcmd = NULL;
+    g_autoptr(virConnect) conn = NULL;
     int ret = -1;
 
     if (!(conn = virGetConnect()))
@@ -99,10 +99,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
         vmdef->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
         virPortAllocatorRelease(vmdef->graphics[0]->data.vnc.port);
 
-    virCommandFree(cmd);
-    virCommandFree(ldcmd);
-    virDomainDefFree(vmdef);
-    virObjectUnref(conn);
     return ret;
 }
 

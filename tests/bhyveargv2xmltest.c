@@ -32,7 +32,7 @@ testCompareXMLToArgvFiles(const char *xmlfile,
     g_autofree char *cmd = NULL;
     g_autofree char *log = NULL;
     int ret = -1;
-    virDomainDefPtr vmdef = NULL;
+    g_autoptr(virDomainDef) vmdef = NULL;
 
     if (virTestLoadFile(cmdfile, &cmd) < 0)
         goto fail;
@@ -86,7 +86,6 @@ testCompareXMLToArgvFiles(const char *xmlfile,
     ret = 0;
 
  fail:
-    virDomainDefFree(vmdef);
     return ret;
 }
 
