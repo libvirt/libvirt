@@ -11,6 +11,7 @@ libxl_driver_sources = [
 ]
 
 driver_source_files += files(libxl_driver_sources)
+stateful_driver_source_files += files(libxl_driver_sources)
 
 if conf.has('WITH_LIBXL')
   libxl_driver_imp = static_library(

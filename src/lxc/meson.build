@@ -46,6 +46,12 @@ driver_source_files += [
   lxc_monitor_generated,
 ]
 
+stateful_driver_source_files += [
+  files(lxc_driver_sources),
+  lxc_monitor_protocol_generated,
+  lxc_monitor_generated,
+]
+
 lxc_controller_sources = files(
   'lxc_conf.c',
   'lxc_container.c',

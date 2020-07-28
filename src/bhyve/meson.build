@@ -11,6 +11,7 @@ bhyve_sources = files(
 )
 
 driver_source_files += bhyve_sources
+stateful_driver_source_files += bhyve_sources
 
 if conf.has('WITH_BHYVE')
   bhyve_driver_impl = static_library(

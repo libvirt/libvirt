@@ -5,6 +5,7 @@ vz_driver_sources = [
 ]
 
 driver_source_files += files(vz_driver_sources)
+stateful_driver_source_files += files(vz_driver_sources)
 
 if conf.has('WITH_VZ')
   vz_driver_impl = static_library(

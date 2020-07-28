@@ -11,6 +11,7 @@ if conf.has('WITH_UDEV')
 endif
 
 driver_source_files += files(interface_driver_sources)
+stateful_driver_source_files += files(interface_driver_sources)
 
 if conf.has('WITH_INTERFACE')
   virt_modules += {

@@ -1,10 +1,5 @@
 # vim: filetype=automake
 
-STATEFUL_DRIVER_SOURCE_FILES += \
-	$(LXC_MONITOR_PROTOCOL_GENERATED) \
-	$(LXC_MONITOR_GENERATED) \
-	$(addprefix $(srcdir)/,$(LXC_DRIVER_SOURCES))
-
 if WITH_LXC
 
 if WITH_DTRACE_PROBES

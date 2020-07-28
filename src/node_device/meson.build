@@ -2,6 +2,8 @@ node_device_driver_sources = [
   'node_device_driver.c',
 ]
 
+stateful_driver_source_files += files(node_device_driver_sources)
+
 if conf.has('WITH_HAL')
   node_device_driver_sources += 'node_device_hal.c'
 endif

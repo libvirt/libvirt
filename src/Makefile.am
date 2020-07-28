@@ -21,7 +21,6 @@
 # that actually use them.
 
 BUILT_SOURCES =
-STATEFUL_DRIVER_SOURCE_FILES =
 augeas_DATA =
 augeastest_DATA =
 if WITH_DTRACE_PROBES
@@ -31,17 +30,7 @@ RPC_PROBE_FILES =
 
 include locking/Makefile.inc.am
 include admin/Makefile.inc.am
-include qemu/Makefile.inc.am
-include bhyve/Makefile.inc.am
-include libxl/Makefile.inc.am
-include vz/Makefile.inc.am
 include lxc/Makefile.inc.am
-include interface/Makefile.inc.am
-include network/Makefile.inc.am
-include nwfilter/Makefile.inc.am
-include node_device/Makefile.inc.am
-include secret/Makefile.inc.am
-include storage/Makefile.inc.am
 
 
 # Keep this list synced with RPC_PROBE_FILES
@@ -98,18 +87,12 @@ else !WITH_REMOTE
 check-protocol:
 endif !WITH_REMOTE
 
-check-aclrules:
-	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-aclrules.py \
-		$(REMOTE_PROTOCOL) \
-		$(STATEFUL_DRIVER_SOURCE_FILES)
-
 check-aclperms:
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-aclperms.py \
 		$(srcdir)/access/viraccessperm.h \
 		$(srcdir)/access/viraccessperm.c
 
 check-local: check-protocol \
-	check-aclrules \
 	check-aclperms check-admin
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 

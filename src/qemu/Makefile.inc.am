@@ -1,3 +1,0 @@
-# vim: filetype=automake
-
-STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))

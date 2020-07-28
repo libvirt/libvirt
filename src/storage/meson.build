@@ -9,6 +9,7 @@ storage_driver_sources = [
 ]
 
 driver_source_files += files(storage_driver_sources)
+stateful_driver_source_files += files(storage_driver_sources)
 
 storage_backend_fs_sources = [
   'storage_backend_fs.c',

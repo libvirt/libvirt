@@ -38,6 +38,7 @@ qemu_driver_sources = [
 ]
 
 driver_source_files += files(qemu_driver_sources)
+stateful_driver_source_files += files(qemu_driver_sources)
 
 qemu_dtrace_gen_headers = []
 qemu_dtrace_gen_objects = []

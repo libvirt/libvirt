@@ -1,5 +1,0 @@
-# vim: filetype=automake
-
-STATEFUL_DRIVER_SOURCE_FILES += \
-	$(addprefix $(srcdir)/,$(NODE_DEVICE_DRIVER_SOURCES)) \
-	$(NULL)

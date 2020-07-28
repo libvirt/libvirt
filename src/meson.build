@@ -219,6 +219,10 @@ virt_install_dirs = []
 #   driver source files to check
 driver_source_files = []
 
+# stateful_driver_source_files:
+#   stateful driver source files to check
+stateful_driver_source_files = []
+
 
 # list subdirectories
 
@@ -873,5 +877,12 @@ test(
   'check-driverimpls',
   python3_prog,
   args: [ check_driverimpls_prog.path(), driver_source_files ],
+  env: runutf8,
+)
+
+test(
+  'check-aclrules',
+  python3_prog,
+  args: [ check_aclrules_prog.path(), files('remote/remote_protocol.x'), stateful_driver_source_files ],
   env: runutf8,
 )

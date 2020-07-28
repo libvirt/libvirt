@@ -4,6 +4,7 @@ network_driver_sources = [
 ]
 
 driver_source_files += files(network_driver_sources)
+stateful_driver_source_files += files(network_driver_sources)
 
 network_leases_helper_sources = files(
   'leaseshelper.c',
