@@ -129,7 +129,6 @@ testGetCaps(char *capsData, const testQemuData *data)
 static int
 testQemuCapsXML(const void *opaque)
 {
-    int ret = -1;
     const testQemuData *data = opaque;
     g_autofree char *capsFile = NULL;
     g_autofree char *xmlFile = NULL;
@@ -144,21 +143,19 @@ testQemuCapsXML(const void *opaque)
                                data->archName, data->suffix);
 
     if (virTestLoadFile(capsFile, &capsData) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(capsProvided = testGetCaps(capsData, data)))
-        goto cleanup;
+        return -1;
 
     capsXml = virCapabilitiesFormatXML(capsProvided);
     if (!capsXml)
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(capsXml, xmlFile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

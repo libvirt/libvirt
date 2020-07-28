@@ -472,33 +472,29 @@ testQemuHotplugCpuPrepare(const char *test,
 static int
 testQemuHotplugCpuFinalize(struct testQemuHotplugCpuData *data)
 {
-    int ret = -1;
     g_autofree char *activeXML = NULL;
     g_autofree char *configXML = NULL;
 
     if (data->file_xml_res_live) {
         if (!(activeXML = virDomainDefFormat(data->vm->def, driver.xmlopt,
                                              VIR_DOMAIN_DEF_FORMAT_SECURE)))
-            goto cleanup;
+            return -1;
 
         if (virTestCompareToFile(activeXML, data->file_xml_res_live) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (data->file_xml_res_conf) {
         if (!(configXML = virDomainDefFormat(data->vm->newDef, driver.xmlopt,
                                              VIR_DOMAIN_DEF_FORMAT_SECURE |
                                              VIR_DOMAIN_DEF_FORMAT_INACTIVE)))
-            goto cleanup;
+            return -1;
 
         if (virTestCompareToFile(configXML, data->file_xml_res_conf) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-     return ret;
+     return 0;
 }
 
 

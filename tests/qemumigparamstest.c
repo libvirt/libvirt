@@ -64,29 +64,25 @@ qemuMigParamsTestXML2XML(const void *opaque)
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
     g_autofree char *actualXML = NULL;
-    int ret = -1;
 
     xmlFile = g_strdup_printf("%s/qemumigparamsdata/%s.xml", abs_srcdir,
                               data->name);
 
     if (!(doc = virXMLParseFileCtxt(xmlFile, &ctxt)))
-        goto cleanup;
+        return -1;
 
     if (qemuMigrationParamsParse(ctxt, &migParams) < 0)
-        goto cleanup;
+        return -1;
 
     qemuMigParamsTestFormatXML(&buf, migParams);
 
     if (!(actualXML = virBufferContentAndReset(&buf)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(actualXML, xmlFile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

@@ -141,7 +141,6 @@ testQemuCaps(const void *opaque)
 static int
 testQemuCapsCopy(const void *opaque)
 {
-    int ret = -1;
     const testQemuData *data = opaque;
     g_autofree char *capsFile = NULL;
     g_autoptr(virQEMUCaps) orig = NULL;
@@ -154,21 +153,18 @@ testQemuCapsCopy(const void *opaque)
 
     if (!(orig = qemuTestParseCapabilitiesArch(
               virArchFromString(data->archName), capsFile)))
-        goto cleanup;
+        return -1;
 
     if (!(copy = virQEMUCapsNewCopy(orig)))
-        goto cleanup;
+        return -1;
 
     if (!(actual = virQEMUCapsFormatCache(copy)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(actual, capsFile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

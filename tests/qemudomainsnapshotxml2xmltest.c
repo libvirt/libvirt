@@ -34,7 +34,6 @@ testCompareXMLToXMLFiles(const char *inxml,
     g_autofree char *inXmlData = NULL;
     g_autofree char *outXmlData = NULL;
     g_autofree char *actual = NULL;
-    int ret = -1;
     unsigned int parseflags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
     unsigned int formatflags = VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE;
     bool cur = false;
@@ -49,40 +48,37 @@ testCompareXMLToXMLFiles(const char *inxml,
         parseflags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
     if (virTestLoadFile(inxml, &inXmlData) < 0)
-        goto cleanup;
+        return -1;
 
     if (virTestLoadFile(outxml, &outXmlData) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(def = virDomainSnapshotDefParseString(inXmlData,
                                                 driver.xmlopt, NULL, &cur,
                                                 parseflags)))
-        goto cleanup;
+        return -1;
     if (cur) {
         if (!(flags & TEST_INTERNAL))
-            goto cleanup;
+            return -1;
         formatflags |= VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT;
     }
     if (flags & TEST_RUNNING) {
         if (def->state)
-            goto cleanup;
+            return -1;
         def->state = VIR_DOMAIN_RUNNING;
     }
 
     if (!(actual = virDomainSnapshotDefFormat(uuid, def,
                                               driver.xmlopt,
                                               formatflags)))
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(outXmlData, actual)) {
         virTestDifferenceFull(stderr, outXmlData, outxml, actual, inxml);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 struct testInfo {

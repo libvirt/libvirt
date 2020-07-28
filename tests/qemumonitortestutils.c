@@ -787,26 +787,25 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
     virJSONValuePtr argobj;
     const char *cmdname;
     size_t i;
-    int ret = -1;
 
     if (!(val = virJSONValueFromString(cmdstr)))
         return -1;
 
     if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
         qemuMonitorTestError("Missing command name in %s", cmdstr);
-        goto cleanup;
+        return -1;
     }
 
     if (data->command_name &&
         STRNEQ(data->command_name, cmdname)) {
         qemuMonitorTestErrorInvalidCommand(data->command_name, cmdname);
-        goto cleanup;
+        return -1;
     }
 
     if (!(args = virJSONValueObjectGet(val, "arguments"))) {
         qemuMonitorTestError("Missing arguments section for command '%s'",
                              NULLSTR(data->command_name));
-        goto cleanup;
+        return -1;
     }
 
     /* validate the args */
@@ -818,12 +817,12 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
             qemuMonitorTestError("Missing argument '%s' for command '%s'",
                                  arg->argname,
                                  NULLSTR(data->command_name));
-            goto cleanup;
+            return -1;
         }
 
         /* convert the argument to string */
         if (!(argstr = virJSONValueToString(argobj, false)))
-            goto cleanup;
+            return -1;
 
         /* verify that the argument value is expected */
         if (STRNEQ(argstr, arg->argval)) {
@@ -832,15 +831,12 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
                                  arg->argname,
                                  NULLSTR(data->command_name),
                                  arg->argval, argstr);
-            goto cleanup;
+            return -1;
         }
     }
 
     /* arguments checked out, return the response */
-    ret = qemuMonitorTestAddResponse(test, data->response);
-
- cleanup:
-    return ret;
+    return qemuMonitorTestAddResponse(test, data->response);
 }
 
 
@@ -907,44 +903,40 @@ qemuMonitorTestProcessCommandWithArgStr(qemuMonitorTestPtr test,
     virJSONValuePtr args;
     g_autofree char *argstr = NULL;
     const char *cmdname;
-    int ret = -1;
 
     if (!(val = virJSONValueFromString(cmdstr)))
         return -1;
 
     if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
         qemuMonitorTestError("Missing command name in %s", cmdstr);
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(data->command_name, cmdname)) {
         qemuMonitorTestErrorInvalidCommand(data->command_name, cmdname);
-        goto cleanup;
+        return -1;
     }
 
     if (!(args = virJSONValueObjectGet(val, "arguments"))) {
         qemuMonitorTestError("Missing arguments section for command '%s'",
                              data->command_name);
-        goto cleanup;
+        return -1;
     }
 
     /* convert the arguments to string */
     if (!(argstr = virJSONValueToString(args, false)))
-        goto cleanup;
+        return -1;
 
     /* verify that the argument value is expected */
     if (STRNEQ(argstr, data->expectArgs)) {
         qemuMonitorTestError("%s: expected arguments: '%s', got: '%s'",
                              data->command_name,
                              data->expectArgs, argstr);
-        goto cleanup;
+        return -1;
     }
 
     /* arguments checked out, return the response */
-    ret = qemuMonitorTestAddResponse(test, data->response);
-
- cleanup:
-    return ret;
+    return qemuMonitorTestAddResponse(test, data->response);
 }
 
 

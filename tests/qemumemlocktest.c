@@ -32,21 +32,16 @@ testCompareMemLock(const void *data)
     const struct testInfo *info = data;
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *xml = NULL;
-    int ret = -1;
 
     xml = g_strdup_printf("%s/qemumemlockdata/qemumemlock-%s.xml", abs_srcdir,
                           info->name);
 
     if (!(def = virDomainDefParseFile(xml, driver.xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
-        goto cleanup;
+        return -1;
     }
 
-    ret = virTestCompareToULL(info->memlock, qemuDomainGetMemLockLimitBytes(def, false));
-
- cleanup:
-
-    return ret;
+    return virTestCompareToULL(info->memlock, qemuDomainGetMemLockLimitBytes(def, false));
 }
 
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
