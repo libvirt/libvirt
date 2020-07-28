@@ -55,7 +55,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 {
     const struct testQemuInfo *data = opaque;
     virDomainObjPtr obj = NULL;
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
 
     if (!(obj = virDomainObjParseFile(data->infile, driver.xmlopt,
@@ -85,7 +85,6 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 
  cleanup:
     virDomainObjEndAPI(&obj);
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -132,7 +131,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *fakerootdir;
+    g_autofree char *fakerootdir = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virHashTablePtr capslatest = NULL;
     g_autoptr(virConnect) conn = NULL;
@@ -1502,7 +1501,6 @@ mymain(void)
 
     virHashFree(capslatest);
     qemuTestDriverFree(&driver);
-    VIR_FREE(fakerootdir);
     virFileWrapperClearPrefixes();
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

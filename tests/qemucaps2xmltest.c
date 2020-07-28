@@ -55,7 +55,7 @@ testQemuGetCaps(char *caps)
     xmlDocPtr xml;
     xmlXPathContextPtr ctxt = NULL;
     ssize_t i, n;
-    xmlNodePtr *nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     if (!(xml = virXMLParseStringCtxt(caps, "(test caps)", &ctxt)))
         goto error;
@@ -69,26 +69,22 @@ testQemuGetCaps(char *caps)
         goto error;
 
     for (i = 0; i < n; i++) {
-        char *str = virXMLPropString(nodes[i], "name");
+        g_autofree char *str = virXMLPropString(nodes[i], "name");
         if (str) {
             int flag = virQEMUCapsTypeFromString(str);
             if (flag < 0) {
                 fprintf(stderr, "Unknown qemu capabilities flag %s", str);
-                VIR_FREE(str);
                 goto error;
             }
-            VIR_FREE(str);
             virQEMUCapsSet(qemuCaps, flag);
         }
     }
 
-    VIR_FREE(nodes);
     xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
     return qemuCaps;
 
  error:
-    VIR_FREE(nodes);
     virObjectUnref(qemuCaps);
     xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
@@ -137,10 +133,10 @@ testQemuCapsXML(const void *opaque)
 {
     int ret = -1;
     const testQemuData *data = opaque;
-    char *capsFile = NULL
-    char *xmlFile = NULL;
-    char *capsData = NULL;
-    char *capsXml = NULL;
+    g_autofree char *capsFile = NULL;
+    g_autofree char *xmlFile = NULL;
+    g_autofree char *capsData = NULL;
+    g_autofree char *capsXml = NULL;
     virCapsPtr capsProvided = NULL;
 
     xmlFile = g_strdup_printf("%s/caps.%s.xml", data->outputDir, data->archName);
@@ -164,10 +160,6 @@ testQemuCapsXML(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(xmlFile);
-    VIR_FREE(capsFile);
-    VIR_FREE(capsXml);
-    VIR_FREE(capsData);
     virObjectUnref(capsProvided);
     return ret;
 }

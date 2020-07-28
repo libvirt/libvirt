@@ -31,9 +31,9 @@ testCompareXMLToXMLFiles(const char *inxml,
                          const char *uuid,
                          unsigned int flags)
 {
-    char *inXmlData = NULL;
-    char *outXmlData = NULL;
-    char *actual = NULL;
+    g_autofree char *inXmlData = NULL;
+    g_autofree char *outXmlData = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     unsigned int parseflags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
     unsigned int formatflags = VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE;
@@ -82,9 +82,6 @@ testCompareXMLToXMLFiles(const char *inxml,
     ret = 0;
 
  cleanup:
-    VIR_FREE(inXmlData);
-    VIR_FREE(outXmlData);
-    VIR_FREE(actual);
     return ret;
 }
 

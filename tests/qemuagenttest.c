@@ -173,7 +173,7 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOptionPtr xmlopt,
                              virDomainDefPtr *def)
 {
     int ret = -1;
-    char *domain_filename = NULL;
+    g_autofree char *domain_filename = NULL;
     qemuMonitorTestPtr ret_test = NULL;
     virDomainDefPtr ret_def = NULL;
 
@@ -233,7 +233,6 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOptionPtr xmlopt,
     ret = 0;
 
  cleanup:
-    VIR_FREE(domain_filename);
     if (ret_test)
         qemuMonitorTestFree(ret_test);
     virDomainDefFree(ret_def);
@@ -664,7 +663,7 @@ testQemuAgentArbitraryCommand(const void *data)
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
     int ret = -1;
-    char *reply = NULL;
+    g_autofree char *reply = NULL;
 
     if (!test)
         return -1;
@@ -693,7 +692,6 @@ testQemuAgentArbitraryCommand(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(reply);
     qemuMonitorTestFree(test);
     return ret;
 }
@@ -713,7 +711,7 @@ testQemuAgentTimeout(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
-    char *reply = NULL;
+    g_autofree char *reply = NULL;
     int ret = -1;
 
     if (!test)
@@ -757,7 +755,6 @@ testQemuAgentTimeout(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(reply);
     qemuMonitorTestFree(test);
     return ret;
 }

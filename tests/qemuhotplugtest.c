@@ -203,7 +203,7 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
                            const char *expectedFile,
                            bool fail)
 {
-    char *actual;
+    g_autofree char *actual = NULL;
     int ret;
 
     actual = virDomainDefFormat(vm->def, driver.xmlopt,
@@ -224,7 +224,6 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
         ret = -1;
     }
 
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -233,12 +232,12 @@ testQemuHotplug(const void *data)
 {
     int ret = -1;
     struct qemuHotplugTestData *test = (struct qemuHotplugTestData *) data;
-    char *domain_filename = NULL;
-    char *device_filename = NULL;
-    char *result_filename = NULL;
-    char *domain_xml = NULL;
-    char *device_xml = NULL;
-    char *result_xml = NULL;
+    g_autofree char *domain_filename = NULL;
+    g_autofree char *device_filename = NULL;
+    g_autofree char *result_filename = NULL;
+    g_autofree char *domain_xml = NULL;
+    g_autofree char *device_xml = NULL;
+    g_autofree char *result_xml = NULL;
     const char *const *tmp;
     bool fail = test->fail;
     bool keep = test->keep;
@@ -340,12 +339,6 @@ testQemuHotplug(const void *data)
     virObjectLock(priv->mon);
 
  cleanup:
-    VIR_FREE(domain_filename);
-    VIR_FREE(device_filename);
-    VIR_FREE(result_filename);
-    VIR_FREE(domain_xml);
-    VIR_FREE(device_xml);
-    VIR_FREE(result_xml);
     /* don't dispose test monitor with VM */
     if (priv)
         priv->mon = NULL;
@@ -416,7 +409,7 @@ testQemuHotplugCpuPrepare(const char *test,
 {
     qemuDomainObjPrivatePtr priv = NULL;
     virCapsPtr caps = NULL;
-    char *prefix = NULL;
+    g_autofree char *prefix = NULL;
     struct testQemuHotplugCpuData *data = NULL;
 
     prefix = g_strdup_printf("%s/qemuhotplugtestcpus/%s", abs_srcdir, test);
@@ -468,14 +461,11 @@ testQemuHotplugCpuPrepare(const char *test,
     if (qemuDomainRefreshVcpuInfo(&driver, data->vm, 0, false) < 0)
         goto error;
 
-    VIR_FREE(prefix);
-
     return data;
 
  error:
     virObjectUnref(caps);
     testQemuHotplugCpuDataFree(data);
-    VIR_FREE(prefix);
     return NULL;
 }
 
@@ -484,8 +474,8 @@ static int
 testQemuHotplugCpuFinalize(struct testQemuHotplugCpuData *data)
 {
     int ret = -1;
-    char *activeXML = NULL;
-    char *configXML = NULL;
+    g_autofree char *activeXML = NULL;
+    g_autofree char *configXML = NULL;
 
     if (data->file_xml_res_live) {
         if (!(activeXML = virDomainDefFormat(data->vm->def, driver.xmlopt,
@@ -509,8 +499,6 @@ testQemuHotplugCpuFinalize(struct testQemuHotplugCpuData *data)
     ret = 0;
 
  cleanup:
-     VIR_FREE(activeXML);
-     VIR_FREE(configXML);
      return ret;
 }
 

@@ -31,7 +31,7 @@ testCompareMemLock(const void *data)
 {
     const struct testInfo *info = data;
     virDomainDefPtr def = NULL;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     int ret = -1;
 
     xml = g_strdup_printf("%s/qemumemlockdata/qemumemlock-%s.xml", abs_srcdir,
@@ -46,7 +46,6 @@ testCompareMemLock(const void *data)
 
  cleanup:
     virDomainDefFree(def);
-    VIR_FREE(xml);
 
     return ret;
 }
@@ -57,7 +56,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *fakerootdir;
+    g_autofree char *fakerootdir = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
@@ -69,10 +68,8 @@ mymain(void)
 
     g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
 
-    if (qemuTestDriverInit(&driver) < 0) {
-        VIR_FREE(fakerootdir);
+    if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
-    }
 
     driver.privileged = true;
 
@@ -154,7 +151,6 @@ mymain(void)
         virFileDeleteTree(fakerootdir);
 
     qemuTestDriverFree(&driver);
-    VIR_FREE(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

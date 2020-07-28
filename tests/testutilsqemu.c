@@ -220,15 +220,13 @@ virCapsPtr testQemuCapsInit(void)
     }
 
     if (virTestGetDebug()) {
-        char *caps_str;
+        g_autofree char *caps_str = NULL;
 
         caps_str = virCapabilitiesFormatXML(caps);
         if (!caps_str)
             goto cleanup;
 
         VIR_TEST_DEBUG("QEMU driver capabilities:\n%s", caps_str);
-
-        VIR_FREE(caps_str);
     }
 
     return caps;
@@ -496,7 +494,7 @@ testQemuGetLatestCapsForArch(const char *arch,
     struct dirent *ent;
     DIR *dir = NULL;
     int rc;
-    char *fullsuffix = NULL;
+    g_autofree char *fullsuffix = NULL;
     unsigned long maxver = 0;
     unsigned long ver;
     g_autofree char *maxname = NULL;
@@ -542,7 +540,6 @@ testQemuGetLatestCapsForArch(const char *arch,
     ret = g_strdup_printf("%s/%s", TEST_QEMU_CAPS_PATH, maxname);
 
  cleanup:
-    VIR_FREE(fullsuffix);
     virDirClose(&dir);
     return ret;
 }

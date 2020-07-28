@@ -71,12 +71,12 @@ testQemuCaps(const void *opaque)
 {
     int ret = -1;
     testQemuData *data = (void *) opaque;
-    char *repliesFile = NULL;
-    char *capsFile = NULL;
+    g_autofree char *repliesFile = NULL;
+    g_autofree char *capsFile = NULL;
     qemuMonitorTestPtr mon = NULL;
     virQEMUCapsPtr capsActual = NULL;
-    char *binary = NULL;
-    char *actual = NULL;
+    g_autofree char *binary = NULL;
+    g_autofree char *actual = NULL;
     unsigned int fakeMicrocodeVersion = 0;
     const char *p;
 
@@ -133,10 +133,6 @@ testQemuCaps(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(repliesFile);
-    VIR_FREE(capsFile);
-    VIR_FREE(actual);
-    VIR_FREE(binary);
     qemuMonitorTestFree(mon);
     virObjectUnref(capsActual);
     return ret;
@@ -148,10 +144,10 @@ testQemuCapsCopy(const void *opaque)
 {
     int ret = -1;
     const testQemuData *data = opaque;
-    char *capsFile = NULL;
+    g_autofree char *capsFile = NULL;
     virQEMUCapsPtr orig = NULL;
     virQEMUCapsPtr copy = NULL;
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
 
     capsFile = g_strdup_printf("%s/%s_%s.%s.xml",
                                data->outputDir, data->prefix, data->version,
@@ -173,10 +169,8 @@ testQemuCapsCopy(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(capsFile);
     virObjectUnref(orig);
     virObjectUnref(copy);
-    VIR_FREE(actual);
     return ret;
 }
 

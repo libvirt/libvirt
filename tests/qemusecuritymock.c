@@ -129,7 +129,7 @@ virFileGetXAttrQuiet(const char *path,
                      char **value)
 {
     int ret = -1;
-    char *key;
+    g_autofree char *key = NULL;
     char *val;
 
     key = get_key(path, name);
@@ -148,7 +148,6 @@ virFileGetXAttrQuiet(const char *path,
     ret = 0;
  cleanup:
     virMutexUnlock(&m);
-    VIR_FREE(key);
     return ret;
 }
 
@@ -186,8 +185,8 @@ int virFileSetXAttr(const char *path,
                     const char *value)
 {
     int ret = -1;
-    char *key;
-    char *val;
+    g_autofree char *key = NULL;
+    g_autofree char *val = NULL;
 
     key = get_key(path, name);
     val = g_strdup(value);
@@ -203,8 +202,6 @@ int virFileSetXAttr(const char *path,
     ret = 0;
  cleanup:
     virMutexUnlock(&m);
-    VIR_FREE(val);
-    VIR_FREE(key);
     return ret;
 }
 
@@ -213,7 +210,7 @@ int virFileRemoveXAttr(const char *path,
                        const char *name)
 {
     int ret = -1;
-    char *key;
+    g_autofree char *key = NULL;
 
     key = get_key(path, name);
 
@@ -225,7 +222,6 @@ int virFileRemoveXAttr(const char *path,
         errno = ENODATA;
 
     virMutexUnlock(&m);
-    VIR_FREE(key);
     return ret;
 }
 

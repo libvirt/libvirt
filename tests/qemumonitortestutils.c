@@ -724,7 +724,7 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
     virJSONValuePtr args;
     unsigned long long id;
     const char *cmdname;
-    char *retmsg = NULL;
+    g_autofree char *retmsg = NULL;
     int ret = -1;
 
     if (!(val = virJSONValueFromString(cmdstr)))
@@ -757,7 +757,6 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
 
  cleanup:
     virJSONValueFree(val);
-    VIR_FREE(retmsg);
     return ret;
 }
 
@@ -908,7 +907,7 @@ qemuMonitorTestProcessCommandWithArgStr(qemuMonitorTestPtr test,
     struct qemuMonitorTestHandlerData *data = item->opaque;
     virJSONValuePtr val = NULL;
     virJSONValuePtr args;
-    char *argstr = NULL;
+    g_autofree char *argstr = NULL;
     const char *cmdname;
     int ret = -1;
 
@@ -947,7 +946,6 @@ qemuMonitorTestProcessCommandWithArgStr(qemuMonitorTestPtr test,
     ret = qemuMonitorTestAddResponse(test, data->response);
 
  cleanup:
-    VIR_FREE(argstr);
     virJSONValueFree(val);
     return ret;
 }
@@ -1228,7 +1226,7 @@ qemuMonitorTestNewFromFile(const char *fileName,
                            bool simple)
 {
     qemuMonitorTestPtr test = NULL;
-    char *json = NULL;
+    g_autofree char *json = NULL;
     char *tmp;
     char *singleReply;
 
@@ -1277,7 +1275,6 @@ qemuMonitorTestNewFromFile(const char *fileName,
         goto error;
 
  cleanup:
-    VIR_FREE(json);
     return test;
 
  error:
@@ -1334,14 +1331,13 @@ qemuMonitorTestFullAddItem(qemuMonitorTestPtr test,
                            const char *response,
                            size_t line)
 {
-    char *cmderr;
+    g_autofree char *cmderr = NULL;
     int ret;
 
     cmderr = g_strdup_printf("wrong expected command in %s:%zu: ", filename, line);
 
     ret = qemuMonitorTestAddItemVerbatim(test, command, cmderr, response);
 
-    VIR_FREE(cmderr);
     return ret;
 }
 
@@ -1369,7 +1365,7 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
                                virHashTablePtr qmpschema)
 {
     qemuMonitorTestPtr ret = NULL;
-    char *jsonstr = NULL;
+    g_autofree char *jsonstr = NULL;
     char *tmp;
     size_t line = 0;
 
@@ -1435,7 +1431,6 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
     }
 
  cleanup:
-    VIR_FREE(jsonstr);
     return ret;
 
  error:

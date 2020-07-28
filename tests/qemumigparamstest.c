@@ -59,11 +59,11 @@ qemuMigParamsTestXML2XML(const void *opaque)
 {
     const qemuMigParamsData *data = opaque;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *xmlFile = NULL;
+    g_autofree char *xmlFile = NULL;
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     qemuMigrationParamsPtr migParams = NULL;
-    char *actualXML = NULL;
+    g_autofree char *actualXML = NULL;
     int ret = -1;
 
     xmlFile = g_strdup_printf("%s/qemumigparamsdata/%s.xml", abs_srcdir,
@@ -86,8 +86,6 @@ qemuMigParamsTestXML2XML(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(xmlFile);
-    VIR_FREE(actualXML);
     qemuMigrationParamsFree(migParams);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
@@ -100,12 +98,12 @@ qemuMigParamsTestXML(const void *opaque)
 {
     const qemuMigParamsData *data = opaque;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *replyFile = NULL;
-    char *xmlFile = NULL;
+    g_autofree char *replyFile = NULL;
+    g_autofree char *xmlFile = NULL;
     qemuMonitorTestPtr mon = NULL;
     virJSONValuePtr params = NULL;
     qemuMigrationParamsPtr migParams = NULL;
-    char *actualXML = NULL;
+    g_autofree char *actualXML = NULL;
     int ret = -1;
 
     replyFile = g_strdup_printf("%s/qemumigparamsdata/%s.reply",
@@ -134,9 +132,6 @@ qemuMigParamsTestXML(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(replyFile);
-    VIR_FREE(xmlFile);
-    VIR_FREE(actualXML);
     virJSONValueFree(params);
     qemuMigrationParamsFree(migParams);
     qemuMonitorTestFree(mon);
@@ -148,13 +143,13 @@ static int
 qemuMigParamsTestJSON(const void *opaque)
 {
     const qemuMigParamsData *data = opaque;
-    char *replyFile = NULL;
-    char *jsonFile = NULL;
+    g_autofree char *replyFile = NULL;
+    g_autofree char *jsonFile = NULL;
     qemuMonitorTestPtr mon = NULL;
     virJSONValuePtr paramsIn = NULL;
     virJSONValuePtr paramsOut = NULL;
     qemuMigrationParamsPtr migParams = NULL;
-    char *actualJSON = NULL;
+    g_autofree char *actualJSON = NULL;
     int ret = -1;
 
     replyFile = g_strdup_printf("%s/qemumigparamsdata/%s.reply",
@@ -182,9 +177,6 @@ qemuMigParamsTestJSON(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(replyFile);
-    VIR_FREE(jsonFile);
-    VIR_FREE(actualJSON);
     virJSONValueFree(paramsIn);
     virJSONValueFree(paramsOut);
     qemuMigrationParamsFree(migParams);

@@ -105,7 +105,7 @@ static virStoragePoolPtr
 fakeStoragePoolLookupByName(virConnectPtr conn,
                             const char *name)
 {
-    char *xmlpath = NULL;
+    g_autofree char *xmlpath = NULL;
     virStoragePoolPtr ret = NULL;
 
     if (STRNEQ(name, "inactive")) {
@@ -122,7 +122,6 @@ fakeStoragePoolLookupByName(virConnectPtr conn,
     ret = virGetStoragePool(conn, name, fakeUUID, NULL, NULL);
 
  cleanup:
-    VIR_FREE(xmlpath);
     return ret;
 }
 
@@ -196,7 +195,7 @@ static char *
 fakeStoragePoolGetXMLDesc(virStoragePoolPtr pool,
                           unsigned int flags_unused G_GNUC_UNUSED)
 {
-    char *xmlpath = NULL;
+    g_autofree char *xmlpath = NULL;
     char *xmlbuf = NULL;
 
     if (STREQ(pool->name, "inactive")) {
@@ -215,7 +214,6 @@ fakeStoragePoolGetXMLDesc(virStoragePoolPtr pool,
     }
 
  cleanup:
-    VIR_FREE(xmlpath);
 
     return xmlbuf;
 }
@@ -560,8 +558,8 @@ static int
 testCompareXMLToArgv(const void *data)
 {
     struct testQemuInfo *info = (void *) data;
-    char *migrateURI = NULL;
-    char *actualargv = NULL;
+    g_autofree char *migrateURI = NULL;
+    g_autofree char *actualargv = NULL;
     unsigned int flags = info->flags;
     unsigned int parseFlags = info->parseFlags;
     int ret = -1;
@@ -689,14 +687,12 @@ testCompareXMLToArgv(const void *data)
 
  cleanup:
     VIR_FREE(log);
-    VIR_FREE(actualargv);
     virDomainChrSourceDefClear(&monitor_chr);
     virCommandFree(cmd);
     virObjectUnref(vm);
     virSetConnectSecret(NULL);
     virSetConnectStorage(NULL);
     virObjectUnref(conn);
-    VIR_FREE(migrateURI);
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
@@ -719,7 +715,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *fakerootdir;
+    g_autofree char *fakerootdir = NULL;
     virHashTablePtr capslatest = NULL;
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
@@ -3366,7 +3362,6 @@ mymain(void)
 
     VIR_FREE(driver.config->nbdTLSx509certdir);
     qemuTestDriverFree(&driver);
-    VIR_FREE(fakerootdir);
     virHashFree(capslatest);
     virFileWrapperClearPrefixes();
 
