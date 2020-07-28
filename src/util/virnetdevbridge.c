@@ -119,6 +119,8 @@ static int virNetDevBridgeSet(const char *brname,
                               struct ifreq *ifr)      /* pre-filled bridge name */
 {
     g_autofree char *path = NULL;
+    unsigned long args[] = { 0, value, 0, 0 };
+    unsigned long paramid;
 
     path = g_strdup_printf(SYSFS_NET_DIR "%s/bridge/%s", brname, paramname);
 
@@ -129,7 +131,6 @@ static int virNetDevBridgeSet(const char *brname,
         VIR_DEBUG("Unable to set bridge %s %s via sysfs", brname, paramname);
     }
 
-    unsigned long paramid;
     if (STREQ(paramname, "stp_state")) {
         paramid = BRCTL_SET_BRIDGE_STP_STATE;
     } else if (STREQ(paramname, "forward_delay")) {
@@ -140,7 +141,8 @@ static int virNetDevBridgeSet(const char *brname,
                              brname, paramname);
         return -1;
     }
-    unsigned long args[] = { paramid, value, 0, 0 };
+
+    args[0] = paramid;
     ifr->ifr_data = (char*)&args;
     if (ioctl(fd, SIOCDEVPRIVATE, ifr) < 0) {
         virReportSystemError(errno,
