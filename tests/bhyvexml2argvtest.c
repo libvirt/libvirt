@@ -26,9 +26,12 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *dmcmdline,
                                      unsigned int flags)
 {
-    char *actualargv = NULL, *actualld = NULL, *actualdm = NULL;
+    char *actualargv = NULL;
+    char *actualld = NULL;
+    char *actualdm = NULL;
     virDomainDefPtr vmdef = NULL;
-    virCommandPtr cmd = NULL, ldcmd = NULL;
+    virCommandPtr cmd = NULL;
+    virCommandPtr ldcmd = NULL;
     virConnectPtr conn;
     int ret = -1;
 
@@ -117,7 +120,9 @@ testCompareXMLToArgvHelper(const void *data)
     int ret = -1;
     const struct testInfo *info = data;
     char *xml = NULL;
-    char *args = NULL, *ldargs = NULL, *dmargs = NULL;
+    char *args = NULL;
+    char *ldargs = NULL;
+    char *dmargs = NULL;
 
     xml = g_strdup_printf("%s/bhyvexml2argvdata/bhyvexml2argv-%s.xml",
                           abs_srcdir, info->name);
