@@ -28,9 +28,9 @@ testCompareXMLToArgvFiles(const char *xmlfile,
                           unsigned int flags)
 
 {
-    char *actualxml = NULL;
-    char *cmd = NULL;
-    char *log = NULL;
+    g_autofree char *actualxml = NULL;
+    g_autofree char *cmd = NULL;
+    g_autofree char *log = NULL;
     int ret = -1;
     virDomainDefPtr vmdef = NULL;
 
@@ -86,9 +86,6 @@ testCompareXMLToArgvFiles(const char *xmlfile,
     ret = 0;
 
  fail:
-    VIR_FREE(actualxml);
-    VIR_FREE(cmd);
-    VIR_FREE(log);
     virDomainDefFree(vmdef);
     return ret;
 }
@@ -103,8 +100,8 @@ testCompareXMLToArgvHelper(const void *data)
 {
     int result = -1;
     const struct testInfo *info = data;
-    char *xml = NULL;
-    char *args = NULL;
+    g_autofree char *xml = NULL;
+    g_autofree char *args = NULL;
 
     xml = g_strdup_printf("%s/bhyveargv2xmldata/bhyveargv2xml-%s.xml",
                           abs_srcdir, info->name);
@@ -112,9 +109,6 @@ testCompareXMLToArgvHelper(const void *data)
                            abs_srcdir, info->name);
 
     result = testCompareXMLToArgvFiles(xml, args, info->flags);
-
-    VIR_FREE(xml);
-    VIR_FREE(args);
     return result;
 }
 

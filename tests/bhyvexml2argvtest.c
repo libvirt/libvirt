@@ -26,9 +26,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *dmcmdline,
                                      unsigned int flags)
 {
-    char *actualargv = NULL;
-    char *actualld = NULL;
-    char *actualdm = NULL;
+    g_autofree char *actualargv = NULL;
+    g_autofree char *actualld = NULL;
+    g_autofree char *actualdm = NULL;
     virDomainDefPtr vmdef = NULL;
     virCommandPtr cmd = NULL;
     virCommandPtr ldcmd = NULL;
@@ -99,9 +99,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
         vmdef->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
         virPortAllocatorRelease(vmdef->graphics[0]->data.vnc.port);
 
-    VIR_FREE(actualargv);
-    VIR_FREE(actualld);
-    VIR_FREE(actualdm);
     virCommandFree(cmd);
     virCommandFree(ldcmd);
     virDomainDefFree(vmdef);
@@ -119,10 +116,10 @@ testCompareXMLToArgvHelper(const void *data)
 {
     int ret = -1;
     const struct testInfo *info = data;
-    char *xml = NULL;
-    char *args = NULL;
-    char *ldargs = NULL;
-    char *dmargs = NULL;
+    g_autofree char *xml = NULL;
+    g_autofree char *args = NULL;
+    g_autofree char *ldargs = NULL;
+    g_autofree char *dmargs = NULL;
 
     xml = g_strdup_printf("%s/bhyvexml2argvdata/bhyvexml2argv-%s.xml",
                           abs_srcdir, info->name);
@@ -135,10 +132,6 @@ testCompareXMLToArgvHelper(const void *data)
 
     ret = testCompareXMLToArgvFiles(xml, args, ldargs, dmargs, info->flags);
 
-    VIR_FREE(xml);
-    VIR_FREE(args);
-    VIR_FREE(ldargs);
-    VIR_FREE(dmargs);
     return ret;
 }
 
