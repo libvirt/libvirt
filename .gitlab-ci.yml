@@ -70,6 +70,7 @@ stages:
 .cirrus_build_job_template: &cirrus_build_job_definition
   stage: builds
   image: registry.gitlab.com/libvirt/libvirt-ci/cirrus-run:master
+  needs: []
   script:
     - source ci/cirrus/libvirt-$NAME.vars
     - sed -e "s|[@]CI_REPOSITORY_URL@|$CI_REPOSITORY_URL|g"
