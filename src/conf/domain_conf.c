@@ -21809,6 +21809,75 @@ virDomainDefClockParse(virDomainDefPtr def,
     return -1;
 }
 
+static int
+virDomainDefControllersParse(virDomainDefPtr def,
+                             xmlXPathContextPtr ctxt,
+                             virDomainXMLOptionPtr xmlopt,
+                             unsigned int flags,
+                             bool *usb_none)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    bool usb_other = false;
+    bool usb_master = false;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./devices/controller", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n && VIR_ALLOC_N(def->controllers, n) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        virDomainControllerDefPtr controller = virDomainControllerDefParseXML(xmlopt,
+                                                                              nodes[i],
+                                                                              ctxt,
+                                                                              flags);
+
+        if (!controller)
+            goto error;
+
+        /* sanitize handling of "none" usb controller */
+        if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+            if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
+                if (usb_other || *usb_none) {
+                    virDomainControllerDefFree(controller);
+                    virReportError(VIR_ERR_XML_DETAIL, "%s",
+                                   _("Can't add another USB controller: "
+                                     "USB is disabled for this domain"));
+                    goto error;
+                }
+                *usb_none = true;
+            } else {
+                if (*usb_none) {
+                    virDomainControllerDefFree(controller);
+                    virReportError(VIR_ERR_XML_DETAIL, "%s",
+                                   _("Can't add another USB controller: "
+                                     "USB is disabled for this domain"));
+                    goto error;
+                }
+                usb_other = true;
+            }
+
+            if (controller->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_NONE)
+                usb_master = true;
+        }
+
+        virDomainControllerInsertPreAlloced(def, controller);
+    }
+    VIR_FREE(nodes);
+
+    if (usb_other && !usb_master) {
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                       _("No master USB controller specified"));
+        goto error;
+    }
+
+    return 0;
+
+ error:
+    return -1;
+}
 
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
@@ -21822,8 +21891,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     virDomainDefPtr def;
     bool uuid_generated = false;
     bool usb_none = false;
-    bool usb_other = false;
-    bool usb_master = false;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *tmp = NULL;
 
@@ -21954,57 +22021,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-    /* analysis of the controller devices */
-    if ((n = virXPathNodeSet("./devices/controller", ctxt, &nodes)) < 0)
+    if (virDomainDefControllersParse(def, ctxt, xmlopt, flags, &usb_none) < 0)
         goto error;
-
-    if (n && VIR_ALLOC_N(def->controllers, n) < 0)
-        goto error;
-
-    for (i = 0; i < n; i++) {
-        virDomainControllerDefPtr controller = virDomainControllerDefParseXML(xmlopt,
-                                                                              nodes[i],
-                                                                              ctxt,
-                                                                              flags);
-
-        if (!controller)
-            goto error;
-
-        /* sanitize handling of "none" usb controller */
-        if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
-            if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
-                if (usb_other || usb_none) {
-                    virDomainControllerDefFree(controller);
-                    virReportError(VIR_ERR_XML_DETAIL, "%s",
-                                   _("Can't add another USB controller: "
-                                     "USB is disabled for this domain"));
-                    goto error;
-                }
-                usb_none = true;
-            } else {
-                if (usb_none) {
-                    virDomainControllerDefFree(controller);
-                    virReportError(VIR_ERR_XML_DETAIL, "%s",
-                                   _("Can't add another USB controller: "
-                                     "USB is disabled for this domain"));
-                    goto error;
-                }
-                usb_other = true;
-            }
-
-            if (controller->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_NONE)
-                usb_master = true;
-        }
-
-        virDomainControllerInsertPreAlloced(def, controller);
-    }
-    VIR_FREE(nodes);
-
-    if (usb_other && !usb_master) {
-        virReportError(VIR_ERR_XML_DETAIL, "%s",
-                       _("No master USB controller specified"));
-        goto error;
-    }
 
     /* analysis of the resource leases */
     if ((n = virXPathNodeSet("./devices/lease", ctxt, &nodes)) < 0) {
