@@ -27,10 +27,10 @@
 #ifdef PACKAGER_VERSION
 # ifdef PACKAGER
 #  define VIR_LOG_VERSION_STRING \
-     "libvirt version: " VERSION ", package: " PACKAGER_VERSION " (" PACKAGER ")"
+    "libvirt version: " VERSION ", package: " PACKAGER_VERSION " (" PACKAGER ")"
 # else
 #  define VIR_LOG_VERSION_STRING \
-     "libvirt version: " VERSION ", package: " PACKAGER_VERSION
+    "libvirt version: " VERSION ", package: " PACKAGER_VERSION
 # endif
 #else
 # define VIR_LOG_VERSION_STRING \
@@ -88,7 +88,7 @@ struct _virLogSource {
     virLogMessage(src, VIR_LOG_ERROR, filename, linenr, funcname, NULL, __VA_ARGS__)
 
 #define VIR_DEBUG(...) \
-   VIR_DEBUG_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
+    VIR_DEBUG_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
 #define VIR_INFO(...) \
     VIR_INFO_INT(&virLogSelf, __FILE__, __LINE__, __func__, __VA_ARGS__)
 #define VIR_WARN(...) \
