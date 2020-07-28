@@ -2,9 +2,9 @@ variables:
   GIT_DEPTH: 100
 
 stages:
-  - sanity_checks
   - containers
   - builds
+  - sanity_checks
 
 .script_variables: &script_variables |
   export MAKEFLAGS="-j$(getconf _NPROCESSORS_ONLN)"
@@ -481,6 +481,7 @@ potfile:
 # merge requests are submitted
 check-dco:
   stage: sanity_checks
+  needs: []
   image: registry.gitlab.com/libvirt/libvirt-ci/check-dco:master
   script:
     - /check-dco
