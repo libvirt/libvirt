@@ -12,6 +12,7 @@ RUN dnf update -y && \
         ca-certificates \
         ccache \
         chrony \
+        clang \
         cppi \
         cyrus-sasl-devel \
         dbus-devel \
@@ -58,7 +59,6 @@ RUN dnf update -y && \
         lvm2 \
         make \
         meson \
-        ncurses-devel \
         net-tools \
         netcf-devel \
         nfs-utils \

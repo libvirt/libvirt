@@ -11,6 +11,7 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         ca-certificates \
         ccache \
         chrony \
+        clang \
         cppi \
         dnsmasq \
         dwarves \

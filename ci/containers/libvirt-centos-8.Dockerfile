@@ -15,6 +15,7 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         ca-certificates \
         ccache \
         chrony \
+        clang \
         cyrus-sasl-devel \
         dbus-devel \
         device-mapper-devel \
@@ -60,7 +61,6 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         lvm2 \
         make \
         meson \
-        ncurses-devel \
         net-tools \
         netcf-devel \
         nfs-utils \

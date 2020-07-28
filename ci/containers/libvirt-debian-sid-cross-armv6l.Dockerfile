@@ -14,6 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             ca-certificates \
             ccache \
             chrony \
+            clang \
             cpanminus \
             dnsmasq-base \
             dwarves \
@@ -90,9 +91,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libglusterfs-dev:armel \
             libgnutls28-dev:armel \
             libiscsi-dev:armel \
-            libncurses-dev:armel \
             libnl-3-dev:armel \
             libnl-route-3-dev:armel \
+            libnuma-dev:armel \
             libparted-dev:armel \
             libpcap0.8-dev:armel \
             libpciaccess-dev:armel \

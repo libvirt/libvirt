@@ -13,6 +13,7 @@ RUN zypper update -y && \
            ca-certificates \
            ccache \
            chrony \
+           clang \
            cppi \
            cyrus-sasl-devel \
            dbus-1-devel \
@@ -59,7 +60,6 @@ RUN zypper update -y && \
            lsof \
            lvm2 \
            make \
-           ncurses-devel \
            net-tools \
            nfs-utils \
            ninja \

@@ -16,6 +16,7 @@ RUN dnf install -y centos-release-stream && \
         ca-certificates \
         ccache \
         chrony \
+        clang \
         cyrus-sasl-devel \
         dbus-devel \
         device-mapper-devel \
@@ -61,7 +62,6 @@ RUN dnf install -y centos-release-stream && \
         lvm2 \
         make \
         meson \
-        ncurses-devel \
         net-tools \
         netcf-devel \
         nfs-utils \

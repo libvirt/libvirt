@@ -14,6 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             ca-certificates \
             ccache \
             chrony \
+            clang \
             cpanminus \
             dnsmasq-base \
             dwarves \
@@ -90,7 +91,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libglusterfs-dev:i386 \
             libgnutls28-dev:i386 \
             libiscsi-dev:i386 \
-            libncurses-dev:i386 \
             libnl-3-dev:i386 \
             libnl-route-3-dev:i386 \
             libnuma-dev:i386 \
