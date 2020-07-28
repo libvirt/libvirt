@@ -141,7 +141,7 @@
                     In this case this device is an SRIOV PF, and the capability
                     element will have a list of <code>address</code>
                     subelements, one for each VF on this PF. If the host system
-                    supports reporting it (via the "sriov_maxvfs" file in the
+                    supports reporting it (via the "sriov_totalvfs" file in the
                     device's sysfs directory) the capability element will also
                     have an attribute named <code>maxCount</code> which is the
                     maximum number of SRIOV VFs supported by this device, which
