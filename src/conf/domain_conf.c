@@ -21175,6 +21175,119 @@ virDomainDefParseCaps(virDomainDefPtr def,
 
 
 static int
+virDomainDefParseMemory(virDomainDefPtr def,
+                        xmlXPathContextPtr ctxt)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_autofree char *tmp = NULL;
+    xmlNodePtr node = NULL;
+    size_t i;
+    int n;
+
+    /* Extract domain memory */
+    if (virDomainParseMemory("./memory[1]", NULL, ctxt,
+                             &def->mem.total_memory, false, true) < 0)
+        goto error;
+
+    if (virDomainParseMemory("./currentMemory[1]", NULL, ctxt,
+                             &def->mem.cur_balloon, false, true) < 0)
+        goto error;
+
+    if (virDomainParseMemory("./maxMemory[1]", NULL, ctxt,
+                             &def->mem.max_memory, false, false) < 0)
+        goto error;
+
+    if (virXPathUInt("string(./maxMemory[1]/@slots)", ctxt, &def->mem.memory_slots) == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Failed to parse memory slot count"));
+        goto error;
+    }
+
+    /* and info about it */
+    if ((tmp = virXPathString("string(./memory[1]/@dumpCore)", ctxt)) &&
+        (def->mem.dump_core = virTristateSwitchTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid memory core dump attribute value '%s'"), tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    tmp = virXPathString("string(./memoryBacking/source/@type)", ctxt);
+    if (tmp) {
+        if ((def->mem.source = virDomainMemorySourceTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown memoryBacking/source/type '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
+    tmp = virXPathString("string(./memoryBacking/access/@mode)", ctxt);
+    if (tmp) {
+        if ((def->mem.access = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown memoryBacking/access/mode '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
+    tmp = virXPathString("string(./memoryBacking/allocation/@mode)", ctxt);
+    if (tmp) {
+        if ((def->mem.allocation = virDomainMemoryAllocationTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown memoryBacking/allocation/mode '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
+    if (virXPathNode("./memoryBacking/hugepages", ctxt)) {
+        /* hugepages will be used */
+        if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot extract hugepages nodes"));
+            goto error;
+        }
+
+        if (n) {
+            if (VIR_ALLOC_N(def->mem.hugepages, n) < 0)
+                goto error;
+
+            for (i = 0; i < n; i++) {
+                if (virDomainHugepagesParseXML(nodes[i], ctxt,
+                                               &def->mem.hugepages[i]) < 0)
+                    goto error;
+                def->mem.nhugepages++;
+            }
+
+            VIR_FREE(nodes);
+        } else {
+            /* no hugepage pages */
+            if (VIR_ALLOC(def->mem.hugepages) < 0)
+                goto error;
+
+            def->mem.nhugepages = 1;
+        }
+    }
+
+    if ((node = virXPathNode("./memoryBacking/nosharepages", ctxt)))
+        def->mem.nosharepages = true;
+
+    if (virXPathBoolean("boolean(./memoryBacking/locked)", ctxt))
+        def->mem.locked = true;
+
+    if (virXPathBoolean("boolean(./memoryBacking/discard)", ctxt))
+        def->mem.discard = VIR_TRISTATE_BOOL_YES;
+
+    return 0;
+
+ error:
+    return -1;
+}
+
+
+static int
 virDomainMemorytuneDefParseMemory(xmlXPathContextPtr ctxt,
                                   xmlNodePtr node,
                                   virResctrlAllocPtr alloc)
@@ -21358,102 +21471,8 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
     }
 
-    /* Extract domain memory */
-    if (virDomainParseMemory("./memory[1]", NULL, ctxt,
-                             &def->mem.total_memory, false, true) < 0)
+    if (virDomainDefParseMemory(def, ctxt) < 0)
         goto error;
-
-    if (virDomainParseMemory("./currentMemory[1]", NULL, ctxt,
-                             &def->mem.cur_balloon, false, true) < 0)
-        goto error;
-
-    if (virDomainParseMemory("./maxMemory[1]", NULL, ctxt,
-                             &def->mem.max_memory, false, false) < 0)
-        goto error;
-
-    if (virXPathUInt("string(./maxMemory[1]/@slots)", ctxt, &def->mem.memory_slots) == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Failed to parse memory slot count"));
-        goto error;
-    }
-
-    /* and info about it */
-    if ((tmp = virXPathString("string(./memory[1]/@dumpCore)", ctxt)) &&
-        (def->mem.dump_core = virTristateSwitchTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid memory core dump attribute value '%s'"), tmp);
-        goto error;
-    }
-    VIR_FREE(tmp);
-
-    tmp = virXPathString("string(./memoryBacking/source/@type)", ctxt);
-    if (tmp) {
-        if ((def->mem.source = virDomainMemorySourceTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown memoryBacking/source/type '%s'"), tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-    }
-
-    tmp = virXPathString("string(./memoryBacking/access/@mode)", ctxt);
-    if (tmp) {
-        if ((def->mem.access = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown memoryBacking/access/mode '%s'"), tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-    }
-
-    tmp = virXPathString("string(./memoryBacking/allocation/@mode)", ctxt);
-    if (tmp) {
-        if ((def->mem.allocation = virDomainMemoryAllocationTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown memoryBacking/allocation/mode '%s'"), tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-    }
-
-    if (virXPathNode("./memoryBacking/hugepages", ctxt)) {
-        /* hugepages will be used */
-        if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot extract hugepages nodes"));
-            goto error;
-        }
-
-        if (n) {
-            if (VIR_ALLOC_N(def->mem.hugepages, n) < 0)
-                goto error;
-
-            for (i = 0; i < n; i++) {
-                if (virDomainHugepagesParseXML(nodes[i], ctxt,
-                                               &def->mem.hugepages[i]) < 0)
-                    goto error;
-                def->mem.nhugepages++;
-            }
-
-            VIR_FREE(nodes);
-        } else {
-            /* no hugepage pages */
-            if (VIR_ALLOC(def->mem.hugepages) < 0)
-                goto error;
-
-            def->mem.nhugepages = 1;
-        }
-    }
-
-    if ((node = virXPathNode("./memoryBacking/nosharepages", ctxt)))
-        def->mem.nosharepages = true;
-
-    if (virXPathBoolean("boolean(./memoryBacking/locked)", ctxt))
-        def->mem.locked = true;
-
-    if (virXPathBoolean("boolean(./memoryBacking/discard)", ctxt))
-        def->mem.discard = VIR_TRISTATE_BOOL_YES;
-
     /* Extract blkio cgroup tunables */
     if (virXPathUInt("string(./blkiotune/weight)", ctxt,
                      &def->blkio.weight) < 0)
