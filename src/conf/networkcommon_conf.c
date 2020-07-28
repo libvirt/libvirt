@@ -228,7 +228,7 @@ virNetDevIPRouteParseXML(const char *errorDetail,
      */
 
     virNetDevIPRoutePtr def = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     char *family = NULL;
     char *address = NULL, *netmask = NULL;
     char *gateway = NULL;

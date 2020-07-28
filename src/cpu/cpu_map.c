@@ -40,7 +40,7 @@ loadData(const char *mapfile,
          void *data)
 {
     int ret = -1;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr *nodes = NULL;
     int n;
     size_t i;
@@ -130,7 +130,7 @@ loadIncludes(xmlXPathContextPtr ctxt,
              void *data)
 {
     int ret = -1;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr *nodes = NULL;
     int n;
     size_t i;

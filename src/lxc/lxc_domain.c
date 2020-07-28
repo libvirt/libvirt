@@ -207,7 +207,7 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     lxcDomainDefPtr lxcDef = g_new0(lxcDomainDef, 1);
     g_autofree xmlNodePtr *nodes = NULL;
     bool uses_lxc_ns = false;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int feature;
     int n;
     size_t i;

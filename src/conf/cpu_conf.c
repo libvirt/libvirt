@@ -327,7 +327,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
 {
     g_autoptr(virCPUDef) def = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int n;
     size_t i;
     g_autofree char *cpuMode = NULL;

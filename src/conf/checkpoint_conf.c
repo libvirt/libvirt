@@ -96,7 +96,7 @@ virDomainCheckpointDiskDefParseXML(xmlNodePtr node,
                                    virDomainCheckpointDiskDefPtr def)
 {
     g_autofree char *checkpoint = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 

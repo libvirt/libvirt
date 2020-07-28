@@ -144,7 +144,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     char *type = NULL;
     char *driver = NULL;
     xmlNodePtr cur;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 

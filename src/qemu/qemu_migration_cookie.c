@@ -935,7 +935,7 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
     int n;
     xmlNodePtr *interfaces = NULL;
     char *vporttype;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     if (VIR_ALLOC(optr) < 0)
         goto error;
@@ -983,7 +983,7 @@ qemuMigrationCookieNBDXMLParse(xmlXPathContextPtr ctxt)
     size_t i;
     int n;
     xmlNodePtr *disks = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     if (VIR_ALLOC(ret) < 0)
         goto error;
@@ -1043,7 +1043,7 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
 {
     qemuDomainJobInfoPtr jobInfo = NULL;
     qemuMonitorMigrationStats *stats;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     if (!(ctxt->node = virXPathNode("./statistics", ctxt)))
         return NULL;

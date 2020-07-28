@@ -1239,7 +1239,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobObjPtr job = &priv->job;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *tmp = NULL;
 
     if (!(ctxt->node = virXPathNode("./job[1]", ctxt)))

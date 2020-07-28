@@ -186,7 +186,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
                                          virDomainDiskDefPtr disk,
                                          virDomainXMLOptionPtr xmlopt)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     g_autofree char *format = NULL;
     g_autofree char *type = NULL;
@@ -2605,7 +2605,7 @@ qemuDomainObjPrivateXMLParseBlockjobChain(xmlNodePtr node,
                                           virDomainXMLOptionPtr xmlopt)
 
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *format = NULL;
     g_autofree char *type = NULL;
     g_autofree char *index = NULL;
@@ -2779,7 +2779,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
                                          xmlXPathContextPtr ctxt,
                                          virDomainXMLOptionPtr xmlopt)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainDiskDefPtr disk = NULL;
     g_autoptr(qemuBlockJobData) job = NULL;
     g_autofree char *name = NULL;
@@ -2961,7 +2961,7 @@ qemuDomainObjPrivateXMLParseSlirpFeatures(xmlNodePtr featuresNode,
                                           xmlXPathContextPtr ctxt,
                                           qemuSlirpPtr slirp)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree xmlNodePtr *nodes = NULL;
     size_t i;
     int n;

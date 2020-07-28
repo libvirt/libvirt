@@ -1781,7 +1781,7 @@ virStorageAuthDefPtr
 virStorageAuthDefParse(xmlNodePtr node,
                        xmlXPathContextPtr ctxt)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virStorageAuthDefPtr ret = NULL;
     xmlNodePtr secretnode = NULL;
     g_autoptr(virStorageAuthDef) authdef = NULL;

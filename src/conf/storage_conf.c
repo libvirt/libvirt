@@ -727,7 +727,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
 {
     long long val;
     int ret = -1;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr node;
     g_autofree char *mode = NULL;
 

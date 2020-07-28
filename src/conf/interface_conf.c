@@ -262,7 +262,7 @@ static int
 virInterfaceDefParseDhcp(virInterfaceProtocolDefPtr def,
                          xmlNodePtr dhcp, xmlXPathContextPtr ctxt)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     char *tmp;
     int ret = 0;
 
@@ -424,7 +424,7 @@ static int
 virInterfaceDefParseIfAdressing(virInterfaceDefPtr def,
                                 xmlXPathContextPtr ctxt)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr *protoNodes = NULL;
     int nProtoNodes, pp, ret = -1;
     char *tmp;
@@ -553,7 +553,7 @@ virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
                              xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *interfaces = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virInterfaceDefPtr itf;
     int nbItf;
     size_t i;
@@ -692,7 +692,7 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
     virInterfaceDefPtr def;
     int type;
     char *tmp;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr lnk;
 
 

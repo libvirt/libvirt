@@ -102,7 +102,7 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
                                unsigned int flags,
                                virDomainXMLOptionPtr xmlopt)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *type = NULL;
     g_autofree char *driver = NULL;
     g_autofree char *backup = NULL;

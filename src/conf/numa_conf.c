@@ -910,7 +910,7 @@ virDomainNumaDefNodeCacheParseXML(virDomainNumaPtr def,
     def->mem_nodes[cur_cell].caches = g_new0(virDomainNumaCache, n);
 
     for (i = 0; i < n; i++) {
-        VIR_XPATH_NODE_AUTORESTORE(ctxt);
+        VIR_XPATH_NODE_AUTORESTORE(ctxt)
         virDomainNumaCachePtr cache = &def->mem_nodes[cur_cell].caches[i];
         g_autofree char *tmp = NULL;
         unsigned int level;
@@ -1010,7 +1010,7 @@ virDomainNumaDefParseXML(virDomainNumaPtr def,
     def->nmem_nodes = n;
 
     for (i = 0; i < n; i++) {
-        VIR_XPATH_NODE_AUTORESTORE(ctxt);
+        VIR_XPATH_NODE_AUTORESTORE(ctxt)
         int rc;
         unsigned int cur_cell = i;
 
@@ -1134,7 +1134,7 @@ virDomainNumaDefParseXML(virDomainNumaPtr def,
             }
             VIR_FREE(tmp);
         } else if (virXMLNodeNameEqual(nodes[i], "bandwidth")) {
-            VIR_XPATH_NODE_AUTORESTORE(ctxt);
+            VIR_XPATH_NODE_AUTORESTORE(ctxt)
             type = VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH;
 
             ctxt->node = nodes[i];

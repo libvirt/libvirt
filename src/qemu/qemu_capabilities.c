@@ -3822,7 +3822,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccelPtr caps,
     char *str = NULL;
     xmlNodePtr hostCPUNode;
     xmlNodePtr *nodes = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     qemuMonitorCPUModelInfoPtr hostCPU = NULL;
     g_autofree char *xpath = g_strdup_printf("./hostCPU[@type='%s']", typeStr);
     int ret = -1;

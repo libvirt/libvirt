@@ -143,7 +143,7 @@ static virStorageEncryptionSecretPtr
 virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virStorageEncryptionSecretPtr ret;
     char *type_str = NULL;
 
@@ -237,7 +237,7 @@ virStorageEncryptionPtr
 virStorageEncryptionParseNode(xmlNodePtr node,
                               xmlXPathContextPtr ctxt)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr *nodes = NULL;
     virStorageEncryptionPtr encdef = NULL;
     virStorageEncryptionPtr ret = NULL;

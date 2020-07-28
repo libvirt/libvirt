@@ -717,7 +717,7 @@ virNodeDevCapDRMParseXML(xmlXPathContextPtr ctxt,
                          xmlNodePtr node,
                          virNodeDevCapDRMPtr drm)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int ret = -1, val;
     char *type = NULL;
 
@@ -746,7 +746,7 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
                          xmlNodePtr node,
                          virNodeDevCapCCWPtr ccw_dev)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int ret = -1;
     char *cssid = NULL, *ssid = NULL, *devno = NULL;
 
@@ -807,7 +807,7 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
                              xmlNodePtr node,
                              virNodeDevCapStoragePtr storage)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr *nodes = NULL;
     size_t i;
     int n, ret = -1;
@@ -900,7 +900,7 @@ virNodeDevCapSCSIParseXML(xmlXPathContextPtr ctxt,
                           xmlNodePtr node,
                           virNodeDevCapSCSIPtr scsi)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int ret = -1;
 
     ctxt->node = node;
@@ -943,7 +943,7 @@ virNodeDevCapSCSITargetParseXML(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node,
                                 virNodeDevCapSCSITargetPtr scsi_target)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr *nodes = NULL;
     int ret = -1, n = 0;
     size_t i;
@@ -1019,7 +1019,7 @@ virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
                               int create,
                               const char *virt_type)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr *nodes = NULL;
     int ret = -1, n = 0;
     size_t i;
@@ -1119,7 +1119,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
                          xmlNodePtr node,
                          virNodeDevCapNetPtr net)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr lnk;
     size_t i = -1;
     int ret = -1, n = -1;
@@ -1197,7 +1197,7 @@ virNodeDevCapUSBInterfaceParseXML(xmlXPathContextPtr ctxt,
                                   xmlNodePtr node,
                                   virNodeDevCapUSBIfPtr usb_if)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int ret = -1;
 
     ctxt->node = node;
@@ -1264,7 +1264,7 @@ virNodeDevCapUSBDevParseXML(xmlXPathContextPtr ctxt,
                             xmlNodePtr node,
                             virNodeDevCapUSBDevPtr usb_dev)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int ret = -1;
 
     ctxt->node = node;
@@ -1307,7 +1307,7 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
                                       xmlNodePtr iommuGroupNode,
                                       virNodeDevCapPCIDevPtr pci_dev)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr *addrNodes = NULL;
     char *numberStr = NULL;
     int nAddrNodes, ret = -1;
@@ -1363,7 +1363,7 @@ virPCIEDeviceInfoLinkParseXML(xmlXPathContextPtr ctxt,
                               xmlNodePtr linkNode,
                               virPCIELinkPtr lnk)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int ret = -1, speed;
     char *speedStr = NULL, *portStr = NULL;
 
@@ -1409,7 +1409,7 @@ virPCIEDeviceInfoParseXML(xmlXPathContextPtr ctxt,
                           xmlNodePtr pciExpressNode,
                           virPCIEDeviceInfoPtr pci_express)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr lnk;
     int ret = -1;
 
@@ -1579,7 +1579,7 @@ virNodeDevPCICapabilityParseXML(xmlXPathContextPtr ctxt,
                                 virNodeDevCapPCIDevPtr pci_dev)
 {
     char *type = virXMLPropString(node, "type");
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int ret = -1;
 
     ctxt->node = node;
@@ -1618,7 +1618,7 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
                             xmlNodePtr node,
                             virNodeDevCapPCIDevPtr pci_dev)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr iommuGroupNode;
     xmlNodePtr pciExpress;
     xmlNodePtr *nodes = NULL;
@@ -1733,7 +1733,7 @@ virNodeDevCapSystemParseXML(xmlXPathContextPtr ctxt,
 {
     virNodeDevCapSystemHardwarePtr hardware = &syscap->hardware;
     virNodeDevCapSystemFirmwarePtr firmware = &syscap->firmware;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int ret = -1;
     char *tmp;
 
@@ -1774,7 +1774,7 @@ virNodeDevCapMdevAttributeParseXML(xmlXPathContextPtr ctxt,
                                    xmlNodePtr node,
                                    virNodeDevCapMdevPtr mdev)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autoptr(virMediatedDeviceAttr) attr = virMediatedDeviceAttrNew();
 
     ctxt->node = node;
@@ -1797,7 +1797,7 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
                           xmlNodePtr node,
                           virNodeDevCapMdevPtr mdev)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int ret = -1;
     int nattrs = 0;
     g_autofree xmlNodePtr *attrs = NULL;

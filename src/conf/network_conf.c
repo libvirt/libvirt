@@ -782,7 +782,7 @@ virNetworkDNSSrvDefParseXML(const char *networkName,
                             bool partialOkay)
 {
     int ret;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 
@@ -940,7 +940,7 @@ virNetworkDNSDefParseXML(const char *networkName,
     g_autofree char *enable = NULL;
     int nhosts, nsrvs, ntxts, nfwds;
     size_t i;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 
@@ -1084,7 +1084,7 @@ virNetworkIPDefParseXML(const char *networkName,
      * On failure clear it out, but don't free it.
      */
 
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr dhcp;
     g_autofree char *address = NULL;
     g_autofree char *netmask = NULL;
@@ -1255,7 +1255,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
      * On failure clear it out, but don't free it.
      */
 
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr virtPortNode;
     xmlNodePtr vlanNode;
     xmlNodePtr bandwidth_node;
@@ -1325,7 +1325,7 @@ virNetworkForwardNatDefParseXML(const char *networkName,
     g_autofree char *addrStart = NULL;
     g_autofree char *addrEnd = NULL;
     g_autofree char *ipv6 = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 
@@ -1463,7 +1463,7 @@ virNetworkForwardDefParseXML(const char *networkName,
     g_autofree char *forwardManaged = NULL;
     g_autofree char *forwardDriverName = NULL;
     g_autofree char *type = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 
@@ -1702,7 +1702,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr forwardNode = NULL;
     g_autofree char *ipv6nogwStr = NULL;
     g_autofree char *trustGuestRxFilters = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr bandwidthNode = NULL;
     xmlNodePtr vlanNode;
     xmlNodePtr metadataNode = NULL;
