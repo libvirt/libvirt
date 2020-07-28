@@ -21660,6 +21660,55 @@ virDomainDefTunablesParse(virDomainDefPtr def,
 }
 
 
+static int
+virDomainDefLifecycleParse(virDomainDefPtr def,
+                           xmlXPathContextPtr ctxt)
+{
+    if (virDomainEventActionParseXML(ctxt, "on_reboot",
+                                     "string(./on_reboot[1])",
+                                     &def->onReboot,
+                                     VIR_DOMAIN_LIFECYCLE_ACTION_RESTART,
+                                     virDomainLifecycleActionTypeFromString) < 0)
+        goto error;
+
+    if (virDomainEventActionParseXML(ctxt, "on_poweroff",
+                                     "string(./on_poweroff[1])",
+                                     &def->onPoweroff,
+                                     VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
+                                     virDomainLifecycleActionTypeFromString) < 0)
+        goto error;
+
+    if (virDomainEventActionParseXML(ctxt, "on_crash",
+                                     "string(./on_crash[1])",
+                                     &def->onCrash,
+                                     VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
+                                     virDomainLifecycleActionTypeFromString) < 0)
+        goto error;
+
+    if (virDomainEventActionParseXML(ctxt, "on_lockfailure",
+                                     "string(./on_lockfailure[1])",
+                                     &def->onLockFailure,
+                                     VIR_DOMAIN_LOCK_FAILURE_DEFAULT,
+                                     virDomainLockFailureTypeFromString) < 0)
+        goto error;
+
+    if (virDomainPMStateParseXML(ctxt,
+                                 "string(./pm/suspend-to-mem/@enabled)",
+                                 &def->pm.s3) < 0)
+        goto error;
+
+    if (virDomainPMStateParseXML(ctxt,
+                                 "string(./pm/suspend-to-disk/@enabled)",
+                                 &def->pm.s4) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    return -1;
+}
+
+
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
@@ -21773,42 +21822,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainFeaturesDefParse(def, ctxt) < 0)
         goto error;
 
-    if (virDomainEventActionParseXML(ctxt, "on_reboot",
-                                     "string(./on_reboot[1])",
-                                     &def->onReboot,
-                                     VIR_DOMAIN_LIFECYCLE_ACTION_RESTART,
-                                     virDomainLifecycleActionTypeFromString) < 0)
-        goto error;
-
-    if (virDomainEventActionParseXML(ctxt, "on_poweroff",
-                                     "string(./on_poweroff[1])",
-                                     &def->onPoweroff,
-                                     VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
-                                     virDomainLifecycleActionTypeFromString) < 0)
-        goto error;
-
-    if (virDomainEventActionParseXML(ctxt, "on_crash",
-                                     "string(./on_crash[1])",
-                                     &def->onCrash,
-                                     VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
-                                     virDomainLifecycleActionTypeFromString) < 0)
-        goto error;
-
-    if (virDomainEventActionParseXML(ctxt, "on_lockfailure",
-                                     "string(./on_lockfailure[1])",
-                                     &def->onLockFailure,
-                                     VIR_DOMAIN_LOCK_FAILURE_DEFAULT,
-                                     virDomainLockFailureTypeFromString) < 0)
-        goto error;
-
-    if (virDomainPMStateParseXML(ctxt,
-                                 "string(./pm/suspend-to-mem/@enabled)",
-                                 &def->pm.s3) < 0)
-        goto error;
-
-    if (virDomainPMStateParseXML(ctxt,
-                                 "string(./pm/suspend-to-disk/@enabled)",
-                                 &def->pm.s4) < 0)
+    if (virDomainDefLifecycleParse(def, ctxt) < 0)
         goto error;
 
     if (virDomainPerfDefParseXML(def, ctxt) < 0)
