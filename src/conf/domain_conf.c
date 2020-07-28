@@ -21415,64 +21415,16 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
 }
 
 
-static virDomainDefPtr
-virDomainDefParseXML(xmlDocPtr xml,
-                     xmlXPathContextPtr ctxt,
-                     virDomainXMLOptionPtr xmlopt,
-                     unsigned int flags)
+static int
+virDomainDefTunablesParse(virDomainDefPtr def,
+                          xmlXPathContextPtr ctxt,
+                          virDomainXMLOptionPtr xmlopt,
+                          unsigned int flags)
 {
-    xmlNodePtr node = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     size_t i, j;
     int n;
-    virDomainDefPtr def;
-    bool uuid_generated = false;
-    bool usb_none = false;
-    bool usb_other = false;
-    bool usb_master = false;
-    g_autofree xmlNodePtr *nodes = NULL;
-    g_autofree char *tmp = NULL;
 
-    if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA) {
-        g_autofree char *schema = NULL;
-
-        schema = virFileFindResource("domain.rng",
-                                     abs_top_srcdir "/docs/schemas",
-                                     PKGDATADIR "/schemas");
-        if (!schema)
-            return NULL;
-        if (virXMLValidateAgainstSchema(schema, xml) < 0)
-            return NULL;
-    }
-
-    if (!(def = virDomainDefNew()))
-        return NULL;
-
-    if (virDomainDefParseIDs(def, ctxt, flags, &uuid_generated) < 0)
-        goto error;
-
-    if (virDomainDefParseCaps(def, ctxt, xmlopt) < 0)
-        goto error;
-
-    /* Extract short description of domain (title) */
-    def->title = virXPathString("string(./title[1])", ctxt);
-    if (def->title && strchr(def->title, '\n')) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Domain title can't contain newlines"));
-        goto error;
-    }
-
-    /* Extract documentation if present */
-    def->description = virXPathString("string(./description[1])", ctxt);
-
-    /* analysis of security label, done early even though we format it
-     * late, so devices can refer to this for defaults */
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL)) {
-        if (virSecurityLabelDefsParseXML(def, ctxt, xmlopt, flags) == -1)
-            goto error;
-    }
-
-    if (virDomainDefParseMemory(def, ctxt) < 0)
-        goto error;
     /* Extract blkio cgroup tunables */
     if (virXPathUInt("string(./blkiotune/weight)", ctxt,
                      &def->blkio.weight) < 0)
@@ -21700,6 +21652,75 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
     }
     VIR_FREE(nodes);
+
+    return 0;
+
+ error:
+    return -1;
+}
+
+
+static virDomainDefPtr
+virDomainDefParseXML(xmlDocPtr xml,
+                     xmlXPathContextPtr ctxt,
+                     virDomainXMLOptionPtr xmlopt,
+                     unsigned int flags)
+{
+    xmlNodePtr node = NULL;
+    size_t i, j;
+    int n;
+    virDomainDefPtr def;
+    bool uuid_generated = false;
+    bool usb_none = false;
+    bool usb_other = false;
+    bool usb_master = false;
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_autofree char *tmp = NULL;
+
+    if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA) {
+        g_autofree char *schema = NULL;
+
+        schema = virFileFindResource("domain.rng",
+                                     abs_top_srcdir "/docs/schemas",
+                                     PKGDATADIR "/schemas");
+        if (!schema)
+            return NULL;
+        if (virXMLValidateAgainstSchema(schema, xml) < 0)
+            return NULL;
+    }
+
+    if (!(def = virDomainDefNew()))
+        return NULL;
+
+    if (virDomainDefParseIDs(def, ctxt, flags, &uuid_generated) < 0)
+        goto error;
+
+    if (virDomainDefParseCaps(def, ctxt, xmlopt) < 0)
+        goto error;
+
+    /* Extract short description of domain (title) */
+    def->title = virXPathString("string(./title[1])", ctxt);
+    if (def->title && strchr(def->title, '\n')) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Domain title can't contain newlines"));
+        goto error;
+    }
+
+    /* Extract documentation if present */
+    def->description = virXPathString("string(./description[1])", ctxt);
+
+    /* analysis of security label, done early even though we format it
+     * late, so devices can refer to this for defaults */
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL)) {
+        if (virSecurityLabelDefsParseXML(def, ctxt, xmlopt, flags) == -1)
+            goto error;
+    }
+
+    if (virDomainDefParseMemory(def, ctxt) < 0)
+        goto error;
+
+    if (virDomainDefTunablesParse(def, ctxt, xmlopt, flags) < 0)
+        goto error;
 
     if (virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST, &def->cpu) < 0)
         goto error;
