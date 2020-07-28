@@ -21709,6 +21709,107 @@ virDomainDefLifecycleParse(virDomainDefPtr def,
 }
 
 
+static int
+virDomainDefClockParse(virDomainDefPtr def,
+                       xmlXPathContextPtr ctxt)
+{
+    size_t i;
+    int n;
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_autofree char *tmp = NULL;
+
+    if ((tmp = virXPathString("string(./clock/@offset)", ctxt)) &&
+        (def->clock.offset = virDomainClockOffsetTypeFromString(tmp)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown clock offset '%s'"), tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    switch (def->clock.offset) {
+    case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+    case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+        tmp = virXPathString("string(./clock/@adjustment)", ctxt);
+        if (tmp) {
+            if (STREQ(tmp, "reset")) {
+                def->clock.data.utc_reset = true;
+            } else {
+                if (virStrToLong_ll(tmp, NULL, 10,
+                                    &def->clock.data.variable.adjustment) < 0) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("unknown clock adjustment '%s'"),
+                                   tmp);
+                    goto error;
+                }
+                switch (def->clock.offset) {
+                case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+                    def->clock.data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_LOCALTIME;
+                    break;
+                case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+                    def->clock.data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_UTC;
+                    break;
+                }
+                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
+            }
+            VIR_FREE(tmp);
+        } else {
+            def->clock.data.utc_reset = false;
+        }
+        break;
+
+    case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
+        if (virXPathLongLong("number(./clock/@adjustment)", ctxt,
+                             &def->clock.data.variable.adjustment) < 0)
+            def->clock.data.variable.adjustment = 0;
+        if (virXPathLongLong("number(./clock/@adjustment0)", ctxt,
+                             &def->clock.data.variable.adjustment0) < 0)
+            def->clock.data.variable.adjustment0 = 0;
+        tmp = virXPathString("string(./clock/@basis)", ctxt);
+        if (tmp) {
+            if ((def->clock.data.variable.basis = virDomainClockBasisTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown clock basis '%s'"), tmp);
+                goto error;
+            }
+            VIR_FREE(tmp);
+        } else {
+            def->clock.data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_UTC;
+        }
+        break;
+
+    case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
+        def->clock.data.timezone = virXPathString("string(./clock/@timezone)", ctxt);
+        if (!def->clock.data.timezone) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing 'timezone' attribute for clock with offset='timezone'"));
+            goto error;
+        }
+        break;
+    }
+
+    if ((n = virXPathNodeSet("./clock/timer", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n && VIR_ALLOC_N(def->clock.timers, n) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        virDomainTimerDefPtr timer = virDomainTimerDefParseXML(nodes[i],
+                                                               ctxt);
+        if (!timer)
+            goto error;
+
+        def->clock.timers[def->clock.ntimers++] = timer;
+    }
+    VIR_FREE(nodes);
+
+    return 0;
+
+ error:
+    return -1;
+}
+
+
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
@@ -21828,90 +21929,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainPerfDefParseXML(def, ctxt) < 0)
         goto error;
 
-    if ((tmp = virXPathString("string(./clock/@offset)", ctxt)) &&
-        (def->clock.offset = virDomainClockOffsetTypeFromString(tmp)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown clock offset '%s'"), tmp);
+    if (virDomainDefClockParse(def, ctxt) < 0)
         goto error;
-    }
-    VIR_FREE(tmp);
-
-    switch (def->clock.offset) {
-    case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
-    case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-        tmp = virXPathString("string(./clock/@adjustment)", ctxt);
-        if (tmp) {
-            if (STREQ(tmp, "reset")) {
-                def->clock.data.utc_reset = true;
-            } else {
-                if (virStrToLong_ll(tmp, NULL, 10,
-                                    &def->clock.data.variable.adjustment) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("unknown clock adjustment '%s'"),
-                                   tmp);
-                    goto error;
-                }
-                switch (def->clock.offset) {
-                case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
-                    def->clock.data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_LOCALTIME;
-                    break;
-                case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-                    def->clock.data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_UTC;
-                    break;
-                }
-                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
-            }
-            VIR_FREE(tmp);
-        } else {
-            def->clock.data.utc_reset = false;
-        }
-        break;
-
-    case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
-        if (virXPathLongLong("number(./clock/@adjustment)", ctxt,
-                             &def->clock.data.variable.adjustment) < 0)
-            def->clock.data.variable.adjustment = 0;
-        if (virXPathLongLong("number(./clock/@adjustment0)", ctxt,
-                             &def->clock.data.variable.adjustment0) < 0)
-            def->clock.data.variable.adjustment0 = 0;
-        tmp = virXPathString("string(./clock/@basis)", ctxt);
-        if (tmp) {
-            if ((def->clock.data.variable.basis = virDomainClockBasisTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown clock basis '%s'"), tmp);
-                goto error;
-            }
-            VIR_FREE(tmp);
-        } else {
-            def->clock.data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_UTC;
-        }
-        break;
-
-    case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
-        def->clock.data.timezone = virXPathString("string(./clock/@timezone)", ctxt);
-        if (!def->clock.data.timezone) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing 'timezone' attribute for clock with offset='timezone'"));
-            goto error;
-        }
-        break;
-    }
-
-    if ((n = virXPathNodeSet("./clock/timer", ctxt, &nodes)) < 0)
-        goto error;
-
-    if (n && VIR_ALLOC_N(def->clock.timers, n) < 0)
-        goto error;
-
-    for (i = 0; i < n; i++) {
-        virDomainTimerDefPtr timer = virDomainTimerDefParseXML(nodes[i],
-                                                               ctxt);
-        if (!timer)
-            goto error;
-
-        def->clock.timers[def->clock.ntimers++] = timer;
-    }
-    VIR_FREE(nodes);
 
     if (virDomainDefParseBootOptions(def, ctxt) < 0)
         goto error;
