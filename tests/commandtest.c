@@ -97,20 +97,16 @@ static int checkoutput(const char *testname)
 static int test0(const void *unused G_GNUC_UNUSED)
 {
     g_autoptr(virCommand) cmd = NULL;
-    int ret = -1;
 
     cmd = virCommandNew(abs_builddir "/commandhelper-doesnotexist");
     if (virCommandRun(cmd, NULL) == 0)
-        goto cleanup;
+        return -1;
 
     if (virGetLastErrorCode() == VIR_ERR_OK)
-        goto cleanup;
+        return -1;
 
     virResetLastError();
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 /*
@@ -121,24 +117,21 @@ static int test0(const void *unused G_GNUC_UNUSED)
 static int test1(const void *unused G_GNUC_UNUSED)
 {
     g_autoptr(virCommand) cmd = NULL;
-    int ret = -1;
     int status;
 
     cmd = virCommandNew(abs_builddir "/commandhelper-doesnotexist");
     if (virCommandRun(cmd, &status) < 0)
-        goto cleanup;
+        return -1;
     if (status != EXIT_ENOENT)
-        goto cleanup;
+        return -1;
 
     virCommandRawStatus(cmd);
     if (virCommandRun(cmd, &status) < 0)
-        goto cleanup;
+        return -1;
     if (!WIFEXITED(status) || WEXITSTATUS(status) != EXIT_ENOENT)
-        goto cleanup;
-    ret = 0;
+        return -1;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 /*
@@ -177,11 +170,10 @@ static int test3(const void *unused G_GNUC_UNUSED)
     VIR_AUTOCLOSE newfd2 = dup(STDERR_FILENO);
     int newfd3 = dup(STDERR_FILENO);
     struct stat before, after;
-    int ret = -1;
 
     if (fstat(newfd3, &before) < 0) {
         perror("fstat");
-        goto cleanup;
+        return -1;
     }
     virCommandPassFD(cmd, newfd1, 0);
     virCommandPassFD(cmd, newfd3,
@@ -189,13 +181,13 @@ static int test3(const void *unused G_GNUC_UNUSED)
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        goto cleanup;
+        return -1;
     }
 
     if (fcntl(newfd1, F_GETFL) < 0 ||
         fcntl(newfd2, F_GETFL) < 0) {
         puts("fds 1/2 were not open");
-        goto cleanup;
+        return -1;
     }
 
     /* We expect newfd3 to be closed, but the
@@ -211,14 +203,11 @@ static int test3(const void *unused G_GNUC_UNUSED)
             before.st_dev == after.st_dev &&
             before.st_mode == after.st_mode) {
             puts("fd 3 should not be open");
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = checkoutput("test3");
-
- cleanup:
-    return ret;
+    return checkoutput("test3");
 }
 
 
@@ -550,7 +539,6 @@ static int test15(const void *unused G_GNUC_UNUSED)
 {
     g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
     g_autofree char *cwd = NULL;
-    int ret = -1;
 
     cwd = g_strdup_printf("%s/commanddata", abs_srcdir);
     virCommandSetWorkingDirectory(cmd, cwd);
@@ -558,14 +546,10 @@ static int test15(const void *unused G_GNUC_UNUSED)
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        goto cleanup;
+        return -1;
     }
 
-    ret = checkoutput("test15");
-
- cleanup:
-
-    return ret;
+    return checkoutput("test15");
 }
 
 /*
@@ -576,7 +560,6 @@ static int test16(const void *unused G_GNUC_UNUSED)
     g_autoptr(virCommand) cmd = virCommandNew("true");
     g_autofree char *outactual = NULL;
     const char *outexpect = "A=B C='D  E' true F 'G  H'";
-    int ret = -1;
     VIR_AUTOCLOSE fd = -1;
 
     virCommandAddEnvPair(cmd, "A", "B");
@@ -586,28 +569,25 @@ static int test16(const void *unused G_GNUC_UNUSED)
 
     if ((outactual = virCommandToString(cmd, false)) == NULL) {
         printf("Cannot convert to string: %s\n", virGetLastErrorMessage());
-        goto cleanup;
+        return -1;
     }
     if ((fd = open(abs_builddir "/commandhelper.log",
                    O_CREAT | O_TRUNC | O_WRONLY, 0600)) < 0) {
         printf("Cannot open log file: %s\n", g_strerror(errno));
-        goto cleanup;
+        return -1;
     }
     virCommandWriteArgLog(cmd, fd);
     if (VIR_CLOSE(fd) < 0) {
         printf("Cannot close log file: %s\n", g_strerror(errno));
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(outactual, outexpect)) {
         virTestDifference(stderr, outexpect, outactual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = checkoutput("test16");
-
- cleanup:
-    return ret;
+    return checkoutput("test16");
 }
 
 /*
@@ -715,32 +695,28 @@ static int test19(const void *unused G_GNUC_UNUSED)
 {
     g_autoptr(virCommand) cmd = virCommandNewArgList("sleep", "100", NULL);
     pid_t pid;
-    int ret = -1;
 
     alarm(5);
     if (virCommandRunAsync(cmd, &pid) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        goto cleanup;
+        return -1;
     }
 
     if (kill(pid, 0) != 0) {
         printf("Child should still be running");
-        goto cleanup;
+        return -1;
     }
 
     virCommandAbort(cmd);
 
     if (kill(pid, 0) == 0) {
         printf("Child should be aborted");
-        goto cleanup;
+        return -1;
     }
 
     alarm(0);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 /*
@@ -752,7 +728,6 @@ static int test20(const void *unused G_GNUC_UNUSED)
     g_autoptr(virCommand) cmd = virCommandNewArgList(abs_builddir "/commandhelper",
                                                      "--close-stdin", NULL);
     g_autofree char *buf = NULL;
-    int ret = -1;
 
     struct sigaction sig_action;
 
@@ -767,12 +742,10 @@ static int test20(const void *unused G_GNUC_UNUSED)
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        goto cleanup;
+        return -1;
     }
 
-    ret = checkoutput("test20");
- cleanup:
-    return ret;
+    return checkoutput("test20");
 }
 
 static const char *const newenv[] = {
@@ -790,7 +763,6 @@ static const char *const newenv[] = {
 static int test21(const void *unused G_GNUC_UNUSED)
 {
     g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
-    int ret = -1;
     const char *wrbuf = "Hello world\n";
     g_autofree char *outbuf = NULL;
     g_autofree char *errbuf = NULL;
@@ -808,28 +780,26 @@ static int test21(const void *unused G_GNUC_UNUSED)
 
     if (virCommandRunAsync(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        goto cleanup;
+        return -1;
     }
 
     if (virCommandWait(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (virTestGetVerbose())
         printf("STDOUT:%s\nSTDERR:%s\n", NULLSTR(outbuf), NULLSTR(errbuf));
 
     if (STRNEQ_NULLABLE(outbuf, outbufExpected)) {
         virTestDifference(stderr, outbufExpected, outbuf);
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(errbuf, errbufExpected)) {
         virTestDifference(stderr, errbufExpected, errbuf);
-        goto cleanup;
+        return -1;
     }
 
-    ret = checkoutput("test21");
- cleanup:
-    return ret;
+    return checkoutput("test21");
 }
 
 static int
@@ -1034,7 +1004,6 @@ static int test26(const void *unused G_GNUC_UNUSED)
         "bang \\\n"
         "wallop";
 
-    int ret = -1;
     VIR_AUTOCLOSE fd = -1;
 
     virCommandAddEnvPair(cmd, "A", "B");
@@ -1046,28 +1015,25 @@ static int test26(const void *unused G_GNUC_UNUSED)
 
     if ((outactual = virCommandToString(cmd, true)) == NULL) {
         printf("Cannot convert to string: %s\n", virGetLastErrorMessage());
-        goto cleanup;
+        return -1;
     }
     if ((fd = open(abs_builddir "/commandhelper.log",
                    O_CREAT | O_TRUNC | O_WRONLY, 0600)) < 0) {
         printf("Cannot open log file: %s\n", g_strerror(errno));
-        goto cleanup;
+        return -1;
     }
     virCommandWriteArgLog(cmd, fd);
     if (VIR_CLOSE(fd) < 0) {
         printf("Cannot close log file: %s\n", g_strerror(errno));
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(outactual, outexpect)) {
         virTestDifference(stderr, outexpect, outactual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = checkoutput("test26");
-
- cleanup:
-    return ret;
+    return checkoutput("test26");
 }
 
 static int test27(const void *unused G_GNUC_UNUSED)
