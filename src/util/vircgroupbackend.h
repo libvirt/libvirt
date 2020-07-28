@@ -452,15 +452,17 @@ virCgroupBackendForController(virCgroupPtr group,
                               unsigned int controller);
 
 #define VIR_CGROUP_BACKEND_CALL(group, controller, func, ret, ...) \
-    virCgroupBackendPtr backend = virCgroupBackendForController(group, controller); \
-    if (!backend) { \
-        virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       _("failed to get cgroup backend for '%s'"), #func); \
-        return ret; \
-    } \
-    if (!backend->func) { \
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, \
-                       _("operation '%s' not supported"), #func); \
-        return ret; \
-    } \
-    return backend->func(group, ##__VA_ARGS__);
+    do { \
+        virCgroupBackendPtr backend = virCgroupBackendForController(group, controller); \
+        if (!backend) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           _("failed to get cgroup backend for '%s'"), #func); \
+            return ret; \
+        } \
+        if (!backend->func) { \
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, \
+                           _("operation '%s' not supported"), #func); \
+            return ret; \
+        } \
+        return backend->func(group, ##__VA_ARGS__); \
+    } while (0)
