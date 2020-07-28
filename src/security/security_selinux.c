@@ -2767,6 +2767,11 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManagerPtr mgr,
     size_t i;
     int rc = 0;
 
+    struct _virSecuritySELinuxChardevCallbackData chardevData = {
+        .mgr = mgr,
+        .chardevStdioLogd = chardevStdioLogd
+    };
+
     VIR_DEBUG("Restoring security label on %s migrated=%d", def->name, migrated);
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
@@ -2804,11 +2809,6 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManagerPtr mgr,
         if (virSecuritySELinuxRestoreTPMFileLabelInt(mgr, def, def->tpms[i]) < 0)
             rc = -1;
     }
-
-    struct _virSecuritySELinuxChardevCallbackData chardevData = {
-        .mgr = mgr,
-        .chardevStdioLogd = chardevStdioLogd
-    };
 
     if (virDomainChrDefForeach(def,
                                false,
@@ -3165,6 +3165,11 @@ virSecuritySELinuxSetAllLabel(virSecurityManagerPtr mgr,
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
 
+    struct _virSecuritySELinuxChardevCallbackData chardevData = {
+        .mgr = mgr,
+        .chardevStdioLogd = chardevStdioLogd
+    };
+
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
 
     if (!secdef || !secdef->relabel || data->skipAllLabel)
@@ -3207,11 +3212,6 @@ virSecuritySELinuxSetAllLabel(virSecurityManagerPtr mgr,
         if (virSecuritySELinuxSetTPMFileLabel(mgr, def, def->tpms[i]) < 0)
             return -1;
     }
-
-    struct _virSecuritySELinuxChardevCallbackData chardevData = {
-        .mgr = mgr,
-        .chardevStdioLogd = chardevStdioLogd
-    };
 
     if (virDomainChrDefForeach(def,
                                true,

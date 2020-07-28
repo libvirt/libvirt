@@ -1945,6 +1945,11 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
     size_t i;
     int rc = 0;
 
+    struct _virSecuritySELinuxChardevCallbackData chardevData = {
+        .mgr = mgr,
+        .chardevStdioLogd = chardevStdioLogd,
+    };
+
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
     if (!priv->dynamicOwnership || (secdef && !secdef->relabel))
@@ -1985,11 +1990,6 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
                                              def->mems[i]) < 0)
             rc = -1;
     }
-
-    struct _virSecuritySELinuxChardevCallbackData chardevData = {
-        .mgr = mgr,
-        .chardevStdioLogd = chardevStdioLogd,
-    };
 
     if (virDomainChrDefForeach(def,
                                false,
@@ -2152,6 +2152,11 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
     uid_t user;
     gid_t group;
 
+    struct _virSecuritySELinuxChardevCallbackData chardevData = {
+        .mgr = mgr,
+        .chardevStdioLogd = chardevStdioLogd,
+    };
+
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
     if (!priv->dynamicOwnership || (secdef && !secdef->relabel))
@@ -2191,11 +2196,6 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
                                          def->mems[i]) < 0)
             return -1;
     }
-
-    struct _virSecuritySELinuxChardevCallbackData chardevData = {
-        .mgr = mgr,
-        .chardevStdioLogd = chardevStdioLogd,
-    };
 
     if (virDomainChrDefForeach(def,
                                true,
