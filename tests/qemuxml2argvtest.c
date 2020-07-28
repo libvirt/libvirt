@@ -565,9 +565,9 @@ testCompareXMLToArgv(const void *data)
     int ret = -1;
     virDomainObjPtr vm = NULL;
     virDomainChrSourceDef monitor_chr;
-    virConnectPtr conn;
+    g_autoptr(virConnect) conn = NULL;
     char *log = NULL;
-    virCommandPtr cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
@@ -688,11 +688,9 @@ testCompareXMLToArgv(const void *data)
  cleanup:
     VIR_FREE(log);
     virDomainChrSourceDefClear(&monitor_chr);
-    virCommandFree(cmd);
     virObjectUnref(vm);
     virSetConnectSecret(NULL);
     virSetConnectStorage(NULL);
-    virObjectUnref(conn);
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
@@ -716,7 +714,7 @@ mymain(void)
 {
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
-    virHashTablePtr capslatest = NULL;
+    g_autoptr(virHashTable) capslatest = NULL;
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
@@ -3362,7 +3360,6 @@ mymain(void)
 
     VIR_FREE(driver.config->nbdTLSx509certdir);
     qemuTestDriverFree(&driver);
-    virHashFree(capslatest);
     virFileWrapperClearPrefixes();
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

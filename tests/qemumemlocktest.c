@@ -30,7 +30,7 @@ static int
 testCompareMemLock(const void *data)
 {
     const struct testInfo *info = data;
-    virDomainDefPtr def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     g_autofree char *xml = NULL;
     int ret = -1;
 
@@ -45,7 +45,6 @@ testCompareMemLock(const void *data)
     ret = virTestCompareToULL(info->memlock, qemuDomainGetMemLockLimitBytes(def, false));
 
  cleanup:
-    virDomainDefFree(def);
 
     return ret;
 }
@@ -57,7 +56,7 @@ mymain(void)
 {
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
-    virQEMUCapsPtr qemuCaps = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
@@ -145,8 +144,6 @@ mymain(void)
     DO_TEST("pseries-locked+hostdev", VIR_DOMAIN_MEMORY_PARAM_UNLIMITED);
 
  cleanup:
-    virObjectUnref(qemuCaps);
-
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 

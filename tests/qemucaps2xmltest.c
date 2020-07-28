@@ -94,7 +94,7 @@ testQemuGetCaps(char *caps)
 static virCapsPtr
 testGetCaps(char *capsData, const testQemuData *data)
 {
-    virQEMUCapsPtr qemuCaps = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
     virCapsPtr caps = NULL;
     virArch arch = virArchFromString(data->archName);
     g_autofree char *binary = NULL;
@@ -119,11 +119,9 @@ testGetCaps(char *capsData, const testQemuData *data)
         goto error;
     }
 
-    virObjectUnref(qemuCaps);
     return caps;
 
  error:
-    virObjectUnref(qemuCaps);
     virObjectUnref(caps);
     return NULL;
 }
@@ -137,7 +135,7 @@ testQemuCapsXML(const void *opaque)
     g_autofree char *xmlFile = NULL;
     g_autofree char *capsData = NULL;
     g_autofree char *capsXml = NULL;
-    virCapsPtr capsProvided = NULL;
+    g_autoptr(virCaps) capsProvided = NULL;
 
     xmlFile = g_strdup_printf("%s/caps.%s.xml", data->outputDir, data->archName);
 
@@ -160,7 +158,6 @@ testQemuCapsXML(const void *opaque)
 
     ret = 0;
  cleanup:
-    virObjectUnref(capsProvided);
     return ret;
 }
 

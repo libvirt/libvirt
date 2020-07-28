@@ -720,7 +720,7 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
                                      qemuMonitorTestItemPtr item G_GNUC_UNUSED,
                                      const char *cmdstr)
 {
-    virJSONValuePtr val = NULL;
+    g_autoptr(virJSONValue) val = NULL;
     virJSONValuePtr args;
     unsigned long long id;
     const char *cmdname;
@@ -756,7 +756,6 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
     ret = qemuMonitorTestAddResponse(test, retmsg);
 
  cleanup:
-    virJSONValueFree(val);
     return ret;
 }
 
@@ -783,7 +782,7 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
                                       const char *cmdstr)
 {
     struct qemuMonitorTestHandlerData *data = item->opaque;
-    virJSONValuePtr val = NULL;
+    g_autoptr(virJSONValue) val = NULL;
     virJSONValuePtr args;
     virJSONValuePtr argobj;
     const char *cmdname;
@@ -841,7 +840,6 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
     ret = qemuMonitorTestAddResponse(test, data->response);
 
  cleanup:
-    virJSONValueFree(val);
     return ret;
 }
 
@@ -905,7 +903,7 @@ qemuMonitorTestProcessCommandWithArgStr(qemuMonitorTestPtr test,
                                         const char *cmdstr)
 {
     struct qemuMonitorTestHandlerData *data = item->opaque;
-    virJSONValuePtr val = NULL;
+    g_autoptr(virJSONValue) val = NULL;
     virJSONValuePtr args;
     g_autofree char *argstr = NULL;
     const char *cmdname;
@@ -946,7 +944,6 @@ qemuMonitorTestProcessCommandWithArgStr(qemuMonitorTestPtr test,
     ret = qemuMonitorTestAddResponse(test, data->response);
 
  cleanup:
-    virJSONValueFree(val);
     return ret;
 }
 

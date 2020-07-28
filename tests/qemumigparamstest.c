@@ -60,9 +60,9 @@ qemuMigParamsTestXML2XML(const void *opaque)
     const qemuMigParamsData *data = opaque;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *xmlFile = NULL;
-    xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     g_autofree char *actualXML = NULL;
     int ret = -1;
 
@@ -86,9 +86,6 @@ qemuMigParamsTestXML2XML(const void *opaque)
     ret = 0;
 
  cleanup:
-    qemuMigrationParamsFree(migParams);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(doc);
     return ret;
 }
 
@@ -101,8 +98,8 @@ qemuMigParamsTestXML(const void *opaque)
     g_autofree char *replyFile = NULL;
     g_autofree char *xmlFile = NULL;
     qemuMonitorTestPtr mon = NULL;
-    virJSONValuePtr params = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(virJSONValue) params = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     g_autofree char *actualXML = NULL;
     int ret = -1;
 
@@ -132,8 +129,6 @@ qemuMigParamsTestXML(const void *opaque)
     ret = 0;
 
  cleanup:
-    virJSONValueFree(params);
-    qemuMigrationParamsFree(migParams);
     qemuMonitorTestFree(mon);
     return ret;
 }
@@ -146,9 +141,9 @@ qemuMigParamsTestJSON(const void *opaque)
     g_autofree char *replyFile = NULL;
     g_autofree char *jsonFile = NULL;
     qemuMonitorTestPtr mon = NULL;
-    virJSONValuePtr paramsIn = NULL;
-    virJSONValuePtr paramsOut = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(virJSONValue) paramsIn = NULL;
+    g_autoptr(virJSONValue) paramsOut = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     g_autofree char *actualJSON = NULL;
     int ret = -1;
 
@@ -177,9 +172,6 @@ qemuMigParamsTestJSON(const void *opaque)
     ret = 0;
 
  cleanup:
-    virJSONValueFree(paramsIn);
-    virJSONValueFree(paramsOut);
-    qemuMigrationParamsFree(migParams);
     qemuMonitorTestFree(mon);
     return ret;
 }

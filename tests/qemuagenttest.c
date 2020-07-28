@@ -175,7 +175,7 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOptionPtr xmlopt,
     int ret = -1;
     g_autofree char *domain_filename = NULL;
     qemuMonitorTestPtr ret_test = NULL;
-    virDomainDefPtr ret_def = NULL;
+    g_autoptr(virDomainDef) ret_def = NULL;
 
     if (!test || !def)
         return -1;
@@ -235,8 +235,6 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOptionPtr xmlopt,
  cleanup:
     if (ret_test)
         qemuMonitorTestFree(ret_test);
-    virDomainDefFree(ret_def);
-
     return ret;
 }
 
@@ -400,7 +398,7 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
                                     const char *cmdstr)
 {
     struct qemuAgentShutdownTestData *data;
-    virJSONValuePtr val = NULL;
+    g_autoptr(virJSONValue) val = NULL;
     virJSONValuePtr args;
     const char *cmdname;
     const char *mode;
@@ -447,7 +445,6 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
     ret = 0;
 
  cleanup:
-    virJSONValueFree(val);
     return ret;
 
 }

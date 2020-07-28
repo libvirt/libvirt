@@ -133,7 +133,7 @@ mymain(void)
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
-    virHashTablePtr capslatest = NULL;
+    g_autoptr(virHashTable) capslatest = NULL;
     g_autoptr(virConnect) conn = NULL;
 
     capslatest = testQemuGetLatestCaps();
@@ -1499,7 +1499,6 @@ mymain(void)
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
-    virHashFree(capslatest);
     qemuTestDriverFree(&driver);
     virFileWrapperClearPrefixes();
 
