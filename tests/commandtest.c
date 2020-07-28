@@ -58,10 +58,10 @@ extern char **environ;
 static int checkoutput(const char *testname)
 {
     int ret = -1;
-    char *expectname = NULL;
-    char *expectlog = NULL;
-    char *actualname = NULL;
-    char *actuallog = NULL;
+    g_autofree char *expectname = NULL;
+    g_autofree char *expectlog = NULL;
+    g_autofree char *actualname = NULL;
+    g_autofree char *actuallog = NULL;
 
     expectname = g_strdup_printf("%s/commanddata/%s.log", abs_srcdir, testname);
     actualname = g_strdup_printf("%s/commandhelper.log", abs_builddir);
@@ -86,10 +86,6 @@ static int checkoutput(const char *testname)
  cleanup:
     if (actualname)
         unlink(actualname);
-    VIR_FREE(actuallog);
-    VIR_FREE(actualname);
-    VIR_FREE(expectlog);
-    VIR_FREE(expectname);
     return ret;
 }
 
@@ -247,7 +243,7 @@ static int test4(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNewArgList(abs_builddir "/commandhelper",
                                              "--check-daemonize", NULL);
-    char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
+    g_autofree char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
     pid_t pid;
     int ret = -1;
 
@@ -275,7 +271,6 @@ static int test4(const void *unused G_GNUC_UNUSED)
     virCommandFree(cmd);
     if (pidfile)
         unlink(pidfile);
-    VIR_FREE(pidfile);
     return ret;
 }
 
@@ -484,7 +479,7 @@ static int test12(const void *unused G_GNUC_UNUSED)
 static int test13(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
-    char *outactual = NULL;
+    g_autofree char *outactual = NULL;
     const char *outexpect = "BEGIN STDOUT\n"
         "Hello World\n"
         "END STDOUT\n";
@@ -512,7 +507,6 @@ static int test13(const void *unused G_GNUC_UNUSED)
 
  cleanup:
     virCommandFree(cmd);
-    VIR_FREE(outactual);
     return ret;
 }
 
@@ -523,16 +517,16 @@ static int test13(const void *unused G_GNUC_UNUSED)
 static int test14(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
-    char *outactual = NULL;
+    g_autofree char *outactual = NULL;
     const char *outexpect = "BEGIN STDOUT\n"
         "Hello World\n"
         "END STDOUT\n";
-    char *erractual = NULL;
+    g_autofree char *erractual = NULL;
     const char *errexpect = "BEGIN STDERR\n"
         "Hello World\n"
         "END STDERR\n";
 
-    char *jointactual = NULL;
+    g_autofree char *jointactual = NULL;
     const char *jointexpect = "BEGIN STDOUT\n"
         "BEGIN STDERR\n"
         "Hello World\n"
@@ -582,9 +576,6 @@ static int test14(const void *unused G_GNUC_UNUSED)
 
  cleanup:
     virCommandFree(cmd);
-    VIR_FREE(outactual);
-    VIR_FREE(erractual);
-    VIR_FREE(jointactual);
     return ret;
 }
 
@@ -596,7 +587,7 @@ static int test14(const void *unused G_GNUC_UNUSED)
 static int test15(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
-    char *cwd = NULL;
+    g_autofree char *cwd = NULL;
     int ret = -1;
 
     cwd = g_strdup_printf("%s/commanddata", abs_srcdir);
@@ -611,7 +602,6 @@ static int test15(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test15");
 
  cleanup:
-    VIR_FREE(cwd);
     virCommandFree(cmd);
 
     return ret;
@@ -623,7 +613,7 @@ static int test15(const void *unused G_GNUC_UNUSED)
 static int test16(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNew("true");
-    char *outactual = NULL;
+    g_autofree char *outactual = NULL;
     const char *outexpect = "A=B C='D  E' true F 'G  H'";
     int ret = -1;
     int fd = -1;
@@ -658,7 +648,6 @@ static int test16(const void *unused G_GNUC_UNUSED)
  cleanup:
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(fd);
-    VIR_FREE(outactual);
     return ret;
 }
 
@@ -669,8 +658,8 @@ static int test17(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNew("true");
     int ret = -1;
-    char *outbuf;
-    char *errbuf = NULL;
+    char *outbuf = NULL;
+    g_autofree char *errbuf = NULL;
 
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (outbuf != NULL) {
@@ -711,7 +700,6 @@ static int test17(const void *unused G_GNUC_UNUSED)
  cleanup:
     virCommandFree(cmd);
     VIR_FREE(outbuf);
-    VIR_FREE(errbuf);
     return ret;
 }
 
@@ -721,7 +709,7 @@ static int test17(const void *unused G_GNUC_UNUSED)
 static int test18(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNewArgList("sleep", "100", NULL);
-    char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
+    g_autofree char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
     pid_t pid;
     int ret = -1;
 
@@ -759,7 +747,6 @@ static int test18(const void *unused G_GNUC_UNUSED)
     virCommandFree(cmd);
     if (pidfile)
         unlink(pidfile);
-    VIR_FREE(pidfile);
     return ret;
 }
 
@@ -807,7 +794,7 @@ static int test20(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNewArgList(abs_builddir "/commandhelper",
                                              "--close-stdin", NULL);
-    char *buf;
+    g_autofree char *buf = NULL;
     int ret = -1;
 
     struct sigaction sig_action;
@@ -829,7 +816,6 @@ static int test20(const void *unused G_GNUC_UNUSED)
     ret = checkoutput("test20");
  cleanup:
     virCommandFree(cmd);
-    VIR_FREE(buf);
     return ret;
 }
 
@@ -850,7 +836,8 @@ static int test21(const void *unused G_GNUC_UNUSED)
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
     int ret = -1;
     const char *wrbuf = "Hello world\n";
-    char *outbuf = NULL, *errbuf = NULL;
+    g_autofree char *outbuf = NULL;
+    g_autofree char *errbuf = NULL;
     const char *outbufExpected = "BEGIN STDOUT\n"
         "Hello world\n"
         "END STDOUT\n";
@@ -886,8 +873,6 @@ static int test21(const void *unused G_GNUC_UNUSED)
 
     ret = checkoutput("test21");
  cleanup:
-    VIR_FREE(outbuf);
-    VIR_FREE(errbuf);
     virCommandFree(cmd);
     return ret;
 }
@@ -1006,7 +991,7 @@ static int test25(const void *unused G_GNUC_UNUSED)
     int rv = 0;
     ssize_t tries = 100;
     pid_t pid;
-    gid_t *groups = NULL;
+    g_autofree gid_t *groups = NULL;
     int ngroups;
     virCommandPtr cmd = virCommandNew("some/nonexistent/binary");
 
@@ -1068,7 +1053,6 @@ static int test25(const void *unused G_GNUC_UNUSED)
  cleanup:
     VIR_FORCE_CLOSE(pipeFD[0]);
     VIR_FORCE_CLOSE(pipeFD[1]);
-    VIR_FREE(groups);
     virCommandFree(cmd);
     return ret;
 }
@@ -1080,7 +1064,7 @@ static int test25(const void *unused G_GNUC_UNUSED)
 static int test26(const void *unused G_GNUC_UNUSED)
 {
     virCommandPtr cmd = virCommandNew("true");
-    char *outactual = NULL;
+    g_autofree char *outactual = NULL;
     const char *outexpect =
         "A=B \\\n"
         "C='D  E' \\\n"
@@ -1131,7 +1115,6 @@ static int test26(const void *unused G_GNUC_UNUSED)
  cleanup:
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(fd);
-    VIR_FREE(outactual);
     return ret;
 }
 
@@ -1142,16 +1125,16 @@ static int test27(const void *unused G_GNUC_UNUSED)
     int pipe2[2];
     int ret = -1;
     size_t buflen = 1024 * 128;
-    char *buffer0 = NULL;
-    char *buffer1 = NULL;
-    char *buffer2 = NULL;
-    char *outactual = NULL;
-    char *erractual = NULL;
-    char *outexpect = NULL;
+    g_autofree char *buffer0 = NULL;
+    g_autofree char *buffer1 = NULL;
+    g_autofree char *buffer2 = NULL;
+    g_autofree char *outactual = NULL;
+    g_autofree char *erractual = NULL;
+    g_autofree char *outexpect = NULL;
 # define TEST27_OUTEXPECT_TEMP "BEGIN STDOUT\n" \
         "%s%s%s" \
         "END STDOUT\n"
-    char *errexpect = NULL;
+    g_autofree char *errexpect = NULL;
 # define TEST27_ERREXPECT_TEMP "BEGIN STDERR\n" \
         "%s%s%s" \
         "END STDERR\n"
@@ -1235,13 +1218,6 @@ static int test27(const void *unused G_GNUC_UNUSED)
     VIR_FORCE_CLOSE(pipe2[0]);
     VIR_FORCE_CLOSE(pipe1[1]);
     VIR_FORCE_CLOSE(pipe2[1]);
-    VIR_FREE(buffer0);
-    VIR_FREE(buffer1);
-    VIR_FREE(buffer2);
-    VIR_FREE(outactual);
-    VIR_FREE(erractual);
-    VIR_FREE(outexpect);
-    VIR_FREE(errexpect);
 
     return ret;
 }
