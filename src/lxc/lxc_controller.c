@@ -1490,11 +1490,12 @@ static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
     /* Populate /dev/ with a few important bits */
     for (i = 0; i < G_N_ELEMENTS(devs); i++) {
         g_autofree char *path = NULL;
+        dev_t dev;
 
         path = g_strdup_printf("/%s/%s.dev/%s", LXC_STATE_DIR, ctrl->def->name,
                                devs[i].path);
 
-        dev_t dev = makedev(devs[i].maj, devs[i].min);
+        dev = makedev(devs[i].maj, devs[i].min);
         if (mknod(path, S_IFCHR, dev) < 0 ||
             chmod(path, devs[i].mode)) {
             virReportSystemError(errno,
@@ -1990,11 +1991,12 @@ static int virLXCControllerMoveInterfaces(virLXCControllerPtr ctrl)
 
     for (i = 0; i < def->nhostdevs; i ++) {
         virDomainHostdevDefPtr hdev = def->hostdevs[i];
+        virDomainHostdevCaps hdcaps;
 
         if (hdev->mode != VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES)
             continue;
 
-        virDomainHostdevCaps hdcaps = hdev->source.caps;
+        hdcaps = hdev->source.caps;
 
         if (hdcaps.type != VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET)
             continue;

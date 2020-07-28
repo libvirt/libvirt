@@ -88,11 +88,13 @@ int virKeycodeValueFromString(virKeycodeSet codeset,
     size_t i;
 
     for (i = 0; i < VIR_KEYMAP_ENTRY_MAX; i++) {
+        const char *name;
+
         if (!virKeymapNames[codeset] ||
             !virKeymapValues[codeset])
             continue;
 
-        const char *name = virKeymapNames[codeset][i];
+        name = virKeymapNames[codeset][i];
 
         if (name && STREQ_NULLABLE(name, keyname))
             return virKeymapValues[codeset][i];

@@ -817,10 +817,12 @@ virNetlinkEventServerUnlock(virNetlinkEventSrvPrivatePtr driver)
 static int
 virNetlinkEventRemoveClientPrimitive(size_t i, unsigned int protocol)
 {
+    virNetlinkEventRemoveCallback removeCB;
+
     if (protocol >= MAX_LINKS)
         return -EINVAL;
 
-    virNetlinkEventRemoveCallback removeCB = server[protocol]->handles[i].removeCB;
+    removeCB = server[protocol]->handles[i].removeCB;
 
     if (removeCB) {
         (removeCB)(server[protocol]->handles[i].watch,
@@ -890,11 +892,13 @@ virNetlinkEventCallback(int watch,
 int
 virNetlinkEventServiceStop(unsigned int protocol)
 {
+    virNetlinkEventSrvPrivatePtr srv;
+    size_t i;
+
     if (protocol >= MAX_LINKS)
         return -EINVAL;
 
-    virNetlinkEventSrvPrivatePtr srv = server[protocol];
-    size_t i;
+    srv = server[protocol];
 
     VIR_INFO("stopping netlink event service");
 

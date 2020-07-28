@@ -275,12 +275,14 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     /* Convert the snapshot parameters into backingStore XML */
     if (snapshotStrVol) {
+        virStorageVolPtr snapVol;
+        char *snapshotStrVolPath;
         /* Lookup snapshot backing volume.  Try the backing-vol
          *  parameter as a name */
         vshDebug(ctl, VSH_ERR_DEBUG,
                  "%s: Look up backing store volume '%s' as name\n",
                  cmd->def->name, snapshotStrVol);
-        virStorageVolPtr snapVol = virStorageVolLookupByName(pool, snapshotStrVol);
+        snapVol = virStorageVolLookupByName(pool, snapshotStrVol);
         if (snapVol)
                 vshDebug(ctl, VSH_ERR_DEBUG,
                          "%s: Backing store volume found using '%s' as name\n",
@@ -315,7 +317,6 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        char *snapshotStrVolPath;
         if ((snapshotStrVolPath = virStorageVolGetPath(snapVol)) == NULL) {
             virStorageVolFree(snapVol);
             goto cleanup;

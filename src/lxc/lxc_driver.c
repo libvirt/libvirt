@@ -1440,6 +1440,7 @@ static virSecurityManagerPtr
 lxcSecurityInit(virLXCDriverConfigPtr cfg)
 {
     unsigned int flags = VIR_SECURITY_MANAGER_PRIVILEGED;
+    virSecurityManagerPtr mgr;
 
     VIR_INFO("lxcSecurityInit %s", cfg->securityDriverName);
 
@@ -1448,8 +1449,8 @@ lxcSecurityInit(virLXCDriverConfigPtr cfg)
     if (cfg->securityRequireConfined)
         flags |= VIR_SECURITY_MANAGER_REQUIRE_CONFINED;
 
-    virSecurityManagerPtr mgr = virSecurityManagerNew(cfg->securityDriverName,
-                                                      LXC_DRIVER_NAME, flags);
+    mgr = virSecurityManagerNew(cfg->securityDriverName,
+                                LXC_DRIVER_NAME, flags);
     if (!mgr)
         goto error;
 

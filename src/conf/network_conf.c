@@ -1935,11 +1935,13 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
             addrMatch = false;
             for (j = 0; j < nips; j++) {
                 virNetworkIPDefPtr def2 = &def->ips[j];
+                int prefix;
+
                 if (VIR_SOCKET_ADDR_FAMILY(gateway)
                     != VIR_SOCKET_ADDR_FAMILY(&def2->address)) {
                     continue;
                 }
-                int prefix = virNetworkIPDefPrefix(def2);
+                prefix = virNetworkIPDefPrefix(def2);
                 virSocketAddrMaskByPrefix(&def2->address, prefix, &testAddr);
                 virSocketAddrMaskByPrefix(gateway, prefix, &testGw);
                 if (VIR_SOCKET_ADDR_VALID(&testAddr) &&

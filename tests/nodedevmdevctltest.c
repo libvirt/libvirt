@@ -203,10 +203,11 @@ fakeParentDevice(void)
 static int
 addDevice(virNodeDeviceDefPtr def)
 {
+    virNodeDeviceObjPtr obj;
     if (!def)
         return -1;
 
-    virNodeDeviceObjPtr obj = virNodeDeviceObjListAssignDef(driver->devs, def);
+    obj = virNodeDeviceObjListAssignDef(driver->devs, def);
 
     if (!obj) {
         virNodeDeviceDefFree(def);

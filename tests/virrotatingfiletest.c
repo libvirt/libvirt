@@ -124,9 +124,12 @@ static int testRotatingFileInitOne(const char *filename,
         VIR_DEBUG("Deleting %s", filename);
         unlink(filename);
     } else {
-        VIR_DEBUG("Creating %s size %zu", filename, (size_t)size);
         char buf[1024];
-        int fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0700);
+        int fd;
+
+        VIR_DEBUG("Creating %s size %zu", filename, (size_t)size);
+
+        fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0700);
         if (fd < 0) {
             fprintf(stderr, "Cannot create %s\n", filename);
             return -1;

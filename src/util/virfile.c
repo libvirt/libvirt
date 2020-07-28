@@ -1412,13 +1412,16 @@ virFileReadLimFD(int fd, int maxlen, char **buf)
 int
 virFileReadAll(const char *path, int maxlen, char **buf)
 {
-    int fd = open(path, O_RDONLY);
+    int fd;
+    int len;
+
+    fd = open(path, O_RDONLY);
     if (fd < 0) {
         virReportSystemError(errno, _("Failed to open file '%s'"), path);
         return -1;
     }
 
-    int len = virFileReadLimFD(fd, maxlen, buf);
+    len = virFileReadLimFD(fd, maxlen, buf);
     VIR_FORCE_CLOSE(fd);
     if (len < 0) {
         virReportSystemError(errno, _("Failed to read file '%s'"), path);
@@ -1431,11 +1434,14 @@ virFileReadAll(const char *path, int maxlen, char **buf)
 int
 virFileReadAllQuiet(const char *path, int maxlen, char **buf)
 {
-    int fd = open(path, O_RDONLY);
+    int fd;
+    int len;
+
+    fd = open(path, O_RDONLY);
     if (fd < 0)
         return -errno;
 
-    int len = virFileReadLimFD(fd, maxlen, buf);
+    len = virFileReadLimFD(fd, maxlen, buf);
     VIR_FORCE_CLOSE(fd);
     if (len < 0)
         return -errno;

@@ -428,11 +428,12 @@ dissect_libvirt_payload(tvbuff_t *tvb, proto_tree *tree,
     if (status == VIR_NET_OK) {
         const vir_dissector_index_t *pds = get_program_data(prog, VIR_PROGRAM_DISSECTORS);
         const gsize *len = get_program_data(prog, VIR_PROGRAM_DISSECTORS_LEN);
+        vir_xdr_dissector_t xd;
 
         if (!len)
             goto unknown;
 
-        vir_xdr_dissector_t xd = find_payload_dissector(proc, type, pds, *len);
+        xd = find_payload_dissector(proc, type, pds, *len);
         if (xd == NULL)
             goto unknown;
         dissect_libvirt_payload_xdr_data(tvb, tree, payload_length, status, xd);

@@ -1335,13 +1335,14 @@ void virReportSystemErrorFull(int domcode,
 
     if (fmt) {
         va_list args;
+        size_t len;
         int n;
 
         va_start(args, fmt);
         n = g_vsnprintf(msgDetailBuf, sizeof(msgDetailBuf), fmt, args);
         va_end(args);
 
-        size_t len = strlen(errnoDetail);
+        len = strlen(errnoDetail);
         if (0 <= n && n + 2 + len < sizeof(msgDetailBuf)) {
           strcpy(msgDetailBuf + n, ": ");
           n += 2;

@@ -371,6 +371,7 @@ int virDiskNameParse(const char *name, int *disk, int *partition)
     int idx = 0;
     static char const* const drive_prefix[] = {"fd", "hd", "vd", "sd", "xvd", "ubd"};
     size_t i;
+    size_t n_digits;
 
     for (i = 0; i < G_N_ELEMENTS(drive_prefix); i++) {
         if (STRPREFIX(name, drive_prefix[i])) {
@@ -391,8 +392,8 @@ int virDiskNameParse(const char *name, int *disk, int *partition)
         ptr++;
     }
 
-    /* Count the trailing digits.  */
-    size_t n_digits = strspn(ptr, "0123456789");
+    /* Count the trailing digits */
+    n_digits = strspn(ptr, "0123456789");
     if (ptr[n_digits] != '\0')
         return -1;
 
@@ -1911,10 +1912,11 @@ static int
 virPipeImpl(int fds[2], bool nonblock, bool errreport)
 {
 #ifdef HAVE_PIPE2
+    int rv;
     int flags = O_CLOEXEC;
     if (nonblock)
         flags |= O_NONBLOCK;
-    int rv = pipe2(fds, flags);
+    rv = pipe2(fds, flags);
 #else /* !HAVE_PIPE2 */
 # ifdef WIN32
     int rv = _pipe(fds, 4096, _O_BINARY);

@@ -511,6 +511,8 @@ int virNetMessageEncodePayloadEmpty(virNetMessagePtr msg)
 
 void virNetMessageSaveError(virNetMessageErrorPtr rerr)
 {
+    virErrorPtr verr;
+
     /* This func may be called several times & the first
      * error is the one we want because we don't want
      * cleanup code overwriting the first one.
@@ -519,7 +521,7 @@ void virNetMessageSaveError(virNetMessageErrorPtr rerr)
         return;
 
     memset(rerr, 0, sizeof(*rerr));
-    virErrorPtr verr = virGetLastError();
+    verr = virGetLastError();
     if (verr) {
         rerr->code = verr->code;
         rerr->domain = verr->domain;

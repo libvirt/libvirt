@@ -5019,11 +5019,12 @@ qemuProcessSetupRawIO(virQEMUDriverPtr driver,
     /* If rawio not already set, check hostdevs as well */
     if (!rawio) {
         for (i = 0; i < vm->def->nhostdevs; i++) {
+            virDomainHostdevSubsysSCSIPtr scsisrc;
+
             if (!virHostdevIsSCSIDevice(vm->def->hostdevs[i]))
                 continue;
 
-            virDomainHostdevSubsysSCSIPtr scsisrc =
-                &vm->def->hostdevs[i]->source.subsys.u.scsi;
+            scsisrc = &vm->def->hostdevs[i]->source.subsys.u.scsi;
             if (scsisrc->rawio == VIR_TRISTATE_BOOL_YES) {
                 rawio = true;
                 break;

@@ -1757,6 +1757,7 @@ virshBlockJobWaitInit(vshControl *ctl,
                       unsigned int timeout,
                       bool async_abort)
 {
+    virConnectDomainEventGenericCallback cb;
     virshBlockJobWaitDataPtr ret;
     virshControlPtr priv = ctl->privData;
 
@@ -1774,8 +1775,7 @@ virshBlockJobWaitInit(vshControl *ctl,
 
     ret->status = -1;
 
-    virConnectDomainEventGenericCallback cb =
-        VIR_DOMAIN_EVENT_CALLBACK(virshBlockJobStatusHandler);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(virshBlockJobStatusHandler);
 
     if ((ret->cb_id = virConnectDomainEventRegisterAny(priv->conn, dom,
                                                        VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
@@ -7117,12 +7117,14 @@ virshParseCPUList(vshControl *ctl, int *cpumaplen,
             return NULL;
         virBitmapSetAll(map);
     } else {
+        int lastcpu;
+
         if (virBitmapParse(cpulist, &map, 1024) < 0 ||
             virBitmapIsAllClear(map)) {
             vshError(ctl, _("Invalid cpulist '%s'"), cpulist);
             goto cleanup;
         }
-        int lastcpu = virBitmapLastSetBit(map);
+        lastcpu = virBitmapLastSetBit(map);
         if (lastcpu >= maxcpu) {
             vshError(ctl, _("CPU %d in cpulist '%s' exceed the maxcpu %d"),
                      lastcpu, cpulist, maxcpu);

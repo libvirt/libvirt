@@ -2864,10 +2864,13 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
     nwItemDesc *item;
 
     while (att[i].name) {
+        virNWFilterEntryItemFlags flags;
+
         VIR_WARNINGS_NO_CAST_ALIGN
         item = (nwItemDesc *)((char *)def + att[i].dataIdx);
         VIR_WARNINGS_RESET
-        virNWFilterEntryItemFlags flags = item->flags;
+
+        flags = item->flags;
         if ((flags & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)) {
             if (!typeShown) {
                 virBufferAsprintf(buf, "<%s", type);

@@ -325,6 +325,8 @@ int virNetSocketNewListenTCP(const char *nodename,
     int bindErrno = 0;
     virSocketAddr tmp_addr;
     int port = 0;
+    int e;
+    struct addrinfo *runp;
 
     *retsocks = NULL;
     *nretsocks = 0;
@@ -346,7 +348,7 @@ int virNetSocketNewListenTCP(const char *nodename,
           virSocketAddrIsWildcard(&tmp_addr)))
         hints.ai_flags |= AI_ADDRCONFIG;
 
-    int e = getaddrinfo(nodename, service, &hints, &ai);
+    e = getaddrinfo(nodename, service, &hints, &ai);
     if (e != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Unable to resolve address '%s' service '%s': %s"),
@@ -354,7 +356,7 @@ int virNetSocketNewListenTCP(const char *nodename,
         return -1;
     }
 
-    struct addrinfo *runp = ai;
+    runp = ai;
     while (runp) {
         virSocketAddr addr;
 
@@ -587,6 +589,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
     virSocketAddr remoteAddr;
     struct addrinfo *runp;
     int savedErrno = ENOENT;
+    int e;
 
     *retsock = NULL;
 
@@ -598,7 +601,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
     hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG | AI_V4MAPPED;
     hints.ai_socktype = SOCK_STREAM;
 
-    int e = getaddrinfo(nodename, service, &hints, &ai);
+    e = getaddrinfo(nodename, service, &hints, &ai);
     if (e != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Unable to resolve address '%s' service '%s': %s"),

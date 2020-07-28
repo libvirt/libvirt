@@ -4235,7 +4235,9 @@ qemuBuildVgaVideoCommand(virCommandPtr cmd,
                          virDomainVideoDefPtr video,
                          virQEMUCapsPtr qemuCaps)
 {
+    const char *dev;
     const char *vgastr = qemuVideoTypeToString(video->type);
+
     if (!vgastr || STREQ(vgastr, "")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid model for video type '%s'"),
@@ -4256,7 +4258,7 @@ qemuBuildVgaVideoCommand(virCommandPtr cmd,
      * See 'Graphics Devices' section in docs/qdev-device-use.txt in
      * QEMU repository.
      */
-    const char *dev = qemuDeviceVideoTypeToString(video->type);
+    dev = qemuDeviceVideoTypeToString(video->type);
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
         (video->vram || video->ram)) {
@@ -4938,9 +4940,11 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         if (dev->data.nix.listen &&
             (flags & QEMU_BUILD_CHARDEV_UNIX_FD_PASS) &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
+            int fd;
+
             if (qemuSecuritySetSocketLabel(secManager, (virDomainDefPtr)def) < 0)
                 return NULL;
-            int fd = qemuOpenChrChardevUNIXSocket(dev);
+            fd = qemuOpenChrChardevUNIXSocket(dev);
             if (qemuSecurityClearSocketLabel(secManager, (virDomainDefPtr)def) < 0) {
                 VIR_FORCE_CLOSE(fd);
                 return NULL;
