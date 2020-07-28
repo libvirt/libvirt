@@ -311,6 +311,29 @@ testISCSIConnectionLogin(const void *data)
 
 
 static int
+testISCSIScanTargetsTests(void)
+{
+    const char *targets[] = {
+        "iqn.2004-06.example:example1:iscsi.test",
+        "iqn.2005-05.example:example1:iscsi.hello",
+        "iqn.2006-04.example:example1:iscsi.world",
+        "iqn.2007-04.example:example1:iscsi.foo",
+        "iqn.2008-04.example:example1:iscsi.bar",
+        "iqn.2009-04.example:example1:iscsi.seven"
+    };
+    struct testScanTargetsInfo infoTargets = {
+        .fake_cmd_output = "iscsiadm_sendtargets",
+        .portal = "10.20.30.40:3260,1",
+        .expected_targets = targets,
+        .nexpected = G_N_ELEMENTS(targets),
+    };
+    if (virTestRun("ISCSI scan targets", testISCSIScanTargets, &infoTargets) < 0)
+        return -1;
+    return 0;
+}
+
+
+static int
 mymain(void)
 {
     int rv = 0;
@@ -331,21 +354,7 @@ mymain(void)
     DO_SESSION_TEST("iqn.2009-04.example:example1:iscsi.seven", "7");
     DO_SESSION_TEST("iqn.2009-04.example:example1:iscsi.eight", NULL);
 
-    const char *targets[] = {
-        "iqn.2004-06.example:example1:iscsi.test",
-        "iqn.2005-05.example:example1:iscsi.hello",
-        "iqn.2006-04.example:example1:iscsi.world",
-        "iqn.2007-04.example:example1:iscsi.foo",
-        "iqn.2008-04.example:example1:iscsi.bar",
-        "iqn.2009-04.example:example1:iscsi.seven"
-    };
-    struct testScanTargetsInfo infoTargets = {
-        .fake_cmd_output = "iscsiadm_sendtargets",
-        .portal = "10.20.30.40:3260,1",
-        .expected_targets = targets,
-        .nexpected = G_N_ELEMENTS(targets),
-    };
-    if (virTestRun("ISCSI scan targets", testISCSIScanTargets, &infoTargets) < 0)
+    if (testISCSIScanTargetsTests() < 0)
         rv = -1;
 
 # define DO_LOGIN_TEST(portal, iqn, target) \
