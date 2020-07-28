@@ -31,11 +31,10 @@ testCompareXMLToArgvFiles(const char *xmlfile,
     g_autofree char *actualxml = NULL;
     g_autofree char *cmd = NULL;
     g_autofree char *log = NULL;
-    int ret = -1;
     g_autoptr(virDomainDef) vmdef = NULL;
 
     if (virTestLoadFile(cmdfile, &cmd) < 0)
-        goto fail;
+        return -1;
 
     if (!(vmdef = bhyveParseCommandLineString(cmd, driver.bhyvecaps,
                                               driver.xmlopt))) {
@@ -43,16 +42,16 @@ testCompareXMLToArgvFiles(const char *xmlfile,
             VIR_TEST_DEBUG("Got expected failure from "
                            "bhyveParseCommandLineString.");
         } else {
-            goto fail;
+            return -1;
         }
     } else if ((flags & FLAG_EXPECT_FAILURE)) {
         VIR_TEST_DEBUG("Did not get expected failure from "
                        "bhyveParseCommandLineString.");
-        goto fail;
+        return -1;
     }
 
     if ((log = virTestLogContentAndReset()) == NULL)
-        goto fail;
+        return -1;
     if (flags & FLAG_EXPECT_WARNING) {
         if (*log) {
             VIR_TEST_DEBUG("Got expected warning from "
@@ -61,32 +60,29 @@ testCompareXMLToArgvFiles(const char *xmlfile,
         } else {
             VIR_TEST_DEBUG("bhyveParseCommandLineString "
                            "should have logged a warning");
-            goto fail;
+            return -1;
         }
     } else { /* didn't expect a warning */
         if (*log) {
             VIR_TEST_DEBUG("Got unexpected warning from "
                            "bhyveParseCommandLineString:\n%s",
                            log);
-            goto fail;
+            return -1;
         }
     }
 
     if (vmdef && !virDomainDefCheckABIStability(vmdef, vmdef, driver.xmlopt)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", xmlfile);
-        goto fail;
+        return -1;
     }
 
     if (vmdef && !(actualxml = virDomainDefFormat(vmdef, driver.xmlopt, 0)))
-        goto fail;
+        return -1;
 
     if (vmdef && virTestCompareToFile(actualxml, xmlfile) < 0)
-        goto fail;
+        return -1;
 
-    ret = 0;
-
- fail:
-    return ret;
+    return 0;
 }
 
 struct testInfo {
@@ -97,7 +93,6 @@ struct testInfo {
 static int
 testCompareXMLToArgvHelper(const void *data)
 {
-    int result = -1;
     const struct testInfo *info = data;
     g_autofree char *xml = NULL;
     g_autofree char *args = NULL;
@@ -107,8 +102,7 @@ testCompareXMLToArgvHelper(const void *data)
     args = g_strdup_printf("%s/bhyveargv2xmldata/bhyveargv2xml-%s.args",
                            abs_srcdir, info->name);
 
-    result = testCompareXMLToArgvFiles(xml, args, info->flags);
-    return result;
+    return testCompareXMLToArgvFiles(xml, args, info->flags);
 }
 
 static int

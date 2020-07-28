@@ -110,7 +110,6 @@ struct testInfo {
 static int
 testCompareXMLToArgvHelper(const void *data)
 {
-    int ret = -1;
     const struct testInfo *info = data;
     g_autofree char *xml = NULL;
     g_autofree char *args = NULL;
@@ -126,9 +125,7 @@ testCompareXMLToArgvHelper(const void *data)
     dmargs = g_strdup_printf("%s/bhyvexml2argvdata/bhyvexml2argv-%s.devmap",
                              abs_srcdir, info->name);
 
-    ret = testCompareXMLToArgvFiles(xml, args, ldargs, dmargs, info->flags);
-
-    return ret;
+    return testCompareXMLToArgvFiles(xml, args, ldargs, dmargs, info->flags);
 }
 
 static int
