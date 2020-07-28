@@ -2,33 +2,3 @@
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(BHYVE_DRIVER_SOURCES))
 STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(BHYVE_DRIVER_SOURCES))
-
-if WITH_BHYVE
-nodist_conf_DATA += bhyve/virtbhyved.conf
-augeas_DATA += bhyve/virtbhyved.aug
-augeastest_DATA += bhyve/test_virtbhyved.aug
-
-bhyve/virtbhyved.conf: remote/libvirtd.conf.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtbhyved/' \
-		$< > $@
-
-bhyve/virtbhyved.aug: remote/libvirtd.aug.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtbhyved/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtbhyved/' \
-		$< > $@
-
-bhyve/test_virtbhyved.aug: remote/test_libvirtd.aug.in \
-		bhyve/virtbhyved.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) bhyve/virtbhyved.conf \
-		$(srcdir)/remote/test_libvirtd.aug.in | \
-		$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtbhyved/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtbhyved/' \
-		> $@ || rm -f $@
-
-endif WITH_BHYVE

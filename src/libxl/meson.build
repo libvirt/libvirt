@@ -52,4 +52,8 @@ if conf.has('WITH_LIBXL')
     'aug': files('test_libvirtd_libxl.aug.in'),
     'conf': files('libxl.conf'),
   }
+
+  virt_daemon_confs += {
+    'name': 'virtxend',
+  }
 endif

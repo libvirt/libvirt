@@ -34,4 +34,8 @@ if conf.has('WITH_INTERFACE')
       '-DMODULE_NAME="interface"',
     ],
   }
+
+  virt_daemon_confs += {
+    'name': 'virtinterfaced',
+  }
 endif

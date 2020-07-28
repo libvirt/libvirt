@@ -38,4 +38,8 @@ if conf.has('WITH_VZ')
       '-DMODULE_NAME="vz"',
     ],
   }
+
+  virt_daemon_confs += {
+    'name': 'virtvzd',
+  }
 endif

@@ -6,10 +6,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 
 if WITH_INTERFACE
 
-nodist_conf_DATA += interface/virtinterfaced.conf
-augeas_DATA += interface/virtinterfaced.aug
-augeastest_DATA += interface/test_virtinterfaced.aug
-
 SYSCONF_FILES += interface/virtinterfaced.sysconf
 
 SYSTEMD_UNIT_FILES += \
@@ -47,28 +43,5 @@ virtinterfaced.service: interface/virtinterfaced.service.in \
 virtinterface%.socket: remote/libvirt%.socket.in \
 		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTINTERFACED_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-interface/virtinterfaced.conf: remote/libvirtd.conf.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtinterfaced/' \
-		$< > $@
-
-interface/virtinterfaced.aug: remote/libvirtd.aug.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtinterfaced/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtinterfaced/' \
-		$< > $@
-
-interface/test_virtinterfaced.aug: remote/test_libvirtd.aug.in \
-		interface/virtinterfaced.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) interface/virtinterfaced.conf \
-		$(srcdir)/remote/test_libvirtd.aug.in | \
-		$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtinterfaced/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtinterfaced/' \
-		> $@ || rm -f $@
 
 endif WITH_INTERFACE

@@ -136,4 +136,8 @@ if conf.has('WITH_LXC')
     'aug': files('test_libvirtd_lxc.aug.in'),
     'conf': files('lxc.conf'),
   }
+
+  virt_daemon_confs += {
+    'name': 'virtlxcd',
+  }
 endif

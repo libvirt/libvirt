@@ -21,7 +21,6 @@
 # that actually use them.
 
 BUILT_SOURCES =
-nodist_conf_DATA =
 DRIVER_SOURCE_FILES =
 STATEFUL_DRIVER_SOURCE_FILES =
 INSTALL_DATA_DIRS =
@@ -31,7 +30,6 @@ SYM_FILES =
 USED_SYM_FILES =
 augeas_DATA =
 augeastest_DATA =
-conf_DATA =
 if WITH_DTRACE_PROBES
 tapset_DATA =
 endif WITH_DTRACE_PROBES
@@ -197,9 +195,6 @@ check-augeas: $(augeas_DATA) $(augeastest_DATA)
 	    done; \
 	fi
 .PHONY: check-augeas
-
-AUG_GENTEST_SCRIPT = $(top_srcdir)/scripts/augeas-gentest.py
-AUG_GENTEST = $(RUNUTF8) $(PYTHON) $(AUG_GENTEST_SCRIPT)
 
 if WITH_DTRACE_PROBES
 

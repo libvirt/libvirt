@@ -62,39 +62,6 @@ OPENRC_CONF_FILES += \
 
 if WITH_LIBVIRTD
 
-augeas_DATA += \
-	remote/libvirtd.aug \
-	remote/virtproxyd.aug \
-	$(NULL)
-
-augeastest_DATA += \
-	remote/test_libvirtd.aug \
-	remote/test_virtproxyd.aug \
-	$(NULL)
-
-nodist_conf_DATA += \
-	remote/libvirtd.conf \
-	remote/virtproxyd.conf \
-	$(NULL)
-
-remote/libvirtd.conf: remote/libvirtd.conf.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/d' \
-		-e '/[@]END[@]/d' \
-		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
-		-e 's|[@]runstatedir[@]|@runstatedir@|' \
-		-e 's|[@]DAEMON_NAME[@]|libvirtd|' \
-		$< > $@
-
-remote/virtproxyd.conf: remote/libvirtd.conf.in
-	$(AM_V_GEN)sed \
-		-e '/[@]CUT_ENABLE_IP[@]/d' \
-		-e '/[@]END[@]/d' \
-		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
-		-e 's|[@]runstatedir[@]|@runstatedir@|' \
-		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
-		$< > $@
-
 INSTALL_DATA_DIRS += remote
 
 install-data-remote:
@@ -102,50 +69,6 @@ install-data-remote:
 
 uninstall-data-remote:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt" ||:
-
-remote/libvirtd.aug: remote/libvirtd.aug.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/d' \
-		-e '/[@]END[@]/d' \
-		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
-		-e 's|[@]DAEMON_NAME[@]|libvirtd|' \
-		-e 's|[@]DAEMON_NAME_UC[@]|Libvirtd|' \
-		$< > $@
-
-remote/virtproxyd.aug: remote/libvirtd.aug.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/d' \
-		-e '/[@]END[@]/d' \
-		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
-		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtproxyd/' \
-		$< > $@
-
-remote/test_libvirtd.aug: remote/test_libvirtd.aug.in \
-		remote/libvirtd.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) remote/libvirtd.conf \
-		$(srcdir)/remote/test_libvirtd.aug.in | \
-		$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/d' \
-		-e '/[@]END[@]/d' \
-		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
-		-e 's|[@]runstatedir[@]|@runstatedir@|' \
-		-e 's|[@]DAEMON_NAME[@]|libvirtd|' \
-		-e 's|[@]DAEMON_NAME_UC[@]|Libvirtd|' \
-		> $@ || rm -f $@
-
-remote/test_virtproxyd.aug: remote/test_libvirtd.aug.in \
-		remote/virtproxyd.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) remote/virtproxyd.conf \
-		$(srcdir)/remote/test_libvirtd.aug.in | \
-		$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/d' \
-		-e '/[@]END[@]/d' \
-		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
-		-e 's|[@]runstatedir[@]|@runstatedir@|' \
-		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtproxyd/' \
-		> $@ || rm -f $@
 
 if WITH_SYSCTL
 # Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on

@@ -5,10 +5,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(STORAGE_DRIVER_SOURCES))
 
 if WITH_STORAGE
-nodist_conf_DATA += storage/virtstoraged.conf
-augeas_DATA += storage/virtstoraged.aug
-augeastest_DATA += storage/test_virtstoraged.aug
-
 SYSCONF_FILES += storage/virtstoraged.sysconf
 
 SYSTEMD_UNIT_FILES += \
@@ -45,29 +41,5 @@ virtstoraged.service: storage/virtstoraged.service.in \
 virtstorage%.socket: remote/libvirt%.socket.in \
 		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTSTORAGED_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-storage/virtstoraged.conf: remote/libvirtd.conf.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtstoraged/' \
-		$< > $@
-
-storage/virtstoraged.aug: remote/libvirtd.aug.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtstoraged/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtstoraged/' \
-		$< > $@
-
-storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
-		storage/virtstoraged.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) storage/virtstoraged.conf \
-		$(srcdir)/remote/test_libvirtd.aug.in | \
-		$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtstoraged/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtstoraged/' \
-		> $@ || rm -f $@
-
 
 endif WITH_STORAGE

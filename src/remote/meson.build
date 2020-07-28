@@ -139,6 +139,11 @@ if conf.has('WITH_REMOTE')
       ],
     }
 
+    virt_daemon_confs += {
+      'name': 'libvirtd',
+      'with_ip': true,
+    }
+
     virt_daemons += {
       'name': 'virtproxyd',
       'c_args': [
@@ -147,6 +152,11 @@ if conf.has('WITH_REMOTE')
         '-DWITH_IP',
         '-DVIRTPROXYD',
       ],
+    }
+
+    virt_daemon_confs += {
+      'name': 'virtproxyd',
+      'with_ip': true,
     }
   endif
 endif

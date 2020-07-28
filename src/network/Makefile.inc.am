@@ -5,10 +5,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(addprefix $(srcdir)/,$(NETWORK_DRIVER_SOURCES))
 
 if WITH_NETWORK
-nodist_conf_DATA += network/virtnetworkd.conf
-augeas_DATA += network/virtnetworkd.aug
-augeastest_DATA += network/test_virtnetworkd.aug
-
 SYSCONF_FILES += network/virtnetworkd.sysconf
 
 SYSTEMD_UNIT_FILES += \
@@ -45,29 +41,6 @@ virtnetworkd.service: network/virtnetworkd.service.in \
 virtnetwork%.socket: remote/libvirt%.socket.in \
 		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTNETWORKD_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-network/virtnetworkd.conf: remote/libvirtd.conf.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtnetworkd/' \
-		$< > $@
-
-network/virtnetworkd.aug: remote/libvirtd.aug.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtnetworkd/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtnetworkd/' \
-		$< > $@
-
-network/test_virtnetworkd.aug: remote/test_libvirtd.aug.in \
-		network/virtnetworkd.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) network/virtnetworkd.conf \
-		$(srcdir)/remote/test_libvirtd.aug.in | \
-		$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtnetworkd/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtnetworkd/' \
-		> $@ || rm -f $@
 
 INSTALL_DATA_DIRS += network
 

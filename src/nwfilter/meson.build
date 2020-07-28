@@ -41,4 +41,8 @@ if conf.has('WITH_NWFILTER')
       '-DMODULE_NAME="nwfilter"',
     ],
   }
+
+  virt_daemon_confs += {
+    'name': 'virtnwfilterd',
+  }
 endif

@@ -11,10 +11,6 @@ if WITH_NWFILTER
 nwfilterxmldir = $(sysconfdir)/libvirt/nwfilter
 nwfilterxml_DATA = $(NWFILTER_XML_FILES)
 
-nodist_conf_DATA += nwfilter/virtnwfilterd.conf
-augeas_DATA += nwfilter/virtnwfilterd.aug
-augeastest_DATA += nwfilter/test_virtnwfilterd.aug
-
 SYSCONF_FILES += nwfilter/virtnwfilterd.sysconf
 
 SYSTEMD_UNIT_FILES += \
@@ -52,28 +48,4 @@ virtnwfilterd.service: nwfilter/virtnwfilterd.service.in \
 virtnwfilter%.socket: remote/libvirt%.socket.in \
 		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTNWFILTERD_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-nwfilter/virtnwfilterd.conf: remote/libvirtd.conf.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtnwfilterd/' \
-		$< > $@
-
-nwfilter/virtnwfilterd.aug: remote/libvirtd.aug.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtnwfilterd/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtnwfilterd/' \
-		$< > $@
-
-nwfilter/test_virtnwfilterd.aug: remote/test_libvirtd.aug.in \
-		nwfilter/virtnwfilterd.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) nwfilter/virtnwfilterd.conf \
-		$(srcdir)/remote/test_libvirtd.aug.in | \
-		$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtnwfilterd/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtnwfilterd/' \
-		> $@ || rm -f $@
-
 endif WITH_NWFILTER

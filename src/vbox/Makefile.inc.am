@@ -6,10 +6,6 @@ DRIVER_SOURCE_FILES += \
 	$(NULL)
 
 if WITH_VBOX
-nodist_conf_DATA += vbox/virtvboxd.conf
-augeas_DATA += vbox/virtvboxd.aug
-augeastest_DATA += vbox/test_virtvboxd.aug
-
 SYSCONF_FILES += vbox/virtvboxd.sysconf
 
 SYSTEMD_UNIT_FILES += \
@@ -44,28 +40,5 @@ virtvboxd.service: vbox/virtvboxd.service.in $(top_builddir)/config.status
 
 virtvbox%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTVBOXD_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-vbox/virtvboxd.conf: remote/libvirtd.conf.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtvboxd/' \
-		$< > $@
-
-vbox/virtvboxd.aug: remote/libvirtd.aug.in
-	$(AM_V_GEN)$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtvboxd/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtvboxd/' \
-		$< > $@
-
-vbox/test_virtvboxd.aug: remote/test_libvirtd.aug.in \
-		vbox/virtvboxd.conf $(AUG_GENTEST_SCRIPT)
-	$(AM_V_GEN)$(AUG_GENTEST) vbox/virtvboxd.conf \
-		$(srcdir)/remote/test_libvirtd.aug.in | \
-		$(SED) \
-		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
-		-e 's/[@]DAEMON_NAME[@]/virtvboxd/' \
-		-e 's/[@]DAEMON_NAME_UC[@]/Virtvboxd/' \
-		> $@ || rm -f $@
 
 endif WITH_VBOX

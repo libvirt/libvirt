@@ -46,4 +46,8 @@ if conf.has('WITH_NODE_DEVICES')
       '-DMODULE_NAME="nodedev"',
     ],
   }
+
+  virt_daemon_confs += {
+    'name': 'virtnodedevd',
+  }
 endif
