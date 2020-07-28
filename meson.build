@@ -115,6 +115,20 @@ configure_file(
 )
 
 
+# packager options
+
+packager = get_option('packager')
+packager_version = get_option('packager_version')
+
+if packager != ''
+  conf.set_quoted('PACKAGER', packager)
+endif
+
+if packager_version != ''
+  conf.set_quoted('PACKAGER_VERSION', packager_version)
+endif
+
+
 # figure out libvirt version strings
 
 arr_version = meson.project_version().split('.')

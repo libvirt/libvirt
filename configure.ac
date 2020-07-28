@@ -40,19 +40,6 @@ m4_ifndef([AM_SILENT_RULES],
 
 AC_CANONICAL_HOST
 
-LIBVIRT_ARG_WITH([PACKAGER], [Extra packager name], [no])
-LIBVIRT_ARG_WITH([PACKAGER_VERSION], [Extra packager version], [no])
-if test "x$with_packager" != "xno"
-then
-  AC_DEFINE_UNQUOTED([PACKAGER], ["$with_packager"],
-                     [Extra package name])
-fi
-if test "x$with_packager_version" != "xno"
-then
-  AC_DEFINE_UNQUOTED([PACKAGER_VERSION], ["$with_packager_version"],
-                     [Extra package version])
-fi
-
 dnl Where we look for daemons and admin binaries during configure
 LIBVIRT_SBIN_PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
