@@ -497,7 +497,6 @@ testQemuGetLatestCapsForArch(const char *arch,
     DIR *dir = NULL;
     int rc;
     char *fullsuffix = NULL;
-    char *tmp = NULL;
     unsigned long maxver = 0;
     unsigned long ver;
     g_autofree char *maxname = NULL;
@@ -509,7 +508,7 @@ testQemuGetLatestCapsForArch(const char *arch,
         goto cleanup;
 
     while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
-        VIR_FREE(tmp);
+        g_autofree char *tmp = NULL;
 
         tmp = g_strdup(STRSKIP(ent->d_name, "caps_"));
 
@@ -543,7 +542,6 @@ testQemuGetLatestCapsForArch(const char *arch,
     ret = g_strdup_printf("%s/%s", TEST_QEMU_CAPS_PATH, maxname);
 
  cleanup:
-    VIR_FREE(tmp);
     VIR_FREE(fullsuffix);
     virDirClose(&dir);
     return ret;

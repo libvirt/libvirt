@@ -787,7 +787,6 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
     virJSONValuePtr val = NULL;
     virJSONValuePtr args;
     virJSONValuePtr argobj;
-    char *argstr = NULL;
     const char *cmdname;
     size_t i;
     int ret = -1;
@@ -815,6 +814,8 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
     /* validate the args */
     for (i = 0; i < data->nargs; i++) {
         qemuMonitorTestCommandArgsPtr arg = &data->args[i];
+        g_autofree char *argstr = NULL;
+
         if (!(argobj = virJSONValueObjectGet(args, arg->argname))) {
             qemuMonitorTestError("Missing argument '%s' for command '%s'",
                                  arg->argname,
@@ -835,15 +836,12 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
                                  arg->argval, argstr);
             goto cleanup;
         }
-
-        VIR_FREE(argstr);
     }
 
     /* arguments checked out, return the response */
     ret = qemuMonitorTestAddResponse(test, data->response);
 
  cleanup:
-    VIR_FREE(argstr);
     virJSONValueFree(val);
     return ret;
 }
