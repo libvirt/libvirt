@@ -30,6 +30,23 @@ lock_protocol_generated += custom_target(
   ],
 )
 
+lock_daemon_sources = files(
+  'lock_daemon.c',
+  'lock_daemon_config.c',
+  'lock_daemon_dispatch.c',
+)
+
+lock_daemon_generated = custom_target(
+  'lock_daemon_dispatch_stubs.h',
+  input: lock_protocol,
+  output: 'lock_daemon_dispatch_stubs.h',
+  command: [
+    gendispatch_prog, '--mode=server',
+    'virLockSpaceProtocol', 'VIR_LOCK_SPACE_PROTOCOL', '@INPUT@',
+  ],
+  capture: true,
+)
+
 sanlock_sources = [
   'lock_driver_sanlock.c',
 ]
@@ -100,4 +117,16 @@ if conf.has('WITH_LIBVIRTD')
       'install_dir': lockdriver_dir,
     }
   endif
+
+  virt_daemons += {
+    'name': 'virtlockd',
+    'sources': [
+      lock_daemon_sources,
+      lock_daemon_generated,
+      lock_protocol_generated,
+    ],
+    'include': [
+      include_directories('.'),
+    ],
+  }
 endif

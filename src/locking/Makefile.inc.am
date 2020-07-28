@@ -3,23 +3,6 @@
 LOCK_DRIVER_SANLOCK_HELPER_SOURCES = \
 	locking/sanlock_helper.c
 
-LOCK_DAEMON_GENERATED = \
-	locking/lock_daemon_dispatch_stubs.h
-	$(NULL)
-
-LOCK_DAEMON_SOURCES = \
-	locking/lock_daemon.h \
-	locking/lock_daemon.c \
-	locking/lock_daemon_config.h \
-	locking/lock_daemon_config.c \
-	locking/lock_daemon_dispatch.c \
-	locking/lock_daemon_dispatch.h \
-	$(NULL)
-
-BUILT_SOURCES += \
-	$(LOCK_DAEMON_GENERATED) \
-	$(NULL)
-
 RPC_PROBE_FILES += $(srcdir)/locking/lock_protocol.x
 SYSCONF_FILES += locking/virtlockd.sysconf
 
@@ -50,42 +33,6 @@ endif WITH_QEMU
 if WITH_LIBXL
 nodist_conf_DATA += locking/libxl-lockd.conf
 endif WITH_LIBXL
-
-sbin_PROGRAMS += virtlockd
-
-virtlockd_SOURCES = \
-	$(LOCK_DAEMON_SOURCES) \
-	$(NULL)
-nodist_virtlockd_SOURCES = \
-	$(LOCK_PROTOCOL_GENERATED) \
-	$(LOCK_DAEMON_GENERATED) \
-	$(NULL)
-virtlockd_CFLAGS = \
-	-I$(srcdir)/locking \
-	-I$(builddir)/locking \
-	-I$(builddir)/rpc \
-	$(AM_CFLAGS) \
-	$(XDR_CFLAGS) \
-	$(NULL)
-virtlockd_LDFLAGS = \
-	$(AM_LDFLAGS) \
-	$(XDR_LIBS) \
-	$(NO_UNDEFINED_LDFLAGS) \
-	$(NULL)
-virtlockd_LDADD = \
-	libvirt.la \
-	libvirt_driver_admin.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-if WITH_DTRACE_PROBES
-virtlockd_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-if WITH_SASL
-virtlockd_CFLAGS += \
-	$(SASL_CFLAGS) \
-	$(NULL)
-endif WITH_SASL
 
 if WITH_SANLOCK
 augeas_DATA += locking/libvirt_sanlock.aug
@@ -172,12 +119,6 @@ locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
 	$(AM_V_GEN)$(MKDIR_P) locking ; \
 	cp $< $@
 
-
-locking/lock_daemon_dispatch_stubs.h: $(LOCK_PROTOCOL) \
-		$(srcdir)/rpc/gendispatch.pl Makefile.am
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
-	    virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL \
-	    $(LOCK_PROTOCOL) > locking/lock_daemon_dispatch_stubs.h
 
 virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@
