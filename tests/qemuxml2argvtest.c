@@ -130,7 +130,7 @@ static virStorageVolPtr
 fakeStorageVolLookupByName(virStoragePoolPtr pool,
                            const char *name)
 {
-    char **volinfo = NULL;
+    VIR_AUTOSTRINGLIST volinfo = NULL;
     virStorageVolPtr ret = NULL;
 
     if (STREQ(pool->name, "inactive")) {
@@ -158,7 +158,6 @@ fakeStorageVolLookupByName(virStoragePoolPtr pool,
                            NULL, NULL);
 
  cleanup:
-    virStringListFree(volinfo);
     return ret;
 
  fallback:
