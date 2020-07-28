@@ -277,11 +277,11 @@ mymain(void)
     do { \
         virSocketAddr addr; \
         struct testParseData data = { &addr, addrstr, family, pass }; \
+        struct testFormatData data2 = { &addr, addrstr, pass }; \
         memset(&addr, 0, sizeof(addr)); \
         if (virTestRun("Test parse " addrstr " family " #family, \
                        testParseHelper, &data) < 0) \
             ret = -1; \
-        struct testFormatData data2 = { &addr, addrstr, pass }; \
         if (virTestRun("Test format " addrstr " family " #family, \
                        testFormatHelper, &data2) < 0) \
             ret = -1; \
@@ -291,11 +291,11 @@ mymain(void)
     do { \
         virSocketAddr addr; \
         struct testParseData data = { &addr, addrstr, family, true}; \
+        struct testFormatData data2 = { &addr, addrformated, pass }; \
         memset(&addr, 0, sizeof(addr)); \
         if (virTestRun("Test parse " addrstr " family " #family, \
                        testParseHelper, &data) < 0) \
             ret = -1; \
-        struct testFormatData data2 = { &addr, addrformated, pass }; \
         if (virTestRun("Test format " addrstr " family " #family, \
                        testFormatHelper, &data2) < 0) \
             ret = -1; \
