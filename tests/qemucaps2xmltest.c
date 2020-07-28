@@ -137,7 +137,8 @@ testQemuCapsXML(const void *opaque)
 {
     int ret = -1;
     const testQemuData *data = opaque;
-    char *capsFile = NULL, *xmlFile = NULL;
+    char *capsFile = NULL
+    char *xmlFile = NULL;
     char *capsData = NULL;
     char *capsXml = NULL;
     virCapsPtr capsProvided = NULL;
