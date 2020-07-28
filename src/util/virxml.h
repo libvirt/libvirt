@@ -241,9 +241,10 @@ G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virXPathContextNodeSave, virXPathContextNodeRes
  * node pointer is reset to the original value when this macro was used.
  */
 #define VIR_XPATH_NODE_AUTORESTORE(_ctxt) \
+    VIR_WARNINGS_NO_UNUSED_VARIABLE \
     g_auto(virXPathContextNodeSave) _ctxt ## CtxtSave = { .ctxt = _ctxt,\
                                                           .node = _ctxt->node}; \
-    ignore_value(&_ctxt ## CtxtSave)
+    VIR_WARNINGS_RESET
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlDoc, xmlFreeDoc);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlXPathContext, xmlXPathFreeContext);

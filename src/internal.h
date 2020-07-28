@@ -189,6 +189,11 @@
      _Pragma ("GCC diagnostic push")
 #endif
 
+/* Where ignore_value cannot be used because it's a statement */
+#define VIR_WARNINGS_NO_UNUSED_VARIABLE \
+    _Pragma ("GCC diagnostic push") \
+    _Pragma ("GCC diagnostic ignored \"-Wunused-variable\"")
+
 #define VIR_WARNINGS_RESET \
     _Pragma ("GCC diagnostic pop")
 
