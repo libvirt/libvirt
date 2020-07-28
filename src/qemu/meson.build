@@ -150,4 +150,9 @@ if conf.has('WITH_QEMU')
     'sockets': [ 'main', 'ro', 'admin' ],
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtqemud',
+    'in_file': files('virtqemud.init.in'),
+  }
 endif

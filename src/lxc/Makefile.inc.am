@@ -13,16 +13,6 @@ if WITH_LXC
 
 SYSCONF_FILES += lxc/virtlxcd.sysconf
 
-OPENRC_INIT_FILES += \
-	virtlxcd.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	lxc/virtlxcd.init.in \
-	$(NULL)
-
-virtlxcd.init: lxc/virtlxcd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
 if WITH_DTRACE_PROBES
 RPC_PROBE_FILES += $(srcdir)/lxc/lxc_monitor_protocol.x
 endif

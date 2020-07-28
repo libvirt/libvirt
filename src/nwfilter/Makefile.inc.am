@@ -13,14 +13,4 @@ nwfilterxml_DATA = $(NWFILTER_XML_FILES)
 
 SYSCONF_FILES += nwfilter/virtnwfilterd.sysconf
 
-OPENRC_INIT_FILES += \
-	virtnwfilterd.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	nwfilter/virtnwfilterd.init.in \
-	$(NULL)
-
-virtnwfilterd.init: nwfilter/virtnwfilterd.init.in \
-		$(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 endif WITH_NWFILTER

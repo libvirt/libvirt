@@ -7,16 +7,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 if WITH_NETWORK
 SYSCONF_FILES += network/virtnetworkd.sysconf
 
-OPENRC_INIT_FILES += \
-	virtnetworkd.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	network/virtnetworkd.init.in \
-	$(NULL)
-
-virtnetworkd.init: network/virtnetworkd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
 INSTALL_DATA_DIRS += network
 
 UUID=$(shell uuidgen 2>/dev/null)

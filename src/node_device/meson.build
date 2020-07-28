@@ -59,4 +59,9 @@ if conf.has('WITH_NODE_DEVICES')
     'sockets': [ 'main', 'ro', 'admin' ],
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtnodedevd',
+    'in_file': files('virtnodedevd.init.in'),
+  }
 endif

@@ -134,6 +134,11 @@ if conf.has('WITH_STORAGE')
     'sockets': [ 'main', 'ro', 'admin' ],
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtstoraged',
+    'in_file': files('virtstoraged.init.in'),
+  }
 endif
 
 if conf.has('WITH_STORAGE_DISK')

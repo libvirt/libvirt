@@ -13,15 +13,4 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 
 if WITH_NODE_DEVICES
 SYSCONF_FILES += node_device/virtnodedevd.sysconf
-
-OPENRC_INIT_FILES += \
-	virtnodedevd.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	node_device/virtnodedevd.init.in \
-	$(NULL)
-
-virtnodedevd.init: node_device/virtnodedevd.init.in \
-		$(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 endif WITH_NODE_DEVICES

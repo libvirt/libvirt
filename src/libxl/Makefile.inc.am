@@ -7,16 +7,6 @@ if WITH_LIBXL
 
 SYSCONF_FILES += libxl/virtxend.sysconf
 
-OPENRC_INIT_FILES += \
-	virtxend.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	libxl/virtxend.init.in \
-	$(NULL)
-
-virtxend.init: libxl/virtxend.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
 INSTALL_DATA_DIRS += libxl
 
 install-data-libxl:

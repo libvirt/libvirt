@@ -199,6 +199,12 @@ guest_unit_files = []
 #   * conflicts - if the service conflicts with libvirtd (optional, true)
 virt_daemon_units = []
 
+# openrc_init_files
+#   generate libvirt daemon openrc init files
+#   * name - daemon name (required)
+#   * in_file - source init file (required)
+openrc_init_files = []
+
 
 # list subdirectories
 
@@ -742,6 +748,41 @@ if conf.has('WITH_LIBVIRTD')
           install_dir: systemd_unit_dir,
         )
       endforeach
+    endforeach
+  endif
+
+  # Generate openrc init files
+  if init_script == 'openrc'
+    foreach init : openrc_init_files
+      init_conf = configuration_data()
+      init_conf.set('sbindir', sbindir)
+      init_conf.set('runstatedir', runstatedir)
+      if conf.has('WITH_FIREWALLD')
+        need_firewalld = 'need firewalld'
+      else
+        need_firewalld = ''
+      endif
+      init_conf.set('NEED_FIREWALLD', need_firewalld)
+
+      init_file = configure_file(
+        input: init['in_file'],
+        output: '@0@.init'.format(init['name']),
+        configuration: init_conf,
+      )
+
+      install_data(
+        init_file,
+        install_dir: sysconfdir / 'init.d',
+        rename: [ init['name'] ],
+      )
+
+      if init.has_key('confd')
+        install_data(
+          init['confd'],
+          install_dir: sysconfdir / 'conf.d',
+          rename: [ init['name'] ],
+        )
+      endif
     endforeach
   endif
 endif

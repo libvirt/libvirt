@@ -7,15 +7,4 @@ DRIVER_SOURCE_FILES += \
 
 if WITH_VBOX
 SYSCONF_FILES += vbox/virtvboxd.sysconf
-
-OPENRC_INIT_FILES += \
-	virtvboxd.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	vbox/virtvboxd.init.in \
-	$(NULL)
-
-virtvboxd.init: vbox/virtvboxd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
 endif WITH_VBOX

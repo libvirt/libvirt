@@ -12,19 +12,6 @@ SYSCONF_FILES += \
 	remote/virtproxyd.sysconf \
 	$(NULL)
 
-OPENRC_INIT_FILES += \
-	libvirtd.init \
-	virtproxyd.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	remote/libvirtd.init.in \
-	remote/virtproxyd.init.in \
-	$(NULL)
-OPENRC_CONF_FILES += \
-	remote/libvirtd.confd \
-	remote/virtproxyd.confd \
-	$(NULL)
-
 if WITH_LIBVIRTD
 
 INSTALL_DATA_DIRS += remote
@@ -100,20 +87,3 @@ uninstall-sasl:
 INSTALL_DATA_LOCAL += install-sasl
 UNINSTALL_LOCAL += uninstall-sasl
 endif WITH_SASL
-
-LIBVIRTD_INIT_VARS = \
-	$(COMMON_UNIT_VARS)
-
-if WITH_FIREWALLD
-LIBVIRTD_INIT_VARS += \
-	-e 's|[@]NEED_FIREWALLD[@]|need firewalld|g'
-else ! WITH_FIREWALLD
-LIBVIRTD_INIT_VARS += \
-	-e 's|[@]NEED_FIREWALLD[@]||g'
-endif ! WITH_FIREWALLD
-
-libvirtd.init: remote/libvirtd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
-virtproxyd.init: remote/virtproxyd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@

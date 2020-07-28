@@ -164,6 +164,12 @@ if conf.has('WITH_REMOTE')
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
     }
 
+    openrc_init_files += {
+      'name': 'libvirtd',
+      'in_file': files('libvirtd.init.in'),
+      'confd': files('libvirtd.confd'),
+    }
+
     virt_daemons += {
       'name': 'virtproxyd',
       'c_args': [
@@ -186,6 +192,12 @@ if conf.has('WITH_REMOTE')
       'sockprefix': 'libvirtd',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
       'deps': libvirtd_socket_conflicts,
+    }
+
+    openrc_init_files += {
+      'name': 'virtproxyd',
+      'in_file': files('virtproxyd.init.in'),
+      'confd': files('virtproxyd.confd'),
     }
   endif
 endif

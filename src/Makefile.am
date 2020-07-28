@@ -35,16 +35,7 @@ tapset_DATA =
 endif WITH_DTRACE_PROBES
 RPC_PROBE_FILES =
 LOGROTATE_FILES_IN =
-OPENRC_INIT_FILES =
-OPENRC_INIT_FILES_IN =
-OPENRC_CONF_FILES =
 SYSCONF_FILES =
-
-COMMON_UNIT_VARS = \
-	-e 's|[@]runstatedir[@]|$(runstatedir)|g' \
-	-e 's|[@]sbindir[@]|$(sbindir)|g' \
-	-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	$(NULL)
 
 include security/Makefile.inc.am
 include access/Makefile.inc.am
@@ -231,25 +222,6 @@ uninstall-sysconfig:
 	done
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
-OPENRC_CONF_DIR = $(sysconfdir)/conf.d
-
-install-openrc-conf:
-	$(MKDIR_P) $(DESTDIR)$(OPENRC_CONF_DIR)
-	for f in $(OPENRC_CONF_FILES:%.confd=%) ; \
-	do \
-		tgt=`basename $$f`; \
-		$(INSTALL_DATA) $(srcdir)/$$f.confd \
-			$(DESTDIR)$(OPENRC_CONF_DIR)/$$tgt; \
-	done
-
-uninstall-openrc-conf:
-	for f in $(OPENRC_CONF_FILES:%.confd=%) ; \
-	do \
-		tgt=`basename $$f`; \
-		rm -f $(DESTDIR)$(OPENRC_CONF_DIR)/$$tgt; \
-	done
-	rmdir $(DESTDIR)$(OPENRC_CONF_DIR) || :
-
 LOGROTATE_FILES := $(LOGROTATE_FILES_IN:remote/%.in=%)
 
 BUILT_SOURCES += $(LOGROTATE_FILES)
@@ -277,40 +249,6 @@ uninstall-logrotate:
 INSTALL_DATA_LOCAL += install-logrotate
 UNINSTALL_LOCAL += uninstall-logrotate
 endif WITH_LIBVIRTD
-
-
-if WITH_LIBVIRTD
-if LIBVIRT_INIT_SCRIPT_OPENRC
-
-OPENRC_INIT_DIR = $(sysconfdir)/init.d
-
-BUILT_SOURCES += $(OPENRC_INIT_FILES)
-
-install-openrc: $(OPENRC_INIT_FILES) install-openrc-conf
-	$(MKDIR_P) $(DESTDIR)$(OPENRC_INIT_DIR)
-	for f in $(OPENRC_INIT_FILES:%.init=%) ; \
-	do \
-		tgt=`basename $$f`; \
-		$(INSTALL_SCRIPT) $$f.init \
-		$(DESTDIR)$(OPENRC_INIT_DIR)/$$tgt ; \
-	done
-
-uninstall-openrc: uninstall-openrc-conf
-	for f in $(OPENRC_INIT_FILES:%.init=%) ; \
-	do \
-		tgt=`basename $$f`; \
-		rm -f $(DESTDIR)$(OPENRC_INIT_DIR)/$$tgt ; \
-	done
-	rmdir $(DESTDIR)$(OPENRC_INIT_DIR) || :
-
-INSTALL_DATA_LOCAL += install-openrc
-UNINSTALL_LOCAL += uninstall-openrc
-endif LIBVIRT_INIT_SCRIPT_OPENRC
-
-endif WITH_LIBVIRTD
-
-
-generated-sources: $(BUILT_SOURCES)
 
 
 install-data-local: $(INSTALL_DATA_LOCAL) \

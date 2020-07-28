@@ -66,4 +66,9 @@ if conf.has('WITH_LIBXL')
     'deps': 'ConditionPathExists=/proc/xen/capabilities',
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtxend',
+    'in_file': files('virtxend.init.in'),
+  }
 endif

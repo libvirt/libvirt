@@ -36,4 +36,9 @@ if conf.has('WITH_SECRETS')
     'sockets': [ 'main', 'ro', 'admin' ],
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtsecretd',
+    'in_file': files('virtsecretd.init.in'),
+  }
 endif

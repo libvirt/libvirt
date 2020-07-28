@@ -8,14 +8,4 @@ if WITH_INTERFACE
 
 SYSCONF_FILES += interface/virtinterfaced.sysconf
 
-OPENRC_INIT_FILES += \
-	virtinterfaced.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	interface/virtinterfaced.init.in \
-	$(NULL)
-
-virtinterfaced.init: interface/virtinterfaced.init.in \
-		$(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 endif WITH_INTERFACE

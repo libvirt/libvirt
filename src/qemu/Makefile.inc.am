@@ -6,16 +6,6 @@ STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(QEMU_DRIVER_SOURCES))
 if WITH_QEMU
 SYSCONF_FILES += qemu/virtqemud.sysconf
 
-OPENRC_INIT_FILES += \
-	virtqemud.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	qemu/virtqemud.init.in \
-	$(NULL)
-
-virtqemud.init: qemu/virtqemud.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
 INSTALL_DATA_DIRS += qemu
 
 install-data-qemu:

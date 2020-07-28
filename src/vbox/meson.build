@@ -59,4 +59,9 @@ if conf.has('WITH_VBOX')
     'sockets': [ 'main', 'ro', 'admin' ],
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtvboxd',
+    'in_file': files('virtvboxd.init.in'),
+  }
 endif

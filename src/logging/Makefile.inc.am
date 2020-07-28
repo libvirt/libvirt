@@ -1,13 +1,3 @@
 # vim: filetype=automake
 
 SYSCONF_FILES += logging/virtlogd.sysconf
-
-OPENRC_INIT_FILES += \
-	virtlogd.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	logging/virtlogd.init.in \
-	$(NULL)
-
-virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@

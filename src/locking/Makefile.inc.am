@@ -3,13 +3,6 @@
 RPC_PROBE_FILES += $(srcdir)/locking/lock_protocol.x
 SYSCONF_FILES += locking/virtlockd.sysconf
 
-OPENRC_INIT_FILES += \
-	virtlockd.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	locking/virtlockd.init.in \
-	$(NULL)
-
 INSTALL_DATA_DIRS += locking
 
 install-data-locking:
@@ -33,7 +26,3 @@ endif WITH_LIBVIRTD
 	install-data-locking \
 	uninstall-data-locking \
 	$(NULL)
-
-
-virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@

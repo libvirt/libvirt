@@ -6,15 +6,4 @@ STATEFUL_DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(VZ_DRIVER_SOURCES))
 
 if WITH_VZ
 SYSCONF_FILES += vz/virtvzd.sysconf
-
-OPENRC_INIT_FILES += \
-	virtvzd.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	vz/virtvzd.init.in \
-	$(NULL)
-
-virtvzd.init: vz/virtvzd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
 endif WITH_VZ

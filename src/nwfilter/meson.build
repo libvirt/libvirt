@@ -54,4 +54,9 @@ if conf.has('WITH_NWFILTER')
     'sockets': [ 'main', 'ro', 'admin' ],
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtnwfilterd',
+    'in_file': files('virtnwfilterd.init.in'),
+  }
 endif

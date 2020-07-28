@@ -149,4 +149,9 @@ if conf.has('WITH_LXC')
     'sockets': [ 'main', 'ro', 'admin' ],
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtlxcd',
+    'in_file': files('virtlxcd.init.in'),
+  }
 endif

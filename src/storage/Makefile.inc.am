@@ -6,15 +6,4 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 
 if WITH_STORAGE
 SYSCONF_FILES += storage/virtstoraged.sysconf
-
-OPENRC_INIT_FILES += \
-	virtstoraged.init \
-	$(NULL)
-OPENRC_INIT_FILES_IN += \
-	storage/virtstoraged.init.in \
-	$(NULL)
-
-virtstoraged.init: storage/virtstoraged.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
-
 endif WITH_STORAGE

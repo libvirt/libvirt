@@ -47,4 +47,9 @@ if conf.has('WITH_INTERFACE')
     'sockets': [ 'main', 'ro', 'admin' ],
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtinterfaced',
+    'in_file': files('virtinterfaced.init.in')
+  }
 endif

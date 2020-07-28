@@ -144,6 +144,11 @@ if conf.has('WITH_LIBVIRTD')
     'socket_admin_in': files('virtlockd-admin.socket.in'),
   }
 
+  openrc_init_files += {
+    'name': 'virtlockd',
+    'in_file': files('virtlockd.init.in'),
+  }
+
   if conf.has('WITH_SANLOCK')
     virt_helpers += {
       'name': 'libvirt_sanlock_helper',

@@ -66,4 +66,9 @@ if conf.has('WITH_NETWORK')
     'sockets': [ 'main', 'ro', 'admin' ],
     'conflicts': true,
   }
+
+  openrc_init_files += {
+    'name': 'virtnetworkd',
+    'in_file': files('virtnetworkd.init.in'),
+  }
 endif
