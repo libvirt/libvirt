@@ -21026,6 +21026,83 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
 
 
 static int
+virDomainDefParseIDs(virDomainDefPtr def,
+                     xmlXPathContextPtr ctxt,
+                     unsigned int flags,
+                     bool *uuid_generated)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_autofree char *tmp = NULL;
+    long id = -1;
+    int n;
+
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+        if (virXPathLong("string(./@id)", ctxt, &id) < 0)
+            id = -1;
+    def->id = (int)id;
+
+    /* Extract domain name */
+    if (!(def->name = virXPathString("string(./name[1])", ctxt))) {
+        virReportError(VIR_ERR_NO_NAME, NULL);
+        goto error;
+    }
+
+    /* Extract domain uuid. If both uuid and sysinfo/system/entry/uuid
+     * exist, they must match; and if only the latter exists, it can
+     * also serve as the uuid. */
+    tmp = virXPathString("string(./uuid[1])", ctxt);
+    if (!tmp) {
+        if (virUUIDGenerate(def->uuid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Failed to generate UUID"));
+            goto error;
+        }
+        *uuid_generated = true;
+    } else {
+        if (virUUIDParse(tmp, def->uuid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("malformed uuid element"));
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
+    /* Extract domain genid - a genid can either be provided or generated */
+    if ((n = virXPathNodeSet("./genid", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n > 0) {
+        if (n != 1) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("element 'genid' can only appear once"));
+            goto error;
+        }
+        def->genidRequested = true;
+        if (!(tmp = virXPathString("string(./genid)", ctxt))) {
+            if (virUUIDGenerate(def->genid) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Failed to generate genid"));
+                goto error;
+            }
+            def->genidGenerated = true;
+        } else {
+            if (virUUIDParse(tmp, def->genid) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("malformed genid element"));
+                goto error;
+            }
+            VIR_FREE(tmp);
+        }
+    }
+    VIR_FREE(nodes);
+    return 0;
+
+ error:
+    return -1;
+}
+
+
+static int
 virDomainDefParseCaps(virDomainDefPtr def,
                       xmlXPathContextPtr ctxt,
                       virDomainXMLOptionPtr xmlopt)
@@ -21234,7 +21311,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     xmlNodePtr node = NULL;
     size_t i, j;
     int n;
-    long id = -1;
     virDomainDefPtr def;
     bool uuid_generated = false;
     bool usb_none = false;
@@ -21258,68 +21334,11 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (!(def = virDomainDefNew()))
         return NULL;
 
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-        if (virXPathLong("string(./@id)", ctxt, &id) < 0)
-            id = -1;
-    def->id = (int)id;
+    if (virDomainDefParseIDs(def, ctxt, flags, &uuid_generated) < 0)
+        goto error;
 
     if (virDomainDefParseCaps(def, ctxt, xmlopt) < 0)
         goto error;
-
-    /* Extract domain name */
-    if (!(def->name = virXPathString("string(./name[1])", ctxt))) {
-        virReportError(VIR_ERR_NO_NAME, NULL);
-        goto error;
-    }
-
-    /* Extract domain uuid. If both uuid and sysinfo/system/entry/uuid
-     * exist, they must match; and if only the latter exists, it can
-     * also serve as the uuid. */
-    tmp = virXPathString("string(./uuid[1])", ctxt);
-    if (!tmp) {
-        if (virUUIDGenerate(def->uuid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Failed to generate UUID"));
-            goto error;
-        }
-        uuid_generated = true;
-    } else {
-        if (virUUIDParse(tmp, def->uuid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("malformed uuid element"));
-            goto error;
-        }
-        VIR_FREE(tmp);
-    }
-
-    /* Extract domain genid - a genid can either be provided or generated */
-    if ((n = virXPathNodeSet("./genid", ctxt, &nodes)) < 0)
-        goto error;
-
-    if (n > 0) {
-        if (n != 1) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("element 'genid' can only appear once"));
-            goto error;
-        }
-        def->genidRequested = true;
-        if (!(tmp = virXPathString("string(./genid)", ctxt))) {
-            if (virUUIDGenerate(def->genid) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("Failed to generate genid"));
-                goto error;
-            }
-            def->genidGenerated = true;
-        } else {
-            if (virUUIDParse(tmp, def->genid) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("malformed genid element"));
-                goto error;
-            }
-            VIR_FREE(tmp);
-        }
-    }
-    VIR_FREE(nodes);
 
     /* Extract short description of domain (title) */
     def->title = virXPathString("string(./title[1])", ctxt);
