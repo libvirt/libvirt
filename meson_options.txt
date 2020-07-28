@@ -1,4 +1,3 @@
-option('force_incomplete_build', type: 'boolean', value: false, description: 'Meson setup fails by default until the rewrite to meson is done, set this to "true" to force the build.')
 option('no_git', type: 'boolean', value: false, description: 'Disable git submodule update')
 option('packager', type: 'string', value: '', description: 'Extra packager name')
 option('packager_version', type: 'string', value: '', description: 'Extra packager version')

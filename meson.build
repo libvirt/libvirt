@@ -12,11 +12,6 @@ project(
 )
 
 
-if not get_option('force_incomplete_build')
-  error('This commit is part of the meson conversion and does not build a complete libvirt. If bisecting, use "git bisect skip" to continue, or "-Dforce_incomplete_build=true" to perform a partial build.')
-endif
-
-
 # figure out if we are building from git
 
 git = run_command('test', '-d', '.git').returncode() == 0
