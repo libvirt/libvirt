@@ -1340,6 +1340,16 @@ if not get_option('sanlock').disabled()
   endif
 endif
 
+sasl_version = '2.1.26'
+if get_option('driver_remote').enabled()
+  sasl_dep = dependency('libsasl2', version: '>=' + sasl_version, required: get_option('sasl'))
+  if sasl_dep.found()
+    conf.set('WITH_SASL', 1)
+  endif
+else
+  sasl_dep = dependency('', required: false)
+endif
+
 
 # generic build dependencies checks
 
@@ -1443,6 +1453,7 @@ libs_summary = {
   'rbd': rbd_dep.found(),
   'readline': readline_dep.found(),
   'sanlock': conf.has('WITH_SANLOCK'),
+  'sasl': sasl_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
 

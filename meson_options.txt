@@ -37,6 +37,7 @@ option('pciaccess', type: 'feature', value: 'auto', description: 'pciaccess supp
 option('polkit', type: 'feature', value: 'auto', description: 'use PolicyKit for UNIX socket access checks')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 option('sanlock', type: 'feature', value: 'auto', description: 'sanlock support')
+option('sasl', type: 'feature', value: 'auto', description: 'sasl supprt')
 
 
 # build driver options
