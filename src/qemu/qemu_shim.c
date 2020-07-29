@@ -30,18 +30,60 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+static GMutex eventLock;
+static bool eventPreventQuitFlag;
 static bool eventQuitFlag;
 static int eventQuitFD = -1;
 static virDomainPtr dom;
 
+/* Runs in event loop thread context */
 static void *
 qemuShimEventLoop(void *opaque G_GNUC_UNUSED)
 {
-    while (!eventQuitFlag)
+    bool quit = false;
+    while (!quit) {
+        g_mutex_lock(&eventLock);
+        if (eventQuitFlag && !eventPreventQuitFlag) {
+            if (dom) {
+                virDomainDestroy(dom);
+                quit = true;
+            }
+        }
+        g_mutex_unlock(&eventLock);
         virEventRunDefaultImpl();
+    }
 
     return NULL;
 }
+
+/* Runs in any thread context */
+static bool
+qemuShimEventLoopPreventQuit(void)
+{
+    bool quitting;
+    g_mutex_lock(&eventLock);
+    quitting = eventQuitFlag;
+    if (!quitting)
+        eventPreventQuitFlag = true;
+    g_mutex_unlock(&eventLock);
+    return quitting;
+}
+
+/* Runs in any thread context */
+static bool
+qemuShimEventLoopAllowQuit(void)
+{
+    bool quitting;
+    g_mutex_lock(&eventLock);
+    eventPreventQuitFlag = false;
+    /* kick the event loop thread again immediately */
+    quitting = eventQuitFlag;
+    if (quitting)
+        ignore_value(safewrite(eventQuitFD, "c", 1));
+    g_mutex_unlock(&eventLock);
+    return quitting;
+}
+
 
 /* Runs in event loop thread context */
 static void
@@ -52,7 +94,9 @@ qemuShimEventLoopStop(int watch G_GNUC_UNUSED,
 {
     char c;
     ignore_value(read(fd, &c, 1));
+    g_mutex_lock(&eventLock);
     eventQuitFlag = true;
+    g_mutex_unlock(&eventLock);
 }
 
 /* Runs in event loop thread context */
@@ -63,8 +107,11 @@ qemuShimDomShutdown(virConnectPtr econn G_GNUC_UNUSED,
                     int detail G_GNUC_UNUSED,
                     void *opaque G_GNUC_UNUSED)
 {
-    if (event == VIR_DOMAIN_EVENT_STOPPED)
+    if (event == VIR_DOMAIN_EVENT_STOPPED) {
+        g_mutex_lock(&eventLock);
         eventQuitFlag = true;
+        g_mutex_unlock(&eventLock);
+    }
 
     return 0;
 }
@@ -109,6 +156,7 @@ int main(int argc, char **argv)
         { 0 }
     };
     int quitfd[2] = {-1, -1};
+    bool quitting;
     long long start = g_get_monotonic_time();
 
 #define deltams() ((long long)g_get_monotonic_time() - start)
@@ -128,8 +176,8 @@ int main(int argc, char **argv)
     }
 
     if (verbose)
-        g_printerr("%s: %lld: initializing libvirt\n",
-                   argv[0], deltams());
+        g_printerr("%s: %lld: initializing libvirt %d\n",
+                   argv[0], deltams(), gettid());
 
     if (virInitialize() < 0) {
         g_printerr("%s: cannot initialize libvirt\n", argv[0]);
@@ -277,7 +325,7 @@ int main(int argc, char **argv)
     }
 
     if (verbose)
-        g_printerr("%s: %lld: starting guest %s\n",
+        g_printerr("%s: %lld: fetching guest config %s\n",
                    argv[0], deltams(), argv[1]);
 
     if (!g_file_get_contents(argv[1], &xml, NULL, &error)) {
@@ -286,7 +334,24 @@ int main(int argc, char **argv)
         goto cleanup;
     }
 
+    if (verbose)
+        g_printerr("%s: %lld: starting guest %s\n",
+                   argv[0], deltams(), argv[1]);
+
+    /*
+     * If the user issues a ctrl-C at this time, we need to
+     * let the virDomainCreateXML call complete, so that we
+     * can then clean up the guest correctly. We must also
+     * ensure that the event loop doesn't quit yet, because
+     * it might be needed to complete VM startup & shutdown
+     * during the cleanup.
+     */
+    quitting = qemuShimEventLoopPreventQuit();
+    if (quitting)
+        goto cleanup;
     dom = virDomainCreateXML(conn, xml, 0);
+    quitting = qemuShimEventLoopAllowQuit();
+
     if (!dom) {
         g_printerr("%s: cannot start VM: %s\n",
                    argv[0], virGetLastErrorMessage());
@@ -295,6 +360,8 @@ int main(int argc, char **argv)
     if (verbose)
         g_printerr("%s: %lld: guest running, Ctrl-C to stop now\n",
                    argv[0], deltams());
+    if (quitting)
+        goto cleanup;
 
     if (debug) {
         g_autofree char *newxml = NULL;
