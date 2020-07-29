@@ -981,6 +981,69 @@ if audit_dep.found()
   conf.set('WITH_AUDIT', 1)
 endif
 
+# readline 7.0 is the first version which includes pkg-config support
+readline_version = '7.0'
+readline_dep = dependency('readline', version: '>=' + readline_version, required: false)
+if not readline_dep.found()
+  readline_dep = cc.find_library('readline', required: get_option('readline'))
+
+  if readline_dep.found()
+    # This function is present in all reasonable (5.0+) readline versions;
+    # however, the macOS base system contains a library called libedit which
+    # takes over the readline name despite lacking many of its features. We
+    # want to make sure we only enable readline support when linking against
+    # the actual readline library, and the availability of this specific
+    # functions is as good a witness for that fact as any.
+    correct_rl = cc.has_function('rl_completion_quote_character', prefix: '#include <readline/readline.h>')
+    if not correct_rl and get_option('readline').enabled()
+      error('readline is missing rl_completion_quote_character')
+    else
+      readline_dep = dependency('', required: false)
+    endif
+  endif
+endif
+if readline_dep.found()
+  # Gross kludge for readline include path obtained through pkg-config.
+  #
+  # As of 8.0, upstream readline.pc has -I${includedir}/readline among
+  # its Cflags, which is clearly wrong. This does not affect Linux
+  # because ${includedir} is already part of the default include path,
+  # but on other platforms that's not the case and the result is that
+  # <readline/readline.h> can't be located, causing the build to fail.
+  # A patch solving this issue has already been posted upstream, so once
+  # the fix has landed in FreeBSD ports and macOS homebrew we can safely
+  # drop the kludge and rely on pkg-config alone on those platforms.
+  #
+  # [1] http://lists.gnu.org/archive/html/bug-readline/2019-04/msg00007.html
+  if readline_dep.type_name() == 'pkgconfig' and host_machine.system() != 'linux'
+    pkg_config_prog = find_program('pkg-config')
+    rc = run_command(pkg_config_prog, '--cflags', 'readline', check: true)
+    cflags = rc.stdout().strip()
+    if cflags.contains('include/readline')
+      rc = run_command(
+        'python3', '-c',
+        'print("@0@".replace("@1@", "@2@"))'.format(
+          cflags, 'include/readline', 'include',
+        ),
+        check: true,
+      )
+      readline_dep = declare_dependency(
+        compile_args: rc.stdout().strip().split(),
+        dependencies: [ readline_dep ],
+      )
+    endif
+  endif
+
+  # We need this to avoid compilation issues with modern compilers.
+  # See 9ea3424a178 for a more detailed explanation
+  readline_dep = declare_dependency(
+    compile_args: [ '-D_FUNCTION_DEF' ],
+    dependencies: [ readline_dep ],
+  )
+
+  conf.set('WITH_READLINE', 1)
+endif
+
 
 # define top include directory
 
@@ -1005,6 +1068,7 @@ libs_summary = {
   'apparmor': apparmor_dep.found(),
   'attr': attr_dep.found(),
   'audit': audit_dep.found(),
+  'readline': readline_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
 
