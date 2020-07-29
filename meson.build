@@ -964,6 +964,13 @@ else
   acl_dep = dependency('', required: false)
 endif
 
+apparmor_dep = dependency('libapparmor', required: get_option('apparmor'))
+if apparmor_dep.found()
+  conf.set('WITH_APPARMOR', 1)
+  conf.set_quoted('APPARMOR_DIR', '/etc/apparmor.d')
+  conf.set_quoted('APPARMOR_PROFILES_PATH', '/sys/kernel/security/apparmor/profiles')
+endif
+
 
 # define top include directory
 
@@ -985,6 +992,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 
 libs_summary = {
   'acl': acl_dep.found(),
+  'apparmor': apparmor_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
 

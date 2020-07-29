@@ -9,5 +9,9 @@ option('test_coverage', type: 'boolean', value: false, description: 'turn on cod
 option('git_werror', type: 'feature', value: 'auto', description: 'use -Werror if building from GIT')
 
 
+# build dependencies options
+option('apparmor', type: 'feature', value: 'auto', description: 'apparmor support')
+
+
 # build driver options
 option('driver_remote', type: 'feature', value: 'enabled', description: 'remote driver')
