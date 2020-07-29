@@ -2076,7 +2076,6 @@ virFileFindHugeTLBFS;
 virFileFindMountPoint;
 virFileFindResource;
 virFileFindResourceFull;
-virFileFlock;
 virFileFreeACLs;
 virFileGetACLs;
 virFileGetDefaultHugepage;

@@ -453,6 +453,8 @@ VIR_ONCE_GLOBAL_INIT(virResctrl);
 
 
 /* Common functions */
+#ifndef WIN32
+
 static int
 virResctrlLockWrite(void)
 {
@@ -463,7 +465,7 @@ virResctrlLockWrite(void)
         return -1;
     }
 
-    if (virFileFlock(fd, true, false) < 0) {
+    if (flock(fd, LOCK_EX) < 0) {
         virReportSystemError(errno, "%s", _("Cannot lock resctrl"));
         VIR_FORCE_CLOSE(fd);
         return -1;
@@ -485,7 +487,7 @@ virResctrlUnlock(int fd)
         virReportSystemError(errno, "%s", _("Cannot close resctrl"));
 
         /* Trying to save the already broken */
-        if (virFileFlock(fd, false, false) < 0)
+        if (flock(fd, LOCK_UN) < 0)
             virReportSystemError(errno, "%s", _("Cannot unlock resctrl"));
 
         return -1;
@@ -493,6 +495,29 @@ virResctrlUnlock(int fd)
 
     return 0;
 }
+
+#else /* WIN32 */
+
+static int
+virResctrlLockWrite(void)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("resctrl locking is not supported "
+                           "on this platform"));
+    return -1;
+}
+
+
+static int
+virResctrlUnlock(int fd G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("resctrl locking is not supported "
+                           "on this platform"));
+    return -1;
+}
+
+#endif /* WIN32 */
 
 
 /* virResctrlInfo-related definitions */

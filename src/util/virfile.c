@@ -463,29 +463,8 @@ int virFileUnlock(int fd, off_t start, off_t len)
 }
 
 
-/**
- * virFileFlock:
- * @fd: file descriptor to call flock on
- * @lock: true for lock, false for unlock
- * @shared: true if shared, false for exclusive, ignored if `@lock == false`
- *
- * This is just a simple wrapper around flock(2) that errors out on unsupported
- * platforms.
- *
- * The lock will be released when @fd is closed or this function is called with
- * `@lock == false`.
- *
- * Returns 0 on success, -1 otherwise (with errno set)
- */
-int virFileFlock(int fd, bool lock, bool shared)
-{
-    if (lock)
-        return flock(fd, shared ? LOCK_SH : LOCK_EX);
-
-    return flock(fd, LOCK_UN);
-}
-
 #else /* WIN32 */
+
 
 int virFileLock(int fd G_GNUC_UNUSED,
                 bool shared G_GNUC_UNUSED,
@@ -504,14 +483,6 @@ int virFileUnlock(int fd G_GNUC_UNUSED,
     return -ENOSYS;
 }
 
-
-int virFileFlock(int fd G_GNUC_UNUSED,
-                 bool lock G_GNUC_UNUSED,
-                 bool shared G_GNUC_UNUSED)
-{
-    errno = ENOSYS;
-    return -1;
-}
 
 #endif /* WIN32 */
 
