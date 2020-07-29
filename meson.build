@@ -1328,6 +1328,18 @@ if readline_dep.found()
   conf.set('WITH_READLINE', 1)
 endif
 
+if not get_option('sanlock').disabled()
+  sanlock_dep = dependency('libsanlock_client', required: false)
+
+  if sanlock_dep.found()
+    conf.set('WITH_SANLOCK', 1)
+    # check for sanlock_strerror introduced in sanlock-3.5.0
+    if cc.has_function('sanlock_strerror', dependencies: sanlock_dep)
+      conf.set('HAVE_SANLOCK_STRERROR', 1)
+    endif
+  endif
+endif
+
 
 # generic build dependencies checks
 
@@ -1430,6 +1442,7 @@ libs_summary = {
   'polkit': conf.has('WITH_POLKIT'),
   'rbd': rbd_dep.found(),
   'readline': readline_dep.found(),
+  'sanlock': conf.has('WITH_SANLOCK'),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
 
