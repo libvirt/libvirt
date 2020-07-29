@@ -7,3 +7,7 @@ option('runstatedir', type: 'string', value: '', description: 'State directory f
 option('expensive_tests', type: 'feature', value: 'auto', description: 'set the default for enabling expensive tests (long timeouts), use VIR_TEST_EXPENSIVE to override')
 option('test_coverage', type: 'boolean', value: false, description: 'turn on code coverage instrumentation')
 option('git_werror', type: 'feature', value: 'auto', description: 'use -Werror if building from GIT')
+
+
+# build driver options
+option('driver_remote', type: 'feature', value: 'enabled', description: 'remote driver')
