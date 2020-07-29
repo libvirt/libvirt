@@ -1422,6 +1422,45 @@ else
   win32_link_flags = []
 endif
 
+wireshark_version = '2.4.0'
+wireshark_dep = dependency('wireshark', version: '>=' + wireshark_version, required: get_option('wireshark_dissector'))
+if wireshark_dep.found()
+  wireshark_plugindir = get_option('wireshark_plugindir')
+  if wireshark_plugindir == ''
+    wireshark_plugindir = wireshark_dep.get_pkgconfig_variable('plugindir')
+  endif
+
+  # On some systems the plugindir variable may not be stored within pkg config.
+  # Fall back to older style of constructing the plugin dir path.
+  if wireshark_plugindir == ''
+    wireshark_modversion = wireshark_dep.version()
+    wireshark_plugindir = '@0@/wireshark/plugins/@1@'.format(
+      libdir, wireshark_modversion
+    )
+  else
+    wireshark_prefix = wireshark_dep.get_pkgconfig_variable('prefix')
+    if wireshark_prefix == ''
+      # If wireshark's prefix cannot be retrieved from pkg-config,
+      # this is our best bet.
+      wireshark_prefix = '/usr'
+    endif
+    # Replace wireshark's prefix with our own.
+    # There is no replace method in meson so we have to workaround it.
+    rc = run_command(
+      'python3', '-c',
+      'print("@0@".replace("@1@", "@2@"))'.format(
+        wireshark_plugindir, wireshark_prefix, prefix,
+      ),
+      check: true,
+    )
+    wireshark_plugindir = rc.stdout().strip()
+  endif
+
+  # Since wireshark 2.5.0 plugins can't live in top level plugindir but have
+  # to be under one of ["epan", "wiretap", "codecs"] subdir. The first one looks okay.
+  wireshark_plugindir = wireshark_plugindir / 'epan'
+endif
+
 
 # generic build dependencies checks
 
@@ -1555,3 +1594,8 @@ misc_summary = {
   'Warning Flags': supported_cc_flags,
 }
 summary(misc_summary, section: 'Miscellaneous', bool_yn: true, list_sep: ' ')
+
+devtools_summary = {
+  'wireshark_dissector': wireshark_dep.found(),
+}
+summary(devtools_summary, section: 'Developer Tools', bool_yn: true)

@@ -42,6 +42,8 @@ option('selinux', type: 'feature', value: 'auto', description: 'selinux support'
 option('selinux_mount', type: 'string', value: '', description: 'set SELinux mount point')
 option('udev', type: 'feature', value: 'auto', description: 'udev support')
 option('virtualport', type: 'feature', value: 'auto', description: 'enable virtual port support')
+option('wireshark_dissector', type: 'feature', value: 'auto', description: 'wireshark support')
+option('wireshark_plugindir', type: 'string', value: '', description: 'wireshark plugins directory for use when installing wireshark plugin')
 
 
 # build driver options
