@@ -456,7 +456,7 @@ VIR_ONCE_GLOBAL_INIT(virResctrl);
 #ifndef WIN32
 
 static int
-virResctrlLockWrite(void)
+virResctrlLock(void)
 {
     int fd = open(SYSFS_RESCTRL_PATH, O_RDONLY | O_CLOEXEC);
 
@@ -499,7 +499,7 @@ virResctrlUnlock(int fd)
 #else /* WIN32 */
 
 static int
-virResctrlLockWrite(void)
+virResctrlLock(void)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("resctrl locking is not supported "
@@ -2416,7 +2416,7 @@ virResctrlAllocCreate(virResctrlInfoPtr resctrl,
     if (STREQ(alloc->path, SYSFS_RESCTRL_PATH))
         return 0;
 
-    lockfd = virResctrlLockWrite();
+    lockfd = virResctrlLock();
     if (lockfd < 0)
         goto cleanup;
 
@@ -2609,7 +2609,7 @@ virResctrlMonitorCreate(virResctrlMonitorPtr monitor,
     if (virResctrlMonitorDeterminePath(monitor, machinename) < 0)
         return -1;
 
-    lockfd = virResctrlLockWrite();
+    lockfd = virResctrlLock();
     if (lockfd < 0)
         return -1;
 
