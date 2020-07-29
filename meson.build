@@ -1555,6 +1555,19 @@ if conf.has('WITH_VIRTUALPORT') and not conf.has('WITH_MACVTAP')
 endif
 
 
+# build driver options
+
+if get_option('driver_remote').enabled()
+  if not xdr_dep.found() and host_machine.system() not in [ 'freebsd', 'darwin' ]
+    error('XDR is required for remote driver')
+  endif
+  conf.set('WITH_REMOTE', 1)
+endif
+
+remote_default_mode = get_option('remote_default_mode').to_upper()
+conf.set('REMOTE_DRIVER_MODE_DEFAULT', 'REMOTE_DRIVER_MODE_@0@'.format(remote_default_mode))
+
+
 # define top include directory
 
 top_inc_dir = include_directories('.')
@@ -1572,6 +1585,11 @@ configure_file(output: 'meson-config.h', configuration: conf)
 
 
 # print configuration summary
+
+driver_summary = {
+  'Remote': conf.has('WITH_REMOTE'),
+}
+summary(driver_summary, section: 'Drivers', bool_yn: true)
 
 libs_summary = {
   'acl': acl_dep.found(),

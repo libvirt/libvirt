@@ -49,3 +49,4 @@ option('yajl', type: 'feature', value: 'auto', description: 'yajl support')
 
 # build driver options
 option('driver_remote', type: 'feature', value: 'enabled', description: 'remote driver')
+option('remote_default_mode', type: 'combo', choices: ['legacy', 'direct'], value: 'legacy', description: 'remote driver default mode')
