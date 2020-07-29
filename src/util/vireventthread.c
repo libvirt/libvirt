@@ -111,7 +111,11 @@ static void *
 virEventThreadWorker(void *opaque)
 {
     virEventThreadData *data = opaque;
-    g_autoptr(GSource) running = g_idle_source_new();
+    /*
+     * Do NOT use g_autoptr on this. We need to unref it
+     * before the GMainContext is unrefed
+     */
+    GSource *running = g_idle_source_new();
 
     g_source_set_callback(running, virEventThreadNotify, data, NULL);
 
@@ -119,6 +123,7 @@ virEventThreadWorker(void *opaque)
 
     g_main_loop_run(data->loop);
 
+    g_source_unref(running);
     virEventThreadDataFree(data);
 
     return NULL;
