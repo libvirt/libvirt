@@ -1,5 +1,6 @@
 docs_kbase_files = [
   'backing_chains',
+  'debuglogs',
   'domainstatecapture',
   'incrementalbackupinternals',
   'kvm-realtime',

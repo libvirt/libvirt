@@ -4,6 +4,9 @@ Knowledge base
 
 .. container:: panel widepanel
 
+   `Debug logs <kbase/debuglogs.html>`__
+     Configuration of logging and tips on how to file a good bug report.
+
    `Disk locking <kbase/locking.html>`__
       Ensuring exclusive guest access to disks with
       `virtlockd <kbase/locking-lockd.html>`__ or
