@@ -1382,6 +1382,12 @@ if not cc.compiles(pthread_sigmask_code)
   conf.set('FUNC_PTHREAD_SIGMASK_BROKEN', 1)
 endif
 
+udev_version = '219'
+udev_dep = dependency('libudev', version: '>=' + udev_version, required: get_option('udev'))
+if udev_dep.found()
+  conf.set('WITH_UDEV', 1)
+endif
+
 
 # generic build dependencies checks
 
@@ -1430,6 +1436,10 @@ if (pkcheck_prog.found() or get_option('polkit').enabled()) and dbus_dep.found()
   conf.set('WITH_POLKIT', 1)
 elif get_option('polkit').enabled()
   error('You must install dbus to compile libvirt with polkit-1')
+endif
+
+if udev_dep.found() and not pciaccess_dep.found()
+  error('You must install the pciaccess module to build with udev')
 endif
 
 
@@ -1487,6 +1497,7 @@ libs_summary = {
   'sanlock': conf.has('WITH_SANLOCK'),
   'sasl': sasl_dep.found(),
   'selinux': selinux_dep.found(),
+  'udev': udev_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
 

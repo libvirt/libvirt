@@ -40,6 +40,7 @@ option('sanlock', type: 'feature', value: 'auto', description: 'sanlock support'
 option('sasl', type: 'feature', value: 'auto', description: 'sasl supprt')
 option('selinux', type: 'feature', value: 'auto', description: 'selinux support')
 option('selinux_mount', type: 'string', value: '', description: 'set SELinux mount point')
+option('udev', type: 'feature', value: 'auto', description: 'udev support')
 
 
 # build driver options
