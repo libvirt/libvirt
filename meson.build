@@ -976,6 +976,11 @@ if attr_dep.found()
   conf.set('HAVE_LIBATTR', 1)
 endif
 
+audit_dep = cc.find_library('audit', required: get_option('audit'))
+if audit_dep.found()
+  conf.set('WITH_AUDIT', 1)
+endif
+
 
 # define top include directory
 
@@ -999,6 +1004,7 @@ libs_summary = {
   'acl': acl_dep.found(),
   'apparmor': apparmor_dep.found(),
   'attr': attr_dep.found(),
+  'audit': audit_dep.found(),
 }
 summary(libs_summary, section: 'Libraries', bool_yn: true)
 
