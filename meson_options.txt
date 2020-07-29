@@ -11,6 +11,7 @@ option('git_werror', type: 'feature', value: 'auto', description: 'use -Werror i
 
 # build dependencies options
 option('apparmor', type: 'feature', value: 'auto', description: 'apparmor support')
+option('attr', type: 'feature', value: 'auto', description: 'attr support')
 
 
 # build driver options
