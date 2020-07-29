@@ -178,7 +178,7 @@ armv6l-debian-10-container:
   variables:
     NAME: debian-10-cross-armv6l
 
-armv7-debian-10-container:
+armv7l-debian-10-container:
   <<: *container_optional_job_definition
   variables:
     NAME: debian-10-cross-armv7l
@@ -223,7 +223,7 @@ armv6l-debian-sid-container:
   variables:
     NAME: debian-sid-cross-armv6l
 
-armv7-debian-sid-container:
+armv7l-debian-sid-container:
   <<: *container_job_definition
   variables:
     NAME: debian-sid-cross-armv7l
