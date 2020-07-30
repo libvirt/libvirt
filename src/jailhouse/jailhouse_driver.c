@@ -292,25 +292,77 @@ jailhouseConnectListAllDomains(virConnectPtr conn,
 static virDomainPtr
 jailhouseDomainLookupByID(virConnectPtr conn, int id)
 {
-    UNUSED(conn);
-    UNUSED(id);
-    return NULL;
+virJailhouseDriverPtr driver = conn->privateData;
+    virDomainObjPtr cell;
+    virDomainPtr dom = NULL;
+
+    cell = virDomainObjListFindByID(driver->domains, id);
+
+    if (!cell) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching ID '%d'"), id);
+        goto cleanup;
+    }
+
+    if (virDomainLookupByIDEnsureACL(conn, cell->def) < 0)
+        goto cleanup;
+
+    dom = virGetDomain(conn, cell->def->name, cell->def->uuid, cell->def->id);
+ cleanup:
+    virDomainObjEndAPI(&cell);
+    return dom;
 }
 
 static virDomainPtr
 jailhouseDomainLookupByName(virConnectPtr conn, const char *name)
 {
-    UNUSED(conn);
-    UNUSED(name);
-    return NULL;
+    virJailhouseDriverPtr driver = conn->privateData;
+    virDomainObjPtr cell;
+    virDomainPtr dom = NULL;
+
+    cell = virDomainObjListFindByName(driver->domains, name);
+
+    if (!cell) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching name '%s'"), name);
+        goto cleanup;
+    }
+
+    if (virDomainLookupByNameEnsureACL(conn, cell->def) < 0)
+        goto cleanup;
+
+    dom = virGetDomain(conn, cell->def->name, cell->def->uuid, cell->def->id);
+
+ cleanup:
+    virDomainObjEndAPI(&cell);
+    return dom;
 }
 
 static virDomainPtr
 jailhouseDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    UNUSED(conn);
-    UNUSED(uuid);
-    return NULL;
+    virJailhouseDriverPtr driver = conn->privateData;
+    virDomainObjPtr cell;
+    virDomainPtr dom = NULL;
+
+    cell = virDomainObjListFindByUUID(driver->domains, uuid);
+
+    if (!cell) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching UUID '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (virDomainLookupByUUIDEnsureACL(conn, cell->def) < 0)
+        goto cleanup;
+
+    dom = virGetDomain(conn, cell->def->name, cell->def->uuid, cell->def->id);
+
+ cleanup:
+    virDomainObjEndAPI(&cell);
+    return dom;
 }
 
 static virDomainObjPtr
