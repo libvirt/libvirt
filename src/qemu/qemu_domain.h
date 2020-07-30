@@ -754,8 +754,8 @@ bool qemuDomainHasBlockjob(virDomainObjPtr vm, bool copy_only)
 unsigned long long qemuDomainGetMemorySizeAlignment(const virDomainDef *def);
 
 int qemuDomainAlignMemorySizes(virDomainDefPtr def);
-int qemuDomainMemoryDeviceAlignSize(virDomainDefPtr def,
-                                    virDomainMemoryDefPtr mem);
+void qemuDomainMemoryDeviceAlignSize(virDomainDefPtr def,
+                                     virDomainMemoryDefPtr mem);
 
 virDomainChrDefPtr qemuFindAgentConfig(virDomainDefPtr def);
 

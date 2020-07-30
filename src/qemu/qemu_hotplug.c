@@ -2368,8 +2368,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     int id;
     int ret = -1;
 
-    if (qemuDomainMemoryDeviceAlignSize(vm->def, mem) < 0)
-        goto cleanup;
+    qemuDomainMemoryDeviceAlignSize(vm->def, mem);
 
     if (qemuDomainDefValidateMemoryHotplug(vm->def, priv->qemuCaps, mem) < 0)
         goto cleanup;
@@ -5611,8 +5610,7 @@ qemuDomainDetachPrepMemory(virDomainObjPtr vm,
     virDomainMemoryDefPtr mem;
     int idx;
 
-    if (qemuDomainMemoryDeviceAlignSize(vm->def, match) < 0)
-        return -1;
+    qemuDomainMemoryDeviceAlignSize(vm->def, match);
 
     if ((idx = virDomainMemoryFindByDef(vm->def, match)) < 0) {
         virReportError(VIR_ERR_DEVICE_MISSING,

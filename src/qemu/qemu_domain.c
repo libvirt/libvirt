@@ -8130,7 +8130,7 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
  * inplace. Default rounding is now to 1 MiB (qemu requires rounding to page,
  * size so this should be safe).
  */
-int
+void
 qemuDomainMemoryDeviceAlignSize(virDomainDefPtr def,
                                 virDomainMemoryDefPtr mem)
 {
@@ -8139,8 +8139,6 @@ qemuDomainMemoryDeviceAlignSize(virDomainDefPtr def,
         mem->size = VIR_ROUND_UP(mem->size,
                                  qemuDomainGetMemorySizeAlignment(def));
     }
-
-    return 0;
 }
 
 
