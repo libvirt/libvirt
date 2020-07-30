@@ -32,8 +32,10 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virlog.h"
+#include "virutil.h"
 #include "vircommand.h"
 #include "virpidfile.h"
+#include "access/viraccessapicheck.h"
 
 #define VIR_FROM_THIS VIR_FROM_JAILHOUSE
 
@@ -241,16 +243,19 @@ jailhouseStateInitialize(bool privileged G_GNUC_UNUSED,
 static const char *
 jailhouseConnectGetType(virConnectPtr conn)
 {
-    UNUSED(conn);
-    return NULL;
+    if (virConnectGetTypeEnsureACL(conn) < 0)
+        return NULL;
 
+    return "JAILHOUSE";
 }
 
 static char *
 jailhouseConnectGetHostname(virConnectPtr conn)
 {
-    UNUSED(conn);
-    return NULL;
+    if (virConnectGetHostnameEnsureACL(conn) < 0)
+        return NULL;
+
+    return virGetHostname();
 }
 
 static int
@@ -263,7 +268,7 @@ jailhouseNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 
 static int
 jailhouseConnectListAllDomains(virConnectPtr conn,
-                               virDomainPtr ** domain, unsigned int flags)
+                               virDomainPtr **domain, unsigned int flags)
 {
     UNUSED(conn);
     UNUSED(domain);
@@ -300,7 +305,6 @@ jailhouseDomainCreate(virDomainPtr domain)
 {
     UNUSED(domain);
     return -1;
-
 }
 
 static int
@@ -350,18 +354,18 @@ static virHypervisorDriver jailhouseHypervisorDriver = {
     .connectOpen = jailhouseConnectOpen,        /* 6.3.0 */
     .connectClose = jailhouseConnectClose,      /* 6.3.0 */
     .connectListAllDomains = jailhouseConnectListAllDomains,    /* 6.3.0 */
-    .domainLookupByID = jailhouseDomainLookupByID,      /* 6.3.0 */
-    .domainLookupByUUID = jailhouseDomainLookupByUUID,  /* 6.3.0 */
-    .domainLookupByName = jailhouseDomainLookupByName,  /* 6.3.0 */
-    .domainGetXMLDesc = jailhouseDomainGetXMLDesc,      /* 6.3.0 */
-    .domainCreate = jailhouseDomainCreate,      /* 6.3.0 */
     .connectGetType = jailhouseConnectGetType,  /* 6.3.0 */
     .connectGetHostname = jailhouseConnectGetHostname,  /* 6.3.0 */
-    .nodeGetInfo = jailhouseNodeGetInfo,        /* 6.3.0 */
+    .domainCreate = jailhouseDomainCreate,      /* 6.3.0 */
     .domainShutdown = jailhouseDomainShutdown,  /* 6.3.0 */
     .domainDestroy = jailhouseDomainDestroy,    /* 6.3.0 */
     .domainGetInfo = jailhouseDomainGetInfo,    /* 6.3.0 */
     .domainGetState = jailhouseDomainGetState,  /* 6.3.0 */
+    .domainLookupByID = jailhouseDomainLookupByID,      /* 6.3.0 */
+    .domainLookupByUUID = jailhouseDomainLookupByUUID,  /* 6.3.0 */
+    .domainLookupByName = jailhouseDomainLookupByName,  /* 6.3.0 */
+    .domainGetXMLDesc = jailhouseDomainGetXMLDesc,      /* 6.3.0 */
+    .nodeGetInfo = jailhouseNodeGetInfo,        /* 6.3.0 */
 };
 
 
