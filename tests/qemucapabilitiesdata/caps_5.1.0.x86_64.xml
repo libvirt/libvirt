@@ -162,7 +162,6 @@
   <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>
-  <flag name='vxhs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='vmcoreinfo'/>
   <flag name='numa.dist'/>
@@ -243,10 +242,10 @@
   <flag name='intel-iommu.aw-bits'/>
   <flag name='numa.hmat'/>
   <flag name='blockdev-hostdev-scsi'/>
-  <version>5000050</version>
+  <version>5000092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
-  <package>v5.0.0-870-g5cc7a54c2e</package>
+  <package>v5.1.0-rc2</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -346,6 +345,7 @@
     <property name='adx' type='boolean' value='true' migratable='yes'/>
     <property name='ss' type='boolean' value='false'/>
     <property name='pni' type='boolean' value='true' migratable='yes'/>
+    <property name='tsx-ldtrk' type='boolean' value='false'/>
     <property name='svm-lock' type='boolean' value='false'/>
     <property name='smep' type='boolean' value='true' migratable='yes'/>
     <property name='smap' type='boolean' value='true' migratable='yes'/>
@@ -440,6 +440,7 @@
     <property name='vmx-apicv-register' type='boolean' value='false'/>
     <property name='tsc-adjust' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-steal-time' type='boolean' value='true' migratable='yes'/>
+    <property name='avx512-vp2intersect' type='boolean' value='false'/>
     <property name='kvmclock' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-zero-len-inject' type='boolean' value='false'/>
     <property name='pschange-mc-no' type='boolean' value='true' migratable='yes'/>
@@ -465,12 +466,14 @@
     <property name='mmxext' type='boolean' value='true' migratable='yes'/>
     <property name='popcnt' type='boolean' value='true' migratable='yes'/>
     <property name='vaes' type='boolean' value='false'/>
+    <property name='serialize' type='boolean' value='false'/>
     <property name='movdir64b' type='boolean' value='false'/>
     <property name='xsaves' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-shadow-vmcs' type='boolean' value='false'/>
     <property name='lm' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-exit-save-preemption-timer' type='boolean' value='false'/>
     <property name='vmx-entry-load-pat' type='boolean' value='false'/>
+    <property name='fsrm' type='boolean' value='false'/>
     <property name='vmx-entry-load-perf-global-ctrl' type='boolean' value='false'/>
     <property name='vmx-io-bitmap' type='boolean' value='false'/>
     <property name='umip' type='boolean' value='true' migratable='yes'/>
@@ -498,6 +501,7 @@
     <property name='monitor' type='boolean' value='false'/>
     <property name='vmx-vintr-pending' type='boolean' value='false'/>
     <property name='avx512er' type='boolean' value='false'/>
+    <property name='full-width-write' type='boolean' value='false'/>
     <property name='pmm-en' type='boolean' value='false'/>
     <property name='pcid' type='boolean' value='false'/>
     <property name='taa-no' type='boolean' value='false'/>
@@ -636,6 +640,22 @@
     <blocker name='mpx'/>
     <blocker name='mpx'/>
     <blocker name='split-lock-detect'/>
+  </cpu>
+  <cpu type='kvm' name='Skylake-Server-v4' typename='Skylake-Server-v4-x86_64-cpu' usable='no'>
+    <blocker name='pcid'/>
+    <blocker name='erms'/>
+    <blocker name='invpcid'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='pku'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='pku'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v3' typename='Skylake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -864,6 +884,35 @@
   </cpu>
   <cpu type='kvm' name='IvyBridge' typename='IvyBridge-x86_64-cpu' usable='no'>
     <blocker name='erms'/>
+  </cpu>
+  <cpu type='kvm' name='Icelake-Server-v4' typename='Icelake-Server-v4-x86_64-cpu' usable='no'>
+    <blocker name='pcid'/>
+    <blocker name='erms'/>
+    <blocker name='invpcid'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='avx512ifma'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vbmi'/>
+    <blocker name='pku'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vaes'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='la57'/>
+    <blocker name='fsrm'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='pku'/>
+    <blocker name='ibrs-all'/>
+    <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v3' typename='Icelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1189,6 +1238,24 @@
   </cpu>
   <cpu type='kvm' name='Conroe-v1' typename='Conroe-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Conroe' typename='Conroe-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Cascadelake-Server-v4' typename='Cascadelake-Server-v4-x86_64-cpu' usable='no'>
+    <blocker name='pcid'/>
+    <blocker name='erms'/>
+    <blocker name='invpcid'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='pku'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='pku'/>
+    <blocker name='ibrs-all'/>
+  </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v3' typename='Cascadelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='erms'/>
@@ -1337,7 +1404,7 @@
   </cpu>
   <cpu type='kvm' name='486-v1' typename='486-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='486' typename='486-x86_64-cpu' usable='yes'/>
-  <machine type='kvm' name='pc-i440fx-5.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-i440fx-5.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes' defaultCPU='qemu64-x86_64-cpu'/>
   <machine type='kvm' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-q35-4.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
@@ -1350,7 +1417,7 @@
   <machine type='kvm' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
-  <machine type='kvm' name='pc-q35-5.1' alias='q35' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
+  <machine type='kvm' name='pc-q35-5.1' alias='q35' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu'/>
   <machine type='kvm' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
@@ -1360,7 +1427,7 @@
   <machine type='kvm' name='pc-1.3' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-i440fx-4.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
-  <machine type='kvm' name='isapc' hotplugCpus='yes' maxCpus='1' defaultCPU='486-x86_64-cpu' numaMemSupported='yes'/>
+  <machine type='kvm' name='isapc' hotplugCpus='yes' maxCpus='1' defaultCPU='486-x86_64-cpu'/>
   <machine type='kvm' name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
@@ -1482,6 +1549,7 @@
     <property name='adx' type='boolean' value='true' migratable='yes'/>
     <property name='ss' type='boolean' value='true' migratable='yes'/>
     <property name='pni' type='boolean' value='true' migratable='yes'/>
+    <property name='tsx-ldtrk' type='boolean' value='false'/>
     <property name='svm-lock' type='boolean' value='false'/>
     <property name='smep' type='boolean' value='true' migratable='yes'/>
     <property name='smap' type='boolean' value='true' migratable='yes'/>
@@ -1576,6 +1644,7 @@
     <property name='vmx-apicv-register' type='boolean' value='false'/>
     <property name='tsc-adjust' type='boolean' value='false'/>
     <property name='kvm-steal-time' type='boolean' value='false'/>
+    <property name='avx512-vp2intersect' type='boolean' value='false'/>
     <property name='kvmclock' type='boolean' value='false'/>
     <property name='vmx-zero-len-inject' type='boolean' value='false'/>
     <property name='pschange-mc-no' type='boolean' value='false'/>
@@ -1601,12 +1670,14 @@
     <property name='mmxext' type='boolean' value='true' migratable='yes'/>
     <property name='popcnt' type='boolean' value='true' migratable='yes'/>
     <property name='vaes' type='boolean' value='false'/>
+    <property name='serialize' type='boolean' value='false'/>
     <property name='movdir64b' type='boolean' value='false'/>
     <property name='xsaves' type='boolean' value='false'/>
     <property name='vmx-shadow-vmcs' type='boolean' value='false'/>
     <property name='lm' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-exit-save-preemption-timer' type='boolean' value='false'/>
     <property name='vmx-entry-load-pat' type='boolean' value='false'/>
+    <property name='fsrm' type='boolean' value='false'/>
     <property name='vmx-entry-load-perf-global-ctrl' type='boolean' value='false'/>
     <property name='vmx-io-bitmap' type='boolean' value='false'/>
     <property name='umip' type='boolean' value='false'/>
@@ -1634,6 +1705,7 @@
     <property name='monitor' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-vintr-pending' type='boolean' value='false'/>
     <property name='avx512er' type='boolean' value='false'/>
+    <property name='full-width-write' type='boolean' value='false'/>
     <property name='pmm-en' type='boolean' value='false'/>
     <property name='pcid' type='boolean' value='false'/>
     <property name='taa-no' type='boolean' value='false'/>
@@ -1772,6 +1844,25 @@
     <blocker name='3dnowprefetch'/>
     <blocker name='xsavec'/>
     <blocker name='split-lock-detect'/>
+  </cpu>
+  <cpu type='tcg' name='Skylake-Server-v4' typename='Skylake-Server-v4-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='rdseed'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='xsavec'/>
   </cpu>
   <cpu type='tcg' name='Skylake-Server-v3' typename='Skylake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='fma'/>
@@ -2122,6 +2213,47 @@
     <blocker name='tsc-deadline'/>
     <blocker name='avx'/>
     <blocker name='f16c'/>
+  </cpu>
+  <cpu type='tcg' name='Icelake-Server-v4' typename='Icelake-Server-v4-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='rdseed'/>
+    <blocker name='avx512ifma'/>
+    <blocker name='avx512cd'/>
+    <blocker name='sha-ni'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vbmi'/>
+    <blocker name='umip'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vaes'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='rdpid'/>
+    <blocker name='fsrm'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='arch-capabilities'/>
+    <blocker name='ssbd'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='xsavec'/>
+    <blocker name='rdctl-no'/>
+    <blocker name='ibrs-all'/>
+    <blocker name='skip-l1dfl-vmentry'/>
+    <blocker name='mds-no'/>
+    <blocker name='pschange-mc-no'/>
+    <blocker name='taa-no'/>
   </cpu>
   <cpu type='tcg' name='Icelake-Server-v3' typename='Icelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='fma'/>
@@ -2745,6 +2877,32 @@
   </cpu>
   <cpu type='tcg' name='Conroe-v1' typename='Conroe-v1-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='Conroe' typename='Conroe-x86_64-cpu' usable='yes'/>
+  <cpu type='tcg' name='Cascadelake-Server-v4' typename='Cascadelake-Server-v4-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='rdseed'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='arch-capabilities'/>
+    <blocker name='ssbd'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='xsavec'/>
+    <blocker name='rdctl-no'/>
+    <blocker name='ibrs-all'/>
+    <blocker name='skip-l1dfl-vmentry'/>
+    <blocker name='mds-no'/>
+  </cpu>
   <cpu type='tcg' name='Cascadelake-Server-v3' typename='Cascadelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='fma'/>
     <blocker name='pcid'/>
@@ -2981,7 +3139,7 @@
   </cpu>
   <cpu type='tcg' name='486-v1' typename='486-v1-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='486' typename='486-x86_64-cpu' usable='yes'/>
-  <machine type='tcg' name='pc-i440fx-5.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-i440fx-5.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes' defaultCPU='qemu64-x86_64-cpu'/>
   <machine type='tcg' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-q35-4.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
@@ -2994,7 +3152,7 @@
   <machine type='tcg' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
-  <machine type='tcg' name='pc-q35-5.1' alias='q35' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
+  <machine type='tcg' name='pc-q35-5.1' alias='q35' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu'/>
   <machine type='tcg' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
@@ -3004,7 +3162,7 @@
   <machine type='tcg' name='pc-1.3' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-i440fx-4.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
-  <machine type='tcg' name='isapc' hotplugCpus='yes' maxCpus='1' defaultCPU='486-x86_64-cpu' numaMemSupported='yes'/>
+  <machine type='tcg' name='isapc' hotplugCpus='yes' maxCpus='1' defaultCPU='486-x86_64-cpu'/>
   <machine type='tcg' name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes'/>

@@ -17,7 +17,8 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -m size=219136k,slots=16,maxmem=1099511627776k \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,dies=1,cores=1,threads=1 \
--numa node,nodeid=0,cpus=0-1,mem=214 \
+-object memory-backend-ram,id=ram-node0,size=224395264 \
+-numa node,nodeid=0,cpus=0-1,memdev=ram-node0 \
 -object memory-backend-file,id=memnvdimm0,prealloc=yes,mem-path=/tmp/nvdimm,\
 share=no,size=536870912 \
 -device nvdimm,node=0,memdev=memnvdimm0,id=nvdimm0,slot=0 \
