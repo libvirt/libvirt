@@ -22,7 +22,9 @@
 
 #include <linux/types.h>
 
+#include "domain_event.h"
 #include "jailhouse_api.h"
+#include "virdomainobjlist.h"
 
 int jailhouseRegister(void);
 
@@ -64,6 +66,12 @@ struct _virJailhouseDriver {
 
     // All the cells created during connect open on the hypervisor.
     virJailhouseCellInfoPtr *cell_info_list;
+
+    // XML options for domain XMLs.
+    virDomainXMLOptionPtr xmlopt;
+    virDomainObjListPtr domains;
+
+    virObjectEventStatePtr domainEventState;
 };
 
 struct _jailhouseCell {

@@ -48,6 +48,27 @@ struct _virJailhouseCellCreate {
     __u32 padding;
 };
 
+typedef struct _virJailhousePreloadImage virJailhousePreloadImage;
+typedef virJailhousePreloadImage *virJailhousePreloadImagePtr;
+
+struct _virJailhousePreloadImage {
+    __u64 source_address;
+    __u64 size;
+    __u64 target_address;
+    __u64 padding;
+};
+
+typedef struct _virJailhouseCellLoad virJailhouseCellLoad;
+typedef virJailhouseCellLoad *virJailhouseCellLoadPtr;
+
+struct _virJailhouseCellLoad {
+    struct _virJailhouseCellId id;
+    __u32 num_preload_images;
+    __u32 padding;
+    struct _virJailhousePreloadImage image[];
+};
+
+
 // Enables the Jailhouse hypervisor by reading the hypervisor system
 // configuration from the given file and calls the ioctl API to
 // enable the hypervisor.
@@ -61,6 +82,14 @@ int jailhouseDisable(void);
 // Creates Jailhouse cells using the cells configurations
 // provided in the dir_name.
 int createJailhouseCells(const char *dir_path);
+
+int loadImagesInCell(virJailhouseCellId cell_id, char **images, int num_images);
+
+int startCell(virJailhouseCellId cell_id);
+
+int shutdownCell(virJailhouseCellId cell_id);
+
+int destroyCell(virJailhouseCellId cell_id);
 
 // Destroys Jailhouse cells using the cell IDs provided in
 // the cell_info_list.

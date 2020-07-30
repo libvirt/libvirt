@@ -25,7 +25,6 @@
 #include "configmake.h"
 #include "datatypes.h"
 #include "domain_conf.h"
-#include "jailhouse_driver.h"
 #include "virtypedparam.h"
 #include "virerror.h"
 #include "virstring.h"
@@ -36,6 +35,9 @@
 #include "vircommand.h"
 #include "virpidfile.h"
 #include "access/viraccessapicheck.h"
+#include "virdomainobjlist.h"
+
+#include "jailhouse_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_JAILHOUSE
 
@@ -62,7 +64,6 @@ virJailhouseDriverConfigNew(void)
 {
     virJailhouseDriverConfigPtr cfg;
 
-    // TODO: Check if the following has to be uncommented.
     if (virJailhouseConfigInitialize() < 0)
         return NULL;
 
@@ -135,6 +136,7 @@ jailhouseFreeDriver(virJailhouseDriverPtr driver)
         return;
 
     virMutexDestroy(&driver->lock);
+    virObjectUnref(driver->domains);
     virObjectUnref(driver->config);
     VIR_FREE(driver);
 }
@@ -207,6 +209,9 @@ jailhouseStateInitialize(bool privileged G_GNUC_UNUSED,
         return VIR_DRV_STATE_INIT_ERROR;
     }
 
+    if (!(jailhouse_driver->domains = virDomainObjListNew()))
+        goto error;
+
     if (!(cfg = virJailhouseDriverConfigNew()))
         goto error;
 
@@ -259,10 +264,11 @@ jailhouseConnectGetHostname(virConnectPtr conn)
 }
 
 static int
-jailhouseNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
+jailhouseNodeGetInfo(virConnectPtr conn,
+                     virNodeInfoPtr nodeinfo)
 {
     UNUSED(conn);
-    UNUSED(info);
+    UNUSED(nodeinfo);
     return -1;
 }
 
@@ -300,11 +306,205 @@ jailhouseDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     return NULL;
 }
 
+static virDomainObjPtr
+virJailhouseDomObjFromDomain(virDomainPtr domain)
+{
+    virDomainObjPtr cell;
+    virJailhouseDriverPtr driver = domain->conn->privateData;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    cell = virDomainObjListFindByUUID(driver->domains, domain->uuid);
+    if (!cell) {
+        virUUIDFormat(domain->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s' (%s)"),
+                       uuidstr, domain->name);
+        return NULL;
+    }
+
+    return cell;
+}
+
+
+
+static virJailhouseCellInfoPtr
+virJailhouseFindCellByName(virJailhouseDriverPtr driver,
+                           char* name)
+{
+    virJailhouseCellInfoPtr *cell = driver->cell_info_list;
+
+    while (*cell) {
+        if (STRCASEEQ((*cell)->id.name, name))
+            return *cell;
+        cell++;
+    }
+
+    return NULL;
+}
+
+static int
+jailhouseDomainCreateWithFlags(virDomainPtr domain,
+                               unsigned int flags)
+{
+    virJailhouseDriverPtr driver = domain->conn->privateData;
+    virDomainObjPtr cell;
+    virJailhouseCellInfoPtr cell_info;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_NONE, -1);
+
+    if (!domain->name) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Error while reading the domain name"));
+        goto cleanup;
+    }
+
+    if (!domain->id) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Error while reading the domain ID"));
+        goto cleanup;
+    }
+
+    if (!(cell = virJailhouseDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainCreateWithFlagsEnsureACL(domain->conn, cell->def) < 0)
+        goto cleanup;
+
+    if (!(cell_info = virJailhouseFindCellByName(driver, cell->def->name))) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name %s and ID %d)"),
+                       cell->def->name, cell->def->id);
+        virDomainObjListRemove(driver->domains, cell);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&cell);
+    return ret;
+
+}
+
 static int
 jailhouseDomainCreate(virDomainPtr domain)
 {
-    UNUSED(domain);
-    return -1;
+    return jailhouseDomainCreateWithFlags(domain, 0);
+}
+
+static virDomainPtr
+jailhouseDomainCreateXML(virConnectPtr conn,
+                         const char *xml,
+                         unsigned int flags)
+{
+    virJailhouseDriverPtr driver = conn->privateData;
+    virJailhouseCellInfoPtr cell_info;
+    virDomainPtr dom = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainObjPtr cell = NULL;
+    virDomainDiskDefPtr disk = NULL;
+    virJailhouseCellId cell_id;
+    char **images = NULL;
+    int num_images = 0, i = 0;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+
+    if (flags & VIR_DOMAIN_START_VALIDATE)
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
+
+    if ((def = virDomainDefParseString(xml, NULL,
+                                       NULL, parse_flags)) == NULL)
+        goto cleanup;
+
+    if ((cell = virDomainObjListFindByUUID(driver->domains, def->uuid)))
+        goto cleanup;
+
+    if (virDomainCreateXMLEnsureACL(conn, def) < 0)
+        goto cleanup;
+
+    if (!(cell_info = virJailhouseFindCellByName(driver, def->name))) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("cell info for %s not found"),
+                       def->name);
+        goto cleanup;
+    }
+
+    // Assign cell Id to the domain.
+    def->id = cell_info->id.id;
+
+    if (!(cell = virDomainObjListAdd(driver->domains, def,
+                                   NULL,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE, NULL)))
+        goto cleanup;
+
+    def = NULL;
+
+    if (cell->def->ndisks < 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Domain XML doesn't contain any disk images"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(images, cell->def->ndisks) < 0)
+        goto cleanup;
+
+    for (i = 0; i < cell->def->ndisks; ++i) {
+        images[i] = NULL;
+
+        if (cell->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+            virDomainDiskGetType(cell->def->disks[i]) == VIR_STORAGE_TYPE_FILE) {
+            disk = cell->def->disks[i];
+            const char *src = virDomainDiskGetSource(disk);
+            if (!src) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("First file-based harddisk has no source"));
+                goto cleanup;
+            }
+
+            images[i] = (char *)src;
+            num_images++;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("A Jailhouse doamin(cell) can ONLY have FILE type disks"));
+            goto cleanup;
+        }
+    }
+
+    // Initialize the cell_id.
+    cell_id.id = cell->def->id;
+    cell_id.padding = 0;
+    if (virStrncpy(cell_id.name, cell->def->name, JAILHOUSE_CELL_ID_NAMELEN, JAILHOUSE_CELL_ID_NAMELEN) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cell name %s length exceeded the limit"),
+                       cell->def->name);
+        goto cleanup;
+    }
+
+    if (loadImagesInCell(cell_id, images, num_images) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to load images in the Cell %s"),
+                       cell->def->name);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Starting the domain...");
+
+    if (startCell(cell_id) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to start the Cell %s"),
+                       cell->def->name);
+        goto cleanup;
+    }
+
+    virDomainObjSetState(cell, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
+
+    dom = virGetDomain(conn, cell->def->name, cell->def->uuid, cell->def->id);
+
+ cleanup:
+    virDomainDefFree(def);
+    virDomainObjEndAPI(&cell);
+    return dom;
 }
 
 static int
@@ -313,7 +513,6 @@ jailhouseDomainShutdown(virDomainPtr domain)
     UNUSED(domain);
     return -1;
 }
-
 
 static int
 jailhouseDomainDestroy(virDomainPtr domain)
@@ -356,7 +555,9 @@ static virHypervisorDriver jailhouseHypervisorDriver = {
     .connectListAllDomains = jailhouseConnectListAllDomains,    /* 6.3.0 */
     .connectGetType = jailhouseConnectGetType,  /* 6.3.0 */
     .connectGetHostname = jailhouseConnectGetHostname,  /* 6.3.0 */
-    .domainCreate = jailhouseDomainCreate,      /* 6.3.0 */
+    .domainCreate = jailhouseDomainCreate,       /*6.3.0 */
+    .domainCreateWithFlags = jailhouseDomainCreateWithFlags,    /* 6.3.0 */
+    .domainCreateXML = jailhouseDomainCreateXML, /* 6.3.0 */
     .domainShutdown = jailhouseDomainShutdown,  /* 6.3.0 */
     .domainDestroy = jailhouseDomainDestroy,    /* 6.3.0 */
     .domainGetInfo = jailhouseDomainGetInfo,    /* 6.3.0 */

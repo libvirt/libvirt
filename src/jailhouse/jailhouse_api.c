@@ -43,11 +43,14 @@
 #define JAILHOUSE_CELLS                         "/sys/devices/jailhouse/cells"
 #define MAX_JAILHOUSE_SYS_CONFIG_FILE_SIZE      1024*1024
 #define MAX_JAILHOUSE_CELL_CONFIG_FILE_SIZE     1024
+#define MAX_JAILHOUSE_CELL_IMAGE_FILE_SIZE      64*1024*1024
 
 
 #define JAILHOUSE_ENABLE               _IOW(0, 0, void *)
 #define JAILHOUSE_DISABLE              _IO(0, 1)
 #define JAILHOUSE_CELL_CREATE          _IOW(0, 2, virJailhouseCellCreate)
+#define JAILHOUSE_CELL_LOAD            _IOW(0, 3, virJailhouseCellLoad)
+#define JAILHOUSE_CELL_START           _IOW(0, 4, virJailhouseCellId)
 #define JAILHOUSE_CELL_DESTROY         _IOW(0, 5, virJailhouseCellId)
 
 #define VIR_FROM_THIS VIR_FROM_JAILHOUSE
@@ -67,8 +70,6 @@ char *readSysfsCellString(const unsigned int id, const char *entry);
 int cell_match(const struct dirent *dirent);
 
 int createCell(const char *conf_file);
-
-int destroyCell(virJailhouseCellId cell_id);
 
 int getCellInfo(const unsigned int id,
                 virJailhouseCellInfoPtr * cell_info);
@@ -254,7 +255,7 @@ readSysfsCellString(const unsigned int id, const char *entry)
 }
 
 int
-getCellInfo(const unsigned int id, virJailhouseCellInfoPtr * cell_info_ptr)
+getCellInfo(const unsigned int id, virJailhouseCellInfoPtr *cell_info_ptr)
 {
     char *tmp;
 
@@ -345,6 +346,90 @@ getJailhouseCellsInfo(void)
 }
 
 int
+loadImagesInCell(virJailhouseCellId cell_id, char **images, int num_images)
+{
+   virJailhousePreloadImagePtr image;
+   virJailhouseCellLoadPtr cell_load;
+   g_autofree char *buffer = NULL;
+   unsigned int n;
+   int len = -1, err = -1;
+   VIR_AUTOCLOSE fd = -1;
+
+
+   if (VIR_ALLOC(cell_load) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("Insufficient memory for cell load"));
+        return -1;
+   }
+
+
+   if (VIR_ALLOC_N(cell_load->image, num_images) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("Insufficient memory for cell load images"));
+        return -1;
+   }
+
+   cell_load->id = cell_id;
+   cell_load->num_preload_images = num_images;
+
+   for (n = 0, image = cell_load->image; n < num_images; n++, image++) {
+        len = virFileReadAll(images[n], MAX_JAILHOUSE_CELL_IMAGE_FILE_SIZE, &buffer);
+        if (len < 0 || !buffer) {
+             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("Failed to read the image file %s"),
+                            images[n]);
+             return -1;
+        }
+
+        image->source_address = (unsigned long)buffer;
+        image->size = len;
+
+        // TODO(Prakhar): Add support for target address.
+        image->target_address = 0;
+   }
+
+   fd = openDev();
+
+   err = ioctl(fd, JAILHOUSE_CELL_LOAD, cell_load);
+   if (err) {
+       virReportSystemError(errno,
+                            _("Loading cell images for %d failed"),
+                            cell_id.id);
+       return -1;
+   }
+
+   return 0;
+}
+
+int
+shutdownCell(virJailhouseCellId cell_id)
+{
+    // Loading 0 images in the cell causes cell to shutdown.
+    return loadImagesInCell(cell_id, NULL, 0);
+}
+
+int
+startCell(virJailhouseCellId cell_id)
+{
+    int err = -1;
+    VIR_AUTOCLOSE fd = -1;
+
+    fd = openDev();
+
+    err = ioctl(fd, JAILHOUSE_CELL_START, &cell_id);
+    if (err) {
+        virReportSystemError(errno,
+                             _("Start cell %d failed"),
+                             cell_id.id);
+        return -1;
+    }
+
+    return 0;
+}
+
+int
 destroyCell(virJailhouseCellId cell_id)
 {
     int err = -1;
@@ -353,20 +438,13 @@ destroyCell(virJailhouseCellId cell_id)
     fd = openDev();
 
     err = ioctl(fd, JAILHOUSE_CELL_DESTROY, &cell_id);
-    if (err)
+    if (err) {
         virReportSystemError(errno,
                              _("Destroying cell %d failed"),
                              cell_id.id);
 
-    return err;
-}
-
-int
-destroyJailhouseCells(virJailhouseCellInfoPtr *cell_info_list G_GNUC_UNUSED)
-{
-
-    /* Iterate over all cells in cell_info_list and destroy each cell */
-    // TODO: Not implemented yet.
+        return -1;
+    }
 
     return 0;
 }
