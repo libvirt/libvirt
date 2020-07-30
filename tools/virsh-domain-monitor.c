@@ -2413,7 +2413,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
         }
 
         for (j = 0; j < iface->naddrs; j++) {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
             switch (iface->addrs[j].type) {
             case VIR_IP_ADDR_TYPE_IPV4:
@@ -2442,7 +2442,6 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
                 vshPrint(ctl, " %-10s %-17s    %s\n",
                          "-", "-", ip_addr_str);
 
-            virBufferFreeAndReset(&buf);
             VIR_FREE(ip_addr_str);
         }
     }

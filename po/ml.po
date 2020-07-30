@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1067,6 +1067,9 @@ msgstr "scsi hostdev ശ്രോതസ്സിനു് 'adapter' , 'address' 
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "scsi hostdev ശ്രോതസ്സിനു് 'adapter' നല്‍കണം"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1081,6 +1084,9 @@ msgstr ""
 msgid ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
 msgstr " scsi hostdev സോഴ്സ് വിലാസത്തിനു് 'bus', 'target',  'unit' നല്‍കിയിരിയ്ക്കണം"
+
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "'can-offline', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
@@ -1116,6 +1122,15 @@ msgstr "libvirt %s-നുള്ള Virsh കമാന്‍ഡ് ലൈന്�
 #, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "'online', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1225,6 +1240,9 @@ msgstr "fs ശൈലി %s 'name' പിന്തുണയ്ക്കുന്�
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy', 'file' തരത്തിലുള്ള വോള്യത്തില്‍ മാത്രം ശരിയാകുന്നു"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1681,6 +1699,9 @@ msgstr ""
 "കോര്‍ ഡമ്പ് ചെയ്തതിനു ശേഷം libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' പുനരാരംഭിക്കുന്നതില്‍ "
 "പരാജയപ്പെട്ടു"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "SSH ഏജന്റ് ലഭ്യമാക്കിയ എല്ലാ തിരിച്ചറിയല്‍ സംവിധാനങ്ങളും നിഷേധിച്ചിരിയ്ക്കുന്നു"
 
@@ -1742,6 +1763,9 @@ msgstr "ആര്‍ഗ്യുമെന്റുകള്‍ കാലിയ�
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 #, fuzzy
@@ -1824,11 +1848,10 @@ msgstr "ഒരു സിന്‍ക്രൊണസ് മറുപടിയ്�
 msgid "Attempted double use of PCI Address %s"
 msgstr "പിസിഐ വിലാസം %s രണ്ടു് തവണ ഉപയോഗിയ്ക്കുവാന്‍ ശ്രമിച്ചിരിയ്ക്കുന്നു"
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
-msgstr "'%s' നെ നാറ്റ് ചെയ്യാന്‍ ശ്രമിച്ചു. ഐപിവി4നു് മാത്രമേ നാറ്റ് പിന്തുണയുള്ളൂ."
-
 msgid "Attempting to use unknown stub driver"
+msgstr ""
+
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -2259,6 +2282,10 @@ msgstr "ക്യൂഇഎംയു എക്സിക്യൂട്ടബി�
 #, fuzzy, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr "ക്യൂഇഎംയു എക്സിക്യൂട്ടബിള്‍ %s ടിപിഎം ബാക്കന്‍ഡ് തരം %s പിന്തുണയ്ക്കുന്നില്ല"
+
+#, c-format
+msgid "Cache level '%u' already defined"
+msgstr ""
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3186,9 +3213,9 @@ msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ സമ്പര്‍�
 msgid "Cannot resize the max memory on an active domain"
 msgstr "സജീവമായൊരു ഡൊമെയിനില്‍ ഏറ്റവും കൂടിയ മെമ്മറിയുടെ വ്യാപ്തി മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "'%s' എന്ന സോക്കറ്റ് വിലാസം മനസ്സിലാകുന്നില്ല: %s"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "നിയന്ത്രിക്കുന്ന TTY ഇല്ലാതെ ഇന്റെറാക്റ്റീവ് കണ്‍സോള്‍ പ്രവര്‍ത്തിപ്പിക്കാന്‍ പറ്റില്ല"
@@ -5764,6 +5791,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "സുരക്ഷ ഡ്രൈവര്‍ '%s' കണ്ടുപിടിയ്ക്കുവാനായില്ല"
@@ -5815,11 +5845,6 @@ msgstr "പേരുള്ള ഒരു സ്നാപ്പ്ഷോട്ട�
 #, fuzzy
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "scsi hostdev ശ്രോതസ്സിനു് 'adapter' , 'address' നല്‍കിയിരിയ്ക്കണം"
-
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr ""
 
 msgid "Eject the media"
 msgstr "സി.ഡി പുറത്തെടുക്കുക"
@@ -5991,8 +6016,8 @@ msgid "Escape character is %s"
 msgstr "ക്യാരക്ടര്‍ ഡിവൈസ്  %s കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "ഈതെര്‍നെറ്റ് കണ്ട്രോളര്‍ അനുക്രമണിക %d പരിധിക്കു [0..3] പുറത്താണ്"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6306,6 +6331,9 @@ msgstr "ടണല്‍ മൈഗ്രേഷനു് പൈപ്പ് തയ
 
 msgid "Failed"
 msgstr "പരാജയപ്പെട്ടു"
+
+msgid "Failed disable mount propagation out of the root filesystem"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed new node mode for target '%s'"
@@ -6681,6 +6709,10 @@ msgstr "ബന്ധിപ്പിക്കാനുള്ള ലക്ഷ്�
 #, fuzzy, c-format
 msgid "Failed to create checkpoint dir %s"
 msgstr "%s-ല്‍ നിന്നും ഡൊമെയിന്‍ ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -7076,10 +7108,6 @@ msgstr "മോഡ് '%s' പാഴ്സ് ചെയ്യുന്നതി�
 msgid "Failed to find parent device for %s"
 msgstr "%s-നുള്ള പേരന്റ് ഡിവൈസ് കണ്ടുപിടിക്കുന്നതില്‍ പരാജയം"
 
-#, c-format
-msgid "Failed to find path for %s binary"
-msgstr "%s ബൈനറിയ്ക്കുള്ള പാത്ത് കണ്ടുപിടിയ്ക്കുന്നതില്‍ പരാജയം"
-
 #, fuzzy, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr "cgroup '%s', '%s'-ല്‍, ബൈന്‍ഡ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -7115,8 +7143,8 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "%s ബ്രിഡ്ജിന് വേണ്ടി പുതിയ xml രേഖ ഫോര്‍മാറ്റ് ചെയ്യാന്‍ പറ്റിയില്ല"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
-msgstr "അടിമയല്ലാത്ത ഇന്റെര്‍ഫേസ് %s ന് വേണ്ടി പുതിയ xml രേഖ ഫേര്‍മാറ്റ്ചെയ്യാനായില്ല"
+msgid "Failed to format new xml document for detached interface %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to fully read directory %s"
@@ -7208,10 +7236,6 @@ msgstr "ഡൊമെയിന്‍ അവസ്ഥ ലഭ്യമാക്ക�
 
 msgid "Failed to get domain's UUID"
 msgstr "ഡൊമെയിന്‍ UUID ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "sysinfo ലഭിക്കുന്നതില്‌ പരാജയപ്പെട്ടു"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8127,10 +8151,6 @@ msgstr "സ്നാപ്പ്ഷോട്ട് %s നശിപ്പിക�
 msgid "Failed to set %s for %s: value too large"
 msgstr "%s , %s നു വേണ്ടി  സജ്ജീകരിക്കുന്നതില്‍ പരാജയപ്പെട്ടു. : മൂല്യം  വളരെ കൂടുതലാണ്"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "പിസിഐ സിസ്എഫ്എസ് ഫയല്‍ കാണുന്നതില്‍ പരാജയം"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "ടിഎല്‍എസ് സെഷന്‍ ആരംഭിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
@@ -8196,20 +8216,20 @@ msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr ""
 "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ക്കു വേണ്ടി മെമ്മറി സജ്ജീകരിക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 msgid "Failed to set new domain description"
 msgstr "ഡൊമൈന്‍ വിവരണം ക്രമീകരിക്കാന്‍ പറ്റിയില്ല"
 
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "ഡൊമെയിന്‍ അവസ്ഥ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr "xml രേഖയില്‍ പുതിയ സ്ലേവ് ഇന്റെര്‍ഫേസ് പേരിനെ '%s' ആയി ക്രമീകരിക്കാന്‍ പറ്റിയില്ല"
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr "xml രേഖയില്‍ പുതിയ സ്ലേവ് ഇന്റെര്‍ഫേസ് തരത്തെ '%s' ആയി ക്രമീകരിക്കാന്‍ പറ്റിയില്ല"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "നോണ്‍-ബ്ലോക്കിങ് ഫയല്‍ വിവരണ ഫ്ലാഗ് സജ്ജമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -8336,9 +8356,6 @@ msgstr "ഡൊമെയിന്‍ %s താല്‍ക്കാലികമ�
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr ""
 "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' താല്‍ക്കാലികമായി നിര്‍ത്തുവെക്കുന്നത്തില്‍ പരാജയപ്പെട്ടു"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr "റൂട്ട് മൌണ്ട് സ്ലേവ് മോഡിലേക്ക് മാറ്റുന്നതില്‍ പരാജയം"
 
 #, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8611,6 +8628,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -8924,6 +8947,9 @@ msgstr "ഗസ്റ്റ് ഏജന്റ് പ്രതികരിയ്�
 
 msgid "Guest agent not available for now"
 msgstr "അതിഥി ഏജന്റ് ഇപ്പോള്‍ ലഭ്യമല്ല"
+
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
 
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
@@ -9438,6 +9464,9 @@ msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷ�
 msgid "Invalid %s image format specified in configuration file"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "%s-ല്‍ തെറ്റായ cpuNum"
@@ -9454,13 +9483,29 @@ msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷ�
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "'%s' നെറ്റ്‌വര്‍ക്കിനുള്ള dhcp പരിധിയില്‍ 'end' വിശേഷത ലഭ്യമല്ല"
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
 
+#, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9701,9 +9746,17 @@ msgstr "ഫ്ലോപ്പി ഡിസ്കിനു് തെറ്റാ�
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "%s-ല്‍ തെറ്റായ cpuNum"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -9908,6 +9961,9 @@ msgstr "ര്‍മോണിറ്ററിനു വേണ്ടി കാത�
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr "ര്‍മോണിറ്ററിനു വേണ്ടി കാത്തിരിക്കുമ്പോള്‍ സാധുവല്ലാത്ത ഫയല്‍ ഡിസ്ക്രിപ്റ്റ"
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "തെറ്റായ ഫ്ലോപ്പി ഡിവൈസ് നാമം: %s"
@@ -9969,6 +10025,10 @@ msgstr "ഐപി വിലാസത്തിന്റെ തെറ്റായ 
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "തെറ്റായ ipv6 സജ്ജീകരണം '%s', '%s' നെറ്റ്‌വര്‍ക്കില്‍"
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid job flags"
@@ -10433,6 +10493,10 @@ msgid "Invalid value for timeout"
 msgstr "സമയപരിധിയ്ക്കുള്ള അസാധുവായ മൂല്ല്യം"
 
 #, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "തെറ്റായ I/O നില %d"
 
@@ -10577,6 +10641,9 @@ msgstr "Libvirt"
 #, fuzzy, c-format
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "ഡിസ്ക് ഡിവൈസ് '%s' സ്നാപ്പ്ഷോട്ട് പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "Link already defined"
+msgstr ""
 
 msgid "List all manageable clients connected to <server>."
 msgstr ""
@@ -10839,6 +10906,9 @@ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ max_clients ഡ�
 msgid "Malformed nbd port '%s'"
 msgstr "തെറ്റായ nbd പോര്‍ട്ട് '%s'"
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed ovs-vsctl output"
 msgstr "തെറ്റായ ഒക്ടല്‍ മോഡ്"
@@ -11028,6 +11098,10 @@ msgstr "മെറ്റാ-വിവരം:"
 msgid "MethodFault is missing 'type' property"
 msgstr "MethodFault-ല്‍ 'type' വിശേഷത ലഭ്യമല്ല"
 
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
+
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 "മറ്റൊരു ഹോസ്റ്റിലേക്ക് ഡൊമെയിന്‍ മാറ്റുക. മാറ്റം ഉടന്‍ സംഭവിക്കുന്നതിനായി --live ചേര്‍ക്കുക."
@@ -11130,11 +11204,12 @@ msgstr "ManagedEntityStatus-നായി തെരയുമ്പോള്‍ '%
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "cgroup മൌണ്ട് '%s'-ല്‍ '/' വിടവടയാളം ലഭ്യമല്ല"
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "കോര്‍സ്‌ (cores) സവിശേഷം സി.പി.യു. ടോപ്പോളജിയില്‍ ഇല്ല"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "NUMA സെല്ലില്‍ 'cpus' വിശേഷത ലഭ്യമല്ല"
 
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
@@ -11164,8 +11239,15 @@ msgstr " <interface> എലമെന്റിലുള്ള  dev വിശേ�
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "NUMA സെല്ലില്‍ 'cpus' വിശേഷത ലഭ്യമല്ല"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "ലീസില്‍ 'key' എലമെന്റ് ലഭ്യമല്ല"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11187,6 +11269,10 @@ msgstr "JSON അവസ്ഥയുടെ രേഖയില്‍ auth ഫീള
 msgid "Missing 'pipefd' in JSON document"
 msgstr "JSON രേഖയില്‍ pid ഡേറ്റാ ലഭ്യമല്ല"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "'runtime.powerState' വിശേഷത ലഭ്യമല്ല"
 
@@ -11197,11 +11283,17 @@ msgstr "സോക്കെറ്റ്‌സ് (sockets) സവിശേഷം 
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "'%s' നെറ്റ്‌വര്‍ക്കിനുള്ള dhcp പരിധിയില്‍ 'start' വിശേഷത ലഭ്യമല്ല"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "ലീസില്‍ 'target' എലമെന്റ് ലഭ്യമല്ല"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "ത്രെട്സ് (threads) സവിശേഷം സി.പി.യു. ടോപ്പോളജിയില്‍ ഇല്ല"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
@@ -11211,6 +11303,9 @@ msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷ�
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -11902,10 +11997,6 @@ msgstr "NULL സ്ട്രിങ് പരാമീറ്റര്‍ '%s'"
 msgid "NULL value for field '%s'"
 msgstr "'%s' എന്ന കളത്തിലെ വില NULL ആണു്"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "NUMA സെല്‍ നംബര്‍:"
 
@@ -11955,6 +12046,9 @@ msgstr "പിസിഐ ബസുകള്‍ ലഭ്യമല്ല"
 
 msgid "NUMA node selections to set"
 msgstr "ക്രമീകരിക്കേണ്ട NUMA നോഡ് തെരഞ്ഞെടുപ്പ്"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "NUMA ടോപ്പോളജി NUMA അറകള്‍ ഇല്ലാതെ വിശദ്ദീകരിച്ചിരിക്കുന്നു"
@@ -12604,6 +12698,10 @@ msgstr "<initarg> എലമെന്റിനു് ഡേറ്റാ നല്
 #, c-format
 msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr "VMX എന്‍ട്രി '%s' നുള്ള '%s' മൂല്യം മുന്‍പ് കൈകാര്യം ചെയ്തിട്ടില്ലാത്തതാണ്"
+
+#, c-format
+msgid "No zPCI %s to reserve"
+msgstr ""
 
 #, c-format
 msgid "Node %d:\n"
@@ -14152,8 +14250,8 @@ msgid "S4 state is disabled for this domain"
 msgstr "ഈ ഡൊമെയിനു് S4 അവസ്ഥ പ്രവര്‍ത്തന രഹിതമാക്കിയിരിയ്ക്കുന്നു"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
-msgstr "എസ്എഎസ്എല്‍ ക്ലയന്റ് '%s' വൈറ്റ്‌ലിസ്റ്റില്‍ അനുവദിയ്ക്കുന്നില്ല"
+msgid "SASL client identity '%s' not allowed by ACL"
+msgstr ""
 
 #, c-format
 msgid "SASL data length %zu too long, max %zu"
@@ -15192,6 +15290,17 @@ msgstr "Ceph ഉപയോഗം വ്യക്തമാക്കിയിരി
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "ടിപിഎം ഡിവൈസ് പാഥ് %s തെറ്റാണു്"
@@ -15466,6 +15575,11 @@ msgstr "ലക്ഷ്യമായ ഡിസ്ക് സീരിയല %s ഉ
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "ലക്ഷ്യമായ ഡിസ്ക് %s ഉറവിടം %s-ഉമായി യോജിക്കുന്നില്ല"
 
+#, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ നാമം '%s', '%s'-മായി പൊരുത്തപ്പെടുന്നില്ല"
@@ -15506,6 +15620,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ SMBIOS മോഡ് %s , %s ശ്രോതസ്സുമായി ചേരുന്നില്ല"
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ യുഎസ്ബി റീഡയറക്ഷന്‍ ഫില്‍റ്റര്‍ എണ്ണം %d , %d ശ്രോതസ്സുമായി ചേരുന്നില്ല"
 
@@ -15524,6 +15642,9 @@ msgstr "ടാര്‍ഗറ്റ് ഡൊമെയിന്‍ കണ്‍�
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ കണ്ട്രോളര്‍ എണ്ണം %zu, ശ്രോതസ്സ് %zu-മായി പൊരുത്തപ്പെടുന്നില്ല"
+
+msgid "Target domain count of sysinfo does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
@@ -15867,6 +15988,9 @@ msgstr "മൊത്തം മെമ്മറി:"
 msgid "Temporary disk space use:"
 msgstr ""
 
+msgid "That firmware name is reserved"
+msgstr ""
+
 #, fuzzy
 msgid "Thaw domain's mounted filesystems."
 msgstr "ഡൊമെിനിന്റെ മൌണ്ട് ചെയ്ത ഫയല്‍സിസ്റ്റങ്ങളില്‍ fstrim ലഭ്യമാക്കുക"
@@ -16199,7 +16323,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "ഒരു vCenter-നു് ഈ ഹോസ്റ്റ് കൈകാര്യം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -16635,6 +16759,12 @@ msgid "Unable to access stream for '%s'"
 msgstr "'%s'-നുള്ള സ്ട്രീം ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
+#, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "'%s'-ലുള്ള പൂട്ട് ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -17030,6 +17160,12 @@ msgstr "കമാന്‍ഡിന്റെ ഐഒ നടപ്പിലാക�
 msgid "Unable to create tunnel migration thread"
 msgstr "മൈഗ്രേഷന്‍ ത്രെഡ് തയ്യാറാക്കുവാന്‍ സാധ്യമായില്ല"
 
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
+
 msgid "Unable to decode header until len is received"
 msgstr "len ലഭ്യമാകുന്നതു് വരെ തലക്കെട്ട് ഡീകോഡ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
@@ -17235,6 +17371,9 @@ msgstr "'%s' എന്ന പേരില്‍ സ്നാപ്പ്ഷോ�
 
 msgid "Unable to force bind to IPv6 only"
 msgstr "IPv6-ലേക്കു് മാത്രം നിര്‍ബന്ധിച്ച് ബൈന്‍ഡ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+msgid "Unable to format NUMA node cache"
+msgstr ""
 
 msgid "Unable to format SELinux context"
 msgstr "SELinux കോണ്ടെക്സ്റ്റ് ഫോര്‍മാറ്റ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -18355,6 +18494,10 @@ msgstr "close-on-exec ഫ്ലാഗ് സജ്ജമാക്കുവാന
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "കണ്‍സോള്‍ ഫയല്‍ വിവരണം നോണ്‍-ബ്ലോക്കിങ് ആയി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
+
 msgid "Unable to set interface parameters"
 msgstr "ഇന്റെര്‍ഫേസ് പരാമീറ്റര്‍ ക്രമീകരിക്കാനാകുന്നില്ല"
 
@@ -18417,6 +18560,9 @@ msgstr "എഫ്ഡി പട്ടിക '%s' വേര്‍പെടുത�
 msgid "Unable to start event thread: %s"
 msgstr "ബന്ധിപ്പിക്കാനുള്ള ലക്ഷ്യം %sന്റെ അവസ്ഥ പരിശോധിക്കാന്‍ സാധ്യമല്ല"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, c-format
 msgid "Unable to stat %s"
 msgstr "%s stat ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -18432,6 +18578,9 @@ msgstr "ബന്ധിപ്പിക്കാനുള്ള ലക്ഷ്�
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "%s stat ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19361,6 +19510,9 @@ msgstr "പിന്തുണയില്ലാത്ത കണ്ട്രോ�
 msgid "Unsupported controller type: %s"
 msgstr "പിന്തുണയില്ലാത്ത കണ്ട്രോളര്‍ മോഡല്‍: %s"
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
 msgstr "പിന്തുണയ്ക്കാത്ത ഡിവൈസ് തരം '%s'"
@@ -20015,6 +20167,11 @@ msgstr ""
 "മറ്റൊരു portgroup എന്‍ട്രി (നെറ്റ്‌വര്‍ക്ക് '%s') നിലവില്‍ സ്വതവേയുള്ളതായി സജ്ജമാക്കിയിരിയ്ക്കുന്നു. "
 "സ്വതവേ ഒന്നു് മാത്രമേ അനുവദിയ്ക്കുന്നുള്ളൂ."
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 #, fuzzy
 msgid "a redefined checkpoint must have a name"
 msgstr "വീണ്ടും നിഷ്കര്‍ഷിച്ച സ്നാപ്പ്ഷോട്ടിനൊരു പേരു് ആവശ്യമുണ്ടു്"
@@ -20215,9 +20372,6 @@ msgid "amount of data to upload"
 msgstr "അപ്ലോഡ് ചെയ്യേണ്ട ഡാറ്റയുടെ വലിപ്പം"
 
 msgid "an <auth> definition already found for disk source"
-msgstr ""
-
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
 msgstr ""
 
 msgid "an <encryption> definition already found for disk source"
@@ -20496,6 +20650,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "പശ്ചാത്തലത്തിലുള്ള ജോലി"
@@ -20503,13 +20660,13 @@ msgstr "പശ്ചാത്തലത്തിലുള്ള ജോലി"
 msgid "backup job data missing"
 msgstr ""
 
-#, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "പാഥ് '%s' ആബ്സല്യൂട്ടല്ല"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr "തെറ്റായ കമാന്‍ഡ്"
@@ -20578,10 +20735,6 @@ msgstr "'%s' എന്ന പേരില്‍ സ്നാപ്പ്ഷോ�
 #, fuzzy, c-format
 msgid "binding '%s' is already being removed"
 msgstr "ഡൊമെയിന്‍ '%s' നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണു്"
-
-#, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
@@ -20883,10 +21036,6 @@ msgstr "നിലവിലുള്ള സ്നാപ്പ്ഷോട്ട�
 #, fuzzy, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "ആരംഭ സെല്‍ %d പരിധി (0-%d)"
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
-msgstr ""
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -21208,6 +21357,9 @@ msgstr "വോള്യത്തില്‍ നിന്നും ഡയറക�
 msgid "cannot create %s"
 msgstr "%s ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല."
 
+msgid "cannot create a mediated device without a parent"
+msgstr ""
+
 #, fuzzy
 msgid "cannot create a new stream"
 msgstr "സ്ട്രീമിലേക്കു് സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -21319,10 +21471,6 @@ msgstr "%s ആര്‍ക്കിറ്റക്ചറിനുള്ള സ�
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "%s-നുള്ള ഫയല്‍സിസ്റ്റം കണ്ടുപിടിക്കുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "%s പ്രവര്‍ത്തന രഹിതമാക്കുവാന്‍ സാധ്യമല്ല"
 
 msgid "cannot do managed save for transient domain"
 msgstr "ക്ഷണിക ഡൊമെയിനിനെ നിയന്ത്രിത സൂക്ഷിപ്പ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -22460,7 +22608,7 @@ msgid "cannot write data to file '%s'"
 msgstr "'%s' എന്ന ഫയലേയ്ക്കു് എഴുതാന്‍ സാധ്യമല്ല"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 #, fuzzy
@@ -23156,6 +23304,10 @@ msgid "could not find capabilities for %s"
 msgstr "'%s'-നുള്ള ഡിവൈസ് വിശേഷതകള്‍ ലഭ്യമല്ല"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr ""
 
@@ -23275,10 +23427,6 @@ msgid "could not initialize domain event timer"
 msgstr "ഡൊമെയിന്‍ ഇവന്റ് ടൈമര്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-
-#, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "ഡൊമെയിന്‍ %s-നുള്ള VirtualBox സെഷന്‍ തുറക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -23363,6 +23511,9 @@ msgstr "Xen ഹൈപ്പര്‍വൈസര്‍ എന്‍ട്രി 
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen ഹൈപ്പര്‍വൈസര്‍ എന്‍ട്രി %s ഉപയോഗിക്കുവാന്‍ സാധ്യമായില്ല"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 #, fuzzy
 msgid "couldn't fetch array of leases"
@@ -23470,6 +23621,9 @@ msgstr "dnsmasq ക്രമീകരണ ഫയല്‍ '%s' സൂക്ഷി
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "radvd ക്രമീകരണ ഫയല്‍ '%s' സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "cpu അഫിനിറ്റി പിന്തുണയ്ക്കുന്നില്ല"
@@ -24594,8 +24748,8 @@ msgstr "ഒരു %s ഡിവൈസ് എങ്ങനെ നീക്കം �
 msgid "don't start the bridge immediately"
 msgstr "ബ്രിഡ്ജ് ഉടനെ തുടങ്ങണ്ട"
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
-msgstr "മോചിപ്പിച്ച ഇന്റെര്‍ഫേസ് ഉടനെ തുടങ്ങരുത്"
+msgid "don't start the detached interface immediately (not recommended)"
+msgstr ""
 
 msgid "done"
 msgstr "ചെയ്തിരിക്കുന്നു"
@@ -25077,9 +25231,9 @@ msgstr ""
 msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr "സംഭരണ പൂള്‍ '%s' autostart ചെയ്യുന്നതില്‍ പരാജയം: %s"
 
-#, fuzzy, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
-msgstr "മേല്‍നോട്ടത്തോടെ സൂക്ഷിച്ച ഡൊമൈന്‍ ഇമേജ് %s നീക്കി"
+#, c-format
+msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
@@ -25350,9 +25504,8 @@ msgstr ""
 "'%s'-ലേക്കു് പുതിയ ഫില്‍റ്റര്‍ നിയമങ്ങള്‍ ചേര്‍ക്കുന്നതില്‍ പരാജയപ്പെട്ടു - പഴയ നിയമങ്ങള്‍ "
 "വീണ്ടെടുക്കുന്നതിനു് ശ്രമിയ്ക്കുന്നു"
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "ഫയല്‍ അടയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -25614,10 +25767,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "cgroup '%s', '%s'-ല്‍, ബൈന്‍ഡ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -26746,6 +26895,9 @@ msgstr ""
 msgid "for hardware virtualization"
 msgstr ""
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' വിശേഷതയില്‍ പാടില്ലാത്ത അക്ഷരങ്ങള്‍"
 
@@ -26848,6 +27000,9 @@ msgstr "ഡിസ്ക്കിന്റെ മുഴുവന്‍ വഴി"
 
 msgid "fuse_loop failed"
 msgstr "fuse_loop പരാജയപ്പെട്ടു"
+
+msgid "fw_cfg is not supported with this QEMU"
+msgstr ""
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -27644,6 +27799,10 @@ msgstr "%s എന്ന ഇന്റര്‍ഫേസ് പേര് ബഫറ
 msgid "interface name or MAC address"
 msgstr "ഇന്റര്‍ഫെയിസ് പേര് അല്ലെങ്കില്‍ MAC വിലാസം"
 
+#, c-format
+msgid "interface not set\n"
+msgstr ""
+
 #, fuzzy
 msgid "interface state driver is not active"
 msgstr "lxc സ്റ്റേറ്റ് ഡ്രൈവര്‍ സജീവമല്ല"
@@ -27953,6 +28112,10 @@ msgstr "അപരിചിതമായ പ്രോട്ടോക്കോള�
 msgid "invalid backing protocol string '%s'"
 msgstr "%s-ല്‍ തെറ്റായ സ്റ്റോറേജ് പൂള്‍ പോയിന്റര്‍"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28210,6 +28373,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "തെറ്റായ മെമ്മറി വ്യാപ്തി %d ലഭിച്ചു"
@@ -28452,6 +28625,10 @@ msgstr "തെറ്റായ മൂല്ല്യം '%s' - VMX എന്‍�
 msgid "invalid statistics collection period"
 msgstr "തെറ്റായ സ്ഥിതിവിവരക്കണക്കിന്റെ കലക്ഷന്‍ സമയം"
 
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
+
 msgid "invalid storage pool pointer in"
 msgstr "തെറ്റായ സ്റ്റോറേജ് പൂള്‍ പോയിന്റര്‍"
 
@@ -28603,6 +28780,9 @@ msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കു
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "virtio നെറ്റ്‌വര്‍ക്ക് ഇന്റര്‍ഫെയിസുകള്‍ക്കു് മാത്രമേ vhost-net പിന്തുണയ്ക്കുന്നുള്ളൂ"
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
+msgstr ""
 
 #, fuzzy
 msgid "iommu: caching mode is not supported with this QEMU binary"
@@ -28763,9 +28943,6 @@ msgstr "nl_recv പരാജയപ്പെട്ടു."
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "write പരാജയപ്പെട്ടു: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr "libselinux എല്‍എക്സ്‌സി കോണ്ടെക്സ്റ്റ് പാഥ് പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy
 msgid "libssh transport error"
@@ -29624,6 +29801,9 @@ msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -30386,10 +30566,6 @@ msgstr "ഇന്റര്‍ഫെയിസ് വിവരം ലഭ്യമ�
 msgid "missing iommuGroup number attribute"
 msgstr "iommuGroup നംബര്‍ വിശേഷത ലഭ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "iommuGroup നംബര്‍ വിശേഷത ലഭ്യമല്ല"
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "ഇന്റര്‍ഫെയിസ് വിവരം ലഭ്യമല്ല"
@@ -30504,6 +30680,10 @@ msgstr "ലഭ്യമല്ലാത്ത ഓപ്പറേറ്റിങ�
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s-നുളള ലഭ്യമല്ലാത്ത ഓപ്പറേറ്റിങ് സിസ്റ്റമിന്‍റെ വിവരം"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing or invalid CPU cache mode"
@@ -32274,8 +32454,11 @@ msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ
 msgid "only a single IOMMU device is supported"
 msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
-msgid "only a single TPM device is supported"
-msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr ""
 
 msgid "only a single memory balloon device is supported"
 msgstr "ഒരു മെമ്മറി ബലൂണ്‍ ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
@@ -33441,7 +33624,7 @@ msgstr "വോള്യത്തിന്റെ വലിപ്പം"
 msgid "read-only connection"
 msgstr "റീഡ്-ഒണ്‍ലി കണക്ഷന്‍"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 #, fuzzy
@@ -33884,9 +34067,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "sanlock error %d"
 msgstr "പിശകില്ല"
-
-msgid "sanlock is too old to support lock failure action"
-msgstr "ലോക്ക് പരാജയ പ്രവര്‍ത്തി പിന്തുണയ്ക്കുന്നതിനായി സാന്‍ലോക്ക് പഴയതാകുന്നു"
 
 #, c-format
 msgid "sasl start reply data too long %d"
@@ -35806,6 +35986,18 @@ msgid "uid and gid should be mapped both"
 msgstr "uid, gid രണ്ടും മാപ്പ് ചെയ്യണം"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "ഉപകരണം %s-ലേക്ക് എഴുതുവാന്‍ സാധ്യമല്ല\n"
 
@@ -35854,6 +36046,10 @@ msgstr "പൈപ്പ് അടയ്ക്കാന്‍ കഴിയുന�
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "'%s:%s'-ലുള്ള സര്‍വറിലേക്കു് കണക്ട് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -35920,6 +36116,10 @@ msgstr "QEMU കമാന്‍ഡ് '%s' നടപ്പിലാക്കു�
 #, c-format
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "QEMU കമാന്‍ഡ് '%s' നടപ്പിലാക്കുവാന്‍ സാധ്യമല്ല: %s"
+
+#, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
@@ -36272,9 +36472,6 @@ msgstr "%s കാലിയാക്കാന്‍ സാധിച്ചില�
 msgid "unable to unload already unloaded profile"
 msgstr "ലഭ്യമല്ലാത്ത പ്രൊഫൈല്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
 msgstr "'%s' പ്രൊഫൈലിനുള്ള AppArmor സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല, '%s'-നുള്ളതു്"
@@ -36316,8 +36513,8 @@ msgstr "നെറ്റ്‌വര്‍ക്ക് ഉപകരണത്ത�
 msgid "undefine VM on source"
 msgstr "VM സോഴ്സ് അണ്‍ഡിഫൈന്‍ ചെയ്യുക"
 
-msgid "undefine a bridge device after detaching its slave device"
-msgstr "അടിമ ഉപകരണത്തെ മോചിപ്പിച്ച് ബ്രിഡ്ജ് ഉപകരണം അണ്‍ഡിഫൈന്‍ ചെയ്യുക"
+msgid "undefine a bridge device after detaching its device(s)"
+msgstr ""
 
 msgid "undefine a domain"
 msgstr "ഒരു ഡൊമെയിന്‍ നിര്‍ഷ്കര്‍ഷിക്കാതിരിക്കുക:"
@@ -36910,6 +37107,10 @@ msgstr "അപരിചിതമായ auth രീതി '%s'"
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "അപരിചിതമായ ഓഥന്റിക്കേഷന്‍ തരം %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -37680,6 +37881,10 @@ msgstr "<address> 'multifunction' വിശേഷതയ്ക്കുള്ള 
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "അജ്ഞാതമായ നിയമ നടപടി സവിശേഷതാ മൂല്യം"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39178,3 +39383,76 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "'%s' എന്ന സോക്കറ്റ് വിലാസം മനസ്സിലാകുന്നില്ല: %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "ഈതെര്‍നെറ്റ് കണ്ട്രോളര്‍ അനുക്രമണിക %d പരിധിക്കു [0..3] പുറത്താണ്"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "sysinfo ലഭിക്കുന്നതില്‌ പരാജയപ്പെട്ടു"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "പിസിഐ സിസ്എഫ്എസ് ഫയല്‍ കാണുന്നതില്‍ പരാജയം"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "NUMA സെല്ലില്‍ 'cpus' വിശേഷത ലഭ്യമല്ല"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "%s പ്രവര്‍ത്തന രഹിതമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "ഫയല്‍ അടയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "libselinux എല്‍എക്സ്‌സി കോണ്ടെക്സ്റ്റ് പാഥ് പിന്തുണയ്ക്കുന്നില്ല"
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr "ലോക്ക് പരാജയ പ്രവര്‍ത്തി പിന്തുണയ്ക്കുന്നതിനായി സാന്‍ലോക്ക് പഴയതാകുന്നു"
+
+#~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+#~ msgstr "'%s' നെ നാറ്റ് ചെയ്യാന്‍ ശ്രമിച്ചു. ഐപിവി4നു് മാത്രമേ നാറ്റ് പിന്തുണയുള്ളൂ."
+
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "%s ബൈനറിയ്ക്കുള്ള പാത്ത് കണ്ടുപിടിയ്ക്കുന്നതില്‍ പരാജയം"
+
+#~ msgid "Failed to format new xml document for un-enslaved interface %s"
+#~ msgstr "അടിമയല്ലാത്ത ഇന്റെര്‍ഫേസ് %s ന് വേണ്ടി പുതിയ xml രേഖ ഫേര്‍മാറ്റ്ചെയ്യാനായില്ല"
+
+#~ msgid "Failed to set new slave interface name to '%s' in xml document"
+#~ msgstr "xml രേഖയില്‍ പുതിയ സ്ലേവ് ഇന്റെര്‍ഫേസ് പേരിനെ '%s' ആയി ക്രമീകരിക്കാന്‍ പറ്റിയില്ല"
+
+#~ msgid "Failed to set new slave interface type to '%s' in xml document"
+#~ msgstr "xml രേഖയില്‍ പുതിയ സ്ലേവ് ഇന്റെര്‍ഫേസ് തരത്തെ '%s' ആയി ക്രമീകരിക്കാന്‍ പറ്റിയില്ല"
+
+#~ msgid "Failed to switch root mount into slave mode"
+#~ msgstr "റൂട്ട് മൌണ്ട് സ്ലേവ് മോഡിലേക്ക് മാറ്റുന്നതില്‍ പരാജയം"
+
+#~ msgid "SASL client identity '%s' not allowed in whitelist"
+#~ msgstr "എസ്എഎസ്എല്‍ ക്ലയന്റ് '%s' വൈറ്റ്‌ലിസ്റ്റില്‍ അനുവദിയ്ക്കുന്നില്ല"
+
+#~ msgid "don't start the un-slaved interface immediately (not recommended)"
+#~ msgstr "മോചിപ്പിച്ച ഇന്റെര്‍ഫേസ് ഉടനെ തുടങ്ങരുത്"
+
+#, fuzzy
+#~ msgid "event 'metdata-change' for domain %s: %s %s\n"
+#~ msgstr "മേല്‍നോട്ടത്തോടെ സൂക്ഷിച്ച ഡൊമൈന്‍ ഇമേജ് %s നീക്കി"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "cgroup '%s', '%s'-ല്‍, ബൈന്‍ഡ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#, fuzzy
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "iommuGroup നംബര്‍ വിശേഷത ലഭ്യമല്ല"
+
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
+
+#~ msgid "undefine a bridge device after detaching its slave device"
+#~ msgstr "അടിമ ഉപകരണത്തെ മോചിപ്പിച്ച് ബ്രിഡ്ജ് ഉപകരണം അണ്‍ഡിഫൈന്‍ ചെയ്യുക"

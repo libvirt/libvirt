@@ -821,8 +821,8 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     for (i = 0; i < vm->def->nrngs; i++)
         virDomainAuditRNG(vm, NULL, vm->def->rngs[i], "start", true);
 
-    if (vm->def->tpm)
-        virDomainAuditTPM(vm, vm->def->tpm, "start", true);
+    for (i = 0; i < vm->def->ntpms; i++)
+        virDomainAuditTPM(vm, vm->def->tpms[i], "start", true);
 
     for (i = 0; i < vm->def->nshmems; i++)
         virDomainAuditShmem(vm, vm->def->shmems[i], "start", true);

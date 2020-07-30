@@ -18,7 +18,7 @@
 
 #include <config.h>
 
-#ifdef NSS
+#ifdef WITH_NSS
 # include "virmock.h"
 # include <sys/types.h>
 # include <dirent.h>

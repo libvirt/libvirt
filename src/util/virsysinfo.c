@@ -1002,7 +1002,7 @@ virSysinfoParseOEMStrings(const char *base,
 
         /* If OEM String contains newline, dmidecode escapes it as a dot.
          * If this is the case then run dmidecode again to get raw string.
-         * Unfortunately, we can't dinstinguish betwen dot an new line at
+         * Unfortunately, we can't dinstinguish between dot an new line at
          * this level. */
         if (memchr(cur, '.', eol - cur)) {
             char *str;
@@ -1573,15 +1573,14 @@ virSysinfoFormatFWCfg(virBufferPtr buf,
 int
 virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
-    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
     const char *type = virSysinfoTypeToString(def->type);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected sysinfo type model %d"),
                        def->type);
-        virBufferFreeAndReset(buf);
         return -1;
     }
 

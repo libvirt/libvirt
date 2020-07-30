@@ -343,24 +343,23 @@ api_DATA = \
        libvirt-lxc-api.xml \
        libvirt-admin-api.xml
 
-fig = \
-  libvirt-daemon-arch.fig \
-  libvirt-driver-arch.fig \
-  libvirt-object-model.fig \
-  migration-managed-direct.fig \
-  migration-managed-p2p.fig \
-  migration-native.fig \
-  migration-tunnel.fig \
-  migration-unmanaged-direct.fig
+svg = \
+  libvirt-daemon-arch.svg \
+  libvirt-driver-arch.svg \
+  libvirt-object-model.svg \
+  migration-managed-direct.svg \
+  migration-managed-p2p.svg \
+  migration-native.svg \
+  migration-tunnel.svg \
+  migration-unmanaged-direct.svg
 
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
 EXTRA_DIST= \
   site.xsl subsite.xsl newapi.xsl page.xsl \
-  wrapstring.xsl \
   $(dot_html_in) $(dot_rst) $(apipng) \
-  $(fig) $(assets) \
+  $(svg) $(assets) \
   $(javascript) $(logofiles) \
   $(internals_html_in) $(internals_rst) $(fonts) \
   $(kbase_html_in) $(kbase_rst) \
@@ -406,9 +405,6 @@ hvsupport.html.in: $(top_srcdir)/scripts/hvsupport.py $(api_DATA) \
 	$(top_srcdir)/src/driver.h
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/hvsupport.py \
 		$(top_srcdir) $(top_builddir) > $@ || { rm $@ && exit 1; }
-
-%.png: %.fig
-	convert -rotate 90 $< $@
 
 manpages/%.html.in: manpages/%.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
@@ -476,13 +472,7 @@ check-html:
 
 check-local: check-html
 
-python_generated_files = \
-		html/libvirt-libvirt-lxc.html \
-		html/libvirt-libvirt-qemu.html \
-		html/libvirt-libvirt-admin.html \
-		html/libvirt-virterror.html \
-		$(api_DATA) \
-		$(NULL)
+python_generated_files = $(api_DATA)
 
 APIBUILD=$(top_srcdir)/scripts/apibuild.py
 APIBUILD_STAMP=apibuild.py.stamp

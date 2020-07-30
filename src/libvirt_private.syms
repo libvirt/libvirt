@@ -830,21 +830,33 @@ virNodeDeviceDeleteVport;
 virNodeDeviceGetParentName;
 
 # conf/numa_conf.h
+virDomainCacheAssociativityTypeFromString;
+virDomainCacheAssociativityTypeToString;
+virDomainCachePolicyTypeFromString;
+virDomainCachePolicyTypeToString;
 virDomainMemoryAccessTypeFromString;
 virDomainMemoryAccessTypeToString;
+virDomainMemoryLatencyTypeFromString;
+virDomainMemoryLatencyTypeToString;
 virDomainNumaCheckABIStability;
 virDomainNumaEquals;
 virDomainNumaFillCPUsInNode;
 virDomainNumaFree;
 virDomainNumaGetCPUCountTotal;
+virDomainNumaGetInterconnect;
+virDomainNumaGetInterconnectsCount;
 virDomainNumaGetMaxCPUID;
 virDomainNumaGetMemorySize;
+virDomainNumaGetNodeCache;
+virDomainNumaGetNodeCacheCount;
 virDomainNumaGetNodeCount;
 virDomainNumaGetNodeCpumask;
 virDomainNumaGetNodeDiscard;
 virDomainNumaGetNodeDistance;
+virDomainNumaGetNodeInitiator;
 virDomainNumaGetNodeMemoryAccessMode;
 virDomainNumaGetNodeMemorySize;
+virDomainNumaHasHMAT;
 virDomainNumaNew;
 virDomainNumaNodeDistanceIsUsingDefaults;
 virDomainNumaNodesDistancesAreBeingSet;
@@ -1560,6 +1572,7 @@ virSecurityManagerRestoreHostdevLabel;
 virSecurityManagerRestoreImageLabel;
 virSecurityManagerRestoreInputLabel;
 virSecurityManagerRestoreMemoryLabel;
+virSecurityManagerRestoreSavedStateLabel;
 virSecurityManagerRestoreTPMLabels;
 virSecurityManagerSetAllLabel;
 virSecurityManagerSetChardevLabel;
@@ -1571,6 +1584,7 @@ virSecurityManagerSetImageLabel;
 virSecurityManagerSetInputLabel;
 virSecurityManagerSetMemoryLabel;
 virSecurityManagerSetProcessLabel;
+virSecurityManagerSetSavedStateLabel;
 virSecurityManagerSetSocketLabel;
 virSecurityManagerSetTapFDLabel;
 virSecurityManagerSetTPMLabels;
@@ -2111,6 +2125,7 @@ virFileRewrite;
 virFileRewriteStr;
 virFileSanitizePath;
 virFileSetACLs;
+virFileSetCOW;
 virFileSetupDev;
 virFileSetXAttr;
 virFileTouch;
@@ -2211,6 +2226,7 @@ virHookPresent;
 
 
 # util/virhostcpu.h
+virHostCPUGetAvailableCPUsBitmap;
 virHostCPUGetCount;
 virHostCPUGetInfo;
 virHostCPUGetKVMMaxVCPUs;
@@ -2402,8 +2418,7 @@ virKeycodeValueTranslate;
 
 
 # util/virkmod.h
-virKModConfig;
-virKModIsBlacklisted;
+virKModIsProhibited;
 virKModLoad;
 virKModUnload;
 
@@ -2840,8 +2855,8 @@ virPCIHeaderTypeToString;
 virPCIIsVirtualFunction;
 virPCIStubDriverTypeFromString;
 virPCIStubDriverTypeToString;
-virZPCIDeviceAddressIsEmpty;
-virZPCIDeviceAddressIsValid;
+virZPCIDeviceAddressIsIncomplete;
+virZPCIDeviceAddressIsPresent;
 
 
 # util/virperf.h
@@ -3485,6 +3500,7 @@ virVsockSetGuestCid;
 
 
 # util/virxml.h
+virParseScaledValue;
 virXMLCheckIllegalChars;
 virXMLChildElementCount;
 virXMLExtractNamespaceXML;

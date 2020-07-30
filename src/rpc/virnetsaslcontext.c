@@ -36,7 +36,7 @@ VIR_LOG_INIT("rpc.netsaslcontext");
 struct _virNetSASLContext {
     virObjectLockable parent;
 
-    const char *const*usernameWhitelist;
+    const char *const *usernameACL;
 };
 
 struct _virNetSASLSession {
@@ -121,7 +121,7 @@ virNetSASLContextPtr virNetSASLContextNewClient(void)
     return ctxt;
 }
 
-virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitelist)
+virNetSASLContextPtr virNetSASLContextNewServer(const char *const *usernameACL)
 {
     virNetSASLContextPtr ctxt;
 
@@ -132,7 +132,7 @@ virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitel
     if (!(ctxt = virObjectLockableNew(virNetSASLContextClass)))
         return NULL;
 
-    ctxt->usernameWhitelist = usernameWhitelist;
+    ctxt->usernameACL = usernameACL;
 
     return ctxt;
 }
@@ -146,7 +146,7 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
     virObjectLock(ctxt);
 
     /* If the list is not set, allow any DN. */
-    wildcards = ctxt->usernameWhitelist;
+    wildcards = ctxt->usernameACL;
     if (!wildcards) {
         ret = 1; /* No ACL, allow all */
         goto cleanup;
@@ -162,7 +162,7 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
     }
 
     /* Denied */
-    VIR_ERROR(_("SASL client identity '%s' not allowed in whitelist"), identity);
+    VIR_ERROR(_("SASL client identity '%s' not allowed by ACL"), identity);
 
     /* This is the most common error: make it informative. */
     virReportError(VIR_ERR_SYSTEM_ERROR, "%s",

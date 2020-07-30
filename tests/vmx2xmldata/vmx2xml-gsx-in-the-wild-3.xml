@@ -19,12 +19,12 @@
     </disk>
     <controller type='ide' index='0'/>
     <interface type='bridge'>
-      <mac address='00:0c:29:c4:be:5a'/>
+      <mac address='00:0c:29:c4:be:5a' type='generated'/>
       <source bridge='net1'/>
       <target dev='/dev/vmnet1'/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:0c:29:c4:be:64'/>
+      <mac address='00:0c:29:c4:be:64' type='generated'/>
       <source bridge='net2'/>
       <target dev='/dev/vmnet2'/>
     </interface>

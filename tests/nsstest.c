@@ -20,7 +20,7 @@
 
 #include "testutils.h"
 
-#ifdef NSS
+#ifdef WITH_NSS
 
 # include "libvirt_nss.h"
 # include "virsocket.h"

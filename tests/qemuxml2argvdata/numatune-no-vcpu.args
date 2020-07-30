@@ -1,0 +1,33 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-QEMUGuest \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name QEMUGuest \
+-S \
+-machine pc,accel=tcg,usb=off,dump-guest-core=off \
+-m 12288 \
+-realtime mlock=off \
+-smp 12,sockets=12,cores=1,threads=1 \
+-numa node,nodeid=0,cpus=0-3,mem=2048 \
+-numa node,nodeid=1,cpus=4-7,mem=2048 \
+-numa node,nodeid=2,cpus=8-11,mem=2048 \
+-numa node,nodeid=3,mem=2048 \
+-numa node,nodeid=4,mem=2048 \
+-numa node,nodeid=5,mem=2048 \
+-uuid c7a5fdb2-cdaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-usb \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

@@ -880,7 +880,7 @@ qemuProcessHandleIOError(qemuMonitorPtr mon G_GNUC_UNUSED,
     if (diskAlias)
         disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL);
     else if (nodename)
-        disk = qemuDomainDiskLookupByNodename(vm->def, nodename, NULL, NULL);
+        disk = qemuDomainDiskLookupByNodename(vm->def, nodename, NULL);
     else
         disk = NULL;
 
@@ -1497,10 +1497,10 @@ qemuProcessHandleBlockThreshold(qemuMonitorPtr mon G_GNUC_UNUSED,
                                 void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virObjectEventPtr event = NULL;
+    virObjectEventPtr eventSource = NULL;
+    virObjectEventPtr eventDevice = NULL;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr src;
-    unsigned int idx;
     const char *path = NULL;
 
     virObjectLock(vm);
@@ -1509,18 +1509,28 @@ qemuProcessHandleBlockThreshold(qemuMonitorPtr mon G_GNUC_UNUSED,
               "threshold '%llu' exceeded by '%llu'",
               nodename, vm, vm->def->name, threshold, excess);
 
-    if ((disk = qemuDomainDiskLookupByNodename(vm->def, nodename, &src, &idx))) {
-        g_autofree char *dev = NULL;
+    if ((disk = qemuDomainDiskLookupByNodename(vm->def, nodename, &src))) {
         if (virStorageSourceIsLocalStorage(src))
             path = src->path;
 
-        if ((dev = qemuDomainDiskBackingStoreGetName(disk, src, idx)))
-            event = virDomainEventBlockThresholdNewFromObj(vm, dev, path,
-                                                           threshold, excess);
+        if (src == disk->src) {
+            g_autofree char *dev = qemuDomainDiskBackingStoreGetName(disk, 0);
+
+            eventDevice = virDomainEventBlockThresholdNewFromObj(vm, dev, path,
+                                                                 threshold, excess);
+        }
+
+        if (src->id != 0) {
+            g_autofree char *dev = qemuDomainDiskBackingStoreGetName(disk, src->id);
+
+            eventSource = virDomainEventBlockThresholdNewFromObj(vm, dev, path,
+                                                                 threshold, excess);
+        }
     }
 
     virObjectUnlock(vm);
-    virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, eventDevice);
+    virObjectEventStateQueue(driver->domainEventState, eventSource);
 
     return 0;
 }
@@ -1608,6 +1618,7 @@ qemuProcessHandleSpiceMigrated(qemuMonitorPtr mon G_GNUC_UNUSED,
                                void *opaque G_GNUC_UNUSED)
 {
     qemuDomainObjPrivatePtr priv;
+    qemuDomainJobPrivatePtr jobPriv;
 
     virObjectLock(vm);
 
@@ -1615,12 +1626,13 @@ qemuProcessHandleSpiceMigrated(qemuMonitorPtr mon G_GNUC_UNUSED,
               vm, vm->def->name);
 
     priv = vm->privateData;
+    jobPriv = priv->job.privateData;
     if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
         VIR_DEBUG("got SPICE_MIGRATE_COMPLETED event without a migration job");
         goto cleanup;
     }
 
-    priv->job.spiceMigrated = true;
+    jobPriv->spiceMigrated = true;
     virDomainObjBroadcast(vm);
 
  cleanup:
@@ -1720,6 +1732,7 @@ qemuProcessHandleDumpCompleted(qemuMonitorPtr mon G_GNUC_UNUSED,
                                void *opaque G_GNUC_UNUSED)
 {
     qemuDomainObjPrivatePtr priv;
+    qemuDomainJobPrivatePtr jobPriv;
 
     virObjectLock(vm);
 
@@ -1727,11 +1740,12 @@ qemuProcessHandleDumpCompleted(qemuMonitorPtr mon G_GNUC_UNUSED,
               vm, vm->def->name, stats, NULLSTR(error));
 
     priv = vm->privateData;
+    jobPriv = priv->job.privateData;
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_NONE) {
         VIR_DEBUG("got DUMP_COMPLETED event without a dump_completed job");
         goto cleanup;
     }
-    priv->job.dumpCompleted = true;
+    jobPriv->dumpCompleted = true;
     priv->job.current->stats.dump = *stats;
     priv->job.error = g_strdup(error);
 
@@ -2639,7 +2653,7 @@ qemuProcessSetupPid(virDomainObjPtr vm,
     virDomainNumatuneMemMode mem_mode;
     virCgroupPtr cgroup = NULL;
     virBitmapPtr use_cpumask = NULL;
-    virBitmapPtr afinity_cpumask = NULL;
+    virBitmapPtr affinity_cpumask = NULL;
     g_autoptr(virBitmap) hostcpumap = NULL;
     g_autofree char *mem_mask = NULL;
     int ret = -1;
@@ -2665,7 +2679,7 @@ qemuProcessSetupPid(virDomainObjPtr vm,
          * its config file */
         if (qemuProcessGetAllCpuAffinity(&hostcpumap) < 0)
             goto cleanup;
-        afinity_cpumask = hostcpumap;
+        affinity_cpumask = hostcpumap;
     }
 
     /*
@@ -2706,11 +2720,11 @@ qemuProcessSetupPid(virDomainObjPtr vm,
 
     }
 
-    if (!afinity_cpumask)
-        afinity_cpumask = use_cpumask;
+    if (!affinity_cpumask)
+        affinity_cpumask = use_cpumask;
 
     /* Setup legacy affinity. */
-    if (afinity_cpumask && virProcessSetAffinity(pid, afinity_cpumask) < 0)
+    if (affinity_cpumask && virProcessSetAffinity(pid, affinity_cpumask) < 0)
         goto cleanup;
 
     /* Set scheduler type and priority, but not for the main thread. */
@@ -3411,6 +3425,8 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
                               virDomainState state,
                               int reason)
 {
+
+    qemuDomainJobPrivatePtr jobPriv = job->privateData;
     bool postcopy = (state == VIR_DOMAIN_PAUSED &&
                      reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED) ||
                     (state == VIR_DOMAIN_RUNNING &&
@@ -3459,7 +3475,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
     }
 
     qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_NONE,
-                             job->migParams, job->apiFlags);
+                             jobPriv->migParams, job->apiFlags);
     return 0;
 }
 
@@ -3471,6 +3487,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
                                int reason,
                                unsigned int *stopFlags)
 {
+    qemuDomainJobPrivatePtr jobPriv = job->privateData;
     bool postcopy = state == VIR_DOMAIN_PAUSED &&
                     (reason == VIR_DOMAIN_PAUSED_POSTCOPY ||
                      reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
@@ -3554,7 +3571,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
     }
 
     qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_NONE,
-                             job->migParams, job->apiFlags);
+                             jobPriv->migParams, job->apiFlags);
     return 0;
 }
 
@@ -6449,9 +6466,6 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
-    if (qemuDBusPrepareHost(driver) < 0)
-        return -1;
-
     if (qemuPrepareNVRAM(cfg, vm) < 0)
         return -1;
 
@@ -7073,6 +7087,7 @@ qemuProcessStart(virConnectPtr conn,
     qemuProcessIncomingDefPtr incoming = NULL;
     unsigned int stopFlags;
     bool relabel = false;
+    bool relabelSavedState = false;
     int ret = -1;
     int rv;
 
@@ -7108,6 +7123,13 @@ qemuProcessStart(virConnectPtr conn,
 
     if (qemuProcessPrepareHost(driver, vm, flags) < 0)
         goto stop;
+
+    if (migratePath) {
+        if (qemuSecuritySetSavedStateLabel(driver->securityManager,
+                                           vm->def, migratePath) < 0)
+            goto cleanup;
+        relabelSavedState = true;
+    }
 
     if ((rv = qemuProcessLaunch(conn, driver, vm, asyncJob, incoming,
                                 snapshot, vmop, flags)) < 0) {
@@ -7145,6 +7167,10 @@ qemuProcessStart(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    if (relabelSavedState &&
+        qemuSecurityRestoreSavedStateLabel(driver->securityManager,
+                                           vm->def, migratePath) < 0)
+        VIR_WARN("failed to restore save state label on %s", migratePath);
     qemuProcessIncomingDefFree(incoming);
     return ret;
 
@@ -7744,6 +7770,52 @@ qemuProcessRefreshDisks(virQEMUDriverPtr driver,
 
 
 static int
+qemuProcessRefreshCPUMigratability(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
+    bool migratable;
+    int rc;
+
+    if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH)
+        return 0;
+
+    /* If the cpu.migratable capability is present, the migratable attribute
+     * is set correctly. */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CPU_MIGRATABLE))
+        return 0;
+
+    if (!ARCH_IS_X86(def->os.arch))
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorGetCPUMigratable(priv->mon, &migratable);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        return -1;
+
+    if (rc == 1)
+        migratable = false;
+
+    /* Libvirt 6.5.0 would set migratable='off' for running domains even though
+     * the actual default used by QEMU was 'on'. */
+    if (def->cpu->migratable == VIR_TRISTATE_SWITCH_OFF && migratable) {
+        VIR_DEBUG("Fixing CPU migratable attribute");
+        def->cpu->migratable = VIR_TRISTATE_SWITCH_ON;
+    }
+
+    if (def->cpu->migratable == VIR_TRISTATE_SWITCH_ABSENT)
+        def->cpu->migratable = virTristateSwitchFromBool(migratable);
+
+    return 0;
+}
+
+
+static int
 qemuProcessRefreshCPU(virQEMUDriverPtr driver,
                       virDomainObjPtr vm)
 {
@@ -7757,6 +7829,9 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
 
     if (!vm->def->cpu)
         return 0;
+
+    if (qemuProcessRefreshCPUMigratability(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+        return -1;
 
     if (!(host = virQEMUDriverGetHostCPU(driver))) {
         virResetLastError();
@@ -8383,8 +8458,7 @@ qemuProcessQMPNew(const char *binary,
                   gid_t runGid,
                   bool forceTCG)
 {
-    qemuProcessQMPPtr ret = NULL;
-    qemuProcessQMPPtr proc = NULL;
+    g_autoptr(qemuProcessQMP) proc = NULL;
     const char *threadSuffix;
     g_autofree char *threadName = NULL;
 
@@ -8392,7 +8466,7 @@ qemuProcessQMPNew(const char *binary,
               binary, libDir, runUid, runGid, forceTCG);
 
     if (VIR_ALLOC(proc) < 0)
-        goto cleanup;
+        return NULL;
 
     proc->binary = g_strdup(binary);
     proc->libDir = g_strdup(libDir);
@@ -8409,13 +8483,9 @@ qemuProcessQMPNew(const char *binary,
     threadName = g_strdup_printf("qmp-%s", threadSuffix);
 
     if (!(proc->eventThread = virEventThreadNew(threadName)))
-        goto cleanup;
+        return NULL;
 
-    ret = g_steal_pointer(&proc);
-
- cleanup:
-    qemuProcessQMPFree(proc);
-    return ret;
+    return g_steal_pointer(&proc);
 }
 
 

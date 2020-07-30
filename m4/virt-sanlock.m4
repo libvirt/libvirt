@@ -22,44 +22,13 @@ AC_DEFUN([LIBVIRT_ARG_SANLOCK],[
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
-  LIBVIRT_CHECK_LIB([SANLOCK], [sanlock_client], [sanlock_init], [sanlock.h])
+  LIBVIRT_CHECK_PKG([SANLOCK], [libsanlock_client], [3.2.4])
 
   if test "x$with_sanlock" = "xyes" ; then
-    AC_CHECK_DECLS([SANLK_INQ_WAIT], [sanlock_inq_wait=1], [sanlock_inq_wait=0], [[
-      #include <stdint.h>
-      #include <sanlock_admin.h>
-    ]])
-
     old_cppflags="$CPPFLAGS"
     old_libs="$LIBS"
     CPPFLAGS="$CPPFLAGS $SANLOCK_CFLAGS"
     LIBS="$LIBS $SANLOCK_LIBS"
-
-    AC_CHECK_LIB([sanlock_client], [sanlock_killpath],
-                 [sanlock_killpath=yes], [sanlock_killpath=no])
-    if test "x$sanlock_killpath" = "xyes" ; then
-      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_KILLPATH], 1,
-        [whether Sanlock supports sanlock_killpath])
-    fi
-
-    AC_CHECK_LIB([sanlock_client], [sanlock_inq_lockspace],
-               [sanlock_inq_lockspace=yes], [sanlock_inq_lockspace=no])
-    if test "x$sanlock_inq_lockspace" = "xyes" && \
-       test $sanlock_inq_wait = 1; then
-      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_INQ_LOCKSPACE], 1,
-        [whether sanlock supports sanlock_inq_lockspace])
-    fi
-
-    dnl Ideally, we would check for sanlock_add_lockspace_timeout here too, but
-    dnl sanlock_write_lockspace has been introduced 2 releases after
-    dnl sanlock_add_lockspace_timeout therefore if sanlock_write_lockspace is found
-    dnl it is safe to assume sanlock_add_lockspace_timeout is present too.
-    AC_CHECK_LIB([sanlock_client], [sanlock_write_lockspace],
-                 [sanlock_write_lockspace=yes], [sanlock_write_lockspace=no])
-    if test "x$sanlock_write_lockspace" = "xyes" ; then
-      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_IO_TIMEOUT], 1,
-        [whether sanlock supports sanlock_write_lockspace])
-    fi
 
     AC_CHECK_LIB([sanlock_client], [sanlock_strerror],
                  [sanlock_strerror=yes], [sanlock_strerror=no])

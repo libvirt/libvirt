@@ -25,7 +25,7 @@
     <controller type='scsi' index='0' model='lsilogic'/>
     <controller type='ide' index='0'/>
     <interface type='user'>
-      <mac address='00:50:56:2f:d3:46'/>
+      <mac address='00:50:56:2f:d3:46' type='static'/>
       <model type='e1000'/>
     </interface>
     <video>

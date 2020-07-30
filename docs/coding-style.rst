@@ -541,6 +541,44 @@ diligent about this, when you see a non-const pointer, you're
 guaranteed that it is used to modify the storage it points to, or
 it is aliased to another pointer that is.
 
+Defining Local Variables
+------------------------
+
+Always define local variables at the top of the block in which they
+are used (before any pure code). Although modern C compilers allow
+defining a local variable in the middle of a block of code, this
+practice can lead to bugs, and must be avoided in all libvirt
+code. As indicated in these examples, it is okay to initialize
+variables where they are defined, even if the initialization involves
+calling another function.
+
+::
+
+  GOOD:
+    int
+    bob(char *loblaw)
+    {
+        int x;
+        int y = lawBlog();
+        char *z = NULL;
+
+        x = y + 20;
+        ...
+    }
+
+  BAD:
+    int
+    bob(char *loblaw)
+    {
+        int x;
+        int y = lawBlog();
+
+        x = y + 20;
+
+        char *z = NULL; // <===
+        ...
+    }
+
 Attribute annotations
 ---------------------
 

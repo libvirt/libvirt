@@ -1,1 +1,7 @@
-<domainbackup mode='push'/>
+<domainbackup mode='push'>
+  <disks>
+    <disk name='vdextradisk' backup='yes' type='file' backupmode='full'>
+      <target file='/fake/vdextradisk.qcow2.SUFFIX'/>
+    </disk>
+  </disks>
+</domainbackup>

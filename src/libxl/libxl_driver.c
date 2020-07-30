@@ -942,7 +942,7 @@ static char *
 libxlConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(0, NULL);
 
@@ -1533,7 +1533,7 @@ libxlDomainPMWakeup(virDomainPtr dom, unsigned int flags)
         goto endjob;
     }
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_WAKEUP);
-    /* reenable death event - libxl reports it only once */
+    /* re-enable death event - libxl reports it only once */
     if (priv->deathW)
         libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
     if (libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW))

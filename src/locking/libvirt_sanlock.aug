@@ -16,7 +16,7 @@ module Libvirt_sanlock =
    let int_entry       (kw:string) = [ key kw . value_sep . int_val ]
 
 
-   (* Each enty in the config is one of the following three ... *)
+   (* Each entry in the config is one of the following three ... *)
    let entry = str_entry "disk_lease_dir"
              | bool_entry "auto_disk_leases"
              | int_entry "host_id"

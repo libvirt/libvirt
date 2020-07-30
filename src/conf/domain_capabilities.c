@@ -596,7 +596,7 @@ virDomainCapsFormatFeatures(const virDomainCaps *caps,
 char *
 virDomainCapsFormat(const virDomainCaps *caps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *virttype_str = virDomainVirtTypeToString(caps->virttype);
     const char *arch_str = virArchToString(caps->arch);
 

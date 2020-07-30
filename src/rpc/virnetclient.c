@@ -428,7 +428,7 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
 {
     virNetSocketPtr sock = NULL;
 
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *nc = NULL;
     g_autofree char *command = NULL;
 
@@ -518,7 +518,7 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
 {
     virNetSocketPtr sock = NULL;
 
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *nc = NULL;
     g_autofree char *command = NULL;
 

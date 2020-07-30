@@ -54,7 +54,7 @@ testMdevctlStart(const char *virt_type,
 {
     g_autoptr(virNodeDeviceDef) def = NULL;
     virNodeDeviceObjPtr obj = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *actualCmdline = NULL;
     int ret = -1;
     g_autofree char *uuid = NULL;
@@ -87,7 +87,6 @@ testMdevctlStart(const char *virt_type,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     virCommandSetDryRun(NULL, NULL, NULL);
     virNodeDeviceObjEndAPI(&obj);
     return ret;
@@ -114,7 +113,7 @@ static int
 testMdevctlStop(const void *data)
 {
     const char *uuid = data;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *actualCmdline = NULL;
     int ret = -1;
     g_autoptr(virCommand) cmd = NULL;
@@ -140,7 +139,6 @@ testMdevctlStop(const void *data)
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     virCommandSetDryRun(NULL, NULL, NULL);
     return ret;
 }

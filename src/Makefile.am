@@ -32,7 +32,6 @@ AM_CPPFLAGS =	-I$(top_srcdir) \
 AM_CFLAGS =	$(LIBXML_CFLAGS) \
 		$(GLIB_CFLAGS) \
 		$(WARN_CFLAGS) \
-		$(LOCK_CHECKING_CFLAGS) \
 		$(WIN32_EXTRA_CFLAGS) \
 		$(COVERAGE_CFLAGS) \
 		$(NULL)
@@ -228,25 +227,25 @@ $(srcdir)/remote_protocol-struct \
 	$(srcdir)/lxc_protocol-struct: \
 		$(srcdir)/%-struct: remote/libvirt_driver_remote_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 $(srcdir)/virnetprotocol-struct $(srcdir)/virkeepaliveprotocol-struct: \
 		$(srcdir)/%-struct: rpc/libvirt_net_rpc_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 if WITH_LXC
 $(srcdir)/lxc_monitor_protocol-struct: \
 		$(srcdir)/%-struct: lxc/libvirt_driver_lxc_impl_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 endif WITH_LXC
 $(srcdir)/lock_protocol-struct: \
 		$(srcdir)/%-struct: locking/lockd_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 $(srcdir)/admin_protocol-struct: \
 		$(srcdir)/%-struct: admin/libvirt_admin_la-%.lo
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
-		"$(CC)" "$(OBJEXT)" $< $(@)s
+		"$(CC)" $< $(@)s
 
 else !WITH_REMOTE
 # The $(PROTOCOL_STRUCTS) files must live in git, because they cannot be
@@ -431,15 +430,13 @@ libvirt_la_LDFLAGS = \
 		-version-info $(LIBVIRT_VERSION_INFO) \
 		$(LIBVIRT_NODELETE) \
 		$(NO_UNDEFINED_LDFLAGS) \
-		$(AM_LDFLAGS)
-if WITH_MACOS
-# macOS has two-level namespaces by default.
-# Override it to allow symbol replacement with DYLD_INSERT_LIBRARIES
-libvirt_la_LDFLAGS += -Wl,-flat_namespace
-endif WITH_MACOS
-libvirt_la_LDFLAGS += $(NULL)
+		$(FLAT_NAMESPACE_FLAGS) \
+		$(AM_LDFLAGS) \
+		$(NULL)
 libvirt_la_LIBADD += \
-		    $(DRIVER_MODULES_LIBS)
+		$(DLOPEN_LIBS) \
+		$(XDR_LIBS) \
+		$(NULL)
 libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
 # Because we specify libvirt_la_DEPENDENCIES for $(LIBVIRT_SYMBOL_FILE), we
 # lose automake's automatic dependencies on an appropriate subset of

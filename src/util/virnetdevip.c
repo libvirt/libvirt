@@ -660,7 +660,7 @@ virNetDevIPCheckIPv6Forwarding(void)
     }
 
     if (!valid) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         for (i = 0; i < data.ndevices; i++) {
             virBufferAdd(&buf, data.devices[i], -1);
             if (i < data.ndevices - 1)
@@ -672,7 +672,6 @@ virNetDevIPCheckIPv6Forwarding(void)
                          "RA routes without accept_ra set to 2 is likely to cause "
                          "routes loss. Interfaces to look at: %s"),
                        virBufferCurrentContent(&buf));
-        virBufferFreeAndReset(&buf);
     }
 
  cleanup:
@@ -898,26 +897,25 @@ virNetDevGetifaddrsAddress(const char *ifname,
     }
 
     for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
-        int family;
-
         if (STRNEQ_NULLABLE(ifa->ifa_name, ifname))
             continue;
 
         if (!ifa->ifa_addr)
             continue;
-        family = ifa->ifa_addr->sa_family;
 
-        if (family != AF_INET6 && family != AF_INET)
-            continue;
-
-        if (family == AF_INET6) {
+        switch (ifa->ifa_addr->sa_family) {
+        case AF_INET6:
             addr->len = sizeof(addr->data.inet6);
             memcpy(&addr->data.inet6, ifa->ifa_addr, addr->len);
-        } else {
+            break;
+        case AF_INET:
             addr->len = sizeof(addr->data.inet4);
             memcpy(&addr->data.inet4, ifa->ifa_addr, addr->len);
+            break;
+        default:
+            continue;
         }
-        addr->data.stor.ss_family = family;
+        addr->data.stor.ss_family = ifa->ifa_addr->sa_family;
         ret = 0;
         goto cleanup;
     }

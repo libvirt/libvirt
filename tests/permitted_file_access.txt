@@ -1,0 +1,28 @@
+# This is a list of files not in our build directory nor source
+# directory which are permitted to be accessed by tests. The
+# records are in the following formats:
+#
+#  $path: $progname: $testname
+#  $path: $action: $progname: $testname
+#
+# All these variables are evaluated as python RE. So to allow
+# /dev/sda and /dev/sdb, you can just '/dev/sd[a-b]', or to allow
+# /proc/$pid/status you can '/proc/\d+/status' and so on.
+# Moreover, $action, $progname and $testname can be empty, in which
+# which case $path is allowed for all tests. However, $action (if
+# specified) must be one of "open", "fopen", "access", "stat",
+# "lstat", "connect".
+
+/bin/cat: sysinfotest
+/bin/dirname: sysinfotest: x86 sysinfo
+/bin/sleep: commandtest
+/bin/true: commandtest
+/dev/null
+/dev/urandom
+/etc/hosts
+/proc/\d+/status
+
+/etc/passwd: fopen
+
+# This is just a dummy example, DO NOT USE IT LIKE THAT!
+.*: nonexistent-test-touching-everything

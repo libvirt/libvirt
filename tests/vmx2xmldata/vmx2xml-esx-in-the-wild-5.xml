@@ -32,7 +32,7 @@
     <controller type='scsi' index='0' model='lsilogic'/>
     <controller type='ide' index='0'/>
     <interface type='bridge'>
-      <mac address='00:50:56:be:00:15'/>
+      <mac address='00:50:56:be:00:15' type='generated'/>
       <source bridge='VM-LAN'/>
       <model type='e1000'/>
     </interface>

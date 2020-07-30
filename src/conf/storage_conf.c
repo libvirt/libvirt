@@ -839,6 +839,33 @@ virStoragePoolDefRefreshFormat(virBufferPtr buf,
 }
 
 
+static int
+virStoragePoolDefParseFeatures(virStoragePoolDefPtr def,
+                               xmlXPathContextPtr ctxt)
+{
+    g_autofree char *cow = virXPathString("string(./features/cow/@state)", ctxt);
+
+    if (cow) {
+        int val;
+        if (def->type != VIR_STORAGE_POOL_FS &&
+            def->type != VIR_STORAGE_POOL_DIR) {
+            virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                           _("cow feature may only be used for 'fs' and 'dir' pools"));
+            return -1;
+        }
+        if ((val = virTristateBoolTypeFromString(cow)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid storage pool cow feature state '%s'"),
+                           cow);
+            return -1;
+        }
+        def->features.cow = val;
+    }
+
+    return 0;
+}
+
+
 virStoragePoolDefPtr
 virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 {
@@ -909,6 +936,9 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
             return NULL;
         }
     }
+
+    if (virStoragePoolDefParseFeatures(def, ctxt) < 0)
+        return NULL;
 
     if (options->flags & VIR_STORAGE_POOL_SOURCE_HOST) {
         if (!def->source.nhost) {
@@ -1131,6 +1161,23 @@ virStoragePoolSourceFormat(virBufferPtr buf,
 }
 
 
+static void
+virStoragePoolDefFormatFeatures(virBufferPtr buf,
+                                virStoragePoolDefPtr def)
+{
+    if (def->features.cow == VIR_TRISTATE_BOOL_ABSENT)
+        return;
+
+    virBufferAddLit(buf, "<features>\n");
+    virBufferAdjustIndent(buf, 2);
+    if (def->features.cow != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(buf, "<cow state='%s'/>\n",
+                          virTristateBoolTypeToString(def->features.cow));
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</features>\n");
+}
+
+
 static int
 virStoragePoolDefFormatBuf(virBufferPtr buf,
                            virStoragePoolDefPtr def)
@@ -1165,6 +1212,8 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
                       def->allocation);
     virBufferAsprintf(buf, "<available unit='bytes'>%llu</available>\n",
                       def->available);
+
+    virStoragePoolDefFormatFeatures(buf, def);
 
     if (virStoragePoolSourceFormat(buf, options, &def->source) < 0)
         return -1;
@@ -1223,16 +1272,12 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
 char *
 virStoragePoolDefFormat(virStoragePoolDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virStoragePoolDefFormatBuf(&buf, def) < 0)
-        goto error;
+        return NULL;
 
     return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 
@@ -1594,7 +1639,7 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
                        virStorageVolDefPtr def)
 {
     virStorageVolOptionsPtr options;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     options = virStorageVolOptionsForPoolType(pool->type);
     if (options == NULL)
@@ -1649,22 +1694,18 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
 
     if (virStorageVolTargetDefFormat(options, &buf,
                                      &def->target, "target") < 0)
-        goto cleanup;
+        return NULL;
 
     if (virStorageSourceHasBacking(&def->target) &&
         virStorageVolTargetDefFormat(options, &buf,
                                      def->target.backingStore,
                                      "backingStore") < 0)
-        goto cleanup;
+        return NULL;
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</volume>\n");
 
     return virBufferContentAndReset(&buf);
-
- cleanup:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 
@@ -1686,7 +1727,7 @@ int
 virStoragePoolSaveState(const char *stateFile,
                         virStoragePoolDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *xml = NULL;
 
     virBufferAddLit(&buf, "<poolstate>\n");
@@ -1743,7 +1784,7 @@ char *
 virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
 {
     virStoragePoolOptionsPtr options;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *type;
     size_t i;
 
@@ -1755,7 +1796,7 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unexpected pool type"));
-        goto cleanup;
+        return NULL;
     }
 
     virBufferAddLit(&buf, "<sources>\n");
@@ -1768,8 +1809,4 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
     virBufferAddLit(&buf, "</sources>\n");
 
     return virBufferContentAndReset(&buf);
-
- cleanup:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }

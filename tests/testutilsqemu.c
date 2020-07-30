@@ -293,10 +293,9 @@ qemuTestParseCapabilitiesArch(virArch arch,
                                               virArchToString(arch));
 
     if (!(qemuCaps = virQEMUCapsNewBinary(binary)) ||
-        virQEMUCapsLoadCache(arch, qemuCaps, capsFile) < 0)
+        virQEMUCapsLoadCache(arch, qemuCaps, capsFile, true) < 0)
         goto error;
 
-    virQEMUCapsSetInvalidation(qemuCaps, false);
     return qemuCaps;
 
  error:

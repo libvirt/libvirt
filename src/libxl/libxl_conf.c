@@ -910,8 +910,7 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
                            const char *username,
                            const char *secret)
 {
-    char *ret = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     switch ((virStorageNetProtocol) src->protocol) {
@@ -931,14 +930,14 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("Unsupported network block protocol '%s'"),
                        virStorageNetProtocolTypeToString(src->protocol));
-        goto cleanup;
+        return NULL;
 
     case VIR_STORAGE_NET_PROTOCOL_RBD:
         if (strchr(src->path, ':')) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("':' not allowed in RBD source volume name '%s'"),
                            src->path);
-            goto cleanup;
+            return NULL;
         }
 
         virBufferStrcat(&buf, "rbd:", src->volume, "/", src->path, NULL);
@@ -973,13 +972,10 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
         if (src->configFile)
             virBufferEscape(&buf, '\\', ":", ":conf=%s", src->configFile);
 
-        ret = virBufferContentAndReset(&buf);
-        break;
+        return virBufferContentAndReset(&buf);
     }
 
- cleanup:
-    virBufferFreeAndReset(&buf);
-    return ret;
+    return NULL;
 }
 
 static int
@@ -1241,7 +1237,7 @@ libxlMakeNic(virDomainDefPtr def,
     const virNetDevBandwidth *actual_bw;
     const virNetDevVPortProfile *port_profile;
     const virNetDevVlan *virt_vlan;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     const char *script = NULL;
     int ret = -1;
@@ -1336,7 +1332,7 @@ libxlMakeNic(virDomainDefPtr def,
                     }
                 }
             }
-            x_nic->bridge = g_strdup(virBufferCurrentContent(&buf));
+            x_nic->bridge = virBufferContentAndReset(&buf);
             G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             x_nic->script = g_strdup(script);
@@ -1434,7 +1430,6 @@ libxlMakeNic(virDomainDefPtr def,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     virObjectUnref(network);
     virObjectUnref(conn);
 
@@ -1866,7 +1861,7 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
 }
 
 /*
- * dom0's maximum memory can be controled by the user with the 'dom0_mem' Xen
+ * dom0's maximum memory can be controlled by the user with the 'dom0_mem' Xen
  * command line parameter. E.g. to set dom0's initial memory to 4G and max
  * memory to 8G: dom0_mem=4G,max:8G
  * Supported unit suffixes are [bBkKmMgGtT]. If not specified the default

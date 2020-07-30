@@ -42,6 +42,9 @@
 
         <dt><a href="kbase/kvm-realtime.html">KVM real time</a></dt>
         <dd>Run real time workloads in guests on a KVM hypervisor</dd>
+
+        <dt><a href="kbase/incrementalbackupinternals.html">Incremental backup internals</a></dt>
+        <dd>Incremental backup implementation details relevant for users</dd>
       </dl>
     </div>
 

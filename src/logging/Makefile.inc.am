@@ -30,7 +30,6 @@ LOG_PROTOCOL = $(srcdir)/logging/log_protocol.x
 EXTRA_DIST += \
 	$(LOG_PROTOCOL) \
 	$(LOG_DAEMON_SOURCES) \
-	$(LOG_DRIVER) \
         logging/virtlogd.aug \
         logging/virtlogd.conf \
         logging/test_virtlogd.aug.in \
@@ -99,6 +98,7 @@ virtlogd_CFLAGS = \
 virtlogd_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(XDR_LIBS) \
 		$(NO_UNDEFINED_LDFLAGS) \
 		$(NULL)
 virtlogd_LDADD = \

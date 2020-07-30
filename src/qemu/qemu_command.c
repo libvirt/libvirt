@@ -695,27 +695,6 @@ qemuBuildObjectSecretCommandLine(virCommandPtr cmd,
 }
 
 
-/* qemuBuildDiskSecinfoCommandLine:
- * @cmd: Pointer to the command string
- * @secinfo: Pointer to a possible secinfo
- *
- * Add the secret object for the disks that will be using it to perform
- * their authentication.
- *
- * Returns 0 on success, -1 w/ error on some sort of failure.
- */
-static int
-qemuBuildDiskSecinfoCommandLine(virCommandPtr cmd,
-                                qemuDomainSecretInfoPtr secinfo)
-{
-    /* Not necessary for non AES secrets */
-    if (!secinfo || secinfo->type != VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-        return 0;
-
-    return qemuBuildObjectSecretCommandLine(cmd, secinfo);
-}
-
-
 /* qemuBuildGeneralSecinfoURI:
  * @uri: Pointer to the URI structure to add to
  * @secinfo: Pointer to the secret info data (if present)
@@ -806,7 +785,7 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
 
 /* qemuBuildTLSx509BackendProps:
  * @tlspath: path to the TLS credentials
- * @listen: boolen listen for client or server setting
+ * @listen: boolean listen for client or server setting
  * @verifypeer: boolean to enable peer verification (form of authorization)
  * @alias: alias for the TLS credentials object
  * @secalias: if one exists, the alias of the security object for passwordid
@@ -847,7 +826,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
 /* qemuBuildTLSx509CommandLine:
  * @cmd: Pointer to command
  * @tlspath: path to the TLS credentials
- * @listen: boolen listen for client or server setting
+ * @listen: boolean listen for client or server setting
  * @verifypeer: boolean to enable peer verification (form of authorization)
  * @certEncSecretAlias: alias of a 'secret' object for decrypting TLS private key
  *                      (optional)
@@ -1193,7 +1172,8 @@ qemuDiskSourceGetProps(virStorageSourcePtr src)
     g_autoptr(virJSONValue) props = NULL;
     virJSONValuePtr ret;
 
-    if (!(props = qemuBlockStorageSourceGetBackendProps(src, true, false, false)))
+    if (!(props = qemuBlockStorageSourceGetBackendProps(src,
+                                                        QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY)))
         return NULL;
 
     if (virJSONValueObjectCreate(&ret, "a:file", &props, NULL) < 0)
@@ -1902,10 +1882,10 @@ qemuBuildZPCIDevStr(virDomainDeviceInfoPtr dev)
 
     virBufferAsprintf(&buf,
                       "zpci,uid=%u,fid=%u,target=%s,id=zpci%u",
-                      dev->addr.pci.zpci.uid,
-                      dev->addr.pci.zpci.fid,
+                      dev->addr.pci.zpci.uid.value,
+                      dev->addr.pci.zpci.fid.value,
                       dev->alias,
-                      dev->addr.pci.zpci.uid);
+                      dev->addr.pci.zpci.uid.value);
 
     return virBufferContentAndReset(&buf);
 }
@@ -2047,6 +2027,7 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
         qemuBuildObjectCommandline(cmd, data->authsecretProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->encryptsecretProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->httpcookiesecretProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->tlsKeySecretProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->tlsProps) < 0)
         return -1;
 
@@ -3186,7 +3167,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                              "with this QEMU binary"));
             return -1;
         }
-        if (virJSONValueObjectAdd(props, "s:pmem", "on", NULL) < 0)
+        if (virJSONValueObjectAdd(props, "b:pmem", true, NULL) < 0)
             return -1;
     }
 
@@ -4608,7 +4589,7 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 }
 
-char *
+static char *
 qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                            virQEMUCapsPtr qemuCaps)
 {
@@ -4639,11 +4620,11 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
 
 char *
 qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
-                           virDomainHostdevDefPtr dev)
+                           virDomainHostdevDefPtr dev,
+                           const char *backendAlias)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int model = -1;
-    g_autofree char *driveAlias = NULL;
     const char *contAlias;
 
     model = qemuDomainFindSCSIControllerModel(def, dev->info);
@@ -4685,9 +4666,7 @@ qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                           dev->info->addr.drive.unit);
     }
 
-    if (!(driveAlias = qemuAliasFromHostdev(dev)))
-        return NULL;
-    virBufferAsprintf(&buf, ",drive=%s,id=%s", driveAlias, dev->info->alias);
+    virBufferAsprintf(&buf, ",drive=%s,id=%s", backendAlias, dev->info->alias);
 
     if (dev->info->bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
@@ -5061,6 +5040,115 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 }
 
+
+qemuBlockStorageSourceAttachData *
+qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDefPtr hostdev,
+                                  virQEMUCapsPtr qemuCaps)
+{
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+    g_autoptr(qemuBlockStorageSourceAttachData) ret = g_new0(qemuBlockStorageSourceAttachData, 1);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
+        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+            qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
+
+            ret->storageNodeName = iscsisrc->src->nodestorage;
+
+            if (srcpriv && srcpriv->secinfo &&
+                srcpriv->secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
+                ret->authsecretAlias = g_strdup(srcpriv->secinfo->s.aes.alias);
+        } else {
+            ret->storageNodeNameCopy = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
+            ret->storageNodeName = ret->storageNodeNameCopy;
+        }
+
+        ret->storageAttached = true;
+    } else {
+        ret->driveAlias = qemuAliasFromHostdev(hostdev);
+        ret->driveAdded = true;
+    }
+
+    return g_steal_pointer(&ret);
+}
+
+
+qemuBlockStorageSourceAttachData *
+qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDefPtr hostdev,
+                                  const char **backendAlias,
+                                  virQEMUCapsPtr qemuCaps)
+{
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+    virStorageSourcePtr src;
+    g_autoptr(virStorageSource) localsrc = NULL;
+    g_autoptr(qemuBlockStorageSourceAttachData) ret = g_new0(qemuBlockStorageSourceAttachData, 1);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
+        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+            src = iscsisrc->src;
+        } else {
+            g_autofree char *devstr = qemuBuildSCSIHostHostdevDrvStr(hostdev);
+
+            if (!devstr)
+                return NULL;
+
+            if (!(src = localsrc = virStorageSourceNew()))
+                return NULL;
+
+            src->type = VIR_STORAGE_TYPE_BLOCK;
+            src->readonly = hostdev->readonly;
+            src->path = g_strdup_printf("/dev/%s", devstr);
+        }
+
+        src->nodestorage = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
+        ret->storageNodeNameCopy = g_strdup(src->nodestorage);
+        ret->storageNodeName = ret->storageNodeNameCopy;
+        *backendAlias = ret->storageNodeNameCopy;
+
+        if (!(ret->storageProps = qemuBlockStorageSourceGetBackendProps(src,
+                                                                        QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)))
+            return NULL;
+
+    } else {
+        ret->driveCmd = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps);
+        ret->driveAlias = qemuAliasFromHostdev(hostdev);
+        *backendAlias = ret->driveAlias;
+    }
+
+    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
+        qemuBuildStorageSourceAttachPrepareCommon(iscsisrc->src, ret, qemuCaps) < 0)
+        return NULL;
+
+    return g_steal_pointer(&ret);
+}
+
+
+static int
+qemuBuildHostdevSCSICommandLine(virCommandPtr cmd,
+                                const virDomainDef *def,
+                                virDomainHostdevDefPtr hostdev,
+                                virQEMUCapsPtr qemuCaps)
+{
+    g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
+    g_autofree char *devstr = NULL;
+    const char *backendAlias = NULL;
+
+    if (!(data = qemuBuildHostdevSCSIAttachPrepare(hostdev, &backendAlias, qemuCaps)))
+        return -1;
+
+    if (qemuBuildBlockStorageSourceAttachDataCommandline(cmd, data) < 0)
+        return -1;
+
+    virCommandAddArg(cmd, "-device");
+    if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev, backendAlias)))
+        return -1;
+    virCommandAddArg(cmd, devstr);
+
+    return 0;
+}
+
+
 static int
 qemuBuildHostdevCommandLine(virCommandPtr cmd,
                             const virDomainDef *def,
@@ -5072,10 +5160,8 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
         virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
-        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
         virDomainHostdevSubsysMediatedDevPtr mdevsrc = &subsys->u.mdev;
         g_autofree char *devstr = NULL;
-        g_autofree char *drvstr = NULL;
         g_autofree char *vhostfdName = NULL;
         unsigned int bootIndex = hostdev->info->bootIndex;
         int vhostfd = -1;
@@ -5121,28 +5207,8 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
 
         /* SCSI */
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-                virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc =
-                    &scsisrc->u.iscsi;
-                qemuDomainStorageSourcePrivatePtr srcPriv =
-                    QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
-
-                if (qemuBuildDiskSecinfoCommandLine(cmd, srcPriv ?
-                                                    srcPriv->secinfo :
-                                                    NULL) < 0)
-                    return -1;
-            }
-
-            virCommandAddArg(cmd, "-drive");
-            if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
+            if (qemuBuildHostdevSCSICommandLine(cmd, def, hostdev, qemuCaps) < 0)
                 return -1;
-            virCommandAddArg(cmd, drvstr);
-
-            virCommandAddArg(cmd, "-device");
-            if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev)))
-                return -1;
-            virCommandAddArg(cmd, devstr);
-
             break;
 
         /* SCSI_host */
@@ -5477,7 +5543,7 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
 
     for (i = 0; i < def->nrngs; i++) {
         g_autoptr(virJSONValue) props = NULL;
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         virDomainRNGDefPtr rng = def->rngs[i];
         g_autofree char *chardev = NULL;
         g_autofree char *devstr = NULL;
@@ -6155,7 +6221,7 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
     if (def->os.dtb)
         virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
     if (def->os.slic_table) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         virCommandAddArg(cmd, "-acpitable");
         virBufferAddLit(&buf, "sig=SLIC,file=");
         virQEMUBuildBufferEscapeComma(&buf, def->os.slic_table);
@@ -6180,7 +6246,7 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
     case VIR_DOMAIN_IOMMU_MODEL_INTEL: {
         g_auto(virBuffer) opts = VIR_BUFFER_INITIALIZER;
 
-        /* qemuDomainDeviceDefValidateIOMMU() already made sure we have
+        /* qemuValidateDomainDeviceDefIOMMU() already made sure we have
          * one of QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU:
          * here we handle the former case, while the latter is taken care
          * of in qemuBuildMachineCommandLine() */
@@ -6204,6 +6270,8 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
             virBufferAsprintf(&opts, ",device-iotlb=%s",
                               virTristateSwitchTypeToString(iommu->iotlb));
         }
+        if (iommu->aw_bits > 0)
+            virBufferAsprintf(&opts, ",aw-bits=%d", iommu->aw_bits);
 
         virCommandAddArg(cmd, "-device");
         virCommandAddArgBuffer(cmd, &opts);
@@ -6720,13 +6788,6 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    /* This should *never* be NULL, since we always provide
-     * a machine in the capabilities data for QEMU. So this
-     * check is just here as a safety in case the unexpected
-     * happens */
-    if (!def->os.machine)
-        return 0;
-
     virCommandAddArg(cmd, "-machine");
     virBufferAdd(&buf, def->os.machine, -1);
 
@@ -6831,7 +6892,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     if (def->iommu) {
         switch (def->iommu->model) {
         case VIR_DOMAIN_IOMMU_MODEL_INTEL:
-            /* qemuDomainDeviceDefValidateIOMMU() already made sure we have
+            /* qemuValidateDomainDeviceDefIOMMU() already made sure we have
              * one of QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU:
              * here we handle the latter case, while the former is taken care
              * of in qemuBuildIOMMUCommandLine() */
@@ -6936,6 +6997,9 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         if (priv->pflash1)
             virBufferAsprintf(&buf, ",pflash1=%s", priv->pflash1->nodeformat);
     }
+
+    if (virDomainNumaHasHMAT(def->numa))
+        virBufferAddLit(&buf, ",hmat=on");
 
     virCommandAddArgBuffer(cmd, &buf);
 
@@ -7120,22 +7184,150 @@ qemuBuildIOThreadCommandLine(virCommandPtr cmd,
 
 
 static int
-qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
-                    virDomainDefPtr def,
-                    virCommandPtr cmd,
-                    qemuDomainObjPrivatePtr priv)
+qemuBuilNumaCellCache(virCommandPtr cmd,
+                      const virDomainDef *def,
+                      size_t cell)
+{
+    size_t ncaches = virDomainNumaGetNodeCacheCount(def->numa, cell);
+    size_t i;
+
+    if (ncaches == 0)
+        return 0;
+
+    for (i = 0; i < ncaches; i++) {
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+        unsigned int level;
+        unsigned int size;
+        unsigned int line;
+        virDomainCacheAssociativity associativity;
+        virDomainCachePolicy policy;
+
+        if (virDomainNumaGetNodeCache(def->numa, cell, i,
+                                      &level, &size, &line,
+                                      &associativity, &policy) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to format NUMA node cache"));
+            return -1;
+        }
+
+        virBufferAsprintf(&buf,
+                          "hmat-cache,node-id=%zu,size=%uK,level=%u",
+                          cell, size, level);
+
+        switch (associativity) {
+        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_NONE:
+            virBufferAddLit(&buf, ",associativity=none");
+            break;
+        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_DIRECT:
+            virBufferAddLit(&buf, ",associativity=direct");
+            break;
+        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_FULL:
+            virBufferAddLit(&buf, ",associativity=complex");
+            break;
+        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_LAST:
+            break;
+        }
+
+        switch (policy) {
+        case VIR_DOMAIN_CACHE_POLICY_NONE:
+            virBufferAddLit(&buf, ",policy=none");
+            break;
+        case VIR_DOMAIN_CACHE_POLICY_WRITEBACK:
+            virBufferAddLit(&buf, ",policy=write-back");
+            break;
+        case VIR_DOMAIN_CACHE_POLICY_WRITETHROUGH:
+            virBufferAddLit(&buf, ",policy=write-through");
+            break;
+        case VIR_DOMAIN_CACHE_POLICY_LAST:
+            break;
+        }
+
+        if (line > 0)
+            virBufferAsprintf(&buf, ",line=%u", line);
+
+        virCommandAddArg(cmd, "-numa");
+        virCommandAddArgBuffer(cmd, &buf);
+    }
+
+    return 0;
+}
+
+
+VIR_ENUM_DECL(qemuDomainMemoryHierarchy);
+VIR_ENUM_IMPL(qemuDomainMemoryHierarchy,
+              4, /* Maximum level of cache */
+              "memory", /* Special case, whole memory not specific cache */
+              "first-level",
+              "second-level",
+              "third-level");
+
+static int
+qemuBuildNumaHMATCommandLine(virCommandPtr cmd,
+                             const virDomainDef *def)
+{
+    size_t nlatencies;
+    size_t i;
+
+    if (!def->numa)
+        return 0;
+
+    nlatencies = virDomainNumaGetInterconnectsCount(def->numa);
+    for (i = 0; i < nlatencies; i++) {
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+        virDomainNumaInterconnectType type;
+        unsigned int initiator;
+        unsigned int target;
+        unsigned int cache;
+        virDomainMemoryLatency accessType;
+        unsigned long value;
+        const char *hierarchyStr;
+        const char *accessStr;
+
+        if (virDomainNumaGetInterconnect(def->numa, i,
+                                         &type, &initiator, &target,
+                                         &cache, &accessType, &value) < 0)
+            return -1;
+
+        hierarchyStr = qemuDomainMemoryHierarchyTypeToString(cache);
+        accessStr = virDomainMemoryLatencyTypeToString(accessType);
+        virBufferAsprintf(&buf,
+                          "hmat-lb,initiator=%u,target=%u,hierarchy=%s,data-type=%s-",
+                          initiator, target, hierarchyStr, accessStr);
+
+        switch (type) {
+        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY:
+            virBufferAsprintf(&buf, "latency,latency=%lu", value);
+            break;
+        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
+            virBufferAsprintf(&buf, "bandwidth,bandwidth=%luK", value);
+            break;
+        }
+
+        virCommandAddArg(cmd, "-numa");
+        virCommandAddArgBuffer(cmd, &buf);
+    }
+
+    return 0;
+}
+
+
+static int
+qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
+                         virDomainDefPtr def,
+                         virCommandPtr cmd,
+                         qemuDomainObjPrivatePtr priv)
 {
     size_t i, j;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *cpumask = NULL;
-    char *tmpmask = NULL;
     char *next = NULL;
     virBufferPtr nodeBackends = NULL;
     bool needBackend = false;
+    bool hmat = false;
     int rc;
     int ret = -1;
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
+    ssize_t masterInitiator = -1;
 
     if (!virDomainNumatuneNodesetIsAvailable(def->numa, priv->autoNodeset))
         goto cleanup;
@@ -7144,6 +7336,11 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                                                def->virtType,
                                                def->os.machine))
         needBackend = true;
+
+    if (virDomainNumaHasHMAT(def->numa)) {
+        needBackend = true;
+        hmat = true;
+    }
 
     if (VIR_ALLOC_N(nodeBackends, ncells) < 0)
         goto cleanup;
@@ -7174,9 +7371,21 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     for (i = 0; i < ncells; i++) {
-        VIR_FREE(cpumask);
-        if (!(cpumask = virBitmapFormat(virDomainNumaGetNodeCpumask(def->numa, i))))
-            goto cleanup;
+        if (virDomainNumaGetNodeCpumask(def->numa, i)) {
+            masterInitiator = i;
+            break;
+        }
+    }
+
+    if (masterInitiator < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("At least one NUMA node has to have CPUs"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < ncells; i++) {
+        virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(def->numa, i);
+        ssize_t initiator = virDomainNumaGetNodeInitiator(def->numa, i);
 
         if (needBackend) {
             virCommandAddArg(cmd, "-object");
@@ -7186,11 +7395,26 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         virCommandAddArg(cmd, "-numa");
         virBufferAsprintf(&buf, "node,nodeid=%zu", i);
 
-        for (tmpmask = cpumask; tmpmask; tmpmask = next) {
-            if ((next = strchr(tmpmask, ',')))
-                *(next++) = '\0';
-            virBufferAddLit(&buf, ",cpus=");
-            virBufferAdd(&buf, tmpmask, -1);
+        if (cpumask) {
+            g_autofree char *cpumaskStr = NULL;
+            char *tmpmask;
+
+            if (!(cpumaskStr = virBitmapFormat(cpumask)))
+                goto cleanup;
+
+            for (tmpmask = cpumaskStr; tmpmask; tmpmask = next) {
+                if ((next = strchr(tmpmask, ',')))
+                    *(next++) = '\0';
+                virBufferAddLit(&buf, ",cpus=");
+                virBufferAdd(&buf, tmpmask, -1);
+            }
+        }
+
+        if (hmat) {
+            if (initiator < 0)
+                initiator = masterInitiator;
+
+            virBufferAsprintf(&buf, ",initiator=%zd", initiator);
         }
 
         if (needBackend)
@@ -7218,11 +7442,21 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         }
     }
 
+    if (hmat) {
+        if (qemuBuildNumaHMATCommandLine(cmd, def) < 0)
+            goto cleanup;
+
+        /* This can't be moved into any of the loops above,
+         * because hmat-cache can be specified only after hmat-lb. */
+        for (i = 0; i < ncells; i++) {
+            if (qemuBuilNumaCellCache(cmd, def, i) < 0)
+                goto cleanup;
+        }
+    }
+
     ret = 0;
 
  cleanup:
-    VIR_FREE(cpumask);
-
     if (nodeBackends) {
         for (i = 0; i < ncells; i++)
             virBufferFreeAndReset(&nodeBackends[i]);
@@ -8911,7 +9145,6 @@ qemuBuldDomainLoaderPflashCommandLine(virCommandPtr cmd,
     virCommandAddArgBuffer(cmd, &buf);
 
     if (loader->nvram) {
-        virBufferFreeAndReset(&buf);
         virBufferAddLit(&buf, "file=");
         virQEMUBuildBufferEscapeComma(&buf, loader->nvram);
         virBufferAsprintf(&buf, ",if=pflash,format=raw,unit=%d", unit);
@@ -8952,10 +9185,10 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
 
 static char *
 qemuBuildTPMDevStr(const virDomainDef *def,
+                   virDomainTPMDefPtr tpm,
                    virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virDomainTPMDef *tpm = def->tpm;
     const char *model = virDomainTPMModelTypeToString(tpm->model);
 
     virBufferAsprintf(&buf, "%s,tpmdev=tpm-%s,id=%s",
@@ -8994,13 +9227,12 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev,
 
 
 static char *
-qemuBuildTPMBackendStr(const virDomainDef *def,
-                       virCommandPtr cmd,
+qemuBuildTPMBackendStr(virCommandPtr cmd,
+                       virDomainTPMDefPtr tpm,
                        int *tpmfd,
                        int *cancelfd,
                        char **chardev)
 {
-    const virDomainTPMDef *tpm = def->tpm;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *cancel_path = NULL;
     g_autofree char *devset = NULL;
@@ -9054,6 +9286,7 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
 static int
 qemuBuildTPMCommandLine(virCommandPtr cmd,
                         const virDomainDef *def,
+                        virDomainTPMDefPtr tpm,
                         virQEMUCapsPtr qemuCaps)
 {
     char *optstr;
@@ -9062,10 +9295,7 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
     int cancelfd = -1;
     char *fdset;
 
-    if (!def->tpm)
-        return 0;
-
-    if (!(optstr = qemuBuildTPMBackendStr(def, cmd,
+    if (!(optstr = qemuBuildTPMBackendStr(cmd, tpm,
                                           &tpmfd, &cancelfd,
                                           &chardev)))
         return -1;
@@ -9094,7 +9324,7 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
         VIR_FREE(fdset);
     }
 
-    if (!(optstr = qemuBuildTPMDevStr(def, qemuCaps)))
+    if (!(optstr = qemuBuildTPMDevStr(def, tpm, qemuCaps)))
         return -1;
 
     virCommandAddArgList(cmd, "-device", optstr, NULL);
@@ -9102,6 +9332,48 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
 
     return 0;
 }
+
+
+static int
+qemuBuildTPMProxyCommandLine(virCommandPtr cmd,
+                             virDomainTPMDefPtr tpm)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char *filePath = NULL;
+
+    filePath = tpm->data.passthrough.source.data.file.path;
+
+    virCommandAddArg(cmd, "-device");
+    virBufferAsprintf(&buf, "%s,id=%s,host-path=",
+                      virDomainTPMModelTypeToString(tpm->model),
+                      tpm->info.alias);
+    virQEMUBuildBufferEscapeComma(&buf, filePath);
+    virCommandAddArgBuffer(cmd, &buf);
+
+    return 0;
+}
+
+
+static int
+qemuBuildTPMsCommandLine(virCommandPtr cmd,
+                         const virDomainDef *def,
+                         virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->ntpms; i++) {
+        if (def->tpms[i]->model == VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY) {
+            if (qemuBuildTPMProxyCommandLine(cmd, def->tpms[i]) < 0)
+                return -1;
+        } else if (qemuBuildTPMCommandLine(cmd, def,
+                                           def->tpms[i], qemuCaps) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 
 static int
 qemuBuildSEVCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
@@ -9684,7 +9956,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         return NULL;
 
     if (virDomainNumaGetNodeCount(def->numa) &&
-        qemuBuildNumaArgStr(cfg, def, cmd, priv) < 0)
+        qemuBuildNumaCommandLine(cfg, def, cmd, priv) < 0)
         return NULL;
 
     if (qemuBuildMemoryDeviceCommandLine(cmd, cfg, def, priv) < 0)
@@ -9785,7 +10057,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
                                     chardevStdioLogd) < 0)
         return NULL;
 
-    if (qemuBuildTPMCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildTPMsCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildInputCommandLine(cmd, def, qemuCaps) < 0)
@@ -10120,6 +10392,7 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
                                           virQEMUCapsPtr qemuCaps)
 {
     qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    const char *tlsKeySecretAlias = NULL;
 
     if (src->pr &&
         !virStoragePRDefIsManaged(src->pr) &&
@@ -10139,11 +10412,18 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
         if (srcpriv->httpcookie &&
             qemuBuildSecretInfoProps(srcpriv->httpcookie, &data->httpcookiesecretProps) < 0)
             return -1;
+
+        if (srcpriv->tlsKeySecret) {
+            if (qemuBuildSecretInfoProps(srcpriv->tlsKeySecret, &data->tlsKeySecretProps) < 0)
+                return -1;
+
+            tlsKeySecretAlias = srcpriv->tlsKeySecret->s.aes.alias;
+        }
     }
 
     if (src->haveTLS == VIR_TRISTATE_BOOL_YES &&
         qemuBuildTLSx509BackendProps(src->tlsCertdir, false, true, src->tlsAlias,
-                                     NULL, qemuCaps, &data->tlsProps) < 0)
+                                     tlsKeySecretAlias, qemuCaps, &data->tlsProps) < 0)
         return -1;
 
     return 0;

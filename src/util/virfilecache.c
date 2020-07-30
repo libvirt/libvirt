@@ -101,7 +101,7 @@ virFileCacheGetFileName(virFileCachePtr cache,
                         const char *name)
 {
     g_autofree char *namehash = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &namehash) < 0)
         return NULL;
@@ -130,6 +130,7 @@ virFileCacheLoad(virFileCachePtr cache,
     g_autofree char *file = NULL;
     int ret = -1;
     void *loadData = NULL;
+    bool outdated = false;
 
     *data = NULL;
 
@@ -148,10 +149,12 @@ virFileCacheLoad(virFileCachePtr cache,
         goto cleanup;
     }
 
-    if (!(loadData = cache->handlers.loadFile(file, name, cache->priv))) {
-        VIR_WARN("Failed to load cached data from '%s' for '%s': %s",
-                 file, name, virGetLastErrorMessage());
-        virResetLastError();
+    if (!(loadData = cache->handlers.loadFile(file, name, cache->priv, &outdated))) {
+        if (!outdated) {
+            VIR_WARN("Failed to load cached data from '%s' for '%s': %s",
+                     file, name, virGetLastErrorMessage());
+            virResetLastError();
+        }
         ret = 0;
         goto cleanup;
     }

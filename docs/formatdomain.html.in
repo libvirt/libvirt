@@ -1840,6 +1840,8 @@
       consistent across qemu and libvirt versions.
       <code>memory</code> specifies the node memory
       in kibibytes (i.e. blocks of 1024 bytes).
+      <span class="since">Since 6.6.0</span> the <code>cpus</code> attribute
+      is optional and if omitted a CPU-less NUMA node is created.
       <span class="since">Since 1.2.11</span> one can use an additional <a
           href="#elementsMemoryAllocation"><code>unit</code></a> attribute to
       define units in which <code>memory</code> is specified.
@@ -1927,6 +1929,113 @@
       by Xen and QEMU. If no <code>distances</code> are given to describe
       the SLIT data between different cells, it will default to a scheme
       using 10 for local and 20 for remote distances.
+    </p>
+
+    <h4><a id="hmat">ACPI Heterogeneous Memory Attribute Table</a></h4>
+
+<pre>
+...
+&lt;cpu&gt;
+  ...
+  &lt;numa&gt;
+    &lt;cell id='0' cpus='0-3' memory='512000' unit='KiB' discard='yes'/&gt;
+    &lt;cell id='1' cpus='4-7' memory='512000' unit='KiB' memAccess='shared'/&gt;
+    &lt;cell id='3' cpus='0-3' memory='2097152' unit='KiB'&gt;
+      &lt;cache level='1' associativity='direct' policy='writeback'&gt;
+        &lt;size value='10' unit='KiB'/&gt;
+        &lt;line value='8' unit='B'/&gt;
+      &lt;/cache&gt;
+    &lt;/cell&gt;
+    &lt;interconnects&gt;
+      &lt;latency initiator='0' target='0' type='access' value='5'/&gt;
+      &lt;latency initiator='0' target='0' cache='1' type='access' value='10'/&gt;
+      &lt;bandwidth initiator='0' target='0' type='access' value='204800' unit='KiB'/&gt;
+    &lt;/interconnects&gt;
+  &lt;/numa&gt;
+  ...
+&lt;/cpu&gt;
+...</pre>
+
+    <p>
+      <span class='since'>Since 6.6.0</span> the <code>cell</code> element can
+      have a <code>cache</code> child element which describes memory side cache
+      for memory proximity domains. The <code>cache</code> element has a
+      <code>level</code> attribute describing the cache level and thus the
+      element can be repeated multiple times to describe different levels of
+      the cache.
+    </p>
+
+    <p>
+      The <code>cache</code> element then has following mandatory attributes:
+    </p>
+
+    <dl>
+      <dt><code>level</code></dt>
+      <dd>
+        Level of the cache this description refers to.
+      </dd>
+
+      <dt><code>associativity</code></dt>
+      <dd>
+        Describes cache associativity (accepted values are <code>none</code>,
+        <code>direct</code> and <code>full</code>).
+      </dd>
+
+      <dt><code>policy</code></dt>
+      <dd>
+        Describes cache write associativity (accepted values are
+        <code>none</code>, <code>writeback</code> and
+        <code>writethrough</code>).
+      </dd>
+    </dl>
+
+    <p>
+      The <code>cache</code> element has two mandatory child elements then:
+      <code>size</code> and <code>line</code> which describe cache size and
+      cache line size. Both elements accept two attributes: <code>value</code>
+      and <code>unit</code> which set the value of corresponding cache
+      attribute.
+    </p>
+
+    <p>
+      The NUMA description has an optional <code>interconnects</code> element that
+      describes the normalized memory read/write latency, read/write bandwidth
+      between Initiator Proximity Domains (Processor or I/O) and Target
+      Proximity Domains (Memory).
+    </p>
+
+    <p>
+      The <code>interconnects</code> element can have zero or more
+      <code>latency</code> child elements to describe latency between two
+      memory nodes and zero or more <code>bandwidth</code> child elements to
+      describe bandwidth between two memory nodes. Both these have the
+      following mandatory attributes:
+    </p>
+
+    <dl>
+      <dt><code>initiator</code></dt>
+      <dd>Refers to the source NUMA node</dd>
+
+      <dt><code>target</code></dt>
+      <dd>Refers to the target NUMA node</dd>
+
+      <dt><code>type</code></dt>
+      <dd>The type of the access. Accepted values: <code>access</code>,
+      <code>read</code>, <code>write</code></dd>
+
+      <dt><code>value</code></dt>
+      <dd>The actual value. For latency this is delay in nanoseconds, for
+      bandwidth this value is in kibibytes per second. Use additional
+      <code>unit</code> attribute to change the units.</dd>
+    </dl>
+
+    <p>
+      To describe latency from one NUMA node to a cache of another NUMA node
+      the <code>latency</code> element has optional <code>cache</code>
+      attribute which in combination with <code>target</code> attribute creates
+      full reference to distant NUMA node's cache level. For instance,
+      <code>target='0' cache='1'</code> refers to the first level cache of NUMA
+      node 0.
     </p>
 
     <h3><a id="elementsEvents">Events configuration</a></h3>
@@ -3983,7 +4092,8 @@
         contents should be reverted automatically when the guest
         exits.  With some hypervisors, marking a disk transient
         prevents the domain from participating in migration or
-        snapshots. <span class="since">Since 0.9.5</span>
+        snapshots. Only suppported in vmx hypervisor.
+        <span class="since">Since 0.9.5</span>
       </dd>
       <dt><code>serial</code></dt>
       <dd>If present, this specify serial number of virtual hard drive.
@@ -5659,6 +5769,13 @@
       attribute <code>type='pci'</code>
       as <a href="#elementsAddress">documented above</a>.
     </p>
+    <p>
+      <span class="since">Since 6.6.0</span>, one can force libvirt to keep the
+      provided MAC address when it's in the reserved VMware range by adding a
+      <code>type="static"</code> attribute to the <code>&lt;mac/&gt;</code> element.
+      Note that this attribute is useless if the provided MAC address is outside of
+      the reserved VMWare ranges.
+    </p>
 
     <h5><a id="elementsNICSVirtual">Virtual network</a></h5>
 
@@ -5785,11 +5902,11 @@
     <p>
       Provides a bridge from the VM directly to the LAN. This assumes
       there is a bridge device on the host which has one or more of the hosts
-      physical NICs enslaved. The guest VM will have an associated tun device
+      physical NICs attached. The guest VM will have an associated tun device
       created with a name of vnetN, which can also be overridden with the
       &lt;target&gt; element (see
       <a href="#elementsNICSTargetOverride">overriding the target element</a>).
-      The tun device will be enslaved to the bridge. The IP range / network
+      The tun device will be attached to the bridge. The IP range / network
       configuration is whatever is used on the LAN. This provides the guest VM
       full incoming &amp; outgoing net access just like a physical machine.
     </p>
@@ -8849,6 +8966,18 @@ qemu-kvm -net nic,model=? /dev/null
           backend device is a TPM 2.0. <span class="since">Since 6.1.0</span>,
           pSeries guests on PPC64 are supported and the default is
           <code>tpm-spapr</code>.
+
+          <span class="since">Since 6.5.0</span>, a new model called
+          <code>spapr-tpm-proxy</code> was added for pSeries guests. This model
+          only works with the <code>passthrough</code> backend. It creates a
+          TPM Proxy device that communicates with an existing TPM Resource Manager
+          in the host, for example <code>/dev/tpmrm0</code>, enabling the guest to
+          run in secure virtual machine mode with the help of an Ultravisor. Adding
+          a TPM Proxy to a pSeries guest brings no security benefits unless the guest
+          is running on a PPC64 host that has an Ultravisor and a TPM Resource Manager.
+          Only one TPM Proxy device is allowed per guest, but a TPM Proxy device can
+          be added together with
+          other TPM devices.
         </p>
       </dd>
       <dt><code>backend</code></dt>
@@ -8861,7 +8990,7 @@ qemu-kvm -net nic,model=? /dev/null
           <dt><code>passthrough</code></dt>
           <dd>
             <p>
-              Use the host's TPM device.
+              Use the host's TPM or TPM Resource Manager device.
             </p>
             <p>
               This backend type requires exclusive access to a TPM device on
@@ -8869,6 +8998,11 @@ qemu-kvm -net nic,model=? /dev/null
               qualified file name is specified by path attribute of the
               <code>source</code> element. If no file name is specified then
               /dev/tpm0 is automatically used.
+
+              <span class="since">Since 6.5.0</span>, when choosing the
+              <code>spapr-tpm-proxy</code> model, the file name specified is
+              expected to be a TPM Resource Manager device, e.g.
+              <code>/dev/tpmrm0</code>.
             </p>
           </dd>
         </dl>
@@ -9279,8 +9413,10 @@ qemu-kvm -net nic,model=? /dev/null
             </p>
             <ol>
               <li>the minimum label size is 128KiB,</li>
-              <li>the remaining size (total-size - label-size) will be aligned
-                to 4KiB as default.</li>
+              <li>the remaining size (total-size - label-size), also called guest
+                area, will be aligned to 4KiB as default. For pSeries guests, the
+                guest area will be aligned down to 256MiB, and the minimum size
+                of the guest area must be at least 256MiB.</li>
             </ol>
           </dd>
 
@@ -9375,6 +9511,15 @@ qemu-kvm -net nic,model=? /dev/null
               turn on the IOTLB used to cache address translation
               requests from devices.
               <span class="since">Since 3.5.0</span> (QEMU/KVM only)
+            </p>
+          </dd>
+          <dt><code>aw_bits</code></dt>
+          <dd>
+            <p>
+              The <code>aw_bits</code> attribute can be used to set
+              the address width to allow mapping larger iova addresses
+              in the guest.
+              <span class="since">Since 6.5.0</span> (QEMU/KVM only)
             </p>
           </dd>
         </dl>

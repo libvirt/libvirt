@@ -294,7 +294,7 @@ udevGenerateDeviceName(struct udev_device *device,
                        const char *s)
 {
     size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, "%s_%s",
                       udev_device_get_subsystem(device),
@@ -1397,7 +1397,7 @@ udevProcessDeviceListEntry(struct udev *udev,
  * Do not bother enumerating over subsystems that do not
  * contain interesting devices.
  */
-const char *subsystem_blacklist[] = {
+const char *subsystem_ignored[] = {
     "acpi", "tty", "vc", "i2c",
 };
 
@@ -1406,10 +1406,10 @@ udevEnumerateAddMatches(struct udev_enumerate *udev_enumerate)
 {
     size_t i;
 
-    for (i = 0; i < G_N_ELEMENTS(subsystem_blacklist); i++) {
-        const char *s = subsystem_blacklist[i];
+    for (i = 0; i < G_N_ELEMENTS(subsystem_ignored); i++) {
+        const char *s = subsystem_ignored[i];
         if (udev_enumerate_add_nomatch_subsystem(udev_enumerate, s) < 0) {
-            virReportSystemError(errno, "%s", _("failed to add susbsystem filter"));
+            virReportSystemError(errno, "%s", _("failed to add subsystem filter"));
             return -1;
         }
     }

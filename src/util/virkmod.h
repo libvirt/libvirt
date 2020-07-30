@@ -23,10 +23,9 @@
 
 #include "internal.h"
 
-char *virKModConfig(void);
-char *virKModLoad(const char *, bool)
+char *virKModLoad(const char *)
     ATTRIBUTE_NONNULL(1);
 char *virKModUnload(const char *)
     ATTRIBUTE_NONNULL(1);
-bool virKModIsBlacklisted(const char *)
+bool virKModIsProhibited(const char *)
     ATTRIBUTE_NONNULL(1);

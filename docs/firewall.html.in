@@ -12,7 +12,7 @@
       <li>The virtual network driver
           <br /><br />
           This provides an isolated bridge device (ie no physical NICs
-          enslaved). Guest TAP devices are attached to this bridge.
+          attached). Guest TAP devices are attached to this bridge.
           Guests can talk to each other and the host, and optionally the
           wider world.
           <br /><br />
@@ -46,7 +46,7 @@
     </p>
     <p>Thus the virtual network driver in libvirt was invented. This takes
        the form of an isolated bridge device (ie one with no physical NICs
-       enslaved). The TAP devices associated with the guest NICs are attached
+       attached). The TAP devices associated with the guest NICs are attached
        to the bridge device. This immediately allows guests on a single host
        to talk to each other and to the host OS (modulo host IPtables rules).
     </p>
@@ -311,7 +311,7 @@ f5c78134-9da4-0c60-a9f0-fb37bc21ac1f  no-other-rarp-traffic
     <p>To associate the clean-traffic filter with a guest, edit the
        guest XML config and change the <code>&lt;interface&gt;</code> element
        to include a <code>&lt;filterref&gt;</code> and also specify the
-       whitelisted <code>&lt;ip address/&gt;</code> the guest is allowed to
+       <code>&lt;ip address/&gt;</code> that the guest is allowed to
        use:
     </p>
     <pre>

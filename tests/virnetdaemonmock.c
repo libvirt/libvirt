@@ -23,6 +23,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+#ifndef WIN32
 time_t time(time_t *t)
 {
     const time_t ret = 1234567890;
@@ -30,3 +31,4 @@ time_t time(time_t *t)
         *t = ret;
     return ret;
 }
+#endif

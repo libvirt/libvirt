@@ -1013,7 +1013,7 @@ virPCIProbeStubDriver(virPCIStubDriver driver)
     if (!probed) {
         g_autofree char *errbuf = NULL;
         probed = true;
-        if ((errbuf = virKModLoad(drvname, true))) {
+        if ((errbuf = virKModLoad(drvname))) {
             VIR_WARN("failed to load driver %s: %s", drvname, errbuf);
             goto cleanup;
         }
@@ -1023,10 +1023,10 @@ virPCIProbeStubDriver(virPCIStubDriver driver)
     }
 
  cleanup:
-    /* If we know failure was because of blacklist, let's report that;
+    /* If we know failure was because of admin config, let's report that;
      * otherwise, report a more generic failure message
      */
-    if (virKModIsBlacklisted(drvname)) {
+    if (virKModIsProhibited(drvname)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to load PCI stub module %s: "
                          "administratively prohibited"),
@@ -2168,29 +2168,18 @@ virPCIDeviceAddressParse(char *address,
 
 
 bool
-virZPCIDeviceAddressIsValid(virZPCIDeviceAddressPtr zpci)
+virZPCIDeviceAddressIsIncomplete(const virZPCIDeviceAddress *addr)
 {
-    /* We don't need to check fid because fid covers
-     * all range of uint32 type.
-     */
-    if (zpci->uid > VIR_DOMAIN_DEVICE_ZPCI_MAX_UID ||
-        zpci->uid == 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid PCI address uid='0x%.4x', "
-                         "must be > 0x0000 and <= 0x%.4x"),
-                       zpci->uid,
-                       VIR_DOMAIN_DEVICE_ZPCI_MAX_UID);
-        return false;
-    }
-
-    return true;
+    return !addr->uid.isSet || !addr->fid.isSet;
 }
+
 
 bool
-virZPCIDeviceAddressIsEmpty(const virZPCIDeviceAddress *addr)
+virZPCIDeviceAddressIsPresent(const virZPCIDeviceAddress *addr)
 {
-    return !(addr->uid || addr->fid);
+    return addr->uid.isSet || addr->fid.isSet;
 }
+
 
 #ifdef __linux__
 

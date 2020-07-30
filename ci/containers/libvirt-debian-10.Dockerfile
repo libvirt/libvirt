@@ -14,6 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             ca-certificates \
             ccache \
             chrony \
+            cpanminus \
             dnsmasq-base \
             dwarves \
             ebtables \
@@ -81,6 +82,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             policykit-1 \
             python3 \
             python3-docutils \
+            python3-pip \
             python3-setuptools \
             python3-wheel \
             qemu-utils \
@@ -94,6 +96,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             wireshark-dev \
             xfslibs-dev \
             xsltproc \
+            xz-utils \
             zfs-fuse && \
     apt-get autoremove -y && \
     apt-get autoclean -y && \

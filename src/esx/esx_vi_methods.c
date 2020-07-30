@@ -105,7 +105,7 @@
     { \
         int result = -1; \
         const char *methodName = #_name; \
-        virBuffer buffer = VIR_BUFFER_INITIALIZER; \
+        g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER; \
         char *request = NULL; \
         esxVI_Response *response = NULL; \
  \
@@ -136,10 +136,6 @@
         result = 0; \
  \
       cleanup: \
-        if (result < 0) { \
-            virBufferFreeAndReset(&buffer); \
-        } \
- \
         VIR_FREE(request); \
         esxVI_Response_Free(&response); \
  \

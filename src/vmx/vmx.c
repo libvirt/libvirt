@@ -290,7 +290,7 @@ def->fss[0]...                    <=>   sharedFolder0.present = "true"          
 ################################################################################
 ## nets ########################################################################
 
-                                        ethernet[0..3] -> <controller>
+                                        ethernet[0..9] -> <controller>
 
                                         ethernet0.present = "true"              # defaults to "false"
                                         ethernet0.startConnected = "true"       # defaults to "true"
@@ -697,8 +697,8 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
 {
     char *result = NULL;
     xmlCharEncodingHandlerPtr handler;
-    xmlBufferPtr input;
-    xmlBufferPtr utf8;
+    g_autoptr(xmlBuffer) input = NULL;
+    g_autoptr(xmlBuffer) utf8 = NULL;
 
     handler = xmlFindCharEncodingHandler(encoding);
 
@@ -708,8 +708,11 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
         return NULL;
     }
 
-    input = xmlBufferCreateStatic((char *)string, strlen(string));
-    utf8 = xmlBufferCreate();
+    if (!(input = xmlBufferCreateStatic((char *)string, strlen(string))) ||
+        !(utf8 = xmlBufferCreate())) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     if (xmlCharEncInFunc(handler, utf8, input) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -717,14 +720,10 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
         goto cleanup;
     }
 
-    result = (char *)utf8->content;
-    utf8->content = NULL;
+    result = (char *)g_steal_pointer(&utf8->content);
 
  cleanup:
     xmlCharEncCloseFunc(handler);
-    xmlBufferFree(input);
-    xmlBufferFree(utf8);
-
     return result;
 }
 
@@ -889,7 +888,7 @@ virVMXSCSIDiskNameToControllerAndUnit(const char *name, int *controller, int *un
     *controller = idx / 15;
     *unit = idx % 15;
 
-    /* Skip the controller ifself at unit 7 */
+    /* Skip the controller itself at unit 7 */
     if (*unit >= 7)
         ++(*unit);
 
@@ -2536,6 +2535,9 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     char generatedAddress_name[48] = "";
     char *generatedAddress = NULL;
 
+    char checkMACAddress_name[48] = "";
+    char *checkMACAddress = NULL;
+
     char address_name[48] = "";
     char *address = NULL;
 
@@ -2565,6 +2567,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     VMX_BUILD_NAME(connectionType);
     VMX_BUILD_NAME(addressType);
     VMX_BUILD_NAME(generatedAddress);
+    VMX_BUILD_NAME(checkMACAddress);
     VMX_BUILD_NAME(address);
     VMX_BUILD_NAME(virtualDev);
     VMX_BUILD_NAME(features);
@@ -2599,7 +2602,9 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
                               true) < 0 ||
         virVMXGetConfigString(conf, generatedAddress_name, &generatedAddress,
                               true) < 0 ||
-        virVMXGetConfigString(conf, address_name, &address, true) < 0) {
+        virVMXGetConfigString(conf, address_name, &address, true) < 0 ||
+        virVMXGetConfigString(conf, checkMACAddress_name, &checkMACAddress,
+                              true) < 0) {
         goto cleanup;
     }
 
@@ -2614,6 +2619,8 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
                 goto cleanup;
             }
         }
+        if (addressType != NULL)
+            (*def)->mac_type = VIR_DOMAIN_NET_MAC_TYPE_GENERATED;
     } else if (STRCASEEQ(addressType, "static")) {
         if (address != NULL) {
             if (virMacAddrParse(address, &(*def)->mac) < 0) {
@@ -2623,11 +2630,20 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
                 goto cleanup;
             }
         }
+        (*def)->mac_type = VIR_DOMAIN_NET_MAC_TYPE_STATIC;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting VMX entry '%s' to be 'generated' or 'static' or "
                          "'vpx' but found '%s'"), addressType_name, addressType);
         goto cleanup;
+    }
+
+    if (checkMACAddress) {
+        if (STREQ(checkMACAddress, "true")) {
+            (*def)->mac_check = VIR_TRISTATE_BOOL_YES;
+        } else {
+            (*def)->mac_check = VIR_TRISTATE_BOOL_NO;
+        }
     }
 
     /* vmx:virtualDev, vmx:features -> def:model */
@@ -3061,7 +3077,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     size_t i;
     int sched_cpu_affinity_length;
     unsigned char zero[VIR_UUID_BUFLEN];
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     char *preliminaryDisplayName = NULL;
     char *displayName = NULL;
     char *annotation = NULL;
@@ -3377,7 +3393,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     /* def:nets */
     for (i = 0; i < def->nnets; ++i) {
-        if (virVMXFormatEthernet(def->nets[i], i, &buffer) < 0)
+        if (virVMXFormatEthernet(def->nets[i], i, &buffer, virtualHW_version) < 0)
             goto cleanup;
     }
 
@@ -3446,9 +3462,6 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     vmx = virBufferContentAndReset(&buffer);
 
  cleanup:
-    if (vmx == NULL)
-        virBufferFreeAndReset(&buffer);
-
     VIR_FREE(preliminaryDisplayName);
     VIR_FREE(displayName);
     VIR_FREE(annotation);
@@ -3733,15 +3746,26 @@ virVMXFormatFileSystem(virDomainFSDefPtr def, int number, virBufferPtr buffer)
 
 int
 virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
-                     virBufferPtr buffer)
+                     virBufferPtr buffer, int virtualHW_version)
 {
     char mac_string[VIR_MAC_STRING_BUFLEN];
+    virDomainNetMacType mac_type = VIR_DOMAIN_NET_MAC_TYPE_DEFAULT;
+    virTristateBool mac_check = VIR_TRISTATE_BOOL_ABSENT;
+    bool mac_vpx = false;
     unsigned int prefix, suffix;
 
-    if (controller < 0 || controller > 3) {
+    /*
+     * Machines older than virtualHW.version = 7 (ESXi 4.0) only support up to 4
+     * virtual NICs. New machines support up to 10.
+     */
+    int controller_limit = 3;
+    if (virtualHW_version >= 7)
+        controller_limit = 9;
+
+    if (controller < 0 || controller > controller_limit) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Ethernet controller index %d out of [0..3] range"),
-                       controller);
+                       _("Ethernet controller index %d out of [0..%d] range"),
+                       controller, controller_limit);
         return -1;
     }
 
@@ -3825,31 +3849,51 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
     prefix = (def->mac.addr[0] << 16) | (def->mac.addr[1] << 8) | def->mac.addr[2];
     suffix = (def->mac.addr[3] << 16) | (def->mac.addr[4] << 8) | def->mac.addr[5];
 
+    /*
+     * Historically we've not stored all the MAC related properties
+     * explicitly in the XML, so we must figure out some defaults
+     * based on the address ranges.
+     */
     if (prefix == 0x000c29) {
-        virBufferAsprintf(buffer, "ethernet%d.addressType = \"generated\"\n",
-                          controller);
-        virBufferAsprintf(buffer, "ethernet%d.generatedAddress = \"%s\"\n",
-                          controller, mac_string);
-        virBufferAsprintf(buffer, "ethernet%d.generatedAddressOffset = \"0\"\n",
-                          controller);
+        mac_type = VIR_DOMAIN_NET_MAC_TYPE_GENERATED;
     } else if (prefix == 0x005056 && suffix <= 0x3fffff) {
-        virBufferAsprintf(buffer, "ethernet%d.addressType = \"static\"\n",
-                          controller);
-        virBufferAsprintf(buffer, "ethernet%d.address = \"%s\"\n",
-                          controller, mac_string);
+        mac_type = VIR_DOMAIN_NET_MAC_TYPE_STATIC;
     } else if (prefix == 0x005056 && suffix >= 0x800000 && suffix <= 0xbfffff) {
-        virBufferAsprintf(buffer, "ethernet%d.addressType = \"vpx\"\n",
-                          controller);
+        mac_type = VIR_DOMAIN_NET_MAC_TYPE_GENERATED;
+        mac_vpx = true;
+    } else {
+        mac_type = VIR_DOMAIN_NET_MAC_TYPE_STATIC;
+        mac_check = VIR_TRISTATE_BOOL_NO;
+    }
+
+    /* If explicit MAC type is set, ignore the above defaults */
+    if (def->mac_type != VIR_DOMAIN_NET_MAC_TYPE_DEFAULT) {
+        mac_type = def->mac_type;
+        if (mac_type == VIR_DOMAIN_NET_MAC_TYPE_GENERATED)
+            mac_check = VIR_TRISTATE_BOOL_ABSENT;
+    }
+
+    if (def->mac_check != VIR_TRISTATE_BOOL_ABSENT)
+        mac_check = def->mac_check;
+
+    if (mac_type == VIR_DOMAIN_NET_MAC_TYPE_GENERATED) {
+        virBufferAsprintf(buffer, "ethernet%d.addressType = \"%s\"\n",
+                          controller, mac_vpx ? "vpx" : "generated");
         virBufferAsprintf(buffer, "ethernet%d.generatedAddress = \"%s\"\n",
                           controller, mac_string);
+        if (!mac_vpx)
+            virBufferAsprintf(buffer, "ethernet%d.generatedAddressOffset = \"0\"\n",
+                              controller);
     } else {
         virBufferAsprintf(buffer, "ethernet%d.addressType = \"static\"\n",
                           controller);
         virBufferAsprintf(buffer, "ethernet%d.address = \"%s\"\n",
                           controller, mac_string);
-        virBufferAsprintf(buffer, "ethernet%d.checkMACAddress = \"false\"\n",
-                          controller);
     }
+    if (mac_check != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(buffer, "ethernet%d.checkMACAddress = \"%s\"\n",
+                          controller,
+                          mac_check == VIR_TRISTATE_BOOL_YES ? "true" : "false");
 
     return 0;
 }

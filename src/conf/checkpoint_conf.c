@@ -430,7 +430,7 @@ virDomainCheckpointDiskDefFormat(virBufferPtr buf,
                           virDomainCheckpointTypeToString(disk->type));
     if (disk->bitmap) {
         virBufferEscapeString(buf, " bitmap='%s'", disk->bitmap);
-        if (flags & VIR_DOMAIN_CHECKPOINT_FORMAT_SIZE)
+        if (flags & VIR_DOMAIN_CHECKPOINT_FORMAT_SIZE && disk->sizeValid)
             virBufferAsprintf(buf, " size='%llu'", disk->size);
     }
     virBufferAddLit(buf, "/>\n");
@@ -476,7 +476,7 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
         for (i = 0; i < def->ndisks; i++) {
             if (virDomainCheckpointDiskDefFormat(buf, &def->disks[i],
                                                  flags) < 0)
-                goto error;
+                return -1;
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</disks>\n");
@@ -485,24 +485,21 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
     if (!(flags & VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN) &&
         virDomainDefFormatInternal(def->parent.dom, xmlopt,
                                    buf, domainflags) < 0)
-        goto error;
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</domaincheckpoint>\n");
 
     return 0;
-
- error:
-    virBufferFreeAndReset(buf);
-    return -1;
 }
+
 
 char *
 virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
                              virDomainXMLOptionPtr xmlopt,
                              unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(VIR_DOMAIN_CHECKPOINT_FORMAT_SECURE |
                   VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN |

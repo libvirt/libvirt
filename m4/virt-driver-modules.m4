@@ -38,17 +38,14 @@ AC_DEFUN([LIBVIRT_CHECK_DRIVER_MODULES], [
   fi
 
   DRIVER_MODULES_CFLAGS=
-  DRIVER_MODULES_LIBS=
   if test "$with_driver_modules" = "yes"; then
     if test "$with_dlfcn" != "yes" || test "$with_dlopen" != "yes"; then
       AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
     fi
 
     DRIVER_MODULES_LDFLAGS="-export-dynamic"
-    DRIVER_MODULES_LIBS="$DLOPEN_LIBS"
   fi
   AC_SUBST([DRIVER_MODULES_LDFLAGS])
-  AC_SUBST([DRIVER_MODULES_LIBS])
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_DRIVER_MODULES], [

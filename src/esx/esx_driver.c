@@ -275,7 +275,7 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
     esxVI_ObjectContent *datastore = NULL;
     esxVI_DatastoreHostMount *hostMount = NULL;
     char separator = '/';
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     char *tmp;
     size_t length;
 
@@ -336,10 +336,8 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
     success = true;
 
  cleanup:
-    if (! success) {
-        virBufferFreeAndReset(&buffer);
+    if (! success)
         VIR_FREE(result);
-    }
 
     VIR_FREE(datastoreName);
     VIR_FREE(directoryAndFileName);
@@ -2359,7 +2357,7 @@ esxDomainScreenshot(virDomainPtr domain, virStreamPtr stream,
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     char *url = NULL;
 
     virCheckFlags(0, NULL);
@@ -2413,7 +2411,6 @@ esxDomainScreenshot(virDomainPtr domain, virStreamPtr stream,
     }
 
  cleanup:
-    virBufferFreeAndReset(&buffer);
 
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
@@ -2579,7 +2576,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     char *datastoreName = NULL;
     char *directoryName = NULL;
     char *directoryAndFileName = NULL;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     char *url = NULL;
     char *vmx = NULL;
     virVMXContext ctx;
@@ -2653,9 +2650,6 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     }
 
  cleanup:
-    if (!url)
-        virBufferFreeAndReset(&buffer);
-
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
     VIR_FREE(moref);
@@ -2936,7 +2930,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     char *datastoreName = NULL;
     char *directoryName = NULL;
     char *escapedName = NULL;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     char *url = NULL;
     char *datastoreRelatedPath = NULL;
     esxVI_String *propertyNameList = NULL;
@@ -3124,9 +3118,6 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     /* FIXME: Add proper rollback in case of an error */
 
  cleanup:
-    if (!url)
-        virBufferFreeAndReset(&buffer);
-
     virDomainDefFree(def);
     VIR_FREE(vmx);
     VIR_FREE(datastoreName);

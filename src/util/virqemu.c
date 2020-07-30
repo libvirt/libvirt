@@ -110,7 +110,7 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
 
 
 /**
- * This array convertor is for quirky cases where the QMP schema mandates an
+ * This array converter is for quirky cases where the QMP schema mandates an
  * array of objects with only one attribute 'str' which needs to be formatted as
  * repeated key-value pairs without the 'str' being printed:
  *
@@ -360,18 +360,13 @@ virQEMUBuildObjectCommandlineFromJSON(virBufferPtr buf,
 char *
 virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr srcdef)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *ret = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virQEMUBuildCommandLineJSON(srcdef, &buf, NULL, false,
                                     virQEMUBuildCommandLineJSONArrayNumbered) < 0)
-        goto cleanup;
+        return NULL;
 
-    ret = virBufferContentAndReset(&buf);
-
- cleanup:
-    virBufferFreeAndReset(&buf);
-    return ret;
+    return virBufferContentAndReset(&buf);
 }
 
 

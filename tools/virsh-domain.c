@@ -575,7 +575,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     int ret;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     const char *stype = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *xml = NULL;
     struct stat st;
     bool current = vshCommandOptBool(cmd, "current");
@@ -778,7 +778,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(xml);
     virshDomainFree(dom);
-    virBufferFreeAndReset(&buf);
     return functionReturn;
 }
 
@@ -905,7 +904,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     virDomainNetType typ;
     int ret;
     bool functionReturn = false;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *xml = NULL;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     bool current = vshCommandOptBool(cmd, "current");
@@ -1091,7 +1090,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(xml);
     virshDomainFree(dom);
-    virBufferFreeAndReset(&buf);
     return functionReturn;
 }
 
@@ -2140,7 +2138,7 @@ cmdBlockcommit(vshControl *ctl, const vshCmd *cmd)
             break;
 
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
-            vshError(ctl, "\n%s", _("Commit failed"));
+            vshPrintExtra(ctl, "\n%s", _("Commit failed"));
             goto cleanup;
             break;
 
@@ -2412,7 +2410,7 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (!xmlstr) {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
             virBufferAsprintf(&buf, "<disk type='%s'>\n",
                               blockdev ? "block" : "file");
             virBufferAdjustIndent(&buf, 2);
@@ -2457,7 +2455,7 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
             break;
 
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
-            vshError(ctl, "\n%s", _("Copy failed"));
+            vshPrintExtra(ctl, "\n%s", _("Copy failed"));
             goto cleanup;
             break;
 
@@ -2865,7 +2863,7 @@ cmdBlockpull(vshControl *ctl, const vshCmd *cmd)
             break;
 
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
-            vshError(ctl, "\n%s", _("Pull failed"));
+            vshPrintExtra(ctl, "\n%s", _("Pull failed"));
             goto cleanup;
             break;
 
@@ -6886,16 +6884,15 @@ virshVcpuinfoInactive(vshControl *ctl,
                       int maxcpu,
                       bool pretty)
 {
-    unsigned char *cpumaps = NULL;
+    g_autofree unsigned char *cpumaps = NULL;
     size_t cpumaplen;
     int ncpus;
-    virBitmapPtr vcpus = NULL;
+    g_autoptr(virBitmap) vcpus = NULL;
     ssize_t nextvcpu = -1;
-    bool ret = false;
     bool first = true;
 
     if (!(vcpus = virshDomainGetVcpuBitmap(ctl, dom, true)))
-        goto cleanup;
+        return false;
 
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
     cpumaps = vshMalloc(ctl, virBitmapSize(vcpus) * cpumaplen);
@@ -6903,7 +6900,7 @@ virshVcpuinfoInactive(vshControl *ctl,
     if ((ncpus = virDomainGetVcpuPinInfo(dom, virBitmapSize(vcpus),
                                          cpumaps, cpumaplen,
                                          VIR_DOMAIN_AFFECT_CONFIG)) < 0)
-        goto cleanup;
+        return false;
 
     while ((nextvcpu = virBitmapNextSetBit(vcpus, nextvcpu)) >= 0) {
         if (!first)
@@ -6918,15 +6915,10 @@ virshVcpuinfoInactive(vshControl *ctl,
         if (virshVcpuinfoPrintAffinity(ctl,
                                        VIR_GET_CPUMAP(cpumaps, cpumaplen, nextvcpu),
                                        maxcpu, pretty) < 0)
-            goto cleanup;
+            return false;
     }
 
-    ret = true;
-
- cleanup:
-    virBitmapFree(vcpus);
-    VIR_FREE(cpumaps);
-    return ret;
+    return true;
 }
 
 
@@ -6934,12 +6926,11 @@ static bool
 cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
-    virDomainPtr dom;
-    virVcpuInfoPtr cpuinfo = NULL;
-    unsigned char *cpumaps = NULL;
+    g_autoptr(virshDomain) dom = NULL;
+    g_autofree virVcpuInfoPtr cpuinfo = NULL;
+    g_autofree unsigned char *cpumaps = NULL;
     int ncpus, maxcpu;
     size_t cpumaplen;
-    bool ret = false;
     bool pretty = vshCommandOptBool(cmd, "pretty");
     int n;
     virshControlPtr priv = ctl->privData;
@@ -6948,10 +6939,10 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if ((maxcpu = virshNodeGetCPUCount(priv->conn)) < 0)
-        goto cleanup;
+        return false;
 
     if (virDomainGetInfo(dom, &info) != 0)
-        goto cleanup;
+        return false;
 
     cpuinfo = vshMalloc(ctl, sizeof(virVcpuInfo)*info.nrVirtCpu);
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
@@ -6961,13 +6952,12 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
                                    cpuinfo, info.nrVirtCpu,
                                    cpumaps, cpumaplen)) < 0) {
         if (info.state != VIR_DOMAIN_SHUTOFF)
-            goto cleanup;
+            return false;
 
         vshResetLibvirtError();
 
         /* for offline VMs we can return pinning information */
-        ret = virshVcpuinfoInactive(ctl, dom, maxcpu, pretty);
-        goto cleanup;
+        return virshVcpuinfoInactive(ctl, dom, maxcpu, pretty);
     }
 
     for (n = 0; n < ncpus; n++) {
@@ -6985,19 +6975,13 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 
         if (virshVcpuinfoPrintAffinity(ctl, VIR_GET_CPUMAP(cpumaps, cpumaplen, n),
                                        maxcpu, pretty) < 0)
-            goto cleanup;
+            return false;
 
         if (n < (ncpus - 1))
             vshPrint(ctl, "\n");
     }
 
-    ret = true;
-
- cleanup:
-    VIR_FREE(cpumaps);
-    VIR_FREE(cpuinfo);
-    virshDomainFree(dom);
-    return ret;
+    return true;
 }
 
 /*
@@ -8504,7 +8488,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
     char *tmp = NULL;
     char *tmpstr;
     const vshCmdOpt *opt = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool ret = false;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
@@ -9642,7 +9626,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virJSONValue) resultjson = NULL;
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool pretty = vshCommandOptBool(cmd, "pretty");
     bool returnval = vshCommandOptBool(cmd, "return-value");
     virJSONValuePtr formatjson;
@@ -9956,7 +9940,7 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
     int judge = 0;
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virJSONValuePtr pretty = NULL;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
@@ -11506,7 +11490,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virDomainPtr dom;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool ret = false;
     char *xpath = NULL;
     char *listen_addr = NULL;
@@ -13202,7 +13186,7 @@ virshEventGenericPrint(virConnectPtr conn G_GNUC_UNUSED,
                        virDomainPtr dom,
                        void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event '%s' for domain %s\n"),
                       ((virshDomEventData *) opaque)->cb->name,
@@ -13217,7 +13201,7 @@ virshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
                          int detail,
                          void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'lifecycle' for domain %s: %s %s\n"),
                       virDomainGetName(dom),
@@ -13232,7 +13216,7 @@ virshEventRTCChangePrint(virConnectPtr conn G_GNUC_UNUSED,
                          long long utcoffset,
                          void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'rtc-change' for domain %s: %lld\n"),
                       virDomainGetName(dom),
@@ -13246,7 +13230,7 @@ virshEventWatchdogPrint(virConnectPtr conn G_GNUC_UNUSED,
                         int action,
                         void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'watchdog' for domain %s: %s\n"),
                       virDomainGetName(dom),
@@ -13262,7 +13246,7 @@ virshEventIOErrorPrint(virConnectPtr conn G_GNUC_UNUSED,
                        int action,
                        void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'io-error' for domain %s: %s (%s) %s\n"),
                       virDomainGetName(dom),
@@ -13282,7 +13266,7 @@ virshEventGraphicsPrint(virConnectPtr conn G_GNUC_UNUSED,
                         const virDomainEventGraphicsSubject *subject,
                         void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     virBufferAsprintf(&buf, _("event 'graphics' for domain %s: "
@@ -13313,7 +13297,7 @@ virshEventIOErrorReasonPrint(virConnectPtr conn G_GNUC_UNUSED,
                              const char *reason,
                              void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'io-error-reason' for domain %s: "
                               "%s (%s) %s due to %s\n"),
@@ -13333,7 +13317,7 @@ virshEventBlockJobPrint(virConnectPtr conn G_GNUC_UNUSED,
                         int status,
                         void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event '%s' for domain %s: %s for %s %s\n"),
                       ((virshDomEventData *) opaque)->cb->name,
@@ -13353,7 +13337,7 @@ virshEventDiskChangePrint(virConnectPtr conn G_GNUC_UNUSED,
                           int reason,
                           void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'disk-change' for domain %s disk %s: "
                               "%s -> %s: %s\n"),
@@ -13372,7 +13356,7 @@ virshEventTrayChangePrint(virConnectPtr conn G_GNUC_UNUSED,
                           int reason,
                           void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'tray-change' for domain %s disk %s: %s\n"),
                       virDomainGetName(dom),
@@ -13398,7 +13382,7 @@ virshEventBalloonChangePrint(virConnectPtr conn G_GNUC_UNUSED,
                              unsigned long long actual,
                              void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'balloon-change' for domain %s: %lluKiB\n"),
                       virDomainGetName(dom),
@@ -13412,7 +13396,7 @@ virshEventDeviceRemovedPrint(virConnectPtr conn G_GNUC_UNUSED,
                              const char *alias,
                              void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'device-removed' for domain %s: %s\n"),
                       virDomainGetName(dom),
@@ -13426,7 +13410,7 @@ virshEventDeviceAddedPrint(virConnectPtr conn G_GNUC_UNUSED,
                            const char *alias,
                            void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'device-added' for domain %s: %s\n"),
                       virDomainGetName(dom),
@@ -13441,7 +13425,7 @@ virshEventTunablePrint(virConnectPtr conn G_GNUC_UNUSED,
                        int nparams,
                        void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     char *value;
 
@@ -13479,7 +13463,7 @@ virshEventAgentLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
                               int reason,
                               void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'agent-lifecycle' for domain %s: state: "
                               "'%s' reason: '%s'\n"),
@@ -13495,7 +13479,7 @@ virshEventMigrationIterationPrint(virConnectPtr conn G_GNUC_UNUSED,
                                   int iteration,
                                   void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'migration-iteration' for domain %s: "
                               "iteration: '%d'\n"),
@@ -13512,7 +13496,7 @@ virshEventJobCompletedPrint(virConnectPtr conn G_GNUC_UNUSED,
                             int nparams,
                             void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     char *value;
 
@@ -13535,7 +13519,7 @@ virshEventDeviceRemovalFailedPrint(virConnectPtr conn G_GNUC_UNUSED,
                                    const char *alias,
                                    void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'device-removal-failed' for domain %s: %s\n"),
                       virDomainGetName(dom),
@@ -13557,9 +13541,9 @@ virshEventMetadataChangePrint(virConnectPtr conn G_GNUC_UNUSED,
                               const char *nsuri,
                               void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'metdata-change' for domain %s: %s %s\n"),
+    virBufferAsprintf(&buf, _("event 'metadata-change' for domain %s: %s %s\n"),
                       virDomainGetName(dom),
                       UNKNOWNSTR(virshEventMetadataChangeTypeTypeToString(type)),
                       NULLSTR(nsuri));
@@ -13576,7 +13560,7 @@ virshEventBlockThresholdPrint(virConnectPtr conn G_GNUC_UNUSED,
                               unsigned long long excess,
                               void *opaque)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, _("event 'block-threshold' for domain %s: "
                               "dev: %s(%s) %llu %llu\n"),
@@ -14167,7 +14151,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         for (i = 0; i < ninfos; i++) {
-            virBuffer targetsBuff = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) targetsBuff = VIR_BUFFER_INITIALIZER;
             g_autofree char *targets = NULL;
 
             for (j = 0; j < info[i]->ndevAlias; j++)

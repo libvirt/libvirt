@@ -33,16 +33,6 @@
 VIR_LOG_INIT("qemu.dbus");
 
 
-int
-qemuDBusPrepareHost(virQEMUDriverPtr driver)
-{
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
-    return virDirCreate(cfg->dbusStateDir, 0770, cfg->user, cfg->group,
-                        VIR_DIR_CREATE_ALLOW_EXIST);
-}
-
-
 static char *
 qemuDBusCreatePidFilename(virQEMUDriverConfigPtr cfg,
                           const char *shortName)
@@ -100,7 +90,7 @@ qemuDBusGetAddress(virQEMUDriverPtr driver,
 static int
 qemuDBusWriteConfig(const char *filename, const char *path)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *config = NULL;
 
     virBufferAddLit(&buf, "<!DOCTYPE busconfig PUBLIC \"-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN\"\n");

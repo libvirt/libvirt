@@ -354,7 +354,7 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
  *
  * This method is used to dispatch a message representing an
  * incoming method call from a client. It decodes the payload
- * to obtain method call arguments, invokves the method and
+ * to obtain method call arguments, invokes the method and
  * then sends a reply packet with the return values
  *
  * Returns 0 if the reply was sent, or -1 upon fatal error

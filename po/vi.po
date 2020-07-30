@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -989,6 +989,9 @@ msgstr "kiểu đích phải được ghi rõ cho thiết bị %s"
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "kiểu đích phải được ghi rõ cho thiết bị %s"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1004,6 +1007,9 @@ msgstr ""
 msgid ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
 msgstr "kiểu đích phải được ghi rõ cho thiết bị %s"
+
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr ""
@@ -1035,6 +1041,15 @@ msgid "'gluster' command line tool not found"
 msgstr "Pool lưu trữ không tìm thấy"
 
 msgid "'host-name' missing in guest-get-host-name reply"
+msgstr ""
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
 msgstr ""
 
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1137,6 +1152,9 @@ msgid "'ssh' protocol is not yet supported"
 msgstr "chế độ hostdev '%s' không được hỗ trợ"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
+msgstr ""
+
+msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
 
 #, fuzzy
@@ -1583,6 +1601,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr ""
 
@@ -1643,6 +1664,9 @@ msgstr "các tham số tới echo"
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 msgid "At least one PTY console is required"
@@ -1721,11 +1745,10 @@ msgstr ""
 msgid "Attempted double use of PCI Address %s"
 msgstr ""
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+msgid "Attempting to use unknown stub driver"
 msgstr ""
 
-msgid "Attempting to use unknown stub driver"
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -2148,6 +2171,10 @@ msgstr ""
 
 #, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cache level '%u' already defined"
 msgstr ""
 
 #, c-format
@@ -3084,9 +3111,9 @@ msgstr ""
 msgid "Cannot resize the max memory on an active domain"
 msgstr "không thể liệt kê vcpu cho miền không hoạt động"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "Không thể phân tích địa chỉ socket '%s': %s"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr ""
@@ -5675,6 +5702,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "Nhãn bảo mật %s không hợp lệ"
@@ -5724,11 +5754,6 @@ msgid "Edit the domain snapshot XML for a named snapshot"
 msgstr "miền không có ảnh chụp hiện tại"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
-msgstr ""
-
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
 msgstr ""
 
 msgid "Eject the media"
@@ -5905,8 +5930,8 @@ msgid "Escape character is %s"
 msgstr "Kiểu thiết bị ký tự không hỗ trợ '%s'"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "Chỉ mục bộ điều khiển ethernet %d vượt miền [0..3]"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6206,6 +6231,9 @@ msgid "Fail to create socket for incoming migration"
 msgstr "Lấy thông tin ổ đĩa thất bại"
 
 msgid "Failed"
+msgstr ""
+
+msgid "Failed disable mount propagation out of the root filesystem"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6590,6 +6618,10 @@ msgstr "Thất bại khi tạo mạng từ %s"
 #, fuzzy, c-format
 msgid "Failed to create checkpoint dir %s"
 msgstr "Thất bại khi tạo miền từ %s"
+
+#, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -6990,10 +7022,6 @@ msgstr "Thất bại khi phân tích chế độ '%s'"
 msgid "Failed to find parent device for %s"
 msgstr "Thất bại khi tìm thiết bị cha cho %s"
 
-#, fuzzy, c-format
-msgid "Failed to find path for %s binary"
-msgstr "Thất bại khi dựng đường dẫn cho hook %s"
-
 #, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr ""
@@ -7028,9 +7056,9 @@ msgstr "Thất bại khi phân nhánh khi là trình nền: %s"
 msgid "Failed to format new xml document for bridge %s"
 msgstr "Thất bại khi tạo miền từ %s"
 
-#, fuzzy, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
-msgstr "Thất bại khi huỷ định nghĩa giao diện %s"
+#, c-format
+msgid "Failed to format new xml document for detached interface %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to fully read directory %s"
@@ -7132,10 +7160,6 @@ msgstr "Thất bại khi lưu trạng thái %s miền"
 #, fuzzy
 msgid "Failed to get domain's UUID"
 msgstr "lấy UUID miền thất bại"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "Lấy thông tin ổ đĩa thất bại"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8088,10 +8112,6 @@ msgstr "Thất bại khi tạo ảnh chụp: %s"
 msgid "Failed to set %s for %s: value too large"
 msgstr "Thất bại khi đặt giá trị bí mật"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "Thất bại khi đặt giá trị bí mật"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "Thất bại khi đặt ngữ cảnh bảo mật cho bộ theo dõi cho %s"
@@ -8155,6 +8175,14 @@ msgstr "Thất bại khi đặt bộ nhớ cho miền"
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr "Thất bại khi đặt bộ nhớ cho miền"
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to set new domain description"
 msgstr "tập tin chứa một mô tả miền XML"
@@ -8162,14 +8190,6 @@ msgstr "tập tin chứa một mô tả miền XML"
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "Thất bại khi lưu trạng thái %s miền"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr ""
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr ""
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Thất bại khi đặt cờ miêu tả tập tin không-chặn"
@@ -8295,9 +8315,6 @@ msgstr "Thất bại khi ngừng miền %s"
 #, fuzzy, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "Thất bại khi ngừng miền %s"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr "Thất bại khi chuyển lắp root vào chế độ slave"
 
 #, fuzzy, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8580,6 +8597,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -8872,6 +8895,9 @@ msgid "Guest agent is not responding: %s"
 msgstr ""
 
 msgid "Guest agent not available for now"
+msgstr ""
+
+msgid "HMAT is not supported with this QEMU"
 msgstr ""
 
 #, fuzzy
@@ -9384,6 +9410,9 @@ msgstr "Đường dẫn quan hệ '%s' không hợp lệ"
 msgid "Invalid %s image format specified in configuration file"
 msgstr "phân tích tập tin cấu hình thất bại"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Invalid 'cpu.max' data."
 msgstr ""
 
@@ -9399,13 +9428,29 @@ msgstr ""
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr ""
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "Đường dẫn quan hệ '%s' không hợp lệ"
 
+#, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "Nhãn bảo mật không hợp lệ '%s'"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9646,9 +9691,17 @@ msgstr "Kiểu tuyến không hợp lệ '%s' với đĩa mềm"
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr ""
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "Đường dẫn quan hệ '%s' không hợp lệ"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -9857,6 +9910,9 @@ msgstr ""
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr ""
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "tên thiết bị mềm không hợp lệ: %s"
@@ -9918,6 +9974,10 @@ msgstr "Giá trị tiền tố địa chỉ ip không hợp lệ"
 #, fuzzy, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid job flags"
@@ -10375,6 +10435,10 @@ msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 msgid "Invalid value for timeout"
 msgstr "giá trị không hợp lệ của 'private'"
 
+#, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
@@ -10517,6 +10581,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "Thiết bị đĩa '%s' không hỗ trợ chụp ảnh"
+
+msgid "Link already defined"
+msgstr ""
 
 msgid "List all manageable clients connected to <server>."
 msgstr ""
@@ -10774,6 +10841,9 @@ msgstr ""
 msgid "Malformed nbd port '%s'"
 msgstr "thành phần uuid sai dạng thức cung cấp cho '%s'"
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed ovs-vsctl output"
 msgstr "chế độ cơ số 8 sai dạng thức"
@@ -10960,6 +11030,10 @@ msgstr ""
 msgid "MethodFault is missing 'type' property"
 msgstr "%s thiếu thuộc tính 'type'"
 
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
+
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "Di trú miền sang máy chủ khác. Thêm --live để di trú thời gian thực."
 
@@ -11058,11 +11132,11 @@ msgstr "Thiếu thuộc tính '%s' khi tìm ManagedEntityStatus"
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr ""
 
-msgid "Missing 'cores' attribute in CPU topology"
-msgstr "Thiếu thuộc tính 'cores' trong tôpô CPU"
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
 
-#, fuzzy
-msgid "Missing 'cpus' attribute in NUMA cell"
+msgid "Missing 'cores' attribute in CPU topology"
 msgstr "Thiếu thuộc tính 'cores' trong tôpô CPU"
 
 msgid "Missing 'domname' in JSON document"
@@ -11090,7 +11164,14 @@ msgstr "Thiếu thuộc tính 'threads' trong tôpô CPU"
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr ""
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
+msgstr ""
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
 msgstr ""
 
 #, fuzzy
@@ -11110,6 +11191,10 @@ msgstr ""
 msgid "Missing 'pipefd' in JSON document"
 msgstr ""
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "Thiếu thuộc tính 'runtime.powerState'"
 
@@ -11120,12 +11205,18 @@ msgstr "Thiếu thuộc tính 'sockets' trong tôpô CPU"
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr ""
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Missing 'target' element for lease"
 msgstr "thiếu thông tin đích cho thiết bị"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "Thiếu thuộc tính 'threads' trong tôpô CPU"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 msgid "Missing 'uuid' attribute for element <address>"
 msgstr ""
@@ -11134,6 +11225,9 @@ msgstr ""
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -11817,10 +11911,6 @@ msgstr ""
 msgid "NULL value for field '%s'"
 msgstr "Thất bại khi đọc tập tin '%s'"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "số ô NUMA"
 
@@ -11866,6 +11956,9 @@ msgid "NUMA node %zd is unavailable"
 msgstr ""
 
 msgid "NUMA node selections to set"
+msgstr ""
+
+msgid "NUMA nodes without CPUs can't be initiator"
 msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
@@ -12522,6 +12615,10 @@ msgstr ""
 #, c-format
 msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr "Giá trị chưa xử lý '%s' cho mục VMX '%s'"
+
+#, c-format
+msgid "No zPCI %s to reserve"
+msgstr ""
 
 #, c-format
 msgid "Node %d:\n"
@@ -14029,7 +14126,7 @@ msgid "S4 state is disabled for this domain"
 msgstr "Các tác vụ khác đang chờ cho miền này"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
+msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
 
 #, c-format
@@ -15048,6 +15145,17 @@ msgstr "sử dụng ổ đã chỉ định, nhưng đường dẫn ổ bị thi�
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr ""
@@ -15314,6 +15422,11 @@ msgstr ""
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "Tên tập tin cấu hình mạng '%s' không khớp tên mạng '%s'"
 
+#, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr "Tên tập tin cấu hình mạng '%s' không khớp tên mạng '%s'"
@@ -15351,6 +15464,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr ""
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr ""
 
@@ -15368,6 +15485,9 @@ msgstr ""
 
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
+msgstr ""
+
+msgid "Target domain count of sysinfo does not match source"
 msgstr ""
 
 #, c-format
@@ -15695,6 +15815,9 @@ msgstr "Bộ nhớ tổng cộng:"
 msgid "Temporary disk space use:"
 msgstr ""
 
+msgid "That firmware name is reserved"
+msgstr ""
+
 msgid "Thaw domain's mounted filesystems."
 msgstr ""
 
@@ -16013,7 +16136,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Máy chủ này không được quản lý bởi một vCenter"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -16458,6 +16581,12 @@ msgstr ""
 msgid "Unable to access stream for '%s'"
 msgstr "Không thể pre-create tập tin chardev '%s'"
 
+#, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "Thất bại khi phân tích tên khối %s"
@@ -16864,6 +16993,12 @@ msgstr "không thể lấy ngữ cảnh tiến trình hiện tại '%s'"
 msgid "Unable to create tunnel migration thread"
 msgstr "không thể tạo cặp socket"
 
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
+
 msgid "Unable to decode header until len is received"
 msgstr ""
 
@@ -17078,6 +17213,9 @@ msgid "Unable to find the snapshot with name %s"
 msgstr "Không thể tìm ảnh chụp của tên '%s'"
 
 msgid "Unable to force bind to IPv6 only"
+msgstr ""
+
+msgid "Unable to format NUMA node cache"
 msgstr ""
 
 #, fuzzy
@@ -18246,6 +18384,10 @@ msgstr "Không thể đặt cờ close-on-exec cho bộ theo dõi"
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "Thất bại khi đặt cờ miêu tả tập tin không-chặn"
 
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to set interface parameters"
 msgstr "Không thể lấy các thông số bộ nhớ"
@@ -18313,6 +18455,9 @@ msgstr "Không thể ghi tập tin pid '%s/%s.pid'"
 msgid "Unable to start event thread: %s"
 msgstr "Thất bại khi bắt đầu giao diện %s"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to stat %s"
 msgstr "Không thể mở %s"
@@ -18328,6 +18473,9 @@ msgstr "Thất bại khi bắt đầu giao diện %s"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "Không thể mở %s"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19269,6 +19417,9 @@ msgstr "kiểu bộ quản lý '%s' không hỗ trợ"
 msgid "Unsupported controller type: %s"
 msgstr "kiểu đích console không hỗ trợ %s"
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
 msgstr "Kiểu thiết bị '%s' không được hỗ trợ"
@@ -19933,6 +20084,11 @@ msgid ""
 "Only one default is allowed."
 msgstr ""
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 msgid "a redefined checkpoint must have a name"
 msgstr ""
 
@@ -20135,9 +20291,6 @@ msgid "amount of data to upload"
 msgstr ""
 
 msgid "an <auth> definition already found for disk source"
-msgstr ""
-
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
 msgstr ""
 
 msgid "an <encryption> definition already found for disk source"
@@ -20408,19 +20561,22 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 msgid "backup job"
 msgstr ""
 
 msgid "backup job data missing"
 msgstr ""
 
-#, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "đường dẫn '%s' không tuyệt đối"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr ""
@@ -20489,10 +20645,6 @@ msgstr "Ảnh chụp '%s' đã tồn tại"
 #, fuzzy, c-format
 msgid "binding '%s' is already being removed"
 msgstr "Miền '%s' đã đang chạy"
-
-#, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
 
 #, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
@@ -20796,10 +20948,6 @@ msgstr "không thể xoá ảnh chụp"
 #, fuzzy, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "bắt đầu ô %d vượt miền (0-%d)"
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
-msgstr ""
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -21118,6 +21266,9 @@ msgstr "không thể sao chép từ ổ tới một ổ thư mục"
 msgid "cannot create %s"
 msgstr "không thể đọc %s"
 
+msgid "cannot create a mediated device without a parent"
+msgstr ""
+
 #, fuzzy
 msgid "cannot create a new stream"
 msgstr "không thể ghi vào luồng"
@@ -21230,10 +21381,6 @@ msgstr "không thể giải mã dữ liệu CPU cho kiến trúc %s"
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "không thể quyết định hệ thống tập tin cho '%s'"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "không thể tắt %s"
 
 #, fuzzy
 msgid "cannot do managed save for transient domain"
@@ -22384,7 +22531,7 @@ msgid "cannot write data to file '%s'"
 msgstr "không thể đồng bộ dữ liệu vào tập tin '%s'"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 #, fuzzy
@@ -23081,6 +23228,10 @@ msgid "could not find capabilities for %s"
 msgstr "không có các khả năng thiết bị cho '%s'"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr ""
 
@@ -23205,10 +23356,6 @@ msgid "could not initialize domain event timer"
 msgstr "không thể lấy trạng thái miền"
 
 #, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-
-#, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "không thể mở phiên VirtualBox với miền %s"
 
@@ -23298,6 +23445,9 @@ msgstr "không thể sử dụng mục quản lý máy ảo Xen"
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "không thể sử dụng mục quản lý máy ảo Xen %s"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 #, fuzzy
 msgid "couldn't fetch array of leases"
@@ -23398,6 +23548,9 @@ msgstr "không thể ghi tập tin cấu hình '%s'"
 #, fuzzy, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "không thể ghi tập tin cấu hình '%s'"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "ái lực cpu không được hỗ trợ"
@@ -24532,7 +24685,7 @@ msgstr ""
 msgid "don't start the bridge immediately"
 msgstr ""
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
+msgid "don't start the detached interface immediately (not recommended)"
 msgstr ""
 
 msgid "done"
@@ -25020,9 +25173,9 @@ msgstr ""
 msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr "Thất bại khi tự khởi chạy pool lưu trữ '%s': %s"
 
-#, fuzzy, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
-msgstr "Gỡ bỏ ảnh managedsave cho miền %s"
+#, c-format
+msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
@@ -25287,9 +25440,8 @@ msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr ""
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "thất bại khi mở tập tin"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -25559,10 +25711,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "Thất bại khi tìm một trình điều khiển nút: %s"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -26704,6 +26852,9 @@ msgstr ""
 msgid "for hardware virtualization"
 msgstr ""
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr ""
 
@@ -26807,6 +26958,9 @@ msgstr ""
 #, fuzzy
 msgid "fuse_loop failed"
 msgstr "sockpair thất bại"
+
+msgid "fw_cfg is not supported with this QEMU"
+msgstr ""
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -27609,6 +27763,10 @@ msgstr "tên giao diện %s không vừa bộ đệm"
 msgid "interface name or MAC address"
 msgstr "tên giao diện hoặc địa chỉ MAC"
 
+#, c-format
+msgid "interface not set\n"
+msgstr ""
+
 #, fuzzy
 msgid "interface state driver is not active"
 msgstr "trình điều khiển trạng thái lxc không hoạt động"
@@ -27920,6 +28078,10 @@ msgstr "Giao thức không rõ '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "con trỏ pool lưu trữ không hợp lệ trong %s"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28176,6 +28338,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "Nhận được kích thước bộ nhớ không hợp lệ %d"
@@ -28425,6 +28597,10 @@ msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 msgid "invalid statistics collection period"
 msgstr "con trỏ kết nối không hợp lệ trong"
 
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
+
 msgid "invalid storage pool pointer in"
 msgstr "con trỏ pool lưu trữ không hợp lệ trong"
 
@@ -28575,6 +28751,9 @@ msgid "io uring is not supported by this QEMU binary"
 msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 msgid "iommu driver option is only supported for virtio devices"
+msgstr ""
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -28734,9 +28913,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "thao tác thất bại: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr ""
 
 msgid "libssh transport error"
 msgstr ""
@@ -29628,6 +29804,9 @@ msgstr ""
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr ""
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -30397,10 +30576,6 @@ msgstr "thiếu thông tin hạt nhân"
 msgid "missing iommuGroup number attribute"
 msgstr "thiếu thuộc tính kiểu miền"
 
-#, fuzzy, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "Thiếu thuộc tính dịch vụ nguồn cho thiết bị ký tự"
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "thiếu thông tin thiết bị gốc"
@@ -30518,6 +30693,10 @@ msgstr "thiếu thông tin hệ điều hành"
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "thiếu thông tin hệ điều hành cho %s"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing or invalid CPU cache mode"
@@ -32293,9 +32472,11 @@ msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
 msgid "only a single IOMMU device is supported"
 msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
 
-#, fuzzy
-msgid "only a single TPM device is supported"
-msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr ""
 
 msgid "only a single memory balloon device is supported"
 msgstr "chỉ có một thiết bị balloon bộ nhớ đơn được hỗ trợ"
@@ -33448,7 +33629,7 @@ msgstr ""
 msgid "read-only connection"
 msgstr "kết nổi chỉ đọc"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 #, fuzzy
@@ -33887,9 +34068,6 @@ msgstr ""
 
 #, c-format
 msgid "sanlock error %d"
-msgstr ""
-
-msgid "sanlock is too old to support lock failure action"
 msgstr ""
 
 #, c-format
@@ -35776,6 +35954,18 @@ msgstr "udev_monitor_new_from_netlink trả lại NULL"
 msgid "uid and gid should be mapped both"
 msgstr ""
 
+#, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to access device %s\n"
 msgstr "Thất bại khi tạo thiết bị %s"
@@ -35827,6 +36017,10 @@ msgstr "không thể đóng %s"
 #, fuzzy, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "không thể tạo rundir %s: %s"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -35891,6 +36085,10 @@ msgstr "không thể thực thi lệnh QEMU '%s'"
 #, c-format
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "không thể thực thi lệnh QEMU '%s': %s"
+
+#, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
@@ -36252,9 +36450,6 @@ msgstr "không thể đóng %s"
 msgid "unable to unload already unloaded profile"
 msgstr ""
 
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
 msgstr "không thể đặt ngữ cảnh bảo mật '%s' trên '%s'"
@@ -36296,7 +36491,7 @@ msgstr "huỷ định nghĩa một bộ lọc mạng"
 msgid "undefine VM on source"
 msgstr "huỷ định nghĩa máy ảo trên nguồn"
 
-msgid "undefine a bridge device after detaching its slave device"
+msgid "undefine a bridge device after detaching its device(s)"
 msgstr ""
 
 #, fuzzy
@@ -36893,6 +37088,10 @@ msgstr "kiểu xác thực không rõ '%s'"
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "kiểu xác thực %s không rõ"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown backend type '%s' for egd"
@@ -37669,6 +37868,10 @@ msgstr "Giá trị không rõ '%s' cho xsd:boolean"
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "giá trị thuộc tính hành động quy tắc không rõ"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39171,3 +39374,56 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <chuỗi>"
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "Không thể phân tích địa chỉ socket '%s': %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "Chỉ mục bộ điều khiển ethernet %d vượt miền [0..3]"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "Lấy thông tin ổ đĩa thất bại"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "Thất bại khi đặt giá trị bí mật"
+
+#, fuzzy
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "Thiếu thuộc tính 'cores' trong tôpô CPU"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "không thể tắt %s"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "thất bại khi mở tập tin"
+
+#, fuzzy
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "Thất bại khi dựng đường dẫn cho hook %s"
+
+#, fuzzy
+#~ msgid "Failed to format new xml document for un-enslaved interface %s"
+#~ msgstr "Thất bại khi huỷ định nghĩa giao diện %s"
+
+#~ msgid "Failed to switch root mount into slave mode"
+#~ msgstr "Thất bại khi chuyển lắp root vào chế độ slave"
+
+#, fuzzy
+#~ msgid "event 'metdata-change' for domain %s: %s %s\n"
+#~ msgstr "Gỡ bỏ ảnh managedsave cho miền %s"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "Thất bại khi tìm một trình điều khiển nút: %s"
+
+#, fuzzy
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "Thiếu thuộc tính dịch vụ nguồn cho thiết bị ký tự"
+
+#, fuzzy
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"

@@ -520,7 +520,7 @@ virNodeDeviceCapMdevDefFormat(virBufferPtr buf,
 char *
 virNodeDeviceDefFormat(const virNodeDeviceDef *def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virNodeDevCapsDefPtr caps;
     size_t i = 0;
 

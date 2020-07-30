@@ -25,11 +25,11 @@
     <controller type='scsi' index='0' model='buslogic'/>
     <controller type='ide' index='0'/>
     <interface type='bridge'>
-      <mac address='00:0c:29:3b:64:ea'/>
+      <mac address='00:0c:29:3b:64:ea' type='generated'/>
       <source bridge=''/>
     </interface>
     <interface type='bridge'>
-      <mac address='00:0c:29:3b:64:f4'/>
+      <mac address='00:0c:29:3b:64:f4' type='generated'/>
       <source bridge=''/>
     </interface>
     <video>

@@ -51,6 +51,39 @@ typedef enum {
 } virDomainMemoryAccess;
 VIR_ENUM_DECL(virDomainMemoryAccess);
 
+typedef enum {
+    VIR_DOMAIN_CACHE_ASSOCIATIVITY_NONE,    /* No associativity */
+    VIR_DOMAIN_CACHE_ASSOCIATIVITY_DIRECT,  /* Direct mapped cache */
+    VIR_DOMAIN_CACHE_ASSOCIATIVITY_FULL,    /* Fully associative cache */
+
+    VIR_DOMAIN_CACHE_ASSOCIATIVITY_LAST
+} virDomainCacheAssociativity;
+VIR_ENUM_DECL(virDomainCacheAssociativity);
+
+typedef enum {
+    VIR_DOMAIN_CACHE_POLICY_NONE,           /* No policy */
+    VIR_DOMAIN_CACHE_POLICY_WRITEBACK,      /* Write-back policy */
+    VIR_DOMAIN_CACHE_POLICY_WRITETHROUGH,   /* Write-through policy */
+
+    VIR_DOMAIN_CACHE_POLICY_LAST
+} virDomainCachePolicy;
+VIR_ENUM_DECL(virDomainCachePolicy);
+
+typedef enum {
+    VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY,
+    VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH,
+} virDomainNumaInterconnectType;
+
+typedef enum {
+    VIR_DOMAIN_MEMORY_LATENCY_NONE = 0, /* No memory latency defined */
+    VIR_DOMAIN_MEMORY_LATENCY_ACCESS,   /* Access latency */
+    VIR_DOMAIN_MEMORY_LATENCY_READ,     /* Read latency */
+    VIR_DOMAIN_MEMORY_LATENCY_WRITE,    /* Write latency */
+
+    VIR_DOMAIN_MEMORY_LATENCY_LAST
+} virDomainMemoryLatency;
+VIR_ENUM_DECL(virDomainMemoryLatency);
+
 
 virDomainNumaPtr virDomainNumaNew(void);
 void virDomainNumaFree(virDomainNumaPtr numa);
@@ -155,9 +188,9 @@ size_t virDomainNumaSetNodeDistanceCount(virDomainNumaPtr numa,
                                          size_t ndistances)
     ATTRIBUTE_NONNULL(1);
 
-virBitmapPtr virDomainNumaSetNodeCpumask(virDomainNumaPtr numa,
-                                         size_t node,
-                                         virBitmapPtr cpumask)
+void  virDomainNumaSetNodeCpumask(virDomainNumaPtr numa,
+                                  size_t node,
+                                  virBitmapPtr cpumask)
     ATTRIBUTE_NONNULL(1);
 
 /*
@@ -181,10 +214,39 @@ bool virDomainNumatuneNodesetIsAvailable(virDomainNumaPtr numatune,
 bool virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
                                     int cellid);
 
-int virDomainNumaDefCPUParseXML(virDomainNumaPtr def, xmlXPathContextPtr ctxt);
-int virDomainNumaDefCPUFormatXML(virBufferPtr buf, virDomainNumaPtr def);
+int virDomainNumaDefParseXML(virDomainNumaPtr def, xmlXPathContextPtr ctxt);
+int virDomainNumaDefFormatXML(virBufferPtr buf, virDomainNumaPtr def);
+int virDomainNumaDefValidate(const virDomainNuma *def);
 
 unsigned int virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa);
 
 int virDomainNumaFillCPUsInNode(virDomainNumaPtr numa, size_t node,
                                 unsigned int maxCpus);
+
+bool virDomainNumaHasHMAT(const virDomainNuma *numa);
+
+size_t virDomainNumaGetNodeCacheCount(const virDomainNuma *numa,
+                                       size_t node);
+
+int virDomainNumaGetNodeCache(const virDomainNuma *numa,
+                              size_t node,
+                              size_t cache,
+                              unsigned int *level,
+                              unsigned int *size,
+                              unsigned int *line,
+                              virDomainCacheAssociativity *associativity,
+                              virDomainCachePolicy *policy);
+
+ssize_t virDomainNumaGetNodeInitiator(const virDomainNuma *numa,
+                                      size_t node);
+
+size_t virDomainNumaGetInterconnectsCount(const virDomainNuma *numa);
+
+int virDomainNumaGetInterconnect(const virDomainNuma *numa,
+                                 size_t i,
+                                 virDomainNumaInterconnectType *type,
+                                 unsigned int *initiator,
+                                 unsigned int *target,
+                                 unsigned int *cache,
+                                 virDomainMemoryLatency *accessType,
+                                 unsigned long *value);

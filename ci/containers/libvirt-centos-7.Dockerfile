@@ -98,6 +98,7 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         parted-devel \
         patch \
         perl \
+        perl-App-cpanminus \
         pkgconfig \
         polkit \
         python3 \
@@ -118,6 +119,7 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         vim \
         wireshark-devel \
         xfsprogs-devel \
+        xz \
         yajl-devel && \
     yum autoremove -y && \
     yum clean all -y && \

@@ -217,7 +217,7 @@ testSELinuxGenLabel(const void *opaque)
     context_t con = NULL;
     context_t imgcon = NULL;
 
-    if (setcon_raw((security_context_t)data->pidcon) < 0) {
+    if (setcon_raw(data->pidcon) < 0) {
         perror("Cannot set process security context");
         return -1;
     }

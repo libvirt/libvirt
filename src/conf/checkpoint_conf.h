@@ -46,6 +46,7 @@ struct _virDomainCheckpointDiskDef {
     int type;       /* virDomainCheckpointType */
     char *bitmap;   /* bitmap name, if type is bitmap */
     unsigned long long size; /* current checkpoint size in bytes */
+    bool sizeValid;
 };
 
 /* Stores the complete checkpoint metadata */

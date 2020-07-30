@@ -83,6 +83,7 @@ testCompareXMLToXMLFiles(const char *inxml,
     }
     if (flags & TEST_SIZE) {
         def->disks[0].size = 1048576;
+        def->disks[0].sizeValid = true;
         formatflags |= VIR_DOMAIN_CHECKPOINT_FORMAT_SIZE;
     }
 

@@ -270,3 +270,11 @@ virXMLNamespaceFormatNS(virBufferPtr buf,
 int
 virXMLNamespaceRegister(xmlXPathContextPtr ctxt,
                         virXMLNamespace const *ns);
+
+int virParseScaledValue(const char *xpath,
+                        const char *units_xpath,
+                        xmlXPathContextPtr ctxt,
+                        unsigned long long *val,
+                        unsigned long long scale,
+                        unsigned long long max,
+                        bool required);

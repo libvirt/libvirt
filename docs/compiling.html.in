@@ -76,7 +76,8 @@ $ <b>sudo</b> <i>make install</i></pre>
     </p>
 
     <pre>
-$ ./autogen.sh --prefix=$HOME/usr
+$ mkdir build &amp;&amp; cd build
+$ ../autogen.sh --prefix=$HOME/usr
 $ make
 $ <b>sudo</b> make install</pre>
 
@@ -88,7 +89,8 @@ $ <b>sudo</b> make install</pre>
     </p>
 
     <pre>
-$ ./autogen.sh --system
+$ mkdir build &amp;&amp; cd build
+$ ../autogen.sh --system
 $ make
     </pre>
 

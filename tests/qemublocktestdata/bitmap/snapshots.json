@@ -1,836 +1,612 @@
 [
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "backing-image": {
-                "backing-image": {
-                    "backing-image": {
-                        "backing-image": {
-                            "virtual-size": 10485760,
-                            "filename": "/tmp/pull4.qcow2",
-                            "cluster-size": 65536,
-                            "format": "qcow2",
-                            "actual-size": 208896,
-                            "format-specific": {
-                                "type": "qcow2",
-                                "data": {
-                                    "compat": "1.1",
-                                    "lazy-refcounts": false,
-                                    "bitmaps": [
-                                        {
-                                            "flags": [
-                                                "auto"
-                                            ],
-                                            "name": "a",
-                                            "granularity": 65536
-                                        }
-                                    ],
-                                    "refcount-bits": 16,
-                                    "corrupt": false
-                                }
-                            },
-                            "dirty-flag": false
-                        },
-                        "backing-filename-format": "qcow2",
-                        "virtual-size": 10485760,
-                        "filename": "/tmp/pull4.1575911522",
-                        "cluster-size": 65536,
-                        "format": "qcow2",
-                        "actual-size": 208896,
-                        "format-specific": {
-                            "type": "qcow2",
-                            "data": {
-                                "compat": "1.1",
-                                "lazy-refcounts": false,
-                                "bitmaps": [
-                                    {
-                                        "flags": [
-                                            "auto"
-                                        ],
-                                        "name": "a",
-                                        "granularity": 65536
-                                    }
-                                ],
-                                "refcount-bits": 16,
-                                "corrupt": false
-                            }
-                        },
-                        "full-backing-filename": "/tmp/pull4.qcow2",
-                        "backing-filename": "/tmp/pull4.qcow2",
-                        "dirty-flag": false
-                    },
-                    "backing-filename-format": "qcow2",
-                    "virtual-size": 10485760,
-                    "filename": "/tmp/pull4.1575911527",
-                    "cluster-size": 65536,
-                    "format": "qcow2",
-                    "actual-size": 217088,
-                    "format-specific": {
-                        "type": "qcow2",
-                        "data": {
-                            "compat": "1.1",
-                            "lazy-refcounts": false,
-                            "bitmaps": [
-                                {
-                                    "flags": [
-                                        "auto"
-                                    ],
-                                    "name": "c",
-                                    "granularity": 65536
-                                },
-                                {
-                                    "flags": [
-
-                                    ],
-                                    "name": "b",
-                                    "granularity": 65536
-                                },
-                                {
-                                    "flags": [
-
-                                    ],
-                                    "name": "a",
-                                    "granularity": 65536
-                                }
-                            ],
-                            "refcount-bits": 16,
-                            "corrupt": false
-                        }
-                    },
-                    "full-backing-filename": "/tmp/pull4.1575911522",
-                    "backing-filename": "/tmp/pull4.1575911522",
-                    "dirty-flag": false
-                },
-                "backing-filename-format": "qcow2",
-                "virtual-size": 10485760,
-                "filename": "/tmp/pull4.1575911540",
-                "cluster-size": 65536,
-                "format": "qcow2",
-                "actual-size": 212992,
-                "format-specific": {
-                    "type": "qcow2",
-                    "data": {
-                        "compat": "1.1",
-                        "lazy-refcounts": false,
-                        "bitmaps": [
-                            {
-                                "flags": [
-                                    "auto"
-                                ],
-                                "name": "d",
-                                "granularity": 65536
-                            },
-                            {
-                                "flags": [
-
-                                ],
-                                "name": "c",
-                                "granularity": 65536
-                            }
-                        ],
-                        "refcount-bits": 16,
-                        "corrupt": false
-                    }
-                },
-                "full-backing-filename": "/tmp/pull4.1575911527",
-                "backing-filename": "/tmp/pull4.1575911527",
-                "dirty-flag": false
-            },
-            "backing-filename-format": "qcow2",
-            "virtual-size": 10485760,
-            "filename": "/tmp/pull4.1575911550",
-            "cluster-size": 65536,
-            "format": "qcow2",
-            "actual-size": 212992,
-            "format-specific": {
-                "type": "qcow2",
-                "data": {
-                    "compat": "1.1",
-                    "lazy-refcounts": false,
-                    "bitmaps": [
-                        {
-                            "flags": [
-                                "in-use",
-                                "auto"
-                            ],
-                            "name": "current",
-                            "granularity": 65536
-                        },
-                        {
-                            "flags": [
-                                "in-use"
-                            ],
-                            "name": "d",
-                            "granularity": 65536
-                        }
-                    ],
-                    "refcount-bits": 16,
-                    "corrupt": false
-                }
-            },
-            "full-backing-filename": "/tmp/pull4.1575911540",
-            "backing-filename": "/tmp/pull4.1575911540",
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": false,
-        "node-name": "libvirt-1-format",
-        "backing_file_depth": 4,
-        "drv": "qcow2",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "backing_file": "/tmp/pull4.1575911540",
-        "dirty-bitmaps": [
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "backing-filename-format": "qcow2",
+      "virtual-size": 104857600,
+      "filename": "/tmp/bitmaps.1591792950",
+      "cluster-size": 65536,
+      "format": "qcow2",
+      "actual-size": 225280,
+      "format-specific": {
+        "type": "qcow2",
+        "data": {
+          "compat": "1.1",
+          "compression-type": "zlib",
+          "lazy-refcounts": false,
+          "bitmaps": [
             {
-                "name": "d",
-                "recording": false,
-                "persistent": true,
-                "busy": false,
-                "status": "disabled",
-                "granularity": 65536,
-                "count": 0
+              "flags": [
+                "in-use",
+                "auto"
+              ],
+              "name": "current",
+              "granularity": 65536
             },
             {
-                "name": "current",
-                "recording": true,
-                "persistent": true,
-                "busy": false,
-                "status": "active",
-                "granularity": 65536,
-                "count": 0
+              "flags": [
+                "in-use",
+                "auto"
+              ],
+              "name": "c",
+              "granularity": 65536
+            },
+            {
+              "flags": [
+                "in-use",
+                "auto"
+              ],
+              "name": "b",
+              "granularity": 65536
+            },
+            {
+              "flags": [
+                "in-use",
+                "auto"
+              ],
+              "name": "a",
+              "granularity": 65536
+            },
+            {
+              "flags": [
+                "in-use",
+                "auto"
+              ],
+              "name": "d",
+              "granularity": 65536
             }
-        ],
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.1575911550",
-        "encryption_key_missing": false
+          ],
+          "refcount-bits": 16,
+          "corrupt": false
+        }
+      },
+      "full-backing-filename": "/tmp/bitmaps.1591792938",
+      "backing-filename": "/tmp/bitmaps.1591792938",
+      "dirty-flag": false
     },
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "virtual-size": 393728,
-            "filename": "/tmp/pull4.1575911550",
-            "format": "file",
-            "actual-size": 212992,
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": false,
-        "node-name": "libvirt-1-storage",
-        "backing_file_depth": 0,
-        "drv": "file",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.1575911550",
-        "encryption_key_missing": false
+    "iops_wr": 0,
+    "ro": false,
+    "node-name": "libvirt-1-format",
+    "backing_file_depth": 0,
+    "drv": "qcow2",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "backing_file": "/tmp/bitmaps.1591792938",
+    "dirty-bitmaps": [
+      {
+        "name": "d",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      },
+      {
+        "name": "a",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      },
+      {
+        "name": "b",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      },
+      {
+        "name": "c",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      },
+      {
+        "name": "current",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      }
+    ],
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
     },
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "backing-image": {
-                "backing-image": {
-                    "backing-image": {
-                        "virtual-size": 10485760,
-                        "filename": "/tmp/pull4.qcow2",
-                        "cluster-size": 65536,
-                        "format": "qcow2",
-                        "actual-size": 208896,
-                        "format-specific": {
-                            "type": "qcow2",
-                            "data": {
-                                "compat": "1.1",
-                                "lazy-refcounts": false,
-                                "bitmaps": [
-                                    {
-                                        "flags": [
-                                            "auto"
-                                        ],
-                                        "name": "a",
-                                        "granularity": 65536
-                                    }
-                                ],
-                                "refcount-bits": 16,
-                                "corrupt": false
-                            }
-                        },
-                        "dirty-flag": false
-                    },
-                    "backing-filename-format": "qcow2",
-                    "virtual-size": 10485760,
-                    "filename": "/tmp/pull4.1575911522",
-                    "cluster-size": 65536,
-                    "format": "qcow2",
-                    "actual-size": 208896,
-                    "format-specific": {
-                        "type": "qcow2",
-                        "data": {
-                            "compat": "1.1",
-                            "lazy-refcounts": false,
-                            "bitmaps": [
-                                {
-                                    "flags": [
-                                        "auto"
-                                    ],
-                                    "name": "a",
-                                    "granularity": 65536
-                                }
-                            ],
-                            "refcount-bits": 16,
-                            "corrupt": false
-                        }
-                    },
-                    "full-backing-filename": "/tmp/pull4.qcow2",
-                    "backing-filename": "/tmp/pull4.qcow2",
-                    "dirty-flag": false
-                },
-                "backing-filename-format": "qcow2",
-                "virtual-size": 10485760,
-                "filename": "/tmp/pull4.1575911527",
-                "cluster-size": 65536,
-                "format": "qcow2",
-                "actual-size": 217088,
-                "format-specific": {
-                    "type": "qcow2",
-                    "data": {
-                        "compat": "1.1",
-                        "lazy-refcounts": false,
-                        "bitmaps": [
-                            {
-                                "flags": [
-                                    "auto"
-                                ],
-                                "name": "c",
-                                "granularity": 65536
-                            },
-                            {
-                                "flags": [
-
-                                ],
-                                "name": "b",
-                                "granularity": 65536
-                            },
-                            {
-                                "flags": [
-
-                                ],
-                                "name": "a",
-                                "granularity": 65536
-                            }
-                        ],
-                        "refcount-bits": 16,
-                        "corrupt": false
-                    }
-                },
-                "full-backing-filename": "/tmp/pull4.1575911522",
-                "backing-filename": "/tmp/pull4.1575911522",
-                "dirty-flag": false
-            },
-            "backing-filename-format": "qcow2",
-            "virtual-size": 10485760,
-            "filename": "/tmp/pull4.1575911540",
-            "cluster-size": 65536,
-            "format": "qcow2",
-            "actual-size": 212992,
-            "format-specific": {
-                "type": "qcow2",
-                "data": {
-                    "compat": "1.1",
-                    "lazy-refcounts": false,
-                    "bitmaps": [
-                        {
-                            "flags": [
-                                "auto"
-                            ],
-                            "name": "d",
-                            "granularity": 65536
-                        },
-                        {
-                            "flags": [
-
-                            ],
-                            "name": "c",
-                            "granularity": 65536
-                        }
-                    ],
-                    "refcount-bits": 16,
-                    "corrupt": false
-                }
-            },
-            "full-backing-filename": "/tmp/pull4.1575911527",
-            "backing-filename": "/tmp/pull4.1575911527",
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": true,
-        "node-name": "libvirt-2-format",
-        "backing_file_depth": 3,
-        "drv": "qcow2",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "backing_file": "/tmp/pull4.1575911527",
-        "dirty-bitmaps": [
+    "file": "/tmp/bitmaps.1591792950",
+    "encryption_key_missing": false
+  },
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "virtual-size": 590336,
+      "filename": "/tmp/bitmaps.1591792950",
+      "format": "file",
+      "actual-size": 225280,
+      "dirty-flag": false
+    },
+    "iops_wr": 0,
+    "ro": false,
+    "node-name": "libvirt-1-storage",
+    "backing_file_depth": 0,
+    "drv": "file",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
+    },
+    "file": "/tmp/bitmaps.1591792950",
+    "encryption_key_missing": false
+  },
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "backing-filename-format": "qcow2",
+      "virtual-size": 104857600,
+      "filename": "/tmp/bitmaps.1591792938",
+      "cluster-size": 65536,
+      "format": "qcow2",
+      "actual-size": 221184,
+      "format-specific": {
+        "type": "qcow2",
+        "data": {
+          "compat": "1.1",
+          "compression-type": "zlib",
+          "lazy-refcounts": false,
+          "bitmaps": [
             {
-                "name": "c",
-                "recording": false,
-                "persistent": true,
-                "busy": false,
-                "status": "disabled",
-                "granularity": 65536,
-                "count": 0
+              "flags": [
+                "auto"
+              ],
+              "name": "d",
+              "granularity": 65536
             },
             {
-                "name": "d",
-                "recording": true,
-                "persistent": true,
-                "busy": false,
-                "status": "active",
-                "granularity": 65536,
-                "count": 0
+              "flags": [
+                "auto"
+              ],
+              "name": "a",
+              "granularity": 65536
+            },
+            {
+              "flags": [
+                "auto"
+              ],
+              "name": "b",
+              "granularity": 65536
+            },
+            {
+              "flags": [
+                "auto"
+              ],
+              "name": "c",
+              "granularity": 65536
             }
-        ],
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.1575911540",
-        "encryption_key_missing": false
+          ],
+          "refcount-bits": 16,
+          "corrupt": false
+        }
+      },
+      "full-backing-filename": "/tmp/bitmaps.1591792930",
+      "backing-filename": "/tmp/bitmaps.1591792930",
+      "dirty-flag": false
     },
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "virtual-size": 393728,
-            "filename": "/tmp/pull4.1575911540",
-            "format": "file",
-            "actual-size": 212992,
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": false,
-        "node-name": "libvirt-2-storage",
-        "backing_file_depth": 0,
-        "drv": "file",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.1575911540",
-        "encryption_key_missing": false
+    "iops_wr": 0,
+    "ro": true,
+    "node-name": "libvirt-2-format",
+    "backing_file_depth": 0,
+    "drv": "qcow2",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "backing_file": "/tmp/bitmaps.1591792930",
+    "dirty-bitmaps": [
+      {
+        "name": "c",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      },
+      {
+        "name": "b",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      },
+      {
+        "name": "a",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      },
+      {
+        "name": "d",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      }
+    ],
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
     },
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "backing-image": {
-                "backing-image": {
-                    "virtual-size": 10485760,
-                    "filename": "/tmp/pull4.qcow2",
-                    "cluster-size": 65536,
-                    "format": "qcow2",
-                    "actual-size": 208896,
-                    "format-specific": {
-                        "type": "qcow2",
-                        "data": {
-                            "compat": "1.1",
-                            "lazy-refcounts": false,
-                            "bitmaps": [
-                                {
-                                    "flags": [
-                                        "auto"
-                                    ],
-                                    "name": "a",
-                                    "granularity": 65536
-                                }
-                            ],
-                            "refcount-bits": 16,
-                            "corrupt": false
-                        }
-                    },
-                    "dirty-flag": false
-                },
-                "backing-filename-format": "qcow2",
-                "virtual-size": 10485760,
-                "filename": "/tmp/pull4.1575911522",
-                "cluster-size": 65536,
-                "format": "qcow2",
-                "actual-size": 208896,
-                "format-specific": {
-                    "type": "qcow2",
-                    "data": {
-                        "compat": "1.1",
-                        "lazy-refcounts": false,
-                        "bitmaps": [
-                            {
-                                "flags": [
-                                    "auto"
-                                ],
-                                "name": "a",
-                                "granularity": 65536
-                            }
-                        ],
-                        "refcount-bits": 16,
-                        "corrupt": false
-                    }
-                },
-                "full-backing-filename": "/tmp/pull4.qcow2",
-                "backing-filename": "/tmp/pull4.qcow2",
-                "dirty-flag": false
-            },
-            "backing-filename-format": "qcow2",
-            "virtual-size": 10485760,
-            "filename": "/tmp/pull4.1575911527",
-            "cluster-size": 65536,
-            "format": "qcow2",
-            "actual-size": 217088,
-            "format-specific": {
-                "type": "qcow2",
-                "data": {
-                    "compat": "1.1",
-                    "lazy-refcounts": false,
-                    "bitmaps": [
-                        {
-                            "flags": [
-                                "auto"
-                            ],
-                            "name": "c",
-                            "granularity": 65536
-                        },
-                        {
-                            "flags": [
-
-                            ],
-                            "name": "b",
-                            "granularity": 65536
-                        },
-                        {
-                            "flags": [
-
-                            ],
-                            "name": "a",
-                            "granularity": 65536
-                        }
-                    ],
-                    "refcount-bits": 16,
-                    "corrupt": false
-                }
-            },
-            "full-backing-filename": "/tmp/pull4.1575911522",
-            "backing-filename": "/tmp/pull4.1575911522",
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": true,
-        "node-name": "libvirt-3-format",
-        "backing_file_depth": 2,
-        "drv": "qcow2",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "backing_file": "/tmp/pull4.1575911522",
-        "dirty-bitmaps": [
+    "file": "/tmp/bitmaps.1591792938",
+    "encryption_key_missing": false
+  },
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "virtual-size": 524800,
+      "filename": "/tmp/bitmaps.1591792938",
+      "format": "file",
+      "actual-size": 221184,
+      "dirty-flag": false
+    },
+    "iops_wr": 0,
+    "ro": false,
+    "node-name": "libvirt-2-storage",
+    "backing_file_depth": 0,
+    "drv": "file",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
+    },
+    "file": "/tmp/bitmaps.1591792938",
+    "encryption_key_missing": false
+  },
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "backing-filename-format": "qcow2",
+      "virtual-size": 104857600,
+      "filename": "/tmp/bitmaps.1591792930",
+      "cluster-size": 65536,
+      "format": "qcow2",
+      "actual-size": 217088,
+      "format-specific": {
+        "type": "qcow2",
+        "data": {
+          "compat": "1.1",
+          "compression-type": "zlib",
+          "lazy-refcounts": false,
+          "bitmaps": [
             {
-                "name": "a",
-                "recording": false,
-                "persistent": true,
-                "busy": false,
-                "status": "disabled",
-                "granularity": 65536,
-                "count": 0
+              "flags": [
+                "auto"
+              ],
+              "name": "c",
+              "granularity": 65536
             },
             {
-                "name": "b",
-                "recording": false,
-                "persistent": true,
-                "busy": false,
-                "status": "disabled",
-                "granularity": 65536,
-                "count": 0
+              "flags": [
+                "auto"
+              ],
+              "name": "b",
+              "granularity": 65536
             },
             {
-                "name": "c",
-                "recording": true,
-                "persistent": true,
-                "busy": false,
-                "status": "active",
-                "granularity": 65536,
-                "count": 0
+              "flags": [
+                "auto"
+              ],
+              "name": "a",
+              "granularity": 65536
             }
-        ],
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.1575911527",
-        "encryption_key_missing": false
+          ],
+          "refcount-bits": 16,
+          "corrupt": false
+        }
+      },
+      "full-backing-filename": "/tmp/bitmaps.1591792925",
+      "backing-filename": "/tmp/bitmaps.1591792925",
+      "dirty-flag": false
     },
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "virtual-size": 459264,
-            "filename": "/tmp/pull4.1575911527",
-            "format": "file",
-            "actual-size": 217088,
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": false,
-        "node-name": "libvirt-3-storage",
-        "backing_file_depth": 0,
-        "drv": "file",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.1575911527",
-        "encryption_key_missing": false
+    "iops_wr": 0,
+    "ro": true,
+    "node-name": "libvirt-3-format",
+    "backing_file_depth": 0,
+    "drv": "qcow2",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "backing_file": "/tmp/bitmaps.1591792925",
+    "dirty-bitmaps": [
+      {
+        "name": "a",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      },
+      {
+        "name": "b",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      },
+      {
+        "name": "c",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      }
+    ],
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
     },
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "backing-image": {
-                "virtual-size": 10485760,
-                "filename": "/tmp/pull4.qcow2",
-                "cluster-size": 65536,
-                "format": "qcow2",
-                "actual-size": 208896,
-                "format-specific": {
-                    "type": "qcow2",
-                    "data": {
-                        "compat": "1.1",
-                        "lazy-refcounts": false,
-                        "bitmaps": [
-                            {
-                                "flags": [
-                                    "auto"
-                                ],
-                                "name": "a",
-                                "granularity": 65536
-                            }
-                        ],
-                        "refcount-bits": 16,
-                        "corrupt": false
-                    }
-                },
-                "dirty-flag": false
-            },
-            "backing-filename-format": "qcow2",
-            "virtual-size": 10485760,
-            "filename": "/tmp/pull4.1575911522",
-            "cluster-size": 65536,
-            "format": "qcow2",
-            "actual-size": 208896,
-            "format-specific": {
-                "type": "qcow2",
-                "data": {
-                    "compat": "1.1",
-                    "lazy-refcounts": false,
-                    "bitmaps": [
-                        {
-                            "flags": [
-                                "auto"
-                            ],
-                            "name": "a",
-                            "granularity": 65536
-                        }
-                    ],
-                    "refcount-bits": 16,
-                    "corrupt": false
-                }
-            },
-            "full-backing-filename": "/tmp/pull4.qcow2",
-            "backing-filename": "/tmp/pull4.qcow2",
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": true,
-        "node-name": "libvirt-4-format",
-        "backing_file_depth": 1,
-        "drv": "qcow2",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "backing_file": "/tmp/pull4.qcow2",
-        "dirty-bitmaps": [
+    "file": "/tmp/bitmaps.1591792930",
+    "encryption_key_missing": false
+  },
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "virtual-size": 459264,
+      "filename": "/tmp/bitmaps.1591792930",
+      "format": "file",
+      "actual-size": 217088,
+      "dirty-flag": false
+    },
+    "iops_wr": 0,
+    "ro": false,
+    "node-name": "libvirt-3-storage",
+    "backing_file_depth": 0,
+    "drv": "file",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
+    },
+    "file": "/tmp/bitmaps.1591792930",
+    "encryption_key_missing": false
+  },
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "backing-filename-format": "qcow2",
+      "virtual-size": 104857600,
+      "filename": "/tmp/bitmaps.1591792925",
+      "cluster-size": 65536,
+      "format": "qcow2",
+      "actual-size": 208896,
+      "format-specific": {
+        "type": "qcow2",
+        "data": {
+          "compat": "1.1",
+          "compression-type": "zlib",
+          "lazy-refcounts": false,
+          "bitmaps": [
             {
-                "name": "a",
-                "recording": true,
-                "persistent": true,
-                "busy": false,
-                "status": "active",
-                "granularity": 65536,
-                "count": 0
+              "flags": [
+                "auto"
+              ],
+              "name": "a",
+              "granularity": 65536
             }
-        ],
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.1575911522",
-        "encryption_key_missing": false
+          ],
+          "refcount-bits": 16,
+          "corrupt": false
+        }
+      },
+      "full-backing-filename": "/tmp/bitmaps.qcow2",
+      "backing-filename": "/tmp/bitmaps.qcow2",
+      "dirty-flag": false
     },
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "virtual-size": 328192,
-            "filename": "/tmp/pull4.1575911522",
-            "format": "file",
-            "actual-size": 208896,
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": false,
-        "node-name": "libvirt-4-storage",
-        "backing_file_depth": 0,
-        "drv": "file",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.1575911522",
-        "encryption_key_missing": false
+    "iops_wr": 0,
+    "ro": true,
+    "node-name": "libvirt-4-format",
+    "backing_file_depth": 0,
+    "drv": "qcow2",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "backing_file": "/tmp/bitmaps.qcow2",
+    "dirty-bitmaps": [
+      {
+        "name": "a",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      }
+    ],
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
     },
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "virtual-size": 10485760,
-            "filename": "/tmp/pull4.qcow2",
-            "cluster-size": 65536,
-            "format": "qcow2",
-            "actual-size": 208896,
-            "format-specific": {
-                "type": "qcow2",
-                "data": {
-                    "compat": "1.1",
-                    "lazy-refcounts": false,
-                    "bitmaps": [
-                        {
-                            "flags": [
-                                "auto"
-                            ],
-                            "name": "a",
-                            "granularity": 65536
-                        }
-                    ],
-                    "refcount-bits": 16,
-                    "corrupt": false
-                }
-            },
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": true,
-        "node-name": "libvirt-5-format",
-        "backing_file_depth": 0,
-        "drv": "qcow2",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "dirty-bitmaps": [
+    "file": "/tmp/bitmaps.1591792925",
+    "encryption_key_missing": false
+  },
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "virtual-size": 328192,
+      "filename": "/tmp/bitmaps.1591792925",
+      "format": "file",
+      "actual-size": 208896,
+      "dirty-flag": false
+    },
+    "iops_wr": 0,
+    "ro": false,
+    "node-name": "libvirt-4-storage",
+    "backing_file_depth": 0,
+    "drv": "file",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
+    },
+    "file": "/tmp/bitmaps.1591792925",
+    "encryption_key_missing": false
+  },
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "virtual-size": 104857600,
+      "filename": "/tmp/bitmaps.qcow2",
+      "cluster-size": 65536,
+      "format": "qcow2",
+      "actual-size": 208896,
+      "format-specific": {
+        "type": "qcow2",
+        "data": {
+          "compat": "1.1",
+          "compression-type": "zlib",
+          "lazy-refcounts": false,
+          "bitmaps": [
             {
-                "name": "a",
-                "recording": true,
-                "persistent": true,
-                "busy": false,
-                "status": "active",
-                "granularity": 65536,
-                "count": 0
+              "flags": [
+                "auto"
+              ],
+              "name": "a",
+              "granularity": 65536
             }
-        ],
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.qcow2",
-        "encryption_key_missing": false
+          ],
+          "refcount-bits": 16,
+          "corrupt": false
+        }
+      },
+      "dirty-flag": false
     },
-    {
-        "iops_rd": 0,
-        "detect_zeroes": "off",
-        "image": {
-            "virtual-size": 328192,
-            "filename": "/tmp/pull4.qcow2",
-            "format": "file",
-            "actual-size": 208896,
-            "dirty-flag": false
-        },
-        "iops_wr": 0,
-        "ro": false,
-        "node-name": "libvirt-5-storage",
-        "backing_file_depth": 0,
-        "drv": "file",
-        "iops": 0,
-        "bps_wr": 0,
-        "write_threshold": 0,
-        "encrypted": false,
-        "bps": 0,
-        "bps_rd": 0,
-        "cache": {
-            "no-flush": false,
-            "direct": false,
-            "writeback": true
-        },
-        "file": "/tmp/pull4.qcow2",
-        "encryption_key_missing": false
-    }
+    "iops_wr": 0,
+    "ro": true,
+    "node-name": "libvirt-5-format",
+    "backing_file_depth": 0,
+    "drv": "qcow2",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "dirty-bitmaps": [
+      {
+        "name": "a",
+        "recording": true,
+        "persistent": true,
+        "busy": false,
+        "status": "active",
+        "granularity": 65536,
+        "count": 0
+      }
+    ],
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
+    },
+    "file": "/tmp/bitmaps.qcow2",
+    "encryption_key_missing": false
+  },
+  {
+    "iops_rd": 0,
+    "detect_zeroes": "off",
+    "image": {
+      "virtual-size": 328192,
+      "filename": "/tmp/bitmaps.qcow2",
+      "format": "file",
+      "actual-size": 208896,
+      "dirty-flag": false
+    },
+    "iops_wr": 0,
+    "ro": false,
+    "node-name": "libvirt-5-storage",
+    "backing_file_depth": 0,
+    "drv": "file",
+    "iops": 0,
+    "bps_wr": 0,
+    "write_threshold": 0,
+    "encrypted": false,
+    "bps": 0,
+    "bps_rd": 0,
+    "cache": {
+      "no-flush": false,
+      "direct": false,
+      "writeback": true
+    },
+    "file": "/tmp/bitmaps.qcow2",
+    "encryption_key_missing": false
+  }
 ]

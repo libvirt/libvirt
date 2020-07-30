@@ -190,7 +190,7 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     unsigned char *secret_value = NULL;
     size_t secret_value_size = 0;
     VIR_AUTODISPOSE_STR rados_key = NULL;
-    virBuffer mon_host = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) mon_host = VIR_BUFFER_INITIALIZER;
     size_t i;
     const char *client_mount_timeout = "30";
     const char *mon_op_timeout = "30";
@@ -330,7 +330,6 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     VIR_DISPOSE_N(secret_value, secret_value_size);
 
     virObjectUnref(conn);
-    virBufferFreeAndReset(&mon_host);
     return ret;
 }
 
@@ -1151,7 +1150,7 @@ virStorageBackendRBDCloneImage(rados_ioctx_t io,
     uint64_t features;
     uint64_t stripe_count;
     uint64_t stripe_unit;
-    virBuffer snapname = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) snapname = VIR_BUFFER_INITIALIZER;
     rbd_image_t image = NULL;
     g_autofree char *snapname_buff = NULL;
 
@@ -1220,8 +1219,6 @@ virStorageBackendRBDCloneImage(rados_ioctx_t io,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&snapname);
-
     if (image)
         rbd_close(image);
 

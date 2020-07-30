@@ -18,7 +18,7 @@ GRegex *testSnapshotXMLVariableLineRegex = NULL;
 static char *
 testFilterXML(char *xml)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char **xmlLines = NULL;
     char **xmlLine;
     char *ret = NULL;
@@ -39,7 +39,6 @@ testFilterXML(char *xml)
     ret = virBufferContentAndReset(&buf);
 
  cleanup:
-   virBufferFreeAndReset(&buf);
    virStringListFree(xmlLines);
    return ret;
 }

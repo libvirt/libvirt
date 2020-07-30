@@ -6,21 +6,22 @@
 # Daniel  <veillard@redhat.com>, 2011
 # Jiri Grönroos <jiri.gronroos@iki.fi>, 2017
 # Toni Rantala <trantalafilo@gmail.com>, 2017
+# Daniel P. Berrange <berrange@redhat.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
-"PO-Revision-Date: 2017-03-26 10:24+0000\n"
-"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
-"Language-Team: Finnish (http://www.transifex.com/projects/p/fedora/language/"
-"fi/)\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
+"PO-Revision-Date: 2020-07-24 22:53+0000\n"
+"Last-Translator: Daniel P. Berrange <berrange@redhat.com>\n"
+"Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.1.1\n"
 
 msgid ""
 "\n"
@@ -985,6 +986,9 @@ msgstr ""
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr ""
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -998,6 +1002,9 @@ msgstr ""
 
 msgid ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
+msgstr ""
+
+msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
@@ -1028,6 +1035,15 @@ msgid "'gluster' command line tool not found"
 msgstr ""
 
 msgid "'host-name' missing in guest-get-host-name reply"
+msgstr ""
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
 msgstr ""
 
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1125,6 +1141,9 @@ msgid "'ssh' protocol is not yet supported"
 msgstr ""
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
+msgstr ""
+
+msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
 
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1555,6 +1574,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr ""
 
@@ -1613,6 +1635,9 @@ msgstr ""
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 msgid "At least one PTY console is required"
@@ -1690,11 +1715,10 @@ msgstr ""
 msgid "Attempted double use of PCI Address %s"
 msgstr ""
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+msgid "Attempting to use unknown stub driver"
 msgstr ""
 
-msgid "Attempting to use unknown stub driver"
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -2107,6 +2131,10 @@ msgstr ""
 
 #, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cache level '%u' already defined"
 msgstr ""
 
 #, c-format
@@ -2983,7 +3011,7 @@ msgid "Cannot resize the max memory on an active domain"
 msgstr "Muuta nykyistä muistinvarauksen enimmäisrajaa vierastoimialueella."
 
 #, c-format
-msgid "Cannot resolve ::1 address: %s"
+msgid "Cannot resolve %s address: %s"
 msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
@@ -5483,6 +5511,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, c-format
 msgid "Duplicate security driver %s"
 msgstr ""
@@ -5531,11 +5562,6 @@ msgid "Edit the domain snapshot XML for a named snapshot"
 msgstr ""
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
-msgstr ""
-
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
 msgstr ""
 
 msgid "Eject the media"
@@ -5702,7 +5728,7 @@ msgid "Escape character is %s"
 msgstr ""
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
+msgid "Ethernet controller index %d out of [0..%d] range"
 msgstr ""
 
 #, fuzzy
@@ -5962,6 +5988,9 @@ msgid "Fail to create socket for incoming migration"
 msgstr "Levytietojen haku epäonnistui"
 
 msgid "Failed"
+msgstr ""
+
+msgid "Failed disable mount propagation out of the root filesystem"
 msgstr ""
 
 #, c-format
@@ -6350,6 +6379,10 @@ msgstr "Verkon luominen tiedostosta %s epäonnistui"
 #, fuzzy, c-format
 msgid "Failed to create checkpoint dir %s"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+
+#, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -6754,10 +6787,6 @@ msgstr " '%s' ei voitu avata"
 msgid "Failed to find parent device for %s"
 msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
-msgid "Failed to find path for %s binary"
-msgstr "Verkkoa ei löytynyt: %s"
-
 #, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr ""
@@ -6794,7 +6823,7 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
+msgid "Failed to format new xml document for detached interface %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6898,10 +6927,6 @@ msgstr "toimialueen ”%s” hakeminen epäonnistui"
 #, fuzzy
 msgid "Failed to get domain's UUID"
 msgstr "toimialueen UUID:n saanti epäonnistui"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "Levytietojen haku epäonnistui"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -7859,10 +7884,6 @@ msgstr "Epäaktiivisten toimialueiden luettelointi epäonnistui"
 msgid "Failed to set %s for %s: value too large"
 msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "ei voitu avata tiedostoa"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "Lohkotilastojen haku epäonnistui %s %s"
@@ -7926,6 +7947,14 @@ msgstr "Toimialueen %s tuhoaminen epäonnistui"
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr ""
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to set new domain description"
 msgstr "tiedosto, joka sisältää XML-muotoisen toimialueen kuvauksen"
@@ -7933,14 +7962,6 @@ msgstr "tiedosto, joka sisältää XML-muotoisen toimialueen kuvauksen"
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "Toimialueen %s asettaminen keskeytystilaan epäonnistui"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr ""
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr ""
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr ""
@@ -8068,9 +8089,6 @@ msgstr "Toimialueen %s asettaminen keskeytystilaan epäonnistui"
 #, fuzzy, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "Toimialueen %s asettaminen keskeytystilaan epäonnistui"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8340,6 +8358,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -8624,6 +8648,9 @@ msgid "Guest agent is not responding: %s"
 msgstr ""
 
 msgid "Guest agent not available for now"
+msgstr ""
+
+msgid "HMAT is not supported with this QEMU"
 msgstr ""
 
 msgid "HTM configuration is not supported by this QEMU binary"
@@ -9110,6 +9137,9 @@ msgstr ""
 msgid "Invalid %s image format specified in configuration file"
 msgstr "asetustiedoston jäsentäminen epäonnistui"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Invalid 'cpu.max' data."
 msgstr ""
 
@@ -9125,12 +9155,28 @@ msgstr ""
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr ""
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr ""
 
 #, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
+#, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
+msgstr ""
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, c-format
@@ -9369,7 +9415,15 @@ msgid "Invalid busNr '%s' in PCI controller"
 msgstr ""
 
 #, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid cache id '%s'"
+msgstr ""
+
+#, c-format
+msgid "Invalid cache policy '%s'"
 msgstr ""
 
 #, c-format
@@ -9574,6 +9628,9 @@ msgstr ""
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr ""
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr ""
@@ -9634,6 +9691,10 @@ msgstr ""
 
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
+msgstr ""
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
 msgstr ""
 
 msgid "Invalid job flags"
@@ -10082,6 +10143,10 @@ msgid "Invalid value for timeout"
 msgstr ""
 
 #, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr ""
 
@@ -10218,6 +10283,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "komento ”%s” ei tue valitsinta --%s"
+
+msgid "Link already defined"
+msgstr ""
 
 msgid "List all manageable clients connected to <server>."
 msgstr ""
@@ -10463,6 +10531,9 @@ msgstr ""
 msgid "Malformed nbd port '%s'"
 msgstr ""
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 msgid "Malformed ovs-vsctl output"
 msgstr ""
 
@@ -10641,6 +10712,10 @@ msgstr ""
 msgid "MethodFault is missing 'type' property"
 msgstr ""
 
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
+
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 "Siirrä toimialue toiseen koneeseen.  Valitsin --live siirtää käytettäessä."
@@ -10738,10 +10813,11 @@ msgstr ""
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr ""
 
-msgid "Missing 'cores' attribute in CPU topology"
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
 msgstr ""
 
-msgid "Missing 'cpus' attribute in NUMA cell"
+msgid "Missing 'cores' attribute in CPU topology"
 msgstr ""
 
 msgid "Missing 'domname' in JSON document"
@@ -10767,7 +10843,14 @@ msgstr ""
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr ""
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
+msgstr ""
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
 msgstr ""
 
 msgid "Missing 'link' attribute for NIC"
@@ -10786,6 +10869,10 @@ msgstr ""
 msgid "Missing 'pipefd' in JSON document"
 msgstr ""
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr ""
 
@@ -10796,11 +10883,17 @@ msgstr ""
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr ""
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Missing 'target' element for lease"
 msgstr "kohdetietoja puuttuu laitteelle"
 
 msgid "Missing 'threads' attribute in CPU topology"
+msgstr ""
+
+msgid "Missing 'type' attribute in NUMA interconnects"
 msgstr ""
 
 msgid "Missing 'uuid' attribute for element <address>"
@@ -10810,6 +10903,9 @@ msgstr ""
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 msgid "Missing <address> element"
@@ -11474,10 +11570,6 @@ msgstr ""
 msgid "NULL value for field '%s'"
 msgstr ""
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr ""
 
@@ -11522,6 +11614,9 @@ msgid "NUMA node %zd is unavailable"
 msgstr ""
 
 msgid "NUMA node selections to set"
+msgstr ""
+
+msgid "NUMA nodes without CPUs can't be initiator"
 msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
@@ -12142,6 +12237,10 @@ msgstr ""
 
 #, c-format
 msgid "No yet handled value '%s' for VMX entry '%s'"
+msgstr ""
+
+#, c-format
+msgid "No zPCI %s to reserve"
 msgstr ""
 
 #, c-format
@@ -13609,7 +13708,7 @@ msgid "S4 state is disabled for this domain"
 msgstr ""
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
+msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
 
 #, c-format
@@ -14575,6 +14674,17 @@ msgstr ""
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr ""
@@ -14839,6 +14949,11 @@ msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr ""
 
 #, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
+#, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr ""
 
@@ -14875,6 +14990,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr ""
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr ""
 
@@ -14892,6 +15011,9 @@ msgstr ""
 
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
+msgstr ""
+
+msgid "Target domain count of sysinfo does not match source"
 msgstr ""
 
 #, c-format
@@ -15218,6 +15340,9 @@ msgstr ""
 msgid "Temporary disk space use:"
 msgstr ""
 
+msgid "That firmware name is reserved"
+msgstr ""
+
 msgid "Thaw domain's mounted filesystems."
 msgstr ""
 
@@ -15530,7 +15655,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr ""
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -15966,6 +16091,12 @@ msgid "Unable to access stream for '%s'"
 msgstr ""
 
 #, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
+#, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr ""
 
@@ -16349,6 +16480,12 @@ msgstr ""
 msgid "Unable to create tunnel migration thread"
 msgstr "asetustiedoston lukeminen epäonnistui"
 
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
+
 msgid "Unable to decode header until len is received"
 msgstr ""
 
@@ -16548,6 +16685,9 @@ msgid "Unable to find the snapshot with name %s"
 msgstr "Verkkoa ei löytynyt: %s"
 
 msgid "Unable to force bind to IPv6 only"
+msgstr ""
+
+msgid "Unable to format NUMA node cache"
 msgstr ""
 
 msgid "Unable to format SELinux context"
@@ -17636,6 +17776,10 @@ msgstr ""
 msgid "Unable to set console file descriptor non-blocking"
 msgstr ""
 
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to set interface parameters"
 msgstr "Liitännän tietojen haku epäonnistui"
@@ -17696,6 +17840,9 @@ msgstr ""
 msgid "Unable to start event thread: %s"
 msgstr "Verkon %s käynnistäminen epäonnistui"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to stat %s"
 msgstr "Toimialueen %s käynnistys epäonnistui"
@@ -17711,6 +17858,9 @@ msgstr "Verkon %s käynnistäminen epäonnistui"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "Toimialueen %s käynnistys epäonnistui"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -18334,9 +18484,9 @@ msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 msgid "Unknown namespace: %s"
 msgstr "Tuntematon julkaisu: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown parameter %s"
-msgstr "Tuntematon arkkitehtuuri  %s"
+msgstr "Tuntematon parametri %s"
 
 #, fuzzy
 msgid "Unknown parameter type"
@@ -18634,6 +18784,9 @@ msgstr "ei tuettu arkkitehtuuri: %s"
 #, fuzzy, c-format
 msgid "Unsupported controller type: %s"
 msgstr "ei tuettu arkkitehtuuri: %s"
+
+msgid "Unsupported device type"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
@@ -19273,6 +19426,11 @@ msgid ""
 "Only one default is allowed."
 msgstr ""
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 msgid "a redefined checkpoint must have a name"
 msgstr ""
 
@@ -19467,9 +19625,6 @@ msgid "amount of data to upload"
 msgstr ""
 
 msgid "an <auth> definition already found for disk source"
-msgstr ""
-
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
 msgstr ""
 
 msgid "an <encryption> definition already found for disk source"
@@ -19730,6 +19885,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 msgid "backup job"
 msgstr ""
 
@@ -19737,11 +19895,11 @@ msgid "backup job data missing"
 msgstr ""
 
 #, c-format
-msgid "backup of readonly disk '%s' makes no sense"
+msgid "backup socket path '%s' must be absolute"
 msgstr ""
 
 #, c-format
-msgid "backup socket path '%s' must be absolute"
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
 msgstr ""
 
 msgid "bad command"
@@ -19809,10 +19967,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "binding '%s' is already being removed"
 msgstr "Toimialuetta %s uudelleenkäynnistetään\n"
-
-#, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
 
 #, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
@@ -20106,10 +20260,6 @@ msgstr ""
 
 #, c-format
 msgid "can't free name %s%d - out of range 0-%d"
-msgstr ""
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
 msgstr ""
 
 #, c-format
@@ -20419,6 +20569,9 @@ msgstr ""
 msgid "cannot create %s"
 msgstr ""
 
+msgid "cannot create a mediated device without a parent"
+msgstr ""
+
 msgid "cannot create a new stream"
 msgstr ""
 
@@ -20525,10 +20678,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot determine filesystem for '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot disable %s"
 msgstr ""
 
 msgid "cannot do managed save for transient domain"
@@ -21631,7 +21780,7 @@ msgid "cannot write data to file '%s'"
 msgstr ""
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 msgid "cannot write to stdout"
@@ -22299,6 +22448,10 @@ msgid "could not find capabilities for %s"
 msgstr "ominaisuuksien hakeminen epäonnistui"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr ""
 
@@ -22419,10 +22572,6 @@ msgid "could not initialize domain event timer"
 msgstr ""
 
 #, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-
-#, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr ""
 
@@ -22507,6 +22656,9 @@ msgstr "Xen-hypervisoria ei voitu käyttää"
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen-hypervisoria %s ei voitu käyttää"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 msgid "couldn't fetch array of leases"
 msgstr ""
@@ -22606,6 +22758,9 @@ msgstr "asetustiedoston kirjoitus epäonnistui: %s"
 #, fuzzy, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "asetustiedoston kirjoitus epäonnistui: %s"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr ""
@@ -23710,7 +23865,7 @@ msgstr ""
 msgid "don't start the bridge immediately"
 msgstr ""
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
+msgid "don't start the detached interface immediately (not recommended)"
 msgstr ""
 
 msgid "done"
@@ -24187,7 +24342,7 @@ msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
+msgid "event 'metadata-change' for domain %s: %s %s\n"
 msgstr ""
 
 #, c-format
@@ -24453,9 +24608,8 @@ msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr ""
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "ei voitu avata tiedostoa"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to apply capabilities: %d"
@@ -24727,10 +24881,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "Toimialueen määrittäminen tiedostosta %s epäonnistui"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -25877,6 +26027,9 @@ msgstr ""
 msgid "for hardware virtualization"
 msgstr ""
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr ""
 
@@ -25975,6 +26128,9 @@ msgid "fully-qualified path of source disk"
 msgstr ""
 
 msgid "fuse_loop failed"
+msgstr ""
+
+msgid "fw_cfg is not supported with this QEMU"
 msgstr ""
 
 #, c-format
@@ -26740,6 +26896,10 @@ msgstr ""
 msgid "interface name or MAC address"
 msgstr ""
 
+#, c-format
+msgid "interface not set\n"
+msgstr ""
+
 msgid "interface state driver is not active"
 msgstr ""
 
@@ -27042,6 +27202,10 @@ msgstr "virheellinen toimialueosoitin kohteessa %s"
 msgid "invalid backing protocol string '%s'"
 msgstr "virheellinen toimialueosoitin kohteessa %s"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -27294,6 +27458,16 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
+#, c-format
 msgid "invalid master key read, size=%zd"
 msgstr ""
 
@@ -27530,6 +27704,10 @@ msgstr ""
 msgid "invalid statistics collection period"
 msgstr "virheellinen yhteysosoitin kohteessa"
 
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "invalid storage pool pointer in"
 msgstr "virheellinen verkko-osoitin kohteessa"
@@ -27678,6 +27856,9 @@ msgid "io uring is not supported by this QEMU binary"
 msgstr ""
 
 msgid "iommu driver option is only supported for virtio devices"
+msgstr ""
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr ""
 
 msgid "iommu: caching mode is not supported with this QEMU binary"
@@ -27829,9 +28010,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "toimenpide epäonnistui: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr ""
 
 msgid "libssh transport error"
 msgstr ""
@@ -28684,6 +28862,9 @@ msgstr ""
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr ""
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -29420,10 +29601,6 @@ msgstr "ytimen tietoja puuttuu"
 msgid "missing iommuGroup number attribute"
 msgstr ""
 
-#, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr ""
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "juurilaitteen tietoja puuttuu"
@@ -29531,6 +29708,10 @@ msgstr "käyttöjärjestelmätieto puuttuu"
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "käyttöjärjestelmätieto puuttuu kohteelle %s"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 msgid "missing or invalid CPU cache mode"
 msgstr ""
@@ -31244,7 +31425,10 @@ msgstr ""
 msgid "only a single IOMMU device is supported"
 msgstr ""
 
-msgid "only a single TPM device is supported"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
 msgstr ""
 
 msgid "only a single memory balloon device is supported"
@@ -32346,7 +32530,7 @@ msgstr ""
 msgid "read-only connection"
 msgstr "vain luku -yhteys"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 msgid "readahead setting is not supported with this QEMU binary"
@@ -32771,9 +32955,6 @@ msgstr ""
 
 #, c-format
 msgid "sanlock error %d"
-msgstr ""
-
-msgid "sanlock is too old to support lock failure action"
 msgstr ""
 
 #, c-format
@@ -34583,6 +34764,18 @@ msgstr ""
 msgid "uid and gid should be mapped both"
 msgstr ""
 
+#, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to access device %s\n"
 msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
@@ -34633,6 +34826,10 @@ msgstr "ei voitu avata tiedostoa"
 #, fuzzy, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "Xen Storeen %s yhdistäminen epäonnistui"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -34696,6 +34893,10 @@ msgstr "toimialueen ”%s” hakeminen epäonnistui"
 
 #, c-format
 msgid "unable to execute QEMU command '%s': %s"
+msgstr ""
+
+#, c-format
+msgid "unable to find PCI address for parent device '%s'"
 msgstr ""
 
 #, c-format
@@ -35045,9 +35246,6 @@ msgstr ""
 msgid "unable to unload already unloaded profile"
 msgstr ""
 
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
-
 #, c-format
 msgid "unable to use target path '%s' for dev '%s'"
 msgstr ""
@@ -35088,7 +35286,7 @@ msgstr "verkkoliitännän lähde"
 msgid "undefine VM on source"
 msgstr ""
 
-msgid "undefine a bridge device after detaching its slave device"
+msgid "undefine a bridge device after detaching its device(s)"
 msgstr ""
 
 #, fuzzy
@@ -35681,6 +35879,10 @@ msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 #, fuzzy, c-format
 msgid "unknown authentication type %s"
 msgstr "todennus epäonnistui: %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown backend type '%s' for egd"
@@ -36454,6 +36656,10 @@ msgstr ""
 
 #, c-format
 msgid "unknown value '%s' in attribute 'usable'"
+msgstr ""
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
 msgstr ""
 
 #, c-format
@@ -37913,3 +38119,23 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <merkkijono>"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "Levytietojen haku epäonnistui"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "ei voitu avata tiedostoa"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "ei voitu avata tiedostoa"
+
+#, fuzzy
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "Verkkoa ei löytynyt: %s"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "Toimialueen määrittäminen tiedostosta %s epäonnistui"

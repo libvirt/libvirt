@@ -1,0 +1,10 @@
+merge bitmpas:
+[
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-2-format",
+      "name": "libvirt-tmp-activewrite"
+    }
+  }
+]

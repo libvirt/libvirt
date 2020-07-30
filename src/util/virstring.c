@@ -148,7 +148,7 @@ char *virStringListJoin(const char **strings,
                         const char *delim)
 {
     char *ret;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     while (*strings) {
         virBufferAdd(&buf, *strings, -1);
         if (*(strings+1))
@@ -1069,7 +1069,7 @@ virStringReplace(const char *haystack,
                  const char *oldneedle,
                  const char *newneedle)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *tmp1, *tmp2;
     size_t oldneedlelen = strlen(oldneedle);
     size_t newneedlelen = strlen(newneedle);

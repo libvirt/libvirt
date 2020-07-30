@@ -28,9 +28,6 @@
 #ifdef __linux__
 # include <sys/ioctl.h>
 # include <linux/fs.h>
-# ifndef FS_NOCOW_FL
-#  define FS_NOCOW_FL                     0x00800000 /* Do not cow file */
-# endif
 # define default_mount_opts "nodev,nosuid,noexec"
 #elif defined(__FreeBSD__)
 # define default_mount_opts "nosuid,noexec"
@@ -456,25 +453,11 @@ storageBackendCreateRaw(virStoragePoolObjPtr pool,
     }
     created = true;
 
-    if (vol->target.nocow) {
-#ifdef __linux__
-        int attr;
-
-        /* Set NOCOW flag. This is an optimisation for btrfs.
-         * The FS_IOC_SETFLAGS ioctl return value will be ignored since any
-         * failure of this operation should not block the volume creation.
-         */
-        if (ioctl(fd, FS_IOC_GETFLAGS, &attr) < 0) {
-            virReportSystemError(errno, "%s", _("Failed to get fs flags"));
-        } else {
-            attr |= FS_NOCOW_FL;
-            if (ioctl(fd, FS_IOC_SETFLAGS, &attr) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("Failed to set NOCOW flag"));
-            }
-        }
-#endif
-    }
+    /* NB, COW flag can only be toggled when the file is zero-size,
+     * so must go before the createRawFile call allocates payload */
+    if (vol->target.nocow &&
+        virFileSetCOW(vol->target.path, VIR_TRISTATE_BOOL_NO) < 0)
+        goto cleanup;
 
     if ((ret = createRawFile(fd, vol, inputvol, reflink_copy)) < 0)
         /* createRawFile already reported the exact error. */
@@ -717,7 +700,7 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
                                 char **opts,
                                 struct _virStorageBackendQemuImgInfo *info)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (info->backingPath)
         virBufferAsprintf(&buf, "backing_fmt=%s,",
@@ -749,7 +732,7 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
                                _("lazy_refcounts not supported with compat"
                                  " level %s"),
                                info->compat);
-                goto error;
+                return -1;
             }
             virBufferAddLit(&buf, "lazy_refcounts,");
         }
@@ -759,10 +742,6 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
 
     *opts = virBufferContentAndReset(&buf);
     return 0;
-
- error:
-    virBufferFreeAndReset(&buf);
-    return -1;
 }
 
 
@@ -934,7 +913,7 @@ storageBackendCreateQemuImgSecretObject(virCommandPtr cmd,
                                         const char *secretPath,
                                         const char *secretAlias)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *commandStr = NULL;
 
     virBufferAsprintf(&buf, "secret,id=%s,file=", secretAlias);
@@ -958,7 +937,7 @@ storageBackendResizeQemuImgImageOpts(virCommandPtr cmd,
                                      const char *path,
                                      const char *secretAlias)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *commandStr = NULL;
 
     virBufferAsprintf(&buf, "driver=luks,key-secret=%s,file.filename=",
@@ -1818,7 +1797,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
                                        struct stat *sb)
 {
 #if WITH_SELINUX
-    security_context_t filecon = NULL;
+    char *filecon = NULL;
 #endif
 
     if (virStorageSourceUpdateBackingSizes(target, fd, sb) < 0)
@@ -2403,7 +2382,7 @@ virStorageBackendVolUploadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
     virCheckFlags(VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM, -1);
     /* if volume has target format VIR_STORAGE_FILE_PLOOP
      * we need to restore DiskDescriptor.xml, according to
-     * new contents of volume. This operation will be perfomed
+     * new contents of volume. This operation will be performed
      * when volUpload is fully finished. */
     if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
         /* Fail if the volume contains snapshots or we failed to check it.*/
@@ -2733,6 +2712,7 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
     bool needs_create_as_uid;
     unsigned int dir_create_flags;
     g_autofree char *parent = NULL;
+    int ret;
 
     parent = g_strdup(def->target.path);
     if (!(p = strrchr(parent, '/'))) {
@@ -2766,11 +2746,19 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
     /* Now create the final dir in the path with the uid/gid/mode
      * requested in the config. If the dir already exists, just set
      * the perms. */
-    return virDirCreate(def->target.path,
-                        mode,
-                        def->target.perms.uid,
-                        def->target.perms.gid,
-                        dir_create_flags);
+    ret = virDirCreate(def->target.path,
+                       mode,
+                       def->target.perms.uid,
+                       def->target.perms.gid,
+                       dir_create_flags);
+    if (ret < 0)
+        return -1;
+
+    if (virFileSetCOW(def->target.path,
+                      def->features.cow) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -2989,7 +2977,7 @@ virStorageBackendBLKIDFindPart(blkid_probe probe,
      * however, the blkid_do_probe for "dvh" returns "sgi" and
      * for "pc98" it returns "dos". Although "bsd" is recognized,
      * it seems that the parted created partition table is not being
-     * properly recogized. Since each of these will cause problems
+     * properly recognized. Since each of these will cause problems
      * with startup comparison, let's just treat them as UNKNOWN causing
      * the caller to fallback to using PARTED */
     if (STREQ(format, "dvh") || STREQ(format, "pc98") || STREQ(format, "bsd"))
@@ -4058,7 +4046,7 @@ virStorageBackendFileSystemMountAddOptions(virCommandPtr cmd,
                                            const char *providedOpts)
 {
     g_autofree char *mountOpts = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (*default_mount_opts != '\0')
         virBufferAsprintf(&buf, "%s,", default_mount_opts);

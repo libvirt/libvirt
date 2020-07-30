@@ -468,12 +468,12 @@ chmod o+x /path/to/directory
       for resource management. It is implemented via a number of "controllers",
       each controller covering a specific task/functional area. One of the
       available controllers is the "devices" controller, which is able to
-      setup whitelists of block/character devices that a cgroup should be
-      allowed to access. If the "devices" controller is mounted on a host,
-      then libvirt will automatically create a dedicated cgroup for each
-      QEMU virtual machine and setup the device whitelist so that the QEMU
-      process can only access shared devices, and explicitly disks images
-      backed by block devices.
+      setup access control lists of block/character devices that a cgroup
+      should be allowed to access. If the "devices" controller is mounted on a
+      host, then libvirt will automatically create a dedicated cgroup for each
+      QEMU virtual machine and setup the device access control list so that the
+      QEMU process can only access shared devices, and explicitly assigned disks
+      images backed by block devices.
     </p>
 
     <p>

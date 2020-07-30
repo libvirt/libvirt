@@ -133,7 +133,7 @@ static int
 qemuMonitorTestAddErrorResponseInternal(qemuMonitorTestPtr test,
                                         const char *usermsg)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *escapemsg = NULL;
     g_autofree char *jsonmsg = NULL;
     char *tmp;

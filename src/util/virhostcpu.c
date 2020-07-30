@@ -663,7 +663,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
      * subcore will vary accordingly to 8, 4 and 2 respectively.
      * So, On host threads_per_core what is arrived at from sysfs in the
      * current logic is actually the subcores_per_core. Threads per subcore
-     * can only be obtained from the kvm device. For example, on P8 wih 1
+     * can only be obtained from the kvm device. For example, on P8 with 1
      * core having 8 threads, sub_cores_percore=4, the threads 0,2,4 & 6
      * will be online. The sysfs reflects this and in the current logic
      * variable 'threads' will be 4 which is nothing but subcores_per_core.
@@ -856,33 +856,17 @@ virHostCPUGetStatsLinux(FILE *procstat,
 }
 
 
-/* Determine the number of CPUs (maximum CPU id + 1) from a file containing
- * a list of CPU ids, like the Linux sysfs cpu/present file */
+/* Determine the number of CPUs (maximum CPU id + 1) present in
+ * the host. */
 static int
-virHostCPUParseCountLinux(void)
+virHostCPUCountLinux(void)
 {
-    char *str = NULL;
-    char *tmp;
-    int ret = -1;
+    g_autoptr(virBitmap) present = virHostCPUGetPresentBitmap();
 
-    if (virFileReadValueString(&str, "%s/cpu/present", SYSFS_SYSTEM_PATH) < 0)
+    if (!present)
         return -1;
 
-    tmp = str;
-    do {
-        if (virStrToLong_i(tmp, &tmp, 10, &ret) < 0 ||
-            !strchr(",-", *tmp)) {
-            virReportError(VIR_ERR_NO_SUPPORT,
-                           _("failed to parse %s"), str);
-            ret = -1;
-            goto cleanup;
-        }
-    } while (*tmp++ && *tmp);
-    ret++;
-
- cleanup:
-    VIR_FREE(str);
-    return ret;
+    return virBitmapSize(present);
 }
 #endif
 
@@ -1031,7 +1015,7 @@ int
 virHostCPUGetCount(void)
 {
 #if defined(__linux__)
-    return virHostCPUParseCountLinux();
+    return virHostCPUCountLinux();
 #elif defined(__FreeBSD__) || defined(__APPLE__)
     return virHostCPUGetCountAppleFreeBSD();
 #else
@@ -1089,7 +1073,7 @@ virHostCPUGetMap(unsigned char **cpumap,
                  unsigned int *online,
                  unsigned int flags)
 {
-    virBitmapPtr cpus = NULL;
+    g_autoptr(virBitmap) cpus = NULL;
     int ret = -1;
     int dummy;
 
@@ -1111,8 +1095,37 @@ virHostCPUGetMap(unsigned char **cpumap,
  cleanup:
     if (ret < 0 && cpumap)
         VIR_FREE(*cpumap);
-    virBitmapFree(cpus);
     return ret;
+}
+
+
+/* virHostCPUGetAvailableCPUsBitmap():
+ *
+ * Returns a virBitmap object with all available host CPUs.
+ *
+ * This is a glorified wrapper of virHostCPUGetOnlineBitmap()
+ * that, instead of returning NULL when 'ifndef __linux__' and
+ * the caller having to handle it outside the function, returns
+ * a virBitmap with all the possible CPUs in the host, up to
+ * virHostCPUGetCount(). */
+virBitmapPtr
+virHostCPUGetAvailableCPUsBitmap(void)
+{
+    g_autoptr(virBitmap) bitmap = NULL;
+
+    if (!(bitmap = virHostCPUGetOnlineBitmap())) {
+        int hostcpus;
+
+        if ((hostcpus = virHostCPUGetCount()) < 0)
+            return NULL;
+
+        if (!(bitmap = virBitmapNew(hostcpus)))
+            return NULL;
+
+        virBitmapSetAll(bitmap);
+    }
+
+    return g_steal_pointer(&bitmap);
 }
 
 

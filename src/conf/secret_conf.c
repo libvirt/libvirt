@@ -277,7 +277,7 @@ virSecretDefFormatUsage(virBufferPtr buf,
 char *
 virSecretDefFormat(const virSecretDef *def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -294,13 +294,9 @@ virSecretDefFormat(const virSecretDef *def)
                               def->description);
     if (def->usage_type != VIR_SECRET_USAGE_TYPE_NONE &&
         virSecretDefFormatUsage(&buf, def) < 0)
-        goto error;
+        return NULL;
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</secret>\n");
 
     return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }

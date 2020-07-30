@@ -45,7 +45,7 @@ virNetDevMidonetBindPort(const char *ifname,
 
     virUUIDFormat(virtualport->interfaceID, virtportuuid);
 
-    cmd = virCommandNew(MMCTL);
+    cmd = virCommandNew(MM_CTL);
 
     virCommandAddArgList(cmd, "--bind-port", virtportuuid, ifname, NULL);
 
@@ -79,7 +79,7 @@ virNetDevMidonetUnbindPort(const virNetDevVPortProfile *virtualport)
 
     virUUIDFormat(virtualport->interfaceID, virtportuuid);
 
-    cmd = virCommandNew(MMCTL);
+    cmd = virCommandNew(MM_CTL);
     virCommandAddArgList(cmd, "--unbind-port", virtportuuid, NULL);
 
     if (virCommandRun(cmd, NULL) < 0) {

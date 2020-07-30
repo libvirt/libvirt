@@ -188,6 +188,7 @@
   <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
+  <flag name='blockdev-hostdev-scsi'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700242</microcodeVersion>

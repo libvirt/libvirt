@@ -368,7 +368,7 @@ vshTablePrint(vshTablePtr table, bool header)
     size_t j;
     size_t *maxwidths;
     size_t **widths;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;
 
     if (VIR_ALLOC_N(maxwidths, table->rows[0]->ncells))

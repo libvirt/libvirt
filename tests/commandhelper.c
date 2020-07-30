@@ -72,6 +72,8 @@ int main(int argc, char **argv) {
     char *buffers[3] = {NULL, NULL, NULL};
     size_t buflen[3] = {0, 0, 0};
     char c;
+    bool daemonize_check = false;
+    size_t daemonize_retries = 3;
 
     if (!log)
         return ret;
@@ -83,6 +85,8 @@ int main(int argc, char **argv) {
             sscanf(argv[i], "%u%c", &readfds[numreadfds++], &c) != 1) {
             printf("Could not parse fd %s\n", argv[i]);
             goto cleanup;
+        } else if (STREQ(argv[i], "--check-daemonize")) {
+            daemonize_check = true;
         }
     }
 
@@ -126,7 +130,18 @@ int main(int argc, char **argv) {
             fprintf(log, "FD:%zu\n", i);
     }
 
-    fprintf(log, "DAEMON:%s\n", getpgrp() == getsid(0) ? "yes" : "no");
+    while (true) {
+        bool daemonized = getpgrp() != getppid();
+
+        if (daemonize_check && !daemonized && daemonize_retries-- > 0) {
+            usleep(100*1000);
+            continue;
+        }
+
+        fprintf(log, "DAEMON:%s\n", daemonized ? "yes" : "no");
+        break;
+    }
+
     if (!(cwd = getcwd(NULL, 0)))
         goto cleanup;
     if (strlen(cwd) > strlen(".../commanddata") &&

@@ -2250,7 +2250,7 @@ When selecting the *--state* group the following fields are returned:
 * ``balloon.swap_in`` - the amount of data read from swap space (in KiB)
 * ``balloon.swap_out`` - the amount of memory written out to swap
   space (in KiB)
-* ``balloon.major_fault`` - the number of page faults then disk IO
+* ``balloon.major_fault`` - the number of page faults when disk IO
   was required
 * ``balloon.minor_fault`` - the number of other page faults
 * ``balloon.unused`` - the amount of memory left unused by the
@@ -2265,6 +2265,10 @@ When selecting the *--state* group the following fields are returned:
   (in seconds)
 * ``balloon.disk_caches`` - the amount of memory that can be reclaimed
   without additional I/O, typically disk (in KiB)
+* ``balloon.hugetlb_pgalloc`` - the number of successful huge page allocations
+  from inside the domain via virtio balloon
+* ``balloon.hugetlb_pgfail`` - the number of failed huge page allocations
+  from inside the domain via virtio balloon
 
 
 *--vcpu* returns:
@@ -2370,6 +2374,11 @@ too high will consume too much CPU time per IOThread failing to allow
 other threads running on the CPU to get time. The polling interval is
 not available for statistical purposes.
 
+* ``iothread.count`` - maximum number of IOThreads in the subsequent list
+                       as unsigned int. Each IOThread in the list will
+                       will use it's iothread_id value as the <id>. There
+                       may be fewer <id> entries than the iothread.count
+                       value if the polling values are not supported.
 * ``iothread.<id>.poll-max-ns`` - maximum polling time in nanoseconds used
   by the <id> IOThread. A value of 0 (zero) indicates polling is disabled.
 * ``iothread.<id>.poll-grow`` - polling time grow value. A value of 0 (zero)

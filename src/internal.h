@@ -174,6 +174,10 @@
     _Pragma ("GCC diagnostic push")
 #endif
 
+#define VIR_WARNINGS_NO_UNUSED_FUNCTION \
+    _Pragma ("GCC diagnostic push") \
+    _Pragma ("GCC diagnostic ignored \"-Wunused-function\"")
+
 /* Workaround bogus GCC 6.0 for logical 'or' equal expression warnings.
  * (GCC bz 69602) */
 #if BROKEN_GCC_WLOGICALOP_EQUAL_EXPR
@@ -490,7 +494,7 @@ enum {
 #endif
 
 /* Ideally callers would use the g_*printf
- * functions directly but there are alot to
+ * functions directly but there are a lot to
  * convert, so until then...
  */
 #ifndef VIR_NO_GLIB_STDIO

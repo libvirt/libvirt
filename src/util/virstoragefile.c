@@ -4255,7 +4255,7 @@ virStorageFileCanonicalizeFormatPath(char **components,
                                      bool beginSlash,
                                      bool beginDoubleSlash)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     char *ret = NULL;
 
@@ -4589,33 +4589,23 @@ virStorageSourceIsRelative(virStorageSourcePtr src)
  * virStorageSourceFindByNodeName:
  * @top: backing chain top
  * @nodeName: node name to find in backing chain
- * @index: if provided the index in the backing chain
  *
  * Looks up the given storage source in the backing chain and returns the
- * pointer to it. If @index is passed then it's filled by the index in the
- * backing chain. On failure NULL is returned and no error is reported.
+ * pointer to it.
+ * On failure NULL is returned and no error is reported.
  */
 virStorageSourcePtr
 virStorageSourceFindByNodeName(virStorageSourcePtr top,
-                               const char *nodeName,
-                               unsigned int *idx)
+                               const char *nodeName)
 {
     virStorageSourcePtr tmp;
-
-    if (idx)
-        *idx = 0;
 
     for (tmp = top; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
         if ((tmp->nodeformat && STREQ(tmp->nodeformat, nodeName)) ||
             (tmp->nodestorage && STREQ(tmp->nodestorage, nodeName)))
             return tmp;
-
-        if (idx)
-            (*idx)++;
     }
 
-    if (idx)
-        *idx = 0;
     return NULL;
 }
 

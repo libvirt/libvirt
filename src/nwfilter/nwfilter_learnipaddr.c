@@ -151,14 +151,13 @@ virNWFilterLockIface(const char *ifname)
 
     ifaceLock = virHashLookup(ifaceLockMap, ifname);
     if (!ifaceLock) {
-        if (VIR_ALLOC(ifaceLock) < 0)
-            goto err_exit;
+        ifaceLock = g_new0(virNWFilterIfaceLock, 1);
 
         if (virMutexInitRecursive(&ifaceLock->lock) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("mutex initialization failed"));
-            VIR_FREE(ifaceLock);
-            goto err_exit;
+            g_free(ifaceLock);
+            goto error;
         }
 
         if (virStrcpyStatic(ifaceLock->ifname, ifname) < 0) {
@@ -166,13 +165,13 @@ virNWFilterLockIface(const char *ifname)
                            _("interface name %s does not fit into "
                              "buffer "),
                            ifaceLock->ifname);
-            VIR_FREE(ifaceLock);
-            goto err_exit;
+            g_free(ifaceLock);
+            goto error;
         }
 
         while (virHashAddEntry(ifaceLockMap, ifname, ifaceLock)) {
-            VIR_FREE(ifaceLock);
-            goto err_exit;
+            g_free(ifaceLock);
+            goto error;
         }
 
         ifaceLock->refctr = 0;
@@ -186,7 +185,7 @@ virNWFilterLockIface(const char *ifname)
 
     return 0;
 
- err_exit:
+ error:
     virMutexUnlock(&ifaceMapLock);
 
     return -1;
@@ -222,7 +221,7 @@ virNWFilterIPAddrLearnReqFree(virNWFilterIPAddrLearnReqPtr req)
 
     virNWFilterBindingDefFree(req->binding);
 
-    VIR_FREE(req);
+    g_free(req);
 }
 
 
@@ -397,8 +396,8 @@ learnIPAddressThread(void *arg)
                        req->binding->portdevname);
     int dhcp_opts_len;
     char macaddr[VIR_MAC_STRING_BUFLEN];
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *filter = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *filter = NULL;
     uint16_t etherType;
     bool showError = true;
     enum howDetect howDetected = 0;
@@ -414,7 +413,7 @@ learnIPAddressThread(void *arg)
     if (virNetDevValidateConfig(req->binding->portdevname, NULL, req->ifindex) <= 0) {
         virResetLastError();
         req->status = ENODEV;
-        goto done;
+        goto cleanup;
     }
 
     handle = pcap_open_live(listen_if, BUFSIZ, 0, PKT_TIMEOUT_MS, errbuf);
@@ -422,7 +421,7 @@ learnIPAddressThread(void *arg)
     if (handle == NULL) {
         VIR_DEBUG("Couldn't open device %s: %s", listen_if, errbuf);
         req->status = ENODEV;
-        goto done;
+        goto cleanup;
     }
 
     fds[0].fd = pcap_fileno(handle);
@@ -436,7 +435,7 @@ learnIPAddressThread(void *arg)
                                            NULL, false) < 0) {
             VIR_DEBUG("Unable to apply DHCP only rules");
             req->status = EINVAL;
-            goto done;
+            goto cleanup;
         }
         virBufferAddLit(&buf, "src port 67 and dst port 68");
     } else {
@@ -444,7 +443,7 @@ learnIPAddressThread(void *arg)
                                         &req->binding->mac) < 0) {
             VIR_DEBUG("Unable to apply basic rules");
             req->status = EINVAL;
-            goto done;
+            goto cleanup;
         }
         virBufferAsprintf(&buf, "ether host %s or ether dst ff:ff:ff:ff:ff:ff",
                           macaddr);
@@ -455,14 +454,14 @@ learnIPAddressThread(void *arg)
     if (pcap_compile(handle, &fp, filter, 1, 0) != 0) {
         VIR_DEBUG("Couldn't compile filter '%s'", filter);
         req->status = EINVAL;
-        goto done;
+        goto cleanup;
     }
 
     if (pcap_setfilter(handle, &fp) != 0) {
         VIR_DEBUG("Couldn't set filter '%s'", filter);
         req->status = EINVAL;
         pcap_freecode(&fp);
-        goto done;
+        goto cleanup;
     }
 
     pcap_freecode(&fp);
@@ -622,9 +621,7 @@ learnIPAddressThread(void *arg)
         }
     } /* while */
 
- done:
-    VIR_FREE(filter);
-
+ cleanup:
     if (handle)
         pcap_close(handle);
 
@@ -634,7 +631,7 @@ learnIPAddressThread(void *arg)
         sa.len = sizeof(sa.data.inet4);
         sa.data.inet4.sin_family = AF_INET;
         sa.data.inet4.sin_addr.s_addr = vmaddr;
-        char *inetaddr;
+        g_autofree char *inetaddr = NULL;
 
         /* It is necessary to unlock interface here to avoid updateMutex and
          * interface ordering deadlocks. Otherwise we are going to
@@ -657,7 +654,6 @@ learnIPAddressThread(void *arg)
                                                    req->ifindex);
             VIR_DEBUG("Result from applying firewall rules on "
                       "%s with IP addr %s : %d", req->binding->portdevname, inetaddr, ret);
-            VIR_FREE(inetaddr);
         }
     } else {
         if (showError)
@@ -718,8 +714,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
         return -1;
     }
 
-    if (VIR_ALLOC(req) < 0)
-        return -1;
+    req = g_new0(virNWFilterIPAddrLearnReq, 1);
 
     if (!(req->binding = virNWFilterBindingDefCopy(binding)))
         goto err_free_req;

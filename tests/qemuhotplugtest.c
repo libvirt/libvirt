@@ -399,9 +399,11 @@ testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
         virObjectUnref(data->vm);
     }
 
-    mon = qemuMonitorTestGetMonitor(data->mon);
-    virObjectLock(mon);
-    qemuMonitorTestFree(data->mon);
+    if (data->mon) {
+        mon = qemuMonitorTestGetMonitor(data->mon);
+        virObjectLock(mon);
+        qemuMonitorTestFree(data->mon);
+    }
     VIR_FREE(data);
 }
 

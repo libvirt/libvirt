@@ -427,6 +427,13 @@ error: invalid argument in libvirt was built without the 'esx' driver
 <pre>
 ethernet0.checkMACAddress = "false"
 </pre>
+    <p>
+        <span class="since">Since 6.6.0</span>, one can force libvirt to keep the
+        provided MAC address when it's in the reserved VMware range by adding a
+        <code>type="static"</code> attribute to the <code>&lt;mac/&gt;</code> element.
+        Note that this attribute is useless if the provided MAC address is outside of
+        the reserved VMWare ranges.
+    </p>
 
 
     <h3><a id="hardware">Available hardware</a></h3>

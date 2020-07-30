@@ -252,7 +252,7 @@ static int
 testSELinuxCheckLabels(testSELinuxFile *files, size_t nfiles)
 {
     size_t i;
-    security_context_t ctx;
+    char *ctx;
 
     for (i = 0; i < nfiles; i++) {
         ctx = NULL;
@@ -360,7 +360,7 @@ mymain(void)
     if (virTestRun("Labelling " # name, testSELinuxLabeling, name) < 0) \
         ret = -1;
 
-    setcon((security_context_t)"system_r:system_u:libvirtd_t:s0:c0.c1023");
+    setcon("system_r:system_u:libvirtd_t:s0:c0.c1023");
 
     DO_TEST_LABELING("disks");
     DO_TEST_LABELING("kernel");

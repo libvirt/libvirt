@@ -178,20 +178,10 @@ virLockManagerSanlockInitLockspace(virLockManagerSanlockDriverPtr driver,
 {
     int ret;
 
-#ifdef HAVE_SANLOCK_IO_TIMEOUT
     const int max_hosts = 0; /* defaults used in sanlock_init() implementation */
     const unsigned int lockspaceFlags = 0;
 
     ret = sanlock_write_lockspace(ls, max_hosts, lockspaceFlags, driver->io_timeout);
-#else
-    if (driver->io_timeout) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("unable to use io_timeout with this version of sanlock"));
-        return -ENOTSUP;
-    }
-
-    ret = sanlock_init(ls, NULL, 0, 0);
-#endif
     return ret;
 }
 
@@ -349,30 +339,15 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriverPtr driver)
      * or we can fallback to polling.
      */
  retry:
-#ifdef HAVE_SANLOCK_IO_TIMEOUT
     rv = sanlock_add_lockspace_timeout(&ls, 0, driver->io_timeout);
-#else
-    if (driver->io_timeout) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("unable to use io_timeout with this version of sanlock"));
-        goto error;
-    }
-    rv = sanlock_add_lockspace(&ls, 0);
-#endif
     if (rv < 0) {
         if (-rv == EINPROGRESS && --retries) {
-#ifdef HAVE_SANLOCK_INQ_LOCKSPACE
             /* we have this function which blocks until lockspace change the
              * state. It returns 0 if lockspace has been added, -ENOENT if it
              * hasn't. */
             VIR_DEBUG("Inquiring lockspace");
             if (sanlock_inq_lockspace(&ls, SANLK_INQ_WAIT) < 0)
                 VIR_DEBUG("Unable to inquire lockspace");
-#else
-            /* fall back to polling */
-            VIR_DEBUG("Sleeping for %dms", LOCKSPACE_SLEEP);
-            g_usleep(LOCKSPACE_SLEEP * 1000);
-#endif
             VIR_DEBUG("Retrying to add lockspace (left %d)", retries);
             goto retry;
         }
@@ -818,14 +793,13 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
     return 0;
 }
 
-#if HAVE_SANLOCK_KILLPATH
 static int
 virLockManagerSanlockRegisterKillscript(int sock,
                                         const char *vmuri,
                                         const char *uuidstr,
                                         virDomainLockFailureAction action)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *path;
     char *args = NULL;
     int ret = -1;
@@ -900,18 +874,6 @@ virLockManagerSanlockRegisterKillscript(int sock,
     VIR_FREE(args);
     return ret;
 }
-#else
-static int
-virLockManagerSanlockRegisterKillscript(int sock G_GNUC_UNUSED,
-                                        const char *vmuri G_GNUC_UNUSED,
-                                        const char *uuidstr G_GNUC_UNUSED,
-                                        virDomainLockFailureAction action G_GNUC_UNUSED)
-{
-    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                   _("sanlock is too old to support lock failure action"));
-    return -1;
-}
-#endif
 
 static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                                         const char *state,

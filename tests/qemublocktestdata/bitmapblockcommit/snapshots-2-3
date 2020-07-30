@@ -1,28 +1,5 @@
-pre job bitmap disable:
-[
-  {
-    "type": "block-dirty-bitmap-disable",
-    "data": {
-      "node": "libvirt-3-format",
-      "name": "c"
-    }
-  }
-]
 merge bitmpas:
 [
-  {
-    "type": "block-dirty-bitmap-merge",
-    "data": {
-      "node": "libvirt-3-format",
-      "target": "c",
-      "bitmaps": [
-        {
-          "node": "libvirt-2-format",
-          "name": "c"
-        }
-      ]
-    }
-  },
   {
     "type": "block-dirty-bitmap-add",
     "data": {
@@ -42,6 +19,45 @@ merge bitmpas:
         {
           "node": "libvirt-2-format",
           "name": "d"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-3-format",
+      "target": "a",
+      "bitmaps": [
+        {
+          "node": "libvirt-2-format",
+          "name": "a"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-3-format",
+      "target": "b",
+      "bitmaps": [
+        {
+          "node": "libvirt-2-format",
+          "name": "b"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-3-format",
+      "target": "c",
+      "bitmaps": [
+        {
+          "node": "libvirt-2-format",
+          "name": "c"
         }
       ]
     }

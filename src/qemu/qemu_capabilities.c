@@ -593,6 +593,10 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 375 */
               "migration-param.xbzrle-cache-size",
+              "intel-iommu.aw-bits",
+              "spapr-tpm-proxy",
+              "numa.hmat",
+              "blockdev-hostdev-scsi"
     );
 
 
@@ -612,7 +616,7 @@ typedef struct _virQEMUCapsHostCPUData virQEMUCapsHostCPUData;
 typedef virQEMUCapsHostCPUData *virQEMUCapsHostCPUDataPtr;
 struct _virQEMUCapsHostCPUData {
     /* Only the "info" part is stored in the capabilities cache, the rest is
-     * re-computed from other fields and external data sources everytime we
+     * re-computed from other fields and external data sources every time we
      * probe QEMU or load the cache.
      */
     qemuMonitorCPUModelInfoPtr info;
@@ -1318,6 +1322,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "vhost-user-fs-device", QEMU_CAPS_DEVICE_VHOST_USER_FS },
     { "tcg-accel", QEMU_CAPS_TCG },
     { "pvscsi", QEMU_CAPS_SCSI_PVSCSI },
+    { "spapr-tpm-proxy", QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY },
 };
 
 
@@ -1481,6 +1486,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
     { "caching-mode", QEMU_CAPS_INTEL_IOMMU_CACHING_MODE, NULL },
     { "eim", QEMU_CAPS_INTEL_IOMMU_EIM, NULL },
     { "device-iotlb", QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB, NULL },
+    { "aw-bits", QEMU_CAPS_INTEL_IOMMU_AW_BITS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsObjectPropsVirtualCSSBridge[] = {
@@ -1518,6 +1524,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "migrate-set-parameters/arg-type/max-bandwidth", QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH },
     { "migrate-set-parameters/arg-type/downtime-limit", QEMU_CAPS_MIGRATION_PARAM_DOWNTIME },
     { "migrate-set-parameters/arg-type/xbzrle-cache-size", QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE },
+    { "set-numa-node/arg-type/+hmat-lb", QEMU_CAPS_NUMA_HMAT },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;
@@ -1804,14 +1811,6 @@ virQEMUCapsNewBinary(const char *binary)
         qemuCaps->binary = g_strdup(binary);
 
     return qemuCaps;
-}
-
-
-void
-virQEMUCapsSetInvalidation(virQEMUCapsPtr qemuCaps,
-                           bool enabled)
-{
-    qemuCaps->invalidation = enabled;
 }
 
 
@@ -2256,8 +2255,8 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
 
 static virDomainCapsCPUModelsPtr
 virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefsPtr defs,
-                           const char **modelWhitelist,
-                           const char **modelBlacklist)
+                           const char **modelAllowed,
+                           const char **modelForbidden)
 {
     g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
     size_t i;
@@ -2268,10 +2267,10 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefsPtr defs,
     for (i = 0; i < defs->ncpus; i++) {
         qemuMonitorCPUDefInfoPtr cpu = defs->cpus + i;
 
-        if (modelWhitelist && !virStringListHasString(modelWhitelist, cpu->name))
+        if (modelAllowed && !virStringListHasString(modelAllowed, cpu->name))
             continue;
 
-        if (modelBlacklist && virStringListHasString(modelBlacklist, cpu->name))
+        if (modelForbidden && virStringListHasString(modelForbidden, cpu->name))
             continue;
 
         if (virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
@@ -2286,15 +2285,15 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefsPtr defs,
 virDomainCapsCPUModelsPtr
 virQEMUCapsGetCPUModels(virQEMUCapsPtr qemuCaps,
                         virDomainVirtType type,
-                        const char **modelWhitelist,
-                        const char **modelBlacklist)
+                        const char **modelAllowed,
+                        const char **modelForbidden)
 {
     qemuMonitorCPUDefsPtr defs;
 
     if (!(defs = virQEMUCapsGetAccel(qemuCaps, type)->cpuModels))
         return NULL;
 
-    return virQEMUCapsCPUDefsToModels(defs, modelWhitelist, modelBlacklist);
+    return virQEMUCapsCPUDefsToModels(defs, modelAllowed, modelForbidden);
 }
 
 
@@ -4205,11 +4204,14 @@ virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
  *   <machine name='pc-1.0' alias='pc' hotplugCpus='yes' maxCpus='4' default='yes' numaMemSupported='yes'/>
  *   ...
  * </qemuCaps>
+ *
+ * Returns 0 on success, 1 if outdated, -1 on error
  */
 int
 virQEMUCapsLoadCache(virArch hostArch,
                      virQEMUCapsPtr qemuCaps,
-                     const char *filename)
+                     const char *filename,
+                     bool skipInvalidation)
 {
     xmlDocPtr doc = NULL;
     int ret = -1;
@@ -4237,6 +4239,31 @@ virQEMUCapsLoadCache(virArch hostArch,
         goto cleanup;
     }
 
+    if (virXPathLongLong("string(./selfctime)", ctxt, &l) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing selfctime in QEMU capabilities XML"));
+        goto cleanup;
+    }
+    qemuCaps->libvirtCtime = (time_t)l;
+
+    qemuCaps->libvirtVersion = 0;
+    if (virXPathULong("string(./selfvers)", ctxt, &lu) == 0)
+        qemuCaps->libvirtVersion = lu;
+
+    if (!skipInvalidation &&
+        (qemuCaps->libvirtCtime != virGetSelfLastChanged() ||
+         qemuCaps->libvirtVersion != LIBVIR_VERSION_NUMBER)) {
+        VIR_DEBUG("Outdated capabilities in %s: libvirt changed "
+                  "(%lld vs %lld, %lu vs %lu), stopping load",
+                  qemuCaps->binary,
+                  (long long)qemuCaps->libvirtCtime,
+                  (long long)virGetSelfLastChanged(),
+                  (unsigned long)qemuCaps->libvirtVersion,
+                  (unsigned long)LIBVIR_VERSION_NUMBER);
+        ret = 1;
+        goto cleanup;
+    }
+
     if (!(str = virXPathString("string(./emulator)", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing emulator in QEMU capabilities cache"));
@@ -4255,17 +4282,6 @@ virQEMUCapsLoadCache(virArch hostArch,
         goto cleanup;
     }
     qemuCaps->ctime = (time_t)l;
-
-    if (virXPathLongLong("string(./selfctime)", ctxt, &l) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing selfctime in QEMU capabilities XML"));
-        goto cleanup;
-    }
-    qemuCaps->libvirtCtime = (time_t)l;
-
-    qemuCaps->libvirtVersion = 0;
-    if (virXPathULong("string(./selfvers)", ctxt, &lu) == 0)
-        qemuCaps->libvirtVersion = lu;
 
     if ((n = virXPathNodeSet("./flag", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4417,6 +4433,9 @@ virQEMUCapsLoadCache(virArch hostArch,
 
     if (virXPathBoolean("boolean(./kvmSupportsSecureGuest)", ctxt) > 0)
         qemuCaps->kvmSupportsSecureGuest = true;
+
+    if (skipInvalidation)
+        qemuCaps->invalidation = false;
 
     ret = 0;
  cleanup:
@@ -4586,7 +4605,7 @@ virQEMUCapsFormatSEVInfo(virQEMUCapsPtr qemuCaps, virBufferPtr buf)
 char *
 virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     virBufferAddLit(&buf, "<qemuCaps>\n");
@@ -5105,6 +5124,9 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCapsPtr qemuCaps)
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_WERROR)) {
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_STORAGE_WERROR);
     }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI);
 }
 
 
@@ -5262,7 +5284,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     virQEMUCapsInitQMPBasicArch(qemuCaps);
 
-    /* initiate all capapbilities based on qemu version */
+    /* initiate all capabilities based on qemu version */
     virQEMUCapsInitQMPVersionCaps(qemuCaps);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
@@ -5360,7 +5382,7 @@ virQEMUCapsInitQMPSingle(virQEMUCapsPtr qemuCaps,
                          gid_t runGid,
                          bool onlyTCG)
 {
-    qemuProcessQMPPtr proc = NULL;
+    g_autoptr(qemuProcessQMP) proc = NULL;
     int ret = -1;
 
     if (!(proc = qemuProcessQMPNew(qemuCaps->binary, libDir,
@@ -5379,7 +5401,6 @@ virQEMUCapsInitQMPSingle(virQEMUCapsPtr qemuCaps,
     if (ret < 0)
         virQEMUCapsLogProbeFailure(qemuCaps->binary);
 
-    qemuProcessQMPFree(proc);
     return ret;
 }
 
@@ -5489,16 +5510,23 @@ virQEMUCapsNewData(const char *binary,
 static void *
 virQEMUCapsLoadFile(const char *filename,
                     const char *binary,
-                    void *privData)
+                    void *privData,
+                    bool *outdated)
 {
     virQEMUCapsPtr qemuCaps = virQEMUCapsNewBinary(binary);
     virQEMUCapsCachePrivPtr priv = privData;
+    int ret;
 
     if (!qemuCaps)
         return NULL;
 
-    if (virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename) < 0)
+    ret = virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename, false);
+    if (ret < 0)
         goto error;
+    if (ret == 1) {
+        *outdated = true;
+        goto error;
+    }
 
     return qemuCaps;
 
@@ -5640,69 +5668,6 @@ virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
 }
 
 
-static int
-virQEMUCapsCompareArch(const void *payload,
-                       const void *name G_GNUC_UNUSED,
-                       const void *opaque)
-{
-    struct virQEMUCapsSearchData *data = (struct virQEMUCapsSearchData *)opaque;
-    const virQEMUCaps *qemuCaps = payload;
-
-    if (qemuCaps->arch != data->arch)
-        return false;
-
-    if (data->binaryFilter &&
-        !strstr(qemuCaps->binary, data->binaryFilter)) {
-        return false;
-    }
-
-    return true;
-}
-
-
-virQEMUCapsPtr
-virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
-                             virArch arch)
-{
-    virQEMUCapsCachePrivPtr priv = virFileCacheGetPriv(cache);
-    virQEMUCapsPtr ret = NULL;
-    const char *binaryFilters[] = {
-        "qemu-system-",
-        NULL,
-    };
-    virArch archs[] = {
-        arch,
-        virQEMUCapsFindTarget(virArchFromHost(), arch),
-    };
-    size_t i;
-    size_t j;
-
-    priv->microcodeVersion = virHostCPUGetMicrocodeVersion();
-
-    for (i = 0; i < G_N_ELEMENTS(binaryFilters); i++) {
-        for (j = 0; j < G_N_ELEMENTS(archs); j++) {
-            struct virQEMUCapsSearchData data = {
-                .arch = archs[j],
-                .binaryFilter = binaryFilters[i],
-            };
-
-            ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
-            if (ret)
-                goto done;
-        }
-    }
-
-    virReportError(VIR_ERR_INVALID_ARG,
-                   _("unable to find any emulator to serve '%s' "
-                     "architecture"), virArchToString(arch));
-
- done:
-    VIR_DEBUG("Returning caps %p for arch %s", ret, virArchToString(arch));
-
-    return ret;
-}
-
-
 /**
  * virQEMUCapsCacheLookupDefault:
  * @cache: QEMU capabilities cache
@@ -5735,8 +5700,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
     virArch hostarch = virArchFromHost();
     virArch arch = hostarch;
     virDomainVirtType capsType;
-    virQEMUCapsPtr qemuCaps = NULL;
-    virQEMUCapsPtr ret = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
     virArch arch_from_caps;
     g_autofree char *probedbinary = NULL;
 
@@ -5744,23 +5708,29 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
         (virttype = virDomainVirtTypeFromString(virttypeStr)) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown virttype: %s"), virttypeStr);
-        goto cleanup;
+        return NULL;
     }
 
     if (archStr &&
         (arch = virArchFromString(archStr)) == VIR_ARCH_NONE) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown architecture: %s"), archStr);
-        goto cleanup;
+        return NULL;
     }
 
     if (!binary) {
         probedbinary = virQEMUCapsGetDefaultEmulator(hostarch, arch);
         binary = probedbinary;
     }
+    if (!binary) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unable to find any emulator to serve '%s' architecture"),
+                       archStr);
+        return NULL;
+    }
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(cache, binary)))
-        goto cleanup;
+        return NULL;
 
     arch_from_caps = virQEMUCapsGetArch(qemuCaps);
 
@@ -5774,7 +5744,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
                          "match given architecture '%s'"),
                        virArchToString(arch_from_caps),
                        virArchToString(arch));
-        goto cleanup;
+        return NULL;
     }
 
     capsType = virQEMUCapsGetVirtType(qemuCaps);
@@ -5786,7 +5756,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("KVM is not supported by '%s' on this host"),
                        binary);
-        goto cleanup;
+        return NULL;
     }
 
     if (machine) {
@@ -5797,7 +5767,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("the machine '%s' is not supported by emulator '%s'"),
                            machine, binary);
-            goto cleanup;
+            return NULL;
         }
     } else {
         machine = virQEMUCapsGetPreferredMachine(qemuCaps, virttype);
@@ -5810,11 +5780,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
     if (retMachine)
         *retMachine = machine;
 
-    ret = g_steal_pointer(&qemuCaps);
-
- cleanup:
-    virObjectUnref(qemuCaps);
-    return ret;
+    return g_steal_pointer(&qemuCaps);
 }
 
 bool
@@ -5976,14 +5942,14 @@ virQEMUCapsFillDomainCPUCaps(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
                                       VIR_CPU_MODE_CUSTOM,
                                       domCaps->machine)) {
-        const char *blacklist[] = { "host", NULL };
+        const char *forbidden[] = { "host", NULL };
         VIR_AUTOSTRINGLIST models = NULL;
 
         if (virCPUGetModels(domCaps->arch, &models) >= 0) {
             domCaps->cpu.custom = virQEMUCapsGetCPUModels(qemuCaps,
                                                           domCaps->virttype,
                                                           (const char **)models,
-                                                          blacklist);
+                                                          forbidden);
         } else {
             domCaps->cpu.custom = NULL;
         }

@@ -1633,20 +1633,20 @@ xenFormatSxprChr(virDomainChrDefPtr def,
 static int
 xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
     int ret;
 
     if (serial) {
         ret = xenFormatSxprChr(serial, &buf);
         if (ret < 0)
-            goto cleanup;
+            return -1;
     } else {
         virBufferAddLit(&buf, "none");
     }
 
     if (VIR_ALLOC(val) < 0)
-        goto cleanup;
+        return -1;
 
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
@@ -1659,10 +1659,6 @@ xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
         list->list = val;
 
     return 0;
-
- cleanup:
-    virBufferFreeAndReset(&buf);
-    return -1;
 }
 
 char *
@@ -1694,7 +1690,7 @@ xenFormatNet(virConnectPtr conn,
              int hvm,
              const char *vif_typename)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
@@ -1782,12 +1778,12 @@ xenFormatNet(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_USER:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%s'"),
                        virDomainNetTypeToString(net->type));
-        goto cleanup;
+        return -1;
 
     case VIR_DOMAIN_NET_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainNetType, net->type);
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainNetGetModelString(net)) {
@@ -1811,7 +1807,7 @@ xenFormatNet(virConnectPtr conn,
         virBufferAsprintf(&buf, ",rate=%lluKB/s", net->bandwidth->out->average);
 
     if (VIR_ALLOC(val) < 0)
-        goto cleanup;
+        return -1;
 
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
@@ -1824,10 +1820,6 @@ xenFormatNet(virConnectPtr conn,
         list->list = val;
 
     return 0;
-
- cleanup:
-    virBufferFreeAndReset(&buf);
-    return -1;
 }
 
 
@@ -2034,7 +2026,7 @@ xenFormatCharDev(virConfPtr conf, virDomainDefPtr def,
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (def->nparallels) {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
             char *str;
             int ret;
 
@@ -2052,7 +2044,7 @@ xenFormatCharDev(virConfPtr conf, virDomainDefPtr def,
 
         if (def->nserials) {
             if ((def->nserials == 1) && (def->serials[0]->target.port == 0)) {
-                virBuffer buf = VIR_BUFFER_INITIALIZER;
+                g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
                 char *str;
                 int ret;
 
@@ -2329,7 +2321,7 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
         } else {
             virConfValuePtr vfb, disp;
             char *vfbstr = NULL;
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
             if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
                 virBufferAddLit(&buf, "type=sdl");

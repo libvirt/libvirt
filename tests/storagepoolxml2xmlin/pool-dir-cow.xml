@@ -1,0 +1,10 @@
+<pool type='dir'>
+  <name>vms</name>
+  <uuid>751f8e7e-d2e9-463d-8ffe-d38f5e13a19b</uuid>
+  <features>
+    <cow state="yes"/>
+  </features>
+  <target>
+    <path>/i/cant/believe/its/not/btrfs</path>
+  </target>
+</pool>

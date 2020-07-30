@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
 "PO-Revision-Date: 2015-02-24 06:05+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -1058,6 +1058,9 @@ msgstr "'adapter' and 'address' must be specified for scsi hostdev source"
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "'adapter' must be specified for scsi hostdev source"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1073,6 +1076,9 @@ msgid ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
 msgstr ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
+
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr ""
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "'can-offline' missing in reply of guest-get-vcpus"
@@ -1108,6 +1114,15 @@ msgstr "Virsh command line tool of libvirt %s\n"
 #, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "'online' missing in reply of guest-get-vcpus"
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+
+msgid "'initiator' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
@@ -1220,6 +1235,9 @@ msgstr "fs format %s is not supported"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' is only valid for 'file' type volume"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr ""
 
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
@@ -1677,6 +1695,9 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "After dumping core, failed to resume domain '%d' with libxenlight"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr ""
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "All identities provided by the SSH Agent were rejected"
 
@@ -1739,6 +1760,9 @@ msgstr "Arguments must be non null"
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "At least one NUMA node has to have CPUs"
 msgstr ""
 
 #, fuzzy
@@ -1821,11 +1845,10 @@ msgstr "Attempt to send an asynchronous message with a synchronous reply"
 msgid "Attempted double use of PCI Address %s"
 msgstr "Attempted double use of PCI Address %s"
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
-msgstr "Attempted to NAT '%s'. NAT is only supported for IPv4."
-
 msgid "Attempting to use unknown stub driver"
+msgstr ""
+
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -2253,6 +2276,10 @@ msgstr "The QEMU executable %s does not support TPM backend type %s"
 #, fuzzy, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr "The QEMU executable %s does not support TPM backend type %s"
+
+#, c-format
+msgid "Cache level '%u' already defined"
+msgstr ""
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3178,9 +3205,9 @@ msgstr "Cannot rename interface '%s' to '%s' on this platform"
 msgid "Cannot resize the max memory on an active domain"
 msgstr "cannot resize the maximum memory on an active domain"
 
-#, fuzzy, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "Cannot parse socket address '%s': %s"
+#, c-format
+msgid "Cannot resolve %s address: %s"
+msgstr ""
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "Cannot run interactive console without a controlling TTY"
@@ -5758,6 +5785,9 @@ msgstr ""
 msgid "Duplicate hash table key '%s'"
 msgstr ""
 
+msgid "Duplicate info for NUMA latencies"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Duplicate security driver %s"
 msgstr "Cannot find security driver '%s'"
@@ -5809,11 +5839,6 @@ msgstr "Edit the domain snapshot XML for a named snapshot"
 #, fuzzy
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "'adapter' and 'address' must be specified for scsi hostdev source"
-
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr ""
 
 msgid "Eject the media"
 msgstr "Eject the media"
@@ -5985,8 +6010,8 @@ msgid "Escape character is %s"
 msgstr "cannot find character device %s"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "Ethernet controller index %d out of [0..3] range"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr ""
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6287,6 +6312,9 @@ msgstr "cannot create pipe for tunnelled migration"
 
 msgid "Failed"
 msgstr "Failed"
+
+msgid "Failed disable mount propagation out of the root filesystem"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed new node mode for target '%s'"
@@ -6655,6 +6683,10 @@ msgstr "Failed to create bind target %s"
 #, fuzzy, c-format
 msgid "Failed to create checkpoint dir %s"
 msgstr "Failed to create domain from %s"
+
+#, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr ""
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -7048,10 +7080,6 @@ msgstr "Failed to parse mode '%s'"
 msgid "Failed to find parent device for %s"
 msgstr "Failed to find parent device for %s"
 
-#, c-format
-msgid "Failed to find path for %s binary"
-msgstr "Failed to find path for %s binary"
-
 #, fuzzy, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr "Failed to bind cgroup '%s' on '%s'"
@@ -7087,8 +7115,8 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "Failed to format new xml document for bridge %s"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
-msgstr "Failed to format new xml document for un-enslaved interface %s"
+msgid "Failed to format new xml document for detached interface %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to fully read directory %s"
@@ -7180,10 +7208,6 @@ msgstr "Failed to get domain state"
 
 msgid "Failed to get domain's UUID"
 msgstr "Failed to get domain's UUID"
-
-#, fuzzy
-msgid "Failed to get fs flags"
-msgstr "failed to get sysinfo"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8095,10 +8119,6 @@ msgstr "Failed to delete snapshot %s"
 msgid "Failed to set %s for %s: value too large"
 msgstr "Failed to set %s for %s: value too large"
 
-#, fuzzy
-msgid "Failed to set NOCOW flag"
-msgstr "Failed to get PCI SYSFS file"
-
 #, fuzzy, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "Failed to initialise TLS session: %s"
@@ -8161,20 +8181,20 @@ msgstr "Failed to set memory for domain"
 msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr "Failed to set memory for domain '%d' with libxenlight"
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+
 msgid "Failed to set new domain description"
 msgstr "Failed to set new domain description"
 
 #, fuzzy
 msgid "Failed to set new domain title"
 msgstr "Failed to get domain state"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr "Failed to set new slave interface name to '%s' in xml document"
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr "Failed to set new slave interface type to '%s' in xml document"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Failed to set non-blocking file descriptor flag"
@@ -8299,9 +8319,6 @@ msgstr "Failed to suspend domain %s"
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "Failed to suspend domain '%d' with libxenlight"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr "Failed to switch root mount into slave mode"
 
 #, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8574,6 +8591,12 @@ msgid "Finished after guest request"
 msgstr ""
 
 msgid "Finished after host request"
+msgstr ""
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr ""
+
+msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 
 msgid ""
@@ -8884,6 +8907,9 @@ msgstr "Guest agent is not responding: %s"
 
 msgid "Guest agent not available for now"
 msgstr "Guest agent not available for now"
+
+msgid "HMAT is not supported with this QEMU"
+msgstr ""
 
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
@@ -9401,6 +9427,9 @@ msgstr "Invalid mode attribute '%s'"
 msgid "Invalid %s image format specified in configuration file"
 msgstr "failed to parse configuration file"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "Invalid cpuNum in %s"
@@ -9417,13 +9446,29 @@ msgstr "Invalid mode attribute '%s'"
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "Missing 'end' attribute in dhcp range for network '%s'"
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "invalid translation value '%s'"
 
+#, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "Invalid memory core dump attribute value '%s'"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr ""
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr ""
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9664,9 +9709,17 @@ msgstr "Invalid bus type '%s' for floppy disk"
 msgid "Invalid busNr '%s' in PCI controller"
 msgstr "Invalid address '%s' in network '%s'"
 
+#, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid cache id '%s'"
 msgstr "Invalid cpuNum in %s"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -9872,6 +9925,9 @@ msgstr "Invalid file descriptor while waiting for monitor"
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr "Invalid file descriptor while waiting for monitor"
 
+msgid "Invalid firmware name"
+msgstr ""
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "Invalid floppy device name: %s"
@@ -9934,6 +9990,10 @@ msgstr "Invalid ip address prefix value"
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Invalid ipv6 setting '%s' in network '%s'"
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid job flags"
@@ -10397,6 +10457,10 @@ msgid "Invalid value for timeout"
 msgstr "Invalid value for timeout"
 
 #, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "Invalid value of %d for I/O weight"
 
@@ -10541,6 +10605,9 @@ msgstr "Libvirt"
 #, fuzzy, c-format
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "Disk device '%s' does not support snapshotting"
+
+msgid "Link already defined"
+msgstr ""
 
 msgid "List all manageable clients connected to <server>."
 msgstr ""
@@ -10803,6 +10870,9 @@ msgstr "Cannot set max_clients data in JSON document"
 msgid "Malformed nbd port '%s'"
 msgstr "Malformed nbd port '%s'"
 
+msgid "Malformed output of dmidecode"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed ovs-vsctl output"
 msgstr "malformed octal mode"
@@ -10990,6 +11060,10 @@ msgstr "Metadata:"
 msgid "MethodFault is missing 'type' property"
 msgstr "MethodFault is missing 'type' property"
 
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
+
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "Migrate domain to another host.  Add --live for live migration."
 
@@ -11091,11 +11165,12 @@ msgstr "Missing '%s' property while looking for ManagedEntityStatus"
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "Missing '/' separator in cgroup mount '%s'"
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "Missing 'cores' attribute in CPU topology"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "Missing 'cpus' attribute in NUMA cell"
 
 #, fuzzy
 msgid "Missing 'domname' in JSON document"
@@ -11125,8 +11200,15 @@ msgstr "missing dev attribute in <interface> element"
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "Missing 'cpus' attribute in NUMA cell"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'key' element for lease"
 msgstr "Missing 'key' element for lease"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'link' attribute for NIC"
@@ -11148,6 +11230,10 @@ msgstr "Missing auth field in JSON state document"
 msgid "Missing 'pipefd' in JSON document"
 msgstr "Missing pid data in JSON document"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr ""
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "Missing 'runtime.powerState' property"
 
@@ -11158,11 +11244,17 @@ msgstr "Missing 'sockets' attribute in CPU topology"
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "Missing 'start' attribute in dhcp range for network '%s'"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr ""
+
 msgid "Missing 'target' element for lease"
 msgstr "Missing 'target' element for lease"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "Missing 'threads' attribute in CPU topology"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
@@ -11172,6 +11264,9 @@ msgstr "missing 'state' attribute for HyperV Enlightenment feature '%s'"
 msgid ""
 "Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
 "id %d'"
+msgstr ""
+
+msgid "Missing 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, fuzzy
@@ -11865,10 +11960,6 @@ msgstr "NULL string parameter '%s'"
 msgid "NULL value for field '%s'"
 msgstr "NULL value for field '%s'"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr ""
-
 msgid "NUMA cell number"
 msgstr "NUMA cell number"
 
@@ -11916,6 +12007,9 @@ msgstr "No PCI buses available"
 
 msgid "NUMA node selections to set"
 msgstr "NUMA node selections to set"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr ""
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "NUMA topology defined without NUMA cells"
@@ -12569,6 +12663,10 @@ msgstr "No data supplied for <initarg> element"
 #, c-format
 msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr "No yet handled value '%s' for VMX entry '%s'"
+
+#, c-format
+msgid "No zPCI %s to reserve"
+msgstr ""
 
 #, c-format
 msgid "Node %d:\n"
@@ -14107,8 +14205,8 @@ msgid "S4 state is disabled for this domain"
 msgstr "S4 state is disabled for this domain"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
-msgstr "SASL client identity '%s' not allowed in whitelist"
+msgid "SASL client identity '%s' not allowed by ACL"
+msgstr ""
 
 #, c-format
 msgid "SASL data length %zu too long, max %zu"
@@ -15166,6 +15264,17 @@ msgstr "Ceph usage specified, but name is missing"
 msgid "TLS:"
 msgstr ""
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr ""
+
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "TPM device path %s is invalid"
@@ -15439,6 +15548,11 @@ msgstr "Target disk serial %s does not match source %s"
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "Target disk %s does not match source %s"
 
+#, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr "Target domain name '%s' does not match source '%s'"
@@ -15477,6 +15591,10 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "Target domain SMBIOS mode %s does not match source %s"
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr "Target domain USB redirection filter count %d does not match source %d"
 
@@ -15495,6 +15613,9 @@ msgstr "Target domain console count %zu does not match source %zu"
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr "Target domain controller count %zu does not match source %zu"
+
+msgid "Target domain count of sysinfo does not match source"
+msgstr ""
 
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
@@ -15823,6 +15944,9 @@ msgid "Temporary disk space total:"
 msgstr "Memory total:"
 
 msgid "Temporary disk space use:"
+msgstr ""
+
+msgid "That firmware name is reserved"
 msgstr ""
 
 #, fuzzy
@@ -16159,7 +16283,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "This host is not managed by a vCentre"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
 
 msgid "This type of disk cannot be hot unplugged"
@@ -16591,6 +16715,12 @@ msgid "Unable to access stream for '%s'"
 msgstr "Unable to access stream for '%s'"
 
 #, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+
+#, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "Unable to acquire lock on '%s'"
 
@@ -16986,6 +17116,12 @@ msgstr "Unable to create thread to process command's IO"
 msgid "Unable to create tunnel migration thread"
 msgstr "Unable to create migration thread"
 
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
+
 msgid "Unable to decode header until len is received"
 msgstr "Unable to decode header until len is received"
 
@@ -17191,6 +17327,9 @@ msgstr "Could not find snapshot with name '%s'"
 
 msgid "Unable to force bind to IPv6 only"
 msgstr "Unable to force bind to IPv6 only"
+
+msgid "Unable to format NUMA node cache"
+msgstr ""
 
 msgid "Unable to format SELinux context"
 msgstr "Unable to format SELinux context"
@@ -18302,6 +18441,10 @@ msgstr "Unable to set close-on-exec flag"
 msgid "Unable to set console file descriptor non-blocking"
 msgstr "Unable to set console file descriptor non-blocking"
 
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
+
 msgid "Unable to set interface parameters"
 msgstr "Unable to set interface parameters"
 
@@ -18364,6 +18507,9 @@ msgstr "Unable to split FD list '%s'"
 msgid "Unable to start event thread: %s"
 msgstr "Unable to stat bind target %s"
 
+msgid "Unable to start mediated device"
+msgstr ""
+
 #, c-format
 msgid "Unable to stat %s"
 msgstr "Unable to stat %s"
@@ -18379,6 +18525,9 @@ msgstr "Unable to stat bind target %s"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "Unable to stat %s"
+
+msgid "Unable to stop mediated device"
+msgstr ""
 
 #, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19307,6 +19456,9 @@ msgstr "Unsupported controller model: %s"
 msgid "Unsupported controller type: %s"
 msgstr "Unsupported controller model: %s"
 
+msgid "Unsupported device type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported device type %d"
 msgstr "Unsupported device type '%s'"
@@ -19962,6 +20114,11 @@ msgstr ""
 "a different portgroup entry in network '%s' is already set as the default. "
 "Only one default is allowed."
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+
 #, fuzzy
 msgid "a redefined checkpoint must have a name"
 msgstr "a redefined snapshot must have a name"
@@ -20162,9 +20319,6 @@ msgid "amount of data to upload"
 msgstr "amount of data to upload"
 
 msgid "an <auth> definition already found for disk source"
-msgstr ""
-
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
 msgstr ""
 
 msgid "an <encryption> definition already found for disk source"
@@ -20439,6 +20593,9 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup TLS directory not configured"
+msgstr ""
+
 #, fuzzy
 msgid "backup job"
 msgstr "background job"
@@ -20446,13 +20603,13 @@ msgstr "background job"
 msgid "backup job data missing"
 msgstr ""
 
-#, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "path '%s' is not absolute"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr ""
 
 msgid "bad command"
 msgstr "bad command"
@@ -20521,10 +20678,6 @@ msgstr "Snapshot '%s' already exists"
 #, fuzzy, c-format
 msgid "binding '%s' is already being removed"
 msgstr "Domain '%s' is already running"
-
-#, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
@@ -20826,10 +20979,6 @@ msgstr "info on current snapshot"
 #, fuzzy, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "start cell %d out of range (0-%d)"
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
-msgstr ""
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -21147,6 +21296,9 @@ msgstr "cannot copy from volume to a directory volume"
 msgid "cannot create %s"
 msgstr "cannot create %s"
 
+msgid "cannot create a mediated device without a parent"
+msgstr ""
+
 #, fuzzy
 msgid "cannot create a new stream"
 msgstr "cannot write to stream"
@@ -21257,10 +21409,6 @@ msgstr "cannot decode CPU data for %s architecture"
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "cannot determine filesystem for '%s'"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "cannot disable %s"
 
 msgid "cannot do managed save for transient domain"
 msgstr "cannot do managed save for transient domain"
@@ -22395,7 +22543,7 @@ msgid "cannot write data to file '%s'"
 msgstr "cannot write data to file '%s'"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
 #, fuzzy
@@ -23089,6 +23237,10 @@ msgid "could not find capabilities for %s"
 msgstr "no device capabilities for '%s'"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr ""
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr ""
 
@@ -23208,10 +23360,6 @@ msgid "could not initialize domain event timer"
 msgstr "could not initialise domain event timer"
 
 #, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-
-#, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "could not open VirtualBox session with domain %s"
 
@@ -23296,6 +23444,9 @@ msgstr "could not use Xen hypervisor entry"
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "could not use Xen hypervisor entry %s"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
 
 #, fuzzy
 msgid "couldn't fetch array of leases"
@@ -23403,6 +23554,9 @@ msgstr "couldn't write dnsmasq config file '%s'"
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "couldn't write radvd config file '%s'"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr ""
 
 msgid "cpu affinity is not supported"
 msgstr "cpu affinity is not supported"
@@ -24524,8 +24678,8 @@ msgstr "don't know how to remove a %s device"
 msgid "don't start the bridge immediately"
 msgstr "don't start the bridge immediately"
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
-msgstr "don't start the un-slaved interface immediately (not recommended)"
+msgid "don't start the detached interface immediately (not recommended)"
+msgstr ""
 
 msgid "done"
 msgstr "done"
@@ -25007,9 +25161,9 @@ msgstr ""
 msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr "Failed to autostart storage pool '%s': %s"
 
-#, fuzzy, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
-msgstr "Removed managedsave image for domain %s"
+#, c-format
+msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
@@ -25283,9 +25437,8 @@ msgid ""
 msgstr ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 
-#, fuzzy
-msgid "failed to add susbsystem filter"
-msgstr "failed to close file"
+msgid "failed to add subsystem filter"
+msgstr ""
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -25545,10 +25698,6 @@ msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "Failed to bind cgroup '%s' on '%s'"
 
 #, fuzzy, c-format
 msgid "failed to find disk '%s'"
@@ -26672,6 +26821,9 @@ msgstr ""
 msgid "for hardware virtualization"
 msgstr ""
 
+msgid "for secure guest support"
+msgstr ""
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr "forbidden characters in 'compat' attribute"
 
@@ -26772,6 +26924,9 @@ msgstr "fully-qualified path of disk"
 
 msgid "fuse_loop failed"
 msgstr "fuse_loop failed"
+
+msgid "fw_cfg is not supported with this QEMU"
+msgstr ""
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -27569,6 +27724,10 @@ msgstr "interface name %s does not fit into buffer "
 msgid "interface name or MAC address"
 msgstr "interface name or MAC address"
 
+#, c-format
+msgid "interface not set\n"
+msgstr ""
+
 #, fuzzy
 msgid "interface state driver is not active"
 msgstr "lxc state driver is not active"
@@ -27877,6 +28036,10 @@ msgstr "Unknown protocol '%s'"
 msgid "invalid backing protocol string '%s'"
 msgstr "invalid storage pool pointer in %s"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr ""
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
 
@@ -28135,6 +28298,16 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
+#, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "Got invalid memory size %d"
@@ -28376,6 +28549,10 @@ msgstr "Invalid value '%s' for VMX entry '%s'"
 msgid "invalid statistics collection period"
 msgstr "invalid statistics collection period"
 
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr ""
+
 msgid "invalid storage pool pointer in"
 msgstr "invalid storage pool pointer in"
 
@@ -28527,6 +28704,9 @@ msgstr "discard is not supported by this QEMU binary"
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
 msgstr "vhost-net is only supported for virtio network interfaces"
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
+msgstr ""
 
 #, fuzzy
 msgid "iommu: caching mode is not supported with this QEMU binary"
@@ -28685,9 +28865,6 @@ msgstr "nl_recv failed"
 #, fuzzy, c-format
 msgid "library call failed: %s"
 msgstr "write failed: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr "libselinux does not support LXC contexts path"
 
 #, fuzzy
 msgid "libssh transport error"
@@ -29546,6 +29723,9 @@ msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
+msgid "mdev attribute missing name or value"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -30310,10 +30490,6 @@ msgstr "missing interface information"
 msgid "missing iommuGroup number attribute"
 msgstr "missing iommuGroup number attribute"
 
-#, fuzzy, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "missing iommuGroup number attribute"
-
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "missing interface information"
@@ -30428,6 +30604,10 @@ msgstr "missing operating system information"
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "missing operating system information for %s"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing or invalid CPU cache mode"
@@ -32202,8 +32382,11 @@ msgstr "only a single TPM device is supported"
 msgid "only a single IOMMU device is supported"
 msgstr "only a single TPM device is supported"
 
-msgid "only a single TPM device is supported"
-msgstr "only a single TPM device is supported"
+msgid "only a single TPM Proxy device is supported"
+msgstr ""
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr ""
 
 msgid "only a single memory balloon device is supported"
 msgstr "only a single memory balloon device is supported"
@@ -33370,7 +33553,7 @@ msgstr "size of the vol, as scaled integer (default bytes)"
 msgid "read-only connection"
 msgstr "read-only connection"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 
 #, fuzzy
@@ -33813,9 +33996,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "sanlock error %d"
 msgstr "no error"
-
-msgid "sanlock is too old to support lock failure action"
-msgstr "sanlock is too old to support lock failure action"
 
 #, c-format
 msgid "sasl start reply data too long %d"
@@ -35737,6 +35917,18 @@ msgid "uid and gid should be mapped both"
 msgstr "uid and gid should be mapped both"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr ""
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "unable to access device %s\n"
 
@@ -35785,6 +35977,10 @@ msgstr "unable to close pipe"
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "unable to connect to server at '%s:%s'"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -35851,6 +36047,10 @@ msgstr "unable to execute QEMU command '%s'"
 #, c-format
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "unable to execute QEMU command '%s': %s"
+
+#, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
@@ -36202,9 +36402,6 @@ msgstr "Unable to truncate %s"
 msgid "unable to unload already unloaded profile"
 msgstr "unable to unload already unloaded profile"
 
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to use target path '%s' for dev '%s'"
 msgstr "unable to set AppArmor profile '%s' for '%s'"
@@ -36246,8 +36443,8 @@ msgstr "unbridge a network device"
 msgid "undefine VM on source"
 msgstr "undefine VM on source"
 
-msgid "undefine a bridge device after detaching its slave device"
-msgstr "undefine a bridge device after detaching its slave device"
+msgid "undefine a bridge device after detaching its device(s)"
+msgstr ""
 
 msgid "undefine a domain"
 msgstr "undefine a domain"
@@ -36840,6 +37037,10 @@ msgstr "unknown auth type '%s'"
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "unknown authentication type %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr ""
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -37610,6 +37811,10 @@ msgstr "Unknown value '%s' for <address> 'multifunction' attribute"
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "unknown rule action attribute value"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39109,6 +39314,79 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "Cannot parse socket address '%s': %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "Ethernet controller index %d out of [0..3] range"
+
+#, fuzzy
+#~ msgid "Failed to get fs flags"
+#~ msgstr "failed to get sysinfo"
+
+#, fuzzy
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "Failed to get PCI SYSFS file"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "Missing 'cpus' attribute in NUMA cell"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "cannot disable %s"
+
+#, fuzzy
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "failed to close file"
+
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "libselinux does not support LXC contexts path"
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr "sanlock is too old to support lock failure action"
+
+#~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+#~ msgstr "Attempted to NAT '%s'. NAT is only supported for IPv4."
+
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "Failed to find path for %s binary"
+
+#~ msgid "Failed to format new xml document for un-enslaved interface %s"
+#~ msgstr "Failed to format new xml document for un-enslaved interface %s"
+
+#~ msgid "Failed to set new slave interface name to '%s' in xml document"
+#~ msgstr "Failed to set new slave interface name to '%s' in xml document"
+
+#~ msgid "Failed to set new slave interface type to '%s' in xml document"
+#~ msgstr "Failed to set new slave interface type to '%s' in xml document"
+
+#~ msgid "Failed to switch root mount into slave mode"
+#~ msgstr "Failed to switch root mount into slave mode"
+
+#~ msgid "SASL client identity '%s' not allowed in whitelist"
+#~ msgstr "SASL client identity '%s' not allowed in whitelist"
+
+#~ msgid "don't start the un-slaved interface immediately (not recommended)"
+#~ msgstr "don't start the un-slaved interface immediately (not recommended)"
+
+#, fuzzy
+#~ msgid "event 'metdata-change' for domain %s: %s %s\n"
+#~ msgstr "Removed managedsave image for domain %s"
+
+#, fuzzy
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "Failed to bind cgroup '%s' on '%s'"
+
+#, fuzzy
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "missing iommuGroup number attribute"
+
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "only a single TPM device is supported"
+
+#~ msgid "undefine a bridge device after detaching its slave device"
+#~ msgstr "undefine a bridge device after detaching its slave device"
 
 #~ msgid "Attempt to close netcf state driver with open connections"
 #~ msgstr "Attempt to close netcf state driver with open connections"

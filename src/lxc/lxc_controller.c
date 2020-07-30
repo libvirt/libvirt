@@ -1378,15 +1378,14 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
                                int num,
                                char *path)
 {
-    virBuffer map_value = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) map_value = VIR_BUFFER_INITIALIZER;
     size_t i;
-    int ret = -1;
 
     /* The kernel supports up to 340 lines in /proc/<pid>/{g,u}id_map */
     if (num > 340) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Too many id mappings defined."));
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < num; i++)
@@ -1397,13 +1396,10 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
 
     if (virFileWriteStr(path, virBufferCurrentContent(&map_value), 0) < 0) {
         virReportSystemError(errno, _("unable write to %s"), path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    virBufferFreeAndReset(&map_value);
-    return ret;
+    return 0;
 }
 
 /**
@@ -2054,25 +2050,25 @@ static int lxcSetPersonality(virDomainDefPtr def)
 }
 
 /* Create a private tty using the private devpts at PTMX, returning
- * the master in *TTYMASTER and the name of the slave, _from the
+ * the primary in @ttyprimary and the name of the secondary, _from the
  * perspective of the guest after remounting file systems_, in
- * *TTYNAME.  Heavily borrowed from glibc, but doesn't require that
+ * @ttyName.  Heavily borrowed from glibc, but doesn't require that
  * devpts == "/dev/pts" */
 static int
-lxcCreateTty(virLXCControllerPtr ctrl, int *ttymaster,
+lxcCreateTty(virLXCControllerPtr ctrl, int *ttyprimary,
              char **ttyName, char **ttyHostPath)
 {
     int ret = -1;
     int ptyno;
     int unlock = 0;
 
-    if ((*ttymaster = open(ctrl->devptmx, O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
+    if ((*ttyprimary = open(ctrl->devptmx, O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
         goto cleanup;
 
-    if (ioctl(*ttymaster, TIOCSPTLCK, &unlock) < 0)
+    if (ioctl(*ttyprimary, TIOCSPTLCK, &unlock) < 0)
         goto cleanup;
 
-    if (ioctl(*ttymaster, TIOCGPTN, &ptyno) < 0)
+    if (ioctl(*ttyprimary, TIOCGPTN, &ptyno) < 0)
         goto cleanup;
 
     /* If mount() succeeded at honoring newinstance, then the kernel
@@ -2088,7 +2084,7 @@ lxcCreateTty(virLXCControllerPtr ctrl, int *ttymaster,
 
  cleanup:
     if (ret != 0) {
-        VIR_FORCE_CLOSE(*ttymaster);
+        VIR_FORCE_CLOSE(*ttyprimary);
         g_free(*ttyName);
         *ttyName = NULL;
     }
@@ -2116,9 +2112,9 @@ virLXCControllerSetupPrivateNS(void)
      *
      * Thus we call unshare(CLONE_NS) so that we can see
      * the guest's new /dev/pts, without it becoming
-     * visible to the host OS. We also put the root FS
-     * into slave mode, just in case it was currently
-     * marked as shared
+     * visible to the host OS. We also disable mount
+     * propagation out of the root FS, in case it was
+     * currently allowing bi-directional propagation.
      */
 
     return virProcessSetupPrivateMountNS();

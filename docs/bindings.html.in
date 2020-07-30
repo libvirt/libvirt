@@ -16,7 +16,7 @@
       </li>
      <li>
         <strong>Go</strong>: Daniel Berrange develops
-        <a href="https://godoc.org/github.com/libvirt/libvirt-go">Go bindings</a>.
+        <a href="https://pkg.go.dev/libvirt.org/libvirt-go">Go bindings</a>.
       </li>
       <li>
         <strong>Java</strong>: Daniel Veillard develops

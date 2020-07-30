@@ -141,16 +141,49 @@ static int virNetSocketForkDaemon(const char *binary)
 }
 #endif
 
-int virNetSocketCheckProtocols(bool *hasIPv4,
-                               bool *hasIPv6)
+
+static int G_GNUC_UNUSED
+virNetSocketCheckProtocolByLookup(const char *address,
+                                  int family,
+                                  bool *hasFamily)
 {
-#ifdef HAVE_IFADDRS_H
-    struct ifaddrs *ifaddr = NULL, *ifa;
     struct addrinfo hints;
     struct addrinfo *ai = NULL;
     int gaierr;
 
     memset(&hints, 0, sizeof(hints));
+    hints.ai_family = family;
+    hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
+    hints.ai_socktype = SOCK_STREAM;
+
+    if ((gaierr = getaddrinfo(address, NULL, &hints, &ai)) != 0) {
+        *hasFamily = false;
+
+        if (gaierr == EAI_FAMILY ||
+#ifdef EAI_ADDRFAMILY
+            gaierr == EAI_ADDRFAMILY ||
+#endif
+            gaierr == EAI_NONAME) {
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot resolve %s address: %s"),
+                           address,
+                           gai_strerror(gaierr));
+            return -1;
+        }
+    } else {
+        *hasFamily = true;
+    }
+
+    freeaddrinfo(ai);
+    return 0;
+}
+
+int virNetSocketCheckProtocols(bool *hasIPv4,
+                               bool *hasIPv6)
+{
+#ifdef HAVE_IFADDRS_H
+    struct ifaddrs *ifaddr = NULL, *ifa;
 
     *hasIPv4 = *hasIPv6 = false;
 
@@ -172,26 +205,13 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
 
     freeifaddrs(ifaddr);
 
-    hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
-    hints.ai_family = AF_INET6;
-    hints.ai_socktype = SOCK_STREAM;
+    if (*hasIPv4 &&
+        virNetSocketCheckProtocolByLookup("127.0.0.1", AF_INET, hasIPv4) < 0)
+        return -1;
 
-    if ((gaierr = getaddrinfo("::1", NULL, &hints, &ai)) != 0) {
-        if (gaierr == EAI_FAMILY ||
-# ifdef EAI_ADDRFAMILY
-            gaierr == EAI_ADDRFAMILY ||
-# endif
-            gaierr == EAI_NONAME) {
-            *hasIPv6 = false;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot resolve ::1 address: %s"),
-                           gai_strerror(gaierr));
-            return -1;
-        }
-    }
-
-    freeaddrinfo(ai);
+    if (*hasIPv6 &&
+        virNetSocketCheckProtocolByLookup("::1", AF_INET6, hasIPv6) < 0)
+        return -1;
 
     VIR_DEBUG("Protocols: v4 %d v6 %d", *hasIPv4, *hasIPv6);
 
@@ -849,7 +869,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
 {
     char *quoted;
     virCommandPtr cmd;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     *retsock = NULL;
 
@@ -1593,7 +1613,7 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock G_GNUC_UNUSED,
 int virNetSocketGetSELinuxContext(virNetSocketPtr sock,
                                   char **context)
 {
-    security_context_t seccon = NULL;
+    char *seccon = NULL;
     int ret = -1;
 
     *context = NULL;

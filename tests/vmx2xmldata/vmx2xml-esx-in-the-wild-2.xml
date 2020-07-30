@@ -48,7 +48,7 @@
     <controller type='fdc' index='0'/>
     <controller type='ide' index='0'/>
     <interface type='bridge'>
-      <mac address='00:0c:29:3c:98:3e'/>
+      <mac address='00:0c:29:3c:98:3e' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vlance'/>
     </interface>

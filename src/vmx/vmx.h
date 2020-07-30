@@ -131,7 +131,7 @@ int virVMXFormatFileSystem(virDomainFSDefPtr def, int number,
                            virBufferPtr buffer);
 
 int virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
-                         virBufferPtr buffer);
+                         virBufferPtr buffer, int virtualHW_version);
 
 int virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
                        virBufferPtr buffer);

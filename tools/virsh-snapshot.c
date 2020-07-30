@@ -395,7 +395,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     const char *desc = NULL;
     const char *memspec = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned int flags = VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE;
     const vshCmdOpt *opt = NULL;
 
@@ -456,7 +456,6 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     ret = virshSnapshotCreate(ctl, dom, buffer, flags, NULL);
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     VIR_FREE(buffer);
     virshDomainFree(dom);
 

@@ -689,7 +689,7 @@ vshCmddefHelp(vshControl *ctl, const vshCmdDef *def)
     fputc('\n', stdout);
 
     desc = vshCmddefGetInfo(def, "desc");
-    if (*desc) {
+    if (desc && *desc) {
         /* Print the description only if it's not empty.  */
         fputs(_("\n  DESCRIPTION\n"), stdout);
         fprintf(stdout, "    %s\n", _(desc));
@@ -2183,7 +2183,7 @@ void
 vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
                  va_list ap)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *str = NULL;
     size_t len;
     const char *lvl = "";
@@ -2241,7 +2241,6 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
  error:
     vshCloseLogFile(ctl);
     vshError(ctl, "%s", _("failed to write the log file"));
-    virBufferFreeAndReset(&buf);
     VIR_FREE(str);
 }
 
@@ -2531,13 +2530,12 @@ vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
              int num_devices, int devid)
 {
     int ret;
-    virBuffer indent = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) indent = VIR_BUFFER_INITIALIZER;
 
     ret = vshTreePrintInternal(ctl, lookup, opaque, num_devices,
                                devid, devid, true, &indent);
     if (ret < 0)
         vshError(ctl, "%s", _("Failed to complete tree listing"));
-    virBufferFreeAndReset(&indent);
     return ret;
 }
 
@@ -2806,7 +2804,7 @@ vshReadlineParse(const char *text, int state)
 
     if (ret &&
         !rl_completion_quote_character) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         virBufferEscapeShell(&buf, ret);
         VIR_FREE(ret);
         ret = virBufferContentAndReset(&buf);
@@ -3217,7 +3215,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     int count = 0;
     const vshCmdOpt *opt = NULL;
     char *arg;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (vshCommandOptBool(cmd, "shell"))
         shell = true;
@@ -3228,7 +3226,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
         char *str;
-        virBuffer xmlbuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) xmlbuf = VIR_BUFFER_INITIALIZER;
 
         arg = opt->data;
 
@@ -3366,7 +3364,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
     const char *arg = "";
     const vshCmdOpt *opt = NULL;
     char **matches = NULL, **iter;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (vshCommandOptStringQuiet(ctl, cmd, "string", &arg) <= 0)
         goto cleanup;
@@ -3406,7 +3404,6 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virBufferFreeAndReset(&buf);
     virStringListFree(matches);
     return ret;
 }

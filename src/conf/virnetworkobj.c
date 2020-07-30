@@ -815,12 +815,12 @@ virNetworkObjFormat(virNetworkObjPtr obj,
                     virNetworkXMLOptionPtr xmlopt,
                     unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *classIdStr = virBitmapFormat(obj->classIdMap);
     size_t i;
 
     if (!classIdStr)
-        goto error;
+        return NULL;
 
     virBufferAddLit(&buf, "<networkstatus>\n");
     virBufferAdjustIndent(&buf, 2);
@@ -835,16 +835,12 @@ virNetworkObjFormat(virNetworkObjPtr obj,
     }
 
     if (virNetworkDefFormatBuf(&buf, obj->def, xmlopt, flags) < 0)
-        goto error;
+        return NULL;
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</networkstatus>");
 
     return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 

@@ -515,7 +515,7 @@ virNetDevTapAttachBridge(const char *tapname,
      * the bridge, or if it is smaller than the current MTU of the
      * bridge). If MTU isn't specified for the new device (i.e. 0),
      * we need to set the interface MTU to the current MTU of the
-     * bridge (to avoid inadvertantly changing the bridge's MTU).
+     * bridge (to avoid inadvertently changing the bridge's MTU).
      */
     if (mtu > 0) {
         if (virNetDevSetMTU(tapname, mtu) < 0)

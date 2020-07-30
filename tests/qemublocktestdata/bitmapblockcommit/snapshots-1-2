@@ -1,13 +1,3 @@
-pre job bitmap disable:
-[
-  {
-    "type": "block-dirty-bitmap-disable",
-    "data": {
-      "node": "libvirt-2-format",
-      "name": "d"
-    }
-  }
-]
 merge bitmpas:
 [
   {
@@ -29,6 +19,61 @@ merge bitmpas:
         {
           "node": "libvirt-1-format",
           "name": "current"
+        },
+        {
+          "node": "libvirt-2-format",
+          "name": "libvirt-tmp-activewrite"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-2-format",
+      "target": "c",
+      "bitmaps": [
+        {
+          "node": "libvirt-1-format",
+          "name": "c"
+        },
+        {
+          "node": "libvirt-2-format",
+          "name": "libvirt-tmp-activewrite"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-2-format",
+      "target": "b",
+      "bitmaps": [
+        {
+          "node": "libvirt-1-format",
+          "name": "b"
+        },
+        {
+          "node": "libvirt-2-format",
+          "name": "libvirt-tmp-activewrite"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-2-format",
+      "target": "a",
+      "bitmaps": [
+        {
+          "node": "libvirt-1-format",
+          "name": "a"
+        },
+        {
+          "node": "libvirt-2-format",
+          "name": "libvirt-tmp-activewrite"
         }
       ]
     }
@@ -42,8 +87,19 @@ merge bitmpas:
         {
           "node": "libvirt-1-format",
           "name": "d"
+        },
+        {
+          "node": "libvirt-2-format",
+          "name": "libvirt-tmp-activewrite"
         }
       ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-2-format",
+      "name": "libvirt-tmp-activewrite"
     }
   }
 ]

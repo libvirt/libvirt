@@ -16,7 +16,7 @@ dnl You should have received a copy of the GNU Lesser General Public
 dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
-AC_INIT([libvirt], [6.5.0], [libvir-list@redhat.com], [], [https://libvirt.org])
+AC_INIT([libvirt], [6.6.0], [libvir-list@redhat.com], [], [https://libvirt.org])
 
 if test $srcdir = "."
 then
@@ -155,8 +155,6 @@ AC_TYPE_UID_T
 dnl Support building Win32 DLLs (must appear *before* AM_PROG_LIBTOOL)
 AC_LIBTOOL_WIN32_DLL
 
-AC_HEADER_MAJOR
-
 m4_ifndef([LT_INIT], [
   AM_PROG_LIBTOOL
 ], [
@@ -188,6 +186,19 @@ case "$host" in
 esac
 AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
 AC_SUBST([VERSION_SCRIPT_FLAGS])
+
+dnl macOS has two-level namespaces by default.
+dnl Override it to allow symbol replacement with DYLD_INSERT_LIBRARIES
+case "$host" in
+  *-*-darwin*)
+    FLAT_NAMESPACE_FLAGS=-Wl,-flat_namespace
+    ;;
+  * )
+    FLAT_NAMESPACE_FLAGS=""
+    ;;
+esac
+AC_MSG_RESULT([$FLAT_NAMESPACE_FLAGS])
+AC_SUBST([FLAT_NAMESPACE_FLAGS])
 
 dnl Specify if we rely on ifconfig instead of iproute2 (e.g. in case
 dnl we're working on BSD)
@@ -345,7 +356,9 @@ AC_CHECK_SIZEOF([long])
 dnl Availability of various common functions (non-fatal if missing),
 dnl and various less common threadsafe functions
 AC_CHECK_FUNCS_ONCE([\
+  elf_aux_info \
   fallocate \
+  getauxval \
   getegid \
   geteuid \
   getgid \
@@ -374,6 +387,7 @@ AC_CHECK_FUNCS_ONCE([\
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([\
+  asm/hwcap.h \
   ifaddrs.h \
   libtasn1.h \
   util.h \
@@ -381,7 +395,6 @@ AC_CHECK_HEADERS([\
   linux/magic.h \
   mntent.h \
   net/ethernet.h \
-  net/if.h \
   pty.h \
   pwd.h \
   stdarg.h \
@@ -393,6 +406,7 @@ AC_CHECK_HEADERS([\
   sys/ucred.h \
   xlocale.h \
   ])
+AC_CHECK_HEADERS([net/if.h], [], [], [[#include <sys/socket.h>]])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
 AC_CHECK_FUNCS([stat stat64 __xstat __xstat64 lstat lstat64 __lxstat __lxstat64])
@@ -856,17 +870,6 @@ if test $with_freebsd = yes; then
                   [AC_MSG_ERROR([BSD kernel memory interface library is required to build on FreeBSD])]
                  )
 fi
-
-# FreeBSD 10-STABLE requires _IFI_OQDROPS to be defined for if_data.ifi_oqdrops
-# field be available
-old_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS -D_IFI_OQDROPS"
-
-AC_CHECK_MEMBERS([struct if_data.ifi_oqdrops],
-		 [],
-		 [CFLAGS="$old_CFLAGS"],
-		 [#include <net/if.h>
-		 ])
 
 AC_CHECK_DECLS([clock_serv_t, host_get_clock_service, clock_get_time],
                [AC_DEFINE([HAVE_MACH_CLOCK_ROUTINES],

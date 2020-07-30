@@ -18,16 +18,16 @@
 
 #pragma once
 
-#ifdef HAVE_NET_IF_H
-# include <net/if.h>
-#endif
-
 #include "virbitmap.h"
 #include "virsocketaddr.h"
 #include "virmacaddr.h"
 #include "virpci.h"
 #include "virnetdevvlan.h"
 #include "virenum.h"
+
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
+#endif
 
 #ifdef HAVE_STRUCT_IFREQ
 typedef struct ifreq virIfreq;

@@ -1931,7 +1931,7 @@ void *remoteClientNew(virNetServerClientPtr client,
  * stateless ones inside libvirt.so). All the interesting
  * drivers are in separate daemons. Thus when we get a NULL
  * URI we need to simulate probing that virConnectOpen would
- * previously do. We use the existance of the UNIX domain
+ * previously do. We use the existence of the UNIX domain
  * socket as our hook for probing.
  *
  * This assumes no stale sockets left over from a now dead
@@ -3861,7 +3861,7 @@ remoteDispatchAuthSaslStart(virNetServerPtr server,
     if (err == VIR_NET_SASL_CONTINUE) {
         ret->complete = 0;
     } else {
-        /* Check username whitelist ACL */
+        /* Check username ACL */
         if ((err = remoteSASLFinish(server, client)) < 0) {
             if (err == -2)
                 goto authdeny;
@@ -3957,7 +3957,7 @@ remoteDispatchAuthSaslStep(virNetServerPtr server,
     if (err == VIR_NET_SASL_CONTINUE) {
         ret->complete = 0;
     } else {
-        /* Check username whitelist ACL */
+        /* Check username ACL */
         if ((err = remoteSASLFinish(server, client)) < 0) {
             if (err == -2)
                 goto authdeny;

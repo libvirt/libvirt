@@ -324,12 +324,10 @@ virNetworkPortDefParseFile(const char *filename)
 char *
 virNetworkPortDefFormat(const virNetworkPortDef *def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (virNetworkPortDefFormatBuf(&buf, def) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virNetworkPortDefFormatBuf(&buf, def) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }

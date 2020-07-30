@@ -24,7 +24,7 @@ module Libvirtd_bhyve =
 
    let log_entry = str_entry "firmware_dir"
 
-   (* Each enty in the config is one of the following three ... *)
+   (* Each entry in the config is one of the following three ... *)
    let entry = log_entry
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]

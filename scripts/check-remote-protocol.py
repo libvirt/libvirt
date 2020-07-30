@@ -32,9 +32,8 @@ import subprocess
 import sys
 
 cc = sys.argv[1]
-objext = sys.argv[2]
-proto_lo = sys.argv[3]
-expected = sys.argv[4]
+proto_lo = sys.argv[2]
+expected = sys.argv[3]
 
 proto_lo = proto_lo.replace("/", "/.libs/")
 

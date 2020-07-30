@@ -67,6 +67,12 @@ typedef int (*virSecurityDomainSetHostdevLabel) (virSecurityManagerPtr mgr,
                                                  virDomainDefPtr def,
                                                  virDomainHostdevDefPtr dev,
                                                  const char *vroot);
+typedef int (*virSecurityDomainSetSavedStateLabel) (virSecurityManagerPtr mgr,
+                                                    virDomainDefPtr def,
+                                                    const char *savefile);
+typedef int (*virSecurityDomainRestoreSavedStateLabel) (virSecurityManagerPtr mgr,
+                                                        virDomainDefPtr def,
+                                                        const char *savefile);
 typedef int (*virSecurityDomainGenLabel) (virSecurityManagerPtr mgr,
                                           virDomainDefPtr sec);
 typedef int (*virSecurityDomainReserveLabel) (virSecurityManagerPtr mgr,
@@ -76,7 +82,7 @@ typedef int (*virSecurityDomainReleaseLabel) (virSecurityManagerPtr mgr,
                                               virDomainDefPtr sec);
 typedef int (*virSecurityDomainSetAllLabel) (virSecurityManagerPtr mgr,
                                              virDomainDefPtr sec,
-                                             const char *stdin_path,
+                                             const char *incomingPath,
                                              bool chardevStdioLogd,
                                              bool migrated);
 typedef int (*virSecurityDomainRestoreAllLabel) (virSecurityManagerPtr mgr,
@@ -199,6 +205,9 @@ struct _virSecurityDriver {
 
     virSecurityDomainSetHostdevLabel domainSetSecurityHostdevLabel;
     virSecurityDomainRestoreHostdevLabel domainRestoreSecurityHostdevLabel;
+
+    virSecurityDomainSetSavedStateLabel domainSetSavedStateLabel;
+    virSecurityDomainRestoreSavedStateLabel domainRestoreSavedStateLabel;
 
     virSecurityDomainSetImageFDLabel domainSetSecurityImageFDLabel;
     virSecurityDomainSetTapFDLabel domainSetSecurityTapFDLabel;

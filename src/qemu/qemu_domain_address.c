@@ -268,10 +268,13 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
             return -1;
     }
 
-    if (def->tpm) {
-        if (qemuDomainIsPSeries(def))
-            def->tpm->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
-        if (qemuDomainAssignSpaprVIOAddress(def, &def->tpm->info,
+    for (i = 0; i < def->ntpms; i++) {
+        virDomainTPMDefPtr tpm = def->tpms[i];
+
+        if (tpm->model != VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY &&
+            qemuDomainIsPSeries(def))
+            tpm->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
+        if (qemuDomainAssignSpaprVIOAddress(def, &tpm->info,
                                             VIO_ADDR_TPM) < 0)
             return -1;
     }
@@ -732,6 +735,14 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             return pciFlags;
 
         if (net->model == VIR_DOMAIN_NET_MODEL_E1000E)
+            return pcieFlags;
+
+        /* the only time model can be "unknown" is for type='hostdev'
+         * or for type='network' where the network is a pool of
+         * hostdev devices. These will always be pcie on the host, and
+         * should be pcie in the guest if it supports pcie.
+         */
+        if (net->model == VIR_DOMAIN_NET_MODEL_UNKNOWN)
             return pcieFlags;
 
         return pciFlags;
@@ -2569,7 +2580,7 @@ qemuDomainAddressFindNewBusNr(virDomainDefPtr def)
      *  never need any additional child buses (probably only a few of the
      *  32 will ever be used). So for pci-expander-bus we find the lowest
      *  existing busNr, and set this one to the current lowest - 2 (one
-     *  for the pxb, one for the intergrated pci-bridge), thus leaving the
+     *  for the pxb, one for the integrated pci-bridge), thus leaving the
      *  maximum possible bus numbers available for other buses plugged
      *  into pci-root (i.e. pci-bridges and other
      *  pci-expander-buses). Anyone who needs more than 32 devices

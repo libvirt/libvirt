@@ -1,10 +1,11 @@
 <domainbackup mode='push'>
   <incremental>1525889631</incremental>
   <disks>
-    <disk name='vda' backup='yes' type='file'>
+    <disk name='vda' backup='yes' type='file' backupmode='incremental' incremental='1525889631'>
       <driver type='raw'/>
       <target file='/path/to/file'/>
     </disk>
     <disk name='hda' backup='no'/>
+    <disk name='vdextradisk' backup='no'/>
   </disks>
 </domainbackup>

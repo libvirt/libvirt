@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.7b-dev -->
+<!-- CreationDate: 2020-07-10 10:25:31 -->
+<!-- Magnification: 1 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="402pt" height="134pt"
+	viewBox="1188 1188 6699 2220">
+<g fill="none">
+<!-- Line -->
+<rect x="2775" y="2400" width="900" height="450"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="2925" y="2700" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">libvirtd</text>
+<!-- Line -->
+<rect x="5400" y="2400" width="900" height="450"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="5550" y="2700" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">libvirtd</text>
+<!-- Line -->
+<defs>
+<clipPath id="cp0">
+	<path clip-rule="evenodd" d="M 1188,1188 H 7887 V 3408 H 1188 z
+		M 3443,2209 3308,2209 3357,2418 3393,2418z"/>
+</clipPath>
+</defs>
+<polyline points=" 3375,1950 3375,2400" clip-path="url(#cp0)"
+	stroke="#000000" stroke-width="30px"/>
+<!-- Forward arrow to point 3375,2400 -->
+<polygon points=" 3308,2209 3375,2389 3443,2209 3308,2209"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8" fill="#000000"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp1">
+	<path clip-rule="evenodd" d="M 1188,1188 H 7887 V 3408 H 1188 z
+		M 5633,3041 5768,3041 5718,2832 5682,2832z"/>
+</clipPath>
+</defs>
+<polyline points=" 3375,2850 3375,3375 5700,3375 5700,2850" clip-path="url(#cp1)"
+	stroke="#000000" stroke-width="30px"/>
+<!-- Forward arrow to point 5700,2850 -->
+<polygon points=" 5768,3041 5700,2861 5633,3041 5768,3041"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8" fill="#000000"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp2">
+	<path clip-rule="evenodd" d="M 1188,1188 H 7887 V 3408 H 1188 z
+		M 5633,2141 5768,2141 5718,1932 5682,1932z"/>
+</clipPath>
+</defs>
+<polyline points=" 5700,2400 5700,1950" clip-path="url(#cp2)"
+	stroke="#000000" stroke-width="30px"/>
+<!-- Forward arrow to point 5700,1950 -->
+<polygon points=" 5768,2141 5700,1961 5633,2141 5768,2141"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8" fill="#000000"/>
+<!-- Line -->
+<rect x="1200" y="1200" width="2625" height="1800"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="5250" y="1200" width="2625" height="1800"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="5400" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="6225" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="3000" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="2175" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<rect x="1350" y="1350" width="675" height="600"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="6825" y="2850" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">Dest Host</text>
+<!-- Text -->
+<text xml:space="preserve" x="1350" y="2850" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">Source Host</text>
+<!-- Text -->
+<text xml:space="preserve" x="1425" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-A</text>
+<!-- Text -->
+<text xml:space="preserve" x="2250" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-B</text>
+<!-- Text -->
+<text xml:space="preserve" x="3075" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-C</text>
+<!-- Text -->
+<text xml:space="preserve" x="5475" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-C</text>
+<!-- Text -->
+<text xml:space="preserve" x="6300" y="1725" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="144" text-anchor="start">VM-D</text>
+</g>
+</svg>

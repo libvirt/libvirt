@@ -948,7 +948,7 @@ printTCPFlags(virBufferPtr buf,
 char *
 virNWFilterPrintTCPFlags(uint8_t flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     printTCPFlags(&buf, flags);
     return virBufferContentAndReset(&buf);
 }
@@ -2561,7 +2561,7 @@ virNWFilterIsAllowedChain(const char *chainname)
     virNWFilterChainSuffixType i;
     const char *name;
     char *msg;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool printed = false;
 
     if (!virNWFilterIsValidChainName(chainname))
@@ -3044,7 +3044,7 @@ virNWFilterEntryFormat(virBufferPtr buf,
 char *
 virNWFilterDefFormat(const virNWFilterDef *def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char uuid[VIR_UUID_STRING_BUFLEN];
     size_t i;
 
@@ -3062,17 +3062,13 @@ virNWFilterDefFormat(const virNWFilterDef *def)
 
     for (i = 0; i < def->nentries; i++) {
         if (virNWFilterEntryFormat(&buf, def->filterEntries[i]) < 0)
-            goto err_exit;
+            return NULL;
     }
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</filter>\n");
 
     return virBufferContentAndReset(&buf);
-
- err_exit:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 static virNWFilterTriggerRebuildCallback rebuildCallback;

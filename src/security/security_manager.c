@@ -597,6 +597,40 @@ virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
 
 
 int
+virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr vm,
+                                     const char *savefile)
+{
+    if (mgr->drv->domainSetSavedStateLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSavedStateLabel(mgr, vm, savefile);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    return 0;
+}
+
+
+int
+virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
+                                         virDomainDefPtr vm,
+                                         const char *savefile)
+{
+    if (mgr->drv->domainRestoreSavedStateLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSavedStateLabel(mgr, vm, savefile);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    return 0;
+}
+
+
+int
 virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                            virDomainDefPtr vm)
 {
@@ -822,14 +856,14 @@ int virSecurityManagerCheckAllLabel(virSecurityManagerPtr mgr,
 int
 virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr vm,
-                              const char *stdin_path,
+                              const char *incomingPath,
                               bool chardevStdioLogd,
                               bool migrated)
 {
     if (mgr->drv->domainSetSecurityAllLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityAllLabel(mgr, vm, stdin_path,
+        ret = mgr->drv->domainSetSecurityAllLabel(mgr, vm, incomingPath,
                                                   chardevStdioLogd,
                                                   migrated);
         virObjectUnlock(mgr);
@@ -1353,11 +1387,17 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
             continue;
 
         if (S_ISDIR(sb.st_mode)) {
-            /* Directories can't be locked */
+            /* We need to open the path for writing because we need exclusive
+             * (write) lock. But directories can't be opened for writing. */
             continue;
         }
 
         if ((fd = open(p, O_RDWR)) < 0) {
+            if (errno == EROFS) {
+                /* There is nothing we can do for RO filesystem. */
+                continue;
+            }
+
 #ifndef WIN32
             if (S_ISSOCK(sb.st_mode)) {
                 /* Sockets can be opened only if there exists the

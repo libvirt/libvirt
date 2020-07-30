@@ -284,16 +284,14 @@ virNWFilterBindingObjParseFile(const char *filename)
 char *
 virNWFilterBindingObjFormat(const virNWFilterBindingObj *obj)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "<filterbindingstatus>\n");
 
     virBufferAdjustIndent(&buf, 2);
 
-    if (virNWFilterBindingDefFormatBuf(&buf, obj->def) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virNWFilterBindingDefFormatBuf(&buf, obj->def) < 0)
         return NULL;
-    }
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</filterbindingstatus>\n");

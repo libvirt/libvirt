@@ -35,7 +35,7 @@
 import re
 import sys
 
-whitelist = {
+permitted = {
     "connectClose": True,
     "connectIsEncrypted": True,
     "connectIsSecure": True,
@@ -58,7 +58,7 @@ whitelist = {
 # XXX this vzDomainMigrateConfirm3Params looks
 # bogus - determine why it doesn't have a valid
 # ACL check.
-implwhitelist = {
+implpermitted = {
     "vzDomainMigrateConfirm3Params": True,
 }
 
@@ -230,8 +230,8 @@ def process_file(filename):
                             api not in ["no", "name"] and
                             table != "virStateDriver"):
                         if (impl not in acls and
-                                api not in whitelist and
-                                impl not in implwhitelist):
+                                api not in permitted and
+                                impl not in implpermitted):
                             print(("%s:%d Missing ACL check in " +
                                    "function '%s' for '%s'") %
                                   (filename, lineno, impl, api),

@@ -56,6 +56,13 @@ VIR_ENUM_IMPL(virDomainBackupDiskState,
               "cancelling",
               "cancelled");
 
+VIR_ENUM_DECL(virDomainBackupDiskBackupMode);
+VIR_ENUM_IMPL(virDomainBackupDiskBackupMode,
+              VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_LAST,
+              "",
+              "full",
+              "incremental");
+
 void
 virDomainBackupDefFree(virDomainBackupDefPtr def)
 {
@@ -72,12 +79,17 @@ virDomainBackupDefFree(virDomainBackupDefPtr def)
         virDomainBackupDiskDefPtr disk = def->disks + i;
 
         g_free(disk->name);
+        g_free(disk->incremental);
         g_free(disk->exportname);
         g_free(disk->exportbitmap);
         virObjectUnref(disk->store);
     }
 
     g_free(def->disks);
+
+    g_free(def->tlsAlias);
+    g_free(def->tlsSecretAlias);
+
     g_free(def);
 }
 
@@ -95,6 +107,7 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
     g_autofree char *driver = NULL;
     g_autofree char *backup = NULL;
     g_autofree char *state = NULL;
+    g_autofree char *backupmode = NULL;
     int tmp;
     xmlNodePtr srcNode;
     unsigned int storageSourceParseFlags = 0;
@@ -131,6 +144,19 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
         def->exportname = virXMLPropString(node, "exportname");
         def->exportbitmap = virXMLPropString(node, "exportbitmap");
     }
+
+    if ((backupmode = virXMLPropString(node, "backupmode"))) {
+        if ((tmp = virDomainBackupDiskBackupModeTypeFromString(backupmode)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid backupmode '%s' of disk '%s'"),
+                           backupmode, def->name);
+            return -1;
+        }
+
+        def->backupmode = tmp;
+    }
+
+    def->incremental = virXMLPropString(node, "incremental");
 
     if (internal) {
         if (!(state = virXMLPropString(node, "state")) ||
@@ -191,6 +217,19 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
 }
 
 
+static void
+virDomainBackupDefParsePrivate(virDomainBackupDefPtr def,
+                               xmlXPathContextPtr ctxt,
+                               unsigned int flags)
+{
+    if (!(flags & VIR_DOMAIN_BACKUP_PARSE_INTERNAL))
+        return;
+
+    def->tlsSecretAlias = virXPathString("string(./privateData/objects/secret[@type='tlskey']/@alias)", ctxt);
+    def->tlsAlias = virXPathString("string(./privateData/objects/TLSx509/@alias)", ctxt);
+}
+
+
 static virDomainBackupDefPtr
 virDomainBackupDefParse(xmlXPathContextPtr ctxt,
                         virDomainXMLOptionPtr xmlopt,
@@ -221,6 +260,8 @@ virDomainBackupDefParse(xmlXPathContextPtr ctxt,
     def->incremental = virXPathString("string(./incremental)", ctxt);
 
     if ((node = virXPathNode("./server", ctxt))) {
+        g_autofree char *tls = NULL;
+
         if (def->type != VIR_DOMAIN_BACKUP_TYPE_PULL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("use of <server> requires pull mode backup"));
@@ -245,6 +286,19 @@ virDomainBackupDefParse(xmlXPathContextPtr ctxt,
                            def->server->socket);
             return NULL;
         }
+
+        if ((tls = virXMLPropString(node, "tls"))) {
+            int tmp;
+
+            if ((tmp = virTristateBoolTypeFromString(tls)) <= 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("unknown value '%s' of 'tls' attribute"),\
+                               tls);
+                return NULL;
+            }
+
+            def->tls = tmp;
+        }
     }
 
     if ((n = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
@@ -259,6 +313,8 @@ virDomainBackupDefParse(xmlXPathContextPtr ctxt,
                                            flags, xmlopt) < 0)
             return NULL;
     }
+
+    virDomainBackupDefParsePrivate(def, ctxt, flags);
 
     return g_steal_pointer(&def);
 }
@@ -335,11 +391,18 @@ virDomainBackupDiskDefFormat(virBufferPtr buf,
 
     virBufferEscapeString(&attrBuf, " name='%s'", disk->name);
     virBufferAsprintf(&attrBuf, " backup='%s'", virTristateBoolTypeToString(disk->backup));
-    if (internal)
+    if (internal && disk->state != VIR_DOMAIN_BACKUP_DISK_STATE_NONE)
         virBufferAsprintf(&attrBuf, " state='%s'", virDomainBackupDiskStateTypeToString(disk->state));
 
     if (disk->backup == VIR_TRISTATE_BOOL_YES) {
         virBufferAsprintf(&attrBuf, " type='%s'", virStorageTypeToString(disk->store->type));
+
+        if (disk->backupmode != VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_DEFAULT) {
+            virBufferAsprintf(&attrBuf, " backupmode='%s'",
+                              virDomainBackupDiskBackupModeTypeToString(disk->backupmode));
+        }
+
+        virBufferEscapeString(&attrBuf, " incremental='%s'", disk->incremental);
 
         virBufferEscapeString(&attrBuf, " exportname='%s'", disk->exportname);
         virBufferEscapeString(&attrBuf, " exportbitmap='%s'", disk->exportbitmap);
@@ -356,6 +419,26 @@ virDomainBackupDiskDefFormat(virBufferPtr buf,
 
     virXMLFormatElement(buf, "disk", &attrBuf, &childBuf);
     return 0;
+}
+
+
+static void
+virDomainBackupDefFormatPrivate(virBufferPtr buf,
+                                virDomainBackupDefPtr def,
+                                bool internal)
+{
+    g_auto(virBuffer) privChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) objectsChildBuf = VIR_BUFFER_INIT_CHILD(&privChildBuf);
+
+    if (!internal)
+        return;
+
+    virBufferEscapeString(&objectsChildBuf, "<secret type='tlskey' alias='%s'/>\n",
+                          def->tlsSecretAlias);
+    virBufferEscapeString(&objectsChildBuf, "<TLSx509 alias='%s'/>\n", def->tlsAlias);
+
+    virXMLFormatElement(&privChildBuf, "objects", NULL, &objectsChildBuf);
+    virXMLFormatElement(buf, "privateData", NULL, &privChildBuf);
 }
 
 
@@ -377,6 +460,8 @@ virDomainBackupDefFormat(virBufferPtr buf,
     if (def->server) {
         virBufferAsprintf(&serverAttrBuf, " transport='%s'",
                           virStorageNetHostTransportTypeToString(def->server->transport));
+        if (def->tls != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&serverAttrBuf, " tls='%s'", virTristateBoolTypeToString(def->tls));
         virBufferEscapeString(&serverAttrBuf, " name='%s'", def->server->name);
         if (def->server->port)
             virBufferAsprintf(&serverAttrBuf, " port='%u'", def->server->port);
@@ -393,6 +478,9 @@ virDomainBackupDefFormat(virBufferPtr buf,
     }
 
     virXMLFormatElement(&childBuf, "disks", NULL, &disksChildBuf);
+
+    virDomainBackupDefFormatPrivate(&childBuf, def, internal);
+
     virXMLFormatElement(buf, "domainbackup", &attrBuf, &childBuf);
 
     return 0;
@@ -408,13 +496,6 @@ virDomainBackupDefAssignStore(virDomainBackupDiskDefPtr disk,
         if (disk->store) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' has no media"), disk->name);
-            return -1;
-        }
-    } else if (src->readonly) {
-        if (disk->store) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("backup of readonly disk '%s' makes no sense"),
-                           disk->name);
             return -1;
         }
     } else if (!disk->store) {
@@ -471,6 +552,16 @@ virDomainBackupAlignDisks(virDomainBackupDefPtr def,
             return -1;
         }
 
+        if (backupdisk->backupmode == VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_INCREMENTAL &&
+            !backupdisk->incremental &&
+            !def->incremental) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("'incremental' backup mode of disk '%s' requires setting 'incremental' field for disk or backup"),
+                           backupdisk->name);
+            return -1;
+        }
+
+
         if (backupdisk->backup == VIR_TRISTATE_BOOL_YES &&
             virDomainBackupDefAssignStore(backupdisk, domdisk->src, suffix) < 0)
             return -1;
@@ -503,6 +594,22 @@ virDomainBackupAlignDisks(virDomainBackupDefPtr def,
         } else {
             backupdisk->backup = VIR_TRISTATE_BOOL_NO;
         }
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainBackupDiskDefPtr backupdisk = &def->disks[i];
+
+        if (backupdisk->backupmode == VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_DEFAULT) {
+            if (def->incremental || backupdisk->incremental) {
+                backupdisk->backupmode = VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_INCREMENTAL;
+            } else {
+                backupdisk->backupmode = VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_FULL;
+            }
+        }
+
+        if (!backupdisk->incremental &&
+            backupdisk->backupmode == VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_INCREMENTAL)
+            backupdisk->incremental = g_strdup(def->incremental);
     }
 
     return 0;

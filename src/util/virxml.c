@@ -32,6 +32,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_XML
 
@@ -682,8 +683,7 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
     const xmlChar *cur, *base;
     unsigned int n, col;        /* GCC warns if signed, because compared with sizeof() */
     int domcode = VIR_FROM_XML;
-
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *contextstr = NULL;
     char *pointerstr = NULL;
 
@@ -953,8 +953,7 @@ char *
 virXMLNodeToString(xmlDocPtr doc,
                    xmlNodePtr node)
 {
-    xmlBufferPtr xmlbuf = NULL;
-    char *ret = NULL;
+    g_autoptr(xmlBuffer) xmlbuf = NULL;
 
     if (!(xmlbuf = xmlBufferCreate())) {
         virReportOOMError();
@@ -964,15 +963,10 @@ virXMLNodeToString(xmlDocPtr doc,
     if (xmlNodeDump(xmlbuf, doc, node, 0, 1) == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to convert the XML node tree"));
-        goto cleanup;
+        return NULL;
     }
 
-    ret = g_strdup((const char *)xmlBufferContent(xmlbuf));
-
- cleanup:
-    xmlBufferFree(xmlbuf);
-
-    return ret;
+    return g_strdup((const char *)xmlBufferContent(xmlbuf));
 }
 
 
@@ -1278,20 +1272,15 @@ int
 virXMLValidatorValidate(virXMLValidatorPtr validator,
                         xmlDocPtr doc)
 {
-    int ret = -1;
-
     if (xmlRelaxNGValidateDoc(validator->rngValid, doc) != 0) {
         virReportError(VIR_ERR_XML_INVALID_SCHEMA,
                        _("Unable to validate doc against %s\n%s"),
                        validator->schemafile,
                        virBufferCurrentContent(&validator->buf));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    virBufferFreeAndReset(&validator->buf);
-    return ret;
+    return 0;
 }
 
 
@@ -1404,4 +1393,75 @@ virXMLNamespaceRegister(xmlXPathContextPtr ctxt,
     }
 
     return 0;
+}
+
+
+/**
+ * virParseScaledValue:
+ * @xpath: XPath to memory amount
+ * @units_xpath: XPath to units attribute
+ * @ctxt: XPath context
+ * @val: scaled value is stored here
+ * @scale: default scale for @val
+ * @max: maximal @val allowed
+ * @required: is the value required?
+ *
+ * Parse a value located at @xpath within @ctxt, and store the
+ * result into @val. The value is scaled by units located at
+ * @units_xpath (or the 'unit' attribute under @xpath if
+ * @units_xpath is NULL). If units are not present, the default
+ * @scale is used. If @required is set, then the value must
+ * exist; otherwise, the value is optional. The resulting value
+ * is in bytes.
+ *
+ * Returns 1 on success,
+ *         0 if the value was not present and !@required,
+ *         -1 on failure after issuing error.
+ */
+int
+virParseScaledValue(const char *xpath,
+                    const char *units_xpath,
+                    xmlXPathContextPtr ctxt,
+                    unsigned long long *val,
+                    unsigned long long scale,
+                    unsigned long long max,
+                    bool required)
+{
+    unsigned long long bytes;
+    g_autofree char *xpath_full = NULL;
+    g_autofree char *unit = NULL;
+    g_autofree char *bytes_str = NULL;
+
+    *val = 0;
+    xpath_full = g_strdup_printf("string(%s)", xpath);
+
+    bytes_str = virXPathString(xpath_full, ctxt);
+    if (!bytes_str) {
+        if (!required)
+            return 0;
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("missing element or attribute '%s'"),
+                       xpath);
+        return -1;
+    }
+    VIR_FREE(xpath_full);
+
+    if (virStrToLong_ullp(bytes_str, NULL, 10, &bytes) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value '%s' for element or attribute '%s'"),
+                       bytes_str, xpath);
+        return -1;
+    }
+
+    if (units_xpath)
+         xpath_full = g_strdup_printf("string(%s)", units_xpath);
+    else
+         xpath_full = g_strdup_printf("string(%s/@unit)", xpath);
+    unit = virXPathString(xpath_full, ctxt);
+
+    if (virScaleInteger(&bytes, unit, scale, max) < 0)
+        return -1;
+
+    *val = bytes;
+    return 1;
 }

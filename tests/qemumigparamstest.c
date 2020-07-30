@@ -58,7 +58,7 @@ static int
 qemuMigParamsTestXML2XML(const void *opaque)
 {
     const qemuMigParamsData *data = opaque;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *xmlFile = NULL;
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -89,7 +89,6 @@ qemuMigParamsTestXML2XML(const void *opaque)
     VIR_FREE(xmlFile);
     VIR_FREE(actualXML);
     qemuMigrationParamsFree(migParams);
-    virBufferFreeAndReset(&buf);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     return ret;
@@ -100,7 +99,7 @@ static int
 qemuMigParamsTestXML(const void *opaque)
 {
     const qemuMigParamsData *data = opaque;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *replyFile = NULL;
     char *xmlFile = NULL;
     qemuMonitorTestPtr mon = NULL;
@@ -140,7 +139,6 @@ qemuMigParamsTestXML(const void *opaque)
     VIR_FREE(actualXML);
     virJSONValueFree(params);
     qemuMigrationParamsFree(migParams);
-    virBufferFreeAndReset(&buf);
     qemuMonitorTestFree(mon);
     return ret;
 }

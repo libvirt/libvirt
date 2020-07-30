@@ -1,0 +1,37 @@
+<domainbackup mode='pull'>
+  <incremental>1525889631</incremental>
+  <server transport='tcp' tls='yes' name='localhost' port='10809'/>
+  <disks>
+    <disk name='vda' backup='yes' state='running' type='file' backupmode='incremental' incremental='1525889631' exportname='test-vda' exportbitmap='blah'>
+      <driver type='qcow2'/>
+      <scratch file='/path/to/file'>
+        <encryption format='luks'>
+          <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
+        </encryption>
+      </scratch>
+    </disk>
+    <disk name='vdb' backup='yes' state='complete' type='file' backupmode='incremental' incremental='1525889631' exportname='test-vda' exportbitmap='blah'>
+      <driver type='qcow2'/>
+      <scratch file='/path/to/file'>
+        <encryption format='luks'>
+          <secret type='passphrase' usage='/storage/backup/vdb'/>
+        </encryption>
+      </scratch>
+    </disk>
+    <disk name='vdc' backup='yes' state='running' type='block' backupmode='incremental' incremental='1525889631'>
+      <driver type='qcow2'/>
+      <scratch dev='/dev/block'>
+        <encryption format='luks'>
+          <secret type='passphrase' usage='/storage/backup/vdc'/>
+        </encryption>
+      </scratch>
+    </disk>
+    <disk name='vdextradisk' backup='no'/>
+  </disks>
+  <privateData>
+    <objects>
+      <secret type='tlskey' alias='test-tlskey'/>
+      <TLSx509 alias='test-tlsobj'/>
+    </objects>
+  </privateData>
+</domainbackup>

@@ -47,22 +47,10 @@ extern const ASN1_ARRAY_TYPE pkix_asn1_tab[];
 gnutls_x509_privkey_t privkey;
 # define PRIVATE_KEY \
     "-----BEGIN PRIVATE KEY-----\n" \
-    "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBALVcr\n" \
-    "BL40Tm6yq88FBhJNw1aaoCjmtg0l4dWQZ/e9Fimx4ARxFpT+ji4FE\n" \
-    "Cgl9s/SGqC+1nvlkm9ViSo0j7MKDbnDB+VRHDvMAzQhA2X7e8M0n9\n" \
-    "rPolUY2lIVC83q0BBaOBkCj2RSmT2xTEbbC2xLukSrg2WP/ihVOxc\n" \
-    "kXRuyFtzAgMBAAECgYB7slBexDwXrtItAMIH6m/U+LUpNe0Xx48OL\n" \
-    "IOn4a4whNgO/o84uIwygUK27ZGFZT0kAGAk8CdF9hA6ArcbQ62s1H\n" \
-    "myxrUbF9/mrLsQw1NEqpuUk9Ay2Tx5U/wPx35S3W/X2AvR/ZpTnCn\n" \
-    "2q/7ym9fyiSoj86drD7BTvmKXlOnOwQJBAPOFMp4mMa9NGpGuEssO\n" \
-    "m3Uwbp6lhcP0cA9MK+iOmeANpoKWfBdk5O34VbmeXnGYWEkrnX+9J\n" \
-    "bM4wVhnnBWtgBMCQQC+qAEmvwcfhauERKYznMVUVksyeuhxhCe7EK\n" \
-    "mPh+U2+g0WwdKvGDgO0PPt1gq0ILEjspMDeMHVdTwkaVBo/uMhAkA\n" \
-    "Z5SsZyCP2aTOPFDypXRdI4eqRcjaEPOUBq27r3uYb/jeboVb2weLa\n" \
-    "L1MmVuHiIHoa5clswPdWVI2y0em2IGoDAkBPSp/v9VKJEZabk9Frd\n" \
-    "a+7u4fanrM9QrEjY3KhduslSilXZZSxrWjjAJPyPiqFb3M8XXA26W\n" \
-    "nz1KYGnqYKhLcBAkB7dt57n9xfrhDpuyVEv+Uv1D3VVAhZlsaZ5Pp\n" \
-    "dcrhrkJn2sa/+O8OKvdrPSeeu/N5WwYhJf61+CPoenMp7IFci\n" \
+    "MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDD39t6GRLeEmsYjRGR6\n" \
+    "iQiIN2S4zXsgLGS/2GloXdG7K+i/3vEJDt9celZ0DfCLcG6hZANiAAQTJIe13jy7\n" \
+    "k4KTXMkHQHEJa/asH263JaPL5kTbfRa6tMq3DS3pzWlOj+NHY/9JzthrKD+Ece+g\n" \
+    "2g/POHa0gfXRYXGiHTs8mY0AHFqNNmF38eIVGjOqobIi90MkyI3wx4g=\n" \
     "-----END PRIVATE KEY-----\n"
 
 /*

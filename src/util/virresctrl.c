@@ -456,7 +456,7 @@ VIR_ONCE_GLOBAL_INIT(virResctrl);
 static int
 virResctrlLockWrite(void)
 {
-    int fd = open(SYSFS_RESCTRL_PATH, O_RDWR | O_CLOEXEC);
+    int fd = open(SYSFS_RESCTRL_PATH, O_RDONLY | O_CLOEXEC);
 
     if (fd < 0) {
         virReportSystemError(errno, "%s", _("Cannot open resctrl"));
@@ -1412,7 +1412,7 @@ virResctrlAllocGetID(virResctrlAllocPtr alloc)
  *
  *     MB:0=100;1=100
  *
- * which indicates node id 0 has 100 percent bandwith and node id 1
+ * which indicates node id 0 has 100 percent bandwidth and node id 1
  * has 100 percent bandwidth. A trailing semi-colon is not formatted.
  */
 static int
@@ -1587,20 +1587,16 @@ virResctrlAllocFormatCache(virResctrlAllocPtr alloc,
 char *
 virResctrlAllocFormat(virResctrlAllocPtr alloc)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!alloc)
         return NULL;
 
-    if (virResctrlAllocFormatCache(alloc, &buf) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virResctrlAllocFormatCache(alloc, &buf) < 0)
         return NULL;
-    }
 
-    if (virResctrlAllocMemoryBandwidthFormat(alloc, &buf) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virResctrlAllocMemoryBandwidthFormat(alloc, &buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }

@@ -138,12 +138,12 @@
     </dl>
 
     <dl>
-      <dt><a href="https://wiki.jenkins-ci.org/display/JENKINS/Libvirt+Slaves+Plugin">Jenkins</a></dt>
+      <dt><a href="https://plugins.jenkins.io/libvirt-slave/">Jenkins</a></dt>
       <dd>
         This plugin for Jenkins adds a way to control guest domains hosted
-        on Xen or QEMU/KVM.  You configure a Jenkins Slave,
+        on Xen or QEMU/KVM.  You configure a Jenkins Agent,
         selecting the guest domain and hypervisor.  When you need to build a
-        job on a specific Slave, its guest domain is started, then the job is
+        job on a specific Agent, its guest domain is started, then the job is
         run.  When the build process is finished, the guest domain is shut
         down, ready to be used again as required.
       </dd>

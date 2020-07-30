@@ -57,7 +57,7 @@ virDevMapperGetTargets(const char *path,
     *devPaths = NULL;
 
     if (STREQ(path, "/dev/mapper/virt")) {
-        *devPaths = g_new(char *, 4);
+        *devPaths = g_new0(char *, 4);
         (*devPaths)[0] = g_strdup("/dev/block/8:0");  /* /dev/sda */
         (*devPaths)[1] = g_strdup("/dev/block/8:16"); /* /dev/sdb */
         (*devPaths)[2] = g_strdup("/dev/block/8:32"); /* /dev/sdc */

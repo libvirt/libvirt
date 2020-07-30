@@ -1,17 +1,18 @@
 <domainbackup mode='push'>
   <incremental>1525889631</incremental>
   <disks>
-    <disk name='vda' backup='yes' type='file'>
+    <disk name='vda' backup='yes' type='file' backupmode='incremental' incremental='1525889631'>
       <driver type='raw'/>
       <target file='/path/to/file'>
         <seclabel model='dac' relabel='no'/>
       </target>
     </disk>
-    <disk name='vdb' backup='yes' type='block'>
+    <disk name='vdb' backup='yes' type='block' backupmode='incremental' incremental='1525889631'>
       <driver type='qcow2'/>
       <target dev='/dev/block'>
         <seclabel model='dac' relabel='no'/>
       </target>
     </disk>
+    <disk name='vdextradisk' backup='no'/>
   </disks>
 </domainbackup>

@@ -1,6 +1,15 @@
 libvirt-1-format:
-  current: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
-        d: record:0 busy:0 persist:0 inconsist:0 gran:65536 dirty:0
-        c: record:0 busy:0 persist:1 inconsist:0 gran:1234 dirty:0
-        b: record:0 busy:1 persist:1 inconsist:0 gran:65536 dirty:21314
-        a: record:0 busy:0 persist:1 inconsist:1 gran:65536 dirty:0
+  current: record:1 busy:0 persist:1 inconsist:1 gran:65536 dirty:0
+   top-ok: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
+ top-inactive: record:0 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
+ top-transient: record:1 busy:0 persist:0 inconsist:0 gran:65536 dirty:0
+ top-transient-inactive: record:0 busy:0 persist:0 inconsist:0 gran:65536 dirty:0
+libvirt-2-format:
+        d: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
+libvirt-3-format:
+        b: record:1 busy:0 persist:0 inconsist:0 gran:65536 dirty:0
+        c: record:0 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
+        d: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
+libvirt-4-format:
+libvirt-5-format:
+        a: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0

@@ -51,6 +51,14 @@
             </attribute>
             <interleave>
               <element name='server'>
+                <optional>
+                  <attribute name='tls'>
+                    <choice>
+                      <value>yes</value>
+                      <value>no</value>
+                    </choice>
+                  </attribute>
+                </optional>
                 <choice>
                   <group>
                     <optional>
@@ -69,7 +77,6 @@
                         <ref name='unsignedInt'/>
                       </attribute>
                     </optional>
-                    <!-- add tls? -->
                   </group>
                   <group>
                     <attribute name='transport'>
@@ -87,6 +94,27 @@
         </choice>
       </interleave>
     </element>
+  </define>
+
+
+  <define name='backupDiskMode'>
+    <optional>
+      <choice>
+        <attribute name='backupmode'>
+          <value>full</value>
+        </attribute>
+        <group>
+          <optional>
+            <attribute name='backupmode'>
+              <value>incremental</value>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name='incremental'/>
+          </optional>
+        </group>
+      </choice>
+    </optional>
   </define>
 
   <define name='backupPushDriver'>
@@ -127,6 +155,7 @@
             <attribute name='name'>
               <ref name='diskTarget'/>
             </attribute>
+            <ref name='backupDiskMode'/>
             <choice>
               <group>
                 <attribute name='backup'>
@@ -196,6 +225,7 @@
             <attribute name='name'>
               <ref name='diskTarget'/>
             </attribute>
+            <ref name='backupDiskMode'/>
             <optional>
               <attribute name='exportname'>
                 <text/>

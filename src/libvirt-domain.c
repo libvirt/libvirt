@@ -2726,9 +2726,8 @@ virDomainMigrateVersion1(virDomainPtr domain,
                          const char *uri,
                          unsigned long bandwidth)
 {
-    virDomainPtr ddomain = NULL;
-    char *uri_out = NULL;
-    char *cookie = NULL;
+    g_autofree char *uri_out = NULL;
+    g_autofree char *cookie = NULL;
     int cookielen = 0, ret;
     virDomainInfo info;
     unsigned int destflags;
@@ -2758,12 +2757,12 @@ virDomainMigrateVersion1(virDomainPtr domain,
     if (dconn->driver->domainMigratePrepare
         (dconn, &cookie, &cookielen, uri, &uri_out, destflags, dname,
          bandwidth) == -1)
-        goto done;
+        return NULL;
 
     if (uri == NULL && uri_out == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare did not set uri"));
-        goto done;
+        return NULL;
     }
     if (uri_out)
         uri = uri_out; /* Did domainMigratePrepare change URI? */
@@ -2773,7 +2772,7 @@ virDomainMigrateVersion1(virDomainPtr domain,
      */
     if (domain->conn->driver->domainMigratePerform
         (domain, cookie, cookielen, uri, flags, dname, bandwidth) == -1)
-        goto done;
+        return NULL;
 
     /* Get the destination domain and return it or error.
      * 'domain' no longer actually exists at this point
@@ -2782,15 +2781,10 @@ virDomainMigrateVersion1(virDomainPtr domain,
      */
     dname = dname ? dname : domain->name;
     if (dconn->driver->domainMigrateFinish)
-        ddomain = dconn->driver->domainMigrateFinish
+        return dconn->driver->domainMigrateFinish
             (dconn, dname, cookie, cookielen, uri, destflags);
-    else
-        ddomain = virDomainLookupByName(dconn, dname);
 
- done:
-    VIR_FREE(uri_out);
-    VIR_FREE(cookie);
-    return ddomain;
+    return virDomainLookupByName(dconn, dname);
 }
 
 
@@ -2822,9 +2816,9 @@ virDomainMigrateVersion2(virDomainPtr domain,
                          unsigned long bandwidth)
 {
     virDomainPtr ddomain = NULL;
-    char *uri_out = NULL;
-    char *cookie = NULL;
-    char *dom_xml = NULL;
+    g_autofree char *uri_out = NULL;
+    g_autofree char *cookie = NULL;
+    g_autofree char *dom_xml = NULL;
     int cookielen = 0, ret;
     virDomainInfo info;
     virErrorPtr orig_err = NULL;
@@ -2879,7 +2873,6 @@ virDomainMigrateVersion2(virDomainPtr domain,
     ret = dconn->driver->domainMigratePrepare2
         (dconn, &cookie, &cookielen, uri, &uri_out, destflags, dname,
          bandwidth, dom_xml);
-    VIR_FREE(dom_xml);
     if (ret == -1)
         goto done;
 
@@ -2924,8 +2917,6 @@ virDomainMigrateVersion2(virDomainPtr domain,
 
  done:
     virErrorRestore(&orig_err);
-    VIR_FREE(uri_out);
-    VIR_FREE(cookie);
     return ddomain;
 }
 
@@ -2971,10 +2962,10 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
                              unsigned int flags)
 {
     virDomainPtr ddomain = NULL;
-    char *uri_out = NULL;
-    char *cookiein = NULL;
-    char *cookieout = NULL;
-    char *dom_xml = NULL;
+    g_autofree char *uri_out = NULL;
+    g_autofree char *cookiein = NULL;
+    g_autofree char *cookieout = NULL;
+    g_autofree char *dom_xml = NULL;
     int cookieinlen = 0;
     int cookieoutlen = 0;
     int ret;
@@ -3248,10 +3239,6 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
 
  done:
     virErrorRestore(&orig_err);
-    VIR_FREE(dom_xml);
-    VIR_FREE(uri_out);
-    VIR_FREE(cookiein);
-    VIR_FREE(cookieout);
     virTypedParamsFree(params, nparams);
     return ddomain;
 }
@@ -3286,22 +3273,17 @@ virDomainMigrateVersion3Params(virDomainPtr domain,
 static int
 virDomainMigrateCheckNotLocal(const char *dconnuri)
 {
-    virURIPtr tempuri = NULL;
-    int ret = -1;
+    g_autoptr(virURI) tempuri = NULL;
 
     if (!(tempuri = virURIParse(dconnuri)))
-        goto cleanup;
+        return -1;
     if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
         virReportInvalidArg(dconnuri, "%s",
                             _("Attempt to migrate guest to the same host"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virURIFree(tempuri);
-    return ret;
+    return 0;
 }
 
 
@@ -3571,7 +3553,7 @@ virDomainMigrate(virDomainPtr domain,
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
-            char *dstURI = NULL;
+            g_autofree char *dstURI = NULL;
             if (uri == NULL) {
                 dstURI = virConnectGetURI(dconn);
                 if (!dstURI)
@@ -3580,11 +3562,8 @@ virDomainMigrate(virDomainPtr domain,
 
             VIR_DEBUG("Using peer2peer migration");
             if (virDomainMigrateUnmanaged(domain, NULL, flags, dname,
-                                          uri ? uri : dstURI, NULL, bandwidth) < 0) {
-                VIR_FREE(dstURI);
+                                          uri ? uri : dstURI, NULL, bandwidth) < 0)
                 goto error;
-            }
-            VIR_FREE(dstURI);
 
             ddomain = virDomainLookupByName(dconn, dname ? dname : domain->name);
         } else {
@@ -3730,17 +3709,14 @@ virDomainMigrate2(virDomainPtr domain,
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
-            char *dstURI = virConnectGetURI(dconn);
+            g_autofree char *dstURI = virConnectGetURI(dconn);
             if (!dstURI)
                 return NULL;
 
             VIR_DEBUG("Using peer2peer migration");
             if (virDomainMigrateUnmanaged(domain, dxml, flags, dname,
-                                          dstURI, uri, bandwidth) < 0) {
-                VIR_FREE(dstURI);
+                                          dstURI, uri, bandwidth) < 0)
                 goto error;
-            }
-            VIR_FREE(dstURI);
 
             ddomain = virDomainLookupByName(dconn, dname ? dname : domain->name);
         } else {
@@ -5749,9 +5725,9 @@ virDomainGetInterfaceParameters(virDomainPtr domain,
  *     Memory that can be reclaimed without additional I/O, typically disk
  *     caches (in kb).
  * VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC
- *     The amount of successful huge page allocations from inside the domain
+ *     The number of successful huge page allocations from inside the domain
  * VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL
- *     The amount of failed huge page allocations from inside the domain
+ *     The number of failed huge page allocations from inside the domain
  *
  * Returns: The number of stats provided or -1 in case of failure.
  */
@@ -10016,7 +9992,7 @@ virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
  * @bandwidth: specify bandwidth limit; flags determine the unit
  * @flags: bitwise-OR of virDomainBlockJobSetSpeedFlags
  *
- * Set the maximimum allowable bandwidth that a block job may consume.  If
+ * Set the maximum allowable bandwidth that a block job may consume.  If
  * bandwidth is 0, the limit will revert to the hypervisor default of
  * unlimited.
  *
@@ -11479,6 +11455,34 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                         as unsigned long long.
  *     "balloon.maximum" - the maximum memory in kiB allowed
  *                         as unsigned long long.
+ *     "balloon.swap_in" - the amount of data read from swap space (in KiB)
+ *                         as unsigned long long
+ *     "balloon.swap_out" - the amount of memory written out to swap space
+ *                          (in KiB) as unsigned long long
+ *     "balloon.major_fault" - the number of page faults when disk IO was
+ *                             required as unsigned long long
+ *     "balloon.minor_fault" - the number of other page faults
+ *                             as unsigned long long
+ *     "balloon.unused" - the amount of memory left unused by the system
+ *                        (in KiB) as unsigned long long
+ *     "balloon.available" - the amount of usable memory as seen by the domain
+ *                           (in KiB) as unsigned long long
+ *     "balloon.rss" - Resident Set Size of running domain's process
+ *                     (in KiB) as unsigned long long
+ *     "balloon.usable" - the amount of memory which can be reclaimed by balloon
+ *                        without causing host swapping (in KiB)
+ *                        as unsigned long long
+ *     "balloon.last-update" - timestamp of the last update of statistics
+ *                             (in seconds) as unsigned long long
+ *     "balloon.disk_caches" - the amount of memory that can be reclaimed
+ *                             without additional I/O, typically disk (in KiB)
+ *                             as unsigned long long
+ *     "balloon.hugetlb_pgalloc" - the number of successful huge page allocations
+ *                                 from inside the domain via virtio balloon
+ *                                 as unsigned long long
+ *     "balloon.hugetlb_pgfail" - the number of failed huge page allocations
+ *                                from inside the domain via virtio balloon
+ *                                as unsigned long long
  *
  * VIR_DOMAIN_STATS_VCPU:
  *     Return virtual CPU statistics.
@@ -11493,6 +11497,11 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                          from virVcpuState enum.
  *     "vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
  *                         as unsigned long long.
+ *     "vcpu.<num>.wait" - time the vCPU <num> wants to run, but the host
+ *                         scheduler has something else running ahead of it.
+ *     "vcpu.<num>.halted" - virtual CPU <num> is halted, may indicate the
+ *                           processor is idle or even disabled, depending
+ *                           on the architecture)
  *
  * VIR_DOMAIN_STATS_INTERFACE:
  *     Return network interface statistics (from domain point of view).
@@ -12389,6 +12398,19 @@ int virDomainGetGuestInfo(virDomainPtr domain,
  * described by @dev is written beyond the set threshold level. The threshold
  * level is unset once the event fires. The event might not be delivered at all
  * if libvirtd was not running at the moment when the threshold was reached.
+ * Note that if the threshold level is reached for a top level image, the event
+ * is emitted for @dev corresponding to the disk target, and may also be reported
+ * with @dev corresponding to the disk target with an index corresponding to the
+ * 'index' attribute of 'source' in the live VM XML if the attribute is present.
+ *
+ * @dev can either be a disk target name (vda, sda) or disk target with index (
+ * vda[4]). Without the index the top image in the backing chain will have the
+ * threshold set. The index corresponds to the 'index' attribute reported in the
+ * live VM XML for 'backingStore' or 'source' elements of a disk. If index is
+ * given the threshold is set for the corresponding image.
+ *
+ * Note that the threshold event can be registered also for destinations of a
+ * 'virDomainBlockCopy' destination by using the 'index' of the 'mirror' source.
  *
  * Hypervisors report the last written sector of an image in the bulk stats API
  * (virConnectGetAllDomainStats/virDomainListGetStats) as

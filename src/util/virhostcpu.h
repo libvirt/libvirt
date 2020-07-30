@@ -43,6 +43,8 @@ int virHostCPUGetStats(int cpuNum,
 bool virHostCPUHasBitmap(void);
 virBitmapPtr virHostCPUGetPresentBitmap(void);
 virBitmapPtr virHostCPUGetOnlineBitmap(void);
+virBitmapPtr virHostCPUGetAvailableCPUsBitmap(void);
+
 int virHostCPUGetCount(void);
 int virHostCPUGetThreadsPerSubcore(virArch arch) G_GNUC_NO_INLINE;
 

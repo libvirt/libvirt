@@ -197,6 +197,8 @@
   <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
+  <flag name='numa.hmat'/>
+  <flag name='blockdev-hostdev-scsi'/>
   <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700241</microcodeVersion>

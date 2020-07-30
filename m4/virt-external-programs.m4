@@ -61,8 +61,8 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
   AC_PATH_PROG([UDEVADM], [udevadm], [udevadm], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([MODPROBE], [modprobe], [modprobe], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([RMMOD], [rmmod], [rmmod], [$LIBVIRT_SBIN_PATH])
-  AC_PATH_PROG([MMCTL], [mm-ctl], [mm-ctl], [$LIBVIRT_SBIN_PATH])
-  AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([MM_CTL], [mm-ctl], [mm-ctl], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([OVS_VSCTL], [ovs-vsctl], [ovs-vsctl], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([SCRUB], [scrub], [scrub], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([ADDR2LINE], [addr2line], [addr2line], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([MDEVCTL], [mdevctl], [mdevctl], [$LIBVIRT_SBIN_PATH])
@@ -75,9 +75,9 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
                      [Location or name of the radvd program])
   AC_DEFINE_UNQUOTED([TC], ["$TC"],
                      [Location or name of the tc program (see iproute2)])
-  AC_DEFINE_UNQUOTED([MMCTL], ["$MMCTL"],
+  AC_DEFINE_UNQUOTED([MM_CTL], ["$MM_CTL"],
                      [Location or name of the mm-ctl program])
-  AC_DEFINE_UNQUOTED([OVSVSCTL], ["$OVSVSCTL"],
+  AC_DEFINE_UNQUOTED([OVS_VSCTL], ["$OVS_VSCTL"],
                      [Location or name of the ovs-vsctl program])
   AC_DEFINE_UNQUOTED([UDEVADM], ["$UDEVADM"],
                      [Location or name of the udevadm program])

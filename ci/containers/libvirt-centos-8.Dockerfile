@@ -71,11 +71,13 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         parted-devel \
         patch \
         perl \
+        perl-App-cpanminus \
         pkgconfig \
         polkit \
         python3 \
         python3-docutils \
         python3-flake8 \
+        python3-pip \
         python3-setuptools \
         python3-wheel \
         qemu-img \
@@ -92,6 +94,7 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         vim \
         wireshark-devel \
         xfsprogs-devel \
+        xz \
         yajl-devel && \
     dnf autoremove -y && \
     dnf clean all -y && \

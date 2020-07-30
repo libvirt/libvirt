@@ -713,7 +713,7 @@ lxcNetworkGetParseDataByIndexLegacy(lxcNetworkParseDataArray *networks,
     if (ndata > 0)
         return networks->parseData[ndata - 1];
 
-    /* Not able to retrive an element */
+    /* Not able to retrieve an element */
     return NULL;
 }
 

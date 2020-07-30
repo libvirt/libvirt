@@ -169,13 +169,11 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     gl_WARN_ADD([-Wframe-larger-than=262144], [RELAXED_FRAME_LIMIT_CFLAGS])
 
     # Extra special flags
-    dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
-    dnl on Mingw32, but fails when actually used
     case $host in
        aarch64-*-*)
        dnl "error: -fstack-protector not supported for this target [-Werror]"
        ;;
-       *-*-linux*)
+       *-*-linux* | *-*-mingw*)
        dnl Prefer -fstack-protector-strong if it's available.
        dnl There doesn't seem to be great overhead in adding
        dnl -fstack-protector-all instead of -fstack-protector.

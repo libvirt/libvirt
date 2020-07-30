@@ -62,6 +62,10 @@ testBackingXMLjsonXML(const void *args)
     g_autoptr(virStorageSource) xmlsrc = NULL;
     g_autoptr(virStorageSource) jsonsrc = NULL;
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+    unsigned int backendpropsflags = 0;
+
+    if (data->legacy)
+        backendpropsflags |= QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY;
 
     if (!(xmlsrc = virStorageSourceNew()))
         return -1;
@@ -77,9 +81,7 @@ testBackingXMLjsonXML(const void *args)
     }
 
     if (!(backendprops = qemuBlockStorageSourceGetBackendProps(xmlsrc,
-                                                               data->legacy,
-                                                               false,
-                                                               false))) {
+                                                               backendpropsflags))) {
         fprintf(stderr, "failed to format disk source json\n");
         return -1;
     }
@@ -159,7 +161,8 @@ testJSONtoJSON(const void *args)
         return -1;
     }
 
-    if (!(jsonsrcout = qemuBlockStorageSourceGetBackendProps(src, false, false, true))) {
+    if (!(jsonsrcout = qemuBlockStorageSourceGetBackendProps(src,
+                                                             QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY))) {
         fprintf(stderr, "failed to format disk source json\n");
         return -1;
     }
@@ -290,6 +293,9 @@ testQemuDiskXMLToProps(const void *opaque)
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         g_autofree char *backingstore = NULL;
+        unsigned int backendpropsflagsnormal = QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY;
+        unsigned int backendpropsflagstarget = QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY |
+                                               QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_TARGET_ONLY;
 
         if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
             return -1;
@@ -300,8 +306,8 @@ testQemuDiskXMLToProps(const void *opaque)
         qemuDomainPrepareDiskSourceData(disk, n);
 
         if (!(formatProps = qemuBlockStorageSourceGetBlockdevProps(n, n->backingStore)) ||
-            !(storageSrcOnlyProps = qemuBlockStorageSourceGetBackendProps(n, false, true, true)) ||
-            !(storageProps = qemuBlockStorageSourceGetBackendProps(n, false, false, true)) ||
+            !(storageSrcOnlyProps = qemuBlockStorageSourceGetBackendProps(n, backendpropsflagstarget)) ||
+            !(storageProps = qemuBlockStorageSourceGetBackendProps(n, backendpropsflagsnormal)) ||
             !(backingstore = qemuBlockGetBackingStoreString(n, true))) {
             if (!data->fail) {
                 VIR_TEST_VERBOSE("failed to generate qemu blockdev props");
@@ -383,7 +389,7 @@ static int
 testQemuDiskXMLToPropsValidateFile(const void *opaque)
 {
     struct testQemuDiskXMLToJSONData *data = (void *) opaque;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *jsonpath = NULL;
     g_autofree char *actual = NULL;
     size_t i;
@@ -647,6 +653,23 @@ testQemuDetectBitmaps(const void *opaque)
 }
 
 
+static void
+testQemuBitmapListPrint(const char *title,
+                        GSList *next,
+                        virBufferPtr buf)
+{
+    if (!next)
+        return;
+
+    virBufferAsprintf(buf, "%s\n", title);
+
+    for (; next; next = next->next) {
+        virStorageSourcePtr src = next->data;
+        virBufferAsprintf(buf, "%s\n", src->nodeformat);
+    }
+}
+
+
 static virStorageSourcePtr
 testQemuBackupIncrementalBitmapCalculateGetFakeImage(size_t idx)
 {
@@ -699,59 +722,6 @@ testQemuBitmapGetFakeChainEntry(virStorageSourcePtr src,
 }
 
 
-typedef virDomainMomentDefPtr testMomentList;
-
-static void
-testMomentListFree(testMomentList *list)
-{
-    testMomentList *tmp = list;
-
-    if (!list)
-        return;
-
-    while (*tmp) {
-        virObjectUnref(*tmp);
-        tmp++;
-    }
-
-    g_free(list);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(testMomentList, testMomentListFree);
-
-static virDomainMomentDefPtr
-testQemuBackupGetIncrementalMoment(const char *name)
-{
-    virDomainCheckpointDefPtr checkpoint = NULL;
-
-    if (!(checkpoint = virDomainCheckpointDefNew()))
-        abort();
-
-    checkpoint->parent.name = g_strdup(name);
-
-    return (virDomainMomentDefPtr) checkpoint;
-}
-
-
-static virDomainMomentDefPtr *
-testQemuBackupGetIncremental(const char *incFrom)
-{
-    const char *checkpoints[] = {"current", "d", "c", "b", "a"};
-    virDomainMomentDefPtr *incr;
-    size_t i;
-
-    incr = g_new0(virDomainMomentDefPtr, G_N_ELEMENTS(checkpoints) + 1);
-
-    for (i = 0; i < G_N_ELEMENTS(checkpoints); i++) {
-        incr[i] = testQemuBackupGetIncrementalMoment(checkpoints[i]);
-
-        if (STREQ(incFrom, checkpoints[i]))
-            break;
-    }
-
-    return incr;
-}
-
 static const char *backupDataPrefix = "qemublocktestdata/backupmerge/";
 
 struct testQemuBackupIncrementalBitmapCalculateData {
@@ -768,10 +738,10 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
     const struct testQemuBackupIncrementalBitmapCalculateData *data = opaque;
     g_autoptr(virJSONValue) nodedatajson = NULL;
     g_autoptr(virHashTable) nodedata = NULL;
-    g_autoptr(virJSONValue) mergebitmaps = NULL;
-    g_autofree char *actual = NULL;
+    g_autoptr(virJSONValue) actions = virJSONValueNewArray();
     g_autofree char *expectpath = NULL;
-    g_autoptr(testMomentList) incremental = NULL;
+    g_autoptr(virStorageSource) target = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
                                  backupDataPrefix, data->name);
@@ -785,38 +755,41 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
         return -1;
     }
 
-    incremental = testQemuBackupGetIncremental(data->incremental);
-
-    if (!(mergebitmaps = qemuBackupDiskPrepareOneBitmapsChain(incremental,
-                                                              data->chain,
-                                                              nodedata,
-                                                              "testdisk"))) {
-        VIR_TEST_VERBOSE("failed to calculate merged bitmaps");
+    if (!(target = virStorageSourceNew()))
         return -1;
+
+    target->nodeformat = g_strdup_printf("target_node");
+
+    if (qemuBackupDiskPrepareOneBitmapsChain(data->chain,
+                                             target,
+                                             "target-bitmap-name",
+                                             data->incremental,
+                                             actions,
+                                             nodedata) >= 0) {
+        if (virJSONValueToBuffer(actions, &buf, true) < 0)
+            return -1;
+    } else {
+        virBufferAddLit(&buf, "NULL\n");
     }
 
-    if (!(actual = virJSONValueToString(mergebitmaps, true)))
-        return -1;
-
-    return virTestCompareToFile(actual, expectpath);
+    return virTestCompareToFile(virBufferCurrentContent(&buf), expectpath);
 }
 
 
 static const char *checkpointDeletePrefix = "qemublocktestdata/checkpointdelete/";
 
-struct testQemuCheckpointDeleteMergeData {
+struct testQemuCheckpointDeleteData {
     const char *name;
     virStorageSourcePtr chain;
     const char *deletebitmap;
-    const char *parentbitmap;
     const char *nodedatafile;
 };
 
 
 static int
-testQemuCheckpointDeleteMerge(const void *opaque)
+testQemuCheckpointDelete(const void *opaque)
 {
-    const struct testQemuCheckpointDeleteMergeData *data = opaque;
+    const struct testQemuCheckpointDeleteData *data = opaque;
     g_autofree char *actual = NULL;
     g_autofree char *expectpath = NULL;
     g_autoptr(virJSONValue) actions = NULL;
@@ -824,7 +797,6 @@ testQemuCheckpointDeleteMerge(const void *opaque)
     g_autoptr(virHashTable) nodedata = NULL;
     g_autoptr(GSList) reopenimages = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    GSList *tmp;
 
     expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
                                  checkpointDeletePrefix, data->name);
@@ -843,25 +815,16 @@ testQemuCheckpointDeleteMerge(const void *opaque)
     if (qemuCheckpointDiscardDiskBitmaps(data->chain,
                                          nodedata,
                                          data->deletebitmap,
-                                         data->parentbitmap,
                                          actions,
                                          "testdisk",
-                                         &reopenimages) < 0) {
-        VIR_TEST_VERBOSE("failed to generate checkpoint delete transaction\n");
-        return -1;
+                                         &reopenimages) >= 0) {
+        if (virJSONValueToBuffer(actions, &buf, true) < 0)
+            return -1;
+    } else {
+        virBufferAddLit(&buf, "NULL\n");
     }
 
-    if (virJSONValueToBuffer(actions, &buf, true) < 0)
-        return -1;
-
-    if (reopenimages) {
-        virBufferAddLit(&buf, "reopen nodes:\n");
-
-        for (tmp = reopenimages; tmp; tmp = tmp->next) {
-            virStorageSourcePtr src = tmp->data;
-            virBufferAsprintf(&buf, "%s\n", src->nodeformat);
-        }
-    }
+    testQemuBitmapListPrint("reopen nodes:", reopenimages, &buf);
 
     actual = virBufferContentAndReset(&buf);
 
@@ -924,6 +887,7 @@ testQemuBlockBitmapBlockcopy(const void *opaque)
     g_autoptr(virJSONValue) nodedatajson = NULL;
     g_autoptr(virHashTable) nodedata = NULL;
     g_autoptr(virStorageSource) fakemirror = virStorageSourceNew();
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!fakemirror)
         return -1;
@@ -946,9 +910,12 @@ testQemuBlockBitmapBlockcopy(const void *opaque)
                                         data->shallow, &actions) < 0)
         return -1;
 
+
     if (actions &&
-        !(actual = virJSONValueToString(actions, true)))
+        virJSONValueToBuffer(actions, &buf, true) < 0)
         return -1;
+
+    actual = virBufferContentAndReset(&buf);
 
     return virTestCompareToFile(actual, expectpath);
 }
@@ -971,12 +938,11 @@ testQemuBlockBitmapBlockcommit(const void *opaque)
 
     g_autofree char *actual = NULL;
     g_autofree char *expectpath = NULL;
-    g_autoptr(virJSONValue) actionsDisable = NULL;
     g_autoptr(virJSONValue) actionsMerge = NULL;
     g_autoptr(virJSONValue) nodedatajson = NULL;
     g_autoptr(virHashTable) nodedata = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOSTRINGLIST bitmapsDisable = NULL;
+    bool active = data->top == data->chain;
 
     expectpath = g_strdup_printf("%s/%s%s", abs_srcdir,
                                  blockcommitPrefix, data->name);
@@ -990,20 +956,10 @@ testQemuBlockBitmapBlockcommit(const void *opaque)
         return -1;
     }
 
-    if (qemuBlockBitmapsHandleCommitStart(data->top, data->base, nodedata,
-                                          &actionsDisable, &bitmapsDisable) < 0)
-        return -1;
-
-    virBufferAddLit(&buf, "pre job bitmap disable:\n");
-
-    if (actionsDisable &&
-        virJSONValueToBuffer(actionsDisable, &buf, true) < 0)
-        return -1;
-
     virBufferAddLit(&buf, "merge bitmpas:\n");
 
-    if (qemuBlockBitmapsHandleCommitFinish(data->top, data->base, nodedata,
-                                           &actionsMerge, bitmapsDisable) < 0)
+    if (qemuBlockBitmapsHandleCommitFinish(data->top, data->base, active, nodedata,
+                                           &actionsMerge) < 0)
         return -1;
 
     if (actionsMerge &&
@@ -1026,7 +982,7 @@ mymain(void)
     struct testJSONtoJSONData jsontojsondata;
     struct testQemuImageCreateData imagecreatedata;
     struct testQemuBackupIncrementalBitmapCalculateData backupbitmapcalcdata;
-    struct testQemuCheckpointDeleteMergeData checkpointdeletedata;
+    struct testQemuCheckpointDeleteData checkpointdeletedata;
     struct testQemuBlockBitmapValidateData blockbitmapvalidatedata;
     struct testQemuBlockBitmapBlockcopyData blockbitmapblockcopydata;
     struct testQemuBlockBitmapBlockcommitData blockbitmapblockcommitdata;
@@ -1286,11 +1242,11 @@ mymain(void)
             ret = -1; \
     } while (0)
 
+    TEST_BITMAP_DETECT("empty");
+
     TEST_BITMAP_DETECT("basic");
-    TEST_BITMAP_DETECT("synthetic");
     TEST_BITMAP_DETECT("snapshots");
-    TEST_BITMAP_DETECT("snapshots-synthetic-checkpoint");
-    TEST_BITMAP_DETECT("snapshots-synthetic-broken");
+    TEST_BITMAP_DETECT("synthetic");
 
 #define TEST_BACKUP_BITMAP_CALCULATE(testname, source, incrbackup, named) \
     do { \
@@ -1304,43 +1260,46 @@ mymain(void)
             ret = -1; \
     } while (0)
 
+    TEST_BACKUP_BITMAP_CALCULATE("empty", bitmapSourceChain, "a", "empty");
+
     TEST_BACKUP_BITMAP_CALCULATE("basic-flat", bitmapSourceChain, "current", "basic");
     TEST_BACKUP_BITMAP_CALCULATE("basic-intermediate", bitmapSourceChain, "d", "basic");
     TEST_BACKUP_BITMAP_CALCULATE("basic-deep", bitmapSourceChain, "a", "basic");
 
-    TEST_BACKUP_BITMAP_CALCULATE("snapshot-flat", bitmapSourceChain, "current", "snapshots");
-    TEST_BACKUP_BITMAP_CALCULATE("snapshot-intermediate", bitmapSourceChain, "d", "snapshots");
-    TEST_BACKUP_BITMAP_CALCULATE("snapshot-deep", bitmapSourceChain, "a", "snapshots");
+    TEST_BACKUP_BITMAP_CALCULATE("snapshots-flat", bitmapSourceChain, "current", "snapshots");
+    TEST_BACKUP_BITMAP_CALCULATE("snapshots-intermediate", bitmapSourceChain, "d", "snapshots");
+    TEST_BACKUP_BITMAP_CALCULATE("snapshots-deep", bitmapSourceChain, "a", "snapshots");
 
-#define TEST_CHECKPOINT_DELETE_MERGE(testname, delbmp, parbmp, named) \
+#define TEST_CHECKPOINT_DELETE(testname, delbmp, named) \
     do { \
         checkpointdeletedata.name = testname; \
         checkpointdeletedata.chain = bitmapSourceChain; \
         checkpointdeletedata.deletebitmap = delbmp; \
-        checkpointdeletedata.parentbitmap = parbmp; \
         checkpointdeletedata.nodedatafile = named; \
         if (virTestRun("checkpoint delete " testname, \
-                       testQemuCheckpointDeleteMerge, &checkpointdeletedata) < 0) \
+                       testQemuCheckpointDelete, &checkpointdeletedata) < 0) \
         ret = -1; \
     } while (0)
 
-    TEST_CHECKPOINT_DELETE_MERGE("basic-noparent", "a", NULL, "basic");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate1", "b", "a", "basic");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate2", "c", "b", "basic");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate3", "d", "c", "basic");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-current", "current", "d", "basic");
+    TEST_CHECKPOINT_DELETE("empty", "a", "empty");
 
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-noparent", "a", NULL, "snapshots");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate1", "b", "a", "snapshots");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate2", "c", "b", "snapshots");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate3", "d", "c", "snapshots");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-current", "current", "d", "snapshots");
+    TEST_CHECKPOINT_DELETE("basic-noparent", "a", "basic");
+    TEST_CHECKPOINT_DELETE("basic-intermediate1", "b", "basic");
+    TEST_CHECKPOINT_DELETE("basic-intermediate2", "c", "basic");
+    TEST_CHECKPOINT_DELETE("basic-intermediate3", "d", "basic");
+    TEST_CHECKPOINT_DELETE("basic-current", "current", "basic");
 
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-noparent", "a", NULL, "snapshots-synthetic-checkpoint");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate1", "b", "a", "snapshots-synthetic-checkpoint");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate2", "c", "b", "snapshots-synthetic-checkpoint");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate3", "d", "c", "snapshots-synthetic-checkpoint");
-    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-current", "current", "d", "snapshots-synthetic-checkpoint");
+    TEST_CHECKPOINT_DELETE("snapshots-noparent", "a", "snapshots");
+    TEST_CHECKPOINT_DELETE("snapshots-intermediate1", "b", "snapshots");
+    TEST_CHECKPOINT_DELETE("snapshots-intermediate2", "c", "snapshots");
+    TEST_CHECKPOINT_DELETE("snapshots-intermediate3", "d", "snapshots");
+    TEST_CHECKPOINT_DELETE("snapshots-current", "current", "snapshots");
+
+    TEST_CHECKPOINT_DELETE("synthetic-noparent", "a", "synthetic");
+    TEST_CHECKPOINT_DELETE("synthetic-intermediate1", "b", "synthetic");
+    TEST_CHECKPOINT_DELETE("synthetic-intermediate2", "c", "synthetic");
+    TEST_CHECKPOINT_DELETE("synthetic-intermediate3", "d", "synthetic");
+    TEST_CHECKPOINT_DELETE("synthetic-current", "current", "synthetic");
 
 #define TEST_BITMAP_VALIDATE(testname, bitmap, rc) \
     do { \
@@ -1353,6 +1312,8 @@ mymain(void)
                        &blockbitmapvalidatedata) < 0) \
             ret = -1; \
     } while (0)
+
+    TEST_BITMAP_VALIDATE("empty", "a", false);
 
     TEST_BITMAP_VALIDATE("basic", "a", true);
     TEST_BITMAP_VALIDATE("basic", "b", true);
@@ -1367,22 +1328,14 @@ mymain(void)
     TEST_BITMAP_VALIDATE("snapshots", "current", true);
 
     TEST_BITMAP_VALIDATE("synthetic", "a", false);
-    TEST_BITMAP_VALIDATE("synthetic", "b", true);
-    TEST_BITMAP_VALIDATE("synthetic", "c", true);
-    TEST_BITMAP_VALIDATE("synthetic", "d", true);
-    TEST_BITMAP_VALIDATE("synthetic", "current", true);
-
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "a", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "b", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "c", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "d", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "current", true);
-
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "a", false);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "b", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "c", true);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "d", false);
-    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "current", true);
+    TEST_BITMAP_VALIDATE("synthetic", "b", false);
+    TEST_BITMAP_VALIDATE("synthetic", "c", false);
+    TEST_BITMAP_VALIDATE("synthetic", "d", false);
+    TEST_BITMAP_VALIDATE("synthetic", "current", false);
+    TEST_BITMAP_VALIDATE("synthetic", "top-ok", true);
+    TEST_BITMAP_VALIDATE("synthetic", "top-inactive", false);
+    TEST_BITMAP_VALIDATE("synthetic", "top-transient", false);
+    TEST_BITMAP_VALIDATE("synthetic", "top-inactive-transient", false);
 
 #define TEST_BITMAP_BLOCKCOPY(testname, shllw, ndf) \
     do { \
@@ -1396,16 +1349,19 @@ mymain(void)
             ret = -1; \
     } while (0)
 
+    TEST_BITMAP_BLOCKCOPY("empty-shallow", true, "empty");
+    TEST_BITMAP_BLOCKCOPY("empty-deep", false, "empty");
+
     TEST_BITMAP_BLOCKCOPY("basic-shallow", true, "basic");
     TEST_BITMAP_BLOCKCOPY("basic-deep", false, "basic");
 
     TEST_BITMAP_BLOCKCOPY("snapshots-shallow", true, "snapshots");
     TEST_BITMAP_BLOCKCOPY("snapshots-deep", false, "snapshots");
 
-
 #define TEST_BITMAP_BLOCKCOMMIT(testname, topimg, baseimg, ndf) \
     do {\
         blockbitmapblockcommitdata.name = testname; \
+        blockbitmapblockcommitdata.chain = bitmapSourceChain; \
         blockbitmapblockcommitdata.top = testQemuBitmapGetFakeChainEntry(bitmapSourceChain, topimg); \
         blockbitmapblockcommitdata.base = testQemuBitmapGetFakeChainEntry(bitmapSourceChain, baseimg); \
         blockbitmapblockcommitdata.nodedatafile = ndf; \
@@ -1414,6 +1370,8 @@ mymain(void)
                        &blockbitmapblockcommitdata) < 0) \
         ret = -1; \
     } while (0)
+
+    TEST_BITMAP_BLOCKCOMMIT("empty", 1, 2, "empty");
 
     TEST_BITMAP_BLOCKCOMMIT("basic-1-2", 1, 2, "basic");
     TEST_BITMAP_BLOCKCOMMIT("basic-1-3", 1, 3, "basic");
@@ -1432,20 +1390,6 @@ mymain(void)
     TEST_BITMAP_BLOCKCOMMIT("snapshots-3-5", 3, 5, "snapshots");
 
     TEST_BITMAP_BLOCKCOMMIT("snapshots-4-5", 4, 5, "snapshots");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-2", 1, 2, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-3", 1, 3, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-4", 1, 4, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-1-5", 1, 5, "snapshots-synthetic-broken");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-2-3", 2, 3, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-2-4", 2, 4, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-2-5", 2, 5, "snapshots-synthetic-broken");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-3-4", 3, 4, "snapshots-synthetic-broken");
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-3-5", 3, 5, "snapshots-synthetic-broken");
-
-    TEST_BITMAP_BLOCKCOMMIT("snapshots-synthetic-broken-4-5", 4, 5, "snapshots-synthetic-broken");
 
  cleanup:
     qemuTestDriverFree(&driver);

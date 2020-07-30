@@ -861,7 +861,7 @@ int virLXCProcessStop(virLXCDriverPtr driver,
     /* If the LXC domain is suspended we send all processes a SIGKILL
      * and thaw them. Upon wakeup the process sees the pending signal
      * and dies immediately. It is guaranteed that priv->cgroup != NULL
-     * here because the domain has aleady been suspended using the
+     * here because the domain has already been suspended using the
      * freezer cgroup.
      */
     if (reason == VIR_DOMAIN_SHUTOFF_DESTROYED &&

@@ -374,7 +374,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
             return -1;
     }
 
-    VIR_DEBUG("Device whitelist complete");
+    VIR_DEBUG("Device ACL setup complete");
 
     return 0;
 }

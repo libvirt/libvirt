@@ -84,11 +84,6 @@ qemuBlockJobDataDisposeJobdata(qemuBlockJobDataPtr job)
         virObjectUnref(job->data.backup.store);
         g_free(job->data.backup.bitmap);
     }
-
-    if (job->type == QEMU_BLOCKJOB_TYPE_COMMIT ||
-        job->type == QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT) {
-        virStringListFree(job->data.commit.disabledBitmapsBase);
-    }
 }
 
 
@@ -290,7 +285,6 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
                           virStorageSourcePtr topparent,
                           virStorageSourcePtr top,
                           virStorageSourcePtr base,
-                          char ***disabledBitmapsBase,
                           bool delete_imgs,
                           unsigned int jobflags)
 {
@@ -316,7 +310,6 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
     job->data.commit.top = top;
     job->data.commit.base = base;
     job->data.commit.deleteCommittedImages = delete_imgs;
-    job->data.commit.disabledBitmapsBase = g_steal_pointer(disabledBitmapsBase);
     job->jobflags = jobflags;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
@@ -526,7 +519,7 @@ qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
         /* try cancelling invalid jobs - this works only if the job is not
          * concluded. In such case it will fail. We'll leave such job linger
          * in qemu and just forget about it in libvirt because there's not much
-         * we coud do besides killing the VM */
+         * we could do besides killing the VM */
         if (job->invalidData) {
 
             qemuBlockJobMarkBroken(job);
@@ -943,6 +936,41 @@ qemuBlockJobClearConfigChain(virDomainObjPtr vm,
 }
 
 
+static int
+qemuBlockJobProcessEventCompletedPullBitmaps(virDomainObjPtr vm,
+                                             qemuBlockJobDataPtr job,
+                                             qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autoptr(virJSONValue) actions = NULL;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
+        return -1;
+
+    if (qemuBlockGetBitmapMergeActions(job->disk->src,
+                                       job->data.pull.base,
+                                       job->disk->src,
+                                       NULL, NULL, NULL,
+                                       &actions,
+                                       blockNamedNodeData) < 0)
+        return -1;
+
+    if (!actions)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        return -1;
+
+    qemuMonitorTransaction(priv->mon, &actions);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuBlockJobProcessEventCompletedPull:
  * @driver: qemu driver object
@@ -982,6 +1010,8 @@ qemuBlockJobProcessEventCompletedPull(virQEMUDriverPtr driver,
 
     if (!cfgdisk)
         qemuBlockJobClearConfigChain(vm, job->disk);
+
+    qemuBlockJobProcessEventCompletedPullBitmaps(vm, job, asyncJob);
 
     /* when pulling if 'base' is right below the top image we don't have to modify it */
     if (job->disk->src->backingStore == job->data.pull.base)
@@ -1069,8 +1099,10 @@ qemuBlockJobProcessEventCompletedCommitBitmaps(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virHashTable) blockNamedNodeData = NULL;
     g_autoptr(virJSONValue) actions = NULL;
+    bool active = job->type == QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
+    if (!active &&
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
         return 0;
 
     if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
@@ -1078,16 +1110,18 @@ qemuBlockJobProcessEventCompletedCommitBitmaps(virDomainObjPtr vm,
 
     if (qemuBlockBitmapsHandleCommitFinish(job->data.commit.top,
                                            job->data.commit.base,
+                                           active,
                                            blockNamedNodeData,
-                                           &actions,
-                                           job->data.commit.disabledBitmapsBase) < 0)
+                                           &actions) < 0)
         return 0;
 
     if (!actions)
         return 0;
 
-    if (qemuBlockReopenReadWrite(vm, job->data.commit.base, asyncJob) < 0)
-        return -1;
+    if (!active) {
+        if (qemuBlockReopenReadWrite(vm, job->data.commit.base, asyncJob) < 0)
+            return -1;
+    }
 
     if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
         return -1;
@@ -1097,8 +1131,10 @@ qemuBlockJobProcessEventCompletedCommitBitmaps(virDomainObjPtr vm,
     if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
         return -1;
 
-    if (qemuBlockReopenReadOnly(vm, job->data.commit.base, asyncJob) < 0)
-        return -1;
+    if (!active) {
+        if (qemuBlockReopenReadOnly(vm, job->data.commit.base, asyncJob) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -1268,6 +1304,9 @@ qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriverPtr driver,
     job->disk->src = job->data.commit.base;
     job->disk->src->readonly = job->data.commit.top->readonly;
 
+    if (qemuBlockJobProcessEventCompletedCommitBitmaps(vm, job, asyncJob) < 0)
+        return;
+
     qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->data.commit.top);
 
     if (job->data.commit.deleteCommittedImages)
@@ -1280,6 +1319,43 @@ qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriverPtr driver,
     job->disk->mirror = NULL;
 }
 
+
+static int
+qemuBlockJobProcessEventCompletedCopyBitmaps(virDomainObjPtr vm,
+                                             qemuBlockJobDataPtr job,
+                                             qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autoptr(virJSONValue) actions = NULL;
+    bool shallow = job->jobflags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
+        return 0;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
+        return -1;
+
+    if (qemuBlockBitmapsHandleBlockcopy(job->disk->src,
+                                        job->disk->mirror,
+                                        blockNamedNodeData,
+                                        shallow,
+                                        &actions) < 0)
+        return 0;
+
+    if (!actions)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        return -1;
+
+    qemuMonitorTransaction(priv->mon, &actions);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
+        return -1;
+
+    return 0;
+}
 
 static void
 qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriverPtr driver,
@@ -1294,6 +1370,8 @@ qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriverPtr driver,
     if (!job->disk ||
         !job->disk->mirror)
         return;
+
+    qemuBlockJobProcessEventCompletedCopyBitmaps(vm, job, asyncJob);
 
     /* for shallow copy without reusing external image the user can either not
      * specify the backing chain in which case libvirt will open and use the
@@ -1328,6 +1406,7 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriverPtr driver,
         !job->disk->mirror)
         return;
 
+    /* activeWrite bitmap is removed automatically here */
     qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->disk->mirror);
     virObjectUnref(job->disk->mirror);
     job->disk->mirror = NULL;
@@ -1337,8 +1416,11 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriverPtr driver,
 static void
 qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriverPtr driver,
                                            virDomainObjPtr vm,
-                                           qemuBlockJobDataPtr job)
+                                           qemuBlockJobDataPtr job,
+                                           qemuDomainAsyncJob asyncJob)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virJSONValue) actions = virJSONValueNewArray();
     virDomainDiskDefPtr disk = job->disk;
 
     VIR_DEBUG("active commit job '%s' on VM '%s' failed", job->name, vm->def->name);
@@ -1346,36 +1428,8 @@ qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriverPtr driver,
     if (!disk)
         return;
 
-    /* Ideally, we would make the backing chain read only again (yes, SELinux
-     * can do that using different labels). But that is not implemented yet and
-     * not leaking security driver metadata is more important. */
-    qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->mirror);
-
-    virObjectUnref(disk->mirror);
-    disk->mirror = NULL;
-}
-
-
-static void
-qemuBlockJobProcessEventFailedCommitCommon(virDomainObjPtr vm,
-                                           qemuBlockJobDataPtr job,
-                                           qemuDomainAsyncJob asyncJob)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autoptr(virJSONValue) actions = virJSONValueNewArray();
-    char **disabledBitmaps = job->data.commit.disabledBitmapsBase;
-
-    if (!disabledBitmaps || !*disabledBitmaps)
-        return;
-
-    for (; *disabledBitmaps; disabledBitmaps++) {
-        qemuMonitorTransactionBitmapEnable(actions,
-                                           job->data.commit.base->nodeformat,
-                                           *disabledBitmaps);
-    }
-
-    if (qemuBlockReopenReadWrite(vm, job->data.commit.base, asyncJob) < 0)
-        return;
+    ignore_value(qemuMonitorTransactionBitmapRemove(actions, disk->mirror->nodeformat,
+                                                    "libvirt-tmp-activewrite"));
 
     if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
         return;
@@ -1385,8 +1439,13 @@ qemuBlockJobProcessEventFailedCommitCommon(virDomainObjPtr vm,
     if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
         return;
 
-    if (qemuBlockReopenReadOnly(vm, job->data.commit.base, asyncJob) < 0)
-        return;
+    /* Ideally, we would make the backing chain read only again (yes, SELinux
+     * can do that using different labels). But that is not implemented yet and
+     * not leaking security driver metadata is more important. */
+    qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->mirror);
+
+    virObjectUnref(disk->mirror);
+    disk->mirror = NULL;
 }
 
 
@@ -1497,16 +1556,13 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
     case QEMU_BLOCKJOB_TYPE_COMMIT:
         if (success)
             qemuBlockJobProcessEventCompletedCommit(driver, vm, job, asyncJob);
-        else
-            qemuBlockJobProcessEventFailedCommitCommon(vm, job, asyncJob);
         break;
 
     case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
         if (success) {
             qemuBlockJobProcessEventCompletedActiveCommit(driver, vm, job, asyncJob);
         } else {
-            qemuBlockJobProcessEventFailedActiveCommit(driver, vm, job);
-            qemuBlockJobProcessEventFailedCommitCommon(vm, job, asyncJob);
+            qemuBlockJobProcessEventFailedActiveCommit(driver, vm, job, asyncJob);
         }
         break;
 

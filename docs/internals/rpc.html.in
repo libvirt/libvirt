@@ -447,7 +447,8 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       <dt><code>virNetSASLContextPtr</code> (virnetsaslcontext.h)</dt>
       <dd>The virNetSASLContext APIs maintain SASL state for a network
         service (server or client). This is primarily used on the server
-        to provide a whitelist of allowed SASL usernames for clients.
+        to provide an access control list of SASL usernames permitted as
+        clients.
       </dd>
 
       <dt><code>virNetSASLSessionPtr</code> (virnetsaslcontext.h)</dt>
@@ -460,7 +461,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       <dt><code>virNetTLSContextPtr</code> (virnettlscontext.h)</dt>
       <dd>The virNetTLSContext APIs maintain TLS state for a network
         service (server or client). This is primarily used on the server
-        to provide a whitelist of allowed x509 distinguished names, as
+        to provide an access control list of x509 distinguished names, as
         well as diffie-hellman keys. It can also do validation of
         x509 certificates prior to initiating a connection, in order
         to improve detection of configuration errors.
@@ -760,8 +761,8 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       next step is to decode the RPC header. The header is validated to
       ensure the request is sensible, ie the server should not receive a
       method reply from a client. If the client has not yet authenticated,
-      a security check is also applied to make sure the procedure is on the
-      whitelist of those allowed prior to auth. If the packet is a method
+      an access control list check is also performed to make sure the procedure
+      is one of those allowed prior to auth. If the packet is a method
       call, it will be placed on a global processing queue. The event loop
       thread is now done with the packet for the time being.
     </p>

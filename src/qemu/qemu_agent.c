@@ -90,7 +90,7 @@ struct _qemuAgentMessage {
     bool finished;
     /* true for sync command */
     bool sync;
-    /* id of the issued sync comand */
+    /* id of the issued sync command */
     unsigned long long id;
     bool first;
 };
@@ -155,7 +155,7 @@ static char *
 qemuAgentEscapeNonPrintable(const char *text)
 {
     size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     for (i = 0; text[i] != '\0'; i++) {
         if (text[i] == '\\')
             virBufferAddLit(&buf, "\\\\");

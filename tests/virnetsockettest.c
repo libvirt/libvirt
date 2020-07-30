@@ -55,11 +55,14 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
         return -1;
 
     for (i = 0; i < 50; i++) {
-        int only = 1;
-        if ((s4 = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-            goto cleanup;
+        if (*hasIPv4) {
+            if ((s4 = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+                goto cleanup;
+        }
 
         if (*hasIPv6) {
+            int only = 1;
+
             if ((s6 = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
                 goto cleanup;
 
@@ -77,13 +80,15 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
         in6.sin6_port = htons(BASE_PORT + i);
         in6.sin6_addr = in6addr_loopback;
 
-        if (bind(s4, (struct sockaddr *)&in4, sizeof(in4)) < 0) {
-            if (errno == EADDRINUSE) {
-                VIR_FORCE_CLOSE(s4);
-                VIR_FORCE_CLOSE(s6);
-                continue;
+        if (*hasIPv4) {
+            if (bind(s4, (struct sockaddr *)&in4, sizeof(in4)) < 0) {
+                if (errno == EADDRINUSE) {
+                    VIR_FORCE_CLOSE(s4);
+                    VIR_FORCE_CLOSE(s6);
+                    continue;
+                }
+                goto cleanup;
             }
-            goto cleanup;
         }
 
         if (*hasIPv6) {

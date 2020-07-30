@@ -124,7 +124,7 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
     g_autofree char *line = NULL;
     size_t n;
     struct virLXCMeminfo meminfo;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     virBufferPtr new_meminfo = &buffer;
 
     if (virLXCCgroupGetMeminfo(&meminfo) < 0) {
@@ -223,7 +223,6 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
     memcpy(buf, virBufferCurrentContent(new_meminfo), res);
 
  cleanup:
-    virBufferFreeAndReset(new_meminfo);
     VIR_FORCE_FCLOSE(fd);
     return res;
 }

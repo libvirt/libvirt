@@ -26,25 +26,18 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-VIR_LOG_INIT("qemu.qemu_process");
+VIR_LOG_INIT("qemu.qemu_security");
 
 
 int
 qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
-                        const char *stdin_path,
+                        const char *incomingPath,
                         bool migrated)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pid_t pid = -1;
-
-    /* Explicitly run this outside of transaction. We really want to relabel
-     * the file in the host and not in the domain's namespace. */
-    if (virSecurityManagerDomainSetPathLabelRO(driver->securityManager,
-                                               vm->def,
-                                               stdin_path) < 0)
-        goto cleanup;
 
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         pid = vm->pid;
@@ -54,7 +47,7 @@ qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
 
     if (virSecurityManagerSetAllLabel(driver->securityManager,
                                       vm->def,
-                                      stdin_path,
+                                      incomingPath,
                                       priv->chardevStdioLogd,
                                       migrated) < 0)
         goto cleanup;
@@ -455,7 +448,7 @@ qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
  * @existstatus: pointer to int returning exit status of process
  * @cmdret: pointer to int returning result of virCommandRun
  *
- * Start the vhost-user-gpu process with approriate labels.
+ * Start the vhost-user-gpu process with appropriate labels.
  * This function returns -1 on security setup error, 0 if all the
  * setup was done properly. In case the virCommand failed to run
  * 0 is returned but cmdret is set appropriately with the process
@@ -617,15 +610,13 @@ qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
 int
 qemuSecurityDomainRestorePathLabel(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
-                                   const char *path,
-                                   bool ignoreNS)
+                                   const char *path)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
 
-    if (!ignoreNS &&
-        qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         pid = vm->pid;
 
     if (virSecurityManagerTransactionStart(driver->securityManager) < 0)

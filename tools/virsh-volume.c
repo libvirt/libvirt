@@ -226,7 +226,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     const char *name, *capacityStr = NULL, *allocationStr = NULL, *format = NULL;
     const char *snapshotStrVol = NULL, *snapshotStrFormat = NULL;
     unsigned long long capacity, allocation = 0;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned long flags = 0;
     virshControlPtr priv = ctl->privData;
     bool ret = false;
@@ -356,7 +356,6 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     if (vol)
         virStorageVolFree(vol);
     virStoragePoolFree(pool);

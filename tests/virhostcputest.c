@@ -112,7 +112,7 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
     char *actualData = NULL;
     FILE *cpustat = NULL;
     virNodeCPUStatsPtr params = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     int nparams = 0;
 
@@ -153,7 +153,6 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
     ret = 0;
 
  fail:
-    virBufferFreeAndReset(&buf);
     VIR_FORCE_FCLOSE(cpustat);
     VIR_FREE(actualData);
     VIR_FREE(params);

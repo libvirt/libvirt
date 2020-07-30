@@ -704,7 +704,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
          net->guestIP.nips == 0)) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer)buf = VIR_BUFFER_INITIALIZER;
         int veid = openvzGetVEID(vpsid);
 
         /* if net is ethernet and the user has specified guest interface name,
@@ -782,7 +782,7 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
                              virDomainDefPtr def)
 {
     size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *param;
     int first = 1;
     struct openvz_driver *driver =  conn->privateData;
@@ -819,7 +819,6 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
     return 0;
 
  exit:
-    virBufferFreeAndReset(&buf);
     return -1;
 }
 

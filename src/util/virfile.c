@@ -71,6 +71,7 @@
 # endif
 # include <sys/ioctl.h>
 # include <linux/cdrom.h>
+# include <linux/fs.h>
 #endif
 
 #if HAVE_LIBATTR
@@ -897,7 +898,7 @@ virFileNBDDeviceFindUnused(void)
 static bool
 virFileNBDLoadDriver(void)
 {
-    if (virKModIsBlacklisted(NBD_DRIVER)) {
+    if (virKModIsProhibited(NBD_DRIVER)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to load nbd module: "
                          "administratively prohibited"));
@@ -905,7 +906,7 @@ virFileNBDLoadDriver(void)
     } else {
         g_autofree char *errbuf = NULL;
 
-        if ((errbuf = virKModLoad(NBD_DRIVER, true))) {
+        if ((errbuf = virKModLoad(NBD_DRIVER))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to load nbd module"));
             return false;
@@ -1303,7 +1304,7 @@ int
 virBuildPathInternal(char **path, ...)
 {
     char *path_component = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     va_list ap;
     int ret = 0;
 
@@ -3127,20 +3128,20 @@ virFileBuildPath(const char *dir, const char *name, const char *ext)
     return path;
 }
 
-/* Open a non-blocking master side of a pty.  If ttyName is not NULL,
- * then populate it with the name of the slave.  If rawmode is set,
- * also put the master side into raw mode before returning.  */
+/* Open a non-blocking primary side of a pty. If ttyName is not NULL,
+ * then populate it with the name of the secondary peer. If rawmode is
+ * set, also put the primary side into raw mode before returning.  */
 #ifndef WIN32
 int
-virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
+virFileOpenTty(int *ttyprimary, char **ttyName, int rawmode)
 {
     /* XXX A word of caution - on some platforms (Solaris and HP-UX),
-     * additional ioctl() calls are needs after opening the slave
+     * additional ioctl() calls are needs after opening the secondary
      * before it will cause isatty() to return true.  Should we make
-     * virFileOpenTty also return the opened slave fd, so the caller
+     * virFileOpenTty also return the opened secondary fd, so the caller
      * doesn't have to worry about that mess?  */
     int ret = -1;
-    int slave = -1;
+    int secondary = -1;
     g_autofree char *name = NULL;
 
     /* Unfortunately, we can't use the name argument of openpty, since
@@ -3148,31 +3149,31 @@ virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
      * Likewise, we can't use the termios argument: we have to use
      * read-modify-write since there is no portable way to initialize
      * a struct termios without use of tcgetattr.  */
-    if (openpty(ttymaster, &slave, NULL, NULL, NULL) < 0)
+    if (openpty(ttyprimary, &secondary, NULL, NULL, NULL) < 0)
         return -1;
 
     /* What a shame that openpty cannot atomically set FD_CLOEXEC, but
      * that using posix_openpt/grantpt/unlockpt/ptsname is not
      * thread-safe, and that ptsname_r is not portable.  */
-    if (virSetNonBlock(*ttymaster) < 0 ||
-        virSetCloseExec(*ttymaster) < 0)
+    if (virSetNonBlock(*ttyprimary) < 0 ||
+        virSetCloseExec(*ttyprimary) < 0)
         goto cleanup;
 
-    /* While Linux supports tcgetattr on either the master or the
-     * slave, Solaris requires it to be on the slave.  */
+    /* While Linux supports tcgetattr on either the primary or the
+     * secondary, Solaris requires it to be on the secondary.  */
     if (rawmode) {
         struct termios ttyAttr;
-        if (tcgetattr(slave, &ttyAttr) < 0)
+        if (tcgetattr(secondary, &ttyAttr) < 0)
             goto cleanup;
 
         cfmakeraw(&ttyAttr);
 
-        if (tcsetattr(slave, TCSADRAIN, &ttyAttr) < 0)
+        if (tcsetattr(secondary, TCSADRAIN, &ttyAttr) < 0)
             goto cleanup;
     }
 
-    /* ttyname_r on the slave is required by POSIX, while ptsname_r on
-     * the master is a glibc extension, and the POSIX ptsname is not
+    /* ttyname_r on the secondary is required by POSIX, while ptsname_r on
+     * the primary is a glibc extension, and the POSIX ptsname is not
      * thread-safe.  Since openpty gave us both descriptors, guess
      * which way we will determine the name?  :)  */
     if (ttyName) {
@@ -3184,7 +3185,7 @@ virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
         if (VIR_ALLOC_N(name, len) < 0)
             goto cleanup;
 
-        while ((rc = ttyname_r(slave, name, len)) == ERANGE) {
+        while ((rc = ttyname_r(secondary, name, len)) == ERANGE) {
             if (VIR_RESIZE_N(name, len, len, len) < 0)
                 goto cleanup;
         }
@@ -3200,14 +3201,14 @@ virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
 
  cleanup:
     if (ret != 0)
-        VIR_FORCE_CLOSE(*ttymaster);
-    VIR_FORCE_CLOSE(slave);
+        VIR_FORCE_CLOSE(*ttyprimary);
+    VIR_FORCE_CLOSE(secondary);
 
     return ret;
 }
 #else /* WIN32 */
 int
-virFileOpenTty(int *ttymaster G_GNUC_UNUSED,
+virFileOpenTty(int *ttyprimary G_GNUC_UNUSED,
                char **ttyName G_GNUC_UNUSED,
                int rawmode G_GNUC_UNUSED)
 {
@@ -4503,4 +4504,96 @@ virFileDataSync(int fd)
 #else
     return fdatasync(fd);
 #endif
+}
+
+
+/**
+ * virFileSetCow:
+ * @path: file or directory to control the COW flag on
+ * @state: the desired state of the COW flag
+ *
+ * When @state is VIR_TRISTATE_BOOL_ABSENT, some helpful
+ * default logic will be used. Specifically if the filesystem
+ * containing @path is 'btrfs', then it will attempt to
+ * disable the COW flag, but errors will be ignored. For
+ * any other filesystem no change will be made.
+ *
+ * When @state is VIR_TRISTATE_BOOL_YES or VIR_TRISTATE_BOOL_NO,
+ * it will attempt to set the COW flag state to that explicit
+ * value, and always return an error if it fails. Note this
+ * means it will always return error if the filesystem is not
+ * 'btrfs'.
+ */
+int
+virFileSetCOW(const char *path,
+              virTristateBool state)
+{
+#if __linux__
+    int val = 0;
+    struct statfs buf;
+    VIR_AUTOCLOSE fd = -1;
+
+    VIR_DEBUG("Setting COW flag on '%s' to '%s'",
+              path, virTristateBoolTypeToString(state));
+
+    fd = open(path, O_RDONLY|O_NONBLOCK|O_LARGEFILE);
+    if (fd < 0) {
+        virReportSystemError(errno, _("unable to open '%s'"),
+                             path);
+        return -1;
+    }
+
+    if (fstatfs(fd, &buf) < 0)  {
+        virReportSystemError(errno, _("unable query filesystem type on '%s'"),
+                             path);
+        return -1;
+    }
+
+    if (buf.f_type != BTRFS_SUPER_MAGIC) {
+        if (state == VIR_TRISTATE_BOOL_ABSENT) {
+            virReportSystemError(ENOSYS,
+                                 _("unable to control COW flag on '%s', not btrfs"),
+                                 path);
+            return -1;
+        }
+        return 0;
+    }
+
+    if (ioctl(fd, FS_IOC_GETFLAGS, &val) < 0) {
+        virReportSystemError(errno, _("unable get directory flags on '%s'"),
+                             path);
+        return -1;
+    }
+
+    VIR_DEBUG("Current flags on '%s' are 0x%x", path, val);
+    if (state == VIR_TRISTATE_BOOL_YES) {
+        val &= ~FS_NOCOW_FL;
+    } else {
+        val |= FS_NOCOW_FL;
+    }
+
+    VIR_DEBUG("New flags on '%s' will be 0x%x", path, val);
+    if (ioctl(fd, FS_IOC_SETFLAGS, &val) < 0) {
+        int saved_err = errno;
+        VIR_DEBUG("Failed to set flags on '%s': %s", path, g_strerror(saved_err));
+        if (state != VIR_TRISTATE_BOOL_ABSENT) {
+            virReportSystemError(saved_err,
+                                 _("unable control COW flag on '%s'"),
+                                 path);
+            return -1;
+        } else {
+            VIR_DEBUG("Ignoring failure to set COW");
+        }
+    }
+
+    return 0;
+#else /* ! __linux__ */
+    if (state != VIR_TRISTATE_BOOL_ABSENT) {
+        virReportSystemError(ENOSYS,
+                             _("Unable to set copy-on-write state on '%s' to '%s'"),
+                             path, virTristateBoolTypeToString(state));
+        return -1;
+    }
+    return 0;
+#endif /* ! __linux__ */
 }

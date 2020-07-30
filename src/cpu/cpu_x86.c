@@ -972,7 +972,7 @@ x86FeatureNames(virCPUx86MapPtr map,
                 const char *separator,
                 virCPUx86Data *data)
 {
-    virBuffer ret = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) ret = VIR_BUFFER_INITIALIZER;
     bool first = true;
     size_t i;
 
@@ -1208,7 +1208,7 @@ virCPUx86SignaturesMatch(virCPUx86SignaturesPtr sigs,
 static char *
 virCPUx86SignaturesFormat(virCPUx86SignaturesPtr sigs)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     if (!sigs)
@@ -1707,7 +1707,7 @@ virCPUx86DataFormat(const virCPUData *data)
 {
     virCPUx86DataIterator iter;
     virCPUx86DataItemPtr item;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCPUx86DataIteratorInit(&iter, &data->data.x86);
 

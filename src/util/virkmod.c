@@ -30,9 +30,7 @@ doModprobe(const char *opts, const char *module, char **outbuf, char **errbuf)
 {
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = virCommandNew(MODPROBE);
-    if (opts)
-        virCommandAddArg(cmd, opts);
+    cmd = virCommandNewArgList(MODPROBE, opts, NULL);
     if (module)
         virCommandAddArg(cmd, module);
     if (outbuf)
@@ -60,30 +58,10 @@ doRmmod(const char *module, char **errbuf)
     return 0;
 }
 
-/**
- * virKModConfig:
- *
- * Get the current kernel module configuration
- *
- * Returns NULL on failure or a pointer to the output which
- * must be VIR_FREE()'d by the caller
- */
-char *
-virKModConfig(void)
-{
-    char *outbuf = NULL;
-
-    if (doModprobe("-c", NULL, &outbuf, NULL) < 0)
-        return NULL;
-
-    return outbuf;
-}
-
 
 /**
  * virKModLoad:
  * @module: Name of the module to load
- * @useBlacklist: True if honoring blacklist
  *
  * Attempts to load a kernel module
  *
@@ -92,11 +70,11 @@ virKModConfig(void)
  * by the caller
  */
 char *
-virKModLoad(const char *module, bool useBlacklist)
+virKModLoad(const char *module)
 {
     char *errbuf = NULL;
 
-    if (doModprobe(useBlacklist ? "-b" : NULL, module, NULL, &errbuf) < 0)
+    if (doModprobe("-b", module, NULL, &errbuf) < 0)
         return errbuf;
 
     VIR_FREE(errbuf);
@@ -134,32 +112,32 @@ virKModUnload(const char *module)
 
 
 /**
- * virKModIsBlacklisted:
- * @module: Name of the module to check for on the blacklist
+ * virKModIsProhibited:
+ * @module: Name of the module to check
  *
- * Search the output of the configuration data for the module being
- * blacklisted.
+ * Determine if loading of @module is prohibited by admin
+ * configuration.
  *
- * returns true when found blacklisted, false otherwise.
+ * returns true when found prohibited, false otherwise.
  */
 bool
-virKModIsBlacklisted(const char *module)
+virKModIsProhibited(const char *module)
 {
     size_t i;
-    g_autofree char *drvblklst = NULL;
+    g_autofree char *drvmatch = NULL;
     g_autofree char *outbuf = NULL;
 
-    drvblklst = g_strdup_printf("blacklist %s\n", module);
+    drvmatch = g_strdup_printf("blacklist %s\n", module);
 
     /* modprobe will convert all '-' into '_', so we need to as well */
-    for (i = 0; i < drvblklst[i]; i++)
-        if (drvblklst[i] == '-')
-            drvblklst[i] = '_';
+    for (i = 0; i < drvmatch[i]; i++)
+        if (drvmatch[i] == '-')
+            drvmatch[i] = '_';
 
     if (doModprobe("-c", NULL, &outbuf, NULL) < 0)
         return false;
 
-    if (strstr(outbuf, drvblklst))
+    if (strstr(outbuf, drvmatch))
         return true;
 
     return false;

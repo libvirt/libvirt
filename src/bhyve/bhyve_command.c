@@ -166,14 +166,14 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
                                bhyveConnPtr driver,
                                virCommandPtr cmd)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virBuffer device = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *disk_source;
     size_t i;
-    int ret = -1;
 
     for (i = 0; i < def->ndisks; i++) {
+        g_auto(virBuffer) device = VIR_BUFFER_INITIALIZER;
         virDomainDiskDefPtr disk = def->disks[i];
+
         if (disk->bus != VIR_DOMAIN_DISK_BUS_SATA)
             continue;
 
@@ -186,11 +186,11 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
             (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_VOLUME)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("unsupported disk type"));
-            goto error;
+            return -1;
         }
 
         if (virDomainDiskTranslateSourcePool(disk) < 0)
-            goto error;
+            return -1;
 
         disk_source = virDomainDiskGetSource(disk);
 
@@ -199,7 +199,7 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("cdrom device without source path "
                              "not supported"));
-            goto error;
+            return -1;
         }
 
         switch (disk->device) {
@@ -218,10 +218,9 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("unsupported disk device"));
-            goto error;
+            return -1;
         }
         virBufferAddBuffer(&buf, &device);
-        virBufferFreeAndReset(&device);
     }
 
     virCommandAddArg(cmd, "-s");
@@ -229,10 +228,7 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
                            controller->info.addr.pci.slot,
                            virBufferCurrentContent(&buf));
 
-    ret = 0;
- error:
-    virBufferFreeAndReset(&buf);
-    return ret;
+    return 0;
 }
 
 static int
@@ -378,7 +374,7 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
                          virCommandPtr cmd,
                          bool dryRun)
 {
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDefPtr glisten = NULL;
     bool escapeAddr;
     unsigned short port;
@@ -407,7 +403,7 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
     if (!(glisten = virDomainGraphicsGetListen(graphics, 0))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing listen element"));
-        goto error;
+        return -1;
     }
 
     virBufferAsprintf(&opt, "%d:%d,fbuf", video->info.addr.pci.slot, video->info.addr.pci.function);
@@ -422,13 +418,13 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
              graphics->data.vnc.port > 65535)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("vnc port must be in range [5900,65535]"));
-            goto error;
+            return -1;
         }
 
         if (graphics->data.vnc.auth.passwd) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("vnc password auth not supported"));
-            goto error;
+            return -1;
         } else {
              /* Bhyve doesn't support VNC Auth yet, so print a warning about
               * unauthenticated VNC sessions */
@@ -462,11 +458,11 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Unsupported listen type"));
-        goto error;
+        return -1;
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainGraphicsListenType, glisten->type);
-        goto error;
+        return -1;
     }
 
     if (video->driver)
@@ -477,9 +473,6 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
     virCommandAddArgBuffer(cmd, &opt);
     return 0;
 
- error:
-    virBufferFreeAndReset(&opt);
-    return -1;
 }
 
 virCommandPtr
@@ -765,15 +758,12 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
                                  char **devicesmap_out)
 {
     virDomainDiskDefPtr hdd, cd, userdef, diskdef;
-    virBuffer devicemap;
     virCommandPtr cmd;
     unsigned int best_idx = UINT_MAX;
     size_t i;
 
     if (def->os.bootloaderArgs != NULL)
         return virBhyveProcessBuildCustomLoaderCmd(def);
-
-    devicemap = (virBuffer)VIR_BUFFER_INITIALIZER;
 
     /* Search disk list for CD or HDD device. We'll respect <boot order=''> if
      * present and otherwise pick the first CD or failing that HDD we come
@@ -809,6 +799,8 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
     VIR_DEBUG("grub-bhyve with default arguments");
 
     if (devicesmap_out != NULL) {
+        g_auto(virBuffer) devicemap = VIR_BUFFER_INITIALIZER;
+
         /* Grub device.map (just for boot) */
         if (userdef != NULL) {
             virBhyveFormatGrubDevice(&devicemap, userdef);

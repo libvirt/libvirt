@@ -100,7 +100,7 @@ char *virSystemdMakeScopeName(const char *name,
                               const char *drivername,
                               bool legacy_behaviour)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "machine-");
     if (legacy_behaviour) {
@@ -116,7 +116,7 @@ char *virSystemdMakeScopeName(const char *name,
 
 char *virSystemdMakeSliceName(const char *partition)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (*partition == '/')
         partition++;
@@ -916,7 +916,7 @@ virSystemdActivationNew(virSystemdActivationMap *map,
  *
  * Acquire an object for handling systemd activation.
  * If no activation FDs have been provided the returned object
- * will be NULL, indicating normal sevice setup can be performed
+ * will be NULL, indicating normal service setup can be performed
  * If the returned object is non-NULL then at least one file
  * descriptor will be present. No normal service setup should
  * be performed.

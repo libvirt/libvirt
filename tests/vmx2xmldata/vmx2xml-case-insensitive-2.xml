@@ -22,7 +22,7 @@
     </disk>
     <controller type='scsi' index='0' model='lsilogic'/>
     <interface type='bridge'>
-      <mac address='00:50:56:91:48:c7'/>
+      <mac address='00:50:56:91:48:c7' type='generated'/>
       <source bridge='vm network'/>
     </interface>
     <video>

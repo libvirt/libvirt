@@ -287,7 +287,7 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
     int keyType;
     size_t keyLength;
     char *errmsg;
-    virBuffer buff = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buff = VIR_BUFFER_INITIALIZER;
     virConnectCredential askKey;
     struct libssh2_knownhost *knownHostEntry = NULL;
     size_t i;
@@ -681,7 +681,7 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
     VIR_DEBUG("sess=%p", sess);
 
     if (priv->password) {
-        /* tunelled password authentication */
+        /* tunnelled password authentication */
         if ((rc = libssh2_userauth_password(sess->session,
                                             priv->username,
                                             priv->password)) == 0) {
@@ -705,7 +705,7 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
                                                     sess->hostname)))
                 goto cleanup;
 
-            /* tunelled password authentication */
+            /* tunnelled password authentication */
             if ((rc = libssh2_userauth_password(sess->session,
                                                 priv->username,
                                                 password)) == 0) {

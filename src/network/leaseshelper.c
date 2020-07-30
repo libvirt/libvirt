@@ -82,8 +82,8 @@ VIR_ENUM_IMPL(virLeaseAction,
 int
 main(int argc, char **argv)
 {
-    char *pid_file = NULL;
-    char *custom_lease_file = NULL;
+    g_autofree char *pid_file = NULL;
+    g_autofree char *custom_lease_file = NULL;
     const char *ip = NULL;
     const char *mac = NULL;
     const char *leases_str = NULL;
@@ -91,13 +91,13 @@ main(int argc, char **argv)
     const char *clientid = getenv("DNSMASQ_CLIENT_ID");
     const char *interface = getenv("DNSMASQ_INTERFACE");
     const char *hostname = getenv("DNSMASQ_SUPPLIED_HOSTNAME");
-    char *server_duid = NULL;
+    g_autofree char *server_duid = NULL;
     int action = -1;
     int pid_file_fd = -1;
     int rv = EXIT_FAILURE;
     bool delete = false;
-    virJSONValuePtr lease_new = NULL;
-    virJSONValuePtr leases_array_new = NULL;
+    g_autoptr(virJSONValue) lease_new = NULL;
+    g_autoptr(virJSONValue) leases_array_new = NULL;
 
     virSetErrorFunc(NULL, NULL);
     virSetErrorLogPriorityFunc(NULL);
@@ -131,8 +131,10 @@ main(int argc, char **argv)
      * events for expired leases. So, libvirtd sets another env var for this
      * purpose */
     if (!interface &&
-        !(interface = getenv("VIR_BRIDGE_NAME")))
-        goto cleanup;
+        !(interface = getenv("VIR_BRIDGE_NAME"))) {
+        fprintf(stderr, _("interface not set\n"));
+        exit(EXIT_FAILURE);
+    }
 
     ip = argv[3];
     mac = argv[2];
@@ -160,13 +162,21 @@ main(int argc, char **argv)
     pid_file = g_strdup(RUNSTATEDIR "/leaseshelper.pid");
 
     /* Try to claim the pidfile, exiting if we can't */
-    if ((pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0)
+    if ((pid_file_fd = virPidFileAcquirePath(pid_file, true, getpid())) < 0) {
+        fprintf(stderr,
+                _("Unable to acquire PID file: %s\n errno=%d"),
+                pid_file, errno);
         goto cleanup;
+    }
 
     /* Since interfaces can be hot plugged, we need to make sure that the
      * corresponding custom lease file exists. If not, 'touch' it */
-    if (virFileTouch(custom_lease_file, 0644) < 0)
+    if (virFileTouch(custom_lease_file, 0644) < 0) {
+        fprintf(stderr,
+                _("Unable to create: %s\n errno=%d"),
+                custom_lease_file, errno);
         goto cleanup;
+    }
 
     switch ((enum virLeaseActionFlags) action) {
     case VIR_LEASE_ACTION_ADD:
@@ -245,12 +255,6 @@ main(int argc, char **argv)
  cleanup:
     if (pid_file_fd != -1)
         virPidFileReleasePath(pid_file, pid_file_fd);
-
-    VIR_FREE(pid_file);
-    VIR_FREE(server_duid);
-    VIR_FREE(custom_lease_file);
-    virJSONValueFree(lease_new);
-    virJSONValueFree(leases_array_new);
 
     return rv;
 }

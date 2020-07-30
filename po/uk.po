@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-06-04 10:39+0100\n"
-"PO-Revision-Date: 2020-06-05 14:05+0000\n"
+"POT-Creation-Date: 2020-07-24 15:35+0000\n"
+"PO-Revision-Date: 2020-07-27 07:34+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.0.4\n"
+"X-Generator: Weblate 4.1.1\n"
 
 msgid ""
 "\n"
@@ -1231,6 +1231,9 @@ msgstr "для джерела scsi слід вказати елементи «ad
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "для джерела scsi слід вказати елемент «adapter»"
 
+msgid "'address' is not supported for 'ramfb' video devices"
+msgstr "підтримки «address» для відеопристроїв «ramfb» не передбачено"
+
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
@@ -1247,6 +1250,9 @@ msgid ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
 msgstr ""
 "для адреси джерела scsi hostdev має бути вказано «bus», «target» і «unit»"
+
+msgid "'cache' refers to a non-existent NUMA node cache"
+msgstr "«cache» посилається на кеш вузлів NUMA, якого не існує"
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "у відповіді guest-get-vcpus пропущено «can-offline»"
@@ -1279,6 +1285,17 @@ msgstr "не знайдено інструмента командного ряд
 
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "у відповіді guest-get-host-name не вистачає «host-name»"
+
+#, c-format
+msgid ""
+"'incremental' backup mode of disk '%s' requires setting 'incremental' field "
+"for disk or backup"
+msgstr ""
+"режим резервного копіювання «incremental» для диска «%s» потребує "
+"встановлення поля «incremental» для диска або резервної копії"
+
+msgid "'initiator' refers to a non-existent NUMA node"
+msgstr "«initiator» посилається на вузол NUMA, якого не існує"
 
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
 msgstr "підтримку «ioeventfd» передбачено лише для контролерів virtio-scsi"
@@ -1385,6 +1402,9 @@ msgstr "підтримки протоколу «ssh» ще не передбач
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "«startupPolicy» можна використовувати лише для томів типу «file»"
+
+msgid "'target' refers to a non-existent NUMA node"
+msgstr "«target» посилається на вузол NUMA, якого не існує"
 
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr ""
@@ -1845,6 +1865,9 @@ msgstr ""
 "Після створення дампу ядра не вдалося відновити роботу домену «%d» за "
 "допомогою libxenlight"
 
+msgid "Ain't nobody heard of that much cache level"
+msgstr "Ніхто не чув про такий високий рівень кешування"
+
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "Всім профілям, наданим агентом SSH, було відмовлено"
 
@@ -1911,6 +1934,9 @@ msgid ""
 msgstr ""
 "Аргументи у елементі memnode не відповідають наявній комірці NUMA гостьової "
 "системи"
+
+msgid "At least one NUMA node has to have CPUs"
+msgstr "Принаймні один з вузлів NUMA повинен мати процесори"
 
 msgid "At least one PTY console is required"
 msgstr "Потрібна принаймні одна консоль PTY"
@@ -1999,12 +2025,13 @@ msgstr "Спроба надсилання асинхронного повідо�
 msgid "Attempted double use of PCI Address %s"
 msgstr "Спроба подвійного використання адреси PCI %s"
 
-#, c-format
-msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
-msgstr "Спроба використання NAT «%s». NAT підтримується лише для IPv4."
-
 msgid "Attempting to use unknown stub driver"
 msgstr "Спроба використання невідомого фіктивного драйвера"
+
+msgid "Attribute migratable is only allowed for host-passthrough CPU"
+msgstr ""
+"Атрибут migratable можна використовувати лише на процесорах без передавання "
+"до основної системи"
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr ""
@@ -2458,6 +2485,10 @@ msgid "Cache level %d id %u does not support tuning for scope type '%s'"
 msgstr ""
 "Підтримки налаштовування кешу рівня %d, ідентифікатор %u, для типу області "
 "«%s» не передбачено"
+
+#, c-format
+msgid "Cache level '%u' already defined"
+msgstr "Рівень кешування «%u» вже визначено"
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
@@ -3388,8 +3419,8 @@ msgstr ""
 "Не можна змінювати значення максимального об'єму пам'яті для активного домену"
 
 #, c-format
-msgid "Cannot resolve ::1 address: %s"
-msgstr "Не вдалося обробити адресу ::1: %s"
+msgid "Cannot resolve %s address: %s"
+msgstr "Не вдалося обробити адресу %s: %s"
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "Не можна запускати інтерактивну консоль без керування TTY"
@@ -5998,6 +6029,9 @@ msgstr "Дублювання типу кешу у resctrl для рівня %u"
 msgid "Duplicate hash table key '%s'"
 msgstr "Дублікат хешу ключа таблиці «%s»"
 
+msgid "Duplicate info for NUMA latencies"
+msgstr "Дублювання даних для латентностей NUMA"
+
 #, c-format
 msgid "Duplicate security driver %s"
 msgstr "Дублювання драйвера захисту %s"
@@ -6048,13 +6082,6 @@ msgstr "Внесення змін до XML вказаного знімка до�
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "Для адаптера «scsi_host» слід вказати «name» або «parent»"
-
-msgid ""
-"Either both target and source domains or none of them must have TPM device "
-"present"
-msgstr ""
-"Пристрій TPM має бути або наявним у доменах призначення та джерела, або його "
-"не повинно бути ні у призначенні, ні у джерелі"
 
 msgid "Eject the media"
 msgstr "Виштовхнути носій даних"
@@ -6229,8 +6256,8 @@ msgid "Escape character is %s"
 msgstr "Символом екранування є %s"
 
 #, c-format
-msgid "Ethernet controller index %d out of [0..3] range"
-msgstr "Індекс контролера ethernet %d лежить поза межами діапазону [0..3]"
+msgid "Ethernet controller index %d out of [0..%d] range"
+msgstr "Індекс контролера ethernet %d лежить поза межами діапазону [0..%d]"
 
 msgid "Event thread is already running"
 msgstr "Потік обробки подій вже запущено"
@@ -6539,6 +6566,10 @@ msgstr "Не вдалося створити сокет для вхідного 
 
 msgid "Failed"
 msgstr "Помилка"
+
+msgid "Failed disable mount propagation out of the root filesystem"
+msgstr ""
+"Не вдалося вимкнути поширення монтування за межі кореневої файлової системи"
 
 #, c-format
 msgid "Failed new node mode for target '%s'"
@@ -6908,6 +6939,10 @@ msgstr "Не вдалося створити каталог призначенн
 #, c-format
 msgid "Failed to create checkpoint dir %s"
 msgstr "Не вдалося створити каталог контрольної точки, %s"
+
+#, c-format
+msgid "Failed to create dbus state dir %s"
+msgstr "Не вдалося створити каталог станів DBus, %s"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -7302,10 +7337,6 @@ msgid "Failed to find parent device for %s"
 msgstr "Не вдалось знайти батьківський пристрій для %s"
 
 #, c-format
-msgid "Failed to find path for %s binary"
-msgstr "Не вдалося визначити шлях для виконуваного файла %s"
-
-#, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr ""
 "Не вдалося знайти scsi_host на основі даних щодо PCI «%s» та unique_id='%u'"
@@ -7341,10 +7372,10 @@ msgid "Failed to format new xml document for bridge %s"
 msgstr "Не вдалося виконати форматування нового документа xml для містка %s"
 
 #, c-format
-msgid "Failed to format new xml document for un-enslaved interface %s"
+msgid "Failed to format new xml document for detached interface %s"
 msgstr ""
-"Не вдалося виконати форматування нового документа xml для інтерфейсу %s зі "
-"скасованою підлеглістю"
+"Не вдалося виконати форматування нового документа xml для від'єднаного "
+"інтерфейсу %s"
 
 #, c-format
 msgid "Failed to fully read directory %s"
@@ -7435,9 +7466,6 @@ msgstr "Не вдалося отримати дані щодо стану дом
 
 msgid "Failed to get domain's UUID"
 msgstr "Не вдалося отримати UUID домену"
-
-msgid "Failed to get fs flags"
-msgstr "Не вдалося отримати прапорці файлової системи"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
@@ -8353,9 +8381,6 @@ msgid "Failed to set %s for %s: value too large"
 msgstr ""
 "Не вдалося встановити значення %s для %s: вказано надто велике значення"
 
-msgid "Failed to set NOCOW flag"
-msgstr "Не вдалося встановити прапорець NOCOW"
-
 #, c-format
 msgid "Failed to set TLS session priority to %s: %s"
 msgstr "Не вдалося встановити значення пріоритетності сеансу TLS %s: %s"
@@ -8426,22 +8451,22 @@ msgid "Failed to set memory for domain '%d' with libxenlight"
 msgstr ""
 "Не вдалося встановити об'єм пам'яті для домену «%d» за допомогою libxenlight"
 
+#, c-format
+msgid "Failed to set new attached interface name to '%s' in xml document"
+msgstr ""
+"Не вдалося встановити назву нового долученого інтерфейсу у «%s» у документі "
+"xml"
+
+#, c-format
+msgid "Failed to set new attached interface type to '%s' in xml document"
+msgstr ""
+"Не вдалося встановити тип нового долученого інтерфейсу у «%s» у документі xml"
+
 msgid "Failed to set new domain description"
 msgstr "Не вдалося встановити новий опис домену"
 
 msgid "Failed to set new domain title"
 msgstr "Не вдалося встановити новий заголовок домену"
-
-#, c-format
-msgid "Failed to set new slave interface name to '%s' in xml document"
-msgstr ""
-"Не вдалося встановити назву нового підлеглого інтерфейсу у «%s» у документі "
-"xml"
-
-#, c-format
-msgid "Failed to set new slave interface type to '%s' in xml document"
-msgstr ""
-"Не вдалося встановити тип нового підлеглого інтерфейсу у «%s» у документі xml"
 
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Не вдалося встановити прапорець «без блокування» дескриптора файла"
@@ -8572,9 +8597,6 @@ msgstr "Помилка при переведенні домену %d в стан
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "Не вдалося призупинити роботу домену «%d» за допомогою libxenlight"
-
-msgid "Failed to switch root mount into slave mode"
-msgstr "Не вдалося перемкнути змонтований кореневий каталог у підлеглий режим"
 
 #, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8850,6 +8872,12 @@ msgstr "Завершено після запиту гостьової систе
 
 msgid "Finished after host request"
 msgstr "Завершено після запиту основної системи"
+
+msgid "Firmware entry is missing 'name' attribute"
+msgstr "У записі мікропрограми пропущено атрибут «name»"
+
+msgid "Firmware entry must have either value or 'file' attribute"
+msgstr "Запис мікропрограми має містити або значення або атрибут «file»"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -9175,6 +9203,9 @@ msgstr "Агент гостьової системи не відповідає: 
 
 msgid "Guest agent not available for now"
 msgstr "Агент гостьової системи зараз недоступний"
+
+msgid "HMAT is not supported with this QEMU"
+msgstr "підтримки HMAT у цьому QEMU не передбачено"
 
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr ""
@@ -9702,6 +9733,9 @@ msgstr "Некоректне значення атрибута %s «vcpus», «%
 msgid "Invalid %s image format specified in configuration file"
 msgstr "У файлі налаштування вказано некоректний формат образу %s"
 
+msgid "Invalid 'cache' attribute in NUMA interconnects"
+msgstr "Некоректний атрибут «cache» у взаємозв'язках NUMA"
+
 msgid "Invalid 'cpu.max' data."
 msgstr "Некоректні дані «cpu.max»."
 
@@ -9717,13 +9751,29 @@ msgstr "Некоректний атрибут «id» у комірці NUMA: «%
 msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
 msgstr "Некоректний атрибут «id» у відстанях NUMA для спорідненого вузла: «%s»"
 
+msgid "Invalid 'initiator' attribute in NUMA interconnects"
+msgstr "Некоректний атрибут «initiator» у взаємозв'язках NUMA"
+
 #, c-format
 msgid "Invalid 'iothread' value '%s'"
 msgstr "Некоректне значення «iothread» «%s»"
 
 #, c-format
+msgid "Invalid 'level' attribute in cache element for NUMA node %d"
+msgstr "Некоректний атрибут «level» в елементі кешу для вузла NUMA %d"
+
+#, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "Некоректне значення атрибута «memAccess»,«%s»"
+
+msgid "Invalid 'target' attribute in NUMA interconnects"
+msgstr "Некоректний атрибут «target» у взаємозв'язках NUMA"
+
+msgid "Invalid 'type' attribute in NUMA interconnects"
+msgstr "Некоректний атрибут «type» у взаємозв'язках NUMA"
+
+msgid "Invalid 'value' attribute in NUMA interconnects"
+msgstr "Некоректний атрибут «value» у взаємозв'язках NUMA"
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -9981,8 +10031,16 @@ msgid "Invalid busNr '%s' in PCI controller"
 msgstr "Некоректний номер каналу, «%s», у контролері PCI"
 
 #, c-format
+msgid "Invalid cache associativity '%s'"
+msgstr "Некоректна асоціативність кешу «%s»"
+
+#, c-format
 msgid "Invalid cache id '%s'"
 msgstr "Некоректний ідентифікатор кешу «%s»"
+
+#, c-format
+msgid "Invalid cache policy '%s'"
+msgstr "Некоректні правила кешування «%s»"
 
 #, c-format
 msgid "Invalid cachetune attribute 'id' value '%s'"
@@ -10197,6 +10255,9 @@ msgstr "Некоректний дескриптор файла під час о�
 msgid "Invalid file descriptor while waiting for monitor"
 msgstr "Некоректний дескриптор файла під час очікування монітора"
 
+msgid "Invalid firmware name"
+msgstr "Некоректна назва мікропрограми"
+
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "Неприпустима назва дисководу: %s"
@@ -10260,6 +10321,10 @@ msgstr "Неправильне значення префіксу IP-адреси
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Некоректний параметр ipv6, «%s», у мережі «%s»"
+
+#, c-format
+msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
+msgstr "Некоректний параметр ipv6, «%s», у NAT мережі «%s»"
 
 msgid "Invalid job flags"
 msgstr "Некоректні прапорці завдання"
@@ -10723,6 +10788,10 @@ msgid "Invalid value for timeout"
 msgstr "Некоректне значення часу очікування"
 
 #, c-format
+msgid "Invalid value in migratable attribute: '%s'"
+msgstr "Некоректне значення в атрибуті migratable: «%s»"
+
+#, c-format
 msgid "Invalid value of %d for I/O weight"
 msgstr "Некоректне значення %d для ваги вводу-виводу"
 
@@ -10871,6 +10940,9 @@ msgstr "Libvirt"
 #, c-format
 msgid "Lifecycle event '%s' doesn't support '%s' action"
 msgstr "У події життєвого циклу «%s» не передбачено підтримки дії «%s»"
+
+msgid "Link already defined"
+msgstr "Посилання вже визначено"
 
 msgid "List all manageable clients connected to <server>."
 msgstr ""
@@ -11122,6 +11194,9 @@ msgstr "Помилкове форматування даних max_anonymous_cli
 msgid "Malformed nbd port '%s'"
 msgstr "Помилкове форматування запису порту nbd, «%s»"
 
+msgid "Malformed output of dmidecode"
+msgstr "Помилкове форматування виведених dmidecode даних"
+
 msgid "Malformed ovs-vsctl output"
 msgstr "Помилкове форматування виведених даних ovs-vsctl"
 
@@ -11311,6 +11386,12 @@ msgstr "Метадані:"
 msgid "MethodFault is missing 'type' property"
 msgstr "У MethodFault не вистачає властивості «type»"
 
+msgid ""
+"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+msgstr ""
+"Підтримки атрибута «migratable» для процесорів із передаванням до основної "
+"системи у цьому виконуваному файлі QEMU не передбачено"
+
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "Міграція домену на інший вузол. Додати --live до живої міграції."
 
@@ -11419,11 +11500,12 @@ msgstr "Під час пошуку ManagedEntityStatus не виявлено в�
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "У шляху монтування cgroup «%s» пропущено «/»"
 
+#, c-format
+msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
+msgstr "Пропущено атрибут «associativity» в елементі кешу для вузла NUMA %d"
+
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "Не вказано атрибута «cores» у топології процесора"
-
-msgid "Missing 'cpus' attribute in NUMA cell"
-msgstr "У комірці NUMA не вказано атрибута «cpus»"
 
 msgid "Missing 'domname' in JSON document"
 msgstr "У документі JSON не вистачає даних «domname»"
@@ -11448,8 +11530,15 @@ msgstr "Не вказано атрибута «id» у елементі <iothrea
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr "Не вказано атрибут «id» у відстанях NUMA під «cell id %d»"
 
+msgid "Missing 'initiator' attribute in NUMA interconnects"
+msgstr "Пропущено атрибут «initiator» у взаємозв'язках NUMA"
+
 msgid "Missing 'key' element for lease"
 msgstr "Не вказано елемента «key» для надання"
+
+#, c-format
+msgid "Missing 'level' attribute in cache element for NUMA node %d"
+msgstr "Пропущено атрибут «level» в елементі кешу для вузла NUMA %d"
 
 msgid "Missing 'link' attribute for NIC"
 msgstr "Не вистачає атрибута «link» для NIC"
@@ -11467,6 +11556,10 @@ msgstr "У документі JSON пропущено поле «path»"
 msgid "Missing 'pipefd' in JSON document"
 msgstr "У документі JSON не вистачає «pipefd»"
 
+#, c-format
+msgid "Missing 'policy' attribute in cache element for NUMA node %d"
+msgstr "Пропущено атрибут «policy» в елементі кешу для вузла NUMA %d"
+
 msgid "Missing 'runtime.powerState' property"
 msgstr "Не вказано властивості «runtime.powerState»"
 
@@ -11477,11 +11570,17 @@ msgstr "Не вказано атрибута «sockets» у топології �
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "У діапазоні DHCP мережі «%s» не вистачає атрибута «start»"
 
+msgid "Missing 'target' attribute in NUMA interconnects"
+msgstr "Пропущено атрибут «target» у взаємозв'язках NUMA"
+
 msgid "Missing 'target' element for lease"
 msgstr "Не вказано елемента «target» для надання"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "Не вказано атрибута «threads» у топології процесора"
+
+msgid "Missing 'type' attribute in NUMA interconnects"
+msgstr "Пропущено атрибут «type» у взаємозв'язках NUMA"
 
 msgid "Missing 'uuid' attribute for element <address>"
 msgstr "Пропущено атрибут «uuid» елемента <address>"
@@ -11493,6 +11592,9 @@ msgid ""
 msgstr ""
 "Не вказано атрибут «value» у відстанях NUMA під «cell id %d» для «sibling id "
 "%d»"
+
+msgid "Missing 'value' attribute in NUMA interconnects"
+msgstr "Пропущено атрибут «value» у взаємозв'язках NUMA"
 
 msgid "Missing <address> element"
 msgstr "Пропущено елемент <address>"
@@ -12194,10 +12296,6 @@ msgstr "рядковий параметр зі значенням NULL, «%s»"
 msgid "NULL value for field '%s'"
 msgstr "Порожнє значення (NULL) поля «%s»"
 
-#, c-format
-msgid "NUMA cell %d has no vCPUs assigned"
-msgstr "з коміркою NUMA %d не пов'язано віртуальних процесорів"
-
 msgid "NUMA cell number"
 msgstr "Номер комірки NUMA"
 
@@ -12248,6 +12346,9 @@ msgstr "Вузол NUMA %zd є недоступним"
 
 msgid "NUMA node selections to set"
 msgstr "Набір вузлів NUMA для встановлення"
+
+msgid "NUMA nodes without CPUs can't be initiator"
+msgstr "Вузли NUMA без процесорів не можуть бути ініціаторами"
 
 msgid "NUMA topology defined without NUMA cells"
 msgstr "Топологію NUMA визначено без комірок NUMA"
@@ -12888,6 +12989,10 @@ msgstr "Не вказано значення для елемента <initenv na
 #, c-format
 msgid "No yet handled value '%s' for VMX entry '%s'"
 msgstr "Ще непридатне до обробки значення «%s» для запису VMX «%s»"
+
+#, c-format
+msgid "No zPCI %s to reserve"
+msgstr "Немає zPCI %s для резервування"
 
 #, c-format
 msgid "Node %d:\n"
@@ -14473,8 +14578,8 @@ msgid "S4 state is disabled for this domain"
 msgstr "на цьому домені стан S4 вимкнено"
 
 #, c-format
-msgid "SASL client identity '%s' not allowed in whitelist"
-msgstr "Профілю клієнта SASL «%s» немає у «білому» списку"
+msgid "SASL client identity '%s' not allowed by ACL"
+msgstr "Профілю клієнта SASL «%s» немає серед дозволених ACL"
 
 #, c-format
 msgid "SASL data length %zu too long, max %zu"
@@ -15561,6 +15666,19 @@ msgstr "Вказано використання TLS, але назву не вк
 msgid "TLS:"
 msgstr "TLS:"
 
+msgid "TPM 1.2 is not supported with the SPAPR device model"
+msgstr ""
+"Підтримки TPM 1.2 у поєднанні із моделлю пристроїв SPAPR не передбачено"
+
+#, c-format
+msgid "TPM Proxy model %s is only available for PPC64 guests"
+msgstr ""
+"Моделлю проксі TPM %s можна користуватися лише для гостьових систем PPC64"
+
+#, c-format
+msgid "TPM Proxy model %s requires 'Passthrough' backend"
+msgstr "Модель проксі TPM %s потребує модуля «Passthrough»"
+
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "Некоректний шлях до пристрою TPM %s"
@@ -15869,6 +15987,13 @@ msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "WWN диска призначення, %s, не збігається з диском джерела, «%s»"
 
 #, c-format
+msgid ""
+"Target domain IOMMU device aw_bits value '%d' does not match source '%d'"
+msgstr ""
+"Значення aw_bits пристрою IOMMU домену призначення, «%d», не збігається із "
+"моделлю джерела, «%d»"
+
+#, c-format
 msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr ""
 "Режим кешування пристрою IOMMU домену призначення, «%s», не збігається із "
@@ -15921,6 +16046,12 @@ msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "Режим SMBIOS домену призначення, %s, не відповідає режиму джерела, %s"
 
 #, c-format
+msgid "Target domain TPM device count %zu does not match source %zu"
+msgstr ""
+"Кількість пристроїв TPM домену призначення, %zu, не відповідає кількості "
+"джерела, %zu"
+
+#, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr ""
 "Фільтр переспрямовування USB домену призначення, %d, не відповідає джерелу, "
@@ -15948,6 +16079,11 @@ msgid "Target domain controller count %zu does not match source %zu"
 msgstr ""
 "Кількість контролерів домену призначення, %zu, не відповідає кількості "
 "джерела, %zu"
+
+msgid "Target domain count of sysinfo does not match source"
+msgstr ""
+"Кількість доменів призначення у системній інформації не відповідає даним "
+"джерела"
 
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
@@ -16379,6 +16515,9 @@ msgstr "Загальний обсяг тимчасового диска:"
 msgid "Temporary disk space use:"
 msgstr "Використаний обсяг тимчасового диска:"
 
+msgid "That firmware name is reserved"
+msgstr "Цю назву мікропрограми зарезервовано"
+
 msgid "Thaw domain's mounted filesystems."
 msgstr "Розморозити файлові системи домену."
 
@@ -16744,7 +16883,7 @@ msgstr ""
 msgid "This host is not managed by a vCenter"
 msgstr "Цією основною системою не керує vCenter"
 
-msgid "This snapshot has children, please delete theses snapshots before"
+msgid "This snapshot has children, please delete these snapshots before"
 msgstr "У цього знімка є дочірні. Будь ласка, спочатку вилучіть ці знімки"
 
 msgid "This type of disk cannot be hot unplugged"
@@ -17186,6 +17325,14 @@ msgid "Unable to access stream for '%s'"
 msgstr "Не вдалося отримати доступ до потоку даних для «%s»"
 
 #, c-format
+msgid ""
+"Unable to acquire PID file: %s\n"
+" errno=%d"
+msgstr ""
+"Не вдалося розмістити файл PID: %s\n"
+" Номер помилки=%d"
+
+#, c-format
 msgid "Unable to acquire lock on '%s'"
 msgstr "Не вдалося встановити блокування для «%s»"
 
@@ -17558,6 +17705,14 @@ msgstr "Не вдалося створити потік обробки для в
 msgid "Unable to create tunnel migration thread"
 msgstr "Не вдалося створити потік обробки перенесення даних тунелем"
 
+#, c-format
+msgid ""
+"Unable to create: %s\n"
+" errno=%d"
+msgstr ""
+"Не вдалося створити: %s\n"
+" Номер помилки=%d"
+
 msgid "Unable to decode header until len is received"
 msgstr "Декодування заголовка неможливе до отримання значення len"
 
@@ -17761,6 +17916,9 @@ msgstr "Не вдалося знайти знімок з назвою %s"
 
 msgid "Unable to force bind to IPv6 only"
 msgstr "Не вдалося обмежити прив'язку лише адресами IPv6"
+
+msgid "Unable to format NUMA node cache"
+msgstr "Не вдалося виконати форматування кешу вузлів NUMA"
 
 msgid "Unable to format SELinux context"
 msgstr "Не вдалося виконати форматування контексту SELinux"
@@ -18818,6 +18976,11 @@ msgid "Unable to set console file descriptor non-blocking"
 msgstr ""
 "Не вдалося встановити для дескриптора файла консолі режим без блокування"
 
+#, c-format
+msgid "Unable to set copy-on-write state on '%s' to '%s'"
+msgstr ""
+"Не вдалося встановити стан копіювання при записі на «%s» у значення «%s»"
+
 msgid "Unable to set interface parameters"
 msgstr "Не вдалося встановити значення параметрів інтерфейсу"
 
@@ -18878,6 +19041,9 @@ msgstr "Не вдалося поділити список дескрипторі
 msgid "Unable to start event thread: %s"
 msgstr "Не вдалося запустити потік обробки подій: %s"
 
+msgid "Unable to start mediated device"
+msgstr "Не вдалося запустити проміжний пристрій"
+
 #, c-format
 msgid "Unable to stat %s"
 msgstr "Не вдалося виконати stat для %s"
@@ -18894,6 +19060,9 @@ msgstr ""
 #, c-format
 msgid "Unable to stat: %s"
 msgstr "Не вдалося виконати stat: %s"
+
+msgid "Unable to stop mediated device"
+msgstr "Не вдалося зупинити проміжний пристрій"
 
 #, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -19827,6 +19996,9 @@ msgstr "Непідтримуваний тип контролера, %s"
 msgid "Unsupported controller type: %s"
 msgstr "Непідтримуваний тип контролера: %s"
 
+msgid "Unsupported device type"
+msgstr "Непідтримуваний тип пристроїв"
+
 #, c-format
 msgid "Unsupported device type %d"
 msgstr "Непідтримуваний тип пристрою %d"
@@ -20506,6 +20678,13 @@ msgstr ""
 "типовим у мережі «%s» вже визначено інший запис portgroup. Можна "
 "використовувати лише один типовий запис."
 
+msgid ""
+"a maximum of two TPM devices is supported, one of them being a TPM Proxy "
+"device"
+msgstr ""
+"передбачено підтримку не більше двох пристроїв TPM, одним і з них має бути "
+"проксі-пристрій TPM"
+
 msgid "a redefined checkpoint must have a name"
 msgstr "перевизначена контрольна точка повинна мати назву"
 
@@ -20709,9 +20888,6 @@ msgstr "об'єм даних, які слід вивантажити"
 
 msgid "an <auth> definition already found for disk source"
 msgstr "визначення <auth> вже виявлено для джерела диска"
-
-msgid "an <auth> definition already found for the <hostdev> iSCSI definition"
-msgstr "визначення <auth> вже знайдено для визначення iSCSI <hostdev>"
 
 msgid "an <encryption> definition already found for disk source"
 msgstr "визначення <encryption> вже виявлено для джерела диска"
@@ -20996,6 +21172,9 @@ msgid ""
 "sense"
 msgstr "backingStore дзеркала без VIR_DOMAIN_BLOCK_COPY_SHALLOW не має сенсу"
 
+msgid "backup TLS directory not configured"
+msgstr "каталог резервного копіювання TLS не налаштовано"
+
 msgid "backup job"
 msgstr "завдання з резервного копіювання"
 
@@ -21003,14 +21182,12 @@ msgid "backup job data missing"
 msgstr "не вказано деяких даних завдання з резервного копіювання"
 
 #, c-format
-msgid "backup of readonly disk '%s' makes no sense"
-msgstr ""
-"резервне копіювання диска, який призначено лише для читання, «%s», не має "
-"сенсу"
-
-#, c-format
 msgid "backup socket path '%s' must be absolute"
 msgstr "шлях сокета резервної копії «%s» має бути абсолютним"
+
+#, c-format
+msgid "backup_tls_x509_cert_dir directory '%s' does not exist"
+msgstr "каталогу backup_tls_x509_cert_dir «%s» не існує"
 
 msgid "bad command"
 msgstr "помилкова команда"
@@ -21083,10 +21260,6 @@ msgstr "прив'язка «%s» вже існує"
 #, c-format
 msgid "binding '%s' is already being removed"
 msgstr "прив'язка «%s» вже вилучається"
-
-#, c-format
-msgid "bitmap '%s' for image '%s%u' is inconsistent"
-msgstr "бітова карта «%s» для образу «%s%u» є несумісною із образом"
 
 #, c-format
 msgid "bitmap '%s' not found in backing chain of '%s'"
@@ -21411,11 +21584,6 @@ msgstr "не вдалося знайти створений знімок"
 #, c-format
 msgid "can't free name %s%d - out of range 0-%d"
 msgstr "не вдалося звільнити назву %s%d — назва не належить діапазону 0-%d"
-
-#, c-format
-msgid "can't handle bitmaps on unterminated backing image '%s'"
-msgstr ""
-"не вдалося обробити бітові карти на незавершеному резервному образі «%s»"
 
 #, c-format
 msgid "can't identify pool in uri %s "
@@ -21755,6 +21923,9 @@ msgstr "не можна виконувати копіювання з тому д
 msgid "cannot create %s"
 msgstr "не вдалося створити %s"
 
+msgid "cannot create a mediated device without a parent"
+msgstr "неможливо створити проміжний пристрій без батьківського"
+
 msgid "cannot create a new stream"
 msgstr "не вдалося створити потік"
 
@@ -21861,10 +22032,6 @@ msgstr ""
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "не вдалося визначити файлову систему для «%s»"
-
-#, c-format
-msgid "cannot disable %s"
-msgstr "не вдалось вимкнути %s"
 
 msgid "cannot do managed save for transient domain"
 msgstr "кероване збереження для тимчасового домену неможливе"
@@ -23013,9 +23180,8 @@ msgid "cannot write data to file '%s'"
 msgstr "не вдалося записати дані до файла «%s»"
 
 #, c-format
-msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
-msgstr ""
-"не вдалося виконати запис до %s для вмикання або вимикання IPv6 на містку %s"
+msgid "cannot write to '%s' on bridge '%s'"
+msgstr "не вдалося виконати запис до «%s» на містку «%s»"
 
 msgid "cannot write to stdout"
 msgstr "не вдалося записати дані до stdout"
@@ -23709,6 +23875,10 @@ msgid "could not find capabilities for %s"
 msgstr "не вдалося визначити можливості для %s"
 
 #, c-format
+msgid "could not find device '%s'"
+msgstr "не вдалося знайти пристрій «%s»"
+
+#, c-format
 msgid "could not find event callback %d for deletion"
 msgstr "не вдалося знайти зворотний виклик події %d для вилучення"
 
@@ -23824,12 +23994,6 @@ msgid "could not initialize domain event timer"
 msgstr "не вдалося ініціалізувати таймер подій домену"
 
 #, c-format
-msgid "could not locate checkpoint '%s' for incremental backup"
-msgstr ""
-"не вдалося знайти контрольну точку «%s» для нарощувального резервного "
-"копіювання"
-
-#, c-format
 msgid "could not open VirtualBox session with domain %s"
 msgstr "не вдалося відкрити сеанс VirtualBox з доменом %s"
 
@@ -23917,6 +24081,10 @@ msgstr "неможливо використати запис гіпервізо�
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "неможливо використати запис гіпервізора Xen %s"
+
+msgid "couldn't convert node device def to mdevctl JSON"
+msgstr ""
+"не вдалося перетворити визначення вузлового пристрою до формату JSON mdevctl"
 
 msgid "couldn't fetch array of leases"
 msgstr "не вдалося отримати масив надання"
@@ -24026,6 +24194,9 @@ msgstr "не вдалося записати файл налаштувань dns
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "не вдалося виконати запис до файла налаштувань radvd «%s»"
+
+msgid "cow feature may only be used for 'fs' and 'dir' pools"
+msgstr "можливістю cow можна скористатися лише для буферів «fs» і «dir»"
 
 msgid "cpu affinity is not supported"
 msgstr "прив'язка процесорів не підтримується"
@@ -25142,9 +25313,8 @@ msgstr "спосіб вилучення пристрою %s невідомий"
 msgid "don't start the bridge immediately"
 msgstr "не запускати місток негайно"
 
-msgid "don't start the un-slaved interface immediately (not recommended)"
-msgstr ""
-"не запускати інтерфейс зі скасованою підлеглістю негайно (не рекомендовано)"
+msgid "don't start the detached interface immediately (not recommended)"
+msgstr "не запускати від'єднаний інтерфейс негайно (не рекомендовано)"
 
 msgid "done"
 msgstr "виконано"
@@ -25629,8 +25799,8 @@ msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr "подія «lifecycle» для сховища даних %s: %s\n"
 
 #, c-format
-msgid "event 'metdata-change' for domain %s: %s %s\n"
-msgstr "подія «metdata-change» для домену %s: %s %s\n"
+msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgstr "подія «metadata-change» для домену %s: %s %s\n"
 
 #, c-format
 msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
@@ -25909,8 +26079,8 @@ msgstr ""
 "не вдалося додати нові правила фільтрування до «%s», спробуємо відновити "
 "старі правила"
 
-msgid "failed to add susbsystem filter"
-msgstr "не вдалося додати фільтр підсистеми"
+msgid "failed to add subsystem filter"
+msgstr "не вдалося додати фільтр підсистем"
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -26159,10 +26329,6 @@ msgstr ""
 "Не вдалося знайти відповідні придатні до під'єднання «вгарячу» віртуальні "
 "процесори для досягнення бажаної кількості віртуальних процесорів у системі "
 "призначення"
-
-#, c-format
-msgid "failed to find bitmap '%s' in image '%s%u'"
-msgstr "не вдалося знайти бітову карту «%s» у образі «%s%u»"
 
 #, c-format
 msgid "failed to find disk '%s'"
@@ -27255,6 +27421,9 @@ msgstr "для підтримки призначення пристроїв IOMM
 msgid "for hardware virtualization"
 msgstr "для апаратної віртуалізації"
 
+msgid "for secure guest support"
+msgstr "для підтримки безпечних гостьових систем"
+
 msgid "forbidden characters in 'compat' attribute"
 msgstr "заборонені символи у атрибуті «compat»"
 
@@ -27366,6 +27535,9 @@ msgstr "шлях до диска джерела повністю"
 
 msgid "fuse_loop failed"
 msgstr "помилка fuse_loop"
+
+msgid "fw_cfg is not supported with this QEMU"
+msgstr "підтримки fw_cfg у цьому QEMU не передбачено"
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -28242,6 +28414,10 @@ msgstr "назву інтерфейсу %s не можна розмістити 
 msgid "interface name or MAC address"
 msgstr "назва інтерфейсу або MAC-адреса"
 
+#, c-format
+msgid "interface not set\n"
+msgstr "інтерфейс не встановлено\n"
+
 msgid "interface state driver is not active"
 msgstr "драйвер станів інтерфейсу не активний"
 
@@ -28553,6 +28729,10 @@ msgstr "некоректний протокол резервного копію�
 msgid "invalid backing protocol string '%s'"
 msgstr "некоректний рядок протоколу резервування, «%s»"
 
+#, c-format
+msgid "invalid backupmode '%s' of disk '%s'"
+msgstr "некоректний режим резервного копіювання «%s» диска «%s»"
+
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr "некоректний розмір кешу у відповіді query-migrate-cache-size"
 
@@ -28817,6 +28997,18 @@ msgstr ""
 "некоректна MAC-адреса «%s» у масиві «unicast-table» відповіді query-rx-filter"
 
 #, c-format
+msgid "invalid mac address check value: '%s'"
+msgstr "некоректне значення перевірки MAC-адреси: «%s»"
+
+#, c-format
+msgid ""
+"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"\"static\"."
+msgstr ""
+"некоректне значення перевірки MAC-адреси: «%s». Коректними значеннями є "
+"«generated» і «static»."
+
+#, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "прочитано некоректний основний ключ, розмір=%zd"
 
@@ -29057,6 +29249,10 @@ msgstr "некоректний стан, «%s», події perf «%s»"
 msgid "invalid statistics collection period"
 msgstr "некоректний період збирання статистичних даних"
 
+#, c-format
+msgid "invalid storage pool cow feature state '%s'"
+msgstr "некоректний стан можливості cow буфера сховища даних «%s»"
+
 msgid "invalid storage pool pointer in"
 msgstr "некоректний вказівник на буфер даних у"
 
@@ -29208,6 +29404,9 @@ msgstr "у цьому виконуваному файлі QEMU не передб
 msgid "iommu driver option is only supported for virtio devices"
 msgstr ""
 "підтримку параметра драйвера iommu передбачено лише для пристроїв virtio"
+
+msgid "iommu: aw_bits is not supported with this QEMU binary"
+msgstr "iommu: підтримки aw_bits з цим виконуваним файлом QEMU не передбачено"
 
 msgid "iommu: caching mode is not supported with this QEMU binary"
 msgstr ""
@@ -29370,9 +29569,6 @@ msgstr "помилка під час виклику бібліотеки"
 #, c-format
 msgid "library call failed: %s"
 msgstr "помилка під час виклику бібліотеки: %s"
-
-msgid "libselinux does not support LXC contexts path"
-msgstr "у libselinux не передбачено підтримки шляхів до контекстів LXC"
 
 msgid "libssh transport error"
 msgstr "Помилка передавання даних libssh"
@@ -30233,6 +30429,9 @@ msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
+msgid "mdev attribute missing name or value"
+msgstr "у атрибуті mdev пропущено назву або значення"
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr "проміжний пристрій %s використовується драйвером %s, домен %s"
@@ -30996,10 +31195,6 @@ msgstr "не визначає даних щодо інтерфейсу"
 msgid "missing iommuGroup number attribute"
 msgstr "не вказано атрибута номера iommuGroup"
 
-#, c-format
-msgid "missing iommuGroup number attribute for '%s'"
-msgstr "пропущено атрибут номера iommuGroup для «%s»"
-
 msgid "missing iothread id in iothreadpin"
 msgstr "не вказано ідентифікатор потоку введення-виведення у iothreadpin"
 
@@ -31098,6 +31293,10 @@ msgstr "немає даних щодо ОС"
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "немає даних щодо операційної системи %s"
+
+#, c-format
+msgid "missing or broken bitmap '%s' for disk '%s'"
+msgstr "пропущено або вказано неправильну бітову карту «%s» для диска «%s»"
 
 msgid "missing or invalid CPU cache mode"
 msgstr "не вказано режим кешування процесора або вказано некоректний режим"
@@ -32873,8 +33072,11 @@ msgstr "підтримку передбачено лише для пристро
 msgid "only a single IOMMU device is supported"
 msgstr "передбачено підтримку лише одинарного пристрою IOMMU"
 
-msgid "only a single TPM device is supported"
-msgstr "передбачено підтримку лише одного пристрою TPM"
+msgid "only a single TPM Proxy device is supported"
+msgstr "передбачено підтримку лише одного проксі пристрою TPM"
+
+msgid "only a single TPM non-proxy device is supported"
+msgstr "передбачено підтримку лише одного не-проксі пристрою TPM"
 
 msgid "only a single memory balloon device is supported"
 msgstr "передбачено підтримку лише одного пристрою додаткової пам'яті"
@@ -34058,7 +34260,7 @@ msgstr ""
 msgid "read-only connection"
 msgstr "з'єднання лише для читання"
 
-msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
 "підтримку випереджального читання передбачено лише для протоколів HTTP(S)/"
 "FTP(s)"
@@ -34505,11 +34707,6 @@ msgstr "rx_queue_size має бути степенем двійки"
 #, c-format
 msgid "sanlock error %d"
 msgstr "помилка sanlock %d"
-
-msgid "sanlock is too old to support lock failure action"
-msgstr ""
-"sanlock є надто застарілим і не підтримує дію у відповідь на помилку "
-"блокування"
 
 #, c-format
 msgid "sasl start reply data too long %d"
@@ -36489,6 +36686,18 @@ msgid "uid and gid should be mapped both"
 msgstr "слід пов'язати uid і gid"
 
 #, c-format
+msgid "unable control COW flag on '%s'"
+msgstr "не вдалося виконати керування прапорцем COW на «%s»"
+
+#, c-format
+msgid "unable get directory flags on '%s'"
+msgstr "не вдалося отримати прапорці каталогів на «%s»"
+
+#, c-format
+msgid "unable query filesystem type on '%s'"
+msgstr "не вдалося виконати запит щодо типу файлової системи на «%s»"
+
+#, c-format
 msgid "unable to access device %s\n"
 msgstr "не вдалося отримати доступ до пристрою %s\n"
 
@@ -36537,6 +36746,10 @@ msgstr "не вдалося закрити канал"
 #, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "не вдалося встановити з'єднання з сервером на «%s:%s»"
+
+#, c-format
+msgid "unable to control COW flag on '%s', not btrfs"
+msgstr "не вдалося виконати керування прапорцем COW на «%s» — це не BTRFS"
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -36601,6 +36814,10 @@ msgstr "не вдалося виконати команду QEMU «%s»"
 #, c-format
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "не вдалося виконати команду QEMU «%s»: %s"
+
+#, c-format
+msgid "unable to find PCI address for parent device '%s'"
+msgstr "не вдалося знайти PCI-адресу для батьківського пристрою «%s»"
 
 #, c-format
 msgid "unable to find a SCSI controller for idx=%d"
@@ -36941,9 +37158,6 @@ msgstr "не вдалося обрізати %s"
 msgid "unable to unload already unloaded profile"
 msgstr "не можна вивантажувати вже вивантажений профіль"
 
-msgid "unable to use io_timeout with this version of sanlock"
-msgstr "не можна використовувати io_timeout з цією версією sanlock"
-
 #, c-format
 msgid "unable to use target path '%s' for dev '%s'"
 msgstr "не вдалося скористатися шляхом призначення «%s» для пристрою «%s»"
@@ -36983,10 +37197,10 @@ msgstr "скасувати створення містка для мережев
 msgid "undefine VM on source"
 msgstr "скасувати визначення ВМ на джерелі даних"
 
-msgid "undefine a bridge device after detaching its slave device"
+msgid "undefine a bridge device after detaching its device(s)"
 msgstr ""
 "скасувати визначення пристрою містка після скасування долучення його "
-"підлеглого пристрою"
+"пристроїв"
 
 msgid "undefine a domain"
 msgstr "скасувати визначення домену"
@@ -37579,6 +37793,10 @@ msgstr "невідомий тип розпізнавання «%s»"
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "невідомий тип розпізнавання %s"
+
+#, c-format
+msgid "unknown aw_bits value: %s"
+msgstr "невідоме значення aw_bits: %s"
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -38347,6 +38565,10 @@ msgstr "невідоме значення «%s» для атрибуту <hostde
 #, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "невідоме значення, «%s» у атрибуті «usable»"
+
+#, c-format
+msgid "unknown value '%s' of 'tls' attribute"
+msgstr "невідоме значення «%s» атрибуту «tls»"
 
 #, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -39912,6 +40134,135 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid "Cannot resolve ::1 address: %s"
+#~ msgstr "Не вдалося обробити адресу ::1: %s"
+
+#~ msgid "Ethernet controller index %d out of [0..3] range"
+#~ msgstr "Індекс контролера ethernet %d лежить поза межами діапазону [0..3]"
+
+#~ msgid "Failed to get fs flags"
+#~ msgstr "Не вдалося отримати прапорці файлової системи"
+
+#~ msgid "Failed to set NOCOW flag"
+#~ msgstr "Не вдалося встановити прапорець NOCOW"
+
+#~ msgid "Missing 'cpus' attribute in NUMA cell"
+#~ msgstr "У комірці NUMA не вказано атрибута «cpus»"
+
+#~ msgid "NUMA cell %d has no vCPUs assigned"
+#~ msgstr "з коміркою NUMA %d не пов'язано віртуальних процесорів"
+
+#~ msgid "This snapshot has children, please delete theses snapshots before"
+#~ msgstr "У цього знімка є дочірні. Будь ласка, спочатку вилучіть ці знімки"
+
+#~ msgid ""
+#~ "an <auth> definition already found for the <hostdev> iSCSI definition"
+#~ msgstr "визначення <auth> вже знайдено для визначення iSCSI <hostdev>"
+
+#~ msgid "backup of readonly disk '%s' makes no sense"
+#~ msgstr ""
+#~ "резервне копіювання диска, який призначено лише для читання, «%s», не має "
+#~ "сенсу"
+
+#~ msgid "cannot disable %s"
+#~ msgstr "не вдалось вимкнути %s"
+
+#~ msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
+#~ msgstr ""
+#~ "не вдалося виконати запис до %s для вмикання або вимикання IPv6 на містку "
+#~ "%s"
+
+#~ msgid "failed to add susbsystem filter"
+#~ msgstr "не вдалося додати фільтр підсистеми"
+
+#~ msgid "libselinux does not support LXC contexts path"
+#~ msgstr "у libselinux не передбачено підтримки шляхів до контекстів LXC"
+
+#~ msgid "no capabilities available for %s"
+#~ msgstr "немає доступних можливостей для %s"
+
+#~ msgid "sanlock is too old to support lock failure action"
+#~ msgstr ""
+#~ "sanlock є надто застарілим і не підтримує дію у відповідь на помилку "
+#~ "блокування"
+
+#~ msgid "unable to use io_timeout with this version of sanlock"
+#~ msgstr "не можна використовувати io_timeout з цією версією sanlock"
+
+#~ msgid "Attempted to NAT '%s'. NAT is only supported for IPv4."
+#~ msgstr "Спроба використання NAT «%s». NAT підтримується лише для IPv4."
+
+#~ msgid ""
+#~ "Either both target and source domains or none of them must have TPM "
+#~ "device present"
+#~ msgstr ""
+#~ "Пристрій TPM має бути або наявним у доменах призначення та джерела, або "
+#~ "його не повинно бути ні у призначенні, ні у джерелі"
+
+#~ msgid "Failed to find path for %s binary"
+#~ msgstr "Не вдалося визначити шлях для виконуваного файла %s"
+
+#~ msgid "Failed to format new xml document for un-enslaved interface %s"
+#~ msgstr ""
+#~ "Не вдалося виконати форматування нового документа xml для інтерфейсу %s "
+#~ "зі скасованою підлеглістю"
+
+#~ msgid "Failed to set new slave interface name to '%s' in xml document"
+#~ msgstr ""
+#~ "Не вдалося встановити назву нового підлеглого інтерфейсу у «%s» у "
+#~ "документі xml"
+
+#~ msgid "Failed to set new slave interface type to '%s' in xml document"
+#~ msgstr ""
+#~ "Не вдалося встановити тип нового підлеглого інтерфейсу у «%s» у документі "
+#~ "xml"
+
+#~ msgid "Failed to switch root mount into slave mode"
+#~ msgstr ""
+#~ "Не вдалося перемкнути змонтований кореневий каталог у підлеглий режим"
+
+#~ msgid "SASL client identity '%s' not allowed in whitelist"
+#~ msgstr "Профілю клієнта SASL «%s» немає у «білому» списку"
+
+#~ msgid "bitmap '%s' for image '%s%u' is inconsistent"
+#~ msgstr "бітова карта «%s» для образу «%s%u» є несумісною із образом"
+
+#~ msgid "can't handle bitmaps on unterminated backing image '%s'"
+#~ msgstr ""
+#~ "не вдалося обробити бітові карти на незавершеному резервному образі «%s»"
+
+#~ msgid "could not locate checkpoint '%s' for incremental backup"
+#~ msgstr ""
+#~ "не вдалося знайти контрольну точку «%s» для нарощувального резервного "
+#~ "копіювання"
+
+#~ msgid "don't start the un-slaved interface immediately (not recommended)"
+#~ msgstr ""
+#~ "не запускати інтерфейс зі скасованою підлеглістю негайно (не "
+#~ "рекомендовано)"
+
+#~ msgid "event 'metdata-change' for domain %s: %s %s\n"
+#~ msgstr "подія «metdata-change» для домену %s: %s %s\n"
+
+#~ msgid "failed to find bitmap '%s' in image '%s%u'"
+#~ msgstr "не вдалося знайти бітову карту «%s» у образі «%s%u»"
+
+#~ msgid "missing iommuGroup number attribute for '%s'"
+#~ msgstr "пропущено атрибут номера iommuGroup для «%s»"
+
+#~ msgid "only a single TPM device is supported"
+#~ msgstr "передбачено підтримку лише одного пристрою TPM"
+
+#~ msgid "readaehad is supported only with HTTP(S)/FTP(s) protocols"
+#~ msgstr ""
+#~ "підтримку випереджального читання передбачено лише для протоколів HTTP(S)/"
+#~ "FTP(s)"
+
+#~ msgid "undefine a bridge device after detaching its slave device"
+#~ msgstr ""
+#~ "скасувати визначення пристрою містка після скасування долучення його "
+#~ "підлеглого пристрою"
 
 #~ msgid "Attempt to close netcf state driver with open connections"
 #~ msgstr "Спроба закрити драйвер станів netcf з відкритими з’єднаннями"

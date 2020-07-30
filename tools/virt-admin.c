@@ -315,9 +315,9 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
 }
 
 
-/* ---------------
- * Command srv-list
- * ---------------
+/* -------------------
+ * Command server-list
+ * -------------------
  */
 
 static const vshCmdInfo info_srv_list[] = {
@@ -380,9 +380,9 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 }
 
 
-/* ---------------------------
- * Command srv-threadpool-info
- * ---------------------------
+/* ------------------------------
+ * Command server-threadpool-info
+ * ------------------------------
  */
 
 static const vshCmdInfo info_srv_threadpool_info[] = {
@@ -441,9 +441,9 @@ cmdSrvThreadpoolInfo(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-/* --------------------------
- * Command srv-threadpool-set
- * --------------------------
+/* -----------------------------
+ * Command server-threadpool-set
+ * -----------------------------
  */
 
 static const vshCmdInfo info_srv_threadpool_set[] = {
@@ -550,9 +550,9 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
     goto cleanup;
 }
 
-/* ------------------------
- * Command srv-clients-list
- * ------------------------
+/* ---------------------------
+ * Command server-clients-list
+ * ---------------------------
  */
 
 static const vshCmdInfo info_srv_clients_list[] = {
@@ -793,9 +793,9 @@ cmdClientDisconnect(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-/* ------------------------
- * Command srv-clients-info
- * ------------------------
+/* ---------------------------
+ * Command server-clients-info
+ * ---------------------------
  */
 
 static const vshCmdInfo info_srv_clients_info[] = {
@@ -852,9 +852,9 @@ cmdSrvClientsInfo(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-/* -----------------------
- * Command srv-clients-set
- * -----------------------
+/* --------------------------
+ * Command server-clients-set
+ * --------------------------
  */
 
 static const vshCmdInfo info_srv_clients_set[] = {
@@ -957,9 +957,9 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
     goto cleanup;
 }
 
-/* ------------------------
- *  Command srv-update-tls
- * ------------------------
+/* --------------------------
+ *  Command server-update-tls
+ * --------------------------
  */
 static const vshCmdInfo info_srv_update_tls_file[] = {
     {.name = "help",

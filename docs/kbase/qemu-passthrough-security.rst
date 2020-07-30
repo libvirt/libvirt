@@ -110,7 +110,8 @@ Granting access per VM
   policy on a per VM basis.
 
 * Cgroups - a custom cgroup is created per VM and this will either use the
-  ``devices`` controller or an ``BPF`` rule to whitelist a set of device nodes.
+  ``devices`` controller or an ``BPF`` rule to define an access control list
+  for the set of device nodes.
   There is no way to change this policy on a per VM basis.
 
 Disabling security protection per VM

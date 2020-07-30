@@ -27,7 +27,7 @@
           <a href="drvlxc.html">LXC</a>,
           <a href="drvbhyve.html">BHyve</a> and
           <a href="drivers.html">more</a></li>
-        <li>targets Linux, FreeBSD, <a href="windows.html">Windows</a> and OS-X</li>
+        <li>targets Linux, FreeBSD, <a href="windows.html">Windows</a> and macOS</li>
         <li>is used by many <a href="apps.html">applications</a></li>
       </ul>
       <p>Recent / forthcoming <a href="news.html">release changes</a></p>
@@ -63,6 +63,9 @@
           <a href="formatbackup.html">backup jobs</a></dd>
         <dt><a href="http://wiki.libvirt.org">Wiki</a></dt>
         <dd>Read further community contributed content</dd>
+
+        <dt><a href="https://libvirt.org/kbase.html">Knowledge base</a></dt>
+        <dd>Learn more about libvirt through knowledge base</dd>
       </dl>
     </div>
 

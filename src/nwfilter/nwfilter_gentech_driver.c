@@ -122,7 +122,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
         return;
 
     virHashFree(inst->vars);
-    VIR_FREE(inst);
+    g_free(inst);
 }
 
 
@@ -204,14 +204,14 @@ virNWFilterCreateVarsFrom(virHashTablePtr vars1,
         return NULL;
 
     if (virNWFilterHashTablePutAll(vars1, res) < 0)
-        goto err_exit;
+        goto error;
 
     if (virNWFilterHashTablePutAll(vars2, res) < 0)
-        goto err_exit;
+        goto error;
 
     return res;
 
- err_exit:
+ error:
     virHashFree(res);
     return NULL;
 }
@@ -234,12 +234,13 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
 
     for (i = 0; i < inst->nfilters; i++)
         virNWFilterObjUnlock(inst->filters[i]);
-    VIR_FREE(inst->filters);
+    g_free(inst->filters);
     inst->nfilters = 0;
 
     for (i = 0; i < inst->nrules; i++)
         virNWFilterRuleInstFree(inst->rules[i]);
-    VIR_FREE(inst->rules);
+    g_free(inst->rules);
+    inst->nrules = 0;
 }
 
 
@@ -261,8 +262,7 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
     virNWFilterRuleInstPtr ruleinst;
     int ret = -1;
 
-    if (VIR_ALLOC(ruleinst) < 0)
-        goto cleanup;
+    ruleinst = g_new0(virNWFilterRuleInst, 1);
 
     ruleinst->chainSuffix = def->chainsuffix;
     ruleinst->chainPriority = def->chainPriority;
@@ -415,7 +415,6 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
     virNWFilterDefPtr next_filter;
     virNWFilterDefPtr newNext_filter;
     virNWFilterVarValuePtr val;
-    virHashTablePtr tmpvars;
 
     for (i = 0; i < filter->nentries; i++) {
         virNWFilterRuleDefPtr    rule = filter->filterEntries[i]->rule;
@@ -425,20 +424,16 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
             for (j = 0; j < rule->nVarAccess; j++) {
                 if (!virNWFilterVarAccessIsAvailable(rule->varAccess[j],
                                                      vars)) {
-                    char *varAccess;
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
+                    g_autofree char *varAccess = NULL;
+                    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
                     virNWFilterVarAccessPrint(rule->varAccess[j], &buf);
 
-                    val = virNWFilterVarValueCreateSimpleCopyValue("1");
-                    if (!val) {
-                        virBufferFreeAndReset(&buf);
+                    if (!(val = virNWFilterVarValueCreateSimpleCopyValue("1")))
                         return -1;
-                    }
 
                     varAccess = virBufferContentAndReset(&buf);
                     rc = virHashUpdateEntry(missing_vars, varAccess, val);
-                    VIR_FREE(varAccess);
                     if (rc < 0) {
                         virNWFilterVarValueFree(val);
                         return -1;
@@ -446,6 +441,8 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                 }
             }
         } else if (inc) {
+            g_autoptr(virHashTable) tmpvars = NULL;
+
             VIR_DEBUG("Following filter %s", inc->filterref);
             if (!(obj = virNWFilterObjListFindInstantiateFilter(driver->nwfilters,
                                                                 inc->filterref)))
@@ -474,9 +471,6 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                                                     missing_vars,
                                                     useNewFilter,
                                                     driver);
-
-            virHashFree(tmpvars);
-
             virNWFilterObjUnlock(obj);
             if (rc < 0)
                 return -1;
@@ -517,7 +511,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
     int rc;
     virNWFilterInst inst;
     bool instantiate = true;
-    char *buf;
+    g_autofree char *buf = NULL;
     virNWFilterVarValuePtr lv;
     const char *learning;
     bool reportIP = false;
@@ -528,7 +522,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
 
     if (!missing_vars) {
         rc = -1;
-        goto err_exit;
+        goto error;
     }
 
     rc = virNWFilterDetermineMissingVarsRec(filter,
@@ -537,7 +531,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
                                             useNewFilter,
                                             driver);
     if (rc < 0)
-        goto err_exit;
+        goto error;
 
     lv = virHashLookup(binding->filterparams, NWFILTER_VARNAME_CTRL_IP_LEARNING);
     if (lv)
@@ -559,7 +553,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
                 rc = virNWFilterDHCPSnoopReq(techdriver,
                                              binding,
                                              driver);
-                goto err_exit;
+                goto error;
             } else if (STRCASEEQ(learning, "any")) {
                 if (!virNWFilterHasLearnReq(ifindex)) {
                     rc = virNWFilterLearnIPAddress(techdriver,
@@ -568,14 +562,14 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
                                                    driver,
                                                    DETECT_DHCP|DETECT_STATIC);
                 }
-                goto err_exit;
+                goto error;
             } else {
                 rc = -1;
                 virReportError(VIR_ERR_PARSE_FAILED,
                                _("filter '%s' "
                                  "learning value '%s' invalid."),
                                filter->name, learning);
-                goto err_exit;
+                goto error;
             }
         } else {
             goto err_unresolvable_vars;
@@ -584,7 +578,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
         goto err_unresolvable_vars;
     } else if (!forceWithPendingReq &&
                virNWFilterHasLearnReq(ifindex)) {
-        goto err_exit;
+        goto error;
     }
 
     rc = virNWFilterDefToInst(driver,
@@ -594,7 +588,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
                               &inst);
 
     if (rc < 0)
-        goto err_exit;
+        goto error;
 
     switch (useNewFilter) {
     case INSTANTIATE_FOLLOW_NEWFILTER:
@@ -607,7 +601,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
 
     if (instantiate) {
         if (virNWFilterLockIface(binding->portdevname) < 0)
-            goto err_exit;
+            goto error;
 
         rc = techdriver->applyNewRules(binding->portdevname, inst.rules, inst.nrules);
 
@@ -624,7 +618,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
         virNWFilterUnlockIface(binding->portdevname);
     }
 
- err_exit:
+ error:
     virNWFilterInstReset(&inst);
     virHashFree(missing_vars);
 
@@ -637,11 +631,10 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot instantiate filter due to unresolvable "
                          "variables or unavailable list elements: %s"), buf);
-        VIR_FREE(buf);
     }
 
     rc = -1;
-    goto err_exit;
+    goto error;
 }
 
 
@@ -708,14 +701,14 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
     if (virNWFilterVarHashmapAddStdValue(binding->filterparams,
                                          NWFILTER_STD_VAR_MAC,
                                          vmmacaddr) < 0)
-        goto err_exit;
+        goto error;
 
     ipaddr = virNWFilterIPAddrMapGetIPAddr(binding->portdevname);
     if (ipaddr &&
         virNWFilterVarHashmapAddStdValue(binding->filterparams,
                                          NWFILTER_STD_VAR_IP,
                                          virNWFilterVarValueGetSimple(ipaddr)) < 0)
-        goto err_exit;
+        goto error;
 
 
     filter = virNWFilterObjGetDef(obj);
@@ -738,7 +731,7 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
                                   teardownOld, driver,
                                   forceWithPendingReq);
 
- err_exit:
+ error:
     virNWFilterObjUnlock(obj);
 
     return rc;

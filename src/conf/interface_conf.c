@@ -1122,11 +1122,10 @@ virInterfaceDefDevFormat(virBufferPtr buf,
 char *
 virInterfaceDefFormat(const virInterfaceDef *def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (virInterfaceDefDevFormat(&buf, def, VIR_INTERFACE_TYPE_LAST) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virInterfaceDefDevFormat(&buf, def, VIR_INTERFACE_TYPE_LAST) < 0)
         return NULL;
-    }
+
     return virBufferContentAndReset(&buf);
 }

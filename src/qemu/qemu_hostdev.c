@@ -202,7 +202,6 @@ qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("host doesn't support legacy PCI passthrough"));
             return false;
-            break;
 
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:

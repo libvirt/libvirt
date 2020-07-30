@@ -244,7 +244,7 @@ static char *
 bhyveConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
     bhyveConnPtr privconn = conn->privateData;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(0, NULL);
 
@@ -678,7 +678,7 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
                               const char *xmlData,
                               unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bhyveConnPtr privconn = conn->privateData;
     virDomainDefPtr def = NULL;
     virCommandPtr cmd = NULL, loadcmd = NULL;

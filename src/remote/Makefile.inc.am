@@ -35,16 +35,13 @@ REMOTE_DAEMON_SOURCES = \
 	$(NULL)
 
 REMOTE_DAEMON_CFLAGS = \
-	$(LIBXML_CFLAGS) \
-	$(GLIB_CFLAGS) \
+	$(AM_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \
 	$(XDR_CFLAGS) \
 	$(DBUS_CFLAGS) \
 	$(LIBNL_CFLAGS) \
-	$(WARN_CFLAGS) \
 	$(PIE_CFLAGS) \
-	$(COVERAGE_CFLAGS) \
 	-I$(srcdir)/access \
 	-I$(builddir)/access \
 	-I$(srcdir)/conf \
@@ -54,11 +51,9 @@ REMOTE_DAEMON_CFLAGS = \
 	$(NULL)
 
 REMOTE_DAEMON_LD_FLAGS = \
-	$(RELRO_LDFLAGS) \
+	$(AM_LDFLAGS) \
 	$(PIE_LDFLAGS) \
-	$(NO_INDIRECT_LDFLAGS) \
 	$(NO_UNDEFINED_LDFLAGS) \
-	$(COVERAGE_LDFLAGS) \
 	$(NULL)
 
 REMOTE_DAEMON_LD_ADD = \
@@ -69,6 +64,7 @@ REMOTE_DAEMON_LD_ADD = \
 	$(LIBXML_LIBS) \
 	$(GNUTLS_LIBS) \
 	$(SASL_LIBS) \
+	$(XDR_LIBS) \
 	$(DBUS_LIBS) \
 	$(LIBNL_LIBS) \
 	$(NULL)
@@ -280,6 +276,7 @@ remote/virtproxyd.conf: remote/libvirtd.conf.in
 	$(AM_V_GEN)sed \
 		-e '/[@]CUT_ENABLE_IP[@]/d' \
 		-e '/[@]END[@]/d' \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's|[@]runstatedir[@]|@runstatedir@|' \
 		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
 		$< > $@
@@ -305,6 +302,7 @@ remote/virtproxyd.aug: remote/libvirtd.aug.in
 	$(AM_V_GEN)$(SED) \
 		-e '/[@]CUT_ENABLE_IP[@]/d' \
 		-e '/[@]END[@]/d' \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtproxyd/' \
 		$< > $@
@@ -329,6 +327,7 @@ remote/test_virtproxyd.aug: remote/test_libvirtd.aug.in \
 		$(SED) \
 		-e '/[@]CUT_ENABLE_IP[@]/d' \
 		-e '/[@]END[@]/d' \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's|[@]runstatedir[@]|@runstatedir@|' \
 		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
 		-e 's/[@]DAEMON_NAME_UC[@]/Virtproxyd/' \

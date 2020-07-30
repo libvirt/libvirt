@@ -42,7 +42,7 @@ VIR_LOG_INIT("util.pidfile");
 
 char *virPidFileBuildPath(const char *dir, const char* name)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf, "%s", dir);
     virBufferEscapeString(&buf, "/%s.pid", name);

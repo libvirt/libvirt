@@ -455,7 +455,7 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 static int
 AppArmorSetSecurityAllLabel(virSecurityManagerPtr mgr,
                             virDomainDefPtr def,
-                            const char *stdin_path,
+                            const char *incomingPath,
                             bool chardevStdioLogd G_GNUC_UNUSED,
                             bool migrated G_GNUC_UNUSED)
 {
@@ -464,10 +464,10 @@ AppArmorSetSecurityAllLabel(virSecurityManagerPtr mgr,
     if (!secdef || !secdef->relabel)
         return 0;
 
-    /* Reload the profile if stdin_path is specified. Note that
+    /* Reload the profile if incomingPath is specified. Note that
        GenSecurityLabel() will have already been run. */
-    if (stdin_path)
-        return reload_profile(mgr, def, stdin_path, true);
+    if (incomingPath)
+        return reload_profile(mgr, def, incomingPath, true);
 
     return 0;
 }
@@ -699,7 +699,6 @@ AppArmorSetMemoryLabel(virSecurityManagerPtr mgr,
             return -1;
         }
         return reload_profile(mgr, def, mem->nvdimmPath, true);
-        break;
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:

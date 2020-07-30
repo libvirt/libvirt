@@ -69,11 +69,13 @@ RUN dnf update -y && \
         parted-devel \
         patch \
         perl \
+        perl-App-cpanminus \
         pkgconfig \
         polkit \
         python3 \
         python3-docutils \
         python3-flake8 \
+        python3-pip \
         python3-setuptools \
         python3-wheel \
         qemu-img \
@@ -92,6 +94,7 @@ RUN dnf update -y && \
         wireshark-devel \
         xen-devel \
         xfsprogs-devel \
+        xz \
         yajl-devel \
         zfs-fuse && \
     dnf autoremove -y && \

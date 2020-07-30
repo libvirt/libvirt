@@ -8,7 +8,40 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v6.5.0 (unreleased)
+v6.6.0 (unreleased)
+===================
+
+* **New features**
+
+  * Allow configuring of ACPI NUMA HMAT
+
+    Libvirt allows configuring ACPI Heterogeneous Memory Attribute Table to
+    hint software running inside the guest on optimization.
+
+  * esx: Add a ``type`` attribute for mac addresses.
+
+    This attribute allows (when set to ``static``) ignoring VMWare checks of the
+    MAC addresses that would generate a new one if they were in its OUI
+    (00:0c:29).
+
+* **Improvements**
+
+  * esx: Change the NIC limit for recent virtualHW versions
+
+    Specifying a virtualHW version greater or equal to 7 (ESXi 4.0) will allow
+    you to use up to 10 NICs instead of 4 as it was previously.
+
+* **Bug fixes**
+
+  * virdevmapper: Don't use libdevmapper to obtain dependencies
+
+    When building domain's private ``/dev`` in a namespace, libdevmapper was
+    consulted for getting full dependency tree of domain's disks. However, this
+    meant that libdevmapper opened ``/dev/mapper/control`` which wasn't closed
+    and was leaked to QEMU. CVE-2020-14339
+
+
+v6.5.0 (2020-07-03)
 ===================
 
 * **New features**
@@ -28,9 +61,65 @@ v6.5.0 (unreleased)
     schema for node devices was expanded to support attributes for mediated
     devices.
 
+  * QEMU: add TPM Proxy device support
+
+    libvirt can now create guests using a new device type called
+    "TPM Proxy". The TPM Proxy connects to a TPM Resource Manager
+    present in the host, enabling the guest to run in secure virtual
+    machine mode with the help of an Ultravisor. Adding a TPM Proxy to
+    a pSeries guest brings no security benefits unless the guest is
+    running on a PPC64 host that has Ultravisor and TPM Resource Manager
+    support. Only one TPM Proxy is allowed per guest. A guest using
+    a TPM Proxy device can instantiate another TPM device at the same
+    time. This device is supported only for pSeries guests via the new
+    'spapr-tpm-proxy' model of the TPM 'passthrough' backend.
+
+  * virhook: Support hooks placed in several files
+
+    Running all scripts from directory /etc/libvirt/hooks/<driver>.d in
+    alphabetical order. Hook script in old place will be executed
+    as first for backward compatibility.
+
+  * qemu: Add support for migratable host-passthrough CPU
+
+    QEMU 2.12 made it possible for guests to use a migration-friendly
+    version of the host-passthrough CPU. This feature is now exposed by
+    libvirt.
+
 * **Improvements**
 
+  * network: Support NAT with IPv6
+
+    It's now possible to use ``<nat ipv6="yes"/>`` in a libvirt network.
+
+  * qemu: Auto-fill NUMA information for incomplete topologies
+
+    If the NUMA topology is not fully described in the guest XML, libvirt
+    will complete it by putting all unspecified CPUs in the first NUMA node.
+    This is only done in the QEMU binary itself supports disjointed CPU
+    ranges for NUMA nodes.
+
+  * qemu: Assign hostdev-backed interfaces to PCIe slots
+
+    All SR-IOV capable devices are PCIe, so when their VFs are assigned to
+    guests they should end up in PCIe slots rather than conventional PCI ones.
+
 * **Bug fixes**
+
+  * qemu: fixed crash in ``qemuDomainBlockCommit``
+
+    This release fixes a regression which was introduced in libvirt v6.4.0
+    where libvirtd always crashes when a block commit of a disk is requested.
+
+  * qemu: fixed zPCI address auto generation on s390
+
+    Removes the correlation between the zPCI address attributes uid and fid.
+    Fixes the validation and autogeneration of zPCI address attributes.
+
+  * qemu: Skip pre-creation of NVMe disks during migration
+
+    libvirt has no way to create NVMe devices on the target host, so it now
+    just makes sure they exist and let the migration proceed in that case.
 
 
 v6.4.0 (2020-06-02)
@@ -88,6 +177,10 @@ v6.4.0 (2020-06-02)
     firewalld resets all iptables rules and chains on restart, and this
     includes deleting those created by libvirt.
 
+  * qemu: reject readonly attribute for virtiofs
+
+    virtiofs does not yet support read-only shares.
+
 
 v6.3.0 (2020-05-05)
 ===================
@@ -143,6 +236,11 @@ v6.3.0 (2020-05-05)
     Users can now setup the following capabilities of pSeries guests: CFPC
     (Cache Flush on Privilege Change), SBBC (Speculation Barrier Bounds
     Checking) and IBS (Indirect Branch Speculation).
+
+  * qemu: Add support for virtio packed option
+
+    The ``packed`` attribute controls if QEMU should try to use packed
+    virtqueues. Possible values are ``on`` or ``off``.
 
 * **Improvements**
 
@@ -335,6 +433,19 @@ v6.1.0 (2020-03-03)
 
     This device, available starting from QEMU 5.0, is limited to pSeries
     guests.
+
+  * qemu: support Panic Crashloaded event handling
+
+    The pvpanic device now supports a 'crashloaded' event, which is emitted
+    when a guest panic has occurred but has already been handled by the guest
+    itself.
+
+  * qemu: Implement virDomainGetHostnameFlags
+
+    The ``--source`` argument to ``virsh domhostname`` can be used to specify
+    what data source to use for the domain hostnames. Currently, in addition
+    to the 'agent', libvirt can also use 'lease' information from dnsmasq to
+    get the hostname.
 
 * **Improvements**
 

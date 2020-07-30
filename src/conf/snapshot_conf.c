@@ -877,7 +877,7 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
         virBufferAdjustIndent(buf, 2);
         for (i = 0; i < def->ndisks; i++) {
             if (virDomainSnapshotDiskDefFormat(buf, &def->disks[i], xmlopt) < 0)
-                goto error;
+                return -1;
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</disks>\n");
@@ -886,7 +886,7 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
     if (def->parent.dom) {
         if (virDomainDefFormatInternal(def->parent.dom, xmlopt,
                                        buf, domainflags) < 0)
-            goto error;
+            return -1;
     } else if (uuidstr) {
         virBufferAddLit(buf, "<domain>\n");
         virBufferAdjustIndent(buf, 2);
@@ -899,12 +899,12 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
         if (virDomainDefFormatInternalSetRootName(def->parent.inactiveDom, xmlopt,
                                                   buf, "inactiveDomain",
                                                   domainflags) < 0)
-            goto error;
+            return -1;
     }
 
     if (virSaveCookieFormatBuf(buf, def->cookie,
                                virDomainXMLOptionGetSaveCookie(xmlopt)) < 0)
-        goto error;
+        return -1;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL)
         virBufferAsprintf(buf, "<active>%d</active>\n",
@@ -914,10 +914,6 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
     virBufferAddLit(buf, "</domainsnapshot>\n");
 
     return 0;
-
- error:
-    virBufferFreeAndReset(buf);
-    return -1;
 }
 
 
@@ -927,7 +923,7 @@ virDomainSnapshotDefFormat(const char *uuidstr,
                            virDomainXMLOptionPtr xmlopt,
                            unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE |
                   VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL |

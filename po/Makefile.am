@@ -7,8 +7,8 @@ LANGS := $(shell cat $(srcdir)/LINGUAS)
 POTFILES_IN = $(srcdir)/POTFILES.in
 POTFILES: $(POTFILES_IN)
 	$(AM_V_GEN) cat $(POTFILES_IN) | \
-		$(SED) 's|[@]SRCDIR[@]|$(top_srcdir)|' | \
-		$(SED) 's|[@]BUILDDIR[@]|$(top_builddir)|' > $@
+		$(SED) 's|[@]SRCDIR[@]||' | \
+		$(SED) 's|[@]BUILDDIR[@]||' > $@
 POTFILE_DEPS = $(shell cat POTFILES)
 POTFILE := $(DOMAIN).pot
 POFILES := $(LANGS:%=%.po)
@@ -32,6 +32,8 @@ XGETTEXT_ARGS = \
 	--package-name="$(PACKAGE_NAME)" \
 	--package-version="$(PACKAGE_VERSION)" \
 	--msgid-bugs-address="$(MSGID_BUGS_ADDRESS)" \
+	--directory="$(top_srcdir)" \
+	--directory="$(top_builddir)" \
 	--sort-output \
 	$(NULL)
 

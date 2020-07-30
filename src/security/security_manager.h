@@ -104,6 +104,12 @@ int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       virDomainHostdevDefPtr dev,
                                       const char *vroot);
+int virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
+                                         virDomainDefPtr def,
+                                         const char *savefile);
+int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
+                                             virDomainDefPtr def,
+                                             const char *savefile);
 int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr sec);
 int virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
@@ -115,7 +121,7 @@ int virSecurityManagerCheckAllLabel(virSecurityManagerPtr mgr,
                                     virDomainDefPtr sec);
 int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr sec,
-                                  const char *stdin_path,
+                                  const char *incomingPath,
                                   bool chardevStdioLogd,
                                   bool migrated);
 int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,

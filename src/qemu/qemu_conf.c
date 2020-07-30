@@ -339,10 +339,16 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->chardevTLSx509secretUUID);
 
     VIR_FREE(cfg->vxhsTLSx509certdir);
+    VIR_FREE(cfg->vxhsTLSx509secretUUID);
+
     VIR_FREE(cfg->nbdTLSx509certdir);
+    VIR_FREE(cfg->nbdTLSx509secretUUID);
 
     VIR_FREE(cfg->migrateTLSx509certdir);
     VIR_FREE(cfg->migrateTLSx509secretUUID);
+
+    VIR_FREE(cfg->backupTLSx509certdir);
+    VIR_FREE(cfg->backupTLSx509secretUUID);
 
     while (cfg->nhugetlbfs) {
         cfg->nhugetlbfs--;
@@ -477,20 +483,13 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
 
     if (virConfGetValueBool(conf, "vxhs_tls", &cfg->vxhsTLS) < 0)
         return -1;
-    if (virConfGetValueString(conf, "vxhs_tls_x509_cert_dir", &cfg->vxhsTLSx509certdir) < 0)
-        return -1;
     if (virConfGetValueBool(conf, "nbd_tls", &cfg->nbdTLS) < 0)
         return -1;
-    if (virConfGetValueString(conf, "nbd_tls_x509_cert_dir", &cfg->nbdTLSx509certdir) < 0)
+    if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
         return -1;
 
-#define GET_CONFIG_TLS_CERTINFO(val) \
+#define GET_CONFIG_TLS_CERTINFO_COMMON(val) \
     do { \
-        if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify", \
-                                      &cfg->val## TLSx509verify)) < 0) \
-            return -1; \
-        if (rv == 1) \
-            cfg->val## TLSx509verifyPresent = true; \
         if (virConfGetValueString(conf, #val "_tls_x509_cert_dir", \
                                   &cfg->val## TLSx509certdir) < 0) \
             return -1; \
@@ -500,13 +499,30 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
             return -1; \
     } while (0)
 
-    if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
-        return -1;
-    GET_CONFIG_TLS_CERTINFO(chardev);
+#define GET_CONFIG_TLS_CERTINFO_SERVER(val) \
+    do { \
+        if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify", \
+                                      &cfg->val## TLSx509verify)) < 0) \
+            return -1; \
+        if (rv == 1) \
+            cfg->val## TLSx509verifyPresent = true; \
+    } while (0)
 
-    GET_CONFIG_TLS_CERTINFO(migrate);
+    GET_CONFIG_TLS_CERTINFO_COMMON(chardev);
+    GET_CONFIG_TLS_CERTINFO_SERVER(chardev);
 
-#undef GET_CONFIG_TLS_CERTINFO
+    GET_CONFIG_TLS_CERTINFO_COMMON(migrate);
+    GET_CONFIG_TLS_CERTINFO_SERVER(migrate);
+
+    GET_CONFIG_TLS_CERTINFO_COMMON(backup);
+    GET_CONFIG_TLS_CERTINFO_SERVER(backup);
+
+    GET_CONFIG_TLS_CERTINFO_COMMON(vxhs);
+
+    GET_CONFIG_TLS_CERTINFO_COMMON(nbd);
+
+#undef GET_CONFIG_TLS_CERTINFO_COMMON
+#undef GET_CONFIG_TLS_CERTINFO_SERVER
     return 0;
 }
 
@@ -1144,6 +1160,14 @@ virQEMUDriverConfigValidate(virQEMUDriverConfigPtr cfg)
         return -1;
     }
 
+    if (cfg->backupTLSx509certdir &&
+        !virFileExists(cfg->backupTLSx509certdir)) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("backup_tls_x509_cert_dir directory '%s' does not exist"),
+                       cfg->backupTLSx509certdir);
+        return -1;
+    }
+
     if (cfg->vxhsTLSx509certdir &&
         !virFileExists(cfg->vxhsTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
@@ -1179,6 +1203,9 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
     SET_TLS_SECRET_UUID_DEFAULT(vnc);
     SET_TLS_SECRET_UUID_DEFAULT(chardev);
     SET_TLS_SECRET_UUID_DEFAULT(migrate);
+    SET_TLS_SECRET_UUID_DEFAULT(backup);
+    SET_TLS_SECRET_UUID_DEFAULT(vxhs);
+    SET_TLS_SECRET_UUID_DEFAULT(nbd);
 
 #undef SET_TLS_SECRET_UUID_DEFAULT
 
@@ -1204,6 +1231,7 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
     SET_TLS_X509_CERT_DEFAULT(spice);
     SET_TLS_X509_CERT_DEFAULT(chardev);
     SET_TLS_X509_CERT_DEFAULT(migrate);
+    SET_TLS_X509_CERT_DEFAULT(backup);
     SET_TLS_X509_CERT_DEFAULT(vxhs);
     SET_TLS_X509_CERT_DEFAULT(nbd);
 
@@ -1218,6 +1246,7 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
     SET_TLS_VERIFY_DEFAULT(vnc);
     SET_TLS_VERIFY_DEFAULT(chardev);
     SET_TLS_VERIFY_DEFAULT(migrate);
+    SET_TLS_VERIFY_DEFAULT(backup);
 
 #undef SET_TLS_VERIFY_DEFAULT
 
@@ -1617,7 +1646,7 @@ qemuSharedDeviceEntryRemove(virQEMUDriverPtr driver,
     if (!(entry = virHashLookup(driver->sharedDevices, key)))
         return -1;
 
-    /* Nothing to do if the shared disk is not recored in the table. */
+    /* Nothing to do if the shared disk is not recorded in the table. */
     if (!qemuSharedDeviceEntryDomainExists(entry, name, &idx))
         return 0;
 

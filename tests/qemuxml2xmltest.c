@@ -135,6 +135,7 @@ mymain(void)
     char *fakerootdir;
     virQEMUDriverConfigPtr cfg = NULL;
     virHashTablePtr capslatest = NULL;
+    g_autoptr(virConnect) conn = NULL;
 
     capslatest = testQemuGetLatestCaps();
     if (!capslatest)
@@ -163,6 +164,16 @@ mymain(void)
 
     cfg = virQEMUDriverGetConfig(&driver);
     driver.privileged = true;
+
+    if (!(conn = virGetConnect()))
+        goto cleanup;
+
+    virSetConnectInterface(conn);
+    virSetConnectNetwork(conn);
+    virSetConnectNWFilter(conn);
+    virSetConnectNodeDev(conn);
+    virSetConnectSecret(conn);
+    virSetConnectStorage(conn);
 
 # define DO_TEST_INTERNAL(_name, suffix, when, ...) \
     do { \
@@ -519,9 +530,19 @@ mymain(void)
     DO_TEST("hostdev-vfio-zpci-autogenerate",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST("hostdev-vfio-zpci-autogenerate-uids",
+            QEMU_CAPS_DEVICE_VFIO_PCI,
+            QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST("hostdev-vfio-zpci-autogenerate-fids",
+            QEMU_CAPS_DEVICE_VFIO_PCI,
+            QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-vfio-zpci-boundaries",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_ZPCI);
+    DO_TEST("hostdev-vfio-zpci-ccw-memballoon",
+            QEMU_CAPS_CCW,
+            QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-mdev-precreated", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-mdev-display",
@@ -529,6 +550,7 @@ mymain(void)
             QEMU_CAPS_VFIO_PCI_DISPLAY,
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_VNC);
+    DO_TEST_CAPS_LATEST("hostdev-mdev-display-ramfb");
     DO_TEST("pci-rom", NONE);
     DO_TEST("pci-rom-disabled", NONE);
     DO_TEST("pci-rom-disabled-invalid", NONE);
@@ -611,6 +633,8 @@ mymain(void)
     DO_TEST("controller-usb-order",
             QEMU_CAPS_PIIX_DISABLE_S3,
             QEMU_CAPS_PIIX_DISABLE_S4);
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-single", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-with-tpm", "ppc64");
 
     DO_TEST_FULL("seclabel-dynamic-baselabel", WHEN_INACTIVE,
                  ARG_QEMU_CAPS, NONE);
@@ -1021,9 +1045,6 @@ mymain(void)
     DO_TEST("hostdev-scsi-virtio-scsi",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_LSI);
-    DO_TEST("hostdev-scsi-readonly",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_LSI);
 
     DO_TEST("hostdev-scsi-shareable",
             QEMU_CAPS_VIRTIO_SCSI,
@@ -1039,19 +1060,6 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_LSI);
     DO_TEST("hostdev-scsi-large-unit",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_LSI);
-
-    DO_TEST("hostdev-scsi-lsi-iscsi",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_LSI);
-    DO_TEST("hostdev-scsi-lsi-iscsi-auth",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_LSI);
-    DO_TEST("hostdev-scsi-virtio-iscsi",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_LSI);
-    DO_TEST("hostdev-scsi-virtio-iscsi-auth",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_LSI);
 
@@ -1117,6 +1125,9 @@ mymain(void)
     DO_TEST("numatune-auto-prefer", NONE);
     DO_TEST("numatune-memnode", QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("numatune-memnode-no-memory", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("numatune-distances", QEMU_CAPS_NUMA, QEMU_CAPS_NUMA_DIST);
+    DO_TEST("numatune-no-vcpu", QEMU_CAPS_NUMA);
+    DO_TEST("numatune-hmat", QEMU_CAPS_NUMA_HMAT);
 
     DO_TEST("bios-nvram", NONE);
     DO_TEST("bios-nvram-os-interleave", NONE);
@@ -1339,6 +1350,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
     DO_TEST_CAPS_LATEST("intel-iommu-eim");
     DO_TEST_CAPS_LATEST("intel-iommu-device-iotlb");
+    DO_TEST_CAPS_LATEST("intel-iommu-aw-bits");
     DO_TEST_CAPS_ARCH_LATEST("iommu-smmuv3", "aarch64");
 
     DO_TEST("cpu-check-none", NONE);
@@ -1483,6 +1495,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-9p-multidevs");
     DO_TEST("downscript", NONE);
 
+ cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 

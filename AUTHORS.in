@@ -7,55 +7,56 @@ Daniel Veillard <veillard@redhat.com> or <daniel@veillard.com>
 
 The primary maintainers and people with commit access rights:
 
-Alex Jia <ajia@redhat.com>
 Andrea Bolognani <abologna@redhat.com>
 Cédric Bosdonnat <cbosdonnat@suse.com>
 Christian Ehrhardt <christian.ehrhardt@canonical.com>
 Christophe Fergeau <cfergeau@redhat.com>
-Claudio Bley <claudio.bley@gmail.com>
 Cole Robinson <crobinso@redhat.com>
 Daniel P. Berrangé <berrange@redhat.com>
 Daniel Veillard <veillard@redhat.com>
-Doug Goldstein <cardoe@gentoo.org>
 Eric Blake <eblake@redhat.com>
 Erik Skultety <eskultet@redhat.com>
 Fabiano Fidêncio <fidencio@redhat.com>
-Gao Feng <gaofeng@cn.fujitsu.com>
 Guido Günther <agx@sigxcpu.org>
 Ján Tomko <jtomko@redhat.com>
 Jim Fehlig <jfehlig@suse.com>
 Jiří Denemark <jdenemar@redhat.com>
-John Ferlan <jferlan@redhat.com>
-Katerina Koukiou <kkoukiou@redhat.com>
 Laine Stump <laine@redhat.com>
-Mark McLoughlin <markmc@redhat.com>
 Martin Kletzander <mkletzan@redhat.com>
-Matthias Bolte <matthias.bolte@googlemail.com>
-Maxim Nestratov <mnestratov@virtuozzo.com>
 Michal Prívozník <mprivozn@redhat.com>
 Nikolay Shirokovskiy <nshirokovskiy@virtuozzo.com>
 Pavel Hrdina <phrdina@redhat.com>
 Peter Krempa <pkrempa@redhat.com>
+Pino Toscano <ptoscano@redhat.com>
 Richard W.M. Jones <rjones@redhat.com>
 Roman Bogorodskiy <bogorodskiy@gmail.com>
-Stefan Berger <stefanb@us.ibm.com>
-Wen Congyang <wency@cn.fujitsu.com>
 
 Previous maintainers:
 
+Alex Jia <ajia@redhat.com>
 Anthony Liguori <aliguori@us.ibm.com>
 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 Chris Lalancette <clalance@redhat.com>
+Claudio Bley <claudio.bley@gmail.com>
 Dan Smith <danms@us.ibm.com>
 Dave Allan <dallan@redhat.com>
 Dave Leskovec <dlesko@linux.vnet.ibm.com>
 Dmitry Guryanov <dguryanov@parallels.com>
+Doug Goldstein <cardoe@gentoo.org>
+Gao Feng <gaofeng@cn.fujitsu.com>
 Guannan Ren <gren@redhat.com>
 Jim Meyering <meyering@redhat.com>
+John Ferlan <jferlan@redhat.com>
 John Levon <john.levon@sun.com>
 Justin Clift <jclift@redhat.com>
 Karel Zak <kzak@redhat.com>
+Katerina Koukiou <kkoukiou@redhat.com>
+Mark McLoughlin <markmc@redhat.com>
+Matthias Bolte <matthias.bolte@googlemail.com>
+Maxim Nestratov <mnestratov@virtuozzo.com>
 Osier Yang <jyang@redhat.com>
+Stefan Berger <stefanb@us.ibm.com>
+Wen Congyang <wency@cn.fujitsu.com>
 
 Patches have also been contributed by:
 

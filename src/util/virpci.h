@@ -38,11 +38,18 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virPCIDeviceList, virObjectUnref);
 #define VIR_DOMAIN_DEVICE_ZPCI_MAX_UID UINT16_MAX
 #define VIR_DOMAIN_DEVICE_ZPCI_MAX_FID UINT32_MAX
 
+typedef struct _virZPCIDeviceAddressID virZPCIDeviceAddressID;
 typedef struct _virZPCIDeviceAddress virZPCIDeviceAddress;
 typedef virZPCIDeviceAddress *virZPCIDeviceAddressPtr;
+
+struct _virZPCIDeviceAddressID {
+    unsigned int value;
+    bool isSet;
+};
+
 struct _virZPCIDeviceAddress {
-    unsigned int uid; /* exempt from syntax-check */
-    unsigned int fid;
+    virZPCIDeviceAddressID uid; /* exempt from syntax-check */
+    virZPCIDeviceAddressID fid;
     /* Don't forget to update virPCIDeviceAddressCopy if needed. */
 };
 
@@ -245,8 +252,8 @@ char *virPCIDeviceAddressAsString(const virPCIDeviceAddress *addr)
 
 int virPCIDeviceAddressParse(char *address, virPCIDeviceAddressPtr bdf);
 
-bool virZPCIDeviceAddressIsValid(virZPCIDeviceAddressPtr zpci);
-bool virZPCIDeviceAddressIsEmpty(const virZPCIDeviceAddress *addr);
+bool virZPCIDeviceAddressIsIncomplete(const virZPCIDeviceAddress *addr);
+bool virZPCIDeviceAddressIsPresent(const virZPCIDeviceAddress *addr);
 
 int virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
                                  int pfNetDevIdx,

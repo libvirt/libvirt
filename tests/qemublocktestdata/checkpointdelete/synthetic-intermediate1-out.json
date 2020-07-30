@@ -1,0 +1,11 @@
+[
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-3-format",
+      "name": "b"
+    }
+  }
+]
+reopen nodes:
+libvirt-3-format

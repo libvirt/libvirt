@@ -102,9 +102,14 @@
 
   <define name="cpuNuma">
     <element name="numa">
-      <oneOrMore>
-        <ref name="numaCell"/>
-      </oneOrMore>
+      <interleave>
+        <oneOrMore>
+          <ref name="numaCell"/>
+        </oneOrMore>
+        <optional>
+          <ref name="numaInterconnects"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
@@ -115,9 +120,11 @@
           <ref name="unsignedInt"/>
         </attribute>
       </optional>
-      <attribute name="cpus">
-        <ref name="cpuset"/>
-      </attribute>
+      <optional>
+        <attribute name="cpus">
+          <ref name="cpuset"/>
+        </attribute>
+      </optional>
       <attribute name="memory">
         <ref name="memoryKB"/>
       </attribute>
@@ -146,6 +153,9 @@
           </oneOrMore>
         </element>
       </optional>
+      <zeroOrMore>
+        <ref name="numaCache"/>
+      </zeroOrMore>
     </element>
   </define>
 
@@ -157,6 +167,102 @@
       <attribute name="value">
         <ref name="numaDistanceValue"/>
       </attribute>
+    </element>
+  </define>
+
+  <define name="numaCache">
+    <element name="cache">
+      <attribute name="level">
+        <ref name="unsignedInt"/>
+      </attribute>
+      <attribute name="associativity">
+        <choice>
+          <value>none</value>
+          <value>direct</value>
+          <value>full</value>
+        </choice>
+      </attribute>
+      <attribute name="policy">
+        <choice>
+          <value>none</value>
+          <value>writeback</value>
+          <value>writethrough</value>
+        </choice>
+      </attribute>
+      <interleave>
+        <element name="size">
+          <attribute name="value">
+            <ref name="unsignedInt"/>
+          </attribute>
+          <attribute name="unit">
+            <ref name="unit"/>
+          </attribute>
+        </element>
+        <element name="line">
+          <attribute name="value">
+            <ref name="unsignedInt"/>
+          </attribute>
+          <attribute name="unit">
+            <ref name="unit"/>
+          </attribute>
+        </element>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="numaInterconnects">
+    <element name="interconnects">
+      <interleave>
+        <zeroOrMore>
+          <element name="latency">
+            <attribute name="initiator">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="target">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <optional>
+              <attribute name="cache">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+            <attribute name="type">
+              <choice>
+                <value>access</value>
+                <value>read</value>
+                <value>write</value>
+              </choice>
+            </attribute>
+            <attribute name="value">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <empty/>
+          </element>
+        </zeroOrMore>
+        <zeroOrMore>
+          <element name="bandwidth">
+            <attribute name="initiator">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="target">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="type">
+              <choice>
+                <value>access</value>
+                <value>read</value>
+                <value>write</value>
+              </choice>
+            </attribute>
+            <attribute name="value">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="unit">
+              <ref name="unit"/>
+            </attribute>
+          </element>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 

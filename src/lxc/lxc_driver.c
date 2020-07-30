@@ -4618,7 +4618,7 @@ static char *
 lxcConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
     virLXCDriverPtr driver = conn->privateData;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(0, NULL);
 

@@ -462,6 +462,24 @@ Example:</p>
 &lt;/domain&gt;
 </pre>
 
+<h3><a id="msrs">Ignoring unknown MSRs reads and writes</a></h3>
+
+<p><span class="since">Since 5.1.0</span>, it's possible to make bhyve
+ignore accesses to unimplemented Model Specific Registers (MSRs).
+Example:</p>
+
+<pre>
+&lt;domain type="bhyve"&gt;
+    ...
+    &lt;features&gt;
+      ...
+      &lt;msrs unknown='ignore'/&gt;
+      ...
+    &lt;/features&gt;
+    ...
+&lt;/domain&gt;
+</pre>
+
 <h3><a id="bhyvecommand">Pass-through of arbitrary bhyve commands</a></h3>
 
 <p><span class="since">Since 5.1.0</span>, it's possible to pass additional command-line

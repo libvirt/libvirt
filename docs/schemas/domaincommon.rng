@@ -3179,6 +3179,19 @@
           <attribute name="address">
             <ref name="uniMacAddr"/>
           </attribute>
+          <optional>
+            <attribute name="type">
+              <choice>
+                <value>generated</value>
+                <value>static</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="check">
+              <ref name="virYesNo"/>
+            </attribute>
+          </optional>
           <empty/>
         </element>
       </optional>
@@ -4618,6 +4631,7 @@
             <value>tpm-tis</value>
             <value>tpm-crb</value>
             <value>tpm-spapr</value>
+            <value>spapr-tpm-proxy</value>
           </choice>
         </attribute>
       </optional>
@@ -4747,6 +4761,11 @@
           <optional>
             <attribute name="iotlb">
               <ref name="virOnOff"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="aw_bits">
+              <ref name="uint8"/>
             </attribute>
           </optional>
         </element>

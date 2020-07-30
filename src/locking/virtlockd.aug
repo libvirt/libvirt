@@ -30,7 +30,7 @@ module Virtlockd =
                      | int_entry "max_clients"
                      | int_entry "admin_max_clients"
 
-   (* Each enty in the config is one of the following three ... *)
+   (* Each entry in the config is one of the following three ... *)
    let entry = logging_entry
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]

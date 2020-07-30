@@ -492,7 +492,7 @@ virNodeDeviceRef(virNodeDevicePtr dev)
  * virNodeDeviceDettach:
  * @dev: pointer to the node device
  *
- * Dettach the node device from the node itself so that it may be
+ * Detach the node device from the node itself so that it may be
  * assigned to a guest domain.
  *
  * Depending on the hypervisor, this may involve operations such

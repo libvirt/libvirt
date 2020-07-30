@@ -637,13 +637,13 @@ typedef enum {
     VIR_DOMAIN_MEMORY_STAT_DISK_CACHES     = 10,
 
     /*
-     * The amount of successful huge page allocations from inside the domain via
+     * The number of successful huge page allocations from inside the domain via
      * virtio balloon.
      */
     VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC    = 11,
 
     /*
-     * The amount of failed huge page allocations from inside the domain via
+     * The number of failed huge page allocations from inside the domain via
      * virtio balloon.
      */
     VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL    = 12,

@@ -922,17 +922,17 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    /* set the type of the inner/slave interface to the original
+    /* set the type of the attached interface to the original
      * if_type, and the name to the original if_name.
      */
     if (!xmlSetProp(if_node, BAD_CAST "type", BAD_CAST if_type)) {
-        vshError(ctl, _("Failed to set new slave interface type to '%s' in xml document"),
+        vshError(ctl, _("Failed to set new attached interface type to '%s' in xml document"),
                  if_type);
         goto cleanup;
     }
 
     if (!xmlSetProp(if_node, BAD_CAST "name", BAD_CAST if_name)) {
-        vshError(ctl, _("Failed to set new slave interface name to '%s' in xml document"),
+        vshError(ctl, _("Failed to set new attached interface name to '%s' in xml document"),
                  if_name);
         goto cleanup;
     }
@@ -1010,7 +1010,7 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_interface_unbridge[] = {
     {.name = "help",
-     .data = N_("undefine a bridge device after detaching its slave device")
+     .data = N_("undefine a bridge device after detaching its device(s)")
     },
     {.name = "desc",
      .data = N_("unbridge a network device")
@@ -1026,7 +1026,7 @@ static const vshCmdOptDef opts_interface_unbridge[] = {
     },
     {.name = "no-start",
      .type = VSH_OT_BOOL,
-     .help = N_("don't start the un-slaved interface immediately (not recommended)")
+     .help = N_("don't start the detached interface immediately (not recommended)")
     },
     {.name = NULL}
 };
@@ -1103,8 +1103,8 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    /* Change the type and name of the outer/master interface to
-     * the type/name of the attached slave interface.
+    /* Change the type and name of the bridge interface to
+     * the type/name of the attached interface.
      */
     if (!(if_name = virXMLPropString(if_node, "name"))) {
         vshError(ctl, _("Device attached to bridge %s has no name"), br_name);
@@ -1154,7 +1154,7 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     xmlDocDumpMemory(xml_doc, &if_xml, &if_xml_size);
 
     if (!if_xml || if_xml_size <= 0) {
-        vshError(ctl, _("Failed to format new xml document for un-enslaved interface %s"),
+        vshError(ctl, _("Failed to format new xml document for detached interface %s"),
                  if_name);
         goto cleanup;
     }

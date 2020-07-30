@@ -59,6 +59,18 @@ module Libvirtd_qemu =
                  | bool_entry "migrate_tls_x509_verify"
                  | str_entry "migrate_tls_x509_secret_uuid"
 
+   let backup_entry = str_entry "backup_tls_x509_cert_dir"
+                 | bool_entry "backup_tls_x509_verify"
+                 | str_entry "backup_tls_x509_secret_uuid"
+
+   let vxhs_entry = bool_entry "vxhs_tls"
+                 | str_entry "vxhs_tls_x509_cert_dir"
+                 | str_entry "vxhs_tls_x509_secret_uuid"
+
+   let nbd_entry = bool_entry "nbd_tls"
+                 | str_entry "nbd_tls_x509_cert_dir"
+                 | str_entry "nbd_tls_x509_secret_uuid"
+
    let nogfx_entry = bool_entry "nographics_allow_host_audio"
 
    let remote_display_entry = int_entry "remote_display_port_min"
@@ -121,12 +133,6 @@ module Libvirtd_qemu =
 
    let memory_entry = str_entry "memory_backing_dir"
 
-   let vxhs_entry = bool_entry "vxhs_tls"
-                 | str_entry "vxhs_tls_x509_cert_dir"
-
-   let nbd_entry = bool_entry "nbd_tls"
-                | str_entry "nbd_tls_x509_cert_dir"
-
    let swtpm_entry = str_entry "swtpm_user"
                 | str_entry "swtpm_group"
 
@@ -144,6 +150,7 @@ module Libvirtd_qemu =
              | spice_entry
              | chardev_entry
              | migrate_entry
+             | backup_entry
              | nogfx_entry
              | remote_display_entry
              | security_entry

@@ -55,10 +55,9 @@ MOCKLIBS_LDFLAGS = -avoid-version \
 DRIVERLIB_LDFLAGS = \
 	-avoid-version \
 	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
-	$(MINGW_EXTRA_LDFLAGS)
-if WITH_MACOS
-DRIVERLIB_LDFLAGS += -Wl,-flat_namespace
-endif WITH_MACOS
+	$(MINGW_EXTRA_LDFLAGS) \
+	$(FLAT_NAMESPACE_FLAGS) \
+	$(NULL)
 
 PROBES_O =
 if WITH_DTRACE_PROBES
@@ -458,14 +457,14 @@ check-access: file-access-clean
 	VIR_TEST_FILE_ACCESS=1 $(MAKE) $(AM_MAKEFLAGS) check
 	$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-file-access.py \
 		$(abs_builddir)/test_file_access.txt \
-		$(abs_srcdir)/file_access_whitelist.txt | sort -u
+		$(abs_srcdir)/permitted_file_access.txt | sort -u
 
 file-access-clean:
 	> test_file_access.txt
 endif WITH_LINUX
 
 EXTRA_DIST += \
-	file_access_whitelist.txt
+	permitted_file_access.txt
 
 if WITH_TESTS
 noinst_PROGRAMS = $(test_programs) $(test_helpers)
@@ -1512,7 +1511,7 @@ endif WITH_LIBVIRTD
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
 	eventtest.c testutils.h testutils.c
-eventtest_LDADD = $(LIB_CLOCK_GETTIME) $(LDADDS)
+eventtest_LDADD = $(LDADDS)
 endif WITH_LIBVIRTD
 
 libshunload_la_SOURCES = shunloadhelper.c

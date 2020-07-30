@@ -573,6 +573,10 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 375 */
     QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE, /* xbzrle-cache-size field in migrate-set-parameters */
+    QEMU_CAPS_INTEL_IOMMU_AW_BITS, /* intel-iommu.aw-bits */
+    QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY, /* -device spapr-tpm-proxy */
+    QEMU_CAPS_NUMA_HMAT, /* -numa hmat */
+    QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI, /* -blockdev used for (i)SCSI hostdevs */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
@@ -629,8 +633,8 @@ int virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  virDomainCapsCPUUsable usable);
 virDomainCapsCPUModelsPtr virQEMUCapsGetCPUModels(virQEMUCapsPtr qemuCaps,
                                                   virDomainVirtType type,
-                                                  const char **modelWhitelist,
-                                                  const char **modelBlacklist);
+                                                  const char **modelAllowed,
+                                                  const char **modelForbidden);
 int virQEMUCapsFetchCPUModels(qemuMonitorPtr mon,
                               virArch arch,
                               virDomainCapsCPUModelsPtr *cpuModels);
@@ -701,8 +705,6 @@ virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
                                           virDomainVirtType virtType,
                                           const char *binary,
                                           const char *machineType);
-virQEMUCapsPtr virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
-                                            virArch arch);
 virQEMUCapsPtr virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
                                              const char *binary,
                                              const char *archStr,

@@ -705,7 +705,7 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
 
     /* XXX check default_emulator, see how it uses this */
     if (!foundguest) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         if (ostype)
             virBufferAsprintf(&buf, "ostype=%s ",
                               virDomainOSTypeToString(ostype));
@@ -725,7 +725,6 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find capabilities for %s"),
                        virBufferCurrentContent(&buf));
-        virBufferFreeAndReset(&buf);
         return ret;
     }
 
@@ -901,7 +900,7 @@ virCapabilitiesFormatResctrlMonitor(virBufferPtr buf,
                                     virResctrlInfoMonPtr monitor)
 {
     size_t i = 0;
-    virBuffer childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     /* monitor not supported, no capability */
     if (!monitor)
@@ -1335,13 +1334,13 @@ virCapabilitiesFormatStoragePoolXML(virCapsStoragePoolPtr *pools,
 char *
 virCapabilitiesFormatXML(virCapsPtr caps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "<capabilities>\n\n");
     virBufferAdjustIndent(&buf, 2);
 
     if (virCapabilitiesFormatHostXML(&caps->host, &buf) < 0)
-        goto error;
+        return NULL;
 
     virCapabilitiesFormatGuestXML(caps->guests, caps->nguests, &buf);
 
@@ -1351,10 +1350,6 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     virBufferAddLit(&buf, "</capabilities>\n");
 
     return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 /* get the maximum ID of cpus in the host */

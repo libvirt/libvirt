@@ -1,0 +1,29 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <interface type='bridge'>
+      <mac address='aa:bb:cc:dd:ee:ff'/>
+      <source bridge='br0'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='aa:bb:cc:dd:ee:fe' type='static' check='yes'/>
+      <source bridge='br1'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='aa:bb:cc:dd:ee:fd' type='generated' check='no'/>
+      <source bridge='br2'/>
+    </interface>
+  </devices>
+</domain>

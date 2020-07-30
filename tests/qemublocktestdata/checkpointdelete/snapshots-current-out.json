@@ -1,25 +1,5 @@
 [
   {
-    "type": "block-dirty-bitmap-enable",
-    "data": {
-      "node": "libvirt-1-format",
-      "name": "d"
-    }
-  },
-  {
-    "type": "block-dirty-bitmap-merge",
-    "data": {
-      "node": "libvirt-1-format",
-      "target": "d",
-      "bitmaps": [
-        {
-          "node": "libvirt-1-format",
-          "name": "current"
-        }
-      ]
-    }
-  },
-  {
     "type": "block-dirty-bitmap-remove",
     "data": {
       "node": "libvirt-1-format",

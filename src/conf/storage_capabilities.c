@@ -117,16 +117,14 @@ virStoragePoolCapsFormatPool(virBufferPtr buf,
 char *
 virStoragePoolCapsFormat(const virStoragePoolCaps *caps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     virBufferAddLit(&buf, "<storagepoolCapabilities>\n");
     virBufferAdjustIndent(&buf, 2);
     for (i = 0; i < VIR_STORAGE_POOL_LAST; i++) {
-        if (virStoragePoolCapsFormatPool(&buf, i, caps) < 0) {
-            virBufferFreeAndReset(&buf);
+        if (virStoragePoolCapsFormatPool(&buf, i, caps) < 0)
             return NULL;
-        }
     }
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</storagepoolCapabilities>\n");

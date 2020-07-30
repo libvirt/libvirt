@@ -69,6 +69,7 @@ RUN zypper update -y && \
            parted-devel \
            patch \
            perl \
+           perl-App-cpanminus \
            pkgconfig \
            polkit \
            python3 \
@@ -91,7 +92,8 @@ RUN zypper update -y && \
            vim \
            wireshark-devel \
            xen-devel \
-           xfsprogs-devel && \
+           xfsprogs-devel \
+           xz && \
     zypper clean --all && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \

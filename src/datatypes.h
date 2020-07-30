@@ -635,6 +635,8 @@ struct _virNetworkPort {
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetworkPort, virObjectUnref);
 
+/* virNetworkDHCPLease is defined in the public API - libvirt-network.h */
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetworkDHCPLease, virNetworkDHCPLeaseFree);
 
 /**
 * _virInterface:

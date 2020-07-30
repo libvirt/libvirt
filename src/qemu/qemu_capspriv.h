@@ -37,12 +37,10 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 unsigned int microcodeVersion,
                                 const char *kernelVersion);
 
-void virQEMUCapsSetInvalidation(virQEMUCapsPtr qemuCaps,
-                                bool enabled);
-
 int virQEMUCapsLoadCache(virArch hostArch,
                          virQEMUCapsPtr qemuCaps,
-                         const char *filename);
+                         const char *filename,
+                         bool skipInvalidation);
 char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps);
 
 int

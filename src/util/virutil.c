@@ -503,8 +503,7 @@ virGetHostnameImpl(bool quiet)
          * string as-is; it's up to callers to check whether "localhost"
          * is allowed.
          */
-        result = g_strdup(hostname);
-        goto cleanup;
+        return g_strdup(hostname);
     }
 
     /* otherwise, it's a shortened, non-localhost, hostname.  Attempt to
@@ -519,8 +518,7 @@ virGetHostnameImpl(bool quiet)
         if (!quiet)
             VIR_WARN("getaddrinfo failed for '%s': %s",
                      hostname, gai_strerror(r));
-        result = g_strdup(hostname);
-        goto cleanup;
+        return g_strdup(hostname);
     }
 
     /* Tell static analyzers about getaddrinfo semantics.  */
@@ -538,10 +536,6 @@ virGetHostnameImpl(bool quiet)
         result = g_strdup(info->ai_canonname);
 
     freeaddrinfo(info);
-
- cleanup:
-    if (!result)
-        virReportOOMError();
     return result;
 }
 
@@ -968,7 +962,7 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
     if (uid != (uid_t)-1 &&
         virGetUserEnt(uid, &user, &primary, NULL, NULL, true) >= 0) {
         int nallocgrps = 10;
-        gid_t *grps = g_new(gid_t, nallocgrps);
+        gid_t *grps = g_new0(gid_t, nallocgrps);
 
         while (1) {
             int nprevallocgrps = nallocgrps;

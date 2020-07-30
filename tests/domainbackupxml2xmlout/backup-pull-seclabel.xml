@@ -2,17 +2,18 @@
   <incremental>1525889631</incremental>
   <server transport='tcp' name='localhost' port='10809'/>
   <disks>
-    <disk name='vda' backup='yes' type='file' exportname='test-vda' exportbitmap='blah'>
+    <disk name='vda' backup='yes' type='file' backupmode='incremental' incremental='1525889631' exportname='test-vda' exportbitmap='blah'>
       <driver type='qcow2'/>
       <scratch file='/path/to/file'>
         <seclabel model='dac' relabel='no'/>
       </scratch>
     </disk>
-    <disk name='vdb' backup='yes' type='block'>
+    <disk name='vdb' backup='yes' type='block' backupmode='incremental' incremental='1525889631'>
       <driver type='qcow2'/>
       <scratch dev='/dev/block'>
         <seclabel model='dac' relabel='no'/>
       </scratch>
     </disk>
+    <disk name='vdextradisk' backup='no'/>
   </disks>
 </domainbackup>

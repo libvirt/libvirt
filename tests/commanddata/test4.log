@@ -1,3 +1,4 @@
+ARG:--check-daemonize
 ENV:DISPLAY=:0.0
 ENV:HOME=/home/test
 ENV:HOSTNAME=test

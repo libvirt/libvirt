@@ -325,14 +325,15 @@ virshBuildPoolXML(vshControl *ctl,
                *adapterWwnn = NULL, *adapterWwpn = NULL, *secretUUID = NULL,
                *adapterParentWwnn = NULL, *adapterParentWwpn = NULL,
                *adapterParentFabricWwn = NULL, *protoVer = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     VSH_EXCLUSIVE_OPTIONS("secret-usage", "secret-uuid");
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
-        goto cleanup;
+        return false;
+
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
-        goto cleanup;
+        return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "source-host", &srcHost) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "source-path", &srcPath) < 0 ||
@@ -351,8 +352,9 @@ virshBuildPoolXML(vshControl *ctl,
         vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwnn", &adapterParentWwnn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwpn", &adapterParentWwpn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-parent-fabric-wwn", &adapterParentFabricWwn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "source-protocol-ver", &protoVer) < 0)
-        goto cleanup;
+        vshCommandOptStringReq(ctl, cmd, "source-protocol-ver", &protoVer) < 0) {
+        return false;
+    }
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
     virBufferAdjustIndent(&buf, 2);
@@ -419,10 +421,6 @@ virshBuildPoolXML(vshControl *ctl,
     *xml = virBufferContentAndReset(&buf);
     *retname = name;
     return true;
-
- cleanup:
-    virBufferFreeAndReset(&buf);
-    return false;
 }
 
 /*
@@ -1450,11 +1448,10 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
 
     if (host) {
         const char *port = NULL;
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
         if (vshCommandOptStringReq(ctl, cmd, "port", &port) < 0) {
             vshError(ctl, "%s", _("missing argument"));
-            virBufferFreeAndReset(&buf);
             return false;
         }
         virBufferAddLit(&buf, "<source>\n");

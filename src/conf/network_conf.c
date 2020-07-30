@@ -2508,7 +2508,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
 
     if (def->metadata) {
-        xmlBufferPtr xmlbuf;
+        g_autoptr(xmlBuffer) xmlbuf = NULL;
         int oldIndentTreeOutput = xmlIndentTreeOutput;
 
         /* Indentation on output requires that we previously set
@@ -2518,15 +2518,17 @@ virNetworkDefFormatBuf(virBufferPtr buf,
          * Thankfully, libxml maps what looks like globals into
          * thread-local uses, so we are thread-safe.  */
         xmlIndentTreeOutput = 1;
-        xmlbuf = xmlBufferCreate();
+        if (!(xmlbuf = xmlBufferCreate())) {
+            virReportOOMError();
+            return -1;
+        }
+
         if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
                         virBufferGetIndent(buf) / 2, 1) < 0) {
-            xmlBufferFree(xmlbuf);
             xmlIndentTreeOutput = oldIndentTreeOutput;
             return -1;
         }
         virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
-        xmlBufferFree(xmlbuf);
         xmlIndentTreeOutput = oldIndentTreeOutput;
     }
 
@@ -2716,16 +2718,12 @@ virNetworkDefFormat(const virNetworkDef *def,
                     virNetworkXMLOptionPtr xmlopt,
                     unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virNetworkDefFormatBuf(&buf, def, xmlopt, flags) < 0)
-        goto error;
+        return NULL;
 
     return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 
@@ -3684,48 +3682,36 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
     switch (section) {
     case VIR_NETWORK_SECTION_BRIDGE:
         return virNetworkDefUpdateBridge(def, command, parentIndex, ctxt, flags);
-        break;
 
     case VIR_NETWORK_SECTION_DOMAIN:
         return virNetworkDefUpdateDomain(def, command, parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_IP:
         return virNetworkDefUpdateIP(def, command, parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_IP_DHCP_HOST:
         return virNetworkDefUpdateIPDHCPHost(def, command,
                                              parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_IP_DHCP_RANGE:
         return virNetworkDefUpdateIPDHCPRange(def, command,
                                               parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_FORWARD:
         return virNetworkDefUpdateForward(def, command,
                                           parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_FORWARD_INTERFACE:
         return virNetworkDefUpdateForwardInterface(def, command,
                                                    parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_FORWARD_PF:
         return virNetworkDefUpdateForwardPF(def, command,
                                             parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_PORTGROUP:
         return virNetworkDefUpdatePortGroup(def, command,
                                             parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_DNS_HOST:
         return virNetworkDefUpdateDNSHost(def, command,
                                           parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_DNS_TXT:
         return virNetworkDefUpdateDNSTxt(def, command, parentIndex, ctxt, flags);
-        break;
     case VIR_NETWORK_SECTION_DNS_SRV:
         return virNetworkDefUpdateDNSSrv(def, command, parentIndex, ctxt, flags);
-        break;
     default:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("can't update unrecognized section of network"));

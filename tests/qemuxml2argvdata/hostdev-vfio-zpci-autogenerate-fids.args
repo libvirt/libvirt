@@ -1,0 +1,31 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-s390x \
+-name QEMUGuest1 \
+-S \
+-machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off \
+-m 214 \
+-realtime mlock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-device zpci,uid=1,fid=0,target=hostdev0,id=zpci1 \
+-device vfio-pci,host=0000:00:00.0,id=hostdev0,bus=pci.0,addr=0x1 \
+-device zpci,uid=5,fid=1,target=hostdev1,id=zpci5 \
+-device vfio-pci,host=0001:00:00.0,id=hostdev1,bus=pci.0,addr=0x2 \
+-device zpci,uid=2,fid=2,target=balloon0,id=zpci2 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

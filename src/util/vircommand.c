@@ -1426,7 +1426,7 @@ virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
  * @name: the name to look up in current environment
  *
  * Pass an environment variable to the child
- * using current process' value
+ * using current process's value
  */
 void
 virCommandAddEnvPass(virCommandPtr cmd, const char *name)
@@ -2080,7 +2080,7 @@ char *
 virCommandToString(virCommandPtr cmd, bool linebreaks)
 {
     size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool prevopt = false;
 
     /* Cannot assume virCommandRun will be called; so report the error
@@ -2101,7 +2101,6 @@ virCommandToString(virCommandPtr cmd, bool linebreaks)
         char *eq = strchr(cmd->env[i], '=');
 
         if (!eq) {
-            virBufferFreeAndReset(&buf);
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("invalid use of command API"));
             return NULL;

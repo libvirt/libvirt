@@ -171,6 +171,7 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
 
 void
 qemuMigrationCookieFree(qemuMigrationCookiePtr mig);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationCookie, qemuMigrationCookieFree);
 
 int
 qemuMigrationCookieAddPersistent(qemuMigrationCookiePtr mig,

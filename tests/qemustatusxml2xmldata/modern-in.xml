@@ -336,6 +336,7 @@
                 <secret type='auth' alias='test-auth-alias'/>
                 <secret type='encryption' alias='test-encryption-alias'/>
                 <secret type='httpcookie' alias='http-cookie-alias'/>
+                <secret type='tlskey' alias='tls-certificate-key-alias'/>
                 <TLSx509 alias='transport-alias'/>
               </objects>
             </privateData>
@@ -457,6 +458,24 @@
         <alias name='video0'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
       </video>
+      <hostdev mode='subsystem' type='scsi' managed='yes'>
+        <source protocol='iscsi' name='iqn.1992-01.com.example:storage/1'>
+          <host name='example.org' port='3260'/>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='hostdev-backend'/>
+            </nodenames>
+            <objects>
+              <secret type='auth' alias='custom-secret'/>
+            </objects>
+          </privateData>
+          <auth username='myname'>
+            <secret type='iscsi' usage='mycluster_myname'/>
+          </auth>
+        </source>
+        <alias name='hostdev0'/>
+        <address type='drive' controller='0' bus='0' target='2' unit='4'/>
+      </hostdev>
       <redirdev bus='usb' type='spicevmc'>
         <alias name='redir0'/>
         <address type='usb' bus='0' port='2'/>

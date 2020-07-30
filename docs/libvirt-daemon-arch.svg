@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.7b-dev -->
+<!-- CreationDate: 2020-07-10 10:24:34 -->
+<!-- Magnification: 1 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="779pt" height="302pt"
+	viewBox="63 139 12979 5028">
+<g fill="none">
+<!-- Line -->
+<rect x="4425" y="764" width="1513" height="386"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="4519" y="1053" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">xen</text>
+<!-- Line -->
+<rect x="4425" y="1246" width="1513" height="385"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="4519" y="1535" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">qemu</text>
+<!-- Line -->
+<rect x="4425" y="1728" width="1513" height="385"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="4519" y="2017" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">openvz</text>
+<!-- Line -->
+<rect x="4425" y="2210" width="1513" height="385"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="4519" y="2499" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">lxc</text>
+<!-- Line -->
+<rect x="4425" y="2691" width="1513" height="386"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="4519" y="2980" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">test</text>
+<!-- Line -->
+<rect x="4425" y="3173" width="1513" height="386"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="4519" y="3462" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">remote</text>
+<!-- Line -->
+<rect x="11328" y="764" width="1514" height="386"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="11423" y="1053" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">xen</text>
+<!-- Line -->
+<rect x="11328" y="1246" width="1514" height="385"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="11423" y="1535" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">qemu</text>
+<!-- Line -->
+<rect x="11328" y="1728" width="1514" height="385"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="11423" y="2017" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">openvz</text>
+<!-- Line -->
+<rect x="11328" y="2210" width="1514" height="385"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="11423" y="2499" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">lxc</text>
+<!-- Line -->
+<rect x="11328" y="2691" width="1514" height="386"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="11423" y="2980" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">test</text>
+<!-- Line -->
+<rect x="11328" y="3173" width="1514" height="386"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="11423" y="3462" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">remote</text>
+<!-- Line -->
+<rect x="75" y="1342" width="1512" height="771"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp0">
+	<path clip-rule="evenodd" d="M 63,139 H 13042 V 5167 H 63 z
+		M 2932,1690 3084,1728 2932,1766 3108,1735 3108,1721z"/>
+</clipPath>
+</defs>
+<polyline points=" 1587,1728 3101,1728" clip-path="url(#cp0)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 3101,1728 -->
+<polyline points=" 2932,1690 3084,1728 2932,1766"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp1">
+	<path clip-rule="evenodd" d="M 63,139 H 13042 V 5167 H 63 z
+		M 7471,1690 7623,1728 7471,1766 7647,1735 7647,1721z"/>
+</clipPath>
+</defs>
+<polyline points=" 5938,3365 6883,3365 7262,1728 7640,1728" clip-path="url(#cp1)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 7640,1728 -->
+<polyline points=" 7471,1690 7623,1728 7471,1766"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp2">
+	<path clip-rule="evenodd" d="M 63,139 H 13042 V 5167 H 63 z
+		M 4256,3327 4408,3365 4256,3403 4432,3372 4432,3358z"/>
+</clipPath>
+</defs>
+<polyline points=" 3101,1728 3858,1728 4141,3365 4425,3365" clip-path="url(#cp2)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 4425,3365 -->
+<polyline points=" 4256,3327 4408,3365 4256,3403"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<rect x="3101" y="572" width="3026" height="3179"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<polyline points=" 3101,572 3101,3751"
+	stroke="#000000" stroke-width="60px"/>
+<!-- Line -->
+<polyline points=" 3858,572 3858,3751"
+	stroke="#000000" stroke-width="60px" stroke-dasharray="10 30"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp3">
+	<path clip-rule="evenodd" d="M 63,139 H 13042 V 5167 H 63 z
+		M 9835,1690 9987,1728 9835,1766 10011,1735 10011,1721z"/>
+</clipPath>
+</defs>
+<polyline points=" 9154,1728 10004,1728" clip-path="url(#cp3)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 10004,1728 -->
+<polyline points=" 9835,1690 9987,1728 9835,1766"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<rect x="7640" y="1342" width="1514" height="771"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<defs>
+<clipPath id="cp4">
+	<path clip-rule="evenodd" d="M 63,139 H 13042 V 5167 H 63 z
+		M 11159,2364 11311,2402 11159,2440 11335,2409 11335,2395z"/>
+</clipPath>
+</defs>
+<polyline points=" 10004,1728 10760,1728 10950,2402 11328,2402" clip-path="url(#cp4)"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Forward arrow to point 11328,2402 -->
+<polyline points=" 11159,2364 11311,2402 11159,2440"
+	stroke="#000000" stroke-width="8px" stroke-miterlimit="8"/>
+<!-- Line -->
+<rect x="10004" y="572" width="3026" height="3179"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<polyline points=" 10004,572 10004,3751"
+	stroke="#000000" stroke-width="60px"/>
+<!-- Line -->
+<polyline points=" 10760,572 10760,3751"
+	stroke="#000000" stroke-width="60px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<text xml:space="preserve" x="170" y="1728" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">Application</text>
+<!-- Text -->
+<text xml:space="preserve" x="1966" y="1631" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="156" text-anchor="start">URI</text>
+<!-- Text -->
+<g transform="translate(3763,4040) rotate(-305)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">Driver API</text>
+</g><!-- Text -->
+<g transform="translate(3101,4040) rotate(-305)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">Public API</text>
+</g><!-- Text -->
+<g transform="translate(4992,4040) rotate(-305)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">Driver Impl</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="3763" y="379" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="216" text-anchor="start">libvirt</text>
+<!-- Text -->
+<text xml:space="preserve" x="1966" y="2017" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="156" text-anchor="start">lxc://host/</text>
+<!-- Text -->
+<text xml:space="preserve" x="7734" y="1728" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">libvirtd</text>
+<!-- Text -->
+<g transform="translate(10666,4040) rotate(-305)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">Driver API</text>
+</g><!-- Text -->
+<g transform="translate(10004,4040) rotate(-305)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">Public API</text>
+</g><!-- Text -->
+<g transform="translate(11896,4040) rotate(-305)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="180" text-anchor="start">Driver Impl</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="10666" y="379" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="normal" font-size="216" text-anchor="start">libvirt</text>
+</g>
+</svg>

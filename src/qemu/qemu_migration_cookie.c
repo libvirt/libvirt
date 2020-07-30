@@ -869,12 +869,10 @@ qemuMigrationCookieXMLFormatStr(virQEMUDriverPtr driver,
                                 virQEMUCapsPtr qemuCaps,
                                 qemuMigrationCookiePtr mig)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuMigrationCookieXMLFormat(driver, qemuCaps, &buf, mig) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (qemuMigrationCookieXMLFormat(driver, qemuCaps, &buf, mig) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }
@@ -1466,14 +1464,14 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
                        int cookieinlen,
                        unsigned int flags)
 {
-    qemuMigrationCookiePtr mig = NULL;
+    g_autoptr(qemuMigrationCookie) mig = NULL;
 
     /* Parse & validate incoming cookie (if any) */
     if (cookiein && cookieinlen &&
         cookiein[cookieinlen-1] != '\0') {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Migration cookie was not NULL terminated"));
-        goto error;
+        return NULL;
     }
 
     VIR_DEBUG("cookielen=%d cookie='%s'", cookieinlen, NULLSTR(cookiein));
@@ -1487,7 +1485,7 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
                                        priv ? priv->qemuCaps : NULL,
                                        cookiein,
                                        flags) < 0)
-        goto error;
+        return NULL;
 
     if (flags & QEMU_MIGRATION_COOKIE_PERSISTENT &&
         mig->persistent &&
@@ -1502,7 +1500,7 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Missing %s lock state for migration cookie"),
                                virLockManagerPluginGetName(driver->lockManager));
-                goto error;
+                return NULL;
             }
         } else if (STRNEQ(mig->lockDriver,
                           virLockManagerPluginGetName(driver->lockManager))) {
@@ -1510,16 +1508,12 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
                            _("Source host lock driver %s different from target %s"),
                            mig->lockDriver,
                            virLockManagerPluginGetName(driver->lockManager));
-            goto error;
+            return NULL;
         }
     }
 
     if (flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo)
         mig->jobInfo->operation = priv->job.current->operation;
 
-    return mig;
-
- error:
-    qemuMigrationCookieFree(mig);
-    return NULL;
+    return g_steal_pointer(&mig);
 }

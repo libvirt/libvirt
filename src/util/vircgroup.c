@@ -773,7 +773,7 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
         return ret;
 
     for (i = 0; tokens[i] != NULL; i++) {
-        /* Whitelist the 3 top level fixed dirs
+        /* Special case the 3 top level fixed dirs
          * NB i == 0 is "", since we have leading '/'
          */
         if (i == 1 &&

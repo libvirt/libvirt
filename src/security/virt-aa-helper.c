@@ -907,7 +907,7 @@ storage_source_add_files(virStorageSourcePtr src,
 static int
 get_files(vahControl * ctl)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int rc = -1;
     size_t i;
     char *uuid;
@@ -1218,15 +1218,17 @@ get_files(vahControl * ctl)
     }
 
 
-    if (ctl->def->tpm) {
+    if (ctl->def->ntpms > 0) {
         char *shortName = NULL;
         const char *tpmpath = NULL;
 
-        switch (ctl->def->tpm->type) {
-        case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        for (i = 0; i < ctl->def->ntpms; i++) {
+            if (ctl->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
+                continue;
+
             shortName = virDomainDefGetShortName(ctl->def);
 
-            switch (ctl->def->tpm->version) {
+            switch (ctl->def->tpms[i]->version) {
             case VIR_DOMAIN_TPM_VERSION_1_2:
                 tpmpath = "tpm1.2";
                 break;
@@ -1256,10 +1258,6 @@ get_files(vahControl * ctl)
                 RUNSTATEDIR, shortName);
 
             VIR_FREE(shortName);
-            break;
-        case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        case VIR_DOMAIN_TPM_TYPE_LAST:
-            break;
         }
     }
 
@@ -1450,7 +1448,6 @@ int
 main(int argc, char **argv)
 {
     vahControl _ctl, *ctl = &_ctl;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
     int rc = -1;
     char *profile = NULL;
     char *include_file = NULL;
@@ -1498,6 +1495,7 @@ main(int argc, char **argv)
         }
     } else if (ctl->cmd == 'c' || ctl->cmd == 'r') {
         char *included_files = NULL;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
         if (ctl->cmd == 'c' && virFileExists(profile))
             vah_error(ctl, 1, _("profile exists"));

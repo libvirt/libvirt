@@ -70,7 +70,7 @@ testVirNetDevBandwidthSet(const void *data)
     const struct testSetStruct *info = data;
     const char *iface = info->iface;
     virNetDevBandwidthPtr band = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *actual_cmd = NULL;
 
     PARSE(info->band, band);
@@ -99,7 +99,6 @@ testVirNetDevBandwidthSet(const void *data)
  cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
     virNetDevBandwidthFree(band);
-    virBufferFreeAndReset(&buf);
     VIR_FREE(actual_cmd);
     return ret;
 }

@@ -237,7 +237,7 @@ cpuTestGuestCPU(const void *arg)
     virCPUDefPtr host = NULL;
     virCPUDefPtr cpu = NULL;
     virCPUCompareResult cmpResult;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *result = NULL;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
