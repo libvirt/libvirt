@@ -267,19 +267,26 @@ static int
 jailhouseNodeGetInfo(virConnectPtr conn,
                      virNodeInfoPtr nodeinfo)
 {
-    UNUSED(conn);
-    UNUSED(nodeinfo);
-    return -1;
+    if (virNodeGetInfoEnsureACL(conn) < 0)
+        return -1;
+
+    return virCapabilitiesGetNodeInfo(nodeinfo);
 }
 
 static int
 jailhouseConnectListAllDomains(virConnectPtr conn,
-                               virDomainPtr **domain, unsigned int flags)
+                               virDomainPtr **domains,
+                               unsigned int flags)
 {
-    UNUSED(conn);
-    UNUSED(domain);
-    UNUSED(flags);
-    return -1;
+    virJailhouseDriverPtr driver = conn->privateData;
+
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
+
+    if (virConnectListAllDomainsEnsureACL(conn) < 0)
+        return -1;
+
+    return virDomainObjListExport(driver->domains, conn, domains,
+                                  virConnectListAllDomainsCheckACL, flags);
 }
 
 static virDomainPtr
@@ -522,30 +529,87 @@ jailhouseDomainDestroy(virDomainPtr domain)
 }
 
 static int
+virjailhouseGetDomainTotalCpuStats(virDomainObjPtr cell,
+                               unsigned long long *cpustats)
+{
+    // TODO(Prakhar): Not implemented yet.
+    UNUSED(cell);
+    UNUSED(cpustats);
+    return -1;
+}
+
+static int
 jailhouseDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
-    UNUSED(domain);
-    UNUSED(info);
-    return -1;
+    virDomainObjPtr cell;
+    int ret = -1;
+
+    if (!(cell = virJailhouseDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainGetInfoEnsureACL(domain->conn, cell->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjIsActive(cell)) {
+        if (virjailhouseGetDomainTotalCpuStats(cell, &(info->cpuTime)) < 0)
+            goto cleanup;
+    } else {
+        info->cpuTime = 0;
+    }
+
+    info->state = virDomainObjGetState(cell, NULL);
+    info->maxMem = virDomainDefGetMemoryTotal(cell->def);
+    info->nrVirtCpu = virDomainDefGetVcpus(cell->def);
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&cell);
+    return ret;
 }
 
 static int
 jailhouseDomainGetState(virDomainPtr domain,
                         int *state, int *reason, unsigned int flags)
 {
-    UNUSED(domain);
-    UNUSED(state);
-    UNUSED(reason);
-    UNUSED(flags);
-    return -1;
+    virDomainObjPtr cell;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(cell = virJailhouseDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainGetStateEnsureACL(domain->conn, cell->def) < 0)
+       goto cleanup;
+
+    *state = virDomainObjGetState(cell, reason);
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&cell);
+    return ret;
 }
 
 static char *
 jailhouseDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
-    UNUSED(domain);
-    UNUSED(flags);
-    return NULL;
+    virDomainObjPtr cell;
+    char *ret = NULL;
+
+    virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
+
+    if (!(cell = virJailhouseDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainGetXMLDescEnsureACL(domain->conn, cell->def, flags) < 0)
+        goto cleanup;
+
+    ret = virDomainDefFormat(cell->def, NULL /* xmlopt */,
+                             virDomainDefFormatConvertXMLFlags(flags));
+
+ cleanup:
+    virDomainObjEndAPI(&cell);
+    return ret;
 }
 
 static virHypervisorDriver jailhouseHypervisorDriver = {
