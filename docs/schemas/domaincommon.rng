@@ -87,6 +87,9 @@
         <optional>
           <ref name='bhyvecmdline'/>
         </optional>
+        <optional>
+          <ref name='xencmdline'/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -6828,6 +6831,20 @@
     -->
   <define name="bhyvecmdline">
     <element name="commandline" ns="http://libvirt.org/schemas/domain/bhyve/1.0">
+      <zeroOrMore>
+        <element name="arg">
+          <attribute name='value'/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <!--
+       Optional hypervisor extensions in their own namespace:
+         Xen
+    -->
+  <define name="xencmdline">
+    <element name="commandline" ns="http://libvirt.org/schemas/domain/xen/1.0">
       <zeroOrMore>
         <element name="arg">
           <attribute name='value'/>

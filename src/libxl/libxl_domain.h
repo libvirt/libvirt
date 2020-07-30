@@ -77,6 +77,7 @@ struct _libxlDomainObjPrivate {
 
 extern virDomainXMLPrivateDataCallbacks libxlDomainXMLPrivateDataCallbacks;
 extern virDomainDefParserConfig libxlDomainDefParserConfig;
+extern virXMLNamespace libxlDriverDomainXMLNamespace;
 extern const struct libxl_event_hooks ev_hooks;
 
 int

@@ -760,6 +760,13 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         libxl_get_required_shadow_memory(b_info->max_memkb,
                                          b_info->max_vcpus);
 
+    if (def->namespaceData) {
+        libxlDomainXmlNsDefPtr nsdata = def->namespaceData;
+
+        if (nsdata->num_args > 0)
+            b_info->extra = g_strdupv(nsdata->args);
+    }
+
     return 0;
 }
 
@@ -2513,5 +2520,6 @@ libxlCreateXMLConf(libxlDriverPrivatePtr driver)
     libxlDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&libxlDomainDefParserConfig,
                                  &libxlDomainXMLPrivateDataCallbacks,
-                                 NULL, NULL, NULL);
+                                 &libxlDriverDomainXMLNamespace,
+                                 NULL, NULL);
 }

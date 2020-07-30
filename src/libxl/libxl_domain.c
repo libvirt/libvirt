@@ -1573,3 +1573,85 @@ libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
     virDomainDefFree(migratableDefDst);
     return ret;
 }
+
+
+static void
+libxlDomainDefNamespaceFree(void *nsdata)
+{
+    libxlDomainXmlNsDefPtr def = nsdata;
+
+    if (!def)
+        return;
+
+    g_strfreev(def->args);
+    g_free(def);
+}
+
+
+static int
+libxlDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
+                             void **data)
+{
+    libxlDomainXmlNsDefPtr nsdata = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    ssize_t nnodes;
+    size_t i;
+    int ret = -1;
+
+    if ((nnodes = virXPathNodeSet("./xen:commandline/xen:arg", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (nnodes == 0)
+        return 0;
+
+    nsdata = g_new0(libxlDomainXmlNsDef, 1);
+    nsdata->args = g_new0(char *, nnodes + 1);
+
+    for (i = 0; i < nnodes; i++) {
+        if (!(nsdata->args[nsdata->num_args++] = virXMLPropString(nodes[i], "value"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No device model command-line argument specified"));
+            goto cleanup;
+        }
+    }
+
+    *data = g_steal_pointer(&nsdata);
+    ret = 0;
+
+ cleanup:
+    libxlDomainDefNamespaceFree(nsdata);
+    return ret;
+}
+
+
+static int
+libxlDomainDefNamespaceFormatXML(virBufferPtr buf,
+                                 void *nsdata)
+{
+    libxlDomainXmlNsDefPtr cmd = nsdata;
+    size_t i;
+
+    if (!cmd->num_args)
+        return 0;
+
+    virBufferAddLit(buf, "<xen:commandline>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < cmd->num_args; i++)
+        virBufferEscapeString(buf, "<xen:arg value='%s'/>\n",
+                              cmd->args[i]);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</xen:commandline>\n");
+
+    return 0;
+}
+
+
+virXMLNamespace libxlDriverDomainXMLNamespace = {
+    .parse = libxlDomainDefNamespaceParse,
+    .free = libxlDomainDefNamespaceFree,
+    .format = libxlDomainDefNamespaceFormatXML,
+    .prefix = "xen",
+    .uri = "http://libvirt.org/schemas/domain/xen/1.0",
+};

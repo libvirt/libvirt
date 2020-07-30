@@ -168,6 +168,14 @@ struct _libxlSavefileHeader {
     uint32_t unused[10];
 };
 
+
+typedef struct _libxlDomainXmlNsDef libxlDomainXmlNsDef;
+typedef libxlDomainXmlNsDef *libxlDomainXmlNsDefPtr;
+struct _libxlDomainXmlNsDef {
+    size_t num_args;
+    char **args;
+};
+
 libxlDriverConfigPtr
 libxlDriverConfigNew(void);
 int
