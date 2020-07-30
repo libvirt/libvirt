@@ -1195,7 +1195,7 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-network-tlsx509-nbd", "2.12.0");
     DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd");
-    DO_TEST_CAPS_LATEST("disk-network-tlsx509-vxhs");
+    DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "5.0.0");
     DO_TEST_CAPS_LATEST("disk-network-http");
     driver.config->vxhsTLS = 0;
     VIR_FREE(driver.config->vxhsTLSx509certdir);
