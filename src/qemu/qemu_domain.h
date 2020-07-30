@@ -751,6 +751,8 @@ bool qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk);
 bool qemuDomainHasBlockjob(virDomainObjPtr vm, bool copy_only)
     ATTRIBUTE_NONNULL(1);
 
+unsigned long long qemuDomainGetMemorySizeAlignment(const virDomainDef *def);
+
 int qemuDomainAlignMemorySizes(virDomainDefPtr def);
 int qemuDomainMemoryDeviceAlignSize(virDomainDefPtr def,
                                     virDomainMemoryDefPtr mem);
