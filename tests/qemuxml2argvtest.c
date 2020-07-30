@@ -1192,8 +1192,10 @@ mymain(void)
     driver.config->vxhsTLS = 1;
     driver.config->nbdTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     driver.config->vxhsTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
-    DO_TEST_CAPS_VER("disk-network-tlsx509", "2.12.0");
-    DO_TEST_CAPS_LATEST("disk-network-tlsx509");
+    DO_TEST_CAPS_VER("disk-network-tlsx509-nbd", "2.12.0");
+    DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "2.12.0");
+    DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd");
+    DO_TEST_CAPS_LATEST("disk-network-tlsx509-vxhs");
     DO_TEST_CAPS_LATEST("disk-network-http");
     driver.config->vxhsTLS = 0;
     VIR_FREE(driver.config->vxhsTLSx509certdir);

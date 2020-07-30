@@ -41,17 +41,7 @@
       <serial>eb90327c-8302-4725-9e1b-4e85ed4dc252</serial>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </disk>
-    <disk type='network' device='disk'>
-      <driver name='qemu' type='raw' cache='none'/>
-      <source protocol='nbd' tls='yes'>
-        <host name='example.com' port='1234'/>
-      </source>
-      <target dev='vdd' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
-    </disk>
-    <controller type='usb' index='0'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
-    </controller>
+    <controller type='usb' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
