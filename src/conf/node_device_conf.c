@@ -1489,15 +1489,13 @@ virNodeDevPCICapSRIOVVirtualParseXML(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     for (i = 0; i < naddresses; i++) {
-        virPCIDeviceAddressPtr addr = NULL;
+        g_autoptr(virPCIDeviceAddress) addr = NULL;
 
         if (VIR_ALLOC(addr) < 0)
             goto cleanup;
 
-        if (virPCIDeviceAddressParseXML(addresses[i], addr) < 0) {
-            VIR_FREE(addr);
+        if (virPCIDeviceAddressParseXML(addresses[i], addr) < 0)
             goto cleanup;
-        }
 
         if (VIR_APPEND_ELEMENT(pci_dev->virtual_functions,
                                pci_dev->num_virtual_functions,
