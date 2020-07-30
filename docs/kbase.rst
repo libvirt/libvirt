@@ -2,7 +2,7 @@
 Knowledge base
 ==============
 
-.. container:: panel
+.. container:: panel widepanel
 
    `Disk locking <kbase/locking.html>`__
       Ensuring exclusive guest access to disks with
