@@ -17,3 +17,7 @@
 /build/
 /ci/scratch/
 tags
+
+# clangd related ignores
+.clangd
+compile_commands.json
