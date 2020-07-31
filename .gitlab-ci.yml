@@ -18,6 +18,7 @@ stages:
 .container_job_template: &container_job_definition
   image: docker:stable
   stage: containers
+  needs: []
   services:
     - docker:dind
   before_script:
