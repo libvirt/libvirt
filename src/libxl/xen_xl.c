@@ -32,6 +32,7 @@
 #include "virstoragefile.h"
 #include "xen_xl.h"
 #include "libxl_capabilities.h"
+#include "libxl_conf.h"
 #include "cpu/cpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENXL
@@ -1158,6 +1159,42 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
     return -1;
 }
 
+static int
+xenParseXLNamespaceData(virConfPtr conf, virDomainDefPtr def)
+{
+    virConfValuePtr list = virConfGetValue(conf, "device_model_args");
+    VIR_AUTOSTRINGLIST args = NULL;
+    size_t nargs;
+    libxlDomainXmlNsDefPtr nsdata = NULL;
+
+    if (list && list->type == VIR_CONF_LIST) {
+        list = list->list;
+        while (list) {
+            if ((list->type != VIR_CONF_STRING) || (list->str == NULL)) {
+                list = list->next;
+                continue;
+            }
+
+            virStringListAdd(&args, list->str);
+            list = list->next;
+        }
+    }
+
+    if (!args)
+        return 0;
+
+    nargs = g_strv_length(args);
+    if (nargs > 0) {
+        nsdata = g_new0(libxlDomainXmlNsDef, 1);
+
+        nsdata->args = g_steal_pointer(&args);
+        nsdata->num_args = nargs;
+        def->namespaceData = nsdata;
+    }
+
+    return 0;
+}
+
 virDomainDefPtr
 xenParseXL(virConfPtr conf,
            virCapsPtr caps,
@@ -1170,6 +1207,7 @@ xenParseXL(virConfPtr conf,
 
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     def->id = -1;
+    def->ns = *(virDomainXMLOptionGetNamespace(xmlopt));
 
     if (xenParseConfigCommon(conf, def, caps, XEN_CONFIG_FORMAT_XL,
                              xmlopt) < 0)
@@ -1205,6 +1243,9 @@ xenParseXL(virConfPtr conf,
         goto cleanup;
 
     if (xenParseXLChannel(conf, def) < 0)
+        goto cleanup;
+
+    if (xenParseXLNamespaceData(conf, def) < 0)
         goto cleanup;
 
     if (virDomainDefPostParse(def, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
@@ -2165,6 +2206,53 @@ xenFormatXLDomainChannels(virConfPtr conf, virDomainDefPtr def)
     return -1;
 }
 
+static int
+xenFormatXLDomainNamespaceData(virConfPtr conf, virDomainDefPtr def)
+{
+    libxlDomainXmlNsDefPtr nsdata = def->namespaceData;
+    virConfValuePtr args = NULL;
+    size_t i;
+
+    if (!nsdata)
+        return 0;
+
+    if (nsdata->num_args == 0)
+        return 0;
+
+    if (VIR_ALLOC(args) < 0)
+        return -1;
+
+    args->type = VIR_CONF_LIST;
+    args->list = NULL;
+
+    for (i = 0; i < nsdata->num_args; i++) {
+        virConfValuePtr val, tmp;
+
+        if (VIR_ALLOC(val) < 0)
+            goto error;
+
+        val->type = VIR_CONF_STRING;
+        val->str = g_strdup(nsdata->args[i]);
+        tmp = args->list;
+        while (tmp && tmp->next)
+            tmp = tmp->next;
+        if (tmp)
+            tmp->next = val;
+        else
+            args->list = val;
+    }
+
+    if (args->list != NULL)
+        if (virConfSetValue(conf, "device_model_args", args) < 0)
+            goto error;
+
+    return 0;
+
+ error:
+    virConfFreeValue(args);
+    return -1;
+}
+
 virConfPtr
 xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
 {
@@ -2206,6 +2294,9 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
         return NULL;
 
     if (xenFormatXLDomainChannels(conf, def) < 0)
+        return NULL;
+
+    if (xenFormatXLDomainNamespaceData(conf, def) < 0)
         return NULL;
 
     return g_steal_pointer(&conf);

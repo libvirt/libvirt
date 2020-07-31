@@ -304,6 +304,7 @@ mymain(void)
 #ifdef LIBXL_HAVE_CREATEINFO_PASSTHROUGH
     DO_TEST("fullvirt-hypervisor-features");
 #endif
+    DO_TEST("qemu-passthrough");
 
     testXLFreeDriver(driver);
 
