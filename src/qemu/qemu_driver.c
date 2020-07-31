@@ -15365,6 +15365,7 @@ static int
 qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainMomentObjPtr snap,
+                                   virHashTablePtr blockNamedNodeData,
                                    unsigned int flags,
                                    virQEMUDriverConfigPtr cfg,
                                    qemuDomainAsyncJob asyncJob)
@@ -15378,16 +15379,11 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     qemuDomainSnapshotDiskDataPtr diskdata = NULL;
     size_t ndiskdata = 0;
     bool blockdev =  virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-    g_autoptr(virHashTable) blockNamedNodeData = NULL;
 
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
 
     actions = virJSONValueNewArray();
-
-    if (blockdev &&
-        !(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
-        return -1;
 
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
@@ -15455,6 +15451,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     int compressed;
     g_autoptr(virCommand) compressor = NULL;
     virQEMUSaveDataPtr data = NULL;
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
 
     /* If quiesce was requested, then issue a freeze command, and a
      * counterpart thaw command when it is actually sent to agent.
@@ -15509,6 +15506,13 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
         }
     }
 
+    /* We need to collect reply from 'query-named-block-nodes' prior to the
+     * migration step as qemu deactivates bitmaps after migration so the result
+     * would be wrong */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+        !(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_SNAPSHOT)))
+        goto cleanup;
+
     /* do the memory snapshot if necessary */
     if (memory) {
         /* check if migration is possible */
@@ -15553,7 +15557,8 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
 
     /* the domain is now paused if a memory snapshot was requested */
 
-    if ((ret = qemuDomainSnapshotCreateDiskActive(driver, vm, snap, flags, cfg,
+    if ((ret = qemuDomainSnapshotCreateDiskActive(driver, vm, snap,
+                                                  blockNamedNodeData, flags, cfg,
                                                   QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
         goto cleanup;
 
