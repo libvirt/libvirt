@@ -24,6 +24,12 @@ v6.6.0 (unreleased)
     MAC addresses that would generate a new one if they were in its OUI
     (00:0c:29).
 
+  * conf: add control over COW for storage pool directories
+
+    The storage pool code now attempts to disable COW by default on btrfs, but
+    management applications may wish to override this behaviour. This is now
+    possible via new ``cow`` element.
+
 * **Improvements**
 
   * esx: Change the NIC limit for recent virtualHW versions
@@ -40,6 +46,14 @@ v6.6.0 (unreleased)
 
     The event can now be used also for block copy destinations by using the
     index of the ``<mirror>`` image.
+
+  * qemu: consider available CPUs in ``vcpupin/emulatorpin`` output
+
+    This patch changes the default bitmap of ``vcpupin`` and ``emulatorpin``,
+    in the case of domains with static vcpu placement, all available CPUs
+    instead of all possible CPUs are returned making these APIs consistent with
+    the behavior of ``vcpuinfo``.
+
 
 * **Bug fixes**
 
@@ -60,6 +74,24 @@ v6.6.0 (unreleased)
 
     Starting from libvirt-6.5 an active layer block commit or a block copy could
     fail if the same destination was used more than once.
+
+  * qemu: Don't change ownership of restore file
+
+    When restoring a domain from a file, Libvirt no longer changes its ownership.
+
+  * qemu: Set SPAPR TPM default to 2.0 and prevent 1.2 choice
+
+    The firmware (SLOF) on QEMU for ppc64 does not support TPM 1.2, so prevent
+    the choice of TPM 1.2 when the SPAPR device model is chosen and use a
+    default of '2.0' (TPM 2) for the backend.
+
+  * qemu: Do not set ``//cpu/@migratable`` for running domains
+
+    Libvirt release of 6.4.0 started to fill the default value for
+    ``//cpu/@migratable`` attribute according to QEMU support. However, active
+    domains either have the migratable attribute already set or they were
+    started with older Libvirt which doesn't support the attribute.
+
 
 v6.5.0 (2020-07-03)
 ===================
