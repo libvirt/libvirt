@@ -2039,7 +2039,7 @@ virFileGetMountSubtreeImpl(const char *mtabpath G_GNUC_UNUSED,
  * the path @prefix, sorted alphabetically.
  *
  * The @mountsret array will be NULL terminated and should
- * be freed with virStringListFree
+ * be freed with g_strfreev
  *
  * Returns 0 on success, -1 on error
  */
@@ -2062,7 +2062,7 @@ int virFileGetMountSubtree(const char *mtabpath,
  * the path @prefix, reverse-sorted alphabetically.
  *
  * The @mountsret array will be NULL terminated and should
- * be freed with virStringListFree
+ * be freed with g_strfreev
  *
  * Returns 0 on success, -1 on error
  */

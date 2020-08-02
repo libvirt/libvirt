@@ -127,7 +127,7 @@ vshNameSorter(const void *a, const void *b)
 /*
  * Convert the strings separated by ',' into array. The returned
  * array is a NULL terminated string list. The caller has to free
- * the array using virStringListFree or a similar method.
+ * the array using g_strfreev or a similar method.
  *
  * Returns the length of the filled array on success, or -1
  * on error.
