@@ -277,11 +277,11 @@ bhyveParseBhyveLPCArg(virDomainDefPtr def,
     char *type = NULL;
 
     separator = strchr(arg, ',');
-    param = separator + 1;
 
     if (!separator)
         goto error;
 
+    param = separator + 1;
     type = g_strndup(arg, separator - arg);
 
     /* Only support com%d */
@@ -434,13 +434,13 @@ bhyveParsePCIDisk(virDomainDefPtr def,
     disk->info.addr.pci.slot = pcislot;
     disk->info.addr.pci.function = function;
 
+    if (!config)
+        goto error;
+
     if (STRPREFIX(config, "/dev/"))
         disk->src->type = VIR_STORAGE_TYPE_BLOCK;
     else
         disk->src->type = VIR_STORAGE_TYPE_FILE;
-
-    if (!config)
-        goto error;
 
     separator = strchr(config, ',');
     if (separator)
