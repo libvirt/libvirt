@@ -83,10 +83,10 @@ int virSocketAddrParseIPv6(virSocketAddrPtr addr,
 
 int virSocketAddrResolveService(const char *service);
 
-void virSocketAddrSetIPv4AddrNetOrder(virSocketAddrPtr s, uint32_t addr);
-void virSocketAddrSetIPv4Addr(virSocketAddrPtr s, uint32_t addr);
-void virSocketAddrSetIPv6AddrNetOrder(virSocketAddrPtr s, uint32_t addr[4]);
-void virSocketAddrSetIPv6Addr(virSocketAddrPtr s, uint32_t addr[4]);
+void virSocketAddrSetIPv4AddrNetOrder(virSocketAddrPtr addr, uint32_t val);
+void virSocketAddrSetIPv4Addr(virSocketAddrPtr addr, uint32_t val);
+void virSocketAddrSetIPv6AddrNetOrder(virSocketAddrPtr addr, uint32_t val[4]);
+void virSocketAddrSetIPv6Addr(virSocketAddrPtr addr, uint32_t val[4]);
 
 char *virSocketAddrFormat(const virSocketAddr *addr);
 char *virSocketAddrFormatFull(const virSocketAddr *addr,

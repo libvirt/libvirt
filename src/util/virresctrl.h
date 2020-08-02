@@ -151,7 +151,7 @@ virResctrlAllocSetMemoryBandwidth(virResctrlAllocPtr alloc,
                                   unsigned int memory_bandwidth);
 
 int
-virResctrlAllocForeachMemory(virResctrlAllocPtr resctrl,
+virResctrlAllocForeachMemory(virResctrlAllocPtr alloc,
                              virResctrlAllocForeachMemoryCallback cb,
                              void *opaque);
 
