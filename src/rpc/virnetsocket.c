@@ -687,7 +687,7 @@ int virNetSocketNewConnectUNIX(const char *path,
     if (spawnDaemon) {
         g_autofree char *binname = NULL;
 
-        if (spawnDaemon && !binary) {
+        if (!binary) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Auto-spawn of daemon requested, "
                              "but no binary specified"));

@@ -1201,7 +1201,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
             if (disk->src->readonly) {
                 gVBoxAPI.UIMedium.SetType(medium, MediumType_Immutable);
                 VIR_DEBUG("Setting hard disk to immutable");
-            } else if (!disk->src->readonly) {
+            } else {
                 gVBoxAPI.UIMedium.SetType(medium, MediumType_Normal);
                 VIR_DEBUG("Setting hard disk type to normal");
             }

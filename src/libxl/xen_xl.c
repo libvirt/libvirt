@@ -450,7 +450,7 @@ xenParseXLVnuma(virConfPtr conf,
         unsigned long long kbsize = 0;
 
         /* Is there a sublist (vnode)? */
-        if (list && list->type == VIR_CONF_LIST) {
+        if (list->type == VIR_CONF_LIST) {
             vnode = list->list;
 
             while (vnode && vnode->type == VIR_CONF_STRING) {

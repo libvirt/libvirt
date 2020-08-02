@@ -1425,7 +1425,7 @@ virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
                      usbsrc->bus, usbsrc->device,
                      bus, device);
         }
-    } else if (!vendor && bus) {
+    } else if (bus) {
         if (virUSBDeviceFindByBus(bus, device, NULL, mandatory, usb) < 0)
             return -1;
     }

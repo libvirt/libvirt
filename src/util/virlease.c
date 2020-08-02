@@ -244,7 +244,7 @@ virLeaseNew(virJSONValuePtr *lease_ret,
         return -1;
     if (ip && virJSONValueObjectAppendString(lease_new, "ip-address", ip) < 0)
         return -1;
-    if (mac && virJSONValueObjectAppendString(lease_new, "mac-address", mac) < 0)
+    if (virJSONValueObjectAppendString(lease_new, "mac-address", mac) < 0)
         return -1;
     if (hostname && virJSONValueObjectAppendString(lease_new, "hostname", hostname) < 0)
         return -1;

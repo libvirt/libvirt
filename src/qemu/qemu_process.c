@@ -6888,11 +6888,11 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
     VIR_DEBUG("Handshake complete, child running");
 
-    if (rv == -1) /* The VM failed to start; tear filters before taps */
+    if (rv == -1) {
+        /* The VM failed to start; tear filters before taps */
         virDomainConfVMNWFilterTeardown(vm);
-
-    if (rv == -1) /* The VM failed to start */
         goto cleanup;
+    }
 
     if (qemuDomainObjStartWorker(vm) < 0)
         goto cleanup;
