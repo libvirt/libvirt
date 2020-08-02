@@ -260,43 +260,6 @@ virStringListMerge(char ***dst,
 
 
 /**
- * virStringListCopy:
- * @dst: where to store the copy of @strings
- * @src: a NULL-terminated array of strings
- *
- * Makes a deep copy of the @src string list and stores it in @dst. Callers
- * are responsible for freeing @dst.
- *
- * Returns 0 on success, -1 on error.
- */
-int
-virStringListCopy(char ***dst,
-                  const char **src)
-{
-    char **copy = NULL;
-    size_t i;
-
-    *dst = NULL;
-
-    if (!src)
-        return 0;
-
-    if (VIR_ALLOC_N(copy, virStringListLength(src) + 1) < 0)
-        goto error;
-
-    for (i = 0; src[i]; i++)
-        copy[i] = g_strdup(src[i]);
-
-    *dst = copy;
-    return 0;
-
- error:
-    virStringListFree(copy);
-    return -1;
-}
-
-
-/**
  * virStringListFree:
  * @strings: a NULL-terminated array of strings to free
  *

@@ -45,9 +45,6 @@ void virStringListRemove(char ***strings,
 int virStringListMerge(char ***dst,
                        char ***src);
 
-int virStringListCopy(char ***dst,
-                      const char **src);
-
 void virStringListFree(char **strings);
 void virStringListAutoFree(char ***strings);
 void virStringListFreeCount(char **strings,
