@@ -1037,7 +1037,6 @@ static const vshCmdOptDef opts_daemon_log_filters[] = {
 static bool
 cmdDaemonLogFilters(vshControl *ctl, const vshCmd *cmd)
 {
-    int nfilters;
     char *filters = NULL;
     vshAdmControlPtr priv = ctl->privData;
 
@@ -1049,8 +1048,8 @@ cmdDaemonLogFilters(vshControl *ctl, const vshCmd *cmd)
             return false;
         }
     } else {
-        if ((nfilters = virAdmConnectGetLoggingFilters(priv->conn,
-                                                       &filters, 0)) < 0) {
+        if (virAdmConnectGetLoggingFilters(priv->conn,
+                                           &filters, 0) < 0) {
             vshError(ctl, _("Unable to get daemon logging filters information"));
             return false;
         }
@@ -1091,7 +1090,6 @@ static const vshCmdOptDef opts_daemon_log_outputs[] = {
 static bool
 cmdDaemonLogOutputs(vshControl *ctl, const vshCmd *cmd)
 {
-    int noutputs;
     char *outputs = NULL;
     vshAdmControlPtr priv = ctl->privData;
 
@@ -1103,8 +1101,7 @@ cmdDaemonLogOutputs(vshControl *ctl, const vshCmd *cmd)
             return false;
         }
     } else {
-        if ((noutputs = virAdmConnectGetLoggingOutputs(priv->conn,
-                                                       &outputs, 0)) < 0) {
+        if (virAdmConnectGetLoggingOutputs(priv->conn, &outputs, 0) < 0) {
             vshError(ctl, _("Unable to get daemon logging outputs information"));
             return false;
         }
