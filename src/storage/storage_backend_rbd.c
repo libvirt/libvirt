@@ -746,7 +746,7 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
     ret = 0;
 
  cleanup:
-    virStringListFree(names);
+    g_strfreev(names);
     virStorageBackendRBDFreeState(&ptr);
     return ret;
 }

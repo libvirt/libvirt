@@ -611,7 +611,7 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
     ret = 0;
 
  cleanup:
-    virStringListFree(tpmmodels);
+    g_strfreev(tpmmodels);
     return ret;
 }
 
@@ -672,7 +672,7 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *opaque)
 
 #undef CHECK
 
-    virStringListFree(params);
+    g_strfreev(params);
     params = NULL;
 
     /* present but empty */
@@ -698,7 +698,7 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *opaque)
         goto cleanup;
     }
 
-    virStringListFree(params);
+    g_strfreev(params);
     params = NULL;
 
     /* no such option */
@@ -727,7 +727,7 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *opaque)
     ret = 0;
 
  cleanup:
-    virStringListFree(params);
+    g_strfreev(params);
     return ret;
 }
 
@@ -1186,7 +1186,7 @@ testQemuMonitorJSONGetDeviceAliases(const void *opaque)
     }
 
  cleanup:
-    virStringListFree(aliases);
+    g_strfreev(aliases);
     return ret;
 }
 
@@ -2269,7 +2269,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
 
  cleanup:
     virJSONValueFree(json);
-    virStringListFree(caps);
+    g_strfreev(caps);
     virBitmapFree(bitmap);
     return ret;
 }

@@ -167,7 +167,7 @@ virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
                 return -1;
         }
 
-        virStringListFree(cells);
+        g_strfreev(cells);
         cells = NULL;
     }
 

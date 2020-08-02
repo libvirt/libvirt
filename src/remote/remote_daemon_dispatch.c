@@ -5903,7 +5903,7 @@ remoteDispatchConnectGetCPUModelNames(virNetServerPtr server G_GNUC_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virStringListFree(models);
+    g_strfreev(models);
     return rv;
 }
 

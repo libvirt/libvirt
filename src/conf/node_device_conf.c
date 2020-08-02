@@ -112,7 +112,7 @@ virNodeDeviceDefFree(virNodeDeviceDefPtr def)
     VIR_FREE(def->sysfs_path);
     VIR_FREE(def->parent_sysfs_path);
     VIR_FREE(def->devnode);
-    virStringListFree(def->devlinks);
+    g_strfreev(def->devlinks);
 
     caps = def->caps;
     while (caps) {

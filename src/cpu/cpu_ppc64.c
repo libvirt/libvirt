@@ -801,7 +801,7 @@ virCPUppc64DriverGetModels(char ***models)
 
  error:
     if (models) {
-        virStringListFree(*models);
+        g_strfreev(*models);
         *models = NULL;
     }
     goto cleanup;

@@ -2010,7 +2010,7 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
 
  cleanup:
     if (ret < 0)
-        virStringListFree(mounts);
+        g_strfreev(mounts);
     endmntent(procmnt);
     return ret;
 }

@@ -88,7 +88,7 @@ static int testFileGetMountSubtree(const void *opaque)
                               data->mounts, data->nmounts);
 
  cleanup:
-    virStringListFree(gotmounts);
+    g_strfreev(gotmounts);
     return ret;
 }
 #endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */

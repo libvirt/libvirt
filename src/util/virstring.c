@@ -282,7 +282,7 @@ void virStringListAutoFree(char ***strings)
     if (!*strings)
         return;
 
-    virStringListFree(*strings);
+    g_strfreev(*strings);
     *strings = NULL;
 }
 
@@ -985,7 +985,7 @@ virStringSearch(const char *str,
 
  cleanup:
     if (ret < 0) {
-        virStringListFree(*matches);
+        g_strfreev(*matches);
         *matches = NULL;
     }
     return ret;

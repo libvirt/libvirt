@@ -84,7 +84,7 @@ static int virLoginShellAllowedUser(virConfPtr conf,
                          name, conf_file);
  cleanup:
     VIR_FREE(gname);
-    virStringListFree(users);
+    g_strfreev(users);
     return ret;
 }
 
@@ -329,7 +329,7 @@ main(int argc, char **argv)
     if (autoshell) {
         tmp = virGetUserShell(uid);
         if (tmp) {
-            virStringListFree(shargv);
+            g_strfreev(shargv);
             shargvlen = 1;
             if (VIR_ALLOC_N(shargv[0], shargvlen + 1) < 0) {
                 VIR_FREE(tmp);
@@ -410,7 +410,7 @@ main(int argc, char **argv)
         virDomainFree(dom);
     if (conn)
         virConnectClose(conn);
-    virStringListFree(shargv);
+    g_strfreev(shargv);
     VIR_FREE(shcmd);
     VIR_FREE(term);
     VIR_FREE(name);

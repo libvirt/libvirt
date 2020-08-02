@@ -1061,20 +1061,20 @@ xenParseVifBridge(virDomainNetDefPtr net, char *bridge)
             nvlans++;
 
         if (VIR_ALLOC_N(net->vlan.tag, nvlans) < 0) {
-            virStringListFree(vlanstr_list);
+            g_strfreev(vlanstr_list);
             return -1;
         }
 
         for (i = 1; i <= nvlans; i++) {
             if (virStrToLong_ui(vlanstr_list[i], NULL, 10, &tag) < 0) {
-                virStringListFree(vlanstr_list);
+                g_strfreev(vlanstr_list);
                 return -1;
             }
             net->vlan.tag[i - 1] = tag;
         }
         net->vlan.nTags = nvlans;
         net->vlan.trunk = true;
-        virStringListFree(vlanstr_list);
+        g_strfreev(vlanstr_list);
 
         if (VIR_ALLOC(net->virtPortProfile) < 0)
             return -1;
@@ -1270,11 +1270,11 @@ xenParseVif(char *entry, const char *vif_typename)
 
         for (i = 0; ip_list[i]; i++) {
             if (virDomainNetAppendIPAddress(net, ip_list[i], 0, 0) < 0) {
-                virStringListFree(ip_list);
+                g_strfreev(ip_list);
                 goto cleanup;
             }
         }
-        virStringListFree(ip_list);
+        g_strfreev(ip_list);
     }
 
     if (script && script[0])
@@ -1679,7 +1679,7 @@ xenMakeIPList(virNetDevIPInfoPtr guestIP)
     ret = virStringListJoin((const char**)address_array, " ");
 
  cleanup:
-    virStringListFree(address_array);
+    g_strfreev(address_array);
     return ret;
 }
 

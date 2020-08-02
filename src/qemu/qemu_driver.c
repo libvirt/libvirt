@@ -1401,7 +1401,7 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
     ret = 0;
 
  cleanup:
-    virStringListFree(lines);
+    g_strfreev(lines);
     return ret;
 }
 
@@ -13479,7 +13479,7 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
  cleanup:
     virCPUDefListFree(cpus);
     virCPUDefFree(cpu);
-    virStringListFree(features);
+    g_strfreev(features);
 
     return cpustr;
 }

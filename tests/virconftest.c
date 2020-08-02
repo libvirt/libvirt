@@ -441,7 +441,7 @@ static int testConfParseStringList(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virStringListFree(str);
+    g_strfreev(str);
     return ret;
 }
 

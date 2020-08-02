@@ -114,7 +114,7 @@ virDomainCapsCPUModelsDispose(void *obj)
 
     for (i = 0; i < cpuModels->nmodels; i++) {
         VIR_FREE(cpuModels->models[i].name);
-        virStringListFree(cpuModels->models[i].blockers);
+        g_strfreev(cpuModels->models[i].blockers);
     }
 
     VIR_FREE(cpuModels->models);

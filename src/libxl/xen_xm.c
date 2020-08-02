@@ -281,7 +281,7 @@ xenParseXMDiskList(virConfPtr conf, virDomainDefPtr def)
     ret = 0;
 
  cleanup:
-    virStringListFree(disks);
+    g_strfreev(disks);
     return ret;
 }
 

@@ -284,7 +284,7 @@ virCgroupV2ParseControllersFile(virCgroupPtr group,
         tmp++;
     }
 
-    virStringListFree(contList);
+    g_strfreev(contList);
 
     return 0;
 }

@@ -542,7 +542,7 @@ virCgroupGetValueForBlkDev(const char *str,
 
     ret = 0;
  error:
-    virStringListFree(lines);
+    g_strfreev(lines);
     return ret;
 }
 
@@ -803,7 +803,7 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
     ret = 0;
 
  cleanup:
-    virStringListFree(tokens);
+    g_strfreev(tokens);
     return ret;
 }
 

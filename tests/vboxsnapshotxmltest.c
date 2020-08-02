@@ -39,7 +39,7 @@ testFilterXML(char *xml)
     ret = virBufferContentAndReset(&buf);
 
  cleanup:
-   virStringListFree(xmlLines);
+   g_strfreev(xmlLines);
    return ret;
 }
 

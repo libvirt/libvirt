@@ -932,7 +932,7 @@ int virConfGetValueStringList(virConfPtr conf,
     if (!cval)
         return 0;
 
-    virStringListFree(*values);
+    g_strfreev(*values);
     *values = NULL;
 
     switch (cval->type) {

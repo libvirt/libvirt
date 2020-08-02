@@ -6119,7 +6119,7 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
 
 
  cleanup:
-    virStringListFree(commandlist);
+    g_strfreev(commandlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -6178,7 +6178,7 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
     eventlist = NULL;
 
  cleanup:
-    virStringListFree(eventlist);
+    g_strfreev(eventlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -6299,7 +6299,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
     if (!qemuMonitorGetOptions(mon))
         qemuMonitorSetOptions(mon, virJSONValueNewArray());
 
-    virStringListFree(paramlist);
+    g_strfreev(paramlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -6397,7 +6397,7 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
     typelist = NULL;
 
  cleanup:
-    virStringListFree(typelist);
+    g_strfreev(typelist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -6727,7 +6727,7 @@ qemuMonitorJSONParsePropsList(virJSONValuePtr cmd,
     proplist = NULL;
 
  cleanup:
-    virStringListFree(proplist);
+    g_strfreev(proplist);
     return ret;
 }
 
@@ -6911,7 +6911,7 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
     list = NULL;
 
  cleanup:
-    virStringListFree(list);
+    g_strfreev(list);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -7351,7 +7351,7 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
     list = NULL;
 
  cleanup:
-    virStringListFree(list);
+    g_strfreev(list);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;

@@ -136,12 +136,12 @@ static char ** lxcStringSplit(const char *string)
         result[ntokens - 2] = g_strdup(parts[i]);
     }
 
-    virStringListFree(parts);
+    g_strfreev(parts);
     return result;
 
  error:
-    virStringListFree(parts);
-    virStringListFree(result);
+    g_strfreev(parts);
+    g_strfreev(result);
     return NULL;
 }
 
@@ -166,13 +166,13 @@ lxcParseFstabLine(char *fstabLine)
     fstab->type = g_strdup(parts[2]);
     fstab->options = g_strdup(parts[3]);
 
-    virStringListFree(parts);
+    g_strfreev(parts);
 
     return fstab;
 
  error:
     lxcFstabFree(fstab);
-    virStringListFree(parts);
+    g_strfreev(parts);
     return NULL;
 }
 
@@ -312,7 +312,7 @@ lxcAddFstabLine(virDomainDefPtr def, lxcFstabPtr fstab)
     ret = 1;
 
  cleanup:
-    virStringListFree(options);
+    g_strfreev(options);
     return ret;
 }
 
@@ -575,11 +575,11 @@ lxcNetworkParseDataIPs(const char *name,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid CIDR address: '%s'"), value->str);
 
-        virStringListFree(ipparts);
+        g_strfreev(ipparts);
         return -1;
     }
 
-    virStringListFree(ipparts);
+    g_strfreev(ipparts);
 
     if (VIR_APPEND_ELEMENT(parseData->ips, parseData->nips, ip) < 0)
         return -1;
@@ -1070,7 +1070,7 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
     ret = 0;
 
  cleanup:
-    virStringListFree(parts);
+    g_strfreev(parts);
     return ret;
 }
 
@@ -1114,7 +1114,7 @@ lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
 
     def->features[VIR_DOMAIN_FEATURE_CAPABILITIES] = VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW;
 
-    virStringListFree(toDrop);
+    g_strfreev(toDrop);
 }
 
 virDomainDefPtr

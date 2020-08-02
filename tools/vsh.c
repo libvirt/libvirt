@@ -2582,7 +2582,7 @@ vshReadlineCommandGenerator(const char *text)
 
                 if (STREQLEN(name, text, len)) {
                     if (VIR_REALLOC_N(ret, ret_size + 2) < 0) {
-                        virStringListFree(ret);
+                        g_strfreev(ret);
                         return NULL;
                     }
                     ret[ret_size] = g_strdup(name);
@@ -2647,7 +2647,7 @@ vshReadlineOptionsGenerator(const char *text,
             continue;
 
         if (VIR_REALLOC_N(ret, ret_size + 2) < 0) {
-            virStringListFree(ret);
+            g_strfreev(ret);
             return NULL;
         }
 
@@ -2741,7 +2741,7 @@ vshReadlineParse(const char *text, int state)
 
         vshCommandFree(partial);
         partial = NULL;
-        virStringListFree(list);
+        g_strfreev(list);
         list = NULL;
         list_index = 0;
 
@@ -2791,7 +2791,7 @@ vshReadlineParse(const char *text, int state)
                 if (completer_list &&
                     (vshCompleterFilter(&completer_list, text) < 0 ||
                      virStringListMerge(&list, &completer_list) < 0)) {
-                    virStringListFree(completer_list);
+                    g_strfreev(completer_list);
                     goto cleanup;
                 }
             }
@@ -2815,7 +2815,7 @@ vshReadlineParse(const char *text, int state)
     if (!ret) {
         vshCommandFree(partial);
         partial = NULL;
-        virStringListFree(list);
+        g_strfreev(list);
         list = NULL;
         list_index = 0;
     }
@@ -3405,7 +3405,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virStringListFree(matches);
+    g_strfreev(matches);
     return ret;
 }
 

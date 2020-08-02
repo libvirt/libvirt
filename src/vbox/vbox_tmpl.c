@@ -1600,7 +1600,7 @@ _vrdeServerGetPorts(vboxDriverPtr data, IVRDEServer *VRDEServer,
     }
 
  cleanup:
-    virStringListFree(matches);
+    g_strfreev(matches);
     VBOX_UTF8_FREE(portUtf8);
     VBOX_UTF16_FREE(VRDEPortsValue);
     VBOX_UTF16_FREE(VRDEPortsKey);

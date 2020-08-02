@@ -124,7 +124,7 @@ virCPUarmDataClear(virCPUarmData *data)
     if (!data)
         return;
 
-    virStringListFree(data->features);
+    g_strfreev(data->features);
 }
 
 static void

@@ -796,7 +796,7 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
 
  cleanup:
     VIR_FREE(buf);
-    virStringListFree(matches);
+    g_strfreev(matches);
     return ret;
 }
 

@@ -134,7 +134,7 @@ static int testSplit(const void *args)
 
     ret = 0;
  cleanup:
-    virStringListFree(got);
+    g_strfreev(got);
 
     return ret;
 }
@@ -192,7 +192,7 @@ static int testAdd(const void *args)
 
     ret = 0;
  cleanup:
-    virStringListFree(list);
+    g_strfreev(list);
     VIR_FREE(got);
     return ret;
 }
@@ -227,7 +227,7 @@ static int testRemove(const void *args)
 
     ret = 0;
  cleanup:
-    virStringListFree(list);
+    g_strfreev(list);
     return ret;
 }
 
@@ -331,7 +331,7 @@ testStringSearch(const void *opaque)
     ret = 0;
 
  cleanup:
-    virStringListFree(matches);
+    g_strfreev(matches);
     return ret;
 }
 

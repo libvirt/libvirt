@@ -246,7 +246,7 @@ bhyveCommandLineToArgv(const char *nativeConfig,
         } else {
             /* To prevent a use-after-free here, only free the argument list
              * when it is definitely not going to be used */
-            virStringListFree(arglist);
+            g_strfreev(arglist);
         }
     }
 
@@ -254,13 +254,13 @@ bhyveCommandLineToArgv(const char *nativeConfig,
     if (!(*bhyve_argv = _bhyve_argv))
         goto error;
 
-    virStringListFree(lines);
+    g_strfreev(lines);
     return 0;
 
  error:
     VIR_FREE(_loader_argv);
     VIR_FREE(_bhyve_argv);
-    virStringListFree(lines);
+    g_strfreev(lines);
     return -1;
 }
 
@@ -884,8 +884,8 @@ bhyveParseCommandLineString(const char* nativeConfig,
     }
 
  cleanup:
-    virStringListFree(loader_argv);
-    virStringListFree(bhyve_argv);
+    g_strfreev(loader_argv);
+    g_strfreev(bhyve_argv);
     return def;
  error:
     virDomainDefFree(def);

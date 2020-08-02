@@ -5005,7 +5005,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
         tmp = virStringReplace(newSnapshotPtr->storageController,
                                searchResultTab[it],
                                uuidReplacing);
-        virStringListFree(searchResultTab);
+        g_strfreev(searchResultTab);
         searchResultTab = NULL;
         VIR_FREE(newSnapshotPtr->storageController);
         if (!tmp)
@@ -5405,9 +5405,9 @@ vboxSnapshotRedefine(virDomainPtr dom,
     VIR_FREE(currentSnapshotXmlFilePath);
     VBOX_UTF16_FREE(machineNameUtf16);
     VBOX_UTF8_FREE(machineName);
-    virStringListFree(realReadOnlyDisksPath);
-    virStringListFree(realReadWriteDisksPath);
-    virStringListFree(searchResultTab);
+    g_strfreev(realReadOnlyDisksPath);
+    g_strfreev(realReadWriteDisksPath);
+    g_strfreev(searchResultTab);
     virVboxSnapshotConfHardDiskFree(newHardDisk);
     VIR_FREE(hardDiskToOpen);
     VIR_FREE(newSnapshotPtr);
@@ -7256,7 +7256,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     VBOX_RELEASE(machine);
     VBOX_UTF16_FREE(settingsFilePathUtf16);
     VBOX_UTF8_FREE(settingsFilepath);
-    virStringListFree(searchResultTab);
+    g_strfreev(searchResultTab);
     VIR_FREE(snapshotMachineDesc);
     VBOX_UTF16_FREE(machineNameUtf16);
     VBOX_UTF8_FREE(machineName);

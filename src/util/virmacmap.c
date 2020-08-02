@@ -55,7 +55,7 @@ virMacMapHashFree(void *payload,
                   const void *name G_GNUC_UNUSED,
                   void *opaque G_GNUC_UNUSED)
 {
-    virStringListFree(payload);
+    g_strfreev(payload);
     return 0;
 }
 

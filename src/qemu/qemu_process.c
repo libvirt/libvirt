@@ -3732,7 +3732,7 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    virStringListFree(old);
+    g_strfreev(old);
     return ret;
 }
 

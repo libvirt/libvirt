@@ -185,7 +185,7 @@ virshParseCheckpointDiskspec(vshControl *ctl,
  cleanup:
     if (ret < 0)
         vshError(ctl, _("unable to parse diskspec: %s"), str);
-    virStringListFree(array);
+    g_strfreev(array);
     return ret;
 }
 

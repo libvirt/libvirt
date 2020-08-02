@@ -318,15 +318,15 @@ xenParseXLCPUID(virConfPtr conf, virDomainDefPtr def)
                                 policy) < 0)
             goto cleanup;
 
-        virStringListFree(name_and_value);
+        g_strfreev(name_and_value);
         name_and_value = NULL;
     }
 
     ret = 0;
 
  cleanup:
-    virStringListFree(name_and_value);
-    virStringListFree(cpuid_pairs);
+    g_strfreev(name_and_value);
+    g_strfreev(cpuid_pairs);
     return ret;
 }
 
@@ -528,7 +528,7 @@ xenParseXLVnuma(virConfPtr conf,
                         VIR_FREE(tmp);
                         tmp = g_strdup(vtoken);
 
-                        virStringListFree(token);
+                        g_strfreev(token);
                         if (!(token = virStringSplitCount(tmp, ",", 0, &ndistances)))
                             goto cleanup;
 
@@ -590,7 +590,7 @@ xenParseXLVnuma(virConfPtr conf,
  cleanup:
     if (ret)
         VIR_FREE(cpu);
-    virStringListFree(token);
+    g_strfreev(token);
     VIR_FREE(tmp);
 
     return ret;
@@ -1402,7 +1402,7 @@ xenFormatXLCPUID(virConfPtr conf, virDomainDefPtr def)
     ret = 0;
 
  cleanup:
-    virStringListFree(cpuid_pairs);
+    g_strfreev(cpuid_pairs);
     VIR_FREE(cpuid_string);
     return ret;
 }

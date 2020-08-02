@@ -553,7 +553,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     ret = 0;
 
  cleanup:
-    virStringListFree(mounts);
+    g_strfreev(mounts);
 
     return ret;
 }

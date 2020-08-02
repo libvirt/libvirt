@@ -253,7 +253,7 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
         if (STREQ(lines[i], ""))
             continue;
 
-        virStringListFree(tokens);
+        g_strfreev(tokens);
         if (!(tokens = virStringSplitCount(lines[i], "\t", 0, &count)))
             goto cleanup;
 

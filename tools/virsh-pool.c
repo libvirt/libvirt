@@ -1175,7 +1175,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         for (i = 0; i < npoolTypes; i++) {
             if ((poolType = virStoragePoolTypeFromString(poolTypes[i])) < 0) {
                 vshError(ctl, _("Invalid pool type '%s'"), poolTypes[i]);
-                virStringListFree(poolTypes);
+                g_strfreev(poolTypes);
                 return false;
             }
 
@@ -1226,7 +1226,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
                 break;
             }
         }
-        virStringListFree(poolTypes);
+        g_strfreev(poolTypes);
     }
 
     if (!(list = virshStoragePoolListCollect(ctl, flags)))

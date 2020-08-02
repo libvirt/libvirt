@@ -1687,7 +1687,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
 void
 qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
 {
-    virStringListFree(priv->qemuDevices);
+    g_strfreev(priv->qemuDevices);
     priv->qemuDevices = NULL;
 
     virCgroupFree(&priv->cgroup);
@@ -1749,7 +1749,7 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
 
     priv->dbusDaemonRunning = false;
 
-    virStringListFree(priv->dbusVMStateIds);
+    g_strfreev(priv->dbusVMStateIds);
     priv->dbusVMStateIds = NULL;
 
     priv->dbusVMState = false;
@@ -3129,7 +3129,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     priv->namespaces = NULL;
     virObjectUnref(priv->monConfig);
     priv->monConfig = NULL;
-    virStringListFree(priv->qemuDevices);
+    g_strfreev(priv->qemuDevices);
     priv->qemuDevices = NULL;
     return -1;
 }
@@ -7729,7 +7729,7 @@ qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
     if (rc < 0)
         return -1;
 
-    virStringListFree(priv->qemuDevices);
+    g_strfreev(priv->qemuDevices);
     priv->qemuDevices = aliases;
     return 0;
 }

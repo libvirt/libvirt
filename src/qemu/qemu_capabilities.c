@@ -3166,7 +3166,7 @@ virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
     else
         ret = 0;
 
-    virStringListFree(list);
+    g_strfreev(list);
     return ret;
 }
 
@@ -3222,7 +3222,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
                                virQEMUCapsTPMModelsToCaps[i].caps);
         }
     }
-    virStringListFree(entries);
+    g_strfreev(entries);
 
     if ((nentries = qemuMonitorGetTPMTypes(mon, &entries)) < 0)
         return -1;
@@ -3235,7 +3235,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
                 virQEMUCapsSet(qemuCaps, virQEMUCapsTPMTypesToCaps[i].caps);
         }
     }
-    virStringListFree(entries);
+    g_strfreev(entries);
 
     return 0;
 }
@@ -3324,7 +3324,7 @@ virQEMUCapsProbeQMPCommandLine(virQEMUCapsPtr qemuCaps,
                 break;
             }
         }
-        virStringListFree(values);
+        g_strfreev(values);
     }
 
     return 0;

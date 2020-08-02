@@ -1922,7 +1922,7 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfigPtr cfg,
                 goto cleanup;
             }
         }
-        virStringListFree(mem_tokens);
+        g_strfreev(mem_tokens);
         mem_tokens = NULL;
     }
 
@@ -1938,8 +1938,8 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfigPtr cfg,
     ret = 0;
 
  cleanup:
-    virStringListFree(cmd_tokens);
-    virStringListFree(mem_tokens);
+    g_strfreev(cmd_tokens);
+    g_strfreev(mem_tokens);
     return ret;
 }
 

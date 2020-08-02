@@ -300,7 +300,7 @@ static void virQEMUDriverConfigDispose(void *obj)
 
     virBitmapFree(cfg->namespaces);
 
-    virStringListFree(cfg->cgroupDeviceACL);
+    g_strfreev(cfg->cgroupDeviceACL);
     VIR_FREE(cfg->uri);
 
     VIR_FREE(cfg->configBaseDir);
@@ -365,7 +365,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->snapshotImageFormat);
     VIR_FREE(cfg->autoDumpPath);
 
-    virStringListFree(cfg->securityDriverNames);
+    g_strfreev(cfg->securityDriverNames);
 
     VIR_FREE(cfg->lockManagerName);
 
@@ -374,7 +374,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->memoryBackingDir);
     VIR_FREE(cfg->swtpmStorageDir);
 
-    virStringListFree(cfg->capabilityfilters);
+    g_strfreev(cfg->capabilityfilters);
 }
 
 
