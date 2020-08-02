@@ -148,7 +148,7 @@ virHostMemGetStatsLinux(FILE *meminfo,
     int found = 0;
     int nr_param;
     char line[1024];
-    char meminfo_hdr[VIR_NODE_MEMORY_STATS_FIELD_LENGTH];
+    char meminfo_hdr[VIR_NODE_MEMORY_STATS_FIELD_LENGTH + 1];
     unsigned long val;
     struct field_conv {
         const char *meminfo_hdr;  /* meminfo header */
@@ -207,8 +207,10 @@ virHostMemGetStatsLinux(FILE *meminfo,
             buf = p;
         }
 
-        if (sscanf(buf, "%s %lu kB", meminfo_hdr, &val) < 2)
+# define MEM_MAX_LEN G_STRINGIFY(VIR_NODE_MEMORY_STATS_FIELD_LENGTH)
+        if (sscanf(buf, "%" MEM_MAX_LEN "s %lu kB", meminfo_hdr, &val) < 2)
             continue;
+# undef MEM_MAX_LEN
 
         for (j = 0; field_conv[j].meminfo_hdr != NULL; j++) {
             struct field_conv *convp = &field_conv[j];
