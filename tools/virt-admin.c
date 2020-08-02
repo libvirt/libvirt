@@ -1037,17 +1037,17 @@ static const vshCmdOptDef opts_daemon_log_filters[] = {
 static bool
 cmdDaemonLogFilters(vshControl *ctl, const vshCmd *cmd)
 {
-    char *filters = NULL;
     vshAdmControlPtr priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "filters")) {
-        if ((vshCommandOptStringReq(ctl, cmd, "filters",
-                                    (const char **) &filters) < 0 ||
+        const char *filters = NULL;
+        if ((vshCommandOptStringReq(ctl, cmd, "filters", &filters) < 0 ||
              virAdmConnectSetLoggingFilters(priv->conn, filters, 0) < 0)) {
             vshError(ctl, _("Unable to change daemon logging settings"));
             return false;
         }
     } else {
+        g_autofree char *filters = NULL;
         if (virAdmConnectGetLoggingFilters(priv->conn,
                                            &filters, 0) < 0) {
             vshError(ctl, _("Unable to get daemon logging filters information"));
@@ -1090,17 +1090,17 @@ static const vshCmdOptDef opts_daemon_log_outputs[] = {
 static bool
 cmdDaemonLogOutputs(vshControl *ctl, const vshCmd *cmd)
 {
-    char *outputs = NULL;
     vshAdmControlPtr priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "outputs")) {
-        if ((vshCommandOptStringReq(ctl, cmd, "outputs",
-                                    (const char **) &outputs) < 0 ||
+        const char *outputs = NULL;
+        if ((vshCommandOptStringReq(ctl, cmd, "outputs", &outputs) < 0 ||
              virAdmConnectSetLoggingOutputs(priv->conn, outputs, 0) < 0)) {
             vshError(ctl, _("Unable to change daemon logging settings"));
             return false;
         }
     } else {
+        g_autofree char *outputs = NULL;
         if (virAdmConnectGetLoggingOutputs(priv->conn, &outputs, 0) < 0) {
             vshError(ctl, _("Unable to get daemon logging outputs information"));
             return false;
