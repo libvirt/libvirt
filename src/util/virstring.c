@@ -259,24 +259,6 @@ virStringListMerge(char ***dst,
 }
 
 
-/**
- * virStringListFree:
- * @strings: a NULL-terminated array of strings to free
- *
- * Frees a NULL-terminated array of strings, and the array itself.
- * If called on a NULL value, virStringListFree() simply returns.
- */
-void virStringListFree(char **strings)
-{
-    char **tmp = strings;
-    while (tmp && *tmp) {
-        VIR_FREE(*tmp);
-        tmp++;
-    }
-    VIR_FREE(strings);
-}
-
-
 void virStringListAutoFree(char ***strings)
 {
     if (!*strings)
