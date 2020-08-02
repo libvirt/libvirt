@@ -199,13 +199,9 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                           char **blockers)
 {
     g_autofree char * nameCopy = NULL;
-    VIR_AUTOSTRINGLIST blockersCopy = NULL;
     virDomainCapsCPUModelPtr cpu;
 
     nameCopy = g_strdup(name);
-
-    if (virStringListCopy(&blockersCopy, (const char **)blockers) < 0)
-        return -1;
 
     if (VIR_RESIZE_N(cpuModels->models, cpuModels->nmodels_max,
                      cpuModels->nmodels, 1) < 0)
@@ -216,7 +212,7 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
 
     cpu->usable = usable;
     cpu->name = g_steal_pointer(&nameCopy);
-    cpu->blockers = g_steal_pointer(&blockersCopy);
+    cpu->blockers = g_strdupv(blockers);
 
     return 0;
 }
