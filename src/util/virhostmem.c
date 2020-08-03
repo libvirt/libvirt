@@ -354,15 +354,15 @@ virHostMemParametersAreAllSupported(virTypedParameterPtr params,
 }
 #endif
 
+#ifdef __linux__
 int
 virHostMemSetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
                         int nparams G_GNUC_UNUSED,
                         unsigned int flags)
 {
-    virCheckFlags(0, -1);
-
-#ifdef __linux__
     size_t i;
+
+    virCheckFlags(0, -1);
 
     if (virTypedParamsValidate(params, nparams,
                                VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
@@ -383,13 +383,21 @@ virHostMemSetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
     }
 
     return 0;
+}
 #else
+int
+virHostMemSetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
+                        int nparams G_GNUC_UNUSED,
+                        unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node set memory parameters not implemented"
                      " on this platform"));
     return -1;
-#endif
 }
+#endif
 
 #ifdef __linux__
 static int
@@ -434,14 +442,12 @@ virHostMemGetParameterValue(const char *field,
 #endif
 
 #define NODE_MEMORY_PARAMETERS_NUM 8
+#ifdef __linux__
 int
 virHostMemGetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
                         int *nparams G_GNUC_UNUSED,
                         unsigned int flags)
 {
-    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
-
-#ifdef __linux__
     unsigned int pages_to_scan;
     unsigned int sleep_millisecs;
     unsigned int merge_across_nodes;
@@ -452,6 +458,8 @@ virHostMemGetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
     unsigned long long full_scans = 0;
     size_t i;
     int ret;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
     if ((*nparams) == 0) {
         *nparams = NODE_MEMORY_PARAMETERS_NUM;
@@ -569,13 +577,21 @@ virHostMemGetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
     }
 
     return 0;
+}
 #else
+int
+virHostMemGetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
+                        int *nparams G_GNUC_UNUSED,
+                        unsigned int flags)
+{
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node get memory parameters not implemented"
                      " on this platform"));
     return -1;
-#endif
 }
+#endif
 
 
 #ifdef WIN32
