@@ -548,9 +548,8 @@ virCgroupV2KillRecursive(virCgroupPtr group,
 static int
 virCgroupV2BindMount(virCgroupPtr group,
                      const char *oldroot,
-                     const char *mountopts)
+                     const char *mountopts G_GNUC_UNUSED)
 {
-    g_autofree char *opts = NULL;
     g_autofree char *src = NULL;
 
     VIR_DEBUG("Mounting cgroups at '%s'", group->unified.mountPoint);
@@ -560,8 +559,6 @@ virCgroupV2BindMount(virCgroupPtr group,
                              group->unified.mountPoint);
         return -1;
     }
-
-    opts = g_strdup_printf("mode=755,size=65536%s", mountopts);
 
     src = g_strdup_printf("%s%s", oldroot, group->unified.mountPoint);
 
