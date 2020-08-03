@@ -2247,8 +2247,7 @@ networkAddAddrToBridge(virNetworkObjPtr obj,
 
 
 static int
-networkStartHandleMACTableManagerMode(virNetworkObjPtr obj,
-                                      const char *macTapIfName)
+networkStartHandleMACTableManagerMode(virNetworkObjPtr obj)
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     const char *brname = def->bridge;
@@ -2257,12 +2256,6 @@ networkStartHandleMACTableManagerMode(virNetworkObjPtr obj,
         def->macTableManager == VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT) {
         if (virNetDevBridgeSetVlanFiltering(brname, true) < 0)
             return -1;
-        if (macTapIfName) {
-            if (virNetDevBridgePortSetLearning(brname, macTapIfName, false) < 0)
-                return -1;
-            if (virNetDevBridgePortSetUnicastFlood(brname, macTapIfName, false) < 0)
-                return -1;
-        }
     }
     return 0;
 }
@@ -2330,10 +2323,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     virErrorPtr save_err = NULL;
     virNetworkIPDefPtr ipdef;
     virNetDevIPRoutePtr routedef;
-    g_autofree char *macTapIfName = NULL;
     virMacMapPtr macmap;
     g_autofree char *macMapFile = NULL;
-    int tapfd = -1;
     bool dnsmasqStarted = false;
     bool devOnline = false;
     bool firewalRulesAdded = false;
@@ -2359,29 +2350,6 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     }
     if (virNetDevBridgeCreate(def->bridge, &def->mac) < 0)
         return -1;
-
-    if (def->mac_specified) {
-        /* To set a mac for the bridge, we need to define a dummy tap
-         * device, set its mac, then attach it to the bridge. As long
-         * as its mac address is lower than any other interface that
-         * gets attached, the bridge will always maintain this mac
-         * address.
-         */
-        macTapIfName = networkBridgeDummyNicName(def->bridge);
-        if (!macTapIfName)
-            goto error;
-        /* Keep tun fd open and interface up to allow for IPv6 DAD to happen */
-        if (virNetDevTapCreateInBridgePort(def->bridge,
-                                           &macTapIfName, &def->mac,
-                                           NULL, NULL, &tapfd, 1, NULL, NULL,
-                                           VIR_TRISTATE_BOOL_NO,
-                                           NULL, def->mtu, NULL,
-                                           VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE |
-                                           VIR_NETDEV_TAP_CREATE_IFUP |
-                                           VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
-            goto error;
-        }
-    }
 
     if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir,
                                          def->bridge)) ||
@@ -2426,7 +2394,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
             goto error;
     }
 
-    if (networkStartHandleMACTableManagerMode(obj, macTapIfName) < 0)
+    if (networkStartHandleMACTableManagerMode(obj) < 0)
         goto error;
 
     /* Bring up the bridge interface */
@@ -2482,15 +2450,6 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     if (v6present && networkWaitDadFinish(obj) < 0)
         goto error;
 
-    /* DAD has finished, dnsmasq is now bound to the
-     * bridge's IPv6 address, so we can set the dummy tun down.
-     */
-    if (tapfd >= 0) {
-        if (virNetDevSetOnline(macTapIfName, false) < 0)
-            goto error;
-        VIR_FORCE_CLOSE(tapfd);
-    }
-
     if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
         goto error;
 
@@ -2514,16 +2473,11 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         def->forward.type != VIR_NETWORK_FORWARD_OPEN)
         networkRemoveFirewallRules(def);
 
-    if (macTapIfName) {
-        VIR_FORCE_CLOSE(tapfd);
-        ignore_value(virNetDevTapDelete(macTapIfName, NULL));
-    }
     virNetworkObjUnrefMacMap(obj);
 
     ignore_value(virNetDevBridgeDelete(def->bridge));
 
     virErrorRestore(&save_err);
-    /* coverity[leaked_handle] - 'tapfd' is not leaked */
     return -1;
 }
 
@@ -2555,9 +2509,13 @@ networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver,
     if (dnsmasqPid > 0)
         kill(dnsmasqPid, SIGTERM);
 
+    /* We no longer create a dummy NIC, but if we've upgraded
+     * from old libvirt, we still need to delete any dummy NIC
+     * that might exist. Keep this logic around for a while...
+     */
     if (def->mac_specified) {
         g_autofree char *macTapIfName = networkBridgeDummyNicName(def->bridge);
-        if (macTapIfName)
+        if (macTapIfName && virNetDevExists(macTapIfName))
             ignore_value(virNetDevTapDelete(macTapIfName, NULL));
     }
 
@@ -2597,7 +2555,7 @@ networkStartNetworkBridge(virNetworkObjPtr obj)
     if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
         goto error;
 
-    if (networkStartHandleMACTableManagerMode(obj, NULL) < 0)
+    if (networkStartHandleMACTableManagerMode(obj) < 0)
         goto error;
 
     return 0;
