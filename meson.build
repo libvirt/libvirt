@@ -2419,7 +2419,7 @@ libs_summary = {
   'netcf': netcf_dep.found(),
   'NLS': have_gnu_gettext_tools,
   'nss': conf.has('WITH_NSS'),
-  'numaclt': numactl_dep.found(),
+  'numactl': numactl_dep.found(),
   'openwsman': openwsman_dep.found(),
   'pciaccess': pciaccess_dep.found(),
   'pm_utils': conf.has('WITH_PM_UTILS'),
