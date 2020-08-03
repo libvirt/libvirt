@@ -467,8 +467,10 @@ int access(const char *path, int mode)
     init_syms();
 
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
-        init_sysfs();
         char *newpath;
+
+        init_sysfs();
+
         if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {
@@ -534,8 +536,10 @@ int mkdir(const char *path, mode_t mode)
     init_syms();
 
     if (STRPREFIX(path, SYSFS_CGROUP_PREFIX)) {
-        init_sysfs();
         char *newpath;
+
+        init_sysfs();
+
         if (asprintf(&newpath, "%s%s",
                      fakesysfscgroupdir,
                      path + strlen(SYSFS_CGROUP_PREFIX)) < 0) {

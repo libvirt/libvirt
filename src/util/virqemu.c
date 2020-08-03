@@ -94,9 +94,9 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
     size_t i;
 
     for (i = 0; i < virJSONValueArraySize(array); i++) {
-        member = virJSONValueArrayGet((virJSONValuePtr) array, i);
         g_autofree char *prefix = NULL;
 
+        member = virJSONValueArrayGet((virJSONValuePtr) array, i);
         prefix = g_strdup_printf("%s.%zu", key, i);
 
         if (virQEMUBuildCommandLineJSONRecurse(prefix, member, buf, skipKey, onOff,

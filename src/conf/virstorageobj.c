@@ -1114,9 +1114,10 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
         /* UUID does not match, but if a name matches, refuse it */
         obj = virStoragePoolObjFindByNameLocked(pools, def->name);
         if (obj) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+
             virObjectLock(obj);
 
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(obj->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("pool '%s' already exists with uuid %s"),

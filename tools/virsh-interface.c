@@ -49,8 +49,9 @@ virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
     const char *n = NULL;
     bool is_mac = false;
     virMacAddr dummy;
-    virCheckFlags(VIRSH_BYNAME | VIRSH_BYMAC, NULL);
     virshControlPtr priv = ctl->privData;
+
+    virCheckFlags(VIRSH_BYNAME | VIRSH_BYMAC, NULL);
 
     if (!optname)
        optname = "interface";

@@ -233,15 +233,15 @@ openvzReadNetworkConf(virDomainDefPtr def,
     } else if (ret > 0) {
         token = strtok_r(temp, ";", &saveptr);
         while (token != NULL) {
+            char *p = token;
+            char cpy_temp[32];
+            int len;
+
             /* add new device to list */
             if (VIR_ALLOC(net) < 0)
                 goto error;
 
             net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
-
-            char *p = token;
-            char cpy_temp[32];
-            int len;
 
             /* parse string */
             do {

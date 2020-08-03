@@ -2857,12 +2857,13 @@ void virDomainSoundCodecDefFree(virDomainSoundCodecDefPtr def)
 
 void virDomainSoundDefFree(virDomainSoundDefPtr def)
 {
+    size_t i;
+
     if (!def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
 
-    size_t i;
     for (i = 0; i < def->ncodecs; i++)
         virDomainSoundCodecDefFree(def->codecs[i]);
     VIR_FREE(def->codecs);
@@ -3255,10 +3256,11 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
 static void
 virDomainClockDefClear(virDomainClockDefPtr def)
 {
+    size_t i;
+
     if (def->offset == VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE)
         VIR_FREE(def->data.timezone);
 
-    size_t i;
     for (i = 0; i < def->ntimers; i++)
         VIR_FREE(def->timers[i]);
     VIR_FREE(def->timers);
@@ -16702,8 +16704,9 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
                                  virDomainMemoryDefPtr def)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
-    ctxt->node = node;
     g_autofree char *nodemask = NULL;
+
+    ctxt->node = node;
 
     switch ((virDomainMemoryModel) def->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:

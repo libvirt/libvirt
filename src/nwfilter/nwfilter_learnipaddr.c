@@ -626,12 +626,12 @@ learnIPAddressThread(void *arg)
         pcap_close(handle);
 
     if (req->status == 0) {
+        g_autofree char *inetaddr = NULL;
         int ret;
         virSocketAddr sa;
         sa.len = sizeof(sa.data.inet4);
         sa.data.inet4.sin_family = AF_INET;
         sa.data.inet4.sin_addr.s_addr = vmaddr;
-        g_autofree char *inetaddr = NULL;
 
         /* It is necessary to unlock interface here to avoid updateMutex and
          * interface ordering deadlocks. Otherwise we are going to

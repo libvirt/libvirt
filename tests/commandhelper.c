@@ -74,6 +74,8 @@ int main(int argc, char **argv) {
     char c;
     bool daemonize_check = false;
     size_t daemonize_retries = 3;
+    char buf[1024];
+    ssize_t got;
 
     if (!log)
         return ret;
@@ -166,9 +168,6 @@ int main(int argc, char **argv) {
             goto cleanup;
         usleep(100*1000);
     }
-
-    char buf[1024];
-    ssize_t got;
 
     fprintf(stdout, "BEGIN STDOUT\n");
     fflush(stdout);

@@ -523,9 +523,10 @@ qemuProcessShutdownOrReboot(virQEMUDriverPtr driver,
 
     if (priv->fakeReboot) {
         g_autofree char *name = g_strdup_printf("reboot-%s", vm->def->name);
+        virThread th;
+
         qemuDomainSetFakeReboot(driver, vm, false);
         virObjectRef(vm);
-        virThread th;
         if (virThreadCreateFull(&th,
                                 false,
                                 qemuProcessFakeReboot,

@@ -285,6 +285,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
         char **caps = NULL;
         int ncaps = 0;
         bool match = false;
+        size_t j, k;
 
         device = list->devices[i];
 
@@ -305,7 +306,6 @@ virshNodeDeviceListCollect(vshControl *ctl,
         /* Check if the device's capability matches with provided
          * capabilities.
          */
-        size_t j, k;
         for (j = 0; j < ncaps; j++) {
             for (k = 0; k < ncapnames; k++) {
                 if (STREQ(caps[j], capnames[k])) {

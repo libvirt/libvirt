@@ -957,6 +957,7 @@ doRemoteOpen(virConnectPtr conn,
     bool tty = true;
 #endif
     int mode;
+    size_t i;
 
     if (inside_daemon && !conn->uri->server) {
         mode = REMOTE_DRIVER_MODE_DIRECT;
@@ -1014,8 +1015,6 @@ doRemoteOpen(virConnectPtr conn,
      * feasibly it might contain variables needed by the real driver,
      * although that won't be the case for now).
      */
-    size_t i;
-
     if (conn->uri) {
         for (i = 0; i < conn->uri->paramsCount; i++) {
             virURIParamPtr var = &conn->uri->params[i];

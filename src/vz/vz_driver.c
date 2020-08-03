@@ -112,6 +112,8 @@ vzBuildCapabilities(void)
     };
     size_t i, j, k;
 
+    G_STATIC_ASSERT(G_N_ELEMENTS(archs) == G_N_ELEMENTS(emulators));
+
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
         return NULL;
@@ -121,8 +123,6 @@ vzBuildCapabilities(void)
 
     if (virCapabilitiesInitCaches(caps) < 0)
         goto error;
-
-    G_STATIC_ASSERT(G_N_ELEMENTS(archs) == G_N_ELEMENTS(emulators));
 
     for (i = 0; i < G_N_ELEMENTS(ostypes); i++)
         for (j = 0; j < G_N_ELEMENTS(archs); j++)
@@ -220,11 +220,11 @@ vzConnectGetCapabilities(virConnectPtr conn)
 static int
 vzDomainDefAddDefaultInputDevices(virDomainDefPtr def)
 {
-    if (def->ngraphics == 0)
-        return 0;
-
     int bus = IS_CT(def) ? VIR_DOMAIN_INPUT_BUS_PARALLELS :
                            VIR_DOMAIN_INPUT_BUS_PS2;
+
+    if (def->ngraphics == 0)
+        return 0;
 
     if (virDomainDefMaybeAddInput(def,
                                   VIR_DOMAIN_INPUT_TYPE_MOUSE,

@@ -653,6 +653,7 @@ static int
 vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
 {
     vboxDriverPtr data = conn->privateData;
+    ISystemProperties *systemProperties = NULL;
     PRUint32 maxCPUCount = 0;
     int ret = -1;
 
@@ -662,7 +663,6 @@ vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
     /* VirtualBox Supports only hvm and thus the type passed to it
      * has no meaning, setting it to G_GNUC_UNUSED
      */
-    ISystemProperties *systemProperties = NULL;
 
     gVBoxAPI.UIVirtualBox.GetSystemProperties(data->vboxObj, &systemProperties);
     if (!systemProperties)
@@ -4603,6 +4603,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
     char *nameTmpUse = NULL;
     bool snapshotFileExists = false;
     bool needToChangeStorageController = false;
+    char uuidtmp[VIR_UUID_STRING_BUFLEN];
     int ret = -1;
 
     if (!data->vboxObj)
@@ -4782,6 +4783,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
         char *parentUuid = NULL;
         virVBoxSnapshotConfHardDiskPtr readOnlyDisk = NULL;
         vboxIID iid, parentiid;
+        IMedium *parentReadOnlyMedium = NULL;
 
         VBOX_IID_INITIALIZE(&iid);
         VBOX_IID_INITIALIZE(&parentiid);
@@ -4831,7 +4833,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
         VBOX_UTF16_FREE(formatUtf);
 
         /* This disk is already in the media registry */
-        IMedium *parentReadOnlyMedium = NULL;
         rc = gVBoxAPI.UIMedium.GetParent(readOnlyMedium, &parentReadOnlyMedium);
         if (NS_FAILED(rc)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4965,7 +4966,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
     if (virUUIDGenerate(snapshotUuid) < 0)
         goto cleanup;
 
-    char uuidtmp[VIR_UUID_STRING_BUFLEN];
     virUUIDFormat(snapshotUuid, uuidtmp);
     newSnapshotPtr->uuid = g_strdup(uuidtmp);
 
@@ -5176,6 +5176,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
             }
         }
     } else {
+        char *snapshotContent;
         /* Create a "fake" disk to avoid corrupting children snapshot disks. */
         for (it = 0; it < def->parent.dom->ndisks; it++) {
             IMedium *medium = NULL;
@@ -5190,6 +5191,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
             char *format = NULL;
             char *tmp = NULL;
             vboxIID iid, parentiid;
+            IProgress *progress = NULL;
+            PRUint32 tab[1];
 
             VBOX_IID_INITIALIZE(&iid);
             VBOX_IID_INITIALIZE(&parentiid);
@@ -5235,8 +5238,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
                 goto cleanup;
             }
 
-            IProgress *progress = NULL;
-            PRUint32 tab[1];
             tab[0] = MediumVariant_Diff;
             gVBoxAPI.UIMedium.CreateDiffStorage(medium, newMedium, 1, tab, &progress);
 
@@ -5320,9 +5321,9 @@ vboxSnapshotRedefine(virDomainPtr dom,
         VIR_FREE(currentSnapshotXmlFilePath);
         currentSnapshotXmlFilePath = g_strdup_printf("%s%s.xml",
                                                      machineLocationPath, snapshotMachineDesc->currentSnapshot);
-        char *snapshotContent = virDomainSnapshotDefFormat(NULL, def,
-                                                           data->xmlopt,
-                                                           VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE);
+        snapshotContent = virDomainSnapshotDefFormat(NULL, def,
+                                                     data->xmlopt,
+                                                     VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE);
         if (snapshotContent == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to get snapshot content"));
@@ -6947,6 +6948,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 char *tmp = NULL;
                 vboxIID iid, parentiid;
                 resultCodeUnion resultCode;
+                PRUint32 tab[1];
 
                 VBOX_IID_INITIALIZE(&iid);
                 VBOX_IID_INITIALIZE(&parentiid);
@@ -7004,7 +7006,6 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 VBOX_UTF16_FREE(formatUtf16);
                 VBOX_UTF16_FREE(newLocation);
 
-                PRUint32 tab[1];
                 tab[0] = MediumVariant_Diff;
                 gVBoxAPI.UIMedium.CreateDiffStorage(medium, newMedium, 1, tab, &progress);
 
@@ -7536,12 +7537,12 @@ vboxConnectListAllDomains(virConnectPtr conn,
 
     for (i = 0; i < machines.count; i++) {
         IMachine *machine = machines.items[i];
+        PRBool isAccessible = PR_FALSE;
         int id = -1;
 
         if (!machine)
             continue;
 
-        PRBool isAccessible = PR_FALSE;
         gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
 
         if (!isAccessible)

@@ -171,11 +171,12 @@ bhyveCommandLineToArgv(const char *nativeConfig,
     }
 
     for (i = 0; i < line_count; i++) {
-        curr = lines[i];
         size_t j;
         char **arglist = NULL;
         size_t args_count = 0;
         size_t args_alloc = 0;
+
+        curr = lines[i];
 
         /* iterate over each line, splitting on sequences of ' '. This code is
          * adapted from qemu/qemu_parse_command.c. */

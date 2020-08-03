@@ -3794,8 +3794,10 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             goto error;
 
         for (i = 0; i < nvol_nodes; i++) {
-            ctxt->node = vol_nodes[i];
             virshUndefineVolume vol;
+
+            ctxt->node = vol_nodes[i];
+
             VIR_FREE(source);
             VIR_FREE(target);
             VIR_FREE(pool);

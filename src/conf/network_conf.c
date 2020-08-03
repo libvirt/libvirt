@@ -2537,9 +2537,10 @@ virNetworkDefFormatBuf(virBufferPtr buf,
 
     if (def->forward.type != VIR_NETWORK_FORWARD_NONE) {
         const char *dev = NULL;
+        const char *mode = virNetworkForwardTypeToString(def->forward.type);
+
         if (!def->forward.npfs)
             dev = virNetworkDefForwardIf(def, 0);
-        const char *mode = virNetworkForwardTypeToString(def->forward.type);
 
         if (!mode) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

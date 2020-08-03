@@ -172,8 +172,9 @@ int virHostValidateNamespace(const char *hvname,
                              virHostValidateLevel level,
                              const char *hint)
 {
-    virHostMsgCheck(hvname, "for namespace %s", ns_name);
     char nspath[100];
+
+    virHostMsgCheck(hvname, "for namespace %s", ns_name);
 
     g_snprintf(nspath, sizeof(nspath), "/proc/self/ns/%s", ns_name);
 

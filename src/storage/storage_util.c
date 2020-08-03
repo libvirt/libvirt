@@ -192,8 +192,8 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
          * blocks */
         amtleft = amtread;
         do {
-            interval = ((wbytes > amtleft) ? amtleft : wbytes);
             int offset = amtread - amtleft;
+            interval = ((wbytes > amtleft) ? amtleft : wbytes);
 
             if (want_sparse && memcmp(buf+offset, zerobuf, interval) == 0) {
                 if (lseek(fd, interval, SEEK_CUR) < 0) {

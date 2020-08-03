@@ -999,6 +999,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
         case DBUS_TYPE_SIGNATURE:
             do {
                 char **x;
+                char *s;
                 if (arrayref) {
                     char ***xptrptr = arrayptr;
                     if (VIR_EXPAND_N(*xptrptr, *narrayptr, 1) < 0)
@@ -1008,7 +1009,6 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                 } else {
                     x = (char **)va_arg(args, char **);
                 }
-                char *s;
                 dbus_message_iter_get_basic(iter, &s);
                 *x = g_strdup(s);
                 VIR_DEBUG("Read basic type 'char *' varg 'char **'"

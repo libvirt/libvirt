@@ -32,8 +32,9 @@ virshLookupDomainInternal(vshControl *ctl,
 {
     virDomainPtr dom = NULL;
     int id;
-    virCheckFlags(VIRSH_BYID | VIRSH_BYUUID | VIRSH_BYNAME, NULL);
     virshControlPtr priv = ctl->privData;
+
+    virCheckFlags(VIRSH_BYID | VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
     /* try it by ID */
     if (flags & VIRSH_BYID) {

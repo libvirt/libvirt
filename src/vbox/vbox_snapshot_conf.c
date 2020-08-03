@@ -1286,8 +1286,10 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
 
     for (i = 0; i < nodeSize; i++) {
         xmlNodePtr node = nodes[i];
+        xmlNodePtr sourceNode;
+
         xPathContext->node = node;
-        xmlNodePtr sourceNode = virXPathNode("./source", xPathContext);
+        sourceNode = virXPathNode("./source", xPathContext);
         if (sourceNode)
             ret[i] = virXMLPropString(sourceNode, "file");
     }
@@ -1347,8 +1349,10 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
 
     for (i = 0; i < nodeSize; i++) {
         xmlNodePtr node = nodes[i];
+        xmlNodePtr sourceNode;
+
         xPathContext->node = node;
-        xmlNodePtr sourceNode = virXPathNode("./source", xPathContext);
+        sourceNode = virXPathNode("./source", xPathContext);
         if (sourceNode)
             ret[i] = virXMLPropString(sourceNode, "file");
     }
