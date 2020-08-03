@@ -94,6 +94,8 @@
   /etc/pki/CA/* r,
   /etc/pki/libvirt{,-spice,-vnc}/ r,
   /etc/pki/libvirt{,-spice,-vnc}/** r,
+  /etc/pki/qemu/ r,
+  /etc/pki/qemu/** r,
 
   # the various binaries
   /usr/bin/kvm rmix,
