@@ -1874,9 +1874,9 @@ sc_prohibit_path_max_allocation:
 	  $(_sc_search_regexp)
 
 ifneq ($(_gl-Makefile),)
-syntax-check: spacing-check test-wrap-argv \
-	prohibit-duplicate-header mock-noinline group-qemu-caps \
-        header-ifdef
+syntax-check: sc_spacing-check sc_test-wrap-argv \
+	sc_prohibit-duplicate-header sc_mock-noinline sc_group-qemu-caps \
+        sc_header-ifdef
 	@if ! cppi --version >/dev/null 2>&1; then \
 		echo "*****************************************************" >&2; \
 		echo "* cppi not installed, some checks have been skipped *" >&2; \
@@ -1890,28 +1890,28 @@ syntax-check: spacing-check test-wrap-argv \
 endif
 
 # Don't include duplicate header in the source (either *.c or *.h)
-prohibit-duplicate-header:
+sc_prohibit-duplicate-header:
 	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[chx]$$' | $(RUNUTF8) xargs \
 	$(PYTHON) $(top_srcdir)/scripts/prohibit-duplicate-header.py
 
-spacing-check:
+sc_spacing-check:
 	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.c$$' | xargs \
 	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl || \
 	  { echo '$(ME): incorrect formatting' 1>&2; exit 1; }
 
-mock-noinline:
+sc_mock-noinline:
 	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[ch]$$' | $(RUNUTF8) xargs \
 	$(PYTHON) $(top_srcdir)/scripts/mock-noinline.py
 
-header-ifdef:
+sc_header-ifdef:
 	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[h]$$' | $(RUNUTF8) xargs \
 	$(PYTHON) $(top_srcdir)/scripts/header-ifdef.py
 
-test-wrap-argv:
+sc_test-wrap-argv:
 	$(AM_V_GEN)$(VC_LIST) | $(GREP) -E '\.(ldargs|args)' | $(RUNUTF8) xargs \
 	$(PYTHON) $(top_srcdir)/scripts/test-wrap-argv.py --check
 
-group-qemu-caps:
+sc_group-qemu-caps:
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/group-qemu-caps.py \
 		--check --prefix $(top_srcdir)/
 
