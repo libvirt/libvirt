@@ -99,7 +99,7 @@ foreach data : docs_man_files
     html_in_file,
     input: rst_file,
     output: html_in_file,
-    command: [ rst2html_prog, '--strict', '@INPUT@' ],
+    command: [ rst2html_prog, '--stylesheet=', '--strict', '@INPUT@' ],
     capture: true,
   )
 

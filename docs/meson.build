@@ -188,7 +188,7 @@ docs_admin_api_xml = docs_api_generated[3]
 docs_rst2html_gen = generator(
   rst2html_prog,
   output: '@BASENAME@.html.in',
-  arguments: [ '--strict', '@INPUT@' ],
+  arguments: [ '--stylesheet=', '--strict', '@INPUT@' ],
   capture: true,
 )
 
