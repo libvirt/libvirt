@@ -1558,8 +1558,10 @@ static void
 virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
                                    virNetClientCallPtr thiscall)
 {
-    VIR_DEBUG("Giving up the buck %p", thiscall);
     virNetClientCallPtr tmp = client->waitDispatch;
+
+    VIR_DEBUG("Giving up the buck %p", thiscall);
+
     /* See if someone else is still waiting
      * and if so, then pass the buck ! */
     while (tmp) {

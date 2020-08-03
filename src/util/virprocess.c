@@ -444,10 +444,11 @@ int virProcessKillPainfully(pid_t pid, bool force)
 int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
 {
     size_t i;
-    VIR_DEBUG("Set process affinity on %lld", (long long)pid);
     int numcpus = 1024;
     size_t masklen;
     cpu_set_t *mask;
+
+    VIR_DEBUG("Set process affinity on %lld", (long long)pid);
 
     /* Not only may the statically allocated cpu_set_t be too small,
      * but there is no way to ask the kernel what size is large enough.

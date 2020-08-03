@@ -862,8 +862,8 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
         dbustype *x = (dbustype *)&v.member; \
         vargtype *y; \
         if (arrayref) { \
-            VIR_DEBUG("Use arrayref"); \
             vargtype **xptrptr = arrayptr; \
+            VIR_DEBUG("Use arrayref"); \
             if (VIR_EXPAND_N(*xptrptr, *narrayptr, 1) < 0) \
                 goto cleanup; \
             y = (*xptrptr + (*narrayptr - 1)); \

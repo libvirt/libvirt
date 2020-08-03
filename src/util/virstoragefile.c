@@ -5335,13 +5335,13 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
                           uid_t uid, gid_t gid,
                           bool report_broken)
 {
-    VIR_DEBUG("path=%s format=%d uid=%u gid=%u report_broken=%d",
-              src->path, src->format, (unsigned int)uid, (unsigned int)gid,
-              report_broken);
-
     virHashTablePtr cycle = NULL;
     virStorageType actualType = virStorageSourceGetActualType(src);
     int ret = -1;
+
+    VIR_DEBUG("path=%s format=%d uid=%u gid=%u report_broken=%d",
+              src->path, src->format, (unsigned int)uid, (unsigned int)gid,
+              report_broken);
 
     if (!(cycle = virHashCreate(5, NULL)))
         return -1;

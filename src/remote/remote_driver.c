@@ -5691,10 +5691,11 @@ remoteStreamSend(virStreamPtr st,
                  const char *data,
                  size_t nbytes)
 {
-    VIR_DEBUG("st=%p data=%p nbytes=%zu", st, data, nbytes);
     struct private_data *priv = st->conn->privateData;
     virNetClientStreamPtr privst = st->privateData;
     int rv;
+
+    VIR_DEBUG("st=%p data=%p nbytes=%zu", st, data, nbytes);
 
     remoteDriverLock(priv);
     priv->localUses++;
@@ -5719,11 +5720,12 @@ remoteStreamRecvFlags(virStreamPtr st,
                       size_t nbytes,
                       unsigned int flags)
 {
-    VIR_DEBUG("st=%p data=%p nbytes=%zu flags=0x%x",
-              st, data, nbytes, flags);
     struct private_data *priv = st->conn->privateData;
     virNetClientStreamPtr privst = st->privateData;
     int rv;
+
+    VIR_DEBUG("st=%p data=%p nbytes=%zu flags=0x%x",
+              st, data, nbytes, flags);
 
     virCheckFlags(VIR_STREAM_RECV_STOP_AT_HOLE, -1);
 
@@ -5760,11 +5762,12 @@ remoteStreamSendHole(virStreamPtr st,
                      long long length,
                      unsigned int flags)
 {
-    VIR_DEBUG("st=%p length=%lld flags=0x%x",
-              st, length, flags);
     struct private_data *priv = st->conn->privateData;
     virNetClientStreamPtr privst = st->privateData;
     int rv;
+
+    VIR_DEBUG("st=%p length=%lld flags=0x%x",
+              st, length, flags);
 
     remoteDriverLock(priv);
     priv->localUses++;

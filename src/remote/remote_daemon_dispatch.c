@@ -1620,10 +1620,10 @@ static
 void remoteRelayConnectionClosedEvent(virConnectPtr conn G_GNUC_UNUSED, int reason, void *opaque)
 {
     virNetServerClientPtr client = opaque;
+    remote_connect_event_connection_closed_msg msg = { reason };
 
     VIR_DEBUG("Relaying connection closed event, reason %d", reason);
 
-    remote_connect_event_connection_closed_msg msg = { reason };
     remoteDispatchObjectEventSend(client, remoteProgram,
                                   REMOTE_PROC_CONNECT_EVENT_CONNECTION_CLOSED,
                                   (xdrproc_t)xdr_remote_connect_event_connection_closed_msg,

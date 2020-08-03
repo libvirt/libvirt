@@ -315,11 +315,12 @@ virObjectRWLockableNew(virClassPtr klass)
 
 static void vir_object_finalize(GObject *gobj)
 {
-    PROBE(OBJECT_DISPOSE, "obj=%p", gobj);
     virObjectPtr obj = VIR_OBJECT(gobj);
     virObjectPrivate *priv = vir_object_get_instance_private(obj);
-
     virClassPtr klass = priv->klass;
+
+    PROBE(OBJECT_DISPOSE, "obj=%p", gobj);
+
     while (klass) {
         if (klass->dispose)
             klass->dispose(obj);

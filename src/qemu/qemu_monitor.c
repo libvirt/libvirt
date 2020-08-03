@@ -2838,8 +2838,9 @@ qemuMonitorAddDeviceWithFd(qemuMonitorPtr mon,
                            int fd,
                            const char *fdname)
 {
-    VIR_DEBUG("device=%s fd=%d fdname=%s", devicestr, fd, NULLSTR(fdname));
     int ret;
+
+    VIR_DEBUG("device=%s fd=%d fdname=%s", devicestr, fd, NULLSTR(fdname));
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -3458,9 +3459,10 @@ qemuMonitorOpenGraphics(qemuMonitorPtr mon,
                         const char *fdname,
                         bool skipauth)
 {
+    int ret;
+
     VIR_DEBUG("protocol=%s fd=%d fdname=%s skipauth=%d",
               protocol, fd, NULLSTR(fdname), skipauth);
-    int ret;
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -4168,8 +4170,9 @@ int
 qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
                                virHashTablePtr *info)
 {
-    VIR_DEBUG("info=%p", info);
     int ret;
+
+    VIR_DEBUG("info=%p", info);
 
     *info = NULL;
 

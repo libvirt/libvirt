@@ -51,11 +51,12 @@ struct _virStorageFileBackendFsPriv {
 static void
 virStorageFileBackendFileDeinit(virStorageSourcePtr src)
 {
+    virStorageFileBackendFsPrivPtr priv = src->drv->priv;
+
     VIR_DEBUG("deinitializing FS storage file %p (%s:%s)", src,
               virStorageTypeToString(virStorageSourceGetActualType(src)),
               src->path);
 
-    virStorageFileBackendFsPrivPtr priv = src->drv->priv;
 
     VIR_FREE(priv->canonpath);
     VIR_FREE(priv);

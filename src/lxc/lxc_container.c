@@ -291,8 +291,10 @@ static int lxcContainerSetupFDs(int *ttyfd,
          */
         for (j = i + 1; j < npassFDs; j++) {
             if (passFDs[j] == wantfd) {
-                VIR_DEBUG("Clash %zu", j);
                 int newfd = dup(passFDs[j]);
+
+                VIR_DEBUG("Clash %zu", j);
+
                 if (newfd < 0) {
                     virReportSystemError(errno,
                                          _("Cannot move fd %d out of the way"),

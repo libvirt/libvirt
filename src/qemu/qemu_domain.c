@@ -6308,12 +6308,14 @@ int qemuDomainLogContextWrite(qemuDomainLogContextPtr ctxt,
 ssize_t qemuDomainLogContextRead(qemuDomainLogContextPtr ctxt,
                                  char **msg)
 {
+    char *buf;
+    size_t buflen;
+
     VIR_DEBUG("Context read %p manager=%p inode=%llu pos=%llu",
               ctxt, ctxt->manager,
               (unsigned long long)ctxt->inode,
               (unsigned long long)ctxt->pos);
-    char *buf;
-    size_t buflen;
+
     if (ctxt->manager) {
         buf = virLogManagerDomainReadLogFile(ctxt->manager,
                                              ctxt->path,

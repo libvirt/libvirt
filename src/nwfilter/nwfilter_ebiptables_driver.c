@@ -2655,8 +2655,10 @@ ebtablesRemoveSubChainsQuery(virFirewallPtr fw,
     const char *chainprefixes = opaque;
 
     for (i = 0; lines[i] != NULL; i++) {
-        VIR_DEBUG("Considering '%s'", lines[i]);
         char *tmp = strstr(lines[i], "-j ");
+
+        VIR_DEBUG("Considering '%s'", lines[i]);
+
         if (!tmp)
             continue;
         tmp = tmp + 3;
@@ -2757,8 +2759,10 @@ ebtablesRenameTmpSubAndRootChainsQuery(virFirewallPtr fw,
     char newchain[MAX_CHAINNAME_LENGTH];
 
     for (i = 0; lines[i] != NULL; i++) {
-        VIR_DEBUG("Considering '%s'", lines[i]);
         char *tmp = strstr(lines[i], "-j ");
+
+        VIR_DEBUG("Considering '%s'", lines[i]);
+
         if (!tmp)
             continue;
         tmp = tmp + 3;

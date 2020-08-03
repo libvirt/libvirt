@@ -673,10 +673,10 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
     virStoragePoolSourceDevicePtr dev = &def->source.devices[0];
     unsigned long long cylinderSize = (unsigned long long)dev->geometry.heads *
                                       dev->geometry.sectors * SECTOR_SIZE;
+    int partType = virStorageBackendDiskPartTypeToCreate(pool);
 
     VIR_DEBUG("find free area: allocation %llu, cyl size %llu", allocation,
           cylinderSize);
-    int partType = virStorageBackendDiskPartTypeToCreate(pool);
 
     /* how many extra bytes we have since we allocate
        aligned to the cylinder boundary */
