@@ -136,13 +136,21 @@ setting which depends on the host configuration, *journald* in our case:
     Logging outputs: 2:journald
 
 What to attach?
-~~~~~~~~~~~~~~~
+---------------
 
 Now you should go and reproduce the bug. Once you're finished, attach:
 
 -  ``/var/log/libvirt/libvirtd.log`` or whatever path you set for the daemon
    logs.
--  If the problem is related to a domain attach
-   ``/var/log/libvirt/qemu/$dom.log`` then. Or substitute ``qemu`` with whatever
-   hypervisor you are using.
+-  If the problem is related to a domain named ``$dom`` attach:
+
+   -  ``/var/log/libvirt/qemu/$dom.log`` (Or substitute ``qemu`` with whatever
+      hypervisor you are using.)
+   -  The XML configuration of the vm/domain obtained by ``virsh dumpxml $dom``
+
+-  If the problem involves a crash of ``libvirtd`` or any other component, also
+   attach the backtrace from the core dump if possible (e.g. using
+   ``coredumpctl``).
 -  If you are asked for client logs, ``/tmp/libvirt_client.log``.
+-  Ideally don't tear down the environment in case additional information is
+   required.
