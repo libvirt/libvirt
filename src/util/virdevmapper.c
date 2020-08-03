@@ -162,7 +162,6 @@ virDMSanitizepath(const char *path)
     DIR *dh = NULL;
     const char *p;
     char *ret = NULL;
-    int rc;
 
     /* If a path is NOT provided then assume it's DM name */
     p = strrchr(path, '/');
@@ -192,7 +191,7 @@ virDMSanitizepath(const char *path)
     if (virDirOpen(&dh, DEV_DM_DIR) < 0)
         return NULL;
 
-    while ((rc = virDirRead(dh, &ent, DEV_DM_DIR)) > 0) {
+    while (virDirRead(dh, &ent, DEV_DM_DIR) > 0) {
         g_autofree char *tmp = g_strdup_printf(DEV_DM_DIR "/%s", ent->d_name);
 
         if (stat(tmp, &sb[1]) == 0 &&

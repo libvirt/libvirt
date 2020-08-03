@@ -8857,8 +8857,6 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
                                 const char *type,
                                 virDomainHostdevDefPtr def)
 {
-    xmlNodePtr sourcenode;
-
     /* @type is passed in from the caller rather than read from the
      * xml document, because it is specified in different places for
      * different kinds of defs - it is an attribute of
@@ -8881,7 +8879,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
         return -1;
     }
 
-    if (!(sourcenode = virXPathNode("./source", ctxt))) {
+    if (!virXPathNode("./source", ctxt)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Missing <source> element in hostdev device"));
         return -1;
