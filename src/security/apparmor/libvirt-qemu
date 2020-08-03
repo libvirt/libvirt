@@ -169,6 +169,11 @@
   /usr/{lib,lib64}/qemu/*.so mr,
   /usr/lib/@{multiarch}/qemu/*.so mr,
 
+  # let qemu load old shared objects after upgrades (LP: #1847361)
+  /{var/,}run/qemu/*/*.so mr,
+  # but explicitly deny writing to these files
+  audit deny /{var/,}run/qemu/*/*.so w,
+
   # swtpm
   /{usr/,}bin/swtpm rmix,
   /usr/{lib,lib64}/libswtpm_libtpms.so mr,
