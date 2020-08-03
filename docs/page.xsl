@@ -166,12 +166,14 @@
               <li><a href="http://serverfault.com/questions/tagged/libvirt">serverfault</a></li>
             </ul>
           </div>
-          <div id="contribute">
-            <h3>Contribute</h3>
-            <ul>
-              <li><a href="https://gitlab.com/libvirt/libvirt/-/blob/master/docs/{$pagesrc}">edit this page</a></li>
-            </ul>
-          </div>
+          <xsl:if test="$pagesrc != ''">
+            <div id="contribute">
+              <h3>Contribute</h3>
+              <ul>
+                <li><a href="https://gitlab.com/libvirt/libvirt/-/blob/master/{$pagesrc}">edit this page</a></li>
+              </ul>
+            </div>
+          </xsl:if>
           <div id="conduct">
             Participants in the libvirt project agree to abide by <a href="{$href_base}governance.html#codeofconduct">the project code of conduct</a>
           </div>

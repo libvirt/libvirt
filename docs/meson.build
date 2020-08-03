@@ -197,7 +197,7 @@ docs_rst2html_gen = generator(
 #   each entry is a dictionary with following items:
 #   name - base file name (required)
 #   file - generated file (required)
-# source - source filename (required)
+# source - source filename relative to repository root (optional, if there is no source)
 docs_html_in_gen = []
 
 foreach name : docs_html_in_files
@@ -205,7 +205,7 @@ foreach name : docs_html_in_files
   docs_html_in_gen += {
     'name': name,
     'file': html_in_file,
-    'source': html_in_file,
+    'source': 'docs' / html_in_file,
   }
 endforeach
 
@@ -214,7 +214,7 @@ foreach name : docs_rst_files
   docs_html_in_gen += {
     'name': name,
     'file': docs_rst2html_gen.process(rst_file),
-    'source': rst_file,
+    'source': 'docs' / rst_file,
   }
 endforeach
 
@@ -242,7 +242,6 @@ hvsupport_html_in = custom_target(
 docs_html_in_gen += {
   'name': 'hvsupport',
   'file': hvsupport_html_in,
-  'source': 'hvsupport.html.in',
 }
 
 news_html_in = docs_rst2html_gen.process(meson.source_root() / 'NEWS.rst')
@@ -270,7 +269,7 @@ foreach data : docs_html_in_gen
       site_xsl,
       '@INPUT@',
       '@OUTPUT@',
-      data['source'],
+      data.get('source', []),
     ],
     depends: [ aclperms_gen ],
     depend_files: [ page_xsl ],

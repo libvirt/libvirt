@@ -12,7 +12,7 @@ parser.add_argument("timestamp", type=str, help="docs timestamp")
 parser.add_argument("style", type=str, help="XSL stile file")
 parser.add_argument("infile", type=str, help="path to source HTML file")
 parser.add_argument("htmlfile", type=str, help="path to generated HTML file")
-parser.add_argument("pagesrc", type=str, help="path to source file used for edit this page")
+parser.add_argument("pagesrc", type=str, default="", nargs='?', help="(optional) path to source file used for edit this page")
 args = parser.parse_args()
 
 name = os.path.basename(args.htmlfile).replace('.html', '')
