@@ -8,6 +8,7 @@ if flake8_prog.found()
 endif
 syntax_check_conf.set('flake8_path', flake8_path)
 syntax_check_conf.set('runutf8', ' '.join(runutf8))
+syntax_check_conf.set('PYTHON3', python3_prog.path())
 
 configure_file(
   input: 'Makefile.in',
