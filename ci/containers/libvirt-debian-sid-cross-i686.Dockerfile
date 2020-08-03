@@ -110,7 +110,19 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libyajl-dev:i386 \
             xfslibs-dev:i386 && \
     apt-get autoremove -y && \
-    apt-get autoclean -y
+    apt-get autoclean -y && \
+    mkdir -p /usr/local/share/meson/cross && \
+    echo "[binaries]\n\
+c = '/usr/bin/i686-linux-gnu-gcc'\n\
+ar = '/usr/bin/i686-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/i686-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/i686-linux-gnu-pkg-config'\n\
+\n\
+[host_machine]\n\
+system = 'linux'\n\
+cpu_family = 'x86'\n\
+cpu = 'i686'\n\
+endian = 'little'" > /usr/local/share/meson/cross/i686-linux-gnu
 
 ENV LANG "en_US.UTF-8"
 
@@ -122,3 +134,4 @@ ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 ENV ABI "i686-linux-gnu"
 ENV CONFIGURE_OPTS "--host=i686-linux-gnu"
+ENV MESON_OPTS "--cross-file=i686-linux-gnu"

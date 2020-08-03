@@ -110,7 +110,19 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libyajl-dev:s390x \
             xfslibs-dev:s390x && \
     apt-get autoremove -y && \
-    apt-get autoclean -y
+    apt-get autoclean -y && \
+    mkdir -p /usr/local/share/meson/cross && \
+    echo "[binaries]\n\
+c = '/usr/bin/s390x-linux-gnu-gcc'\n\
+ar = '/usr/bin/s390x-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/s390x-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/s390x-linux-gnu-pkg-config'\n\
+\n\
+[host_machine]\n\
+system = 'linux'\n\
+cpu_family = 's390x'\n\
+cpu = 's390x'\n\
+endian = 'little'" > /usr/local/share/meson/cross/s390x-linux-gnu
 
 ENV LANG "en_US.UTF-8"
 
@@ -122,3 +134,4 @@ ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 ENV ABI "s390x-linux-gnu"
 ENV CONFIGURE_OPTS "--host=s390x-linux-gnu"
+ENV MESON_OPTS "--cross-file=s390x-linux-gnu"

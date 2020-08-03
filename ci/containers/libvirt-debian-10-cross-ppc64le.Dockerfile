@@ -34,7 +34,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             lsof \
             lvm2 \
             make \
-            meson \
             net-tools \
             nfs-common \
             ninja-build \
@@ -110,7 +109,22 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libyajl-dev:ppc64el \
             xfslibs-dev:ppc64el && \
     apt-get autoremove -y && \
-    apt-get autoclean -y
+    apt-get autoclean -y && \
+    mkdir -p /usr/local/share/meson/cross && \
+    echo "[binaries]\n\
+c = '/usr/bin/powerpc64le-linux-gnu-gcc'\n\
+ar = '/usr/bin/powerpc64le-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/powerpc64le-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/powerpc64le-linux-gnu-pkg-config'\n\
+\n\
+[host_machine]\n\
+system = 'linux'\n\
+cpu_family = 'ppc64'\n\
+cpu = 'powerpc64le'\n\
+endian = 'little'" > /usr/local/share/meson/cross/powerpc64le-linux-gnu
+
+RUN pip3 install \
+         meson==0.54.0
 
 ENV LANG "en_US.UTF-8"
 
@@ -122,3 +136,4 @@ ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 ENV ABI "powerpc64le-linux-gnu"
 ENV CONFIGURE_OPTS "--host=powerpc64le-linux-gnu"
+ENV MESON_OPTS "--cross-file=powerpc64le-linux-gnu"

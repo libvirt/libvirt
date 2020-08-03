@@ -34,7 +34,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             lsof \
             lvm2 \
             make \
-            meson \
             net-tools \
             nfs-common \
             ninja-build \
@@ -110,7 +109,22 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libyajl-dev:mips \
             xfslibs-dev:mips && \
     apt-get autoremove -y && \
-    apt-get autoclean -y
+    apt-get autoclean -y && \
+    mkdir -p /usr/local/share/meson/cross && \
+    echo "[binaries]\n\
+c = '/usr/bin/mips-linux-gnu-gcc'\n\
+ar = '/usr/bin/mips-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/mips-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/mips-linux-gnu-pkg-config'\n\
+\n\
+[host_machine]\n\
+system = 'linux'\n\
+cpu_family = 'mips'\n\
+cpu = 'mips'\n\
+endian = 'little'" > /usr/local/share/meson/cross/mips-linux-gnu
+
+RUN pip3 install \
+         meson==0.54.0
 
 ENV LANG "en_US.UTF-8"
 
@@ -122,3 +136,4 @@ ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 ENV ABI "mips-linux-gnu"
 ENV CONFIGURE_OPTS "--host=mips-linux-gnu"
+ENV MESON_OPTS "--cross-file=mips-linux-gnu"

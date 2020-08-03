@@ -110,7 +110,19 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libyajl-dev:mipsel \
             xfslibs-dev:mipsel && \
     apt-get autoremove -y && \
-    apt-get autoclean -y
+    apt-get autoclean -y && \
+    mkdir -p /usr/local/share/meson/cross && \
+    echo "[binaries]\n\
+c = '/usr/bin/mipsel-linux-gnu-gcc'\n\
+ar = '/usr/bin/mipsel-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/mipsel-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/mipsel-linux-gnu-pkg-config'\n\
+\n\
+[host_machine]\n\
+system = 'linux'\n\
+cpu_family = 'mips'\n\
+cpu = 'mipsel'\n\
+endian = 'little'" > /usr/local/share/meson/cross/mipsel-linux-gnu
 
 ENV LANG "en_US.UTF-8"
 
@@ -122,3 +134,4 @@ ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 ENV ABI "mipsel-linux-gnu"
 ENV CONFIGURE_OPTS "--host=mipsel-linux-gnu"
+ENV MESON_OPTS "--cross-file=mipsel-linux-gnu"

@@ -34,7 +34,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             lsof \
             lvm2 \
             make \
-            meson \
             net-tools \
             nfs-common \
             ninja-build \
@@ -110,7 +109,22 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libyajl-dev:mips64el \
             xfslibs-dev:mips64el && \
     apt-get autoremove -y && \
-    apt-get autoclean -y
+    apt-get autoclean -y && \
+    mkdir -p /usr/local/share/meson/cross && \
+    echo "[binaries]\n\
+c = '/usr/bin/mips64el-linux-gnuabi64-gcc'\n\
+ar = '/usr/bin/mips64el-linux-gnuabi64-gcc-ar'\n\
+strip = '/usr/bin/mips64el-linux-gnuabi64-strip'\n\
+pkgconfig = '/usr/bin/mips64el-linux-gnuabi64-pkg-config'\n\
+\n\
+[host_machine]\n\
+system = 'linux'\n\
+cpu_family = 'mips64'\n\
+cpu = 'mips64el'\n\
+endian = 'little'" > /usr/local/share/meson/cross/mips64el-linux-gnuabi64
+
+RUN pip3 install \
+         meson==0.54.0
 
 ENV LANG "en_US.UTF-8"
 
@@ -122,3 +136,4 @@ ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 ENV ABI "mips64el-linux-gnuabi64"
 ENV CONFIGURE_OPTS "--host=mips64el-linux-gnuabi64"
+ENV MESON_OPTS "--cross-file=mips64el-linux-gnuabi64"

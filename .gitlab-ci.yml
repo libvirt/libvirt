@@ -7,7 +7,6 @@ stages:
   - sanity_checks
 
 .script_variables: &script_variables |
-  export MAKEFLAGS="-j$(getconf _NPROCESSORS_ONLN)"
   export CCACHE_BASEDIR="$(pwd)"
   export CCACHE_DIR="$CCACHE_BASEDIR/ccache"
   export CCACHE_MAXSIZE="500M"
@@ -51,10 +50,25 @@ stages:
   before_script:
     - *script_variables
   script:
-    - mkdir build
-    - cd build
-    - ../autogen.sh || (cat config.log && exit 1)
-    - $MAKE distcheck
+    - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
+    - ninja -C build dist
+
+# Default native build job only for CentOS 7 that is always run
+# meson dist fails on CentOS 7 because of old git that fails to clone
+# from shallow git repository which is done when running meson dist
+.native_build_centos_7_job_template: &native_build_centos_7_job_definition
+  stage: builds
+  image: $CI_REGISTRY_IMAGE/ci-$NAME:latest
+  cache:
+    paths:
+      - ccache/
+    key: "$CI_JOB_NAME"
+  before_script:
+    - *script_variables
+  script:
+    - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
+    - ninja -C build
+    - ninja -C build test
 
 # Jobs that we delegate to Cirrus CI because they require an operating
 # system other than Linux. These jobs will only run if the required
@@ -86,6 +100,8 @@ stages:
           -e "s|[@]PKGS@|$PKGS|g"
           -e "s|[@]MAKE@|$MAKE|g"
           -e "s|[@]PYTHON@|$PYTHON|g"
+          -e "s|[@]PIP@|$PIP|g"
+          -e "s|[@]PYPI_PKGS@|$PYPI_PKGS|g"
       <ci/cirrus/build.yml >ci/cirrus/$NAME.yml
     - cat ci/cirrus/$NAME.yml
     - cirrus-run ci/cirrus/$NAME.yml
@@ -104,10 +120,8 @@ stages:
   before_script:
     - *script_variables
   script:
-    - mkdir build
-    - cd build
-    - ../autogen.sh $CONFIGURE_OPTS || (cat config.log && exit 1)
-    - $MAKE
+    - meson build --werror $MESON_OPTS || (cat build/meson-logs/meson-log.txt && exit 1)
+    - ninja -C build
 
 
 # Native container build jobs
@@ -285,7 +299,7 @@ x64-debian-sid:
     NAME: debian-sid
 
 x64-centos-7:
-  <<: *native_build_job_definition
+  <<: *native_build_centos_7_job_definition
   variables:
     NAME: centos-7
 
@@ -440,12 +454,8 @@ website:
   before_script:
     - *script_variables
   script:
-    - mkdir build
-    - cd build
-    - ../autogen.sh --prefix=$(pwd)/../vroot || (cat config.log && exit 1)
-    - $MAKE -C docs
-    - $MAKE -C docs install
-    - cd ..
+    - meson build --prefix=$(pwd)/vroot || (cat build/meson-logs/meson-log.txt && exit 1)
+    - ninja -C build install-web
     - mv vroot/share/doc/libvirt/html/ website
   artifacts:
     expose_as: 'Website'
@@ -462,10 +472,9 @@ codestyle:
   before_script:
     - *script_variables
   script:
-    - mkdir build
-    - cd build
-    - ../autogen.sh || (cat config.log && exit 1)
-    - $MAKE syntax-check
+    - meson build || (cat build/meson-logs/meson-log.txt && exit 1)
+    - ninja -C build libvirt-pot-dep
+    - meson test -C build --suite syntax-check --no-rebuild || (cat build/meson-logs/testlog.txt && exit 1)
 
 
 # This artifact published by this job is downloaded to push to Weblate
@@ -479,12 +488,9 @@ potfile:
   before_script:
     - *script_variables
   script:
-    - mkdir build
-    - cd build
-    - ../autogen.sh || (cat config.log && exit 1)
-    - $MAKE -C src generated-sources
-    - $MAKE -C po libvirt.pot
-    - cd ..
+    - meson build || (cat build/meson-logs/meson-log.txt && exit 1)
+    - ninja -C build libvirt-pot-dep
+    - ninja -C build libvirt-pot
     - cp po/libvirt.pot libvirt.pot
   artifacts:
     expose_as: 'Potfile'

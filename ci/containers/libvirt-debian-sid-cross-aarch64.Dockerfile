@@ -111,7 +111,19 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libyajl-dev:arm64 \
             xfslibs-dev:arm64 && \
     apt-get autoremove -y && \
-    apt-get autoclean -y
+    apt-get autoclean -y && \
+    mkdir -p /usr/local/share/meson/cross && \
+    echo "[binaries]\n\
+c = '/usr/bin/aarch64-linux-gnu-gcc'\n\
+ar = '/usr/bin/aarch64-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/aarch64-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/aarch64-linux-gnu-pkg-config'\n\
+\n\
+[host_machine]\n\
+system = 'linux'\n\
+cpu_family = 'aarch64'\n\
+cpu = 'aarch64'\n\
+endian = 'little'" > /usr/local/share/meson/cross/aarch64-linux-gnu
 
 ENV LANG "en_US.UTF-8"
 
@@ -123,3 +135,4 @@ ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 ENV ABI "aarch64-linux-gnu"
 ENV CONFIGURE_OPTS "--host=aarch64-linux-gnu"
+ENV MESON_OPTS "--cross-file=aarch64-linux-gnu"
