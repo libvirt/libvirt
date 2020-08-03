@@ -691,6 +691,7 @@ mymain(void)
             ret = -1; \
     } while (0)
 
+    VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT
     const char *tokens1[] = { NULL };
     TEST_SPLIT("", " ", 0, tokens1);
 
@@ -714,6 +715,7 @@ mymain(void)
 
     const char *tokens8[] = { "gluster", "rdma", NULL };
     TEST_SPLIT("gluster+rdma", "+", 2, tokens8);
+    VIR_WARNINGS_RESET
 
     if (virTestRun("virStringSortCompare", testStringSortCompare, NULL) < 0)
         ret = -1;
@@ -741,6 +743,7 @@ mymain(void)
     /* None matching */
     TEST_SEARCH("foo", "(bar)", 10, 0, NULL, false);
 
+    VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT
     /* Full match */
     const char *matches1[] = { "foo" };
     TEST_SEARCH("foo", "(foo)", 10, 1, matches1, false);
@@ -752,6 +755,7 @@ mymain(void)
     /* Multi matches, limited returns */
     const char *matches3[] = { "foo", "bar" };
     TEST_SEARCH("1foo2bar3eek", "([a-z]+)", 2, 2, matches3, false);
+    VIR_WARNINGS_RESET
 
 #define TEST_MATCH(s, r, m) \
     do { \

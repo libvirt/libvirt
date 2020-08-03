@@ -682,6 +682,7 @@ mymain(void)
     /* Missing file */
     TEST_ONE_CHAIN("bogus", VIR_STORAGE_FILE_RAW, EXP_FAIL);
 
+    VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT
     /* Raw image, whether with right format or no specified format */
     testFileData raw = {
         .path = absraw,
@@ -963,6 +964,7 @@ mymain(void)
     };
     TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2, &rbd2), EXP_PASS);
 
+    VIR_WARNINGS_RESET
 
     /* Rewrite wrap and qcow2 back to 3-deep chain, absolute backing */
     virCommandFree(cmd);

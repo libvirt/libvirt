@@ -166,6 +166,7 @@ mymain(void)
               *query_out ? "test://example.com/?" query_out : NULL, \
               "test", "example.com", 0, "/", query_in, NULL, NULL, params)
 
+    VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT
     virURIParam params[] = {
         { (char*)"name", (char*)"value", false },
         { NULL, NULL, false },
@@ -216,6 +217,7 @@ mymain(void)
         { (char*)"foo", (char*)"one", false },
         { NULL, NULL, false },
     };
+    VIR_WARNINGS_RESET
 
     TEST_PARAMS("foo=one&bar=two", "", params1);
     TEST_PARAMS("foo=one&foo=two", "", params2);

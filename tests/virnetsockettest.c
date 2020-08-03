@@ -572,6 +572,7 @@ mymain(void)
     if (virTestRun("Socket External Command /dev/does-not-exist", testSocketCommandFail, NULL) < 0)
         ret = -1;
 
+    VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT
     struct testSSHData sshData1 = {
         .nodename = "somehost",
         .path = "/tmp/socket",
@@ -675,6 +676,7 @@ mymain(void)
                      "fi;"
                      "'''\\''/tmp/fo o/nc'\\'''' $ARG -U /tmp/socket'\n",
     };
+    VIR_WARNINGS_RESET
     if (virTestRun("SSH test 7", testSocketSSH, &sshData7) < 0)
         ret = -1;
 

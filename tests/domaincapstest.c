@@ -287,6 +287,7 @@ doTestQemuInternal(const char *version,
     capsName = g_strdup_printf("caps_%s", version);
     emulator = g_strdup_printf("/usr/bin/qemu-system-%s", arch);
 
+    VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT
     struct testData data = {
         .name = name,
         .emulator = emulator,
@@ -297,6 +298,7 @@ doTestQemuInternal(const char *version,
         .capsName = capsName,
         .capsOpaque = opaque,
     };
+    VIR_WARNINGS_RESET
 
     if (virTestRun(name, test_virDomainCapsFormat, &data) < 0)
         return -1;

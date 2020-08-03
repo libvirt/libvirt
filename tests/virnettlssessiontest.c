@@ -277,6 +277,7 @@ mymain(void)
             ret = -1; \
     } while (0)
 
+    VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT
 # define TLS_CERT_REQ(varname, cavarname, \
                       co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
                       kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo) \
@@ -459,6 +460,8 @@ mymain(void)
 
     DO_SESS_TEST("cacertchain-sess.pem", servercertlevel3areq.filename, clientcertlevel2breq.filename,
                  false, false, "libvirt.org", NULL);
+
+    VIR_WARNINGS_RESET
 
     testTLSDiscardCert(&clientcertreq);
     testTLSDiscardCert(&clientcertaltreq);
