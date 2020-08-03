@@ -363,7 +363,6 @@ virHostMemSetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
 
 #ifdef __linux__
     size_t i;
-    int rc;
 
     if (virTypedParamsValidate(params, nparams,
                                VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
@@ -379,9 +378,7 @@ virHostMemSetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
         return -1;
 
     for (i = 0; i < nparams; i++) {
-        rc = virHostMemSetParameterValue(&params[i]);
-
-        if (rc < 0)
+        if (virHostMemSetParameterValue(&params[i]) < 0)
             return -1;
     }
 
