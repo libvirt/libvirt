@@ -194,6 +194,10 @@
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wunused-variable\"")
 
+#define VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT \
+    _Pragma ("GCC diagnostic push") \
+    _Pragma ("GCC diagnostic ignored \"-Wdeclaration-after-statement\"")
+
 #define VIR_WARNINGS_RESET \
     _Pragma ("GCC diagnostic pop")
 
