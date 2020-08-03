@@ -106,7 +106,8 @@
 
 #index.document,
 #docs.document,
-#hvsupport.document
+#hvsupport.document,
+#knowledge-base.document
 {
     width: inherit;
 }
@@ -395,14 +396,17 @@ h6:hover > a.headerlink {
     visibility: visible;
 }
 
-div.panel {
+div.panel,
+#knowledge-base .section
+{
     width: 24%;
     margin-left: 7%;
     float: left;
     background: rgb(230, 230, 230);
 }
 
-div.panel h2 {
+div.panel h2,
+#knowledge-base .section h1 {
     margin-top: 0px;
     padding: 0.5em;
     padding-left: 1em;
@@ -417,6 +421,11 @@ div.panel h2 {
     text-indent: 100%; white-space: nowrap; overflow: hidden;
     background: url(logos/logo-banner-dark-800.png) no-repeat center center;
     height: 300px;
+}
+
+#knowledge-base.document > h1 {
+    text-align: center;
+    padding: 1em;
 }
 
 #docs.document h1 {
@@ -475,29 +484,38 @@ br.clear {
     font-size: smaller;
 }
 
-div.panel dd {
+div.panel dd,
+#knowledge-base dd {
     font-size: smaller;
 }
 
-div.panel a {
+div.panel a,
+#knowledge-base a {
     text-decoration: none;
 }
 
 div.panel ul,
 div.panel p,
-div.panel dl {
+div.panel dl,
+#knowledge-base ul,
+#knowledge-base p,
+#knowledge-base dl {
     padding: 0.5em;
     margin: 0px;
 }
 
-
-div.panel ul {
+div.panel ul,
+#knowledge-base ul {
     margin-left: 1em;
 }
-div.panel dt {
+
+div.panel dt,
+#knowledge-base dt {
     margin: 0px;
 }
-div.panel dd {
+
+div.panel dd,
+#knowledge-base dd {
     margin: 0px;
     margin-bottom: 1em;
 }
