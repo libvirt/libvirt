@@ -154,3 +154,43 @@ Now you should go and reproduce the bug. Once you're finished, attach:
 -  If you are asked for client logs, ``/tmp/libvirt_client.log``.
 -  Ideally don't tear down the environment in case additional information is
    required.
+
+Example filter settings
+-----------------------
+
+Some filter setting suggestions for debugging more specific things. Unless it's
+explicitly stated, these work on libvirt 4.4.0 and later. Please note that some
+of the filters below may not log enough information for filing a proper libvirt
+bug. Usually it's better to log more than less.
+
+Targetted logging for debugging QEMU VMs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Specifying only some sections allows for a targetted filter configuration which
+works on all versions and is sufficient for most cases.
+
+::
+
+    1:libvirt 1:qemu 1:conf 1:security 3:event 3:json 3:file 3:object 1:util
+
+Less verbose logging for QEMU VMs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Some subsystems are very noisy and usually not the culprit of the problems. They
+can be silenced individually for a less verbose log while still logging
+everything else. Usual suspects are the JSON code, udev, authentication and such.
+A permissive filter is good for development use cases.
+
+::
+
+    3:remote 4:event 3:util.json 3:util.object 3:util.dbus 3:util.udev 3:node_device 3:rpc 3:access.accessmanager 3:util.netlink 1:*
+
+
+Minimalistic QEMU QMP monitor logging
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This filter logs only QMP traffic and skips most of libvirt's messages.
+
+::
+
+    2:qemu.qemu_monitor 3:*
