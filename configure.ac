@@ -16,16 +16,7 @@ dnl You should have received a copy of the GNU Lesser General Public
 dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
-AC_INIT([libvirt], [6.7.0], [libvir-list@redhat.com], [], [https://libvirt.org])
-
-if test $srcdir = "."
-then
-  AC_MSG_ERROR([Build directory must be different from source directory])
-fi
-
-AC_CONFIG_SRCDIR([src/libvirt.c])
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_HEADERS([config.h])
 AH_BOTTOM([#include <config-post.h>])
 AC_CONFIG_MACRO_DIR([m4])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms
@@ -50,61 +41,6 @@ m4_ifndef([AM_SILENT_RULES],
 
 AC_CANONICAL_HOST
 
-AC_USE_SYSTEM_EXTENSIONS
-
-# First extract pieces from the version number string
-LIBVIRT_MAJOR_VERSION=`echo $VERSION | awk -F. '{print $1}'`
-LIBVIRT_MINOR_VERSION=`echo $VERSION | awk -F. '{print $2}'`
-LIBVIRT_MICRO_VERSION=`echo $VERSION | awk -F. '{print $3}'`
-LIBVIRT_VERSION=$LIBVIRT_MAJOR_VERSION.$LIBVIRT_MINOR_VERSION.$LIBVIRT_MICRO_VERSION$LIBVIRT_MICRO_VERSION_SUFFIX
-LIBVIRT_VERSION_NUMBER=`expr $LIBVIRT_MAJOR_VERSION \* 1000000 + $LIBVIRT_MINOR_VERSION \* 1000 + $LIBVIRT_MICRO_VERSION`
-
-# In libtool terminology we need to figure out:
-#
-# CURRENT
-#     The most recent interface number that this library implements.
-#
-# REVISION
-#     The implementation number of the CURRENT interface.
-#
-# AGE
-#     The difference between the newest and oldest interfaces that this
-#     library implements.
-#
-# In other words, the library implements all the interface numbers
-# in the range from number `CURRENT - AGE' to `CURRENT'.
-#
-# Libtool assigns the soname version from `CURRENT - AGE', and we
-# don't want that to ever change in libvirt. ie it must always be
-# zero, to produce libvirt.so.0.
-#
-# We would, however, like the libvirt version number reflected
-# in the so version'd symlinks, and this is based on AGE.REVISION
-# eg  libvirt.so.0.AGE.REVISION
-#
-# Assuming we do ever want to break soname version, this can
-# toggled. But seriously, don't ever touch this.
-LIBVIRT_SONUM=0
-
-# The following examples show what libtool will do
-#
-# Input: 0.9.14 ->   libvirt.so.0.9.14
-# Input: 1.0.0  ->   libvirt.so.0.1000.0
-# Input: 2.5.8  ->   libvirt.so.0.2005.8
-#
-AGE=`expr $LIBVIRT_MAJOR_VERSION '*' 1000 + $LIBVIRT_MINOR_VERSION`
-REVISION=$LIBVIRT_MICRO_VERSION
-CURRENT=`expr $LIBVIRT_SONUM + $AGE`
-LIBVIRT_VERSION_INFO=$CURRENT:$REVISION:$AGE
-
-AC_SUBST([LIBVIRT_MAJOR_VERSION])
-AC_SUBST([LIBVIRT_MINOR_VERSION])
-AC_SUBST([LIBVIRT_MICRO_VERSION])
-AC_SUBST([LIBVIRT_SONUM])
-AC_SUBST([LIBVIRT_VERSION])
-AC_SUBST([LIBVIRT_VERSION_INFO])
-AC_SUBST([LIBVIRT_VERSION_NUMBER])
-
 LIBVIRT_ARG_WITH([PACKAGER], [Extra packager name], [no])
 LIBVIRT_ARG_WITH([PACKAGER_VERSION], [Extra packager version], [no])
 if test "x$with_packager" != "xno"
@@ -125,27 +61,6 @@ dnl Checks for C compiler.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_CPP
-
-dnl autoconf 2.70 adds a --runstatedir option so that downstreams
-dnl can point to /run instead of the historic /var/run, but
-dnl autoconf hasn't had a release since 2012.
-if test "x$runstatedir" = x; then
-  AC_SUBST([runstatedir], ['${localstatedir}/run'])
-fi
-
-dnl we introduce --with-runstatedir and then overwrite the
-dnl value of $runstatedir so configmake.h is more useful
-AC_ARG_WITH(
-    [runstatedir],
-    [AS_HELP_STRING(
-        [--with-runstatedir],
-        [State directory for temporary sockets, pid files, etc])])
-
-if test -n "$with_runstatedir"
-then
-  runstatedir=$with_runstatedir
-fi
-
 
 dnl get 64-int interfaces on 32-bit platforms
 CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64"
@@ -449,17 +364,6 @@ dnl Check for external programs
 dnl
 
 LIBVIRT_CHECK_EXTERNAL_PROGRAMS
-
-dnl if --prefix is /usr, don't use /usr/var for localstatedir
-dnl or /usr/etc for sysconfdir
-dnl as this makes a lot of things break in testing situations
-
-if test "$prefix" = "/usr" && test "$localstatedir" = '${prefix}/var' ; then
-    localstatedir='/var'
-fi
-if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
-    sysconfdir='/etc'
-fi
 
 dnl
 dnl Virtualization drivers check
