@@ -184,7 +184,7 @@ if conf.has('WITH_REMOTE')
       'service': 'libvirtd',
       'service_in': files('libvirtd.service.in'),
       'name': 'Libvirt',
-      'sockprefix': 'libvirtd',
+      'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
     }
 
@@ -218,7 +218,7 @@ if conf.has('WITH_REMOTE')
       'service': 'virtproxyd',
       'service_in': files('virtproxyd.service.in'),
       'name': 'Libvirt proxy',
-      'sockprefix': 'libvirtd',
+      'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
       'deps': libvirtd_socket_conflicts,
     }
