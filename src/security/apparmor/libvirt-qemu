@@ -33,6 +33,8 @@
   owner @{PROC}/@{pid}/task/@{tid}/comm rw,
   @{PROC}/sys/kernel/cap_last_cap r,
   @{PROC}/sys/vm/overcommit_memory r,
+  # detect hardware capabilities via qemu_getauxval
+  owner @{PROC}/*/auxv r,
 
   # For hostdev access. The actual devices will be added dynamically
   /sys/bus/usb/devices/ r,
