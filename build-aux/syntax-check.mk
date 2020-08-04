@@ -72,10 +72,6 @@ VC_LIST_EXCEPT = \
 	| $(GREP) -Ev -e '($(VC_LIST_ALWAYS_EXCLUDE_REGEX)|$(_sc_excl))' \
 	$(_prepend_srcdir_prefix)
 
-# Override this in syntax-check.mk if you are using a different format in your
-# NEWS file.
-today = $(shell date +%Y-%m-%d)
-
 # Prevent programs like 'sort' from considering distinct strings to be equal.
 # Doing it here saves us from having to set LC_ALL elsewhere in this file.
 export LC_ALL = C
@@ -1744,29 +1740,6 @@ sc_prohibit_test_double_equal:
 	halt='use "test x = x", not "test x =''= x"'			\
 	  $(_sc_search_regexp)
 
-# Each program that uses proper_name_utf8 must link with one of the
-# ICONV libraries.  Otherwise, some ICONV library must appear in LDADD.
-# The perl -0777 invocation below extracts the possibly-multi-line
-# definition of LDADD from the appropriate Makefile.am and exits 0
-# when it contains "ICONV".
-sc_proper_name_utf8_requires_ICONV:
-	@progs=$$($(VC_LIST_EXCEPT)					\
-		    | xargs $(GREP) -l 'proper_name_utf8 ''("');	\
-	if test "x$$progs" != x; then					\
-	  fail=0;							\
-	  for p in $$progs; do						\
-	    dir=$$(dirname "$$p");					\
-	    perl -0777							\
-	      -ne 'exit !(/^LDADD =(.+?[^\\]\n)/ms && $$1 =~ /ICONV/)'	\
-	      $$dir/Makefile.am && continue;				\
-	    base=$$(basename "$$p" .c);					\
-	    $(GREP) "$${base}_LDADD.*ICONV)" $$dir/Makefile.am > /dev/null	\
-	      || { fail=1; echo 1>&2 "$(ME): $$p uses proper_name_utf8"; }; \
-	  done;								\
-	  test $$fail = 1 &&						\
-	    { echo 1>&2 '$(ME): the above do not link with any ICONV library'; \
-	      exit 1; } || :;						\
-	fi
 
 # Warn about "c0nst struct Foo const foo[]",
 # but not about "char const *const foo" or "#define const const".
@@ -1827,33 +1800,6 @@ sc_po_check:
 	    || { printf '$(ME): '$(fix_po_file_diag) 1>&2; exit 1; };	\
 	  rm -f $@-1 $@-2;						\
 	fi
-
-# Check that 'make alpha' will not fail at the end of the process,
-# i.e., when pkg-M.N.tar.xz already exists (either in "." or in ../release)
-# and is read-only.
-writable-files:
-	$(AM_V_GEN)if test -d $(release_archive_dir); then		\
-	  for file in $(DIST_ARCHIVES); do				\
-	    for p in ./ $(release_archive_dir)/; do			\
-	      test -e $$p$$file || continue;				\
-	      test -w $$p$$file						\
-		|| { echo ERROR: $$p$$file is not writable; fail=1; };	\
-	    done;							\
-	  done;								\
-	  test "$$fail" && exit 1 || : ;				\
-	else :;								\
-	fi
-
-
-# BRE regex of file contents to identify a test script.
-_test_script_regex ?= \<init\.sh\>
-
-# In tests, use "compare expected actual", not the reverse.
-sc_prohibit_reversed_compare_failure:
-	@prohibit='\<compare [^ ]+ ([^ ]*exp|/dev/null)'		\
-	containing='$(_test_script_regex)'				\
-	halt='reversed compare arguments'				\
-	  $(_sc_search_regexp)
 
 # #if HAVE_... will evaluate to false for any non numeric string.
 # That would be flagged by using -Wundef, however gnulib currently
