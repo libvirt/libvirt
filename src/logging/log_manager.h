@@ -22,8 +22,6 @@
 
 #include "internal.h"
 
-#include "logging/log_protocol.h"
-
 typedef struct _virLogManager virLogManager;
 typedef virLogManager *virLogManagerPtr;
 
