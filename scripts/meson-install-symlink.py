@@ -12,4 +12,8 @@ workdir = os.path.join(destdir, dirname.strip(os.sep))
 
 os.makedirs(workdir, exist_ok=True)
 os.chdir(workdir)
+
+if os.path.exists(link):
+    os.remove(link)
+
 os.symlink(target, link)
