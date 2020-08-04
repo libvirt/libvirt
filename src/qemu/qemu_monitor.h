@@ -408,7 +408,7 @@ int qemuMonitorSetLink(qemuMonitorPtr mon,
 /* These APIs are for use by the internal Text/JSON monitor impl code only */
 char *qemuMonitorNextCommandID(qemuMonitorPtr mon);
 int qemuMonitorSend(qemuMonitorPtr mon,
-                    qemuMonitorMessagePtr msg);
+                    qemuMonitorMessagePtr msg) G_GNUC_NO_INLINE;
 virJSONValuePtr qemuMonitorGetOptions(qemuMonitorPtr mon)
     ATTRIBUTE_NONNULL(1);
 void qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)

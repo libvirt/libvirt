@@ -203,9 +203,9 @@ int qemuProcessRefreshDisks(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             qemuDomainAsyncJob asyncJob);
 
-int qemuProcessStartManagedPRDaemon(virDomainObjPtr vm);
+int qemuProcessStartManagedPRDaemon(virDomainObjPtr vm) G_GNUC_NO_INLINE;
 
-void qemuProcessKillManagedPRDaemon(virDomainObjPtr vm);
+void qemuProcessKillManagedPRDaemon(virDomainObjPtr vm) G_GNUC_NO_INLINE;
 
 typedef struct _qemuProcessQMP qemuProcessQMP;
 typedef qemuProcessQMP *qemuProcessQMPPtr;

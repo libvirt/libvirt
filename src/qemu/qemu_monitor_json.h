@@ -30,7 +30,7 @@
 
 int qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
                                  const char *line,
-                                 qemuMonitorMessagePtr msg);
+                                 qemuMonitorMessagePtr msg) G_GNUC_NO_INLINE;
 
 int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
                              const char *data,
