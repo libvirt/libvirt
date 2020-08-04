@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
 import subprocess
 
 parser = argparse.ArgumentParser()
@@ -15,12 +14,9 @@ parser.add_argument("htmlfile", type=str, help="path to generated HTML file")
 parser.add_argument("pagesrc", type=str, default="", nargs='?', help="(optional) path to source file used for edit this page")
 args = parser.parse_args()
 
-name = os.path.basename(args.htmlfile).replace('.html', '')
-
 html_tmp = subprocess.run(
     [
         args.xsltproc,
-        '--stringparam', 'pagename', name,
         '--stringparam', 'pagesrc', args.pagesrc,
         '--stringparam', 'builddir', args.builddir,
         '--stringparam', 'timestamp', args.timestamp,

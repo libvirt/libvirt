@@ -15,7 +15,7 @@
 
   <xsl:variable name="href_base">
     <xsl:choose>
-      <xsl:when test="$pagename = '404.html'">
+      <xsl:when test="$pagesrc = 'docs/404.html.in'">
         <xsl:value-of select="'/'"/>
       </xsl:when>
       <xsl:otherwise>
@@ -26,7 +26,6 @@
 
   <xsl:template match="/">
     <xsl:apply-templates select="." mode="page">
-      <xsl:with-param name="pagename" select="$pagename"/>
       <xsl:with-param name="pagesrc" select="$pagesrc"/>
       <xsl:with-param name="timestamp" select="$timestamp"/>
     </xsl:apply-templates>

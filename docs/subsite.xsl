@@ -16,7 +16,6 @@
 
   <xsl:template match="/">
     <xsl:apply-templates select="." mode="page">
-      <xsl:with-param name="pagename" select="$pagename"/>
       <xsl:with-param name="pagesrc" select="$pagesrc"/>
       <xsl:with-param name="timestamp" select="$timestamp"/>
     </xsl:apply-templates>

@@ -835,7 +835,6 @@
       indent="yes"
       encoding="UTF-8">
       <xsl:apply-templates select="exsl:node-set($mainpage)" mode="page">
-        <xsl:with-param name="pagename" select="concat($htmldir, '', $indexfile)"/>
         <xsl:with-param name="timestamp" select="$timestamp"/>
       </xsl:apply-templates>
     </xsl:document>
@@ -851,7 +850,6 @@
         indent="yes"
         encoding="UTF-8">
         <xsl:apply-templates select="exsl:node-set($subpage)" mode="page">
-          <xsl:with-param name="pagename" select="concat($htmldir, '/libvirt-', @name, '.html')"/>
           <xsl:with-param name="timestamp" select="$timestamp"/>
         </xsl:apply-templates>
       </xsl:document>
