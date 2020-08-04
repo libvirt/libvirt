@@ -6070,7 +6070,7 @@ below <#elementCharSerialAndConsole>`__.
 Relationship between serial ports and consoles
 ''''''''''''''''''''''''''''''''''''''''''''''
 
-Due to hystorical reasons, the ``serial`` and ``console`` elements have
+Due to historical reasons, the ``serial`` and ``console`` elements have
 partially overlapping scopes.
 
 In general, both elements are used to configure one or more serial consoles to
