@@ -104,7 +104,7 @@ stages:
           -e "s|[@]PYPI_PKGS@|$PYPI_PKGS|g"
       <ci/cirrus/build.yml >ci/cirrus/$NAME.yml
     - cat ci/cirrus/$NAME.yml
-    - cirrus-run ci/cirrus/$NAME.yml
+    - cirrus-run --show-build-log always ci/cirrus/$NAME.yml
   only:
     variables:
       - $CIRRUS_GITHUB_REPO
