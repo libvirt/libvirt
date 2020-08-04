@@ -50,7 +50,6 @@
 #include "virpolkit.h"
 #include "virthreadjob.h"
 #include "configmake.h"
-#include "access/viraccessapicheck.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
