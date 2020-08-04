@@ -710,8 +710,8 @@ groups:
 Persistence
 ...........
 
-Flag *--persistent* is used to include persistent domains in the returned
-list. To include transient domains specify *--transient*.
+Flag *--persistent* is used to include persistent guests in the returned
+list. To include transient guests specify *--transient*.
 
 Existence of managed save image
 ...............................
@@ -1089,8 +1089,9 @@ then the default value of 1 second will be displayed. Supplying a 0 will
 reset the value back to the default.
 
 If *--live* is specified, affect a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 When setting the disk io parameters both *--live* and *--config* flags may be
 given, but *--current* is exclusive. For querying only one of *--live*,
 *--config* or *--current* can be specified. If no flag is specified, behavior
@@ -1151,8 +1152,9 @@ Only the devices listed in the string are modified;
 any existing per-device write_bytes_sec for other devices remain unchanged.
 
 If *--live* is specified, affect a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
@@ -1451,7 +1453,7 @@ Create a domain from an XML <file>. Optionally, *--validate* option can be
 passed to validate the format of the input XML file against an internal RNG
 schema (identical to using virt-xml-validate(1) tool). Domains created using
 this command are going to be either transient (temporary ones that will vanish
-once destroyed) or existing persistent domains that will run with one-time use
+once destroyed) or existing persistent guests that will run with one-time use
 configuration, leaving the persistent XML untouched (this can come handy during
 an automated testing of various configurations all based on the original XML).
 See the example below for usage demonstration.
@@ -1490,7 +1492,7 @@ is only supported with container based virtualization.
    respectively:
 
    a. the domain is going to be transient
-   b. an existing persistent domain will run with a modified one-time
+   b. an existing persistent guest will run with a modified one-time
       configuration
 
    .. code-block::
@@ -1985,8 +1987,9 @@ To clear inbound or outbound settings, use *--inbound* or *--outbound*
 respectfully with average value of zero.
 
 If *--live* is specified, affect a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
@@ -2088,8 +2091,10 @@ QEMU/KVM 1.5 to be running on the host.
 The *--live*, *--config*, and *--current* flags are only valid when using
 the *--period* option in order to set the collection period for the balloon
 driver. If *--live* is specified, only the running guest collection period
-is affected. If *--config* is specified, affect the next boot of a persistent
-guest. If *--current* is specified, affect the current guest state.
+is affected. If *--config* is specified, affect the next start of a persistent
+guest. If *--current* is specified, it is equivalent to either *--live*
+or *--config*, depending on the current state of the guest.
+
 
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. If no flag is specified, behavior is different depending
@@ -2590,8 +2595,9 @@ CPUs.
 See ``vcpupin`` for *cpulist*.
 
 If *--live* is specified, affect a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given if *cpulist* is present,
 but *--current* is exclusive.
 If no flag is specified, behavior is different depending on hypervisor.
@@ -2754,9 +2760,9 @@ If the *iothread_id* already exists, the command will fail. The
 
 If *--live* is specified, affect a running guest. If the guest is not
 running an error is returned.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified or *--live* and *--config* are not specified,
-affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 
 
 iothreaddel
@@ -2775,9 +2781,10 @@ If the *iothread_id* does not exist an error will occur.
 
 If *--live* is specified, affect a running guest. If the guest is not
 running an error is returned.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified or *--live* and *--config* are not specified,
-affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
+
 
 
 iothreadinfo
@@ -2794,10 +2801,11 @@ the CPU Affinity for each IOThread.
 
 If *--live* is specified, get the IOThreads data from the running guest. If
 the guest is not running, an error is returned.
-If *--config* is specified, get the IOThreads data from the next boot of
+If *--config* is specified, get the IOThreads data from the next start of
 a persistent guest.
 If *--current* is specified or *--live* and *--config* are not specified,
-then get the IOThread data based on the current guest state.
+then get the IOThread data based on the current guest state, which can
+either be live or offline.
 
 
 iothreadpin
@@ -2822,9 +2830,9 @@ to all physical cpus, simply specify 'r' as a *cpulist*.
 
 If *--live* is specified, affect a running guest. If the guest is not running,
 an error is returned.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified or *--live* and *--config* are not specified,
-affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given if *cpulist* is present,
 but *--current* is exclusive.
 If no flag is specified, behavior is different depending on hypervisor.
@@ -2861,7 +2869,8 @@ next start, restore, etc.
 If *--live* is specified, affect a running guest. If the guest is not
 running an error is returned.
 If *--current* is specified or *--live* is not specified, then handle
-as if *--live* was specified.
+as if *--live* was specified.  (Where "current" here means whatever the
+present guest state is: live or offline.)
 
 
 managedsave
@@ -3007,8 +3016,9 @@ than KiB, and requests that are not an even multiple will be rounded up.
 For example, vSphere/ESX rounds the parameter up to mebibytes (1024 kibibytes).
 
 If *--live* is specified, affect a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
@@ -3170,7 +3180,7 @@ the destination to supply a larger set of changes to any host-specific
 portions of the domain XML, such as accounting for naming differences
 between source and destination in accessing underlying storage.
 If *--persistent* is enabled, *--persistent-xml* ``file`` can be used to
-supply an alternative XML file which will be used as the persistent domain
+supply an alternative XML file which will be used as the persistent guest
 definition on the destination host.
 
 *--timeout* ``seconds`` tells virsh to run a specified action when live
@@ -3402,8 +3412,9 @@ Its syntax is a comma separated list, with '-' for ranges and '^' for
 excluding a node.
 
 If *--live* is specified, set scheduler information of a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 
 For running guests in Linux hosts, the changes made in the domain's
 numa parameters does not imply that the guest memory will be moved to a
@@ -3495,8 +3506,9 @@ separated by commas. Valid event names are as follows:
 the *--perf* flag.
 
 If *--live* is specified, affect a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
@@ -3724,8 +3736,9 @@ Xen (credit scheduler): weight, cap
 ESX (allocation scheduler): reservation, limit, shares
 
 If *--live* is specified, set scheduler information of a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 
 ``Note``: The cpu_shares parameter has a valid value range of 0-262144; Negative
 values are wrapped to positive, and larger values are capped at the maximum.
@@ -3966,8 +3979,9 @@ setmaxmem
 
 Change the maximum memory allocation limit for a guest domain.
 If *--live* is specified, affect a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
@@ -3997,8 +4011,9 @@ setmem
 
 Change the memory allocation for a guest domain.
 If *--live* is specified, perform a memory balloon of a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
@@ -4048,7 +4063,8 @@ specified together if supported by the hypervisor.  If this command is run
 before the guest has finished booting, the guest may fail to process
 the change.
 
-If *--current* is specified, affect the current guest state.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 
 When no flags are given, the *--live*
 flag is assumed and the guest domain must be active.  In this situation it
@@ -4093,10 +4109,11 @@ Note that hypervisors may refuse to disable certain vcpus such as vcpu 0 or
 others.
 
 If *--live* is specified, affect a running domain.
-If *--config* is specified, affect the next startup of a persistent domain.
-If *--current* is specified, affect the current domain state. This is the
-default. Both *--live* and *--config* flags may be given, but *--current* is
-exclusive.
+If *--config* is specified, affect the next startup of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.  This is the
+default. Both *--live* and *--config* flags may be given, but
+*--current* is exclusive.
 
 
 shutdown
@@ -4272,7 +4289,7 @@ via the *--active* flag, rather than relating to the *--current* flag.
 *--maximum* requests information on the maximum cap of vcpus that a
 domain can add via ``setvcpus``, while *--active* shows the current
 usage; these two flags cannot both be specified.  *--config*
-requires a persistent domain and requests information regarding the next
+requires a persistent guest and requests information regarding the next
 time the domain will be booted, *--live* requires a running domain and
 lists current values, and *--current* queries according to the current
 state of the domain (corresponding to *--live* if running, or
@@ -4365,8 +4382,9 @@ separated list and a special markup using '-' and '^' (ex. '0-4', '0-3,^2') can
 also be allowed. The '-' denotes the range and the '^' denotes exclusive.
 For pinning the *vcpu* to all physical cpus specify 'r' as a *cpulist*.
 If *--live* is specified, affect a running guest.
-If *--config* is specified, affect the next boot of a persistent guest.
-If *--current* is specified, affect the current guest state.
+If *--config* is specified, affect the next start of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given if *cpulist* is present,
 but *--current* is exclusive.
 If no flag is specified, behavior is different depending on hypervisor.
@@ -4412,7 +4430,7 @@ file using a device definition element such as <disk> or <interface>
 as the top-level element.  See the documentation at
 `https://libvirt.org/formatdomain.html#elementsDevices <https://libvirt.org/formatdomain.html#elementsDevices>`__ to learn about
 libvirt XML format for a device.  If *--config* is specified the
-command alters the persistent domain configuration with the device
+command alters the persistent guest configuration with the device
 attach taking effect the next time libvirt starts the domain.
 For cdrom and floppy devices, this command only replaces the media
 within an existing device; consider using ``update-device`` for this
@@ -4420,8 +4438,9 @@ usage.  For passthrough host devices, see also ``nodedev-detach``,
 needed if the PCI device does not use managed mode.
 
 If *--live* is specified, affect a running domain.
-If *--config* is specified, affect the next startup of a persistent domain.
-If *--current* is specified, affect the current domain state.
+If *--config* is specified, affect the next startup of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. When no flag is specified legacy API is used whose behavior depends
 on the hypervisor driver.
@@ -4489,8 +4508,9 @@ If *--print-xml* is specified, then the XML of the disk that would be attached
 is printed instead.
 
 If *--live* is specified, affect a running domain.
-If *--config* is specified, affect the next startup of a persistent domain.
-If *--current* is specified, affect the current domain state.
+If *--config* is specified, affect the next startup of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. When no flag is specified legacy API is used whose behavior depends
 on the hypervisor driver.
@@ -4577,8 +4597,9 @@ If ``--print-xml`` is specified, then the XML of the interface that would be
 attached is printed instead.
 
 If ``--live`` is specified, affect a running domain.
-If ``--config`` is specified, affect the next startup of a persistent domain.
-If ``--current`` is specified, affect the current domain state.
+If ``--config`` is specified, affect the next startup of a persistent guest.
+If ``--current`` is specified, affect the current domain state, which
+can either be live or offline.
 Both ``--live`` and ``--config`` flags may be given, but ``--current`` is
 exclusive.  When no flag is specified legacy API is used whose behavior
 depends on the hypervisor driver.
@@ -4624,8 +4645,9 @@ when the device is removed. Note that the event may arrive before the command
 returns.
 
 If *--live* is specified, affect a running domain.
-If *--config* is specified, affect the next startup of a persistent domain.
-If *--current* is specified, affect the current domain state.
+If *--config* is specified, affect the next startup of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. When no flag is specified legacy API is used whose behavior depends
 on the hypervisor driver.
@@ -4652,8 +4674,9 @@ removal of the device is notified asynchronously via libvirt events
 (see virsh event).
 
 If *--live* is specified, affect a running domain.
-If *--config* is specified, affect the next startup of a persistent domain.
-If *--current* is specified, affect the current domain state.
+If *--config* is specified, affect the next startup of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive.
 
@@ -4672,8 +4695,9 @@ Detach a disk device from a domain. The *target* is the device as seen
 from the domain.
 
 If *--live* is specified, affect a running domain.
-If *--config* is specified, affect the next startup of a persistent domain.
-If *--current* is specified, affect the current domain state.
+If *--config* is specified, affect the next startup of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. When no flag is specified legacy API is used whose behavior depends
 on the hypervisor driver.
@@ -4708,8 +4732,9 @@ Detach a network interface from a domain.
 present on the domain.
 
 If *--live* is specified, affect a running domain.
-If *--config* is specified, affect the next startup of a persistent domain.
-If *--current* is specified, affect the current domain state.
+If *--config* is specified, affect the next startup of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. When no flag is specified legacy API is used whose behavior depends
 on the hypervisor driver.
@@ -4741,8 +4766,9 @@ locked/mounted in the domain. See the documentation at
 libvirt XML format for a device.
 
 If *--live* is specified, affect a running domain.
-If *--config* is specified, affect the next startup of a persistent domain.
-If *--current* is specified, affect the current domain state.
+If *--config* is specified, affect the next startup of a persistent guest.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. Not specifying any flag is the same as specifying *--current*.
 
@@ -4786,7 +4812,7 @@ is used by default.
 The *--force* option can be used to force media changing.
 If *--live* is specified, alter live configuration of running guest.
 If *--config* is specified, alter persistent configuration, effect observed
-on next boot.
+on next startup of the guest.
 *--current* can be either or both of *live* and *config*, depends on
 the hypervisor's implementation.
 Both *--live* and *--config* flags may be given, but *--current* is
@@ -5233,7 +5259,8 @@ instance of <ip> will get the modification.
 
 If *--live* is specified, affect a running network.
 If *--config* is specified, affect the next startup of a persistent network.
-If *--current* is specified, affect the current network state.
+If *--current* is specified, it is equivalent to either *--live* or
+*--config*, depending on the current state of the guest.
 Both *--live* and *--config* flags may be given, but *--current* is
 exclusive. Not specifying any flag is the same as specifying *--current*.
 
@@ -6727,7 +6754,7 @@ taken. This increases the size of the memory image of the external
 snapshot. This is currently supported only for full system external snapshots.
 
 Existence of snapshot metadata will prevent attempts to ``undefine``
-a persistent domain.  However, for transient domains, snapshot
+a persistent guest.  However, for transient domains, snapshot
 metadata is silently lost when the domain quits running (whether
 by command such as ``destroy`` or by internal guest action).
 
@@ -6936,7 +6963,7 @@ Filtering options are not compatible with *--tree*.
 
 If *--metadata* is specified, the list will be filtered to just
 snapshots that involve libvirt metadata, and thus would prevent
-``undefine`` of a persistent domain, or be lost on ``destroy`` of
+``undefine`` of a persistent guest, or be lost on ``destroy`` of
 a transient domain.  Likewise, if *--no-metadata* is specified,
 the list will be filtered to just snapshots that exist without
 the need for libvirt metadata.
@@ -7097,7 +7124,7 @@ to freeze and unfreeze domain's mounted file systems. However,
 if domain has no guest agent, checkpoint creation will fail.
 
 Existence of checkpoint metadata will prevent attempts to ``undefine``
-a persistent domain.  However, for transient domains, checkpoint
+a persistent guest.  However, for transient domains, checkpoint
 metadata is silently lost when the domain quits running (whether
 by command such as ``destroy`` or by internal guest action).
 
