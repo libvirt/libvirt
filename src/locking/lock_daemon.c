@@ -59,7 +59,7 @@ VIR_LOG_INIT("locking.lock_daemon");
 #define VIR_LOCK_DAEMON_NUM_LOCKSPACES 3
 
 struct _virLockDaemon {
-    virMutex lock;
+    GMutex lock;
     virNetDaemonPtr dmn;
     virHashTablePtr lockspaces;
     virLockSpacePtr defaultLockspace;
@@ -89,7 +89,7 @@ virLockDaemonFree(virLockDaemonPtr lockd)
     if (!lockd)
         return;
 
-    virMutexDestroy(&lockd->lock);
+    g_mutex_clear(&lockd->lock);
     virObjectUnref(lockd->dmn);
     virHashFree(lockd->lockspaces);
     virLockSpaceFree(lockd->defaultLockspace);
@@ -100,13 +100,13 @@ virLockDaemonFree(virLockDaemonPtr lockd)
 static inline void
 virLockDaemonLock(virLockDaemonPtr lockd)
 {
-    virMutexLock(&lockd->lock);
+    g_mutex_lock(&lockd->lock);
 }
 
 static inline void
 virLockDaemonUnlock(virLockDaemonPtr lockd)
 {
-    virMutexUnlock(&lockd->lock);
+    g_mutex_unlock(&lockd->lock);
 }
 
 static void virLockDaemonLockSpaceDataFree(void *data)
@@ -123,12 +123,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
     if (VIR_ALLOC(lockd) < 0)
         return NULL;
 
-    if (virMutexInit(&lockd->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to initialize mutex"));
-        VIR_FREE(lockd);
-        return NULL;
-    }
+    g_mutex_init(&lockd->lock);
 
     if (!(lockd->dmn = virNetDaemonNew()))
         goto error;
@@ -220,12 +215,7 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
     if (VIR_ALLOC(lockd) < 0)
         return NULL;
 
-    if (virMutexInit(&lockd->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to initialize mutex"));
-        VIR_FREE(lockd);
-        return NULL;
-    }
+    g_mutex_init(&lockd->lock);
 
     if (!(lockd->lockspaces = virHashCreate(VIR_LOCK_DAEMON_NUM_LOCKSPACES,
                                             virLockDaemonLockSpaceDataFree)))
@@ -450,7 +440,7 @@ virLockDaemonClientFree(void *opaque)
         }
     }
 
-    virMutexDestroy(&priv->lock);
+    g_mutex_clear(&priv->lock);
     VIR_FREE(priv->ownerName);
     VIR_FREE(priv);
 }
@@ -469,11 +459,7 @@ virLockDaemonClientNew(virNetServerClientPtr client,
     if (VIR_ALLOC(priv) < 0)
         return NULL;
 
-    if (virMutexInit(&priv->lock) < 0) {
-        VIR_FREE(priv);
-        virReportSystemError(errno, "%s", _("unable to init mutex"));
-        return NULL;
-    }
+    g_mutex_init(&priv->lock);
 
     if (virNetServerClientGetUNIXIdentity(client,
                                           &clientuid,
@@ -508,7 +494,7 @@ virLockDaemonClientNew(virNetServerClientPtr client,
     return priv;
 
  error:
-    virMutexDestroy(&priv->lock);
+    g_mutex_clear(&priv->lock);
     VIR_FREE(priv);
     return NULL;
 }
