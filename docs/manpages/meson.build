@@ -17,7 +17,7 @@ docs_man_files = [
   { 'name': 'virt-xml-validate', 'section': '1', 'install': true },
 
   { 'name': 'libvirtd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
-  { 'name': 'virt-sanlock-cleanup', 'section': '8', 'install': sanlock_dep.found() },
+  { 'name': 'virt-sanlock-cleanup', 'section': '8', 'install': conf.has('WITH_SANLOCK') },
   { 'name': 'virtlockd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
   { 'name': 'virtlogd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
 ]
