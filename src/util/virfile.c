@@ -4522,7 +4522,7 @@ virFileSetCOW(const char *path,
     }
 
     if (buf.f_type != BTRFS_SUPER_MAGIC) {
-        if (state == VIR_TRISTATE_BOOL_ABSENT) {
+        if (state != VIR_TRISTATE_BOOL_ABSENT) {
             virReportSystemError(ENOSYS,
                                  _("unable to control COW flag on '%s', not btrfs"),
                                  path);
