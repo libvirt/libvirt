@@ -1268,17 +1268,19 @@ if not readline_dep.found()
   readline_dep = cc.find_library('readline', required: get_option('readline'))
 
   if readline_dep.found()
-    # This function is present in all reasonable (5.0+) readline versions;
+    # This variable is present in all reasonable (5.0+) readline versions;
     # however, the macOS base system contains a library called libedit which
     # takes over the readline name despite lacking many of its features. We
     # want to make sure we only enable readline support when linking against
     # the actual readline library, and the availability of this specific
-    # functions is as good a witness for that fact as any.
-    correct_rl = cc.has_function('rl_completion_quote_character', prefix: '#include <readline/readline.h>')
-    if not correct_rl and get_option('readline').enabled()
-      error('readline is missing rl_completion_quote_character')
-    else
-      readline_dep = dependency('', required: false)
+    # variable is as good a witness for that fact as any.
+    correct_rl = cc.has_header_symbol('readline/readline.h', 'rl_completion_quote_character', prefix: '#include <stdio.h>')
+    if not correct_rl
+      if get_option('readline').enabled()
+        error('readline is missing rl_completion_quote_character')
+      else
+        readline_dep = dependency('', required: false)
+      endif
     endif
   endif
 endif
