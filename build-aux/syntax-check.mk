@@ -28,7 +28,15 @@ ME := build-aux/syntax-check.mk
 # ignoring the module description.
 AWK ?= awk
 GREP ?= grep
+# FreeBSD (and probably some other OSes too) ships own version of sed(1), not
+# compatible with the GNU sed. GNU sed is available as gsed(1), so use this
+# instead
+UNAME := $(shell uname)
+ifeq ($(UNAME),FreeBSD)
+SED ?= gsed
+else
 SED ?= sed
+endif
 
 # Helper variables.
 _empty =
