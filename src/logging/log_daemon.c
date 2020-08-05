@@ -56,7 +56,7 @@
 VIR_LOG_INIT("logging.log_daemon");
 
 struct _virLogDaemon {
-    virMutex lock;
+    GMutex lock;
     virNetDaemonPtr dmn;
     virLogHandlerPtr handler;
 };
@@ -86,7 +86,7 @@ virLogDaemonFree(virLogDaemonPtr logd)
         return;
 
     virObjectUnref(logd->handler);
-    virMutexDestroy(&logd->lock);
+    g_mutex_clear(&logd->lock);
     virObjectUnref(logd->dmn);
 
     VIR_FREE(logd);
@@ -119,12 +119,7 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
     if (VIR_ALLOC(logd) < 0)
         return NULL;
 
-    if (virMutexInit(&logd->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to initialize mutex"));
-        VIR_FREE(logd);
-        return NULL;
-    }
+    g_mutex_init(&logd->lock);
 
     if (!(logd->dmn = virNetDaemonNew()))
         goto error;
@@ -222,12 +217,7 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
     if (VIR_ALLOC(logd) < 0)
         return NULL;
 
-    if (virMutexInit(&logd->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to initialize mutex"));
-        VIR_FREE(logd);
-        return NULL;
-    }
+    g_mutex_init(&logd->lock);
 
     if (!(child = virJSONValueObjectGet(object, "daemon"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -325,7 +315,7 @@ virLogDaemonClientFree(void *opaque)
               priv,
               (unsigned long long)priv->clientPid);
 
-    virMutexDestroy(&priv->lock);
+    g_mutex_clear(&priv->lock);
     VIR_FREE(priv);
 }
 
@@ -343,11 +333,7 @@ virLogDaemonClientNew(virNetServerClientPtr client,
     if (VIR_ALLOC(priv) < 0)
         return NULL;
 
-    if (virMutexInit(&priv->lock) < 0) {
-        VIR_FREE(priv);
-        virReportSystemError(errno, "%s", _("unable to init mutex"));
-        return NULL;
-    }
+    g_mutex_init(&priv->lock);
 
     if (virNetServerClientGetUNIXIdentity(client,
                                           &clientuid,
