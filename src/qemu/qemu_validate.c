@@ -371,6 +371,18 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
         case VIR_DOMAIN_TIMER_NAME_TSC:
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
         case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+            if (!ARCH_IS_X86(def->os.arch) && timer->present == 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Configuring the '%s' timer is not supported "
+                                 "for virtType=%s arch=%s machine=%s guests"),
+                               virDomainTimerNameTypeToString(timer->name),
+                               virDomainVirtTypeToString(def->virtType),
+                               virArchToString(def->os.arch),
+                               def->os.machine);
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_TIMER_NAME_LAST:
             break;
 
