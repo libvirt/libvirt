@@ -448,7 +448,7 @@ mymain(void)
      * programs will automatically pick it up.
      *
      * To generate the corresponding output files after a new replies
-     * file has been added, run "VIR_TEST_REGENERATE_OUTPUT=1 make check".
+     * file has been added, run "VIR_TEST_REGENERATE_OUTPUT=1 ninja test".
      */
 
     virObjectUnref(cfg);
