@@ -37,6 +37,11 @@ testQEMUSchemaValidateCommand(const char *command,
                               bool allowRemoved,
                               virBufferPtr debug);
 
+int
+testQEMUSchemaEntryMatchTemplate(virJSONValuePtr schemaentry,
+                                 ...);
+
+
 virJSONValuePtr
 testQEMUSchemaGetLatest(const char* arch);
 

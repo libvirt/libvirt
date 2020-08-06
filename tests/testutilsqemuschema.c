@@ -607,6 +607,121 @@ testQEMUSchemaValidateCommand(const char *command,
 }
 
 
+/**
+ * testQEMUSchemaEntryMatchTemplate:
+ *
+ * @schemaentry: a JSON object representing a 'object' node in the QAPI schema
+ * ...: a NULL terminated list of strings representing the template of properties
+ *      which the QMP object needs to have.
+ *
+ *      The strings have following format:
+ *
+ *      "type:name"
+ *      "?type:name"
+ *
+ *      "type" corresponds to the 'type' property of the member to check (str, bool, any ...)
+ *      "name" corresponds to the name of the member to check
+ *
+ *      If the query string starts with an '?' and member 'name' may be missing.
+ *
+ * This function matches that @schemaentry has all expected members and the
+ * members have expected types. @schemaentry also must not have any unknown
+ * members.
+ */
+int
+testQEMUSchemaEntryMatchTemplate(virJSONValuePtr schemaentry,
+                                 ...)
+{
+    g_autoptr(virJSONValue) members = NULL;
+    va_list ap;
+    const char *next;
+    int ret = -1;
+
+    if (STRNEQ_NULLABLE(virJSONValueObjectGetString(schemaentry, "meta-type"), "object")) {
+        VIR_TEST_VERBOSE("schemaentry is not an object");
+        return -1;
+    }
+
+    if (!(members = virJSONValueCopy(virJSONValueObjectGetArray(schemaentry, "members")))) {
+        VIR_TEST_VERBOSE("failed to copy 'members'");
+        return -1;
+    }
+
+    va_start(ap, schemaentry);
+
+    /* pass 1 */
+
+    while ((next = va_arg(ap, const char *))) {
+        char modifier = *next;
+        g_autofree char *type = NULL;
+        char *name;
+        size_t i;
+        bool found = false;
+        bool optional = false;
+
+        if (!g_ascii_isalpha(modifier))
+            next++;
+
+        if (modifier == '?')
+            optional = true;
+
+        type = g_strdup(next);
+
+        if ((name = strchr(type, ':'))) {
+            *(name++) = '\0';
+        } else {
+            VIR_TEST_VERBOSE("malformed template string '%s'", next);
+            goto cleanup;
+        }
+
+        for (i = 0; i < virJSONValueArraySize(members); i++) {
+            virJSONValuePtr member = virJSONValueArrayGet(members, i);
+            const char *membername = virJSONValueObjectGetString(member, "name");
+            const char *membertype = virJSONValueObjectGetString(member, "type");
+
+            if (STRNEQ_NULLABLE(name, membername))
+                continue;
+
+            if (STRNEQ_NULLABLE(membertype, type)) {
+                VIR_TEST_VERBOSE("member '%s' is of unexpected type '%s' (expected '%s')",
+                                 NULLSTR(membername), NULLSTR(membertype), type);
+                goto cleanup;
+            }
+
+            found = true;
+            break;
+        }
+
+        if (found) {
+            virJSONValueFree(virJSONValueArraySteal(members, i));
+        } else {
+            if (!optional) {
+                VIR_TEST_VERBOSE("mandatory member '%s' not found", name);
+                goto cleanup;
+            }
+        }
+    }
+
+    /* pass 2 - check any unexpected members */
+    if (virJSONValueArraySize(members) > 0) {
+        size_t i;
+
+        for (i = 0; i < virJSONValueArraySize(members); i++) {
+            VIR_TEST_VERBOSE("unexpected member '%s'",
+                             NULLSTR(virJSONValueObjectGetString(virJSONValueArrayGet(members, i), "name")));
+        }
+
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    va_end(ap);
+    return ret;
+}
+
+
 static virJSONValuePtr
 testQEMUSchemaLoadReplies(const char *filename)
 {
