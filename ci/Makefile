@@ -85,7 +85,7 @@ endif
 
 # IDs you run as do not need to exist in
 # the container's /etc/passwd & /etc/group files, but
-# if they do not, then libvirt's 'make check' will fail
+# if they do not, then libvirt's 'ninja test' will fail
 # many tests.
 
 # We do not directly mount /etc/{passwd,group} as Docker
@@ -255,8 +255,8 @@ ci-help:
 	@echo
 	@echo "Available targets:"
 	@echo
-	@echo "    ci-build@\$$IMAGE - run a default 'make'"
-	@echo "    ci-check@\$$IMAGE - run a 'make check'"
+	@echo "    ci-build@\$$IMAGE - run a default 'ninja' build"
+	@echo "    ci-check@\$$IMAGE - run a 'ninja test'"
 	@echo "    ci-shell@\$$IMAGE - run an interactive shell"
 	@echo "    ci-list-images  - list available images"
 	@echo "    ci-help         - show this help message"
