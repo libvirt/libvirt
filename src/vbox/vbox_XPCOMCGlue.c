@@ -114,7 +114,7 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
 
     if (hVBoxXPCOMC == NULL) {
         /*
-         * FIXME: Don't warn in this case as it currently breaks make check
+         * FIXME: Don't warn in this case as it currently breaks ninja test
          *        on systems without VirtualBox.
          */
         if (dir != NULL)
