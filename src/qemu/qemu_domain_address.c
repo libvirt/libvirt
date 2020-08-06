@@ -759,6 +759,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_SOUND_MODEL_SB16:
         case VIR_DOMAIN_SOUND_MODEL_PCSPK:
         case VIR_DOMAIN_SOUND_MODEL_USB:
+        case VIR_DOMAIN_SOUND_MODEL_ICH7:
         case VIR_DOMAIN_SOUND_MODEL_LAST:
             return 0;
         }

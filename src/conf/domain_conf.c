@@ -726,6 +726,7 @@ VIR_ENUM_IMPL(virDomainSoundModel,
               "ich6",
               "ich9",
               "usb",
+              "ich7",
 );
 
 VIR_ENUM_IMPL(virDomainKeyWrapCipherName,

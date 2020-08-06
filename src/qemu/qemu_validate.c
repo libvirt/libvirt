@@ -3588,6 +3588,7 @@ qemuValidateDomainDeviceDefSound(virDomainSoundDefPtr sound,
     case VIR_DOMAIN_SOUND_MODEL_SB16:
     case VIR_DOMAIN_SOUND_MODEL_PCSPK:
         break;
+    case VIR_DOMAIN_SOUND_MODEL_ICH7:
     case VIR_DOMAIN_SOUND_MODEL_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("sound card model '%s' is not supported by qemu"),
