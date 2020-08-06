@@ -36,6 +36,9 @@ Knowledge base
       Examination of the security protections used for QEMU and how they need
       configuring to allow use of QEMU passthrough with host files/devices.
 
+   `Systemtap <kbase/systemtap.html>`__
+      Explanation of how to use systemtap for libvirt tracing.
+
    `Virtio-FS <kbase/virtiofs.html>`__
       Share a filesystem between the guest and the host
 
