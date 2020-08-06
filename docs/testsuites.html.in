@@ -10,7 +10,8 @@
           by developers before submitting patches upstream, it is also
           suggested to have it run and pass as part of the packaging
           process for distributions. It is run by launching:
-          <pre>make check</pre>
+          <pre>make check (libvirt 6.6.0 and older)</pre>
+          <pre>ninja test (libvirt 6.7.0 and newer)</pre>
           in a source tree after compilation has finished. It doesn't
           really make functional testing but checks that large portions
           of the code not interacting directly with virtualization

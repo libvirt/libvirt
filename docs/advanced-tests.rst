@@ -90,7 +90,7 @@ location where the file is stored.
   $ VIR_TEST_FILE_ACCESS=1 VIR_TEST_FILE_ACCESS_OUTPUT="/tmp/file_access.txt" ./qemuxml2argvtest
 
 #. The Valgrind test should produce similar output to
-``make check``. If the output has traces within libvirt API's,
+``ninja test``. If the output has traces within libvirt API's,
 then investigation is required in order to determine the cause
 of the issue. Output such as the following indicates some sort
 of leak:
