@@ -2888,6 +2888,55 @@ testQAPISchemaValidate(const void *opaque)
 }
 
 
+/**
+ * testQAPISchemaObjectDeviceAdd:
+ *
+ * Purpose of this test is to add a last-resort notification that 'object-add'
+ * and 'device_add' are not covered by the QMP schema by surprise. Ideally QEMU
+ * developers will notify us before they switch so we have time to adapt our
+ * generators first. This didn't work out when netdev-add was converted.
+ *
+ * We validate that the QMP schema describes only the expected types and nothing
+ * else assuming that no new field will be added until final conversion.
+ */
+static int
+testQAPISchemaObjectDeviceAdd(const void *opaque)
+{
+    virHashTablePtr schema = (virHashTablePtr) opaque;
+    virJSONValuePtr entry;
+
+    if (virQEMUQAPISchemaPathGet("device_add/arg-type", schema, &entry) < 0) {
+        fprintf(stderr, "schema for 'device_add' not found\n");
+        return -1;
+    }
+
+    if (testQEMUSchemaEntryMatchTemplate(entry,
+                                         "str:driver",
+                                         "str:bus",
+                                         "str:id",
+                                         NULL) < 0) {
+        VIR_TEST_VERBOSE("device_add has unexpected members in schema");
+        return -1;
+    }
+
+    if (virQEMUQAPISchemaPathGet("object-add/arg-type", schema, &entry) < 0) {
+        fprintf(stderr, "schema for 'objectadd' not found\n");
+        return -1;
+    }
+
+    if (testQEMUSchemaEntryMatchTemplate(entry,
+                                         "str:qom-type",
+                                         "str:id",
+                                         "any:props",
+                                         NULL) < 0) {
+        VIR_TEST_VERBOSE("object-add has unexpected members in schema");
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static void
 testQueryJobsPrintJob(virBufferPtr buf,
                       qemuMonitorJobInfoPtr job)
@@ -3379,6 +3428,10 @@ mymain(void)
 
 
 #undef DO_TEST_QAPI_VALIDATE
+
+    if (virTestRun("validate that object-add and device_add don't have schema",
+                   testQAPISchemaObjectDeviceAdd, qapiData.schema) < 0)
+        ret = -1;
 
 #define DO_TEST_QUERY_JOBS(name) \
     do { \
