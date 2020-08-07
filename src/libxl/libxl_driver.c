@@ -2547,6 +2547,7 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm = NULL;
     virDomainDefPtr targetDef = NULL;
+    g_autoptr(virBitmap) hostcpus = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -2568,8 +2569,12 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     /* Make sure coverity knows targetDef is valid at this point. */
     sa_assert(targetDef);
 
+    if (!(hostcpus = virBitmapNew(libxl_get_max_cpus(cfg->ctx))))
+        goto cleanup;
+    virBitmapSetAll(hostcpus);
+
     ret = virDomainDefGetVcpuPinInfoHelper(targetDef, maplen, ncpumaps, cpumaps,
-                                           libxl_get_max_cpus(cfg->ctx), NULL);
+                                           hostcpus, NULL);
 
  cleanup:
     virDomainObjEndAPI(&vm);

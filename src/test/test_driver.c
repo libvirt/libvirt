@@ -3072,6 +3072,7 @@ testDomainGetVcpuPinInfo(virDomainPtr dom,
     testDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr privdom;
     virDomainDefPtr def;
+    g_autoptr(virBitmap) hostcpus = NULL;
     int ret = -1;
 
     if (!(privdom = testDomObjFromDomain(dom)))
@@ -3080,9 +3081,12 @@ testDomainGetVcpuPinInfo(virDomainPtr dom,
     if (!(def = virDomainObjGetOneDef(privdom, flags)))
         goto cleanup;
 
+    if (!(hostcpus = virBitmapNew(VIR_NODEINFO_MAXCPUS(driver->nodeInfo))))
+        goto cleanup;
+    virBitmapSetAll(hostcpus);
+
     ret = virDomainDefGetVcpuPinInfoHelper(def, maplen, ncpumaps, cpumaps,
-                                           VIR_NODEINFO_MAXCPUS(driver->nodeInfo),
-                                           NULL);
+                                           hostcpus, NULL);
 
  cleanup:
     virDomainObjEndAPI(&privdom);

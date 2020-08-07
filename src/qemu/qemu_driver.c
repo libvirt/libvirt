@@ -5288,6 +5288,7 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     virDomainDefPtr def;
     bool live;
     int ret = -1;
+    g_autoptr(virBitmap) hostcpus = NULL;
     virBitmapPtr autoCpuset = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -5302,11 +5303,14 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if (!(def = virDomainObjGetOneDefState(vm, flags, &live)))
         goto cleanup;
 
+    if (!(hostcpus = virHostCPUGetAvailableCPUsBitmap()))
+        goto cleanup;
+
     if (live)
         autoCpuset = QEMU_DOMAIN_PRIVATE(vm)->autoCpuset;
 
     ret = virDomainDefGetVcpuPinInfoHelper(def, maplen, ncpumaps, cpumaps,
-                                           virHostCPUGetCount(), autoCpuset);
+                                           hostcpus, autoCpuset);
  cleanup:
     virDomainObjEndAPI(&vm);
     return ret;

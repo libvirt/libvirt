@@ -2090,33 +2090,25 @@ virDomainDefHasVcpuPin(const virDomainDef *def)
  * @maplen: length of one cpumap passed from caller (@cpumaps)
  * @ncpumaps: count of cpumaps of @maplen length in @cpumaps
  * @cpumaps: array of pinning information bitmaps to be filled
- * @hostcpus: number of cpus in the host
+ * @hostcpus: default CPU pinning bitmap based on host CPUs
  * @autoCpuset: Cpu pinning bitmap used in case of automatic cpu pinning
  *
  * Fills the @cpumaps array as documented by the virDomainGetVcpuPinInfo API.
  * In case when automatic cpu pinning is supported, the bitmap should be passed
- * as @autoCpuset. If @hostcpus is < 0 no error is reported (to pass through
- * error message).
+ * as @autoCpuset.
  *
- * Returns number of filled entries or -1 on error.
+ * Returns number of filled entries.
  */
 int
 virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
                                  int maplen,
                                  int ncpumaps,
                                  unsigned char *cpumaps,
-                                 int hostcpus,
+                                 virBitmapPtr hostcpus,
                                  virBitmapPtr autoCpuset)
 {
     int maxvcpus = virDomainDefGetVcpusMax(def);
     size_t i;
-    g_autoptr(virBitmap) allcpumap = NULL;
-
-    if (hostcpus < 0)
-        return -1;
-
-    if (!(allcpumap = virHostCPUGetAvailableCPUsBitmap()))
-        return -1;
 
     for (i = 0; i < maxvcpus && i < ncpumaps; i++) {
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(def, i);
@@ -2130,7 +2122,7 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
         else if (def->cpumask)
             bitmap = def->cpumask;
         else
-            bitmap = allcpumap;
+            bitmap = hostcpus;
 
         virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, i), maplen);
     }
