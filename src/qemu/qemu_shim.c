@@ -176,8 +176,8 @@ int main(int argc, char **argv)
     }
 
     if (verbose)
-        g_printerr("%s: %lld: initializing libvirt %d\n",
-                   argv[0], deltams(), gettid());
+        g_printerr("%s: %lld: initializing libvirt %llu\n",
+                   argv[0], deltams(), virThreadSelfID());
 
     if (virInitialize() < 0) {
         g_printerr("%s: cannot initialize libvirt\n", argv[0]);
