@@ -5693,15 +5693,11 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
     virDomainIOThreadInfoPtr *info_ret = NULL;
     virBitmapPtr bitmap = NULL;
     virBitmapPtr cpumask = NULL;
-    int hostcpus;
     size_t i;
     int ret = -1;
 
     if (targetDef->niothreadids == 0)
         return 0;
-
-    if ((hostcpus = virHostCPUGetCount()) < 0)
-        goto cleanup;
 
     if (VIR_ALLOC_N(info_ret, targetDef->niothreadids) < 0)
         goto cleanup;
@@ -5718,9 +5714,8 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
             if (targetDef->cpumask) {
                 cpumask = targetDef->cpumask;
             } else {
-                if (!(bitmap = virBitmapNew(hostcpus)))
+                if (!(bitmap = virHostCPUGetAvailableCPUsBitmap()))
                     goto cleanup;
-                virBitmapSetAll(bitmap);
                 cpumask = bitmap;
             }
         }
