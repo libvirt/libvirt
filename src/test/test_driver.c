@@ -2764,6 +2764,7 @@ testDomainGetEmulatorPinInfo(virDomainPtr dom,
                              int maplen,
                              unsigned int flags)
 {
+    testDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def = NULL;
     virBitmapPtr cpumask = NULL;
@@ -2780,8 +2781,7 @@ testDomainGetEmulatorPinInfo(virDomainPtr dom,
     if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
-    if ((hostcpus = virHostCPUGetCount()) < 0)
-        goto cleanup;
+    hostcpus = VIR_NODEINFO_MAXCPUS(driver->nodeInfo);
 
     if (def->cputune.emulatorpin) {
         cpumask = def->cputune.emulatorpin;
