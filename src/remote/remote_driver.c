@@ -872,8 +872,11 @@ doRemoteOpen(virConnectPtr conn,
         goto failed;
 
     if (mode_str &&
-        (mode = remoteDriverModeTypeFromString(mode_str)) < 0)
+        (mode = remoteDriverModeTypeFromString(mode_str)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Unknown remote mode '%s'"), mode_str);
         goto failed;
+    }
 
     if (conf && !proxy_str &&
         virConfGetValueString(conf, "remote_proxy", &proxy_str) < 0)
