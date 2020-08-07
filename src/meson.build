@@ -713,6 +713,12 @@ foreach data : virt_daemon_confs
   daemon_conf.set('DAEMON_NAME_UC', name_uc)
   # to silence meson warning about missing 'CONFIG' in the configuration_data
   daemon_conf.set('CONFIG', '@CONFIG@')
+  if conf.has('WITH_POLKIT')
+    daemon_conf.set('default_auth', 'polkit')
+  else
+    daemon_conf.set('default_auth', 'none')
+  endif
+
 
   if data.get('with_ip', false)
     conf_in = libvirtd_conf_tmp
@@ -792,6 +798,11 @@ if conf.has('WITH_LIBVIRTD')
       unit_conf.set('service', unit['service'])
       unit_conf.set('sockprefix', unit['sockprefix'])
       unit_conf.set('deps', unit.get('deps', ''))
+      if conf.has('WITH_POLKIT')
+        unit_conf.set('mode', '0666')
+      else
+        unit_conf.set('mode', '0600')
+      endif
 
       configure_file(
         input: unit['service_in'],

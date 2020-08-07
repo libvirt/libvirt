@@ -127,6 +127,8 @@
 #
 # Authentication.
 #
+# There are the following choices available:
+#
 #  - none: do not perform auth checks. If you can connect to the
 #          socket you are allowed. This is suitable if there are
 #          restrictions on connecting to the socket (eg, UNIX
@@ -144,21 +146,39 @@
 #            full read/write access (aka sudo like), while anyone
 #            is allowed read/only access.
 #
+
 # Set an authentication scheme for UNIX read-only sockets
+#
 # By default socket permissions allow anyone to connect
 #
-# To restrict monitoring of domains you may wish to enable
-# an authentication mechanism here
-#auth_unix_ro = "none"
-
-# Set an authentication scheme for UNIX read-write sockets
-# By default socket permissions only allow root. If PolicyKit
-# support was compiled into libvirt, the default will be to
-# use 'polkit' auth.
+# If libvirt was compiled without support for 'polkit', then
+# no access control checks are done, but libvirt still only
+# allows execution of APIs which don't change state.
 #
-# If the unix_sock_rw_perms are changed you may wish to enable
-# an authentication mechanism here
-#auth_unix_rw = "none"
+# If libvirt was compiled with support for 'polkit', then
+# the libvirt socket will perform a check with polkit after
+# connections. The default policy still allows any local
+# user access.
+#
+# To restrict monitoring of domains you may wish to either
+# enable 'sasl' here, or change the polkit policy definition.
+#auth_unix_ro = "@default_auth@"
+
+# Set an authentication scheme for UNIX read-write sockets.
+#
+# If libvirt was compiled without support for 'polkit', then
+# the systemd .socket files will use SocketMode=0600 by default
+# thus only allowing root user to connect, and 'auth_unix_rw'
+# will default to 'none'.
+#
+# If libvirt was compiled with support for 'polkit', then
+# the systemd .socket files will use SocketMode=0666 which
+# allows any user to connect and 'auth_iunix_rw' will default
+# to 'polkit'. If you disable use of 'polkit' here, then it
+# is essential to change the systemd SocketMode parameter
+# back to 0600, to avoid an insecure configuration.
+#
+#auth_unix_rw = "@default_auth@"
 @CUT_ENABLE_IP@
 
 # Change the authentication scheme for TCP sockets.
