@@ -6572,6 +6572,55 @@ Valid values are:
 Each ``sound`` element has an optional sub-element ``<address>`` which can tie
 the device to a particular PCI slot, `documented above <#elementsAddress>`__.
 
+:since:`Since 6.7.0`, a sound device could be optionally mapped to the specific
+host audio backend using the ``<audio>`` sub-element:
+
+::
+
+   ...
+   <devices>
+     <sound model='ich7'>
+        <audio id='1'>
+     </sound>
+   </devices>
+   ...
+
+Where ``1`` is an id of the `audio device <#elementsAudio>`__.
+This is supported for bhyve only.
+
+:anchor:`<a id="elementsAudio"/>`
+
+Audio devices
+~~~~~~~~~~~~~
+
+A virtual audio device corresponds to a host audio backend that is mapped
+to the guest sound device. :since:`Since 6.7.0, bhyve only`
+
+``type``
+   The required ``type`` attribute specifies audio backend type.
+   Currently, the only supported value is 'oss'.
+
+``id``
+   Integer id of the audio device. Must be greater than 0.
+
+The 'oss' audio type supports additional configuration:
+
+::
+
+   ...
+   <devices>
+     <audio type='oss' id='1'>
+       <input dev='/dev/dsp0'/>
+       <output dev='/dev/dsp0'/>
+     </audio>
+   </devices>
+
+``input``
+   Input device. The required ``dev`` attribute specifies device path.
+
+``output``
+   Output device. The required ``dev`` attribute specifies device path.
+
 :anchor:`<a id="elementsWatchdog"/>`
 
 Watchdog device
