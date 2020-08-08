@@ -797,9 +797,12 @@ foreach symbol : symbols
 endforeach
 
 # Check for BSD approach for bridge management
-if (cc.has_header_symbol('net/if_bridgevar.h', 'BRDGSFD') and
-    cc.has_header_symbol('net/if_bridgevar.h', 'BRDGADD') and
-    cc.has_header_symbol('net/if_bridgevar.h', 'BRDGDEL'))
+brd_required_headers = '''#include <stdint.h>
+#include <net/if.h>
+#include <net/ethernet.h>'''
+if (cc.has_header_symbol('net/if_bridgevar.h', 'BRDGSFD', prefix: brd_required_headers) and
+    cc.has_header_symbol('net/if_bridgevar.h', 'BRDGADD', prefix: brd_required_headers) and
+    cc.has_header_symbol('net/if_bridgevar.h', 'BRDGDEL', prefix: brd_required_headers))
   conf.set('HAVE_BSD_BRIDGE_MGMT', 1)
 endif
 
