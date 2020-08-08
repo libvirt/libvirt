@@ -3796,6 +3796,7 @@ doCoreDump(virQEMUDriverPtr driver,
 {
     int fd = -1;
     int ret = -1;
+    int rc = -1;
     virFileWrapperFdPtr wrapperFd = NULL;
     int directFlag = 0;
     unsigned int flags = VIR_FILE_WRAPPER_NON_BLOCKING;
@@ -3843,8 +3844,8 @@ doCoreDump(virQEMUDriverPtr driver,
         if (STREQ(memory_dump_format, "elf"))
             memory_dump_format = NULL;
 
-        ret = qemuDumpToFd(driver, vm, fd, QEMU_ASYNC_JOB_DUMP,
-                           memory_dump_format);
+        rc = qemuDumpToFd(driver, vm, fd, QEMU_ASYNC_JOB_DUMP,
+                          memory_dump_format);
     } else {
         if (dumpformat != VIR_DOMAIN_CORE_DUMP_FORMAT_RAW) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -3856,11 +3857,11 @@ doCoreDump(virQEMUDriverPtr driver,
         if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
             goto cleanup;
 
-        ret = qemuMigrationSrcToFile(driver, vm, fd, compressor,
-                                     QEMU_ASYNC_JOB_DUMP);
+        rc = qemuMigrationSrcToFile(driver, vm, fd, compressor,
+                                    QEMU_ASYNC_JOB_DUMP);
     }
 
-    if (ret < 0)
+    if (rc < 0)
         goto cleanup;
 
     if (VIR_CLOSE(fd) < 0) {
