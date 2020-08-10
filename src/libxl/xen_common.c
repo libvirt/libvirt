@@ -372,63 +372,44 @@ static virDomainHostdevDefPtr
 xenParsePCI(char *entry)
 {
     virDomainHostdevDefPtr hostdev = NULL;
-    char domain[5];
-    char bus[3];
-    char slot[3];
-    char func[2];
-    char *key, *nextkey;
-    int domainID;
-    int busID;
-    int slotID;
-    int funcID;
+    VIR_AUTOSTRINGLIST tokens = NULL;
+    size_t ntokens = 0;
+    size_t nexttoken = 0;
+    char *slotstr;
+    char *funcstr;
+    int domain = 0x0;
+    int bus;
+    int slot;
+    int func;
 
-    domain[0] = bus[0] = slot[0] = func[0] = '\0';
+    /* pci=['00:1b.0','0000:00:13.0'] */
+    if (!(tokens = virStringSplitCount(entry, ":", 3, &ntokens)))
+        return NULL;
 
-    /* pci=['0000:00:1b.0','0000:00:13.0'] */
-    if (!(key = entry))
-        return NULL;
-    if (!(nextkey = strchr(key, ':')))
-        return NULL;
-    if (virStrncpy(domain, key, (nextkey - key), sizeof(domain)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Domain %s too big for destination"), key);
-        return NULL;
+    /* domain */
+    if (ntokens == 3) {
+        if (virStrToLong_i(tokens[nexttoken], NULL, 16, &domain) < 0)
+            return NULL;
+        nexttoken++;
     }
 
-    key = nextkey + 1;
-    if (!(nextkey = strchr(key, ':')))
+    /* bus */
+    if (virStrToLong_i(tokens[nexttoken], NULL, 16, &bus) < 0)
         return NULL;
-    if (virStrncpy(bus, key, (nextkey - key), sizeof(bus)) < 0) {
+    nexttoken++;
+
+    /* slot and function */
+    slotstr = tokens[nexttoken];
+    if (!(funcstr = strchr(slotstr, '.'))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Bus %s too big for destination"), key);
+                       _("Malformed PCI address %s"), slotstr);
         return NULL;
     }
-
-    key = nextkey + 1;
-    if (!(nextkey = strchr(key, '.')))
+    *funcstr = '\0';
+    funcstr++;
+    if (virStrToLong_i(slotstr, NULL, 16, &slot) < 0)
         return NULL;
-    if (virStrncpy(slot, key, (nextkey - key), sizeof(slot)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Slot %s too big for destination"), key);
-        return NULL;
-    }
-
-    key = nextkey + 1;
-    if (strlen(key) != 1)
-        return NULL;
-    if (virStrncpy(func, key, 1, sizeof(func)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Function %s too big for destination"), key);
-        return NULL;
-    }
-
-    if (virStrToLong_i(domain, NULL, 16, &domainID) < 0)
-        return NULL;
-    if (virStrToLong_i(bus, NULL, 16, &busID) < 0)
-        return NULL;
-    if (virStrToLong_i(slot, NULL, 16, &slotID) < 0)
-        return NULL;
-    if (virStrToLong_i(func, NULL, 16, &funcID) < 0)
+    if (virStrToLong_i(funcstr, NULL, 16, &func) < 0)
         return NULL;
 
     if (!(hostdev = virDomainHostdevDefNew()))
@@ -436,10 +417,10 @@ xenParsePCI(char *entry)
 
     hostdev->managed = false;
     hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
-    hostdev->source.subsys.u.pci.addr.domain = domainID;
-    hostdev->source.subsys.u.pci.addr.bus = busID;
-    hostdev->source.subsys.u.pci.addr.slot = slotID;
-    hostdev->source.subsys.u.pci.addr.function = funcID;
+    hostdev->source.subsys.u.pci.addr.domain = domain;
+    hostdev->source.subsys.u.pci.addr.bus = bus;
+    hostdev->source.subsys.u.pci.addr.slot = slot;
+    hostdev->source.subsys.u.pci.addr.function = func;
 
     return hostdev;
 }

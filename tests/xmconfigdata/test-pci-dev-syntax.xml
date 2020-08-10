@@ -1,0 +1,71 @@
+<domain type='xen'>
+  <name>test</name>
+  <uuid>cc2315e7-d26a-307a-438c-6d188ec4c09c</uuid>
+  <memory unit='KiB'>391168</memory>
+  <currentMemory unit='KiB'>358400</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='xenfv'>hvm</type>
+    <loader type='rom'>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <clock offset='variable' adjustment='0' basis='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/lib/xen/bin/qemu-system-i386</emulator>
+    <disk type='block' device='disk'>
+      <driver name='phy' type='raw'/>
+      <source dev='/dev/sda8'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='block' device='cdrom'>
+      <driver name='phy' type='raw'/>
+      <target dev='hdc' bus='ide'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
+    </disk>
+    <controller type='xenbus' index='0'/>
+    <controller type='ide' index='0'/>
+    <interface type='bridge'>
+      <mac address='00:16:3e:0a:7b:39'/>
+      <source bridge='xenbr0'/>
+      <script path='vif-bridge'/>
+      <model type='e1000'/>
+    </interface>
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes'>
+      <listen type='address'/>
+    </graphics>
+    <video>
+      <model type='cirrus' vram='8192' heads='1' primary='yes'/>
+    </video>
+    <hostdev mode='subsystem' type='pci' managed='no'>
+      <driver name='xen'/>
+      <source>
+        <address domain='0x0001' bus='0x0c' slot='0x1b' function='0x2'/>
+      </source>
+    </hostdev>
+    <hostdev mode='subsystem' type='pci' managed='no'>
+      <driver name='xen'/>
+      <source>
+        <address domain='0x0000' bus='0x01' slot='0x13' function='0x0'/>
+      </source>
+    </hostdev>
+    <memballoon model='xen'/>
+  </devices>
+</domain>
