@@ -2771,7 +2771,7 @@ paravirtualized driver is specified via the ``disk`` element.
    disks, and its value can be either "on" or "off", defaulting to "off".
    :since:`Since 0.0.3`; ``bus`` attribute :since:`since 0.4.3`; ``tray``
    attribute :since:`since 0.9.11`; "usb" attribute value
-   :since:`since after 0.4.4`; "sata" attribute value :since: `since 0.9.7`;
+   :since:`since after 0.4.4`; "sata" attribute value :since:`since 0.9.7`;
    "removable" attribute value :since:`since 1.1.3`
 ``iotune``
    The optional ``iotune`` element provides the ability to provide additional
