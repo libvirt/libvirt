@@ -342,7 +342,7 @@ virCgroupV2DevicesCountMapEntries(int mapfd)
         prevKey = key;
     }
 
-    if (rc < 0)
+    if (rc < 0 && errno != ENOENT)
         return -1;
 
     return ret;
