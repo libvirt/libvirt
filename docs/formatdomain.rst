@@ -896,12 +896,12 @@ Memory Allocation
    hotplugged later. The units for this value are determined by the optional
    attribute ``unit``, which defaults to "KiB" (kibibytes, 2\ :sup:`10` or
    blocks of 1024 bytes). Valid units are "b" or "bytes" for bytes, "KB" for
-   kilobytes (10:sup:`3` or 1,000 bytes), "k" or "KiB" for kibibytes (1024
-   bytes), "MB" for megabytes (10:sup:`6` or 1,000,000 bytes), "M" or "MiB" for
-   mebibytes (2:sup:`20` or 1,048,576 bytes), "GB" for gigabytes (10:sup:`9` or
-   1,000,000,000 bytes), "G" or "GiB" for gibibytes (2:sup:`30` or 1,073,741,824
-   bytes), "TB" for terabytes (10:sup:`12` or 1,000,000,000,000 bytes), or "T"
-   or "TiB" for tebibytes (2:sup:`40` or 1,099,511,627,776 bytes). However, the
+   kilobytes (10\ :sup:`3` or 1,000 bytes), "k" or "KiB" for kibibytes (1024
+   bytes), "MB" for megabytes (10\ :sup:`6` or 1,000,000 bytes), "M" or "MiB" for
+   mebibytes (2\ :sup:`20` or 1,048,576 bytes), "GB" for gigabytes (10\ :sup:`9` or
+   1,000,000,000 bytes), "G" or "GiB" for gibibytes (2\ :sup:`30` or 1,073,741,824
+   bytes), "TB" for terabytes (10\ :sup:`12` or 1,000,000,000,000 bytes), or "T"
+   or "TiB" for tebibytes (2\ :sup:`40` or 1,099,511,627,776 bytes). However, the
    value will be rounded up to the nearest kibibyte by libvirt, and may be
    further rounded to the granularity supported by the hypervisor. Some
    hypervisors also enforce a minimum, such as 4000KiB. In case
