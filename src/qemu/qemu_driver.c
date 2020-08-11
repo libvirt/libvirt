@@ -9356,7 +9356,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (def) {
         if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_BLKIO)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("blkio cgroup isn't mounted"));
