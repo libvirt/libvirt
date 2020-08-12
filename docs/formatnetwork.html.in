@@ -1209,6 +1209,53 @@
   &lt;/ip&gt;
 &lt;/network&gt;</pre>
 
+    <h3><a id="examplesNATv6">IPv6 NAT based network</a></h3>
+
+    <p>
+      Below is a variation for also providing IPv6 NAT.  This can be
+      especially useful when using multiple interfaces where some,
+      such as WiFi cards, can not be bridged (usually on a laptop),
+      making it difficult to provide end-to-end IPv6 routing.
+    </p>
+
+    <pre>
+&lt;network&gt;
+  &lt;name&gt;default6&lt;/name&gt;
+  &lt;bridge name="virbr0"/&gt;
+  &lt;forward mode="nat"&gt;
+    &lt;nat ipv6='yes'&gt;
+      &lt;port start='1024' end='65535'/&gt;
+    &lt;/nat&gt;
+
+  &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+    &lt;dhcp&gt;
+      &lt;range start="192.168.122.2" end="192.168.122.254"/&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+  &lt;ip family="ipv6" address="fdXX:XXXX:XXXX:NNNN:: prefix="64"/&gt;
+  &lt;/ip&gt;
+&lt;/network&gt;</pre>
+
+    <p>IPv6 NAT addressing has some caveats over the more straight
+    forward IPv4 case.
+    <a href="https://tools.ietf.org/html/rfc4193">RFC 4193</a>
+    defines the address range <tt>fd00::/8</tt> for <tt>/48</tt> IPv6
+    private networks.  It should be concatenated with a random 40-bit
+    string (i.e. 10 random hexadecimal digits replacing the <tt>X</tt>
+    values above, RFC 4193 provides
+    an <a href="https://tools.ietf.org/html/rfc4193#section-3.2.2">algorithm</a>
+    if you do not have a source of sufficient randomness).  This
+    leaves <tt>0</tt> through <tt>ffff</tt> for subnets (<tt>N</tt>
+    above) which you can use at will.</p>
+
+    <p>Many operating systems will not consider these addresses as
+    preferential to IPv4, due to some practial history of these
+    addresses being present but unroutable and causing networking
+    issues.  On many Linux distributions, you may need to
+    override <tt>/etc/gai.conf</tt> with values
+    from <a href="https://www.ietf.org/rfc/rfc3484.txt">RFC 3484</a>
+    to have your IPv6 NAT network correctly preferenced over IPv4.</p>
+
     <h3><a id="examplesRoute">Routed network config</a></h3>
 
     <p>
