@@ -921,10 +921,10 @@ int virNetTLSContextReloadForServer(virNetTLSContextPtr ctxt,
 {
     gnutls_certificate_credentials_t x509credBak;
     int err;
-    char *cacert = NULL;
-    char *cacrl = NULL;
-    char *cert = NULL;
-    char *key = NULL;
+    g_autofree char *cacert = NULL;
+    g_autofree char *cacrl = NULL;
+    g_autofree char *cert = NULL;
+    g_autofree char *key = NULL;
 
     x509credBak = ctxt->x509cred;
     ctxt->x509cred = NULL;
