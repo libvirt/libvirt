@@ -2886,7 +2886,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
 
         *uri_out = g_strdup_printf(incFormat, "tcp", hostname, port);
     } else {
-        bool well_formed_uri;
+        bool well_formed_uri = false;
 
         if (!(uri = qemuMigrationAnyParseURI(uri_in, &well_formed_uri)))
             goto cleanup;
