@@ -302,8 +302,8 @@ virISCSIDirectRefreshVol(virStoragePoolObjPtr pool,
                          char *portal)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    uint32_t block_size;
-    uint64_t nb_block;
+    uint32_t block_size = 0;
+    uint64_t nb_block = 0;
     g_autoptr(virStorageVolDef) vol = NULL;
 
     if (virISCSIDirectTestUnitReady(iscsi, lun) < 0)
@@ -615,8 +615,8 @@ virStorageBackendISCSIDirectVolWipeZero(virStorageVolDefPtr vol,
                                         struct iscsi_context *iscsi)
 {
     uint64_t lba = 0;
-    uint32_t block_size;
-    uint64_t nb_block;
+    uint32_t block_size = 0;
+    uint64_t nb_block = 0;
     struct scsi_task *task = NULL;
     int lun = 0;
     int ret = -1;
