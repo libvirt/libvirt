@@ -1489,9 +1489,8 @@ main(int argc, char **argv)
         rc = parserLoad(ctl->uuid);
     } else if (ctl->cmd == 'R' || ctl->cmd == 'D') {
         rc = parserRemove(ctl->uuid);
-        if (ctl->cmd == 'D') {
+        if (ctl->cmd == 'D')
             unlink(include_file);
-        }
     } else if (ctl->cmd == 'c' || ctl->cmd == 'r') {
         char *included_files = NULL;
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
