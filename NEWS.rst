@@ -13,6 +13,13 @@ v6.8.0 (unreleased)
 
 * **New features**
 
+  * xen: Add ``writeFiltering`` attribute for PCI devices
+
+    By default Xen filters guest writes to the PCI configuration space of a
+    PCI hostdev, which may cause problems for some devices. The ``writeFiltering``
+    attribute of the device's ``<source>`` element can be used to disable the
+    filtering and allow all guest writes to the configuration space.
+
 * **Improvements**
 
 * **Bug fixes**
