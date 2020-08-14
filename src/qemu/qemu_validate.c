@@ -1836,6 +1836,13 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                     return -1;
                 }
             }
+
+            if (hostdev->writeFiltering != VIR_TRISTATE_BOOL_ABSENT) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Write filtering of PCI device configuration "
+                                 "space is not supported by qemu"));
+                return -1;
+            }
             break;
 
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:

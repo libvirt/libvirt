@@ -5021,6 +5021,11 @@
         <optional>
           <ref name="startupPolicy"/>
         </optional>
+        <optional>
+          <attribute name="writeFiltering">
+            <ref name="virYesNo"/>
+          </attribute>
+        </optional>
         <element name="address">
           <ref name="pciaddress"/>
         </element>

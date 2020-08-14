@@ -8137,7 +8137,17 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
                                      virDomainHostdevDefPtr def,
                                      unsigned int flags)
 {
+    g_autofree char *filtering = NULL;
     xmlNodePtr cur;
+
+    if ((filtering = virXMLPropString(node, "writeFiltering"))) {
+        if ((def->writeFiltering = virTristateBoolTypeFromString(filtering)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown pci writeFiltering setting '%s'"),
+                           filtering);
+            return -1;
+        }
+    }
 
     cur = node->children;
     while (cur != NULL) {
@@ -26246,6 +26256,10 @@ virDomainHostdevDefFormatSubsysPCI(virBufferPtr buf,
     g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) origstatesChildBuf = VIR_BUFFER_INIT_CHILD(&sourceChildBuf);
     virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
+
+    if (def->writeFiltering != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&sourceAttrBuf, " writeFiltering='%s'",
+                              virTristateBoolTypeToString(def->writeFiltering));
 
     if (pcisrc->backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
         const char *backend = virDomainHostdevSubsysPCIBackendTypeToString(pcisrc->backend);

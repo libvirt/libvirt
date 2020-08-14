@@ -3733,7 +3733,7 @@ or:
    ...
    <devices>
      <hostdev mode='subsystem' type='pci' managed='yes'>
-       <source>
+       <source writeFiltering='no'>
          <address domain='0x0000' bus='0x06' slot='0x02' function='0x0'/>
        </source>
        <boot order='1'/>
@@ -3899,6 +3899,11 @@ or:
 
    ``pci``
       PCI devices can only be described by their ``address``.
+      :since:`Since 6.8.0 (Xen only)` , the ``source`` element of a PCI device
+      may contain the ``writeFiltering`` attribute to control write access to
+      the PCI configuration space. By default Xen only allows writes of known
+      safe values to the configuration space. Setting ``writeFiltering='no'``
+      will allow all writes to the device's PCI configuration space.
    ``scsi``
       SCSI devices are described by both the ``adapter`` and ``address``
       elements. The ``address`` element includes a ``bus`` attribute (a 2-digit

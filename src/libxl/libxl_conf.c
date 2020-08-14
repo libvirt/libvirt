@@ -2286,6 +2286,7 @@ libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev)
     pcidev->bus = pcisrc->addr.bus;
     pcidev->dev = pcisrc->addr.slot;
     pcidev->func = pcisrc->addr.function;
+    pcidev->permissive = hostdev->writeFiltering == VIR_TRISTATE_BOOL_NO;
 
     return 0;
 }

@@ -88,6 +88,12 @@
             "dev": 16,
             "bus": 10,
 	    "rdm_policy": "invalid"
+        },
+        {
+            "dev": 8,
+            "bus": 10,
+            "permissive": true,
+	    "rdm_policy": "invalid"
         }
     ],
     "vfbs": [

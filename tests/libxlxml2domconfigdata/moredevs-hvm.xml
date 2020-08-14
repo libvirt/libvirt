@@ -48,6 +48,11 @@
         <address type='pci' domain='0x0000' bus='0x0a' slot='0x10' function='0x0'/>
       </source>
     </interface>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source writeFiltering='no'>
+        <address domain='0x0000' bus='0x0a' slot='0x08' function='0x0'/>
+      </source>
+    </hostdev>
     <graphics type='vnc'/>
     <video>
       <model type='cirrus' vram='8192' heads='1' primary='yes'/>
