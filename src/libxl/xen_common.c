@@ -373,16 +373,18 @@ xenParsePCI(char *entry)
 {
     virDomainHostdevDefPtr hostdev = NULL;
     VIR_AUTOSTRINGLIST tokens = NULL;
+    VIR_AUTOSTRINGLIST options = NULL;
     size_t ntokens = 0;
     size_t nexttoken = 0;
-    char *slotstr;
-    char *funcstr;
+    char *str;
+    char *nextstr;
     int domain = 0x0;
     int bus;
     int slot;
     int func;
+    virTristateBool filtered = VIR_TRISTATE_BOOL_ABSENT;
 
-    /* pci=['00:1b.0','0000:00:13.0'] */
+    /* pci=['00:1b.0','0000:00:13.0,permissive=1'] */
     if (!(tokens = virStringSplitCount(entry, ":", 3, &ntokens)))
         return NULL;
 
@@ -398,24 +400,57 @@ xenParsePCI(char *entry)
         return NULL;
     nexttoken++;
 
-    /* slot and function */
-    slotstr = tokens[nexttoken];
-    if (!(funcstr = strchr(slotstr, '.'))) {
+    /* slot, function, and options */
+    str = tokens[nexttoken];
+    if (!(nextstr = strchr(str, '.'))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Malformed PCI address %s"), slotstr);
+                       _("Malformed PCI address %s"), str);
         return NULL;
     }
-    *funcstr = '\0';
-    funcstr++;
-    if (virStrToLong_i(slotstr, NULL, 16, &slot) < 0)
+    *nextstr = '\0';
+    nextstr++;
+    if (virStrToLong_i(str, NULL, 16, &slot) < 0)
         return NULL;
-    if (virStrToLong_i(funcstr, NULL, 16, &func) < 0)
+    str = nextstr++;
+
+    nextstr = strchr(str, ',');
+    if (nextstr) {
+        *nextstr = '\0';
+        nextstr++;
+    }
+    if (virStrToLong_i(str, NULL, 16, &func) < 0)
         return NULL;
+
+    str = nextstr;
+    if (str && (options = virStringSplit(str, ",", 0))) {
+        size_t i;
+
+        for (i = 0; options[i] != NULL; i++) {
+            char *val;
+
+            if (!(val = strchr(options[i], '='))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Malformed PCI options %s"), str);
+                return NULL;
+            }
+            *val = '\0';
+            val++;
+            if (STREQ(options[i], "permissive")) {
+                int intval;
+
+                /* xl.cfg(5) specifies false as 0 and true as any other numeric value */
+                if (virStrToLong_i(val, NULL, 10, &intval) < 0)
+                    return NULL;
+                filtered = intval ? VIR_TRISTATE_BOOL_NO : VIR_TRISTATE_BOOL_YES;
+            }
+        }
+    }
 
     if (!(hostdev = virDomainHostdevDefNew()))
        return NULL;
 
     hostdev->managed = false;
+    hostdev->writeFiltering = filtered;
     hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
     hostdev->source.subsys.u.pci.addr.domain = domain;
     hostdev->source.subsys.u.pci.addr.bus = bus;
@@ -1830,12 +1865,28 @@ xenFormatPCI(virConfPtr conf, virDomainDefPtr def)
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
             virConfValuePtr val, tmp;
             char *buf;
+            const char *permissive_str = NULL;
 
-            buf = g_strdup_printf("%04x:%02x:%02x.%x",
+            switch (def->hostdevs[i]->writeFiltering) {
+                case VIR_TRISTATE_BOOL_YES:
+                    permissive_str = ",permissive=0";
+                    break;
+                case VIR_TRISTATE_BOOL_NO:
+                    permissive_str = ",permissive=1";
+                    break;
+                case VIR_TRISTATE_BOOL_ABSENT:
+                case VIR_TRISTATE_BOOL_LAST:
+                    permissive_str = "";
+                    break;
+            }
+
+            buf = g_strdup_printf("%04x:%02x:%02x.%x%s",
                                   def->hostdevs[i]->source.subsys.u.pci.addr.domain,
                                   def->hostdevs[i]->source.subsys.u.pci.addr.bus,
                                   def->hostdevs[i]->source.subsys.u.pci.addr.slot,
-                                  def->hostdevs[i]->source.subsys.u.pci.addr.function);
+                                  def->hostdevs[i]->source.subsys.u.pci.addr.function,
+                                  permissive_str);
+
 
             if (VIR_ALLOC(val) < 0) {
                 VIR_FREE(buf);
