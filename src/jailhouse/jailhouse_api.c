@@ -71,6 +71,14 @@ int cell_match(const struct dirent *dirent);
 
 int createCell(const char *conf_file);
 
+int loadImagesInCell(virJailhouseCellId cell_id, char *images, int num_images);
+
+int shutdownCell(virJailhouseCellId cell_id);
+
+int startCell(virJailhouseCellId cell_id);
+
+int destroyCell(virJailhouseCellId cell_id);
+
 int getCellInfo(const unsigned int id,
                 virJailhouseCellInfoPtr * cell_info);
 

@@ -406,8 +406,8 @@ jailhouseDomainCreateWithFlags(virDomainPtr domain,
                                unsigned int flags)
 {
     virJailhouseDriverPtr driver = domain->conn->privateData;
-    virDomainObjPtr cell;
     virJailhouseCellInfoPtr cell_info;
+    virDomainObjPtr cell;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_NONE, -1);
@@ -567,17 +567,106 @@ jailhouseDomainCreateXML(virConnectPtr conn,
 }
 
 static int
+jailhouseDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
+{
+    virJailhouseDriverPtr driver = domain->conn->privateData;
+    virJailhouseCellInfoPtr cell_info;
+    virDomainObjPtr cell;
+    virJailhouseCellId cell_id;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(cell = virJailhouseDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainShutdownFlagsEnsureACL(domain->conn, cell->def, flags) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetState(cell, NULL) != VIR_DOMAIN_RUNNING)
+        goto cleanup;
+
+    if (!(cell_info = virJailhouseFindCellByName(driver, cell->def->name))) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name %s and ID %d)"),
+                       cell->def->name, cell->def->id);
+        virDomainObjListRemove(driver->domains, cell);
+        goto cleanup;
+    }
+
+    // Initialize the cell_id.
+    cell_id.id = cell->def->id;
+    cell_id.padding = 0;
+    if (virStrcpy(cell_id.name, cell->def->name, JAILHOUSE_CELL_ID_NAMELEN) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cell name %s length exceeded the limit"),
+                       cell->def->name);
+        goto cleanup;
+    }
+
+    if (shutdownCell(cell_id) < 0)
+        goto cleanup;
+
+    virDomainObjSetState(cell, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&cell);
+    return ret;
+}
+
+static int
 jailhouseDomainShutdown(virDomainPtr domain)
 {
-    UNUSED(domain);
-    return -1;
+    return jailhouseDomainShutdownFlags(domain, 0);
+}
+
+static int
+jailhouseDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
+{
+    virJailhouseDriverPtr driver = domain->conn->privateData;
+    virJailhouseCellInfoPtr cell_info;
+    virDomainObjPtr cell;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(cell = virJailhouseDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainDestroyFlagsEnsureACL(domain->conn, cell->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetState(cell, NULL) != VIR_DOMAIN_SHUTOFF) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("Domain %s is still running."),
+                       cell->def->name);
+        goto cleanup;
+    }
+
+    if (!(cell_info = virJailhouseFindCellByName(driver, cell->def->name))) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name %s and ID %d)"),
+                       cell->def->name, cell->def->id);
+        virDomainObjListRemove(driver->domains, cell);
+        goto cleanup;
+    }
+
+    // Remove the cell from the domain list.
+    virDomainObjListRemove(driver->domains, cell);
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&cell);
+    return ret;
 }
 
 static int
 jailhouseDomainDestroy(virDomainPtr domain)
 {
-    UNUSED(domain);
-    return -1;
+    return jailhouseDomainDestroyFlags(domain, 0);
 }
 
 static int
@@ -675,7 +764,9 @@ static virHypervisorDriver jailhouseHypervisorDriver = {
     .domainCreateWithFlags = jailhouseDomainCreateWithFlags,    /* 6.3.0 */
     .domainCreateXML = jailhouseDomainCreateXML, /* 6.3.0 */
     .domainShutdown = jailhouseDomainShutdown,  /* 6.3.0 */
+    .domainShutdownFlags = jailhouseDomainShutdownFlags,  /* 6.3.0 */
     .domainDestroy = jailhouseDomainDestroy,    /* 6.3.0 */
+    .domainDestroyFlags = jailhouseDomainDestroyFlags,    /* 6.3.0 */
     .domainGetInfo = jailhouseDomainGetInfo,    /* 6.3.0 */
     .domainGetState = jailhouseDomainGetState,  /* 6.3.0 */
     .domainLookupByID = jailhouseDomainLookupByID,      /* 6.3.0 */
