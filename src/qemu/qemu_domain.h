@@ -1017,3 +1017,9 @@ qemuDomainDiskBlockJobIsSupported(virDomainObjPtr vm,
 int
 qemuDomainDefNumaCPUsRectify(virDomainDefPtr def,
                              virQEMUCapsPtr qemuCaps);
+
+void qemuDomainRemoveInactiveJob(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm);
+
+void qemuDomainRemoveInactiveJobLocked(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm);
