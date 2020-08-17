@@ -24,7 +24,7 @@ foreach name : internals_in_files
       subsite_xsl,
       '@INPUT@',
       '@OUTPUT@',
-      'internals' / html_in_file,
+      'docs/internals' / html_in_file,
     ],
     depends: [ aclperms_gen ],
     depend_files: [ page_xsl ],

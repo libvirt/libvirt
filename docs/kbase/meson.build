@@ -37,7 +37,7 @@ foreach name : docs_kbase_files
       subsite_xsl,
       '@INPUT@',
       '@OUTPUT@',
-      'kbase' / rst_file,
+      'docs/kbase' / rst_file,
     ],
     depends: [ aclperms_gen ],
     depend_files: [ page_xsl ],

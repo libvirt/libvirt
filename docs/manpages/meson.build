@@ -118,7 +118,7 @@ foreach data : docs_man_files
       subsite_xsl,
       '@INPUT@',
       '@OUTPUT@',
-      'manpages' / rst_in_file,
+      'docs/manpages' / rst_in_file,
     ],
     depends: [ aclperms_gen ],
     depend_files: [ page_xsl ],
