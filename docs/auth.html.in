@@ -122,17 +122,19 @@ credentials=defgrp</pre>
 
 
     <p>
-      The following service types are known to libvirt
+      The following service types are known to libvirt:
     </p>
 
-    <ol>
-      <li><code>libvirt</code> - used for connections to a libvirtd
-        server, which is configured with SASL auth</li>
-      <li><code>ssh</code> - used for connections to a Phyp server
-        over SSH, but the Phyp driver has been removed</li>
+    <ul>
       <li><code>esx</code> - used for connections to an ESX or
         VirtualCenter server</li>
-    </ol>
+      <li><code>hyperv</code> - used for connections to an HyperV
+        server</li>
+      <li><code>libvirt</code> - used for connections to a libvirtd
+        server, which is configured with SASL auth</li>
+      <li><code>ssh</code> - used for connections to a remote QEMU driver
+        over SSH</li>
+    </ul>
 
     <p>
       Applications using libvirt are free to use this same configuration
