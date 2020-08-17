@@ -675,7 +675,7 @@ msg_gen_function += virReportErrorHelper
 msg_gen_function += virReportSystemError
 msg_gen_function += virLastErrorPrefixMessage
 
-# Uncomment the following and run "make syntax-check" to see diagnostics
+# Uncomment the following and run "ninja test" to see diagnostics
 # that are not yet marked for translation, but that need to be rewritten
 # so that they are translatable.
 # msg_gen_function += fprintf
