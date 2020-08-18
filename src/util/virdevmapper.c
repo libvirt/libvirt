@@ -54,6 +54,9 @@ virDevMapperGetMajor(unsigned int *major)
     VIR_AUTOSTRINGLIST lines = NULL;
     size_t i;
 
+    if (!virFileExists(CONTROL_PATH))
+        return -2;
+
     if (virFileReadAll(PROC_DEVICES, BUF_SIZE, &buf) < 0)
         return -1;
 
@@ -126,8 +129,13 @@ virDMOpen(void)
 
     memset(&dm, 0, sizeof(dm));
 
-    if ((controlFD = open(CONTROL_PATH, O_RDWR)) < 0)
+    if ((controlFD = open(CONTROL_PATH, O_RDWR)) < 0) {
+        if (errno == ENOENT)
+            return -2;
+
+        virReportSystemError(errno, _("Unable to open %s"), CONTROL_PATH);
         return -1;
+    }
 
     if (!virDMIoctl(controlFD, DM_VERSION, &dm, &tmp)) {
         virReportSystemError(errno, "%s",
@@ -299,8 +307,16 @@ virDevMapperGetTargets(const char *path,
      * consist of devices or yet another targets. If that's the
      * case, we have to stop recursion somewhere. */
 
-    if ((controlFD = virDMOpen()) < 0)
+    if ((controlFD = virDMOpen()) < 0) {
+        if (controlFD == -2) {
+            /* The CONTROL_PATH doesn't exist. Probably the
+             * module isn't loaded, yet. Don't error out, just
+             * exit. */
+            return 0;
+        }
+
         return -1;
+    }
 
     return virDevMapperGetTargetsImpl(controlFD, path, devPaths, ttl);
 }
