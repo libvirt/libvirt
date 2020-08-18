@@ -970,7 +970,7 @@ if apparmor_dep.found()
     conf.set('WITH_APPARMOR_PROFILES', 1)
   endif
   conf.set('WITH_APPARMOR', 1)
-  conf.set_quoted('APPARMOR_DIR', '/etc/apparmor.d')
+  conf.set_quoted('APPARMOR_DIR', sysconfdir / 'apparmor.d')
   conf.set_quoted('APPARMOR_PROFILES_PATH', '/sys/kernel/security/apparmor/profiles')
 endif
 
