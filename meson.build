@@ -1,14 +1,14 @@
 project(
-    'libvirt', 'c',
-    version: '6.7.0',
-    license: 'LGPLv2+',
-    meson_version: '>= 0.54.0',
-    default_options: [
-        'buildtype=debugoptimized',
-        'b_pie=true',
-        'c_std=gnu99',
-        'warning_level=2',
-    ],
+  'libvirt', 'c',
+  version: '6.7.0',
+  license: 'LGPLv2+',
+  meson_version: '>= 0.54.0',
+  default_options: [
+    'buildtype=debugoptimized',
+    'b_pie=true',
+    'c_std=gnu99',
+    'warning_level=2',
+  ],
 )
 
 
