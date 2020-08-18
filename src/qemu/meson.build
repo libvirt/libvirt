@@ -132,6 +132,9 @@ if conf.has('WITH_QEMU')
     'name': 'test_libvirtd_qemu.aug',
     'aug': files('test_libvirtd_qemu.aug.in'),
     'conf': files('qemu.conf'),
+    'test_name': 'libvirtd_qemu',
+    'test_srcdir': meson.current_source_dir(),
+    'test_builddir': meson.current_build_dir(),
   }
 
   virt_helpers += {

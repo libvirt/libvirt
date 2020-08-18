@@ -53,6 +53,9 @@ if conf.has('WITH_BHYVE')
     'name': 'test_libvirtd_bhyve.aug',
     'aug': files('test_libvirtd_bhyve.aug.in'),
     'conf': files('bhyve.conf'),
+    'test_name': 'libvirtd_bhyve',
+    'test_srcdir': meson.current_source_dir(),
+    'test_builddir': meson.current_build_dir(),
   }
 
   virt_daemon_confs += {

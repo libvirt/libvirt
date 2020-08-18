@@ -173,6 +173,9 @@ virt_aug_files = []
 #   * name - augeas test file name (required)
 #   * aug - augeas test file source (required)
 #   * conf - conf file (required)
+#   * test_name: name for the check-augeas test (required)
+#   * test_srcdir: path to source dir with aug files (required)
+#   * test_builddir: path to build dir with aug files (required)
 virt_test_aug_files = []
 
 # virt_daemon_confs:
@@ -670,8 +673,16 @@ virt_conf_files += 'libvirt.conf'
 install_data(virt_conf_files, install_dir: confdir)
 install_data(virt_aug_files, install_dir: virt_aug_dir)
 
+# augeas_test_data:
+#   each entry is a dictionary with following items:
+#   * name: daemon name to run the test for (required)
+#   * file: test file to use (required)
+#   * srcdir: path to source dir with aug files (required)
+#   * builddir: path to build dir with aug files (required)
+augeas_test_data = []
+
 foreach data : virt_test_aug_files
-  custom_target(
+  augeas_test_file = custom_target(
     data['name'],
     input: [ data['conf'], data['aug'] ],
     output: data['name'],
@@ -683,15 +694,13 @@ foreach data : virt_test_aug_files
     install: true,
     install_dir: virt_test_aug_dir,
   )
+  augeas_test_data += {
+    'name': data['test_name'],
+    'file': augeas_test_file,
+    'srcdir': data['test_srcdir'],
+    'builddir': data['test_builddir'],
+  }
 endforeach
-
-# augeas_test_data:
-#   each entry is a dictionary with following items:
-#   * name: daemon name to run the test for (required)
-#   * file: test file to use (required)
-#   * srcdir: path to source dir with aug files (required)
-#   * builddir: path to build dir with aug files (required)
-augeas_test_data = []
 
 foreach data : virt_daemon_confs
   capitalize_args = [ '-c', 'print("@0@".capitalize())'.format(data['name']) ]

@@ -77,6 +77,9 @@ if conf.has('WITH_LIBVIRTD')
     'name': 'test_virtlogd.aug',
     'aug': files('test_virtlogd.aug.in'),
     'conf': files('virtlogd.conf'),
+    'test_name': 'virtlogd',
+    'test_srcdir': meson.current_source_dir(),
+    'test_builddir': meson.current_build_dir(),
   }
 
   virt_daemon_units += {

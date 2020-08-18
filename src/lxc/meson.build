@@ -154,6 +154,9 @@ if conf.has('WITH_LXC')
     'name': 'test_libvirtd_lxc.aug',
     'aug': files('test_libvirtd_lxc.aug.in'),
     'conf': files('lxc.conf'),
+    'test_name': 'libvirtd_lxc',
+    'test_srcdir': meson.current_source_dir(),
+    'test_builddir': meson.current_build_dir(),
   }
 
   virt_daemon_confs += {
