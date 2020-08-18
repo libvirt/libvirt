@@ -36,7 +36,7 @@ option('pciaccess', type: 'feature', value: 'auto', description: 'pciaccess supp
 option('polkit', type: 'feature', value: 'auto', description: 'use PolicyKit for UNIX socket access checks')
 option('readline', type: 'feature', value: 'auto', description: 'readline support')
 option('sanlock', type: 'feature', value: 'auto', description: 'sanlock support')
-option('sasl', type: 'feature', value: 'auto', description: 'sasl supprt')
+option('sasl', type: 'feature', value: 'auto', description: 'sasl support')
 option('selinux', type: 'feature', value: 'auto', description: 'selinux support')
 option('selinux_mount', type: 'string', value: '', description: 'set SELinux mount point')
 option('udev', type: 'feature', value: 'auto', description: 'udev support')
