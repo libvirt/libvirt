@@ -689,6 +689,8 @@ endforeach
 #   each entry is a dictionary with following items:
 #   * name: daemon name to run the test for (required)
 #   * file: test file to use (required)
+#   * srcdir: path to source dir with aug files (required)
+#   * builddir: path to build dir with aug files (required)
 augeas_test_data = []
 
 foreach data : virt_daemon_confs
@@ -753,7 +755,12 @@ foreach data : virt_daemon_confs
     install: true,
     install_dir: virt_test_aug_dir,
   )
-  augeas_test_data += { 'name': data['name'], 'file': augeas_test_file }
+  augeas_test_data += {
+    'name': data['name'],
+    'file': augeas_test_file,
+    'srcdir': meson.current_source_dir(),
+    'builddir': meson.current_build_dir(),
+  }
 endforeach
 
 
@@ -960,8 +967,8 @@ if augparse_prog.found()
       'check-augeas-@0@'.format(data['name']),
       augparse_prog,
       args: [
-        '-I', meson.current_source_dir(),
-        '-I', meson.current_build_dir(),
+        '-I', data['srcdir'],
+        '-I', data['builddir'],
         data['file'].full_path(),
       ],
     )
