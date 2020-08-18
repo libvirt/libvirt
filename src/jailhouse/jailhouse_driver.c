@@ -122,7 +122,6 @@ jailhouseCreateAndLoadCells(virJailhouseDriverPtr driver)
     // Create all cells in the hypervisor.
     if (createJailhouseCells(driver->config->cell_config_dir) < 0)
         return -1;
-
     // Get all cells created above.
     driver->cell_info_list = getJailhouseCellsInfo();
 
@@ -136,6 +135,7 @@ jailhouseFreeDriver(virJailhouseDriverPtr driver)
         return;
 
     virMutexDestroy(&driver->lock);
+    virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->domains);
     virObjectUnref(driver->config);
     VIR_FREE(driver);
@@ -147,7 +147,6 @@ jailhouseConnectOpen(virConnectPtr conn,
                      virConfPtr conf G_GNUC_UNUSED, unsigned int flags)
 {
     uid_t uid = geteuid();
-
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (!virConnectValidateURIPath(conn->uri->path, "jailhouse", uid == 0))
@@ -159,8 +158,10 @@ jailhouseConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    conn->privateData = jailhouse_driver;
+    if (virConnectOpenEnsureACL(conn) < 0)
+        return VIR_DRV_OPEN_ERROR;
 
+    conn->privateData = jailhouse_driver;
     return VIR_DRV_OPEN_SUCCESS;
 }
 
@@ -169,16 +170,19 @@ jailhouseConnectOpen(virConnectPtr conn,
 static int
 jailhouseConnectClose(virConnectPtr conn)
 {
-   conn->privateData = NULL;
+    conn->privateData = NULL;
 
-   return 0;
+    return 0;
 }
 
 static int
 jailhouseStateCleanup(void)
 {
     if (!jailhouse_driver)
-       return -1;
+        return -1;
+
+    if (jailhouseDisable() < 0)
+        return -1;
 
     if (jailhouse_driver->lockFD != -1)
         virPidFileRelease(jailhouse_driver->config->stateDir,
@@ -187,6 +191,9 @@ jailhouseStateCleanup(void)
     virMutexDestroy(&jailhouse_driver->lock);
 
     jailhouseFreeDriver(jailhouse_driver);
+
+    jailhouse_driver = NULL;
+
     return 0;
 }
 
@@ -198,6 +205,9 @@ jailhouseStateInitialize(bool privileged G_GNUC_UNUSED,
 {
     virJailhouseDriverConfigPtr cfg = NULL;
     int rc;
+
+    if (jailhouse_driver)
+        return VIR_DRV_STATE_INIT_COMPLETE;
 
     jailhouse_driver = g_new0(virJailhouseDriver, 1);
     jailhouse_driver->lockFD = -1;
@@ -218,6 +228,10 @@ jailhouseStateInitialize(bool privileged G_GNUC_UNUSED,
     jailhouse_driver->config = cfg;
 
     if (jailhouseLoadConf(cfg) < 0)
+        goto error;
+
+    if (!(jailhouse_driver->xmlopt = virDomainXMLOptionNew(NULL, NULL,
+                                                           NULL, NULL, NULL)))
         goto error;
 
     if (virFileMakePath(cfg->stateDir) < 0) {
@@ -292,7 +306,7 @@ jailhouseConnectListAllDomains(virConnectPtr conn,
 static virDomainPtr
 jailhouseDomainLookupByID(virConnectPtr conn, int id)
 {
-virJailhouseDriverPtr driver = conn->privateData;
+    virJailhouseDriverPtr driver = conn->privateData;
     virDomainObjPtr cell;
     virDomainPtr dom = NULL;
 
@@ -409,7 +423,6 @@ jailhouseDomainCreateWithFlags(virDomainPtr domain,
     virJailhouseCellInfoPtr cell_info;
     virDomainObjPtr cell;
     int ret = -1;
-
     virCheckFlags(VIR_DOMAIN_NONE, -1);
 
     if (!domain->name) {
@@ -462,23 +475,23 @@ jailhouseDomainCreateXML(virConnectPtr conn,
     virDomainPtr dom = NULL;
     virDomainDefPtr def = NULL;
     virDomainObjPtr cell = NULL;
-    virDomainDiskDefPtr disk = NULL;
     virJailhouseCellId cell_id;
     char **images = NULL;
     int num_images = 0, i = 0;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    bool removeInactive = false;
 
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    if ((def = virDomainDefParseString(xml, NULL,
-                                       NULL, parse_flags)) == NULL)
-        goto cleanup;
-
-    if ((cell = virDomainObjListFindByUUID(driver->domains, def->uuid)))
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt,
+                                        NULL, parse_flags)))
         goto cleanup;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
+        goto cleanup;
+
+    if ((cell = virDomainObjListFindByUUID(driver->domains, def->uuid)))
         goto cleanup;
 
     if (!(cell_info = virJailhouseFindCellByName(driver, def->name))) {
@@ -492,12 +505,12 @@ jailhouseDomainCreateXML(virConnectPtr conn,
     def->id = cell_info->id.id;
 
     if (!(cell = virDomainObjListAdd(driver->domains, def,
-                                   NULL,
-                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
-                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE, NULL)))
+                                     driver->xmlopt, 0, NULL)))
         goto cleanup;
 
     def = NULL;
+
+    removeInactive = true;
 
     if (cell->def->ndisks < 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -513,7 +526,7 @@ jailhouseDomainCreateXML(virConnectPtr conn,
 
         if (cell->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
             virDomainDiskGetType(cell->def->disks[i]) == VIR_STORAGE_TYPE_FILE) {
-            disk = cell->def->disks[i];
+            virDomainDiskDefPtr disk = cell->def->disks[i];
             const char *src = virDomainDiskGetSource(disk);
             if (!src) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -525,7 +538,7 @@ jailhouseDomainCreateXML(virConnectPtr conn,
             num_images++;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("A Jailhouse doamin(cell) can ONLY have FILE type disks"));
+                           _("A Jailhouse domain(cell) can ONLY have FILE type disks"));
             goto cleanup;
         }
     }
@@ -533,7 +546,7 @@ jailhouseDomainCreateXML(virConnectPtr conn,
     // Initialize the cell_id.
     cell_id.id = cell->def->id;
     cell_id.padding = 0;
-    if (virStrncpy(cell_id.name, cell->def->name, JAILHOUSE_CELL_ID_NAMELEN, JAILHOUSE_CELL_ID_NAMELEN) < 0) {
+    if (virStrcpy(cell_id.name, cell->def->name, JAILHOUSE_CELL_ID_NAMELEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cell name %s length exceeded the limit"),
                        cell->def->name);
@@ -561,6 +574,9 @@ jailhouseDomainCreateXML(virConnectPtr conn,
     dom = virGetDomain(conn, cell->def->name, cell->def->uuid, cell->def->id);
 
  cleanup:
+    if (!dom && removeInactive && !cell->persistent)
+        virDomainObjListRemove(driver->domains, cell);
+
     virDomainDefFree(def);
     virDomainObjEndAPI(&cell);
     return dom;
@@ -671,7 +687,7 @@ jailhouseDomainDestroy(virDomainPtr domain)
 
 static int
 virjailhouseGetDomainTotalCpuStats(virDomainObjPtr cell,
-                               unsigned long long *cpustats)
+                                   unsigned long long *cpustats)
 {
     // TODO(Prakhar): Not implemented yet.
     UNUSED(cell);
@@ -721,7 +737,7 @@ jailhouseDomainGetState(virDomainPtr domain,
         goto cleanup;
 
     if (virDomainGetStateEnsureACL(domain->conn, cell->def) < 0)
-       goto cleanup;
+        goto cleanup;
 
     *state = virDomainObjGetState(cell, reason);
     ret = 0;

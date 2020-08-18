@@ -69,15 +69,9 @@ char *readSysfsCellString(const unsigned int id, const char *entry);
 
 int cell_match(const struct dirent *dirent);
 
+int cell_match_info(const struct dirent *dirent);
+
 int createCell(const char *conf_file);
-
-int loadImagesInCell(virJailhouseCellId cell_id, char *images, int num_images);
-
-int shutdownCell(virJailhouseCellId cell_id);
-
-int startCell(virJailhouseCellId cell_id);
-
-int destroyCell(virJailhouseCellId cell_id);
 
 int getCellInfo(const unsigned int id,
                 virJailhouseCellInfoPtr * cell_info);
@@ -121,25 +115,31 @@ jailhouseDisable(void)
     fd = openDev();
 
     err = ioctl(fd, JAILHOUSE_DISABLE);
-    if (err)
+    if (err) {
         virReportSystemError(errno,
                              "%s",
                              _("Failed to disable jailhouse: %s"));
+         return -1;
+    }
 
     VIR_DEBUG("Jailhouse hypervisor is disabled");
 
-    return err;
+    return 0;
 }
 
 int
 cell_match(const struct dirent *dirent)
 {
     char *ext = strrchr(dirent->d_name, '.');
-
     return dirent->d_name[0] != '.'
-        && (STREQ(ext, JAILHOUSE_CELL_FILE_EXTENSION) == 0);
+        && STREQ(ext, JAILHOUSE_CELL_FILE_EXTENSION);
 }
 
+int
+cell_match_info(const struct dirent *dirent)
+{
+    return dirent->d_name[0] != '.';
+}
 int
 createJailhouseCells(const char *dir_path)
 {
@@ -150,7 +150,6 @@ createJailhouseCells(const char *dir_path)
 
     if (strlen(dir_path) == 0)
         return ret;
-
     num_entries = scandir(dir_path, &namelist, cell_match, alphasort);
     if (num_entries == -1) {
         if (errno == ENOENT) {
@@ -170,7 +169,8 @@ createJailhouseCells(const char *dir_path)
     for (i = 0; i < num_entries; i++) {
         g_autofree char *file_path = g_strdup_printf("%s/%s", dir_path, namelist[i]->d_name);
 
-        if (createCell(file_path) != 0) {
+
+        if (createCell(file_path) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Cell creation failed with conf found in  %s."),
                            namelist[i]->d_name);
@@ -208,13 +208,13 @@ createCell(const char *conf_file)
     VIR_AUTOCLOSE fd = -1;
 
     if (strlen(conf_file) == 0)
-        return err;
+        return -1;
 
     len = virFileReadAll(conf_file, MAX_JAILHOUSE_CELL_CONFIG_FILE_SIZE, &buffer);
     if (len < 0 || !buffer) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                       "%s", _("Failed to read the system configuration file"));
-        return err;
+        return -1;
     }
 
     cell_create.config_address = (unsigned long) buffer;
@@ -223,12 +223,14 @@ createCell(const char *conf_file)
     fd = openDev();
 
     err = ioctl(fd, JAILHOUSE_CELL_CREATE, &cell_create);
-    if (err)
+    if (err) {
         virReportSystemError(errno,
                              "%s",
                              _("Cell creation failed: %s"));
+        return -1;
+    }
 
-    return err;
+    return 0;
 }
 
 void
@@ -243,11 +245,11 @@ cellInfoFree(virJailhouseCellInfoPtr cell_info)
 char *
 readSysfsCellString(const unsigned int id, const char *entry)
 {
-    g_autofree char *buffer = NULL;
+    char *buffer = NULL;
     g_autofree char *file_path = NULL;
     int len = -1;
 
-    file_path = g_strdup_printf(JAILHOUSE_CELLS "%u/%s", id, entry);
+    file_path = g_strdup_printf(JAILHOUSE_CELLS "/%u/%s", id, entry);
 
     len = virFileReadAll(file_path, 1024, &buffer);
     if (len < 0 || !buffer) {
@@ -277,13 +279,12 @@ getCellInfo(const unsigned int id, virJailhouseCellInfoPtr *cell_info_ptr)
 
     /* get cell name */
     tmp = readSysfsCellString(id, "name");
-    if (virStrncpy(cell_info->id.name, tmp, JAILHOUSE_CELL_ID_NAMELEN, JAILHOUSE_CELL_ID_NAMELEN) < 0) {
+    if (virStrcpy(cell_info->id.name, tmp, JAILHOUSE_CELL_ID_NAMELEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cell ID %s too long to be copied to the cell info"),
                        tmp);
         return -1;
     }
-
     cell_info->id.name[JAILHOUSE_CELL_ID_NAMELEN] = 0;
     VIR_FREE(tmp);
 
@@ -310,8 +311,7 @@ getJailhouseCellsInfo(void)
     int num_entries;
     size_t i;
 
-    num_entries =
-        scandir(JAILHOUSE_CELLS, &namelist, cell_match, alphasort);
+    num_entries = scandir(JAILHOUSE_CELLS, &namelist, cell_match_info, alphasort);
     if (num_entries == -1) {
         if (errno == ENOENT) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
