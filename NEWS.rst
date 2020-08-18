@@ -17,6 +17,13 @@ v6.7.0 (unreleased)
 
 * **Bug fixes**
 
+  * virdevmapper: Deal with kernels without DM support
+
+    In the previous release libvirt dropped libdevmapper in favor of its own
+    implementation. However, it failed to deal correctly with kernels that
+    either don't have device mapper enabled or where the dm-mod module is not
+    loaded yet. This is now fixed.
+
 
 v6.6.0 (2020-08-02)
 ===================
