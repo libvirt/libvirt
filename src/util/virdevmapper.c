@@ -46,11 +46,9 @@
 
 G_STATIC_ASSERT(BUF_SIZE > sizeof(struct dm_ioctl));
 
-static unsigned int virDMMajor;
-
 
 static int
-virDevMapperOnceInit(void)
+virDevMapperGetMajor(unsigned int *major)
 {
     g_autofree char *buf = NULL;
     VIR_AUTOSTRINGLIST lines = NULL;
@@ -69,7 +67,7 @@ virDevMapperOnceInit(void)
 
         if (sscanf(lines[i], "%u %ms\n", &maj, &dev) == 2 &&
             STREQ(dev, DM_NAME)) {
-            virDMMajor = maj;
+            *major = maj;
             break;
         }
     }
@@ -83,9 +81,6 @@ virDevMapperOnceInit(void)
 
     return 0;
 }
-
-
-VIR_ONCE_GLOBAL_INIT(virDevMapper);
 
 
 static void *
@@ -304,9 +299,6 @@ virDevMapperGetTargets(const char *path,
      * consist of devices or yet another targets. If that's the
      * case, we have to stop recursion somewhere. */
 
-    if (virDevMapperInitialize() < 0)
-        return -1;
-
     if ((controlFD = virDMOpen()) < 0)
         return -1;
 
@@ -318,13 +310,14 @@ bool
 virIsDevMapperDevice(const char *dev_name)
 {
     struct stat buf;
+    unsigned int major;
 
-    if (virDevMapperInitialize() < 0)
+    if (virDevMapperGetMajor(&major) < 0)
         return false;
 
     if (!stat(dev_name, &buf) &&
         S_ISBLK(buf.st_mode) &&
-        major(buf.st_rdev) == virDMMajor)
+        major(buf.st_rdev) == major)
         return true;
 
     return false;
