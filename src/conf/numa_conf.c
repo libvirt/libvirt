@@ -1421,7 +1421,7 @@ virDomainNumaDefValidate(const virDomainNuma *def)
 
         if (l->cache > 0) {
             for (j = 0; j < def->mem_nodes[l->target].ncaches; j++) {
-                const virDomainNumaCache *cache = def->mem_nodes[l->target].caches;
+                const virDomainNumaCache *cache = &def->mem_nodes[l->target].caches[j];
 
                 if (l->cache == cache->level)
                     break;
