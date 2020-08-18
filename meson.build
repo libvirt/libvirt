@@ -1753,11 +1753,11 @@ if not get_option('driver_qemu').disabled()
       if os_release.contains('arch')
         default_qemu_user = 'nobody'
         default_qemu_group = 'nobody'
-      elif ( os_release.contains('centos') or
-             os_release.contains('fedora') or
-             os_release.contains('gentoo') or
-             os_release.contains('rhel') or
-             os_release.contains('suse'))
+      elif (os_release.contains('centos') or
+            os_release.contains('fedora') or
+            os_release.contains('gentoo') or
+            os_release.contains('rhel') or
+            os_release.contains('suse'))
         default_qemu_user = 'qemu'
         default_qemu_group = 'qemu'
       elif os_release.contains('debian')
@@ -1773,8 +1773,8 @@ if not get_option('driver_qemu').disabled()
       # If the expected user and group don't exist, or we haven't hit any
       # of the cases above bacuse we're running on an unknown OS, the only
       # sensible fallback is root:root
-      if ( run_command('getent', 'passwd', default_qemu_user).returncode() != 0 and
-           run_command('getent', 'group', default_qemu_group).returncode() != 0 )
+      if (run_command('getent', 'passwd', default_qemu_user).returncode() != 0 and
+          run_command('getent', 'group', default_qemu_group).returncode() != 0)
         default_qemu_user = 'root'
         default_qemu_group = 'root'
       endif
