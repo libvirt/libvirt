@@ -1352,11 +1352,10 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
                        int asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virBitmapPtr migEvent = NULL;
-    virJSONValuePtr json = NULL;
-    char **caps = NULL;
+    g_autoptr(virBitmap) migEvent = NULL;
+    g_autoptr(virJSONValue) json = NULL;
+    g_auto(GStrv) caps = NULL;
     char **capStr;
-    int ret = -1;
     int rc;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -1365,16 +1364,14 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
     rc = qemuMonitorGetMigrationCapabilities(priv->mon, &caps);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-        goto cleanup;
+        return -1;
 
-    if (!caps) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!caps)
+        return 0;
 
     priv->migrationCaps = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
     if (!priv->migrationCaps)
-        goto cleanup;
+        return -1;
 
     for (capStr = caps; *capStr; capStr++) {
         int cap = qemuMigrationCapabilityTypeFromString(*capStr);
@@ -1390,21 +1387,21 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT)) {
         migEvent = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
         if (!migEvent)
-            goto cleanup;
+            return -1;
 
         ignore_value(virBitmapSetBit(migEvent, QEMU_MIGRATION_CAP_EVENTS));
 
         if (!(json = qemuMigrationCapsToJSON(migEvent, migEvent)))
-            goto cleanup;
+            return -1;
 
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-            goto cleanup;
+            return -1;
 
         rc = qemuMonitorSetMigrationCapabilities(priv->mon, json);
         json = NULL;
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto cleanup;
+            return -1;
 
         if (rc < 0) {
             virResetLastError();
@@ -1420,13 +1417,7 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
     ignore_value(virBitmapClearBit(priv->migrationCaps,
                                    QEMU_MIGRATION_CAP_EVENTS));
 
-    ret = 0;
-
- cleanup:
-    virBitmapFree(migEvent);
-    virJSONValueFree(json);
-    g_strfreev(caps);
-    return ret;
+    return 0;
 }
 
 
