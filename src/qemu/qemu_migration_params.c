@@ -670,7 +670,7 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
 qemuMigrationParamsPtr
 qemuMigrationParamsFromJSON(virJSONValuePtr params)
 {
-    qemuMigrationParamsPtr migParams;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     qemuMigrationParamValuePtr pv;
     const char *name;
     const char *str;
@@ -680,7 +680,7 @@ qemuMigrationParamsFromJSON(virJSONValuePtr params)
         return NULL;
 
     if (!params)
-        return migParams;
+        return g_steal_pointer(&migParams);
 
     for (i = 0; i < QEMU_MIGRATION_PARAM_LAST; i++) {
         name = qemuMigrationParamTypeToString(i);
@@ -711,7 +711,7 @@ qemuMigrationParamsFromJSON(virJSONValuePtr params)
         }
     }
 
-    return migParams;
+    return g_steal_pointer(&migParams);
 }
 
 
