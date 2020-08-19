@@ -75,7 +75,7 @@ if conf.has('WITH_HOST_VALIDATE')
     ],
     install: true,
     install_dir: bindir,
-    install_rpath: libdir,
+    install_rpath: libvirt_rpath,
   )
 endif
 
@@ -112,7 +112,7 @@ if conf.has('WITH_LOGIN_SHELL')
     ],
     install: true,
     install_dir: libexecdir,
-    install_rpath: libdir,
+    install_rpath: libvirt_rpath,
   )
 
   install_data('virt-login-shell.conf', install_dir: sysconfdir / 'libvirt')
@@ -197,7 +197,7 @@ executable(
   ],
   install: true,
   install_dir: bindir,
-  install_rpath: libdir,
+  install_rpath: libvirt_rpath,
 )
 
 executable(
@@ -219,7 +219,7 @@ executable(
   ],
   install: true,
   install_dir: bindir,
-  install_rpath: libdir,
+  install_rpath: libvirt_rpath,
 )
 
 tools_conf = configuration_data()

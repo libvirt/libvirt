@@ -156,6 +156,16 @@ if rc.returncode() == 0
 endif
 
 
+# Add RPATH information when building for a non-standard prefix, or
+# when explicitly requested to do so
+
+if prefix == '/usr' and not get_option('rpath').enabled()
+  libvirt_rpath = ''
+else
+  libvirt_rpath = libdir
+endif
+
+
 # figure out libvirt version strings
 
 arr_version = meson.project_version().split('.')

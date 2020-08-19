@@ -454,7 +454,7 @@ libvirt_qemu_lib = shared_library(
     libvirt_qemu_syms_file,
   ],
   install: true,
-  install_rpath: libdir,
+  install_rpath: libvirt_rpath,
   version: libvirt_lib_version,
   soversion: libvirt_so_version,
 )
@@ -510,7 +510,7 @@ libvirt_lxc_lib = shared_library(
     libvirt_lxc_syms_file,
   ],
   install: true,
-  install_rpath: libdir,
+  install_rpath: libvirt_rpath,
   version: libvirt_lib_version,
   soversion: libvirt_so_version,
 )
@@ -554,7 +554,7 @@ libvirt_admin_lib = shared_library(
     libvirt_admin_syms_file,
   ],
   install: true,
-  install_rpath: libdir,
+  install_rpath: libvirt_rpath,
   version: libvirt_lib_version,
   soversion: libvirt_so_version,
 )
@@ -588,7 +588,7 @@ foreach module : virt_modules
     ],
     install: true,
     install_dir: module.get('install_dir', libdir / 'libvirt' / 'connection-driver'),
-    install_rpath: libdir,
+    install_rpath: libvirt_rpath,
   )
   set_variable('@0@_module'.format(module['name'].underscorify()), mod)
 endforeach
@@ -633,7 +633,7 @@ foreach daemon : virt_daemons
     ],
     install: true,
     install_dir: sbindir,
-    install_rpath: libdir,
+    install_rpath: libvirt_rpath,
   )
 endforeach
 
@@ -661,7 +661,7 @@ foreach helper : virt_helpers
     ],
     install: true,
     install_dir: helper.get('install_dir', libexecdir),
-    install_rpath: libdir,
+    install_rpath: libvirt_rpath,
   )
 endforeach
 
