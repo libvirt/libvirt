@@ -1265,44 +1265,42 @@ int
 qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
                          qemuMigrationParamsPtr *migParams)
 {
-    qemuMigrationParamsPtr params = NULL;
+    g_autoptr(qemuMigrationParams) params = NULL;
     qemuMigrationParamValuePtr pv;
-    xmlNodePtr *nodes = NULL;
-    char *name = NULL;
-    char *value = NULL;
-    int param;
+    g_autofree xmlNodePtr *nodes = NULL;
     size_t i;
     int rc;
     int n;
-    int ret = -1;
 
     *migParams = NULL;
 
     if ((rc = virXPathBoolean("boolean(./migParams)", ctxt)) < 0)
-        goto cleanup;
+        return -1;
 
-    if (rc == 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (rc == 0)
+        return 0;
 
     if ((n = virXPathNodeSet("./migParams[1]/param", ctxt, &nodes)) < 0)
         return -1;
 
     if (!(params = qemuMigrationParamsNew()))
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < n; i++) {
+        g_autofree char *name = NULL;
+        g_autofree char *value = NULL;
+        int param;
+
         if (!(name = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing migration parameter name"));
-            goto cleanup;
+            return -1;
         }
 
         if ((param = qemuMigrationParamTypeFromString(name)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown migration parameter '%s'"), name);
-            goto cleanup;
+            return -1;
         }
         pv = &params->params[param];
 
@@ -1310,7 +1308,7 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("missing value for migration parameter '%s'"),
                            name);
-            goto cleanup;
+            return -1;
         }
 
         rc = 0;
@@ -1336,23 +1334,15 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("invalid value '%s' for migration parameter '%s'"),
                            value, name);
-            goto cleanup;
+            return -1;
         }
 
         pv->set = true;
-        VIR_FREE(name);
-        VIR_FREE(value);
     }
 
     *migParams = g_steal_pointer(&params);
-    ret = 0;
 
- cleanup:
-    qemuMigrationParamsFree(params);
-    VIR_FREE(nodes);
-    VIR_FREE(name);
-    VIR_FREE(value);
-    return ret;
+    return 0;
 }
 
 
