@@ -35,8 +35,11 @@
 # include "viralloc.h"
 # include "virstring.h"
 # include "virfile.h"
+# include "virlog.h"
 
 # define VIR_FROM_THIS VIR_FROM_STORAGE
+
+VIR_LOG_INIT("util.virdevmapper");
 
 # define PROC_DEVICES "/proc/devices"
 # define DM_NAME "device-mapper"
@@ -130,11 +133,15 @@ virDMOpen(void)
     memset(&dm, 0, sizeof(dm));
 
     if ((controlFD = open(CONTROL_PATH, O_RDWR)) < 0) {
-        if (errno == ENOENT)
-            return -2;
-
-        virReportSystemError(errno, _("Unable to open %s"), CONTROL_PATH);
-        return -1;
+        /* We can't talk to devmapper. Produce a warning and let
+         * the caller decide what to do next. */
+        if (errno == ENOENT) {
+            VIR_DEBUG("device mapper not available");
+        } else {
+            VIR_WARN("unable to open %s: %s",
+                     CONTROL_PATH, g_strerror(errno));
+        }
+        return -2;
     }
 
     if (!virDMIoctl(controlFD, DM_VERSION, &dm, &tmp)) {
@@ -309,9 +316,9 @@ virDevMapperGetTargets(const char *path,
 
     if ((controlFD = virDMOpen()) < 0) {
         if (controlFD == -2) {
-            /* The CONTROL_PATH doesn't exist. Probably the
-             * module isn't loaded, yet. Don't error out, just
-             * exit. */
+            /* The CONTROL_PATH doesn't exist or is unusable.
+             * Probably the module isn't loaded, yet. Don't error
+             * out, just exit. */
             return 0;
         }
 
