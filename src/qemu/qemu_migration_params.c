@@ -244,20 +244,14 @@ qemuMigrationParamsGetAlwaysOnCaps(qemuMigrationParty party)
 qemuMigrationParamsPtr
 qemuMigrationParamsNew(void)
 {
-    qemuMigrationParamsPtr params;
+    g_autoptr(qemuMigrationParams) params = NULL;
 
-    if (VIR_ALLOC(params) < 0)
+    params = g_new0(qemuMigrationParams, 1);
+
+    if (!(params->caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST)))
         return NULL;
 
-    params->caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
-    if (!params->caps)
-        goto error;
-
-    return params;
-
- error:
-    qemuMigrationParamsFree(params);
-    return NULL;
+    return g_steal_pointer(&params);
 }
 
 
