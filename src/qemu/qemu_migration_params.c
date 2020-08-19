@@ -718,20 +718,17 @@ qemuMigrationParamsFromJSON(virJSONValuePtr params)
 virJSONValuePtr
 qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams)
 {
-    virJSONValuePtr params = virJSONValueNewObject();
-    qemuMigrationParamValuePtr pv;
-    const char *name;
+    g_autoptr(virJSONValue) params = virJSONValueNewObject();
     size_t i;
-    int rc;
 
     for (i = 0; i < QEMU_MIGRATION_PARAM_LAST; i++) {
-        name = qemuMigrationParamTypeToString(i);
-        pv = &migParams->params[i];
+        const char *name = qemuMigrationParamTypeToString(i);
+        qemuMigrationParamValuePtr pv = &migParams->params[i];
+        int rc = 0;
 
         if (!pv->set)
             continue;
 
-        rc = 0;
         switch (qemuMigrationParamTypes[i]) {
         case QEMU_MIGRATION_PARAM_TYPE_INT:
             rc = virJSONValueObjectAppendNumberInt(params, name, pv->value.i);
@@ -751,14 +748,10 @@ qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams)
         }
 
         if (rc < 0)
-            goto error;
+            return NULL;
     }
 
-    return params;
-
- error:
-    virJSONValueFree(params);
-    return NULL;
+    return g_steal_pointer(&params);
 }
 
 
