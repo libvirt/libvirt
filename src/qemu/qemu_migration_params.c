@@ -534,7 +534,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              unsigned long flags,
                              qemuMigrationParty party)
 {
-    qemuMigrationParamsPtr migParams;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     size_t i;
 
     if (!(migParams = qemuMigrationParamsNew()))
@@ -565,14 +565,14 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
             if (qemuMigrationParamsGetTPInt(migParams, item->param, params,
                                             nparams, item->typedParam,
                                             item->unit) < 0)
-                goto error;
+                return NULL;
             break;
 
         case QEMU_MIGRATION_PARAM_TYPE_ULL:
             if (qemuMigrationParamsGetTPULL(migParams, item->param, params,
                                             nparams, item->typedParam,
                                             item->unit) < 0)
-                goto error;
+                return NULL;
             break;
 
         case QEMU_MIGRATION_PARAM_TYPE_BOOL:
@@ -581,7 +581,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         case QEMU_MIGRATION_PARAM_TYPE_STRING:
             if (qemuMigrationParamsGetTPString(migParams, item->param, params,
                                                nparams, item->typedParam) < 0)
-                goto error;
+                return NULL;
             break;
         }
     }
@@ -591,24 +591,20 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         !(flags & VIR_MIGRATE_AUTO_CONVERGE)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Turn auto convergence on to tune it"));
-        goto error;
+        return NULL;
     }
 
     if (migParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].set &&
         !(flags & VIR_MIGRATE_PARALLEL)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Turn parallel migration on to tune it"));
-        goto error;
+        return NULL;
     }
 
     if (qemuMigrationParamsSetCompression(params, nparams, flags, migParams) < 0)
-        goto error;
+        return NULL;
 
-    return migParams;
-
- error:
-    qemuMigrationParamsFree(migParams);
-    return NULL;
+    return g_steal_pointer(&migParams);
 }
 
 
