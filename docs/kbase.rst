@@ -47,3 +47,7 @@ Knowledge base
 
    `Incremental backup internals <kbase/incrementalbackupinternals.html>`__
       Incremental backup implementation details relevant for users
+
+   `VM migration internals <kbase/migrationinternals.html>`__
+      VM migration implementation details, complementing the info in
+      `migration <migration.html>`__
