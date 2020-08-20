@@ -677,6 +677,7 @@ struct _virQEMUCaps {
     char *binary;
     time_t ctime;
     time_t libvirtCtime;
+    time_t modDirMtime;
     bool invalidation;
 
     virBitmapPtr flags;
@@ -4194,6 +4195,7 @@ virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
  * <qemuCaps>
  *   <emulator>/some/path</emulator>
  *   <qemuctime>234235253</qemuctime>
+ *   <qemumoddirmtime>234235253</qemumoddirmtime>
  *   <selfctime>234235253</selfctime>
  *   <selfvers>1002016</selfvers>
  *   <flag name='foo'/>
@@ -4282,6 +4284,9 @@ virQEMUCapsLoadCache(virArch hostArch,
         goto cleanup;
     }
     qemuCaps->ctime = (time_t)l;
+
+    if (virXPathLongLong("string(./qemumoddirmtime)", ctxt, &l) == 0)
+        qemuCaps->modDirMtime = (time_t)l;
 
     if ((n = virXPathNodeSet("./flag", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4615,6 +4620,10 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
                           qemuCaps->binary);
     virBufferAsprintf(&buf, "<qemuctime>%llu</qemuctime>\n",
                       (long long)qemuCaps->ctime);
+    if (qemuCaps->modDirMtime > 0) {
+        virBufferAsprintf(&buf, "<qemumoddirmtime>%llu</qemumoddirmtime>\n",
+                          (long long)qemuCaps->modDirMtime);
+    }
     virBufferAsprintf(&buf, "<selfctime>%llu</selfctime>\n",
                       (long long)qemuCaps->libvirtCtime);
     virBufferAsprintf(&buf, "<selfvers>%lu</selfvers>\n",
@@ -4880,6 +4889,23 @@ virQEMUCapsIsValid(void *data,
 
     if (!qemuCaps->binary)
         return true;
+
+    if (virFileExists(QEMU_MODDIR)) {
+        if (stat(QEMU_MODDIR, &sb) < 0) {
+            VIR_DEBUG("Failed to stat QEMU module directory '%s': %s",
+                      QEMU_MODDIR,
+                      g_strerror(errno));
+            return false;
+        }
+
+        if (sb.st_mtime != qemuCaps->modDirMtime) {
+            VIR_DEBUG("Outdated capabilities for '%s': QEMU modules "
+                      "directory '%s' changed (%lld vs %lld)",
+                      qemuCaps->binary, QEMU_MODDIR,
+                      (long long)sb.st_mtime, (long long)qemuCaps->modDirMtime);
+            return false;
+        }
+    }
 
     if (qemuCaps->libvirtCtime != virGetSelfLastChanged() ||
         qemuCaps->libvirtVersion != LIBVIR_VERSION_NUMBER) {
@@ -5461,6 +5487,15 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
         virReportSystemError(errno, _("QEMU binary %s is not executable"),
                              binary);
         goto error;
+    }
+
+    if (virFileExists(QEMU_MODDIR)) {
+        if (stat(QEMU_MODDIR, &sb) < 0) {
+            virReportSystemError(errno, _("Cannot check QEMU module directory %s"),
+                                 QEMU_MODDIR);
+            goto error;
+        }
+        qemuCaps->modDirMtime = sb.st_mtime;
     }
 
     if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid) < 0)

@@ -60,6 +60,7 @@ option('driver_openvz', type: 'feature', value: 'auto', description: 'OpenVZ dri
 option('driver_qemu', type: 'feature', value: 'auto', description: 'QEMU/KVM driver')
 option('qemu_user', type: 'string', value: '', description: 'username to run QEMU system instance as')
 option('qemu_group', type: 'string', value: '', description: 'groupname to run QEMU system instance as')
+option('qemu_moddir', type: 'string', value: '', description: 'set the directory where QEMU modules are located')
 option('driver_remote', type: 'feature', value: 'enabled', description: 'remote driver')
 option('remote_default_mode', type: 'combo', choices: ['legacy', 'direct'], value: 'legacy', description: 'remote driver default mode')
 option('driver_secrets', type: 'feature', value: 'auto', description: 'local secrets management driver')
