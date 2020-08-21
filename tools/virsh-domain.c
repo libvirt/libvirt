@@ -14207,7 +14207,7 @@ static bool
 cmdGuestAgentTimeout(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
-    int timeout;
+    int timeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
     const unsigned int flags = 0;
     bool ret = false;
 

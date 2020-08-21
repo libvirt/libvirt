@@ -2631,15 +2631,16 @@ guest-agent-timeout
 
 .. code-block::
 
-   guest-agent-timeout domain --timeout value
+   guest-agent-timeout domain [--timeout value]
 
 Set how long to wait for a response from guest agent commands. By default,
 agent commands block forever waiting for a response. ``value`` must be a
 positive value (wait for given amount of seconds) or one of the following
 values:
 
-* -2 - block forever waiting for a result,
-* -1 - reset timeout to the default value,
+* -2 - block forever waiting for a result (used when --timeout is omitted),
+* -1 - reset timeout to the default value (currently defined as 5 seconds in
+  libvirt daemon),
 * 0 - do not wait at all,
 
 
