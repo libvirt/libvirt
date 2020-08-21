@@ -117,11 +117,9 @@
     %define with_storage_zfs 0
 %endif
 
-# Ceph dropping support for 32-bit hosts
-%if 0%{?fedora} >= 30
-    %ifarch %{arm} %{ix86}
-        %define with_storage_rbd 0
-    %endif
+# Ceph dropped support for 32-bit hosts
+%ifarch %{arm} %{ix86}
+    %define with_storage_rbd 0
 %endif
 
 # RHEL doesn't ship OpenVZ, VBox, PowerHypervisor,
