@@ -498,8 +498,8 @@ in seconds for which the host has to be suspended, it should be at least
 60 seconds.
 
 
-node
-----
+node-memory-tune
+----------------
 
 **Syntax:**
 
@@ -600,8 +600,8 @@ source elements to create the pool.
 
 
 
-inject
-------
+inject-nmi
+----------
 
 **Syntax:**
 
@@ -2624,8 +2624,8 @@ When *--timestamp* is used, a human-readable timestamp will be printed
 before the event.
 
 
-guest
------
+guest-agent-timeout
+-------------------
 
 **Syntax:**
 
@@ -7259,8 +7259,8 @@ checkpoint-parent
 Output the name of the parent checkpoint, if any, for the given
 *checkpoint*.
 
-checkpoint
-----------
+checkpoint-delete
+-----------------
 
 **Syntax:**
 
