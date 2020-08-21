@@ -616,6 +616,11 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
 {
     VIR_AUTOSTRINGLIST paths = NULL;
 
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT)) {
+        VIR_DEBUG("namespaces disabled for domain %s", vm->def->name);
+        return 0;
+    }
+
     if (qemuDomainPopulateDevices(cfg, &paths) < 0)
         return -1;
 
