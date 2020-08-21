@@ -25,6 +25,11 @@ v6.7.0 (unreleased)
     the ``device_model_args`` setting in xl.cfg(5). The libvirt xen driver now
     supports this using ``<xen:commandline/>`` XML extensions.
 
+  * shmem: Add support for shmem-{plain, doorbell} ``role`` option
+
+    The ``role`` attribute controls how the domain behaves on migration. With
+    ``role=master``, the guest will copy the shared memory on migration to
+    the destination host. With ``role=peer``, the migration is disabled.
 
 * **Improvements**
 
