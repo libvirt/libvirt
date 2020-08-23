@@ -1487,7 +1487,7 @@ exit 0
 %files
 
 %files docs
-%doc AUTHORS ChangeLog NEWS.rst README README.rst
+%doc AUTHORS NEWS.rst README README.rst
 %doc libvirt-docs/*
 
 %files daemon
