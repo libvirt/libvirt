@@ -54,8 +54,7 @@ typedef enum {
 #define VIR_NET_GENERATED_MACVTAP_PREFIX "macvtap"
 #define VIR_NET_GENERATED_MACVLAN_PREFIX "macvlan"
 
-int virNetDevMacVLanReserveName(const char *name, bool quietfail);
-int virNetDevMacVLanReleaseName(const char *name);
+void virNetDevMacVLanReserveName(const char *name);
 
 bool virNetDevMacVLanIsMacvtap(const char *ifname)
    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
@@ -64,8 +63,7 @@ int virNetDevMacVLanCreate(const char *ifname,
                            const char *type,
                            const virMacAddr *macaddress,
                            const char *srcdev,
-                           uint32_t macvlan_mode,
-                           int *retry)
+                           uint32_t macvlan_mode)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
     G_GNUC_WARN_UNUSED_RESULT;
 
