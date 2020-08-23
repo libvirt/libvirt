@@ -122,6 +122,7 @@ jailhouseCreateAndLoadCells(virJailhouseDriverPtr driver)
     // Create all cells in the hypervisor.
     if (createJailhouseCells(driver->config->cell_config_dir) < 0)
         return -1;
+
     // Get all cells created above.
     driver->cell_info_list = getJailhouseCellsInfo();
 
@@ -137,6 +138,7 @@ jailhouseFreeDriver(virJailhouseDriverPtr driver)
     virMutexDestroy(&driver->lock);
     virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->domains);
+    virObjectUnref(driver->domainEventState);
     virObjectUnref(driver->config);
     VIR_FREE(driver);
 }
@@ -220,6 +222,9 @@ jailhouseStateInitialize(bool privileged G_GNUC_UNUSED,
     }
 
     if (!(jailhouse_driver->domains = virDomainObjListNew()))
+        goto error;
+
+    if (!(jailhouse_driver->domainEventState = virObjectEventStateNew()))
         goto error;
 
     if (!(cfg = virJailhouseDriverConfigNew()))
@@ -476,6 +481,7 @@ jailhouseDomainCreateXML(virConnectPtr conn,
     virDomainDefPtr def = NULL;
     virDomainObjPtr cell = NULL;
     virJailhouseCellId cell_id;
+    virObjectEventPtr event = NULL;
     char **images = NULL;
     int num_images = 0, i = 0;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
@@ -573,12 +579,16 @@ jailhouseDomainCreateXML(virConnectPtr conn,
 
     dom = virGetDomain(conn, cell->def->name, cell->def->uuid, cell->def->id);
 
+    event = virDomainEventLifecycleNewFromObj(cell,
+                                              VIR_DOMAIN_EVENT_STARTED,
+                                              VIR_DOMAIN_EVENT_STARTED_BOOTED);
  cleanup:
     if (!dom && removeInactive && !cell->persistent)
         virDomainObjListRemove(driver->domains, cell);
 
     virDomainDefFree(def);
     virDomainObjEndAPI(&cell);
+    virObjectEventStateQueue(driver->domainEventState, event);
     return dom;
 }
 
@@ -589,6 +599,7 @@ jailhouseDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
     virJailhouseCellInfoPtr cell_info;
     virDomainObjPtr cell;
     virJailhouseCellId cell_id;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -627,8 +638,12 @@ jailhouseDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
 
     ret = 0;
 
+    event = virDomainEventLifecycleNewFromObj(cell,
+                                              VIR_DOMAIN_EVENT_STOPPED,
+                                              VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
  cleanup:
     virDomainObjEndAPI(&cell);
+    virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
 
@@ -644,6 +659,7 @@ jailhouseDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
     virJailhouseDriverPtr driver = domain->conn->privateData;
     virJailhouseCellInfoPtr cell_info;
     virDomainObjPtr cell;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -674,8 +690,12 @@ jailhouseDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
 
     ret = 0;
 
+    event = virDomainEventLifecycleNewFromObj(cell,
+                                              VIR_DOMAIN_EVENT_STOPPED,
+                                              VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
  cleanup:
     virDomainObjEndAPI(&cell);
+    virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
 
