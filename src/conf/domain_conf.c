@@ -12428,14 +12428,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
 
         def->data.direct.linkdev = g_steal_pointer(&dev);
-
-        if (ifname &&
-            flags & VIR_DOMAIN_DEF_PARSE_INACTIVE &&
-            (STRPREFIX(ifname, VIR_NET_GENERATED_MACVTAP_PREFIX) ||
-             STRPREFIX(ifname, VIR_NET_GENERATED_MACVLAN_PREFIX))) {
-            VIR_FREE(ifname);
-        }
-
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
@@ -12481,6 +12473,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (def->managed_tap != VIR_TRISTATE_BOOL_NO && ifname &&
         (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
         (STRPREFIX(ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
+         STRPREFIX(ifname, VIR_NET_GENERATED_MACVTAP_PREFIX) ||
+         STRPREFIX(ifname, VIR_NET_GENERATED_MACVLAN_PREFIX) ||
          (prefix && STRPREFIX(ifname, prefix)))) {
         /* An auto-generated target name, blank it out */
         VIR_FREE(ifname);
@@ -26796,6 +26790,8 @@ virDomainNetDefFormat(virBufferPtr buf,
         (def->managed_tap == VIR_TRISTATE_BOOL_NO ||
          !((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
            (STRPREFIX(def->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
+            STRPREFIX(def->ifname, VIR_NET_GENERATED_MACVTAP_PREFIX) ||
+            STRPREFIX(def->ifname, VIR_NET_GENERATED_MACVLAN_PREFIX) ||
             (prefix && STRPREFIX(def->ifname, prefix)))))) {
         /* Skip auto-generated target names for inactive config. */
         virBufferEscapeString(&attrBuf, " dev='%s'", def->ifname);
