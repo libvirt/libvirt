@@ -34,3 +34,9 @@ virHostCPUGetKVMMaxVCPUs(void)
 {
     return INT_MAX;
 }
+
+unsigned int
+virHostCPUGetMicrocodeVersion(virArch hostArch G_GNUC_UNUSED)
+{
+    return 0;
+}

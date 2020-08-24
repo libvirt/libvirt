@@ -75,7 +75,8 @@ virBitmapPtr virHostCPUGetSiblingsList(unsigned int cpu);
 
 int virHostCPUGetOnline(unsigned int cpu, bool *online);
 
-unsigned int virHostCPUGetMicrocodeVersion(virArch hostArch);
+unsigned int
+virHostCPUGetMicrocodeVersion(virArch hostArch) G_GNUC_NO_INLINE;
 
 int virHostCPUGetMSR(unsigned long index,
                      uint64_t *msr);
