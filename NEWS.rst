@@ -26,6 +26,17 @@ v6.7.0 (unreleased)
     Sparse streams (e.g. ``virsh vol-download --sparse`` or ``virsh vol-upload
     --sparse``) now handle if one of the stream ends is a block device.
 
+  * Remove NVDIMM auto-alignment for pSeries Guests
+
+    This feature was introduced in libvirt v6.2.0 as part of the overall
+    NVDIMM support for pSeries guests. The idea was to relieve the user
+    from knowing ppc64 alignment details, but the end result is that we
+    ended up with inconsistencies between domain XML and actual NVDIMM
+    size the guest is using. To promote consistency between domain XML
+    and the guest, unaligned NVDIMM sizes for pSeries guests will now be
+    forbidden and no size auto-alignment will be made. Instead, libvirt will
+    suggest an aligned round up size for the user.
+
 * **Bug fixes**
 
   * virdevmapper: Deal with kernels without DM support
