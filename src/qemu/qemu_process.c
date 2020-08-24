@@ -3320,8 +3320,26 @@ qemuProcessNotifyNets(virDomainDefPtr def)
          * domain to be unceremoniously killed, which would be *very*
          * impolite.
          */
-        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT)
+        switch (virDomainNetGetActualType(net)) {
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
             virNetDevMacVLanReserveName(net->ifname);
+            break;
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+            virNetDevTapReserveName(net->ifname);
+            break;
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        case VIR_DOMAIN_NET_TYPE_UDP:
+        case VIR_DOMAIN_NET_TYPE_LAST:
+            break;
+        }
 
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (!conn && !(conn = virGetConnectNetwork()))
