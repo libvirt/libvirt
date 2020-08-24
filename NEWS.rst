@@ -13,6 +13,12 @@ v6.7.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add support for initiator IQN configuration for iSCSI hostdevs
+
+    Similarly to iSCSI ``<disk>`` users can use an ``<initiator>`` element
+    inside ``<hostdev>`` with the same format to configure the ``IQN`` value
+    used by the qemu initiator when connecting to an iSCSI target.
+
 * **Improvements**
 
   * Allow sparse streams for block devices
