@@ -10643,6 +10643,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_INT,
      .help = N_("port to use by target server for incoming disks migration")
     },
+    {.name = "disks-uri",
+     .type = VSH_OT_STRING,
+     .help = N_("URI to use for disks migration (overrides --disks-port)")
+    },
     {.name = "comp-methods",
      .type = VSH_OT_STRING,
      .help = N_("comma separated list of compression methods to be used")
@@ -10760,6 +10764,14 @@ doMigrate(void *opaque)
     if (intOpt &&
         virTypedParamsAddInt(&params, &nparams, &maxparams,
                              VIR_MIGRATE_PARAM_DISKS_PORT, intOpt) < 0)
+        goto save_error;
+
+    if (vshCommandOptStringReq(ctl, cmd, "disks-uri", &opt) < 0)
+        goto out;
+    if (opt &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_DISKS_URI,
+                                opt) < 0)
         goto save_error;
 
     if (vshCommandOptStringReq(ctl, cmd, "dname", &opt) < 0)

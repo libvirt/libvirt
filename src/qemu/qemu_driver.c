@@ -11233,7 +11233,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
     ret = qemuMigrationDstPrepareDirect(driver, dconn,
                                         NULL, 0, NULL, NULL, /* No cookies */
                                         uri_in, uri_out,
-                                        &def, origname, NULL, 0, NULL, 0,
+                                        &def, origname, NULL, 0, NULL, 0, NULL,
                                         migParams, flags);
 
  cleanup:
@@ -11289,6 +11289,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
      */
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, NULL,
                                   NULL, dconnuri, uri, NULL, NULL, 0, NULL, 0,
+                                  NULL,
                                   migParams, cookie, cookielen,
                                   NULL, NULL, /* No output cookies in v2 */
                                   flags, dname, resource, false);
@@ -11459,7 +11460,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                                          cookieout, cookieoutlen,
                                          uri_in, uri_out,
                                          &def, origname, NULL, 0, NULL, 0,
-                                         migParams, flags);
+                                         NULL, migParams, flags);
 }
 
 static int
@@ -11485,6 +11486,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     g_autofree const char **migrate_disks = NULL;
     g_autofree char *origname = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
+    const char *nbdURI = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
     if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
@@ -11502,6 +11504,9 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_LISTEN_ADDRESS,
                                 &listenAddress) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DISKS_URI,
+                                &nbdURI) < 0 ||
         virTypedParamsGetInt(params, nparams,
                              VIR_MIGRATE_PARAM_DISKS_PORT,
                              &nbdPort) < 0)
@@ -11517,6 +11522,13 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
         return -1;
+
+    if (nbdURI && nbdPort) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Both port and URI requested for disk migration "
+                         "while being mutually exclusive"));
+        return -1;
+    }
 
     if (flags & VIR_MIGRATE_TUNNELLED) {
         /* this is a logical error; we never should have gotten here with
@@ -11540,7 +11552,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
                                          uri_in, uri_out,
                                          &def, origname, listenAddress,
                                          nmigrate_disks, migrate_disks, nbdPort,
-                                         migParams, flags);
+                                         nbdURI, migParams, flags);
 }
 
 
@@ -11682,7 +11694,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
 
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, xmlin, NULL,
                                   dconnuri, uri, NULL, NULL, 0, NULL, 0,
-                                  migParams,
+                                  NULL, migParams,
                                   cookiein, cookieinlen,
                                   cookieout, cookieoutlen,
                                   flags, dname, resource, true);
@@ -11716,6 +11728,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     unsigned long long bandwidth = 0;
     int nbdPort = 0;
     g_autoptr(qemuMigrationParams) migParams = NULL;
+    const char *nbdURI = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -11744,9 +11757,19 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                              VIR_MIGRATE_PARAM_DISKS_PORT,
                              &nbdPort) < 0 ||
         virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DISKS_URI,
+                                &nbdURI) < 0 ||
+        virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_PERSIST_XML,
                                 &persist_xml) < 0)
         goto cleanup;
+
+    if (nbdURI && nbdPort) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Both port and URI requested for disk migration "
+                         "while being mutually exclusive"));
+        goto cleanup;
+    }
 
     nmigrate_disks = virTypedParamsGetStringList(params, nparams,
                                                  VIR_MIGRATE_PARAM_MIGRATE_DISKS,
@@ -11768,7 +11791,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, dom_xml, persist_xml,
                                   dconnuri, uri, graphicsuri, listenAddress,
                                   nmigrate_disks, migrate_disks, nbdPort,
-                                  migParams,
+                                  nbdURI, migParams,
                                   cookiein, cookieinlen, cookieout, cookieoutlen,
                                   flags, dname, bandwidth, true);
  cleanup:

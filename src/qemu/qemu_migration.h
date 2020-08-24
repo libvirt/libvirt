@@ -84,6 +84,7 @@
     VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY, VIR_TYPED_PARAM_ULLONG, \
     VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS, VIR_TYPED_PARAM_INT, \
     VIR_MIGRATE_PARAM_TLS_DESTINATION, VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_DISKS_URI,     VIR_TYPED_PARAM_STRING, \
     NULL
 
 
@@ -149,6 +150,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
                               size_t nmigrate_disks,
                               const char **migrate_disks,
                               int nbdPort,
+                              const char *nbdURI,
                               qemuMigrationParamsPtr migParams,
                               unsigned long flags);
 
@@ -165,6 +167,7 @@ qemuMigrationSrcPerform(virQEMUDriverPtr driver,
                         size_t nmigrate_disks,
                         const char **migrate_disks,
                         int nbdPort,
+                        const char *nbdURI,
                         qemuMigrationParamsPtr migParams,
                         const char *cookiein,
                         int cookieinlen,

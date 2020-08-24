@@ -982,6 +982,19 @@ typedef enum {
 # define VIR_MIGRATE_PARAM_DISKS_PORT    "disks_port"
 
 /**
+ * VIR_MIGRATE_PARAM_DISKS_URI:
+ *
+ * virDomainMigrate* params field: URI used for incoming disks migration. Type
+ * is VIR_TYPED_PARAM_STRING. Only schemes "tcp" and "unix" are accepted. TCP
+ * URI can currently only provide a server and port to listen on (and connect
+ * to), UNIX URI may only provide a path component for a UNIX socket. This is
+ * currently only supported by the QEMU driver.  UNIX URI is only usable if the
+ * management application makes sure that socket created with this name on the
+ * destination will be reachable from the source under the same exact path.
+ */
+# define VIR_MIGRATE_PARAM_DISKS_URI    "disks_uri"
+
+/**
  * VIR_MIGRATE_PARAM_COMPRESSION:
  *
  * virDomainMigrate* params multiple field: name of the method used to
