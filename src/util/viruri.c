@@ -393,3 +393,33 @@ virURIGetParam(virURIPtr uri, const char *name)
                    _("Missing URI parameter '%s'"), name);
     return NULL;
 }
+
+
+/**
+ * virURICheckUnixSocket:
+ * @uri: URI to check
+ *
+ * Check if the URI looks like it refers to a non-standard socket path.  In such
+ * scenario the socket might be proxied to a remote server even though the URI
+ * looks like it is only local.
+ *
+ * Returns: true if the URI might be proxied to a remote server
+ */
+bool
+virURICheckUnixSocket(virURIPtr uri)
+{
+    size_t i = 0;
+
+    if (!uri->scheme)
+        return false;
+
+    if (STRNEQ_NULLABLE(strchr(uri->scheme, '+'), "+unix"))
+        return false;
+
+    for (i = 0; i < uri->paramsCount; i++) {
+        if (STREQ(uri->params[i].name, "socket"))
+            return true;
+    }
+
+    return false;
+}

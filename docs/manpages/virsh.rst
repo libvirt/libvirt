@@ -3235,6 +3235,15 @@ has different semantics:
 
 * peer2peer migration: the *desturi* is an address of the target host as seen from the source machine.
 
+In a special circumstance where you require a complete control of the connection
+and/or libvirt does not have network access to the remote side you can use a
+UNIX transport in the URI and specify a socket path in the query, for example
+with the qemu driver you could use this:
+
+.. code-block::
+
+      qemu+unix:///system?socket=/path/to/socket
+
 When *migrateuri* is not specified, libvirt will automatically determine the
 hypervisor specific URI.  Some hypervisors, including QEMU, have an optional
 "migration_host" configuration parameter (useful when the host has multiple

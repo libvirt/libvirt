@@ -83,7 +83,7 @@ mymain(void)
 
     TEST("scheme://some.cryptorandom.fqdn.tld");
 
-    TEST_FAIL("hehe+unix:///?socket=/path/to/some-sock");
+    TEST("hehe+unix:///?socket=/path/to/some-sock");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
