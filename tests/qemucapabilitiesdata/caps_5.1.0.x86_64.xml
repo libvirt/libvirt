@@ -242,10 +242,10 @@
   <flag name='intel-iommu.aw-bits'/>
   <flag name='numa.hmat'/>
   <flag name='blockdev-hostdev-scsi'/>
-  <version>5000092</version>
+  <version>5001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
-  <package>v5.1.0-rc2</package>
+  <package>v5.1.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
