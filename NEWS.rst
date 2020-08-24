@@ -22,6 +22,12 @@ v6.8.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Allow migration over UNIX sockets
+
+    QEMU migration can now be performed completely over UNIX sockets. This is
+    useful for containerised scenarios and can be used in both peer2peer and
+    direct migrations.
+
 * **Bug fixes**
 
 
