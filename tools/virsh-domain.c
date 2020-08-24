@@ -10708,7 +10708,6 @@ doMigrate(void *opaque)
     virDomainPtr dom = NULL;
     const char *desturi = NULL;
     const char *opt = NULL;
-    int disksPort = 0;
     unsigned int flags = 0;
     virshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
@@ -10756,11 +10755,11 @@ doMigrate(void *opaque)
                                 VIR_MIGRATE_PARAM_LISTEN_ADDRESS, opt) < 0)
         goto save_error;
 
-    if (vshCommandOptInt(ctl, cmd, "disks-port", &disksPort) < 0)
+    if (vshCommandOptInt(ctl, cmd, "disks-port", &intOpt) < 0)
         goto out;
-    if (disksPort &&
+    if (intOpt &&
         virTypedParamsAddInt(&params, &nparams, &maxparams,
-                             VIR_MIGRATE_PARAM_DISKS_PORT, disksPort) < 0)
+                             VIR_MIGRATE_PARAM_DISKS_PORT, intOpt) < 0)
         goto save_error;
 
     if (vshCommandOptStringReq(ctl, cmd, "dname", &opt) < 0)
