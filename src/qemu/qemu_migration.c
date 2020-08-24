@@ -383,12 +383,13 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    unsigned short port = 0;
     size_t i;
     virStorageNetHostDef server = {
         .name = (char *)listenAddr, /* cast away const */
         .transport = VIR_STORAGE_NET_HOST_TRANS_TCP,
+        .port = nbdPort,
     };
+    bool server_started = false;
 
     if (nbdPort < 0 || nbdPort > USHRT_MAX) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -424,20 +425,27 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
             devicename = diskAlias;
         }
 
+        if (!server_started) {
+            if (server.port) {
+                if (virPortAllocatorSetUsed(server.port) < 0)
+                    goto cleanup;
+            } else {
+                unsigned short port = 0;
+
+                if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
+                    goto cleanup;
+
+                server.port = port;
+            }
+        }
+
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
             goto cleanup;
 
-        if (port == 0) {
-            if (nbdPort)
-                port = nbdPort;
-            else if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
-                goto exit_monitor;
-
-            server.port = port;
-            if (qemuMonitorNBDServerStart(priv->mon, &server, tls_alias) < 0)
-                goto exit_monitor;
-        }
+        if (!server_started &&
+            qemuMonitorNBDServerStart(priv->mon, &server, tls_alias) < 0)
+            goto exit_monitor;
 
         if (qemuMonitorNBDServerAdd(priv->mon, devicename, exportname, true, NULL) < 0)
             goto exit_monitor;
@@ -445,12 +453,13 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    priv->nbdPort = port;
+    priv->nbdPort = server.port;
+
     ret = 0;
 
  cleanup:
-    if (ret < 0 && nbdPort == 0)
-        virPortAllocatorRelease(port);
+    if (ret < 0)
+        virPortAllocatorRelease(server.port);
     return ret;
 
  exit_monitor:
