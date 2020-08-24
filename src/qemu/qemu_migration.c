@@ -3369,7 +3369,7 @@ qemuMigrationSrcConnect(virQEMUDriverPtr driver,
 {
     virNetSocketPtr sock;
     const char *host;
-    char *port = NULL;
+    g_autofree char *port = NULL;
     int ret = -1;
 
     host = spec->dest.host.name;
@@ -3400,7 +3400,6 @@ qemuMigrationSrcConnect(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(port);
     if (ret < 0)
         VIR_FORCE_CLOSE(spec->dest.fd.qemu);
     return ret;
