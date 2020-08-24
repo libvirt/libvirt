@@ -763,21 +763,15 @@ qemuMigrationCapsToJSON(virBitmapPtr caps,
     qemuMigrationCapability bit;
 
     for (bit = 0; bit < QEMU_MIGRATION_CAP_LAST; bit++) {
-        g_autoptr(virJSONValue) cap = virJSONValueNewObject();
-        const char *name = qemuMigrationCapabilityTypeToString(bit);
-        bool supported = false;
-        bool state = false;
+        g_autoptr(virJSONValue) cap = NULL;
 
-        ignore_value(virBitmapGetBit(caps, bit, &supported));
-        if (!supported)
+        if (!virBitmapIsBitSet(caps, bit))
             continue;
 
-        ignore_value(virBitmapGetBit(states, bit, &state));
-
-        if (virJSONValueObjectAppendString(cap, "capability", name) < 0)
-            return NULL;
-
-        if (virJSONValueObjectAppendBoolean(cap, "state", state) < 0)
+        if (virJSONValueObjectCreate(&cap,
+                                     "s:capability", qemuMigrationCapabilityTypeToString(bit),
+                                     "b:state", virBitmapIsBitSet(states, bit),
+                                     NULL) < 0)
             return NULL;
 
         if (virJSONValueArrayAppend(json, cap) < 0)
