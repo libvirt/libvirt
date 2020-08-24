@@ -8025,7 +8025,7 @@ qemuDomainAgentAvailable(virDomainObjPtr vm,
 
 
 static unsigned long long
-qemuDomainGetMemorySizeAlignment(virDomainDefPtr def)
+qemuDomainGetMemorySizeAlignment(const virDomainDef *def)
 {
     /* PPC requires the memory sizes to be rounded to 256MiB increments, so
      * round them to the size always. */
