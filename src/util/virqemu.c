@@ -22,18 +22,12 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-
 #include "virbuffer.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virqemu.h"
 #include "virstring.h"
 #include "viralloc.h"
-#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -446,128 +440,4 @@ virQEMUBuildQemuImgKeySecretOpts(virBufferPtr buf,
         virQEMUBuildBufferEscapeComma(buf, encinfo->ivgen_hash);
         virBufferAddLit(buf, ",");
     }
-}
-
-
-int
-virQEMUFileOpenAs(uid_t fallback_uid,
-                  gid_t fallback_gid,
-                  bool dynamicOwnership,
-                  const char *path,
-                  int oflags,
-                  bool *needUnlink)
-{
-    struct stat sb;
-    bool is_reg = true;
-    bool need_unlink = false;
-    unsigned int vfoflags = 0;
-    int fd = -1;
-    int path_shared = virFileIsSharedFS(path);
-    uid_t uid = geteuid();
-    gid_t gid = getegid();
-
-    /* path might be a pre-existing block dev, in which case
-     * we need to skip the create step, and also avoid unlink
-     * in the failure case */
-    if (oflags & O_CREAT) {
-        need_unlink = true;
-
-        /* Don't force chown on network-shared FS
-         * as it is likely to fail. */
-        if (path_shared <= 0 || dynamicOwnership)
-            vfoflags |= VIR_FILE_OPEN_FORCE_OWNER;
-
-        if (stat(path, &sb) == 0) {
-            /* It already exists, we don't want to delete it on error */
-            need_unlink = false;
-
-            is_reg = !!S_ISREG(sb.st_mode);
-            /* If the path is regular file which exists
-             * already and dynamic_ownership is off, we don't
-             * want to change its ownership, just open it as-is */
-            if (is_reg && !dynamicOwnership) {
-                uid = sb.st_uid;
-                gid = sb.st_gid;
-            }
-        }
-    }
-
-    /* First try creating the file as root */
-    if (!is_reg) {
-        if ((fd = open(path, oflags & ~O_CREAT)) < 0) {
-            fd = -errno;
-            goto error;
-        }
-    } else {
-        if ((fd = virFileOpenAs(path, oflags, S_IRUSR | S_IWUSR, uid, gid,
-                                vfoflags | VIR_FILE_OPEN_NOFORK)) < 0) {
-            /* If we failed as root, and the error was permission-denied
-               (EACCES or EPERM), assume it's on a network-connected share
-               where root access is restricted (eg, root-squashed NFS). If the
-               qemu user is non-root, just set a flag to
-               bypass security driver shenanigans, and retry the operation
-               after doing setuid to qemu user */
-            if ((fd != -EACCES && fd != -EPERM) || fallback_uid == geteuid())
-                goto error;
-
-            /* On Linux we can also verify the FS-type of the directory. */
-            switch (path_shared) {
-                case 1:
-                    /* it was on a network share, so we'll continue
-                     * as outlined above
-                     */
-                    break;
-
-                case -1:
-                    virReportSystemError(-fd, oflags & O_CREAT
-                                         ? _("Failed to create file "
-                                             "'%s': couldn't determine fs type")
-                                         : _("Failed to open file "
-                                             "'%s': couldn't determine fs type"),
-                                         path);
-                    goto cleanup;
-
-                case 0:
-                default:
-                    /* local file - log the error returned by virFileOpenAs */
-                    goto error;
-            }
-
-            /* If we created the file above, then we need to remove it;
-             * otherwise, the next attempt to create will fail. If the
-             * file had already existed before we got here, then we also
-             * don't want to delete it and allow the following to succeed
-             * or fail based on existing protections
-             */
-            if (need_unlink)
-                unlink(path);
-
-            /* Retry creating the file as qemu user */
-
-            /* Since we're passing different modes... */
-            vfoflags |= VIR_FILE_OPEN_FORCE_MODE;
-
-            if ((fd = virFileOpenAs(path, oflags,
-                                    S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
-                                    fallback_uid, fallback_gid,
-                                    vfoflags | VIR_FILE_OPEN_FORK)) < 0) {
-                virReportSystemError(-fd, oflags & O_CREAT
-                                     ? _("Error from child process creating '%s'")
-                                     : _("Error from child process opening '%s'"),
-                                     path);
-                goto cleanup;
-            }
-        }
-    }
- cleanup:
-    if (needUnlink)
-        *needUnlink = need_unlink;
-    return fd;
-
- error:
-    virReportSystemError(-fd, oflags & O_CREAT
-                         ? _("Failed to create file '%s'")
-                         : _("Failed to open file '%s'"),
-                         path);
-    goto cleanup;
 }

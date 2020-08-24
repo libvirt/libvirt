@@ -1024,6 +1024,13 @@ void qemuDomainRemoveInactiveJob(virQEMUDriverPtr driver,
 void qemuDomainRemoveInactiveJobLocked(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm);
 
+int virQEMUFileOpenAs(uid_t fallback_uid,
+                      gid_t fallback_gid,
+                      bool dynamicOwnership,
+                      const char *path,
+                      int oflags,
+                      bool *needUnlink);
+
 int
 qemuDomainOpenFile(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,

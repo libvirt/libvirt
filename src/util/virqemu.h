@@ -63,10 +63,3 @@ void virQEMUBuildQemuImgKeySecretOpts(virBufferPtr buf,
                                       virStorageEncryptionInfoDefPtr enc,
                                       const char *alias)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-int virQEMUFileOpenAs(uid_t fallback_uid,
-                      gid_t fallback_gid,
-                      bool dynamicOwnership,
-                      const char *path,
-                      int oflags,
-                      bool *needUnlink);
