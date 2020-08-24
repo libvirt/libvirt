@@ -3368,24 +3368,24 @@ qemuMigrationSrcConnect(virQEMUDriverPtr driver,
                         qemuMigrationSpecPtr spec)
 {
     virNetSocketPtr sock;
-    const char *host;
     g_autofree char *port = NULL;
+    int fd_qemu = -1;
     int ret = -1;
-
-    host = spec->dest.host.name;
-    port = g_strdup_printf("%d", spec->dest.host.port);
-
-    spec->destType = MIGRATION_DEST_FD;
-    spec->dest.fd.qemu = -1;
 
     if (qemuSecuritySetSocketLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
-    if (virNetSocketNewConnectTCP(host, port,
+    port = g_strdup_printf("%d", spec->dest.host.port);
+    if (virNetSocketNewConnectTCP(spec->dest.host.name,
+                                  port,
                                   AF_UNSPEC,
                                   &sock) == 0) {
-        spec->dest.fd.qemu = virNetSocketDupFD(sock, true);
+        fd_qemu = virNetSocketDupFD(sock, true);
         virObjectUnref(sock);
     }
+
+    spec->destType = MIGRATION_DEST_FD;
+    spec->dest.fd.qemu = fd_qemu;
+
     if (qemuSecurityClearSocketLabel(driver->securityManager, vm->def) < 0 ||
         spec->dest.fd.qemu == -1)
         goto cleanup;
