@@ -5502,7 +5502,7 @@ virQEMUCapsNewData(const char *binary,
                                            priv->runUid,
                                            priv->runGid,
                                            priv->hostCPUSignature,
-                                           virHostCPUGetMicrocodeVersion(),
+                                           virHostCPUGetMicrocodeVersion(priv->hostArch),
                                            priv->kernelVersion);
 }
 
@@ -5636,7 +5636,7 @@ virQEMUCapsCacheLookup(virFileCachePtr cache,
     virQEMUCapsCachePrivPtr priv = virFileCacheGetPriv(cache);
     virQEMUCapsPtr ret = NULL;
 
-    priv->microcodeVersion = virHostCPUGetMicrocodeVersion();
+    priv->microcodeVersion = virHostCPUGetMicrocodeVersion(priv->hostArch);
 
     ret = virFileCacheLookup(cache, binary);
 

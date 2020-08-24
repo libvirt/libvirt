@@ -1239,11 +1239,14 @@ virHostCPUGetKVMMaxVCPUs(void)
  * some reason.
  */
 unsigned int
-virHostCPUGetMicrocodeVersion(void)
+virHostCPUGetMicrocodeVersion(virArch hostArch)
 {
     g_autofree char *outbuf = NULL;
     char *cur;
     unsigned int version = 0;
+
+    if (!ARCH_IS_X86(hostArch))
+        return 0;
 
     if (virFileReadHeaderQuiet(CPUINFO_PATH, 4096, &outbuf) < 0) {
         VIR_DEBUG("Failed to read microcode version from %s: %s",
@@ -1268,7 +1271,7 @@ virHostCPUGetMicrocodeVersion(void)
 #else
 
 unsigned int
-virHostCPUGetMicrocodeVersion(void)
+virHostCPUGetMicrocodeVersion(virArch hostArch G_GNUC_UNUSED)
 {
     return 0;
 }
