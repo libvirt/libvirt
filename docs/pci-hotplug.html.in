@@ -56,7 +56,7 @@
     </p>
     <p>
       If you have a very specific use case, such as the appliances
-      used by <a href="http://libguestfs.org/">libguestfs</a> behind
+      used by <a href="https://libguestfs.org/">libguestfs</a> behind
       the scenes to access disk images, and this automatically-added
       <code>pcie-root-port</code> controller ends up being a nuisance,
       you can prevent libvirt from adding it by manually managing PCI

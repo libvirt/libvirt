@@ -33,7 +33,7 @@
     <h2><a id="command">Command line tools</a></h2>
 
     <dl>
-      <dt><a href="http://libguestfs.org">guestfish</a></dt>
+      <dt><a href="https://libguestfs.org">guestfish</a></dt>
       <dd>
         Guestfish is an interactive shell and command-line tool for examining
         and modifying virtual machine filesystems.  It uses libvirt to find
@@ -152,7 +152,7 @@
     <h2><a id="conversion">Conversion</a></h2>
 
     <dl>
-      <dt><a href="http://libguestfs.org/virt-p2v.1.html">virt-p2v</a></dt>
+      <dt><a href="https://libguestfs.org/virt-p2v.1.html">virt-p2v</a></dt>
       <dd>
         Convert a physical machine to run on KVM.  It is a LiveCD
         which is booted on the machine to be converted.  It collects a
@@ -160,7 +160,7 @@
         to a remote machine and defines the XML for a domain to run
         the guest.  (Note this tool is included with libguestfs)
       </dd>
-      <dt><a href="http://libguestfs.org/virt-v2v.1.html">virt-v2v</a></dt>
+      <dt><a href="https://libguestfs.org/virt-v2v.1.html">virt-v2v</a></dt>
       <dd>
         virt-v2v converts guests from a foreign hypervisor to run on
         KVM, managed by libvirt.  It can convert guests from VMware or
@@ -277,7 +277,7 @@
     <h2><a id="libraries">Libraries</a></h2>
 
     <dl>
-      <dt><a href="http://libguestfs.org">libguestfs</a></dt>
+      <dt><a href="https://libguestfs.org">libguestfs</a></dt>
       <dd>
         A library and set of tools for accessing and modifying virtual
         machine disk images.  It can be linked with C and C++ management
@@ -310,7 +310,7 @@
     <h2><a id="livecd">LiveCD / Appliances</a></h2>
 
     <dl>
-      <dt><a href="http://libguestfs.org/virt-v2v/">virt-p2v</a></dt>
+      <dt><a href="https://libguestfs.org/virt-v2v/">virt-p2v</a></dt>
       <dd>
         An older tool for converting a physical machine into a virtual
         machine.  It is a LiveCD which is booted on the machine to be

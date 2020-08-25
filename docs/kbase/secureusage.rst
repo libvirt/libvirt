@@ -77,7 +77,7 @@ time.
 **Recommendation:** if there is a need to access the content of a disk
 image, use a single-use throwaway virtual machine to access the data.
 Never mount disk images on the host OS. Ideally make use of the
-`libguestfs <http://libguestfs.org>`__ tools and APIs for accessing
+`libguestfs <https://libguestfs.org>`__ tools and APIs for accessing
 disks
 
 Guest migration network
