@@ -58,7 +58,7 @@ Remote libvirt supports a range of transports:
 </p>
     <dl>
       <dt><code>tls</code></dt>
-      <dd><a href="http://en.wikipedia.org/wiki/Transport_Layer_Security" title="Transport Layer Security">TLS</a>
+      <dd><a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" title="Transport Layer Security">TLS</a>
  1.0 (SSL 3.1) authenticated and encrypted TCP/IP socket, usually
  listening on a public port number.  To use this you will need to
  <a href="tlscerts.html" title="Generating TLS certificates">generate client and

@@ -135,7 +135,7 @@ server.  May be enabled and disabled in the <a href="#Remote_libvirtd_configurat
     </ul>
     <p>
 For full certificate checking you will need to have certificates
-issued by a recognised <a href="http://en.wikipedia.org/wiki/Certificate_authority">Certificate
+issued by a recognised <a href="https://en.wikipedia.org/wiki/Certificate_authority">Certificate
 Authority (CA)</a> for your server(s) and all clients.  To avoid the
 expense of getting certificates from a commercial CA, you can set up
 your own CA and tell your server(s) and clients to trust certificates

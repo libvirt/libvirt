@@ -25,49 +25,49 @@
 
 typedef enum {
     VIR_ARCH_NONE,
-    VIR_ARCH_ALPHA,        /* Alpha       64 BE http://en.wikipedia.org/wiki/DEC_Alpha */
-    VIR_ARCH_ARMV6L,       /* ARMv6       32 LE http://en.wikipedia.org/wiki/ARM_architecture */
-    VIR_ARCH_ARMV7L,       /* ARMv7       32 LE http://en.wikipedia.org/wiki/ARM_architecture */
-    VIR_ARCH_ARMV7B,       /* ARMv7       32 BE http://en.wikipedia.org/wiki/ARM_architecture */
+    VIR_ARCH_ALPHA,        /* Alpha       64 BE https://en.wikipedia.org/wiki/DEC_Alpha */
+    VIR_ARCH_ARMV6L,       /* ARMv6       32 LE https://en.wikipedia.org/wiki/ARM_architecture */
+    VIR_ARCH_ARMV7L,       /* ARMv7       32 LE https://en.wikipedia.org/wiki/ARM_architecture */
+    VIR_ARCH_ARMV7B,       /* ARMv7       32 BE https://en.wikipedia.org/wiki/ARM_architecture */
 
-    VIR_ARCH_AARCH64,      /* ARMv8       64 LE http://en.wikipedia.org/wiki/ARM_architecture */
-    VIR_ARCH_CRIS,         /* ETRAX       32 LE http://en.wikipedia.org/wiki/ETRAX_CRIS */
-    VIR_ARCH_I686,         /* x86         32 LE http://en.wikipedia.org/wiki/X86 */
-    VIR_ARCH_ITANIUM,      /* Itanium     64 LE http://en.wikipedia.org/wiki/Itanium */
-    VIR_ARCH_LM32,         /* MilkyMist   32 BE http://en.wikipedia.org/wiki/Milkymist */
+    VIR_ARCH_AARCH64,      /* ARMv8       64 LE https://en.wikipedia.org/wiki/ARM_architecture */
+    VIR_ARCH_CRIS,         /* ETRAX       32 LE https://en.wikipedia.org/wiki/ETRAX_CRIS */
+    VIR_ARCH_I686,         /* x86         32 LE https://en.wikipedia.org/wiki/X86 */
+    VIR_ARCH_ITANIUM,      /* Itanium     64 LE https://en.wikipedia.org/wiki/Itanium */
+    VIR_ARCH_LM32,         /* MilkyMist   32 BE https://en.wikipedia.org/wiki/Milkymist */
 
-    VIR_ARCH_M68K,         /* m68k        32 BE http://en.wikipedia.org/wiki/Motorola_68000_family */
-    VIR_ARCH_MICROBLAZE,   /* Microblaze  32 BE http://en.wikipedia.org/wiki/MicroBlaze */
-    VIR_ARCH_MICROBLAZEEL, /* Microblaze  32 LE http://en.wikipedia.org/wiki/MicroBlaze */
-    VIR_ARCH_MIPS,         /* MIPS        32 BE http://en.wikipedia.org/wiki/MIPS_architecture */
-    VIR_ARCH_MIPSEL,       /* MIPS        32 LE http://en.wikipedia.org/wiki/MIPS_architecture */
+    VIR_ARCH_M68K,         /* m68k        32 BE https://en.wikipedia.org/wiki/Motorola_68000_family */
+    VIR_ARCH_MICROBLAZE,   /* Microblaze  32 BE https://en.wikipedia.org/wiki/MicroBlaze */
+    VIR_ARCH_MICROBLAZEEL, /* Microblaze  32 LE https://en.wikipedia.org/wiki/MicroBlaze */
+    VIR_ARCH_MIPS,         /* MIPS        32 BE https://en.wikipedia.org/wiki/MIPS_architecture */
+    VIR_ARCH_MIPSEL,       /* MIPS        32 LE https://en.wikipedia.org/wiki/MIPS_architecture */
 
-    VIR_ARCH_MIPS64,       /* MIPS        64 BE http://en.wikipedia.org/wiki/MIPS_architecture */
-    VIR_ARCH_MIPS64EL,     /* MIPS        64 LE http://en.wikipedia.org/wiki/MIPS_architecture */
-    VIR_ARCH_OR32,         /* OpenRisc    32 BE http://en.wikipedia.org/wiki/OpenRISC#QEMU_support */
-    VIR_ARCH_PARISC,       /* PA-Risc     32 BE http://en.wikipedia.org/wiki/PA-RISC */
-    VIR_ARCH_PARISC64,     /* PA-Risc     64 BE http://en.wikipedia.org/wiki/PA-RISC */
+    VIR_ARCH_MIPS64,       /* MIPS        64 BE https://en.wikipedia.org/wiki/MIPS_architecture */
+    VIR_ARCH_MIPS64EL,     /* MIPS        64 LE https://en.wikipedia.org/wiki/MIPS_architecture */
+    VIR_ARCH_OR32,         /* OpenRisc    32 BE https://en.wikipedia.org/wiki/OpenRISC#QEMU_support */
+    VIR_ARCH_PARISC,       /* PA-Risc     32 BE https://en.wikipedia.org/wiki/PA-RISC */
+    VIR_ARCH_PARISC64,     /* PA-Risc     64 BE https://en.wikipedia.org/wiki/PA-RISC */
 
-    VIR_ARCH_PPC,          /* PowerPC     32 BE http://en.wikipedia.org/wiki/PowerPC */
-    VIR_ARCH_PPCLE,        /* PowerPC     32 LE http://en.wikipedia.org/wiki/PowerPC */
-    VIR_ARCH_PPC64,        /* PowerPC     64 BE http://en.wikipedia.org/wiki/PowerPC */
-    VIR_ARCH_PPC64LE,      /* PowerPC     64 LE http://en.wikipedia.org/wiki/PowerPC */
-    VIR_ARCH_PPCEMB,       /* PowerPC     32 BE http://en.wikipedia.org/wiki/PowerPC */
+    VIR_ARCH_PPC,          /* PowerPC     32 BE https://en.wikipedia.org/wiki/PowerPC */
+    VIR_ARCH_PPCLE,        /* PowerPC     32 LE https://en.wikipedia.org/wiki/PowerPC */
+    VIR_ARCH_PPC64,        /* PowerPC     64 BE https://en.wikipedia.org/wiki/PowerPC */
+    VIR_ARCH_PPC64LE,      /* PowerPC     64 LE https://en.wikipedia.org/wiki/PowerPC */
+    VIR_ARCH_PPCEMB,       /* PowerPC     32 BE https://en.wikipedia.org/wiki/PowerPC */
 
-    VIR_ARCH_RISCV32,      /* RISC-V      32 LE http://en.wikipedia.org/wiki/RISC-V */
-    VIR_ARCH_RISCV64,      /* RISC-V      64 LE http://en.wikipedia.org/wiki/RISC-V */
-    VIR_ARCH_S390,         /* S390        32 BE http://en.wikipedia.org/wiki/S390 */
-    VIR_ARCH_S390X,        /* S390        64 BE http://en.wikipedia.org/wiki/S390x */
-    VIR_ARCH_SH4,          /* SuperH4     32 LE http://en.wikipedia.org/wiki/SuperH */
+    VIR_ARCH_RISCV32,      /* RISC-V      32 LE https://en.wikipedia.org/wiki/RISC-V */
+    VIR_ARCH_RISCV64,      /* RISC-V      64 LE https://en.wikipedia.org/wiki/RISC-V */
+    VIR_ARCH_S390,         /* S390        32 BE https://en.wikipedia.org/wiki/S390 */
+    VIR_ARCH_S390X,        /* S390        64 BE https://en.wikipedia.org/wiki/S390x */
+    VIR_ARCH_SH4,          /* SuperH4     32 LE https://en.wikipedia.org/wiki/SuperH */
 
-    VIR_ARCH_SH4EB,        /* SuperH4     32 BE http://en.wikipedia.org/wiki/SuperH */
-    VIR_ARCH_SPARC,        /* Sparc       32 BE http://en.wikipedia.org/wiki/Sparc */
-    VIR_ARCH_SPARC64,      /* Sparc       64 BE http://en.wikipedia.org/wiki/Sparc */
-    VIR_ARCH_UNICORE32,    /* UniCore     32 LE http://en.wikipedia.org/wiki/Unicore */
-    VIR_ARCH_X86_64,       /* x86         64 LE http://en.wikipedia.org/wiki/X86 */
+    VIR_ARCH_SH4EB,        /* SuperH4     32 BE https://en.wikipedia.org/wiki/SuperH */
+    VIR_ARCH_SPARC,        /* Sparc       32 BE https://en.wikipedia.org/wiki/Sparc */
+    VIR_ARCH_SPARC64,      /* Sparc       64 BE https://en.wikipedia.org/wiki/Sparc */
+    VIR_ARCH_UNICORE32,    /* UniCore     32 LE https://en.wikipedia.org/wiki/Unicore */
+    VIR_ARCH_X86_64,       /* x86         64 LE https://en.wikipedia.org/wiki/X86 */
 
-    VIR_ARCH_XTENSA,       /* XTensa      32 LE http://en.wikipedia.org/wiki/Xtensa#Processor_Cores */
-    VIR_ARCH_XTENSAEB,     /* XTensa      32 BE http://en.wikipedia.org/wiki/Xtensa#Processor_Cores */
+    VIR_ARCH_XTENSA,       /* XTensa      32 LE https://en.wikipedia.org/wiki/Xtensa#Processor_Cores */
+    VIR_ARCH_XTENSAEB,     /* XTensa      32 BE https://en.wikipedia.org/wiki/Xtensa#Processor_Cores */
 
     VIR_ARCH_LAST,
 } virArch;

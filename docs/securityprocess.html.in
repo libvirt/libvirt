@@ -78,7 +78,7 @@
 
     <p>
       The libvirt security team operates a policy of
-      <a href="http://en.wikipedia.org/wiki/Responsible_disclosure">responsible disclosure</a>.
+      <a href="https://en.wikipedia.org/wiki/Responsible_disclosure">responsible disclosure</a>.
       As such any security issue reported, that is not already publicly disclosed
       elsewhere, will have an embargo date assigned. Members of the security team agree
       not to publicly disclose any details of the security issue until the embargo

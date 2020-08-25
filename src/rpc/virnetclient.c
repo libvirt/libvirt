@@ -1838,7 +1838,7 @@ static void virNetClientIOUpdateCallback(virNetClientPtr client,
  *
  * We call this dance  'passing the buck'
  *
- *      http://en.wikipedia.org/wiki/Passing_the_buck
+ *      https://en.wikipedia.org/wiki/Passing_the_buck
  *
  *   "Buck passing or passing the buck is the action of transferring
  *    responsibility or blame unto another person. It is also used as

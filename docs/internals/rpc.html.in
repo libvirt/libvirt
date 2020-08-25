@@ -22,7 +22,7 @@
     <p>
       libvirt uses a simple, variable length, packet based RPC protocol.
       All structured data within packets is encoded using the
-      <a href="http://en.wikipedia.org/wiki/External_Data_Representation">XDR standard</a>
+      <a href="https://en.wikipedia.org/wiki/External_Data_Representation">XDR standard</a>
       as currently defined by <a href="https://tools.ietf.org/html/rfc4506">RFC 4506</a>.
       On any connection running the RPC protocol, there can be multiple
       programs active, each supporting one or more versions. A program

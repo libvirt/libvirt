@@ -1036,7 +1036,7 @@ Memory Tuning
    QEMU and KVM are strongly advised not to set this limit as domain may get
    killed by the kernel if the guess is too low, and determining the memory
    needed for a process to run is an `undecidable
-   problem <http://en.wikipedia.org/wiki/Undecidable_problem>`__; that said, if
+   problem <https://en.wikipedia.org/wiki/Undecidable_problem>`__; that said, if
    you already set ``locked`` in `memory backing <#elementsMemoryBacking>`__
    because your workload demands it, you'll have to take into account the
    specifics of your deployment and figure out a value for ``hard_limit`` that
