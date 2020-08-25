@@ -2306,7 +2306,7 @@ if git
   endforeach
 
   authors = run_command(python3_prog, meson_gen_authors_prog.path(), env: runutf8)
-  authors_file = 'AUTHORS.in'
+  authors_file = 'AUTHORS.rst.in'
 
   authors_conf = configuration_data()
   authors_conf.set('contributorslist', authors.stdout())
@@ -2320,7 +2320,7 @@ if git
   # Using return values from configure_file in add_dist_script is possible since 0.55.0
   dist_files = [
     'libvirt.spec',
-    'AUTHORS',
+    'AUTHORS.rst',
   ]
 
   foreach file : dist_files
