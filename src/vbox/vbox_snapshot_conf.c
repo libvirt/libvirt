@@ -571,6 +571,8 @@ virVBoxSnapshotConfMachineFree(virVBoxSnapshotConfMachinePtr machine)
     VIR_FREE(machine);
 }
 
+#define VBOX_SETTINGS_NS "http://www.innotek.de/VirtualBox-settings"
+
 /*
  *vboxSnapshotLoadVboxFile: Create a vboxSnapshotXmlMachinePtr from a VirtualBoxl xml file.
  *return an initialized vboxSnapshotXmlMachinePtr on success
@@ -613,10 +615,10 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
 
     if (xmlXPathRegisterNs(xPathContext,
                            BAD_CAST "vbox",
-                           BAD_CAST "http://www.innotek.de/VirtualBox-settings") < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Failed to register xml namespace "
-                         "'http://www.innotek.de/VirtualBox-settings'"));
+                           BAD_CAST VBOX_SETTINGS_NS) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Failed to register xml namespace '%s'"),
+                       VBOX_SETTINGS_NS);
         goto cleanup;
     }
 
@@ -1015,7 +1017,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
     }
     if (xmlNewProp(cur,
                    BAD_CAST "xmlns",
-                   BAD_CAST "http://www.innotek.de/VirtualBox-settings") == NULL) {
+                   BAD_CAST VBOX_SETTINGS_NS) == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Error in xmlNewProp"));
         goto cleanup;
