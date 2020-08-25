@@ -5732,6 +5732,7 @@ pool-create-as
    pool-create-as name type
       [--source-host hostname] [--source-path path] [--source-dev path]
       [--source-name name] [--target path] [--source-format format]
+      [--source-initiator initiator-iqn]
       [--auth-type authtype --auth-username username
       [--secret-usage usage | --secret-uuid uuid]]
       [--source-protocol-ver ver]
@@ -5768,6 +5769,9 @@ the host file system.
 
 [*--source-format format*] provides information about the format of the
 pool (pool types fs, netfs, disk, logical).
+
+[*--source-initiator initiator-iqn*] provides the initiator iqn for iscsi
+connection of the pool (pool type iscsi-direct).
 
 [*--auth-type authtype* *--auth-username username*
 [*--secret-usage usage* | *--secret-uuid uuid*]]
@@ -5831,6 +5835,7 @@ pool-define-as
    pool-define-as name type
       [--source-host hostname] [--source-path path] [--source-dev path]
       [*--source-name name*] [*--target path*] [*--source-format format*]
+      [--source-initiator initiator-iqn]
       [*--auth-type authtype* *--auth-username username*
       [*--secret-usage usage* | *--secret-uuid uuid*]]
       [*--source-protocol-ver ver*]

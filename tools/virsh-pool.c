@@ -141,6 +141,10 @@
     {.name = "source-protocol-ver", \
      .type = VSH_OT_STRING, \
      .help = N_("nfsvers value for NFS pool mount option") \
+    }, \
+    {.name = "source-initiator", \
+     .type = VSH_OT_STRING, \
+     .help = N_("initiator iqn for underlying storage") \
     }
 
 virStoragePoolPtr
@@ -324,7 +328,8 @@ virshBuildPoolXML(vshControl *ctl,
                *secretUsage = NULL, *adapterName = NULL, *adapterParent = NULL,
                *adapterWwnn = NULL, *adapterWwpn = NULL, *secretUUID = NULL,
                *adapterParentWwnn = NULL, *adapterParentWwpn = NULL,
-               *adapterParentFabricWwn = NULL, *protoVer = NULL;
+               *adapterParentFabricWwn = NULL, *protoVer = NULL,
+               *srcInitiator = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     VSH_EXCLUSIVE_OPTIONS("secret-usage", "secret-uuid");
@@ -352,15 +357,16 @@ virshBuildPoolXML(vshControl *ctl,
         vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwnn", &adapterParentWwnn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwpn", &adapterParentWwpn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-parent-fabric-wwn", &adapterParentFabricWwn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "source-protocol-ver", &protoVer) < 0) {
+        vshCommandOptStringReq(ctl, cmd, "source-protocol-ver", &protoVer) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "source-initiator", &srcInitiator) < 0) {
         return false;
     }
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
     virBufferAdjustIndent(&buf, 2);
     virBufferAsprintf(&buf, "<name>%s</name>\n", name);
-    if (srcHost || srcPath || srcDev || srcFormat || srcName ||
-        (adapterWwnn && adapterWwpn) || adapterName) {
+    if (srcHost || srcPath || srcDev || srcInitiator || srcFormat ||
+        srcName || (adapterWwnn && adapterWwpn) || adapterName) {
         virBufferAddLit(&buf, "<source>\n");
         virBufferAdjustIndent(&buf, 2);
 
@@ -370,6 +376,13 @@ virshBuildPoolXML(vshControl *ctl,
             virBufferAsprintf(&buf, "<dir path='%s'/>\n", srcPath);
         if (srcDev)
             virBufferAsprintf(&buf, "<device path='%s'/>\n", srcDev);
+        if (srcInitiator) {
+            virBufferAddLit(&buf, "<initiator>\n");
+            virBufferAdjustIndent(&buf, 2);
+            virBufferAsprintf(&buf, "<iqn name='%s'/>\n", srcInitiator);
+            virBufferAdjustIndent(&buf, -2);
+            virBufferAddLit(&buf, "</initiator>\n");
+        }
         if (adapterWwnn && adapterWwpn) {
             virBufferAddLit(&buf, "<adapter type='fc_host'");
             if (adapterParent)
