@@ -1576,7 +1576,7 @@ remoteConnectClose(virConnectPtr conn)
  * private data, and free it when we close the connection.
  *
  * See also:
- * http://www.redhat.com/archives/libvir-list/2007-February/msg00096.html
+ * https://www.redhat.com/archives/libvir-list/2007-February/msg00096.html
  */
 static const char *
 remoteConnectGetType(virConnectPtr conn)

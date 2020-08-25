@@ -8869,7 +8869,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def,
      * small. Although it's not guaranteed that the limit will be enough for all
      * configurations it didn't pose a problem for now.
      *
-     * http://www.redhat.com/archives/libvir-list/2015-November/msg00329.html
+     * https://www.redhat.com/archives/libvir-list/2015-November/msg00329.html
      *
      * Note that this may not be valid for all platforms.
      */

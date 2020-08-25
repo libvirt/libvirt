@@ -34,4 +34,4 @@ with minimal back-and-forth.
 There is more on this subject, including lots of links to
 background reading on the subject, on `Richard Jones' guide to
 working with open source
-projects <http://people.redhat.com/rjones/how-to-supply-code-to-open-source-projects/>`__.
+projects <https://people.redhat.com/rjones/how-to-supply-code-to-open-source-projects/>`__.

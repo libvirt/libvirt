@@ -77,8 +77,8 @@
         tickets against the <code>Fedora</code> product and
         the <code>libvirt</code> component.
         <ul>
-          <li><a href="http://bugzilla.redhat.com/buglist.cgi?component=libvirt&amp;product=Fedora">View Fedora libvirt tickets</a></li>
-          <li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Fedora&amp;component=libvirt">New Fedora libvirt ticket</a></li>
+          <li><a href="https://bugzilla.redhat.com/buglist.cgi?component=libvirt&amp;product=Fedora">View Fedora libvirt tickets</a></li>
+          <li><a href="https://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Fedora&amp;component=libvirt">New Fedora libvirt ticket</a></li>
         </ul>
       </li>
       <li>
@@ -87,7 +87,7 @@
           Linux</strong>, enter tickets against the Red Hat Enterprise
           Linux product that you're using (e.g., Red Hat Enterprise
           Linux 6) and the <code>libvirt</code> component.  Red Hat
-          bugzilla has <a href="http://bugzilla.redhat.com">additional guidance</a> about getting support if
+          bugzilla has <a href="https://bugzilla.redhat.com">additional guidance</a> about getting support if
           you are a Red Hat customer.
         </p>
       </li>

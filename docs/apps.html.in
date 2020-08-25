@@ -343,7 +343,7 @@
         like network and block I/O with
         <a href="http://munin.projects.linpro.no/">Munin</a>.
       </dd>
-      <dt><a href="http://people.redhat.com/rjones/nagios-virt/">Nagios-virt</a></dt>
+      <dt><a href="https://people.redhat.com/rjones/nagios-virt/">Nagios-virt</a></dt>
       <dd>
         Nagios-virt is a configuration tool to add monitoring of your
         virtualised domains to <a href="http://www.nagios.org/">Nagios</a>.
