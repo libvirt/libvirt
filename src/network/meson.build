@@ -93,7 +93,7 @@ if conf.has('WITH_NETWORK')
 
     configure_file(
       input: 'default.xml.in',
-      output: 'default.xml',
+      output: '@BASENAME@',
       command: [
         'sed', '-e', 's|</name>|</name>\\n  <uuid>@0@</uuid>|'.format(uuid),
         '@INPUT@',
@@ -105,7 +105,7 @@ if conf.has('WITH_NETWORK')
   else
     configure_file(
       input: 'default.xml.in',
-      output: 'default.xml',
+      output: '@BASENAME@',
       copy: true,
       install: true,
       install_dir: confdir / 'qemu' / 'networks',

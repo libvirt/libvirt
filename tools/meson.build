@@ -235,7 +235,7 @@ tools_conf.set('sysconfdir', sysconfdir)
 
 configure_file(
   input: 'virt-xml-validate.in',
-  output: 'virt-xml-validate',
+  output: '@BASENAME@',
   configuration: tools_conf,
   install: true,
   install_dir: bindir,
@@ -244,7 +244,7 @@ configure_file(
 
 configure_file(
   input: 'virt-pki-validate.in',
-  output: 'virt-pki-validate',
+  output: '@BASENAME@',
   configuration: tools_conf,
   install: true,
   install_dir: bindir,
@@ -254,7 +254,7 @@ configure_file(
 if conf.has('WITH_SANLOCK')
   configure_file(
     input: 'virt-sanlock-cleanup.in',
-    output: 'virt-sanlock-cleanup',
+    output: '@BASENAME@',
     configuration: tools_conf,
     install: true,
     install_dir: sbindir,
@@ -264,7 +264,7 @@ endif
 
 configure_file(
   input: 'libvirt-guests.sh.in',
-  output: 'libvirt-guests.sh',
+  output: '@BASENAME@',
   configuration: tools_conf,
   install: true,
   install_dir: libexecdir,
@@ -280,7 +280,7 @@ if init_script == 'systemd'
 
   configure_file(
     input: 'libvirt-guests.service.in',
-    output: 'libvirt-guests.service',
+    output: '@BASENAME@',
     configuration: tools_conf,
     install: true,
     install_dir: prefix / 'lib' / 'systemd' / 'system',

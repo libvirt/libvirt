@@ -6,7 +6,7 @@ potfiles_conf.set('BUILDDIR', '')
 
 potfiles = configure_file(
   input: 'POTFILES.in',
-  output: 'POTFILES',
+  output: '@BASENAME@',
   configuration: potfiles_conf,
 )
 

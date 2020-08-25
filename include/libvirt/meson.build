@@ -25,7 +25,7 @@ include_conf.merge_from(conf)
 
 libvirt_common_h = configure_file(
   input: libvirt_common_h_in,
-  output: 'libvirt-common.h',
+  output: '@BASENAME@',
   configuration: include_conf,
 )
 

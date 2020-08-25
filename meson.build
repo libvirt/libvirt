@@ -106,7 +106,7 @@ configmake_conf.set_quoted('SYSCONFDIR', sysconfdir)
 
 configure_file(
   input: 'configmake.h.in',
-  output: 'configmake.h',
+  output: '@BASENAME@',
   configuration: configmake_conf,
 )
 
@@ -2335,7 +2335,7 @@ run_conf = configuration_data()
 run_conf.set('abs_builddir', meson.build_root())
 configure_file(
   input: 'run.in',
-  output: 'run',
+  output: '@BASENAME@',
   configuration: run_conf,
 )
 run_command('chmod', 'a+x', meson.current_build_dir() / 'run')
