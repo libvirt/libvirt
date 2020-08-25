@@ -874,20 +874,62 @@ sc_prohibit_obj_free_apis_in_virsh:
 	halt='avoid using public virXXXFree in virsh, use virsh-prefixed wrappers instead' \
 	  $(_sc_search_regexp)
 
-https_sites = www.libvirt.org
-https_sites += libvirt.org
-https_sites += security.libvirt.org
-https_sites += qemu.org
-https_sites += www.qemu.org
-https_sites += wiki.qemu.org
-https_sites += linux-kvm.org
-https_sites += www.linux-kvm.org
+# Links in various schemas
+http_sites = libvirt.org.*\/schemas\/
+http_sites += \.dtd
+http_sites += libosinfo
+http_sites += localhost
+http_sites += rdf:resource
+http_sites += schemas.dmtf.org
+http_sites += schemas.microsoft.com
+http_sites += schemas.xmlsoap.org
+http_sites += www.inkscape.org
+http_sites += www.innotek.de
+http_sites += www.w3.org
+http_sites += xmlns
 
-https_re= ($(subst $(space),|,$(https_sites)))
+# Links in licenses
+http_sites += scripts.sil.org
+http_sites += www.gnu.org\/licenses\/
+http_sites += www.sun.com
+
+# Example links
+http_sites += example.com
+http_sites += example.org
+http_sites += herp.derp
+
+# HTTP-only sites
+http_sites += 0pointer.de
+http_sites += mah.everybody.org
+http_sites += mingw.org
+http_sites += munin.projects.linpro.no
+http_sites += netcat.sourceforge.net
+http_sites += snooze.inria.fr
+http_sites += www.nimbusproject.org
+http_sites += www.odin.com
+http_sites += www.sflow.net
+http_sites += xmlsoft.org
+http_sites += etallen.com
+
+# dead sites
+http_sites += blog.lystor.org.ua
+http_sites += blog.mes-stats.fr
+http_sites += cc1.ifj.edu.pl
+http_sites += www.javvin.com
+
+# 404 links
+http_sites += publib.boulder.ibm.com
+http_sites += kerneltrap.org
+http_sites += valloric.github.io
+http_sites += www.microsoft.com
+http_sites += xenbits.xen.org
+http_sites += lovezutto.googlepages.com
+
+http_re= ($(subst $(space),|,$(http_sites)))
 
 sc_prohibit_http_urls:
-	@prohibit='http://$(https_re)' \
-	exclude="/schemas/" \
+	@prohibit='http://\w' \
+	exclude="$(http_re)" \
 	halt='Links must use https:// protocol' \
 	  $(_sc_search_regexp)
 
