@@ -22,7 +22,6 @@
 
 #include <config.h>
 
-#include <math.h>
 #include <libxl.h>
 #include <libxl_utils.h>
 #include <xenstore.h>
