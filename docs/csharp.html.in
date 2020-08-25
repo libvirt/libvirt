@@ -32,7 +32,7 @@
     <h2><a id="git">GIT source repository</a></h2>
     <p>
       The C# bindings source code is maintained in a <a
-      href="http://git-scm.com/">git</a> repository available on
+      href="https://git-scm.com/">git</a> repository available on
       <a href="https://gitlab.com/libvirt/libvirt-csharp">gitlab.com</a>:
     </p>
 

@@ -1586,7 +1586,7 @@ lxcNeedNetworkNamespace(virDomainDefPtr def)
 
 /* Got a FS mapped to /, we're going the pivot_root
  * approach to do a better-chroot-than-chroot
- * this is based on this thread http://lkml.org/lkml/2008/3/5/29
+ * this is based on this thread https://lkml.org/lkml/2008/3/5/29
  */
 static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
                                       virDomainFSDefPtr root,

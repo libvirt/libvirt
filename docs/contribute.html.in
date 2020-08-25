@@ -91,7 +91,7 @@
         to obtain support, it is common to rely on community help
         forums such as <a href="contact.html#email">libvirt users
           mailing list</a>, or sites such as
-        <a href="http://stackoverflow.com/questions/tagged/libvirt">stackoverflow.</a>
+        <a href="https://stackoverflow.com/questions/tagged/libvirt">stackoverflow.</a>
         People who are familiar with libvirt and have ability &amp;
         desire to help other users are encouraged to participate in
         these help forums.</li>
@@ -131,7 +131,7 @@
 
     <p>
       Since 2016, the libvirt project directly participates as an
-      organization in the <a href="http://wiki.libvirt.org/page/Google_Summer_of_Code_Ideas">Google Summer of Code program</a>. Prior to
+      organization in the <a href="https://wiki.libvirt.org/page/Google_Summer_of_Code_Ideas">Google Summer of Code program</a>. Prior to
       this the project had a number of students in the program
       via a joint application with the QEMU project. People are
       encouraged to look at both the libvirt and QEMU programs

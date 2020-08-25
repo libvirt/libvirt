@@ -2443,7 +2443,7 @@ virStorageBackendVolDownloadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
  * truncate and extend it to its original size, filling it with
  * zeroes.  This behavior is guaranteed by POSIX:
  *
- * http://www.opengroup.org/onlinepubs/9699919799/functions/ftruncate.html
+ * https://www.opengroup.org/onlinepubs/9699919799/functions/ftruncate.html
  *
  * If fildes refers to a regular file, the ftruncate() function shall
  * cause the size of the file to be truncated to length. If the size

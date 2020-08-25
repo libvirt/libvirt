@@ -75,7 +75,7 @@ would use the following XML
 <p>
 When the container "init" process is started, it will be given several useful
 environment variables. The following standard environment variables are mandated
-by <a href="http://www.freedesktop.org/wiki/Software/systemd/ContainerInterface">systemd container interface</a>
+by <a href="https://www.freedesktop.org/wiki/Software/systemd/ContainerInterface">systemd container interface</a>
 to be provided by all container technologies on Linux.
 </p>
 

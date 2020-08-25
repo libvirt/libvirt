@@ -50,7 +50,7 @@
       control technologies. By default, the <code>none</code>
       driver is used, which does no access control checks at
       all. At this time, libvirt ships with support for using
-      <a href="http://www.freedesktop.org/wiki/Software/polkit/">polkit</a> as a real access
+      <a href="https://www.freedesktop.org/wiki/Software/polkit/">polkit</a> as a real access
       control driver. To learn how to use the polkit access
       driver consult <a href="aclpolkit.html">the configuration
       docs</a>.

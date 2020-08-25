@@ -4,23 +4,23 @@ Some links to relevant documentation
 
 
 VI/vSphere API:
-  http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/
-  http://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/
-  http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/
+  https://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/
+  https://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/
+  https://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/
 
 VMX config:
-  http://www.sanbarrow.com/vmx.html
+  https://www.sanbarrow.com/vmx.html
 
 CPUID:
-  http://www.sandpile.org/ia32/cpuid.htm
+  https://www.sandpile.org/ia32/cpuid.htm
 
 Memory model:
-  http://www.vmware.com/pdf/esx3_memory.pdf
-  http://www.vmware.com/pdf/usenix_resource_mgmt.pdf
+  https://www.vmware.com/pdf/esx3_memory.pdf
+  https://www.vmware.com/pdf/usenix_resource_mgmt.pdf
 
 Virtual serial port (network backed):
-  http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.vm.device.VirtualSerialPort.URIBackingInfo.html
-  http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/vsp41_usingproxy_virtual_serial_ports.pdf
+  https://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.vm.device.VirtualSerialPort.URIBackingInfo.html
+  https://www.vmware.com/support/developer/vc-sdk/visdk41pubs/vsp41_usingproxy_virtual_serial_ports.pdf
 
 
 

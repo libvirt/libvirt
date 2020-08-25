@@ -19,7 +19,7 @@
 
     <ul>
       <li>
-        The <a href="http://openvz.org/">OpenVZ</a> Linux container
+        The <a href="https://openvz.org/">OpenVZ</a> Linux container
         system
       </li>
     </ul>
@@ -54,7 +54,7 @@ openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
     <p>
     One or more of the physical devices must be attached to a bridge. The
     process for this varies according to the operating system in use, so
-    for up to date notes consult the <a href="http://wiki.libvirt.org">Wiki</a>
+    for up to date notes consult the <a href="https://wiki.libvirt.org">Wiki</a>
     or your operating system's networking documentation. The basic idea is
     that the host OS should end up with a bridge device "br0" containing a
     physical device "eth0", or a bonding device "bond0".

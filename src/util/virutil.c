@@ -140,7 +140,7 @@ int virSetSockReuseAddr(int fd G_GNUC_UNUSED, bool fatal G_GNUC_UNUSED)
      * Win32 sockets have Linux/BSD-like SO_REUSEADDR behaviour
      * by default, so we can be a no-op.
      *
-     * http://msdn.microsoft.com/en-us/library/windows/desktop/ms740621.aspx
+     * https://msdn.microsoft.com/en-us/library/windows/desktop/ms740621.aspx
      */
     return 0;
 }

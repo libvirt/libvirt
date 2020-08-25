@@ -151,7 +151,7 @@ x:name</pre>
     <p>
       When logging to the systemd journal, the following fields
       are defined, in addition to any automatically recorded
-      <a href="http://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html">standard fields</a>:
+      <a href="https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html">standard fields</a>:
     </p>
 
     <dl>

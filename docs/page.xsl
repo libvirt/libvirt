@@ -161,8 +161,8 @@
             <h3>Community</h3>
             <ul>
               <li><a href="https://twitter.com/hashtag/libvirt">twitter</a></li>
-              <li><a href="http://stackoverflow.com/questions/tagged/libvirt">stackoverflow</a></li>
-              <li><a href="http://serverfault.com/questions/tagged/libvirt">serverfault</a></li>
+              <li><a href="https://stackoverflow.com/questions/tagged/libvirt">stackoverflow</a></li>
+              <li><a href="https://serverfault.com/questions/tagged/libvirt">serverfault</a></li>
             </ul>
           </div>
           <xsl:if test="$pagesrc != ''">

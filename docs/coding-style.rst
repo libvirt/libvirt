@@ -116,7 +116,7 @@ following to your ~/.vimrc file:
 Or if you don't want to mess your ~/.vimrc up, you can save the
 above into a file called .lvimrc (not .vimrc) located at the root
 of libvirt source, then install a vim script from
-http://www.vim.org/scripts/script.php?script_id=1408, which will
+https://www.vim.org/scripts/script.php?script_id=1408, which will
 load the .lvimrc only when you edit libvirt code.
 
 Code formatting (especially for new code)

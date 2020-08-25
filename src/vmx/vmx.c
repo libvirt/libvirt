@@ -1559,7 +1559,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
     if (sched_cpu_shares != NULL) {
         unsigned int vcpus = virDomainDefGetVcpus(def);
-        /* See http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.SharesInfo.Level.html */
+        /* See https://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.SharesInfo.Level.html */
         if (STRCASEEQ(sched_cpu_shares, "low")) {
             def->cputune.shares = vcpus * 500;
         } else if (STRCASEEQ(sched_cpu_shares, "normal")) {
@@ -3282,7 +3282,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     /* def:cputune.shares -> vmx:sched.cpu.shares */
     if (def->cputune.sharesSpecified) {
         unsigned int vcpus = virDomainDefGetVcpus(def);
-        /* See http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.SharesInfo.Level.html */
+        /* See https://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.SharesInfo.Level.html */
         if (def->cputune.shares == vcpus * 500) {
             virBufferAddLit(&buffer, "sched.cpu.shares = \"low\"\n");
         } else if (def->cputune.shares == vcpus * 1000) {
@@ -4072,7 +4072,7 @@ virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer)
 
     /*
      * For Windows guests the VRAM size should be a multiple of 64 kilobyte.
-     * See http://kb.vmware.com/kb/1003 and http://kb.vmware.com/kb/1001558
+     * See https://kb.vmware.com/kb/1003 and https://kb.vmware.com/kb/1001558
      */
     vram = VIR_DIV_UP(def->vram, 64) * 64;
 

@@ -20,7 +20,7 @@
       (<code>virsh nodedev-create</code>, <code>virsh nodedev-destroy</code>)
       which are meant to be used to create virtual devices, currently only
       supported by NPIV
-      (<a href="http://wiki.libvirt.org/page/NPIV_in_libvirt">more info about NPIV)</a>).
+      (<a href="https://wiki.libvirt.org/page/NPIV_in_libvirt">more info about NPIV)</a>).
       Devices on the host system are arranged in a tree-like hierarchy, with
       the root node being called <code>computer</code>. The node device driver
       supports two backends to manage the devices, HAL and udev, with the former

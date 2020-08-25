@@ -175,7 +175,7 @@ MASQUERADE all  --  *      *       192.168.122.0/24    !192.168.122.0/24</pre>
        the conceptual model is closely aligned with the DMTF CIM schema for
        network filtering:
     </p>
-    <p><a href="http://www.dmtf.org/standards/cim/cim_schema_v2230/CIM_Network.pdf">http://www.dmtf.org/standards/cim/cim_schema_v2230/CIM_Network.pdf</a></p>
+    <p><a href="https://www.dmtf.org/standards/cim/cim_schema_v2230/CIM_Network.pdf">https://www.dmtf.org/standards/cim/cim_schema_v2230/CIM_Network.pdf</a></p>
     <p>The filters are managed in libvirt as a top level, standalone object.
        This allows the filters to then be referenced by any libvirt object
        that requires their functionality, instead tying them only to use

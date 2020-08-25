@@ -116,7 +116,7 @@
       however, it becomes invalid once the resource is deactivated.</p></li >
       <li><code>UUID</code>
       <p> A 16 byte unique identifier
-      as defined in <a href="http://www.ietf.org/rfc/rfc4122.txt">RFC 4122</a>,
+      as defined in <a href="https://www.ietf.org/rfc/rfc4122.txt">RFC 4122</a>,
       which is guaranteed to be unique for long term usage and across a
       set of nodes.</p></li>
     </ul>
@@ -369,7 +369,7 @@
     for processing.
     </p>
     <p>If you are interested in contributing to libvirt, read the
-    <a href="http://wiki.libvirt.org/page/FAQ">FAQ</a> and
+    <a href="https://wiki.libvirt.org/page/FAQ">FAQ</a> and
     <a href="hacking.html">hacking</a> guidelines to gain an understanding
     of basic rules and guidelines.  In order to add new API functionality
     follow the instructions regarding

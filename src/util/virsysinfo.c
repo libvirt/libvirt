@@ -1295,7 +1295,7 @@ virSysinfoRead(void)
 #else /* WIN32 || not supported arch */
     /*
      * this can probably be extracted from Windows using API or registry
-     * http://www.microsoft.com/whdc/system/platform/firmware/SMBIOS.mspx
+     * https://www.microsoft.com/whdc/system/platform/firmware/SMBIOS.mspx
      */
     virReportSystemError(ENOSYS, "%s",
                          _("Host sysinfo extraction not supported on this platform"));

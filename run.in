@@ -41,7 +41,7 @@
 #----------------------------------------------------------------------
 
 # Function to intelligently prepend a path to an environment variable.
-# See http://stackoverflow.com/a/9631350
+# See https://stackoverflow.com/a/9631350
 prepend()
 {
     eval $1="$2\${$1:+:\$$1}"

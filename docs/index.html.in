@@ -61,7 +61,7 @@
           <a href="formatsnapshot.html">snapshots</a>,
           <a href="formatcheckpoint.html">checkpoints</a>,
           <a href="formatbackup.html">backup jobs</a></dd>
-        <dt><a href="http://wiki.libvirt.org">Wiki</a></dt>
+        <dt><a href="https://wiki.libvirt.org">Wiki</a></dt>
         <dd>Read further community contributed content</dd>
 
         <dt><a href="https://libvirt.org/kbase.html">Knowledge base</a></dt>
@@ -75,7 +75,7 @@
       </div>
 
       <p>
-        Read more on the <a href="http://planet.virt-tools.org/">Virt Tools blog planet</a>
+        Read more on the <a href="https://planet.virt-tools.org/">Virt Tools blog planet</a>
       </p>
     </div>
 

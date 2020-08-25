@@ -40,7 +40,7 @@ VIR_LOG_INIT("rpc.netlibsshsession");
 
 /* TRACE_LIBSSH=<level> enables tracing in libssh itself.
  * The meaning of <level> is described here:
- * http://api.libssh.org/master/group__libssh__log.html
+ * https://api.libssh.org/master/group__libssh__log.html
  *
  * The LIBVIRT_LIBSSH_DEBUG environment variable can be used
  * to set/override the level of libssh debug.

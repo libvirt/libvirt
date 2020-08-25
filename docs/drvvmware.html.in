@@ -7,23 +7,23 @@
         The libvirt VMware driver should be able to manage any Workstation,
         Player, Fusion version supported by the VMware VIX API. See the
         compatibility list
-        <a href="http://www.vmware.com/support/developer/vix-api/vix110_reference/">here</a>.
+        <a href="https://www.vmware.com/support/developer/vix-api/vix110_reference/">here</a>.
     </p>
     <p>
     This driver uses the "vmrun" utility which is distributed with the VMware VIX API.
     You can download the VIX API
-    from <a href="http://www.vmware.com/support/developer/vix-api/">here</a>.
+    from <a href="https://www.vmware.com/support/developer/vix-api/">here</a>.
     </p>
 
     <h2><a id="project">Project Links</a></h2>
 
     <ul>
       <li>
-        The <a href="http://www.vmware.com/">VMware Workstation and
+        The <a href="https://www.vmware.com/">VMware Workstation and
         Player</a> hypervisors
       </li>
       <li>
-        The <a href="http://www.vmware.com/fusion">VMware Fusion</a>
+        The <a href="https://www.vmware.com/fusion">VMware Fusion</a>
         hypervisor
       </li>
     </ul>

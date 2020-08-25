@@ -76,7 +76,7 @@ Remote libvirt supports a range of transports:
  </dd>
       <dt><code>ssh</code></dt>
       <dd> Transported over an ordinary
- <a href="http://www.openssh.com/" title="OpenSSH homepage">ssh
+ <a href="https://www.openssh.com/" title="OpenSSH homepage">ssh
  (secure shell)</a> connection.
  Requires <a href="http://netcat.sourceforge.net/">Netcat (nc)</a>
  installed and libvirtd should be running
@@ -95,14 +95,14 @@ Remote libvirt supports a range of transports:
  The standard port is 16509. </dd>
       <dt><code>libssh2</code></dt>
       <dd> Transport over the SSH protocol using
-      <a href="http://libssh2.org/" title="libssh2 homepage">libssh2</a> instead
+      <a href="https://libssh2.org/" title="libssh2 homepage">libssh2</a> instead
 of the OpenSSH binary. This transport uses the libvirt authentication callback for
 all ssh authentication calls and therefore supports keyboard-interactive authentication
 even with graphical management applications. As with the classic ssh transport
 netcat is required on the remote side.</dd>
       <dt><code>libssh</code></dt>
       <dd> Transport over the SSH protocol using
-      <a href="http://libssh.org/" title="libssh homepage">libssh</a> instead
+      <a href="https://libssh.org/" title="libssh homepage">libssh</a> instead
 of the OpenSSH binary. This transport uses the libvirt authentication callback for
 all ssh authentication calls and therefore supports keyboard-interactive authentication
 even with graphical management applications. As with the classic ssh transport

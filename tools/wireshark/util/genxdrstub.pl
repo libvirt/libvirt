@@ -18,7 +18,7 @@
 # <http://www.gnu.org/licenses/>.
 #
 #
-# For XDR syntax, see http://tools.ietf.org/html/rfc4506#section-6.3
+# For XDR syntax, see https://tools.ietf.org/html/rfc4506#section-6.3
 # This script does not strictly check syntax of xdr protocol specification.
 # Make sure the specification files you have are correctly compilable with rpcgen(1).
 # If something fails with this script in spite of you had confirmed that the `make' with libvirt was succeed,

@@ -128,7 +128,7 @@
     <h2><a id="continuousintegration">Continuous Integration</a></h2>
 
     <dl>
-      <dt><a href="http://docs.buildbot.net/latest/manual/configuration/workers-libvirt.html">BuildBot</a></dt>
+      <dt><a href="https://docs.buildbot.net/latest/manual/configuration/workers-libvirt.html">BuildBot</a></dt>
       <dd>
         BuildBot is a system to automate the compile/test cycle required
         by most software projects.  CVS commits trigger new builds, run on
@@ -263,7 +263,7 @@
         cloud where you want the most bang for the bucks.
       </dd>
 
-      <dt><a href="http://en.zstack.io/">ZStack</a></dt>
+      <dt><a href="https://en.zstack.io/">ZStack</a></dt>
       <dd>
         ZStack is an open source IaaS software that aims to automate the
         management of all resources (compute, storage, networking, etc.) in a
@@ -324,14 +324,14 @@
     <dl>
       <dt><a href="https://collectd.org/plugins/libvirt.shtml">collectd</a></dt>
       <dd>
-        The libvirt-plugin is part of <a href="http://collectd.org/">collectd</a>
+        The libvirt-plugin is part of <a href="https://collectd.org/">collectd</a>
         and gathers statistics about virtualized guests on a system. This
         way, you can collect CPU, network interface and block device usage
         for each guest without installing collectd on the guest systems.
         For a full description, please refer to the libvirt section in the
         collectd.conf(5) manual page.
       </dd>
-      <dt><a href="http://www.sflow.net/">Host sFlow</a></dt>
+      <dt><a href="https://www.sflow.net/">Host sFlow</a></dt>
       <dd>
         Host sFlow is a lightweight agent running on KVM hypervisors that
         links to libvirt library and exports standardized cpu, memory, network
@@ -346,15 +346,15 @@
       <dt><a href="https://people.redhat.com/rjones/nagios-virt/">Nagios-virt</a></dt>
       <dd>
         Nagios-virt is a configuration tool to add monitoring of your
-        virtualised domains to <a href="http://www.nagios.org/">Nagios</a>.
+        virtualised domains to <a href="https://www.nagios.org/">Nagios</a>.
         You can use this tool to either set up a new Nagios installation for
         your Xen or QEMU/KVM guests, or to integrate with your existing Nagios
         installation.
       </dd>
-      <dt><a href="http://www.pcp.io/man/man1/pmdalibvirt.1.html">PCP</a></dt>
+      <dt><a href="https://pcp.io/man/man1/pmdalibvirt.1.html">PCP</a></dt>
       <dd>
         The PCP libvirt PMDA (plugin) is part of the
-        <a href="http://pcp.io/">PCP</a> toolkit and provides
+        <a href="https://pcp.io/">PCP</a> toolkit and provides
         hypervisor and guest information and complete set of guest performance
         metrics. It supports pCPU, vCPU, memory, block device, network interface,
         and performance event metrics for each virtual guest.
@@ -398,7 +398,7 @@
     <h2><a id="web">Web applications</a></h2>
 
     <dl>
-      <dt><a href="http://www.abiquo.com/">AbiCloud</a></dt>
+      <dt><a href="https://www.abiquo.com/">AbiCloud</a></dt>
       <dd>
         AbiCloud is an open source cloud platform manager which allows to
         easily deploy a private cloud in your datacenter. One of the key

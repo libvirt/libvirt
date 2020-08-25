@@ -15,7 +15,7 @@
 
     <ul>
       <li>
-        The <a href="http://www.vmware.com/">VMware ESX and GSX</a>
+        The <a href="https://www.vmware.com/">VMware ESX and GSX</a>
         hypervisors
       </li>
     </ul>
@@ -26,11 +26,11 @@
         preparations are required on the server side, no libvirtd must be
         installed on the ESX server. The driver uses version 2.5 of the remote,
         SOAP based
-        <a href="http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/">
+        <a href="https://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/">
         VMware Virtual Infrastructure API</a> (VI API) to communicate with the
         ESX server, like the VMware Virtual Infrastructure Client (VI client)
         does. Since version 4.0 this API is called
-        <a href="http://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/">
+        <a href="https://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/">
         VMware vSphere API</a>.
     </p>
 
@@ -239,7 +239,7 @@ error: internal error curl_easy_perform() returned an error: Peer certificate ca
             Generate new SSL certificates signed by a CA known to your client
             computer and replace the original ones on your ESX server. See the
             section <i>Replace a Default Certificate with a CA-Signed Certificate</i>
-            in the <a href="http://www.vmware.com/pdf/vsphere4/r40/vsp_40_esx_server_config.pdf">ESX Configuration Guide</a>
+            in the <a href="https://www.vmware.com/pdf/vsphere4/r40/vsp_40_esx_server_config.pdf">ESX Configuration Guide</a>
         </li>
     </ul>
 
@@ -468,7 +468,7 @@ ethernet0.checkMACAddress = "false"
         <dt><code>vmpvscsi</code></dt>
         <dd>
             Special VMware Paravirtual SCSI controller, requires VMware tools inside
-            the guest. See <a href="http://kb.vmware.com/kb/1010398">VMware KB1010398</a>
+            the guest. See <a href="https://kb.vmware.com/kb/1010398">VMware KB1010398</a>
             for details. <span class="since">Since 0.8.3</span>
         </dd>
     </dl>
@@ -510,7 +510,7 @@ ethernet0.checkMACAddress = "false"
         <dt><code>vmxnet</code>, <code>vmxnet2</code>, <code>vmxnet3</code></dt>
         <dd>
             Special VMware VMXnet network card, requires VMware tools inside
-            the guest. See <a href="http://kb.vmware.com/kb/1001805">VMware KB1001805</a>
+            the guest. See <a href="https://kb.vmware.com/kb/1001805">VMware KB1001805</a>
             for details.
         </dd>
         <dt><code>e1000</code></dt>
@@ -808,22 +808,22 @@ Enter administrator password for example-vcenter.com:
     <h2><a id="links">Links</a></h2>
     <ul>
         <li>
-            <a href="http://www.vmware.com/support/developer/vc-sdk/">
+            <a href="https://www.vmware.com/support/developer/vc-sdk/">
                 VMware vSphere Web Services SDK Documentation
             </a>
         </li>
         <li>
-            <a href="http://www.vmware.com/pdf/esx3_memory.pdf">
+            <a href="https://www.vmware.com/pdf/esx3_memory.pdf">
                 The Role of Memory in VMware ESX Server 3
             </a>
         </li>
         <li>
-            <a href="http://www.sanbarrow.com/vmx.html">
+            <a href="https://www.sanbarrow.com/vmx.html">
                 VMware VMX config parameters
             </a>
         </li>
         <li>
-            <a href="http://www.vmware.com/pdf/vsp_4_pvscsi_perf.pdf">
+            <a href="https://www.vmware.com/pdf/vsp_4_pvscsi_perf.pdf">
                 VMware ESX 4.0 PVSCSI Storage Performance
             </a>
         </li>

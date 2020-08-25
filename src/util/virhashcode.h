@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  *
  * The hash code generation is based on the public domain MurmurHash3 from Austin Appleby:
- * http://code.google.com/p/smhasher/source/browse/trunk/MurmurHash3.cpp
+ * https://code.google.com/p/smhasher/source/browse/trunk/MurmurHash3.cpp
  *
  * We use only the 32 bit variant because the 2 produce different result while
  * we need to produce the same result regardless of the architecture as

@@ -28,7 +28,7 @@ $
 </pre>
 
 <p>
-Additional information on bhyve could be obtained on <a href="http://bhyve.org/">bhyve.org</a>.
+Additional information on bhyve could be obtained on <a href="https://bhyve.org/">bhyve.org</a>.
 </p>
 
 <h2><a id="uri">Connections to the Bhyve driver</a></h2>
@@ -233,7 +233,7 @@ of a guest.</p>
 
 <p><b>NB:</b> Some versions of bhyve have a bug that prevents guests from booting
 until the console is opened by a client. This bug was fixed in FreeBSD
-<a href="http://svnweb.freebsd.org/changeset/base/262884">r262884</a>. If
+<a href="https://svnweb.freebsd.org/changeset/base/262884">r262884</a>. If
 an older version is used, one either has to open a console manually with <code>virsh console</code>
 to let a guest boot or start a guest using:</p>
 
@@ -392,8 +392,8 @@ it with the <code>port</code> attribute):</p>
 <h3><a id="clockconfig">Clock configuration</a></h3>
 
 <p>Originally bhyve supported only localtime for RTC. Support for UTC time was introduced in
-<a href="http://svnweb.freebsd.org/changeset/base/284894">r284894</a> for <i>10-STABLE</i> and
-in <a href="http://svnweb.freebsd.org/changeset/base/279225">r279225</a> for <i>-CURRENT</i>.
+<a href="https://svnweb.freebsd.org/changeset/base/284894">r284894</a> for <i>10-STABLE</i> and
+in <a href="https://svnweb.freebsd.org/changeset/base/279225">r279225</a> for <i>-CURRENT</i>.
 It's possible to use this in libvirt <span class="since">since 1.2.18</span>, just place the
 following to domain XML:</p>
 
@@ -450,7 +450,7 @@ be wired and cannot be swapped out as follows:</p>
 
 <p><span class="since">Since 4.5.0</span>, it's possible to specify guest CPU topology, if bhyve
 supports that. Support for specifying guest CPU topology was added to bhyve in
-<a href="http://svnweb.freebsd.org/changeset/base/332298">r332298</a> for <i>-CURRENT</i>.
+<a href="https://svnweb.freebsd.org/changeset/base/332298">r332298</a> for <i>-CURRENT</i>.
 Example:</p>
 <pre>
 &lt;domain type="bhyve"&gt;

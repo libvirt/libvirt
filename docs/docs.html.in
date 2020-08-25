@@ -48,7 +48,7 @@
         <dt><a href="nss.html">NSS module</a></dt>
         <dd>Enable domain host name translation to IP addresses</dd>
 
-        <dt><a href="http://wiki.libvirt.org/page/FAQ">FAQ</a></dt>
+        <dt><a href="https://wiki.libvirt.org/page/FAQ">FAQ</a></dt>
         <dd>Frequently asked questions</dd>
       </dl>
 
@@ -85,7 +85,7 @@
           <a href="https://pkg.go.dev/libvirt.org/libvirt-go">go</a>,
           <a href="java.html">java</a>,
           <a href="https://libvirt.org/ocaml/">ocaml</a>,
-          <a href="http://search.cpan.org/dist/Sys-Virt/">perl</a>,
+          <a href="https://search.cpan.org/dist/Sys-Virt/">perl</a>,
           <a href="python.html">python</a>,
           <a href="php.html">php</a>,
           <a href="https://libvirt.org/ruby/">ruby</a>

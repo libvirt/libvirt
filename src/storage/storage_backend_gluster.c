@@ -334,8 +334,8 @@ virStorageBackendGlusterRefreshPool(virStoragePoolObjPtr pool)
     /* Why oh why did glfs 3.4 decide to expose only readdir_r rather
      * than readdir?  POSIX admits that readdir_r is inherently a
      * flawed design, because systems are not required to define
-     * NAME_MAX: http://austingroupbugs.net/view.php?id=696
-     * http://womble.decadent.org.uk/readdir_r-advisory.html
+     * NAME_MAX: https://austingroupbugs.net/view.php?id=696
+     * https://womble.decadent.org.uk/readdir_r-advisory.html
      *
      * Fortunately, gluster appears to limit its underlying bricks to
      * only use file systems such as XFS that have a NAME_MAX of 255;
@@ -343,7 +343,7 @@ virStorageBackendGlusterRefreshPool(virStoragePoolObjPtr pool)
      * tail padding, then we should have enough space to avoid buffer
      * overflow no matter whether the OS used d_name[], d_name[1], or
      * d_name[256] in its 'struct dirent'.
-     * http://lists.gnu.org/archive/html/gluster-devel/2013-10/msg00083.html
+     * https://lists.gnu.org/archive/html/gluster-devel/2013-10/msg00083.html
      */
 
     if (!(dir = glfs_opendir(state->vol, state->dir))) {

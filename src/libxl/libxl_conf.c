@@ -567,7 +567,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
          * configured when building Xen using '--with-system-ovmf='. If
          * not specified, LIBXL_FIRMWARE_DIR/ovmf.bin is used. In the
          * future, Xen will support a user-specified firmware path. See
-         * http://lists.xenproject.org/archives/html/xen-devel/2016-03/msg01628.html
+         * https://lists.xenproject.org/archives/html/xen-devel/2016-03/msg01628.html
          */
         if (virDomainDefHasOldStyleUEFI(def))
             b_info->u.hvm.bios = LIBXL_BIOS_TYPE_OVMF;

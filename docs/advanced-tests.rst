@@ -18,7 +18,7 @@ by running
 
   $ meson test --setup valgrind
 
-`Valgrind <http://valgrind.org/>`__ is a test that checks for
+`Valgrind <https://valgrind.org/>`__ is a test that checks for
 memory management issues, such as leaks or use of uninitialized
 variables.
 
@@ -160,7 +160,7 @@ filter. The filter should be unique enough to not suppress real
 leaks, but it should be generic enough to cover multiple code
 paths. The format of the entry can be found in the
 documentation found at the `Valgrind home
-page <http://valgrind.org/>`__. The following trace was added
+page <https://valgrind.org/>`__. The following trace was added
 to ``tests/.valgrind.supp`` in order to suppress the warning:
 
 ::

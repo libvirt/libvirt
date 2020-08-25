@@ -2,7 +2,7 @@
 #
 # The cpuid tool can be usually found in a package called "cpuid". If your
 # distro does not provide such package, you can find the sources or binary
-# packages at http://www.etallen.com/cpuid.html
+# packages at https://www.etallen.com/cpuid.html
 
 grep 'model name' /proc/cpuinfo | head -n1
 

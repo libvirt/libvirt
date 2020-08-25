@@ -1316,7 +1316,7 @@ if readline_dep.found()
   # the fix has landed in FreeBSD ports and macOS homebrew we can safely
   # drop the kludge and rely on pkg-config alone on those platforms.
   #
-  # [1] http://lists.gnu.org/archive/html/bug-readline/2019-04/msg00007.html
+  # [1] https://lists.gnu.org/archive/html/bug-readline/2019-04/msg00007.html
   if readline_dep.type_name() == 'pkgconfig' and host_machine.system() != 'linux'
     pkg_config_prog = find_program('pkg-config')
     rc = run_command(pkg_config_prog, '--cflags', 'readline', check: true)

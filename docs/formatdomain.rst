@@ -2423,7 +2423,7 @@ paravirtualized driver is specified via the ``disk`` element.
       Using "lun" ( :since:`since 0.9.10` ) is only valid when the ``type`` is
       "block" or "network" for ``protocol='iscsi'`` or when the ``type`` is
       "volume" when using an iSCSI source ``pool`` for ``mode`` "host" or as an
-      `NPIV <http://wiki.libvirt.org/page/NPIV_in_libvirt>`__ virtual Host Bus
+      `NPIV <https://wiki.libvirt.org/page/NPIV_in_libvirt>`__ virtual Host Bus
       Adapter (vHBA) using a Fibre Channel storage pool. Configured in this
       manner, the LUN behaves identically to "disk", except that generic SCSI
       commands from the guest are accepted and passed through to the physical
@@ -3118,16 +3118,16 @@ A directory on the host that can be accessed directly from the guest.
    ``passthrough``
       The ``source`` is accessed with the permissions of the user inside the
       guest. This is the default ``accessmode`` if one is not specified. `More
-      info <http://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html>`__
+      info <https://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html>`__
    ``mapped``
       The ``source`` is accessed with the permissions of the hypervisor (QEMU
       process). `More
-      info <http://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html>`__
+      info <https://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html>`__
    ``squash``
       Similar to 'passthrough', the exception is that failure of privileged
       operations like 'chown' are ignored. This makes a passthrough-like mode
       usable for people who run the hypervisor as non-root. `More
-      info <http://lists.gnu.org/archive/html/qemu-devel/2010-09/msg00121.html>`__
+      info <https://lists.gnu.org/archive/html/qemu-devel/2010-09/msg00121.html>`__
 
    :since:`Since 5.2.0` , the filesystem element has an optional attribute
    ``model`` with supported values "virtio-transitional",
@@ -3354,7 +3354,7 @@ few exceptions:
 For more details see the `qemu patch
 posting <https://lists.gnu.org/archive/html/qemu-devel/2018-12/msg00923.html>`__
 and the `virtio-1.0
-spec <http://docs.oasis-open.org/virtio/virtio/v1.0/virtio-v1.0.html>`__.
+spec <https://docs.oasis-open.org/virtio/virtio/v1.0/virtio-v1.0.html>`__.
 
 :anchor:`<a id="elementsControllers"/>`
 
@@ -4461,7 +4461,7 @@ Direct attachment to physical interface
   interface of the host. :since:`Since 0.7.7 (QEMU and KVM only)`
 | This setup requires the Linux macvtap driver to be available. :since:`(Since
   Linux 2.6.34.)` One of the modes 'vepa' ( `'Virtual Ethernet Port
-  Aggregator' <http://www.ieee802.org/1/files/public/docs2009/new-evb-congdon-vepa-modular-0709-v01.pdf>`__),
+  Aggregator' <https://www.ieee802.org/1/files/public/docs2009/new-evb-congdon-vepa-modular-0709-v01.pdf>`__),
   'bridge' or 'private' can be chosen for the operation mode of the macvtap
   device, 'vepa' being the default mode. The individual modes cause the delivery
   of packets to behave as follows:
@@ -6060,7 +6060,7 @@ type ``serial`` per guest.
 
 Virtio consoles are usually accessible as ``/dev/hvc[0-7]`` from inside the
 guest; for more information, see
-http://fedoraproject.org/wiki/Features/VirtioSerial. :since:`Since 0.8.3`
+https://fedoraproject.org/wiki/Features/VirtioSerial. :since:`Since 0.8.3`
 
 For the relationship between serial ports and consoles, `see
 below <#elementCharSerialAndConsole>`__.
@@ -6181,7 +6181,7 @@ types have different ``target`` attributes.
    Paravirtualized virtio channel. Channel is exposed in the guest under
    /dev/vport*, and if the optional element ``name`` is specified,
    /dev/virtio-ports/$name (for more info, please see
-   http://fedoraproject.org/wiki/Features/VirtioSerial). The optional element
+   https://fedoraproject.org/wiki/Features/VirtioSerial). The optional element
    ``address`` can tie the channel to a particular ``type='virtio-serial'``
    controller, `documented above <#elementsAddress>`__. With qemu, if ``name``
    is "org.qemu.guest_agent.0", then libvirt can interact with a guest agent

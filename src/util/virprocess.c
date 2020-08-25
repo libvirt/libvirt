@@ -455,7 +455,7 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
      * So you have no option but to pick a size, try, catch EINVAL,
      * enlarge, and re-try.
      *
-     * http://lkml.org/lkml/2009/7/28/620
+     * https://lkml.org/lkml/2009/7/28/620
      */
  realloc:
     masklen = CPU_ALLOC_SIZE(numcpus);

@@ -13,7 +13,7 @@ Additionally we may want to refer to a driver on a remote
 machine over the network.
 </p>
     <p>
-To this end, libvirt uses URIs as used on the Web and as defined in <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>. This page
+To this end, libvirt uses URIs as used on the Web and as defined in <a href="https://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>. This page
 documents libvirt URIs.
 </p>
     <h2><a id="URI_libvirt">Specifying URIs to libvirt</a></h2>

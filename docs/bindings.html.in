@@ -28,7 +28,7 @@
       </li>
       <li>
         <strong>Perl</strong>: Daniel Berrange develops
-        <a href="http://search.cpan.org/dist/Sys-Virt/">Perl bindings</a>.
+        <a href="https://search.cpan.org/dist/Sys-Virt/">Perl bindings</a>.
       </li>
       <li>
         <p>
@@ -60,7 +60,7 @@
         </p>
         <p>
           This is named <b>libvirt-python</b> on RHEL/Fedora,
-          <a href="http://packages.ubuntu.com/search?keywords=python-libvirt"><b>python-libvirt</b></a>
+          <a href="https://packages.ubuntu.com/search?keywords=python-libvirt"><b>python-libvirt</b></a>
           on Ubuntu, and may be named differently on others.
         </p>
         <p>

@@ -67,7 +67,7 @@
     <h2><a id="git">DocBook source GIT repository</a></h2>
     <p>
       The DocBook source is archived in a <a
-      href="http://git-scm.com/">git</a> repository available on
+      href="https://git-scm.com/">git</a> repository available on
       <a href="https://gitlab.com/libvirt/libvirt-virshcmdref">gitlab.com</a>.
     </p>
 

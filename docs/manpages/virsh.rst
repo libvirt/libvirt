@@ -6348,7 +6348,7 @@ algorithms in order to define which algorithm to use for the wipe.
   disks: random, 0x00, 0xff, verify.
 * bsi        - 9-pass method recommended by the German Center of
   Security in Information Technologies
-  (http://www.bsi.bund.de): 0xff, 0xfe, 0xfd, 0xfb,
+  (https://www.bsi.bund.de): 0xff, 0xfe, 0xfd, 0xfb,
   0xf7, 0xef, 0xdf, 0xbf, 0x7f.
 * gutmann    - The canonical 35-pass sequence described in
   Gutmann's paper.

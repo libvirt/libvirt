@@ -128,7 +128,7 @@
  * whether a parameter is nonnull.  Make this attribute conditional
  * based on whether we are compiling for real or for analysis, while
  * still requiring correct gcc syntax when it is turned off.  See also
- * http://gcc.gnu.org/bugzilla/show_bug.cgi?id=17308 */
+ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=17308 */
 #ifndef ATTRIBUTE_NONNULL
 # if STATIC_ANALYSIS
 #  define ATTRIBUTE_NONNULL(m) __attribute__((__nonnull__(m)))

@@ -267,7 +267,7 @@
           <dd>Used by the "fc_host" adapter type to optionally specify the
             parent scsi_host device defined in the
             <a href="formatnode.html">Node Device</a> database as the
-            <a href="http://wiki.libvirt.org/page/NPIV_in_libvirt">NPIV</a>
+            <a href="https://wiki.libvirt.org/page/NPIV_in_libvirt">NPIV</a>
             virtual Host Bus Adapter (vHBA). The value provided must be
             a vport capable scsi_host. The value is not the scsi_host of
             the vHBA created by 'virsh nodedev-create', rather it is

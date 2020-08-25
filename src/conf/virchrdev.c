@@ -128,7 +128,7 @@ static int virChrdevLockFileCreate(const char *dev)
     /* lockfile doesn't (shouldn't) exist */
 
     /* ensure correct format according to filesystem hierarchy standard */
-    /* http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLOCKLOCKFILES */
+    /* https://www.pathname.com/fhs/pub/fhs-2.3.html#VARLOCKLOCKFILES */
     pidStr = g_strdup_printf("%10lld\n", (long long)getpid());
 
     /* create the lock file */

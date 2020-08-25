@@ -496,7 +496,7 @@ virNetDaemonGotInhibitReply(DBusPendingCall *pending,
 }
 
 
-/* As per: http://www.freedesktop.org/wiki/Software/systemd/inhibit */
+/* As per: https://www.freedesktop.org/wiki/Software/systemd/inhibit */
 static void
 virNetDaemonCallInhibit(virNetDaemonPtr dmn,
                         const char *what,

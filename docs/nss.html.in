@@ -108,7 +108,7 @@ hosts:       files libvirt libvirt_guest dns
 
     <p>
     Whenever an Unix process wants to do a host name translation
-    <a href="http://linux.die.net/man/3/gethostbyname"><code>gethostbyname()</code></a>
+    <a href="https://linux.die.net/man/3/gethostbyname"><code>gethostbyname()</code></a>
     or some variant of it is called. This is a glibc function that takes a
     string containing the host name, crunch it and produces a list of IP
     addresses assigned to that host. Now, glibc developers made a really good

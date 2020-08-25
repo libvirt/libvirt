@@ -18,7 +18,7 @@
 
     <p>
       A default install of libvirt will typically use
-      <a href="http://www.freedesktop.org/wiki/Software/polkit/">polkit</a>
+      <a href="https://www.freedesktop.org/wiki/Software/polkit/">polkit</a>
       to authenticate the initial user connection to libvirtd. This is a
       very coarse grained check though, either allowing full read-write
       access to all APIs, or just read-only access. The polkit access

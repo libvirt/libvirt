@@ -19,10 +19,10 @@
       </li>
       <li>the <a href="testtck.html">TCK test suite</a> is a functional
           test suite implemented using the
-          <a href="http://search.cpan.org/dist/Sys-Virt/">Perl bindings</a>
+          <a href="https://search.cpan.org/dist/Sys-Virt/">Perl bindings</a>
           of libvirt. It is available separately as a
           <a href="ftp://libvirt.org/libvirt/tck/">download</a>, as a
-          <a href="http://rpmfind.net/linux/rpm2html/search.php?query=libvirt-tck">package</a>
+          <a href="https://rpmfind.net/linux/rpm2html/search.php?query=libvirt-tck">package</a>
           in Fedora distributions, but best is probably to get
           the <a href="https://gitlab.com/libvirt/libvirt-tck">version
           from GIT</a>.

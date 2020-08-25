@@ -343,7 +343,7 @@ which can be installed on the server as
     </h2>
     <p>
 For each client (ie. any program linked with libvirt, such as
-<a href="http://virt-manager.org/">virt-manager</a>)
+<a href="https://virt-manager.org/">virt-manager</a>)
 you need to issue a certificate with the X.509 Distinguished Name (DN)
 set to a suitable name.  You can decide this on a company / organisation
 policy.  For example:
