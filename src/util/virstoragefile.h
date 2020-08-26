@@ -318,6 +318,7 @@ struct _virStorageSource {
     unsigned long long capacity; /* in bytes, 0 if unknown */
     unsigned long long allocation; /* in bytes, 0 if unknown */
     unsigned long long physical; /* in bytes, 0 if unknown */
+    unsigned long long clusterSize; /* in bytes, 0 if unknown */
     bool has_allocation; /* Set to true when provided in XML */
 
     size_t nseclabels;

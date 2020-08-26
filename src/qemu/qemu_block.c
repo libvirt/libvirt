@@ -2315,6 +2315,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQcow2(virStorageSourcePtr src,
                                  "s:file", src->nodestorage,
                                  "U:size", src->capacity,
                                  "S:version", qcow2version,
+                                 "P:cluster-size", src->clusterSize,
                                  NULL) < 0)
         return -1;
 
