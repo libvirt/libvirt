@@ -188,6 +188,7 @@ virt_util_lib = static_library(
     devmapper_dep,
     gnutls_dep,
     libnl_dep,
+    m_dep,
     numactl_dep,
     secdriver_dep,
     src_dep,
