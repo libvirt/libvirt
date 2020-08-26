@@ -2789,6 +2789,12 @@ qemuBlockStorageSourceCreateDetectSize(virHashTablePtr blockNamedNodeData,
         return -1;
     }
 
+    /* propagate cluster size if the images are compatible */
+    if (templ->format == VIR_STORAGE_FILE_QCOW2 &&
+        src->format == VIR_STORAGE_FILE_QCOW2 &&
+        src->clusterSize == 0)
+        src->clusterSize = entry->clusterSize;
+
     if (src->format == VIR_STORAGE_FILE_RAW) {
         src->physical = entry->capacity;
     } else {
