@@ -858,13 +858,15 @@ if conf.has('WITH_LIBVIRTD')
   endif
 endif
 
-foreach sysconf : sysconf_files
-  install_data(
-    sysconf['file'],
-    install_dir: sysconfdir / 'sysconfig',
-    rename: [ sysconf['name'] ],
-  )
-endforeach
+if init_script != 'none'
+  foreach sysconf : sysconf_files
+    install_data(
+      sysconf['file'],
+      install_dir: sysconfdir / 'sysconfig',
+      rename: [ sysconf['name'] ],
+    )
+  endforeach
+endif
 
 if conf.has('WITH_DTRACE_PROBES')
   custom_target(
