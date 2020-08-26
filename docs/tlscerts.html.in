@@ -152,7 +152,7 @@ permissive, depending on your needs.
       <a id="Remote_TLS_CA">Setting up a Certificate Authority (CA)</a>
     </h2>
     <p>
-You will need the <a href="http://www.gnu.org/software/gnutls/manual/html_node/Invoking-certtool.html">GnuTLS
+You will need the <a href="https://www.gnutls.org/manual/html_node/certtool-Invocation.html">GnuTLS
 certtool program documented here</a>.  In Fedora, it is in the
 <code>gnutls-utils</code> package.
 </p>
