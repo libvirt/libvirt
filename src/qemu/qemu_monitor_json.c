@@ -2997,6 +2997,9 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
     if (virJSONValueObjectGetNumberUlong(img, "actual-size", &ent->physical) < 0)
         ent->physical = ent->capacity;
 
+    /* try looking up the cluster size */
+    ignore_value(virJSONValueObjectGetNumberUlong(img, "cluster-size", &ent->clusterSize));
+
     if ((bitmaps = virJSONValueObjectGetArray(val, "dirty-bitmaps")))
         qemuMonitorJSONBlockGetNamedNodeDataBitmaps(bitmaps, ent);
 
