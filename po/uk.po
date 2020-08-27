@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-08-26 08:38+0000\n"
-"PO-Revision-Date: 2020-07-27 07:34+0000\n"
+"PO-Revision-Date: 2020-08-27 08:43+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.1.1\n"
+"X-Generator: Weblate 4.2.1\n"
 
 msgid ""
 "\n"
@@ -283,6 +283,25 @@ msgid ""
 "    -F | --append-file <file>      append file to an existing profile\n"
 "\n"
 msgstr ""
+"\n"
+"%s mode [параметри] [додатковий файл] [< def.xml]\n"
+"\n"
+"  Режими:\n"
+"    -a | --add                     завантажити профіль\n"
+"    -c | --create                  створити профіль з шаблону\n"
+"    -D | --delete                  вивантажити профіль і вилучити створені "
+"правила\n"
+"    -r | --replace                 перезавантажити профіль\n"
+"    -R | --remove                  вивантажити профіль\n"
+"  Параметри:\n"
+"    -d | --dryrun                  не виконувати дій\n"
+"    -u | --uuid <uuid>             uuid (назва профілю)\n"
+"    -h | --help                    це довідкове повідомлення\n"
+"  Додатковий файл:\n"
+"    -f | --add-file <файл>         додати файл до профілю, який створено з "
+"XML\n"
+"    -F | --append-file <файл>      дописати файл до наявного профілю\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -1148,7 +1167,7 @@ msgstr "у драйвері процесора не передбачено пі�
 
 #, c-format
 msgid "'%s' attributes '%s' must not overlap"
-msgstr ""
+msgstr "Атрибути «%s» «%s» не повинні перекриватися"
 
 #, c-format
 msgid "'%s' controller cannot be hot plugged."
@@ -2035,7 +2054,7 @@ msgstr ""
 "Режим атрибутів можна використовувати лише для процесорів гостьових систем"
 
 msgid "Audio type OSS requires to have <input> and <output> specified"
-msgstr ""
+msgstr "Тип звуку OSS потребує визначення <input> і <output>"
 
 msgid "Audit is not supported by the kernel"
 msgstr "У ядрі не передбачено підтримки аудиту"
@@ -10068,7 +10087,7 @@ msgstr "Некоректна спроба встановити IP вузла д�
 
 #, c-format
 msgid "Invalid audio 'id' value '%s'"
-msgstr ""
+msgstr "Некоректне значення «id» звуку «%s»"
 
 msgid "Invalid auth_pending and auth combination in JSON state document"
 msgstr "Некоректна комбінація auth_pending і auth у документі щодо стану JSON"
@@ -11193,7 +11212,7 @@ msgstr ""
 
 #, c-format
 msgid "Malformed PCI address %s"
-msgstr ""
+msgstr "Помилкове форматування адреси PCI %s"
 
 msgid "Malformed auth_pending field in JSON state document"
 msgstr "Помилкове форматування поля auth_pending у документі щодо стану JSON"
@@ -11781,7 +11800,7 @@ msgstr "Пропущено аргумент «%s»"
 
 #, c-format
 msgid "Missing attribute '%s' in element '%s'"
-msgstr ""
+msgstr "Пропущено атрибут «%s» у елементі «%s»"
 
 msgid "Missing auth field in JSON state document"
 msgstr "У документі стану JSON не вистачає поля auth"
@@ -12812,7 +12831,7 @@ msgid "No description for domain: %s"
 msgstr "Немає опису домену: %s"
 
 msgid "No device model command-line argument specified"
-msgstr ""
+msgstr "У командному рядку не вказано аргумент моделі пристрою"
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -14498,7 +14517,7 @@ msgstr ""
 "Див. blockresize, щоб дізнатися як змінювати розмір у «гарячому» режимі."
 
 msgid "Resolved device mapper name too long"
-msgstr ""
+msgstr "Визначена назва прив'язки пристрою є надто довгою"
 
 msgid "Resource control is not supported on this host"
 msgstr "Підтримки керування ресурсами на цьому вузлі не передбачено"
@@ -15392,10 +15411,12 @@ msgid "Some processes refused to die"
 msgstr "Деякі з процесів не вдалося завершити"
 
 msgid "Sound device model is not supported"
-msgstr ""
+msgstr "Підтримки моделі звукових пристроїв не передбачено"
 
 msgid "Sound devices emulation is not supported by given bhyve binary"
 msgstr ""
+"У вказаному виконуваному файлі bhyve не передбачено підтримки емуляції "
+"звукових пристроїв"
 
 #, c-format
 msgid "Sound model %s too big for destination"
@@ -16531,6 +16552,7 @@ msgstr ""
 #, c-format
 msgid "Target shared memory role '%s' does not match source role '%s'"
 msgstr ""
+"Роль спільної пам'яті призначення, «%s», не збігається з роллю джерела, «%s»"
 
 msgid "Target shared memory server usage doesn't match source"
 msgstr ""
@@ -18033,7 +18055,7 @@ msgstr "Не вдалося визначити тип файлової сист�
 
 #, c-format
 msgid "Unable to find major for %s"
-msgstr ""
+msgstr "Не вдалося знайти основу для %s"
 
 #, c-format
 msgid "Unable to find the hard disk with uuid %s"
@@ -18197,7 +18219,7 @@ msgid "Unable to get device master from netlink on this platform"
 msgstr "Неможливо отримати батьківський пристрій із netlink на цій платформі"
 
 msgid "Unable to get device-mapper version"
-msgstr ""
+msgstr "Не вдалося отримати версію device-mapper"
 
 #, c-format
 msgid "Unable to get devmapper targets for %s"
@@ -18711,7 +18733,7 @@ msgstr "Не вдалося визначити використання ключ
 
 #, c-format
 msgid "Unable to query dependencies for %s"
-msgstr ""
+msgstr "Не вдалося опитати залежності для %s"
 
 msgid "Unable to query kqueue"
 msgstr "Не вдалося опитати kqueue"
@@ -19186,7 +19208,7 @@ msgstr "Не вдалося запустити проміжний пристрі
 
 #, c-format
 msgid "Unable to stat %p"
-msgstr ""
+msgstr "Не вдалося виконати stat для %p"
 
 #, c-format
 msgid "Unable to stat %s"
@@ -19877,7 +19899,7 @@ msgstr "Невідомий тип моделі shmem, «%s»"
 
 #, c-format
 msgid "Unknown shmem role type '%s'"
-msgstr ""
+msgstr "Невідомий тип ролі shmem «%s»"
 
 #, c-format
 msgid "Unknown slirp feature %s"
@@ -20158,7 +20180,7 @@ msgstr "Непідтримуваний тип пристроїв «%s»"
 
 #, c-format
 msgid "Unsupported device-mapper version. Expected %d got %d"
-msgstr ""
+msgstr "Непідтримувана версія device-mapper. Мало бути %d, маємо %d"
 
 #, c-format
 msgid "Unsupported disk address type '%s'"
@@ -23170,7 +23192,7 @@ msgid "cannot set moment %s as its own parent"
 msgstr "не можна встановлювати момент %s як власний батьківський елемент"
 
 msgid "cannot set netlink socket buffer size to 128k"
-msgstr "не вдалося встановити встановити розмір буфера сокета netlink 128 кБ"
+msgstr "не вдалося встановити розмір буфера сокета netlink 128 кБ"
 
 msgid "cannot set netlink socket nonblocking"
 msgstr "не вдалося встановити режим без блокування сокета netlink"
@@ -28407,7 +28429,7 @@ msgid "initialize"
 msgstr "ініціалізувати"
 
 msgid "initiator iqn for underlying storage"
-msgstr ""
+msgstr "iqn ініціатора для базового сховища даних"
 
 msgid "inject-nmi"
 msgstr "nmi-ін'єкція"
@@ -28902,7 +28924,7 @@ msgstr "некоректне значення ats"
 
 #, c-format
 msgid "invalid audio 'id' value '%s'"
-msgstr ""
+msgstr "некоректне значення «id» звуку «%s»"
 
 #, c-format
 msgid "invalid autodeflate attribute value '%s'"
@@ -30856,7 +30878,7 @@ msgstr ""
 "виконується перенесення, але даних щодо оперативної пам'яті не встановлено"
 
 msgid "migration with legacy shmem device is not supported"
-msgstr ""
+msgstr "підтримки перенесення із застарілим пристроєм shmem не передбачено"
 
 msgid "migration with non-shared storage with full disk copy"
 msgstr ""
@@ -32956,10 +32978,12 @@ msgid ""
 "node '%s' has unexpected NULL content. This could be caused by malformed "
 "input, or a memory allocation failure"
 msgstr ""
+"вмістом вузла «%s» неочікувано виявився NULL. Причиною може бути помилкове "
+"форматування вхідних даних або помилка під час спроби отримання пам'яті"
 
 #, c-format
 msgid "node '%s' has unexpected type %d"
-msgstr ""
+msgstr "вузол «%s» належить до непідтримуваного типу %d"
 
 msgid "node CPU stats not implemented on this platform"
 msgstr "на цій платформі інформацію щодо процесорів вузла не реалізовано"
@@ -33164,7 +33188,7 @@ msgstr ""
 
 #, c-format
 msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
-msgstr ""
+msgstr "Розмір nvdimm не вирівняно. Пропонований вирівняний розмір: %llu КіБ"
 
 msgid "nvram address type must be spaprvio"
 msgstr "адреса nvram має належати до типу spaprvio"
@@ -34752,7 +34776,7 @@ msgid "require atomic operation"
 msgstr "потребує елементарної дії"
 
 msgid "resctrl locking is not supported on this platform"
-msgstr ""
+msgstr "На цій платформі підтримки блокування resctrl не передбачено"
 
 msgid "reservations not supported with this QEMU binary"
 msgstr "підтримки резервування у цьому виконуваному файлі QEMU не передбачено"
@@ -35297,6 +35321,8 @@ msgid ""
 "shmem device '%s' cannot be migrated, only shmem with role='%s' can be "
 "migrated"
 msgstr ""
+"Пристрій shmem «%s» не може бути перенесено, переносити можна лише пристрої "
+"shmem з role='%s'"
 
 msgid "shmem element must contain 'name' attribute"
 msgstr "елемент shmem має містити атрибут «name»"
@@ -37351,7 +37377,7 @@ msgstr "не вдалося встановити прапорці vnet або mu
 
 #, c-format
 msgid "unable to stat %s"
-msgstr ""
+msgstr "не вдалося виконати stat для %s"
 
 #, c-format
 msgid "unable to stat block copy target '%s'"
@@ -37509,7 +37535,7 @@ msgstr "неочікуваний тип асинхронного завданн�
 
 #, c-format
 msgid "unexpected audio type %d"
-msgstr ""
+msgstr "неочікуваний тип звуку %d"
 
 #, c-format
 msgid "unexpected binding %s already exists"
@@ -38011,7 +38037,7 @@ msgstr "невідома перевірка зв'язку ARP %s"
 
 #, c-format
 msgid "unknown audio type '%s'"
-msgstr ""
+msgstr "невідомий тип звуку «%s»"
 
 #, c-format
 msgid "unknown auth type '%s'"
@@ -38985,7 +39011,7 @@ msgstr "непідтримувана архітектура: %s"
 
 #, c-format
 msgid "unsupported audio backend '%s'"
-msgstr ""
+msgstr "непідтримуваний звуковий модуль «%s»"
 
 #, c-format
 msgid "unsupported authentication type %d"
