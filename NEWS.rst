@@ -37,6 +37,12 @@ v6.7.0 (unreleased)
     ``role=master``, the guest will copy the shared memory on migration to
     the destination host. With ``role=peer``, the migration is disabled.
 
+  * bhyve: Sound device support
+
+    This feature allows to configure guest sound device using
+    the ``<sound>`` element, and map it to the host sound device using
+    the ``<audio>`` element.
+
 * **Improvements**
 
   * Allow sparse streams for block devices
