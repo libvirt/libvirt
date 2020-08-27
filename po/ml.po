@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-07-24 15:35+0000\n"
+"POT-Creation-Date: 2020-08-26 08:38+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -45,6 +45,7 @@ msgstr ""
 "\n"
 "  (കൂട്ടത്തിലുള്ള കല്പ്പന വിശദാംശങ്ങളെക്കുറിച്ചുള്ള സഹായസംഹിത <group> എടുത്തു പറയുക)\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -230,7 +231,8 @@ msgid ""
 "  Modes:\n"
 "    -a | --add                     load profile\n"
 "    -c | --create                  create profile from template\n"
-"    -D | --delete                  unload and delete profile\n"
+"    -D | --delete                  unload profile and delete generated "
+"rules\n"
 "    -r | --replace                 reload profile\n"
 "    -R | --remove                  unload profile\n"
 "  Options:\n"
@@ -581,6 +583,16 @@ msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്�
 msgid "%s object has invalid dynamic type"
 msgstr "%s വസ്തുവില്‍ തെറ്റായ ഡൈനമിക് തരം"
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s വസ്തുവില്‍ ആവശ്യമായ '%s' വിശേഷത ലഭ്യമല്ല"
@@ -633,6 +645,7 @@ msgstr "%s: %d: argv അനുവദിയ്ക്കുന്നതില്�
 msgid "%s: %d: failed to allocate mountpoints"
 msgstr "%s: %d: %d ബൈറ്റുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+#. The length of the formatting string minus two '%s'
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -981,16 +994,16 @@ msgid "%s_DEBUG not set with a valid numeric value"
 msgstr ""
 
 #, c-format
-msgid "%ssched attributes 'vcpus' must not overlap"
-msgstr ""
-
-#, c-format
 msgid "'%s'"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "'%s' architecture is not supported by CPU driver"
 msgstr "അരിപ്പകള്‍ ഈ libvrt പിന്‍തുണയ്ക്കുന്നില്ല"
+
+#, c-format
+msgid "'%s' attributes '%s' must not overlap"
+msgstr ""
 
 #, c-format
 msgid "'%s' controller cannot be hot plugged."
@@ -1340,6 +1353,7 @@ msgstr "(interface_definition)"
 msgid "(libxl_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
+#. parse and modify the xml from the user
 #, fuzzy
 msgid "(metadata_xml)"
 msgstr "മെറ്റാ-വിവരം:"
@@ -1403,6 +1417,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(വോള്യം_നിര്‍വചനം)"
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1857,6 +1872,9 @@ msgstr ""
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "ആട്ട്രിബ്യൂട്ട് മോഡ് ഗസ്റ്റ്‌ സി.പി.യു.-വിനു മാത്രമേ "
 
+msgid "Audio type OSS requires to have <input> and <output> specified"
+msgstr ""
+
 #, fuzzy
 msgid "Audit is not supported by the kernel"
 msgstr "ഈ കേര്‍ണല്‍ unpriv_sgio പിന്തുണയ്ക്കുന്നില്ല"
@@ -2041,10 +2059,6 @@ msgstr "'%s' പ്രിന്റ ചെയ്യാന്‍ മാത്ര�
 
 msgid "Build a given pool."
 msgstr "നല്‍കിയിരിക്കുന്ന പൂള്‍ ബിള്‍ഡ് ചെയ്യുക."
-
-#, c-format
-msgid "Bus %s too big for destination"
-msgstr "ബസ് %s വളരെ വലുതാണു്"
 
 msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgstr "PIIX3 USB അല്ലെങ്കില്‍ ഐഡിഇ കണ്ട്രോളറുകള്‍ക്കുള്ള ബസ് 0 പിസിഐ ആയിരിയ്ക്കണം"
@@ -2291,10 +2305,14 @@ msgstr ""
 msgid "Cache with id %u does not exists for level %d"
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "%s-ലേക്കു് വിളിയ്ക്കുക, ഇവ അപ്രതീക്ഷിതമായ '%s' തരത്തിനു്"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "%s-ലേക്കുള്ള കോള്‍,  അപ്രതീക്ഷിതമായ '%s' തരത്തിനു്,  പ്രതീക്ഷിച്ചതു് '%s'"
@@ -4701,6 +4719,7 @@ msgstr "'%s'-നുള്ള 'bonding/forward_delay' ലഭ്യമാക്ക
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr "'%s'-നുള്ള 'bonding/stp_state' ലഭ്യമാക്കുവാനായില്ല"
 
+#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "പൂള്‍ സംബന്ധിച്ചുള്ള വിവരം ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
@@ -5468,10 +5487,6 @@ msgid "Domain %s suspended\n"
 msgstr "%s ഡൊമെയിന്‍ താല്‍ക്കാലികമായി നിര്‍ത്തിയിരിക്കുന്നു\n"
 
 #, c-format
-msgid "Domain %s too big for destination"
-msgstr "ഡൊമെയിന്‍ %s വളരെ വലുതാണു്"
-
-#, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "ഡൊമെയിന്‍ %s ഓട്ടോമാറ്റിക്കായി തുടങ്ങുന്നു എന്ന് അടയാളപ്പെടുത്തല്‍ മാറ്റിയിരിക്കുന്നു\n"
 
@@ -5579,6 +5594,7 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr "ഡൊമൈനില്‍ %d ഇന്റെര്‍ഫേസുകളുണ്ട്. --mac ഉപയോഗിച്ച് വിച്ഛേദിക്കേണ്ടതിനെ പറയുക"
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6652,10 +6668,6 @@ msgstr "'%s'-നെ int ആയി വേര്‍തിരിയ്ക്കു�
 msgid "Failed to convert the command string to argv-lists"
 msgstr "'%s'-നെ int ആയി വേര്‍തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "Failed to copy ACLs on device %s"
-msgstr "%s ഡിവൈസ് വീണ്ടും സജ്ജമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
-
 #, fuzzy
 msgid "Failed to copy XML node"
 msgstr "ഒരു എക്സ്എംഎല്‍ നോഡ് പകര്‍ത്തുവാന്‍ സാധ്യമല്ല"
@@ -6831,14 +6843,21 @@ msgstr "%s ഉണ്ടാക്കുന്നതില്‍ പരാജയ�
 msgid "Failed to create thread for receiving migration data"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
@@ -7401,6 +7420,7 @@ msgstr "സജീവമായ നെറ്റ്‌വറ്‍ക്കുക�
 msgid "Failed to list active pools"
 msgstr "സജീവമായ പൂളുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
+#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "ഡൊമെയിനുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
@@ -7416,22 +7436,28 @@ msgstr "സജീവമല്ലാത്ത നെറ്റ്‌വറ്‍�
 msgid "Failed to list inactive pools"
 msgstr "സജീവമല്ലാത്ത പൂളുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
+#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "ഇന്റര്‍ഫെയിസ് കാണിക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "നോഡ് അരിപ്പക്കള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "നോഡ് അരിപ്പക്കള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "നെറ്റ്‌വര്‍ക്ക് കാണിക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "നോഡ് ഡിവൈസുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "നോഡ് രഹസ്യം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
@@ -7439,6 +7465,7 @@ msgstr "നോഡ് രഹസ്യം ലഭ്യമാക്കുന്ന�
 msgid "Failed to list persistent guests on $uri"
 msgstr "$uri-ല്‍ സ്ഥിരമായ ഗസ്റ്റുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
+#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "പൂള്‍ പട്ടിക ലഭ്യമായില്ല"
 
@@ -7458,6 +7485,7 @@ msgstr "സ്ഥായിയല്ലാത്ത ഗസ്റ്റുകള�
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ന്റെ vcpuകള്‍ നിരത്തുന്നതില്‍ പരാജയപ്പെട്ടു"
 
+#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "വോള്യം പട്ടിക ലഭ്യമായില്ല"
 
@@ -8047,6 +8075,9 @@ msgstr "ഡൊമെയിന്‍ %s വീണ്ടും ആരംഭിക�
 msgid "Failed to resume domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d' പുനരാരംഭിക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "പരാജയത്തിനു് ശേഷം ഗസ്റ്റ് %s വീണ്ടും ആരംഭിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -8643,10 +8674,63 @@ msgstr ""
 "ആദ്യത്തെ ഫയല്‍ അടിസ്ഥാനത്തിലുള്ള ഹാര്‍ഡ് ഡിസ്കില്‍ ശ്രോതസ്സില്ല, വിഎംഎക്സ് ഫയലില്‍ നിന്നും "
 "ഡേറ്റാസ്റ്റോര്‍ അല്ലെങ്കില്‍ പാഥ് ലഭ്യമല്ല"
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "--%s, --%s ഐച്ഛികങ്ങള്‍ പരസ്പര വിരുദ്ധമാകുന്നു"
@@ -8727,10 +8811,6 @@ msgstr "ബ്ലോക്ക് ഉപകരണത്തിന്റെ മു�
 
 msgid "Fully-qualified path or target of disk device"
 msgstr "ഡിസ്ക്ക് ഉപകരണത്തിന്റെ മുഴുവന്‍ വഴി"
-
-#, c-format
-msgid "Function %s too big for destination"
-msgstr "ഫംഗ്ഷന്‍ %s വളരെ വലുതാണു്"
 
 msgid "GET operation failed"
 msgstr "GET പ്രക്രിയ പരാജയപ്പെട്ടു"
@@ -9674,6 +9754,15 @@ msgstr "അനുവദിയ്ക്കേണ്ട തെറ്റായ മ�
 msgid "Invalid append attribute value '%s'"
 msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്‍റ്"
 
@@ -9708,6 +9797,10 @@ msgid ""
 msgstr ""
 
 msgid "Invalid attempt to set peer IP for guest"
+msgstr ""
+
+#, c-format
+msgid "Invalid audio 'id' value '%s'"
 msgstr ""
 
 #, fuzzy
@@ -10818,6 +10911,10 @@ msgstr ""
 "'uri_aliases' ക്രമീകരണ വില '%s' വികലമാണ്, 'alias=uri://host/path' എന്ന "
 "രീതിയിലാണ് പ്രതീക്ഷിക്കുന്നത്"
 
+#, c-format
+msgid "Malformed PCI address %s"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed auth_pending field in JSON state document"
 msgstr "JSON അവസ്ഥയുടെ രേഖയില്‍ auth ഫീള്‍ഡ് ലഭ്യമല്ല"
@@ -11414,9 +11511,9 @@ msgstr "സിപിയു മോഡല്‍ %s-ല്‍ മുന്‍ഗാ
 msgid "Missing argument for '%s'"
 msgstr "ആര്‍ഗ്യുമെന്റ് ലഭ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "Missing attribute '%s' in element '%sched'"
-msgstr " <interface> എലമെന്റിലുള്ള  dev വിശേഷത ലഭ്യമല്ല"
+#, c-format
+msgid "Missing attribute '%s' in element '%s'"
+msgstr ""
 
 msgid "Missing auth field in JSON state document"
 msgstr "JSON അവസ്ഥയുടെ രേഖയില്‍ auth ഫീള്‍ഡ് ലഭ്യമല്ല"
@@ -12085,6 +12182,12 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "പേര്"
 
@@ -12432,6 +12535,9 @@ msgstr "പിശക് കാണിക്കുന്ന സന്ദേശം 
 #, c-format
 msgid "No description for domain: %s"
 msgstr "%s :ഡൊമൈനിനുള്ള വിവരണം ലഭ്യമല്ല"
+
+msgid "No device model command-line argument specified"
+msgstr ""
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -13107,6 +13213,20 @@ msgstr ""
 "%u സൂചികയുള്ള പിസിഐ കണ്ട്രോളറിനുള്ള പിസിഐയ്ക്കു് ഡിവൈസിന്റെ വിളിപ്പേരു് സജ്ജമല്ല, %s "
 "വിലാസത്തില്‍ ഡിവൈസിനു് ആവശ്യമുണ്ടു്"
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -13117,6 +13237,20 @@ msgstr "ആര്‍ഗ്യുമെന്റ് കാലിയാണു്"
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "--%s, --%s ഐച്ഛികങ്ങള്‍ പരസ്പര വിരുദ്ധമാകുന്നു"
@@ -14044,6 +14178,9 @@ msgid ""
 "See blockresize for live resizing."
 msgstr ""
 
+msgid "Resolved device mapper name too long"
+msgstr ""
+
 #, fuzzy
 msgid "Resource control is not supported on this host"
 msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് ക്രമീകരണം പിന്തുണയ്ക്കുന്നില്ല"
@@ -14249,6 +14386,7 @@ msgstr "ഈ ഡൊമെയിനു് S3 അവസ്ഥ പ്രവര്‍
 msgid "S4 state is disabled for this domain"
 msgstr "ഈ ഡൊമെയിനു് S4 അവസ്ഥ പ്രവര്‍ത്തന രഹിതമാക്കിയിരിയ്ക്കുന്നു"
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14504,6 +14642,8 @@ msgstr "സെക്യൂരിറ്റി മാതൃക ലഭ്യമാ�
 msgid "Security model:"
 msgstr "സുരക്ഷാ മാതൃക:"
 
+#. Bhyve doesn't support VNC Auth yet, so print a warning about
+#. * unauthenticated VNC sessions
 #, fuzzy
 msgid "Security warning: currently VNC auth is not supported."
 msgstr "മൌണ്ട് പോയിന്റ് നല്‍കുന്നതു് ഇപ്പോള്‍ പിന്തുണയ്ക്കുന്നില്ല"
@@ -14762,6 +14902,9 @@ msgstr "സിപിയു സമയം:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "ഈ QEMU സ്പയിസ് ഗ്രാഫിക്സ് പിന്തുണയ്ക്കുന്നില്ല"
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "പങ്കിട്ട മെമ്മറി:\n"
 
@@ -14838,14 +14981,11 @@ msgstr "'%s' വോള്യത്തിന്റെ വലിപ്പം %s �
 msgid "Skipping is not supported with this stream"
 msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
 
-#, c-format
-msgid "Slot %s too big for destination"
-msgstr "സ്ലോട്ട് %s വളരെ വലുതാണു്"
-
 #, fuzzy
 msgid "Snapshot"
 msgstr "സ്നാപ്പ്ഷോട്ട് പട്ടിക"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "സ്നാപ്പ്ഷോട്ട് %s XML ക്രമീകരണത്തില്‍ മാറ്റം വരുത്തിയിട്ടില്ല.\n"
@@ -14918,6 +15058,12 @@ msgstr "ഈ കേര്‍ണല്‍ പരാമീറ്റര്‍ '%s' �
 
 msgid "Some processes refused to die"
 msgstr "ചില പ്രക്രിയകള്‍ ഇല്ലാതാകുന്നതില്‍ നിരസിച്ചു"
+
+msgid "Sound device model is not supported"
+msgstr ""
+
+msgid "Sound devices emulation is not supported by given bhyve binary"
+msgstr ""
 
 #, c-format
 msgid "Sound model %s too big for destination"
@@ -15309,6 +15455,7 @@ msgstr "ടിപിഎം ഡിവൈസ് പാഥ് %s തെറ്റാ
 msgid "Table row cannot be empty"
 msgstr "%s കാലിയാകുവാന്‍ പാടില്ല"
 
+#. title
 msgid "Target"
 msgstr "ടാര്‍ഗറ്റ്"
 
@@ -15895,9 +16042,9 @@ msgstr "ലക്ഷ്യമായ വീഡിയോ കാര്‍ഡ്‌ 
 msgid "Target shared memory model '%s' does not match source model '%s'"
 msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള RNG മോഡല്‍ '%s', സോഴ്സ് '%s'-മായി പൊരുത്തപ്പെടുന്നില്ല"
 
-#, fuzzy, c-format
-msgid "Target shared memory name '%s' does not match source '%s'"
-msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ നാമം '%s', '%s'-മായി പൊരുത്തപ്പെടുന്നില്ല"
+#, c-format
+msgid "Target shared memory role '%s' does not match source role '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Target shared memory server usage doesn't match source"
@@ -16565,9 +16712,11 @@ msgstr "പിശക് അവസ്ഥയില്‍ സോക്കറ്റ�
 msgid "Try again?"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "ഇപ്പോഴും ഉപയോഗത്തിലുള്ള MultiCURL വസ്തു സ്വതന്ത്രമാക്കുവാന്‍ ശ്രമിയ്ക്കുന്നു"
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "ഉപയോഗത്തിലുള്ള SharedCURL വസ്തുവിനെ സ്വതന്ത്രമാക്കുവാന്‍ ശ്രമിയ്ക്കുന്നു"
 
@@ -17357,6 +17506,10 @@ msgstr "'%s'-നുള്ള 'bonding/mode'-നുള്ള ശരിയായ �
 msgid "Unable to find filesystem type for %s"
 msgstr "%s-നുള്ള ഫയല്‍സിസ്റ്റം രീതി കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
+#, c-format
+msgid "Unable to find major for %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to find the hard disk with uuid %s"
 msgstr "നെറ്റ്‌വര്‍ക്ക് '%s'  uuid %s"
@@ -17529,6 +17682,9 @@ msgstr "ഡിവൈസ് ഐഡി '%s' ലഭ്യമാക്കുവാ�
 #, fuzzy
 msgid "Unable to get device master from netlink on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമിലെ വിര്‍ച്ച്വല്‍ ഫങ്ഷനുകള്‍ കാണാന്‍ സാധിച്ചില്ല"
+
+msgid "Unable to get device-mapper version"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to get devmapper targets for %s"
@@ -18070,6 +18226,10 @@ msgstr "സര്‍ട്ടിഫിക്കേറ്റ് %s കീ ഉദ�
 msgid "Unable to query certificate %s key usage %s"
 msgstr "സര്‍ട്ടിഫിക്കേറ്റ് %s കീ ഉപയോഗം %s ചോദിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
+#, c-format
+msgid "Unable to query dependencies for %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to query kqueue"
 msgstr "സെക്റ്ററിന്റെ വ്യാപ്തി %s ചോദിയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -18561,6 +18721,10 @@ msgid "Unable to start event thread: %s"
 msgstr "ബന്ധിപ്പിക്കാനുള്ള ലക്ഷ്യം %sന്റെ അവസ്ഥ പരിശോധിക്കാന്‍ സാധ്യമല്ല"
 
 msgid "Unable to start mediated device"
+msgstr ""
+
+#, c-format
+msgid "Unable to stat %p"
 msgstr ""
 
 #, c-format
@@ -19116,6 +19280,7 @@ msgstr "അജ്ഞാതമായ ഫോര്‍വേഡ് രീതി %d,
 msgid "Unknown error"
 msgstr "അറിയാത്ത ഏതോ പ്രശ്നം"
 
+#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "അപരിചിതമായ പിശക് മൂല്ല്യം"
 
@@ -19247,6 +19412,10 @@ msgstr "അപരിചിതമായ ഡ്രൈവര്‍ തരം %s"
 #, fuzzy, c-format
 msgid "Unknown shmem model type '%s'"
 msgstr "അപരിചിതമായ മോഡല്‍ തരം '%s'"
+
+#, c-format
+msgid "Unknown shmem role type '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown slirp feature %s"
@@ -19520,6 +19689,10 @@ msgstr "പിന്തുണയ്ക്കാത്ത ഡിവൈസ് ത�
 #, c-format
 msgid "Unsupported device type '%s'"
 msgstr "പിന്തുണയ്ക്കാത്ത ഡിവൈസ് തരം '%s'"
+
+#, c-format
+msgid "Unsupported device-mapper version. Expected %d got %d"
+msgstr ""
 
 #, c-format
 msgid "Unsupported disk address type '%s'"
@@ -19868,10 +20041,12 @@ msgstr "ഈ QEMU സ്പയിസ് ഗ്രാഫിക്സ് പിന�
 msgid "Vifname %s too big for destination"
 msgstr "Vifname %s വളരെ വലുതാണു്"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "libvirt %s-നുള്ള Virsh കമാന്‍ഡ് ലൈന്‍ പ്രയോഗം\n"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "libvirt %s-നുള്ള Virsh കമാന്‍ഡ് ലൈന്‍ പ്രയോഗം\n"
@@ -21977,6 +22152,7 @@ msgstr "പാഥ് '%s' തുറക്കുവാന്‍ സാധ്യ�
 msgid "cannot open path '%s' in '%s'"
 msgstr "പാഥ് '%s' തുറക്കുവാന്‍ സാധ്യമല്ല"
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "വോള്യം '%s' തുറക്കുവാന്‍ സാധ്യമല്ല"
@@ -22836,6 +23012,7 @@ msgstr "ക്ലോണിന്റെ പേര്"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "%s എന്ന തട്ടു്  ഉണ്ടാക്കുന്നതില്‍ ചൈല്‍ഡ് പരാജയപ്പെട്ടു"
@@ -26665,6 +26842,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "കോണ്‍ഫിഗ് മൂല്ല്യം %s തെറ്റാണു്"
@@ -27258,6 +27438,7 @@ msgstr "സ്നാപ്ഷോട്ട് ഉണ്ടാക്കിയശ�
 msgid "handler failed to wait on condition"
 msgstr "അവസ്ഥയ്ക്കായി കാത്തിരിക്കുന്നതില്‍ പരാജയം"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "ഹാഷ് തെരച്ചില്‍ നള്‍ പോയിന്റര്‍ ലഭ്യമാക്കുന്നു"
 
@@ -27646,6 +27827,9 @@ msgstr ""
 msgid "initialize"
 msgstr "mutex ആരംഭിക്കുവാന്‍ സാധിച്ചില്ല"
 
+msgid "initiator iqn for underlying storage"
+msgstr ""
+
 msgid "inject-nmi"
 msgstr ""
 
@@ -27796,6 +27980,25 @@ msgstr "ഇന്റര്‍ഫെയിസ് പേര്"
 msgid "interface name %s does not fit into buffer "
 msgstr "%s എന്ന ഇന്റര്‍ഫേസ് പേര് ബഫറിനു ചേരില്ല"
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr "ഇന്റര്‍ഫെയിസ് പേര് അല്ലെങ്കില്‍ MAC വിലാസം"
 
@@ -28099,6 +28302,10 @@ msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്റ്: %s"
 #, fuzzy
 msgid "invalid ats value"
 msgstr "തെറ്റായ മൂല്ല്യം %d"
+
+#, c-format
+msgid "invalid audio 'id' value '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "invalid autodeflate attribute value '%s'"
@@ -30019,6 +30226,9 @@ msgstr "ഡിസ്ക് മൈഗ്രേഷന്‍ സജീവം, പ�
 msgid "migration was active, but no RAM info was set"
 msgstr "ഡിസ്ക് മൈഗ്രേഷന്‍ സജീവം, പക്ഷേ RAM വിവരം ലഭ്യമല്ല"
 
+msgid "migration with legacy shmem device is not supported"
+msgstr ""
+
 msgid "migration with non-shared storage with full disk copy"
 msgstr "മുഴുവന്‍ ഡിസ്ക്ക് കോപ്പി ഉപയോഗിച്ചുള്ള മൈഗ്രേഷന്‍"
 
@@ -30026,10 +30236,6 @@ msgid ""
 "migration with non-shared storage with incremental copy (same base image "
 "shared between source and destination)"
 msgstr "ഇന്‍ക്രീമെന്റെല്‍ ഡിസ്ക്ക് കോപ്പി ഉപയോഗിച്ചുള്ള മൈഗ്രേഷന്‍"
-
-#, fuzzy
-msgid "migration with shmem device is not supported"
-msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ ചേര്‍ത്തുവയ്ക്കലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
 
 #, fuzzy
 msgid "migration with virtiofs device is not supported"
@@ -30044,9 +30250,6 @@ msgid "migration_host must not be the address of the local machine: %s"
 msgstr ""
 
 msgid "minWorkers cannot be larger than maxWorkers"
-msgstr ""
-
-msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr ""
 
 msgid "mirror requires file name"
@@ -31124,6 +31327,15 @@ msgstr "വിവരണത്തിന് പകരം തലക്കെട്�
 msgid "monitor failure"
 msgstr "മോണിറ്റര്‍ പാഥ് ലഭ്യമല്ല"
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr "മോണിറ്റര്‍ NULL ആയിരിയ്ക്കരുതു്"
 
@@ -31325,6 +31537,7 @@ msgstr "rawio വിശേഷത ആവശ്യമുണ്ടു്"
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "ചോദ്യം ചെയ്ത SSF %d മതിയാകുന്നതല്ല"
@@ -32151,6 +32364,16 @@ msgstr "virGetUserDirectory ലഭ്യമല്ല"
 msgid "no x86 CPU data found"
 msgstr "സിപിയുകള്‍ ലഭ്യമല്ല"
 
+#, c-format
+msgid ""
+"node '%s' has unexpected NULL content. This could be caused by malformed "
+"input, or a memory allocation failure"
+msgstr ""
+
+#, c-format
+msgid "node '%s' has unexpected type %d"
+msgstr ""
+
 msgid "node CPU stats not implemented on this platform"
 msgstr "നോഡ് സിപിയു സ്റ്റാറ്റ്സ് ഈ പ്ലാറ്റ്ഫോമില്‍ ലഭ്യമല്ല"
 
@@ -32349,6 +32572,10 @@ msgstr "ഈ QEMU ലൈബ്രറിയില്‍ പങ്കിടുന�
 #, fuzzy
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "ഈ QEMU ലൈബ്രറിയില്‍ പങ്കിടുന്ന മെമ്മറി പ്രവര്‍ത്തന രഹിതമാക്കുന്നതു് ലഭ്യമല്ല"
+
+#, c-format
+msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
+msgstr ""
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram വിലാസ തരം spaprvio ആയിരിയ്ക്കണം"
@@ -33904,6 +34131,9 @@ msgstr ""
 msgid "require atomic operation"
 msgstr "ഏകത്വ പ്രവര്‍ത്തനം വേണം"
 
+msgid "resctrl locking is not supported on this platform"
+msgstr ""
+
 #, fuzzy
 msgid "reservations not supported with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറിയില്‍ vhost-net പിന്തുണയ്ക്കുന്നില്ല"
@@ -34432,6 +34662,12 @@ msgid "shared access for disk '%s' requires use of supported storage format"
 msgstr "'%s' ഫയലിനു്, '%s' ഡിസ്കിനുള്ളതു്,  പുറമേയുള്ള സ്നാപ്പ്ഷോട്ട് മോഡിന്റെ ഉപയോഗമുണ്ടു്"
 
 msgid "sheepdog protocol accepts only one host"
+msgstr ""
+
+#, c-format
+msgid ""
+"shmem device '%s' cannot be migrated, only shmem with role='%s' can be "
+"migrated"
 msgstr ""
 
 #, fuzzy
@@ -36066,10 +36302,6 @@ msgstr "ഇതിനുള്ള selinux കോണ്ടെക്സ്റ്റ
 msgid "unable to create socket pair"
 msgstr "സോക്കറ്റ് പെയര്‍ ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#, fuzzy, c-format
-msgid "unable to create symlink %s"
-msgstr "%s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
-
 #, fuzzy
 msgid "unable to create volume XML"
 msgstr "epoll fd തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
@@ -36155,6 +36387,7 @@ msgstr "mutex init ചെയ്യുവാന്‍ സാധ്യമല്ല
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "%s fsync ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -36449,6 +36682,10 @@ msgstr "'%ld:%ld'-നു് '%s'-ല്‍, ഉപയോക്താവും �
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "macvtap റ്റാപ്പില്‍ വിശേഷത ഫ്ലാഗുകള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
+#, c-format
+msgid "unable to stat %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr "ബന്ധിപ്പിക്കാനുള്ള ലക്ഷ്യം %sന്റെ അവസ്ഥ പരിശോധിക്കാന്‍ സാധ്യമല്ല"
@@ -36602,6 +36839,10 @@ msgstr "സ്കസി ഡിസ്കിനു് അപ്രതീക്ഷ�
 #, fuzzy, c-format
 msgid "unexpected async job %d type expected %d"
 msgstr "അപ്രതീക്ഷിതമായ സിസിന്‍ഫോ തരം മോഡല്‍ %d"
+
+#, c-format
+msgid "unexpected audio type %d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unexpected binding %s already exists"
@@ -37002,6 +37243,8 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr "ഈ QEMU സ്പയിസ് ഗ്രാഫിക്സ് പിന്തുണയ്ക്കുന്നില്ല"
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "അറിയാത്ത"
 
@@ -37099,6 +37342,10 @@ msgstr "അപരിചിതമായ ആര്‍ക്കിറ്റക്�
 #, c-format
 msgid "unknown arp bonding validate %s"
 msgstr "അപരിചിതമായ arp ബോണ്ടിങ് പരിശോധന %s"
+
+#, c-format
+msgid "unknown audio type '%s'"
+msgstr ""
 
 #, c-format
 msgid "unknown auth type '%s'"
@@ -38069,6 +38316,10 @@ msgid "unsupported architecture: %s"
 msgstr "പിന്തുണയ്ക്കാത്ത വിശേഷത %s"
 
 #, c-format
+msgid "unsupported audio backend '%s'"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr "പിന്തുണയില്ലാത്ത ഓഥന്റിക്കേഷന്‍ തരം %d"
 
@@ -38190,6 +38441,28 @@ msgstr "പിന്തുണയില്ലാത്ത പരാജയ പ്�
 msgid "unsupported feature %s"
 msgstr "പിന്തുണയ്ക്കാത്ത വിശേഷത %s"
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "പിന്തുണയ്ക്കാത്ത ഫ്ലാഗുകള്‍ (0x%lx), %s ഫംഗ്ഷനില്‍"
@@ -39383,6 +39656,38 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Bus %s too big for destination"
+#~ msgstr "ബസ് %s വളരെ വലുതാണു്"
+
+#~ msgid "Domain %s too big for destination"
+#~ msgstr "ഡൊമെയിന്‍ %s വളരെ വലുതാണു്"
+
+#, fuzzy
+#~ msgid "Failed to copy ACLs on device %s"
+#~ msgstr "%s ഡിവൈസ് വീണ്ടും സജ്ജമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#~ msgid "Function %s too big for destination"
+#~ msgstr "ഫംഗ്ഷന്‍ %s വളരെ വലുതാണു്"
+
+#, fuzzy
+#~ msgid "Missing attribute '%s' in element '%sched'"
+#~ msgstr " <interface> എലമെന്റിലുള്ള  dev വിശേഷത ലഭ്യമല്ല"
+
+#~ msgid "Slot %s too big for destination"
+#~ msgstr "സ്ലോട്ട് %s വളരെ വലുതാണു്"
+
+#, fuzzy
+#~ msgid "Target shared memory name '%s' does not match source '%s'"
+#~ msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ നാമം '%s', '%s'-മായി പൊരുത്തപ്പെടുന്നില്ല"
+
+#, fuzzy
+#~ msgid "migration with shmem device is not supported"
+#~ msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ ചേര്‍ത്തുവയ്ക്കലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "unable to create symlink %s"
+#~ msgstr "%s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
 #, fuzzy
 #~ msgid "Cannot resolve ::1 address: %s"

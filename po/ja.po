@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-07-24 15:35+0000\n"
+"POT-Creation-Date: 2020-08-26 08:38+0000\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -44,6 +44,7 @@ msgstr ""
 "\n"
 "  (グループにあるコマンドの詳細は help <group> を指定します)\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -229,7 +230,8 @@ msgid ""
 "  Modes:\n"
 "    -a | --add                     load profile\n"
 "    -c | --create                  create profile from template\n"
-"    -D | --delete                  unload and delete profile\n"
+"    -D | --delete                  unload profile and delete generated "
+"rules\n"
 "    -r | --replace                 reload profile\n"
 "    -R | --remove                  unload profile\n"
 "  Options:\n"
@@ -583,6 +585,16 @@ msgstr "%s はこの QEMU ライブラリーにおいてサポートされてい
 msgid "%s object has invalid dynamic type"
 msgstr "%s オブジェクトが無効な動的形式を持ちます"
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s オブジェクトは必要な '%s' プロパティがありません"
@@ -635,6 +647,7 @@ msgstr "%s: %d: 引数の割り当てに失敗しました"
 msgid "%s: %d: failed to allocate mountpoints"
 msgstr "%s: %d: %d バイトを割り当てるのに失敗しました"
 
+#. The length of the formatting string minus two '%s'
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -1011,16 +1024,16 @@ msgid "%s_DEBUG not set with a valid numeric value"
 msgstr ""
 
 #, c-format
-msgid "%ssched attributes 'vcpus' must not overlap"
-msgstr ""
-
-#, c-format
 msgid "'%s'"
 msgstr "'%s'"
 
 #, fuzzy, c-format
 msgid "'%s' architecture is not supported by CPU driver"
 msgstr "フィルタリングはこの libvirt によりサポートされません"
+
+#, c-format
+msgid "'%s' attributes '%s' must not overlap"
+msgstr ""
 
 #, c-format
 msgid "'%s' controller cannot be hot plugged."
@@ -1383,6 +1396,7 @@ msgstr "(インターフェース定義)"
 msgid "(libxl_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
+#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
@@ -1445,6 +1459,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(ボリューム定義)"
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1905,6 +1920,9 @@ msgstr ""
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "mode 属性はゲストの CPU に対してのみ許可されます。"
 
+msgid "Audio type OSS requires to have <input> and <output> specified"
+msgstr ""
+
 #, fuzzy
 msgid "Audit is not supported by the kernel"
 msgstr "unpriv_sgio がこのカーネルによりサポートされません"
@@ -2099,10 +2117,6 @@ msgstr "変数 '%s' を中に表示するにはバッファーが小さすぎま
 
 msgid "Build a given pool."
 msgstr "与えられたプールを構築します。"
-
-#, c-format
-msgid "Bus %s too big for destination"
-msgstr "バス %s が宛先に対して大きすぎます"
 
 msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgstr ""
@@ -2349,10 +2363,14 @@ msgstr ""
 msgid "Cache with id %u does not exists for level %d"
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "%s への呼び出しに対して予期しない形式 '%s' がありました"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "%s を予期しない形式 '%s' に呼び出しています、'%s' が期待されます"
@@ -4771,6 +4789,7 @@ msgstr "'%s' 向け 'bridge/forward_delay' を取得できませんでした"
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr "'%s' 向け 'bridge/stp_state' を取得できませんでした"
 
+#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "プール情報を取得できませんでした"
 
@@ -5544,10 +5563,6 @@ msgid "Domain %s suspended\n"
 msgstr "ドメイン %s は一時停止されました\n"
 
 #, c-format
-msgid "Domain %s too big for destination"
-msgstr "ドメイン %s が宛先に対して大きすぎます"
-
-#, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "ドメイン %s の自動起動設定が解除されました\n"
 
@@ -5657,6 +5672,7 @@ msgstr ""
 "ドメインが %d インターフェースを持ちます。--mac を用いて切断するものを指定し"
 "てください"
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6748,10 +6764,6 @@ msgstr "'%s' を int 型に変換できませんでした"
 msgid "Failed to convert the command string to argv-lists"
 msgstr "'%s' を int 型に変換できませんでした"
 
-#, fuzzy, c-format
-msgid "Failed to copy ACLs on device %s"
-msgstr "デバイス %s をリセットできませんでした"
-
 msgid "Failed to copy XML node"
 msgstr "XML ノードのコピーに失敗しました"
 
@@ -6929,14 +6941,21 @@ msgstr "%s の作成に失敗しました"
 msgid "Failed to create thread for receiving migration data"
 msgstr "ホストを一時停止するためのスレッドの作成に失敗しました"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "ホストを一時停止するためのスレッドの作成に失敗しました"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "ホストを一時停止するためのスレッドの作成に失敗しました"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "ホストを一時停止するためのスレッドの作成に失敗しました"
@@ -7502,6 +7521,7 @@ msgstr "動作中のネットワークの一覧表示に失敗しました"
 msgid "Failed to list active pools"
 msgstr "動作中のプールの一覧表示に失敗しました"
 
+#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "ドメインの一覧表示に失敗しました"
 
@@ -7517,22 +7537,28 @@ msgstr "停止状態のネットワークの一覧表示に失敗しました"
 msgid "Failed to list inactive pools"
 msgstr "停止状態のプールの一覧表示に失敗しました"
 
+#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "インターフェースの一覧表示に失敗しました"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "ネットワークフィルターの一覧表示に失敗しました"
 
+#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "ネットワークフィルターの一覧表示に失敗しました"
 
+#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "ネットワークの一覧表示に失敗しました"
 
+#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "ノードデバイスの一覧表示に失敗しました"
 
+#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "ノードのシークレットの一覧表示に失敗しました"
 
@@ -7540,6 +7566,7 @@ msgstr "ノードのシークレットの一覧表示に失敗しました"
 msgid "Failed to list persistent guests on $uri"
 msgstr "$uri にある永続的なゲストの一覧表示に失敗しました"
 
+#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "プールの一覧表示に失敗しました"
 
@@ -7560,6 +7587,7 @@ msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 "libxenlight を用いたドメイン '%d' の仮想 CPU 数の一覧表示に失敗しました"
 
+#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "ボリュームの一覧表示に失敗しました"
 
@@ -8151,6 +8179,9 @@ msgstr "ドメイン %s の再開に失敗しました"
 msgid "Failed to resume domain '%d' with libxenlight"
 msgstr "libxenlight を用いたドメイン '%d' の再開に失敗しました"
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "失敗後にゲスト %s の再開に失敗しました"
@@ -8754,10 +8785,63 @@ msgstr ""
 "最初のファイルベースのハードディスクはソースがありません、VMX ファイルのデー"
 "タストアおよびパスを推論できません。"
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "オプション --%s と --%s は相互排他です"
@@ -8845,10 +8929,6 @@ msgstr "ブロックデバイスの完全修飾パス"
 
 msgid "Fully-qualified path or target of disk device"
 msgstr "ディスクデバイスの完全修飾パスまたはターゲット"
-
-#, c-format
-msgid "Function %s too big for destination"
-msgstr "ファンクション %s が宛先に対して大きすぎます"
 
 msgid "GET operation failed"
 msgstr "GET 操作は失敗しました"
@@ -9804,6 +9884,15 @@ msgstr "無効な allow 値、'yes' または 'no' のどちらかにする必�
 msgid "Invalid append attribute value '%s'"
 msgstr "無効な memory core dump 属性値 '%s'"
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "不正な引数"
 
@@ -9838,6 +9927,10 @@ msgid ""
 msgstr ""
 
 msgid "Invalid attempt to set peer IP for guest"
+msgstr ""
+
+#, c-format
+msgid "Invalid audio 'id' value '%s'"
 msgstr ""
 
 #, fuzzy
@@ -10958,6 +11051,10 @@ msgstr ""
 "不正な形式の 'uri_aliases' 設定エントリー '%s', 'alias=uri://host/path' が期"
 "待されます"
 
+#, c-format
+msgid "Malformed PCI address %s"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed auth_pending field in JSON state document"
 msgstr "JSON 状態ドキュメントに auth 項目がありません"
@@ -11558,9 +11655,9 @@ msgstr "CPU モデル %s に原型の名前がありません"
 msgid "Missing argument for '%s'"
 msgstr "引数がありません"
 
-#, fuzzy, c-format
-msgid "Missing attribute '%s' in element '%sched'"
-msgstr "<interface> 要素に dev 属性がありません"
+#, c-format
+msgid "Missing attribute '%s' in element '%s'"
+msgstr ""
 
 msgid "Missing auth field in JSON state document"
 msgstr "JSON 状態ドキュメントに auth 項目がありません"
@@ -12237,6 +12334,12 @@ msgstr "SATA はこの QEMU バイナリーでサポートされません"
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "名前"
 
@@ -12604,6 +12707,9 @@ msgstr "エラーメッセージはありませんでした"
 #, c-format
 msgid "No description for domain: %s"
 msgstr "ドメインの説明がありません: %s"
+
+msgid "No device model command-line argument specified"
+msgstr ""
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -13284,6 +13390,20 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -13294,6 +13414,20 @@ msgstr "オプション引数が空です"
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "オプション --%s と --%s は相互排他です"
@@ -14239,6 +14373,9 @@ msgid ""
 "See blockresize for live resizing."
 msgstr ""
 
+msgid "Resolved device mapper name too long"
+msgstr ""
+
 #, fuzzy
 msgid "Resource control is not supported on this host"
 msgstr "このプラットフォームではネットワークデバイスの設定には対応していません"
@@ -14440,6 +14577,7 @@ msgstr "このドメインに対して S3 状態が無効化されています"
 msgid "S4 state is disabled for this domain"
 msgstr "このドメインに対して S4 状態が無効化されています"
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14700,6 +14838,8 @@ msgstr "セキュリティモデルが見つかりません: %s"
 msgid "Security model:"
 msgstr "セキュリティモデル:"
 
+#. Bhyve doesn't support VNC Auth yet, so print a warning about
+#. * unauthenticated VNC sessions
 #, fuzzy
 msgid "Security warning: currently VNC auth is not supported."
 msgstr "マウントポイントの指定が今のところサポートされません"
@@ -14966,6 +15106,9 @@ msgstr "CPU 時間:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "spice グラフィックはこの QEMU でサポートされません"
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "共有メモリー:\n"
 
@@ -15042,14 +15185,11 @@ msgstr "ボリューム '%s' の容量を %s に正常に変更しました\n"
 msgid "Skipping is not supported with this stream"
 msgstr "SATA はこの QEMU バイナリーでサポートされません"
 
-#, c-format
-msgid "Slot %s too big for destination"
-msgstr "スロット %s が宛先に対して大きすぎます"
-
 #, fuzzy
 msgid "Snapshot"
 msgstr "スナップショットを一覧表示します。"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "スナップショット %s の XML 設定は変更されませんでした。\n"
@@ -15120,6 +15260,12 @@ msgstr "パラメーター '%s' がこのカーネルによりサポートされ
 
 msgid "Some processes refused to die"
 msgstr "いくつかのプロセスが die を拒否しました"
+
+msgid "Sound device model is not supported"
+msgstr ""
+
+msgid "Sound devices emulation is not supported by given bhyve binary"
+msgstr ""
 
 #, c-format
 msgid "Sound model %s too big for destination"
@@ -15517,6 +15663,7 @@ msgstr "TPM デバイスのパス %s は無効です"
 msgid "Table row cannot be empty"
 msgstr "%s は空白ではいけません"
 
+#. title
 msgid "Target"
 msgstr "ターゲット"
 
@@ -16100,9 +16247,9 @@ msgstr "ターゲットのビデオカードのアクセラレーションが一
 msgid "Target shared memory model '%s' does not match source model '%s'"
 msgstr "ターゲットの RNG モデル '%s' がソースの '%s' と一致しません"
 
-#, fuzzy, c-format
-msgid "Target shared memory name '%s' does not match source '%s'"
-msgstr "ターゲットドメイン名 '%s' がソースの '%s' と一致しません"
+#, c-format
+msgid "Target shared memory role '%s' does not match source role '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Target shared memory server usage doesn't match source"
@@ -16775,9 +16922,11 @@ msgstr "エラー状態にあるソケットに書き込みを試行します"
 msgid "Try again?"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "まだ使用中の MultiCURL オブジェクトを開放しようとしています"
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "まだ使用中の SharedCURL オブジェクトを解放しようとしています"
 
@@ -17567,6 +17716,10 @@ msgstr "'%s' 向け 'bonding/mode' において正しい値を見つけられま
 msgid "Unable to find filesystem type for %s"
 msgstr "%s のファイルシステム形式を見つけられません"
 
+#, c-format
+msgid "Unable to find major for %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to find the hard disk with uuid %s"
 msgstr "ネットワーク '%s' はすでに UUID %s を用いて存在します"
@@ -17739,6 +17892,9 @@ msgstr "デバイス ID '%s' を取得できません"
 #, fuzzy
 msgid "Unable to get device master from netlink on this platform"
 msgstr "このプラットフォームにおいて仮想ファンクションを取得できません"
+
+msgid "Unable to get device-mapper version"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to get devmapper targets for %s"
@@ -18280,6 +18436,10 @@ msgstr "証明書 %s のキーの目的 %s を問い合わせできません"
 msgid "Unable to query certificate %s key usage %s"
 msgstr "証明書 %s のキー使用法 %s を問い合わせできません"
 
+#, c-format
+msgid "Unable to query dependencies for %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to query kqueue"
 msgstr "セクター容量 %s を問い合わせできません"
@@ -18769,6 +18929,10 @@ msgid "Unable to start event thread: %s"
 msgstr "バインドターゲット %s の統計を取得できません"
 
 msgid "Unable to start mediated device"
+msgstr ""
+
+#, c-format
+msgid "Unable to stat %p"
 msgstr ""
 
 #, c-format
@@ -19324,6 +19488,7 @@ msgstr "不明な転送形式 %d がネットワーク '%s' にあります"
 msgid "Unknown error"
 msgstr "不明なエラー"
 
+#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "不明なエラー値"
 
@@ -19455,6 +19620,10 @@ msgstr "不明なドライバー形式 %s"
 #, fuzzy, c-format
 msgid "Unknown shmem model type '%s'"
 msgstr "不明なモデルの種類 '%s'"
+
+#, c-format
+msgid "Unknown shmem role type '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown slirp feature %s"
@@ -19733,6 +19902,10 @@ msgstr "サポートされないデバイス形式 '%s' です"
 #, c-format
 msgid "Unsupported device type '%s'"
 msgstr "サポートされないデバイス形式 '%s' です"
+
+#, c-format
+msgid "Unsupported device-mapper version. Expected %d got %d"
+msgstr ""
 
 #, c-format
 msgid "Unsupported disk address type '%s'"
@@ -20090,10 +20263,12 @@ msgstr "spice グラフィックはこの QEMU でサポートされません"
 msgid "Vifname %s too big for destination"
 msgstr "仮想インターフェース %s が宛先に対して大きすぎます"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "libvirt の virsh コマンドラインツール %s\n"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "libvirt の virsh コマンドラインツール %s\n"
@@ -22219,6 +22394,7 @@ msgstr "パス '%s' を開けません"
 msgid "cannot open path '%s' in '%s'"
 msgstr "パス '%s' を開けません"
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "ボリューム '%s' を開けません"
@@ -23080,6 +23256,7 @@ msgstr "クローンの名前"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "子がディレクトリー '%s' の作成に失敗しました"
@@ -26943,6 +27120,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "設定値 %s は不正な形式です"
@@ -27540,6 +27720,7 @@ msgstr "スナップショット作成後、ドメインの停止"
 msgid "handler failed to wait on condition"
 msgstr "条件の待機に失敗しました"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "ハッシュ検索の結果が NULL ポインターでした"
 
@@ -27931,6 +28112,9 @@ msgstr ""
 msgid "initialize"
 msgstr "ミューテックスを初期化できません"
 
+msgid "initiator iqn for underlying storage"
+msgstr ""
+
 msgid "inject-nmi"
 msgstr ""
 
@@ -28082,6 +28266,25 @@ msgstr "インターフェース名"
 msgid "interface name %s does not fit into buffer "
 msgstr "インターフェース名 %s がバッファーの中に収まりません"
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr "インターフェイス名または MAC アドレス"
 
@@ -28390,6 +28593,10 @@ msgstr "無効な引数: %s"
 #, fuzzy
 msgid "invalid ats value"
 msgstr "無効な値 %d"
+
+#, c-format
+msgid "invalid audio 'id' value '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "invalid autodeflate attribute value '%s'"
@@ -30327,6 +30534,9 @@ msgstr ""
 msgid "migration was active, but no RAM info was set"
 msgstr "マイグレーションが有効でしたが、RAM の情報が設定されていませんでした"
 
+msgid "migration with legacy shmem device is not supported"
+msgstr ""
+
 msgid "migration with non-shared storage with full disk copy"
 msgstr "完全なディスクコピーとともに非共有のストレージを用いたマイグレーション"
 
@@ -30336,10 +30546,6 @@ msgid ""
 msgstr ""
 "増分コピーとともに非共有のストレージを用いたマイグレーション（ソースと宛先の"
 "間で同じベースイメージを共有します）"
-
-#, fuzzy
-msgid "migration with shmem device is not supported"
-msgstr "デバイスの永続的な接続はサポートされません"
 
 #, fuzzy
 msgid "migration with virtiofs device is not supported"
@@ -30354,9 +30560,6 @@ msgid "migration_host must not be the address of the local machine: %s"
 msgstr ""
 
 msgid "minWorkers cannot be larger than maxWorkers"
-msgstr ""
-
-msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr ""
 
 msgid "mirror requires file name"
@@ -31438,6 +31641,15 @@ msgstr "説明の代わりにタイトルを変更または取得します"
 msgid "monitor failure"
 msgstr "モニターパスがありません"
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr "モニターが NULL ではいけません"
 
@@ -31647,6 +31859,7 @@ msgstr "rawio ケイパビリティの要求"
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "ネゴシエート済みの SSF %d の強度が十分ではありません"
@@ -32484,6 +32697,16 @@ msgstr "virGetUserDirectory が利用できません"
 msgid "no x86 CPU data found"
 msgstr "x86 CPU データが見つかりません"
 
+#, c-format
+msgid ""
+"node '%s' has unexpected NULL content. This could be caused by malformed "
+"input, or a memory allocation failure"
+msgstr ""
+
+#, c-format
+msgid "node '%s' has unexpected type %d"
+msgstr ""
+
 msgid "node CPU stats not implemented on this platform"
 msgstr "ノード CPU の統計はこのプラットフォームにおいて実装されていません"
 
@@ -32688,6 +32911,10 @@ msgstr "共有メモリーの無効化はこの QEMU バイナリーで利用で
 #, fuzzy
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "共有メモリーの無効化はこの QEMU バイナリーで利用できません"
+
+#, c-format
+msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
+msgstr ""
 
 msgid "nvram address type must be spaprvio"
 msgstr "nvram アドレス形式は spaprvio である必要があります"
@@ -34258,6 +34485,9 @@ msgstr ""
 msgid "require atomic operation"
 msgstr "原子性の操作の要求"
 
+msgid "resctrl locking is not supported on this platform"
+msgstr ""
+
 #, fuzzy
 msgid "reservations not supported with this QEMU binary"
 msgstr "vhost-net はこの QEMU バイナリーにサポートされていません"
@@ -34786,6 +35016,12 @@ msgstr ""
 "あります"
 
 msgid "sheepdog protocol accepts only one host"
+msgstr ""
+
+#, c-format
+msgid ""
+"shmem device '%s' cannot be migrated, only shmem with role='%s' can be "
+"migrated"
 msgstr ""
 
 #, fuzzy
@@ -36439,10 +36675,6 @@ msgstr "SELinux コンテキストを作成できません: %s"
 msgid "unable to create socket pair"
 msgstr "ソケット組を作成できません"
 
-#, fuzzy, c-format
-msgid "unable to create symlink %s"
-msgstr "%s を作成できません"
-
 #, fuzzy
 msgid "unable to create volume XML"
 msgstr "epoll ファイルディスクリプターを作成できません"
@@ -36528,6 +36760,7 @@ msgstr "ミューテックスを初期化できません"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "%s を fsync できません"
@@ -36822,6 +37055,10 @@ msgstr "ユーザーとグループを '%ld:%ld' ('%s') に設定できません
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "macvtap タップにおいて機能フラグを取得できません"
 
+#, c-format
+msgid "unable to stat %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr "バインドターゲット %s の統計を取得できません"
@@ -36977,6 +37214,10 @@ msgstr "予期しない SCSI ディスクのアドレス形式です"
 #, fuzzy, c-format
 msgid "unexpected async job %d type expected %d"
 msgstr "予期しないシステム情報の形式のモデル %d"
+
+#, c-format
+msgid "unexpected audio type %d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unexpected binding %s already exists"
@@ -37379,6 +37620,8 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr "spice グラフィックはこの QEMU でサポートされません"
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "不明"
 
@@ -37476,6 +37719,10 @@ msgstr "不明なアーキテクチャー %s"
 #, c-format
 msgid "unknown arp bonding validate %s"
 msgstr "不明なボンディング ARP 検証 %s"
+
+#, c-format
+msgid "unknown audio type '%s'"
+msgstr ""
 
 #, c-format
 msgid "unknown auth type '%s'"
@@ -38449,6 +38696,10 @@ msgid "unsupported architecture: %s"
 msgstr "サポートされない機能 %s"
 
 #, c-format
+msgid "unsupported audio backend '%s'"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr "サポートのない認証タイプ %d です"
 
@@ -38571,6 +38822,28 @@ msgstr "サポートされない失敗時アクション: '%s'\n"
 msgid "unsupported feature %s"
 msgstr "サポートされない機能 %s"
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "フラグ (0x%lx) はファンクション %s においてサポートされません"
@@ -39785,6 +40058,38 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Bus %s too big for destination"
+#~ msgstr "バス %s が宛先に対して大きすぎます"
+
+#~ msgid "Domain %s too big for destination"
+#~ msgstr "ドメイン %s が宛先に対して大きすぎます"
+
+#, fuzzy
+#~ msgid "Failed to copy ACLs on device %s"
+#~ msgstr "デバイス %s をリセットできませんでした"
+
+#~ msgid "Function %s too big for destination"
+#~ msgstr "ファンクション %s が宛先に対して大きすぎます"
+
+#, fuzzy
+#~ msgid "Missing attribute '%s' in element '%sched'"
+#~ msgstr "<interface> 要素に dev 属性がありません"
+
+#~ msgid "Slot %s too big for destination"
+#~ msgstr "スロット %s が宛先に対して大きすぎます"
+
+#, fuzzy
+#~ msgid "Target shared memory name '%s' does not match source '%s'"
+#~ msgstr "ターゲットドメイン名 '%s' がソースの '%s' と一致しません"
+
+#, fuzzy
+#~ msgid "migration with shmem device is not supported"
+#~ msgstr "デバイスの永続的な接続はサポートされません"
+
+#, fuzzy
+#~ msgid "unable to create symlink %s"
+#~ msgstr "%s を作成できません"
 
 #, fuzzy
 #~ msgid "Cannot resolve ::1 address: %s"

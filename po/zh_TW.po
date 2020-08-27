@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-07-24 15:35+0000\n"
+"POT-Creation-Date: 2020-08-26 08:38+0000\n"
 "PO-Revision-Date: 2018-09-10 04:24+0000\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/libvirt/"
@@ -33,6 +33,7 @@ msgid ""
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -167,7 +168,8 @@ msgid ""
 "  Modes:\n"
 "    -a | --add                     load profile\n"
 "    -c | --create                  create profile from template\n"
-"    -D | --delete                  unload and delete profile\n"
+"    -D | --delete                  unload profile and delete generated "
+"rules\n"
 "    -r | --replace                 reload profile\n"
 "    -R | --remove                  unload profile\n"
 "  Options:\n"
@@ -506,6 +508,16 @@ msgstr ""
 msgid "%s object has invalid dynamic type"
 msgstr ""
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr ""
@@ -556,6 +568,7 @@ msgstr "%s：%d：無法分配 %d 位元組"
 msgid "%s: %d: failed to allocate mountpoints"
 msgstr "%s：%d：無法分配 %d 位元組"
 
+#. The length of the formatting string minus two '%s'
 #, c-format
 msgid "%s: %s"
 msgstr ""
@@ -891,15 +904,15 @@ msgid "%s_DEBUG not set with a valid numeric value"
 msgstr ""
 
 #, c-format
-msgid "%ssched attributes 'vcpus' must not overlap"
-msgstr ""
-
-#, c-format
 msgid "'%s'"
 msgstr ""
 
 #, c-format
 msgid "'%s' architecture is not supported by CPU driver"
+msgstr ""
+
+#, c-format
+msgid "'%s' attributes '%s' must not overlap"
 msgstr ""
 
 #, c-format
@@ -1225,6 +1238,7 @@ msgstr ""
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
+#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr ""
 
@@ -1284,6 +1298,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr ""
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr ""
 
@@ -1714,6 +1729,9 @@ msgstr ""
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr ""
 
+msgid "Audio type OSS requires to have <input> and <output> specified"
+msgstr ""
+
 msgid "Audit is not supported by the kernel"
 msgstr ""
 
@@ -1884,10 +1902,6 @@ msgid "Buffer too small to print variable '%s' into"
 msgstr ""
 
 msgid "Build a given pool."
-msgstr ""
-
-#, c-format
-msgid "Bus %s too big for destination"
 msgstr ""
 
 msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
@@ -2131,10 +2145,14 @@ msgstr ""
 msgid "Cache with id %u does not exists for level %d"
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, fuzzy, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "無預期的資料「%s」"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr ""
@@ -4442,6 +4460,7 @@ msgstr ""
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr ""
 
+#. Something went wrong retrieving pool info, cope with it
 #, fuzzy
 msgid "Could not retrieve pool information"
 msgstr "無法取得節點資訊"
@@ -5191,10 +5210,6 @@ msgid "Domain %s suspended\n"
 msgstr "區域 %s 已經暫停\n"
 
 #, fuzzy, c-format
-msgid "Domain %s too big for destination"
-msgstr "區域 %s 正在執行關機\n"
-
-#, fuzzy, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "區域 %s 已開啟\n"
 
@@ -5290,6 +5305,7 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6306,10 +6322,6 @@ msgstr "無法將區域 %s 的核心傾印至 %s"
 msgid "Failed to convert the command string to argv-lists"
 msgstr "無法將區域 %s 的核心傾印至 %s"
 
-#, fuzzy, c-format
-msgid "Failed to copy ACLs on device %s"
-msgstr "無法消止「%s」節點裝置"
-
 #, fuzzy
 msgid "Failed to copy XML node"
 msgstr "無法開啟檔案"
@@ -6493,14 +6505,21 @@ msgstr "無法從 %s 建立網路"
 msgid "Failed to create thread for receiving migration data"
 msgstr "無法從 %s 建立區域"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "無法從 %s 建立區域"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "無法從 %s 建立區域"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "無法從 %s 建立區域"
@@ -7100,6 +7119,7 @@ msgstr "無法列出運作中的網路"
 msgid "Failed to list active pools"
 msgstr "無法列出運作中的區域"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list domains"
 msgstr "無法列出運作中的區域"
@@ -7118,26 +7138,32 @@ msgstr "無法列出非作用中的網路"
 msgid "Failed to list inactive pools"
 msgstr "無法列出非作用中的區域"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list interfaces"
 msgstr "無法消止 %s 介面"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "無法列出非作用中的區域"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filters"
 msgstr "無法開啟網路 %s"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list networks"
 msgstr "無法列出運作中的網路"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node devices"
 msgstr "無法消止「%s」節點裝置"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node secrets"
 msgstr "無法消止「%s」節點裝置"
@@ -7146,6 +7172,7 @@ msgstr "無法消止「%s」節點裝置"
 msgid "Failed to list persistent guests on $uri"
 msgstr "無法列出非作用中的網路"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list pools"
 msgstr "無法消止 %s 集池"
@@ -7170,6 +7197,7 @@ msgstr "無法列出運作中的網路"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "無法消止區域「%d」"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list volumes"
 msgstr "無法列出運作中的區域"
@@ -7771,6 +7799,9 @@ msgstr "無法繼續區域 %s"
 msgid "Failed to resume domain '%d' with libxenlight"
 msgstr "無法繼續區域 %s"
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "無法繼續區域 %s"
@@ -8359,10 +8390,63 @@ msgid ""
 "for VMX file"
 msgstr ""
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr ""
@@ -8441,10 +8525,6 @@ msgid "Fully-qualified path of block device"
 msgstr ""
 
 msgid "Fully-qualified path or target of disk device"
-msgstr ""
-
-#, c-format
-msgid "Function %s too big for destination"
 msgstr ""
 
 msgid "GET operation failed"
@@ -9323,6 +9403,15 @@ msgstr ""
 msgid "Invalid append attribute value '%s'"
 msgstr ""
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr ""
 
@@ -9357,6 +9446,10 @@ msgid ""
 msgstr ""
 
 msgid "Invalid attempt to set peer IP for guest"
+msgstr ""
+
+#, c-format
+msgid "Invalid audio 'id' value '%s'"
 msgstr ""
 
 msgid "Invalid auth_pending and auth combination in JSON state document"
@@ -10433,6 +10526,10 @@ msgid ""
 "Malformed 'uri_aliases' config entry '%s', expected 'alias=uri://host/path'"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI address %s"
+msgstr ""
+
 msgid "Malformed auth_pending field in JSON state document"
 msgstr ""
 
@@ -10989,7 +11086,7 @@ msgid "Missing argument for '%s'"
 msgstr "找不到 %s 裝置的目標資訊"
 
 #, c-format
-msgid "Missing attribute '%s' in element '%sched'"
+msgid "Missing attribute '%s' in element '%s'"
 msgstr ""
 
 msgid "Missing auth field in JSON state document"
@@ -11620,6 +11717,12 @@ msgstr ""
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "名稱"
 
@@ -11950,6 +12053,9 @@ msgstr "無法提供錯誤訊息"
 #, fuzzy, c-format
 msgid "No description for domain: %s"
 msgstr "無法消止區域：%s"
+
+msgid "No device model command-line argument specified"
+msgstr ""
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -12584,6 +12690,20 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -12594,6 +12714,20 @@ msgstr ""
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr ""
@@ -13458,6 +13592,9 @@ msgid ""
 "See blockresize for live resizing."
 msgstr ""
 
+msgid "Resolved device mapper name too long"
+msgstr ""
+
 msgid "Resource control is not supported on this host"
 msgstr ""
 
@@ -13669,6 +13806,7 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr ""
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -13917,6 +14055,8 @@ msgstr ""
 msgid "Security model:"
 msgstr ""
 
+#. Bhyve doesn't support VNC Auth yet, so print a warning about
+#. * unauthenticated VNC sessions
 msgid "Security warning: currently VNC auth is not supported."
 msgstr ""
 
@@ -14137,6 +14277,9 @@ msgstr "處理器時間："
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr ""
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 #, fuzzy
 msgid "Shared memory:\n"
 msgstr "已使用的記憶體："
@@ -14213,13 +14356,10 @@ msgstr ""
 msgid "Skipping is not supported with this stream"
 msgstr ""
 
-#, c-format
-msgid "Slot %s too big for destination"
-msgstr ""
-
 msgid "Snapshot"
 msgstr ""
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr ""
@@ -14284,6 +14424,12 @@ msgid "Some parameters are not supported by migration protocol 3"
 msgstr ""
 
 msgid "Some processes refused to die"
+msgstr ""
+
+msgid "Sound device model is not supported"
+msgstr ""
+
+msgid "Sound devices emulation is not supported by given bhyve binary"
 msgstr ""
 
 #, c-format
@@ -14652,6 +14798,7 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr ""
 
+#. title
 msgid "Target"
 msgstr ""
 
@@ -15208,7 +15355,7 @@ msgid "Target shared memory model '%s' does not match source model '%s'"
 msgstr ""
 
 #, c-format
-msgid "Target shared memory name '%s' does not match source '%s'"
+msgid "Target shared memory role '%s' does not match source role '%s'"
 msgstr ""
 
 msgid "Target shared memory server usage doesn't match source"
@@ -15855,9 +16002,11 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr ""
 
@@ -16626,6 +16775,10 @@ msgid "Unable to find filesystem type for %s"
 msgstr ""
 
 #, c-format
+msgid "Unable to find major for %s"
+msgstr ""
+
+#, c-format
 msgid "Unable to find the hard disk with uuid %s"
 msgstr ""
 
@@ -16789,6 +16942,9 @@ msgid "Unable to get device ID '%s'"
 msgstr "無法取得區域「%s」"
 
 msgid "Unable to get device master from netlink on this platform"
+msgstr ""
+
+msgid "Unable to get device-mapper version"
 msgstr ""
 
 #, c-format
@@ -17329,6 +17485,10 @@ msgstr "無法載入憑證"
 msgid "Unable to query certificate %s key usage %s"
 msgstr "無法載入憑證"
 
+#, c-format
+msgid "Unable to query dependencies for %s"
+msgstr ""
+
 msgid "Unable to query kqueue"
 msgstr ""
 
@@ -17795,6 +17955,10 @@ msgid "Unable to start event thread: %s"
 msgstr "無法開啟網路 %s"
 
 msgid "Unable to start mediated device"
+msgstr ""
+
+#, c-format
+msgid "Unable to stat %p"
 msgstr ""
 
 #, fuzzy, c-format
@@ -18346,6 +18510,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "未知的主機"
 
+#. should never happen (tm)
 msgid "Unknown error value"
 msgstr ""
 
@@ -18479,6 +18644,10 @@ msgstr "未知的作業系統類型 %s"
 #, fuzzy, c-format
 msgid "Unknown shmem model type '%s'"
 msgstr "未知的作業系統類型 %s"
+
+#, c-format
+msgid "Unknown shmem role type '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown slirp feature %s"
@@ -18750,6 +18919,10 @@ msgstr ""
 
 #, c-format
 msgid "Unsupported device type '%s'"
+msgstr ""
+
+#, c-format
+msgid "Unsupported device-mapper version. Expected %d got %d"
 msgstr ""
 
 #, c-format
@@ -19088,10 +19261,12 @@ msgstr ""
 msgid "Vifname %s too big for destination"
 msgstr ""
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr ""
@@ -21113,6 +21288,7 @@ msgstr ""
 msgid "cannot open path '%s' in '%s'"
 msgstr ""
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr ""
@@ -21938,6 +22114,7 @@ msgstr ""
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, fuzzy, c-format
 msgid "child failed to create directory '%s'"
 msgstr "無法取得網路「%s」"
@@ -25738,6 +25915,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, c-format
 msgid "field '%s' is malformed"
 msgstr ""
@@ -26308,6 +26488,7 @@ msgstr ""
 msgid "handler failed to wait on condition"
 msgstr "無法寫入設定檔"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -26675,6 +26856,9 @@ msgstr ""
 msgid "initialize"
 msgstr "無法初始化 mutex"
 
+msgid "initiator iqn for underlying storage"
+msgstr ""
+
 msgid "inject-nmi"
 msgstr ""
 
@@ -26824,6 +27008,25 @@ msgstr "網路名稱"
 msgid "interface name %s does not fit into buffer "
 msgstr ""
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr ""
 
@@ -27119,6 +27322,10 @@ msgid "invalid argument: %s"
 msgstr ""
 
 msgid "invalid ats value"
+msgstr ""
+
+#, c-format
+msgid "invalid audio 'id' value '%s'"
 msgstr ""
 
 #, c-format
@@ -28989,15 +29196,15 @@ msgstr ""
 msgid "migration was active, but no RAM info was set"
 msgstr ""
 
+msgid "migration with legacy shmem device is not supported"
+msgstr ""
+
 msgid "migration with non-shared storage with full disk copy"
 msgstr ""
 
 msgid ""
 "migration with non-shared storage with incremental copy (same base image "
 "shared between source and destination)"
-msgstr ""
-
-msgid "migration with shmem device is not supported"
 msgstr ""
 
 msgid "migration with virtiofs device is not supported"
@@ -29012,9 +29219,6 @@ msgid "migration_host must not be the address of the local machine: %s"
 msgstr ""
 
 msgid "minWorkers cannot be larger than maxWorkers"
-msgstr ""
-
-msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr ""
 
 msgid "mirror requires file name"
@@ -30058,6 +30262,15 @@ msgstr ""
 msgid "monitor failure"
 msgstr ""
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr ""
 
@@ -30251,6 +30464,7 @@ msgstr ""
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr ""
@@ -31050,6 +31264,16 @@ msgstr ""
 msgid "no x86 CPU data found"
 msgstr ""
 
+#, c-format
+msgid ""
+"node '%s' has unexpected NULL content. This could be caused by malformed "
+"input, or a memory allocation failure"
+msgstr ""
+
+#, c-format
+msgid "node '%s' has unexpected type %d"
+msgstr ""
+
 msgid "node CPU stats not implemented on this platform"
 msgstr ""
 
@@ -31232,6 +31456,10 @@ msgid "nvdimm pmem property is not available with this QEMU binary"
 msgstr ""
 
 msgid "nvdimm readonly property is not available with this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
 msgstr ""
 
 msgid "nvram address type must be spaprvio"
@@ -32702,6 +32930,9 @@ msgstr ""
 msgid "require atomic operation"
 msgstr ""
 
+msgid "resctrl locking is not supported on this platform"
+msgstr ""
+
 msgid "reservations not supported with this QEMU binary"
 msgstr ""
 
@@ -33208,6 +33439,12 @@ msgid "shared access for disk '%s' requires use of supported storage format"
 msgstr ""
 
 msgid "sheepdog protocol accepts only one host"
+msgstr ""
+
+#, c-format
+msgid ""
+"shmem device '%s' cannot be migrated, only shmem with role='%s' can be "
+"migrated"
 msgstr ""
 
 msgid "shmem element must contain 'name' attribute"
@@ -34750,10 +34987,6 @@ msgstr "無法從 %s 建立網路"
 msgid "unable to create socket pair"
 msgstr "無法從 %s 建立區域"
 
-#, fuzzy, c-format
-msgid "unable to create symlink %s"
-msgstr "無法從 %s 建立區域"
-
 msgid "unable to create volume XML"
 msgstr ""
 
@@ -34834,6 +35067,7 @@ msgstr ""
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr ""
@@ -35130,6 +35364,10 @@ msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr ""
 
 #, c-format
+msgid "unable to stat %s"
+msgstr ""
+
+#, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr ""
 
@@ -35279,6 +35517,10 @@ msgstr ""
 
 #, c-format
 msgid "unexpected async job %d type expected %d"
+msgstr ""
+
+#, c-format
+msgid "unexpected audio type %d"
 msgstr ""
 
 #, c-format
@@ -35676,6 +35918,8 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr ""
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 #, fuzzy
 msgid "unknown"
 msgstr "未知的主機"
@@ -35773,6 +36017,10 @@ msgstr "未知處理程序：%d"
 
 #, c-format
 msgid "unknown arp bonding validate %s"
+msgstr ""
+
+#, c-format
+msgid "unknown audio type '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -36749,6 +36997,10 @@ msgid "unsupported architecture: %s"
 msgstr ""
 
 #, c-format
+msgid "unsupported audio backend '%s'"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr ""
 
@@ -36869,6 +37121,28 @@ msgstr ""
 msgid "unsupported feature %s"
 msgstr ""
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr ""
@@ -38012,6 +38286,18 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <string>"
+
+#, fuzzy
+#~ msgid "Domain %s too big for destination"
+#~ msgstr "區域 %s 正在執行關機\n"
+
+#, fuzzy
+#~ msgid "Failed to copy ACLs on device %s"
+#~ msgstr "無法消止「%s」節點裝置"
+
+#, fuzzy
+#~ msgid "unable to create symlink %s"
+#~ msgstr "無法從 %s 建立區域"
 
 #, fuzzy
 #~ msgid "Failed to get fs flags"

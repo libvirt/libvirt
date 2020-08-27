@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-07-24 15:35+0000\n"
+"POT-Creation-Date: 2020-08-26 08:38+0000\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -40,6 +40,7 @@ msgstr ""
 "  (명령에 대한 정보를 보기 위해 help <command>를 지정)\n"
 "\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -176,7 +177,8 @@ msgid ""
 "  Modes:\n"
 "    -a | --add                     load profile\n"
 "    -c | --create                  create profile from template\n"
-"    -D | --delete                  unload and delete profile\n"
+"    -D | --delete                  unload profile and delete generated "
+"rules\n"
 "    -r | --replace                 reload profile\n"
 "    -R | --remove                  unload profile\n"
 "  Options:\n"
@@ -516,6 +518,16 @@ msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
 msgid "%s object has invalid dynamic type"
 msgstr "%s 개체에 잘못된 동적 유형이 있습니다 "
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s 개체가 필요한 '%s' 속성에 누락되어 있습니다 "
@@ -568,6 +580,7 @@ msgstr "%s: %d: 인수 할당 실패"
 msgid "%s: %d: failed to allocate mountpoints"
 msgstr "%s: %d: %d 바이트 할당 실패"
 
+#. The length of the formatting string minus two '%s'
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -911,16 +924,16 @@ msgid "%s_DEBUG not set with a valid numeric value"
 msgstr ""
 
 #, c-format
-msgid "%ssched attributes 'vcpus' must not overlap"
-msgstr ""
-
-#, c-format
 msgid "'%s'"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "'%s' architecture is not supported by CPU driver"
 msgstr "SASL 메커니즘 %s가 서버에서 지원되지 않습니다"
+
+#, c-format
+msgid "'%s' attributes '%s' must not overlap"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "'%s' controller cannot be hot plugged."
@@ -1263,6 +1276,7 @@ msgstr "(인터페이스 정의)"
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
+#. parse and modify the xml from the user
 #, fuzzy
 msgid "(metadata_xml)"
 msgstr "메타데이터: "
@@ -1326,6 +1340,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(볼륨 정의)"
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1775,6 +1790,9 @@ msgstr ""
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "모드 속성은 게스트 CPU에 대해서만 허용됨"
 
+msgid "Audio type OSS requires to have <input> and <output> specified"
+msgstr ""
+
 #, fuzzy
 msgid "Audit is not supported by the kernel"
 msgstr "이 기능은 연결 드라이버에 의해 지원되지 않음"
@@ -1955,10 +1973,6 @@ msgstr "버퍼가 uint8 유형에 대해 너무 작음 "
 
 msgid "Build a given pool."
 msgstr "주어진 풀을 만듬"
-
-#, c-format
-msgid "Bus %s too big for destination"
-msgstr "버스 %s가 목적지로는 너무 큼"
 
 msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgstr ""
@@ -2206,10 +2220,14 @@ msgstr ""
 msgid "Cache with id %u does not exists for level %d"
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "예기치 않은 유형 '%s'에 대해 %s로 호출 "
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "예기치 않은 유형 '%s'의 %s로 호출합니다, '%s'가 예상됩니다 "
@@ -4636,6 +4654,7 @@ msgstr "'%s'의 'bridge/forward_delay'를 찾을 수 없습니다 "
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr "'%s'의 'bridge/stp_state'를 찾을 수 없습니다 "
 
+#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "풀 정보를 검색할 수 없음"
 
@@ -5401,10 +5420,6 @@ msgid "Domain %s suspended\n"
 msgstr "도메인 %s가 중지됨\n"
 
 #, c-format
-msgid "Domain %s too big for destination"
-msgstr "도메인 %s가 목적지로는 너무 큼"
-
-#, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "%s 도메인이 자동 시작으로 표시되지 않음\n"
 
@@ -5510,6 +5525,7 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6551,10 +6567,6 @@ msgstr "'%s'를 정수로 변환하는데 실패"
 msgid "Failed to convert the command string to argv-lists"
 msgstr "'%s'를 정수로 변환하는데 실패"
 
-#, fuzzy, c-format
-msgid "Failed to copy ACLs on device %s"
-msgstr "장치 %s의 리셋이 실패"
-
 #, fuzzy
 msgid "Failed to copy XML node"
 msgstr "XML 노드를 복사할 수 없음"
@@ -6735,14 +6747,21 @@ msgstr "%s 생성 실패"
 msgid "Failed to create thread for receiving migration data"
 msgstr "장치 %s의 디렉토리를 생성하는데 실패했습니다 "
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "%s에서 도메인 생성하기 실패"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "%s에서 도메인 생성하기 실패"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "%s에서 풀 생성하기 실패"
@@ -7331,6 +7350,7 @@ msgstr "활성화 네트워크 보들기 실패"
 msgid "Failed to list active pools"
 msgstr "활성화 풀 목록 얻기 실패"
 
+#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "도메인 목록을 나열하는데 실패"
 
@@ -7346,23 +7366,29 @@ msgstr "비활성화 네트워크 보기 실패"
 msgid "Failed to list inactive pools"
 msgstr "비활성화 풀 목록 얻기 실패"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list interfaces"
 msgstr "활성화된 인터페이스 목록 얻기 실패"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "네트워크 필터 나열 실패 "
 
+#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "네트워크 필터 나열 실패 "
 
+#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "네트워크 목록 나열 실패"
 
+#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "노드 장치 목록 얻기 실패"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node secrets"
 msgstr "비밀정보 목록생성 실패"
@@ -7371,6 +7397,7 @@ msgstr "비밀정보 목록생성 실패"
 msgid "Failed to list persistent guests on $uri"
 msgstr "임시 게스트 목록 나열 실패 "
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list pools"
 msgstr "볼륨 목록 나열 실패 "
@@ -7392,6 +7419,7 @@ msgstr "임시 게스트 목록 나열 실패 "
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 
+#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "볼륨 목록 나열 실패 "
 
@@ -7986,6 +8014,9 @@ msgstr "도메인 %s를 다시 시작하기 실패"
 msgid "Failed to resume domain '%d' with libxenlight"
 msgstr "도메인 %s를 다시 시작하기 실패"
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "실패 후 게스트 %s를 재개하는 데 실패"
@@ -8593,10 +8624,63 @@ msgstr ""
 "첫 번째 파일 기반 하드 디스크에는 소스가 없습니다, VMX 파일의 데이터 저장소 "
 "및 경로를 추론할 수 없습니다"
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr ""
@@ -8678,10 +8762,6 @@ msgstr ""
 #, fuzzy
 msgid "Fully-qualified path or target of disk device"
 msgstr "디스크 장치의 대상"
-
-#, c-format
-msgid "Function %s too big for destination"
-msgstr "기능 %s가 목적지로는 너무 큼"
 
 msgid "GET operation failed"
 msgstr "GET 작업 실패"
@@ -9606,6 +9686,15 @@ msgstr "잘못된 허용 값, 'yes' 또는 'no'중 하나이어야 합니다"
 msgid "Invalid append attribute value '%s'"
 msgstr "잘못된 메모리 코어 덤프 속성 값 '%s'"
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "잘못된 인수"
 
@@ -9640,6 +9729,10 @@ msgid ""
 msgstr ""
 
 msgid "Invalid attempt to set peer IP for guest"
+msgstr ""
+
+#, c-format
+msgid "Invalid audio 'id' value '%s'"
 msgstr ""
 
 msgid "Invalid auth_pending and auth combination in JSON state document"
@@ -10744,6 +10837,10 @@ msgid ""
 "Malformed 'uri_aliases' config entry '%s', expected 'alias=uri://host/path'"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI address %s"
+msgstr ""
+
 msgid "Malformed auth_pending field in JSON state document"
 msgstr ""
 
@@ -11337,9 +11434,9 @@ msgstr "CPU 모델 %s에서 선조의 이름이 빠짐"
 msgid "Missing argument for '%s'"
 msgstr "인수가 누락되어 있음"
 
-#, fuzzy, c-format
-msgid "Missing attribute '%s' in element '%sched'"
-msgstr "<interface> 요소에 dev 속성이 누락되어 있습니다 "
+#, c-format
+msgid "Missing attribute '%s' in element '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Missing auth field in JSON state document"
@@ -12039,6 +12136,12 @@ msgstr "이 QEMU 바이너리에서는 SATA를 지원하지 않습니다"
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "이름"
 
@@ -12400,6 +12503,9 @@ msgstr "오류 메세지 없음"
 #, c-format
 msgid "No description for domain: %s"
 msgstr "도메인 설명이 없음: %s"
+
+msgid "No device model command-line argument specified"
+msgstr ""
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
@@ -13065,6 +13171,20 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -13075,6 +13195,20 @@ msgstr ""
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr ""
@@ -13981,6 +14115,9 @@ msgid ""
 "See blockresize for live resizing."
 msgstr ""
 
+msgid "Resolved device mapper name too long"
+msgstr ""
+
 #, fuzzy
 msgid "Resource control is not supported on this host"
 msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
@@ -14188,6 +14325,7 @@ msgstr "USB 허브를 추가할 수 없음: USB는 이 도메인에 비활성화
 msgid "S4 state is disabled for this domain"
 msgstr "USB 허브를 추가할 수 없음: USB는 이 도메인에 비활성화되어 있음"
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14439,6 +14577,8 @@ msgstr "보안 모델 찾을 수 없음: %s"
 msgid "Security model:"
 msgstr "모안 모델:"
 
+#. Bhyve doesn't support VNC Auth yet, so print a warning about
+#. * unauthenticated VNC sessions
 #, fuzzy
 msgid "Security warning: currently VNC auth is not supported."
 msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
@@ -14688,6 +14828,9 @@ msgstr "CPU 시간:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "spice 그래픽은 QEMU로 지원되지 않음 "
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "공유된 메모리:\n"
 
@@ -14765,14 +14908,11 @@ msgstr ""
 msgid "Skipping is not supported with this stream"
 msgstr "이 QEMU 바이너리에서는 SATA를 지원하지 않습니다"
 
-#, c-format
-msgid "Slot %s too big for destination"
-msgstr "슬롯 %s가 목적지로는 너무 큼"
-
 #, fuzzy
 msgid "Snapshot"
 msgstr "스냅샷 목록 "
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "도메인 %s XML 설정이 변경되지 않았습니다.\n"
@@ -14842,6 +14982,12 @@ msgid "Some parameters are not supported by migration protocol 3"
 msgstr "목적지 libvirt가 피어간 이전 프로토콜을 지원하지 않습니다"
 
 msgid "Some processes refused to die"
+msgstr ""
+
+msgid "Sound device model is not supported"
+msgstr ""
+
+msgid "Sound devices emulation is not supported by given bhyve binary"
 msgstr ""
 
 #, c-format
@@ -15226,6 +15372,7 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr "%s을 비워둘 수 없음 "
 
+#. title
 msgid "Target"
 msgstr "대상"
 
@@ -15796,9 +15943,9 @@ msgstr "대상 비디오 카드 가속이 소스와 일치하지 않음"
 msgid "Target shared memory model '%s' does not match source model '%s'"
 msgstr "대상 RNG 모델 '%s'이 소스 '%s'와 일치하지 않음"
 
-#, fuzzy, c-format
-msgid "Target shared memory name '%s' does not match source '%s'"
-msgstr "대상 도메인 이름 '%s'이 소스 '%s'와 일치하지 않음"
+#, c-format
+msgid "Target shared memory role '%s' does not match source role '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Target shared memory server usage doesn't match source"
@@ -16461,9 +16608,11 @@ msgstr "'%s'에 필요한 소켓 생성 실패"
 msgid "Try again?"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "아직 사용 중인 MultiCURL 개체를 해제하려 합니다 "
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "아직 사용 중인 SharedCURL 개체를 해제하려 합니다 "
 
@@ -17281,6 +17430,10 @@ msgstr "'%s'의 'bonding/mode'에서 올바른 값을 찾을 수 없음 "
 msgid "Unable to find filesystem type for %s"
 msgstr "%s의 파일 시스템 유형을 찾을 수 없습니다 "
 
+#, c-format
+msgid "Unable to find major for %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to find the hard disk with uuid %s"
 msgstr "uuid %s를 갖는 네트워크 '%s'가 이미 존재합니다"
@@ -17458,6 +17611,9 @@ msgstr "장치 %s을 생성할 수 없음 "
 #, fuzzy
 msgid "Unable to get device master from netlink on this platform"
 msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
+
+msgid "Unable to get device-mapper version"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to get devmapper targets for %s"
@@ -18032,6 +18188,10 @@ msgstr "인증서를 불러올 수 없음"
 msgid "Unable to query certificate %s key usage %s"
 msgstr "인증서를 불러올 수 없음"
 
+#, c-format
+msgid "Unable to query dependencies for %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to query kqueue"
 msgstr "쿼타를 구문 분석할 수 없습니다"
@@ -18537,6 +18697,10 @@ msgid "Unable to start event thread: %s"
 msgstr "%s를 읽을 수 없습니다 "
 
 msgid "Unable to start mediated device"
+msgstr ""
+
+#, c-format
+msgid "Unable to stat %p"
 msgstr ""
 
 #, fuzzy, c-format
@@ -19099,6 +19263,7 @@ msgstr "알 수 없는 포워드 유형 %d (네트워크 '%s'에서)"
 msgid "Unknown error"
 msgstr "알 수 없는 오류 "
 
+#. should never happen (tm)
 #, fuzzy
 msgid "Unknown error value"
 msgstr "알 수 없는 오류 "
@@ -19232,6 +19397,10 @@ msgstr "알 수 없는 모델 유형 '%s'"
 #, fuzzy, c-format
 msgid "Unknown shmem model type '%s'"
 msgstr "알 수 없는 모델 유형 '%s'"
+
+#, c-format
+msgid "Unknown shmem role type '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown slirp feature %s"
@@ -19505,6 +19674,10 @@ msgstr "지원되지 않는 장치 유형 '%s'"
 #, c-format
 msgid "Unsupported device type '%s'"
 msgstr "지원되지 않는 장치 유형 '%s'"
+
+#, c-format
+msgid "Unsupported device-mapper version. Expected %d got %d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported disk address type '%s'"
@@ -19857,10 +20030,12 @@ msgstr "spice 그래픽은 QEMU로 지원되지 않음 "
 msgid "Vifname %s too big for destination"
 msgstr "Vifname %s가 목적지로는 너무 큼"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr ""
@@ -21990,6 +22165,7 @@ msgstr "'%s' 경로를 열 수 없음"
 msgid "cannot open path '%s' in '%s'"
 msgstr "'%s' 경로를 열 수 없음"
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "볼륨 '%s'를 열 수 없음"
@@ -22852,6 +23028,7 @@ msgstr "복제 이름"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "자식이 디렉터리 '%s'를 만드는 데 실패"
@@ -26720,6 +26897,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "설정 값 %s가 형식이 잘못됨"
@@ -27320,6 +27500,7 @@ msgstr "도메인 스냅샷 %s이 생성됨 "
 msgid "handler failed to wait on condition"
 msgstr "조건을 기다리는 데 실패"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -27706,6 +27887,9 @@ msgstr ""
 msgid "initialize"
 msgstr "뮤텍스를 초기화할 수 없습니다."
 
+msgid "initiator iqn for underlying storage"
+msgstr ""
+
 msgid "inject-nmi"
 msgstr ""
 
@@ -27856,6 +28040,25 @@ msgstr "인터페이스 이름"
 msgid "interface name %s does not fit into buffer "
 msgstr "인터페이스 이름 %s이 버퍼에 맞지 않음 "
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr "인터페이스 이름 또는 MAC 주소"
 
@@ -28158,6 +28361,10 @@ msgstr "잘못된 인수: %s"
 #, fuzzy
 msgid "invalid ats value"
 msgstr "잘못된 값 %d"
+
+#, c-format
+msgid "invalid audio 'id' value '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "invalid autodeflate attribute value '%s'"
@@ -30122,6 +30329,9 @@ msgstr "이전이 작동중이지만, RAM에 '전송된' 데이터를 잃어버�
 msgid "migration was active, but no RAM info was set"
 msgstr "이전이 작동입니다만, RAM 정보가 설정되지 않았습니다"
 
+msgid "migration with legacy shmem device is not supported"
+msgstr ""
+
 msgid "migration with non-shared storage with full disk copy"
 msgstr ""
 
@@ -30129,10 +30339,6 @@ msgid ""
 "migration with non-shared storage with incremental copy (same base image "
 "shared between source and destination)"
 msgstr ""
-
-#, fuzzy
-msgid "migration with shmem device is not supported"
-msgstr "%s 볼륨 생성은 지원되지 않습니다 "
 
 #, fuzzy
 msgid "migration with virtiofs device is not supported"
@@ -30147,9 +30353,6 @@ msgid "migration_host must not be the address of the local machine: %s"
 msgstr ""
 
 msgid "minWorkers cannot be larger than maxWorkers"
-msgstr ""
-
-msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr ""
 
 msgid "mirror requires file name"
@@ -31227,6 +31430,15 @@ msgstr ""
 msgid "monitor failure"
 msgstr "모이터 경로가 없음"
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr ""
 
@@ -31431,6 +31643,7 @@ msgstr ""
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "협상된 SSF %d가 충분히 강력하지 않습니다"
@@ -32252,6 +32465,16 @@ msgstr "존재하는 콘솔 장치가 없습니다"
 msgid "no x86 CPU data found"
 msgstr "CPU를 찾을 수 없음"
 
+#, c-format
+msgid ""
+"node '%s' has unexpected NULL content. This could be caused by malformed "
+"input, or a memory allocation failure"
+msgstr ""
+
+#, c-format
+msgid "node '%s' has unexpected type %d"
+msgstr ""
+
 #, fuzzy
 msgid "node CPU stats not implemented on this platform"
 msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
@@ -32459,6 +32682,10 @@ msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
 #, fuzzy
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+
+#, c-format
+msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
+msgstr ""
 
 msgid "nvram address type must be spaprvio"
 msgstr ""
@@ -34007,6 +34234,9 @@ msgstr "요청된 vcpu가 도메인에서 허용할 수 있는 최대 갯수보�
 msgid "require atomic operation"
 msgstr "동작 중 타임 아웃"
 
+msgid "resctrl locking is not supported on this platform"
+msgstr ""
+
 #, fuzzy
 msgid "reservations not supported with this QEMU binary"
 msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
@@ -34547,6 +34777,12 @@ msgid "shared access for disk '%s' requires use of supported storage format"
 msgstr "디스크 '%s'의 파일 '%s'에 외부 스냅샷 모드가 필요합니다 "
 
 msgid "sheepdog protocol accepts only one host"
+msgstr ""
+
+#, c-format
+msgid ""
+"shmem device '%s' cannot be migrated, only shmem with role='%s' can be "
+"migrated"
 msgstr ""
 
 #, fuzzy
@@ -36177,10 +36413,6 @@ msgstr "역할 '%s'의 SELinux 문맥을 설정할 수 없음"
 msgid "unable to create socket pair"
 msgstr "소켓 쌍을 생성할 수 없음"
 
-#, fuzzy, c-format
-msgid "unable to create symlink %s"
-msgstr "%s을 생성할 수 없음 "
-
 #, fuzzy
 msgid "unable to create volume XML"
 msgstr "소켓 쌍을 생성할 수 없음"
@@ -36267,6 +36499,7 @@ msgstr "뮤텍스를 초기화할 수 없음 "
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "%s를 fsync할 수 없음 "
@@ -36568,6 +36801,10 @@ msgstr "보안 문맥 '%s'를 '%s'상에 설정할 수 없음"
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "macvtap 탭상의 인터페이스 플래그를 얻을 수 었습니다"
 
+#, c-format
+msgid "unable to stat %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr "소켓 보안 문맥 '%s'을 설정할 수 없음"
@@ -36722,6 +36959,10 @@ msgstr "SCSI 디스크에 대해 예기치 못한 주소 유형"
 #, fuzzy, c-format
 msgid "unexpected async job %d type expected %d"
 msgstr "예기치 못한 시스템 정보 유형 모델 %d"
+
+#, c-format
+msgid "unexpected audio type %d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unexpected binding %s already exists"
@@ -37124,6 +37365,8 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr "spice 그래픽은 QEMU로 지원되지 않음 "
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "알 수 없음"
 
@@ -37221,6 +37464,10 @@ msgstr "알 수 없는 아키텍처 %s"
 #, c-format
 msgid "unknown arp bonding validate %s"
 msgstr "알려지지 않은 arp 본딩 검증 %s"
+
+#, c-format
+msgid "unknown audio type '%s'"
+msgstr ""
 
 #, c-format
 msgid "unknown auth type '%s'"
@@ -38195,6 +38442,10 @@ msgid "unsupported architecture: %s"
 msgstr "지원되지 않는 기능 %s"
 
 #, c-format
+msgid "unsupported audio backend '%s'"
+msgstr ""
+
+#, c-format
 msgid "unsupported authentication type %d"
 msgstr "지원되지 않는 인증 유형 %d"
 
@@ -38315,6 +38566,28 @@ msgstr "지원되지 않는 오류 동작: '%s'\n"
 msgid "unsupported feature %s"
 msgstr "지원되지 않는 기능 %s"
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "지원되지 않는 플래그 (0x%lx) (기능 %s에서)"
@@ -39508,6 +39781,38 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Bus %s too big for destination"
+#~ msgstr "버스 %s가 목적지로는 너무 큼"
+
+#~ msgid "Domain %s too big for destination"
+#~ msgstr "도메인 %s가 목적지로는 너무 큼"
+
+#, fuzzy
+#~ msgid "Failed to copy ACLs on device %s"
+#~ msgstr "장치 %s의 리셋이 실패"
+
+#~ msgid "Function %s too big for destination"
+#~ msgstr "기능 %s가 목적지로는 너무 큼"
+
+#, fuzzy
+#~ msgid "Missing attribute '%s' in element '%sched'"
+#~ msgstr "<interface> 요소에 dev 속성이 누락되어 있습니다 "
+
+#~ msgid "Slot %s too big for destination"
+#~ msgstr "슬롯 %s가 목적지로는 너무 큼"
+
+#, fuzzy
+#~ msgid "Target shared memory name '%s' does not match source '%s'"
+#~ msgstr "대상 도메인 이름 '%s'이 소스 '%s'와 일치하지 않음"
+
+#, fuzzy
+#~ msgid "migration with shmem device is not supported"
+#~ msgstr "%s 볼륨 생성은 지원되지 않습니다 "
+
+#, fuzzy
+#~ msgid "unable to create symlink %s"
+#~ msgstr "%s을 생성할 수 없음 "
 
 #, fuzzy
 #~ msgid "Cannot resolve ::1 address: %s"
