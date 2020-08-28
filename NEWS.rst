@@ -11,6 +11,12 @@ For a more fine-grained view, use the `git log`_.
 v6.7.0 (unreleased)
 ===================
 
+* **Packaging changes**
+
+  * Libvirt switch to Meson build system
+
+    Libvirt abandoned autotools and switched to Meson build system.
+
 * **New features**
 
   * qemu: Add support for initiator IQN configuration for iSCSI hostdevs
@@ -57,6 +63,36 @@ v6.7.0 (unreleased)
     implementation. However, it failed to deal correctly with kernels that
     either don't have device mapper enabled or where the dm-mod module is not
     loaded yet. This is now fixed.
+
+  * resctrl: Use exclusive lock for /sys/fs/resctrl
+
+    When two or more domains were attempted to start at once, due to a bug in
+    implementation, resctrl was not locked properly and thus threads did not
+    mutually exclude with each other resulting in not setting requested
+    limitations.
+
+  * mdev: Fix daemon crash when reattaching mdevs on assignment conflict
+
+    If there's a list of mdevs to be assigned to a domain, but one of them (NOT
+    the first) is already assigned to a different domain then libvirtd would
+    crash. This is now fixed.
+
+  * Fix logic in setting COW flag on btrfs
+
+    When COW is not explicitly requested to be disabled or enabled, then
+    libvirt should do nothing on non-BTRFS file systems.
+
+  * Avoid crash due to race in glib event loop code
+
+    Libvirt switched to glib event loop in 6.1.0 but it was also tickling a bug
+    in glib code leading to the daemon crash. Libvirt way of calling glib was
+    changed so the daemon crashes no more.
+
+  * virdevmapper: Handle kernel without device-mapper support
+
+    In the previous release, Libvirt dropped libdevmapper in favor of its own
+    implementation. But the implementation did not handle kernels without
+    device-mapper support. This is now fixed.
 
 
 v6.6.0 (2020-08-02)
