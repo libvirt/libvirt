@@ -120,9 +120,13 @@ if conf.has('WITH_SECDRIVER_SELINUX')
 endif
 
 foreach mock : mock_libs
-  shared_module(
+  shared_library(
     mock['name'],
     mock.get('sources', [ '@0@.c'.format(mock['name']) ]),
+    override_options: [
+     'b_asneeded=false',
+     'b_lundef=false',
+    ],
     dependencies: [
       tests_dep,
       mock.get('deps', []),
