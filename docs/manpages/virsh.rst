@@ -3206,10 +3206,10 @@ Providing *--tls* causes the migration to use the host configured TLS setup
 (see migrate_tls_x509_cert_dir in /etc/libvirt/qemu.conf) in order to perform
 the migration of the domain. Usage requires proper TLS setup for both source
 and target. Normally the TLS certificate from the destination host must match
-+the host's name for TLS verification to succeed. When the certificate does not
-+match the destination hostname and the expected certificate's hostname is
-+known, *--tls-destination* can be used to pass the expected *hostname* when
-+starting the migration.
+the host's name for TLS verification to succeed. When the certificate does not
+match the destination hostname and the expected certificate's hostname is
+known, *--tls-destination* can be used to pass the expected *hostname* when
+starting the migration.
 
 
 *--parallel* option will cause migration data to be sent over multiple
