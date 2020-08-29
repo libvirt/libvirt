@@ -691,7 +691,7 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
          if (def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
              /* align to cylinder boundary */
              neededSize += extraBytes;
-             if ((*start % cylinderSize) > extraBytes) {
+             if ((dev->freeExtents[i].start % cylinderSize) > extraBytes) {
                  /* add an extra cylinder if the offset can't fit within
                     the extra bytes we have */
                  neededSize += cylinderSize;
