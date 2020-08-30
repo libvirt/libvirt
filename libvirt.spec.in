@@ -32,7 +32,7 @@
 %endif
 
 # On RHEL 7 and older macro _vpath_builddir is not defined.
-%if 0%{?rhel} <= 7
+%if 0%{?rhel} && 0%{?rhel} <= 7
     %define _vpath_builddir %{_target_platform}
 %endif
 
