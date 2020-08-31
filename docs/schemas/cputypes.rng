@@ -146,16 +146,18 @@
           <ref name="virYesNo"/>
         </attribute>
       </optional>
-      <optional>
-        <element name="distances">
-          <oneOrMore>
-            <ref name="numaDistance"/>
-          </oneOrMore>
-        </element>
-      </optional>
-      <zeroOrMore>
-        <ref name="numaCache"/>
-      </zeroOrMore>
+      <interleave>
+        <optional>
+          <element name="distances">
+            <oneOrMore>
+              <ref name="numaDistance"/>
+            </oneOrMore>
+          </element>
+        </optional>
+        <zeroOrMore>
+          <ref name="numaCache"/>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 
