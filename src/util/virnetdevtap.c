@@ -974,20 +974,12 @@ virNetDevTapInterfaceStats(const char *ifname,
                 stats->rx_bytes = ifd->ifi_obytes;
                 stats->rx_packets = ifd->ifi_opackets;
                 stats->rx_errs = ifd->ifi_oerrors;
-# ifdef HAVE_STRUCT_IF_DATA_IFI_OQDROPS
                 stats->rx_drop = ifd->ifi_oqdrops;
-# else
-                stats->rx_drop = 0;
-# endif
             } else {
                 stats->tx_bytes = ifd->ifi_obytes;
                 stats->tx_packets = ifd->ifi_opackets;
                 stats->tx_errs = ifd->ifi_oerrors;
-# ifdef HAVE_STRUCT_IF_DATA_IFI_OQDROPS
                 stats->tx_drop = ifd->ifi_oqdrops;
-# else
-                stats->tx_drop = 0;
-# endif
                 stats->rx_bytes = ifd->ifi_ibytes;
                 stats->rx_packets = ifd->ifi_ipackets;
                 stats->rx_errs = ifd->ifi_ierrors;
