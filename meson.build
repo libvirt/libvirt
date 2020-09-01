@@ -1,6 +1,6 @@
 project(
   'libvirt', 'c',
-  version: '6.7.0',
+  version: '6.8.0',
   license: 'LGPLv2+',
   meson_version: '>= 0.54.0',
   default_options: [
