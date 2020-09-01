@@ -28,19 +28,19 @@
 #include <fcntl.h>
 #ifndef WIN32
 # include <termios.h>
-#endif /* !WIN32 */
+#endif
 #ifdef HAVE_PTY_H
 /* Linux openpty */
 # include <pty.h>
-#endif /* !HAVE_PTY_H */
+#endif
 #ifdef HAVE_UTIL_H
 /* macOS openpty */
 # include <util.h>
-#endif /* !HAVE_LIBUTIL_H */
+#endif
 #ifdef HAVE_LIBUTIL_H
 /* FreeBSD openpty */
 # include <libutil.h>
-#endif /* !HAVE_LIBUTIL_H */
+#endif
 #include <sys/stat.h>
 #if defined(HAVE_SYS_MOUNT_H)
 # include <sys/mount.h>
