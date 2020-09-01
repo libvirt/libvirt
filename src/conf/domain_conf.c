@@ -8141,12 +8141,14 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
     xmlNodePtr cur;
 
     if ((filtering = virXMLPropString(node, "writeFiltering"))) {
-        if ((def->writeFiltering = virTristateBoolTypeFromString(filtering)) < 0) {
+        int val;
+        if ((val = virTristateBoolTypeFromString(filtering)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown pci writeFiltering setting '%s'"),
                            filtering);
             return -1;
         }
+        def->writeFiltering = val;
     }
 
     cur = node->children;
