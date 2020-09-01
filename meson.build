@@ -672,7 +672,6 @@ functions = [
   'stat64',
   'symlink',
   'sysctlbyname',
-  'unshare',
 ]
 
 foreach function : functions
@@ -696,11 +695,9 @@ headers = [
   'net/if.h',
   'pty.h',
   'pwd.h',
-  'stdarg.h',
   'sys/ioctl.h',
   'sys/mount.h',
   'sys/syscall.h',
-  'sys/sysctl.h',
   'sys/ucred.h',
   'syslog.h',
   'util.h',
