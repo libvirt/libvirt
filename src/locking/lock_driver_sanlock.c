@@ -100,7 +100,7 @@ virLockManagerSanlockError(int err,
                            char **message)
 {
     if (err <= -200) {
-#if HAVE_SANLOCK_STRERROR
+#if WITH_SANLOCK_STRERROR
         *message = g_strdup(sanlock_strerror(err));
 #else
         *message = g_strdup_printf(_("sanlock error %d"), err);

@@ -22,7 +22,7 @@
 
 #include <config.h>
 #if defined(__aarch64__)
-# if defined(HAVE_ASM_HWCAP_H)
+# if defined(WITH_ASM_HWCAP_H)
 #  include <asm/hwcap.h>
 # endif
 # include <sys/auxv.h>
@@ -520,7 +520,7 @@ virCPUarmCpuDataFromRegs(virCPUarmData *data)
     int cpu_feature_index = 0;
     size_t i;
 
-# if defined(HAVE_GETAUXVAL)
+# if defined(WITH_GETAUXVAL)
     if (!(getauxval(AT_HWCAP) & HWCAP_CPUID)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("CPUID registers unavailable"));
@@ -537,9 +537,9 @@ virCPUarmCpuDataFromRegs(virCPUarmData *data)
     /* parse the corresponding vendor_id bits */
     data->vendor_id = (cpuid >> 24) & 0xff;
 
-# if defined(HAVE_GETAUXVAL)
+# if defined(WITH_GETAUXVAL)
     hwcaps = getauxval(AT_HWCAP);
-# elif defined(HAVE_ELF_AUX_INFO)
+# elif defined(WITH_ELF_AUX_INFO)
     elf_aux_info(AT_HWCAP, &hwcaps, sizeof(u_long));
 # else
 #  error No routines to retrieve a value from the auxiliary vector

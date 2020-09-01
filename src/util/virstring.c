@@ -20,7 +20,7 @@
 
 #include <glib/gprintf.h>
 #include <locale.h>
-#ifdef HAVE_XLOCALE_H
+#ifdef WITH_XLOCALE_H
 # include <xlocale.h>
 #endif
 
@@ -531,7 +531,7 @@ virStrToLong_ullp(char const *s, char **end_ptr, int base,
 }
 
 /* In case thread-safe locales are available */
-#if HAVE_NEWLOCALE
+#if WITH_NEWLOCALE
 
 typedef locale_t virLocale;
 static virLocale virLocaleRaw;
@@ -575,7 +575,7 @@ virLocaleFixupRadix(char **strp G_GNUC_UNUSED)
 {
 }
 
-#else /* !HAVE_NEWLOCALE */
+#else /* !WITH_NEWLOCALE */
 
 typedef int virLocale;
 
@@ -606,7 +606,7 @@ virLocaleFixupRadix(char **strp)
     }
 }
 
-#endif /* !HAVE_NEWLOCALE */
+#endif /* !WITH_NEWLOCALE */
 
 
 /**

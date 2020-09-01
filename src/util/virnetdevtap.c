@@ -36,7 +36,7 @@
 #ifndef WIN32
 # include <sys/ioctl.h>
 #endif
-#ifdef HAVE_NET_IF_H
+#ifdef WITH_NET_IF_H
 # include <net/if.h>
 #endif
 #include <fcntl.h>
@@ -46,7 +46,7 @@
 # include <net/if_mib.h>
 # include <sys/sysctl.h>
 #endif
-#if defined(HAVE_GETIFADDRS) && defined(AF_LINK)
+#if defined(WITH_GETIFADDRS) && defined(AF_LINK)
 # include <ifaddrs.h>
 #endif
 #include <math.h>
@@ -935,7 +935,7 @@ virNetDevTapInterfaceStats(const char *ifname,
                    _("/proc/net/dev: Interface not found"));
     return -1;
 }
-#elif defined(HAVE_GETIFADDRS) && defined(AF_LINK)
+#elif defined(WITH_GETIFADDRS) && defined(AF_LINK)
 int
 virNetDevTapInterfaceStats(const char *ifname,
                            virDomainInterfaceStatsPtr stats,

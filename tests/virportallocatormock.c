@@ -18,7 +18,7 @@
 
 #include <config.h>
 
-#if HAVE_DLFCN_H
+#if WITH_DLFCN_H
 # include <dlfcn.h>
 #endif
 

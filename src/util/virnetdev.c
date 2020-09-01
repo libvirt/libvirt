@@ -40,23 +40,23 @@
 # include <linux/sockios.h>
 # include <linux/if_vlan.h>
 # define VIR_NETDEV_FAMILY AF_UNIX
-#elif defined(HAVE_STRUCT_IFREQ) && defined(AF_LOCAL)
+#elif defined(WITH_STRUCT_IFREQ) && defined(AF_LOCAL)
 # define VIR_NETDEV_FAMILY AF_LOCAL
 #else
-# undef HAVE_STRUCT_IFREQ
+# undef WITH_STRUCT_IFREQ
 #endif
 
-#if defined(SIOCETHTOOL) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCETHTOOL) && defined(WITH_STRUCT_IFREQ)
 # include <linux/types.h>
 # include <linux/ethtool.h>
 #endif
 
-#if HAVE_DECL_LINK_ADDR
+#if WITH_DECL_LINK_ADDR
 # include <sys/sockio.h>
 # include <net/if_dl.h>
 #endif
 
-#if HAVE_LINUX_DEVLINK_H
+#if WITH_LINUX_DEVLINK_H
 # include <linux/devlink.h>
 #endif
 
@@ -73,7 +73,7 @@ VIR_LOG_INIT("util.netdev");
 #define VIR_MCAST_NAME_LEN (IFNAMSIZ + 1)
 #define VIR_MCAST_TOKEN_DELIMS " \n"
 
-#if defined(SIOCSIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCSIFFLAGS) && defined(WITH_STRUCT_IFREQ)
 # define VIR_IFF_UP IFF_UP
 # define VIR_IFF_PROMISC IFF_PROMISC
 # define VIR_IFF_MULTICAST IFF_MULTICAST
@@ -86,7 +86,7 @@ VIR_LOG_INIT("util.netdev");
 #endif
 
 #define RESOURCE_FILE_LEN 4096
-#if HAVE_DECL_ETHTOOL_GFEATURES
+#if WITH_DECL_ETHTOOL_GFEATURES
 # define TX_UDP_TNL 25
 # define GFEATURES_SIZE 2
 # define FEATURE_WORD(blocks, index, field)  ((blocks)[(index) / 32U].field)
@@ -130,7 +130,7 @@ struct _virNetDevMcastList {
     virNetDevMcastEntryPtr *entries;
 };
 
-#if defined(HAVE_STRUCT_IFREQ)
+#if defined(WITH_STRUCT_IFREQ)
 static int virNetDevSetupControlFull(const char *ifname,
                                      struct ifreq *ifr,
                                      int domain,
@@ -172,7 +172,7 @@ virNetDevSetupControl(const char *ifname,
 {
     return virNetDevSetupControlFull(ifname, ifr, VIR_NETDEV_FAMILY, SOCK_DGRAM);
 }
-#else /* !HAVE_STRUCT_IFREQ */
+#else /* !WITH_STRUCT_IFREQ */
 int
 virNetDevSetupControl(const char *ifname G_GNUC_UNUSED,
                       void *ifr G_GNUC_UNUSED)
@@ -182,10 +182,10 @@ virNetDevSetupControl(const char *ifname G_GNUC_UNUSED,
                            "on this platform"));
     return -1;
 }
-#endif /* HAVE_STRUCT_IFREQ */
+#endif /* WITH_STRUCT_IFREQ */
 
 
-#if defined(SIOCGIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFFLAGS) && defined(WITH_STRUCT_IFREQ)
 /**
  * virNetDevExists:
  * @ifname
@@ -224,7 +224,7 @@ int virNetDevExists(const char *ifname)
 
 
 #if defined(SIOCGIFHWADDR) && defined(SIOCSIFHWADDR) && \
-    defined(HAVE_STRUCT_IFREQ)
+    defined(WITH_STRUCT_IFREQ)
 /**
  * virNetDevSetMACInternal:
  * @ifname: interface name to set MTU for
@@ -282,8 +282,8 @@ virNetDevSetMACInternal(const char *ifname,
 }
 
 
-#elif defined(SIOCSIFLLADDR) && defined(HAVE_STRUCT_IFREQ) && \
-    HAVE_DECL_LINK_ADDR
+#elif defined(SIOCSIFLLADDR) && defined(WITH_STRUCT_IFREQ) && \
+    WITH_DECL_LINK_ADDR
 
 
 static int
@@ -350,7 +350,7 @@ virNetDevSetMAC(const char *ifname,
 }
 
 
-#if defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFHWADDR) && defined(WITH_STRUCT_IFREQ)
 /**
  * virNetDevGetMAC:
  * @ifname: interface name to set MTU for
@@ -392,7 +392,7 @@ int virNetDevGetMAC(const char *ifname,
 #endif
 
 
-#if defined(SIOCGIFMTU) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFMTU) && defined(WITH_STRUCT_IFREQ)
 /**
  * virNetDevGetMTU:
  * @ifname: interface name get MTU for
@@ -429,7 +429,7 @@ int virNetDevGetMTU(const char *ifname)
 #endif
 
 
-#if defined(SIOCSIFMTU) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCSIFMTU) && defined(WITH_STRUCT_IFREQ)
 /**
  * virNetDevSetMTU:
  * @ifname: interface name to set MTU for
@@ -534,7 +534,7 @@ int virNetDevSetNamespace(const char *ifname, pid_t pidInNs)
     return 0;
 }
 
-#if defined(SIOCSIFNAME) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCSIFNAME) && defined(WITH_STRUCT_IFREQ)
 /**
  * virNetDevSetName:
  * @ifname: name of device
@@ -552,7 +552,7 @@ int virNetDevSetName(const char* ifname, const char *newifname)
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
-# ifdef HAVE_STRUCT_IFREQ_IFR_NEWNAME
+# ifdef WITH_STRUCT_IFREQ_IFR_NEWNAME
     if (virStrcpyStatic(ifr.ifr_newname, newifname) < 0) {
         virReportSystemError(ERANGE,
                              _("Network interface name '%s' is too long"),
@@ -583,7 +583,7 @@ int virNetDevSetName(const char* ifname, const char *newifname)
 #endif
 
 
-#if defined(SIOCSIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCSIFFLAGS) && defined(WITH_STRUCT_IFREQ)
 static int
 virNetDevSetIFFlag(const char *ifname, int flag, bool val)
 {
@@ -704,7 +704,7 @@ virNetDevSetRcvAllMulti(const char *ifname,
 }
 
 
-#if defined(SIOCGIFFLAGS) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFFLAGS) && defined(WITH_STRUCT_IFREQ)
 static int
 virNetDevGetIFFlag(const char *ifname, int flag, bool *val)
 {
@@ -805,7 +805,7 @@ virNetDevGetRcvAllMulti(const char *ifname,
     return virNetDevGetIFFlag(ifname, VIR_IFF_ALLMULTI, receive);
 }
 
-#if defined(HAVE_IF_INDEXTONAME)
+#if defined(WITH_IF_INDEXTONAME)
 char *virNetDevGetName(int ifindex)
 {
     char name[IFNAMSIZ];
@@ -840,7 +840,7 @@ char *virNetDevGetName(int ifindex)
  *
  * Returns 0 on success, -1 on failure
  */
-#if defined(SIOCGIFINDEX) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFINDEX) && defined(WITH_STRUCT_IFREQ)
 int virNetDevGetIndex(const char *ifname, int *ifindex)
 {
     struct ifreq ifreq;
@@ -867,7 +867,7 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
         return -1;
     }
 
-# ifdef HAVE_STRUCT_IFREQ_IFR_INDEX
+# ifdef WITH_STRUCT_IFREQ_IFR_INDEX
     *ifindex = ifreq.ifr_index;
 # else
     *ifindex = ifreq.ifr_ifindex;
@@ -885,7 +885,7 @@ int virNetDevGetIndex(const char *ifname G_GNUC_UNUSED,
 #endif /* ! SIOCGIFINDEX */
 
 
-#if defined(__linux__) && defined(HAVE_LIBNL)
+#if defined(__linux__) && defined(WITH_LIBNL)
 /**
  * virNetDevGetMaster:
  * @ifname: name of interface we're interested in
@@ -929,10 +929,10 @@ virNetDevGetMaster(const char *ifname G_GNUC_UNUSED,
 }
 
 
-#endif /* defined(__linux__) && defined(HAVE_LIBNL) */
+#endif /* defined(__linux__) && defined(WITH_LIBNL) */
 
 
-#if defined(SIOCGIFVLAN) && defined(HAVE_STRUCT_IFREQ) && HAVE_DECL_GET_VLAN_VID_CMD
+#if defined(SIOCGIFVLAN) && defined(WITH_STRUCT_IFREQ) && WITH_DECL_GET_VLAN_VID_CMD
 int virNetDevGetVLanID(const char *ifname, int *vlanid)
 {
     struct vlan_ioctl_args vlanargs = {
@@ -985,7 +985,7 @@ int virNetDevGetVLanID(const char *ifname G_GNUC_UNUSED,
  *
  * Returns 1 if the config matches, 0 if the config does not match, or interface does not exist, -1 on error
  */
-#if defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFHWADDR) && defined(WITH_STRUCT_IFREQ)
 int virNetDevValidateConfig(const char *ifname,
                             const virMacAddr *macaddr, int ifindex)
 {
@@ -1473,7 +1473,7 @@ virNetDevSysfsFile(char **pf_sysfs_device_link G_GNUC_UNUSED,
 
 
 #endif /* !__linux__ */
-#if defined(__linux__) && defined(HAVE_LIBNL) && defined(IFLA_VF_MAX)
+#if defined(__linux__) && defined(WITH_LIBNL) && defined(IFLA_VF_MAX)
 
 
 static virMacAddr zeroMAC = { .addr = { 0, 0, 0, 0, 0, 0 } };
@@ -2266,7 +2266,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
 }
 
 
-#else /* defined(__linux__) && defined(HAVE_LIBNL)  && defined(IFLA_VF_MAX) */
+#else /* defined(__linux__) && defined(WITH_LIBNL)  && defined(IFLA_VF_MAX) */
 
 
 int
@@ -2309,7 +2309,7 @@ virNetDevSetNetConfig(const char *linkdev G_GNUC_UNUSED,
 }
 
 
-#endif /* defined(__linux__) && defined(HAVE_LIBNL) && defined(IFLA_VF_MAX) */
+#endif /* defined(__linux__) && defined(WITH_LIBNL) && defined(IFLA_VF_MAX) */
 
 VIR_ENUM_IMPL(virNetDevIfState,
               VIR_NETDEV_IF_STATE_LAST,
@@ -2442,8 +2442,8 @@ virNetDevGetLinkInfo(const char *ifname,
 #endif /* defined(__linux__) */
 
 
-#if defined(SIOCADDMULTI) && defined(HAVE_STRUCT_IFREQ) && \
-    defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
+#if defined(SIOCADDMULTI) && defined(WITH_STRUCT_IFREQ) && \
+    defined(WITH_STRUCT_IFREQ_IFR_HWADDR)
 /**
  * virNetDevAddMulti:
  * @ifname: interface name to which to add multicast MAC address
@@ -2487,8 +2487,8 @@ int virNetDevAddMulti(const char *ifname G_GNUC_UNUSED,
 }
 #endif
 
-#if defined(SIOCDELMULTI) && defined(HAVE_STRUCT_IFREQ) && \
-    defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
+#if defined(SIOCDELMULTI) && defined(WITH_STRUCT_IFREQ) && \
+    defined(WITH_STRUCT_IFREQ_IFR_HWADDR)
 /**
  * virNetDevDelMulti:
  * @ifname: interface name from which to delete the multicast MAC address
@@ -2780,7 +2780,7 @@ int virNetDevGetRxFilter(const char *ifname,
     return ret;
 }
 
-#if defined(SIOCETHTOOL) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCETHTOOL) && defined(WITH_STRUCT_IFREQ)
 
 /**
  * virNetDevRDMAFeature
@@ -2912,28 +2912,28 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
         {ETHTOOL_GTXCSUM, VIR_NET_DEV_FEAT_GTXCSUM},
         {ETHTOOL_GSG, VIR_NET_DEV_FEAT_GSG},
         {ETHTOOL_GTSO, VIR_NET_DEV_FEAT_GTSO},
-# if HAVE_DECL_ETHTOOL_GGSO
+# if WITH_DECL_ETHTOOL_GGSO
         {ETHTOOL_GGSO, VIR_NET_DEV_FEAT_GGSO},
 # endif
-# if HAVE_DECL_ETHTOOL_GGRO
+# if WITH_DECL_ETHTOOL_GGRO
         {ETHTOOL_GGRO, VIR_NET_DEV_FEAT_GGRO},
 # endif
     };
 
-# if HAVE_DECL_ETHTOOL_GFLAGS
+# if WITH_DECL_ETHTOOL_GFLAGS
     /* ethtool masks */
     struct virNetDevEthtoolFeatureCmd flags[] = {
-#  if HAVE_DECL_ETH_FLAG_LRO
+#  if WITH_DECL_ETH_FLAG_LRO
         {ETH_FLAG_LRO, VIR_NET_DEV_FEAT_LRO},
 #  endif
-#  if HAVE_DECL_ETH_FLAG_TXVLAN
+#  if WITH_DECL_ETH_FLAG_TXVLAN
         {ETH_FLAG_RXVLAN, VIR_NET_DEV_FEAT_RXVLAN},
         {ETH_FLAG_TXVLAN, VIR_NET_DEV_FEAT_TXVLAN},
 #  endif
-#  if HAVE_DECL_ETH_FLAG_NTUBLE
+#  if WITH_DECL_ETH_FLAG_NTUBLE
         {ETH_FLAG_NTUPLE, VIR_NET_DEV_FEAT_NTUPLE},
 #  endif
-#  if HAVE_DECL_ETH_FLAG_RXHASH
+#  if WITH_DECL_ETH_FLAG_RXHASH
         {ETH_FLAG_RXHASH, VIR_NET_DEV_FEAT_RXHASH},
 #  endif
     };
@@ -2945,7 +2945,7 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
             ignore_value(virBitmapSetBit(bitmap, ethtool_cmds[i].feat));
     }
 
-# if HAVE_DECL_ETHTOOL_GFLAGS
+# if WITH_DECL_ETHTOOL_GFLAGS
     cmd.cmd = ETHTOOL_GFLAGS;
     if (virNetDevFeatureAvailable(fd, ifr, &cmd)) {
         for (i = 0; i < G_N_ELEMENTS(flags); i++) {
@@ -2957,7 +2957,7 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
 }
 
 
-# if HAVE_DECL_DEVLINK_CMD_ESWITCH_GET
+# if WITH_DECL_DEVLINK_CMD_ESWITCH_GET
 
 /**
  * virNetDevGetFamilyId:
@@ -3121,7 +3121,7 @@ virNetDevSwitchdevFeature(const char *ifname G_GNUC_UNUSED,
 # endif
 
 
-# if HAVE_DECL_ETHTOOL_GFEATURES
+# if WITH_DECL_ETHTOOL_GFEATURES
 /**
  * virNetDevGFeatureAvailable
  * This function checks for the availability of a network device gfeature
@@ -3172,7 +3172,7 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap G_GNUC_UNUSED,
 # endif
 
 
-# if HAVE_DECL_ETHTOOL_SCOALESCE && HAVE_DECL_ETHTOOL_GCOALESCE
+# if WITH_DECL_ETHTOOL_SCOALESCE && WITH_DECL_ETHTOOL_GCOALESCE
 /**
  * virNetDevSetCoalesce:
  * @ifname: interface name to modify

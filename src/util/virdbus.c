@@ -242,7 +242,7 @@ static dbus_bool_t virDBusAddWatch(DBusWatch *watch,
     if (dbus_watch_get_enabled(watch))
         flags = virDBusTranslateWatchFlags(dbus_watch_get_flags(watch));
 
-# if HAVE_DBUS_WATCH_GET_UNIX_FD
+# if WITH_DBUS_WATCH_GET_UNIX_FD
     fd = dbus_watch_get_unix_fd(watch);
 # else
     fd = dbus_watch_get_fd(watch);

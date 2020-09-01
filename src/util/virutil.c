@@ -37,7 +37,7 @@
 
 #include <sys/types.h>
 
-#ifdef HAVE_GETPWUID_R
+#ifdef WITH_GETPWUID_R
 # include <pwd.h>
 # include <grp.h>
 #endif
@@ -592,7 +592,7 @@ char *virGetUserRuntimeDirectory(void)
 }
 
 
-#ifdef HAVE_GETPWUID_R
+#ifdef WITH_GETPWUID_R
 /* Look up fields from the user database for the given user.  On
  * error, set errno, report the error if not instructed otherwise via @quiet,
  * and return -1.  */
@@ -1027,7 +1027,7 @@ virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups G_GNUC_UNUSED,
         return -1;
     }
 
-# if HAVE_SETGROUPS
+# if WITH_SETGROUPS
     if (gid != (gid_t)-1 && setgroups(ngroups, groups) < 0) {
         virReportSystemError(errno, "%s",
                              _("cannot set supplemental groups"));
@@ -1045,7 +1045,7 @@ virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups G_GNUC_UNUSED,
     return 0;
 }
 
-#else /* ! HAVE_GETPWUID_R */
+#else /* ! WITH_GETPWUID_R */
 
 int
 virGetGroupList(uid_t uid G_GNUC_UNUSED, gid_t gid G_GNUC_UNUSED,
@@ -1087,7 +1087,7 @@ virGetUserShell(uid_t uid G_GNUC_UNUSED)
     return NULL;
 }
 
-# else /* !HAVE_GETPWUID_R && !WIN32 */
+# else /* !WITH_GETPWUID_R && !WIN32 */
 char *
 virGetUserDirectoryByUID(uid_t uid G_GNUC_UNUSED)
 {
@@ -1105,7 +1105,7 @@ virGetUserShell(uid_t uid G_GNUC_UNUSED)
 
     return NULL;
 }
-# endif /* ! HAVE_GETPWUID_R && ! WIN32 */
+# endif /* ! WITH_GETPWUID_R && ! WIN32 */
 
 char *
 virGetUserName(uid_t uid G_GNUC_UNUSED)
@@ -1154,7 +1154,7 @@ virGetGroupName(gid_t gid G_GNUC_UNUSED)
 
     return NULL;
 }
-#endif /* HAVE_GETPWUID_R */
+#endif /* WITH_GETPWUID_R */
 
 #if WITH_CAPNG
 /* Set the real and effective uid and gid to the given values, while
@@ -1911,19 +1911,19 @@ char *virGetPassword(void)
 static int
 virPipeImpl(int fds[2], bool nonblock, bool errreport)
 {
-#ifdef HAVE_PIPE2
+#ifdef WITH_PIPE2
     int rv;
     int flags = O_CLOEXEC;
     if (nonblock)
         flags |= O_NONBLOCK;
     rv = pipe2(fds, flags);
-#else /* !HAVE_PIPE2 */
+#else /* !WITH_PIPE2 */
 # ifdef WIN32
     int rv = _pipe(fds, 4096, _O_BINARY);
 # else /* !WIN32 */
     int rv = pipe(fds);
 # endif /* !WIN32 */
-#endif /* !HAVE_PIPE2 */
+#endif /* !WITH_PIPE2 */
 
     if (rv < 0) {
         if (errreport)
@@ -1932,7 +1932,7 @@ virPipeImpl(int fds[2], bool nonblock, bool errreport)
         return rv;
     }
 
-#ifndef HAVE_PIPE2
+#ifndef WITH_PIPE2
     if (nonblock) {
         if (virSetNonBlock(fds[0]) < 0 ||
             virSetNonBlock(fds[1]) < 0) {
@@ -1946,7 +1946,7 @@ virPipeImpl(int fds[2], bool nonblock, bool errreport)
             return -1;
         }
     }
-#endif /* !HAVE_PIPE2 */
+#endif /* !WITH_PIPE2 */
 
     return 0;
 }

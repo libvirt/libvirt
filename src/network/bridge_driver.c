@@ -32,7 +32,7 @@
 #include <pwd.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
-#ifdef HAVE_SYSCTLBYNAME
+#ifdef WITH_SYSCTLBYNAME
 # include <sys/sysctl.h>
 #endif
 
@@ -2140,7 +2140,7 @@ networkEnableIPForwarding(bool enableIPv4,
                           bool enableIPv6)
 {
     int ret = 0;
-#ifdef HAVE_SYSCTLBYNAME
+#ifdef WITH_SYSCTLBYNAME
     int enabled = 1;
     if (enableIPv4)
         ret = sysctlbyname("net.inet.ip.forwarding", NULL, 0,

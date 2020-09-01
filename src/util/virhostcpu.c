@@ -28,7 +28,7 @@
 #endif
 #include <unistd.h>
 
-#if HAVE_LINUX_KVM_H
+#if WITH_LINUX_KVM_H
 # include <linux/kvm.h>
 #endif
 
@@ -1129,7 +1129,7 @@ virHostCPUGetAvailableCPUsBitmap(void)
 }
 
 
-#if HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT)
+#if WITH_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT)
 
 /* Get the number of threads per subcore.
  *
@@ -1188,9 +1188,9 @@ virHostCPUGetThreadsPerSubcore(virArch arch G_GNUC_UNUSED)
     return 0;
 }
 
-#endif /* HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT) */
+#endif /* WITH_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT) */
 
-#if HAVE_LINUX_KVM_H
+#if WITH_LINUX_KVM_H
 int
 virHostCPUGetKVMMaxVCPUs(void)
 {
@@ -1229,7 +1229,7 @@ virHostCPUGetKVMMaxVCPUs(void)
                          _("KVM is not supported on this platform"));
     return -1;
 }
-#endif /* HAVE_LINUX_KVM_H */
+#endif /* WITH_LINUX_KVM_H */
 
 
 #ifdef __linux__
@@ -1279,7 +1279,7 @@ virHostCPUGetMicrocodeVersion(virArch hostArch G_GNUC_UNUSED)
 #endif /* __linux__ */
 
 
-#if HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
+#if WITH_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
     (defined(__i386__) || defined(__x86_64__)) && \
     (defined(__linux__) || defined(__FreeBSD__))
 static int
@@ -1427,7 +1427,7 @@ virHostCPUGetTscInfo(void)
     return NULL;
 }
 
-#endif /* HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
+#endif /* WITH_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
           (defined(__i386__) || defined(__x86_64__)) && \
           (defined(__linux__) || defined(__FreeBSD__)) */
 

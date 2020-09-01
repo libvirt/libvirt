@@ -45,10 +45,10 @@
 
 #ifdef FICLONE
 # define REFLINK_IOC_CLONE FICLONE
-#elif HAVE_LINUX_BTRFS_H
+#elif WITH_LINUX_BTRFS_H
 # include <linux/btrfs.h>
 # define REFLINK_IOC_CLONE BTRFS_IOC_CLONE
-#elif HAVE_XFS_XFS_H
+#elif WITH_XFS_XFS_H
 # include <xfs/xfs.h>
 # define REFLINK_IOC_CLONE XFS_IOC_CLONE
 #endif
@@ -337,7 +337,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
     }
 
 /* Avoid issues with older kernel's <linux/fs.h> namespace pollution. */
-#if HAVE_FALLOCATE - 0
+#if WITH_FALLOCATE - 0
     /* Try to preallocate all requested disk space, but fall back to
      * other methods if this fails with ENOSYS or EOPNOTSUPP. If allocation
      * is 0 (or less than 0), then fallocate will fail with EINVAL.

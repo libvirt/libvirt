@@ -23,7 +23,7 @@
 #include <signal.h>
 #include <time.h>
 
-#if HAVE_MACH_CLOCK_ROUTINES
+#if WITH_MACH_CLOCK_ROUTINES
 # include <mach/clock.h>
 # include <mach/mach.h>
 #endif

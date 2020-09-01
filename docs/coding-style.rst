@@ -474,7 +474,7 @@ indentation to track nesting:
 
 ::
 
-  #if defined(HAVE_POSIX_FALLOCATE) && !defined(HAVE_FALLOCATE)
+  #if defined(WITH_POSIX_FALLOCATE) && !defined(WITH_FALLOCATE)
   # define fallocate(a, ignored, b, c) posix_fallocate(a, b, c)
   #endif
 

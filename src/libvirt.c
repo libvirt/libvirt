@@ -242,10 +242,10 @@ virGlobalInit(void)
 
     g_networking_init();
 
-#ifdef HAVE_LIBINTL_H
+#ifdef WITH_LIBINTL_H
     if (!bindtextdomain(PACKAGE, LOCALEDIR))
         goto error;
-#endif /* HAVE_LIBINTL_H */
+#endif /* WITH_LIBINTL_H */
 
     /*
      * Note that the order is important: the first ones have a higher

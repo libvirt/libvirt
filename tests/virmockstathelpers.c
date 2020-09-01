@@ -68,28 +68,28 @@
 
 
 
-#if defined(HAVE_STAT) && !defined(HAVE___XSTAT) && !defined(HAVE_STAT64)
+#if defined(WITH_STAT) && !defined(WITH___XSTAT) && !defined(WITH_STAT64)
 # define MOCK_STAT
 #endif
-#if defined(HAVE_STAT64) && !defined(HAVE___XSTAT64)
+#if defined(WITH_STAT64) && !defined(WITH___XSTAT64)
 # define MOCK_STAT64
 #endif
-#if defined(HAVE___XSTAT) && !defined(HAVE___XSTAT64)
+#if defined(WITH___XSTAT) && !defined(WITH___XSTAT64)
 # define MOCK___XSTAT
 #endif
-#if defined(HAVE___XSTAT64)
+#if defined(WITH___XSTAT64)
 # define MOCK___XSTAT64
 #endif
-#if defined(HAVE_LSTAT) && !defined(HAVE___LXSTAT) && !defined(HAVE_LSTAT64)
+#if defined(WITH_LSTAT) && !defined(WITH___LXSTAT) && !defined(WITH_LSTAT64)
 # define MOCK_LSTAT
 #endif
-#if defined(HAVE_LSTAT64) && !defined(HAVE___LXSTAT64)
+#if defined(WITH_LSTAT64) && !defined(WITH___LXSTAT64)
 # define MOCK_LSTAT64
 #endif
-#if defined(HAVE___LXSTAT) && !defined(HAVE___LXSTAT64)
+#if defined(WITH___LXSTAT) && !defined(WITH___LXSTAT64)
 # define MOCK___LXSTAT
 #endif
-#if defined(HAVE___LXSTAT64)
+#if defined(WITH___LXSTAT64)
 # define MOCK___LXSTAT64
 #endif
 

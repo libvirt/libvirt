@@ -27,7 +27,7 @@
 #include <sys/param.h>
 #include <fcntl.h>
 
-#if HAVE_PWD_H
+#if WITH_PWD_H
 # include <pwd.h>
 #endif
 

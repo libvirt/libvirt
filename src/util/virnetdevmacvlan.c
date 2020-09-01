@@ -48,7 +48,7 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode,
 # include <math.h>
 
 /* Older kernels lacked this enum value.  */
-# if !HAVE_DECL_MACVLAN_MODE_PASSTHRU
+# if !WITH_DECL_MACVLAN_MODE_PASSTHRU
 #  define MACVLAN_MODE_PASSTHRU 8
 # endif
 

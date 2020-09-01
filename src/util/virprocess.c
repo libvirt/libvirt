@@ -28,18 +28,18 @@
 # include <sys/wait.h>
 #endif
 #include <unistd.h>
-#if HAVE_SYS_MOUNT_H
+#if WITH_SYS_MOUNT_H
 # include <sys/mount.h>
 #endif
-#if HAVE_SETRLIMIT
+#if WITH_SETRLIMIT
 # include <sys/time.h>
 # include <sys/resource.h>
 #endif
-#if HAVE_SCHED_SETSCHEDULER
+#if WITH_SCHED_SETSCHEDULER
 # include <sched.h>
 #endif
 
-#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || HAVE_BSD_CPU_AFFINITY
+#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || WITH_BSD_CPU_AFFINITY
 # include <sys/param.h>
 #endif
 
@@ -48,7 +48,7 @@
 # include <sys/user.h>
 #endif
 
-#if HAVE_BSD_CPU_AFFINITY
+#if WITH_BSD_CPU_AFFINITY
 # include <sys/cpuset.h>
 #endif
 
@@ -92,7 +92,7 @@ VIR_LOG_INIT("util.process");
 #  endif
 # endif
 
-# ifndef HAVE_SETNS
+# ifndef WITH_SETNS
 #  if defined(__NR_setns)
 #   include <sys/syscall.h>
 
@@ -439,7 +439,7 @@ int virProcessKillPainfully(pid_t pid, bool force)
     return virProcessKillPainfullyDelay(pid, force, 0);
 }
 
-#if HAVE_SCHED_GETAFFINITY
+#if WITH_SCHED_GETAFFINITY
 
 int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
 {
@@ -530,7 +530,7 @@ virProcessGetAffinity(pid_t pid)
     return ret;
 }
 
-#elif defined(HAVE_BSD_CPU_AFFINITY)
+#elif defined(WITH_BSD_CPU_AFFINITY)
 
 int virProcessSetAffinity(pid_t pid,
                           virBitmapPtr map)
@@ -579,7 +579,7 @@ virProcessGetAffinity(pid_t pid)
     return ret;
 }
 
-#else /* HAVE_SCHED_GETAFFINITY */
+#else /* WITH_SCHED_GETAFFINITY */
 
 int virProcessSetAffinity(pid_t pid G_GNUC_UNUSED,
                           virBitmapPtr map G_GNUC_UNUSED)
@@ -596,7 +596,7 @@ virProcessGetAffinity(pid_t pid G_GNUC_UNUSED)
                          _("Process CPU affinity is not supported on this platform"));
     return NULL;
 }
-#endif /* HAVE_SCHED_GETAFFINITY */
+#endif /* WITH_SCHED_GETAFFINITY */
 
 
 int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
@@ -708,7 +708,7 @@ int virProcessSetNamespaces(size_t nfdlist,
     return 0;
 }
 
-#if HAVE_PRLIMIT
+#if WITH_PRLIMIT
 static int
 virProcessPrLimit(pid_t pid,
                   int resource,
@@ -717,7 +717,7 @@ virProcessPrLimit(pid_t pid,
 {
     return prlimit(pid, resource, new_limit, old_limit);
 }
-#elif HAVE_SETRLIMIT
+#elif WITH_SETRLIMIT
 static int
 virProcessPrLimit(pid_t pid G_GNUC_UNUSED,
                   int resource G_GNUC_UNUSED,
@@ -729,7 +729,7 @@ virProcessPrLimit(pid_t pid G_GNUC_UNUSED,
 }
 #endif
 
-#if HAVE_SETRLIMIT && defined(RLIMIT_MEMLOCK)
+#if WITH_SETRLIMIT && defined(RLIMIT_MEMLOCK)
 int
 virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
 {
@@ -769,7 +769,7 @@ virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
 
     return 0;
 }
-#else /* ! (HAVE_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
+#else /* ! (WITH_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 int
 virProcessSetMaxMemLock(pid_t pid G_GNUC_UNUSED, unsigned long long bytes)
 {
@@ -779,9 +779,9 @@ virProcessSetMaxMemLock(pid_t pid G_GNUC_UNUSED, unsigned long long bytes)
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
-#endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
+#endif /* ! (WITH_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 
-#if HAVE_GETRLIMIT && defined(RLIMIT_MEMLOCK)
+#if WITH_GETRLIMIT && defined(RLIMIT_MEMLOCK)
 int
 virProcessGetMaxMemLock(pid_t pid,
                         unsigned long long *bytes)
@@ -820,7 +820,7 @@ virProcessGetMaxMemLock(pid_t pid,
 
     return 0;
 }
-#else /* ! (HAVE_GETRLIMIT && defined(RLIMIT_MEMLOCK)) */
+#else /* ! (WITH_GETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 int
 virProcessGetMaxMemLock(pid_t pid G_GNUC_UNUSED,
                         unsigned long long *bytes)
@@ -831,9 +831,9 @@ virProcessGetMaxMemLock(pid_t pid G_GNUC_UNUSED,
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
-#endif /* ! (HAVE_GETRLIMIT && defined(RLIMIT_MEMLOCK)) */
+#endif /* ! (WITH_GETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 
-#if HAVE_SETRLIMIT && defined(RLIMIT_NPROC)
+#if WITH_SETRLIMIT && defined(RLIMIT_NPROC)
 int
 virProcessSetMaxProcesses(pid_t pid, unsigned int procs)
 {
@@ -861,7 +861,7 @@ virProcessSetMaxProcesses(pid_t pid, unsigned int procs)
     }
     return 0;
 }
-#else /* ! (HAVE_SETRLIMIT && defined(RLIMIT_NPROC)) */
+#else /* ! (WITH_SETRLIMIT && defined(RLIMIT_NPROC)) */
 int
 virProcessSetMaxProcesses(pid_t pid G_GNUC_UNUSED, unsigned int procs)
 {
@@ -871,9 +871,9 @@ virProcessSetMaxProcesses(pid_t pid G_GNUC_UNUSED, unsigned int procs)
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
-#endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_NPROC)) */
+#endif /* ! (WITH_SETRLIMIT && defined(RLIMIT_NPROC)) */
 
-#if HAVE_SETRLIMIT && defined(RLIMIT_NOFILE)
+#if WITH_SETRLIMIT && defined(RLIMIT_NOFILE)
 int
 virProcessSetMaxFiles(pid_t pid, unsigned int files)
 {
@@ -909,7 +909,7 @@ virProcessSetMaxFiles(pid_t pid, unsigned int files)
     }
     return 0;
 }
-#else /* ! (HAVE_SETRLIMIT && defined(RLIMIT_NOFILE)) */
+#else /* ! (WITH_SETRLIMIT && defined(RLIMIT_NOFILE)) */
 int
 virProcessSetMaxFiles(pid_t pid G_GNUC_UNUSED, unsigned int files)
 {
@@ -919,9 +919,9 @@ virProcessSetMaxFiles(pid_t pid G_GNUC_UNUSED, unsigned int files)
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
-#endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_NOFILE)) */
+#endif /* ! (WITH_SETRLIMIT && defined(RLIMIT_NOFILE)) */
 
-#if HAVE_SETRLIMIT && defined(RLIMIT_CORE)
+#if WITH_SETRLIMIT && defined(RLIMIT_CORE)
 int
 virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes)
 {
@@ -946,7 +946,7 @@ virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes)
     }
     return 0;
 }
-#else /* ! (HAVE_SETRLIMIT && defined(RLIMIT_CORE)) */
+#else /* ! (WITH_SETRLIMIT && defined(RLIMIT_CORE)) */
 int
 virProcessSetMaxCoreSize(pid_t pid G_GNUC_UNUSED,
                          unsigned long long bytes)
@@ -957,7 +957,7 @@ virProcessSetMaxCoreSize(pid_t pid G_GNUC_UNUSED,
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
-#endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_CORE)) */
+#endif /* ! (WITH_SETRLIMIT && defined(RLIMIT_CORE)) */
 
 
 #ifdef __linux__
@@ -1419,7 +1419,7 @@ virProcessExitWithStatus(int status)
     exit(value);
 }
 
-#if HAVE_SCHED_SETSCHEDULER
+#if WITH_SCHED_SETSCHEDULER
 
 static int
 virProcessSchedTranslatePolicy(virProcessSchedPolicy policy)
@@ -1515,7 +1515,7 @@ virProcessSetScheduler(pid_t pid,
     return 0;
 }
 
-#else /* ! HAVE_SCHED_SETSCHEDULER */
+#else /* ! WITH_SCHED_SETSCHEDULER */
 
 int
 virProcessSetScheduler(pid_t pid G_GNUC_UNUSED,
@@ -1531,4 +1531,4 @@ virProcessSetScheduler(pid_t pid G_GNUC_UNUSED,
     return -1;
 }
 
-#endif /* !HAVE_SCHED_SETSCHEDULER */
+#endif /* !WITH_SCHED_SETSCHEDULER */

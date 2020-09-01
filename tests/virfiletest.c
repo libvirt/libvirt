@@ -31,7 +31,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+#if defined WITH_MNTENT_H && defined WITH_GETMNTENT_R
 static int testFileCheckMounts(const char *prefix,
                                char **gotmounts,
                                size_t gotnmounts,
@@ -91,7 +91,7 @@ static int testFileGetMountSubtree(const void *opaque)
     g_strfreev(gotmounts);
     return ret;
 }
-#endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
+#endif /* ! defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */
 
 struct testFileSanitizePathData
 {
@@ -122,7 +122,7 @@ testFileSanitizePath(const void *opaque)
 }
 
 
-#if HAVE_DECL_SEEK_HOLE && defined(__linux__)
+#if WITH_DECL_SEEK_HOLE && defined(__linux__)
 
 /* Create a sparse file. @offsets in KiB. */
 static int
@@ -234,7 +234,7 @@ holesSupported(void)
     return ret;
 }
 
-#else /* !HAVE_DECL_SEEK_HOLE || !defined(__linux__)*/
+#else /* !WITH_DECL_SEEK_HOLE || !defined(__linux__)*/
 
 static int
 makeSparseFile(const off_t offsets[] G_GNUC_UNUSED,
@@ -250,7 +250,7 @@ holesSupported(void)
     return false;
 }
 
-#endif /* !HAVE_DECL_SEEK_HOLE || !defined(__linux__)*/
+#endif /* !WITH_DECL_SEEK_HOLE || !defined(__linux__)*/
 
 struct testFileInData {
     bool startData;     /* whether the list of offsets starts with data section */
@@ -356,7 +356,7 @@ mymain(void)
     int ret = 0;
     struct testFileSanitizePathData data1;
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+#if defined WITH_MNTENT_H && defined WITH_GETMNTENT_R
 # define MTAB_PATH1 abs_srcdir "/virfiledata/mounts1.txt"
 # define MTAB_PATH2 abs_srcdir "/virfiledata/mounts2.txt"
 
@@ -386,7 +386,7 @@ mymain(void)
     DO_TEST_MOUNT_SUBTREE("/proc reverse", MTAB_PATH1, "/proc", wantmounts1rev, true);
     DO_TEST_MOUNT_SUBTREE("/etc/aliases", MTAB_PATH2, "/etc/aliases", wantmounts2a, false);
     DO_TEST_MOUNT_SUBTREE("/etc/aliases.db", MTAB_PATH2, "/etc/aliases.db", wantmounts2b, false);
-#endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
+#endif /* ! defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */
 
 #define DO_TEST_SANITIZE_PATH(PATH, EXPECT) \
     do { \

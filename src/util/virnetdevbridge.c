@@ -27,12 +27,12 @@
 #include "virstring.h"
 #include "virsocket.h"
 
-#ifdef HAVE_NET_IF_H
+#ifdef WITH_NET_IF_H
 # include <net/if.h>
 #endif
 
 #ifdef __linux__
-# if defined(HAVE_LIBNL)
+# if defined(WITH_LIBNL)
 #  include "virnetlink.h"
 # endif
 # include <linux/sockios.h>
@@ -62,7 +62,7 @@
 # define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
 #endif
 
-#if defined(HAVE_BSD_BRIDGE_MGMT)
+#if defined(WITH_BSD_BRIDGE_MGMT)
 # include <net/ethernet.h>
 # include <net/if_bridgevar.h>
 #endif
@@ -71,7 +71,7 @@
 
 VIR_LOG_INIT("util.netdevbridge");
 
-#if defined(HAVE_BSD_BRIDGE_MGMT)
+#if defined(WITH_BSD_BRIDGE_MGMT)
 static int virNetDevBridgeCmd(const char *brname,
                               u_long op,
                               void *arg,
@@ -103,7 +103,7 @@ static int virNetDevBridgeCmd(const char *brname,
 }
 #endif
 
-#if defined(HAVE_STRUCT_IFREQ) && defined(__linux__)
+#if defined(WITH_STRUCT_IFREQ) && defined(__linux__)
 /*
  * Bridge parameters can be set via sysfs on newish kernels,
  * or by  ioctl on older kernels. Perhaps we could just use
@@ -412,7 +412,7 @@ virNetDevBridgePortSetIsolated(const char *brname G_GNUC_UNUSED,
  *
  * Returns 0 in case of success or -1 on failure
  */
-#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDBR)
+#if defined(WITH_STRUCT_IFREQ) && defined(SIOCBRADDBR)
 static int
 virNetDevBridgeCreateWithIoctl(const char *brname,
                                const virMacAddr *mac)
@@ -441,7 +441,7 @@ virNetDevBridgeCreateWithIoctl(const char *brname,
 }
 #endif
 
-#if defined(__linux__) && defined(HAVE_LIBNL)
+#if defined(__linux__) && defined(WITH_LIBNL)
 int
 virNetDevBridgeCreate(const char *brname,
                       const virMacAddr *mac)
@@ -454,7 +454,7 @@ virNetDevBridgeCreate(const char *brname,
 
 
     if (virNetlinkNewLink(brname, "bridge", &data, &error) < 0) {
-# if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDBR)
+# if defined(WITH_STRUCT_IFREQ) && defined(SIOCBRADDBR)
         if (error == -EOPNOTSUPP) {
             /* fallback to ioctl if netlink doesn't support creating bridges */
             return virNetDevBridgeCreateWithIoctl(brname, mac);
@@ -471,7 +471,7 @@ virNetDevBridgeCreate(const char *brname,
 }
 
 
-#elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDBR)
+#elif defined(WITH_STRUCT_IFREQ) && defined(SIOCBRADDBR)
 int
 virNetDevBridgeCreate(const char *brname,
                       const virMacAddr *mac)
@@ -480,7 +480,7 @@ virNetDevBridgeCreate(const char *brname,
 }
 
 
-#elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCIFCREATE2)
+#elif defined(WITH_STRUCT_IFREQ) && defined(SIOCIFCREATE2)
 int
 virNetDevBridgeCreate(const char *brname,
                       const virMacAddr *mac)
@@ -530,7 +530,7 @@ virNetDevBridgeCreate(const char *brname,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
+#if defined(WITH_STRUCT_IFREQ) && defined(SIOCBRDELBR)
 static int
 virNetDevBridgeDeleteWithIoctl(const char *brname)
 {
@@ -552,7 +552,7 @@ virNetDevBridgeDeleteWithIoctl(const char *brname)
 #endif
 
 
-#if defined(__linux__) && defined(HAVE_LIBNL)
+#if defined(__linux__) && defined(WITH_LIBNL)
 int
 virNetDevBridgeDelete(const char *brname)
 {
@@ -560,7 +560,7 @@ virNetDevBridgeDelete(const char *brname)
      * deleting a bridge even if it is currently IFF_UP. fallback to
      * using ioctl(SIOCBRDELBR) if netlink fails with EOPNOTSUPP.
      */
-# if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
+# if defined(WITH_STRUCT_IFREQ) && defined(SIOCBRDELBR)
     return virNetlinkDelLink(brname, virNetDevBridgeDeleteWithIoctl);
 # else
     return virNetlinkDelLink(brname, NULL);
@@ -568,7 +568,7 @@ virNetDevBridgeDelete(const char *brname)
 }
 
 
-#elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
+#elif defined(WITH_STRUCT_IFREQ) && defined(SIOCBRDELBR)
 int
 virNetDevBridgeDelete(const char *brname)
 {
@@ -576,7 +576,7 @@ virNetDevBridgeDelete(const char *brname)
 }
 
 
-#elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCIFDESTROY)
+#elif defined(WITH_STRUCT_IFREQ) && defined(SIOCIFDESTROY)
 int
 virNetDevBridgeDelete(const char *brname)
 {
@@ -613,7 +613,7 @@ int virNetDevBridgeDelete(const char *brname G_GNUC_UNUSED)
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDIF)
+#if defined(WITH_STRUCT_IFREQ) && defined(SIOCBRADDIF)
 int virNetDevBridgeAddPort(const char *brname,
                            const char *ifname)
 {
@@ -637,7 +637,7 @@ int virNetDevBridgeAddPort(const char *brname,
 
     return 0;
 }
-#elif defined(HAVE_BSD_BRIDGE_MGMT)
+#elif defined(WITH_BSD_BRIDGE_MGMT)
 int virNetDevBridgeAddPort(const char *brname,
                            const char *ifname)
 {
@@ -678,7 +678,7 @@ int virNetDevBridgeAddPort(const char *brname,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELIF)
+#if defined(WITH_STRUCT_IFREQ) && defined(SIOCBRDELIF)
 int virNetDevBridgeRemovePort(const char *brname,
                               const char *ifname)
 {
@@ -703,7 +703,7 @@ int virNetDevBridgeRemovePort(const char *brname,
 
     return 0;
 }
-#elif defined(HAVE_BSD_BRIDGE_MGMT)
+#elif defined(WITH_BSD_BRIDGE_MGMT)
 int virNetDevBridgeRemovePort(const char *brname,
                               const char *ifname)
 {
@@ -736,7 +736,7 @@ int virNetDevBridgeRemovePort(const char *brname,
 #endif
 
 
-#if defined(HAVE_STRUCT_IFREQ) && defined(__linux__)
+#if defined(WITH_STRUCT_IFREQ) && defined(__linux__)
 /**
  * virNetDevBridgeSetSTPDelay:
  * @brname: the bridge name
@@ -830,7 +830,7 @@ int virNetDevBridgeGetSTP(const char *brname,
 
     return ret;
 }
-#elif defined(HAVE_BSD_BRIDGE_MGMT)
+#elif defined(WITH_BSD_BRIDGE_MGMT)
 int virNetDevBridgeSetSTPDelay(const char *brname,
                                int delay)
 {
@@ -911,7 +911,7 @@ int virNetDevBridgeGetSTP(const char *brname,
 }
 #endif
 
-#if defined(HAVE_STRUCT_IFREQ) && defined(__linux__)
+#if defined(WITH_STRUCT_IFREQ) && defined(__linux__)
 /**
  * virNetDevBridgeGetVlanFiltering:
  * @brname: the bridge device name
@@ -976,7 +976,7 @@ virNetDevBridgeSetVlanFiltering(const char *brname G_GNUC_UNUSED,
 #endif
 
 
-#if defined(__linux__) && defined(HAVE_LIBNL)
+#if defined(__linux__) && defined(WITH_LIBNL)
 
 # ifndef NTF_SELF
 #  define NTF_SELF 0x02

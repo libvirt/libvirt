@@ -59,22 +59,22 @@ int virDiskNameToIndex(const char* str);
 char *virIndexToDiskName(int idx, const char *prefix);
 
 /* No-op workarounds for functionality missing in mingw.  */
-#ifndef HAVE_GETUID
+#ifndef WITH_GETUID
 static inline int getuid(void)
 { return 0; }
 #endif
 
-#ifndef HAVE_GETEUID
+#ifndef WITH_GETEUID
 static inline int geteuid(void)
 { return 0; }
 #endif
 
-#ifndef HAVE_GETGID
+#ifndef WITH_GETGID
 static inline int getgid(void)
 { return 0; }
 #endif
 
-#ifndef HAVE_GETEGID
+#ifndef WITH_GETEGID
 static inline int getegid(void)
 { return 0; }
 #endif

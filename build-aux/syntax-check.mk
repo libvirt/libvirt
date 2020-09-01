@@ -1397,8 +1397,8 @@ sc_require_config_h_first:
 	else :;								\
 	fi
 
-sc_prohibit_HAVE_MBRTOWC:
-	@prohibit='\bHAVE_MBRTOWC\b'					\
+sc_prohibit_WITH_MBRTOWC:
+	@prohibit='\bWITH_MBRTOWC\b'					\
 	halt="do not use $$prohibit; it is always defined"		\
 	  $(_sc_search_regexp)
 
@@ -1617,8 +1617,8 @@ sc_unmarked_diagnostics:
 
 
 sc_prohibit_defined_have_decl_tests:
-	@prohibit='(#[	 ]*ifn?def|\<defined)\>[	 (]+HAVE_DECL_'	\
-	halt='HAVE_DECL macros are always defined'			\
+	@prohibit='(#[	 ]*ifn?def|\<defined)\>[	 (]+WITH_DECL_'	\
+	halt='WITH_DECL macros are always defined'			\
 	  $(_sc_search_regexp)
 
 # ==================================================================
@@ -1801,7 +1801,7 @@ sc_po_check:
 	  rm -f $@-1 $@-2;						\
 	fi
 
-# #if HAVE_... will evaluate to false for any non numeric string.
+# #if WITH_... will evaluate to false for any non numeric string.
 # That would be flagged by using -Wundef, however gnulib currently
 # tests many undefined macros, and so we can't enable that option.
 # So at least preclude common boolean strings as macro values.

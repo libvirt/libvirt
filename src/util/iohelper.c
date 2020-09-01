@@ -56,7 +56,7 @@ runIO(const char *path, int fd, int oflags)
     bool direct = O_DIRECT && ((oflags & O_DIRECT) != 0);
     off_t end = 0;
 
-#if HAVE_POSIX_MEMALIGN
+#if WITH_POSIX_MEMALIGN
     if (posix_memalign(&base, alignMask + 1, buflen)) {
         virReportOOMError();
         goto cleanup;

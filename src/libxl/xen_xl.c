@@ -46,7 +46,7 @@ VIR_LOG_INIT("xen.xen_xl");
  * corresponding header file wasn't.  Use the header file if detected during
  * configure, otherwise provide extern declarations for any functions used.
  */
-#ifdef HAVE_LIBXLUTIL_H
+#ifdef WITH_LIBXLUTIL_H
 # include <libxlutil.h>
 #else
 typedef struct XLU_Config XLU_Config;

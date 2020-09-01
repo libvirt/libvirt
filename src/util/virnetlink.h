@@ -22,7 +22,7 @@
 #include "internal.h"
 #include "virmacaddr.h"
 
-#if defined(__linux__) && defined(HAVE_LIBNL)
+#if defined(__linux__) && defined(WITH_LIBNL)
 
 # include <netlink/msg.h>
 

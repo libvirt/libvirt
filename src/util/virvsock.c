@@ -17,11 +17,11 @@
 
 #include <config.h>
 
-#ifdef HAVE_SYS_IOCTL_H
+#ifdef WITH_SYS_IOCTL_H
 # include <sys/ioctl.h>
 #endif
 
-#if HAVE_DECL_VHOST_VSOCK_SET_GUEST_CID
+#if WITH_DECL_VHOST_VSOCK_SET_GUEST_CID
 # include <linux/vhost.h>
 #endif
 
@@ -35,7 +35,7 @@
 
 VIR_LOG_INIT("util.vsock");
 
-#if HAVE_DECL_VHOST_VSOCK_SET_GUEST_CID
+#if WITH_DECL_VHOST_VSOCK_SET_GUEST_CID
 static int
 virVsockSetGuestCidQuiet(int fd,
                          unsigned int guest_cid)

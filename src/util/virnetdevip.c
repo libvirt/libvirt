@@ -28,14 +28,14 @@
 #include "vircommand.h"
 #include "viralloc.h"
 
-#if HAVE_GETIFADDRS
+#if WITH_GETIFADDRS
 # include <ifaddrs.h>
 #endif
 
 #ifndef WIN32
 # include <sys/ioctl.h>
 #endif
-#ifdef HAVE_NET_IF_H
+#ifdef WITH_NET_IF_H
 # include <net/if.h>
 #endif
 #include <fcntl.h>
@@ -51,7 +51,7 @@
 
 VIR_LOG_INIT("util.netdevip");
 
-#if defined(__linux__) && defined(HAVE_LIBNL)
+#if defined(__linux__) && defined(WITH_LIBNL)
 
 static int
 virNetDevGetIPAddressBinary(virSocketAddr *addr, void **data, size_t *len)
@@ -676,7 +676,7 @@ virNetDevIPCheckIPv6Forwarding(void)
     return valid;
 }
 
-#else /* defined(__linux__) && defined(HAVE_LIBNL) */
+#else /* defined(__linux__) && defined(WITH_LIBNL) */
 
 
 int
@@ -815,7 +815,7 @@ virNetDevIPCheckIPv6Forwarding(void)
     return true;
 }
 
-#endif /* defined(__linux__) && defined(HAVE_LIBNL) */
+#endif /* defined(__linux__) && defined(WITH_LIBNL) */
 
 
 /**
@@ -828,7 +828,7 @@ virNetDevIPCheckIPv6Forwarding(void)
  *
  * Returns 0 on success, -errno on failure.
  */
-#if defined(SIOCGIFADDR) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFADDR) && defined(WITH_STRUCT_IFREQ)
 static int
 virNetDevGetIPv4AddressIoctl(const char *ifname,
                              virSocketAddrPtr addr)
@@ -878,7 +878,7 @@ virNetDevGetIPv4AddressIoctl(const char *ifname G_GNUC_UNUSED,
  *
  * Returns 0 on success, -1 on failure, -2 on unsupported.
  */
-#if HAVE_GETIFADDRS
+#if WITH_GETIFADDRS
 static int
 virNetDevGetifaddrsAddress(const char *ifname,
                            virSocketAddrPtr addr)
@@ -925,7 +925,7 @@ virNetDevGetifaddrsAddress(const char *ifname,
     return ret;
 }
 
-#else  /* ! HAVE_GETIFADDRS */
+#else  /* ! WITH_GETIFADDRS */
 
 static int
 virNetDevGetifaddrsAddress(const char *ifname G_GNUC_UNUSED,

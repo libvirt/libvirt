@@ -615,7 +615,7 @@ typedef WINBOOL(WINAPI *PFN_MS_EX) (lMEMORYSTATUSEX*);
 static unsigned long long
 virHostMemGetTotal(void)
 {
-#if defined HAVE_SYSCTLBYNAME
+#if defined WITH_SYSCTLBYNAME
     /* This works on freebsd & macOS. */
     unsigned long long physmem = 0;
     size_t len = sizeof(physmem);
@@ -676,7 +676,7 @@ virHostMemGetTotal(void)
 static unsigned long long
 virHostMemGetAvailable(void)
 {
-#if defined HAVE_SYSCTLBYNAME
+#if defined WITH_SYSCTLBYNAME
     /* This works on freebsd and macOS */
     unsigned long long usermem = 0;
     size_t len = sizeof(usermem);

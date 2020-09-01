@@ -36,7 +36,7 @@
  */
 #include <config.h>
 
-#ifdef HAVE_LIBPCAP
+#ifdef WITH_LIBPCAP
 # include <pcap.h>
 #endif
 
@@ -65,7 +65,7 @@
 
 VIR_LOG_INIT("nwfilter.nwfilter_dhcpsnoop");
 
-#ifdef HAVE_LIBPCAP
+#ifdef WITH_LIBPCAP
 
 # define LEASEFILE_DIR RUNSTATEDIR "/libvirt/network/"
 # define LEASEFILE LEASEFILE_DIR "nwfilter.leases"
@@ -2118,7 +2118,7 @@ virNWFilterDHCPSnoopShutdown(void)
     virNWFilterSnoopActiveUnlock();
 }
 
-#else /* HAVE_LIBPCAP */
+#else /* WITH_LIBPCAP */
 
 int
 virNWFilterDHCPSnoopInit(void)
@@ -2150,4 +2150,4 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver G_GNUC_UNUSED,
                      "='dhcp'\" requires it."));
     return -1;
 }
-#endif /* HAVE_LIBPCAP */
+#endif /* WITH_LIBPCAP */

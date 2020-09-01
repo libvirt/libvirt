@@ -20,7 +20,7 @@
 
 #include <signal.h>
 #include <unistd.h>
-#ifdef HAVE_IFADDRS_H
+#ifdef WITH_IFADDRS_H
 # include <ifaddrs.h>
 #endif
 
@@ -37,7 +37,7 @@
 
 VIR_LOG_INIT("tests.netsockettest");
 
-#if HAVE_IFADDRS_H
+#if WITH_IFADDRS_H
 # define BASE_PORT 5672
 
 static int
@@ -522,7 +522,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-#ifdef HAVE_IFADDRS_H
+#ifdef WITH_IFADDRS_H
     bool hasIPv4, hasIPv6;
     int freePort;
 #endif
@@ -533,7 +533,7 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-#ifdef HAVE_IFADDRS_H
+#ifdef WITH_IFADDRS_H
     if (checkProtocols(&hasIPv4, &hasIPv6, &freePort) < 0) {
         fprintf(stderr, "Cannot identify IPv4/6 availability\n");
         return EXIT_FAILURE;

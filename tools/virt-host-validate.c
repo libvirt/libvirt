@@ -21,9 +21,9 @@
 
 #include <config.h>
 
-#ifdef HAVE_LIBINTL_H
+#ifdef WITH_LIBINTL_H
 # include <libintl.h>
-#endif /* HAVE_LIBINTL_H */
+#endif /* WITH_LIBINTL_H */
 #include <getopt.h>
 
 #include "internal.h"

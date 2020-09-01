@@ -32,7 +32,7 @@
 
 VIR_LOG_INIT("util.module");
 
-#ifdef HAVE_DLFCN_H
+#ifdef WITH_DLFCN_H
 # include <dlfcn.h>
 
 static void *
@@ -141,7 +141,7 @@ virModuleLoad(const char *path,
     return ret;
 }
 
-#else /* ! HAVE_DLFCN_H */
+#else /* ! WITH_DLFCN_H */
 int
 virModuleLoad(const char *path,
               const char *regfunc G_GNUC_UNUSED,
@@ -160,4 +160,4 @@ virModuleLoad(const char *path,
         return 1;
     }
 }
-#endif /* ! HAVE_DLFCN_H */
+#endif /* ! WITH_DLFCN_H */

@@ -2524,7 +2524,7 @@ qemuProcessGetAllCpuAffinity(virBitmapPtr *cpumapRet)
 /*
  * To be run between fork/exec of QEMU only
  */
-#if defined(HAVE_SCHED_GETAFFINITY) || defined(HAVE_BSD_CPU_AFFINITY)
+#if defined(WITH_SCHED_GETAFFINITY) || defined(WITH_BSD_CPU_AFFINITY)
 static int
 qemuProcessInitCpuAffinity(virDomainObjPtr vm)
 {
@@ -2577,13 +2577,13 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
 
     return 0;
 }
-#else /* !defined(HAVE_SCHED_GETAFFINITY) && !defined(HAVE_BSD_CPU_AFFINITY) */
+#else /* !defined(WITH_SCHED_GETAFFINITY) && !defined(WITH_BSD_CPU_AFFINITY) */
 static int
 qemuProcessInitCpuAffinity(virDomainObjPtr vm G_GNUC_UNUSED)
 {
     return 0;
 }
-#endif /* !defined(HAVE_SCHED_GETAFFINITY) && !defined(HAVE_BSD_CPU_AFFINITY) */
+#endif /* !defined(WITH_SCHED_GETAFFINITY) && !defined(WITH_BSD_CPU_AFFINITY) */
 
 /* set link states to down on interfaces at qemu start */
 static int

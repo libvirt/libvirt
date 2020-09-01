@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_LIBPCAP
+#ifdef WITH_LIBPCAP
 # include <pcap.h>
 #endif
 
@@ -225,7 +225,7 @@ virNWFilterIPAddrLearnReqFree(virNWFilterIPAddrLearnReqPtr req)
 }
 
 
-#if HAVE_LIBPCAP
+#if WITH_LIBPCAP
 
 static int
 virNWFilterRegisterLearnReq(virNWFilterIPAddrLearnReqPtr req)
@@ -306,7 +306,7 @@ freeLearnReqEntry(void *payload)
 }
 
 
-#ifdef HAVE_LIBPCAP
+#ifdef WITH_LIBPCAP
 
 static virNWFilterIPAddrLearnReqPtr
 virNWFilterDeregisterLearnReq(int ifindex)
@@ -325,7 +325,7 @@ virNWFilterDeregisterLearnReq(int ifindex)
 
 #endif
 
-#ifdef HAVE_LIBPCAP
+#ifdef WITH_LIBPCAP
 
 static void
 procDHCPOpts(struct dhcp *dhcp, int dhcp_opts_len,
@@ -761,7 +761,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver G_GNUC_UNUSED,
                      "support"));
     return -1;
 }
-#endif /* HAVE_LIBPCAP */
+#endif /* WITH_LIBPCAP */
 
 
 /**

@@ -20,7 +20,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_GETUTXID
+#ifdef WITH_GETUTXID
 # include <utmpx.h>
 #endif
 
@@ -82,11 +82,11 @@ virHostGetBootTimeProcfs(unsigned long long *btime)
 }
 #endif /* defined(__linux__) */
 
-#if defined(HAVE_GETUTXID) || defined(__linux__)
+#if defined(WITH_GETUTXID) || defined(__linux__)
 static void
 virHostGetBootTimeOnceInit(void)
 {
-# ifdef HAVE_GETUTXID
+# ifdef WITH_GETUTXID
     struct utmpx id = {.ut_type = BOOT_TIME};
     struct utmpx *res = NULL;
 
@@ -97,7 +97,7 @@ virHostGetBootTimeOnceInit(void)
     }
 
     endutxent();
-# endif /* HAVE_GETUTXID */
+# endif /* WITH_GETUTXID */
 
 # ifdef __linux__
     if (bootTimeErrno != 0 || bootTime == 0)
@@ -105,14 +105,14 @@ virHostGetBootTimeOnceInit(void)
 # endif /* __linux__ */
 }
 
-#else /* !defined(HAVE_GETUTXID) && !defined(__linux__) */
+#else /* !defined(WITH_GETUTXID) && !defined(__linux__) */
 
 static void
 virHostGetBootTimeOnceInit(void)
 {
     bootTimeErrno = ENOSYS;
 }
-#endif /* !defined(HAVE_GETUTXID) && !defined(__linux__) */
+#endif /* !defined(WITH_GETUTXID) && !defined(__linux__) */
 
 /**
  * virHostGetBootTime:

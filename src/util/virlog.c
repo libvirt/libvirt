@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#if HAVE_SYSLOG_H
+#if WITH_SYSLOG_H
 # include <syslog.h>
 #endif
 
@@ -45,7 +45,7 @@
 
 /* Journald output is only supported on Linux new enough to expose
  * htole64.  */
-#if HAVE_SYSLOG_H && defined(__linux__) && HAVE_DECL_HTOLE64
+#if WITH_SYSLOG_H && defined(__linux__) && WITH_DECL_HTOLE64
 # define USE_JOURNALD 1
 # include <sys/uio.h>
 #endif
@@ -705,7 +705,7 @@ virLogNewOutputToFile(virLogPriority priority,
 }
 
 
-#if HAVE_SYSLOG_H || USE_JOURNALD
+#if WITH_SYSLOG_H || USE_JOURNALD
 
 /* Compat in case we build with journald, but no syslog */
 # ifndef LOG_DEBUG
@@ -737,10 +737,10 @@ virLogPrioritySyslog(virLogPriority priority)
         return LOG_ERR;
     }
 }
-#endif /* HAVE_SYSLOG_H || USE_JOURNALD */
+#endif /* WITH_SYSLOG_H || USE_JOURNALD */
 
 
-#if HAVE_SYSLOG_H
+#if WITH_SYSLOG_H
 static void
 virLogOutputToSyslog(virLogSourcePtr source G_GNUC_UNUSED,
                      virLogPriority priority,
@@ -1042,12 +1042,12 @@ int virLogPriorityFromSyslog(int priority)
     return VIR_LOG_ERROR;
 }
 
-#else /* HAVE_SYSLOG_H */
+#else /* WITH_SYSLOG_H */
 int virLogPriorityFromSyslog(int priority G_GNUC_UNUSED)
 {
     return VIR_LOG_ERROR;
 }
-#endif /* HAVE_SYSLOG_H */
+#endif /* WITH_SYSLOG_H */
 
 
 /**
@@ -1383,10 +1383,10 @@ virLogFindOutput(virLogOutputPtr *outputs, size_t noutputs,
 int
 virLogDefineOutputs(virLogOutputPtr *outputs, size_t noutputs)
 {
-#if HAVE_SYSLOG_H
+#if WITH_SYSLOG_H
     int id;
     char *tmp = NULL;
-#endif /* HAVE_SYSLOG_H */
+#endif /* WITH_SYSLOG_H */
 
     if (virLogInitialize() < 0)
         return -1;
@@ -1394,7 +1394,7 @@ virLogDefineOutputs(virLogOutputPtr *outputs, size_t noutputs)
     virLogLock();
     virLogResetOutputs();
 
-#if HAVE_SYSLOG_H
+#if WITH_SYSLOG_H
     /* syslog needs to be special-cased, since it keeps the fd in private */
     if ((id = virLogFindOutput(outputs, noutputs, VIR_LOG_TO_SYSLOG,
                                current_ident)) != -1) {
@@ -1407,7 +1407,7 @@ virLogDefineOutputs(virLogOutputPtr *outputs, size_t noutputs)
         current_ident = tmp;
         openlog(current_ident, 0, 0);
     }
-#endif /* HAVE_SYSLOG_H */
+#endif /* WITH_SYSLOG_H */
 
     virLogOutputs = outputs;
     virLogNbOutputs = noutputs;
@@ -1519,7 +1519,7 @@ virLogParseOutput(const char *src)
         ret = virLogNewOutputToStderr(prio);
         break;
     case VIR_LOG_TO_SYSLOG:
-#if HAVE_SYSLOG_H
+#if WITH_SYSLOG_H
         ret = virLogNewOutputToSyslog(prio, tokens[2]);
 #endif
         break;

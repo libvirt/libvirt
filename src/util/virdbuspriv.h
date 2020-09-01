@@ -27,7 +27,7 @@
 
 #include "virdbus.h"
 
-#if defined(WITH_DBUS) && !HAVE_DBUSBASICVALUE
+#if defined(WITH_DBUS) && !WITH_DBUSBASICVALUE
 /* Copied (and simplified) from dbus 1.6.12, for use with older dbus headers */
 typedef union
 {

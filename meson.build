@@ -583,7 +583,7 @@ supported_cc_flags = cc.get_supported_arguments(cc_flags)
 add_project_arguments(supported_cc_flags, language: 'c')
 
 if cc.has_argument('-Wsuggest-attribute=format')
-  conf.set('HAVE_SUGGEST_ATTRIBUTE_FORMAT', 1)
+  conf.set('WITH_SUGGEST_ATTRIBUTE_FORMAT', 1)
 endif
 
 # used in tests
@@ -676,7 +676,7 @@ functions = [
 
 foreach function : functions
   if cc.has_function(function)
-    conf.set('HAVE_@0@'.format(function.to_upper()), 1)
+    conf.set('WITH_@0@'.format(function.to_upper()), 1)
   endif
 endforeach
 
@@ -715,7 +715,7 @@ endif
 
 foreach name : headers
   if cc.has_header(name)
-    conf.set('HAVE_@0@'.format(name.underscorify().to_upper()), 1)
+    conf.set('WITH_@0@'.format(name.underscorify().to_upper()), 1)
   endif
 endforeach
 
@@ -799,7 +799,7 @@ endif
 
 foreach symbol : symbols
   if cc.has_header_symbol(symbol[0], symbol[1], args: '-D_GNU_SOURCE', prefix: symbol.get(2, ''))
-    conf.set('HAVE_DECL_@0@'.format(symbol[1].to_upper()), 1)
+    conf.set('WITH_DECL_@0@'.format(symbol[1].to_upper()), 1)
   endif
 endforeach
 
@@ -810,19 +810,19 @@ brd_required_headers = '''#include <stdint.h>
 if (cc.has_header_symbol('net/if_bridgevar.h', 'BRDGSFD', prefix: brd_required_headers) and
     cc.has_header_symbol('net/if_bridgevar.h', 'BRDGADD', prefix: brd_required_headers) and
     cc.has_header_symbol('net/if_bridgevar.h', 'BRDGDEL', prefix: brd_required_headers))
-  conf.set('HAVE_BSD_BRIDGE_MGMT', 1)
+  conf.set('WITH_BSD_BRIDGE_MGMT', 1)
 endif
 
 # Check for BSD CPU affinity availability
 if cc.has_header_symbol('sys/cpuset.h', 'cpuset_getaffinity')
-  conf.set('HAVE_BSD_CPU_AFFINITY', 1)
+  conf.set('WITH_BSD_CPU_AFFINITY', 1)
 endif
 
 # whether Mach clock routines are available
 if (cc.has_header_symbol('mach/clock.h', 'clock_serv_t') and
     cc.has_header_symbol('mach/clock.h', 'host_get_clock_service') and
     cc.has_header_symbol('mach/clock.h', 'clock_get_time'))
-  conf.set('HAVE_MACH_CLOCK_ROUTINES', 1)
+  conf.set('WITH_MACH_CLOCK_ROUTINES', 1)
 endif
 
 
@@ -836,7 +836,7 @@ types = [
 foreach type : types
   if cc.has_type(type[0], prefix: type[1])
     name = type[0].underscorify().to_upper()
-    conf.set('HAVE_@0@'.format(name), 1)
+    conf.set('WITH_@0@'.format(name), 1)
   endif
 endforeach
 
@@ -867,7 +867,7 @@ foreach member : members
   if cc.has_member(member[0], member[1], prefix: member[2])
     type = member[0].underscorify().to_upper()
     member = member[1].underscorify().to_upper()
-    conf.set('HAVE_@0@_@1@'.format(type, member), 1)
+    conf.set('WITH_@0@_@1@'.format(type, member), 1)
   endif
 endforeach
 
@@ -966,7 +966,7 @@ endforeach
 
 if host_machine.system() == 'linux' and cc.has_header('sys/acl.h')
   acl_dep = cc.find_library('acl', required: false)
-  conf.set('HAVE_SYS_ACL_H', 1)
+  conf.set('WITH_SYS_ACL_H', 1)
 else
   acl_dep = dependency('', required: false)
 endif
@@ -983,7 +983,7 @@ endif
 
 attr_dep = cc.find_library('attr', required: get_option('attr'))
 if attr_dep.found()
-  conf.set('HAVE_LIBATTR', 1)
+  conf.set('WITH_LIBATTR', 1)
 endif
 
 audit_dep = cc.find_library('audit', required: get_option('audit'))
@@ -1028,12 +1028,12 @@ if dbus_dep.found()
 
   function = 'dbus_watch_get_unix_fd'
   if cc.has_function(function, dependencies: dbus_dep)
-    conf.set('HAVE_@0@'.format(function.to_upper()), 1)
+    conf.set('WITH_@0@'.format(function.to_upper()), 1)
   endif
 
   type = 'DBusBasicValue'
   if cc.has_type(type, dependencies: dbus_dep, prefix: '#include <dbus/dbus.h>')
-    conf.set('HAVE_@0@'.format(type.to_upper()), 1)
+    conf.set('WITH_@0@'.format(type.to_upper()), 1)
   endif
 endif
 
@@ -1056,7 +1056,7 @@ if dlopen_dep.found()
   if not cc.has_header('dlfcn.h')
     error('Unable to find dlfcn.h')
   endif
-  conf.set('HAVE_DLFCN_H', 1)
+  conf.set('WITH_DLFCN_H', 1)
 endif
 
 fuse_version = '2.8.6'
@@ -1103,7 +1103,7 @@ if host_machine.system() == 'linux'
     libnl_dep = declare_dependency(
       dependencies: [ libnl_dep, libnl_route_dep ],
     )
-    conf.set('HAVE_LIBNL', 1)
+    conf.set('WITH_LIBNL', 1)
   endif
 else
   libnl_dep = dependency('', required: false)
@@ -1134,7 +1134,7 @@ if not libpcap_dep.found()
   endif
 endif
 if libpcap_dep.found()
-  conf.set('HAVE_LIBPCAP', 1)
+  conf.set('WITH_LIBPCAP', 1)
 endif
 
 libssh_version = '0.7'
@@ -1191,7 +1191,7 @@ if use_macvtap
   conf.set('WITH_MACVTAP', 1)
 
   if cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_PASSTHRU')
-    conf.set('HAVE_DECL_MACVLAN_MODE_PASSTHRU', 1)
+    conf.set('WITH_DECL_MACVLAN_MODE_PASSTHRU', 1)
   endif
 endif
 
@@ -1216,7 +1216,7 @@ if not get_option('nls').disabled()
   endif
 
   if cc.has_header('libintl.h')
-    conf.set('HAVE_LIBINTL_H', 1)
+    conf.set('WITH_LIBINTL_H', 1)
   elif get_option('nls').enabled()
     error('libintl.h is required to build libvirt')
   endif
@@ -1244,7 +1244,7 @@ if numactl_dep.found()
   conf.set('WITH_NUMACTL', 1)
 
   if cc.has_function('numa_bitmask_isbitset', dependencies: [ numactl_dep ])
-    conf.set('HAVE_NUMA_BITMASK_ISBITSET', 1)
+    conf.set('WITH_NUMA_BITMASK_ISBITSET', 1)
   endif
 endif
 
@@ -1270,7 +1270,7 @@ if rbd_dep.found() and not cc.has_function('rbd_get_features', dependencies: rbd
 endif
 if rbd_dep.found() and rados_dep.found()
   if cc.has_function('rbd_list2', dependencies: rbd_dep)
-    conf.set('HAVE_RBD_LIST2', 1)
+    conf.set('WITH_RBD_LIST2', 1)
   endif
 
   rbd_dep = declare_dependency(dependencies: [ rbd_dep, rados_dep ])
@@ -1350,7 +1350,7 @@ if not get_option('sanlock').disabled()
     conf.set('WITH_SANLOCK', 1)
     # check for sanlock_strerror introduced in sanlock-3.5.0
     if cc.has_function('sanlock_strerror', dependencies: sanlock_dep)
-      conf.set('HAVE_SANLOCK_STRERROR', 1)
+      conf.set('WITH_SANLOCK_STRERROR', 1)
     endif
   endif
 endif
@@ -1551,7 +1551,7 @@ elif get_option('firewalld_zone').enabled()
   error('You must have firewalld support enabled to enable firewalld_zone')
 endif
 
-if conf.has('WITH_MACVTAP') and not conf.has('HAVE_LIBNL')
+if conf.has('WITH_MACVTAP') and not conf.has('WITH_LIBNL')
   error('libnl3-devel is required for macvtap support')
 endif
 
@@ -1654,7 +1654,7 @@ if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
 
     # If building with libxl, use the libxl utility header and lib too
     if cc.has_header('libxlutil.h')
-      conf.set('HAVE_LIBXLUTIL_H', 1)
+      conf.set('WITH_LIBXLUTIL_H', 1)
     endif
     xl_util_dep = cc.find_library('xlutil')
 
@@ -1680,7 +1680,7 @@ if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
 
     # Check if Xen has support for PVH
     if cc.has_header_symbol('libxl.h', 'LIBXL_DOMAIN_TYPE_PVH')
-      conf.set('HAVE_XEN_PVH', 1)
+      conf.set('WITH_XEN_PVH', 1)
     endif
 
     conf.set('WITH_LIBXL', 1)
@@ -1701,7 +1701,7 @@ void main(void) {
   '''
   if cc.compiles(lxc_support_code, name: 'lxc support', args: '-D_GNU_SOURCE')
     conf.set('WITH_LXC', 1)
-    conf.set('HAVE_DECL_LO_FLAGS_AUTOCLEAR', 1)
+    conf.set('WITH_DECL_LO_FLAGS_AUTOCLEAR', 1)
   elif get_option('driver_lxc').enabled()
     error('Required kernel features for LXC were not found')
   endif
@@ -1716,7 +1716,7 @@ void main(void) {
 }
   '''
   if cc.compiles(lxc_get_free_code)
-    conf.set('HAVE_DECL_LOOP_CTL_GET_FREE', 1)
+    conf.set('WITH_DECL_LOOP_CTL_GET_FREE', 1)
   endif
 elif get_option('driver_lxc').enabled()
   error('linux and remote_driver are required for LXC')
@@ -2100,7 +2100,7 @@ endif
 
 driver_modules_flags = []
 if conf.has('WITH_LIBVIRTD')
-  if not conf.has('HAVE_DLFCN_H') or not dlopen_dep.found()
+  if not conf.has('WITH_DLFCN_H') or not dlopen_dep.found()
     error('You must have dlfcn.h / dlopen() support to build driver modules')
   endif
   driver_modules_flags = libvirt_export_dynamic
@@ -2177,7 +2177,7 @@ if not get_option('nss').disabled()
     conf.set('WITH_NSS', 1)
 
     if cc.has_type('struct gaih_addrtuple', prefix: '#include <nss.h>')
-      conf.set('HAVE_STRUCT_GAIH_ADDRTUPLE', 1)
+      conf.set('WITH_STRUCT_GAIH_ADDRTUPLE', 1)
     endif
 
     if (cc.has_type('ns_mtab', prefix: '#include <nsswitch.h>') and
@@ -2190,7 +2190,7 @@ endif
 if not get_option('numad').disabled() and numactl_dep.found()
   numad_prog = find_program('numad', required: get_option('numad'), dirs: libvirt_sbin_path)
   if numad_prog.found()
-    conf.set('HAVE_NUMAD', 1)
+    conf.set('WITH_NUMAD', 1)
     conf.set_quoted('NUMAD', numad_prog.path())
   endif
 elif get_option('numad').enabled()
@@ -2481,7 +2481,7 @@ misc_summary = {
   'Use -Werror': cc_flags.contains('-Werror'),
   'Warning Flags': supported_cc_flags,
   'DTrace': conf.has('WITH_DTRACE_PROBES'),
-  'numad': conf.has('HAVE_NUMAD'),
+  'numad': conf.has('WITH_NUMAD'),
   'Init script': init_script,
   'Char device locks': chrdev_lock_files,
   'Loader/NVRAM': loader_res,

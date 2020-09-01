@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#if HAVE_NET_ETHERNET_H
+#if WITH_NET_ETHERNET_H
 # include <net/ethernet.h>
 #endif
 #include <unistd.h>

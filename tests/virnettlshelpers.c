@@ -27,7 +27,7 @@
 #include "virsocketaddr.h"
 #include "virutil.h"
 
-#if !defined WIN32 && HAVE_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
+#if !defined WIN32 && WITH_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
 
 # define VIR_FROM_THIS VIR_FROM_RPC
 

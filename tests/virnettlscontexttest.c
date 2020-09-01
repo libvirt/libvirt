@@ -30,7 +30,7 @@
 #include "vircommand.h"
 #include "virsocket.h"
 
-#if !defined WIN32 && HAVE_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
+#if !defined WIN32 && WITH_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
 
 # include "rpc/virnettlscontext.h"
 

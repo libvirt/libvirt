@@ -25,11 +25,11 @@
 #include "virnetdevvlan.h"
 #include "virenum.h"
 
-#ifdef HAVE_NET_IF_H
+#ifdef WITH_NET_IF_H
 # include <net/if.h>
 #endif
 
-#ifdef HAVE_STRUCT_IFREQ
+#ifdef WITH_STRUCT_IFREQ
 typedef struct ifreq virIfreq;
 #else
 typedef void virIfreq;

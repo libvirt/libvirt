@@ -580,7 +580,7 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
 }
 
 
-#ifdef HAVE_RBD_LIST2
+#ifdef WITH_RBD_LIST2
 static char **
 virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
 {
@@ -620,7 +620,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
     return NULL;
 }
 
-#else /* ! HAVE_RBD_LIST2 */
+#else /* ! WITH_RBD_LIST2 */
 
 static char **
 virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
@@ -669,7 +669,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
     virStringListFreeCount(names, nnames);
     return NULL;
 }
-#endif /* ! HAVE_RBD_LIST2 */
+#endif /* ! WITH_RBD_LIST2 */
 
 
 static int

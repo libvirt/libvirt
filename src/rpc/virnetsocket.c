@@ -25,11 +25,11 @@
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
-#ifdef HAVE_IFADDRS_H
+#ifdef WITH_IFADDRS_H
 # include <ifaddrs.h>
 #endif
 
-#ifdef HAVE_SYS_UCRED_H
+#ifdef WITH_SYS_UCRED_H
 # include <sys/ucred.h>
 #endif
 
@@ -182,7 +182,7 @@ virNetSocketCheckProtocolByLookup(const char *address,
 int virNetSocketCheckProtocols(bool *hasIPv4,
                                bool *hasIPv6)
 {
-#ifdef HAVE_IFADDRS_H
+#ifdef WITH_IFADDRS_H
     struct ifaddrs *ifaddr = NULL, *ifa;
 
     *hasIPv4 = *hasIPv6 = false;
@@ -1480,7 +1480,7 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
                                 pid_t *pid,
                                 unsigned long long *timestamp)
 {
-# if defined(HAVE_STRUCT_SOCKPEERCRED)
+# if defined(WITH_STRUCT_SOCKPEERCRED)
     struct sockpeercred cr;
 # else
     struct ucred cr;

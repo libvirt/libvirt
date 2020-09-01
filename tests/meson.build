@@ -474,7 +474,7 @@ if conf.has('WITH_REMOTE')
   ]
 
   nettls_sources = [ 'virnettlshelpers.c' ]
-  if conf.has('HAVE_LIBTASN1_H')
+  if conf.has('WITH_LIBTASN1_H')
     nettls_sources += 'pkix_asn1_tab.c'
   endif
 

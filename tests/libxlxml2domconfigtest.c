@@ -180,7 +180,7 @@ mymain(void)
 
     DO_TEST("basic-pv");
     DO_TEST("basic-hvm");
-# ifdef HAVE_XEN_PVH
+# ifdef WITH_XEN_PVH
     DO_TEST("basic-pvh");
 # endif
     DO_TEST("cpu-shares-hvm");

@@ -130,7 +130,7 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
         def->os.type == VIR_DOMAIN_OSTYPE_XENPVH) {
-#ifdef HAVE_XEN_PVH
+#ifdef WITH_XEN_PVH
         c_info->type = def->os.type == VIR_DOMAIN_OSTYPE_HVM ?
             LIBXL_DOMAIN_TYPE_HVM : LIBXL_DOMAIN_TYPE_PVH;
 #else
@@ -300,7 +300,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
     if (hvm) {
         libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_HVM);
     } else if (pvh) {
-#ifdef HAVE_XEN_PVH
+#ifdef WITH_XEN_PVH
         libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_PVH);
 #else
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

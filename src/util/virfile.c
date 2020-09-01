@@ -29,44 +29,44 @@
 #ifndef WIN32
 # include <termios.h>
 #endif
-#ifdef HAVE_PTY_H
+#ifdef WITH_PTY_H
 /* Linux openpty */
 # include <pty.h>
 #endif
-#ifdef HAVE_UTIL_H
+#ifdef WITH_UTIL_H
 /* macOS openpty */
 # include <util.h>
 #endif
-#ifdef HAVE_LIBUTIL_H
+#ifdef WITH_LIBUTIL_H
 /* FreeBSD openpty */
 # include <libutil.h>
 #endif
 #include <sys/stat.h>
-#if defined(HAVE_SYS_MOUNT_H)
+#if defined(WITH_SYS_MOUNT_H)
 # include <sys/mount.h>
 #endif
 #include <unistd.h>
 #include <dirent.h>
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+#if defined WITH_MNTENT_H && defined WITH_GETMNTENT_R
 # include <mntent.h>
 #endif
-#if HAVE_MMAP
+#if WITH_MMAP
 # include <sys/mman.h>
 #endif
-#if HAVE_SYS_SYSCALL_H
+#if WITH_SYS_SYSCALL_H
 # include <sys/syscall.h>
 #endif
-#if HAVE_SYS_ACL_H
+#if WITH_SYS_ACL_H
 # include <sys/acl.h>
 #endif
 #include <sys/file.h>
 
 #ifdef __linux__
-# if HAVE_LINUX_MAGIC_H
+# if WITH_LINUX_MAGIC_H
 #  include <linux/magic.h>
 # endif
 # include <sys/statfs.h>
-# if HAVE_DECL_LO_FLAGS_AUTOCLEAR
+# if WITH_DECL_LO_FLAGS_AUTOCLEAR
 #  include <linux/loop.h>
 # endif
 # include <sys/ioctl.h>
@@ -74,7 +74,7 @@
 # include <linux/fs.h>
 #endif
 
-#if HAVE_LIBATTR
+#if WITH_LIBATTR
 # include <sys/xattr.h>
 #endif
 
@@ -618,9 +618,9 @@ int virFileUpdatePerm(const char *path,
 }
 
 
-#if defined(__linux__) && HAVE_DECL_LO_FLAGS_AUTOCLEAR
+#if defined(__linux__) && WITH_DECL_LO_FLAGS_AUTOCLEAR
 
-# if HAVE_DECL_LOOP_CTL_GET_FREE
+# if WITH_DECL_LOOP_CTL_GET_FREE
 
 /* virFileLoopDeviceOpenLoopCtl() returns -1 when a real failure has occurred
  * while in the process of allocating or opening the loop device.  On success
@@ -665,7 +665,7 @@ static int virFileLoopDeviceOpenLoopCtl(char **dev_name, int *fd)
     *dev_name = looppath;
     return 0;
 }
-# endif /* HAVE_DECL_LOOP_CTL_GET_FREE */
+# endif /* WITH_DECL_LOOP_CTL_GET_FREE */
 
 static int virFileLoopDeviceOpenSearch(char **dev_name)
 {
@@ -735,7 +735,7 @@ static int virFileLoopDeviceOpen(char **dev_name)
 {
     int loop_fd = -1;
 
-# if HAVE_DECL_LOOP_CTL_GET_FREE
+# if WITH_DECL_LOOP_CTL_GET_FREE
     if (virFileLoopDeviceOpenLoopCtl(dev_name, &loop_fd) < 0)
         return -1;
 
@@ -743,7 +743,7 @@ static int virFileLoopDeviceOpen(char **dev_name)
 
     if (loop_fd >= 0)
         return loop_fd;
-# endif /* HAVE_DECL_LOOP_CTL_GET_FREE */
+# endif /* WITH_DECL_LOOP_CTL_GET_FREE */
 
     /* Without the loop control device we just use the old technique. */
     loop_fd = virFileLoopDeviceOpenSearch(dev_name);
@@ -1082,7 +1082,7 @@ safewrite(int fd, const void *buf, size_t count)
     return nwritten;
 }
 
-#ifdef HAVE_POSIX_FALLOCATE
+#ifdef WITH_POSIX_FALLOCATE
 static int
 safezero_posix_fallocate(int fd, off_t offset, off_t len)
 {
@@ -1092,7 +1092,7 @@ safezero_posix_fallocate(int fd, off_t offset, off_t len)
     errno = ret;
     return -1;
 }
-#else /* !HAVE_POSIX_FALLOCATE */
+#else /* !WITH_POSIX_FALLOCATE */
 static int
 safezero_posix_fallocate(int fd G_GNUC_UNUSED,
                          off_t offset G_GNUC_UNUSED,
@@ -1100,9 +1100,9 @@ safezero_posix_fallocate(int fd G_GNUC_UNUSED,
 {
     return -2;
 }
-#endif /* !HAVE_POSIX_FALLOCATE */
+#endif /* !WITH_POSIX_FALLOCATE */
 
-#if HAVE_SYS_SYSCALL_H && defined(SYS_fallocate)
+#if WITH_SYS_SYSCALL_H && defined(SYS_fallocate)
 static int
 safezero_sys_fallocate(int fd,
                        off_t offset,
@@ -1110,7 +1110,7 @@ safezero_sys_fallocate(int fd,
 {
     return syscall(SYS_fallocate, fd, 0, offset, len);
 }
-#else /* !HAVE_SYS_SYSCALL_H || !defined(SYS_fallocate) */
+#else /* !WITH_SYS_SYSCALL_H || !defined(SYS_fallocate) */
 static int
 safezero_sys_fallocate(int fd G_GNUC_UNUSED,
                        off_t offset G_GNUC_UNUSED,
@@ -1118,9 +1118,9 @@ safezero_sys_fallocate(int fd G_GNUC_UNUSED,
 {
     return -2;
 }
-#endif /* !HAVE_SYS_SYSCALL_H || !defined(SYS_fallocate) */
+#endif /* !WITH_SYS_SYSCALL_H || !defined(SYS_fallocate) */
 
-#ifdef HAVE_MMAP
+#ifdef WITH_MMAP
 static int
 safezero_mmap(int fd, off_t offset, off_t len)
 {
@@ -1154,7 +1154,7 @@ safezero_mmap(int fd, off_t offset, off_t len)
      * example because of virtual memory limits) */
     return -2;
 }
-#else /* !HAVE_MMAP */
+#else /* !WITH_MMAP */
 static int
 safezero_mmap(int fd G_GNUC_UNUSED,
               off_t offset G_GNUC_UNUSED,
@@ -1162,7 +1162,7 @@ safezero_mmap(int fd G_GNUC_UNUSED,
 {
     return -2;
 }
-#endif /* !HAVE_MMAP */
+#endif /* !WITH_MMAP */
 
 static int
 safezero_slow(int fd, off_t offset, off_t len)
@@ -1226,7 +1226,7 @@ int virFileAllocate(int fd, off_t offset, off_t len)
     return safezero_sys_fallocate(fd, offset, len);
 }
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+#if defined WITH_MNTENT_H && defined WITH_GETMNTENT_R
 /* search /proc/mounts for mount point of *type; return pointer to
  * malloc'ed string of the path if found, otherwise return NULL
  * with errno set to an appropriate value.
@@ -1259,7 +1259,7 @@ virFileFindMountPoint(const char *type)
     return ret;
 }
 
-#else /* defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
+#else /* defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */
 
 char *
 virFileFindMountPoint(const char *type G_GNUC_UNUSED)
@@ -1269,7 +1269,7 @@ virFileFindMountPoint(const char *type G_GNUC_UNUSED)
     return NULL;
 }
 
-#endif /* defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
+#endif /* defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */
 
 int
 virBuildPathInternal(char **path, ...)
@@ -1969,7 +1969,7 @@ virFileIsCDROM(const char *path)
 #endif /* defined(__linux__) */
 
 
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+#if defined WITH_MNTENT_H && defined WITH_GETMNTENT_R
 static int
 virFileGetMountSubtreeImpl(const char *mtabpath,
                            const char *prefix,
@@ -2020,7 +2020,7 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
     endmntent(procmnt);
     return ret;
 }
-#else /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
+#else /* ! defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */
 static int
 virFileGetMountSubtreeImpl(const char *mtabpath G_GNUC_UNUSED,
                            const char *prefix G_GNUC_UNUSED,
@@ -2032,7 +2032,7 @@ virFileGetMountSubtreeImpl(const char *mtabpath G_GNUC_UNUSED,
                          _("Unable to determine mount table on this platform"));
     return -1;
 }
-#endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
+#endif /* ! defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */
 
 /**
  * virFileGetMountSubtree:
@@ -3691,7 +3691,7 @@ int virFileIsSharedFS(const char *path)
 }
 
 
-#if defined(__linux__) && defined(HAVE_SYS_MOUNT_H)
+#if defined(__linux__) && defined(WITH_SYS_MOUNT_H)
 int
 virFileSetupDev(const char *path,
                 const char *mount_options)
@@ -3761,7 +3761,7 @@ virFileMoveMount(const char *src,
 }
 
 
-#else /* !defined(__linux__) || !defined(HAVE_SYS_MOUNT_H) */
+#else /* !defined(__linux__) || !defined(WITH_SYS_MOUNT_H) */
 
 int
 virFileSetupDev(const char *path G_GNUC_UNUSED,
@@ -3791,10 +3791,10 @@ virFileMoveMount(const char *src G_GNUC_UNUSED,
                          _("mount move is not supported on this platform."));
     return -1;
 }
-#endif /* !defined(__linux__) || !defined(HAVE_SYS_MOUNT_H) */
+#endif /* !defined(__linux__) || !defined(WITH_SYS_MOUNT_H) */
 
 
-#if defined(HAVE_SYS_ACL_H)
+#if defined(WITH_SYS_ACL_H)
 int
 virFileGetACLs(const char *file,
                void **acl)
@@ -3824,7 +3824,7 @@ virFileFreeACLs(void **acl)
     *acl = NULL;
 }
 
-#else /* !defined(HAVE_SYS_ACL_H) */
+#else /* !defined(WITH_SYS_ACL_H) */
 
 int
 virFileGetACLs(const char *file G_GNUC_UNUSED,
@@ -3850,7 +3850,7 @@ virFileFreeACLs(void **acl)
     *acl = NULL;
 }
 
-#endif /* !defined(HAVE_SYS_ACL_H) */
+#endif /* !defined(WITH_SYS_ACL_H) */
 
 int
 virFileCopyACLs(const char *src,
@@ -3909,7 +3909,7 @@ virFileComparePaths(const char *p1, const char *p2)
 }
 
 
-#if HAVE_DECL_SEEK_HOLE
+#if WITH_DECL_SEEK_HOLE
 /**
  * virFileInData:
  * @fd: file to check
@@ -4027,7 +4027,7 @@ virFileInData(int fd,
     return ret;
 }
 
-#else /* !HAVE_DECL_SEEK_HOLE */
+#else /* !WITH_DECL_SEEK_HOLE */
 
 int
 virFileInData(int fd G_GNUC_UNUSED,
@@ -4040,7 +4040,7 @@ virFileInData(int fd G_GNUC_UNUSED,
     return -1;
 }
 
-#endif /* !HAVE_DECL_SEEK_HOLE */
+#endif /* !WITH_DECL_SEEK_HOLE */
 
 
 /**
@@ -4309,7 +4309,7 @@ virFileWaitForExists(const char *path,
 }
 
 
-#if HAVE_LIBATTR
+#if WITH_LIBATTR
 /**
  * virFileGetXAttrQuiet;
  * @path: a filename
@@ -4409,7 +4409,7 @@ virFileRemoveXAttr(const char *path,
     return 0;
 }
 
-#else /* !HAVE_LIBATTR */
+#else /* !WITH_LIBATTR */
 
 int
 virFileGetXAttrQuiet(const char *path G_GNUC_UNUSED,
@@ -4443,7 +4443,7 @@ virFileRemoveXAttr(const char *path,
     return -1;
 }
 
-#endif /* HAVE_LIBATTR */
+#endif /* WITH_LIBATTR */
 
 /**
  * virFileGetXAttr;

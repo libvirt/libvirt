@@ -497,7 +497,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
              * HVM guest type. Add a PVH guest type for each new HVM
              * guest type.
              */
-#ifdef HAVE_XEN_PVH
+#ifdef WITH_XEN_PVH
             if (hvm && i == nr_guest_archs-1) {
                 /* Ensure we have not exhausted the guest_archs array */
                 if (nr_guest_archs >= G_N_ELEMENTS(guest_archs))
