@@ -84,8 +84,8 @@ NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
                          int *herrnop, int32_t *ttlp);
 #endif /* HAVE_STRUCT_GAIH_ADDRTUPLE */
 
-#if defined(HAVE_BSD_NSS)
+#if defined(WITH_BSD_NSS)
 ns_mtab*
 nss_module_register(const char *name, unsigned int *size,
                     nss_module_unregister_fn *unregister);
-#endif /* HAVE_BSD_NSS */
+#endif /* WITH_BSD_NSS */
