@@ -228,6 +228,7 @@ cc_flags += [
   '-Waddress',
   '-Waddress-of-packed-member',
   '-Waggressive-loop-optimizations',
+  '-Wall',
   '-Wattribute-warning',
   '-Wattributes',
   '-Wbool-compare',
@@ -257,6 +258,7 @@ cc_flags += [
   '-Wempty-body',
   '-Wendif-labels',
   '-Wexpansion-to-defined',
+  '-Wextra',
   '-Wformat-contains-nul',
   '-Wformat-extra-args',
   '-Wformat-nonliteral',
@@ -502,10 +504,6 @@ endif
 cc_flags_disabled = [
   # In meson this is specified using 'c_std=gnu99' in project() function.
   '-std=gnu99',
-
-  # In meson this is specified using 'warning_level=2' in project() function.
-  '-Wall',
-  '-Wextra',
 
   # don't care about C++ compiler compat
   '-Wc++-compat',
