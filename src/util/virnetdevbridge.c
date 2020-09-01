@@ -27,7 +27,7 @@
 #include "virstring.h"
 #include "virsocket.h"
 
-#ifdef HAVE_NET_IF
+#ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
 

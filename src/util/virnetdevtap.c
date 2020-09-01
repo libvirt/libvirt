@@ -36,7 +36,7 @@
 #ifndef WIN32
 # include <sys/ioctl.h>
 #endif
-#ifdef HAVE_NET_IF
+#ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
 #include <fcntl.h>
