@@ -48,7 +48,9 @@ struct _ppc64_model {
     virCPUppc64Data data;
 };
 
-struct ppc64_map {
+typedef struct _ppc64_map virCPUppc64Map;
+typedef struct _ppc64_map *virCPUppc64MapPtr;
+struct _ppc64_map {
     size_t nvendors;
     virCPUppc64VendorPtr *vendors;
     size_t nmodels;
@@ -157,7 +159,7 @@ ppc64VendorFree(virCPUppc64VendorPtr vendor)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Vendor, ppc64VendorFree);
 
 static virCPUppc64VendorPtr
-ppc64VendorFind(const struct ppc64_map *map,
+ppc64VendorFind(const virCPUppc64Map *map,
                 const char *name)
 {
     size_t i;
@@ -201,7 +203,7 @@ ppc64ModelCopy(const virCPUppc64Model *model)
 }
 
 static virCPUppc64ModelPtr
-ppc64ModelFind(const struct ppc64_map *map,
+ppc64ModelFind(const virCPUppc64Map *map,
                const char *name)
 {
     size_t i;
@@ -215,7 +217,7 @@ ppc64ModelFind(const struct ppc64_map *map,
 }
 
 static virCPUppc64ModelPtr
-ppc64ModelFindPVR(const struct ppc64_map *map,
+ppc64ModelFindPVR(const virCPUppc64Map *map,
                   uint32_t pvr)
 {
     size_t i;
@@ -234,7 +236,7 @@ ppc64ModelFindPVR(const struct ppc64_map *map,
 
 static virCPUppc64ModelPtr
 ppc64ModelFromCPU(const virCPUDef *cpu,
-                  const struct ppc64_map *map)
+                  const virCPUppc64Map *map)
 {
     virCPUppc64ModelPtr model;
 
@@ -254,7 +256,7 @@ ppc64ModelFromCPU(const virCPUDef *cpu,
 }
 
 static void
-ppc64MapFree(struct ppc64_map *map)
+ppc64MapFree(virCPUppc64MapPtr map)
 {
     size_t i;
 
@@ -277,7 +279,7 @@ ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                  const char *name,
                  void *data)
 {
-    struct ppc64_map *map = data;
+    virCPUppc64MapPtr map = data;
     g_autoptr(virCPUppc64Vendor) vendor = NULL;
 
     if (VIR_ALLOC(vendor) < 0)
@@ -303,7 +305,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
                 const char *name,
                 void *data)
 {
-    struct ppc64_map *map = data;
+    virCPUppc64MapPtr map = data;
     g_autoptr(virCPUppc64Model) model = NULL;
     xmlNodePtr *nodes = NULL;
     char *vendor = NULL;
@@ -384,10 +386,10 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
 }
 
 
-static struct ppc64_map *
+static virCPUppc64MapPtr
 ppc64LoadMap(void)
 {
-    struct ppc64_map *map;
+    virCPUppc64MapPtr map;
 
     if (VIR_ALLOC(map) < 0)
         goto error;
@@ -425,7 +427,7 @@ ppc64Compute(virCPUDefPtr host,
              virCPUDataPtr *guestData,
              char **message)
 {
-    struct ppc64_map *map = NULL;
+    virCPUppc64MapPtr map = NULL;
     g_autoptr(virCPUppc64Model) host_model = NULL;
     g_autoptr(virCPUppc64Model) guest_model = NULL;
     virCPUDefPtr cpu = NULL;
@@ -583,7 +585,7 @@ ppc64DriverDecode(virCPUDefPtr cpu,
                   virDomainCapsCPUModelsPtr models)
 {
     int ret = -1;
-    struct ppc64_map *map;
+    virCPUppc64MapPtr map;
     const virCPUppc64Model *model;
 
     if (!data || !(map = ppc64LoadMap()))
@@ -683,7 +685,7 @@ virCPUppc64Baseline(virCPUDefPtr *cpus,
                     const char **features G_GNUC_UNUSED,
                     bool migratable G_GNUC_UNUSED)
 {
-    struct ppc64_map *map;
+    virCPUppc64MapPtr map;
     const virCPUppc64Model *model;
     const virCPUppc64Vendor *vendor = NULL;
     virCPUDefPtr cpu = NULL;
@@ -772,7 +774,7 @@ virCPUppc64Baseline(virCPUDefPtr *cpus,
 static int
 virCPUppc64DriverGetModels(char ***models)
 {
-    struct ppc64_map *map;
+    virCPUppc64MapPtr map;
     size_t i;
     int ret = -1;
 
