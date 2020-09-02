@@ -180,6 +180,7 @@ ppc64ModelFree(virCPUppc64ModelPtr model)
     VIR_FREE(model->name);
     VIR_FREE(model);
 }
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Model, ppc64ModelFree);
 
 static virCPUppc64ModelPtr
 ppc64ModelCopy(const virCPUppc64Model *model)
