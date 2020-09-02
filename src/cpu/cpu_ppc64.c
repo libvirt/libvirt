@@ -273,6 +273,7 @@ ppc64MapFree(virCPUppc64MapPtr map)
 
     VIR_FREE(map);
 }
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Map, ppc64MapFree);
 
 static int
 ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
