@@ -30,6 +30,10 @@
 #include <signal.h>
 
 #if WITH_READLINE
+/* In order to have proper rl_message declaration with older
+ * versions of readline, we have to declare this. See 9ea3424a178
+ * for more info. */
+# define HAVE_STDARG_H
 # include <readline/readline.h>
 # include <readline/history.h>
 #endif
