@@ -622,17 +622,16 @@ static int
 virCPUppc64GetHost(virCPUDefPtr cpu,
                    virDomainCapsCPUModelsPtr models)
 {
-    virCPUDataPtr cpuData = NULL;
+    g_autoptr(virCPUData) cpuData = NULL;
     virCPUppc64Data *data;
-    int ret = -1;
 
     if (!(cpuData = virCPUDataNew(archs[0])))
-        goto cleanup;
+        return -1;
 
     data = &cpuData->data.ppc64;
 
     if (VIR_ALLOC_N(data->pvr, 1) < 0)
-        goto cleanup;
+        return -1;
 
     data->len = 1;
 
@@ -642,11 +641,7 @@ virCPUppc64GetHost(virCPUDefPtr cpu,
 #endif
     data->pvr[0].mask = 0xfffffffful;
 
-    ret = ppc64DriverDecode(cpu, cpuData, models);
-
- cleanup:
-    virCPUppc64DataFree(cpuData);
-    return ret;
+    return ppc64DriverDecode(cpu, cpuData, models);
 }
 
 
