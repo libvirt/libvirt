@@ -34,19 +34,21 @@ VIR_LOG_INIT("cpu.cpu_ppc64");
 
 static const virArch archs[] = { VIR_ARCH_PPC64, VIR_ARCH_PPC64LE };
 
-struct ppc64_vendor {
+typedef struct _ppc64_vendor virCPUppc64Vendor;
+typedef struct _ppc64_vendor *virCPUppc64VendorPtr;
+struct _ppc64_vendor {
     char *name;
 };
 
 struct ppc64_model {
     char *name;
-    const struct ppc64_vendor *vendor;
+    const virCPUppc64Vendor *vendor;
     virCPUppc64Data data;
 };
 
 struct ppc64_map {
     size_t nvendors;
-    struct ppc64_vendor **vendors;
+    virCPUppc64VendorPtr *vendors;
     size_t nmodels;
     struct ppc64_model **models;
 };
@@ -142,7 +144,7 @@ ppc64DataCopy(virCPUppc64Data *dst, const virCPUppc64Data *src)
 }
 
 static void
-ppc64VendorFree(struct ppc64_vendor *vendor)
+ppc64VendorFree(virCPUppc64VendorPtr vendor)
 {
     if (!vendor)
         return;
@@ -151,7 +153,7 @@ ppc64VendorFree(struct ppc64_vendor *vendor)
     VIR_FREE(vendor);
 }
 
-static struct ppc64_vendor *
+static virCPUppc64VendorPtr
 ppc64VendorFind(const struct ppc64_map *map,
                 const char *name)
 {
@@ -276,7 +278,7 @@ ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                  void *data)
 {
     struct ppc64_map *map = data;
-    struct ppc64_vendor *vendor;
+    virCPUppc64VendorPtr vendor;
     int ret = -1;
 
     if (VIR_ALLOC(vendor) < 0)
@@ -691,7 +693,7 @@ virCPUppc64Baseline(virCPUDefPtr *cpus,
 {
     struct ppc64_map *map;
     const struct ppc64_model *model;
-    const struct ppc64_vendor *vendor = NULL;
+    const virCPUppc64Vendor *vendor = NULL;
     virCPUDefPtr cpu = NULL;
     size_t i;
 
@@ -705,7 +707,7 @@ virCPUppc64Baseline(virCPUDefPtr *cpus,
     }
 
     for (i = 0; i < ncpus; i++) {
-        const struct ppc64_vendor *vnd;
+        const virCPUppc64Vendor *vnd;
 
         /* Hosts running old (<= 1.2.18) versions of libvirt will report
          * strings like 'power7+' or 'power8e' instead of proper CPU model
