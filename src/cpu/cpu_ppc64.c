@@ -185,23 +185,19 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Model, ppc64ModelFree);
 static virCPUppc64ModelPtr
 ppc64ModelCopy(const virCPUppc64Model *model)
 {
-    virCPUppc64ModelPtr copy;
+    g_autoptr(virCPUppc64Model) copy = NULL;
 
     if (VIR_ALLOC(copy) < 0)
-        goto error;
+        return NULL;
 
     copy->name = g_strdup(model->name);
 
     if (ppc64DataCopy(&copy->data, &model->data) < 0)
-        goto error;
+        return NULL;
 
     copy->vendor = model->vendor;
 
-    return copy;
-
- error:
-    ppc64ModelFree(copy);
-    return NULL;
+    return g_steal_pointer(&copy);
 }
 
 static virCPUppc64ModelPtr
@@ -308,7 +304,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
                 void *data)
 {
     struct ppc64_map *map = data;
-    virCPUppc64ModelPtr model;
+    g_autoptr(virCPUppc64Model) model = NULL;
     xmlNodePtr *nodes = NULL;
     char *vendor = NULL;
     unsigned long pvr;
@@ -382,7 +378,6 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
     ret = 0;
 
  cleanup:
-    ppc64ModelFree(model);
     VIR_FREE(vendor);
     VIR_FREE(nodes);
     return ret;
@@ -431,8 +426,8 @@ ppc64Compute(virCPUDefPtr host,
              char **message)
 {
     struct ppc64_map *map = NULL;
-    virCPUppc64ModelPtr host_model = NULL;
-    virCPUppc64ModelPtr guest_model = NULL;
+    g_autoptr(virCPUppc64Model) host_model = NULL;
+    g_autoptr(virCPUppc64Model) guest_model = NULL;
     virCPUDefPtr cpu = NULL;
     virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
     virArch arch;
@@ -545,8 +540,6 @@ ppc64Compute(virCPUDefPtr host,
  cleanup:
     virCPUDefFree(cpu);
     ppc64MapFree(map);
-    ppc64ModelFree(host_model);
-    ppc64ModelFree(guest_model);
     return ret;
 }
 
