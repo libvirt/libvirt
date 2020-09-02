@@ -279,8 +279,7 @@ ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                  void *data)
 {
     struct ppc64_map *map = data;
-    virCPUppc64VendorPtr vendor;
-    int ret = -1;
+    g_autoptr(virCPUppc64Vendor) vendor = NULL;
 
     if (VIR_ALLOC(vendor) < 0)
         return -1;
@@ -290,17 +289,13 @@ ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
     if (ppc64VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU vendor %s already defined"), vendor->name);
-        goto cleanup;
+        return -1;
     }
 
     if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    ppc64VendorFree(vendor);
-    return ret;
+    return 0;
 }
 
 
