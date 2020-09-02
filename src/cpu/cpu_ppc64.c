@@ -390,19 +390,15 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
 static virCPUppc64MapPtr
 ppc64LoadMap(void)
 {
-    virCPUppc64MapPtr map;
+    g_autoptr(virCPUppc64Map) map = NULL;
 
     if (VIR_ALLOC(map) < 0)
-        goto error;
+        return NULL;
 
     if (cpuMapLoad("ppc64", ppc64VendorParse, NULL, ppc64ModelParse, map) < 0)
-        goto error;
+        return NULL;
 
-    return map;
-
- error:
-    ppc64MapFree(map);
-    return NULL;
+    return g_steal_pointer(&map);
 }
 
 static virCPUDataPtr
@@ -428,7 +424,7 @@ ppc64Compute(virCPUDefPtr host,
              virCPUDataPtr *guestData,
              char **message)
 {
-    virCPUppc64MapPtr map = NULL;
+    g_autoptr(virCPUppc64Map) map = NULL;
     g_autoptr(virCPUppc64Model) host_model = NULL;
     g_autoptr(virCPUppc64Model) guest_model = NULL;
     virCPUDefPtr cpu = NULL;
@@ -542,7 +538,6 @@ ppc64Compute(virCPUDefPtr host,
 
  cleanup:
     virCPUDefFree(cpu);
-    ppc64MapFree(map);
     return ret;
 }
 
@@ -585,8 +580,7 @@ ppc64DriverDecode(virCPUDefPtr cpu,
                   const virCPUData *data,
                   virDomainCapsCPUModelsPtr models)
 {
-    int ret = -1;
-    virCPUppc64MapPtr map;
+    g_autoptr(virCPUppc64Map) map = NULL;
     const virCPUppc64Model *model;
 
     if (!data || !(map = ppc64LoadMap()))
@@ -596,26 +590,21 @@ ppc64DriverDecode(virCPUDefPtr cpu,
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Cannot find CPU model with PVR 0x%08x"),
                        data->data.ppc64.pvr[0].value);
-        goto cleanup;
+        return -1;
     }
 
     if (!virCPUModelIsAllowed(model->name, models)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("CPU model %s is not supported by hypervisor"),
                        model->name);
-        goto cleanup;
+        return -1;
     }
 
     cpu->model = g_strdup(model->name);
     if (model->vendor)
         cpu->vendor = g_strdup(model->vendor->name);
 
-    ret = 0;
-
- cleanup:
-    ppc64MapFree(map);
-
-    return ret;
+    return 0;
 }
 
 static void
@@ -686,7 +675,7 @@ virCPUppc64Baseline(virCPUDefPtr *cpus,
                     const char **features G_GNUC_UNUSED,
                     bool migratable G_GNUC_UNUSED)
 {
-    virCPUppc64MapPtr map;
+    g_autoptr(virCPUppc64Map) map = NULL;
     const virCPUppc64Model *model;
     const virCPUppc64Vendor *vendor = NULL;
     virCPUDefPtr cpu = NULL;
@@ -761,23 +750,19 @@ virCPUppc64Baseline(virCPUDefPtr *cpus,
     cpu->match = VIR_CPU_MATCH_EXACT;
     cpu->fallback = VIR_CPU_FALLBACK_FORBID;
 
- cleanup:
-    ppc64MapFree(map);
-
     return cpu;
 
  error:
     virCPUDefFree(cpu);
     cpu = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static int
 virCPUppc64DriverGetModels(char ***models)
 {
-    virCPUppc64MapPtr map;
+    g_autoptr(virCPUppc64Map) map = NULL;
     size_t i;
-    int ret = -1;
 
     if (!(map = ppc64LoadMap()))
         goto error;
@@ -790,18 +775,14 @@ virCPUppc64DriverGetModels(char ***models)
             (*models)[i] = g_strdup(map->models[i]->name);
     }
 
-    ret = map->nmodels;
-
- cleanup:
-    ppc64MapFree(map);
-    return ret;
+    return map->nmodels;
 
  error:
     if (models) {
         g_strfreev(*models);
         *models = NULL;
     }
-    goto cleanup;
+    return -1;
 }
 
 struct cpuArchDriver cpuDriverPPC64 = {
