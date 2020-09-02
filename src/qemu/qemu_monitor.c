@@ -2556,6 +2556,21 @@ qemuMonitorMigrateToHost(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorMigrateToSocket(qemuMonitorPtr mon,
+                           unsigned int flags,
+                           const char *socketPath)
+{
+    g_autofree char *uri = g_strdup_printf("unix:%s", socketPath);
+
+    VIR_DEBUG("socketPath=%s flags=0x%x", socketPath, flags);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONMigrate(mon, flags, uri);
+}
+
+
+int
 qemuMonitorMigrateCancel(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);

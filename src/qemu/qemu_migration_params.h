@@ -113,6 +113,9 @@ int
 qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
                               qemuMigrationParamsPtr migParams);
 
+bool
+qemuMigrationParamsTLSHostnameIsSet(qemuMigrationParamsPtr migParams);
+
 int
 qemuMigrationParamsFetch(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,

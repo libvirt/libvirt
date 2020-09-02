@@ -201,6 +201,9 @@
         numbers. In the latter case the management application may wish
         to choose a specific port number outside the default range in order
         to comply with local firewall policies.</li>
+      <li>The second URI uses UNIX transport method.  In this advanced case
+        libvirt should not guess a *migrateuri* and it should be specified using
+        UNIX socket path URI: <code>unix:///path/to/socket</code>.</li>
     </ol>
 
     <h2><a id="config">Configuration file handling</a></h2>
@@ -622,6 +625,36 @@ virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system qemu+tls:/destho
 eg using different libvirt URI hostname for peer2peer connections
 
 virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system qemu+ssh://10.0.0.1/system
+    </pre>
+
+    <p>
+      Supported by QEMU driver
+    </p>
+
+
+    <h3><a id="scenariounixsocket">Migration using only UNIX sockets</a></h3>
+
+    <p>
+      In niche scenarios where libvirt daemon does not have access to the
+      network (e.g. running in a restricted container on a host that has
+      accessible network), when a management application wants to have complete
+      control over the transfer or when migrating between two containers on the
+      same host all the communication can be done using UNIX sockets.  This
+      includes connecting to non-standard socket path for the destination
+      daemon, using UNIX sockets for hypervisor's communication or for the NBD
+      data transfer.  All of that can be used with both peer2peer and direct
+      migration options.
+    </p>
+
+    <p>
+      Example using <code>/tmp/migdir</code> as a directory representing the
+      same path visible from both libvirt daemons.  That can be achieved by
+      bind-mounting the same directory to different containers running separate
+      daemons or forwarding connections to these sockets manually
+      (using <code>socat</code>, <code>netcat</code> or a custom piece of
+      software):
+    <pre>
+virsh migrate web1 [--p2p] --copy-storage-all 'qemu+unix:///system?socket=/tmp/migdir/test-sock-driver' 'unix:///tmp/migdir/test-sock-qemu' --disks-uri unix:///tmp/migdir/test-sock-nbd
     </pre>
 
     <p>

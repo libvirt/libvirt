@@ -853,6 +853,10 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
                              const char *hostname,
                              int port);
 
+int qemuMonitorMigrateToSocket(qemuMonitorPtr mon,
+                               unsigned int flags,
+                               const char *socketPath);
+
 int qemuMonitorMigrateCancel(qemuMonitorPtr mon);
 
 int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,

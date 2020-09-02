@@ -11480,7 +11480,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     const char *dom_xml = NULL;
     const char *dname = NULL;
     const char *uri_in = NULL;
-    const char *listenAddress = cfg->migrationAddress;
+    const char *listenAddress = NULL;
     int nbdPort = 0;
     int nmigrate_disks;
     g_autofree const char **migrate_disks = NULL;
@@ -11528,6 +11528,17 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
                        _("Both port and URI requested for disk migration "
                          "while being mutually exclusive"));
         return -1;
+    }
+
+    if (listenAddress) {
+        if (uri_in && STRPREFIX(uri_in, "unix:")) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Usage of listen-address is forbidden when "
+                             "migration URI uses UNIX transport method"));
+            return -1;
+        }
+    } else {
+        listenAddress = cfg->migrationAddress;
     }
 
     if (flags & VIR_MIGRATE_TUNNELLED) {
@@ -11769,6 +11780,15 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                        _("Both port and URI requested for disk migration "
                          "while being mutually exclusive"));
         goto cleanup;
+    }
+
+    if (listenAddress) {
+        if (uri && STRPREFIX(uri, "unix:")) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Usage of listen-address is forbidden when "
+                             "migration URI uses UNIX transport method"));
+            return -1;
+        }
     }
 
     nmigrate_disks = virTypedParamsGetStringList(params, nparams,

@@ -1008,6 +1008,15 @@ qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
 }
 
 
+bool
+qemuMigrationParamsTLSHostnameIsSet(qemuMigrationParamsPtr migParams)
+{
+    int param = QEMU_MIGRATION_PARAM_TLS_HOSTNAME;
+    return (migParams->params[param].set &&
+            STRNEQ(migParams->params[param].value.s, ""));
+}
+
+
 /* qemuMigrationParamsResetTLS
  * @driver: pointer to qemu driver
  * @vm: domain object
