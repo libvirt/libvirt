@@ -152,6 +152,7 @@ ppc64VendorFree(virCPUppc64VendorPtr vendor)
     VIR_FREE(vendor->name);
     VIR_FREE(vendor);
 }
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Vendor, ppc64VendorFree);
 
 static virCPUppc64VendorPtr
 ppc64VendorFind(const struct ppc64_map *map,
