@@ -2849,7 +2849,7 @@ virNetDevRDMAFeature(const char *ifname,
  * Returns 0 on success, -1 on failure.
  */
 static int
-virNetDevSendEthtoolIoctl(int fd, struct ifreq *ifr)
+virNetDevSendEthtoolIoctl(const char *ifname, int fd, struct ifreq *ifr)
 {
     int ret = -1;
 
@@ -2857,13 +2857,13 @@ virNetDevSendEthtoolIoctl(int fd, struct ifreq *ifr)
     if (ret != 0) {
         switch (errno) {
         case EINVAL: /* kernel doesn't support SIOCETHTOOL */
-            VIR_DEBUG("ethtool ioctl: invalid request");
+            VIR_DEBUG("ethtool ioctl: invalid request on %s", ifname);
             break;
         case EOPNOTSUPP: /* kernel doesn't support specific feature */
-            VIR_DEBUG("ethtool ioctl: request not supported");
+            VIR_DEBUG("ethtool ioctl: request not supported on %s", ifname);
             break;
         default:
-            virReportSystemError(errno, "%s", _("ethtool ioctl error"));
+            virReportSystemError(errno, _("ethtool ioctl error on %s"), ifname);
             break;
         }
     }
@@ -2888,10 +2888,10 @@ struct virNetDevEthtoolFeatureCmd {
  * Returns true if the feature is available, false otherwise.
  */
 static bool
-virNetDevFeatureAvailable(int fd, struct ifreq *ifr, struct ethtool_value *cmd)
+virNetDevFeatureAvailable(const char *ifname, int fd, struct ifreq *ifr, struct ethtool_value *cmd)
 {
     ifr->ifr_data = (void*)cmd;
-    if (virNetDevSendEthtoolIoctl(fd, ifr) == 0 &&
+    if (virNetDevSendEthtoolIoctl(ifname, fd, ifr) == 0 &&
         cmd->data > 0)
         return true;
     return false;
@@ -2899,7 +2899,8 @@ virNetDevFeatureAvailable(int fd, struct ifreq *ifr, struct ethtool_value *cmd)
 
 
 static void
-virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
+virNetDevGetEthtoolFeatures(const char *ifname,
+                            virBitmapPtr bitmap,
                             int fd,
                             struct ifreq *ifr)
 {
@@ -2941,13 +2942,13 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
 
     for (i = 0; i < G_N_ELEMENTS(ethtool_cmds); i++) {
         cmd.cmd = ethtool_cmds[i].cmd;
-        if (virNetDevFeatureAvailable(fd, ifr, &cmd))
+        if (virNetDevFeatureAvailable(ifname, fd, ifr, &cmd))
             ignore_value(virBitmapSetBit(bitmap, ethtool_cmds[i].feat));
     }
 
 # if WITH_DECL_ETHTOOL_GFLAGS
     cmd.cmd = ETHTOOL_GFLAGS;
-    if (virNetDevFeatureAvailable(fd, ifr, &cmd)) {
+    if (virNetDevFeatureAvailable(ifname, fd, ifr, &cmd)) {
         for (i = 0; i < G_N_ELEMENTS(flags); i++) {
             if (cmd.data & flags[i].cmd)
                 ignore_value(virBitmapSetBit(bitmap, flags[i].feat));
@@ -3133,19 +3134,21 @@ virNetDevSwitchdevFeature(const char *ifname G_GNUC_UNUSED,
  * Returns true if the feature is available, false otherwise.
  */
 static bool
-virNetDevGFeatureAvailable(int fd,
+virNetDevGFeatureAvailable(const char *ifname,
+                           int fd,
                            struct ifreq *ifr,
                            struct ethtool_gfeatures *cmd)
 {
     ifr->ifr_data = (void*)cmd;
-    if (virNetDevSendEthtoolIoctl(fd, ifr) == 0)
+    if (virNetDevSendEthtoolIoctl(ifname, fd, ifr) == 0)
         return !!FEATURE_BIT_IS_SET(cmd->features, TX_UDP_TNL, active);
     return false;
 }
 
 
 static int
-virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap,
+virNetDevGetEthtoolGFeatures(const char *ifname,
+                             virBitmapPtr bitmap,
                              int fd,
                              struct ifreq *ifr)
 {
@@ -3157,13 +3160,14 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap,
 
     g_cmd->cmd = ETHTOOL_GFEATURES;
     g_cmd->size = GFEATURES_SIZE;
-    if (virNetDevGFeatureAvailable(fd, ifr, g_cmd))
+    if (virNetDevGFeatureAvailable(ifname, fd, ifr, g_cmd))
         ignore_value(virBitmapSetBit(bitmap, VIR_NET_DEV_FEAT_TXUDPTNL));
     return 0;
 }
 # else
 static int
-virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap G_GNUC_UNUSED,
+virNetDevGetEthtoolGFeatures(const char *ifname G_GNUC_UNUSED,
+                             virBitmapPtr bitmap G_GNUC_UNUSED,
                              int fd G_GNUC_UNUSED,
                              struct ifreq *ifr G_GNUC_UNUSED)
 {
@@ -3228,7 +3232,7 @@ int virNetDevSetCoalesce(const char *ifname,
 
     ifr.ifr_data = (void *) &coal;
 
-    if (virNetDevSendEthtoolIoctl(fd, &ifr) < 0) {
+    if (virNetDevSendEthtoolIoctl(ifname, fd, &ifr) < 0) {
         virReportSystemError(errno,
                              _("Cannot set coalesce info on '%s'"),
                              ifname);
@@ -3241,7 +3245,7 @@ int virNetDevSetCoalesce(const char *ifname,
         };
 
         /* Don't fail if the update itself fails */
-        if (virNetDevSendEthtoolIoctl(fd, &ifr) == 0) {
+        if (virNetDevSendEthtoolIoctl(ifname, fd, &ifr) == 0) {
             coalesce->rx_max_coalesced_frames = coal.rx_max_coalesced_frames;
             coalesce->rx_coalesce_usecs_irq = coal.rx_coalesce_usecs_irq;
             coalesce->rx_max_coalesced_frames_irq = coal.rx_max_coalesced_frames_irq;
@@ -3307,9 +3311,9 @@ virNetDevGetFeatures(const char *ifname,
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
-    virNetDevGetEthtoolFeatures(*out, fd, &ifr);
+    virNetDevGetEthtoolFeatures(ifname, *out, fd, &ifr);
 
-    if (virNetDevGetEthtoolGFeatures(*out, fd, &ifr) < 0)
+    if (virNetDevGetEthtoolGFeatures(ifname, *out, fd, &ifr) < 0)
         return -1;
 
     if (virNetDevRDMAFeature(ifname, out) < 0)
