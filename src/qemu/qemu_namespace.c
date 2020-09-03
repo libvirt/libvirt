@@ -1094,6 +1094,9 @@ qemuNamespaceMknodItemInit(qemuNamespaceMknodItemPtr item,
     item->file = file;
 
     if (g_lstat(file, &item->sb) < 0) {
+        if (errno == ENOENT)
+            return -2;
+
         virReportSystemError(errno,
                              _("Unable to access %s"), file);
         return -1;
@@ -1168,9 +1171,16 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodDataPtr data,
 
     while (1) {
         qemuNamespaceMknodItem item = { 0 };
+        int rc;
 
-        if (qemuNamespaceMknodItemInit(&item, cfg, vm, next) < 0)
+        rc = qemuNamespaceMknodItemInit(&item, cfg, vm, next);
+        if (rc == -2) {
+            /* @file doesn't exist. We can break here. */
+            break;
+        } else if (rc < 0) {
+            /* Some other (critical) error. */
             return -1;
+        }
 
         if (STRPREFIX(next, QEMU_DEVPREFIX)) {
             for (i = 0; i < ndevMountsPath; i++) {
