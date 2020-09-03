@@ -14,8 +14,8 @@ module Test_@DAEMON_NAME@ =
         { "unix_sock_rw_perms" = "0770" }
         { "unix_sock_admin_perms" = "0700" }
         { "unix_sock_dir" = "@runstatedir@/libvirt" }
-        { "auth_unix_ro" = "none" }
-        { "auth_unix_rw" = "none" }
+        { "auth_unix_ro" = "@default_auth@" }
+        { "auth_unix_rw" = "@default_auth@" }
 @CUT_ENABLE_IP@
         { "auth_tcp" = "sasl" }
         { "auth_tls" = "none" }
