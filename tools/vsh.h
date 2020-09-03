@@ -463,6 +463,8 @@ bool cmdComplete(vshControl *ctl, const vshCmd *cmd);
 /* readline */
 char * vshReadline(vshControl *ctl, const char *prompt);
 
+void vshReadlineHistoryAdd(const char *cmd);
+
 /* allocation wrappers */
 void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);
 #define vshMalloc(_ctl, _sz)    _vshMalloc(_ctl, _sz, __FILE__, __LINE__)

@@ -30,11 +30,6 @@
 #include <sys/stat.h>
 #include <inttypes.h>
 
-#if WITH_READLINE
-# include <readline/readline.h>
-# include <readline/history.h>
-#endif
-
 #include "internal.h"
 #include "virerror.h"
 #include "virbuffer.h"
@@ -920,9 +915,8 @@ main(int argc, char **argv)
             if (ctl->cmdstr == NULL)
                 break;          /* EOF */
             if (*ctl->cmdstr) {
-#if WITH_READLINE
-                add_history(ctl->cmdstr);
-#endif
+                vshReadlineHistoryAdd(ctl->cmdstr);
+
                 if (vshCommandStringParse(ctl, ctl->cmdstr, NULL))
                     vshCommandRun(ctl, ctl->cmd);
             }

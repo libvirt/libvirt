@@ -2925,6 +2925,12 @@ vshReadline(vshControl *ctl G_GNUC_UNUSED, const char *prompt)
     return readline(prompt);
 }
 
+void
+vshReadlineHistoryAdd(const char *cmd)
+{
+    return add_history(cmd);
+}
+
 #else /* !WITH_READLINE */
 
 static int
@@ -2958,6 +2964,12 @@ vshReadline(vshControl *ctl G_GNUC_UNUSED,
         r[len-1] = '\0';
 
     return g_strdup(r);
+}
+
+void
+vshReadlineHistoryAdd(const char *cmd)
+{
+    /* empty */
 }
 
 #endif /* !WITH_READLINE */
