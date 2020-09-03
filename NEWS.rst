@@ -161,6 +161,12 @@ v6.6.0 (2020-08-02)
     The secret key used for disks can now be encrypted similarly to TLS keys
     used for migration, chardev and others.
 
+  * qemu: Support TLS for NBD connections for pull mode backup
+
+    Use the configured TLS env to setup encryption of the TLS transport. Add
+    'tls' attribute for 'server' element to enable TLS. Possible values are
+    ``yes`` or ``no``.
+
   * qemu: ``VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD`` can now be registered for ``<mirror>``
 
     The event can now be used also for block copy destinations by using the
