@@ -130,7 +130,6 @@
 @SRCDIR@src/network/bridge_driver_linux.c
 @SRCDIR@src/network/leaseshelper.c
 @SRCDIR@src/node_device/node_device_driver.c
-@SRCDIR@src/node_device/node_device_hal.c
 @SRCDIR@src/node_device/node_device_udev.c
 @SRCDIR@src/nwfilter/nwfilter_dhcpsnoop.c
 @SRCDIR@src/nwfilter/nwfilter_driver.c

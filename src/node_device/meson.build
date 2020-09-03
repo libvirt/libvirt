@@ -4,10 +4,6 @@ node_device_driver_sources = [
 
 stateful_driver_source_files += files(node_device_driver_sources)
 
-if conf.has('WITH_HAL')
-  node_device_driver_sources += 'node_device_hal.c'
-endif
-
 if conf.has('WITH_UDEV')
   node_device_driver_sources += 'node_device_udev.c'
 endif
@@ -22,7 +18,6 @@ if conf.has('WITH_NODE_DEVICES')
     ],
     dependencies: [
       access_dep,
-      hal_dep,
       libnl_dep,
       pciaccess_dep,
       src_dep,

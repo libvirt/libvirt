@@ -36,7 +36,6 @@
 #include "node_device_conf.h"
 #include "node_device_event.h"
 #include "node_device_driver.h"
-#include "node_device_hal.h"
 #include "node_device_util.h"
 #include "virvhba.h"
 #include "viraccessapicheck.h"
@@ -98,14 +97,13 @@ int nodeConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
     return 1;
 }
 
-#if defined (__linux__) && ( defined (WITH_HAL) || defined(WITH_UDEV))
+#if defined (__linux__) && defined(WITH_UDEV)
 /* NB: It was previously believed that changes in driver name were
  * relayed to libvirt as "change" events by udev, and the udev event
  * notification is setup to recognize such events and effectively
  * recreate the device entry in the cache. However, neither the kernel
  * nor udev sends such an event, so it is necessary to manually update
- * the driver name for a device each time its entry is used, both for
- * udev *and* HAL backends.
+ * the driver name for a device each time its entry is used.
  */
 static int
 nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def)
@@ -935,9 +933,5 @@ nodedevRegister(void)
 {
 #ifdef WITH_UDEV
     return udevNodeRegister();
-#else
-# ifdef WITH_HAL
-    return halNodeRegister();
-# endif
 #endif
 }

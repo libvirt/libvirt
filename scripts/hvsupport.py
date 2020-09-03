@@ -60,7 +60,6 @@ for root, dirs, files in os.walk(os.path.join(srcdir, "src")):
                 file.endswith("common.c") or
                 file.endswith("tmpl.c") or
                 file.endswith("monitor.c") or
-                file.endswith("hal.c") or
                 file.endswith("udev.c")):
             srcs.append(os.path.join(root, file))
 

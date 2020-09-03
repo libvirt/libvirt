@@ -1077,12 +1077,6 @@ glusterfs_dep = dependency('glusterfs-api', version: '>=' + glusterfs_version, r
 gnutls_version = '3.2.0'
 gnutls_dep = dependency('gnutls', version: '>=' + gnutls_version)
 
-hal_version = '0.5.0'
-hal_dep = dependency('hal', version: '>=' + hal_version, required: get_option('hal'))
-if hal_dep.found()
-  conf.set('WITH_HAL', 1)
-endif
-
 # Check for BSD kvm (kernel memory interface)
 if host_machine.system() == 'freebsd'
   kvm_dep = cc.find_library('kvm')
@@ -1728,7 +1722,7 @@ if not get_option('driver_network').disabled() and conf.has('WITH_LIBVIRTD') and
   conf.set('WITH_NETWORK', 1)
 endif
 
-if hal_dep.found() or udev_dep.found()
+if udev_dep.found()
   conf.set('WITH_NODE_DEVICES', 1)
 endif
 
@@ -2433,7 +2427,6 @@ libs_summary = {
   'glib_dep': glib_dep.found(),
   'glusterfs': glusterfs_dep.found(),
   'gnutls': gnutls_dep.found(),
-  'hal': hal_dep.found(),
   'libiscsi': libiscsi_dep.found(),
   'libnl': libnl_dep.found(),
   'libpcap': libpcap_dep.found(),
