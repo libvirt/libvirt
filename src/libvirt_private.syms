@@ -2635,7 +2635,6 @@ virNetDevIPRouteGetAddress;
 virNetDevIPRouteGetGateway;
 virNetDevIPRouteGetMetric;
 virNetDevIPRouteGetPrefix;
-virNetDevIPWaitDadFinish;
 
 
 # util/virnetdevmacvlan.h

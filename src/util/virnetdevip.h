@@ -76,8 +76,6 @@ int virNetDevIPAddrDel(const char *ifname,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 int virNetDevIPAddrGet(const char *ifname, virSocketAddrPtr addr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
-int virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
-    ATTRIBUTE_NONNULL(1);
 bool virNetDevIPCheckIPv6Forwarding(void);
 void virNetDevIPAddrFree(virNetDevIPAddrPtr ip);
 

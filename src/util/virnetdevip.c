@@ -45,8 +45,6 @@
 # include <linux/if_vlan.h>
 #endif
 
-#define VIR_DAD_WAIT_TIMEOUT 20 /* seconds */
-
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.netdevip");
@@ -372,113 +370,6 @@ virNetDevIPRouteAdd(const char *ifname,
 }
 
 
-/* return true if there is a known address with 'tentative' flag set */
-static bool
-virNetDevIPParseDadStatus(struct nlmsghdr *nlh, int len,
-                          virSocketAddrPtr *addrs, size_t count)
-{
-    struct ifaddrmsg *ifaddrmsg_ptr;
-    unsigned int ifaddrmsg_len;
-    struct rtattr *rtattr_ptr;
-    size_t i;
-    struct in6_addr *addr;
-
-    VIR_WARNINGS_NO_CAST_ALIGN
-    for (; NLMSG_OK(nlh, len); nlh = NLMSG_NEXT(nlh, len)) {
-        VIR_WARNINGS_RESET
-        if (NLMSG_PAYLOAD(nlh, 0) < sizeof(struct ifaddrmsg)) {
-            /* Message without payload is the last one. */
-            break;
-        }
-
-        ifaddrmsg_ptr = (struct ifaddrmsg *)NLMSG_DATA(nlh);
-        if (!(ifaddrmsg_ptr->ifa_flags & IFA_F_TENTATIVE)) {
-            /* Not tentative: we are not interested in this entry. */
-            continue;
-        }
-
-        ifaddrmsg_len = IFA_PAYLOAD(nlh);
-        VIR_WARNINGS_NO_CAST_ALIGN
-        rtattr_ptr = (struct rtattr *) IFA_RTA(ifaddrmsg_ptr);
-        for (; RTA_OK(rtattr_ptr, ifaddrmsg_len);
-             rtattr_ptr = RTA_NEXT(rtattr_ptr, ifaddrmsg_len)) {
-            VIR_WARNINGS_RESET
-            if (RTA_PAYLOAD(rtattr_ptr) != sizeof(struct in6_addr)) {
-                /* No address: ignore. */
-                continue;
-            }
-
-            /* We check only known addresses. */
-            for (i = 0; i < count; i++) {
-                addr = &addrs[i]->data.inet6.sin6_addr;
-                if (!memcmp(addr, RTA_DATA(rtattr_ptr),
-                            sizeof(struct in6_addr))) {
-                    /* We found matching tentative address. */
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-
-/* return after DAD finishes for all known IPv6 addresses or an error */
-int
-virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
-{
-    struct ifaddrmsg ifa;
-    unsigned int recvbuflen;
-    bool dad = true;
-    time_t max_time = time(NULL) + VIR_DAD_WAIT_TIMEOUT;
-    g_autoptr(virNetlinkMsg) nlmsg = NULL;
-
-    if (!(nlmsg = nlmsg_alloc_simple(RTM_GETADDR,
-                                     NLM_F_REQUEST | NLM_F_DUMP))) {
-        virReportOOMError();
-        return -1;
-    }
-
-    memset(&ifa, 0, sizeof(ifa));
-    /* DAD is for IPv6 addresses only. */
-    ifa.ifa_family = AF_INET6;
-    if (nlmsg_append(nlmsg, &ifa, sizeof(ifa), NLMSG_ALIGNTO) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("allocated netlink buffer is too small"));
-        return -1;
-    }
-
-    /* Periodically query netlink until DAD finishes on all known addresses. */
-    while (dad && time(NULL) < max_time) {
-        g_autofree struct nlmsghdr *resp = NULL;
-
-        if (virNetlinkCommand(nlmsg, &resp, &recvbuflen, 0, 0,
-                              NETLINK_ROUTE, 0) < 0)
-            return -1;
-
-        if (virNetlinkGetErrorCode(resp, recvbuflen) < 0) {
-            virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
-                           _("error reading DAD state information"));
-            return -1;
-        }
-
-        /* Parse response. */
-        dad = virNetDevIPParseDadStatus(resp, recvbuflen, addrs, count);
-        if (dad)
-            g_usleep(1000 * 10);
-    }
-    /* Check timeout. */
-    if (dad) {
-        virReportError(VIR_ERR_SYSTEM_ERROR,
-                       _("Duplicate Address Detection "
-                         "not finished in %d seconds"), VIR_DAD_WAIT_TIMEOUT);
-    } else {
-        return 0;
-    }
-
-    return -1;
-}
-
 static int
 virNetDevIPGetAcceptRA(const char *ifname)
 {
@@ -797,16 +688,6 @@ virNetDevIPRouteAdd(const char *ifname,
     return 0;
 }
 
-
-/* return after DAD finishes for all known IPv6 addresses or an error */
-int
-virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs G_GNUC_UNUSED,
-                         size_t count G_GNUC_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Unable to wait for IPv6 DAD on this platform"));
-    return -1;
-}
 
 bool
 virNetDevIPCheckIPv6Forwarding(void)
