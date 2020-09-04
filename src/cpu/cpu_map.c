@@ -169,12 +169,11 @@ int cpuMapLoad(const char *arch,
                cpuMapLoadCallback modelCB,
                void *data)
 {
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *xpath = NULL;
-    int ret = -1;
-    char *mapfile;
+    g_autofree char *xpath = NULL;
+    g_autofree char *mapfile = NULL;
 
     if (!(mapfile = virFileFindResource("index.xml",
                                         abs_top_srcdir "/src/cpu_map",
@@ -186,11 +185,11 @@ int cpuMapLoad(const char *arch,
     if (arch == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("undefined hardware architecture"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(xml = virXMLParseFileCtxt(mapfile, &ctxt)))
-        goto cleanup;
+        return -1;
 
     virBufferAsprintf(&buf, "./arch[@name='%s']", arch);
 
@@ -201,28 +200,20 @@ int cpuMapLoad(const char *arch,
     if ((ctxt->node = virXPathNode(xpath, ctxt)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot find CPU map for %s architecture"), arch);
-        goto cleanup;
+        return -1;
     }
 
     if (loadData(mapfile, ctxt, "vendor", vendorCB, data) < 0)
-        goto cleanup;
+        return -1;
 
     if (loadData(mapfile, ctxt, "feature", featureCB, data) < 0)
-        goto cleanup;
+        return -1;
 
     if (loadData(mapfile, ctxt, "model", modelCB, data) < 0)
-        goto cleanup;
+        return -1;
 
     if (loadIncludes(ctxt, vendorCB, featureCB, modelCB, data) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    VIR_FREE(xpath);
-    VIR_FREE(mapfile);
-
-    return ret;
+    return 0;
 }
