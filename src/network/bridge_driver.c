@@ -2286,32 +2286,6 @@ networkAddRouteToBridge(virNetworkObjPtr obj,
     return 0;
 }
 
-static int
-networkWaitDadFinish(virNetworkObjPtr obj)
-{
-    virNetworkDefPtr def = virNetworkObjGetDef(obj);
-    virNetworkIPDefPtr ipdef;
-    g_autofree virSocketAddrPtr *addrs = NULL;
-    virSocketAddrPtr addr = NULL;
-    size_t naddrs = 0;
-    int ret = -1;
-
-    VIR_DEBUG("Begin waiting for IPv6 DAD on network %s", def->name);
-
-    while ((ipdef = virNetworkDefGetIPByIndex(def, AF_INET6, naddrs))) {
-        addr = &ipdef->address;
-        if (VIR_APPEND_ELEMENT_COPY(addrs, naddrs, addr) < 0)
-            goto cleanup;
-    }
-
-    ret = (naddrs == 0) ? 0 : virNetDevIPWaitDadFinish(addrs, naddrs);
-
- cleanup:
-    VIR_DEBUG("Finished waiting for IPv6 DAD on network %s with status %d",
-              def->name, ret);
-    return ret;
-}
-
 
 static int
 networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
@@ -2442,12 +2416,6 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
 
     /* start radvd if there are any ipv6 addresses */
     if (v6present && networkStartRadvd(driver, obj) < 0)
-        goto error;
-
-    /* dnsmasq does not wait for DAD to complete before daemonizing,
-     * so we need to wait for it ourselves.
-     */
-    if (v6present && networkWaitDadFinish(obj) < 0)
         goto error;
 
     if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
