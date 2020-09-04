@@ -2528,6 +2528,7 @@ qemuProcessGetAllCpuAffinity(virBitmapPtr *cpumapRet)
 static int
 qemuProcessInitCpuAffinity(virDomainObjPtr vm)
 {
+    bool settingAll = false;
     g_autoptr(virBitmap) cpumapToSet = NULL;
     virDomainNumatuneMemMode mem_mode;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2566,13 +2567,29 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
         if (!(cpumapToSet = virBitmapNewCopy(vm->def->cputune.emulatorpin)))
             return -1;
     } else {
+        settingAll = true;
         if (qemuProcessGetAllCpuAffinity(&cpumapToSet) < 0)
             return -1;
     }
 
     if (cpumapToSet &&
         virProcessSetAffinity(vm->pid, cpumapToSet) < 0) {
-        return -1;
+        /*
+         * We only want to error out if we failed to set the affinity to
+         * user-requested mapping.  If we are just trying to reset the affinity
+         * to all CPUs and this fails it can only be an issue if:
+         *  1) libvirtd does not have CAP_SYS_NICE
+         *  2) libvirtd does not run on all CPUs
+         *
+         * This scenario can easily occurr when libvirtd is run inside a
+         * container with restrictive permissions and CPU pinning.
+         *
+         * See also: https://bugzilla.redhat.com/1819801#c2
+         */
+        if (settingAll)
+            virResetLastError();
+        else
+            return -1;
     }
 
     return 0;
@@ -2726,8 +2743,25 @@ qemuProcessSetupPid(virDomainObjPtr vm,
         affinity_cpumask = use_cpumask;
 
     /* Setup legacy affinity. */
-    if (affinity_cpumask && virProcessSetAffinity(pid, affinity_cpumask) < 0)
-        goto cleanup;
+    if (affinity_cpumask && virProcessSetAffinity(pid, affinity_cpumask) < 0) {
+        /*
+         * We only want to error out if we failed to set the affinity to
+         * user-requested mapping.  If we are just trying to reset the affinity
+         * to all CPUs and this fails it can only be an issue if:
+         *  1) libvirtd does not have CAP_SYS_NICE
+         *  2) libvirtd does not run on all CPUs
+         *
+         * However since this scenario is very improbable, we rather skip
+         * reporting the error because it helps running libvirtd in a a scenario
+         * where pinning is handled by someone else.
+         *
+         * See also: https://bugzilla.redhat.com/1819801#c2
+         */
+        if (affinity_cpumask == hostcpumap)
+            virResetLastError();
+        else
+            goto cleanup;
+    }
 
     /* Set scheduler type and priority, but not for the main thread. */
     if (sched &&
