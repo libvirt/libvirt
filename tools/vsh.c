@@ -2971,7 +2971,7 @@ vshReadline(vshControl *ctl G_GNUC_UNUSED,
 }
 
 void
-vshReadlineHistoryAdd(const char *cmd)
+vshReadlineHistoryAdd(const char *cmd G_GNUC_UNUSED)
 {
     /* empty */
 }
