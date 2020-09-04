@@ -21,7 +21,9 @@ if conf.has('WITH_BHYVE')
     ],
     dependencies: [
       access_dep,
+      kvm_dep,
       src_dep,
+      util_dep,
     ],
     include_directories: [
       conf_inc_dir,

@@ -1086,7 +1086,8 @@ endif
 # Check for BSD kvm (kernel memory interface)
 if host_machine.system() == 'freebsd'
   kvm_dep = cc.find_library('kvm')
-  add_project_link_arguments('-lkvm', language: 'c')
+else
+  kvm_dep = dependency('', required: false)
 endif
 
 libiscsi_version = '1.18.0'
@@ -1203,11 +1204,10 @@ have_gnu_gettext_tools = false
 if not get_option('nls').disabled()
   have_gettext = cc.has_function('gettext')
   if not have_gettext
-    intl_lib = cc.find_library('intl', required: false)
-    have_gettext = intl_lib.found()
-    if have_gettext
-      add_project_link_arguments('-lintl', language: 'c')
-    endif
+    intl_dep = cc.find_library('intl', required: false)
+    have_gettext = intl_dep.found()
+  else
+    intl_dep = dependency('', required: false)
   endif
   if not have_gettext and get_option('nls').enabled()
     error('gettext() is required to build libvirt')
@@ -1235,6 +1235,8 @@ if not get_option('nls').disabled()
       have_gnu_gettext_tools = true
     endif
   endif
+else
+  intl_dep = dependency('', required: false)
 endif
 
 numactl_dep = cc.find_library('numa', required: get_option('numactl'))
@@ -1402,9 +1404,6 @@ if udev_dep.found()
 endif
 
 util_dep = cc.find_library('util', required: false)
-if util_dep.found()
-  add_project_link_arguments('-lutil', language: 'c')
-endif
 
 if not get_option('virtualport').disabled()
   if cc.has_header_symbol('linux/if_link.h', 'IFLA_PORT_MAX')
