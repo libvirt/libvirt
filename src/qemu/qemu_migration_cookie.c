@@ -194,7 +194,7 @@ qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
 {
     qemuMigrationCookieGraphicsPtr mig = NULL;
     const char *listenAddr;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (VIR_ALLOC(mig) < 0)
         goto error;
@@ -215,12 +215,10 @@ qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
 
     mig->listen = g_strdup(listenAddr);
 
-    virObjectUnref(cfg);
     return mig;
 
  error:
     qemuMigrationCookieGraphicsFree(mig);
-    virObjectUnref(cfg);
     return NULL;
 }
 

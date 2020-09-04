@@ -371,7 +371,7 @@ mymain(void)
 #endif
 
 #if WITH_QEMU
-    virQEMUDriverConfigPtr cfg = virQEMUDriverConfigNew(false, NULL);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverConfigNew(false, NULL);
 
     if (!cfg)
         return EXIT_FAILURE;
@@ -452,8 +452,6 @@ mymain(void)
      * To generate the corresponding output files after a new replies
      * file has been added, run "VIR_TEST_REGENERATE_OUTPUT=1 ninja test".
      */
-
-    virObjectUnref(cfg);
 
     virFileWrapperClearPrefixes();
 

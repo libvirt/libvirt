@@ -64,13 +64,9 @@ typedef virQEMUDriverConfig *virQEMUDriverConfigPtr;
  * being released while they use it.
  *
  * eg
- *  qemuDriverLock(driver);
- *  virQEMUDriverConfigPtr cfg = virObjectRef(driver->config);
- *  qemuDriverUnlock(driver);
+ *  g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
  *
  *  ...do stuff with 'cfg'..
- *
- *  virObjectUnref(cfg);
  */
 struct _virQEMUDriverConfig {
     virObject parent;

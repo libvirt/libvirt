@@ -3205,10 +3205,8 @@ qemuMigrationSrcConfirm(virQEMUDriverPtr driver,
                         int cancelled)
 {
     qemuMigrationJobPhase phase;
-    virQEMUDriverConfigPtr cfg = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
-
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_OUT))
         goto cleanup;
@@ -3237,7 +3235,6 @@ qemuMigrationSrcConfirm(virQEMUDriverPtr driver,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -4091,7 +4088,7 @@ qemuMigrationSrcPerformTunnel(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuMigrationSpec spec;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int fds[2] = { -1, -1 };
 
     VIR_DEBUG("driver=%p, vm=%p, st=%p, cookiein=%s, cookieinlen=%d, "
@@ -4132,7 +4129,6 @@ qemuMigrationSrcPerformTunnel(virQEMUDriverPtr driver,
     VIR_FORCE_CLOSE(spec.dest.fd.qemu);
     VIR_FORCE_CLOSE(spec.dest.fd.local);
 
-    virObjectUnref(cfg);
     return ret;
 }
 

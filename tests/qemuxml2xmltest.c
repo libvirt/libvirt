@@ -132,7 +132,7 @@ mymain(void)
 {
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
-    virQEMUDriverConfigPtr cfg = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(virHashTable) capslatest = NULL;
     g_autoptr(virConnect) conn = NULL;
 

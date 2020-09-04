@@ -405,14 +405,12 @@ qemuHostdevReAttachPCIDevices(virQEMUDriverPtr driver,
                               virDomainHostdevDefPtr *hostdevs,
                               int nhostdevs)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *oldStateDir = cfg->stateDir;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virHostdevReAttachPCIDevices(hostdev_mgr, QEMU_DRIVER_NAME, name,
                                  hostdevs, nhostdevs, oldStateDir);
-
-    virObjectUnref(cfg);
 }
 
 void

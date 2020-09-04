@@ -261,7 +261,7 @@ qemuInterfaceDirectConnect(virDomainDefPtr def,
 {
     int ret = -1;
     char *res_ifname = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
 
     if (qemuInterfaceIsVnetCompatModel(net))
@@ -290,7 +290,6 @@ qemuInterfaceDirectConnect(virDomainDefPtr def,
         while (tapfdSize--)
             VIR_FORCE_CLOSE(tapfd[tapfdSize]);
     }
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -413,7 +412,7 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
     int ret = -1;
     unsigned int tap_create_flags = VIR_NETDEV_TAP_CREATE_IFUP;
     bool template_ifname = false;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *tunpath = "/dev/net/tun";
     const char *auditdev = tunpath;
 
@@ -514,7 +513,6 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
         if (template_ifname)
             VIR_FREE(net->ifname);
     }
-    virObjectUnref(cfg);
 
     return ret;
 }
@@ -542,7 +540,7 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
     int ret = -1;
     unsigned int tap_create_flags = VIR_NETDEV_TAP_CREATE_IFUP;
     bool template_ifname = false;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *tunpath = "/dev/net/tun";
 
     if (net->backend.tap) {
@@ -633,7 +631,6 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
         if (template_ifname)
             VIR_FREE(net->ifname);
     }
-    virObjectUnref(cfg);
 
     return ret;
 }
