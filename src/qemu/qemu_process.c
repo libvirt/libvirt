@@ -2570,7 +2570,7 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
     }
 
     if (cpumapToSet &&
-        virProcessSetAffinity(vm->pid, cpumapToSet) < 0) {
+        virProcessSetAffinity(vm->pid, cpumapToSet, false) < 0) {
         /*
          * We only want to error out if we failed to set the affinity to
          * user-requested mapping.  If we are just trying to reset the affinity
@@ -2740,7 +2740,8 @@ qemuProcessSetupPid(virDomainObjPtr vm,
         affinity_cpumask = use_cpumask;
 
     /* Setup legacy affinity. */
-    if (affinity_cpumask && virProcessSetAffinity(pid, affinity_cpumask) < 0) {
+    if (affinity_cpumask &&
+        virProcessSetAffinity(pid, affinity_cpumask, false) < 0) {
         /*
          * We only want to error out if we failed to set the affinity to
          * user-requested mapping.  If we are just trying to reset the affinity

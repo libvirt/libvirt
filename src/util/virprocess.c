@@ -441,7 +441,7 @@ int virProcessKillPainfully(pid_t pid, bool force)
 
 #if WITH_SCHED_GETAFFINITY
 
-int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
+int virProcessSetAffinity(pid_t pid, virBitmapPtr map, bool quiet)
 {
     size_t i;
     int numcpus = 1024;
@@ -479,9 +479,14 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
             numcpus = numcpus << 2;
             goto realloc;
         }
-        virReportSystemError(errno,
-                             _("cannot set CPU affinity on process %d"), pid);
-        return -1;
+        if (quiet) {
+            VIR_DEBUG("cannot set CPU affinity on process %d: %s",
+                      pid, g_strerror(errno));
+        } else {
+            virReportSystemError(errno,
+                                 _("cannot set CPU affinity on process %d"), pid);
+            return -1;
+        }
     }
     CPU_FREE(mask);
 
@@ -533,7 +538,8 @@ virProcessGetAffinity(pid_t pid)
 #elif defined(WITH_BSD_CPU_AFFINITY)
 
 int virProcessSetAffinity(pid_t pid,
-                          virBitmapPtr map)
+                          virBitmapPtr map,
+                          bool quiet)
 {
     size_t i;
     cpuset_t mask;
@@ -546,9 +552,14 @@ int virProcessSetAffinity(pid_t pid,
 
     if (cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, pid,
                            sizeof(mask), &mask) != 0) {
-        virReportSystemError(errno,
-                             _("cannot set CPU affinity on process %d"), pid);
-        return -1;
+        if (quiet) {
+            VIR_DEBUG("cannot set CPU affinity on process %d: %s",
+                      pid, g_strerror(errno));
+        } else {
+            virReportSystemError(errno,
+                                 _("cannot set CPU affinity on process %d"), pid);
+            return -1;
+        }
     }
 
     return 0;
@@ -582,8 +593,11 @@ virProcessGetAffinity(pid_t pid)
 #else /* WITH_SCHED_GETAFFINITY */
 
 int virProcessSetAffinity(pid_t pid G_GNUC_UNUSED,
-                          virBitmapPtr map G_GNUC_UNUSED)
+                          virBitmapPtr map G_GNUC_UNUSED,
+                          bool quiet G_GNUC_UNUSED)
 {
+    /* The @quiet parameter is ignored here, it is used only for silencing
+     * actual failures. */
     virReportSystemError(ENOSYS, "%s",
                          _("Process CPU affinity is not supported on this platform"));
     return -1;

@@ -4559,7 +4559,8 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
                 goto cleanup;
         }
 
-        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu), cpumap) < 0)
+        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu),
+                                  cpumap, false) < 0)
             goto cleanup;
     }
 
@@ -4777,7 +4778,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
             }
         }
 
-        if (virProcessSetAffinity(vm->pid, pcpumap) < 0)
+        if (virProcessSetAffinity(vm->pid, pcpumap, false) < 0)
             goto endjob;
 
         virBitmapFree(def->cputune.emulatorpin);
@@ -5252,7 +5253,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
             }
         }
 
-        if (virProcessSetAffinity(iothrid->thread_id, pcpumap) < 0)
+        if (virProcessSetAffinity(iothrid->thread_id, pcpumap, false) < 0)
             goto endjob;
 
         if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)

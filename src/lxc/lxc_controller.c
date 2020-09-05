@@ -775,7 +775,7 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
      * so use '0' to indicate our own process ID. No threads are
      * running at this point
      */
-    if (virProcessSetAffinity(0 /* Self */, cpumapToSet) < 0) {
+    if (virProcessSetAffinity(0 /* Self */, cpumapToSet, false) < 0) {
         virBitmapFree(cpumap);
         return -1;
     }
