@@ -2751,9 +2751,8 @@ qemuProcessSetupPid(virDomainObjPtr vm,
          *  1) libvirtd does not have CAP_SYS_NICE
          *  2) libvirtd does not run on all CPUs
          *
-         * However since this scenario is very improbable, we rather skip
-         * reporting the error because it helps running libvirtd in a a scenario
-         * where pinning is handled by someone else.
+         * This scenario can easily occurr when libvirtd is run inside a
+         * container with restrictive permissions and CPU pinning.
          *
          * See also: https://bugzilla.redhat.com/1819801#c2
          */
