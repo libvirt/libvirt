@@ -505,6 +505,7 @@ VIR_ENUM_IMPL(virDomainFSDriver,
 
 VIR_ENUM_IMPL(virDomainFSAccessMode,
               VIR_DOMAIN_FS_ACCESSMODE_LAST,
+              "",
               "passthrough",
               "mapped",
               "squash",
@@ -5513,6 +5514,16 @@ virDomainMemoryDefPostParse(virDomainMemoryDef *mem,
 
 
 static int
+virDomainFSDefPostParse(virDomainFSDef *fs)
+{
+    if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_DEFAULT)
+        fs->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefPostParseCommon(virDomainDeviceDef *dev,
                                   const virDomainDef *def,
                                   unsigned int parseFlags G_GNUC_UNUSED,
@@ -5557,8 +5568,11 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDef *dev,
         ret = virDomainMemoryDefPostParse(dev->data.memory, def);
         break;
 
-    case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
+        ret = virDomainFSDefPostParse(dev->data.fs);
+        break;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -10042,7 +10056,7 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
             goto error;
         }
     } else {
-        def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
+        def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_DEFAULT;
     }
 
     fmode = virXMLPropString(node, "fmode");

@@ -804,6 +804,7 @@ typedef enum {
 
 /* Filesystem mount access mode  */
 typedef enum {
+    VIR_DOMAIN_FS_ACCESSMODE_DEFAULT = 0,
     VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH,
     VIR_DOMAIN_FS_ACCESSMODE_MAPPED,
     VIR_DOMAIN_FS_ACCESSMODE_SQUASH,
