@@ -2569,24 +2569,21 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
             return -1;
     }
 
+    /*
+     * We only want to error out if we failed to set the affinity to
+     * user-requested mapping.  If we are just trying to reset the affinity
+     * to all CPUs and this fails it can only be an issue if:
+     *  1) libvirtd does not have CAP_SYS_NICE
+     *  2) libvirtd does not run on all CPUs
+     *
+     * This scenario can easily occur when libvirtd is run inside a
+     * container with restrictive permissions and CPU pinning.
+     *
+     * See also: https://bugzilla.redhat.com/1819801#c2
+     */
     if (cpumapToSet &&
-        virProcessSetAffinity(vm->pid, cpumapToSet, false) < 0) {
-        /*
-         * We only want to error out if we failed to set the affinity to
-         * user-requested mapping.  If we are just trying to reset the affinity
-         * to all CPUs and this fails it can only be an issue if:
-         *  1) libvirtd does not have CAP_SYS_NICE
-         *  2) libvirtd does not run on all CPUs
-         *
-         * This scenario can easily occurr when libvirtd is run inside a
-         * container with restrictive permissions and CPU pinning.
-         *
-         * See also: https://bugzilla.redhat.com/1819801#c2
-         */
-        if (settingAll)
-            virResetLastError();
-        else
-            return -1;
+        virProcessSetAffinity(vm->pid, cpumapToSet, settingAll) < 0) {
+        return -1;
     }
 
     return 0;
@@ -2739,25 +2736,23 @@ qemuProcessSetupPid(virDomainObjPtr vm,
     if (!affinity_cpumask)
         affinity_cpumask = use_cpumask;
 
-    /* Setup legacy affinity. */
+    /* Setup legacy affinity.
+     *
+     * We only want to error out if we failed to set the affinity to
+     * user-requested mapping.  If we are just trying to reset the affinity
+     * to all CPUs and this fails it can only be an issue if:
+     *  1) libvirtd does not have CAP_SYS_NICE
+     *  2) libvirtd does not run on all CPUs
+     *
+     * This scenario can easily occur when libvirtd is run inside a
+     * container with restrictive permissions and CPU pinning.
+     *
+     * See also: https://bugzilla.redhat.com/1819801#c2
+     */
     if (affinity_cpumask &&
-        virProcessSetAffinity(pid, affinity_cpumask, false) < 0) {
-        /*
-         * We only want to error out if we failed to set the affinity to
-         * user-requested mapping.  If we are just trying to reset the affinity
-         * to all CPUs and this fails it can only be an issue if:
-         *  1) libvirtd does not have CAP_SYS_NICE
-         *  2) libvirtd does not run on all CPUs
-         *
-         * This scenario can easily occurr when libvirtd is run inside a
-         * container with restrictive permissions and CPU pinning.
-         *
-         * See also: https://bugzilla.redhat.com/1819801#c2
-         */
-        if (affinity_cpumask == hostcpumap)
-            virResetLastError();
-        else
-            goto cleanup;
+        virProcessSetAffinity(pid, affinity_cpumask,
+                              affinity_cpumask == hostcpumap) < 0) {
+        goto cleanup;
     }
 
     /* Set scheduler type and priority, but not for the main thread. */
