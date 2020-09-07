@@ -25265,9 +25265,9 @@ virDomainFSDefFormat(virBuffer *buf,
         return -1;
     }
 
-    virBufferAsprintf(buf,
-                      "<filesystem type='%s' accessmode='%s'",
-                      type, accessmode);
+    virBufferAsprintf(buf, "<filesystem type='%s'", type);
+    if (def->accessmode != VIR_DOMAIN_FS_ACCESSMODE_DEFAULT)
+        virBufferAsprintf(buf, " accessmode='%s'", accessmode);
     if (def->model) {
         virBufferAsprintf(buf, " model='%s'",
                           virDomainFSModelTypeToString(def->model));
