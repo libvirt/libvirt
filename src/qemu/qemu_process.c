@@ -6700,6 +6700,25 @@ qemuProcessEnableDomainNamespaces(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessEnablePerf(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
+
+    if (!(priv->perf = virPerfNew()))
+        return -1;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (vm->def->perf.events[i] == VIR_TRISTATE_BOOL_YES &&
+            virPerfEventEnable(priv->perf, i, vm->pid) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuProcessLaunch:
  *
@@ -6733,7 +6752,6 @@ qemuProcessLaunch(virConnectPtr conn,
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     size_t nnicindexes = 0;
     g_autofree int *nicindexes = NULL;
-    size_t i;
 
     VIR_DEBUG("conn=%p driver=%p vm=%p name=%s if=%d asyncJob=%d "
               "incoming.launchURI=%s incoming.deferredURI=%s "
@@ -6885,14 +6903,9 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuSetupCgroup(vm, nnicindexes, nicindexes) < 0)
         goto cleanup;
 
-    if (!(priv->perf = virPerfNew()))
+    VIR_DEBUG("Setting up domain perf (if required)");
+    if (qemuProcessEnablePerf(vm) < 0)
         goto cleanup;
-
-    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
-        if (vm->def->perf.events[i] == VIR_TRISTATE_BOOL_YES &&
-            virPerfEventEnable(priv->perf, i, vm->pid) < 0)
-            goto cleanup;
-    }
 
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
