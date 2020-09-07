@@ -508,19 +508,25 @@ layout of sub-elements, with supported values of:
 ``fwcfg``
    Some hypervisors provide unified way to tweak how firmware configures itself,
    or may contain tables to be installed for the guest OS, for instance boot
-   order, ACPI, SMBIOS, etc. It even allows users to define their own config
-   blobs. In case of QEMU, these then appear under domain's sysfs, under
-   ``/sys/firmware/qemu_fw_cfg``. Note, that these values apply regardless the
-   <smbios/> mode under <os/>. :since:`Since 6.5.0`
+   order, ACPI, SMBIOS, etc.
+
+   It even allows users to define their own config blobs. In case of QEMU,
+   these then appear under domain's sysfs (if the guest kernel has FW_CFG_SYSFS
+   config option enabled), under ``/sys/firmware/qemu_fw_cfg``. Note, that
+   these values apply regardless the ``<smbios/>`` mode under ``<os/>``.
+   :since:`Since 6.5.0`
+
+   **Please note that because of limited number of data slots use of fwcfg is
+   strongly discouraged and <oemStrings/> should be used instead**.
 
    ::
 
-        <smbios type='fwcfg'>
+        <sysinfo type='fwcfg'>
           <entry name='opt/com.example/name'>example value</entry>
-          <entry name='opt/com.coreos/config' file='/tmp/provision.ign'/>
-        </smbios>
+          <entry name='opt/com.example/config' file='/tmp/provision.ign'/>
+        </sysinfo>
 
-   The ``smbios`` element can have multiple ``entry`` child elements. Each
+   The ``sysinfo`` element can have multiple ``entry`` child elements. Each
    element then has mandatory ``name`` attribute, which defines the name of the
    blob and must begin with ``"opt/"`` and to avoid clashing with other names is
    advised to be in form ``"opt/$RFQDN/$name"`` where ``$RFQDN`` is a reverse
