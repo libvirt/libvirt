@@ -871,7 +871,7 @@ qemuDomainNamespaceAvailable(qemuDomainNamespace ns G_GNUC_UNUSED)
 typedef struct _qemuNamespaceMknodItem qemuNamespaceMknodItem;
 typedef qemuNamespaceMknodItem *qemuNamespaceMknodItemPtr;
 struct _qemuNamespaceMknodItem {
-    const char *file;
+    char *file;
     char *target;
     bool bindmounted;
     GStatBuf sb;
@@ -892,6 +892,7 @@ struct _qemuNamespaceMknodData {
 static void
 qemuNamespaceMknodItemClear(qemuNamespaceMknodItemPtr item)
 {
+    VIR_FREE(item->file);
     VIR_FREE(item->target);
     virFileFreeACLs(&item->acl);
 #ifdef WITH_SELINUX
@@ -899,6 +900,8 @@ qemuNamespaceMknodItemClear(qemuNamespaceMknodItemPtr item)
 #endif
 }
 
+
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(qemuNamespaceMknodItem, qemuNamespaceMknodItemClear);
 
 static void
 qemuNamespaceMknodDataClear(qemuNamespaceMknodDataPtr data)
@@ -1091,7 +1094,7 @@ qemuNamespaceMknodItemInit(qemuNamespaceMknodItemPtr item,
     bool isLink;
     bool needsBindMount;
 
-    item->file = file;
+    item->file = g_strdup(file);
 
     if (g_lstat(file, &item->sb) < 0) {
         if (errno == ENOENT)
@@ -1166,11 +1169,13 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodDataPtr data,
                             size_t ndevMountsPath)
 {
     long ttl = sysconf(_SC_SYMLOOP_MAX);
-    const char *next = file;
+    g_autofree char *next = g_strdup(file);
     size_t i;
 
     while (1) {
-        qemuNamespaceMknodItem item = { 0 };
+        g_auto(qemuNamespaceMknodItem) item = { 0 };
+        bool isLink;
+        bool addToData = false;
         int rc;
 
         rc = qemuNamespaceMknodItemInit(&item, cfg, vm, next);
@@ -1182,6 +1187,8 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodDataPtr data,
             return -1;
         }
 
+        isLink = S_ISLNK(item.sb.st_mode);
+
         if (STRPREFIX(next, QEMU_DEVPREFIX)) {
             for (i = 0; i < ndevMountsPath; i++) {
                 if (STREQ(devMountsPath[i], "/dev"))
@@ -1190,12 +1197,18 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodDataPtr data,
                     break;
             }
 
-            if (i == ndevMountsPath &&
-                VIR_APPEND_ELEMENT_COPY(data->items, data->nitems, item) < 0)
-                return -1;
+            if (i == ndevMountsPath)
+                addToData = true;
         }
 
-        if (!S_ISLNK(item.sb.st_mode))
+        g_free(next);
+        next = g_strdup(item.target);
+
+        if (addToData &&
+            VIR_APPEND_ELEMENT(data->items, data->nitems, item) < 0)
+            return -1;
+
+        if (!isLink)
             break;
 
         if (ttl-- == 0) {
@@ -1204,8 +1217,6 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodDataPtr data,
                                  next);
             return -1;
         }
-
-        next = item.target;
     }
 
     return 0;
