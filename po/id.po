@@ -6,21 +6,22 @@
 # Daniel  <veillard@redhat.com>, 2011
 # Muhammad Radifar <m_radifar05@yahoo.com>, 2011
 # Teguh DC <dheche@songolimo.net>, 2007
+# Andika Triwidada <andika@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-08-26 08:38+0000\n"
-"PO-Revision-Date: 2015-02-27 05:03+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Indonesian (http://www.transifex.com/projects/p/libvirt/"
-"language/id/)\n"
+"PO-Revision-Date: 2020-09-07 08:49+0000\n"
+"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
+"Language-Team: Indonesian <https://translate.fedoraproject.org/projects/"
+"libvirt/libvirt/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.2.2\n"
 
 msgid ""
 "\n"
@@ -16429,13 +16430,13 @@ msgstr ""
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG parser for %s"
-msgstr "Gagal membuat jaringan dari %s"
+msgstr "Tidak bisa membuat pengurai RNG bagi %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG validation context %s"
-msgstr "Gagal membuat domain dari %s"
+msgstr "Tidak bisa membuat konteks validasi RNG %s"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr ""
@@ -17229,9 +17230,9 @@ msgstr ""
 msgid "Unable to obtain information about pid: %d"
 msgstr "Kembalikan informasi dasar tentang node."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s"
-msgstr "gagal membuka berkas"
+msgstr "Tidak bisa membuka %s"
 
 #, c-format
 msgid "Unable to open %s (%d)"
