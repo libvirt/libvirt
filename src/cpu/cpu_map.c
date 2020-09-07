@@ -121,37 +121,31 @@ loadIncludes(xmlXPathContextPtr ctxt,
              cpuMapLoadCallback modelCB,
              void *data)
 {
-    int ret = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    xmlNodePtr *nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     int n;
     size_t i;
 
     n = virXPathNodeSet("include", ctxt, &nodes);
     if (n < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < n; i++) {
         char *filename = virXMLPropString(nodes[i], "filename");
         if (!filename) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing 'filename' in CPU map include"));
-            goto cleanup;
+            return -1;
         }
         VIR_DEBUG("Finding CPU map include '%s'", filename);
         if (cpuMapLoadInclude(filename, vendorCB, featureCB, modelCB, data) < 0) {
             VIR_FREE(filename);
-            goto cleanup;
+            return -1;
         }
         VIR_FREE(filename);
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(nodes);
-
-    return ret;
+    return 0;
 }
 
 
