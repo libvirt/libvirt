@@ -861,6 +861,7 @@ struct _virDomainFSDef {
     int multidevs; /* virDomainFSMultidevs */
     unsigned long long usage; /* in bytes */
     virStorageSource *src;
+    char *sock;
     char *dst;
     bool readonly;
     virDomainDeviceInfo info;

@@ -2480,6 +2480,7 @@ void virDomainFSDefFree(virDomainFSDef *def)
     g_free(def->virtio);
     virObjectUnref(def->privateData);
     g_free(def->binary);
+    g_free(def->sock);
 
     g_free(def);
 }
@@ -5516,7 +5517,7 @@ virDomainMemoryDefPostParse(virDomainMemoryDef *mem,
 static int
 virDomainFSDefPostParse(virDomainFSDef *fs)
 {
-    if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_DEFAULT)
+    if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_DEFAULT && !fs->sock)
         fs->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
 
     return 0;
@@ -10031,6 +10032,7 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *multidevs = NULL;
     g_autofree char *fmode = NULL;
     g_autofree char *dmode = NULL;
+    g_autofree char *sock = NULL;
 
     ctxt->node = node;
 
@@ -10113,9 +10115,9 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (!source &&
+            if (!source && !sock &&
                 virXMLNodeNameEqual(cur, "source")) {
-
+                sock = virXMLPropString(cur, "socket");
                 if (def->type == VIR_DOMAIN_FS_TYPE_MOUNT ||
                     def->type == VIR_DOMAIN_FS_TYPE_BIND) {
                     source = virXMLPropString(cur, "dir");
@@ -10237,13 +10239,13 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     if (source == NULL && def->type != VIR_DOMAIN_FS_TYPE_RAM
-        && def->type != VIR_DOMAIN_FS_TYPE_VOLUME) {
+        && def->type != VIR_DOMAIN_FS_TYPE_VOLUME && !sock) {
         virReportError(VIR_ERR_NO_SOURCE,
                        target ? "%s" : NULL, target);
         goto error;
     }
 
-    if (target == NULL) {
+    if (target == NULL && !sock) {
         virReportError(VIR_ERR_NO_TARGET,
                        source ? "%s" : NULL, source);
         goto error;
@@ -10267,6 +10269,7 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     def->src->path = g_steal_pointer(&source);
+    def->sock = g_steal_pointer(&sock);
     def->dst = g_steal_pointer(&target);
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info,
@@ -22199,7 +22202,7 @@ static bool
 virDomainFsDefCheckABIStability(virDomainFSDef *src,
                                 virDomainFSDef *dst)
 {
-    if (STRNEQ(src->dst, dst->dst)) {
+    if (STRNEQ_NULLABLE(src->dst, dst->dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target filesystem guest target %s does not match source %s"),
                        dst->dst, src->dst);
@@ -25337,8 +25340,10 @@ virDomainFSDefFormat(virBuffer *buf,
     switch (def->type) {
     case VIR_DOMAIN_FS_TYPE_MOUNT:
     case VIR_DOMAIN_FS_TYPE_BIND:
-        virBufferEscapeString(buf, "<source dir='%s'/>\n",
-                              src);
+        if (!def->sock)
+            virBufferEscapeString(buf, "<source dir='%s'/>\n", src);
+        else
+            virBufferEscapeString(buf, "<source socket='%s'/>\n", def->sock);
         break;
 
     case VIR_DOMAIN_FS_TYPE_BLOCK:

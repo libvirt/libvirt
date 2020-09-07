@@ -2763,9 +2763,18 @@
                 <ref name="fsBinary"/>
               </optional>
               <element name="source">
+              <choice>
+              <group>
                 <attribute name="dir">
                   <ref name="absDirPath"/>
                 </attribute>
+              </group>
+              <group>
+              <attribute name="socket">
+                <ref name="absFilePath"/>
+              </attribute>
+              </group>
+              </choice>
                 <empty/>
               </element>
             </interleave>
@@ -2827,10 +2836,12 @@
           </group>
         </choice>
         <interleave>
+          <optional>
           <element name="target">
             <attribute name="dir"/>
             <empty/>
           </element>
+          </optional>
           <optional>
             <attribute name="accessmode">
               <choice>
