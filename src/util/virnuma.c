@@ -316,12 +316,21 @@ virNumaNodesetToCPUset(virBitmapPtr nodeset,
 
     for (i = 0; i < nodesetSize; i++) {
         g_autoptr(virBitmap) nodeCPUs = NULL;
+        int rc;
 
         if (!virBitmapIsBitSet(nodeset, i))
             continue;
 
-        if (virNumaGetNodeCPUs(i, &nodeCPUs) < 0)
+        rc = virNumaGetNodeCPUs(i, &nodeCPUs);
+        if (rc < 0) {
+            /* Error is reported for cases other than non-existent NUMA node. */
+            if (rc == -2) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("NUMA node %zu is not available"),
+                               i);
+            }
             return -1;
+        }
 
         if (virBitmapUnion(allNodesCPUs, nodeCPUs) < 0)
             return -1;
