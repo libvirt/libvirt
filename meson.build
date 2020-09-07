@@ -1472,6 +1472,12 @@ if wireshark_dep.found()
   # Since wireshark 2.5.0 plugins can't live in top level plugindir but have
   # to be under one of ["epan", "wiretap", "codecs"] subdir. The first one looks okay.
   wireshark_plugindir = wireshark_plugindir / 'epan'
+
+  # Wireshark is installing ws_version.h since v2.9.0, but some distributions
+  # are not shipping it.
+  if cc.has_header('wireshark/ws_version.h')
+    conf.set('WITH_WS_VERSION', 1)
+  endif
 endif
 
 # On MinGW portablexdr provides XDR functions, on linux they are

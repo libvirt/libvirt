@@ -18,7 +18,6 @@
  */
 #include <config.h>
 
-#include <wireshark/config.h>
 #include <wireshark/epan/proto.h>
 #include <wireshark/epan/packet.h>
 #include <wireshark/epan/dissectors/packet-tcp.h>
