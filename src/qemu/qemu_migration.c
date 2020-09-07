@@ -4088,7 +4088,6 @@ qemuMigrationSrcPerformTunnel(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuMigrationSpec spec;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int fds[2] = { -1, -1 };
 
     VIR_DEBUG("driver=%p, vm=%p, st=%p, cookiein=%s, cookieinlen=%d, "
