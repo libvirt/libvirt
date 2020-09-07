@@ -85,10 +85,9 @@ cpuMapLoadInclude(const char *filename,
                   cpuMapLoadCallback modelCB,
                   void *data)
 {
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    int ret = -1;
-    char *mapfile;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree char *mapfile = NULL;
 
     if (!(mapfile = virFileFindResource(filename,
                                         abs_top_srcdir "/src/cpu_map",
@@ -98,27 +97,20 @@ cpuMapLoadInclude(const char *filename,
     VIR_DEBUG("Loading CPU map include from %s", mapfile);
 
     if (!(xml = virXMLParseFileCtxt(mapfile, &ctxt)))
-        goto cleanup;
+        return -1;
 
     ctxt->node = xmlDocGetRootElement(xml);
 
     if (loadData(mapfile, ctxt, "vendor", vendorCB, data) < 0)
-        goto cleanup;
+        return -1;
 
     if (loadData(mapfile, ctxt, "feature", featureCB, data) < 0)
-        goto cleanup;
+        return -1;
 
     if (loadData(mapfile, ctxt, "model", modelCB, data) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    VIR_FREE(mapfile);
-
-    return ret;
+    return 0;
 }
 
 
