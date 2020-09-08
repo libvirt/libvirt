@@ -15,7 +15,7 @@ libvirt-python) `online <https://gitlab.com/libvirt>`__.
 
 Patches to translations are maintained via the `Fedora Weblate
 service <https://translate.fedoraproject.org/projects/libvirt/libvirt>`__.
-If you want to contirbute to translations of libvirt, join the appropriate
+If you want to contribute to translations of libvirt, join the appropriate
 language team in Weblate.  Translation updates to libvirt will be merged
 during the feature freeze window.
 
