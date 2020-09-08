@@ -6,7 +6,7 @@
 
     <p>
       This page provides guidance on how to contribute to the
-      libvirt project
+      libvirt project.
     </p>
 
     <ul id="toc"></ul>
@@ -74,11 +74,11 @@
         who distribute libvirt may wish to propose a person to
         be part of the security handling team, to get early access
         to information about forthcoming vulnerability fixes.</li>
-      <li><strong>Evangalism</strong>. Work done by the project is of no benefit
+      <li><strong>Evangelism</strong>. Work done by the project is of no benefit
         unless the (potential) user community knows that it
         exists. Thus it is critically important to the health
         and future growth of the project, that there are a people
-        who evangalise the work created by the project. This can
+        who evangelize the work created by the project. This can
         take many forms, writing blog posts (about usage of features,
         personal user experiences, areas for future work, and more),
         syndicating docs and blogs via social media, giving user
