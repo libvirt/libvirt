@@ -1228,9 +1228,6 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
     size_t i;
     int ret = -1;
 
-    if (!(flags & VIR_QEMU_PROCESS_START_NEW))
-        return 0;
-
     /* Fill in FW paths if either os.firmware is enabled, or
      * loader path was provided with no nvram varstore. */
     if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE) {
@@ -1246,6 +1243,11 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
         /* ... then we want to consult JSON FW descriptors first,
          * but we don't want to fail if we haven't found a match. */
         needResult = false;
+    } else {
+        /* Domain has FW autoselection enabled => do nothing if
+         * we are not starting it from scratch. */
+        if (!(flags & VIR_QEMU_PROCESS_START_NEW))
+            return 0;
     }
 
     if ((nfirmwares = qemuFirmwareFetchParsedConfigs(driver->privileged,
