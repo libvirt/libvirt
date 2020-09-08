@@ -187,7 +187,7 @@ if conf.has('WITH_STORAGE_GLUSTER')
     'sources': [
       files(storage_file_gluster_sources),
     ],
-    'dependenciec': [
+    'deps': [
       glusterfs_dep,
     ],
     'install_dir': storage_file_install_dir,
