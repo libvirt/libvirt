@@ -33,6 +33,7 @@ util_sources = [
   'virfirewall.c',
   'virfirewalld.c',
   'virfirmware.c',
+  'virgdbus.c',
   'virgettext.c',
   'virgic.c',
   'virhash.c',

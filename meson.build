@@ -1066,7 +1066,11 @@ endif
 glib_version = '2.48.0'
 glib_dep = dependency('glib-2.0', version: '>=' + glib_version)
 gobject_dep = dependency('gobject-2.0', version: '>=' + glib_version)
-gio_dep = dependency('gio-2.0', version: '>=' + glib_version)
+if host_machine.system() == 'windows'
+  gio_dep = dependency('gio-2.0', version: '>=' + glib_version)
+else
+  gio_dep = dependency('gio-unix-2.0', version: '>=' + glib_version)
+endif
 glib_dep = declare_dependency(
   dependencies: [ glib_dep, gobject_dep, gio_dep ],
 )

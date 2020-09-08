@@ -2190,6 +2190,20 @@ virFirmwareParse;
 virFirmwareParseList;
 
 
+# util/virgdbus.h
+virGDBusCallMethod;
+virGDBusCallMethodWithFD;
+virGDBusCloseSystemBus;
+virGDBusErrorIsUnknownMethod;
+virGDBusGetSessionBus;
+virGDBusGetSystemBus;
+virGDBusHasSystemBus;
+virGDBusIsServiceEnabled;
+virGDBusIsServiceRegistered;
+virGDBusMessageIsSignal;
+virGDBusSetSharedBus;
+
+
 # util/virgettext.h
 virGettextInitialize;
 

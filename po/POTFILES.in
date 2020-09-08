@@ -257,6 +257,7 @@
 @SRCDIR@src/util/virfirewall.c
 @SRCDIR@src/util/virfirewalld.c
 @SRCDIR@src/util/virfirmware.c
+@SRCDIR@src/util/virgdbus.c
 @SRCDIR@src/util/virhash.c
 @SRCDIR@src/util/virhook.c
 @SRCDIR@src/util/virhostcpu.c
