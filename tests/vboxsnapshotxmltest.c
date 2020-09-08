@@ -135,7 +135,8 @@ mymain(void)
     DO_TEST("2disks-3snap-brother");
 
  cleanup:
-    g_regex_unref(testSnapshotXMLVariableLineRegex);
+    if (testSnapshotXMLVariableLineRegex)
+        g_regex_unref(testSnapshotXMLVariableLineRegex);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

@@ -2194,7 +2194,7 @@ virDomainQemuMonitorEventCleanup(void *opaque)
     virDomainQemuMonitorEventData *data = opaque;
 
     VIR_FREE(data->event);
-    if (data->flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX)
+    if (data->regex)
         g_regex_unref(data->regex);
     if (data->freecb)
         (data->freecb)(data->opaque);
