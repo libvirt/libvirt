@@ -5784,13 +5784,16 @@ A video device.
    value "vga", "cirrus", "vmvga", "xen", "vbox", "qxl" ( :since:`since 0.8.6`
    ), "virtio" ( :since:`since 1.3.0` ), "gop" ( :since:`since 3.2.0` ), "bochs"
    ( :since:`since 5.6.0` ), "ramfb" ( :since:`since 5.9.0` ), or "none" (
-   :since:`since 4.6.0` , depending on the hypervisor features available. The
-   purpose of the type ``none`` is to instruct libvirt not to add a default
-   video device in the guest (see the paragraph above). This legacy behaviour
-   can be inconvenient in cases where GPU mediated devices are meant to be the
-   only rendering device within a guest and so specifying another ``video``
-   device along with type ``none``. Refer to Host device assignment to see how
-   to add a mediated device into a guest.
+   :since:`since 4.6.0` ), depending on the hypervisor features available.
+
+   Note: The purpose of the type ``none`` is to instruct libvirt not to add a
+   default video device in the guest (see the ``video`` element description
+   above), since such behaviour is inconvenient in cases where GPU mediated
+   devices are meant to be the only rendering device within a guest. If this
+   is your use case specify a ``none`` type ``video`` device in the XML to stop
+   the default behaviour. Refer to `Host device assignment
+   <#host-device-assignment>`__ to see how to add a mediated device into a
+   guest.
 
    You can provide the amount of video memory in kibibytes (blocks of 1024
    bytes) using ``vram``. This is supported only for guest type of "vz", "qemu",
