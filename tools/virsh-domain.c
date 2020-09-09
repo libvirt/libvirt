@@ -5628,6 +5628,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     bool generated = false;
     char *mime = NULL;
     virshControlPtr priv = ctl->privData;
+    virshStreamCallbackData cbdata;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", (const char **) &file) < 0)
         return false;
@@ -5663,7 +5664,10 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
         created = true;
     }
 
-    if (virStreamRecvAll(st, virshStreamSink, &fd) < 0) {
+    cbdata.ctl = ctl;
+    cbdata.fd = fd;
+
+    if (virStreamRecvAll(st, virshStreamSink, &cbdata) < 0) {
         vshError(ctl, _("could not receive data from domain %s"), name);
         goto cleanup;
     }
