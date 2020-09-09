@@ -54,13 +54,13 @@
 #include "virnetdevveth.h"
 #include "viralloc.h"
 #include "virfile.h"
+#include "virgdbus.h"
 #include "virpidfile.h"
 #include "vircommand.h"
 #include "virhostcpu.h"
 #include "virrandom.h"
 #include "virprocess.h"
 #include "virnuma.h"
-#include "virdbus.h"
 #include "rpc/virnetdaemon.h"
 #include "virstring.h"
 #include "virgettext.h"
@@ -2430,7 +2430,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
      * of LXC instance, since dbus-daemon is limited to
      * only a few 100 connections by default
      */
-    virDBusCloseSystemBus();
+    virGDBusCloseSystemBus();
 
     rc = virLXCControllerMain(ctrl);
 
@@ -2612,7 +2612,7 @@ int main(int argc, char *argv[])
 
     virEventRegisterDefaultImpl();
 
-    virDBusSetSharedBus(false);
+    virGDBusSetSharedBus(false);
 
     if (!(ctrl = virLXCControllerNew(name)))
         goto cleanup;

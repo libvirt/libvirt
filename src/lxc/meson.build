@@ -139,7 +139,6 @@ if conf.has('WITH_LXC')
     'deps': [
       blkid_dep,
       capng_dep,
-      dbus_dep,
       fuse_dep,
       libnl_dep,
       rpc_dep,
