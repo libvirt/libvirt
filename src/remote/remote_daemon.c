@@ -63,7 +63,7 @@
 
 #include "configmake.h"
 
-#include "virdbus.h"
+#include "virgdbus.h"
 
 VIR_LOG_INIT("daemon." DAEMON_NAME);
 
@@ -508,9 +508,8 @@ static void daemonInhibitCallback(bool inhibit, void *opaque)
 }
 
 
-#ifdef WITH_DBUS
-static DBusConnection *sessionBus;
-static DBusConnection *systemBus;
+static GDBusConnection *sessionBus;
+static GDBusConnection *systemBus;
 
 static void daemonStopWorker(void *opaque)
 {
@@ -538,41 +537,40 @@ static void daemonStop(virNetDaemonPtr dmn)
 }
 
 
-static DBusHandlerResult
-handleSessionMessageFunc(DBusConnection *connection G_GNUC_UNUSED,
-                         DBusMessage *message,
-                         void *opaque)
+static GDBusMessage *
+handleSessionMessageFunc(GDBusConnection *connection G_GNUC_UNUSED,
+                         GDBusMessage *message,
+                         gboolean incoming G_GNUC_UNUSED,
+                         gpointer opaque)
 {
     virNetDaemonPtr dmn = opaque;
 
     VIR_DEBUG("dmn=%p", dmn);
 
-    if (dbus_message_is_signal(message,
-                               DBUS_INTERFACE_LOCAL,
-                               "Disconnected"))
+    if (virGDBusMessageIsSignal(message,
+                                "org.freedesktop.DBus.Local",
+                                "Disconnected"))
         daemonStop(dmn);
 
-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    return message;
 }
 
 
-static DBusHandlerResult
-handleSystemMessageFunc(DBusConnection *connection G_GNUC_UNUSED,
-                        DBusMessage *message,
-                        void *opaque)
+static void
+handleSystemMessageFunc(GDBusConnection *connection G_GNUC_UNUSED,
+                        const char *senderName G_GNUC_UNUSED,
+                        const char *objectPath G_GNUC_UNUSED,
+                        const char *interfaceName G_GNUC_UNUSED,
+                        const char *signalName G_GNUC_UNUSED,
+                        GVariant *parameters G_GNUC_UNUSED,
+                        gpointer opaque)
 {
     virNetDaemonPtr dmn = opaque;
 
     VIR_DEBUG("dmn=%p", dmn);
 
-    if (dbus_message_is_signal(message,
-                               "org.freedesktop.login1.Manager",
-                               "PrepareForShutdown"))
-        daemonStop(dmn);
-
-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    daemonStop(dmn);
 }
-#endif
 
 
 static void daemonRunStateInit(void *opaque)
@@ -608,25 +606,28 @@ static void daemonRunStateInit(void *opaque)
 
     driversInitialized = true;
 
-#ifdef WITH_DBUS
     /* Tie the non-privileged daemons to the session/shutdown lifecycle */
     if (!virNetDaemonIsPrivileged(dmn)) {
 
-        sessionBus = virDBusGetSessionBus();
+        sessionBus = virGDBusGetSessionBus();
         if (sessionBus != NULL)
-            dbus_connection_add_filter(sessionBus,
-                                       handleSessionMessageFunc, dmn, NULL);
+            g_dbus_connection_add_filter(sessionBus,
+                                         handleSessionMessageFunc, dmn, NULL);
 
-        systemBus = virDBusGetSystemBus();
-        if (systemBus != NULL) {
-            dbus_connection_add_filter(systemBus,
-                                       handleSystemMessageFunc, dmn, NULL);
-            dbus_bus_add_match(systemBus,
-                               "type='signal',sender='org.freedesktop.login1', interface='org.freedesktop.login1.Manager'",
-                               NULL);
-        }
+        systemBus = virGDBusGetSystemBus();
+        if (systemBus != NULL)
+            g_dbus_connection_signal_subscribe(systemBus,
+                                               "org.freedesktop.login1",
+                                               "org.freedesktop.login1.Manager",
+                                               "PrepareForShutdown",
+                                               NULL,
+                                               NULL,
+                                               G_DBUS_SIGNAL_FLAGS_NONE,
+                                               handleSystemMessageFunc,
+                                               dmn,
+                                               NULL);
     }
-#endif
+
     /* Only now accept clients from network */
     virNetDaemonUpdateServices(dmn, true);
  cleanup:
