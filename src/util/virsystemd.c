@@ -26,7 +26,7 @@
 
 #include "virsystemd.h"
 #include "virbuffer.h"
-#include "virdbus.h"
+#include "virgdbus.h"
 #include "virstring.h"
 #include "viralloc.h"
 #include "virutil.h"
@@ -157,13 +157,13 @@ virSystemdHasMachined(void)
     if (val != -1)
         return val;
 
-    if ((ret = virDBusIsServiceEnabled("org.freedesktop.machine1")) < 0) {
+    if ((ret = virGDBusIsServiceEnabled("org.freedesktop.machine1")) < 0) {
         if (ret == -2)
             g_atomic_int_set(&virSystemdHasMachinedCachedValue, -2);
         return ret;
     }
 
-    if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) == -1)
+    if ((ret = virGDBusIsServiceRegistered("org.freedesktop.systemd1")) == -1)
         return ret;
     g_atomic_int_set(&virSystemdHasMachinedCachedValue, ret);
     return ret;
@@ -179,14 +179,14 @@ virSystemdHasLogind(void)
     if (val != -1)
         return val;
 
-    ret = virDBusIsServiceEnabled("org.freedesktop.login1");
+    ret = virGDBusIsServiceEnabled("org.freedesktop.login1");
     if (ret < 0) {
         if (ret == -2)
             g_atomic_int_set(&virSystemdHasLogindCachedValue, -2);
         return ret;
     }
 
-    if ((ret = virDBusIsServiceRegistered("org.freedesktop.login1")) == -1)
+    if ((ret = virGDBusIsServiceRegistered("org.freedesktop.login1")) == -1)
         return ret;
 
     g_atomic_int_set(&virSystemdHasLogindCachedValue, ret);
@@ -197,52 +197,58 @@ virSystemdHasLogind(void)
 char *
 virSystemdGetMachineNameByPID(pid_t pid)
 {
-    DBusConnection *conn;
-    DBusMessage *reply = NULL;
-    char *name = NULL, *object = NULL;
+    GDBusConnection *conn;
+    g_autoptr(GVariant) message = NULL;
+    g_autoptr(GVariant) reply = NULL;
+    g_autoptr(GVariant) gvar = NULL;
+    g_autofree char *object = NULL;
+    char *name = NULL;
 
     if (virSystemdHasMachined() < 0)
-        goto cleanup;
+        return NULL;
 
-    if (!(conn = virDBusGetSystemBus()))
-        goto cleanup;
+    if (!(conn = virGDBusGetSystemBus()))
+        return NULL;
 
-    if (virDBusCallMethod(conn, &reply, NULL,
-                          "org.freedesktop.machine1",
-                          "/org/freedesktop/machine1",
-                          "org.freedesktop.machine1.Manager",
-                          "GetMachineByPID",
-                          "u", pid) < 0)
-        goto cleanup;
+    message = g_variant_new("(u)", pid);
 
-    if (virDBusMessageDecode(reply, "o", &object) < 0)
-        goto cleanup;
+    if (virGDBusCallMethod(conn,
+                           &reply,
+                           NULL,
+                           "org.freedesktop.machine1",
+                           "/org/freedesktop/machine1",
+                           "org.freedesktop.machine1.Manager",
+                           "GetMachineByPID",
+                           message) < 0)
+        return NULL;
 
-    virDBusMessageUnref(reply);
+    g_variant_get(reply, "(o)", &object);
+
+    g_variant_unref(reply);
     reply = NULL;
 
     VIR_DEBUG("Domain with pid %lld has object path '%s'",
               (long long) pid, object);
 
-    if (virDBusCallMethod(conn, &reply, NULL,
-                          "org.freedesktop.machine1",
-                          object,
-                          "org.freedesktop.DBus.Properties",
-                          "Get",
-                          "ss",
-                          "org.freedesktop.machine1.Machine",
-                          "Name") < 0)
-        goto cleanup;
+    g_variant_unref(message);
+    message = g_variant_new("(ss)",
+                            "org.freedesktop.machine1.Machine", "Name");
 
-    if (virDBusMessageDecode(reply, "v", "s", &name) < 0)
-        goto cleanup;
+    if (virGDBusCallMethod(conn,
+                           &reply,
+                           NULL,
+                           "org.freedesktop.machine1",
+                           object,
+                           "org.freedesktop.DBus.Properties",
+                           "Get",
+                           message) < 0)
+        return NULL;
+
+    g_variant_get(reply, "(v)", &gvar);
+    g_variant_get(gvar, "s", &name);
 
     VIR_DEBUG("Domain with pid %lld has machine name '%s'",
               (long long) pid, name);
-
- cleanup:
-    VIR_FREE(object);
-    virDBusMessageUnref(reply);
 
     return name;
 }
@@ -274,26 +280,28 @@ int virSystemdCreateMachine(const char *name,
                             const char *partition,
                             unsigned int maxthreads)
 {
-    int ret;
-    DBusConnection *conn;
-    char *creatorname = NULL;
-    char *slicename = NULL;
-    char *scopename = NULL;
+    int rc;
+    GDBusConnection *conn;
+    GVariant *guuid;
+    GVariant *gnicindexes;
+    GVariant *gprops;
+    GVariant *message;
+    g_autofree char *creatorname = NULL;
+    g_autofree char *slicename = NULL;
+    g_autofree char *scopename = NULL;
     static int hasCreateWithNetwork = 1;
 
-    if ((ret = virSystemdHasMachined()) < 0)
-        return ret;
+    if ((rc = virSystemdHasMachined()) < 0)
+        return rc;
 
-    if (!(conn = virDBusGetSystemBus()))
+    if (!(conn = virGDBusGetSystemBus()))
         return -1;
-
-    ret = -1;
 
     creatorname = g_strdup_printf("libvirt-%s", drivername);
 
     if (partition) {
         if (!(slicename = virSystemdMakeSliceName(partition)))
-             goto cleanup;
+             return -1;
     } else {
         slicename = g_strdup("");
     }
@@ -352,122 +360,138 @@ int virSystemdCreateMachine(const char *name,
 
     VIR_DEBUG("Attempting to create machine via systemd");
     if (g_atomic_int_get(&hasCreateWithNetwork)) {
-        virError error;
-        memset(&error, 0, sizeof(error));
+        g_autoptr(virError) error = NULL;
 
-        if (virDBusCallMethod(conn,
-                              NULL,
-                              &error,
-                              "org.freedesktop.machine1",
-                              "/org/freedesktop/machine1",
-                              "org.freedesktop.machine1.Manager",
-                              "CreateMachineWithNetwork",
-                              "sayssusa&ia(sv)",
-                              name,
-                              16,
-                              uuid[0], uuid[1], uuid[2], uuid[3],
-                              uuid[4], uuid[5], uuid[6], uuid[7],
-                              uuid[8], uuid[9], uuid[10], uuid[11],
-                              uuid[12], uuid[13], uuid[14], uuid[15],
-                              creatorname,
-                              iscontainer ? "container" : "vm",
-                              (unsigned int)pidleader,
-                              NULLSTR_EMPTY(rootdir),
-                              nnicindexes, nicindexes,
-                              3,
-                              "Slice", "s", slicename,
-                              "After", "as", 1, "libvirtd.service",
-                              "Before", "as", 1, "virt-guest-shutdown.target") < 0)
-            goto cleanup;
+        if (VIR_ALLOC(error) < 0)
+            return -1;
 
-        if (error.level == VIR_ERR_ERROR) {
-            if (virDBusErrorIsUnknownMethod(&error)) {
+        guuid = g_variant_new_fixed_array(G_VARIANT_TYPE("y"),
+                                          uuid, 16, sizeof(unsigned char));
+        gnicindexes = g_variant_new_fixed_array(G_VARIANT_TYPE("i"),
+                                                nicindexes, nnicindexes, sizeof(int));
+        gprops = g_variant_new_parsed("[('Slice', <%s>),"
+                                      " ('After', <['libvirtd.service']>),"
+                                      " ('Before', <['virt-guest-shutdown.target']>)]",
+                                      slicename);
+        message = g_variant_new("(s@ayssus@ai@a(sv))",
+                                name,
+                                guuid,
+                                creatorname,
+                                iscontainer ? "container" : "vm",
+                                (unsigned int)pidleader,
+                                NULLSTR_EMPTY(rootdir),
+                                gnicindexes,
+                                gprops);
+
+        rc = virGDBusCallMethod(conn,
+                                NULL,
+                                error,
+                                "org.freedesktop.machine1",
+                                "/org/freedesktop/machine1",
+                                "org.freedesktop.machine1.Manager",
+                                "CreateMachineWithNetwork",
+                                message);
+
+        g_variant_unref(message);
+
+        if (rc < 0)
+            return -1;
+
+        if (error->level == VIR_ERR_ERROR) {
+            if (virGDBusErrorIsUnknownMethod(error)) {
                 VIR_INFO("CreateMachineWithNetwork isn't supported, switching "
                          "to legacy CreateMachine method for systemd-machined");
-                virResetError(&error);
+                virResetError(error);
                 g_atomic_int_set(&hasCreateWithNetwork, 0);
                 /* Could re-structure without Using goto, but this
                  * avoids another atomic read which would trigger
                  * another memory barrier */
                 goto fallback;
             }
-            virReportErrorObject(&error);
-            virResetError(&error);
-            goto cleanup;
+            virReportErrorObject(error);
+            virResetError(error);
+            return -1;
         }
     } else {
     fallback:
-        if (virDBusCallMethod(conn,
-                              NULL,
-                              NULL,
-                              "org.freedesktop.machine1",
-                              "/org/freedesktop/machine1",
-                              "org.freedesktop.machine1.Manager",
-                              "CreateMachine",
-                              "sayssusa(sv)",
-                              name,
-                              16,
-                              uuid[0], uuid[1], uuid[2], uuid[3],
-                              uuid[4], uuid[5], uuid[6], uuid[7],
-                              uuid[8], uuid[9], uuid[10], uuid[11],
-                              uuid[12], uuid[13], uuid[14], uuid[15],
-                              creatorname,
-                              iscontainer ? "container" : "vm",
-                              (unsigned int)pidleader,
-                              NULLSTR_EMPTY(rootdir),
-                              3,
-                              "Slice", "s", slicename,
-                              "After", "as", 1, "libvirtd.service",
-                              "Before", "as", 1, "virt-guest-shutdown.target") < 0)
-            goto cleanup;
+        guuid = g_variant_new_fixed_array(G_VARIANT_TYPE("y"),
+                                          uuid, 16, sizeof(unsigned char));
+        gprops = g_variant_new_parsed("[('Slice', <%s>),"
+                                      " ('After', <['libvirtd.service']>),"
+                                      " ('Before', <['virt-guest-shutdown.target']>)]",
+                                      slicename);
+        message = g_variant_new("(s@ayssus@a(sv))",
+                                name,
+                                guuid,
+                                creatorname,
+                                iscontainer ? "container" : "vm",
+                                (unsigned int)pidleader,
+                                NULLSTR_EMPTY(rootdir),
+                                gprops);
+
+        rc = virGDBusCallMethod(conn,
+                                NULL,
+                                NULL,
+                                "org.freedesktop.machine1",
+                                "/org/freedesktop/machine1",
+                                "org.freedesktop.machine1.Manager",
+                                "CreateMachine",
+                                message);
+
+        g_variant_unref(message);
+
+        if (rc < 0)
+            return -1;
     }
 
     if (maxthreads > 0) {
         if (!(scopename = virSystemdMakeScopeName(name, drivername, false)))
-            goto cleanup;
+            return -1;
 
-        if (virDBusCallMethod(conn,
-                              NULL,
-                              NULL,
-                              "org.freedesktop.systemd1",
-                              "/org/freedesktop/systemd1",
-                              "org.freedesktop.systemd1.Manager",
-                              "SetUnitProperties",
-                              "sba(sv)",
-                              scopename,
-                              true,
-                              1,
-                              "TasksMax", "t", (uint64_t)maxthreads) < 0)
-            goto cleanup;
+        gprops = g_variant_new_parsed("[('TasksMax', <%llu>)]",
+                                      (uint64_t)maxthreads);
+
+        message = g_variant_new("(sb@a(sv))",
+                                scopename,
+                                true,
+                                gprops);
+
+        rc = virGDBusCallMethod(conn,
+                                NULL,
+                                NULL,
+                                "org.freedesktop.systemd1",
+                                "/org/freedesktop/systemd1",
+                                "org.freedesktop.systemd1.Manager",
+                                "SetUnitProperties",
+                                message);
+
+        g_variant_unref(message);
+
+        if (rc < 0)
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(creatorname);
-    VIR_FREE(slicename);
-    VIR_FREE(scopename);
-    return ret;
+    return 0;
 }
 
 int virSystemdTerminateMachine(const char *name)
 {
-    int ret;
-    DBusConnection *conn;
-    virError error;
+    int rc;
+    GDBusConnection *conn;
+    g_autoptr(GVariant) message = NULL;
+    g_autoptr(virError) error = NULL;
 
     if (!name)
         return 0;
 
-    memset(&error, 0, sizeof(error));
+    if ((rc = virSystemdHasMachined()) < 0)
+        return rc;
 
-    if ((ret = virSystemdHasMachined()) < 0)
-        goto cleanup;
+    if (!(conn = virGDBusGetSystemBus()))
+        return -1;
 
-    ret = -1;
-
-    if (!(conn = virDBusGetSystemBus()))
-        goto cleanup;
+    if (VIR_ALLOC(error) < 0)
+        return -1;
 
     /*
      * The systemd DBus API we're invoking has the
@@ -479,31 +503,27 @@ int virSystemdTerminateMachine(const char *name)
      * in 'ps' listing & similar
      */
 
-    VIR_DEBUG("Attempting to terminate machine via systemd");
-    if (virDBusCallMethod(conn,
-                          NULL,
-                          &error,
-                          "org.freedesktop.machine1",
-                          "/org/freedesktop/machine1",
-                          "org.freedesktop.machine1.Manager",
-                          "TerminateMachine",
-                          "s",
-                          name) < 0)
-        goto cleanup;
+    message = g_variant_new("(s)", name);
 
-    if (error.level == VIR_ERR_ERROR &&
+    VIR_DEBUG("Attempting to terminate machine via systemd");
+    if (virGDBusCallMethod(conn,
+                           NULL,
+                           error,
+                           "org.freedesktop.machine1",
+                           "/org/freedesktop/machine1",
+                           "org.freedesktop.machine1.Manager",
+                           "TerminateMachine",
+                           message) < 0)
+        return -1;
+
+    if (error->level == VIR_ERR_ERROR &&
         STRNEQ_NULLABLE("org.freedesktop.machine1.NoSuchMachine",
-                        error.str1)) {
-        virReportErrorObject(&error);
-        goto cleanup;
+                        error->str1)) {
+        virReportErrorObject(error);
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virResetError(&error);
-
-    return ret;
+    return 0;
 }
 
 void
@@ -559,41 +579,32 @@ virSystemdNotifyStartup(void)
 static int
 virSystemdPMSupportTarget(const char *methodName, bool *result)
 {
-    int ret;
-    DBusConnection *conn;
-    DBusMessage *message = NULL;
+    int rc;
+    GDBusConnection *conn;
+    g_autoptr(GVariant) reply = NULL;
     char *response;
 
-    if ((ret = virSystemdHasLogind()) < 0)
-        return ret;
+    if ((rc = virSystemdHasLogind()) < 0)
+        return rc;
 
-    if (!(conn = virDBusGetSystemBus()))
+    if (!(conn = virGDBusGetSystemBus()))
         return -1;
 
-    ret = -1;
+    if (virGDBusCallMethod(conn,
+                           &reply,
+                           NULL,
+                           "org.freedesktop.login1",
+                           "/org/freedesktop/login1",
+                           "org.freedesktop.login1.Manager",
+                           methodName,
+                           NULL) < 0)
+        return -1;
 
-    if (virDBusCallMethod(conn,
-                          &message,
-                          NULL,
-                          "org.freedesktop.login1",
-                          "/org/freedesktop/login1",
-                          "org.freedesktop.login1.Manager",
-                          methodName,
-                          NULL) < 0)
-        return ret;
-
-    if ((ret = virDBusMessageDecode(message, "s", &response)) < 0)
-        goto cleanup;
+    g_variant_get(reply, "(&s)", &response);
 
     *result = STREQ("yes", response) || STREQ("challenge", response);
 
-    ret = 0;
-
- cleanup:
-    virDBusMessageUnref(message);
-    VIR_FREE(response);
-
-    return ret;
+    return 0;
 }
 
 int virSystemdCanSuspend(bool *result)

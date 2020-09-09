@@ -20,9 +20,8 @@
 
 #include "testutils.h"
 
-#if defined(WITH_DBUS) && defined(__linux__)
+#if defined(__linux__)
 
-# include <dbus/dbus.h>
 # include <fcntl.h>
 # include <unistd.h>
 
@@ -30,7 +29,7 @@
 # include "virsystemdpriv.h"
 
 # include "virsystemd.h"
-# include "virdbus.h"
+# include "virgdbus.h"
 # include "virlog.h"
 # include "virmock.h"
 # include "rpc/virnetsocket.h"
@@ -39,125 +38,77 @@
 
 VIR_LOG_INIT("tests.systemdtest");
 
-VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
-                       DBusMessage *,
-                       DBusConnection *, connection,
-                       DBusMessage *, message,
-                       int, timeout_milliseconds,
-                       DBusError *, error)
+VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
+                       GVariant *,
+                       GDBusConnection *, connection,
+                       const gchar *, bus_name,
+                       const gchar *, object_path,
+                       const gchar *, interface_name,
+                       const gchar *, method_name,
+                       GVariant *, parameters,
+                       const GVariantType *, reply_type,
+                       GDBusCallFlags, flags,
+                       gint, timeout_msec,
+                       GCancellable *, cancellable,
+                       GError **, error)
 {
-    DBusMessage *reply = NULL;
-    const char *service = dbus_message_get_destination(message);
-    const char *member = dbus_message_get_member(message);
+    GVariant *reply = NULL;
 
-    VIR_MOCK_REAL_INIT(dbus_connection_send_with_reply_and_block);
+    if (parameters)
+        g_variant_unref(parameters);
 
-    if (STREQ(service, "org.freedesktop.machine1")) {
+    VIR_MOCK_REAL_INIT(g_dbus_connection_call_sync);
+
+    if (STREQ(bus_name, "org.freedesktop.machine1")) {
         if (getenv("FAIL_BAD_SERVICE")) {
-            dbus_set_error_const(error,
-                                 "org.freedesktop.systemd.badthing",
-                                 "Something went wrong creating the machine");
+            *error = g_dbus_error_new_for_dbus_error(
+                    "org.freedesktop.systemd.badthing",
+                     "Something went wrong creating the machine");
         } else {
-            reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
-
-            if (STREQ(member, "GetMachineByPID")) {
-                const char *object_path = "/org/freedesktop/machine1/machine/qemu_2ddemo";
-                DBusMessageIter iter;
-
-                dbus_message_iter_init_append(reply, &iter);
-                if (!dbus_message_iter_append_basic(&iter,
-                                                    DBUS_TYPE_OBJECT_PATH,
-                                                    &object_path))
-                    goto error;
-            } else if (STREQ(member, "Get")) {
-                const char *name = "qemu-demo";
-                DBusMessageIter iter;
-                DBusMessageIter sub;
-
-                dbus_message_iter_init_append(reply, &iter);
-                dbus_message_iter_open_container(&iter, DBUS_TYPE_VARIANT,
-                                                 "s", &sub);
-
-                if (!dbus_message_iter_append_basic(&sub,
-                                                    DBUS_TYPE_STRING,
-                                                    &name))
-                    goto error;
-                dbus_message_iter_close_container(&iter, &sub);
+            if (STREQ(method_name, "GetMachineByPID")) {
+                reply = g_variant_new("(o)",
+                                      "/org/freedesktop/machine1/machine/qemu_2ddemo");
+            } else if (STREQ(method_name, "Get")) {
+                reply = g_variant_new("(v)", g_variant_new_string("qemu-demo"));
+            } else {
+                reply = g_variant_new("()");
             }
         }
-    } else if (STREQ(service, "org.freedesktop.login1")) {
-        char *supported = getenv("RESULT_SUPPORT");
-        DBusMessageIter iter;
-        reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
-        dbus_message_iter_init_append(reply, &iter);
+    } else if (STREQ(bus_name, "org.freedesktop.login1")) {
+        reply = g_variant_new("(s)", getenv("RESULT_SUPPORT"));
+    } else if (STREQ(bus_name, "org.freedesktop.DBus") &&
+               STREQ(method_name, "ListActivatableNames")) {
+        GVariantBuilder builder;
 
-        if (!dbus_message_iter_append_basic(&iter,
-                                            DBUS_TYPE_STRING,
-                                            &supported))
-            goto error;
-    } else if (STREQ(service, "org.freedesktop.DBus") &&
-               STREQ(member, "ListActivatableNames")) {
-        const char *svc1 = "org.foo.bar.wizz";
-        const char *svc2 = "org.freedesktop.machine1";
-        const char *svc3 = "org.freedesktop.login1";
-        DBusMessageIter iter;
-        DBusMessageIter sub;
-        reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
-        dbus_message_iter_init_append(reply, &iter);
-        dbus_message_iter_open_container(&iter, DBUS_TYPE_ARRAY,
-                                         "s", &sub);
+        g_variant_builder_init(&builder, G_VARIANT_TYPE("as"));
 
-        if (!dbus_message_iter_append_basic(&sub,
-                                            DBUS_TYPE_STRING,
-                                            &svc1))
-            goto error;
-        if (!getenv("FAIL_NO_SERVICE") &&
-            !dbus_message_iter_append_basic(&sub,
-                                            DBUS_TYPE_STRING,
-                                            &svc2))
-            goto error;
-        if (!getenv("FAIL_NO_SERVICE") &&
-            !dbus_message_iter_append_basic(&sub,
-                                            DBUS_TYPE_STRING,
-                                            &svc3))
-            goto error;
-        dbus_message_iter_close_container(&iter, &sub);
-    } else if (STREQ(service, "org.freedesktop.DBus") &&
-               STREQ(member, "ListNames")) {
-        const char *svc1 = "org.foo.bar.wizz";
-        const char *svc2 = "org.freedesktop.systemd1";
-        const char *svc3 = "org.freedesktop.login1";
-        DBusMessageIter iter;
-        DBusMessageIter sub;
-        reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
-        dbus_message_iter_init_append(reply, &iter);
-        dbus_message_iter_open_container(&iter, DBUS_TYPE_ARRAY,
-                                         "s", &sub);
+        g_variant_builder_add(&builder, "s", "org.foo.bar.wizz");
 
-        if (!dbus_message_iter_append_basic(&sub,
-                                            DBUS_TYPE_STRING,
-                                            &svc1))
-            goto error;
-        if ((!getenv("FAIL_NO_SERVICE") && !getenv("FAIL_NOT_REGISTERED")) &&
-            !dbus_message_iter_append_basic(&sub,
-                                            DBUS_TYPE_STRING,
-                                            &svc2))
-            goto error;
-        if ((!getenv("FAIL_NO_SERVICE") && !getenv("FAIL_NOT_REGISTERED")) &&
-            !dbus_message_iter_append_basic(&sub,
-                                            DBUS_TYPE_STRING,
-                                            &svc3))
-            goto error;
-        dbus_message_iter_close_container(&iter, &sub);
+        if (!getenv("FAIL_NO_SERVICE")) {
+            g_variant_builder_add(&builder, "s", "org.freedesktop.machine1");
+            g_variant_builder_add(&builder, "s", "org.freedesktop.login1");
+        }
+
+        reply = g_variant_new("(@as)", g_variant_builder_end(&builder));
+    } else if (STREQ(bus_name, "org.freedesktop.DBus") &&
+               STREQ(method_name, "ListNames")) {
+        GVariantBuilder builder;
+
+        g_variant_builder_init(&builder, G_VARIANT_TYPE("as"));
+
+        g_variant_builder_add(&builder, "s", "org.foo.bar.wizz");
+
+        if (!getenv("FAIL_NO_SERVICE") && !getenv("FAIL_NOT_REGISTERED")) {
+            g_variant_builder_add(&builder, "s", "org.freedesktop.systemd1");
+            g_variant_builder_add(&builder, "s", "org.freedesktop.login1");
+        }
+
+        reply = g_variant_new("(@as)", g_variant_builder_end(&builder));
     } else {
-        reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
+        reply = g_variant_new("()");
     }
 
     return reply;
-
- error:
-    virDBusMessageUnref(reply);
-    return NULL;
 }
 
 
@@ -794,12 +745,12 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virdbus"))
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virgdbus"))
 
-#else /* ! (WITH_DBUS && __linux__) */
+#else /* ! __linux__ */
 int
 main(void)
 {
     return EXIT_AM_SKIP;
 }
-#endif /* ! WITH_DBUS */
+#endif /* ! __linux__ */

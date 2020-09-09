@@ -332,6 +332,7 @@ tests += [
   { 'name': 'virschematest' },
   { 'name': 'virshtest' },
   { 'name': 'virstringtest' },
+  { 'name': 'virsystemdtest' },
   { 'name': 'virtimetest' },
   { 'name': 'virtypedparamtest' },
   { 'name': 'viruritest' },
@@ -362,7 +363,6 @@ endif
 if conf.has('WITH_DBUS')
   tests += [
     { 'name': 'virdbustest', 'deps': [ dbus_dep ] },
-    { 'name': 'virsystemdtest', 'deps': [ dbus_dep ] },
   ]
 
 endif
