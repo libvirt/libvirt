@@ -59,7 +59,7 @@
 #include "virnetdevtap.h"
 #include "virnetdevvportprofile.h"
 #include "virpci.h"
-#include "virdbus.h"
+#include "virgdbus.h"
 #include "virfile.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"
@@ -638,33 +638,29 @@ networkAutostartConfig(virNetworkObjPtr obj,
 
 
 #ifdef WITH_FIREWALLD
-static DBusHandlerResult
-firewalld_dbus_filter_bridge(DBusConnection *connection G_GNUC_UNUSED,
-                             DBusMessage *message,
-                             void *user_data)
+static void
+firewalld_dbus_signal_callback(GDBusConnection *connection G_GNUC_UNUSED,
+                               const char *senderName G_GNUC_UNUSED,
+                               const char *objectPath G_GNUC_UNUSED,
+                               const char *interfaceName,
+                               const char *signalName,
+                               GVariant *parameters,
+                               gpointer user_data)
 {
     virNetworkDriverStatePtr driver = user_data;
     bool reload = false;
 
-    if (dbus_message_is_signal(message,
-                               "org.fedoraproject.FirewallD1", "Reloaded")) {
+    if (STREQ(interfaceName, "org.fedoraproject.FirewallD1") &&
+        STREQ(signalName, "Reloaded")) {
         reload = true;
+    } else if (STREQ(interfaceName, "org.freedesktop.DBus") &&
+               STREQ(signalName, "NameOwnerChanged")) {
+        char *name = NULL;
+        char *old_owner = NULL;
+        char *new_owner = NULL;
 
-    } else if (dbus_message_is_signal(message,
-                                      DBUS_INTERFACE_DBUS, "NameOwnerChanged")) {
+        g_variant_get(parameters, "(&s&s&s)", &name, &old_owner, &new_owner);
 
-        g_autofree char *name = NULL;
-        g_autofree char *old_owner = NULL;
-        g_autofree char *new_owner = NULL;
-
-        if (virDBusMessageDecode(message, "sss", &name, &old_owner, &new_owner) < 0) {
-            VIR_WARN("Failed to decode DBus NameOwnerChanged message");
-            return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-        }
-        /*
-         * if new_owner is empty, firewalld is shutting down. If it is
-         * non-empty, then it is starting
-         */
         if (new_owner && *new_owner)
             reload = true;
     }
@@ -673,8 +669,6 @@ firewalld_dbus_filter_bridge(DBusConnection *connection G_GNUC_UNUSED,
         VIR_DEBUG("Reload in bridge_driver because of firewalld.");
         networkReloadFirewallRules(driver, false, true);
     }
-
-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 #endif
 
@@ -694,7 +688,7 @@ networkStateInitialize(bool privileged,
     g_autofree char *rundir = NULL;
     bool autostart = true;
 #ifdef WITH_FIREWALLD
-    DBusConnection *sysbus = NULL;
+    GDBusConnection *sysbus = NULL;
 #endif
 
     if (root != NULL) {
@@ -793,27 +787,30 @@ networkStateInitialize(bool privileged,
     network_driver->networkEventState = virObjectEventStateNew();
 
 #ifdef WITH_FIREWALLD
-    if (!(sysbus = virDBusGetSystemBus())) {
+    if (!(sysbus = virGDBusGetSystemBus())) {
         VIR_WARN("DBus not available, disabling firewalld support "
                  "in bridge_network_driver: %s", virGetLastErrorMessage());
     } else {
-        /* add matches for
-         * NameOwnerChanged on org.freedesktop.DBus for firewalld start/stop
-         * Reloaded on org.fedoraproject.FirewallD1 for firewalld reload
-         */
-        dbus_bus_add_match(sysbus,
-                           "type='signal'"
-                           ",interface='"DBUS_INTERFACE_DBUS"'"
-                           ",member='NameOwnerChanged'"
-                           ",arg0='org.fedoraproject.FirewallD1'",
-                           NULL);
-        dbus_bus_add_match(sysbus,
-                           "type='signal'"
-                           ",interface='org.fedoraproject.FirewallD1'"
-                           ",member='Reloaded'",
-                           NULL);
-        dbus_connection_add_filter(sysbus, firewalld_dbus_filter_bridge,
-                                   network_driver, NULL);
+        g_dbus_connection_signal_subscribe(sysbus,
+                                           NULL,
+                                           "org.freedesktop.DBus",
+                                           "NameOwnerChanged",
+                                           NULL,
+                                           "org.fedoraproject.FirewallD1",
+                                           G_DBUS_SIGNAL_FLAGS_NONE,
+                                           firewalld_dbus_signal_callback,
+                                           network_driver,
+                                           NULL);
+        g_dbus_connection_signal_subscribe(sysbus,
+                                           NULL,
+                                           "org.fedoraproject.FirewallD1",
+                                           "Reloaded",
+                                           NULL,
+                                           NULL,
+                                           G_DBUS_SIGNAL_FLAGS_NONE,
+                                           firewalld_dbus_signal_callback,
+                                           network_driver,
+                                           NULL);
     }
 #endif
 

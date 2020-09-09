@@ -18,7 +18,6 @@ if conf.has('WITH_NETWORK')
     ],
     dependencies: [
       access_dep,
-      dbus_dep,
       libnl_dep,
       src_dep,
     ],
@@ -30,7 +29,6 @@ if conf.has('WITH_NETWORK')
   virt_modules += {
     'name': 'virt_driver_network',
     'deps': [
-      dbus_dep,
       libnl_dep,
     ],
     'link_whole': [
