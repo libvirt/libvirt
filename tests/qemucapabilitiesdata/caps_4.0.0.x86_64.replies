@@ -5154,11 +5154,113 @@
 }
 
 {
+    "execute": "device-list-properties",
+    "arguments": {
+        "typename": "usb-host"
+    },
+    "id": "libvirt-36"
+}
+
+{
+  "return": [
+    {
+      "default-value": true,
+      "name": "full-path",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "port",
+      "type": "str"
+    },
+    {
+      "default-value": true,
+      "name": "msos-desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "default-value": 0,
+      "name": "hostbus",
+      "type": "uint32"
+    },
+    {
+      "default-value": 4,
+      "name": "isobufs",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "vendorid",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "productid",
+      "type": "uint32"
+    },
+    {
+      "name": "hostport",
+      "type": "str"
+    },
+    {
+      "default-value": true,
+      "name": "pipeline",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "hostaddr",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "suppress-remote-wake",
+      "type": "bool"
+    },
+    {
+      "default-value": 2,
+      "name": "loglevel",
+      "type": "uint32"
+    },
+    {
+      "default-value": 32,
+      "name": "isobsize",
+      "type": "uint32"
+    },
+    {
+      "default-value": false,
+      "name": "guest-resets-all",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "guest-reset",
+      "type": "bool"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "attached",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-36"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -5223,7 +5325,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -5231,7 +5333,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -5295,7 +5397,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -5303,7 +5405,7 @@
   "arguments": {
     "typename": "max-x86_64-cpu"
   },
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -6421,12 +6523,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -6645,12 +6747,12 @@
       "alias": "q35"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -7167,12 +7269,12 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -7180,12 +7282,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -7193,12 +7295,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -8480,12 +8582,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -8559,12 +8661,12 @@
       "capability": "x-ignore-shared"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -21029,16 +21131,16 @@
       ]
     }
   ],
-  "id": "libvirt-45"
-}
-
-{
-  "execute": "query-sev-capabilities",
   "id": "libvirt-46"
 }
 
 {
-  "id": "libvirt-46",
+  "execute": "query-sev-capabilities",
+  "id": "libvirt-47"
+}
+
+{
+  "id": "libvirt-47",
   "error": {
     "class": "GenericError",
     "desc": "SEV feature is not available"
@@ -21053,7 +21155,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -21257,7 +21359,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -21463,7 +21565,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -21742,7 +21844,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -21756,7 +21858,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {
@@ -21960,7 +22062,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {
@@ -22166,7 +22268,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-51"
 }
 
 {
@@ -22445,7 +22547,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-51"
 }
 
 {

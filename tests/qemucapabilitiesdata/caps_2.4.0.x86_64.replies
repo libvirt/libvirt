@@ -3225,8 +3225,110 @@
 }
 
 {
-  "execute": "query-machines",
+    "execute": "device-list-properties",
+    "arguments": {
+        "typename": "usb-host"
+    },
+    "id": "libvirt-36"
+}
+
+{
+  "return": [
+    {
+      "default-value": true,
+      "name": "full-path",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "port",
+      "type": "str"
+    },
+    {
+      "default-value": true,
+      "name": "msos-desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "default-value": 0,
+      "name": "hostbus",
+      "type": "uint32"
+    },
+    {
+      "default-value": 4,
+      "name": "isobufs",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "vendorid",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "productid",
+      "type": "uint32"
+    },
+    {
+      "name": "hostport",
+      "type": "str"
+    },
+    {
+      "default-value": true,
+      "name": "pipeline",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "hostaddr",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "suppress-remote-wake",
+      "type": "bool"
+    },
+    {
+      "default-value": 2,
+      "name": "loglevel",
+      "type": "uint32"
+    },
+    {
+      "default-value": 32,
+      "name": "isobsize",
+      "type": "uint32"
+    },
+    {
+      "default-value": false,
+      "name": "guest-resets-all",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "guest-reset",
+      "type": "bool"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "attached",
+      "type": "bool"
+    }
+  ],
   "id": "libvirt-36"
+}
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-37"
 }
 
 {
@@ -3355,12 +3457,12 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -3450,36 +3552,36 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -4487,12 +4589,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -4522,7 +4624,7 @@
       "capability": "events"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {

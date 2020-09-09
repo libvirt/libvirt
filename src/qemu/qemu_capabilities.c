@@ -597,6 +597,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "spapr-tpm-proxy",
               "numa.hmat",
               "blockdev-hostdev-scsi",
+
+              /* 380 */
+              "usb-host.hostdevice",
     );
 
 
@@ -1391,6 +1394,10 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPCIeRootPort[] =
     { "hotplug", QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG, NULL },
 };
 
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBHost[] = {
+    { "hostdevice", QEMU_CAPS_USB_HOST_HOSTDEVICE, NULL },
+};
+
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSpaprPCIHostBridge[] = {
     { "numa_node", QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE, NULL },
 };
@@ -1649,6 +1656,9 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "pcie-root-port", virQEMUCapsDevicePropsPCIeRootPort,
       G_N_ELEMENTS(virQEMUCapsDevicePropsPCIeRootPort),
       QEMU_CAPS_DEVICE_PCIE_ROOT_PORT },
+    { "usb-host", virQEMUCapsDevicePropsUSBHost,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsUSBHost),
+      -1 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {

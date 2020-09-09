@@ -3111,8 +3111,110 @@
 }
 
 {
-  "execute": "query-machines",
+    "execute": "device-list-properties",
+    "arguments": {
+        "typename": "usb-host"
+    },
+    "id": "libvirt-28"
+}
+
+{
+  "return": [
+    {
+      "default-value": true,
+      "name": "full-path",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "port",
+      "type": "str"
+    },
+    {
+      "default-value": true,
+      "name": "msos-desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "default-value": 0,
+      "name": "hostbus",
+      "type": "uint32"
+    },
+    {
+      "default-value": 4,
+      "name": "isobufs",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "vendorid",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "productid",
+      "type": "uint32"
+    },
+    {
+      "name": "hostport",
+      "type": "str"
+    },
+    {
+      "default-value": true,
+      "name": "pipeline",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "hostaddr",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "suppress-remote-wake",
+      "type": "bool"
+    },
+    {
+      "default-value": 2,
+      "name": "loglevel",
+      "type": "uint32"
+    },
+    {
+      "default-value": 32,
+      "name": "isobsize",
+      "type": "uint32"
+    },
+    {
+      "default-value": false,
+      "name": "guest-resets-all",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "guest-reset",
+      "type": "bool"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "attached",
+      "type": "bool"
+    }
+  ],
   "id": "libvirt-28"
+}
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-29"
 }
 
 {
@@ -3155,12 +3257,12 @@
       "cpu-max": 248
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-29"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-29"
+  "id": "libvirt-30"
 }
 
 {
@@ -3550,34 +3652,34 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-30"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-30"
+  "id": "libvirt-31"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-31"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -4652,12 +4754,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -4699,12 +4801,12 @@
       "capability": "release-ram"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -13990,7 +14092,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -14001,7 +14103,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -14028,7 +14130,7 @@
       }
     }
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {

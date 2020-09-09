@@ -578,6 +578,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_NUMA_HMAT, /* -numa hmat */
     QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI, /* -blockdev used for (i)SCSI hostdevs */
 
+    /* 380 */
+    QEMU_CAPS_USB_HOST_HOSTDEVICE, /* -device usb-host.hostdevice */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
