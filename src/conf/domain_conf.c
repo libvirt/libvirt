@@ -8234,23 +8234,26 @@ virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
 
 static int
 virDomainStorageNetworkParseHosts(xmlNodePtr node,
+                                  xmlXPathContextPtr ctxt,
                                   virStorageNetHostDefPtr *hosts,
                                   size_t *nhosts)
 {
-    xmlNodePtr child;
+    g_autofree xmlNodePtr *hostnodes = NULL;
+    ssize_t nhostnodes;
+    size_t i;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
-    for (child = node->children; child; child = child->next) {
-        if (child->type == XML_ELEMENT_NODE &&
-            virXMLNodeNameEqual(child, "host")) {
-            virStorageNetHostDef host;
+    ctxt->node = node;
 
-            if (virDomainStorageNetworkParseHost(child, &host) < 0)
-                return -1;
-            if (VIR_APPEND_ELEMENT(*hosts, *nhosts, host) < 0) {
-                virStorageNetHostDefClear(&host);
-                return -1;
-            }
-        }
+    if ((nhostnodes = virXPathNodeSet("./host", ctxt, &hostnodes)) <= 0)
+        return nhostnodes;
+
+    *hosts = g_new0(virStorageNetHostDef, nhostnodes);
+    *nhosts = nhostnodes;
+
+    for (i = 0; i < nhostnodes; i++) {
+        if (virDomainStorageNetworkParseHost(hostnodes[i], *hosts + i) < 0)
+            return -1;
     }
 
     return 0;
@@ -8370,7 +8373,7 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
         return -1;
     }
 
-    if (virDomainStorageNetworkParseHosts(sourcenode, &iscsisrc->src->hosts,
+    if (virDomainStorageNetworkParseHosts(sourcenode, ctxt, &iscsisrc->src->hosts,
                                           &iscsisrc->src->nhosts) < 0)
         return -1;
 
@@ -9643,7 +9646,7 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTPS)
         src->query = virXMLPropString(node, "query");
 
-    if (virDomainStorageNetworkParseHosts(node, &src->hosts, &src->nhosts) < 0)
+    if (virDomainStorageNetworkParseHosts(node, ctxt, &src->hosts, &src->nhosts) < 0)
         return -1;
 
     virStorageSourceNetworkAssignDefaultPorts(src);
