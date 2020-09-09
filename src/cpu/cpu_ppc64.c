@@ -738,24 +738,17 @@ virCPUppc64DriverGetModels(char ***models)
     size_t i;
 
     if (!(map = ppc64LoadMap()))
-        goto error;
+        return -1;
 
     if (models) {
         if (VIR_ALLOC_N(*models, map->nmodels + 1) < 0)
-            goto error;
+            return -1;
 
         for (i = 0; i < map->nmodels; i++)
             (*models)[i] = g_strdup(map->models[i]->name);
     }
 
     return map->nmodels;
-
- error:
-    if (models) {
-        g_strfreev(*models);
-        *models = NULL;
-    }
-    return -1;
 }
 
 struct cpuArchDriver cpuDriverPPC64 = {
