@@ -365,11 +365,6 @@ if conf.has('WITH_DBUS')
     { 'name': 'virsystemdtest', 'deps': [ dbus_dep ] },
   ]
 
-  if conf.has('WITH_POLKIT')
-    tests += [
-      { 'name': 'virpolkittest', 'deps': [ dbus_dep ] },
-    ]
-  endif
 endif
 
 if conf.has('WITH_ESX')
@@ -443,6 +438,12 @@ endif
 if conf.has('WITH_OPENVZ')
   tests += [
     { 'name': 'openvzutilstest', 'link_with': [ openvz_lib ] },
+  ]
+endif
+
+if conf.has('WITH_POLKIT')
+  tests += [
+    { 'name': 'virpolkittest' },
   ]
 endif
 

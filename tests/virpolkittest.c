@@ -22,10 +22,8 @@
 
 #if defined(__ELF__)
 
-# include <dbus/dbus.h>
-
 # include "virpolkit.h"
-# include "virdbus.h"
+# include "virgdbus.h"
 # include "virlog.h"
 # include "virmock.h"
 # define VIR_FROM_THIS VIR_FROM_NONE
@@ -37,54 +35,43 @@ VIR_LOG_INIT("tests.systemdtest");
 # define THE_TIME 11011000001
 # define THE_UID 1729
 
-VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
-                       DBusMessage *,
-                       DBusConnection *, connection,
-                       DBusMessage *, message,
-                       int, timeout_milliseconds,
-                       DBusError *, error)
+VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
+                       GVariant *,
+                       GDBusConnection *, connection,
+                       const gchar *, bus_name,
+                       const gchar *, object_path,
+                       const gchar *, interface_name,
+                       const gchar *, method_name,
+                       GVariant *, parameters,
+                       const GVariantType *, reply_type,
+                       GDBusCallFlags, flags,
+                       gint, timeout_msec,
+                       GCancellable *, cancellable,
+                       GError **, error)
 {
-    DBusMessage *reply = NULL;
-    const char *service = dbus_message_get_destination(message);
-    const char *member = dbus_message_get_member(message);
+    GVariant *reply = NULL;
+    g_autoptr(GVariant) params = parameters;
 
-    VIR_MOCK_REAL_INIT(dbus_connection_send_with_reply_and_block);
+    VIR_MOCK_REAL_INIT(g_dbus_connection_call_sync);
 
-    if (STREQ(service, "org.freedesktop.PolicyKit1") &&
-        STREQ(member, "CheckAuthorization")) {
+    if (STREQ(bus_name, "org.freedesktop.PolicyKit1") &&
+        STREQ(method_name, "CheckAuthorization")) {
+        g_autoptr(GVariantIter) iter = NULL;
+        GVariantBuilder builder;
         char *type;
-        char *pidkey;
-        unsigned int pidval;
-        char *timekey;
-        unsigned long long timeval;
-        char *uidkey;
-        int uidval;
         char *actionid;
-        char **details;
-        size_t detailslen;
-        int allowInteraction;
-        char *cancellationId;
-        const char **retdetails = NULL;
-        size_t retdetailslen = 0;
-        const char *retdetailscancelled[] = {
-            "polkit.dismissed", "true",
-        };
         int is_authorized = 1;
         int is_challenge = 0;
 
-        if (virDBusMessageDecode(message,
-                                 "(sa{sv})sa&{ss}us",
-                                 &type,
-                                 3,
-                                 &pidkey, "u", &pidval,
-                                 &timekey, "t", &timeval,
-                                 &uidkey, "i", &uidval,
-                                 &actionid,
-                                 &detailslen,
-                                 &details,
-                                 &allowInteraction,
-                                 &cancellationId) < 0)
-            goto error;
+        g_variant_get(params, "((&s@a{sv})&sa{ss}@u@s)",
+                      &type,
+                      NULL,
+                      &actionid,
+                      &iter,
+                      NULL,
+                      NULL);
+
+        g_variant_builder_init(&builder, G_VARIANT_TYPE("a{ss}"));
 
         if (STREQ(actionid, "org.libvirt.test.success")) {
             is_authorized = 1;
@@ -95,17 +82,15 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
         } else if (STREQ(actionid, "org.libvirt.test.cancelled")) {
             is_authorized = 0;
             is_challenge = 0;
-            retdetails = retdetailscancelled;
-            retdetailslen = G_N_ELEMENTS(retdetailscancelled) / 2;
+            g_variant_builder_add(&builder, "{ss}", "polkit.dismissed", "true");
         } else if (STREQ(actionid, "org.libvirt.test.details")) {
-            size_t i;
+            char *key;
+            char *val;
             is_authorized = 0;
             is_challenge = 0;
-            for (i = 0; i < detailslen / 2; i++) {
-                if (STREQ(details[i * 2],
-                          "org.libvirt.test.person") &&
-                    STREQ(details[(i * 2) + 1],
-                          "Fred")) {
+
+            while (g_variant_iter_loop(iter, "{ss}", &key, &val)) {
+                if (STREQ(key, "org.libvirt.test.person") && STREQ(val, "Fred")) {
                     is_authorized = 1;
                     is_challenge = 0;
                 }
@@ -115,30 +100,13 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
             is_challenge = 0;
         }
 
-        VIR_FREE(type);
-        VIR_FREE(pidkey);
-        VIR_FREE(timekey);
-        VIR_FREE(uidkey);
-        VIR_FREE(actionid);
-        VIR_FREE(cancellationId);
-        virStringListFreeCount(details, detailslen);
-
-        if (virDBusCreateReply(&reply,
-                               "(bba&{ss})",
-                               is_authorized,
-                               is_challenge,
-                               retdetailslen,
-                               retdetails) < 0)
-            goto error;
+        reply = g_variant_new("((bb@a{ss}))", is_authorized, is_challenge,
+                              g_variant_builder_end(&builder));
     } else {
-        reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
+        reply = g_variant_new("()");
     }
 
     return reply;
-
- error:
-    virDBusMessageUnref(reply);
-    return NULL;
 }
 
 
@@ -322,7 +290,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virdbus"))
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virgdbus"))
 
 #else /* ! __ELF__ */
 int

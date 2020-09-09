@@ -28,7 +28,7 @@
 #include "virstring.h"
 #include "virprocess.h"
 #include "viralloc.h"
-#include "virdbus.h"
+#include "virgdbus.h"
 #include "virfile.h"
 #include "virutil.h"
 
@@ -63,80 +63,81 @@ int virPolkitCheckAuth(const char *actionid,
                        const char **details,
                        bool allowInteraction)
 {
-    DBusConnection *sysbus;
-    DBusMessage *reply = NULL;
-    char **retdetails = NULL;
-    size_t nretdetails = 0;
-    bool is_authorized;
-    bool is_challenge;
+    GDBusConnection *sysbus;
+    GVariantBuilder builder;
+    GVariant *gprocess = NULL;
+    GVariant *gdetails = NULL;
+    g_autoptr(GVariant) message = NULL;
+    g_autoptr(GVariant) reply = NULL;
+    g_autoptr(GVariantIter) iter = NULL;
+    char *retkey;
+    char *retval;
+    gboolean is_authorized;
+    gboolean is_challenge;
     bool is_dismissed = false;
     size_t i;
-    int ret = -1;
 
-    if (!(sysbus = virDBusGetSystemBus()))
-        goto cleanup;
+    if (!(sysbus = virGDBusGetSystemBus()))
+        return -1;
 
     VIR_INFO("Checking PID %lld running as %d",
              (long long) pid, uid);
 
-    if (virDBusCallMethod(sysbus,
-                          &reply,
-                          NULL,
-                          "org.freedesktop.PolicyKit1",
-                          "/org/freedesktop/PolicyKit1/Authority",
-                          "org.freedesktop.PolicyKit1.Authority",
-                          "CheckAuthorization",
-                          "(sa{sv})sa&{ss}us",
-                          "unix-process",
-                          3,
-                          "pid", "u", (unsigned int)pid,
-                          "start-time", "t", startTime,
-                          "uid", "i", (int)uid,
-                          actionid,
-                          virStringListLength(details) / 2,
-                          details,
-                          allowInteraction,
-                          "" /* cancellation ID */) < 0)
-        goto cleanup;
+    g_variant_builder_init(&builder, G_VARIANT_TYPE("a{sv}"));
+    g_variant_builder_add(&builder, "{sv}", "pid", g_variant_new_uint32(pid));
+    g_variant_builder_add(&builder, "{sv}", "start-time", g_variant_new_uint64(startTime));
+    g_variant_builder_add(&builder, "{sv}", "uid", g_variant_new_int32(uid));
+    gprocess = g_variant_builder_end(&builder);
 
-    if (virDBusMessageDecode(reply,
-                             "(bba&{ss})",
-                             &is_authorized,
-                             &is_challenge,
-                             &nretdetails,
-                             &retdetails) < 0)
-        goto cleanup;
+    g_variant_builder_init(&builder, G_VARIANT_TYPE("a{ss}"));
+    for (i = 0; i < virStringListLength(details); i += 2)
+        g_variant_builder_add(&builder, "{ss}", details[i], details[i + 1]);
+    gdetails = g_variant_builder_end(&builder);
 
-    for (i = 0; i < (nretdetails / 2); i++) {
-        if (STREQ(retdetails[(i * 2)], "polkit.dismissed") &&
-            STREQ(retdetails[(i * 2) + 1], "true"))
+    message = g_variant_new("((s@a{sv})s@a{ss}us)",
+                            "unix-process",
+                            gprocess,
+                            actionid,
+                            gdetails,
+                            allowInteraction,
+                            "" /* cancellation ID */);
+
+    if (virGDBusCallMethod(sysbus,
+                           &reply,
+                           NULL,
+                           "org.freedesktop.PolicyKit1",
+                           "/org/freedesktop/PolicyKit1/Authority",
+                           "org.freedesktop.PolicyKit1.Authority",
+                           "CheckAuthorization",
+                           message) < 0)
+        return -1;
+
+    g_variant_get(reply, "((bba{ss}))", &is_authorized, &is_challenge, &iter);
+
+    while (g_variant_iter_loop(iter, "{ss}", &retkey, &retval)) {
+        if (STREQ(retkey, "polkit.dismissed") && STREQ(retval, "true"))
             is_dismissed = true;
     }
 
     VIR_DEBUG("is auth %d  is challenge %d",
               is_authorized, is_challenge);
 
-    if (is_authorized) {
-        ret = 0;
+    if (is_authorized)
+        return 0;
+
+    if (is_dismissed) {
+        virReportError(VIR_ERR_AUTH_CANCELLED, "%s",
+                       _("user cancelled authentication process"));
+    } else if (is_challenge) {
+        virReportError(VIR_ERR_AUTH_UNAVAILABLE,
+                       _("no polkit agent available to authenticate action '%s'"),
+                       actionid);
     } else {
-        ret = -2;
-        if (is_dismissed)
-            virReportError(VIR_ERR_AUTH_CANCELLED, "%s",
-                           _("user cancelled authentication process"));
-        else if (is_challenge)
-            virReportError(VIR_ERR_AUTH_UNAVAILABLE,
-                           _("no polkit agent available to authenticate "
-                             "action '%s'"),
-                           actionid);
-        else
-            virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("access denied by policy"));
+        virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                       _("access denied by policy"));
     }
 
- cleanup:
-    virStringListFreeCount(retdetails, nretdetails);
-    virDBusMessageUnref(reply);
-    return ret;
+    return -2;
 }
 
 
