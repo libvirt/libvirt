@@ -8262,88 +8262,60 @@ virDomainStorageNetworkParseHosts(xmlNodePtr node,
 
 static int
 virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
+                                          xmlXPathContextPtr ctxt,
                                           virDomainHostdevSubsysSCSIPtr scsisrc)
 {
-    bool got_address = false, got_adapter = false;
-    xmlNodePtr cur;
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
     g_autofree char *bus = NULL;
     g_autofree char *target = NULL;
     g_autofree char *unit = NULL;
+    xmlNodePtr addressnode = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
-    cur = sourcenode->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "address")) {
-                if (got_address) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("more than one source addresses is "
-                                     "specified for scsi hostdev"));
-                    return -1;
-                }
+    ctxt->node = sourcenode;
 
-                if (!(bus = virXMLPropString(cur, "bus")) ||
-                    !(target = virXMLPropString(cur, "target")) ||
-                    !(unit = virXMLPropString(cur, "unit"))) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("'bus', 'target', and 'unit' must be specified "
-                                     "for scsi hostdev source address"));
-                    return -1;
-                }
-
-                if (virStrToLong_uip(bus, NULL, 0, &scsihostsrc->bus) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot parse bus '%s'"), bus);
-                    return -1;
-                }
-
-                if (virStrToLong_uip(target, NULL, 0,
-                                    &scsihostsrc->target) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot parse target '%s'"), target);
-                    return -1;
-                }
-
-                if (virStrToLong_ullp(unit, NULL, 0, &scsihostsrc->unit) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot parse unit '%s'"), unit);
-                    return -1;
-                }
-
-                got_address = true;
-            } else if (virXMLNodeNameEqual(cur, "adapter")) {
-                if (got_adapter) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("more than one adapters is specified "
-                                     "for scsi hostdev source"));
-                    return -1;
-                }
-                if (!(scsihostsrc->adapter = virXMLPropString(cur, "name"))) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("'adapter' must be specified for scsi hostdev source"));
-                    return -1;
-                }
-
-                got_adapter = true;
-            } else {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("unsupported element '%s' of scsi hostdev source"),
-                               cur->name);
-                return -1;
-            }
-        }
-        cur = cur->next;
+    if (!(addressnode = virXPathNode("./address", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("'address' must be specified for scsi hostdev source"));
+        return -1;
     }
 
-    if (!got_address || !got_adapter) {
+    if (!(bus = virXMLPropString(addressnode, "bus")) ||
+        !(target = virXMLPropString(addressnode, "target")) ||
+        !(unit = virXMLPropString(addressnode, "unit"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("'adapter' and 'address' must be specified for scsi "
-                         "hostdev source"));
+                       _("'bus', 'target', and 'unit' must be specified "
+                         "for scsi hostdev source address"));
+        return -1;
+    }
+
+    if (virStrToLong_uip(bus, NULL, 0, &scsihostsrc->bus) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse bus '%s'"), bus);
+        return -1;
+    }
+
+    if (virStrToLong_uip(target, NULL, 0, &scsihostsrc->target) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse target '%s'"), target);
+        return -1;
+    }
+
+    if (virStrToLong_ullp(unit, NULL, 0, &scsihostsrc->unit) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse unit '%s'"), unit);
+        return -1;
+    }
+
+    if (!(scsihostsrc->adapter = virXPathString("string(./adapter/@name)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("'adapter' name must be specified for scsi hostdev source"));
         return -1;
     }
 
     return 0;
 }
+
 
 static int
 virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
@@ -8441,7 +8413,7 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
 
     switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
-        return virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, scsisrc);
+        return virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, ctxt, scsisrc);
 
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
         return virDomainHostdevSubsysSCSIiSCSIDefParseXML(sourcenode, scsisrc, ctxt,
