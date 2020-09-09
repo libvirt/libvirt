@@ -24,7 +24,7 @@
 
 #include <config.h>
 
-#include "virdbus.h"
+#include "virgdbus.h"
 #include "virlog.h"
 
 #include "internal.h"
@@ -50,17 +50,6 @@
 
 VIR_LOG_INIT("nwfilter.nwfilter_driver");
 
-#define DBUS_RULE_FWD_NAMEOWNERCHANGED \
-    "type='signal'" \
-    ",interface='"DBUS_INTERFACE_DBUS"'" \
-    ",member='NameOwnerChanged'" \
-    ",arg0='org.fedoraproject.FirewallD1'"
-
-#define DBUS_RULE_FWD_RELOADED \
-    "type='signal'" \
-    ",interface='org.fedoraproject.FirewallD1'" \
-    ",member='Reloaded'"
-
 
 static virNWFilterDriverStatePtr driver;
 
@@ -79,36 +68,30 @@ static void nwfilterDriverUnlock(void)
 
 #ifdef WITH_FIREWALLD
 
-static DBusHandlerResult
-nwfilterFirewalldDBusFilter(DBusConnection *connection G_GNUC_UNUSED,
-                            DBusMessage *message,
-                            void *user_data G_GNUC_UNUSED)
+static void
+nwfilterFirewalldDBusSignalCallback(GDBusConnection *connection G_GNUC_UNUSED,
+                                    const char *senderName G_GNUC_UNUSED,
+                                    const char *objectPath G_GNUC_UNUSED,
+                                    const char *interfaceName G_GNUC_UNUSED,
+                                    const char *signalName G_GNUC_UNUSED,
+                                    GVariant *parameters G_GNUC_UNUSED,
+                                    gpointer user_data G_GNUC_UNUSED)
 {
-    if (dbus_message_is_signal(message, DBUS_INTERFACE_DBUS,
-                               "NameOwnerChanged") ||
-        dbus_message_is_signal(message, "org.fedoraproject.FirewallD1",
-                               "Reloaded")) {
-        VIR_DEBUG("Reload in nwfilter_driver because of firewalld.");
-        nwfilterStateReload();
-    }
-
-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    nwfilterStateReload();
 }
+
+static unsigned int restartID;
+static unsigned int reloadID;
 
 static void
 nwfilterDriverRemoveDBusMatches(void)
 {
-    DBusConnection *sysbus;
+    GDBusConnection *sysbus;
 
-    sysbus = virDBusGetSystemBus();
+    sysbus = virGDBusGetSystemBus();
     if (sysbus) {
-        dbus_bus_remove_match(sysbus,
-                              DBUS_RULE_FWD_NAMEOWNERCHANGED,
-                              NULL);
-        dbus_bus_remove_match(sysbus,
-                              DBUS_RULE_FWD_RELOADED,
-                              NULL);
-        dbus_connection_remove_filter(sysbus, nwfilterFirewalldDBusFilter, NULL);
+        g_dbus_connection_signal_unsubscribe(sysbus, restartID);
+        g_dbus_connection_signal_unsubscribe(sysbus, reloadID);
     }
 }
 
@@ -117,33 +100,29 @@ nwfilterDriverRemoveDBusMatches(void)
  *
  * Startup DBus matches for monitoring the state of firewalld
  */
-static int
-nwfilterDriverInstallDBusMatches(DBusConnection *sysbus)
+static void
+nwfilterDriverInstallDBusMatches(GDBusConnection *sysbus)
 {
-    int ret = 0;
-
-    if (!sysbus) {
-        ret = -1;
-    } else {
-        /* add matches for
-         * NameOwnerChanged on org.freedesktop.DBus for firewalld start/stop
-         * Reloaded on org.fedoraproject.FirewallD1 for firewalld reload
-         */
-        dbus_bus_add_match(sysbus,
-                           DBUS_RULE_FWD_NAMEOWNERCHANGED,
-                           NULL);
-        dbus_bus_add_match(sysbus,
-                           DBUS_RULE_FWD_RELOADED,
-                           NULL);
-        if (!dbus_connection_add_filter(sysbus, nwfilterFirewalldDBusFilter,
-                                        NULL, NULL)) {
-            VIR_WARN(("Adding a filter to the DBus connection failed"));
-            nwfilterDriverRemoveDBusMatches();
-            ret =  -1;
-        }
-    }
-
-    return ret;
+    restartID = g_dbus_connection_signal_subscribe(sysbus,
+                                                   NULL,
+                                                   "org.freedesktop.DBus",
+                                                   "NameOwnerChanged",
+                                                   NULL,
+                                                   "org.fedoraproject.FirewallD1",
+                                                   G_DBUS_SIGNAL_FLAGS_NONE,
+                                                   nwfilterFirewalldDBusSignalCallback,
+                                                   NULL,
+                                                   NULL);
+    reloadID = g_dbus_connection_signal_subscribe(sysbus,
+                                                  NULL,
+                                                  "org.fedoraproject.FirewallD1",
+                                                  "Reloaded",
+                                                  NULL,
+                                                  NULL,
+                                                  G_DBUS_SIGNAL_FLAGS_NONE,
+                                                  nwfilterFirewalldDBusSignalCallback,
+                                                  NULL,
+                                                  NULL);
 }
 
 #else /* WITH_FIREWALLD */
@@ -153,10 +132,9 @@ nwfilterDriverRemoveDBusMatches(void)
 {
 }
 
-static int
-nwfilterDriverInstallDBusMatches(DBusConnection *sysbus G_GNUC_UNUSED)
+static void
+nwfilterDriverInstallDBusMatches(GDBusConnection *sysbus G_GNUC_UNUSED)
 {
-    return 0;
 }
 
 #endif /* WITH_FIREWALLD */
@@ -181,7 +159,7 @@ nwfilterStateInitialize(bool privileged,
                         virStateInhibitCallback callback G_GNUC_UNUSED,
                         void *opaque G_GNUC_UNUSED)
 {
-    DBusConnection *sysbus = NULL;
+    GDBusConnection *sysbus = NULL;
 
     if (root != NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -189,8 +167,8 @@ nwfilterStateInitialize(bool privileged,
         return -1;
     }
 
-    if (virDBusHasSystemBus() &&
-        !(sysbus = virDBusGetSystemBus()))
+    if (virGDBusHasSystemBus() &&
+        !(sysbus = virGDBusGetSystemBus()))
         return VIR_DRV_STATE_INIT_ERROR;
 
     driver = g_new0(virNWFilterDriverState, 1);
@@ -241,21 +219,8 @@ nwfilterStateInitialize(bool privileged,
      * startup the DBus late so we don't get a reload signal while
      * initializing
      */
-    if (sysbus &&
-        nwfilterDriverInstallDBusMatches(sysbus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("DBus matches could not be installed. "
-                       "Disabling nwfilter driver"));
-        /*
-         * unfortunately this is fatal since virNWFilterTechDriversInit
-         * may have caused the ebiptables driver to use the firewall tool
-         * but now that the watches don't work, we just disable the nwfilter
-         * driver
-         *
-         * This may only happen if the system bus is available.
-         */
-        goto error;
-    }
+    if (sysbus)
+        nwfilterDriverInstallDBusMatches(sysbus);
 
     driver->configDir = g_strdup(SYSCONFDIR "/libvirt/nwfilter");
 

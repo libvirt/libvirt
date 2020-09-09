@@ -17,7 +17,6 @@ if conf.has('WITH_NWFILTER')
     ],
     dependencies: [
       access_dep,
-      dbus_dep,
       libnl_dep,
       libpcap_dep,
       src_dep,
