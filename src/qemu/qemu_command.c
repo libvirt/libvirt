@@ -4461,16 +4461,21 @@ qemuBuildUSBHostdevDevStr(const virDomainDef *def,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
 
-    if (!dev->missing && !usbsrc->bus && !usbsrc->device) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("USB host device is missing bus/device information"));
-        return NULL;
-    }
-
     virBufferAddLit(&buf, "usb-host");
     if (!dev->missing) {
-        virBufferAsprintf(&buf, ",hostbus=%d,hostaddr=%d",
-                          usbsrc->bus, usbsrc->device);
+        if (usbsrc->bus == 0 && usbsrc->device == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("USB host device is missing bus/device information"));
+            return NULL;
+        }
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_HOST_HOSTDEVICE)) {
+            virBufferAsprintf(&buf, ",hostdevice=/dev/bus/usb/%03d/%03d",
+                              usbsrc->bus, usbsrc->device);
+        } else {
+            virBufferAsprintf(&buf, ",hostbus=%d,hostaddr=%d",
+                              usbsrc->bus, usbsrc->device);
+        }
     }
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
     if (dev->info->bootIndex)
