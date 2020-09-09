@@ -5301,6 +5301,57 @@ qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(virDomainHostdevDefPtr hostde
 }
 
 
+/**
+ * qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias:
+ *
+ * Re-generate backend alias if it wasn't stored in the status XML by an older
+ * libvirtd.
+ *
+ * Note that qemuCaps should be always present for a status XML.
+ */
+static int
+qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(virDomainHostdevDefPtr hostdev,
+                                                       virQEMUCapsPtr qemuCaps,
+                                                       unsigned int parseFlags)
+{
+    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    virStorageSourcePtr src;
+
+    if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS))
+        return 0;
+
+    if (!qemuCaps ||
+        hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+        hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI ||
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI))
+        return 0;
+
+    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
+        if (!scsisrc->u.host.src &&
+            !(scsisrc->u.host.src = virStorageSourceNew()))
+            return -1;
+
+        src = scsisrc->u.host.src;
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
+        src = scsisrc->u.iscsi.src;
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
+        return -1;
+    }
+
+    if (!src->nodestorage)
+        src->nodestorage = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
+
+    return 0;
+}
+
+
 static int
 qemuDomainHostdevDefMdevPostParse(virDomainHostdevSubsysMediatedDevPtr mdevsrc,
                                   virQEMUCapsPtr qemuCaps)
@@ -5325,6 +5376,10 @@ qemuDomainHostdevDefPostParse(virDomainHostdevDefPtr hostdev,
 
     if (qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(hostdev, qemuCaps,
                                                            parseFlags) < 0)
+        return -1;
+
+    if (qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(hostdev, qemuCaps,
+                                                               parseFlags) < 0)
         return -1;
 
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&

@@ -232,6 +232,7 @@
     <flag name='isa-serial'/>
     <flag name='dump-completed'/>
     <flag name='hda-output'/>
+    <flag name='blockdev-hostdev-scsi'/>
   </qemuCaps>
   <devices>
     <device alias='rng0'/>

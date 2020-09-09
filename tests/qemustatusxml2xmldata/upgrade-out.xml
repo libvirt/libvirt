@@ -232,6 +232,7 @@
     <flag name='isa-serial'/>
     <flag name='dump-completed'/>
     <flag name='hda-output'/>
+    <flag name='blockdev-hostdev-scsi'/>
   </qemuCaps>
   <devices>
     <device alias='rng0'/>
@@ -517,6 +518,9 @@
         <source protocol='iscsi' name='iqn.1992-01.com.example:storage/1'>
           <host name='example.org' port='3260'/>
           <privateData>
+            <nodenames>
+              <nodename type='storage' name='libvirt-hostdev0-backend'/>
+            </nodenames>
             <objects>
               <secret type='auth' alias='hostdev0-secret0'/>
             </objects>
@@ -532,6 +536,9 @@
         <source protocol='iscsi' name='iqn.1992-01.com.example:storage/2'>
           <host name='example.org' port='3260'/>
           <privateData>
+            <nodenames>
+              <nodename type='storage' name='libvirt-hostdev1-backend'/>
+            </nodenames>
             <objects>
               <secret type='auth' alias='hostdev1-secret0'/>
             </objects>
@@ -547,6 +554,11 @@
         <source>
           <adapter name='scsi_host0'/>
           <address bus='0' target='0' unit='0'/>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='libvirt-hostdev2-backend'/>
+            </nodenames>
+          </privateData>
         </source>
         <alias name='hostdev2'/>
         <address type='drive' controller='0' bus='0' target='2' unit='6'/>
