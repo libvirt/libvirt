@@ -39,20 +39,19 @@ loadData(const char *mapfile,
          cpuMapLoadCallback callback,
          void *data)
 {
-    int ret = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    xmlNodePtr *nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     int n;
     size_t i;
     int rv;
 
     if ((n = virXPathNodeSet(element, ctxt, &nodes)) < 0)
-        goto cleanup;
+        return -1;
 
     if (n > 0 && !callback) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected element '%s' in CPU map '%s'"), element, mapfile);
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < n; i++) {
@@ -60,22 +59,17 @@ loadData(const char *mapfile,
         if (!name) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot find %s name in CPU map '%s'"), element, mapfile);
-            goto cleanup;
+            return -1;
         }
         VIR_DEBUG("Load %s name %s", element, name);
         ctxt->node = nodes[i];
         rv = callback(ctxt, name, data);
         VIR_FREE(name);
         if (rv < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(nodes);
-
-    return ret;
+    return 0;
 }
 
 static int
