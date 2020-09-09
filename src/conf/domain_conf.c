@@ -3019,6 +3019,8 @@ virDomainHostdevSubsysSCSIClear(virDomainHostdevSubsysSCSIPtr scsisrc)
         scsisrc->u.iscsi.src = NULL;
     } else {
         VIR_FREE(scsisrc->u.host.adapter);
+        virObjectUnref(scsisrc->u.host.src);
+        scsisrc->u.host.src = NULL;
     }
 }
 
@@ -8263,7 +8265,9 @@ virDomainStorageNetworkParseHosts(xmlNodePtr node,
 static int
 virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
                                           xmlXPathContextPtr ctxt,
-                                          virDomainHostdevSubsysSCSIPtr scsisrc)
+                                          virDomainHostdevSubsysSCSIPtr scsisrc,
+                                          unsigned int flags,
+                                          virDomainXMLOptionPtr xmlopt)
 {
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
     g_autofree char *bus = NULL;
@@ -8313,6 +8317,16 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
         return -1;
     }
 
+    if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
+        xmlopt && xmlopt->privateData.storageParse) {
+        if ((ctxt->node = virXPathNode("./privateData", ctxt))) {
+            if (!scsihostsrc->src &&
+                !(scsihostsrc->src = virStorageSourceNew()))
+                return -1;
+            if (xmlopt->privateData.storageParse(ctxt, scsihostsrc->src) < 0)
+                return -1;
+        }
+    }
     return 0;
 }
 
@@ -8413,7 +8427,8 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
 
     switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
-        return virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, ctxt, scsisrc);
+        return virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, ctxt, scsisrc,
+                                                         flags, xmlopt);
 
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
         return virDomainHostdevSubsysSCSIiSCSIDefParseXML(sourcenode, scsisrc, ctxt,
@@ -26305,6 +26320,11 @@ virDomainHostdevDefFormatSubsysSCSI(virBufferPtr buf,
         virBufferAsprintf(&sourceChildBuf, " bus='%u' target='%u' unit='%llu'",
                           scsihostsrc->bus, scsihostsrc->target, scsihostsrc->unit);
         virBufferAddLit(&sourceChildBuf, "/>\n");
+
+        if (scsihostsrc->src &&
+            virDomainDiskSourceFormatPrivateData(&sourceChildBuf, scsihostsrc->src,
+                                                 flags, xmlopt) < 0)
+            return -1;
     }
 
     virXMLFormatElement(buf, "source", &sourceAttrBuf, &sourceChildBuf);

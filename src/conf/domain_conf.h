@@ -245,6 +245,7 @@ struct _virDomainHostdevSubsysSCSIHost {
     unsigned bus;
     unsigned target;
     unsigned long long unit;
+    virStorageSourcePtr src;
 };
 
 struct _virDomainHostdevSubsysSCSIiSCSI {
