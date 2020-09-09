@@ -3012,23 +3012,14 @@ virDomainHostdevDefNew(void)
 
 
 static void
-virDomainHostdevSubsysSCSIiSCSIClear(virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc)
-{
-    if (!iscsisrc)
-        return;
-
-    virObjectUnref(iscsisrc->src);
-    iscsisrc->src = NULL;
-}
-
-
-static void
 virDomainHostdevSubsysSCSIClear(virDomainHostdevSubsysSCSIPtr scsisrc)
 {
-    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
-        virDomainHostdevSubsysSCSIiSCSIClear(&scsisrc->u.iscsi);
-    else
+    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+        virObjectUnref(scsisrc->u.iscsi.src);
+        scsisrc->u.iscsi.src = NULL;
+    } else {
         VIR_FREE(scsisrc->u.host.adapter);
+    }
 }
 
 
