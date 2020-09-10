@@ -37,9 +37,11 @@ drive=drive-hostdev0,id=hostdev0 \
 -drive file=/dev/sg0,if=none,format=raw,id=drive-hostdev1,readonly=on \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=7,\
 drive=drive-hostdev1,id=hostdev1 \
--drive file=/dev/sg0,if=none,format=raw,id=drive-ua-test \
--device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=6,drive=drive-ua-test,\
-id=ua-test \
+-drive file=/dev/sg0,if=none,format=raw,\
+id=drive-ua-7996c8dc-a4fa-4012-b76f-043d20144263 \
+-device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=6,\
+drive=drive-ua-7996c8dc-a4fa-4012-b76f-043d20144263,\
+id=ua-7996c8dc-a4fa-4012-b76f-043d20144263 \
 -drive file=iscsi://example.org:3260/iqn.1992-01.com.example/0,if=none,\
 format=raw,id=drive-hostdev2 \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=4,\
