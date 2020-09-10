@@ -751,13 +751,13 @@ class Object(GenericObject):
         source += "{\n"
 
         if self.features & Object.FEATURE__LIST:
-            if self.extends is not None:
+            base_class = get_base_class(self)
+            if base_class:
                 # avoid "dereferencing type-punned pointer will break
                 # strict-aliasing rules" warnings
-                source += "    esxVI_%s *next = (esxVI_%s *)item->_next;\n\n" \
-                          % (self.extends, self.extends)
-                source += "    esxVI_%s_Free(&next);\n" % self.extends
-                source += "    item->_next = (esxVI_%s *)next;\n\n" % self.name
+                source += "    esxVI_%s *baseNext = (esxVI_%s *)item->_next;\n" \
+                          % (base_class, base_class)
+                source += "    esxVI_%s_Free(&baseNext);\n\n" % base_class
             else:
                 source += "    esxVI_%s_Free(&item->_next);\n\n" % self.name
 
@@ -1250,6 +1250,21 @@ def is_known_type(type):
             type in enums_by_name)
 
 
+def get_base_class(obj):
+    if not obj.extends:
+        return None
+    base_class = None
+    try:
+        base_class = base_class_by_name[obj.extends]
+    except KeyError:
+        parent = objects_by_name[obj.extends]
+        base_class = get_base_class(parent)
+        if not base_class:
+            base_class = parent.name
+        base_class_by_name[name] = base_class
+    return base_class
+
+
 def open_file(filename):
     return open(filename, "wt")
 
@@ -1341,6 +1356,7 @@ managed_objects_by_name = {}
 enums_by_name = {}
 methods_by_name = {}
 block = None
+base_class_by_name = {}
 
 
 # parse input file
