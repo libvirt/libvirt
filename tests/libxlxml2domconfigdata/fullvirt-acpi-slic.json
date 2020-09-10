@@ -14,10 +14,10 @@
         "shadow_memkb": 5656,
         "sched_params": {
         },
+        "apic": "True",
+        "acpi": "True",
         "type.hvm": {
             "pae": "True",
-            "apic": "True",
-            "acpi": "True",
             "acpi_firmware": "/path/to/slic.dat",
             "nographic": "True",
             "vga": {

@@ -21,10 +21,10 @@
         "sched_params": {
 
         },
+        "apic": "True",
+        "acpi": "True",
         "type.hvm": {
             "pae": "True",
-            "apic": "True",
-            "acpi": "True",
             "vga": {
                 "kind": "cirrus"
             },

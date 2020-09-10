@@ -508,12 +508,25 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         libxl_defbool_set(&b_info->u.hvm.pae,
                           def->features[VIR_DOMAIN_FEATURE_PAE] ==
                           VIR_TRISTATE_SWITCH_ON);
+#ifdef LIBXL_HAVE_BUILDINFO_APIC
+        libxl_defbool_set(&b_info->apic,
+                          def->features[VIR_DOMAIN_FEATURE_APIC] ==
+                          VIR_TRISTATE_SWITCH_ON);
+        /*
+         * Strictly speaking b_info->acpi was introduced earlier (Xen 4.8), but
+         * there is no separate #define in libxl.h.
+         */
+        libxl_defbool_set(&b_info->acpi,
+                          def->features[VIR_DOMAIN_FEATURE_ACPI] ==
+                          VIR_TRISTATE_SWITCH_ON);
+#else
         libxl_defbool_set(&b_info->u.hvm.apic,
                           def->features[VIR_DOMAIN_FEATURE_APIC] ==
                           VIR_TRISTATE_SWITCH_ON);
         libxl_defbool_set(&b_info->u.hvm.acpi,
                           def->features[VIR_DOMAIN_FEATURE_ACPI] ==
                           VIR_TRISTATE_SWITCH_ON);
+#endif
 
         /* copy SLIC table path to acpi_firmware */
         if (def->os.slic_table)

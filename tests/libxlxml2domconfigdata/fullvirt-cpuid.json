@@ -22,10 +22,10 @@
         "sched_params": {
         },
         "nested_hvm": "False",
+        "apic": "True",
+        "acpi": "True",
         "type.hvm": {
             "pae": "True",
-            "apic": "True",
-            "acpi": "True",
             "nographic": "True",
             "vga": {
                 "kind": "none"
