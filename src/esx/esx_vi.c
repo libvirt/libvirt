@@ -1390,7 +1390,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
             }
         }
     } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_HTTP_ERROR,
                        _("HTTP response code %d for call to '%s'"),
                        (*response)->responseCode, methodName);
         goto cleanup;

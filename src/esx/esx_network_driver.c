@@ -355,7 +355,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
             for (hostPortGroup = hostPortGroupList; hostPortGroup;
                  hostPortGroup = hostPortGroup->_next) {
                 if (STREQ(def->portGroups[i].name, hostPortGroup->spec->name)) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                    virReportError(VIR_ERR_NETWORK_EXIST,
                                    _("HostPortGroup with name '%s' exists already"),
                                    def->portGroups[i].name);
                     goto cleanup;
@@ -388,7 +388,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
 
             if (def->forward.ifs[i].type !=
                 VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
+                virReportError(VIR_ERR_NO_SUPPORT,
                                _("unsupported device type in network %s "
                                  "interface pool"),
                                def->name);

@@ -897,7 +897,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         goto cleanup;
 
     if (def->type != VIR_STORAGE_VOL_FILE) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("Creating non-file volumes is not supported"));
         goto cleanup;
     }
@@ -913,7 +913,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
     }
 
     if (!virStringHasCaseSuffix(def->name, ".vmdk")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_NO_SUPPORT,
                        _("Volume name '%s' has unsupported suffix, "
                          "expecting '.vmdk'"), def->name);
         goto cleanup;
@@ -1032,7 +1032,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
             key = g_strdup(datastorePath);
         }
     } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_NO_SUPPORT,
                        _("Creation of %s volumes is not supported"),
                        virStorageFileFormatTypeToString(def->target.format));
         goto cleanup;
@@ -1111,7 +1111,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         goto cleanup;
 
     if (def->type != VIR_STORAGE_VOL_FILE) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("Creating non-file volumes is not supported"));
         goto cleanup;
     }
@@ -1127,7 +1127,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     }
 
     if (!virStringHasCaseSuffix(def->name, ".vmdk")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_NO_SUPPORT,
                        _("Volume name '%s' has unsupported suffix, "
                          "expecting '.vmdk'"), def->name);
         goto cleanup;
@@ -1212,7 +1212,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
             key = g_strdup(datastorePath);
         }
     } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_NO_SUPPORT,
                        _("Creation of %s volumes is not supported"),
                        virStorageFileFormatTypeToString(def->target.format));
         goto cleanup;
