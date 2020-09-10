@@ -797,6 +797,9 @@ Enter administrator password for example-vcenter.com:
     </p>
     <ul>
         <li>
+            <code>virDomainGetHostname</code>
+        </li>
+        <li>
             <code>virDomainReboot</code>
         </li>
         <li>

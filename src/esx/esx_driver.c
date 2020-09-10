@@ -5060,6 +5060,59 @@ esxDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
 }
 
 
+static char *
+esxDomainGetHostname(virDomainPtr domain,
+                     unsigned int flags)
+{
+    esxPrivate *priv = domain->conn->privateData;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_VirtualMachinePowerState powerState;
+    char *hostname = NULL;
+    char *new_hostname = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (esxVI_EnsureSession(priv->primary) < 0)
+        return NULL;
+
+    if (esxVI_String_AppendValueListToList(&propertyNameList,
+                                       "runtime.powerState\0"
+                                       "guest.hostName") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
+                                         propertyNameList, &virtualMachine,
+                                         esxVI_Occurrence_OptionalItem) ||
+        esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0) {
+        goto cleanup;
+    }
+
+    if (powerState != esxVI_VirtualMachinePowerState_PoweredOn) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Domain is not powered on"));
+        goto cleanup;
+    }
+
+    if (esxVI_GetStringValue(virtualMachine, "guest.hostName",
+                             &hostname, esxVI_Occurrence_OptionalItem) < 0) {
+        goto cleanup;
+    }
+
+    if (!hostname) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("hostName field not available (missing VMware Tools?)"));
+        goto cleanup;
+    }
+
+    new_hostname = g_strdup(hostname);
+
+ cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&virtualMachine);
+
+    return new_hostname;
+}
+
+
 static virHypervisorDriver esxHypervisorDriver = {
     .name = "ESX",
     .connectOpen = esxConnectOpen, /* 0.7.0 */
@@ -5140,6 +5193,7 @@ static virHypervisorDriver esxHypervisorDriver = {
     .domainSnapshotDelete = esxDomainSnapshotDelete, /* 0.8.0 */
     .connectIsAlive = esxConnectIsAlive, /* 0.9.8 */
     .domainHasManagedSaveImage = esxDomainHasManagedSaveImage, /* 1.2.13 */
+    .domainGetHostname = esxDomainGetHostname, /* 6.8.0 */
 };
 
 
