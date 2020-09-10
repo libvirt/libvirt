@@ -258,15 +258,15 @@ comment, although use of a semicolon is not currently rejected.
 Curly braces
 ------------
 
-Omit the curly braces around an ``if``, ``while``, ``for`` etc.
-body only when both that body and the condition itself occupy a
-single line. In every other case we require the braces. This
+Curly braces around an ``if``, ``while``, ``for`` etc. can be omitted if the
+body and the condition itself occupy only a single line.
+In every other case we require the braces. This
 ensures that it is trivially easy to identify a
 single-\ *statement* loop: each has only one *line* in its body.
 
 ::
 
-  while (expr)             // single line body; {} is forbidden
+  while (expr)             // single line body; {} is optional
       single_line_stmt();
 
 ::

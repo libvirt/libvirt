@@ -24,11 +24,6 @@ my $ret = 0;
 my $incomment = 0;
 
 foreach my $file (@ARGV) {
-    # Per-file variables for multiline Curly Bracket (cb_) check
-    my $cb_linenum = 0;
-    my $cb_code = "";
-    my $cb_scolon = 0;
-
     open FILE, $file;
 
     while (defined (my $line = <FILE>)) {
@@ -159,37 +154,6 @@ foreach my $file (@ARGV) {
             print "Spacing around '=' or '==':\n";
             print "$file:$.: $line";
             $ret = 1;
-        }
-
-        # One line conditional statements with one line bodies should
-        # not use curly brackets.
-        if ($data =~ /^\s*(if|while|for)\b.*\{$/) {
-            $cb_linenum = $.;
-            $cb_code = $line;
-            $cb_scolon = 0;
-        }
-
-        # We need to check for exactly one semicolon inside the body,
-        # because empty statements (e.g. with comment only) are
-        # allowed
-        if ($cb_linenum == $. - 1 && $data =~ /^[^;]*;[^;]*$/) {
-            $cb_code .= $line;
-            $cb_scolon = 1;
-        }
-
-        if ($data =~ /^\s*}\s*$/ &&
-            $cb_linenum == $. - 2 &&
-            $cb_scolon) {
-
-            print "Curly brackets around single-line body:\n";
-            print "$file:$cb_linenum-$.:\n$cb_code$line";
-            $ret = 1;
-
-            # There _should_ be no need to reset the values; but to
-            # keep my inner peace...
-            $cb_linenum = 0;
-            $cb_scolon = 0;
-            $cb_code = "";
         }
     }
     close FILE;
