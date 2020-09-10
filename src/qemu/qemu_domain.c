@@ -10429,7 +10429,8 @@ qemuDomainPrepareHostdev(virDomainHostdevDefPtr hostdev,
             const char *backendalias = hostdev->info->alias;
 
             if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
-                src->nodestorage = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
+                src->id = qemuDomainStorageIdNew(priv);
+                src->nodestorage = g_strdup_printf("libvirt-%d-backend", src->id);
                 backendalias = src->nodestorage;
             }
 

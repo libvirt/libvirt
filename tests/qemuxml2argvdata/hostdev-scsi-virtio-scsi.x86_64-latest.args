@@ -35,46 +35,46 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 "file":"libvirt-1-storage"}' \
 -device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
 -blockdev '{"driver":"host_device","filename":"/dev/sg0",\
-"node-name":"libvirt-hostdev0-backend","read-only":false}' \
+"node-name":"libvirt-2-backend","read-only":false}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=8,\
-drive=libvirt-hostdev0-backend,id=hostdev0 \
+drive=libvirt-2-backend,id=hostdev0 \
 -blockdev '{"driver":"host_device","filename":"/dev/sg0",\
-"node-name":"libvirt-hostdev1-backend","read-only":true}' \
+"node-name":"libvirt-3-backend","read-only":true}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=7,\
-drive=libvirt-hostdev1-backend,id=hostdev1 \
+drive=libvirt-3-backend,id=hostdev1 \
 -blockdev '{"driver":"host_device","filename":"/dev/sg0",\
-"node-name":"libvirt-ua-test-backend","read-only":false}' \
+"node-name":"libvirt-4-backend","read-only":false}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=6,\
-drive=libvirt-ua-test-backend,id=ua-test \
+drive=libvirt-4-backend,id=ua-test \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260",\
 "target":"iqn.1992-01.com.example","lun":0,"transport":"tcp",\
-"node-name":"libvirt-hostdev2-backend","read-only":false}' \
+"node-name":"libvirt-5-backend","read-only":false}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=4,\
-drive=libvirt-hostdev2-backend,id=hostdev2 \
+drive=libvirt-5-backend,id=hostdev2 \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260",\
 "target":"iqn.1992-01.com.example","lun":1,"transport":"tcp",\
-"node-name":"libvirt-hostdev3-backend","read-only":false}' \
+"node-name":"libvirt-6-backend","read-only":false}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=5,\
-drive=libvirt-hostdev3-backend,id=hostdev3 \
--object secret,id=libvirt-hostdev4-backend-secret0,\
+drive=libvirt-6-backend,id=hostdev3 \
+-object secret,id=libvirt-7-backend-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260",\
 "target":"iqn.1992-01.com.example:storage","lun":1,"transport":"tcp",\
-"user":"myname","password-secret":"libvirt-hostdev4-backend-secret0",\
-"node-name":"libvirt-hostdev4-backend","read-only":false}' \
+"user":"myname","password-secret":"libvirt-7-backend-secret0",\
+"node-name":"libvirt-7-backend","read-only":false}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=3,lun=4,\
-drive=libvirt-hostdev4-backend,id=hostdev4 \
--object secret,id=libvirt-hostdev5-backend-secret0,\
+drive=libvirt-7-backend,id=hostdev4 \
+-object secret,id=libvirt-8-backend-secret0,\
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260",\
 "target":"iqn.1992-01.com.example:storage","lun":2,"transport":"tcp",\
-"user":"myname","password-secret":"libvirt-hostdev5-backend-secret0",\
+"user":"myname","password-secret":"libvirt-8-backend-secret0",\
 "initiator-name":"iqn.2020-07.com.example:test",\
-"node-name":"libvirt-hostdev5-backend","read-only":false}' \
+"node-name":"libvirt-8-backend","read-only":false}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=3,lun=5,\
-drive=libvirt-hostdev5-backend,id=hostdev5 \
+drive=libvirt-8-backend,id=hostdev5 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
