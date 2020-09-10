@@ -1557,7 +1557,6 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
     virJSONValueFree(data->encryptsecretProps);
     virJSONValueFree(data->tlsProps);
     virJSONValueFree(data->tlsKeySecretProps);
-    VIR_FREE(data->storageNodeNameCopy);
     VIR_FREE(data->tlsAlias);
     VIR_FREE(data->tlsKeySecretAlias);
     VIR_FREE(data->authsecretAlias);
