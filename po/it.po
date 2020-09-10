@@ -9,13 +9,14 @@
 # Guido Grazioli <guido.grazioli@gmail.com>, 2008, 2009, 2012, 2013
 # Silvio Pierro <perplesso82@gmail.com>, 2009
 # Pino Toscano <toscano.pino@tiscali.it>, 2020.
+# Milo Casagrande <milo@milo.name>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-08-26 08:38+0000\n"
-"PO-Revision-Date: 2020-07-27 07:34+0000\n"
-"Last-Translator: Pino Toscano <toscano.pino@tiscali.it>\n"
+"PO-Revision-Date: 2020-09-10 13:43+0000\n"
+"Last-Translator: Milo Casagrande <milo@milo.name>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/it/>\n"
 "Language: it\n"
@@ -23,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1.1\n"
+"X-Generator: Weblate 4.2.2\n"
 
 msgid ""
 "\n"
@@ -266,11 +267,13 @@ msgstr ""
 "\n"
 "Dominio %s salvato su %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "Domain %s state saved by libvirt\n"
-msgstr "Dominio %s avviato\n"
+msgstr ""
+"\n"
+"Stato del dominio %s salvato da libvirt\n"
 
 #, c-format
 msgid ""
@@ -17104,13 +17107,13 @@ msgstr ""
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG parser for %s"
-msgstr "impossibile creare rundir %s: %s"
+msgstr "Impossibile creare un analizzatore RNG per %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG validation context %s"
-msgstr "Impossibile creare il contesto del client SASL: %d (%s)"
+msgstr "Impossibile creare il contesto di validazione RNG %s"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "Impossibile creare dispositivi TAP su questa piattaforma"
