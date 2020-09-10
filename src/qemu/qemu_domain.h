@@ -851,10 +851,6 @@ qemuDomainSecretInfoTLSNew(qemuDomainObjPrivatePtr priv,
 void qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr disk)
     ATTRIBUTE_NONNULL(1);
 
-int qemuDomainSecretHostdevPrepare(qemuDomainObjPrivatePtr priv,
-                                   virDomainHostdevDefPtr hostdev)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 void qemuDomainSecretChardevDestroy(virDomainChrSourceDefPtr dev)
     ATTRIBUTE_NONNULL(1);
 

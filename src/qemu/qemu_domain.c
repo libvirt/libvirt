@@ -1381,56 +1381,6 @@ qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
 }
 
 
-/* qemuDomainSecretHostdevPrepare:
- * @priv: pointer to domain private object
- * @hostdev: Pointer to a hostdev definition
- *
- * For the right host device, generate the qemuDomainSecretInfo structure.
- *
- * Returns 0 on success, -1 on failure
- */
-int
-qemuDomainSecretHostdevPrepare(qemuDomainObjPrivatePtr priv,
-                               virDomainHostdevDefPtr hostdev)
-{
-    if (virHostdevIsSCSIDevice(hostdev)) {
-        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
-        virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
-        virStorageSourcePtr src = iscsisrc->src;
-
-        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
-            src->auth) {
-            bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET);
-            virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
-            qemuDomainStorageSourcePrivatePtr srcPriv;
-
-            if (!(src->privateData = qemuDomainStorageSourcePrivateNew()))
-                return -1;
-
-            srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-
-            if (!qemuDomainSupportsEncryptedSecret(priv) || !iscsiHasPS) {
-                srcPriv->secinfo = qemuDomainSecretInfoNewPlain(usageType,
-                                                                src->auth->username,
-                                                                &src->auth->seclookupdef);
-            } else {
-                srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv,
-                                                                      hostdev->info->alias,
-                                                                      NULL,
-                                                                      usageType,
-                                                                      src->auth->username,
-                                                                      &src->auth->seclookupdef);
-            }
-
-            if (!srcPriv->secinfo)
-                return -1;
-        }
-    }
-
-    return 0;
-}
-
-
 void
 qemuDomainSecretChardevDestroy(virDomainChrSourceDefPtr dev)
 {
