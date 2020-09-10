@@ -38,7 +38,7 @@ You can manually check whether SEV is among the CPU flags with:
 
 ::
 
-   $ cat /proc/cpuinfo | grep sev
+   $ grep -w sev /proc/cpuinfo
    ...
    sme ssbd sev ibpb
 
