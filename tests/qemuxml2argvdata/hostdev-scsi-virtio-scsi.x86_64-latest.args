@@ -42,6 +42,10 @@ drive=libvirt-hostdev0-backend,id=hostdev0 \
 "node-name":"libvirt-hostdev1-backend","read-only":true}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=7,\
 drive=libvirt-hostdev1-backend,id=hostdev1 \
+-blockdev '{"driver":"host_device","filename":"/dev/sg0",\
+"node-name":"libvirt-ua-test-backend","read-only":false}' \
+-device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=6,\
+drive=libvirt-ua-test-backend,id=ua-test \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260",\
 "target":"iqn.1992-01.com.example","lun":0,"transport":"tcp",\
 "node-name":"libvirt-hostdev2-backend","read-only":false}' \
