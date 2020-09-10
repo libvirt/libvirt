@@ -10426,8 +10426,11 @@ qemuDomainPrepareHostdev(virDomainHostdevDefPtr hostdev,
         }
 
         if (src) {
+            const char *backendalias = hostdev->info->alias;
+
             if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
                 src->nodestorage = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
+                backendalias = src->nodestorage;
             }
 
             if (src->auth) {
@@ -10441,7 +10444,7 @@ qemuDomainPrepareHostdev(virDomainHostdevDefPtr hostdev,
                                                                     &src->auth->seclookupdef);
                 } else {
                     srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv,
-                                                                          hostdev->info->alias,
+                                                                          backendalias,
                                                                           NULL,
                                                                           usageType,
                                                                           src->auth->username,
