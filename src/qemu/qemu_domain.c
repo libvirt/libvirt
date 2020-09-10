@@ -1596,13 +1596,7 @@ qemuDomainSecretPrepare(virQEMUDriverPtr driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     size_t i;
 
-    /* disk secrets are prepared when preparing disks */
-
-    for (i = 0; i < vm->def->nhostdevs; i++) {
-        if (qemuDomainSecretHostdevPrepare(priv,
-                                           vm->def->hostdevs[i]) < 0)
-            return -1;
-    }
+    /* disk and hostdev secrets are prepared when preparing internal data */
 
     for (i = 0; i < vm->def->nserials; i++) {
         if (qemuDomainSecretChardevPrepare(cfg, priv,
@@ -10449,6 +10443,57 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
     } else {
         if (qemuDomainPrepareDiskSourceLegacy(disk, priv, cfg) < 0)
             return -1;
+    }
+
+    return 0;
+}
+
+
+int
+qemuDomainPrepareHostdev(virDomainHostdevDefPtr hostdev,
+                         qemuDomainObjPrivatePtr priv)
+{
+    if (virHostdevIsSCSIDevice(hostdev)) {
+        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+        virStorageSourcePtr src = NULL;
+
+        switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
+            src = scsisrc->u.iscsi.src;
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
+            return -1;
+        }
+
+        if (src) {
+            if (src->auth) {
+                bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET);
+                virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
+                qemuDomainStorageSourcePrivatePtr srcPriv = qemuDomainStorageSourcePrivateFetch(src);
+
+                if (!qemuDomainSupportsEncryptedSecret(priv) || !iscsiHasPS) {
+                    srcPriv->secinfo = qemuDomainSecretInfoNewPlain(usageType,
+                                                                    src->auth->username,
+                                                                    &src->auth->seclookupdef);
+                } else {
+                    srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv,
+                                                                          hostdev->info->alias,
+                                                                          NULL,
+                                                                          usageType,
+                                                                          src->auth->username,
+                                                                          &src->auth->seclookupdef);
+                }
+
+                if (!srcPriv->secinfo)
+                    return -1;
+            }
+        }
     }
 
     return 0;

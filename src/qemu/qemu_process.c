@@ -6213,6 +6213,23 @@ qemuProcessPrepareDomainStorage(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessPrepareDomainHostdevs(virDomainObjPtr vm,
+                                 qemuDomainObjPrivatePtr priv)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
+
+        if (qemuDomainPrepareHostdev(hostdev, priv) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static void
 qemuProcessPrepareAllowReboot(virDomainObjPtr vm)
 {
@@ -6313,6 +6330,10 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Setting up storage");
     if (qemuProcessPrepareDomainStorage(driver, vm, priv, cfg, flags) < 0)
+        return -1;
+
+    VIR_DEBUG("Setting up host devices");
+    if (qemuProcessPrepareDomainHostdevs(vm, priv) < 0)
         return -1;
 
     VIR_DEBUG("Prepare chardev source backends for TLS");
