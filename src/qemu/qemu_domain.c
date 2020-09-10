@@ -10409,6 +10409,10 @@ qemuDomainPrepareHostdev(virDomainHostdevDefPtr hostdev,
 
         switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
         case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
+            virObjectUnref(scsisrc->u.host.src);
+            if (!(scsisrc->u.host.src = virStorageSourceNew()))
+                return -1;
+            src = scsisrc->u.host.src;
             break;
 
         case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
@@ -10422,6 +10426,10 @@ qemuDomainPrepareHostdev(virDomainHostdevDefPtr hostdev,
         }
 
         if (src) {
+            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
+                src->nodestorage = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
+            }
+
             if (src->auth) {
                 bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET);
                 virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;

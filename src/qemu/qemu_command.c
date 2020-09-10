@@ -5105,9 +5105,11 @@ qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDefPtr hostdev,
 
         switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
         case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
-            if (!scsisrc->u.host.src &&
-                !(scsisrc->u.host.src = virStorageSourceNew()))
+            if (!scsisrc->u.host.src) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("SCSI host device data structure was not initialized"));
                 return NULL;
+            }
 
             if (!(devstr = qemuBuildSCSIHostHostdevDrvStr(hostdev)))
                 return NULL;
@@ -5130,7 +5132,6 @@ qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDefPtr hostdev,
             return NULL;
         }
 
-        src->nodestorage = g_strdup_printf("libvirt-%s-backend", hostdev->info->alias);
         ret->storageNodeName = src->nodestorage;
         *backendAlias = src->nodestorage;
 
