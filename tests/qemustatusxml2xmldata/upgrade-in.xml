@@ -511,6 +511,14 @@
         <alias name='hostdev1'/>
         <address type='drive' controller='0' bus='0' target='2' unit='5'/>
       </hostdev>
+      <hostdev mode='subsystem' type='scsi' managed='yes'>
+        <source>
+          <adapter name='scsi_host0'/>
+          <address bus='0' target='0' unit='0'/>
+        </source>
+        <alias name='hostdev2'/>
+        <address type='drive' controller='0' bus='0' target='2' unit='6'/>
+      </hostdev>
       <redirdev bus='usb' type='spicevmc'>
         <alias name='redir0'/>
         <address type='usb' bus='0' port='2'/>
