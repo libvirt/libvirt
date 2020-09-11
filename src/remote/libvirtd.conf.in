@@ -173,7 +173,7 @@
 #
 # If libvirt was compiled with support for 'polkit', then
 # the systemd .socket files will use SocketMode=0666 which
-# allows any user to connect and 'auth_iunix_rw' will default
+# allows any user to connect and 'auth_unix_rw' will default
 # to 'polkit'. If you disable use of 'polkit' here, then it
 # is essential to change the systemd SocketMode parameter
 # back to 0600, to avoid an insecure configuration.
