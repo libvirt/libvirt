@@ -1372,7 +1372,7 @@ static const vshCmdInfo info_network_dhcp_leases[] = {
 };
 
 static const vshCmdOptDef opts_network_dhcp_leases[] = {
-    VIRSH_COMMON_OPT_NETWORK_FULL(0),
+    VIRSH_COMMON_OPT_NETWORK_FULL(VIR_CONNECT_LIST_NETWORKS_ACTIVE),
     {.name = "mac",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_NONE,
