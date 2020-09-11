@@ -78,3 +78,7 @@ char ** virshDomainUUIDCompleter(vshControl *ctl,
 char ** virshDomainIOThreadIdCompleter(vshControl *ctl,
                                        const vshCmd *cmd,
                                        unsigned int flags);
+
+char ** virshDomainVcpuCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int flags);

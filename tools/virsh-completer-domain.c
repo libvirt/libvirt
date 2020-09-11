@@ -476,3 +476,45 @@ virshDomainIOThreadIdCompleter(vshControl *ctl,
     virshDomainFree(dom);
     return ret;
 }
+
+
+char **
+virshDomainVcpuCompleter(vshControl *ctl,
+                         const vshCmd *cmd,
+                         unsigned int flags)
+{
+    virDomainPtr dom = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    int nvcpus = 0;
+    unsigned int id;
+    char **ret = NULL;
+    VIR_AUTOSTRINGLIST tmp = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return NULL;
+
+    if (virshDomainGetXMLFromDom(ctl, dom, VIR_DOMAIN_XML_INACTIVE,
+                                 &xml, &ctxt) < 0)
+        goto cleanup;
+
+    /* Query the max rather than the current vcpu count */
+    if (virXPathInt("string(/domain/vcpu)", ctxt, &nvcpus) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(tmp, nvcpus + 1) < 0)
+        goto cleanup;
+
+    for (id = 0; id < nvcpus; id++)
+        tmp[id] = g_strdup_printf("%u", id);
+
+    ret = g_steal_pointer(&tmp);
+
+ cleanup:
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    virshDomainFree(dom);
+    return ret;
+}
