@@ -27,8 +27,8 @@
 
 #include "internal.h"
 
-#define VIR_MOCK_COUNT_ARGS(...) VIR_MOCK_ARG21(__VA_ARGS__, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
-#define VIR_MOCK_ARG21(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, ...) _21
+#define VIR_MOCK_COUNT_ARGS(...) VIR_MOCK_ARG27(__VA_ARGS__, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+#define VIR_MOCK_ARG27(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, ...) _27
 #define VIR_MOCK_ARG_PASTE(a, b, ...) a##b(__VA_ARGS__)
 
 #define VIR_MOCK_ARGNAME(a, b) b
@@ -56,6 +56,12 @@
 #define VIR_MOCK_GET_ARG19(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r)
 #define VIR_MOCK_GET_ARG20(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t)
 #define VIR_MOCK_GET_ARG21(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t)
+#define VIR_MOCK_GET_ARG22(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t), z(u, v)
+#define VIR_MOCK_GET_ARG23(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t), z(u, v)
+#define VIR_MOCK_GET_ARG24(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t), z(u, v), z(w, x)
+#define VIR_MOCK_GET_ARG25(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t), z(u, v), z(w, x)
+#define VIR_MOCK_GET_ARG26(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, aa) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t), z(u, v), z(w, x), z(y, aa)
+#define VIR_MOCK_GET_ARG27(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, aa, ab) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t), z(u, v), z(w, x), z(y, aa)
 
 
 #define VIR_MOCK_ARGNAMES_EXPAND(a, b, ...) VIR_MOCK_ARG_PASTE(a, b, __VA_ARGS__)
