@@ -539,8 +539,8 @@ void virNetMessageSaveError(virNetMessageErrorPtr rerr)
     } else {
         rerr->code = VIR_ERR_INTERNAL_ERROR;
         rerr->domain = VIR_FROM_RPC;
-        if (VIR_ALLOC_QUIET(rerr->message) == 0)
-            *rerr->message = g_strdup(_("Library function returned error but did not set virError"));
+        rerr->message = g_new0(virNetMessageNonnullString, 1);
+        *rerr->message = g_strdup(_("Library function returned error but did not set virError"));
         rerr->level = VIR_ERR_ERROR;
     }
 }
