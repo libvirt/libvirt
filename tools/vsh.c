@@ -2709,13 +2709,11 @@ vshCompleterFilter(char ***list,
         return -1;
 
     list_len = virStringListLength((const char **) *list);
-
-    if (VIR_ALLOC_N(newList, list_len + 1) < 0)
-        return -1;
+    newList = g_new0(char *, list_len + 1);
 
     for (i = 0; i < list_len; i++) {
         if (!STRPREFIX((*list)[i], text)) {
-            VIR_FREE((*list)[i]);
+            g_clear_pointer(&(*list)[i], g_free);
             continue;
         }
 
@@ -2723,8 +2721,8 @@ vshCompleterFilter(char ***list,
         newList_len++;
     }
 
-    ignore_value(VIR_REALLOC_N_QUIET(newList, newList_len + 1));
-    VIR_FREE(*list);
+    newList = g_renew(char *, newList, newList_len + 1);
+    g_free(*list);
     *list = newList;
     return 0;
 }
