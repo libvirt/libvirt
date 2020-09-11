@@ -404,8 +404,7 @@ virSaveLastError(void)
     virErrorPtr to;
     int saved_errno = errno;
 
-    if (VIR_ALLOC_QUIET(to) < 0)
-        return NULL;
+    to = g_new0(virError, 1);
 
     virCopyLastError(to);
     errno = saved_errno;
