@@ -16770,7 +16770,7 @@ qemuDomainPMSuspendAgent(virQEMUDriverPtr driver,
     if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) < 0)
         return -1;
 
-    if ((ret = virDomainObjCheckActive(vm)) < 0)
+    if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
     if (!qemuDomainAgentAvailable(vm, true))
