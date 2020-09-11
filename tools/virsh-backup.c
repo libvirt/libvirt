@@ -36,7 +36,7 @@ static const vshCmdInfo info_backup_begin[] = {
 };
 
 static const vshCmdOptDef opts_backup_begin[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "backupxml",
      .type = VSH_OT_STRING,
      .help = N_("domain backup XML"),
@@ -112,7 +112,7 @@ static const vshCmdInfo info_backup_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_backup_dumpxml[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = NULL}
 };
 
