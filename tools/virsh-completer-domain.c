@@ -81,6 +81,58 @@ virshDomainNameCompleter(vshControl *ctl,
 
 
 char **
+virshDomainUUIDCompleter(vshControl *ctl,
+                         const vshCmd *cmd G_GNUC_UNUSED,
+                         unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virDomainPtr *domains = NULL;
+    int ndomains = 0;
+    size_t i = 0;
+    char **ret = NULL;
+    VIR_AUTOSTRINGLIST tmp = NULL;
+
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_ACTIVE |
+                  VIR_CONNECT_LIST_DOMAINS_INACTIVE |
+                  VIR_CONNECT_LIST_DOMAINS_OTHER |
+                  VIR_CONNECT_LIST_DOMAINS_PAUSED |
+                  VIR_CONNECT_LIST_DOMAINS_PERSISTENT |
+                  VIR_CONNECT_LIST_DOMAINS_RUNNING |
+                  VIR_CONNECT_LIST_DOMAINS_SHUTOFF |
+                  VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE |
+                  VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT |
+                  VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT,
+                  NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if ((ndomains = virConnectListAllDomains(priv->conn, &domains, flags)) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(tmp, ndomains + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ndomains; i++) {
+        char uuid[VIR_UUID_STRING_BUFLEN];
+
+        if (virDomainGetUUIDString(domains[i], uuid) < 0)
+            goto cleanup;
+
+        tmp[i] = g_strdup(uuid);
+    }
+
+    ret = g_steal_pointer(&tmp);
+
+ cleanup:
+    for (i = 0; i < ndomains; i++)
+        virshDomainFree(domains[i]);
+    VIR_FREE(domains);
+    return ret;
+}
+
+
+char **
 virshDomainInterfaceCompleter(vshControl *ctl,
                               const vshCmd *cmd,
                               unsigned int flags)

@@ -70,3 +70,7 @@ char ** virshDomainPerfEnableCompleter(vshControl *ctl,
 char ** virshDomainPerfDisableCompleter(vshControl *ctl,
                                         const vshCmd *cmd,
                                         unsigned int flags);
+
+char ** virshDomainUUIDCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int flags);
