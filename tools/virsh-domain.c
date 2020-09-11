@@ -4848,7 +4848,7 @@ static const vshCmdInfo info_managedsaveremove[] = {
 };
 
 static const vshCmdOptDef opts_managedsaveremove[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE),
     {.name = NULL}
 };
 
@@ -4903,7 +4903,7 @@ static const vshCmdInfo info_managed_save_edit[] = {
 };
 
 static const vshCmdOptDef opts_managed_save_edit[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE),
     {.name = "running",
      .type = VSH_OT_BOOL,
      .help = N_("set domain to be running on start")
@@ -4969,7 +4969,7 @@ static const vshCmdInfo info_managed_save_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_managed_save_dumpxml[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE),
     {.name = "security-info",
      .type = VSH_OT_BOOL,
      .help = N_("include security sensitive information in XML dump")
@@ -5017,7 +5017,7 @@ static const vshCmdInfo info_managed_save_define[] = {
 };
 
 static const vshCmdOptDef opts_managed_save_define[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE),
     {.name = "xml",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
