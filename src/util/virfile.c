@@ -4327,8 +4327,7 @@ virFileGetXAttrQuiet(const char *path,
                      const char *name,
                      char **value)
 {
-    char *buf = NULL;
-    int ret = -1;
+    g_autofree char *buf = NULL;
 
     /* We might be racing with somebody who sets the same attribute. */
     while (1) {
@@ -4337,15 +4336,14 @@ virFileGetXAttrQuiet(const char *path,
 
         /* The first call determines how many bytes we need to allocate. */
         if ((need = getxattr(path, name, NULL, 0)) < 0)
-            goto cleanup;
+            return -1;
 
-        if (VIR_REALLOC_N_QUIET(buf, need + 1) < 0)
-            goto cleanup;
+        buf = g_renew(char, buf, need + 1);
 
         if ((got = getxattr(path, name, buf, need)) < 0) {
             if (errno == ERANGE)
                 continue;
-            goto cleanup;
+            return -1;
         }
 
         buf[got] = '\0';
@@ -4353,10 +4351,7 @@ virFileGetXAttrQuiet(const char *path,
     }
 
     *value = g_steal_pointer(&buf);
-    ret = 0;
- cleanup:
-    VIR_FREE(buf);
-    return ret;
+    return 0;
 }
 
 /**
