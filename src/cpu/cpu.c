@@ -286,9 +286,7 @@ virCPUDataNew(virArch arch)
 {
     virCPUDataPtr data;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
-
+    data = g_new0(virCPUData, 1);
     data->arch = arch;
 
     return data;
