@@ -2082,7 +2082,7 @@ qemuProcessReadLog(qemuDomainLogContextPtr logCtxt,
         got -= skip;
     }
 
-    ignore_value(VIR_REALLOC_N_QUIET(buf, got + 1));
+    buf = g_renew(char, buf, got + 1);
     *msg = buf;
     return 0;
 }
