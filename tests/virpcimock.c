@@ -701,12 +701,12 @@ pci_driver_new(const char *name, ...)
         if ((device = va_arg(args, int)) == -1)
             ABORT("Invalid vendor device pair for driver %s", name);
 
-        if (VIR_REALLOC_N_QUIET(driver->vendor, driver->len + 1) < 0 ||
-            VIR_REALLOC_N_QUIET(driver->device, driver->len + 1) < 0)
-            ABORT_OOM();
-
+        driver->vendor = g_renew(int, driver->vendor, driver->len + 1);
         driver->vendor[driver->len] = vendor;
+
+        driver->device = g_renew(int, driver->device, driver->len + 1);
         driver->device[driver->len] = device;
+
         driver->len++;
     }
 
