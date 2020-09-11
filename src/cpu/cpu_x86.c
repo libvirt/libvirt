@@ -493,7 +493,7 @@ virCPUx86DataFree(virCPUDataPtr data)
         return;
 
     virCPUx86DataClear(&data->data.x86);
-    VIR_FREE(data);
+    g_free(data);
 }
 
 
@@ -2207,7 +2207,7 @@ x86Decode(virCPUDefPtr cpu,
             if (x86FeatureIsMigratable(cpuModel->features[i].name, map)) {
                 i++;
             } else {
-                VIR_FREE(cpuModel->features[i].name);
+                g_free(cpuModel->features[i].name);
                 VIR_DELETE_ELEMENT_INPLACE(cpuModel->features, i,
                                            cpuModel->nfeatures);
             }
@@ -2892,7 +2892,7 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
         cpu->fallback = VIR_CPU_FALLBACK_FORBID;
 
     if (!outputVendor)
-        VIR_FREE(cpu->vendor);
+        g_clear_pointer(&cpu->vendor, g_free);
 
     return g_steal_pointer(&cpu);
 }
@@ -2914,7 +2914,7 @@ x86UpdateHostModel(virCPUDefPtr guest,
         return -1;
 
     if (guest->vendor_id) {
-        VIR_FREE(updated->vendor_id);
+        g_free(updated->vendor_id);
         updated->vendor_id = g_strdup(guest->vendor_id);
     }
 

@@ -315,7 +315,7 @@ virCPUDataFree(virCPUDataPtr data)
     if ((driver = cpuGetSubDriver(data->arch)) && driver->dataFree)
         driver->dataFree(data);
     else
-        VIR_FREE(data);
+        g_free(data);
 }
 
 

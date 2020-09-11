@@ -126,7 +126,7 @@ ppc64DataClear(virCPUppc64Data *data)
     if (!data)
         return;
 
-    VIR_FREE(data->pvr);
+    g_clear_pointer(&data->pvr, g_free);
 }
 
 static int
@@ -151,8 +151,8 @@ ppc64VendorFree(virCPUppc64VendorPtr vendor)
     if (!vendor)
         return;
 
-    VIR_FREE(vendor->name);
-    VIR_FREE(vendor);
+    g_free(vendor->name);
+    g_free(vendor);
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Vendor, ppc64VendorFree);
 
@@ -177,8 +177,8 @@ ppc64ModelFree(virCPUppc64ModelPtr model)
         return;
 
     ppc64DataClear(&model->data);
-    VIR_FREE(model->name);
-    VIR_FREE(model);
+    g_free(model->name);
+    g_free(model);
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Model, ppc64ModelFree);
 
@@ -261,13 +261,13 @@ ppc64MapFree(virCPUppc64MapPtr map)
 
     for (i = 0; i < map->nmodels; i++)
         ppc64ModelFree(map->models[i]);
-    VIR_FREE(map->models);
+    g_free(map->models);
 
     for (i = 0; i < map->nvendors; i++)
         ppc64VendorFree(map->vendors[i]);
-    VIR_FREE(map->vendors);
+    g_free(map->vendors);
 
-    VIR_FREE(map);
+    g_free(map);
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Map, ppc64MapFree);
 
@@ -584,7 +584,7 @@ virCPUppc64DataFree(virCPUDataPtr data)
         return;
 
     ppc64DataClear(&data->data.ppc64);
-    VIR_FREE(data);
+    g_free(data);
 }
 
 
