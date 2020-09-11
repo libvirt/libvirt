@@ -2156,7 +2156,7 @@ dompmwakeup
 Wakeup a domain from pmsuspended state (either suspended by dompmsuspend or
 from the guest itself). Injects a wakeup into the guest that is in pmsuspended
 state, rather than waiting for the previously requested duration (if any) to
-elapse. This operation doesn't not necessarily fail if the domain is running.
+elapse. This operation does not necessarily fail if the domain is running.
 
 
 domrename
