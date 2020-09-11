@@ -439,3 +439,40 @@ virshDomainPerfDisableCompleter(vshControl *ctl,
 
     return virshCommaStringListComplete(event, (const char **)events);
 }
+
+
+char **
+virshDomainIOThreadIdCompleter(vshControl *ctl,
+                               const vshCmd *cmd,
+                               unsigned int flags)
+{
+    virDomainPtr dom = NULL;
+    size_t niothreads = 0;
+    g_autofree virDomainIOThreadInfoPtr *info = NULL;
+    size_t i;
+    int rc;
+    char **ret = NULL;
+    VIR_AUTOSTRINGLIST tmp = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return NULL;
+
+    if ((rc = virDomainGetIOThreadInfo(dom, &info, flags)) < 0)
+        goto cleanup;
+
+    niothreads = rc;
+
+    if (VIR_ALLOC_N(tmp, niothreads + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < niothreads; i++)
+        tmp[i] = g_strdup_printf("%u", info[i]->iothread_id);
+
+    ret = g_steal_pointer(&tmp);
+
+ cleanup:
+    virshDomainFree(dom);
+    return ret;
+}

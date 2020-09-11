@@ -74,3 +74,7 @@ char ** virshDomainPerfDisableCompleter(vshControl *ctl,
 char ** virshDomainUUIDCompleter(vshControl *ctl,
                                  const vshCmd *cmd,
                                  unsigned int flags);
+
+char ** virshDomainIOThreadIdCompleter(vshControl *ctl,
+                                       const vshCmd *cmd,
+                                       unsigned int flags);
