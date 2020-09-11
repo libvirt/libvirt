@@ -399,7 +399,7 @@ static virCPUDataPtr
 ppc64MakeCPUData(virArch arch,
                  virCPUppc64Data *data)
 {
-    virCPUDataPtr cpuData;
+    g_autoptr(virCPUData) cpuData = NULL;
 
     if (VIR_ALLOC(cpuData) < 0)
         return NULL;
@@ -407,9 +407,9 @@ ppc64MakeCPUData(virArch arch,
     cpuData->arch = arch;
 
     if (ppc64DataCopy(&cpuData->data.ppc64, data) < 0)
-        VIR_FREE(cpuData);
+        return NULL;
 
-    return cpuData;
+    return g_steal_pointer(&cpuData);
 }
 
 static virCPUCompareResult
