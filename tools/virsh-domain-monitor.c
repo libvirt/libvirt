@@ -469,6 +469,8 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
     char *phy = NULL;
     vshTablePtr table = NULL;
 
+    VSH_EXCLUSIVE_OPTIONS("all", "device");
+
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
