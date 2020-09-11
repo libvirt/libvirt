@@ -9109,6 +9109,7 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
     int npar = 0;
     size_t i;
     int ret = -1;
+    bool live = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -9123,7 +9124,7 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
-    if (!(def = virDomainObjGetOneDef(vm, flags)))
+    if (!(def = virDomainObjGetOneDefState(vm, flags, &live)))
         goto endjob;
 
     priv = vm->privateData;
@@ -9131,7 +9132,7 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
         bool perf_enabled;
 
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+        if ((flags & VIR_DOMAIN_AFFECT_CONFIG) || !live)
             perf_enabled = def->perf.events[i] == VIR_TRISTATE_BOOL_YES;
         else
             perf_enabled = virPerfEventIsEnabled(priv->perf, i);
