@@ -305,11 +305,7 @@ add_fd(int fd, const char *path)
               fd, path, cb.fd, cb.path);
     }
 
-    if (VIR_REALLOC_N_QUIET(callbacks, nCallbacks + 1) < 0) {
-        errno = ENOMEM;
-        return -1;
-    }
-
+    callbacks = g_renew(struct fdCallback, callbacks, nCallbacks + 1);
     callbacks[nCallbacks].path = g_strdup(path);
     callbacks[nCallbacks++].fd = fd;
 
