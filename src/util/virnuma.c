@@ -260,7 +260,7 @@ virNumaGetNodeCPUs(int node,
 
     *cpus = NULL;
 
-    if (!nodemask_isset(&numa_all_nodes, node)) {
+    if (!virNumaNodeIsAvailable(node)) {
         VIR_DEBUG("NUMA topology for cell %d is not available, ignoring", node);
         return -2;
     }
