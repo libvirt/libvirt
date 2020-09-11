@@ -16820,6 +16820,9 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     if (virDomainPMSuspendForDurationEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto cleanup;
+
     /*
      * The case we want to handle here is when QEMU has the API (i.e.
      * QEMU_CAPS_QUERY_CURRENT_MACHINE is set). Otherwise, do not interfere
