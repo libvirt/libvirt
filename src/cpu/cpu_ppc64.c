@@ -134,9 +134,7 @@ ppc64DataCopy(virCPUppc64Data *dst, const virCPUppc64Data *src)
 {
     size_t i;
 
-    if (VIR_ALLOC_N(dst->pvr, src->len) < 0)
-        return -1;
-
+    dst->pvr = g_new0(virCPUppc64PVR, src->len);
     dst->len = src->len;
 
     for (i = 0; i < src->len; i++) {
@@ -343,9 +341,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
         return -1;
     }
 
-    if (VIR_ALLOC_N(model->data.pvr, n) < 0)
-        return -1;
-
+    model->data.pvr = g_new0(virCPUppc64PVR, n);
     model->data.len = n;
 
     for (i = 0; i < n; i++) {
@@ -603,10 +599,7 @@ virCPUppc64GetHost(virCPUDefPtr cpu,
         return -1;
 
     data = &cpuData->data.ppc64;
-
-    if (VIR_ALLOC_N(data->pvr, 1) < 0)
-        return -1;
-
+    data->pvr = g_new0(virCPUppc64PVR, 1);
     data->len = 1;
 
 #if defined(__powerpc__) || defined(__powerpc64__)
@@ -732,8 +725,7 @@ virCPUppc64DriverGetModels(char ***models)
         return -1;
 
     if (models) {
-        if (VIR_ALLOC_N(*models, map->nmodels + 1) < 0)
-            return -1;
+        *models = g_new0(char*, map->nmodels + 1);
 
         for (i = 0; i < map->nmodels; i++)
             (*models)[i] = g_strdup(map->models[i]->name);
