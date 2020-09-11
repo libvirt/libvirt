@@ -2778,6 +2778,7 @@ vshReadlineParse(const char *text, int state)
         } else {
             if (!opt || (opt->type != VSH_OT_DATA &&
                          opt->type != VSH_OT_STRING &&
+                         opt->type != VSH_OT_INT &&
                          opt->type != VSH_OT_ARGV))
                 list = vshReadlineOptionsGenerator(text, cmd, partial);
 
