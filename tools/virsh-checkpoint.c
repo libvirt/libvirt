@@ -90,7 +90,7 @@ static const vshCmdInfo info_checkpoint_create[] = {
 };
 
 static const vshCmdOptDef opts_checkpoint_create[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "xmlfile",
      .type = VSH_OT_STRING,
      .help = N_("domain checkpoint XML")
@@ -201,7 +201,7 @@ static const vshCmdInfo info_checkpoint_create_as[] = {
 };
 
 static const vshCmdOptDef opts_checkpoint_create_as[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "name",
      .type = VSH_OT_STRING,
      .help = N_("name of checkpoint")
@@ -1015,7 +1015,8 @@ static const vshCmdInfo info_checkpoint_delete[] = {
 };
 
 static const vshCmdOptDef opts_checkpoint_delete[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT |
+                                 VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
      .help = N_("checkpoint name"),
