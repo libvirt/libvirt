@@ -423,7 +423,7 @@ virNumaGetMaxCPUs(void)
 }
 
 
-#if WITH_NUMACTL && WITH_NUMA_BITMASK_ISBITSET
+#if WITH_NUMACTL
 /**
  * virNumaNodeIsAvailable:
  * @node: node to check
@@ -493,7 +493,7 @@ virNumaGetDistances(int node,
     return 0;
 }
 
-#else /* !(WITH_NUMACTL && WITH_NUMA_BITMASK_ISBITSET) */
+#else /* !WITH_NUMACTL */
 
 bool
 virNumaNodeIsAvailable(int node)
@@ -518,7 +518,7 @@ virNumaGetDistances(int node G_GNUC_UNUSED,
     VIR_DEBUG("NUMA distance information isn't available on this host");
     return 0;
 }
-#endif /* !(WITH_NUMACTL && WITH_NUMA_BITMASK_ISBITSET) */
+#endif /* !WITH_NUMACTL */
 
 
 /* currently all the huge page stuff below is linux only */

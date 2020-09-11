@@ -1239,13 +1239,10 @@ else
   intl_dep = dependency('', required: false)
 endif
 
+numactl_version = '2.0.6'
 numactl_dep = cc.find_library('numa', required: get_option('numactl'))
 if numactl_dep.found()
   conf.set('WITH_NUMACTL', 1)
-
-  if cc.has_function('numa_bitmask_isbitset', dependencies: [ numactl_dep ])
-    conf.set('WITH_NUMA_BITMASK_ISBITSET', 1)
-  endif
 endif
 
 openwsman_version = '2.2.3'
