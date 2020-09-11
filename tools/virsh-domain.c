@@ -9332,10 +9332,12 @@ static const vshCmdOptDef opts_perf[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "enable",
      .type = VSH_OT_STRING,
+     .completer = virshDomainPerfEnableCompleter,
      .help = N_("perf events which will be enabled")
     },
     {.name = "disable",
      .type = VSH_OT_STRING,
+     .completer = virshDomainPerfDisableCompleter,
      .help = N_("perf events which will be disabled")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,

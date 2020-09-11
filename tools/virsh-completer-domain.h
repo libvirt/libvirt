@@ -62,3 +62,11 @@ virshDomainInterfaceAddrSourceCompleter(vshControl *ctl,
 char ** virshDomainHostnameSourceCompleter(vshControl *ctl,
                                            const vshCmd *cmd,
                                            unsigned int flags);
+
+char ** virshDomainPerfEnableCompleter(vshControl *ctl,
+                                       const vshCmd *cmd,
+                                       unsigned int flags);
+
+char ** virshDomainPerfDisableCompleter(vshControl *ctl,
+                                        const vshCmd *cmd,
+                                        unsigned int flags);

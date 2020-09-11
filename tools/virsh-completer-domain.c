@@ -29,6 +29,7 @@
 #include "virsh.h"
 #include "virstring.h"
 #include "virxml.h"
+#include "virperf.h"
 
 char **
 virshDomainNameCompleter(vshControl *ctl,
@@ -337,4 +338,52 @@ virshDomainHostnameSourceCompleter(vshControl *ctl G_GNUC_UNUSED,
         ret[i] = g_strdup(virshDomainHostnameSourceTypeToString(i));
 
     return ret;
+}
+
+
+char **
+virshDomainPerfEnableCompleter(vshControl *ctl,
+                              const vshCmd *cmd,
+                              unsigned int flags)
+{
+    size_t i = 0;
+    VIR_AUTOSTRINGLIST events = NULL;
+    const char *event = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (VIR_ALLOC_N(events, VIR_PERF_EVENT_LAST + 1) < 0)
+        return NULL;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++)
+        events[i] = g_strdup(virPerfEventTypeToString(i));
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "enable", &event) < 0)
+        return NULL;
+
+    return virshCommaStringListComplete(event, (const char **)events);
+}
+
+
+char **
+virshDomainPerfDisableCompleter(vshControl *ctl,
+                                const vshCmd *cmd,
+                                unsigned int flags)
+{
+    size_t i = 0;
+    VIR_AUTOSTRINGLIST events = NULL;
+    const char *event = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (VIR_ALLOC_N(events, VIR_PERF_EVENT_LAST + 1) < 0)
+        return NULL;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++)
+        events[i] = g_strdup(virPerfEventTypeToString(i));
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "disable", &event) < 0)
+        return NULL;
+
+    return virshCommaStringListComplete(event, (const char **)events);
 }
