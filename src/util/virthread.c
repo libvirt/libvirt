@@ -253,11 +253,8 @@ int virThreadCreateFull(virThreadPtr thread,
 
     if ((err = pthread_attr_init(&attr)) != 0)
         goto cleanup;
-    if (VIR_ALLOC_QUIET(args) < 0) {
-        err = ENOMEM;
-        goto cleanup;
-    }
 
+    args = g_new0(struct virThreadArgs, 1);
     args->func = func;
     args->name = g_strdup(name);
     args->worker = worker;
