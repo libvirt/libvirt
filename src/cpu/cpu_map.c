@@ -43,7 +43,6 @@ loadData(const char *mapfile,
     g_autofree xmlNodePtr *nodes = NULL;
     int n;
     size_t i;
-    int rv;
 
     if ((n = virXPathNodeSet(element, ctxt, &nodes)) < 0)
         return -1;
@@ -64,8 +63,7 @@ loadData(const char *mapfile,
         }
         VIR_DEBUG("Load %s name %s", element, name);
         ctxt->node = nodes[i];
-        rv = callback(ctxt, name, data);
-        if (rv < 0)
+        if (callback(ctxt, name, data) < 0)
             return -1;
     }
 
