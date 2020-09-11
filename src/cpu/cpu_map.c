@@ -55,8 +55,9 @@ loadData(const char *mapfile,
     }
 
     for (i = 0; i < n; i++) {
-        char *name = virXMLPropString(nodes[i], "name");
-        if (!name) {
+        g_autofree char *name = NULL;
+
+        if (!(name = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot find %s name in CPU map '%s'"), element, mapfile);
             return -1;
@@ -64,7 +65,6 @@ loadData(const char *mapfile,
         VIR_DEBUG("Load %s name %s", element, name);
         ctxt->node = nodes[i];
         rv = callback(ctxt, name, data);
-        VIR_FREE(name);
         if (rv < 0)
             return -1;
     }
