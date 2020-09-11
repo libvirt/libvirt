@@ -427,9 +427,7 @@ pci_device_create_iommu(const struct pciDevice *dev,
             return;
     }
 
-    if (VIR_ALLOC_QUIET(iommuGroup) < 0)
-        ABORT_OOM();
-
+    iommuGroup = g_new0(struct pciIommuGroup, 1);
     iommuGroup->iommu = dev->iommuGroup;
     iommuGroup->nDevicesBoundToVFIO = 0; /* No device bound to VFIO by default */
 
@@ -469,8 +467,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
         c = strchr(c, ':');
     }
 
-    if (VIR_ALLOC_QUIET(dev) < 0)
-        ABORT_OOM();
+    dev = g_new0(struct pciDevice, 1);
 
     configSrc = g_strdup_printf("%s/virpcitestdata/%s.config", abs_srcdir, id);
 
@@ -694,8 +691,7 @@ pci_driver_new(const char *name, ...)
     int vendor, device;
     g_autofree char *driverpath = NULL;
 
-    if (VIR_ALLOC_QUIET(driver) < 0)
-        ABORT_OOM();
+    driver = g_new0(struct pciDriver, 1);
     driver->name = g_strdup(name);
     if (!(driverpath = pci_driver_get_path(driver, NULL, true)))
         ABORT_OOM();
