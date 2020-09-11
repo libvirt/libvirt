@@ -604,27 +604,33 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
         goto cleanup;
     }
 
-    if (!(def = virDomainDefNew()))
-        goto cleanup;
+    /*
+     * On a driver reload dom0 will already exist. On host restart it must
+     * created.
+     */
+    if ((vm = virDomainObjListFindByID(driver->domains, 0)) == NULL) {
+        if (!(def = virDomainDefNew()))
+            goto cleanup;
 
-    def->id = 0;
-    def->virtType = VIR_DOMAIN_VIRT_XEN;
-    def->name = g_strdup("Domain-0");
+        def->id = 0;
+        def->virtType = VIR_DOMAIN_VIRT_XEN;
+        def->name = g_strdup("Domain-0");
 
-    def->os.type = VIR_DOMAIN_OSTYPE_XEN;
+        def->os.type = VIR_DOMAIN_OSTYPE_XEN;
 
-    if (virUUIDParse("00000000-0000-0000-0000-000000000000", def->uuid) < 0)
-        goto cleanup;
+        if (virUUIDParse("00000000-0000-0000-0000-000000000000", def->uuid) < 0)
+            goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains, def,
-                                   driver->xmlopt,
-                                   0,
-                                   NULL)))
-        goto cleanup;
-    def = NULL;
+        if (!(vm = virDomainObjListAdd(driver->domains, def,
+                                       driver->xmlopt,
+                                       0,
+                                       NULL)))
+            goto cleanup;
 
-    vm->persistent = 1;
-    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
+        vm->persistent = 1;
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
+    }
+
     if (virDomainDefSetVcpusMax(vm->def, d_info.vcpu_max_id + 1, driver->xmlopt))
         goto cleanup;
 
@@ -783,10 +789,6 @@ libxlStateInitialize(bool privileged,
     if (!(libxl_driver->xmlopt = libxlCreateXMLConf(libxl_driver)))
         goto error;
 
-    /* Add Domain-0 */
-    if (libxlAddDom0(libxl_driver) < 0)
-        goto error;
-
     /* Load running domains first. */
     if (virDomainObjListLoadAllConfigs(libxl_driver->domains,
                                        cfg->stateDir,
@@ -794,6 +796,10 @@ libxlStateInitialize(bool privileged,
                                        true,
                                        libxl_driver->xmlopt,
                                        NULL, NULL) < 0)
+        goto error;
+
+    /* Add Domain-0 */
+    if (libxlAddDom0(libxl_driver) < 0)
         goto error;
 
     libxlReconnectDomains(libxl_driver);
