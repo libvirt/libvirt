@@ -1610,10 +1610,8 @@ virshDomainListFree(virshDomainListPtr domlist)
     size_t i;
 
     if (domlist && domlist->domains) {
-        for (i = 0; i < domlist->ndomains; i++) {
-            if (domlist->domains[i])
-                virshDomainFree(domlist->domains[i]);
-        }
+        for (i = 0; i < domlist->ndomains; i++)
+            virshDomainFree(domlist->domains[i]);
         VIR_FREE(domlist->domains);
     }
     VIR_FREE(domlist);

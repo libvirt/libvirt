@@ -5509,8 +5509,7 @@ doDump(void *opaque)
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
 #endif /* !WIN32 */
-    if (dom)
-        virshDomainFree(dom);
+    virshDomainFree(dom);
     g_main_loop_quit(data->eventLoop);
 }
 
