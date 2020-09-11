@@ -332,7 +332,7 @@ static const vshCmdInfo info_checkpoint_edit[] = {
 };
 
 static const vshCmdOptDef opts_checkpoint_edit[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
      .help = N_("checkpoint name"),
@@ -452,7 +452,7 @@ static const vshCmdInfo info_checkpoint_info[] = {
 };
 
 static const vshCmdOptDef opts_checkpoint_info[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
      .help = N_("checkpoint name"),
@@ -662,7 +662,7 @@ static const vshCmdInfo info_checkpoint_list[] = {
 };
 
 static const vshCmdOptDef opts_checkpoint_list[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "parent",
      .type = VSH_OT_BOOL,
      .help = N_("add a column showing parent checkpoint")
@@ -879,7 +879,7 @@ static const vshCmdInfo info_checkpoint_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_checkpoint_dumpxml[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
      .help = N_("checkpoint name"),
@@ -954,7 +954,7 @@ static const vshCmdInfo info_checkpoint_parent[] = {
 };
 
 static const vshCmdOptDef opts_checkpoint_parent[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
      .help = N_("find parent of checkpoint name"),
@@ -1015,7 +1015,7 @@ static const vshCmdInfo info_checkpoint_delete[] = {
 };
 
 static const vshCmdOptDef opts_checkpoint_delete[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT),
     {.name = "checkpointname",
      .type = VSH_OT_STRING,
      .help = N_("checkpoint name"),
