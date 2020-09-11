@@ -351,6 +351,8 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     bool ret = false;
     vshTablePtr table = NULL;
 
+    VSH_EXCLUSIVE_OPTIONS_VAR(all, inactive);
+
     if (inactive)
         flags = VIR_CONNECT_LIST_INTERFACES_INACTIVE;
     if (all)
