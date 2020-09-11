@@ -7522,6 +7522,7 @@ static const vshCmdOptDef opts_setvcpu[] = {
     {.name = "vcpulist",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainVcpulistCompleter,
      .help = N_("ids of vcpus to manipulate")
     },
     {.name = "enable",
