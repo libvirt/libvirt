@@ -511,7 +511,7 @@ qemuDomainMasterKeyReadFile(qemuDomainObjPrivatePtr priv)
         goto error;
     }
 
-    ignore_value(VIR_REALLOC_N_QUIET(masterKey, masterKeyLen));
+    masterKey = g_renew(uint8_t, masterKey, masterKeyLen);
 
     priv->masterKey = masterKey;
     priv->masterKeyLen = masterKeyLen;
