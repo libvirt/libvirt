@@ -48,7 +48,10 @@ virshDomainNameCompleter(vshControl *ctl,
                   VIR_CONNECT_LIST_DOMAINS_PAUSED |
                   VIR_CONNECT_LIST_DOMAINS_PERSISTENT |
                   VIR_CONNECT_LIST_DOMAINS_RUNNING |
-                  VIR_CONNECT_LIST_DOMAINS_SHUTOFF,
+                  VIR_CONNECT_LIST_DOMAINS_SHUTOFF |
+                  VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE |
+                  VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT |
+                  VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT,
                   NULL);
 
     if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
