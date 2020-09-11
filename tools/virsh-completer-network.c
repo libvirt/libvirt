@@ -137,3 +137,45 @@ virshNetworkPortUUIDCompleter(vshControl *ctl,
     VIR_FREE(ret);
     return NULL;
 }
+
+
+char **
+virshNetworkUUIDCompleter(vshControl *ctl,
+                          const vshCmd *cmd G_GNUC_UNUSED,
+                          unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virNetworkPtr *nets = NULL;
+    int nnets = 0;
+    size_t i = 0;
+    char **ret = NULL;
+    VIR_AUTOSTRINGLIST tmp = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if ((nnets = virConnectListAllNetworks(priv->conn, &nets, flags)) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(tmp, nnets + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nnets; i++) {
+        char uuid[VIR_UUID_STRING_BUFLEN];
+
+        if (virNetworkGetUUIDString(nets[i], uuid) < 0)
+            goto cleanup;
+
+        tmp[i] = g_strdup(uuid);
+    }
+
+    ret = g_steal_pointer(&tmp);
+
+ cleanup:
+    for (i = 0; i < nnets; i++)
+        virNetworkFree(nets[i]);
+    VIR_FREE(nets);
+    return ret;
+}

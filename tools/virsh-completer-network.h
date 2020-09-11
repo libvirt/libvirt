@@ -33,3 +33,7 @@ char ** virshNetworkEventNameCompleter(vshControl *ctl,
 char ** virshNetworkPortUUIDCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);
+
+char ** virshNetworkUUIDCompleter(vshControl *ctl,
+                                  const vshCmd *cmd,
+                                  unsigned int flags);

@@ -806,6 +806,7 @@ static const vshCmdOptDef opts_network_name[] = {
     {.name = "network",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshNetworkUUIDCompleter,
      .help = N_("network uuid")
     },
     {.name = NULL}
