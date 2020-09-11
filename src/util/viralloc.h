@@ -135,21 +135,6 @@ void virDisposeString(char **strptr)
 #define VIR_REALLOC_N(ptr, count) virReallocN(&(ptr), sizeof(*(ptr)), (count))
 
 /**
- * VIR_REALLOC_N_QUIET:
- * @ptr: pointer to hold address of allocated memory
- * @count: number of elements to allocate
- *
- * Re-allocate an array of 'count' elements, each sizeof(*ptr)
- * bytes long and store the address of allocated memory in
- * 'ptr'. If 'ptr' grew, the added memory is uninitialized.
- *
- * This macro is safe to use on arguments with side effects.
- *
- * Returns 0 on success, aborts on OOM
- */
-#define VIR_REALLOC_N_QUIET(ptr, count) VIR_REALLOC_N(ptr, count)
-
-/**
  * VIR_EXPAND_N:
  * @ptr: pointer to hold address of allocated memory
  * @count: variable tracking number of elements currently allocated
