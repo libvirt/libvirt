@@ -11522,6 +11522,8 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     const char *xpath_fmt = "string(/domain/devices/graphics[@type='%s']/%s)";
     virSocketAddr addr;
 
+    VSH_EXCLUSIVE_OPTIONS("all", "type");
+
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
