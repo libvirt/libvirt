@@ -1308,7 +1308,6 @@ virLogFilterNew(const char *match,
                 virLogPriority priority)
 {
     virLogFilterPtr ret = NULL;
-    char *mdup = NULL;
     size_t mlen = strlen(match);
 
     if (priority < VIR_LOG_DEBUG || priority > VIR_LOG_ERROR) {
@@ -1317,23 +1316,16 @@ virLogFilterNew(const char *match,
         return NULL;
     }
 
+    ret = g_new0(virLogFilter, 1);
+    ret->priority = priority;
+
     /* We must treat 'foo' as equiv to '*foo*' for g_pattern_match
      * todo substring matches, so add 2 extra bytes
      */
-    if (VIR_ALLOC_N_QUIET(mdup, mlen + 3) < 0)
-        return NULL;
-
-    mdup[0] = '*';
-    memcpy(mdup + 1, match, mlen);
-    mdup[mlen + 1] = '*';
-
-    if (VIR_ALLOC_QUIET(ret) < 0) {
-        VIR_FREE(mdup);
-        return NULL;
-    }
-
-    ret->match = mdup;
-    ret->priority = priority;
+    ret->match = g_new0(char, mlen + 3);
+    ret->match[0] = '*';
+    memcpy(ret->match + 1, match, mlen);
+    ret->match[mlen + 1] = '*';
 
     return ret;
 }
