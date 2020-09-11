@@ -1146,6 +1146,8 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     inactive = vshCommandOptBool(cmd, "inactive");
     all = vshCommandOptBool(cmd, "all");
 
+    VSH_EXCLUSIVE_OPTIONS_VAR(all, inactive);
+
     if (inactive)
         flags = VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE;
 
