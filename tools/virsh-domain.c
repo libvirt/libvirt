@@ -7008,6 +7008,7 @@ static const vshCmdOptDef opts_vcpupin[] = {
     {.name = "cpulist",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
+     .completer = virshDomainCpulistCompleter,
      .help = N_("host cpu number(s) to set, or omit option to query")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -7235,6 +7236,7 @@ static const vshCmdOptDef opts_emulatorpin[] = {
     {.name = "cpulist",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
+     .completer = virshDomainCpulistCompleter,
      .help = N_("host cpu number(s) to set, or omit option to query")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -7757,6 +7759,7 @@ static const vshCmdOptDef opts_iothreadpin[] = {
     {.name = "cpulist",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainCpulistCompleter,
      .help = N_("host cpu number(s) to set")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
