@@ -246,7 +246,7 @@ qemuDomainObjRestoreJob(virDomainObjPtr obj,
 }
 
 void
-qemuDomainObjFreeJob(qemuDomainJobObjPtr job)
+qemuDomainObjClearJob(qemuDomainJobObjPtr job)
 {
     qemuDomainObjResetJob(job);
     qemuDomainObjResetAsyncJob(job);

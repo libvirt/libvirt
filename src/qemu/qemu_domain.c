@@ -1859,7 +1859,7 @@ qemuDomainObjPrivateFree(void *data)
     qemuDomainObjPrivateDataClear(priv);
 
     virObjectUnref(priv->monConfig);
-    qemuDomainObjFreeJob(&priv->job);
+    qemuDomainObjClearJob(&priv->job);
     VIR_FREE(priv->lockState);
     VIR_FREE(priv->origname);
 
