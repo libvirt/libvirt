@@ -805,7 +805,6 @@ qemuBackupBegin(virDomainObjPtr vm,
     if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, QEMU_ASYNC_JOB_BACKUP) < 0)
         goto endjob;
 
-    /* TODO: TLS is a must-have for the modern age */
     if (pull) {
         if (tlsSecretProps)
             rc = qemuMonitorAddObject(priv->mon, &tlsSecretProps, &tlsSecretAlias);
