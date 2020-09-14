@@ -235,10 +235,9 @@ virLastErrorObject(void)
     virErrorPtr err;
     err = virThreadLocalGet(&virLastErr);
     if (!err) {
-        if (VIR_ALLOC_QUIET(err) < 0)
-            return NULL;
+        err = g_new0(virError, 1);
         if (virThreadLocalSet(&virLastErr, err) < 0)
-            VIR_FREE(err);
+            g_clear_pointer(&err, g_free);
     }
     return err;
 }
