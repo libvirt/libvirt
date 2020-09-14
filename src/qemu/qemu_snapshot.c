@@ -1719,7 +1719,6 @@ qemuSnapshotRevert(virDomainObjPtr vm,
     qemuDomainSaveCookiePtr cookie;
     virCPUDefPtr origCPU = NULL;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_GEN_VMID;
-    qemuDomainAsyncJob jobType = QEMU_ASYNC_JOB_START;
     bool defined = false;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
@@ -1899,9 +1898,6 @@ qemuSnapshotRevert(virDomainObjPtr vm,
                                                      VIR_DOMAIN_EVENT_STOPPED,
                                                      detail);
                     virObjectEventStateQueue(driver->domainEventState, event);
-                    /* Start after stop won't be an async start job, so
-                     * reset to none */
-                    jobType = QEMU_ASYNC_JOB_NONE;
                     goto load;
                 }
             }
@@ -1968,7 +1964,7 @@ qemuSnapshotRevert(virDomainObjPtr vm,
 
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
                                   cookie ? cookie->cpu : NULL,
-                                  jobType, NULL, -1, NULL, snap,
+                                  QEMU_ASYNC_JOB_START, NULL, -1, NULL, snap,
                                   VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                                   start_flags);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
@@ -2003,7 +1999,7 @@ qemuSnapshotRevert(virDomainObjPtr vm,
             }
             rc = qemuProcessStartCPUs(driver, vm,
                                       VIR_DOMAIN_RUNNING_FROM_SNAPSHOT,
-                                      jobType);
+                                      QEMU_ASYNC_JOB_START);
             if (rc < 0)
                 goto endjob;
             virObjectUnref(event);
