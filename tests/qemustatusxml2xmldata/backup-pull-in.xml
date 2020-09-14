@@ -254,12 +254,18 @@
   <backups>
     <domainbackup mode='pull'>
       <incremental>12345</incremental>
-      <server transport='tcp' name='localhost' port='10809'/>
+      <server transport='tcp' tls='yes' name='localhost' port='10809'/>
       <disks>
         <disk name='vda' backup='yes' state='running' type='file'>
           <scratch file='/path/to/file/'/>
         </disk>
       </disks>
+      <privateData>
+        <objects>
+          <secret type='tlskey' alias='testalias-secret'/>
+          <TLSx509 alias='testalias-tlsx509'/>
+        </objects>
+      </privateData>
     </domainbackup>
   </backups>
   <domain type='kvm' id='4'>
