@@ -47,8 +47,7 @@ virshInterfaceNameCompleter(vshControl *ctl,
     if ((nifaces = virConnectListAllInterfaces(priv->conn, &ifaces, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, nifaces + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, nifaces + 1);
 
     for (i = 0; i < nifaces; i++) {
         const char *name = virInterfaceGetName(ifaces[i]);
@@ -58,7 +57,6 @@ virshInterfaceNameCompleter(vshControl *ctl,
 
     ret = g_steal_pointer(&tmp);
 
- cleanup:
     for (i = 0; i < nifaces; i++)
         virInterfaceFree(ifaces[i]);
     g_free(ifaces);

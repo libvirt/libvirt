@@ -49,8 +49,7 @@ virshNetworkNameCompleter(vshControl *ctl,
     if ((nnets = virConnectListAllNetworks(priv->conn, &nets, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, nnets + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, nnets + 1);
 
     for (i = 0; i < nnets; i++) {
         const char *name = virNetworkGetName(nets[i]);
@@ -60,7 +59,6 @@ virshNetworkNameCompleter(vshControl *ctl,
 
     ret = g_steal_pointer(&tmp);
 
- cleanup:
     for (i = 0; i < nnets; i++)
         virNetworkFree(nets[i]);
     g_free(nets);
@@ -78,8 +76,7 @@ virshNetworkEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(tmp, VIR_NETWORK_EVENT_ID_LAST + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, VIR_NETWORK_EVENT_ID_LAST + 1);
 
     for (i = 0; i < VIR_NETWORK_EVENT_ID_LAST; i++)
         tmp[i] = g_strdup(virshNetworkEventCallbacks[i].name);
@@ -111,8 +108,7 @@ virshNetworkPortUUIDCompleter(vshControl *ctl,
     if ((nports = virNetworkListAllPorts(net, &ports, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, nports + 1) < 0)
-        goto error;
+    ret = g_new0(char *, nports + 1);
 
     for (i = 0; i < nports; i++) {
         char uuid[VIR_UUID_STRING_BUFLEN];
@@ -159,8 +155,7 @@ virshNetworkUUIDCompleter(vshControl *ctl,
     if ((nnets = virConnectListAllNetworks(priv->conn, &nets, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, nnets + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, nnets + 1);
 
     for (i = 0; i < nnets; i++) {
         char uuid[VIR_UUID_STRING_BUFLEN];

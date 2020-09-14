@@ -47,8 +47,7 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
     if ((ndevs = virConnectListAllNodeDevices(priv->conn, &devs, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, ndevs + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, ndevs + 1);
 
     for (i = 0; i < ndevs; i++) {
         const char *name = virNodeDeviceGetName(devs[i]);
@@ -58,7 +57,6 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
 
     ret = g_steal_pointer(&tmp);
 
- cleanup:
     for (i = 0; i < ndevs; i++)
         virNodeDeviceFree(devs[i]);
     g_free(devs);
@@ -76,8 +74,7 @@ virshNodeDeviceEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(tmp, VIR_NODE_DEVICE_EVENT_ID_LAST + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, VIR_NODE_DEVICE_EVENT_ID_LAST + 1);
 
     for (i = 0; i < VIR_NODE_DEVICE_EVENT_ID_LAST; i++)
         tmp[i] = g_strdup(virshNodeDeviceEventCallbacks[i].name);
@@ -100,8 +97,7 @@ virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
     if (vshCommandOptStringQuiet(ctl, cmd, "cap", &cap_str) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, VIR_NODE_DEV_CAP_LAST + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, VIR_NODE_DEV_CAP_LAST + 1);
 
     for (i = 0; i < VIR_NODE_DEV_CAP_LAST; i++)
         tmp[i] = g_strdup(virNodeDevCapTypeToString(i));

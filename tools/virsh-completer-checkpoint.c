@@ -50,8 +50,7 @@ virshCheckpointNameCompleter(vshControl *ctl,
                                                     flags)) < 0)
         goto error;
 
-    if (VIR_ALLOC_N(ret, ncheckpoints + 1) < 0)
-        goto error;
+    ret = g_new0(char *, ncheckpoints + 1);
 
     for (i = 0; i < ncheckpoints; i++) {
         const char *name = virDomainCheckpointGetName(checkpoints[i]);

@@ -87,8 +87,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     if (npages <= 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, npages + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, npages + 1);
 
     for (i = 0; i < npages; i++) {
         if (!(tmp[i] = virshPagesizeNodeToString(pages[i])))
@@ -128,8 +127,7 @@ virshCellnoCompleter(vshControl *ctl,
     if (ncells <= 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, ncells + 1))
-        return NULL;
+    tmp = g_new0(char *, ncells + 1);
 
     for (i = 0; i < ncells; i++) {
         if (!(tmp[i] = virXMLPropString(cells[i], "id")))

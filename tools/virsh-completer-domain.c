@@ -61,8 +61,7 @@ virshDomainNameCompleter(vshControl *ctl,
     if ((ndomains = virConnectListAllDomains(priv->conn, &domains, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, ndomains + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, ndomains + 1);
 
     for (i = 0; i < ndomains; i++) {
         const char *name = virDomainGetName(domains[i]);
@@ -72,7 +71,6 @@ virshDomainNameCompleter(vshControl *ctl,
 
     ret = g_steal_pointer(&tmp);
 
- cleanup:
     for (i = 0; i < ndomains; i++)
         virshDomainFree(domains[i]);
     g_free(domains);
@@ -110,8 +108,7 @@ virshDomainUUIDCompleter(vshControl *ctl,
     if ((ndomains = virConnectListAllDomains(priv->conn, &domains, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, ndomains + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, ndomains + 1);
 
     for (i = 0; i < ndomains; i++) {
         char uuid[VIR_UUID_STRING_BUFLEN];
@@ -161,8 +158,7 @@ virshDomainInterfaceCompleter(vshControl *ctl,
     if (ninterfaces < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, ninterfaces + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, ninterfaces + 1);
 
     for (i = 0; i < ninterfaces; i++) {
         ctxt->node = interfaces[i];
@@ -206,8 +202,7 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
     if (ndisks < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, ndisks + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, ndisks + 1);
 
     for (i = 0; i < ndisks; i++) {
         ctxt->node = disks[i];
@@ -229,8 +224,7 @@ virshDomainEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(tmp, VIR_DOMAIN_EVENT_ID_LAST + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, VIR_DOMAIN_EVENT_ID_LAST + 1);
 
     for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++)
         tmp[i] = g_strdup(virshDomainEventCallbacks[i].name);
@@ -283,8 +277,7 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
 
     ctxt->node = interfaces[0];
 
-    if (VIR_ALLOC_N(tmp, 2) < 0)
-        return NULL;
+    tmp = g_new0(char *, 2);
 
     if ((state = virXPathString("string(./link/@state)", ctxt)) &&
         STREQ(state, "down")) {
@@ -326,8 +319,7 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
     if (naliases < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, naliases + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, naliases + 1);
 
     for (i = 0; i < naliases; i++) {
         if (!(tmp[i] = virXMLNodeContentString(aliases[i])))
@@ -404,8 +396,7 @@ virshDomainPerfEnableCompleter(vshControl *ctl,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(events, VIR_PERF_EVENT_LAST + 1) < 0)
-        return NULL;
+    events = g_new0(char *, VIR_PERF_EVENT_LAST + 1);
 
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++)
         events[i] = g_strdup(virPerfEventTypeToString(i));
@@ -428,8 +419,7 @@ virshDomainPerfDisableCompleter(vshControl *ctl,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(events, VIR_PERF_EVENT_LAST + 1) < 0)
-        return NULL;
+    events = g_new0(char *, VIR_PERF_EVENT_LAST + 1);
 
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++)
         events[i] = g_strdup(virPerfEventTypeToString(i));
@@ -464,8 +454,7 @@ virshDomainIOThreadIdCompleter(vshControl *ctl,
 
     niothreads = rc;
 
-    if (VIR_ALLOC_N(tmp, niothreads + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, niothreads + 1);
 
     for (i = 0; i < niothreads; i++)
         tmp[i] = g_strdup_printf("%u", info[i]->iothread_id);
@@ -504,8 +493,7 @@ virshDomainVcpuCompleter(vshControl *ctl,
     if (virXPathInt("string(/domain/vcpu)", ctxt, &nvcpus) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(tmp, nvcpus + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, nvcpus + 1);
 
     for (id = 0; id < nvcpus; id++)
         tmp[id] = g_strdup_printf("%u", id);
@@ -550,8 +538,7 @@ virshDomainVcpulistCompleter(vshControl *ctl,
     if (virXPathInt("string(/domain/vcpu)", ctxt, &nvcpus) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(vcpulist, nvcpus + 1) < 0)
-        goto cleanup;
+    vcpulist = g_new0(char *, nvcpus + 1);
 
     for (id = 0; id < nvcpus; id++)
         vcpulist[id] = g_strdup_printf("%u", id);
@@ -587,8 +574,7 @@ virshDomainCpulistCompleter(vshControl *ctl,
     if ((cpunum = virNodeGetCPUMap(priv->conn, &cpumap, &online, 0)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(cpulist, cpunum + 1) < 0)
-        return NULL;
+    cpulist = g_new0(char *, cpunum + 1);
 
     for (i = 0; i < cpunum; i++)
         cpulist[i] = g_strdup_printf("%zu", i);

@@ -50,8 +50,7 @@ virshStoragePoolNameCompleter(vshControl *ctl,
     if ((npools = virConnectListAllStoragePools(priv->conn, &pools, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, npools + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, npools + 1);
 
     for (i = 0; i < npools; i++) {
         const char *name = virStoragePoolGetName(pools[i]);
@@ -61,7 +60,6 @@ virshStoragePoolNameCompleter(vshControl *ctl,
 
     ret = g_steal_pointer(&tmp);
 
- cleanup:
     for (i = 0; i < npools; i++)
         virStoragePoolFree(pools[i]);
     g_free(pools);
@@ -79,8 +77,7 @@ virshPoolEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC_N(tmp, VIR_STORAGE_POOL_EVENT_ID_LAST + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, VIR_STORAGE_POOL_EVENT_ID_LAST + 1);
 
     for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++)
         tmp[i] = g_strdup(virshPoolEventCallbacks[i].name);
@@ -103,8 +100,7 @@ virshPoolTypeCompleter(vshControl *ctl,
     if (vshCommandOptStringQuiet(ctl, cmd, "type", &type_str) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, VIR_STORAGE_POOL_LAST + 1) < 0)
-        return NULL;
+    tmp = g_new0(char *, VIR_STORAGE_POOL_LAST + 1);
 
     for (i = 0; i < VIR_STORAGE_POOL_LAST; i++)
         tmp[i] = g_strdup(virStoragePoolTypeToString(i));

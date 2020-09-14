@@ -45,8 +45,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
     if ((nnwfilters = virConnectListAllNWFilters(priv->conn, &nwfilters, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, nnwfilters + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, nnwfilters + 1);
 
     for (i = 0; i < nnwfilters; i++) {
         const char *name = virNWFilterGetName(nwfilters[i]);
@@ -56,7 +55,6 @@ virshNWFilterNameCompleter(vshControl *ctl,
 
     ret = g_steal_pointer(&tmp);
 
- cleanup:
     for (i = 0; i < nnwfilters; i++)
         virNWFilterFree(nwfilters[i]);
     g_free(nwfilters);
@@ -84,8 +82,7 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
     if ((nbindings = virConnectListAllNWFilterBindings(priv->conn, &bindings, flags)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(tmp, nbindings + 1) < 0)
-        goto cleanup;
+    tmp = g_new0(char *, nbindings + 1);
 
     for (i = 0; i < nbindings; i++) {
         const char *name = virNWFilterBindingGetPortDev(bindings[i]);
@@ -95,7 +92,6 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
 
     ret = g_steal_pointer(&tmp);
 
- cleanup:
     for (i = 0; i < nbindings; i++)
         virNWFilterBindingFree(bindings[i]);
     g_free(bindings);
