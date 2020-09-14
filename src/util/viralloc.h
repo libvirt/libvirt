@@ -76,20 +76,6 @@ void virDisposeString(char **strptr)
 #define VIR_ALLOC(ptr) virAlloc(&(ptr), sizeof(*(ptr)))
 
 /**
- * VIR_ALLOC_QUIET:
- * @ptr: pointer to hold address of allocated memory
- *
- * Allocate sizeof(*ptr) bytes of memory and store
- * the address of allocated memory in 'ptr'. Fill the
- * newly allocated memory with zeros.
- *
- * This macro is safe to use on arguments with side effects.
- *
- * Returns 0 on success, aborts on OOM
- */
-#define VIR_ALLOC_QUIET(ptr) VIR_ALLOC(ptr)
-
-/**
  * VIR_ALLOC_N:
  * @ptr: pointer to hold address of allocated memory
  * @count: number of elements to allocate
