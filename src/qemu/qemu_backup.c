@@ -825,6 +825,9 @@ qemuBackupBegin(virDomainObjPtr vm,
         goto endjob;
 
     job_started = true;
+    priv->backup->tlsAlias = g_steal_pointer(&tlsAlias);
+    priv->backup->tlsSecretAlias = g_steal_pointer(&tlsSecretAlias);
+    /* qemuBackupDiskStarted saves the status XML */
     qemuBackupDiskStarted(vm, dd, ndd);
 
     if (chk) {
@@ -847,9 +850,6 @@ qemuBackupBegin(virDomainObjPtr vm,
             goto endjob;
         }
     }
-
-    priv->backup->tlsAlias = g_steal_pointer(&tlsAlias);
-    priv->backup->tlsSecretAlias = g_steal_pointer(&tlsSecretAlias);
 
     ret = 0;
 
