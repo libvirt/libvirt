@@ -322,7 +322,7 @@ int virNetDevTapCreate(char **ifname,
     size_t i = 0;
     struct ifreq ifr;
     int ret = -1;
-    int fd = 0;
+    int fd = -1;
 
     virMutexLock(&virNetDevTapCreateMutex);
 
