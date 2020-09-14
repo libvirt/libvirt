@@ -223,14 +223,8 @@ virCopyError(virErrorPtr from,
 virErrorPtr
 virErrorCopyNew(virErrorPtr err)
 {
-    virErrorPtr ret;
-
-    if (VIR_ALLOC_QUIET(ret) < 0)
-        return NULL;
-
-    if (virCopyError(err, ret) < 0)
-        VIR_FREE(ret);
-
+    virErrorPtr ret = g_new0(virError, 1);
+    virCopyError(err, ret);
     return ret;
 }
 
