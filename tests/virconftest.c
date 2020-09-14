@@ -32,39 +32,30 @@
 static int testConfRoundTrip(const void *opaque)
 {
     const char *name = opaque;
-    int ret = -1;
     g_autoptr(virConf) conf = NULL;
     int len = 10000;
-    char *buffer = NULL;
-    char *srcfile = NULL;
-    char *dstfile = NULL;
+    g_autofree char *buffer = NULL;
+    g_autofree char *srcfile = NULL;
+    g_autofree char *dstfile = NULL;
 
     srcfile = g_strdup_printf("%s/virconfdata/%s.conf", abs_srcdir, name);
     dstfile = g_strdup_printf("%s/virconfdata/%s.out", abs_srcdir, name);
 
-    if (VIR_ALLOC_N_QUIET(buffer, len) < 0) {
-        fprintf(stderr, "out of memory\n");
-        goto cleanup;
-    }
+    buffer = g_new0(char, len);
     conf = virConfReadFile(srcfile, 0);
     if (conf == NULL) {
         fprintf(stderr, "Failed to process %s\n", srcfile);
-        goto cleanup;
+        return -1;
     }
     if (virConfWriteMem(buffer, &len, conf) < 0) {
         fprintf(stderr, "Failed to serialize %s back\n", srcfile);
-        goto cleanup;
+        return -1;
     }
 
     if (virTestCompareToFile(buffer, dstfile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(srcfile);
-    VIR_FREE(dstfile);
-    VIR_FREE(buffer);
-    return ret;
+    return 0;
 }
 
 
