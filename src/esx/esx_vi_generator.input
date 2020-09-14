@@ -277,6 +277,18 @@ object FolderFileQuery               extends FileQuery
 end
 
 
+object GuestNicInfo
+    Boolean                                  connected                      r
+    Int                                      deviceConfigId                 r
+    NetDnsConfigInfo                         dnsConfig                      o
+    String                                   ipAddress                      ol
+    NetIpConfigInfo                          ipConfig                       o
+    String                                   macAddress                     o
+    NetBIOSConfigInfo                        netBIOSConfig                  o
+    String                                   network                        o
+end
+
+
 object HostAutoStartManagerConfig
     AutoStartDefaults                        defaults                       o
     AutoStartPowerInfo                       powerInfo                      ol
@@ -767,6 +779,48 @@ end
 
 object NasDatastoreInfo              extends DatastoreInfo
     HostNasVolume                            nas                            o
+end
+
+
+object NetBIOSConfigInfo
+    String                                   mode                           r
+end
+
+
+object NetDhcpConfigInfo
+    NetDhcpConfigInfoDhcpOptions             ipv4                           o
+    NetDhcpConfigInfoDhcpOptions             ipv6                           o
+end
+
+
+object NetDhcpConfigInfoDhcpOptions
+    KeyAnyValue                              config                         ol
+    Boolean                                  enable                         r
+end
+
+
+object NetDnsConfigInfo
+    Boolean                                  dhcp                           r
+    String                                   domainName                     r
+    String                                   hostName                       r
+    String                                   ipAddress                      ol
+    String                                   searchDomain                   ol
+end
+
+
+object NetIpConfigInfo
+    Boolean                                  autoConfigurationEnabled       o
+    NetDhcpConfigInfo                        dhcp                           o
+    NetIpConfigInfoIpAddress                 ipAddress                      ol
+end
+
+
+object NetIpConfigInfoIpAddress
+    String                                   ipAddress                      r
+    DateTime                                 lifetime                       o
+    String                                   origin                         o
+    Int                                      prefixLength                   r
+    String                                   state                          o
 end
 
 

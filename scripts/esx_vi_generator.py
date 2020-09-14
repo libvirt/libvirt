@@ -1292,6 +1292,7 @@ additional_object_features = {
     "DatastoreHostMount": (Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST |
                            Object.FEATURE__ANY_TYPE),
     "DatastoreInfo": Object.FEATURE__ANY_TYPE | Object.FEATURE__DYNAMIC_CAST,
+    "GuestNicInfo": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
     "HostConfigManager": Object.FEATURE__ANY_TYPE,
     "HostCpuIdInfo": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
     "HostDatastoreBrowserSearchResults": (Object.FEATURE__LIST |
