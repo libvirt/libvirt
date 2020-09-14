@@ -800,6 +800,10 @@ Enter administrator password for example-vcenter.com:
             <code>virDomainGetHostname</code>
         </li>
         <li>
+            <code>virDomainInterfaceAddresses</code> (only for the
+            <code>VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT</code> source)
+        </li>
+        <li>
             <code>virDomainReboot</code>
         </li>
         <li>
