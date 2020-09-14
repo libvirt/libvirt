@@ -65,6 +65,7 @@ VIR_ENUM_IMPL(virNodeDevCap,
               "mdev_types",
               "mdev",
               "ccw",
+              "css",
 );
 
 VIR_ENUM_IMPL(virNodeDevNetCap,
@@ -602,6 +603,7 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             virNodeDeviceCapMdevDefFormat(&buf, data);
             break;
         case VIR_NODE_DEV_CAP_CCW_DEV:
+        case VIR_NODE_DEV_CAP_CSS_DEV:
             virBufferAsprintf(&buf, "<cssid>0x%x</cssid>\n",
                               data->ccw_dev.cssid);
             virBufferAsprintf(&buf, "<ssid>0x%x</ssid>\n",
@@ -1904,6 +1906,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         ret = virNodeDevCapMdevParseXML(ctxt, def, node, &caps->data.mdev);
         break;
     case VIR_NODE_DEV_CAP_CCW_DEV:
+    case VIR_NODE_DEV_CAP_CSS_DEV:
         ret = virNodeDevCapCCWParseXML(ctxt, def, node, &caps->data.ccw_dev);
         break;
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
@@ -2228,6 +2231,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
     case VIR_NODE_DEV_CAP_CCW_DEV:
+    case VIR_NODE_DEV_CAP_CSS_DEV:
     case VIR_NODE_DEV_CAP_LAST:
         /* This case is here to shutup the compiler */
         break;
@@ -2281,6 +2285,7 @@ virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
         case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_MDEV:
         case VIR_NODE_DEV_CAP_CCW_DEV:
+        case VIR_NODE_DEV_CAP_CSS_DEV:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }

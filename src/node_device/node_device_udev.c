@@ -1098,6 +1098,24 @@ udevProcessCCW(struct udev_device *device,
 
 
 static int
+udevProcessCSS(struct udev_device *device,
+               virNodeDeviceDefPtr def)
+{
+    /* only process IO subchannel and vfio-ccw devices to keep the list sane */
+    if (STRNEQ(def->driver, "io_subchannel") &&
+        STRNEQ(def->driver, "vfio_ccw"))
+        return -1;
+
+    if (udevGetCCWAddress(def->sysfs_path, &def->caps->data) < 0)
+        return -1;
+
+    if (udevGenerateDeviceName(device, def, NULL) != 0)
+        return -1;
+
+    return 0;
+}
+
+static int
 udevGetDeviceNodes(struct udev_device *device,
                    virNodeDeviceDefPtr def)
 {
@@ -1175,6 +1193,8 @@ udevGetDeviceType(struct udev_device *device,
             *type = VIR_NODE_DEV_CAP_MDEV;
         else if (STREQ_NULLABLE(subsystem, "ccw"))
             *type = VIR_NODE_DEV_CAP_CCW_DEV;
+        else if (STREQ_NULLABLE(subsystem, "css"))
+            *type = VIR_NODE_DEV_CAP_CSS_DEV;
 
         VIR_FREE(subsystem);
     }
@@ -1219,6 +1239,8 @@ udevGetDeviceDetails(struct udev_device *device,
         return udevProcessMediatedDevice(device, def);
     case VIR_NODE_DEV_CAP_CCW_DEV:
         return udevProcessCCW(device, def);
+    case VIR_NODE_DEV_CAP_CSS_DEV:
+        return udevProcessCSS(device, def);
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_SYSTEM:
     case VIR_NODE_DEV_CAP_FC_HOST:
