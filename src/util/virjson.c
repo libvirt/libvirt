@@ -1243,8 +1243,7 @@ virJSONValueGetArrayAsBitmap(const virJSONValue *val,
     if (val->type != VIR_JSON_TYPE_ARRAY)
         return -1;
 
-    if (VIR_ALLOC_N_QUIET(elems, val->data.array.nvalues) < 0)
-        return -1;
+    elems = g_new0(unsigned long long, val->data.array.nvalues);
 
     /* first pass converts array members to numbers and finds the maximum */
     for (i = 0; i < val->data.array.nvalues; i++) {
