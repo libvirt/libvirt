@@ -101,6 +101,7 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
  *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES
  *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV
  *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_CSS_DEV
  *
  * Returns the number of node devices found or -1 and sets @devices to NULL in
  * case of error.  On success, the array stored into @devices is guaranteed to

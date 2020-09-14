@@ -861,7 +861,8 @@ virNodeDeviceObjMatch(virNodeDeviceObjPtr obj,
               MATCH(DRM)           ||
               MATCH(MDEV_TYPES)    ||
               MATCH(MDEV)          ||
-              MATCH(CCW_DEV)))
+              MATCH(CCW_DEV)       ||
+              MATCH(CSS_DEV)))
             return false;
     }
 

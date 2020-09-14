@@ -420,6 +420,18 @@
               <dd>The device number.</dd>
             </dl>
           </dd>
+          <dt><code>css</code></dt>
+          <dd>Describes a Channel SubSystem (CSS) device commonly found on
+          the S390 architecture. Sub-elements include:
+            <dl>
+              <dt><code>cssid</code></dt>
+              <dd>The channel subsystem identifier.</dd>
+              <dt><code>ssid</code></dt>
+              <dd>The subchannel-set identifier.</dd>
+              <dt><code>devno</code></dt>
+              <dd>The device number.</dd>
+            </dl>
+          </dd>
         </dl>
       </dd>
     </dl>

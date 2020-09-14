@@ -368,7 +368,8 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM           | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES    | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV          | \
-                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV)
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV       | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_CSS_DEV)
 
 int
 virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host);
