@@ -75,7 +75,7 @@ virshDomainNameCompleter(vshControl *ctl,
  cleanup:
     for (i = 0; i < ndomains; i++)
         virshDomainFree(domains[i]);
-    VIR_FREE(domains);
+    g_free(domains);
     return ret;
 }
 
@@ -127,7 +127,7 @@ virshDomainUUIDCompleter(vshControl *ctl,
  cleanup:
     for (i = 0; i < ndomains; i++)
         virshDomainFree(domains[i]);
-    VIR_FREE(domains);
+    g_free(domains);
     return ret;
 }
 

@@ -59,7 +59,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
  cleanup:
     for (i = 0; i < nnwfilters; i++)
         virNWFilterFree(nwfilters[i]);
-    VIR_FREE(nwfilters);
+    g_free(nwfilters);
     return ret;
 }
 
@@ -98,6 +98,6 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
  cleanup:
     for (i = 0; i < nbindings; i++)
         virNWFilterBindingFree(bindings[i]);
-    VIR_FREE(bindings);
+    g_free(bindings);
     return ret;
 }

@@ -67,6 +67,6 @@ virshStorageVolNameCompleter(vshControl *ctl,
     virStoragePoolFree(pool);
     for (i = 0; i < nvols; i++)
         virStorageVolFree(vols[i]);
-    VIR_FREE(vols);
+    g_free(vols);
     return ret;
 }

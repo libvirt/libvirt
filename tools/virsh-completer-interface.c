@@ -61,6 +61,6 @@ virshInterfaceNameCompleter(vshControl *ctl,
  cleanup:
     for (i = 0; i < nifaces; i++)
         virInterfaceFree(ifaces[i]);
-    VIR_FREE(ifaces);
+    g_free(ifaces);
     return ret;
 }

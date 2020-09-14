@@ -67,6 +67,6 @@ virshSnapshotNameCompleter(vshControl *ctl,
     virshDomainFree(dom);
     for (i = 0; i < nsnapshots; i++)
         virshDomainSnapshotFree(snapshots[i]);
-    VIR_FREE(snapshots);
+    g_free(snapshots);
     return ret;
 }

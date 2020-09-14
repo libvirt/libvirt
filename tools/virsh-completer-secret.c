@@ -63,7 +63,7 @@ virshSecretUUIDCompleter(vshControl *ctl,
  cleanup:
     for (i = 0; i < nsecrets; i++)
         virshSecretFree(secrets[i]);
-    VIR_FREE(secrets);
+    g_free(secrets);
     return ret;
 }
 

@@ -63,7 +63,7 @@ virshNetworkNameCompleter(vshControl *ctl,
  cleanup:
     for (i = 0; i < nnets; i++)
         virNetworkFree(nets[i]);
-    VIR_FREE(nets);
+    g_free(nets);
     return ret;
 }
 
@@ -124,17 +124,17 @@ virshNetworkPortUUIDCompleter(vshControl *ctl,
 
         virNetworkPortFree(ports[i]);
     }
-    VIR_FREE(ports);
+    g_free(ports);
 
     return ret;
 
  error:
     for (; i < nports; i++)
         virNetworkPortFree(ports[i]);
-    VIR_FREE(ports);
+    g_free(ports);
     for (i = 0; i < nports; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        g_free(ret[i]);
+    g_free(ret);
     return NULL;
 }
 
@@ -176,6 +176,6 @@ virshNetworkUUIDCompleter(vshControl *ctl,
  cleanup:
     for (i = 0; i < nnets; i++)
         virNetworkFree(nets[i]);
-    VIR_FREE(nets);
+    g_free(nets);
     return ret;
 }

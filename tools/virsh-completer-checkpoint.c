@@ -60,7 +60,7 @@ virshCheckpointNameCompleter(vshControl *ctl,
 
         virshDomainCheckpointFree(checkpoints[i]);
     }
-    VIR_FREE(checkpoints);
+    g_free(checkpoints);
     virshDomainFree(dom);
 
     return ret;
@@ -68,10 +68,10 @@ virshCheckpointNameCompleter(vshControl *ctl,
  error:
     for (; i < ncheckpoints; i++)
         virshDomainCheckpointFree(checkpoints[i]);
-    VIR_FREE(checkpoints);
+    g_free(checkpoints);
     for (i = 0; i < ncheckpoints; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
+        g_free(ret[i]);
+    g_free(ret);
     virshDomainFree(dom);
     return NULL;
 }

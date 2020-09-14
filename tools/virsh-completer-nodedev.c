@@ -61,7 +61,7 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
  cleanup:
     for (i = 0; i < ndevs; i++)
         virNodeDeviceFree(devs[i]);
-    VIR_FREE(devs);
+    g_free(devs);
     return ret;
 }
 
