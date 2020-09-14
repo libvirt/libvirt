@@ -51,8 +51,7 @@ static int testConfRoundTrip(const void *opaque)
         fprintf(stderr, "Failed to process %s\n", srcfile);
         goto cleanup;
     }
-    ret = virConfWriteMem(buffer, &len, conf);
-    if (ret < 0) {
+    if (virConfWriteMem(buffer, &len, conf) < 0) {
         fprintf(stderr, "Failed to serialize %s back\n", srcfile);
         goto cleanup;
     }
