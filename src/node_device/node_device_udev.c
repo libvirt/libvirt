@@ -1058,26 +1058,37 @@ udevProcessMediatedDevice(struct udev_device *dev,
 
 
 static int
-udevProcessCCW(struct udev_device *device,
-               virNodeDeviceDefPtr def)
+udevGetCCWAddress(const char *sysfs_path,
+                  virNodeDevCapDataPtr data)
 {
-    int online;
     char *p;
-    virNodeDevCapDataPtr data = &def->caps->data;
 
-    /* process only online devices to keep the list sane */
-    if (udevGetIntSysfsAttr(device, "online", &online, 0) < 0 || online != 1)
-        return -1;
-
-    if ((p = strrchr(def->sysfs_path, '/')) == NULL ||
+    if ((p = strrchr(sysfs_path, '/')) == NULL ||
         virStrToLong_ui(p + 1, &p, 16, &data->ccw_dev.cssid) < 0 || p == NULL ||
         virStrToLong_ui(p + 1, &p, 16, &data->ccw_dev.ssid) < 0 || p == NULL ||
         virStrToLong_ui(p + 1, &p, 16, &data->ccw_dev.devno) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to parse the CCW address from sysfs path: '%s'"),
-                       def->sysfs_path);
+                       sysfs_path);
         return -1;
     }
+
+    return 0;
+}
+
+
+static int
+udevProcessCCW(struct udev_device *device,
+               virNodeDeviceDefPtr def)
+{
+    int online;
+
+    /* process only online devices to keep the list sane */
+    if (udevGetIntSysfsAttr(device, "online", &online, 0) < 0 || online != 1)
+        return -1;
+
+    if (udevGetCCWAddress(def->sysfs_path, &def->caps->data) < 0)
+        return -1;
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
         return -1;
