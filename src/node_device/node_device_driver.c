@@ -28,6 +28,7 @@
 
 #include "virerror.h"
 #include "datatypes.h"
+#include "domain_addr.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virjson.h"
@@ -628,7 +629,7 @@ nodeDeviceFindAddressByName(const char *name)
 {
     virNodeDeviceDefPtr def = NULL;
     virNodeDevCapsDefPtr caps = NULL;
-    char *pci_addr = NULL;
+    char *addr = NULL;
     virNodeDeviceObjPtr dev = virNodeDeviceObjListFindByName(driver->devs, name);
 
     if (!dev) {
@@ -640,21 +641,30 @@ nodeDeviceFindAddressByName(const char *name)
     def = virNodeDeviceObjGetDef(dev);
     for (caps = def->caps; caps != NULL; caps = caps->next) {
         if (caps->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
-            virPCIDeviceAddress addr = {
+            virPCIDeviceAddress pci_addr = {
                 .domain = caps->data.pci_dev.domain,
                 .bus = caps->data.pci_dev.bus,
                 .slot = caps->data.pci_dev.slot,
                 .function = caps->data.pci_dev.function
             };
 
-            pci_addr = virPCIDeviceAddressAsString(&addr);
+            addr = virPCIDeviceAddressAsString(&pci_addr);
+            break;
+        } else if (caps->data.type == VIR_NODE_DEV_CAP_CSS_DEV) {
+            virDomainDeviceCCWAddress ccw_addr = {
+                .cssid = caps->data.ccw_dev.cssid,
+                .ssid = caps->data.ccw_dev.ssid,
+                .devno = caps->data.ccw_dev.devno
+            };
+
+            addr = virDomainCCWAddressAsString(&ccw_addr);
             break;
         }
     }
 
     virNodeDeviceObjEndAPI(&dev);
 
-    return pci_addr;
+    return addr;
 }
 
 
@@ -664,11 +674,11 @@ nodeDeviceGetMdevctlStartCommand(virNodeDeviceDefPtr def,
 {
     virCommandPtr cmd;
     g_autofree char *json = NULL;
-    g_autofree char *parent_pci = nodeDeviceFindAddressByName(def->parent);
+    g_autofree char *parent_addr = nodeDeviceFindAddressByName(def->parent);
 
-    if (!parent_pci) {
+    if (!parent_addr) {
         virReportError(VIR_ERR_NO_NODE_DEVICE,
-                       _("unable to find PCI address for parent device '%s'"), def->parent);
+                       _("unable to find parent device '%s'"), def->parent);
         return NULL;
     }
 
@@ -679,7 +689,7 @@ nodeDeviceGetMdevctlStartCommand(virNodeDeviceDefPtr def,
     }
 
     cmd = virCommandNewArgList(MDEVCTL, "start",
-                               "-p", parent_pci,
+                               "-p", parent_addr,
                                "--jsonfile", "/dev/stdin",
                                NULL);
 

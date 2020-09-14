@@ -208,6 +208,9 @@ int virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void virDomainCCWAddressSetFree(virDomainCCWAddressSetPtr addrs);
 
+char* virDomainCCWAddressAsString(virDomainDeviceCCWAddressPtr addr)
+    ATTRIBUTE_NONNULL(1);
+
 virDomainCCWAddressSetPtr
 virDomainCCWAddressSetCreateFromDomain(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
