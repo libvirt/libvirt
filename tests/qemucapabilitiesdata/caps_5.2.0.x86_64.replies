@@ -241,6 +241,12 @@
       "name": "transaction"
     },
     {
+      "name": "query-dirty-rate"
+    },
+    {
+      "name": "calc-dirty-rate"
+    },
+    {
       "name": "migrate-pause"
     },
     {
@@ -626,16 +632,16 @@
       "parent": "vhost-vsock-common"
     },
     {
+      "name": "virtio-blk-pci-transitional",
+      "parent": "virtio-blk-pci-base"
+    },
+    {
       "name": "pcie-pci-bridge",
       "parent": "base-pci-bridge"
     },
     {
       "name": "pc-q35-2.11-machine",
       "parent": "generic-pc-machine"
-    },
-    {
-      "name": "virtio-crypto-device",
-      "parent": "virtio-device"
     },
     {
       "name": "isa-applesmc",
@@ -654,16 +660,16 @@
       "parent": "bus"
     },
     {
-      "name": "Denverton-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "virtio-crypto-device",
+      "parent": "virtio-device"
     },
     {
       "name": "chardev-testdev",
       "parent": "chardev"
     },
     {
-      "name": "usb-wacom-tablet",
-      "parent": "usb-device"
+      "name": "Denverton-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "pci-ipmi-bt",
@@ -682,8 +688,8 @@
       "parent": "netfilter"
     },
     {
-      "name": "Icelake-Server-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "usb-wacom-tablet",
+      "parent": "usb-device"
     },
     {
       "name": "ich9-usb-uhci6",
@@ -722,12 +728,12 @@
       "parent": "object"
     },
     {
-      "name": "core2duo-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "ich9-usb-uhci5",
       "parent": "pci-uhci-usb"
+    },
+    {
+      "name": "core2duo-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "pcm3680_pci",
@@ -774,6 +780,10 @@
       "parent": "usb-device"
     },
     {
+      "name": "chardev-serial",
+      "parent": "chardev-fd"
+    },
+    {
       "name": "virtio-blk-device",
       "parent": "virtio-device"
     },
@@ -814,28 +824,24 @@
       "parent": "accel"
     },
     {
-      "name": "chardev-serial",
-      "parent": "chardev-fd"
-    },
-    {
       "name": "vhost-user-vsock-pci",
       "parent": "vhost-user-vsock-pci-base"
-    },
-    {
-      "name": "Icelake-Client-v2-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
-      "name": "pc-i440fx-5.0-machine",
-      "parent": "generic-pc-machine"
     },
     {
       "name": "ich9-usb-uhci1",
       "parent": "pci-uhci-usb"
     },
     {
+      "name": "pc-i440fx-5.0-machine",
+      "parent": "generic-pc-machine"
+    },
+    {
       "name": "scsi-generic",
       "parent": "scsi-device"
+    },
+    {
+      "name": "Icelake-Client-v2-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "kvmclock",
@@ -898,6 +904,10 @@
       "parent": "bus"
     },
     {
+      "name": "vhost-scsi-pci",
+      "parent": "vhost-scsi-pci-base"
+    },
+    {
       "name": "usb-host",
       "parent": "usb-device"
     },
@@ -922,8 +932,8 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "vhost-scsi-pci",
-      "parent": "vhost-scsi-pci-base"
+      "name": "acpi-ged",
+      "parent": "sys-bus-device"
     },
     {
       "name": "isa-ipmi-bt",
@@ -942,12 +952,12 @@
       "parent": "pci-device"
     },
     {
-      "name": "xio3130-downstream",
-      "parent": "pcie-slot"
-    },
-    {
       "name": "intel-iommu-iommu-memory-region",
       "parent": "qemu:iommu-memory-region"
+    },
+    {
+      "name": "xio3130-downstream",
+      "parent": "pcie-slot"
     },
     {
       "name": "vhost-user-vsock-pci-non-transitional",
@@ -958,12 +968,12 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "microvm-machine",
-      "parent": "x86-machine"
-    },
-    {
       "name": "PCI",
       "parent": "bus"
+    },
+    {
+      "name": "microvm-machine",
+      "parent": "x86-machine"
     },
     {
       "name": "sdhci-bus",
@@ -1122,10 +1132,6 @@
       "parent": "pci-device"
     },
     {
-      "name": "chardev-memory",
-      "parent": "chardev-ringbuf"
-    },
-    {
       "name": "i82557a",
       "parent": "pci-device"
     },
@@ -1136,6 +1142,10 @@
     {
       "name": "vmmouse",
       "parent": "isa-device"
+    },
+    {
+      "name": "chardev-udp",
+      "parent": "chardev"
     },
     {
       "name": "pc-q35-2.8-machine",
@@ -1162,8 +1172,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "chardev-udp",
-      "parent": "chardev"
+      "name": "chardev-memory",
+      "parent": "chardev-ringbuf"
     },
     {
       "name": "EPYC-Rome-v1-x86_64-cpu",
@@ -1214,12 +1224,12 @@
       "parent": "virtio-9p-pci-base"
     },
     {
-      "name": "memory-backend-file",
-      "parent": "memory-backend"
-    },
-    {
       "name": "Nehalem-v2-x86_64-cpu",
       "parent": "x86_64-cpu"
+    },
+    {
+      "name": "memory-backend-file",
+      "parent": "memory-backend"
     },
     {
       "name": "vhost-vsock-device",
@@ -1282,6 +1292,10 @@
       "parent": "accel"
     },
     {
+      "name": "piix4-ide",
+      "parent": "pci-ide"
+    },
+    {
       "name": "virtio-balloon-pci",
       "parent": "virtio-balloon-pci-base"
     },
@@ -1306,6 +1320,14 @@
       "parent": "x86_64-cpu"
     },
     {
+      "name": "acpi-ged-x86",
+      "parent": "acpi-ged"
+    },
+    {
+      "name": "ES1370",
+      "parent": "pci-device"
+    },
+    {
       "name": "i82551",
       "parent": "pci-device"
     },
@@ -1322,8 +1344,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "pc-i440fx-2.6-machine",
-      "parent": "generic-pc-machine"
+      "name": "nvme",
+      "parent": "pci-device"
     },
     {
       "name": "SandyBridge-x86_64-cpu",
@@ -1334,15 +1356,11 @@
       "parent": "pci-device"
     },
     {
-      "name": "piix4-ide",
-      "parent": "pci-ide"
+      "name": "pc-i440fx-2.6-machine",
+      "parent": "generic-pc-machine"
     },
     {
       "name": "mioe3680_pci",
-      "parent": "pci-device"
-    },
-    {
-      "name": "nvme",
       "parent": "pci-device"
     },
     {
@@ -1358,16 +1376,12 @@
       "parent": "base-xhci"
     },
     {
-      "name": "ES1370",
-      "parent": "pci-device"
+      "name": "kvm-apic",
+      "parent": "apic-common"
     },
     {
       "name": "Conroe-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "kvm-apic",
-      "parent": "apic-common"
     },
     {
       "name": "isa-pit",
@@ -1406,12 +1420,12 @@
       "parent": "virtio-crypto-pci-base-type"
     },
     {
-      "name": "i8042",
-      "parent": "isa-device"
-    },
-    {
       "name": "iothread",
       "parent": "object"
+    },
+    {
+      "name": "i8042",
+      "parent": "isa-device"
     },
     {
       "name": "virtio-iommu-pci-transitional",
@@ -1450,6 +1464,10 @@
       "parent": "x86_64-cpu"
     },
     {
+      "name": "virtio-rng-pci-non-transitional",
+      "parent": "virtio-rng-pci-base"
+    },
+    {
       "name": "cirrus-vga",
       "parent": "pci-device"
     },
@@ -1466,16 +1484,12 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "virtio-serial-pci",
-      "parent": "virtio-serial-pci-base"
-    },
-    {
       "name": "i82559er",
       "parent": "pci-device"
     },
     {
-      "name": "virtio-rng-pci-non-transitional",
-      "parent": "virtio-rng-pci-base"
+      "name": "virtio-serial-pci",
+      "parent": "virtio-serial-pci-base"
     },
     {
       "name": "Skylake-Client-x86_64-cpu",
@@ -1484,10 +1498,6 @@
     {
       "name": "Opteron_G3-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "isa-ide",
-      "parent": "isa-device"
     },
     {
       "name": "container",
@@ -1514,6 +1524,10 @@
       "parent": "isa-device"
     },
     {
+      "name": "isa-ide",
+      "parent": "isa-device"
+    },
+    {
       "name": "am53c974",
       "parent": "pci-device"
     },
@@ -1534,12 +1548,12 @@
       "parent": "e1000-base"
     },
     {
-      "name": "pxb-pcie-bus",
-      "parent": "PCIE"
-    },
-    {
       "name": "sdhci-pci",
       "parent": "pci-device"
+    },
+    {
+      "name": "pxb-pcie-bus",
+      "parent": "PCIE"
     },
     {
       "name": "vhost-user-scsi",
@@ -1838,8 +1852,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "qio-net-listener",
-      "parent": "object"
+      "name": "qio-channel-websock",
+      "parent": "qio-channel"
     },
     {
       "name": "pc-q35-4.1-machine",
@@ -1862,8 +1876,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "qio-channel-websock",
-      "parent": "qio-channel"
+      "name": "qio-net-listener",
+      "parent": "object"
     },
     {
       "name": "edu",
@@ -1942,8 +1956,8 @@
       "parent": "chardev"
     },
     {
-      "name": "clock",
-      "parent": "object"
+      "name": "virtio-net-device",
+      "parent": "virtio-device"
     },
     {
       "name": "Haswell-v2-x86_64-cpu",
@@ -1978,8 +1992,8 @@
       "parent": "sys-bus-device"
     },
     {
-      "name": "secret",
-      "parent": "secret_common"
+      "name": "clock",
+      "parent": "object"
     },
     {
       "name": "virtconsole",
@@ -2002,8 +2016,8 @@
       "parent": "scsi-disk-base"
     },
     {
-      "name": "Cascadelake-Server-noTSX-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "secret",
+      "parent": "secret_common"
     },
     {
       "name": "usb-kbd",
@@ -2014,20 +2028,20 @@
       "parent": "isa-device"
     },
     {
-      "name": "virtio-net-device",
-      "parent": "virtio-device"
+      "name": "usb-mtp",
+      "parent": "usb-device"
     },
     {
       "name": "filter-replay",
       "parent": "netfilter"
     },
     {
-      "name": "input-linux",
-      "parent": "object"
+      "name": "Cascadelake-Server-noTSX-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
-      "name": "usb-mtp",
-      "parent": "usb-device"
+      "name": "input-linux",
+      "parent": "object"
     },
     {
       "name": "pc-q35-2.9-machine",
@@ -2182,12 +2196,12 @@
       "parent": "device"
     },
     {
-      "name": "virtio-net-pci-transitional",
-      "parent": "virtio-net-pci-base"
-    },
-    {
       "name": "virtio-balloon-pci-non-transitional",
       "parent": "virtio-balloon-pci-base"
+    },
+    {
+      "name": "virtio-net-pci-transitional",
+      "parent": "virtio-net-pci-base"
     },
     {
       "name": "ipmi-bmc-sim",
@@ -2250,12 +2264,12 @@
       "parent": "object"
     },
     {
-      "name": "virtio-mmio",
-      "parent": "sys-bus-device"
-    },
-    {
       "name": "pxb-bus",
       "parent": "PCI"
+    },
+    {
+      "name": "virtio-mmio",
+      "parent": "sys-bus-device"
     },
     {
       "name": "pentium2-x86_64-cpu",
@@ -2298,6 +2312,10 @@
       "parent": "x86_64-cpu"
     },
     {
+      "name": "authz-simple",
+      "parent": "authz"
+    },
+    {
       "name": "Opteron_G2-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
@@ -2310,12 +2328,12 @@
       "parent": "vhost-user-blk-pci-base"
     },
     {
-      "name": "authz-simple",
-      "parent": "authz"
-    },
-    {
       "name": "fw_cfg_io",
       "parent": "fw_cfg"
+    },
+    {
+      "name": "pc-1.1-machine",
+      "parent": "generic-pc-machine"
     },
     {
       "name": "intel-iommu",
@@ -2334,8 +2352,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "pc-1.1-machine",
-      "parent": "generic-pc-machine"
+      "name": "u2f-passthru",
+      "parent": "u2f-key"
     },
     {
       "name": "Snowridge-x86_64-cpu",
@@ -2474,12 +2492,12 @@
       "parent": "virtio-gpu-base"
     },
     {
-      "name": "pentium-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "hda-duplex",
       "parent": "hda-audio"
+    },
+    {
+      "name": "pentium-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "amd-iommu-iommu-memory-region",
@@ -2488,6 +2506,10 @@
     {
       "name": "can-bus",
       "parent": "object"
+    },
+    {
+      "name": "virtio-balloon-device",
+      "parent": "virtio-device"
     },
     {
       "name": "cfi.pflash01",
@@ -2500,10 +2522,6 @@
     {
       "name": "Cooperlake-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "virtio-balloon-device",
-      "parent": "virtio-device"
     },
     {
       "name": "isa-parallel",
@@ -2558,20 +2576,20 @@
       "parent": "rng-backend"
     },
     {
-      "name": "ivshmem-doorbell",
-      "parent": "ivshmem-common"
+      "name": "Cascadelake-Server-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "i82558b",
       "parent": "pci-device"
     },
     {
-      "name": "qxl-vga",
-      "parent": "pci-qxl"
+      "name": "ivshmem-doorbell",
+      "parent": "ivshmem-common"
     },
     {
-      "name": "Cascadelake-Server-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "qxl-vga",
+      "parent": "pci-qxl"
     },
     {
       "name": "virtio-iommu-device",
@@ -2754,12 +2772,12 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "scsi-block",
-      "parent": "scsi-disk-base"
-    },
-    {
       "name": "mptsas1068",
       "parent": "pci-device"
+    },
+    {
+      "name": "scsi-block",
+      "parent": "scsi-disk-base"
     },
     {
       "name": "Snowridge-v1-x86_64-cpu",
@@ -2850,12 +2868,12 @@
       "parent": "qio-channel"
     },
     {
-      "name": "virtio-blk-pci-transitional",
-      "parent": "virtio-blk-pci-base"
-    },
-    {
       "name": "virtio-vga",
       "parent": "virtio-vga-base-type"
+    },
+    {
+      "name": "Icelake-Server-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "authz-pam",
@@ -3045,7 +3063,7 @@
       "type": "uint32"
     },
     {
-      "default-value": 1,
+      "default-value": 65535,
       "name": "num-queues",
       "type": "uint16"
     },
@@ -3778,7 +3796,7 @@
       "type": "bool"
     },
     {
-      "default-value": 1,
+      "default-value": 4294967295,
       "name": "num_queues",
       "type": "uint32"
     },
@@ -4460,6 +4478,11 @@
     },
     {
       "default-value": true,
+      "name": "acpi-root-pci-hotplug",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
       "name": "memory-hotplug-support",
       "type": "bool"
     },
@@ -4554,9 +4577,17 @@
       "type": "bool"
     },
     {
+      "name": "pci-hole-end",
+      "type": "uint32"
+    },
+    {
       "default-value": 2147483648,
       "name": "pci-hole64-size",
       "type": "size"
+    },
+    {
+      "name": "pci-hole64-start",
+      "type": "uint64"
     },
     {
       "default-value": 0,
@@ -4564,21 +4595,17 @@
       "type": "uint32"
     },
     {
+      "name": "pci-hole64-end",
+      "type": "uint64"
+    },
+    {
       "default-value": true,
       "name": "x-pci-hole64-fix",
       "type": "bool"
     },
     {
-      "name": "pci-hole-end",
+      "name": "pci-hole-start",
       "type": "uint32"
-    },
-    {
-      "name": "pci-hole64-start",
-      "type": "uint64"
-    },
-    {
-      "name": "pci-hole64-end",
-      "type": "uint64"
     },
     {
       "name": "pci-conf-idx[0]",
@@ -4587,10 +4614,6 @@
     {
       "name": "pci-conf-data[0]",
       "type": "child<qemu:memory-region>"
-    },
-    {
-      "name": "pci-hole-start",
-      "type": "uint32"
     }
   ],
   "id": "libvirt-18"
@@ -6485,6 +6508,10 @@
       "type": "link<qemu:memory-region>"
     },
     {
+      "name": "start-powered-off",
+      "type": "bool"
+    },
+    {
       "name": "legacy-memory",
       "type": "str"
     },
@@ -8145,6 +8172,14 @@
       "default-ram-id": "pc.ram"
     },
     {
+      "hotpluggable-cpus": false,
+      "name": "none",
+      "numa-mem-supported": false,
+      "cpu-max": 1,
+      "deprecated": false,
+      "default-ram-id": "ram"
+    },
+    {
       "hotpluggable-cpus": true,
       "name": "pc-1.1",
       "numa-mem-supported": true,
@@ -8152,14 +8187,6 @@
       "cpu-max": 255,
       "deprecated": true,
       "default-ram-id": "pc.ram"
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "none",
-      "numa-mem-supported": false,
-      "cpu-max": 1,
-      "deprecated": false,
-      "default-ram-id": "ram"
     },
     {
       "hotpluggable-cpus": true,
@@ -10284,13 +10311,97 @@
     },
     {
       "parameters": [
+        {
+          "name": "audiodev",
+          "type": "string"
+        },
+        {
+          "name": "non-adaptive",
+          "type": "boolean"
+        },
+        {
+          "name": "lossy",
+          "type": "boolean"
+        },
+        {
+          "name": "sasl-authz",
+          "type": "string"
+        },
+        {
+          "name": "tls-authz",
+          "type": "string"
+        },
+        {
+          "name": "acl",
+          "type": "boolean"
+        },
+        {
+          "name": "sasl",
+          "type": "boolean"
+        },
+        {
+          "name": "key-delay-ms",
+          "type": "number"
+        },
+        {
+          "name": "lock-key-sync",
+          "type": "boolean"
+        },
+        {
+          "name": "reverse",
+          "type": "boolean"
+        },
+        {
+          "name": "password",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv6",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv4",
+          "type": "boolean"
+        },
+        {
+          "name": "to",
+          "type": "number"
+        },
+        {
+          "name": "connections",
+          "type": "number"
+        },
+        {
+          "name": "head",
+          "type": "number"
+        },
+        {
+          "name": "display",
+          "type": "string"
+        },
+        {
+          "name": "share",
+          "type": "string"
+        },
+        {
+          "name": "tls-creds",
+          "type": "string"
+        },
+        {
+          "name": "websocket",
+          "type": "string"
+        },
+        {
+          "name": "vnc",
+          "type": "string"
+        }
       ],
-      "option": "acpi"
+      "option": "vnc"
     },
     {
       "parameters": [
       ],
-      "option": "smbios"
+      "option": "acpi"
     },
     {
       "parameters": [
@@ -10420,6 +10531,36 @@
         }
       ],
       "option": "spice"
+    },
+    {
+      "parameters": [
+        {
+          "name": "resourcecontrol",
+          "type": "string"
+        },
+        {
+          "name": "spawn",
+          "type": "string"
+        },
+        {
+          "name": "elevateprivileges",
+          "type": "string"
+        },
+        {
+          "name": "obsolete",
+          "type": "string"
+        },
+        {
+          "name": "enable",
+          "type": "boolean"
+        }
+      ],
+      "option": "sandbox"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "smbios"
     },
     {
       "parameters": [
@@ -10609,120 +10750,6 @@
         }
       ],
       "option": "fsdev"
-    },
-    {
-      "parameters": [
-        {
-          "name": "audiodev",
-          "type": "string"
-        },
-        {
-          "name": "non-adaptive",
-          "type": "boolean"
-        },
-        {
-          "name": "lossy",
-          "type": "boolean"
-        },
-        {
-          "name": "sasl-authz",
-          "type": "string"
-        },
-        {
-          "name": "tls-authz",
-          "type": "string"
-        },
-        {
-          "name": "acl",
-          "type": "boolean"
-        },
-        {
-          "name": "sasl",
-          "type": "boolean"
-        },
-        {
-          "name": "key-delay-ms",
-          "type": "number"
-        },
-        {
-          "name": "lock-key-sync",
-          "type": "boolean"
-        },
-        {
-          "name": "reverse",
-          "type": "boolean"
-        },
-        {
-          "name": "password",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv6",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv4",
-          "type": "boolean"
-        },
-        {
-          "name": "to",
-          "type": "number"
-        },
-        {
-          "name": "connections",
-          "type": "number"
-        },
-        {
-          "name": "head",
-          "type": "number"
-        },
-        {
-          "name": "display",
-          "type": "string"
-        },
-        {
-          "name": "share",
-          "type": "string"
-        },
-        {
-          "name": "tls-creds",
-          "type": "string"
-        },
-        {
-          "name": "websocket",
-          "type": "string"
-        },
-        {
-          "name": "vnc",
-          "type": "string"
-        }
-      ],
-      "option": "vnc"
-    },
-    {
-      "parameters": [
-        {
-          "name": "resourcecontrol",
-          "type": "string"
-        },
-        {
-          "name": "spawn",
-          "type": "string"
-        },
-        {
-          "name": "elevateprivileges",
-          "type": "string"
-        },
-        {
-          "name": "obsolete",
-          "type": "string"
-        },
-        {
-          "name": "enable",
-          "type": "boolean"
-        }
-      ],
-      "option": "sandbox"
     },
     {
       "parameters": [
@@ -12562,44 +12589,56 @@
       "arg-type": "150"
     },
     {
-      "name": "transaction",
+      "name": "calc-dirty-rate",
       "ret-type": "0",
       "meta-type": "command",
       "arg-type": "151"
     },
     {
-      "name": "trace-event-get-state",
-      "ret-type": "[153]",
+      "name": "query-dirty-rate",
+      "ret-type": "152",
       "meta-type": "command",
-      "arg-type": "152"
+      "arg-type": "0"
+    },
+    {
+      "name": "transaction",
+      "ret-type": "0",
+      "meta-type": "command",
+      "arg-type": "153"
+    },
+    {
+      "name": "trace-event-get-state",
+      "ret-type": "[155]",
+      "meta-type": "command",
+      "arg-type": "154"
     },
     {
       "name": "trace-event-set-state",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "154"
+      "arg-type": "156"
     },
     {
       "name": "qmp_capabilities",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "155"
+      "arg-type": "157"
     },
     {
       "name": "query-version",
-      "ret-type": "156",
+      "ret-type": "158",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-commands",
-      "ret-type": "[157]",
+      "ret-type": "[159]",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-events",
-      "ret-type": "[158]",
+      "ret-type": "[160]",
       "meta-type": "command",
       "arg-type": "0",
       "features": [
@@ -12614,78 +12653,78 @@
     },
     {
       "name": "query-qmp-schema",
-      "ret-type": "[159]",
+      "ret-type": "[161]",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "qom-list",
-      "ret-type": "[161]",
+      "ret-type": "[163]",
       "meta-type": "command",
-      "arg-type": "160"
+      "arg-type": "162"
     },
     {
       "name": "qom-get",
       "ret-type": "any",
       "meta-type": "command",
-      "arg-type": "162"
+      "arg-type": "164"
     },
     {
       "name": "qom-set",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "163"
+      "arg-type": "165"
     },
     {
       "name": "qom-list-types",
-      "ret-type": "[165]",
+      "ret-type": "[167]",
       "meta-type": "command",
-      "arg-type": "164"
+      "arg-type": "166"
     },
     {
       "name": "qom-list-properties",
-      "ret-type": "[161]",
+      "ret-type": "[163]",
       "meta-type": "command",
-      "arg-type": "166"
+      "arg-type": "168"
     },
     {
       "name": "object-add",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "167"
+      "arg-type": "169"
     },
     {
       "name": "object-del",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "168"
+      "arg-type": "170"
     },
     {
       "name": "device-list-properties",
-      "ret-type": "[161]",
+      "ret-type": "[163]",
       "meta-type": "command",
-      "arg-type": "169"
+      "arg-type": "171"
     },
     {
       "name": "device_add",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "170"
+      "arg-type": "172"
     },
     {
       "name": "device_del",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "171"
+      "arg-type": "173"
     },
     {
       "name": "DEVICE_DELETED",
       "meta-type": "event",
-      "arg-type": "172"
+      "arg-type": "174"
     },
     {
       "name": "query-cpus",
-      "ret-type": "[173]",
+      "ret-type": "[175]",
       "meta-type": "command",
       "arg-type": "0",
       "features": [
@@ -12694,7 +12733,7 @@
     },
     {
       "name": "query-cpus-fast",
-      "ret-type": "[174]",
+      "ret-type": "[176]",
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -12702,38 +12741,38 @@
       "name": "cpu-add",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "175",
+      "arg-type": "177",
       "features": [
         "deprecated"
       ]
     },
     {
       "name": "query-machines",
-      "ret-type": "[176]",
+      "ret-type": "[178]",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-current-machine",
-      "ret-type": "177",
+      "ret-type": "179",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-target",
-      "ret-type": "178",
+      "ret-type": "180",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-memdev",
-      "ret-type": "[179]",
+      "ret-type": "[181]",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-hotpluggable-cpus",
-      "ret-type": "[180]",
+      "ret-type": "[182]",
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -12741,17 +12780,17 @@
       "name": "set-numa-node",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "181"
+      "arg-type": "183"
     },
     {
       "name": "query-cpu-model-expansion",
-      "ret-type": "187",
+      "ret-type": "189",
       "meta-type": "command",
-      "arg-type": "186"
+      "arg-type": "188"
     },
     {
       "name": "query-cpu-definitions",
-      "ret-type": "[188]",
+      "ret-type": "[190]",
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -12759,46 +12798,46 @@
       "name": "add_client",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "189"
+      "arg-type": "191"
     },
     {
       "name": "query-name",
-      "ret-type": "190",
-      "meta-type": "command",
-      "arg-type": "0"
-    },
-    {
-      "name": "query-kvm",
-      "ret-type": "191",
-      "meta-type": "command",
-      "arg-type": "0"
-    },
-    {
-      "name": "query-uuid",
       "ret-type": "192",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
+      "name": "query-kvm",
+      "ret-type": "193",
+      "meta-type": "command",
+      "arg-type": "0"
+    },
+    {
+      "name": "query-uuid",
+      "ret-type": "194",
+      "meta-type": "command",
+      "arg-type": "0"
+    },
+    {
       "name": "query-iothreads",
-      "ret-type": "[193]",
+      "ret-type": "[195]",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-balloon",
-      "ret-type": "194",
+      "ret-type": "196",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "BALLOON_CHANGE",
       "meta-type": "event",
-      "arg-type": "195"
+      "arg-type": "197"
     },
     {
       "name": "query-pci",
-      "ret-type": "[196]",
+      "ret-type": "[198]",
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -12824,13 +12863,13 @@
       "name": "memsave",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "197"
+      "arg-type": "199"
     },
     {
       "name": "pmemsave",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "198"
+      "arg-type": "200"
     },
     {
       "name": "cont",
@@ -12860,13 +12899,13 @@
       "name": "balloon",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "199"
+      "arg-type": "201"
     },
     {
       "name": "human-monitor-command",
       "ret-type": "str",
       "meta-type": "command",
-      "arg-type": "200",
+      "arg-type": "202",
       "features": [
         "savevm-monitor-nodes"
       ]
@@ -12875,7 +12914,7 @@
       "name": "change",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "201",
+      "arg-type": "203",
       "features": [
         "deprecated"
       ]
@@ -12884,93 +12923,93 @@
       "name": "xen-set-global-dirty-log",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "202"
+      "arg-type": "204"
     },
     {
       "name": "getfd",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "203"
+      "arg-type": "205"
     },
     {
       "name": "closefd",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "204"
+      "arg-type": "206"
     },
     {
       "name": "query-memory-size-summary",
-      "ret-type": "205",
+      "ret-type": "207",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "add-fd",
-      "ret-type": "207",
+      "ret-type": "209",
       "meta-type": "command",
-      "arg-type": "206"
+      "arg-type": "208"
     },
     {
       "name": "remove-fd",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "208"
+      "arg-type": "210"
     },
     {
       "name": "query-fdsets",
-      "ret-type": "[209]",
+      "ret-type": "[211]",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-command-line-options",
-      "ret-type": "[211]",
+      "ret-type": "[213]",
       "meta-type": "command",
-      "arg-type": "210"
+      "arg-type": "212"
     },
     {
       "name": "query-memory-devices",
-      "ret-type": "[212]",
+      "ret-type": "[214]",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "MEMORY_DEVICE_SIZE_CHANGE",
       "meta-type": "event",
-      "arg-type": "213"
+      "arg-type": "215"
     },
     {
       "name": "MEM_UNPLUG_ERROR",
       "meta-type": "event",
-      "arg-type": "214"
+      "arg-type": "216"
     },
     {
       "name": "query-acpi-ospm-status",
-      "ret-type": "[215]",
+      "ret-type": "[217]",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "ACPI_DEVICE_OST",
       "meta-type": "event",
-      "arg-type": "216"
+      "arg-type": "218"
     },
     {
       "name": "xen-load-devices-state",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "217"
+      "arg-type": "219"
     },
     {
       "name": "query-vm-generation-id",
-      "ret-type": "218",
+      "ret-type": "220",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "RTC_CHANGE",
       "meta-type": "event",
-      "arg-type": "219"
+      "arg-type": "221"
     },
     {
       "name": "rtc-reset-reinjection",
@@ -12980,19 +13019,19 @@
     },
     {
       "name": "query-sev",
-      "ret-type": "220",
+      "ret-type": "222",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-sev-launch-measure",
-      "ret-type": "221",
+      "ret-type": "223",
       "meta-type": "command",
       "arg-type": "0"
     },
     {
       "name": "query-sev-capabilities",
-      "ret-type": "222",
+      "ret-type": "224",
       "meta-type": "command",
       "arg-type": "0"
     },
@@ -13015,7 +13054,7 @@
         },
         {
           "name": "status",
-          "type": "225"
+          "type": "227"
         }
       ],
       "meta-type": "object"
@@ -13029,7 +13068,7 @@
         },
         {
           "name": "reason",
-          "type": "226"
+          "type": "228"
         }
       ],
       "meta-type": "object"
@@ -13043,7 +13082,7 @@
         },
         {
           "name": "reason",
-          "type": "226"
+          "type": "228"
         }
       ],
       "meta-type": "object"
@@ -13053,7 +13092,7 @@
       "members": [
         {
           "name": "action",
-          "type": "227"
+          "type": "229"
         }
       ],
       "meta-type": "object"
@@ -13063,7 +13102,7 @@
       "members": [
         {
           "name": "action",
-          "type": "227"
+          "type": "229"
         }
       ],
       "meta-type": "object"
@@ -13073,12 +13112,12 @@
       "members": [
         {
           "name": "action",
-          "type": "228"
+          "type": "230"
         },
         {
           "name": "info",
           "default": null,
-          "type": "229"
+          "type": "231"
         }
       ],
       "meta-type": "object"
@@ -13088,12 +13127,12 @@
       "members": [
         {
           "name": "action",
-          "type": "228"
+          "type": "230"
         },
         {
           "name": "info",
           "default": null,
-          "type": "229"
+          "type": "231"
         }
       ],
       "meta-type": "object"
@@ -13236,7 +13275,7 @@
         {
           "name": "read-only-mode",
           "default": null,
-          "type": "230"
+          "type": "232"
         }
       ],
       "meta-type": "object"
@@ -13458,12 +13497,12 @@
         {
           "name": "io-status",
           "default": null,
-          "type": "231"
+          "type": "233"
         },
         {
           "name": "dirty-bitmaps",
           "default": null,
-          "type": "[232]",
+          "type": "[234]",
           "features": [
             "deprecated"
           ]
@@ -13507,12 +13546,12 @@
         },
         {
           "name": "stats",
-          "type": "233"
+          "type": "235"
         },
         {
           "name": "driver-specific",
           "default": null,
-          "type": "234"
+          "type": "236"
         },
         {
           "name": "parent",
@@ -13565,7 +13604,7 @@
         },
         {
           "name": "io-status",
-          "type": "231"
+          "type": "233"
         },
         {
           "name": "ready",
@@ -13573,7 +13612,7 @@
         },
         {
           "name": "status",
-          "type": "235"
+          "type": "237"
         },
         {
           "name": "auto-finalize",
@@ -13661,7 +13700,7 @@
         {
           "name": "mode",
           "default": null,
-          "type": "236"
+          "type": "238"
         }
       ],
       "meta-type": "object"
@@ -13749,7 +13788,7 @@
         {
           "name": "on-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "filter-node-name",
@@ -13783,7 +13822,7 @@
         },
         {
           "name": "sync",
-          "type": "238"
+          "type": "240"
         },
         {
           "name": "speed",
@@ -13798,7 +13837,7 @@
         {
           "name": "bitmap-mode",
           "default": null,
-          "type": "239"
+          "type": "241"
         },
         {
           "name": "compress",
@@ -13808,12 +13847,12 @@
         {
           "name": "on-source-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "on-target-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "auto-finalize",
@@ -13842,7 +13881,7 @@
         {
           "name": "mode",
           "default": null,
-          "type": "236"
+          "type": "238"
         }
       ],
       "meta-type": "object"
@@ -13861,7 +13900,7 @@
         },
         {
           "name": "sync",
-          "type": "238"
+          "type": "240"
         },
         {
           "name": "speed",
@@ -13876,7 +13915,7 @@
         {
           "name": "bitmap-mode",
           "default": null,
-          "type": "239"
+          "type": "241"
         },
         {
           "name": "compress",
@@ -13886,12 +13925,12 @@
         {
           "name": "on-source-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "on-target-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "auto-finalize",
@@ -13973,7 +14012,7 @@
         },
         {
           "name": "detect_zeroes",
-          "type": "240"
+          "type": "242"
         },
         {
           "name": "bps",
@@ -14001,7 +14040,7 @@
         },
         {
           "name": "image",
-          "type": "241"
+          "type": "243"
         },
         {
           "name": "bps_max",
@@ -14075,7 +14114,7 @@
         },
         {
           "name": "cache",
-          "type": "242"
+          "type": "244"
         },
         {
           "name": "write_threshold",
@@ -14084,7 +14123,7 @@
         {
           "name": "dirty-bitmaps",
           "default": null,
-          "type": "[232]"
+          "type": "[234]"
         }
       ],
       "meta-type": "object"
@@ -14094,11 +14133,11 @@
       "members": [
         {
           "name": "nodes",
-          "type": "[243]"
+          "type": "[245]"
         },
         {
           "name": "edges",
-          "type": "[244]"
+          "type": "[246]"
         }
       ],
       "meta-type": "object"
@@ -14136,12 +14175,12 @@
         },
         {
           "name": "sync",
-          "type": "238"
+          "type": "240"
         },
         {
           "name": "mode",
           "default": null,
-          "type": "236"
+          "type": "238"
         },
         {
           "name": "speed",
@@ -14161,12 +14200,12 @@
         {
           "name": "on-source-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "on-target-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "unmap",
@@ -14176,7 +14215,7 @@
         {
           "name": "copy-mode",
           "default": null,
-          "type": "245"
+          "type": "247"
         },
         {
           "name": "auto-finalize",
@@ -14247,7 +14286,7 @@
         },
         {
           "name": "bitmaps",
-          "type": "[246]"
+          "type": "[248]"
         }
       ],
       "meta-type": "object"
@@ -14285,7 +14324,7 @@
         },
         {
           "name": "sync",
-          "type": "238"
+          "type": "240"
         },
         {
           "name": "speed",
@@ -14305,12 +14344,12 @@
         {
           "name": "on-source-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "on-target-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "filter-node-name",
@@ -14320,7 +14359,7 @@
         {
           "name": "copy-mode",
           "default": null,
-          "type": "245"
+          "type": "247"
         },
         {
           "name": "auto-finalize",
@@ -14370,7 +14409,7 @@
         {
           "name": "on-error",
           "default": null,
-          "type": "237"
+          "type": "239"
         },
         {
           "name": "auto-finalize",
@@ -14470,169 +14509,169 @@
       "variants": [
         {
           "case": "blkdebug",
-          "type": "250"
-        },
-        {
-          "case": "blklogwrites",
-          "type": "251"
-        },
-        {
-          "case": "blkverify",
           "type": "252"
         },
         {
-          "case": "blkreplay",
+          "case": "blklogwrites",
           "type": "253"
         },
         {
-          "case": "bochs",
+          "case": "blkverify",
           "type": "254"
         },
         {
-          "case": "cloop",
-          "type": "254"
-        },
-        {
-          "case": "compress",
-          "type": "254"
-        },
-        {
-          "case": "copy-on-read",
-          "type": "254"
-        },
-        {
-          "case": "dmg",
-          "type": "254"
-        },
-        {
-          "case": "file",
+          "case": "blkreplay",
           "type": "255"
         },
         {
-          "case": "ftp",
+          "case": "bochs",
           "type": "256"
         },
         {
-          "case": "ftps",
+          "case": "cloop",
+          "type": "256"
+        },
+        {
+          "case": "compress",
+          "type": "256"
+        },
+        {
+          "case": "copy-on-read",
+          "type": "256"
+        },
+        {
+          "case": "dmg",
+          "type": "256"
+        },
+        {
+          "case": "file",
           "type": "257"
         },
         {
-          "case": "gluster",
+          "case": "ftp",
           "type": "258"
         },
         {
-          "case": "host_cdrom",
-          "type": "255"
-        },
-        {
-          "case": "host_device",
-          "type": "255"
-        },
-        {
-          "case": "http",
+          "case": "ftps",
           "type": "259"
         },
         {
-          "case": "https",
+          "case": "gluster",
           "type": "260"
         },
         {
-          "case": "iscsi",
+          "case": "host_cdrom",
+          "type": "257"
+        },
+        {
+          "case": "host_device",
+          "type": "257"
+        },
+        {
+          "case": "http",
           "type": "261"
         },
         {
-          "case": "luks",
+          "case": "https",
           "type": "262"
         },
         {
-          "case": "nbd",
+          "case": "iscsi",
           "type": "263"
         },
         {
-          "case": "nfs",
+          "case": "luks",
           "type": "264"
         },
         {
-          "case": "null-aio",
+          "case": "nbd",
           "type": "265"
         },
         {
-          "case": "null-co",
-          "type": "265"
-        },
-        {
-          "case": "nvme",
+          "case": "nfs",
           "type": "266"
         },
         {
-          "case": "parallels",
-          "type": "254"
-        },
-        {
-          "case": "qcow2",
+          "case": "null-aio",
           "type": "267"
         },
         {
-          "case": "qcow",
+          "case": "null-co",
+          "type": "267"
+        },
+        {
+          "case": "nvme",
           "type": "268"
         },
         {
-          "case": "qed",
+          "case": "parallels",
+          "type": "256"
+        },
+        {
+          "case": "qcow2",
           "type": "269"
         },
         {
-          "case": "quorum",
+          "case": "qcow",
           "type": "270"
         },
         {
-          "case": "raw",
+          "case": "qed",
           "type": "271"
         },
         {
-          "case": "rbd",
+          "case": "quorum",
           "type": "272"
         },
         {
-          "case": "replication",
+          "case": "raw",
           "type": "273"
         },
         {
-          "case": "sheepdog",
+          "case": "rbd",
           "type": "274"
         },
         {
-          "case": "ssh",
+          "case": "replication",
           "type": "275"
         },
         {
-          "case": "throttle",
+          "case": "sheepdog",
           "type": "276"
         },
         {
+          "case": "ssh",
+          "type": "277"
+        },
+        {
+          "case": "throttle",
+          "type": "278"
+        },
+        {
           "case": "vdi",
-          "type": "254"
+          "type": "256"
         },
         {
           "case": "vhdx",
-          "type": "254"
+          "type": "256"
         },
         {
           "case": "vmdk",
-          "type": "269"
+          "type": "271"
         },
         {
           "case": "vpc",
-          "type": "254"
+          "type": "256"
         },
         {
           "case": "vvfat",
-          "type": "277"
+          "type": "279"
         }
       ],
       "members": [
         {
           "name": "driver",
-          "type": "247"
+          "type": "249"
         },
         {
           "name": "node-name",
@@ -14642,12 +14681,12 @@
         {
           "name": "discard",
           "default": null,
-          "type": "248"
+          "type": "250"
         },
         {
           "name": "cache",
           "default": null,
-          "type": "249"
+          "type": "251"
         },
         {
           "name": "read-only",
@@ -14667,7 +14706,7 @@
         {
           "name": "detect-zeroes",
           "default": null,
-          "type": "240"
+          "type": "242"
         }
       ],
       "meta-type": "object"
@@ -14691,7 +14730,7 @@
         },
         {
           "name": "options",
-          "type": "278"
+          "type": "280"
         }
       ],
       "meta-type": "object"
@@ -14709,7 +14748,7 @@
         },
         {
           "name": "options",
-          "type": "279"
+          "type": "281"
         },
         {
           "name": "force",
@@ -14766,11 +14805,11 @@
         },
         {
           "name": "operation",
-          "type": "280"
+          "type": "282"
         },
         {
           "name": "action",
-          "type": "281"
+          "type": "283"
         },
         {
           "name": "nospace",
@@ -14789,7 +14828,7 @@
       "members": [
         {
           "name": "type",
-          "type": "282"
+          "type": "284"
         },
         {
           "name": "device",
@@ -14820,7 +14859,7 @@
       "members": [
         {
           "name": "type",
-          "type": "282"
+          "type": "284"
         },
         {
           "name": "device",
@@ -14850,11 +14889,11 @@
         },
         {
           "name": "operation",
-          "type": "280"
+          "type": "282"
         },
         {
           "name": "action",
-          "type": "281"
+          "type": "283"
         }
       ],
       "meta-type": "object"
@@ -14864,7 +14903,7 @@
       "members": [
         {
           "name": "type",
-          "type": "282"
+          "type": "284"
         },
         {
           "name": "device",
@@ -14890,7 +14929,7 @@
       "members": [
         {
           "name": "type",
-          "type": "282"
+          "type": "284"
         },
         {
           "name": "id",
@@ -14960,7 +14999,7 @@
         },
         {
           "name": "iothread",
-          "type": "283"
+          "type": "285"
         },
         {
           "name": "force",
@@ -14975,7 +15014,7 @@
       "members": [
         {
           "name": "addr",
-          "type": "284"
+          "type": "286"
         },
         {
           "name": "tls-creds",
@@ -15030,7 +15069,7 @@
         {
           "name": "mode",
           "default": null,
-          "type": "285"
+          "type": "287"
         }
       ],
       "meta-type": "object"
@@ -15058,7 +15097,7 @@
       "members": [
         {
           "name": "type",
-          "type": "286"
+          "type": "288"
         },
         {
           "name": "error",
@@ -15157,7 +15196,7 @@
         },
         {
           "name": "status",
-          "type": "235"
+          "type": "237"
         }
       ],
       "meta-type": "object"
@@ -15236,11 +15275,11 @@
         },
         {
           "name": "type",
-          "type": "282"
+          "type": "284"
         },
         {
           "name": "status",
-          "type": "235"
+          "type": "237"
         },
         {
           "name": "current-progress",
@@ -15310,7 +15349,7 @@
         {
           "name": "format",
           "default": null,
-          "type": "287"
+          "type": "289"
         }
       ],
       "meta-type": "object"
@@ -15329,7 +15368,7 @@
         {
           "name": "format",
           "default": null,
-          "type": "287"
+          "type": "289"
         }
       ],
       "meta-type": "object"
@@ -15348,7 +15387,7 @@
         },
         {
           "name": "backend",
-          "type": "288"
+          "type": "290"
         }
       ],
       "meta-type": "object"
@@ -15373,7 +15412,7 @@
         },
         {
           "name": "backend",
-          "type": "288"
+          "type": "290"
         }
       ],
       "meta-type": "object"
@@ -15441,7 +15480,7 @@
         {
           "name": "format",
           "default": null,
-          "type": "289"
+          "type": "291"
         }
       ],
       "meta-type": "object"
@@ -15451,7 +15490,7 @@
       "members": [
         {
           "name": "status",
-          "type": "290"
+          "type": "292"
         },
         {
           "name": "completed",
@@ -15484,7 +15523,7 @@
       "members": [
         {
           "name": "formats",
-          "type": "[289]"
+          "type": "[291]"
         }
       ],
       "meta-type": "object"
@@ -15509,47 +15548,47 @@
       "variants": [
         {
           "case": "nic",
-          "type": "292"
-        },
-        {
-          "case": "user",
-          "type": "293"
-        },
-        {
-          "case": "tap",
           "type": "294"
         },
         {
-          "case": "l2tpv3",
+          "case": "user",
           "type": "295"
         },
         {
-          "case": "socket",
+          "case": "tap",
           "type": "296"
         },
         {
-          "case": "vde",
+          "case": "l2tpv3",
           "type": "297"
         },
         {
-          "case": "bridge",
+          "case": "socket",
           "type": "298"
         },
         {
-          "case": "hubport",
+          "case": "vde",
           "type": "299"
         },
         {
-          "case": "netmap",
+          "case": "bridge",
           "type": "300"
         },
         {
-          "case": "vhost-user",
+          "case": "hubport",
           "type": "301"
         },
         {
-          "case": "vhost-vdpa",
+          "case": "netmap",
           "type": "302"
+        },
+        {
+          "case": "vhost-user",
+          "type": "303"
+        },
+        {
+          "case": "vhost-vdpa",
+          "type": "304"
         },
         {
           "case": "none",
@@ -15563,7 +15602,7 @@
         },
         {
           "name": "type",
-          "type": "291"
+          "type": "293"
         }
       ],
       "meta-type": "object"
@@ -15607,15 +15646,15 @@
         },
         {
           "name": "multicast",
-          "type": "303"
+          "type": "305"
         },
         {
           "name": "unicast",
-          "type": "303"
+          "type": "305"
         },
         {
           "name": "vlan",
-          "type": "303"
+          "type": "305"
         },
         {
           "name": "broadcast-allowed",
@@ -15791,11 +15830,11 @@
         },
         {
           "name": "duplex",
-          "type": "304"
+          "type": "306"
         },
         {
           "name": "autoneg",
-          "type": "305"
+          "type": "307"
         }
       ],
       "meta-type": "object"
@@ -15833,15 +15872,15 @@
         },
         {
           "name": "key",
-          "type": "306"
+          "type": "308"
         },
         {
           "name": "mask",
-          "type": "307"
+          "type": "309"
         },
         {
           "name": "action",
-          "type": "308"
+          "type": "310"
         }
       ],
       "meta-type": "object"
@@ -15980,7 +16019,7 @@
         },
         {
           "name": "options",
-          "type": "309"
+          "type": "311"
         }
       ],
       "meta-type": "object"
@@ -16076,12 +16115,12 @@
         },
         {
           "name": "mouse-mode",
-          "type": "310"
+          "type": "312"
         },
         {
           "name": "channels",
           "default": null,
-          "type": "[311]"
+          "type": "[313]"
         }
       ],
       "meta-type": "object"
@@ -16091,11 +16130,11 @@
       "members": [
         {
           "name": "server",
-          "type": "312"
+          "type": "314"
         },
         {
           "name": "client",
-          "type": "312"
+          "type": "314"
         }
       ],
       "meta-type": "object"
@@ -16105,11 +16144,11 @@
       "members": [
         {
           "name": "server",
-          "type": "313"
+          "type": "315"
         },
         {
           "name": "client",
-          "type": "311"
+          "type": "313"
         }
       ],
       "meta-type": "object"
@@ -16119,11 +16158,11 @@
       "members": [
         {
           "name": "server",
-          "type": "312"
+          "type": "314"
         },
         {
           "name": "client",
-          "type": "312"
+          "type": "314"
         }
       ],
       "meta-type": "object"
@@ -16143,7 +16182,7 @@
         {
           "name": "family",
           "default": null,
-          "type": "314"
+          "type": "316"
         },
         {
           "name": "service",
@@ -16158,7 +16197,7 @@
         {
           "name": "clients",
           "default": null,
-          "type": "[315]"
+          "type": "[317]"
         }
       ],
       "meta-type": "object"
@@ -16177,20 +16216,20 @@
         },
         {
           "name": "server",
-          "type": "[316]"
+          "type": "[318]"
         },
         {
           "name": "clients",
-          "type": "[315]"
+          "type": "[317]"
         },
         {
           "name": "auth",
-          "type": "317"
+          "type": "319"
         },
         {
           "name": "vencrypt",
           "default": null,
-          "type": "318"
+          "type": "320"
         },
         {
           "name": "display",
@@ -16215,11 +16254,11 @@
       "members": [
         {
           "name": "server",
-          "type": "319"
+          "type": "321"
         },
         {
           "name": "client",
-          "type": "320"
+          "type": "322"
         }
       ],
       "meta-type": "object"
@@ -16229,11 +16268,11 @@
       "members": [
         {
           "name": "server",
-          "type": "319"
+          "type": "321"
         },
         {
           "name": "client",
-          "type": "315"
+          "type": "317"
         }
       ],
       "meta-type": "object"
@@ -16243,11 +16282,11 @@
       "members": [
         {
           "name": "server",
-          "type": "319"
+          "type": "321"
         },
         {
           "name": "client",
-          "type": "315"
+          "type": "317"
         }
       ],
       "meta-type": "object"
@@ -16284,7 +16323,7 @@
       "members": [
         {
           "name": "keys",
-          "type": "[321]"
+          "type": "[323]"
         },
         {
           "name": "hold-time",
@@ -16309,7 +16348,7 @@
         },
         {
           "name": "events",
-          "type": "[322]"
+          "type": "[324]"
         }
       ],
       "meta-type": "object"
@@ -16320,15 +16359,15 @@
       "variants": [
         {
           "case": "gtk",
-          "type": "325"
+          "type": "327"
         },
         {
           "case": "curses",
-          "type": "326"
+          "type": "328"
         },
         {
           "case": "egl-headless",
-          "type": "327"
+          "type": "329"
         },
         {
           "case": "default",
@@ -16354,7 +16393,7 @@
       "members": [
         {
           "name": "type",
-          "type": "323"
+          "type": "325"
         },
         {
           "name": "full-screen",
@@ -16374,7 +16413,7 @@
         {
           "name": "gl",
           "default": null,
-          "type": "324"
+          "type": "326"
         }
       ],
       "meta-type": "object"
@@ -16385,22 +16424,22 @@
         {
           "name": "status",
           "default": null,
-          "type": "328"
+          "type": "330"
         },
         {
           "name": "ram",
           "default": null,
-          "type": "329"
+          "type": "331"
         },
         {
           "name": "disk",
           "default": null,
-          "type": "329"
+          "type": "331"
         },
         {
           "name": "xbzrle-cache",
           "default": null,
-          "type": "330"
+          "type": "332"
         },
         {
           "name": "total-time",
@@ -16445,12 +16484,12 @@
         {
           "name": "compression",
           "default": null,
-          "type": "331"
+          "type": "333"
         },
         {
           "name": "socket-address",
           "default": null,
-          "type": "[332]"
+          "type": "[334]"
         }
       ],
       "meta-type": "object"
@@ -16475,7 +16514,7 @@
       "members": [
         {
           "name": "capability",
-          "type": "333"
+          "type": "335"
         },
         {
           "name": "state",
@@ -16550,17 +16589,17 @@
         {
           "name": "tls-creds",
           "default": null,
-          "type": "283"
+          "type": "285"
         },
         {
           "name": "tls-hostname",
           "default": null,
-          "type": "283"
+          "type": "285"
         },
         {
           "name": "tls-authz",
           "default": null,
-          "type": "283"
+          "type": "285"
         },
         {
           "name": "max-bandwidth",
@@ -16605,7 +16644,7 @@
         {
           "name": "multifd-compression",
           "default": null,
-          "type": "334"
+          "type": "336"
         },
         {
           "name": "multifd-zlib-level",
@@ -16620,7 +16659,7 @@
         {
           "name": "block-bitmap-mapping",
           "default": null,
-          "type": "[335]"
+          "type": "[337]"
         }
       ],
       "meta-type": "object"
@@ -16746,7 +16785,7 @@
         {
           "name": "multifd-compression",
           "default": null,
-          "type": "334"
+          "type": "336"
         },
         {
           "name": "multifd-zlib-level",
@@ -16761,7 +16800,7 @@
         {
           "name": "block-bitmap-mapping",
           "default": null,
-          "type": "[335]"
+          "type": "[337]"
         }
       ],
       "meta-type": "object"
@@ -16800,7 +16839,7 @@
       "members": [
         {
           "name": "status",
-          "type": "328"
+          "type": "330"
         }
       ],
       "meta-type": "object"
@@ -16820,11 +16859,11 @@
       "members": [
         {
           "name": "mode",
-          "type": "336"
+          "type": "338"
         },
         {
           "name": "reason",
-          "type": "337"
+          "type": "339"
         }
       ],
       "meta-type": "object"
@@ -16834,7 +16873,7 @@
       "members": [
         {
           "name": "state",
-          "type": "328"
+          "type": "330"
         }
       ],
       "meta-type": "object"
@@ -16968,15 +17007,15 @@
       "members": [
         {
           "name": "mode",
-          "type": "336"
+          "type": "338"
         },
         {
           "name": "last-mode",
-          "type": "336"
+          "type": "338"
         },
         {
           "name": "reason",
-          "type": "337"
+          "type": "339"
         }
       ],
       "meta-type": "object"
@@ -17005,19 +17044,51 @@
       "name": "151",
       "members": [
         {
-          "name": "actions",
-          "type": "[338]"
-        },
-        {
-          "name": "properties",
-          "default": null,
-          "type": "339"
+          "name": "calc-time",
+          "type": "int"
         }
       ],
       "meta-type": "object"
     },
     {
       "name": "152",
+      "members": [
+        {
+          "name": "dirty-rate",
+          "type": "int"
+        },
+        {
+          "name": "status",
+          "type": "340"
+        },
+        {
+          "name": "start-time",
+          "type": "int"
+        },
+        {
+          "name": "calc-time",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "153",
+      "members": [
+        {
+          "name": "actions",
+          "type": "[341]"
+        },
+        {
+          "name": "properties",
+          "default": null,
+          "type": "342"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "154",
       "members": [
         {
           "name": "name",
@@ -17032,12 +17103,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[153]",
-      "element-type": "153",
+      "name": "[155]",
+      "element-type": "155",
       "meta-type": "array"
     },
     {
-      "name": "153",
+      "name": "155",
       "members": [
         {
           "name": "name",
@@ -17045,7 +17116,7 @@
         },
         {
           "name": "state",
-          "type": "340"
+          "type": "343"
         },
         {
           "name": "vcpu",
@@ -17055,7 +17126,7 @@
       "meta-type": "object"
     },
     {
-      "name": "154",
+      "name": "156",
       "members": [
         {
           "name": "name",
@@ -17079,55 +17150,25 @@
       "meta-type": "object"
     },
     {
-      "name": "155",
+      "name": "157",
       "members": [
         {
           "name": "enable",
           "default": null,
-          "type": "[341]"
+          "type": "[344]"
         }
       ],
       "meta-type": "object"
-    },
-    {
-      "name": "156",
-      "members": [
-        {
-          "name": "qemu",
-          "type": "342"
-        },
-        {
-          "name": "package",
-          "type": "str"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "[157]",
-      "element-type": "157",
-      "meta-type": "array"
-    },
-    {
-      "name": "157",
-      "members": [
-        {
-          "name": "name",
-          "type": "str"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "[158]",
-      "element-type": "158",
-      "meta-type": "array"
     },
     {
       "name": "158",
       "members": [
         {
-          "name": "name",
+          "name": "qemu",
+          "type": "345"
+        },
+        {
+          "name": "package",
           "type": "str"
         }
       ],
@@ -17140,59 +17181,24 @@
     },
     {
       "name": "159",
-      "tag": "meta-type",
-      "variants": [
-        {
-          "case": "builtin",
-          "type": "344"
-        },
-        {
-          "case": "enum",
-          "type": "345"
-        },
-        {
-          "case": "array",
-          "type": "346"
-        },
-        {
-          "case": "object",
-          "type": "347"
-        },
-        {
-          "case": "alternate",
-          "type": "348"
-        },
-        {
-          "case": "command",
-          "type": "349"
-        },
-        {
-          "case": "event",
-          "type": "350"
-        }
-      ],
       "members": [
         {
           "name": "name",
           "type": "str"
-        },
-        {
-          "name": "meta-type",
-          "type": "343"
-        },
-        {
-          "name": "features",
-          "default": null,
-          "type": "[str]"
         }
       ],
       "meta-type": "object"
     },
     {
+      "name": "[160]",
+      "element-type": "160",
+      "meta-type": "array"
+    },
+    {
       "name": "160",
       "members": [
         {
-          "name": "path",
+          "name": "name",
           "type": "str"
         }
       ],
@@ -17205,6 +17211,71 @@
     },
     {
       "name": "161",
+      "tag": "meta-type",
+      "variants": [
+        {
+          "case": "builtin",
+          "type": "347"
+        },
+        {
+          "case": "enum",
+          "type": "348"
+        },
+        {
+          "case": "array",
+          "type": "349"
+        },
+        {
+          "case": "object",
+          "type": "350"
+        },
+        {
+          "case": "alternate",
+          "type": "351"
+        },
+        {
+          "case": "command",
+          "type": "352"
+        },
+        {
+          "case": "event",
+          "type": "353"
+        }
+      ],
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "meta-type",
+          "type": "346"
+        },
+        {
+          "name": "features",
+          "default": null,
+          "type": "[str]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "162",
+      "members": [
+        {
+          "name": "path",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[163]",
+      "element-type": "163",
+      "meta-type": "array"
+    },
+    {
+      "name": "163",
       "members": [
         {
           "name": "name",
@@ -17228,7 +17299,7 @@
       "meta-type": "object"
     },
     {
-      "name": "162",
+      "name": "164",
       "members": [
         {
           "name": "path",
@@ -17247,7 +17318,7 @@
       "meta-type": "builtin"
     },
     {
-      "name": "163",
+      "name": "165",
       "members": [
         {
           "name": "path",
@@ -17265,7 +17336,7 @@
       "meta-type": "object"
     },
     {
-      "name": "164",
+      "name": "166",
       "members": [
         {
           "name": "implements",
@@ -17281,12 +17352,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[165]",
-      "element-type": "165",
+      "name": "[167]",
+      "element-type": "167",
       "meta-type": "array"
     },
     {
-      "name": "165",
+      "name": "167",
       "members": [
         {
           "name": "name",
@@ -17306,7 +17377,7 @@
       "meta-type": "object"
     },
     {
-      "name": "166",
+      "name": "168",
       "members": [
         {
           "name": "typename",
@@ -17316,7 +17387,7 @@
       "meta-type": "object"
     },
     {
-      "name": "167",
+      "name": "169",
       "members": [
         {
           "name": "qom-type",
@@ -17335,7 +17406,7 @@
       "meta-type": "object"
     },
     {
-      "name": "168",
+      "name": "170",
       "members": [
         {
           "name": "id",
@@ -17345,7 +17416,7 @@
       "meta-type": "object"
     },
     {
-      "name": "169",
+      "name": "171",
       "members": [
         {
           "name": "typename",
@@ -17355,7 +17426,7 @@
       "meta-type": "object"
     },
     {
-      "name": "170",
+      "name": "172",
       "members": [
         {
           "name": "driver",
@@ -17375,7 +17446,7 @@
       "meta-type": "object"
     },
     {
-      "name": "171",
+      "name": "173",
       "members": [
         {
           "name": "id",
@@ -17385,7 +17456,7 @@
       "meta-type": "object"
     },
     {
-      "name": "172",
+      "name": "174",
       "members": [
         {
           "name": "device",
@@ -17400,41 +17471,41 @@
       "meta-type": "object"
     },
     {
-      "name": "[173]",
-      "element-type": "173",
+      "name": "[175]",
+      "element-type": "175",
       "meta-type": "array"
     },
     {
-      "name": "173",
+      "name": "175",
       "tag": "arch",
       "variants": [
         {
           "case": "x86",
-          "type": "353"
-        },
-        {
-          "case": "sparc",
-          "type": "354"
-        },
-        {
-          "case": "ppc",
-          "type": "355"
-        },
-        {
-          "case": "mips",
           "type": "356"
         },
         {
-          "case": "tricore",
+          "case": "sparc",
           "type": "357"
         },
         {
-          "case": "s390",
+          "case": "ppc",
           "type": "358"
         },
         {
-          "case": "riscv",
+          "case": "mips",
           "type": "359"
+        },
+        {
+          "case": "tricore",
+          "type": "360"
+        },
+        {
+          "case": "s390",
+          "type": "361"
+        },
+        {
+          "case": "riscv",
+          "type": "362"
         },
         {
           "case": "other",
@@ -17465,27 +17536,27 @@
         {
           "name": "props",
           "default": null,
-          "type": "351"
+          "type": "354"
         },
         {
           "name": "arch",
-          "type": "352"
+          "type": "355"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "[174]",
-      "element-type": "174",
+      "name": "[176]",
+      "element-type": "176",
       "meta-type": "array"
     },
     {
-      "name": "174",
+      "name": "176",
       "tag": "target",
       "variants": [
         {
           "case": "s390x",
-          "type": "358"
+          "type": "361"
         },
         {
           "case": "aarch64",
@@ -17632,24 +17703,24 @@
         {
           "name": "props",
           "default": null,
-          "type": "351"
+          "type": "354"
         },
         {
           "name": "arch",
-          "type": "352",
+          "type": "355",
           "features": [
             "deprecated"
           ]
         },
         {
           "name": "target",
-          "type": "360"
+          "type": "363"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "175",
+      "name": "177",
       "members": [
         {
           "name": "id",
@@ -17659,12 +17730,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[176]",
-      "element-type": "176",
+      "name": "[178]",
+      "element-type": "178",
       "meta-type": "array"
     },
     {
-      "name": "176",
+      "name": "178",
       "members": [
         {
           "name": "name",
@@ -17710,7 +17781,7 @@
       "meta-type": "object"
     },
     {
-      "name": "177",
+      "name": "179",
       "members": [
         {
           "name": "wakeup-suspend-support",
@@ -17720,22 +17791,22 @@
       "meta-type": "object"
     },
     {
-      "name": "178",
+      "name": "180",
       "members": [
         {
           "name": "arch",
-          "type": "360"
+          "type": "363"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "[179]",
-      "element-type": "179",
+      "name": "[181]",
+      "element-type": "181",
       "meta-type": "array"
     },
     {
-      "name": "179",
+      "name": "181",
       "members": [
         {
           "name": "id",
@@ -17764,18 +17835,18 @@
         },
         {
           "name": "policy",
-          "type": "361"
+          "type": "364"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "[180]",
-      "element-type": "180",
+      "name": "[182]",
+      "element-type": "182",
       "meta-type": "array"
     },
     {
-      "name": "180",
+      "name": "182",
       "members": [
         {
           "name": "type",
@@ -17787,7 +17858,7 @@
         },
         {
           "name": "props",
-          "type": "351"
+          "type": "354"
         },
         {
           "name": "qom-path",
@@ -17798,69 +17869,69 @@
       "meta-type": "object"
     },
     {
-      "name": "181",
+      "name": "183",
       "tag": "type",
       "variants": [
         {
           "case": "node",
-          "type": "363"
-        },
-        {
-          "case": "dist",
-          "type": "364"
-        },
-        {
-          "case": "cpu",
-          "type": "365"
-        },
-        {
-          "case": "hmat-lb",
           "type": "366"
         },
         {
-          "case": "hmat-cache",
+          "case": "dist",
           "type": "367"
-        }
-      ],
-      "members": [
-        {
-          "name": "type",
-          "type": "362"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "186",
-      "members": [
-        {
-          "name": "type",
-          "type": "370"
         },
         {
-          "name": "model",
+          "case": "cpu",
           "type": "368"
+        },
+        {
+          "case": "hmat-lb",
+          "type": "369"
+        },
+        {
+          "case": "hmat-cache",
+          "type": "370"
         }
       ],
-      "meta-type": "object"
-    },
-    {
-      "name": "187",
       "members": [
         {
-          "name": "model",
-          "type": "368"
+          "name": "type",
+          "type": "365"
         }
       ],
       "meta-type": "object"
-    },
-    {
-      "name": "[188]",
-      "element-type": "188",
-      "meta-type": "array"
     },
     {
       "name": "188",
+      "members": [
+        {
+          "name": "type",
+          "type": "373"
+        },
+        {
+          "name": "model",
+          "type": "371"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "189",
+      "members": [
+        {
+          "name": "model",
+          "type": "371"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[190]",
+      "element-type": "190",
+      "meta-type": "array"
+    },
+    {
+      "name": "190",
       "members": [
         {
           "name": "name",
@@ -17893,7 +17964,7 @@
       "meta-type": "object"
     },
     {
-      "name": "189",
+      "name": "191",
       "members": [
         {
           "name": "protocol",
@@ -17917,7 +17988,7 @@
       "meta-type": "object"
     },
     {
-      "name": "190",
+      "name": "192",
       "members": [
         {
           "name": "name",
@@ -17928,7 +17999,7 @@
       "meta-type": "object"
     },
     {
-      "name": "191",
+      "name": "193",
       "members": [
         {
           "name": "enabled",
@@ -17942,7 +18013,7 @@
       "meta-type": "object"
     },
     {
-      "name": "192",
+      "name": "194",
       "members": [
         {
           "name": "UUID",
@@ -17952,12 +18023,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[193]",
-      "element-type": "193",
+      "name": "[195]",
+      "element-type": "195",
       "meta-type": "array"
     },
     {
-      "name": "193",
+      "name": "195",
       "members": [
         {
           "name": "id",
@@ -17983,7 +18054,7 @@
       "meta-type": "object"
     },
     {
-      "name": "194",
+      "name": "196",
       "members": [
         {
           "name": "actual",
@@ -17993,7 +18064,7 @@
       "meta-type": "object"
     },
     {
-      "name": "195",
+      "name": "197",
       "members": [
         {
           "name": "actual",
@@ -18003,12 +18074,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[196]",
-      "element-type": "196",
+      "name": "[198]",
+      "element-type": "198",
       "meta-type": "array"
     },
     {
-      "name": "196",
+      "name": "198",
       "members": [
         {
           "name": "bus",
@@ -18016,13 +18087,13 @@
         },
         {
           "name": "devices",
-          "type": "[371]"
+          "type": "[374]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "197",
+      "name": "199",
       "members": [
         {
           "name": "val",
@@ -18045,7 +18116,7 @@
       "meta-type": "object"
     },
     {
-      "name": "198",
+      "name": "200",
       "members": [
         {
           "name": "val",
@@ -18063,7 +18134,7 @@
       "meta-type": "object"
     },
     {
-      "name": "199",
+      "name": "201",
       "members": [
         {
           "name": "value",
@@ -18073,7 +18144,7 @@
       "meta-type": "object"
     },
     {
-      "name": "200",
+      "name": "202",
       "members": [
         {
           "name": "command-line",
@@ -18088,7 +18159,7 @@
       "meta-type": "object"
     },
     {
-      "name": "201",
+      "name": "203",
       "members": [
         {
           "name": "device",
@@ -18107,7 +18178,7 @@
       "meta-type": "object"
     },
     {
-      "name": "202",
+      "name": "204",
       "members": [
         {
           "name": "enable",
@@ -18117,27 +18188,27 @@
       "meta-type": "object"
     },
     {
-      "name": "203",
-      "members": [
-        {
-          "name": "fdname",
-          "type": "str"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "204",
-      "members": [
-        {
-          "name": "fdname",
-          "type": "str"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
       "name": "205",
+      "members": [
+        {
+          "name": "fdname",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "206",
+      "members": [
+        {
+          "name": "fdname",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "207",
       "members": [
         {
           "name": "base-memory",
@@ -18152,7 +18223,7 @@
       "meta-type": "object"
     },
     {
-      "name": "206",
+      "name": "208",
       "members": [
         {
           "name": "fdset-id",
@@ -18168,40 +18239,6 @@
       "meta-type": "object"
     },
     {
-      "name": "207",
-      "members": [
-        {
-          "name": "fdset-id",
-          "type": "int"
-        },
-        {
-          "name": "fd",
-          "type": "int"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "208",
-      "members": [
-        {
-          "name": "fdset-id",
-          "type": "int"
-        },
-        {
-          "name": "fd",
-          "default": null,
-          "type": "int"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "[209]",
-      "element-type": "209",
-      "meta-type": "array"
-    },
-    {
       "name": "209",
       "members": [
         {
@@ -18209,8 +18246,8 @@
           "type": "int"
         },
         {
-          "name": "fds",
-          "type": "[372]"
+          "name": "fd",
+          "type": "int"
         }
       ],
       "meta-type": "object"
@@ -18219,9 +18256,13 @@
       "name": "210",
       "members": [
         {
-          "name": "option",
+          "name": "fdset-id",
+          "type": "int"
+        },
+        {
+          "name": "fd",
           "default": null,
-          "type": "str"
+          "type": "int"
         }
       ],
       "meta-type": "object"
@@ -18235,52 +18276,82 @@
       "name": "211",
       "members": [
         {
+          "name": "fdset-id",
+          "type": "int"
+        },
+        {
+          "name": "fds",
+          "type": "[375]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "212",
+      "members": [
+        {
+          "name": "option",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[213]",
+      "element-type": "213",
+      "meta-type": "array"
+    },
+    {
+      "name": "213",
+      "members": [
+        {
           "name": "option",
           "type": "str"
         },
         {
           "name": "parameters",
-          "type": "[373]"
+          "type": "[376]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "[212]",
-      "element-type": "212",
+      "name": "[214]",
+      "element-type": "214",
       "meta-type": "array"
     },
     {
-      "name": "212",
+      "name": "214",
       "tag": "type",
       "variants": [
         {
           "case": "dimm",
-          "type": "375"
+          "type": "378"
         },
         {
           "case": "nvdimm",
-          "type": "375"
+          "type": "378"
         },
         {
           "case": "virtio-pmem",
-          "type": "376"
+          "type": "379"
         },
         {
           "case": "virtio-mem",
-          "type": "377"
+          "type": "380"
         }
       ],
       "members": [
         {
           "name": "type",
-          "type": "374"
+          "type": "377"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "213",
+      "name": "215",
       "members": [
         {
           "name": "id",
@@ -18295,7 +18366,7 @@
       "meta-type": "object"
     },
     {
-      "name": "214",
+      "name": "216",
       "members": [
         {
           "name": "device",
@@ -18309,12 +18380,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[215]",
-      "element-type": "215",
+      "name": "[217]",
+      "element-type": "217",
       "meta-type": "array"
     },
     {
-      "name": "215",
+      "name": "217",
       "members": [
         {
           "name": "device",
@@ -18327,7 +18398,7 @@
         },
         {
           "name": "slot-type",
-          "type": "378"
+          "type": "381"
         },
         {
           "name": "source",
@@ -18341,17 +18412,17 @@
       "meta-type": "object"
     },
     {
-      "name": "216",
+      "name": "218",
       "members": [
         {
           "name": "info",
-          "type": "215"
+          "type": "217"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "217",
+      "name": "219",
       "members": [
         {
           "name": "filename",
@@ -18361,7 +18432,7 @@
       "meta-type": "object"
     },
     {
-      "name": "218",
+      "name": "220",
       "members": [
         {
           "name": "guid",
@@ -18371,7 +18442,7 @@
       "meta-type": "object"
     },
     {
-      "name": "219",
+      "name": "221",
       "members": [
         {
           "name": "offset",
@@ -18381,7 +18452,7 @@
       "meta-type": "object"
     },
     {
-      "name": "220",
+      "name": "222",
       "members": [
         {
           "name": "enabled",
@@ -18405,7 +18476,7 @@
         },
         {
           "name": "state",
-          "type": "379"
+          "type": "382"
         },
         {
           "name": "handle",
@@ -18415,7 +18486,7 @@
       "meta-type": "object"
     },
     {
-      "name": "221",
+      "name": "223",
       "members": [
         {
           "name": "data",
@@ -18425,7 +18496,7 @@
       "meta-type": "object"
     },
     {
-      "name": "222",
+      "name": "224",
       "members": [
         {
           "name": "pdh",
@@ -18452,7 +18523,7 @@
       "meta-type": "builtin"
     },
     {
-      "name": "225",
+      "name": "227",
       "meta-type": "enum",
       "values": [
         "debug",
@@ -18475,7 +18546,7 @@
       ]
     },
     {
-      "name": "226",
+      "name": "228",
       "meta-type": "enum",
       "values": [
         "none",
@@ -18491,7 +18562,7 @@
       ]
     },
     {
-      "name": "227",
+      "name": "229",
       "meta-type": "enum",
       "values": [
         "reset",
@@ -18504,7 +18575,7 @@
       ]
     },
     {
-      "name": "228",
+      "name": "230",
       "meta-type": "enum",
       "values": [
         "pause",
@@ -18513,28 +18584,28 @@
       ]
     },
     {
-      "name": "229",
+      "name": "231",
       "tag": "type",
       "variants": [
         {
           "case": "hyper-v",
-          "type": "381"
+          "type": "384"
         },
         {
           "case": "s390",
-          "type": "382"
+          "type": "385"
         }
       ],
       "members": [
         {
           "name": "type",
-          "type": "380"
+          "type": "383"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "230",
+      "name": "232",
       "meta-type": "enum",
       "values": [
         "retain",
@@ -18548,7 +18619,7 @@
       "meta-type": "array"
     },
     {
-      "name": "231",
+      "name": "233",
       "meta-type": "enum",
       "values": [
         "ok",
@@ -18557,12 +18628,12 @@
       ]
     },
     {
-      "name": "[232]",
-      "element-type": "232",
+      "name": "[234]",
+      "element-type": "234",
       "meta-type": "array"
     },
     {
-      "name": "232",
+      "name": "234",
       "members": [
         {
           "name": "name",
@@ -18587,7 +18658,7 @@
         },
         {
           "name": "status",
-          "type": "383",
+          "type": "386",
           "features": [
             "deprecated"
           ]
@@ -18605,7 +18676,7 @@
       "meta-type": "object"
     },
     {
-      "name": "233",
+      "name": "235",
       "members": [
         {
           "name": "rd_bytes",
@@ -18714,37 +18785,37 @@
         },
         {
           "name": "timed_stats",
-          "type": "[384]"
+          "type": "[387]"
         },
         {
           "name": "rd_latency_histogram",
           "default": null,
-          "type": "385"
+          "type": "388"
         },
         {
           "name": "wr_latency_histogram",
           "default": null,
-          "type": "385"
+          "type": "388"
         },
         {
           "name": "flush_latency_histogram",
           "default": null,
-          "type": "385"
+          "type": "388"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "234",
+      "name": "236",
       "tag": "driver",
       "variants": [
         {
           "case": "file",
-          "type": "386"
+          "type": "389"
         },
         {
           "case": "host_device",
-          "type": "386"
+          "type": "389"
         },
         {
           "case": "blkdebug",
@@ -18902,13 +18973,13 @@
       "members": [
         {
           "name": "driver",
-          "type": "247"
+          "type": "249"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "235",
+      "name": "237",
       "meta-type": "enum",
       "values": [
         "undefined",
@@ -18925,7 +18996,7 @@
       ]
     },
     {
-      "name": "236",
+      "name": "238",
       "meta-type": "enum",
       "values": [
         "existing",
@@ -18933,7 +19004,7 @@
       ]
     },
     {
-      "name": "237",
+      "name": "239",
       "meta-type": "enum",
       "values": [
         "report",
@@ -18944,7 +19015,7 @@
       ]
     },
     {
-      "name": "238",
+      "name": "240",
       "meta-type": "enum",
       "values": [
         "top",
@@ -18955,7 +19026,7 @@
       ]
     },
     {
-      "name": "239",
+      "name": "241",
       "meta-type": "enum",
       "values": [
         "on-success",
@@ -18964,7 +19035,7 @@
       ]
     },
     {
-      "name": "240",
+      "name": "242",
       "meta-type": "enum",
       "values": [
         "off",
@@ -18973,7 +19044,7 @@
       ]
     },
     {
-      "name": "241",
+      "name": "243",
       "members": [
         {
           "name": "filename",
@@ -19035,18 +19106,18 @@
         {
           "name": "backing-image",
           "default": null,
-          "type": "241"
+          "type": "243"
         },
         {
           "name": "format-specific",
           "default": null,
-          "type": "387"
+          "type": "390"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "242",
+      "name": "244",
       "members": [
         {
           "name": "writeback",
@@ -19064,12 +19135,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[243]",
-      "element-type": "243",
+      "name": "[245]",
+      "element-type": "245",
       "meta-type": "array"
     },
     {
-      "name": "243",
+      "name": "245",
       "members": [
         {
           "name": "id",
@@ -19077,7 +19148,7 @@
         },
         {
           "name": "type",
-          "type": "388"
+          "type": "391"
         },
         {
           "name": "name",
@@ -19087,12 +19158,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[244]",
-      "element-type": "244",
+      "name": "[246]",
+      "element-type": "246",
       "meta-type": "array"
     },
     {
-      "name": "244",
+      "name": "246",
       "members": [
         {
           "name": "parent",
@@ -19108,17 +19179,17 @@
         },
         {
           "name": "perm",
-          "type": "[389]"
+          "type": "[392]"
         },
         {
           "name": "shared-perm",
-          "type": "[389]"
+          "type": "[392]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "245",
+      "name": "247",
       "meta-type": "enum",
       "values": [
         "background",
@@ -19126,12 +19197,12 @@
       ]
     },
     {
-      "name": "[246]",
-      "element-type": "246",
+      "name": "[248]",
+      "element-type": "248",
       "meta-type": "array"
     },
     {
-      "name": "246",
+      "name": "248",
       "members": [
         {
           "type": "str"
@@ -19143,7 +19214,7 @@
       "meta-type": "alternate"
     },
     {
-      "name": "247",
+      "name": "249",
       "meta-type": "enum",
       "values": [
         "blkdebug",
@@ -19189,7 +19260,7 @@
       ]
     },
     {
-      "name": "248",
+      "name": "250",
       "meta-type": "enum",
       "values": [
         "ignore",
@@ -19197,7 +19268,7 @@
       ]
     },
     {
-      "name": "249",
+      "name": "251",
       "members": [
         {
           "name": "direct",
@@ -19213,11 +19284,11 @@
       "meta-type": "object"
     },
     {
-      "name": "250",
+      "name": "252",
       "members": [
         {
           "name": "image",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "config",
@@ -19257,36 +19328,36 @@
         {
           "name": "inject-error",
           "default": null,
-          "type": "[391]"
+          "type": "[394]"
         },
         {
           "name": "set-state",
           "default": null,
-          "type": "[392]"
+          "type": "[395]"
         },
         {
           "name": "take-child-perms",
           "default": null,
-          "type": "[389]"
+          "type": "[392]"
         },
         {
           "name": "unshare-child-perms",
           "default": null,
-          "type": "[389]"
+          "type": "[392]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "251",
+      "name": "253",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "log",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "log-sector-size",
@@ -19307,41 +19378,41 @@
       "meta-type": "object"
     },
     {
-      "name": "252",
-      "members": [
-        {
-          "name": "test",
-          "type": "390"
-        },
-        {
-          "name": "raw",
-          "type": "390"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "253",
-      "members": [
-        {
-          "name": "image",
-          "type": "390"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
       "name": "254",
       "members": [
         {
-          "name": "file",
-          "type": "390"
+          "name": "test",
+          "type": "393"
+        },
+        {
+          "name": "raw",
+          "type": "393"
         }
       ],
       "meta-type": "object"
     },
     {
       "name": "255",
+      "members": [
+        {
+          "name": "image",
+          "type": "393"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "256",
+      "members": [
+        {
+          "name": "file",
+          "type": "393"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "257",
       "members": [
         {
           "name": "filename",
@@ -19355,12 +19426,12 @@
         {
           "name": "locking",
           "default": null,
-          "type": "393"
+          "type": "396"
         },
         {
           "name": "aio",
           "default": null,
-          "type": "394"
+          "type": "397"
         },
         {
           "name": "drop-cache",
@@ -19379,112 +19450,39 @@
       ]
     },
     {
-      "name": "256",
-      "members": [
-        {
-          "name": "url",
-          "type": "str"
-        },
-        {
-          "name": "readahead",
-          "default": null,
-          "type": "int"
-        },
-        {
-          "name": "timeout",
-          "default": null,
-          "type": "int"
-        },
-        {
-          "name": "username",
-          "default": null,
-          "type": "str"
-        },
-        {
-          "name": "password-secret",
-          "default": null,
-          "type": "str"
-        },
-        {
-          "name": "proxy-username",
-          "default": null,
-          "type": "str"
-        },
-        {
-          "name": "proxy-password-secret",
-          "default": null,
-          "type": "str"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "257",
-      "members": [
-        {
-          "name": "url",
-          "type": "str"
-        },
-        {
-          "name": "readahead",
-          "default": null,
-          "type": "int"
-        },
-        {
-          "name": "timeout",
-          "default": null,
-          "type": "int"
-        },
-        {
-          "name": "username",
-          "default": null,
-          "type": "str"
-        },
-        {
-          "name": "password-secret",
-          "default": null,
-          "type": "str"
-        },
-        {
-          "name": "proxy-username",
-          "default": null,
-          "type": "str"
-        },
-        {
-          "name": "proxy-password-secret",
-          "default": null,
-          "type": "str"
-        },
-        {
-          "name": "sslverify",
-          "default": null,
-          "type": "bool"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
       "name": "258",
       "members": [
         {
-          "name": "volume",
+          "name": "url",
           "type": "str"
         },
         {
-          "name": "path",
-          "type": "str"
-        },
-        {
-          "name": "server",
-          "type": "[332]"
-        },
-        {
-          "name": "debug",
+          "name": "readahead",
           "default": null,
           "type": "int"
         },
         {
-          "name": "logfile",
+          "name": "timeout",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "username",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "password-secret",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "proxy-username",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "proxy-password-secret",
           "default": null,
           "type": "str"
         }
@@ -19529,6 +19527,79 @@
           "type": "str"
         },
         {
+          "name": "sslverify",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "260",
+      "members": [
+        {
+          "name": "volume",
+          "type": "str"
+        },
+        {
+          "name": "path",
+          "type": "str"
+        },
+        {
+          "name": "server",
+          "type": "[334]"
+        },
+        {
+          "name": "debug",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "261",
+      "members": [
+        {
+          "name": "url",
+          "type": "str"
+        },
+        {
+          "name": "readahead",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "timeout",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "username",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "password-secret",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "proxy-username",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "proxy-password-secret",
+          "default": null,
+          "type": "str"
+        },
+        {
           "name": "cookie",
           "default": null,
           "type": "str"
@@ -19542,7 +19613,7 @@
       "meta-type": "object"
     },
     {
-      "name": "260",
+      "name": "262",
       "members": [
         {
           "name": "url",
@@ -19597,11 +19668,11 @@
       "meta-type": "object"
     },
     {
-      "name": "261",
+      "name": "263",
       "members": [
         {
           "name": "transport",
-          "type": "395"
+          "type": "398"
         },
         {
           "name": "portal",
@@ -19634,7 +19705,7 @@
         {
           "name": "header-digest",
           "default": null,
-          "type": "396"
+          "type": "399"
         },
         {
           "name": "timeout",
@@ -19645,11 +19716,11 @@
       "meta-type": "object"
     },
     {
-      "name": "262",
+      "name": "264",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "key-secret",
@@ -19660,11 +19731,11 @@
       "meta-type": "object"
     },
     {
-      "name": "263",
+      "name": "265",
       "members": [
         {
           "name": "server",
-          "type": "332"
+          "type": "334"
         },
         {
           "name": "export",
@@ -19690,11 +19761,11 @@
       "meta-type": "object"
     },
     {
-      "name": "264",
+      "name": "266",
       "members": [
         {
           "name": "server",
-          "type": "397"
+          "type": "400"
         },
         {
           "name": "path",
@@ -19734,7 +19805,7 @@
       "meta-type": "object"
     },
     {
-      "name": "265",
+      "name": "267",
       "members": [
         {
           "name": "size",
@@ -19755,7 +19826,7 @@
       "meta-type": "object"
     },
     {
-      "name": "266",
+      "name": "268",
       "members": [
         {
           "name": "device",
@@ -19769,16 +19840,16 @@
       "meta-type": "object"
     },
     {
-      "name": "267",
+      "name": "269",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "backing",
           "default": null,
-          "type": "398"
+          "type": "401"
         },
         {
           "name": "lazy-refcounts",
@@ -19803,7 +19874,7 @@
         {
           "name": "overlap-check",
           "default": null,
-          "type": "399"
+          "type": "402"
         },
         {
           "name": "cache-size",
@@ -19833,47 +19904,12 @@
         {
           "name": "encrypt",
           "default": null,
-          "type": "400"
+          "type": "403"
         },
         {
           "name": "data-file",
           "default": null,
-          "type": "390"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "268",
-      "members": [
-        {
-          "name": "file",
-          "type": "390"
-        },
-        {
-          "name": "backing",
-          "default": null,
-          "type": "398"
-        },
-        {
-          "name": "encrypt",
-          "default": null,
-          "type": "401"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "269",
-      "members": [
-        {
-          "name": "file",
-          "type": "390"
-        },
-        {
-          "name": "backing",
-          "default": null,
-          "type": "398"
+          "type": "393"
         }
       ],
       "meta-type": "object"
@@ -19882,13 +19918,48 @@
       "name": "270",
       "members": [
         {
+          "name": "file",
+          "type": "393"
+        },
+        {
+          "name": "backing",
+          "default": null,
+          "type": "401"
+        },
+        {
+          "name": "encrypt",
+          "default": null,
+          "type": "404"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "271",
+      "members": [
+        {
+          "name": "file",
+          "type": "393"
+        },
+        {
+          "name": "backing",
+          "default": null,
+          "type": "401"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "272",
+      "members": [
+        {
           "name": "blkverify",
           "default": null,
           "type": "bool"
         },
         {
           "name": "children",
-          "type": "[390]"
+          "type": "[393]"
         },
         {
           "name": "vote-threshold",
@@ -19902,17 +19973,17 @@
         {
           "name": "read-pattern",
           "default": null,
-          "type": "402"
+          "type": "405"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "271",
+      "name": "273",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "offset",
@@ -19928,7 +19999,7 @@
       "meta-type": "object"
     },
     {
-      "name": "272",
+      "name": "274",
       "members": [
         {
           "name": "pool",
@@ -19961,7 +20032,7 @@
         {
           "name": "auth-client-required",
           "default": null,
-          "type": "[403]"
+          "type": "[406]"
         },
         {
           "name": "key-secret",
@@ -19971,21 +20042,21 @@
         {
           "name": "server",
           "default": null,
-          "type": "[404]"
+          "type": "[407]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "273",
+      "name": "275",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "mode",
-          "type": "405"
+          "type": "408"
         },
         {
           "name": "top-id",
@@ -19996,11 +20067,11 @@
       "meta-type": "object"
     },
     {
-      "name": "274",
+      "name": "276",
       "members": [
         {
           "name": "server",
-          "type": "332"
+          "type": "334"
         },
         {
           "name": "vdi",
@@ -20020,11 +20091,11 @@
       "meta-type": "object"
     },
     {
-      "name": "275",
+      "name": "277",
       "members": [
         {
           "name": "server",
-          "type": "406"
+          "type": "409"
         },
         {
           "name": "path",
@@ -20038,13 +20109,13 @@
         {
           "name": "host-key-check",
           "default": null,
-          "type": "407"
+          "type": "410"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "276",
+      "name": "278",
       "members": [
         {
           "name": "throttle-group",
@@ -20052,13 +20123,13 @@
         },
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "277",
+      "name": "279",
       "members": [
         {
           "name": "dir",
@@ -20088,68 +20159,68 @@
       "meta-type": "object"
     },
     {
-      "name": "278",
+      "name": "280",
       "tag": "driver",
       "variants": [
         {
           "case": "file",
-          "type": "408"
-        },
-        {
-          "case": "gluster",
-          "type": "409"
-        },
-        {
-          "case": "luks",
-          "type": "410"
-        },
-        {
-          "case": "nfs",
           "type": "411"
         },
         {
-          "case": "parallels",
+          "case": "gluster",
           "type": "412"
         },
         {
-          "case": "qcow",
+          "case": "luks",
           "type": "413"
         },
         {
-          "case": "qcow2",
+          "case": "nfs",
           "type": "414"
         },
         {
-          "case": "qed",
+          "case": "parallels",
           "type": "415"
         },
         {
-          "case": "rbd",
+          "case": "qcow",
           "type": "416"
         },
         {
-          "case": "sheepdog",
+          "case": "qcow2",
           "type": "417"
         },
         {
-          "case": "ssh",
+          "case": "qed",
           "type": "418"
         },
         {
-          "case": "vdi",
+          "case": "rbd",
           "type": "419"
         },
         {
-          "case": "vhdx",
+          "case": "sheepdog",
           "type": "420"
         },
         {
-          "case": "vmdk",
+          "case": "ssh",
           "type": "421"
         },
         {
-          "case": "vpc",
+          "case": "vdi",
           "type": "422"
+        },
+        {
+          "case": "vhdx",
+          "type": "423"
+        },
+        {
+          "case": "vmdk",
+          "type": "424"
+        },
+        {
+          "case": "vpc",
+          "type": "425"
         },
         {
           "case": "blkdebug",
@@ -20255,22 +20326,22 @@
       "members": [
         {
           "name": "driver",
-          "type": "247"
+          "type": "249"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "279",
+      "name": "281",
       "tag": "driver",
       "variants": [
         {
           "case": "luks",
-          "type": "423"
+          "type": "426"
         },
         {
           "case": "qcow2",
-          "type": "424"
+          "type": "427"
         },
         {
           "case": "blkdebug",
@@ -20428,13 +20499,13 @@
       "members": [
         {
           "name": "driver",
-          "type": "247"
+          "type": "249"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "280",
+      "name": "282",
       "meta-type": "enum",
       "values": [
         "read",
@@ -20442,7 +20513,7 @@
       ]
     },
     {
-      "name": "281",
+      "name": "283",
       "meta-type": "enum",
       "values": [
         "ignore",
@@ -20451,7 +20522,7 @@
       ]
     },
     {
-      "name": "282",
+      "name": "284",
       "meta-type": "enum",
       "values": [
         "commit",
@@ -20463,7 +20534,7 @@
       ]
     },
     {
-      "name": "283",
+      "name": "285",
       "members": [
         {
           "type": "str"
@@ -20475,36 +20546,36 @@
       "meta-type": "alternate"
     },
     {
-      "name": "284",
+      "name": "286",
       "tag": "type",
       "variants": [
         {
           "case": "inet",
-          "type": "426"
+          "type": "429"
         },
         {
           "case": "unix",
-          "type": "427"
+          "type": "430"
         },
         {
           "case": "vsock",
-          "type": "428"
+          "type": "431"
         },
         {
           "case": "fd",
-          "type": "429"
+          "type": "432"
         }
       ],
       "members": [
         {
           "name": "type",
-          "type": "425"
+          "type": "428"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "285",
+      "name": "287",
       "meta-type": "enum",
       "values": [
         "safe",
@@ -20512,7 +20583,7 @@
       ]
     },
     {
-      "name": "286",
+      "name": "288",
       "meta-type": "enum",
       "values": [
         "read",
@@ -20521,7 +20592,7 @@
       ]
     },
     {
-      "name": "287",
+      "name": "289",
       "meta-type": "enum",
       "values": [
         "utf8",
@@ -20529,100 +20600,100 @@
       ]
     },
     {
-      "name": "288",
+      "name": "290",
       "tag": "type",
       "variants": [
         {
           "case": "file",
-          "type": "431"
-        },
-        {
-          "case": "serial",
-          "type": "432"
-        },
-        {
-          "case": "parallel",
-          "type": "432"
-        },
-        {
-          "case": "pipe",
-          "type": "432"
-        },
-        {
-          "case": "socket",
-          "type": "433"
-        },
-        {
-          "case": "udp",
           "type": "434"
         },
         {
-          "case": "pty",
+          "case": "serial",
           "type": "435"
         },
         {
-          "case": "null",
+          "case": "parallel",
           "type": "435"
         },
         {
-          "case": "mux",
+          "case": "pipe",
+          "type": "435"
+        },
+        {
+          "case": "socket",
           "type": "436"
         },
         {
-          "case": "msmouse",
-          "type": "435"
-        },
-        {
-          "case": "wctablet",
-          "type": "435"
-        },
-        {
-          "case": "braille",
-          "type": "435"
-        },
-        {
-          "case": "testdev",
-          "type": "435"
-        },
-        {
-          "case": "stdio",
+          "case": "udp",
           "type": "437"
         },
         {
-          "case": "console",
-          "type": "435"
-        },
-        {
-          "case": "spicevmc",
+          "case": "pty",
           "type": "438"
         },
         {
-          "case": "spiceport",
+          "case": "null",
+          "type": "438"
+        },
+        {
+          "case": "mux",
           "type": "439"
         },
         {
-          "case": "vc",
+          "case": "msmouse",
+          "type": "438"
+        },
+        {
+          "case": "wctablet",
+          "type": "438"
+        },
+        {
+          "case": "braille",
+          "type": "438"
+        },
+        {
+          "case": "testdev",
+          "type": "438"
+        },
+        {
+          "case": "stdio",
           "type": "440"
         },
         {
-          "case": "ringbuf",
+          "case": "console",
+          "type": "438"
+        },
+        {
+          "case": "spicevmc",
           "type": "441"
         },
         {
+          "case": "spiceport",
+          "type": "442"
+        },
+        {
+          "case": "vc",
+          "type": "443"
+        },
+        {
+          "case": "ringbuf",
+          "type": "444"
+        },
+        {
           "case": "memory",
-          "type": "441"
+          "type": "444"
         }
       ],
       "members": [
         {
           "name": "type",
-          "type": "430"
+          "type": "433"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "289",
+      "name": "291",
       "meta-type": "enum",
       "values": [
         "elf",
@@ -20633,7 +20704,7 @@
       ]
     },
     {
-      "name": "290",
+      "name": "292",
       "meta-type": "enum",
       "values": [
         "none",
@@ -20643,12 +20714,12 @@
       ]
     },
     {
-      "name": "[289]",
-      "element-type": "289",
+      "name": "[291]",
+      "element-type": "291",
       "meta-type": "array"
     },
     {
-      "name": "291",
+      "name": "293",
       "meta-type": "enum",
       "values": [
         "none",
@@ -20666,7 +20737,7 @@
       ]
     },
     {
-      "name": "292",
+      "name": "294",
       "members": [
         {
           "name": "netdev",
@@ -20697,7 +20768,7 @@
       "meta-type": "object"
     },
     {
-      "name": "293",
+      "name": "295",
       "members": [
         {
           "name": "hostname",
@@ -20757,7 +20828,7 @@
         {
           "name": "dnssearch",
           "default": null,
-          "type": "[442]"
+          "type": "[445]"
         },
         {
           "name": "domainname",
@@ -20797,12 +20868,12 @@
         {
           "name": "hostfwd",
           "default": null,
-          "type": "[442]"
+          "type": "[445]"
         },
         {
           "name": "guestfwd",
           "default": null,
-          "type": "[442]"
+          "type": "[445]"
         },
         {
           "name": "tftp-server-name",
@@ -20813,7 +20884,7 @@
       "meta-type": "object"
     },
     {
-      "name": "294",
+      "name": "296",
       "members": [
         {
           "name": "ifname",
@@ -20894,7 +20965,7 @@
       "meta-type": "object"
     },
     {
-      "name": "295",
+      "name": "297",
       "members": [
         {
           "name": "src",
@@ -20967,7 +21038,7 @@
       "meta-type": "object"
     },
     {
-      "name": "296",
+      "name": "298",
       "members": [
         {
           "name": "fd",
@@ -21003,7 +21074,7 @@
       "meta-type": "object"
     },
     {
-      "name": "297",
+      "name": "299",
       "members": [
         {
           "name": "sock",
@@ -21029,7 +21100,7 @@
       "meta-type": "object"
     },
     {
-      "name": "298",
+      "name": "300",
       "members": [
         {
           "name": "br",
@@ -21045,7 +21116,7 @@
       "meta-type": "object"
     },
     {
-      "name": "299",
+      "name": "301",
       "members": [
         {
           "name": "hubid",
@@ -21060,7 +21131,7 @@
       "meta-type": "object"
     },
     {
-      "name": "300",
+      "name": "302",
       "members": [
         {
           "name": "ifname",
@@ -21075,7 +21146,7 @@
       "meta-type": "object"
     },
     {
-      "name": "301",
+      "name": "303",
       "members": [
         {
           "name": "chardev",
@@ -21095,7 +21166,7 @@
       "meta-type": "object"
     },
     {
-      "name": "302",
+      "name": "304",
       "members": [
         {
           "name": "vhostdev",
@@ -21111,7 +21182,7 @@
       "meta-type": "object"
     },
     {
-      "name": "303",
+      "name": "305",
       "meta-type": "enum",
       "values": [
         "normal",
@@ -21125,7 +21196,7 @@
       "meta-type": "array"
     },
     {
-      "name": "304",
+      "name": "306",
       "meta-type": "enum",
       "values": [
         "half",
@@ -21133,7 +21204,7 @@
       ]
     },
     {
-      "name": "305",
+      "name": "307",
       "meta-type": "enum",
       "values": [
         "off",
@@ -21141,7 +21212,7 @@
       ]
     },
     {
-      "name": "306",
+      "name": "308",
       "members": [
         {
           "name": "priority",
@@ -21200,7 +21271,7 @@
       "meta-type": "object"
     },
     {
-      "name": "307",
+      "name": "309",
       "members": [
         {
           "name": "in-pport",
@@ -21241,7 +21312,7 @@
       "meta-type": "object"
     },
     {
-      "name": "308",
+      "name": "310",
       "members": [
         {
           "name": "goto-tbl",
@@ -21277,28 +21348,28 @@
       "meta-type": "object"
     },
     {
-      "name": "309",
+      "name": "311",
       "tag": "type",
       "variants": [
         {
           "case": "passthrough",
-          "type": "444"
+          "type": "447"
         },
         {
           "case": "emulator",
-          "type": "445"
+          "type": "448"
         }
       ],
       "members": [
         {
           "name": "type",
-          "type": "443"
+          "type": "446"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "310",
+      "name": "312",
       "meta-type": "enum",
       "values": [
         "client",
@@ -21307,12 +21378,12 @@
       ]
     },
     {
-      "name": "[311]",
-      "element-type": "311",
+      "name": "[313]",
+      "element-type": "313",
       "meta-type": "array"
     },
     {
-      "name": "311",
+      "name": "313",
       "members": [
         {
           "name": "host",
@@ -21324,7 +21395,7 @@
         },
         {
           "name": "family",
-          "type": "314"
+          "type": "316"
         },
         {
           "name": "connection-id",
@@ -21346,7 +21417,7 @@
       "meta-type": "object"
     },
     {
-      "name": "312",
+      "name": "314",
       "members": [
         {
           "name": "host",
@@ -21358,13 +21429,13 @@
         },
         {
           "name": "family",
-          "type": "314"
+          "type": "316"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "313",
+      "name": "315",
       "members": [
         {
           "name": "host",
@@ -21376,7 +21447,7 @@
         },
         {
           "name": "family",
-          "type": "314"
+          "type": "316"
         },
         {
           "name": "auth",
@@ -21387,7 +21458,7 @@
       "meta-type": "object"
     },
     {
-      "name": "314",
+      "name": "316",
       "meta-type": "enum",
       "values": [
         "ipv4",
@@ -21398,12 +21469,12 @@
       ]
     },
     {
-      "name": "[315]",
-      "element-type": "315",
+      "name": "[317]",
+      "element-type": "317",
       "meta-type": "array"
     },
     {
-      "name": "315",
+      "name": "317",
       "members": [
         {
           "name": "host",
@@ -21415,7 +21486,7 @@
         },
         {
           "name": "family",
-          "type": "314"
+          "type": "316"
         },
         {
           "name": "websocket",
@@ -21435,12 +21506,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[316]",
-      "element-type": "316",
+      "name": "[318]",
+      "element-type": "318",
       "meta-type": "array"
     },
     {
-      "name": "316",
+      "name": "318",
       "members": [
         {
           "name": "host",
@@ -21452,7 +21523,7 @@
         },
         {
           "name": "family",
-          "type": "314"
+          "type": "316"
         },
         {
           "name": "websocket",
@@ -21460,18 +21531,18 @@
         },
         {
           "name": "auth",
-          "type": "317"
+          "type": "319"
         },
         {
           "name": "vencrypt",
           "default": null,
-          "type": "318"
+          "type": "320"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "317",
+      "name": "319",
       "meta-type": "enum",
       "values": [
         "none",
@@ -21486,7 +21557,7 @@
       ]
     },
     {
-      "name": "318",
+      "name": "320",
       "meta-type": "enum",
       "values": [
         "plain",
@@ -21501,7 +21572,7 @@
       ]
     },
     {
-      "name": "319",
+      "name": "321",
       "members": [
         {
           "name": "host",
@@ -21513,7 +21584,7 @@
         },
         {
           "name": "family",
-          "type": "314"
+          "type": "316"
         },
         {
           "name": "websocket",
@@ -21528,7 +21599,7 @@
       "meta-type": "object"
     },
     {
-      "name": "320",
+      "name": "322",
       "members": [
         {
           "name": "host",
@@ -21540,7 +21611,7 @@
         },
         {
           "name": "family",
-          "type": "314"
+          "type": "316"
         },
         {
           "name": "websocket",
@@ -21550,55 +21621,21 @@
       "meta-type": "object"
     },
     {
-      "name": "[321]",
-      "element-type": "321",
+      "name": "[323]",
+      "element-type": "323",
       "meta-type": "array"
     },
     {
-      "name": "321",
+      "name": "323",
       "tag": "type",
       "variants": [
         {
           "case": "number",
-          "type": "447"
-        },
-        {
-          "case": "qcode",
-          "type": "448"
-        }
-      ],
-      "members": [
-        {
-          "name": "type",
-          "type": "446"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "[322]",
-      "element-type": "322",
-      "meta-type": "array"
-    },
-    {
-      "name": "322",
-      "tag": "type",
-      "variants": [
-        {
-          "case": "key",
           "type": "450"
         },
         {
-          "case": "btn",
+          "case": "qcode",
           "type": "451"
-        },
-        {
-          "case": "rel",
-          "type": "452"
-        },
-        {
-          "case": "abs",
-          "type": "452"
         }
       ],
       "members": [
@@ -21610,7 +21647,41 @@
       "meta-type": "object"
     },
     {
-      "name": "323",
+      "name": "[324]",
+      "element-type": "324",
+      "meta-type": "array"
+    },
+    {
+      "name": "324",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "key",
+          "type": "453"
+        },
+        {
+          "case": "btn",
+          "type": "454"
+        },
+        {
+          "case": "rel",
+          "type": "455"
+        },
+        {
+          "case": "abs",
+          "type": "455"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "452"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "325",
       "meta-type": "enum",
       "values": [
         "default",
@@ -21624,7 +21695,7 @@
       ]
     },
     {
-      "name": "324",
+      "name": "326",
       "meta-type": "enum",
       "values": [
         "off",
@@ -21634,7 +21705,7 @@
       ]
     },
     {
-      "name": "325",
+      "name": "327",
       "members": [
         {
           "name": "grab-on-hover",
@@ -21650,7 +21721,7 @@
       "meta-type": "object"
     },
     {
-      "name": "326",
+      "name": "328",
       "members": [
         {
           "name": "charset",
@@ -21661,7 +21732,7 @@
       "meta-type": "object"
     },
     {
-      "name": "327",
+      "name": "329",
       "members": [
         {
           "name": "rendernode",
@@ -21672,7 +21743,7 @@
       "meta-type": "object"
     },
     {
-      "name": "328",
+      "name": "330",
       "meta-type": "enum",
       "values": [
         "none",
@@ -21692,7 +21763,7 @@
       ]
     },
     {
-      "name": "329",
+      "name": "331",
       "members": [
         {
           "name": "transferred",
@@ -21754,7 +21825,7 @@
       "meta-type": "object"
     },
     {
-      "name": "330",
+      "name": "332",
       "members": [
         {
           "name": "cache-size",
@@ -21788,7 +21859,7 @@
       "meta-type": "object"
     },
     {
-      "name": "331",
+      "name": "333",
       "members": [
         {
           "name": "pages",
@@ -21814,41 +21885,41 @@
       "meta-type": "object"
     },
     {
-      "name": "[332]",
-      "element-type": "332",
+      "name": "[334]",
+      "element-type": "334",
       "meta-type": "array"
     },
     {
-      "name": "332",
+      "name": "334",
       "tag": "type",
       "variants": [
         {
           "case": "inet",
-          "type": "406"
+          "type": "409"
         },
         {
           "case": "unix",
-          "type": "454"
+          "type": "457"
         },
         {
           "case": "vsock",
-          "type": "455"
+          "type": "458"
         },
         {
           "case": "fd",
-          "type": "442"
+          "type": "445"
         }
       ],
       "members": [
         {
           "name": "type",
-          "type": "453"
+          "type": "456"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "333",
+      "name": "335",
       "meta-type": "enum",
       "values": [
         "xbzrle",
@@ -21872,7 +21943,7 @@
       ]
     },
     {
-      "name": "334",
+      "name": "336",
       "meta-type": "enum",
       "values": [
         "none",
@@ -21880,12 +21951,12 @@
       ]
     },
     {
-      "name": "[335]",
-      "element-type": "335",
+      "name": "[337]",
+      "element-type": "337",
       "meta-type": "array"
     },
     {
-      "name": "335",
+      "name": "337",
       "members": [
         {
           "name": "node-name",
@@ -21897,13 +21968,13 @@
         },
         {
           "name": "bitmaps",
-          "type": "[456]"
+          "type": "[459]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "336",
+      "name": "338",
       "meta-type": "enum",
       "values": [
         "none",
@@ -21912,7 +21983,7 @@
       ]
     },
     {
-      "name": "337",
+      "name": "339",
       "meta-type": "enum",
       "values": [
         "none",
@@ -21927,89 +21998,12 @@
       "meta-type": "builtin"
     },
     {
-      "name": "[338]",
-      "element-type": "338",
-      "meta-type": "array"
-    },
-    {
-      "name": "338",
-      "tag": "type",
-      "variants": [
-        {
-          "case": "abort",
-          "type": "458"
-        },
-        {
-          "case": "block-dirty-bitmap-add",
-          "type": "459"
-        },
-        {
-          "case": "block-dirty-bitmap-remove",
-          "type": "460"
-        },
-        {
-          "case": "block-dirty-bitmap-clear",
-          "type": "460"
-        },
-        {
-          "case": "block-dirty-bitmap-enable",
-          "type": "460"
-        },
-        {
-          "case": "block-dirty-bitmap-disable",
-          "type": "460"
-        },
-        {
-          "case": "block-dirty-bitmap-merge",
-          "type": "461"
-        },
-        {
-          "case": "blockdev-backup",
-          "type": "462"
-        },
-        {
-          "case": "blockdev-snapshot",
-          "type": "463"
-        },
-        {
-          "case": "blockdev-snapshot-internal-sync",
-          "type": "464"
-        },
-        {
-          "case": "blockdev-snapshot-sync",
-          "type": "465"
-        },
-        {
-          "case": "drive-backup",
-          "type": "466"
-        }
-      ],
-      "members": [
-        {
-          "name": "type",
-          "type": "457"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "339",
-      "members": [
-        {
-          "name": "completion-mode",
-          "default": null,
-          "type": "467"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
       "name": "340",
       "meta-type": "enum",
       "values": [
-        "unavailable",
-        "disabled",
-        "enabled"
+        "unstarted",
+        "measuring",
+        "measured"
       ]
     },
     {
@@ -22019,13 +22013,99 @@
     },
     {
       "name": "341",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "abort",
+          "type": "461"
+        },
+        {
+          "case": "block-dirty-bitmap-add",
+          "type": "462"
+        },
+        {
+          "case": "block-dirty-bitmap-remove",
+          "type": "463"
+        },
+        {
+          "case": "block-dirty-bitmap-clear",
+          "type": "463"
+        },
+        {
+          "case": "block-dirty-bitmap-enable",
+          "type": "463"
+        },
+        {
+          "case": "block-dirty-bitmap-disable",
+          "type": "463"
+        },
+        {
+          "case": "block-dirty-bitmap-merge",
+          "type": "464"
+        },
+        {
+          "case": "blockdev-backup",
+          "type": "465"
+        },
+        {
+          "case": "blockdev-snapshot",
+          "type": "466"
+        },
+        {
+          "case": "blockdev-snapshot-internal-sync",
+          "type": "467"
+        },
+        {
+          "case": "blockdev-snapshot-sync",
+          "type": "468"
+        },
+        {
+          "case": "drive-backup",
+          "type": "469"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "460"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "342",
+      "members": [
+        {
+          "name": "completion-mode",
+          "default": null,
+          "type": "470"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "343",
+      "meta-type": "enum",
+      "values": [
+        "unavailable",
+        "disabled",
+        "enabled"
+      ]
+    },
+    {
+      "name": "[344]",
+      "element-type": "344",
+      "meta-type": "array"
+    },
+    {
+      "name": "344",
       "meta-type": "enum",
       "values": [
         "oob"
       ]
     },
     {
-      "name": "342",
+      "name": "345",
       "members": [
         {
           "name": "major",
@@ -22043,7 +22123,7 @@
       "meta-type": "object"
     },
     {
-      "name": "343",
+      "name": "346",
       "meta-type": "enum",
       "values": [
         "builtin",
@@ -22056,17 +22136,17 @@
       ]
     },
     {
-      "name": "344",
+      "name": "347",
       "members": [
         {
           "name": "json-type",
-          "type": "468"
+          "type": "471"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "345",
+      "name": "348",
       "members": [
         {
           "name": "values",
@@ -22076,7 +22156,7 @@
       "meta-type": "object"
     },
     {
-      "name": "346",
+      "name": "349",
       "members": [
         {
           "name": "element-type",
@@ -22086,11 +22166,11 @@
       "meta-type": "object"
     },
     {
-      "name": "347",
+      "name": "350",
       "members": [
         {
           "name": "members",
-          "type": "[469]"
+          "type": "[472]"
         },
         {
           "name": "tag",
@@ -22100,23 +22180,23 @@
         {
           "name": "variants",
           "default": null,
-          "type": "[470]"
+          "type": "[473]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "348",
+      "name": "351",
       "members": [
         {
           "name": "members",
-          "type": "[471]"
+          "type": "[474]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "349",
+      "name": "352",
       "members": [
         {
           "name": "arg-type",
@@ -22135,7 +22215,7 @@
       "meta-type": "object"
     },
     {
-      "name": "350",
+      "name": "353",
       "members": [
         {
           "name": "arg-type",
@@ -22145,7 +22225,7 @@
       "meta-type": "object"
     },
     {
-      "name": "351",
+      "name": "354",
       "members": [
         {
           "name": "node-id",
@@ -22176,7 +22256,7 @@
       "meta-type": "object"
     },
     {
-      "name": "352",
+      "name": "355",
       "meta-type": "enum",
       "values": [
         "x86",
@@ -22190,7 +22270,7 @@
       ]
     },
     {
-      "name": "353",
+      "name": "356",
       "members": [
         {
           "name": "pc",
@@ -22200,7 +22280,7 @@
       "meta-type": "object"
     },
     {
-      "name": "354",
+      "name": "357",
       "members": [
         {
           "name": "pc",
@@ -22214,7 +22294,7 @@
       "meta-type": "object"
     },
     {
-      "name": "355",
+      "name": "358",
       "members": [
         {
           "name": "nip",
@@ -22224,7 +22304,7 @@
       "meta-type": "object"
     },
     {
-      "name": "356",
+      "name": "359",
       "members": [
         {
           "name": "PC",
@@ -22234,7 +22314,7 @@
       "meta-type": "object"
     },
     {
-      "name": "357",
+      "name": "360",
       "members": [
         {
           "name": "PC",
@@ -22244,17 +22324,17 @@
       "meta-type": "object"
     },
     {
-      "name": "358",
+      "name": "361",
       "members": [
         {
           "name": "cpu-state",
-          "type": "472"
+          "type": "475"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "359",
+      "name": "362",
       "members": [
         {
           "name": "pc",
@@ -22264,7 +22344,7 @@
       "meta-type": "object"
     },
     {
-      "name": "360",
+      "name": "363",
       "meta-type": "enum",
       "values": [
         "aarch64",
@@ -22303,7 +22383,7 @@
       ]
     },
     {
-      "name": "361",
+      "name": "364",
       "meta-type": "enum",
       "values": [
         "default",
@@ -22313,7 +22393,7 @@
       ]
     },
     {
-      "name": "362",
+      "name": "365",
       "meta-type": "enum",
       "values": [
         "node",
@@ -22324,7 +22404,7 @@
       ]
     },
     {
-      "name": "363",
+      "name": "366",
       "members": [
         {
           "name": "nodeid",
@@ -22355,7 +22435,7 @@
       "meta-type": "object"
     },
     {
-      "name": "364",
+      "name": "367",
       "members": [
         {
           "name": "src",
@@ -22373,7 +22453,7 @@
       "meta-type": "object"
     },
     {
-      "name": "365",
+      "name": "368",
       "members": [
         {
           "name": "node-id",
@@ -22404,7 +22484,7 @@
       "meta-type": "object"
     },
     {
-      "name": "366",
+      "name": "369",
       "members": [
         {
           "name": "initiator",
@@ -22416,11 +22496,11 @@
         },
         {
           "name": "hierarchy",
-          "type": "473"
+          "type": "476"
         },
         {
           "name": "data-type",
-          "type": "474"
+          "type": "477"
         },
         {
           "name": "latency",
@@ -22436,7 +22516,7 @@
       "meta-type": "object"
     },
     {
-      "name": "367",
+      "name": "370",
       "members": [
         {
           "name": "node-id",
@@ -22452,11 +22532,11 @@
         },
         {
           "name": "associativity",
-          "type": "475"
+          "type": "478"
         },
         {
           "name": "policy",
-          "type": "476"
+          "type": "479"
         },
         {
           "name": "line",
@@ -22466,7 +22546,7 @@
       "meta-type": "object"
     },
     {
-      "name": "368",
+      "name": "371",
       "members": [
         {
           "name": "name",
@@ -22481,7 +22561,7 @@
       "meta-type": "object"
     },
     {
-      "name": "369",
+      "name": "372",
       "meta-type": "enum",
       "values": [
         "incompatible",
@@ -22491,7 +22571,7 @@
       ]
     },
     {
-      "name": "370",
+      "name": "373",
       "meta-type": "enum",
       "values": [
         "static",
@@ -22499,12 +22579,12 @@
       ]
     },
     {
-      "name": "[371]",
-      "element-type": "371",
+      "name": "[374]",
+      "element-type": "374",
       "meta-type": "array"
     },
     {
-      "name": "371",
+      "name": "374",
       "members": [
         {
           "name": "bus",
@@ -22520,11 +22600,11 @@
         },
         {
           "name": "class_info",
-          "type": "477"
+          "type": "480"
         },
         {
           "name": "id",
-          "type": "478"
+          "type": "481"
         },
         {
           "name": "irq",
@@ -22542,22 +22622,22 @@
         {
           "name": "pci_bridge",
           "default": null,
-          "type": "479"
+          "type": "482"
         },
         {
           "name": "regions",
-          "type": "[480]"
+          "type": "[483]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "[372]",
-      "element-type": "372",
+      "name": "[375]",
+      "element-type": "375",
       "meta-type": "array"
     },
     {
-      "name": "372",
+      "name": "375",
       "members": [
         {
           "name": "fd",
@@ -22572,12 +22652,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[373]",
-      "element-type": "373",
+      "name": "[376]",
+      "element-type": "376",
       "meta-type": "array"
     },
     {
-      "name": "373",
+      "name": "376",
       "members": [
         {
           "name": "name",
@@ -22585,7 +22665,7 @@
         },
         {
           "name": "type",
-          "type": "481"
+          "type": "484"
         },
         {
           "name": "help",
@@ -22601,7 +22681,7 @@
       "meta-type": "object"
     },
     {
-      "name": "374",
+      "name": "377",
       "meta-type": "enum",
       "values": [
         "dimm",
@@ -22611,37 +22691,37 @@
       ]
     },
     {
-      "name": "375",
-      "members": [
-        {
-          "name": "data",
-          "type": "482"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "376",
-      "members": [
-        {
-          "name": "data",
-          "type": "483"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "377",
-      "members": [
-        {
-          "name": "data",
-          "type": "484"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
       "name": "378",
+      "members": [
+        {
+          "name": "data",
+          "type": "485"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "379",
+      "members": [
+        {
+          "name": "data",
+          "type": "486"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "380",
+      "members": [
+        {
+          "name": "data",
+          "type": "487"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "381",
       "meta-type": "enum",
       "values": [
         "DIMM",
@@ -22649,7 +22729,7 @@
       ]
     },
     {
-      "name": "379",
+      "name": "382",
       "meta-type": "enum",
       "values": [
         "uninit",
@@ -22661,7 +22741,7 @@
       ]
     },
     {
-      "name": "380",
+      "name": "383",
       "meta-type": "enum",
       "values": [
         "hyper-v",
@@ -22669,7 +22749,7 @@
       ]
     },
     {
-      "name": "381",
+      "name": "384",
       "members": [
         {
           "name": "arg1",
@@ -22695,7 +22775,7 @@
       "meta-type": "object"
     },
     {
-      "name": "382",
+      "name": "385",
       "members": [
         {
           "name": "core",
@@ -22711,13 +22791,13 @@
         },
         {
           "name": "reason",
-          "type": "485"
+          "type": "488"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "383",
+      "name": "386",
       "meta-type": "enum",
       "values": [
         "active",
@@ -22728,12 +22808,12 @@
       ]
     },
     {
-      "name": "[384]",
-      "element-type": "384",
+      "name": "[387]",
+      "element-type": "387",
       "meta-type": "array"
     },
     {
-      "name": "384",
+      "name": "387",
       "members": [
         {
           "name": "interval_length",
@@ -22787,7 +22867,7 @@
       "meta-type": "object"
     },
     {
-      "name": "385",
+      "name": "388",
       "members": [
         {
           "name": "boundaries",
@@ -22801,7 +22881,7 @@
       "meta-type": "object"
     },
     {
-      "name": "386",
+      "name": "389",
       "members": [
         {
           "name": "discard-nb-ok",
@@ -22824,32 +22904,32 @@
       "meta-type": "array"
     },
     {
-      "name": "387",
+      "name": "390",
       "tag": "type",
       "variants": [
         {
           "case": "qcow2",
-          "type": "487"
+          "type": "490"
         },
         {
           "case": "vmdk",
-          "type": "488"
+          "type": "491"
         },
         {
           "case": "luks",
-          "type": "489"
+          "type": "492"
         }
       ],
       "members": [
         {
           "name": "type",
-          "type": "486"
+          "type": "489"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "388",
+      "name": "391",
       "meta-type": "enum",
       "values": [
         "block-backend",
@@ -22858,12 +22938,12 @@
       ]
     },
     {
-      "name": "[389]",
-      "element-type": "389",
+      "name": "[392]",
+      "element-type": "392",
       "meta-type": "array"
     },
     {
-      "name": "389",
+      "name": "392",
       "meta-type": "enum",
       "values": [
         "consistent-read",
@@ -22874,7 +22954,7 @@
       ]
     },
     {
-      "name": "390",
+      "name": "393",
       "members": [
         {
           "type": "48"
@@ -22886,16 +22966,16 @@
       "meta-type": "alternate"
     },
     {
-      "name": "[391]",
-      "element-type": "391",
+      "name": "[394]",
+      "element-type": "394",
       "meta-type": "array"
     },
     {
-      "name": "391",
+      "name": "394",
       "members": [
         {
           "name": "event",
-          "type": "490"
+          "type": "493"
         },
         {
           "name": "state",
@@ -22905,7 +22985,7 @@
         {
           "name": "iotype",
           "default": null,
-          "type": "491"
+          "type": "494"
         },
         {
           "name": "errno",
@@ -22931,16 +23011,16 @@
       "meta-type": "object"
     },
     {
-      "name": "[392]",
-      "element-type": "392",
+      "name": "[395]",
+      "element-type": "395",
       "meta-type": "array"
     },
     {
-      "name": "392",
+      "name": "395",
       "members": [
         {
           "name": "event",
-          "type": "490"
+          "type": "493"
         },
         {
           "name": "state",
@@ -22955,7 +23035,7 @@
       "meta-type": "object"
     },
     {
-      "name": "393",
+      "name": "396",
       "meta-type": "enum",
       "values": [
         "auto",
@@ -22964,7 +23044,7 @@
       ]
     },
     {
-      "name": "394",
+      "name": "397",
       "meta-type": "enum",
       "values": [
         "threads",
@@ -22973,7 +23053,7 @@
       ]
     },
     {
-      "name": "395",
+      "name": "398",
       "meta-type": "enum",
       "values": [
         "tcp",
@@ -22981,7 +23061,7 @@
       ]
     },
     {
-      "name": "396",
+      "name": "399",
       "meta-type": "enum",
       "values": [
         "crc32c",
@@ -22991,11 +23071,11 @@
       ]
     },
     {
-      "name": "397",
+      "name": "400",
       "members": [
         {
           "name": "type",
-          "type": "492"
+          "type": "495"
         },
         {
           "name": "host",
@@ -23005,7 +23085,7 @@
       "meta-type": "object"
     },
     {
-      "name": "398",
+      "name": "401",
       "members": [
         {
           "type": "48"
@@ -23020,45 +23100,28 @@
       "meta-type": "alternate"
     },
     {
-      "name": "399",
+      "name": "402",
       "members": [
         {
-          "type": "493"
+          "type": "496"
         },
         {
-          "type": "494"
+          "type": "497"
         }
       ],
       "meta-type": "alternate"
     },
     {
-      "name": "400",
+      "name": "403",
       "tag": "format",
       "variants": [
         {
           "case": "aes",
-          "type": "496"
+          "type": "499"
         },
         {
           "case": "luks",
-          "type": "497"
-        }
-      ],
-      "members": [
-        {
-          "name": "format",
-          "type": "495"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "401",
-      "tag": "format",
-      "variants": [
-        {
-          "case": "aes",
-          "type": "496"
+          "type": "500"
         }
       ],
       "members": [
@@ -23070,12 +23133,29 @@
       "meta-type": "object"
     },
     {
-      "name": "[390]",
-      "element-type": "390",
+      "name": "404",
+      "tag": "format",
+      "variants": [
+        {
+          "case": "aes",
+          "type": "499"
+        }
+      ],
+      "members": [
+        {
+          "name": "format",
+          "type": "501"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[393]",
+      "element-type": "393",
       "meta-type": "array"
     },
     {
-      "name": "402",
+      "name": "405",
       "meta-type": "enum",
       "values": [
         "quorum",
@@ -23083,12 +23163,12 @@
       ]
     },
     {
-      "name": "[403]",
-      "element-type": "403",
+      "name": "[406]",
+      "element-type": "406",
       "meta-type": "array"
     },
     {
-      "name": "403",
+      "name": "406",
       "meta-type": "enum",
       "values": [
         "cephx",
@@ -23096,12 +23176,12 @@
       ]
     },
     {
-      "name": "[404]",
-      "element-type": "404",
+      "name": "[407]",
+      "element-type": "407",
       "meta-type": "array"
     },
     {
-      "name": "404",
+      "name": "407",
       "members": [
         {
           "name": "host",
@@ -23115,7 +23195,7 @@
       "meta-type": "object"
     },
     {
-      "name": "405",
+      "name": "408",
       "meta-type": "enum",
       "values": [
         "primary",
@@ -23123,7 +23203,7 @@
       ]
     },
     {
-      "name": "406",
+      "name": "409",
       "members": [
         {
           "name": "host",
@@ -23162,12 +23242,12 @@
       "meta-type": "object"
     },
     {
-      "name": "407",
+      "name": "410",
       "tag": "mode",
       "variants": [
         {
           "case": "hash",
-          "type": "500"
+          "type": "503"
         },
         {
           "case": "none",
@@ -23181,13 +23261,13 @@
       "members": [
         {
           "name": "mode",
-          "type": "499"
+          "type": "502"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "408",
+      "name": "411",
       "members": [
         {
           "name": "filename",
@@ -23200,7 +23280,7 @@
         {
           "name": "preallocation",
           "default": null,
-          "type": "501"
+          "type": "504"
         },
         {
           "name": "nocow",
@@ -23216,11 +23296,11 @@
       "meta-type": "object"
     },
     {
-      "name": "409",
+      "name": "412",
       "members": [
         {
           "name": "location",
-          "type": "258"
+          "type": "260"
         },
         {
           "name": "size",
@@ -23229,13 +23309,13 @@
         {
           "name": "preallocation",
           "default": null,
-          "type": "501"
+          "type": "504"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "410",
+      "name": "413",
       "members": [
         {
           "name": "key-secret",
@@ -23245,27 +23325,27 @@
         {
           "name": "cipher-alg",
           "default": null,
-          "type": "502"
+          "type": "505"
         },
         {
           "name": "cipher-mode",
           "default": null,
-          "type": "503"
+          "type": "506"
         },
         {
           "name": "ivgen-alg",
           "default": null,
-          "type": "504"
+          "type": "507"
         },
         {
           "name": "ivgen-hash-alg",
           "default": null,
-          "type": "505"
+          "type": "508"
         },
         {
           "name": "hash-alg",
           "default": null,
-          "type": "505"
+          "type": "508"
         },
         {
           "name": "iter-time",
@@ -23274,7 +23354,7 @@
         },
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "size",
@@ -23283,17 +23363,17 @@
         {
           "name": "preallocation",
           "default": null,
-          "type": "501"
+          "type": "504"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "411",
+      "name": "414",
       "members": [
         {
           "name": "location",
-          "type": "264"
+          "type": "266"
         },
         {
           "name": "size",
@@ -23303,11 +23383,11 @@
       "meta-type": "object"
     },
     {
-      "name": "412",
+      "name": "415",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "size",
@@ -23322,11 +23402,11 @@
       "meta-type": "object"
     },
     {
-      "name": "413",
+      "name": "416",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "size",
@@ -23340,25 +23420,30 @@
         {
           "name": "encrypt",
           "default": null,
-          "type": "506"
+          "type": "509"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "414",
+      "name": "417",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "data-file",
           "default": null,
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "data-file-raw",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "extended-l2",
           "default": null,
           "type": "bool"
         },
@@ -23369,7 +23454,7 @@
         {
           "name": "version",
           "default": null,
-          "type": "507"
+          "type": "510"
         },
         {
           "name": "backing-file",
@@ -23379,12 +23464,12 @@
         {
           "name": "backing-fmt",
           "default": null,
-          "type": "247"
+          "type": "249"
         },
         {
           "name": "encrypt",
           "default": null,
-          "type": "506"
+          "type": "509"
         },
         {
           "name": "cluster-size",
@@ -23394,7 +23479,7 @@
         {
           "name": "preallocation",
           "default": null,
-          "type": "501"
+          "type": "504"
         },
         {
           "name": "lazy-refcounts",
@@ -23409,17 +23494,17 @@
         {
           "name": "compression-type",
           "default": null,
-          "type": "508"
+          "type": "511"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "415",
+      "name": "418",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "size",
@@ -23433,7 +23518,7 @@
         {
           "name": "backing-fmt",
           "default": null,
-          "type": "247"
+          "type": "249"
         },
         {
           "name": "cluster-size",
@@ -23449,11 +23534,11 @@
       "meta-type": "object"
     },
     {
-      "name": "416",
+      "name": "419",
       "members": [
         {
           "name": "location",
-          "type": "272"
+          "type": "274"
         },
         {
           "name": "size",
@@ -23468,11 +23553,11 @@
       "meta-type": "object"
     },
     {
-      "name": "417",
+      "name": "420",
       "members": [
         {
           "name": "location",
-          "type": "274"
+          "type": "276"
         },
         {
           "name": "size",
@@ -23486,12 +23571,12 @@
         {
           "name": "preallocation",
           "default": null,
-          "type": "501"
+          "type": "504"
         },
         {
           "name": "redundancy",
           "default": null,
-          "type": "509"
+          "type": "512"
         },
         {
           "name": "object-size",
@@ -23502,11 +23587,11 @@
       "meta-type": "object"
     },
     {
-      "name": "418",
+      "name": "421",
       "members": [
         {
           "name": "location",
-          "type": "275"
+          "type": "277"
         },
         {
           "name": "size",
@@ -23516,11 +23601,11 @@
       "meta-type": "object"
     },
     {
-      "name": "419",
+      "name": "422",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "size",
@@ -23529,17 +23614,17 @@
         {
           "name": "preallocation",
           "default": null,
-          "type": "501"
+          "type": "504"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "420",
+      "name": "423",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "size",
@@ -23558,7 +23643,7 @@
         {
           "name": "subformat",
           "default": null,
-          "type": "510"
+          "type": "513"
         },
         {
           "name": "block-state-zero",
@@ -23569,11 +23654,11 @@
       "meta-type": "object"
     },
     {
-      "name": "421",
+      "name": "424",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "size",
@@ -23582,12 +23667,12 @@
         {
           "name": "extents",
           "default": null,
-          "type": "[390]"
+          "type": "[393]"
         },
         {
           "name": "subformat",
           "default": null,
-          "type": "511"
+          "type": "514"
         },
         {
           "name": "backing-file",
@@ -23597,7 +23682,7 @@
         {
           "name": "adapter-type",
           "default": null,
-          "type": "512"
+          "type": "515"
         },
         {
           "name": "hwversion",
@@ -23613,11 +23698,11 @@
       "meta-type": "object"
     },
     {
-      "name": "422",
+      "name": "425",
       "members": [
         {
           "name": "file",
-          "type": "390"
+          "type": "393"
         },
         {
           "name": "size",
@@ -23626,7 +23711,7 @@
         {
           "name": "subformat",
           "default": null,
-          "type": "513"
+          "type": "516"
         },
         {
           "name": "force-size",
@@ -23637,11 +23722,11 @@
       "meta-type": "object"
     },
     {
-      "name": "423",
+      "name": "426",
       "members": [
         {
           "name": "state",
-          "type": "514"
+          "type": "517"
         },
         {
           "name": "new-secret",
@@ -23672,12 +23757,12 @@
       "meta-type": "object"
     },
     {
-      "name": "424",
+      "name": "427",
       "members": [
         {
           "name": "encrypt",
           "default": null,
-          "type": "515"
+          "type": "518"
         }
       ],
       "meta-type": "object"
@@ -23688,7 +23773,7 @@
       "meta-type": "builtin"
     },
     {
-      "name": "425",
+      "name": "428",
       "meta-type": "enum",
       "values": [
         "inet",
@@ -23698,47 +23783,47 @@
       ]
     },
     {
-      "name": "426",
-      "members": [
-        {
-          "name": "data",
-          "type": "406"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "427",
-      "members": [
-        {
-          "name": "data",
-          "type": "454"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "428",
-      "members": [
-        {
-          "name": "data",
-          "type": "455"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
       "name": "429",
       "members": [
         {
           "name": "data",
-          "type": "442"
+          "type": "409"
         }
       ],
       "meta-type": "object"
     },
     {
       "name": "430",
+      "members": [
+        {
+          "name": "data",
+          "type": "457"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "431",
+      "members": [
+        {
+          "name": "data",
+          "type": "458"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "432",
+      "members": [
+        {
+          "name": "data",
+          "type": "445"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "433",
       "meta-type": "enum",
       "values": [
         "file",
@@ -23762,36 +23847,6 @@
         "ringbuf",
         "memory"
       ]
-    },
-    {
-      "name": "431",
-      "members": [
-        {
-          "name": "data",
-          "type": "516"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "432",
-      "members": [
-        {
-          "name": "data",
-          "type": "517"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "433",
-      "members": [
-        {
-          "name": "data",
-          "type": "518"
-        }
-      ],
-      "meta-type": "object"
     },
     {
       "name": "434",
@@ -23874,30 +23929,7 @@
       "meta-type": "object"
     },
     {
-      "name": "[442]",
-      "element-type": "442",
-      "meta-type": "array"
-    },
-    {
       "name": "442",
-      "members": [
-        {
-          "name": "str",
-          "type": "str"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "443",
-      "meta-type": "enum",
-      "values": [
-        "passthrough",
-        "emulator"
-      ]
-    },
-    {
-      "name": "444",
       "members": [
         {
           "name": "data",
@@ -23907,7 +23939,7 @@
       "meta-type": "object"
     },
     {
-      "name": "445",
+      "name": "443",
       "members": [
         {
           "name": "data",
@@ -23917,25 +23949,7 @@
       "meta-type": "object"
     },
     {
-      "name": "446",
-      "meta-type": "enum",
-      "values": [
-        "number",
-        "qcode"
-      ]
-    },
-    {
-      "name": "447",
-      "members": [
-        {
-          "name": "data",
-          "type": "int"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "448",
+      "name": "444",
       "members": [
         {
           "name": "data",
@@ -23945,17 +23959,30 @@
       "meta-type": "object"
     },
     {
-      "name": "449",
+      "name": "[445]",
+      "element-type": "445",
+      "meta-type": "array"
+    },
+    {
+      "name": "445",
+      "members": [
+        {
+          "name": "str",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "446",
       "meta-type": "enum",
       "values": [
-        "key",
-        "btn",
-        "rel",
-        "abs"
+        "passthrough",
+        "emulator"
       ]
     },
     {
-      "name": "450",
+      "name": "447",
       "members": [
         {
           "name": "data",
@@ -23965,7 +23992,7 @@
       "meta-type": "object"
     },
     {
-      "name": "451",
+      "name": "448",
       "members": [
         {
           "name": "data",
@@ -23975,7 +24002,25 @@
       "meta-type": "object"
     },
     {
-      "name": "452",
+      "name": "449",
+      "meta-type": "enum",
+      "values": [
+        "number",
+        "qcode"
+      ]
+    },
+    {
+      "name": "450",
+      "members": [
+        {
+          "name": "data",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "451",
       "members": [
         {
           "name": "data",
@@ -23985,7 +24030,47 @@
       "meta-type": "object"
     },
     {
+      "name": "452",
+      "meta-type": "enum",
+      "values": [
+        "key",
+        "btn",
+        "rel",
+        "abs"
+      ]
+    },
+    {
       "name": "453",
+      "members": [
+        {
+          "name": "data",
+          "type": "533"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "454",
+      "members": [
+        {
+          "name": "data",
+          "type": "534"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "455",
+      "members": [
+        {
+          "name": "data",
+          "type": "535"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "456",
       "meta-type": "enum",
       "values": [
         "inet",
@@ -23995,7 +24080,7 @@
       ]
     },
     {
-      "name": "454",
+      "name": "457",
       "members": [
         {
           "name": "path",
@@ -24015,7 +24100,7 @@
       "meta-type": "object"
     },
     {
-      "name": "455",
+      "name": "458",
       "members": [
         {
           "name": "cid",
@@ -24029,12 +24114,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[456]",
-      "element-type": "456",
+      "name": "[459]",
+      "element-type": "459",
       "meta-type": "array"
     },
     {
-      "name": "456",
+      "name": "459",
       "members": [
         {
           "name": "name",
@@ -24048,7 +24133,7 @@
       "meta-type": "object"
     },
     {
-      "name": "457",
+      "name": "460",
       "meta-type": "enum",
       "values": [
         "abort",
@@ -24066,41 +24151,11 @@
       ]
     },
     {
-      "name": "458",
-      "members": [
-        {
-          "name": "data",
-          "type": "533"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "459",
-      "members": [
-        {
-          "name": "data",
-          "type": "35"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "460",
-      "members": [
-        {
-          "name": "data",
-          "type": "36"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
       "name": "461",
       "members": [
         {
           "name": "data",
-          "type": "37"
+          "type": "536"
         }
       ],
       "meta-type": "object"
@@ -24110,7 +24165,7 @@
       "members": [
         {
           "name": "data",
-          "type": "30"
+          "type": "35"
         }
       ],
       "meta-type": "object"
@@ -24120,7 +24175,7 @@
       "members": [
         {
           "name": "data",
-          "type": "26"
+          "type": "36"
         }
       ],
       "meta-type": "object"
@@ -24130,7 +24185,7 @@
       "members": [
         {
           "name": "data",
-          "type": "68"
+          "type": "37"
         }
       ],
       "meta-type": "object"
@@ -24140,7 +24195,7 @@
       "members": [
         {
           "name": "data",
-          "type": "25"
+          "type": "30"
         }
       ],
       "meta-type": "object"
@@ -24150,13 +24205,43 @@
       "members": [
         {
           "name": "data",
-          "type": "29"
+          "type": "26"
         }
       ],
       "meta-type": "object"
     },
     {
       "name": "467",
+      "members": [
+        {
+          "name": "data",
+          "type": "68"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "468",
+      "members": [
+        {
+          "name": "data",
+          "type": "25"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "469",
+      "members": [
+        {
+          "name": "data",
+          "type": "29"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "470",
       "meta-type": "enum",
       "values": [
         "individual",
@@ -24164,7 +24249,7 @@
       ]
     },
     {
-      "name": "468",
+      "name": "471",
       "meta-type": "enum",
       "values": [
         "string",
@@ -24178,12 +24263,12 @@
       ]
     },
     {
-      "name": "[469]",
-      "element-type": "469",
+      "name": "[472]",
+      "element-type": "472",
       "meta-type": "array"
     },
     {
-      "name": "469",
+      "name": "472",
       "members": [
         {
           "name": "name",
@@ -24207,12 +24292,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[470]",
-      "element-type": "470",
+      "name": "[473]",
+      "element-type": "473",
       "meta-type": "array"
     },
     {
-      "name": "470",
+      "name": "473",
       "members": [
         {
           "name": "case",
@@ -24226,12 +24311,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[471]",
-      "element-type": "471",
+      "name": "[474]",
+      "element-type": "474",
       "meta-type": "array"
     },
     {
-      "name": "471",
+      "name": "474",
       "members": [
         {
           "name": "type",
@@ -24241,7 +24326,7 @@
       "meta-type": "object"
     },
     {
-      "name": "472",
+      "name": "475",
       "meta-type": "enum",
       "values": [
         "uninitialized",
@@ -24252,7 +24337,7 @@
       ]
     },
     {
-      "name": "473",
+      "name": "476",
       "meta-type": "enum",
       "values": [
         "memory",
@@ -24262,7 +24347,7 @@
       ]
     },
     {
-      "name": "474",
+      "name": "477",
       "meta-type": "enum",
       "values": [
         "access-latency",
@@ -24274,7 +24359,7 @@
       ]
     },
     {
-      "name": "475",
+      "name": "478",
       "meta-type": "enum",
       "values": [
         "none",
@@ -24283,7 +24368,7 @@
       ]
     },
     {
-      "name": "476",
+      "name": "479",
       "meta-type": "enum",
       "values": [
         "none",
@@ -24292,7 +24377,7 @@
       ]
     },
     {
-      "name": "477",
+      "name": "480",
       "members": [
         {
           "name": "desc",
@@ -24307,7 +24392,7 @@
       "meta-type": "object"
     },
     {
-      "name": "478",
+      "name": "481",
       "members": [
         {
           "name": "device",
@@ -24331,27 +24416,27 @@
       "meta-type": "object"
     },
     {
-      "name": "479",
+      "name": "482",
       "members": [
         {
           "name": "bus",
-          "type": "534"
+          "type": "537"
         },
         {
           "name": "devices",
           "default": null,
-          "type": "[371]"
+          "type": "[374]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "[480]",
-      "element-type": "480",
+      "name": "[483]",
+      "element-type": "483",
       "meta-type": "array"
     },
     {
-      "name": "480",
+      "name": "483",
       "members": [
         {
           "name": "bar",
@@ -24383,7 +24468,7 @@
       "meta-type": "object"
     },
     {
-      "name": "481",
+      "name": "484",
       "meta-type": "enum",
       "values": [
         "string",
@@ -24393,7 +24478,7 @@
       ]
     },
     {
-      "name": "482",
+      "name": "485",
       "members": [
         {
           "name": "id",
@@ -24432,7 +24517,7 @@
       "meta-type": "object"
     },
     {
-      "name": "483",
+      "name": "486",
       "members": [
         {
           "name": "id",
@@ -24455,7 +24540,7 @@
       "meta-type": "object"
     },
     {
-      "name": "484",
+      "name": "487",
       "members": [
         {
           "name": "id",
@@ -24494,7 +24579,7 @@
       "meta-type": "object"
     },
     {
-      "name": "485",
+      "name": "488",
       "meta-type": "enum",
       "values": [
         "unknown",
@@ -24505,7 +24590,7 @@
       ]
     },
     {
-      "name": "486",
+      "name": "489",
       "meta-type": "enum",
       "values": [
         "qcow2",
@@ -24514,37 +24599,37 @@
       ]
     },
     {
-      "name": "487",
-      "members": [
-        {
-          "name": "data",
-          "type": "535"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "488",
-      "members": [
-        {
-          "name": "data",
-          "type": "536"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "489",
-      "members": [
-        {
-          "name": "data",
-          "type": "537"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
       "name": "490",
+      "members": [
+        {
+          "name": "data",
+          "type": "538"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "491",
+      "members": [
+        {
+          "name": "data",
+          "type": "539"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "492",
+      "members": [
+        {
+          "name": "data",
+          "type": "540"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "493",
       "meta-type": "enum",
       "values": [
         "l1_update",
@@ -24598,7 +24683,7 @@
       ]
     },
     {
-      "name": "491",
+      "name": "494",
       "meta-type": "enum",
       "values": [
         "read",
@@ -24610,19 +24695,19 @@
       ]
     },
     {
-      "name": "492",
+      "name": "495",
       "meta-type": "enum",
       "values": [
         "inet"
       ]
     },
     {
-      "name": "493",
+      "name": "496",
       "members": [
         {
           "name": "template",
           "default": null,
-          "type": "494"
+          "type": "497"
         },
         {
           "name": "main-header",
@@ -24673,7 +24758,7 @@
       "meta-type": "object"
     },
     {
-      "name": "494",
+      "name": "497",
       "meta-type": "enum",
       "values": [
         "none",
@@ -24683,7 +24768,7 @@
       ]
     },
     {
-      "name": "495",
+      "name": "498",
       "meta-type": "enum",
       "values": [
         "aes",
@@ -24691,52 +24776,22 @@
       ]
     },
     {
-      "name": "496",
-      "members": [
-        {
-          "name": "key-secret",
-          "default": null,
-          "type": "str"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "497",
-      "members": [
-        {
-          "name": "key-secret",
-          "default": null,
-          "type": "str"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "498",
-      "meta-type": "enum",
-      "values": [
-        "aes"
-      ]
-    },
-    {
       "name": "499",
-      "meta-type": "enum",
-      "values": [
-        "none",
-        "hash",
-        "known_hosts"
-      ]
+      "members": [
+        {
+          "name": "key-secret",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
     },
     {
       "name": "500",
       "members": [
         {
-          "name": "type",
-          "type": "538"
-        },
-        {
-          "name": "hash",
+          "name": "key-secret",
+          "default": null,
           "type": "str"
         }
       ],
@@ -24746,6 +24801,36 @@
       "name": "501",
       "meta-type": "enum",
       "values": [
+        "aes"
+      ]
+    },
+    {
+      "name": "502",
+      "meta-type": "enum",
+      "values": [
+        "none",
+        "hash",
+        "known_hosts"
+      ]
+    },
+    {
+      "name": "503",
+      "members": [
+        {
+          "name": "type",
+          "type": "541"
+        },
+        {
+          "name": "hash",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "504",
+      "meta-type": "enum",
+      "values": [
         "off",
         "metadata",
         "falloc",
@@ -24753,7 +24838,7 @@
       ]
     },
     {
-      "name": "502",
+      "name": "505",
       "meta-type": "enum",
       "values": [
         "aes-128",
@@ -24771,7 +24856,7 @@
       ]
     },
     {
-      "name": "503",
+      "name": "506",
       "meta-type": "enum",
       "values": [
         "ecb",
@@ -24781,7 +24866,7 @@
       ]
     },
     {
-      "name": "504",
+      "name": "507",
       "meta-type": "enum",
       "values": [
         "plain",
@@ -24790,7 +24875,7 @@
       ]
     },
     {
-      "name": "505",
+      "name": "508",
       "meta-type": "enum",
       "values": [
         "md5",
@@ -24803,58 +24888,22 @@
       ]
     },
     {
-      "name": "506",
+      "name": "509",
       "tag": "format",
       "variants": [
         {
           "case": "qcow",
-          "type": "496"
+          "type": "499"
         },
         {
           "case": "luks",
-          "type": "540"
-        }
-      ],
-      "members": [
-        {
-          "name": "format",
-          "type": "539"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "507",
-      "meta-type": "enum",
-      "values": [
-        "v2",
-        "v3"
-      ]
-    },
-    {
-      "name": "508",
-      "meta-type": "enum",
-      "values": [
-        "zlib"
-      ]
-    },
-    {
-      "name": "509",
-      "tag": "type",
-      "variants": [
-        {
-          "case": "full",
-          "type": "542"
-        },
-        {
-          "case": "erasure-coded",
           "type": "543"
         }
       ],
       "members": [
         {
-          "name": "type",
-          "type": "541"
+          "name": "format",
+          "type": "542"
         }
       ],
       "meta-type": "object"
@@ -24863,30 +24912,37 @@
       "name": "510",
       "meta-type": "enum",
       "values": [
-        "dynamic",
-        "fixed"
+        "v2",
+        "v3"
       ]
     },
     {
       "name": "511",
       "meta-type": "enum",
       "values": [
-        "monolithicSparse",
-        "monolithicFlat",
-        "twoGbMaxExtentSparse",
-        "twoGbMaxExtentFlat",
-        "streamOptimized"
+        "zlib"
       ]
     },
     {
       "name": "512",
-      "meta-type": "enum",
-      "values": [
-        "ide",
-        "buslogic",
-        "lsilogic",
-        "legacyESX"
-      ]
+      "tag": "type",
+      "variants": [
+        {
+          "case": "full",
+          "type": "545"
+        },
+        {
+          "case": "erasure-coded",
+          "type": "546"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "544"
+        }
+      ],
+      "meta-type": "object"
     },
     {
       "name": "513",
@@ -24900,17 +24956,46 @@
       "name": "514",
       "meta-type": "enum",
       "values": [
+        "monolithicSparse",
+        "monolithicFlat",
+        "twoGbMaxExtentSparse",
+        "twoGbMaxExtentFlat",
+        "streamOptimized"
+      ]
+    },
+    {
+      "name": "515",
+      "meta-type": "enum",
+      "values": [
+        "ide",
+        "buslogic",
+        "lsilogic",
+        "legacyESX"
+      ]
+    },
+    {
+      "name": "516",
+      "meta-type": "enum",
+      "values": [
+        "dynamic",
+        "fixed"
+      ]
+    },
+    {
+      "name": "517",
+      "meta-type": "enum",
+      "values": [
         "active",
         "inactive"
       ]
     },
     {
-      "name": "515",
+      "name": "518",
       "tag": "format",
       "variants": [
         {
           "case": "luks",
-          "type": "544"
+          "type": "547"
         },
         {
           "case": "qcow",
@@ -24920,13 +25005,13 @@
       "members": [
         {
           "name": "format",
-          "type": "539"
+          "type": "542"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "516",
+      "name": "519",
       "members": [
         {
           "name": "logfile",
@@ -24956,7 +25041,7 @@
       "meta-type": "object"
     },
     {
-      "name": "517",
+      "name": "520",
       "members": [
         {
           "name": "logfile",
@@ -24976,7 +25061,7 @@
       "meta-type": "object"
     },
     {
-      "name": "518",
+      "name": "521",
       "members": [
         {
           "name": "logfile",
@@ -24990,7 +25075,7 @@
         },
         {
           "name": "addr",
-          "type": "284"
+          "type": "286"
         },
         {
           "name": "tls-creds",
@@ -25041,7 +25126,7 @@
       "meta-type": "object"
     },
     {
-      "name": "519",
+      "name": "522",
       "members": [
         {
           "name": "logfile",
@@ -25055,18 +25140,18 @@
         },
         {
           "name": "remote",
-          "type": "284"
+          "type": "286"
         },
         {
           "name": "local",
           "default": null,
-          "type": "284"
+          "type": "286"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "520",
+      "name": "523",
       "members": [
         {
           "name": "logfile",
@@ -25082,7 +25167,7 @@
       "meta-type": "object"
     },
     {
-      "name": "521",
+      "name": "524",
       "members": [
         {
           "name": "logfile",
@@ -25102,7 +25187,7 @@
       "meta-type": "object"
     },
     {
-      "name": "522",
+      "name": "525",
       "members": [
         {
           "name": "logfile",
@@ -25123,7 +25208,7 @@
       "meta-type": "object"
     },
     {
-      "name": "523",
+      "name": "526",
       "members": [
         {
           "name": "logfile",
@@ -25143,7 +25228,7 @@
       "meta-type": "object"
     },
     {
-      "name": "524",
+      "name": "527",
       "members": [
         {
           "name": "logfile",
@@ -25163,7 +25248,7 @@
       "meta-type": "object"
     },
     {
-      "name": "525",
+      "name": "528",
       "members": [
         {
           "name": "logfile",
@@ -25199,7 +25284,7 @@
       "meta-type": "object"
     },
     {
-      "name": "526",
+      "name": "529",
       "members": [
         {
           "name": "logfile",
@@ -25220,7 +25305,7 @@
       "meta-type": "object"
     },
     {
-      "name": "527",
+      "name": "530",
       "members": [
         {
           "name": "path",
@@ -25236,7 +25321,7 @@
       "meta-type": "object"
     },
     {
-      "name": "528",
+      "name": "531",
       "members": [
         {
           "name": "chardev",
@@ -25246,7 +25331,7 @@
       "meta-type": "object"
     },
     {
-      "name": "529",
+      "name": "532",
       "meta-type": "enum",
       "values": [
         "unmapped",
@@ -25400,11 +25485,11 @@
       ]
     },
     {
-      "name": "530",
+      "name": "533",
       "members": [
         {
           "name": "key",
-          "type": "321"
+          "type": "323"
         },
         {
           "name": "down",
@@ -25414,11 +25499,11 @@
       "meta-type": "object"
     },
     {
-      "name": "531",
+      "name": "534",
       "members": [
         {
           "name": "button",
-          "type": "545"
+          "type": "548"
         },
         {
           "name": "down",
@@ -25428,11 +25513,11 @@
       "meta-type": "object"
     },
     {
-      "name": "532",
+      "name": "535",
       "members": [
         {
           "name": "axis",
-          "type": "546"
+          "type": "549"
         },
         {
           "name": "value",
@@ -25442,13 +25527,13 @@
       "meta-type": "object"
     },
     {
-      "name": "533",
+      "name": "536",
       "members": [
       ],
       "meta-type": "object"
     },
     {
-      "name": "534",
+      "name": "537",
       "members": [
         {
           "name": "number",
@@ -25464,21 +25549,21 @@
         },
         {
           "name": "io_range",
-          "type": "547"
+          "type": "550"
         },
         {
           "name": "memory_range",
-          "type": "547"
+          "type": "550"
         },
         {
           "name": "prefetchable_range",
-          "type": "547"
+          "type": "550"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "535",
+      "name": "538",
       "members": [
         {
           "name": "compat",
@@ -25491,6 +25576,11 @@
         },
         {
           "name": "data-file-raw",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "extended-l2",
           "default": null,
           "type": "bool"
         },
@@ -25511,22 +25601,22 @@
         {
           "name": "encrypt",
           "default": null,
-          "type": "548"
+          "type": "551"
         },
         {
           "name": "bitmaps",
           "default": null,
-          "type": "[549]"
+          "type": "[552]"
         },
         {
           "name": "compression-type",
-          "type": "508"
+          "type": "511"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "536",
+      "name": "539",
       "members": [
         {
           "name": "create-type",
@@ -25542,34 +25632,34 @@
         },
         {
           "name": "extents",
-          "type": "[241]"
+          "type": "[243]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "537",
+      "name": "540",
       "members": [
         {
           "name": "cipher-alg",
-          "type": "502"
+          "type": "505"
         },
         {
           "name": "cipher-mode",
-          "type": "503"
+          "type": "506"
         },
         {
           "name": "ivgen-alg",
-          "type": "504"
+          "type": "507"
         },
         {
           "name": "ivgen-hash-alg",
           "default": null,
-          "type": "505"
+          "type": "508"
         },
         {
           "name": "hash-alg",
-          "type": "505"
+          "type": "508"
         },
         {
           "name": "payload-offset",
@@ -25585,13 +25675,13 @@
         },
         {
           "name": "slots",
-          "type": "[550]"
+          "type": "[553]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "538",
+      "name": "541",
       "meta-type": "enum",
       "values": [
         "md5",
@@ -25599,7 +25689,7 @@
       ]
     },
     {
-      "name": "539",
+      "name": "542",
       "meta-type": "enum",
       "values": [
         "qcow",
@@ -25607,7 +25697,7 @@
       ]
     },
     {
-      "name": "540",
+      "name": "543",
       "members": [
         {
           "name": "key-secret",
@@ -25617,27 +25707,27 @@
         {
           "name": "cipher-alg",
           "default": null,
-          "type": "502"
+          "type": "505"
         },
         {
           "name": "cipher-mode",
           "default": null,
-          "type": "503"
+          "type": "506"
         },
         {
           "name": "ivgen-alg",
           "default": null,
-          "type": "504"
+          "type": "507"
         },
         {
           "name": "ivgen-hash-alg",
           "default": null,
-          "type": "505"
+          "type": "508"
         },
         {
           "name": "hash-alg",
           "default": null,
-          "type": "505"
+          "type": "508"
         },
         {
           "name": "iter-time",
@@ -25648,7 +25738,7 @@
       "meta-type": "object"
     },
     {
-      "name": "541",
+      "name": "544",
       "meta-type": "enum",
       "values": [
         "full",
@@ -25656,7 +25746,7 @@
       ]
     },
     {
-      "name": "542",
+      "name": "545",
       "members": [
         {
           "name": "copies",
@@ -25666,7 +25756,7 @@
       "meta-type": "object"
     },
     {
-      "name": "543",
+      "name": "546",
       "members": [
         {
           "name": "data-strips",
@@ -25680,11 +25770,11 @@
       "meta-type": "object"
     },
     {
-      "name": "544",
+      "name": "547",
       "members": [
         {
           "name": "state",
-          "type": "514"
+          "type": "517"
         },
         {
           "name": "new-secret",
@@ -25715,7 +25805,7 @@
       "meta-type": "object"
     },
     {
-      "name": "545",
+      "name": "548",
       "meta-type": "enum",
       "values": [
         "left",
@@ -25728,7 +25818,7 @@
       ]
     },
     {
-      "name": "546",
+      "name": "549",
       "meta-type": "enum",
       "values": [
         "x",
@@ -25736,7 +25826,7 @@
       ]
     },
     {
-      "name": "547",
+      "name": "550",
       "members": [
         {
           "name": "base",
@@ -25750,12 +25840,12 @@
       "meta-type": "object"
     },
     {
-      "name": "548",
+      "name": "551",
       "tag": "format",
       "variants": [
         {
           "case": "luks",
-          "type": "537"
+          "type": "540"
         },
         {
           "case": "aes",
@@ -25765,18 +25855,18 @@
       "members": [
         {
           "name": "format",
-          "type": "495"
+          "type": "498"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "[549]",
-      "element-type": "549",
+      "name": "[552]",
+      "element-type": "552",
       "meta-type": "array"
     },
     {
-      "name": "549",
+      "name": "552",
       "members": [
         {
           "name": "name",
@@ -25788,23 +25878,23 @@
         },
         {
           "name": "flags",
-          "type": "[551]"
+          "type": "[554]"
         }
       ],
       "meta-type": "object"
     },
     {
-      "name": "[241]",
-      "element-type": "241",
+      "name": "[243]",
+      "element-type": "243",
       "meta-type": "array"
     },
     {
-      "name": "[550]",
-      "element-type": "550",
+      "name": "[553]",
+      "element-type": "553",
       "meta-type": "array"
     },
     {
-      "name": "550",
+      "name": "553",
       "members": [
         {
           "name": "active",
@@ -25828,12 +25918,12 @@
       "meta-type": "object"
     },
     {
-      "name": "[551]",
-      "element-type": "551",
+      "name": "[554]",
+      "element-type": "554",
       "meta-type": "array"
     },
     {
-      "name": "551",
+      "name": "554",
       "meta-type": "enum",
       "values": [
         "in-use",
@@ -29483,6 +29573,14 @@
       "default-ram-id": "pc.ram"
     },
     {
+      "hotpluggable-cpus": false,
+      "name": "none",
+      "numa-mem-supported": false,
+      "cpu-max": 1,
+      "deprecated": false,
+      "default-ram-id": "ram"
+    },
+    {
       "hotpluggable-cpus": true,
       "name": "pc-1.1",
       "numa-mem-supported": true,
@@ -29490,14 +29588,6 @@
       "cpu-max": 255,
       "deprecated": true,
       "default-ram-id": "pc.ram"
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "none",
-      "numa-mem-supported": false,
-      "cpu-max": 1,
-      "deprecated": false,
-      "default-ram-id": "ram"
     },
     {
       "hotpluggable-cpus": true,
