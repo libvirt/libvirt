@@ -47,7 +47,7 @@ format=raw,id=drive-hostdev2 \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=4,\
 drive=drive-hostdev2,id=hostdev2 \
 -drive file=iscsi://example.org:3260/iqn.1992-01.com.example/1,if=none,\
-format=raw,id=drive-hostdev3 \
+format=raw,id=drive-hostdev3,readonly=on \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=5,\
 drive=drive-hostdev3,id=hostdev3 \
 -drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org:\

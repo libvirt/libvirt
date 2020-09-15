@@ -65,6 +65,7 @@
       <source protocol='iscsi' name='iqn.1992-01.com.example/1'>
         <host name='example.org' port='3260'/>
       </source>
+      <readonly/>
       <address type='drive' controller='0' bus='0' target='2' unit='5'/>
     </hostdev>
     <hostdev mode='subsystem' type='scsi' managed='yes'>
