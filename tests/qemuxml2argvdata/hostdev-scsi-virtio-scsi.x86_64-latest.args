@@ -53,7 +53,7 @@ drive=libvirt-4-backend,id=ua-7996c8dc-a4fa-4012-b76f-043d20144263 \
 drive=libvirt-5-backend,id=hostdev2 \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260",\
 "target":"iqn.1992-01.com.example","lun":1,"transport":"tcp",\
-"node-name":"libvirt-6-backend","read-only":false}' \
+"node-name":"libvirt-6-backend","read-only":true}' \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=5,\
 drive=libvirt-6-backend,id=hostdev3 \
 -object secret,id=libvirt-7-backend-secret0,\
