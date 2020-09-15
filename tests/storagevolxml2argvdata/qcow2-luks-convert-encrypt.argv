@@ -1,0 +1,18 @@
+qemu-img \
+create \
+-f qcow2 \
+--object secret,id=OtherDemoLuks.img_encrypt0,file=/path/to/secretFile \
+-o encrypt.format=luks,encrypt.key-secret=OtherDemoLuks.img_encrypt0,\
+compat=0.10 /var/lib/libvirt/images/OtherDemoLuks.img 5242880K
+qemu-img \
+convert \
+--image-opts \
+-n \
+--target-image-opts \
+--object secret,id=OtherDemoLuks.img_encrypt0,file=/path/to/secretFile \
+--object secret,id=OtherDemoLuksConvert.img_encrypt0,\
+file=/path/to/inputSecretFile driver=qcow2,\
+file.filename=/var/lib/libvirt/images/OtherDemoLuksConvert.img,\
+encrypt.key-secret=OtherDemoLuksConvert.img_encrypt0 driver=qcow2,\
+file.filename=/var/lib/libvirt/images/OtherDemoLuks.img,\
+encrypt.key-secret=OtherDemoLuks.img_encrypt0

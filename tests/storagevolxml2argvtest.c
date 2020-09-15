@@ -255,6 +255,9 @@ mymain(void)
     DO_TEST("pool-dir", "vol-luks-cipher",
             NULL, NULL,
             "luks-cipher", 0);
+    DO_TEST("pool-dir", "vol-qcow2-luks",
+            NULL, NULL,
+            "qcow2-luks", 0);
 
     DO_TEST("pool-dir", "vol-luks-convert",
             "pool-dir", "vol-file",
@@ -275,6 +278,18 @@ mymain(void)
     DO_TEST("pool-dir", "vol-file-qcow2",
             "pool-dir", "vol-luks-convert",
             "luks-convert-encrypt2fileqcow2", 0);
+
+    DO_TEST("pool-dir", "vol-qcow2-luks",
+            "pool-dir", "vol-qcow2-luks-convert",
+            "qcow2-luks-convert-encrypt", 0);
+
+    DO_TEST("pool-dir", "vol-file",
+            "pool-dir", "vol-qcow2-luks-convert",
+            "qcow2-luks-convert-encrypt2fileraw", 0);
+
+    DO_TEST("pool-dir", "vol-file-qcow2",
+            "pool-dir", "vol-qcow2-luks-convert",
+            "qcow2-luks-convert-encrypt2fileqcow2", 0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

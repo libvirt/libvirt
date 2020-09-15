@@ -60,6 +60,7 @@ char *virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr src);
 
 void virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str);
 void virQEMUBuildQemuImgKeySecretOpts(virBufferPtr buf,
+                                      int format,
                                       virStorageEncryptionInfoDefPtr enc,
                                       const char *alias)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);

@@ -87,6 +87,7 @@ mymain(void)
     DO_TEST("pool-dir", "vol-qcow2-0.10-lazy");
     DO_TEST("pool-dir", "vol-qcow2-nobacking");
     DO_TEST("pool-dir", "vol-qcow2-encryption");
+    DO_TEST("pool-dir", "vol-qcow2-luks");
     DO_TEST("pool-dir", "vol-luks");
     DO_TEST("pool-dir", "vol-luks-cipher");
     DO_TEST("pool-disk", "vol-partition");

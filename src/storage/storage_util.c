@@ -707,7 +707,7 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
                           virStorageFileFormatTypeToString(info->backingFormat));
 
     if (encinfo)
-        virQEMUBuildQemuImgKeySecretOpts(&buf, encinfo, info->secretAlias);
+        virQEMUBuildQemuImgKeySecretOpts(&buf, info->format, encinfo, info->secretAlias);
 
     if (info->preallocate) {
         if (info->size_arg > info->allocation)
@@ -761,7 +761,8 @@ storageBackendCreateQemuImgCheckEncryption(int format,
 {
     virStorageEncryptionPtr enc = vol->target.encryption;
 
-    if (format == VIR_STORAGE_FILE_RAW) {
+    if (format == VIR_STORAGE_FILE_RAW ||
+        format == VIR_STORAGE_FILE_QCOW2) {
         if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported volume encryption format %d"),
@@ -927,21 +928,34 @@ storageBackendCreateQemuImgSecretObject(virCommandPtr cmd,
 }
 
 
-/* Add a --image-opts to the qemu-img resize command line:
+/* Add a --image-opts to the qemu-img resize command line for use
+ * with encryption:
  *    --image-opts driver=luks,file.filename=$volpath,key-secret=$secretAlias
+ * or
+ *    --image-opts driver=qcow2,file.filename=$volpath,encrypt.key-secret=$secretAlias
  *
- *    NB: format=raw is assumed
  */
 static int
 storageBackendResizeQemuImgImageOpts(virCommandPtr cmd,
+                                     int format,
                                      const char *path,
                                      const char *secretAlias)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *commandStr = NULL;
+    const char *encprefix;
+    const char *driver;
 
-    virBufferAsprintf(&buf, "driver=luks,key-secret=%s,file.filename=",
-                      secretAlias);
+    if (format == VIR_STORAGE_FILE_QCOW2) {
+        driver = "qcow2";
+        encprefix = "encrypt.";
+    } else {
+        driver = "luks";
+        encprefix = "";
+    }
+
+    virBufferAsprintf(&buf, "driver=%s,%skey-secret=%s,file.filename=",
+                      driver, encprefix, secretAlias);
     virQEMUBuildBufferEscapeComma(&buf, path);
 
     commandStr = virBufferContentAndReset(&buf);
@@ -1006,6 +1020,16 @@ virStorageBackendCreateQemuImgSetInfo(virStoragePoolObjPtr pool,
             return -1;
         }
     }
+    if (inputvol && inputvol->target.format == VIR_STORAGE_FILE_RAW &&
+        inputvol->target.encryption) {
+        if (inputvol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+            info->inputType = "luks";
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only luks encryption is supported for raw files"));
+            return -1;
+        }
+    }
 
     if (inputvol &&
         storageBackendCreateQemuImgSetInput(inputvol, convertStep, info) < 0)
@@ -1056,6 +1080,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
     virStorageEncryptionPtr inputenc = inputvol ? inputvol->target.encryption : NULL;
     virStorageEncryptionInfoDefPtr encinfo = NULL;
     g_autofree char *inputSecretAlias = NULL;
+    const char *encprefix;
+    const char *inputencprefix;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
@@ -1134,24 +1160,34 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
             virCommandAddArgFormat(cmd, "%lluK", info.size_arg);
     } else {
         /* source */
-        if (inputenc)
+        if (inputenc) {
+            if (inputvol->target.format == VIR_STORAGE_FILE_QCOW2)
+                inputencprefix = "encrypt.";
+            else
+                inputencprefix = "";
             virCommandAddArgFormat(cmd,
-                                   "driver=luks,file.filename=%s,key-secret=%s",
-                                   info.inputPath, inputSecretAlias);
-        else
+                                   "driver=%s,file.filename=%s,%skey-secret=%s",
+                                   info.inputType, info.inputPath, inputencprefix, inputSecretAlias);
+        } else {
             virCommandAddArgFormat(cmd, "driver=%s,file.filename=%s",
                                    info.inputType ? info.inputType : "raw",
                                    info.inputPath);
+        }
 
         /* dest */
-        if (enc)
+        if (enc) {
+            if (vol->target.format == VIR_STORAGE_FILE_QCOW2)
+                encprefix = "encrypt.";
+            else
+                encprefix = "";
+
             virCommandAddArgFormat(cmd,
-                                   "driver=%s,file.filename=%s,key-secret=%s",
-                                   info.type, info.path, info.secretAlias);
-        else
+                                   "driver=%s,file.filename=%s,%skey-secret=%s",
+                                   info.type, info.path, encprefix, info.secretAlias);
+        } else {
             virCommandAddArgFormat(cmd, "driver=%s,file.filename=%s",
                                    info.type, info.path);
-
+        }
     }
     VIR_FREE(info.secretAlias);
 
@@ -2276,7 +2312,9 @@ storageBackendResizeQemuImg(virStoragePoolObjPtr pool,
                                                     secretAlias) < 0)
             goto cleanup;
 
-        if (storageBackendResizeQemuImgImageOpts(cmd, vol->target.path,
+        if (storageBackendResizeQemuImgImageOpts(cmd,
+                                                 vol->target.format,
+                                                 vol->target.path,
                                                  secretAlias) < 0)
             goto cleanup;
     }

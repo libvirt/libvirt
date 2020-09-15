@@ -28,6 +28,7 @@
 #include "virqemu.h"
 #include "virstring.h"
 #include "viralloc.h"
+#include "virstoragefile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -407,36 +408,46 @@ virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
  */
 void
 virQEMUBuildQemuImgKeySecretOpts(virBufferPtr buf,
+                                 int format,
                                  virStorageEncryptionInfoDefPtr encinfo,
                                  const char *alias)
 {
-    virBufferAsprintf(buf, "key-secret=%s,", alias);
+    const char *encprefix;
+
+    if (format == VIR_STORAGE_FILE_QCOW2) {
+        virBufferAddLit(buf, "encrypt.format=luks,");
+        encprefix = "encrypt.";
+    } else {
+        encprefix = "";
+    }
+
+    virBufferAsprintf(buf, "%skey-secret=%s,", encprefix, alias);
 
     if (!encinfo->cipher_name)
         return;
 
-    virBufferAddLit(buf, "cipher-alg=");
+    virBufferAsprintf(buf, "%scipher-alg=", encprefix);
     virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_name);
     virBufferAsprintf(buf, "-%u,", encinfo->cipher_size);
     if (encinfo->cipher_mode) {
-        virBufferAddLit(buf, "cipher-mode=");
+        virBufferAsprintf(buf, "%scipher-mode=", encprefix);
         virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_mode);
         virBufferAddLit(buf, ",");
     }
     if (encinfo->cipher_hash) {
-        virBufferAddLit(buf, "hash-alg=");
+        virBufferAsprintf(buf, "%shash-alg=", encprefix);
         virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_hash);
         virBufferAddLit(buf, ",");
     }
     if (!encinfo->ivgen_name)
         return;
 
-    virBufferAddLit(buf, "ivgen-alg=");
+    virBufferAsprintf(buf, "%sivgen-alg=", encprefix);
     virQEMUBuildBufferEscapeComma(buf, encinfo->ivgen_name);
     virBufferAddLit(buf, ",");
 
     if (encinfo->ivgen_hash) {
-        virBufferAddLit(buf, "ivgen-hash-alg=");
+        virBufferAsprintf(buf, "%sivgen-hash-alg=", encprefix);
         virQEMUBuildBufferEscapeComma(buf, encinfo->ivgen_hash);
         virBufferAddLit(buf, ",");
     }

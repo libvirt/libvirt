@@ -1,0 +1,31 @@
+<volume>
+  <name>OtherDemoLuks.img</name>
+  <key>/var/lib/libvirt/images/OtherDemoLuks.img</key>
+  <source>
+  </source>
+  <capacity unit="G">5</capacity>
+  <allocation>294912</allocation>
+  <target>
+    <path>/var/lib/libvirt/images/OtherDemoLuks.img</path>
+    <format type='qcow2'/>
+    <permissions>
+      <mode>0644</mode>
+      <owner>0</owner>
+      <group>0</group>
+      <label>unconfined_u:object_r:virt_image_t:s0</label>
+    </permissions>
+    <encryption format='luks'>
+      <secret type='passphrase' uuid='e78d4b51-a2af-485f-b0f5-afca709a80f4'/>
+    </encryption>
+  </target>
+  <backingStore>
+    <path>/dev/null</path>
+    <format type='raw'/>
+    <permissions>
+      <mode>0644</mode>
+      <owner>0</owner>
+      <group>0</group>
+      <label>unconfined_u:object_r:virt_image_t:s0</label>
+    </permissions>
+  </backingStore>
+</volume>

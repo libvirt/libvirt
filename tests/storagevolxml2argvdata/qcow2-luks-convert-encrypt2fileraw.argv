@@ -1,0 +1,13 @@
+qemu-img \
+create \
+-f raw /var/lib/libvirt/images/sparse.img 1073741824K
+qemu-img \
+convert \
+--image-opts \
+-n \
+--target-image-opts \
+--object secret,id=OtherDemoLuksConvert.img_encrypt0,\
+file=/path/to/inputSecretFile driver=qcow2,\
+file.filename=/var/lib/libvirt/images/OtherDemoLuksConvert.img,\
+encrypt.key-secret=OtherDemoLuksConvert.img_encrypt0 driver=raw,\
+file.filename=/var/lib/libvirt/images/sparse.img
