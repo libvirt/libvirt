@@ -310,7 +310,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     }
 
     info->cores = processorList->data.common->NumberOfCores;
-    info->threads = info->cores / processorList->data.common->NumberOfLogicalProcessors;
+    info->threads = processorList->data.common->NumberOfLogicalProcessors / info->cores;
     info->cpus = info->sockets * info->cores;
 
     result = 0;
