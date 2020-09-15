@@ -22,6 +22,8 @@
 
 #if defined(__linux__)
 
+# include <gio/gio.h>
+
 # include "virbuffer.h"
 # define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
@@ -30,14 +32,8 @@
 # define LIBVIRT_VIRFIREWALLDPRIV_H_ALLOW
 # include "virfirewalldpriv.h"
 # include "virmock.h"
-# define LIBVIRT_VIRDBUSPRIV_H_ALLOW
-# include "virdbuspriv.h"
 
 # define VIR_FROM_THIS VIR_FROM_FIREWALL
-
-# if WITH_DBUS
-#  include <dbus/dbus.h>
-# endif
 
 static bool fwDisabled = true;
 static virBufferPtr fwBuf;
@@ -66,64 +62,64 @@ static bool fwError;
     "Chain POSTROUTING (policy ACCEPT)\n" \
     "target     prot opt source               destination\n"
 
-# if WITH_DBUS
-VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
-                       DBusMessage *,
-                       DBusConnection *, connection,
-                       DBusMessage *, message,
-                       int, timeout_milliseconds,
-                       DBusError *, error)
+VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
+                       GVariant *,
+                       GDBusConnection *, connection,
+                       const gchar *, bus_name,
+                       const gchar *, object_path,
+                       const gchar *, interface_name,
+                       const gchar *, method_name,
+                       GVariant *, parameters,
+                       const GVariantType *, reply_type,
+                       GDBusCallFlags, flags,
+                       gint, timeout_msec,
+                       GCancellable *, cancellable,
+                       GError **, error)
 {
-    DBusMessage *reply = NULL;
-    const char *service = dbus_message_get_destination(message);
-    const char *member = dbus_message_get_member(message);
-    size_t i;
-    size_t nargs = 0;
-    char **args = NULL;
-    char *type = NULL;
+    GVariant *reply = NULL;
+    g_autoptr(GVariant) params = parameters;
 
-    VIR_MOCK_REAL_INIT(dbus_connection_send_with_reply_and_block);
+    VIR_MOCK_REAL_INIT(g_dbus_connection_call_sync);
 
-    if (STREQ(service, "org.freedesktop.DBus") &&
-        STREQ(member, "ListNames")) {
-        const char *svc1 = "org.foo.bar.wizz";
-        const char *svc2 = VIR_FIREWALL_FIREWALLD_SERVICE;
-        DBusMessageIter iter;
-        DBusMessageIter sub;
-        reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
-        dbus_message_iter_init_append(reply, &iter);
-        dbus_message_iter_open_container(&iter, DBUS_TYPE_ARRAY,
-                                         "s", &sub);
+    if (STREQ(bus_name, "org.freedesktop.DBus") &&
+        STREQ(method_name, "ListNames")) {
+        GVariantBuilder builder;
 
-        if (!dbus_message_iter_append_basic(&sub,
-                                            DBUS_TYPE_STRING,
-                                            &svc1))
-            goto error;
-        if (!fwDisabled &&
-            !dbus_message_iter_append_basic(&sub,
-                                            DBUS_TYPE_STRING,
-                                            &svc2))
-            goto error;
-        dbus_message_iter_close_container(&iter, &sub);
-    } else if (STREQ(service, VIR_FIREWALL_FIREWALLD_SERVICE) &&
-               STREQ(member, "passthrough")) {
+        g_variant_builder_init(&builder, G_VARIANT_TYPE("(as)"));
+        g_variant_builder_open(&builder, G_VARIANT_TYPE("as"));
+
+        g_variant_builder_add(&builder, "s", "org.foo.bar.wizz");
+
+        if (!fwDisabled)
+            g_variant_builder_add(&builder, "s", VIR_FIREWALL_FIREWALLD_SERVICE);
+
+        g_variant_builder_close(&builder);
+
+        reply = g_variant_builder_end(&builder);
+    } else if (STREQ(bus_name, VIR_FIREWALL_FIREWALLD_SERVICE) &&
+               STREQ(method_name, "passthrough")) {
+        g_autoptr(GVariantIter) iter = NULL;
+        VIR_AUTOSTRINGLIST args = NULL;
+        size_t nargs = 0;
+        char *type = NULL;
+        char *item = NULL;
         bool isAdd = false;
         bool doError = false;
+        size_t i;
 
-        if (virDBusMessageDecode(message,
-                                 "sa&s",
-                                 &type,
-                                 &nargs,
-                                 &args) < 0)
-            goto error;
+        g_variant_get(params, "(&sas)", &type, &iter);
 
-        for (i = 0; i < nargs; i++) {
+        nargs = g_variant_iter_n_children(iter);
+
+        while (g_variant_iter_loop(iter, "s", &item)) {
             /* Fake failure on the command with this IP addr */
-            if (STREQ(args[i], "-A")) {
+            if (STREQ(item, "-A")) {
                 isAdd = true;
-            } else if (isAdd && STREQ(args[i], "192.168.122.255")) {
+            } else if (isAdd && STREQ(item, "192.168.122.255")) {
                 doError = true;
             }
+
+            virStringListAdd(&args, g_strdup(item));
         }
 
         if (fwBuf) {
@@ -134,61 +130,42 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
             else
                 virBufferAddLit(fwBuf, EBTABLES_PATH);
         }
+
         for (i = 0; i < nargs; i++) {
             if (fwBuf) {
                 virBufferAddLit(fwBuf, " ");
                 virBufferEscapeShell(fwBuf, args[i]);
             }
         }
+
         if (fwBuf)
             virBufferAddLit(fwBuf, "\n");
+
         if (doError) {
-            dbus_set_error_const(error,
-                                 "org.firewalld.error",
-                                 "something bad happened");
+            if (error)
+                *error = g_dbus_error_new_for_dbus_error("org.firewalld.error",
+                                                         "something bad happened");
         } else {
             if (nargs == 1 &&
                 STREQ(type, "ipv4") &&
                 STREQ(args[0], "-L")) {
-                if (virDBusCreateReply(&reply,
-                                       "s", TEST_FILTER_TABLE_LIST) < 0)
-                    goto error;
+                reply = g_variant_new("(s)", TEST_FILTER_TABLE_LIST);
             } else if (nargs == 3 &&
                        STREQ(type, "ipv4") &&
                        STREQ(args[0], "-t") &&
                        STREQ(args[1], "nat") &&
                        STREQ(args[2], "-L")) {
-                if (virDBusCreateReply(&reply,
-                                       "s", TEST_NAT_TABLE_LIST) < 0)
-                    goto error;
+                reply = g_variant_new("(s)", TEST_NAT_TABLE_LIST);
             } else {
-                if (virDBusCreateReply(&reply,
-                                       "s", "success") < 0)
-                    goto error;
+                reply = g_variant_new("(s)", "success");
             }
         }
     } else {
-        reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
+        reply = g_variant_new("()");
     }
 
- cleanup:
-    VIR_FREE(type);
-    for (i = 0; i < nargs; i++)
-        VIR_FREE(args[i]);
-    VIR_FREE(args);
     return reply;
-
- error:
-    virDBusMessageUnref(reply);
-    reply = NULL;
-    if (error && !dbus_error_is_set(error))
-        dbus_set_error_const(error,
-                             "org.firewalld.error",
-                             "something unexpected happened");
-
-    goto cleanup;
 }
-# endif
 
 struct testFirewallData {
     virFirewallBackend tryBackend;
@@ -1073,8 +1050,7 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-# if WITH_DBUS
-#  define RUN_TEST_FIREWALLD(name, method) \
+# define RUN_TEST_FIREWALLD(name, method) \
     do { \
         struct testFirewallData data; \
         data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC; \
@@ -1089,13 +1065,9 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-#  define RUN_TEST(name, method) \
+# define RUN_TEST(name, method) \
     RUN_TEST_DIRECT(name, method); \
     RUN_TEST_FIREWALLD(name, method)
-# else /* ! WITH_DBUS */
-#  define RUN_TEST(name, method) \
-    RUN_TEST_DIRECT(name, method)
-# endif /* ! WITH_DBUS */
 
     virFirewallSetLockOverride(true);
 
@@ -1113,11 +1085,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-# if WITH_DBUS
-VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virdbus"))
-# else
-VIR_TEST_MAIN(mymain)
-# endif
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virgdbus"))
 
 #else /* ! defined (__linux__) */
 
