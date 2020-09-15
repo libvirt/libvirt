@@ -7216,8 +7216,10 @@ Example: usage of the memory devices
       following restrictions apply:
 
       #. the minimum label size is 128KiB,
-      #. the remaining size (total-size - label-size) will be aligned
-         to 4KiB as default.
+      #. the remaining size (total-size - label-size), also called guest area,
+         will be aligned to 4KiB as default. For pSeries guests, the guest area
+         will be aligned down to 256MiB, and the minimum size of the guest area
+         must be at least 256MiB.
 
    ``readonly``
       The ``readonly`` element is used to mark the vNVDIMM as read-only. Only

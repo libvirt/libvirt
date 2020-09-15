@@ -8037,7 +8037,7 @@ qemuDomainAgentAvailable(virDomainObjPtr vm,
 }
 
 
-unsigned long long
+static unsigned long long
 qemuDomainGetMemorySizeAlignment(const virDomainDef *def)
 {
     /* PPC requires the memory sizes to be rounded to 256MiB increments, so
@@ -8064,6 +8064,44 @@ qemuDomainGetMemoryModuleSizeAlignment(const virDomainDef *def,
     /* dimm memory modules require 2MiB alignment rather than the 1MiB we are
      * using elsewhere. */
     return 2048;
+}
+
+
+static int
+qemuDomainNVDimmAlignSizePseries(virDomainDefPtr def,
+                                 virDomainMemoryDefPtr mem)
+{
+    /* For NVDIMMs in ppc64 in we want to align down the guest
+     * visible space, instead of align up, to avoid writing
+     * beyond the end of file by adding a potential 256MiB
+     * to the user specified size.
+     *
+     * The label-size is mandatory for ppc64 as well, meaning that
+     * the guest visible space will be target_size-label_size.
+     *
+     * Finally, target_size must include label_size.
+     *
+     * The above can be summed up as follows:
+     *
+     * target_size = AlignDown(target_size - label_size) + label_size
+     */
+    unsigned long long ppc64AlignSize = qemuDomainGetMemorySizeAlignment(def);
+    unsigned long long guestArea = mem->size - mem->labelsize;
+
+    /* Align down guest_area. 256MiB is the minimum size. Error
+     * out if target_size is smaller than 256MiB + label_size,
+     * since aligning it up will cause QEMU errors. */
+    if (mem->size < (ppc64AlignSize + mem->labelsize)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("minimum target size for the NVDIMM "
+                         "must be 256MB plus the label size"));
+        return -1;
+    }
+
+    guestArea = (guestArea/ppc64AlignSize) * ppc64AlignSize;
+    mem->size = guestArea + mem->labelsize;
+
+    return 0;
 }
 
 
@@ -8113,8 +8151,11 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
 
     /* Align memory module sizes */
     for (i = 0; i < def->nmems; i++) {
-        if (!(def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-              ARCH_IS_PPC64(def->os.arch))) {
+        if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+            ARCH_IS_PPC64(def->os.arch)) {
+            if (qemuDomainNVDimmAlignSizePseries(def, def->mems[i]) < 0)
+                return -1;
+        } else {
             align = qemuDomainGetMemoryModuleSizeAlignment(def, def->mems[i]);
             def->mems[i]->size = VIR_ROUND_UP(def->mems[i]->size, align);
         }
@@ -8143,15 +8184,19 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
  * inplace. Default rounding is now to 1 MiB (qemu requires rounding to page,
  * size so this should be safe).
  */
-void
+int
 qemuDomainMemoryDeviceAlignSize(virDomainDefPtr def,
                                 virDomainMemoryDefPtr mem)
 {
-    if (!(mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-          ARCH_IS_PPC64(def->os.arch))) {
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        ARCH_IS_PPC64(def->os.arch)) {
+        return qemuDomainNVDimmAlignSizePseries(def, mem);
+    } else {
         mem->size = VIR_ROUND_UP(mem->size,
                                  qemuDomainGetMemorySizeAlignment(def));
     }
+
+    return 0;
 }
 
 
