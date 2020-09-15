@@ -26,8 +26,13 @@
 
 #if defined (__linux__)
 
+# if WITH_DBUS
+#  include <dbus/dbus.h>
+# endif
+
 # include "network/bridge_driver_platform.h"
 # include "virbuffer.h"
+# include "virmock.h"
 
 # define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
 # include "virfirewallpriv.h"
@@ -41,6 +46,22 @@
 #  define RULESTYPE "linux"
 # else
 #  error "test case not ported to this platform"
+# endif
+
+# if WITH_DBUS
+VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
+                       DBusMessage *,
+                       DBusConnection *, connection,
+                       DBusMessage *, message,
+                       int, timeout_milliseconds,
+                       DBusError *, error)
+{
+    VIR_MOCK_REAL_INIT(dbus_connection_send_with_reply_and_block);
+
+    dbus_set_error_const(error, "org.freedesktop.error", "dbus is disabled");
+
+    return NULL;
+}
 # endif
 
 static void
@@ -176,7 +197,11 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
+# if WITH_DBUS
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virdbus"))
+# else
 VIR_TEST_MAIN(mymain)
+# endif
 
 #else /* ! defined (__linux__) */
 
