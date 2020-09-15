@@ -1019,22 +1019,6 @@ if curl_dep.found()
   conf.set('WITH_CURL', 1)
 endif
 
-dbus_version = '1.0.0'
-dbus_dep = dependency('dbus-1', version: '>=' + dbus_version, required: get_option('dbus'))
-if dbus_dep.found()
-  conf.set('WITH_DBUS', 1)
-
-  function = 'dbus_watch_get_unix_fd'
-  if cc.has_function(function, dependencies: dbus_dep)
-    conf.set('WITH_@0@'.format(function.to_upper()), 1)
-  endif
-
-  type = 'DBusBasicValue'
-  if cc.has_type(type, dependencies: dbus_dep, prefix: '#include <dbus/dbus.h>')
-    conf.set('WITH_@0@'.format(type.to_upper()), 1)
-  endif
-endif
-
 devmapper_version = '1.0.0'
 devmapper_dep = dependency('devmapper', version: '>=' + devmapper_version, required: false)
 if not devmapper_dep.found()
@@ -1536,10 +1520,8 @@ if bash_completion_dep.found()
 endif
 
 if host_machine.system() != 'freebsd'
-  if not get_option('firewalld').disabled() and dbus_dep.found()
+  if not get_option('firewalld').disabled()
     conf.set('WITH_FIREWALLD', 1)
-  elif get_option('firewalld').enabled()
-    error('You must have dbus enabled for firewalld support')
   endif
 endif
 
@@ -1553,10 +1535,8 @@ if conf.has('WITH_MACVTAP') and not conf.has('WITH_LIBNL')
   error('libnl3-devel is required for macvtap support')
 endif
 
-if (pkcheck_prog.found() or get_option('polkit').enabled()) and dbus_dep.found()
+if (pkcheck_prog.found() or get_option('polkit').enabled())
   conf.set('WITH_POLKIT', 1)
-elif get_option('polkit').enabled()
-  error('You must install dbus to compile libvirt with polkit-1')
 endif
 
 if udev_dep.found() and not pciaccess_dep.found()
@@ -2203,7 +2183,7 @@ endif
 
 if not get_option('pm_utils').disabled()
   use_pm_utils = true
-  if dbus_dep.found() and init_script == 'systemd'
+  if init_script == 'systemd'
     use_pm_utils = false
   endif
 
@@ -2423,7 +2403,6 @@ libs_summary = {
   'blkid': blkid_dep.found(),
   'capng': capng_dep.found(),
   'curl': curl_dep.found(),
-  'dbus': dbus_dep.found(),
   'dlopen': dlopen_dep.found(),
   'firewalld': conf.has('WITH_FIREWALLD'),
   'firewalld-zone': conf.has('WITH_FIREWALLD_ZONE'),

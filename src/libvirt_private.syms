@@ -1948,23 +1948,6 @@ virDaemonSetupLogging;
 virDaemonUnixSocketPaths;
 
 
-# util/virdbus.h
-virDBusCallMethod;
-virDBusCloseSystemBus;
-virDBusCreateMethod;
-virDBusCreateMethodV;
-virDBusCreateReply;
-virDBusCreateReplyV;
-virDBusErrorIsUnknownMethod;
-virDBusGetSessionBus;
-virDBusGetSystemBus;
-virDBusHasSystemBus;
-virDBusMessageDecode;
-virDBusMessageEncode;
-virDBusMessageUnref;
-virDBusSetSharedBus;
-
-
 # util/virdevmapper.h
 virDevMapperGetTargets;
 virIsDevMapperDevice;

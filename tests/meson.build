@@ -86,12 +86,6 @@ if conf.has('WITH_BHYVE')
   ]
 endif
 
-if conf.has('WITH_DBUS')
-  mock_libs += [
-    { 'name': 'virdbusmock', 'deps': [ dbus_dep ] },
-  ]
-endif
-
 if conf.has('WITH_LIBXL')
   mock_libs += [
     { 'name': 'xlmock', 'sources': [ 'libxlmock.c' ], 'deps': [ libxl_dep ] },
@@ -358,13 +352,6 @@ if conf.has('WITH_BHYVE')
     { 'name': 'bhyvexml2argvtest', 'link_with': [ bhyve_driver_impl ] },
     { 'name': 'bhyvexml2xmltest', 'link_with': [ bhyve_driver_impl ] },
   ]
-endif
-
-if conf.has('WITH_DBUS')
-  tests += [
-    { 'name': 'virdbustest', 'deps': [ dbus_dep ] },
-  ]
-
 endif
 
 if conf.has('WITH_ESX')

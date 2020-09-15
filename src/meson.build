@@ -614,7 +614,6 @@ foreach daemon : virt_daemons
     dependencies: [
       admin_dep,
       access_dep,
-      dbus_dep,
       gnutls_dep,
       libnl_dep,
       rpc_dep,

@@ -374,9 +374,6 @@ BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
 BuildRequires: nfs-utils
 
-# Communication with the firewall and polkit daemons use DBus
-BuildRequires: dbus-devel
-
 # Fedora build root suckage
 BuildRequires: gawk
 
