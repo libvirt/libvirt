@@ -4521,7 +4521,8 @@ within the existing virtual cdrom or floppy device; consider using
 *sourcetype* can indicate the type of source (block|file)
 *cache* can be one of "default", "none", "writethrough", "writeback",
 "directsync" or "unsafe".
-*io* controls specific policies on I/O; QEMU guests support "threads" and "native".
+*io* controls specific policies on I/O; QEMU guests support "threads",
+"native" and "io_uring".
 *iothread* is the number within the range of domain IOThreads to which
 this disk may be attached (QEMU only).
 *serial* is the serial of disk device. *wwn* is the wwn of disk device.
