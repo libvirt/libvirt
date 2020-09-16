@@ -145,6 +145,11 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
     g_autofree char *direct_sock_name = NULL;
     g_autofree char *legacy_sock_name = NULL;
 
+    VIR_DEBUG("Choosing remote socket for transport=%s mode=%s driver=%s ro=%d session=%d",
+              remoteDriverTransportTypeToString(transport),
+              remoteDriverModeTypeToString(mode),
+              driver, ro, session);
+
     if (driver)
         direct_daemon = g_strdup_printf("virt%sd", driver);
 
@@ -208,12 +213,9 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
         return NULL;
     }
 
-    VIR_DEBUG("Chosen UNIX sockname=%s daemon=%s "
-              "for mode=%s transport=%s ro=%d session=%d",
+    VIR_DEBUG("Chosen UNIX sockname=%s daemon=%s with mode=%s",
               sock_name, NULLSTR(*daemon),
-              remoteDriverModeTypeToString(mode),
-              remoteDriverTransportTypeToString(transport),
-              ro, session);
+              remoteDriverModeTypeToString(mode));
     return sock_name;
 }
 
