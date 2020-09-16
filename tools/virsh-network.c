@@ -1506,8 +1506,10 @@ cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         goto cleanup;
 
-    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
+        vshSaveLibvirtError();
         goto cleanup;
+    }
 
     port = virNetworkPortCreateXML(network, buffer, 0);
 
