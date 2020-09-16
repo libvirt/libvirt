@@ -290,6 +290,22 @@ static struct FileEncryptionInfo const qcow2EncryptionInfo[] = {
 
         .payloadOffset = -1,
     },
+    {
+        .format = VIR_STORAGE_ENCRYPTION_FORMAT_LUKS,
+
+        .magicOffset = 0,
+        .magic = NULL,
+        .endian = LV_BIG_ENDIAN,
+
+        .versionOffset  = -1,
+        .versionSize = 0,
+        .versionNumbers = {},
+
+        .modeOffset = QCOW2_HDR_CRYPT,
+        .modeValue = 2,
+
+        .payloadOffset = -1,
+    },
     { 0 }
 };
 
