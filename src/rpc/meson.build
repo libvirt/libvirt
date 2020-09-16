@@ -98,7 +98,6 @@ virt_rpc_server_lib = static_library(
     rpc_gen_headers,
   ],
   dependencies: [
-    dbus_dep,
     sasl_dep,
     src_dep,
     xdr_dep,

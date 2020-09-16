@@ -32,7 +32,7 @@
 #include "virutil.h"
 #include "virfile.h"
 #include "virnetserver.h"
-#include "virdbus.h"
+#include "virgdbus.h"
 #include "virhash.h"
 #include "virstring.h"
 #include "virsystemd.h"
@@ -78,7 +78,6 @@ struct _virNetDaemon {
 
     unsigned int autoShutdownTimeout;
     size_t autoShutdownInhibitions;
-    bool autoShutdownCallingInhibit;
     int autoShutdownInhibitFd;
 };
 
@@ -459,53 +458,7 @@ virNetDaemonAutoShutdown(virNetDaemonPtr dmn,
 }
 
 
-#if defined(WITH_DBUS) && defined(DBUS_TYPE_UNIX_FD)
-static void
-virNetDaemonGotInhibitReplyLocked(DBusPendingCall *pending,
-                                  virNetDaemonPtr dmn)
-{
-    DBusMessage *reply;
-    int fd;
-
-    dmn->autoShutdownCallingInhibit = false;
-
-    VIR_DEBUG("dmn=%p", dmn);
-
-    reply = dbus_pending_call_steal_reply(pending);
-    if (reply == NULL)
-        goto cleanup;
-
-    if (dbus_message_get_args(reply, NULL,
-                              DBUS_TYPE_UNIX_FD, &fd,
-                              DBUS_TYPE_INVALID)) {
-        if (dmn->autoShutdownInhibitions) {
-            dmn->autoShutdownInhibitFd = fd;
-            VIR_DEBUG("Got inhibit FD %d", fd);
-        } else {
-            /* We stopped the last VM since we made the inhibit call */
-            VIR_DEBUG("Closing inhibit FD %d", fd);
-            VIR_FORCE_CLOSE(fd);
-        }
-    }
-    virDBusMessageUnref(reply);
-
- cleanup:
-    dbus_pending_call_unref(pending);
-}
-
-
-static void
-virNetDaemonGotInhibitReply(DBusPendingCall *pending,
-                            void *opaque)
-{
-    virNetDaemonPtr dmn = opaque;
-
-    virObjectLock(dmn);
-    virNetDaemonGotInhibitReplyLocked(pending, dmn);
-    virObjectUnlock(dmn);
-}
-
-
+#ifdef G_OS_UNIX
 /* As per: https://www.freedesktop.org/wiki/Software/systemd/inhibit */
 static void
 virNetDaemonCallInhibit(virNetDaemonPtr dmn,
@@ -514,9 +467,12 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
                         const char *why,
                         const char *mode)
 {
-    DBusMessage *message;
-    DBusPendingCall *pendingReply = NULL;
-    DBusConnection *systemBus;
+    g_autoptr(GVariant) reply = NULL;
+    g_autoptr(GUnixFDList) replyFD = NULL;
+    GVariant *message = NULL;
+    GDBusConnection *systemBus;
+    int fd;
+    int rc;
 
     VIR_DEBUG("dmn=%p what=%s who=%s why=%s mode=%s",
               dmn, NULLSTR(what), NULLSTR(who), NULLSTR(why), NULLSTR(mode));
@@ -524,41 +480,40 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
     if (virSystemdHasLogind() < 0)
         return;
 
-    if (!(systemBus = virDBusGetSystemBus()))
+    if (!(systemBus = virGDBusGetSystemBus()))
         return;
 
-    /* Only one outstanding call at a time */
-    if (dmn->autoShutdownCallingInhibit)
+    message = g_variant_new("(ssss)", what, who, why, mode);
+
+    rc = virGDBusCallMethodWithFD(systemBus,
+                                  &reply,
+                                  &replyFD,
+                                  NULL,
+                                  "org.freedesktop.login1",
+                                  "/org/freedesktop/login1",
+                                  "org.freedesktop.login1.Manager",
+                                  "Inhibit",
+                                  message,
+                                  NULL);
+
+    if (rc < 0)
         return;
 
-    message = dbus_message_new_method_call("org.freedesktop.login1",
-                                           "/org/freedesktop/login1",
-                                           "org.freedesktop.login1.Manager",
-                                           "Inhibit");
-    if (message == NULL)
+    if (g_unix_fd_list_get_length(replyFD) <= 0)
         return;
 
-    dbus_message_append_args(message,
-                             DBUS_TYPE_STRING, &what,
-                             DBUS_TYPE_STRING, &who,
-                             DBUS_TYPE_STRING, &why,
-                             DBUS_TYPE_STRING, &mode,
-                             DBUS_TYPE_INVALID);
+    fd = g_unix_fd_list_get(replyFD, 0, NULL);
+    if (fd < 0)
+        return;
 
-    if (dbus_connection_send_with_reply(systemBus, message,
-                                        &pendingReply,
-                                        25 * 1000) &&
-        pendingReply) {
-        if (dbus_pending_call_get_completed(pendingReply)) {
-            virNetDaemonGotInhibitReplyLocked(pendingReply, dmn);
-        } else {
-            dbus_pending_call_set_notify(pendingReply,
-                                         virNetDaemonGotInhibitReply,
-                                         dmn, NULL);
-        }
-        dmn->autoShutdownCallingInhibit = true;
+    if (dmn->autoShutdownInhibitions) {
+        dmn->autoShutdownInhibitFd = fd;
+        VIR_DEBUG("Got inhibit FD %d", fd);
+    } else {
+        /* We stopped the last VM since we made the inhibit call */
+        VIR_DEBUG("Closing inhibit FD %d", fd);
+        VIR_FORCE_CLOSE(fd);
     }
-    virDBusMessageUnref(message);
 }
 #endif
 
@@ -570,7 +525,7 @@ virNetDaemonAddShutdownInhibition(virNetDaemonPtr dmn)
 
     VIR_DEBUG("dmn=%p inhibitions=%zu", dmn, dmn->autoShutdownInhibitions);
 
-#if defined(WITH_DBUS) && defined(DBUS_TYPE_UNIX_FD)
+#ifdef G_OS_UNIX
     if (dmn->autoShutdownInhibitions == 1)
         virNetDaemonCallInhibit(dmn,
                                 "shutdown",
