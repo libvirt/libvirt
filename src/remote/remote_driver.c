@@ -5382,7 +5382,7 @@ remoteDomainBuildQemuMonitorEvent(virNetClientProgram *prog G_GNUC_UNUSED,
 
 static unsigned char *
 remoteSecretGetValue(virSecretPtr secret, size_t *value_size,
-                     unsigned int flags, unsigned int internalFlags)
+                     unsigned int flags)
 {
     unsigned char *rv = NULL;
     remote_secret_get_value_args args;
@@ -5390,12 +5390,6 @@ remoteSecretGetValue(virSecretPtr secret, size_t *value_size,
     struct private_data *priv = secret->conn->privateData;
 
     remoteDriverLock(priv);
-
-    /* internalFlags intentionally do not go over the wire */
-    if (internalFlags) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no internalFlags support"));
-        goto done;
-    }
 
     make_nonnull_secret(&args.secret, secret);
     args.flags = flags;

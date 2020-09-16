@@ -174,8 +174,7 @@ virSecretGetSecretString(virConnectPtr conn,
         goto cleanup;
     }
 
-    *secret = conn->secretDriver->secretGetValue(sec, secret_size, 0,
-                                                 VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+    *secret = conn->secretDriver->secretGetValue(sec, secret_size, 0);
 
     if (!*secret)
         goto cleanup;

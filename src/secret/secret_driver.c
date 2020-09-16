@@ -36,6 +36,7 @@
 #include "viruuid.h"
 #include "virerror.h"
 #include "virfile.h"
+#include "viridentity.h"
 #include "virpidfile.h"
 #include "configmake.h"
 #include "virstring.h"
@@ -352,8 +353,7 @@ secretSetValue(virSecretPtr secret,
 static unsigned char *
 secretGetValue(virSecretPtr secret,
                size_t *value_size,
-               unsigned int flags,
-               unsigned int internalFlags)
+               unsigned int flags)
 {
     unsigned char *ret = NULL;
     virSecretObj *obj;
@@ -368,11 +368,31 @@ secretGetValue(virSecretPtr secret,
     if (virSecretGetValueEnsureACL(secret->conn, def) < 0)
         goto cleanup;
 
-    if ((internalFlags & VIR_SECRET_GET_VALUE_INTERNAL_CALL) == 0 &&
-        def->isprivate) {
-        virReportError(VIR_ERR_INVALID_SECRET, "%s",
-                       _("secret is private"));
-        goto cleanup;
+    /*
+     * For historical compat we want to deny access to
+     * private secrets, even if no ACL driver is
+     * present.
+     *
+     * We need to validate the identity requesting
+     * the secret value is running as the same user
+     * credentials as this driver.
+     *
+     * ie a non-root libvirt client should not be
+     * able to request the value from privileged
+     * libvirt driver.
+     *
+     * To apply restrictions to processes running under
+     * the same user account is out of scope.
+     */
+    if (def->isprivate) {
+        int rv = virIdentityIsCurrentElevated();
+        if (rv < 0)
+            goto cleanup;
+        if (rv == 0) {
+            virReportError(VIR_ERR_INVALID_SECRET, "%s",
+                           _("secret is private"));
+            goto cleanup;
+        }
     }
 
     if (!(ret = virSecretObjGetValue(obj)))

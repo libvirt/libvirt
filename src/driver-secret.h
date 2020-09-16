@@ -24,12 +24,6 @@
 # error "Don't include this file directly, only use driver.h"
 #endif
 
-enum {
-    /* This getValue call is inside libvirt, override the "private" flag.
-       This flag cannot be set by outside callers. */
-    VIR_SECRET_GET_VALUE_INTERNAL_CALL = 1 << 0,
-};
-
 typedef virSecretPtr
 (*virDrvSecretLookupByUUID)(virConnectPtr conn,
                             const unsigned char *uuid);
@@ -57,8 +51,7 @@ typedef int
 typedef unsigned char *
 (*virDrvSecretGetValue)(virSecretPtr secret,
                         size_t *value_size,
-                        unsigned int flags,
-                        unsigned int internalFlags);
+                        unsigned int flags);
 
 typedef int
 (*virDrvSecretUndefine)(virSecretPtr secret);

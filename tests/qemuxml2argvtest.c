@@ -43,8 +43,7 @@ static virQEMUDriver driver;
 static unsigned char *
 fakeSecretGetValue(virSecretPtr obj G_GNUC_UNUSED,
                    size_t *value_size,
-                   unsigned int fakeflags G_GNUC_UNUSED,
-                   unsigned int internalFlags G_GNUC_UNUSED)
+                   unsigned int fakeflags G_GNUC_UNUSED)
 {
     char *secret;
     secret = g_strdup("AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A");

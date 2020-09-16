@@ -585,7 +585,7 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
     if (conn->secretDriver != NULL && conn->secretDriver->secretGetValue != NULL) {
         unsigned char *ret;
 
-        ret = conn->secretDriver->secretGetValue(secret, value_size, flags, 0);
+        ret = conn->secretDriver->secretGetValue(secret, value_size, flags);
         if (ret == NULL)
             goto error;
         return ret;
