@@ -10859,6 +10859,13 @@ qemuDomainDiskBlockJobIsSupported(virDomainObjPtr vm,
         return false;
     }
 
+    if (disk->transient) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("block jobs are not supported on transient disk '%s'"),
+                       disk->dst);
+        return false;
+    }
+
     return true;
 }
 
