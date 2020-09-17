@@ -2974,8 +2974,9 @@ paravirtualized driver is specified via the ``disk`` element.
 ``transient``
    If present, this indicates that changes to the device contents should be
    reverted automatically when the guest exits. With some hypervisors, marking a
-   disk transient prevents the domain from participating in migration or
-   snapshots. Only suppported in vmx hypervisor. :since:`Since 0.9.5`
+   disk transient prevents the domain from participating in migration,
+   snapshots, or blockjobs. Only supported in vmx hypervisor
+   (:since:`Since 0.9.5`) and ``qemu`` hypervisor (:since:`Since 6.9.0`).
 ``serial``
    If present, this specify serial number of virtual hard drive. For example, it
    may look like ``<serial>WD-WMAP9A966149</serial>``. Not supported for

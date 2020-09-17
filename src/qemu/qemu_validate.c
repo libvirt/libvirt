@@ -2186,12 +2186,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         }
     }
 
-    if (disk->transient) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("transient disks not supported yet"));
-        return -1;
-    }
-
     if (disk->iomode == VIR_DOMAIN_DISK_IO_NATIVE &&
         disk->cachemode != VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
         disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
@@ -2340,6 +2334,53 @@ qemuValidateDomainDeviceDefDiskBlkdeviotune(const virDomainDiskDef *disk,
 }
 
 
+static int
+qemuValidateDomainDeviceDefDiskTransient(const virDomainDiskDef *disk,
+                                         virQEMUCapsPtr qemuCaps)
+
+{
+    virStorageType actualType = virStorageSourceGetActualType(disk->src);
+
+    if (!disk->transient)
+        return 0;
+
+    if (virStorageSourceIsEmpty(disk->src)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("transient disk '%s' must not be empty"), disk->dst);
+        return -1;
+    }
+
+    if (disk->src->readonly) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("transient disk '%s' must not be read-only"), disk->dst);
+        return -1;
+    }
+
+    if (actualType != VIR_STORAGE_TYPE_FILE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("transient disk supported only with 'file' type (%s)"),
+                       disk->dst);
+        return -1;
+    }
+
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("transient disk supported only with 'disk' device (%s)"),
+                       disk->dst);
+        return -1;
+    }
+
+    if (qemuCaps && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("transient disk not supported by this QEMU binary (%s)"),
+                       disk->dst);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int
 qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
                                 const virDomainDef *def,
@@ -2355,6 +2396,9 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
         return -1;
 
     if (qemuValidateDomainDeviceDefDiskBlkdeviotune(disk, def, qemuCaps) < 0)
+        return -1;
+
+    if (qemuValidateDomainDeviceDefDiskTransient(disk, qemuCaps) < 0)
         return -1;
 
     if (disk->src->shared && !disk->src->readonly &&
