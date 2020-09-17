@@ -28,6 +28,13 @@ v6.8.0 (unreleased)
     useful for containerised scenarios and can be used in both peer2peer and
     direct migrations.
 
+  * dbus: Use GLib implementation instead of libdbus
+
+    Adopting GLib DBus implementation simplifies our code as libdbus provides
+    low-level APIs where we had to have a lot of helper functions. With this
+    change we also remove dependency on libdbus and possibly fix all the DBus
+    related libvirtd crashes seen over the time.
+
 * **Bug fixes**
 
 * **Removed features**
