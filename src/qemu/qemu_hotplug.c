@@ -1031,6 +1031,12 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriverPtr driver,
         return -1;
     }
 
+    if (disk->transient) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("transient disk hotplug isn't supported"));
+        return -1;
+    }
+
     if (virDomainDiskTranslateSourcePool(disk) < 0)
         goto cleanup;
 
