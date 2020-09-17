@@ -1394,6 +1394,16 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
                            _("cannot migrate this domain without dbus-vmstate support"));
             return false;
         }
+
+        for (i = 0; i < vm->def->ndisks; i++) {
+            virDomainDiskDefPtr disk = vm->def->disks[i];
+
+            if (disk->transient) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("migration with transient disk is not supported"));
+                return false;
+            }
+        }
     }
 
     return true;
