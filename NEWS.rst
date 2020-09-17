@@ -30,6 +30,13 @@ v6.8.0 (unreleased)
 
 * **Bug fixes**
 
+* **Removed features**
+
+  * node_device: Remove HAL node device backend
+
+    HAL is deprecated on all supported OS so there is no need to keep it
+    in libvirt. udev backend is used on Linux OSes and devd can be eventually
+    implemented as replacement for FreeBSD.
 
 v6.7.0 (2020-09-01)
 ===================
