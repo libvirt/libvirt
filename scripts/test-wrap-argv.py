@@ -59,7 +59,7 @@ def rewrap_line(line):
             # If there's a leading '-' then this is a new
             # parameter, otherwise its a value for the prev
             # parameter.
-            if bit.startswith("-"):
+            if bit.startswith("-") or len(args) == 0:
                 args.append(bit)
             else:
                 args[-1] = args[-1] + " " + bit
