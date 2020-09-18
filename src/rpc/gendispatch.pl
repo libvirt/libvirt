@@ -2119,7 +2119,7 @@ elsif ($mode eq "client") {
                 if ($acl[$i]->{object} ne $acl[0]->{object}) {
                     die "acl for '$call->{ProcName}' cannot check different objects";
                 }
-                if (defined $acl[$i]->{flags}) {
+                if (defined $acl[$i]->{flags} && length $acl[$i]->{flags}) {
                     $checkflags = 1;
                 }
             }
@@ -2207,7 +2207,7 @@ elsif ($mode eq "client") {
                     my $method = "virAccessManagerCheck" . $object;
                     my $space = ' ' x length($method);
                     print "    if (";
-                    if (defined $acl->{flags}) {
+                    if (defined $acl->{flags} && length $acl->{flags}) {
                         my $flags = $acl->{flags};
                         if ($flags =~ /^\!/) {
                             $flags = substr $flags, 1;
