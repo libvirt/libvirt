@@ -3805,6 +3805,7 @@ enum remote_procedure {
      *
      * - @acl: <object>:<permission>
      * - @acl: <object>:<permission>:<flagname>
+     * - @acl: <object>:<permission>::<param>:<value>
      *
      *   Declare the access control requirements for the API. May be repeated
      *   multiple times, if multiple rules are required.
@@ -3814,6 +3815,8 @@ enum remote_procedure {
      *     <permission> is one of the permissions in access/viraccessperm.h
      *     <flagname> indicates the rule only applies if the named flag
      *     is set in the API call
+     *     <param> and <value> can be used to check an unsigned int parameter
+     *     against value
      *
      * - @aclfilter: <object>:<permission>
      *
