@@ -6211,6 +6211,7 @@ enum remote_procedure {
     /**
      * @generate: none
      * @acl: domain:read
+     * @acl: domain:write::source:VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT
      */
     REMOTE_PROC_DOMAIN_INTERFACE_ADDRESSES = 353,
 
