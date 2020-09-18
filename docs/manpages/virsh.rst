@@ -3758,7 +3758,8 @@ available for each hypervisor are:
 LXC (posix scheduler) : cpu_shares, vcpu_period, vcpu_quota
 
 QEMU/KVM (posix scheduler): cpu_shares, vcpu_period, vcpu_quota,
-emulator_period, emulator_quota, iothread_quota, iothread_period
+emulator_period, emulator_quota, global_period, global_quota,
+iothread_period, iothread_quota
 
 Xen (credit scheduler): weight, cap
 
