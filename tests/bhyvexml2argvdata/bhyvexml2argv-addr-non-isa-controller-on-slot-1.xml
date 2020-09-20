@@ -5,6 +5,7 @@
   <vcpu>1</vcpu>
   <os>
     <type>hvm</type>
+    <loader readonly="yes" type="pflash">/path/to/test.fd</loader>
   </os>
   <devices>
     <disk type='file'>

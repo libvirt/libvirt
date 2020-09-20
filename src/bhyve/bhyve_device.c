@@ -42,21 +42,8 @@ bhyveCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
     virDomainPCIAddressSetPtr addrs = opaque;
     virPCIDeviceAddressPtr addr = &info->addr.pci;
 
-    if (addr->domain == 0 && addr->bus == 0) {
-        if (addr->slot == 0) {
+    if (addr->domain == 0 && addr->bus == 0 && addr->slot == 0) {
             return 0;
-        } else if (addr->slot == 1) {
-            if (!(device->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
-                  device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA)) {
-                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("PCI bus 0 slot 1 is reserved for the implicit "
-                                  "LPC PCI-ISA bridge"));
-                 return -1;
-            } else {
-                /* We reserve slot 1 for LPC in bhyveAssignDevicePCISlots(), so exit early */
-                return 0;
-            }
-        }
     }
 
     if (virDomainPCIAddressReserveAddr(addrs, addr,
@@ -98,29 +85,38 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
     size_t i;
     virPCIDeviceAddress lpc_addr;
 
-    /* explicitly reserve slot 1 for LPC-ISA bridge */
     memset(&lpc_addr, 0, sizeof(lpc_addr));
     lpc_addr.slot = 0x1;
 
-    if (virDomainPCIAddressReserveAddr(addrs, &lpc_addr,
-                                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE, 0) < 0) {
-        return -1;
-    }
+    /* If the user didn't explicitly specify slot 1 for some of the devices,
+       reserve it for LPC, even if there's no LPC device configured.
+       If the slot 1 is used by some other device, LPC will have an address
+       auto-assigned.
 
-    for (i = 0; i < def->ncontrollers; i++) {
-         if ((def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA) &&
-              virDeviceInfoPCIAddressIsWanted(&def->controllers[i]->info)) {
-             def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-             def->controllers[i]->info.addr.pci = lpc_addr;
-             break;
-         }
+       The idea behind that is to try to use slot 1 for the LPC device unless
+       user specifically configured otherwise.*/
+    if (!virDomainPCIAddressSlotInUse(addrs, &lpc_addr)) {
+        if (virDomainPCIAddressReserveAddr(addrs, &lpc_addr,
+                                           VIR_PCI_CONNECT_TYPE_PCI_DEVICE, 0) < 0) {
+            return -1;
+        }
+
+        for (i = 0; i < def->ncontrollers; i++) {
+             if ((def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA) &&
+                  virDeviceInfoPCIAddressIsWanted(&def->controllers[i]->info)) {
+                 def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                 def->controllers[i]->info.addr.pci = lpc_addr;
+                 break;
+             }
+        }
     }
 
     for (i = 0; i < def->ncontrollers; i++) {
         if ((def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) ||
             (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) ||
             ((def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) &&
-             (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI))) {
+             (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI)) ||
+            def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA) {
             if (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
                 !virDeviceInfoPCIAddressIsWanted(&def->controllers[i]->info))
                 continue;

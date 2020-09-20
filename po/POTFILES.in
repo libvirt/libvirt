@@ -12,7 +12,6 @@
 @SRCDIR@src/admin/libvirt-admin.c
 @SRCDIR@src/bhyve/bhyve_capabilities.c
 @SRCDIR@src/bhyve/bhyve_command.c
-@SRCDIR@src/bhyve/bhyve_device.c
 @SRCDIR@src/bhyve/bhyve_domain.c
 @SRCDIR@src/bhyve/bhyve_driver.c
 @SRCDIR@src/bhyve/bhyve_monitor.c

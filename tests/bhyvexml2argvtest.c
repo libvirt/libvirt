@@ -213,7 +213,7 @@ mymain(void)
     DO_TEST("addr-multiple-virtio-disks");
     DO_TEST("addr-isa-controller-on-slot-1");
     DO_TEST("addr-isa-controller-on-slot-31");
-    DO_TEST_FAILURE("addr-non-isa-controller-on-slot-1");
+    DO_TEST("addr-non-isa-controller-on-slot-1");
 
     /* The same without 32 devs per controller support */
     driver.bhyvecaps ^= BHYVE_CAP_AHCI32SLOT;
