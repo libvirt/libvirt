@@ -627,16 +627,6 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDefPtr def)
 }
 
 
-static int
-virDomainSnapshotCompareDiskIndex(const void *a, const void *b)
-{
-    const virDomainSnapshotDiskDef *diska = a;
-    const virDomainSnapshotDiskDef *diskb = b;
-
-    /* Integer overflow shouldn't be a problem here.  */
-    return diska->idx - diskb->idx;
-}
-
 /* Align def->disks to def->parent.dom.  Sort the list of def->disks,
  * filling in any missing disks or snapshot state defaults given by
  * the domain, with a fallback to a passed in default.  Convert paths
@@ -650,9 +640,9 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
                             bool require_match)
 {
     virDomainDefPtr domdef = snapdef->parent.dom;
-    g_autoptr(virBitmap) map = NULL;
+    g_autoptr(virHashTable) map = virHashNew(NULL);
+    g_autofree virDomainSnapshotDiskDefPtr olddisks = NULL;
     size_t i;
-    int ndisks;
 
     if (!domdef) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -670,9 +660,6 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
     if (!domdef->ndisks)
         return 0;
 
-    if (!(map = virBitmapNew(domdef->ndisks)))
-        return -1;
-
     /* Double check requested disks.  */
     for (i = 0; i < snapdef->ndisks; i++) {
         virDomainSnapshotDiskDefPtr snapdisk = &snapdef->disks[i];
@@ -687,14 +674,15 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
 
         domdisk = domdef->disks[idx];
 
-        if (virBitmapIsBitSet(map, idx)) {
+        if (virHashHasEntry(map, domdisk->dst)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' specified twice"),
                            snapdisk->name);
             return -1;
         }
-        ignore_value(virBitmapSetBit(map, idx));
-        snapdisk->idx = idx;
+
+        if (virHashAddEntry(map, domdisk->dst, snapdisk) < 0)
+            return -1;
 
         if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) {
             if (domdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
@@ -729,21 +717,24 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
         }
     }
 
-    /* Provide defaults for all remaining disks.  */
-    ndisks = snapdef->ndisks;
-    if (VIR_EXPAND_N(snapdef->disks, snapdef->ndisks,
-                     domdef->ndisks - snapdef->ndisks) < 0)
-        return -1;
+    olddisks = g_steal_pointer(&snapdef->disks);
+    snapdef->disks = g_new0(virDomainSnapshotDiskDef, domdef->ndisks);
+    snapdef->ndisks = domdef->ndisks;
 
     for (i = 0; i < domdef->ndisks; i++) {
-        virDomainSnapshotDiskDefPtr snapdisk;
+        virDomainDiskDefPtr domdisk = domdef->disks[i];
+        virDomainSnapshotDiskDefPtr snapdisk = snapdef->disks + i;
+        virDomainSnapshotDiskDefPtr existing;
 
-        if (virBitmapIsBitSet(map, i))
+        /* copy existing disks */
+        if ((existing = virHashLookup(map, domdisk->dst))) {
+            memcpy(snapdisk, existing, sizeof(*snapdisk));
             continue;
-        snapdisk = &snapdef->disks[ndisks++];
+        }
+
+        /* Provide defaults for all remaining disks. */
         snapdisk->src = virStorageSourceNew();
         snapdisk->name = g_strdup(domdef->disks[i]->dst);
-        snapdisk->idx = i;
 
         /* Don't snapshot empty drives */
         if (virStorageSourceIsEmpty(domdef->disks[i]->src))
@@ -755,9 +746,6 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
         if (!snapdisk->snapshot)
             snapdisk->snapshot = default_snapshot;
     }
-
-    qsort(&snapdef->disks[0], snapdef->ndisks, sizeof(snapdef->disks[0]),
-          virDomainSnapshotCompareDiskIndex);
 
     /* Generate default external file names for external snapshot locations */
     if (virDomainSnapshotDefAssignExternalNames(snapdef) < 0)
