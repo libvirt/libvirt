@@ -792,10 +792,11 @@ typedef qemuSnapshotDiskData *qemuSnapshotDiskDataPtr;
 static void
 qemuSnapshotDiskCleanup(qemuSnapshotDiskDataPtr data,
                         size_t ndata,
-                        virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         qemuDomainAsyncJob asyncJob)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
     virErrorPtr orig_err;
     size_t i;
 
@@ -931,18 +932,19 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriverPtr driver,
 
 
 static int
-qemuSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
+qemuSnapshotDiskPrepareOne(virDomainObjPtr vm,
                            virQEMUDriverConfigPtr cfg,
                            virDomainDiskDefPtr disk,
                            virDomainSnapshotDiskDefPtr snapdisk,
                            qemuSnapshotDiskDataPtr dd,
                            virHashTablePtr blockNamedNodeData,
                            bool reuse,
-                           bool blockdev,
                            qemuDomainAsyncJob asyncJob,
                            virJSONValuePtr actions)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     virDomainDiskDefPtr persistdisk;
     bool supportsCreate;
     bool updateRelativeBacking = false;
@@ -1045,12 +1047,10 @@ qemuSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
  * that are selected for the snapshot.
  */
 static int
-qemuSnapshotDiskPrepare(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
+qemuSnapshotDiskPrepare(virDomainObjPtr vm,
                         virDomainMomentObjPtr snap,
                         virQEMUDriverConfigPtr cfg,
                         bool reuse,
-                        bool blockdev,
                         virHashTablePtr blockNamedNodeData,
                         qemuDomainAsyncJob asyncJob,
                         qemuSnapshotDiskDataPtr *rdata,
@@ -1070,11 +1070,11 @@ qemuSnapshotDiskPrepare(virQEMUDriverPtr driver,
         if (snapdef->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
 
-        if (qemuSnapshotDiskPrepareOne(driver, vm, cfg, vm->def->disks[i],
+        if (qemuSnapshotDiskPrepareOne(vm, cfg, vm->def->disks[i],
                                        snapdef->disks + i,
                                        data + ndata++,
                                        blockNamedNodeData,
-                                       reuse, blockdev,
+                                       reuse,
                                        asyncJob,
                                        actions) < 0)
             goto cleanup;
@@ -1085,7 +1085,7 @@ qemuSnapshotDiskPrepare(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuSnapshotDiskCleanup(data, ndata, driver, vm, asyncJob);
+    qemuSnapshotDiskCleanup(data, ndata, vm, asyncJob);
     return ret;
 }
 
@@ -1166,7 +1166,6 @@ qemuSnapshotCreateActiveExternalDisks(virQEMUDriverPtr driver,
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     qemuSnapshotDiskDataPtr diskdata = NULL;
     size_t ndiskdata = 0;
-    bool blockdev =  virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
@@ -1175,7 +1174,7 @@ qemuSnapshotCreateActiveExternalDisks(virQEMUDriverPtr driver,
 
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
-    if (qemuSnapshotDiskPrepare(driver, vm, snap, cfg, reuse, blockdev,
+    if (qemuSnapshotDiskPrepare(vm, snap, cfg, reuse,
                                 blockNamedNodeData, asyncJob,
                                 &diskdata, &ndiskdata, actions) < 0)
         goto cleanup;
@@ -1214,7 +1213,7 @@ qemuSnapshotCreateActiveExternalDisks(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuSnapshotDiskCleanup(diskdata, ndiskdata, driver, vm, asyncJob);
+    qemuSnapshotDiskCleanup(diskdata, ndiskdata, vm, asyncJob);
     return ret;
 }
 
