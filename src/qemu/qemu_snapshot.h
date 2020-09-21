@@ -21,6 +21,7 @@
 #include "virconftypes.h"
 #include "datatypes.h"
 #include "qemu_conf.h"
+#include "qemu_domainjob.h"
 
 virDomainMomentObjPtr
 qemuSnapObjFromName(virDomainObjPtr vm,
@@ -53,3 +54,7 @@ int
 qemuSnapshotDelete(virDomainObjPtr vm,
                    virDomainSnapshotPtr snapshot,
                    unsigned int flags);
+
+int
+qemuSnapshotCreateDisksTransient(virDomainObjPtr vm,
+                                 qemuDomainAsyncJob asyncJob);
