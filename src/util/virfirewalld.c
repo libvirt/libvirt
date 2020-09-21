@@ -215,7 +215,7 @@ virFirewallDGetZones(char ***zones, size_t *nzones)
                            NULL) < 0)
         return -1;
 
-    g_variant_get(reply, "(@as)", array);
+    g_variant_get(reply, "(@as)", &array);
     *zones = g_variant_dup_strv(array, nzones);
 
     return 0;
