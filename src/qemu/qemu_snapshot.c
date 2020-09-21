@@ -171,7 +171,7 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
      * create them correctly.  */
     for (i = 0; i < snapdef->ndisks && !reuse; i++) {
         snapdisk = &(snapdef->disks[i]);
-        defdisk = snapdef->parent.dom->disks[snapdisk->idx];
+        defdisk = vm->def->disks[i];
         if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
             continue;
 
@@ -216,7 +216,7 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
         g_autoptr(virStorageSource) newsrc = NULL;
 
         snapdisk = &(snapdef->disks[i]);
-        defdisk = vm->def->disks[snapdisk->idx];
+        defdisk = vm->def->disks[i];
 
         if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
             continue;
