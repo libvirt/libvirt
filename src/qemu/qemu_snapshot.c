@@ -1103,19 +1103,18 @@ qemuSnapshotDiskUpdateSourceRenumber(virStorageSourcePtr src)
 
 /**
  * qemuSnapshotDiskUpdateSource:
- * @driver: QEMU driver
  * @vm: domain object
  * @dd: snapshot disk data object
- * @blockdev: -blockdev is in use for the VM
  *
  * Updates disk definition after a successful snapshot.
  */
 static void
-qemuSnapshotDiskUpdateSource(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             qemuSnapshotDiskDataPtr dd,
-                             bool blockdev)
+qemuSnapshotDiskUpdateSource(virDomainObjPtr vm,
+                             qemuSnapshotDiskDataPtr dd)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+
     /* storage driver access won'd be needed */
     if (dd->initialized)
         virStorageFileDeinit(dd->src);
@@ -1138,7 +1137,7 @@ qemuSnapshotDiskUpdateSource(virQEMUDriverPtr driver,
     dd->disk->src = g_steal_pointer(&dd->src);
 
     /* fix numbering of disks */
-    if (!blockdev)
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         qemuSnapshotDiskUpdateSourceRenumber(dd->disk->src);
 
     if (dd->persistdisk) {
@@ -1201,7 +1200,7 @@ qemuSnapshotCreateActiveExternalDisks(virQEMUDriverPtr driver,
         virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
 
         if (rc == 0)
-            qemuSnapshotDiskUpdateSource(driver, vm, dd, blockdev);
+            qemuSnapshotDiskUpdateSource(vm, dd);
     }
 
     if (rc < 0)
