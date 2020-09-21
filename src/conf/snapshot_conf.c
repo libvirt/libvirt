@@ -678,7 +678,6 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
         virDomainSnapshotDiskDefPtr snapdisk = &snapdef->disks[i];
         int idx = virDomainDiskIndexByName(domdef, snapdisk->name, false);
         virDomainDiskDefPtr domdisk = NULL;
-        int disk_snapshot;
 
         if (idx < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -697,24 +696,25 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
         ignore_value(virBitmapSetBit(map, idx));
         snapdisk->idx = idx;
 
-        disk_snapshot = domdisk->snapshot;
-        if (!snapdisk->snapshot) {
-            if (disk_snapshot &&
+        if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) {
+            if (domdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
                 (!require_match ||
-                 disk_snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE))
-                snapdisk->snapshot = disk_snapshot;
-            else
+                 domdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)) {
+                snapdisk->snapshot = domdisk->snapshot;
+            } else {
                 snapdisk->snapshot = default_snapshot;
+            }
         } else if (require_match &&
                    snapdisk->snapshot != default_snapshot &&
                    !(snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
-                     disk_snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)) {
+                     domdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' must use snapshot mode '%s'"),
                            snapdisk->name,
                            virDomainSnapshotLocationTypeToString(default_snapshot));
             return -1;
         }
+
         if (snapdisk->src->path &&
             snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
