@@ -1091,8 +1091,8 @@ static int test27(const void *unused G_GNUC_UNUSED)
         printf("Could not set send buffers\n");
         goto cleanup;
     }
-    pipe1[1] = 0;
-    pipe2[1] = 0;
+    pipe1[1] = -1;
+    pipe2[1] = -1;
     buffer1 = NULL;
     buffer2 = NULL;
 
