@@ -1130,8 +1130,9 @@ udevProcessCSS(struct udev_device *device,
                virNodeDeviceDefPtr def)
 {
     /* only process IO subchannel and vfio-ccw devices to keep the list sane */
-    if (STRNEQ(def->driver, "io_subchannel") &&
-        STRNEQ(def->driver, "vfio_ccw"))
+    if (!def->driver ||
+        (STRNEQ(def->driver, "io_subchannel") &&
+         STRNEQ(def->driver, "vfio_ccw")))
         return -1;
 
     if (udevGetCCWAddress(def->sysfs_path, &def->caps->data) < 0)
