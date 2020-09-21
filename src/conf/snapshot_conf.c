@@ -649,33 +649,34 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
                             int default_snapshot,
                             bool require_match)
 {
+    virDomainDefPtr domdef = snapdef->parent.dom;
     g_autoptr(virBitmap) map = NULL;
     size_t i;
     int ndisks;
 
-    if (!snapdef->parent.dom) {
+    if (!domdef) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing domain in snapshot"));
         return -1;
     }
 
-    if (snapdef->ndisks > snapdef->parent.dom->ndisks) {
+    if (snapdef->ndisks > domdef->ndisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("too many disk snapshot requests for domain"));
         return -1;
     }
 
     /* Unlikely to have a guest without disks but technically possible.  */
-    if (!snapdef->parent.dom->ndisks)
+    if (!domdef->ndisks)
         return 0;
 
-    if (!(map = virBitmapNew(snapdef->parent.dom->ndisks)))
+    if (!(map = virBitmapNew(domdef->ndisks)))
         return -1;
 
     /* Double check requested disks.  */
     for (i = 0; i < snapdef->ndisks; i++) {
         virDomainSnapshotDiskDefPtr snapdisk = &snapdef->disks[i];
-        int idx = virDomainDiskIndexByName(snapdef->parent.dom, snapdisk->name, false);
+        int idx = virDomainDiskIndexByName(domdef, snapdisk->name, false);
         int disk_snapshot;
 
         if (idx < 0) {
@@ -693,7 +694,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
         ignore_value(virBitmapSetBit(map, idx));
         snapdisk->idx = idx;
 
-        disk_snapshot = snapdef->parent.dom->disks[idx]->snapshot;
+        disk_snapshot = domdef->disks[idx]->snapshot;
         if (!snapdisk->snapshot) {
             if (disk_snapshot &&
                 (!require_match ||
@@ -721,33 +722,33 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
                            snapdisk->src->path, snapdisk->name);
             return -1;
         }
-        if (STRNEQ(snapdisk->name, snapdef->parent.dom->disks[idx]->dst)) {
+        if (STRNEQ(snapdisk->name, domdef->disks[idx]->dst)) {
             VIR_FREE(snapdisk->name);
-            snapdisk->name = g_strdup(snapdef->parent.dom->disks[idx]->dst);
+            snapdisk->name = g_strdup(domdef->disks[idx]->dst);
         }
     }
 
     /* Provide defaults for all remaining disks.  */
     ndisks = snapdef->ndisks;
     if (VIR_EXPAND_N(snapdef->disks, snapdef->ndisks,
-                     snapdef->parent.dom->ndisks - snapdef->ndisks) < 0)
+                     domdef->ndisks - snapdef->ndisks) < 0)
         return -1;
 
-    for (i = 0; i < snapdef->parent.dom->ndisks; i++) {
+    for (i = 0; i < domdef->ndisks; i++) {
         virDomainSnapshotDiskDefPtr snapdisk;
 
         if (virBitmapIsBitSet(map, i))
             continue;
         snapdisk = &snapdef->disks[ndisks++];
         snapdisk->src = virStorageSourceNew();
-        snapdisk->name = g_strdup(snapdef->parent.dom->disks[i]->dst);
+        snapdisk->name = g_strdup(domdef->disks[i]->dst);
         snapdisk->idx = i;
 
         /* Don't snapshot empty drives */
-        if (virStorageSourceIsEmpty(snapdef->parent.dom->disks[i]->src))
+        if (virStorageSourceIsEmpty(domdef->disks[i]->src))
             snapdisk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
         else
-            snapdisk->snapshot = snapdef->parent.dom->disks[i]->snapshot;
+            snapdisk->snapshot = domdef->disks[i]->snapshot;
 
         snapdisk->src->type = VIR_STORAGE_TYPE_FILE;
         if (!snapdisk->snapshot)
