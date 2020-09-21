@@ -709,12 +709,10 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
                    snapdisk->snapshot != default_snapshot &&
                    !(snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
                      disk_snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)) {
-            const char *tmp;
-
-            tmp = virDomainSnapshotLocationTypeToString(default_snapshot);
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' must use snapshot mode '%s'"),
-                           snapdisk->name, tmp);
+                           snapdisk->name,
+                           virDomainSnapshotLocationTypeToString(default_snapshot));
             return -1;
         }
         if (snapdisk->src->path &&
