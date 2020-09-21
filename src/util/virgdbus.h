@@ -45,6 +45,7 @@ virGDBusCloseSystemBus(void);
 int
 virGDBusCallMethod(GDBusConnection *conn,
                    GVariant **reply,
+                   const GVariantType *replyType,
                    virErrorPtr error,
                    const char *busName,
                    const char *objectPath,
@@ -55,6 +56,7 @@ virGDBusCallMethod(GDBusConnection *conn,
 int
 virGDBusCallMethodWithFD(GDBusConnection *conn,
                          GVariant **reply,
+                         const GVariantType *replyType,
                          GUnixFDList **replyFD,
                          virErrorPtr error,
                          const char *busName,

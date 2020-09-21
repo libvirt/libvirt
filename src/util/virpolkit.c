@@ -104,6 +104,7 @@ int virPolkitCheckAuth(const char *actionid,
 
     if (virGDBusCallMethod(sysbus,
                            &reply,
+                           G_VARIANT_TYPE("((bba{ss}))"),
                            NULL,
                            "org.freedesktop.PolicyKit1",
                            "/org/freedesktop/PolicyKit1/Authority",

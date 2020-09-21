@@ -214,6 +214,7 @@ virSystemdGetMachineNameByPID(pid_t pid)
 
     if (virGDBusCallMethod(conn,
                            &reply,
+                           G_VARIANT_TYPE("(o)"),
                            NULL,
                            "org.freedesktop.machine1",
                            "/org/freedesktop/machine1",
@@ -236,6 +237,7 @@ virSystemdGetMachineNameByPID(pid_t pid)
 
     if (virGDBusCallMethod(conn,
                            &reply,
+                           G_VARIANT_TYPE("(v)"),
                            NULL,
                            "org.freedesktop.machine1",
                            object,
@@ -385,6 +387,7 @@ int virSystemdCreateMachine(const char *name,
 
         rc = virGDBusCallMethod(conn,
                                 NULL,
+                                NULL,
                                 error,
                                 "org.freedesktop.machine1",
                                 "/org/freedesktop/machine1",
@@ -432,6 +435,7 @@ int virSystemdCreateMachine(const char *name,
         rc = virGDBusCallMethod(conn,
                                 NULL,
                                 NULL,
+                                NULL,
                                 "org.freedesktop.machine1",
                                 "/org/freedesktop/machine1",
                                 "org.freedesktop.machine1.Manager",
@@ -457,6 +461,7 @@ int virSystemdCreateMachine(const char *name,
                                 gprops);
 
         rc = virGDBusCallMethod(conn,
+                                NULL,
                                 NULL,
                                 NULL,
                                 "org.freedesktop.systemd1",
@@ -507,6 +512,7 @@ int virSystemdTerminateMachine(const char *name)
 
     VIR_DEBUG("Attempting to terminate machine via systemd");
     if (virGDBusCallMethod(conn,
+                           NULL,
                            NULL,
                            error,
                            "org.freedesktop.machine1",
@@ -592,6 +598,7 @@ virSystemdPMSupportTarget(const char *methodName, bool *result)
 
     if (virGDBusCallMethod(conn,
                            &reply,
+                           G_VARIANT_TYPE("(s)"),
                            NULL,
                            "org.freedesktop.login1",
                            "/org/freedesktop/login1",

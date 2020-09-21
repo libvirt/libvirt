@@ -181,6 +181,7 @@ virGDBusCloseSystemBus(void)
  * virGDBusCallMethod:
  * @conn: a DBus connection
  * @reply: pointer to receive reply message, or NULL
+ * @replyType: pointer to GVariantType to validate reply data, or NULL
  * @error: libvirt error pointer or NULL
  * @busName: bus identifier of the target service
  * @objectPath: object path of the target service
@@ -198,6 +199,7 @@ virGDBusCloseSystemBus(void)
 int
 virGDBusCallMethod(GDBusConnection *conn,
                    GVariant **reply,
+                   const GVariantType *replyType,
                    virErrorPtr error,
                    const char *busName,
                    const char *objectPath,
@@ -220,7 +222,7 @@ virGDBusCallMethod(GDBusConnection *conn,
                                       ifaceName,
                                       method,
                                       data,
-                                      NULL,
+                                      replyType,
                                       G_DBUS_CALL_FLAGS_NONE,
                                       VIR_DBUS_METHOD_CALL_TIMEOUT_MILIS,
                                       NULL,
@@ -250,6 +252,7 @@ virGDBusCallMethod(GDBusConnection *conn,
 int
 virGDBusCallMethodWithFD(GDBusConnection *conn,
                          GVariant **reply,
+                         const GVariantType *replyType,
                          GUnixFDList **replyFD,
                          virErrorPtr error,
                          const char *busName,
@@ -274,7 +277,7 @@ virGDBusCallMethodWithFD(GDBusConnection *conn,
                                                         ifaceName,
                                                         method,
                                                         data,
-                                                        NULL,
+                                                        replyType,
                                                         G_DBUS_CALL_FLAGS_NONE,
                                                         VIR_DBUS_METHOD_CALL_TIMEOUT_MILIS,
                                                         dataFD,
@@ -342,6 +345,7 @@ virGDBusIsServiceInList(const char *listMethod,
 
     rc = virGDBusCallMethod(conn,
                             &reply,
+                            G_VARIANT_TYPE("(as)"),
                             NULL,
                             "org.freedesktop.DBus",
                             "/org/freedesktop/DBus",

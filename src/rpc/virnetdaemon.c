@@ -487,6 +487,7 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
 
     rc = virGDBusCallMethodWithFD(systemBus,
                                   &reply,
+                                  G_VARIANT_TYPE("(h)"),
                                   &replyFD,
                                   NULL,
                                   "org.freedesktop.login1",
