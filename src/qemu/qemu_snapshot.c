@@ -1151,13 +1151,13 @@ qemuSnapshotDiskUpdateSource(virQEMUDriverPtr driver,
 
 /* The domain is expected to be locked and active. */
 static int
-qemuSnapshotCreateDiskActive(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virDomainMomentObjPtr snap,
-                             virHashTablePtr blockNamedNodeData,
-                             unsigned int flags,
-                             virQEMUDriverConfigPtr cfg,
-                             qemuDomainAsyncJob asyncJob)
+qemuSnapshotCreateActiveExternalDisks(virQEMUDriverPtr driver,
+                                      virDomainObjPtr vm,
+                                      virDomainMomentObjPtr snap,
+                                      virHashTablePtr blockNamedNodeData,
+                                      unsigned int flags,
+                                      virQEMUDriverConfigPtr cfg,
+                                      qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virJSONValue) actions = NULL;
@@ -1346,9 +1346,9 @@ qemuSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
 
     /* the domain is now paused if a memory snapshot was requested */
 
-    if ((ret = qemuSnapshotCreateDiskActive(driver, vm, snap,
-                                            blockNamedNodeData, flags, cfg,
-                                            QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
+    if ((ret = qemuSnapshotCreateActiveExternalDisks(driver, vm, snap,
+                                                     blockNamedNodeData, flags, cfg,
+                                                     QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
         goto cleanup;
 
     /* the snapshot is complete now */
