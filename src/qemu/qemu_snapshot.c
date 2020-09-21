@@ -1182,19 +1182,57 @@ qemuSnapshotDiskUpdateSource(virDomainObjPtr vm,
 }
 
 
+static int
+qemuSnapshotDiskCreate(qemuSnapshotDiskContextPtr snapctxt,
+                       virQEMUDriverConfigPtr cfg)
+{
+    qemuDomainObjPrivatePtr priv = snapctxt->vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    size_t i;
+    int rc;
+
+    /* check whether there's anything to do */
+    if (snapctxt->ndd == 0)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, snapctxt->vm, snapctxt->asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorTransaction(priv->mon, &snapctxt->actions);
+
+    if (qemuDomainObjExitMonitor(driver, snapctxt->vm) < 0)
+        rc = -1;
+
+    for (i = 0; i < snapctxt->ndd; i++) {
+        qemuSnapshotDiskDataPtr dd = snapctxt->dd + i;
+
+        virDomainAuditDisk(snapctxt->vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
+
+        if (rc == 0)
+            qemuSnapshotDiskUpdateSource(snapctxt->vm, dd);
+    }
+
+    if (rc < 0)
+        return -1;
+
+    if (virDomainObjSave(snapctxt->vm, driver->xmlopt, cfg->stateDir) < 0 ||
+        (snapctxt->vm->newDef && virDomainDefSave(snapctxt->vm->newDef, driver->xmlopt,
+                                        cfg->configDir) < 0))
+        return -1;
+
+    return 0;
+}
+
+
 /* The domain is expected to be locked and active. */
 static int
-qemuSnapshotCreateActiveExternalDisks(virQEMUDriverPtr driver,
-                                      virDomainObjPtr vm,
+qemuSnapshotCreateActiveExternalDisks(virDomainObjPtr vm,
                                       virDomainMomentObjPtr snap,
                                       virHashTablePtr blockNamedNodeData,
                                       unsigned int flags,
                                       virQEMUDriverConfigPtr cfg,
                                       qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
-    size_t i;
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
 
@@ -1207,33 +1245,7 @@ qemuSnapshotCreateActiveExternalDisks(virQEMUDriverPtr driver,
                                              blockNamedNodeData, asyncJob)))
         return -1;
 
-    /* check whether there's anything to do */
-    if (snapctxt->ndd == 0)
-        return 0;
-
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        return -1;
-
-    rc = qemuMonitorTransaction(priv->mon, &snapctxt->actions);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        rc = -1;
-
-    for (i = 0; i < snapctxt->ndd; i++) {
-        qemuSnapshotDiskDataPtr dd = snapctxt->dd + i;
-
-        virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
-
-        if (rc == 0)
-            qemuSnapshotDiskUpdateSource(vm, dd);
-    }
-
-    if (rc < 0)
-        return -1;
-
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0 ||
-        (vm->newDef && virDomainDefSave(vm->newDef, driver->xmlopt,
-                                        cfg->configDir) < 0))
+    if (qemuSnapshotDiskCreate(snapctxt, cfg) < 0)
         return -1;
 
     return 0;
@@ -1366,7 +1378,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
 
     /* the domain is now paused if a memory snapshot was requested */
 
-    if ((ret = qemuSnapshotCreateActiveExternalDisks(driver, vm, snap,
+    if ((ret = qemuSnapshotCreateActiveExternalDisks(vm, snap,
                                                      blockNamedNodeData, flags, cfg,
                                                      QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
         goto cleanup;
