@@ -70,6 +70,11 @@ struct _virDomainSnapshotDiskDef {
     virStorageSourcePtr src;
 };
 
+void
+virDomainSnapshotDiskDefFree(virDomainSnapshotDiskDefPtr disk);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSnapshotDiskDef, virDomainSnapshotDiskDefFree);
+
 /* Stores the complete snapshot metadata */
 struct _virDomainSnapshotDef {
     virDomainMomentDef parent;

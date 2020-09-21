@@ -30,6 +30,3 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
                                  virDomainSnapshotDiskDefPtr def,
                                  unsigned int flags,
                                  virDomainXMLOptionPtr xmlopt);
-
-void
-virDomainSnapshotDiskDefFree(virDomainSnapshotDiskDefPtr disk);
