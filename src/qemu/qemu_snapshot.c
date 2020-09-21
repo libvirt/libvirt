@@ -1087,18 +1087,18 @@ qemuSnapshotDiskPrepareOne(virDomainObjPtr vm,
 
 
 /**
- * qemuSnapshotDiskPrepare:
+ * qemuSnapshotDiskPrepareActiveExternal:
  *
  * Collects and prepares a list of structures that hold information about disks
  * that are selected for the snapshot.
  */
 static qemuSnapshotDiskContextPtr
-qemuSnapshotDiskPrepare(virDomainObjPtr vm,
-                        virDomainMomentObjPtr snap,
-                        virQEMUDriverConfigPtr cfg,
-                        bool reuse,
-                        virHashTablePtr blockNamedNodeData,
-                        qemuDomainAsyncJob asyncJob)
+qemuSnapshotDiskPrepareActiveExternal(virDomainObjPtr vm,
+                                      virDomainMomentObjPtr snap,
+                                      virQEMUDriverConfigPtr cfg,
+                                      bool reuse,
+                                      virHashTablePtr blockNamedNodeData,
+                                      qemuDomainAsyncJob asyncJob)
 {
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
     size_t i;
@@ -1241,8 +1241,8 @@ qemuSnapshotCreateActiveExternalDisks(virDomainObjPtr vm,
 
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
-    if (!(snapctxt = qemuSnapshotDiskPrepare(vm, snap, cfg, reuse,
-                                             blockNamedNodeData, asyncJob)))
+    if (!(snapctxt = qemuSnapshotDiskPrepareActiveExternal(vm, snap, cfg, reuse,
+                                                           blockNamedNodeData, asyncJob)))
         return -1;
 
     if (qemuSnapshotDiskCreate(snapctxt, cfg) < 0)
