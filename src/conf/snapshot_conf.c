@@ -649,31 +649,28 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
                             int default_snapshot,
                             bool require_match)
 {
-    int ret = -1;
-    virBitmapPtr map = NULL;
+    g_autoptr(virBitmap) map = NULL;
     size_t i;
     int ndisks;
 
     if (!def->parent.dom) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing domain in snapshot"));
-        goto cleanup;
+        return -1;
     }
 
     if (def->ndisks > def->parent.dom->ndisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("too many disk snapshot requests for domain"));
-        goto cleanup;
+        return -1;
     }
 
     /* Unlikely to have a guest without disks but technically possible.  */
-    if (!def->parent.dom->ndisks) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!def->parent.dom->ndisks)
+        return 0;
 
     if (!(map = virBitmapNew(def->parent.dom->ndisks)))
-        goto cleanup;
+        return -1;
 
     /* Double check requested disks.  */
     for (i = 0; i < def->ndisks; i++) {
@@ -684,14 +681,14 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
         if (idx < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("no disk named '%s'"), disk->name);
-            goto cleanup;
+            return -1;
         }
 
         if (virBitmapIsBitSet(map, idx)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' specified twice"),
                            disk->name);
-            goto cleanup;
+            return -1;
         }
         ignore_value(virBitmapSetBit(map, idx));
         disk->idx = idx;
@@ -714,7 +711,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' must use snapshot mode '%s'"),
                            disk->name, tmp);
-            goto cleanup;
+            return -1;
         }
         if (disk->src->path &&
             disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
@@ -722,7 +719,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
                            _("file '%s' for disk '%s' requires "
                              "use of external snapshot mode"),
                            disk->src->path, disk->name);
-            goto cleanup;
+            return -1;
         }
         if (STRNEQ(disk->name, def->parent.dom->disks[idx]->dst)) {
             VIR_FREE(disk->name);
@@ -734,7 +731,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
     ndisks = def->ndisks;
     if (VIR_EXPAND_N(def->disks, def->ndisks,
                      def->parent.dom->ndisks - def->ndisks) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < def->parent.dom->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk;
@@ -762,13 +759,9 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
 
     /* Generate default external file names for external snapshot locations */
     if (virDomainSnapshotDefAssignExternalNames(def) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virBitmapFree(map);
-    return ret;
+    return 0;
 }
 
 
