@@ -677,6 +677,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
     for (i = 0; i < snapdef->ndisks; i++) {
         virDomainSnapshotDiskDefPtr snapdisk = &snapdef->disks[i];
         int idx = virDomainDiskIndexByName(domdef, snapdisk->name, false);
+        virDomainDiskDefPtr domdisk = NULL;
         int disk_snapshot;
 
         if (idx < 0) {
@@ -684,6 +685,8 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
                            _("no disk named '%s'"), snapdisk->name);
             return -1;
         }
+
+        domdisk = domdef->disks[idx];
 
         if (virBitmapIsBitSet(map, idx)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -694,7 +697,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
         ignore_value(virBitmapSetBit(map, idx));
         snapdisk->idx = idx;
 
-        disk_snapshot = domdef->disks[idx]->snapshot;
+        disk_snapshot = domdisk->snapshot;
         if (!snapdisk->snapshot) {
             if (disk_snapshot &&
                 (!require_match ||
@@ -722,9 +725,9 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
                            snapdisk->src->path, snapdisk->name);
             return -1;
         }
-        if (STRNEQ(snapdisk->name, domdef->disks[idx]->dst)) {
+        if (STRNEQ(snapdisk->name, domdisk->dst)) {
             VIR_FREE(snapdisk->name);
-            snapdisk->name = g_strdup(domdef->disks[idx]->dst);
+            snapdisk->name = g_strdup(domdisk->dst);
         }
     }
 
