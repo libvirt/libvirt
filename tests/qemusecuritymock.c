@@ -265,7 +265,7 @@ mock_chown(const char *path,
     int ret = -1;
 
     if (gid >> 16 || uid >> 16) {
-        fprintf(stderr, "Attempt to set too high UID or GID: %lld %lld",
+        fprintf(stderr, "Attempt to set too high UID or GID: %llu %llu",
                (unsigned long long) uid, (unsigned long long) gid);
         abort();
     }

@@ -105,7 +105,7 @@ parse_argv(int argc, char *argv[],
             }
             *seconds = val;
             if (*seconds != val) {
-                ERROR("Integer overflow: %ld", val);
+                ERROR("Integer overflow: %lu", val);
                 return -1;
             }
             break;

@@ -34,7 +34,7 @@ testHashInit(int size)
         }
 
         if (virHashTableSize(hash) != oldsize) {
-            VIR_TEST_DEBUG("hash grown from %zd to %zd",
+            VIR_TEST_DEBUG("hash grown from %zu to %zu",
                      (size_t)oldsize, (size_t)virHashTableSize(hash));
         }
     }
@@ -313,7 +313,7 @@ testHashRemoveSet(const void *data G_GNUC_UNUSED)
 
     if (count != rcount) {
         VIR_TEST_VERBOSE("\nvirHashRemoveSet didn't remove expected number of"
-                  " entries, %d != %u",
+                  " entries, %d != %d",
                   rcount, count);
         goto cleanup;
     }

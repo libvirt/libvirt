@@ -120,7 +120,7 @@ struct pciDeviceAddress {
     unsigned int device;
     unsigned int function;
 };
-# define ADDR_STR_FMT "%04x:%02x:%02x.%d"
+# define ADDR_STR_FMT "%04x:%02x:%02x.%u"
 
 struct pciDevice {
     struct pciDeviceAddress addr;
