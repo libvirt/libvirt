@@ -1594,8 +1594,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
                                       size_t nttyPaths,
                                       virSecurityManagerPtr securityDriver)
 {
-    virCgroupPtr cgroup = NULL;
-    int ret = -1;
+    g_autoptr(virCgroup) cgroup = NULL;
     g_autofree char *sec_mount_options = NULL;
     g_autofree char *stateDir = NULL;
 
@@ -1607,69 +1606,65 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     /* Before pivoting we need to identify any
      * cgroups controllers that are mounted */
     if (virCgroupNewSelf(&cgroup) < 0)
-        goto cleanup;
+        return -1;
 
     if (virFileResolveAllLinks(LXC_STATE_DIR, &stateDir) < 0)
-        goto cleanup;
+        return -1;
 
     /* Ensure the root filesystem is mounted */
     if (lxcContainerPrepareRoot(vmDef, root, sec_mount_options) < 0)
-        goto cleanup;
+        return -1;
 
     /* Gives us a private root, leaving all parent OS mounts on /.oldroot */
     if (lxcContainerPivotRoot(root) < 0)
-        goto cleanup;
+        return -1;
 
     /* FIXME: we should find a way to unmount these mounts for container
      * even user namespace is enabled. */
     if (STREQ(root->src->path, "/") && (!vmDef->idmap.nuidmap) &&
         lxcContainerUnmountForSharedRoot(stateDir, vmDef->name) < 0)
-        goto cleanup;
+        return -1;
 
     /* Mounts the core /proc, /sys, etc filesystems */
     if (lxcContainerMountBasicFS(vmDef->idmap.nuidmap,
                                  !lxcNeedNetworkNamespace(vmDef)) < 0)
-        goto cleanup;
+        return -1;
 
     /* Ensure entire root filesystem (except /.oldroot) is readonly */
     if (root->readonly &&
         lxcContainerSetReadOnly() < 0)
-        goto cleanup;
+        return -1;
 
     /* Mounts /proc/meminfo etc sysinfo */
     if (lxcContainerMountProcFuse(vmDef, stateDir) < 0)
-        goto cleanup;
+        return -1;
 
     /* Now we can re-mount the cgroups controllers in the
      * same configuration as before */
     if (virCgroupBindMount(cgroup, "/.oldroot/", sec_mount_options) < 0)
-        goto cleanup;
+        return -1;
 
     /* Mounts /dev */
     if (lxcContainerMountFSDev(vmDef, stateDir) < 0)
-        goto cleanup;
+        return -1;
 
     /* Mounts /dev/pts */
     if (lxcContainerMountFSDevPTS(vmDef, stateDir) < 0)
-        goto cleanup;
+        return -1;
 
     /* Setup device nodes in /dev/ */
     if (lxcContainerSetupDevices(ttyPaths, nttyPaths) < 0)
-        goto cleanup;
+        return -1;
 
     /* Sets up any non-root mounts from guest config */
     if (lxcContainerMountAllFS(vmDef, sec_mount_options) < 0)
-        goto cleanup;
+        return -1;
 
    /* Gets rid of all remaining mounts from host OS, including /.oldroot itself */
     if (lxcContainerUnmountSubtree("/.oldroot", true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virCgroupFree(cgroup);
-    return ret;
+    return 0;
 }
 
 static int lxcContainerResolveAllSymlinks(virDomainDefPtr vmDef)

@@ -1194,7 +1194,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virCapsPtr caps = NULL;
     virErrorPtr err = NULL;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
-    virCgroupPtr selfcgroup;
+    g_autoptr(virCgroup) selfcgroup = NULL;
     int status;
     g_autofree char *pidfile = NULL;
 
@@ -1203,26 +1203,22 @@ int virLXCProcessStart(virConnectPtr conn,
 
     if (!virCgroupHasController(selfcgroup,
                                 VIR_CGROUP_CONTROLLER_CPUACCT)) {
-        virCgroupFree(selfcgroup);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to find 'cpuacct' cgroups controller mount"));
         return -1;
     }
     if (!virCgroupHasController(selfcgroup,
                                 VIR_CGROUP_CONTROLLER_DEVICES)) {
-        virCgroupFree(selfcgroup);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to find 'devices' cgroups controller mount"));
         return -1;
     }
     if (!virCgroupHasController(selfcgroup,
                                 VIR_CGROUP_CONTROLLER_MEMORY)) {
-        virCgroupFree(selfcgroup);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to find 'memory' cgroups controller mount"));
         return -1;
     }
-    virCgroupFree(selfcgroup);
 
     if (vm->def->nconsoles == 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
