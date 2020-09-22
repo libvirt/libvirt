@@ -2750,7 +2750,7 @@ qemuProcessSetupPid(virDomainObjPtr vm,
     if (cgroup) {
         if (ret < 0)
             virCgroupRemove(cgroup);
-        virCgroupFree(&cgroup);
+        virCgroupFree(cgroup);
     }
 
     return ret;

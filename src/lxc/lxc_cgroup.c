@@ -168,7 +168,7 @@ int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo)
 
     ret = 0;
  cleanup:
-    virCgroupFree(&cgroup);
+    virCgroupFree(cgroup);
     return ret;
 }
 
@@ -417,7 +417,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                               def->idmap.uidmap[0].target,
                               def->idmap.gidmap[0].target,
                               (1 << VIR_CGROUP_CONTROLLER_SYSTEMD)) < 0) {
-            virCgroupFree(&cgroup);
+            virCgroupFree(cgroup);
             return NULL;
         }
     }

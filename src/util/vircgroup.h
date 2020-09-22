@@ -107,7 +107,7 @@ int virCgroupTerminateMachine(const char *name)
 
 bool virCgroupNewIgnoreError(void);
 
-void virCgroupFree(virCgroupPtr *group);
+void virCgroupFree(virCgroupPtr group);
 
 bool virCgroupHasController(virCgroupPtr cgroup, int controller);
 int virCgroupPathOfController(virCgroupPtr group,

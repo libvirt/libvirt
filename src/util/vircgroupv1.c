@@ -1484,7 +1484,7 @@ virCgroupV1MemoryOnceInit(void)
                                       "memory.limit_in_bytes",
                                       &mem_unlimited));
  cleanup:
-    virCgroupFree(&group);
+    virCgroupFree(group);
     virCgroupV1MemoryUnlimitedKB = mem_unlimited >> 10;
 }
 

@@ -310,7 +310,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
     g_free(ctrl->nbdpids);
 
     g_free(ctrl->nsFDs);
-    virCgroupFree(&ctrl->cgroup);
+    virCgroupFree(ctrl->cgroup);
 
     /* This must always be the last thing to be closed */
     VIR_FORCE_CLOSE(ctrl->handshakeFd);

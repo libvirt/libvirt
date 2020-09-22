@@ -1725,7 +1725,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
     g_strfreev(priv->qemuDevices);
     priv->qemuDevices = NULL;
 
-    virCgroupFree(&priv->cgroup);
+    virCgroupFree(priv->cgroup);
+    priv->cgroup = NULL;
 
     virPerfFree(priv->perf);
     priv->perf = NULL;

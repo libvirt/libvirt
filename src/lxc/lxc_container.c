@@ -1668,7 +1668,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     ret = 0;
 
  cleanup:
-    virCgroupFree(&cgroup);
+    virCgroupFree(cgroup);
     return ret;
 }
 

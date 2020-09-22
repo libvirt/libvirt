@@ -315,7 +315,7 @@ int virHostValidateCGroupControllers(const char *hvname,
         }
     }
 
-    virCgroupFree(&group);
+    virCgroupFree(group);
 
     return ret;
 }

@@ -921,7 +921,8 @@ qemuInitCgroup(virDomainObjPtr vm,
     if (!virCgroupAvailable())
         return 0;
 
-    virCgroupFree(&priv->cgroup);
+    virCgroupFree(priv->cgroup);
+    priv->cgroup = NULL;
 
     if (!vm->def->resource) {
         virDomainResourceDefPtr res;
@@ -983,7 +984,7 @@ qemuRestoreCgroupThread(virCgroupPtr cgroup,
 
     ret = 0;
  cleanup:
-    virCgroupFree(&cgroup_temp);
+    virCgroupFree(cgroup_temp);
     return ret;
 }
 
@@ -1054,7 +1055,8 @@ qemuConnectCgroup(virDomainObjPtr vm)
     if (!virCgroupAvailable())
         return 0;
 
-    virCgroupFree(&priv->cgroup);
+    virCgroupFree(priv->cgroup);
+    priv->cgroup = NULL;
 
     if (virCgroupNewDetectMachine(vm->def->name,
                                   "qemu",
@@ -1150,7 +1152,7 @@ qemuSetupCgroupForExtDevices(virDomainObjPtr vm,
     ret = qemuExtDevicesSetupCgroup(driver, vm, cgroup_temp);
 
  cleanup:
-    virCgroupFree(&cgroup_temp);
+    virCgroupFree(cgroup_temp);
 
     return ret;
 }
@@ -1221,7 +1223,7 @@ qemuCgroupEmulatorAllNodesDataFree(qemuCgroupEmulatorAllNodesDataPtr data)
     if (!data)
         return;
 
-    virCgroupFree(&data->emulatorCgroup);
+    virCgroupFree(data->emulatorCgroup);
     VIR_FREE(data->emulatorMemMask);
     VIR_FREE(data);
 }

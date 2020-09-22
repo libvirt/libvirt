@@ -168,7 +168,7 @@ virLXCDomainObjPrivateFree(void *data)
 {
     virLXCDomainObjPrivatePtr priv = data;
 
-    virCgroupFree(&priv->cgroup);
+    virCgroupFree(priv->cgroup);
     virLXCDomainObjFreeJob(priv);
     g_free(priv);
 }
