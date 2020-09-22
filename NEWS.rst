@@ -35,6 +35,13 @@ v6.8.0 (unreleased)
     change we also remove dependency on libdbus and possibly fix all the DBus
     related libvirtd crashes seen over the time.
 
+  * Re-introduce NVDIMM auto-alignment for pSeries Guests
+
+    The auto-alignment logic was removed in v6.7.0 in favor of requiring the
+    size provided by the user to be already aligned; however, this had the
+    unintended consequence of breaking some existing guests. v6.8.0 restores
+    the previous behavior.
+
 * **Bug fixes**
 
 * **Removed features**
