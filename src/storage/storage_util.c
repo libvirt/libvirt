@@ -3389,8 +3389,7 @@ storageBackendProbeTarget(virStorageSourcePtr target,
         return -1;
 
     if (meta->backingStoreRaw) {
-        if (virStorageSourceNewFromBacking(meta, &target->backingStore) < 0)
-            return -1;
+        virStorageSourceNewFromBacking(meta, &target->backingStore);
 
         /* XXX: Remote storage doesn't play nicely with volumes backed by
          * remote storage. To avoid trouble, just fake the backing store is RAW
@@ -3398,9 +3397,7 @@ storageBackendProbeTarget(virStorageSourcePtr target,
         if (!virStorageSourceIsLocalStorage(target->backingStore)) {
             virObjectUnref(target->backingStore);
 
-            if (!(target->backingStore = virStorageSourceNew()))
-                return -1;
-
+            target->backingStore = virStorageSourceNew();
             target->backingStore->type = VIR_STORAGE_TYPE_NETWORK;
             target->backingStore->path = meta->backingStoreRaw;
             meta->backingStoreRaw = NULL;
@@ -3568,8 +3565,7 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
         goto cleanup;
     VIR_DIR_CLOSE(dir);
 
-    if (!(target = virStorageSourceNew()))
-        goto cleanup;
+    target = virStorageSourceNew();
 
     if ((fd = open(def->target.path, O_RDONLY)) < 0) {
         virReportSystemError(errno,

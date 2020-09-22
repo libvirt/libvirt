@@ -2187,8 +2187,7 @@ virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    if (!(ret->src = virStorageSourceNew()))
-        goto error;
+    ret->src = virStorageSourceNew();
 
     if (xmlopt &&
         xmlopt->privateData.diskNew &&
@@ -2400,8 +2399,7 @@ virDomainFSDefNew(virDomainXMLOptionPtr xmlopt)
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    if (!(ret->src = virStorageSourceNew()))
-        goto cleanup;
+    ret->src = virStorageSourceNew();
 
     if (xmlopt &&
         xmlopt->privateData.fsNew &&
@@ -8346,9 +8344,8 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
         xmlopt && xmlopt->privateData.storageParse) {
         if ((ctxt->node = virXPathNode("./privateData", ctxt))) {
-            if (!scsihostsrc->src &&
-                !(scsihostsrc->src = virStorageSourceNew()))
-                return -1;
+            if (!scsihostsrc->src)
+                scsihostsrc->src = virStorageSourceNew();
             if (xmlopt->privateData.storageParse(ctxt, scsihostsrc->src) < 0)
                 return -1;
         }
@@ -8374,8 +8371,7 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
 
     /* For the purposes of command line creation, this needs to look
      * like a disk storage source */
-    if (!(iscsisrc->src = virStorageSourceNew()))
-        return -1;
+    iscsisrc->src = virStorageSourceNew();
     iscsisrc->src->type = VIR_STORAGE_TYPE_NETWORK;
     iscsisrc->src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
@@ -9791,9 +9787,7 @@ virDomainStorageSourceParseBase(const char *type,
 {
     g_autoptr(virStorageSource) src = NULL;
 
-    if (!(src = virStorageSourceNew()))
-        return NULL;
-
+    src = virStorageSourceNew();
     src->type = VIR_STORAGE_TYPE_FILE;
 
     if (type &&
@@ -9981,8 +9975,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
 
     /* terminator does not have a type */
     if (!(type = virXMLPropString(ctxt->node, "type"))) {
-        if (!(src->backingStore = virStorageSourceNew()))
-            return -1;
+        src->backingStore = virStorageSourceNew();
         return 0;
     }
 

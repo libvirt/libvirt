@@ -169,8 +169,7 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
         def->state = tmp;
     }
 
-    if (!(def->store = virStorageSourceNew()))
-        return -1;
+    def->store = virStorageSourceNew();
 
     if ((type = virXMLPropString(node, "type"))) {
         if ((def->store->type = virStorageTypeFromString(type)) <= 0) {
@@ -500,9 +499,7 @@ virDomainBackupDefAssignStore(virDomainBackupDiskDefPtr disk,
         }
     } else if (!disk->store) {
         if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_FILE) {
-            if (!(disk->store = virStorageSourceNew()))
-                return -1;
-
+            disk->store = virStorageSourceNew();
             disk->store->type = VIR_STORAGE_TYPE_FILE;
             disk->store->path = g_strdup_printf("%s.%s", src->path, suffix);
         } else {

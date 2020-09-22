@@ -5273,9 +5273,8 @@ qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(virDomainHostdevDefPtr ho
 
     switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
-        if (!scsisrc->u.host.src &&
-            !(scsisrc->u.host.src = virStorageSourceNew()))
-            return -1;
+        if (!scsisrc->u.host.src)
+            scsisrc->u.host.src = virStorageSourceNew();
 
         src = scsisrc->u.host.src;
         break;
@@ -7167,9 +7166,8 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         }
 
         /* terminate the chain for such images as the code below would do */
-        if (!disksrc->backingStore &&
-            !(disksrc->backingStore = virStorageSourceNew()))
-            return -1;
+        if (!disksrc->backingStore)
+            disksrc->backingStore = virStorageSourceNew();
 
         /* host cdrom requires special treatment in qemu, so we need to check
          * whether a block device is a cdrom */
@@ -10418,8 +10416,7 @@ qemuDomainPrepareHostdev(virDomainHostdevDefPtr hostdev,
         switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
         case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
             virObjectUnref(scsisrc->u.host.src);
-            if (!(scsisrc->u.host.src = virStorageSourceNew()))
-                return -1;
+            scsisrc->u.host.src = virStorageSourceNew();
             src = scsisrc->u.host.src;
             break;
 
@@ -10812,9 +10809,7 @@ qemuDomainInitializePflashStorageSource(virDomainObjPtr vm)
     if (!virDomainDefHasOldStyleUEFI(def))
         return 0;
 
-    if (!(pflash0 = virStorageSourceNew()))
-        return -1;
-
+    pflash0 = virStorageSourceNew();
     pflash0->type = VIR_STORAGE_TYPE_FILE;
     pflash0->format = VIR_STORAGE_FILE_RAW;
     pflash0->path = g_strdup(def->os.loader->path);
@@ -10824,9 +10819,7 @@ qemuDomainInitializePflashStorageSource(virDomainObjPtr vm)
 
 
     if (def->os.loader->nvram) {
-        if (!(pflash1 = virStorageSourceNew()))
-            return -1;
-
+        pflash1 = virStorageSourceNew();
         pflash1->type = VIR_STORAGE_TYPE_FILE;
         pflash1->format = VIR_STORAGE_FILE_RAW;
         pflash1->path = g_strdup(def->os.loader->nvram);

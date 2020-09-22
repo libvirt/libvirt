@@ -67,9 +67,7 @@ testBackingXMLjsonXML(const void *args)
     if (data->legacy)
         backendpropsflags |= QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY;
 
-    if (!(xmlsrc = virStorageSourceNew()))
-        return -1;
-
+    xmlsrc = virStorageSourceNew();
     xmlsrc->type = data->type;
 
     if (!(xml = virXMLParseStringCtxt(data->xml, "(test storage source XML)", &ctxt)))
@@ -670,10 +668,7 @@ testQemuBitmapListPrint(const char *title,
 static virStorageSourcePtr
 testQemuBackupIncrementalBitmapCalculateGetFakeImage(size_t idx)
 {
-   virStorageSourcePtr ret;
-
-   if (!(ret = virStorageSourceNew()))
-       abort();
+   virStorageSourcePtr ret = virStorageSourceNew();
 
    ret->id = idx;
    ret->type = VIR_STORAGE_TYPE_FILE;
@@ -752,9 +747,7 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
         return -1;
     }
 
-    if (!(target = virStorageSourceNew()))
-        return -1;
-
+    target = virStorageSourceNew();
     target->nodeformat = g_strdup_printf("target_node");
 
     if (qemuBackupDiskPrepareOneBitmapsChain(data->chain,
@@ -885,9 +878,6 @@ testQemuBlockBitmapBlockcopy(const void *opaque)
     g_autoptr(virHashTable) nodedata = NULL;
     g_autoptr(virStorageSource) fakemirror = virStorageSourceNew();
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    if (!fakemirror)
-        return -1;
 
     fakemirror->nodeformat = g_strdup("mirror-format-node");
 

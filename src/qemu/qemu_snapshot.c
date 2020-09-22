@@ -894,8 +894,7 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriverPtr driver,
 
     /* create a terminator for the snapshot disks so that qemu does not try
      * to open them at first */
-    if (!(terminator = virStorageSourceNew()))
-        return -1;
+    terminator = virStorageSourceNew();
 
     if (qemuDomainPrepareStorageSourceBlockdev(dd->disk, dd->src,
                                                priv, cfg) < 0)

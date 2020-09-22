@@ -1350,9 +1350,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     }
 
     if ((backingStore = virXPathString("string(./backingStore/path)", ctxt))) {
-        if (!(def->target.backingStore = virStorageSourceNew()))
-            return NULL;
-
+        def->target.backingStore = virStorageSourceNew();
         def->target.backingStore->type = VIR_STORAGE_TYPE_FILE;
 
         def->target.backingStore->path = backingStore;

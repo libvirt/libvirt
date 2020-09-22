@@ -1084,10 +1084,7 @@ static virStorageSourcePtr
 virStorageFileMetadataNew(const char *path,
                           int format)
 {
-    g_autoptr(virStorageSource) def = NULL;
-
-    if (!(def = virStorageSourceNew()))
-        return NULL;
+    g_autoptr(virStorageSource) def = virStorageSourceNew();
 
     def->format = format;
     def->type = VIR_STORAGE_TYPE_FILE;
@@ -2368,10 +2365,7 @@ virStorageSourcePtr
 virStorageSourceCopy(const virStorageSource *src,
                      bool backingChain)
 {
-    g_autoptr(virStorageSource) def = NULL;
-
-    if (!(def = virStorageSourceNew()))
-        return NULL;
+    g_autoptr(virStorageSource) def = virStorageSourceNew();
 
     def->id = src->id;
     def->type = src->type;
@@ -2746,10 +2740,15 @@ VIR_ONCE_GLOBAL_INIT(virStorageSource);
 virStorageSourcePtr
 virStorageSourceNew(void)
 {
-    if (virStorageSourceInitialize() < 0)
-        return NULL;
+    virStorageSourcePtr ret;
 
-    return virObjectNew(virStorageSourceClass);
+    if (virStorageSourceInitialize() < 0)
+        abort();
+
+    if (!(ret = virObjectNew(virStorageSourceClass)))
+        abort();
+
+    return ret;
 }
 
 
@@ -2758,10 +2757,7 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
                                        const char *rel)
 {
     g_autofree char *dirname = NULL;
-    g_autoptr(virStorageSource) def = NULL;
-
-    if (!(def = virStorageSourceNew()))
-        return NULL;
+    g_autoptr(virStorageSource) def = virStorageSourceNew();
 
     /* store relative name */
     def->relPath = g_strdup(rel);
@@ -3980,12 +3976,9 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
     const char *json;
     const char *dirpath;
     int rc = 0;
-    g_autoptr(virStorageSource) def = NULL;
+    g_autoptr(virStorageSource) def = virStorageSourceNew();
 
     *src = NULL;
-
-    if (!(def = virStorageSourceNew()))
-        return -1;
 
     if (virStorageIsFile(path)) {
         def->type = VIR_STORAGE_TYPE_FILE;
@@ -5317,8 +5310,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         src->backingStore = g_steal_pointer(&backingStore);
     } else {
         /* add terminator */
-        if (!(src->backingStore = virStorageSourceNew()))
-            return -1;
+        src->backingStore = virStorageSourceNew();
     }
 
     return 0;

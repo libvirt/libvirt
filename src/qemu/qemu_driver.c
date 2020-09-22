@@ -14904,10 +14904,8 @@ qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(virStorageSourcePtr mirr
 {
     if (!virStorageSourceHasBacking(mirror)) {
         /* for deep copy there won't be backing chain so we can terminate it */
-        if (!mirror->backingStore &&
-            !shallow &&
-            !(mirror->backingStore = virStorageSourceNew()))
-            return -1;
+        if (!mirror->backingStore && !shallow)
+            mirror->backingStore = virStorageSourceNew();
 
         /* When reusing an external image we document that the user must ensure
          * that the <mirror> image must expose data as the original image did
@@ -15158,9 +15156,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
             if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY)) {
                 g_autoptr(virStorageSource) terminator = virStorageSourceNew();
 
-                if (!terminator)
-                    goto endjob;
-
                 if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
                                                                                  terminator,
                                                                                  priv->qemuCaps)))
@@ -15305,8 +15300,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
         return qemuDomainBlockPullCommon(vm, path, base, bandwidth, flags);
 
     /* If we got here, we are doing a block copy rebase. */
-    if (!(dest = virStorageSourceNew()))
-        goto cleanup;
+    dest = virStorageSourceNew();
     dest->type = (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_DEV) ?
         VIR_STORAGE_TYPE_BLOCK : VIR_STORAGE_TYPE_FILE;
     dest->path = g_strdup(base);

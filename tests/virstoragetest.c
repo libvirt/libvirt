@@ -85,10 +85,7 @@ testStorageFileGetMetadata(const char *path,
                            uid_t uid, gid_t gid)
 {
     struct stat st;
-    g_autoptr(virStorageSource) def = NULL;
-
-    if (!(def = virStorageSourceNew()))
-        return NULL;
+    g_autoptr(virStorageSource) def = virStorageSourceNew();
 
     def->type = VIR_STORAGE_TYPE_FILE;
     def->format = format;

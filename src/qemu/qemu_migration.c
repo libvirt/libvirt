@@ -837,15 +837,12 @@ qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDefPtr disk,
 {
     g_autoptr(virStorageSource) copysrc = NULL;
 
-    if (!(copysrc = virStorageSourceNew()))
-        return NULL;
-
+    copysrc = virStorageSourceNew();
     copysrc->type = VIR_STORAGE_TYPE_NETWORK;
     copysrc->protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
     copysrc->format = VIR_STORAGE_FILE_RAW;
 
-    if (!(copysrc->backingStore = virStorageSourceNew()))
-        return NULL;
+    copysrc->backingStore = virStorageSourceNew();
 
     if (!(copysrc->path = qemuAliasDiskDriveFromDisk(disk)))
         return NULL;
