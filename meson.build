@@ -2444,6 +2444,7 @@ win_summary = {
 summary(win_summary, section: 'Windows', bool_yn: true)
 
 test_summary = {
+  'Expensive': use_expensive_tests,
   'Coverage': coverage_flags.length() > 0,
 }
 summary(test_summary, section: 'Test suite', bool_yn: true)
