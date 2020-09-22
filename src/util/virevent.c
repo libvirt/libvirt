@@ -305,7 +305,8 @@ int virEventRegisterDefaultImpl(void)
 {
     VIR_DEBUG("registering default event implementation");
 
-    virInitialize();
+    if (virInitialize() < 0)
+        return -1;
 
     virResetLastError();
 
