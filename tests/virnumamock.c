@@ -133,23 +133,13 @@ virNumaGetPages(int node,
     size_t i = 0;
 
     if (pages_size)
-        *pages_size = NULL;
+        *pages_size = g_new0(unsigned int, npages_def);
 
     if (pages_avail)
-        *pages_avail = NULL;
+        *pages_avail = g_new0(unsigned long long, npages_def);
 
     if (pages_free)
-        *pages_free = NULL;
-
-    *npages = 0;
-
-    if ((pages_size && VIR_ALLOC_N(*pages_size, npages_def) < 0) ||
-        (pages_avail && VIR_ALLOC_N(*pages_avail, npages_def) < 0) ||
-        (pages_free && VIR_ALLOC_N(*pages_free, npages_def) < 0)) {
-        VIR_FREE(*pages_size);
-        VIR_FREE(*pages_avail);
-        return -1;
-    }
+        *pages_free = g_new0(unsigned long long, npages_def);
 
     *npages = npages_def;
     if (pages_size)
