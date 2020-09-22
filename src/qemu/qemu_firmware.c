@@ -434,9 +434,16 @@ qemuFirmwareMappingParse(const char *path,
                          virJSONValuePtr doc,
                          qemuFirmwarePtr fw)
 {
-    virJSONValuePtr mapping = virJSONValueObjectGet(doc, "mapping");
+    virJSONValuePtr mapping;
     const char *deviceStr;
     int tmp;
+
+    if (!(mapping = virJSONValueObjectGet(doc, "mapping"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing mapping in '%s'"),
+                       path);
+        return -1;
+    }
 
     if (!(deviceStr = virJSONValueObjectGetString(mapping, "device"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
