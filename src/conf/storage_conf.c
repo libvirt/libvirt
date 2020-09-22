@@ -1352,9 +1352,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if ((backingStore = virXPathString("string(./backingStore/path)", ctxt))) {
         def->target.backingStore = virStorageSourceNew();
         def->target.backingStore->type = VIR_STORAGE_TYPE_FILE;
-
-        def->target.backingStore->path = backingStore;
-        backingStore = NULL;
+        def->target.backingStore->path = g_steal_pointer(&backingStore);
 
         if (options->formatFromString) {
             g_autofree char *format = NULL;
