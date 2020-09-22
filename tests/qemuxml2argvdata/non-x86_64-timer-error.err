@@ -1,0 +1,1 @@
+unsupported configuration: Configuring the 'tsc' timer is not supported for virtType=kvm arch=s390x machine=s390-ccw guests

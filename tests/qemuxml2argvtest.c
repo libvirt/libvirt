@@ -1141,6 +1141,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_ZPCI,
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_PARSE_ERROR("non-x86_64-timer-error",
+                        QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-order", QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-virtio-queues",
             QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);
