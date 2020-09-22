@@ -146,7 +146,9 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
             len = strlen(buf);
             if (len != 0 && buf[len-1] == '\n')
                 buf[len-1] = '\0';
-            bufptr = g_strdup(buf);
+
+            if (strlen(buf) > 0)
+                bufptr = g_strdup(buf);
             break;
 
         case VIR_CRED_PASSPHRASE:
