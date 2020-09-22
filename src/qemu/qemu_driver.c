@@ -15301,8 +15301,10 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
 
     /* If we got here, we are doing a block copy rebase. */
     dest = virStorageSourceNew();
-    dest->type = (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_DEV) ?
-        VIR_STORAGE_TYPE_BLOCK : VIR_STORAGE_TYPE_FILE;
+    if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_DEV)
+        dest->type = VIR_STORAGE_TYPE_BLOCK;
+    else
+        dest->type = VIR_STORAGE_TYPE_FILE;
     dest->path = g_strdup(base);
     if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)
         dest->format = VIR_STORAGE_FILE_RAW;
