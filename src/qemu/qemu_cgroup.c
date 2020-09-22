@@ -960,16 +960,41 @@ qemuInitCgroup(virDomainObjPtr vm,
     return 0;
 }
 
+static int
+qemuRestoreCgroupThread(virCgroupPtr cgroup,
+                        virCgroupThreadName thread,
+                        int id)
+{
+    virCgroupPtr cgroup_temp = NULL;
+    g_autofree char *nodeset = NULL;
+    int ret = -1;
+
+    if (virCgroupNewThread(cgroup, thread, id, false, &cgroup_temp) < 0)
+        goto cleanup;
+
+    if (virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0)
+        goto cleanup;
+
+    if (virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0)
+        goto cleanup;
+
+    if (virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virCgroupFree(&cgroup_temp);
+    return ret;
+}
+
 static void
 qemuRestoreCgroupState(virDomainObjPtr vm)
 {
     g_autofree char *mem_mask = NULL;
-    g_autofree char *nodeset = NULL;
     int empty = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i = 0;
     g_autoptr(virBitmap) all_nodes = NULL;
-    virCgroupPtr cgroup_temp = NULL;
 
     if (!virNumaIsAvailable() ||
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
@@ -994,45 +1019,27 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
         if (!vcpu->online)
             continue;
 
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
-                               false, &cgroup_temp) < 0 ||
-            virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0 ||
-            virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0 ||
-            virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
-            goto cleanup;
-
-        VIR_FREE(nodeset);
-        virCgroupFree(&cgroup_temp);
+        if (qemuRestoreCgroupThread(priv->cgroup,
+                                    VIR_CGROUP_THREAD_VCPU, i) < 0)
+            return;
     }
 
     for (i = 0; i < vm->def->niothreadids; i++) {
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
-                               vm->def->iothreadids[i]->iothread_id,
-                               false, &cgroup_temp) < 0 ||
-            virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0 ||
-            virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0 ||
-            virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
-            goto cleanup;
-
-        VIR_FREE(nodeset);
-        virCgroupFree(&cgroup_temp);
+        if (qemuRestoreCgroupThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
+                                    vm->def->iothreadids[i]->iothread_id) < 0)
+            return;
     }
 
-    if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
-                           false, &cgroup_temp) < 0 ||
-        virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0 ||
-        virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0 ||
-        virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
-        goto cleanup;
+    if (qemuRestoreCgroupThread(priv->cgroup,
+                                VIR_CGROUP_THREAD_EMULATOR, 0) < 0)
+        return;
 
- cleanup:
-    virCgroupFree(&cgroup_temp);
     return;
 
  error:
     virResetLastError();
     VIR_DEBUG("Couldn't restore cgroups to meaningful state");
-    goto cleanup;
+    return;
 }
 
 int
