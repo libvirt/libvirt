@@ -211,10 +211,7 @@ virTestLoadFile(const char *file, char **buf)
 
     tmplen = buflen = st.st_size + 1;
 
-    if (VIR_ALLOC_N(*buf, buflen) < 0) {
-        VIR_FORCE_FCLOSE(fp);
-        return -1;
-    }
+    *buf = g_new0(char, buflen);
 
     tmp = *buf;
     (*buf)[0] = '\0';
@@ -977,8 +974,7 @@ virTestCapsBuildNUMATopology(int seq)
 
     id = 0;
     for (cell_id = 0; cell_id < MAX_CELLS; cell_id++) {
-        if (VIR_ALLOC_N(cell_cpus, MAX_CPUS_IN_CELL) < 0)
-            goto error;
+        cell_cpus = g_new0(virCapsHostNUMACellCPU, MAX_CPUS_IN_CELL);
 
         for (core_id = 0; core_id < MAX_CPUS_IN_CELL; core_id++) {
             cell_cpus[core_id].id = id + core_id;

@@ -204,8 +204,7 @@ virCapsPtr testQemuCapsInit(void)
 
     /* Add dummy 'none' security_driver. This is equal to setting
      * security_driver = "none" in qemu.conf. */
-    if (VIR_ALLOC_N(caps->host.secModels, 1) < 0)
-        goto cleanup;
+    caps->host.secModels = g_new0(virCapsHostSecModel, 1);
     caps->host.nsecModels = 1;
 
     caps->host.secModels[0].model = g_strdup("none");
@@ -459,8 +458,7 @@ testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
     virGICCapability *gicCapabilities = NULL;
     size_t ngicCapabilities = 0;
 
-    if (VIR_ALLOC_N(gicCapabilities, 2) < 0)
-        return -1;
+    gicCapabilities = g_new0(virGICCapability, 2);
 
 # define IMPL_BOTH \
          VIR_GIC_IMPLEMENTATION_KERNEL|VIR_GIC_IMPLEMENTATION_EMULATED

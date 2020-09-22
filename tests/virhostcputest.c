@@ -124,8 +124,7 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
     if (virHostCPUGetStatsLinux(NULL, 0, NULL, &nparams) < 0)
         goto fail;
 
-    if (VIR_ALLOC_N(params, nparams) < 0)
-        goto fail;
+    params = g_new0(virNodeCPUStats, nparams);
 
     if (virHostCPUGetStatsLinux(cpustat, VIR_NODE_CPU_STATS_ALL_CPUS, params,
                                 &nparams) < 0)

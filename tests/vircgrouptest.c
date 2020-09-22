@@ -708,8 +708,7 @@ static int testCgroupGetPercpuStats(const void *args G_GNUC_UNUSED)
         635751356ULL, 0, 0, 0, 0, 0, 0, 0,
     };
 
-    if (VIR_ALLOC_N(params, EXPECTED_NCPUS) < 0)
-        goto cleanup;
+    params = g_new0(virTypedParameter, EXPECTED_NCPUS);
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
                                     (1 << VIR_CGROUP_CONTROLLER_CPU) |

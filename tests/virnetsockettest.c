@@ -206,11 +206,7 @@ testSocketAccept(const void *opaque)
         if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &usock) < 0)
             goto cleanup;
 
-        if (VIR_ALLOC_N(lsock, 1) < 0) {
-            virObjectUnref(usock);
-            goto cleanup;
-        }
-
+        lsock = g_new0(virNetSocketPtr, 1);
         lsock[0] = usock;
         nlsock = 1;
 

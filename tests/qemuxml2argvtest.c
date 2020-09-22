@@ -753,8 +753,7 @@ mymain(void)
     driver.config->nbdTLSx509certdir = g_strdup("/etc/pki/libvirt-nbd/dummy,path");
 
     VIR_FREE(driver.config->hugetlbfs);
-    if (VIR_ALLOC_N(driver.config->hugetlbfs, 2) < 0)
-        return EXIT_FAILURE;
+    driver.config->hugetlbfs = g_new0(virHugeTLBFS, 2);
     driver.config->nhugetlbfs = 2;
     driver.config->hugetlbfs[0].mnt_dir = g_strdup("/dev/hugepages2M");
     driver.config->hugetlbfs[1].mnt_dir = g_strdup("/dev/hugepages1G");

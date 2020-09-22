@@ -117,8 +117,7 @@ static void testTLSDerEncode(ASN1_TYPE src,
     size = 0;
     asn1_der_coding(src, src_name, NULL, &size, NULL);
 
-    if (VIR_ALLOC_N(data, size) < 0)
-        abort();
+    data = g_new0(char, size);
 
     asn1_der_coding(src, src_name, data, &size, NULL);
 

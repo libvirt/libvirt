@@ -555,8 +555,7 @@ testVirStringListFreeCount(const void *opaque G_GNUC_UNUSED)
 {
     char **list;
 
-    if (VIR_ALLOC_N(list, 4) < 0)
-        return -1;
+    list = g_new0(char *, 4);
 
     list[0] = g_strdup("test1");
     list[2] = g_strdup("test2");

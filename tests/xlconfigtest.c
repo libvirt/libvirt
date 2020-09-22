@@ -73,8 +73,7 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
     virDomainDefPtr def = NULL;
     char *replacedXML = NULL;
 
-    if (VIR_ALLOC_N(gotxlcfgData, wrote) < 0)
-        goto fail;
+    gotxlcfgData = g_new0(char, wrote);
 
     conn = virGetConnect();
     if (!conn) goto fail;

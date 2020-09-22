@@ -83,9 +83,8 @@ testCryptoEncrypt(const void *opaque)
         return EXIT_AM_SKIP;
     }
 
-    if (VIR_ALLOC_N(enckey, enckeylen) < 0 ||
-        VIR_ALLOC_N(iv, ivlen) < 0)
-        goto cleanup;
+    enckey = g_new0(uint8_t, enckeylen);
+    iv = g_new0(uint8_t, ivlen);
 
     if (virRandomBytes(enckey, enckeylen) < 0 ||
         virRandomBytes(iv, ivlen) < 0) {

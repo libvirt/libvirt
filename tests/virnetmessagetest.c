@@ -102,8 +102,7 @@ static int testMessageHeaderDecode(const void *args G_GNUC_UNUSED)
         return -1;
 
     msg->bufferLength = 4;
-    if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0)
-        goto cleanup;
+    msg->buffer = g_new0(char, msg->bufferLength);
     memcpy(msg->buffer, input_buf, msg->bufferLength);
 
     msg->header.prog = 0x11223344;
@@ -332,8 +331,7 @@ static int testMessagePayloadDecode(const void *args G_GNUC_UNUSED)
         return -1;
 
     msg->bufferLength = 4;
-    if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0)
-        goto cleanup;
+    msg->buffer = g_new0(char, msg->bufferLength);
     memcpy(msg->buffer, input_buffer, msg->bufferLength);
 
     if (virNetMessageDecodeLength(msg) < 0) {

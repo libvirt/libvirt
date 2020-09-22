@@ -147,8 +147,7 @@ fillXenCaps(virDomainCapsPtr domCaps)
     virFirmwarePtr *firmwares;
     int ret = -1;
 
-    if (VIR_ALLOC_N(firmwares, 2) < 0)
-        return ret;
+    firmwares = g_new0(virFirmwarePtr, 2);
 
     firmwares[0] = g_new0(virFirmware, 1);
     firmwares[1] = g_new0(virFirmware, 1);

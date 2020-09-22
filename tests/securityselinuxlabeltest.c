@@ -114,8 +114,7 @@ testSELinuxLoadFileList(const char *testname,
     if (!(fp = fopen(path, "r")))
         goto cleanup;
 
-    if (VIR_ALLOC_N(line, 1024) < 0)
-        goto cleanup;
+    line = g_new0(char, 1024);
 
     while (!feof(fp)) {
         char *file = NULL, *context = NULL, *tmp;

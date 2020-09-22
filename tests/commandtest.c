@@ -1057,10 +1057,9 @@ static int test27(const void *unused G_GNUC_UNUSED)
         "%s%s%s" \
         "END STDERR\n"
 
-    if (VIR_ALLOC_N(buffer0, buflen) < 0 ||
-        VIR_ALLOC_N(buffer1, buflen) < 0 ||
-        VIR_ALLOC_N(buffer2, buflen) < 0)
-        goto cleanup;
+    buffer0 = g_new0(char, buflen);
+    buffer1 = g_new0(char, buflen);
+    buffer2 = g_new0(char, buflen);
 
     memset(buffer0, 'H', buflen - 2);
     buffer0[buflen - 2] = '\n';

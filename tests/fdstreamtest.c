@@ -54,9 +54,8 @@ static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
     if (!(conn = virConnectOpen("test:///default")))
         goto cleanup;
 
-    if (VIR_ALLOC_N(pattern, PATTERN_LEN) < 0 ||
-        VIR_ALLOC_N(buf, PATTERN_LEN) < 0)
-        goto cleanup;
+    pattern = g_new0(char, PATTERN_LEN);
+    buf = g_new0(char, PATTERN_LEN);
 
     for (i = 0; i < PATTERN_LEN; i++)
         pattern[i] = i;
@@ -185,9 +184,8 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
     if (!(conn = virConnectOpen("test:///default")))
         goto cleanup;
 
-    if (VIR_ALLOC_N(pattern, PATTERN_LEN) < 0 ||
-        VIR_ALLOC_N(buf, PATTERN_LEN) < 0)
-        goto cleanup;
+    pattern = g_new0(char, PATTERN_LEN);
+    buf = g_new0(char, PATTERN_LEN);
 
     for (i = 0; i < PATTERN_LEN; i++)
         pattern[i] = i;
