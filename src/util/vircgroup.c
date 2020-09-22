@@ -785,10 +785,8 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
          */
         if (STRNEQ(tokens[i], "") &&
             !strchr(tokens[i], '.')) {
-            if (VIR_REALLOC_N(tokens[i],
-                              strlen(tokens[i]) + strlen(".partition") + 1) < 0)
-                goto cleanup;
-            strcat(tokens[i], ".partition");
+            g_autofree char *oldtoken = tokens[i];
+            tokens[i] = g_strdup_printf("%s.partition", oldtoken);
         }
 
         if (virCgroupPartitionEscape(&(tokens[i])) < 0)
