@@ -793,5 +793,6 @@ testQemuInfoClear(struct testQemuInfo *info)
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);
     VIR_FREE(info->schemafile);
+    VIR_FREE(info->errfile);
     virObjectUnref(info->qemuCaps);
 }

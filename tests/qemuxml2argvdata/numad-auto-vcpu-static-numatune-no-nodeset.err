@@ -1,0 +1,1 @@
+unsupported configuration: nodeset for NUMA memory tuning must be set if 'placement' is 'static'

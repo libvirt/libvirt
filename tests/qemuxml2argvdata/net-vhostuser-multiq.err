@@ -1,0 +1,1 @@
+unsupported configuration: interface 52:54:00:ee:96:6e - multiqueue is not supported for network interfaces of type vhost-user with this QEMU binary

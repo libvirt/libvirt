@@ -1,0 +1,1 @@
+XML error: The PCI controller with index='0' must be model='pcie-root' for this machine type, but model='pci-root' was found instead

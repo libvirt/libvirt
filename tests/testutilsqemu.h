@@ -58,6 +58,7 @@ struct testQemuInfo {
     const char *name;
     char *infile;
     char *outfile;
+    char *errfile;
     virQEMUCapsPtr qemuCaps;
     const char *migrateFrom;
     int migrateFd;

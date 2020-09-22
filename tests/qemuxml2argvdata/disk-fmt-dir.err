@@ -1,0 +1,1 @@
+unsupported configuration: 'directory' storage format is not directly supported by QEMU, use 'dir' disk type instead

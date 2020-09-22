@@ -1,0 +1,1 @@
+internal error: a PCI slot is needed to connect a PCI controller model='pcie-root-port', but none is available, and it cannot be automatically added

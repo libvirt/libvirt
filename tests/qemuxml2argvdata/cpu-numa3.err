@@ -1,0 +1,1 @@
+XML error: Exactly one 'cell' element per guest NUMA cell allowed, non-contiguous ranges or ranges not starting from 0 are not allowed

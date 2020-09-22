@@ -1,0 +1,1 @@
+XML error: pci-expander-bus with index 1 is configured for a NUMA node (1) not present in the domain's <cpu><numa> array (0)

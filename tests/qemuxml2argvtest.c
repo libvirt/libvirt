@@ -565,6 +565,7 @@ testCompareXMLToArgv(const void *data)
     virDomainObjPtr vm = NULL;
     virDomainChrSourceDef monitor_chr;
     g_autoptr(virConnect) conn = NULL;
+    virError *err = NULL;
     char *log = NULL;
     g_autoptr(virCommand) cmd = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
@@ -615,7 +616,13 @@ testCompareXMLToArgv(const void *data)
     if (!(vm->def = virDomainDefParseFile(info->infile,
                                           driver.xmlopt,
                                           NULL, parseFlags))) {
-        if (flags & FLAG_EXPECT_PARSE_ERROR)
+        err = virGetLastError();
+        if (!err) {
+            VIR_TEST_DEBUG("no error was reported for expected parse error");
+            goto cleanup;
+        }
+        if (flags & FLAG_EXPECT_PARSE_ERROR &&
+            virTestCompareToFile(err->message, info->errfile) >= 0)
             goto ok;
         goto cleanup;
     }
@@ -651,7 +658,13 @@ testCompareXMLToArgv(const void *data)
 
     if (!(cmd = testCompareXMLToArgvCreateArgs(&driver, vm, migrateURI, info,
                                                flags, false))) {
-        if (flags & FLAG_EXPECT_FAILURE)
+        err = virGetLastError();
+        if (!err) {
+            VIR_TEST_DEBUG("no error was reported for expected failure");
+            goto cleanup;
+        }
+        if (flags & FLAG_EXPECT_FAILURE &&
+            virTestCompareToFile(err->message, info->errfile) >= 0)
             goto ok;
         goto cleanup;
     }
@@ -704,6 +717,8 @@ testInfoSetPaths(struct testQemuInfo *info,
                                    abs_srcdir, info->name);
     info->outfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.args",
                                     abs_srcdir, info->name, suffix ? suffix : "");
+    info->errfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.err",
+                                      abs_srcdir, info->name, suffix ? suffix : "");
 }
 
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
@@ -907,6 +922,7 @@ mymain(void)
     g_setenv("USER", "test", TRUE);
     g_setenv("LOGNAME", "test", TRUE);
     g_setenv("HOME", "/home/test", TRUE);
+    g_setenv("LC_ALL", "C", TRUE);
     g_unsetenv("TMPDIR");
     g_unsetenv("LD_PRELOAD");
     g_unsetenv("LD_LIBRARY_PATH");
@@ -1864,7 +1880,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("cpu-numa-disjoint", NONE);
     DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
     DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_RAM);
-    DO_TEST_PARSE_ERROR("cpu-numa-memshared", NONE);
+    DO_TEST_PARSE_ERROR("cpu-numa-memshared-1", NONE);
     DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("cpu-host-model", NONE);
     DO_TEST("cpu-host-model-vendor", NONE);
@@ -2091,7 +2107,7 @@ mymain(void)
             QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT */
-    DO_TEST_PARSE_ERROR("pseries-features",
+    DO_TEST_PARSE_ERROR("pseries-features-htp-resize",
                         QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
@@ -2102,7 +2118,7 @@ mymain(void)
                         QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE */
-    DO_TEST_PARSE_ERROR("pseries-features",
+    DO_TEST_PARSE_ERROR("pseries-features-hpt-pagesize",
                         QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
@@ -2113,7 +2129,7 @@ mymain(void)
                         QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_HTM */
-    DO_TEST_PARSE_ERROR("pseries-features",
+    DO_TEST_PARSE_ERROR("pseries-features-htm",
                         QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
@@ -2124,7 +2140,7 @@ mymain(void)
                         QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV */
-    DO_TEST_PARSE_ERROR("pseries-features",
+    DO_TEST_PARSE_ERROR("pseries-features-nested-hv",
                         QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
@@ -2135,7 +2151,7 @@ mymain(void)
                         QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST */
-    DO_TEST_PARSE_ERROR("pseries-features",
+    DO_TEST_PARSE_ERROR("pseries-features-ccf",
                         QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
@@ -2146,7 +2162,7 @@ mymain(void)
                         QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CFPC */
-    DO_TEST_PARSE_ERROR("pseries-features",
+    DO_TEST_PARSE_ERROR("pseries-features-cfpc",
                         QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                         QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
@@ -2157,7 +2173,7 @@ mymain(void)
                         QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_SBBC */
-    DO_TEST_PARSE_ERROR("pseries-features",
+    DO_TEST_PARSE_ERROR("pseries-features-sbbc",
                         QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                         QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
@@ -2168,7 +2184,7 @@ mymain(void)
                         QEMU_CAPS_MACHINE_PSERIES_CAP_IBS);
 
     /* parse error: no QEMU_CAPS_MACHINE_PSERIES_IBS */
-    DO_TEST_PARSE_ERROR("pseries-features",
+    DO_TEST_PARSE_ERROR("pseries-features-ibs",
                         QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                         QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT,
                         QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,

@@ -1,0 +1,1 @@
+unsupported configuration: using disk target name 'sda' conflicts with SCSI host device address controller='0' bus='0' target='0' unit='0

@@ -1,0 +1,1 @@
+unsupported configuration: CPU mode 'host-passthrough' for x86_64 qemu domain on x86_64 host is not supported by hypervisor

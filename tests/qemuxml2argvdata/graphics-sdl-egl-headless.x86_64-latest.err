@@ -1,0 +1,1 @@
+unsupported configuration: graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' graphics types
