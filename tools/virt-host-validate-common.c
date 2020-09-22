@@ -289,7 +289,7 @@ int virHostValidateCGroupControllers(const char *hvname,
                                      int controllers,
                                      virHostValidateLevel level)
 {
-    virCgroupPtr group = NULL;
+    g_autoptr(virCgroup) group = NULL;
     int ret = 0;
     size_t i;
 
@@ -314,8 +314,6 @@ int virHostValidateCGroupControllers(const char *hvname,
             virHostMsgPass();
         }
     }
-
-    virCgroupFree(group);
 
     return ret;
 }
