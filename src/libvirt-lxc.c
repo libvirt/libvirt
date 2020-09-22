@@ -289,7 +289,7 @@ int virDomainLxcEnterCGroup(virDomainPtr domain,
                             unsigned int flags)
 {
     virConnectPtr conn;
-    virCgroupPtr cgroup = NULL;
+    g_autoptr(virCgroup) cgroup = NULL;
 
     VIR_DOMAIN_DEBUG(domain, "flags=0x%x", flags);
 
@@ -307,12 +307,9 @@ int virDomainLxcEnterCGroup(virDomainPtr domain,
     if (virCgroupAddProcess(cgroup, getpid()) < 0)
         goto error;
 
-    virCgroupFree(cgroup);
-
     return 0;
 
  error:
     virDispatchError(NULL);
-    virCgroupFree(cgroup);
     return -1;
 }
