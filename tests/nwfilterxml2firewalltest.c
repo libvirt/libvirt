@@ -209,8 +209,7 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
     virNWFilterRuleInstPtr ruleinst;
     int ret = -1;
 
-    if (VIR_ALLOC(ruleinst) < 0)
-        goto cleanup;
+    ruleinst = g_new0(virNWFilterRuleInst, 1);
 
     ruleinst->chainSuffix = def->chainsuffix;
     ruleinst->chainPriority = def->chainPriority;

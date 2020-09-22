@@ -227,11 +227,10 @@ static int testMessagePayloadEncode(const void *args G_GNUC_UNUSED)
     err.domain = VIR_FROM_RPC;
     err.level = VIR_ERR_ERROR;
 
-    if (VIR_ALLOC(err.message) < 0 ||
-        VIR_ALLOC(err.str1) < 0 ||
-        VIR_ALLOC(err.str2) < 0 ||
-        VIR_ALLOC(err.str3) < 0)
-        goto cleanup;
+    err.message = g_new0(char *, 1);
+    err.str1 = g_new0(char *, 1);
+    err.str2 = g_new0(char *, 1);
+    err.str3 = g_new0(char *, 1);
 
     *err.message = g_strdup("Hello World");
     *err.str1 = g_strdup("One");

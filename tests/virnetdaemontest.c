@@ -38,8 +38,7 @@ testClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
 {
     struct testClientPriv *priv;
 
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
+    priv = g_new0(struct testClientPriv, 1);
 
     priv->magic = 1729;
 

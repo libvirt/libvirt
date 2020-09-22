@@ -150,8 +150,9 @@ fillXenCaps(virDomainCapsPtr domCaps)
     if (VIR_ALLOC_N(firmwares, 2) < 0)
         return ret;
 
-    if (VIR_ALLOC(firmwares[0]) < 0 || VIR_ALLOC(firmwares[1]) < 0)
-        goto cleanup;
+    firmwares[0] = g_new0(virFirmware, 1);
+    firmwares[1] = g_new0(virFirmware, 1);
+
     firmwares[0]->name = g_strdup("/usr/lib/xen/boot/hvmloader");
     firmwares[1]->name = g_strdup("/usr/lib/xen/boot/ovmf.bin");
 
@@ -175,8 +176,7 @@ fillBhyveCaps(virDomainCapsPtr domCaps, unsigned int *bhyve_caps)
     virDomainCapsStringValuesPtr firmwares = NULL;
     int ret = -1;
 
-    if (VIR_ALLOC(firmwares) < 0)
-        return -1;
+    firmwares = g_new0(virDomainCapsStringValues, 1);
 
     if (fillStringValues(firmwares, "/foo/bar", "/foo/baz", NULL) < 0)
         goto cleanup;

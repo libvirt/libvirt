@@ -292,8 +292,7 @@ selabel_open(unsigned int backend,
         return real_selabel_open(backend, opts, nopts);
 
     /* struct selabel_handle is opaque; fake it */
-    if (VIR_ALLOC(fake_handle) < 0)
-        return NULL;
+    fake_handle = g_new0(char, 1);
     return (struct selabel_handle *)fake_handle;
 }
 

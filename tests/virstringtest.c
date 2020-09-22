@@ -176,9 +176,8 @@ static int testAdd(const void *args)
             goto cleanup;
     }
 
-    if (!list &&
-        VIR_ALLOC(list) < 0)
-        goto cleanup;
+    if (!list)
+        list = g_new0(char *, 1);
 
     if (!(got = virStringListJoin((const char **)list, data->delim))) {
         VIR_DEBUG("Got no result");

@@ -270,8 +270,7 @@ mock_chown(const char *path,
         abort();
     }
 
-    if (VIR_ALLOC(val) < 0)
-        return -1;
+    val = g_new0(uint32_t, 1);
 
     *val = (gid << 16) + uid;
 

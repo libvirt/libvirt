@@ -413,8 +413,7 @@ testQemuHotplugCpuPrepare(const char *test,
 
     prefix = g_strdup_printf("%s/qemuhotplugtestcpus/%s", abs_srcdir, test);
 
-    if (VIR_ALLOC(data) < 0)
-        goto error;
+    data = g_new0(struct testQemuHotplugCpuData, 1);
 
     data->modern = modern;
 

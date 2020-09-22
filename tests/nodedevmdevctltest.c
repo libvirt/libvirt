@@ -162,11 +162,8 @@ fakeRootDevice(void)
 {
     virNodeDeviceDefPtr def = NULL;
 
-    if (VIR_ALLOC(def) != 0 || VIR_ALLOC(def->caps) != 0) {
-        virNodeDeviceDefFree(def);
-        return NULL;
-    }
-
+    def = g_new0(virNodeDeviceDef, 1);
+    def->caps = g_new0(virNodeDevCapsDef, 1);
     def->name = g_strdup("computer");
 
     return def;
@@ -182,10 +179,8 @@ fakeParentDevice(void)
     virNodeDeviceDefPtr def = NULL;
     virNodeDevCapPCIDevPtr pci_dev;
 
-    if (VIR_ALLOC(def) != 0 || VIR_ALLOC(def->caps) != 0) {
-        virNodeDeviceDefFree(def);
-        return NULL;
-    }
+    def = g_new0(virNodeDeviceDef, 1);
+    def->caps = g_new0(virNodeDevCapsDef, 1);
 
     def->name = g_strdup("pci_0000_00_02_0");
     def->parent = g_strdup("computer");
@@ -233,8 +228,7 @@ static int
 nodedevTestDriverInit(void)
 {
     int ret = -1;
-    if (VIR_ALLOC(driver) < 0)
-        return -1;
+    driver = g_new0(virNodeDeviceDriverState, 1);
 
     driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0 ||

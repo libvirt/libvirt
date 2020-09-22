@@ -461,8 +461,7 @@ qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
 {
     qemuMonitorTestItemPtr item;
 
-    if (VIR_ALLOC(item) < 0)
-        goto error;
+    item = g_new0(qemuMonitorTestItem, 1);
 
     item->identifier = g_strdup(identifier);
     item->cb = cb;
@@ -619,8 +618,7 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
 {
     struct qemuMonitorTestHandlerData *data;
 
-    if (VIR_ALLOC(data) < 0)
-        return -1;
+    data = g_new0(struct qemuMonitorTestHandlerData, 1);
 
     data->command_name = g_strdup(command_name);
     data->response = g_strdup(response);
@@ -694,8 +692,7 @@ qemuMonitorTestAddItemVerbatim(qemuMonitorTestPtr test,
 {
     struct qemuMonitorTestHandlerData *data;
 
-    if (VIR_ALLOC(data) < 0)
-        return -1;
+    data = g_new0(struct qemuMonitorTestHandlerData, 1);
 
     data->response = g_strdup(response);
     data->cmderr = g_strdup(cmderr);
@@ -856,8 +853,7 @@ qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
 
     va_start(args, response);
 
-    if (VIR_ALLOC(data) < 0)
-        goto error;
+    data = g_new0(struct qemuMonitorTestHandlerData, 1);
 
     data->command_name = g_strdup(cmdname);
     data->response = g_strdup(response);
@@ -962,8 +958,7 @@ qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
 {
     struct qemuMonitorTestHandlerData *data;
 
-    if (VIR_ALLOC(data) < 0)
-        goto error;
+    data = g_new0(struct qemuMonitorTestHandlerData, 1);
 
     data->command_name = g_strdup(cmdname);
     data->response = g_strdup(response);
@@ -984,10 +979,6 @@ qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
                                      cmdname,
                                      qemuMonitorTestProcessCommandWithArgStr,
                                      data, qemuMonitorTestHandlerDataFree);
-
- error:
-    qemuMonitorTestHandlerDataFree(data);
-    return -1;
 }
 
 
@@ -1036,8 +1027,7 @@ qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
     char *path = NULL;
     char *tmpdir_template = NULL;
 
-    if (VIR_ALLOC(test) < 0)
-        goto error;
+    test = g_new0(qemuMonitorTest, 1);
 
     if (virMutexInit(&test->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

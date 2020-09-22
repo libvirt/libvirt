@@ -1653,8 +1653,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
         !(expectedBlockDevices = virHashCreate(32, virHashValueFree)))
         goto cleanup;
 
-    if (VIR_ALLOC(info) < 0)
-        goto cleanup;
+    info = g_new0(struct qemuDomainDiskInfo, 1);
 
     if (virHashAddEntry(expectedBlockDevices, "virtio-disk0", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1662,8 +1661,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
         goto cleanup;
     }
 
-    if (VIR_ALLOC(info) < 0)
-        goto cleanup;
+    info = g_new0(struct qemuDomainDiskInfo, 1);
 
     if (virHashAddEntry(expectedBlockDevices, "virtio-disk1", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1671,8 +1669,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
         goto cleanup;
     }
 
-    if (VIR_ALLOC(info) < 0)
-        goto cleanup;
+    info = g_new0(struct qemuDomainDiskInfo, 1);
 
     info->removable = true;
     info->tray = true;
@@ -1683,8 +1680,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
         goto cleanup;
     }
 
-    if (VIR_ALLOC(info) < 0)
-        goto cleanup;
+    info = g_new0(struct qemuDomainDiskInfo, 1);
 
     info->removable = true;
     info->tray = true;

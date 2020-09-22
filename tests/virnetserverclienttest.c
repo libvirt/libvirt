@@ -32,8 +32,7 @@ testClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
 {
     char *dummy;
 
-    if (VIR_ALLOC(dummy) < 0)
-        return NULL;
+    dummy = g_new0(char, 1);
 
     return dummy;
 }

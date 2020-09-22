@@ -149,8 +149,7 @@ myInit(void)
             goto cleanup;
     }
 
-    if (VIR_ALLOC(mgr) < 0)
-        goto cleanup;
+    mgr = g_new0(virHostdevManager, 1);
     if ((mgr->activePCIHostdevs = virPCIDeviceListNew()) == NULL)
         goto cleanup;
     if ((mgr->activeUSBHostdevs = virUSBDeviceListNew()) == NULL)
