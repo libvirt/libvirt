@@ -36,7 +36,6 @@
 extern PFNVBOXGETXPCOMCFUNCTIONS g_pfnGetFunctions;
 
 int VBoxCGlueInit(unsigned int *version);
-void VBoxCGlueTerm(void);
 
 typedef struct _vboxArray vboxArray;
 

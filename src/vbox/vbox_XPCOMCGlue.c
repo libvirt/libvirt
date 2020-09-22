@@ -217,25 +217,6 @@ VBoxCGlueInit(unsigned int *version)
 }
 
 
-/**
- * Terminate the C glue library.
- */
-void
-VBoxCGlueTerm(void)
-{
-    if (hVBoxXPCOMC != NULL) {
-#if 0 /* VBoxRT.so doesn't like being reloaded. See @bugref{3725}. */
-        dlclose(g_hVBoxXPCOMC);
-#endif
-        hVBoxXPCOMC = NULL;
-    }
-
-    pVBoxFuncs_v2_2 = NULL;
-    g_pfnGetFunctions = NULL;
-}
-
-
-
 /*
  * In XPCOM an array is represented by 1) a pointer to an array of pointers
  * that point to the items and 2) an unsigned int representing the number of
