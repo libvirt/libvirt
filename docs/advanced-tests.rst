@@ -26,13 +26,7 @@ Some tests are skipped by default in a development environment,
 based on the time they take in comparison to the likelihood
 that those tests will turn up problems during incremental
 builds. These tests default to being run when building from a
-tarball or with the configure option -Dexpensive_tests=enabled;
-you can also force a one-time toggle of these tests by setting
-VIR_TEST_EXPENSIVE to 0 or 1 at make time, as in:
-
-::
-
-  $ VIR_TEST_EXPENSIVE=1 ninja test
+tarball or with the configure option -Dexpensive_tests=enabled.
 
 If you encounter any failing tests, the VIR_TEST_DEBUG
 environment variable may provide extra information to debug the
