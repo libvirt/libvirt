@@ -111,10 +111,12 @@ cpuTestLoadMultiXML(virArch arch,
         goto cleanup;
 
     n = virXPathNodeSet("/cpuTest/cpu", ctxt, &nodes);
-    if (n <= 0 || (VIR_ALLOC_N(cpus, n) < 0)) {
+    if (n <= 0) {
         fprintf(stderr, "\nNo /cpuTest/cpu elements found in %s\n", xml);
         goto cleanup;
     }
+
+    cpus = g_new0(virCPUDefPtr, n);
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
