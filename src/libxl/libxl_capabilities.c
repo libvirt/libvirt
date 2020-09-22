@@ -52,7 +52,6 @@ enum libxlHwcapVersion {
 
 struct guest_arch {
     virArch arch;
-    int bits;
     int hvm;
     int pvh;
     int pae;
