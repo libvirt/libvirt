@@ -103,7 +103,7 @@ virshNetworkPortUUIDCompleter(vshControl *ctl,
         return NULL;
 
     if (!(net = virshCommandOptNetwork(ctl, cmd, NULL)))
-        return false;
+        return NULL;
 
     if ((nports = virNetworkListAllPorts(net, &ports, flags)) < 0)
         return NULL;
