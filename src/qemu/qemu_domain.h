@@ -263,6 +263,10 @@ struct _qemuDomainObjPrivate {
     char **dbusVMStateIds;
     /* true if -object dbus-vmstate was added */
     bool dbusVMState;
+
+    /* prevent deletion of <transient> disk overlay files between startup and
+     * succesful setup of the overlays */
+    bool inhibitDiskTransientDelete;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \

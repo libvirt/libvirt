@@ -1792,6 +1792,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
     priv->dbusVMStateIds = NULL;
 
     priv->dbusVMState = false;
+
+    priv->inhibitDiskTransientDelete = false;
 }
 
 
