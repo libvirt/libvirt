@@ -2111,7 +2111,7 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIID *iid
                 VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
                 VBOX_UTF16_FREE(valueDisplayUtf16);
 
-                if (strlen(valueDisplayUtf8) <= 0)
+                if (strlen(valueDisplayUtf8) == 0)
                     VBOX_UTF8_FREE(valueDisplayUtf8);
             }
 
@@ -2988,7 +2988,7 @@ vboxHostDeviceGetXMLDesc(vboxDriverPtr data, virDomainDefPtr def, IMachine *mach
     gVBoxAPI.UArray.vboxArrayGet(&deviceFilters, USBCommon,
                                  gVBoxAPI.UArray.handleUSBGetDeviceFilters(USBCommon));
 
-    if (deviceFilters.count <= 0)
+    if (deviceFilters.count == 0)
         goto release_filters;
 
     /* check if the filters are active and then only
@@ -3610,9 +3610,8 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
     gVBoxAPI.UArray.vboxArrayGet(&sharedFolders, machine,
                                  gVBoxAPI.UArray.handleMachineGetSharedFolders(machine));
 
-    if (sharedFolders.count <= 0) {
-        if (sharedFolders.count == 0)
-            ret = 0;
+    if (sharedFolders.count == 0) {
+        ret = 0;
         goto cleanup;
     }
 

@@ -1215,7 +1215,7 @@ static int openvzDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
         return -1;
 
-    if (nvcpus <= 0) {
+    if (nvcpus == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Number of vCPUs should be >= 1"));
         goto cleanup;
