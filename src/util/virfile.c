@@ -3884,7 +3884,6 @@ virFileCopyACLs(const char *src,
  * Returns:
  *  1 : Equal
  *  0 : Non-Equal
- * -1 : Error
  */
 int
 virFileComparePaths(const char *p1, const char *p2)
