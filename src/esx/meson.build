@@ -12,21 +12,36 @@ esx_sources = [
   'esx_vi_types.c',
 ]
 
+esx_gen_headers = custom_target(
+  'virtesxgenheaders',
+  input: [
+    'esx_vi_generator.input',
+  ],
+  output: [
+    'esx_vi.generated.h',
+    'esx_vi_methods.generated.h',
+    'esx_vi_types.generated.h',
+    'esx_vi_types.generated.typedef',
+    'esx_vi_types.generated.typeenum',
+  ],
+  command: [
+    meson_python_prog, python3_prog.path(), esx_vi_generator_prog.path(),
+    meson.source_root() / 'src',
+    meson.build_root() / 'src',
+    'header',
+  ],
+)
+
 esx_gen_sources = custom_target(
-  'virtesxgen',
+  'virtesxgensources',
   input: [
     'esx_vi_generator.input',
   ],
   output: [
     'esx_vi.generated.c',
-    'esx_vi.generated.h',
-    'esx_vi_methods.generated.c',
-    'esx_vi_methods.generated.h',
     'esx_vi_methods.generated.macro',
+    'esx_vi_methods.generated.c',
     'esx_vi_types.generated.c',
-    'esx_vi_types.generated.h',
-    'esx_vi_types.generated.typedef',
-    'esx_vi_types.generated.typeenum',
     'esx_vi_types.generated.typefromstring',
     'esx_vi_types.generated.typetostring',
   ],
@@ -34,6 +49,7 @@ esx_gen_sources = custom_target(
     meson_python_prog, python3_prog.path(), esx_vi_generator_prog.path(),
     meson.source_root() / 'src',
     meson.build_root() / 'src',
+    'source',
   ],
 )
 
@@ -42,6 +58,7 @@ if conf.has('WITH_ESX')
     'virt_driver_esx',
     [
       esx_sources,
+      esx_gen_headers[1],
       esx_gen_sources[1],
     ],
     dependencies: [
