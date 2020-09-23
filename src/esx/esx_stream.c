@@ -132,8 +132,7 @@ esxVI_CURL_WriteStream(char *input, size_t size, size_t nmemb, void *userdata)
             priv->backlog_size = input_remaining;
             priv->backlog_used = 0;
 
-            if (VIR_ALLOC_N(priv->backlog, priv->backlog_size) < 0)
-                return 0;
+            priv->backlog = g_new0(char, priv->backlog_size);
         } else if (input_remaining > backlog_remaining) {
             priv->backlog_size += input_remaining - backlog_remaining;
 
@@ -409,8 +408,7 @@ esxStreamOpen(virStreamPtr stream, esxPrivate *priv, const char *url,
         return -1;
     }
 
-    if (VIR_ALLOC(streamPriv) < 0)
-        return -1;
+    streamPriv = g_new0(esxStreamPrivate, 1);
 
     streamPriv->mode = mode;
 

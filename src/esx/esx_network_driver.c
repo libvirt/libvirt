@@ -604,10 +604,9 @@ esxShapingPolicyToBandwidth(esxVI_HostNetworkTrafficShapingPolicy *shapingPolicy
     if (!shapingPolicy || shapingPolicy->enabled != esxVI_Boolean_True)
         return 0;
 
-    if (VIR_ALLOC(*bandwidth) < 0 ||
-        VIR_ALLOC((*bandwidth)->in) < 0 ||
-        VIR_ALLOC((*bandwidth)->out) < 0)
-        return -1;
+    *bandwidth = g_new0(virNetDevBandwidth, 1);
+    (*bandwidth)->in = g_new0(virNetDevBandwidthRate, 1);
+    (*bandwidth)->out = g_new0(virNetDevBandwidthRate, 1);
 
     if (shapingPolicy->averageBandwidth) {
         /* Scale bits per second to kilobytes per second */
@@ -655,8 +654,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;
 
-    if (VIR_ALLOC(def) < 0)
-        goto cleanup;
+    def = g_new0(virNetworkDef, 1);
 
     /* Lookup HostVirtualSwitch */
     if (esxVI_LookupHostVirtualSwitchByName(priv->primary, network_->name,
@@ -682,9 +680,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
 
     if (count > 0) {
         def->forward.type = VIR_NETWORK_FORWARD_BRIDGE;
-
-        if (VIR_ALLOC_N(def->forward.ifs, count) < 0)
-            goto cleanup;
+        def->forward.ifs = g_new0(virNetworkForwardIfDef, count);
 
         /* Find PhysicalNic by key */
         if (esxVI_LookupPhysicalNicList(priv->primary, &physicalNicList) < 0)
@@ -726,8 +722,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     }
 
     if (count > 0) {
-        if (VIR_ALLOC_N(def->portGroups, count) < 0)
-            goto cleanup;
+        def->portGroups = g_new0(virPortGroupDef, count);
 
         /* Lookup Network list and create name list */
         if (esxVI_String_AppendValueToList(&propertyNameList, "name") < 0 ||

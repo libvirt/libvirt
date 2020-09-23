@@ -53,8 +53,7 @@ VIR_LOG_INIT("esx.esx_vi");
     { \
         ESX_VI_CHECK_ARG_LIST(ptrptr); \
  \
-        if (VIR_ALLOC(*ptrptr) < 0) \
-            return -1; \
+        *ptrptr = g_new0(esxVI_##_type, 1); \
         return 0; \
     }
 
@@ -182,8 +181,7 @@ esxVI_CURL_Debug(CURL *curl G_GNUC_UNUSED, curl_infotype type,
      * To handle this properly in order to pass the info string to VIR_DEBUG
      * a zero terminated copy of the info string has to be allocated.
      */
-    if (VIR_ALLOC_N(buffer, size + 1) < 0)
-        return 0;
+    buffer = g_new0(char, size + 1);
 
     memcpy(buffer, info, size);
     buffer[size] = '\0';
@@ -861,8 +859,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     ctx->username = g_strdup(username);
     ctx->password = g_strdup(password);
 
-    if (VIR_ALLOC(ctx->sessionLock) < 0)
-        goto cleanup;
+    ctx->sessionLock = g_new0(virMutex, 1);
 
 
     if (virMutexInit(ctx->sessionLock) < 0) {
@@ -3714,8 +3711,7 @@ esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
                 goto cleanup;
             }
 
-            if (VIR_ALLOC_N(*key, VIR_UUID_STRING_BUFLEN) < 0)
-                goto cleanup;
+            *key = g_new0(char, VIR_UUID_STRING_BUFLEN);
 
             if (esxUtil_ReformatUuid(uuid_string, *key) < 0)
                 goto cleanup;

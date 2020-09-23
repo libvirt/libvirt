@@ -512,8 +512,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     if (esxVI_LocalDatastoreInfo_DynamicCast(info)) {
         def.type = VIR_STORAGE_POOL_DIR;
     } else if ((nasInfo = esxVI_NasDatastoreInfo_DynamicCast(info))) {
-        if (VIR_ALLOC_N(def.source.hosts, 1) < 0)
-            goto cleanup;
+        def.source.hosts = g_new0(virStoragePoolSourceHost, 1);
         def.type = VIR_STORAGE_POOL_NETFS;
         def.source.nhost = 1;
         def.source.hosts[0].name = nasInfo->nas->remoteHost;
@@ -1016,8 +1015,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         }
 
         if (priv->primary->hasQueryVirtualDiskUuid) {
-            if (VIR_ALLOC_N(key, VIR_UUID_STRING_BUFLEN) < 0)
-                goto cleanup;
+            key = g_new0(char, VIR_UUID_STRING_BUFLEN);
 
             if (esxVI_QueryVirtualDiskUuid(priv->primary, datastorePath,
                                            priv->primary->datacenter->_reference,
@@ -1196,7 +1194,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         }
 
         if (priv->primary->hasQueryVirtualDiskUuid) {
-            if (VIR_ALLOC_N(key, VIR_UUID_STRING_BUFLEN) < 0)
+            key = g_new0(char, VIR_UUID_STRING_BUFLEN);
                 goto cleanup;
 
             if (esxVI_QueryVirtualDiskUuid(priv->primary, datastorePath,

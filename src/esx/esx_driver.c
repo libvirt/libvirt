@@ -824,8 +824,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     /* Allocate per-connection private data */
-    if (VIR_ALLOC(priv) < 0)
-        goto cleanup;
+    priv = g_new0(esxPrivate, 1);
 
     if (esxUtil_ParseUri(&priv->parsedUri, conn->uri) < 0)
         goto cleanup;
@@ -4823,9 +4822,8 @@ esxConnectListAllDomains(virConnectPtr conn,
          !MATCH(VIR_CONNECT_LIST_DOMAINS_PERSISTENT)) ||
         (MATCH(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE) &&
          !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE))) {
-        if (domains &&
-            VIR_ALLOC_N(*domains, 1) < 0)
-            goto cleanup;
+        if (domains)
+            *domains = g_new0(virDomainPtr, 1);
 
         ret = 0;
         goto cleanup;
@@ -4885,8 +4883,7 @@ esxConnectListAllDomains(virConnectPtr conn,
         goto cleanup;
 
     if (domains) {
-        if (VIR_ALLOC_N(doms, 1) < 0)
-            goto cleanup;
+        doms = g_new0(virDomainPtr, 1);
         ndoms = 1;
     }
 
@@ -5218,8 +5215,7 @@ esxDomainInterfaceAddresses(virDomainPtr domain,
         if (VIR_EXPAND_N(ifaces_ret, ifaces_count, 1) < 0)
             goto cleanup;
 
-        if (VIR_ALLOC(ifaces_ret[ifaces_count - 1]) < 0)
-            goto cleanup;
+        ifaces_ret[ifaces_count - 1] = g_new0(virDomainInterface, 1);
 
         iface = ifaces_ret[ifaces_count - 1];
         iface->naddrs = 0;

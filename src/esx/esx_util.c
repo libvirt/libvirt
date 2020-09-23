@@ -49,8 +49,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
 
     ESX_VI_CHECK_ARG_LIST(parsedUri);
 
-    if (VIR_ALLOC(*parsedUri) < 0)
-        return -1;
+    *parsedUri = g_new0(esxUtil_ParsedUri, 1);
 
     for (i = 0; i < uri->paramsCount; i++) {
         virURIParamPtr queryParam = &uri->params[i];

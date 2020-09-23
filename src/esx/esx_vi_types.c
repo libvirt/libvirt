@@ -44,8 +44,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
     { \
         ESX_VI_CHECK_ARG_LIST(ptrptr); \
  \
-        if (VIR_ALLOC(*ptrptr) < 0) \
-            return -1; \
+        *ptrptr = g_new0(esxVI_##__type, 1); \
  \
         (*ptrptr)->_type = esxVI_Type_##__type; \
  \
