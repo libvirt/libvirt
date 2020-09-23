@@ -2491,7 +2491,7 @@ virDomainVsockDefFree(virDomainVsockDefPtr vsock)
 
 
 void
-virDomainNetDefClear(virDomainNetDefPtr def)
+virDomainNetDefFree(virDomainNetDefPtr def)
 {
     if (!def)
         return;
@@ -2566,14 +2566,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     virNetDevBandwidthFree(def->bandwidth);
     def->bandwidth = NULL;
     virNetDevVlanClear(&def->vlan);
-}
 
-void
-virDomainNetDefFree(virDomainNetDefPtr def)
-{
-    if (!def)
-        return;
-    virDomainNetDefClear(def);
     virObjectUnref(def->privateData);
     VIR_FREE(def);
 }
