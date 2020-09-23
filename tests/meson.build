@@ -477,7 +477,7 @@ if conf.has('WITH_REMOTE')
 endif
 
 if conf.has('WITH_SECDRIVER_SELINUX')
-  if conf.has('WITH_ATTR')
+  if conf.has('WITH_LIBATTR')
     tests += [
       { 'name': 'securityselinuxtest' },
       { 'name': 'viridentitytest' },
@@ -485,7 +485,7 @@ if conf.has('WITH_SECDRIVER_SELINUX')
 
     if conf.has('WITH_QEMU')
       tests += [
-        { 'name': 'securityselinuxlabeltest', 'link_whole': [ test_utils_qemu_lib ] },
+        { 'name': 'securityselinuxlabeltest', 'link_with': [ test_qemu_driver_lib ], 'link_whole': [ test_utils_qemu_lib ] },
       ]
     endif
   endif
