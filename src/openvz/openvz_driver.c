@@ -1287,8 +1287,7 @@ static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
     /* We now know the URI is definitely for this driver, so beyond
      * here, don't return DECLINED, always use ERROR */
 
-    if (VIR_ALLOC(driver) < 0)
-        return VIR_DRV_OPEN_ERROR;
+    driver = g_new0(struct openvz_driver, 1);
 
     if (!(driver->domains = virDomainObjListNew()))
         goto cleanup;

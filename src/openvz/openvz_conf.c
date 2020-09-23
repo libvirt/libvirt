@@ -205,8 +205,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
     } else if (ret > 0) {
         token = strtok_r(temp, " ", &saveptr);
         while (token != NULL) {
-            if (VIR_ALLOC(net) < 0)
-                goto error;
+            net = g_new0(virDomainNetDef, 1);
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
             if (virDomainNetAppendIPAddress(net, token, AF_UNSPEC, 0) < 0)
@@ -238,8 +237,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
             int len;
 
             /* add new device to list */
-            if (VIR_ALLOC(net) < 0)
-                goto error;
+            net = g_new0(virDomainNetDef, 1);
 
             net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
@@ -259,8 +257,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                         goto error;
                     }
 
-                    if (VIR_ALLOC_N(net->ifname, len+1) < 0)
-                        goto error;
+                    net->ifname = g_new0(char, len+1);
 
                     if (virStrncpy(net->ifname, p, len, len+1) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -276,8 +273,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                         goto error;
                     }
 
-                    if (VIR_ALLOC_N(net->data.bridge.brname, len+1) < 0)
-                        goto error;
+                    net->data.bridge.brname = g_new0(char, len+1);
 
                     if (virStrncpy(net->data.bridge.brname, p, len, len+1) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
