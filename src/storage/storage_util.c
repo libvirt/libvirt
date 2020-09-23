@@ -2526,10 +2526,8 @@ storageBackendWipeLocal(const char *path,
                         size_t writebuf_length,
                         bool zero_end)
 {
-    int written = 0;
     unsigned long long remaining = 0;
     off_t size;
-    size_t write_size = 0;
     g_autofree char *writebuf = NULL;
 
     if (VIR_ALLOC_N(writebuf, writebuf_length) < 0)
@@ -2557,9 +2555,9 @@ storageBackendWipeLocal(const char *path,
 
     remaining = wipe_len;
     while (remaining > 0) {
+        size_t write_size = MIN(writebuf_length, remaining);
+        int written = safewrite(fd, writebuf, write_size);
 
-        write_size = (writebuf_length < remaining) ? writebuf_length : remaining;
-        written = safewrite(fd, writebuf, write_size);
         if (written < 0) {
             virReportSystemError(errno,
                                  _("Failed to write %zu bytes to "
