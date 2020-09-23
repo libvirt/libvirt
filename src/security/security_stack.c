@@ -56,8 +56,7 @@ virSecurityStackAddNested(virSecurityManagerPtr mgr,
     while (tmp && tmp->next)
         tmp = tmp->next;
 
-    if (VIR_ALLOC(item) < 0)
-        return -1;
+    item = g_new0(virSecurityStackItem, 1);
     item->securityManager = nested;
     item->prev = tmp;
     if (tmp)
@@ -620,8 +619,7 @@ virSecurityStackGetNested(virSecurityManagerPtr mgr)
     for (item = priv->itemsHead; item; item = item->next)
         len++;
 
-    if (VIR_ALLOC_N(list, len + 1) < 0)
-        return NULL;
+    list = g_new0(virSecurityManagerPtr, len + 1);
 
     for (i = 0, item = priv->itemsHead; item; item = item->next, i++)
         list[i] = item->securityManager;

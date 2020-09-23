@@ -123,8 +123,7 @@ virSecuritySELinuxContextListAppend(virSecuritySELinuxContextListPtr list,
     int ret = -1;
     virSecuritySELinuxContextItemPtr item = NULL;
 
-    if (VIR_ALLOC(item) < 0)
-        return -1;
+    item = g_new0(virSecuritySELinuxContextItem, 1);
 
     item->path = g_strdup(path);
     item->tcon = g_strdup(tcon);
@@ -258,8 +257,7 @@ virSecuritySELinuxTransactionRun(pid_t pid G_GNUC_UNUSED,
     int ret = -1;
 
     if (list->lock) {
-        if (VIR_ALLOC_N(paths, list->nItems) < 0)
-            return -1;
+        paths = g_new0(const char *, list->nItems);
 
         for (i = 0; i < list->nItems; i++) {
             virSecuritySELinuxContextItemPtr item = list->items[i];
@@ -1088,8 +1086,7 @@ virSecuritySELinuxTransactionStart(virSecurityManagerPtr mgr)
         return -1;
     }
 
-    if (VIR_ALLOC(list) < 0)
-        return -1;
+    list = g_new0(virSecuritySELinuxContextList, 1);
 
     list->manager = virObjectRef(mgr);
 

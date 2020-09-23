@@ -87,8 +87,7 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
 
     virCheckFlags(VIR_SECURITY_MANAGER_NEW_MASK, NULL);
 
-    if (VIR_ALLOC_N(privateData, drv->privateDataLen) < 0)
-        return NULL;
+    privateData = g_new0(char, drv->privateDataLen);
 
     if (!(mgr = virObjectLockableNew(virSecurityManagerClass)))
         goto error;
@@ -1034,8 +1033,7 @@ virSecurityManagerGetNested(virSecurityManagerPtr mgr)
     if (STREQ("stack", mgr->drv->name))
         return virSecurityStackGetNested(mgr);
 
-    if (VIR_ALLOC_N(list, 2) < 0)
-        return NULL;
+    list = g_new0(virSecurityManagerPtr, 2);
 
     list[0] = mgr;
     list[1] = NULL;
@@ -1346,9 +1344,8 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
     const char **locked_paths = NULL;
     virSecurityManagerMetadataLockStatePtr ret = NULL;
 
-    if (VIR_ALLOC_N(fds, npaths) < 0 ||
-        VIR_ALLOC_N(locked_paths, npaths) < 0)
-        return NULL;
+    fds = g_new0(int, npaths);
+    locked_paths = g_new0(const char *, npaths);
 
     /* Sort paths to lock in order to avoid deadlocks with other
      * processes. For instance, if one process wants to lock
@@ -1441,8 +1438,7 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
         VIR_APPEND_ELEMENT_COPY_INPLACE(fds, nfds, fd);
     }
 
-    if (VIR_ALLOC(ret) < 0)
-        goto cleanup;
+    ret = g_new0(virSecurityManagerMetadataLockState, 1);
 
     ret->paths = g_steal_pointer(&locked_paths);
     ret->fds = g_steal_pointer(&fds);

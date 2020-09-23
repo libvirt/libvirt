@@ -867,8 +867,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     if (profile_loaded(secdef->imagelabel) < 0)
         return 0;
 
-    if (VIR_ALLOC(ptr) < 0)
-        return -1;
+    ptr = g_new0(struct SDPDOP, 1);
     ptr->mgr = mgr;
     ptr->def = def;
 
