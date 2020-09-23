@@ -173,9 +173,8 @@ virshStreamSourceSkip(virStreamPtr st G_GNUC_UNUSED,
 {
     virshStreamCallbackDataPtr cbData = opaque;
     int fd = cbData->fd;
-    off_t cur;
 
-    if ((cur = lseek(fd, offset, SEEK_CUR)) == (off_t) -1)
+    if (lseek(fd, offset, SEEK_CUR) == (off_t) -1)
         return -1;
 
     return 0;
