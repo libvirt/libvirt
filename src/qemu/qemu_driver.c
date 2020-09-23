@@ -6456,24 +6456,20 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
      */
     for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
-        unsigned int bootIndex = net->info.bootIndex;
-        g_autofree char *model = NULL;
-        virMacAddr mac = net->mac;
-        char *script = net->script;
+        virDomainNetDefPtr newNet = virDomainNetDefNew(driver->xmlopt);
 
-        model = g_strdup(virDomainNetGetModelString(net));
-
-        net->script = NULL;
-
-        virDomainNetDefClear(net);
-
-        net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
-        net->info.bootIndex = bootIndex;
-        net->mac = mac;
-        net->script = script;
-
-        if (virDomainNetSetModelString(net, model) < 0)
+        if (!newNet)
             goto cleanup;
+
+        newNet->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+        newNet->info.bootIndex = net->info.bootIndex;
+        newNet->model = net->model;
+        newNet->modelstr = g_steal_pointer(&net->modelstr);
+        newNet->mac = net->mac;
+        newNet->script = g_steal_pointer(&net->script);
+
+        virDomainNetDefFree(net);
+        vm->def->nets[i] = newNet;
     }
 
     if (!(cmd = qemuProcessCreatePretendCmd(driver, vm, NULL,
