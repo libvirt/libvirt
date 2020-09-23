@@ -73,8 +73,7 @@ virStorageFileBackendFileInit(virStorageSourcePtr src)
               src->path,
               (unsigned int)src->drv->uid, (unsigned int)src->drv->gid);
 
-    if (VIR_ALLOC(priv) < 0)
-        return -1;
+    priv = g_new0(virStorageFileBackendFsPriv, 1);
 
     src->drv->priv = priv;
 

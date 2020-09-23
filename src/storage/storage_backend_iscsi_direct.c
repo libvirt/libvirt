@@ -309,8 +309,7 @@ virISCSIDirectRefreshVol(virStoragePoolObjPtr pool,
     if (virISCSIDirectTestUnitReady(iscsi, lun) < 0)
         return -1;
 
-    if (VIR_ALLOC(vol) < 0)
-        return -1;
+    vol = g_new0(virStorageVolDef, 1);
 
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
@@ -518,13 +517,11 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
     if (virISCSIDirectScanTargets(source->initiator.iqn, portal, &ntargets, &targets) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(list.sources, ntargets) < 0)
-        goto cleanup;
+    list.sources = g_new0(virStoragePoolSource, ntargets);
 
     for (i = 0; i < ntargets; i++) {
-        if (VIR_ALLOC_N(list.sources[i].devices, 1) < 0 ||
-            VIR_ALLOC_N(list.sources[i].hosts, 1) < 0)
-            goto cleanup;
+        list.sources[i].devices = g_new0(virStoragePoolSourceDevice, 1);
+        list.sources[i].hosts = g_new0(virStoragePoolSourceHost, 1);
         list.sources[i].nhost = 1;
         list.sources[i].hosts[0] = source->hosts[0];
         list.sources[i].initiator = source->initiator;
@@ -628,7 +625,7 @@ virStorageBackendISCSIDirectVolWipeZero(virStorageVolDefPtr vol,
         return ret;
     if (virISCSIDirectGetVolumeCapacity(iscsi, lun, &block_size, &nb_block))
         return ret;
-    if (VIR_ALLOC_N(data, block_size * BLOCK_PER_PACKET))
+    data = g_new0(unsigned char, block_size * BLOCK_PER_PACKET);
         return ret;
 
     while (lba < nb_block) {

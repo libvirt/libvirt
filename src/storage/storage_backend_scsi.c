@@ -329,9 +329,7 @@ createVport(virStoragePoolDefPtr def,
      * retry logic set to true. If the thread isn't created, then no big
      * deal since it's still possible to refresh the pool later.
      */
-    if (VIR_ALLOC(cbdata) < 0)
-        return -1;
-
+    cbdata = g_new0(virStoragePoolFCRefreshInfo, 1);
     memcpy(cbdata->pool_uuid, def->uuid, VIR_UUID_BUFLEN);
     cbdata->fchost_name = g_steal_pointer(&name);
 

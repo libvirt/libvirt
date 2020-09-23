@@ -154,11 +154,9 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     if (wbytes < WRITE_BLOCK_SIZE_DEFAULT)
         wbytes = WRITE_BLOCK_SIZE_DEFAULT;
 
-    if (VIR_ALLOC_N(zerobuf, wbytes) < 0)
-        return -errno;
+    zerobuf = g_new0(char, wbytes);
 
-    if (VIR_ALLOC_N(buf, rbytes) < 0)
-        return -errno;
+    buf = g_new0(char, rbytes);
 
     if (reflink_copy) {
         if (reflinkCloneFile(fd, inputfd) < 0) {
@@ -1839,14 +1837,14 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
     if (virStorageSourceUpdateBackingSizes(target, fd, sb) < 0)
         return -1;
 
-    if (!target->perms && VIR_ALLOC(target->perms) < 0)
-        return -1;
+    if (!target->perms)
+        target->perms = g_new0(virStoragePerms, 1);
     target->perms->mode = sb->st_mode & S_IRWXUGO;
     target->perms->uid = sb->st_uid;
     target->perms->gid = sb->st_gid;
 
-    if (!target->timestamps && VIR_ALLOC(target->timestamps) < 0)
-        return -1;
+    if (!target->timestamps)
+        target->timestamps = g_new0(virStorageTimestamps, 1);
 
 #ifdef __APPLE__
     target->timestamps->atime = sb->st_atimespec;
@@ -2214,12 +2212,8 @@ storageBackendLoadDefaultSecrets(virStorageVolDefPtr vol)
     if (!sec)
         return 0;
 
-    if (VIR_ALLOC_N(vol->target.encryption->secrets, 1) < 0 ||
-        VIR_ALLOC(encsec) < 0) {
-        VIR_FREE(vol->target.encryption->secrets);
-        virObjectUnref(sec);
-        return -1;
-    }
+    vol->target.encryption->secrets = g_new0(virStorageEncryptionSecretPtr, 1);
+    encsec = g_new0(virStorageEncryptionSecret, 1);
 
     vol->target.encryption->nsecrets = 1;
     vol->target.encryption->secrets[0] = encsec;
@@ -2528,8 +2522,7 @@ storageBackendWipeLocal(const char *path,
     off_t size;
     g_autofree char *writebuf = NULL;
 
-    if (VIR_ALLOC_N(writebuf, writebuf_length) < 0)
-        return -1;
+    writebuf = g_new0(char, writebuf_length);
 
     if (!zero_end) {
         if ((size = lseek(fd, 0, SEEK_SET)) < 0) {
@@ -2873,8 +2866,7 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
             goto cleanup;
         }
 
-        if (VIR_ALLOC_N(src->hosts, 1) < 0)
-            goto cleanup;
+        src->hosts = g_new0(virStoragePoolSourceHost, 1);
         src->nhost = 1;
 
         src->hosts[0].name = g_strdup(host);
@@ -3535,8 +3527,7 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
             continue;
         }
 
-        if (VIR_ALLOC(vol) < 0)
-            goto cleanup;
+        vol = g_new0(virStorageVolDef, 1);
 
         vol->name = g_strdup(ent->d_name);
 
@@ -3671,8 +3662,7 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
         return -1;
     }
 
-    if (VIR_ALLOC(vol) < 0)
-        return -1;
+    vol = g_new0(virStorageVolDef, 1);
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 

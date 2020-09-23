@@ -76,8 +76,7 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(char **const groups,
     if (!(src = virStoragePoolSourceListNewSource(&state->list)))
         return -1;
 
-    if (VIR_ALLOC_N(src->hosts, 1) < 0)
-        return -1;
+    src->hosts = g_new0(virStoragePoolSourceHost, 1);
     src->nhost = 1;
 
     src->hosts[0].name = g_strdup(state->host);
@@ -576,9 +575,8 @@ virStoragePoolDefFSNamespaceParse(xmlXPathContextPtr ctxt,
     if (nnodes == 0)
         return 0;
 
-    if (VIR_ALLOC(cmdopts) < 0 ||
-        VIR_ALLOC_N(cmdopts->options, nnodes) < 0)
-        goto cleanup;
+    cmdopts = g_new0(virStoragePoolFSMountOptionsDef, 1);
+    cmdopts->options = g_new0(char *, nnodes);
 
     for (i = 0; i < nnodes; i++) {
         if (!(cmdopts->options[cmdopts->noptions] =

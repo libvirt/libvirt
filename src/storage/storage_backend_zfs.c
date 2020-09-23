@@ -121,8 +121,7 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
         volume = vol;
 
     if (volume == NULL) {
-        if (VIR_ALLOC(volume) < 0)
-            goto cleanup;
+        volume = g_new0(virStorageVolDef, 1);
 
         is_new_vol = true;
         volume->type = VIR_STORAGE_VOL_BLOCK;

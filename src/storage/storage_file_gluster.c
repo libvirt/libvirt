@@ -109,8 +109,7 @@ virStorageFileBackendGlusterInit(virStorageSourcePtr src)
         return -1;
     }
 
-    if (VIR_ALLOC(priv) < 0)
-        return -1;
+    priv = g_new0(virStorageFileBackendGlusterPriv, 1);
 
     VIR_DEBUG("initializing gluster storage file %p "
               "(priv='%p' volume='%s' path='%s') as [%u:%u]",
@@ -209,8 +208,7 @@ virStorageFileBackendGlusterRead(virStorageSourcePtr src,
     }
 
 
-    if (VIR_ALLOC_N(*buf, len) < 0)
-        return -1;
+    *buf = g_new0(char, len);
 
     s = *buf;
     while (len) {

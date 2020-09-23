@@ -161,8 +161,7 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
     }
 
     /* Allocate space for 'nextents' regex_unit strings plus a comma for each */
-    if (VIR_ALLOC_N(regex, nextents * (strlen(regex_unit) + 1) + 1) < 0)
-        goto cleanup;
+    regex = g_new0(char, nextents * (strlen(regex_unit) + 1) + 1);
     strcat(regex, regex_unit);
     for (i = 1; i < nextents; i++) {
         /* "," is the separator of "devices" field */
@@ -252,8 +251,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
 
     /* Or a completely new volume */
     if (vol == NULL) {
-        if (VIR_ALLOC(vol) < 0)
-            return -1;
+        vol = g_new0(virStorageVolDef, 1);
 
         is_new_vol = true;
         vol->type = VIR_STORAGE_VOL_BLOCK;

@@ -94,12 +94,10 @@ virStoragePoolDefRBDNamespaceParse(xmlXPathContextPtr ctxt,
     if (nnodes == 0)
         return 0;
 
-    if (VIR_ALLOC(cmdopts) < 0)
-        goto cleanup;
+    cmdopts = g_new0(virStoragePoolRBDConfigOptionsDef, 1);
 
-    if (VIR_ALLOC_N(cmdopts->names, nnodes) < 0 ||
-        VIR_ALLOC_N(cmdopts->values, nnodes) < 0)
-        goto cleanup;
+    cmdopts->names = g_new0(char *, nnodes);
+    cmdopts->values = g_new0(char *, nnodes);
 
     for (i = 0; i < nnodes; i++) {
         if (!(cmdopts->names[cmdopts->noptions] =
@@ -384,8 +382,7 @@ virStorageBackendRBDNewState(virStoragePoolObjPtr pool)
     virStorageBackendRBDStatePtr ptr;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
-    if (VIR_ALLOC(ptr) < 0)
-        return NULL;
+    ptr = g_new0(virStorageBackendRBDState, 1);
 
     if (virStorageBackendRBDOpenRADOSConn(ptr, def) < 0)
         goto error;
@@ -604,8 +601,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
         }
     }
 
-    if (VIR_ALLOC_N(names, nimages + 1) < 0)
-        goto error;
+    names = g_new0(char *, nimages + 1);
     nnames = nimages;
 
     for (i = 0; i < nimages; i++)
@@ -633,8 +629,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
     const char *name;
 
     while (true) {
-        if (VIR_ALLOC_N(namebuf, max_size) < 0)
-            goto error;
+        namebuf = g_new0(char, max_size);
 
         rc = rbd_list(ptr->ioctx, namebuf, &max_size);
         if (rc >= 0)
@@ -712,8 +707,7 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
     for (i = 0; names[i] != NULL; i++) {
         g_autoptr(virStorageVolDef) vol = NULL;
 
-        if (VIR_ALLOC(vol) < 0)
-            goto cleanup;
+        vol = g_new0(virStorageVolDef, 1);
 
         vol->name = g_steal_pointer(&names[i]);
 
@@ -770,8 +764,7 @@ virStorageBackendRBDCleanupSnapshots(rados_ioctx_t ioctx,
     }
 
     do {
-        if (VIR_ALLOC_N(snaps, max_snaps))
-            goto cleanup;
+        snaps = g_new0(rbd_snap_info_t, max_snaps);
 
         snap_count = rbd_snap_list(image, snaps, &max_snaps);
         if (snap_count <= 0)
@@ -1028,8 +1021,7 @@ virStorageBackendRBDSnapshotFindNoDiff(rbd_image_t image,
     }
 
     do {
-        if (VIR_ALLOC_N(snaps, max_snaps))
-            goto cleanup;
+        snaps = g_new0(rbd_snap_info_t, max_snaps);
 
         snap_count = rbd_snap_list(image, snaps, &max_snaps);
         if (snap_count <= 0)
@@ -1320,8 +1312,7 @@ virStorageBackendRBDVolWipeZero(rbd_image_t image,
     unsigned long long length;
     g_autofree char *writebuf = NULL;
 
-    if (VIR_ALLOC_N(writebuf, info->obj_size * stripe_count) < 0)
-        return -1;
+    writebuf = g_new0(char, info->obj_size * stripe_count);
 
     while (offset < info->size) {
         length = MIN((info->size - offset), (info->obj_size * stripe_count));

@@ -265,8 +265,7 @@ storageStateInitialize(bool privileged,
         return -1;
     }
 
-    if (VIR_ALLOC(driver) < 0)
-        return VIR_DRV_STATE_INIT_ERROR;
+    driver = g_new0(virStorageDriverState, 1);
 
     driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
@@ -1956,10 +1955,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
         int buildret;
         virStorageVolDefPtr buildvoldef = NULL;
 
-        if (VIR_ALLOC(buildvoldef) < 0) {
-            voldef = NULL;
-            goto cleanup;
-        }
+        buildvoldef = g_new0(virStorageVolDef, 1);
 
         /* Make a shallow copy of the 'defined' volume definition, since the
          * original allocation value will change as the user polls 'info',
@@ -2143,8 +2139,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
      * original allocation value will change as the user polls 'info',
      * but we only need the initial requested values
      */
-    if (VIR_ALLOC(shadowvol) < 0)
-        goto cleanup;
+    shadowvol = g_new0(virStorageVolDef, 1);
 
     memcpy(shadowvol, voldef, sizeof(*voldef));
 
@@ -2428,8 +2423,7 @@ storageVolUpload(virStorageVolPtr vol,
      * interaction and we can just lookup the backend in the callback
      * routine in order to call the refresh API.
      */
-    if (VIR_ALLOC(cbdata) < 0)
-        goto cleanup;
+    cbdata = g_new0(virStorageVolStreamInfo, 1);
     cbdata->pool_name = g_strdup(def->name);
     if (voldef->type == VIR_STORAGE_VOL_PLOOP)
         cbdata->vol_path = g_strdup(voldef->target.path);

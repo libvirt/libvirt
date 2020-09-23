@@ -189,13 +189,11 @@ virStorageBackendISCSIFindPoolSources(const char *srcSpec,
                             &ntargets, &targets) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(list.sources, ntargets) < 0)
-        goto cleanup;
+    list.sources = g_new0(virStoragePoolSource, ntargets);
 
     for (i = 0; i < ntargets; i++) {
-        if (VIR_ALLOC_N(list.sources[i].devices, 1) < 0 ||
-            VIR_ALLOC_N(list.sources[i].hosts, 1) < 0)
-            goto cleanup;
+        list.sources[i].devices = g_new0(virStoragePoolSourceDevice, 1);
+        list.sources[i].hosts = g_new0(virStoragePoolSourceHost, 1);
         list.sources[i].nhost = 1;
         list.sources[i].hosts[0] = source->hosts[0];
         list.sources[i].initiator = source->initiator;

@@ -118,8 +118,7 @@ virStorageBackendSheepdogAddVolume(virStoragePoolObjPtr pool, const char *diskIn
         return -1;
     }
 
-    if (VIR_ALLOC(vol) < 0)
-        return -1;
+    vol = g_new0(virStorageVolDef, 1);
 
     vol->name = g_strdup(diskInfo);
 

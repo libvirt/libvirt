@@ -97,16 +97,14 @@ virStorageBackendGlusterOpen(virStoragePoolObjPtr pool)
             trailing_slash = false;
     }
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virStorageBackendGlusterState, 1);
 
     ret->volname = g_strdup(name);
     ret->dir = g_strdup_printf("%s%s", dir ? dir : "/", trailing_slash ? "" : "/");
 
     /* FIXME: Currently hard-coded to tcp transport; XML needs to be
      * extended to allow alternate transport */
-    if (VIR_ALLOC(ret->uri) < 0)
-        goto error;
+    ret->uri = g_new0(virURI, 1);
     ret->uri->scheme = g_strdup("gluster");
     ret->uri->server = g_strdup(def->source.hosts[0].name);
     ret->uri->path = g_strdup_printf("/%s%s", ret->volname, ret->dir);
@@ -151,8 +149,7 @@ virStorageBackendGlusterRead(glfs_fd_t *fd,
     char *s;
     size_t nread = 0;
 
-    if (VIR_ALLOC_N(*buf, len) < 0)
-        return -1;
+    *buf = g_new0(char, len);
 
     s = *buf;
     while (len) {
@@ -245,8 +242,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
         return ret;
     }
 
-    if (VIR_ALLOC(vol) < 0)
-        goto cleanup;
+    vol = g_new0(virStorageVolDef, 1);
 
     if (virStorageBackendUpdateVolTargetInfoFD(&vol->target, -1, st) < 0)
         goto cleanup;

@@ -74,8 +74,7 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
          * we're discovering the existing partitions for the pool
          */
         addVol = true;
-        if (VIR_ALLOC(vol) < 0)
-            return -1;
+        vol = g_new0(virStorageVolDef, 1);
         vol->name = g_strdup(partname);
     }
 
@@ -132,8 +131,7 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
     }
 
     if (vol->source.extents == NULL) {
-        if (VIR_ALLOC(vol->source.extents) < 0)
-            goto error;
+        vol->source.extents = g_new0(virStorageVolSourceExtent, 1);
         vol->source.nextent = 1;
 
         if (virStrToLong_ull(groups[3], NULL, 10,
