@@ -99,7 +99,7 @@ static int virLoginShellGetShellArgv(virConfPtr conf,
         return -1;
 
     if (rv == 0) {
-        if (VIR_ALLOC_N(*shargv, 2) < 0)
+        *shargv = g_new0(char *, 2);
             return -1;
         (*shargv)[0] = g_strdup("/bin/sh");
         *shargvlen = 1;
@@ -302,10 +302,8 @@ main(int argc, char **argv)
 
     if ((nfdlist = virDomainLxcOpenNamespace(dom, &fdlist, 0)) < 0)
         goto cleanup;
-    if (VIR_ALLOC(secmodel) < 0)
-        goto cleanup;
-    if (VIR_ALLOC(seclabel) < 0)
-        goto cleanup;
+    secmodel = g_new0(virSecurityModel, 1);
+    seclabel = g_new0(virSecurityLabel, 1);
     if (virNodeGetSecurityModel(conn, secmodel) < 0)
         goto cleanup;
     if (virDomainGetSecurityLabel(dom, seclabel) < 0)
@@ -331,10 +329,7 @@ main(int argc, char **argv)
         if (tmp) {
             g_strfreev(shargv);
             shargvlen = 1;
-            if (VIR_ALLOC_N(shargv[0], shargvlen + 1) < 0) {
-                VIR_FREE(tmp);
-                goto cleanup;
-            }
+            shargv = g_new0(char *, shargvlen + 1);
             shargv[0] = tmp;
             shargv[1] = NULL;
         }

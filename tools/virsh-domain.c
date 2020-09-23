@@ -1762,8 +1762,7 @@ virshBlockJobWaitInit(vshControl *ctl,
     virshBlockJobWaitDataPtr ret;
     virshControlPtr priv = ctl->privData;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virshBlockJobWaitData, 1);
 
     ret->ctl = ctl;
     ret->dom = dom;
@@ -8177,8 +8176,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(params, nparams * MIN(show_count, 128)) < 0)
-        goto cleanup;
+    params = g_new0(virTypedParameter, nparams * MIN(show_count, 128));
 
     while (show_count) {
         int ncpus = MIN(show_count, 128);
@@ -8215,8 +8213,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(params, nparams) < 0)
-        goto cleanup;
+    params = g_new0(virTypedParameter, nparams);
 
     /* passing start_cpu == -1 gives us domain's total status */
     if ((stats_per_cpu = virDomainGetCPUStats(dom, params, nparams,
@@ -10086,14 +10083,9 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (setlabel) {
-        if (VIR_ALLOC(secmodel) < 0) {
-            vshError(ctl, "%s", _("Failed to allocate security model"));
-            goto cleanup;
-        }
-        if (VIR_ALLOC(seclabel) < 0) {
-            vshError(ctl, "%s", _("Failed to allocate security label"));
-            goto cleanup;
-        }
+        secmodel = g_new0(virSecurityModel, 1);
+        seclabel = g_new0(virSecurityLabel, 1);
+
         if (virNodeGetSecurityModel(priv->conn, secmodel) < 0)
             goto cleanup;
         if (virDomainGetSecurityLabel(dom, seclabel) < 0)
@@ -13737,8 +13729,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (all) {
-        if (VIR_ALLOC_N(data, VIR_DOMAIN_EVENT_ID_LAST) < 0)
-            goto cleanup;
+        data = g_new0(virshDomEventData, VIR_DOMAIN_EVENT_ID_LAST);
         for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++) {
             data[i].ctl = ctl;
             data[i].loop = loop;
@@ -13748,8 +13739,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
             data[i].id = -1;
         }
     } else {
-        if (VIR_ALLOC_N(data, 1) < 0)
-            goto cleanup;
+        data = g_new0(virshDomEventData, 1);
         data[0].ctl = ctl;
         data[0].loop = vshCommandOptBool(cmd, "loop");
         data[0].count = &count;

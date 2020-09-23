@@ -95,8 +95,7 @@ vshTableRowNew(const char *arg, va_list ap)
         goto error;
     }
 
-    if (VIR_ALLOC(row) < 0)
-        goto error;
+    row = g_new0(vshTableRow, 1);
 
     while (arg) {
         char *tmp = NULL;
@@ -134,8 +133,7 @@ vshTableNew(const char *arg, ...)
     vshTableRowPtr header = NULL;
     va_list ap;
 
-    if (VIR_ALLOC(table) < 0)
-        goto error;
+    table = g_new0(vshTable, 1);
 
     va_start(ap, arg);
     header = vshTableRowNew(arg, ap);
@@ -215,8 +213,7 @@ vshTableSafeEncode(const char *s, size_t *width)
 
     memset(&st, 0, sizeof(st));
 
-    if (VIR_ALLOC_N(buf, (sz * HEX_ENCODE_LENGTH) + 1) < 0)
-        return NULL;
+    buf = g_new0(char, (sz * HEX_ENCODE_LENGTH) + 1);
 
     ret = buf;
     *width = 0;
@@ -369,17 +366,13 @@ vshTablePrint(vshTablePtr table, bool header)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;
 
-    if (VIR_ALLOC_N(maxwidths, table->rows[0]->ncells))
-        goto cleanup;
+    maxwidths = g_new0(size_t, table->rows[0]->ncells);
 
-    if (VIR_ALLOC_N(widths, table->nrows))
-        goto cleanup;
+    widths = g_new0(size_t *, table->nrows);
 
     /* retrieve widths of columns */
-    for (i = 0; i < table->nrows; i++) {
-        if (VIR_ALLOC_N(widths[i], table->rows[0]->ncells))
-            goto cleanup;
-    }
+    for (i = 0; i < table->nrows; i++)
+        widths[i] = g_new0(size_t, table->rows[0]->ncells);
 
     if (vshTableGetColumnsWidths(table, maxwidths, widths, header) < 0)
         goto cleanup;

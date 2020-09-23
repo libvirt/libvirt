@@ -1234,8 +1234,7 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
     ndisks = count;
 
     if (ndisks) {
-        if (VIR_ALLOC_N(disks, ndisks) < 0)
-            goto cleanup;
+        disks = g_new0(virDomainDiskError, ndisks);
 
         if ((count = virDomainGetDiskErrors(dom, disks, ndisks, 0)) == -1)
             goto cleanup;
@@ -1378,10 +1377,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %s\n", _("Security DOI:"), secmodel.doi);
 
             /* Security labels are only valid for active domains */
-            if (VIR_ALLOC(seclabel) < 0) {
-                virshDomainFree(dom);
-                return false;
-            }
+            seclabel = g_new0(virSecurityLabel, 1);
 
             if (virDomainGetSecurityLabel(dom, seclabel) == -1) {
                 virshDomainFree(dom);
@@ -2280,8 +2276,7 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT;
 
     if (vshCommandOptBool(cmd, "domain")) {
-        if (VIR_ALLOC_N(domlist, 1) < 0)
-            goto cleanup;
+        domlist = g_new0(virDomainPtr, 1);
         ndoms = 1;
 
         while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {

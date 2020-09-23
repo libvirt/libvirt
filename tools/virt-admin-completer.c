@@ -46,8 +46,7 @@ vshAdmServerCompleter(vshControl *ctl,
     if ((nsrvs = virAdmConnectListServers(priv->conn, &srvs, 0)) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(ret, nsrvs + 1) < 0)
-        goto error;
+    ret = g_new0(char *, nsrvs + 1);
 
     for (i = 0; i < nsrvs; i++) {
         const char *name = virAdmServerGetName(srvs[i]);
@@ -58,14 +57,5 @@ vshAdmServerCompleter(vshControl *ctl,
     }
     VIR_FREE(srvs);
 
-    return ret;
-
- error:
-    for (; i < nsrvs; i++)
-        virAdmServerFree(srvs[i]);
-    VIR_FREE(srvs);
-    for (i = 0; i < nsrvs; i++)
-        VIR_FREE(ret[i]);
-    VIR_FREE(ret);
     return ret;
 }

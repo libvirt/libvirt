@@ -162,10 +162,7 @@ vshStringToArray(const char *str,
     }
 
     /* reserve the NULL element at the end */
-    if (VIR_ALLOC_N(arr, nstr_tokens + 1) < 0) {
-        VIR_FREE(str_copied);
-        return -1;
-    }
+    arr = g_new0(char *, nstr_tokens + 1);
 
     /* tokenize the input string, while treating ,, as a literal comma */
     nstr_tokens = 0;
