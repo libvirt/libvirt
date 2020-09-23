@@ -151,13 +151,12 @@ static int
 virStorageBackendCreateVols(virStoragePoolObjPtr pool,
                             struct dm_names *names)
 {
-    int is_mpath = 0;
     uint32_t minor = -1;
     uint32_t next;
     g_autofree char *map_device = NULL;
 
     do {
-        is_mpath = virStorageBackendIsMultipath(names->name);
+        int is_mpath = virStorageBackendIsMultipath(names->name);
 
         if (is_mpath < 0)
             return -1;

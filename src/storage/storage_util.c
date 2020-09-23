@@ -2416,7 +2416,6 @@ virStorageBackendVolUploadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                                 unsigned int flags)
 {
     char *target_path = vol->target.path;
-    int has_snap = 0;
     bool sparse = flags & VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM;
     g_autofree char *path = NULL;
 
@@ -2427,7 +2426,7 @@ virStorageBackendVolUploadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
      * when volUpload is fully finished. */
     if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
         /* Fail if the volume contains snapshots or we failed to check it.*/
-        has_snap = storageBackendPloopHasSnapshots(vol->target.path);
+        int has_snap = storageBackendPloopHasSnapshots(vol->target.path);
         if (has_snap < 0) {
             return -1;
         } else if (!has_snap) {
@@ -2456,13 +2455,12 @@ virStorageBackendVolDownloadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                                   unsigned int flags)
 {
     char *target_path = vol->target.path;
-    int has_snap = 0;
     bool sparse = flags & VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM;
     g_autofree char *path = NULL;
 
     virCheckFlags(VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM, -1);
     if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
-        has_snap = storageBackendPloopHasSnapshots(vol->target.path);
+        int has_snap = storageBackendPloopHasSnapshots(vol->target.path);
         if (has_snap < 0) {
             return -1;
         } else if (!has_snap) {

@@ -747,7 +747,6 @@ nodeDeviceCreateXML(virConnectPtr conn,
     g_autoptr(virNodeDeviceDef) def = NULL;
     g_autofree char *wwnn = NULL;
     g_autofree char *wwpn = NULL;
-    int parent_host = -1;
     virNodeDevicePtr device = NULL;
     const char *virt_type = NULL;
 
@@ -765,6 +764,8 @@ nodeDeviceCreateXML(virConnectPtr conn,
         return NULL;
 
     if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_SCSI_HOST)) {
+        int parent_host;
+
         if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
             return NULL;
 

@@ -1352,8 +1352,6 @@ virConnectSetKeepAlive(virConnectPtr conn,
                        int interval,
                        unsigned int count)
 {
-    int ret = -1;
-
     VIR_DEBUG("conn=%p, interval=%d, count=%u", conn, interval, count);
 
     virResetLastError();
@@ -1361,7 +1359,7 @@ virConnectSetKeepAlive(virConnectPtr conn,
     virCheckConnectReturn(conn, -1);
 
     if (conn->driver->connectSetKeepAlive) {
-        ret = conn->driver->connectSetKeepAlive(conn, interval, count);
+        int ret = conn->driver->connectSetKeepAlive(conn, interval, count);
         if (ret < 0)
             goto error;
         return ret;
