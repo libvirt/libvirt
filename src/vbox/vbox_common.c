@@ -3077,23 +3077,18 @@ static int
 vboxDumpStorageControllers(virDomainDefPtr def, IMachine *machine)
 {
     vboxArray storageControllers = VBOX_ARRAY_INITIALIZER;
-    IStorageController *controller = NULL;
-    PRUint32 storageBus = StorageBus_Null;
-    PRUint32 controllerType = StorageControllerType_Null;
-    virDomainControllerDefPtr cont = NULL;
     size_t i = 0;
-    int model = -1, ret = -1;
-    virDomainControllerType type = VIR_DOMAIN_CONTROLLER_TYPE_LAST;
+    int ret = -1;
 
     gVBoxAPI.UArray.vboxArrayGet(&storageControllers, machine,
                  gVBoxAPI.UArray.handleMachineGetStorageControllers(machine));
 
     for (i = 0; i < storageControllers.count; i++) {
-        controller = storageControllers.items[i];
-        storageBus = StorageBus_Null;
-        controllerType = StorageControllerType_Null;
-        type = VIR_DOMAIN_CONTROLLER_TYPE_LAST;
-        model = -1;
+        IStorageController *controller = storageControllers.items[i];
+        PRUint32 storageBus = StorageBus_Null;
+        PRUint32 controllerType = StorageControllerType_Null;
+        virDomainControllerType type = VIR_DOMAIN_CONTROLLER_TYPE_LAST;
+        int model = -1;
 
         if (!controller)
             continue;
@@ -3131,8 +3126,6 @@ vboxDumpStorageControllers(virDomainDefPtr def, IMachine *machine)
         case StorageControllerType_IntelAhci:
         case StorageControllerType_I82078:
         case StorageControllerType_Null:
-            model = -1;
-
             break;
         }
 
@@ -3163,6 +3156,8 @@ vboxDumpStorageControllers(virDomainDefPtr def, IMachine *machine)
         }
 
         if (type != VIR_DOMAIN_CONTROLLER_TYPE_LAST) {
+            virDomainControllerDefPtr cont;
+
             cont = virDomainDefAddController(def, type, -1, model);
             if (!cont) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
