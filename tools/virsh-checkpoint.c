@@ -581,7 +581,6 @@ virshCheckpointListCollect(vshControl *ctl,
                            bool tree)
 {
     size_t i;
-    char **names = NULL;
     int count = -1;
     virDomainCheckpointPtr *chks;
     virshCheckpointListPtr checkpointlist = vshMalloc(ctl,
@@ -628,10 +627,6 @@ virshCheckpointListCollect(vshControl *ctl,
 
  cleanup:
     virshCheckpointListFree(checkpointlist);
-    if (names && count > 0)
-        for (i = 0; i < count; i++)
-            VIR_FREE(names[i]);
-    VIR_FREE(names);
     return ret;
 }
 
