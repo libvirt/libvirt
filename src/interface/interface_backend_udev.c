@@ -86,8 +86,7 @@ udevGetMinimalDefForDevice(struct udev_device *dev)
     virInterfaceDef *def;
 
     /* Allocate our interface definition structure */
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    def = g_new0(virInterfaceDef, 1);
 
     def->name = g_strdup(udev_device_get_sysname(dev));
     def->mac = g_strdup(udev_device_get_sysattr_value(dev, "address"));
@@ -352,10 +351,8 @@ udevConnectListAllInterfaces(virConnectPtr conn,
     }
 
     /* If we're asked for the ifaces then alloc up memory */
-    if (ifaces && VIR_ALLOC_N(ifaces_list, count + 1) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
+    if (ifaces)
+        ifaces_list = g_new0(virInterfacePtr, count + 1);
 
     /* Get a list we can walk */
     devices = udev_enumerate_get_list_entry(enumerate);
@@ -758,8 +755,8 @@ udevGetIfaceDefBond(struct udev *udev,
     }
 
     /* Allocate our list of slave devices */
-    if (VIR_ALLOC_N(ifacedef->data.bond.itf, slave_count) < 0)
-        goto error;
+    ifacedef->data.bond.itf = g_new0(struct _virInterfaceDef *,
+                                     slave_count);
     ifacedef->data.bond.nbItf = slave_count;
 
     for (i = 0; i < slave_count; i++) {
@@ -873,8 +870,7 @@ udevGetIfaceDefBridge(struct udev *udev,
     }
 
     /* Allocate our list of member devices */
-    if (VIR_ALLOC_N(ifacedef->data.bridge.itf, member_count) < 0)
-        goto error;
+    ifacedef->data.bridge.itf = g_new0(struct _virInterfaceDef *, member_count);
     ifacedef->data.bridge.nbItf = member_count;
 
     /* Get the interface definitions for each member of the bridge */
@@ -976,8 +972,7 @@ udevGetIfaceDef(struct udev *udev, const char *name)
     const char *devtype;
 
     /* Allocate our interface definition structure */
-    if (VIR_ALLOC(ifacedef) < 0)
-        return NULL;
+    ifacedef = g_new0(virInterfaceDef, 1);
 
     /* Clear our structure and set safe defaults */
     ifacedef->startmode = VIR_INTERFACE_START_UNSPECIFIED;
@@ -1158,8 +1153,7 @@ udevStateInitialize(bool privileged,
         return -1;
     }
 
-    if (VIR_ALLOC(driver) < 0)
-        goto cleanup;
+    driver = g_new0(struct udev_iface_driver, 1);
 
     driver->lockFD = -1;
 
