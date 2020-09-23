@@ -2090,7 +2090,7 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIID *iid
     int ret = -1;
 
     if (!data->vboxObj)
-        return ret;
+        return -1;
 
     VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
     gVBoxAPI.UIMachine.GetExtraData(machine, keyTypeUtf16, &valueTypeUtf16);
@@ -2177,7 +2177,7 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIID *iid
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("OpenRemoteSession/LaunchVMProcess failed, domain can't be started"));
-        ret = -1;
+        goto cleanup;
     } else {
         PRBool completed = 0;
         resultCodeUnion resultCode;
@@ -2186,19 +2186,21 @@ vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIID *iid
         rc = gVBoxAPI.UIProgress.GetCompleted(progress, &completed);
         if (NS_FAILED(rc)) {
             /* error */
-            ret = -1;
+            goto cleanup;
         }
         gVBoxAPI.UIProgress.GetResultCode(progress, &resultCode);
         if (RC_FAILED(resultCode)) {
             /* error */
-            ret = -1;
+            goto cleanup;
         } else {
             /* all ok set the domid */
             dom->id = maxDomID + 1;
-            ret = 0;
         }
     }
 
+    ret = 0;
+
+ cleanup:
     VBOX_RELEASE(progress);
 
     gVBoxAPI.UISession.Close(data->vboxSession);
