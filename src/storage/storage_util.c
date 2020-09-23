@@ -1997,7 +1997,6 @@ createFileDir(virStoragePoolObjPtr pool,
               unsigned int flags)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    int err;
 
     virCheckFlags(0, -1);
 
@@ -2015,14 +2014,14 @@ createFileDir(virStoragePoolObjPtr pool,
     }
 
 
-    if ((err = virDirCreate(vol->target.path,
-                            (vol->target.perms->mode == (mode_t)-1 ?
-                             VIR_STORAGE_DEFAULT_VOL_PERM_MODE :
-                             vol->target.perms->mode),
-                            vol->target.perms->uid,
-                            vol->target.perms->gid,
-                            (def->type == VIR_STORAGE_POOL_NETFS
-                             ? VIR_DIR_CREATE_AS_UID : 0))) < 0) {
+    if (virDirCreate(vol->target.path,
+                     (vol->target.perms->mode == (mode_t)-1 ?
+                      VIR_STORAGE_DEFAULT_VOL_PERM_MODE :
+                      vol->target.perms->mode),
+                     vol->target.perms->uid,
+                     vol->target.perms->gid,
+                     (def->type == VIR_STORAGE_POOL_NETFS
+                      ? VIR_DIR_CREATE_AS_UID : 0)) < 0) {
         return -1;
     }
 
