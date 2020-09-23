@@ -5741,7 +5741,6 @@ virDomainMemoryStats(virDomainPtr dom, virDomainMemoryStatPtr stats,
                      unsigned int nr_stats, unsigned int flags)
 {
     virConnectPtr conn;
-    unsigned long nr_stats_ret = 0;
 
     VIR_DOMAIN_DEBUG(dom, "stats=%p, nr_stats=%u, flags=0x%x",
                      stats, nr_stats, flags);
@@ -5758,11 +5757,10 @@ virDomainMemoryStats(virDomainPtr dom, virDomainMemoryStatPtr stats,
 
     conn = dom->conn;
     if (conn->driver->domainMemoryStats) {
-        nr_stats_ret = conn->driver->domainMemoryStats(dom, stats, nr_stats,
-                                                       flags);
-        if (nr_stats_ret == -1)
+        int ret = conn->driver->domainMemoryStats(dom, stats, nr_stats, flags);
+        if (ret == -1)
             goto error;
-        return nr_stats_ret;
+        return ret;
     }
 
     virReportUnsupportedError();
