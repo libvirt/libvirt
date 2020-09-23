@@ -128,8 +128,7 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     /* Allocate per-connection private data */
-    if (VIR_ALLOC(priv) < 0)
-        goto cleanup;
+    priv = g_new0(hypervPrivate, 1);
 
     if (hypervParseUri(&priv->parsedUri, conn->uri) < 0)
         goto cleanup;
@@ -1221,8 +1220,8 @@ hypervConnectListAllDomains(virConnectPtr conn,
          !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART)) ||
         (MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) &&
          !MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT))) {
-        if (domains && VIR_ALLOC_N(*domains, 1) < 0)
-            goto cleanup;
+        if (domains)
+            *domains = g_new0(virDomainPtr, 1);
 
         ret = 0;
         goto cleanup;
@@ -1251,8 +1250,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
         goto cleanup;
 
     if (domains) {
-        if (VIR_ALLOC_N(doms, 1) < 0)
-            goto cleanup;
+        doms = g_new0(virDomainPtr, 1);
         ndoms = 1;
     }
 
@@ -1357,8 +1355,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     if (hypervGetMsvmKeyboardList(priv, &query, &keyboard) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(translatedKeycodes, nkeycodes) < 0)
-        goto cleanup;
+    translatedKeycodes = g_new0(int, nkeycodes);
 
     /* translate keycodes to win32 and generate keyup scancodes. */
     for (i = 0; i < nkeycodes; i++) {

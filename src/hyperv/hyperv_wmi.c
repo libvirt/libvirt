@@ -176,14 +176,9 @@ hypervCreateInvokeParamsList(hypervPrivate *priv, const char *method,
     if (hypervGetWmiClassInfo(priv, obj, &info) < 0)
         return NULL;
 
-    if (VIR_ALLOC(params) < 0)
-        return NULL;
+    params = g_new0(hypervInvokeParamsList, 1);
 
-    if (VIR_ALLOC_N(params->params,
-                HYPERV_DEFAULT_PARAM_COUNT) < 0) {
-        VIR_FREE(params);
-        return NULL;
-    }
+    params->params = g_new0(hypervParam, HYPERV_DEFAULT_PARAM_COUNT);
 
     params->method = method;
     params->ns = info->rootUri;
@@ -1052,9 +1047,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
             goto cleanup;
         }
 
-        if (VIR_ALLOC(object) < 0)
-            goto cleanup;
-
+        object = g_new0(hypervObject, 1);
         object->info = wmiInfo;
         object->data.common = data;
 

@@ -45,8 +45,7 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
         return -1;
     }
 
-    if (VIR_ALLOC(*parsedUri) < 0)
-        return -1;
+    *parsedUri = g_new0(hypervParsedUri, 1);
 
     for (i = 0; i < uri->paramsCount; i++) {
         virURIParamPtr queryParam = &uri->params[i];
