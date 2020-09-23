@@ -12336,6 +12336,15 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
         if (virCPUDefParseXMLString(xmlCPU, VIR_CPU_TYPE_AUTO, &cpu) < 0)
             goto cleanup;
 
+        if (!cpu->model) {
+            if (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
+                cpu->model = g_strdup("host");
+            } else {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("cpu parameter is missing a model name"));
+                goto cleanup;
+            }
+        }
         ret = qemuConnectCPUModelComparison(qemuCaps, cfg->libDir,
                                             cfg->user, cfg->group,
                                             hvCPU, cpu, failIncompatible);
