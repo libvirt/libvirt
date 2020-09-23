@@ -1401,7 +1401,7 @@ virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
 
         if (virHashLookup(addrs->defined, addr)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("The CCW devno '%s' is in use already "),
+                           _("The CCW devno '%s' is in use already"),
                            addr);
             return -1;
         }
