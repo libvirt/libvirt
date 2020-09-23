@@ -588,8 +588,7 @@ virStreamSendAll(virStreamPtr stream,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(bytes, want) < 0)
-        goto cleanup;
+    bytes = g_new0(char, want);
 
     errno = 0;
     for (;;) {
@@ -724,8 +723,7 @@ int virStreamSparseSendAll(virStreamPtr stream,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(bytes, bufLen) < 0)
-        goto cleanup;
+    bytes = g_new0(char, bufLen);
 
     errno = 0;
     for (;;) {
@@ -859,8 +857,7 @@ virStreamRecvAll(virStreamPtr stream,
     }
 
 
-    if (VIR_ALLOC_N(bytes, want) < 0)
-        goto cleanup;
+    bytes = g_new0(char, want);
 
     errno = 0;
     for (;;) {
@@ -977,8 +974,7 @@ virStreamSparseRecvAll(virStreamPtr stream,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(bytes, want) < 0)
-        goto cleanup;
+    bytes = g_new0(char, want);
 
     errno = 0;
     for (;;) {
