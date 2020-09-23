@@ -42,8 +42,7 @@ xenParseXMOS(virConfPtr conf, virDomainDefPtr def)
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         g_autofree char *boot = NULL;
 
-        if (VIR_ALLOC(def->os.loader) < 0)
-            return -1;
+        def->os.loader = g_new0(virDomainLoaderDef, 1);
 
         if (xenConfigCopyString(conf, "kernel", &def->os.loader->path) < 0)
             return -1;
@@ -346,9 +345,7 @@ xenFormatXMDisk(virConfValuePtr list,
         return -1;
     }
 
-    if (VIR_ALLOC(val) < 0)
-        return -1;
-
+    val = g_new0(virConfValue, 1);
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
     tmp = list->list;

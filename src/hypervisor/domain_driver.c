@@ -219,8 +219,7 @@ virDomainDriverParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
 
     ndevices = (nsep + 1) / 2;
 
-    if (VIR_ALLOC_N(result, ndevices) < 0)
-        return -1;
+    result = g_new0(virBlkioDevice, ndevices);
 
     i = 0;
     temp = blkioDeviceStr;

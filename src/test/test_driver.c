@@ -212,15 +212,14 @@ testDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     unsigned int tmpuint;
     g_autofree xmlNodePtr *nodes = NULL;
 
-    if (VIR_ALLOC(nsdata) < 0)
-        return -1;
+    nsdata = g_new0(testDomainNamespaceDef, 1);
 
     n = virXPathNodeSet("./test:domainsnapshot", ctxt, &nodes);
     if (n < 0)
         goto error;
 
-    if (n && VIR_ALLOC_N(nsdata->snap_nodes, n) < 0)
-        goto error;
+    if (n)
+        nsdata->snap_nodes = g_new0(xmlNodePtr, n);
 
     for (i = 0; i < n; i++) {
         xmlNodePtr newnode = xmlCopyNode(nodes[i], 1);
@@ -302,8 +301,7 @@ testBuildCapabilities(virConnectPtr conn)
 
     virCapabilitiesHostInitIOMMU(caps);
 
-    if (VIR_ALLOC_N(caps->host.pagesSize, 4) < 0)
-        goto error;
+    caps->host.pagesSize = g_new0(unsigned int, 4);
 
     caps->host.pagesSize[caps->host.nPagesSize++] = 4;
     caps->host.pagesSize[caps->host.nPagesSize++] = 8;
@@ -316,11 +314,8 @@ testBuildCapabilities(virConnectPtr conn)
         virCapsHostNUMACellPageInfoPtr pages;
         size_t nPages = caps->host.nPagesSize - 1;
 
-        if (VIR_ALLOC_N(cpu_cells, privconn->cells[i].numCpus) < 0 ||
-            VIR_ALLOC_N(pages, nPages) < 0) {
-                VIR_FREE(cpu_cells);
-                goto error;
-            }
+        cpu_cells = g_new0(virCapsHostNUMACellCPU, privconn->cells[i].numCpus);
+        pages = g_new0(virCapsHostNUMACellPageInfo, nPages);
 
         memcpy(cpu_cells, privconn->cells[i].cpus,
                sizeof(*cpu_cells) * privconn->cells[i].numCpus);
@@ -364,8 +359,7 @@ testBuildCapabilities(virConnectPtr conn)
     }
 
     caps->host.nsecModels = 1;
-    if (VIR_ALLOC_N(caps->host.secModels, caps->host.nsecModels) < 0)
-        goto error;
+    caps->host.secModels = g_new0(virCapsHostSecModel, caps->host.nsecModels);
     caps->host.secModels[0].model = g_strdup("testSecurity");
 
     caps->host.secModels[0].doi = g_strdup("");
@@ -396,8 +390,7 @@ testDomainObjPrivateAlloc(void *opaque)
 {
     testDomainObjPrivatePtr priv;
 
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
+    priv = g_new0(testDomainObjPrivate, 1);
 
     priv->driver = opaque;
     priv->frozen[0] = priv->frozen[1] = false;
@@ -760,8 +753,7 @@ static char *testBuildFilename(const char *relativeTo,
     if ((baseLen = (offset-relativeTo+1))) {
         char *absFile;
         int totalLen = baseLen + strlen(filename) + 1;
-        if (VIR_ALLOC_N(absFile, totalLen) < 0)
-            return NULL;
+        absFile = g_new0(char, totalLen);
         if (virStrncpy(absFile, relativeTo, baseLen, totalLen) < 0) {
             VIR_FREE(absFile);
             return NULL;
@@ -1233,8 +1225,8 @@ testParseAuthUsers(testDriverPtr privconn,
         return -1;
 
     privconn->numAuths = num;
-    if (num && VIR_ALLOC_N(privconn->auths, num) < 0)
-        return -1;
+    if (num)
+        privconn->auths = g_new0(testAuth, num);
 
     for (i = 0; i < num; i++) {
         g_autofree char *username = NULL;
@@ -2298,8 +2290,7 @@ testDomainSaveImageOpen(testDriverPtr driver,
         goto error;
     }
 
-    if (VIR_ALLOC_N(xml, len+1) < 0)
-        goto error;
+    xml = g_new0(char, len + 1);
 
     if (saferead(fd, xml, len) != len) {
         virReportSystemError(errno, _("incomplete metadata in '%s'"), path);
@@ -3491,10 +3482,9 @@ testDomainSetInterfaceParameters(virDomainPtr dom,
     if (!(net = virDomainNetFind(def, device)))
         goto cleanup;
 
-    if ((VIR_ALLOC(bandwidth) < 0) ||
-        (VIR_ALLOC(bandwidth->in) < 0) ||
-        (VIR_ALLOC(bandwidth->out) < 0))
-        goto cleanup;
+    bandwidth = g_new0(virNetDevBandwidth, 1);
+    bandwidth->in = g_new0(virNetDevBandwidthRate, 1);
+    bandwidth->out = g_new0(virNetDevBandwidthRate, 1);
 
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
@@ -4726,21 +4716,17 @@ testDomainGetFSInfo(virDomainPtr dom,
         if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
             char *name = vm->def->disks[i]->dst;
 
-            if (VIR_ALLOC_N(info_ret, 2) < 0)
-                goto cleanup;
-
-            if (VIR_ALLOC(info_ret[0]) < 0 ||
-                VIR_ALLOC(info_ret[0]->devAlias) < 0)
-                goto cleanup;
+            info_ret = g_new0(virDomainFSInfo *, 2);
+            info_ret[0] = g_new0(virDomainFSInfo, 1);
+            info_ret[0]->devAlias = g_new0(char *, 1);
 
             info_ret[0]->mountpoint = g_strdup("/");
             info_ret[0]->fstype = g_strdup("ext4");
             info_ret[0]->devAlias[0] = g_strdup(name);
             info_ret[0]->name = g_strdup_printf("%s1", name);
 
-            if (VIR_ALLOC(info_ret[1]) < 0 ||
-                VIR_ALLOC(info_ret[1]->devAlias) < 0)
-                goto cleanup;
+            info_ret[1] = g_new0(virDomainFSInfo, 1);
+            info_ret[1]->devAlias = g_new0(char *, 1);
 
             info_ret[1]->mountpoint = g_strdup("/boot");
             info_ret[1]->fstype = g_strdup("ext4");
@@ -5076,22 +5062,19 @@ testDomainInterfaceAddresses(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(ifaces_ret, vm->def->nnets) < 0)
-        goto cleanup;
+    ifaces_ret = g_new0(virDomainInterfacePtr, vm->def->nnets);
 
     for (i = 0; i < vm->def->nnets; i++) {
         const virDomainNetDef *net = vm->def->nets[i];
 
-        if (VIR_ALLOC(iface) < 0)
-            goto cleanup;
+        iface = g_new0(virDomainInterface, 1);
 
         iface->name = g_strdup(net->ifname);
 
         virMacAddrFormat(&net->mac, macaddr);
         iface->hwaddr = g_strdup(macaddr);
 
-        if (VIR_ALLOC(iface->addrs) < 0)
-            goto cleanup;
+        iface->addrs = g_new0(virDomainIPAddress, 1);
         iface->naddrs = 1;
 
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -7741,8 +7724,7 @@ testNodeGetCPUMap(virConnectPtr conn G_GNUC_UNUSED,
     virCheckFlags(0, -1);
 
     if (cpumap) {
-        if (VIR_ALLOC_N(*cpumap, 1) < 0)
-            return -1;
+        *cpumap = g_new0(unsigned char, 1);
         *cpumap[0] = 0x15;
     }
 

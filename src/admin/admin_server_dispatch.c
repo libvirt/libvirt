@@ -88,8 +88,7 @@ remoteAdmClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
         return NULL;
     }
 
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
+    priv = g_new0(struct daemonAdmClientPrivate, 1);
 
     if (virMutexInit(&priv->lock) < 0) {
         VIR_FREE(priv);
@@ -511,8 +510,7 @@ adminDispatchConnectGetLoggingFilters(virNetServerPtr server G_GNUC_UNUSED,
         ret->filters = NULL;
     } else {
         char **ret_filters = NULL;
-        if (VIR_ALLOC(ret_filters) < 0)
-            return -1;
+        ret_filters = g_new0(char *, 1);
 
         *ret_filters = filters;
         ret->filters = ret_filters;

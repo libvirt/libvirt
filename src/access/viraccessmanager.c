@@ -91,8 +91,7 @@ static virAccessManagerPtr virAccessManagerNewDriver(virAccessDriverPtr drv)
     if (virAccessManagerInitialize() < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(privateData, drv->privateDataLen) < 0)
-        return NULL;
+    privateData = g_new0(char, drv->privateDataLen);
 
     if (!(mgr = virObjectLockableNew(virAccessManagerClass))) {
         VIR_FREE(privateData);

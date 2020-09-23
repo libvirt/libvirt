@@ -120,9 +120,7 @@ virCloseCallbacksSet(virCloseCallbacksPtr closeCallbacks,
 
         closeDef->cb = cb;
     } else {
-        if (VIR_ALLOC(closeDef) < 0)
-            goto cleanup;
-
+        closeDef = g_new0(virDriverCloseDef, 1);
         closeDef->conn = conn;
         closeDef->cb = cb;
         if (virHashAddEntry(closeCallbacks->list, uuidstr, closeDef) < 0) {
@@ -284,8 +282,7 @@ virCloseCallbacksGetForConn(virCloseCallbacksPtr closeCallbacks,
     virCloseCallbacksListPtr list = NULL;
     struct virCloseCallbacksData data;
 
-    if (VIR_ALLOC(list) < 0)
-        return NULL;
+    list = g_new0(virCloseCallbacksList, 1);
 
     data.conn = conn;
     data.list = list;
