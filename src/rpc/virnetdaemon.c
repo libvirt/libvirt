@@ -469,7 +469,7 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
 {
     g_autoptr(GVariant) reply = NULL;
     g_autoptr(GUnixFDList) replyFD = NULL;
-    GVariant *message = NULL;
+    g_autoptr(GVariant) message = NULL;
     GDBusConnection *systemBus;
     int fd;
     int rc;
