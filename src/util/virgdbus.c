@@ -359,8 +359,10 @@ virGDBusIsServiceInList(const char *listMethod,
 
     g_variant_get(reply, "(as)", &iter);
     while (g_variant_iter_loop(iter, "s", &str)) {
-        if (STREQ(str, name))
+        if (STREQ(str, name)) {
+            g_free(str);
             return 0;
+        }
     }
 
     return -2;
