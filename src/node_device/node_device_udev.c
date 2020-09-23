@@ -413,13 +413,11 @@ udevProcessPCI(struct udev_device *device,
             goto cleanup;
 
         if (virPCIDeviceIsPCIExpress(pciDev) > 0) {
-            if (VIR_ALLOC(pci_express) < 0)
-                goto cleanup;
+            pci_express = g_new0(virPCIEDeviceInfo, 1);
 
             if (virPCIDeviceHasPCIExpressLink(pciDev) > 0) {
-                if (VIR_ALLOC(pci_express->link_cap) < 0 ||
-                    VIR_ALLOC(pci_express->link_sta) < 0)
-                    goto cleanup;
+                pci_express->link_cap = g_new0(virPCIELink, 1);
+                pci_express->link_sta = g_new0(virPCIELink, 1);
 
                 if (virPCIDeviceGetLinkCapSta(pciDev,
                                               &pci_express->link_cap->port,
@@ -1159,8 +1157,7 @@ udevGetDeviceNodes(struct udev_device *device,
     udev_list_entry_foreach(list_entry, udev_device_get_devlinks_list_entry(device))
         n++;
 
-    if (VIR_ALLOC_N(def->devlinks, n + 1) < 0)
-        return -1;
+    def->devlinks = g_new0(char *, n + 1);
 
     n = 0;
     udev_list_entry_foreach(list_entry, udev_device_get_devlinks_list_entry(device)) {
@@ -1371,16 +1368,14 @@ udevAddOneDevice(struct udev_device *device)
     bool new_device = true;
     int ret = -1;
 
-    if (VIR_ALLOC(def) != 0)
-        goto cleanup;
+    def = g_new0(virNodeDeviceDef, 1);
 
     def->sysfs_path = g_strdup(udev_device_get_syspath(device));
 
     if (udevGetStringProperty(device, "DRIVER", &def->driver) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(def->caps) != 0)
-        goto cleanup;
+    def->caps = g_new0(virNodeDevCapsDef, 1);
 
     if (udevGetDeviceType(device, &def->caps->data.type) != 0)
         goto cleanup;
@@ -1788,13 +1783,10 @@ udevSetupSystemDev(void)
     virNodeDeviceObjPtr obj = NULL;
     int ret = -1;
 
-    if (VIR_ALLOC(def) < 0)
-        return -1;
+    def = g_new0(virNodeDeviceDef, 1);
 
     def->name = g_strdup("computer");
-
-    if (VIR_ALLOC(def->caps) != 0)
-        goto cleanup;
+    def->caps = g_new0(virNodeDevCapsDef, 1);
 
 #if defined(__x86_64__) || defined(__i386__) || defined(__amd64__)
     udevGetDMIData(&def->caps->data.system);
@@ -1882,8 +1874,7 @@ nodeStateInitialize(bool privileged,
         return -1;
     }
 
-    if (VIR_ALLOC(driver) < 0)
-        return VIR_DRV_STATE_INIT_ERROR;
+    driver = g_new0(virNodeDeviceDriverState, 1);
 
     driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
