@@ -356,7 +356,7 @@ endif
 
 if conf.has('WITH_ESX')
   tests += [
-    { 'name': 'esxutilstest', 'include': [ esx_inc_dir ] },
+    { 'name': 'esxutilstest', 'deps': [ esx_dep ] },
   ]
 endif
 

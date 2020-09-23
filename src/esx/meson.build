@@ -81,3 +81,8 @@ else
 endif
 
 esx_inc_dir = include_directories('.')
+
+esx_dep = declare_dependency(
+  include_directories: esx_inc_dir,
+  sources: esx_gen_headers,
+)
