@@ -89,7 +89,8 @@ foreach data : docs_man_files
       man_file,
       input: rst_file,
       output: man_file,
-      command: [ rst2man_prog, '--strict', '@INPUT@', '@OUTPUT@' ],
+      # 'contents' element is the table of contents which is undesired in manpage
+      command: [ rst2man_prog, '--strip-elements-with-class', 'contents', '--strict', '@INPUT@', '@OUTPUT@' ],
       install: true,
       install_dir: mandir / 'man@0@'.format(data['section']),
     )
