@@ -310,6 +310,7 @@ virGDBusCallMethodWithFD(GDBusConnection *conn,
 int
 virGDBusCallMethodWithFD(GDBusConnection *conn G_GNUC_UNUSED,
                          GVariant **reply G_GNUC_UNUSED,
+                         const GVariantType *replyType G_GNUC_UNUSED,
                          GUnixFDList **replyFD G_GNUC_UNUSED,
                          virErrorPtr error G_GNUC_UNUSED,
                          const char *busName G_GNUC_UNUSED,
