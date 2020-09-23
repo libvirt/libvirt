@@ -159,8 +159,7 @@ libxlFDRegisterEventHook(void *priv,
     int vir_events = VIR_EVENT_HANDLE_ERROR;
     libxlOSEventHookInfoPtr info;
 
-    if (VIR_ALLOC(info) < 0)
-        return -1;
+    info = g_new0(libxlOSEventHookInfo, 1);
 
     info->ctx = priv;
     info->xl_priv = xl_priv;
@@ -239,8 +238,7 @@ libxlTimeoutRegisterEventHook(void *priv,
     gint64 res_ms;
     int timeout;
 
-    if (VIR_ALLOC(info) < 0)
-        return -1;
+    info = g_new0(libxlOSEventHookInfo, 1);
 
     info->ctx = priv;
     info->xl_priv = xl_priv;
@@ -671,8 +669,7 @@ libxlStateInitialize(bool privileged,
     if (!libxlDriverShouldLoad(privileged))
         return VIR_DRV_STATE_INIT_SKIPPED;
 
-    if (VIR_ALLOC(libxl_driver) < 0)
-        return VIR_DRV_STATE_INIT_ERROR;
+    libxl_driver = g_new0(libxlDriverPrivate, 1);
 
     libxl_driver->lockFD = -1;
     if (virMutexInit(&libxl_driver->lock) < 0) {
@@ -2316,8 +2313,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
 
     maplen = VIR_CPU_MAPLEN(nvcpus);
-    if (VIR_ALLOC_N(bitmask, maplen) < 0)
-        goto endjob;
+    bitmask = g_new0(uint8_t, maplen);
 
     for (i = 0; i < nvcpus; ++i) {
         pos = i / 8;
@@ -2766,7 +2762,7 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(ret, len) < 0)
+    ret = g_new0(char, len);
         goto cleanup;
 
     if (virConfWriteMem(ret, &len, conf) < 0) {
@@ -6373,15 +6369,15 @@ libxlGetDHCPInterfaces(virDomainObjPtr vm,
             goto error;
 
         if (n_leases) {
-            ifaces_ret = g_renew(typeof(*ifaces_ret), ifaces_ret, ifaces_count + 1);
-            ifaces_ret[ifaces_count] = g_new0(typeof(**ifaces_ret), 1);
+            ifaces_ret = g_renew(virDomainInterfacePtr, ifaces_ret, ifaces_count + 1);
+            ifaces_ret[ifaces_count] = g_new0(virDomainInterface, 1);
             iface = ifaces_ret[ifaces_count];
             ifaces_count++;
 
             /* Assuming each lease corresponds to a separate IP */
             iface->naddrs = n_leases;
 
-            iface->addrs = g_new0(typeof(*iface->addrs), iface->naddrs);
+            iface->addrs = g_new0(virDomainIPAddress, iface->naddrs);
             iface->name = g_strdup(vm->def->nets[i]->ifname);
             iface->hwaddr = g_strdup(macaddr);
         }

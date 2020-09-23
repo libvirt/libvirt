@@ -269,11 +269,9 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         }
     }
 
-    if (VIR_ALLOC_N(cpus, nr_nodes) < 0)
-        goto cleanup;
+    cpus = g_new0(virCapsHostNUMACellCPUPtr, nr_nodes);
 
-    if (VIR_ALLOC_N(nr_cpus_node, nr_nodes) < 0)
-        goto cleanup;
+    nr_cpus_node = g_new0(int, nr_nodes);
 
     /* For each node, prepare a list of CPUs belonging to that node */
     for (i = 0; i < nr_cpus; i++) {
@@ -285,7 +283,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         nr_cpus_node[node]++;
 
         if (nr_cpus_node[node] == 1) {
-            if (VIR_ALLOC(cpus[node]) < 0)
+            cpus[node] = g_new0(virCapsHostNUMACellCPU, 1);
                 goto cleanup;
         } else {
             if (VIR_REALLOC_N(cpus[node], nr_cpus_node[node]) < 0)
@@ -328,7 +326,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         if (nr_siblings) {
             size_t j;
 
-            if (VIR_ALLOC_N(siblings, nr_siblings) < 0)
+            siblings = g_new0(virCapsHostNUMACellSiblingInfo, nr_siblings);
                 goto cleanup;
 
             for (j = 0; j < nr_siblings; j++) {
@@ -590,8 +588,7 @@ libxlMakeDomainOSCaps(const char *machine,
         return 0;
 
     capsLoader->supported = VIR_TRISTATE_BOOL_YES;
-    if (VIR_ALLOC_N(capsLoader->values.values, nfirmwares) < 0)
-        return -1;
+    capsLoader->values.values = g_new0(char *, nfirmwares);
 
     for (i = 0; i < nfirmwares; i++) {
         capsLoader->values.values[capsLoader->values.nvalues] = g_strdup(firmwares[i]->name);

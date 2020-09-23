@@ -72,8 +72,7 @@ libxlDomainObjInitJob(libxlDomainObjPrivatePtr priv)
     if (virCondInit(&priv->job.cond) < 0)
         return -1;
 
-    if (VIR_ALLOC(priv->job.current) < 0)
-        return -1;
+    priv->job.current = g_new0(virDomainJobInfo, 1);
 
     return 0;
 }
@@ -402,11 +401,7 @@ libxlDomainDefPostParse(virDomainDefPtr def,
         chrdef->target.port = 0;
         chrdef->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
 
-        if (VIR_ALLOC_N(def->consoles, 1) < 0) {
-            virDomainChrDefFree(chrdef);
-            return -1;
-        }
-
+        def->consoles = g_new0(virDomainChrDefPtr, 1);
         def->nconsoles = 1;
         def->consoles[0] = chrdef;
     }
@@ -429,8 +424,8 @@ libxlDomainDefPostParse(virDomainDefPtr def,
     /* add implicit balloon device */
     if (def->memballoon == NULL) {
         virDomainMemballoonDefPtr memballoon;
-        if (VIR_ALLOC(memballoon) < 0)
-            return -1;
+        memballoon = g_new0(virDomainMemballoonDef,
+                            1);
 
         memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_XEN;
         def->memballoon = memballoon;
@@ -695,8 +690,7 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
      * Start a thread to handle shutdown.  We don't want to be tying up
      * libxl's event machinery by doing a potentially lengthy shutdown.
      */
-    if (VIR_ALLOC(shutdown_info) < 0)
-        goto error;
+    shutdown_info = g_new0(struct libxlShutdownThreadInfo, 1);
 
     shutdown_info->driver = driver;
     shutdown_info->event = (libxl_event *)event;
@@ -785,8 +779,7 @@ libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
         goto error;
     }
 
-    if (VIR_ALLOC_N(xml, hdr.xmlLen) < 0)
-        goto error;
+    xml = g_new0(char, hdr.xmlLen);
 
     if (saferead(fd, xml, hdr.xmlLen) != hdr.xmlLen) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", _("failed to read XML"));

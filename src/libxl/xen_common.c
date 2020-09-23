@@ -253,8 +253,7 @@ xenConfigSetInt(virConfPtr conf, const char *setting, long long l)
                        l, setting);
         return -1;
     }
-    if (VIR_ALLOC(value) < 0)
-        return -1;
+    value = g_new0(virConfValue, 1);
 
     value->type = VIR_CONF_LLONG;
     value->next = NULL;
@@ -269,8 +268,7 @@ xenConfigSetString(virConfPtr conf, const char *setting, const char *str)
 {
     virConfValuePtr value = NULL;
 
-    if (VIR_ALLOC(value) < 0)
-        return -1;
+    value = g_new0(virConfValue, 1);
 
     value->type = VIR_CONF_STRING;
     value->next = NULL;
@@ -554,10 +552,10 @@ xenParseHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
         return -1;
 
     if (strval) {
-        if (VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1) < 0 ||
-            VIR_ALLOC(timer) < 0)
+        if (VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1) < 0)
             return -1;
 
+        timer = g_new0(virDomainTimerDef, 1);
         timer->name = VIR_DOMAIN_TIMER_NAME_TSC;
         timer->present = 1;
         timer->tickpolicy = -1;
@@ -627,10 +625,10 @@ xenParseHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
             return -1;
 
         if (val != -1) {
-            if (VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1) < 0 ||
-                VIR_ALLOC(timer) < 0)
+            if (VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1) < 0)
                 return -1;
 
+            timer = g_new0(virDomainTimerDef, 1);
             timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
             timer->present = val;
             timer->tickpolicy = -1;
@@ -666,8 +664,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
         if (xenConfigGetBool(conf, "vnc", &val, 0) < 0)
             goto cleanup;
         if (val) {
-            if (VIR_ALLOC(graphics) < 0)
-                goto cleanup;
+            graphics = g_new0(virDomainGraphicsDef, 1);
             graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
             if (xenConfigGetBool(conf, "vncunused", &val, 1) < 0)
                 goto cleanup;
@@ -689,8 +686,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                 goto cleanup;
             if (xenConfigCopyStringOpt(conf, "keymap", &graphics->data.vnc.keymap) < 0)
                 goto cleanup;
-            if (VIR_ALLOC_N(def->graphics, 1) < 0)
-                goto cleanup;
+            def->graphics = g_new0(virDomainGraphicsDefPtr, 1);
             def->graphics[0] = graphics;
             def->ngraphics = 1;
             graphics = NULL;
@@ -698,15 +694,13 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
             if (xenConfigGetBool(conf, "sdl", &val, 0) < 0)
                 goto cleanup;
             if (val) {
-                if (VIR_ALLOC(graphics) < 0)
-                    goto cleanup;
+                graphics = g_new0(virDomainGraphicsDef, 1);
                 graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
                 if (xenConfigCopyStringOpt(conf, "display", &graphics->data.sdl.display) < 0)
                     goto cleanup;
                 if (xenConfigCopyStringOpt(conf, "xauthority", &graphics->data.sdl.xauth) < 0)
                     goto cleanup;
-                if (VIR_ALLOC_N(def->graphics, 1) < 0)
-                    goto cleanup;
+                def->graphics = g_new0(virDomainGraphicsDefPtr, 1);
                 def->graphics[0] = graphics;
                 def->ngraphics = 1;
                 graphics = NULL;
@@ -729,8 +723,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                 goto cleanup;
             }
 
-            if (VIR_ALLOC(graphics) < 0)
-                goto cleanup;
+            graphics = g_new0(virDomainGraphicsDef, 1);
             if (strstr(key, "type=sdl"))
                 graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
             else
@@ -785,8 +778,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                     goto cleanup;
                 VIR_FREE(listenAddr);
             }
-            if (VIR_ALLOC_N(def->graphics, 1) < 0)
-                goto cleanup;
+            def->graphics = g_new0(virDomainGraphicsDefPtr, 1);
             def->graphics[0] = graphics;
             def->ngraphics = 1;
             graphics = NULL;
@@ -962,8 +954,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
             !(chr = xenParseSxprChar(parallel, NULL)))
             goto cleanup;
         if (chr) {
-            if (VIR_ALLOC_N(def->parallels, 1) < 0)
-                goto cleanup;
+            def->parallels = g_new0(virDomainChrDefPtr, 1);
 
             chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
             chr->target.port = 0;
@@ -1010,8 +1001,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
                 !(chr = xenParseSxprChar(serial, NULL)))
                 goto cleanup;
             if (chr) {
-                if (VIR_ALLOC_N(def->serials, 1) < 0)
-                    goto cleanup;
+                def->serials = g_new0(virDomainChrDefPtr, 1);
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = 0;
                 def->serials[0] = chr;
@@ -1019,8 +1009,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
             }
         }
     } else {
-        if (VIR_ALLOC_N(def->consoles, 1) < 0)
-            goto cleanup;
+        def->consoles = g_new0(virDomainChrDefPtr, 1);
         def->nconsoles = 1;
         if (!(def->consoles[0] = xenParseSxprChar("pty", NULL)))
             goto cleanup;
@@ -1051,15 +1040,11 @@ xenParseVifBridge(virDomainNetDefPtr net, char *bridge)
         if (virStrToLong_ui(vlanstr, NULL, 10, &tag) < 0)
             return -1;
 
-        if (VIR_ALLOC_N(net->vlan.tag, 1) < 0)
-            return -1;
-
+        net->vlan.tag = g_new0(unsigned int, 1);
         net->vlan.tag[0] = tag;
         net->vlan.nTags = 1;
 
-        if (VIR_ALLOC(net->virtPortProfile) < 0)
-            return -1;
-
+        net->virtPortProfile = g_new0(virNetDevVPortProfile, 1);
         net->virtPortProfile->virtPortType = VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH;
         return 0;
     } else if ((vlanstr = strchr(bridge, ':'))) {
@@ -1076,10 +1061,7 @@ xenParseVifBridge(virDomainNetDefPtr net, char *bridge)
         for (i = 1; vlanstr_list[i]; i++)
             nvlans++;
 
-        if (VIR_ALLOC_N(net->vlan.tag, nvlans) < 0) {
-            g_strfreev(vlanstr_list);
-            return -1;
-        }
+        net->vlan.tag = g_new0(unsigned int, nvlans);
 
         for (i = 1; i <= nvlans; i++) {
             if (virStrToLong_ui(vlanstr_list[i], NULL, 10, &tag) < 0) {
@@ -1092,9 +1074,7 @@ xenParseVifBridge(virDomainNetDefPtr net, char *bridge)
         net->vlan.trunk = true;
         g_strfreev(vlanstr_list);
 
-        if (VIR_ALLOC(net->virtPortProfile) < 0)
-            return -1;
-
+        net->virtPortProfile = g_new0(virNetDevVPortProfile, 1);
         net->virtPortProfile->virtPortType = VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH;
         return 0;
     } else {
@@ -1314,14 +1294,8 @@ xenParseVif(char *entry, const char *vif_typename)
         if (xenParseSxprVifRate(rate, &kbytes_per_sec) < 0)
             goto cleanup;
 
-        if (VIR_ALLOC(bandwidth) < 0)
-            goto cleanup;
-
-        if (VIR_ALLOC(bandwidth->out) < 0) {
-            VIR_FREE(bandwidth);
-            goto cleanup;
-        }
-
+        bandwidth = g_new0(virNetDevBandwidth, 1);
+        bandwidth->out = g_new0(virNetDevBandwidthRate, 1);
         bandwidth->out->average = kbytes_per_sec;
         net->bandwidth = bandwidth;
     }
@@ -1393,15 +1367,11 @@ xenParseSxprSound(virDomainDefPtr def,
          * Hence use of MODEL_ES1370 + 1, instead of MODEL_LAST
          */
 
-        if (VIR_ALLOC_N(def->sounds,
-                        VIR_DOMAIN_SOUND_MODEL_ES1370 + 1) < 0)
-            return -1;
-
+        def->sounds = g_new0(virDomainSoundDefPtr,
+                             VIR_DOMAIN_SOUND_MODEL_ES1370 + 1);
 
         for (i = 0; i < (VIR_DOMAIN_SOUND_MODEL_ES1370 + 1); i++) {
-            virDomainSoundDefPtr sound;
-            if (VIR_ALLOC(sound) < 0)
-                return -1;
+            virDomainSoundDefPtr sound = g_new0(virDomainSoundDef, 1);
             sound->model = i;
             def->sounds[def->nsounds++] = sound;
         }
@@ -1424,8 +1394,7 @@ xenParseSxprSound(virDomainDefPtr def,
                 return -1;
             }
 
-            if (VIR_ALLOC(sound) < 0)
-                return -1;
+            sound = g_new0(virDomainSoundDef, 1);
 
             if ((sound->model = virDomainSoundModelTypeFromString(model)) < 0) {
                 VIR_FREE(sound);
@@ -1661,8 +1630,7 @@ xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
         virBufferAddLit(&buf, "none");
     }
 
-    if (VIR_ALLOC(val) < 0)
-        return -1;
+    val = g_new0(virConfValue, 1);
 
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
@@ -1684,8 +1652,7 @@ xenMakeIPList(virNetDevIPInfoPtr guestIP)
     char **address_array;
     char *ret = NULL;
 
-    if (VIR_ALLOC_N(address_array, guestIP->nips + 1) < 0)
-        return NULL;
+    address_array = g_new0(char *, guestIP->nips + 1);
 
     for (i = 0; i < guestIP->nips; i++) {
         address_array[i] = virSocketAddrFormat(&guestIP->ips[i]->address);
@@ -1822,9 +1789,7 @@ xenFormatNet(virConnectPtr conn,
     if (net->bandwidth && net->bandwidth->out && net->bandwidth->out->average)
         virBufferAsprintf(&buf, ",rate=%lluKB/s", net->bandwidth->out->average);
 
-    if (VIR_ALLOC(val) < 0)
-        return -1;
-
+    val = g_new0(virConfValue, 1);
     val->type = VIR_CONF_STRING;
     val->str = virBufferContentAndReset(&buf);
     tmp = list->list;
@@ -1854,8 +1819,7 @@ xenFormatPCI(virConfPtr conf, virDomainDefPtr def)
     if (!hasPCI)
         return 0;
 
-    if (VIR_ALLOC(pciVal) < 0)
-        return -1;
+    pciVal = g_new0(virConfValue, 1);
 
     pciVal->type = VIR_CONF_LIST;
     pciVal->list = NULL;
@@ -1888,10 +1852,7 @@ xenFormatPCI(virConfPtr conf, virDomainDefPtr def)
                                   permissive_str);
 
 
-            if (VIR_ALLOC(val) < 0) {
-                VIR_FREE(buf);
-                goto error;
-            }
+            val = g_new0(virConfValue, 1);
             val->type = VIR_CONF_STRING;
             val->str = buf;
             tmp = pciVal->list;
@@ -1913,10 +1874,6 @@ xenFormatPCI(virConfPtr conf, virDomainDefPtr def)
     VIR_FREE(pciVal);
 
     return 0;
-
- error:
-    virConfFreeValue(pciVal);
-    return -1;
 }
 
 
@@ -2098,9 +2055,7 @@ xenFormatCharDev(virConfPtr conf, virDomainDefPtr def,
                     return -1;
                 }
 
-                if (VIR_ALLOC(serialVal) < 0)
-                    return -1;
-
+                serialVal = g_new0(virConfValue, 1);
                 serialVal->type = VIR_CONF_LIST;
                 serialVal->list = NULL;
 
@@ -2385,16 +2340,8 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
 
             vfbstr = virBufferContentAndReset(&buf);
 
-            if (VIR_ALLOC(vfb) < 0) {
-                VIR_FREE(vfbstr);
-                return -1;
-            }
-
-            if (VIR_ALLOC(disp) < 0) {
-                VIR_FREE(vfb);
-                VIR_FREE(vfbstr);
-                return -1;
-            }
+            vfb = g_new0(virConfValue, 1);
+            disp = g_new0(virConfValue, 1);
 
             vfb->type = VIR_CONF_LIST;
             vfb->list = disp;
@@ -2450,8 +2397,7 @@ xenFormatVif(virConfPtr conf,
     size_t i;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
 
-    if (VIR_ALLOC(netVal) < 0)
-        goto cleanup;
+    netVal = g_new0(virConfValue, 1);
     netVal->type = VIR_CONF_LIST;
     netVal->list = NULL;
 

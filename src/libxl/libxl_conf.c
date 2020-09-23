@@ -613,9 +613,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                     return -1;
             } else {
 #ifdef LIBXL_HAVE_BUILDINFO_SERIAL_LIST
-                if (VIR_ALLOC_N(b_info->u.hvm.serial_list, def->nserials + 1) <
-                    0)
-                    return -1;
+                b_info->u.hvm.serial_list = *g_new0(libxl_string_list, def->nserials + 1);
                 for (i = 0; i < def->nserials; i++) {
                     if (libxlMakeChrdevStr(def->serials[i],
                                            &b_info->u.hvm.serial_list[i]) < 0)
@@ -826,8 +824,7 @@ libxlMakeVnumaList(virDomainDefPtr def,
     /*
      * allocate the vnuma_nodes for assignment under b_info.
      */
-    if (VIR_ALLOC_N(vnuma_nodes, num_vnuma) < 0)
-        return -1;
+    vnuma_nodes = g_new0(libxl_vnode_info, num_vnuma);
 
     /*
      * parse the vnuma vnodes data.
@@ -870,8 +867,7 @@ libxlMakeVnumaList(virDomainDefPtr def,
         libxl_bitmap_dispose(&vcpu_bitmap);
 
         /* vdistances */
-        if (VIR_ALLOC_N(p->distances, num_vnuma) < 0)
-            goto cleanup;
+        p->distances = g_new0(uint32_t, num_vnuma);
         p->num_distances = num_vnuma;
 
         for (j = 0; j < num_vnuma; j++)
@@ -1193,8 +1189,7 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
     libxl_device_disk *x_disks;
     size_t i;
 
-    if (VIR_ALLOC_N(x_disks, ndisks) < 0)
-        return -1;
+    x_disks = g_new0(libxl_device_disk, ndisks);
 
     for (i = 0; i < ndisks; i++) {
         if (libxlMakeDisk(l_disks[i], &x_disks[i]) < 0)
@@ -1464,8 +1459,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
     libxl_device_nic *x_nics;
     size_t i, nvnics = 0;
 
-    if (VIR_ALLOC_N(x_nics, nnics) < 0)
-        return -1;
+    x_nics = g_new0(libxl_device_nic, nnics);
 
     for (i = 0; i < nnics; i++) {
         if (virDomainNetGetActualType(l_nics[i]) == VIR_DOMAIN_NET_TYPE_HOSTDEV)
@@ -1567,12 +1561,8 @@ libxlMakeVfbList(virPortAllocatorRangePtr graphicsports,
     if (nvfbs == 0)
         return 0;
 
-    if (VIR_ALLOC_N(x_vfbs, nvfbs) < 0)
-        return -1;
-    if (VIR_ALLOC_N(x_vkbs, nvfbs) < 0) {
-        VIR_FREE(x_vfbs);
-        return -1;
-    }
+    x_vfbs = g_new0(libxl_device_vfb, nvfbs);
+    x_vkbs = g_new0(libxl_device_vkb, nvfbs);
 
     for (i = 0; i < nvfbs; i++) {
         libxl_device_vkb_init(&x_vkbs[i]);
@@ -1764,11 +1754,9 @@ libxlDriverConfigNew(void)
         goto error;
 
 #else
-    if (VIR_ALLOC_N(cfg->firmwares, 1) < 0)
-        goto error;
+    cfg->firmwares = g_new0(virFirmwarePtr, 1);
     cfg->nfirmwares = 1;
-    if (VIR_ALLOC(cfg->firmwares[0]) < 0)
-        goto error;
+    cfg->firmwares[0] = g_new0(virFirmware, 1);
     cfg->firmwares[0]->name = g_strdup(LIBXL_FIRMWARE_DIR "/ovmf.bin");
 #endif
 
@@ -1776,8 +1764,7 @@ libxlDriverConfigNew(void)
     if (VIR_REALLOC_N(cfg->firmwares, cfg->nfirmwares + 1) < 0)
         goto error;
     cfg->nfirmwares++;
-    if (VIR_ALLOC(cfg->firmwares[cfg->nfirmwares - 1]) < 0)
-        goto error;
+    cfg->firmwares[cfg->nfirmwares - 1] = g_new0(virFirmware, 1);
     cfg->firmwares[cfg->nfirmwares - 1]->name = g_strdup(LIBXL_FIRMWARE_DIR "/hvmloader");
 
     /* defaults for keepalive messages */
@@ -2033,8 +2020,7 @@ libxlMakeChannelList(const char *channelDir,
     libxl_device_channel *x_channels;
     size_t i, nvchannels = 0;
 
-    if (VIR_ALLOC_N(x_channels, nchannels) < 0)
-        return -1;
+    x_channels = g_new0(libxl_device_channel, nchannels);
 
     for (i = 0; i < nchannels; i++) {
         if (l_channels[i]->deviceType != VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL)
@@ -2125,8 +2111,7 @@ libxlMakeDefaultUSBControllers(virDomainDefPtr def,
 
     /* Create USB controllers with 8 ports */
     ncontrollers = VIR_DIV_UP(nusbdevs, 8);
-    if (VIR_ALLOC_N(x_controllers, ncontrollers) < 0)
-        return -1;
+    x_controllers = g_new0(libxl_device_usbctrl, ncontrollers);
 
     for (i = 0; i < ncontrollers; i++) {
         if (!(l_controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB)))
@@ -2176,8 +2161,7 @@ libxlMakeUSBControllerList(virDomainDefPtr def, libxl_domain_config *d_config)
     if (nusbctrls == 0)
         return libxlMakeDefaultUSBControllers(def, d_config);
 
-    if (VIR_ALLOC_N(x_usbctrls, nusbctrls) < 0)
-        return -1;
+    x_usbctrls = g_new0(libxl_device_usbctrl, nusbctrls);
 
     for (i = 0, j = 0; i < ncontrollers && j < nusbctrls; i++) {
         if (l_controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_USB)
@@ -2253,8 +2237,7 @@ libxlMakeUSBList(virDomainDefPtr def, libxl_domain_config *d_config)
     if (nhostdevs == 0)
         return 0;
 
-    if (VIR_ALLOC_N(x_usbdevs, nhostdevs) < 0)
-        return -1;
+    x_usbdevs = g_new0(libxl_device_usbdev, nhostdevs);
 
     for (i = 0, j = 0; i < nhostdevs; i++) {
         if (l_hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -2316,8 +2299,7 @@ libxlMakePCIList(virDomainDefPtr def, libxl_domain_config *d_config)
     if (nhostdevs == 0)
         return 0;
 
-    if (VIR_ALLOC_N(x_pcidevs, nhostdevs) < 0)
-        return -1;
+    x_pcidevs = g_new0(libxl_device_pci, nhostdevs);
 
     for (i = 0, j = 0; i < nhostdevs; i++) {
         if (l_hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
