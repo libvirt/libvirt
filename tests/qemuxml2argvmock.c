@@ -23,6 +23,7 @@
 #include "vircommand.h"
 #include "vircrypto.h"
 #include "virmock.h"
+#include "virlog.h"
 #include "virnetdev.h"
 #include "virnetdevip.h"
 #include "virnetdevtap.h"
@@ -91,6 +92,8 @@ virNumaNodesetIsAvailable(virBitmapPtr nodeset)
         if (virNumaNodeIsAvailable(bit))
             continue;
 
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Mock: no numa node set is available at bit %zd", bit);
         return false;
     }
 
