@@ -44,7 +44,6 @@ vir_event_thread_finalize(GObject *object)
     if (evt->thread) {
         g_main_loop_quit(evt->loop);
         g_thread_join(evt->thread);
-        g_thread_unref(evt->thread);
     }
 
     g_main_loop_unref(evt->loop);
