@@ -1224,8 +1224,7 @@ bhyveStateInitialize(bool privileged,
         return VIR_DRV_STATE_INIT_SKIPPED;
     }
 
-    if (VIR_ALLOC(bhyve_driver) < 0)
-        return VIR_DRV_STATE_INIT_ERROR;
+    bhyve_driver = g_new0(bhyveConn, 1);
 
     bhyve_driver->lockFD = -1;
     if (virMutexInit(&bhyve_driver->lock) < 0) {

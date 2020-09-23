@@ -38,8 +38,7 @@ bhyveDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
 {
     bhyveDomainObjPrivatePtr priv;
 
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
+    priv = g_new0(bhyveDomainObjPrivate, 1);
 
     return priv;
 }
@@ -236,8 +235,7 @@ bhyveDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     size_t i;
     int ret = -1;
 
-    if (VIR_ALLOC(cmd) < 0)
-        return -1;
+    cmd = g_new0(bhyveDomainCmdlineDef, 1);
 
     n = virXPathNodeSet("./bhyve:commandline/bhyve:arg", ctxt, &nodes);
     if (n == 0)
@@ -245,8 +243,7 @@ bhyveDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     if (n <= 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(cmd->args, n) < 0)
-        goto cleanup;
+    cmd->args = g_new0(char *, n);
 
     for (i = 0; i < n; i++) {
         cmd->args[cmd->num_args] = virXMLPropString(nodes[i], "value");

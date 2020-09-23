@@ -150,8 +150,7 @@ virBhyveDomainCapsBuild(bhyveConnPtr conn,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(firmwares) < 0)
-        goto cleanup;
+    firmwares = g_new0(virDomainCapsStringValues, 1);
 
     if (virDirOpenIfExists(&dir, firmware_dir) > 0) {
         while ((virDirRead(dir, &entry, firmware_dir)) > 0) {
