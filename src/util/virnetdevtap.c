@@ -292,20 +292,11 @@ int virNetDevTapCreate(char **ifname,
 
         ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
         /* If tapfdSize is greater than one, request multiqueue */
-        if (tapfdSize > 1) {
-# ifdef IFF_MULTI_QUEUE
+        if (tapfdSize > 1)
             ifr.ifr_flags |= IFF_MULTI_QUEUE;
-# else
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Multiqueue devices are not supported on this system"));
-            goto cleanup;
-# endif
-        }
 
-# ifdef IFF_VNET_HDR
         if (flags &  VIR_NETDEV_TAP_CREATE_VNET_HDR)
             ifr.ifr_flags |= IFF_VNET_HDR;
-# endif
 
         if (virStrcpyStatic(ifr.ifr_name, *ifname) < 0) {
             virReportSystemError(ERANGE,

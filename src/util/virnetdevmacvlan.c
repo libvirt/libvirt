@@ -380,18 +380,10 @@ virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr)
             new_flags &= ~IFF_VNET_HDR;
         }
 
-# ifdef IFF_MULTI_QUEUE
         if (tapfdSize > 1)
             new_flags |= IFF_MULTI_QUEUE;
         else
             new_flags &= ~IFF_MULTI_QUEUE;
-# else
-        if (tapfdSize > 1) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Multiqueue devices are not supported on this system"));
-            return -1;
-        }
-# endif
 
         if (new_flags != ifreq.ifr_flags) {
             ifreq.ifr_flags = new_flags;
