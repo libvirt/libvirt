@@ -1642,6 +1642,7 @@ exit 0
 %{_unitdir}/virtnodedevd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtnodedevd
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
+%{_mandir}/man8/virtnodedevd.8*
 
 %files daemon-driver-nwfilter
 %config(noreplace) %{_sysconfdir}/sysconfig/virtnwfilterd
