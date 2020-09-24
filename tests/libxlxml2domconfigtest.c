@@ -97,6 +97,20 @@ testCompareXMLToDomConfig(const char *xmlfile,
                        "Failed to create libxl_domain_config from JSON doc");
         goto cleanup;
     }
+
+    /*
+     * In order to have common test files between Xen 4.9 and newer Xen versions,
+     * tweak the expected libxl_domain_config object before getting a json
+     * representation.
+     */
+# ifndef LIBXL_HAVE_BUILDINFO_APIC
+    if (expectconfig.c_info.type == LIBXL_DOMAIN_TYPE_HVM) {
+        libxl_defbool_unset(&expectconfig.b_info.acpi);
+        libxl_defbool_set(&expectconfig.b_info.u.hvm.apic, true);
+        libxl_defbool_set(&expectconfig.b_info.u.hvm.acpi, true);
+    }
+# endif
+
     if (!(expectjson = libxl_domain_config_to_json(cfg->ctx, &expectconfig))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Failed to retrieve JSON doc for libxl_domain_config");
