@@ -25,6 +25,7 @@ These daemons provide functionality to a single libvirt driver
 * `virtnwfilterd(8) <virtnwfilterd.html>`__ - libvirt network filter management daemon
 * `virtqemud(8) <virtqemud.html>`__ - libvirt QEMU management daemon
 * `virtsecretd(8) <virtsecretd.html>`__ - libvirt secret data management daemon
+* `virtstoraged(8) <virtstoraged.html>`__ - libvirt storage pool management daemon
 
 Tools
 =====
