@@ -32,6 +32,19 @@ v6.8.0 (unreleased)
     can now be passed using the ``passwd`` attribute on
     the ``<graphics>`` element.
 
+  * remote: ``virt-ssh-helper`` replaces ``nc`` for SSH tunnelling
+
+    Libvirt now provides a ``virt-ssh-helper`` binary on the server
+    side. The libvirt remote client will use this binary for setting
+    up an SSH tunnelled connection to hosts. If not present, it will
+    transparently fallback to the traditional ``nc`` tunnel. The new
+    binary makes it possible for libvirt to transparently connect
+    across hosts even if libvirt is built with a different installation
+    prefix on the client vs server. It also enables remote access to
+    the unprivileged per-user libvirt daemons (e.g. using a URI such as
+    ``qemu+ssh://hostname/session``). The only requirement is that
+    ``virt-ssh-helper`` is present in ``$PATH`` of the remote host.
+
 * **Improvements**
 
   * qemu: Allow migration over UNIX sockets
