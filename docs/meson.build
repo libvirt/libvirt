@@ -117,6 +117,7 @@ docs_rst_files = [
   'formatbackup',
   'formatcheckpoint',
   'formatdomain',
+  'glib-adoption',
   'hacking',
   'kbase',
   'libvirt-go',
