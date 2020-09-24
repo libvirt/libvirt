@@ -75,7 +75,19 @@ v6.8.0 (unreleased)
     the previous behavior with an improvement: it also reflects the auto-aligned
     value in the domain XML.
 
+  * qemu: Preserve qcow2 cluster size after external snapshots
+
+   The new overlay image which is installed on top of the current chain when
+   taking an external snapshot now preserves the cluser size of the original
+   top image to preserve any performance tuning done on the original image.
+
 * **Bug fixes**
+
+  * qemu: Various (i)SCSI backed hostdev fixes
+
+   (i)SCSI backed hostdevs now work again with an arbitrarily long
+   user-specified device alias and also honor the 'readonly' property after a
+   recent rewrite.
 
 * **Removed features**
 
