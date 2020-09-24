@@ -12,6 +12,13 @@ These daemons provide functionality across multiple libvirt drivers
 * `virtlogd(8) <virtlogd.html>`__ - libvirt log management daemon
 * `virtproxyd(8) <virtproxyd.html>`__ - libvirt proxy daemon
 
+Modular Driver daemons
+======================
+
+These daemons provide functionality to a single libvirt driver
+
+* `virtbhyved(8) <virtbhyved.html>`__ - libvirt bhyve management daemon
+
 Tools
 =====
 
