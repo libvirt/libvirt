@@ -18,6 +18,8 @@ Memory allocation
    ``VIR_ALLOC``, ``VIR_REALLOC``, ``VIR_RESIZE_N``,
    ``VIR_EXPAND_N``, ``VIR_SHRINK_N``, ``VIR_FREE``
 
+   https://developer.gnome.org/glib/stable/glib-Memory-Allocation.html
+
    Prefer the GLib APIs ``g_new0``/``g_renew``/ ``g_free`` in most
    cases. There should rarely be a need to use
    ``g_malloc``/``g_realloc``. **NEVER MIX** use of the classic
@@ -27,6 +29,8 @@ Memory allocation
 
 Array operations
    ``VIR_APPEND_ELEMENT``, ``VIR_INSERT_ELEMENT``, ``VIR_DELETE_ELEMENT``
+
+   https://developer.gnome.org/glib/stable/glib-Arrays.html
 
    Instead of using plain C arrays, it is preferrable to use one of
    the GLib types, ``GArray``, ``GPtrArray`` or ``GByteArray``.
