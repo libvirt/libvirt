@@ -341,6 +341,18 @@ virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
     return 0;
 }
 
+bool
+virDomainDeviceCCWAddressEqual(virDomainDeviceCCWAddressPtr addr1,
+                               virDomainDeviceCCWAddressPtr addr2)
+{
+    if (addr1->cssid == addr2->cssid &&
+        addr1->ssid == addr2->ssid &&
+        addr1->devno == addr2->devno) {
+        return true;
+    }
+    return false;
+}
+
 int
 virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
                                     virDomainDeviceDriveAddressPtr addr)

@@ -207,6 +207,9 @@ void virPCIDeviceAddressFormat(virBufferPtr buf,
 bool virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr);
 int virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
                                       virDomainDeviceCCWAddressPtr addr);
+bool virDomainDeviceCCWAddressEqual(virDomainDeviceCCWAddressPtr addr1,
+                                    virDomainDeviceCCWAddressPtr addr2);
+#define VIR_CCW_DEVICE_ADDRESS_FMT "%x.%x.%04x"
 
 int virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
                                         virDomainDeviceDriveAddressPtr addr);
