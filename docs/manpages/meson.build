@@ -24,6 +24,7 @@ docs_man_files = [
   { 'name': 'virt-sanlock-cleanup', 'section': '8', 'install': conf.has('WITH_SANLOCK') },
   { 'name': 'virtlockd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
   { 'name': 'virtlogd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
+  { 'name': 'virtproxyd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
 ]
 
 foreach name : keycode_list
