@@ -627,6 +627,7 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
                                        NULL)))
             goto cleanup;
 
+        def = NULL;
         vm->persistent = 1;
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
     }
