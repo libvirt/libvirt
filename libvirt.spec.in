@@ -1670,6 +1670,7 @@ exit 0
 %{_unitdir}/virtsecretd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtsecretd
 %{_libdir}/%{name}/connection-driver/libvirt_driver_secret.so
+%{_mandir}/man8/virtsecretd.8*
 
 %files daemon-driver-storage
 
