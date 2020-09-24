@@ -621,9 +621,11 @@ testCompareXMLToArgv(const void *data)
             VIR_TEST_DEBUG("no error was reported for expected parse error");
             goto cleanup;
         }
-        if (flags & FLAG_EXPECT_PARSE_ERROR &&
-            virTestCompareToFile(err->message, info->errfile) >= 0)
-            goto ok;
+        if (flags & FLAG_EXPECT_PARSE_ERROR) {
+            g_autofree char *tmperr = g_strdup_printf("%s\n", NULLSTR(err->message));
+            if (virTestCompareToFile(tmperr, info->errfile) >= 0)
+                goto ok;
+        }
         goto cleanup;
     }
     if (flags & FLAG_EXPECT_PARSE_ERROR) {
@@ -663,9 +665,11 @@ testCompareXMLToArgv(const void *data)
             VIR_TEST_DEBUG("no error was reported for expected failure");
             goto cleanup;
         }
-        if (flags & FLAG_EXPECT_FAILURE &&
-            virTestCompareToFile(err->message, info->errfile) >= 0)
-            goto ok;
+        if (flags & FLAG_EXPECT_FAILURE) {
+            g_autofree char *tmperr = g_strdup_printf("%s\n", NULLSTR(err->message));
+            if (virTestCompareToFile(tmperr, info->errfile) >= 0)
+                goto ok;
+        }
         goto cleanup;
     }
     if (flags & FLAG_EXPECT_FAILURE) {
