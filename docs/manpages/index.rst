@@ -23,6 +23,7 @@ These daemons provide functionality to a single libvirt driver
 * `virtnetworkd(8) <virtnetworkd.html>`__ - libvirt virtual network management daemon
 * `virtnodedevd(8) <virtnodedevd.html>`__ - libvirt host device management daemon
 * `virtnwfilterd(8) <virtnwfilterd.html>`__ - libvirt network filter management daemon
+* `virtqemud(8) <virtqemud.html>`__ - libvirt QEMU management daemon
 
 Tools
 =====

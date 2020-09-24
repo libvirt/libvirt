@@ -1755,6 +1755,7 @@ exit 0
 %dir %attr(0730, tss, tss) %{_localstatedir}/log/swtpm/libvirt/qemu/
 %{_bindir}/virt-qemu-run
 %{_mandir}/man1/virt-qemu-run.1*
+%{_mandir}/man8/virtqemud.8*
 %endif
 
 %if %{with_lxc}

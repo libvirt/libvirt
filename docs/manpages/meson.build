@@ -31,6 +31,7 @@ docs_man_files = [
   { 'name': 'virtnodedevd', 'section': '8', 'install': conf.has('WITH_NODE_DEVICES') },
   { 'name': 'virtnwfilterd', 'section': '8', 'install': conf.has('WITH_NWFILTER') },
   { 'name': 'virtproxyd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
+  { 'name': 'virtqemud', 'section': '8', 'install': conf.has('WITH_QEMU') },
 ]
 
 foreach name : keycode_list
