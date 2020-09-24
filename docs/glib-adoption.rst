@@ -36,3 +36,19 @@ Array operations
    the GLib types, ``GArray``, ``GPtrArray`` or ``GByteArray``.
    These all use a struct to track the array memory and size
    together and efficiently resize.
+
+String arrays
+   ``virStringList*``, ``virStringListCount*``
+
+   https://developer.gnome.org/glib/stable/glib-String-Utility-Functions.html
+
+   Prefer the NULL-terminated variant instead of storing the count
+   separately. Prefer ``g_str*v`` functions instead of their ``vir*``
+   counterparts. For use with ``g_auto`` GLib provides the ``GStrv`` type.
+
+Objects
+   ``virObject``
+
+   https://developer.gnome.org/gobject/stable/gobject-The-Base-Object-Type.html
+
+   Prefer ``GObject`` instead.
