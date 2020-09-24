@@ -19,6 +19,7 @@ These daemons provide functionality to a single libvirt driver
 
 * `virtbhyved(8) <virtbhyved.html>`__ - libvirt bhyve management daemon
 * `virtinterfaced(8) <virtinterfaced.html>`__ - libvirt host network interface management daemon
+* `virtlxcd(8) <virtlxcd.html>`__ - libvirt LXC management daemon
 
 Tools
 =====

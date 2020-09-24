@@ -26,6 +26,7 @@ docs_man_files = [
   { 'name': 'virtinterfaced', 'section': '8', 'install': conf.has('WITH_INTERFACE') },
   { 'name': 'virtlockd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
   { 'name': 'virtlogd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
+  { 'name': 'virtlxcd', 'section': '8', 'install': conf.has('WITH_LXC') },
   { 'name': 'virtproxyd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
 ]
 
