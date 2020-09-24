@@ -27,6 +27,7 @@ These daemons provide functionality to a single libvirt driver
 * `virtsecretd(8) <virtsecretd.html>`__ - libvirt secret data management daemon
 * `virtstoraged(8) <virtstoraged.html>`__ - libvirt storage pool management daemon
 * `virtvboxd(8) <virtvboxd.html>`__ - libvirt VirtualBox management daemon
+* `virtvzd(8) <virtvzd.html>`__ - libvirt Virtuozzo management daemon
 
 Tools
 =====
