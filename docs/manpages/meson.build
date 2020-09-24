@@ -29,6 +29,7 @@ docs_man_files = [
   { 'name': 'virtlxcd', 'section': '8', 'install': conf.has('WITH_LXC') },
   { 'name': 'virtnetworkd', 'section': '8', 'install': conf.has('WITH_NETWORK') },
   { 'name': 'virtnodedevd', 'section': '8', 'install': conf.has('WITH_NODE_DEVICES') },
+  { 'name': 'virtnwfilterd', 'section': '8', 'install': conf.has('WITH_NWFILTER') },
   { 'name': 'virtproxyd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
 ]
 

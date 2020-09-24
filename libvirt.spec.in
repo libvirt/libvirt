@@ -1657,6 +1657,7 @@ exit 0
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 %ghost %dir %{_rundir}/libvirt/network/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
+%{_mandir}/man8/virtnwfilterd.8*
 
 %files daemon-driver-secret
 %config(noreplace) %{_sysconfdir}/sysconfig/virtsecretd
