@@ -138,7 +138,7 @@ virLogHandlerGetLogFileFromWatch(virLogHandlerPtr handler,
 static void
 virLogHandlerDomainLogFileEvent(int watch,
                                 int fd,
-                                int events,
+                                int events G_GNUC_UNUSED,
                                 void *opaque)
 {
     virLogHandlerPtr handler = opaque;
@@ -168,12 +168,11 @@ virLogHandlerDomainLogFileEvent(int watch,
         virReportSystemError(errno, "%s",
                              _("Unable to read from log pipe"));
         goto error;
+    } else if (len == 0) {
+        goto error;
     }
 
     if (virRotatingFileWriterAppend(logfile->file, buf, len) != len)
-        goto error;
-
-    if (events & VIR_EVENT_HANDLE_HANGUP)
         goto error;
 
  cleanup:
