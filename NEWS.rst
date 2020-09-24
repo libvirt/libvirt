@@ -45,6 +45,13 @@ v6.8.0 (unreleased)
     ``qemu+ssh://hostname/session``). The only requirement is that
     ``virt-ssh-helper`` is present in ``$PATH`` of the remote host.
 
+  * esx: implement few APIs
+
+    The ``virConnectListAllNetworks()``, ``virDomainGetHostname()``, and
+    ``virDomainInterfaceAddresses()`` (only for
+    ``VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT`` source) APIs were implemented
+    in the esx driver.
+
 * **Improvements**
 
   * qemu: Allow migration over UNIX sockets
