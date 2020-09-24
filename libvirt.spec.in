@@ -1803,6 +1803,7 @@ exit 0
 %ghost %dir %{_rundir}/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_libxl.so
+%{_mandir}/man8/virtxend.8*
 %endif
 
 %if %{with_vbox}

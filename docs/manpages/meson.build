@@ -36,6 +36,7 @@ docs_man_files = [
   { 'name': 'virtstoraged', 'section': '8', 'install': conf.has('WITH_STORAGE') },
   { 'name': 'virtvboxd', 'section': '8', 'install': conf.has('WITH_VBOX') },
   { 'name': 'virtvzd', 'section': '8', 'install': conf.has('WITH_VZ') },
+  { 'name': 'virtxend', 'section': '8', 'install': conf.has('WITH_LIBXL') },
 ]
 
 foreach name : keycode_list

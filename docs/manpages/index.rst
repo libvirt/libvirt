@@ -28,6 +28,7 @@ These daemons provide functionality to a single libvirt driver
 * `virtstoraged(8) <virtstoraged.html>`__ - libvirt storage pool management daemon
 * `virtvboxd(8) <virtvboxd.html>`__ - libvirt VirtualBox management daemon
 * `virtvzd(8) <virtvzd.html>`__ - libvirt Virtuozzo management daemon
+* `virtxend(8) <virtxend.html>`__ - libvirt Xen management daemon
 
 Tools
 =====
