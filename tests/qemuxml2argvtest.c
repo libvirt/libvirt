@@ -1175,6 +1175,8 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-cache", "2.7.0");
     DO_TEST_CAPS_VER("disk-cache", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cache");
+    DO_TEST_CAPS_ARCH_VER_PARSE_ERROR("disk-transient", "x86_64", "4.1.0");
+    DO_TEST_CAPS_LATEST("disk-transient");
     DO_TEST("disk-network-nbd", NONE);
     DO_TEST_CAPS_VER("disk-network-nbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-nbd");

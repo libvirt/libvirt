@@ -14,9 +14,9 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-i386</emulator>
-    <disk type='block' device='disk'>
+    <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' cache='none'/>
-      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <source file='/tmp/QEMUGuest1.img'/>
       <target dev='hda' bus='ide'/>
       <transient/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
