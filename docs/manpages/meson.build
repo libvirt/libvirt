@@ -23,6 +23,7 @@ docs_man_files = [
   { 'name': 'libvirtd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
   { 'name': 'virt-sanlock-cleanup', 'section': '8', 'install': conf.has('WITH_SANLOCK') },
   { 'name': 'virtbhyved', 'section': '8', 'install': conf.has('WITH_BHYVE') },
+  { 'name': 'virtinterfaced', 'section': '8', 'install': conf.has('WITH_INTERFACE') },
   { 'name': 'virtlockd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
   { 'name': 'virtlogd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
   { 'name': 'virtproxyd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },

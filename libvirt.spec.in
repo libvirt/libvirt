@@ -1605,6 +1605,7 @@ exit 0
 %{_unitdir}/virtinterfaced-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtinterfaced
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
+%{_mandir}/man8/virtinterfaced.8*
 
 %files daemon-driver-network
 %config(noreplace) %{_sysconfdir}/sysconfig/virtnetworkd
