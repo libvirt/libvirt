@@ -865,7 +865,6 @@ qemuSnapshotDiskContextNew(size_t ndisks,
     qemuSnapshotDiskContextPtr ret = g_new0(qemuSnapshotDiskContext, 1);
 
     ret->dd = g_new0(qemuSnapshotDiskData, ndisks);
-    ret->ndd = ndisks;
     ret->actions = virJSONValueNewArray();
     ret->vm = vm;
     ret->asyncJob = asyncJob;
