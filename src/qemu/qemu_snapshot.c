@@ -883,6 +883,8 @@ qemuSnapshotDiskContextCleanup(qemuSnapshotDiskContextPtr snapctxt)
     virJSONValueFree(snapctxt->actions);
 
     qemuSnapshotDiskCleanup(snapctxt->dd, snapctxt->ndd, snapctxt->vm, snapctxt->asyncJob);
+
+    g_free(snapctxt);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuSnapshotDiskContext, qemuSnapshotDiskContextCleanup);
