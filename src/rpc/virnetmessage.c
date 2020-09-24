@@ -38,8 +38,7 @@ virNetMessagePtr virNetMessageNew(bool tracked)
 {
     virNetMessagePtr msg;
 
-    if (VIR_ALLOC(msg) < 0)
-        return NULL;
+    msg = g_new0(virNetMessage, 1);
 
     msg->tracked = tracked;
     VIR_DEBUG("msg=%p tracked=%d", msg, tracked);
@@ -328,8 +327,8 @@ int virNetMessageDecodeNumFDs(virNetMessagePtr msg)
 
     if (msg->nfds == 0) {
         msg->nfds = numFDs;
-        if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0)
-            goto cleanup;
+        msg->fds = g_new0(int, msg->nfds);
+
         for (i = 0; i < msg->nfds; i++)
             msg->fds[i] = -1;
     }
@@ -525,15 +524,23 @@ void virNetMessageSaveError(virNetMessageErrorPtr rerr)
     if (verr) {
         rerr->code = verr->code;
         rerr->domain = verr->domain;
-        if (verr->message && VIR_ALLOC(rerr->message) == 0)
+        if (verr->message) {
+            rerr->message = g_new0(char *, 1);
             *rerr->message = g_strdup(verr->message);
+        }
         rerr->level = verr->level;
-        if (verr->str1 && VIR_ALLOC(rerr->str1) == 0)
+        if (verr->str1) {
+            rerr->str1 = g_new0(char *, 1);
             *rerr->str1 = g_strdup(verr->str1);
-        if (verr->str2 && VIR_ALLOC(rerr->str2) == 0)
+        }
+        if (verr->str2) {
+            rerr->str2 = g_new0(char *, 1);
             *rerr->str2 = g_strdup(verr->str2);
-        if (verr->str3 && VIR_ALLOC(rerr->str3) == 0)
+        }
+        if (verr->str3) {
+            rerr->str3 = g_new0(char *, 1);
             *rerr->str3 = g_strdup(verr->str3);
+        }
         rerr->int1 = verr->int1;
         rerr->int2 = verr->int2;
     } else {

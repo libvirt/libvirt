@@ -173,8 +173,7 @@ virNetSSHSessionAuthMethodNew(virNetSSHSessionPtr sess)
 {
     virNetSSHAuthMethodPtr auth;
 
-    if (VIR_ALLOC(auth) < 0)
-        goto error;
+    auth = g_new0(virNetSSHAuthMethod, 1);
 
     if (VIR_EXPAND_N(sess->auths, sess->nauths, 1) < 0)
         goto error;
@@ -223,10 +222,7 @@ virNetSSHKbIntCb(const char *name G_GNUC_UNUSED,
         return;
     }
 
-    if (VIR_ALLOC_N(askcred, num_prompts) < 0) {
-        priv->authCbErr = VIR_NET_SSH_AUTHCB_OOM;
-        return;
-    }
+    askcred = g_new0(virConnectCredential, num_prompts);
 
     /* fill data structures for auth callback */
     for (i = 0; i < num_prompts; i++) {

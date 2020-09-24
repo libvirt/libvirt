@@ -106,8 +106,7 @@ virNetServerServiceNewSocket(virNetSocketPtr *socks,
     if (!(svc = virObjectNew(virNetServerServiceClass)))
         return NULL;
 
-    if (VIR_ALLOC_N(svc->socks, nsocks) < 0)
-        goto error;
+    svc->socks = g_new0(virNetSocketPtr, nsocks);
     svc->nsocks = nsocks;
     for (i = 0; i < svc->nsocks; i++) {
         svc->socks[i] = socks[i];
@@ -230,8 +229,7 @@ virNetServerServicePtr virNetServerServiceNewFDs(int *fds,
     virNetSocketPtr *socks;
     size_t i;
 
-    if (VIR_ALLOC_N(socks, nfds) < 0)
-        goto cleanup;
+    socks = g_new0(virNetSocketPtr, nfds);
 
     for (i = 0; i < nfds; i++) {
         if (virNetSocketNewListenFD(fds[i],
@@ -301,8 +299,7 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
     }
 
     n = virJSONValueArraySize(socks);
-    if (VIR_ALLOC_N(svc->socks, n) < 0)
-        goto error;
+    svc->socks = g_new0(virNetSocketPtr, n);
     svc->nsocks = n;
 
     for (i = 0; i < svc->nsocks; i++) {

@@ -673,8 +673,7 @@ virNetDaemonAddSignalHandler(virNetDaemonPtr dmn,
     if (VIR_EXPAND_N(dmn->signals, dmn->nsignals, 1) < 0)
         goto error;
 
-    if (VIR_ALLOC(sigdata) < 0)
-        goto error;
+    sigdata = g_new0(virNetDaemonSignal, 1);
 
     sigdata->signum = signum;
     sigdata->func = func;

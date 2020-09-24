@@ -299,9 +299,7 @@ static int virNetTLSContextCheckCertKeyPurpose(gnutls_x509_crt_t cert,
             return -1;
         }
 
-        if (VIR_ALLOC_N(buffer, size) < 0)
-            return -1;
-
+        buffer = g_new0(char, size);
         status = gnutls_x509_crt_get_key_purpose_oid(cert, i, buffer, &size, &purposeCritical);
         if (status < 0) {
             VIR_FREE(buffer);

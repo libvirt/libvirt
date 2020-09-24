@@ -211,8 +211,7 @@ virNetServerDispatchNewMessage(virNetServerClientPtr client,
     if (virThreadPoolGetMaxWorkers(srv->workers) > 0)  {
         virNetServerJobPtr job;
 
-        if (VIR_ALLOC(job) < 0)
-            goto error;
+        job = g_new0(virNetServerJob, 1);
 
         job->client = virObjectRef(client);
         job->msg = msg;

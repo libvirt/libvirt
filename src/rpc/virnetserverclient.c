@@ -240,8 +240,7 @@ int virNetServerClientAddFilter(virNetServerClientPtr client,
     virNetServerClientFilterPtr *place;
     int ret;
 
-    if (VIR_ALLOC(filter) < 0)
-        return -1;
+    filter = g_new0(virNetServerClientFilter, 1);
 
     virObjectLock(client);
 
@@ -311,10 +310,7 @@ virNetServerClientCheckAccess(virNetServerClientPtr client)
      * (NB. The '\1' byte is sent in an encrypted record).
      */
     confirm->bufferLength = 1;
-    if (VIR_ALLOC_N(confirm->buffer, confirm->bufferLength) < 0) {
-        virNetMessageFree(confirm);
-        return -1;
-    }
+    confirm->buffer = g_new0(char, confirm->bufferLength);
     confirm->bufferOffset = 0;
     confirm->buffer[0] = '\1';
 
@@ -414,8 +410,7 @@ virNetServerClientNewInternal(unsigned long long id,
     if (!(client->rx = virNetMessageNew(true)))
         goto error;
     client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
-    if (VIR_ALLOC_N(client->rx->buffer, client->rx->bufferLength) < 0)
-        goto error;
+    client->rx->buffer = g_new0(char, client->rx->bufferLength);
     client->nrequests = 1;
 
     PROBE(RPC_SERVER_CLIENT_NEW,
@@ -1306,12 +1301,8 @@ static virNetMessagePtr virNetServerClientDispatchRead(virNetServerClientPtr cli
                 client->wantClose = true;
             } else {
                 client->rx->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
-                if (VIR_ALLOC_N(client->rx->buffer,
-                                client->rx->bufferLength) < 0) {
-                    client->wantClose = true;
-                } else {
-                    client->nrequests++;
-                }
+                client->rx->buffer = g_new0(char, client->rx->bufferLength);
+                client->nrequests++;
             }
         }
         virNetServerClientUpdateEvent(client);
@@ -1411,10 +1402,7 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
                     /* Ready to recv more messages */
                     virNetMessageClear(msg);
                     msg->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
-                    if (VIR_ALLOC_N(msg->buffer, msg->bufferLength) < 0) {
-                        virNetMessageFree(msg);
-                        return;
-                    }
+                    msg->buffer = g_new0(char, msg->bufferLength);
                     client->rx = msg;
                     msg = NULL;
                     client->nrequests++;

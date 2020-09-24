@@ -185,8 +185,7 @@ virNetLibsshSessionAuthMethodNew(virNetLibsshSessionPtr sess)
 {
     virNetLibsshAuthMethodPtr auth;
 
-    if (VIR_ALLOC(auth) < 0)
-        goto error;
+    auth = g_new0(virNetLibsshAuthMethod, 1);
 
     if (VIR_EXPAND_N(sess->auths, sess->nauths, 1) < 0)
         goto error;

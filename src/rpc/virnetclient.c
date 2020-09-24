@@ -1435,8 +1435,7 @@ virNetClientIOReadMessage(virNetClientPtr client)
     /* Start by reading length word */
     if (client->msg.bufferLength == 0) {
         client->msg.bufferLength = 4;
-        if (VIR_ALLOC_N(client->msg.buffer, client->msg.bufferLength) < 0)
-            return -ENOMEM;
+        client->msg.buffer = g_new0(char, client->msg.bufferLength);
     }
 
     wantData = client->msg.bufferLength - client->msg.bufferOffset;
@@ -2107,8 +2106,7 @@ virNetClientCallNew(virNetMessagePtr msg,
         goto error;
     }
 
-    if (VIR_ALLOC(call) < 0)
-        goto error;
+    call = g_new0(virNetClientCall, 1);
 
     if (virCondInit(&call->cond) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
