@@ -389,6 +389,30 @@ it with the <code>port</code> attribute):</p>
     &lt;graphics type='vnc' autoport='yes'&gt;
 </pre>
 
+<p><span class="since">Since 6.8.0</span>, it's possible to set framebuffer resolution
+using the <code>resolution</code> sub-element:</p>
+
+<pre>
+   &lt;video&gt;
+     &lt;model type='gop' heads='1' primary='yes'&gt;
+       &lt;resolution x='800' y='600'/&gt;
+     &lt;/model&gt;
+   &lt;/video&gt;
+</pre>
+
+<p><span class="since">Since 6.8.0</span>, VNC server can be configured to use
+password based authentication:</p>
+
+<pre>
+  &lt;graphics type='vnc' port='5904' passwd='foobar'&gt;
+    &lt;listen type='address' address='127.0.0.1'/&gt;
+  &lt;/graphics&gt;
+</pre>
+
+<p>Note: VNC password authentication is known to be cryptographically weak.
+Additionally, the password is passed as a command line argument in clear text.
+Make sure you understand the risks associated with this feature before using it.</p>
+
 <h3><a id="clockconfig">Clock configuration</a></h3>
 
 <p>Originally bhyve supported only localtime for RTC. Support for UTC time was introduced in
@@ -431,6 +455,29 @@ supports Intel e1000 network adapter emulation. It's supported in libvirt
     &lt;/interface&gt;
 ...
 </pre>
+
+<h3><a id="sound">Sound device</a></h3>
+
+<p>As of <a href="https://svnweb.freebsd.org/changeset/base/349355">FreeBSD changeset r349355</a>
+bhyve supports sound device emulation. It's supported in libvirt
+<span class="since">since 6.7.0</span>.</p>
+
+<pre>
+...
+  &lt;sound model='ich7'&gt;
+    &lt;audio id='1'/&gt;
+  &lt;/sound&gt;
+  &lt;audio id='1' type='oss'&gt;
+    &lt;input dev='/dev/dsp0'/&gt;
+    &lt;output dev='/dev/dsp0'/&gt;
+  &lt;/audio&gt;
+...
+</pre>
+
+<p>Here, the <code>sound</code> element specifies the sound device as it's exposed
+to the guest, with <code>ich7</code> being the only supported model now,
+and the <code>audio</code> element specifies how the guest device is mapped
+to the host sound device.</p>
 
 <h3><a id="wired">Wiring guest memory</a></h3>
 
