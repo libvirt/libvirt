@@ -1817,6 +1817,7 @@ exit 0
 %{_unitdir}/virtvboxd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtvboxd
 %{_libdir}/%{name}/connection-driver/libvirt_driver_vbox.so
+%{_mandir}/man8/virtvboxd.8*
 %endif
 
 %if %{with_qemu_tcg}

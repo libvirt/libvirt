@@ -26,6 +26,7 @@ These daemons provide functionality to a single libvirt driver
 * `virtqemud(8) <virtqemud.html>`__ - libvirt QEMU management daemon
 * `virtsecretd(8) <virtsecretd.html>`__ - libvirt secret data management daemon
 * `virtstoraged(8) <virtstoraged.html>`__ - libvirt storage pool management daemon
+* `virtvboxd(8) <virtvboxd.html>`__ - libvirt VirtualBox management daemon
 
 Tools
 =====
