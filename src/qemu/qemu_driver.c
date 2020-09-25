@@ -12423,6 +12423,7 @@ qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
     g_autoptr(qemuProcessQMP) proc = NULL;
     g_autoptr(virCPUDef) baseline = NULL;
     qemuMonitorCPUModelInfoPtr result = NULL;
+    qemuMonitorCPUModelExpansionType expansion_type;
     size_t i;
 
     for (i = 0; i < ncpus; i++) {
@@ -12466,9 +12467,11 @@ qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
             return NULL;
     }
 
-    if (expand_features) {
-        if (qemuMonitorGetCPUModelExpansion(proc->mon,
-                                            QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL,
+    if (expand_features || ncpus == 1) {
+        expansion_type = expand_features ? QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL
+                                         : QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC;
+
+        if (qemuMonitorGetCPUModelExpansion(proc->mon, expansion_type,
                                             baseline, true, false, &result) < 0)
             return NULL;
 
