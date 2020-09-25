@@ -685,7 +685,6 @@ headers = [
   'asm/hwcap.h',
   'ifaddrs.h',
   'libtasn1.h',
-  'libutil.h',
   'linux/kvm.h',
   'linux/magic.h',
   'mntent.h',
@@ -709,6 +708,10 @@ if host_machine.system() == 'linux'
   headers += 'xfs/xfs.h'
   # check for DEVLINK_CMD_ESWITCH_GET
   headers += 'linux/devlink.h'
+endif
+
+if host_machine.system() == 'freebsd'
+  headers += 'libutil.h'
 endif
 
 foreach name : headers
