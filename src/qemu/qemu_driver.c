@@ -12433,7 +12433,7 @@ qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
 
     baseline = g_new0(virCPUDef, 1);
 
-    if (virCPUDefCopyModel(baseline, cpus[0], false))
+    if (virCPUDefCopyModel(baseline, cpus[0], false) < 0)
         return NULL;
 
     for (i = 1; i < ncpus; i++) {
