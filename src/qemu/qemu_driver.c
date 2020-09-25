@@ -12424,6 +12424,19 @@ qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
     qemuMonitorCPUModelInfoPtr result = NULL;
     size_t i;
 
+    for (i = 0; i < ncpus; i++) {
+        if (!cpus[i]) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("invalid CPU definition at index %zu"), i);
+            return NULL;
+        }
+        if (!cpus[i]->model) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("no CPU model specified at index %zu"), i);
+            return NULL;
+        }
+    }
+
     if (!(proc = qemuProcessQMPNew(virQEMUCapsGetBinary(qemuCaps),
                                    libDir, runUid, runGid, false)))
         return NULL;
