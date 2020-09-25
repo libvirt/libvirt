@@ -12526,7 +12526,8 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
                                    (const char **)features, migratable)))
             goto cleanup;
     } else if (ARCH_IS_S390(arch) &&
-               virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_BASELINE)) {
+               virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_BASELINE) &&
+               virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
         bool expand_features = (flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES);
 
         if (!(cpu = qemuConnectCPUModelBaseline(qemuCaps, cfg->libDir,
