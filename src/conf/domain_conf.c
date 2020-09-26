@@ -2509,27 +2509,27 @@ virDomainNetDefFree(virDomainNetDefPtr def)
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:
     case VIR_DOMAIN_NET_TYPE_UDP:
-        VIR_FREE(def->data.socket.address);
-        VIR_FREE(def->data.socket.localaddr);
+        g_free(def->data.socket.address);
+        g_free(def->data.socket.localaddr);
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
-        VIR_FREE(def->data.network.name);
-        VIR_FREE(def->data.network.portgroup);
+        g_free(def->data.network.name);
+        g_free(def->data.network.portgroup);
         virDomainActualNetDefFree(def->data.network.actual);
         def->data.network.actual = NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        VIR_FREE(def->data.bridge.brname);
+        g_free(def->data.bridge.brname);
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        VIR_FREE(def->data.internal.name);
+        g_free(def->data.internal.name);
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        VIR_FREE(def->data.direct.linkdev);
+        g_free(def->data.direct.linkdev);
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
@@ -2542,24 +2542,24 @@ virDomainNetDefFree(virDomainNetDefPtr def)
         break;
     }
 
-    VIR_FREE(def->backend.tap);
-    VIR_FREE(def->backend.vhost);
-    VIR_FREE(def->teaming.persistent);
-    VIR_FREE(def->virtPortProfile);
-    VIR_FREE(def->script);
-    VIR_FREE(def->downscript);
-    VIR_FREE(def->domain_name);
-    VIR_FREE(def->ifname);
-    VIR_FREE(def->ifname_guest);
-    VIR_FREE(def->ifname_guest_actual);
-    VIR_FREE(def->virtio);
-    VIR_FREE(def->coalesce);
+    g_free(def->backend.tap);
+    g_free(def->backend.vhost);
+    g_free(def->teaming.persistent);
+    g_free(def->virtPortProfile);
+    g_free(def->script);
+    g_free(def->downscript);
+    g_free(def->domain_name);
+    g_free(def->ifname);
+    g_free(def->ifname_guest);
+    g_free(def->ifname_guest_actual);
+    g_free(def->virtio);
+    g_free(def->coalesce);
 
     virNetDevIPInfoClear(&def->guestIP);
     virNetDevIPInfoClear(&def->hostIP);
     virDomainDeviceInfoClear(&def->info);
 
-    VIR_FREE(def->filter);
+    g_free(def->filter);
     virHashFree(def->filterparams);
     def->filterparams = NULL;
 
@@ -2568,7 +2568,7 @@ virDomainNetDefFree(virDomainNetDefPtr def)
     virNetDevVlanClear(&def->vlan);
 
     virObjectUnref(def->privateData);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
