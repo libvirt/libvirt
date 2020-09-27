@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-09-24 11:56+0000\n"
-"PO-Revision-Date: 2020-08-27 08:43+0000\n"
+"PO-Revision-Date: 2020-09-24 15:55+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.2.1\n"
+"X-Generator: Weblate 4.2.2\n"
 
 msgid ""
 "\n"
@@ -665,7 +665,7 @@ msgstr "Модель %s watchdog може стосуватися лише кан
 
 #, c-format
 msgid "%s model of watchdog does not support configuring the address"
-msgstr ""
+msgstr "У моделі %s watchdog не передбачено підтримки налаштовування адреси"
 
 #, c-format
 msgid "%s model of watchdog is allowed for s390 and s390x only"
@@ -912,15 +912,15 @@ msgstr "%s: невідоме сімейство «%s» у визначенні �
 
 #, c-format
 msgid "%s: cannot connect to '%s': %s\n"
-msgstr ""
+msgstr "%s: не вдалося встановити з'єднання із «%s»: %s\n"
 
 #, c-format
 msgid "%s: cannot parse URI transport '%s': %s\n"
-msgstr ""
+msgstr "%s: не вдалося обробити передавання адреси «%s»: %s\n"
 
 #, c-format
 msgid "%s: could not proxy traffic: %s\n"
-msgstr ""
+msgstr "%s: не вдалося виконати спрямування даних крізь проксі-сервер: %s\n"
 
 #, c-format
 msgid "%s: error: %s%c"
@@ -1122,7 +1122,7 @@ msgstr "%s: не вдалося визначити режим доступу д�
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
-msgstr ""
+msgstr "%s: неочікуване передавання адреси «%s»\n"
 
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
@@ -1256,13 +1256,13 @@ msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "Не можна використовувати «:» у назви тому джерела RBD «%s»"
 
 msgid "'adapter' name must be specified for scsi hostdev source"
-msgstr ""
+msgstr "для джерела scsi слід вказати елемент назви «adapter»"
 
 msgid "'address' is not supported for 'ramfb' video devices"
 msgstr "підтримки «address» для відеопристроїв «ramfb» не передбачено"
 
 msgid "'address' must be specified for scsi hostdev source"
-msgstr ""
+msgstr "для джерела scsi слід вказати елементи «address»"
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
@@ -2209,6 +2209,8 @@ msgstr ""
 msgid ""
 "Both port and URI requested for disk migration while being mutually exclusive"
 msgstr ""
+"Надіслано запит щодо порту і адреси для перенесення диска, хоча їх не можна "
+"вказувати одночасно"
 
 msgid "Bounded"
 msgstr "Зв'язане"
@@ -2806,7 +2808,7 @@ msgstr "Не вдалося перевірити виконуваний файл
 
 #, c-format
 msgid "Cannot check QEMU module directory %s"
-msgstr ""
+msgstr "Не вдалося перевірити каталог модуля QEMU %s"
 
 msgid "Cannot check address family on this platform"
 msgstr "Неможливо перевірити сімейство адрес на цій платформі"
@@ -3814,6 +3816,10 @@ msgid ""
 "enabling forwarding  without accept_ra set to 2 will cause the kernel to "
 "flush them, breaking networking."
 msgstr ""
+"Перевірте налаштування основної системи: для інтерфейсу %s передбачено "
+"автоматичне налаштовування маршрутів IPv6 і увімкнено переспрямовування без "
+"встановлення accept_ra у значення 2 — це призведе до ігнорування інтерфейсу "
+"ядром і зашкодить роботі у мережі."
 
 #, c-format
 msgid "Checkpoint %s XML configuration not changed.\n"
@@ -6532,6 +6538,8 @@ msgstr "Строк дії"
 msgid ""
 "Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
+"Слід вказати явним чином назву вузла призначення для перенесення TLS крізь "
+"сокет UNIX"
 
 msgid "Extended attributes are not supported on this system"
 msgstr "Підтримки розширених атрибутів у цій системі не передбачено"
@@ -11176,7 +11184,7 @@ msgstr "Помилкове форматування адреси PCI %s"
 
 #, c-format
 msgid "Malformed PCI options %s"
-msgstr ""
+msgstr "Помилкове форматування параметрів PCI, %s"
 
 msgid "Malformed auth_pending field in JSON state document"
 msgstr "Помилкове форматування поля auth_pending у документі щодо стану JSON"
@@ -12096,7 +12104,7 @@ msgstr "У документі стану JSON не вистачає поля pri
 
 #, c-format
 msgid "Missing property '%s' in answer"
-msgstr ""
+msgstr "У відповіді пропущено властивість «%s»"
 
 msgid "Missing readonly field in JSON state document"
 msgstr "У документі стану JSON не вистачає поля readonly"
@@ -12409,7 +12417,7 @@ msgstr "Вузол NUMA %zd є недоступним"
 
 #, c-format
 msgid "NUMA node %zu is not available"
-msgstr ""
+msgstr "Вузол NUMA %zu є недоступним"
 
 msgid "NUMA node selections to set"
 msgstr "Набір вузлів NUMA для встановлення"
@@ -13789,7 +13797,7 @@ msgid "Passphrase for key '%s'"
 msgstr "Пароль до ключа «%s»"
 
 msgid "Password may not contain ',' character"
-msgstr ""
+msgstr "У паролі не повинно міститися символу «,»"
 
 msgid "Password request failed"
 msgstr "Невдала спроба запиту щодо пароля"
@@ -14742,7 +14750,7 @@ msgstr ""
 "модуль='%u' використовується іншим пристроєм SCSI основної системи"
 
 msgid "SCSI host device data structure was not initialized"
-msgstr ""
+msgstr "Структуру даних пристрою основної системи SCSI не було ініціалізовано"
 
 msgid "SCSI host device doesn't support managed mode"
 msgstr "У пристрої вузла SCSI не передбачено підтримки керованого режиму"
@@ -14941,10 +14949,10 @@ msgid "Security model:"
 msgstr "Модель безпеки:"
 
 msgid "Security warning: VNC auth is not supported."
-msgstr ""
+msgstr "Попередження захисту: розпізнавання VNC не передбачено."
 
 msgid "Security warning: VNC is used without authentication."
-msgstr ""
+msgstr "Попередження захисту: використано VNC без розпізнавання."
 
 #, c-format
 msgid ""
@@ -16679,7 +16687,7 @@ msgstr "Сертифікат CA %s ще не набув чинності"
 
 #, c-format
 msgid "The CCW devno '%s' is in use already"
-msgstr ""
+msgstr "Номер пристрою CCW «%s» вже використовується"
 
 #, c-format
 msgid ""
@@ -17313,7 +17321,7 @@ msgid "UEFI requires ACPI on this architecture"
 msgstr "На цій архітектурі UEFI потребує ACPI"
 
 msgid "UNIX disks URI does not include path"
-msgstr ""
+msgstr "До адреси дисків UNIX не включено шлях"
 
 msgid "UNIX socket address is required"
 msgstr "Потрібна адреса сокета UNIX"
@@ -17350,10 +17358,12 @@ msgstr "Схема адреси «%s» для вбудованого драйв�
 
 msgid "URI to use for disks migration (overrides --disks-port)"
 msgstr ""
+"Адреса, яку слід використати для перенесення дисків (перевизначається "
+"--disks-port)"
 
 #, c-format
 msgid "URI with tcp scheme did not provide a server part: %s"
-msgstr ""
+msgstr "У адресі за схемою tcp не надано частини, пов'язаної із сервером: %s"
 
 #, c-format
 msgid "USB bus %u requested but no controller with that index is present"
@@ -17749,7 +17759,7 @@ msgstr "Не вдалося створити пристрій %s"
 
 #, c-format
 msgid "Unable to create device '%s'"
-msgstr ""
+msgstr "Не вдалося створити пристрій «%s»"
 
 #, c-format
 msgid "Unable to create directory %s"
@@ -18314,7 +18324,7 @@ msgstr "Не вдалося отримати параметри workerpool се�
 
 #, c-format
 msgid "Unable to get session bus connection: %s"
-msgstr ""
+msgstr "Не вдалося встановити з'єднання з каналом сеансу: %s"
 
 msgid "Unable to get snapshot content"
 msgstr "Не вдалося отримати дані щодо вмісту знімка"
@@ -18324,7 +18334,7 @@ msgstr "Неможливо отримати дані щодо sysfs на цій 
 
 #, c-format
 msgid "Unable to get system bus connection: %s"
-msgstr ""
+msgstr "Не вдалося встановити з'єднання з каналом для передавання даних: %s"
 
 msgid "Unable to get the machine location path"
 msgstr "Не вдалося отримати шлях до розташування машини"
@@ -18734,7 +18744,7 @@ msgstr "Не вдалося прочитати %s"
 
 #, c-format
 msgid "Unable to read %s for ipv6 forwarding checks"
-msgstr ""
+msgstr "Не вдалося прочитати %s для перевірок переспрямовування ipv6"
 
 msgid "Unable to read TLS confirmation"
 msgstr "Не вдалося прочитати підтвердження TLS"
@@ -18940,7 +18950,7 @@ msgstr ""
 "%s"
 
 msgid "Unable to run one time GDBus initializer"
-msgstr ""
+msgstr "Не вдалося запустити одноразовий ініціалізатор GDBus"
 
 #, c-format
 msgid "Unable to save '%s'"
@@ -19546,7 +19556,7 @@ msgid "Unexpectedly got a network port without a plug"
 msgstr "Несподівано отримано порт мережі без з'єднання"
 
 msgid "Unix file descriptors not supported on this platform"
-msgstr ""
+msgstr "На цій платформі не передбачено підтримки дескрипторів файлів UNIX"
 
 msgid "Unknown"
 msgstr "Невідомо"
@@ -19844,7 +19854,7 @@ msgstr "Невідомий випуск: %s"
 
 #, c-format
 msgid "Unknown remote mode '%s'"
-msgstr ""
+msgstr "Невідомий віддалений режим «%s»"
 
 msgid "Unknown return code"
 msgstr "Невідомий код результату"
@@ -19949,7 +19959,7 @@ msgstr ""
 
 #, c-format
 msgid "Unnkown proxy type '%s'"
-msgstr ""
+msgstr "Невідомий тип проксі — «%s»"
 
 msgid "Unpaused"
 msgstr "Поновлено"
@@ -20245,7 +20255,7 @@ msgstr "Непідтримуваний тип кореневої файлово�
 
 #, c-format
 msgid "Unsupported scheme in disks URI: %s"
-msgstr ""
+msgstr "Непідтримувана схема у адресі дисків: %s"
 
 #, c-format
 msgid "Unsupported spicevmc target name '%s'"
@@ -20315,6 +20325,8 @@ msgid ""
 "Usage of listen-address is forbidden when migration URI uses UNIX transport "
 "method"
 msgstr ""
+"Не можна використовувати listen-address, якщо за адресою перенесення "
+"використовується метод передавання UNIX"
 
 msgid "Usage:"
 msgstr "Користування:"
@@ -20476,7 +20488,7 @@ msgid "VNC"
 msgstr "VNC"
 
 msgid "VNC Password authentication not supported by bhyve"
-msgstr ""
+msgstr "У bhyve не передбачено підтримки розпізнавання за паролем у VNC"
 
 msgid "VNC supports connected='keep' only"
 msgstr "У VNC передбачено підтримку лише connected='keep'"
@@ -20650,6 +20662,8 @@ msgstr "Витирання тому «%s»(%s) ... "
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
 msgstr ""
+"У QEMU не передбачено підтримки фільтрування запису у просторі налаштувань "
+"пристрою PCI"
 
 #, c-format
 msgid "Write of '%s' to '%s' during vport create/delete failed"
@@ -24335,7 +24349,7 @@ msgid "cpu count too large"
 msgstr "кількість процесорів є надто великою"
 
 msgid "cpu parameter is missing a model name"
-msgstr ""
+msgstr "пропущено параметр процесора у назві моделі"
 
 #, c-format
 msgid "cpu topology results in more than %u cpus"
@@ -25840,7 +25854,7 @@ msgstr "екранувати для використання у командні
 
 #, c-format
 msgid "ethtool ioctl error on %s"
-msgstr ""
+msgstr "помилка ioctl ethtool %s"
 
 #, c-format
 msgid "event '%s' for domain %s\n"
@@ -28063,7 +28077,7 @@ msgid "host-certificates mode needs exactly three certificates"
 msgstr "режим сертифікації основної системи потребує точно трьох сертифікатів"
 
 msgid "hostName field not available (missing VMware Tools?)"
-msgstr ""
+msgstr "поле hostName є недоступним (не встановлено VMware Tools?)"
 
 #, c-format
 msgid "hostdev %s not found"
@@ -31387,7 +31401,7 @@ msgstr "у записі кешу можливостей QEMU не вистача
 
 #, c-format
 msgid "missing mapping in '%s'"
-msgstr ""
+msgstr "пропущено прив'язку у «%s»"
 
 msgid "missing memory model"
 msgstr "не вказано моделі пам'яті"
@@ -32115,6 +32129,8 @@ msgstr ""
 
 msgid "netcat path not valid with native proxy mode"
 msgstr ""
+"шлях netcat не є чинним, якщо використовується режим природного "
+"проксі-сервера"
 
 msgid "netdir"
 msgstr "мережевий каталог"
@@ -33355,7 +33371,7 @@ msgid "only sending a signal to pid 1 is supported"
 msgstr "передбачено підтримку лише надсилання сигналу до pid 1"
 
 msgid "only single ISA controller is supported"
-msgstr ""
+msgstr "передбачено підтримку лише одного контролера ISA"
 
 msgid "only single USB controller is supported"
 msgstr "передбачено підтримку лише одного контролера USB"
@@ -33452,7 +33468,7 @@ msgstr "параметр --%s вже використано"
 
 #, c-format
 msgid "option parsing failed: %s\n"
-msgstr ""
+msgstr "не вдалося обробити параметр: %s\n"
 
 msgid "optional CPU features are not supported"
 msgstr "підтримки додаткових можливостей процесора не передбачено"
@@ -37024,7 +37040,7 @@ msgstr "не вдалося знайти диск за призначенням:
 
 #, c-format
 msgid "unable to find parent device '%s'"
-msgstr ""
+msgstr "не вдалося знайти батьківський пристрій «%s»"
 
 msgid "unable to find ploop tools, please install them"
 msgstr "не вдалося знайти інструменти ploop; будь ласка, встановіть їх"
@@ -38507,7 +38523,7 @@ msgstr "невідомий тип PCI-джерела «%s»"
 
 #, c-format
 msgid "unknown pci writeFiltering setting '%s'"
-msgstr ""
+msgstr "невідомий параметр writeFiltering PCI, «%s»"
 
 #, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
