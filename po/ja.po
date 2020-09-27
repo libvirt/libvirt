@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-08-26 08:38+0000\n"
+"POT-Creation-Date: 2020-09-24 11:56+0000\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -538,11 +538,11 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "%s の長さが最大値よりも大きいです: %d > %d"
 
 #, c-format
-msgid "%s model of watchdog can go only on ISA bus"
+msgid "%s model of watchdog can go only on PCI bus"
 msgstr ""
 
 #, c-format
-msgid "%s model of watchdog can go only on PCI bus"
+msgid "%s model of watchdog does not support configuring the address"
 msgstr ""
 
 #, c-format
@@ -782,6 +782,18 @@ msgid "%s: Unrecognized family '%s' in route definition"
 msgstr "認識できないファミリー '%s' (ネットワーク  '%s' 内)"
 
 #, c-format
+msgid "%s: cannot connect to '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: cannot parse URI transport '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: could not proxy traffic: %s\n"
+msgstr ""
+
+#, c-format
 msgid "%s: error: %s%c"
 msgstr "%s: エラー: %s%c"
 
@@ -976,6 +988,10 @@ msgid "%s: unable to determine access mode of fd %d"
 msgstr "%s: ファイルディスクリプター %d のアクセスモードを決定できません"
 
 #, c-format
+msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: サポートされないハイパーバイザーの名前 %s\n"
 
@@ -1104,16 +1120,13 @@ msgstr "--storage と --remove-all-storage がどちらも指定されました"
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "':' が RBD ソースボリューム名 '%s' において許可されません"
 
-msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+msgid "'adapter' name must be specified for scsi hostdev source"
 msgstr ""
-"'adapter' および 'address' を SCSI ホストデバイスソースに対して指定する必要が"
-"あります"
-
-msgid "'adapter' must be specified for scsi hostdev source"
-msgstr ""
-"'adapter' を SCSI ホストデバイスのソースに対して指定する必要があります。"
 
 msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
+msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
 msgid ""
@@ -2066,6 +2079,10 @@ msgstr ""
 "'adapter' および 'address' を SCSI ホストデバイスソースに対して指定する必要が"
 "あります"
 
+msgid ""
+"Both port and URI requested for disk migration while being mutually exclusive"
+msgstr ""
+
 msgid "Bounded"
 msgstr "制限"
 
@@ -2595,10 +2612,6 @@ msgstr "既存の秘密上ではプライベートフラグを変更できませ
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
 msgstr ""
 
-#, c-format
-msgid "Cannot append basic type %s"
-msgstr "ベーシックタイプ %s を追加できません"
-
 #, fuzzy
 msgid "Cannot assign SCSI host device address"
 msgstr "デバイス %s に pty が割り当てられていません"
@@ -2626,6 +2639,10 @@ msgstr "NBD デバイス %s PID を確認できません"
 msgid "Cannot check QEMU binary %s"
 msgstr "QEMU バイナリー %s を確認できません"
 
+#, c-format
+msgid "Cannot check QEMU module directory %s"
+msgstr ""
+
 #, fuzzy
 msgid "Cannot check address family on this platform"
 msgstr "このプラットフォームにおいて macvlan デバイスを作成できません"
@@ -2637,9 +2654,6 @@ msgstr "dnsmasq バイナリー %s を確認できません"
 #, fuzzy, c-format
 msgid "Cannot chown uniq path: %s"
 msgstr "パス '%s' を開けません"
-
-msgid "Cannot close container iterator"
-msgstr "コンテナーのイテレーターを閉じられません"
 
 #, fuzzy
 msgid "Cannot close resctrl"
@@ -3625,8 +3639,9 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: enabling IPv6 forwarding with RA routes without "
-"accept_ra set to 2 is likely to cause routes loss. Interfaces to look at: %s"
+"Check the host setup: interface %s has kernel autoconfigured IPv6 routes and "
+"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"flush them, breaking networking."
 msgstr ""
 
 #, fuzzy, c-format
@@ -3878,12 +3893,6 @@ msgstr "ドメイン %s に接続しました\n"
 #, fuzzy
 msgid "Connected to the admin server"
 msgstr "ドメイン %s に接続しました\n"
-
-#, c-format
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"%s transport"
-msgstr ""
 
 msgid "Connections from inside daemon must be direct"
 msgstr ""
@@ -5050,24 +5059,6 @@ msgstr ""
 msgid "DBus daemon %s didn't show up"
 msgstr "ドメイン %s が現れませんでした"
 
-msgid "DBus matches could not be installed. Disabling nwfilter driver"
-msgstr ""
-"DBus matches がインストールされていません。ネットワークフィルタードライバーを"
-"無効化します。"
-
-#, c-format
-msgid "DBus not available, disabling HAL driver: %s"
-msgstr "DBus が利用できません、HAL ドライバーを無効にします: %s"
-
-msgid "DBus support not compiled into this binary"
-msgstr "DBus サポートはこのバイナリーの中にコンパイルされていません"
-
-msgid "DBus type stack is empty"
-msgstr "DBus タイプスタックが空です"
-
-msgid "DBus type too deeply nested"
-msgstr "DBus タイプの入れ子が深すぎます"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS HOST レコードは更新できません、追加または削除のみできます"
 
@@ -5325,15 +5316,6 @@ msgstr "デバイスが正常に更新されました\n"
 #, c-format
 msgid "Device: %s\n"
 msgstr "デバイス: %s\n"
-
-#, c-format
-msgid "Dict entry in signature '%s' is wrong size"
-msgstr "シグネチャー '%s' 内の辞書エントリーのサイズがただしくありません"
-
-#, c-format
-msgid "Dict entry in signature '%s' must be a basic type"
-msgstr ""
-"シグネチャー '%s' 内の辞書エントリーはベーシックタイプである必要があります"
 
 msgid ""
 "Did not create EK and certificates since this requires privileged mode for a "
@@ -5861,10 +5843,6 @@ msgstr ""
 
 msgid "Dump failed"
 msgstr "ダンプが失敗しました"
-
-#, c-format
-msgid "Duplicate Address Detection not finished in %d seconds"
-msgstr ""
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%u'"
@@ -6401,6 +6379,10 @@ msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "仮想化の種類は '%s' が期待されますが '%s' が見つかりました"
 
 msgid "Expiry Time"
+msgstr ""
+
+msgid ""
+"Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
 
 #, fuzzy
@@ -7634,10 +7616,6 @@ msgstr "%s のオープンに失敗しました"
 msgid "Failed to logout: %s"
 msgstr "%s の更新に失敗しました"
 
-#, fuzzy
-msgid "Failed to loop over IPv6 routes"
-msgstr "ストレージボリュームの一覧表示に失敗しました"
-
 msgid "Failed to make auth credentials"
 msgstr "認証情報の作成に失敗しました"
 
@@ -8064,11 +8042,6 @@ msgstr "ロック失敗時アクションの登録に失敗しました"
 
 #, c-format
 msgid "Failed to register xml namespace '%s'"
-msgstr "XML 名前空間 '%s' の登録に失敗しました"
-
-#, fuzzy
-msgid ""
-"Failed to register xml namespace 'http://www.innotek.de/VirtualBox-settings'"
 msgstr "XML 名前空間 '%s' の登録に失敗しました"
 
 msgid "Failed to release lock"
@@ -9093,16 +9066,6 @@ msgid "Gets or sets the domain's system time"
 msgstr "ドメインのホスト名の表示"
 
 msgid "Gets statistics about one or more (or all) domains"
-msgstr ""
-
-#, c-format
-msgid "Got array ref but '%s' is not a single basic type / dict"
-msgstr ""
-
-#, c-format
-msgid ""
-"Got array ref but '%s' is not a single basic type or dict with matching key"
-"+value type"
 msgstr ""
 
 msgid "Got empty feature list from resctrl"
@@ -11055,6 +11018,10 @@ msgstr ""
 msgid "Malformed PCI address %s"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI options %s"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed auth_pending field in JSON state document"
 msgstr "JSON 状態ドキュメントに auth 項目がありません"
@@ -11971,6 +11938,10 @@ msgstr "JSON ドキュメントに priority_workers データがありません"
 msgid "Missing privateData field in JSON state document"
 msgstr "JSON 状態ドキュメントに privateData 項目がありません"
 
+#, c-format
+msgid "Missing property '%s' in answer"
+msgstr ""
+
 msgid "Missing readonly field in JSON state document"
 msgstr "JSON 状態ドキュメントに readonly 項目がありません"
 
@@ -12101,9 +12072,6 @@ msgstr "ストレージホストブロックパスがありません"
 #, c-format
 msgid "Missing storage volume name for disk '%s'"
 msgstr "ディスク '%s' のストレージボリューム名がありません"
-
-msgid "Missing variant type signature"
-msgstr "バリアントタイプシグネチャーがありません"
 
 #, c-format
 msgid "Missing vendor string for CPU vendor %s"
@@ -12292,6 +12260,10 @@ msgstr "ノード %zu が範囲外です"
 #, fuzzy, c-format
 msgid "NUMA node %zd is unavailable"
 msgstr "利用可能な PCI バスがありません"
+
+#, c-format
+msgid "NUMA node %zu is not available"
+msgstr ""
 
 msgid "NUMA node selections to set"
 msgstr "設定する NUMA ノードのセット"
@@ -12652,10 +12624,6 @@ msgstr "デバイスにおいて動作中の操作がありません: %s"
 #, fuzzy
 msgid "No addresses to bind to"
 msgstr "ソケットアドレスが '%s' に対して見つかりません"
-
-#, c-format
-msgid "No args present for signature %s"
-msgstr "シグネチャー %s 用の引数が存在しません"
 
 msgid "No authentication callback available"
 msgstr "認証のコールバックが利用可能ではありません"
@@ -13047,9 +13015,6 @@ msgstr "ストリームから読み込みできません"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "動作中のデバイス %s を切断しません"
-
-msgid "Not enough fields in message for signature"
-msgstr "シグネチャー用のメッセージに十分なフィールドがありません"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13521,9 +13486,6 @@ msgstr ""
 "PCI アドレス 0:0:2.0 が使用中です、QEMU はプライマリービデオのためにそれが必"
 "要です"
 
-msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
-msgstr ""
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13694,6 +13656,9 @@ msgstr "QEMU コマンドライン引数が指定されていません"
 #, c-format
 msgid "Passphrase for key '%s'"
 msgstr "キー '%s' のパスフレーズ"
+
+msgid "Password may not contain ',' character"
+msgstr ""
 
 msgid "Password request failed"
 msgstr "パスワードの要求が失敗しました"
@@ -14295,9 +14260,6 @@ msgstr "状態保存ファイルと関連づけられたドメインの XML を�
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "状態保存ファイルと関連づけられたドメインの XML を置き換えます。"
 
-msgid "Reply message incorrect"
-msgstr "応答メッセージが不正です"
-
 #, c-format
 msgid ""
 "Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
@@ -14638,6 +14600,9 @@ msgid ""
 "another SCSI host device"
 msgstr ""
 
+msgid "SCSI host device data structure was not initialized"
+msgstr ""
+
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI ホストデバイスが管理済みモードをサポートしません"
 
@@ -14838,11 +14803,11 @@ msgstr "セキュリティモデルが見つかりません: %s"
 msgid "Security model:"
 msgstr "セキュリティモデル:"
 
-#. Bhyve doesn't support VNC Auth yet, so print a warning about
-#. * unauthenticated VNC sessions
-#, fuzzy
-msgid "Security warning: currently VNC auth is not supported."
-msgstr "マウントポイントの指定が今のところサポートされません"
+msgid "Security warning: VNC auth is not supported."
+msgstr ""
+
+msgid "Security warning: VNC is used without authentication."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -15159,10 +15124,6 @@ msgstr "URI $uri においてゲストのシャットダウン中..."
 #, fuzzy
 msgid "Signal handling not available on this platform"
 msgstr "numad はこのホストにおいて利用可能ではありません"
-
-#, c-format
-msgid "Signature '%s' too deeply nested"
-msgstr "シグネチャー '%s' の入れ子が深すぎます"
 
 #, fuzzy, c-format
 msgid ""
@@ -16396,8 +16357,8 @@ msgid "The CA certificate %s is not yet active"
 msgstr "CA 証明書 %s がまだアクティブではありません"
 
 #, c-format
-msgid "The CCW devno '%s' is in use already "
-msgstr "CCW デバイス番号 '%s' がすでに使用中です"
+msgid "The CCW devno '%s' is in use already"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -16810,9 +16771,6 @@ msgstr "ドライバーが多すぎます、%s を登録できません"
 msgid "Too many drivers, cannot register storage file backend '%s'"
 msgstr "ドライバーが多すぎます、%s を登録できません"
 
-msgid "Too many fields in message for signature"
-msgstr "シグネチャー用のメッセージにフィールドが多すぎます"
-
 #, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "%s に対して検知されたファイルシステムが多すぎます"
@@ -16884,10 +16842,6 @@ msgstr "シークレット '%d' が制限値 '%d' に対して多すぎます"
 #, fuzzy, c-format
 msgid "Too many storage_vols '%d' for limit '%d'"
 msgstr "シークレット '%d' が制限値 '%d' に対して多すぎます"
-
-#, fuzzy, c-format
-msgid "Too many unreserved %s devices in use"
-msgstr "%s に登録しているドライバーが多すぎます"
 
 msgid "Total"
 msgstr "合計"
@@ -17001,6 +16955,9 @@ msgstr "<virtualport> 要素は <interface type='%s'> に対してサポート�
 msgid "UEFI requires ACPI on this architecture"
 msgstr ""
 
+msgid "UNIX disks URI does not include path"
+msgstr ""
+
 #, fuzzy
 msgid "UNIX socket address is required"
 msgstr "ソケットアドレスが '%s' に対して見つかりません"
@@ -17034,6 +16991,13 @@ msgstr "名前空間の URI"
 
 #, c-format
 msgid "URI scheme '%s' for embedded driver is not valid"
+msgstr ""
+
+msgid "URI to use for disks migration (overrides --disks-port)"
+msgstr ""
+
+#, c-format
+msgid "URI with tcp scheme did not provide a server part: %s"
 msgstr ""
 
 #, c-format
@@ -17399,10 +17363,6 @@ msgid "Unable to create %s"
 msgstr "%s を作成できません"
 
 #, fuzzy, c-format
-msgid "Unable to create %s device %s"
-msgstr "デバイス %s を作成できません"
-
-#, fuzzy, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "ブリッジ %s を作成できません"
 
@@ -17448,6 +17408,10 @@ msgstr "ブリッジデバイスを作成できません"
 #, c-format
 msgid "Unable to create device %s"
 msgstr "デバイス %s を作成できません"
+
+#, c-format
+msgid "Unable to create device '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unable to create directory %s"
@@ -17767,14 +17731,6 @@ msgstr "ケイパビリティを取得できませんでした"
 msgid "Unable to get Console object for domain %s"
 msgstr "%s の SCSI キーを取得できません"
 
-#, c-format
-msgid "Unable to get DBus session bus connection: %s"
-msgstr "DBus セッションのバス接続を取得できません: %s"
-
-#, c-format
-msgid "Unable to get DBus system bus connection: %s"
-msgstr "DBus システムバス接続を取得できません: %s"
-
 #, fuzzy
 msgid "Unable to get IP address on this platform"
 msgstr "このプラットフォームにおいて %s における STP を取得できません"
@@ -18046,6 +18002,10 @@ msgstr "リモートソケット名を取得できません"
 msgid "Unable to get server workerpool parameters"
 msgstr "メモリーのパラメーターを取得できませんでした"
 
+#, c-format
+msgid "Unable to get session bus connection: %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get snapshot content"
 msgstr "スナップショット数の取得に失敗しました"
@@ -18053,6 +18013,10 @@ msgstr "スナップショット数の取得に失敗しました"
 #, fuzzy
 msgid "Unable to get sysfs info on this platform"
 msgstr "このプラットフォームの VLAN を取得できません"
+
+#, c-format
+msgid "Unable to get system bus connection: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to get the machine location path"
@@ -18480,6 +18444,10 @@ msgstr "メッセージ長を再エンコードできません"
 msgid "Unable to read %s"
 msgstr "%s を読み込めません"
 
+#, c-format
+msgid "Unable to read %s for ipv6 forwarding checks"
+msgstr ""
+
 msgid "Unable to read TLS confirmation"
 msgstr "TLS 確認を読み込めません"
 
@@ -18689,8 +18657,8 @@ msgid "Unable to run command to set OVS port data for interface %s"
 msgstr ""
 "インターフェース %s の OVS ポートデータを設定するコマンドを実行できません"
 
-msgid "Unable to run one time DBus initializer"
-msgstr "ワンタイム DBus イニシャライザーを実行できません"
+msgid "Unable to run one time GDBus initializer"
+msgstr ""
 
 #, c-format
 msgid "Unable to save '%s'"
@@ -19012,10 +18980,6 @@ msgstr "クライアント証明書 %s を CA 証明書 %s に対して検証で
 msgid "Unable to verify server certificate %s against CA certificate %s"
 msgstr "サーバー証明書 %s を CA 証明書 %s に対して検証できません"
 
-#, fuzzy
-msgid "Unable to wait for IPv6 DAD on this platform"
-msgstr "このプラットフォームの VLAN を取得できません"
-
 msgid "Unable to wait for child process"
 msgstr "子プロセスに対して待機できません"
 
@@ -19289,10 +19253,6 @@ msgstr "予期しないホストデバイスのドライバー名形式 %d "
 msgid "Unexpected signal received: %d"
 msgstr "予期しないシグナルを受け取りました: %d"
 
-#, c-format
-msgid "Unexpected signature '%s'"
-msgstr "予期しないシグネチャー '%s'"
-
 #, fuzzy, c-format
 msgid "Unexpected socket family %d"
 msgstr "予期しないソースモード %d"
@@ -19313,6 +19273,9 @@ msgid "Unexpectedly got a network port without a network bridge"
 msgstr ""
 
 msgid "Unexpectedly got a network port without a plug"
+msgstr ""
+
+msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
 msgid "Unknown"
@@ -19606,6 +19569,10 @@ msgstr "不明な QEMU ケイパビリティフラグ %s"
 msgid "Unknown release: %s"
 msgstr "不明なリリース: %s"
 
+#, c-format
+msgid "Unknown remote mode '%s'"
+msgstr ""
+
 msgid "Unknown return code"
 msgstr "不明なリターンコード"
 
@@ -19665,14 +19632,6 @@ msgid "Unknown taint flag %s"
 msgstr "不明な汚染フラグ %s"
 
 #, fuzzy, c-format
-msgid "Unknown type '%c' in signature '%s'"
-msgstr "不明な転送形式 %d がネットワーク '%s' にあります"
-
-#, fuzzy, c-format
-msgid "Unknown type '%x' in signature '%s'"
-msgstr "不明な転送形式 %d がネットワーク '%s' にあります"
-
-#, fuzzy, c-format
 msgid "Unknown uri scheme: '%s'"
 msgstr "不明なソースモード '%s'"
 
@@ -19710,6 +19669,10 @@ msgstr ""
 
 #, c-format
 msgid "Unmanaged PCI device %s must be manually detached from the host"
+msgstr ""
+
+#, c-format
+msgid "Unnkown proxy type '%s'"
 msgstr ""
 
 #, fuzzy
@@ -20011,6 +19974,10 @@ msgid "Unsupported root filesystem type %s"
 msgstr "サポートされないルートファイルシステム形式 %s"
 
 #, c-format
+msgid "Unsupported scheme in disks URI: %s"
+msgstr ""
+
+#, c-format
 msgid "Unsupported spicevmc target name '%s'"
 msgstr "サポートされない spicevmc ターゲット名 '%s'"
 
@@ -20073,6 +20040,11 @@ msgstr "ファイルの内容をボリュームにアップロードします。
 
 msgid "Usage"
 msgstr "使用法"
+
+msgid ""
+"Usage of listen-address is forbidden when migration URI uses UNIX transport "
+"method"
+msgstr ""
 
 #, fuzzy
 msgid "Usage:"
@@ -20228,6 +20200,9 @@ msgstr ""
 
 msgid "VNC"
 msgstr "VNC"
+
+msgid "VNC Password authentication not supported by bhyve"
+msgstr ""
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC は connected='keep' のみがサポートされます"
@@ -20394,6 +20369,10 @@ msgstr ""
 #, c-format
 msgid "Wiping volume '%s'(%s) ... "
 msgstr "ボリューム '%s'(%s) の完全削除中 ... "
+
+msgid ""
+"Write filtering of PCI device configuration space is not supported by qemu"
+msgstr ""
 
 #, c-format
 msgid "Write of '%s' to '%s' during vport create/delete failed"
@@ -21441,10 +21420,6 @@ msgstr ""
 msgid "can't find created snapshot"
 msgstr "カレントのスナップショットにある情報"
 
-#, fuzzy, c-format
-msgid "can't free name %s%d - out of range 0-%d"
-msgstr "セル %d を開始、範囲外です (0-%d)"
-
 #, c-format
 msgid "can't identify pool in uri %s "
 msgstr ""
@@ -21522,10 +21497,6 @@ msgstr "ネットワークの認識できないセクションを更新できま
 
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "can't use name %s%d - out of range 0-%d"
-msgstr "セル %d を開始、範囲外です (0-%d)"
 
 #, fuzzy
 msgid "canceled"
@@ -23976,10 +23947,6 @@ msgstr ""
 msgid "couldn't find interface with MAC address '%s': %s%s%s"
 msgstr "MAC アドレス '%s' を持つインターフェースが見つかりませんでした: %s%s%s"
 
-#, fuzzy, c-format
-msgid "couldn't get id value from macvtap device name %s"
-msgstr "変数 '%s' の値を見つけられませんでした"
-
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr ""
@@ -24012,18 +23979,6 @@ msgid ""
 msgstr ""
 "ネットワーク '%s' において一致する DHCP ホスト項目の場所が決められませんでし"
 "た"
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as unused"
-msgstr "引数を構文解析できませんでした"
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as used"
-msgstr "プール %s を自動起動としてマークするのに失敗しました"
-
-#, fuzzy, c-format
-msgid "couldn't reserve name %s%d - already in use"
-msgstr "ストレージボリューム名 '%s' はすでに使用中です"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
@@ -24060,6 +24015,9 @@ msgstr "cpu アフィニティはサポートされていません"
 #, fuzzy
 msgid "cpu count too large"
 msgstr "ncpus が大きすぎます"
+
+msgid "cpu parameter is missing a model name"
+msgstr ""
 
 #, c-format
 msgid "cpu topology results in more than %u cpus"
@@ -25548,10 +25506,6 @@ msgstr "IFLA_VF_PORT 部分を構文解析中にエラーが発生しました"
 msgid "error parsing pid of lldpad"
 msgstr "lldpad の pid を構文解析中にエラーが発生しました"
 
-#, fuzzy
-msgid "error reading DAD state information"
-msgstr "初期設定の作成中にエラーが発生しました"
-
 msgid "error receiving signal from container"
 msgstr "コンテナーからシグナルを受信中にエラーが発生しました"
 
@@ -25588,7 +25542,8 @@ msgstr "XML における使用のためのエスケープ"
 msgid "escape for shell use"
 msgstr "シェルにおける使用のためのエスケープ"
 
-msgid "ethtool ioctl error"
+#, c-format
+msgid "ethtool ioctl error on %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27820,6 +27775,9 @@ msgstr ""
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "ホスト証明書モードは正確に 3 つの証明書が必要です"
 
+msgid "hostName field not available (missing VMware Tools?)"
+msgstr ""
+
 #, c-format
 msgid "hostdev %s not found"
 msgstr "ホストデバイス %s がありませんでした"
@@ -29424,19 +29382,6 @@ msgstr "メタデータの長さは範囲外です"
 msgid "level %u cache size %llu does not match expected size %llu"
 msgstr "ターゲットのビデオカードのヘッド %u がソースの %u と一致しません"
 
-msgid "libhal_ctx_init failed, haldaemon is probably not running"
-msgstr ""
-"libhal_ctx_init に失敗しました、おそらく haldaemon が実行中ではありません"
-
-msgid "libhal_ctx_new returned NULL"
-msgstr "libhal_ctx_new が NULL を返しました"
-
-msgid "libhal_ctx_set_dbus_connection failed"
-msgstr "libhal_ctx_set_dbus_connection に失敗しました"
-
-msgid "libhal_get_all_devices failed"
-msgstr "libhal_get_all_devices に失敗しました"
-
 msgid "libnl was not available at build time"
 msgstr "libnl がビルド時に利用可能ではありませんでした"
 
@@ -30562,6 +30507,9 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr ""
 
+msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
+msgstr ""
+
 msgid "mirror requires file name"
 msgstr "ミラーはファイル名が必要です"
 
@@ -31125,6 +31073,10 @@ msgstr "リースの 'key' 要素がありません"
 msgid "missing machine name in QEMU capabilities cache"
 msgstr "マイグレーションのケイパビリティ名がありません"
 
+#, c-format
+msgid "missing mapping in '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "missing memory model"
 msgstr "タイマー名がありません"
@@ -31666,14 +31618,8 @@ msgid ""
 "device"
 msgstr ""
 
-msgid "more than one adapters is specified for scsi hostdev source"
-msgstr "複数のアダプターが SCSI ホストデバイスソースに対して指定されています"
-
 msgid "more than one snapshot claims to be active"
 msgstr ""
-
-msgid "more than one source addresses is specified for scsi hostdev"
-msgstr "複数のソースアドレスが SCSI ホストデバイスに対して指定されています"
 
 #, fuzzy
 msgid "mount is not supported on this platform."
@@ -31869,6 +31815,9 @@ msgid "negotiation SSF %d was not strong enough"
 msgstr "交渉 SSF %d は強度不足です"
 
 msgid "nested JSON array to commandline conversion is not supported"
+msgstr ""
+
+msgid "netcat path not valid with native proxy mode"
 msgstr ""
 
 msgid "netdir"
@@ -32912,10 +32861,6 @@ msgstr "共有メモリーの無効化はこの QEMU バイナリーで利用で
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "共有メモリーの無効化はこの QEMU バイナリーで利用できません"
 
-#, c-format
-msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
-msgstr ""
-
 msgid "nvram address type must be spaprvio"
 msgstr "nvram アドレス形式は spaprvio である必要があります"
 
@@ -33124,6 +33069,9 @@ msgstr ""
 msgid "only sending a signal to pid 1 is supported"
 msgstr "watchdog デバイスは1つのみサポートされます"
 
+msgid "only single ISA controller is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only single USB controller is supported"
 msgstr "一つの TPM デバイスのみがサポートされます"
@@ -33221,6 +33169,10 @@ msgstr "オプション '-%c'/'--%s' は引数を必要とします"
 #, c-format
 msgid "option --%s already seen"
 msgstr "オプション --%s はすでに指定されています"
+
+#, c-format
+msgid "option parsing failed: %s\n"
+msgstr ""
 
 #, fuzzy
 msgid "optional CPU features are not supported"
@@ -34979,9 +34931,6 @@ msgstr "WWN の設定は LUN デバイスに対してサポートされません
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr ""
 
-msgid "setting up HAL callbacks failed"
-msgstr "HAL 呼び出しのセットアップに失敗しました"
-
 msgid "setuid or setgid failed"
 msgstr "setuid または setgid に失敗しました"
 
@@ -36722,10 +36671,6 @@ msgstr "QEMU コマンド '%s' を実行できません"
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "QEMU コマンド '%s' を実行できません: %s"
 
-#, c-format
-msgid "unable to find PCI address for parent device '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "インデックス %d の SCSI コントローラーがありません"
@@ -36745,6 +36690,10 @@ msgstr "ブロッキングモードを '%s' に設定できません"
 #, fuzzy, c-format
 msgid "unable to find disk by target: %s"
 msgstr "バインドターゲット %s の統計を取得できません"
+
+#, c-format
+msgid "unable to find parent device '%s'"
+msgstr ""
 
 msgid "unable to find ploop tools, please install them"
 msgstr ""
@@ -38242,6 +38191,10 @@ msgstr "不明なパーティション形式"
 msgid "unknown pci source type '%s'"
 msgstr "不明な PCI ソース形式 '%s'"
 
+#, c-format
+msgid "unknown pci writeFiltering setting '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
 msgstr "不明な状態属性値 '%s' (機能 '%s')"
@@ -38805,10 +38758,6 @@ msgstr "%s はこの QEMU ライブラリーにおいてサポートされてい
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
 msgstr "'origstates' の要素 '%s' はサポートされません"
-
-#, c-format
-msgid "unsupported element '%s' of scsi hostdev source"
-msgstr "SCSI ホストデバイスソースのサポートされない要素 '%s'"
 
 #, c-format
 msgid "unsupported event ID %d"
@@ -39718,10 +39667,6 @@ msgid "vnc graphics are not supported with this QEMU"
 msgstr "VNC グラフィックスはこの QEMU でサポートされません"
 
 #, fuzzy
-msgid "vnc password auth not supported"
-msgstr "この操作はサポートされていません"
-
-#, fuzzy
 msgid "vnc port must be in range [5900,65535]"
 msgstr ""
 "rebootTimeout に無効な値があります、[-1,65535] の範囲にある必要があります"
@@ -40058,6 +40003,170 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+#~ msgstr ""
+#~ "'adapter' および 'address' を SCSI ホストデバイスソースに対して指定する必"
+#~ "要があります"
+
+#~ msgid "'adapter' must be specified for scsi hostdev source"
+#~ msgstr ""
+#~ "'adapter' を SCSI ホストデバイスのソースに対して指定する必要があります。"
+
+#~ msgid "Cannot append basic type %s"
+#~ msgstr "ベーシックタイプ %s を追加できません"
+
+#~ msgid "Cannot close container iterator"
+#~ msgstr "コンテナーのイテレーターを閉じられません"
+
+#~ msgid "DBus matches could not be installed. Disabling nwfilter driver"
+#~ msgstr ""
+#~ "DBus matches がインストールされていません。ネットワークフィルタードライ"
+#~ "バーを無効化します。"
+
+#~ msgid "DBus not available, disabling HAL driver: %s"
+#~ msgstr "DBus が利用できません、HAL ドライバーを無効にします: %s"
+
+#~ msgid "DBus support not compiled into this binary"
+#~ msgstr "DBus サポートはこのバイナリーの中にコンパイルされていません"
+
+#~ msgid "DBus type stack is empty"
+#~ msgstr "DBus タイプスタックが空です"
+
+#~ msgid "DBus type too deeply nested"
+#~ msgstr "DBus タイプの入れ子が深すぎます"
+
+#~ msgid "Dict entry in signature '%s' is wrong size"
+#~ msgstr "シグネチャー '%s' 内の辞書エントリーのサイズがただしくありません"
+
+#~ msgid "Dict entry in signature '%s' must be a basic type"
+#~ msgstr ""
+#~ "シグネチャー '%s' 内の辞書エントリーはベーシックタイプである必要があります"
+
+#, fuzzy
+#~ msgid "Failed to loop over IPv6 routes"
+#~ msgstr "ストレージボリュームの一覧表示に失敗しました"
+
+#, fuzzy
+#~ msgid ""
+#~ "Failed to register xml namespace 'http://www.innotek.de/VirtualBox-"
+#~ "settings'"
+#~ msgstr "XML 名前空間 '%s' の登録に失敗しました"
+
+#~ msgid "Missing variant type signature"
+#~ msgstr "バリアントタイプシグネチャーがありません"
+
+#~ msgid "No args present for signature %s"
+#~ msgstr "シグネチャー %s 用の引数が存在しません"
+
+#~ msgid "Not enough fields in message for signature"
+#~ msgstr "シグネチャー用のメッセージに十分なフィールドがありません"
+
+#~ msgid "Reply message incorrect"
+#~ msgstr "応答メッセージが不正です"
+
+#, fuzzy
+#~ msgid "Security warning: currently VNC auth is not supported."
+#~ msgstr "マウントポイントの指定が今のところサポートされません"
+
+#~ msgid "Signature '%s' too deeply nested"
+#~ msgstr "シグネチャー '%s' の入れ子が深すぎます"
+
+#~ msgid "The CCW devno '%s' is in use already "
+#~ msgstr "CCW デバイス番号 '%s' がすでに使用中です"
+
+#~ msgid "Too many fields in message for signature"
+#~ msgstr "シグネチャー用のメッセージにフィールドが多すぎます"
+
+#, fuzzy
+#~ msgid "Too many unreserved %s devices in use"
+#~ msgstr "%s に登録しているドライバーが多すぎます"
+
+#, fuzzy
+#~ msgid "Unable to create %s device %s"
+#~ msgstr "デバイス %s を作成できません"
+
+#~ msgid "Unable to get DBus session bus connection: %s"
+#~ msgstr "DBus セッションのバス接続を取得できません: %s"
+
+#~ msgid "Unable to get DBus system bus connection: %s"
+#~ msgstr "DBus システムバス接続を取得できません: %s"
+
+#~ msgid "Unable to run one time DBus initializer"
+#~ msgstr "ワンタイム DBus イニシャライザーを実行できません"
+
+#, fuzzy
+#~ msgid "Unable to wait for IPv6 DAD on this platform"
+#~ msgstr "このプラットフォームの VLAN を取得できません"
+
+#~ msgid "Unexpected signature '%s'"
+#~ msgstr "予期しないシグネチャー '%s'"
+
+#, fuzzy
+#~ msgid "Unknown type '%c' in signature '%s'"
+#~ msgstr "不明な転送形式 %d がネットワーク '%s' にあります"
+
+#, fuzzy
+#~ msgid "Unknown type '%x' in signature '%s'"
+#~ msgstr "不明な転送形式 %d がネットワーク '%s' にあります"
+
+#, fuzzy
+#~ msgid "can't free name %s%d - out of range 0-%d"
+#~ msgstr "セル %d を開始、範囲外です (0-%d)"
+
+#, fuzzy
+#~ msgid "can't use name %s%d - out of range 0-%d"
+#~ msgstr "セル %d を開始、範囲外です (0-%d)"
+
+#, fuzzy
+#~ msgid "couldn't get id value from macvtap device name %s"
+#~ msgstr "変数 '%s' の値を見つけられませんでした"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as unused"
+#~ msgstr "引数を構文解析できませんでした"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as used"
+#~ msgstr "プール %s を自動起動としてマークするのに失敗しました"
+
+#, fuzzy
+#~ msgid "couldn't reserve name %s%d - already in use"
+#~ msgstr "ストレージボリューム名 '%s' はすでに使用中です"
+
+#, fuzzy
+#~ msgid "error reading DAD state information"
+#~ msgstr "初期設定の作成中にエラーが発生しました"
+
+#~ msgid "libhal_ctx_init failed, haldaemon is probably not running"
+#~ msgstr ""
+#~ "libhal_ctx_init に失敗しました、おそらく haldaemon が実行中ではありません"
+
+#~ msgid "libhal_ctx_new returned NULL"
+#~ msgstr "libhal_ctx_new が NULL を返しました"
+
+#~ msgid "libhal_ctx_set_dbus_connection failed"
+#~ msgstr "libhal_ctx_set_dbus_connection に失敗しました"
+
+#~ msgid "libhal_get_all_devices failed"
+#~ msgstr "libhal_get_all_devices に失敗しました"
+
+#~ msgid "more than one adapters is specified for scsi hostdev source"
+#~ msgstr ""
+#~ "複数のアダプターが SCSI ホストデバイスソースに対して指定されています"
+
+#~ msgid "more than one source addresses is specified for scsi hostdev"
+#~ msgstr "複数のソースアドレスが SCSI ホストデバイスに対して指定されています"
+
+#~ msgid "setting up HAL callbacks failed"
+#~ msgstr "HAL 呼び出しのセットアップに失敗しました"
+
+#~ msgid "unsupported element '%s' of scsi hostdev source"
+#~ msgstr "SCSI ホストデバイスソースのサポートされない要素 '%s'"
+
+#, fuzzy
+#~ msgid "vnc password auth not supported"
+#~ msgstr "この操作はサポートされていません"
 
 #~ msgid "Bus %s too big for destination"
 #~ msgstr "バス %s が宛先に対して大きすぎます"

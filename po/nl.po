@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-08-26 08:38+0000\n"
+"POT-Creation-Date: 2020-09-24 11:56+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -470,11 +470,11 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "vCPU kaart buffer lengte overschrijdt maximum: %d > %d"
 
 #, c-format
-msgid "%s model of watchdog can go only on ISA bus"
+msgid "%s model of watchdog can go only on PCI bus"
 msgstr ""
 
 #, c-format
-msgid "%s model of watchdog can go only on PCI bus"
+msgid "%s model of watchdog does not support configuring the address"
 msgstr ""
 
 #, c-format
@@ -692,6 +692,18 @@ msgid "%s: Unrecognized family '%s' in route definition"
 msgstr ""
 
 #, c-format
+msgid "%s: cannot connect to '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: cannot parse URI transport '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: could not proxy traffic: %s\n"
+msgstr ""
+
+#, c-format
 msgid "%s: error: %s%c"
 msgstr "%s: fout: %s%c"
 
@@ -872,6 +884,10 @@ msgstr ""
 msgid "%s: unable to determine access mode of fd %d"
 msgstr "kan beveiliging context '%s' niet instellen fd %d"
 
+#, c-format
+msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "niet-ondersteund timer type (naam) '%s'"
@@ -998,15 +1014,13 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr ""
 
-#, fuzzy
-msgid "'adapter' and 'address' must be specified for scsi hostdev source"
-msgstr "doel type moet gespecificeerd worden voor %s apparaat"
-
-#, fuzzy
-msgid "'adapter' must be specified for scsi hostdev source"
-msgstr "doel type moet gespecificeerd worden voor %s apparaat"
+msgid "'adapter' name must be specified for scsi hostdev source"
+msgstr ""
 
 msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
+msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
 msgid ""
@@ -1910,6 +1924,10 @@ msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
 msgstr ""
 
+msgid ""
+"Both port and URI requested for disk migration while being mutually exclusive"
+msgstr ""
+
 msgid "Bounded"
 msgstr "Gebonden"
 
@@ -2443,10 +2461,6 @@ msgstr "kan privé vlag niet veranderen voor bestaand geheim"
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Cannot append basic type %s"
-msgstr "kan spice poort %s niet ontleden"
-
 #, fuzzy
 msgid "Cannot assign SCSI host device address"
 msgstr "geen pty toegewezen aan apparaat %s"
@@ -2474,6 +2488,10 @@ msgstr "kan apparaat %s niet ontleden"
 msgid "Cannot check QEMU binary %s"
 msgstr "kan binair bestand %s niet uitvoeren"
 
+#, c-format
+msgid "Cannot check QEMU module directory %s"
+msgstr ""
+
 msgid "Cannot check address family on this platform"
 msgstr ""
 
@@ -2484,10 +2502,6 @@ msgstr "kan binair bestand %s niet uitvoeren"
 #, fuzzy, c-format
 msgid "Cannot chown uniq path: %s"
 msgstr "kan pad '%s' niet openen"
-
-#, fuzzy
-msgid "Cannot close container iterator"
-msgstr "Kan controller index %s niet ontleden"
 
 #, fuzzy
 msgid "Cannot close resctrl"
@@ -3481,8 +3495,9 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: enabling IPv6 forwarding with RA routes without "
-"accept_ra set to 2 is likely to cause routes loss. Interfaces to look at: %s"
+"Check the host setup: interface %s has kernel autoconfigured IPv6 routes and "
+"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"flush them, breaking networking."
 msgstr ""
 
 #, fuzzy, c-format
@@ -3733,12 +3748,6 @@ msgstr "Verbinden met domein %s\n"
 #, fuzzy
 msgid "Connected to the admin server"
 msgstr "Verbinden met domein %s\n"
-
-#, c-format
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"%s transport"
-msgstr ""
 
 msgid "Connections from inside daemon must be direct"
 msgstr ""
@@ -4921,23 +4930,6 @@ msgstr ""
 msgid "DBus daemon %s didn't show up"
 msgstr "Domein %s kwam niet opdagen"
 
-msgid "DBus matches could not be installed. Disabling nwfilter driver"
-msgstr ""
-
-#, c-format
-msgid "DBus not available, disabling HAL driver: %s"
-msgstr ""
-
-#, fuzzy
-msgid "DBus support not compiled into this binary"
-msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
-
-msgid "DBus type stack is empty"
-msgstr ""
-
-msgid "DBus type too deeply nested"
-msgstr ""
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr ""
 
@@ -5197,14 +5189,6 @@ msgstr "Apparaat met succes vernieuwd\n"
 #, fuzzy, c-format
 msgid "Device: %s\n"
 msgstr "Apparaat %s is hersteld\n"
-
-#, c-format
-msgid "Dict entry in signature '%s' is wrong size"
-msgstr ""
-
-#, c-format
-msgid "Dict entry in signature '%s' must be a basic type"
-msgstr ""
 
 msgid ""
 "Did not create EK and certificates since this requires privileged mode for a "
@@ -5726,10 +5710,6 @@ msgid "Dump failed"
 msgstr "Dump mislukte"
 
 #, c-format
-msgid "Duplicate Address Detection not finished in %d seconds"
-msgstr ""
-
-#, c-format
 msgid "Duplicate NUMA cell info for cell id '%u'"
 msgstr ""
 
@@ -6249,6 +6229,10 @@ msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "Verwacht dat virt type '%s' is maar vond '%s'"
 
 msgid "Expiry Time"
+msgstr ""
+
+msgid ""
+"Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
 
 #, fuzzy
@@ -7521,10 +7505,6 @@ msgstr "Openen van '%s' mislukte"
 msgid "Failed to logout: %s"
 msgstr "Bouwen van pool %s mislukte"
 
-#, fuzzy
-msgid "Failed to loop over IPv6 routes"
-msgstr "Het tonen van opslag volumes mislukte"
-
 msgid "Failed to make auth credentials"
 msgstr "Auth legitimatie maken mislukte"
 
@@ -7954,11 +7934,6 @@ msgstr "Registratie van shutdown timeout mislukte"
 
 #, c-format
 msgid "Failed to register xml namespace '%s'"
-msgstr "Registratie van xml naam ruimte '%s' mislukte"
-
-#, fuzzy
-msgid ""
-"Failed to register xml namespace 'http://www.innotek.de/VirtualBox-settings'"
 msgstr "Registratie van xml naam ruimte '%s' mislukte"
 
 #, fuzzy
@@ -9005,16 +8980,6 @@ msgid "Gets or sets the domain's system time"
 msgstr ""
 
 msgid "Gets statistics about one or more (or all) domains"
-msgstr ""
-
-#, c-format
-msgid "Got array ref but '%s' is not a single basic type / dict"
-msgstr ""
-
-#, c-format
-msgid ""
-"Got array ref but '%s' is not a single basic type or dict with matching key"
-"+value type"
 msgstr ""
 
 msgid "Got empty feature list from resctrl"
@@ -10941,6 +10906,10 @@ msgstr ""
 msgid "Malformed PCI address %s"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI options %s"
+msgstr ""
+
 msgid "Malformed auth_pending field in JSON state document"
 msgstr ""
 
@@ -11835,6 +11804,10 @@ msgstr ""
 msgid "Missing privateData field in JSON state document"
 msgstr ""
 
+#, c-format
+msgid "Missing property '%s' in answer"
+msgstr ""
+
 msgid "Missing readonly field in JSON state document"
 msgstr ""
 
@@ -11966,10 +11939,6 @@ msgstr "ontbrekend opslag pool bron pad"
 #, fuzzy, c-format
 msgid "Missing storage volume name for disk '%s'"
 msgstr "ongeldige opslag volume aanwijzer in %s"
-
-#, fuzzy
-msgid "Missing variant type signature"
-msgstr "ontbrekend domein type attribuut"
 
 #, c-format
 msgid "Missing vendor string for CPU vendor %s"
@@ -12147,6 +12116,10 @@ msgstr "Waarde '%s' is buiten de %s reeks"
 
 #, c-format
 msgid "NUMA node %zd is unavailable"
+msgstr ""
+
+#, c-format
+msgid "NUMA node %zu is not available"
 msgstr ""
 
 msgid "NUMA node selections to set"
@@ -12501,10 +12474,6 @@ msgstr "geen pty toegewezen aan apparaat %s"
 #, fuzzy
 msgid "No addresses to bind to"
 msgstr "Geen socket adressen gevonden voor '%s'"
-
-#, c-format
-msgid "No args present for signature %s"
-msgstr ""
 
 msgid "No authentication callback available"
 msgstr "Geen authenticatie callback beschikbaar"
@@ -12894,9 +12863,6 @@ msgstr "kan niet van stream lezen"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "Actief apparaat %s wordt niet losgemaakt"
-
-msgid "Not enough fields in message for signature"
-msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13352,9 +13318,6 @@ msgstr ""
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr ""
 
-msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
-msgstr ""
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13518,6 +13481,9 @@ msgstr "Geen qemu commando-regel argument opgegeven"
 
 #, c-format
 msgid "Passphrase for key '%s'"
+msgstr ""
+
+msgid "Password may not contain ',' character"
 msgstr ""
 
 msgid "Password request failed"
@@ -14097,10 +14063,6 @@ msgstr ""
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "herstel een domein van een opgeslagen toestand in een bestand"
 
-#, fuzzy
-msgid "Reply message incorrect"
-msgstr "image magic is niet correct"
-
 #, c-format
 msgid ""
 "Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
@@ -14444,6 +14406,9 @@ msgid ""
 "another SCSI host device"
 msgstr ""
 
+msgid "SCSI host device data structure was not initialized"
+msgstr ""
+
 #, fuzzy
 msgid "SCSI host device doesn't support managed mode"
 msgstr "hostdev mode '%s' niet ondersteund"
@@ -14638,11 +14603,11 @@ msgstr "Beveiliging model niet gevonden: %s"
 msgid "Security model:"
 msgstr "Beveiliging model:"
 
-#. Bhyve doesn't support VNC Auth yet, so print a warning about
-#. * unauthenticated VNC sessions
-#, fuzzy
-msgid "Security warning: currently VNC auth is not supported."
-msgstr "cpu affiniteit wordt niet ondersteund"
+msgid "Security warning: VNC auth is not supported."
+msgstr ""
+
+msgid "Security warning: VNC is used without authentication."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14950,10 +14915,6 @@ msgstr "Afsluiten van gasten op $uri URI..."
 #, fuzzy
 msgid "Signal handling not available on this platform"
 msgstr "node info niet geïmplementeerd op dit platform"
-
-#, c-format
-msgid "Signature '%s' too deeply nested"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -16192,7 +16153,7 @@ msgid "The CA certificate %s is not yet active"
 msgstr "Het certificaat is niet vertrouwd"
 
 #, c-format
-msgid "The CCW devno '%s' is in use already "
+msgid "The CCW devno '%s' is in use already"
 msgstr ""
 
 #, fuzzy, c-format
@@ -16599,10 +16560,6 @@ msgstr "Te veel drivers, kan %s niet registreren"
 msgid "Too many drivers, cannot register storage file backend '%s'"
 msgstr "Te veel drivers, kan %s niet registreren"
 
-#, fuzzy
-msgid "Too many fields in message for signature"
-msgstr "Te veel bits om te lezen van stream"
-
 #, fuzzy, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "Te veel bits om te lezen van stream"
@@ -16673,10 +16630,6 @@ msgstr ""
 #, c-format
 msgid "Too many storage_vols '%d' for limit '%d'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Too many unreserved %s devices in use"
-msgstr "te veel drivers geregistreerd in %s"
 
 msgid "Total"
 msgstr "Totaal"
@@ -16793,6 +16746,9 @@ msgstr ""
 msgid "UEFI requires ACPI on this architecture"
 msgstr ""
 
+msgid "UNIX disks URI does not include path"
+msgstr ""
+
 #, fuzzy
 msgid "UNIX socket address is required"
 msgstr "Geen socket adressen gevonden voor '%s'"
@@ -16828,6 +16784,13 @@ msgstr ""
 
 #, c-format
 msgid "URI scheme '%s' for embedded driver is not valid"
+msgstr ""
+
+msgid "URI to use for disks migration (overrides --disks-port)"
+msgstr ""
+
+#, c-format
+msgid "URI with tcp scheme did not provide a server part: %s"
 msgstr ""
 
 #, c-format
@@ -17203,10 +17166,6 @@ msgid "Unable to create %s"
 msgstr "%s aanmaken mislukte"
 
 #, fuzzy, c-format
-msgid "Unable to create %s device %s"
-msgstr "kan geen toegang tot apparaat %s krijgen\n"
-
-#, fuzzy, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "niet in staat om rundir %s aan te maken: %s"
 
@@ -17255,6 +17214,10 @@ msgstr "Aanmaken van node apparaat uit %s mislukte"
 #, fuzzy, c-format
 msgid "Unable to create device %s"
 msgstr "kan geen toegang tot apparaat %s krijgen\n"
+
+#, c-format
+msgid "Unable to create device '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to create directory %s"
@@ -17590,14 +17553,6 @@ msgstr "mogelijkheden verkrijgen mislukte"
 msgid "Unable to get Console object for domain %s"
 msgstr "kan geen snapshot telling krijgen voor domein %s"
 
-#, fuzzy, c-format
-msgid "Unable to get DBus session bus connection: %s"
-msgstr "kan huidig proces context '%s' niet krijgen"
-
-#, fuzzy, c-format
-msgid "Unable to get DBus system bus connection: %s"
-msgstr "kan beveiliging context '%s' niet instellen"
-
 #, fuzzy
 msgid "Unable to get IP address on this platform"
 msgstr "Kan domein status niet krijgen"
@@ -17888,6 +17843,10 @@ msgstr "kan socket paar niet aanmaken"
 msgid "Unable to get server workerpool parameters"
 msgstr "Kan geheugen parameters niet verkrijgen"
 
+#, c-format
+msgid "Unable to get session bus connection: %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get snapshot content"
 msgstr "kon geen snapshot naam krijgen"
@@ -17895,6 +17854,10 @@ msgstr "kon geen snapshot naam krijgen"
 #, fuzzy
 msgid "Unable to get sysfs info on this platform"
 msgstr "node info niet geïmplementeerd op dit platform"
+
+#, c-format
+msgid "Unable to get system bus connection: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to get the machine location path"
@@ -18348,6 +18311,10 @@ msgstr "Kan geen sessie leider worden"
 msgid "Unable to read %s"
 msgstr "Kan %s niet openen"
 
+#, c-format
+msgid "Unable to read %s for ipv6 forwarding checks"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to read TLS confirmation"
 msgstr "lezen van configuratie bestand mislukte"
@@ -18563,9 +18530,8 @@ msgstr ""
 "Draaien van commando '%s' on iscsi interface te vernieuwen met IQN '%s' "
 "mislukte"
 
-#, fuzzy
-msgid "Unable to run one time DBus initializer"
-msgstr "Kloon container uitvoeren mislukte"
+msgid "Unable to run one time GDBus initializer"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to save '%s'"
@@ -18892,9 +18858,6 @@ msgstr ""
 msgid "Unable to verify server certificate %s against CA certificate %s"
 msgstr ""
 
-msgid "Unable to wait for IPv6 DAD on this platform"
-msgstr ""
-
 #, fuzzy
 msgid "Unable to wait for child process"
 msgstr "kan kind proces niet afsplitsen"
@@ -19178,10 +19141,6 @@ msgid "Unexpected signal received: %d"
 msgstr "onverwacht interface type %d"
 
 #, fuzzy, c-format
-msgid "Unexpected signature '%s'"
-msgstr "onverwachte data '%s'"
-
-#, fuzzy, c-format
 msgid "Unexpected socket family %d"
 msgstr "onverwacht netwerk type %d"
 
@@ -19201,6 +19160,9 @@ msgid "Unexpectedly got a network port without a network bridge"
 msgstr ""
 
 msgid "Unexpectedly got a network port without a plug"
+msgstr ""
+
+msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
 msgid "Unknown"
@@ -19497,6 +19459,10 @@ msgstr "geen apparaat mogelijkheden voor '%s'"
 msgid "Unknown release: %s"
 msgstr "Onbekende vrijgave: %s"
 
+#, c-format
+msgid "Unknown remote mode '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "Unknown return code"
 msgstr "Onbekende fout"
@@ -19557,14 +19523,6 @@ msgid "Unknown taint flag %s"
 msgstr "onbekend interface type %s"
 
 #, fuzzy, c-format
-msgid "Unknown type '%c' in signature '%s'"
-msgstr "onbekend pci bron type '%s'"
-
-#, fuzzy, c-format
-msgid "Unknown type '%x' in signature '%s'"
-msgstr "onbekende timer naam '%s'"
-
-#, fuzzy, c-format
 msgid "Unknown uri scheme: '%s'"
 msgstr "Onbekende bron mode '%s'"
 
@@ -19602,6 +19560,10 @@ msgstr ""
 
 #, c-format
 msgid "Unmanaged PCI device %s must be manually detached from the host"
+msgstr ""
+
+#, c-format
+msgid "Unnkown proxy type '%s'"
 msgstr ""
 
 #, fuzzy
@@ -19897,6 +19859,10 @@ msgid "Unsupported root filesystem type %s"
 msgstr "ondersteunt alleen mount bestandssysteem type"
 
 #, c-format
+msgid "Unsupported scheme in disks URI: %s"
+msgstr ""
+
+#, c-format
 msgid "Unsupported spicevmc target name '%s'"
 msgstr "niet-ondersteunde spicevmc doel naam '%s'"
 
@@ -19959,6 +19925,11 @@ msgstr ""
 
 msgid "Usage"
 msgstr "Gebruik"
+
+msgid ""
+"Usage of listen-address is forbidden when migration URI uses UNIX transport "
+"method"
+msgstr ""
 
 #, fuzzy
 msgid "Usage:"
@@ -20112,6 +20083,9 @@ msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr "VMX ingang 'sched.cpu.affinity' bevat een %d, deze waarde is te groot"
 
 msgid "VNC"
+msgstr ""
+
+msgid "VNC Password authentication not supported by bhyve"
 msgstr ""
 
 msgid "VNC supports connected='keep' only"
@@ -20275,6 +20249,10 @@ msgstr ""
 
 #, c-format
 msgid "Wiping volume '%s'(%s) ... "
+msgstr ""
+
+msgid ""
+"Write filtering of PCI device configuration space is not supported by qemu"
 msgstr ""
 
 #, c-format
@@ -21320,10 +21298,6 @@ msgstr ""
 msgid "can't find created snapshot"
 msgstr "kan snapshot niet verwijderen"
 
-#, fuzzy, c-format
-msgid "can't free name %s%d - out of range 0-%d"
-msgstr "start cel %d buiten (0-%d) reeks"
-
 #, c-format
 msgid "can't identify pool in uri %s "
 msgstr ""
@@ -21397,10 +21371,6 @@ msgstr ""
 
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "can't use name %s%d - out of range 0-%d"
-msgstr "start cel %d buiten (0-%d) reeks"
 
 #, fuzzy
 msgid "canceled"
@@ -23857,10 +23827,6 @@ msgid "couldn't find interface with MAC address '%s': %s%s%s"
 msgstr "meerdere interfaces met overeenkomend MAC adres"
 
 #, c-format
-msgid "couldn't get id value from macvtap device name %s"
-msgstr ""
-
-#, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr ""
 
@@ -23885,18 +23851,6 @@ msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%s'\" \"name='%s'\" "
 "\"ip='%s'\" in network '%s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as unused"
-msgstr "kon argumenten niet ontleden"
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as used"
-msgstr "pool %s als autostart te markeren mislukte"
-
-#, fuzzy, c-format
-msgid "couldn't reserve name %s%d - already in use"
-msgstr "opslag volume naam '%s' al in gebruik."
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
@@ -23929,6 +23883,9 @@ msgstr "cpu affiniteit wordt niet ondersteund"
 #, fuzzy
 msgid "cpu count too large"
 msgstr "nparams te groot"
+
+msgid "cpu parameter is missing a model name"
+msgstr ""
 
 #, c-format
 msgid "cpu topology results in more than %u cpus"
@@ -25422,10 +25379,6 @@ msgid "error parsing pid of lldpad"
 msgstr "fout bij ontleden van pid van lldpad"
 
 #, fuzzy
-msgid "error reading DAD state information"
-msgstr "Fout bij aanmaken initiële configuratie"
-
-#, fuzzy
 msgid "error receiving signal from container"
 msgstr "Fout bij aanmaken initiële configuratie"
 
@@ -25462,7 +25415,8 @@ msgstr "escape voor XML gebruik"
 msgid "escape for shell use"
 msgstr "escape voor shell gebruik"
 
-msgid "ethtool ioctl error"
+#, c-format
+msgid "ethtool ioctl error on %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27690,6 +27644,9 @@ msgstr "host usb apparaat %03d.%03d niet gevonden"
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "host-certificaten mode heeft precies drie certificaten nodig"
 
+msgid "hostName field not available (missing VMware Tools?)"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "hostdev %s not found"
 msgstr "schijf %s niet gevonden"
@@ -29290,18 +29247,6 @@ msgstr "lengte van metadata buiten de reeks"
 msgid "level %u cache size %llu does not match expected size %llu"
 msgstr ""
 
-msgid "libhal_ctx_init failed, haldaemon is probably not running"
-msgstr "libhal_ctx_init faalde, haldaemon draait waarschijnlijk niet"
-
-msgid "libhal_ctx_new returned NULL"
-msgstr "libhal_ctx_new gaf NULL terug"
-
-msgid "libhal_ctx_set_dbus_connection failed"
-msgstr "libhal_ctx_set_dbus_connection faalde"
-
-msgid "libhal_get_all_devices failed"
-msgstr "libhal_get_all_devices faalde"
-
 msgid "libnl was not available at build time"
 msgstr ""
 
@@ -30471,6 +30416,9 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr ""
 
+msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
+msgstr ""
+
 #, fuzzy
 msgid "mirror requires file name"
 msgstr "fout bij kopiëren profiel naam"
@@ -31033,6 +30981,10 @@ msgstr ""
 msgid "missing machine name in QEMU capabilities cache"
 msgstr ""
 
+#, c-format
+msgid "missing mapping in '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "missing memory model"
 msgstr "timer naam ontbreekt"
@@ -31578,13 +31530,7 @@ msgid ""
 "device"
 msgstr ""
 
-msgid "more than one adapters is specified for scsi hostdev source"
-msgstr ""
-
 msgid "more than one snapshot claims to be active"
-msgstr ""
-
-msgid "more than one source addresses is specified for scsi hostdev"
 msgstr ""
 
 #, fuzzy
@@ -31772,6 +31718,9 @@ msgid "negotiation SSF %d was not strong enough"
 msgstr "onderhandeling SSF %d was niet sterk genoeg"
 
 msgid "nested JSON array to commandline conversion is not supported"
+msgstr ""
+
+msgid "netcat path not valid with native proxy mode"
 msgstr ""
 
 msgid "netdir"
@@ -32799,10 +32748,6 @@ msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "vhost-net wordt niet ondersteund met dit QEMU binaire programma"
 
-#, c-format
-msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
-msgstr ""
-
 msgid "nvram address type must be spaprvio"
 msgstr ""
 
@@ -33018,6 +32963,9 @@ msgstr ""
 msgid "only sending a signal to pid 1 is supported"
 msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
 
+msgid "only single ISA controller is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only single USB controller is supported"
 msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
@@ -33117,6 +33065,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "option --%s already seen"
 msgstr "verbinding al open"
+
+#, c-format
+msgid "option parsing failed: %s\n"
+msgstr ""
 
 #, fuzzy
 msgid "optional CPU features are not supported"
@@ -34857,9 +34809,6 @@ msgstr ""
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr ""
 
-msgid "setting up HAL callbacks failed"
-msgstr "instellen van HAL callbacks faalde"
-
 #, fuzzy
 msgid "setuid or setgid failed"
 msgstr "Opschort operatie mislukte"
@@ -36548,10 +36497,6 @@ msgstr "kan QEMU commando '%s' niet uitvoeren"
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "kan QEMU commando '%s' niet uitvoeren: %s"
 
-#, c-format
-msgid "unable to find PCI address for parent device '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "Ontbrekende SCSI controller voor index %d"
@@ -36571,6 +36516,10 @@ msgstr "kan geen toegang tot apparaat %s krijgen\n"
 #, fuzzy, c-format
 msgid "unable to find disk by target: %s"
 msgstr "kan tty attributen niet instellen: %s"
+
+#, c-format
+msgid "unable to find parent device '%s'"
+msgstr ""
 
 msgid "unable to find ploop tools, please install them"
 msgstr ""
@@ -38079,6 +38028,10 @@ msgstr "onbekend partitie type"
 msgid "unknown pci source type '%s'"
 msgstr "onbekend pci bron type '%s'"
 
+#, c-format
+msgid "unknown pci writeFiltering setting '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
 msgstr "onbekend mogelijkheid type '%d' voor '%s'"
@@ -38642,10 +38595,6 @@ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
 
 #, fuzzy, c-format
 msgid "unsupported element '%s' of 'origstates'"
-msgstr "niet-ondersteunde driver naam '%s' voor schijf '%s'"
-
-#, fuzzy, c-format
-msgid "unsupported element '%s' of scsi hostdev source"
 msgstr "niet-ondersteunde driver naam '%s' voor schijf '%s'"
 
 #, c-format
@@ -39542,10 +39491,6 @@ msgstr "vnc display"
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "spice graphics wordt niet ondersteund met deze QEMU"
 
-#, fuzzy
-msgid "vnc password auth not supported"
-msgstr "cpu affiniteit wordt niet ondersteund"
-
 msgid "vnc port must be in range [5900,65535]"
 msgstr ""
 
@@ -39877,6 +39822,131 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <tekenreeks>"
+
+#, fuzzy
+#~ msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+#~ msgstr "doel type moet gespecificeerd worden voor %s apparaat"
+
+#, fuzzy
+#~ msgid "'adapter' must be specified for scsi hostdev source"
+#~ msgstr "doel type moet gespecificeerd worden voor %s apparaat"
+
+#, fuzzy
+#~ msgid "Cannot append basic type %s"
+#~ msgstr "kan spice poort %s niet ontleden"
+
+#, fuzzy
+#~ msgid "Cannot close container iterator"
+#~ msgstr "Kan controller index %s niet ontleden"
+
+#, fuzzy
+#~ msgid "DBus support not compiled into this binary"
+#~ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
+
+#, fuzzy
+#~ msgid "Failed to loop over IPv6 routes"
+#~ msgstr "Het tonen van opslag volumes mislukte"
+
+#, fuzzy
+#~ msgid ""
+#~ "Failed to register xml namespace 'http://www.innotek.de/VirtualBox-"
+#~ "settings'"
+#~ msgstr "Registratie van xml naam ruimte '%s' mislukte"
+
+#, fuzzy
+#~ msgid "Missing variant type signature"
+#~ msgstr "ontbrekend domein type attribuut"
+
+#, fuzzy
+#~ msgid "Reply message incorrect"
+#~ msgstr "image magic is niet correct"
+
+#, fuzzy
+#~ msgid "Security warning: currently VNC auth is not supported."
+#~ msgstr "cpu affiniteit wordt niet ondersteund"
+
+#, fuzzy
+#~ msgid "Too many fields in message for signature"
+#~ msgstr "Te veel bits om te lezen van stream"
+
+#, fuzzy
+#~ msgid "Too many unreserved %s devices in use"
+#~ msgstr "te veel drivers geregistreerd in %s"
+
+#, fuzzy
+#~ msgid "Unable to create %s device %s"
+#~ msgstr "kan geen toegang tot apparaat %s krijgen\n"
+
+#, fuzzy
+#~ msgid "Unable to get DBus session bus connection: %s"
+#~ msgstr "kan huidig proces context '%s' niet krijgen"
+
+#, fuzzy
+#~ msgid "Unable to get DBus system bus connection: %s"
+#~ msgstr "kan beveiliging context '%s' niet instellen"
+
+#, fuzzy
+#~ msgid "Unable to run one time DBus initializer"
+#~ msgstr "Kloon container uitvoeren mislukte"
+
+#, fuzzy
+#~ msgid "Unexpected signature '%s'"
+#~ msgstr "onverwachte data '%s'"
+
+#, fuzzy
+#~ msgid "Unknown type '%c' in signature '%s'"
+#~ msgstr "onbekend pci bron type '%s'"
+
+#, fuzzy
+#~ msgid "Unknown type '%x' in signature '%s'"
+#~ msgstr "onbekende timer naam '%s'"
+
+#, fuzzy
+#~ msgid "can't free name %s%d - out of range 0-%d"
+#~ msgstr "start cel %d buiten (0-%d) reeks"
+
+#, fuzzy
+#~ msgid "can't use name %s%d - out of range 0-%d"
+#~ msgstr "start cel %d buiten (0-%d) reeks"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as unused"
+#~ msgstr "kon argumenten niet ontleden"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as used"
+#~ msgstr "pool %s als autostart te markeren mislukte"
+
+#, fuzzy
+#~ msgid "couldn't reserve name %s%d - already in use"
+#~ msgstr "opslag volume naam '%s' al in gebruik."
+
+#, fuzzy
+#~ msgid "error reading DAD state information"
+#~ msgstr "Fout bij aanmaken initiële configuratie"
+
+#~ msgid "libhal_ctx_init failed, haldaemon is probably not running"
+#~ msgstr "libhal_ctx_init faalde, haldaemon draait waarschijnlijk niet"
+
+#~ msgid "libhal_ctx_new returned NULL"
+#~ msgstr "libhal_ctx_new gaf NULL terug"
+
+#~ msgid "libhal_ctx_set_dbus_connection failed"
+#~ msgstr "libhal_ctx_set_dbus_connection faalde"
+
+#~ msgid "libhal_get_all_devices failed"
+#~ msgstr "libhal_get_all_devices faalde"
+
+#~ msgid "setting up HAL callbacks failed"
+#~ msgstr "instellen van HAL callbacks faalde"
+
+#, fuzzy
+#~ msgid "unsupported element '%s' of scsi hostdev source"
+#~ msgstr "niet-ondersteunde driver naam '%s' voor schijf '%s'"
+
+#, fuzzy
+#~ msgid "vnc password auth not supported"
+#~ msgstr "cpu affiniteit wordt niet ondersteund"
 
 #~ msgid "Bus %s too big for destination"
 #~ msgstr "Bus %s is te groot voor bestemming"

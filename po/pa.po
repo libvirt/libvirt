@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-08-26 08:38+0000\n"
+"POT-Creation-Date: 2020-09-24 11:56+0000\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -529,11 +529,11 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "%s ਲੰਬਾਈ ਅਧਿਕਤਮ ਤੋਂ ਜਿਆਦਾ ਹੈ: %d > %d"
 
 #, c-format
-msgid "%s model of watchdog can go only on ISA bus"
+msgid "%s model of watchdog can go only on PCI bus"
 msgstr ""
 
 #, c-format
-msgid "%s model of watchdog can go only on PCI bus"
+msgid "%s model of watchdog does not support configuring the address"
 msgstr ""
 
 #, c-format
@@ -751,6 +751,18 @@ msgid "%s: Unrecognized family '%s' in route definition"
 msgstr "ਅਣਪਛਾਤਾ '%s' ਪਰਿਵਾਰ '%s' ਨੈੱਟਵਰਕ ਵਿੱਚ"
 
 #, c-format
+msgid "%s: cannot connect to '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: cannot parse URI transport '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: could not proxy traffic: %s\n"
+msgstr ""
+
+#, c-format
 msgid "%s: error: %s%c"
 msgstr "%s: ਗਲਤੀ: %s%c"
 
@@ -934,6 +946,10 @@ msgid "%s: unable to determine access mode of fd %d"
 msgstr "%s: fd %d ਦਾ ਐਕਸੈੱਸ ਮੋਡ ਪਤਾ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
 #, c-format
+msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: ਨਾ ਸਹਿਯੋਗੀ ਹਾਈਪਰਵਾਈਸਰ ਨਾਂ %s\n"
 
@@ -1062,13 +1078,13 @@ msgstr "--storage ਅਤੇ --remove-all-storage ਦੋਵੇਂ ਦਰਸਾਏ
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "RBD ਸਰੋਤ ਆਇਤਨ ਨਾਂ '%s' ਵਿੱਚ ':' ਮਨਜੂਰ ਨਹੀਂ"
 
-msgid "'adapter' and 'address' must be specified for scsi hostdev source"
-msgstr "scsi hostdev ਸਰੋਤ ਲਈ 'ਅਡਾਪਟਰ' ਅਤੇ 'ਪਤਾ' ਜਰੂਰ ਦਰਸਾਏ ਜਾਣ"
-
-msgid "'adapter' must be specified for scsi hostdev source"
-msgstr "scsi hostdev ਸਰੋਤ ਲਈ 'ਅਡਾਪਟਰ' ਦਾ ਦਰਸਾਇਆ ਜਾਣਾ ਜਰੂਰੀ ਹੈ"
+msgid "'adapter' name must be specified for scsi hostdev source"
+msgstr ""
 
 msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
+msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
 msgid ""
@@ -1997,6 +2013,10 @@ msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
 msgstr "scsi hostdev ਸਰੋਤ ਲਈ 'ਅਡਾਪਟਰ' ਅਤੇ 'ਪਤਾ' ਜਰੂਰ ਦਰਸਾਏ ਜਾਣ"
 
+msgid ""
+"Both port and URI requested for disk migration while being mutually exclusive"
+msgstr ""
+
 msgid "Bounded"
 msgstr "ਬਾਊਂਡਡ"
 
@@ -2523,10 +2543,6 @@ msgstr "ਮੌਜੂਦਾ ਸੀਕਰੇਟ ਤੇ ਪਰਾਈਵੇਟ ਫ�
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
 msgstr ""
 
-#, c-format
-msgid "Cannot append basic type %s"
-msgstr "ਮੁੱਢਲੀ ਕਿਸਮ %s ਵਿੱਚ ਵਾਧਾ ਨਹੀਂ ਜੋੜ ਸਕਦਾ"
-
 #, fuzzy
 msgid "Cannot assign SCSI host device address"
 msgstr "ਜੰਤਰ %s ਲਈ ਕੋਈ pty ਨਿਰਧਾਰਤ ਨਹੀਂ ਹੈ"
@@ -2554,6 +2570,10 @@ msgstr "NBD ਯੰਤਰ %s pid ਜਾਂਚ ਨਹੀਂ ਸਕਦਾ"
 msgid "Cannot check QEMU binary %s"
 msgstr "QEMU ਬਾਇਨਰੀ %s ਜਾਂਚ ਨਹੀਂ ਸਕਦਾ"
 
+#, c-format
+msgid "Cannot check QEMU module directory %s"
+msgstr ""
+
 #, fuzzy
 msgid "Cannot check address family on this platform"
 msgstr "ਇਸ ਪਲੇਟ ਫਾਰਮ ਤੇ ਹੋਸਟ ਜੰਤਰ ਮਲਕੀਅਤ ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
@@ -2565,9 +2585,6 @@ msgstr "dnsmasq ਬਾਇਨਰੀ %s ਚੈੱਕ ਨਹੀਂ ਕਰ ਸਕਦ
 #, fuzzy, c-format
 msgid "Cannot chown uniq path: %s"
 msgstr "ਮਾਰਗ '%s' ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
-
-msgid "Cannot close container iterator"
-msgstr "ਕੰਟੇਨਰ ਦਾ iterator ਬੰਦ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #, fuzzy
 msgid "Cannot close resctrl"
@@ -3543,8 +3560,9 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: enabling IPv6 forwarding with RA routes without "
-"accept_ra set to 2 is likely to cause routes loss. Interfaces to look at: %s"
+"Check the host setup: interface %s has kernel autoconfigured IPv6 routes and "
+"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"flush them, breaking networking."
 msgstr ""
 
 #, fuzzy, c-format
@@ -3791,12 +3809,6 @@ msgstr "ਡੋਮੇਨ %s ਨਾਲ ਜੁੜੋ\n"
 #, fuzzy
 msgid "Connected to the admin server"
 msgstr "ਡੋਮੇਨ %s ਨਾਲ ਜੁੜੋ\n"
-
-#, c-format
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"%s transport"
-msgstr ""
 
 msgid "Connections from inside daemon must be direct"
 msgstr ""
@@ -4953,22 +4965,6 @@ msgstr ""
 msgid "DBus daemon %s didn't show up"
 msgstr "ਡੋਮੇਨ %s ਦਿਸਿਆ ਨਹੀਂ"
 
-msgid "DBus matches could not be installed. Disabling nwfilter driver"
-msgstr "DBus ਮੇਲ ਇੰਸਟਾਲ ਨਹੀਂ ਕੀਤੇ ਜੇ ਸਕਦੇ। nwfilter ਚਾਲਕ ਨੂੰ ਅਯੋਗ ਕਰ ਰਿਹਾ ਹੈ"
-
-#, c-format
-msgid "DBus not available, disabling HAL driver: %s"
-msgstr "DBus ਉਪਲੱਬਧ ਨਹੀਂ, ਅਯੋਗ ਕਰ ਰਿਹਾ HAL ਚਾਲਕ: %s"
-
-msgid "DBus support not compiled into this binary"
-msgstr "DBus ਸਹਿਯੋਗ ਇਸ ਲਾਇਬਰੇਰੀ ਵਿੱਚ ਕੰਪਾਈਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ"
-
-msgid "DBus type stack is empty"
-msgstr "DBus ਕਿਸਮ ਸਟੈਕ ਖਾਲੀ ਹੈ"
-
-msgid "DBus type too deeply nested"
-msgstr "DBus ਕਿਸਮ ਬਹੁਤ ਡੂੰਘਾਈ ਵਿੱਚ ਨੈੱਸਟ ਕੀਤੀ ਹੈ"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS HOST ਇੰਦਰਾਜ ਸੁਧਾਰੇ ਨਹੀਂ ਜਾ ਸਕਦੇ, ਸਿਰਫ਼ ਜੋੜੇ ਜਾਂ ਮਿਟਾਏ ਜਾ ਸਕਦੇ ਹਨ"
 
@@ -5218,14 +5214,6 @@ msgstr "ਜੰਤਰ ਸਫਲਤਾਪੂਰਕ ਅੱਪਡੇਟ ਹੋ ਗ�
 #, c-format
 msgid "Device: %s\n"
 msgstr "ਜੰਤਰ: %s\n"
-
-#, c-format
-msgid "Dict entry in signature '%s' is wrong size"
-msgstr "ਦਸਤਖਤ '%s' ਵਿੱਚ Dict ਇੰਦਰਾਜ ਗਲਤ ਆਕਾਰ ਦਾ ਹੈ"
-
-#, c-format
-msgid "Dict entry in signature '%s' must be a basic type"
-msgstr "ਦਸਤਖਤ '%s' ਵਿੱਚ Dict ਇੰਦਰਾਜ ਲਾਜਮੀ ਮੁੱਢਲੀ ਕਿਸਮ ਦਾ ਹੋਵੇ"
 
 msgid ""
 "Did not create EK and certificates since this requires privileged mode for a "
@@ -5739,10 +5727,6 @@ msgstr "ਇੱਕ ਸੰਭਾਲੀ ਹੋਈ ਫਾਈਲ ਦੇ stdout ਲਈ
 
 msgid "Dump failed"
 msgstr "ਡੰਪ ਫੇਲ ਹੋਇਆ"
-
-#, c-format
-msgid "Duplicate Address Detection not finished in %d seconds"
-msgstr ""
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%u'"
@@ -6259,6 +6243,10 @@ msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "virt ਕਿਸਮ ਦੇ '%s' ਹੋਣ ਦੀ ਆਸ ਸੀ ਪਰ ਲੱਭਿਆ '%s'"
 
 msgid "Expiry Time"
+msgstr ""
+
+msgid ""
+"Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
 
 #, fuzzy
@@ -7474,10 +7462,6 @@ msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਫੇਲ"
 msgid "Failed to logout: %s"
 msgstr "%s ਨੂੰ ਅੱਪਡੇਟ ਵਿੱਚ ਫੇਲ"
 
-#, fuzzy
-msgid "Failed to loop over IPv6 routes"
-msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਵੇਖਾਉਣ ਤੋਂ ਫੇਲ"
-
 msgid "Failed to make auth credentials"
 msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਅਧਿਕਾਰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
@@ -7901,11 +7885,6 @@ msgstr "ਤਾਲਾ ਅਸਫਲਤਾ ਕਾਰਵਾਈ ਨੂੰ ਦਰਜ �
 
 #, c-format
 msgid "Failed to register xml namespace '%s'"
-msgstr "ਡਾਇਰੈ ਨਾਂ '%s' ਨੂੰ  ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
-
-#, fuzzy
-msgid ""
-"Failed to register xml namespace 'http://www.innotek.de/VirtualBox-settings'"
 msgstr "ਡਾਇਰੈ ਨਾਂ '%s' ਨੂੰ  ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
 msgid "Failed to release lock"
@@ -8902,16 +8881,6 @@ msgid "Gets or sets the domain's system time"
 msgstr "ਡੋਮੇਨ ਦਾ ਹੋਸਟ ਨਾਂ ਪ੍ਰਿੰਟ ਕਰੋ"
 
 msgid "Gets statistics about one or more (or all) domains"
-msgstr ""
-
-#, c-format
-msgid "Got array ref but '%s' is not a single basic type / dict"
-msgstr ""
-
-#, c-format
-msgid ""
-"Got array ref but '%s' is not a single basic type or dict with matching key"
-"+value type"
 msgstr ""
 
 msgid "Got empty feature list from resctrl"
@@ -10825,6 +10794,10 @@ msgstr ""
 msgid "Malformed PCI address %s"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI options %s"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed auth_pending field in JSON state document"
 msgstr "JSON ਹਾਲਾਤ ਦਸਤਾਵੇਜ ਵਿੱਚ auth ਖੇਤਰ ਗੁੰਮ"
@@ -11733,6 +11706,10 @@ msgstr "JSON ਦਸਤਾਵੇਜ ਵਿੱਚ priority_workers ਡਾਟਾ �
 msgid "Missing privateData field in JSON state document"
 msgstr "JSON ਹਾਲਾਤ ਦਸਤਾਵੇਜ ਵਿੱਚ privateData ਖੇਤਰ ਗੁੰਮ"
 
+#, c-format
+msgid "Missing property '%s' in answer"
+msgstr ""
+
 msgid "Missing readonly field in JSON state document"
 msgstr "JSON ਹਾਲਾਤ ਦਸਤਾਵੇਜ ਵਿੱਚ readonly ਖੇਤਰ ਗੁੰਮ"
 
@@ -11859,9 +11836,6 @@ msgstr "ਗੁੰਮ ਭੰਡਾਰਣ ਮੇਜਬਾਨ ਬਲਾਕ ਰਾ�
 #, fuzzy, c-format
 msgid "Missing storage volume name for disk '%s'"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਪੁਆਇੰਟਰ ਹੈ"
-
-msgid "Missing variant type signature"
-msgstr "ਗੁੰਮ ਵੈਰੀਐਂਟ ਕਿਸਮ ਦਸਤਖਤ"
 
 #, c-format
 msgid "Missing vendor string for CPU vendor %s"
@@ -12040,6 +12014,10 @@ msgstr "ਨੋਡ %zu ਪਹੁੰਚ ਹੱਦ ਤੋਂ ਬਾਹਰ"
 #, fuzzy, c-format
 msgid "NUMA node %zd is unavailable"
 msgstr "ਕੋਈ PCI ਬਸਾਂ ਉਪਲੱਬਧ ਨਹੀਂ ਹਨ"
+
+#, c-format
+msgid "NUMA node %zu is not available"
+msgstr ""
 
 msgid "NUMA node selections to set"
 msgstr "ਸੈੱਟ ਕਰਨ ਲਈ NUMA ਨੋਡ ਚੋਣਾਂ"
@@ -12388,10 +12366,6 @@ msgstr "ਜੰਤਰ ਲਈ ਕੋਈ ਸਰਗਰਮ ਕਾਰਵਾਈ ਨਹ�
 #, fuzzy
 msgid "No addresses to bind to"
 msgstr "'%s' ਲਈ ਕੋਈ ਸਾਕਟ ਐਡਰੈੱਸ ਨਹੀਂ ਲੱਭਿਆ"
-
-#, c-format
-msgid "No args present for signature %s"
-msgstr "ਦਸਤਖਤ %s ਲਈ ਕੋਈ args ਮੌਜੂਦ ਨਹੀਂ"
 
 msgid "No authentication callback available"
 msgstr "ਕੋਈ ਪ੍ਰਮਾਣਿਕਤਾ ਕਾਲਬੈਕ ਨਹੀਂ ਦਿੱਤੀ।"
@@ -12781,9 +12755,6 @@ msgstr "ਤੋਂ ਪੜ ਨਹੀਂ ਸਕਿਆ"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "ਸਰਗਰਮ ਜੰਤਰ %s ਨੂੰ ਹਟਾ ਨਹੀਂ ਰਿਹਾ ਹੈ"
-
-msgid "Not enough fields in message for signature"
-msgstr "ਸੁਨੇਹੇ ਵਿੱਚ ਦਸਤਖਤ ਲਈ ਖੇਤਰ ਕਾਫੀ ਨਹੀਂ"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13240,9 +13211,6 @@ msgstr "PCI ਪਤਾ 0:0:2.0 ਵਰਤੋਂ ਵਿੱਚ ਹੈ, QEMU ਨੂ�
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr "PCI ਪਤਾ 0:0:2.0 ਵਰਤੋਂ ਵਿੱਚ ਹੈ, QEMU ਨੂੰ ਪ੍ਰਮੁੱਖ ਵੀਡੀਓ ਲਈ ਇਸ ਦੀ ਜਰੂਰਤ ਹੈ"
 
-msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
-msgstr ""
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13412,6 +13380,9 @@ msgstr "ਕੋਈ qemu ਵਿੱਚ ਕਮਾਂਡ-ਲਾਈਨ ਆਰਗੂਮ
 #, c-format
 msgid "Passphrase for key '%s'"
 msgstr "ਚਾਬੀ '%s' ਲਈ ਪਾਸਫਰੇਜ਼"
+
+msgid "Password may not contain ',' character"
+msgstr ""
 
 msgid "Password request failed"
 msgstr "ਪਾਸਵਰਡ ਬੇਨਤੀ ਫੇਲ ਹੋਈ"
@@ -13987,10 +13958,6 @@ msgstr "ਇੱਕ ਫਾਇਲ ਵਿੱਚ ਇੱਕ ਸੰਭਾਲੀ ਹਾ�
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "ਇੱਕ ਫਾਇਲ ਵਿੱਚ ਇੱਕ ਸੰਭਾਲੀ ਹਾਲਤ ਤੋਂ ਇੱਕ ਡੋਮੇਨ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰੋ"
 
-#, fuzzy
-msgid "Reply message incorrect"
-msgstr "ਈਮੇਜ ਮੈਜਿਕ ਗਲਤ ਹੈ"
-
 #, c-format
 msgid ""
 "Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
@@ -14328,6 +14295,9 @@ msgid ""
 "another SCSI host device"
 msgstr ""
 
+msgid "SCSI host device data structure was not initialized"
+msgstr ""
+
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI ਮੇਜਬਾਨ ਯੰਤਰ ਪ੍ਰਬੰਧਿਤ ਨੋਡਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ"
 
@@ -14522,11 +14492,11 @@ msgstr "ਸੁਰੱਖਿਆ ਮਾਡਲ ਨਹੀਂ ਲੱਭਿਆ: %s"
 msgid "Security model:"
 msgstr "ਸੁਰੱਖਿਆ ਮਾਡਲ:"
 
-#. Bhyve doesn't support VNC Auth yet, so print a warning about
-#. * unauthenticated VNC sessions
-#, fuzzy
-msgid "Security warning: currently VNC auth is not supported."
-msgstr "ਮਾਊਂਟ ਬਿੰਦੂਆਂ ਦਾ ਨਿਰਧਾਰਨ ਇਸ ਸਮੇਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+msgid "Security warning: VNC auth is not supported."
+msgstr ""
+
+msgid "Security warning: VNC is used without authentication."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14832,10 +14802,6 @@ msgstr "$uri URI ਉੱਪਰ ਗਿਸਟਾਂ ਨੂੰ ਬੰਦ ਕਰ ਰ�
 #, fuzzy
 msgid "Signal handling not available on this platform"
 msgstr "ਡੋਮੇਨ ਨੂੰ ਹੋਰ ਹੋਸਟ ਤੇ ਮਾਈਗਰੇਟ ਕਰੋ"
-
-#, c-format
-msgid "Signature '%s' too deeply nested"
-msgstr "ਦਸਤਖਤ '%s' ਬਹੁਤ ਡੂੰਘਾਈ ਵਿੱਚ ਨੈੱਸਟ ਕੀਤਾ ਹੈ"
 
 #, c-format
 msgid ""
@@ -16046,8 +16012,8 @@ msgid "The CA certificate %s is not yet active"
 msgstr "CA ਸਾਰਟੀਫਿਕੇਟ %s ਹਾਲੇ ਸਰਗਰਮ ਨਹੀਂ ਹੋਇਆ"
 
 #, c-format
-msgid "The CCW devno '%s' is in use already "
-msgstr "CCW devno '%s' ਪਹਿਲਾਂ ਹੀ ਵਰਤੋਂ ਵਿੱਚ ਹੈ"
+msgid "The CCW devno '%s' is in use already"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -16456,9 +16422,6 @@ msgstr "%s ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਈਵਰ ਰ�
 msgid "Too many drivers, cannot register storage file backend '%s'"
 msgstr "%s ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਈਵਰ ਰਜਿਸਟਰ ਹਨ"
 
-msgid "Too many fields in message for signature"
-msgstr "ਸੁਨੇਹੇ ਵਿੱਚ ਦਸਤਖਤ ਲਈ ਬਹੁਤ ਸਾਰੇ ਖੇਤਰ"
-
 #, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "%s ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਈਵਰ ਰਜਿਸਟਰ ਹਨ"
@@ -16529,10 +16492,6 @@ msgstr "ਬਹੁਤ ਸਾਰੇ ਸਰੋਤ %d ਹਨ ਆਬਜੈਕਟ ਲ�
 #, fuzzy, c-format
 msgid "Too many storage_vols '%d' for limit '%d'"
 msgstr "ਬਹੁਤ ਸਾਰੇ ਸਰੋਤ %d ਹਨ ਆਬਜੈਕਟ ਲਈ"
-
-#, fuzzy, c-format
-msgid "Too many unreserved %s devices in use"
-msgstr "%s ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਈਵਰ ਰਜਿਸਟਰ ਹਨ"
 
 msgid "Total"
 msgstr "ਕੁੱਲ"
@@ -16646,6 +16605,9 @@ msgstr "<virtualport> ਐਲੀਮੈਂਟ ਨੂੰ <interface type='%s'> ਲ�
 msgid "UEFI requires ACPI on this architecture"
 msgstr ""
 
+msgid "UNIX disks URI does not include path"
+msgstr ""
+
 #, fuzzy
 msgid "UNIX socket address is required"
 msgstr "'%s' ਲਈ ਕੋਈ ਸਾਕਟ ਐਡਰੈੱਸ ਨਹੀਂ ਲੱਭਿਆ"
@@ -16679,6 +16641,13 @@ msgstr ""
 
 #, c-format
 msgid "URI scheme '%s' for embedded driver is not valid"
+msgstr ""
+
+msgid "URI to use for disks migration (overrides --disks-port)"
+msgstr ""
+
+#, c-format
+msgid "URI with tcp scheme did not provide a server part: %s"
 msgstr ""
 
 #, c-format
@@ -17040,10 +17009,6 @@ msgid "Unable to create %s"
 msgstr "%s ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
 
 #, fuzzy, c-format
-msgid "Unable to create %s device %s"
-msgstr "%s ਯੰਤਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
-
-#, fuzzy, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "ਬਰਿੱਜ %s ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
 
@@ -17089,6 +17054,10 @@ msgstr "ਬਰਿੱਜ ਯੰਤਰ ਬਣਾਉਣ ਤੋਂ ਅਸਮਰੱ�
 #, c-format
 msgid "Unable to create device %s"
 msgstr "%s ਯੰਤਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
+
+#, c-format
+msgid "Unable to create device '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unable to create directory %s"
@@ -17407,14 +17376,6 @@ msgstr "ਅਨੁਕੂਲਤਾ ਲੈਣ ਲਈ ਫੇਲ ਹੈ"
 msgid "Unable to get Console object for domain %s"
 msgstr "%s ਲਈ SCSI ਕੁੰਜੀ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#, c-format
-msgid "Unable to get DBus session bus connection: %s"
-msgstr "DBus ਸੈਸ਼ਨ ਬਸ ਸੰਪਰਕ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ: %s"
-
-#, c-format
-msgid "Unable to get DBus system bus connection: %s"
-msgstr "DBus ਸਿਸਟਮ ਬੱਸ ਕੁਨੈਕਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰਥ: %s"
-
 #, fuzzy
 msgid "Unable to get IP address on this platform"
 msgstr "STP ਨੂੰ %s ਉੱਪਰ ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
@@ -17687,6 +17648,10 @@ msgstr "ਸਾਕਟ ਜੋੜੇ ਬਣਾਉਣ ਤੋਂ ਅਸਫਲi"
 msgid "Unable to get server workerpool parameters"
 msgstr "ਮੈਮੋਰੀ ਪੈਰਾਮੀਟਰ ਲੈਣ ਤੋਂ ਅਸਮਰਥUnable to get memory parameters"
 
+#, c-format
+msgid "Unable to get session bus connection: %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get snapshot content"
 msgstr "ਸਨੈਪਸ਼ਾਟ ਗਿਣਤੀ ਪਤਾ ਕਰਨ ਵਿੱਚ ਫੇਲ"
@@ -17694,6 +17659,10 @@ msgstr "ਸਨੈਪਸ਼ਾਟ ਗਿਣਤੀ ਪਤਾ ਕਰਨ ਵਿੱਚ �
 #, fuzzy
 msgid "Unable to get sysfs info on this platform"
 msgstr "ਇੰਟਰਫੇਸ %s ਉੱਪਰ VLAN ਲੈਣ ਤੋਂ ਅਸਮਰਥ"
+
+#, c-format
+msgid "Unable to get system bus connection: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to get the machine location path"
@@ -18120,6 +18089,10 @@ msgstr "ਸੁਨੇਹਾ ਲੰਬਾਈ ਰੀ-ਇੰਕੋਡ ਕਰਨ ਤ�
 msgid "Unable to read %s"
 msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
 
+#, c-format
+msgid "Unable to read %s for ipv6 forwarding checks"
+msgstr ""
+
 msgid "Unable to read TLS confirmation"
 msgstr "TLS ਪੁਸ਼ਟੀ ਪੜ੍ਹਨ ਲਈ ਅਸਫ਼ਲ"
 
@@ -18324,8 +18297,8 @@ msgstr "ਇੰਟਰਫੇਸ %s ਲਈ OVS ਪੋਰਟ ਡਾਟਾ ਪ੍ਰ�
 msgid "Unable to run command to set OVS port data for interface %s"
 msgstr "ਇੰਟਰਫੇਸ %s ਲਈ OVS ਪੋਰਟ ਡਾਟਾ ਸੈੱਟ ਕਰਨ ਲਈ ਕਮਾਂਡ ਚਲਾਉਣ ਤੋਂ ਅਸਮਰੱਥ"
 
-msgid "Unable to run one time DBus initializer"
-msgstr "ਇੱਕ ਸਮੇਂ DBus ਸ਼ੁਰੂਆਤੀ ਲਈ ਚਲਾਉਣ ਤੋਂ ਅਸਮਰਥ"
+msgid "Unable to run one time GDBus initializer"
+msgstr ""
 
 #, c-format
 msgid "Unable to save '%s'"
@@ -18647,10 +18620,6 @@ msgstr "ਕਲਾਂਈਟ %s ਸਾਰਟੀਫਿਕੇਟ CA ਸਾਰਟੀ�
 msgid "Unable to verify server certificate %s against CA certificate %s"
 msgstr "ਸਰਵਰ %s ਸਾਰਟੀਫਿਕੇਟ CA ਸਾਰਟੀਫਿਕੇਟ %s ਦੀ ਜਾਂਚ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
-#, fuzzy
-msgid "Unable to wait for IPv6 DAD on this platform"
-msgstr "ਇੰਟਰਫੇਸ %s ਉੱਪਰ VLAN ਲੈਣ ਤੋਂ ਅਸਮਰਥ"
-
 msgid "Unable to wait for child process"
 msgstr "ਅਧੀਨ ਕਾਰਜ ਨੂੰ ਫੈਲਾਅ ਨਹੀਂ ਸਕਦਾ"
 
@@ -18923,10 +18892,6 @@ msgstr "ਅਣਕਿਆਸੀ hostdev ਚਾਲਕ ਨਾਂ ਕਿਸਮ %d "
 msgid "Unexpected signal received: %d"
 msgstr "ਅਚਾਨਕ ਇੰਟਰਫੇਸ ਕਿਸਮ: %d"
 
-#, c-format
-msgid "Unexpected signature '%s'"
-msgstr "ਅਣਕਿਆਸਿਆ ਦਸਤਖਤ '%s'"
-
 #, fuzzy, c-format
 msgid "Unexpected socket family %d"
 msgstr "ਅਚਾਨਕ ਸਾਊਂਡ ਨੋਡ %d"
@@ -18947,6 +18912,9 @@ msgid "Unexpectedly got a network port without a network bridge"
 msgstr ""
 
 msgid "Unexpectedly got a network port without a plug"
+msgstr ""
+
+msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
 msgid "Unknown"
@@ -19240,6 +19208,10 @@ msgstr "ਅਣਜਾਣ qemu ਸਮਰੱਥਾ ਫਲੈਗ %s"
 msgid "Unknown release: %s"
 msgstr "ਅਚਾਨਕ ਰੀਲੀਜ਼: %s"
 
+#, c-format
+msgid "Unknown remote mode '%s'"
+msgstr ""
+
 msgid "Unknown return code"
 msgstr "ਅਣਜਾਣ ਰਿਟਰਨ ਕੋਡ"
 
@@ -19299,14 +19271,6 @@ msgid "Unknown taint flag %s"
 msgstr "ਅਣਜਾਣ ਇੰਟਰਫੇਸ ਕਿਸਮ %s"
 
 #, fuzzy, c-format
-msgid "Unknown type '%c' in signature '%s'"
-msgstr "ਅਚਾਨਕ ਫਾਰਵਰਡਿੰਗ ਕਿਸਮ %d ਨੈੱਟਵਰਕ ਵਿੱਚ '%s'"
-
-#, fuzzy, c-format
-msgid "Unknown type '%x' in signature '%s'"
-msgstr "ਅਚਾਨਕ ਫਾਰਵਰਡਿੰਗ ਕਿਸਮ %d ਨੈੱਟਵਰਕ ਵਿੱਚ '%s'"
-
-#, fuzzy, c-format
 msgid "Unknown uri scheme: '%s'"
 msgstr "ਅਣਜਾਣ ਸਰੋਤ ਮੋਡ '%s'"
 
@@ -19344,6 +19308,10 @@ msgstr ""
 
 #, c-format
 msgid "Unmanaged PCI device %s must be manually detached from the host"
+msgstr ""
+
+#, c-format
+msgid "Unnkown proxy type '%s'"
 msgstr ""
 
 #, fuzzy
@@ -19639,6 +19607,10 @@ msgid "Unsupported root filesystem type %s"
 msgstr "ਅਸਮਰਥਿਤ ਰੂਟ ਫਾਈਲ-ਸਿਸਟਮ ਕਿਸਮ %s"
 
 #, c-format
+msgid "Unsupported scheme in disks URI: %s"
+msgstr ""
+
+#, c-format
 msgid "Unsupported spicevmc target name '%s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਪਰੋਟੋਕਾਲ ਫੈਮਿਲੀ '%s'"
 
@@ -19701,6 +19673,11 @@ msgstr "ਫਾਈਲ ਅੰਸ਼ਾਂ ਨੂੰ ਕਿਸੇ ਆਇਤਨ ਤੇ 
 
 msgid "Usage"
 msgstr "ਉਪਯੋਗਤਾ"
+
+msgid ""
+"Usage of listen-address is forbidden when migration URI uses UNIX transport "
+"method"
+msgstr ""
 
 #, fuzzy
 msgid "Usage:"
@@ -19846,6 +19823,9 @@ msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr "VMX ਐਂਟਰੀ 'sched.cpu.affinity' ਵਿੱਚ ਇੱਕ %d ਸ਼ਾਮਿਲ ਹੈ, ਇਹ ਮੁੱਲ ਬਹੁਤ ਵੱਡਾ ਹੈ"
 
 msgid "VNC"
+msgstr ""
+
+msgid "VNC Password authentication not supported by bhyve"
 msgstr ""
 
 msgid "VNC supports connected='keep' only"
@@ -20013,6 +19993,10 @@ msgstr ""
 #, c-format
 msgid "Wiping volume '%s'(%s) ... "
 msgstr "ਪੂੰਝਿਆ ਜਾ ਰਿਹਾ ਆਇਤਨ '%s'(%s) ... "
+
+msgid ""
+"Write filtering of PCI device configuration space is not supported by qemu"
+msgstr ""
 
 #, c-format
 msgid "Write of '%s' to '%s' during vport create/delete failed"
@@ -21046,10 +21030,6 @@ msgstr ""
 msgid "can't find created snapshot"
 msgstr "ਮੌਜੂਦਾ ਸਨੈਪਸ਼ਾਟ ਤੇ ਜਾਣਕਾਰੀ"
 
-#, fuzzy, c-format
-msgid "can't free name %s%d - out of range 0-%d"
-msgstr "ਸਟਾਰਟ ਸੈੱਲ %d ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ (0-%d)"
-
 #, c-format
 msgid "can't identify pool in uri %s "
 msgstr ""
@@ -21127,10 +21107,6 @@ msgstr "ਨੈੱਟਵਰਕ ਦੇ ਅਣਪਛਾਤੇ ਹਿੱਸੇ ਨ�
 
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "can't use name %s%d - out of range 0-%d"
-msgstr "ਸਟਾਰਟ ਸੈੱਲ %d ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ (0-%d)"
 
 #, fuzzy
 msgid "canceled"
@@ -23558,10 +23534,6 @@ msgstr "MAC ਐਡਰੈੱਸ '%s' ਵਾਲਾ ਕੋਈ ਇੰਟਰਫੇਸ
 msgid "couldn't find interface with MAC address '%s': %s%s%s"
 msgstr "MAC ਐਡਰੈੱਸ '%s' ਵਾਲਾ ਕੋਈ ਇੰਟਰਫੇਸ ਨਹੀਂ ਲੱਭਿਆ: %s%s%s"
 
-#, fuzzy, c-format
-msgid "couldn't get id value from macvtap device name %s"
-msgstr "typefile '%s' ਨੂੰ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
-
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr "ਨੈੱਟਵਰਕ %s ਵਿੱਚ ਮੇਲ ਖਾਂਦਾ DNS HOST ਇੰਦਰਾਜ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
@@ -23587,18 +23559,6 @@ msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%s'\" \"name='%s'\" "
 "\"ip='%s'\" in network '%s'"
 msgstr "ਨੈਟਵਰਕ '%s' ਵਿੱਚ  ਇੱਕ ਮਿਲਦੀ-ਜੁਲਦੀ dhcp ਮੇਜਬਾਨ ਐਂਟਰੀ ਲੱਭ ਨਹੀਂ ਸਕਿਆ"
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as unused"
-msgstr "ਆਰਗੂਮੈਂਟ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as used"
-msgstr "ਪੂਲ %s ਨੂੰ ਆਟੋ-ਸਟਾਰਟ ਮਾਰਕ ਕਰਨ ਲਈ ਫੇਲ"
-
-#, fuzzy, c-format
-msgid "couldn't reserve name %s%d - already in use"
-msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਨਾਂ '%s' ਪਹਿਲਾਂ ਹੀ ਵਰਤੋਂ ਅਧੀਨ ਹੈ।"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
@@ -23634,6 +23594,9 @@ msgstr "cpu affinity ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 #, fuzzy
 msgid "cpu count too large"
 msgstr "ncpus ਬਹੁਤ ਵੱਡਾ"
+
+msgid "cpu parameter is missing a model name"
+msgstr ""
 
 #, c-format
 msgid "cpu topology results in more than %u cpus"
@@ -25101,10 +25064,6 @@ msgstr "error parsing IFLA_VF_PORT part"
 msgid "error parsing pid of lldpad"
 msgstr "pid ਆਫ lldpad ਪਾਰਸ ਕਰਨ ਤੇ ਗਲਤੀ"
 
-#, fuzzy
-msgid "error reading DAD state information"
-msgstr "ਸ਼ੁਰੂਆਤੀ ਸੰਰਚਨਾ ਬਣਾਉਣ ਵਿੱਚ ਗਲਤੀ"
-
 msgid "error receiving signal from container"
 msgstr "netlink ਸਾਕਟ ਤੋਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਗਲਤੀ"
 
@@ -25141,7 +25100,8 @@ msgstr "XML ਵਰਤੋਂ ਲਈ ਬਚਾਅ"
 msgid "escape for shell use"
 msgstr "ਸ਼ੈੱਲ ਵਰਤੋਂ ਲਈ ਛੱਡੋ"
 
-msgid "ethtool ioctl error"
+#, c-format
+msgid "ethtool ioctl error on %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27353,6 +27313,9 @@ msgstr "ਹੋਸਟ usb ਜੰਤਰ vendor=0x%.4x product=0x%.4x ਨਹੀਂ 
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "ਹੋਸਟ-ਸਾਰਟੀਫਿਕੇਟ ਮੋਡ ਲਈ ਤਿੰਨ ਸਾਰਟੀਫਿਕੇਟਾਂ ਦੀ ਲੋੜ ਹੈ"
 
+msgid "hostName field not available (missing VMware Tools?)"
+msgstr ""
+
 #, c-format
 msgid "hostdev %s not found"
 msgstr "hostdev %s ਨਹੀਂ ਲੱਭਿਆ"
@@ -28934,19 +28897,6 @@ msgstr "ਮੈਟਾਡਾਟਾ ਦੀ ਲੰਬਾਈ ਰੇਂਜ ਤੋਂ �
 msgid "level %u cache size %llu does not match expected size %llu"
 msgstr "ਟਾਰਗਿਟ ਵੀਡੀਓ ਕਾਰਨ ਹੈੱਡ %u ਸਰੋਤ %u ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ"
 
-msgid "libhal_ctx_init failed, haldaemon is probably not running"
-msgstr "libhal_ctx_init ਫੇਲ ਹੋਈ, ਹੋ ਸਕਦਾ ਹੈ haldaemon ਬੰਦੇ ਹੋਵੇ"
-
-msgid "libhal_ctx_new returned NULL"
-msgstr "libhal_ctx_new returned NULL"
-
-msgid "libhal_ctx_set_dbus_connection failed"
-msgstr ""
-"libhal_ctx_set_dbus_connection ਫੇਲ ਹੋਇਆlibhal_ctx_set_dbus_connection faile"
-
-msgid "libhal_get_all_devices failed"
-msgstr "libhal_get_all_devices ਫੇਲ ਹੋਇਆ"
-
 msgid "libnl was not available at build time"
 msgstr "libnl ਉਸਾਰੀ ਸਮੇਂ ਤੇ ਉਪਲੱਬਧ ਨਹੀਂ ਸੀ"
 
@@ -30075,6 +30025,9 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr ""
 
+msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
+msgstr ""
+
 msgid "mirror requires file name"
 msgstr "ਮਿਰਰ ਲਈ ਫਾਇਲ ਨਾਂ ਲੋੜੀਂਦਾ ਹੈ"
 
@@ -30636,6 +30589,10 @@ msgstr "ਲੀਜ਼ ਲਈ ਗੁੰਮ 'key' ਤੱਤ"
 msgid "missing machine name in QEMU capabilities cache"
 msgstr "ਗੁੰਮ ਪ੍ਰਵਾਸ ਯੋਗਤਾ ਨਾਂ"
 
+#, c-format
+msgid "missing mapping in '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "missing memory model"
 msgstr "ਗੈਰ-ਮੌਜੂਦ ਟਾਈਮਰ ਨਾਂ"
@@ -31173,14 +31130,8 @@ msgid ""
 "device"
 msgstr ""
 
-msgid "more than one adapters is specified for scsi hostdev source"
-msgstr "scsi hostdev ਸਰੋਤ ਲਈ ਇੱਕ ਤੋਂ ਵੱਧ ਕੇ ਅਡਾਪਟਰ ਦਰਸਾਇਆ ਗਿਆ"
-
 msgid "more than one snapshot claims to be active"
 msgstr ""
-
-msgid "more than one source addresses is specified for scsi hostdev"
-msgstr "scsi hostdev ਲਈ ਇੱਕ ਤੋਂ ਵੱਧ ਸਰੋਤ ਪਤੇ ਦਰਸਾਏ ਗਏ"
 
 #, fuzzy
 msgid "mount is not supported on this platform."
@@ -31368,6 +31319,9 @@ msgid "negotiation SSF %d was not strong enough"
 msgstr "SSF %d ਨੂੰ ਰੱਦ ਕਰਨਾ ਏਨਾ ਮਜਬਰੂ ਨਹੀਂ ਸੀ"
 
 msgid "nested JSON array to commandline conversion is not supported"
+msgstr ""
+
+msgid "netcat path not valid with native proxy mode"
 msgstr ""
 
 msgid "netdir"
@@ -32390,10 +32344,6 @@ msgstr "ਸਾਂਝੀ ਮੈਮੋਰੀ ਅਯੋਗ ਕਰਨਾ ਇਸ QEMU
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "ਸਾਂਝੀ ਮੈਮੋਰੀ ਅਯੋਗ ਕਰਨਾ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 
-#, c-format
-msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
-msgstr ""
-
 msgid "nvram address type must be spaprvio"
 msgstr "nvram ਪਤਾ ਕਿਸਮ ਲਾਜਮੀ spaprvio ਹੋਵੇ"
 
@@ -32601,6 +32551,9 @@ msgstr ""
 msgid "only sending a signal to pid 1 is supported"
 msgstr "ਸਿਰਫ ਇੱਕ ਹੀ watchdog ਜੰਤਰ ਸਹਿਯੋਗੀ ਹੈ"
 
+msgid "only single ISA controller is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only single USB controller is supported"
 msgstr "ਸਿਰਫ ਇੱਕ ਇਕੱਲਾ TPM ਯੰਤਰ ਸਮਰਥਿਤ ਹੈ"
@@ -32698,6 +32651,10 @@ msgstr "ਚੋਣ '-%c'/'--%s' ਨੂੰ ਇੱਕ ਆਰਗੂਮੈਂਟ ਲ�
 #, c-format
 msgid "option --%s already seen"
 msgstr "ਚੋਣ --%s ਪਹਿਲਾਂ ਹੀ ਵੇਖੀ ਜਾ ਚੁੱਕੀ ਹੈ"
+
+#, c-format
+msgid "option parsing failed: %s\n"
+msgstr ""
 
 #, fuzzy
 msgid "optional CPU features are not supported"
@@ -34439,9 +34396,6 @@ msgstr "wwn ਨੂੰ ਸੈੱਟ ਕਰਨਾ lun ਯੰਤਰਾਂ ਲਈ �
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr ""
 
-msgid "setting up HAL callbacks failed"
-msgstr "HAL ਕੈਲਬੈਕ ਸੈੱਟਅੱਪ ਫੇਲ ਹੋਇਆ"
-
 msgid "setuid or setgid failed"
 msgstr "setuid ਜਾਂ setgid ਅਸਫਲ"
 
@@ -36159,10 +36113,6 @@ msgstr "QEMU ਕਮਾਂਡ '%s' ਨੂੰ ਚਲਾਉਣ ਤੋਂ ਅਸਮ�
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "QEMU ਕਮਾਂਡ '%s' ਨੂੰ ਚਲਾਉਣ ਤੋਂ ਅਸਮਰਥ: %s"
 
-#, c-format
-msgid "unable to find PCI address for parent device '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "ਗੈਰਮੌਜੂਦ SCSI ਕੰਟਰੋਲਰ %d ਸੂਚੀ ਲਈ ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
@@ -36182,6 +36132,10 @@ msgstr "ਛੋਟੇ ਯੰਤਰ '%s' ਦੀ ਗਿਣਤੀ ਲੈਣ ਤੋ�
 #, fuzzy, c-format
 msgid "unable to find disk by target: %s"
 msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ %s"
+
+#, c-format
+msgid "unable to find parent device '%s'"
+msgstr ""
 
 msgid "unable to find ploop tools, please install them"
 msgstr ""
@@ -37675,6 +37629,10 @@ msgstr "ਅਣਜਾਣ ਭਾਗ ਕਿਸਮ"
 msgid "unknown pci source type '%s'"
 msgstr "ਅਚਾਨਕ pci ਸੋਰਸ ਕਿਸਮ '%s'"
 
+#, c-format
+msgid "unknown pci writeFiltering setting '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
 msgstr "ਅਣਜਾਣ ਸਮਰੱਥਾ ਕਿਸਮ '%d', '%s' ਲਈ"
@@ -38234,10 +38192,6 @@ msgstr "%s ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀ
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਆਲੀਮੈਂਟ '%s' 'origstates' ਦੇ"
-
-#, c-format
-msgid "unsupported element '%s' of scsi hostdev source"
-msgstr "scsi hostdev ਸਰੋਤ ਦਾ ਅਸਮਰਥਿਤ ਤੱਤ '%s'"
 
 #, c-format
 msgid "unsupported event ID %d"
@@ -39127,10 +39081,6 @@ msgid "vnc graphics are not supported with this QEMU"
 msgstr "ਇਸ QEMU ਨਾਲ vnc ਗਰਾਫਿਕਸ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ"
 
 #, fuzzy
-msgid "vnc password auth not supported"
-msgstr "ਓਪਰੇਸ਼ਨ ਸਹਾਇਕ ਨਹੀਂ"
-
-#, fuzzy
 msgid "vnc port must be in range [5900,65535]"
 msgstr "rebootTimeout ਲਈ ਗਲਤ ਮੁੱਲ, [-1,65535] ਰੇਂਜ ਵਿੱਚ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
@@ -39464,6 +39414,164 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+#~ msgstr "scsi hostdev ਸਰੋਤ ਲਈ 'ਅਡਾਪਟਰ' ਅਤੇ 'ਪਤਾ' ਜਰੂਰ ਦਰਸਾਏ ਜਾਣ"
+
+#~ msgid "'adapter' must be specified for scsi hostdev source"
+#~ msgstr "scsi hostdev ਸਰੋਤ ਲਈ 'ਅਡਾਪਟਰ' ਦਾ ਦਰਸਾਇਆ ਜਾਣਾ ਜਰੂਰੀ ਹੈ"
+
+#~ msgid "Cannot append basic type %s"
+#~ msgstr "ਮੁੱਢਲੀ ਕਿਸਮ %s ਵਿੱਚ ਵਾਧਾ ਨਹੀਂ ਜੋੜ ਸਕਦਾ"
+
+#~ msgid "Cannot close container iterator"
+#~ msgstr "ਕੰਟੇਨਰ ਦਾ iterator ਬੰਦ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+
+#~ msgid "DBus matches could not be installed. Disabling nwfilter driver"
+#~ msgstr "DBus ਮੇਲ ਇੰਸਟਾਲ ਨਹੀਂ ਕੀਤੇ ਜੇ ਸਕਦੇ। nwfilter ਚਾਲਕ ਨੂੰ ਅਯੋਗ ਕਰ ਰਿਹਾ ਹੈ"
+
+#~ msgid "DBus not available, disabling HAL driver: %s"
+#~ msgstr "DBus ਉਪਲੱਬਧ ਨਹੀਂ, ਅਯੋਗ ਕਰ ਰਿਹਾ HAL ਚਾਲਕ: %s"
+
+#~ msgid "DBus support not compiled into this binary"
+#~ msgstr "DBus ਸਹਿਯੋਗ ਇਸ ਲਾਇਬਰੇਰੀ ਵਿੱਚ ਕੰਪਾਈਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ"
+
+#~ msgid "DBus type stack is empty"
+#~ msgstr "DBus ਕਿਸਮ ਸਟੈਕ ਖਾਲੀ ਹੈ"
+
+#~ msgid "DBus type too deeply nested"
+#~ msgstr "DBus ਕਿਸਮ ਬਹੁਤ ਡੂੰਘਾਈ ਵਿੱਚ ਨੈੱਸਟ ਕੀਤੀ ਹੈ"
+
+#~ msgid "Dict entry in signature '%s' is wrong size"
+#~ msgstr "ਦਸਤਖਤ '%s' ਵਿੱਚ Dict ਇੰਦਰਾਜ ਗਲਤ ਆਕਾਰ ਦਾ ਹੈ"
+
+#~ msgid "Dict entry in signature '%s' must be a basic type"
+#~ msgstr "ਦਸਤਖਤ '%s' ਵਿੱਚ Dict ਇੰਦਰਾਜ ਲਾਜਮੀ ਮੁੱਢਲੀ ਕਿਸਮ ਦਾ ਹੋਵੇ"
+
+#, fuzzy
+#~ msgid "Failed to loop over IPv6 routes"
+#~ msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਵੇਖਾਉਣ ਤੋਂ ਫੇਲ"
+
+#, fuzzy
+#~ msgid ""
+#~ "Failed to register xml namespace 'http://www.innotek.de/VirtualBox-"
+#~ "settings'"
+#~ msgstr "ਡਾਇਰੈ ਨਾਂ '%s' ਨੂੰ  ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
+
+#~ msgid "Missing variant type signature"
+#~ msgstr "ਗੁੰਮ ਵੈਰੀਐਂਟ ਕਿਸਮ ਦਸਤਖਤ"
+
+#~ msgid "No args present for signature %s"
+#~ msgstr "ਦਸਤਖਤ %s ਲਈ ਕੋਈ args ਮੌਜੂਦ ਨਹੀਂ"
+
+#~ msgid "Not enough fields in message for signature"
+#~ msgstr "ਸੁਨੇਹੇ ਵਿੱਚ ਦਸਤਖਤ ਲਈ ਖੇਤਰ ਕਾਫੀ ਨਹੀਂ"
+
+#, fuzzy
+#~ msgid "Reply message incorrect"
+#~ msgstr "ਈਮੇਜ ਮੈਜਿਕ ਗਲਤ ਹੈ"
+
+#, fuzzy
+#~ msgid "Security warning: currently VNC auth is not supported."
+#~ msgstr "ਮਾਊਂਟ ਬਿੰਦੂਆਂ ਦਾ ਨਿਰਧਾਰਨ ਇਸ ਸਮੇਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#~ msgid "Signature '%s' too deeply nested"
+#~ msgstr "ਦਸਤਖਤ '%s' ਬਹੁਤ ਡੂੰਘਾਈ ਵਿੱਚ ਨੈੱਸਟ ਕੀਤਾ ਹੈ"
+
+#~ msgid "The CCW devno '%s' is in use already "
+#~ msgstr "CCW devno '%s' ਪਹਿਲਾਂ ਹੀ ਵਰਤੋਂ ਵਿੱਚ ਹੈ"
+
+#~ msgid "Too many fields in message for signature"
+#~ msgstr "ਸੁਨੇਹੇ ਵਿੱਚ ਦਸਤਖਤ ਲਈ ਬਹੁਤ ਸਾਰੇ ਖੇਤਰ"
+
+#, fuzzy
+#~ msgid "Too many unreserved %s devices in use"
+#~ msgstr "%s ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਈਵਰ ਰਜਿਸਟਰ ਹਨ"
+
+#, fuzzy
+#~ msgid "Unable to create %s device %s"
+#~ msgstr "%s ਯੰਤਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰਥ"
+
+#~ msgid "Unable to get DBus session bus connection: %s"
+#~ msgstr "DBus ਸੈਸ਼ਨ ਬਸ ਸੰਪਰਕ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ: %s"
+
+#~ msgid "Unable to get DBus system bus connection: %s"
+#~ msgstr "DBus ਸਿਸਟਮ ਬੱਸ ਕੁਨੈਕਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰਥ: %s"
+
+#~ msgid "Unable to run one time DBus initializer"
+#~ msgstr "ਇੱਕ ਸਮੇਂ DBus ਸ਼ੁਰੂਆਤੀ ਲਈ ਚਲਾਉਣ ਤੋਂ ਅਸਮਰਥ"
+
+#, fuzzy
+#~ msgid "Unable to wait for IPv6 DAD on this platform"
+#~ msgstr "ਇੰਟਰਫੇਸ %s ਉੱਪਰ VLAN ਲੈਣ ਤੋਂ ਅਸਮਰਥ"
+
+#~ msgid "Unexpected signature '%s'"
+#~ msgstr "ਅਣਕਿਆਸਿਆ ਦਸਤਖਤ '%s'"
+
+#, fuzzy
+#~ msgid "Unknown type '%c' in signature '%s'"
+#~ msgstr "ਅਚਾਨਕ ਫਾਰਵਰਡਿੰਗ ਕਿਸਮ %d ਨੈੱਟਵਰਕ ਵਿੱਚ '%s'"
+
+#, fuzzy
+#~ msgid "Unknown type '%x' in signature '%s'"
+#~ msgstr "ਅਚਾਨਕ ਫਾਰਵਰਡਿੰਗ ਕਿਸਮ %d ਨੈੱਟਵਰਕ ਵਿੱਚ '%s'"
+
+#, fuzzy
+#~ msgid "can't free name %s%d - out of range 0-%d"
+#~ msgstr "ਸਟਾਰਟ ਸੈੱਲ %d ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ (0-%d)"
+
+#, fuzzy
+#~ msgid "can't use name %s%d - out of range 0-%d"
+#~ msgstr "ਸਟਾਰਟ ਸੈੱਲ %d ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ (0-%d)"
+
+#, fuzzy
+#~ msgid "couldn't get id value from macvtap device name %s"
+#~ msgstr "typefile '%s' ਨੂੰ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as unused"
+#~ msgstr "ਆਰਗੂਮੈਂਟ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as used"
+#~ msgstr "ਪੂਲ %s ਨੂੰ ਆਟੋ-ਸਟਾਰਟ ਮਾਰਕ ਕਰਨ ਲਈ ਫੇਲ"
+
+#, fuzzy
+#~ msgid "couldn't reserve name %s%d - already in use"
+#~ msgstr "ਸਟੋਰੇਜ਼ ਵਾਲੀਅਮ ਨਾਂ '%s' ਪਹਿਲਾਂ ਹੀ ਵਰਤੋਂ ਅਧੀਨ ਹੈ।"
+
+#, fuzzy
+#~ msgid "error reading DAD state information"
+#~ msgstr "ਸ਼ੁਰੂਆਤੀ ਸੰਰਚਨਾ ਬਣਾਉਣ ਵਿੱਚ ਗਲਤੀ"
+
+#~ msgid "libhal_ctx_init failed, haldaemon is probably not running"
+#~ msgstr "libhal_ctx_init ਫੇਲ ਹੋਈ, ਹੋ ਸਕਦਾ ਹੈ haldaemon ਬੰਦੇ ਹੋਵੇ"
+
+#~ msgid "libhal_ctx_new returned NULL"
+#~ msgstr "libhal_ctx_new returned NULL"
+
+#~ msgid "libhal_ctx_set_dbus_connection failed"
+#~ msgstr ""
+#~ "libhal_ctx_set_dbus_connection ਫੇਲ ਹੋਇਆlibhal_ctx_set_dbus_connection faile"
+
+#~ msgid "libhal_get_all_devices failed"
+#~ msgstr "libhal_get_all_devices ਫੇਲ ਹੋਇਆ"
+
+#~ msgid "more than one adapters is specified for scsi hostdev source"
+#~ msgstr "scsi hostdev ਸਰੋਤ ਲਈ ਇੱਕ ਤੋਂ ਵੱਧ ਕੇ ਅਡਾਪਟਰ ਦਰਸਾਇਆ ਗਿਆ"
+
+#~ msgid "more than one source addresses is specified for scsi hostdev"
+#~ msgstr "scsi hostdev ਲਈ ਇੱਕ ਤੋਂ ਵੱਧ ਸਰੋਤ ਪਤੇ ਦਰਸਾਏ ਗਏ"
+
+#~ msgid "setting up HAL callbacks failed"
+#~ msgstr "HAL ਕੈਲਬੈਕ ਸੈੱਟਅੱਪ ਫੇਲ ਹੋਇਆ"
+
+#~ msgid "unsupported element '%s' of scsi hostdev source"
+#~ msgstr "scsi hostdev ਸਰੋਤ ਦਾ ਅਸਮਰਥਿਤ ਤੱਤ '%s'"
+
+#, fuzzy
+#~ msgid "vnc password auth not supported"
+#~ msgstr "ਓਪਰੇਸ਼ਨ ਸਹਾਇਕ ਨਹੀਂ"
 
 #~ msgid "Bus %s too big for destination"
 #~ msgstr "ਬੱਸ %s ਨੀਯਤ ਟਿਕਾਣੇ ਲਈ ਬਹੁਤ ਵੱਡੀ ਹੈ"

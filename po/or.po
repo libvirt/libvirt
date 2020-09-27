@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-08-26 08:38+0000\n"
+"POT-Creation-Date: 2020-09-24 11:56+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -595,11 +595,11 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "vCPU ମ୍ୟାପ ବଫର ସର୍ବାଧିକ ଲମ୍ବକୁ ଅତିକ୍ରମ କରିସାରିଲାଣି: %d > %d"
 
 #, c-format
-msgid "%s model of watchdog can go only on ISA bus"
+msgid "%s model of watchdog can go only on PCI bus"
 msgstr ""
 
 #, c-format
-msgid "%s model of watchdog can go only on PCI bus"
+msgid "%s model of watchdog does not support configuring the address"
 msgstr ""
 
 #, c-format
@@ -819,6 +819,18 @@ msgid "%s: Unrecognized family '%s' in route definition"
 msgstr "ଅଚିହ୍ନା ପରିବାର '%s' ନେଟୱର୍କ '%s' ରେ"
 
 #, c-format
+msgid "%s: cannot connect to '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: cannot parse URI transport '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: could not proxy traffic: %s\n"
+msgstr ""
+
+#, c-format
 msgid "%s: error: %s%c"
 msgstr "%s: ତୃଟି: %s%c"
 
@@ -1011,6 +1023,10 @@ msgid "%s: unable to determine access mode of fd %d"
 msgstr "%s: ତ୍ରୁଟି: ଡେମନ ଚାଲୁଅଛି କି ନାହିଁ ନିର୍ଦ୍ଧାରଣ କରିବାରେ ଅସମର୍ଥ: %s\n"
 
 #, c-format
+msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: ଅସମର୍ଥିତ ହାଇପରଭାଇଜର ନାମ %s\n"
 
@@ -1139,13 +1155,13 @@ msgstr "ଉଭୟ --storage ଏବଂ --remove-all-storage କୁ ଉଲ୍ଲ�
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ iscsi ଭଲ୍ୟୁମ ନାମ '%s'"
 
-msgid "'adapter' and 'address' must be specified for scsi hostdev source"
-msgstr "'ଏଡପଟର' ଏବଂ 'ଠିକଣା' କୁ ନିଶ୍ଚିତ ଭାବରେ scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ ଉଲ୍ଲେଖ କରିବା ଉଚିତ"
-
-msgid "'adapter' must be specified for scsi hostdev source"
-msgstr "scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ 'adapter' କୁ ନିଶ୍ଚିତ ଭାବରେ ଉଲ୍ଲେଖ କରିବା ଉଚିତ"
+msgid "'adapter' name must be specified for scsi hostdev source"
+msgstr ""
 
 msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
+msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
 msgid ""
@@ -2058,6 +2074,10 @@ msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
 msgstr "'ଏଡପଟର' ଏବଂ 'ଠିକଣା' କୁ ନିଶ୍ଚିତ ଭାବରେ scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ ଉଲ୍ଲେଖ କରିବା ଉଚିତ"
 
+msgid ""
+"Both port and URI requested for disk migration while being mutually exclusive"
+msgstr ""
+
 msgid "Bounded"
 msgstr "ବାନ୍ଧିହୋଇଛି"
 
@@ -2580,10 +2600,6 @@ msgstr "ସ୍ଥିତବାନ ଗୁପ୍ତତଥ୍ୟ ଉପରେ ବ୍
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
 msgstr ""
 
-#, c-format
-msgid "Cannot append basic type %s"
-msgstr "ମୌଳିକ ପ୍ରକାର %s କୁ ଯୋଡ଼ିପାରିବେ ନାହିଁ"
-
 #, fuzzy
 msgid "Cannot assign SCSI host device address"
 msgstr "ଡମେନରେ ହୋଷ୍ଟ ଉପକରଣ ନ୍ୟସ୍ତ ହୋଇଛି"
@@ -2611,6 +2627,10 @@ msgstr "NBD ଉପକକରଣ %s pid କୁ ଯାଞ୍ଚ କରିପାର�
 msgid "Cannot check QEMU binary %s"
 msgstr "QEMU ଦ୍ୱିମିକ %sକୁ ଯାଞ୍ଚ କରିପାରିବେ ନାହିଁ"
 
+#, c-format
+msgid "Cannot check QEMU module directory %s"
+msgstr ""
+
 #, fuzzy
 msgid "Cannot check address family on this platform"
 msgstr "ଏହି ପ୍ଲାଟଫର୍ମ ଉପରେ macvlan ଉପକରଣଗୁଡ଼ିକୁ ସୃଷ୍ଟି କରି ପାରିବେ ନାହିଁ"
@@ -2622,9 +2642,6 @@ msgstr "dnsmasq ଦ୍ୱିମିକ %s କୁ ଯାଞ୍ଚ କରିପା�
 #, fuzzy, c-format
 msgid "Cannot chown uniq path: %s"
 msgstr "ପଥ '%s' କୁ ଖୋଲିପାରିବେ ନାହିଁ"
-
-msgid "Cannot close container iterator"
-msgstr "ଧାରଣ ପାତ୍ର ସଂଯୋଜକକୁ ବନ୍ଦ କରିପାରିବେ ନାହିଁ"
 
 #, fuzzy
 msgid "Cannot close resctrl"
@@ -3595,8 +3612,9 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: enabling IPv6 forwarding with RA routes without "
-"accept_ra set to 2 is likely to cause routes loss. Interfaces to look at: %s"
+"Check the host setup: interface %s has kernel autoconfigured IPv6 routes and "
+"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"flush them, breaking networking."
 msgstr ""
 
 #, fuzzy, c-format
@@ -3843,12 +3861,6 @@ msgstr "ପରିସର %s ସହିତ ସଂଯୁକ୍ତ\n"
 #, fuzzy
 msgid "Connected to the admin server"
 msgstr "ପରିସର %s ସହିତ ସଂଯୁକ୍ତ\n"
-
-#, c-format
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"%s transport"
-msgstr ""
 
 msgid "Connections from inside daemon must be direct"
 msgstr ""
@@ -5003,22 +5015,6 @@ msgstr "DAC seclabel କୁ ନିର୍ଦ୍ଧାରଣ କରିପାରି
 msgid "DBus daemon %s didn't show up"
 msgstr "ଡମେନ %s କୁ ଦର୍ଶାଇପାରିବେ ନାହିଁ"
 
-msgid "DBus matches could not be installed. Disabling nwfilter driver"
-msgstr "DBus ମେଳକଗୁଡ଼ିକୁ ସ୍ଥାପନ କରାଯାଇପାରିଲା ନାହିଁ। nwfilter ଡ୍ରାଇଭରକୁ ନିଷ୍କ୍ରିୟ କରୁଅଛି"
-
-#, c-format
-msgid "DBus not available, disabling HAL driver: %s"
-msgstr "DBus ଉପଲବ୍ଧ ନାହିଁ, HAL ଡ୍ରାଇଭରକୁ ନିଷ୍କ୍ରିୟ କରୁଅଛି: %s"
-
-msgid "DBus support not compiled into this binary"
-msgstr "DBus ସହାୟତା ଏହି ବାଇନାରୀରେ ସୁସଙ୍ଗତ ନୁହଁ"
-
-msgid "DBus type stack is empty"
-msgstr "DBus ପ୍ରକାର ଷ୍ଟାକ ଖାଲି ଅଛି"
-
-msgid "DBus type too deeply nested"
-msgstr "DBus ପ୍ରକାର ଅତି ମାତ୍ରାରେ ସନ୍ନିହିତ"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr ""
 "DNS HOST ବିବରଣୀକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ, କେବଳ ଯୋଗ କରାଯାଇଥିଲା କିମ୍ବା ଅପସାରିତ ହୋଇଥିଲା"
@@ -5274,14 +5270,6 @@ msgstr "ଉପକରଣ ସଫଳତାର ସହିତ ଅଦ୍ୟତିତ �
 #, c-format
 msgid "Device: %s\n"
 msgstr "ଉପକରଣ: %s\n"
-
-#, c-format
-msgid "Dict entry in signature '%s' is wrong size"
-msgstr "ହସ୍ତାକ୍ଷର '%s' ରେ ଅବିଧାନ ନିବେଶର ଆକାର ଭୁଲ ଅଟେ"
-
-#, c-format
-msgid "Dict entry in signature '%s' must be a basic type"
-msgstr "ହସ୍ତାକ୍ଷର '%s' ରେ ଅବିଧାନ ନିବେଶ ନିଶ୍ଚିତ ଭାବରେ ଏକ ମୌଳିକ ପ୍ରକାରର ଅଟେ"
 
 msgid ""
 "Did not create EK and certificates since this requires privileged mode for a "
@@ -5795,10 +5783,6 @@ msgid "Dump failed"
 msgstr "ଡମ୍ପ ବିଫଳ ହୋଇଛି"
 
 #, c-format
-msgid "Duplicate Address Detection not finished in %d seconds"
-msgstr ""
-
-#, c-format
 msgid "Duplicate NUMA cell info for cell id '%u'"
 msgstr "ସେଲ id '%u' ପାଇଁ ନକଲି NUMA ସେଲ ସୂଚନା"
 
@@ -6299,6 +6283,10 @@ msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "virt ପ୍ରକାରକୁ '%s' ହେବା ପାଇଁ ଆଶା କରୁଅଛି କିନ୍ତୁ '%s' ମିଲିଲା"
 
 msgid "Expiry Time"
+msgstr ""
+
+msgid ""
+"Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
 
 #, fuzzy
@@ -7512,10 +7500,6 @@ msgstr "%s କୁ ଖୋଲିବାରେ ବିଫଳ"
 msgid "Failed to logout: %s"
 msgstr "%s କୁ ଅଦ୍ୟତନ କରିବାରେ ବିଫଳ"
 
-#, fuzzy
-msgid "Failed to loop over IPv6 routes"
-msgstr "ସଂରକ୍ଷଣ ଭଲ୍ୟୁମଗୁଡ଼ିକୁ ତାଲିକାଭୁକ୍ତ କରିବାରେ ବିଫଳ"
-
 msgid "Failed to make auth credentials"
 msgstr "auth ପ୍ରମାଣପତ୍ର ପ୍ରସ୍ତୁତ କରିବାରେ ବିଫଳ"
 
@@ -7945,11 +7929,6 @@ msgstr "ବନ୍ଦ କରିବା ସମୟ ସମାପ୍ତକୁ ପଞ�
 #, c-format
 msgid "Failed to register xml namespace '%s'"
 msgstr "xml namespace '%s' କୁ ପଞ୍ଜିକରଣ କରିବାରେ ବିଫଳ"
-
-msgid ""
-"Failed to register xml namespace 'http://www.innotek.de/VirtualBox-settings'"
-msgstr ""
-"xml namespace 'http://www.innotek.de/VirtualBox-settings' କୁ ପଞ୍ଜିକରଣ କରିବାରେ ବିଫଳ"
 
 msgid "Failed to release lock"
 msgstr "ଲକ ଖୋଲିବାରେ ବିଫଳ"
@@ -8926,16 +8905,6 @@ msgid "Gets or sets the domain's system time"
 msgstr "ଡମେନର ଆଧାର ନାମକୁ ମୂଦ୍ରଣ କରନ୍ତୁ"
 
 msgid "Gets statistics about one or more (or all) domains"
-msgstr ""
-
-#, c-format
-msgid "Got array ref but '%s' is not a single basic type / dict"
-msgstr ""
-
-#, c-format
-msgid ""
-"Got array ref but '%s' is not a single basic type or dict with matching key"
-"+value type"
 msgstr ""
 
 msgid "Got empty feature list from resctrl"
@@ -10850,6 +10819,10 @@ msgstr ""
 msgid "Malformed PCI address %s"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI options %s"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed auth_pending field in JSON state document"
 msgstr "JSON ଦଲିଲରେ auth ସ୍ଥାନ ଅନୁପସ୍ଥିତ"
@@ -11757,6 +11730,10 @@ msgstr "JSON ଦଲିଲରେ priority_workers ତଥ୍ୟ ଅନୁପସ୍
 msgid "Missing privateData field in JSON state document"
 msgstr "JSON ଦଲିଲରେ privateData ସ୍ଥାନ ଅନୁପସ୍ଥିତ"
 
+#, c-format
+msgid "Missing property '%s' in answer"
+msgstr ""
+
 msgid "Missing readonly field in JSON state document"
 msgstr "JSON ଦଲିଲରେ କେବଳ ପଠନୀୟ ସ୍ଥାନ ଅନୁପସ୍ଥିତ"
 
@@ -11882,9 +11859,6 @@ msgstr "ସଂରକ୍ଷଣ ହୋଷ୍ଟ ବ୍ଲକ ପଥ ଅନୁପ�
 #, fuzzy, c-format
 msgid "Missing storage volume name for disk '%s'"
 msgstr "ପଥ '%s' ପାଇଁ ଅନୁପସ୍ଥିତ ଗ୍ଲଷ୍ଟର ଭଲ୍ୟୁମ ନାମ"
-
-msgid "Missing variant type signature"
-msgstr "ଅନୁପସ୍ଥିତ ବିଭିନ୍ନ ପ୍ରକାରର ହସ୍ତାକ୍ଷର"
 
 #, c-format
 msgid "Missing vendor string for CPU vendor %s"
@@ -12065,6 +12039,10 @@ msgstr "NUMA ନୋଡ %d ଟି ସୀମା ବାହାରେ"
 #, fuzzy, c-format
 msgid "NUMA node %zd is unavailable"
 msgstr "NUMA ନୋଡ %d ଟି ସୀମା ବାହାରେ"
+
+#, c-format
+msgid "NUMA node %zu is not available"
+msgstr ""
 
 msgid "NUMA node selections to set"
 msgstr "ସେଟ କରିବା ପାଇଁ NUMA ନୋଡ ଚୟନ"
@@ -12407,10 +12385,6 @@ msgstr "ଉପକରଣ ଉପରେ କୌଣସି ସକ୍ରିୟ ପ୍�
 
 msgid "No addresses to bind to"
 msgstr ""
-
-#, c-format
-msgid "No args present for signature %s"
-msgstr "ହସ୍ତାକ୍ଷର %s ପାଇଁ କୌଣସି ସ୍ୱତନ୍ତ୍ରଚର ନାହିଁ"
 
 msgid "No authentication callback available"
 msgstr "କୌଣସି ବୈଧିକରଣ ଡାକରା ଉପଲବ୍ଧ ହୋଇନାହିଁ"
@@ -12796,9 +12770,6 @@ msgstr "ଧାରାରୁ ପଢ଼ିପାରିବେ ନାହିଁ"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "ସକ୍ରିୟ ଉପକରଣ %s କୁ ପୃଥକ କରୁନାହିଁ"
-
-msgid "Not enough fields in message for signature"
-msgstr "ହସ୍ତାକ୍ଷର ପାଇଁ ସନ୍ଦେଶରେ ଯଥେଷ୍ଟ ସ୍ଥାନ ନାହିଁ"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13257,9 +13228,6 @@ msgstr "PCI ଠିକଣା 0:0:1.0 ବ୍ୟବହାର ହେଉଛି, QEMU 
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr "PCI ଠିକଣା 0:0:2.0 ବ୍ୟବହାର ହେଉଛି, QEMU ଏହାକୁ ପ୍ରାଥମିକ ଭିଡ଼ିଓ ପାଇଁ ଆବଶ୍ୟକ କରିଥାଏ"
 
-msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
-msgstr "PCI ବସ 0 ସ୍ଲଟ 1 କୁ LPC PCI-ISA ବ୍ରିଜ ପାଇଁ ସଂରକ୍ଷଣ କରାଯାଇଛି"
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13425,6 +13393,9 @@ msgstr "କୌଣସି qemu ନିର୍ଦ୍ଦେଶ ଧାରା ସ୍ୱ�
 #, c-format
 msgid "Passphrase for key '%s'"
 msgstr "କି '%s' ପାଇଁ ପ୍ରବେଶ ସଂକେତ"
+
+msgid "Password may not contain ',' character"
+msgstr ""
 
 msgid "Password request failed"
 msgstr "ପ୍ରବେଶ ସଂକେତ ଅନୁରୋଧ ବିଫଳ ହୋଇଛି"
@@ -13988,9 +13959,6 @@ msgstr "ସଂରକ୍ଷିତ ସ୍ଥିତି ଫାଇଲ ସହିତ �
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "ସଂରକ୍ଷିତ ସ୍ଥିତି ଫାଇଲ ସହିତ ସମ୍ପୃକ୍ତ XML ଡମେନକୁ ସ୍ଥାନାନ୍ତରଣ କରନ୍ତୁ"
 
-msgid "Reply message incorrect"
-msgstr "ଉତ୍ତର ସନ୍ଦେଶ ଭୁଲ ଅଛି"
-
 #, c-format
 msgid ""
 "Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
@@ -14328,6 +14296,9 @@ msgid ""
 "another SCSI host device"
 msgstr ""
 
+msgid "SCSI host device data structure was not initialized"
+msgstr ""
+
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI ହୋଷ୍ଟ ଉପକରଣ ପରିଚାଳିତ ଧାରାକୁ ସହାୟତା ଦେଇନଥାଏ"
 
@@ -14518,11 +14489,11 @@ msgstr "ସୁରକ୍ଷା ମଡେଲ ମିଳିଲା ନାହିଁ: %
 msgid "Security model:"
 msgstr "ସୁରକ୍ଷା ମଡେଲ:"
 
-#. Bhyve doesn't support VNC Auth yet, so print a warning about
-#. * unauthenticated VNC sessions
-#, fuzzy
-msgid "Security warning: currently VNC auth is not supported."
-msgstr "ସ୍ଥାପନ ବିନ୍ଦୁକୁ ଉଲ୍ଲେଖ କରିବା ବର୍ତ୍ତମାନ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
+msgid "Security warning: VNC auth is not supported."
+msgstr ""
+
+msgid "Security warning: VNC is used without authentication."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14833,10 +14804,6 @@ msgstr "$uri URI ଉପରେ ଅତିଥିମାନଙ୍କୁ ବନ୍ଦ 
 #, fuzzy
 msgid "Signal handling not available on this platform"
 msgstr "ଏହି ହୋଷ୍ଟରେ numad ଉପଲବ୍ଧ ନାହିଁ"
-
-#, c-format
-msgid "Signature '%s' too deeply nested"
-msgstr "ହସ୍ତାକ୍ଷର '%s' ଅତି ମାତ୍ରାରେ ସନ୍ନିହିତ"
 
 #, c-format
 msgid ""
@@ -16040,8 +16007,8 @@ msgid "The CA certificate %s is not yet active"
 msgstr "CA ପ୍ରମାଣପତ୍ର %s ଟି ଏପର୍ଯ୍ୟନ୍ତ ସକ୍ରିୟ ନାହିଁ"
 
 #, c-format
-msgid "The CCW devno '%s' is in use already "
-msgstr "CCW devno '%s' ଟି ପୂର୍ବରୁ ବ୍ୟବହାର ହେଉଛି"
+msgid "The CCW devno '%s' is in use already"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -16445,9 +16412,6 @@ msgstr "ଅତ୍ୟଧିକ ଡ୍ରାଇଭର, %s କୁ ପଞ୍ଜି�
 msgid "Too many drivers, cannot register storage file backend '%s'"
 msgstr "ଅତ୍ୟଧିକ ଡ୍ରାଇଭର, %s କୁ ପଞ୍ଜିକୃତ କରିପାରିବେ ନାହିଁ"
 
-msgid "Too many fields in message for signature"
-msgstr "ହସ୍ତାକ୍ଷର ପାଇଁ ସନ୍ଦେଶରେ ଅତ୍ୟଧିକ ସ୍ଥାନ ଅଛି"
-
 #, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "%s ପାଇଁ ଅତ୍ୟଧିକ ଫାଇଲତନ୍ତ୍ର ମିଳିଛି"
@@ -16519,10 +16483,6 @@ msgstr "ଅତ୍ଯଧିକ ଗୁପ୍ତ '%d' ସିମୀତ '%d' ପା�
 #, fuzzy, c-format
 msgid "Too many storage_vols '%d' for limit '%d'"
 msgstr "ଅତ୍ଯଧିକ ଗୁପ୍ତ '%d' ସିମୀତ '%d' ପାଇଁ"
-
-#, fuzzy, c-format
-msgid "Too many unreserved %s devices in use"
-msgstr "%s ରେ ଅନେକ ଡ୍ରାଇଭର ପଞ୍ଜିକୃତ ହୋଇଛନ୍ତି"
 
 msgid "Total"
 msgstr "ସମୁଦାୟ"
@@ -16637,6 +16597,9 @@ msgstr "ପ୍ରକାର='%s' ଟି <interface type='vhostuser'> ପାଇଁ
 msgid "UEFI requires ACPI on this architecture"
 msgstr ""
 
+msgid "UNIX disks URI does not include path"
+msgstr ""
+
 msgid "UNIX socket address is required"
 msgstr ""
 
@@ -16669,6 +16632,13 @@ msgstr ""
 
 #, c-format
 msgid "URI scheme '%s' for embedded driver is not valid"
+msgstr ""
+
+msgid "URI to use for disks migration (overrides --disks-port)"
+msgstr ""
+
+#, c-format
+msgid "URI with tcp scheme did not provide a server part: %s"
 msgstr ""
 
 #, c-format
@@ -17025,10 +16995,6 @@ msgstr "stdout ଫାଇଲ ନିୟନ୍ତ୍ରକକୁ ବିନ୍ୟା
 msgid "Unable to create %s"
 msgstr "%s କୁ ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ"
 
-#, fuzzy, c-format
-msgid "Unable to create %s device %s"
-msgstr "ଉପକରଣ %s କୁ ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ"
-
 #, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "ହାର୍ଡ ଡିସ୍କ ସୃଷ୍ଟି କରିବାରେ ଅସମର୍ଥ, rc=%08x"
@@ -17076,6 +17042,10 @@ msgstr "ବ୍ରିଜ ଉପକରଣକୁ ନିର୍ମାଣ କରିବ
 #, c-format
 msgid "Unable to create device %s"
 msgstr "ଉପକରଣ %s କୁ ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ"
+
+#, c-format
+msgid "Unable to create device '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unable to create directory %s"
@@ -17404,14 +17374,6 @@ msgstr "କ୍ଷମତା ପାଇବାରେ ଅସମର୍ଥ"
 msgid "Unable to get Console object for domain %s"
 msgstr "ଡମେନ %s ପାଇଁ ଆଶୁଚିତ୍ର ଗଣନା ପାଇଲା ନାହିଁ"
 
-#, c-format
-msgid "Unable to get DBus session bus connection: %s"
-msgstr "DBus ଅଧିବେଶନ ବସ ସଂଯୋଗ ପାଇବାରେ ଅସମର୍ଥ: %s"
-
-#, c-format
-msgid "Unable to get DBus system bus connection: %s"
-msgstr "DBus ତନ୍ତ୍ର ବସ ସଂଯୋଗ ପାଇବାରେ ଅସମର୍ଥ: %s"
-
 #, fuzzy
 msgid "Unable to get IP address on this platform"
 msgstr "ଏହି ପ୍ଲାଟଫର୍ମରେ %s ଉପରେ STP କୁ ପାଇବାରେ ଅସମର୍ଥ"
@@ -17675,12 +17637,20 @@ msgstr "ସୁଦୂର ସକେଟ ନାମ ପାଇବାରେ ଅସମ�
 msgid "Unable to get server workerpool parameters"
 msgstr "ସ୍ମୃତିସ୍ଥାନ ପ୍ରାଚଳକୁ ପାଇବାରେ ଅସମର୍ଥ"
 
+#, c-format
+msgid "Unable to get session bus connection: %s"
+msgstr ""
+
 msgid "Unable to get snapshot content"
 msgstr "ଆଶୁଚିତ୍ର ବିଷୟବସ୍ତୁ ପାଇବାରେ ଅସମର୍ଥ"
 
 #, fuzzy
 msgid "Unable to get sysfs info on this platform"
 msgstr "ଏହି ପ୍ଲାଟଫର୍ମ ଉପରେ VLAN ପାଇବାରେ ଅସମର୍ଥ"
+
+#, c-format
+msgid "Unable to get system bus connection: %s"
+msgstr ""
 
 msgid "Unable to get the machine location path"
 msgstr "ମେସିନ ଅବସ୍ଥାନ ପଥ ପାଇବାରେ ଅସମର୍ଥ"
@@ -18107,6 +18077,10 @@ msgstr "ଅଧିବେଶନ ନେତା ହେବାରେ ଅସମର୍ଥ
 msgid "Unable to read %s"
 msgstr "%s କୁ ପଢ଼ିବାରେ ଅସମର୍ଥ"
 
+#, c-format
+msgid "Unable to read %s for ipv6 forwarding checks"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to read TLS confirmation"
 msgstr "ମନିଟରରୁ ପଢିବାରେ ଅସମର୍ଥ"
@@ -18312,8 +18286,8 @@ msgstr "ଅନ୍ତରାପୃଷ୍ଠ %s ପାଇଁ OVS ପୋର୍ଟ �
 msgid "Unable to run command to set OVS port data for interface %s"
 msgstr "ଅନ୍ତରାପୃଷ୍ଠ %s ପାଇଁ OVS ପୋର୍ଟ ତଥ୍ୟ ସେଟ କରିବାକୁ ନିର୍ଦ୍ଦେଶ ଚଲାଇବାରେ ଅସମର୍ଥ"
 
-msgid "Unable to run one time DBus initializer"
-msgstr "ଗୋଟିଏ ଥର DBus ପ୍ରାରମ୍ଭକାରୀକୁ ଚଲାଇବାରେ ଅସମର୍ଥ"
+msgid "Unable to run one time GDBus initializer"
+msgstr ""
 
 #, c-format
 msgid "Unable to save '%s'"
@@ -18633,10 +18607,6 @@ msgstr "କ୍ଲାଏଣ୍ଟ ପ୍ରମାଣପତ୍ର %s ଆମଦା�
 msgid "Unable to verify server certificate %s against CA certificate %s"
 msgstr "ସର୍ଭର ପ୍ରମାଣପତ୍ର %s ଆମଦାନୀ କରିବାରେ ଅସମର୍ଥ"
 
-#, fuzzy
-msgid "Unable to wait for IPv6 DAD on this platform"
-msgstr "ଏହି ପ୍ଲାଟଫର୍ମ ଉପରେ VLAN ପାଇବାରେ ଅସମର୍ଥ"
-
 msgid "Unable to wait for child process"
 msgstr "ନିମ୍ନ ସ୍ତର ପଦ୍ଧତି ପାଇଁ ଅପେକ୍ଷା କରିବାରେ ଅସମର୍ଥ"
 
@@ -18910,10 +18880,6 @@ msgstr "ଅପ୍ରତ୍ୟାଶିତ hostdev ଡ୍ରାଇଭର ନା�
 msgid "Unexpected signal received: %d"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ ସଂକେତ ଗ୍ରହଣ ହୋଇଛି: %d"
 
-#, c-format
-msgid "Unexpected signature '%s'"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ହସ୍ତାକ୍ଷର '%s'"
-
 #, fuzzy, c-format
 msgid "Unexpected socket family %d"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ ଉତ୍ସ ଧାରା %d"
@@ -18934,6 +18900,9 @@ msgid "Unexpectedly got a network port without a network bridge"
 msgstr ""
 
 msgid "Unexpectedly got a network port without a plug"
+msgstr ""
+
+msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
 msgid "Unknown"
@@ -19227,6 +19196,10 @@ msgstr "ଅଜଣା qemu କ୍ଷମତା ସୂଚକ %s"
 msgid "Unknown release: %s"
 msgstr "ଅଜଣା ପ୍ରକାଶନ: %s"
 
+#, c-format
+msgid "Unknown remote mode '%s'"
+msgstr ""
+
 msgid "Unknown return code"
 msgstr "ଅଜଣା ଫେରିବା ସଂକେତ"
 
@@ -19285,14 +19258,6 @@ msgstr "ଅଜଣା ନିଲମ୍ବନ ଲକ୍ଷ୍ଯସ୍ଥଳ: %u"
 msgid "Unknown taint flag %s"
 msgstr "ଅଜଣା ଟେଣ୍ଟ ପତାକା %s"
 
-#, c-format
-msgid "Unknown type '%c' in signature '%s'"
-msgstr "ଅଜଣା ପ୍ରକାର '%c' ହସ୍ତାକ୍ଷର '%s' ରେ ଅଛି"
-
-#, c-format
-msgid "Unknown type '%x' in signature '%s'"
-msgstr "ଅଜଣା ପ୍ରକାର '%x' ହସ୍ତାକ୍ଷର '%s' ରେ ଅଛି"
-
 #, fuzzy, c-format
 msgid "Unknown uri scheme: '%s'"
 msgstr "ଅଜଣା ଉତ୍ସ ଧାରା '%s'"
@@ -19331,6 +19296,10 @@ msgstr ""
 
 #, c-format
 msgid "Unmanaged PCI device %s must be manually detached from the host"
+msgstr ""
+
+#, c-format
+msgid "Unnkown proxy type '%s'"
 msgstr ""
 
 #, fuzzy
@@ -19626,6 +19595,10 @@ msgid "Unsupported root filesystem type %s"
 msgstr "ଅସମର୍ଥିତ ରୁଟ ଫାଇଲତନ୍ତ୍ର ପ୍ରକାର %s"
 
 #, c-format
+msgid "Unsupported scheme in disks URI: %s"
+msgstr ""
+
+#, c-format
 msgid "Unsupported spicevmc target name '%s'"
 msgstr "ଅସମର୍ଥିତ  spicevmc ଲକ୍ଷ୍ଯସ୍ଥଳ ନାମ '%s'"
 
@@ -19688,6 +19661,11 @@ msgstr "ଏହି ଭଲ୍ୟୁମ ମଧ୍ଯରେ ଫାଇଲ ବିଷ�
 
 msgid "Usage"
 msgstr "ବ୍ୟବହାର ବିଧି"
+
+msgid ""
+"Usage of listen-address is forbidden when migration URI uses UNIX transport "
+"method"
+msgstr ""
 
 #, fuzzy
 msgid "Usage:"
@@ -19834,6 +19812,9 @@ msgstr "VMX ନିବେଶ 'sched.cpu.affinity' ଗୋଟିଏ %d ଧାରଣ
 
 msgid "VNC"
 msgstr "VNC"
+
+msgid "VNC Password authentication not supported by bhyve"
+msgstr ""
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC ସହାୟତା ସଂଯୁକ୍ତ=କେବଳ 'keep'"
@@ -19994,6 +19975,10 @@ msgstr "%s, ଆଭାସୀକରଣ ପାରସ୍ପରିକ କ୍ରିୟ
 #, c-format
 msgid "Wiping volume '%s'(%s) ... "
 msgstr "ଭଲ୍ୟୁମ '%s'(%s) କୁ ସଫା କରୁଅଛି ... "
+
+msgid ""
+"Write filtering of PCI device configuration space is not supported by qemu"
+msgstr ""
 
 #, c-format
 msgid "Write of '%s' to '%s' during vport create/delete failed"
@@ -21021,10 +21006,6 @@ msgstr ""
 msgid "can't find created snapshot"
 msgstr "ଆଶୁଚିତ୍ର %s କୁ ଖୋଜିବାରେ ଅସମର୍ଥ"
 
-#, fuzzy, c-format
-msgid "can't free name %s%d - out of range 0-%d"
-msgstr "ଆରମ୍ଭ କୋଷ %d ସୀମା ବାହାରେ (0-%d)"
-
 #, c-format
 msgid "can't identify pool in uri %s "
 msgstr ""
@@ -21102,10 +21083,6 @@ msgstr "ନେଟୱର୍କର ଅଚିହ୍ନା ବିଭାଗକୁ ଅ
 
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "can't use name %s%d - out of range 0-%d"
-msgstr "ଆରମ୍ଭ କୋଷ %d ସୀମା ବାହାରେ (0-%d)"
 
 #, fuzzy
 msgid "canceled"
@@ -23526,10 +23503,6 @@ msgstr "'%s' MAC ଠିକଣା ଥିବା କୌଣସି ଅନ୍ତରା
 msgid "couldn't find interface with MAC address '%s': %s%s%s"
 msgstr "'%s' MAC ଠିକଣା ଥିବା କୌଣସି ଅନ୍ତରାପୃଷ୍ଠ ମିଳିଲା ନାହିଁ: %s%s%s"
 
-#, fuzzy, c-format
-msgid "couldn't get id value from macvtap device name %s"
-msgstr "ପ୍ରାଚଳ '%s' ପାଇଁ ମୂଲ୍ୟ ପାଇଲା ନାହିଁ"
-
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr ""
@@ -23558,18 +23531,6 @@ msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%s'\" \"name='%s'\" "
 "\"ip='%s'\" in network '%s'"
 msgstr "ନେଟୱର୍କ '%s' ରେ ମେଳଖାଉଥିବା ଏକ dhcp ହୋଷ୍ଟ ନିବେଶକୁ ଦେଖି ପାରିଲା ନାହିଁ"
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as unused"
-msgstr "ପ୍ରାଚଳଗୁଡ଼ିକୁ  ବିଶ୍ଳେଷଣ କରିପାରିଲା ନାହିଁ"
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as used"
-msgstr "ପୁଲ %s କୁ ସ୍ବୟଂଚାଳିତ ଭାବରେ ଚିହ୍ନିତ କରିବାରେ ବିଫଳ"
-
-#, fuzzy, c-format
-msgid "couldn't reserve name %s%d - already in use"
-msgstr "ଭଣ୍ଡାର ଭଲ୍ୟୁମ ନାମ '%s' ପୂର୍ବରୁ ବ୍ୟବହାରରେ ଅଛି।"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
@@ -23605,6 +23566,9 @@ msgstr "cpu ସାଦୃଶ୍ୟ ସମର୍ଥିତ ନୁହଁ"
 #, fuzzy
 msgid "cpu count too large"
 msgstr "ncpus ଅତ୍ୟଧିକ ବଡ଼ ଅଟେ"
+
+msgid "cpu parameter is missing a model name"
+msgstr ""
 
 #, c-format
 msgid "cpu topology results in more than %u cpus"
@@ -25056,10 +25020,6 @@ msgstr "IFLA_VF_PORT ଅଂଶକୁ ବିଶ୍ଳେଷଣ କରିବାର
 msgid "error parsing pid of lldpad"
 msgstr "lldpad ର pid କୁ ବିଶ୍ଳେଷଣ କରିବାରେ ତୃଟି"
 
-#, fuzzy
-msgid "error reading DAD state information"
-msgstr "ପ୍ରାରମ୍ଭିକ ବିନ୍ୟାସକୁ ନିର୍ମାଣ କରିବାରେ ତ୍ରୁଟି"
-
 msgid "error receiving signal from container"
 msgstr "ଧାରଣ ପାତ୍ରରୁ ସଂକେତ ଗ୍ରହଣ କରିବାରେ ତ୍ରୁଟି"
 
@@ -25097,7 +25057,8 @@ msgstr "XML ବ୍ୟବହାର ପାଇଁ ଏସକେପ"
 msgid "escape for shell use"
 msgstr "ସେଲ ବ୍ୟବହାର ପାଇଁ ଏସକେପ"
 
-msgid "ethtool ioctl error"
+#, c-format
+msgid "ethtool ioctl error on %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27307,6 +27268,9 @@ msgstr "ହୋଷ୍ଟ usb ଉପକରଣ ବିକ୍ରେତା=0x%.4x ଉ�
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "ହୋଷ୍ଟ-ପ୍ରମାଣପତ୍ରଗୁଡ଼ିକର ଧାରା ତିନୋଟି ପ୍ରମାଣପତ୍ର ଆବଶ୍ୟକ କରିଥାଏ"
 
+msgid "hostName field not available (missing VMware Tools?)"
+msgstr ""
+
 #, c-format
 msgid "hostdev %s not found"
 msgstr "hostdev %s ମିଳିଲା ନାହିଁ"
@@ -28884,18 +28848,6 @@ msgstr "ଅଧିତଥ୍ୟ ଲମ୍ବର ସୀମା ବାହାରେ"
 msgid "level %u cache size %llu does not match expected size %llu"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଭିଡ଼ିଓ କାର୍ଡ ମୁଖ୍ୟ ଭାଗ %u ଉତ୍ସ %u ସହିତ ମେଳଖାଉ ନାହିଁ"
 
-msgid "libhal_ctx_init failed, haldaemon is probably not running"
-msgstr "libhal_ctx_init ବିଫଳ ହୋଇଛି, haldaemon ସମ୍ଭବତଃ ଚାଲୁନାହିଁ"
-
-msgid "libhal_ctx_new returned NULL"
-msgstr "libhal_ctx_new କିଛି ଫେରାଇ ନାହିଁ"
-
-msgid "libhal_ctx_set_dbus_connection failed"
-msgstr "libhal_ctx_set_dbus_connection ବିଫଳ ହୋଇଛି"
-
-msgid "libhal_get_all_devices failed"
-msgstr "libhal_get_all_devices ବିଫଳ ହୋଇଛି"
-
 msgid "libnl was not available at build time"
 msgstr "libnl ନିର୍ମାଣ ସମୟରେ ଉପଲବ୍ଧ ନଥିଲା"
 
@@ -30003,6 +29955,9 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr ""
 
+msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
+msgstr ""
+
 msgid "mirror requires file name"
 msgstr "ପ୍ରତିବିମ୍ବ ଫାଇଲ ନାମ ଆବଶ୍ୟକ କରିଥାଏ"
 
@@ -30560,6 +30515,10 @@ msgstr "ରାଜିନାମା ପାଇଁ 'ମୂଖ୍ୟ' ଉପାଦା�
 msgid "missing machine name in QEMU capabilities cache"
 msgstr "ସ୍ଥାନାନ୍ତରଣ କ୍ଷମତା ନାମ ଅନୁପସ୍ଥିତ"
 
+#, c-format
+msgid "missing mapping in '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "missing memory model"
 msgstr "ଅନୁପସ୍ଥିତ ସମୟ ମାପକ ନାମ"
@@ -31092,14 +31051,8 @@ msgid ""
 "device"
 msgstr ""
 
-msgid "more than one adapters is specified for scsi hostdev source"
-msgstr "scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ ଗୋଟିଏରୁ ଅଧିକ ଏଡପଟର ଉଲ୍ଲେଖ ହୋଇଛି"
-
 msgid "more than one snapshot claims to be active"
 msgstr ""
-
-msgid "more than one source addresses is specified for scsi hostdev"
-msgstr "scsi ହୋଷ୍ଟ ଉପକରଣ ପାଇଁ ଗୋଟିଏରୁ ଅଧିକ ଠିକଣାକୁ ଉଲ୍ଲେଖ କରାଯାଇଥାଏ"
 
 #, fuzzy
 msgid "mount is not supported on this platform."
@@ -31289,6 +31242,9 @@ msgid "negotiation SSF %d was not strong enough"
 msgstr "SSF %d ଆଦାନ ପ୍ରଦାନଟି ଯଥେଷ୍ଟ ଶକ୍ତ ନୁହଁ"
 
 msgid "nested JSON array to commandline conversion is not supported"
+msgstr ""
+
+msgid "netcat path not valid with native proxy mode"
 msgstr ""
 
 msgid "netdir"
@@ -32307,10 +32263,6 @@ msgstr "ସହଭାଗୀ ସ୍ମୃତିସ୍ଥାନ ଏହି QEMU ବ�
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "ସହଭାଗୀ ସ୍ମୃତିସ୍ଥାନ ଏହି QEMU ବାଇନାରୀ ସହିତ ଉପଲବ୍ଧ ନାହିଁ"
 
-#, c-format
-msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
-msgstr ""
-
 msgid "nvram address type must be spaprvio"
 msgstr "nvram ଠିକଣା ପ୍ରକାର ନିଶ୍ଚିତ ଭାବରେ spaprvio ହେବା ଉଚିତ"
 
@@ -32519,6 +32471,9 @@ msgstr ""
 msgid "only sending a signal to pid 1 is supported"
 msgstr "କେବଳ ଏକକ ୱାଚଡଗ ଉପକରଣ ସମର୍ଥିତ"
 
+msgid "only single ISA controller is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only single USB controller is supported"
 msgstr "କେବଳ ଏକକ TPM ଉପକରଣ ସମର୍ଥିତ"
@@ -32616,6 +32571,10 @@ msgstr "ବିକଳ୍ପ '-%c'/'--%s' ଏକ ସ୍ୱତନ୍ତ୍ରଚର
 #, c-format
 msgid "option --%s already seen"
 msgstr "ବିକଳ୍ପ --%s କୁ ପୂର୍ବରୁ ଦେଖାଯାଇଛି"
+
+#, c-format
+msgid "option parsing failed: %s\n"
+msgstr ""
 
 #, fuzzy
 msgid "optional CPU features are not supported"
@@ -34347,9 +34306,6 @@ msgstr ""
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr ""
 
-msgid "setting up HAL callbacks failed"
-msgstr "HAL କଲବ୍ୟାକ୍‌ ସେଟ କରିବାରେ ବିଫଳ"
-
 msgid "setuid or setgid failed"
 msgstr "setuid କିମ୍ବା setgid ବିଫଳ ହୋଇଛି"
 
@@ -36048,10 +36004,6 @@ msgstr "QEMU ନିର୍ଦ୍ଦେଶ '%s'କୁ ନିଷ୍ପାଦନ କ
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "QEMU ନିର୍ଦ୍ଦେଶ '%s' କୁ ନିଷ୍ପାଦନ କରିବାରେ ଅସମର୍ଥ: %s"
 
-#, c-format
-msgid "unable to find PCI address for parent device '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "ଅନୁକ୍ରମଣିକା  %d ପାଇଁ SCSI ନିୟନ୍ତ୍ରକ ଅନୁପସ୍ଥିତ"
@@ -36071,6 +36023,10 @@ msgstr "'%s' ପାଇଁ ବାଧାପ୍ରାପ୍ତ ଅବସ୍ଥା�
 #, fuzzy, c-format
 msgid "unable to find disk by target: %s"
 msgstr "ବନ୍ଧନ ଲକ୍ଷ୍ଯସ୍ଥଳ %s କୁ ଆରମ୍ଭ କରିବାରେ ଅସମର୍ଥ"
+
+#, c-format
+msgid "unable to find parent device '%s'"
+msgstr ""
 
 msgid "unable to find ploop tools, please install them"
 msgstr ""
@@ -37565,6 +37521,10 @@ msgstr "ଅଜଣା ବିଭାଜନ ପ୍ରକାର"
 msgid "unknown pci source type '%s'"
 msgstr "ଅଜଣା pci ଉତ୍ସ ପ୍ରକାର '%s'"
 
+#, c-format
+msgid "unknown pci writeFiltering setting '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
 msgstr "ଅଜଣା ସ୍ଥିତି ଗୁଣ '%s' ବିଶେଷତା '%s' ର"
@@ -38122,10 +38082,6 @@ msgstr "%s ଏହି QEMU ଦ୍ୱିମିକରେ ସମର୍ଥିତ ନ�
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
 msgstr "'origstates' ର ଅସମର୍ଥିତ ଉପାଦାନ '%s'"
-
-#, c-format
-msgid "unsupported element '%s' of scsi hostdev source"
-msgstr "scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ ଅସମର୍ଥିତ ଉପାଦାନ '%s'"
 
 #, c-format
 msgid "unsupported event ID %d"
@@ -39013,10 +38969,6 @@ msgid "vnc graphics are not supported with this QEMU"
 msgstr "vnc ଆଲେଖିକଗୁଡ଼ିକ ଏହି QEMUସହିତ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
 #, fuzzy
-msgid "vnc password auth not supported"
-msgstr "ପ୍ରୟୋଗ ସମର୍ଥିତ ନୁହଁ"
-
-#, fuzzy
 msgid "vnc port must be in range [5900,65535]"
 msgstr "ପୁନଃଚାଳନ ସମୟ ସମାପ୍ତି ପାଇଁ ଅବୈଧ ମୂଲ୍ୟ, ନିଶ୍ଚିତ ଭାବରେ [-1,65535] ଭିତରେ ରହିବା ଉଚିତ"
 
@@ -39353,6 +39305,165 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+#~ msgstr ""
+#~ "'ଏଡପଟର' ଏବଂ 'ଠିକଣା' କୁ ନିଶ୍ଚିତ ଭାବରେ scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ ଉଲ୍ଲେଖ କରିବା ଉଚିତ"
+
+#~ msgid "'adapter' must be specified for scsi hostdev source"
+#~ msgstr "scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ 'adapter' କୁ ନିଶ୍ଚିତ ଭାବରେ ଉଲ୍ଲେଖ କରିବା ଉଚିତ"
+
+#~ msgid "Cannot append basic type %s"
+#~ msgstr "ମୌଳିକ ପ୍ରକାର %s କୁ ଯୋଡ଼ିପାରିବେ ନାହିଁ"
+
+#~ msgid "Cannot close container iterator"
+#~ msgstr "ଧାରଣ ପାତ୍ର ସଂଯୋଜକକୁ ବନ୍ଦ କରିପାରିବେ ନାହିଁ"
+
+#~ msgid "DBus matches could not be installed. Disabling nwfilter driver"
+#~ msgstr "DBus ମେଳକଗୁଡ଼ିକୁ ସ୍ଥାପନ କରାଯାଇପାରିଲା ନାହିଁ। nwfilter ଡ୍ରାଇଭରକୁ ନିଷ୍କ୍ରିୟ କରୁଅଛି"
+
+#~ msgid "DBus not available, disabling HAL driver: %s"
+#~ msgstr "DBus ଉପଲବ୍ଧ ନାହିଁ, HAL ଡ୍ରାଇଭରକୁ ନିଷ୍କ୍ରିୟ କରୁଅଛି: %s"
+
+#~ msgid "DBus support not compiled into this binary"
+#~ msgstr "DBus ସହାୟତା ଏହି ବାଇନାରୀରେ ସୁସଙ୍ଗତ ନୁହଁ"
+
+#~ msgid "DBus type stack is empty"
+#~ msgstr "DBus ପ୍ରକାର ଷ୍ଟାକ ଖାଲି ଅଛି"
+
+#~ msgid "DBus type too deeply nested"
+#~ msgstr "DBus ପ୍ରକାର ଅତି ମାତ୍ରାରେ ସନ୍ନିହିତ"
+
+#~ msgid "Dict entry in signature '%s' is wrong size"
+#~ msgstr "ହସ୍ତାକ୍ଷର '%s' ରେ ଅବିଧାନ ନିବେଶର ଆକାର ଭୁଲ ଅଟେ"
+
+#~ msgid "Dict entry in signature '%s' must be a basic type"
+#~ msgstr "ହସ୍ତାକ୍ଷର '%s' ରେ ଅବିଧାନ ନିବେଶ ନିଶ୍ଚିତ ଭାବରେ ଏକ ମୌଳିକ ପ୍ରକାରର ଅଟେ"
+
+#, fuzzy
+#~ msgid "Failed to loop over IPv6 routes"
+#~ msgstr "ସଂରକ୍ଷଣ ଭଲ୍ୟୁମଗୁଡ଼ିକୁ ତାଲିକାଭୁକ୍ତ କରିବାରେ ବିଫଳ"
+
+#~ msgid ""
+#~ "Failed to register xml namespace 'http://www.innotek.de/VirtualBox-"
+#~ "settings'"
+#~ msgstr ""
+#~ "xml namespace 'http://www.innotek.de/VirtualBox-settings' କୁ ପଞ୍ଜିକରଣ କରିବାରେ "
+#~ "ବିଫଳ"
+
+#~ msgid "Missing variant type signature"
+#~ msgstr "ଅନୁପସ୍ଥିତ ବିଭିନ୍ନ ପ୍ରକାରର ହସ୍ତାକ୍ଷର"
+
+#~ msgid "No args present for signature %s"
+#~ msgstr "ହସ୍ତାକ୍ଷର %s ପାଇଁ କୌଣସି ସ୍ୱତନ୍ତ୍ରଚର ନାହିଁ"
+
+#~ msgid "Not enough fields in message for signature"
+#~ msgstr "ହସ୍ତାକ୍ଷର ପାଇଁ ସନ୍ଦେଶରେ ଯଥେଷ୍ଟ ସ୍ଥାନ ନାହିଁ"
+
+#~ msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
+#~ msgstr "PCI ବସ 0 ସ୍ଲଟ 1 କୁ LPC PCI-ISA ବ୍ରିଜ ପାଇଁ ସଂରକ୍ଷଣ କରାଯାଇଛି"
+
+#~ msgid "Reply message incorrect"
+#~ msgstr "ଉତ୍ତର ସନ୍ଦେଶ ଭୁଲ ଅଛି"
+
+#, fuzzy
+#~ msgid "Security warning: currently VNC auth is not supported."
+#~ msgstr "ସ୍ଥାପନ ବିନ୍ଦୁକୁ ଉଲ୍ଲେଖ କରିବା ବର୍ତ୍ତମାନ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
+
+#~ msgid "Signature '%s' too deeply nested"
+#~ msgstr "ହସ୍ତାକ୍ଷର '%s' ଅତି ମାତ୍ରାରେ ସନ୍ନିହିତ"
+
+#~ msgid "The CCW devno '%s' is in use already "
+#~ msgstr "CCW devno '%s' ଟି ପୂର୍ବରୁ ବ୍ୟବହାର ହେଉଛି"
+
+#~ msgid "Too many fields in message for signature"
+#~ msgstr "ହସ୍ତାକ୍ଷର ପାଇଁ ସନ୍ଦେଶରେ ଅତ୍ୟଧିକ ସ୍ଥାନ ଅଛି"
+
+#, fuzzy
+#~ msgid "Too many unreserved %s devices in use"
+#~ msgstr "%s ରେ ଅନେକ ଡ୍ରାଇଭର ପଞ୍ଜିକୃତ ହୋଇଛନ୍ତି"
+
+#, fuzzy
+#~ msgid "Unable to create %s device %s"
+#~ msgstr "ଉପକରଣ %s କୁ ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ"
+
+#~ msgid "Unable to get DBus session bus connection: %s"
+#~ msgstr "DBus ଅଧିବେଶନ ବସ ସଂଯୋଗ ପାଇବାରେ ଅସମର୍ଥ: %s"
+
+#~ msgid "Unable to get DBus system bus connection: %s"
+#~ msgstr "DBus ତନ୍ତ୍ର ବସ ସଂଯୋଗ ପାଇବାରେ ଅସମର୍ଥ: %s"
+
+#~ msgid "Unable to run one time DBus initializer"
+#~ msgstr "ଗୋଟିଏ ଥର DBus ପ୍ରାରମ୍ଭକାରୀକୁ ଚଲାଇବାରେ ଅସମର୍ଥ"
+
+#, fuzzy
+#~ msgid "Unable to wait for IPv6 DAD on this platform"
+#~ msgstr "ଏହି ପ୍ଲାଟଫର୍ମ ଉପରେ VLAN ପାଇବାରେ ଅସମର୍ଥ"
+
+#~ msgid "Unexpected signature '%s'"
+#~ msgstr "ଅପ୍ରତ୍ଯାଶିତ ହସ୍ତାକ୍ଷର '%s'"
+
+#~ msgid "Unknown type '%c' in signature '%s'"
+#~ msgstr "ଅଜଣା ପ୍ରକାର '%c' ହସ୍ତାକ୍ଷର '%s' ରେ ଅଛି"
+
+#~ msgid "Unknown type '%x' in signature '%s'"
+#~ msgstr "ଅଜଣା ପ୍ରକାର '%x' ହସ୍ତାକ୍ଷର '%s' ରେ ଅଛି"
+
+#, fuzzy
+#~ msgid "can't free name %s%d - out of range 0-%d"
+#~ msgstr "ଆରମ୍ଭ କୋଷ %d ସୀମା ବାହାରେ (0-%d)"
+
+#, fuzzy
+#~ msgid "can't use name %s%d - out of range 0-%d"
+#~ msgstr "ଆରମ୍ଭ କୋଷ %d ସୀମା ବାହାରେ (0-%d)"
+
+#, fuzzy
+#~ msgid "couldn't get id value from macvtap device name %s"
+#~ msgstr "ପ୍ରାଚଳ '%s' ପାଇଁ ମୂଲ୍ୟ ପାଇଲା ନାହିଁ"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as unused"
+#~ msgstr "ପ୍ରାଚଳଗୁଡ଼ିକୁ  ବିଶ୍ଳେଷଣ କରିପାରିଲା ନାହିଁ"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as used"
+#~ msgstr "ପୁଲ %s କୁ ସ୍ବୟଂଚାଳିତ ଭାବରେ ଚିହ୍ନିତ କରିବାରେ ବିଫଳ"
+
+#, fuzzy
+#~ msgid "couldn't reserve name %s%d - already in use"
+#~ msgstr "ଭଣ୍ଡାର ଭଲ୍ୟୁମ ନାମ '%s' ପୂର୍ବରୁ ବ୍ୟବହାରରେ ଅଛି।"
+
+#, fuzzy
+#~ msgid "error reading DAD state information"
+#~ msgstr "ପ୍ରାରମ୍ଭିକ ବିନ୍ୟାସକୁ ନିର୍ମାଣ କରିବାରେ ତ୍ରୁଟି"
+
+#~ msgid "libhal_ctx_init failed, haldaemon is probably not running"
+#~ msgstr "libhal_ctx_init ବିଫଳ ହୋଇଛି, haldaemon ସମ୍ଭବତଃ ଚାଲୁନାହିଁ"
+
+#~ msgid "libhal_ctx_new returned NULL"
+#~ msgstr "libhal_ctx_new କିଛି ଫେରାଇ ନାହିଁ"
+
+#~ msgid "libhal_ctx_set_dbus_connection failed"
+#~ msgstr "libhal_ctx_set_dbus_connection ବିଫଳ ହୋଇଛି"
+
+#~ msgid "libhal_get_all_devices failed"
+#~ msgstr "libhal_get_all_devices ବିଫଳ ହୋଇଛି"
+
+#~ msgid "more than one adapters is specified for scsi hostdev source"
+#~ msgstr "scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ ଗୋଟିଏରୁ ଅଧିକ ଏଡପଟର ଉଲ୍ଲେଖ ହୋଇଛି"
+
+#~ msgid "more than one source addresses is specified for scsi hostdev"
+#~ msgstr "scsi ହୋଷ୍ଟ ଉପକରଣ ପାଇଁ ଗୋଟିଏରୁ ଅଧିକ ଠିକଣାକୁ ଉଲ୍ଲେଖ କରାଯାଇଥାଏ"
+
+#~ msgid "setting up HAL callbacks failed"
+#~ msgstr "HAL କଲବ୍ୟାକ୍‌ ସେଟ କରିବାରେ ବିଫଳ"
+
+#~ msgid "unsupported element '%s' of scsi hostdev source"
+#~ msgstr "scsi ହୋଷ୍ଟ ଉପକରଣ ଉତ୍ସ ପାଇଁ ଅସମର୍ଥିତ ଉପାଦାନ '%s'"
+
+#, fuzzy
+#~ msgid "vnc password auth not supported"
+#~ msgstr "ପ୍ରୟୋଗ ସମର୍ଥିତ ନୁହଁ"
 
 #~ msgid "Bus %s too big for destination"
 #~ msgstr "ବସ %s ଟି ଲକ୍ଷ୍ଯସ୍ଥଳ ପାଇଁ ଅତ୍ୟଧିକ ବଡ଼"

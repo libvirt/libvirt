@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-08-26 08:38+0000\n"
+"POT-Creation-Date: 2020-09-24 11:56+0000\n"
 "PO-Revision-Date: 2019-12-16 05:00+0000\n"
 "Last-Translator: Daniel Berrange <dan-zanata@berrange.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
@@ -630,12 +630,12 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "%s je delší než maximum: %d > %d"
 
 #, c-format
-msgid "%s model of watchdog can go only on ISA bus"
-msgstr "model resetátoru (watchdog) %s může přijít pouze na ISA sběrnici"
-
-#, c-format
 msgid "%s model of watchdog can go only on PCI bus"
 msgstr "model resetátoru (watchdog) %s může přijít pouze na PCI sběrnici"
+
+#, c-format
+msgid "%s model of watchdog does not support configuring the address"
+msgstr ""
 
 #, c-format
 msgid "%s model of watchdog is allowed for s390 and s390x only"
@@ -869,6 +869,18 @@ msgid "%s: Unrecognized family '%s' in route definition"
 msgstr "%s: Nerozpoznaná generace „%s“ v definici trasy"
 
 #, c-format
+msgid "%s: cannot connect to '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: cannot parse URI transport '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: could not proxy traffic: %s\n"
+msgstr ""
+
+#, c-format
 msgid "%s: error: %s%c"
 msgstr "%s: chyba: %s%c"
 
@@ -1060,6 +1072,10 @@ msgid "%s: unable to determine access mode of fd %d"
 msgstr "%s: nedaří se zjistit režim přístupu popisovače souboru %d"
 
 #, c-format
+msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: nepodporovaný název hypervizoru %s\n"
 
@@ -1188,13 +1204,13 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "„:“ není dovoleno v názvu RBD zdrojového svazku „%s“"
 
-msgid "'adapter' and 'address' must be specified for scsi hostdev source"
-msgstr "je třeba, aby pro zdroj scsi hostdev bylo zadáno 'adapter' a 'address'"
-
-msgid "'adapter' must be specified for scsi hostdev source"
-msgstr "je třeba, aby pro zdroj scsi hostdev byl zadán 'adapter'"
+msgid "'adapter' name must be specified for scsi hostdev source"
+msgstr ""
 
 msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
+msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
 msgid ""
@@ -2109,6 +2125,10 @@ msgstr ""
 "U adaptéru 'scsi_host' nemůže být zadáno jak 'name' (název), tak "
 "'parent' (nadřazené) dohromady"
 
+msgid ""
+"Both port and URI requested for disk migration while being mutually exclusive"
+msgstr ""
+
 msgid "Bounded"
 msgstr "Navázáno"
 
@@ -2656,10 +2676,6 @@ msgstr ""
 "Není možné pozměnit nastavení existujících nmem_nodes vzdáleností pro uzel: "
 "%zu"
 
-#, c-format
-msgid "Cannot append basic type %s"
-msgstr "Nedaří se připojit základní typ %s"
-
 msgid "Cannot assign SCSI host device address"
 msgstr "Nedaří se přiřadit adresu SCSI host zařízení"
 
@@ -2688,6 +2704,10 @@ msgstr "Nedaří se zkontrolovat pid NBD zařízení %s"
 msgid "Cannot check QEMU binary %s"
 msgstr "Nedaří se zkontrolovat binárku QEMU %s"
 
+#, c-format
+msgid "Cannot check QEMU module directory %s"
+msgstr ""
+
 msgid "Cannot check address family on this platform"
 msgstr "Na této platformě není možné zjistit generaci adres"
 
@@ -2698,9 +2718,6 @@ msgstr "Nedaří se zkontrolovat spustitelný soubor dnsmaq %s"
 #, c-format
 msgid "Cannot chown uniq path: %s"
 msgstr "Nedaří se změnit vlastníka uniq popisu umístění: %s"
-
-msgid "Cannot close container iterator"
-msgstr "Nedaří se zavřít iterátor kontejneru"
 
 msgid "Cannot close resctrl"
 msgstr "Nedaří se zavřít resctrl"
@@ -3672,12 +3689,10 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: enabling IPv6 forwarding with RA routes without "
-"accept_ra set to 2 is likely to cause routes loss. Interfaces to look at: %s"
+"Check the host setup: interface %s has kernel autoconfigured IPv6 routes and "
+"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"flush them, breaking networking."
 msgstr ""
-"Zkontrolujte nastavení hostitele: zapnutí přeposílání IPv6 s trasami "
-"propagace směrovače (RA) bez accept_ra nastaveného na 2 je pravděpodobně "
-"příčinou ztráty tras. Rozhraní na které se podívat: %s"
 
 #, c-format
 msgid "Checkpoint %s XML configuration not changed.\n"
@@ -3928,14 +3943,6 @@ msgstr "Připojeno k doméně %s\n"
 
 msgid "Connected to the admin server"
 msgstr "Připojeno ke správnímu serveru"
-
-#, c-format
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"%s transport"
-msgstr ""
-"Transport %s nepodporuje připojování k instanci relace bez popisu umístění "
-"soketu"
 
 msgid "Connections from inside daemon must be direct"
 msgstr "Je třeba, aby spojení zevnitř procesu služby byla přímá"
@@ -5068,22 +5075,6 @@ msgstr "nepodařilo se zjistit DAC seclabel"
 msgid "DBus daemon %s didn't show up"
 msgstr "Doména %s se neukázala"
 
-msgid "DBus matches could not be installed. Disabling nwfilter driver"
-msgstr "DBus shody se nepodařilo nainstalovat. Vypíná se ovladač nwfilter"
-
-#, c-format
-msgid "DBus not available, disabling HAL driver: %s"
-msgstr "DBus není k dispozici, vypíná se ovladač HAL: %s"
-
-msgid "DBus support not compiled into this binary"
-msgstr "V této binárce není zakompilována podpora pro DBus"
-
-msgid "DBus type stack is empty"
-msgstr "Stack typu DBus je prázdný"
-
-msgid "DBus type too deeply nested"
-msgstr "Typ DBus je příliš hluboko vnořený"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS HOST záznamy není možné upravovat – pouze přidávat nebo mazat"
 
@@ -5342,14 +5333,6 @@ msgstr "Zařízení aktualizováno\n"
 #, c-format
 msgid "Device: %s\n"
 msgstr "Zařízení: %s\n"
-
-#, c-format
-msgid "Dict entry in signature '%s' is wrong size"
-msgstr "Slovníková položka v „%s“ má nesprávnou velikost"
-
-#, c-format
-msgid "Dict entry in signature '%s' must be a basic type"
-msgstr "Je třeba, aby slovníková položka v signatuře „%s“ byla základního typu"
 
 msgid ""
 "Did not create EK and certificates since this requires privileged mode for a "
@@ -5863,10 +5846,6 @@ msgstr "Vypsat XML informací o doméně pro uložený stav na standardní výst
 
 msgid "Dump failed"
 msgstr "Výpis se nezdařil"
-
-#, c-format
-msgid "Duplicate Address Detection not finished in %d seconds"
-msgstr "Zjišťování duplicitních adres nedokončeno v %d sekundách"
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%u'"
@@ -6399,6 +6378,10 @@ msgstr "Očekáváno, že typ virtualizace bude „%s“, ale nalezeno „%s“"
 
 msgid "Expiry Time"
 msgstr "Čas skončení platnosti"
+
+msgid ""
+"Explicit destination hostname is required for TLS migration over UNIX socket"
+msgstr ""
 
 #, fuzzy
 msgid "Extended attributes are not supported on this system"
@@ -7599,9 +7582,6 @@ msgstr "Nepodařilo se otevřít %s"
 msgid "Failed to logout: %s"
 msgstr "Nepodařilo se aktualizovat %s"
 
-msgid "Failed to loop over IPv6 routes"
-msgstr "Nepodařilo se udělat smyčku nad IPv6 trasami"
-
 msgid "Failed to make auth credentials"
 msgstr "Nepodařilo se vytvořit přihlašovací údaje pro ověření se"
 
@@ -8025,12 +8005,6 @@ msgstr "Nepodařilo se zaregistrovat akci selhání zámku"
 #, c-format
 msgid "Failed to register xml namespace '%s'"
 msgstr "Nepodařilo se zaregistrovat xml jmenný prostor „%s“"
-
-msgid ""
-"Failed to register xml namespace 'http://www.innotek.de/VirtualBox-settings'"
-msgstr ""
-"Nepodařilo se zaregistrovat xml jmenný prostor „http://www.innotek.de/"
-"VirtualBox-settings“"
 
 msgid "Failed to release lock"
 msgstr "Nepodařilo se uvolnit zámek"
@@ -9035,19 +9009,6 @@ msgstr "Získat nebo nastavit systémový čas domény"
 
 msgid "Gets statistics about one or more (or all) domains"
 msgstr "Získat statistiky o jedné nebo více (nebo všech) doménách"
-
-#, c-format
-msgid "Got array ref but '%s' is not a single basic type / dict"
-msgstr ""
-"Obdržen odkaz na pole, ale „%s“ není jediného základního typu / slovníku"
-
-#, c-format
-msgid ""
-"Got array ref but '%s' is not a single basic type or dict with matching key"
-"+value type"
-msgstr ""
-"Obdržen odkaz na pole, ale „%s“ není jediného základního typu nebo slovník s "
-"odpovídajícím typem klíč+hodnota"
 
 msgid "Got empty feature list from resctrl"
 msgstr "Získán prázdný seznam funkcí z resctrl"
@@ -10993,6 +10954,10 @@ msgstr ""
 msgid "Malformed PCI address %s"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI options %s"
+msgstr ""
+
 msgid "Malformed auth_pending field in JSON state document"
 msgstr ""
 "V JSON stavovém dokumentu je nesprávně formulovaná kolonka auth_pending "
@@ -11872,6 +11837,10 @@ msgstr "V JSON dokumentu chybí data priority_workers"
 msgid "Missing privateData field in JSON state document"
 msgstr "V JSON stavovém dokumentu chybí kolonka privateData"
 
+#, c-format
+msgid "Missing property '%s' in answer"
+msgstr ""
+
 msgid "Missing readonly field in JSON state document"
 msgstr "V JSON stavovém dokumentu chybí kolonka readonly (pouze pro čtení)"
 
@@ -11990,9 +11959,6 @@ msgstr "Chybí popis umístění bloku hostitele úložiště"
 #, c-format
 msgid "Missing storage volume name for disk '%s'"
 msgstr "Chybí název svazku úložiště pro „%s“"
-
-msgid "Missing variant type signature"
-msgstr "Chybí signatura typu varianty"
 
 #, c-format
 msgid "Missing vendor string for CPU vendor %s"
@@ -12173,6 +12139,10 @@ msgstr "NUMA uzel %d je mimo rozsah"
 #, c-format
 msgid "NUMA node %zd is unavailable"
 msgstr "NUMA uzel %zd není dostupný"
+
+#, c-format
+msgid "NUMA node %zu is not available"
+msgstr ""
 
 msgid "NUMA node selections to set"
 msgstr "Výběr NUMA uzlů, který nastavit"
@@ -12507,10 +12477,6 @@ msgstr "Žádná aktivní operace na zařízení: %s"
 
 msgid "No addresses to bind to"
 msgstr "Žádná adresa na kterou navázat"
-
-#, c-format
-msgid "No args present for signature %s"
-msgstr "Žádné argumenty přítomné pro signaturu %s"
 
 msgid "No authentication callback available"
 msgstr "Není k dispozici žádné zpětné volání ověření se"
@@ -12891,9 +12857,6 @@ msgstr "Nejedná se o nahrávací proud"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "Neodpojuje se aktivní zařízení %s"
-
-msgid "Not enough fields in message for signature"
-msgstr "Nedostatek kolonek ve zprávě pro signaturu"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13344,9 +13307,6 @@ msgstr "PCI adresa 0:0:1.0 je používána, QEMU ji potřebuje pro hlavní video
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr "PCI adresa 0:0:2.0 je používána, QEMU ji potřebuje pro hlavní video"
 
-msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
-msgstr "PCI sběrnice 0 slot 1 je vyhrazeno pro implicitní LPC PCI-ISA most"
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13517,6 +13477,9 @@ msgstr "Nezadán žádný argument příkazového řádku pro qemu"
 #, c-format
 msgid "Passphrase for key '%s'"
 msgstr "Heslová fráze pro klíč „%s“"
+
+msgid "Password may not contain ',' character"
+msgstr ""
 
 msgid "Password request failed"
 msgstr "Požadavek na heslo se nezdařil"
@@ -14093,9 +14056,6 @@ msgstr ""
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "Nahradit XML domény související se souborem s uloženým stavem"
 
-msgid "Reply message incorrect"
-msgstr "Neplatná zpráva odpovědi"
-
 #, c-format
 msgid ""
 "Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
@@ -14444,6 +14404,9 @@ msgstr ""
 "SCSI host adresa controller='%u' bus='%u' target='%u' unit='%u' je používána "
 "jiným SCSI host zařízením"
 
+msgid "SCSI host device data structure was not initialized"
+msgstr ""
+
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI host zařízení nepodporuje spravovaný režim"
 
@@ -14638,11 +14601,11 @@ msgstr "Model zabezpečení nenalezen: %s"
 msgid "Security model:"
 msgstr "Model zabezpečení:"
 
-#. Bhyve doesn't support VNC Auth yet, so print a warning about
-#. * unauthenticated VNC sessions
-msgid "Security warning: currently VNC auth is not supported."
+msgid "Security warning: VNC auth is not supported."
 msgstr ""
-"Varování ohledně zabezpečení: VNC ověřování v současnosti není podporováno."
+
+msgid "Security warning: VNC is used without authentication."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14939,10 +14902,6 @@ msgstr "Vypínání hostů na URI $uri…"
 #, fuzzy
 msgid "Signal handling not available on this platform"
 msgstr "numad není na tomto stroji k dispozici"
-
-#, c-format
-msgid "Signature '%s' too deeply nested"
-msgstr "Signatura „%s“ je vnořená příliš hluboko"
 
 #, c-format
 msgid ""
@@ -16168,8 +16127,8 @@ msgid "The CA certificate %s is not yet active"
 msgstr "Certifikát cert. autority %s ještě nezačal platit"
 
 #, c-format
-msgid "The CCW devno '%s' is in use already "
-msgstr "Číslo zařízení (devno) CCW „%s“ už je používáno"
+msgid "The CCW devno '%s' is in use already"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16593,9 +16552,6 @@ msgstr ""
 "Příliš mnoho ovladačů, není možné zaregistrovat podpůrnou vrstvu úložného "
 "souboru „%s“"
 
-msgid "Too many fields in message for signature"
-msgstr "Příliš mnoho kolonek ve zprávě pro signaturu"
-
 #, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "Na %s zjištěno příliš mnoho souborových systémů"
@@ -16668,10 +16624,6 @@ msgstr "Příliš mnoho storage_pools „%d“ pro limit „%d“"
 #, c-format
 msgid "Too many storage_vols '%d' for limit '%d'"
 msgstr "Příliš mnoho storage_vols „%d“ pro limit „%d“"
-
-#, c-format
-msgid "Too many unreserved %s devices in use"
-msgstr "Používáno příliš mnoho nezarezervovaných zařízení %s"
 
 msgid "Total"
 msgstr "Celkem"
@@ -16787,6 +16739,9 @@ msgstr "Type='%s' nepodporován pro <interface type='vhostuser'>"
 msgid "UEFI requires ACPI on this architecture"
 msgstr "UEFI na této architektuře potřebuje ACPI"
 
+msgid "UNIX disks URI does not include path"
+msgstr ""
+
 msgid "UNIX socket address is required"
 msgstr "Je třeba adresy unixového soketu"
 
@@ -16818,6 +16773,13 @@ msgstr "URI jmenného prostoru"
 
 #, c-format
 msgid "URI scheme '%s' for embedded driver is not valid"
+msgstr ""
+
+msgid "URI to use for disks migration (overrides --disks-port)"
+msgstr ""
+
+#, c-format
+msgid "URI with tcp scheme did not provide a server part: %s"
 msgstr ""
 
 #, c-format
@@ -17169,10 +17131,6 @@ msgid "Unable to create %s"
 msgstr "Nedaří se vytvořit %s"
 
 #, c-format
-msgid "Unable to create %s device %s"
-msgstr "Nedaří se vytvořit zařízení %s %s"
-
-#, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "Nedaří se vytvořit HardDisk, rc=%08x"
 
@@ -17220,6 +17178,10 @@ msgstr "Nedaří se vytvořit zařízení mostu"
 #, c-format
 msgid "Unable to create device %s"
 msgstr "Nedaří se vytvořit zařízení %s"
+
+#, c-format
+msgid "Unable to create device '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to create directory %s"
@@ -17534,14 +17496,6 @@ msgstr "Nepodařilo se zjistit schopnosti"
 msgid "Unable to get Console object for domain %s"
 msgstr "Nedaří se získat objekt konzole pro doménu %s"
 
-#, c-format
-msgid "Unable to get DBus session bus connection: %s"
-msgstr "Nedaří se získat spojení na DBUS sběrnici relace: %s"
-
-#, c-format
-msgid "Unable to get DBus system bus connection: %s"
-msgstr "Nedaří se získat spojení na DBUS systémovou sběrnici: %s"
-
 msgid "Unable to get IP address on this platform"
 msgstr "Na této platformě není možné získat IP adresu"
 
@@ -17790,11 +17744,19 @@ msgstr "Nedaří se získat název soketu na protějšku"
 msgid "Unable to get server workerpool parameters"
 msgstr "Nedaří se získat workerpool parametry serveru"
 
+#, c-format
+msgid "Unable to get session bus connection: %s"
+msgstr ""
+
 msgid "Unable to get snapshot content"
 msgstr "Nedaří se získat obsah zachyceného stavu"
 
 msgid "Unable to get sysfs info on this platform"
 msgstr "Na této platformě se nedaří získat sysfs info"
+
+#, c-format
+msgid "Unable to get system bus connection: %s"
+msgstr ""
 
 msgid "Unable to get the machine location path"
 msgstr "Nedaří se získat popis umístění stroje"
@@ -18208,6 +18170,10 @@ msgstr "Nedaří se opětovně enkódovat délku zprávy"
 msgid "Unable to read %s"
 msgstr "Nedaří se číst %s"
 
+#, c-format
+msgid "Unable to read %s for ipv6 forwarding checks"
+msgstr ""
+
 msgid "Unable to read TLS confirmation"
 msgstr "Nedaří se číst TLS potvrzení"
 
@@ -18407,8 +18373,8 @@ msgstr "Nedaří se spustit příkaz pro získání dat OVS portu pro rozhraní 
 msgid "Unable to run command to set OVS port data for interface %s"
 msgstr "Nedaří se spustit příkaz pro nastavení dat OVS portu pro rozhraní %s"
 
-msgid "Unable to run one time DBus initializer"
-msgstr "Nedaří se spustit jednorázový inicializátor DBus"
+msgid "Unable to run one time GDBus initializer"
+msgstr ""
 
 #, c-format
 msgid "Unable to save '%s'"
@@ -18719,9 +18685,6 @@ msgid "Unable to verify server certificate %s against CA certificate %s"
 msgstr ""
 "Nedaří se ověřit certifikát serveru %s vůči certifikátu cert. autority %s"
 
-msgid "Unable to wait for IPv6 DAD on this platform"
-msgstr "Nedaří se čekat na IPv6 DAD na této platformě"
-
 msgid "Unable to wait for child process"
 msgstr "Nedaří se čekat na podřízený proces"
 
@@ -18996,10 +18959,6 @@ msgstr "Neočekávaný název serveru „%s“ při restartu"
 msgid "Unexpected signal received: %d"
 msgstr "Obdržen neočekávaný signál: %d"
 
-#, c-format
-msgid "Unexpected signature '%s'"
-msgstr "Neočekávaná signatura „%s“"
-
 #, fuzzy, c-format
 msgid "Unexpected socket family %d"
 msgstr "neočekávaný režim zdroje %d"
@@ -19020,6 +18979,9 @@ msgstr "Neočekávaně obdržen síťový port bez síťového mostu"
 
 msgid "Unexpectedly got a network port without a plug"
 msgstr "Neočekávaně získán síťový port bez zapojení"
+
+msgid "Unix file descriptors not supported on this platform"
+msgstr ""
 
 msgid "Unknown"
 msgstr "Neznámý"
@@ -19313,6 +19275,10 @@ msgstr "Neznámý příznak %s schopností qemu"
 msgid "Unknown release: %s"
 msgstr "Neznámé vydání: %s"
 
+#, c-format
+msgid "Unknown remote mode '%s'"
+msgstr ""
+
 msgid "Unknown return code"
 msgstr "Neznámý návratový kód"
 
@@ -19372,14 +19338,6 @@ msgid "Unknown taint flag %s"
 msgstr "Neznámý příznak %s schopností qemu"
 
 #, c-format
-msgid "Unknown type '%c' in signature '%s'"
-msgstr "Neznámý typ „%c“ v signatuře „%s“"
-
-#, c-format
-msgid "Unknown type '%x' in signature '%s'"
-msgstr "Neznámý typ „%x“ v signatuře „%s“"
-
-#, c-format
 msgid "Unknown uri scheme: '%s'"
 msgstr "Neznámé uri schéma: „%s“"
 
@@ -19418,6 +19376,10 @@ msgstr "Neznámá hodnota virDomainControllerPCIModelName: %d"
 #, c-format
 msgid "Unmanaged PCI device %s must be manually detached from the host"
 msgstr "Nespravovatelné PCI zařízení %s je třeba od hosta odpojit ručně"
+
+#, c-format
+msgid "Unnkown proxy type '%s'"
+msgstr ""
 
 msgid "Unpaused"
 msgstr "Obnoven chod"
@@ -19708,6 +19670,10 @@ msgid "Unsupported root filesystem type %s"
 msgstr "Neočekávaný typ kořenového souborového systému %s"
 
 #, c-format
+msgid "Unsupported scheme in disks URI: %s"
+msgstr ""
+
+#, c-format
 msgid "Unsupported spicevmc target name '%s'"
 msgstr "Nepodporovaný název spicemvc cíle „%s“"
 
@@ -19769,6 +19735,11 @@ msgstr "Nahrát obsah souboru do svazku"
 
 msgid "Usage"
 msgstr "Použití"
+
+msgid ""
+"Usage of listen-address is forbidden when migration URI uses UNIX transport "
+"method"
+msgstr ""
 
 msgid "Usage:"
 msgstr "Použití:"
@@ -19924,6 +19895,9 @@ msgstr ""
 
 msgid "VNC"
 msgstr "VNC"
+
+msgid "VNC Password authentication not supported by bhyve"
+msgstr ""
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC podporuje pouze connected='keep'"
@@ -20085,6 +20059,10 @@ msgstr ""
 #, c-format
 msgid "Wiping volume '%s'(%s) ... "
 msgstr "Vymazávání svazku „%s“(%s)…"
+
+msgid ""
+"Write filtering of PCI device configuration space is not supported by qemu"
+msgstr ""
 
 #, c-format
 msgid "Write of '%s' to '%s' during vport create/delete failed"
@@ -21143,10 +21121,6 @@ msgid "can't find created snapshot"
 msgstr "vytvořený zachycený stav se nedaří nalézt"
 
 #, c-format
-msgid "can't free name %s%d - out of range 0-%d"
-msgstr "nedaří se uvolnit název %s%d – mimo rozsah 0-%d"
-
-#, c-format
 msgid "can't identify pool in uri %s "
 msgstr "v uri %s se nedaří identifikovat fond"
 
@@ -21219,10 +21193,6 @@ msgstr "není možné aktualizovat nerozpoznanou sekci sítě"
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
 "svazek se nedaří nahrát, všechny existující zachycené stavy budou ztraceny"
-
-#, c-format
-msgid "can't use name %s%d - out of range 0-%d"
-msgstr "název %s%d není možné použít – je mimo rozsah 0-%d"
 
 msgid "canceled"
 msgstr "zrušeno"
@@ -23635,10 +23605,6 @@ msgid "couldn't find interface with MAC address '%s': %s%s%s"
 msgstr "nepodařilo se najít rozhraní s MAC adresou „%s“: %s%s%s"
 
 #, c-format
-msgid "couldn't get id value from macvtap device name %s"
-msgstr "nedaří se získat hodnotu identifikátor z macvtap zařízení názvu %s"
-
-#, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr "nedaří se v síti %s nalézt odpovídající DNS HOST záznam"
 
@@ -23665,18 +23631,6 @@ msgid ""
 msgstr ""
 "nedaří se nalézt existující položku pro dhcp hostitele s \"mac='%s'\" "
 "\"name='%s'\" \"ip='%s'\" v síti „%s“"
-
-#, c-format
-msgid "couldn't mark %s%d as unused"
-msgstr "nedaří se označit %s%d za nepoužitý"
-
-#, c-format
-msgid "couldn't mark %s%d as used"
-msgstr "nedaří se označit %s%d za použitý"
-
-#, c-format
-msgid "couldn't reserve name %s%d - already in use"
-msgstr "není možné vyhradit název %s%d – už je používán"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
@@ -23712,6 +23666,9 @@ msgstr "afinita procesoru není podporována"
 
 msgid "cpu count too large"
 msgstr "počet procesorů je příliš velký"
+
+msgid "cpu parameter is missing a model name"
+msgstr ""
 
 #, c-format
 msgid "cpu topology results in more than %u cpus"
@@ -25152,9 +25109,6 @@ msgstr "chyba zpracovávání části IFLA_VF_PORT"
 msgid "error parsing pid of lldpad"
 msgstr "chyba při zpracovávání identifikátoru procesu lldpad"
 
-msgid "error reading DAD state information"
-msgstr "chyba při čtení informací stavu DAD"
-
 msgid "error receiving signal from container"
 msgstr "chyba při získávání signálu z kontejneru"
 
@@ -25191,8 +25145,9 @@ msgstr "zbavení významu (escape) pro použití v XML"
 msgid "escape for shell use"
 msgstr "zbavení významu (escape) pro použití v shellu"
 
-msgid "ethtool ioctl error"
-msgstr "ioctl chyba ethtool"
+#, c-format
+msgid "ethtool ioctl error on %s"
+msgstr ""
 
 #, c-format
 msgid "event '%s' for domain %s\n"
@@ -27401,6 +27356,9 @@ msgstr ""
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "režim host-certificates potřebuje přesně tři certifikáty"
 
+msgid "hostName field not available (missing VMware Tools?)"
+msgstr ""
+
 #, c-format
 msgid "hostdev %s not found"
 msgstr "zařízení hostitele %s nenalezeno"
@@ -28993,18 +28951,6 @@ msgid "level %u cache size %llu does not match expected size %llu"
 msgstr ""
 "velikost mezipaměti %u úrovně %llu se neshoduje s očekávanou velikostí %llu"
 
-msgid "libhal_ctx_init failed, haldaemon is probably not running"
-msgstr "libhal_ctx_init se nezdařilo, nejspíš není spuštěný haldaemon "
-
-msgid "libhal_ctx_new returned NULL"
-msgstr "libhal_ctx_new vrátilo NULL"
-
-msgid "libhal_ctx_set_dbus_connection failed"
-msgstr "libhal_ctx_set_dbus_connection se nezdařilo"
-
-msgid "libhal_get_all_devices failed"
-msgstr "libhal_get_all_devices se nezdařilo"
-
 msgid "libnl was not available at build time"
 msgstr "při sestavování (build) nebyla libnl k dispozici"
 
@@ -30109,6 +30055,9 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr "minWorkers nemůže být vyšší než maxWorkers"
 
+msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
+msgstr ""
+
 msgid "mirror requires file name"
 msgstr "zrcadlo vyžaduje název souboru"
 
@@ -30633,6 +30582,10 @@ msgstr "chybí prvek listen (očekávání spojení) pro grafiku typu spice"
 
 msgid "missing machine name in QEMU capabilities cache"
 msgstr "v mezipaměti schopností QEMU chybí název stroje"
+
+#, c-format
+msgid "missing mapping in '%s'"
+msgstr ""
 
 msgid "missing memory model"
 msgstr "chybí model paměti"
@@ -31170,14 +31123,8 @@ msgstr ""
 "větší počet, než %d procesorů, vyžaduje zapnutí rozšířeného režimu přerušení "
 "u iommu zařízení"
 
-msgid "more than one adapters is specified for scsi hostdev source"
-msgstr "pro scsi hostdev je zadán více než jeden adaptér"
-
 msgid "more than one snapshot claims to be active"
 msgstr "je tvrzeno, že je aktivní více než jeden zachycený stav"
-
-msgid "more than one source addresses is specified for scsi hostdev"
-msgstr "pro scsi hostdev je zadaná více než jedna zdrojová adresa"
 
 msgid "mount is not supported on this platform."
 msgstr "připojení (mount) není na této platformě podporováno"
@@ -31365,6 +31312,9 @@ msgstr "SSF %d dojednávání nebylo dostatečně odolné"
 
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr "převod vnořeného JSON pole na příkazový řádek není podporován"
+
+msgid "netcat path not valid with native proxy mode"
+msgstr ""
 
 msgid "netdir"
 msgstr "síťová složka"
@@ -32373,10 +32323,6 @@ msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr ""
 "s touto binárkou QEMU není vlastnost readonly (pouze pro čtení) k dispozici"
 
-#, c-format
-msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
-msgstr ""
-
 msgid "nvram address type must be spaprvio"
 msgstr "je třeba, aby typ adresy nvram bylo spaprvio"
 
@@ -32582,6 +32528,9 @@ msgstr "ve vz URI stěhování jsou podporovány pouze schéma a stroj: %s"
 msgid "only sending a signal to pid 1 is supported"
 msgstr "je podporováno pouze posílání signálu pid 1"
 
+msgid "only single ISA controller is supported"
+msgstr ""
+
 msgid "only single USB controller is supported"
 msgstr "v rámci jednoho stroje je podporován pouze jeden USB řadič"
 
@@ -32675,6 +32624,10 @@ msgstr "Volba „-%c“/„--%s“ vyžaduje argument"
 #, c-format
 msgid "option --%s already seen"
 msgstr "volba --%s už viděna"
+
+#, c-format
+msgid "option parsing failed: %s\n"
+msgstr ""
 
 #, fuzzy
 msgid "optional CPU features are not supported"
@@ -34404,9 +34357,6 @@ msgstr ""
 
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr "pro model 's390' není podporováno nastavování adresy zařízení paniky"
-
-msgid "setting up HAL callbacks failed"
-msgstr "setting up HAL callbacks se nezdařilo"
 
 msgid "setuid or setgid failed"
 msgstr "setuid nebo setgid se nezdařilo"
@@ -36142,10 +36092,6 @@ msgid "unable to execute QEMU command '%s': %s"
 msgstr "nedaří se vykonat QEMU příkaz „%s“: %s"
 
 #, c-format
-msgid "unable to find PCI address for parent device '%s'"
-msgstr ""
-
-#, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "nedaří se najít SCSI řadič pro idx=%d"
 
@@ -36164,6 +36110,10 @@ msgstr "nedaří se nalézt název, na kterém je založeno pro zařízení %s"
 #, c-format
 msgid "unable to find disk by target: %s"
 msgstr "nedaří se nalézt disk podle cíle: %s"
+
+#, c-format
+msgid "unable to find parent device '%s'"
+msgstr ""
 
 msgid "unable to find ploop tools, please install them"
 msgstr "nedaří se najít nástroje ploop – nainstalujte je"
@@ -37644,6 +37594,10 @@ msgid "unknown pci source type '%s'"
 msgstr "neznámý typ „%s“ pro zdroj pci"
 
 #, c-format
+msgid "unknown pci writeFiltering setting '%s'"
+msgstr ""
+
+#, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
 msgstr "neznámý atribut zásady „%s“ funkce „%s“"
 
@@ -38201,10 +38155,6 @@ msgstr "nepodporovaný formát výpisu „%s“ pro tuto binárku QEMU"
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
 msgstr "nepodporovaný prvek „%s“ 'origstates'"
-
-#, c-format
-msgid "unsupported element '%s' of scsi hostdev source"
-msgstr "nepodporovaný prvek „%s“ zdroje scsi hostdev"
 
 #, c-format
 msgid "unsupported event ID %d"
@@ -39112,9 +39062,6 @@ msgstr "vnc displej"
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "vnc grafiky nejsou tímto QEMU podporovány"
 
-msgid "vnc password auth not supported"
-msgstr "ověřování se vnc heslem není podporováno"
-
 msgid "vnc port must be in range [5900,65535]"
 msgstr "je třeba, aby vnc port byl z rozsahu 5900 až 65535"
 
@@ -39447,6 +39394,191 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "%s model of watchdog can go only on ISA bus"
+#~ msgstr "model resetátoru (watchdog) %s může přijít pouze na ISA sběrnici"
+
+#~ msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+#~ msgstr ""
+#~ "je třeba, aby pro zdroj scsi hostdev bylo zadáno 'adapter' a 'address'"
+
+#~ msgid "'adapter' must be specified for scsi hostdev source"
+#~ msgstr "je třeba, aby pro zdroj scsi hostdev byl zadán 'adapter'"
+
+#~ msgid "Cannot append basic type %s"
+#~ msgstr "Nedaří se připojit základní typ %s"
+
+#~ msgid "Cannot close container iterator"
+#~ msgstr "Nedaří se zavřít iterátor kontejneru"
+
+#~ msgid ""
+#~ "Check the host setup: enabling IPv6 forwarding with RA routes without "
+#~ "accept_ra set to 2 is likely to cause routes loss. Interfaces to look at: "
+#~ "%s"
+#~ msgstr ""
+#~ "Zkontrolujte nastavení hostitele: zapnutí přeposílání IPv6 s trasami "
+#~ "propagace směrovače (RA) bez accept_ra nastaveného na 2 je pravděpodobně "
+#~ "příčinou ztráty tras. Rozhraní na které se podívat: %s"
+
+#~ msgid ""
+#~ "Connecting to session instance without socket path is not supported by "
+#~ "the %s transport"
+#~ msgstr ""
+#~ "Transport %s nepodporuje připojování k instanci relace bez popisu "
+#~ "umístění soketu"
+
+#~ msgid "DBus matches could not be installed. Disabling nwfilter driver"
+#~ msgstr "DBus shody se nepodařilo nainstalovat. Vypíná se ovladač nwfilter"
+
+#~ msgid "DBus not available, disabling HAL driver: %s"
+#~ msgstr "DBus není k dispozici, vypíná se ovladač HAL: %s"
+
+#~ msgid "DBus support not compiled into this binary"
+#~ msgstr "V této binárce není zakompilována podpora pro DBus"
+
+#~ msgid "DBus type stack is empty"
+#~ msgstr "Stack typu DBus je prázdný"
+
+#~ msgid "DBus type too deeply nested"
+#~ msgstr "Typ DBus je příliš hluboko vnořený"
+
+#~ msgid "Dict entry in signature '%s' is wrong size"
+#~ msgstr "Slovníková položka v „%s“ má nesprávnou velikost"
+
+#~ msgid "Dict entry in signature '%s' must be a basic type"
+#~ msgstr ""
+#~ "Je třeba, aby slovníková položka v signatuře „%s“ byla základního typu"
+
+#~ msgid "Duplicate Address Detection not finished in %d seconds"
+#~ msgstr "Zjišťování duplicitních adres nedokončeno v %d sekundách"
+
+#~ msgid "Failed to loop over IPv6 routes"
+#~ msgstr "Nepodařilo se udělat smyčku nad IPv6 trasami"
+
+#~ msgid ""
+#~ "Failed to register xml namespace 'http://www.innotek.de/VirtualBox-"
+#~ "settings'"
+#~ msgstr ""
+#~ "Nepodařilo se zaregistrovat xml jmenný prostor „http://www.innotek.de/"
+#~ "VirtualBox-settings“"
+
+#~ msgid "Got array ref but '%s' is not a single basic type / dict"
+#~ msgstr ""
+#~ "Obdržen odkaz na pole, ale „%s“ není jediného základního typu / slovníku"
+
+#~ msgid ""
+#~ "Got array ref but '%s' is not a single basic type or dict with matching "
+#~ "key+value type"
+#~ msgstr ""
+#~ "Obdržen odkaz na pole, ale „%s“ není jediného základního typu nebo "
+#~ "slovník s odpovídajícím typem klíč+hodnota"
+
+#~ msgid "Missing variant type signature"
+#~ msgstr "Chybí signatura typu varianty"
+
+#~ msgid "No args present for signature %s"
+#~ msgstr "Žádné argumenty přítomné pro signaturu %s"
+
+#~ msgid "Not enough fields in message for signature"
+#~ msgstr "Nedostatek kolonek ve zprávě pro signaturu"
+
+#~ msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
+#~ msgstr "PCI sběrnice 0 slot 1 je vyhrazeno pro implicitní LPC PCI-ISA most"
+
+#~ msgid "Reply message incorrect"
+#~ msgstr "Neplatná zpráva odpovědi"
+
+#~ msgid "Security warning: currently VNC auth is not supported."
+#~ msgstr ""
+#~ "Varování ohledně zabezpečení: VNC ověřování v současnosti není "
+#~ "podporováno."
+
+#~ msgid "Signature '%s' too deeply nested"
+#~ msgstr "Signatura „%s“ je vnořená příliš hluboko"
+
+#~ msgid "The CCW devno '%s' is in use already "
+#~ msgstr "Číslo zařízení (devno) CCW „%s“ už je používáno"
+
+#~ msgid "Too many fields in message for signature"
+#~ msgstr "Příliš mnoho kolonek ve zprávě pro signaturu"
+
+#~ msgid "Too many unreserved %s devices in use"
+#~ msgstr "Používáno příliš mnoho nezarezervovaných zařízení %s"
+
+#~ msgid "Unable to create %s device %s"
+#~ msgstr "Nedaří se vytvořit zařízení %s %s"
+
+#~ msgid "Unable to get DBus session bus connection: %s"
+#~ msgstr "Nedaří se získat spojení na DBUS sběrnici relace: %s"
+
+#~ msgid "Unable to get DBus system bus connection: %s"
+#~ msgstr "Nedaří se získat spojení na DBUS systémovou sběrnici: %s"
+
+#~ msgid "Unable to run one time DBus initializer"
+#~ msgstr "Nedaří se spustit jednorázový inicializátor DBus"
+
+#~ msgid "Unable to wait for IPv6 DAD on this platform"
+#~ msgstr "Nedaří se čekat na IPv6 DAD na této platformě"
+
+#~ msgid "Unexpected signature '%s'"
+#~ msgstr "Neočekávaná signatura „%s“"
+
+#~ msgid "Unknown type '%c' in signature '%s'"
+#~ msgstr "Neznámý typ „%c“ v signatuře „%s“"
+
+#~ msgid "Unknown type '%x' in signature '%s'"
+#~ msgstr "Neznámý typ „%x“ v signatuře „%s“"
+
+#~ msgid "can't free name %s%d - out of range 0-%d"
+#~ msgstr "nedaří se uvolnit název %s%d – mimo rozsah 0-%d"
+
+#~ msgid "can't use name %s%d - out of range 0-%d"
+#~ msgstr "název %s%d není možné použít – je mimo rozsah 0-%d"
+
+#~ msgid "couldn't get id value from macvtap device name %s"
+#~ msgstr "nedaří se získat hodnotu identifikátor z macvtap zařízení názvu %s"
+
+#~ msgid "couldn't mark %s%d as unused"
+#~ msgstr "nedaří se označit %s%d za nepoužitý"
+
+#~ msgid "couldn't mark %s%d as used"
+#~ msgstr "nedaří se označit %s%d za použitý"
+
+#~ msgid "couldn't reserve name %s%d - already in use"
+#~ msgstr "není možné vyhradit název %s%d – už je používán"
+
+#~ msgid "error reading DAD state information"
+#~ msgstr "chyba při čtení informací stavu DAD"
+
+#~ msgid "ethtool ioctl error"
+#~ msgstr "ioctl chyba ethtool"
+
+#~ msgid "libhal_ctx_init failed, haldaemon is probably not running"
+#~ msgstr "libhal_ctx_init se nezdařilo, nejspíš není spuštěný haldaemon "
+
+#~ msgid "libhal_ctx_new returned NULL"
+#~ msgstr "libhal_ctx_new vrátilo NULL"
+
+#~ msgid "libhal_ctx_set_dbus_connection failed"
+#~ msgstr "libhal_ctx_set_dbus_connection se nezdařilo"
+
+#~ msgid "libhal_get_all_devices failed"
+#~ msgstr "libhal_get_all_devices se nezdařilo"
+
+#~ msgid "more than one adapters is specified for scsi hostdev source"
+#~ msgstr "pro scsi hostdev je zadán více než jeden adaptér"
+
+#~ msgid "more than one source addresses is specified for scsi hostdev"
+#~ msgstr "pro scsi hostdev je zadaná více než jedna zdrojová adresa"
+
+#~ msgid "setting up HAL callbacks failed"
+#~ msgstr "setting up HAL callbacks se nezdařilo"
+
+#~ msgid "unsupported element '%s' of scsi hostdev source"
+#~ msgstr "nepodporovaný prvek „%s“ zdroje scsi hostdev"
+
+#~ msgid "vnc password auth not supported"
+#~ msgstr "ověřování se vnc heslem není podporováno"
 
 #~ msgid "%ssched attributes 'vcpus' must not overlap"
 #~ msgstr "%ssched atributy 'vcpus' (virt. procesory) se nemohou překrývat"

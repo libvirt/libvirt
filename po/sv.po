@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-08-26 08:38+0000\n"
+"POT-Creation-Date: 2020-09-24 11:56+0000\n"
 "PO-Revision-Date: 2017-02-26 05:02+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -472,11 +472,11 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr ""
 
 #, c-format
-msgid "%s model of watchdog can go only on ISA bus"
+msgid "%s model of watchdog can go only on PCI bus"
 msgstr ""
 
 #, c-format
-msgid "%s model of watchdog can go only on PCI bus"
+msgid "%s model of watchdog does not support configuring the address"
 msgstr ""
 
 #, c-format
@@ -691,6 +691,18 @@ msgstr ""
 msgid "%s: Unrecognized family '%s' in route definition"
 msgstr ""
 
+#, c-format
+msgid "%s: cannot connect to '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: cannot parse URI transport '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: could not proxy traffic: %s\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "%s: error: %s%c"
 msgstr "fel: "
@@ -870,6 +882,10 @@ msgstr ""
 msgid "%s: unable to determine access mode of fd %d"
 msgstr "%s: fel: kan inte avgöra om demonen kör: %s\n"
 
+#, c-format
+msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: %s: ej stödd autenticering %s"
@@ -996,15 +1012,13 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr ""
 
-#, fuzzy
-msgid "'adapter' and 'address' must be specified for scsi hostdev source"
-msgstr "måltypen måste anges för %s-enhet"
-
-#, fuzzy
-msgid "'adapter' must be specified for scsi hostdev source"
-msgstr "måltypen måste anges för %s-enhet"
+msgid "'adapter' name must be specified for scsi hostdev source"
+msgstr ""
 
 msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
+msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
 msgid ""
@@ -1873,6 +1887,10 @@ msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
 msgstr ""
 
+msgid ""
+"Both port and URI requested for disk migration while being mutually exclusive"
+msgstr ""
+
 msgid "Bounded"
 msgstr ""
 
@@ -2391,10 +2409,6 @@ msgstr ""
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Cannot append basic type %s"
-msgstr "okänd diskbusstyp ”%s”"
-
 msgid "Cannot assign SCSI host device address"
 msgstr ""
 
@@ -2421,6 +2435,10 @@ msgstr ""
 msgid "Cannot check QEMU binary %s"
 msgstr ""
 
+#, c-format
+msgid "Cannot check QEMU module directory %s"
+msgstr ""
+
 msgid "Cannot check address family on this platform"
 msgstr ""
 
@@ -2431,10 +2449,6 @@ msgstr ""
 #, c-format
 msgid "Cannot chown uniq path: %s"
 msgstr ""
-
-#, fuzzy
-msgid "Cannot close container iterator"
-msgstr "Kan inte tolka styrenhetsindex %s"
 
 msgid "Cannot close resctrl"
 msgstr ""
@@ -3399,8 +3413,9 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: enabling IPv6 forwarding with RA routes without "
-"accept_ra set to 2 is likely to cause routes loss. Interfaces to look at: %s"
+"Check the host setup: interface %s has kernel autoconfigured IPv6 routes and "
+"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"flush them, breaking networking."
 msgstr ""
 
 #, c-format
@@ -3640,12 +3655,6 @@ msgid "Connected to domain %s\n"
 msgstr "Kunde inte starta domänen: %s"
 
 msgid "Connected to the admin server"
-msgstr ""
-
-#, c-format
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"%s transport"
 msgstr ""
 
 msgid "Connections from inside daemon must be direct"
@@ -4809,22 +4818,6 @@ msgstr ""
 msgid "DBus daemon %s didn't show up"
 msgstr ""
 
-msgid "DBus matches could not be installed. Disabling nwfilter driver"
-msgstr ""
-
-#, c-format
-msgid "DBus not available, disabling HAL driver: %s"
-msgstr ""
-
-msgid "DBus support not compiled into this binary"
-msgstr ""
-
-msgid "DBus type stack is empty"
-msgstr ""
-
-msgid "DBus type too deeply nested"
-msgstr ""
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr ""
 
@@ -5070,14 +5063,6 @@ msgstr ""
 
 #, c-format
 msgid "Device: %s\n"
-msgstr ""
-
-#, c-format
-msgid "Dict entry in signature '%s' is wrong size"
-msgstr ""
-
-#, c-format
-msgid "Dict entry in signature '%s' must be a basic type"
 msgstr ""
 
 msgid ""
@@ -5583,10 +5568,6 @@ msgid "Dump failed"
 msgstr ""
 
 #, c-format
-msgid "Duplicate Address Detection not finished in %d seconds"
-msgstr ""
-
-#, c-format
 msgid "Duplicate NUMA cell info for cell id '%u'"
 msgstr ""
 
@@ -6060,6 +6041,10 @@ msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr ""
 
 msgid "Expiry Time"
+msgstr ""
+
+msgid ""
+"Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
 
 #, fuzzy
@@ -7350,9 +7335,6 @@ msgstr "Misslyckades att starta domän %s"
 msgid "Failed to logout: %s"
 msgstr "Misslyckades att starta om domän %s"
 
-msgid "Failed to loop over IPv6 routes"
-msgstr ""
-
 #, fuzzy
 msgid "Failed to make auth credentials"
 msgstr "Misslyckades att skapa uttag"
@@ -7789,10 +7771,6 @@ msgstr "misslyckades att få gränssnittsinformation"
 #, fuzzy, c-format
 msgid "Failed to register xml namespace '%s'"
 msgstr "Misslyckades med att förstöra gränssnittet %s"
-
-msgid ""
-"Failed to register xml namespace 'http://www.innotek.de/VirtualBox-settings'"
-msgstr ""
 
 #, fuzzy
 msgid "Failed to release lock"
@@ -8780,16 +8758,6 @@ msgid "Gets or sets the domain's system time"
 msgstr ""
 
 msgid "Gets statistics about one or more (or all) domains"
-msgstr ""
-
-#, c-format
-msgid "Got array ref but '%s' is not a single basic type / dict"
-msgstr ""
-
-#, c-format
-msgid ""
-"Got array ref but '%s' is not a single basic type or dict with matching key"
-"+value type"
 msgstr ""
 
 msgid "Got empty feature list from resctrl"
@@ -10683,6 +10651,10 @@ msgstr ""
 msgid "Malformed PCI address %s"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI options %s"
+msgstr ""
+
 msgid "Malformed auth_pending field in JSON state document"
 msgstr ""
 
@@ -11561,6 +11533,10 @@ msgstr ""
 msgid "Missing privateData field in JSON state document"
 msgstr ""
 
+#, c-format
+msgid "Missing property '%s' in answer"
+msgstr ""
+
 msgid "Missing readonly field in JSON state document"
 msgstr ""
 
@@ -11689,10 +11665,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Missing storage volume name for disk '%s'"
 msgstr "saknat namn för källskiva"
-
-#, fuzzy
-msgid "Missing variant type signature"
-msgstr "Saknad CPU-arkitektur"
 
 #, fuzzy, c-format
 msgid "Missing vendor string for CPU vendor %s"
@@ -11863,6 +11835,10 @@ msgstr ""
 
 #, c-format
 msgid "NUMA node %zd is unavailable"
+msgstr ""
+
+#, c-format
+msgid "NUMA node %zu is not available"
 msgstr ""
 
 msgid "NUMA node selections to set"
@@ -12198,10 +12174,6 @@ msgid "No active operation on device: %s"
 msgstr "saknar källinformation för enhet %s"
 
 msgid "No addresses to bind to"
-msgstr ""
-
-#, c-format
-msgid "No args present for signature %s"
 msgstr ""
 
 #, fuzzy
@@ -12577,9 +12549,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Not detaching active device %s"
 msgstr "avmontera diskenhet"
-
-msgid "Not enough fields in message for signature"
-msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13032,9 +13001,6 @@ msgstr ""
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr ""
 
-msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
-msgstr ""
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13189,6 +13155,9 @@ msgstr ""
 
 #, c-format
 msgid "Passphrase for key '%s'"
+msgstr ""
+
+msgid "Password may not contain ',' character"
 msgstr ""
 
 msgid "Password request failed"
@@ -13742,9 +13711,6 @@ msgstr ""
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "återställ en domän från ett sparat tillstånd i en fil"
 
-msgid "Reply message incorrect"
-msgstr ""
-
 #, c-format
 msgid ""
 "Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
@@ -14097,6 +14063,9 @@ msgid ""
 "another SCSI host device"
 msgstr ""
 
+msgid "SCSI host device data structure was not initialized"
+msgstr ""
+
 msgid "SCSI host device doesn't support managed mode"
 msgstr ""
 
@@ -14284,9 +14253,10 @@ msgstr "Nätverk hittades inte: %s"
 msgid "Security model:"
 msgstr ""
 
-#. Bhyve doesn't support VNC Auth yet, so print a warning about
-#. * unauthenticated VNC sessions
-msgid "Security warning: currently VNC auth is not supported."
+msgid "Security warning: VNC auth is not supported."
+msgstr ""
+
+msgid "Security warning: VNC is used without authentication."
 msgstr ""
 
 #, c-format
@@ -14563,10 +14533,6 @@ msgid "Shutting down guests on $uri URI..."
 msgstr ""
 
 msgid "Signal handling not available on this platform"
-msgstr ""
-
-#, c-format
-msgid "Signature '%s' too deeply nested"
 msgstr ""
 
 #, c-format
@@ -15756,7 +15722,7 @@ msgid "The CA certificate %s is not yet active"
 msgstr "nätverket %s är inte aktivt"
 
 #, c-format
-msgid "The CCW devno '%s' is in use already "
+msgid "The CCW devno '%s' is in use already"
 msgstr ""
 
 #, c-format
@@ -16158,9 +16124,6 @@ msgstr "för många drivrutiner registrerade i %s"
 msgid "Too many drivers, cannot register storage file backend '%s'"
 msgstr "för många drivrutiner registrerade i %s"
 
-msgid "Too many fields in message for signature"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "för många drivrutiner registrerade i %s"
@@ -16231,10 +16194,6 @@ msgstr "För många servrar ”%d” för gränsen ”%d”"
 #, fuzzy, c-format
 msgid "Too many storage_vols '%d' for limit '%d'"
 msgstr "För många servrar ”%d” för gränsen ”%d”"
-
-#, fuzzy, c-format
-msgid "Too many unreserved %s devices in use"
-msgstr "för många drivrutiner registrerade i %s"
 
 msgid "Total"
 msgstr "Totalt"
@@ -16351,6 +16310,9 @@ msgstr ""
 msgid "UEFI requires ACPI on this architecture"
 msgstr ""
 
+msgid "UNIX disks URI does not include path"
+msgstr ""
+
 msgid "UNIX socket address is required"
 msgstr ""
 
@@ -16383,6 +16345,13 @@ msgstr ""
 
 #, c-format
 msgid "URI scheme '%s' for embedded driver is not valid"
+msgstr ""
+
+msgid "URI to use for disks migration (overrides --disks-port)"
+msgstr ""
+
+#, c-format
+msgid "URI with tcp scheme did not provide a server part: %s"
 msgstr ""
 
 #, c-format
@@ -16749,10 +16718,6 @@ msgid "Unable to create %s"
 msgstr "kan inte skapa körkatalogen %s: %s"
 
 #, fuzzy, c-format
-msgid "Unable to create %s device %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
-
-#, fuzzy, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "kan inte skapa körkatalogen %s: %s"
 
@@ -16801,6 +16766,10 @@ msgstr "kan inte skapa uttagspar"
 #, fuzzy, c-format
 msgid "Unable to create device %s"
 msgstr "kan inte skapa körkatalogen %s: %s"
+
+#, c-format
+msgid "Unable to create device '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to create directory %s"
@@ -17127,14 +17096,6 @@ msgstr "misslyckades att hämta kapabiliteter"
 msgid "Unable to get Console object for domain %s"
 msgstr "Misslyckades att starta om domän %s"
 
-#, c-format
-msgid "Unable to get DBus session bus connection: %s"
-msgstr ""
-
-#, c-format
-msgid "Unable to get DBus system bus connection: %s"
-msgstr ""
-
 #, fuzzy
 msgid "Unable to get IP address on this platform"
 msgstr "Kan inte läsa från övervakaren"
@@ -17424,6 +17385,10 @@ msgstr "Kan inte få fjärruttagets namn"
 msgid "Unable to get server workerpool parameters"
 msgstr "Kan inte hämta parametrar för trådpoolen"
 
+#, c-format
+msgid "Unable to get session bus connection: %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get snapshot content"
 msgstr "Kan inte få lokalt uttagsnamn"
@@ -17431,6 +17396,10 @@ msgstr "Kan inte få lokalt uttagsnamn"
 #, fuzzy
 msgid "Unable to get sysfs info on this platform"
 msgstr "Kan inte läsa från övervakaren"
+
+#, c-format
+msgid "Unable to get system bus connection: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to get the machine location path"
@@ -17877,6 +17846,10 @@ msgstr ""
 msgid "Unable to read %s"
 msgstr "Kan inte läsa från övervakaren"
 
+#, c-format
+msgid "Unable to read %s for ipv6 forwarding checks"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to read TLS confirmation"
 msgstr "Kan inte läsa från övervakaren"
@@ -18085,7 +18058,7 @@ msgstr ""
 msgid "Unable to run command to set OVS port data for interface %s"
 msgstr ""
 
-msgid "Unable to run one time DBus initializer"
+msgid "Unable to run one time GDBus initializer"
 msgstr ""
 
 #, fuzzy, c-format
@@ -18410,10 +18383,6 @@ msgid "Unable to verify server certificate %s against CA certificate %s"
 msgstr ""
 
 #, fuzzy
-msgid "Unable to wait for IPv6 DAD on this platform"
-msgstr "Kan inte skriva till övervakaren"
-
-#, fuzzy
 msgid "Unable to wait for child process"
 msgstr "Kan inte vänta på föräldraprocessen"
 
@@ -18689,10 +18658,6 @@ msgid "Unexpected signal received: %d"
 msgstr "oväntade sysinfo typmodell %d"
 
 #, fuzzy, c-format
-msgid "Unexpected signature '%s'"
-msgstr "oväntad data '%s'"
-
-#, fuzzy, c-format
 msgid "Unexpected socket family %d"
 msgstr "Oväntad CPU-funktionspolicy %d"
 
@@ -18712,6 +18677,9 @@ msgid "Unexpectedly got a network port without a network bridge"
 msgstr ""
 
 msgid "Unexpectedly got a network port without a plug"
+msgstr ""
+
+msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
 msgid "Unknown"
@@ -19007,6 +18975,10 @@ msgstr ""
 msgid "Unknown release: %s"
 msgstr "Okänd modelltyp ”%s”"
 
+#, c-format
+msgid "Unknown remote mode '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "Unknown return code"
 msgstr "Okänt fel"
@@ -19066,14 +19038,6 @@ msgstr "okänt förfarande: %d"
 msgid "Unknown taint flag %s"
 msgstr "okän gränssnittstyp ”%s”"
 
-#, c-format
-msgid "Unknown type '%c' in signature '%s'"
-msgstr ""
-
-#, c-format
-msgid "Unknown type '%x' in signature '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Unknown uri scheme: '%s'"
 msgstr "Okänd källäge ”%s”"
@@ -19112,6 +19076,10 @@ msgstr ""
 
 #, c-format
 msgid "Unmanaged PCI device %s must be manually detached from the host"
+msgstr ""
+
+#, c-format
+msgid "Unnkown proxy type '%s'"
 msgstr ""
 
 #, fuzzy
@@ -19406,6 +19374,10 @@ msgstr "Konfigurationstypen stödjs inte %s"
 msgid "Unsupported root filesystem type %s"
 msgstr "Konfigurationstypen stödjs inte %s"
 
+#, c-format
+msgid "Unsupported scheme in disks URI: %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported spicevmc target name '%s'"
 msgstr "Diskenhettypen ”%s” stödjs inte"
@@ -19470,6 +19442,11 @@ msgid "Upload file contents to a volume"
 msgstr ""
 
 msgid "Usage"
+msgstr ""
+
+msgid ""
+"Usage of listen-address is forbidden when migration URI uses UNIX transport "
+"method"
 msgstr ""
 
 msgid "Usage:"
@@ -19612,6 +19589,9 @@ msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr ""
 
 msgid "VNC"
+msgstr ""
+
+msgid "VNC Password authentication not supported by bhyve"
 msgstr ""
 
 msgid "VNC supports connected='keep' only"
@@ -19772,6 +19752,10 @@ msgstr ""
 
 #, c-format
 msgid "Wiping volume '%s'(%s) ... "
+msgstr ""
+
+msgid ""
+"Write filtering of PCI device configuration space is not supported by qemu"
 msgstr ""
 
 #, c-format
@@ -20781,10 +20765,6 @@ msgid "can't find created snapshot"
 msgstr ""
 
 #, c-format
-msgid "can't free name %s%d - out of range 0-%d"
-msgstr ""
-
-#, c-format
 msgid "can't identify pool in uri %s "
 msgstr ""
 
@@ -20857,10 +20837,6 @@ msgstr ""
 
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "can't use name %s%d - out of range 0-%d"
-msgstr "värdet på managerid är utanför intervallet"
 
 msgid "canceled"
 msgstr "avbruten"
@@ -23260,10 +23236,6 @@ msgid "couldn't find interface with MAC address '%s': %s%s%s"
 msgstr ""
 
 #, c-format
-msgid "couldn't get id value from macvtap device name %s"
-msgstr ""
-
-#, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr ""
 
@@ -23288,18 +23260,6 @@ msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%s'\" \"name='%s'\" "
 "\"ip='%s'\" in network '%s'"
 msgstr ""
-
-#, c-format
-msgid "couldn't mark %s%d as unused"
-msgstr ""
-
-#, c-format
-msgid "couldn't mark %s%d as used"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "couldn't reserve name %s%d - already in use"
-msgstr "lagringsvolymnamnet ”%s” används redan."
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
@@ -23332,6 +23292,9 @@ msgstr ""
 #, fuzzy
 msgid "cpu count too large"
 msgstr "nparams är för stor"
+
+msgid "cpu parameter is missing a model name"
+msgstr ""
 
 #, c-format
 msgid "cpu topology results in more than %u cpus"
@@ -24787,10 +24750,6 @@ msgstr ""
 msgid "error parsing pid of lldpad"
 msgstr ""
 
-#, fuzzy
-msgid "error reading DAD state information"
-msgstr "saknar operativsysteminformation"
-
 msgid "error receiving signal from container"
 msgstr ""
 
@@ -24829,7 +24788,8 @@ msgstr ""
 msgid "escape for shell use"
 msgstr ""
 
-msgid "ethtool ioctl error"
+#, c-format
+msgid "ethtool ioctl error on %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27061,6 +27021,9 @@ msgstr ""
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "läget host-certificates behöver exakt tre certifikat"
 
+msgid "hostName field not available (missing VMware Tools?)"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "hostdev %s not found"
 msgstr "Domän hittades inte"
@@ -28635,19 +28598,6 @@ msgstr "värdet på managerid är utanför intervallet"
 msgid "level %u cache size %llu does not match expected size %llu"
 msgstr ""
 
-msgid "libhal_ctx_init failed, haldaemon is probably not running"
-msgstr ""
-
-msgid "libhal_ctx_new returned NULL"
-msgstr ""
-
-#, fuzzy
-msgid "libhal_ctx_set_dbus_connection failed"
-msgstr "libhal_get_all_devices misslyckades"
-
-msgid "libhal_get_all_devices failed"
-msgstr "libhal_get_all_devices misslyckades"
-
 msgid "libnl was not available at build time"
 msgstr ""
 
@@ -29767,6 +29717,9 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr ""
 
+msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
+msgstr ""
+
 msgid "mirror requires file name"
 msgstr ""
 
@@ -30320,6 +30273,10 @@ msgstr "Saknat ”key”-element för hyra"
 msgid "missing machine name in QEMU capabilities cache"
 msgstr ""
 
+#, c-format
+msgid "missing mapping in '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "missing memory model"
 msgstr "namn för värd saknas"
@@ -30864,13 +30821,7 @@ msgid ""
 "device"
 msgstr ""
 
-msgid "more than one adapters is specified for scsi hostdev source"
-msgstr ""
-
 msgid "more than one snapshot claims to be active"
-msgstr ""
-
-msgid "more than one source addresses is specified for scsi hostdev"
 msgstr ""
 
 #, fuzzy
@@ -31055,6 +31006,9 @@ msgid "negotiation SSF %d was not strong enough"
 msgstr "förhandlad SSF %d var inte stark nog"
 
 msgid "nested JSON array to commandline conversion is not supported"
+msgstr ""
+
+msgid "netcat path not valid with native proxy mode"
 msgstr ""
 
 msgid "netdir"
@@ -32058,10 +32012,6 @@ msgstr ""
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr ""
 
-#, c-format
-msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
-msgstr ""
-
 msgid "nvram address type must be spaprvio"
 msgstr ""
 
@@ -32260,6 +32210,9 @@ msgstr ""
 msgid "only sending a signal to pid 1 is supported"
 msgstr ""
 
+msgid "only single ISA controller is supported"
+msgstr ""
+
 msgid "only single USB controller is supported"
 msgstr ""
 
@@ -32357,6 +32310,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "option --%s already seen"
 msgstr "anslutningen redan öppen"
+
+#, c-format
+msgid "option parsing failed: %s\n"
+msgstr ""
 
 #, fuzzy
 msgid "optional CPU features are not supported"
@@ -34043,9 +34000,6 @@ msgstr ""
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr ""
 
-msgid "setting up HAL callbacks failed"
-msgstr "att sätta upp HAL-återanrop misslyckades"
-
 msgid "setuid or setgid failed"
 msgstr ""
 
@@ -35700,10 +35654,6 @@ msgid "unable to execute QEMU command '%s': %s"
 msgstr "kan inte skapa körkatalogen %s: %s"
 
 #, c-format
-msgid "unable to find PCI address for parent device '%s'"
-msgstr ""
-
-#, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr ""
 
@@ -35722,6 +35672,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "unable to find disk by target: %s"
 msgstr "kan inte initiera mutex"
+
+#, c-format
+msgid "unable to find parent device '%s'"
+msgstr ""
 
 msgid "unable to find ploop tools, please install them"
 msgstr ""
@@ -37234,6 +37188,10 @@ msgid "unknown pci source type '%s'"
 msgstr "okän gränssnittstyp ”%s”"
 
 #, c-format
+msgid "unknown pci writeFiltering setting '%s'"
+msgstr ""
+
+#, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
 msgstr ""
 
@@ -37797,10 +37755,6 @@ msgstr ""
 
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
-msgstr ""
-
-#, c-format
-msgid "unsupported element '%s' of scsi hostdev source"
 msgstr ""
 
 #, c-format
@@ -38665,9 +38619,6 @@ msgstr "vnc-skärm"
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "UNIX-uttag stödjs inte på denna plattform"
 
-msgid "vnc password auth not supported"
-msgstr ""
-
 msgid "vnc port must be in range [5900,65535]"
 msgstr ""
 
@@ -38995,6 +38946,64 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
+
+#, fuzzy
+#~ msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+#~ msgstr "måltypen måste anges för %s-enhet"
+
+#, fuzzy
+#~ msgid "'adapter' must be specified for scsi hostdev source"
+#~ msgstr "måltypen måste anges för %s-enhet"
+
+#, fuzzy
+#~ msgid "Cannot append basic type %s"
+#~ msgstr "okänd diskbusstyp ”%s”"
+
+#, fuzzy
+#~ msgid "Cannot close container iterator"
+#~ msgstr "Kan inte tolka styrenhetsindex %s"
+
+#, fuzzy
+#~ msgid "Missing variant type signature"
+#~ msgstr "Saknad CPU-arkitektur"
+
+#, fuzzy
+#~ msgid "Too many unreserved %s devices in use"
+#~ msgstr "för många drivrutiner registrerade i %s"
+
+#, fuzzy
+#~ msgid "Unable to create %s device %s"
+#~ msgstr "kan inte skapa körkatalogen %s: %s"
+
+#, fuzzy
+#~ msgid "Unable to wait for IPv6 DAD on this platform"
+#~ msgstr "Kan inte skriva till övervakaren"
+
+#, fuzzy
+#~ msgid "Unexpected signature '%s'"
+#~ msgstr "oväntad data '%s'"
+
+#, fuzzy
+#~ msgid "can't use name %s%d - out of range 0-%d"
+#~ msgstr "värdet på managerid är utanför intervallet"
+
+#, fuzzy
+#~ msgid "couldn't reserve name %s%d - already in use"
+#~ msgstr "lagringsvolymnamnet ”%s” används redan."
+
+#, fuzzy
+#~ msgid "error reading DAD state information"
+#~ msgstr "saknar operativsysteminformation"
+
+#, fuzzy
+#~ msgid "libhal_ctx_set_dbus_connection failed"
+#~ msgstr "libhal_get_all_devices misslyckades"
+
+#~ msgid "libhal_get_all_devices failed"
+#~ msgstr "libhal_get_all_devices misslyckades"
+
+#~ msgid "setting up HAL callbacks failed"
+#~ msgstr "att sätta upp HAL-återanrop misslyckades"
 
 #, fuzzy
 #~ msgid "Domain %s too big for destination"

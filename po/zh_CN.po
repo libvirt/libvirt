@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-08-26 08:38+0000\n"
+"POT-Creation-Date: 2020-09-24 11:56+0000\n"
 "PO-Revision-Date: 2019-03-29 03:37+0000\n"
 "Last-Translator: Di Wei <dwlinux@outlook.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -625,11 +625,11 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "%s 长度超过上限：%d > %d"
 
 #, c-format
-msgid "%s model of watchdog can go only on ISA bus"
+msgid "%s model of watchdog can go only on PCI bus"
 msgstr ""
 
 #, c-format
-msgid "%s model of watchdog can go only on PCI bus"
+msgid "%s model of watchdog does not support configuring the address"
 msgstr ""
 
 #, c-format
@@ -850,6 +850,18 @@ msgid "%s: Unrecognized family '%s' in route definition"
 msgstr "%s：路由定义中无法识别的产品线  '%s'"
 
 #, c-format
+msgid "%s: cannot connect to '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: cannot parse URI transport '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: could not proxy traffic: %s\n"
+msgstr ""
+
+#, c-format
 msgid "%s: error: %s%c"
 msgstr "%s:错误: %s%c"
 
@@ -1030,6 +1042,10 @@ msgid "%s: unable to determine access mode of fd %d"
 msgstr "%s: 无法确定 fd %d 的访问模式"
 
 #, c-format
+msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: 不支持虚拟化层 %s\n"
 
@@ -1158,13 +1174,13 @@ msgstr "同时指定 --storage 和 --remove-all-storage"
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "RBD 源卷名称 '%s' 中部允许使用 ':'"
 
-msgid "'adapter' and 'address' must be specified for scsi hostdev source"
-msgstr "必须为 scsi hostdev 源地址指定 'adapter' 和 'address'"
-
-msgid "'adapter' must be specified for scsi hostdev source"
-msgstr "必须为 scsi hostdev 源地址指定 'adapter'"
+msgid "'adapter' name must be specified for scsi hostdev source"
+msgstr ""
 
 msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
+msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
 msgid ""
@@ -2062,6 +2078,10 @@ msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
 msgstr "无法为 'scsi_host' 适配器指定 'name' 和 'parent"
 
+msgid ""
+"Both port and URI requested for disk migration while being mutually exclusive"
+msgstr ""
+
 msgid "Bounded"
 msgstr "已捆绑"
 
@@ -2579,10 +2599,6 @@ msgstr "无法提取 memnode 节点"
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
 msgstr ""
 
-#, c-format
-msgid "Cannot append basic type %s"
-msgstr "无法附加基本类型 %s"
-
 #, fuzzy
 msgid "Cannot assign SCSI host device address"
 msgstr "已分配主机设备的域"
@@ -2610,6 +2626,10 @@ msgstr "无法坚持 NBD 设备 %s pid"
 msgid "Cannot check QEMU binary %s"
 msgstr "无法检查 QEMU 二进制文件 %s"
 
+#, c-format
+msgid "Cannot check QEMU module directory %s"
+msgstr ""
+
 #, fuzzy
 msgid "Cannot check address family on this platform"
 msgstr "无法在这个平台中生成 macvlan 设备"
@@ -2621,9 +2641,6 @@ msgstr "无法检查 dnsmasq 二进制 %s"
 #, fuzzy, c-format
 msgid "Cannot chown uniq path: %s"
 msgstr "无法打开路径 '%s'"
-
-msgid "Cannot close container iterator"
-msgstr "无法关闭容器迭代程序"
 
 #, fuzzy
 msgid "Cannot close resctrl"
@@ -3593,8 +3610,9 @@ msgstr "检查是否载入 'kvm-intel' 或者 'kvm-amd' 模块以及 BIOS 是否
 
 #, c-format
 msgid ""
-"Check the host setup: enabling IPv6 forwarding with RA routes without "
-"accept_ra set to 2 is likely to cause routes loss. Interfaces to look at: %s"
+"Check the host setup: interface %s has kernel autoconfigured IPv6 routes and "
+"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"flush them, breaking networking."
 msgstr ""
 
 #, fuzzy, c-format
@@ -3839,12 +3857,6 @@ msgstr "连接到域 %s\n"
 
 msgid "Connected to the admin server"
 msgstr "已连接到admin server"
-
-#, c-format
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"%s transport"
-msgstr ""
 
 msgid "Connections from inside daemon must be direct"
 msgstr ""
@@ -4999,22 +5011,6 @@ msgstr ""
 msgid "DBus daemon %s didn't show up"
 msgstr "未显示域 %s"
 
-msgid "DBus matches could not be installed. Disabling nwfilter driver"
-msgstr "无法安装 Dbus 映射。正在禁用 nwfilter 驱动程序。"
-
-#, c-format
-msgid "DBus not available, disabling HAL driver: %s"
-msgstr "DBus 不可用，禁用 HAL 驱动程序：%s"
-
-msgid "DBus support not compiled into this binary"
-msgstr "DBus 支持不可用于这个二进制文件"
-
-msgid "DBus type stack is empty"
-msgstr "DBus类型栈为空"
-
-msgid "DBus type too deeply nested"
-msgstr "DBus 类型嵌入过深"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "无法修改 DNS HOST 记录，只能添加或者删除。"
 
@@ -5270,14 +5266,6 @@ msgstr "成功更新设备\n"
 #, c-format
 msgid "Device: %s\n"
 msgstr "失败：%s\n"
-
-#, c-format
-msgid "Dict entry in signature '%s' is wrong size"
-msgstr "签名 '%s' 中的 Dict 条目大小有误"
-
-#, c-format
-msgid "Dict entry in signature '%s' must be a basic type"
-msgstr "签名 '%s' 中的 Dict 条目必须是基本类型"
 
 msgid ""
 "Did not create EK and certificates since this requires privileged mode for a "
@@ -5785,10 +5773,6 @@ msgid "Dump failed"
 msgstr "转储失败"
 
 #, c-format
-msgid "Duplicate Address Detection not finished in %d seconds"
-msgstr ""
-
-#, c-format
 msgid "Duplicate NUMA cell info for cell id '%u'"
 msgstr "cell id '%u' 的重复 NuMA 单元格信息"
 
@@ -6282,6 +6266,10 @@ msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "virt 类型应为 '%s' 但却显示为 '%s'"
 
 msgid "Expiry Time"
+msgstr ""
+
+msgid ""
+"Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
 
 #, fuzzy
@@ -7490,10 +7478,6 @@ msgstr "打开 %s 失败"
 msgid "Failed to logout: %s"
 msgstr "更新 %s 失败"
 
-#, fuzzy
-msgid "Failed to loop over IPv6 routes"
-msgstr "列出存储卷失败"
-
 msgid "Failed to make auth credentials"
 msgstr "生成验证证书失败"
 
@@ -7916,11 +7900,6 @@ msgstr "注册锁失败动作失败"
 
 #, c-format
 msgid "Failed to register xml namespace '%s'"
-msgstr "注册 xml 名称空间 '%s' 失败"
-
-#, fuzzy
-msgid ""
-"Failed to register xml namespace 'http://www.innotek.de/VirtualBox-settings'"
 msgstr "注册 xml 名称空间 '%s' 失败"
 
 msgid "Failed to release lock"
@@ -8910,16 +8889,6 @@ msgid "Gets or sets the domain's system time"
 msgstr "输出域主机名"
 
 msgid "Gets statistics about one or more (or all) domains"
-msgstr ""
-
-#, c-format
-msgid "Got array ref but '%s' is not a single basic type / dict"
-msgstr ""
-
-#, c-format
-msgid ""
-"Got array ref but '%s' is not a single basic type or dict with matching key"
-"+value type"
 msgstr ""
 
 msgid "Got empty feature list from resctrl"
@@ -10822,6 +10791,10 @@ msgstr "不正常的 'uri_aliases' 配置条目 '%s'，应为 'alias=uri://host/
 msgid "Malformed PCI address %s"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI options %s"
+msgstr ""
+
 #, fuzzy
 msgid "Malformed auth_pending field in JSON state document"
 msgstr "JSON 状态文件中缺少 auth 字段"
@@ -11724,6 +11697,10 @@ msgstr "JSON 文件中缺少 priority_workers 数据"
 msgid "Missing privateData field in JSON state document"
 msgstr "JSON 状态文件中缺少 privateData 字段"
 
+#, c-format
+msgid "Missing property '%s' in answer"
+msgstr ""
+
 msgid "Missing readonly field in JSON state document"
 msgstr "JSON 状态文件中缺少 readonly 字段"
 
@@ -11846,9 +11823,6 @@ msgstr "缺少存储主机块路径"
 #, fuzzy, c-format
 msgid "Missing storage volume name for disk '%s'"
 msgstr "%s 中无效的存储卷指针"
-
-msgid "Missing variant type signature"
-msgstr "缺少变体类型签名"
 
 #, c-format
 msgid "Missing vendor string for CPU vendor %s"
@@ -12027,6 +12001,10 @@ msgstr "节点 %zu 超出范围"
 #, fuzzy, c-format
 msgid "NUMA node %zd is unavailable"
 msgstr "没有可用的控制台设备"
+
+#, c-format
+msgid "NUMA node %zu is not available"
+msgstr ""
 
 msgid "NUMA node selections to set"
 msgstr "要设定的 NUMA 节点选择"
@@ -12363,10 +12341,6 @@ msgstr "设备中没有活跃操作：%s"
 #, fuzzy
 msgid "No addresses to bind to"
 msgstr "未找到 '%s' 的插槽地址"
-
-#, c-format
-msgid "No args present for signature %s"
-msgstr "没有为签名 %s 显示参数"
 
 msgid "No authentication callback available"
 msgstr "没有可用认证回叫"
@@ -12750,9 +12724,6 @@ msgstr "不是上传数据流"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "不要分离活跃的设备 %s"
-
-msgid "Not enough fields in message for signature"
-msgstr "信息中没有为签名留有足够字段"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13210,9 +13181,6 @@ msgstr "PCI 地址 0:0:1.0 已被使用，QEMU 需要它用于主视频"
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr "PCI 地址 0:0:2.0 已被使用，QEMU 需要它用于主视频。"
 
-msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
-msgstr "PCI 总线 0 插槽 1 是为隐式 LPC PCI-ISA 网桥保留"
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13377,6 +13345,9 @@ msgstr "未指定 qemu 命令行参数"
 #, c-format
 msgid "Passphrase for key '%s'"
 msgstr "密钥 '%s' 的密码短语"
+
+msgid "Password may not contain ',' character"
+msgstr ""
 
 msgid "Password request failed"
 msgstr "密码请求失败"
@@ -13941,10 +13912,6 @@ msgstr "替换与域 XML 关联的保存的状态文件"
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "替换与域 XML 关联的保存的状态文件"
 
-#, fuzzy
-msgid "Reply message incorrect"
-msgstr "image magic 不正确"
-
 #, c-format
 msgid ""
 "Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
@@ -14281,6 +14248,9 @@ msgid ""
 "another SCSI host device"
 msgstr ""
 
+msgid "SCSI host device data structure was not initialized"
+msgstr ""
+
 msgid "SCSI host device doesn't support managed mode"
 msgstr "SCSI 主机设备不支持管理的模式"
 
@@ -14475,11 +14445,11 @@ msgstr "未找到安全性模式：%s"
 msgid "Security model:"
 msgstr "安全性模式："
 
-#. Bhyve doesn't support VNC Auth yet, so print a warning about
-#. * unauthenticated VNC sessions
-#, fuzzy
-msgid "Security warning: currently VNC auth is not supported."
-msgstr "现在还不支持指定挂载点"
+msgid "Security warning: VNC auth is not supported."
+msgstr ""
+
+msgid "Security warning: VNC is used without authentication."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14781,10 +14751,6 @@ msgstr "关闭 $uri URI 中的虚拟机"
 #, fuzzy
 msgid "Signal handling not available on this platform"
 msgstr "这个主机中的 numad 不可用"
-
-#, c-format
-msgid "Signature '%s' too deeply nested"
-msgstr "签名 '%s' 嵌入过深"
 
 #, fuzzy, c-format
 msgid ""
@@ -15985,8 +15951,8 @@ msgid "The CA certificate %s is not yet active"
 msgstr "CA 证书 %s 还为激活"
 
 #, c-format
-msgid "The CCW devno '%s' is in use already "
-msgstr "CCW devno '%s' 已在使用中 "
+msgid "The CCW devno '%s' is in use already"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -16394,9 +16360,6 @@ msgstr "驱动程序过多，无法注册 %s"
 msgid "Too many drivers, cannot register storage file backend '%s'"
 msgstr "驱动程序过多，无法注册 %s"
 
-msgid "Too many fields in message for signature"
-msgstr "信息中签名的字段太多"
-
 #, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "探测到 %s 的太多文件系统"
@@ -16468,10 +16431,6 @@ msgstr "secret 个数 '%d' 已超过限制 '%d'"
 #, fuzzy, c-format
 msgid "Too many storage_vols '%d' for limit '%d'"
 msgstr "secret 个数 '%d' 已超过限制 '%d'"
-
-#, fuzzy, c-format
-msgid "Too many unreserved %s devices in use"
-msgstr "注册了太多的设备 %s"
 
 msgid "Total"
 msgstr "总量"
@@ -16585,6 +16544,9 @@ msgstr "<interface type='vhostuser'> 不支持 Type='%s'"
 msgid "UEFI requires ACPI on this architecture"
 msgstr ""
 
+msgid "UNIX disks URI does not include path"
+msgstr ""
+
 #, fuzzy
 msgid "UNIX socket address is required"
 msgstr "未找到 '%s' 的插槽地址"
@@ -16618,6 +16580,13 @@ msgstr ""
 
 #, c-format
 msgid "URI scheme '%s' for embedded driver is not valid"
+msgstr ""
+
+msgid "URI to use for disks migration (overrides --disks-port)"
+msgstr ""
+
+#, c-format
+msgid "URI with tcp scheme did not provide a server part: %s"
 msgstr ""
 
 #, c-format
@@ -16977,10 +16946,6 @@ msgid "Unable to create %s"
 msgstr "无法创建 %s"
 
 #, fuzzy, c-format
-msgid "Unable to create %s device %s"
-msgstr "无法生成设备 %s"
-
-#, fuzzy, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "无法生成桥接 %s"
 
@@ -17026,6 +16991,10 @@ msgstr "无法生成桥接设备"
 #, c-format
 msgid "Unable to create device %s"
 msgstr "无法生成设备 %s"
+
+#, c-format
+msgid "Unable to create device '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unable to create directory %s"
@@ -17342,14 +17311,6 @@ msgstr "无法获取 Capabilities 信息"
 msgid "Unable to get Console object for domain %s"
 msgstr "无法为 %s 获得 SCSI 密钥"
 
-#, c-format
-msgid "Unable to get DBus session bus connection: %s"
-msgstr "无法获取 DBus 会话总线连接：%s"
-
-#, c-format
-msgid "Unable to get DBus system bus connection: %s"
-msgstr "无法获取 DBus 系统总线连接：%s"
-
 #, fuzzy
 msgid "Unable to get IP address on this platform"
 msgstr "无法在这个平台中为 %s 获取 STP"
@@ -17619,6 +17580,10 @@ msgstr "无法获取远程插槽名"
 msgid "Unable to get server workerpool parameters"
 msgstr "无法获取server中worker线程池的信息"
 
+#, c-format
+msgid "Unable to get session bus connection: %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get snapshot content"
 msgstr "获取快照计数失败"
@@ -17626,6 +17591,10 @@ msgstr "获取快照计数失败"
 #, fuzzy
 msgid "Unable to get sysfs info on this platform"
 msgstr "无法在这个平台中获取 VLAN"
+
+#, c-format
+msgid "Unable to get system bus connection: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to get the machine location path"
@@ -18050,6 +18019,10 @@ msgstr "无法重新编码信息长度"
 msgid "Unable to read %s"
 msgstr "无法读取 %s"
 
+#, c-format
+msgid "Unable to read %s for ipv6 forwarding checks"
+msgstr ""
+
 msgid "Unable to read TLS confirmation"
 msgstr "无法读取 TLS 确认信息。"
 
@@ -18253,8 +18226,8 @@ msgstr "无法运行命令为接口 %s 获取 OVS 端口数据"
 msgid "Unable to run command to set OVS port data for interface %s"
 msgstr "无法运行命令为接口 %s 设定 OVS 端口数据"
 
-msgid "Unable to run one time DBus initializer"
-msgstr "无法运行一次性 DBus 初始化程序"
+msgid "Unable to run one time GDBus initializer"
+msgstr ""
 
 #, c-format
 msgid "Unable to save '%s'"
@@ -18574,10 +18547,6 @@ msgstr "无法根据 CA 证书 %s 确认证书 %s"
 msgid "Unable to verify server certificate %s against CA certificate %s"
 msgstr "无法根据 CA 证书 %s 确认证书 %s"
 
-#, fuzzy
-msgid "Unable to wait for IPv6 DAD on this platform"
-msgstr "无法在这个平台中获取 VLAN"
-
 msgid "Unable to wait for child process"
 msgstr "无法等待子进程"
 
@@ -18849,10 +18818,6 @@ msgstr "意外的 hostdev 驱动程序名称类型 %d"
 msgid "Unexpected signal received: %d"
 msgstr "收到意外的信号：%d"
 
-#, c-format
-msgid "Unexpected signature '%s'"
-msgstr "意外签名 '%s'"
-
 #, fuzzy, c-format
 msgid "Unexpected socket family %d"
 msgstr "意外的源模式 %d"
@@ -18873,6 +18838,9 @@ msgid "Unexpectedly got a network port without a network bridge"
 msgstr ""
 
 msgid "Unexpectedly got a network port without a plug"
+msgstr ""
+
+msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
 msgid "Unknown"
@@ -19166,6 +19134,10 @@ msgstr "未知 qemu 功能标签 %s"
 msgid "Unknown release: %s"
 msgstr "未知发布：%s"
 
+#, c-format
+msgid "Unknown remote mode '%s'"
+msgstr ""
+
 msgid "Unknown return code"
 msgstr "未知的返回代码"
 
@@ -19225,14 +19197,6 @@ msgid "Unknown taint flag %s"
 msgstr "未知 taint 标签 %s"
 
 #, fuzzy, c-format
-msgid "Unknown type '%c' in signature '%s'"
-msgstr "未知转发类型 %d 在网络 '%s' 中"
-
-#, fuzzy, c-format
-msgid "Unknown type '%x' in signature '%s'"
-msgstr "未知转发类型 %d 在网络 '%s' 中"
-
-#, fuzzy, c-format
 msgid "Unknown uri scheme: '%s'"
 msgstr "未知的来源模式类型 '%s'"
 
@@ -19270,6 +19234,10 @@ msgstr ""
 
 #, c-format
 msgid "Unmanaged PCI device %s must be manually detached from the host"
+msgstr ""
+
+#, c-format
+msgid "Unnkown proxy type '%s'"
 msgstr ""
 
 #, fuzzy
@@ -19566,6 +19534,10 @@ msgid "Unsupported root filesystem type %s"
 msgstr "不支持的 root 文件系统类型 %s"
 
 #, c-format
+msgid "Unsupported scheme in disks URI: %s"
+msgstr ""
+
+#, c-format
 msgid "Unsupported spicevmc target name '%s'"
 msgstr "不支持的 spicevmc 目标名称 '%s'"
 
@@ -19628,6 +19600,11 @@ msgstr "将文件内容上传到卷中"
 
 msgid "Usage"
 msgstr "用量"
+
+msgid ""
+"Usage of listen-address is forbidden when migration URI uses UNIX transport "
+"method"
+msgstr ""
 
 #, fuzzy
 msgid "Usage:"
@@ -19778,6 +19755,9 @@ msgstr "VMX 条目 'sched.cpu.affinity' 包含一个 %d，这个数值太大。"
 
 msgid "VNC"
 msgstr "VNC"
+
+msgid "VNC Password authentication not supported by bhyve"
+msgstr ""
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC 只支持 connected='keep' "
@@ -19940,6 +19920,10 @@ msgstr ""
 #, c-format
 msgid "Wiping volume '%s'(%s) ... "
 msgstr "擦除卷 '%s'(%s) ... "
+
+msgid ""
+"Write filtering of PCI device configuration space is not supported by qemu"
+msgstr ""
 
 #, c-format
 msgid "Write of '%s' to '%s' during vport create/delete failed"
@@ -20970,10 +20954,6 @@ msgstr ""
 msgid "can't find created snapshot"
 msgstr "当前快照信息"
 
-#, fuzzy, c-format
-msgid "can't free name %s%d - out of range 0-%d"
-msgstr "启动单元 %d 溢出（0 - %d）"
-
 #, c-format
 msgid "can't identify pool in uri %s "
 msgstr ""
@@ -21051,10 +21031,6 @@ msgstr "无法更新网络的未识别部分"
 
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "can't use name %s%d - out of range 0-%d"
-msgstr "启动单元 %d 溢出（0 - %d）"
 
 #, fuzzy
 msgid "canceled"
@@ -23466,10 +23442,6 @@ msgstr "无法找到 MAC 地址为 '%s' 的接口"
 msgid "couldn't find interface with MAC address '%s': %s%s%s"
 msgstr "无法找到 MAC 地址为 '%s' 的接口：%s%s%s"
 
-#, fuzzy, c-format
-msgid "couldn't get id value from macvtap device name %s"
-msgstr "无法找到变量 '%s' 值"
-
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr "无法在网络 %s 中定位匹配的 DNS HOST 记录"
@@ -23497,18 +23469,6 @@ msgid ""
 msgstr ""
 "无法在网络 '%s' 中使用 \"mac='%s'\" \"name='%s'\" \"ip='%s'\" 定位现有 dhcp "
 "主机条目"
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as unused"
-msgstr "无法解析参数"
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as used"
-msgstr "将池 %s 标记为自动启动失败"
-
-#, fuzzy, c-format
-msgid "couldn't reserve name %s%d - already in use"
-msgstr "存储卷名称 '%s' 已在使用中。"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
@@ -23541,6 +23501,9 @@ msgstr "不支持 cpu 亲和性"
 #, fuzzy
 msgid "cpu count too large"
 msgstr "ncpus 太大"
+
+msgid "cpu parameter is missing a model name"
+msgstr ""
 
 #, c-format
 msgid "cpu topology results in more than %u cpus"
@@ -25000,10 +24963,6 @@ msgstr "接卸 IFLA_VF_PORT 部分出错"
 msgid "error parsing pid of lldpad"
 msgstr "解析 lldpad 的pid 出错"
 
-#, fuzzy
-msgid "error reading DAD state information"
-msgstr "生成初始配置时出错"
-
 msgid "error receiving signal from container"
 msgstr "从容器接收信号失败"
 
@@ -25040,7 +24999,8 @@ msgstr "为了在XML中使用而进行编码"
 msgid "escape for shell use"
 msgstr "为了在shell中使用而进行编码"
 
-msgid "ethtool ioctl error"
+#, c-format
+msgid "ethtool ioctl error on %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27241,6 +27201,9 @@ msgstr "未找到 host usb device vendor=0x%.4x product=0x%.4x"
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "主机认证模式需要三个证书"
 
+msgid "hostName field not available (missing VMware Tools?)"
+msgstr ""
+
 #, c-format
 msgid "hostdev %s not found"
 msgstr "没有找到 hostdev %s "
@@ -28816,18 +28779,6 @@ msgstr "元数据长度超出范围"
 msgid "level %u cache size %llu does not match expected size %llu"
 msgstr "目标共享内存大小 '%llu' 与源 '%llu' 不匹配"
 
-msgid "libhal_ctx_init failed, haldaemon is probably not running"
-msgstr "libhal_ctx_init 失败，haldaemon 可能没有运行。"
-
-msgid "libhal_ctx_new returned NULL"
-msgstr "libhal_ctx_new 返回 NULL"
-
-msgid "libhal_ctx_set_dbus_connection failed"
-msgstr "libhal_ctx_set_dbus_connection 失败"
-
-msgid "libhal_get_all_devices failed"
-msgstr "libhal_get_all_devices 失败"
-
 msgid "libnl was not available at build time"
 msgstr "构建时 libnl 不可用"
 
@@ -29942,6 +29893,9 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr "选项--min-workers的值必须小于或等于--max-workers的值"
 
+msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
+msgstr ""
+
 msgid "mirror requires file name"
 msgstr "镜像需要文件名"
 
@@ -30494,6 +30448,10 @@ msgstr "租约缺少 'key' 元素"
 msgid "missing machine name in QEMU capabilities cache"
 msgstr "QEMU 功能 XML 中缺少机器名称"
 
+#, c-format
+msgid "missing mapping in '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "missing memory model"
 msgstr "缺少计时器名称"
@@ -31026,14 +30984,8 @@ msgid ""
 "device"
 msgstr ""
 
-msgid "more than one adapters is specified for scsi hostdev source"
-msgstr "为 scsi hostdev 源指定了一个以上的适配器"
-
 msgid "more than one snapshot claims to be active"
 msgstr ""
-
-msgid "more than one source addresses is specified for scsi hostdev"
-msgstr "为 scsi hostdev 指定一个以上源地址"
 
 #, fuzzy
 msgid "mount is not supported on this platform."
@@ -31220,6 +31172,9 @@ msgid "negotiation SSF %d was not strong enough"
 msgstr "协商 SSF %d 不够强大"
 
 msgid "nested JSON array to commandline conversion is not supported"
+msgstr ""
+
+msgid "netcat path not valid with native proxy mode"
 msgstr ""
 
 msgid "netdir"
@@ -32235,10 +32190,6 @@ msgstr "这个 QEMU 二进制中不能使用共享内存"
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "这个 QEMU 二进制中不能使用共享内存"
 
-#, c-format
-msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
-msgstr ""
-
 msgid "nvram address type must be spaprvio"
 msgstr "nvram 地址类型必须为 spaprvio"
 
@@ -32444,6 +32395,9 @@ msgstr ""
 msgid "only sending a signal to pid 1 is supported"
 msgstr "只支持单一监视器设备"
 
+msgid "only single ISA controller is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only single USB controller is supported"
 msgstr "只支持单一 TPM 设备"
@@ -32540,6 +32494,10 @@ msgstr "选项 '-%c'/'--%s' 需要一个参数"
 #, c-format
 msgid "option --%s already seen"
 msgstr "已留意到选项 --%s"
+
+#, c-format
+msgid "option parsing failed: %s\n"
+msgstr ""
 
 #, fuzzy
 msgid "optional CPU features are not supported"
@@ -34278,9 +34236,6 @@ msgstr "lun 设备不支持设定 wwn"
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr ""
 
-msgid "setting up HAL callbacks failed"
-msgstr "设置 HAL 回叫失败"
-
 msgid "setuid or setgid failed"
 msgstr "setuid 或者 setgid 失败"
 
@@ -35974,10 +35929,6 @@ msgstr "无法执行 QEMU 命令 '%s'"
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "无法执行 QEMU 命令 '%s'：%s"
 
-#, c-format
-msgid "unable to find PCI address for parent device '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr "缺少索引 %d 的 SCSI 控制器"
@@ -35997,6 +35948,10 @@ msgstr "无法获得设备 '%s' 的次编号"
 #, fuzzy, c-format
 msgid "unable to find disk by target: %s"
 msgstr "无法统计捆绑目标 %s"
+
+#, c-format
+msgid "unable to find parent device '%s'"
+msgstr ""
 
 msgid "unable to find ploop tools, please install them"
 msgstr ""
@@ -37486,6 +37441,10 @@ msgstr "未知分区类型"
 msgid "unknown pci source type '%s'"
 msgstr "未知 pci 源类型 '%s'"
 
+#, c-format
+msgid "unknown pci writeFiltering setting '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
 msgstr "功能 '%s' 的未知 state 属性 '%s'"
@@ -38044,10 +38003,6 @@ msgstr "这个 QEMU 二进制中不支持 %s"
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
 msgstr "不支持 'origstates' 的元素 '%s'"
-
-#, c-format
-msgid "unsupported element '%s' of scsi hostdev source"
-msgstr "scsi hostdev 源不支持的元素 '%s'"
 
 #, c-format
 msgid "unsupported event ID %d"
@@ -38934,10 +38889,6 @@ msgid "vnc graphics are not supported with this QEMU"
 msgstr "这个 QEMU 不支持 vnc 图形"
 
 #, fuzzy
-msgid "vnc password auth not supported"
-msgstr "不支持该操作"
-
-#, fuzzy
 msgid "vnc port must be in range [5900,65535]"
 msgstr "boot 菜单超时的无效值，必须在 [0,65535] 范围内"
 
@@ -39272,6 +39223,166 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <字符串>}..."
+
+#~ msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+#~ msgstr "必须为 scsi hostdev 源地址指定 'adapter' 和 'address'"
+
+#~ msgid "'adapter' must be specified for scsi hostdev source"
+#~ msgstr "必须为 scsi hostdev 源地址指定 'adapter'"
+
+#~ msgid "Cannot append basic type %s"
+#~ msgstr "无法附加基本类型 %s"
+
+#~ msgid "Cannot close container iterator"
+#~ msgstr "无法关闭容器迭代程序"
+
+#~ msgid "DBus matches could not be installed. Disabling nwfilter driver"
+#~ msgstr "无法安装 Dbus 映射。正在禁用 nwfilter 驱动程序。"
+
+#~ msgid "DBus not available, disabling HAL driver: %s"
+#~ msgstr "DBus 不可用，禁用 HAL 驱动程序：%s"
+
+#~ msgid "DBus support not compiled into this binary"
+#~ msgstr "DBus 支持不可用于这个二进制文件"
+
+#~ msgid "DBus type stack is empty"
+#~ msgstr "DBus类型栈为空"
+
+#~ msgid "DBus type too deeply nested"
+#~ msgstr "DBus 类型嵌入过深"
+
+#~ msgid "Dict entry in signature '%s' is wrong size"
+#~ msgstr "签名 '%s' 中的 Dict 条目大小有误"
+
+#~ msgid "Dict entry in signature '%s' must be a basic type"
+#~ msgstr "签名 '%s' 中的 Dict 条目必须是基本类型"
+
+#, fuzzy
+#~ msgid "Failed to loop over IPv6 routes"
+#~ msgstr "列出存储卷失败"
+
+#, fuzzy
+#~ msgid ""
+#~ "Failed to register xml namespace 'http://www.innotek.de/VirtualBox-"
+#~ "settings'"
+#~ msgstr "注册 xml 名称空间 '%s' 失败"
+
+#~ msgid "Missing variant type signature"
+#~ msgstr "缺少变体类型签名"
+
+#~ msgid "No args present for signature %s"
+#~ msgstr "没有为签名 %s 显示参数"
+
+#~ msgid "Not enough fields in message for signature"
+#~ msgstr "信息中没有为签名留有足够字段"
+
+#~ msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
+#~ msgstr "PCI 总线 0 插槽 1 是为隐式 LPC PCI-ISA 网桥保留"
+
+#, fuzzy
+#~ msgid "Reply message incorrect"
+#~ msgstr "image magic 不正确"
+
+#, fuzzy
+#~ msgid "Security warning: currently VNC auth is not supported."
+#~ msgstr "现在还不支持指定挂载点"
+
+#~ msgid "Signature '%s' too deeply nested"
+#~ msgstr "签名 '%s' 嵌入过深"
+
+#~ msgid "The CCW devno '%s' is in use already "
+#~ msgstr "CCW devno '%s' 已在使用中 "
+
+#~ msgid "Too many fields in message for signature"
+#~ msgstr "信息中签名的字段太多"
+
+#, fuzzy
+#~ msgid "Too many unreserved %s devices in use"
+#~ msgstr "注册了太多的设备 %s"
+
+#, fuzzy
+#~ msgid "Unable to create %s device %s"
+#~ msgstr "无法生成设备 %s"
+
+#~ msgid "Unable to get DBus session bus connection: %s"
+#~ msgstr "无法获取 DBus 会话总线连接：%s"
+
+#~ msgid "Unable to get DBus system bus connection: %s"
+#~ msgstr "无法获取 DBus 系统总线连接：%s"
+
+#~ msgid "Unable to run one time DBus initializer"
+#~ msgstr "无法运行一次性 DBus 初始化程序"
+
+#, fuzzy
+#~ msgid "Unable to wait for IPv6 DAD on this platform"
+#~ msgstr "无法在这个平台中获取 VLAN"
+
+#~ msgid "Unexpected signature '%s'"
+#~ msgstr "意外签名 '%s'"
+
+#, fuzzy
+#~ msgid "Unknown type '%c' in signature '%s'"
+#~ msgstr "未知转发类型 %d 在网络 '%s' 中"
+
+#, fuzzy
+#~ msgid "Unknown type '%x' in signature '%s'"
+#~ msgstr "未知转发类型 %d 在网络 '%s' 中"
+
+#, fuzzy
+#~ msgid "can't free name %s%d - out of range 0-%d"
+#~ msgstr "启动单元 %d 溢出（0 - %d）"
+
+#, fuzzy
+#~ msgid "can't use name %s%d - out of range 0-%d"
+#~ msgstr "启动单元 %d 溢出（0 - %d）"
+
+#, fuzzy
+#~ msgid "couldn't get id value from macvtap device name %s"
+#~ msgstr "无法找到变量 '%s' 值"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as unused"
+#~ msgstr "无法解析参数"
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as used"
+#~ msgstr "将池 %s 标记为自动启动失败"
+
+#, fuzzy
+#~ msgid "couldn't reserve name %s%d - already in use"
+#~ msgstr "存储卷名称 '%s' 已在使用中。"
+
+#, fuzzy
+#~ msgid "error reading DAD state information"
+#~ msgstr "生成初始配置时出错"
+
+#~ msgid "libhal_ctx_init failed, haldaemon is probably not running"
+#~ msgstr "libhal_ctx_init 失败，haldaemon 可能没有运行。"
+
+#~ msgid "libhal_ctx_new returned NULL"
+#~ msgstr "libhal_ctx_new 返回 NULL"
+
+#~ msgid "libhal_ctx_set_dbus_connection failed"
+#~ msgstr "libhal_ctx_set_dbus_connection 失败"
+
+#~ msgid "libhal_get_all_devices failed"
+#~ msgstr "libhal_get_all_devices 失败"
+
+#~ msgid "more than one adapters is specified for scsi hostdev source"
+#~ msgstr "为 scsi hostdev 源指定了一个以上的适配器"
+
+#~ msgid "more than one source addresses is specified for scsi hostdev"
+#~ msgstr "为 scsi hostdev 指定一个以上源地址"
+
+#~ msgid "setting up HAL callbacks failed"
+#~ msgstr "设置 HAL 回叫失败"
+
+#~ msgid "unsupported element '%s' of scsi hostdev source"
+#~ msgstr "scsi hostdev 源不支持的元素 '%s'"
+
+#, fuzzy
+#~ msgid "vnc password auth not supported"
+#~ msgstr "不支持该操作"
 
 #~ msgid "Bus %s too big for destination"
 #~ msgstr "对于目的地来说总线 %s 太大"

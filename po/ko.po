@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-08-26 08:38+0000\n"
+"POT-Creation-Date: 2020-09-24 11:56+0000\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -471,11 +471,11 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "vCPU 맵 버퍼 길이가 최대 길이를 초과: %d > %d"
 
 #, c-format
-msgid "%s model of watchdog can go only on ISA bus"
+msgid "%s model of watchdog can go only on PCI bus"
 msgstr ""
 
 #, c-format
-msgid "%s model of watchdog can go only on PCI bus"
+msgid "%s model of watchdog does not support configuring the address"
 msgstr ""
 
 #, c-format
@@ -695,6 +695,18 @@ msgid "%s: Unrecognized family '%s' in route definition"
 msgstr "네트워크 '%s'에서 인식되지 않은 제품군 '%s'"
 
 #, c-format
+msgid "%s: cannot connect to '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: cannot parse URI transport '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "%s: could not proxy traffic: %s\n"
+msgstr ""
+
+#, c-format
 msgid "%s: error: %s%c"
 msgstr "%s: 오류: %s%c"
 
@@ -876,6 +888,10 @@ msgid "%s: unable to determine access mode of fd %d"
 msgstr "%s: 오류: 데몬이 실행중인지 확인할 수 없음: %s\n"
 
 #, c-format
+msgid "%s: unexpected URI transport '%s'\n"
+msgstr ""
+
+#, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "%s: 지원되지 않는 하이퍼바이저 이름 %s\n"
 
@@ -1003,13 +1019,13 @@ msgstr ""
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr ""
 
-msgid "'adapter' and 'address' must be specified for scsi hostdev source"
-msgstr "scsi hostdev 소스의 'adapter' 및 'address'를 지정해야 합니다"
-
-msgid "'adapter' must be specified for scsi hostdev source"
-msgstr "scsi hostdev 소스의 'adapter'를 지정해야 합니다"
+msgid "'adapter' name must be specified for scsi hostdev source"
+msgstr ""
 
 msgid "'address' is not supported for 'ramfb' video devices"
+msgstr ""
+
+msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
 
 msgid ""
@@ -1922,6 +1938,10 @@ msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
 msgstr "scsi hostdev 소스의 'adapter' 및 'address'를 지정해야 합니다"
 
+msgid ""
+"Both port and URI requested for disk migration while being mutually exclusive"
+msgstr ""
+
 msgid "Bounded"
 msgstr "묶임"
 
@@ -2452,10 +2472,6 @@ msgstr "기존 비밀정보의 개인용 플래그를 변경할 수 없음"
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Cannot append basic type %s"
-msgstr "%s을 생성할 수 없음"
-
 #, fuzzy
 msgid "Cannot assign SCSI host device address"
 msgstr "장치 %s에 대해 할당된 pty가 없음"
@@ -2483,6 +2499,10 @@ msgstr "장치 %s을(를) 구문 분석할 수 없음  "
 msgid "Cannot check QEMU binary %s"
 msgstr "QEMU 바이너리 %s를 확인할 수 없음"
 
+#, c-format
+msgid "Cannot check QEMU module directory %s"
+msgstr ""
+
 #, fuzzy
 msgid "Cannot check address family on this platform"
 msgstr "이 플랫폼에서 macvlan 장치를 생성할 수 없음"
@@ -2494,10 +2514,6 @@ msgstr "dnsmasq 바이너리 %s를 확인할 수 없음"
 #, fuzzy, c-format
 msgid "Cannot chown uniq path: %s"
 msgstr "'%s' 경로를 열 수 없음"
-
-#, fuzzy
-msgid "Cannot close container iterator"
-msgstr "문맥 %s을 설정할 수 없음"
 
 #, fuzzy
 msgid "Cannot close resctrl"
@@ -3488,8 +3504,9 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Check the host setup: enabling IPv6 forwarding with RA routes without "
-"accept_ra set to 2 is likely to cause routes loss. Interfaces to look at: %s"
+"Check the host setup: interface %s has kernel autoconfigured IPv6 routes and "
+"enabling forwarding  without accept_ra set to 2 will cause the kernel to "
+"flush them, breaking networking."
 msgstr ""
 
 #, fuzzy, c-format
@@ -3734,12 +3751,6 @@ msgstr "도메인 %s에 연결되었습니다\n"
 #, fuzzy
 msgid "Connected to the admin server"
 msgstr "도메인 %s에 연결되었습니다\n"
-
-#, c-format
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"%s transport"
-msgstr ""
 
 msgid "Connections from inside daemon must be direct"
 msgstr ""
@@ -4917,23 +4928,6 @@ msgstr ""
 msgid "DBus daemon %s didn't show up"
 msgstr "%s 도메인을 보여주지 못함"
 
-msgid "DBus matches could not be installed. Disabling nwfilter driver"
-msgstr ""
-
-#, c-format
-msgid "DBus not available, disabling HAL driver: %s"
-msgstr ""
-
-#, fuzzy
-msgid "DBus support not compiled into this binary"
-msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
-
-msgid "DBus type stack is empty"
-msgstr ""
-
-msgid "DBus type too deeply nested"
-msgstr ""
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS 호스트 기록을 수정할 수 없습니다. 추가 또는 삭제만 가능합니다 "
 
@@ -5188,14 +5182,6 @@ msgstr "장치가 성공적으로 부착되었습니다\n"
 #, c-format
 msgid "Device: %s\n"
 msgstr "장치: %s\n"
-
-#, c-format
-msgid "Dict entry in signature '%s' is wrong size"
-msgstr ""
-
-#, c-format
-msgid "Dict entry in signature '%s' must be a basic type"
-msgstr ""
 
 msgid ""
 "Did not create EK and certificates since this requires privileged mode for a "
@@ -5710,10 +5696,6 @@ msgid "Dump failed"
 msgstr "실패함"
 
 #, c-format
-msgid "Duplicate Address Detection not finished in %d seconds"
-msgstr ""
-
-#, c-format
 msgid "Duplicate NUMA cell info for cell id '%u'"
 msgstr "'%u' 셀 ID에 대한 NUMA 셀 정보 복제"
 
@@ -6205,6 +6187,10 @@ msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "유형 '%s'가 필요하지만 '%s'가 검색됨 "
 
 msgid "Expiry Time"
+msgstr ""
+
+msgid ""
+"Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
 
 #, fuzzy
@@ -7466,10 +7452,6 @@ msgstr "플로그인 %s을 불러오는데 실패했습니다: %s"
 msgid "Failed to logout: %s"
 msgstr "풀 %s를 만드는 데 실패"
 
-#, fuzzy
-msgid "Failed to loop over IPv6 routes"
-msgstr "스토리지 볼륨 목록 나열 실패 "
-
 msgid "Failed to make auth credentials"
 msgstr "인증 크레덴셜 생성 실패"
 
@@ -7897,11 +7879,6 @@ msgstr "잠금 오류 동작을 등록하는데 실패했습니다 "
 
 #, c-format
 msgid "Failed to register xml namespace '%s'"
-msgstr "xml 네임 스페이스 '%s'를 등록하는데 실패 "
-
-#, fuzzy
-msgid ""
-"Failed to register xml namespace 'http://www.innotek.de/VirtualBox-settings'"
 msgstr "xml 네임 스페이스 '%s'를 등록하는데 실패 "
 
 msgid "Failed to release lock"
@@ -8904,16 +8881,6 @@ msgid "Gets or sets the domain's system time"
 msgstr "도메인의 호스트 이름 인쇄"
 
 msgid "Gets statistics about one or more (or all) domains"
-msgstr ""
-
-#, c-format
-msgid "Got array ref but '%s' is not a single basic type / dict"
-msgstr ""
-
-#, c-format
-msgid ""
-"Got array ref but '%s' is not a single basic type or dict with matching key"
-"+value type"
 msgstr ""
 
 msgid "Got empty feature list from resctrl"
@@ -10841,6 +10808,10 @@ msgstr ""
 msgid "Malformed PCI address %s"
 msgstr ""
 
+#, c-format
+msgid "Malformed PCI options %s"
+msgstr ""
+
 msgid "Malformed auth_pending field in JSON state document"
 msgstr ""
 
@@ -11770,6 +11741,10 @@ msgstr "JSON 문서에서 priority_workers 데이터를 설정할 수 없음"
 msgid "Missing privateData field in JSON state document"
 msgstr "JSON 문서에서 ownerName 데이터가 누락되어 있음 "
 
+#, c-format
+msgid "Missing property '%s' in answer"
+msgstr ""
+
 #, fuzzy
 msgid "Missing readonly field in JSON state document"
 msgstr "JSON 문서에서 magic 데이터가 누락되어 있음 "
@@ -11912,10 +11887,6 @@ msgstr "스토리지 호스트 블록 경로가 누락되어 있음 "
 #, fuzzy, c-format
 msgid "Missing storage volume name for disk '%s'"
 msgstr " %s 내부에 잘못된 저장소 볼륨 포인터"
-
-#, fuzzy
-msgid "Missing variant type signature"
-msgstr "도메인 유형 속성이 누락되어 있음"
 
 #, c-format
 msgid "Missing vendor string for CPU vendor %s"
@@ -12094,6 +12065,10 @@ msgstr "값 '%s'이 %s 범위를 벗어남 "
 #, fuzzy, c-format
 msgid "NUMA node %zd is unavailable"
 msgstr "존재하는 콘솔 장치가 없습니다"
+
+#, c-format
+msgid "NUMA node %zu is not available"
+msgstr ""
 
 msgid "NUMA node selections to set"
 msgstr "설정한 NUMA 노드 선택"
@@ -12442,10 +12417,6 @@ msgid "No active operation on device: %s"
 msgstr "장치 %s에 대해 할당된 pty가 없음"
 
 msgid "No addresses to bind to"
-msgstr ""
-
-#, c-format
-msgid "No args present for signature %s"
 msgstr ""
 
 #, fuzzy
@@ -12837,9 +12808,6 @@ msgstr "스트림에서 읽을 수 없음 "
 #, fuzzy, c-format
 msgid "Not detaching active device %s"
 msgstr "작동중인 장치 %s를 리셋하지 않음"
-
-msgid "Not enough fields in message for signature"
-msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13301,9 +13269,6 @@ msgstr ""
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr ""
 
-msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
-msgstr "PCI 버스 0 슬롯 1은 암시적 LPC PCI-ISA 브릿지에 예약되어 있습니다"
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13464,6 +13429,9 @@ msgstr ""
 
 #, c-format
 msgid "Passphrase for key '%s'"
+msgstr ""
+
+msgid "Password may not contain ',' character"
 msgstr ""
 
 msgid "Password request failed"
@@ -14036,10 +14004,6 @@ msgstr ""
 msgid "Replace the domain XML associated with a saved state file"
 msgstr "파일에 저장된 상태에서 도메인을 복구"
 
-#, fuzzy
-msgid "Reply message incorrect"
-msgstr "이미지 매직이 잘못되었습니다"
-
 #, c-format
 msgid ""
 "Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
@@ -14386,6 +14350,9 @@ msgid ""
 "another SCSI host device"
 msgstr ""
 
+msgid "SCSI host device data structure was not initialized"
+msgstr ""
+
 #, fuzzy
 msgid "SCSI host device doesn't support managed mode"
 msgstr "이 디스크는 업데이트를 지원하지 않음"
@@ -14577,11 +14544,11 @@ msgstr "보안 모델 찾을 수 없음: %s"
 msgid "Security model:"
 msgstr "모안 모델:"
 
-#. Bhyve doesn't support VNC Auth yet, so print a warning about
-#. * unauthenticated VNC sessions
-#, fuzzy
-msgid "Security warning: currently VNC auth is not supported."
-msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
+msgid "Security warning: VNC auth is not supported."
+msgstr ""
+
+msgid "Security warning: VNC is used without authentication."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -14882,10 +14849,6 @@ msgstr ""
 #, fuzzy
 msgid "Signal handling not available on this platform"
 msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
-
-#, c-format
-msgid "Signature '%s' too deeply nested"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -16088,7 +16051,7 @@ msgid "The CA certificate %s is not yet active"
 msgstr "인증서가 신뢰할 수 없습니다"
 
 #, c-format
-msgid "The CCW devno '%s' is in use already "
+msgid "The CCW devno '%s' is in use already"
 msgstr ""
 
 #, fuzzy, c-format
@@ -16493,10 +16456,6 @@ msgstr "드라이버가 너무 많습니다, %s을 등록할 수 없음 "
 msgid "Too many drivers, cannot register storage file backend '%s'"
 msgstr "드라이버가 너무 많습니다, %s을 등록할 수 없음 "
 
-#, fuzzy
-msgid "Too many fields in message for signature"
-msgstr "스트림에서 읽을 바이트가 너무 많습니다 "
-
 #, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "%s에 대해 너무 많은 파일 시스템이 감지되었습니다 "
@@ -16567,10 +16526,6 @@ msgstr "개체에 대해 리소스 %d가 너무 많습니다 "
 #, fuzzy, c-format
 msgid "Too many storage_vols '%d' for limit '%d'"
 msgstr "개체에 대해 리소스 %d가 너무 많습니다 "
-
-#, fuzzy, c-format
-msgid "Too many unreserved %s devices in use"
-msgstr "과도한 드라이버가 %s에 등록됨"
 
 msgid "Total"
 msgstr "전체"
@@ -16688,6 +16643,9 @@ msgstr "<virtualport> 요소는 <interface type='%s'>에 대해 지원되지 않
 msgid "UEFI requires ACPI on this architecture"
 msgstr ""
 
+msgid "UNIX disks URI does not include path"
+msgstr ""
+
 msgid "UNIX socket address is required"
 msgstr ""
 
@@ -16721,6 +16679,13 @@ msgstr ""
 
 #, c-format
 msgid "URI scheme '%s' for embedded driver is not valid"
+msgstr ""
+
+msgid "URI to use for disks migration (overrides --disks-port)"
+msgstr ""
+
+#, c-format
+msgid "URI with tcp scheme did not provide a server part: %s"
 msgstr ""
 
 #, c-format
@@ -17095,10 +17060,6 @@ msgid "Unable to create %s"
 msgstr "%s을 생성할 수 없음 "
 
 #, fuzzy, c-format
-msgid "Unable to create %s device %s"
-msgstr "장치 %s을 생성할 수 없음 "
-
-#, fuzzy, c-format
 msgid "Unable to create HardDisk, rc=%08x"
 msgstr "장치 %s을 생성할 수 없음 "
 
@@ -17146,6 +17107,10 @@ msgstr "장치 %s을 생성할 수 없음 "
 #, c-format
 msgid "Unable to create device %s"
 msgstr "장치 %s을 생성할 수 없음 "
+
+#, c-format
+msgid "Unable to create device '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to create directory %s"
@@ -17482,14 +17447,6 @@ msgstr "기능을 가져올 수 없습니다"
 msgid "Unable to get Console object for domain %s"
 msgstr "도메인 %s의 메모리 통계를 얻는 데 실패했습니다"
 
-#, fuzzy, c-format
-msgid "Unable to get DBus session bus connection: %s"
-msgstr "kvm 서술자를 가져올 수 없습니다: %s"
-
-#, fuzzy, c-format
-msgid "Unable to get DBus system bus connection: %s"
-msgstr "kvm 서술자를 가져올 수 없습니다: %s"
-
 #, fuzzy
 msgid "Unable to get IP address on this platform"
 msgstr "kvm 서술자를 가져올 수 없습니다: %s"
@@ -17779,6 +17736,10 @@ msgstr "소켓을 만들 수 없습니다"
 msgid "Unable to get server workerpool parameters"
 msgstr "메모리 매개 변수를 얻을 수 없음"
 
+#, c-format
+msgid "Unable to get session bus connection: %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get snapshot content"
 msgstr "스냅샷 필터링을 실행할 수 없음"
@@ -17786,6 +17747,10 @@ msgstr "스냅샷 필터링을 실행할 수 없음"
 #, fuzzy
 msgid "Unable to get sysfs info on this platform"
 msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
+
+#, c-format
+msgid "Unable to get system bus connection: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to get the machine location path"
@@ -18236,6 +18201,10 @@ msgstr "세션 리더가 되는 데 실패"
 msgid "Unable to read %s"
 msgstr "%s를 읽을 수 없습니다 "
 
+#, c-format
+msgid "Unable to read %s for ipv6 forwarding checks"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to read TLS confirmation"
 msgstr "설정 파일 읽기 실패"
@@ -18451,9 +18420,8 @@ msgstr ""
 "IQN '%s'인 iscsi 인터페이스를 갱신하기 위해 '%s' 명령을 실행하는 데 실패했습"
 "니다"
 
-#, fuzzy
-msgid "Unable to run one time DBus initializer"
-msgstr "복제 컨테이너를 실행하는 데 실패"
+msgid "Unable to run one time GDBus initializer"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to save '%s'"
@@ -18780,9 +18748,6 @@ msgstr ""
 msgid "Unable to verify server certificate %s against CA certificate %s"
 msgstr ""
 
-msgid "Unable to wait for IPv6 DAD on this platform"
-msgstr ""
-
 #, fuzzy
 msgid "Unable to wait for child process"
 msgstr "자식 프로세스를 fork할 수 없음"
@@ -19065,10 +19030,6 @@ msgid "Unexpected signal received: %d"
 msgstr "예기치 못한 %s 작업: %d"
 
 #, fuzzy, c-format
-msgid "Unexpected signature '%s'"
-msgstr "예상외의 데이터 '%s'"
-
-#, fuzzy, c-format
 msgid "Unexpected socket family %d"
 msgstr "예기치 못한 소스 모드 %d"
 
@@ -19088,6 +19049,9 @@ msgid "Unexpectedly got a network port without a network bridge"
 msgstr ""
 
 msgid "Unexpectedly got a network port without a plug"
+msgstr ""
+
+msgid "Unix file descriptors not supported on this platform"
 msgstr ""
 
 msgid "Unknown"
@@ -19383,6 +19347,10 @@ msgstr "'%s'에 대한 장치 기능이 없음"
 msgid "Unknown release: %s"
 msgstr "알려지지 않은 릴리즈: %s"
 
+#, c-format
+msgid "Unknown remote mode '%s'"
+msgstr ""
+
 msgid "Unknown return code"
 msgstr "알 수 없는 반환 코드 "
 
@@ -19442,14 +19410,6 @@ msgid "Unknown taint flag %s"
 msgstr "알 수 없는 시작 정책 '%s'"
 
 #, fuzzy, c-format
-msgid "Unknown type '%c' in signature '%s'"
-msgstr "알 수 없는 포워드 유형 %d (네트워크 '%s'에서)"
-
-#, fuzzy, c-format
-msgid "Unknown type '%x' in signature '%s'"
-msgstr "알 수 없는 포워드 유형 %d (네트워크 '%s'에서)"
-
-#, fuzzy, c-format
 msgid "Unknown uri scheme: '%s'"
 msgstr "알려지지 않은 소스 모드 '%s'"
 
@@ -19487,6 +19447,10 @@ msgstr ""
 
 #, c-format
 msgid "Unmanaged PCI device %s must be manually detached from the host"
+msgstr ""
+
+#, c-format
+msgid "Unnkown proxy type '%s'"
 msgstr ""
 
 #, fuzzy
@@ -19782,6 +19746,10 @@ msgid "Unsupported root filesystem type %s"
 msgstr "지원되지 않는 root 파일 시스템 유형 %s"
 
 #, c-format
+msgid "Unsupported scheme in disks URI: %s"
+msgstr ""
+
+#, c-format
 msgid "Unsupported spicevmc target name '%s'"
 msgstr "지원되지 않는 spicevmc 대상 이름 '%s'"
 
@@ -19845,6 +19813,11 @@ msgstr "볼륨에 파일 컨텐츠를 업로드함"
 
 msgid "Usage"
 msgstr "사용법"
+
+msgid ""
+"Usage of listen-address is forbidden when migration URI uses UNIX transport "
+"method"
+msgstr ""
 
 #, fuzzy
 msgid "Usage:"
@@ -19994,6 +19967,9 @@ msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr ""
 
 msgid "VNC"
+msgstr ""
+
+msgid "VNC Password authentication not supported by bhyve"
 msgstr ""
 
 msgid "VNC supports connected='keep' only"
@@ -20158,6 +20134,10 @@ msgstr ""
 
 #, c-format
 msgid "Wiping volume '%s'(%s) ... "
+msgstr ""
+
+msgid ""
+"Write filtering of PCI device configuration space is not supported by qemu"
 msgstr ""
 
 #, c-format
@@ -21212,10 +21192,6 @@ msgstr ""
 msgid "can't find created snapshot"
 msgstr "현재 스냅샷 정보"
 
-#, fuzzy, c-format
-msgid "can't free name %s%d - out of range 0-%d"
-msgstr "시작 셀 %d 범위 초과 (0-%d)"
-
 #, c-format
 msgid "can't identify pool in uri %s "
 msgstr ""
@@ -21292,10 +21268,6 @@ msgstr "인식할 수 없는 네트워크 섹션을 업데이트할 수 없습�
 
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "can't use name %s%d - out of range 0-%d"
-msgstr "시작 셀 %d 범위 초과 (0-%d)"
 
 #, fuzzy
 msgid "canceled"
@@ -23765,10 +23737,6 @@ msgstr "MAC 주소 '%s'의 인터페이스를 찾을 수 없습니다"
 msgid "couldn't find interface with MAC address '%s': %s%s%s"
 msgstr "MAC 주소 '%s'의 인터페이스를 찾을 수 없습니다: %s%s%s"
 
-#, fuzzy, c-format
-msgid "couldn't get id value from macvtap device name %s"
-msgstr "변수 '%s'의 값을 찾을 수 없음 "
-
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
 msgstr "네트워크 %s에서 일치하는 DNS 호스트 기록을 배치할 수 없습니다 "
@@ -23794,18 +23762,6 @@ msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%s'\" \"name='%s'\" "
 "\"ip='%s'\" in network '%s'"
 msgstr "네트워크 '%s'에서 일치하는 dhcp 호스트 항목을 배치할 수 없습니다 "
-
-#, c-format
-msgid "couldn't mark %s%d as unused"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "couldn't mark %s%d as used"
-msgstr "자동 시작으로 %s 풀을 표시하기 실패"
-
-#, fuzzy, c-format
-msgid "couldn't reserve name %s%d - already in use"
-msgstr "저장소 볼륨 이름 '%s'가 이미 사용중입니다."
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
@@ -23842,6 +23798,9 @@ msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
 #, fuzzy
 msgid "cpu count too large"
 msgstr "ncpus가 너무 큽니다"
+
+msgid "cpu parameter is missing a model name"
+msgstr ""
 
 #, c-format
 msgid "cpu topology results in more than %u cpus"
@@ -25326,10 +25285,6 @@ msgid "error parsing pid of lldpad"
 msgstr "프로파일 이름 복사 중 오류"
 
 #, fuzzy
-msgid "error reading DAD state information"
-msgstr "초기 설정 생성 오류"
-
-#, fuzzy
 msgid "error receiving signal from container"
 msgstr "초기 설정 생성 오류"
 
@@ -25368,7 +25323,8 @@ msgstr ""
 msgid "escape for shell use"
 msgstr ""
 
-msgid "ethtool ioctl error"
+#, c-format
+msgid "ethtool ioctl error on %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -27601,6 +27557,9 @@ msgstr "호스트 usb 장치 %03d.%03d를 찾을 수 없음"
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "호스트 인증 모드에는 세 개의 인증서가 필요합니다"
 
+msgid "hostName field not available (missing VMware Tools?)"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "hostdev %s not found"
 msgstr "디스크 %s를 찾을 수 없음"
@@ -29187,18 +29146,6 @@ msgstr "메타데이터 길이가 범위를 벗어남"
 msgid "level %u cache size %llu does not match expected size %llu"
 msgstr "대상 비디오 카드 헤드 %u가 소스 %u와 일치하지 않음"
 
-msgid "libhal_ctx_init failed, haldaemon is probably not running"
-msgstr "libhal_ctx_init  실패, haldaemon이 실행되고 있지 않음 "
-
-msgid "libhal_ctx_new returned NULL"
-msgstr ""
-
-msgid "libhal_ctx_set_dbus_connection failed"
-msgstr "libhal_ctx_set_dbus_connection 실패 "
-
-msgid "libhal_get_all_devices failed"
-msgstr "libhal_get_all_devices 실패"
-
 msgid "libnl was not available at build time"
 msgstr ""
 
@@ -30355,6 +30302,9 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr ""
 
+msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
+msgstr ""
+
 msgid "mirror requires file name"
 msgstr "미러에는 파일 이름이 필요합니다"
 
@@ -30915,6 +30865,10 @@ msgstr "임대의 'key' 요소가 누락되어 있음"
 msgid "missing machine name in QEMU capabilities cache"
 msgstr ""
 
+#, c-format
+msgid "missing mapping in '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "missing memory model"
 msgstr "타이머 이름이 누락되어 있음"
@@ -31456,14 +31410,8 @@ msgid ""
 "device"
 msgstr ""
 
-msgid "more than one adapters is specified for scsi hostdev source"
-msgstr "scsi hostdev 장치에 대해 하나 이상의 어댑터가 지정되어 있음"
-
 msgid "more than one snapshot claims to be active"
 msgstr ""
-
-msgid "more than one source addresses is specified for scsi hostdev"
-msgstr "scsi hostdev 장치에 대해 하나 이상의 소스 주소가 지정되어 있음"
 
 #, fuzzy
 msgid "mount is not supported on this platform."
@@ -31653,6 +31601,9 @@ msgid "negotiation SSF %d was not strong enough"
 msgstr "SSF %d 협상이 충분히 강력하지 않았습니다"
 
 msgid "nested JSON array to commandline conversion is not supported"
+msgstr ""
+
+msgid "netcat path not valid with native proxy mode"
 msgstr ""
 
 msgid "netdir"
@@ -32683,10 +32634,6 @@ msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
 
-#, c-format
-msgid "nvdimm size is not aligned. Suggested aligned size: %llu KiB"
-msgstr ""
-
 msgid "nvram address type must be spaprvio"
 msgstr ""
 
@@ -32896,6 +32843,9 @@ msgstr ""
 msgid "only sending a signal to pid 1 is supported"
 msgstr "와치독 장치는 한개만 지원합니다"
 
+msgid "only single ISA controller is supported"
+msgstr ""
+
 #, fuzzy
 msgid "only single USB controller is supported"
 msgstr "단일 TPM 장치만 지원됨"
@@ -32995,6 +32945,10 @@ msgstr "'-%c'/'--%s' 옵션에는 인수가 필요함"
 #, fuzzy, c-format
 msgid "option --%s already seen"
 msgstr "연결이 이미 열려있습니다"
+
+#, c-format
+msgid "option parsing failed: %s\n"
+msgstr ""
 
 #, fuzzy
 msgid "optional CPU features are not supported"
@@ -34739,9 +34693,6 @@ msgstr ""
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr ""
 
-msgid "setting up HAL callbacks failed"
-msgstr "HAL 콜백 설정 실패 "
-
 msgid "setuid or setgid failed"
 msgstr "setuid 또는 setgid 실패 "
 
@@ -36462,10 +36413,6 @@ msgid "unable to execute QEMU command '%s': %s"
 msgstr "QEMU 명령 '%s'를 실행할 수 없음 : %s"
 
 #, c-format
-msgid "unable to find PCI address for parent device '%s'"
-msgstr ""
-
-#, c-format
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr ""
 
@@ -36484,6 +36431,10 @@ msgstr "장치 %s에 액세스할 수 없음\n"
 #, fuzzy, c-format
 msgid "unable to find disk by target: %s"
 msgstr "%s의 파일 시스템 유형을 찾을 수 없습니다 "
+
+#, c-format
+msgid "unable to find parent device '%s'"
+msgstr ""
 
 msgid "unable to find ploop tools, please install them"
 msgstr ""
@@ -37988,6 +37939,10 @@ msgstr "알 수 없는 파티션 유형"
 msgid "unknown pci source type '%s'"
 msgstr "알려지지 않은 pci 소스 유형 '%s'"
 
+#, c-format
+msgid "unknown pci writeFiltering setting '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
 msgstr "기능 유형 '%d'가('%s'에 대해) 알려져 있지 않음"
@@ -38549,10 +38504,6 @@ msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
 msgstr "'origstates'의 지원되지 않는 요소 '%s'"
-
-#, c-format
-msgid "unsupported element '%s' of scsi hostdev source"
-msgstr "scsi hostdev 소스의 지원되지 않는 요소 '%s'"
 
 #, c-format
 msgid "unsupported event ID %d"
@@ -39447,10 +39398,6 @@ msgid "vnc graphics are not supported with this QEMU"
 msgstr "vnc 그래픽은 QEMU로 지원되지 않습니다"
 
 #, fuzzy
-msgid "vnc password auth not supported"
-msgstr "동작을 지원하지 않습니다"
-
-#, fuzzy
 msgid "vnc port must be in range [5900,65535]"
 msgstr "rebootTimeout의 잘못된 값, [-1,65535] 범위에 있어야 합니다"
 
@@ -39781,6 +39728,134 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'adapter' and 'address' must be specified for scsi hostdev source"
+#~ msgstr "scsi hostdev 소스의 'adapter' 및 'address'를 지정해야 합니다"
+
+#~ msgid "'adapter' must be specified for scsi hostdev source"
+#~ msgstr "scsi hostdev 소스의 'adapter'를 지정해야 합니다"
+
+#, fuzzy
+#~ msgid "Cannot append basic type %s"
+#~ msgstr "%s을 생성할 수 없음"
+
+#, fuzzy
+#~ msgid "Cannot close container iterator"
+#~ msgstr "문맥 %s을 설정할 수 없음"
+
+#, fuzzy
+#~ msgid "DBus support not compiled into this binary"
+#~ msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
+
+#, fuzzy
+#~ msgid "Failed to loop over IPv6 routes"
+#~ msgstr "스토리지 볼륨 목록 나열 실패 "
+
+#, fuzzy
+#~ msgid ""
+#~ "Failed to register xml namespace 'http://www.innotek.de/VirtualBox-"
+#~ "settings'"
+#~ msgstr "xml 네임 스페이스 '%s'를 등록하는데 실패 "
+
+#, fuzzy
+#~ msgid "Missing variant type signature"
+#~ msgstr "도메인 유형 속성이 누락되어 있음"
+
+#~ msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
+#~ msgstr "PCI 버스 0 슬롯 1은 암시적 LPC PCI-ISA 브릿지에 예약되어 있습니다"
+
+#, fuzzy
+#~ msgid "Reply message incorrect"
+#~ msgstr "이미지 매직이 잘못되었습니다"
+
+#, fuzzy
+#~ msgid "Security warning: currently VNC auth is not supported."
+#~ msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
+
+#, fuzzy
+#~ msgid "Too many fields in message for signature"
+#~ msgstr "스트림에서 읽을 바이트가 너무 많습니다 "
+
+#, fuzzy
+#~ msgid "Too many unreserved %s devices in use"
+#~ msgstr "과도한 드라이버가 %s에 등록됨"
+
+#, fuzzy
+#~ msgid "Unable to create %s device %s"
+#~ msgstr "장치 %s을 생성할 수 없음 "
+
+#, fuzzy
+#~ msgid "Unable to get DBus session bus connection: %s"
+#~ msgstr "kvm 서술자를 가져올 수 없습니다: %s"
+
+#, fuzzy
+#~ msgid "Unable to get DBus system bus connection: %s"
+#~ msgstr "kvm 서술자를 가져올 수 없습니다: %s"
+
+#, fuzzy
+#~ msgid "Unable to run one time DBus initializer"
+#~ msgstr "복제 컨테이너를 실행하는 데 실패"
+
+#, fuzzy
+#~ msgid "Unexpected signature '%s'"
+#~ msgstr "예상외의 데이터 '%s'"
+
+#, fuzzy
+#~ msgid "Unknown type '%c' in signature '%s'"
+#~ msgstr "알 수 없는 포워드 유형 %d (네트워크 '%s'에서)"
+
+#, fuzzy
+#~ msgid "Unknown type '%x' in signature '%s'"
+#~ msgstr "알 수 없는 포워드 유형 %d (네트워크 '%s'에서)"
+
+#, fuzzy
+#~ msgid "can't free name %s%d - out of range 0-%d"
+#~ msgstr "시작 셀 %d 범위 초과 (0-%d)"
+
+#, fuzzy
+#~ msgid "can't use name %s%d - out of range 0-%d"
+#~ msgstr "시작 셀 %d 범위 초과 (0-%d)"
+
+#, fuzzy
+#~ msgid "couldn't get id value from macvtap device name %s"
+#~ msgstr "변수 '%s'의 값을 찾을 수 없음 "
+
+#, fuzzy
+#~ msgid "couldn't mark %s%d as used"
+#~ msgstr "자동 시작으로 %s 풀을 표시하기 실패"
+
+#, fuzzy
+#~ msgid "couldn't reserve name %s%d - already in use"
+#~ msgstr "저장소 볼륨 이름 '%s'가 이미 사용중입니다."
+
+#, fuzzy
+#~ msgid "error reading DAD state information"
+#~ msgstr "초기 설정 생성 오류"
+
+#~ msgid "libhal_ctx_init failed, haldaemon is probably not running"
+#~ msgstr "libhal_ctx_init  실패, haldaemon이 실행되고 있지 않음 "
+
+#~ msgid "libhal_ctx_set_dbus_connection failed"
+#~ msgstr "libhal_ctx_set_dbus_connection 실패 "
+
+#~ msgid "libhal_get_all_devices failed"
+#~ msgstr "libhal_get_all_devices 실패"
+
+#~ msgid "more than one adapters is specified for scsi hostdev source"
+#~ msgstr "scsi hostdev 장치에 대해 하나 이상의 어댑터가 지정되어 있음"
+
+#~ msgid "more than one source addresses is specified for scsi hostdev"
+#~ msgstr "scsi hostdev 장치에 대해 하나 이상의 소스 주소가 지정되어 있음"
+
+#~ msgid "setting up HAL callbacks failed"
+#~ msgstr "HAL 콜백 설정 실패 "
+
+#~ msgid "unsupported element '%s' of scsi hostdev source"
+#~ msgstr "scsi hostdev 소스의 지원되지 않는 요소 '%s'"
+
+#, fuzzy
+#~ msgid "vnc password auth not supported"
+#~ msgstr "동작을 지원하지 않습니다"
 
 #~ msgid "Bus %s too big for destination"
 #~ msgstr "버스 %s가 목적지로는 너무 큼"
