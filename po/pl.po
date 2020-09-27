@@ -13,8 +13,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-09-24 11:56+0000\n"
-"PO-Revision-Date: 2020-09-27 10:21+0000\n"
-"Last-Translator: Michał Smyk <fedora@smyk.it>\n"
+"PO-Revision-Date: 2020-09-27 10:28+0000\n"
+"Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/pl/>\n"
 "Language: pl\n"
@@ -256,7 +256,7 @@ msgid ""
 "Domain %s dumped to %s\n"
 msgstr ""
 "\n"
-"Domena %s została zrzucona do %s\n"
+"Domena %s została zrzucona do %s\n"
 
 #, c-format
 msgid ""
@@ -264,7 +264,7 @@ msgid ""
 "Domain %s saved to %s\n"
 msgstr ""
 "\n"
-"Domena %s została zapisana do %s\n"
+"Domena %s została zapisana do %s\n"
 
 #, c-format
 msgid ""
@@ -458,7 +458,7 @@ msgstr ""
 
 #, c-format
 msgid "%s family specified for non-IPv4 address '%s' in network '%s'"
-msgstr "Rodzina %s podana dla adresu nie-IPv4 \"'%s' w sieci '%s'\""
+msgstr "Podano rodzinę %s dla adresu nie-IPv4 „%s” w sieci „%s”"
 
 #, c-format
 msgid "%s forwarding requested, but no IP address provided for network '%s'"
@@ -474,11 +474,11 @@ msgstr "%s ma niedozwoloną wartość %s"
 
 #, c-format
 msgid "%s has unexpected '*' before last line"
-msgstr "%s posiada niespodziewany znak \"*\" przed ostatnią linią"
+msgstr "%s ma nieoczekiwany znak „*” przed ostatnim wierszem"
 
 #, c-format
 msgid "%s in %s must be NULL"
-msgstr "%s w %s musi miec wartość NULL"
+msgstr "%s w %s musi mieć wartość NULL"
 
 #, c-format
 msgid "%s in %s must be greater than zero"
@@ -494,7 +494,7 @@ msgstr ""
 
 #, c-format
 msgid "%s in %s must not be NULL"
-msgstr "%s w %s nie może mieć wartości NULL"
+msgstr "%s w %s nie może mieć wartości NULL"
 
 #, c-format
 msgid "%s in %s must not be zero"
@@ -506,11 +506,11 @@ msgstr "brak właściwości „type” w %s"
 
 #, c-format
 msgid "%s is not a supported cipher name"
-msgstr "%s nie jest nazwą wspieranego szyfru"
+msgstr "%s nie jest nazwą obsługiwanego szyfru"
 
 #, c-format
 msgid "%s is not a supported cipher state"
-msgstr "%s nie jest wspieranym stanem szyfru"
+msgstr "%s nie jest obsługiwanym stanem szyfru"
 
 #, c-format
 msgid "%s is not an executable"
@@ -518,11 +518,11 @@ msgstr "%s nie jest plikiem wykonywalnym"
 
 #, c-format
 msgid "%s is not available with this QEMU binary"
-msgstr "%s nie jest dostępny w tym pliku binarnym QUEMU"
+msgstr "%s jest niedostępne w tym pliku binarnym QEMU"
 
 #, c-format
 msgid "%s is not supported by this QEMU binary"
-msgstr "%s nie jest wspierany przez ten plik binarny QUEMU"
+msgstr "%s nie jest obsługiwane przez ten plik binarny QEMU"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
@@ -550,11 +550,11 @@ msgstr ""
 
 #, c-format
 msgid "%s namespace is not available"
-msgstr "Przestrzeń nazw %s nie jest dostepna"
+msgstr "Przestrzeń nazw %s jest niedostępna"
 
 #, c-format
 msgid "%s not found in %s"
-msgstr "nie odnaleziono %s w %s"
+msgstr "Nie odnaleziono %s w %s"
 
 #, c-format
 msgid "%s not implemented on Win32"
