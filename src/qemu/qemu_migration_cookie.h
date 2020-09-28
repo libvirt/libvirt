@@ -152,13 +152,13 @@ struct _qemuMigrationCookie {
 
 
 int
-qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
-                        virQEMUDriverPtr driver,
-                        virDomainObjPtr dom,
-                        qemuMigrationParty party,
-                        char **cookieout,
-                        int *cookieoutlen,
-                        unsigned int flags);
+qemuMigrationCookieFormat(qemuMigrationCookiePtr mig,
+                          virQEMUDriverPtr driver,
+                          virDomainObjPtr dom,
+                          qemuMigrationParty party,
+                          char **cookieout,
+                          int *cookieoutlen,
+                          unsigned int flags);
 
 qemuMigrationCookiePtr
 qemuMigrationEatCookie(virQEMUDriverPtr driver,
