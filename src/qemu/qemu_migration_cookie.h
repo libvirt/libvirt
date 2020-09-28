@@ -165,13 +165,13 @@ qemuMigrationCookieFormat(qemuMigrationCookiePtr mig,
                           unsigned int flags);
 
 qemuMigrationCookiePtr
-qemuMigrationEatCookie(virQEMUDriverPtr driver,
-                       const virDomainDef *def,
-                       const char *origname,
-                       qemuDomainObjPrivatePtr priv,
-                       const char *cookiein,
-                       int cookieinlen,
-                       unsigned int flags);
+qemuMigrationCookieParse(virQEMUDriverPtr driver,
+                        const virDomainDef *def,
+                        const char *origname,
+                        qemuDomainObjPrivatePtr priv,
+                        const char *cookiein,
+                        int cookieinlen,
+                        unsigned int flags);
 
 void
 qemuMigrationCookieFree(qemuMigrationCookiePtr mig);

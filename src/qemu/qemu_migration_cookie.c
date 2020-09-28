@@ -1441,13 +1441,13 @@ qemuMigrationCookieFormat(qemuMigrationCookiePtr mig,
 
 
 qemuMigrationCookiePtr
-qemuMigrationEatCookie(virQEMUDriverPtr driver,
-                       const virDomainDef *def,
-                       const char *origname,
-                       qemuDomainObjPrivatePtr priv,
-                       const char *cookiein,
-                       int cookieinlen,
-                       unsigned int flags)
+qemuMigrationCookieParse(virQEMUDriverPtr driver,
+                         const virDomainDef *def,
+                         const char *origname,
+                         qemuDomainObjPrivatePtr priv,
+                         const char *cookiein,
+                         int cookieinlen,
+                         unsigned int flags)
 {
     g_autoptr(qemuMigrationCookie) mig = NULL;
 
