@@ -151,6 +151,10 @@ struct _qemuMigrationCookie {
 };
 
 
+qemuMigrationCookiePtr
+qemuMigrationCookieNew(const virDomainDef *def,
+                       const char *origname);
+
 int
 qemuMigrationCookieFormat(qemuMigrationCookiePtr mig,
                           virQEMUDriverPtr driver,

@@ -275,7 +275,7 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver G_GNUC_UNUSED,
 }
 
 
-static qemuMigrationCookiePtr
+qemuMigrationCookiePtr
 qemuMigrationCookieNew(const virDomainDef *def,
                        const char *origname)
 {
