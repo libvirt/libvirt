@@ -861,20 +861,6 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 }
 
 
-static char *
-qemuMigrationCookieXMLFormatStr(virQEMUDriverPtr driver,
-                                virQEMUCapsPtr qemuCaps,
-                                qemuMigrationCookiePtr mig)
-{
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    if (qemuMigrationCookieXMLFormat(driver, qemuCaps, &buf, mig) < 0)
-        return NULL;
-
-    return virBufferContentAndReset(&buf);
-}
-
-
 static qemuMigrationCookieGraphicsPtr
 qemuMigrationCookieGraphicsXMLParse(xmlXPathContextPtr ctxt)
 {
@@ -1397,6 +1383,7 @@ qemuMigrationCookieFormat(qemuMigrationCookiePtr mig,
                           unsigned int flags)
 {
     qemuDomainObjPrivatePtr priv = dom->privateData;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!cookieout || !cookieoutlen)
         return 0;
@@ -1441,10 +1428,11 @@ qemuMigrationCookieFormat(qemuMigrationCookiePtr mig,
         qemuMigrationCookieAddCaps(mig, dom, party) < 0)
         return -1;
 
-    if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, priv->qemuCaps, mig)))
+    if (qemuMigrationCookieXMLFormat(driver, priv->qemuCaps, &buf, mig) < 0)
         return -1;
 
-    *cookieoutlen = strlen(*cookieout) + 1;
+    *cookieoutlen = virBufferUse(&buf) + 1;
+    *cookieout = virBufferContentAndReset(&buf);
 
     VIR_DEBUG("cookielen=%d cookie=%s", *cookieoutlen, *cookieout);
 
