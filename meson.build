@@ -1386,14 +1386,6 @@ endif
 
 util_dep = cc.find_library('util', required: false)
 
-if not get_option('virtualport').disabled()
-  if cc.has_header_symbol('linux/if_link.h', 'IFLA_PORT_MAX')
-    conf.set('WITH_VIRTUALPORT', 1)
-  elif get_option('virtualport').enabled()
-    error('Installed linux headers don\'t show support for virtual port support.')
-  endif
-endif
-
 if host_machine.system() == 'windows'
   ole32_dep = cc.find_library('ole32')
   oleaut32_dep = cc.find_library('oleaut32')

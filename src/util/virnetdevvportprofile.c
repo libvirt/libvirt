@@ -46,7 +46,7 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp,
               "no-op",
 );
 
-#if WITH_VIRTUALPORT
+#if defined(WITH_LIBNL)
 
 # include <fcntl.h>
 
@@ -454,7 +454,7 @@ int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
 }
 
 
-#if WITH_VIRTUALPORT
+#if defined(WITH_LIBNL)
 
 static struct nla_policy ifla_port_policy[IFLA_PORT_MAX + 1] =
 {
@@ -1343,7 +1343,7 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
     return rc;
 }
 
-#else /* ! WITH_VIRTUALPORT */
+#else /* !WITH_LIBNL */
 int virNetDevVPortProfileAssociate(const char *macvtap_ifname G_GNUC_UNUSED,
                                    const virNetDevVPortProfile *virtPort G_GNUC_UNUSED,
                                    const virMacAddr *macvtap_macaddr G_GNUC_UNUSED,
@@ -1369,4 +1369,4 @@ int virNetDevVPortProfileDisassociate(const char *macvtap_ifname G_GNUC_UNUSED,
                          _("Virtual port profile association not supported on this platform"));
     return -1;
 }
-#endif /* ! WITH_VIRTUALPORT */
+#endif /* !WITH_LIBNL */

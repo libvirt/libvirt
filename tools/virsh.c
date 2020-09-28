@@ -549,9 +549,6 @@ virshShowVersion(vshControl *ctl G_GNUC_UNUSED)
 #ifdef WITH_NWFILTER
     vshPrint(ctl, " Nwfilter");
 #endif
-#ifdef WITH_VIRTUALPORT
-    vshPrint(ctl, " VirtualPort");
-#endif
     vshPrint(ctl, "\n");
 
     vshPrint(ctl, "%s", _(" Storage:"));
