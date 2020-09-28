@@ -441,7 +441,7 @@ virNetDevBridgeCreateWithIoctl(const char *brname,
 }
 #endif
 
-#if defined(__linux__) && defined(WITH_LIBNL)
+#if defined(WITH_LIBNL)
 int
 virNetDevBridgeCreate(const char *brname,
                       const virMacAddr *mac)
@@ -552,7 +552,7 @@ virNetDevBridgeDeleteWithIoctl(const char *brname)
 #endif
 
 
-#if defined(__linux__) && defined(WITH_LIBNL)
+#if defined(WITH_LIBNL)
 int
 virNetDevBridgeDelete(const char *brname)
 {
@@ -976,7 +976,7 @@ virNetDevBridgeSetVlanFiltering(const char *brname G_GNUC_UNUSED,
 #endif
 
 
-#if defined(__linux__) && defined(WITH_LIBNL)
+#if defined(WITH_LIBNL)
 
 # ifndef NTF_SELF
 #  define NTF_SELF 0x02

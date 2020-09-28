@@ -885,7 +885,7 @@ int virNetDevGetIndex(const char *ifname G_GNUC_UNUSED,
 #endif /* ! SIOCGIFINDEX */
 
 
-#if defined(__linux__) && defined(WITH_LIBNL)
+#if defined(WITH_LIBNL)
 /**
  * virNetDevGetMaster:
  * @ifname: name of interface we're interested in
@@ -929,7 +929,7 @@ virNetDevGetMaster(const char *ifname G_GNUC_UNUSED,
 }
 
 
-#endif /* defined(__linux__) && defined(WITH_LIBNL) */
+#endif /* defined(WITH_LIBNL) */
 
 
 #if defined(SIOCGIFVLAN) && defined(WITH_STRUCT_IFREQ) && WITH_DECL_GET_VLAN_VID_CMD
@@ -1473,7 +1473,7 @@ virNetDevSysfsFile(char **pf_sysfs_device_link G_GNUC_UNUSED,
 
 
 #endif /* !__linux__ */
-#if defined(__linux__) && defined(WITH_LIBNL)
+#if defined(WITH_LIBNL)
 
 
 static virMacAddr zeroMAC = { .addr = { 0, 0, 0, 0, 0, 0 } };
@@ -2266,7 +2266,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
 }
 
 
-#else /* defined(__linux__) && defined(WITH_LIBNL) */
+#else /* defined(WITH_LIBNL) */
 
 
 int
@@ -2309,7 +2309,7 @@ virNetDevSetNetConfig(const char *linkdev G_GNUC_UNUSED,
 }
 
 
-#endif /* defined(__linux__) && defined(WITH_LIBNL) */
+#endif /* defined(WITH_LIBNL) */
 
 VIR_ENUM_IMPL(virNetDevIfState,
               VIR_NETDEV_IF_STATE_LAST,

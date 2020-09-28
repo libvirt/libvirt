@@ -40,7 +40,7 @@ VIR_LOG_INIT("util.netlink");
 
 #define NETLINK_ACK_TIMEOUT_S  (2*1000)
 
-#if defined(__linux__) && defined(WITH_LIBNL)
+#if defined(WITH_LIBNL)
 /* State for a single netlink event handle */
 struct virNetlinkEventHandle {
     int watch;
@@ -1387,4 +1387,4 @@ virNetlinkGetErrorCode(struct nlmsghdr *resp G_GNUC_UNUSED,
     return -EINVAL;
 }
 
-#endif /* __linux__ */
+#endif /* WITH_LIBNL */

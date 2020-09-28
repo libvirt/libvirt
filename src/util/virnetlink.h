@@ -22,7 +22,7 @@
 #include "internal.h"
 #include "virmacaddr.h"
 
-#if defined(__linux__) && defined(WITH_LIBNL)
+#if defined(WITH_LIBNL)
 
 # include <netlink/msg.h>
 
@@ -36,7 +36,7 @@ struct sockaddr_nl;
 struct nlattr;
 struct nlmsghdr;
 
-#endif /* __linux__ */
+#endif /* WITH_LIBNL */
 
 #define NETLINK_MSG_NEST_START(msg, container, attrtype) \
 do { \
