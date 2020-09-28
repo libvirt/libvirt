@@ -280,31 +280,30 @@ qemuMigrationCookieNew(const virDomainDef *def,
                        const char *origname)
 {
     qemuMigrationCookiePtr mig = NULL;
-    const char *name;
+    unsigned char localHostUUID[VIR_UUID_BUFLEN];
+    g_autofree char *localHostname = NULL;
 
-    if (VIR_ALLOC(mig) < 0)
-        goto error;
+    if (!(localHostname = virGetHostname()))
+        return NULL;
 
-    if (origname)
-        name = origname;
-    else
-        name = def->name;
-    mig->name = g_strdup(name);
-    memcpy(mig->uuid, def->uuid, VIR_UUID_BUFLEN);
-
-    if (!(mig->localHostname = virGetHostname()))
-        goto error;
-    if (virGetHostUUID(mig->localHostuuid) < 0) {
+    if (virGetHostUUID(localHostUUID) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to obtain host UUID"));
-        goto error;
+        return NULL;
     }
 
-    return mig;
+    mig = g_new0(qemuMigrationCookie, 1);
 
- error:
-    qemuMigrationCookieFree(mig);
-    return NULL;
+    if (origname)
+        mig->name = g_strdup(origname);
+    else
+        mig->name = g_strdup(def->name);
+
+    memcpy(mig->uuid, def->uuid, VIR_UUID_BUFLEN);
+    memcpy(mig->localHostuuid, localHostUUID, VIR_UUID_BUFLEN);
+    mig->localHostname = g_steal_pointer(&localHostname);
+
+    return mig;
 }
 
 
