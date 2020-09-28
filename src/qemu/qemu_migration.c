@@ -2263,8 +2263,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
     if (!(flags & VIR_MIGRATE_OFFLINE))
         cookieFlags |= QEMU_MIGRATION_COOKIE_CAPS;
 
-    if (!(mig = qemuMigrationEatCookie(driver, vm->def,
-                                       priv->origname, priv, NULL, 0, 0)))
+    if (!(mig = qemuMigrationCookieNew(vm->def, priv->origname)))
         return NULL;
 
     if (qemuMigrationCookieFormat(mig, driver, vm,
