@@ -1473,7 +1473,7 @@ virNetDevSysfsFile(char **pf_sysfs_device_link G_GNUC_UNUSED,
 
 
 #endif /* !__linux__ */
-#if defined(__linux__) && defined(WITH_LIBNL) && defined(IFLA_VF_MAX)
+#if defined(__linux__) && defined(WITH_LIBNL)
 
 
 static virMacAddr zeroMAC = { .addr = { 0, 0, 0, 0, 0, 0 } };
@@ -2266,7 +2266,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
 }
 
 
-#else /* defined(__linux__) && defined(WITH_LIBNL)  && defined(IFLA_VF_MAX) */
+#else /* defined(__linux__) && defined(WITH_LIBNL) */
 
 
 int
@@ -2309,7 +2309,7 @@ virNetDevSetNetConfig(const char *linkdev G_GNUC_UNUSED,
 }
 
 
-#endif /* defined(__linux__) && defined(WITH_LIBNL) && defined(IFLA_VF_MAX) */
+#endif /* defined(__linux__) && defined(WITH_LIBNL) */
 
 VIR_ENUM_IMPL(virNetDevIfState,
               VIR_NETDEV_IF_STATE_LAST,
