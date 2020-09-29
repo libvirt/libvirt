@@ -316,8 +316,7 @@ static int virLockManagerLockDaemonInit(unsigned int version,
     if (driver)
         return 0;
 
-    if (VIR_ALLOC(driver) < 0)
-        return -1;
+    driver = g_new0(virLockManagerLockDaemonDriver, 1);
 
     driver->requireLeaseForDisks = true;
     driver->autoDiskLease = true;
@@ -399,8 +398,8 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
 
     virCheckFlags(VIR_LOCK_MANAGER_NEW_STARTED, -1);
 
-    if (VIR_ALLOC(priv) < 0)
-        return -1;
+    priv = g_new0(virLockManagerLockDaemonPrivate,
+                  1);
 
     switch (type) {
     case VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN:

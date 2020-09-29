@@ -171,8 +171,7 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     if (driver->drvInit(VIR_LOCK_MANAGER_VERSION, configFile, flags) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(plugin) < 0)
-        goto cleanup;
+    plugin = g_new0(virLockManagerPlugin, 1);
 
     plugin->driver = driver;
     plugin->handle = handle;
@@ -303,8 +302,7 @@ virLockManagerPtr virLockManagerNew(virLockDriverPtr driver,
 
     CHECK_DRIVER(drvNew, NULL);
 
-    if (VIR_ALLOC(lock) < 0)
-        return NULL;
+    lock = g_new0(virLockManager, 1);
 
     lock->driver = driver;
 

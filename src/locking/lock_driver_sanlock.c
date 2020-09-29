@@ -397,8 +397,7 @@ static int virLockManagerSanlockInit(unsigned int version,
     if (sanlockDriver)
         return 0;
 
-    if (VIR_ALLOC(sanlockDriver) < 0)
-        return -1;
+    sanlockDriver = g_new0(virLockManagerSanlockDriver, 1);
 
     driver = sanlockDriver;
 
@@ -468,8 +467,8 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
         return -1;
     }
 
-    if (VIR_ALLOC(priv) < 0)
-        return -1;
+    priv = g_new0(virLockManagerSanlockPrivate,
+                  1);
 
     priv->flags = flags;
 
@@ -937,8 +936,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
         return 0;
     }
 
-    if (VIR_ALLOC(opt) < 0)
-        goto error;
+    opt = g_new0(struct sanlk_options, 1);
 
     /* sanlock doesn't use owner_name for anything, so it's safe to take just
      * the first SANLK_NAME_LEN - 1 characters from vm_name */

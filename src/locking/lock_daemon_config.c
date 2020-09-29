@@ -57,8 +57,7 @@ virLockDaemonConfigNew(bool privileged G_GNUC_UNUSED)
 {
     virLockDaemonConfigPtr data;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(virLockDaemonConfig, 1);
 
     data->max_clients = 1024;
     data->admin_max_clients = 5000;

@@ -120,8 +120,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
     virLockDaemonPtr lockd;
     virNetServerPtr srv = NULL;
 
-    if (VIR_ALLOC(lockd) < 0)
-        return NULL;
+    lockd = g_new0(virLockDaemon, 1);
 
     g_mutex_init(&lockd->lock);
 
@@ -212,8 +211,7 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
     size_t i;
     const char *serverNames[] = { "virtlockd" };
 
-    if (VIR_ALLOC(lockd) < 0)
-        return NULL;
+    lockd = g_new0(virLockDaemon, 1);
 
     g_mutex_init(&lockd->lock);
 
@@ -456,8 +454,7 @@ virLockDaemonClientNew(virNetServerClientPtr client,
     unsigned long long timestamp;
     bool privileged = opaque != NULL;
 
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
+    priv = g_new0(virLockDaemonClient, 1);
 
     g_mutex_init(&priv->lock);
 
