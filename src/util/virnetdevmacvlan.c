@@ -47,11 +47,6 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode,
 # include <linux/if_tun.h>
 # include <math.h>
 
-/* Older kernels lacked this enum value.  */
-# if !WITH_DECL_MACVLAN_MODE_PASSTHRU
-#  define MACVLAN_MODE_PASSTHRU 8
-# endif
-
 # include "viralloc.h"
 # include "virlog.h"
 # include "viruuid.h"

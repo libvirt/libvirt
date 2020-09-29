@@ -1172,10 +1172,6 @@ if not get_option('macvtap').disabled()
 endif
 if use_macvtap
   conf.set('WITH_MACVTAP', 1)
-
-  if cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_PASSTHRU')
-    conf.set('WITH_DECL_MACVLAN_MODE_PASSTHRU', 1)
-  endif
 endif
 
 netcf_version = '0.1.8'
