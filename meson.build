@@ -1159,19 +1159,14 @@ libxml_dep = dependency('libxml-2.0', version: '>=' + libxml_version)
 cc = meson.get_compiler('c')
 m_dep = cc.find_library('m', required : false)
 
-use_macvtap = false
-if not get_option('macvtap').disabled()
-  if (cc.has_header_symbol('linux/if_link.h', 'MACVLAN_MODE_BRIDGE') and
-      cc.has_header_symbol('linux/if_link.h', 'IFLA_VF_MAX'))
-    use_macvtap = true
+if host_machine.system() == 'linux'
+  if not get_option('macvtap').disabled()
+    conf.set('WITH_MACVTAP', 1)
   endif
-
-  if get_option('macvtap').enabled() and not use_macvtap
-    error('Installed linux headers don\'t show support for macvtap device.')
+else
+  if get_option('macvtap').enabled()
+    error('macvtap is not supported on this platform.')
   endif
-endif
-if use_macvtap
-  conf.set('WITH_MACVTAP', 1)
 endif
 
 netcf_version = '0.1.8'
