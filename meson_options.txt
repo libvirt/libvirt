@@ -26,7 +26,6 @@ option('libiscsi', type: 'feature', value: 'auto', description: 'libiscsi suppor
 option('libpcap', type: 'feature', value: 'auto', description: 'libpcap support')
 option('libssh', type: 'feature', value: 'auto', description: 'libssh support')
 option('libssh2', type: 'feature', value: 'auto', description: 'libssh2 support')
-option('macvtap', type: 'feature', value: 'auto', description: 'enable macvtap device')
 option('netcf', type: 'feature', value: 'auto', description: 'netcf support')
 option('nls', type: 'feature', value: 'auto', description: 'nls support')
 option('numactl', type: 'feature', value: 'auto', description: 'numactl support')

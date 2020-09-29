@@ -1159,16 +1159,6 @@ libxml_dep = dependency('libxml-2.0', version: '>=' + libxml_version)
 cc = meson.get_compiler('c')
 m_dep = cc.find_library('m', required : false)
 
-if host_machine.system() == 'linux'
-  if not get_option('macvtap').disabled()
-    conf.set('WITH_MACVTAP', 1)
-  endif
-else
-  if get_option('macvtap').enabled()
-    error('macvtap is not supported on this platform.')
-  endif
-endif
-
 netcf_version = '0.1.8'
 netcf_dep = dependency('netcf', version: '>=' + netcf_version, required: get_option('netcf'))
 if netcf_dep.found()

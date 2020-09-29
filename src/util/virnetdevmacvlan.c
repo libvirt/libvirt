@@ -40,7 +40,7 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode,
               "passthrough",
 );
 
-#if WITH_MACVTAP
+#if defined(WITH_LIBNL)
 # include <fcntl.h>
 
 # include <net/if.h>
@@ -1043,7 +1043,7 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
 
 }
 
-#else /* ! WITH_MACVTAP */
+#else /* ! WITH_LIBNL */
 bool virNetDevMacVLanIsMacvtap(const char *ifname G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -1149,4 +1149,4 @@ void virNetDevMacVLanReserveName(const char *name G_GNUC_UNUSED)
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
 }
-#endif /* ! WITH_MACVTAP */
+#endif /* ! WITH_LIBNL */
