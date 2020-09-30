@@ -598,35 +598,27 @@ static void
 qemuMigrationCookieNetworkXMLFormat(virBufferPtr buf,
                                     qemuMigrationCookieNetworkPtr optr)
 {
+    g_auto(virBuffer) interfaceBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i;
-    bool empty = true;
 
     for (i = 0; i < optr->nnets; i++) {
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(&interfaceBuf);
+
         /* If optr->net[i].vporttype is not set, there is nothing to transfer */
-        if (optr->net[i].vporttype != VIR_NETDEV_VPORT_PROFILE_NONE) {
-            if (empty) {
-                virBufferAddLit(buf, "<network>\n");
-                virBufferAdjustIndent(buf, 2);
-                empty = false;
-            }
-            virBufferAsprintf(buf, "<interface index='%zu' vporttype='%s'",
-                              i, virNetDevVPortTypeToString(optr->net[i].vporttype));
-            if (optr->net[i].portdata) {
-                virBufferAddLit(buf, ">\n");
-                virBufferAdjustIndent(buf, 2);
-                virBufferEscapeString(buf, "<portdata>%s</portdata>\n",
-                                      optr->net[i].portdata);
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</interface>\n");
-            } else {
-                virBufferAddLit(buf, "/>\n");
-            }
-        }
+        if (optr->net[i].vporttype == VIR_NETDEV_VPORT_PROFILE_NONE)
+            continue;
+
+        virBufferAsprintf(&attrBuf, " index='%zu' vporttype='%s'",
+                          i, virNetDevVPortTypeToString(optr->net[i].vporttype));
+
+        virBufferEscapeString(&childBuf, "<portdata>%s</portdata>\n",
+                              optr->net[i].portdata);
+
+        virXMLFormatElement(&interfaceBuf, "interface", &attrBuf, &childBuf);
     }
-    if (!empty) {
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</network>\n");
-    }
+
+    virXMLFormatElement(buf, "network", NULL, &interfaceBuf);
 }
 
 
