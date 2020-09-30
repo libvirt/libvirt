@@ -221,8 +221,7 @@ virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
     const char *domuuid;
     const char *tmp;
 
-    if (VIR_ALLOC(file) < 0)
-        return NULL;
+    file = g_new0(virLogHandlerLogFile, 1);
 
     handler->inhibitor(true, handler->opaque);
 
@@ -389,8 +388,7 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
     if (virPipe(pipefd) < 0)
         goto error;
 
-    if (VIR_ALLOC(file) < 0)
-        goto error;
+    file = g_new0(virLogHandlerLogFile, 1);
 
     file->watch = -1;
     file->pipefd = pipefd[0];
@@ -537,8 +535,7 @@ virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
     if (virRotatingFileReaderSeek(file, inode, offset) < 0)
         goto error;
 
-    if (VIR_ALLOC_N(data, maxlen + 1) < 0)
-        goto error;
+    data = g_new0(char, maxlen + 1);
 
     got = virRotatingFileReaderConsume(file, data, maxlen);
     if (got < 0)

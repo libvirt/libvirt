@@ -116,8 +116,7 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
     virLogDaemonPtr logd;
     virNetServerPtr srv = NULL;
 
-    if (VIR_ALLOC(logd) < 0)
-        return NULL;
+    logd = g_new0(virLogDaemon, 1);
 
     g_mutex_init(&logd->lock);
 
@@ -214,8 +213,7 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
     virJSONValuePtr child;
     const char *serverNames[] = { "virtlogd" };
 
-    if (VIR_ALLOC(logd) < 0)
-        return NULL;
+    logd = g_new0(virLogDaemon, 1);
 
     g_mutex_init(&logd->lock);
 
@@ -330,8 +328,7 @@ virLogDaemonClientNew(virNetServerClientPtr client,
     unsigned long long timestamp;
     bool privileged = opaque != NULL;
 
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
+    priv = g_new0(virLogDaemonClient, 1);
 
     g_mutex_init(&priv->lock);
 

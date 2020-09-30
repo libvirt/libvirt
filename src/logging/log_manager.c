@@ -113,8 +113,7 @@ virLogManagerNew(bool privileged)
 {
     virLogManagerPtr mgr;
 
-    if (VIR_ALLOC(mgr) < 0)
-        goto error;
+    mgr = g_new0(virLogManager, 1);
 
     if (!(mgr->client = virLogManagerConnect(privileged, &mgr->program)))
         goto error;
