@@ -785,10 +785,8 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
     VBOX_IID_INITIALIZE(&vboxnet0IID);
     virCheckFlags(0, NULL);
 
-    if (VIR_ALLOC(def) < 0)
-        goto cleanup;
-    if (VIR_ALLOC(ipdef) < 0)
-        goto cleanup;
+    def = g_new0(virNetworkDef, 1);
+    ipdef = g_new0(virNetworkIPDef, 1);
     def->ips = ipdef;
     def->nips = 1;
 
@@ -829,9 +827,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
         bool errorOccurred = false;
 
         ipdef->nranges = 1;
-
-        if (VIR_ALLOC_N(ipdef->ranges, ipdef->nranges) < 0)
-            goto cleanup;
+        ipdef->ranges = g_new0(virNetworkDHCPRangeDef, ipdef->nranges);
 
         gVBoxAPI.UIDHCPServer.GetIPAddress(dhcpServer, &ipAddressUtf16);
         gVBoxAPI.UIDHCPServer.GetNetworkMask(dhcpServer, &networkMaskUtf16);
@@ -861,8 +857,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
             goto cleanup;
 
         ipdef->nhosts = 1;
-        if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) < 0)
-            goto cleanup;
+        ipdef->hosts = g_new0(virNetworkDHCPHostDef, ipdef->nhosts);
 
         ipdef->hosts[0].name = g_strdup(network->name);
         gVBoxAPI.UIHNInterface.GetHardwareAddress(networkInterface, &macAddressUtf16);
