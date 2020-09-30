@@ -755,6 +755,26 @@ qemuMigrationCookieCapsXMLFormat(virBufferPtr buf,
 }
 
 
+static void
+qemuMigrationCookieNBDXMLFormat(qemuMigrationCookieNBDPtr nbd,
+                                virBufferPtr buf)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t i;
+
+    if (nbd->port)
+        virBufferAsprintf(buf, " port='%d'", nbd->port);
+
+    for (i = 0; i < nbd->ndisks; i++) {
+        virBufferEscapeString(&childBuf, "<disk target='%s'", nbd->disks[i].target);
+        virBufferAsprintf(&childBuf, " capacity='%llu'/>\n", nbd->disks[i].capacity);
+    }
+
+    virXMLFormatElement(buf, "nbd", &attrBuf, &childBuf);
+}
+
+
 static int
 qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
                              virQEMUCapsPtr qemuCaps,
@@ -811,25 +831,8 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
     if ((mig->flags & QEMU_MIGRATION_COOKIE_NETWORK) && mig->network)
         qemuMigrationCookieNetworkXMLFormat(buf, mig->network);
 
-    if ((mig->flags & QEMU_MIGRATION_COOKIE_NBD) && mig->nbd) {
-        virBufferAddLit(buf, "<nbd");
-        if (mig->nbd->port)
-            virBufferAsprintf(buf, " port='%d'", mig->nbd->port);
-        if (mig->nbd->ndisks) {
-            virBufferAddLit(buf, ">\n");
-            virBufferAdjustIndent(buf, 2);
-            for (i = 0; i < mig->nbd->ndisks; i++) {
-                virBufferEscapeString(buf, "<disk target='%s'",
-                                      mig->nbd->disks[i].target);
-                virBufferAsprintf(buf, " capacity='%llu'/>\n",
-                                  mig->nbd->disks[i].capacity);
-            }
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</nbd>\n");
-        } else {
-            virBufferAddLit(buf, "/>\n");
-        }
-    }
+    if ((mig->flags & QEMU_MIGRATION_COOKIE_NBD) && mig->nbd)
+        qemuMigrationCookieNBDXMLFormat(mig->nbd, buf);
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo)
         qemuMigrationCookieStatisticsXMLFormat(buf, mig->jobInfo);
