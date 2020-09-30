@@ -1058,6 +1058,9 @@ virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
     return 0;
 }
 
+
+# if defined(WITH_LIBNL)
+
 /**
  * Determine if the device path specified in devpath is a PCI Device
  * by resolving the 'subsystem'-link in devpath and looking for
@@ -1091,6 +1094,7 @@ virNetDevIsPCIDevice(const char *devpath)
     return STRPREFIX(subsys, "pci");
 }
 
+
 static virPCIDevicePtr
 virNetDevGetPCIDevice(const char *devName)
 {
@@ -1110,6 +1114,7 @@ virNetDevGetPCIDevice(const char *devName)
     return virPCIDeviceNew(vfPCIAddr->domain, vfPCIAddr->bus,
                            vfPCIAddr->slot, vfPCIAddr->function);
 }
+# endif
 
 
 /**
@@ -2958,7 +2963,7 @@ virNetDevGetEthtoolFeatures(const char *ifname,
 }
 
 
-# if WITH_DECL_DEVLINK_CMD_ESWITCH_GET
+# if defined(WITH_LIBNL) && WITH_DECL_DEVLINK_CMD_ESWITCH_GET
 
 /**
  * virNetDevGetFamilyId:
