@@ -1221,33 +1221,33 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     if (!(name = virXPathString("string(./name[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing name element in migration data"));
-        goto error;
+        return -1;
     }
     if (STRNEQ(name, mig->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Incoming cookie data had unexpected name %s vs %s"),
                        name, mig->name);
-        goto error;
+        return -1;
     }
 
     /* Extract domain uuid */
     if (!(uuid = virXPathString("string(./uuid[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing uuid element in migration data"));
-        goto error;
+        return -1;
     }
     virUUIDFormat(mig->uuid, localdomuuid);
     if (STRNEQ(uuid, localdomuuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Incoming cookie data had unexpected UUID %s vs %s"),
                        uuid, localdomuuid);
-        goto error;
+        return -1;
     }
 
     if (!(mig->remoteHostname = virXPathString("string(./hostname[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing hostname element in migration data"));
-        goto error;
+        return -1;
     }
     /* Historically, this is the place where we checked whether remoteHostname
      * and localHostname are the same. But even if they were, it doesn't mean
@@ -1258,18 +1258,18 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     if (!(hostuuid = virXPathString("string(./hostuuid[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing hostuuid element in migration data"));
-        goto error;
+        return -1;
     }
     if (virUUIDParse(hostuuid, mig->remoteHostuuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("malformed hostuuid element in migration data"));
-        goto error;
+        return -1;
     }
     if (memcmp(mig->remoteHostuuid, mig->localHostuuid, VIR_UUID_BUFLEN) == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Attempt to migrate guest to the same host %s"),
                        hostuuid);
-        goto error;
+        return -1;
     }
 
     if (qemuMigrationCookieXMLParseMandatoryFeatures(ctxt, flags) < 0)
@@ -1278,7 +1278,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     if ((flags & QEMU_MIGRATION_COOKIE_GRAPHICS) &&
         virXPathBoolean("count(./graphics) > 0", ctxt) &&
         (!(mig->graphics = qemuMigrationCookieGraphicsXMLParse(ctxt))))
-        goto error;
+        return -1;
 
     if ((flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) &&
         virXPathBoolean("count(./lockstate) > 0", ctxt)) {
@@ -1286,7 +1286,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         if (!mig->lockDriver) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing lock driver name in migration cookie"));
-            goto error;
+            return -1;
         }
         mig->lockState = virXPathString("string(./lockstate[1]/leases[1])", ctxt);
         if (mig->lockState && STREQ(mig->lockState, ""))
@@ -1300,7 +1300,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         if ((virXPathNodeSet("./domain", ctxt, &nodes)) != 1) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Too many domain elements in migration cookie"));
-            goto error;
+            return -1;
         }
         mig->persistent = virDomainDefParseNode(doc, nodes[0],
                                                 driver->xmlopt, qemuCaps,
@@ -1308,40 +1308,37 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                                                 VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION |
                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
         if (!mig->persistent)
-            goto error;
+            return -1;
     }
 
     if ((flags & QEMU_MIGRATION_COOKIE_NETWORK) &&
         virXPathBoolean("count(./network) > 0", ctxt) &&
         (!(mig->network = qemuMigrationCookieNetworkXMLParse(ctxt))))
-        goto error;
+        return -1;
 
     if (flags & QEMU_MIGRATION_COOKIE_NBD &&
         virXPathBoolean("boolean(./nbd)", ctxt) &&
         (!(mig->nbd = qemuMigrationCookieNBDXMLParse(ctxt))))
-        goto error;
+        return -1;
 
     if (flags & QEMU_MIGRATION_COOKIE_STATS &&
         virXPathBoolean("boolean(./statistics)", ctxt) &&
         (!(mig->jobInfo = qemuMigrationCookieStatisticsXMLParse(ctxt))))
-        goto error;
+        return -1;
 
     if (flags & QEMU_MIGRATION_COOKIE_CPU &&
         virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST, &mig->cpu) < 0)
-        goto error;
+        return -1;
 
     if (flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT &&
         qemuDomainObjPrivateXMLParseAllowReboot(ctxt, &mig->allowReboot) < 0)
-        goto error;
+        return -1;
 
     if (flags & QEMU_MIGRATION_COOKIE_CAPS &&
         !(mig->caps = qemuMigrationCookieCapsXMLParse(ctxt)))
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 
