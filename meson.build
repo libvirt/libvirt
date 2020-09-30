@@ -774,9 +774,6 @@ symbols = [
 
   [ 'unistd.h', 'SEEK_HOLE' ],
 
-  # GET_VLAN_VID_CMD is required for virNetDevGetVLanID
-  [ 'linux/if_vlan.h', 'GET_VLAN_VID_CMD' ],
-
   # Check for BSD approach for setting MAC addr
   [ 'net/if_dl.h', 'link_addr', '#include <sys/types.h>\n#include <sys/socket.h>' ],
 ]
