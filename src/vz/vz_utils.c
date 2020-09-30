@@ -556,8 +556,7 @@ vzDomObjAlloc(void *opaque G_GNUC_UNUSED)
 {
     vzDomObjPtr pdom = NULL;
 
-    if (VIR_ALLOC(pdom) < 0)
-        return NULL;
+    pdom = g_new0(struct vzDomObj, 1);
 
     if (virCondInit(&pdom->job.cond) < 0)
         goto error;

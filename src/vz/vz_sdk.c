@@ -70,16 +70,14 @@ logPrlErrorHelper(PRL_RESULT err, const char *filename,
     /* Get required buffer length */
     PrlApi_GetResultDescription(err, PRL_TRUE, PRL_FALSE, NULL, &len);
 
-    if (VIR_ALLOC_N(msg1, len) < 0)
-        goto cleanup;
+    msg1 = g_new0(char, len);
 
     /* get short error description */
     PrlApi_GetResultDescription(err, PRL_TRUE, PRL_FALSE, msg1, &len);
 
     PrlApi_GetResultDescription(err, PRL_FALSE, PRL_FALSE, NULL, &len);
 
-    if (VIR_ALLOC_N(msg2, len) < 0)
-        goto cleanup;
+    msg2 = g_new0(char, len);
 
     /* get long error description */
     PrlApi_GetResultDescription(err, PRL_FALSE, PRL_FALSE, msg2, &len);
@@ -88,7 +86,6 @@ logPrlErrorHelper(PRL_RESULT err, const char *filename,
                          filename, funcname, linenr,
                          _("%s %s"), msg1, msg2);
 
- cleanup:
     VIR_FREE(msg1);
     VIR_FREE(msg2);
 }
@@ -122,22 +119,19 @@ logPrlEventErrorHelper(PRL_HANDLE event, const char *filename,
 
     PrlEvent_GetErrString(event, PRL_TRUE, PRL_FALSE, NULL, &len);
 
-    if (VIR_ALLOC_N(msg1, len) < 0)
-        goto cleanup;
+    msg1 = g_new0(char, len);
 
     PrlEvent_GetErrString(event, PRL_TRUE, PRL_FALSE, msg1, &len);
 
     PrlEvent_GetErrString(event, PRL_FALSE, PRL_FALSE, NULL, &len);
 
-    if (VIR_ALLOC_N(msg2, len) < 0)
-        goto cleanup;
+    msg2 = g_new0(char, len);
 
     PrlEvent_GetErrString(event, PRL_FALSE, PRL_FALSE, msg2, &len);
 
     virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INTERNAL_ERROR,
                          filename, funcname, linenr,
                          _("%s %s"), msg1, msg2);
- cleanup:
     VIR_FREE(msg1);
     VIR_FREE(msg2);
 }
@@ -306,8 +300,7 @@ prlsdkGetStringParamVar(prlsdkParamGetterType getter, PRL_HANDLE handle)
     pret = getter(handle, NULL, &buflen);
     prlsdkCheckRetGoto(pret, error);
 
-    if (VIR_ALLOC_N(str, buflen) < 0)
-        goto error;
+    str = g_new0(char, buflen);
 
     pret = getter(handle, str, &buflen);
     prlsdkCheckRetGoto(pret, error);
@@ -582,11 +575,8 @@ prlsdkAddDomainVideoInfoVm(PRL_HANDLE sdkdom, virDomainDefPtr def)
     ret = PrlVmCfg_GetVideoRamSize(sdkdom, &videoRam);
     prlsdkCheckRetGoto(ret, error);
 
-    if (VIR_ALLOC(video) < 0)
-        goto error;
-
-    if (VIR_ALLOC(accel) < 0)
-        goto error;
+    video = g_new0(virDomainVideoDef, 1);
+    accel = g_new0(virDomainVideoAccelDef, 1);
 
     if (VIR_APPEND_ELEMENT_COPY(def->videos, def->nvideos, video) < 0)
         goto error;
@@ -773,8 +763,7 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
             goto cleanup;
         }
         fs->type = VIR_DOMAIN_FS_TYPE_VOLUME;
-        if (VIR_ALLOC(fs->src->srcpool) < 0)
-            goto cleanup;
+        fs->src->srcpool = g_new0(virStorageSourcePoolDef, 1);
         fs->src->srcpool->pool = g_strdup(matches[1]);
         fs->src->srcpool->volume = g_strdup(matches[2]);
         VIR_FREE(buf);
@@ -914,8 +903,7 @@ prlsdkParseNetAddress(char *addr)
     *maskstr = '\0';
     ++maskstr;
 
-    if (VIR_ALLOC(ip) < 0)
-        goto cleanup;
+    ip = g_new0(virNetDevIPAddr, 1);
 
     if (virSocketAddrParse(&ip->address, addr, AF_UNSPEC) < 0)
         goto cleanup;
@@ -962,8 +950,7 @@ prlsdkGetNetAddresses(PRL_HANDLE sdknet, virDomainNetDefPtr net)
         pret = PrlStrList_GetItem(addrlist, i, NULL, &buflen);
         prlsdkCheckRetGoto(pret, cleanup);
 
-        if (VIR_ALLOC_N(addr, buflen) < 0)
-            goto cleanup;
+        addr = g_new0(char, buflen);
 
         pret = PrlStrList_GetItem(addrlist, i, addr, &buflen);
         prlsdkCheckRetGoto(pret, cleanup);
@@ -1145,8 +1132,7 @@ prlsdkAddDomainNetInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
         ret = PrlVmCfg_GetNetAdapter(sdkdom, i, &netAdapter);
         prlsdkCheckRetGoto(ret, error);
 
-        if (VIR_ALLOC(net) < 0)
-            goto error;
+        net = g_new0(virDomainNetDef, 1);
 
         if (prlsdkGetNetInfo(netAdapter, net, IS_CT(def)) < 0)
             goto error;
@@ -1333,8 +1319,7 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     if (vncMode == PRD_DISABLED)
         return 0;
 
-    if (VIR_ALLOC(gr) < 0)
-        goto error;
+    gr = g_new0(virDomainGraphicsDef, 1);
 
     if (!(passwd = prlsdkGetStringParamVar(PrlVmCfg_GetVNCPassword, sdkdom)))
         goto error;
@@ -1351,9 +1336,7 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     gr->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
     gr->data.vnc.port = port;
 
-    if (VIR_ALLOC(gr->listens) < 0)
-        goto error;
-
+    gr->listens = g_new0(virDomainGraphicsListenDef, 1);
     gr->nListens = 1;
 
     if (!(gr->listens[0].address = prlsdkGetStringParamVar(PrlVmCfg_GetVNCHostName,
@@ -4652,8 +4635,7 @@ prlsdkParseSnapshotTree(const char *treexml)
         if (nodes[i]->parent == root)
             continue;
 
-        if (VIR_ALLOC(def) < 0)
-            goto cleanup;
+        def = g_new0(virDomainSnapshotDef, 1);
 
         ctxt->node = nodes[i];
 

@@ -380,8 +380,7 @@ vzConnectOpen(virConnectPtr conn,
     if (!(driver = vzGetDriverConnection()))
         return VIR_DRV_OPEN_ERROR;
 
-    if (VIR_ALLOC(privconn) < 0)
-        goto error;
+    privconn = g_new0(vzConn, 1);
 
     conn->privateData = privconn;
     privconn->driver = driver;
@@ -2792,8 +2791,7 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
     xmlXPathContextPtr ctx = NULL;
     vzMigrationCookiePtr mig = NULL;
 
-    if (VIR_ALLOC(mig) < 0)
-        return NULL;
+    mig = g_new0(vzMigrationCookie, 1);
 
     if (!cookiein || cookieinlen <= 0 || cookiein[cookieinlen - 1] != '\0') {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3717,8 +3715,7 @@ vzDomainGetAllStats(virConnectPtr conn,
     virDomainStatsRecordPtr stat;
     int maxparams = 0;
 
-    if (VIR_ALLOC(stat) < 0)
-        return NULL;
+    stat = g_new0(virDomainStatsRecord, 1);
 
     if (vzDomainGetStateStats(dom, stat, &maxparams) < 0)
         goto error;
@@ -3802,8 +3799,7 @@ vzConnectGetAllDomainStats(virConnectPtr conn,
             return -1;
     }
 
-    if (VIR_ALLOC_N(tmpstats, ndoms + 1) < 0)
-        goto cleanup;
+    tmpstats = g_new0(virDomainStatsRecordPtr, ndoms + 1);
 
     for (i = 0; i < ndoms; i++) {
         virDomainStatsRecordPtr tmp;
