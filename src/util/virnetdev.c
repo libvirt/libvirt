@@ -915,9 +915,30 @@ virNetDevGetMaster(const char *ifname, char **master)
     return 0;
 }
 
+#elif defined(__linux__)
+
+/* libnl isn't available, so we can't use netlink.
+ * Fall back to using sysfs
+ */
+int
+virNetDevGetMaster(const char *ifname, char **master)
+{
+    g_autofree char *path = NULL;
+    g_autofree char *canonical = NULL;
+
+    if (virNetDevSysfsFile(&path, ifname, "master") < 0)
+        return -1;
+
+    if (!(canonical = virFileCanonicalizePath(path)))
+        return -1;
+
+    *master = g_path_get_basename(canonical);
+
+    VIR_DEBUG("IFLA_MASTER for %s is %s", ifname, *master ? *master : "(none)");
+    return 0;
+}
 
 #else
-
 
 int
 virNetDevGetMaster(const char *ifname G_GNUC_UNUSED,
