@@ -14,9 +14,9 @@
     </data>
   </define>
 
-  <define name='encryption'>
-    <element name='encryption'>
-      <attribute name='format'>
+  <define name="encryption">
+    <element name="encryption">
+      <attribute name="format">
         <choice>
           <value>default</value>
           <value>qcow</value>
@@ -24,23 +24,23 @@
         </choice>
       </attribute>
       <interleave>
-        <ref name='secret'/>
+        <ref name="secret"/>
         <optional>
-          <element name='cipher'>
-            <ref name='keycipher'/>
+          <element name="cipher">
+            <ref name="keycipher"/>
           </element>
-          <element name='ivgen'>
-            <ref name='keyivgen'/>
+          <element name="ivgen">
+            <ref name="keyivgen"/>
           </element>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='initiatorinfo'>
-    <element name='initiator'>
-      <element name='iqn'>
-        <attribute name='name'>
+  <define name="initiatorinfo">
+    <element name="initiator">
+      <element name="iqn">
+        <attribute name="name">
           <text/>
         </attribute>
         <empty/>
@@ -61,7 +61,7 @@
     </element>
   </define>
 
-  <define name='unixSocketSource'>
+  <define name="unixSocketSource">
     <element name="source">
       <attribute name="type">
         <value>unix</value>
@@ -82,47 +82,47 @@
     </element>
   </define>
 
-  <define name='reservations'>
-    <element name='reservations'>
+  <define name="reservations">
+    <element name="reservations">
       <optional>
-        <attribute name='managed'>
-          <ref name='virYesNo'/>
+        <attribute name="managed">
+          <ref name="virYesNo"/>
         </attribute>
       </optional>
       <optional>
-        <ref name='unixSocketSource'/>
+        <ref name="unixSocketSource"/>
       </optional>
     </element>
   </define>
 
-  <define name='secret'>
-    <element name='secret'>
-      <attribute name='type'>
+  <define name="secret">
+    <element name="secret">
+      <attribute name="type">
         <value>passphrase</value>
       </attribute>
       <choice>
-        <attribute name='uuid'>
+        <attribute name="uuid">
           <ref name="UUID"/>
         </attribute>
-        <attribute name='usage'>
+        <attribute name="usage">
           <text/>
         </attribute>
       </choice>
     </element>
   </define>
 
-  <define name='compat'>
-    <element name='compat'>
-      <data type='string'>
-        <param name='pattern'>[0-9]+\.[0-9]+</param>
+  <define name="compat">
+    <element name="compat">
+      <data type="string">
+        <param name="pattern">[0-9]+\.[0-9]+</param>
       </data>
     </element>
   </define>
-  <define name='fileFormatFeatures'>
-    <element name='features'>
+  <define name="fileFormatFeatures">
+    <element name="features">
       <interleave>
         <optional>
-          <element name='lazy_refcounts'>
+          <element name="lazy_refcounts">
             <empty/>
           </element>
         </optional>
@@ -132,7 +132,7 @@
 
   <!-- split the list of known storage formats into two, those where
        we know how to follow backing chains, and all others -->
-  <define name='storageFormatBacking'>
+  <define name="storageFormatBacking">
     <choice>
       <value>cow</value>
       <value>qcow</value>
@@ -141,7 +141,7 @@
       <value>vmdk</value>
     </choice>
   </define>
-  <define name='storageFormat'>
+  <define name="storageFormat">
     <choice>
       <value>raw</value>
       <value>dir</value>
@@ -155,51 +155,51 @@
       <value>vhd</value>
       <value>ploop</value>
       <value>luks</value>
-      <ref name='storageFormatBacking'/>
+      <ref name="storageFormatBacking"/>
     </choice>
   </define>
 
-  <define name='storageStartupPolicy'>
-    <!-- Use a combine='choice' override in client files that want to
+  <define name="storageStartupPolicy">
+    <!-- Use a combine="choice" override in client files that want to
          add additional attributes to a <source> sub-element
          associated with a storage source -->
     <notAllowed/>
   </define>
 
-  <define name='storageSourceExtra'>
-    <!-- Use a combine='choice' override in client files that want to
+  <define name="storageSourceExtra">
+    <!-- Use a combine="choice" override in client files that want to
          add additional elements as siblings of a <source> sub-element
          associated with a storage source -->
     <notAllowed/>
   </define>
 
-  <define name='permissions'>
+  <define name="permissions">
     <optional>
-      <element name='permissions'>
+      <element name="permissions">
         <interleave>
           <optional>
-            <element name='mode'>
-              <ref name='octalMode'/>
+            <element name="mode">
+              <ref name="octalMode"/>
             </element>
           </optional>
           <optional>
-            <element name='owner'>
+            <element name="owner">
               <choice>
-                <ref name='unsignedInt'/>
+                <ref name="unsignedInt"/>
                 <value>-1</value>
               </choice>
             </element>
           </optional>
           <optional>
-            <element name='group'>
+            <element name="group">
               <choice>
-                <ref name='unsignedInt'/>
+                <ref name="unsignedInt"/>
                 <value>-1</value>
               </choice>
             </element>
           </optional>
           <optional>
-            <element name='label'>
+            <element name="label">
               <text/>
             </element>
           </optional>
@@ -208,35 +208,35 @@
     </optional>
   </define>
 
-  <define name='keycipher'>
-    <attribute name='name'>
+  <define name="keycipher">
+    <attribute name="name">
       <text/>
     </attribute>
-    <attribute name='size'>
+    <attribute name="size">
       <ref name="unsignedInt"/>
     </attribute>
     <optional>
-      <attribute name='mode'>
+      <attribute name="mode">
         <text/>
       </attribute>
-      <attribute name='hash'>
+      <attribute name="hash">
         <text/>
       </attribute>
     </optional>
   </define>
 
-  <define name='keyivgen'>
-    <attribute name='name'>
+  <define name="keyivgen">
+    <attribute name="name">
       <text/>
     </attribute>
     <optional>
-      <attribute name='hash'>
+      <attribute name="hash">
         <text/>
       </attribute>
     </optional>
   </define>
 
-  <define name='refreshVolumeAllocation'>
+  <define name="refreshVolumeAllocation">
     <choice>
       <value>default</value>
       <value>capacity</value>

@@ -2,76 +2,76 @@
 <!-- A Relax NG schema for the libvirt capabilities XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <include href='basictypes.rng'/>
+  <include href="basictypes.rng"/>
   <start>
-    <ref name='capabilities'/>
+    <ref name="capabilities"/>
   </start>
 
 
-  <define name='capabilities'>
-    <element name='capabilities'>
-      <ref name='hostcaps'/>
+  <define name="capabilities">
+    <element name="capabilities">
+      <ref name="hostcaps"/>
 
       <zeroOrMore>
-        <ref name='guestcaps'/>
+        <ref name="guestcaps"/>
       </zeroOrMore>
     </element>
   </define>
 
-  <define name='hostcaps'>
-    <element name='host'>
+  <define name="hostcaps">
+    <element name="host">
       <optional>
-        <element name='uuid'>
-          <ref name='UUID'/>
+        <element name="uuid">
+          <ref name="UUID"/>
         </element>
       </optional>
-      <element name='cpu'>
-        <element name='arch'>
-          <ref name='archnames'/>
+      <element name="cpu">
+        <element name="arch">
+          <ref name="archnames"/>
         </element>
         <optional>
-          <ref name='cpufeatures'/>
+          <ref name="cpufeatures"/>
         </optional>
         <optional>
-          <ref name='cpuspec'/>
+          <ref name="cpuspec"/>
         </optional>
       </element>
       <optional>
-        <ref name='power_management'/>
+        <ref name="power_management"/>
       </optional>
       <optional>
-        <ref name='iommu_support'/>
+        <ref name="iommu_support"/>
       </optional>
       <optional>
-        <ref name='migration'/>
+        <ref name="migration"/>
       </optional>
       <optional>
-        <ref name='topology'/>
+        <ref name="topology"/>
       </optional>
       <optional>
-        <ref name='cache'/>
+        <ref name="cache"/>
       </optional>
       <optional>
-        <ref name='memory_bandwidth'/>
+        <ref name="memory_bandwidth"/>
       </optional>
       <zeroOrMore>
-        <ref name='secmodel'/>
+        <ref name="secmodel"/>
       </zeroOrMore>
     </element>
   </define>
 
-  <define name='secmodel'>
-    <element name='secmodel'>
+  <define name="secmodel">
+    <element name="secmodel">
       <interleave>
-        <element name='model'>
+        <element name="model">
           <text/>
         </element>
-        <element name='doi'>
+        <element name="doi">
           <text/>
         </element>
         <zeroOrMore>
-          <element name='baselabel'>
-            <attribute name='type'>
+          <element name="baselabel">
+            <attribute name="type">
               <text/>
             </attribute>
             <text/>
@@ -82,78 +82,78 @@
   </define>
 
 
-  <define name='cpufeatures'>
-    <element name='features'>
+  <define name="cpufeatures">
+    <element name="features">
       <optional>
-        <element name='pae'><empty/></element>
+        <element name="pae"><empty/></element>
       </optional>
       <optional>
-        <element name='nonpae'><empty/></element>
+        <element name="nonpae"><empty/></element>
       </optional>
       <optional>
-        <element name='vmx'><empty/></element>
+        <element name="vmx"><empty/></element>
       </optional>
       <optional>
-        <element name='svm'><empty/></element>
+        <element name="svm"><empty/></element>
       </optional>
     </element>
   </define>
 
-  <define name='cpuspec'>
-    <element name='model'>
+  <define name="cpuspec">
+    <element name="model">
       <text/>
     </element>
     <optional>
-      <element name='vendor'>
+      <element name="vendor">
         <text/>
       </element>
     </optional>
     <optional>
-      <element name='microcode'>
-        <attribute name='version'>
-          <ref name='positiveInteger'/>
+      <element name="microcode">
+        <attribute name="version">
+          <ref name="positiveInteger"/>
         </attribute>
       </element>
     </optional>
-    <element name='topology'>
-      <attribute name='sockets'>
-        <ref name='positiveInteger'/>
+    <element name="topology">
+      <attribute name="sockets">
+        <ref name="positiveInteger"/>
       </attribute>
-      <attribute name='cores'>
-        <ref name='positiveInteger'/>
+      <attribute name="cores">
+        <ref name="positiveInteger"/>
       </attribute>
-      <attribute name='threads'>
-        <ref name='positiveInteger'/>
+      <attribute name="threads">
+        <ref name="positiveInteger"/>
       </attribute>
     </element>
     <zeroOrMore>
-      <element name='feature'>
-        <attribute name='name'>
-          <ref name='featureName'/>
+      <element name="feature">
+        <attribute name="name">
+          <ref name="featureName"/>
         </attribute>
         <empty/>
       </element>
     </zeroOrMore>
     <zeroOrMore>
-      <ref name='pagesHost'/>
+      <ref name="pagesHost"/>
     </zeroOrMore>
   </define>
 
-  <define name='power_management'>
-    <element name='power_management'>
+  <define name="power_management">
+    <element name="power_management">
       <interleave>
         <optional>
-          <element name='suspend_mem'>
+          <element name="suspend_mem">
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='suspend_disk'>
+          <element name="suspend_disk">
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='suspend_hybrid'>
+          <element name="suspend_hybrid">
             <empty/>
           </element>
         </optional>
@@ -161,27 +161,27 @@
     </element>
   </define>
 
-  <define name='iommu_support'>
-    <element name='iommu'>
+  <define name="iommu_support">
+    <element name="iommu">
       <optional>
-        <attribute name='support'>
-          <ref name='virYesNo'/>
+        <attribute name="support">
+          <ref name="virYesNo"/>
         </attribute>
       </optional>
     </element>
   </define>
 
-  <define name='migration'>
-    <element name='migration_features'>
+  <define name="migration">
+    <element name="migration_features">
       <optional>
-        <element name='live'>
+        <element name="live">
           <empty/>
         </element>
       </optional>
       <optional>
-        <element name='uri_transports'>
+        <element name="uri_transports">
           <oneOrMore>
-            <element name='uri_transport'>
+            <element name="uri_transport">
               <choice>
                 <value>vpxmigr</value>
                 <value>tcp</value>
@@ -195,42 +195,42 @@
     </element>
   </define>
 
-  <define name='topology'>
-    <element name='topology'>
-      <element name='cells'>
-        <attribute name='num'>
-          <ref name='unsignedInt'/>
+  <define name="topology">
+    <element name="topology">
+      <element name="cells">
+        <attribute name="num">
+          <ref name="unsignedInt"/>
         </attribute>
         <oneOrMore>
-          <ref name='cell'/>
+          <ref name="cell"/>
         </oneOrMore>
       </element>
     </element>
   </define>
 
-  <define name='cell'>
-    <element name='cell'>
-      <attribute name='id'>
-        <ref name='unsignedInt'/>
+  <define name="cell">
+    <element name="cell">
+      <attribute name="id">
+        <ref name="unsignedInt"/>
       </attribute>
 
       <optional>
-        <ref name='memory'/>
+        <ref name="memory"/>
       </optional>
 
       <zeroOrMore>
-        <ref name='pagesNuma'/>
+        <ref name="pagesNuma"/>
       </zeroOrMore>
 
       <optional>
-        <element name='distances'>
+        <element name="distances">
           <zeroOrMore>
-            <element name='sibling'>
-              <attribute name='id'>
-                <ref name='unsignedInt'/>
+            <element name="sibling">
+              <attribute name="id">
+                <ref name="unsignedInt"/>
               </attribute>
-              <attribute name='value'>
-                <ref name='unsignedInt'/>
+              <attribute name="value">
+                <ref name="unsignedInt"/>
               </attribute>
             </element>
           </zeroOrMore>
@@ -238,95 +238,95 @@
       </optional>
 
       <optional>
-        <element name='cpus'>
-          <attribute name='num'>
-            <ref name='unsignedInt'/>
+        <element name="cpus">
+          <attribute name="num">
+            <ref name="unsignedInt"/>
           </attribute>
           <oneOrMore>
-            <ref name='cpu'/>
+            <ref name="cpu"/>
           </oneOrMore>
         </element>
       </optional>
     </element>
   </define>
 
-  <define name='memory'>
-    <element name='memory'>
-      <ref name='scaledInteger'/>
+  <define name="memory">
+    <element name="memory">
+      <ref name="scaledInteger"/>
     </element>
   </define>
 
-  <define name='cpu'>
-    <element name='cpu'>
-      <attribute name='id'>
-        <ref name='unsignedInt'/>
+  <define name="cpu">
+    <element name="cpu">
+      <attribute name="id">
+        <ref name="unsignedInt"/>
       </attribute>
       <optional>
-        <attribute name='socket_id'>
-          <ref name='unsignedInt'/>
+        <attribute name="socket_id">
+          <ref name="unsignedInt"/>
         </attribute>
-        <attribute name='die_id'>
-          <ref name='unsignedInt'/>
+        <attribute name="die_id">
+          <ref name="unsignedInt"/>
         </attribute>
-        <attribute name='core_id'>
-          <ref name='unsignedInt'/>
+        <attribute name="core_id">
+          <ref name="unsignedInt"/>
         </attribute>
-        <attribute name='siblings'>
-          <ref name='cpuset'/>
+        <attribute name="siblings">
+          <ref name="cpuset"/>
         </attribute>
       </optional>
     </element>
   </define>
 
-  <define name='cache'>
-    <element name='cache'>
+  <define name="cache">
+    <element name="cache">
       <oneOrMore>
-        <element name='bank'>
-          <attribute name='id'>
-            <ref name='unsignedInt'/>
+        <element name="bank">
+          <attribute name="id">
+            <ref name="unsignedInt"/>
           </attribute>
-          <attribute name='level'>
-            <ref name='unsignedInt'/>
+          <attribute name="level">
+            <ref name="unsignedInt"/>
           </attribute>
-          <ref name='cacheType'/>
-          <attribute name='size'>
-            <ref name='unsignedInt'/>
+          <ref name="cacheType"/>
+          <attribute name="size">
+            <ref name="unsignedInt"/>
           </attribute>
-          <attribute name='unit'>
-            <ref name='unit'/>
+          <attribute name="unit">
+            <ref name="unit"/>
           </attribute>
-          <attribute name='cpus'>
-            <ref name='cpuset'/>
+          <attribute name="cpus">
+            <ref name="cpuset"/>
           </attribute>
           <zeroOrMore>
-            <element name='control'>
-              <attribute name='granularity'>
-                <ref name='unsignedInt'/>
+            <element name="control">
+              <attribute name="granularity">
+                <ref name="unsignedInt"/>
               </attribute>
               <optional>
-                <attribute name='min'>
-                  <ref name='unsignedInt'/>
+                <attribute name="min">
+                  <ref name="unsignedInt"/>
                 </attribute>
               </optional>
-              <attribute name='unit'>
-                <ref name='unit'/>
+              <attribute name="unit">
+                <ref name="unit"/>
               </attribute>
-              <ref name='cacheType'/>
-              <attribute name='maxAllocs'>
-                <ref name='unsignedInt'/>
+              <ref name="cacheType"/>
+              <attribute name="maxAllocs">
+                <ref name="unsignedInt"/>
               </attribute>
             </element>
           </zeroOrMore>
         </element>
       </oneOrMore>
       <optional>
-        <ref name='cpuMonitor'/>
+        <ref name="cpuMonitor"/>
       </optional>
     </element>
   </define>
 
-  <define name='cacheType'>
-    <attribute name='type'>
+  <define name="cacheType">
+    <attribute name="type">
       <choice>
         <value>both</value>
         <value>code</value>
@@ -335,83 +335,83 @@
     </attribute>
   </define>
 
-  <define name='memory_bandwidth'>
-    <element name='memory_bandwidth'>
+  <define name="memory_bandwidth">
+    <element name="memory_bandwidth">
       <oneOrMore>
-        <element name='node'>
-          <attribute name='id'>
-            <ref name='unsignedInt'/>
+        <element name="node">
+          <attribute name="id">
+            <ref name="unsignedInt"/>
           </attribute>
-          <attribute name='cpus'>
-            <ref name='cpuset'/>
+          <attribute name="cpus">
+            <ref name="cpuset"/>
           </attribute>
           <zeroOrMore>
-            <element name='control'>
-              <attribute name='granularity'>
-                <ref name='unsignedInt'/>
+            <element name="control">
+              <attribute name="granularity">
+                <ref name="unsignedInt"/>
               </attribute>
             <optional>
-              <attribute name='min'>
-                <ref name='unsignedInt'/>
+              <attribute name="min">
+                <ref name="unsignedInt"/>
               </attribute>
             </optional>
-              <attribute name='maxAllocs'>
-                <ref name='unsignedInt'/>
+              <attribute name="maxAllocs">
+                <ref name="unsignedInt"/>
               </attribute>
             </element>
           </zeroOrMore>
         </element>
       </oneOrMore>
       <optional>
-        <ref name='cpuMonitor'/>
+        <ref name="cpuMonitor"/>
       </optional>
     </element>
   </define>
 
-  <define name='cpuMonitor'>
-    <element name='monitor'>
+  <define name="cpuMonitor">
+    <element name="monitor">
       <optional>
-        <attribute name='level'>
-          <ref name='unsignedInt'/>
+        <attribute name="level">
+          <ref name="unsignedInt"/>
         </attribute>
-        <attribute name='reuseThreshold'>
-          <ref name='unsignedInt'/>
+        <attribute name="reuseThreshold">
+          <ref name="unsignedInt"/>
         </attribute>
       </optional>
-      <attribute name='maxMonitors'>
-        <ref name='unsignedInt'/>
+      <attribute name="maxMonitors">
+        <ref name="unsignedInt"/>
       </attribute>
       <oneOrMore>
-        <element name='feature'>
-          <attribute name='name'>
-            <ref name='monitorFeature'/>
+        <element name="feature">
+          <attribute name="name">
+            <ref name="monitorFeature"/>
           </attribute>
         </element>
       </oneOrMore>
     </element>
   </define>
 
-  <define name='monitorFeature'>
-    <data type='string'>
-      <param name='pattern'>(llc_|mbm_)[a-zA-Z0-9\-_]+</param>
+  <define name="monitorFeature">
+    <data type="string">
+      <param name="pattern">(llc_|mbm_)[a-zA-Z0-9\-_]+</param>
     </data>
   </define>
 
-  <define name='guestcaps'>
-    <element name='guest'>
-      <ref name='ostype'/>
-      <ref name='arch'/>
+  <define name="guestcaps">
+    <element name="guest">
+      <ref name="ostype"/>
+      <ref name="arch"/>
       <optional>
-        <ref name='features'/>
+        <ref name="features"/>
       </optional>
     </element>
   </define>
 
-  <define name='ostype'>
-    <element name='os_type'>
+  <define name="ostype">
+    <element name="os_type">
       <choice>
         <value>xen</value> <!-- Xen 3.0 pv -->
-        <value>linux</value> <!-- same as 'xen' - meant to be legacy -->
+        <value>linux</value> <!-- same as "xen" - meant to be legacy -->
         <value>hvm</value> <!-- unmodified OS -->
         <value>exe</value> <!-- For container based virt -->
         <value>uml</value> <!-- user mode linux; NOT USED ANYMORE -->
@@ -419,41 +419,41 @@
     </element>
   </define>
 
-  <define name='arch'>
-    <element name='arch'>
-      <attribute name='name'>
-        <ref name='archnames'/>
+  <define name="arch">
+    <element name="arch">
+      <attribute name="name">
+        <ref name="archnames"/>
       </attribute>
-      <ref name='wordsize'/>
+      <ref name="wordsize"/>
       <optional>
-        <ref name='emulator'/>
+        <ref name="emulator"/>
       </optional>
       <optional>
-        <ref name='loader'/>
+        <ref name="loader"/>
       </optional>
       <zeroOrMore>
-        <ref name='machine'/>
+        <ref name="machine"/>
       </zeroOrMore>
       <oneOrMore>
-        <ref name='domain'/>
+        <ref name="domain"/>
       </oneOrMore>
     </element>
   </define>
 
-  <define name='emulator'>
-    <element name='emulator'>
-      <ref name='absFilePath'/>
+  <define name="emulator">
+    <element name="emulator">
+      <ref name="absFilePath"/>
     </element>
   </define>
 
-  <define name='loader'>
-    <element name='loader'>
-      <ref name='absFilePath'/>
+  <define name="loader">
+    <element name="loader">
+      <ref name="absFilePath"/>
     </element>
   </define>
 
-  <define name='wordsize'>
-    <element name='wordsize'>
+  <define name="wordsize">
+    <element name="wordsize">
       <choice>
         <value>31</value>
         <value>32</value>
@@ -462,25 +462,25 @@
     </element>
   </define>
 
-  <define name='machine'>
-    <element name='machine'>
+  <define name="machine">
+    <element name="machine">
       <optional>
-        <attribute name='canonical'>
+        <attribute name="canonical">
           <text/>
         </attribute>
       </optional>
       <optional>
-        <attribute name='maxCpus'>
-          <ref name='unsignedInt'/>
+        <attribute name="maxCpus">
+          <ref name="unsignedInt"/>
         </attribute>
       </optional>
       <text/>
     </element>
   </define>
 
-  <define name='domain'>
-    <element name='domain'>
-      <attribute name='type'>
+  <define name="domain">
+    <element name="domain">
+      <attribute name="type">
         <choice>
           <value>qemu</value>
           <value>kqemu</value>
@@ -494,63 +494,63 @@
       </attribute>
 
       <optional>
-        <ref name='emulator'/>
+        <ref name="emulator"/>
       </optional>
       <zeroOrMore>
-        <ref name='machine'/>
+        <ref name="machine"/>
       </zeroOrMore>
     </element>
   </define>
 
-  <define name='features'>
-    <element name='features'>
+  <define name="features">
+    <element name="features">
       <interleave>
         <optional>
-          <element name='pae'>
+          <element name="pae">
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='nonpae'>
+          <element name="nonpae">
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='ia64_be'>
+          <element name="ia64_be">
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='acpi'>
-            <ref name='featuretoggle'/>
+          <element name="acpi">
+            <ref name="featuretoggle"/>
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='apic'>
-            <ref name='featuretoggle'/>
+          <element name="apic">
+            <ref name="featuretoggle"/>
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='cpuselection'>
+          <element name="cpuselection">
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='deviceboot'>
+          <element name="deviceboot">
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='disksnapshot'>
-            <ref name='featuretoggle'/>
+          <element name="disksnapshot">
+            <ref name="featuretoggle"/>
             <empty/>
           </element>
         </optional>
         <optional>
-          <element name='hap'>
-            <ref name='featuretoggle'/>
+          <element name="hap">
+            <ref name="featuretoggle"/>
             <empty/>
           </element>
         </optional>
@@ -558,40 +558,40 @@
     </element>
   </define>
 
-  <define name='featuretoggle'>
-    <attribute name='toggle'>
+  <define name="featuretoggle">
+    <attribute name="toggle">
       <ref name="virYesNo"/>
     </attribute>
-    <attribute name='default'>
+    <attribute name="default">
       <ref name="virOnOff"/>
     </attribute>
   </define>
 
-  <define name='featureName'>
-    <data type='string'>
-      <param name='pattern'>[a-zA-Z0-9\-_]+</param>
+  <define name="featureName">
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9\-_]+</param>
     </data>
   </define>
 
-  <define name='pagesHost'>
-    <element name='pages'>
-      <ref name='pagesElem'/>
+  <define name="pagesHost">
+    <element name="pages">
+      <ref name="pagesElem"/>
     </element>
   </define>
-  <define name='pagesNuma'>
-    <element name='pages'>
-      <ref name='pagesElem'/>
-      <ref name='unsignedInt'/>
+  <define name="pagesNuma">
+    <element name="pages">
+      <ref name="pagesElem"/>
+      <ref name="unsignedInt"/>
     </element>
   </define>
-  <define name='pagesElem'>
+  <define name="pagesElem">
     <optional>
-      <attribute name='unit'>
-        <ref name='unit'/>
+      <attribute name="unit">
+        <ref name="unit"/>
       </attribute>
     </optional>
-    <attribute name='size'>
-      <ref name='unsignedInt'/>
+    <attribute name="size">
+      <ref name="unsignedInt"/>
     </attribute>
   </define>
 </grammar>

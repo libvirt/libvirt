@@ -8,14 +8,14 @@
       <param name="pattern">[0-9]+</param>
     </data>
   </define>
-  <define name='unsignedLong'>
-    <data type='unsignedLong'>
-      <param name='pattern'>[0-9]+</param>
+  <define name="unsignedLong">
+    <data type="unsignedLong">
+      <param name="pattern">[0-9]+</param>
     </data>
   </define>
 
-  <define name='hexuint'>
-    <data type='string'>
+  <define name="hexuint">
+    <data type="string">
       <param name="pattern">(0x)?[0-9a-f]+</param>
     </data>
   </define>
@@ -26,9 +26,9 @@
     </data>
   </define>
 
-  <define name='octalMode'>
+  <define name="octalMode">
     <data type="unsignedInt">
-      <param name='pattern'>[0-7]+</param>
+      <param name="pattern">[0-7]+</param>
     </data>
   </define>
 
@@ -48,7 +48,7 @@
       <data type="string">
         <param name="pattern">(0x)?[0-9a-fA-F]{1,4}</param>
       </data>
-      <data type='int'>
+      <data type="int">
         <param name="minInclusive">0</param>
         <param name="maxInclusive">65535</param>
       </data>
@@ -309,18 +309,18 @@
     </data>
   </define>
 
-  <define name='unit'>
-    <data type='string'>
-      <param name='pattern'>([bB]([yY][tT][eE][sS]?)?)|([kKmMgGtTpPeE]([iI]?[bB])?)</param>
+  <define name="unit">
+    <data type="string">
+      <param name="pattern">([bB]([yY][tT][eE][sS]?)?)|([kKmMgGtTpPeE]([iI]?[bB])?)</param>
     </data>
   </define>
-  <define name='scaledInteger'>
+  <define name="scaledInteger">
     <optional>
-      <attribute name='unit'>
-        <ref name='unit'/>
+      <attribute name="unit">
+        <ref name="unit"/>
       </attribute>
     </optional>
-    <ref name='unsignedLong'/>
+    <ref name="unsignedLong"/>
   </define>
 
   <define name="pciDomain">
@@ -352,9 +352,9 @@
     </choice>
   </define>
 
-  <define name='wwn'>
-    <data type='string'>
-      <param name='pattern'>(0x)?[0-9a-fA-F]{16}</param>
+  <define name="wwn">
+    <data type="string">
+      <param name="pattern">(0x)?[0-9a-fA-F]{16}</param>
     </data>
   </define>
 
@@ -395,9 +395,9 @@
     </data>
   </define>
 
-  <define name='volName'>
+  <define name="volName">
     <!-- directory pools allow almost any file name as a volume name -->
-    <data type='string'>
+    <data type="string">
       <param name="pattern">[^/]+</param>
       <except>
         <choice>
@@ -408,7 +408,7 @@
     </data>
   </define>
 
-  <define name='archnames'>
+  <define name="archnames">
     <choice>
       <value>aarch64</value>
       <value>alpha</value>
@@ -454,20 +454,20 @@
     </data>
   </define>
 
-  <define name='sourceinfoadapter'>
-    <element name='adapter'>
+  <define name="sourceinfoadapter">
+    <element name="adapter">
       <choice>
         <group>
-          <!-- To keep back-compat, 'type' is not mandatory for
+          <!-- To keep back-compat, "type" is not mandatory for
            scsi_host adapter -->
           <optional>
-            <attribute name='type'>
+            <attribute name="type">
               <value>scsi_host</value>
             </attribute>
           </optional>
           <choice>
             <group>
-              <attribute name='name'>
+              <attribute name="name">
                 <text/>
               </attribute>
             </group>
@@ -475,8 +475,8 @@
               <interleave>
                 <element name="parentaddr">
                   <optional>
-                    <attribute name='unique_id'>
-                      <ref name='positiveInteger'/>
+                    <attribute name="unique_id">
+                      <ref name="positiveInteger"/>
                     </attribute>
                   </optional>
                   <element name="address">
@@ -488,39 +488,39 @@
           </choice>
         </group>
         <group>
-          <attribute name='type'>
+          <attribute name="type">
             <value>fc_host</value>
           </attribute>
           <optional>
-            <attribute name='parent'>
+            <attribute name="parent">
               <text/>
             </attribute>
           </optional>
           <optional>
-            <attribute name='managed'>
+            <attribute name="managed">
               <ref name="virYesNo"/>
             </attribute>
           </optional>
           <optional>
-            <attribute name='parent_wwnn'>
-              <ref name='wwn'/>
+            <attribute name="parent_wwnn">
+              <ref name="wwn"/>
             </attribute>
           </optional>
           <optional>
-            <attribute name='parent_wwpn'>
-              <ref name='wwn'/>
+            <attribute name="parent_wwpn">
+              <ref name="wwn"/>
             </attribute>
           </optional>
           <optional>
-            <attribute name='parent_fabric_wwn'>
-              <ref name='wwn'/>
+            <attribute name="parent_fabric_wwn">
+              <ref name="wwn"/>
             </attribute>
           </optional>
-          <attribute name='wwnn'>
-            <ref name='wwn'/>
+          <attribute name="wwnn">
+            <ref name="wwn"/>
           </attribute>
-          <attribute name='wwpn'>
-            <ref name='wwn'/>
+          <attribute name="wwpn">
+            <ref name="wwn"/>
           </attribute>
         </group>
       </choice>

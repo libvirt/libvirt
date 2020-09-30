@@ -17,7 +17,7 @@
     </choice>
   </start>
 
-  <include href='basictypes.rng'/>
+  <include href="basictypes.rng"/>
   <!--
        FIXME: How do we handle VLAN's ? Should they be their own interface
        or should we treat them as an option on the base interface ?  For
@@ -131,7 +131,7 @@
             </attribute>
           </optional>
           <!-- Bridge forward delay
-               (see 'ip link set <dev> type bridge forward_delay') -->
+               (see "ip link set <dev> type bridge forward_delay") -->
           <optional v:since="2">
             <attribute name="delay"><ref name="timeval"/></attribute>
           </optional>
@@ -426,7 +426,7 @@
     </data>
   </define>
 
-  <define name='vlan-id'>
+  <define name="vlan-id">
     <data type="unsignedInt">
       <param name="maxInclusive">4095</param>
     </data>

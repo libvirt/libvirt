@@ -46,7 +46,7 @@
       <optional>
         <attribute name="vendor_id">
           <data type="string">
-            <param name='pattern'>[^,]{12}</param>
+            <param name="pattern">[^,]{12}</param>
           </data>
         </attribute>
       </optional>
@@ -274,7 +274,7 @@
   </define>
   <define name="featureName">
     <data type="string">
-      <param name='pattern'>[a-zA-Z0-9\-_\.]+</param>
+      <param name="pattern">[a-zA-Z0-9\-_\.]+</param>
     </data>
   </define>
 

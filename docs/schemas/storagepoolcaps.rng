@@ -1,85 +1,85 @@
 <?xml version="1.0"?>
 <!-- A Relax NG schema for the libvirt storage pool capabilities XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <include href='basictypes.rng'/>
+  <include href="basictypes.rng"/>
   <start>
-    <ref name='storagepoolCapabilities'/>
+    <ref name="storagepoolCapabilities"/>
   </start>
 
 
-  <define name='storagepoolCapabilities'>
-    <element name='storagepoolCapabilities'>
+  <define name="storagepoolCapabilities">
+    <element name="storagepoolCapabilities">
       <zeroOrMore>
-        <ref name='poolCapsType'/>
+        <ref name="poolCapsType"/>
       </zeroOrMore>
     </element>
   </define>
 
-  <define name='poolCapsType'>
-    <element name='pool'>
-      <ref name='poolCapsTypes'/>
-      <ref name='poolCapsSupported'/>
+  <define name="poolCapsType">
+    <element name="pool">
+      <ref name="poolCapsTypes"/>
+      <ref name="poolCapsSupported"/>
       <optional>
-        <ref name='poolCapsPoolOptions'/>
+        <ref name="poolCapsPoolOptions"/>
       </optional>
       <optional>
-        <ref name='poolCapsVolOptions'/>
+        <ref name="poolCapsVolOptions"/>
       </optional>
     </element>
   </define>
 
-  <define name='poolCapsTypes'>
-    <attribute name='type'>
+  <define name="poolCapsTypes">
+    <attribute name="type">
       <text/>
     </attribute>
   </define>
 
-  <define name='poolCapsSupported'>
-    <attribute name='supported'>
+  <define name="poolCapsSupported">
+    <attribute name="supported">
       <ref name="virYesNo"/>
     </attribute>
   </define>
 
-  <define name='poolCapsPoolOptions'>
-    <element name='poolOptions'>
+  <define name="poolCapsPoolOptions">
+    <element name="poolOptions">
       <optional>
-        <ref name='poolDefaultFormat'/>
+        <ref name="poolDefaultFormat"/>
       </optional>
       <optional>
-        <ref name='poolCapsEnum'/>
+        <ref name="poolCapsEnum"/>
       </optional>
     </element>
   </define>
 
-  <define name='poolCapsVolOptions'>
-    <element name='volOptions'>
-      <ref name='poolDefaultFormat'/>
-      <ref name='poolCapsEnum'/>
+  <define name="poolCapsVolOptions">
+    <element name="volOptions">
+      <ref name="poolDefaultFormat"/>
+      <ref name="poolCapsEnum"/>
     </element>
   </define>
 
-  <define name='poolDefaultFormat'>
-    <element name='defaultFormat'>
-      <attribute name='type'>
+  <define name="poolDefaultFormat">
+    <element name="defaultFormat">
+      <attribute name="type">
         <text/>
       </attribute>
     </element>
   </define>
 
-  <define name='poolCapsEnum'>
+  <define name="poolCapsEnum">
     <zeroOrMore>
-      <element name='enum'>
-        <attribute name='name'>
+      <element name="enum">
+        <attribute name="name">
           <text/>
         </attribute>
-        <ref name='value'/>
+        <ref name="value"/>
       </element>
     </zeroOrMore>
   </define>
 
-  <define name='value'>
+  <define name="value">
     <zeroOrMore>
-      <element name='value'>
+      <element name="value">
         <text/>
       </element>
     </zeroOrMore>

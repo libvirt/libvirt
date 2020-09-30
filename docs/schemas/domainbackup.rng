@@ -2,57 +2,57 @@
 <!-- A Relax NG schema for the libvirt domain backup properties XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0">
   <start>
-    <ref name='domainbackup'/>
+    <ref name="domainbackup"/>
   </start>
 
-  <include href='domaincommon.rng'/>
+  <include href="domaincommon.rng"/>
 
-  <define name='backupEncryption'>
-    <element name='encryption'>
-      <attribute name='format'>
+  <define name="backupEncryption">
+    <element name="encryption">
+      <attribute name="format">
         <choice>
           <value>luks</value>
         </choice>
       </attribute>
       <interleave>
-        <ref name='secret'/>
+        <ref name="secret"/>
         <optional>
-          <element name='cipher'>
-            <ref name='keycipher'/>
+          <element name="cipher">
+            <ref name="keycipher"/>
           </element>
-          <element name='ivgen'>
-            <ref name='keyivgen'/>
+          <element name="ivgen">
+            <ref name="keyivgen"/>
           </element>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='domainbackup'>
-    <element name='domainbackup'>
+  <define name="domainbackup">
+    <element name="domainbackup">
       <interleave>
         <optional>
-          <element name='incremental'>
+          <element name="incremental">
             <text/>
           </element>
         </optional>
         <choice>
           <group>
             <optional>
-              <attribute name='mode'>
+              <attribute name="mode">
                 <value>push</value>
               </attribute>
             </optional>
-            <ref name='backupDisksPush'/>
+            <ref name="backupDisksPush"/>
           </group>
           <group>
-            <attribute name='mode'>
+            <attribute name="mode">
               <value>pull</value>
             </attribute>
             <interleave>
-              <element name='server'>
+              <element name="server">
                 <optional>
-                  <attribute name='tls'>
+                  <attribute name="tls">
                     <choice>
                       <value>yes</value>
                       <value>no</value>
@@ -62,33 +62,33 @@
                 <choice>
                   <group>
                     <optional>
-                      <attribute name='transport'>
+                      <attribute name="transport">
                         <value>tcp</value>
                       </attribute>
                     </optional>
-                    <attribute name='name'>
+                    <attribute name="name">
                       <choice>
-                        <ref name='dnsName'/>
-                        <ref name='ipAddr'/>
+                        <ref name="dnsName"/>
+                        <ref name="ipAddr"/>
                       </choice>
                     </attribute>
                     <optional>
-                      <attribute name='port'>
-                        <ref name='unsignedInt'/>
+                      <attribute name="port">
+                        <ref name="unsignedInt"/>
                       </attribute>
                     </optional>
                   </group>
                   <group>
-                    <attribute name='transport'>
+                    <attribute name="transport">
                       <value>unix</value>
                     </attribute>
-                    <attribute name='socket'>
-                      <ref name='absFilePath'/>
+                    <attribute name="socket">
+                      <ref name="absFilePath"/>
                     </attribute>
                   </group>
                 </choice>
               </element>
-              <ref name='backupDisksPull'/>
+              <ref name="backupDisksPull"/>
             </interleave>
           </group>
         </choice>
@@ -97,49 +97,49 @@
   </define>
 
 
-  <define name='backupDiskMode'>
+  <define name="backupDiskMode">
     <optional>
       <choice>
-        <attribute name='backupmode'>
+        <attribute name="backupmode">
           <value>full</value>
         </attribute>
         <group>
           <optional>
-            <attribute name='backupmode'>
+            <attribute name="backupmode">
               <value>incremental</value>
             </attribute>
           </optional>
           <optional>
-            <attribute name='incremental'/>
+            <attribute name="incremental"/>
           </optional>
         </group>
       </choice>
     </optional>
   </define>
 
-  <define name='backupPushDriver'>
+  <define name="backupPushDriver">
     <optional>
-      <element name='driver'>
-        <attribute name='type'>
-          <ref name='storageFormat'/>
+      <element name="driver">
+        <attribute name="type">
+          <ref name="storageFormat"/>
         </attribute>
       </element>
     </optional>
   </define>
 
-  <define name='backupPullDriver'>
+  <define name="backupPullDriver">
     <optional>
-      <element name='driver'>
-        <attribute name='type'>
+      <element name="driver">
+        <attribute name="type">
           <value>qcow2</value>
         </attribute>
       </element>
     </optional>
   </define>
 
-  <define name='backupAttr'>
+  <define name="backupAttr">
     <optional>
-      <attribute name='backup'>
+      <attribute name="backup">
         <choice>
           <value>yes</value>
         </choice>
@@ -147,67 +147,67 @@
     </optional>
   </define>
 
-  <define name='backupDisksPush'>
+  <define name="backupDisksPush">
     <optional>
-      <element name='disks'>
+      <element name="disks">
         <oneOrMore>
-          <element name='disk'>
-            <attribute name='name'>
-              <ref name='diskTarget'/>
+          <element name="disk">
+            <attribute name="name">
+              <ref name="diskTarget"/>
             </attribute>
-            <ref name='backupDiskMode'/>
+            <ref name="backupDiskMode"/>
             <choice>
               <group>
-                <attribute name='backup'>
+                <attribute name="backup">
                   <value>no</value>
                 </attribute>
               </group>
               <group>
-                <ref name='backupAttr'/>
-                <attribute name='type'>
+                <ref name="backupAttr"/>
+                <attribute name="type">
                   <value>file</value>
                 </attribute>
                 <interleave>
                   <optional>
-                    <element name='target'>
-                      <attribute name='file'>
-                        <ref name='absFilePath'/>
+                    <element name="target">
+                      <attribute name="file">
+                        <ref name="absFilePath"/>
                       </attribute>
                       <interleave>
                         <zeroOrMore>
-                          <ref name='devSeclabel'/>
+                          <ref name="devSeclabel"/>
                         </zeroOrMore>
                         <optional>
-                          <ref name='backupEncryption'/>
+                          <ref name="backupEncryption"/>
                         </optional>
                       </interleave>
                     </element>
                   </optional>
-                  <ref name='backupPushDriver'/>
+                  <ref name="backupPushDriver"/>
                 </interleave>
               </group>
               <group>
-                <ref name='backupAttr'/>
-                <attribute name='type'>
+                <ref name="backupAttr"/>
+                <attribute name="type">
                   <value>block</value>
                 </attribute>
                 <interleave>
                   <optional>
-                    <element name='target'>
-                      <attribute name='dev'>
-                        <ref name='absFilePath'/>
+                    <element name="target">
+                      <attribute name="dev">
+                        <ref name="absFilePath"/>
                       </attribute>
                       <interleave>
                         <zeroOrMore>
-                          <ref name='devSeclabel'/>
+                          <ref name="devSeclabel"/>
                         </zeroOrMore>
                         <optional>
-                          <ref name='backupEncryption'/>
+                          <ref name="backupEncryption"/>
                         </optional>
                       </interleave>
                     </element>
                   </optional>
-                  <ref name='backupPushDriver'/>
+                  <ref name="backupPushDriver"/>
                 </interleave>
               </group>
             </choice>
@@ -217,77 +217,77 @@
     </optional>
   </define>
 
-  <define name='backupDisksPull'>
+  <define name="backupDisksPull">
     <optional>
-      <element name='disks'>
+      <element name="disks">
         <oneOrMore>
-          <element name='disk'>
-            <attribute name='name'>
-              <ref name='diskTarget'/>
+          <element name="disk">
+            <attribute name="name">
+              <ref name="diskTarget"/>
             </attribute>
-            <ref name='backupDiskMode'/>
+            <ref name="backupDiskMode"/>
             <optional>
-              <attribute name='exportname'>
+              <attribute name="exportname">
                 <text/>
               </attribute>
             </optional>
             <optional>
-              <attribute name='exportbitmap'>
+              <attribute name="exportbitmap">
                 <text/>
               </attribute>
             </optional>
             <choice>
               <group>
-                <attribute name='backup'>
+                <attribute name="backup">
                   <value>no</value>
                 </attribute>
               </group>
               <group>
                 <optional>
-                  <ref name='backupAttr'/>
-                  <attribute name='type'>
+                  <ref name="backupAttr"/>
+                  <attribute name="type">
                     <value>file</value>
                   </attribute>
                 </optional>
                 <optional>
                   <interleave>
-                    <element name='scratch'>
-                      <attribute name='file'>
-                        <ref name='absFilePath'/>
+                    <element name="scratch">
+                      <attribute name="file">
+                        <ref name="absFilePath"/>
                       </attribute>
                       <interleave>
                         <zeroOrMore>
-                          <ref name='devSeclabel'/>
+                          <ref name="devSeclabel"/>
                         </zeroOrMore>
                         <optional>
-                          <ref name='backupEncryption'/>
+                          <ref name="backupEncryption"/>
                         </optional>
                       </interleave>
                     </element>
-                    <ref name='backupPullDriver'/>
+                    <ref name="backupPullDriver"/>
                   </interleave>
                 </optional>
               </group>
               <group>
-                <ref name='backupAttr'/>
-                <attribute name='type'>
+                <ref name="backupAttr"/>
+                <attribute name="type">
                   <value>block</value>
                 </attribute>
                 <interleave>
-                  <element name='scratch'>
-                    <attribute name='dev'>
-                      <ref name='absFilePath'/>
+                  <element name="scratch">
+                    <attribute name="dev">
+                      <ref name="absFilePath"/>
                     </attribute>
                     <interleave>
                       <zeroOrMore>
-                        <ref name='devSeclabel'/>
+                        <ref name="devSeclabel"/>
                       </zeroOrMore>
                       <optional>
-                        <ref name='backupEncryption'/>
+                        <ref name="backupEncryption"/>
                       </optional>
                     </interleave>
                   </element>
-                  <ref name='backupPullDriver'/>
+                  <ref name="backupPullDriver"/>
                 </interleave>
               </group>
             </choice>

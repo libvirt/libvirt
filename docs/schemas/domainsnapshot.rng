@@ -2,38 +2,38 @@
 <!-- A Relax NG schema for the libvirt domain snapshot properties XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0">
   <start>
-    <ref name='domainsnapshot'/>
+    <ref name="domainsnapshot"/>
   </start>
 
-  <include href='domaincommon.rng'/>
+  <include href="domaincommon.rng"/>
 
-  <define name='domainsnapshot'>
-    <element name='domainsnapshot'>
+  <define name="domainsnapshot">
+    <element name="domainsnapshot">
       <interleave>
         <optional>
-          <element name='name'>
+          <element name="name">
             <text/>
           </element>
         </optional>
         <optional>
-          <element name='description'>
+          <element name="description">
             <text/>
           </element>
         </optional>
         <optional>
-          <element name='state'>
-            <ref name='state'/>
+          <element name="state">
+            <ref name="state"/>
           </element>
         </optional>
         <optional>
-          <element name='creationTime'>
+          <element name="creationTime">
             <text/>
           </element>
         </optional>
         <optional>
-          <element name='memory'>
+          <element name="memory">
             <choice>
-              <attribute name='snapshot'>
+              <attribute name="snapshot">
                 <choice>
                   <value>no</value>
                   <value>internal</value>
@@ -41,12 +41,12 @@
               </attribute>
               <group>
                 <optional>
-                  <attribute name='snapshot'>
+                  <attribute name="snapshot">
                     <value>external</value>
                   </attribute>
                 </optional>
-                <attribute name='file'>
-                  <ref name='absFilePath'/>
+                <attribute name="file">
+                  <ref name="absFilePath"/>
                 </attribute>
               </group>
             </choice>
@@ -54,14 +54,14 @@
           </element>
         </optional>
         <optional>
-          <element name='disks'>
+          <element name="disks">
             <zeroOrMore>
-              <ref name='disksnapshot'/>
+              <ref name="disksnapshot"/>
             </zeroOrMore>
           </element>
         </optional>
         <optional>
-          <element name='active'>
+          <element name="active">
             <choice>
               <value>0</value>
               <value>1</value>
@@ -70,8 +70,8 @@
         </optional>
         <optional>
           <choice>
-            <element name='domain'>
-              <element name='uuid'>
+            <element name="domain">
+              <element name="uuid">
                 <ref name="UUID"/>
               </element>
             </element>
@@ -79,21 +79,21 @@
                  storagecommon/domaincommon defines do not conflict
                  with any domain.rng overrides.  -->
             <grammar>
-              <include href='domain.rng'/>
+              <include href="domain.rng"/>
             </grammar>
           </choice>
         </optional>
         <optional>
-          <element name='parent'>
-            <element name='name'>
+          <element name="parent">
+            <element name="name">
               <text/>
             </element>
           </element>
         </optional>
         <optional>
-          <element name='cookie'>
+          <element name="cookie">
             <zeroOrMore>
-              <ref name='customElement'/>
+              <ref name="customElement"/>
             </zeroOrMore>
           </element>
         </optional>
@@ -101,7 +101,7 @@
     </element>
   </define>
 
-  <define name='state'>
+  <define name="state">
     <choice>
       <value>running</value>
       <value>blocked</value>
@@ -113,55 +113,55 @@
     </choice>
   </define>
 
-  <define name='storageSourceExtra' combine='choice'>
+  <define name="storageSourceExtra" combine="choice">
     <!-- overrides the no-op version in storagecommon.rng -->
-    <ref name='disksnapshotdriver'/>
+    <ref name="disksnapshotdriver"/>
   </define>
 
-  <define name='disksnapshot'>
-    <element name='disk'>
-      <attribute name='name'>
+  <define name="disksnapshot">
+    <element name="disk">
+      <attribute name="name">
         <choice>
-          <ref name='diskTarget'/>
-          <ref name='absFilePath'/>
+          <ref name="diskTarget"/>
+          <ref name="absFilePath"/>
         </choice>
       </attribute>
       <choice>
-        <attribute name='snapshot'>
+        <attribute name="snapshot">
           <value>no</value>
         </attribute>
-        <attribute name='snapshot'>
+        <attribute name="snapshot">
           <value>internal</value>
         </attribute>
         <group>
           <optional>
-            <attribute name='snapshot'>
+            <attribute name="snapshot">
               <value>external</value>
             </attribute>
           </optional>
           <choice>
             <group>
               <optional>
-                <attribute name='type'>
+                <attribute name="type">
                   <value>file</value>
                 </attribute>
               </optional>
               <interleave>
                 <optional>
-                  <element name='source'>
+                  <element name="source">
                     <optional>
-                      <attribute name='file'>
-                        <ref name='absFilePath'/>
+                      <attribute name="file">
+                        <ref name="absFilePath"/>
                       </attribute>
                     </optional>
                     <optional>
-                      <ref name='storageStartupPolicy'/>
+                      <ref name="storageStartupPolicy"/>
                     </optional>
                     <zeroOrMore>
-                      <ref name='devSeclabel'/>
+                      <ref name="devSeclabel"/>
                     </zeroOrMore>
                     <optional>
-                      <ref name='diskSourceCommon'/>
+                      <ref name="diskSourceCommon"/>
                     </optional>
                     <optional>
                       <ref name="encryption"/>
@@ -169,11 +169,11 @@
                     <empty/>
                   </element>
                 </optional>
-                <ref name='storageSourceExtra'/>
+                <ref name="storageSourceExtra"/>
               </interleave>
             </group>
             <group>
-              <attribute name='type'>
+              <attribute name="type">
                 <value>block</value>
               </attribute>
               <interleave>
@@ -183,10 +183,10 @@
                       <ref name="absFilePath"/>
                     </attribute>
                     <zeroOrMore>
-                      <ref name='devSeclabel'/>
+                      <ref name="devSeclabel"/>
                     </zeroOrMore>
                     <optional>
-                      <ref name='diskSourceCommon'/>
+                      <ref name="diskSourceCommon"/>
                     </optional>
                     <optional>
                       <ref name="encryption"/>
@@ -194,22 +194,22 @@
                     <empty/>
                   </element>
                 </optional>
-                <ref name='storageSourceExtra'/>
+                <ref name="storageSourceExtra"/>
               </interleave>
             </group>
-            <ref name='diskSourceNetwork'/>
+            <ref name="diskSourceNetwork"/>
           </choice>
         </group>
       </choice>
     </element>
   </define>
 
-  <define name='disksnapshotdriver'>
+  <define name="disksnapshotdriver">
     <optional>
-      <element name='driver'>
+      <element name="driver">
         <optional>
-          <attribute name='type'>
-            <ref name='storageFormatBacking'/>
+          <attribute name="type">
+            <ref name="storageFormatBacking"/>
           </attribute>
         </optional>
         <empty/>

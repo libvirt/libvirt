@@ -2,18 +2,18 @@
 <!-- A Relax NG schema for the libvirt storage volume XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <include href='basictypes.rng'/>
+  <include href="basictypes.rng"/>
   <start>
-    <ref name='vol'/>
+    <ref name="vol"/>
   </start>
 
-  <include href='storagecommon.rng'/>
+  <include href="storagecommon.rng"/>
 
 
-  <define name='vol'>
-    <element name='volume'>
+  <define name="vol">
+    <element name="volume">
       <optional>
-        <attribute name='type'>
+        <attribute name="type">
           <choice>
             <value>file</value>
             <value>block</value>
@@ -24,68 +24,68 @@
         </attribute>
       </optional>
       <interleave>
-        <element name='name'>
-          <ref name='volName'/>
+        <element name="name">
+          <ref name="volName"/>
         </element>
         <optional>
-          <element name='key'>
+          <element name="key">
             <text/>
           </element>
         </optional>
         <optional>
-          <ref name='source'/>
+          <ref name="source"/>
         </optional>
-        <ref name='sizing'/>
-        <ref name='target'/>
+        <ref name="sizing"/>
+        <ref name="target"/>
         <optional>
-          <ref name='backingStore'/>
+          <ref name="backingStore"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='sizing'>
+  <define name="sizing">
     <interleave>
       <optional>
-        <element name='capacity'>
-          <ref name='scaledInteger'/>
+        <element name="capacity">
+          <ref name="scaledInteger"/>
         </element>
       </optional>
       <optional>
-        <element name='allocation'>
-          <ref name='scaledInteger'/>
+        <element name="allocation">
+          <ref name="scaledInteger"/>
         </element>
       </optional>
       <optional>
-        <element name='physical'>
-          <ref name='scaledInteger'/>
+        <element name="physical">
+          <ref name="scaledInteger"/>
         </element>
       </optional>
     </interleave>
   </define>
 
-  <define name='timestamps'>
+  <define name="timestamps">
     <optional>
-      <element name='timestamps'>
+      <element name="timestamps">
         <interleave>
           <optional>
-            <element name='atime'>
-              <ref name='timestamp'/>
+            <element name="atime">
+              <ref name="timestamp"/>
             </element>
           </optional>
           <optional>
-            <element name='btime'>
-              <ref name='timestamp'/>
+            <element name="btime">
+              <ref name="timestamp"/>
             </element>
           </optional>
           <optional>
-            <element name='ctime'>
-              <ref name='timestamp'/>
+            <element name="ctime">
+              <ref name="timestamp"/>
             </element>
           </optional>
           <optional>
-            <element name='mtime'>
-              <ref name='timestamp'/>
+            <element name="mtime">
+              <ref name="timestamp"/>
             </element>
           </optional>
         </interleave>
@@ -93,92 +93,92 @@
     </optional>
   </define>
 
-  <define name='timestamp'>
-    <data type='string'>
+  <define name="timestamp">
+    <data type="string">
       <param name="pattern">[0-9]+(\.[0-9]{0,9})?</param>
     </data>
   </define>
 
-  <define name='target'>
-    <element name='target'>
+  <define name="target">
+    <element name="target">
       <interleave>
         <optional>
-          <element name='path'>
+          <element name="path">
             <choice>
-              <data type='anyURI'/>
-              <ref name='absFilePath'/>
+              <data type="anyURI"/>
+              <ref name="absFilePath"/>
             </choice>
           </element>
         </optional>
-        <ref name='format'/>
-        <ref name='permissions'/>
-        <ref name='timestamps'/>
+        <ref name="format"/>
+        <ref name="permissions"/>
+        <ref name="timestamps"/>
         <optional>
-          <ref name='encryption'/>
+          <ref name="encryption"/>
         </optional>
         <optional>
-          <ref name='compat'/>
+          <ref name="compat"/>
         </optional>
         <optional>
-          <element name='nocow'>
+          <element name="nocow">
             <empty/>
           </element>
         </optional>
         <optional>
-          <ref name='fileFormatFeatures'/>
+          <ref name="fileFormatFeatures"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='backingStore'>
-    <element name='backingStore'>
+  <define name="backingStore">
+    <element name="backingStore">
       <interleave>
-        <element name='path'>
-          <ref name='absFilePath'/>
+        <element name="path">
+          <ref name="absFilePath"/>
         </element>
-        <ref name='format'/>
-        <ref name='permissions'/>
-        <ref name='timestamps'/>
+        <ref name="format"/>
+        <ref name="permissions"/>
+        <ref name="timestamps"/>
       </interleave>
     </element>
   </define>
 
 
-  <define name='source'>
-    <element name='source'>
+  <define name="source">
+    <element name="source">
       <zeroOrMore>
-        <ref name='sourcedev'/>
+        <ref name="sourcedev"/>
       </zeroOrMore>
     </element>
   </define>
 
-  <define name='sourcedev'>
-    <element name='device'>
-      <attribute name='path'>
-        <ref name='absFilePath'/>
+  <define name="sourcedev">
+    <element name="device">
+      <attribute name="path">
+        <ref name="absFilePath"/>
       </attribute>
       <choice>
         <empty/>
-        <ref name='devextents'/>
+        <ref name="devextents"/>
       </choice>
     </element>
   </define>
 
-  <define name='devextents'>
+  <define name="devextents">
     <oneOrMore>
-      <element name='extent'>
-        <attribute name='start'>
-          <ref name='unsignedLong'/>
+      <element name="extent">
+        <attribute name="start">
+          <ref name="unsignedLong"/>
         </attribute>
-        <attribute name='end'>
-          <ref name='unsignedLong'/>
+        <attribute name="end">
+          <ref name="unsignedLong"/>
         </attribute>
       </element>
     </oneOrMore>
   </define>
 
-  <define name='formatdev'>
+  <define name="formatdev">
     <choice>
       <value>none</value>
       <value>auto</value>
@@ -198,14 +198,14 @@
     </choice>
   </define>
 
-  <define name='formatfile'>
+  <define name="formatfile">
     <choice>
       <value>unknown</value>
-      <ref name='storageFormat'/>
+      <ref name="storageFormat"/>
     </choice>
   </define>
 
-  <define name='formatdisk'>
+  <define name="formatdisk">
     <choice>
       <value>none</value>
       <value>linux</value>
@@ -218,14 +218,14 @@
     </choice>
   </define>
 
-  <define name='format'>
+  <define name="format">
     <optional>
-      <element name='format'>
-        <attribute name='type'>
+      <element name="format">
+        <attribute name="type">
           <choice>
-            <ref name='formatfile'/>
-            <ref name='formatdev'/>
-            <ref name='formatdisk'/>
+            <ref name="formatfile"/>
+            <ref name="formatdev"/>
+            <ref name="formatdisk"/>
           </choice>
         </attribute>
       </element>

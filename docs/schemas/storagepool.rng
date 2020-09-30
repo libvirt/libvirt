@@ -2,240 +2,240 @@
 <!-- A Relax NG schema for the libvirt storage pool XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <include href='basictypes.rng'/>
-  <include href='storagecommon.rng'/>
+  <include href="basictypes.rng"/>
+  <include href="storagecommon.rng"/>
   <start>
-    <ref name='pool'/>
+    <ref name="pool"/>
   </start>
 
 
-  <define name='pool'>
-    <element name='pool'>
+  <define name="pool">
+    <element name="pool">
       <choice>
-        <ref name='pooldir'/>
-        <ref name='poolfs'/>
-        <ref name='poolnetfs'/>
-        <ref name='poollogical'/>
-        <ref name='pooldisk'/>
-        <ref name='pooliscsi'/>
-        <ref name='pooliscsidirect'/>
-        <ref name='poolscsi'/>
-        <ref name='poolmpath'/>
-        <ref name='poolrbd'/>
-        <ref name='poolsheepdog'/>
-        <ref name='poolgluster'/>
-        <ref name='poolzfs'/>
-        <ref name='poolvstorage'/>
+        <ref name="pooldir"/>
+        <ref name="poolfs"/>
+        <ref name="poolnetfs"/>
+        <ref name="poollogical"/>
+        <ref name="pooldisk"/>
+        <ref name="pooliscsi"/>
+        <ref name="pooliscsidirect"/>
+        <ref name="poolscsi"/>
+        <ref name="poolmpath"/>
+        <ref name="poolrbd"/>
+        <ref name="poolsheepdog"/>
+        <ref name="poolgluster"/>
+        <ref name="poolzfs"/>
+        <ref name="poolvstorage"/>
       </choice>
     </element>
   </define>
 
-  <define name='pooldir'>
-    <attribute name='type'>
+  <define name="pooldir">
+    <attribute name="type">
       <value>dir</value>
     </attribute>
     <interleave>
-      <ref name='commonmetadata'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcedir'/>
-      <ref name='target'/>
+      <ref name="commonmetadata"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcedir"/>
+      <ref name="target"/>
     </interleave>
   </define>
 
-  <define name='poolfs'>
-    <attribute name='type'>
+  <define name="poolfs">
+    <attribute name="type">
       <value>fs</value>
     </attribute>
     <interleave>
-      <ref name='commonmetadata'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcefs'/>
-      <ref name='target'/>
+      <ref name="commonmetadata"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcefs"/>
+      <ref name="target"/>
     </interleave>
     <optional>
-      <ref name='fs_mount_opts'/>
+      <ref name="fs_mount_opts"/>
     </optional>
   </define>
 
-  <define name='poolnetfs'>
-    <attribute name='type'>
+  <define name="poolnetfs">
+    <attribute name="type">
       <value>netfs</value>
     </attribute>
     <interleave>
-      <ref name='commonmetadata'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcenetfs'/>
-      <ref name='target'/>
+      <ref name="commonmetadata"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcenetfs"/>
+      <ref name="target"/>
     </interleave>
     <optional>
-      <ref name='fs_mount_opts'/>
+      <ref name="fs_mount_opts"/>
     </optional>
   </define>
 
-  <define name='poollogical'>
-    <attribute name='type'>
+  <define name="poollogical">
+    <attribute name="type">
       <value>logical</value>
     </attribute>
     <interleave>
-      <ref name='commonMetadataNameOptional'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcelogical'/>
-      <ref name='targetlogical'/>
+      <ref name="commonMetadataNameOptional"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcelogical"/>
+      <ref name="targetlogical"/>
     </interleave>
   </define>
 
-  <define name='pooldisk'>
-    <attribute name='type'>
+  <define name="pooldisk">
+    <attribute name="type">
       <value>disk</value>
     </attribute>
     <interleave>
-      <ref name='commonmetadata'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcedisk'/>
-      <ref name='target'/>
+      <ref name="commonmetadata"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcedisk"/>
+      <ref name="target"/>
     </interleave>
   </define>
 
-  <define name='pooliscsi'>
-    <attribute name='type'>
+  <define name="pooliscsi">
+    <attribute name="type">
       <value>iscsi</value>
     </attribute>
     <interleave>
-      <ref name='commonmetadata'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourceiscsi'/>
-      <ref name='target'/>
+      <ref name="commonmetadata"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourceiscsi"/>
+      <ref name="target"/>
     </interleave>
   </define>
 
-  <define name='pooliscsidirect'>
-    <attribute name='type'>
+  <define name="pooliscsidirect">
+    <attribute name="type">
       <value>iscsi-direct</value>
     </attribute>
     <interleave>
-      <ref name='commonmetadata'/>
+      <ref name="commonmetadata"/>
       <optional>
-        <ref name='sizing'/>
+        <ref name="sizing"/>
       </optional>
-      <ref name='features'/>
-      <ref name='sourceiscsidirect'/>
+      <ref name="features"/>
+      <ref name="sourceiscsidirect"/>
     </interleave>
   </define>
 
-  <define name='poolscsi'>
-    <attribute name='type'>
+  <define name="poolscsi">
+    <attribute name="type">
       <value>scsi</value>
     </attribute>
     <interleave>
-      <ref name='commonmetadata'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcescsi'/>
-      <ref name='target'/>
+      <ref name="commonmetadata"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcescsi"/>
+      <ref name="target"/>
     </interleave>
   </define>
 
-  <define name='poolmpath'>
-    <attribute name='type'>
+  <define name="poolmpath">
+    <attribute name="type">
       <value>mpath</value>
     </attribute>
     <interleave>
-      <ref name='commonmetadata'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
+      <ref name="commonmetadata"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
       <optional>
-        <ref name='sourcempath'/>
+        <ref name="sourcempath"/>
       </optional>
-      <ref name='target'/>
+      <ref name="target"/>
     </interleave>
   </define>
 
-  <define name='poolrbd'>
-    <attribute name='type'>
+  <define name="poolrbd">
+    <attribute name="type">
       <value>rbd</value>
     </attribute>
     <interleave>
-      <ref name='commonMetadataNameOptional'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcerbd'/>
-      <ref name='refresh'/>
+      <ref name="commonMetadataNameOptional"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcerbd"/>
+      <ref name="refresh"/>
     </interleave>
     <optional>
-      <ref name='rbd_config_opts'/>
+      <ref name="rbd_config_opts"/>
     </optional>
   </define>
 
-  <define name='poolsheepdog'>
-    <attribute name='type'>
+  <define name="poolsheepdog">
+    <attribute name="type">
       <value>sheepdog</value>
     </attribute>
     <interleave>
-      <ref name='commonMetadataNameOptional'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcesheepdog'/>
+      <ref name="commonMetadataNameOptional"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcesheepdog"/>
     </interleave>
   </define>
 
-  <define name='poolgluster'>
-    <attribute name='type'>
+  <define name="poolgluster">
+    <attribute name="type">
       <value>gluster</value>
     </attribute>
     <interleave>
-      <ref name='commonMetadataNameOptional'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcegluster'/>
+      <ref name="commonMetadataNameOptional"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcegluster"/>
     </interleave>
   </define>
 
-  <define name='poolzfs'>
-    <attribute name='type'>
+  <define name="poolzfs">
+    <attribute name="type">
       <value>zfs</value>
     </attribute>
     <interleave>
-      <ref name='commonMetadataNameOptional'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcezfs'/>
+      <ref name="commonMetadataNameOptional"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcezfs"/>
       <optional>
-        <ref name='target'/>
+        <ref name="target"/>
       </optional>
     </interleave>
   </define>
 
-  <define name='poolvstorage'>
-    <attribute name='type'>
+  <define name="poolvstorage">
+    <attribute name="type">
       <value>vstorage</value>
     </attribute>
     <interleave>
-      <ref name='commonMetadataNameOptional'/>
-      <ref name='sizing'/>
-      <ref name='features'/>
-      <ref name='sourcevstorage'/>
-      <ref name='target'/>
+      <ref name="commonMetadataNameOptional"/>
+      <ref name="sizing"/>
+      <ref name="features"/>
+      <ref name="sourcevstorage"/>
+      <ref name="target"/>
     </interleave>
   </define>
 
-  <define name='sourceinfovendor'>
+  <define name="sourceinfovendor">
     <interleave>
       <optional>
-        <element name='vendor'>
-          <attribute name='name'>
+        <element name="vendor">
+          <attribute name="name">
             <text/>
           </attribute>
         </element>
       </optional>
       <optional>
-        <element name='product'>
-          <attribute name='name'>
+        <element name="product">
+          <attribute name="name">
             <text/>
           </attribute>
         </element>
@@ -243,62 +243,62 @@
     </interleave>
   </define>
 
-  <define name='commonMetadataNameOptional'>
+  <define name="commonMetadataNameOptional">
     <interleave>
       <optional>
-        <element name='name'>
-          <ref name='poolName'/>
+        <element name="name">
+          <ref name="poolName"/>
         </element>
       </optional>
       <optional>
-        <element name='uuid'>
-          <ref name='UUID'/>
+        <element name="uuid">
+          <ref name="UUID"/>
         </element>
       </optional>
     </interleave>
   </define>
 
-  <define name='commonmetadata'>
+  <define name="commonmetadata">
     <interleave>
-      <element name='name'>
-        <ref name='poolName'/>
+      <element name="name">
+        <ref name="poolName"/>
       </element>
       <optional>
-        <element name='uuid'>
-          <ref name='UUID'/>
+        <element name="uuid">
+          <ref name="UUID"/>
         </element>
       </optional>
     </interleave>
   </define>
 
-  <define name='sizing'>
+  <define name="sizing">
     <interleave>
       <optional>
-        <element name='capacity'>
-          <ref name='scaledInteger'/>
+        <element name="capacity">
+          <ref name="scaledInteger"/>
         </element>
       </optional>
       <optional>
-        <element name='allocation'>
-          <ref name='scaledInteger'/>
+        <element name="allocation">
+          <ref name="scaledInteger"/>
         </element>
       </optional>
       <optional>
-        <element name='available'>
-          <ref name='scaledInteger'/>
+        <element name="available">
+          <ref name="scaledInteger"/>
         </element>
       </optional>
     </interleave>
   </define>
 
-  <define name='features'>
+  <define name="features">
     <optional>
-      <element name='features'>
+      <element name="features">
         <interleave>
           <optional>
-            <element name='cow'>
+            <element name="cow">
               <attribute name="state">
-                <ref name='virYesNo'/>
+                <ref name="virYesNo"/>
                 </attribute>
             </element>
           </optional>
@@ -307,41 +307,41 @@
     </optional>
   </define>
 
-  <define name='target'>
-    <element name='target'>
+  <define name="target">
+    <element name="target">
       <interleave>
-        <element name='path'>
-          <ref name='absFilePath'/>
+        <element name="path">
+          <ref name="absFilePath"/>
         </element>
-        <ref name='permissions'/>
+        <ref name="permissions"/>
       </interleave>
     </element>
   </define>
 
-  <define name='targetlogical'>
-    <element name='target'>
+  <define name="targetlogical">
+    <element name="target">
       <interleave>
         <optional>
-          <element name='path'>
-            <ref name='absFilePath'/>
+          <element name="path">
+            <ref name="absFilePath"/>
           </element>
         </optional>
-        <ref name='permissions'/>
+        <ref name="permissions"/>
       </interleave>
     </element>
   </define>
 
-  <define name='sourceinfohost'>
+  <define name="sourceinfohost">
     <oneOrMore>
-      <element name='host'>
-        <attribute name='name'>
+      <element name="host">
+        <attribute name="name">
           <choice>
             <ref name="dnsName"/>
             <ref name="ipAddr"/>
           </choice>
         </attribute>
         <optional>
-          <attribute name='port'>
+          <attribute name="port">
             <ref name="PortNumber"/>
           </attribute>
         </optional>
@@ -350,18 +350,18 @@
     </oneOrMore>
   </define>
 
-  <define name='sourceinfodev'>
-    <element name='device'>
-      <attribute name='path'>
+  <define name="sourceinfodev">
+    <element name="device">
+      <attribute name="path">
         <choice>
-          <ref name='absFilePath'/>
-          <ref name='genericName'/>
-          <ref name='IscsiQualifiedName'/>
+          <ref name="absFilePath"/>
+          <ref name="genericName"/>
+          <ref name="IscsiQualifiedName"/>
         </choice>
       </attribute>
       <choice>
         <empty/>
-        <ref name='devextents'/>
+        <ref name="devextents"/>
       </choice>
       <optional>
         <attribute name="part_separator">
@@ -371,102 +371,102 @@
     </element>
   </define>
 
-  <define name='sourceinfodeviscsidirect'>
-    <element name='device'>
-      <attribute name='path'>
-        <ref name='IscsiQualifiedName'/>
+  <define name="sourceinfodeviscsidirect">
+    <element name="device">
+      <attribute name="path">
+        <ref name="IscsiQualifiedName"/>
       </attribute>
     </element>
   </define>
 
-  <define name='devextents'>
+  <define name="devextents">
     <oneOrMore>
-      <element name='freeExtent'>
-        <attribute name='start'>
-          <ref name='unsignedLong'/>
+      <element name="freeExtent">
+        <attribute name="start">
+          <ref name="unsignedLong"/>
         </attribute>
-        <attribute name='end'>
-          <ref name='unsignedLong'/>
+        <attribute name="end">
+          <ref name="unsignedLong"/>
         </attribute>
       </element>
     </oneOrMore>
   </define>
 
-  <define name='sourceinfodir'>
-    <element name='dir'>
-      <attribute name='path'>
-        <ref name='absDirPath'/>
+  <define name="sourceinfodir">
+    <element name="dir">
+      <attribute name="path">
+        <ref name="absDirPath"/>
       </attribute>
       <empty/>
     </element>
   </define>
 
-  <define name='sourceinfonetrelativepath'>
-    <element name='dir'>
-      <attribute name='path'>
-        <ref name='dirPath'/>
+  <define name="sourceinfonetrelativepath">
+    <element name="dir">
+      <attribute name="path">
+        <ref name="dirPath"/>
       </attribute>
       <empty/>
     </element>
   </define>
 
-  <define name='sourceinfoname'>
-    <element name='name'>
+  <define name="sourceinfoname">
+    <element name="name">
       <text/>
     </element>
   </define>
 
-  <define name='sourceinfoauth'>
-    <element name='auth'>
-      <attribute name='type'>
+  <define name="sourceinfoauth">
+    <element name="auth">
+      <attribute name="type">
         <choice>
           <value>chap</value>
           <value>ceph</value>
         </choice>
       </attribute>
-      <attribute name='username'>
+      <attribute name="username">
         <text/>
       </attribute>
-      <ref name='sourceinfoauthsecret'/>
+      <ref name="sourceinfoauthsecret"/>
     </element>
   </define>
 
-  <define name='sourceinfoauthsecret'>
-    <element name='secret'>
+  <define name="sourceinfoauthsecret">
+    <element name="secret">
       <choice>
-        <attribute name='uuid'>
+        <attribute name="uuid">
           <text/>
         </attribute>
-        <attribute name='usage'>
+        <attribute name="usage">
           <text/>
         </attribute>
       </choice>
     </element>
   </define>
 
-  <define name='sourcezfs'>
-    <element name='source'>
+  <define name="sourcezfs">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfoname'/>
+        <ref name="sourceinfoname"/>
         <optional>
-          <ref name='sourceinfodev'/>
+          <ref name="sourceinfodev"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='sourcevstorage'>
-    <element name='source'>
+  <define name="sourcevstorage">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfoname'/>
+        <ref name="sourceinfoname"/>
       </interleave>
     </element>
   </define>
 
-  <define name='sourcefmtfs'>
+  <define name="sourcefmtfs">
     <optional>
-      <element name='format'>
-        <attribute name='type'>
+      <element name="format">
+        <attribute name="type">
           <choice>
             <value>auto</value>
             <value>ext2</value>
@@ -489,10 +489,10 @@
   </define>
 
 
-  <define name='sourcefmtnetfs'>
+  <define name="sourcefmtnetfs">
     <optional>
-      <element name='format'>
-        <attribute name='type'>
+      <element name="format">
+        <attribute name="type">
           <choice>
             <value>auto</value>
             <value>nfs</value>
@@ -503,10 +503,10 @@
   </define>
 
 
-  <define name='sourcefmtdisk'>
+  <define name="sourcefmtdisk">
     <optional>
-      <element name='format'>
-        <attribute name='type'>
+      <element name="format">
+        <attribute name="type">
           <choice>
             <value>unknown</value>
             <value>dos</value>
@@ -520,79 +520,79 @@
           </choice>
         </attribute>
         <optional>
-          <ref name='sourceinfovendor'/>
+          <ref name="sourceinfovendor"/>
         </optional>
       </element>
     </optional>
   </define>
 
 
-  <define name='sourcefmtlogical'>
+  <define name="sourcefmtlogical">
     <optional>
-      <element name='format'>
-        <attribute name='type'>
+      <element name="format">
+        <attribute name="type">
           <choice>
-            <value>unknown</value> <!-- back-compat requires keeping 'unknown' not 'auto' -->
+            <value>unknown</value> <!-- back-compat requires keeping "unknown" not "auto" -->
             <value>lvm2</value>
           </choice>
         </attribute>
         <optional>
-          <ref name='sourceinfovendor'/>
+          <ref name="sourceinfovendor"/>
         </optional>
       </element>
     </optional>
   </define>
 
 
-  <define name='sourcedir'>
+  <define name="sourcedir">
     <optional>
-      <element name='source'>
+      <element name="source">
         <empty/>
         <optional>
-          <ref name='sourceinfovendor'/>
+          <ref name="sourceinfovendor"/>
         </optional>
       </element>
     </optional>
   </define>
 
-  <define name='sourcefs'>
-    <element name='source'>
+  <define name="sourcefs">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfodev'/>
-        <ref name='sourcefmtfs'/>
+        <ref name="sourceinfodev"/>
+        <ref name="sourcefmtfs"/>
         <optional>
-          <ref name='sourceinfovendor'/>
+          <ref name="sourceinfovendor"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='sourcenetfs'>
-    <element name='source'>
+  <define name="sourcenetfs">
+    <element name="source">
       <choice>
         <group>
           <interleave>
-            <ref name='sourceinfohost'/>
-            <ref name='sourceinfodir'/>
-            <ref name='sourcefmtnetfs'/>
+            <ref name="sourceinfohost"/>
+            <ref name="sourceinfodir"/>
+            <ref name="sourcefmtnetfs"/>
             <optional>
-              <element name='protocol'>
-                <attribute name='ver'>
-                  <ref name='unsignedInt'/>
+              <element name="protocol">
+                <attribute name="ver">
+                  <ref name="unsignedInt"/>
                 </attribute>
               </element>
             </optional>
             <optional>
-              <ref name='sourceinfovendor'/>
+              <ref name="sourceinfovendor"/>
             </optional>
           </interleave>
         </group>
         <group>
           <interleave>
-            <ref name='sourceinfohost'/>
-            <ref name='sourceinfonetrelativepath'/>
-            <element name='format'>
-              <attribute name='type'>
+            <ref name="sourceinfohost"/>
+            <ref name="sourceinfonetrelativepath"/>
+            <element name="format">
+              <attribute name="type">
                 <choice>
                   <value>cifs</value>
                   <value>glusterfs</value>
@@ -600,7 +600,7 @@
               </attribute>
             </element>
             <optional>
-              <ref name='sourceinfovendor'/>
+              <ref name="sourceinfovendor"/>
             </optional>
           </interleave>
         </group>
@@ -608,139 +608,139 @@
     </element>
   </define>
 
-  <define name='sourcelogical'>
-    <element name='source'>
+  <define name="sourcelogical">
+    <element name="source">
       <interleave>
         <oneOrMore>
           <optional>
-            <ref name='sourceinfoname'/>
+            <ref name="sourceinfoname"/>
           </optional>
           <optional>
-            <ref name='sourceinfodev'/>
+            <ref name="sourceinfodev"/>
           </optional>
         </oneOrMore>
-        <ref name='sourcefmtlogical'/>
+        <ref name="sourcefmtlogical"/>
         <optional>
-          <ref name='sourceinfovendor'/>
+          <ref name="sourceinfovendor"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='sourcedisk'>
-    <element name='source'>
+  <define name="sourcedisk">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfodev'/>
-        <ref name='sourcefmtdisk'/>
+        <ref name="sourceinfodev"/>
+        <ref name="sourcefmtdisk"/>
         <optional>
-          <ref name='sourceinfovendor'/>
+          <ref name="sourceinfovendor"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='sourceiscsi'>
-    <element name='source'>
+  <define name="sourceiscsi">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfohost'/>
-        <ref name='sourceinfodev'/>
+        <ref name="sourceinfohost"/>
+        <ref name="sourceinfodev"/>
         <optional>
-          <ref name='initiatorinfo'/>
+          <ref name="initiatorinfo"/>
         </optional>
         <optional>
-          <ref name='sourceinfoauth'/>
+          <ref name="sourceinfoauth"/>
         </optional>
         <optional>
-          <ref name='sourceinfovendor'/>
+          <ref name="sourceinfovendor"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='sourceiscsidirect'>
-    <element name='source'>
+  <define name="sourceiscsidirect">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfohost'/>
-        <ref name='sourceinfodeviscsidirect'/>
-        <ref name='initiatorinfo'/>
+        <ref name="sourceinfohost"/>
+        <ref name="sourceinfodeviscsidirect"/>
+        <ref name="initiatorinfo"/>
         <optional>
-          <ref name='sourceinfoauth'/>
+          <ref name="sourceinfoauth"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='sourcescsi'>
-    <element name='source'>
+  <define name="sourcescsi">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfoadapter'/>
+        <ref name="sourceinfoadapter"/>
         <optional>
-          <ref name='sourceinfovendor'/>
+          <ref name="sourceinfovendor"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='sourcempath'>
-    <element name='source'>
+  <define name="sourcempath">
+    <element name="source">
       <empty/>
     </element>
   </define>
 
-  <define name='sourcerbd'>
-    <element name='source'>
+  <define name="sourcerbd">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfoname'/>
-        <ref name='sourceinfohost'/>
+        <ref name="sourceinfoname"/>
+        <ref name="sourceinfohost"/>
         <optional>
-          <ref name='sourceinfoauth'/>
+          <ref name="sourceinfoauth"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='sourcesheepdog'>
-    <element name='source'>
+  <define name="sourcesheepdog">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfohost'/>
-        <ref name='sourceinfoname'/>
+        <ref name="sourceinfohost"/>
+        <ref name="sourceinfoname"/>
       </interleave>
     </element>
   </define>
 
-  <define name='sourcegluster'>
-    <element name='source'>
+  <define name="sourcegluster">
+    <element name="source">
       <interleave>
-        <ref name='sourceinfohost'/>
-        <ref name='sourceinfoname'/>
+        <ref name="sourceinfohost"/>
+        <ref name="sourceinfoname"/>
         <optional>
-          <ref name='sourceinfodir'/>
+          <ref name="sourceinfodir"/>
         </optional>
       </interleave>
     </element>
   </define>
 
-  <define name='IscsiQualifiedName'>
-    <data type='string'>
+  <define name="IscsiQualifiedName">
+    <data type="string">
       <param name="pattern">iqn\.[0-9]{4}-(0[1-9]|1[0-2])\.[a-zA-Z0-9\.\-]+(:.+)?</param>
     </data>
   </define>
 
-  <define name='refresh'>
+  <define name="refresh">
     <optional>
-      <element name='refresh'>
+      <element name="refresh">
         <interleave>
-          <ref name='refreshVolume'/>
+          <ref name="refreshVolume"/>
         </interleave>
       </element>
     </optional>
   </define>
 
-  <define name='refreshVolume'>
+  <define name="refreshVolume">
     <optional>
-      <element name='volume'>
+      <element name="volume">
         <optional>
-          <attribute name='allocation'>
+          <attribute name="allocation">
             <ref name="refreshVolumeAllocation"/>
           </attribute>
         </optional>
@@ -757,7 +757,7 @@
     <element name="mount_opts" ns="http://libvirt.org/schemas/storagepool/fs/1.0">
       <zeroOrMore>
         <element name="option">
-          <attribute name='name'>
+          <attribute name="name">
             <text/>
           </attribute>
         </element>
@@ -774,10 +774,10 @@
     <element name="config_opts" ns="http://libvirt.org/schemas/storagepool/rbd/1.0">
       <zeroOrMore>
         <element name="option">
-          <attribute name='name'>
+          <attribute name="name">
             <text/>
           </attribute>
-          <attribute name='value'>
+          <attribute name="value">
             <text/>
           </attribute>
         </element>

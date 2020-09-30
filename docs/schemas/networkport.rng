@@ -2,8 +2,8 @@
 <!-- A Relax NG schema for the libvirt network port XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <include href='basictypes.rng'/>
-  <include href='networkcommon.rng'/>
+  <include href="basictypes.rng"/>
+  <include href="networkcommon.rng"/>
 
   <start>
     <ref name="networkport"/>
@@ -152,7 +152,7 @@
         <empty/>
       </element>
     </optional>
-    <element name='address'>
+    <element name="address">
       <ref name="pciaddress"/>
     </element>
   </define>

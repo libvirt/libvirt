@@ -173,7 +173,7 @@
       </attribute>
     </optional>
     <optional>
-      <attribute name='burst'>
+      <attribute name="burst">
         <ref name="BurstSize"/>
       </attribute>
     </optional>
@@ -192,19 +192,19 @@
     </data>
   </define>
 
-  <define name='unsignedShort'>
-    <data type='integer'>
+  <define name="unsignedShort">
+    <data type="integer">
       <param name="minInclusive">0</param>
       <param name="maxInclusive">65535</param>
     </data>
   </define>
-  <define name='protocol'>
-    <data type='string'>
-      <param name='pattern'>(tcp)|(udp)</param>
+  <define name="protocol">
+    <data type="string">
+      <param name="pattern">(tcp)|(udp)</param>
     </data>
   </define>
-  <define name='addr-family'>
-    <data type='string'>
+  <define name="addr-family">
+    <data type="string">
       <param name="pattern">(ipv4)|(ipv6)</param>
     </data>
   </define>
@@ -237,17 +237,17 @@
     </element>
   </define>
 
-  <define name='port'>
-    <data type='integer'>
-      <param name='minInclusive'>1</param>
-      <param name='maxInclusive'>65535</param>
+  <define name="port">
+    <data type="integer">
+      <param name="minInclusive">1</param>
+      <param name="maxInclusive">65535</param>
     </data>
   </define>
 
   <!-- The (static) route element specifies a network address and gateway
        address to access that network. Both the network address and
        the gateway address must be specified. -->
-  <define name='route'>
+  <define name="route">
     <element name="route">
       <optional>
         <attribute name="family"><ref name="addr-family"/></attribute>

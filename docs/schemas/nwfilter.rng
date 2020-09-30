@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <include href='basictypes.rng'/>
-  <include href='nwfilter_params.rng'/>
+  <include href="basictypes.rng"/>
+  <include href="nwfilter_params.rng"/>
   <start>
     <ref name="filter"/>
   </start>
@@ -242,26 +242,26 @@
     </optional>
     <optional>
       <attribute name="priority">
-        <ref name='priority-type'/>
+        <ref name="priority-type"/>
       </attribute>
     </optional>
   </define>
 
   <define name="rule-node-attributes">
     <attribute name="action">
-      <ref name='action-type'/>
+      <ref name="action-type"/>
     </attribute>
     <attribute name="direction">
-      <ref name='direction-type'/>
+      <ref name="direction-type"/>
     </attribute>
     <optional>
       <attribute name="priority">
-        <ref name='priority-type'/>
+        <ref name="priority-type"/>
       </attribute>
     </optional>
     <optional>
       <attribute name="statematch">
-        <ref name='statematch-type'/>
+        <ref name="statematch-type"/>
       </attribute>
     </optional>
   </define>
@@ -923,7 +923,7 @@
     </choice>
   </define>
 
-  <define name='action-type'>
+  <define name="action-type">
     <choice>
       <value>drop</value>
       <value>accept</value>
@@ -933,7 +933,7 @@
     </choice>
   </define>
 
-  <define name='direction-type'>
+  <define name="direction-type">
     <choice>
       <value>in</value>
       <value>out</value>
@@ -941,35 +941,35 @@
     </choice>
   </define>
 
-  <define name='priority-type'>
+  <define name="priority-type">
     <data type="int">
       <param name="minInclusive">-1000</param>
       <param name="maxInclusive">1000</param>
     </data>
   </define>
-  <define name='statematch-type'>
+  <define name="statematch-type">
     <data type="string">
       <param name="pattern">([Ff][Aa][Ll][Ss][Ee]|0)</param>
     </data>
   </define>
 
-  <define name='comment-type'>
+  <define name="comment-type">
     <data type="string"/>
   </define>
 
-  <define name='stateflags-type'>
+  <define name="stateflags-type">
     <data type="string">
       <param name="pattern">((NEW|ESTABLISHED|RELATED|INVALID)(,(NEW|ESTABLISHED|RELATED|INVALID))*|NONE)</param>
     </data>
   </define>
 
-  <define name='tcpflags-type'>
+  <define name="tcpflags-type">
     <data type="string">
       <param name="pattern">((SYN|ACK|URG|PSH|FIN|RST)(,(SYN|ACK|URG|PSH|FIN|RST))*|ALL|NONE)/((SYN|ACK|URG|PSH|FIN|RST)(,(SYN|ACK|URG|PSH|FIN|RST))*|ALL|NONE)</param>
     </data>
   </define>
 
-  <define name='ipset-name-type'>
+  <define name="ipset-name-type">
     <choice>
       <ref name="variable-name-type"/>
       <data type="string">
@@ -978,7 +978,7 @@
     </choice>
   </define>
 
-  <define name='ipset-flags-type'>
+  <define name="ipset-flags-type">
     <data type="string">
       <param name="pattern">(src|dst)(,(src|dst)){0,5}</param>
     </data>

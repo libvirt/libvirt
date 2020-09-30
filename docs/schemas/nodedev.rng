@@ -2,12 +2,12 @@
 <!-- A Relax NG schema for the libvirt node device XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <include href='basictypes.rng'/>
+  <include href="basictypes.rng"/>
   <start>
-    <ref name='device'/>
+    <ref name="device"/>
   </start>
 
-  <define name='device'>
+  <define name="device">
     <element name="device">
       <!-- The name of the network, used to refer to it through the API
          and in virsh -->
@@ -17,7 +17,7 @@
       </optional>
       <optional>
         <element name="devnode">
-          <attribute name='type'>
+          <attribute name="type">
             <value>dev</value>
           </attribute>
           <text/>
@@ -25,7 +25,7 @@
       </optional>
       <zeroOrMore>
         <element name="devnode">
-          <attribute name='type'>
+          <attribute name="type">
             <value>link</value>
           </attribute>
           <text/>
@@ -47,21 +47,21 @@
     </element>
   </define>
 
-  <define name='parent'>
-    <element name='parent'>
+  <define name="parent">
+    <element name="parent">
       <choice>
         <group>
-          <attribute name='wwnn'>
-            <ref name='wwn'/>
+          <attribute name="wwnn">
+            <ref name="wwn"/>
           </attribute>
-          <attribute name='wwpn'>
-            <ref name='wwn'/>
+          <attribute name="wwpn">
+            <ref name="wwn"/>
           </attribute>
           <empty/>
         </group>
         <group>
-          <attribute name='fabric_wwn'>
-            <ref name='wwn'/>
+          <attribute name="fabric_wwn">
+            <ref name="wwn"/>
           </attribute>
           <empty/>
         </group>
@@ -70,7 +70,7 @@
     </element>
   </define>
 
-  <define name='capability'>
+  <define name="capability">
     <element name="capability">
       <choice>
         <ref name="capsystem"/>
@@ -90,73 +90,73 @@
     </element>
   </define>
 
-  <define name='capsystem'>
-    <attribute name='type'>
+  <define name="capsystem">
+    <attribute name="type">
       <value>system</value>
     </attribute>
 
     <optional>
-      <element name='product'><text/></element>
+      <element name="product"><text/></element>
     </optional>
 
-    <element name='hardware'>
+    <element name="hardware">
       <optional>
-        <element name='vendor'><text/></element>
+        <element name="vendor"><text/></element>
       </optional>
       <optional>
-        <element name='version'><text/></element>
+        <element name="version"><text/></element>
       </optional>
       <optional>
-        <element name='serial'><text/></element>
+        <element name="serial"><text/></element>
       </optional>
 
-      <element name='uuid'>
-        <ref name='UUID'/>
+      <element name="uuid">
+        <ref name="UUID"/>
       </element>
     </element>
 
 
-    <element name='firmware'>
+    <element name="firmware">
       <optional>
-        <element name='vendor'><text/></element>
+        <element name="vendor"><text/></element>
       </optional>
       <optional>
-        <element name='version'><text/></element>
+        <element name="version"><text/></element>
       </optional>
       <optional>
-        <element name='release_date'><text/></element>
+        <element name="release_date"><text/></element>
       </optional>
     </element>
   </define>
 
-  <define name='cappcidev'>
-    <attribute name='type'>
+  <define name="cappcidev">
+    <attribute name="type">
       <value>pci</value>
     </attribute>
 
     <optional>
-      <element name='class'>
+      <element name="class">
         <data type="string">
           <param name="pattern">0x[0-9a-fA-F]{6}</param>
         </data>
       </element>
     </optional>
-    <element name='domain'>
-      <ref name='unsignedLong'/>
+    <element name="domain">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='bus'>
-      <ref name='unsignedLong'/>
+    <element name="bus">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='slot'>
-      <ref name='unsignedLong'/>
+    <element name="slot">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='function'>
-      <ref name='unsignedLong'/>
+    <element name="function">
+      <ref name="unsignedLong"/>
     </element>
 
-    <element name='product'>
-      <attribute name='id'>
-        <ref name='hexuint'/>
+    <element name="product">
+      <attribute name="id">
+        <ref name="hexuint"/>
       </attribute>
 
       <choice>
@@ -165,9 +165,9 @@
       </choice>
     </element>
 
-    <element name='vendor'>
-      <attribute name='id'>
-        <ref name='hexuint'/>
+    <element name="vendor">
+      <attribute name="id">
+        <ref name="hexuint"/>
       </attribute>
 
       <choice>
@@ -177,35 +177,35 @@
     </element>
 
     <optional>
-      <element name='capability'>
-        <attribute name='type'>
+      <element name="capability">
+        <attribute name="type">
           <value>phys_function</value>
         </attribute>
         <optional>
-          <ref name='address'/>
+          <ref name="address"/>
         </optional>
       </element>
     </optional>
 
     <optional>
-      <element name='capability'>
-        <attribute name='type'>
+      <element name="capability">
+        <attribute name="type">
           <value>virt_functions</value>
         </attribute>
         <optional>
-          <attribute name='maxCount'>
-            <ref name='unsignedInt'/>
+          <attribute name="maxCount">
+            <ref name="unsignedInt"/>
           </attribute>
         </optional>
         <zeroOrMore>
-          <ref name='address'/>
+          <ref name="address"/>
         </zeroOrMore>
       </element>
     </optional>
 
     <optional>
-      <element name='capability'>
-        <attribute name='type'>
+      <element name="capability">
+        <attribute name="type">
           <choice>
             <value>pci-bridge</value>
             <value>cardbus-bridge</value>
@@ -215,23 +215,23 @@
     </optional>
 
     <optional>
-      <element name='capability'>
-        <attribute name='type'>
+      <element name="capability">
+        <attribute name="type">
           <value>mdev_types</value>
         </attribute>
         <oneOrMore>
-          <element name='type'>
-            <attribute name='id'>
-              <data type='string'/>
+          <element name="type">
+            <attribute name="id">
+              <data type="string"/>
             </attribute>
             <optional>
-              <element name='name'><text/></element>
+              <element name="name"><text/></element>
             </optional>
-            <element name='deviceAPI'>
+            <element name="deviceAPI">
               <value>vfio-pci</value>
             </element>
-            <element name='availableInstances'>
-              <ref name='unsignedInt'/>
+            <element name="availableInstances">
+              <ref name="unsignedInt"/>
             </element>
           </element>
         </oneOrMore>
@@ -239,50 +239,50 @@
     </optional>
 
     <optional>
-      <element name='iommuGroup'>
-        <attribute name='number'>
-          <ref name='unsignedInt'/>
+      <element name="iommuGroup">
+        <attribute name="number">
+          <ref name="unsignedInt"/>
         </attribute>
         <oneOrMore>
-          <ref name='address'/>
+          <ref name="address"/>
         </oneOrMore>
       </element>
     </optional>
 
     <optional>
-      <element name='numa'>
+      <element name="numa">
         <optional>
-          <attribute name='node'>
-            <data type='int'/>
+          <attribute name="node">
+            <data type="int"/>
           </attribute>
         </optional>
       </element>
     </optional>
 
     <optional>
-      <element name='pci-express'>
+      <element name="pci-express">
         <zeroOrMore>
-          <element name='link'>
-            <attribute name='validity'>
+          <element name="link">
+            <attribute name="validity">
               <choice>
                 <value>cap</value>
                 <value>sta</value>
               </choice>
             </attribute>
             <optional>
-              <attribute name='port'>
-                <ref name='unsignedInt'/>
+              <attribute name="port">
+                <ref name="unsignedInt"/>
               </attribute>
             </optional>
             <optional>
-              <attribute name='speed'>
+              <attribute name="speed">
                 <data type="string">
                   <param name="pattern">[0-9]+(.[0-9]+)?</param>
                 </data>
               </attribute>
             </optional>
-            <attribute name='width'>
-              <ref name='unsignedInt'/>
+            <attribute name="width">
+              <ref name="unsignedInt"/>
             </attribute>
           </element>
         </zeroOrMore>
@@ -290,21 +290,21 @@
     </optional>
   </define>
 
-  <define name='capusbdev'>
-    <attribute name='type'>
+  <define name="capusbdev">
+    <attribute name="type">
       <value>usb_device</value>
     </attribute>
 
-    <element name='bus'>
-      <ref name='unsignedLong'/>
+    <element name="bus">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='device'>
-      <ref name='unsignedLong'/>
+    <element name="device">
+      <ref name="unsignedLong"/>
     </element>
 
-    <element name='product'>
-      <attribute name='id'>
-        <ref name='hexuint'/>
+    <element name="product">
+      <attribute name="id">
+        <ref name="hexuint"/>
       </attribute>
 
       <choice>
@@ -313,9 +313,9 @@
       </choice>
     </element>
 
-    <element name='vendor'>
-      <attribute name='id'>
-        <ref name='hexuint'/>
+    <element name="vendor">
+      <attribute name="id">
+        <ref name="hexuint"/>
       </attribute>
 
       <choice>
@@ -325,294 +325,294 @@
     </element>
   </define>
 
-  <define name='capusbinterface'>
-    <attribute name='type'>
+  <define name="capusbinterface">
+    <attribute name="type">
       <value>usb</value>
     </attribute>
 
-    <element name='number'>
-      <ref name='unsignedLong'/>
+    <element name="number">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='class'>
-      <ref name='unsignedLong'/>
+    <element name="class">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='subclass'>
-      <ref name='unsignedLong'/>
+    <element name="subclass">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='protocol'>
-      <ref name='unsignedLong'/>
+    <element name="protocol">
+      <ref name="unsignedLong"/>
     </element>
 
     <optional>
-      <element name='description'>
+      <element name="description">
         <text/>
       </element>
     </optional>
   </define>
 
-  <define name='capnet'>
-    <attribute name='type'>
+  <define name="capnet">
+    <attribute name="type">
       <value>net</value>
     </attribute>
 
-    <element name='interface'>
+    <element name="interface">
       <text/>
     </element>
     <optional>
-      <element name='address'>
-        <ref name='mac'/>
+      <element name="address">
+        <ref name="mac"/>
       </element>
     </optional>
     <ref name="link-speed-state"/>
 
     <zeroOrMore>
-      <element name='feature'>
-        <attribute name='name'>
-          <ref name='netfeaturename'/>
+      <element name="feature">
+        <attribute name="name">
+          <ref name="netfeaturename"/>
         </attribute>
       </element>
     </zeroOrMore>
 
     <zeroOrMore>
-      <ref name='subcapnet'/>
+      <ref name="subcapnet"/>
     </zeroOrMore>
   </define>
 
-  <define name='netfeaturename'>
-    <data type='string'>
-      <param name='pattern'>[a-zA-Z\-_]+</param>
+  <define name="netfeaturename">
+    <data type="string">
+      <param name="pattern">[a-zA-Z\-_]+</param>
     </data>
   </define>
 
-  <define name='subcapnet'>
-    <element name='capability'>
+  <define name="subcapnet">
+    <element name="capability">
       <choice>
-        <ref name='subcapnet80203'/>
-        <ref name='subcapnet80211'/>
+        <ref name="subcapnet80203"/>
+        <ref name="subcapnet80211"/>
       </choice>
     </element>
   </define>
 
-  <define name='subcapnet80203'>
-    <attribute name='type'>
+  <define name="subcapnet80203">
+    <attribute name="type">
       <value>80203</value>
     </attribute>
   </define>
 
-  <define name='subcapnet80211'>
-    <attribute name='type'>
+  <define name="subcapnet80211">
+    <attribute name="type">
       <value>80211</value>
     </attribute>
   </define>
 
-  <define name='capsfchost'>
-    <attribute name='type'>
+  <define name="capsfchost">
+    <attribute name="type">
       <value>fc_host</value>
     </attribute>
 
-    <element name='wwnn'>
-      <ref name='wwn'/>
+    <element name="wwnn">
+      <ref name="wwn"/>
     </element>
 
-    <element name='wwpn'>
-      <ref name='wwn'/>
+    <element name="wwpn">
+      <ref name="wwn"/>
     </element>
 
     <optional>
-      <element name='fabric_wwn'>
-        <ref name='wwn'/>
+      <element name="fabric_wwn">
+        <ref name="wwn"/>
       </element>
     </optional>
   </define>
 
-  <define name='capsvports'>
-    <attribute name='type'>
+  <define name="capsvports">
+    <attribute name="type">
       <value>vports_ops</value>
     </attribute>
-    <element name='max_vports'>
-      <ref name='unsignedInt'/>
+    <element name="max_vports">
+      <ref name="unsignedInt"/>
     </element>
-    <element name='vports'>
-      <ref name='unsignedInt'/>
+    <element name="vports">
+      <ref name="unsignedInt"/>
     </element>
   </define>
 
-  <define name='capscsihost'>
-    <attribute name='type'>
+  <define name="capscsihost">
+    <attribute name="type">
       <value>scsi_host</value>
     </attribute>
 
-    <element name='host'>
-      <ref name='unsignedLong'/>
+    <element name="host">
+      <ref name="unsignedLong"/>
     </element>
 
     <optional>
-      <element name='unique_id'>
-        <ref name='positiveInteger'/>
+      <element name="unique_id">
+        <ref name="positiveInteger"/>
       </element>
     </optional>
 
     <optional>
       <zeroOrMore>
-        <element name='capability'>
+        <element name="capability">
           <choice>
-            <ref name='capsfchost'/>
-            <ref name='capsvports'/>
+            <ref name="capsfchost"/>
+            <ref name="capsvports"/>
           </choice>
         </element>
       </zeroOrMore>
     </optional>
   </define>
 
-  <define name='capsfcrport'>
-    <attribute name='type'>
+  <define name="capsfcrport">
+    <attribute name="type">
       <value>fc_remote_port</value>
     </attribute>
 
-    <element name='rport'>
+    <element name="rport">
       <text/>
     </element>
 
-    <element name='wwpn'>
-      <ref name='wwn'/>
+    <element name="wwpn">
+      <ref name="wwn"/>
     </element>
   </define>
 
-  <define name='capscsitarget'>
-    <attribute name='type'>
+  <define name="capscsitarget">
+    <attribute name="type">
       <value>scsi_target</value>
     </attribute>
 
-    <element name='target'>
+    <element name="target">
       <text/>
     </element>
 
     <optional>
-      <element name='capability'>
-        <ref name='capsfcrport'/>
+      <element name="capability">
+        <ref name="capsfcrport"/>
       </element>
     </optional>
   </define>
 
-  <define name='capscsi'>
-    <attribute name='type'>
+  <define name="capscsi">
+    <attribute name="type">
       <value>scsi</value>
     </attribute>
 
-    <element name='host'>
-      <ref name='unsignedLong'/>
+    <element name="host">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='bus'>
-      <ref name='unsignedLong'/>
+    <element name="bus">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='target'>
-      <ref name='unsignedLong'/>
+    <element name="target">
+      <ref name="unsignedLong"/>
     </element>
-    <element name='lun'>
-      <ref name='unsignedLong'/>
+    <element name="lun">
+      <ref name="unsignedLong"/>
     </element>
 
-    <element name='type'>
+    <element name="type">
       <text/>
     </element>
   </define>
 
-  <define name='capstorage'>
-    <attribute name='type'>
+  <define name="capstorage">
+    <attribute name="type">
       <value>storage</value>
     </attribute>
 
-    <element name='block'>
-      <ref name='path'/>
+    <element name="block">
+      <ref name="path"/>
     </element>
 
     <optional>
-      <element name='bus'>
+      <element name="bus">
         <text/>
       </element>
     </optional>
     <optional>
-      <element name='drive_type'>
+      <element name="drive_type">
         <text/>
       </element>
     </optional>
     <optional>
-      <element name='model'>
+      <element name="model">
         <text/>
       </element>
     </optional>
     <optional>
-      <element name='vendor'>
+      <element name="vendor">
         <text/>
       </element>
     </optional>
     <optional>
-      <element name='serial'>
+      <element name="serial">
         <text/>
       </element>
     </optional>
 
     <choice>
-      <ref name='capstorageremoveable'/>
-      <ref name='capstoragefixed'/>
+      <ref name="capstorageremoveable"/>
+      <ref name="capstoragefixed"/>
     </choice>
 
     <optional>
-      <element name='capability'>
-        <attribute name='type'>
+      <element name="capability">
+        <attribute name="type">
           <value>hotpluggable</value>
         </attribute>
       </element>
     </optional>
   </define>
 
-  <define name='capstorageremoveable'>
-    <element name='capability'>
-      <attribute name='type'>
+  <define name="capstorageremoveable">
+    <element name="capability">
+      <attribute name="type">
         <value>removable</value>
       </attribute>
-      <element name='media_available'>
+      <element name="media_available">
         <choice>
           <value>1</value>
           <value>0</value>
         </choice>
       </element>
 
-      <element name='media_size'>
-        <ref name='unsignedLong'/>
+      <element name="media_size">
+        <ref name="unsignedLong"/>
       </element>
       <optional>
-        <element name='media_label'>
+        <element name="media_label">
           <text/>
         </element>
       </optional>
-      <ref name='blockData'/>
+      <ref name="blockData"/>
     </element>
   </define>
 
-  <define name='capstoragefixed'>
-    <element name='size'>
-      <ref name='unsignedLong'/>
+  <define name="capstoragefixed">
+    <element name="size">
+      <ref name="unsignedLong"/>
     </element>
-    <ref name='blockData'/>
+    <ref name="blockData"/>
   </define>
 
-  <define name='blockData'>
+  <define name="blockData">
     <optional>
-      <element name='logical_block_size'>
-        <ref name='unsignedLong'/>
+      <element name="logical_block_size">
+        <ref name="unsignedLong"/>
       </element>
-      <element name='num_blocks'>
-        <ref name='unsignedLong'/>
+      <element name="num_blocks">
+        <ref name="unsignedLong"/>
       </element>
     </optional>
   </define>
 
-  <define name='capdrm'>
-    <attribute name='type'>
+  <define name="capdrm">
+    <attribute name="type">
       <value>drm</value>
     </attribute>
-    <element name='type'>
+    <element name="type">
       <choice>
         <value>primary</value>
         <value>control</value>
@@ -621,19 +621,19 @@
     </element>
   </define>
 
-  <define name='capmdev'>
-    <attribute name='type'>
+  <define name="capmdev">
+    <attribute name="type">
       <value>mdev</value>
     </attribute>
-    <element name='type'>
-      <attribute name='id'>
-        <data type='string'/>
+    <element name="type">
+      <attribute name="id">
+        <data type="string"/>
       </attribute>
     </element>
     <optional>
-      <element name='iommuGroup'>
-        <attribute name='number'>
-          <ref name='unsignedInt'/>
+      <element name="iommuGroup">
+        <attribute name="number">
+          <ref name="unsignedInt"/>
         </attribute>
       </element>
     </optional>
@@ -645,53 +645,53 @@
     </zeroOrMore>
   </define>
 
-  <define name='capccwdev'>
-    <attribute name='type'>
+  <define name="capccwdev">
+    <attribute name="type">
       <value>ccw</value>
     </attribute>
-    <element name='cssid'>
-      <ref name='ccwCssidRange'/>
+    <element name="cssid">
+      <ref name="ccwCssidRange"/>
     </element>
-    <element name='ssid'>
-      <ref name='ccwSsidRange'/>
+    <element name="ssid">
+      <ref name="ccwSsidRange"/>
     </element>
-    <element name='devno'>
-      <ref name='ccwDevnoRange'/>
+    <element name="devno">
+      <ref name="ccwDevnoRange"/>
     </element>
   </define>
 
-  <define name='capcssdev'>
-    <attribute name='type'>
+  <define name="capcssdev">
+    <attribute name="type">
       <value>css</value>
     </attribute>
-    <element name='cssid'>
-      <ref name='ccwCssidRange'/>
+    <element name="cssid">
+      <ref name="ccwCssidRange"/>
     </element>
-    <element name='ssid'>
-      <ref name='ccwSsidRange'/>
+    <element name="ssid">
+      <ref name="ccwSsidRange"/>
     </element>
-    <element name='devno'>
-      <ref name='ccwDevnoRange'/>
-    </element>
-  </define>
-
-  <define name='address'>
-    <element name='address'>
-      <attribute name='domain'><ref name='hexuint'/></attribute>
-      <attribute name='bus'><ref name='hexuint'/></attribute>
-      <attribute name='slot'><ref name='hexuint'/></attribute>
-      <attribute name='function'><ref name='hexuint'/></attribute>
+    <element name="devno">
+      <ref name="ccwDevnoRange"/>
     </element>
   </define>
 
-  <define name='mac'>
-    <data type='string'>
+  <define name="address">
+    <element name="address">
+      <attribute name="domain"><ref name="hexuint"/></attribute>
+      <attribute name="bus"><ref name="hexuint"/></attribute>
+      <attribute name="slot"><ref name="hexuint"/></attribute>
+      <attribute name="function"><ref name="hexuint"/></attribute>
+    </element>
+  </define>
+
+  <define name="mac">
+    <data type="string">
       <param name="pattern">([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}</param>
     </data>
   </define>
 
-  <define name='path'>
-    <data type='string'>
+  <define name="path">
+    <data type="string">
       <param name="pattern">/[a-zA-Z0-9_\+\-/%]+</param>
     </data>
   </define>
