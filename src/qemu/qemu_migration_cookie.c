@@ -1156,6 +1156,49 @@ qemuMigrationCookieCapsXMLParse(xmlXPathContextPtr ctxt)
 }
 
 
+/**
+ * qemuMigrationCookieXMLParseMandatoryFeatures:
+ *
+ * Check to ensure all mandatory features from XML are also present in 'flags'.
+ */
+static int
+qemuMigrationCookieXMLParseMandatoryFeatures(xmlXPathContextPtr ctxt,
+                                             unsigned int flags)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    size_t i;
+    ssize_t n;
+
+    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        int val;
+        g_autofree char *str = virXMLPropString(nodes[i], "name");
+
+        if (!str) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("missing feature name"));
+            return -1;
+        }
+
+        if ((val = qemuMigrationCookieFlagTypeFromString(str)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown migration cookie feature %s"), str);
+            return -1;
+        }
+
+        if ((flags & (1 << val)) == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unsupported migration cookie feature %s"), str);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                             virQEMUDriverPtr driver,
@@ -1167,7 +1210,6 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *tmp = NULL;
     xmlNodePtr *nodes = NULL;
-    size_t i;
     int n;
 
     /* We don't store the uuid, name, hostname, or hostuuid
@@ -1234,38 +1276,9 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     }
     VIR_FREE(tmp);
 
-    /* Check to ensure all mandatory features from XML are also
-     * present in 'flags' */
-    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0)
-        goto error;
 
-    for (i = 0; i < n; i++) {
-        int val;
-        char *str = virXMLPropString(nodes[i], "name");
-        if (!str) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("missing feature name"));
-            goto error;
-        }
-
-        if ((val = qemuMigrationCookieFlagTypeFromString(str)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown migration cookie feature %s"),
-                           str);
-            VIR_FREE(str);
-            goto error;
-        }
-
-        if ((flags & (1 << val)) == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unsupported migration cookie feature %s"),
-                           str);
-            VIR_FREE(str);
-            goto error;
-        }
-        VIR_FREE(str);
-    }
-    VIR_FREE(nodes);
+    if (qemuMigrationCookieXMLParseMandatoryFeatures(ctxt, flags) < 0)
+        return -1;
 
     if ((flags & QEMU_MIGRATION_COOKIE_GRAPHICS) &&
         virXPathBoolean("count(./graphics) > 0", ctxt) &&
