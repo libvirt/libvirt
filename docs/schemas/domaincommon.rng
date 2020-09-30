@@ -44,7 +44,7 @@
           <ref name="metadata"/>
         </optional>
         <optional>
-          <ref name="cpu"/>
+          <ref name="guestcpu"/>
         </optional>
         <zeroOrMore>
           <ref name="sysinfo"/>
@@ -5535,47 +5535,6 @@
         </interleave>
       </element>
     </optional>
-  </define>
-  <!--
-      CPU specification
-      -->
-  <define name="cpu">
-    <element name="cpu">
-      <optional>
-        <ref name="cpuMode"/>
-      </optional>
-      <optional>
-        <ref name="cpuMatch"/>
-      </optional>
-      <optional>
-        <ref name="cpuCheck"/>
-      </optional>
-      <optional>
-        <attribute name="migratable">
-          <ref name="virOnOff"/>
-        </attribute>
-      </optional>
-      <interleave>
-        <optional>
-          <ref name="cpuModel"/>
-        </optional>
-        <optional>
-          <ref name="cpuVendor"/>
-        </optional>
-        <optional>
-          <ref name="cpuTopology"/>
-        </optional>
-        <zeroOrMore>
-          <ref name="cpuFeature"/>
-        </zeroOrMore>
-        <optional>
-          <ref name="cpuNuma"/>
-        </optional>
-        <optional>
-          <ref name="cpuCache"/>
-        </optional>
-      </interleave>
-    </element>
   </define>
 
   <!--
