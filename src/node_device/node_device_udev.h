@@ -24,4 +24,3 @@
 
 #define SYSFS_DATA_SIZE 4096
 #define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
-#define DMI_DEVPATH_FALLBACK "/sys/class/dmi/id"

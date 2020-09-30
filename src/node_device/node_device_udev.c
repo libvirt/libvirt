@@ -1731,14 +1731,11 @@ udevGetDMIData(virNodeDevCapSystemPtr syscap)
 
     device = udev_device_new_from_syspath(udev, DMI_DEVPATH);
     if (device == NULL) {
-        device = udev_device_new_from_syspath(udev, DMI_DEVPATH_FALLBACK);
-        if (device == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to get udev device for syspath '%s' or '%s'"),
-                           DMI_DEVPATH, DMI_DEVPATH_FALLBACK);
-            virObjectUnlock(priv);
-            return;
-        }
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to get udev device for syspath '%s'"),
+                       DMI_DEVPATH);
+        virObjectUnlock(priv);
+        return;
     }
     virObjectUnlock(priv);
 
