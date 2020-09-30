@@ -3,6 +3,7 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <include href="basictypes.rng"/>
+  <include href="cputypes.rng"/>
   <start>
     <ref name="capabilities"/>
   </start>
@@ -25,17 +26,7 @@
           <ref name="UUID"/>
         </element>
       </optional>
-      <element name="cpu">
-        <element name="arch">
-          <ref name="archnames"/>
-        </element>
-        <optional>
-          <ref name="cpufeatures"/>
-        </optional>
-        <optional>
-          <ref name="cpuspec"/>
-        </optional>
-      </element>
+      <ref name="hostcpu"/>
       <optional>
         <ref name="power_management"/>
       </optional>
@@ -79,64 +70,6 @@
         </zeroOrMore>
       </interleave>
     </element>
-  </define>
-
-
-  <define name="cpufeatures">
-    <element name="features">
-      <optional>
-        <element name="pae"><empty/></element>
-      </optional>
-      <optional>
-        <element name="nonpae"><empty/></element>
-      </optional>
-      <optional>
-        <element name="vmx"><empty/></element>
-      </optional>
-      <optional>
-        <element name="svm"><empty/></element>
-      </optional>
-    </element>
-  </define>
-
-  <define name="cpuspec">
-    <element name="model">
-      <text/>
-    </element>
-    <optional>
-      <element name="vendor">
-        <text/>
-      </element>
-    </optional>
-    <optional>
-      <element name="microcode">
-        <attribute name="version">
-          <ref name="positiveInteger"/>
-        </attribute>
-      </element>
-    </optional>
-    <element name="topology">
-      <attribute name="sockets">
-        <ref name="positiveInteger"/>
-      </attribute>
-      <attribute name="cores">
-        <ref name="positiveInteger"/>
-      </attribute>
-      <attribute name="threads">
-        <ref name="positiveInteger"/>
-      </attribute>
-    </element>
-    <zeroOrMore>
-      <element name="feature">
-        <attribute name="name">
-          <ref name="featureName"/>
-        </attribute>
-        <empty/>
-      </element>
-    </zeroOrMore>
-    <zeroOrMore>
-      <ref name="pagesHost"/>
-    </zeroOrMore>
   </define>
 
   <define name="power_management">
@@ -567,17 +500,6 @@
     </attribute>
   </define>
 
-  <define name="featureName">
-    <data type="string">
-      <param name="pattern">[a-zA-Z0-9\-_]+</param>
-    </data>
-  </define>
-
-  <define name="pagesHost">
-    <element name="pages">
-      <ref name="pagesElem"/>
-    </element>
-  </define>
   <define name="pagesNuma">
     <element name="pages">
       <ref name="pagesElem"/>
