@@ -578,20 +578,19 @@ static void
 qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
                                      qemuMigrationCookieGraphicsPtr grap)
 {
-    virBufferAsprintf(buf, "<graphics type='%s' port='%d' listen='%s'",
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    virBufferAsprintf(&attrBuf, " type='%s' port='%d' listen='%s'",
                       virDomainGraphicsTypeToString(grap->type),
                       grap->port, grap->listen);
+
     if (grap->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
-        virBufferAsprintf(buf, " tlsPort='%d'", grap->tlsPort);
-    if (grap->tlsSubject) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<cert info='subject' value='%s'/>\n", grap->tlsSubject);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</graphics>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
+        virBufferAsprintf(&attrBuf, " tlsPort='%d'", grap->tlsPort);
+
+    virBufferEscapeString(&childBuf, "<cert info='subject' value='%s'/>\n", grap->tlsSubject);
+
+    virXMLFormatElement(buf, "graphics", &attrBuf, &childBuf);
 }
 
 
