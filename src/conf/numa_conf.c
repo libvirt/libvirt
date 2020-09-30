@@ -1816,7 +1816,7 @@ virDomainNumaFillCPUsInNode(virDomainNumaPtr numa,
     for (i = 0; i < numa->nmem_nodes; i++) {
         virBitmapPtr nodeCpus = virDomainNumaGetNodeCpumask(numa, i);
 
-        if (i == node)
+        if (i == node || !nodeCpus)
             continue;
 
         virBitmapSubtract(maxCPUsBitmap, nodeCpus);
