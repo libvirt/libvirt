@@ -637,8 +637,7 @@ virVMXEscapeHex(const char *string, char escape, const char *special)
         ++length;
     }
 
-    if (VIR_ALLOC_N(escaped, length) < 0)
-        return NULL;
+    escaped = g_new0(char, length);
 
     tmp1 = string; /* reading from this one */
     tmp2 = escaped; /* writing to this one */
@@ -1150,8 +1149,7 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
     int count = 0;
     int *autodetectedModels;
 
-    if (VIR_ALLOC_N(autodetectedModels, def->ndisks) < 0)
-        return -1;
+    autodetectedModels = g_new0(int, def->ndisks);
 
     for (i = 0; i < def->ncontrollers; ++i) {
         controller = def->controllers[i];
@@ -1611,9 +1609,7 @@ virVMXParseConfig(virVMXContext *ctx,
     /* FIXME */
 
     /* def:graphics */
-    if (VIR_ALLOC_N(def->graphics, 1) < 0)
-        goto cleanup;
-
+    def->graphics = g_new0(virDomainGraphicsDefPtr, 1);
     def->ngraphics = 0;
 
     if (virVMXParseVNC(conf, &def->graphics[def->ngraphics]) < 0)
@@ -1623,9 +1619,7 @@ virVMXParseConfig(virVMXContext *ctx,
         ++def->ngraphics;
 
     /* def:disks: 4 * 15 scsi + 2 * 2 ide + 2 floppy = 66 */
-    if (VIR_ALLOC_N(def->disks, 66) < 0)
-        goto cleanup;
-
+    def->disks = g_new0(virDomainDiskDefPtr, 66);
     def->ndisks = 0;
 
     /* def:disks (scsi) */
@@ -1733,9 +1727,7 @@ virVMXParseConfig(virVMXContext *ctx,
         if (sharedFolder_maxNum > 0) {
             int number;
 
-            if (VIR_ALLOC_N(def->fss, sharedFolder_maxNum) < 0)
-                goto cleanup;
-
+            def->fss = g_new0(virDomainFSDefPtr, sharedFolder_maxNum);
             def->nfss = 0;
 
             for (number = 0; number < sharedFolder_maxNum; ++number) {
@@ -1767,9 +1759,7 @@ virVMXParseConfig(virVMXContext *ctx,
     /* FIXME */
 
     /* def:videos */
-    if (VIR_ALLOC_N(def->videos, 1) < 0)
-        goto cleanup;
-
+    def->videos = g_new0(virDomainVideoDefPtr, 1);
     def->nvideos = 0;
 
     if (virVMXParseSVGA(conf, &def->videos[def->nvideos]) < 0)
@@ -1784,9 +1774,7 @@ virVMXParseConfig(virVMXContext *ctx,
     /* FIXME */
 
     /* def:serials */
-    if (VIR_ALLOC_N(def->serials, 4) < 0)
-        goto cleanup;
-
+    def->serials = g_new0(virDomainChrDefPtr, 4);
     def->nserials = 0;
 
     for (port = 0; port < 4; ++port) {
@@ -1800,9 +1788,7 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     /* def:parallels */
-    if (VIR_ALLOC_N(def->parallels, 3) < 0)
-        goto cleanup;
-
+    def->parallels = g_new0(virDomainChrDefPtr, 3);
     def->nparallels = 0;
 
     for (port = 0; port < 3; ++port) {
@@ -1819,10 +1805,7 @@ virVMXParseConfig(virVMXContext *ctx,
     if (ctx->datacenterPath || ctx->moref) {
         struct virVMXDomainDefNamespaceData *nsdata = NULL;
 
-        if (VIR_ALLOC(nsdata) < 0) {
-            virVMXDomainDefNamespaceFree(nsdata);
-            goto cleanup;
-        }
+        nsdata = g_new0(struct virVMXDomainDefNamespaceData, 1);
 
         nsdata->datacenterPath = g_strdup(ctx->datacenterPath);
 
@@ -1891,9 +1874,7 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
     if (! enabled)
         return 0;
 
-    if (VIR_ALLOC(*def) < 0)
-        goto failure;
-
+    *def = g_new0(virDomainGraphicsDef, 1);
     (*def)->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
 
     if (virVMXGetConfigLong(conf, "RemoteDisplay.vnc.port", &port, -1,
@@ -2588,8 +2569,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     if (! present/* && ! startConnected*/)
         return 0;
 
-    if (VIR_ALLOC(*def) < 0)
-        return -1;
+    *def = g_new0(virDomainNetDef, 1);
 
     /* vmx:connectionType -> def:type */
     if (virVMXGetConfigString(conf, connectionType_name, &connectionType,
@@ -3040,9 +3020,7 @@ virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def)
         return -1;
     }
 
-    if (VIR_ALLOC(*def) < 0)
-        return -1;
-
+    *def = g_new0(virDomainVideoDef, 1);
     (*def)->type = VIR_DOMAIN_VIDEO_TYPE_VMVGA;
 
     /* vmx:vramSize */

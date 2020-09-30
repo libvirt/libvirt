@@ -97,8 +97,7 @@ vmwareDataAllocFunc(void *opaque G_GNUC_UNUSED)
 {
     vmwareDomainPtr dom;
 
-    if (VIR_ALLOC(dom) < 0)
-        return NULL;
+    dom = g_new0(vmwareDomain, 1);
 
     dom->vmxPath = NULL;
     dom->gui = true;
@@ -184,8 +183,7 @@ vmwareConnectOpen(virConnectPtr conn,
     /* We now know the URI is definitely for this driver, so beyond
      * here, don't return DECLINED, always use ERROR */
 
-    if (VIR_ALLOC(driver) < 0)
-        return VIR_DRV_OPEN_ERROR;
+    driver = g_new0(struct vmware_driver, 1);
 
     /* Find vmrun, which is what this driver uses to communicate to
      * the VMware hypervisor. We look this up first since we use it
