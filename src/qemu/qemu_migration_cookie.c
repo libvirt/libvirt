@@ -1307,11 +1307,8 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                 VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION |
                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
-        if (!mig->persistent) {
-            /* virDomainDefParseNode already reported
-             * an error for us */
+        if (!mig->persistent)
             goto error;
-        }
     }
 
     if ((flags & QEMU_MIGRATION_COOKIE_NETWORK) &&
