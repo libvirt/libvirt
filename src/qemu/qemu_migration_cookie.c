@@ -1207,8 +1207,10 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                             xmlXPathContextPtr ctxt,
                             unsigned int flags)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *tmp = NULL;
+    g_autofree char *name = NULL;
+    g_autofree char *uuid = NULL;
+    g_autofree char *hostuuid = NULL;
+    char localdomuuid[VIR_UUID_STRING_BUFLEN];
     xmlNodePtr *nodes = NULL;
     int n;
 
@@ -1218,34 +1220,31 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
      */
 
     /* Extract domain name */
-    if (!(tmp = virXPathString("string(./name[1])", ctxt))) {
+    if (!(name = virXPathString("string(./name[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing name element in migration data"));
         goto error;
     }
-    if (STRNEQ(tmp, mig->name)) {
+    if (STRNEQ(name, mig->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Incoming cookie data had unexpected name %s vs %s"),
-                       tmp, mig->name);
+                       name, mig->name);
         goto error;
     }
-    VIR_FREE(tmp);
 
     /* Extract domain uuid */
-    tmp = virXPathString("string(./uuid[1])", ctxt);
-    if (!tmp) {
+    if (!(uuid = virXPathString("string(./uuid[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing uuid element in migration data"));
         goto error;
     }
-    virUUIDFormat(mig->uuid, uuidstr);
-    if (STRNEQ(tmp, uuidstr)) {
+    virUUIDFormat(mig->uuid, localdomuuid);
+    if (STRNEQ(uuid, localdomuuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Incoming cookie data had unexpected UUID %s vs %s"),
-                       tmp, uuidstr);
+                       uuid, localdomuuid);
         goto error;
     }
-    VIR_FREE(tmp);
 
     if (!(mig->remoteHostname = virXPathString("string(./hostname[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1258,12 +1257,12 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
      * for sure. */
 
     /* Check & forbid localhost migration */
-    if (!(tmp = virXPathString("string(./hostuuid[1])", ctxt))) {
+    if (!(hostuuid = virXPathString("string(./hostuuid[1])", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing hostuuid element in migration data"));
         goto error;
     }
-    if (virUUIDParse(tmp, mig->remoteHostuuid) < 0) {
+    if (virUUIDParse(hostuuid, mig->remoteHostuuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("malformed hostuuid element in migration data"));
         goto error;
@@ -1271,11 +1270,9 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     if (memcmp(mig->remoteHostuuid, mig->localHostuuid, VIR_UUID_BUFLEN) == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Attempt to migrate guest to the same host %s"),
-                       tmp);
+                       hostuuid);
         goto error;
     }
-    VIR_FREE(tmp);
-
 
     if (qemuMigrationCookieXMLParseMandatoryFeatures(ctxt, flags) < 0)
         return -1;
@@ -1350,7 +1347,6 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     return 0;
 
  error:
-    VIR_FREE(tmp);
     VIR_FREE(nodes);
     return -1;
 }
