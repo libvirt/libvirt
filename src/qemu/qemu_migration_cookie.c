@@ -1211,7 +1211,6 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     g_autofree char *uuid = NULL;
     g_autofree char *hostuuid = NULL;
     char localdomuuid[VIR_UUID_STRING_BUFLEN];
-    xmlNodePtr *nodes = NULL;
 
     /* We don't store the uuid, name, hostname, or hostuuid
      * values. We just compare them to local data to do some
@@ -1296,6 +1295,8 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
 
     if ((flags & QEMU_MIGRATION_COOKIE_PERSISTENT) &&
         virXPathBoolean("count(./domain) > 0", ctxt)) {
+        g_autofree xmlNodePtr *nodes = NULL;
+
         if ((virXPathNodeSet("./domain", ctxt, &nodes)) != 1) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Too many domain elements in migration cookie"));
@@ -1311,7 +1312,6 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
              * an error for us */
             goto error;
         }
-        VIR_FREE(nodes);
     }
 
     if ((flags & QEMU_MIGRATION_COOKIE_NETWORK) &&
@@ -1344,7 +1344,6 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     return 0;
 
  error:
-    VIR_FREE(nodes);
     return -1;
 }
 
