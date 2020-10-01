@@ -345,6 +345,9 @@ virBitmapToString(virBitmapPtr bitmap)
 
     sz = bitmap->map_len;
 
+    /* initialize buffer to return empty string for 0 length bitmap */
+    virBufferAdd(&buf, "", -1);
+
     while (sz--) {
         virBufferAsprintf(&buf, "%0*lx",
                           VIR_BITMAP_BITS_PER_UNIT / 4,
