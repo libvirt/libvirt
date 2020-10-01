@@ -1592,7 +1592,7 @@ virResctrlAllocFormatCache(virResctrlAllocPtr alloc,
                 if (!mask)
                     continue;
 
-                mask_str = virBitmapToString(mask, false, true);
+                mask_str = virBitmapToString(mask);
                 if (!mask_str)
                     return -1;
 

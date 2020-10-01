@@ -327,26 +327,19 @@ virBitmapGetBit(virBitmapPtr bitmap,
 /**
  * virBitmapToString:
  * @bitmap: Pointer to bitmap
- * @prefix: Whether to prepend "0x"
- * @trim: Whether to output only the minimum required characters
  *
  * Convert @bitmap to printable string.
  *
  * Returns pointer to the string or NULL on error.
  */
 char *
-virBitmapToString(virBitmapPtr bitmap,
-                  bool prefix,
-                  bool trim)
+virBitmapToString(virBitmapPtr bitmap)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t sz;
     size_t len;
     size_t diff;
     char *ret = NULL;
-
-    if (prefix)
-        virBufferAddLit(&buf, "0x");
 
     sz = bitmap->map_len;
 
@@ -360,14 +353,8 @@ virBitmapToString(virBitmapPtr bitmap,
     if (!ret)
         return NULL;
 
-    if (!trim)
-        return ret;
-
     if (bitmap->nbits != bitmap->map_len * VIR_BITMAP_BITS_PER_UNIT) {
         char *tmp = ret;
-
-        if (prefix)
-            tmp += 2;
 
         len = strlen(tmp);
         sz = VIR_DIV_UP(bitmap->nbits, 4);

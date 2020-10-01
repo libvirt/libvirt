@@ -81,7 +81,7 @@ virBitmapPtr
 virBitmapNewString(const char *string)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-char *virBitmapToString(virBitmapPtr bitmap, bool prefix, bool trim)
+char *virBitmapToString(virBitmapPtr bitmap)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 char *virBitmapFormat(virBitmapPtr bitmap);

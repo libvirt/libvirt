@@ -681,7 +681,7 @@ test13(const void *opaque G_GNUC_UNUSED)
         if (!map)
             goto cleanup;
 
-        str = virBitmapToString(map, false, true);
+        str = virBitmapToString(map);
         if (!str)
             goto cleanup;
 
