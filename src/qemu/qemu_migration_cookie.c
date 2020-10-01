@@ -192,12 +192,9 @@ qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
                                       virDomainGraphicsDefPtr def,
                                       virDomainGraphicsListenDefPtr glisten)
 {
-    qemuMigrationCookieGraphicsPtr mig = NULL;
+    g_autoptr(qemuMigrationCookieGraphics) mig = g_new0(qemuMigrationCookieGraphics, 1);
     const char *listenAddr;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
-    if (VIR_ALLOC(mig) < 0)
-        goto error;
 
     mig->type = VIR_DOMAIN_GRAPHICS_TYPE_SPICE;
     mig->port = def->data.spice.port;
@@ -211,15 +208,11 @@ qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
 
     if (cfg->spiceTLS &&
         !(mig->tlsSubject = qemuDomainExtractTLSSubject(cfg->spiceTLSx509certdir)))
-        goto error;
+        return NULL;
 
     mig->listen = g_strdup(listenAddr);
 
-    return mig;
-
- error:
-    qemuMigrationCookieGraphicsFree(mig);
-    return NULL;
+    return g_steal_pointer(&mig);
 }
 
 
