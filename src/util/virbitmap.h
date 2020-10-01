@@ -33,7 +33,6 @@ typedef virBitmap *virBitmapPtr;
  * Allocate a bitmap capable of containing @size bits.
  */
 virBitmapPtr virBitmapNew(size_t size);
-virBitmapPtr virBitmapNewEmpty(void) G_GNUC_WARN_UNUSED_RESULT;
 
 /*
  * Free previously allocated bitmap

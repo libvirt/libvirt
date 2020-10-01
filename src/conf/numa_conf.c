@@ -1374,7 +1374,7 @@ virDomainNumaDefValidate(const virDomainNuma *def)
 
     for (i = 0; i < def->nmem_nodes; i++) {
         const virDomainNumaNode *node = &def->mem_nodes[i];
-        g_autoptr(virBitmap) levelsSeen = virBitmapNewEmpty();
+        g_autoptr(virBitmap) levelsSeen = virBitmapNew(0);
 
         for (j = 0; j < node->ncaches; j++) {
             const virDomainNumaCache *cache = &node->caches[j];

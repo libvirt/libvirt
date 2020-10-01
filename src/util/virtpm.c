@@ -183,7 +183,7 @@ virTPMExecGetCaps(virCommandPtr cmd,
     if (virCommandRun(cmd, &exitstatus) < 0)
         return NULL;
 
-    bitmap = virBitmapNewEmpty();
+    bitmap = virBitmapNew(0);
 
     /* older version does not support --print-capabilties -- that's fine */
     if (exitstatus != 0) {

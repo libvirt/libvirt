@@ -311,7 +311,7 @@ virNumaNodesetToCPUset(virBitmapPtr nodeset,
     if (!nodeset)
         return 0;
 
-    allNodesCPUs = virBitmapNewEmpty();
+    allNodesCPUs = virBitmapNew(0);
     nodesetSize = virBitmapSize(nodeset);
 
     for (i = 0; i < nodesetSize; i++) {

@@ -85,20 +85,6 @@ virBitmapNew(size_t size)
 
 
 /**
- * virBitmapNewEmpty:
- *
- * Allocate an empty bitmap. It can be used with self-expanding APIs.
- *
- * Returns a pointer to the allocated bitmap.
- */
-virBitmapPtr
-virBitmapNewEmpty(void)
-{
-    return g_new0(virBitmap, 1);
-}
-
-
-/**
  * virBitmapFree:
  * @bitmap: previously allocated bitmap
  *
@@ -576,7 +562,7 @@ virBitmapParse(const char *str,
 virBitmapPtr
 virBitmapParseUnlimited(const char *str)
 {
-    virBitmapPtr bitmap = virBitmapNewEmpty();
+    virBitmapPtr bitmap = virBitmapNew(0);
     bool neg = false;
     const char *cur = str;
     char *tmp;
