@@ -670,37 +670,27 @@ test12(const void *opaque G_GNUC_UNUSED)
 static int
 test13(const void *opaque G_GNUC_UNUSED)
 {
-    virBitmapPtr map = NULL;
     const char *strings[] = { "1234feebee", "000c0fefe" };
-    char *str = NULL;
     size_t i = 0;
-    int ret = -1;
 
     for (i = 0; i < G_N_ELEMENTS(strings); i++) {
-        map = virBitmapNewString(strings[i]);
-        if (!map)
-            goto cleanup;
+        g_autoptr(virBitmap) map = NULL;
+        g_autofree char *str = NULL;
 
-        str = virBitmapToString(map);
-        if (!str)
-            goto cleanup;
+        if (!(map = virBitmapNewString(strings[i])))
+            return -1;
+
+        if (!(str = virBitmapToString(map)))
+            return -1;
 
         if (STRNEQ(strings[i], str)) {
             fprintf(stderr, "\n expected bitmap string '%s' actual string "
                     "'%s'\n", strings[i], str);
-            goto cleanup;
+            return -1;
         }
-
-        VIR_FREE(str);
-        virBitmapFree(map);
-        map = NULL;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(str);
-    virBitmapFree(map);
-    return ret;
+    return 0;
 }
 
 #undef TEST_MAP
