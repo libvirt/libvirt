@@ -83,9 +83,7 @@ qemuSlirpNew(void)
 {
     g_autoptr(qemuSlirp) slirp = g_new0(qemuSlirp, 1);
 
-    if (!(slirp->features = virBitmapNew(QEMU_SLIRP_FEATURE_LAST)))
-        return NULL;
-
+    slirp->features = virBitmapNew(QEMU_SLIRP_FEATURE_LAST);
     slirp->pid = (pid_t)-1;
     slirp->fd[0] = slirp->fd[1] = -1;
 

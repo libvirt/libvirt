@@ -433,8 +433,7 @@ virBitmapParseSeparator(const char *str,
     size_t i;
     int start, last;
 
-    if (!(*bitmap = virBitmapNew(bitmapSize)))
-        return -1;
+    *bitmap = virBitmapNew(bitmapSize);
 
     if (!str)
         goto error;
@@ -664,10 +663,7 @@ virBitmapParseUnlimited(const char *str)
 virBitmapPtr
 virBitmapNewCopy(virBitmapPtr src)
 {
-    virBitmapPtr dst;
-
-    if ((dst = virBitmapNew(src->nbits)) == NULL)
-        return NULL;
+    virBitmapPtr dst = virBitmapNew(src->nbits);
 
     if (virBitmapCopy(dst, src) != 0) {
         virBitmapFree(dst);
@@ -699,8 +695,6 @@ virBitmapNewData(const void *data,
     const unsigned char *bytes = data;
 
     bitmap = virBitmapNew(len * CHAR_BIT);
-    if (!bitmap)
-        return NULL;
 
     /* le64toh is not available, so we do the conversion by hand */
     p = bitmap->map;
@@ -1116,8 +1110,6 @@ virBitmapNewString(const char *string)
     }
 
     bitmap = virBitmapNew(len * 4);
-    if (!bitmap)
-        return NULL;
 
     for (i = 0; i < len; i++) {
         unsigned long nibble = g_ascii_xdigit_value(string[len - i - 1]);

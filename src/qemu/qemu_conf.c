@@ -278,8 +278,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged,
     cfg->glusterDebugLevel = 4;
     cfg->stdioLogD = true;
 
-    if (!(cfg->namespaces = virBitmapNew(QEMU_DOMAIN_NS_LAST)))
-        return NULL;
+    cfg->namespaces = virBitmapNew(QEMU_DOMAIN_NS_LAST);
 
     if (privileged &&
         qemuDomainNamespaceAvailable(QEMU_DOMAIN_NS_MOUNT) &&

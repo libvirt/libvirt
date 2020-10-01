@@ -2252,9 +2252,6 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
     }
 
     bitmap = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
-    if (!bitmap)
-        goto cleanup;
-
     ignore_value(virBitmapSetBit(bitmap, QEMU_MIGRATION_CAP_XBZRLE));
     if (!(json = qemuMigrationCapsToJSON(bitmap, bitmap)))
         goto cleanup;

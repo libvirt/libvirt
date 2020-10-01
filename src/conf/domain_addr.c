@@ -1595,8 +1595,7 @@ virDomainVirtioSerialAddrSetAddController(virDomainVirtioSerialAddrSetPtr addrs,
     if (VIR_ALLOC(cnt) < 0)
         goto cleanup;
 
-    if (!(cnt->ports = virBitmapNew(ports)))
-        goto cleanup;
+    cnt->ports = virBitmapNew(ports);
     cnt->idx = cont->idx;
 
     if ((insertAt = virDomainVirtioSerialAddrPlaceController(addrs, cnt)) < -1)
@@ -2043,8 +2042,7 @@ virDomainUSBAddressHubNew(size_t nports)
     if (VIR_ALLOC(hub) < 0)
         goto cleanup;
 
-    if (!(hub->portmap = virBitmapNew(nports)))
-        goto cleanup;
+    hub->portmap = virBitmapNew(nports);
 
     if (VIR_ALLOC_N(hub->ports, nports) < 0)
         goto cleanup;

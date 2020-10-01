@@ -1464,8 +1464,7 @@ prlsdkConvertCpuInfo(PRL_HANDLE sdkdom,
         return -1;
 
     if (strlen(buf) == 0) {
-        if (!(def->cpumask = virBitmapNew(hostcpus)))
-            return -1;
+        def->cpumask = virBitmapNew(hostcpus);
         virBitmapSetAll(def->cpumask);
     } else {
         if (virBitmapParse(buf, &def->cpumask, hostcpus) < 0)

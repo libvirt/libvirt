@@ -19280,17 +19280,12 @@ qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
     virTypedParameterPtr par = NULL;
     int npar = 0;
     int maxpar = 0;
-    virBitmapPtr vcpus = NULL;
-    virBitmapPtr online = NULL;
-    virBitmapPtr offlinable = NULL;
+    virBitmapPtr vcpus = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
+    virBitmapPtr online = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
+    virBitmapPtr offlinable = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
     g_autofree char *tmp = NULL;
     size_t i;
     int ret = -1;
-
-    if (!(vcpus = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID)) ||
-        !(online = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID)) ||
-        !(offlinable = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID)))
-        goto cleanup;
 
     for (i = 0; i < ninfo; i++) {
         if (virBitmapSetBit(vcpus, info[i].id) < 0) {

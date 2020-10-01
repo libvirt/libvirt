@@ -1507,8 +1507,6 @@ virVMXParseConfig(virVMXContext *ctx,
         size_t naffs;
 
         def->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
-        if (!def->cpumask)
-            goto cleanup;
 
         if (!(afflist = virStringSplitCount(sched_cpu_affinity, ",", 0, &naffs)))
             goto cleanup;

@@ -61,8 +61,7 @@ test1(const void *data G_GNUC_UNUSED)
 
     size = 1024;
     bit = 100;
-    if (!(bitmap = virBitmapNew(size)))
-        return -1;
+    bitmap = virBitmapNew(size);
 
     if (virBitmapSetBit(bitmap, bit) < 0)
         return -1;
@@ -165,8 +164,7 @@ test3(const void *data G_GNUC_UNUSED)
     int size = 5;
     size_t i;
 
-    if ((bitmap = virBitmapNew(size)) == NULL)
-        return -1;
+    bitmap = virBitmapNew(size);
 
     for (i = 0; i < size; i++)
         ignore_value(virBitmapSetBit(bitmap, i));
@@ -214,8 +212,6 @@ test4b(const void *data G_GNUC_UNUSED)
     /* 1. zero set */
 
     bitmap = virBitmapNew(size);
-    if (!bitmap)
-        return -1;
 
     if (virBitmapNextSetBit(bitmap, -1) != -1)
         return -1;
@@ -375,8 +371,6 @@ test6(const void *v G_GNUC_UNUSED)
     int size = 64;
 
     bitmap = virBitmapNew(size);
-    if (!bitmap)
-        return -1;
 
     if (checkBitmap(bitmap, "", -1) < 0)
         return -1;
@@ -425,8 +419,6 @@ test7(const void *v G_GNUC_UNUSED)
 
     for (i = 0; i < nmaxBit; i++) {
         g_autoptr(virBitmap) bitmap = virBitmapNew(maxBit[i]);
-        if (!bitmap)
-            return -1;
 
         if (virBitmapIsAllSet(bitmap))
             return -1;

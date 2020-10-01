@@ -1143,10 +1143,8 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
     if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0)
         goto out;
 
-    if (n > 0) {
-        if (!(net->features = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
-            goto out;
-    }
+    if (n > 0)
+        net->features = virBitmapNew(VIR_NET_DEV_FEAT_LAST);
 
     for (i = 0; i < n; i++) {
         int val;

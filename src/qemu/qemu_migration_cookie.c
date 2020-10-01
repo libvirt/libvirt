@@ -1122,9 +1122,8 @@ qemuMigrationCookieCapsXMLParse(xmlXPathContextPtr ctxt)
     if (VIR_ALLOC(caps) < 0)
         return NULL;
 
-    if (!(caps->supported = virBitmapNew(QEMU_MIGRATION_CAP_LAST)) ||
-        !(caps->automatic = virBitmapNew(QEMU_MIGRATION_CAP_LAST)))
-        goto cleanup;
+    caps->supported = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
+    caps->automatic = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
 
     if ((n = virXPathNodeSet("./capabilities[1]/cap", ctxt, &nodes)) < 0)
         goto cleanup;

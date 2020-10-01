@@ -799,9 +799,8 @@ qemuDomainEnableNamespace(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (!priv->namespaces &&
-        !(priv->namespaces = virBitmapNew(QEMU_DOMAIN_NS_LAST)))
-        return -1;
+    if (!priv->namespaces)
+        priv->namespaces = virBitmapNew(QEMU_DOMAIN_NS_LAST);
 
     if (virBitmapSetBit(priv->namespaces, ns) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

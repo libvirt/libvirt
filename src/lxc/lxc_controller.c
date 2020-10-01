@@ -756,9 +756,6 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
         maxcpu = hostcpus;
 
     cpumap = virBitmapNew(maxcpu);
-    if (!cpumap)
-        return -1;
-
     cpumapToSet = cpumap;
 
     if (ctrl->def->cpumask) {

@@ -2032,11 +2032,8 @@ virDomainDefGetVcpus(const virDomainDef *def)
 virBitmapPtr
 virDomainDefGetOnlineVcpumap(const virDomainDef *def)
 {
-    virBitmapPtr ret = NULL;
+    virBitmapPtr ret = virBitmapNew(def->maxvcpus);
     size_t i;
-
-    if (!(ret = virBitmapNew(def->maxvcpus)))
-        return NULL;
 
     for (i = 0; i < def->maxvcpus; i++) {
         if (def->vcpus[i]->online)
@@ -3311,8 +3308,7 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def,
         return 0;
 
     /* iothread's are numbered starting at 1, account for that */
-    if (!(thrmap = virBitmapNew(iothreads + 1)))
-        return -1;
+    thrmap = virBitmapNew(iothreads + 1);
     virBitmapSetAll(thrmap);
 
     /* Clear 0 since we don't use it, then mark those which are
@@ -4505,8 +4501,8 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
     max_idx[VIR_DOMAIN_CONTROLLER_TYPE_USB] = -1;
 
     for (i = 0; i < VIR_DOMAIN_CONTROLLER_TYPE_LAST; i++) {
-        if (max_idx[i] >= 0 && !(bitmaps[i] = virBitmapNew(max_idx[i] + 1)))
-            goto cleanup;
+        if (max_idx[i] >= 0)
+            bitmaps[i] = virBitmapNew(max_idx[i] + 1);
         nbitmaps++;
     }
 

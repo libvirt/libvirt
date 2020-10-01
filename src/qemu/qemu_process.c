@@ -5870,11 +5870,8 @@ qemuProcessValidateHotpluggableVcpus(virDomainDefPtr def)
     unsigned int maxvcpus = virDomainDefGetVcpusMax(def);
     size_t i = 0;
     size_t j;
-    virBitmapPtr ordermap = NULL;
+    virBitmapPtr ordermap = virBitmapNew(maxvcpus + 1);
     int ret = -1;
-
-    if (!(ordermap = virBitmapNew(maxvcpus + 1)))
-        goto cleanup;
 
     /* validate:
      * - all hotpluggable entities to be hotplugged have the correct data

@@ -224,11 +224,8 @@ G_STATIC_ASSERT(G_N_ELEMENTS(qemuMigrationParamTypes) == QEMU_MIGRATION_PARAM_LA
 virBitmapPtr
 qemuMigrationParamsGetAlwaysOnCaps(qemuMigrationParty party)
 {
-    virBitmapPtr caps = NULL;
+    virBitmapPtr caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
     size_t i;
-
-    if (!(caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST)))
-        return NULL;
 
     for (i = 0; i < G_N_ELEMENTS(qemuMigrationParamsAlwaysOn); i++) {
         if (!(qemuMigrationParamsAlwaysOn[i].party & party))
@@ -248,8 +245,7 @@ qemuMigrationParamsNew(void)
 
     params = g_new0(qemuMigrationParams, 1);
 
-    if (!(params->caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST)))
-        return NULL;
+    params->caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
 
     return g_steal_pointer(&params);
 }
@@ -1373,8 +1369,6 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
         return 0;
 
     priv->migrationCaps = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
-    if (!priv->migrationCaps)
-        return -1;
 
     for (capStr = caps; *capStr; capStr++) {
         int cap = qemuMigrationCapabilityTypeFromString(*capStr);
@@ -1389,8 +1383,6 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT)) {
         migEvent = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
-        if (!migEvent)
-            return -1;
 
         ignore_value(virBitmapSetBit(migEvent, QEMU_MIGRATION_CAP_EVENTS));
 

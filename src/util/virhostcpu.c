@@ -268,8 +268,7 @@ virHostCPUGetSiblingsList(unsigned int cpu)
     if (rv == -2) {
         /* If the file doesn't exist, the threadis its only sibling */
         ret = virBitmapNew(cpu + 1);
-        if (ret)
-            ignore_value(virBitmapSetBit(ret, cpu));
+        ignore_value(virBitmapSetBit(ret, cpu));
     }
 
     return ret;
@@ -332,8 +331,7 @@ virHostCPUParseNode(const char *node,
         goto cleanup;
 
     /* Keep track of the CPUs that belong to the current node */
-    if (!(node_cpus_map = virBitmapNew(npresent_cpus)))
-        goto cleanup;
+    node_cpus_map = virBitmapNew(npresent_cpus);
 
     /* enumerate sockets in the node */
     sockets_map = virBitmapNew(0);
@@ -1119,9 +1117,7 @@ virHostCPUGetAvailableCPUsBitmap(void)
         if ((hostcpus = virHostCPUGetCount()) < 0)
             return NULL;
 
-        if (!(bitmap = virBitmapNew(hostcpus)))
-            return NULL;
-
+        bitmap = virBitmapNew(hostcpus);
         virBitmapSetAll(bitmap);
     }
 

@@ -1360,8 +1360,6 @@ testOpenDefault(virConnectPtr conn)
     }
     for (i = 0; i < 16; i++) {
         virBitmapPtr siblings = virBitmapNew(16);
-        if (!siblings)
-            goto error;
         ignore_value(virBitmapSetBit(siblings, i));
         privconn->cells[i / 8].cpus[(i % 8)].id = i;
         privconn->cells[i / 8].cpus[(i % 8)].socket_id = i / 8;
@@ -2788,8 +2786,7 @@ testDomainGetEmulatorPinInfo(virDomainPtr dom,
     } else if (def->cpumask) {
         cpumask = def->cpumask;
     } else {
-        if (!(bitmap = virBitmapNew(hostcpus)))
-            goto cleanup;
+        bitmap = virBitmapNew(hostcpus);
         virBitmapSetAll(bitmap);
         cpumask = bitmap;
     }
@@ -2966,9 +2963,7 @@ static int testDomainGetVcpus(virDomainPtr domain,
     statbase = g_get_real_time();
 
     hostcpus = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
-    if (!(allcpumap = virBitmapNew(hostcpus)))
-        goto cleanup;
-
+    allcpumap = virBitmapNew(hostcpus);
     virBitmapSetAll(allcpumap);
 
     /* Clamp to actual number of vcpus */
@@ -3081,8 +3076,7 @@ testDomainGetVcpuPinInfo(virDomainPtr dom,
     if (!(def = virDomainObjGetOneDef(privdom, flags)))
         goto cleanup;
 
-    if (!(hostcpus = virBitmapNew(VIR_NODEINFO_MAXCPUS(driver->nodeInfo))))
-        goto cleanup;
+    hostcpus = virBitmapNew(VIR_NODEINFO_MAXCPUS(driver->nodeInfo));
     virBitmapSetAll(hostcpus);
 
     ret = virDomainDefGetVcpuPinInfoHelper(def, maplen, ncpumaps, cpumaps,

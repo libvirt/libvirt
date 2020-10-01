@@ -273,8 +273,7 @@ virNumaGetNodeCPUs(int node,
         return -2;
     }
 
-    if (!(cpumap = virBitmapNew(max_n_cpus)))
-        return -1;
+    cpumap = virBitmapNew(max_n_cpus);
 
     for (i = 0; i < max_n_cpus; i++) {
         if (MASK_CPU_ISSET(mask, i)) {
@@ -1027,8 +1026,7 @@ virNumaGetHostMemoryNodeset(void)
     if (maxnode < 0)
         return NULL;
 
-    if (!(nodeset = virBitmapNew(maxnode + 1)))
-        return NULL;
+    nodeset = virBitmapNew(maxnode + 1);
 
     for (i = 0; i <= maxnode; i++) {
         if (!virNumaNodeIsAvailable(i))

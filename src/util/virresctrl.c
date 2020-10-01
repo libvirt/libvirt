@@ -1157,12 +1157,8 @@ virResctrlAllocUpdateMask(virResctrlAllocPtr alloc,
                      cache - a_type->nmasks + 1) < 0)
         return -1;
 
-    if (!a_type->masks[cache]) {
+    if (!a_type->masks[cache])
         a_type->masks[cache] = virBitmapNew(virBitmapSize(mask));
-
-        if (!a_type->masks[cache])
-            return -1;
-    }
 
     return virBitmapCopy(a_type->masks[cache], mask);
 }
@@ -1874,8 +1870,6 @@ virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
 
             virBitmapFree(mask);
             mask = virBitmapNew(i_type->bits);
-            if (!mask)
-                goto error;
             virBitmapSetAll(mask);
 
             for (k = 0; k <= i_type->max_cache_id; k++) {
@@ -2102,8 +2096,6 @@ virResctrlAllocFindUnused(virResctrlAllocPtr alloc,
     }
 
     a_mask = virBitmapNew(i_type->bits);
-    if (!a_mask)
-        return -1;
 
     for (i = last_pos; i < last_pos + need_bits; i++)
         ignore_value(virBitmapSetBit(a_mask, i));

@@ -163,8 +163,7 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
     if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
         goto cleanup;
 
-    if (!(created = virBitmapNew(snapdef->ndisks)))
-        goto cleanup;
+    created = virBitmapNew(snapdef->ndisks);
 
     /* If reuse is true, then qemuSnapshotPrepare already
      * ensured that the new files exist, and it was up to the user to

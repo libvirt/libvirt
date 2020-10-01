@@ -571,8 +571,7 @@ virCommandMassClose(virCommandPtr cmd,
         return -1;
     }
 
-    if (!(fds = virBitmapNew(openmax)))
-        return -1;
+    fds = virBitmapNew(openmax);
 
 #  ifdef __linux__
     if (virCommandMassCloseGetFDsLinux(cmd, fds) < 0)

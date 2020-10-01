@@ -1411,9 +1411,7 @@ virCapabilitiesHostNUMAGetCpus(virCapsHostNUMAPtr caps,
     unsigned int maxcpu = virCapabilitiesHostNUMAGetMaxcpu(caps);
     ssize_t node = -1;
 
-    if (!(ret = virBitmapNew(maxcpu + 1)))
-        return NULL;
-
+    ret = virBitmapNew(maxcpu + 1);
 
     while ((node = virBitmapNextSetBit(nodemask, node)) >= 0) {
         if (virCapabilitiesHostNUMAGetCellCpus(caps, node, ret) < 0) {
@@ -1591,8 +1589,7 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMAPtr caps)
                         cpus[cid].die_id = 0;
                         cpus[cid].socket_id = s;
                         cpus[cid].core_id = c;
-                        if (!(cpus[cid].siblings = virBitmapNew(ncpus)))
-                            goto error;
+                        cpus[cid].siblings = virBitmapNew(ncpus);
                         virBitmapCopy(cpus[cid].siblings, siblings);
                         cid++;
                     }

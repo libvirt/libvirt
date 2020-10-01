@@ -110,8 +110,7 @@ virNetworkObjNew(void)
     if (!(obj = virObjectLockableNew(virNetworkObjClass)))
         return NULL;
 
-    if (!(obj->classIdMap = virBitmapNew(INIT_CLASS_ID_BITMAP_SIZE)))
-        goto error;
+    obj->classIdMap = virBitmapNew(INIT_CLASS_ID_BITMAP_SIZE);
 
     /* The first three class IDs are already taken */
     if (virBitmapSetBitExpand(obj->classIdMap, 0) < 0 ||

@@ -323,8 +323,7 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
     if (!def->ndisks)
         checkpoint_default = VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP;
 
-    if (!(map = virBitmapNew(def->parent.dom->ndisks)))
-        goto cleanup;
+    map = virBitmapNew(def->parent.dom->ndisks);
 
     /* Double check requested disks.  */
     for (i = 0; i < def->ndisks; i++) {

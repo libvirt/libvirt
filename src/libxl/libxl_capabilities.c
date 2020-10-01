@@ -296,10 +296,6 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         cpus[node][nr_cpus_node[node]-1].core_id = cpu_topo[i].core;
         /* Allocate the siblings maps. We will be filling them later */
         cpus[node][nr_cpus_node[node]-1].siblings = virBitmapNew(nr_cpus);
-        if (!cpus[node][nr_cpus_node[node]-1].siblings) {
-            virReportOOMError();
-            goto cleanup;
-        }
     }
 
     /* Let's now populate the siblings bitmaps */

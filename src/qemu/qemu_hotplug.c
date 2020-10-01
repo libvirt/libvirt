@@ -6150,8 +6150,7 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDefPtr def,
     unsigned int curvcpus = virDomainDefGetVcpus(def);
     ssize_t i;
 
-    if (!(ret = virBitmapNew(maxvcpus)))
-        return NULL;
+    ret = virBitmapNew(maxvcpus);
 
     if (nvcpus > curvcpus) {
         *enable = true;

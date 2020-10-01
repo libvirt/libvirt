@@ -832,8 +832,7 @@ int virTestMain(int argc,
         }
     }
 
-    if (!(failedTests = virBitmapNew(1)))
-        return EXIT_FAILURE;
+    failedTests = virBitmapNew(1);
 
     ret = (func)();
 
@@ -980,9 +979,7 @@ virTestCapsBuildNUMATopology(int seq)
             cell_cpus[core_id].id = id + core_id;
             cell_cpus[core_id].socket_id = cell_id + seq;
             cell_cpus[core_id].core_id = id + core_id;
-            if (!(cell_cpus[core_id].siblings =
-                  virBitmapNew(MAX_CPUS_IN_CELL)))
-                goto error;
+            cell_cpus[core_id].siblings = virBitmapNew(MAX_CPUS_IN_CELL);
             ignore_value(virBitmapSetBit(cell_cpus[core_id].siblings, id));
         }
         id++;
@@ -997,10 +994,6 @@ virTestCapsBuildNUMATopology(int seq)
     }
 
     return g_steal_pointer(&caps);
-
- error:
-    VIR_FREE(cell_cpus);
-    return NULL;
 }
 
 static virDomainDefParserConfig virTestGenericDomainDefParserConfig = {

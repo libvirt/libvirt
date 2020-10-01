@@ -1800,8 +1800,7 @@ virQEMUCapsNew(void)
         return NULL;
 
     qemuCaps->invalidation = true;
-    if (!(qemuCaps->flags = virBitmapNew(QEMU_CAPS_LAST)))
-        goto error;
+    qemuCaps->flags = virBitmapNew(QEMU_CAPS_LAST);
 
     if (!(qemuCaps->domCapsCache = virQEMUDomainCapsCacheNew()))
         goto error;

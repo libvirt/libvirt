@@ -852,8 +852,7 @@ qcow2GetFeatures(virBitmapPtr *features,
     if (len < QCOW2v3_HDR_SIZE)
         return -1;
 
-    if (!(feat = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST)))
-        return -1;
+    feat = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST);
 
     /* todo: check for incompatible or autoclear features? */
     bits = virReadBufInt64BE(buf + QCOW2v3_HDR_FEATURES_COMPATIBLE);

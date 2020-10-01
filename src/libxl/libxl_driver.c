@@ -2571,8 +2571,7 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     /* Make sure coverity knows targetDef is valid at this point. */
     sa_assert(targetDef);
 
-    if (!(hostcpus = virBitmapNew(libxl_get_max_cpus(cfg->ctx))))
-        goto cleanup;
+    hostcpus = virBitmapNew(libxl_get_max_cpus(cfg->ctx));
     virBitmapSetAll(hostcpus);
 
     ret = virDomainDefGetVcpuPinInfoHelper(targetDef, maplen, ncpumaps, cpumaps,
@@ -4952,8 +4951,7 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
                 virReportOOMError();
                 goto cleanup;
             }
-            if (!(nodes = virBitmapNew(numnodes)))
-                goto cleanup;
+            nodes = virBitmapNew(numnodes);
 
             rc = libxl_domain_get_nodeaffinity(cfg->ctx,
                                                vm->def->id,

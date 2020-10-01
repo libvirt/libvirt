@@ -3331,8 +3331,7 @@ virNetDevGetFeatures(const char *ifname,
     struct ifreq ifr;
     VIR_AUTOCLOSE fd = -1;
 
-    if (!(*out = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
-        return -1;
+    *out = virBitmapNew(VIR_NET_DEV_FEAT_LAST);
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;

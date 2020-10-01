@@ -1937,8 +1937,7 @@ qemuMonitorGetCpuHalted(qemuMonitorPtr mon,
     if (rc < 0)
         goto cleanup;
 
-    if (!(ret = virBitmapNew(maxvcpus)))
-        goto cleanup;
+    ret = virBitmapNew(maxvcpus);
 
     for (i = 0; i < ncpuentries; i++) {
         if (cpuentries[i].halted)

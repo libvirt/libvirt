@@ -768,14 +768,9 @@ dnsmasqCapsNewEmpty(const char *binaryPath)
         return NULL;
     if (!(caps = virObjectNew(dnsmasqCapsClass)))
         return NULL;
-    if (!(caps->flags = virBitmapNew(DNSMASQ_CAPS_LAST)))
-        goto error;
+    caps->flags = virBitmapNew(DNSMASQ_CAPS_LAST);
     caps->binaryPath = g_strdup(binaryPath ? binaryPath : DNSMASQ);
     return caps;
-
- error:
-    virObjectUnref(caps);
-    return NULL;
 }
 
 dnsmasqCapsPtr

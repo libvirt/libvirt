@@ -1444,8 +1444,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         if (!def->target.compat)
             def->target.compat = g_strdup("1.1");
 
-        if (!(def->target.features = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST)))
-            return NULL;
+        def->target.features = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST);
 
         for (i = 0; i < n; i++) {
             int f = virStorageFileFeatureTypeFromString((const char*)nodes[i]->name);

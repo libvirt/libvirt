@@ -6840,8 +6840,7 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
     if (curvcpus == 0)
         curvcpus = maxvcpus;
 
-    if (!(ret = virBitmapNew(maxvcpus)))
-        goto cleanup;
+    ret = virBitmapNew(maxvcpus);
 
     if ((nnodes = virXPathNodeSet("/domain/vcpus/vcpu", ctxt, &nodes)) <= 0) {
         /* if the specific vcpu state is missing provide a fallback */
@@ -7118,8 +7117,7 @@ virshParseCPUList(vshControl *ctl, int *cpumaplen,
     virBitmapPtr map = NULL;
 
     if (cpulist[0] == 'r') {
-        if (!(map = virBitmapNew(maxcpu)))
-            return NULL;
+        map = virBitmapNew(maxcpu);
         virBitmapSetAll(map);
     } else {
         int lastcpu;
@@ -11989,8 +11987,7 @@ virshNodeIsSuperset(xmlNodePtr n1, xmlNodePtr n2)
     if (n1_child_size == 0 && n2_child_size == 0)
         return true;
 
-    if (!(bitmap = virBitmapNew(n1_child_size)))
-        return false;
+    bitmap = virBitmapNew(n1_child_size);
 
     child2 = n2->children;
     while (child2) {
