@@ -54,7 +54,7 @@ checkBitmap(virBitmapPtr map,
 static int
 test1(const void *data G_GNUC_UNUSED)
 {
-    virBitmapPtr bitmap;
+    g_autoptr(virBitmap) bitmap = NULL;
     int size;
     int bit;
     bool result;
@@ -83,7 +83,6 @@ test1(const void *data G_GNUC_UNUSED)
     ret = 0;
 
  error:
-    virBitmapFree(bitmap);
     return ret;
 }
 
@@ -110,8 +109,8 @@ static int
 test2(const void *data G_GNUC_UNUSED)
 {
     const char *bitsString1 = "1-32,50,88-99,1021-1023";
-    char *bitsString2 = NULL;
-    virBitmapPtr bitmap = NULL;
+    g_autofree char *bitsString2 = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
     int ret = -1;
     int size = 1025;
 
@@ -164,15 +163,13 @@ test2(const void *data G_GNUC_UNUSED)
     ret = 0;
 
  error:
-    virBitmapFree(bitmap);
-    VIR_FREE(bitsString2);
     return ret;
 }
 
 static int
 test3(const void *data G_GNUC_UNUSED)
 {
-    virBitmapPtr bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
     int ret = -1;
     int size = 5;
     size_t i;
@@ -192,7 +189,6 @@ test3(const void *data G_GNUC_UNUSED)
     ret = 0;
 
  error:
-    virBitmapFree(bitmap);
     return ret;
 }
 
@@ -200,7 +196,7 @@ test3(const void *data G_GNUC_UNUSED)
 static int
 test4a(const void *data G_GNUC_UNUSED)
 {
-    virBitmapPtr bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
 
     /* 0. empty set */
 
@@ -215,11 +211,9 @@ test4a(const void *data G_GNUC_UNUSED)
     if (virBitmapNextClearBit(bitmap, -1) != -1)
         goto error;
 
-    virBitmapFree(bitmap);
     return 0;
 
  error:
-    virBitmapFree(bitmap);
     return -1;
 }
 
@@ -227,7 +221,7 @@ test4a(const void *data G_GNUC_UNUSED)
 static int
 test4b(const void *data G_GNUC_UNUSED)
 {
-    virBitmapPtr bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
     int size = 40;
     size_t i;
 
@@ -253,11 +247,9 @@ test4b(const void *data G_GNUC_UNUSED)
     if (!virBitmapIsAllClear(bitmap))
         goto error;
 
-    virBitmapFree(bitmap);
     return 0;
 
  error:
-    virBitmapFree(bitmap);
     return -1;
 }
 
@@ -275,7 +267,7 @@ test4c(const void *data G_GNUC_UNUSED)
         1, 5, 11, 13, 19, 21, 23, 24, 26, 27,
         28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
-    virBitmapPtr bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
     ssize_t i, j;
 
     if (G_N_ELEMENTS(bitsPos) + G_N_ELEMENTS(bitsPosInv) != size)
@@ -334,11 +326,9 @@ test4c(const void *data G_GNUC_UNUSED)
     if (virBitmapNextClearBit(bitmap, -1) != -1)
         goto error;
 
-    virBitmapFree(bitmap);
     return 0;
 
  error:
-    virBitmapFree(bitmap);
     return -1;
 }
 
@@ -347,10 +337,10 @@ static int
 test5(const void *v G_GNUC_UNUSED)
 {
     char data[] = {0x01, 0x02, 0x00, 0x00, 0x04};
-    unsigned char *data2 = NULL;
+    g_autofree unsigned char *data2 = NULL;
     int len2;
     int bits[] = {0, 9, 34};
-    virBitmapPtr bitmap;
+    g_autoptr(virBitmap) bitmap = NULL;
     size_t i;
     ssize_t j;
     int ret = -1;
@@ -396,8 +386,6 @@ test5(const void *v G_GNUC_UNUSED)
 
     ret = 0;
  error:
-    virBitmapFree(bitmap);
-    VIR_FREE(data2);
     return ret;
 }
 
@@ -406,7 +394,7 @@ test5(const void *v G_GNUC_UNUSED)
 static int
 test6(const void *v G_GNUC_UNUSED)
 {
-    virBitmapPtr bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
     int size = 64;
     int ret = -1;
 
@@ -449,14 +437,12 @@ test6(const void *v G_GNUC_UNUSED)
 
     ret = 0;
  error:
-    virBitmapFree(bitmap);
     return ret;
 }
 
 static int
 test7(const void *v G_GNUC_UNUSED)
 {
-    virBitmapPtr bitmap;
     size_t i;
     size_t maxBit[] = {
         1, 8, 31, 32, 63, 64, 95, 96, 127, 128, 159, 160
@@ -464,7 +450,7 @@ test7(const void *v G_GNUC_UNUSED)
     size_t nmaxBit = 12;
 
     for (i = 0; i < nmaxBit; i++) {
-        bitmap = virBitmapNew(maxBit[i]);
+        g_autoptr(virBitmap) bitmap = virBitmapNew(maxBit[i]);
         if (!bitmap)
             goto error;
 
@@ -482,21 +468,18 @@ test7(const void *v G_GNUC_UNUSED)
         virBitmapClearAll(bitmap);
         if (!virBitmapIsAllClear(bitmap))
             goto error;
-
-        virBitmapFree(bitmap);
     }
 
     return 0;
 
  error:
-    virBitmapFree(bitmap);
     return -1;
 }
 
 static int
 test8(const void *v G_GNUC_UNUSED)
 {
-    virBitmapPtr bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
     char data[108] = {0x00,};
     int ret = -1;
 
@@ -515,7 +498,6 @@ test8(const void *v G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBitmapFree(bitmap);
     return ret;
 }
 
@@ -525,7 +507,7 @@ static int
 test9(const void *opaque G_GNUC_UNUSED)
 {
     int ret = -1;
-    virBitmapPtr bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
 
     if (virBitmapParse("100000000", &bitmap, 20) != -1)
         goto cleanup;
@@ -547,7 +529,6 @@ test9(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBitmapFree(bitmap);
     return ret;
 
 }
@@ -556,7 +537,10 @@ static int
 test10(const void *opaque G_GNUC_UNUSED)
 {
     int ret = -1;
-    virBitmapPtr b1 = NULL, b2 = NULL, b3 = NULL, b4 = NULL;
+    g_autoptr(virBitmap) b1 = NULL;
+    g_autoptr(virBitmap) b2 = NULL;
+    g_autoptr(virBitmap) b3 = NULL;
+    g_autoptr(virBitmap) b4 = NULL;
 
     if (virBitmapParseSeparator("0-3,5-8,11-15f16", 'f', &b1, 20) < 0 ||
         virBitmapParse("4,9,10,16-19", &b2, 20) < 0 ||
@@ -577,10 +561,6 @@ test10(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virBitmapFree(b1);
-    virBitmapFree(b2);
-    virBitmapFree(b3);
-    virBitmapFree(b4);
     return ret;
 }
 
@@ -594,9 +574,9 @@ static int
 test11(const void *opaque)
 {
     const struct testBinaryOpData *data = opaque;
-    virBitmapPtr amap = NULL;
-    virBitmapPtr bmap = NULL;
-    virBitmapPtr resmap = NULL;
+    g_autoptr(virBitmap) amap = NULL;
+    g_autoptr(virBitmap) bmap = NULL;
+    g_autoptr(virBitmap) resmap = NULL;
     int ret = -1;
 
     if (virBitmapParse(data->a, &amap, 256) < 0 ||
@@ -616,10 +596,6 @@ test11(const void *opaque)
     ret = 0;
 
  cleanup:
-    virBitmapFree(amap);
-    virBitmapFree(bmap);
-    virBitmapFree(resmap);
-
     return ret;
 }
 
@@ -628,7 +604,7 @@ test11(const void *opaque)
 static int
 test12a(const void *opaque G_GNUC_UNUSED)
 {
-    virBitmapPtr map = virBitmapNewEmpty();
+    g_autoptr(virBitmap) map = virBitmapNewEmpty();
     int ret = -1;
 
     if (checkBitmap(map, "", 0) < 0)
@@ -649,7 +625,6 @@ test12a(const void *opaque G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    virBitmapFree(map);
     return ret;
 }
 
@@ -657,7 +632,7 @@ test12a(const void *opaque G_GNUC_UNUSED)
 static int
 test12b(const void *opaque G_GNUC_UNUSED)
 {
-    virBitmapPtr map = virBitmapNewEmpty();
+    g_autoptr(virBitmap) map = NULL;
     int ret = -1;
 
     if (!(map = virBitmapParseUnlimited("34,1023")))
@@ -677,7 +652,6 @@ test12b(const void *opaque G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    virBitmapFree(map);
     return ret;
 }
 
@@ -714,9 +688,9 @@ static int
 test14(const void *opaque)
 {
     const struct testBinaryOpData *data = opaque;
-    virBitmapPtr amap = NULL;
-    virBitmapPtr bmap = NULL;
-    virBitmapPtr resmap = NULL;
+    g_autoptr(virBitmap) amap = NULL;
+    g_autoptr(virBitmap) bmap = NULL;
+    g_autoptr(virBitmap) resmap = NULL;
     int ret = -1;
 
     if (virBitmapParse(data->a, &amap, 256) < 0 ||
@@ -736,9 +710,6 @@ test14(const void *opaque)
     ret = 0;
 
  cleanup:
-    virBitmapFree(amap);
-    virBitmapFree(bmap);
-    virBitmapFree(resmap);
 
     return ret;
 }
