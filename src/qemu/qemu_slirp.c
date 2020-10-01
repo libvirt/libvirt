@@ -81,10 +81,9 @@ qemuSlirpHasFeature(const qemuSlirp *slirp,
 qemuSlirpPtr
 qemuSlirpNew(void)
 {
-    g_autoptr(qemuSlirp) slirp = NULL;
+    g_autoptr(qemuSlirp) slirp = g_new0(qemuSlirp, 1);
 
-    if (VIR_ALLOC(slirp) < 0 ||
-        !(slirp->features = virBitmapNew(QEMU_SLIRP_FEATURE_LAST)))
+    if (!(slirp->features = virBitmapNew(QEMU_SLIRP_FEATURE_LAST)))
         return NULL;
 
     slirp->pid = (pid_t)-1;
