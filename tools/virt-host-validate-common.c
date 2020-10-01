@@ -196,8 +196,7 @@ virBitmapPtr virHostValidateGetCPUFlags(void)
     if (!(fp = fopen("/proc/cpuinfo", "r")))
         return NULL;
 
-    if (!(flags = virBitmapNewQuiet(VIR_HOST_VALIDATE_CPU_FLAG_LAST)))
-        goto cleanup;
+    flags = virBitmapNew(VIR_HOST_VALIDATE_CPU_FLAG_LAST);
 
     do {
         char line[1024];
@@ -245,7 +244,6 @@ virBitmapPtr virHostValidateGetCPUFlags(void)
         virStringListFreeCount(tokens, ntokens);
     } while (1);
 
- cleanup:
     VIR_FORCE_FCLOSE(fp);
 
     return flags;

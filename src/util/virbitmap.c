@@ -50,7 +50,7 @@ struct _virBitmap {
 
 
 /**
- * virBitmapNewQuiet:
+ * virBitmapNew:
  * @size: number of bits
  *
  * Allocate a bitmap capable of containing @size bits.
@@ -58,7 +58,7 @@ struct _virBitmap {
  * Returns a pointer to the allocated bitmap.
  */
 virBitmapPtr
-virBitmapNewQuiet(size_t size)
+virBitmapNew(size_t size)
 {
     virBitmapPtr bitmap;
     size_t sz;
@@ -81,27 +81,6 @@ virBitmapNewQuiet(size_t size)
     bitmap->map_len = sz;
     bitmap->map_alloc = sz;
     return bitmap;
-}
-
-
-/**
- * virBitmapNew:
- * @size: number of bits
- *
- * Allocate a bitmap capable of containing @size bits.
- *
- * Returns a pointer to the allocated bitmap or NULL if either memory cannot be
- * allocated or size is 0. Reports libvirt errors.
- */
-virBitmapPtr
-virBitmapNew(size_t size)
-{
-    virBitmapPtr ret;
-
-    if (!(ret = virBitmapNewQuiet(size)))
-        virReportOOMError();
-
-    return ret;
 }
 
 

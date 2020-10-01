@@ -1257,8 +1257,7 @@ virJSONValueGetArrayAsBitmap(const virJSONValue *val,
             maxelem = elems[i];
     }
 
-    if (!(*bitmap = virBitmapNewQuiet(maxelem + 1)))
-        return -1;
+    *bitmap = virBitmapNew(maxelem + 1);
 
     /* second pass sets the correct bits in the map */
     for (i = 0; i < val->data.array.nvalues; i++)
