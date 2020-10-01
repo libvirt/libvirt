@@ -64,6 +64,9 @@ qemuMigrationCookieGraphicsFree(qemuMigrationCookieGraphicsPtr grap)
     VIR_FREE(grap);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationCookieGraphics,
+                              qemuMigrationCookieGraphicsFree);
+
 
 static void
 qemuMigrationCookieNetworkFree(qemuMigrationCookieNetworkPtr network)
@@ -81,6 +84,8 @@ qemuMigrationCookieNetworkFree(qemuMigrationCookieNetworkPtr network)
     VIR_FREE(network);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationCookieNetwork,
+                              qemuMigrationCookieNetworkFree);
 
 static void
 qemuMigrationCookieNBDFree(qemuMigrationCookieNBDPtr nbd)
@@ -94,6 +99,8 @@ qemuMigrationCookieNBDFree(qemuMigrationCookieNBDPtr nbd)
     VIR_FREE(nbd);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationCookieNBD,
+                              qemuMigrationCookieNBDFree);
 
 static void
 qemuMigrationCookieCapsFree(qemuMigrationCookieCapsPtr caps)
@@ -106,6 +113,8 @@ qemuMigrationCookieCapsFree(qemuMigrationCookieCapsPtr caps)
     VIR_FREE(caps);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationCookieCaps,
+                              qemuMigrationCookieCapsFree);
 
 void
 qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
