@@ -328,7 +328,9 @@ virBitmapGetBit(virBitmapPtr bitmap,
  * virBitmapToString:
  * @bitmap: Pointer to bitmap
  *
- * Convert @bitmap to printable string.
+ * Convert @bitmap to a number where the bit with highest position/index in
+ * @bitmap represents the most significant bit and return the number in form
+ * of a hexadecimal string.
  *
  * Returns pointer to the string or NULL on error.
  */
@@ -1117,10 +1119,14 @@ virBitmapCountBits(virBitmapPtr bitmap)
  * virBitmapNewString:
  * @string: the string to be converted to a bitmap
  *
- * Allocate a bitmap from a string of hexadecimal data.
+ * Allocate a bitmap and populate it from @string representing a number in
+ * hexadecimal format. Note that the most significant bit of the number
+ * represented by @string will correspond to the highest index/position in the
+ * bitmap. The size of the returned bitmap corresponds to 4 * the length of
+ * @string.
  *
- * Returns a pointer to the allocated bitmap or NULL if
- * memory cannot be allocated.
+ * Returns a pointer to the allocated bitmap or NULL and reports an error if
+ * @string can't be converted.
  */
 virBitmapPtr
 virBitmapNewString(const char *string)
