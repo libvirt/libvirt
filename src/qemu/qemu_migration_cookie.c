@@ -220,16 +220,11 @@ static qemuMigrationCookieNetworkPtr
 qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver G_GNUC_UNUSED,
                                 virDomainDefPtr def)
 {
-    qemuMigrationCookieNetworkPtr mig;
+    g_autoptr(qemuMigrationCookieNetwork) mig = g_new0(qemuMigrationCookieNetwork, 1);
     size_t i;
 
-    if (VIR_ALLOC(mig) < 0)
-        goto error;
-
     mig->nnets = def->nnets;
-
-    if (VIR_ALLOC_N(mig->net, def->nnets) <0)
-        goto error;
+    mig->net = g_new0(qemuMigrationCookieNetData, def->nnets);
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr netptr;
@@ -252,7 +247,7 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver G_GNUC_UNUSED,
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("Unable to run command to get OVS port data for "
                                          "interface %s"), netptr->ifname);
-                        goto error;
+                        return NULL;
                 }
                 break;
             default:
@@ -260,11 +255,7 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver G_GNUC_UNUSED,
             }
         }
     }
-    return mig;
-
- error:
-    qemuMigrationCookieNetworkFree(mig);
-    return NULL;
+    return g_steal_pointer(&mig);
 }
 
 
