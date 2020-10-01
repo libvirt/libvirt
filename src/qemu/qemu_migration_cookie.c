@@ -133,9 +133,9 @@ qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
 static char *
 qemuDomainExtractTLSSubject(const char *certdir)
 {
-    char *certfile = NULL;
+    g_autofree char *certfile = NULL;
     char *subject = NULL;
-    char *pemdata = NULL;
+    g_autofree char *pemdata = NULL;
     gnutls_datum_t pemdatum;
     gnutls_x509_crt_t cert;
     int ret;
@@ -146,7 +146,7 @@ qemuDomainExtractTLSSubject(const char *certdir)
     if (virFileReadAll(certfile, 8192, &pemdata) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to read server cert %s"), certfile);
-        goto error;
+        return NULL;
     }
 
     ret = gnutls_x509_crt_init(&cert);
@@ -154,7 +154,7 @@ qemuDomainExtractTLSSubject(const char *certdir)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot initialize cert object: %s"),
                        gnutls_strerror(ret));
-        goto error;
+        return NULL;
     }
 
     pemdatum.data = (unsigned char *)pemdata;
@@ -165,25 +165,16 @@ qemuDomainExtractTLSSubject(const char *certdir)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot load cert data from %s: %s"),
                        certfile, gnutls_strerror(ret));
-        goto error;
+        return NULL;
     }
 
     subjectlen = 1024;
-    if (VIR_ALLOC_N(subject, subjectlen+1) < 0)
-        goto error;
+    subject = g_new0(char, subjectlen + 1);
 
     gnutls_x509_crt_get_dn(cert, subject, &subjectlen);
     subject[subjectlen] = '\0';
 
-    VIR_FREE(certfile);
-    VIR_FREE(pemdata);
-
     return subject;
-
- error:
-    VIR_FREE(certfile);
-    VIR_FREE(pemdata);
-    return NULL;
 }
 
 
