@@ -285,18 +285,12 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
     return g_steal_pointer(&pcidevs);
 }
 
+
 static int
 virHostdevPCISysfsPath(virDomainHostdevDefPtr hostdev,
                        char **sysfs_path)
 {
-    virPCIDeviceAddress config_address;
-
-    config_address.domain = hostdev->source.subsys.u.pci.addr.domain;
-    config_address.bus = hostdev->source.subsys.u.pci.addr.bus;
-    config_address.slot = hostdev->source.subsys.u.pci.addr.slot;
-    config_address.function = hostdev->source.subsys.u.pci.addr.function;
-
-    return virPCIDeviceAddressGetSysfsFile(&config_address, sysfs_path);
+    return virPCIDeviceAddressGetSysfsFile(&hostdev->source.subsys.u.pci.addr, sysfs_path);
 }
 
 
