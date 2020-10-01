@@ -2035,12 +2035,6 @@ virQEMUCapsClear(virQEMUCapsPtr qemuCaps,
 }
 
 
-char *virQEMUCapsFlagsString(virQEMUCapsPtr qemuCaps)
-{
-    return virBitmapToString(qemuCaps->flags, true, false);
-}
-
-
 bool
 virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
                virQEMUCapsFlags flag)
