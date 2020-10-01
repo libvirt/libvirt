@@ -1,13 +1,10 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>EPYC-IBPB</model>
+  <model>EPYC-Rome</model>
   <vendor>AMD</vendor>
   <feature name='ht'/>
   <feature name='osxsave'/>
   <feature name='cmt'/>
-  <feature name='clwb'/>
-  <feature name='umip'/>
-  <feature name='rdpid'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>
@@ -18,18 +15,11 @@
   <feature name='wdt'/>
   <feature name='tce'/>
   <feature name='topoext'/>
-  <feature name='perfctr_core'/>
   <feature name='perfctr_nb'/>
   <feature name='invtsc'/>
-  <feature name='clzero'/>
-  <feature name='xsaveerptr'/>
-  <feature name='wbnoinvd'/>
-  <feature name='amd-stibp'/>
   <feature name='amd-ssbd'/>
-  <feature name='npt'/>
   <feature name='lbrv'/>
   <feature name='svm-lock'/>
-  <feature name='nrip-save'/>
   <feature name='tsc-scale'/>
   <feature name='vmcb-clean'/>
   <feature name='flushbyasid'/>

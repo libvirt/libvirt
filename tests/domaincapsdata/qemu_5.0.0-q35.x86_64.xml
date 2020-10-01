@@ -95,6 +95,7 @@
       <model usable='yes'>Haswell-noTSX</model>
       <model usable='yes'>Haswell-IBRS</model>
       <model usable='yes'>Haswell</model>
+      <model usable='no'>EPYC-Rome</model>
       <model usable='no'>EPYC-IBPB</model>
       <model usable='no'>EPYC</model>
       <model usable='no'>Dhyana</model>

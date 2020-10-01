@@ -66,6 +66,7 @@
     <include filename="x86_Opteron_G5.xml"/>
     <include filename="x86_EPYC.xml"/>
     <include filename="x86_EPYC-IBPB.xml"/>
+    <include filename="x86_EPYC-Rome.xml"/>
 
     <!-- Hygon CPU models -->
     <include filename="x86_Dhyana.xml"/>
