@@ -54,8 +54,10 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
 {
     GVariant *reply = NULL;
 
-    if (parameters)
+    if (parameters) {
+        g_variant_ref_sink(parameters);
         g_variant_unref(parameters);
+    }
 
     VIR_MOCK_REAL_INIT(g_dbus_connection_call_sync);
 

@@ -52,6 +52,9 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
     GVariant *reply = NULL;
     g_autoptr(GVariant) params = parameters;
 
+    if (params)
+        g_variant_ref_sink(params);
+
     VIR_MOCK_REAL_INIT(g_dbus_connection_call_sync);
 
     if (STREQ(bus_name, "org.freedesktop.PolicyKit1") &&
