@@ -3383,14 +3383,14 @@ virDomainMigrateUnmanagedProto3(virDomainPtr domain,
 
 
 /*
- * In normal migration, the libvirt client co-ordinates communication
+ * In normal migration, the libvirt client coordinates communication
  * between the 2 libvirtd instances on source & dest hosts.
  *
  * This function encapsulates 2 alternatives to the above case.
  *
  * 1. peer-2-peer migration, the libvirt client only talks to the source
  * libvirtd instance. The source libvirtd then opens its own
- * connection to the destination and co-ordinates migration itself.
+ * connection to the destination and coordinates migration itself.
  *
  * 2. direct migration, where there is no requirement for a libvirtd instance
  * on the dest host. Eg, XenD can talk direct to XenD, so libvirtd on dest

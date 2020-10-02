@@ -27,7 +27,7 @@
  * The vbox_tmpl.c is the only place where the driver knows the inside
  * architecture of those vbox structs(vboxObj, vboxSession,
  * pFuncs, and vboxCallback). The file should be included
- * after the currect vbox_CAPI_v*.h, then we can use the vbox structs
+ * after the correct vbox_CAPI_v*.h, then we can use the vbox structs
  * in vboxGlobalData. The vbox_tmpl.c should implement functions
  * defined in vboxUniformedAPI.
  *

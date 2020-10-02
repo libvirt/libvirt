@@ -10,7 +10,7 @@ Documentation=https://libvirt.org
 EnvironmentFile=-@sysconfdir@/sysconfig/virtlockd
 ExecStart=@sbindir@/virtlockd $VIRTLOCKD_ARGS
 ExecReload=/bin/kill -USR1 $MAINPID
-# Loosing the locks is a really bad thing that will
+# Losing the locks is a really bad thing that will
 # cause the machine to be fenced (rebooted), so make
 # sure we discourage OOM killer
 OOMScoreAdjust=-900

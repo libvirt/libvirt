@@ -2252,7 +2252,7 @@ esxVI_GetBoolean(esxVI_ObjectContent *objectContent, const char *propertyName,
 
 int
 esxVI_GetInt(esxVI_ObjectContent *objectContent, const char *propertyName,
-             esxVI_Int **value, esxVI_Occurrence occurence)
+             esxVI_Int **value, esxVI_Occurrence occurrence)
 {
     esxVI_DynamicProperty *dynamicProperty;
 
@@ -2268,7 +2268,7 @@ esxVI_GetInt(esxVI_ObjectContent *objectContent, const char *propertyName,
         }
     }
 
-    if (!(*value) && occurence == esxVI_Occurrence_RequiredItem) {
+    if (!(*value) && occurrence == esxVI_Occurrence_RequiredItem) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing '%s' property"), propertyName);
         return -1;

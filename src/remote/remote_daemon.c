@@ -454,7 +454,7 @@ static void daemonShutdownHandler(virNetDaemonPtr dmn,
     virNetDaemonQuit(dmn);
 }
 
-static void daemonReloadHandlerThread(void *opague G_GNUC_UNUSED)
+static void daemonReloadHandlerThread(void *opaque G_GNUC_UNUSED)
 {
     VIR_INFO("Reloading configuration on SIGHUP");
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",

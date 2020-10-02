@@ -528,7 +528,7 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
  * @str: the string argument which will be URI-encoded
  *
  * Append the string to the buffer.  The string will be URI-encoded
- * during the append (ie any non alpha-numeric characters are replaced
+ * during the append (ie any non alphanumeric characters are replaced
  * with '%xx' hex sequences).  Auto indentation may be applied.
  */
 void

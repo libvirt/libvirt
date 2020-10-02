@@ -186,7 +186,7 @@ virEventGLibHandleFind(int watch)
 }
 
 /*
- * If the last refernce to a GSource is released in a non-main
+ * If the last reference to a GSource is released in a non-main
  * thread we're exposed to a race condition that causes a
  * crash:
  * https://gitlab.gnome.org/GNOME/glib/-/merge_requests/1358
