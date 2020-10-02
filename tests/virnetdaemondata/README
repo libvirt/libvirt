@@ -2,7 +2,7 @@
    ===========================
 
 The various input-data-*.json files are a record of all the historical
-formats that libvirt has been able to produce data for. Everytime a
+formats that libvirt has been able to produce data for. Every time a
 new field is added to the JSON output, a *new* input data file should
 be created. We must not add new fields to existing input-data files,
 nor must we ever re-structure them if code changes, as we must check

@@ -34,7 +34,7 @@
  * too.
  *
  * On 64-bit hosts the stat & stat64 functions are identical, always
- * refering to the 64-bit ABI.
+ * referring to the 64-bit ABI.
  *
  * On 32-bit hosts they refer to the 32-bit & 64-bit ABIs respectively.
  *
@@ -49,7 +49,7 @@
  * In GLibC there may be two additional functions exposed by the headers,
  * __xstat() and __xstat64(). When these exist, stat() and stat64() are
  * transparently rewritten to call __xstat() and __xstat64() respectively.
- * The former symbols will not actally exist in the library at all, only
+ * The former symbols will not actually exist in the library at all, only
  * the header. The leading "__" indicates the symbols are a private impl
  * detail of the C library that applications should not care about.
  * Unfortunately, because we are trying to mock replace the C library,

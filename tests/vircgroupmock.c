@@ -58,7 +58,7 @@ const char *fakedevicedir1 = FAKEDEVDIR1;
  * use /sys/fs/cgroup, because we want to make it easy to
  * detect places where we've not mocked enough syscalls.
  *
- * In any open/acces/mkdir calls we look at path and if
+ * In any open/access/mkdir calls we look at path and if
  * it starts with /not/really/sys/fs/cgroup, we rewrite
  * the path to point at a subdirectory of the temporary
  * directory referred to by LIBVIRT_FAKE_ROOT_DIR env

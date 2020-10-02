@@ -1078,7 +1078,7 @@ open(const char *path, int flags, ...)
 
 # ifdef __GLIBC__
 /* in some cases this function may not be present in headers, so we need
- * a declaration to silence the complier */
+ * a declaration to silence the compiler */
 int
 __open_2(const char *path, int flags);
 
