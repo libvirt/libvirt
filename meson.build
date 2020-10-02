@@ -1503,20 +1503,12 @@ elif get_option('firewalld_zone').enabled()
   error('You must have firewalld support enabled to enable firewalld_zone')
 endif
 
-if conf.has('WITH_MACVTAP') and not conf.has('WITH_LIBNL')
-  error('libnl3-devel is required for macvtap support')
-endif
-
 if (pkcheck_prog.found() or get_option('polkit').enabled())
   conf.set('WITH_POLKIT', 1)
 endif
 
 if udev_dep.found() and not pciaccess_dep.found()
   error('You must install the pciaccess module to build with udev')
-endif
-
-if conf.has('WITH_VIRTUALPORT') and not conf.has('WITH_MACVTAP')
-  error('macvtap is required for virtualport support')
 endif
 
 
@@ -2388,7 +2380,6 @@ libs_summary = {
   'libssh': libssh_dep.found(),
   'libssh2': libssh2_dep.found(),
   'libxml': libxml_dep.found(),
-  'macvtap': conf.has('WITH_MACVTAP'),
   'netcf': netcf_dep.found(),
   'NLS': have_gnu_gettext_tools,
   'nss': conf.has('WITH_NSS'),
@@ -2403,7 +2394,6 @@ libs_summary = {
   'sasl': sasl_dep.found(),
   'selinux': selinux_dep.found(),
   'udev': udev_dep.found(),
-  'virtualport': conf.has('WITH_VIRTUALPORT'),
   'xdr': xdr_dep.found(),
   'yajl': yajl_dep.found(),
 }
