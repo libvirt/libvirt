@@ -1215,15 +1215,18 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
 
     if ((flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) &&
         virXPathBoolean("count(./lockstate) > 0", ctxt)) {
+        g_autofree char *lockState = NULL;
+
         mig->lockDriver = virXPathString("string(./lockstate[1]/@driver)", ctxt);
         if (!mig->lockDriver) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing lock driver name in migration cookie"));
             return -1;
         }
-        mig->lockState = virXPathString("string(./lockstate[1]/leases[1])", ctxt);
-        if (mig->lockState && STREQ(mig->lockState, ""))
-            VIR_FREE(mig->lockState);
+
+        lockState = virXPathString("string(./lockstate[1]/leases[1])", ctxt);
+        if (STRNEQ_NULLABLE(lockState, ""))
+            mig->lockState = g_steal_pointer(&lockState);
     }
 
     if ((flags & QEMU_MIGRATION_COOKIE_PERSISTENT) &&
