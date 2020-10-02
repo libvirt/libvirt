@@ -20900,7 +20900,6 @@ virDomainResctrlNew(xmlNodePtr node,
                     unsigned int flags)
 {
     virDomainResctrlDefPtr resctrl = NULL;
-    virDomainResctrlDefPtr ret = NULL;
     g_autofree char *vcpus_str = NULL;
     g_autofree char *alloc_id = NULL;
 
@@ -20923,18 +20922,13 @@ virDomainResctrlNew(xmlNodePtr node,
     }
 
     if (virResctrlAllocSetID(alloc, alloc_id) < 0)
-        goto cleanup;
+        return NULL;
 
-    if (VIR_ALLOC(resctrl) < 0)
-        goto cleanup;
-
+    resctrl = g_new0(virDomainResctrlDef, 1);
     resctrl->vcpus = virBitmapNewCopy(vcpus);
     resctrl->alloc = virObjectRef(alloc);
 
-    ret = g_steal_pointer(&resctrl);
- cleanup:
-    virDomainResctrlDefFree(resctrl);
-    return ret;
+    return resctrl;
 }
 
 
