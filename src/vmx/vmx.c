@@ -2734,6 +2734,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     VIR_FREE(networkName);
     VIR_FREE(connectionType);
     VIR_FREE(addressType);
+    VIR_FREE(checkMACAddress);
     VIR_FREE(generatedAddress);
     VIR_FREE(address);
     VIR_FREE(virtualDev);
