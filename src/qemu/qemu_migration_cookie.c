@@ -542,8 +542,7 @@ qemuMigrationCookieAddCaps(qemuMigrationCookiePtr mig,
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     qemuMigrationCookieCapsFree(mig->caps);
-    if (VIR_ALLOC(mig->caps) < 0)
-        return -1;
+    mig->caps = g_new0(qemuMigrationCookieCaps, 1);
 
     if (priv->migrationCaps)
         mig->caps->supported = virBitmapNewCopy(priv->migrationCaps);
