@@ -36,6 +36,7 @@ tests_env = [
   'abs_top_srcdir=@0@'.format(meson.source_root()),
   'LC_ALL=C',
   'LIBVIRT_AUTOSTART=0',
+  'G_DEBUG=fatal-warnings',
 ]
 
 if use_expensive_tests
