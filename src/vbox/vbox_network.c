@@ -821,69 +821,65 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
                                                       networkNameUtf16,
                                                       &dhcpServer);
     if (dhcpServer) {
+        PRUnichar *ipAddressUtf16 = NULL;
+        PRUnichar *networkMaskUtf16 = NULL;
+        PRUnichar *fromIPAddressUtf16 = NULL;
+        PRUnichar *toIPAddressUtf16 = NULL;
+        PRUnichar *macAddressUtf16 = NULL;
+        bool errorOccurred = false;
+
         ipdef->nranges = 1;
-        if (VIR_ALLOC_N(ipdef->ranges, ipdef->nranges) >= 0) {
-            PRUnichar *ipAddressUtf16 = NULL;
-            PRUnichar *networkMaskUtf16 = NULL;
-            PRUnichar *fromIPAddressUtf16 = NULL;
-            PRUnichar *toIPAddressUtf16 = NULL;
-            bool errorOccurred = false;
 
-            gVBoxAPI.UIDHCPServer.GetIPAddress(dhcpServer, &ipAddressUtf16);
-            gVBoxAPI.UIDHCPServer.GetNetworkMask(dhcpServer, &networkMaskUtf16);
-            gVBoxAPI.UIDHCPServer.GetLowerIP(dhcpServer, &fromIPAddressUtf16);
-            gVBoxAPI.UIDHCPServer.GetUpperIP(dhcpServer, &toIPAddressUtf16);
-            /* Currently virtualbox supports only one dhcp server per network
-             * with contiguous address space from start to end
-             */
-            addr = ipdef->ranges[0].addr;
-            if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
-                                         &ipdef->address) < 0 ||
-                vboxSocketParseAddrUtf16(data, networkMaskUtf16,
-                                         &ipdef->netmask) < 0 ||
-                vboxSocketParseAddrUtf16(data, fromIPAddressUtf16,
-                                         &addr.start) < 0 ||
-                vboxSocketParseAddrUtf16(data, toIPAddressUtf16,
-                                         &addr.end) < 0) {
-                errorOccurred = true;
-            }
+        if (VIR_ALLOC_N(ipdef->ranges, ipdef->nranges) < 0)
+            goto cleanup;
 
-            VBOX_UTF16_FREE(ipAddressUtf16);
-            VBOX_UTF16_FREE(networkMaskUtf16);
-            VBOX_UTF16_FREE(fromIPAddressUtf16);
-            VBOX_UTF16_FREE(toIPAddressUtf16);
-
-            if (errorOccurred)
-                goto cleanup;
-        } else {
-            ipdef->nranges = 0;
+        gVBoxAPI.UIDHCPServer.GetIPAddress(dhcpServer, &ipAddressUtf16);
+        gVBoxAPI.UIDHCPServer.GetNetworkMask(dhcpServer, &networkMaskUtf16);
+        gVBoxAPI.UIDHCPServer.GetLowerIP(dhcpServer, &fromIPAddressUtf16);
+        gVBoxAPI.UIDHCPServer.GetUpperIP(dhcpServer, &toIPAddressUtf16);
+        /* Currently virtualbox supports only one dhcp server per network
+         * with contiguous address space from start to end
+         */
+        addr = ipdef->ranges[0].addr;
+        if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
+                                     &ipdef->address) < 0 ||
+            vboxSocketParseAddrUtf16(data, networkMaskUtf16,
+                                     &ipdef->netmask) < 0 ||
+            vboxSocketParseAddrUtf16(data, fromIPAddressUtf16,
+                                     &addr.start) < 0 ||
+            vboxSocketParseAddrUtf16(data, toIPAddressUtf16,
+                                     &addr.end) < 0) {
+            errorOccurred = true;
         }
+
+        VBOX_UTF16_FREE(ipAddressUtf16);
+        VBOX_UTF16_FREE(networkMaskUtf16);
+        VBOX_UTF16_FREE(fromIPAddressUtf16);
+        VBOX_UTF16_FREE(toIPAddressUtf16);
+
+        if (errorOccurred)
+            goto cleanup;
 
         ipdef->nhosts = 1;
-        if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) >= 0) {
-            PRUnichar *macAddressUtf16 = NULL;
-            PRUnichar *ipAddressUtf16 = NULL;
-            bool errorOccurred = false;
+        if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) < 0)
+            goto cleanup;
 
-            ipdef->hosts[0].name = g_strdup(network->name);
-            gVBoxAPI.UIHNInterface.GetHardwareAddress(networkInterface, &macAddressUtf16);
-            gVBoxAPI.UIHNInterface.GetIPAddress(networkInterface, &ipAddressUtf16);
+        ipdef->hosts[0].name = g_strdup(network->name);
+        gVBoxAPI.UIHNInterface.GetHardwareAddress(networkInterface, &macAddressUtf16);
+        gVBoxAPI.UIHNInterface.GetIPAddress(networkInterface, &ipAddressUtf16);
 
-            VBOX_UTF16_TO_UTF8(macAddressUtf16, &ipdef->hosts[0].mac);
+        VBOX_UTF16_TO_UTF8(macAddressUtf16, &ipdef->hosts[0].mac);
 
-            if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
-                                         &ipdef->hosts[0].ip) < 0) {
-                errorOccurred = true;
-            }
-
-            VBOX_UTF16_FREE(macAddressUtf16);
-            VBOX_UTF16_FREE(ipAddressUtf16);
-
-            if (errorOccurred)
-                goto cleanup;
-        } else {
-            ipdef->nhosts = 0;
+        if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
+                                     &ipdef->hosts[0].ip) < 0) {
+            errorOccurred = true;
         }
+
+        VBOX_UTF16_FREE(macAddressUtf16);
+        VBOX_UTF16_FREE(ipAddressUtf16);
+
+        if (errorOccurred)
+            goto cleanup;
     } else {
         PRUnichar *networkMaskUtf16 = NULL;
         PRUnichar *ipAddressUtf16 = NULL;
