@@ -2807,9 +2807,9 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
 
     if (flags & VZ_MIGRATION_COOKIE_SESSION_UUID) {
         g_autofree char *tmp = NULL;
+        mig->session_uuid = g_new0(unsigned char, VIR_UUID_BUFLEN);
 
         if ((!(tmp = virXPathString("string(./session-uuid[1])", ctx))
-            || (VIR_ALLOC_N(mig->session_uuid, VIR_UUID_BUFLEN) < 0)
             || (virUUIDParse(tmp, mig->session_uuid) < 0))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing or malformed session-uuid element "
@@ -2820,9 +2820,9 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
 
     if (flags & VZ_MIGRATION_COOKIE_DOMAIN_UUID) {
         g_autofree char *tmp = NULL;
+        mig->uuid = g_new0(unsigned char, VIR_UUID_BUFLEN);
 
         if ((!(tmp = virXPathString("string(./uuid[1])", ctx))
-            || (VIR_ALLOC_N(mig->uuid, VIR_UUID_BUFLEN) < 0)
             || (virUUIDParse(tmp, mig->uuid) < 0))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing or malformed uuid element in migration data"));
