@@ -916,40 +916,37 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
 static qemuMigrationCookieNBDPtr
 qemuMigrationCookieNBDXMLParse(xmlXPathContextPtr ctxt)
 {
-    qemuMigrationCookieNBDPtr ret = NULL;
-    char *port = NULL, *capacity = NULL;
+    g_autoptr(qemuMigrationCookieNBD) ret = g_new0(qemuMigrationCookieNBD, 1);
+    g_autofree char *port = NULL;
     size_t i;
     int n;
-    xmlNodePtr *disks = NULL;
+    g_autofree xmlNodePtr *disks = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-
-    if (VIR_ALLOC(ret) < 0)
-        goto error;
 
     port = virXPathString("string(./nbd/@port)", ctxt);
     if (port && virStrToLong_i(port, NULL, 10, &ret->port) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Malformed nbd port '%s'"),
                        port);
-        goto error;
+        return NULL;
     }
 
     /* Now check if source sent a list of disks to prealloc. We might be
      * talking to an older server, so it's not an error if the list is
      * missing. */
     if ((n = virXPathNodeSet("./nbd/disk", ctxt, &disks)) > 0) {
-        if (VIR_ALLOC_N(ret->disks, n) < 0)
-            goto error;
+        ret->disks = g_new0(struct qemuMigrationCookieNBDDisk, n);
         ret->ndisks = n;
 
         for (i = 0; i < n; i++) {
+            g_autofree char *capacity = NULL;
+
             ctxt->node = disks[i];
-            VIR_FREE(capacity);
 
             if (!(ret->disks[i].target = virXPathString("string(./@target)", ctxt))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Malformed disk target"));
-                goto error;
+                return NULL;
             }
 
             capacity = virXPathString("string(./@capacity)", ctxt);
@@ -959,20 +956,12 @@ qemuMigrationCookieNBDXMLParse(xmlXPathContextPtr ctxt)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Malformed disk capacity: '%s'"),
                                NULLSTR(capacity));
-                goto error;
+                return NULL;
             }
         }
     }
 
- cleanup:
-    VIR_FREE(port);
-    VIR_FREE(capacity);
-    VIR_FREE(disks);
-    return ret;
- error:
-    qemuMigrationCookieNBDFree(ret);
-    ret = NULL;
-    goto cleanup;
+    return g_steal_pointer(&ret);
 }
 
 
