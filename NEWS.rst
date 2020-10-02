@@ -27,6 +27,14 @@ v6.9.0 (unreleased)
 v6.8.0 (2020-10-01)
 ===================
 
+* **Security**
+
+  * qemu: double free in qemuAgentGetInterfaces() in qemu_agent.c
+
+    Clients connecting to the read-write socket with limited ACL permissions
+    may be able to crash the libvirt daemon, resulting in a denial of service,
+    or potentially escalate their privileges on the system. CVE-2020-25637.
+
 * **New features**
 
   * xen: Add ``writeFiltering`` attribute for PCI devices
