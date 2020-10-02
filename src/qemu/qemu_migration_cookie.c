@@ -59,9 +59,9 @@ qemuMigrationCookieGraphicsFree(qemuMigrationCookieGraphicsPtr grap)
 {
     if (!grap)
         return;
-    VIR_FREE(grap->listen);
-    VIR_FREE(grap->tlsSubject);
-    VIR_FREE(grap);
+    g_free(grap->listen);
+    g_free(grap->tlsSubject);
+    g_free(grap);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationCookieGraphics,
@@ -78,10 +78,10 @@ qemuMigrationCookieNetworkFree(qemuMigrationCookieNetworkPtr network)
 
     if (network->net) {
         for (i = 0; i < network->nnets; i++)
-            VIR_FREE(network->net[i].portdata);
+            g_free(network->net[i].portdata);
     }
-    VIR_FREE(network->net);
-    VIR_FREE(network);
+    g_free(network->net);
+    g_free(network);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationCookieNetwork,
@@ -94,9 +94,9 @@ qemuMigrationCookieNBDFree(qemuMigrationCookieNBDPtr nbd)
         return;
 
     while (nbd->ndisks)
-        VIR_FREE(nbd->disks[--nbd->ndisks].target);
-    VIR_FREE(nbd->disks);
-    VIR_FREE(nbd);
+        g_free(nbd->disks[--nbd->ndisks].target);
+    g_free(nbd->disks);
+    g_free(nbd);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationCookieNBD,
@@ -110,7 +110,7 @@ qemuMigrationCookieCapsFree(qemuMigrationCookieCapsPtr caps)
 
     virBitmapFree(caps->supported);
     virBitmapFree(caps->automatic);
-    VIR_FREE(caps);
+    g_free(caps);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationCookieCaps,
@@ -127,15 +127,15 @@ qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
     qemuMigrationCookieNetworkFree(mig->network);
     qemuMigrationCookieNBDFree(mig->nbd);
 
-    VIR_FREE(mig->localHostname);
-    VIR_FREE(mig->remoteHostname);
-    VIR_FREE(mig->name);
-    VIR_FREE(mig->lockState);
-    VIR_FREE(mig->lockDriver);
+    g_free(mig->localHostname);
+    g_free(mig->remoteHostname);
+    g_free(mig->name);
+    g_free(mig->lockState);
+    g_free(mig->lockDriver);
     g_clear_pointer(&mig->jobInfo, qemuDomainJobInfoFree);
     virCPUDefFree(mig->cpu);
     qemuMigrationCookieCapsFree(mig->caps);
-    VIR_FREE(mig);
+    g_free(mig);
 }
 
 
@@ -1406,7 +1406,7 @@ qemuMigrationCookieParse(virQEMUDriverPtr driver,
     if (flags & QEMU_MIGRATION_COOKIE_PERSISTENT &&
         mig->persistent &&
         STRNEQ(def->name, mig->persistent->name)) {
-        VIR_FREE(mig->persistent->name);
+        g_free(mig->persistent->name);
         mig->persistent->name = g_strdup(def->name);
     }
 
