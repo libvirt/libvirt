@@ -1054,29 +1054,26 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
 static qemuMigrationCookieCapsPtr
 qemuMigrationCookieCapsXMLParse(xmlXPathContextPtr ctxt)
 {
-    qemuMigrationCookieCapsPtr caps = NULL;
-    xmlNodePtr *nodes = NULL;
-    qemuMigrationCookieCapsPtr ret = NULL;
-    char *name = NULL;
-    char *automatic = NULL;
-    int cap;
+    g_autoptr(qemuMigrationCookieCaps) caps = g_new0(qemuMigrationCookieCaps, 1);
+    g_autofree xmlNodePtr *nodes = NULL;
     size_t i;
     int n;
-
-    if (VIR_ALLOC(caps) < 0)
-        return NULL;
 
     caps->supported = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
     caps->automatic = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
 
     if ((n = virXPathNodeSet("./capabilities[1]/cap", ctxt, &nodes)) < 0)
-        goto cleanup;
+        return NULL;
 
     for (i = 0; i < n; i++) {
+        g_autofree char *name = NULL;
+        g_autofree char *automatic = NULL;
+        int cap;
+
         if (!(name = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing migration capability name"));
-            goto cleanup;
+            return NULL;
         }
 
         if ((cap = qemuMigrationCapabilityTypeFromString(name)) < 0)
@@ -1087,19 +1084,9 @@ qemuMigrationCookieCapsXMLParse(xmlXPathContextPtr ctxt)
         if ((automatic = virXMLPropString(nodes[i], "auto")) &&
             STREQ(automatic, "yes"))
             ignore_value(virBitmapSetBit(caps->automatic, cap));
-
-        VIR_FREE(name);
-        VIR_FREE(automatic);
     }
 
-    ret = g_steal_pointer(&caps);
-
- cleanup:
-    qemuMigrationCookieCapsFree(caps);
-    VIR_FREE(nodes);
-    VIR_FREE(name);
-    VIR_FREE(automatic);
-    return ret;
+    return g_steal_pointer(&caps);
 }
 
 
