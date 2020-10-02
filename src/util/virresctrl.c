@@ -1158,9 +1158,9 @@ virResctrlAllocUpdateMask(virResctrlAllocPtr alloc,
         return -1;
 
     if (!a_type->masks[cache])
-        a_type->masks[cache] = virBitmapNew(virBitmapSize(mask));
+        a_type->masks[cache] = virBitmapNewCopy(mask);
 
-    return virBitmapCopy(a_type->masks[cache], mask);
+    return 0;
 }
 
 

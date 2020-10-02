@@ -1589,8 +1589,7 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMAPtr caps)
                         cpus[cid].die_id = 0;
                         cpus[cid].socket_id = s;
                         cpus[cid].core_id = c;
-                        cpus[cid].siblings = virBitmapNew(ncpus);
-                        virBitmapCopy(cpus[cid].siblings, siblings);
+                        cpus[cid].siblings = virBitmapNewCopy(siblings);
                         cid++;
                     }
 

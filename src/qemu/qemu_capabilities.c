@@ -1932,7 +1932,8 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 
     ret->ctime = qemuCaps->ctime;
 
-    virBitmapCopy(ret->flags, qemuCaps->flags);
+    virBitmapFree(ret->flags);
+    ret->flags = virBitmapNewCopy(qemuCaps->flags);
 
     ret->version = qemuCaps->version;
     ret->kvmVersion = qemuCaps->kvmVersion;
