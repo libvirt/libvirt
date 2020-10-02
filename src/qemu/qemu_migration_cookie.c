@@ -839,49 +839,40 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 static qemuMigrationCookieGraphicsPtr
 qemuMigrationCookieGraphicsXMLParse(xmlXPathContextPtr ctxt)
 {
-    qemuMigrationCookieGraphicsPtr grap;
-    char *tmp;
+    g_autoptr(qemuMigrationCookieGraphics) grap = g_new0(qemuMigrationCookieGraphics, 1);
+    g_autofree char *graphicstype = NULL;
 
-    if (VIR_ALLOC(grap) < 0)
-        goto error;
-
-    if (!(tmp = virXPathString("string(./graphics/@type)", ctxt))) {
+    if (!(graphicstype = virXPathString("string(./graphics/@type)", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing type attribute in migration data"));
-        goto error;
+        return NULL;
     }
-    if ((grap->type = virDomainGraphicsTypeFromString(tmp)) < 0) {
+    if ((grap->type = virDomainGraphicsTypeFromString(graphicstype)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown graphics type %s"), tmp);
-        VIR_FREE(tmp);
-        goto error;
+                       _("unknown graphics type %s"), graphicstype);
+        return NULL;
     }
-    VIR_FREE(tmp);
     if (virXPathInt("string(./graphics/@port)", ctxt, &grap->port) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing port attribute in migration data"));
-        goto error;
+        return NULL;
     }
     if (grap->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
         if (virXPathInt("string(./graphics/@tlsPort)", ctxt, &grap->tlsPort) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("missing tlsPort attribute in migration data"));
-            goto error;
+            return NULL;
         }
     }
     if (!(grap->listen = virXPathString("string(./graphics/@listen)", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing listen attribute in migration data"));
-        goto error;
+        return NULL;
     }
     /* Optional */
     grap->tlsSubject = virXPathString("string(./graphics/cert[@info='subject']/@value)", ctxt);
 
-    return grap;
-
- error:
-    qemuMigrationCookieGraphicsFree(grap);
-    return NULL;
+    return g_steal_pointer(&grap);
 }
 
 
