@@ -2636,8 +2636,10 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
             VIR_FORCE_CLOSE(cmd->infd);
         /* clear any error so we can catch if the helper thread reports one */
         cmd->has_error = 0;
-        if (VIR_ALLOC(cmd->asyncioThread) < 0 ||
-            virThreadCreateFull(cmd->asyncioThread, true,
+        if (VIR_ALLOC(cmd->asyncioThread) < 0)
+            ret = -1;
+
+        if (virThreadCreateFull(cmd->asyncioThread, true,
                                 virCommandDoAsyncIOHelper,
                                 "cmd-async-io", false, cmd) < 0) {
             virReportSystemError(errno, "%s",
