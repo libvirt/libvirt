@@ -3798,20 +3798,16 @@ vboxDumpAudio(virDomainDefPtr def, vboxDriverPtr data G_GNUC_UNUSED,
             PRUint32 audioController = AudioControllerType_AC97;
 
             def->nsounds = 1;
-            if (VIR_ALLOC_N(def->sounds, def->nsounds) >= 0) {
-                if (VIR_ALLOC(def->sounds[0]) >= 0) {
-                    gVBoxAPI.UIAudioAdapter.GetAudioController(audioAdapter, &audioController);
-                    if (audioController == AudioControllerType_SB16) {
-                        def->sounds[0]->model = VIR_DOMAIN_SOUND_MODEL_SB16;
-                    } else if (audioController == AudioControllerType_AC97) {
-                        def->sounds[0]->model = VIR_DOMAIN_SOUND_MODEL_AC97;
-                    }
-                } else {
-                    VIR_FREE(def->sounds);
-                    def->nsounds = 0;
-                }
-            } else {
-                def->nsounds = 0;
+            if (VIR_ALLOC_N(def->sounds, def->nsounds) < 0)
+                return;
+            if (VIR_ALLOC(def->sounds[0]) < 0)
+                return;
+
+            gVBoxAPI.UIAudioAdapter.GetAudioController(audioAdapter, &audioController);
+            if (audioController == AudioControllerType_SB16) {
+                def->sounds[0]->model = VIR_DOMAIN_SOUND_MODEL_SB16;
+            } else if (audioController == AudioControllerType_AC97) {
+                def->sounds[0]->model = VIR_DOMAIN_SOUND_MODEL_AC97;
             }
         }
         VBOX_RELEASE(audioAdapter);
