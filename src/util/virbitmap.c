@@ -655,20 +655,14 @@ virBitmapParseUnlimited(const char *str)
  * virBitmapNewCopy:
  * @src: the source bitmap.
  *
- * Makes a copy of bitmap @src.
- *
- * returns the copied bitmap on success, or NULL otherwise. Caller
- * should call virBitmapFree to free the returned bitmap.
+ * Returns a copy of bitmap @src.
  */
 virBitmapPtr
 virBitmapNewCopy(virBitmapPtr src)
 {
     virBitmapPtr dst = virBitmapNew(src->nbits);
 
-    if (virBitmapCopy(dst, src) != 0) {
-        virBitmapFree(dst);
-        return NULL;
-    }
+    memcpy(dst->map, src->map, src->map_len * sizeof(src->map[0]));
 
     return dst;
 }
