@@ -6419,12 +6419,9 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
 {
     qemuDomainVcpuPrivatePtr vcpupriv;
     virDomainVcpuDefPtr vcpu;
-    virBitmapPtr map = NULL;
-    virBitmapPtr ret = NULL;
+    g_autoptr(virBitmap) map = virBitmapNewCopy(vcpus);
     ssize_t next = -1;
     size_t i;
-
-    map = virBitmapNewCopy(vcpus);
 
     /* make sure that all selected vcpus are in the correct state */
     while ((next = virBitmapNextSetBit(map, next)) >= 0) {
@@ -6434,13 +6431,13 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
         if (vcpu->online == state) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("vcpu '%zd' is already in requested state"), next);
-            goto cleanup;
+            return NULL;
         }
 
         if (vcpu->online && !vcpu->hotpluggable) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("vcpu '%zd' can't be hotunplugged"), next);
-            goto cleanup;
+            return NULL;
         }
     }
 
@@ -6457,7 +6454,7 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("vcpu '%zd' belongs to a larger hotpluggable entity, "
                              "but siblings were not selected"), next);
-            goto cleanup;
+            return NULL;
         }
 
         for (i = next + 1; i < next + vcpupriv->vcpus; i++) {
@@ -6467,7 +6464,7 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
                                  "hotpluggable entity '%zd-%zd' which was "
                                  "partially selected"),
                                i, next, next + vcpupriv->vcpus - 1);
-                goto cleanup;
+                return NULL;
             }
 
             /* clear the subthreads */
@@ -6475,11 +6472,7 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
         }
     }
 
-    ret = g_steal_pointer(&map);
-
- cleanup:
-    virBitmapFree(map);
-    return ret;
+    return g_steal_pointer(&map);
 }
 
 
