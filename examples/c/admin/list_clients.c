@@ -80,7 +80,7 @@ int main(int argc, char **argv)
         goto cleanup;
 
     /* let's print the currently connected clients and some basic info about
-     * them, we have 2 options how to interate over the returned list,
+     * them, we have 2 options how to iterate over the returned list,
      * use @count as the boundary or use the fact that @clients are guaranteed
      * to contain 1 extra element NULL;
      * this example uses the first option

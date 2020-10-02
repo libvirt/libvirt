@@ -1,5 +1,5 @@
 /**
- * section: Informations
+ * section: Information
  * synopsis: Extract information about Xen domain 0
  * purpose: Demonstrate the basic use of the library to connect to the
  *          hypervisor and extract domain information.

@@ -19,7 +19,7 @@ int main(void)
     if ((count = virAdmConnectListServers(conn, &servers, 0)) < 0)
         goto cleanup;
 
-    /* let's print the available servers, we have 2 options how to interate
+    /* let's print the available servers, we have 2 options how to iterate
      * over the returned list, use @count as the boundary or use the fact
      * that @servers are guaranteed to contain 1 extra element NULL;
      * this example uses the second option
