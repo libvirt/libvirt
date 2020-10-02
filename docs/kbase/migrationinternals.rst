@@ -25,7 +25,7 @@ In this document, unless stated otherwise, these conventions are followed:
   any host;
 
 * 'regular migration' refers to any migration operation where the libvirt
-  client co-ordinates the communication between the libvirtd instances in
+  client coordinates the communication between the libvirtd instances in
   the source and destination hosts.
 
 Migration protocol

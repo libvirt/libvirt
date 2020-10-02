@@ -384,7 +384,7 @@ set of hypervisor packages too.
 
 Since this installs every possible libvirt feature for the virtualization
 driver in question, the on-disk footprint is quite large. The in-memory
-footprint of the daemons is also relatively large since alot of code is
+footprint of the daemons is also relatively large since a lot of code is
 loaded.
 
 

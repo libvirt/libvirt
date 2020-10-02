@@ -84,7 +84,7 @@
       <dt>C</dt>
       <dd>Large parts of the core libvirt library, daemons, and helper tools
         will continue to make use in the C language. Integration of other
-        languages will be an incremental, targetted process where they can
+        languages will be an incremental, targeted process where they can
         bring the greatest benefit.</dd>
       <dt>Rust / Go</dt>
       <dd>Parts of the core libvirt library, daemons and helper tools are to

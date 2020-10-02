@@ -203,7 +203,7 @@
         <code>/etc/libvirt/hooks/qemu.d/</code>. They are executed in
         alphabetical order after main script. In this case each script also
         acts as filter and can modify the domain XML and print it out on
-        its standart output. This script output is passed to standard input
+        its standard output. This script output is passed to standard input
         next script in order. Empty output from any script is also identical
         to copying the input XML without changing it.
         In case any script returns failure common process will be aborted,
@@ -296,7 +296,7 @@
         <code>/etc/libvirt/hooks/libxl.d/</code>. They are executed in
         alphabetical order after main script. In this case each script also
         acts as filter and can modify the domain XML and print it out on
-        its standart output. This script output is passed to standard input
+        its standard output. This script output is passed to standard input
         next script in order. Empty output from any script is also identical
         to copying the input XML without changing it.
         In case any script returns failure common process will be aborted,

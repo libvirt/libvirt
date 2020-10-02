@@ -137,7 +137,7 @@ do not include any CPU affinity at this stage:
 
 The guest CPUs now need to be placed individually. In this case, they will all
 be put within the same host socket, such that they can be exposed as core
-siblings. This is achieved using the `CPU tunning config <../formatdomain.html#elementsCPUTuning>`_:
+siblings. This is achieved using the `CPU tuning config <../formatdomain.html#elementsCPUTuning>`_:
 
 ::
 

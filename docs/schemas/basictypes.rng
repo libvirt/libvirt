@@ -167,7 +167,7 @@
   <!--such as dnsmasq to assign a specific IP address (and optionally a   -->
   <!--name to an interface.  The applicable standards are RFC3315 and     -->
   <!--RFC6355.  These standards actually require the duid to be fixed for -->
-  <!--the hardward device and applicable to all network interfaces on     -->
+  <!--the hardware device and applicable to all network interfaces on     -->
   <!--that device.  It is not clear that any software currently enforces  -->
   <!--this requirement although it could be implemented manually.         -->
   <!--====================================================================-->

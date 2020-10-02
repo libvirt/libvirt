@@ -48,7 +48,7 @@
       <dt><code>name</code></dt>
       <dd>The content of the <code>name</code> element provides
         a short name for the virtual network. This name should
-        consist only of alpha-numeric characters and is required
+        consist only of alphanumeric characters and is required
         to be unique within the scope of a single host. It is
         used to form the filename for storing the persistent
         configuration file. <span class="since">Since 0.3.0</span></dd>
@@ -1249,7 +1249,7 @@
     above) which you can use at will.</p>
 
     <p>Many operating systems will not consider these addresses as
-    preferential to IPv4, due to some practial history of these
+    preferential to IPv4, due to some practical history of these
     addresses being present but unroutable and causing networking
     issues.  On many Linux distributions, you may need to
     override <tt>/etc/gai.conf</tt> with values

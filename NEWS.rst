@@ -465,7 +465,7 @@ v6.3.0 (2020-05-05)
     libvirt can now set the "hotplug" option for pcie-root-ports and
     pcie-switch-downstream-ports, which can be used to disable hotplug/unplug
     of devices from these ports (default behavior is for these controllers to
-    accept all hotplug/unplug attempts, but this is often undesireable).
+    accept all hotplug/unplug attempts, but this is often undesirable).
 
   * vbox: added support for version 6.0 and 6.1 APIs
 
@@ -949,7 +949,7 @@ v5.10.0 (2019-12-02)
 
   * Forcibly create nodes in domain's namespace
 
-    The QEMU driver starts a domain in a namepsace with private ``/dev`` and
+    The QEMU driver starts a domain in a namespace with private ``/dev`` and
     creates only those nodes there which the domain is configured to have.
     However, it may have happened that if a node changed its minor number this
     change wasn't propagated to the namespace.
@@ -1252,7 +1252,7 @@ v5.6.0 (2019-08-05)
 
   * network: Allow passing arbitrary options to dnsmasq
 
-    This works similarly to the existing support for passing arbitary options
+    This works similarly to the existing support for passing arbitrary options
     to QEMU, and just like that feature it comes with no support guarantees.
 
 * **Removed features**
@@ -2266,7 +2266,7 @@ v4.4.0 (2018-06-04)
 
 * **Improvements**
 
-  * qemu: Add suport for OpenGL rendering with SDL
+  * qemu: Add support for OpenGL rendering with SDL
 
     Domains using SDL as a graphics backend will now be able to use OpenGL
     accelerated rendering.

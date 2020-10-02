@@ -234,7 +234,7 @@ Note that parameter values must be
         </td>
         <td> tls </td>
         <td>
-  A vaid GNUTLS priority string
+  A valid GNUTLS priority string
 </td>
       </tr>
       <tr>

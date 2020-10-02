@@ -221,7 +221,7 @@ vpx://example-vcenter.com/folder1/dc1/folder2/example-esx.com
         using the CA certificate pool installed on your client computer. With
         an out-of-the-box installed ESX server this won't work, because a newly
         installed ESX server uses auto-generated self-signed certificates.
-        Those are singed by a CA certificate that is typically not known to your
+        Those are signed by a CA certificate that is typically not known to your
         client computer and libvirt will report an error like this one:
     </p>
 <pre>
@@ -322,9 +322,9 @@ error: invalid argument in libvirt was built without the 'esx' driver
     </p>
 
 
-    <h2><a id="xmlspecial">Specialties in the domain XML config</a></h2>
+    <h2><a id="xmlspecial">Specialities in the domain XML config</a></h2>
     <p>
-        There are several specialties in the domain XML config for ESX domains.
+        There are several specialities in the domain XML config for ESX domains.
     </p>
 
     <h3><a id="restrictions">Restrictions</a></h3>

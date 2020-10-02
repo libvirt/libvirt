@@ -356,7 +356,7 @@
                 which of the scsi_host adapters for the provided PCI address
                 should be used. The value is determine by contents of the
                 <code>unique_id</code> file for the specific scsi_host adapter.
-                For a PCI address of "0000:00:1f:2", the unique identifer files
+                For a PCI address of "0000:00:1f:2", the unique identifier files
                 can be found using the command
                 <code>find -H /sys/class/scsi_host/host*/unique_id |
                 xargs grep '[0-9]'</code>. Optionally, the

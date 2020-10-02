@@ -64,7 +64,7 @@
 &lt;/storagepoolCapabilities&gt;
 </pre>
 
-    <p>The following section decribes subelements of the
+    <p>The following section describes subelements of the
     <code>poolOptions</code> and <code>volOptions</code> subelements </p>:
 
     <dl>

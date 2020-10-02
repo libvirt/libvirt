@@ -152,7 +152,7 @@
       values for which a firmware "descriptor file" exists on the host.
       Firmware descriptor file is a small JSON document that describes
       details about a given BIOS or UEFI binary on the host, e.g. the
-      fimware binary path, its architecture, supported machine types,
+      firmware binary path, its architecture, supported machine types,
       NVRAM template, etc. This ensures that the reported values won't
       cause a failure on guest boot.
     </p>

@@ -512,7 +512,7 @@ other end of which are owned by the ``virtlogd`` daemon. It will then write
 data on those pipes to log files, while enforcing a maximum file size and
 performing log rollover at the size limit.
 
-Since the daemon holds open anoymous pipe file descriptors, it must never be
+Since the daemon holds open anonymous pipe file descriptors, it must never be
 stopped while any QEMU virtual machines are running. To enable software updates
 to be applied, the daemon is capable of re-executing itself while keeping all
 file descriptors open. This can be triggered by sending the daemon ``SIGUSR1``
@@ -605,7 +605,7 @@ images and devices serving as backing storage for virtual disks. The locks
 will be held for as long as there is a QEMU process running with the disk
 open.
 
-To ensure continuity of locking, the daemon holds open anoymous file
+To ensure continuity of locking, the daemon holds open anonymous file
 descriptors, it must never be stopped while any QEMU virtual machines are
 running. To enable software updates to be applied, the daemon is capable of
 re-executing itself while keeping all file descriptors open. This can be

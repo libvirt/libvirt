@@ -7142,7 +7142,7 @@ checkpoint-create
 Create a checkpoint for domain *domain* with the properties specified
 in *xmlfile* describing a <domaincheckpoint> top-level element. The
 format of the input XML file will be validated against an internal RNG
-schema (idential to using the virt-xml-validate(1) tool). If
+schema (identical to using the virt-xml-validate(1) tool). If
 *xmlfile* is completely omitted, then libvirt will create a
 checkpoint with a name based on the current time.
 

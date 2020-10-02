@@ -277,7 +277,7 @@ to turn on SASL auth in these listeners.
     <p>
 Since the libvirt SASL config file defaults to using GSSAPI (Kerberos), a
 config change is required to enable plain password auth. This is done by
-editting <code>/etc/sasl2/libvirt.conf</code> to set the <code>mech_list</code>
+editing <code>/etc/sasl2/libvirt.conf</code> to set the <code>mech_list</code>
 parameter to <code>scram-sha-1</code>.
     </p>
     <p>

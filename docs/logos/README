@@ -38,7 +38,7 @@ format:
 
  - logo-square-powered.svg
 
-   A variant of the square logo for use by 3rd party applications, to advertize
+   A variant of the square logo for use by 3rd party applications, to advertise
    their use of libvirt.
 
    Bitmap sizes: 64, 128, 192, 256 px square

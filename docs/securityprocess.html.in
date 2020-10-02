@@ -59,7 +59,7 @@
       the various vendors who distribute libvirt. The team is responsible
       for analysing incoming reports from users to identify whether a
       security problem exists and its severity. It then works to produce
-      a fix for all official stable branches of libvirt and co-ordinate
+      a fix for all official stable branches of libvirt and coordinate
       embargo dates between vendors to allow simultaneous release of the
       fix by all affected parties.
     </p>

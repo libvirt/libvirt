@@ -163,10 +163,10 @@ explicitly stated, these work on libvirt 4.4.0 and later. Please note that some
 of the filters below may not log enough information for filing a proper libvirt
 bug. Usually it's better to log more than less.
 
-Targetted logging for debugging QEMU VMs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Targeted logging for debugging QEMU VMs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Specifying only some sections allows for a targetted filter configuration which
+Specifying only some sections allows for a targeted filter configuration which
 works on all versions and is sufficient for most cases.
 
 ::

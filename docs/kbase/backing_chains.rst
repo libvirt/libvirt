@@ -186,7 +186,7 @@ of the following criteria is met:
 - ``backing file`` is present AND is correct/trusted
 
 Note that the last criterion may require manual inspection and thus should not
-be scripted unless the trust for the image can be expressed programatically.
+be scripted unless the trust for the image can be expressed programmatically.
 
 Also note that the above steps may need to be repeated recursively for any
 subsequent backing images.

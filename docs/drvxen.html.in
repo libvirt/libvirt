@@ -154,7 +154,7 @@ vif = [ "mac=00:16:3e:60:36:ba,bridge=virbr0,script=vif-bridge,vifname=vif5.0" ]
       <code>&lt;xen:commandline&gt;</code> describing each argument passed to
       the device model when starting the domain.
     </p>
-    <p>The following example illustrates passing agruments to the QEMU device
+    <p>The following example illustrates passing arguments to the QEMU device
       model that define a floppy drive, which Xen does not support through its
       public APIs:
     </p>

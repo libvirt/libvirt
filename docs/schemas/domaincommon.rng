@@ -5580,7 +5580,7 @@
 
   <!--
       System information specification:
-       Placeholder for system specific informations likes the ones
+       Placeholder for system specific information likes the ones
        contained in the SMBIOS area.
        Only a limited subset of entries can be modified there, so we
        fully enumerate each case here.

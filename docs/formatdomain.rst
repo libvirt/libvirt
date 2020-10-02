@@ -45,7 +45,7 @@ General metadata
 
 ``name``
    The content of the ``name`` element provides a short name for the virtual
-   machine. This name should consist only of alpha-numeric characters and is
+   machine. This name should consist only of alphanumeric characters and is
    required to be unique within the scope of a single host. It is often used to
    form the filename for storing the persistent configuration file.
    :since:`Since 0.0.1`
@@ -804,7 +804,7 @@ CPU Tuning
 ``vcpusched``, ``iothreadsched`` and ``emulatorsched``
    The optional ``vcpusched``, ``iothreadsched`` and ``emulatorsched`` elements
    specify the scheduler type (values ``batch``, ``idle``, ``fifo``, ``rr``) for
-   particular vCPU, IOThread and emulator threads respecively. For ``vcpusched``
+   particular vCPU, IOThread and emulator threads respectively. For ``vcpusched``
    and ``iothreadsched`` the attributes ``vcpus`` and ``iothreads`` select which
    vCPUs/IOThreads this setting applies to, leaving them out sets the default.
    The element ``emulatorsched`` does not have that attribute. Valid ``vcpus``
@@ -4422,7 +4422,7 @@ Generic ethernet connection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Provides a means to use a new or existing tap device (or veth device pair,
-depening on the needs of the hypervisor driver) that is partially or wholly
+depending on the needs of the hypervisor driver) that is partially or wholly
 setup external to libvirt (either prior to the guest starting, or while the
 guest is being started via an optional script specified in the config).
 
