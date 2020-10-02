@@ -2422,9 +2422,8 @@ virStorageSourceCopy(const virStorageSource *src,
         !(def->srcpool = virStorageSourcePoolDefCopy(src->srcpool)))
         return NULL;
 
-    if (src->features &&
-        !(def->features = virBitmapNewCopy(src->features)))
-        return NULL;
+    if (src->features)
+        def->features = virBitmapNewCopy(src->features);
 
     if (src->encryption &&
         !(def->encryption = virStorageEncryptionCopy(src->encryption)))

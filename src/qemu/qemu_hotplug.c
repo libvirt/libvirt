@@ -6424,8 +6424,7 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
     ssize_t next = -1;
     size_t i;
 
-    if (!(map = virBitmapNewCopy(vcpus)))
-        return NULL;
+    map = virBitmapNewCopy(vcpus);
 
     /* make sure that all selected vcpus are in the correct state */
     while ((next = virBitmapNextSetBit(map, next)) >= 0) {

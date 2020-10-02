@@ -2743,10 +2743,7 @@ testDomainPinEmulator(virDomainPtr dom,
     }
 
     virBitmapFree(def->cputune.emulatorpin);
-    def->cputune.emulatorpin = NULL;
-
-    if (!(def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
-        goto cleanup;
+    def->cputune.emulatorpin = virBitmapNewCopy(pcpumap);
 
     ret = 0;
  cleanup:

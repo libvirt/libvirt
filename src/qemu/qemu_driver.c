@@ -4543,8 +4543,7 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (!(tmpmap = virBitmapNewCopy(cpumap)))
-        goto cleanup;
+    tmpmap = virBitmapNewCopy(cpumap);
 
     if (!(str = virBitmapFormat(cpumap)))
         goto cleanup;
@@ -4782,10 +4781,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
             goto endjob;
 
         virBitmapFree(def->cputune.emulatorpin);
-        def->cputune.emulatorpin = NULL;
-
-        if (!(def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
-            goto endjob;
+        def->cputune.emulatorpin = virBitmapNewCopy(pcpumap);
 
         if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
             goto endjob;
@@ -4802,10 +4798,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
 
     if (persistentDef) {
         virBitmapFree(persistentDef->cputune.emulatorpin);
-        persistentDef->cputune.emulatorpin = NULL;
-
-        if (!(persistentDef->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
-            goto endjob;
+        persistentDef->cputune.emulatorpin = virBitmapNewCopy(pcpumap);
 
         ret = virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir);
         goto endjob;

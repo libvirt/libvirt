@@ -568,9 +568,6 @@ qemuMigrationCookieAddCaps(qemuMigrationCookiePtr mig,
 
     mig->caps->automatic = qemuMigrationParamsGetAlwaysOnCaps(party);
 
-    if (!mig->caps->supported || !mig->caps->automatic)
-        return -1;
-
     mig->flags |= QEMU_MIGRATION_COOKIE_CAPS;
 
     return 0;

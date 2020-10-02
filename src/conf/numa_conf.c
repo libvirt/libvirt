@@ -582,8 +582,8 @@ virDomainNumatuneSet(virDomainNumaPtr numa,
 
     if (nodeset) {
         virBitmapFree(numa->memory.nodeset);
-        if (!(numa->memory.nodeset = virBitmapNewCopy(nodeset)))
-            return -1;
+        numa->memory.nodeset = virBitmapNewCopy(nodeset);
+
         if (placement == -1)
             placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
     }

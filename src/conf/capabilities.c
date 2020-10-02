@@ -1823,8 +1823,7 @@ virCapabilitiesInitResctrlMemory(virCapsPtr caps)
         if (virResctrlInfoGetMemoryBandwidth(caps->host.resctrl,
                                              bank->level, &node->control) > 0) {
             node->id = bank->id;
-            if (!(node->cpus = virBitmapNewCopy(bank->cpus)))
-                goto cleanup;
+            node->cpus = virBitmapNewCopy(bank->cpus);
 
             if (VIR_APPEND_ELEMENT(caps->host.memBW.nodes,
                                    caps->host.memBW.nnodes, node) < 0) {

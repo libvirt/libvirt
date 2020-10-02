@@ -20928,12 +20928,7 @@ virDomainResctrlNew(xmlNodePtr node,
     if (VIR_ALLOC(resctrl) < 0)
         goto cleanup;
 
-    if (!(resctrl->vcpus = virBitmapNewCopy(vcpus))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to copy 'vcpus'"));
-        goto cleanup;
-    }
-
+    resctrl->vcpus = virBitmapNewCopy(vcpus);
     resctrl->alloc = virObjectRef(alloc);
 
     ret = g_steal_pointer(&resctrl);
