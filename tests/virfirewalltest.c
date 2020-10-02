@@ -122,7 +122,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
                 doError = true;
             }
 
-            virStringListAdd(&args, g_strdup(item));
+            virStringListAdd(&args, item);
         }
 
         if (fwBuf) {
