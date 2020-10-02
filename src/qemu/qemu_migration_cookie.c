@@ -879,27 +879,24 @@ qemuMigrationCookieGraphicsXMLParse(xmlXPathContextPtr ctxt)
 static qemuMigrationCookieNetworkPtr
 qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
 {
-    qemuMigrationCookieNetworkPtr optr;
+    g_autoptr(qemuMigrationCookieNetwork) optr = g_new0(qemuMigrationCookieNetwork, 1);
     size_t i;
     int n;
-    xmlNodePtr *interfaces = NULL;
-    char *vporttype;
+    g_autofree xmlNodePtr *interfaces = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-
-    if (VIR_ALLOC(optr) < 0)
-        goto error;
 
     if ((n = virXPathNodeSet("./network/interface", ctxt, &interfaces)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing interface information"));
-        goto error;
+        return NULL;
     }
 
     optr->nnets = n;
-    if (VIR_ALLOC_N(optr->net, optr->nnets) < 0)
-        goto error;
+    optr->net = g_new0(qemuMigrationCookieNetData, optr->nnets);
 
     for (i = 0; i < n; i++) {
+        g_autofree char *vporttype = NULL;
+
         /* portdata is optional, and may not exist */
         ctxt->node = interfaces[i];
         optr->net[i].portdata = virXPathString("string(./portdata[1])", ctxt);
@@ -907,20 +904,12 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
         if (!(vporttype = virXMLPropString(interfaces[i], "vporttype"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("missing vporttype attribute in migration data"));
-            goto error;
+            return NULL;
         }
         optr->net[i].vporttype = virNetDevVPortTypeFromString(vporttype);
-        VIR_FREE(vporttype);
     }
 
-    VIR_FREE(interfaces);
-
-    return optr;
-
- error:
-    VIR_FREE(interfaces);
-    qemuMigrationCookieNetworkFree(optr);
-    return NULL;
+    return g_steal_pointer(&optr);
 }
 
 
