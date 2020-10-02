@@ -66,7 +66,7 @@
  *
  *   virsh command --arg str1,str2,str3
  *
- * This does not play nicely with our completer funtions, because
+ * This does not play nicely with our completer functions, because
  * they have to return strings prepended with user's input. For
  * instance:
  *

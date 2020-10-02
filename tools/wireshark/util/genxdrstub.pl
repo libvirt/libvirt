@@ -853,7 +853,7 @@ sub parse {
     @lexs;
 }
 
-# Followings are code templates handled by PT
+# Following are code templates handled by PT
 __END__<<DUMMY # Dummy heredoc to disable perl syntax highlighting
 @@ Sym::Type#render_dissector
 <%

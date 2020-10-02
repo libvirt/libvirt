@@ -1572,7 +1572,7 @@ static const vshCmdOptDef opts_pool_info[] = {
 
     {.name = "bytes",
      .type = VSH_OT_BOOL,
-     .help = N_("Reture pool info in bytes"),
+     .help = N_("Return pool info in bytes"),
     },
     {.name = NULL}
 };
