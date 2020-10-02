@@ -2806,26 +2806,28 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
                                       _("(_migration_cookie)"), &ctx)))
         goto error;
 
-    if ((flags & VZ_MIGRATION_COOKIE_SESSION_UUID)
-        && (!(tmp = virXPathString("string(./session-uuid[1])", ctx))
+    if (flags & VZ_MIGRATION_COOKIE_SESSION_UUID) {
+        if ((!(tmp = virXPathString("string(./session-uuid[1])", ctx))
             || (VIR_ALLOC_N(mig->session_uuid, VIR_UUID_BUFLEN) < 0)
             || (virUUIDParse(tmp, mig->session_uuid) < 0))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing or malformed session-uuid element "
-                         "in migration data"));
-        VIR_FREE(tmp);
-        goto error;
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing or malformed session-uuid element "
+                             "in migration data"));
+            VIR_FREE(tmp);
+            goto error;
+        }
     }
     VIR_FREE(tmp);
 
-    if ((flags & VZ_MIGRATION_COOKIE_DOMAIN_UUID)
-        && (!(tmp = virXPathString("string(./uuid[1])", ctx))
+    if (flags & VZ_MIGRATION_COOKIE_DOMAIN_UUID) {
+        if ((!(tmp = virXPathString("string(./uuid[1])", ctx))
             || (VIR_ALLOC_N(mig->uuid, VIR_UUID_BUFLEN) < 0)
             || (virUUIDParse(tmp, mig->uuid) < 0))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing or malformed uuid element in migration data"));
-        VIR_FREE(tmp);
-        goto error;
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing or malformed uuid element in migration data"));
+            VIR_FREE(tmp);
+            goto error;
+        }
     }
     VIR_FREE(tmp);
 
