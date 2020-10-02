@@ -101,29 +101,6 @@ virBitmapFree(virBitmapPtr bitmap)
 
 
 /**
- * virBitmapCopy:
- * @dst: destination bitmap
- * @src: source bitmap
- *
- * Copies contents of @src to @dst. @dst must have the same size as @src.
- * Returns -1 if the size is not the same or 0 on success.
- */
-int
-virBitmapCopy(virBitmapPtr dst,
-              virBitmapPtr src)
-{
-    if (dst->nbits != src->nbits) {
-        errno = EINVAL;
-        return -1;
-    }
-
-    memcpy(dst->map, src->map, src->map_len * sizeof(src->map[0]));
-
-    return 0;
-}
-
-
-/**
  * virBitmapSetBit:
  * @bitmap: Pointer to bitmap
  * @b: bit position to set

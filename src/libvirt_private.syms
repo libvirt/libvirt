@@ -1668,7 +1668,6 @@ virAuthConfigNewData;
 virBitmapClearAll;
 virBitmapClearBit;
 virBitmapClearBitExpand;
-virBitmapCopy;
 virBitmapCountBits;
 virBitmapDataFormat;
 virBitmapEqual;
