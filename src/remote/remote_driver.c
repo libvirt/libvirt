@@ -1207,8 +1207,7 @@ static struct private_data *
 remoteAllocPrivateData(void)
 {
     struct private_data *priv;
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
+    priv = g_new0(struct private_data, 1);
 
     if (virMutexInit(&priv->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2271,18 +2270,15 @@ remoteDomainGetIOThreadInfo(virDomainPtr dom,
             goto cleanup;
         }
 
-        if (VIR_ALLOC_N(info_ret, ret.info.info_len) < 0)
-            goto cleanup;
+        info_ret = g_new0(virDomainIOThreadInfoPtr, ret.info.info_len);
 
         for (i = 0; i < ret.info.info_len; i++) {
             src = &ret.info.info_val[i];
 
-            if (VIR_ALLOC(info_ret[i]) < 0)
-                goto cleanup;
+            info_ret[i] = g_new0(virDomainIOThreadInfo, 1);
 
             info_ret[i]->iothread_id = src->iothread_id;
-            if (VIR_ALLOC_N(info_ret[i]->cpumap, src->cpumap.cpumap_len) < 0)
-                goto cleanup;
+            info_ret[i]->cpumap = g_new0(unsigned char, src->cpumap.cpumap_len);
             memcpy(info_ret[i]->cpumap, src->cpumap.cpumap_val,
                    src->cpumap.cpumap_len);
             info_ret[i]->cpumaplen = src->cpumap.cpumap_len;
@@ -2367,8 +2363,7 @@ remoteDomainGetSecurityLabelList(virDomainPtr domain, virSecurityLabelPtr* secla
         goto done;
     }
 
-    if (VIR_ALLOC_N(*seclabels, ret.labels.labels_len) < 0)
-        goto cleanup;
+    *seclabels = g_new0(virSecurityLabel, ret.labels.labels_len);
 
     for (i = 0; i < ret.labels.labels_len; i++) {
         remote_domain_get_security_label_ret *cur = &ret.labels.labels_val[i];
@@ -3766,8 +3761,7 @@ static sasl_callback_t *remoteAuthMakeCallbacks(int *credtype, int ncredtype)
     sasl_callback_t *cbs;
     size_t i;
     int n;
-    if (VIR_ALLOC_N(cbs, ncredtype+1) < 0)
-        return NULL;
+    cbs = g_new0(sasl_callback_t, ncredtype + 1);
 
     for (i = 0, n = 0; i < ncredtype; i++) {
         int id = remoteAuthCredVir2SASL(credtype[i]);
@@ -3804,8 +3798,7 @@ static int remoteAuthMakeCredentials(sasl_interact_t *interact,
         (*ncred)++;
     }
 
-    if (VIR_ALLOC_N(*cred, *ncred) < 0)
-        return -1;
+    *cred = g_new0(virConnectCredential, *ncred);
 
     for (ninteract = 0, *ncred = 0; interact[ninteract].id != 0; ninteract++) {
         if (interact[ninteract].result)
@@ -4665,22 +4658,18 @@ remoteDomainBuildEventGraphicsHelper(virConnectPtr conn,
     if (!dom)
         return;
 
-    if (VIR_ALLOC(localAddr) < 0)
-        goto error;
+    localAddr = g_new0(virDomainEventGraphicsAddress, 1);
     localAddr->family = msg->local.family;
     localAddr->service = g_strdup(msg->local.service);
     localAddr->node = g_strdup(msg->local.node);
 
-    if (VIR_ALLOC(remoteAddr) < 0)
-        goto error;
+    remoteAddr = g_new0(virDomainEventGraphicsAddress, 1);
     remoteAddr->family = msg->remote.family;
     remoteAddr->service = g_strdup(msg->remote.service);
     remoteAddr->node = g_strdup(msg->remote.node);
 
-    if (VIR_ALLOC(subject) < 0)
-        goto error;
-    if (VIR_ALLOC_N(subject->identities, msg->subject.subject_len) < 0)
-        goto error;
+    subject = g_new0(virDomainEventGraphicsSubject, 1);
+    subject->identities = g_new0(virDomainEventGraphicsSubjectIdentity, msg->subject.subject_len);
     subject->nidentity = msg->subject.subject_len;
     for (i = 0; i < subject->nidentity; i++) {
         subject->identities[i].type = g_strdup(msg->subject.subject_val[i].type);
@@ -4697,28 +4686,6 @@ remoteDomainBuildEventGraphicsHelper(virConnectPtr conn,
     virObjectUnref(dom);
 
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
-    return;
-
- error:
-    if (localAddr) {
-        VIR_FREE(localAddr->service);
-        VIR_FREE(localAddr->node);
-        VIR_FREE(localAddr);
-    }
-    if (remoteAddr) {
-        VIR_FREE(remoteAddr->service);
-        VIR_FREE(remoteAddr->node);
-        VIR_FREE(remoteAddr);
-    }
-    if (subject) {
-        for (i = 0; i < subject->nidentity; i++) {
-            VIR_FREE(subject->identities[i].type);
-            VIR_FREE(subject->identities[i].name);
-        }
-        VIR_FREE(subject->identities);
-        VIR_FREE(subject);
-    }
-    virObjectUnref(dom);
     return;
 }
 static void
@@ -5640,8 +5607,7 @@ remoteStreamEventAddCallback(virStreamPtr st,
     int ret = -1;
     struct remoteStreamCallbackData *cbdata;
 
-    if (VIR_ALLOC(cbdata) < 0)
-        return -1;
+    cbdata = g_new0(struct remoteStreamCallbackData, 1);
     cbdata->cb = cb;
     cbdata->opaque = opaque;
     cbdata->ff = ff;
@@ -6304,8 +6270,7 @@ remoteConnectGetCPUModelNames(virConnectPtr conn,
     }
 
     if (models) {
-        if (VIR_ALLOC_N(retmodels, ret.models.models_len + 1) < 0)
-            goto cleanup;
+        retmodels = g_new0(char *, ret.models.models_len + 1);
 
         for (i = 0; i < ret.models.models_len; i++) {
             retmodels[i] = ret.models.models_val[i];
@@ -6738,8 +6703,7 @@ remoteNodeGetCPUMap(virConnectPtr conn,
         goto cleanup;
 
     if (cpumap) {
-        if (VIR_ALLOC_N(*cpumap, ret.cpumap.cpumap_len) < 0)
-            goto cleanup;
+        *cpumap = g_new0(unsigned char, ret.cpumap.cpumap_len);
         memcpy(*cpumap, ret.cpumap.cpumap_val, ret.cpumap.cpumap_len);
     }
 
@@ -7467,13 +7431,11 @@ remoteNetworkGetDHCPLeases(virNetworkPtr net,
     }
 
     if (leases) {
-        if (ret.leases.leases_len &&
-            VIR_ALLOC_N(leases_ret, ret.leases.leases_len + 1) < 0)
-            goto cleanup;
+        if (ret.leases.leases_len)
+            leases_ret = g_new0(virNetworkDHCPLeasePtr, ret.leases.leases_len + 1);
 
         for (i = 0; i < ret.leases.leases_len; i++) {
-            if (VIR_ALLOC(leases_ret[i]) < 0)
-                goto cleanup;
+            leases_ret[i] = g_new0(virNetworkDHCPLease, 1);
 
             if (remoteSerializeDHCPLease(leases_ret[i], &ret.leases.leases_val[i]) < 0)
                 goto cleanup;
@@ -7519,8 +7481,7 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
     memset(&args, 0, sizeof(args));
 
     if (ndoms) {
-        if (VIR_ALLOC_N(args.doms.doms_val, ndoms) < 0)
-            goto cleanup;
+        args.doms.doms_val = g_new0(remote_nonnull_domain, ndoms);
 
         for (i = 0; i < ndoms; i++)
             make_nonnull_domain(args.doms.doms_val + i, doms[i]);
@@ -7550,14 +7511,12 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
 
     *retStats = NULL;
 
-    if (VIR_ALLOC_N(tmpret, ret.retStats.retStats_len + 1) < 0)
-        goto cleanup;
+    tmpret = g_new0(virDomainStatsRecordPtr, ret.retStats.retStats_len + 1);
 
     for (i = 0; i < ret.retStats.retStats_len; i++) {
         remote_domain_stats_record *rec = ret.retStats.retStats_val + i;
 
-        if (VIR_ALLOC(elem) < 0)
-            goto cleanup;
+        elem = g_new0(virDomainStatsRecord, 1);
 
         if (!(elem->dom = get_nonnull_domain(conn, rec->dom)))
             goto cleanup;
@@ -7676,14 +7635,13 @@ remoteDomainGetFSInfo(virDomainPtr dom,
             goto cleanup;
         }
 
-        if (VIR_ALLOC_N(info_ret, ret.info.info_len) < 0)
+        info_ret = g_new0(virDomainFSInfoPtr, ret.info.info_len);
             goto cleanup;
 
         for (i = 0; i < ret.info.info_len; i++) {
             src = &ret.info.info_val[i];
 
-            if (VIR_ALLOC(info_ret[i]) < 0)
-                goto cleanup;
+            info_ret[i] = g_new0(virDomainFSInfo, 1);
 
             info_ret[i]->mountpoint = g_strdup(src->mountpoint);
 
@@ -7693,9 +7651,8 @@ remoteDomainGetFSInfo(virDomainPtr dom,
 
             len = src->dev_aliases.dev_aliases_len;
             info_ret[i]->ndevAlias = len;
-            if (len &&
-                VIR_ALLOC_N(info_ret[i]->devAlias, len) < 0)
-                goto cleanup;
+            if (len)
+                info_ret[i]->devAlias = g_new0(char *, len);
 
             for (j = 0; j < len; j++)
                 info_ret[i]->devAlias[j] = g_strdup(src->dev_aliases.dev_aliases_val[j]);
@@ -7760,16 +7717,14 @@ remoteDomainInterfaceAddresses(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (ret.ifaces.ifaces_len &&
-        VIR_ALLOC_N(ifaces_ret, ret.ifaces.ifaces_len) < 0)
-        goto cleanup;
+    if (ret.ifaces.ifaces_len)
+        ifaces_ret = g_new0(virDomainInterfacePtr, ret.ifaces.ifaces_len);
 
     for (i = 0; i < ret.ifaces.ifaces_len; i++) {
         virDomainInterfacePtr iface;
         remote_domain_interface *iface_ret = &(ret.ifaces.ifaces_val[i]);
 
-        if (VIR_ALLOC(ifaces_ret[i]) < 0)
-            goto cleanup;
+        ifaces_ret[i] = g_new0(virDomainInterface, 1);
 
         iface = ifaces_ret[i];
 
@@ -7788,8 +7743,7 @@ remoteDomainInterfaceAddresses(virDomainPtr dom,
         iface->naddrs = iface_ret->addrs.addrs_len;
 
         if (iface->naddrs) {
-            if (VIR_ALLOC_N(iface->addrs, iface->naddrs) < 0)
-                goto cleanup;
+            iface->addrs = g_new0(virDomainIPAddress, iface->naddrs);
 
            for (j = 0; j < iface->naddrs; j++) {
                 virDomainIPAddressPtr ip_addr = &(iface->addrs[j]);

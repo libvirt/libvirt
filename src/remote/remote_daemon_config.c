@@ -94,8 +94,7 @@ daemonConfigNew(bool privileged G_GNUC_UNUSED)
 {
     struct daemonConfig *data;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(struct daemonConfig, 1);
 
 #ifdef WITH_IP
 # ifdef LIBVIRTD

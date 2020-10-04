@@ -362,8 +362,7 @@ daemonCreateClientStream(virNetServerClientPtr client,
     VIR_DEBUG("client=%p, proc=%d, serial=%u, st=%p",
               client, header->proc, header->serial, st);
 
-    if (VIR_ALLOC(stream) < 0)
-        return NULL;
+    stream = g_new0(daemonClientStream, 1);
 
     stream->refs = 1;
     stream->priv = priv;
@@ -853,8 +852,7 @@ daemonStreamHandleRead(virNetServerClientPtr client,
 
     memset(&rerr, 0, sizeof(rerr));
 
-    if (VIR_ALLOC_N(buffer, bufferLen) < 0)
-        return -1;
+    buffer = g_new0(char, bufferLen);
 
     if (!(msg = virNetMessageNew(false)))
         goto cleanup;
