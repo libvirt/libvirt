@@ -7286,7 +7286,7 @@ Example:
 :anchor:`<a id="vsock"/>`
 
 Vsock
------
+~~~~~
 
 A vsock host/guest interface. The ``model`` attribute defaults to ``virtio``.
 :since:`Since 5.2.0` ``model`` can also be 'virtio-transitional' and
