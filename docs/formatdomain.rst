@@ -4066,6 +4066,7 @@ after 0.9.5 (KVM only)` :
 
    ...
    <devices>
+     <redirdev bus='usb' type='spicevmc'/>
      <redirdev bus='usb' type='tcp'>
        <source mode='connect' host='localhost' service='4000'/>
        <boot order='1'/>
