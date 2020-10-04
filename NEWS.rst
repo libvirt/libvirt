@@ -404,6 +404,12 @@ v6.4.0 (2020-06-02)
     ``virsh capabilities`` will now include information about the host CPU when
     run on ARM machines.
 
+  * qemu: support network interface downscript
+
+    QEMU has the ability to run a script when a NIC is brought up and down.
+    Libvirt only enables use of the up script. Now add support for postscript
+    when NIC is down/detached.
+
 * **Improvements**
 
   * qemu: stricter validation for disk type='lun'
@@ -453,12 +459,6 @@ v6.3.0 (2020-05-05)
 ===================
 
 * **New features**
-
-  * qemu: support network interface downscript
-
-    QEMU has the ability to run a script when a NIC is brought up and down.
-    Libvirt only enables use of the up script. Now add support for postscript
-    when NIC is down/detached.
 
   * qemu: support disabling hotplug/unplug of PCIe devices
 
