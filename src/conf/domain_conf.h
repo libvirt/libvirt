@@ -2736,7 +2736,7 @@ typedef enum {
     VIR_DOMAIN_TAINT_SHELL_SCRIPTS,    /* Network configuration using opaque shell scripts */
     VIR_DOMAIN_TAINT_DISK_PROBING,     /* Relying on potentially unsafe disk format probing */
     VIR_DOMAIN_TAINT_EXTERNAL_LAUNCH,  /* Externally launched guest domain */
-    VIR_DOMAIN_TAINT_HOST_CPU,         /* Host CPU passthrough in use */
+    VIR_DOMAIN_TAINT_HOST_CPU,         /* Host CPU passthrough in use after migration */
     VIR_DOMAIN_TAINT_HOOK,             /* Domain (possibly) changed via hook script */
     VIR_DOMAIN_TAINT_CDROM_PASSTHROUGH,/* CDROM passthrough */
     VIR_DOMAIN_TAINT_CUSTOM_DTB,       /* Custom device tree blob was specified */

@@ -6115,7 +6115,8 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
 
 void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              virDomainObjPtr obj,
-                             qemuDomainLogContextPtr logCtxt)
+                             qemuDomainLogContextPtr logCtxt,
+                             bool incomingMigration)
 {
     size_t i;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -6144,7 +6145,9 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                            VIR_DOMAIN_TAINT_CUSTOM_HYPERVISOR_FEATURE, logCtxt);
     }
 
-    if (obj->def->cpu && obj->def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
+    if (obj->def->cpu &&
+        obj->def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH &&
+        incomingMigration)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOST_CPU, logCtxt);
 
     for (i = 0; i < obj->def->ndisks; i++)

@@ -567,7 +567,8 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
 
 void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              virDomainObjPtr obj,
-                             qemuDomainLogContextPtr logCtxt);
+                             qemuDomainLogContextPtr logCtxt,
+                             bool incomingMigration);
 void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                                  virDomainObjPtr obj,
                                  virDomainDiskDefPtr disk,
