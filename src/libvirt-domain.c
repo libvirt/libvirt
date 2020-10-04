@@ -284,7 +284,7 @@ virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
  *
  * Try to find a domain based on the hypervisor ID number
  * Note that this won't work for inactive domains which have an ID of -1,
- * in that case a lookup based on the Name or UUId need to be done instead.
+ * in that case a lookup based on the Name or UUID need to be done instead.
  *
  * virDomainFree should be used to free the resources after the
  * domain object is no longer needed.
