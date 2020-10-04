@@ -3719,8 +3719,10 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
 
         if (j == def->npanics) {
             virDomainPanicDefPtr panic;
-            if (VIR_ALLOC(panic) < 0 ||
-                VIR_APPEND_ELEMENT_COPY(def->panics,
+            if (VIR_ALLOC(panic) < 0)
+                return -1;
+
+            if (VIR_APPEND_ELEMENT_COPY(def->panics,
                                         def->npanics, panic) < 0) {
                 VIR_FREE(panic);
                 return -1;

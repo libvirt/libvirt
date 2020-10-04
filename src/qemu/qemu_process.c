@@ -832,17 +832,18 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon G_GNUC_UNUSED,
 
     if (vm->def->watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP) {
         struct qemuProcessEvent *processEvent;
-        if (VIR_ALLOC(processEvent) == 0) {
-            processEvent->eventType = QEMU_PROCESS_EVENT_WATCHDOG;
-            processEvent->action = VIR_DOMAIN_WATCHDOG_ACTION_DUMP;
-            /* Hold an extra reference because we can't allow 'vm' to be
-             * deleted before handling watchdog event is finished.
-             */
-            processEvent->vm = virObjectRef(vm);
-            if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-                virObjectUnref(vm);
-                qemuProcessEventFree(processEvent);
-            }
+        if (VIR_ALLOC(processEvent) < 0)
+            ;
+
+        processEvent->eventType = QEMU_PROCESS_EVENT_WATCHDOG;
+        processEvent->action = VIR_DOMAIN_WATCHDOG_ACTION_DUMP;
+        /* Hold an extra reference because we can't allow 'vm' to be
+         * deleted before handling watchdog event is finished.
+         */
+        processEvent->vm = virObjectRef(vm);
+        if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
+            virObjectUnref(vm);
+            qemuProcessEventFree(processEvent);
         }
     }
 

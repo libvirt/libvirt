@@ -4890,8 +4890,10 @@ qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
     if (!rawjobname)
         device = qemuAliasDiskDriveSkipPrefix(device);
 
-    if (VIR_ALLOC(info) < 0 ||
-        virHashAddEntry(blockJobs, device, info) < 0) {
+    if (VIR_ALLOC(info) < 0)
+        return -1;
+
+    if (virHashAddEntry(blockJobs, device, info) < 0) {
         VIR_FREE(info);
         return -1;
     }
