@@ -232,8 +232,8 @@ Then <code>virsh console</code> command can be used to connect to the text conso
 of a guest.</p>
 
 <p><b>NB:</b> Some versions of bhyve have a bug that prevents guests from booting
-until the console is opened by a client. This bug was fixed in FreeBSD
-<a href="https://svnweb.freebsd.org/changeset/base/262884">r262884</a>. If
+until the console is opened by a client. This bug was fixed in
+<a href="https://svnweb.freebsd.org/changeset/base/262884">FreeBSD changeset r262884</a>. If
 an older version is used, one either has to open a console manually with <code>virsh console</code>
 to let a guest boot or start a guest using:</p>
 
@@ -272,7 +272,9 @@ tweak them.</p>
 <pre>
 # virsh -c "bhyve:///system"  domxml-to-native --format bhyve-argv --xml /path/to/bhyve.xml
 /usr/sbin/bhyveload -m 214 -d /home/user/vm1.img vm1
-/usr/sbin/bhyve -c 2 -m 214 -A -I -H -P -s 0:0,hostbridge -s 3:0,virtio-net,tap0,mac=52:54:00:5d:74:e3 -s 2:0,virtio-blk,/home/user/vm1.img -s 1,lpc -l com1,/dev/nmdm0A vm1
+/usr/sbin/bhyve -c 2 -m 214 -A -I -H -P -s 0:0,hostbridge \
+    -s 3:0,virtio-net,tap0,mac=52:54:00:5d:74:e3 -s 2:0,virtio-blk,/home/user/vm1.img \
+    -s 1,lpc -l com1,/dev/nmdm0A vm1
 </pre>
 
 <h3><a id="zfsvolume">Using ZFS volumes</a></h3>
@@ -416,10 +418,11 @@ Make sure you understand the risks associated with this feature before using it.
 <h3><a id="clockconfig">Clock configuration</a></h3>
 
 <p>Originally bhyve supported only localtime for RTC. Support for UTC time was introduced in
-<a href="https://svnweb.freebsd.org/changeset/base/284894">r284894</a> for <i>10-STABLE</i> and
-in <a href="https://svnweb.freebsd.org/changeset/base/279225">r279225</a> for <i>-CURRENT</i>.
-It's possible to use this in libvirt <span class="since">since 1.2.18</span>, just place the
-following to domain XML:</p>
+<a href="https://svnweb.freebsd.org/changeset/base/284894">FreeBSD changeset r284894</a>
+for <i>10-STABLE</i> and
+in <a href="https://svnweb.freebsd.org/changeset/base/279225">changeset r279225</a>
+for <i>-CURRENT</i>. It's possible to use this in libvirt <span class="since">since 1.2.18</span>,
+just place the following to domain XML:</p>
 
 <pre>
 &lt;domain type="bhyve"&gt;
@@ -443,8 +446,8 @@ you'll need to explicitly specify 'localtime' in this case:</p>
 
 <h3><a id="e1000">e1000 NIC</a></h3>
 
-<p>As of <a href="https://svnweb.freebsd.org/changeset/base/302504">r302504</a> bhyve
-supports Intel e1000 network adapter emulation. It's supported in libvirt
+<p>As of <a href="https://svnweb.freebsd.org/changeset/base/302504">FreeBSD changeset r302504</a>
+bhyve supports Intel e1000 network adapter emulation. It's supported in libvirt
 <span class="since">since 3.1.0</span> and could be used as follows:</p>
 
 <pre>
@@ -497,7 +500,8 @@ be wired and cannot be swapped out as follows:</p>
 
 <p><span class="since">Since 4.5.0</span>, it's possible to specify guest CPU topology, if bhyve
 supports that. Support for specifying guest CPU topology was added to bhyve in
-<a href="https://svnweb.freebsd.org/changeset/base/332298">r332298</a> for <i>-CURRENT</i>.
+<a href="https://svnweb.freebsd.org/changeset/base/332298">FreeBSD changeset r332298</a>
+for <i>-CURRENT</i>.
 Example:</p>
 <pre>
 &lt;domain type="bhyve"&gt;
