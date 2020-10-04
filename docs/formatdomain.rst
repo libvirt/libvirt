@@ -3064,7 +3064,6 @@ A directory on the host that can be accessed directly from the guest.
      </filesystem>
      <filesystem type='file' accessmode='passthrough'>
        <driver type='loop' format='raw'/>
-       <driver type='path' wrpolicy='immediate'/>
        <source file='/export/to/guest.img'/>
        <target dir='/import/from/host'/>
        <readonly/>
