@@ -5971,15 +5971,14 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDefPtr def,
     }
 
     /* Allocate mem, if fails return error */
-    if (VIR_ALLOC_N(defdom->disks, defdom->ndisks) >= 0) {
-        for (i = 0; i < defdom->ndisks; i++) {
-            virDomainDiskDefPtr diskDef = virDomainDiskDefNew(NULL);
-            if (!diskDef)
-                goto cleanup;
-            defdom->disks[i] = diskDef;
-        }
-    } else {
+    if (VIR_ALLOC_N(defdom->disks, defdom->ndisks) < 0)
         goto cleanup;
+
+    for (i = 0; i < defdom->ndisks; i++) {
+        virDomainDiskDefPtr diskDef = virDomainDiskDefNew(NULL);
+        if (!diskDef)
+            goto cleanup;
+        defdom->disks[i] = diskDef;
     }
 
     /* get the attachment details here */
