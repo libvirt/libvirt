@@ -41,8 +41,8 @@ VIR_LOG_INIT("libvirt.domain");
  *
  * Collect the list of active domains, and store their IDs in array @ids
  *
- * For inactive domains, see virConnectListDefinedDomains().  For more
- * control over the results, see virConnectListAllDomains().
+ * The use of this function is discouraged. Instead, use
+ * virConnectListAllDomains().
  *
  * Returns the number of domains found or -1 in case of error.  Note that
  * this command is inherently racy; a domain can be started between a
@@ -6526,8 +6526,8 @@ virConnectNumOfDefinedDomains(virConnectPtr conn)
  * list the defined but inactive domains, stores the pointers to the names
  * in @names
  *
- * For active domains, see virConnectListDomains().  For more control over
- * the results, see virConnectListAllDomains().
+ * The use of this function is discouraged. Instead, use
+ * virConnectListAllDomains().
  *
  * Returns the number of names provided in the array or -1 in case of error.
  * Note that this command is inherently racy; a domain can be defined between

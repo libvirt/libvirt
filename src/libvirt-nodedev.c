@@ -128,7 +128,8 @@ virConnectListAllNodeDevices(virConnectPtr conn,
  *
  * Collect the list of node devices, and store their names in @names
  *
- * For more control over the results, see virConnectListAllNodeDevices().
+ * The use of this function is discouraged. Instead, use
+ * virConnectListAllNodeDevices().
  *
  * If the optional 'cap'  argument is non-NULL, then the count
  * will be restricted to devices with the specified capability

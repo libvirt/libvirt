@@ -117,6 +117,9 @@ virConnectListAllNWFilters(virConnectPtr conn,
  *
  * Collect the list of network filters, and store their names in @names
  *
+ * The use of this function is discouraged. Instead, use
+ * virConnectListAllNWFilters().
+ *
  * Returns the number of network filters found or -1 in case of error
  */
 int

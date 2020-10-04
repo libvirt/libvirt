@@ -381,8 +381,10 @@ virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
  * snapshots were listed if the return is less than @nameslen.  Likewise,
  * you should be prepared for virDomainSnapshotLookupByName() to fail when
  * converting a name from this call into a snapshot object, if another
- * connection deletes the snapshot in the meantime.  For more control over
- * the results, see virDomainListAllSnapshots().
+ * connection deletes the snapshot in the meantime.
+ *
+ * The use of this function is discouraged. Instead, use
+ * virDomainListAllSnapshots().
  *
  * Returns the number of domain snapshots found or -1 in case of error.
  * The caller is responsible to call free() for each member of the array.
@@ -582,8 +584,10 @@ virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
  * snapshots were listed if the return is less than @nameslen.  Likewise,
  * you should be prepared for virDomainSnapshotLookupByName() to fail when
  * converting a name from this call into a snapshot object, if another
- * connection deletes the snapshot in the meantime.  For more control over
- * the results, see virDomainSnapshotListAllChildren().
+ * connection deletes the snapshot in the meantime.
+ *
+ * The use of this function is discouraged. Instead, use
+ * virDomainSnapshotListAllChildren().
  *
  * Returns the number of domain snapshots found or -1 in case of error.
  * The caller is responsible to call free() for each member of the array.

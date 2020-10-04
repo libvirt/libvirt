@@ -156,6 +156,9 @@ virConnectListAllSecrets(virConnectPtr conn,
  *
  * List UUIDs of defined secrets, store pointers to names in uuids.
  *
+ * The use of this function is discouraged. Instead, use
+ * virConnectListAllSecrets().
+ *
  * Returns the number of UUIDs provided in the array, or -1 on failure.
  */
 int

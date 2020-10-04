@@ -159,7 +159,8 @@ virConnectNumOfNetworks(virConnectPtr conn)
  *
  * Collect the list of active networks, and store their names in @names
  *
- * For more control over the results, see virConnectListAllNetworks().
+ * The use of this function is discouraged. Instead, use
+ * virConnectListAllNetworks().
  *
  * Returns the number of networks found or -1 in case of error.  Note that
  * this command is inherently racy; a network can be started between a call
@@ -235,7 +236,8 @@ virConnectNumOfDefinedNetworks(virConnectPtr conn)
  *
  * list the inactive networks, stores the pointers to the names in @names
  *
- * For more control over the results, see virConnectListAllNetworks().
+ * The use of this function is discouraged. Instead, use
+ * virConnectListAllNetworks().
  *
  * Returns the number of names provided in the array or -1 in case of error.
  * Note that this command is inherently racy; a network can be defined between

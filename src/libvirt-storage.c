@@ -179,7 +179,8 @@ virConnectNumOfStoragePools(virConnectPtr conn)
  * If there are more than maxnames, the remaining names will be silently
  * ignored.
  *
- * For more control over the results, see virConnectListAllStoragePools().
+ * The use of this function is discouraged. Instead, use
+ * virConnectListAllStoragePools().
  *
  * Returns the number of pools found or -1 in case of error.  Note that
  * this command is inherently racy; a pool can be started between a call to
@@ -259,7 +260,8 @@ virConnectNumOfDefinedStoragePools(virConnectPtr conn)
  * If there are more than maxnames, the remaining names will be silently
  * ignored.
  *
- * For more control over the results, see virConnectListAllStoragePools().
+ * The use of this function is discouraged. Instead, use
+ * virConnectListAllStoragePools().
  *
  * Returns the number of names provided in the array or -1 in case of error.
  * Note that this command is inherently racy; a pool can be defined between
@@ -1254,7 +1256,8 @@ virStoragePoolNumOfVolumes(virStoragePoolPtr pool)
  * Fetch list of storage volume names, limiting to
  * at most maxnames.
  *
- * To list the volume objects directly, see virStoragePoolListAllVolumes().
+ * The use of this function is discouraged. Instead, use
+ * virStoragePoolListAllVolumes().
  *
  * Returns the number of names fetched, or -1 on error
  */
