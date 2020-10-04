@@ -4444,7 +4444,7 @@ After creating/opening the tap device, an optional shell script (given in the
 ``path`` attribute of the ``<script>`` element) will be run. :since:`Since
 0.2.1` Also, after detaching/closing the tap device, an optional shell script
 (given in the ``path`` attribute of the ``<downscript>`` element) will be run.
-:since:`Since 5.1.0` These can be used to do whatever extra host network
+:since:`Since 6.4.0` These can be used to do whatever extra host network
 integration is required.
 
 ::
