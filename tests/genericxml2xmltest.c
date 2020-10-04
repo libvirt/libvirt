@@ -233,6 +233,7 @@ mymain(void)
     DO_TEST("launch-security-sev");
 
     DO_TEST_DIFFERENT("cputune");
+    DO_TEST("device-backenddomain");
 
 #define DO_TEST_BACKUP_FULL(name, intrnl) \
     do { \
