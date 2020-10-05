@@ -935,8 +935,7 @@ virCommandNewArgs(const char *const*args)
 {
     virCommandPtr cmd;
 
-    if (VIR_ALLOC(cmd) < 0)
-        return NULL;
+    cmd = g_new0(virCommand, 1);
 
     cmd->handshakeWait[0] = -1;
     cmd->handshakeWait[1] = -1;
@@ -2183,21 +2182,18 @@ virCommandProcessIO(virCommandPtr cmd)
     if (cmd->outbuf) {
         outfd = cmd->outfd;
         VIR_FREE(*cmd->outbuf);
-        if (VIR_ALLOC_N(*cmd->outbuf, 1) < 0)
-            ret = -1;
+        *cmd->outbuf = g_new0(char, 1);
     }
     if (cmd->errbuf) {
         errfd = cmd->errfd;
         VIR_FREE(*cmd->errbuf);
-        if (VIR_ALLOC_N(*cmd->errbuf, 1) < 0)
-            ret = -1;
+        *cmd->errbuf = g_new0(char, 1);
     }
     if (ret == -1)
         goto cleanup;
     ret = -1;
 
-    if (VIR_ALLOC_N(fds, 3 + virCommandGetNumSendBuffers(cmd)) < 0)
-        goto cleanup;
+    fds = g_new0(struct pollfd, 3 + virCommandGetNumSendBuffers(cmd));
 
     for (;;) {
         size_t i;
@@ -2636,8 +2632,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
             VIR_FORCE_CLOSE(cmd->infd);
         /* clear any error so we can catch if the helper thread reports one */
         cmd->has_error = 0;
-        if (VIR_ALLOC(cmd->asyncioThread) < 0)
-            ret = -1;
+        cmd->asyncioThread = g_new0(virThread, 1);
 
         if (virThreadCreateFull(cmd->asyncioThread, true,
                                 virCommandDoAsyncIOHelper,
@@ -2854,10 +2849,7 @@ int virCommandHandshakeWait(virCommandPtr cmd)
     if (c != '1') {
         g_autofree char *msg = NULL;
         ssize_t len;
-        if (VIR_ALLOC_N(msg, 1024) < 0) {
-            VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
-            return -1;
-        }
+        msg = g_new0(char, 1024);
         /* Close the handshakeNotify fd before trying to read anything
          * further on the handshakeWait pipe; so that a child waiting
          * on our acknowledgment will die rather than deadlock.  */
@@ -3193,8 +3185,7 @@ virCommandRunRegex(virCommandPtr cmd,
     int ret = -1;
 
     /* Compile all regular expressions */
-    if (VIR_ALLOC_N(reg, nregex) < 0)
-        return -1;
+    reg = g_new0(GRegex *, nregex);
 
     for (i = 0; i < nregex; i++) {
         g_autoptr(GError) err = NULL;
@@ -3212,8 +3203,7 @@ virCommandRunRegex(virCommandPtr cmd,
     }
 
     /* Storage for matched variables */
-    if (VIR_ALLOC_N(groups, totgroups) < 0)
-        goto cleanup;
+    groups = g_new0(char *, totgroups);
 
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, exitstatus) < 0)
@@ -3299,8 +3289,7 @@ virCommandRunNul(virCommandPtr cmd,
     if (n_columns == 0)
         return -1;
 
-    if (VIR_ALLOC_N(v, n_columns) < 0)
-        return -1;
+    v = g_new0(char *, n_columns);
     for (i = 0; i < n_columns; i++)
         v[i] = NULL;
 
