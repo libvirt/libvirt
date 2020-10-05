@@ -17,29 +17,28 @@
     %define _vpath_builddir %{_target_platform}
 %endif
 
+%define qemu_kvm_arches         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
+%if 0%{?rhel}
+    %define qemu_kvm_arches     x86_64 %{power64} aarch64 s390x
+%endif
+
 # The hypervisor drivers that run in libvirtd
 %define with_qemu          0%{!?_without_qemu:1}
 %define with_lxc           0%{!?_without_lxc:1}
 %define with_libxl         0%{!?_without_libxl:1}
 %define with_vbox          0%{!?_without_vbox:1}
 
-%define with_qemu_tcg      %{with_qemu}
-
-%define qemu_kvm_arches %{ix86} x86_64
-
-%if 0%{?fedora}
-    %define qemu_kvm_arches %{ix86} x86_64 %{power64} s390x %{arm} aarch64
-%endif
-
-%if 0%{?rhel}
-    %define with_qemu_tcg 0
-    %define qemu_kvm_arches x86_64 %{power64} aarch64 s390x
-%endif
-
 %ifarch %{qemu_kvm_arches}
     %define with_qemu_kvm      %{with_qemu}
 %else
     %define with_qemu_kvm      0
+%endif
+
+%define with_qemu_tcg      %{with_qemu}
+
+# RHEL disables TCG on all architectures
+%if 0%{?rhel}
+    %define with_qemu_tcg 0
 %endif
 
 %if ! %{with_qemu_tcg} && ! %{with_qemu_kvm}
