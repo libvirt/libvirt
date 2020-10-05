@@ -2127,7 +2127,6 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
     size_t ifaces_count = 0;
     virDomainInterfacePtr *ifaces_ret = NULL;
     virHashTablePtr ifaces_store = NULL;
-    char **ifname = NULL;
 
     /* Hash table to handle the interface alias */
     if (!(ifaces_store = virHashCreate(ifaces_count, NULL))) {
@@ -2158,6 +2157,7 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
         virJSONValuePtr ip_addr_arr = NULL;
         const char *hwaddr, *ifname_s, *name = NULL;
         virDomainInterfacePtr iface = NULL;
+        g_auto(GStrv) ifname = NULL;
         size_t addrs_count = 0;
 
         /* interface name is required to be presented */
@@ -2193,10 +2193,6 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
             hwaddr = virJSONValueObjectGetString(tmp_iface, "hardware-address");
             iface->hwaddr = g_strdup(hwaddr);
         }
-
-        /* Has to be freed for each interface. */
-        g_strfreev(ifname);
-        ifname = NULL;
 
         /* as well as IP address which - moreover -
          * can be presented multiple times */
@@ -2242,8 +2238,6 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
             virDomainInterfaceFree(ifaces_ret[i]);
     }
     VIR_FREE(ifaces_ret);
-    g_strfreev(ifname);
-
     goto cleanup;
 }
 
