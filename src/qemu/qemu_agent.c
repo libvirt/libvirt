@@ -2125,7 +2125,6 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr ret_array = NULL;
     size_t ifaces_count = 0;
-    size_t addrs_count = 0;
     virDomainInterfacePtr *ifaces_ret = NULL;
     virHashTablePtr ifaces_store = NULL;
     char **ifname = NULL;
@@ -2159,6 +2158,7 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
         virJSONValuePtr ip_addr_arr = NULL;
         const char *hwaddr, *ifname_s, *name = NULL;
         virDomainInterfacePtr iface = NULL;
+        size_t addrs_count = 0;
 
         /* interface name is required to be presented */
         name = virJSONValueObjectGetString(tmp_iface, "name");
