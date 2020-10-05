@@ -22,6 +22,9 @@ patch. However, the usual workflow of libvirt developer is:
   (hack, committing any changes along the way)
 
 More hints on compiling can be found `here <compiling.html>`__.
+Make sure to express your agreement with the `Developer Certificate
+of Origin <hacking.html#developer-certificate-of-origin>`__ by
+adding a "Signed-off-by" line to every commit message.
 When you want to post your patches:
 
 ::
