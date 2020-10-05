@@ -2160,13 +2160,6 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
         const char *hwaddr, *ifname_s, *name = NULL;
         virDomainInterfacePtr iface = NULL;
 
-        /* Shouldn't happen but doesn't hurt to check neither */
-        if (!tmp_iface) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("qemu agent reply missing interface entry in array"));
-            goto error;
-        }
-
         /* interface name is required to be presented */
         name = virJSONValueObjectGetString(tmp_iface, "name");
         if (!name) {
@@ -2228,13 +2221,6 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
                 goto error;
 
             ip_addr = &iface->addrs[addrs_count - 1];
-
-            /* Shouldn't happen but doesn't hurt to check neither */
-            if (!ip_addr_obj) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("qemu agent reply missing IP addr in array"));
-                goto error;
-            }
 
             if (qemuAgentGetInterfaceOneAddress(ip_addr, ip_addr_obj, name) < 0)
                 goto error;
