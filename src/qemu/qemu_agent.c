@@ -2213,20 +2213,18 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
         /* If current iface already exists, continue with the count */
         addrs_count = iface->naddrs;
 
+        if (VIR_EXPAND_N(iface->addrs, addrs_count,
+                         virJSONValueArraySize(ip_addr_arr))  < 0)
+            goto error;
+
         for (j = 0; j < virJSONValueArraySize(ip_addr_arr); j++) {
             virJSONValuePtr ip_addr_obj = virJSONValueArrayGet(ip_addr_arr, j);
-            virDomainIPAddressPtr ip_addr;
-
-            if (VIR_EXPAND_N(iface->addrs, addrs_count, 1)  < 0)
-                goto error;
-
-            ip_addr = &iface->addrs[addrs_count - 1];
+            virDomainIPAddressPtr ip_addr = iface->addrs + iface->naddrs;
+            iface->naddrs++;
 
             if (qemuAgentGetInterfaceOneAddress(ip_addr, ip_addr_obj, name) < 0)
                 goto error;
         }
-
-        iface->naddrs = addrs_count;
     }
 
     *ifaces = g_steal_pointer(&ifaces_ret);
