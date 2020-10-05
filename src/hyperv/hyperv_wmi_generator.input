@@ -673,7 +673,7 @@ class Win32_OperatingSystem
     string   CSCreationClassName
     string   CSDVersion
     string   CSName
-    uint16   CurrentTimeZone
+    int16    CurrentTimeZone
     boolean  DataExecutionPrevention_Available
     boolean  DataExecutionPrevention_32BitApplications
     boolean  DataExecutionPrevention_Drivers
