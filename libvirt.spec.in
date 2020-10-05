@@ -84,6 +84,9 @@
     %define with_storage_iscsi_direct 0
 %endif
 
+# Other optional features
+%define with_bash_completion  0%{!?_without_bash_completion:1}
+
 # A few optional bits off by default, we enable later
 %define with_fuse             0
 %define with_sanlock          0
@@ -92,7 +95,6 @@
 %define with_libssh2          0
 %define with_wireshark        0
 %define with_libssh           0
-%define with_bash_completion  0
 
 # Finally set the OS / architecture specific special cases
 
@@ -173,8 +175,6 @@
 %if 0%{?fedora} || 0%{?rhel} > 7
     %define with_libssh 0%{!?_without_libssh:1}
 %endif
-
-%define with_bash_completion  0%{!?_without_bash_completion:1}
 
 %if %{with_qemu} || %{with_lxc}
 # numad is used to manage the CPU and memory placement dynamically,
