@@ -301,8 +301,7 @@ qemuFirmwareInterfaceParse(const char *path,
 
     ninterfaces = virJSONValueArraySize(interfacesJSON);
 
-    if (VIR_ALLOC_N(interfaces, ninterfaces) < 0)
-        return -1;
+    interfaces = g_new0(qemuFirmwareOSInterface, ninterfaces);
 
     for (i = 0; i < ninterfaces; i++) {
         virJSONValuePtr item = virJSONValueArrayGet(interfacesJSON, i);
@@ -504,8 +503,7 @@ qemuFirmwareTargetParse(const char *path,
 
     ntargets = virJSONValueArraySize(targetsJSON);
 
-    if (VIR_ALLOC_N(targets, ntargets) < 0)
-        return -1;
+    targets = g_new0(qemuFirmwareTargetPtr, ntargets);
 
     for (i = 0; i < ntargets; i++) {
         virJSONValuePtr item = virJSONValueArrayGet(targetsJSON, i);
@@ -515,8 +513,7 @@ qemuFirmwareTargetParse(const char *path,
         size_t nmachines;
         size_t j;
 
-        if (VIR_ALLOC(t) < 0)
-            goto cleanup;
+        t = g_new0(qemuFirmwareTarget, 1);
 
         if (!(architectureStr = virJSONValueObjectGetString(item, "architecture"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -541,8 +538,7 @@ qemuFirmwareTargetParse(const char *path,
 
         nmachines = virJSONValueArraySize(machines);
 
-        if (VIR_ALLOC_N(t->machines, nmachines) < 0)
-            goto cleanup;
+        t->machines = g_new0(char *, nmachines);
 
         for (j = 0; j < nmachines; j++) {
             virJSONValuePtr machine = virJSONValueArrayGet(machines, j);
@@ -588,8 +584,7 @@ qemuFirmwareFeatureParse(const char *path,
 
     nfeatures = virJSONValueArraySize(featuresJSON);
 
-    if (VIR_ALLOC_N(features, nfeatures) < 0)
-        return -1;
+    features = g_new0(qemuFirmwareFeature, nfeatures);
 
     for (i = 0; i < nfeatures; i++) {
         virJSONValuePtr item = virJSONValueArrayGet(featuresJSON, i);
@@ -632,8 +627,7 @@ qemuFirmwareParse(const char *path)
         return NULL;
     }
 
-    if (VIR_ALLOC(fw) < 0)
-        return NULL;
+    fw = g_new0(qemuFirmware, 1);
 
     if (qemuFirmwareInterfaceParse(path, doc, fw) < 0)
         return NULL;
@@ -1050,9 +1044,8 @@ qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
 
     switch (fw->mapping.device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
-        if (!def->os.loader &&
-            VIR_ALLOC(def->os.loader) < 0)
-            return -1;
+        if (!def->os.loader)
+            def->os.loader = g_new0(virDomainLoaderDef, 1);
 
         def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
         def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
@@ -1093,9 +1086,8 @@ qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
         break;
 
     case QEMU_FIRMWARE_DEVICE_MEMORY:
-        if (!def->os.loader &&
-            VIR_ALLOC(def->os.loader) < 0)
-            return -1;
+        if (!def->os.loader)
+            def->os.loader = g_new0(virDomainLoaderDef, 1);
 
         def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
         def->os.loader->path = g_strdup(memory->filename);
@@ -1201,8 +1193,7 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
 
     npaths = virStringListLength((const char **)paths);
 
-    if (VIR_ALLOC_N(firmwares, npaths) < 0)
-        return -1;
+    firmwares = g_new0(qemuFirmwarePtr, npaths);
 
     for (i = 0; i < npaths; i++) {
         if (!(firmwares[i] = qemuFirmwareParse(paths[i])))
@@ -1431,8 +1422,7 @@ qemuFirmwareGetSupported(const char *machine,
             }
 
             if (j == *nfws) {
-                if (VIR_ALLOC(tmp) < 0)
-                    return -1;
+                tmp = g_new0(virFirmware, 1);
 
                 tmp->name = g_strdup(fwpath);
                 tmp->nvram = g_strdup(nvrampath);
