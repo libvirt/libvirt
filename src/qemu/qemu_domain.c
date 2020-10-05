@@ -496,8 +496,7 @@ qemuDomainMasterKeyReadFile(qemuDomainObjPrivatePtr priv)
         goto error;
     }
 
-    if (VIR_ALLOC_N(masterKey, 1024) < 0)
-        goto error;
+    masterKey = g_new0(uint8_t, 1024);
 
     if ((masterKeyLen = saferead(fd, masterKey, 1024)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -572,8 +571,7 @@ qemuDomainMasterKeyCreate(virDomainObjPtr vm)
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET))
         return 0;
 
-    if (VIR_ALLOC_N(priv->masterKey, QEMU_DOMAIN_MASTER_KEY_LEN) < 0)
-        return -1;
+    priv->masterKey = g_new0(uint8_t, QEMU_DOMAIN_MASTER_KEY_LEN);
     priv->masterKeyLen = QEMU_DOMAIN_MASTER_KEY_LEN;
 
     if (virRandomBytes(priv->masterKey, priv->masterKeyLen) < 0) {
@@ -1188,8 +1186,7 @@ qemuDomainSecretInfoNewPlain(virSecretUsageType usageType,
 {
     qemuDomainSecretInfoPtr secinfo = NULL;
 
-    if (VIR_ALLOC(secinfo) < 0)
-        return NULL;
+    secinfo = g_new0(qemuDomainSecretInfo, 1);
 
     if (qemuDomainSecretPlainSetup(secinfo, usageType, username, lookupDef) < 0) {
         g_clear_pointer(&secinfo, qemuDomainSecretInfoFree);
@@ -1689,8 +1686,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
 {
     qemuDomainObjPrivatePtr priv;
 
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
+    priv = g_new0(qemuDomainObjPrivate, 1);
 
     if (qemuDomainObjInitJob(&priv->job, &qemuPrivateJobCallbacks) < 0) {
         virReportSystemError(errno, "%s",
@@ -1845,9 +1841,7 @@ qemuStorageSourcePrivateDataAssignSecinfo(qemuDomainSecretInfoPtr *secinfo,
         return 0;
 
     if (!*secinfo) {
-        if (VIR_ALLOC(*secinfo) < 0)
-            return -1;
-
+        *secinfo = g_new0(qemuDomainSecretInfo, 1);
         (*secinfo)->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
     }
 
@@ -3083,8 +3077,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     }
     if (n > 0) {
         /* NULL-terminated list */
-        if (VIR_ALLOC_N(priv->qemuDevices, n + 1) < 0)
-            goto error;
+        priv->qemuDevices = g_new0(char *, n + 1);
 
         for (i = 0; i < n; i++) {
             priv->qemuDevices[i] = virXMLPropString(nodes[i], "alias");
@@ -3245,8 +3238,7 @@ qemuDomainDefNamespaceParseCommandlineArgs(qemuDomainXmlNsDefPtr nsdef,
     if (nnodes == 0)
         return 0;
 
-    if (VIR_ALLOC_N(nsdef->args, nnodes) < 0)
-        return -1;
+    nsdef->args = g_new0(char *, nnodes);
 
     for (i = 0; i < nnodes; i++) {
         if (!(nsdef->args[nsdef->num_args++] = virXMLPropString(nodes[i], "value"))) {
@@ -3293,9 +3285,8 @@ qemuDomainDefNamespaceParseCommandlineEnv(qemuDomainXmlNsDefPtr nsdef,
     if (nnodes == 0)
         return 0;
 
-    if (VIR_ALLOC_N(nsdef->env_name, nnodes) < 0 ||
-        VIR_ALLOC_N(nsdef->env_value, nnodes) < 0)
-        return -1;
+    nsdef->env_name = g_new0(char *, nnodes);
+    nsdef->env_value = g_new0(char *, nnodes);
 
     for (i = 0; i < nnodes; i++) {
         if (!(nsdef->env_name[nsdef->num_env] = virXMLPropString(nodes[i], "name"))) {
@@ -3331,8 +3322,7 @@ qemuDomainDefNamespaceParseCaps(qemuDomainXmlNsDefPtr nsdef,
         return -1;
 
     if (nnodesadd > 0) {
-        if (VIR_ALLOC_N(nsdef->capsadd, nnodesadd) < 0)
-            return -1;
+        nsdef->capsadd = g_new0(char *, nnodesadd);
 
         for (i = 0; i < nnodesadd; i++) {
             if (!(nsdef->capsadd[nsdef->ncapsadd++] = virXMLPropString(nodesadd[i], "capability"))) {
@@ -3344,8 +3334,7 @@ qemuDomainDefNamespaceParseCaps(qemuDomainXmlNsDefPtr nsdef,
     }
 
     if (nnodesdel > 0) {
-        if (VIR_ALLOC_N(nsdef->capsdel, nnodesdel) < 0)
-            return -1;
+        nsdef->capsdel = g_new0(char *, nnodesdel);
 
         for (i = 0; i < nnodesdel; i++) {
             if (!(nsdef->capsdel[nsdef->ncapsdel++] = virXMLPropString(nodesdel[i], "capability"))) {
@@ -3367,8 +3356,7 @@ qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     qemuDomainXmlNsDefPtr nsdata = NULL;
     int ret = -1;
 
-    if (VIR_ALLOC(nsdata) < 0)
-        return -1;
+    nsdata = g_new0(qemuDomainXmlNsDef, 1);
 
     if (qemuDomainDefNamespaceParseCommandlineArgs(nsdata, ctxt) < 0 ||
         qemuDomainDefNamespaceParseCommandlineEnv(nsdata, ctxt) < 0 ||
@@ -3661,8 +3649,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
 
     if (addDefaultMemballoon && !def->memballoon) {
         virDomainMemballoonDefPtr memballoon;
-        if (VIR_ALLOC(memballoon) < 0)
-            return -1;
+        memballoon = g_new0(virDomainMemballoonDef, 1);
 
         memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
         def->memballoon = memballoon;
@@ -3718,9 +3705,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         }
 
         if (j == def->npanics) {
-            virDomainPanicDefPtr panic;
-            if (VIR_ALLOC(panic) < 0)
-                return -1;
+            virDomainPanicDefPtr panic = g_new0(virDomainPanicDef, 1);
 
             if (VIR_APPEND_ELEMENT_COPY(def->panics,
                                         def->npanics, panic) < 0) {
@@ -5911,12 +5896,9 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
             virDomainControllerDefPtr *controllers = def->controllers;
             int ncontrollers = def->ncontrollers;
 
-            if (VIR_ALLOC_N(def->controllers, ncontrollers - toremove) < 0) {
-                def->controllers = controllers;
-                goto cleanup;
-            }
-
+            def->controllers = g_new0(virDomainControllerDefPtr, ncontrollers - toremove);
             def->ncontrollers = 0;
+
             for (i = 0; i < ncontrollers; i++) {
                 if (controllers[i] != usb && controllers[i] != pci)
                     def->controllers[def->ncontrollers++] = controllers[i];
@@ -6350,8 +6332,7 @@ ssize_t qemuDomainLogContextRead(qemuDomainLogContextPtr ctxt,
         /* Best effort jump to start of messages */
         ignore_value(lseek(ctxt->readfd, ctxt->pos, SEEK_SET));
 
-        if (VIR_ALLOC_N(buf, buflen) < 0)
-            return -1;
+        buf = g_new0(char, buflen);
 
         got = saferead(ctxt->readfd, buf, buflen - 1);
         if (got < 0) {
