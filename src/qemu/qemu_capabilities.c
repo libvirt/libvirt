@@ -943,14 +943,12 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
     *machines = NULL;
     *nmachines = accel->nmachineTypes;
 
-    if (*nmachines &&
-        VIR_ALLOC_N(*machines, accel->nmachineTypes) < 0)
-        goto error;
+    if (*nmachines)
+        *machines = g_new0(virCapsGuestMachinePtr, accel->nmachineTypes);
 
     for (i = 0; i < accel->nmachineTypes; i++) {
         virCapsGuestMachinePtr mach;
-        if (VIR_ALLOC(mach) < 0)
-            goto error;
+        mach = g_new0(virCapsGuestMachine, 1);
         (*machines)[i] = mach;
         if (accel->machineTypes[i].alias) {
             mach->name = g_strdup(accel->machineTypes[i].alias);
@@ -985,8 +983,7 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
 
         if (!found) {
             virCapsGuestMachinePtr mach;
-            if (VIR_ALLOC(mach) < 0)
-                goto error;
+            mach = g_new0(virCapsGuestMachine, 1);
             if (VIR_INSERT_ELEMENT_COPY(*machines, i, *nmachines, mach) < 0) {
                 VIR_FREE(mach);
                 goto error;
@@ -1867,8 +1864,7 @@ virQEMUCapsSEVInfoCopy(virSEVCapabilityPtr *dst,
 {
     g_autoptr(virSEVCapability) tmp = NULL;
 
-    if (VIR_ALLOC(tmp) < 0)
-        return -1;
+    tmp = g_new0(virSEVCapability, 1);
 
     tmp->pdh = g_strdup(src->pdh);
     tmp->cert_chain = g_strdup(src->cert_chain);
@@ -1949,8 +1945,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
         virQEMUCapsAccelCopy(&ret->tcg, &qemuCaps->tcg) < 0)
         goto error;
 
-    if (VIR_ALLOC_N(ret->gicCapabilities, qemuCaps->ngicCapabilities) < 0)
-        goto error;
+    ret->gicCapabilities = g_new0(virGICCapability, qemuCaps->ngicCapabilities);
     ret->ngicCapabilities = qemuCaps->ngicCapabilities;
     for (i = 0; i < qemuCaps->ngicCapabilities; i++)
         ret->gicCapabilities[i] = qemuCaps->gicCapabilities[i];
@@ -3178,8 +3173,7 @@ virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
     if (!modelInfo)
         return 0;
 
-    if (VIR_ALLOC_N(list, modelInfo->nprops + 1) < 0)
-        return -1;
+    list = g_new0(char *, modelInfo->nprops + 1);
 
     n = 0;
     for (i = 0; i < modelInfo->nprops; i++) {
@@ -3555,8 +3549,7 @@ virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
     }
 
     cpu->model = g_strdup(modelInfo->name);
-    if (VIR_ALLOC_N(cpu->features, modelInfo->nprops) < 0)
-        return -1;
+    cpu->features = g_new0(virCPUFeatureDef, modelInfo->nprops);
 
     cpu->nfeatures_max = modelInfo->nprops;
     cpu->nfeatures = 0;
@@ -3866,8 +3859,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccelPtr caps,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(hostCPU) < 0)
-        goto cleanup;
+    hostCPU = g_new0(qemuMonitorCPUModelInfo, 1);
 
     if (!(hostCPU->name = virXMLPropString(hostCPUNode, "model"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3888,9 +3880,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccelPtr caps,
     ctxt->node = hostCPUNode;
 
     if ((n = virXPathNodeSet("./property", ctxt, &nodes)) > 0) {
-        if (VIR_ALLOC_N(hostCPU->props, n) < 0)
-            goto cleanup;
-
+        hostCPU->props = g_new0(qemuMonitorCPUProperty, n);
         hostCPU->nprops = n;
 
         for (i = 0; i < n; i++) {
@@ -4035,8 +4025,7 @@ virQEMUCapsLoadCPUModels(virQEMUCapsAccelPtr caps,
         if (nblockers > 0) {
             size_t j;
 
-            if (VIR_ALLOC_N(cpu->blockers, nblockers + 1) < 0)
-                return -1;
+            cpu->blockers = g_new0(char *, nblockers + 1);
 
             for (j = 0; j < nblockers; j++) {
                 if (!(cpu->blockers[j] = virXMLPropString(blockerNodes[j], "name"))) {
@@ -4075,8 +4064,7 @@ virQEMUCapsLoadMachines(virQEMUCapsAccelPtr caps,
         return 0;
 
     caps->nmachineTypes = n;
-    if (VIR_ALLOC_N(caps->machineTypes, caps->nmachineTypes) < 0)
-        return -1;
+    caps->machineTypes = g_new0(virQEMUCapsMachineType, caps->nmachineTypes);
 
     for (i = 0; i < n; i++) {
         if (!(caps->machineTypes[i].name = virXMLPropString(nodes[i], "name"))) {
@@ -4183,8 +4171,7 @@ virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
         return -1;
     }
 
-    if (VIR_ALLOC(sev) < 0)
-        return -1;
+    sev = g_new0(virSEVCapability, 1);
 
     if (virXPathUInt("string(./sev/cbitpos)", ctxt, &sev->cbitpos) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -4402,8 +4389,7 @@ virQEMUCapsLoadCache(virArch hostArch,
         bool boolValue;
 
         qemuCaps->ngicCapabilities = n;
-        if (VIR_ALLOC_N(qemuCaps->gicCapabilities, n) < 0)
-            goto cleanup;
+        qemuCaps->gicCapabilities = g_new0(virGICCapability, n);
 
         for (i = 0; i < n; i++) {
             virGICCapabilityPtr cap = &qemuCaps->gicCapabilities[i];
@@ -5668,8 +5654,7 @@ virQEMUCapsCacheNew(const char *libDir,
     if (!(cache = virFileCacheNew(capsCacheDir, "xml", &qemuCapsCacheHandlers)))
         goto error;
 
-    if (VIR_ALLOC(priv) < 0)
-        goto error;
+    priv = g_new0(virQEMUCapsCachePriv, 1);
     virFileCacheSetPriv(cache, priv);
 
     priv->libDir = g_strdup(libDir);
@@ -5893,8 +5878,7 @@ virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
     capsLoader->readonly.report = true;
     capsLoader->secure.report = true;
 
-    if (VIR_ALLOC_N(capsLoader->values.values, nfirmwares) < 0)
-        return -1;
+    capsLoader->values.values = g_new0(char *, nfirmwares);
 
     for (i = 0; i < nfirmwares; i++) {
         const char *filename = firmwares[i]->name;
