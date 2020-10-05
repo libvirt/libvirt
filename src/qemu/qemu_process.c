@@ -302,8 +302,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(processEvent) < 0)
-        goto cleanup;
+    processEvent = g_new0(struct qemuProcessEvent, 1);
 
     processEvent->eventType = QEMU_PROCESS_EVENT_MONITOR_EOF;
     processEvent->vm = virObjectRef(vm);
@@ -832,8 +831,7 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon G_GNUC_UNUSED,
 
     if (vm->def->watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP) {
         struct qemuProcessEvent *processEvent;
-        if (VIR_ALLOC(processEvent) < 0)
-            ;
+        processEvent = g_new0(struct qemuProcessEvent, 1);
 
         processEvent->eventType = QEMU_PROCESS_EVENT_WATCHDOG;
         processEvent->action = VIR_DOMAIN_WATCHDOG_ACTION_DUMP;
@@ -965,8 +963,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon G_GNUC_UNUSED,
         virDomainObjBroadcast(vm);
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
-        if (VIR_ALLOC(processEvent) < 0)
-            goto cleanup;
+        processEvent = g_new0(struct qemuProcessEvent, 1);
 
         processEvent->eventType = QEMU_PROCESS_EVENT_BLOCK_JOB;
         data = g_strdup(diskAlias);
@@ -1030,8 +1027,7 @@ qemuProcessHandleJobStatusChange(qemuMonitorPtr mon G_GNUC_UNUSED,
         virDomainObjBroadcast(vm);
     } else {
         VIR_DEBUG("job '%s' handled by event thread", jobname);
-        if (VIR_ALLOC(processEvent) < 0)
-            goto cleanup;
+        processEvent = g_new0(struct qemuProcessEvent, 1);
 
         processEvent->eventType = QEMU_PROCESS_EVENT_JOB_STATUS_CHANGE;
         processEvent->vm = virObjectRef(vm);
@@ -1074,20 +1070,17 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon G_GNUC_UNUSED,
     virDomainEventGraphicsSubjectPtr subject = NULL;
     size_t i;
 
-    if (VIR_ALLOC(localAddr) < 0)
-        goto error;
+    localAddr = g_new0(virDomainEventGraphicsAddress, 1);
     localAddr->family = localFamily;
     localAddr->service = g_strdup(localService);
     localAddr->node = g_strdup(localNode);
 
-    if (VIR_ALLOC(remoteAddr) < 0)
-        goto error;
+    remoteAddr = g_new0(virDomainEventGraphicsAddress, 1);
     remoteAddr->family = remoteFamily;
     remoteAddr->service = g_strdup(remoteService);
     remoteAddr->node = g_strdup(remoteNode);
 
-    if (VIR_ALLOC(subject) < 0)
-        goto error;
+    subject = g_new0(virDomainEventGraphicsSubject, 1);
     if (x509dname) {
         if (VIR_REALLOC_N(subject->identities, subject->nidentity+1) < 0)
             goto error;
@@ -1329,8 +1322,7 @@ qemuProcessHandleGuestPanic(qemuMonitorPtr mon G_GNUC_UNUSED,
     struct qemuProcessEvent *processEvent;
 
     virObjectLock(vm);
-    if (VIR_ALLOC(processEvent) < 0)
-        goto cleanup;
+    processEvent = g_new0(struct qemuProcessEvent, 1);
 
     processEvent->eventType = QEMU_PROCESS_EVENT_GUESTPANIC;
     processEvent->action = vm->def->onCrash;
@@ -1345,7 +1337,6 @@ qemuProcessHandleGuestPanic(qemuMonitorPtr mon G_GNUC_UNUSED,
         qemuProcessEventFree(processEvent);
     }
 
- cleanup:
     virObjectUnlock(vm);
 
     return 0;
@@ -1371,8 +1362,7 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon G_GNUC_UNUSED,
                                       QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_OK))
         goto cleanup;
 
-    if (VIR_ALLOC(processEvent) < 0)
-        goto error;
+    processEvent = g_new0(struct qemuProcessEvent, 1);
 
     processEvent->eventType = QEMU_PROCESS_EVENT_DEVICE_DELETED;
     data = g_strdup(devAlias);
@@ -1552,8 +1542,7 @@ qemuProcessHandleNicRxFilterChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
     VIR_DEBUG("Device %s RX Filter changed in domain %p %s",
               devAlias, vm, vm->def->name);
 
-    if (VIR_ALLOC(processEvent) < 0)
-        goto error;
+    processEvent = g_new0(struct qemuProcessEvent, 1);
 
     processEvent->eventType = QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED;
     data = g_strdup(devAlias);
@@ -1590,8 +1579,7 @@ qemuProcessHandleSerialChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
     VIR_DEBUG("Serial port %s state changed to '%d' in domain %p %s",
               devAlias, connected, vm, vm->def->name);
 
-    if (VIR_ALLOC(processEvent) < 0)
-        goto error;
+    processEvent = g_new0(struct qemuProcessEvent, 1);
 
     processEvent->eventType = QEMU_PROCESS_EVENT_SERIAL_CHANGED;
     data = g_strdup(devAlias);
@@ -1800,8 +1788,7 @@ qemuProcessHandlePRManagerStatusChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
     priv = vm->privateData;
     priv->prDaemonRunning = false;
 
-    if (VIR_ALLOC(processEvent) < 0)
-        goto cleanup;
+    processEvent = g_new0(struct qemuProcessEvent, 1);
 
     processEvent->eventType = QEMU_PROCESS_EVENT_PR_DISCONNECT;
     processEvent->vm = virObjectRef(vm);
@@ -1838,8 +1825,7 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
     VIR_DEBUG("netdev=%s,gid_status=%d,subnet_prefix=0x%llx,interface_id=0x%llx",
               netdev, gid_status, subnet_prefix, interface_id);
 
-    if (VIR_ALLOC(info) < 0)
-        goto cleanup;
+    info = g_new0(qemuMonitorRdmaGidStatus, 1);
 
     info->netdev = g_strdup(netdev);
 
@@ -1847,8 +1833,7 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
     info->subnet_prefix = subnet_prefix;
     info->interface_id = interface_id;
 
-    if (VIR_ALLOC(processEvent) < 0)
-        goto cleanup;
+    processEvent = g_new0(struct qemuProcessEvent, 1);
 
     processEvent->eventType = QEMU_PROCESS_EVENT_RDMA_GID_STATUS_CHANGED;
     processEvent->vm = virObjectRef(vm);
@@ -1877,8 +1862,7 @@ qemuProcessHandleGuestCrashloaded(qemuMonitorPtr mon G_GNUC_UNUSED,
     struct qemuProcessEvent *processEvent;
 
     virObjectLock(vm);
-    if (VIR_ALLOC(processEvent) < 0)
-        goto cleanup;
+    processEvent = g_new0(struct qemuProcessEvent, 1);
 
     processEvent->eventType = QEMU_PROCESS_EVENT_GUEST_CRASHLOADED;
     processEvent->vm = virObjectRef(vm);
@@ -1888,7 +1872,6 @@ qemuProcessHandleGuestCrashloaded(qemuMonitorPtr mon G_GNUC_UNUSED,
         qemuProcessEventFree(processEvent);
     }
 
- cleanup:
     virObjectUnlock(vm);
 
     return 0;
@@ -4588,8 +4571,7 @@ qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
     if (qemuMigrationDstCheckProtocol(qemuCaps, migrateFrom) < 0)
         return NULL;
 
-    if (VIR_ALLOC(inc) < 0)
-        return NULL;
+    inc = g_new0(qemuProcessIncomingDef, 1);
 
     inc->address = g_strdup(listenAddress);
 
@@ -8427,8 +8409,7 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
     if (!obj->pid)
         return 0;
 
-    if (VIR_ALLOC(data) < 0)
-        return -1;
+    data = g_new0(struct qemuProcessReconnectData, 1);
 
     memcpy(data, src, sizeof(*data));
     data->obj = obj;
@@ -8584,8 +8565,7 @@ qemuProcessQMPNew(const char *binary,
     VIR_DEBUG("exec=%s, libDir=%s, runUid=%u, runGid=%u, forceTCG=%d",
               binary, libDir, runUid, runGid, forceTCG);
 
-    if (VIR_ALLOC(proc) < 0)
-        return NULL;
+    proc = g_new0(qemuProcessQMP, 1);
 
     proc->binary = g_strdup(binary);
     proc->libDir = g_strdup(libDir);
