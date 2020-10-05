@@ -12,6 +12,11 @@
     %define supported_platform 0
 %endif
 
+# On RHEL 7 and older macro _vpath_builddir is not defined.
+%if 0%{?rhel} && 0%{?rhel} <= 7
+    %define _vpath_builddir %{_target_platform}
+%endif
+
 # The hypervisor drivers that run in libvirtd
 %define with_qemu          0%{!?_without_qemu:1}
 %define with_lxc           0%{!?_without_lxc:1}
@@ -29,11 +34,6 @@
 %if 0%{?rhel}
     %define with_qemu_tcg 0
     %define qemu_kvm_arches x86_64 %{power64} aarch64 s390x
-%endif
-
-# On RHEL 7 and older macro _vpath_builddir is not defined.
-%if 0%{?rhel} && 0%{?rhel} <= 7
-    %define _vpath_builddir %{_target_platform}
 %endif
 
 %ifarch %{qemu_kvm_arches}
