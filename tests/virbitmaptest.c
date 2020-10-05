@@ -173,23 +173,9 @@ test3(const void *data G_GNUC_UNUSED)
 
 /* test for virBitmapNextSetBit, virBitmapLastSetBit, virBitmapNextClearBit */
 static int
-test4(const void *data G_GNUC_UNUSED)
+test4a(const void *data G_GNUC_UNUSED)
 {
-    const char *bitsString = "0, 2-4, 6-10, 12, 14-18, 20, 22, 25";
-    int size = 40;
-    int bitsPos[] = {
-        0,  2,  3,  4,  6,  7,  8,  9, 10, 12,
-        14, 15, 16, 17, 18, 20, 22, 25
-    };
-    int bitsPosInv[] = {
-        1, 5, 11, 13, 19, 21, 23, 24, 26, 27,
-        28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
-    };
     virBitmapPtr bitmap = NULL;
-    ssize_t i, j;
-
-    if (G_N_ELEMENTS(bitsPos) + G_N_ELEMENTS(bitsPosInv) != size)
-        goto error;
 
     /* 0. empty set */
 
@@ -205,7 +191,20 @@ test4(const void *data G_GNUC_UNUSED)
         goto error;
 
     virBitmapFree(bitmap);
-    bitmap = NULL;
+    return 0;
+
+ error:
+    virBitmapFree(bitmap);
+    return -1;
+}
+
+
+static int
+test4b(const void *data G_GNUC_UNUSED)
+{
+    virBitmapPtr bitmap = NULL;
+    int size = 40;
+    size_t i;
 
     /* 1. zero set */
 
@@ -230,7 +229,32 @@ test4(const void *data G_GNUC_UNUSED)
         goto error;
 
     virBitmapFree(bitmap);
-    bitmap = NULL;
+    return 0;
+
+ error:
+    virBitmapFree(bitmap);
+    return -1;
+}
+
+
+static int
+test4c(const void *data G_GNUC_UNUSED)
+{
+    const char *bitsString = "0, 2-4, 6-10, 12, 14-18, 20, 22, 25";
+    int size = 40;
+    int bitsPos[] = {
+        0,  2,  3,  4,  6,  7,  8,  9, 10, 12,
+        14, 15, 16, 17, 18, 20, 22, 25
+    };
+    int bitsPosInv[] = {
+        1, 5, 11, 13, 19, 21, 23, 24, 26, 27,
+        28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
+    };
+    virBitmapPtr bitmap = NULL;
+    ssize_t i, j;
+
+    if (G_N_ELEMENTS(bitsPos) + G_N_ELEMENTS(bitsPosInv) != size)
+        goto error;
 
     /* 2. partial set */
 
@@ -818,7 +842,11 @@ mymain(void)
         ret = -1;
     if (virTestRun("test3", test3, NULL) < 0)
         ret = -1;
-    if (virTestRun("test4", test4, NULL) < 0)
+    if (virTestRun("test4a", test4a, NULL) < 0)
+        ret = -1;
+    if (virTestRun("test4b", test4b, NULL) < 0)
+        ret = -1;
+    if (virTestRun("test4c", test4c, NULL) < 0)
         ret = -1;
     if (virTestRun("test5", test5, NULL) < 0)
         ret = -1;
