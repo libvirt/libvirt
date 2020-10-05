@@ -32,13 +32,13 @@ The libvirt client libraries and utilities connect to this daemon to issue
 tasks and collect information about the configuration and resources of the host
 system and guests.
 
-By default, the libvirtd daemon listens for requests on a local Unix domain
-socket.  Using the ``-l`` | ``--listen`` command line option, the libvirtd daemon
-can be instructed to additionally listen on a TCP/IP socket.  The TCP/IP socket
-to use is defined in the libvirtd configuration file.
+By default, the ``libvirtd`` daemon listens for requests on a local Unix domain
+socket.  Using the ``-l`` | ``--listen`` command line option, the ``libvirtd``
+daemon can be instructed to additionally listen on a TCP/IP socket.  The TCP/IP
+socket to use is defined in the ``libvirtd`` configuration file.
 
-Restarting libvirtd does not impact running guests.  Guests continue to operate
-and will be picked up automatically if their XML configuration has been
+Restarting ``libvirtd`` does not impact running guests.  Guests continue to
+operate and will be picked up automatically if their XML configuration has been
 defined.  Any guests whose XML configuration has not been defined will be lost
 from the configuration.
 
@@ -98,8 +98,8 @@ Use this configuration file, overriding the default value.
 ``-l``, ``--listen``
 
 Listen for TCP/IP connections. This should not be set if using systemd
-socket activation. Instead activate the libvirtd-tls.socket or
-libvirtd-tcp.socket unit files.
+socket activation. Instead activate the ``libvirtd-tls.socket`` or
+``libvirtd-tcp.socket`` unit files.
 
 ``-p``, ``--pid-file *FILE*``
 
@@ -122,7 +122,7 @@ Display version information then exit.
 SIGNALS
 =======
 
-On receipt of ``SIGHUP`` libvirtd will reload its configuration.
+On receipt of ``SIGHUP`` ``libvirtd`` will reload its configuration.
 
 
 FILES
@@ -133,25 +133,25 @@ When run as *root*
 
 * ``@SYSCONFDIR@/libvirt/libvirtd.conf``
 
-The default configuration file used by libvirtd, unless overridden on the
+The default configuration file used by ``libvirtd``, unless overridden on the
 command line using the ``-f`` | ``--config`` option.
 
 * ``@RUNSTATEDIR@/libvirt/libvirt-sock``
 * ``@RUNSTATEDIR@/libvirt/libvirt-sock-ro``
 
-The sockets libvirtd will use.
+The sockets ``libvirtd`` will use.
 
 * ``@SYSCONFDIR@/pki/CA/cacert.pem``
 
-The TLS **Certificate Authority** certificate libvirtd will use.
+The TLS **Certificate Authority** certificate ``libvirtd`` will use.
 
 * ``@SYSCONFDIR@/pki/libvirt/servercert.pem``
 
-The TLS **Server** certificate libvirtd will use.
+The TLS **Server** certificate ``libvirtd`` will use.
 
 * ``@SYSCONFDIR@/pki/libvirt/private/serverkey.pem``
 
-The TLS **Server** private key libvirtd will use.
+The TLS **Server** private key ``libvirtd`` will use.
 
 * ``@RUNSTATEDIR@/libvirtd.pid``
 
@@ -163,41 +163,41 @@ When run as *non-root*
 
 * ``$XDG_CONFIG_HOME/libvirt/libvirtd.conf``
 
-The default configuration file used by libvirtd, unless overridden on the
+The default configuration file used by ``libvirtd``, unless overridden on the
 command line using the ``-f``|``--config`` option.
 
 * ``$XDG_RUNTIME_DIR/libvirt/libvirt-sock``
 
-The socket libvirtd will use.
+The socket ``libvirtd`` will use.
 
 * ``$HOME/.pki/libvirt/cacert.pem``
 
-The TLS **Certificate Authority** certificate libvirtd will use.
+The TLS **Certificate Authority** certificate ``libvirtd`` will use.
 
 * ``$HOME/.pki/libvirt/servercert.pem``
 
-The TLS **Server** certificate libvirtd will use.
+The TLS **Server** certificate ``libvirtd`` will use.
 
 * ``$HOME/.pki/libvirt/serverkey.pem``
 
-The TLS **Server** private key libvirtd will use.
+The TLS **Server** private key ``libvirtd`` will use.
 
 * ``$XDG_RUNTIME_DIR/libvirt/libvirtd.pid``
 
 The PID file to use, unless overridden by the ``-p``|``--pid-file`` option.
 
 
-If ``$XDG_CONFIG_HOME`` is not set in your environment, libvirtd will use
+If ``$XDG_CONFIG_HOME`` is not set in your environment, ``libvirtd`` will use
 ``$HOME/.config``
 
-If ``$XDG_RUNTIME_DIR`` is not set in your environment, libvirtd will use
+If ``$XDG_RUNTIME_DIR`` is not set in your environment, ``libvirtd`` will use
 ``$HOME/.cache``
 
 
 EXAMPLES
 ========
 
-To retrieve the version of libvirtd:
+To retrieve the version of ``libvirtd``:
 
 ::
 
@@ -205,7 +205,7 @@ To retrieve the version of libvirtd:
   libvirtd (libvirt) 0.8.2
 
 
-To start libvirtd, instructing it to daemonize and create a PID file:
+To start ``libvirtd``, instructing it to daemonize and create a PID file:
 
 ::
 
@@ -246,7 +246,7 @@ libvirt AUTHORS file.
 LICENSE
 =======
 
-libvirtd is distributed under the terms of the GNU LGPL v2.1+.
+``libvirtd`` is distributed under the terms of the GNU LGPL v2.1+.
 This is free software; see the source for copying conditions. There
 is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE
