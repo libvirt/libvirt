@@ -625,8 +625,7 @@ qemuStateInitialize(bool privileged,
     const char *defsecmodel = NULL;
     g_autofree virSecurityManagerPtr *sec_managers = NULL;
 
-    if (VIR_ALLOC(qemu_driver) < 0)
-        return VIR_DRV_STATE_INIT_ERROR;
+    qemu_driver = g_new0(virQEMUDriver, 1);
 
     qemu_driver->lockFD = -1;
 
@@ -1059,8 +1058,7 @@ qemuStateStop(void)
                                                VIR_CONNECT_LIST_DOMAINS_ACTIVE)) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(flags, numDomains) < 0)
-        goto cleanup;
+    flags = g_new0(unsigned int, numDomains);
 
     /* First we pause all VMs to make them stop dirtying
        pages, etc. We remember if any VMs were paused so
@@ -5036,14 +5034,12 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if (VIR_ALLOC_N(info_ret, niothreads) < 0)
-        goto endjob;
+    info_ret = g_new0(virDomainIOThreadInfoPtr, niothreads);
 
     for (i = 0; i < niothreads; i++) {
         virBitmapPtr map = NULL;
 
-        if (VIR_ALLOC(info_ret[i]) < 0)
-            goto endjob;
+        info_ret[i] = g_new0(virDomainIOThreadInfo, 1);
         info_ret[i]->iothread_id = iothreads[i]->iothread_id;
 
         if (!(map = virProcessGetAffinity(iothreads[i]->thread_id)))
@@ -5091,12 +5087,10 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
     if (targetDef->niothreadids == 0)
         return 0;
 
-    if (VIR_ALLOC_N(info_ret, targetDef->niothreadids) < 0)
-        goto cleanup;
+    info_ret = g_new0(virDomainIOThreadInfoPtr, targetDef->niothreadids);
 
     for (i = 0; i < targetDef->niothreadids; i++) {
-        if (VIR_ALLOC(info_ret[i]) < 0)
-            goto cleanup;
+        info_ret[i] = g_new0(virDomainIOThreadInfo, 1);
 
         /* IOThread ID's are taken from the iothreadids list */
         info_ret[i]->iothread_id = targetDef->iothreadids[i]->iothread_id;
@@ -5938,10 +5932,7 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
         for (i = 0; mgrs[i]; i++)
             len++;
 
-        if (VIR_ALLOC_N((*seclabels), len) < 0) {
-            VIR_FREE(mgrs);
-            goto cleanup;
-        }
+        (*seclabels) = g_new0(virSecurityLabel, len);
         memset(*seclabels, 0, sizeof(**seclabels) * len);
 
         /* Fill the array */
@@ -9972,8 +9963,7 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || nstats < 0 || rc < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(*retstats) < 0)
-        goto cleanup;
+    *retstats = g_new0(qemuBlockStats, 1);
 
     if (entryname) {
         if (!(stats = virHashLookup(blockstats, entryname))) {
@@ -10277,10 +10267,9 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         goto endjob;
     }
 
-    if ((VIR_ALLOC(bandwidth) < 0) ||
-        (VIR_ALLOC(bandwidth->in) < 0) ||
-        (VIR_ALLOC(bandwidth->out) < 0))
-        goto endjob;
+    bandwidth = g_new0(virNetDevBandwidth, 1);
+    bandwidth->in = g_new0(virNetDevBandwidthRate, 1);
+    bandwidth->out = g_new0(virNetDevBandwidthRate, 1);
 
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
@@ -10314,16 +10303,14 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         VIR_FREE(bandwidth->out);
 
     if (net) {
-        if (VIR_ALLOC(newBandwidth) < 0)
-            goto endjob;
+        newBandwidth = g_new0(virNetDevBandwidth, 1);
 
         /* virNetDevBandwidthSet() will clear any previous value of
          * bandwidth parameters, so merge with old bandwidth parameters
          * here to prevent them from being lost. */
         if (bandwidth->in ||
             (!inboundSpecified && net->bandwidth && net->bandwidth->in)) {
-            if (VIR_ALLOC(newBandwidth->in) < 0)
-                goto endjob;
+            newBandwidth->in = g_new0(virNetDevBandwidthRate, 1);
 
             memcpy(newBandwidth->in,
                    bandwidth->in ? bandwidth->in : net->bandwidth->in,
@@ -10331,8 +10318,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         }
         if (bandwidth->out ||
             (!outboundSpecified && net->bandwidth && net->bandwidth->out)) {
-            if (VIR_ALLOC(newBandwidth->out) < 0)
-                goto endjob;
+            newBandwidth->out = g_new0(virNetDevBandwidthRate, 1);
 
             memcpy(newBandwidth->out,
                    bandwidth->out ? bandwidth->out : net->bandwidth->out,
@@ -12456,8 +12442,7 @@ qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
     if (qemuProcessQMPStart(proc) < 0)
         return NULL;
 
-    if (VIR_ALLOC(baseline) < 0)
-        return NULL;
+    baseline = g_new0(virCPUDef, 1);
 
     if (virCPUDefCopyModel(baseline, cpus[0], false))
         return NULL;
@@ -17714,8 +17699,7 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
             if (domresmon->tag != tag)
                 continue;
 
-            if (VIR_ALLOC(res) < 0)
-                return -1;
+            res = g_new0(virQEMUResctrlMonData, 1);
 
             /* If virBitmapFormat successfully returns an vcpu string, then
              * res.vcpus is assigned with an memory space holding it,
@@ -18029,9 +18013,8 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
                                  "vcpu.maximum") < 0)
         return -1;
 
-    if (VIR_ALLOC_N(cpuinfo, virDomainDefGetVcpus(dom->def)) < 0 ||
-        VIR_ALLOC_N(cpuwait, virDomainDefGetVcpus(dom->def)) < 0)
-        goto cleanup;
+    cpuinfo = g_new0(virVcpuInfo, virDomainDefGetVcpus(dom->def));
+    cpuwait = g_new0(unsigned long long, virDomainDefGetVcpus(dom->def));
 
     if (HAVE_JOB(privflags) && virDomainObjIsActive(dom) &&
         qemuDomainRefreshVcpuHalted(driver, dom, QEMU_ASYNC_JOB_NONE) < 0) {
@@ -18683,8 +18666,7 @@ qemuDomainGetStats(virConnectPtr conn,
     g_autoptr(virTypedParamList) params = NULL;
     size_t i;
 
-    if (VIR_ALLOC(params) < 0)
-        return -1;
+    params = g_new0(virTypedParamList, 1);
 
     for (i = 0; qemuDomainGetStatsWorkers[i].func; i++) {
         if (stats & qemuDomainGetStatsWorkers[i].stats) {
@@ -18694,8 +18676,7 @@ qemuDomainGetStats(virConnectPtr conn,
         }
     }
 
-    if (VIR_ALLOC(tmp) < 0)
-        return -1;
+    tmp = g_new0(virDomainStatsRecord, 1);
 
     if (!(tmp->dom = virGetDomain(conn, dom->def->name,
                                   dom->def->uuid, dom->def->id)))
@@ -18756,8 +18737,7 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
             return -1;
     }
 
-    if (VIR_ALLOC_N(tmpstats, nvms + 1) < 0)
-        goto cleanup;
+    tmpstats = g_new0(virDomainStatsRecordPtr, nvms + 1);
 
     if (qemuDomainGetStatsNeedMonitor(stats))
         privflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
