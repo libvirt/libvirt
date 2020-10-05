@@ -407,7 +407,6 @@ static int
 test6(const void *v G_GNUC_UNUSED)
 {
     virBitmapPtr bitmap = NULL;
-    char *str = NULL;
     int size = 64;
     int ret = -1;
 
@@ -415,73 +414,42 @@ test6(const void *v G_GNUC_UNUSED)
     if (!bitmap)
         goto error;
 
-    str = virBitmapFormat(bitmap);
-    if (!str)
+    if (checkBitmap(bitmap, "", -1) < 0)
         goto error;
-
-    if (STRNEQ(str, ""))
-        goto error;
-
-    VIR_FREE(str);
 
     ignore_value(virBitmapSetBit(bitmap, 0));
-    str = virBitmapFormat(bitmap);
-    if (!str)
-        goto error;
 
-    if (STRNEQ(str, "0"))
+    if (checkBitmap(bitmap, "0", -1) < 0)
         goto error;
-
-    VIR_FREE(str);
 
     ignore_value(virBitmapSetBit(bitmap, 4));
     ignore_value(virBitmapSetBit(bitmap, 5));
-    str = virBitmapFormat(bitmap);
-    if (!str)
-        goto error;
 
-    if (STRNEQ(str, "0,4-5"))
+    if (checkBitmap(bitmap, "0,4-5", -1) < 0)
         goto error;
-
-    VIR_FREE(str);
 
     ignore_value(virBitmapSetBit(bitmap, 6));
-    str = virBitmapFormat(bitmap);
-    if (!str)
-        goto error;
 
-    if (STRNEQ(str, "0,4-6"))
+    if (checkBitmap(bitmap, "0,4-6", -1) < 0)
         goto error;
-
-    VIR_FREE(str);
 
     ignore_value(virBitmapSetBit(bitmap, 13));
     ignore_value(virBitmapSetBit(bitmap, 14));
     ignore_value(virBitmapSetBit(bitmap, 15));
     ignore_value(virBitmapSetBit(bitmap, 16));
-    str = virBitmapFormat(bitmap);
-    if (!str)
-        goto error;
 
-    if (STRNEQ(str, "0,4-6,13-16"))
+    if (checkBitmap(bitmap, "0,4-6,13-16", -1) < 0)
         goto error;
-
-    VIR_FREE(str);
 
     ignore_value(virBitmapSetBit(bitmap, 62));
     ignore_value(virBitmapSetBit(bitmap, 63));
-    str = virBitmapFormat(bitmap);
-    if (!str)
-        goto error;
 
-    if (STRNEQ(str, "0,4-6,13-16,62-63"))
+    if (checkBitmap(bitmap, "0,4-6,13-16,62-63", -1) < 0)
         goto error;
-
 
     ret = 0;
  error:
     virBitmapFree(bitmap);
-    VIR_FREE(str);
     return ret;
 }
 
