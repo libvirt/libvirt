@@ -2129,9 +2129,9 @@ qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
                                virJSONValuePtr tmp_iface)
 {
     virJSONValuePtr ip_addr_arr = NULL;
-    const char *hwaddr, *ifname_s, *name = NULL;
+    const char *hwaddr, *name = NULL;
     virDomainInterfacePtr iface = NULL;
-    g_auto(GStrv) ifname = NULL;
+    g_autofree char *ifname = NULL;
     size_t addrs_count = 0;
     size_t j;
 
@@ -2144,10 +2144,9 @@ qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
     }
 
     /* Handle interface alias (<ifname>:<alias>) */
-    ifname = virStringSplit(name, ":", 2);
-    ifname_s = ifname[0];
+    ifname = g_strdelimit(g_strdup(name), ":", '\0');
 
-    iface = virHashLookup(ifaces_store, ifname_s);
+    iface = virHashLookup(ifaces_store, ifname);
 
     /* If the hash table doesn't contain this iface, add it */
     if (!iface) {
@@ -2157,11 +2156,11 @@ qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
         iface = g_new0(virDomainInterface, 1);
         (*ifaces_ret)[*ifaces_count - 1] = iface;
 
-        if (virHashAddEntry(ifaces_store, ifname_s, iface) < 0)
+        if (virHashAddEntry(ifaces_store, ifname, iface) < 0)
             return -1;
 
         iface->naddrs = 0;
-        iface->name = g_strdup(ifname_s);
+        iface->name = g_strdup(ifname);
 
         hwaddr = virJSONValueObjectGetString(tmp_iface, "hardware-address");
         iface->hwaddr = g_strdup(hwaddr);
