@@ -271,10 +271,7 @@ virHashGrow(virHashTablePtr table, size_t size)
     if (oldtable == NULL)
         return -1;
 
-    if (VIR_ALLOC_N(table->table, size) < 0) {
-        table->table = oldtable;
-        return -1;
-    }
+    table->table = g_new0(virHashEntryPtr, size);
     table->size = size;
 
     for (i = 0; i < oldsize; i++) {
@@ -792,8 +789,7 @@ virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
     if (numElems < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(iter.sortArray, numElems + 1))
-        return NULL;
+    iter.sortArray = g_new0(virHashKeyValuePair, numElems + 1);
 
     virHashForEach(table, virHashGetKeysIterator, &iter);
 

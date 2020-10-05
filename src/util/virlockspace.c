@@ -119,8 +119,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
     virLockSpaceResourcePtr res;
     bool shared = !!(flags & VIR_LOCK_SPACE_ACQUIRE_SHARED);
 
-    if (VIR_ALLOC(res) < 0)
-        return NULL;
+    res = g_new0(virLockSpaceResource, 1);
 
     res->fd = -1;
     res->flags = flags;
@@ -241,8 +240,7 @@ virLockSpacePtr virLockSpaceNew(const char *directory)
 
     VIR_DEBUG("directory=%s", NULLSTR(directory));
 
-    if (VIR_ALLOC(lockspace) < 0)
-        return NULL;
+    lockspace = g_new0(virLockSpace, 1);
 
     if (virMutexInit(&lockspace->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -292,8 +290,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
 
     VIR_DEBUG("object=%p", object);
 
-    if (VIR_ALLOC(lockspace) < 0)
-        return NULL;
+    lockspace = g_new0(virLockSpace, 1);
 
     if (virMutexInit(&lockspace->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -331,8 +328,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
         size_t j;
         size_t m;
 
-        if (VIR_ALLOC(res) < 0)
-            goto error;
+        res = g_new0(virLockSpaceResource, 1);
         res->fd = -1;
 
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
@@ -391,10 +387,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
         }
 
         m = virJSONValueArraySize(owners);
-        if (VIR_ALLOC_N(res->owners, res->nOwners) < 0) {
-            virLockSpaceResourceFree(res);
-            goto error;
-        }
+        res->owners = g_new0(pid_t, res->nOwners);
         res->nOwners = m;
 
         for (j = 0; j < res->nOwners; j++) {

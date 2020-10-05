@@ -1018,8 +1018,7 @@ virNetlinkEventServiceStart(unsigned int protocol, unsigned int groups)
 
     VIR_INFO("starting netlink event service with protocol %d", protocol);
 
-    if (VIR_ALLOC(srv) < 0)
-        return -1;
+    srv = g_new0(virNetlinkEventSrvPrivate, 1);
 
     if (virMutexInit(&srv->lock) < 0) {
         VIR_FREE(srv);

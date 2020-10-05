@@ -265,8 +265,7 @@ virNumaGetNodeCPUs(int node,
         return -2;
     }
 
-    if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof(*mask)) < 0)
-        return -1;
+    mask = g_new0(unsigned long, mask_n_bytes / sizeof(*mask));
 
     if (numa_node_to_cpus(node, mask, mask_n_bytes) < 0) {
         VIR_WARN("NUMA topology for cell %d is not available, ignoring", node);
@@ -477,9 +476,7 @@ virNumaGetDistances(int node,
     if ((max_node = virNumaGetMaxNode()) < 0)
         return -1;
 
-    if (VIR_ALLOC_N(*distances, max_node + 1) < 0)
-        return -1;
-
+    *distances = g_new0(int, max_node + 1);
     *ndistances = max_node + 1;
 
     for (i = 0; i <= max_node; i++) {

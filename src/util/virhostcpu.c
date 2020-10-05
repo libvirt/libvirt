@@ -145,8 +145,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 
     cpu_times_size = sizeof(long) * cpu_times_num * CPUSTATES;
 
-    if (VIR_ALLOC_N(cpu_times, cpu_times_num * CPUSTATES) < 0)
-        goto cleanup;
+    cpu_times = g_new0(long, cpu_times_num * CPUSTATES);
 
     if (sysctlbyname(sysctl_name, cpu_times, &cpu_times_size, NULL, 0) < 0) {
         virReportSystemError(errno,
@@ -366,8 +365,7 @@ virHostCPUParseNode(const char *node,
     sock_max++;
 
     /* allocate cores maps for each socket */
-    if (VIR_ALLOC_N(cores_maps, sock_max) < 0)
-        goto cleanup;
+    cores_maps = g_new0(virBitmapPtr, sock_max);
 
     for (i = 0; i < sock_max; i++)
         cores_maps[i] = virBitmapNew(0);
@@ -1385,8 +1383,7 @@ virHostCPUGetTscInfo(void)
         return NULL;
     }
 
-    if (VIR_ALLOC(info) < 0)
-        return NULL;
+    info = g_new0(virHostCPUTscInfo, 1);
 
     info->frequency = rc * 1000ULL;
 

@@ -664,10 +664,8 @@ virCgroupNew(pid_t pid,
 {
     VIR_DEBUG("pid=%lld path=%s parent=%p controllers=%d group=%p",
               (long long) pid, path, parent, controllers, group);
-    *group = NULL;
 
-    if (VIR_ALLOC((*group)) < 0)
-        goto error;
+    *group = g_new0(virCgroup, 1);
 
     if (path[0] == '/' || !parent) {
         (*group)->path = g_strdup(path);
@@ -2170,8 +2168,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     param_idx = 1;
 
     if (guestvcpus && param_idx < nparams) {
-        if (VIR_ALLOC_N(sum_cpu_time, need_cpus) < 0)
-            goto cleanup;
+        sum_cpu_time = g_new0(unsigned long long, need_cpus);
         if (virCgroupGetPercpuVcpuSum(group, guestvcpus, sum_cpu_time,
                                       need_cpus, cpumap) < 0)
             goto cleanup;

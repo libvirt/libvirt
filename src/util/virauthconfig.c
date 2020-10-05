@@ -40,8 +40,7 @@ virAuthConfigPtr virAuthConfigNew(const char *path)
 {
     virAuthConfigPtr auth;
 
-    if (VIR_ALLOC(auth) < 0)
-        goto error;
+    auth = g_new0(virAuthConfig, 1);
 
     auth->path = g_strdup(path);
 
@@ -65,8 +64,7 @@ virAuthConfigPtr virAuthConfigNewData(const char *path,
 {
     virAuthConfigPtr auth;
 
-    if (VIR_ALLOC(auth) < 0)
-        goto error;
+    auth = g_new0(virAuthConfig, 1);
 
     auth->path = g_strdup(path);
 

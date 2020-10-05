@@ -112,15 +112,13 @@ virFirmwareParseList(const char *list,
     }
 
     if (i) {
-        if (VIR_ALLOC_N(*firmwares, i / 2) < 0)
-            goto cleanup;
+        *firmwares = g_new0(virFirmwarePtr, i / 2);
         *nfirmwares = i / 2;
 
         for (j = 0; j < i / 2; j++) {
             virFirmwarePtr *fws = *firmwares;
 
-            if (VIR_ALLOC(fws[j]) < 0)
-                goto cleanup;
+            fws[j] = g_new0(virFirmware, 1);
             fws[j]->name = g_strdup(token[2 * j]);
             fws[j]->nvram = g_strdup(token[2 * j + 1]);
         }

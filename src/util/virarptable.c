@@ -74,8 +74,7 @@ virArpTableGet(void)
     if (msglen < 0)
         return NULL;
 
-    if (VIR_ALLOC(table) < 0)
-        return NULL;
+    table = g_new0(virArpTable, 1);
 
     nh = (struct nlmsghdr*)nlData;
 

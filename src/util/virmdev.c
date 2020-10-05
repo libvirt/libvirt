@@ -150,8 +150,7 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
         return NULL;
     }
 
-    if (VIR_ALLOC(dev) < 0)
-        return NULL;
+    dev = g_new0(virMediatedDevice, 1);
 
     dev->path = g_steal_pointer(&sysfspath);
 
@@ -494,8 +493,7 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
         } \
     } while (0)
 
-    if (VIR_ALLOC(tmp) < 0)
-        return -1;
+    tmp = g_new0(virMediatedDeviceType, 1);
 
     tmp->id = g_path_get_basename(sysfspath);
 

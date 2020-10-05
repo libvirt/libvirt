@@ -704,9 +704,7 @@ virBitmapToData(virBitmapPtr bitmap,
     else
         len = (len + CHAR_BIT) / CHAR_BIT;
 
-    if (VIR_ALLOC_N(*data, len) < 0)
-        return -1;
-
+    *data = g_new0(unsigned char, len);
     *dataLen = len;
 
     virBitmapToDataBuf(bitmap, *data, *dataLen);

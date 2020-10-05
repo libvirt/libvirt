@@ -258,8 +258,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
         return NULL;
     }
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virFileWrapperFd, 1);
 
     mode = fcntl(*fd, F_GETFL);
 
@@ -1178,11 +1177,7 @@ safezero_slow(int fd, off_t offset, off_t len)
     remain = len;
     bytes = MIN(1024 * 1024, len);
 
-    r = VIR_ALLOC_N(buf, bytes);
-    if (r < 0) {
-        errno = ENOMEM;
-        return -1;
-    }
+    buf = g_new0(char, bytes);
 
     while (remain) {
         if (bytes > remain)
@@ -3160,8 +3155,7 @@ virFileOpenTty(int *ttyprimary, char **ttyName, int rawmode)
         size_t len = 64;
         int rc;
 
-        if (VIR_ALLOC_N(name, len) < 0)
-            goto cleanup;
+        name = g_new0(char, len);
 
         while ((rc = ttyname_r(secondary, name, len)) == ERANGE) {
             if (VIR_RESIZE_N(name, len, len, len) < 0)

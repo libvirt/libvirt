@@ -1271,10 +1271,7 @@ virLogOutputNew(virLogOutputFunc f,
         ndup = g_strdup(name);
     }
 
-    if (VIR_ALLOC(ret) < 0) {
-        VIR_FREE(ndup);
-        return NULL;
-    }
+    ret = g_new0(virLogOutput, 1);
 
     ret->logInitMessage = true;
     ret->f = f;

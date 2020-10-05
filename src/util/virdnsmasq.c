@@ -109,8 +109,7 @@ addnhostsAdd(dnsmasqAddnHostsfile *addnhostsfile,
             goto error;
 
         idx = addnhostsfile->nhosts;
-        if (VIR_ALLOC(addnhostsfile->hosts[idx].hostnames) < 0)
-            goto error;
+        addnhostsfile->hosts[idx].hostnames = g_new0(char *, 1);
 
         addnhostsfile->hosts[idx].ip = g_strdup(ipstr);
 
@@ -141,8 +140,7 @@ addnhostsNew(const char *name,
     dnsmasqAddnHostsfile *addnhostsfile;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (VIR_ALLOC(addnhostsfile) < 0)
-        return NULL;
+    addnhostsfile = g_new0(dnsmasqAddnHostsfile, 1);
 
     addnhostsfile->hosts = NULL;
     addnhostsfile->nhosts = 0;
@@ -343,8 +341,7 @@ hostsfileNew(const char *name,
     dnsmasqHostsfile *hostsfile;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (VIR_ALLOC(hostsfile) < 0)
-        return NULL;
+    hostsfile = g_new0(dnsmasqHostsfile, 1);
 
     hostsfile->hosts = NULL;
     hostsfile->nhosts = 0;
@@ -444,8 +441,7 @@ dnsmasqContextNew(const char *network_name,
 {
     dnsmasqContext *ctx;
 
-    if (VIR_ALLOC(ctx) < 0)
-        return NULL;
+    ctx = g_new0(dnsmasqContext, 1);
 
     ctx->config_dir = g_strdup(config_dir);
 

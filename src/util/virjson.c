@@ -438,8 +438,7 @@ virJSONValueNewString(const char *data)
     if (!data)
         return virJSONValueNewNull();
 
-    if (VIR_ALLOC(val) < 0)
-        return NULL;
+    val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_STRING;
     val->data.string = g_strdup(data);
@@ -457,8 +456,7 @@ virJSONValueNewStringLen(const char *data,
     if (!data)
         return virJSONValueNewNull();
 
-    if (VIR_ALLOC(val) < 0)
-        return NULL;
+    val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_STRING;
     val->data.string = g_strndup(data, length);
@@ -472,8 +470,7 @@ virJSONValueNewNumber(const char *data)
 {
     virJSONValuePtr val;
 
-    if (VIR_ALLOC(val) < 0)
-        return NULL;
+    val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_NUMBER;
     val->data.number = g_strdup(data);
@@ -533,8 +530,7 @@ virJSONValueNewBoolean(int boolean_)
 {
     virJSONValuePtr val;
 
-    if (VIR_ALLOC(val) < 0)
-        return NULL;
+    val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_BOOLEAN;
     val->data.boolean = boolean_;
@@ -548,8 +544,7 @@ virJSONValueNewNull(void)
 {
     virJSONValuePtr val;
 
-    if (VIR_ALLOC(val) < 0)
-        return NULL;
+    val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_NULL;
 

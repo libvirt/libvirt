@@ -88,8 +88,7 @@ virCryptoHashString(virCryptoHash hash,
 
     hashstrlen = (rc * 2) + 1;
 
-    if (VIR_ALLOC_N(*output, hashstrlen) < 0)
-        return -1;
+    *output = g_new0(char, hashstrlen);
 
     for (i = 0; i < rc; i++) {
         (*output)[i * 2] = hex[(buf[i] >> 4) & 0xf];
@@ -167,8 +166,7 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
      * data from non-padded data. Hence datalen + 1
      */
     ciphertextlen = VIR_ROUND_UP(datalen + 1, 16);
-    if (VIR_ALLOC_N(ciphertext, ciphertextlen) < 0)
-        return -1;
+    ciphertext = g_new0(uint8_t, ciphertextlen);
     memcpy(ciphertext, data, datalen);
 
      /* Fill in the padding of the buffer with the size of the padding
