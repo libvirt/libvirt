@@ -100,24 +100,6 @@ vshPrettyCapacity(unsigned long long val, const char **unit)
 }
 
 
-void *
-_vshMalloc(vshControl *ctl, size_t size, const char *filename, int line)
-{
-    char *x;
-
-    if (VIR_ALLOC_N(x, size) == 0)
-        return x;
-    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
-             filename, line, (int) size);
-    exit(EXIT_FAILURE);
-}
-
-void *
-vshCalloc(vshControl *ctl G_GNUC_UNUSED, size_t nmemb, size_t size)
-{
-    return g_malloc0_n(nmemb, size);
-}
-
 int
 vshNameSorter(const void *a, const void *b)
 {
