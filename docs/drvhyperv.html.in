@@ -112,4 +112,54 @@ winrm set winrm/config/service @{AllowUnencrypted="true"}
 </pre>
 
 
+    <h2><a id="versions">Version Numbers</a></h2>
+    <p>
+        Since Microsoft's build numbers are almost always over 1000, this driver
+        needs to pack the value differently compared to the format defined by
+        <code>virConnectGetVersion</code>.
+        To preserve all of the digits, the following format is used:
+    </p>
+    <pre>major * 100000000 + minor * 1000000 + micro</pre>
+    <p>
+        This results in <code>virsh version</code> producing unexpected output.
+    </p>
+    <table class="top_table">
+        <thead>
+            <th>Windows Release</th>
+            <th>Kernel Version</th>
+            <th>libvirt Representation</th>
+        </thead>
+        <tr>
+            <td>Windows Server 2008</td>
+            <td>6.0.6001</td>
+            <td>600.6.1</td>
+        </tr>
+        <tr>
+            <td>Windows Server 2008 R2</td>
+            <td>6.1.7600</td>
+            <td>601.7.600</td>
+        </tr>
+        <tr>
+            <td>Windows Server 2012</td>
+            <td>6.2.9200</td>
+            <td>602.9.200</td>
+        </tr>
+        <tr>
+            <td>Windows Server 2012 R2</td>
+            <td>6.3.9600</td>
+            <td>603.9.600</td>
+        </tr>
+        <tr>
+            <td>Windows Server 2016</td>
+            <td>10.0.14393</td>
+            <td>1000.14.393</td>
+        </tr>
+        <tr>
+            <td>Windows Server 2019</td>
+            <td>10.0.17763</td>
+            <td>1000.17.763</td>
+        </tr>
+    </table>
+
+
 </body></html>

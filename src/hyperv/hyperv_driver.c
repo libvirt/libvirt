@@ -29,6 +29,7 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "viruuid.h"
+#include "virutil.h"
 #include "hyperv_driver.h"
 #include "hyperv_private.h"
 #include "hyperv_util.h"
@@ -289,6 +290,24 @@ hypervGetMemSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
  */
 
 static int
+hypervParseVersionString(const char *str, unsigned int *major,
+                         unsigned int *minor, unsigned int *micro)
+{
+    char *suffix = NULL;
+
+    if (virStrToLong_ui(str, &suffix, 10, major) < 0)
+        return -1;
+
+    if (virStrToLong_ui(suffix + 1, &suffix, 10, minor) < 0)
+        return -1;
+
+    if (virStrToLong_ui(suffix + 1, NULL, 10, micro) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
 hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
 {
     Win32_ComputerSystemProduct *computerSystem = NULL;
@@ -519,6 +538,67 @@ static const char *
 hypervConnectGetType(virConnectPtr conn G_GNUC_UNUSED)
 {
     return "Hyper-V";
+}
+
+
+
+static int
+hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
+{
+    int result = -1;
+    hypervPrivate *priv = conn->privateData;
+    Win32_OperatingSystem *os = NULL;
+    g_auto(virBuffer) query = { g_string_new(WIN32_OPERATINGSYSTEM_WQL_SELECT), 0 };
+    unsigned int major, minor, micro;
+
+    if (hypervGetWmiClass(Win32_OperatingSystem, &os) < 0 ||
+        !os) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get version information for host %s"),
+                       conn->uri->server);
+        goto cleanup;
+    }
+
+    if (hypervParseVersionString(os->data.common->Version,
+                                 &major, &minor, &micro) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not parse version from '%s'"),
+                       os->data.common->Version);
+        goto cleanup;
+    }
+
+    /*
+     * Pack the version into an unsigned long while retaining all the digits.
+     *
+     * Since Microsoft's build numbers are almost always over 1000, this driver
+     * needs to pack the value differently compared to the format defined by
+     * virConnectGetVersion().
+     *
+     * This results in `virsh version` producing unexpected output.
+     *
+     * For example...
+     * 2008:      6.0.6001     =>   600.6.1
+     * 2008 R2:   6.1.7600     =>   601.7.600
+     * 2012:      6.2.9200     =>   602.9.200
+     * 2012 R2:   6.3.9600     =>   603.9.600
+     * 2016:      10.0.14393   =>   1000.14.393
+     * 2019:      10.0.17763   =>   1000.17.763
+     */
+    if (major > 99 || minor > 99 || micro > 999999) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not produce packed version number from '%s'"),
+                       os->data.common->Version);
+        goto cleanup;
+    }
+
+    *version = major * 100000000 + minor * 1000000 + micro;
+
+    result = 0;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *) os);
+
+    return result;
 }
 
 
@@ -1721,6 +1801,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .connectOpen = hypervConnectOpen, /* 0.9.5 */
     .connectClose = hypervConnectClose, /* 0.9.5 */
     .connectGetType = hypervConnectGetType, /* 0.9.5 */
+    .connectGetVersion = hypervConnectGetVersion, /* 6.9.0 */
     .connectGetHostname = hypervConnectGetHostname, /* 0.9.5 */
     .connectGetMaxVcpus = hypervConnectGetMaxVcpus, /* 6.9.0 */
     .nodeGetInfo = hypervNodeGetInfo, /* 0.9.5 */
