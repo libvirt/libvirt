@@ -88,7 +88,6 @@
 %define with_fuse             0
 %define with_sanlock          0
 %define with_numad            0
-%define with_firewalld        0
 %define with_firewalld_zone   0
 %define with_libssh2          0
 %define with_wireshark        0
@@ -137,8 +136,6 @@
         %define with_lxc 0
     %endif
 %endif
-
-%define with_firewalld 1
 
 %if 0%{?fedora} || 0%{?rhel} > 7
     %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
@@ -1089,12 +1086,6 @@ exit 1
     %define arg_sanlock -Dsanlock=disabled
 %endif
 
-%if %{with_firewalld}
-    %define arg_firewalld -Dfirewalld=enabled
-%else
-    %define arg_firewalld -Dfirewalld=disabled
-%endif
-
 %if %{with_firewalld_zone}
     %define arg_firewalld_zone -Dfirewalld_zone=enabled
 %else
@@ -1171,7 +1162,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dlibnl=enabled \
            -Daudit=enabled \
            -Ddtrace=enabled \
-           %{?arg_firewalld} \
+           -Dfirewalld=enabled \
            %{?arg_firewalld_zone} \
            %{?arg_wireshark} \
            -Dpm_utils=disabled \
