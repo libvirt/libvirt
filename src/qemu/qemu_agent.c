@@ -1444,12 +1444,6 @@ qemuAgentGetVCPUs(qemuAgentPtr agent,
         goto cleanup;
     }
 
-    if (!virJSONValueIsArray(data)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed guest-get-vcpus data array"));
-        goto cleanup;
-    }
-
     ndata = virJSONValueArraySize(data);
 
     *info = g_new0(qemuAgentCPUInfo, ndata);
@@ -2311,12 +2305,6 @@ qemuAgentGetUsers(qemuAgentPtr agent,
     if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("guest-get-users reply was missing return data"));
-        return -1;
-    }
-
-    if (!virJSONValueIsArray(data)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed guest-get-users data array"));
         return -1;
     }
 
