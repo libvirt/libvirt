@@ -2232,13 +2232,7 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
         goto cleanup;
 
-    if (!(ret_array = virJSONValueObjectGet(reply, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("qemu agent didn't provide 'return' field"));
-        goto cleanup;
-    }
-
-    if (!virJSONValueIsArray(ret_array)) {
+    if (!(ret_array = virJSONValueObjectGetArray(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("qemu agent didn't return an array of interfaces"));
         goto cleanup;
