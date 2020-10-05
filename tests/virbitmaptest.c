@@ -329,7 +329,8 @@ test5(const void *v G_GNUC_UNUSED)
     size_t i;
     ssize_t j;
     int ret = -1;
-    char *str = NULL;
+    g_autofree char *actual1 = NULL;
+    g_autofree char *actual2 = NULL;
 
     bitmap = virBitmapNewData(data, sizeof(data));
     if (!bitmap)
@@ -359,19 +360,17 @@ test5(const void *v G_GNUC_UNUSED)
         data2[4] != 0x04)
         goto error;
 
-    if (!(str = virBitmapDataFormat(data, sizeof(data))))
+    if (!(actual1 = virBitmapDataFormat(data, sizeof(data))))
         goto error;
-    if (STRNEQ(str, "0,9,34"))
+    if (STRNEQ(actual1, "0,9,34"))
         goto error;
-    VIR_FREE(str);
-    if (!(str = virBitmapDataFormat(data2, len2)))
+    if (!(actual2 = virBitmapDataFormat(data2, len2)))
         goto error;
-    if (STRNEQ(str, "0,2,9,15,34"))
+    if (STRNEQ(actual2, "0,2,9,15,34"))
         goto error;
 
     ret = 0;
  error:
-    VIR_FREE(str);
     virBitmapFree(bitmap);
     VIR_FREE(data2);
     return ret;
