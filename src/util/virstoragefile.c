@@ -520,8 +520,7 @@ qcow2GetExtensions(const char *buf,
             if (!backingFormat)
                 break;
 
-            if (VIR_ALLOC_N(tmp, len + 1) < 0)
-                return -1;
+            tmp = g_new0(char, len + 1);
             memcpy(tmp, buf + offset, len);
             tmp[len] = '\0';
 
@@ -575,8 +574,7 @@ qcowXGetBackingStore(char **res,
         return BACKING_STORE_INVALID;
     if (offset + size > buf_size || offset + size < offset)
         return BACKING_STORE_INVALID;
-    if (VIR_ALLOC_N(*res, size + 1) < 0)
-        return BACKING_STORE_ERROR;
+    *res = g_new0(char, size + 1);
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
 
@@ -598,8 +596,7 @@ vmdk4GetBackingStore(char **res,
     size_t len;
     g_autofree char *desc = NULL;
 
-    if (VIR_ALLOC_N(desc, VIR_STORAGE_MAX_HEADER) < 0)
-        return BACKING_STORE_ERROR;
+    desc = g_new0(char, VIR_STORAGE_MAX_HEADER);
 
     *res = NULL;
     /*
@@ -669,8 +666,7 @@ qedGetBackingStore(char **res,
         return BACKING_STORE_OK;
     if (offset + size > buf_size || offset + size < offset)
         return BACKING_STORE_INVALID;
-    if (VIR_ALLOC_N(*res, size + 1) < 0)
-        return BACKING_STORE_ERROR;
+    *res = g_new0(char, size + 1);
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
 
@@ -959,9 +955,7 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                                   buf, len)) {
                 int expt_fmt = fileTypeInfo[meta->format].cryptInfo[i].format;
                 if (!meta->encryption) {
-                    if (VIR_ALLOC(meta->encryption) < 0)
-                        return -1;
-
+                    meta->encryption = g_new0(virStorageEncryption, 1);
                     meta->encryption->format = expt_fmt;
                 } else {
                     if (meta->encryption->format != expt_fmt) {
@@ -1735,8 +1729,7 @@ virStorageNetHostDefCopy(size_t nhosts,
     virStorageNetHostDefPtr ret = NULL;
     size_t i;
 
-    if (VIR_ALLOC_N(ret, nhosts) < 0)
-        goto error;
+    ret = g_new0(virStorageNetHostDef, nhosts);
 
     for (i = 0; i < nhosts; i++) {
         virStorageNetHostDefPtr src = &hosts[i];
@@ -1750,10 +1743,6 @@ virStorageNetHostDefCopy(size_t nhosts,
     }
 
     return ret;
-
- error:
-    virStorageNetHostDefFree(nhosts, ret);
-    return NULL;
 }
 
 
@@ -1775,8 +1764,7 @@ virStorageAuthDefCopy(const virStorageAuthDef *src)
 {
     g_autoptr(virStorageAuthDef) authdef = NULL;
 
-    if (VIR_ALLOC(authdef) < 0)
-        return NULL;
+    authdef = g_new0(virStorageAuthDef, 1);
 
     authdef->username = g_strdup(src->username);
     /* Not present for storage pool, but used for disk source */
@@ -1801,8 +1789,7 @@ virStorageAuthDefParse(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (VIR_ALLOC(authdef) < 0)
-        goto cleanup;
+    authdef = g_new0(virStorageAuthDef, 1);
 
     if (!(authdef->username = virXPathString("string(./@username)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1891,8 +1878,7 @@ virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
     g_autofree char *path = NULL;
     g_autofree char *mode = NULL;
 
-    if (VIR_ALLOC(prd) < 0)
-        return NULL;
+    prd = g_new0(virStoragePRDef, 1);
 
     if (!(managed = virXPathString("string(./@managed)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -2020,8 +2006,7 @@ virStoragePRDefCopy(virStoragePRDefPtr src)
     virStoragePRDefPtr copy = NULL;
     virStoragePRDefPtr ret = NULL;
 
-    if (VIR_ALLOC(copy) < 0)
-        return NULL;
+    copy = g_new0(virStoragePRDef, 1);
 
     copy->managed = src->managed;
 
@@ -2129,8 +2114,7 @@ virStorageSourceSeclabelsCopy(virStorageSourcePtr to,
     if (from->nseclabels == 0)
         return 0;
 
-    if (VIR_ALLOC_N(to->seclabels, from->nseclabels) < 0)
-        return -1;
+    to->seclabels = g_new0(virSecurityDeviceLabelDefPtr, from->nseclabels);
     to->nseclabels = from->nseclabels;
 
     for (i = 0; i < to->nseclabels; i++) {
@@ -2280,8 +2264,7 @@ virStorageTimestampsCopy(const virStorageTimestamps *src)
 {
     virStorageTimestampsPtr ret;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virStorageTimestamps, 1);
 
     memcpy(ret, src, sizeof(*src));
 
@@ -2294,8 +2277,7 @@ virStoragePermsCopy(const virStoragePerms *src)
 {
     virStoragePermsPtr ret;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virStoragePerms, 1);
 
     ret->mode = src->mode;
     ret->uid = src->uid;
@@ -2312,8 +2294,7 @@ virStorageSourcePoolDefCopy(const virStorageSourcePoolDef *src)
 {
     virStorageSourcePoolDefPtr ret;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virStorageSourcePoolDef, 1);
 
     ret->voltype = src->voltype;
     ret->pooltype = src->pooltype;
@@ -2806,9 +2787,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
         return -1;
     }
 
-    if (VIR_ALLOC(src->hosts) < 0)
-        return -1;
-
+    src->hosts = g_new0(virStorageNetHostDef, 1);
     src->nhosts = 1;
 
     if (!(scheme = virStringSplit(uri->scheme, "+", 2)))
@@ -3001,8 +2980,8 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
                                _("duplicate 'id' found in '%s'"), src->path);
                 return -1;
             }
-            if (VIR_ALLOC(authdef) < 0)
-                return -1;
+
+            authdef = g_new0(virStorageAuthDef, 1);
 
             authdef->username = g_strdup(p + strlen("id="));
 
@@ -3475,8 +3454,7 @@ virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
         return -1;
     }
 
-    if (VIR_ALLOC_N(src->hosts, nservers) < 0)
-        return -1;
+    src->hosts = g_new0(virStorageNetHostDef, nservers);
     src->nhosts = nservers;
 
     for (i = 0; i < nservers; i++) {
@@ -3513,9 +3491,7 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
     if (!lun)
         lun = "0";
 
-    if (VIR_ALLOC(src->hosts) < 0)
-        return -1;
-
+    src->hosts = g_new0(virStorageNetHostDef, 1);
     src->nhosts = 1;
 
     if (STRNEQ_NULLABLE(transport, "tcp")) {
@@ -3583,8 +3559,7 @@ virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
 
     src->path = g_strdup(export);
 
-    if (VIR_ALLOC_N(src->hosts, 1) < 0)
-        return -1;
+    src->hosts = g_new0(virStorageNetHostDef, 1);
     src->nhosts = 1;
 
     if (server) {
@@ -3639,9 +3614,7 @@ virStorageSourceParseBackingJSONSheepdog(virStorageSourcePtr src,
 
     src->path = g_strdup(vdi);
 
-    if (VIR_ALLOC(src->hosts) < 0)
-        return -1;
-
+    src->hosts = g_new0(virStorageNetHostDef, 1);
     src->nhosts = 1;
 
     if (virStorageSourceParseBackingJSONSocketAddress(src->hosts, server) < 0)
@@ -3676,8 +3649,7 @@ virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
 
     src->path = g_strdup(path);
 
-    if (VIR_ALLOC_N(src->hosts, 1) < 0)
-        return -1;
+    src->hosts = g_new0(virStorageNetHostDef, 1);
     src->nhosts = 1;
 
     if (server) {
@@ -3738,9 +3710,7 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
     if (servers) {
         nservers = virJSONValueArraySize(servers);
 
-        if (VIR_ALLOC_N(src->hosts, nservers) < 0)
-            return -1;
-
+        src->hosts = g_new0(virStorageNetHostDef, nservers);
         src->nhosts = nservers;
 
         for (i = 0; i < nservers; i++) {
@@ -3814,8 +3784,7 @@ virStorageSourceParseBackingJSONVxHS(virStorageSourcePtr src,
 
     src->path = g_strdup(vdisk_id);
 
-    if (VIR_ALLOC_N(src->hosts, 1) < 0)
-        return -1;
+    src->hosts = g_new0(virStorageNetHostDef, 1);
     src->nhosts = 1;
 
     if (virStorageSourceParseBackingJSONInetSocketAddress(src->hosts,
@@ -4887,8 +4856,7 @@ virStorageFileInitAs(virStorageSourcePtr src,
                      uid_t uid, gid_t gid)
 {
     int actualType = virStorageSourceGetActualType(src);
-    if (VIR_ALLOC(src->drv) < 0)
-        return -1;
+    src->drv = g_new0(virStorageDriverData, 1);
 
     if (uid == (uid_t) -1)
         src->drv->uid = geteuid();
