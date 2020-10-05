@@ -44,10 +44,10 @@
  */
 
 #define MSVM_COMPUTERSYSTEM_WQL_VIRTUAL \
-    "Description = \"Microsoft Virtual Machine\" "
+    "Name != __SERVER "
 
 #define MSVM_COMPUTERSYSTEM_WQL_PHYSICAL \
-    "Description = \"Microsoft Hosting Computer System\" "
+    "Name = __SERVER "
 
 #define MSVM_COMPUTERSYSTEM_WQL_ACTIVE \
     "(EnabledState != 0 and EnabledState != 3 and EnabledState != 32769) "
