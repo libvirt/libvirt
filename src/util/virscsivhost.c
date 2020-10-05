@@ -250,8 +250,7 @@ virSCSIVHostDeviceNew(const char *name)
 {
     g_autoptr(virSCSIVHostDevice) dev = NULL;
 
-    if (VIR_ALLOC(dev) < 0)
-        return NULL;
+    dev = g_new0(virSCSIVHostDevice, 1);
 
     dev->name = g_strdup(name);
 

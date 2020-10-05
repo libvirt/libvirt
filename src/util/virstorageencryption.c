@@ -115,12 +115,9 @@ virStorageEncryptionCopy(const virStorageEncryption *src)
     virStorageEncryptionPtr ret;
     size_t i;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virStorageEncryption, 1);
 
-    if (VIR_ALLOC_N(ret->secrets, src->nsecrets) < 0)
-        goto error;
-
+    ret->secrets = g_new0(virStorageEncryptionSecretPtr, src->nsecrets);
     ret->nsecrets = src->nsecrets;
     ret->format = src->format;
 
@@ -147,8 +144,7 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
     virStorageEncryptionSecretPtr ret;
     char *type_str = NULL;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virStorageEncryptionSecret, 1);
 
     ctxt->node = node;
 
@@ -247,8 +243,7 @@ virStorageEncryptionParseNode(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (VIR_ALLOC(encdef) < 0)
-        goto cleanup;
+    encdef = g_new0(virStorageEncryption, 1);
 
     if (!(format_str = virXPathString("string(./@format)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -268,8 +263,7 @@ virStorageEncryptionParseNode(xmlNodePtr node,
         goto cleanup;
 
     if (n > 0) {
-        if (VIR_ALLOC_N(encdef->secrets, n) < 0)
-            goto cleanup;
+        encdef->secrets = g_new0(virStorageEncryptionSecretPtr, n);
         encdef->nsecrets = n;
 
         for (i = 0; i < n; i++) {

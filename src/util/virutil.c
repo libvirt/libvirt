@@ -447,8 +447,7 @@ char *virIndexToDiskName(int idx, const char *prefix)
 
     offset = strlen(prefix);
 
-    if (VIR_ALLOC_N(name, offset + i + 1))
-        return NULL;
+    name = g_new0(char, offset + i + 1);
 
     strcpy(name, prefix);
     name[offset + i] = '\0';
@@ -618,8 +617,7 @@ virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir, char **shell, bo
     if (val < 0)
         strbuflen = 1024;
 
-    if (VIR_ALLOC_N(strbuf, strbuflen) < 0)
-        return -1;
+    strbuf = g_new0(char, strbuflen);
 
     /*
      * From the manpage (terrifying but true):
@@ -688,8 +686,7 @@ static char *virGetGroupEnt(gid_t gid)
     if (val < 0)
         strbuflen = 1024;
 
-    if (VIR_ALLOC_N(strbuf, strbuflen) < 0)
-        return NULL;
+    strbuf = g_new0(char, strbuflen);
 
     /*
      * From the manpage (terrifying but true):
@@ -774,8 +771,7 @@ virGetUserIDByName(const char *name, uid_t *uid, bool missing_ok)
     if (val < 0)
         strbuflen = 1024;
 
-    if (VIR_ALLOC_N(strbuf, strbuflen) < 0)
-        goto cleanup;
+    strbuf = g_new0(char, strbuflen);
 
     while ((rc = getpwnam_r(name, &pwbuf, strbuf, strbuflen, &pw)) == ERANGE) {
         if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0)
@@ -856,8 +852,7 @@ virGetGroupIDByName(const char *name, gid_t *gid, bool missing_ok)
     if (val < 0)
         strbuflen = 1024;
 
-    if (VIR_ALLOC_N(strbuf, strbuflen) < 0)
-        goto cleanup;
+    strbuf = g_new0(char, strbuflen);
 
     while ((rc = getgrnam_r(name, &grbuf, strbuf, strbuflen, &gr)) == ERANGE) {
         if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0)

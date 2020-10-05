@@ -312,8 +312,7 @@ virUSBDeviceNew(unsigned int bus,
 {
     virUSBDevicePtr dev;
 
-    if (VIR_ALLOC(dev) < 0)
-        return NULL;
+    dev = g_new0(virUSBDevice, 1);
 
     dev->bus     = bus;
     dev->dev     = devno;

@@ -102,8 +102,7 @@ virPortAllocatorRangeNew(const char *name,
         return NULL;
     }
 
-    if (VIR_ALLOC(range) < 0)
-        return NULL;
+    range = g_new0(virPortAllocatorRange, 1);
 
     range->start = start;
     range->end = end;

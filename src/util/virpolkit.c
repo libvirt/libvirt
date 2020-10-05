@@ -178,8 +178,7 @@ virPolkitAgentCreate(void)
     if (virPipe(pipe_fd) < 0)
         goto error;
 
-    if (VIR_ALLOC(agent) < 0)
-        goto error;
+    agent = g_new0(virPolkitAgent, 1);
 
     agent->cmd = virCommandNewArgList(PKTTYAGENT, "--process", NULL);
 

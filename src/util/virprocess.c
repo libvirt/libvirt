@@ -1351,8 +1351,7 @@ virProcessNamespaceAvailable(unsigned int ns)
     /* Signal parent as soon as the child dies. RIP. */
     flags |= SIGCHLD;
 
-    if (VIR_ALLOC_N(stack, stacksize) < 0)
-        return -1;
+    stack = g_new0(char, stacksize);
 
     childStack = stack + stacksize;
 

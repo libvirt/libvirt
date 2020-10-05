@@ -68,8 +68,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 
     va_start(ap, nparams);
 
-    if (VIR_ALLOC_N(sorted, nparams) < 0)
-        goto cleanup;
+    sorted = g_new0(virTypedParameter, nparams);
 
     /* Here we intentionally don't copy values */
     memcpy(sorted, params, sizeof(*params) * nparams);
@@ -361,8 +360,7 @@ virTypedParamsCopy(virTypedParameterPtr *dst,
     if (!src || nparams <= 0)
         return 0;
 
-    if (VIR_ALLOC_N(*dst, nparams) < 0)
-        return -1;
+    *dst = g_new0(virTypedParameter, nparams);
 
     for (i = 0; i < nparams; i++) {
         ignore_value(virStrcpyStatic((*dst)[i].field, src[i].field));
@@ -399,8 +397,7 @@ virTypedParamsFilter(virTypedParameterPtr params,
 {
     size_t i, n = 0;
 
-    if (VIR_ALLOC_N(*ret, nparams) < 0)
-        return -1;
+    *ret = g_new0(virTypedParameterPtr, nparams);
 
     for (i = 0; i < nparams; i++) {
         if (STREQ(params[i].field, name)) {
@@ -447,9 +444,8 @@ virTypedParamsGetStringList(virTypedParameterPtr params,
     if (nfiltered < 0)
         goto error;
 
-    if (nfiltered &&
-        VIR_ALLOC_N(*values, nfiltered) < 0)
-        goto error;
+    if (nfiltered)
+        *values = g_new0(const char *, nfiltered);
 
     for (n = 0, i = 0; i < nfiltered; i++) {
         if (filtered[i]->type == VIR_TYPED_PARAM_STRING)
@@ -551,8 +547,7 @@ virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
             goto cleanup;
         }
     } else {
-        if (VIR_ALLOC_N(*params, remote_params_len) < 0)
-            goto cleanup;
+        *params = g_new0(virTypedParameter, remote_params_len);
     }
     *nparams = remote_params_len;
 
@@ -662,8 +657,7 @@ virTypedParamsSerialize(virTypedParameterPtr params,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(params_val, nparams) < 0)
-        goto cleanup;
+    params_val = g_new0(struct _virTypedParameterRemote, nparams);
 
     for (i = 0, j = 0; i < nparams; ++i) {
         virTypedParameterPtr param = params + i;

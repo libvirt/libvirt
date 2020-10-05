@@ -186,8 +186,7 @@ virSCSIDeviceNew(const char *sysfs_prefix,
     g_autofree char *model = NULL;
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_DEVICES;
 
-    if (VIR_ALLOC(dev) < 0)
-        return NULL;
+    dev = g_new0(virSCSIDevice, 1);
 
     dev->bus = bus;
     dev->target = target;
@@ -263,8 +262,7 @@ virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev,
 {
     g_autoptr(virUsedByInfo) copy = NULL;
 
-    if (VIR_ALLOC(copy) < 0)
-        return -1;
+    copy = g_new0(virUsedByInfo, 1);
     copy->drvname = g_strdup(drvname);
     copy->domname = g_strdup(domname);
 

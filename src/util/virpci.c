@@ -1372,8 +1372,7 @@ virPCIDeviceNew(unsigned int domain,
     g_autofree char *vendor = NULL;
     g_autofree char *product = NULL;
 
-    if (VIR_ALLOC(dev) < 0)
-        return NULL;
+    dev = g_new0(virPCIDevice, 1);
 
     dev->address.domain = domain;
     dev->address.bus = bus;
@@ -1422,8 +1421,7 @@ virPCIDeviceCopy(virPCIDevicePtr dev)
 {
     virPCIDevicePtr copy;
 
-    if (VIR_ALLOC(copy) < 0)
-        return NULL;
+    copy = g_new0(virPCIDevice, 1);
 
     /* shallow copy to take care of most attributes */
     *copy = *dev;
@@ -1871,8 +1869,7 @@ virPCIGetIOMMUGroupAddressesAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaq
     virPCIDeviceAddressPtr copyAddr;
 
     /* make a copy to insert onto the list */
-    if (VIR_ALLOC(copyAddr) < 0)
-        goto cleanup;
+    copyAddr = g_new0(virPCIDeviceAddress, 1);
 
     *copyAddr = *newDevAddr;
 
@@ -2204,8 +2201,7 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
     }
 
     config_address = g_path_get_basename(device_path);
-    if (VIR_ALLOC(bdf) < 0)
-        return NULL;
+    bdf = g_new0(virPCIDeviceAddress, 1);
 
     if (virPCIDeviceAddressParse(config_address, bdf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

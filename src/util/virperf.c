@@ -368,8 +368,7 @@ virPerfNew(void)
     size_t i;
     virPerfPtr perf;
 
-    if (VIR_ALLOC(perf) < 0)
-        return NULL;
+    perf = g_new0(virPerf, 1);
 
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
         perf->events[i].fd = -1;

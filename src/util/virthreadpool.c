@@ -188,9 +188,8 @@ virThreadPoolExpand(virThreadPoolPtr pool, size_t gain, bool priority)
 
     for (i = 0; i < gain; i++) {
         g_autofree char *name = NULL;
-        if (VIR_ALLOC(data) < 0)
-            goto error;
 
+        data = g_new0(struct virThreadPoolWorkerData, 1);
         data->pool = pool;
         data->cond = priority ? &pool->prioCond : &pool->cond;
         data->priority = priority;
@@ -232,8 +231,7 @@ virThreadPoolNewFull(size_t minWorkers,
     if (minWorkers > maxWorkers)
         minWorkers = maxWorkers;
 
-    if (VIR_ALLOC(pool) < 0)
-        return NULL;
+    pool = g_new0(virThreadPool, 1);
 
     pool->jobList.tail = pool->jobList.head = NULL;
 
@@ -403,8 +401,7 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
         virThreadPoolExpand(pool, 1, false) < 0)
         goto error;
 
-    if (VIR_ALLOC(job) < 0)
-        goto error;
+    job = g_new0(virThreadPoolJob, 1);
 
     job->data = jobData;
     job->priority = priority;

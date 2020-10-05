@@ -672,9 +672,7 @@ virXPathNodeSet(const char *xpath,
 
     ret = obj->nodesetval->nodeNr;
     if (list != NULL && ret) {
-        if (VIR_ALLOC_N(*list, ret) < 0)
-            return -1;
-
+        *list = g_new0(xmlNodePtr, ret);
         memcpy(*list, obj->nodesetval->nodeTab, ret * sizeof(xmlNodePtr));
     }
     xmlXPathFreeObject(obj);
@@ -1237,8 +1235,7 @@ virXMLValidatorInit(const char *schemafile)
 {
     virXMLValidatorPtr validator = NULL;
 
-    if (VIR_ALLOC(validator) < 0)
-        return NULL;
+    validator = g_new0(virXMLValidator, 1);
 
     validator->schemafile = g_strdup(schemafile);
 

@@ -105,8 +105,7 @@ virRotatingFileWriterEntryNew(const char *path,
 
     VIR_DEBUG("Opening %s mode=0%02o", path, mode);
 
-    if (VIR_ALLOC(entry) < 0)
-        return NULL;
+    entry = g_new0(virRotatingFileWriterEntry, 1);
 
     if ((entry->fd = open(path, O_CREAT|O_APPEND|O_WRONLY|O_CLOEXEC, mode)) < 0) {
         virReportSystemError(errno,
@@ -148,8 +147,7 @@ virRotatingFileReaderEntryNew(const char *path)
 
     VIR_DEBUG("Opening %s", path);
 
-    if (VIR_ALLOC(entry) < 0)
-        return NULL;
+    entry = g_new0(virRotatingFileReaderEntry, 1);
 
     if ((entry->fd = open(path, O_RDONLY|O_CLOEXEC)) < 0) {
         if (errno != ENOENT) {
@@ -238,8 +236,7 @@ virRotatingFileWriterNew(const char *path,
 {
     virRotatingFileWriterPtr file;
 
-    if (VIR_ALLOC(file) < 0)
-        goto error;
+    file = g_new0(virRotatingFileWriter, 1);
 
     file->basepath = g_strdup(path);
 
@@ -288,8 +285,7 @@ virRotatingFileReaderNew(const char *path,
     virRotatingFileReaderPtr file;
     size_t i;
 
-    if (VIR_ALLOC(file) < 0)
-        goto error;
+    file = g_new0(virRotatingFileReader, 1);
 
     if (maxbackup > VIR_MAX_MAX_BACKUP) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -299,8 +295,7 @@ virRotatingFileReaderNew(const char *path,
     }
 
     file->nentries = maxbackup + 1;
-    if (VIR_ALLOC_N(file->entries, file->nentries) < 0)
-        goto error;
+    file->entries = g_new0(virRotatingFileReaderEntryPtr, file->nentries);
 
     if (!(file->entries[file->nentries - 1] = virRotatingFileReaderEntryNew(path)))
         goto error;
