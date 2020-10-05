@@ -19,10 +19,20 @@ v6.9.0 (unreleased)
     local file-backed disks to configure a disk which discards changes made to
     it while the VM was active.
 
+  * hyperv: implement new APIs
+
+    The ``virConnectGetCapabilities()``, ``virConnectGetMaxVcpus()``,
+    ``virConnectGetVersion()``, and ``virDomainGetAutostart()`` APIs have been
+    implemented in the Hyper-V driver.
+
 * **Improvements**
 
 * **Bug fixes**
 
+  * hyperv: ensure WQL queries work in all locales
+
+    Relying on the "Description" field caused queries to fail on non-"en-US"
+    systems. The queries have been updated to avoid using localized strings.
 
 v6.8.0 (2020-10-01)
 ===================
