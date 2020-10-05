@@ -926,8 +926,7 @@ qemuInitCgroup(virDomainObjPtr vm,
     if (!vm->def->resource) {
         virDomainResourceDefPtr res;
 
-        if (VIR_ALLOC(res) < 0)
-            return -1;
+        res = g_new0(virDomainResourceDef, 1);
 
         res->partition = g_strdup("/machine");
 
@@ -1252,8 +1251,7 @@ qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
     if (!(all_nodes_str = virBitmapFormat(all_nodes)))
         goto cleanup;
 
-    if (VIR_ALLOC(data) < 0)
-        goto cleanup;
+    data = g_new0(qemuCgroupEmulatorAllNodesData, 1);
 
     if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                            false, &data->emulatorCgroup) < 0)

@@ -928,8 +928,7 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
 
     /* No SCSI controller present, for backward compatibility we
      * now hotplug a controller */
-    if (VIR_ALLOC(cont) < 0)
-        return NULL;
+    cont = g_new0(virDomainControllerDef, 1);
     cont->type = VIR_DOMAIN_CONTROLLER_TYPE_SCSI;
     cont->idx = controller;
     if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT)
@@ -1243,11 +1242,9 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
         queueSize = tapfdSize;
-        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0)
-            goto cleanup;
+        tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
-        if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0)
-            goto cleanup;
+        vhostfd = g_new0(int, vhostfdSize);
         memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuInterfaceBridgeConnect(vm->def, driver, net,
                                        tapfd, &tapfdSize) < 0)
@@ -1262,11 +1259,9 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
         queueSize = tapfdSize;
-        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0)
-            goto cleanup;
+        tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
-        if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0)
-            goto cleanup;
+        vhostfd = g_new0(int, vhostfdSize);
         memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuInterfaceDirectConnect(vm->def, driver, net,
                                        tapfd, tapfdSize,
@@ -1282,10 +1277,9 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
         queueSize = tapfdSize;
-        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0)
-            goto cleanup;
+        tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
-        if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0)
+        vhostfd = g_new0(int, vhostfdSize);
             goto cleanup;
         memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuInterfaceEthernetConnect(vm->def, driver, net,
@@ -1381,9 +1375,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if (VIR_ALLOC_N(tapfdName, tapfdSize) < 0 ||
-        VIR_ALLOC_N(vhostfdName, vhostfdSize) < 0)
-        goto cleanup;
+    tapfdName = g_new0(char *, tapfdSize);
+    vhostfdName = g_new0(char *, vhostfdSize);
 
     for (i = 0; i < tapfdSize; i++)
         tapfdName[i] = g_strdup_printf("fd-%s%zu", net->info.alias, i);
@@ -1973,8 +1966,8 @@ qemuDomainChrPreInsert(virDomainDefPtr vmdef,
      */
     if (vmdef->nserials == 0 && vmdef->nconsoles == 0 &&
         chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
-        if (!vmdef->consoles && VIR_ALLOC(vmdef->consoles) < 0)
-            return -1;
+        if (!vmdef->consoles)
+            vmdef->consoles = g_new0(virDomainChrDefPtr, 1);
 
         /* We'll be dealing with serials[0] directly, so NULL is fine here. */
         if (!(vmdef->consoles[0] = virDomainChrDefNew(NULL))) {

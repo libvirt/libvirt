@@ -1452,8 +1452,7 @@ qemuAgentGetVCPUs(qemuAgentPtr agent,
 
     ndata = virJSONValueArraySize(data);
 
-    if (VIR_ALLOC_N(*info, ndata) < 0)
-        goto cleanup;
+    *info = g_new0(qemuAgentCPUInfo, ndata);
 
     for (i = 0; i < ndata; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
@@ -2148,8 +2147,7 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
             if (VIR_EXPAND_N(ifaces_ret, ifaces_count, 1) < 0)
                 goto error;
 
-            if (VIR_ALLOC(ifaces_ret[ifaces_count - 1]) < 0)
-                goto error;
+            ifaces_ret[ifaces_count - 1] = g_new0(virDomainInterface, 1);
 
             if (virHashAddEntry(ifaces_store, ifname_s,
                                 ifaces_ret[ifaces_count - 1]) < 0)

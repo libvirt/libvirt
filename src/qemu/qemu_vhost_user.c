@@ -196,8 +196,7 @@ qemuVhostUserParse(const char *path)
         return NULL;
     }
 
-    if (VIR_ALLOC(vu) < 0)
-        return NULL;
+    vu = g_new0(qemuVhostUser, 1);
 
     if (qemuVhostUserTypeParse(path, doc, vu) < 0)
         return NULL;
@@ -253,8 +252,7 @@ qemuVhostUserFetchParsedConfigs(bool privileged,
 
     npaths = virStringListLength((const char **)paths);
 
-    if (VIR_ALLOC_N(vus, npaths) < 0)
-        return -1;
+    vus = g_new0(qemuVhostUserPtr, npaths);
 
     for (i = 0; i < npaths; i++) {
         if (!(vus[i] = qemuVhostUserParse(paths[i])))
@@ -292,8 +290,7 @@ qemuVhostUserGPUFillCapabilities(qemuVhostUserPtr vu,
     }
 
     nfeatures = virJSONValueArraySize(featuresJSON);
-    if (VIR_ALLOC_N(features, nfeatures) < 0)
-        return -1;
+    features = g_new0(qemuVhostUserGPUFeature, nfeatures);
 
     for (i = 0; i < nfeatures; i++) {
         virJSONValuePtr item = virJSONValueArrayGet(featuresJSON, i);
@@ -382,8 +379,8 @@ qemuVhostUserFillDomainGPU(virQEMUDriverPtr driver,
                 continue;
         }
 
-        if (!video->driver && VIR_ALLOC(video->driver) < 0)
-            goto end;
+        if (!video->driver)
+            video->driver = g_new0(virDomainVideoDriverDef, 1);
 
         VIR_FREE(video->driver->vhost_user_binary);
         video->driver->vhost_user_binary = g_strdup(vu->binary);
@@ -397,8 +394,8 @@ qemuVhostUserFillDomainGPU(virQEMUDriverPtr driver,
         goto end;
     }
 
-    if (!video->accel && VIR_ALLOC(video->accel) < 0)
-        goto end;
+    if (!video->accel)
+        video->accel = g_new0(virDomainVideoAccelDef, 1);
 
     if (!video->accel->rendernode &&
         qemuVhostUserGPUHasFeature(&vu->capabilities.gpu,

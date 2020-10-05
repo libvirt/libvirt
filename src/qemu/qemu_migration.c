@@ -3309,8 +3309,7 @@ static void qemuMigrationSrcIOFunc(void *arg)
     VIR_DEBUG("Running migration tunnel; stream=%p, sock=%d",
               data->st, data->sock);
 
-    if (VIR_ALLOC_N(buffer, TUNNEL_SEND_BUF_SIZE) < 0)
-        goto abrt;
+    buffer = g_new0(char, TUNNEL_SEND_BUF_SIZE);
 
     fds[0].fd = data->sock;
     fds[1].fd = data->wakeupRecvFD;
@@ -3414,8 +3413,7 @@ qemuMigrationSrcStartTunnel(virStreamPtr st,
     if (virPipe(wakeupFD) < 0)
         goto error;
 
-    if (VIR_ALLOC(io) < 0)
-        goto error;
+    io = g_new0(qemuMigrationIOThread, 1);
 
     io->st = st;
     io->sock = sock;

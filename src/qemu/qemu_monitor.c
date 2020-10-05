@@ -1869,8 +1869,7 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (VIR_ALLOC_N(info, maxvcpus) < 0)
-        return -1;
+    info = g_new0(qemuMonitorCPUInfo, maxvcpus);
 
     /* initialize a few non-zero defaults */
     qemuMonitorCPUInfoClear(info, maxvcpus);
@@ -3684,11 +3683,9 @@ qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig)
     qemuMonitorCPUModelInfoPtr copy;
     size_t i;
 
-    if (VIR_ALLOC(copy) < 0)
-        goto error;
+    copy = g_new0(qemuMonitorCPUModelInfo, 1);
 
-    if (VIR_ALLOC_N(copy->props, orig->nprops) < 0)
-        goto error;
+    copy->props = g_new0(qemuMonitorCPUProperty, orig->nprops);
 
     copy->name = g_strdup(orig->name);
 
@@ -3719,10 +3716,6 @@ qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig)
     }
 
     return copy;
-
- error:
-    qemuMonitorCPUModelInfoFree(copy);
-    return NULL;
 }
 
 

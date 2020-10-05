@@ -103,8 +103,7 @@ virQEMUSaveDataNew(char *domXML,
     virQEMUSaveDataPtr data = NULL;
     virQEMUSaveHeaderPtr header;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(virQEMUSaveData, 1);
 
     data->xml = g_steal_pointer(&domXML);
 

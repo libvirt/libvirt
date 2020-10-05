@@ -155,8 +155,7 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
         }
     }
 
-    if (VIR_ALLOC_N(paths, nmounts) < 0)
-        goto error;
+    paths = g_new0(char *, nmounts);
 
     for (i = 0; i < nmounts; i++) {
         if (!(paths[i] = qemuDomainGetPreservedMountPath(cfg, vm, mounts[i])))

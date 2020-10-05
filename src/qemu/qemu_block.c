@@ -169,8 +169,7 @@ qemuBlockNodeNameGetBackingChainBacking(virJSONValuePtr next,
         }
     }
 
-    if (VIR_ALLOC(data) < 0)
-        return -1;
+    data = g_new0(qemuBlockNodeNameBackingChainData, 1);
 
     data->nodeformat = g_strdup(nodename);
     data->nodestorage = g_strdup(parentnodename);
@@ -415,8 +414,7 @@ qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
         return NULL;
     }
 
-    if (VIR_ALLOC(uri) < 0)
-        return NULL;
+    uri = g_new0(virURI, 1);
 
     if (src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
         uri->port = src->hosts->port;
@@ -1595,8 +1593,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
     if (autoreadonly)
         backendpropsflags |= QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_AUTO_READONLY;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
     if (!(data->formatProps = qemuBlockStorageSourceGetBlockdevProps(src,
                                                                      backingStore)) ||
@@ -1886,8 +1883,7 @@ qemuBlockStorageSourceChainDetachPrepareBlockdev(virStorageSourcePtr src)
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     virStorageSourcePtr n;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(qemuBlockStorageSourceChainData, 1);
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (!(backend = qemuBlockStorageSourceDetachPrepare(n, NULL)))
@@ -1916,8 +1912,7 @@ qemuBlockStorageSourceChainDetachPrepareDrive(virStorageSourcePtr src,
     g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(qemuBlockStorageSourceChainData, 1);
 
     if (!(backend = qemuBlockStorageSourceDetachPrepare(src, driveAlias)))
         return NULL;
