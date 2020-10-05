@@ -94,6 +94,7 @@
 %define with_libssh2          0
 %define with_wireshark        0
 %define with_libssh           0
+%define with_dmidecode        0
 
 # Finally set the OS / architecture specific special cases
 
@@ -181,6 +182,10 @@
     %ifnarch s390 s390x %{arm} riscv64
         %define with_numad    0%{!?_without_numad:1}
     %endif
+%endif
+
+%ifarch %{ix86} x86_64
+    %define with_dmidecode 0%{!?_without_dmidecode:1}
 %endif
 
 # Force QEMU to run as non-root
@@ -435,7 +440,7 @@ Requires: iproute-tc
 %endif
 
 Requires: polkit >= 0.112
-%ifarch %{ix86} x86_64
+%if %{with_dmidecode}
 # For virConnectGetSysinfo
 Requires: dmidecode
 %endif
