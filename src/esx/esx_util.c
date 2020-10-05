@@ -310,16 +310,14 @@ esxUtil_ResolveHostname(const char *hostname,
 
     errcode = getnameinfo(result->ai_addr, result->ai_addrlen, ipAddress,
                           ipAddress_length, NULL, 0, NI_NUMERICHOST);
+    freeaddrinfo(result);
 
     if (errcode != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Formatting IP address for host '%s' failed: %s"), hostname,
                        gai_strerror(errcode));
-        freeaddrinfo(result);
         return -1;
     }
-
-    freeaddrinfo(result);
 
     return 0;
 }
