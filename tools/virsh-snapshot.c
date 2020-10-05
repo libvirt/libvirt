@@ -1102,8 +1102,10 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
     if (count >= 0) {
         /* When mixing --from and --tree, we also want a copy of from
          * in the list, but with no parent for that one entry.  */
-        snaplist->snaps = vshCalloc(ctl, count + (tree && from),
-                                    sizeof(*snaplist->snaps));
+        if (tree && from)
+            snaplist->snaps = g_new0(struct virshSnap, count + 1);
+        else
+            snaplist->snaps = g_new0(struct virshSnap, count);
         snaplist->nsnaps = count;
         for (i = 0; i < count; i++)
             snaplist->snaps[i].snap = snaps[i];
