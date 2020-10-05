@@ -364,8 +364,7 @@ int virSystemdCreateMachine(const char *name,
     if (g_atomic_int_get(&hasCreateWithNetwork)) {
         g_autoptr(virError) error = NULL;
 
-        if (VIR_ALLOC(error) < 0)
-            return -1;
+        error = g_new0(virError, 1);
 
         guuid = g_variant_new_fixed_array(G_VARIANT_TYPE("y"),
                                           uuid, 16, sizeof(unsigned char));
@@ -495,8 +494,7 @@ int virSystemdTerminateMachine(const char *name)
     if (!(conn = virGDBusGetSystemBus()))
         return -1;
 
-    if (VIR_ALLOC(error) < 0)
-        return -1;
+    error = g_new0(virError, 1);
 
     /*
      * The systemd DBus API we're invoking has the
@@ -655,14 +653,8 @@ virSystemdActivationAddFD(virSystemdActivationPtr act,
     virSystemdActivationEntryPtr ent = virHashLookup(act->fds, name);
 
     if (!ent) {
-        if (VIR_ALLOC(ent) < 0)
-            return -1;
-
-        if (VIR_ALLOC_N(ent->fds, 1) < 0) {
-            virSystemdActivationEntryFree(ent);
-            return -1;
-        }
-
+        ent = g_new0(virSystemdActivationEntry, 1);
+        ent->fds = g_new0(int, 1);
         ent->fds[ent->nfds++] = fd;
 
         VIR_DEBUG("Record first FD %d with name %s", fd, name);
@@ -902,8 +894,7 @@ virSystemdActivationNew(virSystemdActivationMap *map,
     const char *fdnames;
 
     VIR_DEBUG("Activated with %d FDs", nfds);
-    if (VIR_ALLOC(act) < 0)
-        return NULL;
+    act = g_new0(virSystemdActivation, 1);
 
     if (!(act->fds = virHashCreate(10, virSystemdActivationEntryFree)))
         goto error;
