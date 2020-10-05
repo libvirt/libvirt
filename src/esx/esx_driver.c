@@ -602,7 +602,7 @@ esxConnectToHost(esxPrivate *priv,
                  char **vCenterIPAddress)
 {
     int result = -1;
-    char ipAddress[NI_MAXHOST] = "";
+    g_autofree char *ipAddress = NULL;
     char *username = NULL;
     char *password = NULL;
     char *url = NULL;
@@ -615,7 +615,7 @@ esxConnectToHost(esxPrivate *priv,
 
     ESX_VI_CHECK_ARG_LIST(vCenterIPAddress);
 
-    if (esxUtil_ResolveHostname(conn->uri->server, ipAddress, NI_MAXHOST) < 0)
+    if (esxUtil_ResolveHostname(conn->uri->server, &ipAddress) < 0)
         return -1;
 
     if (conn->uri->user) {
@@ -692,7 +692,7 @@ esxConnectToVCenter(esxPrivate *priv,
                     const char *hostSystemIPAddress)
 {
     int result = -1;
-    char ipAddress[NI_MAXHOST] = "";
+    g_autofree char *ipAddress = NULL;
     char *username = NULL;
     char *password = NULL;
     char *url = NULL;
@@ -704,7 +704,7 @@ esxConnectToVCenter(esxPrivate *priv,
         return -1;
     }
 
-    if (esxUtil_ResolveHostname(hostname, ipAddress, NI_MAXHOST) < 0)
+    if (esxUtil_ResolveHostname(hostname, &ipAddress) < 0)
         return -1;
 
     if (conn->uri->user) {
@@ -813,7 +813,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     esxPrivate *priv = NULL;
     char *potentialVCenterIPAddress = NULL;
-    char vCenterIPAddress[NI_MAXHOST] = "";
+    g_autofree char *vCenterIPAddress = NULL;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -875,16 +875,10 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
                     goto cleanup;
                 }
 
-                if (virStrcpyStatic(vCenterIPAddress,
-                                    potentialVCenterIPAddress) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("vCenter IP address %s too big for destination"),
-                                   potentialVCenterIPAddress);
-                    goto cleanup;
-                }
+                vCenterIPAddress = g_strdup(potentialVCenterIPAddress);
             } else {
                 if (esxUtil_ResolveHostname(priv->parsedUri->vCenter,
-                                            vCenterIPAddress, NI_MAXHOST) < 0) {
+                                            &vCenterIPAddress) < 0) {
                     goto cleanup;
                 }
 

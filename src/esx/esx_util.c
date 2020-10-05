@@ -278,12 +278,12 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
 
 
 int
-esxUtil_ResolveHostname(const char *hostname,
-                        char *ipAddress, size_t ipAddress_length)
+esxUtil_ResolveHostname(const char *hostname, char **ipAddress)
 {
     struct addrinfo hints;
     struct addrinfo *result = NULL;
     int errcode;
+    g_autofree char *address = NULL;
 
     memset(&hints, 0, sizeof(hints));
 
@@ -308,8 +308,9 @@ esxUtil_ResolveHostname(const char *hostname,
         return -1;
     }
 
-    errcode = getnameinfo(result->ai_addr, result->ai_addrlen, ipAddress,
-                          ipAddress_length, NULL, 0, NI_NUMERICHOST);
+    address = g_new0(char, NI_MAXHOST);
+    errcode = getnameinfo(result->ai_addr, result->ai_addrlen, address,
+                          NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
     freeaddrinfo(result);
 
     if (errcode != 0) {
@@ -318,6 +319,8 @@ esxUtil_ResolveHostname(const char *hostname,
                        gai_strerror(errcode));
         return -1;
     }
+
+    *ipAddress = g_strdup(address);
 
     return 0;
 }

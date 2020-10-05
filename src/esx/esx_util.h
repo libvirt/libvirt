@@ -55,8 +55,7 @@ int esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id);
 int esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
                                char **directoryName, char **directoryAndFileName);
 
-int esxUtil_ResolveHostname(const char *hostname,
-                            char *ipAddress, size_t ipAddress_length);
+int esxUtil_ResolveHostname(const char *hostname, char **ipAddress);
 
 int esxUtil_ReformatUuid(const char *input, char *output);
 
