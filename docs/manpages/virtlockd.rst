@@ -120,14 +120,14 @@ EXAMPLES
 
 To retrieve the version of ``virtlockd``:
 
-.. code-block::
+::
 
   # virtlockd --version
   virtlockd (libvirt) 1.1.1
 
 To start ``virtlockd``, instructing it to daemonize and create a PID file:
 
-.. code-block::
+::
 
   # virtlockd -d
   # ls -la @RUNSTATEDIR@/virtlockd.pid

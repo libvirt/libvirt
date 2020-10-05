@@ -29,7 +29,7 @@ configured in ``/etc/libvirt/virt-login-shell.conf``.
 
 The basic structure of most ``virt-login-shell`` usage is:
 
-.. code-block::
+::
 
    virt-login-shell
 
@@ -58,7 +58,7 @@ By default, ``virt-login-shell`` will execute the ``/bin/sh`` program for
 the user. You can modify this behaviour by defining the shell variable in
 ``/etc/libvirt/virt-login-shell.conf``. e.g.
 
-.. code-block::
+::
 
    shell = [ "/bin/bash" ]
 
@@ -68,7 +68,7 @@ detect the shell from ``/etc/password`` inside the container. This should only
 be done if the container has a separate ``/etc`` directory from the host,
 otherwise it will end up recursively invoking ``virt-login-shell``. e.g.
 
-.. code-block::
+::
 
    auto_shell = 1
 
@@ -77,7 +77,7 @@ By default no users are allowed to use virt-login-shell, if you want to allow
 certain users to use virt-login-shell, you need to modify the allowed_users
 variable in /etc/libvirt/virt-login-shell.conf. e.g.
 
-.. code-block::
+::
 
    allowed_users = [ "tom", "dick", "harry" ]
 

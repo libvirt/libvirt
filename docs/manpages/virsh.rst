@@ -38,7 +38,7 @@ KVM, LXC, OpenVZ, VirtualBox and VMware ESX.
 The basic structure of most virsh usage is:
 
 
-.. code-block::
+::
 
    virsh [OPTION]... <command> <domain> [ARG]...
 
@@ -185,7 +185,7 @@ historical reasons, some commands default to bytes, while other
 commands default to kibibytes).  The following case-insensitive
 suffixes can be used to select a specific scale:
 
-.. code-block::
+::
 
    b, byte  byte      1
    KB       kilobyte  1,000
@@ -214,7 +214,7 @@ help
 
 **Syntax:**
 
-.. code-block::
+::
 
    help [command-or-group]
 
@@ -228,7 +228,7 @@ group as an option.  For example:
 
 **Example 1:**
 
-.. code-block::
+::
 
    virsh # help host
 
@@ -250,7 +250,7 @@ option instead.  For example:
 
 **Example 2:**
 
-.. code-block::
+::
 
    virsh # help list
      NAME
@@ -272,7 +272,7 @@ quit, exit
 
 **Syntax:**
 
-.. code-block::
+::
 
    quit
    exit
@@ -286,7 +286,7 @@ version
 
 **Syntax:**
 
-.. code-block::
+::
 
    version [--daemon]
 
@@ -296,7 +296,7 @@ is included in the output.
 
 **Example:**
 
-.. code-block::
+::
 
    $ virsh version
    Compiled against library: libvirt 1.2.3
@@ -317,7 +317,7 @@ cd
 
 **Syntax:**
 
-.. code-block::
+::
 
    cd [directory]
 
@@ -334,7 +334,7 @@ pwd
 
 **Syntax:**
 
-.. code-block::
+::
 
    pwd
 
@@ -347,7 +347,7 @@ connect
 
 **Syntax:**
 
-.. code-block::
+::
 
    connect [URI] [--readonly]
 
@@ -388,7 +388,7 @@ uri
 
 **Syntax:**
 
-.. code-block::
+::
 
    uri
 
@@ -400,7 +400,7 @@ hostname
 
 **Syntax:**
 
-.. code-block::
+::
 
    hostname
 
@@ -412,7 +412,7 @@ sysinfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    sysinfo
 
@@ -424,7 +424,7 @@ nodeinfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodeinfo
 
@@ -440,7 +440,7 @@ nodecpumap
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodecpumap [--pretty]
 
@@ -456,7 +456,7 @@ nodecpustats
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodecpustats [cpu] [--percent]
 
@@ -471,7 +471,7 @@ nodememstats
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodememstats [cell]
 
@@ -484,7 +484,7 @@ nodesuspend
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodesuspend [target] [duration]
 
@@ -503,7 +503,7 @@ node-memory-tune
 
 **Syntax:**
 
-.. code-block::
+::
 
    node-memory-tune [shm-pages-to-scan] [shm-sleep-millisecs] [shm-merge-across-nodes]
 
@@ -525,7 +525,7 @@ capabilities
 
 **Syntax:**
 
-.. code-block::
+::
 
    capabilities
 
@@ -545,7 +545,7 @@ domcapabilities
 
 **Syntax:**
 
-.. code-block::
+::
 
    domcapabilities [virttype] [emulatorbin] [arch] [machine]
 
@@ -588,7 +588,7 @@ pool-capabilities
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-capabilities
 
@@ -605,7 +605,7 @@ inject-nmi
 
 **Syntax:**
 
-.. code-block::
+::
 
    inject-nmi domain
 
@@ -617,7 +617,7 @@ list
 
 **Syntax:**
 
-.. code-block::
+::
 
    list [--inactive | --all]
         [--managed-save] [--title]
@@ -637,7 +637,7 @@ specified it prints out information about running domains.
 
 An example format for the list is as follows:
 
-.. code-block::
+::
 
    ``virsh`` list
      Id    Name                           State
@@ -775,7 +775,7 @@ printed in an extra column. This flag is usable only with the default
 
 **Example 2:**
 
-.. code-block::
+::
 
    $ virsh list --title
      Id    Name        State      Title
@@ -790,7 +790,7 @@ freecell
 
 **Syntax:**
 
-.. code-block::
+::
 
    freecell [{ [--cellno] cellno | --all }]
 
@@ -809,7 +809,7 @@ freepages
 
 **Syntax:**
 
-.. code-block::
+::
 
    freepages [{ [--cellno] cellno [--pagesize] pagesize |     --all }]
 
@@ -824,7 +824,7 @@ allocpages
 
 **Syntax:**
 
-.. code-block::
+::
 
    allocpages [--pagesize] pagesize [--pagecount] pagecount [[--cellno] cellno] [--add] [--all]
 
@@ -843,7 +843,7 @@ cpu-baseline
 
 **Syntax:**
 
-.. code-block::
+::
 
    cpu-baseline FILE [--features] [--migratable]
 
@@ -864,7 +864,7 @@ cpu-compare
 
 **Syntax:**
 
-.. code-block::
+::
 
    cpu-compare FILE [--error]
 
@@ -890,7 +890,7 @@ cpu-models
 
 **Syntax:**
 
-.. code-block::
+::
 
    cpu-models arch
 
@@ -909,7 +909,7 @@ echo
 
 **Syntax:**
 
-.. code-block::
+::
 
    echo [--shell] [--xml] [err...] [arg...]
 
@@ -926,7 +926,7 @@ hypervisor-cpu-compare
 
 **Syntax:**
 
-.. code-block::
+::
 
    hypervisor-cpu-compare FILE [virttype] [emulator] [arch] [machine] [--error]
 
@@ -958,7 +958,7 @@ hypervisor-cpu-baseline
 
 **Syntax:**
 
-.. code-block::
+::
 
    hypervisor-cpu-baseline FILE [virttype] [emulator] [arch] [machine] [--features] [--migratable]
 
@@ -1005,7 +1005,7 @@ autostart
 
 **Syntax:**
 
-.. code-block::
+::
 
    autostart [--disable] domain
 
@@ -1020,7 +1020,7 @@ blkdeviotune
 
 **Syntax:**
 
-.. code-block::
+::
 
    blkdeviotune domain device [[--config] [--live] | [--current]]
       [[total-bytes-sec] | [read-bytes-sec] [write-bytes-sec]]
@@ -1103,7 +1103,7 @@ blkiotune
 
 **Syntax:**
 
-.. code-block::
+::
 
    blkiotune domain [--weight weight] [--device-weights device-weights]
       [--device-read-iops-sec device-read-iops-sec]
@@ -1165,7 +1165,7 @@ blockcommit
 
 **Syntax:**
 
-.. code-block::
+::
 
    blockcommit domain path [bandwidth] [--bytes] [base]
       [--shallow] [top] [--delete] [--keep-relative]
@@ -1223,7 +1223,7 @@ blockcopy
 
 **Syntax:**
 
-.. code-block::
+::
 
    blockcopy domain path { dest [format] [--blockdev] | --xml file }
       [--shallow] [--reuse-external] [bandwidth]
@@ -1295,7 +1295,7 @@ blockjob
 
 **Syntax:**
 
-.. code-block::
+::
 
    blockjob domain path { [--abort] [--async] [--pivot] |
       [--info] [--raw] [--bytes] | [bandwidth] }
@@ -1345,7 +1345,7 @@ blockpull
 
 **Syntax:**
 
-.. code-block::
+::
 
    blockpull domain path [bandwidth] [--bytes] [base]
       [--wait [--verbose] [--timeout seconds] [--async]]
@@ -1386,7 +1386,7 @@ blockresize
 
 **Syntax:**
 
-.. code-block::
+::
 
    blockresize domain path size
 
@@ -1407,7 +1407,7 @@ console
 
 **Syntax:**
 
-.. code-block::
+::
 
    console domain [devname] [--safe] [--force]
 
@@ -1428,7 +1428,7 @@ cpu-stats
 
 **Syntax:**
 
-.. code-block::
+::
 
    cpu-stats domain [--total] [start] [count]
 
@@ -1444,7 +1444,7 @@ create
 
 **Syntax:**
 
-.. code-block::
+::
 
    create FILE [--console] [--paused] [--autodestroy]
       [--pass-fds N,M,...] [--validate]
@@ -1475,7 +1475,7 @@ is only supported with container based virtualization.
 #. prepare a template from an existing domain (skip directly to 3a if writing
    one from scratch)
 
-   .. code-block::
+   ::
 
       # virsh dumpxml <domain> > domain.xml
 
@@ -1484,7 +1484,7 @@ is only supported with container based virtualization.
    a. DO CHANGE! <name> and <uuid> (<uuid> can also be removed), or
    b. DON'T CHANGE! either <name> or <uuid>
 
-   .. code-block::
+   ::
 
       # $EDITOR domain.xml
 
@@ -1495,7 +1495,7 @@ is only supported with container based virtualization.
    b. an existing persistent guest will run with a modified one-time
       configuration
 
-   .. code-block::
+   ::
 
       # virsh create domain.xml
 
@@ -1505,7 +1505,7 @@ define
 
 **Syntax:**
 
-.. code-block::
+::
 
    define FILE [--validate]
 
@@ -1521,7 +1521,7 @@ desc
 
 **Syntax:**
 
-.. code-block::
+::
 
    desc domain [[--live] [--config] |
       [--current]] [--title] [--edit] [--new-desc
@@ -1553,7 +1553,7 @@ destroy
 
 **Syntax:**
 
-.. code-block::
+::
 
    destroy domain [--graceful]
 
@@ -1581,7 +1581,7 @@ domblkerror
 
 **Syntax:**
 
-.. code-block::
+::
 
    domblkerror domain
 
@@ -1597,7 +1597,7 @@ domblkinfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    domblkinfo domain [block-device --all] [--human]
 
@@ -1617,7 +1617,7 @@ domblklist
 
 **Syntax:**
 
-.. code-block::
+::
 
    domblklist domain [--inactive] [--details]
 
@@ -1637,7 +1637,7 @@ domblkstat
 
 **Syntax:**
 
-.. code-block::
+::
 
    domblkstat domain [block-device] [--human]
 
@@ -1674,7 +1674,7 @@ domblkthreshold
 
 **Syntax:**
 
-.. code-block::
+::
 
    domblkthreshold domain dev threshold
 
@@ -1689,7 +1689,7 @@ domcontrol
 
 **Syntax:**
 
-.. code-block::
+::
 
    domcontrol domain
 
@@ -1703,7 +1703,7 @@ domdisplay
 
 **Syntax:**
 
-.. code-block::
+::
 
    domdisplay domain [--include-password] [[--type] type] [--all]
 
@@ -1720,7 +1720,7 @@ domfsfreeze
 
 **Syntax:**
 
-.. code-block::
+::
 
    domfsfreeze domain [[--mountpoint] mountpoint...]
 
@@ -1742,7 +1742,7 @@ domfsinfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    domfsinfo domain
 
@@ -1759,7 +1759,7 @@ domfsthaw
 
 **Syntax:**
 
-.. code-block::
+::
 
    domfsthaw domain [[--mountpoint] mountpoint...]
 
@@ -1776,7 +1776,7 @@ domfstrim
 
 **Syntax:**
 
-.. code-block::
+::
 
    domfstrim domain [--minimum bytes] [--mountpoint mountPoint]
 
@@ -1797,7 +1797,7 @@ domhostname
 
 **Syntax:**
 
-.. code-block::
+::
 
    domhostname domain [--source lease|agent]
 
@@ -1814,7 +1814,7 @@ domid
 
 **Syntax:**
 
-.. code-block::
+::
 
    domid domain-name-or-uuid
 
@@ -1826,7 +1826,7 @@ domif-getlink
 
 **Syntax:**
 
-.. code-block::
+::
 
    domif-getlink domain interface-device [--config]
 
@@ -1842,7 +1842,7 @@ domif-setlink
 
 **Syntax:**
 
-.. code-block::
+::
 
    domif-setlink domain interface-device state [--config]
 
@@ -1858,7 +1858,7 @@ domifaddr
 
 **Syntax:**
 
-.. code-block::
+::
 
    domifaddr domain [interface] [--full]
       [--source lease|agent|arp]
@@ -1885,7 +1885,7 @@ backup-begin
 
 **Syntax:**
 
-.. code-block::
+::
 
    backup-begin domain [backupxml] [checkpointxml] [--reuse-external]
 
@@ -1919,7 +1919,7 @@ backup-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    backup-dumpxml domain
 
@@ -1931,7 +1931,7 @@ domiflist
 
 **Syntax:**
 
-.. code-block::
+::
 
    domiflist domain [--inactive]
 
@@ -1948,7 +1948,7 @@ domifstat
 
 **Syntax:**
 
-.. code-block::
+::
 
    domifstat domain interface-device
 
@@ -1965,7 +1965,7 @@ domiftune
 
 **Syntax:**
 
-.. code-block::
+::
 
    domiftune domain interface-device [[--config] [--live] | [--current]]
       [*--inbound average,peak,burst,floor*]
@@ -2000,7 +2000,7 @@ dominfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    dominfo domain
 
@@ -2012,7 +2012,7 @@ domjobabort
 
 **Syntax:**
 
-.. code-block::
+::
 
    domjobabort domain
 
@@ -2024,7 +2024,7 @@ domjobinfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    domjobinfo domain [--completed [--keep-completed]] [--anystats] [--rawstats]
 
@@ -2051,7 +2051,7 @@ dommemstat
 
 **Syntax:**
 
-.. code-block::
+::
 
    dommemstat domain [--period seconds] [[--config] [--live] | [--current]]
 
@@ -2106,7 +2106,7 @@ domname
 
 **Syntax:**
 
-.. code-block::
+::
 
    domname domain-id-or-uuid
 
@@ -2118,7 +2118,7 @@ dompmsuspend
 
 **Syntax:**
 
-.. code-block::
+::
 
    dompmsuspend domain target [--duration]
 
@@ -2149,7 +2149,7 @@ dompmwakeup
 
 **Syntax:**
 
-.. code-block::
+::
 
    dompmwakeup domain
 
@@ -2164,7 +2164,7 @@ domrename
 
 **Syntax:**
 
-.. code-block::
+::
 
    domrename domain new-name
 
@@ -2179,7 +2179,7 @@ domstate
 
 **Syntax:**
 
-.. code-block::
+::
 
    domstate domain [--reason]
 
@@ -2192,7 +2192,7 @@ domstats
 
 **Syntax:**
 
-.. code-block::
+::
 
    domstats [--raw] [--enforce] [--backing] [--nowait] [--state]
       [--cpu-total] [--balloon] [--vcpu] [--interface]
@@ -2426,7 +2426,7 @@ domtime
 
 **Syntax:**
 
-.. code-block::
+::
 
    domtime domain { [--now] [--pretty] [--sync] [--time time] }
 
@@ -2451,7 +2451,7 @@ domuuid
 
 **Syntax:**
 
-.. code-block::
+::
 
    domuuid domain-name-or-id
 
@@ -2463,7 +2463,7 @@ domxml-from-native
 
 **Syntax:**
 
-.. code-block::
+::
 
    domxml-from-native format config
 
@@ -2481,7 +2481,7 @@ domxml-to-native
 
 **Syntax:**
 
-.. code-block::
+::
 
    domxml-to-native format { [--xml] xml | --domain domain-name-or-id-or-uuid }
 
@@ -2496,7 +2496,7 @@ dump
 
 **Syntax:**
 
-.. code-block::
+::
 
    dump domain corefilepath [--bypass-cache]
       { [--live] | [--crash] | [--reset] }
@@ -2538,7 +2538,7 @@ dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    dumpxml domain [--inactive] [--security-info] [--update-cpu] [--migratable]
 
@@ -2559,7 +2559,7 @@ edit
 
 **Syntax:**
 
-.. code-block::
+::
 
    edit domain
 
@@ -2568,7 +2568,7 @@ next boot of the guest.
 
 This is equivalent to:
 
-.. code-block::
+::
 
    virsh dumpxml --inactive --security-info domain > domain.xml
    vi domain.xml (or make changes with your other text editor)
@@ -2585,7 +2585,7 @@ emulatorpin
 
 **Syntax:**
 
-.. code-block::
+::
 
    emulatorpin domain [cpulist] [[--live] [--config]  | [--current]]
 
@@ -2608,7 +2608,7 @@ event
 
 **Syntax:**
 
-.. code-block::
+::
 
    event {[domain] { event | --all } [--loop] [--timeout seconds] [--timestamp] | --list}
 
@@ -2635,7 +2635,7 @@ guest-agent-timeout
 
 **Syntax:**
 
-.. code-block::
+::
 
    guest-agent-timeout domain [--timeout value]
 
@@ -2655,7 +2655,7 @@ guestinfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    guestinfo domain [--user] [--os] [--timezone] [--hostname] [--filesystem]
 
@@ -2731,7 +2731,7 @@ guestvcpus
 
 **Syntax:**
 
-.. code-block::
+::
 
    guestvcpus domain [[--enable] | [--disable]] [cpulist]
 
@@ -2750,7 +2750,7 @@ iothreadadd
 
 **Syntax:**
 
-.. code-block::
+::
 
    iothreadadd domain iothread_id [[--config] [--live] | [--current]]
 
@@ -2770,7 +2770,7 @@ iothreaddel
 
 **Syntax:**
 
-.. code-block::
+::
 
    iothreaddel domain iothread_id [[--config] [--live] | [--current]]
 
@@ -2792,7 +2792,7 @@ iothreadinfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    iothreadinfo domain [[--live] [--config] | [--current]]
 
@@ -2813,7 +2813,7 @@ iothreadpin
 
 **Syntax:**
 
-.. code-block::
+::
 
    iothreadpin domain iothread cpulist [[--live] [--config] | [--current]]
 
@@ -2846,7 +2846,7 @@ iothreadset
 
 **Syntax:**
 
-.. code-block::
+::
 
    iothreadset domain iothread_id [[--poll-max-ns ns] [--poll-grow factor]
       [--poll-shrink divisor]]
@@ -2878,7 +2878,7 @@ managedsave
 
 **Syntax:**
 
-.. code-block::
+::
 
    managedsave domain [--bypass-cache] [{--running | --paused}] [--verbose]
 
@@ -2907,7 +2907,7 @@ managedsave-define
 
 **Syntax:**
 
-.. code-block::
+::
 
    managedsave-define domain xml [{--running | --paused}]
 
@@ -2927,7 +2927,7 @@ managedsave-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    managedsave-dumpxml domain [--security-info]
 
@@ -2941,7 +2941,7 @@ managedsave-edit
 
 **Syntax:**
 
-.. code-block::
+::
 
    managedsave-edit domain [{--running | --paused}]
 
@@ -2955,7 +2955,7 @@ will allow overriding which state the ``restore`` should use.
 
 This is equivalent to:
 
-.. code-block::
+::
 
    virsh managedsave-dumpxml domain-name > state-file.xml
    vi state-file.xml (or make changes with your other text editor)
@@ -2972,7 +2972,7 @@ managedsave-remove
 
 **Syntax:**
 
-.. code-block::
+::
 
    managedsave-remove domain
 
@@ -2985,7 +2985,7 @@ maxvcpus
 
 **Syntax:**
 
-.. code-block::
+::
 
    maxvcpus [type]
 
@@ -2999,7 +2999,7 @@ memtune
 
 **Syntax:**
 
-.. code-block::
+::
 
    memtune domain [--hard-limit size] [--soft-limit size] [--swap-hard-limit size]
       [--min-guarantee size] [[--config] [--live] | [--current]]
@@ -3058,7 +3058,7 @@ metadata
 
 **Syntax:**
 
-.. code-block::
+::
 
    metadata domain [[--live] [--config] | [--current]]
       [--edit] [uri] [key] [set] [--remove]
@@ -3097,7 +3097,7 @@ migrate
 
 **Syntax:**
 
-.. code-block::
+::
 
    migrate [--live] [--offline] [--direct] [--p2p [--tunnelled]]
       [--persistent] [--undefinesource] [--suspend] [--copy-storage-all]
@@ -3240,7 +3240,7 @@ and/or libvirt does not have network access to the remote side you can use a
 UNIX transport in the URI and specify a socket path in the query, for example
 with the qemu driver you could use this:
 
-.. code-block::
+::
 
       qemu+unix:///system?socket=/path/to/socket
 
@@ -3274,7 +3274,7 @@ There are a few scenarios where specifying *migrateuri* may help:
   should not guess a *migrateuri* and it should be specified using
   UNIX socket path URI:
 
-.. code-block::
+::
 
       unix:///path/to/socket
 
@@ -3289,7 +3289,7 @@ connected to and needs to connect through a proxy, *graphicsuri* may be used
 to specify the address the client should connect to. The URI is formed as
 follows:
 
-.. code-block::
+::
 
       protocol://hostname[:port]/[?parameters]
 
@@ -3297,7 +3297,7 @@ where protocol is either "spice" or "vnc" and parameters is a list of protocol
 specific parameters separated by '&'. Currently recognized parameters are
 "tlsPort" and "tlsSubject". For example,
 
-.. code-block::
+::
 
       spice://target.host.com:1234/?tlsPort=4567
 
@@ -3327,7 +3327,7 @@ migrate-compcache
 
 **Syntax:**
 
-.. code-block::
+::
 
    migrate-compcache domain [--size bytes]
 
@@ -3347,7 +3347,7 @@ migrate-getmaxdowntime
 
 **Syntax:**
 
-.. code-block::
+::
 
    migrate-getmaxdowntime domain
 
@@ -3362,7 +3362,7 @@ migrate-getspeed
 
 **Syntax:**
 
-.. code-block::
+::
 
    migrate-getspeed domain [--postcopy]
 
@@ -3376,7 +3376,7 @@ migrate-postcopy
 
 **Syntax:**
 
-.. code-block::
+::
 
    migrate-postcopy domain
 
@@ -3389,7 +3389,7 @@ migrate-setmaxdowntime
 
 **Syntax:**
 
-.. code-block::
+::
 
    migrate-setmaxdowntime domain downtime
 
@@ -3403,7 +3403,7 @@ migrate-setspeed
 
 **Syntax:**
 
-.. code-block::
+::
 
    migrate-setspeed domain bandwidth [--postcopy]
 
@@ -3421,7 +3421,7 @@ numatune
 
 **Syntax:**
 
-.. code-block::
+::
 
    numatune domain [--mode mode] [--nodeset nodeset]
       [[--config] [--live] | [--current]]
@@ -3459,7 +3459,7 @@ perf
 
 **Syntax:**
 
-.. code-block::
+::
 
    perf domain [--enable eventSpec] [--disable eventSpec]
       [[--config] [--live] | [--current]]
@@ -3548,7 +3548,7 @@ reboot
 
 **Syntax:**
 
-.. code-block::
+::
 
    reboot domain [--mode MODE-LIST]
 
@@ -3574,7 +3574,7 @@ reset
 
 **Syntax:**
 
-.. code-block::
+::
 
    reset domain
 
@@ -3590,7 +3590,7 @@ restore
 
 **Syntax:**
 
-.. code-block::
+::
 
    restore state-file [--bypass-cache] [--xml file]
       [{--running | --paused}]
@@ -3622,7 +3622,7 @@ resume
 
 **Syntax:**
 
-.. code-block::
+::
 
    resume domain
 
@@ -3636,7 +3636,7 @@ save
 
 **Syntax:**
 
-.. code-block::
+::
 
    save domain state-file [--bypass-cache] [--xml file]
       [{--running | --paused}] [--verbose]
@@ -3680,7 +3680,7 @@ save-image-define
 
 **Syntax:**
 
-.. code-block::
+::
 
    save-image-define file xml [{--running | --paused}]
 
@@ -3702,7 +3702,7 @@ save-image-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    save-image-dumpxml file [--security-info]
 
@@ -3716,7 +3716,7 @@ save-image-edit
 
 **Syntax:**
 
-.. code-block::
+::
 
    save-image-edit file [{--running | --paused}]
 
@@ -3730,7 +3730,7 @@ will allow overriding which state the ``restore`` should use.
 
 This is equivalent to:
 
-.. code-block::
+::
 
    virsh save-image-dumpxml state-file > state-file.xml
    vi state-file.xml (or make changes with your other text editor)
@@ -3747,7 +3747,7 @@ schedinfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    schedinfo domain [[--config] [--live] | [--current]] [[--set] parameter=value]...
    schedinfo [--weight number] [--cap number] domain
@@ -3790,7 +3790,7 @@ screenshot
 
 **Syntax:**
 
-.. code-block::
+::
 
    screenshot domain [imagefilepath] [--screen screenID]
 
@@ -3807,7 +3807,7 @@ send-key
 
 **Syntax:**
 
-.. code-block::
+::
 
    send-key domain [--codeset codeset] [--holdtime holdtime] keycode...
 
@@ -3904,7 +3904,7 @@ distinct keypresses, you must use multiple send-key invocations.
 
 **Examples:**
 
-.. code-block::
+::
 
    # send three strokes 'k', 'e', 'y', using xt codeset. these
    # are all pressed simultaneously and may be received by the guest
@@ -3924,7 +3924,7 @@ send-process-signal
 
 **Syntax:**
 
-.. code-block::
+::
 
    send-process-signal domain-id pid signame
 
@@ -3935,7 +3935,7 @@ domain namespace.
 The *signame* argument may be either an integer signal constant number,
 or one of the symbolic names:
 
-.. code-block::
+::
 
       "nop", "hup", "int", "quit", "ill",
       "trap", "abrt", "bus", "fpe", "kill",
@@ -3955,7 +3955,7 @@ may be in uppercase or lowercase.
 
 **Examples:**
 
-.. code-block::
+::
 
    virsh send-process-signal myguest 1 15
    virsh send-process-signal myguest 1 term
@@ -3968,7 +3968,7 @@ set-lifecycle-action
 
 **Syntax:**
 
-.. code-block::
+::
 
    set-lifecycle-action domain type action
       [[--config] [--live] | [--current]]
@@ -3985,7 +3985,7 @@ set-user-password
 
 **Syntax:**
 
-.. code-block::
+::
 
    set-user-password domain user password [--encrypted]
 
@@ -4003,7 +4003,7 @@ setmaxmem
 
 **Syntax:**
 
-.. code-block::
+::
 
    setmaxmem domain size [[--config] [--live] | [--current]]
 
@@ -4035,7 +4035,7 @@ setmem
 
 **Syntax:**
 
-.. code-block::
+::
 
    setmem domain size [[--config] [--live] | [--current]]
 
@@ -4071,7 +4071,7 @@ setvcpus
 
 **Syntax:**
 
-.. code-block::
+::
 
    setvcpus domain count [--maximum] [[--config] [--live] | [--current]] [--guest] [--hotpluggable]
 
@@ -4123,7 +4123,7 @@ setvcpu
 
 **Syntax:**
 
-.. code-block::
+::
 
    setvcpu domain vcpulist [--enable] | [--disable]
       [[--live] [--config] | [--current]]
@@ -4151,7 +4151,7 @@ shutdown
 
 **Syntax:**
 
-.. code-block::
+::
 
    shutdown domain [--mode MODE-LIST]
 
@@ -4183,7 +4183,7 @@ start
 
 **Syntax:**
 
-.. code-block::
+::
 
    start domain-name-or-uuid [--console] [--paused]
       [--autodestroy] [--bypass-cache] [--force-boot]
@@ -4212,7 +4212,7 @@ suspend
 
 **Syntax:**
 
-.. code-block::
+::
 
    suspend domain
 
@@ -4225,7 +4225,7 @@ ttyconsole
 
 **Syntax:**
 
-.. code-block::
+::
 
    ttyconsole domain
 
@@ -4238,7 +4238,7 @@ undefine
 
 **Syntax:**
 
-.. code-block::
+::
 
    undefine domain [--managed-save] [--snapshots-metadata]
       [--checkpoints-metadata] [--nvram] [--keep-nvram]
@@ -4304,7 +4304,7 @@ vcpucount
 
 **Syntax:**
 
-.. code-block::
+::
 
    vcpucount domain  [{--maximum | --active}
       {--config | --live | --current}] [--guest]
@@ -4335,7 +4335,7 @@ vcpuinfo
 
 **Syntax:**
 
-.. code-block::
+::
 
    vcpuinfo domain [--pretty]
 
@@ -4346,7 +4346,7 @@ With *--pretty*, cpu affinities are shown as ranges.
 
 **Example:**
 
-.. code-block::
+::
 
    $ virsh vcpuinfo fedora
    VCPU:           0
@@ -4399,7 +4399,7 @@ vcpupin
 
 **Syntax:**
 
-.. code-block::
+::
 
    vcpupin domain [vcpu] [cpulist] [[--live] [--config] | [--current]]
 
@@ -4428,7 +4428,7 @@ vncdisplay
 
 **Syntax:**
 
-.. code-block::
+::
 
    vncdisplay domain
 
@@ -4451,7 +4451,7 @@ attach-device
 
 **Syntax:**
 
-.. code-block::
+::
 
    attach-device domain FILE [[[--live] [--config] | [--current]] | [--persistent]]
 
@@ -4488,7 +4488,7 @@ attach-disk
 
 **Syntax:**
 
-.. code-block::
+::
 
    attach-disk domain source target [[[--live] [--config] |
       [--current]] | [--persistent]] [--targetbus bus]
@@ -4556,7 +4556,7 @@ attach-interface
 
 **Syntax:**
 
-.. code-block::
+::
 
    attach-interface domain type source [[[--live]
       [--config] | [--current]] | [--persistent]]
@@ -4648,7 +4648,7 @@ detach-device
 
 **Syntax:**
 
-.. code-block::
+::
 
    detach-device domain FILE [[[--live] [--config] |
       [--current]] | [--persistent]]
@@ -4695,7 +4695,7 @@ detach-device-alias
 
 **Syntax:**
 
-.. code-block::
+::
 
    detach-device-alias domain alias [[[--live] [--config] | [--current]]]]
 
@@ -4717,7 +4717,7 @@ detach-disk
 
 **Syntax:**
 
-.. code-block::
+::
 
    detach-disk domain target [[[--live] [--config] |
       [--current]] | [--persistent]] [--print-xml]
@@ -4751,7 +4751,7 @@ detach-interface
 
 **Syntax:**
 
-.. code-block::
+::
 
    detach-interface domain type [--mac mac]
       [[[--live] [--config] | [--current]] | [--persistent]]
@@ -4784,7 +4784,7 @@ update-device
 
 **Syntax:**
 
-.. code-block::
+::
 
    update-device domain file [--force] [[[--live]
       [--config] | [--current]] | [--persistent]]
@@ -4819,7 +4819,7 @@ change-media
 
 **Syntax:**
 
-.. code-block::
+::
 
    change-media domain path [--eject] [--insert]
       [--update] [source] [--force] [[--live] [--config] |
@@ -4889,7 +4889,7 @@ nodedev-create
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodedev-create FILE
 
@@ -4905,7 +4905,7 @@ nodedev-destroy
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodedev-destroy device
 
@@ -4920,7 +4920,7 @@ nodedev-detach
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodedev-detach nodedev [--driver backend_driver]
 
@@ -4940,7 +4940,7 @@ nodedev-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodedev-dumpxml device
 
@@ -4957,7 +4957,7 @@ nodedev-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodedev-list cap --tree
 
@@ -4976,7 +4976,7 @@ nodedev-reattach
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodedev-reattach nodedev
 
@@ -4991,7 +4991,7 @@ nodedev-reset
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodedev-reset nodedev
 
@@ -5006,7 +5006,7 @@ nodedev-event
 
 **Syntax:**
 
-.. code-block::
+::
 
    nodedev-event {[nodedev] event [--loop] [--timeout seconds] [--timestamp] | --list}
 
@@ -5042,7 +5042,7 @@ net-autostart
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-autostart network [--disable]
 
@@ -5055,7 +5055,7 @@ net-create
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-create file
 
@@ -5070,7 +5070,7 @@ net-define
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-define file
 
@@ -5083,7 +5083,7 @@ net-destroy
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-destroy network
 
@@ -5096,7 +5096,7 @@ net-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-dumpxml network [--inactive]
 
@@ -5111,7 +5111,7 @@ net-edit
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-edit network
 
@@ -5119,7 +5119,7 @@ Edit the XML configuration file for a network.
 
 This is equivalent to:
 
-.. code-block::
+::
 
    virsh net-dumpxml --inactive network > network.xml
    vi network.xml (or make changes with your other text editor)
@@ -5136,7 +5136,7 @@ net-event
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-event {[network] event [--loop] [--timeout seconds] [--timestamp] | --list}
 
@@ -5161,7 +5161,7 @@ net-info
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-info network
 
@@ -5173,7 +5173,7 @@ net-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-list [--inactive | --all]
       { [--table] | --name | --uuid }
@@ -5204,7 +5204,7 @@ net-name
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-name network-UUID
 
@@ -5216,7 +5216,7 @@ net-start
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-start network
 
@@ -5228,7 +5228,7 @@ net-undefine
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-undefine network
 
@@ -5241,7 +5241,7 @@ net-uuid
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-uuid network-name
 
@@ -5253,7 +5253,7 @@ net-update
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-update network command section xml
       [--parent-index index] [[--live] [--config] | [--current]]
@@ -5301,7 +5301,7 @@ net-dhcp-leases
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-dhcp-leases network [mac]
 
@@ -5326,7 +5326,7 @@ net-port-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-port-list { [--table] | --uuid } network
 
@@ -5343,7 +5343,7 @@ net-port-create
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-port-create network file
 
@@ -5356,7 +5356,7 @@ net-port-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-port-dumpxml network port
 
@@ -5368,7 +5368,7 @@ net-port-delete
 
 **Syntax:**
 
-.. code-block::
+::
 
    net-port-delete network port
 
@@ -5397,7 +5397,7 @@ iface-bridge
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-bridge interface bridge [--no-stp] [delay] [--no-start]
 
@@ -5416,7 +5416,7 @@ iface-define
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-define file
 
@@ -5429,7 +5429,7 @@ iface-destroy
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-destroy interface
 
@@ -5442,7 +5442,7 @@ iface-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-dumpxml interface [--inactive]
 
@@ -5456,7 +5456,7 @@ iface-edit
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-edit interface
 
@@ -5464,7 +5464,7 @@ Edit the XML configuration file for a host interface.
 
 This is equivalent to:
 
-.. code-block::
+::
 
    virsh iface-dumpxml iface > iface.xml
    vi iface.xml (or make changes with your other text editor)
@@ -5481,7 +5481,7 @@ iface-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-list [--inactive | --all]
 
@@ -5495,7 +5495,7 @@ iface-name
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-name interface
 
@@ -5510,7 +5510,7 @@ iface-mac
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-mac interface
 
@@ -5524,7 +5524,7 @@ iface-start
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-start interface
 
@@ -5536,7 +5536,7 @@ iface-unbridge
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-unbridge bridge [--no-start]
 
@@ -5554,7 +5554,7 @@ iface-undefine
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-undefine interface
 
@@ -5566,7 +5566,7 @@ iface-begin
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-begin
 
@@ -5584,7 +5584,7 @@ iface-commit
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-commit
 
@@ -5598,7 +5598,7 @@ iface-rollback
 
 **Syntax:**
 
-.. code-block::
+::
 
    iface-rollback
 
@@ -5624,7 +5624,7 @@ find-storage-pool-sources
 
 **Syntax:**
 
-.. code-block::
+::
 
    find-storage-pool-sources type [srcSpec]
 
@@ -5662,7 +5662,7 @@ find-pool-sources-as
 
 **Syntax:**
 
-.. code-block::
+::
 
    find-storage-pool-sources-as type [host] [port] [initiator]
 
@@ -5686,7 +5686,7 @@ pool-autostart
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-autostart pool-or-uuid [--disable]
 
@@ -5698,7 +5698,7 @@ pool-build
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-build pool-or-uuid [--overwrite] [--no-overwrite]
 
@@ -5740,7 +5740,7 @@ pool-create
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-create file [--build] [[--overwrite] | [--no-overwrite]]
 
@@ -5758,7 +5758,7 @@ pool-create-as
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-create-as name type
       [--source-host hostname] [--source-path path] [--source-dev path]
@@ -5848,7 +5848,7 @@ pool-define
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-define file
 
@@ -5861,7 +5861,7 @@ pool-define-as
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-define-as name type
       [--source-host hostname] [--source-path path] [--source-dev path]
@@ -5887,7 +5887,7 @@ pool-destroy
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-destroy pool-or-uuid
 
@@ -5902,7 +5902,7 @@ pool-delete
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-delete pool-or-uuid
 
@@ -5916,7 +5916,7 @@ pool-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-dumpxml [--inactive] pool-or-uuid
 
@@ -5930,7 +5930,7 @@ pool-edit
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-edit pool-or-uuid
 
@@ -5938,7 +5938,7 @@ Edit the XML configuration file for a storage pool.
 
 This is equivalent to:
 
-.. code-block::
+::
 
    virsh pool-dumpxml pool > pool.xml
    vi pool.xml (or make changes with your other text editor)
@@ -5955,7 +5955,7 @@ pool-info
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-info [--bytes] pool-or-uuid
 
@@ -5968,7 +5968,7 @@ pool-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-list [--inactive] [--all]
       [--persistent] [--transient]
@@ -6008,7 +6008,7 @@ pool-name
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-name uuid
 
@@ -6020,7 +6020,7 @@ pool-refresh
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-refresh pool-or-uuid
 
@@ -6032,7 +6032,7 @@ pool-start
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-start pool-or-uuid [--build] [[--overwrite] | [--no-overwrite]]
 
@@ -6060,7 +6060,7 @@ pool-undefine
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-undefine pool-or-uuid
 
@@ -6072,7 +6072,7 @@ pool-uuid
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-uuid pool
 
@@ -6084,7 +6084,7 @@ pool-event
 
 **Syntax:**
 
-.. code-block::
+::
 
    pool-event {[pool] event [--loop] [--timeout seconds] [--timestamp] | --list}
 
@@ -6112,7 +6112,7 @@ vol-create
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-create pool-or-uuid FILE [--prealloc-metadata]
 
@@ -6131,7 +6131,7 @@ only slightly higher initial disk space usage.
 
 **Example:**
 
-.. code-block::
+::
 
    virsh vol-dumpxml --pool storagepool1 appvolume1 > newvolume.xml
    vi newvolume.xml (or make changes with your other text editor)
@@ -6143,7 +6143,7 @@ vol-create-from
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-create-from pool-or-uuid FILE vol-name-or-key-or-path
       [--inputpool pool-or-uuid]  [--prealloc-metadata] [--reflink]
@@ -6174,7 +6174,7 @@ vol-create-as
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-create-as pool-or-uuid name capacity [--allocation size] [--format string]
       [--backing-vol vol-name-or-key-or-path]
@@ -6223,7 +6223,7 @@ vol-clone
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-clone vol-name-or-key-or-path name
       [--pool pool-or-uuid] [--prealloc-metadata] [--reflink]
@@ -6256,7 +6256,7 @@ vol-delete
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-delete vol-name-or-key-or-path [--pool pool-or-uuid] [--delete-snapshots]
 
@@ -6280,7 +6280,7 @@ vol-upload
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-upload vol-name-or-key-or-path local-file
       [--pool pool-or-uuid] [--offset bytes]
@@ -6318,7 +6318,7 @@ vol-download
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-download vol-name-or-key-or-path local-file
       [--pool pool-or-uuid] [--offset bytes] [--length bytes]
@@ -6349,7 +6349,7 @@ vol-wipe
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-wipe vol-name-or-key-or-path [--pool pool-or-uuid] [--algorithm algorithm]
 
@@ -6408,7 +6408,7 @@ vol-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-dumpxml vol-name-or-key-or-path [--pool pool-or-uuid]
 
@@ -6428,7 +6428,7 @@ vol-info
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-info vol-name-or-key-or-path [--pool pool-or-uuid] [--bytes] [--physical]
 
@@ -6457,7 +6457,7 @@ vol-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-list [--pool pool-or-uuid] [--details]
 
@@ -6474,7 +6474,7 @@ vol-pool
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-pool vol-key-or-path [--uuid]
 
@@ -6492,7 +6492,7 @@ vol-path
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-path vol-name-or-key [--pool pool-or-uuid]
 
@@ -6511,7 +6511,7 @@ vol-name
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-name vol-key-or-path
 
@@ -6525,7 +6525,7 @@ vol-key
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-key vol-name-or-path [--pool pool-or-uuid]
 
@@ -6545,7 +6545,7 @@ vol-resize
 
 **Syntax:**
 
-.. code-block::
+::
 
    vol-resize vol-name-or-path capacity [--pool pool-or-uuid] [--allocate] [--delta] [--shrink]
 
@@ -6590,7 +6590,7 @@ secret-define
 
 **Syntax:**
 
-.. code-block::
+::
 
    secret-define file
 
@@ -6605,7 +6605,7 @@ secret-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    secret-dumpxml secret
 
@@ -6617,7 +6617,7 @@ secret-event
 
 **Syntax:**
 
-.. code-block::
+::
 
    secret-event {[secret] event [--loop] [--timeout seconds] [--timestamp] | --list}
 
@@ -6642,7 +6642,7 @@ secret-set-value
 
 **Syntax:**
 
-.. code-block::
+::
 
    secret-set-value secret (--file filename [--plain] | --interactive | base64)
 
@@ -6665,7 +6665,7 @@ secret-get-value
 
 **Syntax:**
 
-.. code-block::
+::
 
    secret-get-value [--plain] secret
 
@@ -6682,7 +6682,7 @@ secret-undefine
 
 **Syntax:**
 
-.. code-block::
+::
 
    secret-undefine secret
 
@@ -6696,7 +6696,7 @@ secret-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    secret-list [--ephemeral] [--no-ephemeral]
       [--private] [--no-private]
@@ -6723,7 +6723,7 @@ snapshot-create
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-create domain [xmlfile] {[--redefine [--current]] |
       [--no-metadata] [--halt] [--disk-only] [--reuse-external]
@@ -6804,7 +6804,7 @@ snapshot-create-as
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-create-as domain {[--print-xml] [--no-metadata]
       [--halt] [--reuse-external]} [name]
@@ -6843,7 +6843,7 @@ all three of *domain*, *name*, and *description* are also present.
 For example, a diskspec of "vda,snapshot=external,file=/path/to,,new"
 results in the following XML:
 
-.. code-block::
+::
 
    <disk name='vda' snapshot='external'>
      <source file='/path/to,new'/>
@@ -6886,7 +6886,7 @@ snapshot-current
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-current domain {[--name] | [--security-info] | [snapshotname]}
 
@@ -6905,7 +6905,7 @@ snapshot-edit
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-edit domain [snapshotname] [--current] {[--rename] | [--clone]}
 
@@ -6917,7 +6917,7 @@ snapshot.
 
 This is equivalent to:
 
-.. code-block::
+::
 
    virsh snapshot-dumpxml dom name > snapshot.xml
    vi snapshot.xml (or make changes with your other text editor)
@@ -6942,7 +6942,7 @@ snapshot-info
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-info domain {snapshot | --current}
 
@@ -6955,7 +6955,7 @@ snapshot-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-list domain [--metadata] [--no-metadata]
       [{--parent | --roots | [{--tree | --name}]}] [--topological]
@@ -7024,7 +7024,7 @@ snapshot-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-dumpxml domain snapshot [--security-info]
 
@@ -7038,7 +7038,7 @@ snapshot-parent
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-parent domain {snapshot | --current}
 
@@ -7051,7 +7051,7 @@ snapshot-revert
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-revert domain {snapshot | --current} [{--running | --paused}] [--force]
 
@@ -7101,7 +7101,7 @@ snapshot-delete
 
 **Syntax:**
 
-.. code-block::
+::
 
    snapshot-delete domain {snapshot | --current}
       [--metadata] [{--children | --children-only}]
@@ -7135,7 +7135,7 @@ checkpoint-create
 
 **Syntax:**
 
-.. code-block::
+::
 
    checkpoint-create domain [xmlfile] { --redefine | [--quiesce]}
 
@@ -7174,7 +7174,7 @@ checkpoint-create-as
 
 **Syntax:**
 
-.. code-block::
+::
 
    checkpoint-create-as domain [--print-xml] [name]
       [description] [--quiesce] [--diskspec] diskspec]...
@@ -7194,7 +7194,7 @@ all three of *domain*, *name*, and *description* are also present.
 For example, a diskspec of "vda,checkpoint=bitmap,bitmap=map1"
 results in the following XML:
 
-.. code-block::
+::
 
    <disk name='vda' checkpoint='bitmap' bitmap='map1'/>
 
@@ -7212,7 +7212,7 @@ checkpoint-edit
 
 **Syntax:**
 
-.. code-block::
+::
 
    checkpoint-edit domain checkpointname
 
@@ -7220,7 +7220,7 @@ Edit the XML configuration file for *checkpointname* of a domain.
 
 This is equivalent to:
 
-.. code-block::
+::
 
    virsh checkpoint-dumpxml dom name > checkpoint.xml
    vi checkpoint.xml (or make changes with your other text editor)
@@ -7238,7 +7238,7 @@ checkpoint-info
 
 **Syntax:**
 
-.. code-block::
+::
 
    checkpoint-info domain checkpoint
 
@@ -7250,7 +7250,7 @@ checkpoint-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    checkpoint-list domain [{--parent | --roots |
       [{--tree | --name}]}] [--topological]
@@ -7296,7 +7296,7 @@ checkpoint-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    checkpoint-dumpxml domain checkpoint [--security-info] [--no-domain] [--size]
 
@@ -7316,7 +7316,7 @@ checkpoint-parent
 
 **Syntax:**
 
-.. code-block::
+::
 
    checkpoint-parent domain checkpoint
 
@@ -7328,7 +7328,7 @@ checkpoint-delete
 
 **Syntax:**
 
-.. code-block::
+::
 
    checkpoint-delete domain checkpoint
       [--metadata] [{--children | --children-only}]
@@ -7365,7 +7365,7 @@ nwfilter-define
 
 **Syntax:**
 
-.. code-block::
+::
 
    nwfilter-define xmlfile
 
@@ -7382,7 +7382,7 @@ nwfilter-undefine
 
 **Syntax:**
 
-.. code-block::
+::
 
    nwfilter-undefine nwfilter-name
 
@@ -7395,7 +7395,7 @@ nwfilter-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    nwfilter-list
 
@@ -7407,7 +7407,7 @@ nwfilter-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    nwfilter-dumpxml nwfilter-name
 
@@ -7419,7 +7419,7 @@ nwfilter-edit
 
 **Syntax:**
 
-.. code-block::
+::
 
    nwfilter-edit nwfilter-name
 
@@ -7427,7 +7427,7 @@ Edit the XML of a network filter.
 
 This is equivalent to:
 
-.. code-block::
+::
 
    virsh nwfilter-dumpxml myfilter > myfilter.xml
    vi myfilter.xml (or make changes with your other text editor)
@@ -7458,7 +7458,7 @@ nwfilter-binding-create
 
 **Syntax:**
 
-.. code-block::
+::
 
    nwfilter-binding-create xmlfile
 
@@ -7477,7 +7477,7 @@ nwfilter-binding-delete
 
 **Syntax:**
 
-.. code-block::
+::
 
    nwfilter-binding-delete port-name
 
@@ -7495,7 +7495,7 @@ nwfilter-binding-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    nwfilter-binding-list
 
@@ -7507,7 +7507,7 @@ nwfilter-binding-dumpxml
 
 **Syntax:**
 
-.. code-block::
+::
 
    nwfilter-binding-dumpxml port-name
 
@@ -7531,7 +7531,7 @@ qemu-attach
 
 **Syntax:**
 
-.. code-block::
+::
 
    qemu-attach pid
 
@@ -7540,7 +7540,7 @@ The QEMU process must have been created with a monitor connection
 using the UNIX driver. Ideally the process will also have had the
 '-name' argument specified.
 
-.. code-block::
+::
 
        $ qemu-kvm -cdrom ~/demo.iso \
            -monitor unix:/tmp/demo,server,nowait \
@@ -7561,7 +7561,7 @@ qemu-monitor-command
 
 **Syntax:**
 
-.. code-block::
+::
 
    qemu-monitor-command domain { [--hmp] | [--pretty] [--return-value] } command...
 
@@ -7588,7 +7588,7 @@ qemu-agent-command
 
 **Syntax:**
 
-.. code-block::
+::
 
    qemu-agent-command domain [--timeout seconds | --async | --block] command...
 
@@ -7606,7 +7606,7 @@ qemu-monitor-event
 
 **Syntax:**
 
-.. code-block::
+::
 
    qemu-monitor-event [domain] [--event event-name]
      [--loop] [--timeout seconds] [--pretty] [--regex] [--no-case]
@@ -7637,7 +7637,7 @@ lxc-enter-namespace
 
 **Syntax:**
 
-.. code-block::
+::
 
    lxc-enter-namespace domain [--noseclabel] --
       /path/to/binary [arg1, [arg2, ...]]

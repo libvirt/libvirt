@@ -199,7 +199,7 @@ EXAMPLES
 
 To retrieve the version of libvirtd:
 
-.. code-block::
+::
 
   # libvirtd --version
   libvirtd (libvirt) 0.8.2
@@ -207,7 +207,7 @@ To retrieve the version of libvirtd:
 
 To start libvirtd, instructing it to daemonize and create a PID file:
 
-.. code-block::
+::
 
   # libvirtd -d
   # ls -la @RUNSTATEDIR@/libvirtd.pid

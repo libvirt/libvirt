@@ -28,7 +28,7 @@ as for monitoring and managing all clients connected to the daemon.
 
 The basic structure of most virt-admin usage is:
 
-.. code-block::
+::
 
    virt-admin [OPTION]... <command> [ARG]...
 
@@ -107,7 +107,7 @@ help
 
 **Syntax:**
 
-.. code-block::
+::
 
    help [command-or-group]
 
@@ -124,7 +124,7 @@ quit, exit
 
 **Syntax:**
 
-.. code-block::
+::
 
    quit
    exit
@@ -136,7 +136,7 @@ version
 
 **Syntax:**
 
-.. code-block::
+::
 
    version
 
@@ -146,7 +146,7 @@ the version of the daemon.
 
 **Example:**
 
-.. code-block::
+::
 
    $ virt-admin version
    Compiled against library: libvirt 1.2.21
@@ -160,7 +160,7 @@ cd
 
 **Syntax:**
 
-.. code-block::
+::
 
    cd [directory]
 
@@ -175,7 +175,7 @@ pwd
 
 **Syntax:**
 
-.. code-block::
+::
 
    pwd
 
@@ -187,7 +187,7 @@ connect
 
 **Syntax:**
 
-.. code-block::
+::
 
    connect [URI]
 
@@ -206,7 +206,7 @@ uri
 
 **Syntax:**
 
-.. code-block::
+::
 
    uri
 
@@ -230,7 +230,7 @@ server-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    server-list
 
@@ -243,7 +243,7 @@ daemon-log-filters
 
 **Syntax:**
 
-.. code-block::
+::
 
    daemon-log-filters [--filters string]
 
@@ -264,7 +264,7 @@ space. Each filter must conform to the form described in detail by
 To define a filter which suppresses all e.g. 'virObjectUnref' DEBUG
 messages, use the following:
 
-.. code-block::
+::
 
    $ virt-admin daemon-log-filters "4:util.object"
 
@@ -277,7 +277,7 @@ daemon-log-outouts
 
 **Syntax:**
 
-.. code-block::
+::
 
    daemon-log-outputs [--outputs string]
 
@@ -298,13 +298,13 @@ space. Each output must conform to the form described in detail by
 To replace the current setting for logging outputs with one that writes to
 a file while logging errors only, the following could be used:
 
-.. code-block::
+::
 
    $ virt-admin daemon-log-outputs "4:file:<absolute_path_to_the_file>"
 
 To define multiple outputs at once they need to be delimited by spaces:
 
-.. code-block::
+::
 
    $ virt-admin daemon-log-outputs "4:stderr 2:syslog:<msg_ident>"
 
@@ -320,7 +320,7 @@ server-threadpool-info
 
 **Syntax:**
 
-.. code-block::
+::
 
    server-threadpool-info server
 
@@ -355,7 +355,7 @@ that, unlike tasks carried out by normal workers, are within libvirt's full
 control and libvirt guarantees that such a task cannot hang, thus will always
 finish. An example of such a task this would be destroying a domain:
 
-.. code-block::
+::
 
    $ virsh destroy <domain>.
 
@@ -365,7 +365,7 @@ server-threadpool-set
 
 **Syntax:**
 
-.. code-block::
+::
 
    server-threadpool-set server [--min-workers count] [--max-workers count] [--priority-workers count]
 
@@ -394,7 +394,7 @@ server-clients-info
 
 **Syntax:**
 
-.. code-block::
+::
 
    server-clients-info server
 
@@ -407,7 +407,7 @@ runtime values, more specifically, the current number of clients connected to
 
 **Example:**
 
-.. code-block::
+::
 
    # virt-admin server-clients-info libvirtd
    nclients_max        : 120
@@ -421,7 +421,7 @@ server-clients-set
 
 **Syntax:**
 
-.. code-block::
+::
 
    server-clients-set server [--max-clients count] [--max-unauth-clients count]
 
@@ -447,7 +447,7 @@ server-update-tls
 
 **Syntax:**
 
-.. code-block::
+::
 
    server-update-tls server
 
@@ -474,7 +474,7 @@ client-list
 
 **Syntax:**
 
-.. code-block::
+::
 
    client-list server
 
@@ -488,7 +488,7 @@ client-info
 
 **Syntax:**
 
-.. code-block::
+::
 
    client-info server client
 
@@ -504,7 +504,7 @@ enabled within daemon).
 
 **Examples:**
 
-.. code-block::
+::
 
    # virt-admin client-info libvirtd 1
    id             : 1
@@ -530,7 +530,7 @@ client-disconnect
 
 **Syntax:**
 
-.. code-block::
+::
 
    client-disconnect server client
 
