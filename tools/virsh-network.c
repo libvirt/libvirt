@@ -1693,7 +1693,6 @@ virshNetworkPortListCollect(vshControl *ctl,
     if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
         goto cleanup;
 
-    /* try the list with flags support (0.10.2 and later) */
     if ((ret = virNetworkListAllPorts(network,
                                       &list->ports,
                                       flags)) < 0)
