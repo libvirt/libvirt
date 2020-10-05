@@ -36,6 +36,7 @@
 #include "openwsman.h"
 #include "virstring.h"
 #include "virkeycode.h"
+#include "domain_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
@@ -284,6 +285,76 @@ hypervGetMemSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
 
 
 /*
+ * API-specific utility functions
+ */
+
+static int
+hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
+{
+    Win32_ComputerSystemProduct *computerSystem = NULL;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    int result = -1;
+
+    virBufferAddLit(&query, WIN32_COMPUTERSYSTEMPRODUCT_WQL_SELECT);
+    if (hypervGetWmiClass(Win32_ComputerSystemProduct, &computerSystem) < 0)
+        goto cleanup;
+
+    if (virUUIDParse(computerSystem->data.common->UUID, uuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not parse UUID from string '%s'"),
+                       computerSystem->data.common->UUID);
+        goto cleanup;
+    }
+    result = 0;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *) computerSystem);
+
+    return result;
+}
+
+static virCapsPtr
+hypervCapsInit(hypervPrivate *priv)
+{
+    virCapsPtr caps = NULL;
+    virCapsGuestPtr guest = NULL;
+
+    caps = virCapabilitiesNew(VIR_ARCH_X86_64, 1, 1);
+
+    if (!caps)
+        return NULL;
+
+    if (hypervLookupHostSystemBiosUuid(priv, caps->host.host_uuid) < 0)
+        goto error;
+
+    /* i686 caps */
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
+                                    NULL, NULL, 0, NULL);
+    if (!guest)
+        goto error;
+
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_HYPERV, NULL, NULL, 0, NULL))
+        goto error;
+
+    /* x86_64 caps */
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
+                                    NULL, NULL, 0, NULL);
+    if (!guest)
+        goto error;
+
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_HYPERV, NULL, NULL, 0, NULL))
+        goto error;
+
+    return caps;
+
+ error:
+    virObjectUnref(caps);
+    return NULL;
+}
+
+
+
+/*
  * Driver functions
  */
 
@@ -297,6 +368,9 @@ hypervFreePrivate(hypervPrivate **priv)
         /* FIXME: This leaks memory due to bugs in openwsman <= 2.2.6 */
         wsmc_release((*priv)->client);
     }
+
+    if ((*priv)->caps)
+        virObjectUnref((*priv)->caps);
 
     hypervFreeParsedUri(&(*priv)->parsedUri);
     VIR_FREE(*priv);
@@ -408,6 +482,11 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     if (hypervInitConnection(conn, priv, username, password) < 0)
         goto cleanup;
 
+    /* set up capabilities */
+    priv->caps = hypervCapsInit(priv);
+    if (!priv->caps)
+        goto cleanup;
+
     conn->privateData = priv;
     priv = NULL;
     result = VIR_DRV_OPEN_SUCCESS;
@@ -460,6 +539,16 @@ hypervConnectGetHostname(virConnectPtr conn)
     hypervFreeObject(priv, (hypervObject *)computerSystem);
 
     return hostname;
+}
+
+
+
+static char*
+hypervConnectGetCapabilities(virConnectPtr conn)
+{
+    hypervPrivate *priv = conn->privateData;
+
+    return virCapabilitiesFormatXML(priv->caps);
 }
 
 
@@ -1601,6 +1690,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .connectGetType = hypervConnectGetType, /* 0.9.5 */
     .connectGetHostname = hypervConnectGetHostname, /* 0.9.5 */
     .nodeGetInfo = hypervNodeGetInfo, /* 0.9.5 */
+    .connectGetCapabilities = hypervConnectGetCapabilities, /* 6.9.0 */
     .connectListDomains = hypervConnectListDomains, /* 0.9.5 */
     .connectNumOfDomains = hypervConnectNumOfDomains, /* 0.9.5 */
     .connectListAllDomains = hypervConnectListAllDomains, /* 0.10.2 */
