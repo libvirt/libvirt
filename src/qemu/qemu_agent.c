@@ -2129,10 +2129,7 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
     virHashTablePtr ifaces_store = NULL;
 
     /* Hash table to handle the interface alias */
-    if (!(ifaces_store = virHashCreate(ifaces_count, NULL))) {
-        virHashFree(ifaces_store);
-        return -1;
-    }
+    ifaces_store = virHashNew(NULL);
 
     if (!(cmd = qemuAgentMakeCommand("guest-network-get-interfaces", NULL)))
         goto cleanup;
