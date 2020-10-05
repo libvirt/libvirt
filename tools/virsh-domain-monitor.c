@@ -1063,8 +1063,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
         DOMBLKSTAT_LEGACY_PRINT(3, stats.wr_bytes);
         DOMBLKSTAT_LEGACY_PRINT(4, stats.errs);
     } else {
-        params = vshCalloc(ctl, nparams, sizeof(*params));
-
+        params = g_new0(virTypedParameter, nparams);
         if (virDomainBlockStatsFlags(dom, device, params, &nparams, 0) < 0) {
             vshError(ctl, _("Failed to get block stats for domain '%s' device '%s'"), name, device);
             goto cleanup;
@@ -1618,7 +1617,7 @@ virshDomainListFree(virshDomainListPtr domlist)
 static virshDomainListPtr
 virshDomainListCollect(vshControl *ctl, unsigned int flags)
 {
-    virshDomainListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshDomainListPtr list = g_new0(struct virshDomainList, 1);
     size_t i;
     int ret;
     int *ids = NULL;
@@ -1680,7 +1679,7 @@ virshDomainListCollect(vshControl *ctl, unsigned int flags)
         }
 
         if (nids) {
-            ids = vshMalloc(ctl, sizeof(int) * nids);
+            ids = g_new0(int, nids);
 
             if ((nids = virConnectListDomains(priv->conn, ids, nids)) < 0) {
                 vshError(ctl, "%s", _("Failed to list active domains"));
@@ -1697,7 +1696,7 @@ virshDomainListCollect(vshControl *ctl, unsigned int flags)
         }
 
         if (nnames) {
-            names = vshMalloc(ctl, sizeof(char *) * nnames);
+            names = g_new0(char *, nnames);
 
             if ((nnames = virConnectListDefinedDomains(priv->conn, names,
                                                       nnames)) < 0) {
@@ -1707,7 +1706,7 @@ virshDomainListCollect(vshControl *ctl, unsigned int flags)
         }
     }
 
-    list->domains = vshMalloc(ctl, sizeof(virDomainPtr) * (nids + nnames));
+    list->domains = g_new0(virDomainPtr, nids + nnames);
     list->ndomains = 0;
 
     /* get active domains */

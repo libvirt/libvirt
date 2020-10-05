@@ -185,7 +185,7 @@ static virshInterfaceListPtr
 virshInterfaceListCollect(vshControl *ctl,
                           unsigned int flags)
 {
-    virshInterfaceListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshInterfaceListPtr list = g_new0(struct virshInterfaceList, 1);
     size_t i;
     int ret;
     char **activeNames = NULL;
@@ -226,7 +226,7 @@ virshInterfaceListCollect(vshControl *ctl,
             goto cleanup;
         }
         if (nActiveIfaces) {
-            activeNames = vshMalloc(ctl, sizeof(char *) * nActiveIfaces);
+            activeNames = g_new0(char *, nActiveIfaces);
 
             if ((nActiveIfaces = virConnectListInterfaces(priv->conn, activeNames,
                                                           nActiveIfaces)) < 0) {
@@ -243,7 +243,7 @@ virshInterfaceListCollect(vshControl *ctl,
             goto cleanup;
         }
         if (nInactiveIfaces) {
-            inactiveNames = vshMalloc(ctl, sizeof(char *) * nInactiveIfaces);
+            inactiveNames = g_new0(char *, nInactiveIfaces);
 
             if ((nInactiveIfaces =
                      virConnectListDefinedInterfaces(priv->conn, inactiveNames,
@@ -261,7 +261,7 @@ virshInterfaceListCollect(vshControl *ctl,
         return list;
     }
 
-    list->ifaces = vshMalloc(ctl, sizeof(virInterfacePtr) * (nAllIfaces));
+    list->ifaces = g_new0(virInterfacePtr, nAllIfaces);
     list->nifaces = 0;
 
     /* get active interfaces */

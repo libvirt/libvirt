@@ -859,7 +859,7 @@ static virshStoragePoolListPtr
 virshStoragePoolListCollect(vshControl *ctl,
                             unsigned int flags)
 {
-    virshStoragePoolListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshStoragePoolListPtr list = g_new0(struct virshStoragePoolList, 1);
     size_t i;
     int ret;
     char **names = NULL;
@@ -936,7 +936,7 @@ virshStoragePoolListCollect(vshControl *ctl,
     if (nAllPools == 0)
         return list;
 
-    names = vshMalloc(ctl, sizeof(char *) * nAllPools);
+    names = g_new0(char *, nAllPools);
 
     /* Retrieve a list of active storage pool names */
     if (!VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
@@ -959,7 +959,7 @@ virshStoragePoolListCollect(vshControl *ctl,
         }
     }
 
-    list->pools = vshMalloc(ctl, sizeof(virStoragePoolPtr) * (nAllPools));
+    list->pools = g_new0(virStoragePoolPtr, nAllPools);
     list->npools = 0;
 
     /* get active pools */
@@ -1247,7 +1247,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     if (!(list = virshStoragePoolListCollect(ctl, flags)))
         goto cleanup;
 
-    poolInfoTexts = vshCalloc(ctl, list->npools, sizeof(*poolInfoTexts));
+    poolInfoTexts = g_new0(struct poolInfoText, list->npools);
 
     /* Collect the storage pool information for display */
     for (i = 0; i < list->npools; i++) {

@@ -1450,7 +1450,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                         goto syntaxError;
                     if (tk != VSH_TK_ARG) {
                         if (partial) {
-                            vshCmdOpt *arg = vshMalloc(ctl, sizeof(vshCmdOpt));
+                            vshCmdOpt *arg = g_new0(vshCmdOpt, 1);
                             arg->def = opt;
                             arg->data = tkdata;
                             tkdata = NULL;
@@ -1499,7 +1499,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
             }
             if (opt) {
                 /* save option */
-                vshCmdOpt *arg = vshMalloc(ctl, sizeof(vshCmdOpt));
+                vshCmdOpt *arg = g_new0(vshCmdOpt, 1);
 
                 arg->def = opt;
                 arg->data = tkdata;
@@ -1523,7 +1523,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
 
         /* command parsed -- allocate new struct for the command */
         if (cmd) {
-            vshCmd *c = vshMalloc(ctl, sizeof(vshCmd));
+            vshCmd *c = g_new0(vshCmd, 1);
             vshCmdOpt *tmpopt = first;
 
             /* if we encountered --help, replace parsed command with
@@ -1535,7 +1535,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
 
                 help = vshCmddefSearch("help");
                 vshCommandOptFree(first);
-                first = vshMalloc(ctl, sizeof(vshCmdOpt));
+                first = g_new0(vshCmdOpt, 1);
                 first->def = help->opts;
                 first->data = g_strdup(cmd->name);
                 first->next = NULL;
@@ -1579,7 +1579,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
     if (partial) {
         vshCmd *tmp;
 
-        tmp = vshMalloc(ctl, sizeof(*tmp));
+        tmp = g_new0(vshCmd, 1);
         tmp->opts = first;
         tmp->def = cmd;
 
@@ -2653,7 +2653,7 @@ vshReadlineOptionsGenerator(const char *text,
         }
 
         name_len = strlen(name);
-        ret[ret_size] = vshMalloc(NULL, name_len + 3);
+        ret[ret_size] = g_new0(char, name_len + 3);
         g_snprintf(ret[ret_size], name_len + 3,  "--%s", name);
         ret_size++;
         /* Terminate the string list properly. */

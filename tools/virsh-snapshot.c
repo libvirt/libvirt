@@ -1069,7 +1069,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
     bool descendants = false;
     bool roots = false;
     virDomainSnapshotPtr *snaps;
-    virshSnapshotListPtr snaplist = vshMalloc(ctl, sizeof(*snaplist));
+    virshSnapshotListPtr snaplist = g_new0(struct virshSnapshotList, 1);
     virshSnapshotListPtr ret = NULL;
     const char *fromname = NULL;
     int start_index = -1;
@@ -1221,7 +1221,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
     if (!count)
         goto success;
 
-    names = vshCalloc(ctl, sizeof(*names), count);
+    names = g_new0(char *, count);
 
     /* Now that we have a count, collect the list.  */
     if (from && !priv->useSnapshotOld) {
@@ -1242,7 +1242,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
     if (count < 0)
         goto cleanup;
 
-    snaplist->snaps = vshCalloc(ctl, sizeof(*snaplist->snaps), count);
+    snaplist->snaps = g_new0(struct virshSnap, count);
     snaplist->nsnaps = count;
     for (i = 0; i < count; i++) {
         snaplist->snaps[i].snap = virDomainSnapshotLookupByName(dom,
@@ -1310,7 +1310,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
             }
         }
         if (!changed) {
-            ret = vshMalloc(ctl, sizeof(*snaplist));
+            ret = g_new0(struct virshSnapshotList, 1);
             goto cleanup;
         }
         while (changed && remaining) {

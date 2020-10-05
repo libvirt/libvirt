@@ -1283,7 +1283,7 @@ virshStorageVolListCollect(vshControl *ctl,
                            virStoragePoolPtr pool,
                            unsigned int flags)
 {
-    virshStorageVolListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshStorageVolListPtr list = g_new0(struct virshStorageVolList, 1);
     size_t i;
     char **names = NULL;
     virStorageVolPtr vol = NULL;
@@ -1322,13 +1322,13 @@ virshStorageVolListCollect(vshControl *ctl,
         return list;
 
     /* Retrieve the list of volume names in the pool */
-    names = vshCalloc(ctl, nvols, sizeof(*names));
+    names = g_new0(char *, nvols);
     if ((nvols = virStoragePoolListVolumes(pool, names, nvols)) < 0) {
         vshError(ctl, "%s", _("Failed to list storage volumes"));
         goto cleanup;
     }
 
-    list->vols = vshMalloc(ctl, sizeof(virStorageVolPtr) * (nvols));
+    list->vols = g_new0(virStorageVolPtr, nvols);
     list->nvols = 0;
 
     /* get the vols */
@@ -1415,7 +1415,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         goto cleanup;
 
     if (list->nvols > 0)
-        volInfoTexts = vshCalloc(ctl, list->nvols, sizeof(*volInfoTexts));
+        volInfoTexts = g_new0(struct volInfoText, list->nvols);
 
     /* Collect the rest of the volume information for display */
     for (i = 0; i < list->nvols; i++) {

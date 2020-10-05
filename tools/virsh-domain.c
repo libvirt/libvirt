@@ -1431,7 +1431,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        params = vshCalloc(ctl, nparams, sizeof(*params));
+        params = g_new0(virTypedParameter, nparams);
 
         if (virDomainGetBlockIoTune(dom, disk, params, &nparams, flags) != 0) {
             vshError(ctl, "%s",
@@ -1629,7 +1629,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
         }
 
         /* now go get all the blkio parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
+        params = g_new0(virTypedParameter, nparams);
         if (virDomainGetBlkioParameters(dom, params, &nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to get blkio parameters"));
             goto cleanup;
@@ -2372,7 +2372,7 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
         transientjob) {
         /* New API */
         if (bandwidth || granularity || buf_size) {
-            params = vshCalloc(ctl, 3, sizeof(*params));
+            params = g_new0(virTypedParameter, 3);
             if (bandwidth) {
                 if (!bytes) {
                     /* bandwidth is ulong MiB/s, but the typed parameter is
@@ -3375,7 +3375,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
         }
 
         /* get all interface parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
+        params = g_new0(virTypedParameter, nparams);
         if (virDomainGetInterfaceParameters(dom, device, params, &nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to get interface parameters"));
             goto cleanup;
@@ -5243,7 +5243,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (nparams) {
-        params = vshMalloc(ctl, sizeof(*params) * nparams);
+        params = g_new0(virTypedParameter, nparams);
 
         memset(params, 0, sizeof(*params) * nparams);
         if (flags || current) {
@@ -6894,7 +6894,7 @@ virshVcpuinfoInactive(vshControl *ctl,
         return false;
 
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-    cpumaps = vshMalloc(ctl, virBitmapSize(vcpus) * cpumaplen);
+    cpumaps = g_new0(unsigned char, virBitmapSize(vcpus) * cpumaplen);
 
     if (virDomainGetVcpuPinInfo(dom, virBitmapSize(vcpus),
                                 cpumaps, cpumaplen,
@@ -6943,9 +6943,9 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     if (virDomainGetInfo(dom, &info) != 0)
         return false;
 
-    cpuinfo = vshMalloc(ctl, sizeof(virVcpuInfo)*info.nrVirtCpu);
+    cpuinfo = g_new0(virVcpuInfo, info.nrVirtCpu);
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-    cpumaps = vshMalloc(ctl, info.nrVirtCpu * cpumaplen);
+    cpumaps = g_new0(unsigned char, info.nrVirtCpu * cpumaplen);
 
     if ((ncpus = virDomainGetVcpus(dom,
                                    cpuinfo, info.nrVirtCpu,
@@ -7075,7 +7075,7 @@ virshVcpuPinQuery(vshControl *ctl,
     }
 
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-    cpumap = vshMalloc(ctl, ncpus * cpumaplen);
+    cpumap = g_new0(unsigned char, ncpus * cpumaplen);
     if ((ncpus = virDomainGetVcpuPinInfo(dom, ncpus, cpumap,
                                          cpumaplen, flags)) >= 0) {
         table = vshTableNew(_("VCPU"), _("CPU Affinity"), NULL);
@@ -7291,7 +7291,7 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
             flags = VIR_DOMAIN_AFFECT_CURRENT;
 
         cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-        cpumap = vshMalloc(ctl, cpumaplen);
+        cpumap = g_new0(unsigned char, cpumaplen);
         if (virDomainGetEmulatorPinInfo(dom, cpumap,
                                         cpumaplen, flags) >= 0) {
             vshPrintExtra(ctl, "%s %s\n", _("emulator:"), _("CPU Affinity"));
@@ -9281,7 +9281,7 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
         }
 
         /* now go get all the memory parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
+        params = g_new0(virTypedParameter, nparams);
         if (virDomainGetMemoryParameters(dom, params, &nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to get memory parameters"));
             goto cleanup;
@@ -9554,7 +9554,7 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
         }
 
         /* now go get all the numa parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
+        params = g_new0(virTypedParameter, nparams);
         if (virDomainGetNumaParameters(dom, params, &nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to get numa parameters"));
             goto cleanup;

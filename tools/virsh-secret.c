@@ -425,7 +425,7 @@ static virshSecretListPtr
 virshSecretListCollect(vshControl *ctl,
                        unsigned int flags)
 {
-    virshSecretListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshSecretListPtr list = g_new0(struct virshSecretList, 1);
     size_t i;
     int ret;
     virSecretPtr secret;
@@ -470,7 +470,7 @@ virshSecretListCollect(vshControl *ctl,
     if (nsecrets == 0)
         return list;
 
-    uuids = vshMalloc(ctl, sizeof(char *) * nsecrets);
+    uuids = g_new0(char *, nsecrets);
 
     nsecrets = virConnectListSecrets(priv->conn, uuids, nsecrets);
     if (nsecrets < 0) {
@@ -478,7 +478,7 @@ virshSecretListCollect(vshControl *ctl,
         goto cleanup;
     }
 
-    list->secrets = vshMalloc(ctl, sizeof(virSecretPtr) * (nsecrets));
+    list->secrets = g_new0(virSecretPtr, nsecrets);
     list->nsecrets = 0;
 
     /* get the secrets */

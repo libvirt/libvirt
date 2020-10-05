@@ -583,10 +583,11 @@ virshCheckpointListCollect(vshControl *ctl,
     size_t i;
     int count = -1;
     virDomainCheckpointPtr *chks;
-    virshCheckpointListPtr checkpointlist = vshMalloc(ctl,
-                                                      sizeof(*checkpointlist));
+    virshCheckpointListPtr checkpointlist = NULL;
     virshCheckpointListPtr ret = NULL;
     unsigned int flags = orig_flags;
+
+    checkpointlist = g_new0(struct virshCheckpointList, 1);
 
     if (from)
         count = virDomainCheckpointListAllChildren(from, &chks, flags);

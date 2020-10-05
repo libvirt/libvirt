@@ -216,7 +216,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
                          int ncapnames,
                          unsigned int flags)
 {
-    virshNodeDeviceListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshNodeDeviceListPtr list = g_new0(struct virshNodeDeviceList, 1);
     size_t i;
     int ret;
     virNodeDevicePtr device;
@@ -256,7 +256,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
     if (ndevices == 0)
         return list;
 
-    names = vshMalloc(ctl, sizeof(char *) * ndevices);
+    names = g_new0(char *, ndevices);
 
     ndevices = virNodeListDevices(priv->conn, NULL, names, ndevices, 0);
     if (ndevices < 0) {
@@ -264,7 +264,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
         goto cleanup;
     }
 
-    list->devices = vshMalloc(ctl, sizeof(virNodeDevicePtr) * (ndevices));
+    list->devices = g_new0(virNodeDevicePtr, ndevices);
     list->ndevices = 0;
 
     /* get the node devices */
@@ -295,7 +295,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
             goto cleanup;
         }
 
-        caps = vshMalloc(ctl, sizeof(char *) * ncaps);
+        caps = g_new0(char *, ncaps);
 
         if ((ncaps = virNodeDeviceListCaps(device, caps, ncaps)) < 0) {
             vshError(ctl, "%s", _("Failed to get capability names of the device"));
@@ -475,8 +475,8 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     }
 
     if (tree) {
-        char **parents = vshMalloc(ctl, sizeof(char *) * list->ndevices);
-        char **names = vshMalloc(ctl, sizeof(char *) * list->ndevices);
+        char **parents = g_new0(char *, list->ndevices);
+        char **names = g_new0(char *, list->ndevices);
         struct virshNodeList arrays = { names, parents };
 
         for (i = 0; i < list->ndevices; i++)

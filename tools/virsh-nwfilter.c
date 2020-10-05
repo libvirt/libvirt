@@ -243,7 +243,7 @@ static virshNWFilterListPtr
 virshNWFilterListCollect(vshControl *ctl,
                          unsigned int flags)
 {
-    virshNWFilterListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshNWFilterListPtr list = g_new0(struct virshNWFilterList, 1);
     size_t i;
     int ret;
     virNWFilterPtr filter;
@@ -285,7 +285,7 @@ virshNWFilterListCollect(vshControl *ctl,
     if (nfilters == 0)
         return list;
 
-    names = vshMalloc(ctl, sizeof(char *) * nfilters);
+    names = g_new0(char *, nfilters);
 
     nfilters = virConnectListNWFilters(priv->conn, names, nfilters);
     if (nfilters < 0) {
@@ -293,7 +293,7 @@ virshNWFilterListCollect(vshControl *ctl,
         goto cleanup;
     }
 
-    list->filters = vshMalloc(ctl, sizeof(virNWFilterPtr) * nfilters);
+    list->filters = g_new0(virNWFilterPtr, nfilters);
     list->nfilters = 0;
 
     /* get the network filters */
@@ -664,7 +664,7 @@ static virshNWFilterBindingListPtr
 virshNWFilterBindingListCollect(vshControl *ctl,
                                 unsigned int flags)
 {
-    virshNWFilterBindingListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshNWFilterBindingListPtr list = g_new0(struct virshNWFilterBindingList, 1);
     int ret;
     bool success = false;
     virshControlPtr priv = ctl->privData;

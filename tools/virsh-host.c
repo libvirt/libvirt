@@ -197,8 +197,8 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        nodes_free = vshCalloc(ctl, nodes_cnt, sizeof(*nodes_free));
-        nodes_id = vshCalloc(ctl, nodes_cnt, sizeof(*nodes_id));
+        nodes_free = g_new0(unsigned long long, nodes_cnt);
+        nodes_id = g_new0(unsigned long, nodes_cnt);
 
         for (i = 0; i < nodes_cnt; i++) {
             unsigned long id;
@@ -346,7 +346,7 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
                 }
             }
 
-            pagesize = vshCalloc(ctl, nodes_cnt, sizeof(*pagesize));
+            pagesize = g_new0(unsigned int, nodes_cnt);
 
             for (i = 0; i < nodes_cnt; i++) {
                 char *val = virXMLPropString(nodes[i], "size");
@@ -379,12 +379,12 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
             npages = nodes_cnt;
             VIR_FREE(nodes);
         } else {
-            pagesize = vshMalloc(ctl, sizeof(*pagesize));
+            pagesize = g_new0(unsigned int, 1);
             pagesize[0] = kibibytes;
             npages = 1;
         }
 
-        counts = vshCalloc(ctl, npages, sizeof(*counts));
+        counts = g_new0(unsigned long long, npages);
 
         nodes_cnt = virXPathNodeSet("/capabilities/host/topology/cells/cell",
                                     ctxt, &nodes);
@@ -429,10 +429,10 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
         }
 
         /* page size is expected in kibibytes */
-        pagesize = vshMalloc(ctl, sizeof(*pagesize));
+        pagesize = g_new0(unsigned int, 1);
         pagesize[0] = kibibytes;
 
-        counts = vshMalloc(ctl, sizeof(*counts));
+        counts = g_new0(unsigned long long, 1);
 
         if (virNodeGetFreePages(priv->conn, 1, pagesize,
                                 cell, 1, counts, 0) < 0)
@@ -816,7 +816,7 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
     }
 
     memset(cpu_stats, 0, sizeof(cpu_stats));
-    params = vshCalloc(ctl, nparams, sizeof(*params));
+    params = g_new0(virNodeCPUStats, nparams);
 
     for (i = 0; i < 2; i++) {
         if (virNodeGetCPUStats(priv->conn, cpuNum, params, &nparams, 0) != 0) {
@@ -930,7 +930,7 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* now go get all the memory parameters */
-    params = vshCalloc(ctl, nparams, sizeof(*params));
+    params = g_new0(virNodeMemoryStats, nparams);
     if (virNodeGetMemoryStats(priv->conn, cellNum, params, &nparams, 0) != 0) {
         vshError(ctl, "%s", _("Unable to get memory stats"));
         goto cleanup;
@@ -1158,7 +1158,7 @@ vshExtractCPUDefXMLs(vshControl *ctl,
         goto error;
     }
 
-    cpus = vshCalloc(ctl, n + 1, sizeof(const char *));
+    cpus = g_new0(char *, n + 1);
 
     for (i = 0; i < n; i++) {
         /* If the user provided domain capabilities XML, we need to replace
@@ -1567,7 +1567,7 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
         }
 
         /* Now go get all the memory parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
+        params = g_new0(virTypedParameter, nparams);
         if (virNodeGetMemoryParameters(priv->conn, params, &nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to get memory parameters"));
             goto cleanup;

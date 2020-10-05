@@ -468,7 +468,7 @@ static virshNetworkListPtr
 virshNetworkListCollect(vshControl *ctl,
                         unsigned int flags)
 {
-    virshNetworkListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshNetworkListPtr list = g_new0(struct virshNetworkList, 1);
     size_t i;
     int ret;
     char **names = NULL;
@@ -539,7 +539,7 @@ virshNetworkListCollect(vshControl *ctl,
     if (nAllNets == 0)
          return list;
 
-    names = vshMalloc(ctl, sizeof(char *) * nAllNets);
+    names = g_new0(char *, nAllNets);
 
     /* Retrieve a list of active network names */
     if (!VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) ||
@@ -562,7 +562,7 @@ virshNetworkListCollect(vshControl *ctl,
         }
     }
 
-    list->nets = vshMalloc(ctl, sizeof(virNetworkPtr) * (nAllNets));
+    list->nets = g_new0(virNetworkPtr, nAllNets);
     list->nnets = 0;
 
     /* get active networks */
@@ -1685,7 +1685,7 @@ virshNetworkPortListCollect(vshControl *ctl,
                             const vshCmd *cmd,
                             unsigned int flags)
 {
-    virshNetworkPortListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshNetworkPortListPtr list = g_new0(struct virshNetworkPortList, 1);
     int ret;
     virNetworkPtr network = NULL;
     bool success = false;
