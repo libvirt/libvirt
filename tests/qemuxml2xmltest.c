@@ -49,45 +49,6 @@ testXML2XMLInactive(const void *opaque)
 
 
 static int
-testCompareStatusXMLToXMLFiles(const void *opaque)
-{
-    const struct testQemuInfo *data = opaque;
-    virDomainObjPtr obj = NULL;
-    g_autofree char *actual = NULL;
-    int ret = -1;
-
-    if (!(obj = virDomainObjParseFile(data->infile, driver.xmlopt,
-                                      VIR_DOMAIN_DEF_PARSE_STATUS |
-                                      VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
-                                      VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
-                                      VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
-                                      VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL))) {
-        VIR_TEST_DEBUG("\nfailed to parse '%s'", data->infile);
-        goto cleanup;
-    }
-
-    if (!(actual = virDomainObjFormat(obj, driver.xmlopt,
-                                      VIR_DOMAIN_DEF_FORMAT_SECURE |
-                                      VIR_DOMAIN_DEF_FORMAT_STATUS |
-                                      VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
-                                      VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES |
-                                      VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST))) {
-        VIR_TEST_DEBUG("\nfailed to format back '%s'", data->infile);
-        goto cleanup;
-    }
-
-    if (virTestCompareToFile(actual, data->outfile) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virDomainObjEndAPI(&obj);
-    return ret;
-}
-
-
-static int
 testInfoSetPaths(struct testQemuInfo *info,
                  const char *suffix,
                  int when)
@@ -110,16 +71,6 @@ testInfoSetPaths(struct testQemuInfo *info,
     }
 
     return 0;
-}
-
-
-static const char *statusPath = abs_srcdir "/qemustatusxml2xmldata/";
-
-static void
-testInfoSetStatusPaths(struct testQemuInfo *info)
-{
-    info->infile = g_strdup_printf("%s%s-in.xml", statusPath, info->name);
-    info->outfile = g_strdup_printf("%s%s-out.xml", statusPath, info->name);
 }
 
 
@@ -1420,41 +1371,6 @@ mymain(void)
             QEMU_CAPS_MACHINE_SMM_OPT,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES);
-
-#define DO_TEST_STATUS(_name) \
-    do { \
-        static struct testQemuInfo info = { \
-            .name = _name, \
-        }; \
-        if (testQemuInfoSetArgs(&info, capslatest, \
-                                ARG_QEMU_CAPS, QEMU_CAPS_LAST, \
-                                ARG_END) < 0 || \
-            qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
-            VIR_TEST_DEBUG("Failed to generate status test data for '%s'", _name); \
-            return -1; \
-        } \
-        testInfoSetStatusPaths(&info); \
-\
-        if (virTestRun("QEMU status XML-2-XML " _name, \
-                       testCompareStatusXMLToXMLFiles, &info) < 0) \
-            ret = -1; \
-\
-        testQemuInfoClear(&info); \
-    } while (0)
-
-
-    DO_TEST_STATUS("blockjob-mirror");
-    DO_TEST_STATUS("vcpus-multi");
-    DO_TEST_STATUS("modern");
-    DO_TEST_STATUS("migration-out-nbd");
-    DO_TEST_STATUS("migration-in-params");
-    DO_TEST_STATUS("migration-out-params");
-    DO_TEST_STATUS("migration-out-nbd-tls");
-    DO_TEST_STATUS("upgrade");
-
-    DO_TEST_STATUS("blockjob-blockdev");
-
-    DO_TEST_STATUS("backup-pull");
 
     DO_TEST("vhost-vsock", QEMU_CAPS_DEVICE_VHOST_VSOCK);
     DO_TEST("vhost-vsock-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK);
