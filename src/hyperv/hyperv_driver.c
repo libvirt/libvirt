@@ -47,6 +47,20 @@ VIR_LOG_INIT("hyperv.hyperv_driver");
  * wrapper functions for commonly-accessed WMI objects and interfaces.
  */
 
+/**
+ * hypervGetWmiClass:
+ * @type: the type of the class being retrieved from WMI
+ * @class: double pointer where the class data will be stored
+ *
+ * Retrieve one or more classes from WMI.
+ *
+ * The following variables must exist in the caller:
+ *   1. hypervPrivate *priv
+ *   2. virBuffer query
+ */
+#define hypervGetWmiClass(type, class) \
+    hypervGetWmiClassList(priv, type ## _WmiInfo, &query, (hypervObject **)class)
+
 static int
 hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
                           Win32_Processor **processorList)
@@ -58,7 +72,7 @@ hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
                        "ResultClass = Win32_Processor",
                        name);
 
-    if (hypervGetWin32ProcessorList(priv, &query, processorList) < 0 ||
+    if (hypervGetWmiClass(Win32_Processor, processorList) < 0 ||
         !processorList) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up processor(s) on '%s'"),
@@ -77,7 +91,7 @@ hypervGetActiveVirtualSystemList(hypervPrivate *priv,
                                              "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
                                              "AND " MSVM_COMPUTERSYSTEM_WQL_ACTIVE), 0 };
 
-    if (hypervGetMsvmComputerSystemList(priv, &query, computerSystemList) < 0 ||
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0 ||
         !*computerSystemList) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not look up active virtual machines"));
@@ -96,7 +110,7 @@ hypervGetInactiveVirtualSystemList(hypervPrivate *priv,
                                              "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
                                              "AND " MSVM_COMPUTERSYSTEM_WQL_INACTIVE), 0 };
 
-    if (hypervGetMsvmComputerSystemList(priv, &query, computerSystemList) < 0 ||
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0 ||
         !*computerSystemList) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not look up inactive virtual machines"));
@@ -112,7 +126,7 @@ hypervGetPhysicalSystemList(hypervPrivate *priv,
 {
     g_auto(virBuffer) query = { g_string_new(WIN32_COMPUTERSYSTEM_WQL_SELECT), 0 };
 
-    if (hypervGetWin32ComputerSystemList(priv, &query, computerSystemList) < 0 ||
+    if (hypervGetWmiClass(Win32_ComputerSystem, computerSystemList) < 0 ||
         !*computerSystemList) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not look up Win32_ComputerSystem"));
@@ -133,7 +147,7 @@ hypervGetVirtualSystemByID(hypervPrivate *priv, int id,
                       "AND ProcessID = %d",
                       id);
 
-    if (hypervGetMsvmComputerSystemList(priv, &query, computerSystemList) < 0) {
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Could not look up virtual system with ID %d"), id);
         return -1;
@@ -158,7 +172,7 @@ hypervGetVirtualSystemByUUID(hypervPrivate *priv, const char *uuid,
                        "AND Name = \"%s\"",
                        uuid);
 
-    if (hypervGetMsvmComputerSystemList(priv, &query, computerSystemList) < 0) {
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Could not look up virtual system with UUID '%s'"),
                        uuid);
@@ -186,7 +200,7 @@ hypervGetVirtualSystemByName(hypervPrivate *priv, const char *name,
                        "AND ElementName = \"%s\"",
                        name);
 
-    if (hypervGetMsvmComputerSystemList(priv, &query, computerSystemList) < 0) {
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Could not look up virtual system named '%s'"), name);
         return -1;
@@ -212,7 +226,7 @@ hypervGetVSSDFromUUID(hypervPrivate *priv, const char *uuid,
                        "ResultClass = Msvm_VirtualSystemSettingData",
                        uuid);
 
-    if (hypervGetMsvmVirtualSystemSettingDataList(priv, &query, data) < 0 ||
+    if (hypervGetWmiClass(Msvm_VirtualSystemSettingData, data) < 0 ||
         !*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up virtual system setting data with UUID '%s'"),
@@ -234,7 +248,7 @@ hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
                        "ResultClass = Msvm_ProcessorSettingData",
                        id);
 
-    if (hypervGetMsvmProcessorSettingDataList(priv, &query, data) < 0 ||
+    if (hypervGetWmiClass(Msvm_ProcessorSettingData, data) < 0 ||
         !*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up processor setting data with virtual system instance ID '%s'"),
@@ -256,7 +270,7 @@ hypervGetMemSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
                        "ResultClass = Msvm_MemorySettingData",
                        id);
 
-    if (hypervGetMsvmMemorySettingDataList(priv, &query, data) < 0 ||
+    if (hypervGetWmiClass(Msvm_MemorySettingData, data) < 0 ||
         !*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up memory setting data with virtual system instance ID '%s'"),
@@ -1278,8 +1292,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
         }
     }
 
-    if (hypervGetMsvmComputerSystemList(priv, &query,
-                                        &computerSystemList) < 0)
+    if (hypervGetWmiClass(Msvm_ComputerSystem, &computerSystemList) < 0)
         goto cleanup;
 
     if (domains) {
@@ -1385,7 +1398,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
             "where ResultClass = Msvm_Keyboard",
             uuid_string);
 
-    if (hypervGetMsvmKeyboardList(priv, &query, &keyboard) < 0)
+    if (hypervGetWmiClass(Msvm_Keyboard, &keyboard) < 0)
         goto cleanup;
 
     translatedKeycodes = g_new0(int, nkeycodes);

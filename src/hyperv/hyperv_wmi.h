@@ -198,39 +198,17 @@ const char *hypervReturnCodeToString(int returnCode);
  * Generic "Get WMI class list" helpers
  */
 
-int hypervGetMsvmComputerSystemList(hypervPrivate *priv, virBufferPtr query,
-                                    Msvm_ComputerSystem **list);
-
-int hypervGetMsvmConcreteJobList(hypervPrivate *priv, virBufferPtr query,
-                                 Msvm_ConcreteJob **list);
-
-int hypervGetWin32ComputerSystemList(hypervPrivate *priv, virBufferPtr query,
-                                     Win32_ComputerSystem **list);
-
-int hypervGetWin32ProcessorList(hypervPrivate *priv, virBufferPtr query,
-                                    Win32_Processor **list);
-
-int hypervGetMsvmVirtualSystemSettingDataList(hypervPrivate *priv,
-                                              virBufferPtr query,
-                                              Msvm_VirtualSystemSettingData **list);
+int hypervGetWmiClassList(hypervPrivate *priv,
+                          hypervWmiClassInfoListPtr wmiInfo, virBufferPtr query,
+                          hypervObject **wmiClass);
 
 int hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
                                                   const char *uuid_string,
                                                   Msvm_VirtualSystemSettingData **list);
 
-int hypervGetMsvmProcessorSettingDataList(hypervPrivate *priv,
-                                          virBufferPtr query,
-                                          Msvm_ProcessorSettingData **list);
-
-int hypervGetMsvmMemorySettingDataList(hypervPrivate *priv, virBufferPtr query,
-                                       Msvm_MemorySettingData **list);
-
 int hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
                                            const char *vssd_instanceid,
                                            Msvm_MemorySettingData **list);
-
-int hypervGetMsvmKeyboardList(hypervPrivate *priv, virBufferPtr query,
-                                       Msvm_Keyboard **list);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_ComputerSystem

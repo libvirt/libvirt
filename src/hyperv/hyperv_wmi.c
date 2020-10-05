@@ -83,7 +83,7 @@ hypervGetWmiClassInfo(hypervPrivate *priv, hypervWmiClassInfoListPtr list,
     return -1;
 }
 
-static int
+int
 hypervGetWmiClassList(hypervPrivate *priv, hypervWmiClassInfoListPtr wmiInfo,
                       virBufferPtr query, hypervObject **wmiClass)
 {
@@ -878,8 +878,8 @@ hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
             virBufferAddLit(&query, MSVM_CONCRETEJOB_WQL_SELECT);
             virBufferEscapeSQL(&query, "where InstanceID = \"%s\"", instanceID);
 
-            if (hypervGetMsvmConcreteJobList(priv, &query, &job) < 0
-                    || job == NULL)
+            if (hypervGetWmiClassList(priv, Msvm_ConcreteJob_WmiInfo, &query,
+                    (hypervObject **)&job) < 0 || job == NULL)
                 goto cleanup;
 
             jobState = job->data.common->JobState;
@@ -1219,77 +1219,6 @@ hypervReturnCodeToString(int returnCode)
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Generic "Get WMI class list" helpers
- */
-
-int
-hypervGetMsvmComputerSystemList(hypervPrivate *priv, virBufferPtr query,
-                                Msvm_ComputerSystem **list)
-{
-    return hypervGetWmiClassList(priv, Msvm_ComputerSystem_WmiInfo, query,
-                                 (hypervObject **)list);
-}
-
-int
-hypervGetMsvmConcreteJobList(hypervPrivate *priv, virBufferPtr query,
-                             Msvm_ConcreteJob **list)
-{
-    return hypervGetWmiClassList(priv, Msvm_ConcreteJob_WmiInfo, query,
-                                 (hypervObject **)list);
-}
-
-int
-hypervGetWin32ComputerSystemList(hypervPrivate *priv, virBufferPtr query,
-                                 Win32_ComputerSystem **list)
-{
-    return hypervGetWmiClassList(priv, Win32_ComputerSystem_WmiInfo, query,
-                                 (hypervObject **)list);
-}
-
-int
-hypervGetWin32ProcessorList(hypervPrivate *priv, virBufferPtr query,
-                            Win32_Processor **list)
-{
-    return hypervGetWmiClassList(priv, Win32_Processor_WmiInfo, query,
-                                 (hypervObject **)list);
-}
-
-int
-hypervGetMsvmVirtualSystemSettingDataList(hypervPrivate *priv,
-                                          virBufferPtr query,
-                                          Msvm_VirtualSystemSettingData **list)
-{
-    return hypervGetWmiClassList(priv, Msvm_VirtualSystemSettingData_WmiInfo, query,
-                                 (hypervObject **)list);
-}
-
-int
-hypervGetMsvmProcessorSettingDataList(hypervPrivate *priv,
-                                      virBufferPtr query,
-                                      Msvm_ProcessorSettingData **list)
-{
-    return hypervGetWmiClassList(priv, Msvm_ProcessorSettingData_WmiInfo, query,
-                                 (hypervObject **)list);
-}
-
-int
-hypervGetMsvmMemorySettingDataList(hypervPrivate *priv, virBufferPtr query,
-                                   Msvm_MemorySettingData **list)
-{
-    return hypervGetWmiClassList(priv, Msvm_MemorySettingData_WmiInfo, query,
-                                 (hypervObject **)list);
-}
-
-int hypervGetMsvmKeyboardList(hypervPrivate *priv, virBufferPtr query,
-                              Msvm_Keyboard **list)
-{
-    return hypervGetWmiClassList(priv, Msvm_Keyboard_WmiInfo, query,
-                                 (hypervObject **)list);
-}
-
-
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_ComputerSystem
  */
 
@@ -1371,7 +1300,8 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
             virBufferAddLit(&query, MSVM_CONCRETEJOB_WQL_SELECT);
             virBufferAsprintf(&query, "where InstanceID = \"%s\"", instanceID);
 
-            if (hypervGetMsvmConcreteJobList(priv, &query, &concreteJob) < 0)
+            if (hypervGetWmiClassList(priv, Msvm_ConcreteJob_WmiInfo, &query,
+                                      (hypervObject **)&concreteJob) < 0)
                 goto cleanup;
 
             if (concreteJob == NULL) {
@@ -1560,7 +1490,8 @@ hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
     virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_VIRTUAL);
     virBufferAsprintf(&query, "and Name = \"%s\"", uuid_string);
 
-    if (hypervGetMsvmComputerSystemList(priv, &query, computerSystem) < 0)
+    if (hypervGetWmiClassList(priv, Msvm_ComputerSystem_WmiInfo, &query,
+                              (hypervObject **)computerSystem) < 0)
         return -1;
 
     if (*computerSystem == NULL) {
