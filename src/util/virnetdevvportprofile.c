@@ -129,9 +129,7 @@ int virNetDevVPortProfileCopy(virNetDevVPortProfilePtr *dst, const virNetDevVPor
         return 0;
     }
 
-    if (VIR_ALLOC(*dst) < 0)
-        return -1;
-
+    *dst = g_new0(virNetDevVPortProfile, 1);
     memcpy(*dst, src, sizeof(*src));
     return 0;
 }
@@ -431,8 +429,7 @@ int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
     }
 
     /* at least one of the source profiles is non-empty */
-    if (VIR_ALLOC(*result) < 0)
-        return ret;
+    *result = g_new0(virNetDevVPortProfile, 1);
 
     /* start with the interface's profile. There are no pointers in a
      * virtualPortProfile, so a shallow copy is sufficient.

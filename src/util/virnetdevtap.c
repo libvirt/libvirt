@@ -165,8 +165,7 @@ virNetDevTapGetRealDeviceName(char *ifname G_GNUC_UNUSED)
         return NULL;
     }
 
-    if (VIR_ALLOC_N(ret, len) < 0)
-        return NULL;
+    ret = g_new0(char, len);
 
     if (sysctl(name, 6, ret, &len, 0, 0) < 0) {
         virReportSystemError(errno,

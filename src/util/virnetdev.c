@@ -1209,8 +1209,7 @@ virNetDevGetVirtualFunctions(const char *pfname,
                                   n_vfname, max_vfs) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(*vfname, *n_vfname) < 0)
-        goto cleanup;
+    *vfname = g_new0(char *, *n_vfname);
 
     for (i = 0; i < *n_vfname; i++) {
         g_autofree char *pciConfigAddr = NULL;
@@ -2039,8 +2038,7 @@ virNetDevReadNetConfig(const char *linkdev, int vf,
     }
 
     if (MACStr) {
-        if (VIR_ALLOC(*MAC) < 0)
-            goto cleanup;
+        *MAC = g_new0(virMacAddr, 1);
 
         if (virMacAddrParse(MACStr, *MAC) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2051,8 +2049,7 @@ virNetDevReadNetConfig(const char *linkdev, int vf,
     }
 
     if (adminMACStr) {
-        if (VIR_ALLOC(*adminMAC) < 0)
-            goto cleanup;
+        *adminMAC = g_new0(virMacAddr, 1);
 
         if (virMacAddrParse(adminMACStr, *adminMAC) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2064,10 +2061,8 @@ virNetDevReadNetConfig(const char *linkdev, int vf,
 
     if (vlanTag != -1) {
         /* construct a simple virNetDevVlan object with a single tag */
-        if (VIR_ALLOC(*vlan) < 0)
-            goto cleanup;
-        if (VIR_ALLOC((*vlan)->tag) < 0)
-            goto cleanup;
+        *vlan = g_new0(virNetDevVlan, 1);
+        (*vlan)->tag = g_new0(unsigned int, 1);
         (*vlan)->nTags = 1;
         (*vlan)->tag[0] = vlanTag;
     }
@@ -2664,8 +2659,8 @@ static int virNetDevGetMcastList(const char *ifname,
 
     cur = buf;
     while (cur) {
-        if (!entry && VIR_ALLOC(entry) < 0)
-                return -1;
+        if (!entry)
+            entry = g_new0(virNetDevMcastEntry, 1);
 
         next = strchr(cur, '\n');
         if (next)
@@ -2709,8 +2704,7 @@ static int virNetDevGetMulticastTable(const char *ifname,
         goto cleanup;
 
     if (mcast.nentries > 0) {
-        if (VIR_ALLOC_N(filter->multicast.table, mcast.nentries) < 0)
-            goto cleanup;
+        filter->multicast.table = g_new0(virMacAddr, mcast.nentries);
 
         for (i = 0; i < mcast.nentries; i++) {
             virMacAddrSet(&filter->multicast.table[i],
@@ -2733,8 +2727,7 @@ virNetDevRxFilterNew(void)
 {
     virNetDevRxFilterPtr filter;
 
-    if (VIR_ALLOC(filter) < 0)
-        return NULL;
+    filter = g_new0(virNetDevRxFilter, 1);
     return filter;
 }
 

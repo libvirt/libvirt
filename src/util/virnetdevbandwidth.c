@@ -442,39 +442,25 @@ int
 virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
                        const virNetDevBandwidth *src)
 {
-    int ret = -1;
-
     *dest = NULL;
     if (!src) {
         /* nothing to be copied */
         return 0;
     }
 
-    if (VIR_ALLOC(*dest) < 0)
-        goto cleanup;
+    *dest = g_new0(virNetDevBandwidth, 1);
 
     if (src->in) {
-        if (VIR_ALLOC((*dest)->in) < 0)
-            goto cleanup;
+        (*dest)->in = g_new0(virNetDevBandwidthRate, 1);
         memcpy((*dest)->in, src->in, sizeof(*src->in));
     }
 
     if (src->out) {
-        if (VIR_ALLOC((*dest)->out) < 0) {
-            VIR_FREE((*dest)->in);
-            goto cleanup;
-        }
+        (*dest)->out = g_new0(virNetDevBandwidthRate, 1);
         memcpy((*dest)->out, src->out, sizeof(*src->out));
     }
 
-    ret = 0;
-
- cleanup:
-    if (ret < 0) {
-        virNetDevBandwidthFree(*dest);
-        *dest = NULL;
-    }
-    return ret;
+    return 0;
 }
 
 bool

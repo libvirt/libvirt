@@ -726,11 +726,9 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
     virNetlinkCallbackDataPtr calld = NULL;
 
     if (virtPortProfile && virNetlinkEventServiceIsRunning(NETLINK_ROUTE)) {
-        if (VIR_ALLOC(calld) < 0)
-            goto error;
+        calld = g_new0(struct virNetlinkCallbackData, 1);
         calld->cr_ifname = g_strdup(ifname);
-        if (VIR_ALLOC(calld->virtPortProfile) < 0)
-            goto error;
+        calld->virtPortProfile = g_new0(virNetDevVPortProfile, 1);
         memcpy(calld->virtPortProfile, virtPortProfile, sizeof(*virtPortProfile));
         virMacAddrSet(&calld->macaddress, macaddress);
         calld->linkdev = g_strdup(linkdev);

@@ -180,8 +180,7 @@ virNetDevIPAddrAdd(const char *ifname,
     if (VIR_SOCKET_ADDR_FAMILY(addr) == AF_INET &&
         !(peer && VIR_SOCKET_ADDR_VALID(peer))) {
         /* compute a broadcast address if this is IPv4 */
-        if (VIR_ALLOC(broadcast) < 0)
-            return -1;
+        broadcast = g_new0(virSocketAddr, 1);
 
         if (virSocketAddrBroadcastByPrefix(addr, prefix, broadcast) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
