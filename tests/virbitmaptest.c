@@ -629,7 +629,7 @@ test11(const void *opaque)
 
 /* test self-expanding bitmap APIs */
 static int
-test12(const void *opaque G_GNUC_UNUSED)
+test12a(const void *opaque G_GNUC_UNUSED)
 {
     virBitmapPtr map = virBitmapNewEmpty();
     int ret = -1;
@@ -646,7 +646,20 @@ test12(const void *opaque G_GNUC_UNUSED)
 
     TEST_MAP(151, "128");
 
+    ret = 0;
+
+ cleanup:
     virBitmapFree(map);
+    return ret;
+}
+
+
+static int
+test12b(const void *opaque G_GNUC_UNUSED)
+{
+    virBitmapPtr map = virBitmapNewEmpty();
+    int ret = -1;
+
     if (!(map = virBitmapParseUnlimited("34,1023")))
         goto cleanup;
 
@@ -829,7 +842,9 @@ mymain(void)
     TESTBINARYOP("0-3", "0,^0", "0,^0", test11);
     TESTBINARYOP("0,2", "1,3", "0,^0", test11);
 
-    if (virTestRun("test12", test12, NULL) < 0)
+    if (virTestRun("test12a", test12a, NULL) < 0)
+        ret = -1;
+    if (virTestRun("test12b", test12b, NULL) < 0)
         ret = -1;
     if (virTestRun("test13", test13, NULL) < 0)
         ret = -1;
