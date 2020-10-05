@@ -211,8 +211,7 @@ virFirewallGroupNew(void)
 {
     virFirewallGroupPtr group;
 
-    if (VIR_ALLOC(group) < 0)
-        return NULL;
+    group = g_new0(virFirewallGroup, 1);
 
     return group;
 }
@@ -235,8 +234,7 @@ virFirewallPtr virFirewallNew(void)
     if (virFirewallInitialize() < 0)
         return NULL;
 
-    if (VIR_ALLOC(firewall) < 0)
-        return NULL;
+    firewall = g_new0(virFirewall, 1);
 
     return firewall;
 }
@@ -346,8 +344,7 @@ virFirewallAddRuleFullV(virFirewallPtr firewall,
     group = firewall->groups[firewall->currentGroup];
 
 
-    if (VIR_ALLOC(rule) < 0)
-        goto no_memory;
+    rule = g_new0(virFirewallRule, 1);
 
     rule->layer = layer;
     rule->queryCB = cb;

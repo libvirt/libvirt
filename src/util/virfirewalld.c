@@ -139,8 +139,7 @@ virFirewallDGetBackend(void)
     if (!sysbus)
         return -1;
 
-    if (VIR_ALLOC(error) < 0)
-        return -1;
+    error = g_new0(virError, 1);
 
     message = g_variant_new("(ss)",
                             "org.fedoraproject.FirewallD1.config",
@@ -289,8 +288,7 @@ virFirewallDApplyRule(virFirewallLayer layer,
         return -1;
     }
 
-    if (VIR_ALLOC(error) < 0)
-        return -1;
+    error = g_new0(virError, 1);
 
     message = g_variant_new("(s@as)",
                             ipv,
