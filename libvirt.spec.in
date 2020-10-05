@@ -17,10 +17,22 @@
     %define _vpath_builddir %{_target_platform}
 %endif
 
-%define qemu_kvm_arches         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
+%define arches_qemu_kvm         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
 %if 0%{?rhel}
-    %define qemu_kvm_arches     x86_64 %{power64} aarch64 s390x
+    %define arches_qemu_kvm     x86_64 %{power64} aarch64 s390x
 %endif
+
+%define arches_64bit            x86_64 %{power64} aarch64 s390x riscv64
+%define arches_x86              %{ix86} x86_64
+
+%define arches_systemtap_64bit  %{arches_64bit}
+%define arches_dmidecode        %{arches_x86}
+%define arches_xen              %{arches_x86} aarch64
+%define arches_vbox             %{arches_x86}
+%define arches_ceph             %{arches_64bit}
+%define arches_zfs              %{arches_x86} %{power64} %{arm}
+%define arches_numactl          %{arches_x86} %{power64} aarch64
+%define arches_numad            %{arches_x86} %{power64} aarch64
 
 # The hypervisor drivers that run in libvirtd
 %define with_qemu          0%{!?_without_qemu:1}
@@ -28,7 +40,7 @@
 %define with_libxl         0%{!?_without_libxl:1}
 %define with_vbox          0%{!?_without_vbox:1}
 
-%ifarch %{qemu_kvm_arches}
+%ifarch %{arches_qemu_kvm}
     %define with_qemu_kvm      %{with_qemu}
 %else
     %define with_qemu_kvm      0
@@ -60,7 +72,7 @@
 %endif
 
 %define with_storage_gluster 0%{!?_without_storage_gluster:1}
-%ifnarch %{qemu_kvm_arches}
+%ifnarch %{arches_qemu_kvm}
     # gluster is only built where qemu driver is enabled on RHEL 8
     %if 0%{?rhel} >= 8
         %define with_storage_gluster 0
@@ -97,28 +109,20 @@
 
 # Finally set the OS / architecture specific special cases
 
-# Xen is available only on some architectures
-%ifnarch %{ix86} x86_64 aarch64
+# Architecture-dependent features
+%ifnarch %{arches_xen}
     %define with_libxl 0
 %endif
-
-# vbox is available only on i386 x86_64
-%ifnarch %{ix86} x86_64
+%ifnarch %{arches_vbox}
     %define with_vbox 0
 %endif
-
-# Numactl is not available on many non-x86 archs
-%ifarch s390x %{arm} riscv64
+%ifnarch %{arches_numactl}
     %define with_numactl 0
 %endif
-
-# zfs-fuse is not available on some architectures
-%ifarch s390x aarch64 riscv64
+%ifnarch %{arches_zfs}
     %define with_storage_zfs 0
 %endif
-
-# Ceph dropped support for 32-bit hosts
-%ifarch %{arm} %{ix86}
+%ifnarch %{arches_ceph}
     %define with_storage_rbd 0
 %endif
 
@@ -154,7 +158,7 @@
     %define with_sanlock 0%{!?_without_sanlock:1}
 %endif
 %if 0%{?rhel}
-    %ifarch %{qemu_kvm_arches}
+    %ifarch %{arches_qemu_kvm}
         %define with_sanlock 0%{!?_without_sanlock:1}
     %endif
 %endif
@@ -178,12 +182,12 @@
 %if %{with_qemu} || %{with_lxc}
 # numad is used to manage the CPU and memory placement dynamically,
 # it's not available on many non-x86 architectures.
-    %ifnarch s390x %{arm} riscv64
+    %ifnarch %{arches_numad}
         %define with_numad    0%{!?_without_numad:1}
     %endif
 %endif
 
-%ifarch %{ix86} x86_64
+%ifarch %{arches_dmidecode}
     %define with_dmidecode 0%{!?_without_dmidecode:1}
 %endif
 
@@ -1259,7 +1263,7 @@ rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 # Copied into libvirt-docs subpackage eventually
 mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt libvirt-docs
 
-%ifarch %{power64} s390x x86_64 aarch64 riscv64
+%ifarch %{arches_systemtap_64bit}
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
    $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes-64.stp
 
