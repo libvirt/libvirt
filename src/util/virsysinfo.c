@@ -225,8 +225,7 @@ virSysinfoParsePPCSystem(const char *base, virSysinfoSystemDefPtr *sysdef)
     if ((cur = strstr(base, "platform")) == NULL)
         return 0;
 
-    if (VIR_ALLOC(def) < 0)
-        return ret;
+    def = g_new0(virSysinfoSystemDef, 1);
 
     base = cur;
     /* Account for format 'platform    : XXXX'*/
@@ -318,8 +317,7 @@ virSysinfoReadPPC(void)
     g_auto(virSysinfoDefPtr) ret = NULL;
     g_autofree char *outbuf = NULL;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virSysinfoDef, 1);
 
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -350,8 +348,7 @@ virSysinfoParseARMSystem(const char *base, virSysinfoSystemDefPtr *sysdef)
     if ((cur = strstr(base, "platform")) == NULL)
         return 0;
 
-    if (VIR_ALLOC(def) < 0)
-        return ret;
+    def = g_new0(virSysinfoSystemDef, 1);
 
     base = cur;
     /* Account for format 'platform    : XXXX'*/
@@ -453,8 +450,7 @@ virSysinfoReadARM(void)
     /* Well, we've tried. Fall back to parsing cpuinfo */
     virResetLastError();
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virSysinfoDef, 1);
 
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -507,8 +503,7 @@ virSysinfoParseS390System(const char *base, virSysinfoSystemDefPtr *sysdef)
     int ret = -1;
     virSysinfoSystemDefPtr def;
 
-    if (VIR_ALLOC(def) < 0)
-        return ret;
+    def = g_new0(virSysinfoSystemDef, 1);
 
     if (!virSysinfoParseS390Line(base, "Manufacturer", &def->manufacturer))
         goto cleanup;
@@ -612,8 +607,7 @@ virSysinfoReadS390(void)
     g_auto(virSysinfoDefPtr) ret = NULL;
     g_autofree char *outbuf = NULL;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virSysinfoDef, 1);
 
     /* Gather info from /proc/cpuinfo */
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
@@ -653,8 +647,7 @@ virSysinfoParseBIOS(const char *base, virSysinfoBIOSDefPtr *bios)
     if ((cur = strstr(base, "BIOS Information")) == NULL)
         return 0;
 
-    if (VIR_ALLOC(def) < 0)
-        return ret;
+    def = g_new0(virSysinfoBIOSDef, 1);
 
     base = cur;
     if ((cur = strstr(base, "Vendor: ")) != NULL) {
@@ -710,8 +703,7 @@ virSysinfoParseX86System(const char *base, virSysinfoSystemDefPtr *sysdef)
     if ((cur = strstr(base, "System Information")) == NULL)
         return 0;
 
-    if (VIR_ALLOC(def) < 0)
-        return ret;
+    def = g_new0(virSysinfoSystemDef, 1);
 
     base = cur;
     if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
@@ -877,8 +869,7 @@ virSysinfoParseX86Chassis(const char *base,
     if ((cur = strstr(base, "Chassis Information")) == NULL)
         return 0;
 
-    if (VIR_ALLOC(def) < 0)
-        return ret;
+    def = g_new0(virSysinfoChassisDef, 1);
 
     base = cur;
     if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
@@ -968,8 +959,7 @@ virSysinfoParseOEMStrings(const char *base,
     if (!(cur = strstr(base, "OEM Strings")))
         return 0;
 
-    if (VIR_ALLOC(strings) < 0)
-        return -1;
+    strings = g_new0(virSysinfoOEMStringsDef, 1);
 
     while ((cur = strstr(cur, "String "))) {
         char *eol;
@@ -1237,8 +1227,7 @@ virSysinfoReadDMI(void)
     if (virCommandRun(cmd, NULL) < 0)
         return NULL;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virSysinfoDef, 1);
 
     ret->type = VIR_SYSINFO_SMBIOS;
 
