@@ -2216,12 +2216,12 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
 {
     int ret = -1;
     size_t i;
-    virJSONValuePtr cmd = NULL;
-    virJSONValuePtr reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr ret_array = NULL;
     size_t ifaces_count = 0;
     virDomainInterfacePtr *ifaces_ret = NULL;
-    virHashTablePtr ifaces_store = NULL;
+    g_autoptr(virHashTable) ifaces_store = NULL;
 
     /* Hash table to handle the interface alias */
     ifaces_store = virHashNew(NULL);
@@ -2250,9 +2250,6 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
     ret = ifaces_count;
 
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    virHashFree(ifaces_store);
     return ret;
 
  error:
