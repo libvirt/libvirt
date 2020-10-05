@@ -2059,6 +2059,51 @@ qemuAgentGetFSInfo(qemuAgentPtr agent,
     return ret;
 }
 
+
+static int
+qemuAgentGetInterfaceOneAddress(virDomainIPAddressPtr ip_addr,
+                                virJSONValuePtr ip_addr_obj,
+                                const char *name)
+{
+    const char *type, *addr;
+
+    type = virJSONValueObjectGetString(ip_addr_obj, "ip-address-type");
+    if (!type) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qemu agent didn't provide 'ip-address-type'"
+                         " field for interface '%s'"), name);
+        return -1;
+    } else if (STREQ(type, "ipv4")) {
+        ip_addr->type = VIR_IP_ADDR_TYPE_IPV4;
+    } else if (STREQ(type, "ipv6")) {
+        ip_addr->type = VIR_IP_ADDR_TYPE_IPV6;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown ip address type '%s'"),
+                       type);
+        return -1;
+    }
+
+    addr = virJSONValueObjectGetString(ip_addr_obj, "ip-address");
+    if (!addr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qemu agent didn't provide 'ip-address'"
+                         " field for interface '%s'"), name);
+        return -1;
+    }
+    ip_addr->addr = g_strdup(addr);
+
+    if (virJSONValueObjectGetNumberUint(ip_addr_obj, "prefix",
+                                        &ip_addr->prefix) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed 'prefix' field"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /*
  * qemuAgentGetInterfaces:
  * @agent: agent object
@@ -2176,7 +2221,6 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
         addrs_count = iface->naddrs;
 
         for (j = 0; j < virJSONValueArraySize(ip_addr_arr); j++) {
-            const char *type, *addr;
             virJSONValuePtr ip_addr_obj = virJSONValueArrayGet(ip_addr_arr, j);
             virDomainIPAddressPtr ip_addr;
 
@@ -2192,38 +2236,8 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
                 goto error;
             }
 
-            type = virJSONValueObjectGetString(ip_addr_obj, "ip-address-type");
-            if (!type) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("qemu agent didn't provide 'ip-address-type'"
-                                 " field for interface '%s'"), name);
+            if (qemuAgentGetInterfaceOneAddress(ip_addr, ip_addr_obj, name) < 0)
                 goto error;
-            } else if (STREQ(type, "ipv4")) {
-                ip_addr->type = VIR_IP_ADDR_TYPE_IPV4;
-            } else if (STREQ(type, "ipv6")) {
-                ip_addr->type = VIR_IP_ADDR_TYPE_IPV6;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown ip address type '%s'"),
-                               type);
-                goto error;
-            }
-
-            addr = virJSONValueObjectGetString(ip_addr_obj, "ip-address");
-            if (!addr) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("qemu agent didn't provide 'ip-address'"
-                                 " field for interface '%s'"), name);
-                goto error;
-            }
-            ip_addr->addr = g_strdup(addr);
-
-            if (virJSONValueObjectGetNumberUint(ip_addr_obj, "prefix",
-                                                &ip_addr->prefix) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed 'prefix' field"));
-                goto error;
-            }
         }
 
         iface->naddrs = addrs_count;
