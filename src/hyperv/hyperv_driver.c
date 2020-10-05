@@ -1275,6 +1275,45 @@ hypervDomainCreate(virDomainPtr domain)
 
 
 static int
+hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
+{
+    int result = -1;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    hypervPrivate *priv = domain->conn->privateData;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    Msvm_VirtualSystemGlobalSettingData *vsgsd = NULL;
+    Msvm_VirtualSystemSettingData *vssd = NULL;
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
+        virBufferEscapeSQL(&query,
+                           MSVM_VIRTUALSYSTEMGLOBALSETTINGDATA_WQL_SELECT
+                           "WHERE SystemName = \"%s\"", uuid_string);
+
+        if (hypervGetWmiClass(Msvm_VirtualSystemGlobalSettingData, &vsgsd) < 0)
+            goto cleanup;
+
+        *autostart = vsgsd->data.common->AutomaticStartupAction == 2;
+        result = 0;
+    } else {
+        if (hypervGetVSSDFromUUID(priv, uuid_string, &vssd) < 0)
+            goto cleanup;
+
+        *autostart = vssd->data.v2->AutomaticStartupAction == 4;
+        result = 0;
+    }
+
+    cleanup:
+    hypervFreeObject(priv, (hypervObject *) vsgsd);
+    hypervFreeObject(priv, (hypervObject *) vssd);
+
+    return result;
+}
+
+
+
+static int
 hypervConnectIsEncrypted(virConnectPtr conn)
 {
     hypervPrivate *priv = conn->privateData;
@@ -1824,6 +1863,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .connectNumOfDefinedDomains = hypervConnectNumOfDefinedDomains, /* 0.9.5 */
     .domainCreate = hypervDomainCreate, /* 0.9.5 */
     .domainCreateWithFlags = hypervDomainCreateWithFlags, /* 0.9.5 */
+    .domainGetAutostart = hypervDomainGetAutostart, /* 6.9.0 */
     .connectIsEncrypted = hypervConnectIsEncrypted, /* 0.9.5 */
     .connectIsSecure = hypervConnectIsSecure, /* 0.9.5 */
     .domainIsActive = hypervDomainIsActive, /* 0.9.5 */
