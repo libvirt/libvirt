@@ -2176,15 +2176,13 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
             if (VIR_EXPAND_N(ifaces_ret, ifaces_count, 1) < 0)
                 goto error;
 
-            ifaces_ret[ifaces_count - 1] = g_new0(virDomainInterface, 1);
+            iface = g_new0(virDomainInterface, 1);
+            ifaces_ret[ifaces_count - 1] = iface;
 
-            if (virHashAddEntry(ifaces_store, ifname_s,
-                                ifaces_ret[ifaces_count - 1]) < 0)
+            if (virHashAddEntry(ifaces_store, ifname_s, iface) < 0)
                 goto error;
 
-            iface = ifaces_ret[ifaces_count - 1];
             iface->naddrs = 0;
-
             iface->name = g_strdup(ifname_s);
 
             hwaddr = virJSONValueObjectGetString(tmp_iface, "hardware-address");
