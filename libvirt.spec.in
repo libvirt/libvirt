@@ -97,8 +97,8 @@
 
 # Finally set the OS / architecture specific special cases
 
-# Xen is available only on i386 x86_64 ia64
-%ifnarch %{ix86} x86_64 ia64
+# Xen is available only on i386 x86_64
+%ifnarch %{ix86} x86_64
     %define with_libxl 0
 %endif
 
@@ -438,7 +438,7 @@ Requires: iproute-tc
 %endif
 
 Requires: polkit >= 0.112
-%ifarch %{ix86} x86_64 ia64
+%ifarch %{ix86} x86_64
 # For virConnectGetSysinfo
 Requires: dmidecode
 %endif
@@ -1261,7 +1261,7 @@ rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 # Copied into libvirt-docs subpackage eventually
 mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt libvirt-docs
 
-%ifarch %{power64} s390x x86_64 ia64 alpha sparc64
+%ifarch %{power64} s390x x86_64
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
    $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes-64.stp
 
