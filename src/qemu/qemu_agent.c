@@ -2109,9 +2109,9 @@ qemuAgentGetInterfaceOneAddress(virDomainIPAddressPtr ip_addr,
  * @ifaces_ret: the array to put/update the interface in
  * @ifaces_count: the number of interfaces in that array
  * @ifaces_store: hash table into @ifaces_ret by interface name
- * @tmp_iface: one item from the JSON array of interfaces
+ * @iface_obj: one item from the JSON array of interfaces
  *
- * This function processes @tmp_iface (which represents
+ * This function processes @iface_obj (which represents
  * information about a single interface) and adds the information
  * into the ifaces_ret array.
  *
@@ -2126,7 +2126,7 @@ static int
 qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
                                size_t *ifaces_count,
                                virHashTablePtr ifaces_store,
-                               virJSONValuePtr tmp_iface)
+                               virJSONValuePtr iface_obj)
 {
     virJSONValuePtr ip_addr_arr = NULL;
     const char *hwaddr, *name = NULL;
@@ -2136,7 +2136,7 @@ qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
     size_t j;
 
     /* interface name is required to be presented */
-    name = virJSONValueObjectGetString(tmp_iface, "name");
+    name = virJSONValueObjectGetString(iface_obj, "name");
     if (!name) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("qemu agent didn't provide 'name' field"));
@@ -2162,13 +2162,13 @@ qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
         iface->naddrs = 0;
         iface->name = g_strdup(ifname);
 
-        hwaddr = virJSONValueObjectGetString(tmp_iface, "hardware-address");
+        hwaddr = virJSONValueObjectGetString(iface_obj, "hardware-address");
         iface->hwaddr = g_strdup(hwaddr);
     }
 
     /* as well as IP address which - moreover -
      * can be presented multiple times */
-    ip_addr_arr = virJSONValueObjectGet(tmp_iface, "ip-addresses");
+    ip_addr_arr = virJSONValueObjectGet(iface_obj, "ip-addresses");
     if (!ip_addr_arr)
         return 0;
 
@@ -2237,10 +2237,10 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
     }
 
     for (i = 0; i < virJSONValueArraySize(ret_array); i++) {
-        virJSONValuePtr tmp_iface = virJSONValueArrayGet(ret_array, i);
+        virJSONValuePtr iface_obj = virJSONValueArrayGet(ret_array, i);
 
         if (qemuAgentGetInterfaceAddresses(&ifaces_ret, &ifaces_count,
-                                           ifaces_store, tmp_iface) < 0)
+                                           ifaces_store, iface_obj) < 0)
             goto error;
     }
 
