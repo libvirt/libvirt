@@ -1879,7 +1879,7 @@ virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
         }
     }
 
-    /* set default free memory bandwidth to 100%*/
+    /* set default free memory bandwidth to 100% */
     if (info->membw_info) {
         if (VIR_ALLOC(ret->mem_bw) < 0)
             goto error;
