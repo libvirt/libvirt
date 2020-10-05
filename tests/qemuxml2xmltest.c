@@ -7,17 +7,15 @@
 
 #include "testutils.h"
 
-#ifdef WITH_QEMU
+#include "internal.h"
+#include "qemu/qemu_domain_address.h"
+#include "qemu/qemu_domain.h"
+#include "testutilsqemu.h"
+#include "virstring.h"
+#include "virfilewrapper.h"
+#include "configmake.h"
 
-# include "internal.h"
-# include "qemu/qemu_domain_address.h"
-# include "qemu/qemu_domain.h"
-# include "testutilsqemu.h"
-# include "virstring.h"
-# include "virfilewrapper.h"
-# include "configmake.h"
-
-# define VIR_FROM_THIS VIR_FROM_NONE
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 static virQEMUDriver driver;
 
@@ -125,7 +123,7 @@ testInfoSetStatusPaths(struct testQemuInfo *info)
 }
 
 
-# define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
+#define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
 static int
 mymain(void)
@@ -174,7 +172,7 @@ mymain(void)
     virSetConnectSecret(conn);
     virSetConnectStorage(conn);
 
-# define DO_TEST_INTERNAL(_name, suffix, when, ...) \
+#define DO_TEST_INTERNAL(_name, suffix, when, ...) \
     do { \
         static struct testQemuInfo info = { \
             .name = _name, \
@@ -209,38 +207,38 @@ mymain(void)
         testQemuInfoClear(&info); \
     } while (0)
 
-# define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
+#define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
     DO_TEST_INTERNAL(name, "." arch "-" ver, WHEN_BOTH, \
                      ARG_CAPS_ARCH, arch, \
                      ARG_CAPS_VER, ver, \
                      __VA_ARGS__)
 
-# define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
+#define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
 
-# define DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ...) \
+#define DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, ver, __VA_ARGS__)
 
-# define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
+#define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
 
-# define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
+#define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ARG_END)
 
-# define DO_TEST_CAPS_LATEST(name) \
+#define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
 
-# define DO_TEST_CAPS_VER(name, ver) \
+#define DO_TEST_CAPS_VER(name, ver) \
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
-# define DO_TEST_FULL(name, when, ...) \
+#define DO_TEST_FULL(name, when, ...) \
     DO_TEST_INTERNAL(name, "", when, __VA_ARGS__)
 
-# define DO_TEST(name, ...) \
+#define DO_TEST(name, ...) \
     DO_TEST_FULL(name, WHEN_BOTH, \
                  ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST)
 
-# define NONE QEMU_CAPS_LAST
+#define NONE QEMU_CAPS_LAST
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
@@ -1423,7 +1421,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES);
 
-# define DO_TEST_STATUS(_name) \
+#define DO_TEST_STATUS(_name) \
     do { \
         static struct testQemuInfo info = { \
             .name = _name, \
@@ -1530,13 +1528,3 @@ VIR_TEST_MAIN_PRELOAD(mymain,
                       VIR_TEST_MOCK("virpci"),
                       VIR_TEST_MOCK("virrandom"),
                       VIR_TEST_MOCK("domaincaps"))
-
-#else
-
-int
-main(void)
-{
-    return EXIT_AM_SKIP;
-}
-
-#endif /* WITH_QEMU */
