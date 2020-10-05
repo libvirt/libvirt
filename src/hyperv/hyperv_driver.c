@@ -554,6 +554,39 @@ hypervConnectGetCapabilities(virConnectPtr conn)
 
 
 static int
+hypervConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
+{
+    int result = -1;
+    hypervPrivate *priv = conn->privateData;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    Msvm_ProcessorSettingData *processorSettingData = NULL;
+
+    /* Get max processors definition */
+    virBufferAddLit(&query,
+                    MSVM_PROCESSORSETTINGDATA_WQL_SELECT
+                    "WHERE InstanceID LIKE 'Microsoft:Definition%Maximum'");
+
+    if (hypervGetWmiClass(Msvm_ProcessorSettingData, &processorSettingData) < 0)
+        goto cleanup;
+
+    if (!processorSettingData) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get maximum definition of Msvm_ProcessorSettingData for host %s"),
+                       conn->uri->server);
+        goto cleanup;
+    }
+
+    result = processorSettingData->data.common->VirtualQuantity;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *) processorSettingData);
+
+    return result;
+}
+
+
+
+static int
 hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 {
     int result = -1;
@@ -1689,6 +1722,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .connectClose = hypervConnectClose, /* 0.9.5 */
     .connectGetType = hypervConnectGetType, /* 0.9.5 */
     .connectGetHostname = hypervConnectGetHostname, /* 0.9.5 */
+    .connectGetMaxVcpus = hypervConnectGetMaxVcpus, /* 6.9.0 */
     .nodeGetInfo = hypervNodeGetInfo, /* 0.9.5 */
     .connectGetCapabilities = hypervConnectGetCapabilities, /* 6.9.0 */
     .connectListDomains = hypervConnectListDomains, /* 0.9.5 */
