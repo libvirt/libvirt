@@ -7428,8 +7428,7 @@ qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
         hmat = true;
     }
 
-    if (VIR_ALLOC_N(nodeBackends, ncells) < 0)
-        goto cleanup;
+    nodeBackends = g_new0(virBuffer, ncells);
 
     /* using of -numa memdev= cannot be combined with -numa mem=, thus we
      * need to check which approach to use */
@@ -8119,9 +8118,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         if (!tapfdSize)
             tapfdSize = 1;
 
-        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0 ||
-            VIR_ALLOC_N(tapfdName, tapfdSize) < 0)
-            goto cleanup;
+        tapfd = g_new0(int, tapfdSize);
+        tapfdName = g_new0(char *, tapfdSize);
 
         memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
 
@@ -8135,9 +8133,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         if (!tapfdSize)
             tapfdSize = 1;
 
-        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0 ||
-            VIR_ALLOC_N(tapfdName, tapfdSize) < 0)
-            goto cleanup;
+        tapfd = g_new0(int, tapfdSize);
+        tapfdName = g_new0(char *, tapfdSize);
 
         memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
 
@@ -8151,9 +8148,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         if (!tapfdSize)
             tapfdSize = 1;
 
-        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0 ||
-            VIR_ALLOC_N(tapfdName, tapfdSize) < 0)
-            goto cleanup;
+        tapfd = g_new0(int, tapfdSize);
+        tapfdName = g_new0(char *, tapfdSize);
 
         memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
 
@@ -8268,9 +8264,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         if (!vhostfdSize)
             vhostfdSize = 1;
 
-        if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0 ||
-            VIR_ALLOC_N(vhostfdName, vhostfdSize))
-            goto cleanup;
+        vhostfd = g_new0(int, vhostfdSize);
+        vhostfdName = g_new0(char *, vhostfdSize);
 
         memset(vhostfd, -1, vhostfdSize * sizeof(vhostfd[0]));
 
@@ -10465,8 +10460,7 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
     if (!(data->driveCmd = qemuBuildDriveStr(disk, qemuCaps)) ||
         !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk)))
@@ -10543,8 +10537,7 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
     g_autoptr(qemuBlockStorageSourceAttachData) elem = NULL;
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(qemuBlockStorageSourceChainData, 1);
 
     if (!(elem = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
         return NULL;
@@ -10595,8 +10588,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     virStorageSourcePtr n;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(qemuBlockStorageSourceChainData, 1);
 
     for (n = top; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, n,
@@ -10625,8 +10617,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    data = g_new0(qemuBlockStorageSourceChainData, 1);
 
     if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, top, backingStore,
                                                             qemuCaps) < 0)
