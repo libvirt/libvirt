@@ -285,6 +285,10 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
         } else if (STRPREFIX(tmp, "(TM)")) {
             memmove(tmp, tmp + 4, strlen(tmp + 4) + 1);
             continue;
+        } else if (STRPREFIX(tmp, " @ ")) {
+            /* Remove " @ X.YZGHz" from the end. */
+            *tmp = '\0';
+            break;
         }
 
         ++tmp;
