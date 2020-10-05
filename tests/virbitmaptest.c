@@ -26,6 +26,31 @@
 
 #include "virbitmap.h"
 
+
+static int
+checkBitmap(virBitmapPtr map,
+            const char *expect,
+            ssize_t expectedSize)
+{
+    g_autofree char *actual = virBitmapFormat(map);
+
+    if (expectedSize != -1 &&
+        virBitmapSize(map) != expectedSize) {
+        fprintf(stderr, "\n expected bitmap size: '%zd' actual size: "
+                "'%zu'\n", expectedSize, virBitmapSize(map));
+        return -1;
+    }
+
+    if (STRNEQ_NULLABLE(expect, actual)) {
+        fprintf(stderr, "\n expected bitmap contents '%s' actual contents "\
+                "'%s'\n", NULLSTR(expect), NULLSTR(actual));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 test1(const void *data G_GNUC_UNUSED)
 {
@@ -630,25 +655,6 @@ test11(const void *opaque)
     return ret;
 }
 
-#define TEST_MAP(sz, expect) \
-    do { \
-        char *actual; \
-        if (virBitmapSize(map) != sz) { \
-            fprintf(stderr, "\n expected bitmap size: '%d' actual size: " \
-                    "'%zu'\n", sz, virBitmapSize(map)); \
-            goto cleanup; \
-        } \
- \
-        actual = virBitmapFormat(map); \
- \
-        if (STRNEQ_NULLABLE(expect, actual)) { \
-            fprintf(stderr, "\n expected bitmap contents '%s' actual contents "\
-                    "'%s'\n", NULLSTR(expect), NULLSTR(actual)); \
-            VIR_FREE(actual); \
-            goto cleanup; \
-        } \
-        VIR_FREE(actual); \
-    } while (0)
 
 /* test self-expanding bitmap APIs */
 static int
@@ -657,17 +663,20 @@ test12a(const void *opaque G_GNUC_UNUSED)
     virBitmapPtr map = virBitmapNewEmpty();
     int ret = -1;
 
-    TEST_MAP(0, "");
+    if (checkBitmap(map, "", 0) < 0)
+        goto cleanup;
 
     if (virBitmapSetBitExpand(map, 128) < 0)
         goto cleanup;
 
-    TEST_MAP(129, "128");
+    if (checkBitmap(map, "128", 129) < 0)
+        goto cleanup;
 
     if (virBitmapClearBitExpand(map, 150) < 0)
         goto cleanup;
 
-    TEST_MAP(151, "128");
+    if (checkBitmap(map, "128", 151) < 0)
+        goto cleanup;
 
     ret = 0;
 
@@ -686,13 +695,16 @@ test12b(const void *opaque G_GNUC_UNUSED)
     if (!(map = virBitmapParseUnlimited("34,1023")))
         goto cleanup;
 
-    TEST_MAP(1024, "34,1023");
+    if (checkBitmap(map, "34,1023", 1024) < 0)
+        goto cleanup;
 
     virBitmapShrink(map, 35);
-    TEST_MAP(35, "34");
+    if (checkBitmap(map, "34", 35) < 0)
+        goto cleanup;
 
     virBitmapShrink(map, 34);
-    TEST_MAP(34, "");
+    if (checkBitmap(map, "", 34) < 0)
+        goto cleanup;
 
     ret = 0;
 
@@ -729,7 +741,6 @@ test13(const void *opaque G_GNUC_UNUSED)
     return 0;
 }
 
-#undef TEST_MAP
 
 static int
 test14(const void *opaque)
