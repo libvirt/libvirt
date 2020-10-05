@@ -68,8 +68,6 @@
     %endif
 %endif
 
-%define with_numactl          0%{!?_without_numactl:1}
-
 # F25+ has zfs-fuse
 %if 0%{?fedora}
     %define with_storage_zfs      0%{!?_without_storage_zfs:1}
@@ -86,6 +84,7 @@
 
 # Other optional features
 %define with_bash_completion  0%{!?_without_bash_completion:1}
+%define with_numactl          0%{!?_without_numactl:1}
 
 # A few optional bits off by default, we enable later
 %define with_fuse             0
