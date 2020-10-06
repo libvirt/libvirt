@@ -290,12 +290,16 @@ static const struct testSchemaEntry schemaStoragePool[] = {
     { .dir = "tests/storagepoolxml2xmlin" },
     { .dir = "tests/storagepoolxml2xmlout" },
     { .dir = "tests/storagepoolschemadata" },
+    { .dir = "examples/xml/storage",
+      .dirRegex = "pool-.*" },
 };
 
 static const struct testSchemaEntry schemaStorageVol[] = {
     { .dir = "tests/storagevolxml2xmlin" },
     { .dir = "tests/storagevolxml2xmlout" },
     { .dir = "tests/storagevolschemadata" },
+    { .dir = "examples/xml/storage",
+      .dirRegex = "vol-.*" },
 };
 
 
