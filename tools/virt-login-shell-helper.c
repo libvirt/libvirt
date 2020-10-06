@@ -100,7 +100,6 @@ static int virLoginShellGetShellArgv(virConfPtr conf,
 
     if (rv == 0) {
         *shargv = g_new0(char *, 2);
-            return -1;
         (*shargv)[0] = g_strdup("/bin/sh");
         *shargvlen = 1;
     } else {

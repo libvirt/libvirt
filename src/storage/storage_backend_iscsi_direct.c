@@ -626,7 +626,6 @@ virStorageBackendISCSIDirectVolWipeZero(virStorageVolDefPtr vol,
     if (virISCSIDirectGetVolumeCapacity(iscsi, lun, &block_size, &nb_block))
         return ret;
     data = g_new0(unsigned char, block_size * BLOCK_PER_PACKET);
-        return ret;
 
     while (lba < nb_block) {
         const uint64_t to_write = MIN(nb_block - lba + 1, BLOCK_PER_PACKET);

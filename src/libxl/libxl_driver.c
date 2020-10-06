@@ -2762,7 +2762,6 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
     }
 
     ret = g_new0(char, len);
-        goto cleanup;
 
     if (virConfWriteMem(ret, &len, conf) < 0) {
         VIR_FREE(ret);

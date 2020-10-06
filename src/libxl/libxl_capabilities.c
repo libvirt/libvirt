@@ -284,7 +284,6 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
 
         if (nr_cpus_node[node] == 1) {
             cpus[node] = g_new0(virCapsHostNUMACellCPU, 1);
-                goto cleanup;
         } else {
             if (VIR_REALLOC_N(cpus[node], nr_cpus_node[node]) < 0)
                 goto cleanup;
@@ -323,7 +322,6 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
             size_t j;
 
             siblings = g_new0(virCapsHostNUMACellSiblingInfo, nr_siblings);
-                goto cleanup;
 
             for (j = 0; j < nr_siblings; j++) {
                 siblings[j].node = j;

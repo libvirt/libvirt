@@ -1280,7 +1280,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
         vhostfd = g_new0(int, vhostfdSize);
-            goto cleanup;
         memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuInterfaceEthernetConnect(vm->def, driver, net,
                                          tapfd, tapfdSize) < 0)

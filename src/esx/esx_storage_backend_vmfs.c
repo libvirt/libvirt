@@ -1195,7 +1195,6 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
 
         if (priv->primary->hasQueryVirtualDiskUuid) {
             key = g_new0(char, VIR_UUID_STRING_BUFLEN);
-                goto cleanup;
 
             if (esxVI_QueryVirtualDiskUuid(priv->primary, datastorePath,
                                            priv->primary->datacenter->_reference,
