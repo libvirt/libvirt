@@ -2,7 +2,7 @@
   <name>virtimages</name>
   <source>
     <host name="nfs.example.com"/>
-    <directory path="/var/lib/virt/images"/>
+    <dir path="/var/lib/virt/images"/>
   </source>
   <target>
     <path>/var/lib/virt/images</path>
