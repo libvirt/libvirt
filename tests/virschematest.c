@@ -32,6 +32,10 @@ VIR_LOG_INIT("tests.schematest");
 
 struct testSchemaEntry {
     const char *dir;
+    /* if dirRegex is non-NULL the provided regular expression is used to match
+     * the file names in a directory (without path prefixed) and only matching
+     * files are validated */
+    const char *dirRegex;
     const char *file;
 };
 
@@ -79,16 +83,27 @@ testSchemaFile(const char *schema,
 static int
 testSchemaDir(const char *schema,
               virXMLValidatorPtr validator,
-              const char *dir_path)
+              const char *dir_path,
+              const char *filterstr)
 {
     DIR *dir = NULL;
     struct dirent *ent;
     int ret = 0;
     int rc;
+    g_autoptr(GRegex) filter = NULL;
 
     if (virDirOpen(&dir, dir_path) < 0) {
         virTestPropagateLibvirtError();
         return -1;
+    }
+
+    if (filterstr) {
+        g_autoptr(GError) err = NULL;
+
+        if (!(filter = g_regex_new(filterstr, 0, 0, &err))) {
+            VIR_TEST_VERBOSE("\nfailed to compile regex '%s': %s", filterstr, err->message);
+            return -1;
+        }
     }
 
     while ((rc = virDirRead(dir, &ent, dir_path)) > 0) {
@@ -97,6 +112,9 @@ testSchemaDir(const char *schema,
         if (!virStringHasSuffix(ent->d_name, ".xml"))
             continue;
         if (ent->d_name[0] == '.')
+            continue;
+        if (filter &&
+            !g_regex_match(filter, ent->d_name, 0, NULL))
             continue;
 
         xml_path = g_strdup_printf("%s/%s", dir_path, ent->d_name);
@@ -176,7 +194,7 @@ testSchemaEntries(const char *schema,
         if (entry->dir) {
             g_autofree char *path = g_strdup_printf("%s/%s", abs_top_srcdir, entry->dir);
 
-            if (testSchemaDir(schema, validator, path) < 0)
+            if (testSchemaDir(schema, validator, path, entry->dirRegex) < 0)
                 ret = -1;
         }
 
