@@ -2028,7 +2028,7 @@ virDomainUSBAddressControllerModelToPorts(virDomainControllerDefPtr cont)
 static virDomainUSBAddressHubPtr
 virDomainUSBAddressHubNew(size_t nports)
 {
-    virDomainUSBAddressHubPtr hub = NULL, ret = NULL;
+    virDomainUSBAddressHubPtr hub;
 
     hub = g_new0(virDomainUSBAddressHub, 1);
 
@@ -2037,9 +2037,7 @@ virDomainUSBAddressHubNew(size_t nports)
     hub->ports = g_new0(virDomainUSBAddressHubPtr, nports);
     hub->nports = nports;
 
-    ret = g_steal_pointer(&hub);
-    virDomainUSBAddressHubFree(hub);
-    return ret;
+    return hub;
 }
 
 
