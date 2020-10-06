@@ -6829,7 +6829,6 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
     virTristateSwitch smm = def->features[VIR_DOMAIN_FEATURE_SMM];
     virCPUDefPtr cpu = def->cpu;
-    const char *defaultRAMid = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
@@ -7046,11 +7045,24 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     if (virDomainNumaHasHMAT(def->numa))
         virBufferAddLit(&buf, ",hmat=on");
 
-    defaultRAMid = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
-                                                     def->virtType,
-                                                     def->os.machine);
-    if (defaultRAMid)
-        virBufferAsprintf(&buf, ",memory-backend=%s", defaultRAMid);
+    if (!virDomainNumaGetNodeCount(def->numa)) {
+        const char *defaultRAMid = NULL;
+
+        /* QEMU is obsoleting -mem-path and -mem-prealloc. That means we have
+         * to switch to memory-backend-* even for regular RAM and to keep
+         * domain migratable we have to set the same ID as older QEMUs would.
+         * If domain has no NUMA nodes and QEMU is new enough to expose ID of
+         * the default RAM we want to use it for default RAM (construct
+         * memory-backend-* with corresponding attributes instead of obsolete
+         * -mem-path and -mem-prealloc).
+         * This generates only reference for the memory-backend-* object added
+         * later in qemuBuildMemCommandLine() */
+        defaultRAMid = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
+                                                         def->virtType,
+                                                         def->os.machine);
+        if (defaultRAMid)
+            virBufferAsprintf(&buf, ",memory-backend=%s", defaultRAMid);
+    }
 
     virCommandAddArgBuffer(cmd, &buf);
 
@@ -7216,7 +7228,13 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
                                                      def->os.machine);
 
     if (defaultRAMid) {
-        qemuBuildMemCommandLineMemoryDefaultBackend(cmd, def, priv, defaultRAMid);
+        /* As documented in qemuBuildMachineCommandLine() if QEMU is new enough
+         * to expose default RAM ID we must use memory-backend-* even for
+         * regular memory because -mem-path and -mem-prealloc are obsolete.
+         * However, if domain has one or more NUMA nodes then there is no
+         * default RAM and we mustn't generate the memory object. */
+        if (!virDomainNumaGetNodeCount(def->numa))
+            qemuBuildMemCommandLineMemoryDefaultBackend(cmd, def, priv, defaultRAMid);
     } else {
         if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE) {
             virCommandAddArgList(cmd, "-mem-prealloc", NULL);
