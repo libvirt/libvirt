@@ -229,6 +229,8 @@ static const struct testSchemaEntry schemaDomain[] = {
     { .dir = "tests/xlconfigdata" },
     { .dir = "tests/libxlxml2domconfigdata" },
     { .dir = "tests/qemuhotplugtestdomains" },
+    { .dir = "examples/xml/test/",
+      .dirRegex = "testdom.*" },
 };
 
 static const struct testSchemaEntry schemaDomainCaps[] = {
@@ -259,6 +261,8 @@ static const struct testSchemaEntry schemaNetwork[] = {
     { .dir = "tests/networkxml2xmlin" },
     { .dir = "tests/networkxml2xmlout" },
     { .dir = "tests/networkxml2confdata" },
+    { .dir = "examples/xml/test/",
+      .dirRegex = "testnet.*" },
 };
 
 static const struct testSchemaEntry schemaNetworkport[] = {
@@ -267,6 +271,7 @@ static const struct testSchemaEntry schemaNetworkport[] = {
 
 static const struct testSchemaEntry schemaNodedev[] = {
     { .dir = "tests/nodedevschemadata" },
+    { .file = "examples/xml/test/testdev.xml" },
 };
 
 static const struct testSchemaEntry schemaNwfilter[] = {
@@ -292,6 +297,7 @@ static const struct testSchemaEntry schemaStoragePool[] = {
     { .dir = "tests/storagepoolschemadata" },
     { .dir = "examples/xml/storage",
       .dirRegex = "pool-.*" },
+    { .file = "examples/xml/test/testpool.xml" },
 };
 
 static const struct testSchemaEntry schemaStorageVol[] = {
@@ -300,6 +306,7 @@ static const struct testSchemaEntry schemaStorageVol[] = {
     { .dir = "tests/storagevolschemadata" },
     { .dir = "examples/xml/storage",
       .dirRegex = "vol-.*" },
+    { .file = "examples/xml/test/testvol.xml" },
 };
 
 
