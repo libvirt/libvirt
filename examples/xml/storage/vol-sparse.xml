@@ -2,4 +2,7 @@
   <name>sparse.img</name>
   <allocation>0</allocation>
   <capacity unit="T">1</capacity>
+  <target>
+    <format type="raw"/>
+  </target>
 </volume>

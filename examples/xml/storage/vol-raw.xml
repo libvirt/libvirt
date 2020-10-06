@@ -2,4 +2,7 @@
   <name>raw.img</name>
   <allocation unit="M">10</allocation>
   <capacity unit="M">1000</capacity>
+  <target>
+    <format type="raw"/>
+  </target>
 </volume>
