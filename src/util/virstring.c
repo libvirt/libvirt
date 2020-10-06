@@ -43,28 +43,9 @@ VIR_LOG_INIT("util.string");
 
 /**
  * virStringSplitCount:
- * @string: a string to split
- * @delim: a string which specifies the places at which to split
- *     the string. The delimiter is not included in any of the resulting
- *     strings, unless @max_tokens is reached.
- * @max_tokens: the maximum number of pieces to split @string into.
- *     If this is 0, the string is split completely.
- * @tokcount: If provided, the value is set to the count of pieces the string
- *            was split to excluding the terminating NULL element.
  *
- * Splits a string into a maximum of @max_tokens pieces, using the given
- * @delim. If @max_tokens is reached, the remainder of @string is
- * appended to the last token.
- *
- * As a special case, the result of splitting the empty string "" is an empty
- * vector, not a vector containing a single string. The reason for this
- * special case is that being able to represent an empty vector is typically
- * more useful than consistent handling of empty elements. If you do need
- * to represent empty elements, you'll need to check for the empty string
- * before calling virStringSplit().
- *
- * Return value: a newly-allocated NULL-terminated array of strings. Use
- *    g_strfreev() to free it.
+ * A wrapper for g_strsplit which provides number of elements of the split
+ * string.
  */
 char **
 virStringSplitCount(const char *string,
@@ -72,54 +53,11 @@ virStringSplitCount(const char *string,
                     size_t max_tokens,
                     size_t *tokcount)
 {
-    char **tokens = NULL;
-    size_t ntokens = 0;
-    size_t maxtokens = 0;
-    const char *remainder = string;
-    char *tmp;
-    size_t i;
+    GStrv ret = g_strsplit(string, delim, max_tokens);
 
-    if (max_tokens == 0)
-        max_tokens = INT_MAX;
+    *tokcount = g_strv_length(ret);
 
-    tmp = strstr(remainder, delim);
-    if (tmp) {
-        size_t delimlen = strlen(delim);
-
-        while (--max_tokens && tmp) {
-            size_t len = tmp - remainder;
-
-            if (VIR_RESIZE_N(tokens, maxtokens, ntokens, 1) < 0)
-                goto error;
-
-            tokens[ntokens] = g_strndup(remainder, len);
-            ntokens++;
-            remainder = tmp + delimlen;
-            tmp = strstr(remainder, delim);
-        }
-    }
-    if (*string) {
-        if (VIR_RESIZE_N(tokens, maxtokens, ntokens, 1) < 0)
-            goto error;
-
-        tokens[ntokens] = g_strdup(remainder);
-        ntokens++;
-    }
-
-    if (VIR_RESIZE_N(tokens, maxtokens, ntokens, 1) < 0)
-        goto error;
-    tokens[ntokens++] = NULL;
-
-    if (tokcount)
-        *tokcount = ntokens - 1;
-
-    return tokens;
-
- error:
-    for (i = 0; i < ntokens; i++)
-        VIR_FREE(tokens[i]);
-    VIR_FREE(tokens);
-    return NULL;
+    return ret;
 }
 
 
