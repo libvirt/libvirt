@@ -2886,7 +2886,9 @@
 
   <define name="interface-bridge-attributes">
     <attribute name="bridge">
-      <ref name="deviceName"/>
+      <data type="string">
+        <param name="pattern">[a-zA-Z0-9_\.\-\\:/ ]*</param>
+      </data>
     </attribute>
     <optional>
       <attribute name="macTableManager">
