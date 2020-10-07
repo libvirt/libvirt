@@ -402,6 +402,7 @@ virDomainDiskSourceFormat;
 virDomainDiskTranslateSourcePool;
 virDomainFeatureTypeFromString;
 virDomainFeatureTypeToString;
+virDomainFSAccessModeTypeToString;
 virDomainFSCacheModeTypeToString;
 virDomainFSDefFree;
 virDomainFSDefNew;

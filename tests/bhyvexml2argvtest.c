@@ -167,7 +167,7 @@ mymain(void)
                        BHYVE_CAP_NET_E1000 | BHYVE_CAP_LPC_BOOTROM | \
                        BHYVE_CAP_FBUF | BHYVE_CAP_XHCI | \
                        BHYVE_CAP_CPUTOPOLOGY | BHYVE_CAP_SOUND_HDA | \
-                       BHYVE_CAP_VNC_PASSWORD;
+                       BHYVE_CAP_VNC_PASSWORD | BHYVE_CAP_VIRTIO_9P;
 
     DO_TEST("base");
     DO_TEST("wired");
@@ -208,6 +208,13 @@ mymain(void)
     DO_TEST("sound");
     DO_TEST("isa-controller");
     DO_TEST_FAILURE("isa-multiple-controllers");
+    DO_TEST("fs-9p");
+    DO_TEST("fs-9p-readonly");
+    DO_TEST_FAILURE("fs-9p-unsupported-type");
+    DO_TEST_FAILURE("fs-9p-unsupported-driver");
+    DO_TEST_FAILURE("fs-9p-unsupported-accessmode");
+    driver.bhyvecaps &= ~BHYVE_CAP_VIRTIO_9P;
+    DO_TEST_FAILURE("fs-9p");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");

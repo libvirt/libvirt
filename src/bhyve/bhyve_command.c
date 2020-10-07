@@ -547,6 +547,73 @@ bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
     return 0;
 }
 
+static int
+bhyveBuildFSArgStr(const virDomainDef *def G_GNUC_UNUSED,
+                   virDomainFSDefPtr fs,
+                   virCommandPtr cmd)
+{
+    g_auto(virBuffer) params = VIR_BUFFER_INITIALIZER;
+
+    switch ((virDomainFSType) fs->type) {
+    case VIR_DOMAIN_FS_TYPE_MOUNT:
+        break;
+    case VIR_DOMAIN_FS_TYPE_BLOCK:
+    case VIR_DOMAIN_FS_TYPE_FILE:
+    case VIR_DOMAIN_FS_TYPE_TEMPLATE:
+    case VIR_DOMAIN_FS_TYPE_RAM:
+    case VIR_DOMAIN_FS_TYPE_BIND:
+    case VIR_DOMAIN_FS_TYPE_VOLUME:
+    case VIR_DOMAIN_FS_TYPE_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported filesystem type '%s'"),
+                       virDomainFSTypeToString(fs->type));
+        return -1;
+    }
+
+    switch (fs->fsdriver) {
+    case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
+        /* The only supported driver by bhyve currently */
+        break;
+    case VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported filesystem driver '%s'"),
+                       virDomainFSDriverTypeToString(fs->fsdriver));
+        return -1;
+    }
+
+    switch (fs->accessmode) {
+    case VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH:
+        /* This is the only supported mode for now, does not need specific configuration */
+        break;
+    case VIR_DOMAIN_FS_ACCESSMODE_MAPPED:
+    case VIR_DOMAIN_FS_ACCESSMODE_SQUASH:
+    case VIR_DOMAIN_FS_ACCESSMODE_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported filesystem accessmode '%s'"),
+                       virDomainFSAccessModeTypeToString(fs->accessmode));
+        return -1;
+    }
+
+    if (fs->readonly)
+        virBufferAddLit(&params, ",ro");
+
+    virCommandAddArg(cmd, "-s");
+    virCommandAddArgFormat(cmd, "%d:%d,virtio-9p,%s=%s%s",
+                           fs->info.addr.pci.slot,
+                           fs->info.addr.pci.function,
+                           fs->src->path,
+                           fs->dst,
+                           virBufferCurrentContent(&params));
+
+    return 0;
+}
+
 virCommandPtr
 virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
                              bool dryRun)
@@ -696,6 +763,11 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
         if (bhyveBuildSoundArgStr(def, def->sounds[i],
                                   virDomainDefFindAudioForSound(def, def->sounds[i]),
                                   driver, cmd) < 0)
+            goto error;
+    }
+
+    for (i = 0; i < def->nfss; i++) {
+        if (bhyveBuildFSArgStr(def, def->fss[i], cmd) < 0)
             goto error;
     }
 
