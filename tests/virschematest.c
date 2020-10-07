@@ -30,36 +30,49 @@
 
 VIR_LOG_INIT("tests.schematest");
 
+struct testSchemaEntry {
+    const char *dir;
+    const char *file;
+};
+
+
 struct testSchemaData {
     virXMLValidatorPtr validator;
-    const char *schema;
     const char *xml_path;
 };
 
 
 static int
-testSchemaFile(const void *args)
+testSchemaValidateXML(const void *args)
 {
     const struct testSchemaData *data = args;
     bool shouldFail = virStringHasSuffix(data->xml_path, "-invalid.xml");
-    xmlDocPtr xml = NULL;
-    int ret = -1;
+    g_autoptr(xmlDoc) xml = NULL;
 
     if (!(xml = virXMLParseFile(data->xml_path)))
         return -1;
 
-    if (virXMLValidatorValidate(data->validator, xml) < 0) {
-        if (!shouldFail)
-            goto cleanup;
-    } else {
-        if (shouldFail)
-            goto cleanup;
-    }
+    if ((virXMLValidatorValidate(data->validator, xml) < 0) != shouldFail)
+        return -1;
 
-    ret = 0;
- cleanup:
-    xmlFreeDoc(xml);
-    return ret;
+    return 0;
+}
+
+
+static int
+testSchemaFile(const char *schema,
+               virXMLValidatorPtr validator,
+               const char *path)
+{
+    g_autofree char *test_name = NULL;
+    struct testSchemaData data = {
+        .validator = validator,
+        .xml_path = path,
+    };
+
+    test_name = g_strdup_printf("Checking %s against %s", path, schema);
+
+    return virTestRun(test_name, testSchemaValidateXML, &data);
 }
 
 
@@ -72,9 +85,6 @@ testSchemaDir(const char *schema,
     struct dirent *ent;
     int ret = 0;
     int rc;
-    struct testSchemaData data = {
-        .validator = validator,
-    };
 
     if (virDirOpen(&dir, dir_path) < 0) {
         virTestPropagateLibvirtError();
@@ -82,7 +92,6 @@ testSchemaDir(const char *schema,
     }
 
     while ((rc = virDirRead(dir, &ent, dir_path)) > 0) {
-        g_autofree char *test_name = NULL;
         g_autofree char *xml_path = NULL;
 
         if (!virStringHasSuffix(ent->d_name, ".xml"))
@@ -92,10 +101,7 @@ testSchemaDir(const char *schema,
 
         xml_path = g_strdup_printf("%s/%s", dir_path, ent->d_name);
 
-        test_name = g_strdup_printf("Checking %s against %s", ent->d_name, schema);
-
-        data.xml_path = xml_path;
-        if (virTestRun(test_name, testSchemaFile, &data) < 0)
+        if (testSchemaFile(schema, validator, xml_path) < 0)
             ret = -1;
     }
 
@@ -109,122 +115,197 @@ testSchemaDir(const char *schema,
 }
 
 
+/**
+ * testSchemaGrammarReport:
+ *
+ * We need to parse the schema regardless since it's necessary also when tests
+ * are skipped using VIR_TEST_RANGE so this function merely reports whether the
+ * schema was parsed successfully via virTestRun.
+ */
 static int
-testSchemaDirs(const char *schema, virXMLValidatorPtr validator, ...)
+testSchemaGrammarReport(const void *opaque)
 {
-    va_list args;
-    int ret = 0;
-    const char *dir;
+    const virXMLValidator *validator = opaque;
 
-    va_start(args, validator);
+    if (!validator)
+        return -1;
 
-    while ((dir = va_arg(args, char *))) {
-        g_autofree char *dir_path = g_strdup_printf("%s/%s", abs_srcdir, dir);
-        if (testSchemaDir(schema, validator, dir_path) < 0)
-            ret = -1;
-    }
+    return 0;
+}
 
-    va_end(args);
+static virXMLValidatorPtr
+testSchemaGrammarLoad(const char *schema)
+{
+    g_autofree char *schema_path = NULL;
+    g_autofree char *testname = NULL;
+    virXMLValidatorPtr ret;
+
+    schema_path = g_strdup_printf("%s/%s", abs_top_srcdir, schema);
+
+    ret = virXMLValidatorInit(schema_path);
+
+    testname = g_strdup_printf("test schema grammar file: '%s'", schema);
+
+    ignore_value(virTestRun(testname, testSchemaGrammarReport, ret));
+
     return ret;
 }
 
 
 static int
-testSchemaGrammar(const void *opaque)
+testSchemaEntries(const char *schema,
+                  const struct testSchemaEntry *entries,
+                  size_t nentries)
 {
-    struct testSchemaData *data = (struct testSchemaData *) opaque;
-    g_autofree char *schema_path = NULL;
+    g_autoptr(virXMLValidator) validator = NULL;
+    size_t i;
+    int ret = 0;
 
-    schema_path = g_strdup_printf("%s/docs/schemas/%s", abs_top_srcdir,
-                                  data->schema);
-
-    if (!(data->validator = virXMLValidatorInit(schema_path)))
+    if (!(validator = testSchemaGrammarLoad(schema)))
         return -1;
 
-    return 0;
+    for (i = 0; i < nentries; i++) {
+        const struct testSchemaEntry *entry = entries + i;
+
+        if (!entry->file == !entry->dir) {
+            VIR_TEST_VERBOSE("\nmust specify exactly one of 'dir' and 'file' for struct testSchemaEntry\n");
+            ret = -1;
+            continue;
+        }
+
+        if (entry->dir) {
+            g_autofree char *path = g_strdup_printf("%s/%s", abs_top_srcdir, entry->dir);
+
+            if (testSchemaDir(schema, validator, path) < 0)
+                ret = -1;
+        }
+
+        if (entry->file) {
+            g_autofree char *path = g_strdup_printf("%s/%s", abs_top_srcdir, entry->file);
+
+            if (testSchemaFile(schema, validator, path) < 0)
+                ret = -1;
+        }
+    }
+
+    return ret;
 }
+
+
+static const struct testSchemaEntry schemaCapability[] = {
+    { .dir = "tests/capabilityschemadata" },
+    { .dir = "tests/vircaps2xmldata" },
+};
+
+static const struct testSchemaEntry schemaDomain[] = {
+    { .dir = "tests/domainschemadata" },
+    { .dir = "tests/qemuxml2argvdata" },
+    { .dir = "tests/xmconfigdata" },
+    { .dir = "tests/qemuxml2xmloutdata" },
+    { .dir = "tests/lxcxml2xmldata" },
+    { .dir = "tests/lxcxml2xmloutdata" },
+    { .dir = "tests/bhyvexml2argvdata" },
+    { .dir = "tests/bhyvexml2xmloutdata" },
+    { .dir = "tests/genericxml2xmlindata" },
+    { .dir = "tests/genericxml2xmloutdata" },
+    { .dir = "tests/xlconfigdata" },
+    { .dir = "tests/libxlxml2domconfigdata" },
+    { .dir = "tests/qemuhotplugtestdomains" },
+};
+
+static const struct testSchemaEntry schemaDomainCaps[] = {
+    { .dir = "tests/domaincapsdata" },
+};
+
+static const struct testSchemaEntry schemaDomainBackup[] = {
+    { .dir = "tests/domainbackupxml2xmlin" },
+    { .dir = "tests/domainbackupxml2xmlout" },
+};
+
+static const struct testSchemaEntry schemaDomainCheckpoint[] = {
+    { .dir = "tests/qemudomaincheckpointxml2xmlin" },
+    { .dir = "tests/qemudomaincheckpointxml2xmlout" },
+};
+
+static const struct testSchemaEntry schemaDomainSnapshot[] = {
+    { .dir = "tests/qemudomainsnapshotxml2xmlin" },
+    { .dir = "tests/qemudomainsnapshotxml2xmlout" },
+};
+
+static const struct testSchemaEntry schemaInterface[] = {
+    { .dir = "tests/interfaceschemadata" },
+};
+
+static const struct testSchemaEntry schemaNetwork[] = {
+    { .dir = "src/network" },
+    { .dir = "tests/networkxml2xmlin" },
+    { .dir = "tests/networkxml2xmlout" },
+    { .dir = "tests/networkxml2confdata" },
+};
+
+static const struct testSchemaEntry schemaNetworkport[] = {
+    { .dir = "tests/virnetworkportxml2xmldata" },
+};
+
+static const struct testSchemaEntry schemaNodedev[] = {
+    { .dir = "tests/nodedevschemadata" },
+};
+
+static const struct testSchemaEntry schemaNwfilter[] = {
+    { .dir = "tests/nwfilterxml2xmlout" },
+    { .dir = "src/nwfilter" },
+};
+
+static const struct testSchemaEntry schemaNwfilterbinding[] = {
+    { .dir = "tests/virnwfilterbindingxml2xmldata" },
+};
+
+static const struct testSchemaEntry schemaSecret[] = {
+    { .dir = "tests/secretxml2xmlin" },
+};
+
+static const struct testSchemaEntry schemaStoragepoolcaps[] = {
+    { .dir = "tests/storagepoolcapsschemadata" },
+};
+
+static const struct testSchemaEntry schemaStoragePool[] = {
+    { .dir = "tests/storagepoolxml2xmlin" },
+    { .dir = "tests/storagepoolxml2xmlout" },
+    { .dir = "tests/storagepoolschemadata" },
+};
+
+static const struct testSchemaEntry schemaStorageVol[] = {
+    { .dir = "tests/storagevolxml2xmlin" },
+    { .dir = "tests/storagevolxml2xmlout" },
+    { .dir = "tests/storagevolschemadata" },
+};
 
 
 static int
 mymain(void)
 {
     int ret = 0;
-    struct testSchemaData data;
 
-    memset(&data, 0, sizeof(data));
+#define DO_TEST(sch, ent) \
+    if (testSchemaEntries((sch), (ent), G_N_ELEMENTS(ent)) < 0) \
+        ret = -1;
 
-#define DO_TEST_DIR(sch, ...) \
-    do { \
-        data.schema = sch; \
-        if (virTestRun("test schema grammar file: " sch, \
-                       testSchemaGrammar, &data) == 0) { \
-            /* initialize the validator even if the schema test \
-             * was skipped because of VIR_TEST_RANGE */ \
-            if (!data.validator && testSchemaGrammar(&data) < 0) { \
-                ret = -1; \
-                break; \
-            } \
-            if (testSchemaDirs(sch, data.validator, __VA_ARGS__, NULL) < 0) \
-                ret = -1; \
- \
-            virXMLValidatorFree(data.validator); \
-            data.validator = NULL; \
-        } else { \
-            ret = -1; \
-        } \
-    } while (0)
-
-#define DO_TEST_FILE(sch, xmlfile) \
-    do { \
-        data.schema = sch; \
-        data.xml_path = abs_srcdir "/" xmlfile; \
-        if (virTestRun("test schema grammar file: " sch, \
-                       testSchemaGrammar, &data) == 0) { \
-            /* initialize the validator even if the schema test \
-             * was skipped because of VIR_TEST_RANGE */ \
-            if (!data.validator && testSchemaGrammar(&data) < 0) { \
-                ret = -1; \
-                break; \
-            } \
-            if (virTestRun("Checking " xmlfile " against " sch, \
-                           testSchemaFile, &data) < 0) \
-                ret = -1; \
- \
-            virXMLValidatorFree(data.validator); \
-            data.validator = NULL; \
-        } else { \
-            ret = -1; \
-        } \
-    } while (0)
-
-    DO_TEST_DIR("capability.rng", "capabilityschemadata", "vircaps2xmldata");
-    DO_TEST_DIR("domain.rng", "domainschemadata",
-                "qemuxml2argvdata", "xmconfigdata",
-                "qemuxml2xmloutdata", "lxcxml2xmldata",
-                "lxcxml2xmloutdata", "bhyvexml2argvdata",
-                "bhyvexml2xmloutdata", "genericxml2xmlindata",
-                "genericxml2xmloutdata", "xlconfigdata", "libxlxml2domconfigdata",
-                "qemuhotplugtestdomains");
-    DO_TEST_DIR("domaincaps.rng", "domaincapsdata");
-    DO_TEST_DIR("domainbackup.rng", "domainbackupxml2xmlin",
-                "domainbackupxml2xmlout");
-    DO_TEST_DIR("domaincheckpoint.rng", "qemudomaincheckpointxml2xmlin",
-                "qemudomaincheckpointxml2xmlout");
-    DO_TEST_DIR("domainsnapshot.rng", "qemudomainsnapshotxml2xmlin",
-                "qemudomainsnapshotxml2xmlout");
-    DO_TEST_DIR("interface.rng", "interfaceschemadata");
-    DO_TEST_DIR("network.rng", "../src/network", "networkxml2xmlin",
-                "networkxml2xmlout", "networkxml2confdata");
-    DO_TEST_DIR("networkport.rng", "virnetworkportxml2xmldata");
-    DO_TEST_DIR("nodedev.rng", "nodedevschemadata");
-    DO_TEST_DIR("nwfilter.rng", "nwfilterxml2xmlout", "../src/nwfilter");
-    DO_TEST_DIR("nwfilterbinding.rng", "virnwfilterbindingxml2xmldata");
-    DO_TEST_DIR("secret.rng", "secretxml2xmlin");
-    DO_TEST_DIR("storagepoolcaps.rng", "storagepoolcapsschemadata");
-    DO_TEST_DIR("storagepool.rng", "storagepoolxml2xmlin", "storagepoolxml2xmlout",
-                "storagepoolschemadata");
-    DO_TEST_DIR("storagevol.rng", "storagevolxml2xmlin", "storagevolxml2xmlout",
-                "storagevolschemadata");
+    DO_TEST("docs/schemas/capability.rng", schemaCapability);
+    DO_TEST("docs/schemas/domain.rng", schemaDomain);
+    DO_TEST("docs/schemas/domaincaps.rng", schemaDomainCaps);
+    DO_TEST("docs/schemas/domainbackup.rng", schemaDomainBackup);
+    DO_TEST("docs/schemas/domaincheckpoint.rng", schemaDomainCheckpoint);
+    DO_TEST("docs/schemas/domainsnapshot.rng", schemaDomainSnapshot);
+    DO_TEST("docs/schemas/interface.rng", schemaInterface);
+    DO_TEST("docs/schemas/network.rng", schemaNetwork);
+    DO_TEST("docs/schemas/networkport.rng", schemaNetworkport);
+    DO_TEST("docs/schemas/nodedev.rng", schemaNodedev);
+    DO_TEST("docs/schemas/nwfilter.rng", schemaNwfilter);
+    DO_TEST("docs/schemas/nwfilterbinding.rng", schemaNwfilterbinding);
+    DO_TEST("docs/schemas/secret.rng", schemaSecret);
+    DO_TEST("docs/schemas/storagepoolcaps.rng", schemaStoragepoolcaps);
+    DO_TEST("docs/schemas/storagepool.rng", schemaStoragePool);
+    DO_TEST("docs/schemas/storagevol.rng", schemaStorageVol);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
