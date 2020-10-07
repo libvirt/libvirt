@@ -1,3 +1,4 @@
 config.version = "8"
 virtualHW.version = "13"
 firmware = "efi"
+displayName = "test"

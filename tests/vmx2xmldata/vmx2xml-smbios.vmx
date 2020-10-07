@@ -1,3 +1,4 @@
 config.version = "8"
 virtualHW.version = "4"
 smbios.reflecthost = "true"
+displayName = "test"

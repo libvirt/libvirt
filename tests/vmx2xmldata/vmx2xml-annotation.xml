@@ -1,4 +1,5 @@
 <domain type='vmware'>
+  <name>test</name>
   <uuid>00000000-0000-0000-0000-000000000000</uuid>
   <description>Some |text| to test the &quot;escaping&quot;: ||&quot;&quot;||&quot;| Escaped!</description>
   <memory unit='KiB'>32768</memory>

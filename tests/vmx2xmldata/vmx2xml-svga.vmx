@@ -1,3 +1,4 @@
 config.version = "8"
 virtualHW.version = "4"
 svga.vramSize = "8388608"
+displayName = "test"

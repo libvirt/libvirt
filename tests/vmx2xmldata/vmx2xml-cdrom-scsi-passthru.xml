@@ -1,4 +1,5 @@
 <domain type='vmware'>
+  <name>test</name>
   <uuid>00000000-0000-0000-0000-000000000000</uuid>
   <memory unit='KiB'>32768</memory>
   <currentMemory unit='KiB'>32768</currentMemory>
