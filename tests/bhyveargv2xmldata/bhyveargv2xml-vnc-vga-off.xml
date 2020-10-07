@@ -17,7 +17,7 @@
     </graphics>
     <video>
       <driver vgaconf='off'/>
-      <model type='default' heads='1'/>
+      <model type='gop' heads='1'/>
     </video>
   </devices>
 </domain>

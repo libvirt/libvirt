@@ -16,7 +16,7 @@
       <listen type='address' address='1.2.3.4'/>
     </graphics>
     <video>
-      <model type='default' heads='1'/>
+      <model type='gop' heads='1'/>
     </video>
   </devices>
 </domain>

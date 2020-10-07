@@ -573,6 +573,8 @@ bhyveParsePCIFbuf(virDomainDefPtr def,
     if (!(video = virDomainVideoDefNew(xmlopt)))
         goto cleanup;
 
+    video->type = VIR_DOMAIN_VIDEO_TYPE_GOP;
+
     if (!(graphics = virDomainGraphicsDefNew(xmlopt)))
         goto cleanup;
 
