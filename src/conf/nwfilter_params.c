@@ -70,8 +70,7 @@ virNWFilterVarValueCopy(const virNWFilterVarValue *val)
     size_t i;
     char *str;
 
-    if (VIR_ALLOC(res) < 0)
-        return NULL;
+    res = g_new0(virNWFilterVarValue, 1);
     res->valType = val->valType;
 
     switch (res->valType) {
@@ -79,8 +78,7 @@ virNWFilterVarValueCopy(const virNWFilterVarValue *val)
         res->u.simple.value = g_strdup(val->u.simple.value);
         break;
     case NWFILTER_VALUE_TYPE_ARRAY:
-        if (VIR_ALLOC_N(res->u.array.values, val->u.array.nValues) < 0)
-            goto err_exit;
+        res->u.array.values = g_new0(char *, val->u.array.nValues);
         res->u.array.nValues = val->u.array.nValues;
         for (i = 0; i < val->u.array.nValues; i++) {
             str = g_strdup(val->u.array.values[i]);
@@ -92,10 +90,6 @@ virNWFilterVarValueCopy(const virNWFilterVarValue *val)
     }
 
     return res;
-
- err_exit:
-    virNWFilterVarValueFree(res);
-    return NULL;
 }
 
 virNWFilterVarValuePtr
@@ -109,8 +103,7 @@ virNWFilterVarValueCreateSimple(char *value)
         return NULL;
     }
 
-    if (VIR_ALLOC(val) < 0)
-        return NULL;
+    val = g_new0(virNWFilterVarValue, 1);
 
     val->valType = NWFILTER_VALUE_TYPE_SIMPLE;
     val->u.simple.value = value;
@@ -219,10 +212,7 @@ virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value)
     case NWFILTER_VALUE_TYPE_SIMPLE:
         /* switch to array */
         tmp = val->u.simple.value;
-        if (VIR_ALLOC_N(val->u.array.values, 2) < 0) {
-            val->u.simple.value = tmp;
-            return -1;
-        }
+        val->u.array.values = g_new0(char *, 2);
         val->valType = NWFILTER_VALUE_TYPE_ARRAY;
         val->u.array.nValues = 2;
         val->u.array.values[0] = tmp;
@@ -870,8 +860,7 @@ virNWFilterVarAccessParse(const char *varAccess)
     virNWFilterVarAccessPtr dest;
     const char *input = varAccess;
 
-    if (VIR_ALLOC(dest) < 0)
-        return NULL;
+    dest = g_new0(virNWFilterVarAccess, 1);
 
     idx = strspn(input, VALID_VARNAME);
 
