@@ -231,6 +231,15 @@ static const struct testSchemaEntry schemaDomain[] = {
     { .dir = "tests/qemuhotplugtestdomains" },
     { .dir = "examples/xml/test/",
       .dirRegex = "testdom.*" },
+    { .dir = "tests/qemuhotplugtestcpus" },
+    { .dir = "tests/securityselinuxlabeldata" },
+    { .dir = "tests/domainconfdata" },
+    { .dir = "tests/lxcconf2xmldata" },
+    { .dir = "tests/qemumemlockdata" },
+    { .dir = "tests/vmx2xmldata" },
+    { .dir = "tests/xml2vmxdata" },
+    { .dir = "tests/bhyveargv2xmldata" },
+    { .dir = "tests/qemuagentdata" },
 };
 
 static const struct testSchemaEntry schemaDomainCaps[] = {
