@@ -153,9 +153,7 @@ virCPUDefCopyModelFilter(virCPUDefPtr dst,
     size_t i;
     size_t n;
 
-    if (VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
-        return -1;
-
+    dst->features = g_new0(virCPUFeatureDef, src->nfeatures);
     dst->model = g_strdup(src->model);
     dst->vendor = g_strdup(src->vendor);
     dst->vendor_id = g_strdup(src->vendor_id);
@@ -248,16 +246,12 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
     copy->migratable = cpu->migratable;
 
     if (cpu->cache) {
-        if (VIR_ALLOC(copy->cache) < 0)
-            return NULL;
-
+        copy->cache = g_new0(virCPUCacheDef, 1);
         *copy->cache = *cpu->cache;
     }
 
     if (cpu->tsc) {
-        if (VIR_ALLOC(copy->tsc) < 0)
-            return NULL;
-
+        copy->tsc = g_new0(virHostCPUTscInfo, 1);
         *copy->tsc = *cpu->tsc;
     }
 
@@ -1156,8 +1150,7 @@ virCPUDefListParse(const char **xmlCPUs,
         goto error;
     }
 
-    if (VIR_ALLOC_N(cpus, ncpus + 1))
-        goto error;
+    cpus = g_new0(virCPUDefPtr, ncpus + 1);
 
     for (i = 0; i < ncpus; i++) {
         if (!(doc = virXMLParseStringCtxt(xmlCPUs[i], _("(CPU_definition)"), &ctxt)))
