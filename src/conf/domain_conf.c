@@ -21917,7 +21917,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainDefTunablesParse(def, ctxt, xmlopt, flags) < 0)
         goto error;
 
-    if (virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST, &def->cpu) < 0)
+    if (virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST, &def->cpu,
+                          false) < 0)
         goto error;
 
     if (virDomainNumaDefParseXML(def->numa, ctxt) < 0)

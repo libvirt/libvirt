@@ -81,7 +81,7 @@ cpuTestLoadXML(virArch arch, const char *name)
     if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
         goto cleanup;
 
-    virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_AUTO, &cpu);
+    virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_AUTO, &cpu, false);
 
  cleanup:
     xmlXPathFreeContext(ctxt);
@@ -120,7 +120,8 @@ cpuTestLoadMultiXML(virArch arch,
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
-        if (virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_HOST, &cpus[i]) < 0)
+        if (virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_HOST, &cpus[i],
+                              false) < 0)
             goto cleanup_cpus;
     }
 

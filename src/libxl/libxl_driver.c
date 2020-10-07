@@ -6529,19 +6529,22 @@ libxlConnectCompareCPU(virConnectPtr conn,
     libxlDriverConfigPtr cfg;
     int ret = VIR_CPU_COMPARE_ERROR;
     bool failIncompatible;
+    bool validateXML;
 
-    virCheckFlags(VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE,
+    virCheckFlags(VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE |
+                  VIR_CONNECT_COMPARE_CPU_VALIDATE_XML,
                   VIR_CPU_COMPARE_ERROR);
 
     if (virConnectCompareCPUEnsureACL(conn) < 0)
         return ret;
 
     failIncompatible = !!(flags & VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE);
+    validateXML = !!(flags & VIR_CONNECT_COMPARE_CPU_VALIDATE_XML);
 
     cfg = libxlDriverConfigGet(driver);
 
     ret = virCPUCompareXML(cfg->caps->host.arch, cfg->caps->host.cpu,
-                           xmlDesc, failIncompatible);
+                           xmlDesc, failIncompatible, validateXML);
 
     virObjectUnref(cfg);
     return ret;

@@ -153,7 +153,8 @@ virCPUCompareResult
 virCPUCompareXML(virArch arch,
                  virCPUDefPtr host,
                  const char *xml,
-                 bool failIncompatible);
+                 bool failIncompatible,
+                 bool validateXML);
 
 virCPUCompareResult
 virCPUCompare(virArch arch,

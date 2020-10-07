@@ -12202,20 +12202,23 @@ qemuConnectCompareCPU(virConnectPtr conn,
     virQEMUDriverPtr driver = conn->privateData;
     g_autoptr(virCPUDef) cpu = NULL;
     bool failIncompatible;
+    bool validateXML;
 
-    virCheckFlags(VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE,
+    virCheckFlags(VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE |
+                  VIR_CONNECT_COMPARE_CPU_VALIDATE_XML,
                   VIR_CPU_COMPARE_ERROR);
 
     if (virConnectCompareCPUEnsureACL(conn) < 0)
         return VIR_CPU_COMPARE_ERROR;
 
     failIncompatible = !!(flags & VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE);
+    validateXML = !!(flags & VIR_CONNECT_COMPARE_CPU_VALIDATE_XML);
 
     if (!(cpu = virQEMUDriverGetHostCPU(driver)))
         return VIR_CPU_COMPARE_ERROR;
 
     return virCPUCompareXML(driver->hostarch, cpu,
-                            xmlDesc, failIncompatible);
+                            xmlDesc, failIncompatible, validateXML);
 }
 
 
@@ -12270,18 +12273,21 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     bool failIncompatible;
+    bool validateXML;
     virCPUDefPtr hvCPU;
     virCPUDefPtr cpu = NULL;
     virArch arch;
     virDomainVirtType virttype;
 
-    virCheckFlags(VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE,
+    virCheckFlags(VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE |
+                  VIR_CONNECT_COMPARE_CPU_VALIDATE_XML,
                   VIR_CPU_COMPARE_ERROR);
 
     if (virConnectCompareHypervisorCPUEnsureACL(conn) < 0)
         goto cleanup;
 
     failIncompatible = !!(flags & VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE);
+    validateXML = !!(flags & VIR_CONNECT_COMPARE_CPU_VALIDATE_XML);
 
     qemuCaps = virQEMUCapsCacheLookupDefault(driver->qemuCapsCache,
                                              emulator,
@@ -12305,10 +12311,12 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
     }
 
     if (ARCH_IS_X86(arch)) {
-        ret = virCPUCompareXML(arch, hvCPU, xmlCPU, failIncompatible);
+        ret = virCPUCompareXML(arch, hvCPU, xmlCPU, failIncompatible,
+                               validateXML);
     } else if (ARCH_IS_S390(arch) &&
                virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON)) {
-        if (virCPUDefParseXMLString(xmlCPU, VIR_CPU_TYPE_AUTO, &cpu) < 0)
+        if (virCPUDefParseXMLString(xmlCPU, VIR_CPU_TYPE_AUTO, &cpu,
+                                    validateXML) < 0)
             goto cleanup;
 
         if (!cpu->model) {

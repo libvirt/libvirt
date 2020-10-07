@@ -109,14 +109,15 @@ virCPUCompareResult
 virCPUCompareXML(virArch arch,
                  virCPUDefPtr host,
                  const char *xml,
-                 bool failIncompatible)
+                 bool failIncompatible,
+                 bool validateXML)
 {
     g_autoptr(virCPUDef) cpu = NULL;
 
     VIR_DEBUG("arch=%s, host=%p, xml=%s",
               virArchToString(arch), host, NULLSTR(xml));
 
-    if (virCPUDefParseXMLString(xml, VIR_CPU_TYPE_AUTO, &cpu) < 0)
+    if (virCPUDefParseXMLString(xml, VIR_CPU_TYPE_AUTO, &cpu, validateXML) < 0)
         return VIR_CPU_COMPARE_ERROR;
 
     return virCPUCompare(arch, host, cpu, failIncompatible);
