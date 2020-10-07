@@ -357,7 +357,7 @@ virshDomainInterfaceAddrSourceCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    ret = g_new0(typeof(*ret), VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST + 1);
+    ret = g_new0(char *, VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST + 1);
 
     for (i = 0; i < VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST; i++)
         ret[i] = g_strdup(virshDomainInterfaceAddressesSourceTypeToString(i));
@@ -376,7 +376,7 @@ virshDomainHostnameSourceCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    ret = g_new0(typeof(*ret), VIRSH_DOMAIN_HOSTNAME_SOURCE_LAST + 1);
+    ret = g_new0(char *, VIRSH_DOMAIN_HOSTNAME_SOURCE_LAST + 1);
 
     for (i = 0; i < VIRSH_DOMAIN_HOSTNAME_SOURCE_LAST; i++)
         ret[i] = g_strdup(virshDomainHostnameSourceTypeToString(i));
