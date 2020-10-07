@@ -213,6 +213,7 @@ testSchemaEntries(const char *schema,
 static const struct testSchemaEntry schemaCapability[] = {
     { .dir = "tests/capabilityschemadata" },
     { .dir = "tests/vircaps2xmldata" },
+    { .dir = "tests/qemucaps2xmloutdata" },
 };
 
 static const struct testSchemaEntry schemaDomain[] = {
@@ -272,6 +273,8 @@ static const struct testSchemaEntry schemaNetwork[] = {
     { .dir = "tests/networkxml2confdata" },
     { .dir = "examples/xml/test/",
       .dirRegex = "testnet.*" },
+    { .dir = "tests/networkxml2xmlupdateout" },
+    { .dir = "tests/networkxml2firewalldata" },
 };
 
 static const struct testSchemaEntry schemaNetworkport[] = {
@@ -286,6 +289,8 @@ static const struct testSchemaEntry schemaNodedev[] = {
 static const struct testSchemaEntry schemaNwfilter[] = {
     { .dir = "tests/nwfilterxml2xmlout" },
     { .dir = "src/nwfilter/xml" },
+    { .dir = "tests/nwfilterxml2xmlin" },
+    { .dir = "tests/nwfilterxml2firewalldata" },
 };
 
 static const struct testSchemaEntry schemaNwfilterbinding[] = {
