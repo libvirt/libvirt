@@ -323,6 +323,14 @@ static const struct testSchemaEntry schemaStorageVol[] = {
     { .file = "examples/xml/test/testvol.xml" },
 };
 
+static const struct testSchemaEntry schemaCpu[] = {
+    { . dir = "tests/cputestdata",
+      . dirRegex = "^[^-]+-cpuid-.*(-host|-guest|-json)\\.xml$" },
+    { . dir = "tests/cputestdata",
+      . dirRegex = "^[^-]+-baseline-.*-result\\.xml$" },
+    { . dir = "tests/cputestdata",
+      . dirRegex = "^[^-]+-(?!cpuid|baseline).*$" },
+};
 
 static int
 mymain(void)
@@ -349,6 +357,7 @@ mymain(void)
     DO_TEST("docs/schemas/storagepoolcaps.rng", schemaStoragepoolcaps);
     DO_TEST("docs/schemas/storagepool.rng", schemaStoragePool);
     DO_TEST("docs/schemas/storagevol.rng", schemaStorageVol);
+    DO_TEST("docs/schemas/cpu.rng", schemaCpu);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
