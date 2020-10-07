@@ -1868,6 +1868,7 @@ exit 0
 
 %{_datadir}/libvirt/schemas/basictypes.rng
 %{_datadir}/libvirt/schemas/capability.rng
+%{_datadir}/libvirt/schemas/cpu.rng
 %{_datadir}/libvirt/schemas/cputypes.rng
 %{_datadir}/libvirt/schemas/domain.rng
 %{_datadir}/libvirt/schemas/domainbackup.rng
