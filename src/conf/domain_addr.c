@@ -1026,8 +1026,7 @@ virDomainPCIAddressSetExtensionAlloc(virDomainPCIAddressSetPtr addrs,
         if (addrs->zpciIds)
             return 0;
 
-        if (VIR_ALLOC(addrs->zpciIds) < 0)
-            return -1;
+        addrs->zpciIds = g_new0(virDomainZPCIAddressIds, 1);
 
         addrs->zpciIds->uids = virHashCreateFull(10, NULL,
                                                  virZPCIAddrKeyCode,
@@ -1054,12 +1053,8 @@ virDomainPCIAddressSetAlloc(unsigned int nbuses,
 {
     virDomainPCIAddressSetPtr addrs;
 
-    if (VIR_ALLOC(addrs) < 0)
-        goto error;
-
-    if (VIR_ALLOC_N(addrs->buses, nbuses) < 0)
-        goto error;
-
+    addrs = g_new0(virDomainPCIAddressSet, 1);
+    addrs->buses = g_new0(virDomainPCIAddressBus, nbuses);
     addrs->nbuses = nbuses;
 
     if (virDomainPCIAddressSetExtensionAlloc(addrs, extFlags) < 0)
@@ -1465,8 +1460,7 @@ virDomainCCWAddressSetCreate(void)
 {
     virDomainCCWAddressSetPtr addrs = NULL;
 
-    if (VIR_ALLOC(addrs) < 0)
-        goto error;
+    addrs = g_new0(virDomainCCWAddressSet, 1);
 
     if (!(addrs->defined = virHashCreate(10, virHashValueFree)))
         goto error;
@@ -1520,8 +1514,7 @@ virDomainVirtioSerialAddrSetCreate(void)
 {
     virDomainVirtioSerialAddrSetPtr ret = NULL;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virDomainVirtioSerialAddrSet, 1);
 
     return ret;
 }
@@ -1592,8 +1585,7 @@ virDomainVirtioSerialAddrSetAddController(virDomainVirtioSerialAddrSetPtr addrs,
     VIR_DEBUG("Adding virtio serial controller index %u with %d"
               " ports to the address set", cont->idx, ports);
 
-    if (VIR_ALLOC(cnt) < 0)
-        goto cleanup;
+    cnt = g_new0(virDomainVirtioSerialController, 1);
 
     cnt->ports = virBitmapNew(ports);
     cnt->idx = cont->idx;
@@ -1951,8 +1943,7 @@ virDomainUSBAddressSetCreate(void)
 {
     virDomainUSBAddressSetPtr addrs;
 
-    if (VIR_ALLOC(addrs) < 0)
-        return NULL;
+    addrs = g_new0(virDomainUSBAddressSet, 1);
 
     return addrs;
 }
@@ -2039,17 +2030,14 @@ virDomainUSBAddressHubNew(size_t nports)
 {
     virDomainUSBAddressHubPtr hub = NULL, ret = NULL;
 
-    if (VIR_ALLOC(hub) < 0)
-        goto cleanup;
+    hub = g_new0(virDomainUSBAddressHub, 1);
 
     hub->portmap = virBitmapNew(nports);
 
-    if (VIR_ALLOC_N(hub->ports, nports) < 0)
-        goto cleanup;
+    hub->ports = g_new0(virDomainUSBAddressHubPtr, nports);
     hub->nports = nports;
 
     ret = g_steal_pointer(&hub);
- cleanup:
     virDomainUSBAddressHubFree(hub);
     return ret;
 }
