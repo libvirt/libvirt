@@ -337,16 +337,14 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
     if (ipNodes == NULL)
         return 0;
 
-    if (VIR_ALLOC_N(def->ips, nipNodes) < 0)
-        goto error;
+    def->ips = g_new0(virInterfaceIPDefPtr, nipNodes);
 
     def->nips = 0;
     for (i = 0; i < nipNodes; i++) {
 
         virInterfaceIPDefPtr ip;
 
-        if (VIR_ALLOC(ip) < 0)
-            goto error;
+        ip = g_new0(virInterfaceIPDef, 1);
 
         ctxt->node = ipNodes[i];
         if (virInterfaceDefParseIP(ip, ctxt) < 0) {
@@ -393,16 +391,14 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
     if (ipNodes == NULL)
         return 0;
 
-    if (VIR_ALLOC_N(def->ips, nipNodes) < 0)
-        goto error;
+    def->ips = g_new0(virInterfaceIPDefPtr, nipNodes);
 
     def->nips = 0;
     for (i = 0; i < nipNodes; i++) {
 
         virInterfaceIPDefPtr ip;
 
-        if (VIR_ALLOC(ip) < 0)
-            goto error;
+        ip = g_new0(virInterfaceIPDef, 1);
 
         ctxt->node = ipNodes[i];
         if (virInterfaceDefParseIP(ip, ctxt) < 0) {
@@ -438,16 +434,14 @@ virInterfaceDefParseIfAdressing(virInterfaceDefPtr def,
         return 0;
     }
 
-    if (VIR_ALLOC_N(def->protos, nProtoNodes) < 0)
-        goto error;
+    def->protos = g_new0(virInterfaceProtocolDefPtr, nProtoNodes);
 
     def->nprotos = 0;
     for (pp = 0; pp < nProtoNodes; pp++) {
 
         virInterfaceProtocolDefPtr proto;
 
-        if (VIR_ALLOC(proto) < 0)
-            goto error;
+        proto = g_new0(virInterfaceProtocolDef, 1);
 
         ctxt->node = protoNodes[pp];
         tmp = virXPathString("string(./@family)", ctxt);
@@ -522,10 +516,7 @@ virInterfaceDefParseBridge(virInterfaceDefPtr def,
         goto error;
     }
     if (nbItf > 0) {
-        if (VIR_ALLOC_N(def->data.bridge.itf, nbItf) < 0) {
-            ret = -1;
-            goto error;
-        }
+        def->data.bridge.itf = g_new0(struct _virInterfaceDef *, nbItf);
         def->data.bridge.nbItf = nbItf;
 
         for (i = 0; i < nbItf; i++) {
@@ -568,8 +559,7 @@ virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(def->data.bond.itf, nbItf) < 0)
-        goto cleanup;
+    def->data.bond.itf = g_new0(struct _virInterfaceDef *, nbItf);
 
     def->data.bond.nbItf = nbItf;
 
@@ -712,8 +702,7 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(tmp);
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    def = g_new0(virInterfaceDef, 1);
 
     if (((parentIfType == VIR_INTERFACE_TYPE_BOND)
          && (type != VIR_INTERFACE_TYPE_ETHERNET))
