@@ -276,7 +276,7 @@ static const struct testSchemaEntry schemaNodedev[] = {
 
 static const struct testSchemaEntry schemaNwfilter[] = {
     { .dir = "tests/nwfilterxml2xmlout" },
-    { .dir = "src/nwfilter" },
+    { .dir = "src/nwfilter/xml" },
 };
 
 static const struct testSchemaEntry schemaNwfilterbinding[] = {
