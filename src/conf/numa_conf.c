@@ -851,9 +851,7 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNumaPtr def,
         /* Apply the local / remote distance */
         ldist = def->mem_nodes[cur_cell].distances;
         if (!ldist) {
-            if (VIR_ALLOC_N(ldist, ndistances) < 0)
-                goto cleanup;
-
+            ldist = g_new0(virDomainNumaDistance, ndistances);
             ldist[cur_cell].value = LOCAL_DISTANCE;
             ldist[cur_cell].cellid = cur_cell;
             def->mem_nodes[cur_cell].ndistances = ndistances;
@@ -866,9 +864,7 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNumaPtr def,
         /* Apply symmetry if none given */
         rdist = def->mem_nodes[sibling_id].distances;
         if (!rdist) {
-            if (VIR_ALLOC_N(rdist, ndistances) < 0)
-                goto cleanup;
-
+            rdist = g_new0(virDomainNumaDistance, ndistances);
             rdist[sibling_id].value = LOCAL_DISTANCE;
             rdist[sibling_id].cellid = sibling_id;
             def->mem_nodes[sibling_id].ndistances = ndistances;
@@ -1005,8 +1001,7 @@ virDomainNumaDefParseXML(virDomainNumaPtr def,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(def->mem_nodes, n) < 0)
-        goto cleanup;
+    def->mem_nodes = g_new0(struct _virDomainNumaNode, n);
     def->nmem_nodes = n;
 
     for (i = 0; i < n; i++) {
@@ -1502,11 +1497,7 @@ virDomainNumaGetMaxCPUID(virDomainNumaPtr numa)
 virDomainNumaPtr
 virDomainNumaNew(void)
 {
-    virDomainNumaPtr ret = NULL;
-
-    ignore_value(VIR_ALLOC(ret));
-
-    return ret;
+    return g_new0(virDomainNuma, 1);
 }
 
 
@@ -1586,8 +1577,7 @@ virDomainNumaSetNodeCount(virDomainNumaPtr numa, size_t nmem_nodes)
         return 0;
     }
 
-    if (VIR_ALLOC_N(numa->mem_nodes, nmem_nodes) < 0)
-        return 0;
+    numa->mem_nodes = g_new0(struct _virDomainNumaNode, nmem_nodes);
 
     numa->nmem_nodes = nmem_nodes;
 
@@ -1727,8 +1717,7 @@ virDomainNumaSetNodeDistanceCount(virDomainNumaPtr numa,
         return 0;
     }
 
-    if (VIR_ALLOC_N(distances, ndistances) < 0)
-        return 0;
+    distances = g_new0(struct _virDomainNumaDistance, ndistances);
 
     numa->mem_nodes[node].distances = distances;
     numa->mem_nodes[node].ndistances = ndistances;
