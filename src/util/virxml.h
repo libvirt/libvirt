@@ -220,6 +220,7 @@ virXMLValidateNodeAgainstSchema(const char *schemafile,
 
 void
 virXMLValidatorFree(virXMLValidatorPtr validator);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virXMLValidator, virXMLValidatorFree);
 
 void
 virXMLFormatElement(virBufferPtr buf,
