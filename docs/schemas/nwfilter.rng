@@ -725,7 +725,7 @@
 
   <define name="variable-name-type">
     <data type="string">
-      <param name="pattern">$[a-zA-Z0-9_]+(\[[ ]*[@]?[0-9]+[ ]*\])?</param>
+      <param name="pattern">$[ ]*[a-zA-Z0-9_]+(\[[ ]*[@]?[0-9]+[ ]*\])?[ ]*</param>
     </data>
   </define>
 
