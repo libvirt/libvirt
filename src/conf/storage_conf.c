@@ -572,8 +572,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     if (n) {
-        if (VIR_ALLOC_N(source->hosts, n) < 0)
-            goto cleanup;
+        source->hosts = g_new0(virStoragePoolSourceHost, n);
         source->nhost = n;
 
         for (i = 0; i < source->nhost; i++) {
@@ -703,8 +702,7 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
                                       &xpath_ctxt)))
         return NULL;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    def = g_new0(virStoragePoolSource, 1);
 
     if (!(node = virXPathNode("/source", xpath_ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -814,8 +812,7 @@ virStoragePoolDefRefreshParse(xmlXPathContextPtr ctxt,
         return -1;
     }
 
-    if (VIR_ALLOC(refresh) < 0)
-        return -1;
+    refresh = g_new0(virStoragePoolDefRefresh, 1);
 
     refresh->volume.allocation = tmp;
     def->refresh = g_steal_pointer(&refresh);
@@ -876,8 +873,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     g_autofree char *uuid = NULL;
     g_autofree char *target_path = NULL;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    def = g_new0(virStoragePoolDef, 1);
 
     type = virXPathString("string(./@type)", ctxt);
     if (type == NULL) {
@@ -1324,8 +1320,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (options == NULL)
         return NULL;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    def = g_new0(virStorageVolDef, 1);
 
     def->target.type = VIR_STORAGE_TYPE_FILE;
 
@@ -1370,8 +1365,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
             }
         }
 
-        if (VIR_ALLOC(def->target.backingStore->perms) < 0)
-            return NULL;
+        def->target.backingStore->perms = g_new0(virStoragePerms, 1);
         if (virStorageDefParsePerms(ctxt, def->target.backingStore->perms,
                                     "./backingStore/permissions") < 0)
             return NULL;
@@ -1417,8 +1411,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         }
     }
 
-    if (VIR_ALLOC(def->target.perms) < 0)
-        return NULL;
+    def->target.perms = g_new0(virStoragePerms, 1);
     if (virStorageDefParsePerms(ctxt, def->target.perms,
                                 "./target/permissions") < 0)
         return NULL;
