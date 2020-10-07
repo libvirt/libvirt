@@ -699,6 +699,28 @@
       "migration-safe": true
     },
     {
+      "name": "Skylake-Server-v4",
+      "typename": "Skylake-Server-v4-x86_64-cpu",
+      "unavailable-features": [
+        "pcid",
+        "erms",
+        "invpcid",
+        "avx512f",
+        "avx512dq",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "spec-ctrl",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
       "name": "Skylake-Server-v3",
       "typename": "Skylake-Server-v3-x86_64-cpu",
       "unavailable-features": [
@@ -1174,6 +1196,74 @@
       "migration-safe": true
     },
     {
+      "name": "Icelake-Server-v4",
+      "typename": "Icelake-Server-v4-x86_64-cpu",
+      "unavailable-features": [
+        "pcid",
+        "erms",
+        "invpcid",
+        "avx512f",
+        "avx512dq",
+        "avx512ifma",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "la57",
+        "fsrm",
+        "spec-ctrl",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "ibrs-all",
+        "taa-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Icelake-Server-v3",
+      "typename": "Icelake-Server-v3-x86_64-cpu",
+      "unavailable-features": [
+        "pcid",
+        "erms",
+        "invpcid",
+        "avx512f",
+        "avx512dq",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "avx512vbmi",
+        "pku",
+        "avx512vbmi2",
+        "gfni",
+        "vaes",
+        "vpclmulqdq",
+        "avx512vnni",
+        "avx512bitalg",
+        "avx512-vpopcntdq",
+        "la57",
+        "spec-ctrl",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "ibrs-all",
+        "taa-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
       "name": "Icelake-Server-v2",
       "typename": "Icelake-Server-v2-x86_64-cpu",
       "unavailable-features": [
@@ -1502,6 +1592,13 @@
       "migration-safe": true
     },
     {
+      "name": "EPYC-v3",
+      "typename": "EPYC-v3-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
       "name": "EPYC-v2",
       "typename": "EPYC-v2-x86_64-cpu",
       "unavailable-features": [],
@@ -1512,6 +1609,21 @@
       "name": "EPYC-v1",
       "typename": "EPYC-v1-x86_64-cpu",
       "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "EPYC-Rome-v1",
+      "typename": "EPYC-Rome-v1-x86_64-cpu",
+      "unavailable-features": [],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "EPYC-Rome",
+      "typename": "EPYC-Rome-x86_64-cpu",
+      "unavailable-features": [],
+      "alias-of": "EPYC-Rome-v1",
       "static": false,
       "migration-safe": true
     },
@@ -1547,6 +1659,16 @@
       "migration-safe": true
     },
     {
+      "name": "Denverton-v2",
+      "typename": "Denverton-v2-x86_64-cpu",
+      "unavailable-features": [
+        "erms",
+        "spec-ctrl"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
       "name": "Denverton-v1",
       "typename": "Denverton-v1-x86_64-cpu",
       "unavailable-features": [
@@ -1574,6 +1696,63 @@
       "migration-safe": true
     },
     {
+      "name": "Cooperlake-v1",
+      "typename": "Cooperlake-v1-x86_64-cpu",
+      "unavailable-features": [
+        "pcid",
+        "hle",
+        "erms",
+        "invpcid",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "spec-ctrl",
+        "avx512-bf16",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "ibrs-all",
+        "taa-no"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Cooperlake",
+      "typename": "Cooperlake-x86_64-cpu",
+      "unavailable-features": [
+        "pcid",
+        "hle",
+        "erms",
+        "invpcid",
+        "rtm",
+        "avx512f",
+        "avx512dq",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "spec-ctrl",
+        "avx512-bf16",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "ibrs-all",
+        "taa-no"
+      ],
+      "alias-of": "Cooperlake-v1",
+      "static": false,
+      "migration-safe": true
+    },
+    {
       "name": "Conroe-v1",
       "typename": "Conroe-v1-x86_64-cpu",
       "unavailable-features": [],
@@ -1585,6 +1764,30 @@
       "typename": "Conroe-x86_64-cpu",
       "unavailable-features": [],
       "alias-of": "Conroe-v1",
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Cascadelake-Server-v4",
+      "typename": "Cascadelake-Server-v4-x86_64-cpu",
+      "unavailable-features": [
+        "pcid",
+        "erms",
+        "invpcid",
+        "avx512f",
+        "avx512dq",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "pku",
+        "avx512vnni",
+        "spec-ctrl",
+        "avx512f",
+        "avx512f",
+        "avx512f",
+        "pku",
+        "ibrs-all"
+      ],
       "static": false,
       "migration-safe": true
     },

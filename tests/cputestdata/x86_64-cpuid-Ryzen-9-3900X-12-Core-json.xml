@@ -1,29 +1,21 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>EPYC-IBPB</model>
+  <model fallback='forbid'>EPYC-Rome</model>
   <vendor>AMD</vendor>
   <feature policy='require' name='x2apic'/>
   <feature policy='require' name='tsc-deadline'/>
   <feature policy='require' name='hypervisor'/>
   <feature policy='require' name='tsc_adjust'/>
-  <feature policy='require' name='clwb'/>
-  <feature policy='require' name='umip'/>
-  <feature policy='require' name='rdpid'/>
   <feature policy='require' name='stibp'/>
   <feature policy='require' name='arch-capabilities'/>
   <feature policy='require' name='ssbd'/>
   <feature policy='require' name='xsaves'/>
   <feature policy='require' name='cmp_legacy'/>
-  <feature policy='require' name='perfctr_core'/>
-  <feature policy='require' name='clzero'/>
-  <feature policy='require' name='xsaveerptr'/>
-  <feature policy='require' name='wbnoinvd'/>
   <feature policy='require' name='amd-ssbd'/>
   <feature policy='require' name='virt-ssbd'/>
-  <feature policy='require' name='npt'/>
-  <feature policy='require' name='nrip-save'/>
   <feature policy='require' name='rdctl-no'/>
   <feature policy='require' name='skip-l1dfl-vmentry'/>
   <feature policy='require' name='mds-no'/>
   <feature policy='require' name='pschange-mc-no'/>
   <feature policy='disable' name='monitor'/>
+  <feature policy='disable' name='amd-stibp'/>
 </cpu>
