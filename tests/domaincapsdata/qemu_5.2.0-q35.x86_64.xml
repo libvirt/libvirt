@@ -54,7 +54,6 @@
       <feature policy='require' name='skip-l1dfl-vmentry'/>
       <feature policy='require' name='mds-no'/>
       <feature policy='require' name='pschange-mc-no'/>
-      <feature policy='disable' name='monitor'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes'>qemu64</model>
