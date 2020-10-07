@@ -2201,6 +2201,37 @@ qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
 }
 
 
+static int
+qemuAgentGetAllInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
+                                  virJSONValuePtr ret_array)
+{
+    g_autoptr(virHashTable) ifaces_store = NULL;
+    size_t ifaces_count = 0;
+    size_t i;
+
+    /* Hash table to handle the interface alias */
+    ifaces_store = virHashNew(NULL);
+
+    for (i = 0; i < virJSONValueArraySize(ret_array); i++) {
+        virJSONValuePtr iface_obj = virJSONValueArrayGet(ret_array, i);
+
+        if (qemuAgentGetInterfaceAddresses(ifaces_ret, &ifaces_count,
+                                           ifaces_store, iface_obj) < 0)
+            goto error;
+    }
+
+    return ifaces_count;
+
+ error:
+    if (ifaces_ret) {
+        for (i = 0; i < ifaces_count; i++)
+            virDomainInterfaceFree(*ifaces_ret[i]);
+    }
+    VIR_FREE(*ifaces_ret);
+    return -1;
+}
+
+
 /*
  * qemuAgentGetInterfaces:
  * @agent: agent object
@@ -2216,16 +2247,9 @@ int
 qemuAgentGetInterfaces(qemuAgentPtr agent,
                        virDomainInterfacePtr **ifaces)
 {
-    size_t i;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr ret_array = NULL;
-    size_t ifaces_count = 0;
-    virDomainInterfacePtr *ifaces_ret = NULL;
-    g_autoptr(virHashTable) ifaces_store = NULL;
-
-    /* Hash table to handle the interface alias */
-    ifaces_store = virHashNew(NULL);
 
     if (!(cmd = qemuAgentMakeCommand("guest-network-get-interfaces", NULL)))
         return -1;
@@ -2239,24 +2263,7 @@ qemuAgentGetInterfaces(qemuAgentPtr agent,
         return -1;
     }
 
-    for (i = 0; i < virJSONValueArraySize(ret_array); i++) {
-        virJSONValuePtr iface_obj = virJSONValueArrayGet(ret_array, i);
-
-        if (qemuAgentGetInterfaceAddresses(&ifaces_ret, &ifaces_count,
-                                           ifaces_store, iface_obj) < 0)
-            goto error;
-    }
-
-    *ifaces = g_steal_pointer(&ifaces_ret);
-    return ifaces_count;
-
- error:
-    if (ifaces_ret) {
-        for (i = 0; i < ifaces_count; i++)
-            virDomainInterfaceFree(ifaces_ret[i]);
-    }
-    VIR_FREE(ifaces_ret);
-    return -1;
+    return qemuAgentGetAllInterfaceAddresses(ifaces, ret_array);
 }
 
 
