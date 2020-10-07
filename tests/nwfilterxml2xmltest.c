@@ -89,32 +89,32 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    DO_TEST("mac-test", true);
-    DO_TEST("vlan-test", true);
+    DO_TEST("mac-test-invalid", true);
+    DO_TEST("vlan-test-invalid", true);
     DO_TEST("stp-test", false);
-    DO_TEST("arp-test", true);
-    DO_TEST("rarp-test", true);
-    DO_TEST("ip-test", true);
-    DO_TEST("ipv6-test", true);
+    DO_TEST("arp-test-invalid", true);
+    DO_TEST("rarp-test-invalid", true);
+    DO_TEST("ip-test-invalid", true);
+    DO_TEST("ipv6-test-invalid", true);
 
-    DO_TEST("tcp-test", true);
-    DO_TEST("udp-test", true);
-    DO_TEST("icmp-test", true);
+    DO_TEST("tcp-test-invalid", true);
+    DO_TEST("udp-test-invalid", true);
+    DO_TEST("icmp-test-invalid", true);
     DO_TEST("igmp-test", false);
-    DO_TEST("sctp-test", true);
+    DO_TEST("sctp-test-invalid", true);
     DO_TEST("udplite-test", false);
     DO_TEST("esp-test", false);
     DO_TEST("ah-test", false);
     DO_TEST("all-test", false);
 
-    DO_TEST("tcp-ipv6-test", true);
-    DO_TEST("udp-ipv6-test", true);
-    DO_TEST("icmpv6-test", true);
-    DO_TEST("sctp-ipv6-test", true);
-    DO_TEST("udplite-ipv6-test", true);
-    DO_TEST("esp-ipv6-test", true);
-    DO_TEST("ah-ipv6-test", true);
-    DO_TEST("all-ipv6-test", true);
+    DO_TEST("tcp-ipv6-test-invalid", true);
+    DO_TEST("udp-ipv6-test-invalid", true);
+    DO_TEST("icmpv6-test-invalid", true);
+    DO_TEST("sctp-ipv6-test-invalid", true);
+    DO_TEST("udplite-ipv6-test-invalid", true);
+    DO_TEST("esp-ipv6-test-invalid", true);
+    DO_TEST("ah-ipv6-test-invalid", true);
+    DO_TEST("all-ipv6-test-invalid", true);
 
     DO_TEST("ref-test", false);
     DO_TEST("ref-rule-test", false);
@@ -125,14 +125,14 @@ mymain(void)
 
     DO_TEST("conntrack-test", false);
 
-    DO_TEST("hex-data-test", true);
+    DO_TEST("hex-data-test-invalid", true);
 
-    DO_TEST("comment-test", true);
+    DO_TEST("comment-test-invalid", true);
 
     DO_TEST("example-1", false);
     DO_TEST("example-2", false);
 
-    DO_TEST("chain_prefixtest1", true); /* derived from arp-test */
+    DO_TEST("chain_prefixtest1-invalid", true); /* derived from arp-test */
 
     DO_TEST("attr-value-test", false);
     DO_TEST("iter-test1", false);
