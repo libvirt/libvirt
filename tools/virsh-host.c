@@ -1214,6 +1214,10 @@ static const vshCmdOptDef opts_cpu_compare[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report error if CPUs are incompatible")
     },
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML document against schema")
+    },
     {.name = NULL}
 };
 
@@ -1229,6 +1233,9 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "error"))
         flags |= VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE;
+
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_CONNECT_COMPARE_CPU_VALIDATE_XML;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -1636,6 +1643,10 @@ static const vshCmdOptDef opts_hypervisor_cpu_compare[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report error if CPUs are incompatible")
     },
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML document against schema")
+    },
     {.name = NULL}
 };
 
@@ -1656,6 +1667,9 @@ cmdHypervisorCPUCompare(vshControl *ctl,
 
     if (vshCommandOptBool(cmd, "error"))
         flags |= VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE;
+
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_CONNECT_COMPARE_CPU_VALIDATE_XML;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||

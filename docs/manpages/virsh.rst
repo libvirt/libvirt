@@ -866,7 +866,7 @@ cpu-compare
 
 ::
 
-   cpu-compare FILE [--error]
+   cpu-compare FILE [--error] [--validate]
 
 Compare CPU definition from XML <file> with host CPU. (See
 ``hypervisor-cpu-compare`` command for comparing the CPU definition with the CPU
@@ -882,7 +882,8 @@ the CPU definition. For more information on guest CPU definition see:
 `https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#elementsCPU>`__. If *--error* is
 specified, the command will return an error when the given CPU is
 incompatible with host CPU and a message providing more details about the
-incompatibility will be printed out.
+incompatibility will be printed out. If *--validate* is specified, validates
+the format of the XML document against an internal RNG schema.
 
 
 cpu-models
@@ -928,7 +929,7 @@ hypervisor-cpu-compare
 
 ::
 
-   hypervisor-cpu-compare FILE [virttype] [emulator] [arch] [machine] [--error]
+   hypervisor-cpu-compare FILE [virttype] [emulator] [arch] [machine] [--error] [--validate]
 
 Compare CPU definition from XML <file> with the CPU the hypervisor is able to
 provide on the host. (This is different from ``cpu-compare`` which compares the
@@ -951,6 +952,8 @@ specifies the path to the emulator, *arch* specifies the CPU architecture, and
 *machine* specifies the machine type. If *--error* is specified, the command
 will return an error when the given CPU is incompatible with the host CPU and a
 message providing more details about the incompatibility will be printed out.
+If *--validate* is specified, validates the format of the XML document against
+an internal RNG schema.
 
 
 hypervisor-cpu-baseline
