@@ -980,7 +980,7 @@
 
   <define name="ipset-flags-type">
     <data type="string">
-      <param name="pattern">(src|dst)(,(src|dst)){0,5}</param>
+      <param name="pattern">([Ss][Rr][Cc]|[Dd][Ss][Tt])(,([Ss][Rr][Cc]|[Dd][Ss][Tt])){0,5}</param>
     </data>
   </define>
 </grammar>
