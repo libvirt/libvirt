@@ -1137,10 +1137,10 @@ mymain(void)
     DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-exact", VIR_CPU_COMPARE_INCOMPATIBLE);
     DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-legacy", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-legacy-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
-    DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-legacy-invalid", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-legacy-bad", VIR_CPU_COMPARE_ERROR);
     DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-compat-none", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-compat-valid", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-compat-invalid", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-compat-bad", VIR_CPU_COMPARE_ERROR);
     DO_TEST_COMPARE(VIR_ARCH_PPC64, "host", "guest-compat-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
 
     /* guest updates for migration
@@ -1158,10 +1158,10 @@ mymain(void)
     DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-nofallback", VIR_CPU_COMPARE_INCOMPATIBLE);
     DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-legacy", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-legacy-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
-    DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-legacy-invalid", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-legacy-bad", VIR_CPU_COMPARE_ERROR);
     DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-compat-none", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-compat-valid", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-compat-invalid", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-compat-bad", VIR_CPU_COMPARE_ERROR);
     DO_TEST_UPDATE(VIR_ARCH_PPC64, "host", "guest-compat-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
 
     /* computing baseline CPUs */
@@ -1216,7 +1216,7 @@ mymain(void)
     DO_TEST_GUESTCPU(VIR_ARCH_PPC64, "host", "guest-nofallback", ppc_models, -1);
     DO_TEST_GUESTCPU(VIR_ARCH_PPC64, "host", "guest-legacy", ppc_models, 0);
     DO_TEST_GUESTCPU(VIR_ARCH_PPC64, "host", "guest-legacy-incompatible", ppc_models, -1);
-    DO_TEST_GUESTCPU(VIR_ARCH_PPC64, "host", "guest-legacy-invalid", ppc_models, -1);
+    DO_TEST_GUESTCPU(VIR_ARCH_PPC64, "host", "guest-legacy-bad", ppc_models, -1);
 
     DO_TEST_CPUID(VIR_ARCH_X86_64, "A10-5800K", JSON_HOST);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Atom-D510", JSON_NONE);
