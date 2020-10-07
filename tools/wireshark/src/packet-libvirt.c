@@ -21,6 +21,7 @@
 #include <wireshark/epan/proto.h>
 #include <wireshark/epan/packet.h>
 #include <wireshark/epan/dissectors/packet-tcp.h>
+#include <rpc/types.h>
 #include <rpc/xdr.h>
 #include "packet-libvirt.h"
 #include "internal.h"
