@@ -212,8 +212,7 @@ virDomainMomentObjNew(void)
 {
     virDomainMomentObjPtr moment;
 
-    if (VIR_ALLOC(moment) < 0)
-        return NULL;
+    moment = g_new0(virDomainMomentObj, 1);
 
     VIR_DEBUG("obj=%p", moment);
 
@@ -275,8 +274,7 @@ virDomainMomentObjListNew(void)
 {
     virDomainMomentObjListPtr moments;
 
-    if (VIR_ALLOC(moments) < 0)
-        return NULL;
+    moments = g_new0(virDomainMomentObjList, 1);
     moments->objs = virHashCreate(50, virDomainMomentObjListDataFree);
     if (!moments->objs) {
         VIR_FREE(moments);

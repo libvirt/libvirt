@@ -2069,8 +2069,7 @@ virNWFilterIncludeParse(xmlNodePtr cur)
 {
     virNWFilterIncludeDefPtr ret;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virNWFilterIncludeDef, 1);
 
     ret->filterref = virXMLPropString(cur, "filter");
     if (!ret->filterref) {
@@ -2423,8 +2422,7 @@ virNWFilterRuleParse(xmlNodePtr node)
     xmlNodePtr cur;
     virNWFilterRuleDefPtr ret;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virNWFilterRuleDef, 1);
 
     action     = virXMLPropString(node, "action");
     direction  = virXMLPropString(node, "direction");
@@ -2616,8 +2614,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
     int chain_priority;
     const char *name_prefix;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virNWFilterDef, 1);
 
     ret->name = virXPathString("string(./@name)", ctxt);
     if (!ret->name) {
@@ -2689,8 +2686,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
 
     while (curr != NULL) {
         if (curr->type == XML_ELEMENT_NODE) {
-            if (VIR_ALLOC(entry) < 0)
-                goto cleanup;
+            entry = g_new0(virNWFilterEntry, 1);
 
             if (virXMLNodeNameEqual(curr, "rule")) {
                 if (!(entry->rule = virNWFilterRuleParse(curr))) {

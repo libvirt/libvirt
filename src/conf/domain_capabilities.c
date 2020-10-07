@@ -155,15 +155,10 @@ virDomainCapsCPUModelsNew(size_t nmodels)
     if (!(cpuModels = virObjectNew(virDomainCapsCPUModelsClass)))
         return NULL;
 
-    if (VIR_ALLOC_N(cpuModels->models, nmodels) < 0)
-        goto error;
+    cpuModels->models = g_new0(virDomainCapsCPUModel, nmodels);
     cpuModels->nmodels_max = nmodels;
 
     return cpuModels;
-
- error:
-    virObjectUnref(cpuModels);
-    return NULL;
 }
 
 

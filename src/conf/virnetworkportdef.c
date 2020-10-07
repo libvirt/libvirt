@@ -95,8 +95,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     g_autofree char *managed = NULL;
     g_autofree char *driver = NULL;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    def = g_new0(virNetworkPortDef, 1);
 
     uuid = virXPathString("string(./uuid)", ctxt);
     if (!uuid) {

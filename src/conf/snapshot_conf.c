@@ -367,8 +367,8 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     if ((n = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
         goto cleanup;
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_DISKS) {
-        if (n && VIR_ALLOC_N(def->disks, n) < 0)
-            goto cleanup;
+        if (n)
+            def->disks = g_new0(virDomainSnapshotDiskDef, n);
         def->ndisks = n;
         for (i = 0; i < def->ndisks; i++) {
             if (virDomainSnapshotDiskDefParseXML(nodes[i], ctxt, &def->disks[i],

@@ -930,11 +930,8 @@ virNodeDeviceObjListExport(virConnectPtr conn,
         .devices = NULL, .ndevices = 0, .error = false };
 
     virObjectRWLockRead(devs);
-    if (devices &&
-        VIR_ALLOC_N(data.devices, virHashSize(devs->objs) + 1) < 0) {
-        virObjectRWUnlock(devs);
-        return -1;
-    }
+    if (devices)
+        data.devices = g_new0(virNodeDevicePtr, virHashSize(devs->objs));
 
     virHashForEach(devs->objs, virNodeDeviceObjListExportCallback, &data);
     virObjectRWUnlock(devs);

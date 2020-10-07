@@ -121,8 +121,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     xmlNodePtr in = NULL, out = NULL;
     char *class_id_prop = NULL;
 
-    if (VIR_ALLOC(def) < 0)
-        return ret;
+    def = g_new0(virNetDevBandwidth, 1);
 
     if (!node || !virXMLNodeNameEqual(node, "bandwidth")) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -173,8 +172,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     }
 
     if (in) {
-        if (VIR_ALLOC(def->in) < 0)
-            goto cleanup;
+        def->in = g_new0(virNetDevBandwidthRate, 1);
 
         if (virNetDevBandwidthParseRate(in, def->in) < 0) {
             /* helper reported error for us */
@@ -189,8 +187,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     }
 
     if (out) {
-        if (VIR_ALLOC(def->out) < 0)
-            goto cleanup;
+        def->out = g_new0(virNetDevBandwidthRate, 1);
 
         if (virNetDevBandwidthParseRate(out, def->out) < 0) {
             /* helper reported error for us */

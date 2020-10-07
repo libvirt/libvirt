@@ -434,10 +434,7 @@ virNWFilterBindingObjListCollect(virNWFilterBindingObjListPtr domlist,
 
     virObjectRWLockRead(domlist);
     sa_assert(domlist->objs);
-    if (VIR_ALLOC_N(data.bindings, virHashSize(domlist->objs)) < 0) {
-        virObjectRWUnlock(domlist);
-        return -1;
-    }
+    data.bindings = g_new0(virNWFilterBindingObjPtr, virHashSize(domlist->objs));
 
     virHashForEach(domlist->objs, virNWFilterBindingObjListCollectIterator, &data);
     virObjectRWUnlock(domlist);
@@ -467,8 +464,7 @@ virNWFilterBindingObjListExport(virNWFilterBindingObjListPtr bindings,
         return -1;
 
     if (bindinglist) {
-        if (VIR_ALLOC_N(*bindinglist, nbindings + 1) < 0)
-            goto cleanup;
+        *bindinglist = g_new0(virNWFilterBindingPtr, nbindings + 1);
 
         for (i = 0; i < nbindings; i++) {
             virNWFilterBindingObjPtr binding = bindingobjs[i];

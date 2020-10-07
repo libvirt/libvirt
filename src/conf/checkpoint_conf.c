@@ -182,8 +182,8 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
 
     if ((n = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
         return NULL;
-    if (n && VIR_ALLOC_N(def->disks, n) < 0)
-        return NULL;
+    if (n)
+        def->disks = g_new0(virDomainCheckpointDiskDef, n);
     def->ndisks = n;
     for (i = 0; i < def->ndisks; i++) {
         if (virDomainCheckpointDiskDefParseXML(nodes[i], ctxt,

@@ -44,8 +44,7 @@ virNWFilterBindingDefForNet(const char *vmname,
 {
     virNWFilterBindingDefPtr ret;
 
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
+    ret = g_new0(virNWFilterBindingDef, 1);
 
     ret->ownername = g_strdup(vmname);
 

@@ -149,8 +149,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 
     ctxt->node = root;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    def = g_new0(virSecretDef, 1);
 
     prop = virXPathString("string(./@ephemeral)", ctxt);
     if (prop != NULL) {

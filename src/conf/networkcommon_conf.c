@@ -44,8 +44,7 @@ virNetDevIPRouteCreate(const char *errorDetail,
     virNetDevIPRoutePtr def = NULL;
     virSocketAddr testAddr;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    def = g_new0(virNetDevIPRoute, 1);
 
     def->family = g_strdup(family);
 

@@ -255,8 +255,7 @@ static void virChrdevFDStreamCloseCb(virStreamPtr st G_GNUC_UNUSED,
 virChrdevsPtr virChrdevAlloc(void)
 {
     virChrdevsPtr devs;
-    if (VIR_ALLOC(devs) < 0)
-        return NULL;
+    devs = g_new0(virChrdevs, 1);
 
     if (virMutexInit(&devs->lock) < 0) {
         virReportSystemError(errno, "%s",
@@ -388,11 +387,8 @@ int virChrdevOpen(virChrdevsPtr devs,
         return -1;
     }
 
-    if (VIR_ALLOC(cbdata) < 0)
-        goto error;
-
-    if (VIR_ALLOC(ent) < 0)
-        goto error;
+    cbdata = g_new0(virChrdevStreamInfo, 1);
+    ent = g_new0(virChrdevHashEntry, 1);
 
     ent->st = st;
     ent->dev = g_strdup(path);

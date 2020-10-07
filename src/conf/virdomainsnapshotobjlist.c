@@ -85,8 +85,7 @@ virDomainSnapshotObjListNew(void)
 {
     virDomainSnapshotObjListPtr snapshots;
 
-    if (VIR_ALLOC(snapshots) < 0)
-        return NULL;
+    snapshots = g_new0(virDomainSnapshotObjList, 1);
     snapshots->base = virDomainMomentObjListNew();
     if (!snapshots->base) {
         VIR_FREE(snapshots);
@@ -267,9 +266,8 @@ virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
 
     if (!snaps || count < 0)
         return count;
-    if (VIR_ALLOC_N(names, count) < 0 ||
-        VIR_ALLOC_N(list, count + 1) < 0)
-        goto cleanup;
+    names = g_new0(char *, count);
+    list = g_new0(virDomainSnapshotPtr, count + 1);
 
     if (virDomainSnapshotObjListGetNames(snapshots, from, names, count,
                                          flags) < 0)

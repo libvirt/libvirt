@@ -981,10 +981,7 @@ virDomainObjListCollect(virDomainObjListPtr domlist,
 
     virObjectRWLockRead(domlist);
     sa_assert(domlist->objs);
-    if (VIR_ALLOC_N(data.vms, virHashSize(domlist->objs)) < 0) {
-        virObjectRWUnlock(domlist);
-        return -1;
-    }
+    data.vms = g_new0(virDomainObjPtr, virHashSize(domlist->objs));
 
     virHashForEach(domlist->objs, virDomainObjListCollectIterator, &data);
     virObjectRWUnlock(domlist);
@@ -1074,8 +1071,7 @@ virDomainObjListExport(virDomainObjListPtr domlist,
         return -1;
 
     if (domains) {
-        if (VIR_ALLOC_N(doms, nvms + 1) < 0)
-            goto cleanup;
+        doms = g_new0(virDomainPtr, nvms + 1);
 
         for (i = 0; i < nvms; i++) {
             virDomainObjPtr vm = vms[i];

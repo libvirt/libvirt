@@ -62,8 +62,7 @@ virDomainCheckpointObjListNew(void)
 {
     virDomainCheckpointObjListPtr checkpoints;
 
-    if (VIR_ALLOC(checkpoints) < 0)
-        return NULL;
+    checkpoints = g_new0(virDomainCheckpointObjList, 1);
     checkpoints->base = virDomainMomentObjListNew();
     if (!checkpoints->base) {
         VIR_FREE(checkpoints);
@@ -216,9 +215,9 @@ virDomainListCheckpoints(virDomainCheckpointObjListPtr checkpoints,
 
     if (!chks || count < 0)
         return count;
-    if (VIR_ALLOC_N(names, count) < 0 ||
-        VIR_ALLOC_N(list, count + 1) < 0)
-        goto cleanup;
+
+    names = g_new0(char *, count);
+    list = g_new0(virDomainCheckpointPtr, count + 1);
 
     if (virDomainCheckpointObjListGetNames(checkpoints, from, names, count,
                                            flags) < 0)

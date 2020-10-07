@@ -1406,8 +1406,8 @@ virNetworkObjListExport(virConnectPtr conn,
         .nnets = 0, .error = false };
 
     virObjectRWLockRead(netobjs);
-    if (nets && VIR_ALLOC_N(data.nets, virHashSize(netobjs->objs) + 1) < 0)
-        goto cleanup;
+    if (nets)
+        data.nets = g_new0(virNetworkPtr, virHashSize(netobjs->objs));
 
     virHashForEach(netobjs->objs, virNetworkObjListExportCallback, &data);
 
@@ -1801,8 +1801,7 @@ virNetworkObjPortListExport(virNetworkPtr net,
     if (ports) {
         *ports = NULL;
 
-        if (VIR_ALLOC_N(data.ports, virHashSize(obj->ports) + 1) < 0)
-            goto cleanup;
+        data.ports = g_new0(virNetworkPortPtr, virHashSize(obj->ports));
     }
 
     virHashForEach(obj->ports, virNetworkObjPortListExportCallback, &data);

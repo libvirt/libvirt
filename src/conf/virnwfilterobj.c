@@ -53,8 +53,7 @@ virNWFilterObjNew(void)
 {
     virNWFilterObjPtr obj;
 
-    if (VIR_ALLOC(obj) < 0)
-        return NULL;
+    obj = g_new0(virNWFilterObj, 1);
 
     if (virMutexInitRecursive(&obj->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -120,8 +119,7 @@ virNWFilterObjListNew(void)
 {
     virNWFilterObjListPtr nwfilters;
 
-    if (VIR_ALLOC(nwfilters) < 0)
-        return NULL;
+    nwfilters = g_new0(virNWFilterObjList, 1);
     return nwfilters;
 }
 
@@ -450,8 +448,7 @@ virNWFilterObjListExport(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(tmp_filters, nwfilters->count + 1) < 0)
-        goto cleanup;
+    tmp_filters = g_new0(virNWFilterPtr, nwfilters->count + 1);
 
     for (i = 0; i < nwfilters->count; i++) {
         obj = nwfilters->objs[i];

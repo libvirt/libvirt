@@ -319,9 +319,8 @@ virInterfaceObjListExport(virConnectPtr conn,
         .nifaces = 0, .error = false };
 
     virObjectRWLockRead(ifaceobjs);
-    if (ifaces && VIR_ALLOC_N(data.ifaces,
-                              virHashSize(ifaceobjs->objsName) + 1) < 0)
-        goto cleanup;
+    if (ifaces)
+        data.ifaces = g_new0(virInterfacePtr, virHashSize(ifaceobjs->objsName));
 
     virHashForEach(ifaceobjs->objsName, virInterfaceObjListExportCallback, &data);
 
