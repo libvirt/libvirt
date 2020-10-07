@@ -442,9 +442,7 @@ virNetworkDHCPLeaseTimeDefParseXML(virNetworkDHCPLeaseTimeDefPtr *lease,
         }
     }
 
-    if (VIR_ALLOC(new_lease) < 0)
-        return -1;
-
+    new_lease = g_new0(virNetworkDHCPLeaseTimeDef, 1);
     new_lease->expiry = expiry;
     new_lease->unit = unit;
 
@@ -976,8 +974,7 @@ virNetworkDNSDefParseXML(const char *networkName,
         return -1;
     }
     if (nfwds > 0) {
-        if (VIR_ALLOC_N(def->forwarders, nfwds) < 0)
-            return -1;
+        def->forwarders = g_new0(virNetworkDNSForwarder, nfwds);
 
         for (i = 0; i < nfwds; i++) {
             g_autofree char *addr = virXMLPropString(fwdNodes[i], "addr");
@@ -1009,8 +1006,7 @@ virNetworkDNSDefParseXML(const char *networkName,
         return -1;
     }
     if (nhosts > 0) {
-        if (VIR_ALLOC_N(def->hosts, nhosts) < 0)
-            return -1;
+        def->hosts = g_new0(virNetworkDNSHostDef, nhosts);
 
         for (i = 0; i < nhosts; i++) {
             if (virNetworkDNSHostDefParseXML(networkName, hostNodes[i],
@@ -1029,8 +1025,7 @@ virNetworkDNSDefParseXML(const char *networkName,
         return -1;
     }
     if (nsrvs > 0) {
-        if (VIR_ALLOC_N(def->srvs, nsrvs) < 0)
-            return -1;
+        def->srvs = g_new0(virNetworkDNSSrvDef, nsrvs);
 
         for (i = 0; i < nsrvs; i++) {
             if (virNetworkDNSSrvDefParseXML(networkName, srvNodes[i], ctxt,
@@ -1049,8 +1044,7 @@ virNetworkDNSDefParseXML(const char *networkName,
         return -1;
     }
     if (ntxts > 0) {
-        if (VIR_ALLOC_N(def->txts, ntxts) < 0)
-            return -1;
+        def->txts = g_new0(virNetworkDNSTxtDef, ntxts);
 
         for (i = 0; i < ntxts; i++) {
             if (virNetworkDNSTxtDefParseXML(networkName, txtNodes[i],
@@ -1551,8 +1545,7 @@ virNetworkForwardDefParseXML(const char *networkName,
     }
 
     if (nForwardIfs > 0 || forwardDev) {
-        if (VIR_ALLOC_N(def->ifs, MAX(nForwardIfs, 1)) < 0)
-            return -1;
+        def->ifs = g_new0(virNetworkForwardIfDef, MAX(nForwardIfs, 1));
 
         if (forwardDev) {
             def->ifs[0].device.dev = g_steal_pointer(&forwardDev);
@@ -1603,8 +1596,7 @@ virNetworkForwardDefParseXML(const char *networkName,
         }
 
     } else if (nForwardAddrs > 0) {
-        if (VIR_ALLOC_N(def->ifs, nForwardAddrs) < 0)
-            return -1;
+        def->ifs = g_new0(virNetworkForwardIfDef, nForwardAddrs);
 
         for (i = 0; i < nForwardAddrs; i++) {
             g_autofree char *addrType = NULL;
@@ -1661,8 +1653,7 @@ virNetworkForwardDefParseXML(const char *networkName,
                        networkName);
         return -1;
     } else if (nForwardPfs == 1) {
-        if (VIR_ALLOC_N(def->pfs, nForwardPfs) < 0)
-            return -1;
+        def->pfs = g_new0(virNetworkForwardPfDef, nForwardPfs);
 
         forwardDev = virXMLPropString(*forwardPfNodes, "dev");
         if (!forwardDev) {
@@ -1707,8 +1698,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr vlanNode;
     xmlNodePtr metadataNode = NULL;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    def = g_new0(virNetworkDef, 1);
 
     /* Extract network name */
     def->name = virXPathString("string(./name[1])", ctxt);
@@ -1863,8 +1853,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
         size_t i;
 
         /* allocate array to hold all the portgroups */
-        if (VIR_ALLOC_N(def->portGroups, nPortGroups) < 0)
-            return NULL;
+        def->portGroups = g_new0(virPortGroupDef, nPortGroups);
         /* parse each portgroup */
         for (i = 0; i < nPortGroups; i++) {
             if (virNetworkPortGroupParseXML(&def->portGroups[i],
@@ -1883,8 +1872,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
         size_t i;
 
         /* allocate array to hold all the addrs */
-        if (VIR_ALLOC_N(def->ips, nips) < 0)
-            return NULL;
+        def->ips = g_new0(virNetworkIPDef, nips);
         /* parse each addr */
         for (i = 0; i < nips; i++) {
             if (virNetworkIPDefParseXML(def->name,
@@ -1904,8 +1892,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
         size_t i;
 
         /* allocate array to hold all the route definitions */
-        if (VIR_ALLOC_N(def->routes, nRoutes) < 0)
-            return NULL;
+        def->routes = g_new0(virNetDevIPRoutePtr, nRoutes);
         /* parse each definition */
         for (i = 0; i < nRoutes; i++) {
             virNetDevIPRoutePtr route = NULL;
