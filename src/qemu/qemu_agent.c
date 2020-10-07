@@ -2073,11 +2073,9 @@ qemuAgentGetInterfaceOneAddress(virDomainIPAddressPtr ip_addr,
                        _("qemu agent didn't provide 'ip-address-type'"
                          " field for interface '%s'"), name);
         return -1;
-    } else if (STREQ(type, "ipv4")) {
-        ip_addr->type = VIR_IP_ADDR_TYPE_IPV4;
-    } else if (STREQ(type, "ipv6")) {
-        ip_addr->type = VIR_IP_ADDR_TYPE_IPV6;
-    } else {
+    }
+
+    if (STRNEQ(type, "ipv4") && STRNEQ(type, "ipv6")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown ip address type '%s'"),
                        type);
@@ -2091,7 +2089,6 @@ qemuAgentGetInterfaceOneAddress(virDomainIPAddressPtr ip_addr,
                          " field for interface '%s'"), name);
         return -1;
     }
-    ip_addr->addr = g_strdup(addr);
 
     if (virJSONValueObjectGetNumberUint(ip_addr_obj, "prefix",
                                         &ip_addr->prefix) < 0) {
@@ -2100,6 +2097,12 @@ qemuAgentGetInterfaceOneAddress(virDomainIPAddressPtr ip_addr,
         return -1;
     }
 
+    if (STREQ(type, "ipv4"))
+        ip_addr->type = VIR_IP_ADDR_TYPE_IPV4;
+    else
+        ip_addr->type = VIR_IP_ADDR_TYPE_IPV6;
+
+    ip_addr->addr = g_strdup(addr);
     return 0;
 }
 
