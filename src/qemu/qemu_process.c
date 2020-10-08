@@ -6394,9 +6394,8 @@ static int
 qemuProcessPrepareSEVGuestInput(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainDefPtr def = vm->def;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
-    virDomainSEVDefPtr sev = def->sev;
+    virDomainSEVDefPtr sev = vm->def->sev;
 
     if (!sev)
         return 0;
