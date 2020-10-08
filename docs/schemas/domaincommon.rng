@@ -26,6 +26,12 @@
     </element>
   </define>
 
+  <define name="createMode">
+    <data type="unsignedInt">
+      <param name="pattern">0[0-7]{3}|[0-7]{1,3}</param>
+    </data>
+  </define>
+
   <!--
       We handle only document defining a domain
     -->
@@ -2744,6 +2750,16 @@
               <value>forbid</value>
               <value>warn</value>
             </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="fmode">
+            <ref name="createMode"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="dmode">
+            <ref name="createMode"/>
           </attribute>
         </optional>
         <optional>

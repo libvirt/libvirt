@@ -11476,6 +11476,8 @@ virDomainFSDefParseXML(virDomainXMLOptionPtr xmlopt,
     g_autofree char *units = NULL;
     g_autofree char *model = NULL;
     g_autofree char *multidevs = NULL;
+    g_autofree char *fmode = NULL;
+    g_autofree char *dmode = NULL;
 
     ctxt->node = node;
 
@@ -11502,6 +11504,26 @@ virDomainFSDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     } else {
         def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
+    }
+
+    fmode = virXMLPropString(node, "fmode");
+    if (fmode) {
+        if ((virStrToLong_uip(fmode, NULL, 8, &def->fmode) < 0) ||
+            (def->fmode > 0777)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid fmode: '%s'"), fmode);
+            goto error;
+        }
+    }
+
+    dmode = virXMLPropString(node, "dmode");
+    if (dmode) {
+        if ((virStrToLong_uip(dmode, NULL, 8, &def->dmode) < 0) ||
+            (def->dmode > 0777)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid dmode: '%s'"), dmode);
+            goto error;
+        }
     }
 
     model = virXMLPropString(node, "model");
@@ -26181,6 +26203,13 @@ virDomainFSDefFormat(virBufferPtr buf,
     }
     if (def->multidevs)
         virBufferAsprintf(buf, " multidevs='%s'", multidevs);
+
+    if (def->fmode)
+        virBufferAsprintf(buf, " fmode='%04o'", def->fmode);
+
+    if (def->dmode)
+        virBufferAsprintf(buf, " dmode='%04o'", def->dmode);
+
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 2);
