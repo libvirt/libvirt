@@ -3590,10 +3590,9 @@ static int
 remoteDispatchAuthList(virNetServerPtr server,
                        virNetServerClientPtr client,
                        virNetMessagePtr msg G_GNUC_UNUSED,
-                       virNetMessageErrorPtr rerr,
+                       virNetMessageErrorPtr rerr G_GNUC_UNUSED,
                        remote_auth_list_ret *ret)
 {
-    int rv = -1;
     int auth = virNetServerClientGetAuth(client);
     uid_t callerUid;
     gid_t callerGid;
@@ -3636,11 +3635,7 @@ remoteDispatchAuthList(virNetServerPtr server,
         break;
     }
 
-    rv = 0;
-
-    if (rv < 0)
-        virNetMessageSaveError(rerr);
-    return rv;
+    return 0;
 }
 
 
