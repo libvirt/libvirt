@@ -1678,7 +1678,7 @@ if not get_option('driver_network').disabled() and conf.has('WITH_LIBVIRTD') and
   conf.set('WITH_NETWORK', 1)
 endif
 
-if udev_dep.found()
+if udev_dep.found() and conf.has('WITH_LIBVIRTD')
   conf.set('WITH_NODE_DEVICES', 1)
 endif
 
