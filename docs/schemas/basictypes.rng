@@ -303,6 +303,12 @@
     </data>
   </define>
 
+  <define name="vmwarePath">
+    <data type="string">
+      <param name="pattern">\[[^\]]+\] .+</param>
+    </data>
+  </define>
+
   <define name="absDirPath">
     <data type="string">
       <param name="pattern">/.*</param>

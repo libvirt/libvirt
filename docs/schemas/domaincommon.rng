@@ -1652,7 +1652,10 @@
         <interleave>
           <optional>
             <attribute name="file">
-              <ref name="absFilePath"/>
+              <choice>
+                <ref name="absFilePath"/>
+                <ref name="vmwarePath"/>
+              </choice>
             </attribute>
           </optional>
           <ref name="diskSourceCommon"/>
