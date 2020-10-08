@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href="@SCHEMADIR@/basictypes.rng"/>
+  <include href="@SCHEMADIR@/cputypes.rng"/>
+
+  <start>
+    <ref name="cputestdata"/>
+  </start>
+
+  <define name="cputestdata">
+    <choice>
+      <ref name="guestcpu"/>
+      <ref name="hostcpu"/>
+      <ref name="cputest"/>
+      <ref name="cpudata"/>
+    </choice>
+  </define>
+
+  <define name="cputest">
+    <element name="cpuTest">
+      <oneOrMore>
+        <choice>
+          <ref name="guestcpu"/>
+          <ref name="hostcpu"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="cpudata">
+    <element name="cpudata">
+      <attribute name="arch">
+        <choice>
+          <value>x86</value>
+        </choice>
+      </attribute>
+      <interleave>
+        <oneOrMore>
+          <ref name="cpudata_cpuid"/>
+        </oneOrMore>
+        <zeroOrMore>
+          <ref name="cpudata_msr"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="cpudata_cpuid">
+    <element name="cpuid">
+      <attribute name="eax_in">
+        <ref name="hexuint"/>
+      </attribute>
+      <attribute name="ecx_in">
+        <ref name="hexuint"/>
+      </attribute>
+      <attribute name="eax">
+        <ref name="hexuint"/>
+      </attribute>
+      <attribute name="ebx">
+        <ref name="hexuint"/>
+      </attribute>
+      <attribute name="ecx">
+        <ref name="hexuint"/>
+      </attribute>
+      <attribute name="edx">
+        <ref name="hexuint"/>
+      </attribute>
+    </element>
+  </define>
+
+  <define name="cpudata_msr">
+    <element name="msr">
+      <attribute name="index">
+        <ref name="hexuint"/>
+      </attribute>
+      <attribute name="eax">
+        <ref name="hexuint"/>
+      </attribute>
+      <attribute name="edx">
+        <ref name="hexuint"/>
+      </attribute>
+    </element>
+  </define>
+</grammar>

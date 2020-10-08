@@ -318,13 +318,8 @@ static const struct testSchemaEntry schemaStorageVol[] = {
     { .file = "examples/xml/test/testvol.xml" },
 };
 
-static const struct testSchemaEntry schemaCpu[] = {
-    { . dir = "tests/cputestdata",
-      . dirRegex = "^[^-]+-cpuid-.*(-host|-guest|-json)\\.xml$" },
-    { . dir = "tests/cputestdata",
-      . dirRegex = "^[^-]+-baseline-.*-result\\.xml$" },
-    { . dir = "tests/cputestdata",
-      . dirRegex = "^[^-]+-(?!cpuid|baseline).*$" },
+static const struct testSchemaEntry testsCpuBaseline[] = {
+    { . dir = "tests/cputestdata" },
 };
 
 static int
@@ -333,6 +328,7 @@ mymain(void)
     int ret = 0;
 
 #define SCHEMAS_PATH abs_top_srcdir "/src/conf/schemas/"
+#define INTERNAL_SCHEMAS_PATH abs_builddir "/schemas/"
 
 #define DO_TEST(sch, ent) \
     if (testSchemaEntries((sch), (ent), G_N_ELEMENTS(ent)) < 0) \
@@ -354,7 +350,8 @@ mymain(void)
     DO_TEST(SCHEMAS_PATH "storagepoolcaps.rng", schemaStoragepoolcaps);
     DO_TEST(SCHEMAS_PATH "storagepool.rng", schemaStoragePool);
     DO_TEST(SCHEMAS_PATH "storagevol.rng", schemaStorageVol);
-    DO_TEST(SCHEMAS_PATH "cpu.rng", schemaCpu);
+
+    DO_TEST(INTERNAL_SCHEMAS_PATH "cpu-baseline.rng", testsCpuBaseline);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

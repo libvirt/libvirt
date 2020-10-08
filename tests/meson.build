@@ -208,6 +208,7 @@ tests_deps += executable(
   ],
 )
 
+subdir('schemas')
 
 # build and define libvirt tests
 
