@@ -6684,11 +6684,6 @@ remoteDispatchNodeGetFreePages(virNetServerPtr server G_GNUC_UNUSED,
 static int
 remoteSerializeDHCPLease(remote_network_dhcp_lease *lease_dst, virNetworkDHCPLeasePtr lease_src)
 {
-    char **mac_tmp = NULL;
-    char **iaid_tmp = NULL;
-    char **hostname_tmp = NULL;
-    char **clientid_tmp = NULL;
-
     lease_dst->expirytime = lease_src->expirytime;
     lease_dst->type = lease_src->type;
     lease_dst->prefix = lease_src->prefix;
@@ -6697,49 +6692,23 @@ remoteSerializeDHCPLease(remote_network_dhcp_lease *lease_dst, virNetworkDHCPLea
     lease_dst->ipaddr = g_strdup(lease_src->ipaddr);
 
     if (lease_src->mac) {
-        if (VIR_ALLOC(mac_tmp) < 0)
-            goto error;
-        *mac_tmp = g_strdup(lease_src->mac);
+        lease_dst->mac = g_new0(char *, 1);
+        *lease_dst->mac = g_strdup(lease_src->mac);
     }
     if (lease_src->iaid) {
-        if (VIR_ALLOC(iaid_tmp) < 0)
-            goto error;
-        *iaid_tmp = g_strdup(lease_src->iaid);
+        lease_dst->iaid = g_new0(char *, 1);
+        *lease_dst->iaid = g_strdup(lease_src->iaid);
     }
     if (lease_src->hostname) {
-        if (VIR_ALLOC(hostname_tmp) < 0)
-            goto error;
-        *hostname_tmp = g_strdup(lease_src->hostname);
+        lease_dst->hostname = g_new0(char *, 1);
+        *lease_dst->hostname = g_strdup(lease_src->hostname);
     }
     if (lease_src->clientid) {
-        if (VIR_ALLOC(clientid_tmp) < 0)
-            goto error;
-        *clientid_tmp = g_strdup(lease_src->clientid);
+        lease_dst->clientid = g_new0(char *, 1);
+        *lease_dst->clientid = g_strdup(lease_src->clientid);
     }
 
-    lease_dst->mac = mac_tmp;
-    lease_dst->iaid = iaid_tmp;
-    lease_dst->hostname = hostname_tmp;
-    lease_dst->clientid = clientid_tmp;
-
     return 0;
-
- error:
-    if (mac_tmp)
-        VIR_FREE(*mac_tmp);
-    if (iaid_tmp)
-        VIR_FREE(*iaid_tmp);
-    if (hostname_tmp)
-        VIR_FREE(*hostname_tmp);
-    if (clientid_tmp)
-        VIR_FREE(*clientid_tmp);
-    VIR_FREE(mac_tmp);
-    VIR_FREE(iaid_tmp);
-    VIR_FREE(hostname_tmp);
-    VIR_FREE(clientid_tmp);
-    VIR_FREE(lease_dst->ipaddr);
-    VIR_FREE(lease_dst->iface);
-    return -1;
 }
 
 
