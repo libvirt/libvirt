@@ -1220,14 +1220,14 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-device-lun-type-invalid",
                         QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-attaching-partition-nosupport");
-    DO_TEST_FAILURE("disk-usb-nosupport", NONE);
+    DO_TEST_PARSE_ERROR("disk-usb-nosupport", NONE);
     DO_TEST("disk-usb-device",
             QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST("disk-usb-device-removable",
             QEMU_CAPS_DEVICE_USB_STORAGE,
             QEMU_CAPS_USB_STORAGE_REMOVABLE);
-    DO_TEST_FAILURE("disk-usb-pci",
-                    QEMU_CAPS_DEVICE_USB_STORAGE);
+    DO_TEST_PARSE_ERROR("disk-usb-pci",
+                        QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST_CAPS_LATEST("disk-scsi");
     DO_TEST_CAPS_VER("disk-scsi-device-auto", "1.5.3");
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");

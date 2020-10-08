@@ -1693,19 +1693,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_DISK_BUS_USB:
-        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-            disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("unexpected address type for usb disk"));
-            return NULL;
-        }
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("This QEMU doesn't support '-device "
-                             "usb-storage'"));
-            return NULL;
-
-        }
         virBufferAddLit(&opt, "usb-storage");
 
         if (qemuBuildDeviceAddressStr(&opt, def, &disk->info, qemuCaps) < 0)
@@ -1772,13 +1759,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                 virBufferAddLit(&opt, ",removable=on");
             else
                 virBufferAddLit(&opt, ",removable=off");
-        } else {
-            if (disk->removable != VIR_TRISTATE_SWITCH_ABSENT) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("This QEMU doesn't support setting the "
-                                 "removable flag of USB storage devices"));
-                return NULL;
-            }
         }
     }
 

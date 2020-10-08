@@ -328,9 +328,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-aio-io_uring");
     DO_TEST("disk-cdrom", NONE);
     DO_TEST_CAPS_LATEST("disk-cdrom-empty-network-invalid");
-    DO_TEST("disk-cdrom-bus-other", NONE);
+    DO_TEST("disk-cdrom-bus-other", QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST("disk-floppy", NONE);
-    DO_TEST("disk-usb-device", NONE);
+    DO_TEST("disk-usb-device", QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST("disk-virtio", NONE);
     DO_TEST("floppy-drive-fat", NONE);
     DO_TEST("disk-virtio-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);

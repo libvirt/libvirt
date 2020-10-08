@@ -2272,6 +2272,31 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         }
         break;
 
+    case VIR_DOMAIN_DISK_BUS_USB:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support '-device "
+                             "usb-storage'"));
+            return -1;
+        }
+
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("unexpected address type for usb disk"));
+            return -1;
+        }
+
+        if (disk->removable != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_REMOVABLE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support setting the "
+                             "removable flag of USB storage devices"));
+            return -1;
+        }
+
+        break;
+
     case VIR_DOMAIN_DISK_BUS_XEN:
     case VIR_DOMAIN_DISK_BUS_SD:
         break;
