@@ -1153,7 +1153,6 @@ endif
 libxml_version = '2.9.1'
 libxml_dep = dependency('libxml-2.0', version: '>=' + libxml_version)
 
-cc = meson.get_compiler('c')
 m_dep = cc.find_library('m', required : false)
 
 netcf_version = '0.1.8'
