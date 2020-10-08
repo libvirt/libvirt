@@ -344,7 +344,8 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-cache", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cache");
     DO_TEST("disk-network-nbd", NONE);
-    DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI,
+            QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("disk-network-gluster", NONE);
     DO_TEST("disk-network-rbd", NONE);
     DO_TEST("disk-network-source-auth", NONE);
@@ -355,7 +356,9 @@ mymain(void)
     DO_TEST("disk-nvme", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_QCOW2_LUKS);
     DO_TEST_CAPS_LATEST("disk-scsi");
     DO_TEST("disk-virtio-scsi-reservations",
-            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_PR_MANAGER_HELPER);
+            QEMU_CAPS_VIRTIO_SCSI,
+            QEMU_CAPS_PR_MANAGER_HELPER,
+            QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("controller-virtio-scsi", QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-s390-zpci",
             QEMU_CAPS_DEVICE_ZPCI,
@@ -660,7 +663,10 @@ mymain(void)
     DO_TEST("numad-static-vcpu-no-numatune", NONE);
 
     DO_TEST("disk-scsi-lun-passthrough-sgio",
-            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
+            QEMU_CAPS_SCSI_LSI,
+            QEMU_CAPS_VIRTIO_SCSI,
+            QEMU_CAPS_SCSI_DISK_WWN,
+            QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("disk-scsi-disk-vpd",
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-source-pool", NONE);

@@ -1561,12 +1561,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
 
     switch ((virDomainDiskBus) disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
-        if (disk->info.addr.drive.target != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("target must be 0 for ide controller"));
-            return NULL;
-        }
-
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
             virBufferAddLit(&opt, "ide-cd");
         else
@@ -1590,15 +1584,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_DISK_BUS_SCSI:
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_BLOCK)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("This QEMU doesn't support scsi-block for "
-                                 "lun passthrough"));
-                return NULL;
-            }
-        }
-
         controllerModel = qemuDomainFindSCSIControllerModel(def, &disk->info);
         if (controllerModel < 0)
             return NULL;

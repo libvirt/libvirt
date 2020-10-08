@@ -2112,6 +2112,15 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
             return -1;
         }
 
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_BLOCK)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support scsi-block for "
+                             "lun passthrough"));
+            return -1;
+        }
+
+
         if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("copy_on_read is not compatible with 'lun' disk '%s'"),
@@ -2163,6 +2172,11 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         if (disk->info.addr.drive.controller != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Only 1 IDE controller is supported"));
+            return -1;
+        }
+        if (disk->info.addr.drive.target != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("target must be 0 for ide controller"));
             return -1;
         }
         break;
