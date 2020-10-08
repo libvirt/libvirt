@@ -3062,6 +3062,12 @@ A directory on the host that can be accessed directly from the guest.
        <target dir='/import/from/host'/>
        <readonly/>
      </filesystem>
+     <filesystem type='mount' accessmode='mapped' fmode='644' dmode='755'>
+       <driver type='path'/>
+       <source dir='/export/to/guest'/>
+       <target dir='/import/from/host'/>
+       <readonly/>
+     </filesystem>
      <filesystem type='file' accessmode='passthrough'>
        <driver type='loop' format='raw'/>
        <source file='/export/to/guest.img'/>
@@ -3139,6 +3145,13 @@ A directory on the host that can be accessed directly from the guest.
    ``model`` with supported values "virtio-transitional",
    "virtio-non-transitional", or "virtio". See `Virtio transitional
    devices <#elementsVirtioTransitional>`__ for more details.
+
+   The filesystem element has optional attributes ``fmode`` and ``dmode``.
+   These two attributes control the creation mode for files and directories
+   when used with the ``mapped`` value for ``accessmode`` (:since:`since 6.10.0,
+   requires QEMU 2.10` ).  If not specified, QEMU creates files with mode
+   ``600`` and directories with mode ``700``. The setuid, setgid, and sticky
+   bit are unsupported.
 
    The filesystem element has an optional attribute ``multidevs`` which
    specifies how to deal with a filesystem export containing more than one
