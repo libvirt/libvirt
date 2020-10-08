@@ -1683,13 +1683,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         }
 
         if (disk->queues) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("num-queues property isn't supported by this "
-                                 "QEMU binary"));
-                return NULL;
-            }
-
             virBufferAsprintf(&opt, ",num-queues=%u", disk->queues);
         }
 
