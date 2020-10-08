@@ -1066,9 +1066,9 @@ gnutls_dep = dependency('gnutls', version: '>=' + gnutls_version)
 
 # Check for BSD kvm (kernel memory interface)
 if host_machine.system() == 'freebsd'
-  kvm_dep = cc.find_library('kvm')
+  libkvm_dep = cc.find_library('kvm')
 else
-  kvm_dep = dependency('', required: false)
+  libkvm_dep = dependency('', required: false)
 endif
 
 libiscsi_version = '1.18.0'
@@ -1160,7 +1160,7 @@ endif
 libxml_version = '2.9.1'
 libxml_dep = dependency('libxml-2.0', version: '>=' + libxml_version)
 
-m_dep = cc.find_library('m', required : false)
+libm_dep = cc.find_library('m', required : false)
 
 netcf_version = '0.1.8'
 netcf_dep = dependency('netcf', version: '>=' + netcf_version, required: get_option('netcf'))
@@ -1372,7 +1372,7 @@ if udev_dep.found()
   conf.set('WITH_UDEV', 1)
 endif
 
-util_dep = cc.find_library('util', required: false)
+libutil_dep = cc.find_library('util', required: false)
 
 if host_machine.system() == 'windows'
   ole32_dep = cc.find_library('ole32')
