@@ -1614,8 +1614,6 @@ vir_g_strdup_vprintf;
 
 
 # util/viralloc.h
-virAlloc;
-virAllocN;
 virAllocVar;
 virDeleteElementsN;
 virDispose;

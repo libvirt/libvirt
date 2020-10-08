@@ -34,10 +34,6 @@
  */
 
 /* Don't call these directly - use the macros below */
-int virAlloc(void *ptrptr, size_t size)
-    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
-int virAllocN(void *ptrptr, size_t size, size_t count)
-    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
 int virReallocN(void *ptrptr, size_t size, size_t count)
     G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
 int virExpandN(void *ptrptr, size_t size, size_t *count, size_t add)
@@ -60,35 +56,6 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
     ATTRIBUTE_NONNULL(1);
 void virDisposeString(char **strptr)
     ATTRIBUTE_NONNULL(1);
-
-/**
- * VIR_ALLOC:
- * @ptr: pointer to hold address of allocated memory
- *
- * Allocate sizeof(*ptr) bytes of memory and store
- * the address of allocated memory in 'ptr'. Fill the
- * newly allocated memory with zeros.
- *
- * This macro is safe to use on arguments with side effects.
- *
- * Returns 0 on success, aborts on OOM
- */
-#define VIR_ALLOC(ptr) virAlloc(&(ptr), sizeof(*(ptr)))
-
-/**
- * VIR_ALLOC_N:
- * @ptr: pointer to hold address of allocated memory
- * @count: number of elements to allocate
- *
- * Allocate an array of 'count' elements, each sizeof(*ptr)
- * bytes long and store the address of allocated memory in
- * 'ptr'. Fill the newly allocated memory with zeros.
- *
- * This macro is safe to use on arguments with side effects.
- *
- * Returns 0 on success, aborts on OOM
- */
-#define VIR_ALLOC_N(ptr, count) virAllocN(&(ptr), sizeof(*(ptr)), (count))
 
 /**
  * VIR_REALLOC_N:

@@ -32,45 +32,6 @@ VIR_LOG_INIT("util.alloc");
 
 
 /**
- * virAlloc:
- * @ptrptr: pointer to pointer for address of allocated memory
- * @size: number of bytes to allocate
- *
- * Allocate  'size' bytes of memory. Return the address of the
- * allocated memory in 'ptrptr'. The newly allocated memory is
- * filled with zeros.
- *
- * Returns zero on success, aborts on OOM
- */
-int virAlloc(void *ptrptr,
-             size_t size)
-{
-    *(void **)ptrptr = g_malloc0(size);
-    return 0;
-}
-
-/**
- * virAllocN:
- * @ptrptr: pointer to pointer for address of allocated memory
- * @size: number of bytes to allocate
- * @count: number of elements to allocate
- *
- * Allocate an array of memory 'count' elements long,
- * each with 'size' bytes. Return the address of the
- * allocated memory in 'ptrptr'.  The newly allocated
- * memory is filled with zeros.
- *
- * Returns zero on success, aborts on OOM
- */
-int virAllocN(void *ptrptr,
-              size_t size,
-              size_t count)
-{
-    *(void**)ptrptr = g_malloc0_n(count, size);
-    return 0;
-}
-
-/**
  * virReallocN:
  * @ptrptr: pointer to pointer for address of allocated memory
  * @size: number of bytes to allocate
