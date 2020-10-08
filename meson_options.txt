@@ -61,7 +61,7 @@ option('driver_remote', type: 'feature', value: 'enabled', description: 'remote 
 option('remote_default_mode', type: 'combo', choices: ['legacy', 'direct'], value: 'legacy', description: 'remote driver default mode')
 option('driver_secrets', type: 'feature', value: 'auto', description: 'local secrets management driver')
 option('driver_test', type: 'feature', value: 'enabled', description: 'test driver')
-option('driver_vbox', type: 'feature', value: 'enabled', description: 'VirtualBox XPCOMC driver')
+option('driver_vbox', type: 'feature', value: 'auto', description: 'VirtualBox XPCOMC driver')
 option('vbox_xpcomc_dir', type: 'string', value: '', description: 'Location of directory containing VirtualBox XPCOMC library')
 option('driver_vmware', type: 'feature', value: 'auto', description: 'VMware driver')
 option('driver_vz', type: 'feature', value: 'auto', description: 'Virtuozzo driver')
