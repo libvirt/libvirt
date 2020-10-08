@@ -51,24 +51,13 @@ stages:
     - *script_variables
   script:
     - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - ninja -C build dist
-
-# Default native build job only for CentOS 7 that is always run
-# meson dist fails on CentOS 7 because of old git that fails to clone
-# from shallow git repository which is done when running meson dist
-.native_build_centos_7_job_template: &native_build_centos_7_job_definition
-  stage: builds
-  image: $CI_REGISTRY_IMAGE/ci-$NAME:latest
-  cache:
-    paths:
-      - ccache/
-    key: "$CI_JOB_NAME"
-  before_script:
-    - *script_variables
-  script:
-    - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - ninja -C build
-    - ninja -C build test
+    - if test "$DIST" != "skip";
+      then
+        ninja -C build dist;
+      else
+        ninja -C build;
+        ninja -C build test;
+      fi
 
 # Jobs that we delegate to Cirrus CI because they require an operating
 # system other than Linux. These jobs will only run if the required
@@ -305,11 +294,14 @@ x64-debian-sid:
     NAME: debian-sid
 
 x64-centos-7:
-  <<: *native_build_centos_7_job_definition
+  <<: *native_build_job_definition
   needs:
     - x64-centos-7-container
   variables:
     NAME: centos-7
+    # meson dist fails on CentOS 7 because of old git that fails to clone
+    # from shallow git repository which is done when running meson dist
+    DIST: skip
 
 x64-centos-8:
   <<: *native_build_job_definition
