@@ -313,6 +313,7 @@ int virNetDevRunEthernetScript(const char *ifname, const char *script)
     G_GNUC_NO_INLINE;
 
 int virNetDevSetRootQDisc(const char *ifname,
-                          const char *qdisc);
+                          const char *qdisc)
+    G_GNUC_NO_INLINE;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetDevRxFilter, virNetDevRxFilterFree);

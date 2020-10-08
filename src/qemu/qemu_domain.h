@@ -1046,3 +1046,7 @@ qemuDomainOpenFile(virQEMUDriverPtr driver,
 int
 qemuDomainFileWrapperFDClose(virDomainObjPtr vm,
                              virFileWrapperFdPtr fd);
+
+int
+qemuDomainInterfaceSetDefaultQDisc(virQEMUDriverPtr driver,
+                                   virDomainNetDefPtr net);

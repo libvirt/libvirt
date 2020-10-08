@@ -8267,6 +8267,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         }
     }
 
+    qemuDomainInterfaceSetDefaultQDisc(driver, net);
+
     if (net->mtu &&
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;

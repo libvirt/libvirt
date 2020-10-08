@@ -286,3 +286,11 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev G_GNUC_UNUSED,
     *cancelfd = 1731;
     return 0;
 }
+
+
+int
+virNetDevSetRootQDisc(const char *ifname G_GNUC_UNUSED,
+                      const char *qdisc G_GNUC_UNUSED)
+{
+    return 0;
+}

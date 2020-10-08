@@ -11049,3 +11049,39 @@ qemuDomainFileWrapperFDClose(virDomainObjPtr vm,
     }
     return ret;
 }
+
+
+/**
+ * qemuDomainInterfaceSetDefaultQDisc:
+ * @driver: QEMU driver
+ * @net: domain interface
+ *
+ * Set the noqueue qdisc on @net if running as privileged. The
+ * noqueue qdisc is a lockless transmit and thus faster than the
+ * default pfifo_fast (at least in theory). But we can modify
+ * root qdisc only if we have CAP_NET_ADMIN.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
+int
+qemuDomainInterfaceSetDefaultQDisc(virQEMUDriverPtr driver,
+                                   virDomainNetDefPtr net)
+{
+    virDomainNetType actualType = virDomainNetGetActualType(net);
+
+    if (!driver->privileged || !net->ifname)
+        return 0;
+
+    /* We want only those types which are represented as TAP
+     * devices in the host. */
+    if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
+        actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+        actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+        actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        if (virNetDevSetRootQDisc(net->ifname, "noqueue") < 0)
+            return -1;
+    }
+
+    return 0;
+}

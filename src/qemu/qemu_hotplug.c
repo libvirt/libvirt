@@ -1368,6 +1368,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;
 
+    qemuDomainInterfaceSetDefaultQDisc(driver, net);
+
     for (i = 0; i < tapfdSize; i++) {
         if (qemuSecuritySetTapFDLabel(driver->securityManager,
                                       vm->def, tapfd[i]) < 0)
