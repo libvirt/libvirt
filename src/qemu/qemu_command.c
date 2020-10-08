@@ -1567,14 +1567,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             return NULL;
         }
 
-        if (disk->wwn &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_IDE_DRIVE_WWN)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Setting wwn for ide disk is not supported "
-                             "by this QEMU"));
-            return NULL;
-        }
-
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
             virBufferAddLit(&opt, "ide-cd");
         else
@@ -1605,25 +1597,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                                  "lun passthrough"));
                 return NULL;
             }
-        }
-
-        if (disk->wwn &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_WWN)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Setting wwn for scsi disk is not supported "
-                             "by this QEMU"));
-            return NULL;
-        }
-
-        /* Properties wwn, vendor and product were introduced in the
-         * same QEMU release (1.2.0).
-         */
-        if ((disk->vendor || disk->product) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_WWN)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Setting vendor or product for scsi disk is not "
-                             "supported by this QEMU"));
-            return NULL;
         }
 
         controllerModel = qemuDomainFindSCSIControllerModel(def, &disk->info);

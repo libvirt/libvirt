@@ -2066,13 +2066,40 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
                            _("Only ide and scsi disk support wwn"));
             return -1;
         }
+
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_IDE_DRIVE_WWN)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting wwn for ide disk is not supported "
+                             "by this QEMU"));
+            return -1;
+        }
+
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_WWN)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting wwn for scsi disk is not supported "
+                             "by this QEMU"));
+            return -1;
+        }
     }
 
-    if ((disk->vendor || disk->product) &&
-        disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
+    if (disk->vendor || disk->product) {
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only scsi disk supports vendor and product"));
             return -1;
+        }
+
+        /* Properties wwn, vendor and product were introduced in the
+         * same QEMU release (1.2.0).
+         */
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_WWN)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting vendor or product for scsi disk is not "
+                             "supported by this QEMU"));
+            return -1;
+        }
     }
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {

@@ -2252,7 +2252,9 @@ mymain(void)
     DO_TEST_PARSE_ERROR("mach-virt-serial-invalid-machine", NONE);
 
     DO_TEST("disk-ide-split", NONE);
-    DO_TEST("disk-ide-wwn", QEMU_CAPS_IDE_DRIVE_WWN);
+    DO_TEST("disk-ide-wwn",
+            QEMU_CAPS_IDE_DRIVE_WWN,
+            QEMU_CAPS_SCSI_DISK_WWN);
 
     DO_TEST("disk-geometry", NONE);
     DO_TEST("disk-blockio", QEMU_CAPS_BLOCKIO);
