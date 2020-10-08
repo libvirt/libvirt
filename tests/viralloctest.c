@@ -117,8 +117,7 @@ testReallocArray(const void *opaque G_GNUC_UNUSED)
     size_t nt = 10, i;
     int ret = -1;
 
-    if (VIR_ALLOC_N(t, nt) < 0)
-        return -1;
+    t = g_new0(testDummyStruct, nt);
 
     if (testCheckNonNull(t) < 0)
         goto cleanup;
@@ -191,8 +190,7 @@ testExpandArray(const void *opaque G_GNUC_UNUSED)
     size_t nt = 10, i;
     int ret = -1;
 
-    if (VIR_ALLOC_N(t, nt) < 0)
-        return -1;
+    t = g_new0(testDummyStruct, nt);
 
     if (testCheckNonNull(t) < 0)
         goto cleanup;
@@ -271,8 +269,7 @@ testResizeArray(const void *opaque G_GNUC_UNUSED)
     size_t nt = 10, at, i;
     int ret = -1;
 
-    if (VIR_ALLOC_N(t, nt) < 0)
-        return -1;
+    t = g_new0(testDummyStruct, nt);
 
     at = nt;
 
@@ -333,8 +330,7 @@ testInsertArray(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     testDummyStruct *n = (void *)0xff;
 
-    if (VIR_ALLOC_N(t, nt) < 0)
-        return -1;
+    t = g_new0(testDummyStruct, nt);
 
     if (testCheckNonNull(t) < 0)
         goto cleanup;
@@ -398,14 +394,12 @@ testDispose(const void *opaque G_GNUC_UNUSED)
     nnums = 10;
     VIR_DISPOSE_N(nums, nnums);
 
-    if (VIR_ALLOC(num) < 0)
-        return -1;
+    num = g_new0(int, 1);
 
     VIR_DISPOSE(num);
 
     nnums = 10;
-    if (VIR_ALLOC_N(nums, nnums) < 0)
-        return -1;
+    nums = g_new0(int, nnums);
 
     VIR_DISPOSE_N(nums, nnums);
 
