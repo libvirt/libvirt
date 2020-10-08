@@ -8,6 +8,7 @@ option('test_coverage', type: 'boolean', value: false, description: 'turn on cod
 option('git_werror', type: 'feature', value: 'auto', description: 'use -Werror if building from GIT')
 option('rpath', type: 'feature', value: 'auto', description: 'whether to include rpath information in installed binaries and libraries')
 option('docs', type: 'feature', value: 'auto', description: 'whether to generate documentation')
+option('tests', type: 'feature', value: 'auto', description: 'whether to build tests')
 
 
 # build dependencies options

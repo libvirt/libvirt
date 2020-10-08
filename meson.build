@@ -2197,7 +2197,10 @@ subdir('src')
 
 subdir('tools')
 
-subdir('tests')
+build_tests = not get_option('tests').disabled()
+if build_tests
+  subdir('tests')
+endif
 
 subdir('examples')
 
@@ -2432,6 +2435,7 @@ misc_summary = {
   'Use -Werror': cc_flags.contains('-Werror'),
   'Warning Flags': supported_cc_flags,
   'docs': gen_docs,
+  'tests': build_tests,
   'DTrace': conf.has('WITH_DTRACE_PROBES'),
   'firewalld': conf.has('WITH_FIREWALLD'),
   'firewalld-zone': conf.has('WITH_FIREWALLD_ZONE'),

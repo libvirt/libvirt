@@ -1185,6 +1185,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dexpensive_tests=enabled \
            -Dinit_script=systemd \
            -Ddocs=enabled \
+           -Dtests=enabled \
            %{?arg_login_shell}
 
 %meson_build
