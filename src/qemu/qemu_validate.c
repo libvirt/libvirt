@@ -2004,8 +2004,12 @@ qemuValidateDomainDeviceDefDiskSerial(const char *value)
 
 static int
 qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
+                                        const virDomainDef *def,
                                         virQEMUCapsPtr qemuCaps)
 {
+    virDomainDeviceInfoPtr diskInfo;
+    int cModel;
+
     if (disk->geometry.cylinders > 0 &&
         disk->geometry.heads > 0 &&
         disk->geometry.sectors > 0) {
@@ -2146,6 +2150,9 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
+        diskInfo = (virDomainDeviceInfoPtr)&disk->info;
+        cModel = qemuDomainFindSCSIControllerModel(def, diskInfo);
+
         if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unexpected address type for scsi disk"));
@@ -2159,6 +2166,36 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("SCSI controller only supports 1 bus"));
             return -1;
+        }
+
+        /* We allow hotplug/hotunplug disks without a controller,
+         * hence we don't error out if cModel is < 0. These
+         * validations were originally made under the assumption of
+         * a controller being found though. */
+        if (cModel > 0) {
+            if (cModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
+                if (disk->info.addr.drive.target != 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("target must be 0 for controller "
+                                     "model 'lsilogic'"));
+                    return -1;
+                }
+            } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_CHANNEL)) {
+                if (disk->info.addr.drive.target > 7) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("This QEMU doesn't support target "
+                                     "greater than 7"));
+                    return -1;
+                }
+
+                if (disk->info.addr.drive.bus != 0 &&
+                    disk->info.addr.drive.unit != 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("This QEMU only supports both bus and "
+                                     "unit equal to 0"));
+                    return -1;
+                }
+            }
         }
         break;
 
@@ -2433,7 +2470,7 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
     int idx;
     int partition;
 
-    if (qemuValidateDomainDeviceDefDiskFrontend(disk, qemuCaps) < 0)
+    if (qemuValidateDomainDeviceDefDiskFrontend(disk, def, qemuCaps) < 0)
         return -1;
 
     if (qemuValidateDomainDeviceDefDiskBlkdeviotune(disk, def, qemuCaps) < 0)

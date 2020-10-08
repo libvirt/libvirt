@@ -1616,35 +1616,11 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
            return NULL;
 
         if (controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
-            if (disk->info.addr.drive.target != 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("target must be 0 for controller "
-                                 "model 'lsilogic'"));
-                return NULL;
-            }
-
             virBufferAsprintf(&opt, ",bus=%s.%d,scsi-id=%d",
                               contAlias,
                               disk->info.addr.drive.bus,
                               disk->info.addr.drive.unit);
         } else {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_CHANNEL)) {
-                if (disk->info.addr.drive.target > 7) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("This QEMU doesn't support target "
-                                     "greater than 7"));
-                    return NULL;
-                }
-
-                if (disk->info.addr.drive.bus != 0 &&
-                    disk->info.addr.drive.unit != 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("This QEMU only supports both bus and "
-                                     "unit equal to 0"));
-                    return NULL;
-                }
-            }
-
             virBufferAsprintf(&opt, ",bus=%s.0,channel=%d,scsi-id=%d,lun=%d",
                               contAlias,
                               disk->info.addr.drive.bus,
