@@ -2491,7 +2491,9 @@ struct _virDomainSEVDef {
     char *dh_cert;
     char *session;
     unsigned int policy;
+    bool haveCbitpos;
     unsigned int cbitpos;
+    bool haveReducedPhysBits;
     unsigned int reduced_phys_bits;
 };
 
