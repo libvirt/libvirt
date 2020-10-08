@@ -227,28 +227,8 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 
 %dir %{mingw32_datadir}/libvirt/
 %dir %{mingw32_datadir}/libvirt/schemas/
-%{mingw32_datadir}/libvirt/schemas/basictypes.rng
-%{mingw32_datadir}/libvirt/schemas/capability.rng
-%{mingw32_datadir}/libvirt/schemas/cputypes.rng
-%{mingw32_datadir}/libvirt/schemas/domain.rng
-%{mingw32_datadir}/libvirt/schemas/domainbackup.rng
-%{mingw32_datadir}/libvirt/schemas/domaincaps.rng
-%{mingw32_datadir}/libvirt/schemas/domaincheckpoint.rng
-%{mingw32_datadir}/libvirt/schemas/domaincommon.rng
-%{mingw32_datadir}/libvirt/schemas/domainsnapshot.rng
-%{mingw32_datadir}/libvirt/schemas/interface.rng
-%{mingw32_datadir}/libvirt/schemas/network.rng
-%{mingw32_datadir}/libvirt/schemas/networkcommon.rng
-%{mingw32_datadir}/libvirt/schemas/networkport.rng
-%{mingw32_datadir}/libvirt/schemas/nodedev.rng
-%{mingw32_datadir}/libvirt/schemas/nwfilter.rng
-%{mingw32_datadir}/libvirt/schemas/nwfilter_params.rng
-%{mingw32_datadir}/libvirt/schemas/nwfilterbinding.rng
-%{mingw32_datadir}/libvirt/schemas/secret.rng
-%{mingw32_datadir}/libvirt/schemas/storagecommon.rng
-%{mingw32_datadir}/libvirt/schemas/storagepool.rng
-%{mingw32_datadir}/libvirt/schemas/storagepoolcaps.rng
-%{mingw32_datadir}/libvirt/schemas/storagevol.rng
+%{mingw32_datadir}/libvirt/schemas/*.rng
+
 %dir %{mingw32_datadir}/libvirt/api/
 %{mingw32_datadir}/libvirt/api/libvirt-api.xml
 %{mingw32_datadir}/libvirt/api/libvirt-lxc-api.xml
