@@ -1101,17 +1101,22 @@ if libparted_dep.found()
 endif
 
 libpcap_version = '1.5.0'
-libpcap_dep = dependency('libpcap', version: '>=' + libpcap_version, required: false)
-if not libpcap_dep.found()
-  pcap_config_prog = find_program('pcap-config', required: get_option('libpcap'))
-  if pcap_config_prog.found()
-    pcap_args = run_command(pcap_config_prog, '--cflags').stdout().strip().split()
-    pcap_libs = run_command(pcap_config_prog, '--libs').stdout().strip().split()
-    libpcap_dep = declare_dependency(
-      compile_args: pcap_args,
-      link_args: pcap_libs,
-    )
+if not get_option('libpcap').disabled()
+  libpcap_dep = dependency('libpcap', version: '>=' + libpcap_version, required: false)
+
+  if not libpcap_dep.found()
+    pcap_config_prog = find_program('pcap-config', required: get_option('libpcap'))
+    if pcap_config_prog.found()
+      pcap_args = run_command(pcap_config_prog, '--cflags').stdout().strip().split()
+      pcap_libs = run_command(pcap_config_prog, '--libs').stdout().strip().split()
+      libpcap_dep = declare_dependency(
+        compile_args: pcap_args,
+        link_args: pcap_libs,
+      )
+    endif
   endif
+else
+  libpcap_dep = dependency('', required: false)
 endif
 if libpcap_dep.found()
   conf.set('WITH_LIBPCAP', 1)
