@@ -399,7 +399,7 @@ BuildRequires: rpcgen
 
 BuildRequires: libtirpc-devel
 
-# Needed for the %firewalld_reload macro
+# Needed for the firewalld_reload macro
 %if %{with_firewalld_zone}
 BuildRequires: firewalld-filesystem
 %endif
