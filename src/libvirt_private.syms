@@ -2580,6 +2580,7 @@ virNetDevSetOnline;
 virNetDevSetPromiscuous;
 virNetDevSetRcvAllMulti;
 virNetDevSetRcvMulti;
+virNetDevSetRootQDisc;
 virNetDevSetupControl;
 virNetDevSysfsFile;
 virNetDevValidateConfig;
