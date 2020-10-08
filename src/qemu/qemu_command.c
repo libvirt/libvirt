@@ -1634,17 +1634,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_DISK_BUS_SATA:
-        if (disk->info.addr.drive.bus != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("bus must be 0 for ide controller"));
-            return NULL;
-        }
-        if (disk->info.addr.drive.target != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("target must be 0 for ide controller"));
-            return NULL;
-        }
-
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
             virBufferAddLit(&opt, "ide-cd");
         else
