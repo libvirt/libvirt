@@ -7,6 +7,7 @@ option('expensive_tests', type: 'feature', value: 'auto', description: 'set the 
 option('test_coverage', type: 'boolean', value: false, description: 'turn on code coverage instrumentation')
 option('git_werror', type: 'feature', value: 'auto', description: 'use -Werror if building from GIT')
 option('rpath', type: 'feature', value: 'auto', description: 'whether to include rpath information in installed binaries and libraries')
+option('docs', type: 'feature', value: 'auto', description: 'whether to generate documentation')
 
 
 # build dependencies options

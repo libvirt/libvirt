@@ -2203,7 +2203,10 @@ subdir('examples')
 
 subdir('po')
 
-subdir('docs')
+gen_docs = not get_option('docs').disabled()
+if gen_docs
+  subdir('docs')
+endif
 
 subdir('build-aux')
 
@@ -2428,6 +2431,7 @@ endif
 misc_summary = {
   'Use -Werror': cc_flags.contains('-Werror'),
   'Warning Flags': supported_cc_flags,
+  'docs': gen_docs,
   'DTrace': conf.has('WITH_DTRACE_PROBES'),
   'firewalld': conf.has('WITH_FIREWALLD'),
   'firewalld-zone': conf.has('WITH_FIREWALLD_ZONE'),
