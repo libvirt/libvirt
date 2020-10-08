@@ -18,8 +18,6 @@ option('bash_completion_dir', type: 'string', value: '', description: 'directory
 option('blkid', type: 'feature', value: 'auto', description: 'blkid support')
 option('capng', type: 'feature', value: 'auto', description: 'cap-ng support')
 option('curl', type: 'feature', value: 'auto', description: 'curl support')
-option('firewalld', type: 'feature', value: 'auto', description: 'firewalld support')
-option('firewalld_zone', type: 'feature', value: 'auto', description: 'whether to install firewalld libvirt zone')
 option('fuse', type: 'feature', value: 'auto', description: 'fuse support')
 option('glusterfs', type: 'feature', value: 'auto', description: 'glusterfs support')
 option('libiscsi', type: 'feature', value: 'auto', description: 'libiscsi support')
@@ -90,6 +88,8 @@ option('storage_zfs', type: 'feature', value: 'auto', description: 'ZFS backend 
 # build feature options
 option('chrdev_lock_files', type: 'string', value: '', description: 'location for UUCP style lock files for character devices (leave empty for default paths on some platforms)')
 option('dtrace', type: 'feature', value: 'auto', description: 'use dtrace for static probing')
+option('firewalld', type: 'feature', value: 'auto', description: 'firewalld support')
+option('firewalld_zone', type: 'feature', value: 'auto', description: 'whether to install firewalld libvirt zone')
 option('host_validate', type: 'feature', value: 'auto', description: 'build virt-host-validate')
 option('init_script', type: 'combo', choices: ['systemd', 'openrc', 'check', 'none'], value: 'check', description: 'Style of init script to install')
 option('loader_nvram', type: 'string', value: '', description: 'Pass list of pairs of <loader>:<nvram> paths. Both pairs and list items are separated by a colon.')
