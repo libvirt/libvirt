@@ -2181,6 +2181,12 @@ qemuBuildFSStr(virDomainFSDefPtr fs)
         } else if (fs->multidevs == VIR_DOMAIN_FS_MULTIDEVS_WARN) {
             virBufferAddLit(&opt, ",multidevs=warn");
         }
+        if (fs->fmode) {
+            virBufferAsprintf(&opt, ",fmode=%04o", fs->fmode);
+        }
+        if (fs->dmode) {
+            virBufferAsprintf(&opt, ",dmode=%04o", fs->dmode);
+        }
     } else if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE) {
         /* removed since qemu 4.0.0 see v3.1.0-29-g93aee84f57 */
         virBufferAddLit(&opt, "handle");
