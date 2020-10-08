@@ -58,6 +58,10 @@ stages:
         ninja -C build;
         ninja -C build test;
       fi
+    - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
+      then
+        rpmbuild --nodeps -ta build/meson-dist/libvirt-*.tar.xz;
+      fi
 
 # Jobs that we delegate to Cirrus CI because they require an operating
 # system other than Linux. These jobs will only run if the required
@@ -302,6 +306,7 @@ x64-centos-7:
     # meson dist fails on CentOS 7 because of old git that fails to clone
     # from shallow git repository which is done when running meson dist
     DIST: skip
+    RPM: skip
 
 x64-centos-8:
   <<: *native_build_job_definition
@@ -309,6 +314,7 @@ x64-centos-8:
     - x64-centos-8-container
   variables:
     NAME: centos-8
+    RPM: skip
 
 x64-centos-8-clang:
   <<: *native_build_job_definition
@@ -317,6 +323,7 @@ x64-centos-8-clang:
   variables:
     NAME: centos-8
     CC: clang
+    RPM: skip
 
 x64-centos-stream:
   <<: *native_build_job_definition
@@ -324,6 +331,7 @@ x64-centos-stream:
     - x64-centos-stream-container
   variables:
     NAME: centos-stream
+    RPM: skip
 
 x64-fedora-31:
   <<: *native_build_job_definition
@@ -331,6 +339,7 @@ x64-fedora-31:
     - x64-fedora-31-container
   variables:
     NAME: fedora-31
+    RPM: skip
 
 x64-fedora-32:
   <<: *native_build_job_definition
@@ -353,6 +362,7 @@ x64-fedora-rawhide-clang:
   variables:
     NAME: fedora-rawhide
     CC: clang
+    RPM: skip
 
 x64-opensuse-151:
   <<: *native_build_job_definition
@@ -360,6 +370,7 @@ x64-opensuse-151:
     - x64-opensuse-151-container
   variables:
     NAME: opensuse-151
+    RPM: skip
 
 x64-ubuntu-1804:
   <<: *native_build_job_definition
