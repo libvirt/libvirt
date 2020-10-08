@@ -1168,6 +1168,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dyajl=enabled \
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
+           -Dlibnl=enabled \
            -Daudit=enabled \
            -Ddtrace=enabled \
            %{?arg_firewalld} \

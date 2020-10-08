@@ -1075,9 +1075,9 @@ libiscsi_version = '1.18.0'
 libiscsi_dep = dependency('libiscsi', version: '>=' + libiscsi_version, required: get_option('libiscsi'))
 
 libnl_version = '3.0'
-if host_machine.system() == 'linux'
-  libnl_dep = dependency('libnl-3.0', version: '>=' + libnl_version, required: false)
-  libnl_route_dep = dependency('libnl-route-3.0', version: '>=' + libnl_version, required: false)
+if not get_option('libnl').disabled() and host_machine.system() == 'linux'
+  libnl_dep = dependency('libnl-3.0', version: '>=' + libnl_version, required: get_option('libnl'))
+  libnl_route_dep = dependency('libnl-route-3.0', version: '>=' + libnl_version, required: get_option('libnl'))
 
   if libnl_dep.found() and libnl_route_dep.found()
     libnl_dep = declare_dependency(
@@ -1085,6 +1085,8 @@ if host_machine.system() == 'linux'
     )
     conf.set('WITH_LIBNL', 1)
   endif
+elif get_option('libnl').enabled()
+  error('libnl can be enabled only on linux')
 else
   libnl_dep = dependency('', required: false)
 endif
