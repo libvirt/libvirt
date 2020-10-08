@@ -143,6 +143,7 @@
   <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
+  <flag name='fsdev.createmode'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100240</microcodeVersion>

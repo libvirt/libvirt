@@ -209,6 +209,7 @@
   <flag name='spapr-tpm-proxy'/>
   <flag name='numa.hmat'/>
   <flag name='blockdev-hostdev-scsi'/>
+  <flag name='fsdev.createmode'/>
   <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900241</microcodeVersion>

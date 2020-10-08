@@ -237,6 +237,7 @@
   <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='intel-iommu.aw-bits'/>
   <flag name='blockdev-hostdev-scsi'/>
+  <flag name='fsdev.createmode'/>
   <version>4002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

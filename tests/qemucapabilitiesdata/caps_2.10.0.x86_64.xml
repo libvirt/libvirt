@@ -190,6 +190,7 @@
   <flag name='fw_cfg'/>
   <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>
+  <flag name='fsdev.createmode'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100287</microcodeVersion>

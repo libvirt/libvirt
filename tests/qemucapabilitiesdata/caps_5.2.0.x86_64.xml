@@ -248,6 +248,7 @@
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='block-export-add'/>
   <flag name='netdev.vhost-vdpa'/>
+  <flag name='fsdev.createmode'/>
   <version>5001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

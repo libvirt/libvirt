@@ -246,6 +246,7 @@
   <flag name='usb-host.hostdevice'/>
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='netdev.vhost-vdpa'/>
+  <flag name='fsdev.createmode'/>
   <version>5001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

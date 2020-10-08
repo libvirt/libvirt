@@ -583,6 +583,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VIRTIO_BALLOON_FREE_PAGE_REPORTING, /*virtio balloon free-page-reporting */
     QEMU_CAPS_BLOCK_EXPORT_ADD, /* 'block-export-add' command is supported */
     QEMU_CAPS_NETDEV_VHOST_VDPA, /* -netdev vhost-vdpa*/
+    QEMU_CAPS_FSDEV_CREATEMODE, /* fsdev.createmode */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
