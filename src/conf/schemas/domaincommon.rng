@@ -6,6 +6,7 @@
   <include href="networkcommon.rng"/>
   <include href="cputypes.rng"/>
   <include href="nwfilter_params.rng"/>
+  <include href="privatedata.rng"/>
 
   <!--
     description and title element, may be placed anywhere under the root
@@ -1698,6 +1699,7 @@
     <interleave>
       <ref name="storageSourceExtra"/>
       <ref name="diskBackingChain"/>
+      <ref name="privateDataDeviceDisk"/>
     </interleave>
   </define>
 
@@ -1773,6 +1775,7 @@
         </element>
       </element>
     </optional>
+    <ref name="privateDataStorageSource"/>
   </define>
 
   <define name="diskSource">
