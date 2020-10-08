@@ -90,6 +90,9 @@
         <optional>
           <ref name="xencmdline"/>
         </optional>
+        <optional>
+          <ref name="vmwaredatacenterpath"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -6832,6 +6835,16 @@
           <attribute name="value"/>
         </element>
       </zeroOrMore>
+    </element>
+  </define>
+
+  <!--
+       Optional hypervisor extensions in their own namespace:
+         vmware
+    -->
+  <define name="vmwaredatacenterpath">
+    <element name="datacenterpath" ns="http://libvirt.org/schemas/domain/vmware/1.0">
+      <text/>
     </element>
   </define>
 
