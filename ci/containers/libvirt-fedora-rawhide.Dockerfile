@@ -21,6 +21,7 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         dnsmasq \
         dwarves \
         ebtables \
+        firewalld-filesystem \
         fuse-devel \
         gcc \
         gdb \

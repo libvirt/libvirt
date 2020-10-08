@@ -23,6 +23,7 @@ RUN dnf install -y centos-release-stream && \
         dnsmasq \
         dwarves \
         ebtables \
+        firewalld-filesystem \
         fuse-devel \
         gcc \
         gdb \

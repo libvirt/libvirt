@@ -20,6 +20,7 @@ RUN dnf update -y && \
         dnsmasq \
         dwarves \
         ebtables \
+        firewalld-filesystem \
         fuse-devel \
         gcc \
         gdb \

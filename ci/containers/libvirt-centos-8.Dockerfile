@@ -22,6 +22,7 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         dnsmasq \
         dwarves \
         ebtables \
+        firewalld-filesystem \
         fuse-devel \
         gcc \
         gdb \

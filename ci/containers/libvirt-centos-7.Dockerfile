@@ -50,6 +50,7 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         dnsmasq \
         dwarves \
         ebtables \
+        firewalld-filesystem \
         fuse-devel \
         gcc \
         gdb \
