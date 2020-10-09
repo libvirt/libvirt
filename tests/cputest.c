@@ -817,8 +817,8 @@ cpuTestUpdateLive(const void *arg)
     if (!(expected = cpuTestLoadXML(data->arch, expectedFile)))
         goto cleanup;
 
-    /* In case the host CPU signature does not exactly match any CPU model from
-     * cpu_map.xml, the CPU model we detect from CPUID may differ from the one
+    /* In case the host CPU signature does not exactly match any CPU model in
+     * src/cpu_map, the CPU model we detect from CPUID may differ from the one
      * we compute by asking QEMU. Since this test expands both CPU models and
      * compares their features, we can try to translate the 'actual' CPU to
      * use the CPU model from 'expected'.
