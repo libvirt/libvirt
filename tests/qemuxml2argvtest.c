@@ -1445,7 +1445,8 @@ mymain(void)
     DO_TEST("net-virtio-rxtxqueuesize",
             QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE,
             QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE);
-    DO_TEST_PARSE_ERROR("net-virtio-rxqueuesize-invalid-size", NONE);
+    DO_TEST_PARSE_ERROR("net-virtio-rxqueuesize-invalid-size",
+                        QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE);
     DO_TEST("net-virtio-teaming",
             QEMU_CAPS_VIRTIO_NET_FAILOVER,
             QEMU_CAPS_DEVICE_VFIO_PCI);
