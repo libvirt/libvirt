@@ -1361,7 +1361,7 @@ In case no restrictions need to be put on CPU model and its features, a simpler
 ``model``
    The content of the ``model`` element specifies CPU model requested by the
    guest. The list of available CPU models and their definition can be found in
-   ``cpu_map.xml`` file installed in libvirt's data directory. If a hypervisor
+   directory ``cpu_map``, installed in libvirt's data directory. If a hypervisor
    is not able to use the exact CPU model, libvirt automatically falls back to a
    closest model supported by the hypervisor while maintaining the list of CPU
    features. :since:`Since 0.9.10` , an optional ``fallback`` attribute can be
@@ -1376,7 +1376,7 @@ In case no restrictions need to be put on CPU model and its features, a simpler
    :since:`Since 0.8.3` the content of the ``vendor`` element specifies CPU
    vendor requested by the guest. If this element is missing, the guest can be
    run on a CPU matching given features regardless on its vendor. The list of
-   supported vendors can be found in ``cpu_map.xml``.
+   supported vendors can be found in ``cpu_map/*_vendors.xml``.
 ``topology``
    The ``topology`` element specifies requested topology of virtual CPU provided
    to the guest. Four attributes, ``sockets``, ``dies``, ``cores``, and
