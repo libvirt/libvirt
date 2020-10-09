@@ -976,8 +976,9 @@ as printed by ``capabilities`` command. The guest CPU definition may be created
 from the host CPU model found in domain capabilities XML (printed by
 ``domcapabilities`` command). In addition to the <cpu> elements, this command
 accepts full capabilities XMLs, or domain capabilities XMLs containing the CPU
-definitions. For best results, use only the CPU definitions from domain
-capabilities.
+definitions. It is recommended to use only the CPU definitions from domain
+capabilities, as on some architectures using the host CPU definition may either
+fail or provide unexpected results.
 
 When *FILE* contains only a single CPU definition, the command will print the
 same CPU with restrictions imposed by the capabilities of the hypervisor.
