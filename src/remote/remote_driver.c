@@ -7636,7 +7636,6 @@ remoteDomainGetFSInfo(virDomainPtr dom,
         }
 
         info_ret = g_new0(virDomainFSInfoPtr, ret.info.info_len);
-            goto cleanup;
 
         for (i = 0; i < ret.info.info_len; i++) {
             src = &ret.info.info_val[i];
