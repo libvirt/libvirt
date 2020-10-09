@@ -5342,7 +5342,6 @@ qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
 
 int
 qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
-                         virQEMUCapsPtr qemuCaps,
                          virJSONValuePtr *props)
 {
     g_autofree char *objAlias = NULL;
@@ -5352,13 +5351,6 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
 
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_RANDOM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support the rng-random "
-                             "backend"));
-            return -1;
-        }
-
         if (qemuMonitorCreateObjectProps(props, "rng-random", objAlias,
                                          "s:filename", rng->source.file,
                                          NULL) < 0)
@@ -5367,13 +5359,6 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_EGD)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support the rng-egd "
-                             "backend"));
-            return -1;
-        }
-
         if (!(charBackendAlias = qemuAliasChardevFromDevAlias(rng->info.alias)))
             return -1;
 
@@ -5385,13 +5370,6 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_BUILTIN)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support the rng-builtin "
-                             "backend"));
-            return -1;
-        }
-
         if (qemuMonitorCreateObjectProps(props, "rng-builtin", objAlias,
                                          NULL) < 0)
             return -1;
@@ -5399,9 +5377,7 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_LAST:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("unknown rng-random backend"));
-        return -1;
+        break;
     }
 
     return 0;
@@ -5478,7 +5454,7 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
         if (chardev)
             virCommandAddArgList(cmd, "-chardev", chardev, NULL);
 
-        if (qemuBuildRNGBackendProps(rng, qemuCaps, &props) < 0)
+        if (qemuBuildRNGBackendProps(rng, &props) < 0)
             return -1;
 
         rc = virQEMUBuildObjectCommandlineFromJSON(&buf, props);

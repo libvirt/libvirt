@@ -2264,7 +2264,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildRNGDevStr(vm->def, rng, priv->qemuCaps)))
         goto cleanup;
 
-    if (qemuBuildRNGBackendProps(rng, priv->qemuCaps, &props) < 0)
+    if (qemuBuildRNGBackendProps(rng, &props) < 0)
         goto cleanup;
 
     if (!(charAlias = qemuAliasChardevFromDevAlias(rng->info.alias)))

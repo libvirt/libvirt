@@ -167,7 +167,6 @@ char *qemuBuildRNGDevStr(const virDomainDef *def,
                          virDomainRNGDefPtr dev,
                          virQEMUCapsPtr qemuCaps);
 int qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
-                             virQEMUCapsPtr qemuCaps,
                              virJSONValuePtr *props);
 
 /* Current, best practice */

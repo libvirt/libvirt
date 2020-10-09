@@ -1646,9 +1646,43 @@ static int
 qemuValidateDomainRNGDef(const virDomainRNGDef *def,
                          virQEMUCapsPtr qemuCaps)
 {
-    if (def->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
-        qemuValidateDomainChrSourceDef(def->source.chardev, qemuCaps) < 0)
+    switch ((virDomainRNGBackend) def->backend) {
+    case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_RANDOM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support the rng-random "
+                             "backend"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_EGD:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_EGD)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support the rng-egd "
+                             "backend"));
+            return -1;
+        }
+
+        if (qemuValidateDomainChrSourceDef(def->source.chardev, qemuCaps) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_BUILTIN)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support the rng-builtin "
+                             "backend"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unknown rng-random backend"));
         return -1;
+    }
 
     if (qemuValidateDomainVirtioOptions(def->virtio, qemuCaps) < 0)
         return -1;
