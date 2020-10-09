@@ -383,10 +383,8 @@ hypervFreePrivate(hypervPrivate **priv)
     if (priv == NULL || *priv == NULL)
         return;
 
-    if ((*priv)->client != NULL) {
-        /* FIXME: This leaks memory due to bugs in openwsman <= 2.2.6 */
+    if ((*priv)->client != NULL)
         wsmc_release((*priv)->client);
-    }
 
     if ((*priv)->caps)
         virObjectUnref((*priv)->caps);

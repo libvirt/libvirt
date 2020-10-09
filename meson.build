@@ -1207,7 +1207,7 @@ if numactl_dep.found()
   conf.set('WITH_NUMACTL', 1)
 endif
 
-openwsman_version = '2.2.3'
+openwsman_version = '2.6.3'
 openwsman_dep = dependency('openwsman', version: '>=' + openwsman_version, required: get_option('openwsman'))
 
 parallels_sdk_version = '7.0.22'

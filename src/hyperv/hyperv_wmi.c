@@ -1082,8 +1082,6 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
 
     if (data != NULL) {
 #if WS_SERIALIZER_FREE_MEM_WORKS
-        /* FIXME: ws_serializer_free_mem is broken in openwsman <= 2.2.6,
-         *        see hypervFreeObject for a detailed explanation. */
         if (ws_serializer_free_mem(serializerContext, data,
                                    wmiInfo->serializerInfo) < 0) {
             VIR_ERROR(_("Could not free deserialized data"));
@@ -1118,12 +1116,6 @@ hypervFreeObject(hypervPrivate *priv G_GNUC_UNUSED, hypervObject *object)
         next = object->next;
 
 #if WS_SERIALIZER_FREE_MEM_WORKS
-        /* FIXME: ws_serializer_free_mem is broken in openwsman <= 2.2.6,
-         *        but this is not that critical, because openwsman keeps
-         *        track of all allocations of the deserializer and frees
-         *        them in wsmc_release. So this doesn't result in a real
-         *        memory leak, but just in piling up unused memory until
-         *        the connection is closed. */
         if (ws_serializer_free_mem(serializerContext, object->data.common,
                                    object->info->serializerInfo) < 0) {
             VIR_ERROR(_("Could not free deserialized data"));

@@ -363,7 +363,7 @@ BuildRequires: netcf-devel >= 0.2.2
 BuildRequires: libcurl-devel
 %endif
 %if %{with_hyperv}
-BuildRequires: libwsman-devel >= 2.2.3
+BuildRequires: libwsman-devel >= 2.6.3
 %endif
 BuildRequires: audit-libs-devel
 # we need /usr/sbin/dtrace
