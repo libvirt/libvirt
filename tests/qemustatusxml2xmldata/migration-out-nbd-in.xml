@@ -1,6 +1,6 @@
 <domstatus state='running' reason='booted' pid='15433'>
   <taint flag='high-privileges'/>
-  <monitor path='/var/lib/libvirt/qemu/domain-4-upstream/monitor.sock' json='1' type='unix'/>
+  <monitor path='/var/lib/libvirt/qemu/domain-4-upstream/monitor.sock' type='unix'/>
   <vcpus>
     <vcpu id='0' pid='15449'/>
     <vcpu id='1' pid='15450'/>
