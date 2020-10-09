@@ -966,26 +966,22 @@ qemuRestoreCgroupThread(virCgroupPtr cgroup,
                         virCgroupThreadName thread,
                         int id)
 {
-    virCgroupPtr cgroup_temp = NULL;
+    g_autoptr(virCgroup) cgroup_temp = NULL;
     g_autofree char *nodeset = NULL;
-    int ret = -1;
 
     if (virCgroupNewThread(cgroup, thread, id, false, &cgroup_temp) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virCgroupFree(cgroup_temp);
-    return ret;
+    return 0;
 }
 
 static void
@@ -1129,8 +1125,7 @@ qemuSetupCgroupForExtDevices(virDomainObjPtr vm,
                              virQEMUDriverPtr driver)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCgroupPtr cgroup_temp = NULL;
-    int ret = -1;
+    g_autoptr(virCgroup) cgroup_temp = NULL;
 
     if (!qemuExtDevicesHasDevice(vm->def) ||
         priv->cgroup == NULL)
@@ -1147,14 +1142,9 @@ qemuSetupCgroupForExtDevices(virDomainObjPtr vm,
 
     if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                            false, &cgroup_temp) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = qemuExtDevicesSetupCgroup(driver, vm, cgroup_temp);
-
- cleanup:
-    virCgroupFree(cgroup_temp);
-
-    return ret;
+    return qemuExtDevicesSetupCgroup(driver, vm, cgroup_temp);
 }
 
 

@@ -4519,7 +4519,7 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
     virBitmapPtr tmpmap = NULL;
     virDomainVcpuDefPtr vcpuinfo;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCgroupPtr cgroup_vcpu = NULL;
+    g_autoptr(virCgroup) cgroup_vcpu = NULL;
     g_autofree char *str = NULL;
     virObjectEventPtr event = NULL;
     char paramField[VIR_TYPED_PARAM_FIELD_LENGTH] = "";
@@ -4583,7 +4583,6 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
 
  cleanup:
     virBitmapFree(tmpmap);
-    virCgroupFree(cgroup_vcpu);
     virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
@@ -4720,7 +4719,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virCgroupPtr cgroup_emulator = NULL;
+    g_autoptr(virCgroup) cgroup_emulator = NULL;
     virDomainDefPtr def;
     virDomainDefPtr persistentDef;
     int ret = -1;
@@ -4808,8 +4807,6 @@ qemuDomainPinEmulator(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (cgroup_emulator)
-        virCgroupFree(cgroup_emulator);
     virObjectEventStateQueue(driver->domainEventState, event);
     virBitmapFree(pcpumap);
     virDomainObjEndAPI(&vm);
@@ -5174,7 +5171,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
     virDomainDefPtr persistentDef;
     virBitmapPtr pcpumap = NULL;
     qemuDomainObjPrivatePtr priv;
-    virCgroupPtr cgroup_iothread = NULL;
+    g_autoptr(virCgroup) cgroup_iothread = NULL;
     virObjectEventPtr event = NULL;
     char paramField[VIR_TYPED_PARAM_FIELD_LENGTH] = "";
     g_autofree char *str = NULL;
@@ -5286,8 +5283,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (cgroup_iothread)
-        virCgroupFree(cgroup_iothread);
     virObjectEventStateQueue(driver->domainEventState, event);
     virBitmapFree(pcpumap);
     virDomainObjEndAPI(&vm);
@@ -8691,68 +8686,60 @@ static int
 qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
                             virBitmapPtr nodeset)
 {
-    virCgroupPtr cgroup_temp = NULL;
+    g_autoptr(virCgroup) cgroup_thread = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree char *nodeset_str = NULL;
     virDomainNumatuneMemMode mode;
     size_t i = 0;
-    int ret = -1;
 
     if (virDomainNumatuneGetMode(vm->def->numa, -1, &mode) == 0 &&
         mode != VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("change of nodeset for running domain "
                          "requires strict numa mode"));
-        goto cleanup;
+        return -1;
     }
 
     if (!virNumaNodesetIsAvailable(nodeset))
-        goto cleanup;
+        return -1;
 
     /* Ensure the cpuset string is formatted before passing to cgroup */
     if (!(nodeset_str = virBitmapFormat(nodeset)))
-        goto cleanup;
+        return -1;
 
     if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
-                           false, &cgroup_temp) < 0 ||
-        virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
-        goto cleanup;
-    virCgroupFree(cgroup_temp);
-    cgroup_temp = NULL;
+                           false, &cgroup_thread) < 0 ||
+        virCgroupSetCpusetMems(cgroup_thread, nodeset_str) < 0)
+        return -1;
 
     for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+        g_autoptr(virCgroup) cgroup_vcpu = NULL;
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, i);
 
         if (!vcpu->online)
             continue;
 
         if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
-                               false, &cgroup_temp) < 0 ||
-            virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
-            goto cleanup;
-        virCgroupFree(cgroup_temp);
-        cgroup_temp = NULL;
+                               false, &cgroup_vcpu) < 0 ||
+            virCgroupSetCpusetMems(cgroup_vcpu, nodeset_str) < 0)
+            return -1;
     }
 
     for (i = 0; i < vm->def->niothreadids; i++) {
+        g_autoptr(virCgroup) cgroup_iothread = NULL;
+
         if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
                                vm->def->iothreadids[i]->iothread_id,
-                               false, &cgroup_temp) < 0 ||
-            virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
-            goto cleanup;
-        virCgroupFree(cgroup_temp);
-        cgroup_temp = NULL;
+                               false, &cgroup_iothread) < 0 ||
+            virCgroupSetCpusetMems(cgroup_iothread, nodeset_str) < 0)
+            return -1;
     }
 
     /* set nodeset for root cgroup */
     if (virCgroupSetCpusetMems(priv->cgroup, nodeset_str) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virCgroupFree(cgroup_temp);
-
-    return ret;
+    return 0;
 }
 
 static int
@@ -9146,7 +9133,6 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
                    unsigned long long period, long long quota)
 {
     size_t i;
-    virCgroupPtr cgroup_vcpu = NULL;
 
     if (period == 0 && quota == 0)
         return 0;
@@ -9155,27 +9141,21 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
         return 0;
 
     for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+        g_autoptr(virCgroup) cgroup_vcpu = NULL;
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, i);
 
         if (!vcpu->online)
-            continue;
+            return -1;
 
         if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_VCPU, i,
                                false, &cgroup_vcpu) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
-            goto cleanup;
-
-        virCgroupFree(cgroup_vcpu);
-        cgroup_vcpu = NULL;
+            return -1;
     }
 
     return 0;
-
- cleanup:
-    virCgroupFree(cgroup_vcpu);
-    return -1;
 }
 
 static int
@@ -9183,24 +9163,19 @@ qemuSetEmulatorBandwidthLive(virCgroupPtr cgroup,
                              unsigned long long period,
                              long long quota)
 {
-    virCgroupPtr cgroup_emulator = NULL;
+    g_autoptr(virCgroup) cgroup_emulator = NULL;
 
     if (period == 0 && quota == 0)
         return 0;
 
     if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                            false, &cgroup_emulator) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuSetupCgroupVcpuBW(cgroup_emulator, period, quota) < 0)
-        goto cleanup;
+        return -1;
 
-    virCgroupFree(cgroup_emulator);
     return 0;
-
- cleanup:
-    virCgroupFree(cgroup_emulator);
-    return -1;
 }
 
 
@@ -9209,7 +9184,6 @@ qemuSetIOThreadsBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
                        unsigned long long period, long long quota)
 {
     size_t i;
-    virCgroupPtr cgroup_iothread = NULL;
 
     if (period == 0 && quota == 0)
         return 0;
@@ -9218,23 +9192,18 @@ qemuSetIOThreadsBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
         return 0;
 
     for (i = 0; i < vm->def->niothreadids; i++) {
+        g_autoptr(virCgroup) cgroup_iothread = NULL;
+
         if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_IOTHREAD,
                                vm->def->iothreadids[i]->iothread_id,
                                false, &cgroup_iothread) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuSetupCgroupVcpuBW(cgroup_iothread, period, quota) < 0)
-            goto cleanup;
-
-        virCgroupFree(cgroup_iothread);
-        cgroup_iothread = NULL;
+            return -1;
     }
 
     return 0;
-
- cleanup:
-    virCgroupFree(cgroup_iothread);
-    return -1;
 }
 
 
@@ -9576,38 +9545,32 @@ static int
 qemuGetVcpusBWLive(virDomainObjPtr vm,
                    unsigned long long *period, long long *quota)
 {
-    virCgroupPtr cgroup_vcpu = NULL;
+    g_autoptr(virCgroup) cgroup_vcpu = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
     int rc;
-    int ret = -1;
 
     priv = vm->privateData;
     if (!qemuDomainHasVcpuPids(vm)) {
         /* We do not create sub dir for each vcpu */
         rc = qemuGetVcpuBWLive(priv->cgroup, period, quota);
         if (rc < 0)
-            goto cleanup;
+            return -1;
 
         if (*quota > 0)
             *quota /= virDomainDefGetVcpus(vm->def);
-        goto out;
+        return 0;
     }
 
     /* get period and quota for vcpu0 */
     if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, 0,
                            false, &cgroup_vcpu) < 0)
-        goto cleanup;
+        return -1;
 
     rc = qemuGetVcpuBWLive(cgroup_vcpu, period, quota);
     if (rc < 0)
-        goto cleanup;
+        return -1;
 
- out:
-    ret = 0;
-
- cleanup:
-    virCgroupFree(cgroup_vcpu);
-    return ret;
+    return 0;
 }
 
 static int
@@ -9615,58 +9578,47 @@ qemuGetEmulatorBandwidthLive(virCgroupPtr cgroup,
                              unsigned long long *period,
                              long long *quota)
 {
-    virCgroupPtr cgroup_emulator = NULL;
-    int ret = -1;
+    g_autoptr(virCgroup) cgroup_emulator = NULL;
 
     /* get period and quota for emulator */
     if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                            false, &cgroup_emulator) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuGetVcpuBWLive(cgroup_emulator, period, quota) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virCgroupFree(cgroup_emulator);
-    return ret;
+    return 0;
 }
 
 static int
 qemuGetIOThreadsBWLive(virDomainObjPtr vm,
                        unsigned long long *period, long long *quota)
 {
-    virCgroupPtr cgroup_iothread = NULL;
+    g_autoptr(virCgroup) cgroup_iothread = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
     int rc;
-    int ret = -1;
 
     priv = vm->privateData;
     if (!vm->def->niothreadids) {
         /* We do not create sub dir for each iothread */
         if ((rc = qemuGetVcpuBWLive(priv->cgroup, period, quota)) < 0)
-            goto cleanup;
+            return -1;
 
-        goto out;
+        return 0;
     }
 
     /* get period and quota for the "first" IOThread */
     if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
                            vm->def->iothreadids[0]->iothread_id,
                            false, &cgroup_iothread) < 0)
-        goto cleanup;
+        return -1;
 
     rc = qemuGetVcpuBWLive(cgroup_iothread, period, quota);
     if (rc < 0)
-        goto cleanup;
+        return -1;
 
- out:
-    ret = 0;
-
- cleanup:
-    virCgroupFree(cgroup_iothread);
-    return ret;
+    return 0;
 }
 
 
