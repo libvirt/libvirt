@@ -1895,6 +1895,14 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                                  "supported by vhost SCSI devices"));
                 return -1;
             }
+
+            if (hostdev->source.subsys.u.scsi_host.protocol ==
+                VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_SCSI)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("This QEMU doesn't support vhost-scsi devices"));
+                return -1;
+            }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
             return qemuValidateDomainMdevDef(hostdev, def, qemuCaps);

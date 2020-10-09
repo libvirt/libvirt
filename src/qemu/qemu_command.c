@@ -4461,12 +4461,6 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_SCSI)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("This QEMU doesn't support vhost-scsi devices"));
-        return NULL;
-    }
-
     if (qemuBuildVirtioDevStr(&buf, "vhost-scsi", qemuCaps,
                               VIR_DOMAIN_DEVICE_HOSTDEV, dev) < 0) {
         return NULL;
