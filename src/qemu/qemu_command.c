@@ -3408,14 +3408,9 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     if (usingVirtio && net->driver.virtio.tx_queue_size)
         virBufferAsprintf(&buf, ",tx_queue_size=%u", net->driver.virtio.tx_queue_size);
 
-    if (usingVirtio && net->mtu) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_HOST_MTU)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("setting MTU is not supported with this QEMU binary"));
-            return NULL;
-        }
+    if (usingVirtio && net->mtu)
         virBufferAsprintf(&buf, ",host_mtu=%u", net->mtu);
-    }
+
     if (usingVirtio && net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT)
        virBufferAddLit(&buf, ",failover=on");
 

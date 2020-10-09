@@ -1277,6 +1277,14 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
             return -1;
         }
 
+        if (net->mtu &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_HOST_MTU)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("setting MTU is not supported with this "
+                             "QEMU binary"));
+            return -1;
+        }
+
         if (net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("rx_queue_size has to be a power of two"));

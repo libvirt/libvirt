@@ -499,7 +499,7 @@ mymain(void)
     DO_TEST("watchdog", NONE);
     DO_TEST("net-bandwidth", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
     DO_TEST("net-bandwidth2", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
-    DO_TEST("net-mtu", NONE);
+    DO_TEST("net-mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU);
     DO_TEST("net-coalesce", NONE);
     DO_TEST("net-many-models", NONE);
 
