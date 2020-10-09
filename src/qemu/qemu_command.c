@@ -3823,12 +3823,6 @@ qemuBuildUSBInputDevStr(const virDomainDef *def,
         virBufferAsprintf(&buf, "usb-tablet,id=%s", dev->info.alias);
         break;
     case VIR_DOMAIN_INPUT_TYPE_KBD:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_KBD)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("usb keyboard is not supported by this "
-                             "QEMU binary"));
-            return NULL;
-        }
         virBufferAsprintf(&buf, "usb-kbd,id=%s", dev->info.alias);
         break;
     }

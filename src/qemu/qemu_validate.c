@@ -3990,6 +3990,15 @@ qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
         return -1;
     }
 
+    if (input->bus == VIR_DOMAIN_INPUT_BUS_USB &&
+        input->type == VIR_DOMAIN_INPUT_TYPE_KBD &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_KBD)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("usb keyboard is not supported by this "
+                         "QEMU binary"));
+        return -1;
+    }
+
     if (input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO)
         return 0;
 
