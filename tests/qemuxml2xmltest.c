@@ -467,7 +467,7 @@ mymain(void)
     DO_TEST("net-user", NONE);
     DO_TEST("net-user-addr", NONE);
     DO_TEST("net-virtio", NONE);
-    DO_TEST("net-virtio-device", NONE);
+    DO_TEST("net-virtio-device", QEMU_CAPS_VIRTIO_TX_ALG);
     DO_TEST("net-virtio-disable-offloads", NONE);
     DO_TEST("net-eth", NONE);
     DO_TEST("net-eth-ifname", NONE);
@@ -795,7 +795,7 @@ mymain(void)
     DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement", NONE);
     DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
     DO_TEST("usb-ich9-ehci-addr", NONE);
-    DO_TEST("disk-copy_on_read", NONE);
+    DO_TEST("disk-copy_on_read", QEMU_CAPS_VIRTIO_TX_ALG);
     DO_TEST_CAPS_LATEST("tpm-passthrough");
     DO_TEST_CAPS_LATEST("tpm-passthrough-crb");
     DO_TEST_CAPS_LATEST("tpm-emulator");

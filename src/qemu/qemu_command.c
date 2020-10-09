@@ -3330,10 +3330,6 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                                             net->driver.virtio.txmode);
                     return NULL;
             }
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtio-net-pci 'tx' option not supported in this QEMU binary"));
-            return NULL;
         }
     }
     if (usingVirtio) {

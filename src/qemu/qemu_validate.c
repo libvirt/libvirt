@@ -1253,6 +1253,14 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
     }
 
     if (virDomainNetIsVirtioModel(net)) {
+        if (net->driver.virtio.txmode &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TX_ALG)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-net-pci 'tx' option not supported in "
+                             "this QEMU binary"));
+            return -1;
+        }
+
         if (net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("rx_queue_size has to be a power of two"));
