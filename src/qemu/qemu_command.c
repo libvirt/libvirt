@@ -3306,8 +3306,9 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         virBufferAddStr(&buf, virDomainNetGetModelString(net));
     }
 
-    if (usingVirtio && net->driver.virtio.txmode) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TX_ALG)) {
+    if (usingVirtio) {
+        if (net->driver.virtio.txmode &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TX_ALG)) {
             virBufferAddLit(&buf, ",tx=");
             switch (net->driver.virtio.txmode) {
                 case VIR_DOMAIN_NET_VIRTIO_TX_MODE_IOTHREAD:
@@ -3331,8 +3332,6 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                     return NULL;
             }
         }
-    }
-    if (usingVirtio) {
         qemuBuildIoEventFdStr(&buf, net->driver.virtio.ioeventfd, qemuCaps);
         if (net->driver.virtio.event_idx &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_EVENT_IDX)) {
@@ -3387,32 +3386,33 @@ qemuBuildNicDevStr(virDomainDefPtr def,
             virBufferAsprintf(&buf, ",guest_ufo=%s",
                               virTristateSwitchTypeToString(net->driver.virtio.guest.ufo));
         }
-    }
-    if (usingVirtio && vhostfdSize > 1) {
-        if (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-            /* ccw provides a one to one relation of fds to queues and
-             * does not support the vectors option
-             */
-            virBufferAddLit(&buf, ",mq=on");
-        } else {
-            /* As advised at https://www.linux-kvm.org/page/Multiqueue
-             * we should add vectors=2*N+2 where N is the vhostfdSize
-             */
-            virBufferAsprintf(&buf, ",mq=on,vectors=%zu", 2 * vhostfdSize + 2);
+
+        if (vhostfdSize > 1) {
+            if (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+                /* ccw provides a one to one relation of fds to queues and
+                 * does not support the vectors option
+                 */
+                virBufferAddLit(&buf, ",mq=on");
+            } else {
+                /* As advised at https://www.linux-kvm.org/page/Multiqueue
+                 * we should add vectors=2*N+2 where N is the vhostfdSize
+                 */
+                virBufferAsprintf(&buf, ",mq=on,vectors=%zu", 2 * vhostfdSize + 2);
+            }
         }
+
+        if (net->driver.virtio.rx_queue_size)
+            virBufferAsprintf(&buf, ",rx_queue_size=%u", net->driver.virtio.rx_queue_size);
+
+        if (net->driver.virtio.tx_queue_size)
+            virBufferAsprintf(&buf, ",tx_queue_size=%u", net->driver.virtio.tx_queue_size);
+
+        if (net->mtu)
+            virBufferAsprintf(&buf, ",host_mtu=%u", net->mtu);
+
+        if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT)
+            virBufferAddLit(&buf, ",failover=on");
     }
-
-    if (usingVirtio && net->driver.virtio.rx_queue_size)
-        virBufferAsprintf(&buf, ",rx_queue_size=%u", net->driver.virtio.rx_queue_size);
-
-    if (usingVirtio && net->driver.virtio.tx_queue_size)
-        virBufferAsprintf(&buf, ",tx_queue_size=%u", net->driver.virtio.tx_queue_size);
-
-    if (usingVirtio && net->mtu)
-        virBufferAsprintf(&buf, ",host_mtu=%u", net->mtu);
-
-    if (usingVirtio && net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT)
-       virBufferAddLit(&buf, ",failover=on");
 
     virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
     virBufferAsprintf(&buf, ",id=%s", net->info.alias);
