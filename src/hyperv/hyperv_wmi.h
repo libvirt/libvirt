@@ -26,7 +26,6 @@
 #include "virbuffer.h"
 #include "hyperv_private.h"
 #include "hyperv_wmi_classes.h"
-#include "openwsman.h"
 #include "virhash.h"
 
 

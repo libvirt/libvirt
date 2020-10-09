@@ -23,8 +23,9 @@
 
 #pragma once
 
+#include <wsman-api.h>
+
 #include "internal.h"
-#include "openwsman.h"
 
 #include "hyperv_wmi_classes.generated.typedef"
 

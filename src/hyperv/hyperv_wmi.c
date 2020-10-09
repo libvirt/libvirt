@@ -24,7 +24,10 @@
  */
 
 #include <config.h>
+
 #include <wsman-soap.h>
+#include <wsman-xml.h>
+#include <wsman-xml-binding.h>
 
 #include "internal.h"
 #include "virerror.h"
@@ -35,7 +38,6 @@
 #include "hyperv_private.h"
 #include "hyperv_wmi.h"
 #include "virstring.h"
-#include "openwsman.h"
 #include "virlog.h"
 #include "virxml.h"
 

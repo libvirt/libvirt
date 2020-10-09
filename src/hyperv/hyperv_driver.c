@@ -34,7 +34,6 @@
 #include "hyperv_private.h"
 #include "hyperv_util.h"
 #include "hyperv_wmi.h"
-#include "openwsman.h"
 #include "virstring.h"
 #include "virkeycode.h"
 #include "domain_conf.h"
