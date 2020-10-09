@@ -467,12 +467,16 @@
         <value>sev</value>
       </attribute>
       <interleave>
-        <element name="cbitpos">
-          <data type="unsignedInt"/>
-        </element>
-        <element name="reducedPhysBits">
-          <data type="unsignedInt"/>
-        </element>
+        <optional>
+          <element name="cbitpos">
+            <data type="unsignedInt"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="reducedPhysBits">
+            <data type="unsignedInt"/>
+          </element>
+        </optional>
         <element name="policy">
           <ref name="hexuint"/>
         </element>

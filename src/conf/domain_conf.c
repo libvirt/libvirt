@@ -16764,6 +16764,7 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     virDomainSEVDefPtr def;
     unsigned long policy;
     g_autofree char *type = NULL;
+    int rc = -1;
 
     def = g_new0(virDomainSEVDef, 1);
 
@@ -16788,22 +16789,32 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
         goto error;
     }
 
-    if (virXPathUInt("string(./cbitpos)", ctxt, &def->cbitpos) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("failed to get launch security cbitpos"));
-        goto error;
-    }
-
-    if (virXPathUInt("string(./reducedPhysBits)", ctxt,
-                     &def->reduced_phys_bits) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("failed to get launch security reduced-phys-bits"));
-        goto error;
-    }
-
     if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("failed to get launch security policy"));
+        goto error;
+    }
+
+    /* the following attributes are platform dependent and if missing, we can
+     * autofill them from domain capabilities later
+     */
+    rc = virXPathUInt("string(./cbitpos)", ctxt, &def->cbitpos);
+    if (rc == 0) {
+        def->haveCbitpos = true;
+    } else if (rc == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Invalid format for launch security cbitpos"));
+        goto error;
+    }
+
+    rc = virXPathUInt("string(./reducedPhysBits)", ctxt,
+                      &def->reduced_phys_bits);
+    if (rc == 0) {
+        def->haveReducedPhysBits = true;
+    } else if (rc == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Invalid format for launch security "
+                         "reduced-phys-bits"));
         goto error;
     }
 
@@ -28958,9 +28969,12 @@ virDomainSEVDefFormat(virBufferPtr buf, virDomainSEVDefPtr sev)
                       virDomainLaunchSecurityTypeToString(sev->sectype));
     virBufferAdjustIndent(buf, 2);
 
-    virBufferAsprintf(buf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
-    virBufferAsprintf(buf, "<reducedPhysBits>%d</reducedPhysBits>\n",
-                      sev->reduced_phys_bits);
+    if (sev->haveCbitpos)
+        virBufferAsprintf(buf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
+
+    if (sev->haveReducedPhysBits)
+        virBufferAsprintf(buf, "<reducedPhysBits>%d</reducedPhysBits>\n",
+                          sev->reduced_phys_bits);
     virBufferAsprintf(buf, "<policy>0x%04x</policy>\n", sev->policy);
     if (sev->dh_cert)
         virBufferEscapeString(buf, "<dhCert>%s</dhCert>\n", sev->dh_cert);

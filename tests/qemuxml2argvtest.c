@@ -3319,6 +3319,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("vhost-vsock-ccw-auto", "s390x");
 
     DO_TEST_CAPS_VER("launch-security-sev", "2.12.0");
+    DO_TEST_CAPS_VER("launch-security-sev-missing-platform-info", "2.12.0");
 
     DO_TEST_CAPS_LATEST("vhost-user-fs-fd-memory");
     DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
