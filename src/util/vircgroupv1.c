@@ -1470,21 +1470,20 @@ static virOnceControl virCgroupV1MemoryOnce = VIR_ONCE_CONTROL_INITIALIZER;
 static void
 virCgroupV1MemoryOnceInit(void)
 {
-    virCgroupPtr group;
+    g_autoptr(virCgroup) group = NULL;
     unsigned long long int mem_unlimited = 0ULL;
 
     if (virCgroupNew(-1, "/", NULL, -1, &group) < 0)
-        goto cleanup;
+        return;
 
     if (!virCgroupV1HasController(group, VIR_CGROUP_CONTROLLER_MEMORY))
-        goto cleanup;
+        return;
 
     ignore_value(virCgroupGetValueU64(group,
                                       VIR_CGROUP_CONTROLLER_MEMORY,
                                       "memory.limit_in_bytes",
                                       &mem_unlimited));
- cleanup:
-    virCgroupFree(group);
+
     virCgroupV1MemoryUnlimitedKB = mem_unlimited >> 10;
 }
 
