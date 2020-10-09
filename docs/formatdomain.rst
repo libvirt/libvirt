@@ -1388,11 +1388,11 @@ In case no restrictions need to be put on CPU model and its features, a simpler
    of vCPUs specified by the ``cpus`` element equals to the number of vcpus
    resulting from the topology.
 ``feature``
-   The ``cpu`` element can contain zero or more ``elements`` used to fine-tune
-   features provided by the selected CPU model. The list of known feature names
-   can be found in the same file as CPU models. The meaning of each ``feature``
-   element depends on its ``policy`` attribute, which has to be set to one of
-   the following values:
+   The ``cpu`` element can contain zero or more ``feature`` elements used to
+   fine-tune features provided by the selected CPU model. The list of known
+   feature names can be found in the same file as CPU models. The meaning of
+   each ``feature`` element depends on its ``policy`` attribute, which has to be
+   set to one of the following values:
 
    ``force``
       The virtual CPU will claim the feature is supported regardless of it being
