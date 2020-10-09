@@ -3072,7 +3072,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
 
     cpu->model = g_strdup(model);
 
-    /* Some x86_64 features defined in cpu_map.xml use spelling which differ
+    /* Some x86_64 features defined in src/cpu_map/ use spelling which differ
      * from the one preferred by QEMU. Static expansion would give us only the
      * preferred spelling. With new QEMU we always use the QEMU's canonical
      * names of all features and translate between them and our names. But for
