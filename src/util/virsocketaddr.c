@@ -1097,6 +1097,8 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
                              virSocketAddrPtr netmask,
                              int family)
 {
+    memset(netmask, 0, sizeof(*netmask));
+
     netmask->data.stor.ss_family = AF_UNSPEC; /* assume failure */
 
     if (family == AF_INET) {
@@ -1135,7 +1137,7 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
     }
 
     return 0;
- }
+}
 
 /**
  * virSocketAddrGetIPPrefix:
