@@ -1153,7 +1153,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_IVSHMEM_PLAIN, QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL);
     DO_TEST("smbios", NONE);
     DO_TEST("smbios-multiple-type2", NONE);
-    DO_TEST("smbios-type-fwcfg", NONE);
+    DO_TEST("smbios-type-fwcfg", QEMU_CAPS_FW_CFG);
 
     DO_TEST_CAPS_LATEST("os-firmware-bios");
     DO_TEST_CAPS_LATEST("os-firmware-efi");

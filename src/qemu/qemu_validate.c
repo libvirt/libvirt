@@ -778,9 +778,16 @@ qemuValidateDefGetVcpuHotplugGranularity(const virDomainDef *def)
 
 static int
 qemuValidateDomainDefSysinfo(const virSysinfoDef *def,
-                             virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
+                             virQEMUCapsPtr qemuCaps)
 {
     size_t i;
+
+    if (def->type == VIR_SYSINFO_FWCFG &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_FW_CFG)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("fw_cfg is not supported with this QEMU"));
+        return -1;
+    }
 
     for (i = 0; i < def->nfw_cfgs; i++) {
         const virSysinfoFWCfgDef *f = &def->fw_cfgs[i];
