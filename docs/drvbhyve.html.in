@@ -482,6 +482,27 @@ to the guest, with <code>ich7</code> being the only supported model now,
 and the <code>audio</code> element specifies how the guest device is mapped
 to the host sound device.</p>
 
+<h3><a id="fs-9p">Virtio-9p filesystem</a></h3>
+
+<p>As of <a href="https://svnweb.freebsd.org/changeset/base/366413">FreeBSD changeset r366413</a>
+bhyve supports sharing arbitrary directory tree between the guest and the host.
+It's supported in libvirt <span class="since">since 6.9.0</span>.</p>
+
+<pre>
+...
+  &lt;filesystem&gt;
+    &lt;source dir='/shared/dir'/&gt;
+    &lt;target dir='shared_dir'/&gt;
+  &lt;/filesystem&gt;
+...
+</pre>
+
+<p>This share could be made read only by adding the <code>&lt;readonly/&gt;</code> sub-element.</p>
+
+<p>In the Linux guest, this could be mounted using:</p>
+
+<pre>mount -t 9p shared_dir /mnt/shared_dir</pre>
+
 <h3><a id="wired">Wiring guest memory</a></h3>
 
 <p><span class="since">Since 4.4.0</span>, it's possible to specify that guest memory should
