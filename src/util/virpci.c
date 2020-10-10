@@ -209,10 +209,7 @@ VIR_ONCE_GLOBAL_INIT(virPCI);
 static char *
 virPCIDriverDir(const char *driver)
 {
-    char *buffer;
-
-    buffer = g_strdup_printf(PCI_SYSFS "drivers/%s", driver);
-    return buffer;
+    return g_strdup_printf(PCI_SYSFS "drivers/%s", driver);
 }
 
 
@@ -1002,7 +999,9 @@ virPCIProbeStubDriver(virPCIStubDriver driver)
     }
 
  recheck:
-    if ((drvpath = virPCIDriverDir(drvname)) && virFileExists(drvpath))
+    drvpath = virPCIDriverDir(drvname);
+
+    if (virFileExists(drvpath))
         /* driver already loaded, return */
         return 0;
 
@@ -1153,9 +1152,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev)
         return -1;
     }
 
-    if (!(stubDriverPath = virPCIDriverDir(stubDriverName)))
-        return -1;
-
+    stubDriverPath = virPCIDriverDir(stubDriverName);
     driverLink = virPCIFile(dev->name, "driver");
 
     if (virFileExists(driverLink)) {
