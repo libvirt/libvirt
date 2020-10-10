@@ -607,8 +607,8 @@ bhyveBuildFSArgStr(const virDomainDef *def G_GNUC_UNUSED,
     virCommandAddArgFormat(cmd, "%d:%d,virtio-9p,%s=%s%s",
                            fs->info.addr.pci.slot,
                            fs->info.addr.pci.function,
-                           fs->src->path,
                            fs->dst,
+                           fs->src->path,
                            virBufferCurrentContent(&params));
 
     return 0;
