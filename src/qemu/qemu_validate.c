@@ -353,6 +353,59 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
 
 
 static int
+qemuValidateDomainDefCpu(virQEMUDriverPtr driver,
+                         const virDomainDef *def,
+                         virQEMUCapsPtr qemuCaps)
+{
+    virCPUDefPtr cpu = def->cpu;
+
+    if (!cpu)
+        return 0;
+
+    if (!cpu->model && cpu->mode == VIR_CPU_MODE_CUSTOM)
+        return 0;
+
+    switch ((virCPUMode) cpu->mode) {
+    case VIR_CPU_MODE_HOST_PASSTHROUGH:
+        if (def->os.arch == VIR_ARCH_ARMV7L &&
+            driver->hostarch == VIR_ARCH_AARCH64) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("QEMU binary does not support CPU "
+                                 "host-passthrough for armv7l on "
+                                 "aarch64 host"));
+                return -1;
+            }
+        }
+
+        if (cpu->migratable &&
+            cpu->migratable != VIR_TRISTATE_SWITCH_OFF &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Migratable attribute for host-passthrough "
+                             "CPU is not supported by QEMU binary"));
+            return -1;
+        }
+        break;
+
+    case VIR_CPU_MODE_HOST_MODEL:
+        /* qemu_command.c will error out if cpu->mode is HOST_MODEL for
+         * every arch but PPC64. However, we can't move this validation
+         * here because non-PPC64 archs will translate HOST_MODEL to
+         * something else during domain start, changing cpu->mode to
+         * CUSTOM.
+         */
+        break;
+    case VIR_CPU_MODE_CUSTOM:
+    case VIR_CPU_MODE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuValidateDomainDefClockTimers(const virDomainDef *def,
                                  virQEMUCapsPtr qemuCaps)
 {
@@ -934,6 +987,9 @@ qemuValidateDomainDef(const virDomainDef *def,
             return -1;
         }
     }
+
+    if (qemuValidateDomainDefCpu(driver, def, qemuCaps) < 0)
+        return -1;
 
     if (qemuDomainDefValidateMemoryHotplug(def, qemuCaps, NULL) < 0)
         return -1;

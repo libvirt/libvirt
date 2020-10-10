@@ -6243,13 +6243,6 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 
         if (def->os.arch == VIR_ARCH_ARMV7L &&
             driver->hostarch == VIR_ARCH_AARCH64) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("QEMU binary does not support CPU "
-                                 "host-passthrough for armv7l on "
-                                 "aarch64 host"));
-                return -1;
-            }
             virBufferAddLit(buf, ",aarch64=off");
         }
 
@@ -6257,19 +6250,16 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE)) {
                 virBufferAsprintf(buf, ",migratable=%s",
                                   virTristateSwitchTypeToString(cpu->migratable));
-            } else if (ARCH_IS_X86(def->os.arch) &&
-                       cpu->migratable == VIR_TRISTATE_SWITCH_OFF) {
-                /* This is the default on x86 */
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Migratable attribute for host-passthrough "
-                                 "CPU is not supported by QEMU binary"));
-                return -1;
             }
         }
         break;
 
     case VIR_CPU_MODE_HOST_MODEL:
+        /* HOST_MODEL is a valid CPU mode for domain XMLs of all archs, meaning
+         * that we can't move this validation to parse time. By the time we reach
+         * this point, all non-PPC64 archs must have translated the CPU model to
+         * something else and set the CPU mode to MODE_CUSTOM.
+         */
         if (ARCH_IS_PPC64(def->os.arch)) {
             virBufferAddLit(buf, "host");
             if (cpu->model &&
