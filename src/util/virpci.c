@@ -219,10 +219,7 @@ virPCIDriverDir(const char *driver)
 static char *
 virPCIFile(const char *device, const char *file)
 {
-    char *buffer;
-
-    buffer = g_strdup_printf(PCI_SYSFS "devices/%s/%s", device, file);
-    return buffer;
+    return g_strdup_printf(PCI_SYSFS "devices/%s/%s", device, file);
 }
 
 
@@ -240,9 +237,9 @@ virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev, char **path, char **name)
     g_autofree char *drvlink = NULL;
 
     *path = *name = NULL;
+
     /* drvlink = "/sys/bus/pci/dddd:bb:ss.ff/driver" */
-    if (!(drvlink = virPCIFile(dev->name, "driver")))
-        goto cleanup;
+    drvlink = virPCIFile(dev->name, "driver");
 
     if (!virFileExists(drvlink)) {
         ret = 0;
@@ -376,8 +373,7 @@ virPCIDeviceReadClass(virPCIDevicePtr dev, uint16_t *device_class)
     g_autofree char *id_str = NULL;
     unsigned int value;
 
-    if (!(path = virPCIFile(dev->name, "class")))
-        return -1;
+    path = virPCIFile(dev->name, "class");
 
     /* class string is '0xNNNNNN\n' ... i.e. 9 bytes */
     if (virFileReadAll(path, 9, &id_str) < 0)
@@ -1054,8 +1050,7 @@ virPCIDeviceUnbind(virPCIDevicePtr dev)
         /* The device is not bound to any driver */
         return 0;
 
-    if (!(path = virPCIFile(dev->name, "driver/unbind")))
-        return -1;
+    path = virPCIFile(dev->name, "driver/unbind");
 
     if (virFileExists(path)) {
         if (virFileWriteStr(path, dev->name, 0) < 0) {
@@ -1111,8 +1106,7 @@ virPCIDeviceBindWithDriverOverride(virPCIDevicePtr dev,
 {
     g_autofree char *path = NULL;
 
-    if (!(path = virPCIFile(dev->name, "driver_override")))
-        return -1;
+    path = virPCIFile(dev->name, "driver_override");
 
     if (virFileWriteStr(path, driverName, 0) < 0) {
         virReportSystemError(errno,
@@ -1159,9 +1153,10 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev)
         return -1;
     }
 
-    if (!(stubDriverPath = virPCIDriverDir(stubDriverName))  ||
-        !(driverLink = virPCIFile(dev->name, "driver")))
+    if (!(stubDriverPath = virPCIDriverDir(stubDriverName)))
         return -1;
+
+    driverLink = virPCIFile(dev->name, "driver");
 
     if (virFileExists(driverLink)) {
         if (virFileLinkPointsTo(driverLink, stubDriverPath)) {
@@ -1259,8 +1254,7 @@ virPCIDeviceReadID(virPCIDevicePtr dev, const char *id_name)
     g_autofree char *path = NULL;
     char *id_str;
 
-    if (!(path = virPCIFile(dev->name, id_name)))
-        return NULL;
+    path = virPCIFile(dev->name, id_name);
 
     /* ID string is '0xNNNN\n' ... i.e. 7 bytes */
     if (virFileReadAll(path, 7, &id_str) < 0)
@@ -1924,8 +1918,8 @@ virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr)
     devName = g_strdup_printf(VIR_PCI_DEVICE_ADDRESS_FMT, addr->domain, addr->bus,
                               addr->slot, addr->function);
 
-    if (!(devPath = virPCIFile(devName, "iommu_group")))
-        return -1;
+    devPath = virPCIFile(devName, "iommu_group");
+
     if (virFileIsLink(devPath) != 1)
         return -2;
     if (virFileResolveLink(devPath, &groupPath) < 0) {
@@ -1973,8 +1967,8 @@ virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev)
     g_autofree char *groupPath = NULL;
     g_autofree char *groupFile = NULL;
 
-    if (!(devPath = virPCIFile(dev->name, "iommu_group")))
-        return NULL;
+    devPath = virPCIFile(dev->name, "iommu_group");
+
     if (virFileIsLink(devPath) != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid device %s iommu_group file %s is not a symlink"),
