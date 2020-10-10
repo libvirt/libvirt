@@ -25,6 +25,10 @@ v6.9.0 (unreleased)
     ``virConnectGetVersion()``, and ``virDomainGetAutostart()`` APIs have been
     implemented in the Hyper-V driver.
 
+  * bhyve: implement virtio-9p filesystem support
+
+    Implement virito-9p shared filesystem using the ``<filesystem/>`` element.
+
 * **Improvements**
 
 * **Bug fixes**
