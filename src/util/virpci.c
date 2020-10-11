@@ -2408,7 +2408,6 @@ virPCIGetNetName(const char *device_link_sysfs_path,
 {
     g_autofree char *pcidev_sysfs_net_path = NULL;
     g_autofree char *firstEntryName = NULL;
-    g_autofree char *thisPhysPortID = NULL;
     int ret = -1;
     DIR *dir = NULL;
     struct dirent *entry = NULL;
@@ -2433,12 +2432,13 @@ virPCIGetNetName(const char *device_link_sysfs_path,
          * physportID of this netdev. If not, look for entry[idx].
          */
         if (physPortID) {
+            g_autofree char *thisPhysPortID = NULL;
+
             if (virNetDevGetPhysPortID(entry->d_name, &thisPhysPortID) < 0)
                 goto cleanup;
 
             /* if this one doesn't match, keep looking */
             if (STRNEQ_NULLABLE(physPortID, thisPhysPortID)) {
-                VIR_FREE(thisPhysPortID);
                 /* save the first entry we find to use as a failsafe
                  * in case we don't match the phys_port_id. This is
                  * needed because some NIC drivers (e.g. i40e)
