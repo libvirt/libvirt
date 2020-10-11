@@ -988,7 +988,7 @@ virPCIProbeStubDriver(virPCIStubDriver driver)
 {
     const char *drvname = NULL;
     g_autofree char *drvpath = NULL;
-    bool probed = false;
+    g_autofree char *errbuf = NULL;
 
     if (driver == VIR_PCI_STUB_DRIVER_NONE ||
         !(drvname = virPCIStubDriverTypeToString(driver))) {
@@ -998,24 +998,20 @@ virPCIProbeStubDriver(virPCIStubDriver driver)
         return -1;
     }
 
- recheck:
     drvpath = virPCIDriverDir(drvname);
 
+    /* driver previously loaded, return */
     if (virFileExists(drvpath))
-        /* driver already loaded, return */
         return 0;
 
-    if (!probed) {
-        g_autofree char *errbuf = NULL;
-        probed = true;
-        if ((errbuf = virKModLoad(drvname))) {
-            VIR_WARN("failed to load driver %s: %s", drvname, errbuf);
-            goto cleanup;
-        }
-
-        VIR_FREE(drvpath);
-        goto recheck;
+    if ((errbuf = virKModLoad(drvname))) {
+        VIR_WARN("failed to load driver %s: %s", drvname, errbuf);
+        goto cleanup;
     }
+
+    /* driver loaded after probing */
+    if (virFileExists(drvpath))
+        return 0;
 
  cleanup:
     /* If we know failure was because of admin config, let's report that;
