@@ -1245,7 +1245,7 @@ static char *
 virPCIDeviceReadID(virPCIDevicePtr dev, const char *id_name)
 {
     g_autofree char *path = NULL;
-    char *id_str;
+    g_autofree char *id_str = NULL;
 
     path = virPCIFile(dev->name, id_name);
 
@@ -1254,15 +1254,13 @@ virPCIDeviceReadID(virPCIDevicePtr dev, const char *id_name)
         return NULL;
 
     /* Check for 0x suffix */
-    if (id_str[0] != '0' || id_str[1] != 'x') {
-        VIR_FREE(id_str);
+    if (id_str[0] != '0' || id_str[1] != 'x')
         return NULL;
-    }
 
     /* Chop off the newline; we know the string is 7 bytes */
     id_str[6] = '\0';
 
-    return id_str;
+    return g_steal_pointer(&id_str);
 }
 
 bool
@@ -1853,7 +1851,7 @@ virPCIGetIOMMUGroupAddressesAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaq
 {
     int ret = -1;
     virPCIDeviceAddressListPtr addrList = opaque;
-    virPCIDeviceAddressPtr copyAddr;
+    g_autofree virPCIDeviceAddressPtr copyAddr = NULL;
 
     /* make a copy to insert onto the list */
     copyAddr = g_new0(virPCIDeviceAddress, 1);
@@ -1866,7 +1864,6 @@ virPCIGetIOMMUGroupAddressesAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaq
 
     ret = 0;
  cleanup:
-    VIR_FREE(copyAddr);
     return ret;
 }
 
@@ -2170,7 +2167,7 @@ virZPCIDeviceAddressIsPresent(const virZPCIDeviceAddress *addr)
 virPCIDeviceAddressPtr
 virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
 {
-    virPCIDeviceAddressPtr bdf = NULL;
+    g_autofree virPCIDeviceAddressPtr bdf = NULL;
     g_autofree char *config_address = NULL;
     g_autofree char *device_path = NULL;
 
@@ -2194,11 +2191,10 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse PCI config address '%s'"),
                        config_address);
-        VIR_FREE(bdf);
         return NULL;
     }
 
-    return bdf;
+    return g_steal_pointer(&bdf);
 }
 
 /**
@@ -2251,7 +2247,7 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
     size_t i;
     g_autofree char *totalvfs_file = NULL;
     g_autofree char *totalvfs_str = NULL;
-    virPCIDeviceAddressPtr config_addr = NULL;
+    g_autofree virPCIDeviceAddressPtr config_addr = NULL;
 
     *virtual_functions = NULL;
     *num_virtual_functions = 0;
@@ -2296,7 +2292,6 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
               *num_virtual_functions, sysfs_path);
     ret = 0;
  cleanup:
-    VIR_FREE(config_addr);
     return ret;
 
  error:
@@ -2333,7 +2328,7 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
     size_t i;
     size_t num_virt_fns = 0;
     unsigned int max_virt_fns = 0;
-    virPCIDeviceAddressPtr vf_bdf = NULL;
+    g_autofree virPCIDeviceAddressPtr vf_bdf = NULL;
     virPCIDeviceAddressPtr *virt_fns = NULL;
 
     if (!(vf_bdf = virPCIGetDeviceAddressFromSysfsLink(vf_sysfs_device_link)))
@@ -2362,8 +2357,6 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
         VIR_FREE(virt_fns[i]);
 
     VIR_FREE(virt_fns);
-    VIR_FREE(vf_bdf);
-
     return ret;
 }
 
@@ -2492,7 +2485,7 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
                              char **pfname,
                              int *vf_index)
 {
-    virPCIDeviceAddressPtr pf_config_address = NULL;
+    g_autofree virPCIDeviceAddressPtr pf_config_address = NULL;
     g_autofree char *pf_sysfs_device_path = NULL;
     g_autofree char *vfname = NULL;
     g_autofree char *vfPhysPortID = NULL;
@@ -2549,8 +2542,6 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
 
     ret = 0;
  cleanup:
-    VIR_FREE(pf_config_address);
-
     return ret;
 }
 
