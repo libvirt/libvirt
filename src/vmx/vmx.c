@@ -1645,8 +1645,8 @@ virVMXParseConfig(virVMXContext *ctx,
     if (def->graphics[def->ngraphics] != NULL)
         ++def->ngraphics;
 
-    /* def:disks: 4 * 15 scsi + 2 * 2 ide + 2 floppy = 66 */
-    def->disks = g_new0(virDomainDiskDefPtr, 66);
+    /* def:disks: 4 * 15 scsi + 4 * 30 sata + 2 * 2 ide + 2 floppy = 186 */
+    def->disks = g_new0(virDomainDiskDefPtr, 186);
     def->ndisks = 0;
 
     /* def:disks (scsi) */
