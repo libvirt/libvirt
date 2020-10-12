@@ -521,6 +521,35 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI,
               "UNUSED virtio-non-transitional",
 );
 
+static int virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);
+static int virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
+                                     int *virtualDev);
+static int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt,
+                           virConfPtr conf, int device, int busType,
+                           int controllerOrBus, int unit, virDomainDiskDefPtr *def,
+                           virDomainDefPtr vmdef);
+static int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def);
+static int virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def);
+static int virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
+                             virDomainChrDefPtr *def);
+static int virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
+                               virDomainChrDefPtr *def);
+static int virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def);
+
+static int virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer);
+static int virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
+                                   virBufferPtr buffer);
+static int virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
+                              virBufferPtr buffer, bool floppy_present[2]);
+static int virVMXFormatFileSystem(virDomainFSDefPtr def, int number,
+                                  virBufferPtr buffer);
+static int virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
+                                virBufferPtr buffer, int virtualHW_version);
+static int virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
+                              virBufferPtr buffer);
+static int virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
+                                virBufferPtr buffer);
+static int virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Helpers
@@ -1852,7 +1881,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
 
 
-int
+static int
 virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
 {
     bool enabled = false;
@@ -1916,7 +1945,7 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
 
 
 
-int
+static int
 virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
                           int *virtualDev)
 {
@@ -1986,7 +2015,7 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
 
 
 
-int
+static int
 virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr conf,
                 int device, int busType, int controllerOrBus, int unit,
                 virDomainDiskDefPtr *def, virDomainDefPtr vmdef)
@@ -2406,7 +2435,8 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
 
 
 
-int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
+static int
+virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
 {
     int result = -1;
     char prefix[48] = "";
@@ -2493,7 +2523,7 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
 
 
 
-int
+static int
 virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 {
     int result = -1;
@@ -2723,7 +2753,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 
 
 
-int
+static int
 virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
                   virDomainChrDefPtr *def)
 {
@@ -2905,7 +2935,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
 
 
 
-int
+static int
 virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
                     virDomainChrDefPtr *def)
 {
@@ -3007,7 +3037,7 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
 
 
 
-int
+static int
 virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def)
 {
     int result = -1;
@@ -3448,7 +3478,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
 
 
-int
+static int
 virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
 {
     virDomainGraphicsListenDefPtr glisten;
@@ -3492,7 +3522,7 @@ virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
     return 0;
 }
 
-int
+static int
 virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
                  virBufferPtr buffer)
 {
@@ -3639,7 +3669,7 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
     return 0;
 }
 
-int
+static int
 virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
                    virBufferPtr buffer, bool floppy_present[2])
 {
@@ -3696,7 +3726,7 @@ virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
 
 
 
-int
+static int
 virVMXFormatFileSystem(virDomainFSDefPtr def, int number, virBufferPtr buffer)
 {
     if (def->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
@@ -3721,7 +3751,7 @@ virVMXFormatFileSystem(virDomainFSDefPtr def, int number, virBufferPtr buffer)
 
 
 
-int
+static int
 virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
                      virBufferPtr buffer, int virtualHW_version)
 {
@@ -3877,7 +3907,7 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
 
 
 
-int
+static int
 virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
                    virBufferPtr buffer)
 {
@@ -3983,7 +4013,7 @@ virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
 
 
 
-int
+static int
 virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
                      virBufferPtr buffer)
 {
@@ -4035,7 +4065,7 @@ virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
 
 
 
-int
+static int
 virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer)
 {
     unsigned long long vram;

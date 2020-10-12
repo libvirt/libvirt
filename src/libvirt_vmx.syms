@@ -7,19 +7,7 @@ virVMXConvertToUTF8;
 virVMXDomainXMLConfInit;
 virVMXEscapeHex;
 virVMXFormatConfig;
-virVMXFormatDisk;
-virVMXFormatEthernet;
-virVMXFormatFloppy;
-virVMXFormatParallel;
-virVMXFormatSerial;
-virVMXFormatVNC;
 virVMXParseConfig;
-virVMXParseDisk;
-virVMXParseEthernet;
-virVMXParseParallel;
-virVMXParseSCSIController;
-virVMXParseSerial;
-virVMXParseVNC;
 virVMXUnescapeHex;
 
 # Let emacs know we want case-insensitive sorting
