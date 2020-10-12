@@ -1212,13 +1212,10 @@ virNetDevGetVirtualFunctions(const char *pfname,
     *vfname = g_new0(char *, *n_vfname);
 
     for (i = 0; i < *n_vfname; i++) {
-        g_autofree char *pciConfigAddr = NULL;
         g_autofree char *pci_sysfs_device_link = NULL;
 
-        if (!(pciConfigAddr = virPCIDeviceAddressAsString((*virt_fns)[i])))
-            goto cleanup;
-
-        if (virPCIGetSysfsFile(pciConfigAddr, &pci_sysfs_device_link) < 0) {
+        if (virPCIDeviceAddressGetSysfsFile((*virt_fns)[i],
+                                            &pci_sysfs_device_link) < 0) {
             virReportSystemError(ENOSYS, "%s",
                                  _("Failed to get PCI SYSFS file"));
             goto cleanup;
