@@ -320,7 +320,7 @@ virInterfaceObjListExport(virConnectPtr conn,
 
     virObjectRWLockRead(ifaceobjs);
     if (ifaces)
-        data.ifaces = g_new0(virInterfacePtr, virHashSize(ifaceobjs->objsName));
+        data.ifaces = g_new0(virInterfacePtr, virHashSize(ifaceobjs->objsName) + 1);
 
     virHashForEach(ifaceobjs->objsName, virInterfaceObjListExportCallback, &data);
 

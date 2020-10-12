@@ -931,7 +931,7 @@ virNodeDeviceObjListExport(virConnectPtr conn,
 
     virObjectRWLockRead(devs);
     if (devices)
-        data.devices = g_new0(virNodeDevicePtr, virHashSize(devs->objs));
+        data.devices = g_new0(virNodeDevicePtr, virHashSize(devs->objs) + 1);
 
     virHashForEach(devs->objs, virNodeDeviceObjListExportCallback, &data);
     virObjectRWUnlock(devs);
