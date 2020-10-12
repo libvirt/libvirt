@@ -1,0 +1,36 @@
+<domain type='vmware'>
+  <name>w2019biosvmware</name>
+  <uuid>421a6177-5aa9-abb7-5924-fc376c18a1b4</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <cputune>
+    <shares>2000</shares>
+  </cputune>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <cpu>
+    <topology sockets='1' dies='1' cores='2' threads='1'/>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/windows2019biosvmware.vmdk'/>
+      <target dev='sda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='sata' index='0'/>
+    <interface type='bridge'>
+      <mac address='00:50:56:9a:9c:7a' type='generated'/>
+      <source bridge='VM Network'/>
+      <model type='e1000e'/>
+    </interface>
+    <video>
+      <model type='vmvga' vram='8192' primary='yes'/>
+    </video>
+  </devices>
+</domain>

@@ -90,6 +90,7 @@ def->os
 ## disks #######################################################################
 
                                         scsi[0..3]:[0..6,8..15] -> <controller>:<unit> with 1 bus per controller
+                                        sata[0..3]:[0..29] -> <controller>:<unit> with 1 bus per controller
                                         ide[0..1]:[0..1]        -> <bus>:<unit> with 1 controller
                                         floppy[0..1]            -> <unit> with 1 controller and 1 bus per controller
 
@@ -115,6 +116,26 @@ def->disks[0]...
 ->driverName = <driver>           <=>   scsi0.virtualDev = "<driver>"           # default depends on guestOS value
 ->driverType
 ->cachemode                       <=>   scsi0:0.writeThrough = "<value>"        # defaults to false, true -> _DISK_CACHE_WRITETHRU, false _DISK_CACHE_DEFAULT
+->readonly
+->shared
+->slotnum
+
+
+## disks: sata hard drive from .vmdk image #####################################
+
+                                        sata0.present = "true"                  # defaults to "false"
+                                        sata0:0.present = "true"                # defaults to "false"
+                                        sata0:0.startConnected = "true"         # defaults to "true"
+
+...
+->type = _DISK_TYPE_FILE          <=>   sata0:0.deviceType = "???"              # defaults to ?
+->device = _DISK_DEVICE_DISK      <=>   sata0:0.deviceType = "???"              # defaults to ?
+->bus = _DISK_BUS_SATA
+->src = <value>.vmdk              <=>   sata0:0.fileName = "<value>.vmdk"
+->dst = sd[<controller> * 30 + <unit> mapped to [a-z]+]
+->driverName = <driver>           <=>   sata0.virtualDev = "<driver>"           # default depends on guestOS value
+->driverType
+->cachemode                       <=>   sata0:0.writeThrough = "<value>"        # defaults to false, true -> _DISK_CACHE_WRITETHRU, false _DISK_CACHE_DEFAULT
 ->readonly
 ->shared
 ->slotnum
@@ -157,6 +178,26 @@ def->disks[0]...
 ->src = <value>.iso               <=>   scsi0:0.fileName = "<value>.iso"
 ->dst = sd[<controller> * 15 + <unit> mapped to [a-z]+]
 ->driverName = <driver>           <=>   scsi0.virtualDev = "<driver>"           # default depends on guestOS value
+->driverType
+->cachemode
+->readonly
+->shared
+->slotnum
+
+
+## disks: sata cdrom from .iso image ###########################################
+
+                                        sata0.present = "true"                  # defaults to "false"
+                                        sata0:0.present = "true"                # defaults to "false"
+                                        sata0:0.startConnected = "true"         # defaults to "true"
+
+...
+->type = _DISK_TYPE_FILE          <=>   sata0:0.deviceType = "cdrom-image"      # defaults to ?
+->device = _DISK_DEVICE_CDROM     <=>   sata0:0.deviceType = "cdrom-image"      # defaults to ?
+->bus = _DISK_BUS_SATA
+->src = <value>.iso               <=>   sata0:0.fileName = "<value>.iso"
+->dst = sd[<controller> * 30 + <unit> mapped to [a-z]+]
+->driverName = <driver>           <=>   sata0.virtualDev = "<driver>"           # default depends on guestOS value
 ->driverType
 ->cachemode
 ->readonly
@@ -524,6 +565,7 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI,
 static int virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);
 static int virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
                                      int *virtualDev);
+static int virVMXParseSATAController(virConfPtr conf, int controller, bool *present);
 static int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt,
                            virConfPtr conf, int device, int busType,
                            int controllerOrBus, int unit, virDomainDiskDefPtr *def,
@@ -1335,6 +1377,7 @@ virVMXParseConfig(virVMXContext *ctx,
     long long coresPerSocket = 0;
     virCPUDefPtr cpu = NULL;
     char *firmware = NULL;
+    size_t saved_ndisks = 0;
 
     if (ctx->parseFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1700,6 +1743,51 @@ virVMXParseConfig(virVMXContext *ctx,
                                            controller, scsi_virtualDev[controller]))
                 goto cleanup;
         }
+        saved_ndisks = def->ndisks;
+    }
+
+    /* def:disks (sata) */
+    for (controller = 0; controller < 4; ++controller) {
+        if (virVMXParseSATAController(conf, controller, &present) < 0) {
+            goto cleanup;
+        }
+
+        if (! present)
+            continue;
+
+        for (unit = 0; unit < 30; ++unit) {
+            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
+                                VIR_DOMAIN_DISK_BUS_SATA, controller, unit,
+                                &def->disks[def->ndisks], def) < 0) {
+                goto cleanup;
+            }
+
+            if (def->disks[def->ndisks] != NULL) {
+                ++def->ndisks;
+                continue;
+            }
+
+            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
+                                 VIR_DOMAIN_DISK_BUS_SATA, controller, unit,
+                                 &def->disks[def->ndisks], def) < 0) {
+                goto cleanup;
+            }
+
+            if (def->disks[def->ndisks] != NULL)
+                ++def->ndisks;
+        }
+
+    }
+
+    /* add all the SATA controllers we've seen, up until the last one that is
+     * currently used by a disk */
+    if (def->ndisks - saved_ndisks != 0) {
+        virDomainDeviceInfoPtr info = &def->disks[def->ndisks - 1]->info;
+        for (controller = 0; controller <= info->addr.drive.controller; controller++) {
+            if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+                                           controller, -1))
+                goto cleanup;
+        }
     }
 
     /* def:disks (ide) */
@@ -2016,6 +2104,28 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
 
 
 static int
+virVMXParseSATAController(virConfPtr conf, int controller, bool *present)
+{
+    char present_name[32];
+
+    if (controller < 0 || controller > 3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("SATA controller index %d out of [0..3] range"),
+                       controller);
+        return -1;
+    }
+
+    g_snprintf(present_name, sizeof(present_name), "sata%d.present", controller);
+
+    if (virVMXGetConfigBoolean(conf, present_name, present, false, true) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+
+static int
 virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr conf,
                 int device, int busType, int controllerOrBus, int unit,
                 virDomainDiskDefPtr *def, virDomainDefPtr vmdef)
@@ -2027,6 +2137,13 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
      *         busType = VIR_DOMAIN_DISK_BUS_SCSI
      * controllerOrBus = [0..3] -> controller
      *            unit = [0..6,8..15]
+     *
+     *          device = {VIR_DOMAIN_DISK_DEVICE_DISK,
+     *                    VIR_DOMAIN_DISK_DEVICE_CDROM,
+     *                    VIR_DOMAIN_DISK_DEVICE_LUN}
+     *         busType = VIR_DOMAIN_DISK_BUS_SATA
+     * controllerOrBus = [0..3] -> controller
+     *            unit = [0..29]
      *
      *          device = {VIR_DOMAIN_DISK_DEVICE_DISK,
      *                    VIR_DOMAIN_DISK_DEVICE_CDROM,
@@ -2102,6 +2219,27 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             (*def)->dst =
                virIndexToDiskName
                  (controllerOrBus * 15 + (unit < 7 ? unit : unit - 1), "sd");
+
+            if ((*def)->dst == NULL)
+                goto cleanup;
+        } else if (busType == VIR_DOMAIN_DISK_BUS_SATA) {
+            if (controllerOrBus < 0 || controllerOrBus > 3) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("SATA controller index %d out of [0..3] range"),
+                               controllerOrBus);
+                goto cleanup;
+            }
+
+            if (unit < 0 || unit >= 30) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("SATA unit index %d out of [0..29] range"),
+                               unit);
+                goto cleanup;
+            }
+
+            prefix = g_strdup_printf("sata%d:%d", controllerOrBus, unit);
+
+            (*def)->dst = virIndexToDiskName(controllerOrBus * 30 + unit, "sd");
 
             if ((*def)->dst == NULL)
                 goto cleanup;

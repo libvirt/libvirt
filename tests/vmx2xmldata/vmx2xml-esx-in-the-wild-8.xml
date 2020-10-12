@@ -34,7 +34,13 @@
       <target dev='sdc' bus='scsi'/>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
     </disk>
+    <disk type='file' device='cdrom'>
+      <source file='[692eb778-2d4937fe] CentOS-4.7.ServerCD-x86_64.iso'/>
+      <target dev='sda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
     <controller type='scsi' index='0' model='vmpvscsi'/>
+    <controller type='sata' index='0'/>
     <interface type='bridge'>
       <mac address='00:1a:4a:16:01:55' type='static'/>
       <source bridge='VM Network'/>
