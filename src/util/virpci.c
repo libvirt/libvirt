@@ -2359,14 +2359,6 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
  */
 
 int
-virPCIGetSysfsFile(char *virPCIDeviceName, char **pci_sysfs_device_link)
-{
-    *pci_sysfs_device_link = g_strdup_printf(PCI_SYSFS "devices/%s",
-                                             virPCIDeviceName);
-    return 0;
-}
-
-int
 virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr addr,
                                 char **pci_sysfs_device_link)
 {
@@ -2633,13 +2625,6 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link G_GNUC_UNUSED,
 
 }
 
-int
-virPCIGetSysfsFile(char *virPCIDeviceName G_GNUC_UNUSED,
-                   char **pci_sysfs_device_link G_GNUC_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
-    return -1;
-}
 
 int
 virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr dev G_GNUC_UNUSED,

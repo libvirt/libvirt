@@ -2849,7 +2849,6 @@ virPCIGetHeaderType;
 virPCIGetMdevTypes;
 virPCIGetNetName;
 virPCIGetPhysicalFunction;
-virPCIGetSysfsFile;
 virPCIGetVirtualFunctionIndex;
 virPCIGetVirtualFunctionInfo;
 virPCIGetVirtualFunctions;
