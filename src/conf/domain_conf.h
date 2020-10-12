@@ -1790,6 +1790,7 @@ struct _virDomainMemballoonDef {
     virDomainDeviceInfo info;
     int period; /* seconds between collections */
     int autodeflate; /* enum virTristateSwitch */
+    int free_page_reporting; /* enum virTristateSwitch */
     virDomainVirtioOptionsPtr virtio;
 };
 

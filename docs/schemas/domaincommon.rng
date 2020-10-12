@@ -4539,6 +4539,11 @@
           <ref name="virOnOff"/>
         </attribute>
       </optional>
+      <optional>
+         <attribute name="free-page-reporting">
+           <ref name="virOnOff"/>
+         </attribute>
+       </optional>
       <interleave>
         <optional>
           <ref name="alias"/>

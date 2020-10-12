@@ -15336,6 +15336,7 @@ virDomainMemballoonDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     unsigned int period = 0;
     g_autofree char *model = NULL;
+    g_autofree char *freepage_reporting = NULL;
     g_autofree char *deflate = NULL;
 
     def = g_new0(virDomainMemballoonDef, 1);
@@ -15357,6 +15358,13 @@ virDomainMemballoonDefParseXML(virDomainXMLOptionPtr xmlopt,
         (def->autodeflate = virTristateSwitchTypeFromString(deflate)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("invalid autodeflate attribute value '%s'"), deflate);
+        goto error;
+    }
+
+    if ((freepage_reporting = virXMLPropString(node, "free-page-reporting")) &&
+        (def->free_page_reporting = virTristateSwitchTypeFromString(freepage_reporting)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid free-page-reporting attribute value '%s'"), freepage_reporting);
         goto error;
     }
 
@@ -23538,6 +23546,15 @@ virDomainMemballoonDefCheckABIStability(virDomainMemballoonDefPtr src,
         return false;
     }
 
+    if (src->free_page_reporting != dst->free_page_reporting) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target balloon free-page-reporting attribute value "
+                         "'%s' does not match source '%s'"),
+                       virTristateSwitchTypeToString(dst->free_page_reporting),
+                       virTristateSwitchTypeToString(src->free_page_reporting));
+        return false;
+    }
+
     if (src->virtio && dst->virtio &&
         !virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
@@ -27643,6 +27660,10 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     if (def->autodeflate != VIR_TRISTATE_SWITCH_ABSENT)
         virBufferAsprintf(&attrBuf, " autodeflate='%s'",
                           virTristateSwitchTypeToString(def->autodeflate));
+
+    if (def->free_page_reporting != VIR_TRISTATE_SWITCH_ABSENT)
+        virBufferAsprintf(&attrBuf, " free-page-reporting='%s'",
+                          virTristateSwitchTypeToString(def->free_page_reporting));
 
     if (def->period)
         virBufferAsprintf(&childrenBuf, "<stats period='%i'/>\n", def->period);
