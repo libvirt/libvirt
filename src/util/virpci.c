@@ -1849,7 +1849,6 @@ typedef virPCIDeviceAddressList *virPCIDeviceAddressListPtr;
 static int
 virPCIGetIOMMUGroupAddressesAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaque)
 {
-    int ret = -1;
     virPCIDeviceAddressListPtr addrList = opaque;
     g_autofree virPCIDeviceAddressPtr copyAddr = NULL;
 
@@ -1860,11 +1859,9 @@ virPCIGetIOMMUGroupAddressesAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaq
 
     if (VIR_APPEND_ELEMENT(*addrList->iommuGroupDevices,
                            *addrList->nIommuGroupDevices, copyAddr) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -2243,7 +2240,6 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
                           size_t *num_virtual_functions,
                           unsigned int *max_virtual_functions)
 {
-    int ret = -1;
     size_t i;
     g_autofree char *totalvfs_file = NULL;
     g_autofree char *totalvfs_str = NULL;
@@ -2290,16 +2286,14 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
 
     VIR_DEBUG("Found %zu virtual functions for %s",
               *num_virtual_functions, sysfs_path);
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 
  error:
     for (i = 0; i < *num_virtual_functions; i++)
         VIR_FREE((*virtual_functions)[i]);
     VIR_FREE(*virtual_functions);
     *num_virtual_functions = 0;
-    goto cleanup;
+    return -1;
 }
 
 
@@ -2489,22 +2483,21 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
     g_autofree char *pf_sysfs_device_path = NULL;
     g_autofree char *vfname = NULL;
     g_autofree char *vfPhysPortID = NULL;
-    int ret = -1;
 
     if (virPCIGetPhysicalFunction(vf_sysfs_device_path, &pf_config_address) < 0)
-        goto cleanup;
+        return -1;
 
     if (!pf_config_address)
-        goto cleanup;
+        return -1;
 
     if (virPCIDeviceAddressGetSysfsFile(pf_config_address,
                                         &pf_sysfs_device_path) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     if (virPCIGetVirtualFunctionIndex(pf_sysfs_device_path,
                                       vf_sysfs_device_path, vf_index) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     /* If the caller hasn't asked for a specific pfNetDevIdx, and VF
@@ -2516,18 +2509,18 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
      */
     if (pfNetDevIdx == -1) {
         if (virPCIGetNetName(vf_sysfs_device_path, 0, NULL, &vfname) < 0)
-            goto cleanup;
+            return -1;
 
         if (vfname) {
             if (virNetDevGetPhysPortID(vfname, &vfPhysPortID) < 0)
-                goto cleanup;
+                return -1;
         }
         pfNetDevIdx = 0;
     }
 
     if (virPCIGetNetName(pf_sysfs_device_path,
                          pfNetDevIdx, vfPhysPortID, pfname) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     if (!*pfname) {
@@ -2537,12 +2530,10 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("The PF device for VF %s has no network device name"),
                        vf_sysfs_device_path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
