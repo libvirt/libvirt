@@ -653,6 +653,7 @@ virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system qemu+ssh://10.0.
       daemons or forwarding connections to these sockets manually
       (using <code>socat</code>, <code>netcat</code> or a custom piece of
       software):
+    </p>
     <pre>
 virsh migrate web1 [--p2p] --copy-storage-all 'qemu+unix:///system?socket=/tmp/migdir/test-sock-driver' 'unix:///tmp/migdir/test-sock-qemu' --disks-uri unix:///tmp/migdir/test-sock-nbd
     </pre>
