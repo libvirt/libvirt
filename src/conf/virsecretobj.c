@@ -588,7 +588,7 @@ virSecretObjListExport(virConnectPtr conn,
 
     virObjectRWLockRead(secretobjs);
     if (secrets)
-        data.secrets = g_new0(virSecretPtr, virHashSize(secretobjs->objs));
+        data.secrets = g_new0(virSecretPtr, virHashSize(secretobjs->objs) + 1);
 
     virHashForEach(secretobjs->objs, virSecretObjListExportCallback, &data);
     virObjectRWUnlock(secretobjs);
