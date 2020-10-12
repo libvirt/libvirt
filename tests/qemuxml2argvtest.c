@@ -3195,6 +3195,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-options-fs-packed");
     DO_TEST_CAPS_LATEST("virtio-options-input-packed");
     DO_TEST_CAPS_LATEST("virtio-options-memballoon-packed");
+    DO_TEST_CAPS_LATEST("virtio-options-memballoon-freepage-reporting");
     DO_TEST_CAPS_LATEST("virtio-options-net-packed");
     DO_TEST_CAPS_LATEST("virtio-options-rng-packed");
     DO_TEST_CAPS_LATEST("virtio-options-video-packed");
@@ -3232,6 +3233,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("virtio-options-input-packed", QEMU_CAPS_VIRTIO_MOUSE,
                         QEMU_CAPS_VIRTIO_KEYBOARD);
     DO_TEST_PARSE_ERROR("virtio-options-memballoon-packed", NONE);
+    DO_TEST_PARSE_ERROR("virtio-options-memballoon-freepage-reporting", NONE);
     DO_TEST_PARSE_ERROR("virtio-options-net-packed", NONE);
     DO_TEST_PARSE_ERROR("virtio-options-rng-packed", QEMU_CAPS_DEVICE_VIRTIO_RNG,
                         QEMU_CAPS_OBJECT_RNG_RANDOM);
