@@ -2235,13 +2235,15 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             (deviceType &&
              (STRCASEEQ(deviceType, "atapi-cdrom") ||
               STRCASEEQ(deviceType, "cdrom-raw") ||
+              STRCASEEQ(deviceType, "cdrom-image") ||
               (STRCASEEQ(deviceType, "scsi-passthru") &&
                STRPREFIX(fileName, "/vmfs/devices/cdrom/"))))) {
             /*
              * This function was called in order to parse a harddisk device,
-             * but .iso files, 'atapi-cdrom', 'cdrom-raw', and 'scsi-passthru'
-             * CDROM devices are for CDROM devices only. Just ignore it, another
-             * call to this function to parse a CDROM device may handle it.
+             * but .iso files, 'atapi-cdrom', 'cdrom-raw', 'cdrom-image',
+             * and 'scsi-passthru' CDROM devices are for CDROM devices only.
+             * Just ignore it, another call to this function to parse a CDROM
+             * device may handle it.
              */
             goto ignore;
         } else if (virStringHasCaseSuffix(fileName, ".vmdk")) {
