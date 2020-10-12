@@ -3830,6 +3830,11 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
                           virTristateSwitchTypeToString(def->memballoon->autodeflate));
     }
 
+    if (def->memballoon->free_page_reporting != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&buf, ",free-page-reporting=%s",
+                          virTristateSwitchTypeToString(def->memballoon->free_page_reporting));
+    }
+
     qemuBuildVirtioOptionsStr(&buf, def->memballoon->virtio);
 
     if (qemuCommandAddExtDevice(cmd, &def->memballoon->info) < 0)
