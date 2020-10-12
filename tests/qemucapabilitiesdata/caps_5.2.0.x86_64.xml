@@ -243,6 +243,7 @@
   <flag name='numa.hmat'/>
   <flag name='blockdev-hostdev-scsi'/>
   <flag name='usb-host.hostdevice'/>
+  <flag name='virtio-balloon.free-page-reporting'/>
   <version>5001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
