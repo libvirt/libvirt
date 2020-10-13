@@ -22,7 +22,6 @@ scripts = [
   'meson-gen-authors.py',
   'meson-gen-def.py',
   'meson-gen-sym.py',
-  'meson-html-gen.py',
   'meson-install-dirs.py',
   'meson-install-symlink.py',
   'meson-install-web.py',
