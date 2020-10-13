@@ -521,7 +521,7 @@ virCgroupV2HasEmptyTasks(virCgroupPtr cgroup,
     int ret = -1;
     g_autofree char *content = NULL;
 
-    ret = virCgroupGetValueStr(cgroup, controller, "cgroup.procs", &content);
+    ret = virCgroupGetValueStr(cgroup, controller, "cgroup.threads", &content);
 
     if (ret == 0 && content[0] == '\0')
         ret = 1;
