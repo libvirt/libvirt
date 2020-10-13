@@ -558,7 +558,7 @@ testQemuGetLatestCapsForArch(const char *arch,
     ret = g_strdup_printf("%s/%s", TEST_QEMU_CAPS_PATH, maxname);
 
  cleanup:
-    virDirClose(&dir);
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -667,8 +667,7 @@ testQemuCapsIterate(const char *suffix,
     ret = 0;
 
  cleanup:
-    virDirClose(&dir);
-
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

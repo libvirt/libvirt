@@ -3487,8 +3487,7 @@ virSecuritySELinuxSetFileLabels(virSecurityManagerPtr mgr,
         virReportSystemError(errno, _("Unable to label files under %s"),
                              path);
 
-    virDirClose(&dir);
-
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -3532,8 +3531,7 @@ virSecuritySELinuxRestoreFileLabels(virSecurityManagerPtr mgr,
         virReportSystemError(errno, _("Unable to restore file labels under %s"),
                              path);
 
-    virDirClose(&dir);
-
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

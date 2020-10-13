@@ -79,7 +79,7 @@ qemuBuildFileList(virHashTablePtr files, const char *dir)
 
     ret = 0;
  cleanup:
-    virDirClose(&dirp);
+    VIR_DIR_CLOSE(dirp);
     return ret;
 }
 

@@ -211,7 +211,7 @@ virDMSanitizepath(const char *path)
         }
     }
 
-    virDirClose(&dh);
+    VIR_DIR_CLOSE(dh);
     return ret;
 }
 

@@ -2983,8 +2983,7 @@ int virFileChownFiles(const char *name,
     ret = 0;
 
  cleanup:
-    virDirClose(&dir);
-
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
