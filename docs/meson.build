@@ -32,7 +32,6 @@ docs_assets = [
 
 docs_html_in_files = [
   '404',
-  'acl',
   'aclpolkit',
   'api_extension',
   'api',
@@ -199,6 +198,7 @@ docs_rst2html_gen = generator(
 #   name - base file name (required)
 #   file - generated file (required)
 # source - source filename relative to repository root (optional, if there is no source)
+# depends - explicit dependency on other input (optional)
 docs_html_in_gen = []
 
 foreach name : docs_html_in_files
@@ -218,6 +218,13 @@ foreach name : docs_rst_files
     'source': 'docs' / rst_file,
   }
 endforeach
+
+docs_html_in_gen += {
+  'name': 'acl.html',
+  'file': 'acl.html.in',
+  'source': 'docs' / 'acl.html.in',
+  'depends': aclperms_gen,
+}
 
 hvsupport_html_in = custom_target(
   'hvsupport.html.in',
@@ -272,7 +279,7 @@ foreach data : docs_html_in_gen
       '@OUTPUT@',
       data.get('source', []),
     ],
-    depends: [ aclperms_gen ],
+    depends: data.get('depends', []),
     depend_files: [ page_xsl ],
     install: true,
     install_dir: docs_html_dir,
