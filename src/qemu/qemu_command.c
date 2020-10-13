@@ -8410,13 +8410,6 @@ qemuBuildShmemDevLegacyStr(virDomainDefPtr def,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("ivshmem device is not supported "
-                         "with this QEMU binary"));
-        return NULL;
-    }
-
     virBufferAddLit(&buf, "ivshmem");
     virBufferAsprintf(&buf, ",id=%s", shmem->info.alias);
 
@@ -8449,17 +8442,6 @@ qemuBuildShmemDevStr(virDomainDefPtr def,
                      virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    if ((shmem->model == VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN &&
-         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_PLAIN)) ||
-        (shmem->model == VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL &&
-         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL))) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("shmem model '%s' is not supported "
-                             "by this QEMU binary"),
-                           virDomainShmemModelTypeToString(shmem->model));
-        return NULL;
-    }
 
     virBufferAdd(&buf, virDomainShmemModelTypeToString(shmem->model), -1);
     virBufferAsprintf(&buf, ",id=%s", shmem->info.alias);

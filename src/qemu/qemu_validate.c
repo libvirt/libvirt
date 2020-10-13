@@ -4398,6 +4398,44 @@ qemuValidateDomainDeviceDefMemory(virDomainMemoryDefPtr mem,
 }
 
 
+static int
+qemuValidateDomainDeviceDefShmem(virDomainShmemDefPtr shmem,
+                                 virQEMUCapsPtr qemuCaps)
+{
+    switch (shmem->model) {
+    case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ivshmem device is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_PLAIN)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("shmem model '%s' is not supported "
+                             "by this QEMU binary"),
+                           virDomainShmemModelTypeToString(shmem->model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("shmem model '%s' is not supported "
+                             "by this QEMU binary"),
+                           virDomainShmemModelTypeToString(shmem->model));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 int
 qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
@@ -4512,8 +4550,11 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         ret = qemuValidateDomainDeviceDefMemory(dev->data.memory, qemuCaps);
         break;
 
-    case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_SHMEM:
+        ret = qemuValidateDomainDeviceDefShmem(dev->data.shmem, qemuCaps);
+        break;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_NONE:
