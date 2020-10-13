@@ -14,7 +14,7 @@ parser.add_argument("htmlfile", type=str, help="path to generated HTML file")
 parser.add_argument("pagesrc", type=str, default="", nargs='?', help="(optional) path to source file used for edit this page")
 args = parser.parse_args()
 
-html_tmp = subprocess.run(
+html = subprocess.run(
     [
         args.xsltproc,
         '--stringparam', 'pagesrc', args.pagesrc,
@@ -22,13 +22,6 @@ html_tmp = subprocess.run(
         '--stringparam', 'timestamp', args.timestamp,
         '--nonet', args.style, args.infile,
     ],
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE,
-)
-
-html = subprocess.run(
-    [args.xmllint, '--nonet', '--format', '-'],
-    input=html_tmp.stdout,
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
 )
