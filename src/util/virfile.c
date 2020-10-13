@@ -2927,13 +2927,12 @@ int virDirRead(DIR *dirp, struct dirent **ent, const char *name)
     return !!*ent;
 }
 
-void virDirClose(DIR **dirp)
+void virDirClose(DIR *dirp)
 {
-    if (!*dirp)
+    if (!dirp)
         return;
 
-    closedir(*dirp); /* exempt from syntax-check */
-    *dirp = NULL;
+    closedir(dirp); /* exempt from syntax-check */
 }
 
 

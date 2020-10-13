@@ -269,9 +269,9 @@ int virDirOpenQuiet(DIR **dirp, const char *dirname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 int virDirRead(DIR *dirp, struct dirent **ent, const char *dirname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
-void virDirClose(DIR **dirp)
+void virDirClose(DIR *dirp)
     ATTRIBUTE_NONNULL(1);
-#define VIR_DIR_CLOSE(dir)  virDirClose(&(dir))
+#define VIR_DIR_CLOSE(dir)  virDirClose(dir)
 
 int virFileMakePath(const char *path) G_GNUC_WARN_UNUSED_RESULT;
 int virFileMakePathWithMode(const char *path,
