@@ -8925,31 +8925,10 @@ qemuBuildRedirdevDevStr(const virDomainDef *def,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainRedirFilterDefPtr redirfilter = def->redirfilter;
 
-    if (dev->bus != VIR_DOMAIN_REDIRDEV_BUS_USB) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Redirection bus %s is not supported by QEMU"),
-                       virDomainRedirdevBusTypeToString(dev->bus));
-        return NULL;
-    }
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("USB redirection is not supported "
-                         "by this version of QEMU"));
-        return NULL;
-    }
-
     virBufferAsprintf(&buf, "usb-redir,chardev=char%s,id=%s",
                       dev->info.alias, dev->info.alias);
 
     if (redirfilter && redirfilter->nusbdevs) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR_FILTER)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("USB redirection filter is not "
-                             "supported by this version of QEMU"));
-            return NULL;
-        }
-
         virBufferAddLit(&buf, ",filter=");
 
         for (i = 0; i < redirfilter->nusbdevs; i++) {

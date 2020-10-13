@@ -631,9 +631,13 @@ mymain(void)
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST("usb-port-missing", QEMU_CAPS_USB_HUB);
-    DO_TEST("usb-redir", NONE);
-    DO_TEST("usb-redir-filter", NONE);
-    DO_TEST("usb-redir-filter-version", NONE);
+    DO_TEST("usb-redir", QEMU_CAPS_USB_REDIR);
+    DO_TEST("usb-redir-filter",
+            QEMU_CAPS_USB_REDIR,
+            QEMU_CAPS_USB_REDIR_FILTER);
+    DO_TEST("usb-redir-filter-version",
+            QEMU_CAPS_USB_REDIR,
+            QEMU_CAPS_USB_REDIR_FILTER);
     DO_TEST_CAPS_LATEST("blkdeviotune");
     DO_TEST_CAPS_LATEST("blkdeviotune-max");
     DO_TEST_CAPS_LATEST("blkdeviotune-group-num");

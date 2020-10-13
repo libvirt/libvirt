@@ -1770,11 +1770,34 @@ qemuValidateDomainRNGDef(const virDomainRNGDef *def,
 
 
 static int
-qemuValidateDomainRedirdevDef(const virDomainRedirdevDef *def,
+qemuValidateDomainRedirdevDef(const virDomainRedirdevDef *dev,
+                              const virDomainDef *def,
                               virQEMUCapsPtr qemuCaps)
 {
-    if (qemuValidateDomainChrSourceDef(def->source, qemuCaps) < 0)
+    if (qemuValidateDomainChrSourceDef(dev->source, qemuCaps) < 0)
         return -1;
+
+    if (dev->bus != VIR_DOMAIN_REDIRDEV_BUS_USB) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Redirection bus %s is not supported by QEMU"),
+                       virDomainRedirdevBusTypeToString(dev->bus));
+        return -1;
+    }
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("USB redirection is not supported "
+                         "by this version of QEMU"));
+        return -1;
+    }
+
+    if (def->redirfilter && def->redirfilter->nusbdevs &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR_FILTER)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("USB redirection filter is not "
+                         "supported by this version of QEMU"));
+        return -1;
+    }
 
     return 0;
 }
@@ -4480,7 +4503,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:
-        ret = qemuValidateDomainRedirdevDef(dev->data.redirdev, qemuCaps);
+        ret = qemuValidateDomainRedirdevDef(dev->data.redirdev, def, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_WATCHDOG:
