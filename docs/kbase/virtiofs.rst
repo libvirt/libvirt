@@ -16,10 +16,17 @@ See https://virtio-fs.gitlab.io/
 Host setup
 ==========
 
-The host-side virtiofsd daemon, like other vhost-user backed devices,
-requires shared memory between the host and the guest. As of QEMU 4.2, this
-requires specifying a NUMA topology for the guest and explicitly specifying
-a memory backend. Multiple options are available:
+Almost all virtio devices (all that use virtqueues) require access to
+at least certain portions of guest RAM (possibly policed by DMA). In
+case of virtiofsd, much like in case of other vhost-user (see
+https://www.qemu.org/docs/master/interop/vhost-user.html) virtio
+devices that are realized by an userspace process, this in practice
+means that QEMU needs to allocate the backing memory for all the guest
+RAM as shared memory. As of QEMU 4.2, it is possible to explicitly
+specify a memory backend when specifying the NUMA topology. This
+method is however only viable for machine types that do support
+NUMA. As of QEMU 5.0.0, it is possible to specify the memory backend
+without NUMA (using the so called memobject interface).
 
 Either of the following:
 
@@ -46,7 +53,7 @@ Either of the following:
 Guest setup
 ===========
 
-#. Specify the NUMA topology
+#. Specify the NUMA topology (this step is only required for the NUMA case)
 
    in the domain XML of the guest.
    For the simplest one-node topology for a guest with 2GiB of RAM and 8 vCPUs:
