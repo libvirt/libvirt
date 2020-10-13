@@ -1116,12 +1116,12 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
 
-    DO_TEST("panic", NONE);
-    DO_TEST("panic-isa", NONE);
+    DO_TEST("panic", QEMU_CAPS_DEVICE_PANIC);
+    DO_TEST("panic-isa", QEMU_CAPS_DEVICE_PANIC);
     DO_TEST("panic-pseries",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
-    DO_TEST("panic-double", NONE);
-    DO_TEST("panic-no-address", NONE);
+    DO_TEST("panic-double", QEMU_CAPS_DEVICE_PANIC);
+    DO_TEST("panic-no-address", QEMU_CAPS_DEVICE_PANIC);
 
     DO_TEST("disk-backing-chains", NONE);
     DO_TEST("disk-backing-chains-index", NONE);

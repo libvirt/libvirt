@@ -1,1 +1,1 @@
-unsupported configuration: 'spapr-vty' is not supported in this QEMU binary
+unsupported configuration: setting the panic device address is not supported for model 'pseries'

@@ -2065,8 +2065,8 @@ mymain(void)
     DO_TEST("pseries-panic-no-address",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST_FAILURE("pseries-panic-address",
-                    QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST_PARSE_ERROR("pseries-panic-address",
+                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
 
     DO_TEST("pseries-phb-simple",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
@@ -2378,9 +2378,9 @@ mymain(void)
     DO_TEST("s390-panic-no-address",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_FAILURE("s390-panic-address",
-            QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_PARSE_ERROR("s390-panic-address",
+                        QEMU_CAPS_CCW,
+                        QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-panic-missing",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390);
