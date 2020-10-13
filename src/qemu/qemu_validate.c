@@ -3470,14 +3470,19 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
 
 
 static int
-qemuValidateDomainDefVirtioFSSharedMemory(const virDomainDef *def)
+qemuValidateDomainDefVirtioFSSharedMemory(const virDomainDef *def,
+                                          virQEMUCapsPtr qemuCaps)
 {
+    const char *defaultRAMId = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
+                                                                 def->virtType,
+                                                                 def->os.machine);
     size_t numa_nodes = virDomainNumaGetNodeCount(def->numa);
     size_t i;
 
-    if (numa_nodes == 0) {
+    if (numa_nodes == 0 &&
+        !(defaultRAMId && def->mem.access == VIR_DOMAIN_MEMORY_ACCESS_SHARED)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("virtiofs requires one or more NUMA nodes"));
+                       _("virtiofs requires shared memory"));
         return -1;
     }
 
@@ -3591,7 +3596,7 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
                            _("virtiofs does not support multidevs"));
             return -1;
         }
-        if (qemuValidateDomainDefVirtioFSSharedMemory(def) < 0)
+        if (qemuValidateDomainDefVirtioFSSharedMemory(def, qemuCaps) < 0)
             return -1;
         break;
 
