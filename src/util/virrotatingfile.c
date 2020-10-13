@@ -225,7 +225,8 @@ virRotatingFileWriterDelete(virRotatingFileWriterPtr file)
  *
  * The files will never exceed @maxlen bytes in size,
  * but may be rolled over before they reach this size
- * in order to avoid splitting lines
+ * in order to avoid splitting lines. If @maxlen is
+ * zero then no rollover will be performed.
  */
 virRotatingFileWriterPtr
 virRotatingFileWriterNew(const char *path,
@@ -430,25 +431,27 @@ virRotatingFileWriterAppend(virRotatingFileWriterPtr file,
         size_t towrite = len;
         bool forceRollover = false;
 
-        if (file->entry->pos > file->maxlen) {
-            /* If existing file is for some reason larger then max length we
-             * won't write to this file anymore, but we rollover this file.*/
-            forceRollover = true;
-            towrite = 0;
-        } else if ((file->entry->pos + towrite) > file->maxlen) {
-            towrite = file->maxlen - file->entry->pos;
+        if (file->maxlen != 0) {
+            if (file->entry->pos > file->maxlen) {
+                /* If existing file is for some reason larger then max length we
+                 * won't write to this file anymore, but we rollover this file.*/
+                forceRollover = true;
+                towrite = 0;
+            } else if ((file->entry->pos + towrite) > file->maxlen) {
+                towrite = file->maxlen - file->entry->pos;
 
-            /*
-             * If there's a newline in the last 80 chars
-             * we're about to write, then break at that
-             * point to avoid splitting lines across
-             * separate files
-             */
-            for (i = 0; i < towrite && i < 80; i++) {
-                if (buf[towrite - i - 1] == '\n') {
-                    towrite -= i;
-                    forceRollover = true;
-                    break;
+                /*
+                 * If there's a newline in the last 80 chars
+                 * we're about to write, then break at that
+                 * point to avoid splitting lines across
+                 * separate files
+                 */
+                for (i = 0; i < towrite && i < 80; i++) {
+                    if (buf[towrite - i - 1] == '\n') {
+                        towrite -= i;
+                        forceRollover = true;
+                        break;
+                    }
                 }
             }
         }
@@ -468,8 +471,9 @@ virRotatingFileWriterAppend(virRotatingFileWriterPtr file,
             file->entry->len += towrite;
         }
 
-        if ((file->entry->pos == file->maxlen && len) ||
-            forceRollover) {
+        if (file->maxlen != 0 &&
+            ((file->entry->pos == file->maxlen && len) ||
+             forceRollover)) {
             virRotatingFileWriterEntryPtr tmp;
             VIR_DEBUG("Hit max size %zu on %s (force=%d)",
                       file->maxlen, file->basepath, forceRollover);
