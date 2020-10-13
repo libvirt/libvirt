@@ -7291,11 +7291,6 @@ qemuBuildNumaCommandLine(virQEMUDriverConfigPtr cfg,
             if (rc == 0)
                 needBackend = true;
         }
-    } else if (needBackend) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("NUMA without specified memory backing is not "
-                         "supported with this QEMU binary"));
-        goto cleanup;
     }
 
     if (!needBackend &&

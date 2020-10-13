@@ -701,6 +701,7 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
     bool hasMemoryCap = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
                         virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE) ||
                         virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD);
+    bool needBacking = false;
 
     if (virDomainNumatuneHasPerNodeBinding(def->numa) && !hasMemoryCap) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -749,6 +750,20 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("setting NUMA distances is not "
                          "supported with this qemu"));
+        return -1;
+    }
+
+    if (virDomainNumaHasHMAT(def->numa) ||
+        !virQEMUCapsGetMachineNumaMemSupported(qemuCaps,
+                                               def->virtType,
+                                               def->os.machine)) {
+        needBacking = true;
+    }
+
+    if (needBacking && !hasMemoryCap) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("NUMA without specified memory backing is not "
+                         "supported with this QEMU binary"));
         return -1;
     }
 
