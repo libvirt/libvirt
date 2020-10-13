@@ -122,12 +122,6 @@ virCgroupV2ValidateMachineGroup(virCgroupPtr group,
     if (!(tmp = strrchr(group->unified.placement, '/')))
         return false;
 
-    if (STREQ(tmp, "/emulator")) {
-        *tmp = '\0';
-
-        if (!(tmp = strrchr(group->unified.placement, '/')))
-            return false;
-    }
     tmp++;
 
     if (STRNEQ(tmp, partmachinename) &&
@@ -198,6 +192,9 @@ virCgroupV2DetectPlacement(virCgroupPtr group,
                            const char *controllers,
                            const char *selfpath)
 {
+    g_autofree char *placement = g_strdup(selfpath);
+    char *tmp = NULL;
+
     if (group->unified.placement)
         return 0;
 
@@ -208,12 +205,18 @@ virCgroupV2DetectPlacement(virCgroupPtr group,
     if (STRNEQ(controllers, ""))
         return 0;
 
+    /* Running VM will have the main thread placed in emulator cgroup
+     * but we need to get the main cgroup. */
+    tmp = g_strrstr(placement, "/emulator");
+    if (tmp)
+        *tmp = '\0';
+
     /*
      * selfpath == "/" + path="" -> "/"
      * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"
      * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
      */
-    group->unified.placement = g_strdup_printf("%s%s%s", selfpath,
+    group->unified.placement = g_strdup_printf("%s%s%s", placement,
                                                (STREQ(selfpath, "/") || STREQ(path, "") ? "" : "/"), path);
 
     return 0;
