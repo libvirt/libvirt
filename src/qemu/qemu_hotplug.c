@@ -5502,7 +5502,6 @@ qemuDomainDetachPrepRedirdev(virDomainObjPtr vm,
                              virDomainRedirdevDefPtr match,
                              virDomainRedirdevDefPtr *detach)
 {
-    virDomainRedirdevDefPtr redirdev;
     ssize_t idx;
 
     if ((idx = virDomainRedirdevDefFind(vm->def, match)) < 0) {
@@ -5511,7 +5510,7 @@ qemuDomainDetachPrepRedirdev(virDomainObjPtr vm,
         return -1;
     }
 
-    *detach = redirdev = vm->def->redirdevs[idx];
+    *detach = vm->def->redirdevs[idx];
 
     return 0;
 }
@@ -5523,12 +5522,11 @@ qemuDomainDetachPrepNet(virDomainObjPtr vm,
                         virDomainNetDefPtr *detach)
 {
     int detachidx;
-    virDomainNetDefPtr net = NULL;
 
     if ((detachidx = virDomainNetFindIdx(vm->def, match)) < 0)
         return -1;
 
-    *detach = net = vm->def->nets[detachidx];
+    *detach = vm->def->nets[detachidx];
 
     return 0;
 }
@@ -5598,7 +5596,6 @@ qemuDomainDetachPrepRNG(virDomainObjPtr vm,
                         virDomainRNGDefPtr *detach)
 {
     ssize_t idx;
-    virDomainRNGDefPtr rng;
 
     if ((idx = virDomainRNGFind(vm->def, match)) < 0) {
         virReportError(VIR_ERR_DEVICE_MISSING,
@@ -5608,7 +5605,7 @@ qemuDomainDetachPrepRNG(virDomainObjPtr vm,
         return -1;
     }
 
-    *detach = rng = vm->def->rngs[idx];
+    *detach = vm->def->rngs[idx];
 
     return 0;
 }
@@ -5619,7 +5616,6 @@ qemuDomainDetachPrepMemory(virDomainObjPtr vm,
                            virDomainMemoryDefPtr match,
                            virDomainMemoryDefPtr *detach)
 {
-    virDomainMemoryDefPtr mem;
     int idx;
 
     if (qemuDomainMemoryDeviceAlignSize(vm->def, match) < 0)
@@ -5633,7 +5629,7 @@ qemuDomainDetachPrepMemory(virDomainObjPtr vm,
         return -1;
     }
 
-    *detach = mem = vm->def->mems[idx];
+    *detach = vm->def->mems[idx];
 
     return 0;
 }
