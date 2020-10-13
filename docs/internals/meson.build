@@ -5,33 +5,48 @@ internals_in_files = [
   'rpc',
 ]
 
-foreach name : internals_in_files
-  html_in_file = '@0@.html.in'.format(name)
-  html_file = '@0@.html'.format(name)
+html_xslt_gen_xslt = subsite_xsl
+html_xslt_gen_install_dir = docs_html_dir / 'internals'
+html_xslt_gen = []
 
-  out_file = custom_target(
-    html_file,
-    input: html_in_file,
-    output: html_file,
+foreach name : internals_in_files
+  html_xslt_gen += {
+    'name': name,
+    'source': 'docs/internals' / name + '.html.in',
+  }
+endforeach
+
+# keep the XSLT processing code block in sync with docs/meson.build
+
+# --- begin of XSLT processing ---
+
+foreach data : html_xslt_gen
+  html_filename = data['name'] + '.html'
+
+  html_file = custom_target(
+    html_filename,
+    input: data.get('file', data['name'] + '.html.in'),
+    output: html_filename,
     command: [
-      meson_python_prog,
-      python3_prog.path(),
-      meson_html_gen_prog.path(),
-      xsltproc_prog.path(),
-      xmllint_prog.path(),
-      meson.build_root(),
-      docs_timestamp,
-      subsite_xsl,
+      xsltproc_prog,
+      '--stringparam', 'pagesrc', data.get('source', ''),
+      '--stringparam', 'builddir', meson.build_root(),
+      '--stringparam', 'timestamp', docs_timestamp,
+      '--nonet',
+      html_xslt_gen_xslt,
       '@INPUT@',
-      '@OUTPUT@',
-      'docs/internals' / html_in_file,
     ],
-    depends: [ aclperms_gen ],
+    depends: data.get('depends', []),
     depend_files: [ page_xsl ],
+    capture: true,
     install: true,
-    install_dir: docs_html_dir / 'internals',
+    install_dir: html_xslt_gen_install_dir,
   )
 
-  install_web_deps += out_file
-  install_web_files += '@0@:@1@'.format(out_file.full_path(), docs_html_dir / 'internals')
+  install_web_deps += html_file
+  install_web_files += html_file.full_path() + ':' + html_xslt_gen_install_dir
 endforeach
+
+html_xslt_gen = []
+
+# --- end of XSLT processing ---
