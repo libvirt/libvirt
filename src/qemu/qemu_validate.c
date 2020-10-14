@@ -613,8 +613,38 @@ qemuValidateDomainDefBoot(const virDomainDef *def,
 }
 
 
+/**
+ * qemuValidateDefGetVcpuHotplugGranularity:
+ * @def: domain definition
+ *
+ * With QEMU 2.7 and newer, vCPUs can only be hotplugged in groups that
+ * respect the guest's hotplug granularity; because of that, QEMU will
+ * not allow guests to start unless the initial number of vCPUs is a
+ * multiple of the hotplug granularity.
+ *
+ * Returns the vCPU hotplug granularity.
+ */
+static unsigned int
+qemuValidateDefGetVcpuHotplugGranularity(const virDomainDef *def)
+{
+    /* If the guest CPU topology has not been configured, assume we
+     * can hotplug vCPUs one at a time */
+    if (!def->cpu || def->cpu->sockets == 0)
+        return 1;
+
+    /* For pSeries guests, hotplug can only be performed one core
+     * at a time, so the vCPU hotplug granularity is the number
+     * of threads per core */
+    if (qemuDomainIsPSeries(def))
+        return def->cpu->threads;
+
+    /* In all other cases, we can hotplug vCPUs one at a time */
+    return 1;
+}
+
+
 static int
-qemuValidateDomainCpuCount(const virDomainDef *def, virQEMUCapsPtr qemuCaps)
+qemuValidateDomainVCpuTopology(const virDomainDef *def, virQEMUCapsPtr qemuCaps)
 {
     unsigned int maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->virtType,
                                                         def->os.machine);
@@ -630,6 +660,61 @@ qemuValidateDomainCpuCount(const virDomainDef *def, virQEMUCapsPtr qemuCaps)
                        _("Maximum CPUs greater than specified machine "
                          "type limit %u"), maxCpus);
         return -1;
+    }
+
+    /* QEMU 2.7 (detected via the availability of query-hotpluggable-cpus)
+     * enforces stricter rules than previous versions when it comes to guest
+     * CPU topology. Verify known constraints are respected */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS)) {
+        unsigned int topologycpus;
+        unsigned int granularity;
+        unsigned int numacpus;
+
+        /* Starting from QEMU 2.5, max vCPU count and overall vCPU topology
+         * must agree. We only actually enforce this with QEMU 2.7+, due
+         * to the capability check above */
+        if (virDomainDefGetVcpusTopology(def, &topologycpus) == 0) {
+            if (topologycpus != virDomainDefGetVcpusMax(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("CPU topology doesn't match maximum vcpu count"));
+                return -1;
+            }
+
+            numacpus = virDomainNumaGetCPUCountTotal(def->numa);
+            if ((numacpus != 0) && (topologycpus != numacpus)) {
+                VIR_WARN("CPU topology doesn't match numa CPU count; "
+                         "partial NUMA mapping is obsoleted and will "
+                         "be removed in future");
+            }
+        }
+
+        /* vCPU hotplug granularity must be respected */
+        granularity = qemuValidateDefGetVcpuHotplugGranularity(def);
+        if ((virDomainDefGetVcpus(def) % granularity) != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("vCPUs count must be a multiple of the vCPU "
+                             "hotplug granularity (%u)"),
+                           granularity);
+            return -1;
+        }
+    }
+
+    if (ARCH_IS_X86(def->os.arch) &&
+        virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM) {
+        if (!qemuDomainIsQ35(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("more than %d vCPUs are only supported on "
+                             "q35-based machine types"),
+                           QEMU_MAX_VCPUS_WITHOUT_EIM);
+            return -1;
+        }
+        if (!def->iommu || def->iommu->eim != VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("more than %d vCPUs require extended interrupt "
+                             "mode enabled on the iommu device"),
+                           QEMU_MAX_VCPUS_WITHOUT_EIM);
+            return -1;
+        }
     }
 
     return 0;
@@ -820,36 +905,6 @@ qemuValidateDomainDefConsole(const virDomainDef *def,
     }
 
     return 0;
-}
-
-
-/**
- * qemuValidateDefGetVcpuHotplugGranularity:
- * @def: domain definition
- *
- * With QEMU 2.7 and newer, vCPUs can only be hotplugged in groups that
- * respect the guest's hotplug granularity; because of that, QEMU will
- * not allow guests to start unless the initial number of vCPUs is a
- * multiple of the hotplug granularity.
- *
- * Returns the vCPU hotplug granularity.
- */
-static unsigned int
-qemuValidateDefGetVcpuHotplugGranularity(const virDomainDef *def)
-{
-    /* If the guest CPU topology has not been configured, assume we
-     * can hotplug vCPUs one at a time */
-    if (!def->cpu || def->cpu->sockets == 0)
-        return 1;
-
-    /* For pSeries guests, hotplug can only be performed one core
-     * at a time, so the vCPU hotplug granularity is the number
-     * of threads per core */
-    if (qemuDomainIsPSeries(def))
-        return def->cpu->threads;
-
-    /* In all other cases, we can hotplug vCPUs one at a time */
-    return 1;
 }
 
 
@@ -1113,63 +1168,8 @@ qemuValidateDomainDef(const virDomainDef *def,
     if (qemuValidateDomainDefBoot(def, qemuCaps) < 0)
         return -1;
 
-    /* QEMU 2.7 (detected via the availability of query-hotpluggable-cpus)
-     * enforces stricter rules than previous versions when it comes to guest
-     * CPU topology. Verify known constraints are respected */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS)) {
-        unsigned int topologycpus;
-        unsigned int granularity;
-        unsigned int numacpus;
-
-        /* Starting from QEMU 2.5, max vCPU count and overall vCPU topology
-         * must agree. We only actually enforce this with QEMU 2.7+, due
-         * to the capability check above */
-        if (virDomainDefGetVcpusTopology(def, &topologycpus) == 0) {
-            if (topologycpus != virDomainDefGetVcpusMax(def)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("CPU topology doesn't match maximum vcpu count"));
-                return -1;
-            }
-
-            numacpus = virDomainNumaGetCPUCountTotal(def->numa);
-            if ((numacpus != 0) && (topologycpus != numacpus)) {
-                VIR_WARN("CPU topology doesn't match numa CPU count; "
-                         "partial NUMA mapping is obsoleted and will "
-                         "be removed in future");
-            }
-        }
-
-        /* vCPU hotplug granularity must be respected */
-        granularity = qemuValidateDefGetVcpuHotplugGranularity(def);
-        if ((virDomainDefGetVcpus(def) % granularity) != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("vCPUs count must be a multiple of the vCPU "
-                             "hotplug granularity (%u)"),
-                           granularity);
-            return -1;
-        }
-    }
-
-    if (qemuValidateDomainCpuCount(def, qemuCaps) < 0)
+    if (qemuValidateDomainVCpuTopology(def, qemuCaps) < 0)
         return -1;
-
-    if (ARCH_IS_X86(def->os.arch) &&
-        virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM) {
-        if (!qemuDomainIsQ35(def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("more than %d vCPUs are only supported on "
-                             "q35-based machine types"),
-                           QEMU_MAX_VCPUS_WITHOUT_EIM);
-            return -1;
-        }
-        if (!def->iommu || def->iommu->eim != VIR_TRISTATE_SWITCH_ON) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("more than %d vCPUs require extended interrupt "
-                             "mode enabled on the iommu device"),
-                           QEMU_MAX_VCPUS_WITHOUT_EIM);
-            return -1;
-        }
-    }
 
     if (def->nresctrls &&
         def->virtType != VIR_DOMAIN_VIRT_KVM) {
