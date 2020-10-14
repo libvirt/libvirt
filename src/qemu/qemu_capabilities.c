@@ -601,6 +601,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 380 */
               "usb-host.hostdevice",
               "virtio-balloon.free-page-reporting",
+              "block-export-add",
     );
 
 
@@ -1170,6 +1171,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "block-dirty-bitmap-merge", QEMU_CAPS_BITMAP_MERGE },
     { "query-cpu-model-baseline", QEMU_CAPS_QUERY_CPU_MODEL_BASELINE },
     { "query-cpu-model-comparison", QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON },
+    { "block-export-add", QEMU_CAPS_BLOCK_EXPORT_ADD },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {

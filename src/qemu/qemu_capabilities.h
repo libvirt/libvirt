@@ -581,6 +581,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 380 */
     QEMU_CAPS_USB_HOST_HOSTDEVICE, /* -device usb-host.hostdevice */
     QEMU_CAPS_VIRTIO_BALLOON_FREE_PAGE_REPORTING, /*virtio balloon free-page-reporting */
+    QEMU_CAPS_BLOCK_EXPORT_ADD, /* 'block-export-add' command is supported */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
