@@ -4506,11 +4506,20 @@ static int
 qemuValidateDomainDeviceDefMemory(virDomainMemoryDefPtr mem,
                                   virQEMUCapsPtr qemuCaps)
 {
-    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("nvdimm isn't supported by this QEMU binary"));
-        return -1;
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("nvdimm isn't supported by this QEMU binary"));
+            return -1;
+        }
+
+        if (mem->readonly &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM_UNARMED)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("nvdimm readonly property is not available "
+                             "with this QEMU binary"));
+            return -1;
+        }
     }
 
     return 0;

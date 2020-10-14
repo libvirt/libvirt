@@ -3199,8 +3199,7 @@ qemuBuildMemoryDimmBackendStr(virBufferPtr buf,
 
 
 char *
-qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
-                         qemuDomainObjPrivatePtr priv)
+qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *device;
@@ -3236,12 +3235,6 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
         }
 
         if (mem->readonly) {
-            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_NVDIMM_UNARMED)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("nvdimm readonly property is not available "
-                                 "with this QEMU binary"));
-                return NULL;
-            }
             virBufferAddLit(&buf, "unarmed=on,");
         }
 
@@ -7415,7 +7408,7 @@ qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
         virCommandAddArg(cmd, "-object");
         virCommandAddArgBuffer(cmd, &buf);
 
-        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i], priv)))
+        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i])))
             return -1;
 
         virCommandAddArgList(cmd, "-device", dimmStr, NULL);
