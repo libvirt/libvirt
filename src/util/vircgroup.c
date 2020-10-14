@@ -411,15 +411,44 @@ virCgroupValidatePlacement(virCgroupPtr group,
 
 
 static int
+virCgroupDetectControllers(virCgroupPtr group,
+                           int controllers,
+                           virCgroupPtr parent)
+{
+    size_t i;
+    int controllersAvailable = 0;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        int rc;
+
+        if (!group->backends[i])
+            continue;
+
+        rc = group->backends[i]->detectControllers(group, controllers, parent,
+                                                   controllersAvailable);
+        if (rc < 0)
+            return -1;
+        controllersAvailable |= rc;
+    }
+
+    /* Check that at least 1 controller is available */
+    if (controllersAvailable == 0) {
+        virReportSystemError(ENXIO, "%s",
+                             _("At least one cgroup controller is required"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virCgroupDetect(virCgroupPtr group,
                 pid_t pid,
                 int controllers,
                 const char *path,
                 virCgroupPtr parent)
 {
-    size_t i;
-    int controllersAvailable = 0;
-
     VIR_DEBUG("group=%p controllers=%d path=%s parent=%p",
               group, controllers, path, parent);
 
@@ -450,22 +479,8 @@ virCgroupDetect(virCgroupPtr group,
     if (virCgroupValidatePlacement(group, pid) < 0)
         return -1;
 
-    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (group->backends[i]) {
-            int rc = group->backends[i]->detectControllers(group, controllers, parent,
-                                                           controllersAvailable);
-            if (rc < 0)
-                return -1;
-            controllersAvailable |= rc;
-        }
-    }
-
-    /* Check that at least 1 controller is available */
-    if (controllersAvailable == 0) {
-        virReportSystemError(ENXIO, "%s",
-                             _("At least one cgroup controller is required"));
+    if (virCgroupDetectControllers(group, controllers, parent) < 0)
         return -1;
-    }
 
     return 0;
 }
