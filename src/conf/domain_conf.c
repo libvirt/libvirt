@@ -15361,10 +15361,10 @@ virDomainMemballoonDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    if ((freepage_reporting = virXMLPropString(node, "free-page-reporting")) &&
+    if ((freepage_reporting = virXMLPropString(node, "freePageReporting")) &&
         (def->free_page_reporting = virTristateSwitchTypeFromString(freepage_reporting)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid free-page-reporting attribute value '%s'"), freepage_reporting);
+                       _("invalid freePageReporting attribute value '%s'"), freepage_reporting);
         goto error;
     }
 
@@ -23548,7 +23548,7 @@ virDomainMemballoonDefCheckABIStability(virDomainMemballoonDefPtr src,
 
     if (src->free_page_reporting != dst->free_page_reporting) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target balloon free-page-reporting attribute value "
+                       _("Target balloon freePageReporting attribute value "
                          "'%s' does not match source '%s'"),
                        virTristateSwitchTypeToString(dst->free_page_reporting),
                        virTristateSwitchTypeToString(src->free_page_reporting));
@@ -27662,7 +27662,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
                           virTristateSwitchTypeToString(def->autodeflate));
 
     if (def->free_page_reporting != VIR_TRISTATE_SWITCH_ABSENT)
-        virBufferAsprintf(&attrBuf, " free-page-reporting='%s'",
+        virBufferAsprintf(&attrBuf, " freePageReporting='%s'",
                           virTristateSwitchTypeToString(def->free_page_reporting));
 
     if (def->period)

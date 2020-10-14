@@ -3934,7 +3934,7 @@ qemuValidateDomainDeviceDefMemballoon(const virDomainMemballoonDef *memballoon,
     if (memballoon->free_page_reporting != VIR_TRISTATE_SWITCH_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BALLOON_FREE_PAGE_REPORTING)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("free-page-reporting is not supported by this QEMU binary"));
+                       _("freePageReporting is not supported by this QEMU binary"));
         return -1;
     }
 

@@ -4540,7 +4540,7 @@
         </attribute>
       </optional>
       <optional>
-         <attribute name="free-page-reporting">
+         <attribute name="freePageReporting">
            <ref name="virOnOff"/>
          </attribute>
        </optional>

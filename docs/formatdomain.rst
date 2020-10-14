@@ -6755,8 +6755,8 @@ Example: manually added device with static PCI slot 2 requested
    release some memory at the last moment before a guest's process get killed by
    Out of Memory killer. :since:`Since 1.3.1, QEMU and KVM only`
 
-``free-page-reporting``
-   The optional ``free-page-reporting`` attribute allows to enable/disable
+``freePageReporting``
+   The optional ``freePageReporting`` attribute allows to enable/disable
    ("on"/"off", respectively) the ability of the QEMU virtio memory balloon to
    return unused pages back to the hypervisor to be used by other guests or
    processes. :since:`Since 6.9.0, QEMU and KVM only`
