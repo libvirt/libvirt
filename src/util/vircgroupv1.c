@@ -1468,7 +1468,7 @@ virCgroupV1MemoryOnceInit(void)
     g_autoptr(virCgroup) group = NULL;
     unsigned long long int mem_unlimited = 0ULL;
 
-    if (virCgroupNew(-1, "/", NULL, -1, &group) < 0)
+    if (virCgroupNew(-1, "/", -1, &group) < 0)
         return;
 
     if (!virCgroupV1HasController(group, VIR_CGROUP_CONTROLLER_MEMORY))

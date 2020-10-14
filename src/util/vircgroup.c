@@ -446,28 +446,19 @@ static int
 virCgroupDetect(virCgroupPtr group,
                 pid_t pid,
                 int controllers,
-                const char *path,
-                virCgroupPtr parent)
+                const char *path)
 {
-    VIR_DEBUG("group=%p controllers=%d path=%s parent=%p",
-              group, controllers, path, parent);
+    VIR_DEBUG("group=%p controllers=%d path=%s",
+              group, controllers, path);
 
     if (virCgroupSetBackends(group) < 0)
         return -1;
 
-    if (parent) {
-        if (virCgroupCopyMounts(group, parent) < 0)
-            return -1;
-    } else {
-        if (virCgroupDetectMounts(group) < 0)
-            return -1;
-    }
+    if (virCgroupDetectMounts(group) < 0)
+        return -1;
 
-    /* In some cases we can copy part of the placement info
-     * based on the parent cgroup...
-     */
-    if (parent || path[0] == '/') {
-        if (virCgroupCopyPlacement(group, path, parent) < 0)
+    if (path[0] == '/') {
+        if (virCgroupCopyPlacement(group, path, NULL) < 0)
             return -1;
     }
 
@@ -479,7 +470,7 @@ virCgroupDetect(virCgroupPtr group,
     if (virCgroupValidatePlacement(group, pid) < 0)
         return -1;
 
-    if (virCgroupDetectControllers(group, controllers, parent) < 0)
+    if (virCgroupDetectControllers(group, controllers, NULL) < 0)
         return -1;
 
     return 0;
@@ -708,15 +699,12 @@ virCgroupMakeGroup(virCgroupPtr parent,
 /**
  * virCgroupNew:
  * @path: path for the new group
- * @parent: parent group, or NULL
  * @controllers: bitmask of controllers to activate
  *
  * Create a new cgroup storing it in @group.
  *
  * If @path starts with a '/' it is treated as an
- * absolute path, and @parent is ignored. Otherwise
- * it is treated as being relative to @parent. If
- * @parent is NULL, then the placement of the current
+ * absolute path. Otherwise then the placement of the current
  * process is used.
  *
  * Returns 0 on success, -1 on error
@@ -724,19 +712,18 @@ virCgroupMakeGroup(virCgroupPtr parent,
 int
 virCgroupNew(pid_t pid,
              const char *path,
-             virCgroupPtr parent,
              int controllers,
              virCgroupPtr *group)
 {
     g_autoptr(virCgroup) newGroup = NULL;
 
-    VIR_DEBUG("pid=%lld path=%s parent=%p controllers=%d group=%p",
-              (long long) pid, path, parent, controllers, group);
+    VIR_DEBUG("pid=%lld path=%s controllers=%d group=%p",
+              (long long) pid, path, controllers, group);
 
     *group = NULL;
     newGroup = g_new0(virCgroup, 1);
 
-    if (virCgroupDetect(newGroup, pid, controllers, path, parent) < 0)
+    if (virCgroupDetect(newGroup, pid, controllers, path) < 0)
         return -1;
 
     *group = g_steal_pointer(&newGroup);
@@ -940,7 +927,7 @@ virCgroupNewPartition(const char *path,
         tmp++;
         *tmp = '\0';
 
-        if (virCgroupNew(-1, parentPath, NULL, controllers, &parent) < 0)
+        if (virCgroupNew(-1, parentPath, controllers, &parent) < 0)
             return -1;
     }
 
@@ -1156,7 +1143,6 @@ virCgroupEnableMissingControllers(char *path,
 
     if (virCgroupNew(pidleader,
                      "/",
-                     NULL,
                      controllers,
                      &parent) < 0)
         return -1;
