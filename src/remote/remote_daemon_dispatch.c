@@ -1302,6 +1302,37 @@ remoteRelayDomainEventBlockThreshold(virConnectPtr conn,
 }
 
 
+static int
+remoteRelayDomainEventMemoryFailure(virConnectPtr conn,
+                                    virDomainPtr dom,
+                                    int recipient,
+                                    int action,
+                                    unsigned int flags,
+                                    void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_domain_event_memory_failure_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
+        return -1;
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    data.callbackID = callback->callbackID;
+    data.recipient = recipient;
+    data.action = action;
+    data.flags = flags;
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_MEMORY_FAILURE,
+                                  (xdrproc_t)xdr_remote_domain_event_memory_failure_msg, &data);
+
+    return 0;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -1328,6 +1359,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDeviceRemovalFailed),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMetadataChange),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockThreshold),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMemoryFailure),
 };
 
 G_STATIC_ASSERT(G_N_ELEMENTS(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

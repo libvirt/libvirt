@@ -705,6 +705,8 @@ virDomainEventLifecycleNew;
 virDomainEventLifecycleNewFromDef;
 virDomainEventLifecycleNewFromDom;
 virDomainEventLifecycleNewFromObj;
+virDomainEventMemoryFailureNewFromDom;
+virDomainEventMemoryFailureNewFromObj;
 virDomainEventMetadataChangeNewFromDom;
 virDomainEventMetadataChangeNewFromObj;
 virDomainEventMigrationIterationNewFromDom;

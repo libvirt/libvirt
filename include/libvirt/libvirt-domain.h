@@ -3196,6 +3196,64 @@ typedef enum {
 } virDomainEventCrashedDetailType;
 
 /**
+ * virDomainMemoryFailureRecipientType:
+ *
+ * Recipient of a memory failure event.
+ */
+typedef enum {
+    /* memory failure at hypersivor memory address space */
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_HYPERVISOR = 0,
+
+    /* memory failure at guest memory address space */
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_GUEST = 1,
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_LAST
+# endif
+} virDomainMemoryFailureRecipientType;
+
+
+/**
+ * virDomainMemoryFailureActionType:
+ *
+ * Action of a memory failure event.
+ */
+typedef enum {
+    /* the memory failure could be ignored. This will only be the case for
+     * action-optional failures. */
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_IGNORE = 0,
+
+    /* memory failure occurred in guest memory, the guest enabled MCE handling
+     * mechanism, and hypervisor could inject the MCE into the guest
+     * successfully. */
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_INJECT = 1,
+
+    /* the failure is unrecoverable.  This occurs for action-required failures
+     * if the recipient is the hypervisor; hypervisor will exit. */
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_FATAL = 2,
+
+    /* the failure is unrecoverable but confined to the guest. This occurs if
+     * the recipient is a guest which is not ready to handle memory failures. */
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_RESET = 3,
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_LAST
+# endif
+} virDomainMemoryFailureActionType;
+
+
+typedef enum {
+    /* whether a memory failure event is action-required or action-optional
+     * (e.g. a failure during memory scrub). */
+    VIR_DOMAIN_MEMORY_FAILURE_ACTION_REQUIRED = (1 << 0),
+
+    /* whether the failure occurred while the previous failure was still in
+     * progress. */
+    VIR_DOMAIN_MEMORY_FAILURE_RECURSIVE = (1 << 1),
+} virDomainMemoryFailureFlags;
+
+
+/**
  * virConnectDomainEventCallback:
  * @conn: virConnect connection
  * @dom: The domain on which the event occurred
@@ -4565,6 +4623,31 @@ typedef void (*virConnectDomainEventBlockThresholdCallback)(virConnectPtr conn,
                                                             void *opaque);
 
 /**
+ * virConnectDomainEventMemoryFailureCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @recipient: the recipient of hardware memory failure
+ *             (virDomainMemoryFailureRecipientType)
+ * @action: the action of hardware memory failure
+ *          (virDomainMemoryFailureActionType)
+ * @flags: the flags of hardware memory failure
+ * @opaque: application specified data
+ *
+ * The callback occurs when the hypervisor handles the hardware memory
+ * corrupted event.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventMemoryFailureCallback)(virConnectPtr conn,
+                                                           virDomainPtr dom,
+                                                           int recipient,
+                                                           int action,
+                                                           unsigned int flags,
+                                                           void *opaque);
+
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -4606,6 +4689,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED = 22, /* virConnectDomainEventDeviceRemovalFailedCallback */
     VIR_DOMAIN_EVENT_ID_METADATA_CHANGE = 23, /* virConnectDomainEventMetadataChangeCallback */
     VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD = 24, /* virConnectDomainEventBlockThresholdCallback */
+    VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE = 25,  /* virConnectDomainEventMemoryFailureCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

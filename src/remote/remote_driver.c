@@ -405,6 +405,11 @@ remoteDomainBuildEventBlockThreshold(virNetClientProgramPtr prog,
                                      void *evdata, void *opaque);
 
 static void
+remoteDomainBuildEventMemoryFailure(virNetClientProgramPtr prog,
+                                    virNetClientPtr client,
+                                    void *evdata, void *opaque);
+
+static void
 remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog G_GNUC_UNUSED,
                                          virNetClientPtr client G_GNUC_UNUSED,
                                          void *evdata, void *opaque);
@@ -615,6 +620,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventBlockThreshold,
       sizeof(remote_domain_event_block_threshold_msg),
       (xdrproc_t)xdr_remote_domain_event_block_threshold_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_MEMORY_FAILURE,
+      remoteDomainBuildEventMemoryFailure,
+      sizeof(remote_domain_event_memory_failure_msg),
+      (xdrproc_t)xdr_remote_domain_event_memory_failure_msg },
 };
 
 static void
@@ -5433,6 +5442,29 @@ remoteDomainBuildEventBlockThreshold(virNetClientProgramPtr prog G_GNUC_UNUSED,
     event = virDomainEventBlockThresholdNewFromDom(dom, msg->dev,
                                                    msg->path ? *msg->path : NULL,
                                                    msg->threshold, msg->excess);
+
+    virObjectUnref(dom);
+
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
+}
+
+
+static void
+remoteDomainBuildEventMemoryFailure(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                    virNetClientPtr client G_GNUC_UNUSED,
+                                    void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_memory_failure_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virObjectEventPtr event = NULL;
+
+    if (!(dom = get_nonnull_domain(conn, msg->dom)))
+        return;
+
+    event = virDomainEventMemoryFailureNewFromDom(dom, msg->recipient,
+                                                  msg->action, msg->flags);
 
     virObjectUnref(dom);
 
