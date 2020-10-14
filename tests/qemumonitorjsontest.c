@@ -3276,7 +3276,7 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONDrivePivot);
     DO_TEST_GEN(qemuMonitorJSONScreendump);
     DO_TEST_GEN(qemuMonitorJSONOpenGraphics);
-    DO_TEST_GEN(qemuMonitorJSONNBDServerAdd);
+    DO_TEST_GEN_DEPRECATED(qemuMonitorJSONNBDServerAdd, false);
     DO_TEST_GEN(qemuMonitorJSONDetachCharDev);
     DO_TEST_GEN(qemuMonitorJSONBlockdevTrayOpen);
     DO_TEST_GEN(qemuMonitorJSONBlockdevTrayClose);
