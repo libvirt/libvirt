@@ -502,7 +502,6 @@ qemuBackupBeginPullExportDisks(virDomainObjPtr vm,
                                struct qemuBackupDiskData *disks,
                                size_t ndisks)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
 
     for (i = 0; i < ndisks; i++) {
@@ -511,11 +510,11 @@ qemuBackupBeginPullExportDisks(virDomainObjPtr vm,
         if (!dd->backupdisk->exportname)
             dd->backupdisk->exportname = g_strdup(dd->domdisk->dst);
 
-        if (qemuMonitorNBDServerAdd(priv->mon,
-                                    dd->store->nodeformat,
-                                    dd->backupdisk->exportname,
-                                    false,
-                                    dd->incrementalBitmap) < 0)
+        if (qemuBlockExportAddNBD(vm, NULL,
+                                  dd->store,
+                                  dd->backupdisk->exportname,
+                                  false,
+                                  dd->incrementalBitmap) < 0)
             return -1;
     }
 

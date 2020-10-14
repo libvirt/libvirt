@@ -445,8 +445,6 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         g_autofree char *diskAlias = NULL;
-        const char *exportname = NULL;
-        const char *devicename = NULL;
 
         /* check whether disk should be migrated */
         if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
@@ -461,14 +459,6 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
 
         if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
             goto cleanup;
-
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-            exportname = diskAlias;
-            devicename = disk->src->nodeformat;
-        } else {
-            exportname = NULL;
-            devicename = diskAlias;
-        }
 
         if (!server_started &&
             server.transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
@@ -493,7 +483,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
             qemuMonitorNBDServerStart(priv->mon, &server, tls_alias) < 0)
             goto exit_monitor;
 
-        if (qemuMonitorNBDServerAdd(priv->mon, devicename, exportname, true, NULL) < 0)
+        if (qemuBlockExportAddNBD(vm, diskAlias, disk->src, diskAlias, true, NULL) < 0)
             goto exit_monitor;
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;

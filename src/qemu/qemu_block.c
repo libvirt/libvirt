@@ -3363,3 +3363,41 @@ qemuBlockUpdateRelativeBacking(virDomainObjPtr vm,
 
     return 0;
 }
+
+
+/**
+ * qemuBlockExportAddNBD:
+ * @vm: domain object
+ * @drivealias: (optional) alias of -drive to export in pre-blockdev configurations
+ * @src: disk source to export
+ * @exportname: name for the export
+ * @writable: whether the NBD export allows writes
+ * @bitmap: (optional) block dirty bitmap to export along
+ *
+ * This function automatically selects the proper invocation of exporting a
+ * block backend via NBD in qemu. This includes use of nodename for blockdev
+ * and proper configuration for the exportname for older qemus.
+ *
+ * This function must be called while in the monitor context.
+ */
+int
+qemuBlockExportAddNBD(virDomainObjPtr vm,
+                      const char *drivealias,
+                      virStorageSourcePtr src,
+                      const char *exportname,
+                      bool writable,
+                      const char *bitmap)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    const char *exportsrc = drivealias;
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        exportsrc = src->nodeformat;
+    } else {
+        /* older qemu versions didn't support configuring the exportname and
+         * took the 'drivealias' as the export name */
+        exportname = NULL;
+    }
+
+    return qemuMonitorNBDServerAdd(priv->mon, exportsrc, exportname, writable, bitmap);
+}
