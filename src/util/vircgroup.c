@@ -294,6 +294,24 @@ virCgroupDetectMounts(virCgroupPtr group)
 }
 
 
+static int
+virCgroupCopyPlacement(virCgroupPtr group,
+                      const char *path,
+                      virCgroupPtr parent)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->copyPlacement(group, path, parent) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /*
  * virCgroupDetectPlacement:
  * @group: the group to process
@@ -403,12 +421,8 @@ virCgroupDetect(virCgroupPtr group,
      * based on the parent cgroup...
      */
     if (parent || path[0] == '/') {
-        for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-            if (group->backends[i] &&
-                group->backends[i]->copyPlacement(group, path, parent) < 0) {
-                return -1;
-            }
-        }
+        if (virCgroupCopyPlacement(group, path, parent) < 0)
+            return -1;
     }
 
     /* ... but use /proc/cgroups to fill in the rest */
