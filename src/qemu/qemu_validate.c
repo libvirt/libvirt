@@ -753,11 +753,20 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
         return -1;
     }
 
-    if (virDomainNumaHasHMAT(def->numa) ||
-        !virQEMUCapsGetMachineNumaMemSupported(qemuCaps,
+    if (!virQEMUCapsGetMachineNumaMemSupported(qemuCaps,
                                                def->virtType,
                                                def->os.machine)) {
         needBacking = true;
+    }
+
+    if (virDomainNumaHasHMAT(def->numa)) {
+        needBacking = true;
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA_HMAT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("HMAT is not supported with this QEMU"));
+            return -1;
+        }
     }
 
     if (needBacking && !hasMemoryCap) {
@@ -1066,13 +1075,6 @@ qemuValidateDomainDef(const virDomainDef *def,
                            _("Secure boot requires SMM feature enabled"));
             return -1;
         }
-    }
-
-    if (virDomainNumaHasHMAT(def->numa) &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA_HMAT)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("HMAT is not supported with this QEMU"));
-        return -1;
     }
 
     if (def->genidRequested &&
