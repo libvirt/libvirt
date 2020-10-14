@@ -502,6 +502,7 @@ mymain(void)
     DO_TEST("net-mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU);
     DO_TEST("net-coalesce", NONE);
     DO_TEST("net-many-models", NONE);
+    DO_TEST("net-vdpa", QEMU_CAPS_NETDEV_VHOST_VDPA);
 
     DO_TEST("serial-tcp-tlsx509-chardev", NONE);
     DO_TEST("serial-tcp-tlsx509-chardev-notls", NONE);

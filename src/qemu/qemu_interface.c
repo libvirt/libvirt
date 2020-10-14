@@ -638,6 +638,29 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
 }
 
 
+/* qemuInterfaceVDPAConnect:
+ * @net: pointer to the VM's interface description
+ *
+ * returns: file descriptor of the vdpa device
+ *
+ * Called *only* called if actualType is VIR_DOMAIN_NET_TYPE_VDPA
+ */
+int
+qemuInterfaceVDPAConnect(virDomainNetDefPtr net)
+{
+    int fd;
+
+    if ((fd = open(net->data.vdpa.devicepath, O_RDWR)) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to open '%s' for vdpa device"),
+                             net->data.vdpa.devicepath);
+        return -1;
+    }
+
+    return fd;
+}
+
+
 qemuSlirpPtr
 qemuInterfacePrepareSlirp(virQEMUDriverPtr driver,
                           virDomainNetDefPtr net)

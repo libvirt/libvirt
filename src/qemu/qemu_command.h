@@ -99,7 +99,8 @@ virJSONValuePtr qemuBuildHostNetStr(virDomainNetDefPtr net,
                                     size_t tapfdSize,
                                     char **vhostfd,
                                     size_t vhostfdSize,
-                                    const char *slirpfd);
+                                    const char *slirpfd,
+                                    const char *vdpadev);
 
 /* Current, best practice */
 char *qemuBuildNicDevStr(virDomainDefPtr def,

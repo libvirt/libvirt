@@ -1429,6 +1429,20 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                 }
             }
         }
+    } else if (net->type == VIR_DOMAIN_NET_TYPE_VDPA) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_VHOST_VDPA)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vDPA devices are not supported with this QEMU binary"));
+            return -1;
+        }
+
+        if (net->model != VIR_DOMAIN_NET_MODEL_VIRTIO) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("invalid model for interface of type '%s': '%s'"),
+                           virDomainNetTypeToString(net->type),
+                           virDomainNetModelTypeToString(net->model));
+            return -1;
+        }
     } else if (net->guestIP.nroutes || net->guestIP.nips) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Invalid attempt to set network interface "

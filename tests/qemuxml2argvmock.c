@@ -195,7 +195,7 @@ virHostGetDRMRenderNode(void)
 
 static void (*real_virCommandPassFD)(virCommandPtr cmd, int fd, unsigned int flags);
 
-static const int testCommandPassSafeFDs[] = { 1730, 1731 };
+static const int testCommandPassSafeFDs[] = { 1730, 1731, 1732 };
 
 void
 virCommandPassFD(virCommandPtr cmd,
@@ -280,4 +280,13 @@ virNetDevSetRootQDisc(const char *ifname G_GNUC_UNUSED,
                       const char *qdisc G_GNUC_UNUSED)
 {
     return 0;
+}
+
+
+int
+qemuInterfaceVDPAConnect(virDomainNetDefPtr net G_GNUC_UNUSED)
+{
+    if (fcntl(1732, F_GETFD) != -1)
+        abort();
+    return 1732;
 }

@@ -58,3 +58,5 @@ int qemuInterfaceOpenVhostNet(virDomainDefPtr def,
 
 qemuSlirpPtr qemuInterfacePrepareSlirp(virQEMUDriverPtr driver,
                                        virDomainNetDefPtr net);
+
+int qemuInterfaceVDPAConnect(virDomainNetDefPtr net) G_GNUC_NO_INLINE;

@@ -1367,7 +1367,15 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
 
         for (i = 0; i < vm->def->nnets; i++) {
             virDomainNetDefPtr net = vm->def->nets[i];
-            qemuSlirpPtr slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
+            qemuSlirpPtr slirp;
+
+            if (net->type == VIR_DOMAIN_NET_TYPE_VDPA) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("vDPA devices cannot be migrated"));
+                return false;
+            }
+
+            slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
 
             if (slirp && !qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_MIGRATE)) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
