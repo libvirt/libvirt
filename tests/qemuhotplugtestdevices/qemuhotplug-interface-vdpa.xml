@@ -1,0 +1,4 @@
+<interface type='vdpa'>
+    <mac address='52:54:00:39:5f:04'/>
+    <source dev='/dev/vhost-vdpa-0'/>
+</interface>

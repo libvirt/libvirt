@@ -1157,6 +1157,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     virErrorPtr originalError = NULL;
     g_autofree char *slirpfdName = NULL;
     int slirpfd = -1;
+    g_autofree char *vdpafdName = NULL;
+    int vdpafd = -1;
     char **tapfdName = NULL;
     int *tapfd = NULL;
     size_t tapfdSize = 0;
@@ -1334,12 +1336,16 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         /* hostdev interfaces were handled earlier in this function */
         break;
 
+    case VIR_DOMAIN_NET_TYPE_VDPA:
+        if ((vdpafd = qemuInterfaceVDPAConnect(net)) < 0)
+            goto cleanup;
+        break;
+
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_UDP:
-    case VIR_DOMAIN_NET_TYPE_VDPA:
     case VIR_DOMAIN_NET_TYPE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("hotplug of interface type of %s is not implemented yet"),
@@ -1386,13 +1392,29 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     for (i = 0; i < vhostfdSize; i++)
         vhostfdName[i] = g_strdup_printf("vhostfd-%s%zu", net->info.alias, i);
 
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    if (vdpafd > 0) {
+        /* vhost-vdpa only accepts a filename. We can pass an open fd by
+         * filename if we add the fd to an fdset and then pass a filename of
+         * /dev/fdset/$FDSETID. */
+        qemuMonitorAddFdInfo fdinfo;
+        if (qemuMonitorAddFileHandleToSet(priv->mon, vdpafd, -1,
+                                          net->data.vdpa.devicepath,
+                                          &fdinfo) < 0) {
+            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            goto cleanup;
+        }
+        vdpafdName = g_strdup_printf("/dev/fdset/%d", fdinfo.fdset);
+    }
+
     if (!(netprops = qemuBuildHostNetStr(net,
                                          tapfdName, tapfdSize,
                                          vhostfdName, vhostfdSize,
-                                         slirpfdName, NULL)))
+                                         slirpfdName, vdpafdName))) {
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto cleanup;
-
-    qemuDomainObjEnterMonitor(driver, vm);
+    }
 
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
         if (qemuMonitorAttachCharDev(priv->mon, charDevAlias, net->data.vhostuser) < 0) {
@@ -1518,6 +1540,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     VIR_FREE(vhostfdName);
     virDomainCCWAddressSetFree(ccwaddrs);
     VIR_FORCE_CLOSE(slirpfd);
+    VIR_FORCE_CLOSE(vdpafd);
 
     return ret;
 
@@ -4598,7 +4621,38 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
              * to just ignore the error and carry on.
              */
         }
+    } else if (actualType == VIR_DOMAIN_NET_TYPE_VDPA) {
+        int vdpafdset = -1;
+        g_autoptr(qemuMonitorFdsets) fdsets = NULL;
+
+        /* query qemu for which fdset is associated with the fd that we passed
+         * to qemu via 'add-fd' for this vdpa device. If we don't remove the
+         * fd, qemu will keep it open */
+        if (qemuMonitorQueryFdsets(priv->mon, &fdsets) == 0) {
+            for (i = 0; i < fdsets->nfdsets && vdpafdset < 0; i++) {
+                size_t j;
+                qemuMonitorFdsetInfoPtr set = &fdsets->fdsets[i];
+
+                for (j = 0; j < set->nfds; j++) {
+                    qemuMonitorFdsetFdInfoPtr fdinfo = &set->fds[j];
+                    if (STREQ_NULLABLE(fdinfo->opaque, net->data.vdpa.devicepath)) {
+                        vdpafdset = set->id;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (vdpafdset < 0) {
+            VIR_WARN("Cannot determine fdset for vdpa device");
+        } else {
+            if (qemuMonitorRemoveFdset(priv->mon, vdpafdset) < 0) {
+                /* if it fails, there's not much we can do... just carry on */
+                VIR_WARN("failed to close vdpa device");
+            }
+        }
     }
+
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -1;

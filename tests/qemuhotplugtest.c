@@ -90,6 +90,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SCSI_BLOCK);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_KBD);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_NETDEV_VHOST_VDPA);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, priv->qemuCaps) < 0)
         return -1;
@@ -141,6 +142,9 @@ testQemuHotplugAttach(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         ret = qemuDomainAttachHostDevice(&driver, vm, dev->data.hostdev);
         break;
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = qemuDomainAttachNetDevice(&driver, vm, dev->data.net);
+        break;
     default:
         VIR_TEST_VERBOSE("device type '%s' cannot be attached",
                 virDomainDeviceTypeToString(dev->type));
@@ -163,6 +167,7 @@ testQemuHotplugDetach(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_NET:
         ret = qemuDomainDetachDeviceLive(vm, dev, &driver, async);
         break;
     default:
@@ -823,6 +828,17 @@ mymain(void)
                    "device_add", QMP_OK);
     DO_TEST_DETACH("pseries-base-live", "hostdev-pci", false, false,
                    "device_del", QMP_DEVICE_DELETED("hostdev0") QMP_OK);
+
+    DO_TEST_ATTACH("base-live", "interface-vdpa", false, true,
+                   "add-fd", "{ \"return\": { \"fdset-id\": 1, \"fd\": 95 }}",
+                   "netdev_add", QMP_OK, "device_add", QMP_OK);
+    DO_TEST_DETACH("base-live", "interface-vdpa", false, false,
+                   "device_del", QMP_DEVICE_DELETED("net0") QMP_OK,
+                   "netdev_del", QMP_OK,
+                   "query-fdsets",
+                   "{ \"return\": [{\"fds\": [{\"fd\": 95, \"opaque\": \"/dev/vhost-vdpa-0\"}], \"fdset-id\": 1}]}",
+                   "remove-fd", QMP_OK
+                   );
 
     DO_TEST_ATTACH("base-live", "watchdog", false, true,
                    "watchdog-set-action", QMP_OK,

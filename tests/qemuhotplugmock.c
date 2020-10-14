@@ -19,11 +19,13 @@
 #include <config.h>
 
 #include "qemu/qemu_hotplug.h"
+#include "qemu/qemu_interface.h"
 #include "qemu/qemu_process.h"
 #include "conf/domain_conf.h"
 #include "virdevmapper.h"
 #include "virutil.h"
 #include "virmock.h"
+#include <fcntl.h>
 
 static int (*real_virGetDeviceID)(const char *path, int *maj, int *min);
 static bool (*real_virFileExists)(const char *path);
@@ -105,4 +107,11 @@ qemuProcessStartManagedPRDaemon(virDomainObjPtr vm G_GNUC_UNUSED)
 void
 qemuProcessKillManagedPRDaemon(virDomainObjPtr vm G_GNUC_UNUSED)
 {
+}
+
+int
+qemuInterfaceVDPAConnect(virDomainNetDefPtr net G_GNUC_UNUSED)
+{
+    /* need a valid fd or sendmsg won't work. Just open /dev/null */
+    return open("/dev/null", O_RDONLY);
 }
