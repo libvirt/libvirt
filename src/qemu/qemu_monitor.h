@@ -1232,6 +1232,10 @@ int qemuMonitorNBDServerAdd(qemuMonitorPtr mon,
                             bool writable,
                             const char *bitmap);
 int qemuMonitorNBDServerStop(qemuMonitorPtr);
+
+int qemuMonitorBlockExportAdd(qemuMonitorPtr mon,
+                              virJSONValuePtr *props);
+
 int qemuMonitorGetTPMModels(qemuMonitorPtr mon,
                             char ***tpmmodels);
 

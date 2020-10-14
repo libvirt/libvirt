@@ -505,6 +505,10 @@ int qemuMonitorJSONNBDServerAdd(qemuMonitorPtr mon,
                                 bool writable,
                                 const char *bitmap);
 int qemuMonitorJSONNBDServerStop(qemuMonitorPtr mon);
+
+int qemuMonitorJSONBlockExportAdd(qemuMonitorPtr mon,
+                                  virJSONValuePtr *props);
+
 int qemuMonitorJSONGetTPMModels(qemuMonitorPtr mon,
                                 char ***tpmmodels)
     ATTRIBUTE_NONNULL(2);

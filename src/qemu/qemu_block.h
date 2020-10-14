@@ -277,6 +277,13 @@ qemuBlockUpdateRelativeBacking(virDomainObjPtr vm,
                                virStorageSourcePtr src,
                                virStorageSourcePtr topsrc);
 
+virJSONValuePtr
+qemuBlockExportGetNBDProps(const char *nodename,
+                           const char *exportname,
+                           bool writable,
+                           const char *bitmap);
+
+
 int
 qemuBlockExportAddNBD(virDomainObjPtr vm,
                       const char *drivealias,

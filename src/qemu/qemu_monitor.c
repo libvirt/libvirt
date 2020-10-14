@@ -3926,6 +3926,16 @@ qemuMonitorNBDServerStop(qemuMonitorPtr mon)
 
 
 int
+qemuMonitorBlockExportAdd(qemuMonitorPtr mon,
+                          virJSONValuePtr *props)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONBlockExportAdd(mon, props);
+}
+
+
+int
 qemuMonitorGetTPMModels(qemuMonitorPtr mon,
                             char ***tpmmodels)
 {

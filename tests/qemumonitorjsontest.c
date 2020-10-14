@@ -3047,6 +3047,28 @@ testQemuMonitorJSONTransaction(const void *opaque)
 
 
 static int
+testQemuMonitorJSONBlockExportAdd(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    g_autoptr(qemuMonitorTest) test = NULL;
+    g_autoptr(virJSONValue) nbddata = NULL;
+
+    if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
+        return -1;
+
+    if (!(nbddata = qemuBlockExportGetNBDProps("nodename", "exportname", true, "bitmapname")))
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "block-export-add", "{\"return\":{}}") < 0)
+        return -1;
+
+    if (qemuMonitorJSONBlockExportAdd(qemuMonitorTestGetMonitor(test), &nbddata) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
 testQemuMonitorJSONqemuMonitorJSONGetCPUModelComparison(const void *opaque)
 {
     const testGenericData *data = opaque;
@@ -3243,6 +3265,7 @@ mymain(void)
     DO_TEST(GetNonExistingCPUData);
     DO_TEST(GetIOThreads);
     DO_TEST(Transaction);
+    DO_TEST(BlockExportAdd);
     DO_TEST_SIMPLE("qmp_capabilities", qemuMonitorJSONSetCapabilities);
     DO_TEST_SIMPLE("system_powerdown", qemuMonitorJSONSystemPowerdown);
     DO_TEST_SIMPLE("system_reset", qemuMonitorJSONSystemReset);

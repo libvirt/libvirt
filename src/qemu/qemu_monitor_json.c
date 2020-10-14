@@ -7284,6 +7284,27 @@ qemuMonitorJSONNBDServerStop(qemuMonitorPtr mon)
 }
 
 
+int
+qemuMonitorJSONBlockExportAdd(qemuMonitorPtr mon,
+                              virJSONValuePtr *props)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValuePtr pr = g_steal_pointer(props);
+
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("block-export-add", pr)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
                               char ***array)

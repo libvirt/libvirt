@@ -3365,6 +3365,31 @@ qemuBlockUpdateRelativeBacking(virDomainObjPtr vm,
 }
 
 
+virJSONValuePtr
+qemuBlockExportGetNBDProps(const char *nodename,
+                           const char *exportname,
+                           bool writable,
+                           const char *bitmap)
+{
+    g_autofree char *exportid = NULL;
+    virJSONValuePtr ret = NULL;
+
+    exportid = g_strdup_printf("libvirt-nbd-%s", nodename);
+
+    if (virJSONValueObjectCreate(&ret,
+                                 "s:type", "nbd",
+                                 "s:id", exportid,
+                                 "s:node-name", nodename,
+                                 "b:writable", writable,
+                                 "s:name", exportname,
+                                 "S:bitmap", bitmap,
+                                 NULL) < 0)
+        return NULL;
+
+    return ret;
+}
+
+
 /**
  * qemuBlockExportAddNBD:
  * @vm: domain object
