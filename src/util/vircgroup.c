@@ -669,13 +669,6 @@ virCgroupNew(pid_t pid,
     *group = NULL;
     newGroup = g_new0(virCgroup, 1);
 
-    if (path[0] == '/' || !parent) {
-        newGroup->path = g_strdup(path);
-    } else {
-        newGroup->path = g_strdup_printf("%s%s%s", parent->path,
-                                         STREQ(parent->path, "") ? "" : "/", path);
-    }
-
     if (virCgroupDetect(newGroup, pid, controllers, path, parent) < 0)
         return -1;
 
@@ -2388,8 +2381,8 @@ virCgroupKillInternal(virCgroupPtr group,
     g_autofree char *keypath = NULL;
     bool done = false;
     FILE *fp = NULL;
-    VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
-              group, group->path, signum, pids);
+    VIR_DEBUG("group=%p signum=%d pids=%p",
+              group, signum, pids);
 
     if (virCgroupPathOfController(group, controller, taskFile, &keypath) < 0)
         return -1;
@@ -2471,8 +2464,8 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     g_autoptr(DIR) dp = NULL;
     struct dirent *ent;
     int direrr;
-    VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
-              group, group->path, signum, pids);
+    VIR_DEBUG("group=%p signum=%d pids=%p",
+              group, signum, pids);
 
     if (virCgroupPathOfController(group, controller, "", &keypath) < 0)
         return -1;
@@ -2532,7 +2525,7 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
     virCgroupBackendPtr *backends = virCgroupBackendGetAll();
     g_autoptr(GHashTable) pids = g_hash_table_new_full(g_int64_hash, g_int64_equal, g_free, NULL);
 
-    VIR_DEBUG("group=%p path=%s signum=%d", group, group->path, signum);
+    VIR_DEBUG("group=%p signum=%d", group, signum);
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (backends && backends[i] && backends[i]->available()) {
@@ -2563,7 +2556,7 @@ virCgroupKillPainfully(virCgroupPtr group)
 {
     size_t i;
     int ret;
-    VIR_DEBUG("cgroup=%p path=%s", group, group->path);
+    VIR_DEBUG("cgroup=%p", group);
     for (i = 0; i < 15; i++) {
         int signum;
         if (i == 0)
@@ -3491,7 +3484,6 @@ virCgroupFree(virCgroupPtr group)
     VIR_FREE(group->unified.mountPoint);
     VIR_FREE(group->unified.placement);
 
-    VIR_FREE(group->path);
     VIR_FREE(group);
 }
 

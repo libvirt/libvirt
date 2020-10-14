@@ -38,7 +38,6 @@
 VIR_LOG_INIT("tests.cgrouptest");
 
 static int validateCgroup(virCgroupPtr cgroup,
-                          const char *expectPath,
                           const char **expectMountPoint,
                           const char **expectLinkPoint,
                           const char **expectPlacement,
@@ -47,12 +46,6 @@ static int validateCgroup(virCgroupPtr cgroup,
                           unsigned int expectUnifiedControllers)
 {
     size_t i;
-
-    if (STRNEQ(cgroup->path, expectPath)) {
-        fprintf(stderr, "Wrong path '%s', expected '%s'\n",
-                cgroup->path, expectPath);
-        return -1;
-    }
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         if (STRNEQ_NULLABLE(expectMountPoint[i],
@@ -240,7 +233,7 @@ static int testCgroupNewForSelf(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    return validateCgroup(cgroup, "", mountsFull, links, placement, NULL, NULL, 0);
+    return validateCgroup(cgroup, mountsFull, links, placement, NULL, NULL, 0);
 }
 
 
@@ -314,14 +307,14 @@ static int testCgroupNewForPartition(const void *args G_GNUC_UNUSED)
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         return -1;
     }
-    rv = validateCgroup(cgroup, "/virtualmachines.partition", mountsSmall, links, placementSmall, NULL, NULL, 0);
+    rv = validateCgroup(cgroup, mountsSmall, links, placementSmall, NULL, NULL, 0);
     virCgroupFree(cgroup);
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         return -1;
     }
-    return validateCgroup(cgroup, "/virtualmachines.partition", mountsFull, links, placementFull, NULL, NULL, 0);
+    return validateCgroup(cgroup, mountsFull, links, placementFull, NULL, NULL, 0);
 }
 
 
@@ -365,8 +358,7 @@ static int testCgroupNewForPartitionNested(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    return validateCgroup(cgroup, "/deployment.partition/production.partition",
-                          mountsFull, links, placementFull, NULL, NULL, 0);
+    return validateCgroup(cgroup, mountsFull, links, placementFull, NULL, NULL, 0);
 }
 
 
@@ -416,8 +408,7 @@ static int testCgroupNewForPartitionNestedDeep(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    return validateCgroup(cgroup, "/user/berrange.user/production.partition",
-                          mountsFull, links, placementFull, NULL, NULL, 0);
+    return validateCgroup(cgroup, mountsFull, links, placementFull, NULL, NULL, 0);
 }
 
 
@@ -448,7 +439,7 @@ static int testCgroupNewForPartitionDomain(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    return validateCgroup(domaincgroup, "/production.partition/foo.libvirt-lxc", mountsFull, links, placement, NULL, NULL, 0);
+    return validateCgroup(domaincgroup, mountsFull, links, placement, NULL, NULL, 0);
 }
 
 static int testCgroupNewForPartitionDomainEscaped(const void *args G_GNUC_UNUSED)
@@ -493,7 +484,7 @@ static int testCgroupNewForPartitionDomainEscaped(const void *args G_GNUC_UNUSED
      * since our fake /proc/cgroups pretends this controller
      * isn't compiled into the kernel
      */
-    return validateCgroup(domaincgroup, "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc", mountsFull, links, placement, NULL, NULL, 0);
+    return validateCgroup(domaincgroup, mountsFull, links, placement, NULL, NULL, 0);
 }
 
 static int testCgroupNewForSelfAllInOne(const void *args G_GNUC_UNUSED)
@@ -514,7 +505,7 @@ static int testCgroupNewForSelfAllInOne(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    return validateCgroup(cgroup, "", mountsAllInOne, linksAllInOne, placement, NULL, NULL, 0);
+    return validateCgroup(cgroup, mountsAllInOne, linksAllInOne, placement, NULL, NULL, 0);
 }
 
 
@@ -547,7 +538,7 @@ static int testCgroupNewForSelfUnified(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    return validateCgroup(cgroup, "", empty, empty, empty,
+    return validateCgroup(cgroup, empty, empty, empty,
                           "/not/really/sys/fs/cgroup", "/", controllers);
 }
 
@@ -580,7 +571,7 @@ static int testCgroupNewForSelfHybrid(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    return validateCgroup(cgroup, "", mounts, empty, placement,
+    return validateCgroup(cgroup, mounts, empty, placement,
                           "/not/really/sys/fs/cgroup/unified", "/", controllers);
 }
 

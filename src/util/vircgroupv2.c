@@ -413,8 +413,6 @@ virCgroupV2MakeGroup(virCgroupPtr parent,
         return 0;
     }
 
-    VIR_DEBUG("Make group %s", group->path);
-
     controller = virCgroupV2GetAnyController(group);
     if (virCgroupV2PathOfController(group, controller, "", &path) < 0)
         return -1;
@@ -424,7 +422,7 @@ virCgroupV2MakeGroup(virCgroupPtr parent,
     if (!virFileExists(path) &&
         (!create || (mkdir(path, 0755) < 0 && errno != EEXIST))) {
         virReportSystemError(errno, _("Failed to create v2 cgroup '%s'"),
-                             group->path);
+                             path);
         return -1;
     }
 

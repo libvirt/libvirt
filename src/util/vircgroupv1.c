@@ -545,7 +545,9 @@ virCgroupV1CpuSetInherit(virCgroupPtr parent,
         "cpuset.memory_migrate",
     };
 
-    VIR_DEBUG("Setting up inheritance %s -> %s", parent->path, group->path);
+    VIR_DEBUG("Setting up inheritance %s -> %s",
+              parent->legacy[VIR_CGROUP_CONTROLLER_CPUSET].placement,
+              group->legacy[VIR_CGROUP_CONTROLLER_CPUSET].placement);
     for (i = 0; i < G_N_ELEMENTS(inherit_values); i++) {
         g_autofree char *value = NULL;
 
@@ -583,7 +585,6 @@ virCgroupV1SetMemoryUseHierarchy(virCgroupPtr group)
     if (value == 1)
         return 0;
 
-    VIR_DEBUG("Setting up %s/%s", group->path, filename);
     if (virCgroupSetValueU64(group,
                              VIR_CGROUP_CONTROLLER_MEMORY,
                              filename, 1) < 0)
@@ -601,7 +602,6 @@ virCgroupV1MakeGroup(virCgroupPtr parent,
 {
     size_t i;
 
-    VIR_DEBUG("Make group %s", group->path);
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         g_autofree char *path = NULL;
 
@@ -671,7 +671,6 @@ virCgroupV1Remove(virCgroupPtr group)
     int rc = 0;
     size_t i;
 
-    VIR_DEBUG("Removing cgroup %s", group->path);
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         g_autofree char *grppath = NULL;
 
@@ -697,7 +696,6 @@ virCgroupV1Remove(virCgroupPtr group)
         VIR_DEBUG("Removing cgroup %s and all child cgroups", grppath);
         rc = virCgroupRemoveRecursively(grppath);
     }
-    VIR_DEBUG("Done removing cgroup %s", group->path);
 
     return rc;
 }
