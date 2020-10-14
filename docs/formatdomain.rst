@@ -6759,7 +6759,9 @@ Example: manually added device with static PCI slot 2 requested
    The optional ``freePageReporting`` attribute allows to enable/disable
    ("on"/"off", respectively) the ability of the QEMU virtio memory balloon to
    return unused pages back to the hypervisor to be used by other guests or
-   processes. :since:`Since 6.9.0, QEMU and KVM only`
+   processes. Please note that despite its name it has no effect on free memory
+   as reported by ``virDomainMemoryStats()`` and/or ``virsh dommemstat``.
+   :since:`Since 6.9.0, QEMU and KVM only`
 
 ``period``
    The optional ``period`` allows the QEMU virtio memory balloon driver to
