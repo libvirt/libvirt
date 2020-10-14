@@ -239,6 +239,23 @@ virCgroupSetBackends(virCgroupPtr group)
 }
 
 
+static int
+virCgroupCopyMounts(virCgroupPtr group,
+                    virCgroupPtr parent)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->copyMounts(group, parent) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /*
  * Process /proc/mounts figuring out what controllers are
  * mounted and where
@@ -375,12 +392,8 @@ virCgroupDetect(virCgroupPtr group,
         return -1;
 
     if (parent) {
-        for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-            if (group->backends[i] &&
-                group->backends[i]->copyMounts(group, parent) < 0) {
-                return -1;
-            }
-        }
+        if (virCgroupCopyMounts(group, parent) < 0)
+            return -1;
     } else {
         if (virCgroupDetectMounts(group) < 0)
             return -1;
