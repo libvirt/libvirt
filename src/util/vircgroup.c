@@ -1048,7 +1048,28 @@ virCgroupNewDetect(pid_t pid,
                    int controllers,
                    virCgroupPtr *group)
 {
-    return virCgroupNew(pid, "", NULL, controllers, group);
+    g_autoptr(virCgroup) new = g_new0(virCgroup, 1);
+
+    VIR_DEBUG("pid=%lld controllers=%d group=%p",
+              (long long) pid, controllers, group);
+
+    if (virCgroupSetBackends(new) < 0)
+        return -1;
+
+    if (virCgroupDetectMounts(new) < 0)
+        return -1;
+
+    if (virCgroupDetectPlacement(new, pid, "") < 0)
+        return -1;
+
+    if (virCgroupValidatePlacement(new, pid) < 0)
+        return -1;
+
+    if (virCgroupDetectControllers(new, controllers, NULL) < 0)
+        return -1;
+
+    *group = g_steal_pointer(&new);
+    return 0;
 }
 
 
