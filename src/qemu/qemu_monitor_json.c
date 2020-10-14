@@ -3929,6 +3929,179 @@ int qemuMonitorJSONGraphicsRelocate(qemuMonitorPtr mon,
 }
 
 
+static int
+qemuAddfdInfoParse(virJSONValuePtr msg,
+                   qemuMonitorAddFdInfoPtr fdinfo)
+{
+    virJSONValuePtr returnObj;
+
+    if (!(returnObj = virJSONValueObjectGetObject(msg, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid return data in add-fd response"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberInt(returnObj, "fd", &fdinfo->fd) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid fd in add-fd response"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberInt(returnObj, "fdset-id", &fdinfo->fdset) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing or invalid fdset-id in add-fd response"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/* if fdset is negative, qemu will create a new fdset and add the fd to that */
+int qemuMonitorJSONAddFileHandleToSet(qemuMonitorPtr mon,
+                                      int fd,
+                                      int fdset,
+                                      const char *opaque,
+                                      qemuMonitorAddFdInfoPtr fdinfo)
+{
+    virJSONValuePtr args = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+
+    if (virJSONValueObjectCreate(&args, "S:opaque", opaque, NULL) < 0)
+        return -1;
+
+    if (fdset >= 0)
+        if (virJSONValueObjectAdd(args, "j:fdset-id", fdset, NULL) < 0)
+            return -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("add-fd", args)))
+        return -1;
+
+    if (qemuMonitorJSONCommandWithFd(mon, cmd, fd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    if (qemuAddfdInfoParse(reply, fdinfo) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
+qemuMonitorJSONQueryFdsetsParse(virJSONValuePtr msg,
+                                qemuMonitorFdsetsPtr *fdsets)
+{
+    virJSONValuePtr returnArray, entry;
+    size_t i;
+    g_autoptr(qemuMonitorFdsets) sets = g_new0(qemuMonitorFdsets, 1);
+    int ninfo;
+
+    returnArray = virJSONValueObjectGetArray(msg, "return");
+
+    ninfo = virJSONValueArraySize(returnArray);
+    if (ninfo > 0)
+        sets->fdsets = g_new0(qemuMonitorFdsetInfo, ninfo);
+    sets->nfdsets = ninfo;
+
+    for (i = 0; i < ninfo; i++) {
+        size_t j;
+        const char *tmp;
+        virJSONValuePtr fdarray;
+        qemuMonitorFdsetInfoPtr fdsetinfo = &sets->fdsets[i];
+
+        if (!(entry = virJSONValueArrayGet(returnArray, i))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-fdsets return data missing fdset array element"));
+            return -1;
+        }
+
+        if (virJSONValueObjectGetNumberInt(entry, "fdset-id", &fdsetinfo->id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-fdsets reply was missing 'fdset-id'"));
+            return -1;
+
+        }
+
+        fdarray = virJSONValueObjectGetArray(entry, "fds");
+        fdsetinfo->nfds = virJSONValueArraySize(fdarray);
+        if (fdsetinfo->nfds > 0)
+            fdsetinfo->fds = g_new0(qemuMonitorFdsetFdInfo, fdsetinfo->nfds);
+
+        for (j = 0; j < fdsetinfo->nfds; j++) {
+            qemuMonitorFdsetFdInfoPtr fdinfo = &fdsetinfo->fds[j];
+            virJSONValuePtr fdentry;
+
+            if (!(fdentry = virJSONValueArrayGet(fdarray, j))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("query-fdsets return data missing fd array element"));
+                return -1;
+            }
+
+            if (virJSONValueObjectGetNumberInt(fdentry, "fd", &fdinfo->fd) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("query-fdsets return data missing 'fd'"));
+                return -1;
+            }
+
+            /* opaque is optional and may be missing */
+            tmp = virJSONValueObjectGetString(fdentry, "opaque");
+            if (tmp)
+                fdinfo->opaque = g_strdup(tmp);
+        }
+    }
+
+    *fdsets = g_steal_pointer(&sets);
+    return 0;
+}
+
+
+int qemuMonitorJSONQueryFdsets(qemuMonitorPtr mon,
+                               qemuMonitorFdsetsPtr *fdsets)
+{
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("query-fdsets",
+                                                             NULL);
+
+    if (!cmd)
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONQueryFdsetsParse(reply, fdsets) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int qemuMonitorJSONRemoveFdset(qemuMonitorPtr mon,
+                               int fdset)
+{
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("remove-fd",
+                                                             "i:fdset-id", fdset,
+                                                             NULL);
+
+    if (!cmd)
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int qemuMonitorJSONSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,
                                   int fd)

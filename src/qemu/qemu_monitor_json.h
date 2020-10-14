@@ -202,6 +202,18 @@ int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
 int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon,
                                    virPCIDeviceAddress *guestAddr);
 
+int qemuMonitorJSONAddFileHandleToSet(qemuMonitorPtr mon,
+                                      int fd,
+                                      int fdset,
+                                      const char *opaque,
+                                      qemuMonitorAddFdInfoPtr info);
+
+int qemuMonitorJSONRemoveFdset(qemuMonitorPtr mon,
+                               int fdset);
+
+int qemuMonitorJSONQueryFdsets(qemuMonitorPtr mon,
+                               qemuMonitorFdsetsPtr *fdsets);
+
 int qemuMonitorJSONSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,
                                   int fd);

@@ -2649,6 +2649,99 @@ qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
 }
 
 
+/**
+ * qemuMonitorAddFileHandleToSet:
+ * @mon: monitor object
+ * @fd: file descriptor to pass to qemu
+ * @fdset: the fdset to register this fd with, -1 to create a new fdset
+ * @opaque: opaque data to associated with this fd
+ * @info: structure that will be updated with the fd and fdset returned by qemu
+ *
+ * Attempts to register a file descriptor with qemu that can then be referenced
+ * via the file path /dev/fdset/$FDSETID
+ * Returns 0 if ok, and -1 on failure */
+int
+qemuMonitorAddFileHandleToSet(qemuMonitorPtr mon,
+                              int fd,
+                              int fdset,
+                              const char *opaque,
+                              qemuMonitorAddFdInfoPtr info)
+{
+    VIR_DEBUG("fd=%d,fdset=%i,opaque=%s", fd, fdset, opaque);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    if (fd < 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("fd must be valid"));
+        return -1;
+    }
+
+    return qemuMonitorJSONAddFileHandleToSet(mon, fd, fdset, opaque, info);
+}
+
+
+/**
+ * qemuMonitorRemoveFdset:
+ * @mon: monitor object
+ * @fdset: the fdset to remove
+ *
+ * Attempts to remove a fdset from qemu and close associated file descriptors
+ * Returns 0 if ok, and -1 on failure */
+int
+qemuMonitorRemoveFdset(qemuMonitorPtr mon,
+                       int fdset)
+{
+    VIR_DEBUG("fdset=%d", fdset);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    if (fdset < 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("fdset must be valid"));
+        return -1;
+    }
+
+    return qemuMonitorJSONRemoveFdset(mon, fdset);
+}
+
+
+void qemuMonitorFdsetsFree(qemuMonitorFdsetsPtr fdsets)
+{
+    size_t i;
+
+    for (i = 0; i < fdsets->nfdsets; i++) {
+        size_t j;
+        qemuMonitorFdsetInfoPtr set = &fdsets->fdsets[i];
+
+        for (j = 0; j < set->nfds; j++)
+            g_free(set->fds[j].opaque);
+    }
+    g_free(fdsets->fdsets);
+    g_free(fdsets);
+}
+
+
+/**
+ * qemuMonitorQueryFdsets:
+ * @mon: monitor object
+ * @fdsets: a pointer that is filled with a new qemuMonitorFdsets struct
+ *
+ * Queries qemu for the fdsets that are registered with that instance, and
+ * returns a structure describing those fdsets. The returned struct should be
+ * freed with qemuMonitorFdsetsFree();
+ *
+ * Returns 0 if ok, and -1 on failure */
+int
+qemuMonitorQueryFdsets(qemuMonitorPtr mon,
+                       qemuMonitorFdsetsPtr *fdsets)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONQueryFdsets(mon, fdsets);
+}
+
+
 int
 qemuMonitorSendFileHandle(qemuMonitorPtr mon,
                           const char *fdname,

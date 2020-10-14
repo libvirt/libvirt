@@ -880,6 +880,47 @@ int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
                                 int tlsPort,
                                 const char *tlsSubject);
 
+typedef struct _qemuMonitorAddFdInfo qemuMonitorAddFdInfo;
+typedef qemuMonitorAddFdInfo *qemuMonitorAddFdInfoPtr;
+struct _qemuMonitorAddFdInfo {
+    int fd;
+    int fdset;
+};
+int
+qemuMonitorAddFileHandleToSet(qemuMonitorPtr mon,
+                              int fd,
+                              int fdset,
+                              const char *opaque,
+                              qemuMonitorAddFdInfoPtr info);
+
+int
+qemuMonitorRemoveFdset(qemuMonitorPtr mon,
+                       int fdset);
+
+typedef struct _qemuMonitorFdsetFdInfo qemuMonitorFdsetFdInfo;
+typedef qemuMonitorFdsetFdInfo *qemuMonitorFdsetFdInfoPtr;
+struct _qemuMonitorFdsetFdInfo {
+    int fd;
+    char *opaque;
+};
+typedef struct _qemuMonitorFdsetInfo qemuMonitorFdsetInfo;
+typedef qemuMonitorFdsetInfo *qemuMonitorFdsetInfoPtr;
+struct _qemuMonitorFdsetInfo {
+    int id;
+    qemuMonitorFdsetFdInfoPtr fds;
+    int nfds;
+};
+typedef struct _qemuMonitorFdsets qemuMonitorFdsets;
+typedef qemuMonitorFdsets *qemuMonitorFdsetsPtr;
+struct _qemuMonitorFdsets {
+    qemuMonitorFdsetInfoPtr fdsets;
+    int nfdsets;
+};
+void qemuMonitorFdsetsFree(qemuMonitorFdsetsPtr fdsets);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorFdsets, qemuMonitorFdsetsFree);
+int qemuMonitorQueryFdsets(qemuMonitorPtr mon,
+                           qemuMonitorFdsetsPtr *fdsets);
+
 int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
                               const char *fdname,
                               int fd);
