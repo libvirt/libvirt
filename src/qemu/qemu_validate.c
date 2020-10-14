@@ -591,6 +591,35 @@ static int
 qemuValidateDomainDefBoot(const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
+    if (def->os.loader &&
+        def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
+        /* These are the QEMU implementation limitations. But we
+         * have to live with them for now. */
+
+        if (!qemuDomainIsQ35(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Secure boot is supported with q35 machine types only"));
+            return -1;
+        }
+
+        /* Now, technically it is possible to have secure boot on
+         * 32bits too, but that would require some -cpu xxx magic
+         * too. Not worth it unless we are explicitly asked. */
+        if (def->os.arch != VIR_ARCH_X86_64) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Secure boot is supported for x86_64 architecture only"));
+            return -1;
+        }
+
+        /* SMM will be enabled by qemuFirmwareFillDomain() if needed. */
+        if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE &&
+            def->features[VIR_DOMAIN_FEATURE_SMM] != VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Secure boot requires SMM feature enabled"));
+            return -1;
+        }
+    }
+
     if (def->os.bios.rt_set) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_REBOOT_TIMEOUT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1101,35 +1130,6 @@ qemuValidateDomainDef(const virDomainDef *def,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("ACPI requires UEFI on this architecture"));
         return -1;
-    }
-
-    if (def->os.loader &&
-        def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
-        /* These are the QEMU implementation limitations. But we
-         * have to live with them for now. */
-
-        if (!qemuDomainIsQ35(def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Secure boot is supported with q35 machine types only"));
-            return -1;
-        }
-
-        /* Now, technically it is possible to have secure boot on
-         * 32bits too, but that would require some -cpu xxx magic
-         * too. Not worth it unless we are explicitly asked. */
-        if (def->os.arch != VIR_ARCH_X86_64) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Secure boot is supported for x86_64 architecture only"));
-            return -1;
-        }
-
-        /* SMM will be enabled by qemuFirmwareFillDomain() if needed. */
-        if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE &&
-            def->features[VIR_DOMAIN_FEATURE_SMM] != VIR_TRISTATE_SWITCH_ON) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Secure boot requires SMM feature enabled"));
-            return -1;
-        }
     }
 
     if (def->genidRequested &&
