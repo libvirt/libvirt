@@ -312,6 +312,7 @@ bool virNetDevSupportsBandwidth(virDomainNetType type)
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_VDPA:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }

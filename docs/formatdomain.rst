@@ -4644,6 +4644,30 @@ or stopping the guest.
    </devices>
    ...
 
+:anchor:`<a id="elementsNICSVDPA"/>`
+
+vDPA devices
+^^^^^^^^^^^^
+
+A vDPA network device can be used to provide wire speed network performance
+within a domain. A vDPA device is a specialized type of network device that
+uses a datapath that complies with the virtio specification but has a
+vendor-specific control path.  To use such a device with libvirt, the host
+device must already be bound to the appropriate device-specific vDPA driver.
+This creates a vDPA char device (e.g. /dev/vhost-vdpa-0) that can be used to
+assign the device to a libvirt domain.  :since:`Since 6.9.0 (QEMU only,
+requires QEMU 5.1.0 or newer)`
+
+::
+
+   ...
+   <devices>
+     <interface type='vdpa'>
+       <source dev='/dev/vhost-vdpa-0'/>
+     </interface>
+   </devices>
+   ...
+
 :anchor:`<a id="elementsTeaming"/>`
 
 Teaming a virtio/hostdev NIC pair

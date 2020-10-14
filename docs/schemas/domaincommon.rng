@@ -3129,6 +3129,21 @@
             <ref name="interface-options"/>
           </interleave>
         </group>
+
+        <group>
+          <attribute name="type">
+            <value>vdpa</value>
+          </attribute>
+          <interleave>
+            <element name="source">
+              <attribute name="dev">
+                <ref name="deviceName"/>
+              </attribute>
+            </element>
+            <ref name="interface-options"/>
+          </interleave>
+        </group>
+
       </choice>
       <optional>
         <attribute name="trustGuestRxFilters">
