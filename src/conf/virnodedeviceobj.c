@@ -711,6 +711,7 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
         case VIR_NODE_DEV_CAP_MDEV:
         case VIR_NODE_DEV_CAP_CCW_DEV:
         case VIR_NODE_DEV_CAP_CSS_DEV:
+        case VIR_NODE_DEV_CAP_VDPA:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }
@@ -862,7 +863,8 @@ virNodeDeviceObjMatch(virNodeDeviceObjPtr obj,
               MATCH(MDEV_TYPES)    ||
               MATCH(MDEV)          ||
               MATCH(CCW_DEV)       ||
-              MATCH(CSS_DEV)))
+              MATCH(CSS_DEV)       ||
+              MATCH(VDPA)))
             return false;
     }
 

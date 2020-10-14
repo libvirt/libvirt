@@ -432,6 +432,15 @@
               <dd>The device number.</dd>
             </dl>
           </dd>
+          <dt><code>vdpa</code></dt>
+          <dd>Describes a virtual datapath acceleration (vDPA) network device.
+          <span class="since">Since 6.9.0</span>. Sub-elements include:
+            <dl>
+              <dt><code>chardev</code></dt>
+              <dd>The path to the character device that is used to access the
+                  device.</dd>
+            </dl>
+          </dd>
         </dl>
       </dd>
     </dl>
