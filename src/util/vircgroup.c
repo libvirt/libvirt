@@ -394,6 +394,23 @@ virCgroupDetectPlacement(virCgroupPtr group,
 
 
 static int
+virCgroupValidatePlacement(virCgroupPtr group,
+                           pid_t pid)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->validatePlacement(group, pid) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 virCgroupDetect(virCgroupPtr group,
                 pid_t pid,
                 int controllers,
@@ -430,12 +447,8 @@ virCgroupDetect(virCgroupPtr group,
         return -1;
 
     /* Check that for every mounted controller, we found our placement */
-    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (group->backends[i] &&
-            group->backends[i]->validatePlacement(group, pid) < 0) {
-            return -1;
-        }
-    }
+    if (virCgroupValidatePlacement(group, pid) < 0)
+        return -1;
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (group->backends[i]) {
