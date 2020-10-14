@@ -212,6 +212,33 @@ virCgroupPartitionEscape(char **path)
 }
 
 
+static int
+virCgroupSetBackends(virCgroupPtr group)
+{
+    virCgroupBackendPtr *backends = virCgroupBackendGetAll();
+    bool backendAvailable = false;
+    size_t i;
+
+    if (!backends)
+        return -1;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (backends[i] && backends[i]->available()) {
+            group->backends[i] = backends[i];
+            backendAvailable = true;
+        }
+    }
+
+    if (!backendAvailable) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no cgroup backend available"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /*
  * Process /proc/mounts figuring out what controllers are
  * mounted and where
@@ -339,28 +366,13 @@ virCgroupDetect(virCgroupPtr group,
                 virCgroupPtr parent)
 {
     size_t i;
-    bool backendAvailable = false;
     int controllersAvailable = 0;
-    virCgroupBackendPtr *backends = virCgroupBackendGetAll();
 
     VIR_DEBUG("group=%p controllers=%d path=%s parent=%p",
               group, controllers, path, parent);
 
-    if (!backends)
+    if (virCgroupSetBackends(group) < 0)
         return -1;
-
-    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (backends[i] && backends[i]->available()) {
-            group->backends[i] = backends[i];
-            backendAvailable = true;
-        }
-    }
-
-    if (!backendAvailable) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("no cgroup backend available"));
-        return -1;
-    }
 
     if (parent) {
         for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
