@@ -340,6 +340,40 @@ typedef int (*qemuMonitorDomainGuestCrashloadedCallback)(qemuMonitorPtr mon,
                                                          virDomainObjPtr vm,
                                                          void *opaque);
 
+typedef enum {
+    QEMU_MONITOR_MEMORY_FAILURE_RECIPIENT_HYPERVISOR,
+    QEMU_MONITOR_MEMORY_FAILURE_RECIPIENT_GUEST,
+
+    QEMU_MONITOR_MEMORY_FAILURE_RECIPIENT_LAST
+} qemuMonitorMemoryFailureRecipient;
+
+VIR_ENUM_DECL(qemuMonitorMemoryFailureRecipient);
+
+typedef enum {
+    QEMU_MONITOR_MEMORY_FAILURE_ACTION_IGNORE,
+    QEMU_MONITOR_MEMORY_FAILURE_ACTION_INJECT,
+    QEMU_MONITOR_MEMORY_FAILURE_ACTION_FATAL,
+    QEMU_MONITOR_MEMORY_FAILURE_ACTION_RESET,
+
+    QEMU_MONITOR_MEMORY_FAILURE_ACTION_LAST
+} qemuMonitorMemoryFailureAction;
+
+VIR_ENUM_DECL(qemuMonitorMemoryFailureAction);
+
+typedef struct _qemuMonitorEventMemoryFailure qemuMonitorEventMemoryFailure;
+typedef qemuMonitorEventMemoryFailure *qemuMonitorEventMemoryFailurePtr;
+struct _qemuMonitorEventMemoryFailure {
+    qemuMonitorMemoryFailureRecipient recipient;
+    qemuMonitorMemoryFailureAction action;
+    bool action_required;
+    bool recursive;
+};
+
+typedef int (*qemuMonitorDomainMemoryFailureCallback)(qemuMonitorPtr mon,
+                                                      virDomainObjPtr vm,
+                                                      qemuMonitorEventMemoryFailurePtr mfp,
+                                                      void *opaque);
+
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 typedef qemuMonitorCallbacks *qemuMonitorCallbacksPtr;
 struct _qemuMonitorCallbacks {
@@ -376,6 +410,7 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainPRManagerStatusChangedCallback domainPRManagerStatusChanged;
     qemuMonitorDomainRdmaGidStatusChangedCallback domainRdmaGidStatusChanged;
     qemuMonitorDomainGuestCrashloadedCallback domainGuestCrashloaded;
+    qemuMonitorDomainMemoryFailureCallback domainMemoryFailure;
 };
 
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
@@ -475,6 +510,10 @@ int qemuMonitorEmitSerialChange(qemuMonitorPtr mon,
                                 const char *devAlias,
                                 bool connected);
 int qemuMonitorEmitSpiceMigrated(qemuMonitorPtr mon);
+
+int qemuMonitorEmitMemoryFailure(qemuMonitorPtr mon,
+                                 qemuMonitorEventMemoryFailurePtr mfp);
+
 int qemuMonitorEmitMigrationStatus(qemuMonitorPtr mon,
                                    int status);
 int qemuMonitorEmitMigrationPass(qemuMonitorPtr mon,

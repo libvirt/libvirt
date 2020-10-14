@@ -112,6 +112,7 @@ static void qemuMonitorJSONHandleBlockThreshold(qemuMonitorPtr mon, virJSONValue
 static void qemuMonitorJSONHandleDumpCompleted(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePRManagerStatusChanged(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleRdmaGidStatusChanged(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleMemoryFailure(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -132,6 +133,7 @@ static qemuEventHandler eventHandlers[] = {
     { "GUEST_CRASHLOADED", qemuMonitorJSONHandleGuestCrashloaded, },
     { "GUEST_PANICKED", qemuMonitorJSONHandleGuestPanic, },
     { "JOB_STATUS_CHANGE", qemuMonitorJSONHandleJobStatusChange, },
+    { "MEMORY_FAILURE", qemuMonitorJSONHandleMemoryFailure, },
     { "MIGRATION", qemuMonitorJSONHandleMigrationStatus, },
     { "MIGRATION_PASS", qemuMonitorJSONHandleMigrationPass, },
     { "NIC_RX_FILTER_CHANGED", qemuMonitorJSONHandleNicRxFilterChanged, },
@@ -1332,6 +1334,53 @@ qemuMonitorJSONHandleSpiceMigrated(qemuMonitorPtr mon,
                                    virJSONValuePtr data G_GNUC_UNUSED)
 {
     qemuMonitorEmitSpiceMigrated(mon);
+}
+
+
+static void
+qemuMonitorJSONHandleMemoryFailure(qemuMonitorPtr mon,
+                                   virJSONValuePtr data)
+{
+    virJSONValuePtr flagsjson = virJSONValueObjectGetObject(data, "flags");
+    const char *str;
+    int recipient;
+    int action;
+    bool ar = false;
+    bool recursive = false;
+    qemuMonitorEventMemoryFailure mf = {0};
+
+    if (!(str = virJSONValueObjectGetString(data, "recipient"))) {
+        VIR_WARN("missing recipient in memory failure event");
+        return;
+    }
+
+    recipient = qemuMonitorMemoryFailureRecipientTypeFromString(str);
+    if (recipient < 0) {
+        VIR_WARN("unknown recipient '%s' in memory_failure event", str);
+        return;
+    }
+
+    if (!(str = virJSONValueObjectGetString(data, "action"))) {
+        VIR_WARN("missing action in memory failure event");
+        return;
+    }
+
+    action = qemuMonitorMemoryFailureActionTypeFromString(str);
+    if (action < 0) {
+        VIR_WARN("unknown action '%s' in memory_failure event", str);
+        return;
+    }
+
+    if (flagsjson) {
+        virJSONValueObjectGetBoolean(flagsjson, "action-required", &ar);
+        virJSONValueObjectGetBoolean(flagsjson, "recursive", &recursive);
+    }
+
+    mf.recipient = recipient;
+    mf.action = action;
+    mf.action_required = ar;
+    mf.recursive = recursive;
+    qemuMonitorEmitMemoryFailure(mon, &mf);
 }
 
 

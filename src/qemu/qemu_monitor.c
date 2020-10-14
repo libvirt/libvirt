@@ -197,6 +197,14 @@ VIR_ENUM_IMPL(qemuMonitorDumpStatus,
               "none", "active", "completed", "failed",
 );
 
+VIR_ENUM_IMPL(qemuMonitorMemoryFailureRecipient,
+              QEMU_MONITOR_MEMORY_FAILURE_RECIPIENT_LAST,
+              "hypervisor", "guest");
+
+VIR_ENUM_IMPL(qemuMonitorMemoryFailureAction,
+              QEMU_MONITOR_MEMORY_FAILURE_ACTION_LAST,
+              "ignore", "inject",
+              "fatal", "reset");
 
 #if DEBUG_RAW_IO
 static char *
@@ -1422,6 +1430,18 @@ qemuMonitorEmitSpiceMigrated(qemuMonitorPtr mon)
     VIR_DEBUG("mon=%p", mon);
 
     QEMU_MONITOR_CALLBACK(mon, ret, domainSpiceMigrated, mon->vm);
+
+    return ret;
+}
+
+
+int
+qemuMonitorEmitMemoryFailure(qemuMonitorPtr mon,
+                             qemuMonitorEventMemoryFailurePtr mfp)
+{
+    int ret = -1;
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainMemoryFailure, mon->vm, mfp);
 
     return ret;
 }
