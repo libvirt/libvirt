@@ -111,6 +111,12 @@
     </code></p>
 
     <p>
+      Please consult our
+      <a href="coding-style.html#xml-element-and-attribute-naming">coding style</a>
+      guide on elements and attribute names.
+    </p>
+
+    <p>
       This task is in many ways the most important to get right, since once
       the API has been committed to the repository, it's libvirt's policy
       never to change it.  Mistakes in the implementation are bugs that you

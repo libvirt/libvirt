@@ -960,3 +960,18 @@ git):
    cleanup:
       /* ... do other stuff ... */
   }
+
+
+XML element and attribute naming
+--------------------------------
+
+New elements and/or attributes should be short and descriptive.
+In general, they should reflect what the feature does instead of
+how exactly it is named in given hypervisor because this creates
+an abstraction that other drivers can benefit from (for instance
+if the same feature is named differently in two hypervisors).
+That is not to say an element or attribute can't have the same
+name as in a hypervisor, but proceed with caution.
+
+Single worded names are preferred, but if more words must be
+used then they shall be joined in camelCase style.
