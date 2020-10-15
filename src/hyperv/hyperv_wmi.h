@@ -154,8 +154,9 @@ int hypervAddEmbeddedParam(hypervInvokeParamsListPtr params, hypervPrivate *priv
 
 void hypervFreeEmbeddedParam(virHashTablePtr p);
 
-int hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
-        WsXmlDocH *res);
+int hypervInvokeMethod(hypervPrivate *priv,
+                       hypervInvokeParamsListPtr *paramsPtr,
+                       WsXmlDocH *res);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * CIM/Msvm_ReturnCode

@@ -753,17 +753,24 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
 /*
  * hypervInvokeMethod:
  * @priv: hypervPrivate object associated with the connection
- * @params: object containing the all necessary information for method
- * invocation
+ * @paramsPtr: pointer to object containing the all necessary information for
+ *             method invocation (consumed on invocation)
  * @res: Optional out parameter to contain the response XML.
  *
- * Performs an invocation described by @params, and optionally returns the
- * XML containing the result. Returns -1 on failure, 0 on success.
+ * Performs an invocation described by object at @paramsPtr, and optionally
+ * returns the XML containing the result.
+ *
+ * Please note that, object at @paramsPtr is consumed by this function and the
+ * pointer is cleared out, regardless of returning success or failure.
+ *
+ * Returns -1 on failure, 0 on success.
  */
 int
-hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
-        WsXmlDocH *res)
+hypervInvokeMethod(hypervPrivate *priv,
+                   hypervInvokeParamsListPtr *paramsPtr,
+                   WsXmlDocH *res)
 {
+    hypervInvokeParamsListPtr params = *paramsPtr;
     int result = -1;
     size_t i = 0;
     int returnCode;
@@ -939,6 +946,7 @@ hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
     VIR_FREE(instanceID);
     hypervFreeObject(priv, (hypervObject *)job);
     hypervFreeInvokeParams(params);
+    *paramsPtr = NULL;
     return result;
 }
 
