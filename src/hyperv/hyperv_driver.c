@@ -1765,7 +1765,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
 
         if (hypervAddEprParam(params, "ComputerSystem", priv, &eprQuery,
                     Msvm_ComputerSystem_WmiInfo) < 0)
-            goto params_cleanup;
+            goto cleanup;
     } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2) {
         params = hypervCreateInvokeParamsList(priv, "ModifyResourceSettings",
                 MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
@@ -1779,31 +1779,31 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
 
     memResource = hypervCreateEmbeddedParam(priv, Msvm_MemorySettingData_WmiInfo);
     if (!memResource)
-        goto params_cleanup;
+        goto cleanup;
 
     if (hypervSetEmbeddedProperty(memResource, "VirtualQuantity", memory_str) < 0) {
         hypervFreeEmbeddedParam(memResource);
-        goto params_cleanup;
+        goto cleanup;
     }
 
     if (hypervSetEmbeddedProperty(memResource, "InstanceID",
                 memsd->data.common->InstanceID) < 0) {
         hypervFreeEmbeddedParam(memResource);
-        goto params_cleanup;
+        goto cleanup;
     }
 
     if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
         if (hypervAddEmbeddedParam(params, priv, "ResourceSettingData",
                     memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
             hypervFreeEmbeddedParam(memResource);
-            goto params_cleanup;
+            goto cleanup;
         }
 
     } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2) {
         if (hypervAddEmbeddedParam(params, priv, "ResourceSettings",
                     memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
             hypervFreeEmbeddedParam(memResource);
-            goto params_cleanup;
+            goto cleanup;
         }
     }
 
@@ -1813,14 +1813,12 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     }
 
     result = 0;
-    goto cleanup;
 
- params_cleanup:
-    hypervFreeInvokeParams(params);
  cleanup:
     VIR_FREE(memory_str);
     hypervFreeObject(priv, (hypervObject *)vssd);
     hypervFreeObject(priv, (hypervObject *)memsd);
+    hypervFreeInvokeParams(params);
     return result;
 }
 
