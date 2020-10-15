@@ -2209,6 +2209,7 @@ qemuAgentGetAllInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
     size_t ifaces_count = 0;
     size_t i;
 
+    *ifaces_ret = NULL;
     /* Hash table to handle the interface alias */
     ifaces_store = virHashNew(NULL);
 
@@ -2223,9 +2224,9 @@ qemuAgentGetAllInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
     return ifaces_count;
 
  error:
-    if (ifaces_ret) {
+    if (*ifaces_ret) {
         for (i = 0; i < ifaces_count; i++)
-            virDomainInterfaceFree(*ifaces_ret[i]);
+            virDomainInterfaceFree((*ifaces_ret)[i]);
     }
     VIR_FREE(*ifaces_ret);
     return -1;
