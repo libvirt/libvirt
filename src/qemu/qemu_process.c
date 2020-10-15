@@ -6393,21 +6393,12 @@ qemuProcessSEVCreateFile(virDomainObjPtr vm,
 static int
 qemuProcessPrepareSEVGuestInput(virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     virDomainSEVDefPtr sev = vm->def->sev;
 
     if (!sev)
         return 0;
 
     VIR_DEBUG("Preparing SEV guest");
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("Domain %s asked for 'sev' launch but this "
-                          "QEMU does not support SEV feature"), vm->def->name);
-        return -1;
-    }
 
     if (sev->dh_cert) {
         if (qemuProcessSEVCreateFile(vm, "dh_cert", sev->dh_cert) < 0)
