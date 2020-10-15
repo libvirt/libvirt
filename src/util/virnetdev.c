@@ -1660,9 +1660,15 @@ virNetDevSetVfConfig(const char *ifname, int vf,
     goto cleanup;
 }
 
+/**
+ * virNetDevParseVfInfo:
+ * Get the VF interface infomation from kernel by netlink, To make netlink
+ * parsing logic easy to maintain, extending this function to get some new
+ * data is better than add a new function.
+ */
 static int
-virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
-                       int *vlanid, virDomainInterfaceStatsPtr stats)
+virNetDevParseVfInfo(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
+                     int *vlanid, virDomainInterfaceStatsPtr stats)
 {
     int rc = -1;
     struct ifla_vf_mac *vf_mac;
@@ -1746,7 +1752,7 @@ virNetDevGetVfConfig(const char *ifname, int vf, virMacAddrPtr mac,
     if (virNetlinkDumpLink(ifname, ifindex, &nlData, tb, 0, 0) < 0)
         return -1;
 
-    return virNetDevParseVfConfig(tb, vf, mac, vlanid, NULL);
+    return virNetDevParseVfInfo(tb, vf, mac, vlanid, NULL);
 }
 
 
@@ -1782,7 +1788,7 @@ virNetDevVFInterfaceStats(virPCIDeviceAddressPtr vfAddr,
     if (virNetlinkDumpLink(pfname, -1, &nlData, tb, 0, 0) < 0)
         return -1;
 
-    return virNetDevParseVfConfig(tb, vf, NULL, NULL, stats);
+    return virNetDevParseVfInfo(tb, vf, NULL, NULL, stats);
 }
 
 
