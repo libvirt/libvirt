@@ -4402,19 +4402,6 @@ qemuBuildHubCommandLine(virCommandPtr cmd,
 
 
 static char *
-qemuBuildSCSIHostHostdevDrvStr(virDomainHostdevDefPtr dev)
-{
-    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
-    virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-
-    return virSCSIDeviceGetSgName(NULL,
-                                  scsihostsrc->adapter,
-                                  scsihostsrc->bus,
-                                  scsihostsrc->target,
-                                  scsihostsrc->unit);
-}
-
-static char *
 qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                                 virQEMUCapsPtr qemuCaps)
 {
@@ -4484,9 +4471,7 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
             return NULL;
         virBufferAdd(&buf, source, -1);
     } else {
-        if (!(source = qemuBuildSCSIHostHostdevDrvStr(dev)))
-            return NULL;
-        virBufferAsprintf(&buf, "file=/dev/%s,if=none,format=raw", source);
+        virBufferAsprintf(&buf, "file=%s,if=none,format=raw", scsisrc->u.host.src->path);
     }
 
     if (!(drivealias = qemuAliasFromHostdev(dev)))
@@ -4977,23 +4962,9 @@ qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDefPtr hostdev,
     virStorageSourcePtr src = NULL;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
-        g_autofree char *devstr = NULL;
-
         switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
         case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
-            if (!scsisrc->u.host.src) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("SCSI host device data structure was not initialized"));
-                return NULL;
-            }
-
-            if (!(devstr = qemuBuildSCSIHostHostdevDrvStr(hostdev)))
-                return NULL;
-
             src = scsisrc->u.host.src;
-
-            src->path = g_strdup_printf("/dev/%s", devstr);
-
             break;
 
         case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:

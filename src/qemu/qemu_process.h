@@ -122,6 +122,8 @@ int qemuProcessPrepareDomain(virQEMUDriverPtr driver,
 
 int qemuProcessOpenVhostVsock(virDomainVsockDefPtr vsock);
 
+int qemuProcessPrepareHostHostdev(virDomainHostdevDefPtr hostdev);
+
 int qemuProcessPrepareHost(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            unsigned int flags);

@@ -6398,6 +6398,59 @@ static char
 }
 
 
+static int
+qemuConnectDomainXMLToNativePrepareHostHostdev(virDomainHostdevDefPtr hostdev)
+{
+    if (virHostdevIsSCSIDevice(hostdev)) {
+        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+
+        switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE: {
+            virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
+            virStorageSourcePtr src = scsisrc->u.host.src;
+            g_autofree char *devstr = NULL;
+
+            if (!(devstr = virSCSIDeviceGetSgName(NULL,
+                                                  scsihostsrc->adapter,
+                                                  scsihostsrc->bus,
+                                                  scsihostsrc->target,
+                                                  scsihostsrc->unit)))
+                return -1;
+
+            src->path = g_strdup_printf("/dev/%s", devstr);
+            break;
+        }
+
+        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+qemuConnectDomainXMLToNativePrepareHost(virDomainObjPtr vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
+
+        if (qemuConnectDomainXMLToNativePrepareHostHostdev(hostdev) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                           const char *format,
                                           const char *xmlData,
@@ -6453,6 +6506,9 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 
     if (qemuProcessCreatePretendCmdPrepare(driver, vm, NULL, true,
                                            VIR_QEMU_PROCESS_START_COLD) < 0)
+        goto cleanup;
+
+    if (qemuConnectDomainXMLToNativePrepareHost(vm) < 0)
         goto cleanup;
 
     if (!(cmd = qemuProcessCreatePretendCmdBuild(driver, vm, NULL,

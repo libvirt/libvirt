@@ -413,6 +413,24 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
             hostdev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
             hostdev->source.subsys.u.pci.backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
         }
+
+        if (virHostdevIsSCSIDevice(hostdev)) {
+            virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+
+            switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+            case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
+                scsisrc->u.host.src->path = g_strdup("/dev/sg0");
+                break;
+
+            case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
+                break;
+
+            case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
+            default:
+                virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
+                return NULL;
+            }
+        }
     }
 
     for (i = 0; i < vm->def->nfss; i++) {
