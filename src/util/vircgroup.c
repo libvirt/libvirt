@@ -1112,14 +1112,13 @@ virCgroupNewDetectMachine(const char *name,
 
 static int
 virCgroupEnableMissingControllers(char *path,
-                                  pid_t pidleader,
                                   int controllers,
                                   virCgroupPtr *group)
 {
     g_autoptr(virCgroup) parent = NULL;
     char *offset = path;
 
-    if (virCgroupNew(pidleader,
+    if (virCgroupNew(-1,
                      "/",
                      controllers,
                      &parent) < 0)
@@ -1213,10 +1212,8 @@ virCgroupNewMachineSystemd(const char *name,
         return -2;
     }
 
-    if (virCgroupEnableMissingControllers(path, pidleader,
-                                          controllers, &newGroup) < 0) {
+    if (virCgroupEnableMissingControllers(path, controllers, &newGroup) < 0)
         return -1;
-    }
 
     if (virCgroupAddProcess(newGroup, pidleader) < 0) {
         virErrorPtr saved;
