@@ -1735,7 +1735,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     Msvm_VirtualSystemSettingData *vssd = NULL;
     Msvm_MemorySettingData *memsd = NULL;
     g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
-    virHashTablePtr memResource = NULL;
+    g_autoptr(virHashTable) memResource = NULL;
 
     virCheckFlags(0, -1);
 
@@ -1781,21 +1781,17 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     if (!memResource)
         goto cleanup;
 
-    if (hypervSetEmbeddedProperty(memResource, "VirtualQuantity", memory_str) < 0) {
-        hypervFreeEmbeddedParam(memResource);
+    if (hypervSetEmbeddedProperty(memResource, "VirtualQuantity", memory_str) < 0)
         goto cleanup;
-    }
 
     if (hypervSetEmbeddedProperty(memResource, "InstanceID",
                 memsd->data.common->InstanceID) < 0) {
-        hypervFreeEmbeddedParam(memResource);
         goto cleanup;
     }
 
     if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
         if (hypervAddEmbeddedParam(params, priv, "ResourceSettingData",
                                    &memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
-            hypervFreeEmbeddedParam(memResource);
             goto cleanup;
         }
 
