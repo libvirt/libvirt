@@ -671,15 +671,14 @@ virCgroupMakeGroup(virCgroupPtr parent,
  * Returns 0 on success, -1 on error
  */
 int
-virCgroupNew(pid_t pid,
-             const char *path,
+virCgroupNew(const char *path,
              int controllers,
              virCgroupPtr *group)
 {
     g_autoptr(virCgroup) newGroup = NULL;
 
-    VIR_DEBUG("pid=%lld path=%s controllers=%d group=%p",
-              (long long) pid, path, controllers, group);
+    VIR_DEBUG("path=%s controllers=%d group=%p",
+              path, controllers, group);
 
     *group = NULL;
     newGroup = g_new0(virCgroup, 1);
@@ -694,11 +693,11 @@ virCgroupNew(pid_t pid,
         return -1;
 
     /* ... but use /proc/cgroups to fill in the rest */
-    if (virCgroupDetectPlacement(newGroup, pid, path) < 0)
+    if (virCgroupDetectPlacement(newGroup, -1, path) < 0)
         return -1;
 
     /* Check that for every mounted controller, we found our placement */
-    if (virCgroupValidatePlacement(newGroup, pid) < 0)
+    if (virCgroupValidatePlacement(newGroup, -1) < 0)
         return -1;
 
     if (virCgroupDetectControllers(newGroup, controllers, NULL) < 0)
@@ -905,7 +904,7 @@ virCgroupNewPartition(const char *path,
         tmp++;
         *tmp = '\0';
 
-        if (virCgroupNew(-1, parentPath, controllers, &parent) < 0)
+        if (virCgroupNew(parentPath, controllers, &parent) < 0)
             return -1;
     }
 
@@ -1118,8 +1117,7 @@ virCgroupEnableMissingControllers(char *path,
     g_autoptr(virCgroup) parent = NULL;
     char *offset = path;
 
-    if (virCgroupNew(-1,
-                     "/",
+    if (virCgroupNew("/",
                      controllers,
                      &parent) < 0)
         return -1;

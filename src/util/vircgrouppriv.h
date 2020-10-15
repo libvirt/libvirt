@@ -110,8 +110,7 @@ int virCgroupGetValueForBlkDev(const char *str,
                                const char *devPath,
                                char **value);
 
-int virCgroupNew(pid_t pid,
-                 const char *path,
+int virCgroupNew(const char *path,
                  int controllers,
                  virCgroupPtr *group);
 
