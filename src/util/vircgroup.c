@@ -457,10 +457,8 @@ virCgroupDetect(virCgroupPtr group,
     if (virCgroupDetectMounts(group) < 0)
         return -1;
 
-    if (path[0] == '/') {
-        if (virCgroupCopyPlacement(group, path, NULL) < 0)
-            return -1;
-    }
+    if (virCgroupCopyPlacement(group, path, NULL) < 0)
+        return -1;
 
     /* ... but use /proc/cgroups to fill in the rest */
     if (virCgroupDetectPlacement(group, pid, path) < 0)
@@ -702,10 +700,6 @@ virCgroupMakeGroup(virCgroupPtr parent,
  * @controllers: bitmask of controllers to activate
  *
  * Create a new cgroup storing it in @group.
- *
- * If @path starts with a '/' it is treated as an
- * absolute path. Otherwise then the placement of the current
- * process is used.
  *
  * Returns 0 on success, -1 on error
  */
