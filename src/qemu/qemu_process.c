@@ -7290,35 +7290,45 @@ qemuProcessStart(virConnectPtr conn,
 }
 
 
-virCommandPtr
-qemuProcessCreatePretendCmd(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            const char *migrateURI,
-                            bool enableFips,
-                            bool standalone,
-                            bool jsonPropsValidation,
-                            unsigned int flags)
+int
+qemuProcessCreatePretendCmdPrepare(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   const char *migrateURI,
+                                   bool standalone,
+                                   unsigned int flags)
 {
-    unsigned int buildflags = 0;
-
     virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
                   VIR_QEMU_PROCESS_START_PAUSED |
-                  VIR_QEMU_PROCESS_START_AUTODESTROY, NULL);
+                  VIR_QEMU_PROCESS_START_AUTODESTROY, -1);
 
     flags |= VIR_QEMU_PROCESS_START_PRETEND;
     flags |= VIR_QEMU_PROCESS_START_NEW;
     if (standalone)
         flags |= VIR_QEMU_PROCESS_START_STANDALONE;
 
-    if (jsonPropsValidation)
-        buildflags = QEMU_BUILD_COMMANDLINE_VALIDATE_KEEP_JSON;
-
     if (qemuProcessInit(driver, vm, NULL, QEMU_ASYNC_JOB_NONE,
                         !!migrateURI, flags) < 0)
-        return NULL;
+        return -1;
 
     if (qemuProcessPrepareDomain(driver, vm, flags) < 0)
-        return NULL;
+        return -1;
+
+    return 0;
+}
+
+
+virCommandPtr
+qemuProcessCreatePretendCmdBuild(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 const char *migrateURI,
+                                 bool enableFips,
+                                 bool standalone,
+                                 bool jsonPropsValidation)
+{
+    unsigned int buildflags = 0;
+
+    if (jsonPropsValidation)
+        buildflags = QEMU_BUILD_COMMANDLINE_VALIDATE_KEEP_JSON;
 
     VIR_DEBUG("Building emulator command line");
     return qemuBuildCommandLine(driver,

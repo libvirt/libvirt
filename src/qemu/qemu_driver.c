@@ -6451,9 +6451,12 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         vm->def->nets[i] = newNet;
     }
 
-    if (!(cmd = qemuProcessCreatePretendCmd(driver, vm, NULL,
-                                            qemuCheckFips(), true, false,
-                                            VIR_QEMU_PROCESS_START_COLD)))
+    if (qemuProcessCreatePretendCmdPrepare(driver, vm, NULL, true,
+                                           VIR_QEMU_PROCESS_START_COLD) < 0)
+        goto cleanup;
+
+    if (!(cmd = qemuProcessCreatePretendCmdBuild(driver, vm, NULL,
+                                                 qemuCheckFips(), true, false)))
         goto cleanup;
 
     ret = virCommandToString(cmd, false);

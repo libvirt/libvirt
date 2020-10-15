@@ -401,6 +401,10 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
 {
     size_t i;
 
+    if (qemuProcessCreatePretendCmdPrepare(drv, vm, migrateURI, false,
+                                           VIR_QEMU_PROCESS_START_COLD) < 0)
+        return NULL;
+
     for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
 
@@ -466,10 +470,9 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
         }
     }
 
-    return qemuProcessCreatePretendCmd(drv, vm, migrateURI,
-                                       (flags & FLAG_FIPS), false,
-                                       jsonPropsValidation,
-                                       VIR_QEMU_PROCESS_START_COLD);
+    return qemuProcessCreatePretendCmdBuild(drv, vm, migrateURI,
+                                            (flags & FLAG_FIPS), false,
+                                            jsonPropsValidation);
 }
 
 
