@@ -10408,6 +10408,9 @@ qemuDomainPrepareHostdev(virDomainHostdevDefPtr hostdev,
             virObjectUnref(scsisrc->u.host.src);
             scsisrc->u.host.src = virStorageSourceNew();
             src = scsisrc->u.host.src;
+
+            src->type = VIR_STORAGE_TYPE_BLOCK;
+
             break;
 
         case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
@@ -10422,6 +10425,8 @@ qemuDomainPrepareHostdev(virDomainHostdevDefPtr hostdev,
 
         if (src) {
             const char *backendalias = hostdev->info->alias;
+
+            src->readonly = hostdev->readonly;
 
             if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
                 src->id = qemuDomainStorageIdNew(priv);

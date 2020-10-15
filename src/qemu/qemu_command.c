@@ -4992,7 +4992,6 @@ qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDefPtr hostdev,
 
             src = scsisrc->u.host.src;
 
-            src->type = VIR_STORAGE_TYPE_BLOCK;
             src->path = g_strdup_printf("/dev/%s", devstr);
 
             break;
@@ -5007,7 +5006,6 @@ qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDefPtr hostdev,
             return NULL;
         }
 
-        src->readonly = hostdev->readonly;
         ret->storageNodeName = src->nodestorage;
         *backendAlias = src->nodestorage;
 
