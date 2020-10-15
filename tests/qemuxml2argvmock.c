@@ -121,19 +121,6 @@ virMemoryMaxValue(bool capped G_GNUC_UNUSED)
     return LLONG_MAX;
 }
 
-char *
-virSCSIDeviceGetSgName(const char *sysfs_prefix G_GNUC_UNUSED,
-                       const char *adapter G_GNUC_UNUSED,
-                       unsigned int bus G_GNUC_UNUSED,
-                       unsigned int target G_GNUC_UNUSED,
-                       unsigned long long unit G_GNUC_UNUSED)
-{
-    char *ret;
-
-    ret = g_strdup("sg0");
-    return ret;
-}
-
 int
 virSCSIVHostOpenVhostSCSI(int *vhostfd)
 {
