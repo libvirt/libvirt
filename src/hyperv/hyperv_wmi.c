@@ -791,14 +791,14 @@ hypervInvokeMethod(hypervPrivate *priv,
 
     if (hypervCreateInvokeXmlDoc(params, &paramsDocRoot) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                _("Could not create XML document"));
+                       _("Could not create XML document"));
         goto cleanup;
     }
 
     methodNode = xml_parser_get_root(paramsDocRoot);
     if (!methodNode) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                _("Could not get root of XML document"));
+                       _("Could not get root of XML document"));
         goto cleanup;
     }
 
@@ -807,25 +807,25 @@ hypervInvokeMethod(hypervPrivate *priv,
         p = &(params->params[i]);
 
         switch (p->type) {
-            case HYPERV_SIMPLE_PARAM:
-                if (hypervSerializeSimpleParam(p, params->resourceUri,
-                            &methodNode) < 0)
-                    goto cleanup;
-                break;
-            case HYPERV_EPR_PARAM:
-                if (hypervSerializeEprParam(p, priv, params->resourceUri,
-                                            &methodNode) < 0)
-                    goto cleanup;
-                break;
-            case HYPERV_EMBEDDED_PARAM:
-                if (hypervSerializeEmbeddedParam(p, params->resourceUri,
-                            &methodNode) < 0)
-                    goto cleanup;
-                break;
-            default:
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Unknown parameter type"));
+        case HYPERV_SIMPLE_PARAM:
+            if (hypervSerializeSimpleParam(p, params->resourceUri,
+                                           &methodNode) < 0)
                 goto cleanup;
+            break;
+        case HYPERV_EPR_PARAM:
+            if (hypervSerializeEprParam(p, priv, params->resourceUri,
+                                        &methodNode) < 0)
+                goto cleanup;
+            break;
+        case HYPERV_EMBEDDED_PARAM:
+            if (hypervSerializeEmbeddedParam(p, params->resourceUri,
+                                             &methodNode) < 0)
+                goto cleanup;
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unknown parameter type"));
+            goto cleanup;
         }
     }
 
@@ -840,7 +840,7 @@ hypervInvokeMethod(hypervPrivate *priv,
 
     /* do the invoke */
     response = wsmc_action_invoke(priv->client, params->resourceUri, options,
-            params->method, paramsDocRoot);
+                                  params->method, paramsDocRoot);
 
     /* check return code of invocation */
     returnValue_xpath = g_strdup_printf("/s:Envelope/s:Body/p:%s_OUTPUT/p:ReturnValue",
@@ -888,43 +888,43 @@ hypervInvokeMethod(hypervPrivate *priv,
             virBufferEscapeSQL(&query, "where InstanceID = \"%s\"", instanceID);
 
             if (hypervGetWmiClassList(priv, Msvm_ConcreteJob_WmiInfo, &query,
-                    (hypervObject **)&job) < 0 || job == NULL)
+                                      (hypervObject **)&job) < 0 || job == NULL)
                 goto cleanup;
 
             jobState = job->data.common->JobState;
             switch (jobState) {
-                case MSVM_CONCRETEJOB_JOBSTATE_NEW:
-                case MSVM_CONCRETEJOB_JOBSTATE_STARTING:
-                case MSVM_CONCRETEJOB_JOBSTATE_RUNNING:
-                case MSVM_CONCRETEJOB_JOBSTATE_SHUTTING_DOWN:
-                    hypervFreeObject(priv, (hypervObject *)job);
-                    job = NULL;
-                    g_usleep(100 * 1000); /* sleep 100 ms */
-                    timeout -= 100;
-                    continue;
-                case MSVM_CONCRETEJOB_JOBSTATE_COMPLETED:
-                    completed = true;
-                    break;
-                case MSVM_CONCRETEJOB_JOBSTATE_TERMINATED:
-                case MSVM_CONCRETEJOB_JOBSTATE_KILLED:
-                case MSVM_CONCRETEJOB_JOBSTATE_EXCEPTION:
-                case MSVM_CONCRETEJOB_JOBSTATE_SERVICE:
-                    goto cleanup;
-                default:
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Unknown invocation state"));
-                    goto cleanup;
+            case MSVM_CONCRETEJOB_JOBSTATE_NEW:
+            case MSVM_CONCRETEJOB_JOBSTATE_STARTING:
+            case MSVM_CONCRETEJOB_JOBSTATE_RUNNING:
+            case MSVM_CONCRETEJOB_JOBSTATE_SHUTTING_DOWN:
+                hypervFreeObject(priv, (hypervObject *)job);
+                job = NULL;
+                g_usleep(100 * 1000); /* sleep 100 ms */
+                timeout -= 100;
+                continue;
+            case MSVM_CONCRETEJOB_JOBSTATE_COMPLETED:
+                completed = true;
+                break;
+            case MSVM_CONCRETEJOB_JOBSTATE_TERMINATED:
+            case MSVM_CONCRETEJOB_JOBSTATE_KILLED:
+            case MSVM_CONCRETEJOB_JOBSTATE_EXCEPTION:
+            case MSVM_CONCRETEJOB_JOBSTATE_SERVICE:
+                goto cleanup;
+            default:
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Unknown invocation state"));
+                goto cleanup;
             }
         }
         if (!completed && timeout < 0) {
             virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                    _("Timeout waiting for %s invocation"), params->method);
+                           _("Timeout waiting for %s invocation"), params->method);
             goto cleanup;
         }
     } else if (returnCode != CIM_RETURNCODE_COMPLETED_WITH_NO_ERROR) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Invocation of %s returned an error: %s (%d)"),
-                    params->method, hypervReturnCodeToString(returnCode),
-                    returnCode);
+                       params->method, hypervReturnCodeToString(returnCode),
+                       returnCode);
         goto cleanup;
     }
 
