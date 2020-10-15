@@ -29,11 +29,11 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
+-blockdev '{"driver":"host_cdrom","filename":"/dev/cdrom",\
 "node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw",\
+-blockdev '{"node-name":"libvirt-4-format","read-only":true,"driver":"raw",\
 "file":"libvirt-4-storage"}' \
--device ide-hd,bus=ide.0,unit=0,drive=libvirt-4-format,id=ide0-0-0,bootindex=1 \
+-device ide-cd,bus=ide.0,unit=0,drive=libvirt-4-format,id=ide0-0-0 \
 -blockdev '{"driver":"file","filename":"/root/boot.iso",\
 "node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"raw",\

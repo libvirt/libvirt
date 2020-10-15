@@ -407,6 +407,17 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
                                            VIR_QEMU_PROCESS_START_COLD) < 0)
         return NULL;
 
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+
+        /* host cdrom requires special treatment in qemu, mock it */
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            disk->src->format == VIR_STORAGE_FILE_RAW &&
+            virStorageSourceIsBlockLocal(disk->src) &&
+            STREQ(disk->src->path, "/dev/cdrom"))
+            disk->src->hostcdrom = true;
+    }
+
     for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
 
