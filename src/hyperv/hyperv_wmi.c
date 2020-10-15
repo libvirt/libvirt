@@ -362,15 +362,22 @@ hypervSetEmbeddedProperty(virHashTablePtr table, const char *name, char *value)
  * @params: Params list to add to
  * @priv: hypervPrivate object associated with the connection
  * @name: Name of the parameter
- * @table: table of properties to add
+ * @table: pointer to table of properties to add
  * @info: WmiInfo of the object to serialize
  *
  * Add a virHashTable containing object properties as an embedded param to
- * an invocation list. Returns -1 on failure, 0 on success.
+ * an invocation list.
+ *
+ * Upon successfull return the @table is consumed and the pointer is cleared out.
+ *
+ * Returns -1 on failure, 0 on success.
  */
 int
-hypervAddEmbeddedParam(hypervInvokeParamsListPtr params, hypervPrivate *priv,
-        const char *name, virHashTablePtr table, hypervWmiClassInfoListPtr info)
+hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
+                       hypervPrivate *priv,
+                       const char *name,
+                       virHashTablePtr *table,
+                       hypervWmiClassInfoListPtr info)
 {
     hypervParamPtr p = NULL;
     hypervWmiClassInfoPtr classInfo = NULL;
@@ -385,7 +392,7 @@ hypervAddEmbeddedParam(hypervInvokeParamsListPtr params, hypervPrivate *priv,
     p = &params->params[params->nbParams];
     p->type = HYPERV_EMBEDDED_PARAM;
     p->embedded.name = name;
-    p->embedded.table = table;
+    p->embedded.table = g_steal_pointer(table);
     p->embedded.info = classInfo;
     params->nbParams++;
 

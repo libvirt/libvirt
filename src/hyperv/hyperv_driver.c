@@ -1794,14 +1794,14 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
 
     if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
         if (hypervAddEmbeddedParam(params, priv, "ResourceSettingData",
-                    memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
+                                   &memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
             hypervFreeEmbeddedParam(memResource);
             goto cleanup;
         }
 
     } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2) {
         if (hypervAddEmbeddedParam(params, priv, "ResourceSettings",
-                    memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
+                                   &memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
             hypervFreeEmbeddedParam(memResource);
             goto cleanup;
         }

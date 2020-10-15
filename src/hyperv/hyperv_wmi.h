@@ -149,8 +149,11 @@ virHashTablePtr hypervCreateEmbeddedParam(hypervPrivate *priv,
 int hypervSetEmbeddedProperty(virHashTablePtr table, const char *name,
         char *value);
 
-int hypervAddEmbeddedParam(hypervInvokeParamsListPtr params, hypervPrivate *priv,
-        const char *name, virHashTablePtr table, hypervWmiClassInfoListPtr info);
+int hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
+                           hypervPrivate *priv,
+                           const char *name,
+                           virHashTablePtr *table,
+                           hypervWmiClassInfoListPtr info);
 
 void hypervFreeEmbeddedParam(virHashTablePtr p);
 
