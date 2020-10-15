@@ -661,30 +661,39 @@ qemuInterfaceVDPAConnect(virDomainNetDefPtr net)
 }
 
 
-qemuSlirpPtr
+/*
+ * Returns: -1 on error, 0 if slirp isn't available, 1 on succcess
+ */
+int
 qemuInterfacePrepareSlirp(virQEMUDriverPtr driver,
-                          virDomainNetDefPtr net)
+                          virDomainNetDefPtr net,
+                          qemuSlirpPtr *slirpret)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(qemuSlirp) slirp = NULL;
     size_t i;
 
+    if (!cfg->slirpHelperName ||
+        !virFileExists(cfg->slirpHelperName))
+        return 0; /* fallback to builtin slirp impl */
+
     if (!(slirp = qemuSlirpNewForHelper(cfg->slirpHelperName)))
-        return NULL;
+        return -1;
 
     for (i = 0; i < net->guestIP.nips; i++) {
         const virNetDevIPAddr *ip = net->guestIP.ips[i];
 
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET) &&
             !qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_IPV4))
-            return NULL;
+            return 0;
 
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6) &&
             !qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_IPV6))
-            return NULL;
+            return 0;
     }
 
-    return g_steal_pointer(&slirp);
+    *slirpret = g_steal_pointer(&slirp);
+    return 1;
 }
 
 

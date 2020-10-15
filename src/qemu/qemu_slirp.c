@@ -101,9 +101,6 @@ qemuSlirpNewForHelper(const char *helper)
     virJSONValuePtr featuresJSON;
     size_t i, nfeatures;
 
-    if (!helper)
-        return NULL;
-
     slirp = qemuSlirpNew();
     if (!slirp) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
