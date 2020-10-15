@@ -2584,6 +2584,7 @@ virNetDevSetRootQDisc;
 virNetDevSetupControl;
 virNetDevSysfsFile;
 virNetDevValidateConfig;
+virNetDevVFInterfaceStats;
 
 
 # util/virnetdevbandwidth.h

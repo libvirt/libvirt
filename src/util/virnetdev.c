@@ -1514,6 +1514,17 @@ static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
                             .maxlen = sizeof(struct ifla_vf_mac) },
     [IFLA_VF_VLAN]      = { .type = NLA_UNSPEC,
                             .maxlen = sizeof(struct ifla_vf_vlan) },
+    [IFLA_VF_STATS]     = { .type = NLA_NESTED },
+};
+
+
+static struct nla_policy ifla_vfstats_policy[IFLA_VF_STATS_MAX+1] = {
+    [IFLA_VF_STATS_RX_PACKETS]  = { .type = NLA_U64 },
+    [IFLA_VF_STATS_TX_PACKETS]  = { .type = NLA_U64 },
+    [IFLA_VF_STATS_RX_BYTES]    = { .type = NLA_U64 },
+    [IFLA_VF_STATS_TX_BYTES]    = { .type = NLA_U64 },
+    [IFLA_VF_STATS_BROADCAST]   = { .type = NLA_U64 },
+    [IFLA_VF_STATS_MULTICAST]   = { .type = NLA_U64 },
 };
 
 
@@ -1651,13 +1662,14 @@ virNetDevSetVfConfig(const char *ifname, int vf,
 
 static int
 virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
-                       int *vlanid)
+                       int *vlanid, virDomainInterfaceStatsPtr stats)
 {
     int rc = -1;
     struct ifla_vf_mac *vf_mac;
     struct ifla_vf_vlan *vf_vlan;
     struct nlattr *tb_vf_info = {NULL, };
     struct nlattr *tb_vf[IFLA_VF_MAX+1];
+    struct nlattr *tb_vf_stats[IFLA_VF_STATS_MAX+1];
     int rem;
 
     if (!tb[IFLA_VFINFO_LIST]) {
@@ -1693,6 +1705,26 @@ virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
             }
         }
 
+        if (stats && tb_vf[IFLA_VF_STATS] && tb_vf[IFLA_VF_MAC]) {
+            vf_mac = RTA_DATA(tb_vf[IFLA_VF_MAC]);
+            if (vf_mac && vf_mac->vf == vf)  {
+                rc = nla_parse_nested(tb_vf_stats, IFLA_VF_STATS_MAX,
+                                      tb_vf[IFLA_VF_STATS],
+                                      ifla_vfstats_policy);
+                if (rc < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("error parsing IFLA_VF_STATS"));
+                     return rc;
+                }
+
+                stats->rx_bytes = nla_get_u64(tb_vf_stats[IFLA_VF_STATS_RX_BYTES]);
+                stats->tx_bytes = nla_get_u64(tb_vf_stats[IFLA_VF_STATS_TX_BYTES]);
+                stats->rx_packets = nla_get_u64(tb_vf_stats[IFLA_VF_STATS_RX_PACKETS]);
+                stats->tx_packets = nla_get_u64(tb_vf_stats[IFLA_VF_STATS_TX_PACKETS]);
+                rc = 0;
+            }
+        }
+
         if (rc == 0)
             break;
     }
@@ -1714,7 +1746,43 @@ virNetDevGetVfConfig(const char *ifname, int vf, virMacAddrPtr mac,
     if (virNetlinkDumpLink(ifname, ifindex, &nlData, tb, 0, 0) < 0)
         return -1;
 
-    return virNetDevParseVfConfig(tb, vf, mac, vlanid);
+    return virNetDevParseVfConfig(tb, vf, mac, vlanid, NULL);
+}
+
+
+/**
+ * virNetDevVFInterfaceStats:
+ * @vfAddr: PCI address of a VF
+ * @stats: returns stats of the VF interface
+ *
+ * Get the VF interface from kernel by netlink.
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virNetDevVFInterfaceStats(virPCIDeviceAddressPtr vfAddr,
+                          virDomainInterfaceStatsPtr stats)
+{
+    g_autofree void *nlData = NULL;
+    struct nlattr *tb[IFLA_MAX + 1] = {NULL, };
+    g_autofree char *vfSysfsPath = NULL;
+    g_autofree char *pfname = NULL;
+    int vf = -1;
+
+    if (virPCIDeviceAddressGetSysfsFile(vfAddr, &vfSysfsPath) < 0)
+        return -1;
+
+    if (!virPCIIsVirtualFunction(vfSysfsPath)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("'%s' is not a VF device"), vfSysfsPath);
+       return -1;
+    }
+
+    if (virPCIGetVirtualFunctionInfo(vfSysfsPath, -1, &pfname, &vf) < 0)
+        return -1;
+
+    if (virNetlinkDumpLink(pfname, -1, &nlData, tb, 0, 0) < 0)
+        return -1;
+
+    return virNetDevParseVfConfig(tb, vf, NULL, NULL, stats);
 }
 
 
@@ -2326,6 +2394,16 @@ virNetDevSetNetConfig(const char *linkdev G_GNUC_UNUSED,
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to set net device config on this platform"));
+    return -1;
+}
+
+
+int
+virNetDevVFInterfaceStats(virPCIDeviceAddressPtr vfAddr G_GNUC_UNUSED,
+                          virDomainInterfaceStatsPtr stats G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get VF net device stats on this platform"));
     return -1;
 }
 

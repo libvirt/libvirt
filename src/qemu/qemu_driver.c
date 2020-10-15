@@ -10191,6 +10191,20 @@ qemuDomainInterfaceStats(virDomainPtr dom,
     if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
         if (virNetDevOpenvswitchInterfaceStats(net->ifname, stats) < 0)
             goto cleanup;
+    } else if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        virDomainHostdevDefPtr hostdev = virDomainNetGetActualHostdev(net);
+        virPCIDeviceAddressPtr vfAddr;
+
+        if (!hostdev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("hostdev interface missing hostdev data"));
+            goto cleanup;
+        }
+
+        vfAddr = &hostdev->source.subsys.u.pci.addr;
+        if (virNetDevVFInterfaceStats(vfAddr, stats) < 0)
+            goto cleanup;
+
     } else {
         if (virNetDevTapInterfaceStats(net->ifname, stats,
                                        !virDomainNetTypeSharesHostView(net)) < 0)
