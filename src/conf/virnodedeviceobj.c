@@ -507,20 +507,26 @@ void
 virNodeDeviceObjListRemove(virNodeDeviceObjListPtr devs,
                            virNodeDeviceObjPtr obj)
 {
-    virNodeDeviceDefPtr def;
-
     if (!obj)
         return;
-    def = obj->def;
 
     virObjectRef(obj);
     virObjectUnlock(obj);
     virObjectRWLockWrite(devs);
     virObjectLock(obj);
-    virHashRemoveEntry(devs->objs, def->name);
+    virNodeDeviceObjListRemoveLocked(devs, obj);
     virObjectUnlock(obj);
     virObjectUnref(obj);
     virObjectRWUnlock(devs);
+}
+
+
+/* The caller must hold lock on 'devs' */
+void
+virNodeDeviceObjListRemoveLocked(virNodeDeviceObjList *devs,
+                                 virNodeDeviceObj *dev)
+{
+    virHashRemoveEntry(devs->objs, dev->def->name);
 }
 
 
@@ -1018,4 +1024,48 @@ virNodeDeviceObjSetPersistent(virNodeDeviceObj *obj,
                               bool persistent)
 {
     obj->persistent = persistent;
+}
+
+
+struct virNodeDeviceObjListRemoveHelperData
+{
+    virNodeDeviceObjListRemoveIterator callback;
+    void *opaque;
+};
+
+static int virNodeDeviceObjListRemoveHelper(void *key G_GNUC_UNUSED,
+                                            void *value,
+                                            void *opaque)
+{
+    struct virNodeDeviceObjListRemoveHelperData *data = opaque;
+
+    return data->callback(value, data->opaque);
+}
+
+
+/**
+ * virNodeDeviceObjListForEachRemove
+ * @devs: Pointer to object list
+ * @callback: function to call for each device object
+ * @opaque: Opaque data to use as argument to helper
+ *
+ * For each object in @devs, call the @callback helper using @opaque as
+ * an argument. If @callback returns true, that item will be removed from the
+ * object list.
+ */
+void
+virNodeDeviceObjListForEachRemove(virNodeDeviceObjList *devs,
+                                  virNodeDeviceObjListRemoveIterator callback,
+                                  void *opaque)
+{
+    struct virNodeDeviceObjListRemoveHelperData data = {
+        .callback = callback,
+        .opaque = opaque
+    };
+
+    virObjectRWLockWrite(devs);
+    g_hash_table_foreach_remove(devs->objs,
+                                virNodeDeviceObjListRemoveHelper,
+                                &data);
+    virObjectRWUnlock(devs);
 }
