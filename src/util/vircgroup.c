@@ -442,39 +442,6 @@ virCgroupDetectControllers(virCgroupPtr group,
 }
 
 
-static int
-virCgroupDetect(virCgroupPtr group,
-                pid_t pid,
-                int controllers,
-                const char *path)
-{
-    VIR_DEBUG("group=%p controllers=%d path=%s",
-              group, controllers, path);
-
-    if (virCgroupSetBackends(group) < 0)
-        return -1;
-
-    if (virCgroupDetectMounts(group) < 0)
-        return -1;
-
-    if (virCgroupCopyPlacement(group, path, NULL) < 0)
-        return -1;
-
-    /* ... but use /proc/cgroups to fill in the rest */
-    if (virCgroupDetectPlacement(group, pid, path) < 0)
-        return -1;
-
-    /* Check that for every mounted controller, we found our placement */
-    if (virCgroupValidatePlacement(group, pid) < 0)
-        return -1;
-
-    if (virCgroupDetectControllers(group, controllers, NULL) < 0)
-        return -1;
-
-    return 0;
-}
-
-
 char *
 virCgroupGetBlockDevString(const char *path)
 {
@@ -717,7 +684,24 @@ virCgroupNew(pid_t pid,
     *group = NULL;
     newGroup = g_new0(virCgroup, 1);
 
-    if (virCgroupDetect(newGroup, pid, controllers, path) < 0)
+    if (virCgroupSetBackends(newGroup) < 0)
+        return -1;
+
+    if (virCgroupDetectMounts(newGroup) < 0)
+        return -1;
+
+    if (virCgroupCopyPlacement(newGroup, path, NULL) < 0)
+        return -1;
+
+    /* ... but use /proc/cgroups to fill in the rest */
+    if (virCgroupDetectPlacement(newGroup, pid, path) < 0)
+        return -1;
+
+    /* Check that for every mounted controller, we found our placement */
+    if (virCgroupValidatePlacement(newGroup, pid) < 0)
+        return -1;
+
+    if (virCgroupDetectControllers(newGroup, controllers, NULL) < 0)
         return -1;
 
     *group = g_steal_pointer(&newGroup);
