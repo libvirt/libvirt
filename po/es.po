@@ -17,21 +17,22 @@
 # Eduardo Villagrán  <evillagr@fedoraproject.org>, 2016
 # William  Moreno Reyes <williamjmorenor@gmail.com>, 2016
 # Javier Blanco <javi.deb@gmail.com>, 2018
+# Adolfo Jayme Barrientos <fitoschido@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-09-24 11:56+0000\n"
-"PO-Revision-Date: 2018-03-10 04:16+0000\n"
-"Last-Translator: Javier Blanco <javi.deb@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/projects/p/libvirt/language/"
-"es/)\n"
+"PO-Revision-Date: 2020-10-16 20:30+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
+"Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2.2\n"
 
 msgid ""
 "\n"
@@ -39,7 +40,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"  (indique asistencia <command> para obtener detalles acerca del comando)\n"
+"  (especifique help <orden> para obtener detalles de la orden)\n"
 "\n"
 
 msgid ""
@@ -47,8 +48,8 @@ msgid ""
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
 "\n"
-"  (especificar ayuda <group> para obtener información sobre comandos en el "
-"grupo)\n"
+"  (especifique help <grupo> para obtener detalles de las órdenes en el grupo)"
+"\n"
 
 #. Print the description only if it's not empty.
 msgid ""
@@ -181,7 +182,7 @@ msgid ""
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
-"  SíNTESIS\n"
+"  SÍNTESIS\n"
 
 #, c-format
 msgid ""
@@ -257,7 +258,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"(Time: %.3f ms)\n"
+"(Tiempo: %.3f ms)\n"
 "\n"
 
 #, c-format
@@ -266,7 +267,7 @@ msgid ""
 "Domain %s dumped to %s\n"
 msgstr ""
 "\n"
-"Dominio %s vaciado a %s\n"
+"El dominio %s se volcó en %s\n"
 
 #, c-format
 msgid ""
@@ -274,9 +275,7 @@ msgid ""
 "Domain %s saved to %s\n"
 msgstr ""
 "\n"
-"El dominio  %s  se guardo a %s\n"
-"\n"
-"\n"
+"El dominio %s se guardó en %s\n"
 
 #, c-format
 msgid ""
@@ -284,8 +283,7 @@ msgid ""
 "Domain %s state saved by libvirt\n"
 msgstr ""
 "\n"
-"Libvirt\n"
-" guardó  el estado de dominio  %s  \n"
+"libvirt guardó el estado del dominio %s\n"
 
 #, c-format
 msgid ""
@@ -300,6 +298,16 @@ msgid ""
 "\n"
 "libvirt login shell\n"
 msgstr ""
+"\n"
+"Uso:\n"
+"  %s [opción]\n"
+"\n"
+"Options:\n"
+"  -h | --help            Mostrar ayuda del programa\n"
+"  -V | --version         Mostrar versión del programa\n"
+"  -c ORDEN               Ejecutar ORDEN vía el intérprete\n"
+"\n"
+"libvirt login shell\n"
 
 #, c-format
 msgid ""
@@ -364,23 +372,23 @@ msgstr "  NOMBRE\n"
 
 #, c-format
 msgid " %s (help keyword '%s')\n"
-msgstr " %s (palabra clave de ayuda '%s')\n"
+msgstr " %s (palabra clave de ayuda «%s»)\n"
 
 #, c-format
 msgid " %s (help keyword '%s'):\n"
-msgstr " %s (palabra  clave de ayuda '%s'):\n"
+msgstr " %s (palabra clave de ayuda «%s»):\n"
 
 msgid " Hypervisors:"
-msgstr "Hipervisores:"
+msgstr " Hipervisores:"
 
 msgid " Miscellaneous:"
-msgstr "Varios:"
+msgstr " Varios:"
 
 msgid " Networking:"
-msgstr "Red:"
+msgstr " Red:"
 
 msgid " Storage:"
-msgstr "Almacenaje:"
+msgstr " Almacenamiento:"
 
 #, c-format
 msgid ""
@@ -396,18 +404,18 @@ msgid ""
 "from stored identity. Please verify the new host key '%s' to avoid possible "
 "man in the middle attack. The key is stored in '%s'."
 msgstr ""
-"!!! FALLÓ VERIFICACIÓN DE LLAVE DE HOST !!!: Identidad de host '%s:%d' "
-"difiere de identidad almacenada. Por favor verifique la nueva llave de host "
-"'%s' para evitar posible ataque de intermediario. La llave está almacenada "
-"en '%s'."
+"¡FALLÓ LA VERIFICACIÓN DE LA CLAVE S.S.H. DEL ANFITRIÓN!: la identidad del "
+"anfitrión «%s:%d» difiere de la identidad almacenada. Verifique la clave de "
+"anfitrión nueva, «%s», para evitar potenciales ataques de intermediario. La "
+"clave se almacena en «%s»."
 
 #, c-format
 msgid "$%s value should be between 0 and %d"
-msgstr ""
+msgstr "El valor de $%s debe estar entre 0 y %d"
 
 #, c-format
 msgid "%6s: Checking %-60s: "
-msgstr "%6s: Verificando %-60s: "
+msgstr "%6s: comprobando %-60s: "
 
 #, c-format
 msgid "%s\n"
@@ -417,47 +425,47 @@ msgstr "%s\n"
 msgid "%s %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s '%s' has an unsupported type '%s'"
-msgstr "%s el disco rígido '%s' posee un modo de caché '%s' no soportado"
+msgstr "%s %s «%s» tiene un tipo no admitido, «%s»"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
-msgstr ""
-"El floppy '%s' posee un tipo '%s' no soportado, se esperaba '%s' o '%s'"
+msgstr "%s %s «%s» tiene un tipo no admitido, «%s»; se esperaba «%s» o «%s»"
 
 #, c-format
 msgid "%s (out of %d)"
-msgstr ""
+msgstr "%s (de %d)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s 3d acceleration is not supported"
-msgstr "Operación no tiene soporte"
+msgstr "La aceleración 3D %s no se admite"
 
 #, c-format
 msgid "%s array element does not contain data"
-msgstr "El elemento array %s no contiene datos"
+msgstr "El elemento matriz %s no contiene datos"
 
 #, c-format
 msgid "%s can't be empty"
-msgstr "%s can't be empty"
+msgstr "%s no puede quedar vacío"
 
 #, fuzzy, c-format
 msgid "%s cannot be set higher than %s "
 msgstr ""
 "No es posible establecer que la memoria sea mayor que la memoria máxima"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s cannot parse GID '%s'"
-msgstr "No se puede analizar bus '%s'"
+msgstr "%s no puede analizar el GID «%s»"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s cannot parse UID '%s'"
-msgstr "No se puede analizar bus '%s'"
+msgstr "%s no puede analizar el UID «%s»"
 
 #, c-format
 msgid "%s does not support passing a passphrase using a file descriptor"
 msgstr ""
+"%s no permite pasar una frase de contraseña mediante un descriptor de archivo"
 
 #, c-format
 msgid "%s does not support passing passphrase via file descriptor"
@@ -483,7 +491,7 @@ msgstr ""
 
 #, c-format
 msgid "%s harddisk '%s' has unsupported cache mode '%s'"
-msgstr "%s el disco rígido '%s' posee un modo de caché '%s' no soportado"
+msgstr "El disco duro %s «%s» posee un modo de antememoria «%s» no admitido"
 
 #, c-format
 msgid "%s has illegal value %s"
@@ -521,13 +529,13 @@ msgstr "%s en %s no debe ser cero"
 msgid "%s is missing 'type' property"
 msgstr "%s no posee la propiedad 'type'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not a supported cipher name"
-msgstr "%s: nombre de hipervisor sin soporte %s\n"
+msgstr "%s no es un nombre de código admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not a supported cipher state"
-msgstr "Discos transitorios aún no tienen soporte"
+msgstr "%s no es un estado admitido por el código"
 
 #, fuzzy, c-format
 msgid "%s is not an executable"
@@ -587,7 +595,7 @@ msgstr "%s no es analizable"
 
 #, c-format
 msgid "%s not supported in this QEMU binary"
-msgstr "%s no tiene soporte en este binario QEMU"
+msgstr "%s no se admite en este binario QEMU"
 
 #, c-format
 msgid "%s object has invalid dynamic type"
@@ -970,7 +978,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: too many command line arguments\n"
-msgstr "%s: demasiados argumentos de línea de comandos\n"
+msgstr "%s: demasiados argumentos de línea de órdenes\n"
 
 #, c-format
 msgid "%s: try --help for more details"
@@ -1173,9 +1181,8 @@ msgstr "'online' falta en respuesta de guest-get-vcpus"
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "atributo 'floor' permitido únicamente en elemento <inbound>"
 
-#, fuzzy
 msgid "'gluster' command line tool not found"
-msgstr "Herramienta de línea de comandos virsh de libvirt %s\n"
+msgstr "No se encontró la herramienta de línea de órdenes «gluster»"
 
 #, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
@@ -1214,12 +1221,14 @@ msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "El controlador virtio-scsi solo admite 'queues'"
 
 msgid "'max_workers' must be greater than 0"
-msgstr ""
+msgstr "«max_workers» debe ser mayor que 0"
 
 msgid ""
 "'mode' attribute for Xen feature 'passthrough' must be 'sync_pt' or "
 "'share_pt'"
 msgstr ""
+"el atributo «mode» para la función «passthrough» de Xen debe ser «sync_pt» o "
+"«share_pt»"
 
 #, c-format
 msgid ""
@@ -1263,15 +1272,16 @@ msgid "'pci-controller' missing in guest-get-fsinfo 'disk' data"
 msgstr ""
 
 msgid "'peak' and 'burst' require 'average' attribute"
-msgstr "'peak' y 'burst' requieren atributo 'average'"
+msgstr "«peak» y «burst» requieren el atributo «average»"
 
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr ""
-"'pool'y 'volume' deben ser especificadas junto para fuente de tipo  'pool'"
+"«pool» y «volume» deben especificarse en conjunto para la fuente de tipo "
+"«pool»"
 
 #, c-format
 msgid "'queues' attribute must be positive number: %s"
-msgstr "El atributo 'queues' debe ser un número positivo: %s"
+msgstr "El atributo «queues» debe ser un número positivo: %s"
 
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "El controlador virtio-scsi solo admite 'queues'"
@@ -1297,39 +1307,34 @@ msgstr ""
 msgid "'socket' attribute is valid only for listen type 'socket'"
 msgstr ""
 
-#, fuzzy
 msgid "'ssh' protocol is not yet supported"
-msgstr "Formato fs %s no tiene soporte"
+msgstr "El protocolo «ssh» no se admite aún"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "'startupPolicy' no es válido para volumen de tipo 'file'"
+msgstr "«startupPolicy» es válido solo para volúmenes de tipo «file»"
 
 msgid "'target' refers to a non-existent NUMA node"
-msgstr ""
+msgstr "«target» hace referencia a un nodo NUMA inexistente"
 
-#, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
-msgstr "No existe soporte para SATA con este binario QEMU"
+msgstr "El protocolo «tftp» no se admite con este binario de QEMU"
 
-#, fuzzy
 msgid "'trim' algorithm not supported"
-msgstr "El algoritmo de limpieza %d no tiene soporte"
+msgstr "El algoritmo «trim» no se admite"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'tx_queue_size' attribute must be positive number: %s"
-msgstr "El atributo 'queues' debe ser un número positivo: %s"
+msgstr "El atributo «tx_queue_size» debe ser un número positivo: %s"
 
-#, fuzzy
 msgid "'type' missing in reply of guest-get-fsinfo"
-msgstr "'online' falta en respuesta de guest-get-vcpus"
+msgstr "Falta «type» en la respuesta de guest-get-fsinfo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'unsupported perf event '%s'"
-msgstr "chardev sin soporte '%s'"
+msgstr "No se admite el suceso de perf «%s»"
 
-#, fuzzy
 msgid "'user' missing in reply of guest-get-users"
-msgstr "'online' falta en respuesta de guest-get-vcpus"
+msgstr "Falta «user» en la respuesta de guest-get-users"
 
 #, c-format
 msgid "'value %d' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
@@ -2495,7 +2500,7 @@ msgstr ""
 "No se puede modificar parámetro de índice de arranque de dispositivo de red"
 
 msgid "Can't find prlctl command in the PATH env"
-msgstr "No se  pudo hallar comando prlctl en el entorno PATH"
+msgstr "No se encuentra la orden prlctl en el entorno PATH"
 
 #, c-format
 msgid ""
@@ -3909,8 +3914,8 @@ msgstr ""
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
-"Se conecta con el hypervisor local. Este es un comando perteneciente a la "
-"consola una vez que esta se inicia."
+"Conectar con el hipervisor local. Esta es una orden incorporada luego del "
+"inicio del intérprete."
 
 #, fuzzy
 msgid "Connected since"
@@ -5023,8 +5028,8 @@ msgid ""
 "Create a device on the node.  Note that this command creates devices on the "
 "physical host that can then be assigned to a virtual machine."
 msgstr ""
-"Crea un dispositivo en el nodo. Fíjese que este comando crea dispositivos en "
-"el host físico que luego pueden ser asignados a una máquina virtual. "
+"Crear un dispositivo en el nodo. Observe que esta orden crea dispositivos en "
+"el anfitrión físico que se pueden asignar luego a una máquina virtual."
 
 msgid "Create a domain."
 msgstr "Crea un dominio."
@@ -5254,8 +5259,8 @@ msgid ""
 "Destroy a device on the node.  Note that this command destroys devices on "
 "the physical host"
 msgstr ""
-"Destruye un dispositivo en el nodo. Fíjese que este comando destruye "
-"dispositivos en el host físico."
+"Destruir un dispositivo en el nodo. Observe que esta orden destruye "
+"dispositivos en el anfitrión físico"
 
 #, fuzzy
 msgid "Destroyed"
@@ -6142,7 +6147,7 @@ msgid "Error while processing agent IO"
 msgstr "Error al procesar monitor de E/S"
 
 msgid "Error while processing command's IO"
-msgstr "Error al  procesar comando de E"
+msgstr "Error al procesar la E/S de la orden"
 
 msgid "Error while processing monitor IO"
 msgstr "Error al procesar monitor de E/S"
@@ -8273,7 +8278,7 @@ msgstr "Falló al ejecutar el contenedor de clon"
 
 #, c-format
 msgid "Failed to run command '%s' to create new iscsi interface"
-msgstr "Falló al ejecutar el comando '%s' para crear una nueva interfaz isci"
+msgstr "No se pudo ejecutar la orden «%s» para crear una interfaz iscsi nueva"
 
 #, c-format
 msgid "Failed to run command '%s' to update iscsi interface with IQN '%s'"
@@ -12755,10 +12760,10 @@ msgid "No bridge node in xml document"
 msgstr "No hay nodo de puente en el documento XML"
 
 msgid "No category range available"
-msgstr "No hay rango de categorías disponible"
+msgstr "No hay ningún intervalo de categorías disponible"
 
 msgid "No channel command provided"
-msgstr "No se  proporcionó comando channel "
+msgstr "No se proporcionó ninguna orden de canal"
 
 #, fuzzy, c-format
 msgid "No client with matching ID '%llu'"
@@ -12830,9 +12835,9 @@ msgstr "No existe un dominio coincidente con el uuid '%s'"
 msgid "No domain with name %s"
 msgstr "No hay dominio con nombre %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No emulator found for arch '%s'"
-msgstr "No se encontraron  direcciones de socket  para  '%s'"
+msgstr "No se encontró ningún emulador para la arquitectura «%s»"
 
 msgid "No error message from child failure"
 msgstr "No aparece ningún mensaje de error de falla de hijo"
@@ -12847,16 +12852,14 @@ msgstr "No se encontraron errores\n"
 msgid "No event expected with procedure 0x%x"
 msgstr ""
 
-#, fuzzy
 msgid "No filesystems are mounted in the domain"
-msgstr "Error mientras se suspendía el dominio"
+msgstr "Ningún sistema de archivos está montado en el dominio"
 
 msgid "No free NBD devices"
 msgstr "No hay dispositivos NBD libres"
 
-#, fuzzy
 msgid "No free USB ports"
-msgstr "No hay dispositivos NBD libres"
+msgstr "No hay puertos USB libres"
 
 #, c-format
 msgid ""
@@ -12909,7 +12912,7 @@ msgid "No memory balloon device configured, can not set the collection period"
 msgstr ""
 
 msgid "No message in the queue"
-msgstr ""
+msgstr "No hay ningún mensaje en la cola"
 
 msgid "No more available PCI slots"
 msgstr "No hay más ranuras PCI disponibles"
@@ -12961,9 +12964,9 @@ msgstr "El servidor de certificado  %s aún no está activo"
 msgid "No server key path set to match server cert"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "No server named '%s'"
-msgstr "No hay disco llamado '%s'"
+msgstr "No hay ningún servidor llamado «%s»"
 
 #, fuzzy
 msgid "No socket address provided"
@@ -12987,15 +12990,15 @@ msgstr "No se ha indicado el tipo de dirección del dispositivo"
 
 #, c-format
 msgid "No such disk in media registry %s"
-msgstr ""
+msgstr "No existe ese disco en el registro de soportes %s"
 
 #, c-format
 msgid "No support for %s in command 'attach-disk'"
-msgstr "No existe soporte para %s en el comando 'attach-disk'"
+msgstr "No se admite %s en la orden «attach-disk»"
 
 #, c-format
 msgid "No support for %s in command 'attach-interface'"
-msgstr "No existe soporte para %s en el comando 'attach-interface'"
+msgstr "No se admite %s en la orden «attach-interface»"
 
 msgid "No support for domain XML entry 'vcpu' attribute 'current'"
 msgstr ""
@@ -13012,7 +13015,7 @@ msgid "No total stats available"
 msgstr "No hay estadísticas totales disponibles"
 
 msgid "No transaction is set"
-msgstr ""
+msgstr "No se ha definido ninguna transacción"
 
 msgid "No type specified for device address"
 msgstr "No se ha indicado el tipo de dirección del dispositivo"
@@ -23625,9 +23628,9 @@ msgstr "El comando '%s' necesita una opción --%s"
 msgid "command '%s' has non-required VSH_OT_DATA"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "command '%s' has too many options"
-msgstr "El comando '%s' necesita una opción --%s"
+msgstr "la orden «%s» tiene demasiadas opciones"
 
 #, c-format
 msgid "command '%s' lacks help"
@@ -23639,11 +23642,11 @@ msgstr ""
 
 #, c-format
 msgid "command '%s' requires --%s option"
-msgstr "El comando '%s' necesita una opción --%s"
+msgstr "la orden «%s» necesita la opción --%s"
 
 #, c-format
 msgid "command '%s' requires <%s> option"
-msgstr "El comando '%s' necesita una opción <%s>"
+msgstr "la orden «%s» necesita la opción <%s>"
 
 msgid "command groups and command are both NULL run vshInit before reloading"
 msgstr ""
@@ -23653,21 +23656,20 @@ msgstr ""
 
 #, c-format
 msgid "command is already running as pid %lld"
-msgstr "El comando ya está ejecutándose como PID %lld"
+msgstr "la orden ya está ejecutándose como PID %lld"
 
 msgid "command is in human monitor protocol"
-msgstr "El comando  está en  protocolo de monitor humano"
+msgstr "la orden está en protocolo de monitor humano"
 
 msgid "command is not yet running"
-msgstr "El  comando aún no está ejecutándose"
+msgstr "la orden aún no se ejecuta"
 
 #, c-format
 msgid "command or command group '%s' doesn't exist"
-msgstr "Comando o grupo de comandos '%s' no existe"
+msgstr "no existe la orden o el grupo de órdenes «%s»"
 
-#, fuzzy
 msgid "command to run"
-msgstr "Comando"
+msgstr "orden que ejecutar"
 
 msgid "commit changes and free restore point"
 msgstr "Envíe cambios y libera  punto de restauraciḿ"
@@ -24391,7 +24393,7 @@ msgstr ""
 "sean raw "
 
 msgid "creation of pid file requires daemonized command"
-msgstr "La creación del archivo PID requiere comando  demonizado"
+msgstr "la creación del archivo pid requiere la orden daemonized"
 
 msgid "creation of qcow/qcow2 files supports only 'luks' encryption"
 msgstr ""
@@ -24454,10 +24456,10 @@ msgstr "dominio muestra conexión URI"
 
 #, c-format
 msgid "daemonized command cannot set working directory %s"
-msgstr "Comando demonizado  no  se puede establecer directorio de trabajo  %s"
+msgstr "la orden daemonized no puede establecer el directorio de trabajo %s"
 
 msgid "daemonized command cannot use virCommandRunAsync"
-msgstr "Comando demonizado no puede usar virCommandRunAsync"
+msgstr "la orden daemonized no puede utilizar virCommandRunAsync"
 
 msgid "dangling \\"
 msgstr "dangling \\"
@@ -25800,7 +25802,7 @@ msgid "error parsing IFLA_VF_PORT part"
 msgstr "Error al analizar la parte IFLA_VF_PORT"
 
 msgid "error parsing pid of lldpad"
-msgstr "Error analizando pid de lldpad"
+msgstr "error al analizar el pid de lldpad"
 
 msgid "error receiving signal from container"
 msgstr "Error al  recibir señal del contenedor"
@@ -25814,49 +25816,51 @@ msgstr "Error al  iterar sobre la parte IFLA_VF_PORTS"
 #, c-format
 msgid "error while opening private key '%s', wrong passphrase?"
 msgstr ""
+"error al abrir la clave privada «%s»; quizá la frase de contraseña es "
+"incorrecta."
 
-#, fuzzy, c-format
+#, c-format
 msgid "error while reading private key '%s'"
-msgstr "Error al leer el nombre del dominio"
+msgstr "error al leer la clave privada «%s»"
 
-#, fuzzy, c-format
+#, c-format
 msgid "error while reading public key '%s'"
-msgstr "Error durante la lectura de /proc/cgroups"
+msgstr "error al leer la clave pública «%s»"
 
 msgid "error while resuming the domain"
-msgstr "Error al reanudar el dominio"
+msgstr "error al reanudar el dominio"
 
 msgid "error while suspending the domain"
-msgstr "Error mientras se suspendía el dominio"
+msgstr "error al suspender el dominio"
 
 msgid "error: "
-msgstr "Error:"
+msgstr "error: "
 
 msgid "escape for XML use"
-msgstr "Escape para uso de XML"
+msgstr "escape para uso de XML"
 
 msgid "escape for shell use"
-msgstr "Escape are uso de shell"
+msgstr "escape para uso de intérprete"
 
 #, c-format
 msgid "ethtool ioctl error on %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "event '%s' for domain %s\n"
-msgstr "No se pudo buscar %s para dominio %s"
+msgstr "suceso «%s» para el dominio %s\n"
 
 #, c-format
 msgid "event '%s' for domain %s: %s for %s %s\n"
-msgstr ""
+msgstr "suceso «%s» para el dominio %s: %s para %s %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "event '%s' for node device %s\n"
-msgstr "Se ha destruido el dispositivo de nodo '%s'\n"
+msgstr "suceso «%s» para el dispositivo de nodos %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "event '%s' for secret %s\n"
-msgstr "revert requires force: %s"
+msgstr "suceso «%s» para el secreto %s\n"
 
 #, fuzzy, c-format
 msgid "event '%s' for storage pool %s\n"
@@ -25999,10 +26003,10 @@ msgid "exclude <domain> from XML"
 msgstr "crea un dominio desde un archivo XML"
 
 msgid "execute command without timeout"
-msgstr "Ejecute el comando sin tiempo de espera"
+msgstr "ejecutar la orden sin tiempo de espera"
 
 msgid "execute command without waiting for timeout"
-msgstr "Ejecute el  comando sin esperar por tiempo de espera"
+msgstr "ejecutar la orden sin esperar a que se agote el tiempo de espera"
 
 msgid "existing interface name"
 msgstr "Nombre de la interfaz existente"
@@ -26453,7 +26457,7 @@ msgstr "Falló abrir la imagen RBD '%s'"
 
 #, c-format
 msgid "failed to execute command '%s': %s"
-msgstr "Falló la ejecución del comando '%s': %s"
+msgstr "no se pudo ejecutar la orden «%s»: %s"
 
 #, fuzzy
 msgid "failed to extract gluster volume name"
@@ -28555,14 +28559,13 @@ msgstr "nombre de interfaz o dirección MAC"
 
 #, c-format
 msgid "interface not set\n"
-msgstr ""
+msgstr "no se estableció la interfaz\n"
 
-#, fuzzy
 msgid "interface state driver is not active"
-msgstr "El estado del controlador lxc está inactivo"
+msgstr "el controlador de estado de interfaz está inactivo"
 
 msgid "interface stats not implemented on this platform"
-msgstr "Interfaz de estadísticas no se implementó en esta plataforma"
+msgstr "las estadísticas de interfaz no están implementadas en esta plataforma"
 
 msgid "internal"
 msgstr "interno"
@@ -28579,7 +28582,7 @@ msgstr ""
 "instantáneas de solo disco requieren al menos un disco para instantánea"
 
 msgid "internal command for autocompletion"
-msgstr ""
+msgstr "orden interna para la compleción automática"
 
 msgid "internal command for testing virt shells"
 msgstr ""
@@ -28589,15 +28592,15 @@ msgstr "error interno"
 
 #, c-format
 msgid "internal error: %s"
-msgstr "Error interno: %s"
+msgstr "error interno: %s"
 
 #, c-format
 msgid "internal error: bad options in command: '%s'"
-msgstr "Error interno: opciones erradas en comando: '%s'"
+msgstr "error interno: opciones erradas en la orden: «%s»"
 
-#, fuzzy, c-format
+#, c-format
 msgid "internal inactive snapshots are not supported on '%s' disks"
-msgstr "Borrado de instantáneas de disco externo %d aún no  tienen soporte"
+msgstr "no se admiten las instantáneas inactivas internas en discos «%s»"
 
 #, c-format
 msgid ""
@@ -28650,9 +28653,9 @@ msgstr "Código de tecla inválido: '%s'"
 msgid "invalid '=' after option --%s"
 msgstr "inválido '=' after option --%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid 'managed' value '%s'"
-msgstr "Valor de traducción inválido '%s'"
+msgstr "valor de «managed» no válido «%s»"
 
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
@@ -29443,7 +29446,7 @@ msgid "invalid unique_id supplied for '%s'"
 msgstr "el tamaño suministrado para '%s' no es válido"
 
 msgid "invalid use of command API"
-msgstr "Uso inválido del comando API"
+msgstr "uso no válido de la API de órdenes"
 
 msgid "invalid use with no flags"
 msgstr "Uso inválido sin indicadores"
@@ -31013,9 +31016,8 @@ msgstr ""
 msgid "missing <target> element for <memory> device"
 msgstr "No se encuentra el elemento 'target' para arrendamiento"
 
-#, fuzzy
 msgid "missing @managed attribute for <reservations/>"
-msgstr "falta atributo 'usage' para sistema de archivos RAM"
+msgstr "falta el atributo @managed para <reservations/>"
 
 #, fuzzy
 msgid "missing CPU data architecture"
@@ -31133,13 +31135,11 @@ msgstr "No se encuentra un elemento de capacidad"
 msgid "missing cellno argument"
 msgstr "Falta argumento"
 
-#, fuzzy
 msgid "missing connection mode for <reservations/>"
-msgstr "falta información del sistema operativo"
+msgstr "falta el modo de conexión para <reservations/>"
 
-#, fuzzy
 msgid "missing connection type for <reservations/>"
-msgstr "falta información del sistema operativo"
+msgstr "falta el tipo de conexión para <reservations/>"
 
 #, fuzzy
 msgid "missing cookie name"
@@ -31531,9 +31531,8 @@ msgstr "Falta argumento"
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "missing path for <reservations/>"
-msgstr "Falta información de nombre"
+msgstr "falta la ruta para <reservations/>"
 
 msgid "missing per-device path"
 msgstr "Falta ruta per-device"
@@ -33418,7 +33417,7 @@ msgid "only sending a signal to pid 1 is supported"
 msgstr "solo hay soporte para un dispositivo watchdog"
 
 msgid "only single ISA controller is supported"
-msgstr ""
+msgstr "solo se admite un único controlador ISA"
 
 #, fuzzy
 msgid "only single USB controller is supported"
@@ -33519,7 +33518,7 @@ msgstr "opción --%s ya vista"
 
 #, c-format
 msgid "option parsing failed: %s\n"
-msgstr ""
+msgstr "falló el análisis de la opción: %s\n"
 
 #, fuzzy
 msgid "optional CPU features are not supported"
@@ -36351,15 +36350,16 @@ msgstr ""
 "\"<portgroup name='%s'>\""
 
 msgid "there is another transaction running."
-msgstr "No hay otra transacción en ejecución."
+msgstr "hay otra transacción en ejecución."
 
 #, c-format
 msgid "there is no hub at port %u in USB address bus: %u port: %s"
 msgstr ""
 
-#, fuzzy
 msgid "this QEMU binary doesn't support relative block pull/rebase"
-msgstr "El binario QEMU no soporta %s"
+msgstr ""
+"este binario de QEMU no admite la incorporación/cambio de base de bloques "
+"relativa"
 
 msgid "this QEMU binary lacks multiple smartcard support"
 msgstr "Este binario QEMU carece de soporte para múltiples smartcard"
@@ -36401,18 +36401,17 @@ msgid "this domain exists already"
 msgstr "este dominio ya existe"
 
 msgid "this function is not supported by the connection driver"
-msgstr "esta función no está soportada por el controlador de conexión"
+msgstr "esta función no la admite el controlador de conexión"
 
 #, c-format
 msgid "this function is not supported by the connection driver: %s"
-msgstr "esta función no está soportada por el controlador de conexión: %s"
+msgstr "esta función no la admite el controlador de conexión: %s"
 
 msgid "this network exists already"
 msgstr "esta red ya existe"
 
-#, fuzzy
 msgid "this network port exists already"
-msgstr "esta red ya existe"
+msgstr "este puerto de red ya existe"
 
 msgid "this platform is missing dlopen"
 msgstr "Falta dlopen en esta plataforma"
@@ -37101,7 +37100,7 @@ msgstr "No se puede 'stat bind' target %s"
 
 #, c-format
 msgid "unable to find parent device '%s'"
-msgstr ""
+msgstr "no se puede encontrar el dispositivo primario «%s»"
 
 msgid "unable to find ploop tools, please install them"
 msgstr ""
@@ -38604,7 +38603,7 @@ msgstr "tipo de fuente pci '%s' desconocido"
 
 #, c-format
 msgid "unknown pci writeFiltering setting '%s'"
-msgstr ""
+msgstr "se desconoce la configuración de pci writeFiltering «%s»"
 
 #, fuzzy, c-format
 msgid "unknown policy attribute '%s' of feature '%s'"
@@ -38974,7 +38973,7 @@ msgid "unplug of device was rejected by the guest"
 msgstr ""
 
 msgid "unpriv_sgio is not supported by this kernel"
-msgstr "unpriv_sgio no está soportado por este kernel"
+msgstr "este núcleo no admite unpriv_sgio"
 
 #, c-format
 msgid "unprocessed hole of size %lld already in the queue"
@@ -38988,7 +38987,7 @@ msgstr ""
 
 #, c-format
 msgid "unrecognized command name '%s'"
-msgstr "nombre de comando no reconocido '%s'"
+msgstr "no se reconoce la orden con el nombre «%s»"
 
 #, c-format
 msgid "unrecognized network update command code %d"

@@ -15,21 +15,22 @@
 # Rafael Ferreira <rafael.f.f1@gmail.com>, 2012
 # Frederico Henrique Gonçalves Lima <fred@fredericolima.com.br>, 2016
 # Filipe Rosset <rosset.filipe@gmail.com>, 2017
+# Adolfo Jayme Barrientos <fitoschido@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-09-24 11:56+0000\n"
-"PO-Revision-Date: 2017-04-15 11:51+0000\n"
-"Last-Translator: Filipe Rosset <rosset.filipe@gmail.com>\n"
-"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
-"libvirt/language/pt_BR/)\n"
+"PO-Revision-Date: 2020-10-14 16:08+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
+"projects/libvirt/libvirt/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.2.2\n"
 
 msgid ""
 "\n"
@@ -29287,7 +29288,7 @@ msgid "invalid unique_id supplied for '%s'"
 msgstr "tamanho fornecido inválido para \"%s\""
 
 msgid "invalid use of command API"
-msgstr "Uso inválido do comando API"
+msgstr "Uso inválido da API de comandos"
 
 msgid "invalid use with no flags"
 msgstr "Uso inválido sem flags"
