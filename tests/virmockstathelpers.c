@@ -153,7 +153,7 @@ static void virMockStatInit(void)
 #endif
 #ifdef MOCK_LSTAT
 # ifdef __APPLE__
-    VIR_MOCK_REAL_INIT_ALIASED(stat, "lstat$INODE64");
+    VIR_MOCK_REAL_INIT_ALIASED(lstat, "lstat$INODE64");
 # else
     VIR_MOCK_REAL_INIT(lstat);
 # endif
