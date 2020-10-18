@@ -55,6 +55,10 @@
  * Unfortunately, because we are trying to mock replace the C library,
  * we need to know about this internal impl detail.
  *
+ * On macOS stat() and lstat() are resolved to _stat$INODE64 and
+ * _lstat$INODE64, respectively. stat(2) man page also declares that
+ * stat64(), lstat64() and fstat64() are deprecated.
+ *
  * With all this in mind the list of functions we have to mock will depend
  * on several factors
  *
@@ -68,8 +72,10 @@
 
 
 
-#if defined(WITH_STAT) && !defined(WITH___XSTAT) && !defined(WITH_STAT64)
-# define MOCK_STAT
+#if defined(WITH_STAT)
+# if !defined(WITH___XSTAT) && !defined(WITH_STAT64) || defined(__APPLE__)
+#  define MOCK_STAT
+# endif
 #endif
 #if defined(WITH_STAT64) && !defined(WITH___XSTAT64)
 # define MOCK_STAT64
@@ -80,8 +86,10 @@
 #if defined(WITH___XSTAT64)
 # define MOCK___XSTAT64
 #endif
-#if defined(WITH_LSTAT) && !defined(WITH___LXSTAT) && !defined(WITH_LSTAT64)
-# define MOCK_LSTAT
+#if defined(WITH_LSTAT)
+# if !defined(WITH___LXSTAT) && !defined(WITH_LSTAT64) || defined(__APPLE__)
+#  define MOCK_LSTAT
+# endif
 #endif
 #if defined(WITH_LSTAT64) && !defined(WITH___LXSTAT64)
 # define MOCK_LSTAT64
