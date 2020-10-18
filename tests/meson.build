@@ -185,6 +185,7 @@ if conf.has('WITH_QEMU')
   test_qemu_driver_lib = shared_library(
     'test_qemu_driver',
     [ qemu_dtrace_gen_objects ],
+    link_args: [ libvirt_flat_namespace ],
     link_whole: [ qemu_driver_impl ],
     link_with: [ libvirt_lib ],
   )
