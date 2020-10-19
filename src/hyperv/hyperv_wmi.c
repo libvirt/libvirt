@@ -325,7 +325,7 @@ hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
 
     /* Get the typeinfo out of the class info list */
     if (hypervGetWmiClassInfo(priv, info, &classInfo) < 0)
-        goto error;
+        return NULL;
 
     typeinfo = classInfo->serializerInfo;
 
@@ -335,19 +335,16 @@ hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
 
     table = virHashCreate(count, NULL);
     if (table == NULL)
-        goto error;
+        return NULL;
 
     for (i = 0; typeinfo[i].name != NULL; i++) {
         item = &typeinfo[i];
 
         if (virHashAddEntry(table, item->name, NULL) < 0)
-            goto error;
+            return NULL;
     }
 
     return g_steal_pointer(&table);
-
- error:
-    return NULL;
 }
 
 
