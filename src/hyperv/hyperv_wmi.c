@@ -317,10 +317,9 @@ virHashTablePtr
 hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
 {
     size_t i;
-    int count = 0;
+    size_t count;
     g_autoptr(virHashTable) table = NULL;
     XmlSerializerInfo *typeinfo = NULL;
-    XmlSerializerInfo *item = NULL;
     hypervWmiClassInfoPtr classInfo = NULL;
 
     /* Get the typeinfo out of the class info list */
@@ -330,15 +329,15 @@ hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
     typeinfo = classInfo->serializerInfo;
 
     /* loop through the items to find out how many fields there are */
-    for (i = 0; typeinfo[i].name != NULL; i++) {}
-    count = i;
+    for (count = 0; typeinfo[count].name != NULL; count++)
+        ;
 
     table = virHashCreate(count, NULL);
     if (table == NULL)
         return NULL;
 
     for (i = 0; typeinfo[i].name != NULL; i++) {
-        item = &typeinfo[i];
+        XmlSerializerInfo *item = &typeinfo[i];
 
         if (virHashAddEntry(table, item->name, NULL) < 0)
             return NULL;
