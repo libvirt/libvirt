@@ -351,10 +351,26 @@ hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
     return NULL;
 }
 
+
+/**
+ * hypervSetEmbeddedProperty:
+ * @table: hash table allocated earlier by hypervCreateEmbeddedParam()
+ * @name: name of the property
+ * @value: value of the property
+ *
+ * For given table of properties, set property of @name to @value.
+ * Please note, that the hash table does NOT become owner of the @value and
+ * thus caller must ensure the pointer validity.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
 int
-hypervSetEmbeddedProperty(virHashTablePtr table, const char *name, char *value)
+hypervSetEmbeddedProperty(virHashTablePtr table,
+                          const char *name,
+                          const char *value)
 {
-    return virHashUpdateEntry(table, name, value);
+    return virHashUpdateEntry(table, name, (void*) value);
 }
 
 /*
