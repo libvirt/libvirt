@@ -182,7 +182,7 @@
 %if %{with_qemu} || %{with_lxc}
 # numad is used to manage the CPU and memory placement dynamically,
 # it's not available on many non-x86 architectures.
-    %ifnarch %{arches_numad}
+    %ifarch %{arches_numad}
         %define with_numad    0%{!?_without_numad:1}
     %endif
 %endif
