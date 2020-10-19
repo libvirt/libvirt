@@ -318,7 +318,7 @@ hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
 {
     size_t i;
     int count = 0;
-    virHashTablePtr table = NULL;
+    g_autoptr(virHashTable) table = NULL;
     XmlSerializerInfo *typeinfo = NULL;
     XmlSerializerInfo *item = NULL;
     hypervWmiClassInfoPtr classInfo = NULL;
@@ -344,10 +344,9 @@ hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
             goto error;
     }
 
-    return table;
+    return g_steal_pointer(&table);
 
  error:
-    virHashFree(table);
     return NULL;
 }
 
