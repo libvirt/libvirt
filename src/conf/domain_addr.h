@@ -115,8 +115,8 @@ typedef struct {
 typedef virDomainPCIAddressBus *virDomainPCIAddressBusPtr;
 
 typedef struct {
-    virHashTablePtr uids;
-    virHashTablePtr fids;
+    GHashTable *uids;
+    GHashTable *fids;
 } virDomainZPCIAddressIds;
 typedef virDomainZPCIAddressIds *virDomainZPCIAddressIdsPtr;
 
