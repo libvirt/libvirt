@@ -5155,6 +5155,13 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCapsPtr qemuCaps)
     /* TCG couldn't be disabled nor queried until QEMU 2.10 */
     if (qemuCaps->version < 2010000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_TCG);
+
+    /* -enable-fips is deprecated in QEMU 5.2.0, and QEMU
+     * should be built with gcrypt to achieve FIPS compliance
+     * automatically / implicitly
+     */
+    if (qemuCaps->version < 5002000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_ENABLE_FIPS);
 }
 
 

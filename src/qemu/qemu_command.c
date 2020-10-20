@@ -1089,10 +1089,20 @@ qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDefPtr disk)
  *                          old QEMU            new QEMU
  * FIPS enabled             doesn't start       VNC auth disabled
  * FIPS disabled/missing    VNC auth enabled    VNC auth enabled
+ *
+ * In QEMU 5.2.0, use of -enable-fips was deprecated. In scenarios
+ * where FIPS is required, QEMU must be built against libgcrypt
+ * which automatically enforces FIPS compliance.
  */
 bool
-qemuCheckFips(void)
+qemuCheckFips(virDomainObjPtr vm)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUCapsPtr qemuCaps = priv->qemuCaps;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_FIPS))
+        return false;
+
     if (virFileExists("/proc/sys/crypto/fips_enabled")) {
         g_autofree char *buf = NULL;
 

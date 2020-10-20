@@ -6901,7 +6901,7 @@ qemuProcessLaunch(virConnectPtr conn,
                                      incoming ? incoming->launchURI : NULL,
                                      snapshot, vmop,
                                      false,
-                                     qemuCheckFips(),
+                                     qemuCheckFips(vm),
                                      &nnicindexes, &nicindexes, 0)))
         goto cleanup;
 

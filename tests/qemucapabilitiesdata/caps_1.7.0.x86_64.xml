@@ -66,6 +66,7 @@
   <flag name='kvm-pit-lost-tick-policy'/>
   <flag name='boot-strict'/>
   <flag name='pvpanic'/>
+  <flag name='enable-fips'/>
   <flag name='spice-file-xfer-disable'/>
   <flag name='usb-kbd'/>
   <flag name='msg-timestamp'/>

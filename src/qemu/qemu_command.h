@@ -214,7 +214,7 @@ qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDefPtr disk);
 
 
 bool
-qemuCheckFips(void);
+qemuCheckFips(virDomainObjPtr vm);
 
 virJSONValuePtr qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
     ATTRIBUTE_NONNULL(1);

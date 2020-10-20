@@ -62,6 +62,7 @@
   <flag name='kvm-pit-lost-tick-policy'/>
   <flag name='boot-strict'/>
   <flag name='pvpanic'/>
+  <flag name='enable-fips'/>
   <flag name='usb-kbd'/>
   <flag name='usb-audio'/>
   <flag name='splash-timeout'/>

@@ -21,6 +21,7 @@
   <flag name='drive-discard'/>
   <flag name='virtio-mmio'/>
   <flag name='boot-strict'/>
+  <flag name='enable-fips'/>
   <flag name='msg-timestamp'/>
   <flag name='active-commit'/>
   <flag name='change-backing-file'/>

@@ -399,6 +399,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
                                unsigned int flags,
                                bool jsonPropsValidation)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     bool enableFips = !!(flags & FLAG_FIPS_HOST);
     size_t i;
 
@@ -488,6 +489,10 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
             }
         }
     }
+
+    /* we can't use qemuCheckFips() directly as it queries host state */
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
+        enableFips = false;
 
     return qemuProcessCreatePretendCmdBuild(drv, vm, migrateURI,
                                             enableFips, false,
