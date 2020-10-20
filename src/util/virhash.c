@@ -118,49 +118,6 @@ virHashComputeKey(const virHashTable *table, const void *name)
     return value % table->size;
 }
 
-/**
- * virHashCreateFull:
- * @size: the size of the hash table
- * @dataFree: callback to free data
- * @keyCode: callback to compute hash code
- * @keyEqual: callback to compare hash keys
- * @keyCopy: callback to copy hash keys
- * @keyFree: callback to free keys
- *
- * Create a new virHashTablePtr.
- *
- * Returns the newly created object.
- */
-virHashTablePtr virHashCreateFull(ssize_t size,
-                                  virHashDataFree dataFree,
-                                  virHashKeyCode keyCode,
-                                  virHashKeyEqual keyEqual,
-                                  virHashKeyCopy keyCopy,
-                                  virHashKeyPrintHuman keyPrint,
-                                  virHashKeyFree keyFree)
-{
-    virHashTablePtr table = NULL;
-
-    if (size <= 0)
-        size = 256;
-
-    table = g_new0(virHashTable, 1);
-
-    table->seed = virRandomBits(32);
-    table->size = size;
-    table->nbElems = 0;
-    table->dataFree = dataFree;
-    table->keyCode = keyCode;
-    table->keyEqual = keyEqual;
-    table->keyCopy = keyCopy;
-    table->keyPrint = keyPrint;
-    table->keyFree = keyFree;
-
-    table->table = g_new0(virHashEntryPtr, table->size);
-
-    return table;
-}
-
 
 /**
  * virHashNew:
@@ -173,13 +130,23 @@ virHashTablePtr virHashCreateFull(ssize_t size,
 virHashTablePtr
 virHashNew(virHashDataFree dataFree)
 {
-    return virHashCreateFull(32,
-                             dataFree,
-                             virHashStrCode,
-                             virHashStrEqual,
-                             virHashStrCopy,
-                             virHashStrPrintHuman,
-                             virHashStrFree);
+    virHashTablePtr table = NULL;
+
+    table = g_new0(virHashTable, 1);
+
+    table->seed = virRandomBits(32);
+    table->size = 32;
+    table->nbElems = 0;
+    table->dataFree = dataFree;
+    table->keyCode = virHashStrCode;
+    table->keyEqual = virHashStrEqual;
+    table->keyCopy = virHashStrCopy;
+    table->keyPrint = virHashStrPrintHuman;
+    table->keyFree = virHashStrFree;
+
+    table->table = g_new0(virHashEntryPtr, table->size);
+
+    return table;
 }
 
 

@@ -113,13 +113,6 @@ typedef void (*virHashKeyFree)(void *name);
  */
 virHashTablePtr virHashNew(virHashDataFree dataFree);
 virHashAtomicPtr virHashAtomicNew(virHashDataFree dataFree);
-virHashTablePtr virHashCreateFull(ssize_t size,
-                                  virHashDataFree dataFree,
-                                  virHashKeyCode keyCode,
-                                  virHashKeyEqual keyEqual,
-                                  virHashKeyCopy keyCopy,
-                                  virHashKeyPrintHuman keyPrint,
-                                  virHashKeyFree keyFree);
 void virHashFree(virHashTablePtr table);
 ssize_t virHashSize(const virHashTable *table);
 
