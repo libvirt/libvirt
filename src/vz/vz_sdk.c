@@ -745,7 +745,7 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
             goto cleanup;
         }
 
-        if (!(matches = virStringSplitCount(uri->path, "/", 0, NULL)) ||
+        if (!(matches = virStringSplit(uri->path, "/", 0)) ||
             !matches[0]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("splitting StorageUrl failed %s"), uri->path);
