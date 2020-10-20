@@ -1020,13 +1020,6 @@ endif
 
 devmapper_version = '1.0.0'
 devmapper_dep = dependency('devmapper', version: '>=' + devmapper_version, required: false)
-if not devmapper_dep.found()
-  # devmapper is missing pkg-config files in ubuntu, suse, etc
-  devmapper_dep = cc.find_library('devmapper', required: false)
-  if devmapper_dep.found() and not cc.has_function('dm_task_run', dependencies: tmp)
-    devmapper_dep = dependency('', required: false)
-  endif
-endif
 if devmapper_dep.found()
   conf.set('WITH_DEVMAPPER', 1)
 endif
