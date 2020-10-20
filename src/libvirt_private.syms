@@ -927,7 +927,6 @@ virNWFilterIPAddrMapShutdown;
 
 
 # conf/nwfilter_params.h
-virNWFilterHashTableCreate;
 virNWFilterHashTableEqual;
 virNWFilterHashTablePutAll;
 virNWFilterVarAccessGetVarName;
@@ -948,6 +947,7 @@ virNWFilterVarValueFree;
 virNWFilterVarValueGetCardinality;
 virNWFilterVarValueGetNthValue;
 virNWFilterVarValueGetSimple;
+virNWFilterVarValueHashFree;
 
 
 # conf/object_event.h

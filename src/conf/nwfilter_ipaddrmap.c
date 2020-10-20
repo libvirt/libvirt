@@ -149,7 +149,7 @@ virNWFilterIPAddrMapGetIPAddr(const char *ifname)
 int
 virNWFilterIPAddrMapInit(void)
 {
-    ipAddressMap = virNWFilterHashTableCreate(0);
+    ipAddressMap = virHashNew(virNWFilterVarValueHashFree);
     if (!ipAddressMap)
         return -1;
 

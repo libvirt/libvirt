@@ -52,6 +52,7 @@ virNWFilterVarValuePtr virNWFilterVarValueCreateSimple(char *);
 virNWFilterVarValuePtr virNWFilterVarValueCreateSimpleCopyValue(const char *);
 virNWFilterVarValuePtr virNWFilterVarValueCopy(const virNWFilterVarValue *);
 void virNWFilterVarValueFree(virNWFilterVarValuePtr val);
+void virNWFilterVarValueHashFree(void *payload);
 const char *virNWFilterVarValueGetSimple(const virNWFilterVarValue *val);
 const char *virNWFilterVarValueGetNthValue(const virNWFilterVarValue *val,
                                            unsigned int idx);
@@ -67,7 +68,6 @@ int virNWFilterFormatParamAttributes(virBufferPtr buf,
                                      virHashTablePtr table,
                                      const char *filterref);
 
-virHashTablePtr virNWFilterHashTableCreate(int n);
 int virNWFilterHashTablePutAll(virHashTablePtr src,
                                virHashTablePtr dest);
 bool virNWFilterHashTableEqual(virHashTablePtr a,

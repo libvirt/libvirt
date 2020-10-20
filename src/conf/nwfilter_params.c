@@ -606,18 +606,12 @@ virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
     return res;
 }
 
-static void
-hashDataFree(void *payload)
+void
+virNWFilterVarValueHashFree(void *payload)
 {
     virNWFilterVarValueFree(payload);
 }
 
-
-virHashTablePtr
-virNWFilterHashTableCreate(int n)
-{
-    return virHashCreate(n, hashDataFree);
-}
 
 struct addToTableStruct {
     virHashTablePtr target;
@@ -708,7 +702,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
     char *nam, *val;
     virNWFilterVarValuePtr value;
 
-    virHashTablePtr table = virNWFilterHashTableCreate(0);
+    virHashTablePtr table = virHashNew(virNWFilterVarValueHashFree);
     if (!table)
         return NULL;
 

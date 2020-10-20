@@ -59,7 +59,7 @@ virNWFilterBindingDefForNet(const char *vmname,
 
     ret->filter = g_strdup(net->filter);
 
-    if (!(ret->filterparams = virNWFilterHashTableCreate(0)))
+    if (!(ret->filterparams = virHashNew(virNWFilterVarValueHashFree)))
         goto error;
 
     if (net->filterparams &&

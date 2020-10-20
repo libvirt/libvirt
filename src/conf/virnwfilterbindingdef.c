@@ -65,7 +65,7 @@ virNWFilterBindingDefCopy(virNWFilterBindingDefPtr src)
 
     ret->filter = g_strdup(src->filter);
 
-    if (!(ret->filterparams = virNWFilterHashTableCreate(0)))
+    if (!(ret->filterparams = virHashNew(virNWFilterVarValueHashFree)))
         goto error;
 
     if (virNWFilterHashTablePutAll(src->filterparams, ret->filterparams) < 0)

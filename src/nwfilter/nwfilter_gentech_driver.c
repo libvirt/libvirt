@@ -199,7 +199,7 @@ static virHashTablePtr
 virNWFilterCreateVarsFrom(virHashTablePtr vars1,
                           virHashTablePtr vars2)
 {
-    virHashTablePtr res = virNWFilterHashTableCreate(0);
+    virHashTablePtr res = virHashNew(virNWFilterVarValueHashFree);
     if (!res)
         return NULL;
 
@@ -268,7 +268,7 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
     ruleinst->chainPriority = def->chainPriority;
     ruleinst->def = rule;
     ruleinst->priority = rule->priority;
-    if (!(ruleinst->vars = virNWFilterHashTableCreate(0)))
+    if (!(ruleinst->vars = virHashNew(virNWFilterVarValueHashFree)))
         goto cleanup;
     if (virNWFilterHashTablePutAll(vars, ruleinst->vars) < 0)
         goto cleanup;
@@ -516,7 +516,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
     const char *learning;
     bool reportIP = false;
 
-    virHashTablePtr missing_vars = virNWFilterHashTableCreate(0);
+    virHashTablePtr missing_vars = virHashNew(virNWFilterVarValueHashFree);
 
     memset(&inst, 0, sizeof(inst));
 

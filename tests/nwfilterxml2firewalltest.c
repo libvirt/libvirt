@@ -149,7 +149,7 @@ static virHashTablePtr
 virNWFilterCreateVarsFrom(virHashTablePtr vars1,
                           virHashTablePtr vars2)
 {
-    virHashTablePtr res = virNWFilterHashTableCreate(0);
+    virHashTablePtr res = virHashNew(virNWFilterVarValueHashFree);
     if (!res)
         return NULL;
 
@@ -215,7 +215,7 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
     ruleinst->chainPriority = def->chainPriority;
     ruleinst->def = rule;
     ruleinst->priority = rule->priority;
-    if (!(ruleinst->vars = virNWFilterHashTableCreate(0)))
+    if (!(ruleinst->vars = virHashNew(virNWFilterVarValueHashFree)))
         goto cleanup;
     if (virNWFilterHashTablePutAll(vars, ruleinst->vars) < 0)
         goto cleanup;
@@ -368,7 +368,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 {
     char *actualargv = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virHashTablePtr vars = virNWFilterHashTableCreate(0);
+    virHashTablePtr vars = virHashNew(virNWFilterVarValueHashFree);
     virNWFilterInst inst;
     int ret = -1;
 
