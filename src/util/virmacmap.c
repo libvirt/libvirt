@@ -299,7 +299,7 @@ virMacMapNew(const char *file)
         return NULL;
 
     virObjectLock(mgr);
-    if (!(mgr->macs = virHashCreate(VIR_MAC_HASH_TABLE_SIZE, NULL)))
+    if (!(mgr->macs = virHashNew(NULL)))
         goto error;
 
     if (file &&

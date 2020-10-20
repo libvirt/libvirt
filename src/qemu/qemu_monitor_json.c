@@ -5126,7 +5126,7 @@ qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon,
     }
 
     nr_results = virJSONValueArraySize(data);
-    if (!(blockJobs = virHashCreate(nr_results, virHashValueFree)))
+    if (!(blockJobs = virHashNew(virHashValueFree)))
         goto cleanup;
 
     for (i = 0; i < nr_results; i++) {

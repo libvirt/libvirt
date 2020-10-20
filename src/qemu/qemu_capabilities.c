@@ -1784,7 +1784,7 @@ virQEMUDomainCapsCacheNew(void)
     if (!(cache = virObjectLockableNew(virQEMUDomainCapsCacheClass)))
         return NULL;
 
-    if (!(cache->cache = virHashCreate(5, virObjectFreeHashData)))
+    if (!(cache->cache = virHashNew(virObjectFreeHashData)))
         return NULL;
 
     return g_steal_pointer(&cache);
@@ -3114,7 +3114,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
         qemuMonitorCPUPropertyPtr nmProp;
         size_t i;
 
-        if (!(hash = virHashCreate(0, NULL)))
+        if (!(hash = virHashNew(NULL)))
             goto cleanup;
 
         for (i = 0; i < modelInfo->nprops; i++) {

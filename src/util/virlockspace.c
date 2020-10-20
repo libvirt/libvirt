@@ -251,8 +251,7 @@ virLockSpacePtr virLockSpaceNew(const char *directory)
 
     lockspace->dir = g_strdup(directory);
 
-    if (!(lockspace->resources = virHashCreate(VIR_LOCKSPACE_TABLE_SIZE,
-                                               virLockSpaceResourceDataFree)))
+    if (!(lockspace->resources = virHashNew(virLockSpaceResourceDataFree)))
         goto error;
 
     if (directory) {
@@ -299,8 +298,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
         return NULL;
     }
 
-    if (!(lockspace->resources = virHashCreate(VIR_LOCKSPACE_TABLE_SIZE,
-                                               virLockSpaceResourceDataFree)))
+    if (!(lockspace->resources = virHashNew(virLockSpaceResourceDataFree)))
         goto error;
 
     if (virJSONValueObjectHasKey(object, "directory")) {

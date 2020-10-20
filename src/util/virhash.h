@@ -112,8 +112,6 @@ typedef void (*virHashKeyFree)(void *name);
  * Constructor and destructor.
  */
 virHashTablePtr virHashNew(virHashDataFree dataFree);
-virHashTablePtr virHashCreate(ssize_t size,
-                              virHashDataFree dataFree);
 virHashAtomicPtr virHashAtomicNew(virHashDataFree dataFree);
 virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashDataFree dataFree,

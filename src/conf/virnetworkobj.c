@@ -118,8 +118,7 @@ virNetworkObjNew(void)
         virBitmapSetBitExpand(obj->classIdMap, 2) < 0)
         goto error;
 
-    if (!(obj->ports = virHashCreate(10,
-                                     virNetworkObjPortFree)))
+    if (!(obj->ports = virHashNew(virNetworkObjPortFree)))
         goto error;
 
     virObjectLock(obj);
@@ -351,7 +350,7 @@ virNetworkObjListNew(void)
     if (!(nets = virObjectRWLockableNew(virNetworkObjListClass)))
         return NULL;
 
-    if (!(nets->objs = virHashCreate(50, virObjectFreeHashData))) {
+    if (!(nets->objs = virHashNew(virObjectFreeHashData))) {
         virObjectUnref(nets);
         return NULL;
     }

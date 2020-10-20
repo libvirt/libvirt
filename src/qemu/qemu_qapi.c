@@ -517,7 +517,7 @@ virQEMUQAPISchemaConvert(virJSONValuePtr schemareply)
     g_autoptr(virHashTable) schema = NULL;
     g_autoptr(virJSONValue) schemajson = schemareply;
 
-    if (!(schema = virHashCreate(512, virJSONValueHashFree)))
+    if (!(schema = virHashNew(virJSONValueHashFree)))
         return NULL;
 
     if (virJSONValueArrayForeachSteal(schemajson,

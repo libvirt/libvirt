@@ -454,7 +454,7 @@ virNodeDeviceObjListNew(void)
     if (!(devs = virObjectRWLockableNew(virNodeDeviceObjListClass)))
         return NULL;
 
-    if (!(devs->objs = virHashCreate(50, virObjectFreeHashData))) {
+    if (!(devs->objs = virHashNew(virObjectFreeHashData))) {
         virObjectUnref(devs);
         return NULL;
     }

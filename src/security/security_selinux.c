@@ -685,7 +685,7 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
         goto error;
     }
 
-    if (!(data->mcs = virHashCreate(10, NULL)))
+    if (!(data->mcs = virHashNew(NULL)))
         goto error;
 
     return 0;
@@ -757,7 +757,7 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
     VIR_DEBUG("Loaded file context '%s', content context '%s'",
               data->file_context, data->content_context);
 
-    if (!(data->mcs = virHashCreate(10, NULL)))
+    if (!(data->mcs = virHashNew(NULL)))
         goto error;
 
     return 0;

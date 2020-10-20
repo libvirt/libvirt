@@ -172,9 +172,9 @@ virStorageVolObjListNew(void)
     if (!(vols = virObjectRWLockableNew(virStorageVolObjListClass)))
         return NULL;
 
-    if (!(vols->objsKey = virHashCreate(10, virObjectFreeHashData)) ||
-        !(vols->objsName = virHashCreate(10, virObjectFreeHashData)) ||
-        !(vols->objsPath = virHashCreate(10, virObjectFreeHashData))) {
+    if (!(vols->objsKey = virHashNew(virObjectFreeHashData)) ||
+        !(vols->objsName = virHashNew(virObjectFreeHashData)) ||
+        !(vols->objsPath = virHashNew(virObjectFreeHashData))) {
         virObjectUnref(vols);
         return NULL;
     }
@@ -404,8 +404,8 @@ virStoragePoolObjListNew(void)
     if (!(pools = virObjectRWLockableNew(virStoragePoolObjListClass)))
         return NULL;
 
-    if (!(pools->objs = virHashCreate(20, virObjectFreeHashData)) ||
-        !(pools->objsName = virHashCreate(20, virObjectFreeHashData))) {
+    if (!(pools->objs = virHashNew(virObjectFreeHashData)) ||
+        !(pools->objsName = virHashNew(virObjectFreeHashData))) {
         virObjectUnref(pools);
         return NULL;
     }

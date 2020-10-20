@@ -242,7 +242,7 @@ virFileCacheNew(const char *dir,
     if (!(cache = virObjectNew(virFileCacheClass)))
         return NULL;
 
-    if (!(cache->table = virHashCreate(10, virObjectFreeHashData)))
+    if (!(cache->table = virHashNew(virObjectFreeHashData)))
         goto cleanup;
 
     cache->dir = g_strdup(dir);

@@ -5821,7 +5821,7 @@ virDomainDefBootOrderPostParse(virDomainDefPtr def)
     virHashTablePtr bootHash = NULL;
     int ret = -1;
 
-    if (!(bootHash = virHashCreate(5, NULL)))
+    if (!(bootHash = virHashNew(NULL)))
         goto cleanup;
 
     if (virDomainDeviceInfoIterate(def, virDomainDefCollectBootOrder, bootHash) < 0)
@@ -6927,7 +6927,7 @@ virDomainDefValidateAliases(const virDomainDef *def,
     int ret = -1;
 
     /* We are not storing copies of aliases. Don't free them. */
-    if (!(data.aliases = virHashCreate(10, NULL)))
+    if (!(data.aliases = virHashNew(NULL)))
         goto cleanup;
 
     if (virDomainDeviceInfoIterateInternal((virDomainDefPtr) def,

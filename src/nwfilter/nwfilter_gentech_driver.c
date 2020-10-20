@@ -1008,7 +1008,7 @@ virNWFilterBuildAll(virNWFilterDriverStatePtr driver,
     VIR_DEBUG("Build all filters newFilters=%d", newFilters);
 
     if (newFilters) {
-        if (!(data.skipInterfaces = virHashCreate(0, NULL)))
+        if (!(data.skipInterfaces = virHashNew(NULL)))
             return -1;
 
         data.step = STEP_APPLY_NEW;

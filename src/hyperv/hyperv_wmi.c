@@ -332,7 +332,7 @@ hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
     for (count = 0; typeinfo[count].name != NULL; count++)
         ;
 
-    table = virHashCreate(count, NULL);
+    table = virHashNew(NULL);
     if (table == NULL)
         return NULL;
 

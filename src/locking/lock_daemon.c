@@ -56,8 +56,6 @@
 
 VIR_LOG_INIT("locking.lock_daemon");
 
-#define VIR_LOCK_DAEMON_NUM_LOCKSPACES 3
-
 struct _virLockDaemon {
     GMutex lock;
     virNetDaemonPtr dmn;
@@ -155,8 +153,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
     virObjectUnref(srv);
     srv = NULL;
 
-    if (!(lockd->lockspaces = virHashCreate(VIR_LOCK_DAEMON_NUM_LOCKSPACES,
-                                            virLockDaemonLockSpaceDataFree)))
+    if (!(lockd->lockspaces = virHashNew(virLockDaemonLockSpaceDataFree)))
         goto error;
 
     if (!(lockd->defaultLockspace = virLockSpaceNew(NULL)))
@@ -215,8 +212,7 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
 
     g_mutex_init(&lockd->lock);
 
-    if (!(lockd->lockspaces = virHashCreate(VIR_LOCK_DAEMON_NUM_LOCKSPACES,
-                                            virLockDaemonLockSpaceDataFree)))
+    if (!(lockd->lockspaces = virHashNew(virLockDaemonLockSpaceDataFree)))
         goto error;
 
     if (!(child = virJSONValueObjectGet(object, "defaultLockspace"))) {

@@ -125,7 +125,7 @@ qemuInteropFetchConfigs(const char *name,
         homeConfig = g_strdup_printf("%s/qemu/%s", xdgConfig, name);
     }
 
-    if (!(files = virHashCreate(10, virHashValueFree)))
+    if (!(files = virHashNew(virHashValueFree)))
         return -1;
 
     if (qemuBuildFileList(files, sysLocation) < 0)

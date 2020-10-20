@@ -2199,7 +2199,6 @@ virHashAddEntry;
 virHashAtomicNew;
 virHashAtomicSteal;
 virHashAtomicUpdate;
-virHashCreate;
 virHashEqual;
 virHashForEach;
 virHashFree;

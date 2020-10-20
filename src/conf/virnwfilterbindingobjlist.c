@@ -66,7 +66,7 @@ virNWFilterBindingObjListNew(void)
     if (!(bindings = virObjectRWLockableNew(virNWFilterBindingObjListClass)))
         return NULL;
 
-    if (!(bindings->objs = virHashCreate(50, virObjectFreeHashData))) {
+    if (!(bindings->objs = virHashNew(virObjectFreeHashData))) {
         virObjectUnref(bindings);
         return NULL;
     }

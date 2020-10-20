@@ -85,12 +85,12 @@ init_hash(void)
     if (xattr_paths)
         return;
 
-    if (!(xattr_paths = virHashCreate(10, virHashValueFree))) {
+    if (!(xattr_paths = virHashNew(virHashValueFree))) {
         fprintf(stderr, "Unable to create hash table for XATTR paths\n");
         abort();
     }
 
-    if (!(chown_paths = virHashCreate(10, virHashValueFree))) {
+    if (!(chown_paths = virHashNew(virHashValueFree))) {
         fprintf(stderr, "Unable to create hash table for chowned paths\n");
         abort();
     }

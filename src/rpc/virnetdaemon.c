@@ -140,7 +140,7 @@ virNetDaemonNew(void)
     if (!(dmn = virObjectLockableNew(virNetDaemonClass)))
         return NULL;
 
-    if (!(dmn->servers = virHashCreate(5, virObjectFreeHashData)))
+    if (!(dmn->servers = virHashNew(virObjectFreeHashData)))
         goto error;
 
 #ifndef WIN32

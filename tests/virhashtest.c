@@ -388,7 +388,7 @@ testHashGetItems(const void *data G_GNUC_UNUSED)
     char value2[] = "2";
     char value3[] = "3";
 
-    if (!(hash = virHashCreate(0, NULL)) ||
+    if (!(hash = virHashNew(NULL)) ||
         virHashAddEntry(hash, keya, value3) < 0 ||
         virHashAddEntry(hash, keyc, value1) < 0 ||
         virHashAddEntry(hash, keyb, value2) < 0) {
@@ -458,8 +458,8 @@ testHashEqual(const void *data G_GNUC_UNUSED)
     char value3_u[] = "O";
     char value4_u[] = "P";
 
-    if (!(hash1 = virHashCreate(0, NULL)) ||
-        !(hash2 = virHashCreate(0, NULL)) ||
+    if (!(hash1 = virHashNew(NULL)) ||
+        !(hash2 = virHashNew(NULL)) ||
         virHashAddEntry(hash1, keya, value1_l) < 0 ||
         virHashAddEntry(hash1, keyb, value2_l) < 0 ||
         virHashAddEntry(hash1, keyc, value3_l) < 0 ||
@@ -508,7 +508,7 @@ testHashDuplicate(const void *data G_GNUC_UNUSED)
 {
     g_autoptr(virHashTable) hash = NULL;
 
-    if (!(hash = virHashCreate(0, NULL)))
+    if (!(hash = virHashNew(NULL)))
         return -1;
 
     if (virHashAddEntry(hash, "a", NULL) < 0) {

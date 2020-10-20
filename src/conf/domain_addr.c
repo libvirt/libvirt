@@ -1389,7 +1389,7 @@ virDomainCCWAddressSetCreate(void)
 
     addrs = g_new0(virDomainCCWAddressSet, 1);
 
-    if (!(addrs->defined = virHashCreate(10, virHashValueFree)))
+    if (!(addrs->defined = virHashNew(virHashValueFree)))
         goto error;
 
     /* must use cssid = 0xfe (254) for virtio-ccw devices */

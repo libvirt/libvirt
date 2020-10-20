@@ -76,9 +76,9 @@ iptablesPrivateChainCreate(virFirewallPtr fw,
     int ret = -1;
     size_t i;
 
-    if (!(chains = virHashCreate(50, NULL)))
+    if (!(chains = virHashNew(NULL)))
         goto cleanup;
-    if (!(links = virHashCreate(50, NULL)))
+    if (!(links = virHashNew(NULL)))
         goto cleanup;
 
     tmp = lines;

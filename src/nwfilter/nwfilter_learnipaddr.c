@@ -777,11 +777,11 @@ virNWFilterLearnInit(void)
     VIR_DEBUG("Initializing IP address learning");
     threadsTerminate = false;
 
-    pendingLearnReq = virHashCreate(0, freeLearnReqEntry);
+    pendingLearnReq = virHashNew(freeLearnReqEntry);
     if (!pendingLearnReq)
         return -1;
 
-    ifaceLockMap = virHashCreate(0, virHashValueFree);
+    ifaceLockMap = virHashNew(virHashValueFree);
     if (!ifaceLockMap) {
         virNWFilterLearnShutdown();
         return -1;

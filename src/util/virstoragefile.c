@@ -4310,7 +4310,7 @@ virStorageFileCanonicalizePath(const char *path,
             beginDoubleSlash = true;
     }
 
-    if (!(cycle = virHashCreate(10, NULL)))
+    if (!(cycle = virHashNew(NULL)))
         goto cleanup;
 
     if (!(components = virStringSplitCount(path, "/", 0, &ncomponents)))
@@ -5317,7 +5317,7 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
               src->path, src->format, (unsigned int)uid, (unsigned int)gid,
               report_broken);
 
-    if (!(cycle = virHashCreate(5, NULL)))
+    if (!(cycle = virHashNew(NULL)))
         return -1;
 
     if (src->format <= VIR_STORAGE_FILE_NONE) {

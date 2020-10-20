@@ -2086,7 +2086,7 @@ qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
 
     QEMU_CHECK_MONITOR_NULL(mon);
 
-    if (!(table = virHashCreate(32, qemuDomainDiskInfoFree)))
+    if (!(table = virHashNew(qemuDomainDiskInfoFree)))
         return NULL;
 
     ret = qemuMonitorJSONGetBlockInfo(mon, table);
@@ -2137,7 +2137,7 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (!(*ret_stats = virHashCreate(10, virHashValueFree)))
+    if (!(*ret_stats = virHashNew(virHashValueFree)))
         goto error;
 
     ret = qemuMonitorJSONGetAllBlockStatsInfo(mon, *ret_stats,
@@ -2878,7 +2878,7 @@ qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR_GOTO(mon, error);
 
-    if (!(info = virHashCreate(10, qemuMonitorChardevInfoFree)))
+    if (!(info = virHashNew(qemuMonitorChardevInfoFree)))
         goto error;
 
     ret = qemuMonitorJSONGetChardevInfo(mon, info);
@@ -4289,7 +4289,7 @@ qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (!(*info = virHashCreate(10, virHashValueFree)))
+    if (!(*info = virHashNew(virHashValueFree)))
         return -1;
 
     if ((ret = qemuMonitorJSONGetMemoryDeviceInfo(mon, *info)) < 0) {
@@ -4593,7 +4593,7 @@ qemuMonitorGetPRManagerInfo(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (!(info = virHashCreate(10, virHashValueFree)))
+    if (!(info = virHashNew(virHashValueFree)))
         goto cleanup;
 
     if (qemuMonitorJSONGetPRManagerInfo(mon, info) < 0)

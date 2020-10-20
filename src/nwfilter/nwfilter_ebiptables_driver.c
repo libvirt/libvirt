@@ -3323,8 +3323,8 @@ ebiptablesApplyNewRules(const char *ifname,
 {
     size_t i, j;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    g_autoptr(virHashTable) chains_in_set  = virHashCreate(10, NULL);
-    g_autoptr(virHashTable) chains_out_set = virHashCreate(10, NULL);
+    g_autoptr(virHashTable) chains_in_set  = virHashNew(NULL);
+    g_autoptr(virHashTable) chains_out_set = virHashNew(NULL);
     bool haveEbtables = false;
     bool haveIptables = false;
     bool haveIp6tables = false;

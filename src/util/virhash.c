@@ -190,27 +190,6 @@ virHashNew(virHashDataFree dataFree)
 }
 
 
-/**
- * virHashCreate:
- * @size: the size of the hash table
- * @dataFree: callback to free data
- *
- * Create a new virHashTablePtr.
- *
- * Returns the newly created object.
- */
-virHashTablePtr virHashCreate(ssize_t size, virHashDataFree dataFree)
-{
-    return virHashCreateFull(size,
-                             dataFree,
-                             virHashStrCode,
-                             virHashStrEqual,
-                             virHashStrCopy,
-                             virHashStrPrintHuman,
-                             virHashStrFree);
-}
-
-
 virHashAtomicPtr
 virHashAtomicNew(virHashDataFree dataFree)
 {

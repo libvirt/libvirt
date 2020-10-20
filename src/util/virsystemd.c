@@ -896,7 +896,7 @@ virSystemdActivationNew(virSystemdActivationMap *map,
     VIR_DEBUG("Activated with %d FDs", nfds);
     act = g_new0(virSystemdActivation, 1);
 
-    if (!(act->fds = virHashCreate(10, virSystemdActivationEntryFree)))
+    if (!(act->fds = virHashNew(virSystemdActivationEntryFree)))
         goto error;
 
     fdnames = getenv("LISTEN_FDNAMES");

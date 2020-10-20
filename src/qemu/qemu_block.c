@@ -234,7 +234,7 @@ qemuBlockNodeNameGetBackingChain(virJSONValuePtr namednodes,
 
     memset(&data, 0, sizeof(data));
 
-    if (!(namednodestable = virHashCreate(50, virJSONValueHashFree)))
+    if (!(namednodestable = virHashNew(virJSONValueHashFree)))
         return NULL;
 
     if (virJSONValueArrayForeachSteal(namednodes,
@@ -242,7 +242,7 @@ qemuBlockNodeNameGetBackingChain(virJSONValuePtr namednodes,
                                       namednodestable) < 0)
         return NULL;
 
-    if (!(disks = virHashCreate(50, qemuBlockNodeNameBackingChainDataHashEntryFree)))
+    if (!(disks = virHashNew(qemuBlockNodeNameBackingChainDataHashEntryFree)))
         return NULL;
 
     data.nodenamestable = namednodestable;
@@ -370,7 +370,7 @@ qemuBlockGetNodeData(virJSONValuePtr data)
 {
     g_autoptr(virHashTable) nodedata = NULL;
 
-    if (!(nodedata = virHashCreate(50, virJSONValueHashFree)))
+    if (!(nodedata = virHashNew(virJSONValueHashFree)))
         return NULL;
 
     if (virJSONValueArrayForeachSteal(data,

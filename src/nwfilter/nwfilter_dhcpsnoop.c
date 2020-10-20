@@ -2005,10 +2005,10 @@ virNWFilterDHCPSnoopInit(void)
         virMutexInit(&virNWFilterSnoopState.activeLock) < 0)
         return -1;
 
-    virNWFilterSnoopState.ifnameToKey = virHashCreate(0, NULL);
-    virNWFilterSnoopState.active = virHashCreate(0, NULL);
+    virNWFilterSnoopState.ifnameToKey = virHashNew(NULL);
+    virNWFilterSnoopState.active = virHashNew(NULL);
     virNWFilterSnoopState.snoopReqs =
-        virHashCreate(0, virNWFilterSnoopReqRelease);
+        virHashNew(virNWFilterSnoopReqRelease);
 
     if (!virNWFilterSnoopState.ifnameToKey ||
         !virNWFilterSnoopState.snoopReqs ||

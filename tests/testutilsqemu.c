@@ -576,7 +576,7 @@ testQemuGetLatestCaps(void)
     virHashTablePtr capslatest;
     size_t i;
 
-    if (!(capslatest = virHashCreate(4, virHashValueFree)))
+    if (!(capslatest = virHashNew(virHashValueFree)))
         goto error;
 
     VIR_TEST_VERBOSE("");
