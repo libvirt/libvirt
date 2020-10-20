@@ -30933,8 +30933,9 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
 {
     virDomainNetType actualType = virDomainNetGetActualType(iface);
 
-    if (virDomainNetCreatePort(conn, dom, iface,
-                               VIR_NETWORK_PORT_CREATE_RECLAIM) < 0) {
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK && conn
+        && virDomainNetCreatePort(conn, dom, iface,
+                                  VIR_NETWORK_PORT_CREATE_RECLAIM) < 0) {
         return;
     }
 
@@ -30946,7 +30947,7 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
          * (final arg to virNetDevTapReattachBridge())
          */
         ignore_value(virNetDevTapReattachBridge(iface->ifname,
-                                                iface->data.network.actual->data.bridge.brname,
+                                                virDomainNetGetActualBridgeName(iface),
                                                 &iface->mac, dom->uuid,
                                                 virDomainNetGetActualVirtPortProfile(iface),
                                                 virDomainNetGetActualVlan(iface),
