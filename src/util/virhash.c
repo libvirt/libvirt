@@ -212,8 +212,7 @@ virHashTablePtr virHashCreate(ssize_t size, virHashDataFree dataFree)
 
 
 virHashAtomicPtr
-virHashAtomicNew(ssize_t size,
-                 virHashDataFree dataFree)
+virHashAtomicNew(virHashDataFree dataFree)
 {
     virHashAtomicPtr hash;
 
@@ -223,7 +222,7 @@ virHashAtomicNew(ssize_t size,
     if (!(hash = virObjectLockableNew(virHashAtomicClass)))
         return NULL;
 
-    if (!(hash->hash = virHashCreate(size, dataFree))) {
+    if (!(hash->hash = virHashNew(dataFree))) {
         virObjectUnref(hash);
         return NULL;
     }

@@ -114,8 +114,7 @@ typedef void (*virHashKeyFree)(void *name);
 virHashTablePtr virHashNew(virHashDataFree dataFree);
 virHashTablePtr virHashCreate(ssize_t size,
                               virHashDataFree dataFree);
-virHashAtomicPtr virHashAtomicNew(ssize_t size,
-                                  virHashDataFree dataFree);
+virHashAtomicPtr virHashAtomicNew(virHashDataFree dataFree);
 virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashDataFree dataFree,
                                   virHashKeyCode keyCode,

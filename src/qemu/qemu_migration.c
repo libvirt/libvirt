@@ -5743,7 +5743,7 @@ qemuMigrationDstErrorFree(void *data)
 int
 qemuMigrationDstErrorInit(virQEMUDriverPtr driver)
 {
-    driver->migrationErrors = virHashAtomicNew(64, qemuMigrationDstErrorFree);
+    driver->migrationErrors = virHashAtomicNew(qemuMigrationDstErrorFree);
     if (driver->migrationErrors)
         return 0;
     else
