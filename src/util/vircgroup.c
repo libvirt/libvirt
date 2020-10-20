@@ -42,7 +42,6 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virhash.h"
-#include "virhashcode.h"
 #include "virstring.h"
 #include "virsystemd.h"
 #include "virtypedparam.h"
@@ -2382,7 +2381,7 @@ virCgroupRemove(virCgroupPtr group)
 static int
 virCgroupKillInternal(virCgroupPtr group,
                       int signum,
-                      virHashTablePtr pids,
+                      GHashTable *pids,
                       int controller,
                       const char *taskFile)
 {
@@ -2415,8 +2414,9 @@ virCgroupKillInternal(virCgroupPtr group,
             goto cleanup;
         } else {
             while (!feof(fp)) {
-                long pid_value;
-                if (fscanf(fp, "%ld", &pid_value) != 1) {
+                g_autofree long long *pid_value = g_new0(long long, 1);
+
+                if (fscanf(fp, "%lld", pid_value) != 1) {
                     if (feof(fp))
                         break;
                     virReportSystemError(errno,
@@ -2424,16 +2424,17 @@ virCgroupKillInternal(virCgroupPtr group,
                                          keypath);
                     goto cleanup;
                 }
-                if (virHashLookup(pids, (void*)pid_value))
+
+                if (g_hash_table_lookup(pids, pid_value))
                     continue;
 
-                VIR_DEBUG("pid=%ld", pid_value);
+                VIR_DEBUG("pid=%lld", *pid_value);
                 /* Cgroups is a Linux concept, so this cast is safe.  */
-                if (kill((pid_t)pid_value, signum) < 0) {
+                if (kill((pid_t)*pid_value, signum) < 0) {
                     if (errno != ESRCH) {
                         virReportSystemError(errno,
-                                             _("Failed to kill process %ld"),
-                                             pid_value);
+                                             _("Failed to kill process %lld"),
+                                             *pid_value);
                         goto cleanup;
                     }
                     /* Leave RC == 0 since we didn't kill one */
@@ -2442,7 +2443,7 @@ virCgroupKillInternal(virCgroupPtr group,
                     done = false;
                 }
 
-                ignore_value(virHashAddEntry(pids, (void*)pid_value, (void*)1));
+                g_hash_table_add(pids, g_steal_pointer(&pid_value));
             }
             VIR_FORCE_FCLOSE(fp);
         }
@@ -2458,39 +2459,10 @@ virCgroupKillInternal(virCgroupPtr group,
 }
 
 
-static uint32_t
-virCgroupPidCode(const void *name, uint32_t seed)
-{
-    long pid_value = (long)(intptr_t)name;
-    return virHashCodeGen(&pid_value, sizeof(pid_value), seed);
-}
-
-
-static bool
-virCgroupPidEqual(const void *namea, const void *nameb)
-{
-    return namea == nameb;
-}
-
-
-static void *
-virCgroupPidCopy(const void *name)
-{
-    return (void*)name;
-}
-
-
-static char *
-virCgroupPidPrintHuman(const void *name)
-{
-    return g_strdup_printf("%ld", (const long)name);
-}
-
-
 int
 virCgroupKillRecursiveInternal(virCgroupPtr group,
                                int signum,
-                               virHashTablePtr pids,
+                               GHashTable *pids,
                                int controller,
                                const char *taskFile,
                                bool dormdir)
@@ -2565,13 +2537,7 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
     size_t i;
     bool backendAvailable = false;
     virCgroupBackendPtr *backends = virCgroupBackendGetAll();
-    virHashTablePtr pids = virHashCreateFull(100,
-                                             NULL,
-                                             virCgroupPidCode,
-                                             virCgroupPidEqual,
-                                             virCgroupPidCopy,
-                                             virCgroupPidPrintHuman,
-                                             NULL);
+    g_autoptr(GHashTable) pids = g_hash_table_new_full(g_int64_hash, g_int64_equal, g_free, NULL);
 
     VIR_DEBUG("group=%p path=%s signum=%d", group, group->path, signum);
 
@@ -2596,7 +2562,6 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
     }
 
  cleanup:
-    virHashFree(pids);
     return ret;
 }
 

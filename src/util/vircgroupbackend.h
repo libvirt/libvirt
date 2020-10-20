@@ -23,7 +23,6 @@
 #include "internal.h"
 
 #include "vircgroup.h"
-#include "virhash.h"
 
 #define CGROUP_MAX_VAL 512
 
@@ -136,7 +135,7 @@ typedef int
 typedef int
 (*virCgroupKillRecursiveCB)(virCgroupPtr group,
                             int signum,
-                            virHashTablePtr pids);
+                            GHashTable *pids);
 
 typedef int
 (*virCgroupBindMountCB)(virCgroupPtr group,

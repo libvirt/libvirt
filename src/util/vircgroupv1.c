@@ -752,7 +752,7 @@ virCgroupV1HasEmptyTasks(virCgroupPtr cgroup,
 static int
 virCgroupV1KillRecursive(virCgroupPtr group,
                          int signum,
-                         virHashTablePtr pids)
+                         GHashTable *pids)
 {
     int controller = virCgroupV1GetAnyController(group);
 
