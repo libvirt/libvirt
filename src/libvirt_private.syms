@@ -2213,7 +2213,6 @@ virHashRemoveSet;
 virHashSearch;
 virHashSize;
 virHashSteal;
-virHashTableSize;
 virHashUpdateEntry;
 virHashValueFree;
 

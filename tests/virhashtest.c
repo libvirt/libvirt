@@ -27,15 +27,9 @@ testHashInit(int size)
      * collision list in the same order as in the uuids array
      */
     for (i = G_N_ELEMENTS(uuids) - 1; i >= 0; i--) {
-        ssize_t oldsize = virHashTableSize(hash);
         if (virHashAddEntry(hash, uuids[i], (void *) uuids[i]) < 0) {
             virHashFree(hash);
             return NULL;
-        }
-
-        if (virHashTableSize(hash) != oldsize) {
-            VIR_TEST_DEBUG("hash grown from %zu to %zu",
-                     (size_t)oldsize, (size_t)virHashTableSize(hash));
         }
     }
 

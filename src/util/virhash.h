@@ -125,7 +125,6 @@ virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashKeyFree keyFree);
 void virHashFree(virHashTablePtr table);
 ssize_t virHashSize(const virHashTable *table);
-ssize_t virHashTableSize(const virHashTable *table);
 
 /*
  * Add a new entry to the hash table.
