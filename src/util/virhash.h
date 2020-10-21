@@ -202,7 +202,4 @@ ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void
 void *virHashSearch(const virHashTable *table, virHashSearcher iter,
                     const void *data, void **name);
 
-/* Convenience for when VIR_FREE(value) is sufficient as a data freer.  */
-void virHashValueFree(void *value);
-
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virHashTable, virHashFree);

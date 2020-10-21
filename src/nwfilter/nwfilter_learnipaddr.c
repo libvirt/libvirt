@@ -781,7 +781,7 @@ virNWFilterLearnInit(void)
     if (!pendingLearnReq)
         return -1;
 
-    ifaceLockMap = virHashNew(virHashValueFree);
+    ifaceLockMap = virHashNew(g_free);
     if (!ifaceLockMap) {
         virNWFilterLearnShutdown();
         return -1;

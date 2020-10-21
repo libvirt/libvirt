@@ -2213,7 +2213,6 @@ virHashSearch;
 virHashSize;
 virHashSteal;
 virHashUpdateEntry;
-virHashValueFree;
 
 
 # util/virhashcode.h

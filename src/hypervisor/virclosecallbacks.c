@@ -69,7 +69,7 @@ virCloseCallbacksNew(void)
     if (!(closeCallbacks = virObjectLockableNew(virCloseCallbacksClass)))
         return NULL;
 
-    closeCallbacks->list = virHashNew(virHashValueFree);
+    closeCallbacks->list = virHashNew(g_free);
     if (!closeCallbacks->list) {
         virObjectUnref(closeCallbacks);
         return NULL;

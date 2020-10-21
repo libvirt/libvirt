@@ -1649,8 +1649,8 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
         return -1;
 
-    if (!(blockDevices = virHashNew(virHashValueFree)) ||
-        !(expectedBlockDevices = virHashNew(virHashValueFree)))
+    if (!(blockDevices = virHashNew(g_free)) ||
+        !(expectedBlockDevices = virHashNew(g_free)))
         goto cleanup;
 
     info = g_new0(struct qemuDomainDiskInfo, 1);
@@ -1811,7 +1811,7 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
         return -1;
 
-    if (!(blockstats = virHashNew(virHashValueFree)))
+    if (!(blockstats = virHashNew(g_free)))
         goto cleanup;
 
     if (qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0)

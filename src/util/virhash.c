@@ -111,13 +111,6 @@ static void virHashStrFree(void *name)
 }
 
 
-void
-virHashValueFree(void *value)
-{
-    VIR_FREE(value);
-}
-
-
 static size_t
 virHashComputeKey(const virHashTable *table, const void *name)
 {
