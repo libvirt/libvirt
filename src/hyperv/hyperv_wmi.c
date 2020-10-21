@@ -85,6 +85,7 @@ hypervGetWmiClassInfo(hypervPrivate *priv, hypervWmiClassInfoListPtr list,
     return -1;
 }
 
+
 int
 hypervGetWmiClassList(hypervPrivate *priv, hypervWmiClassInfoListPtr wmiInfo,
                       virBufferPtr query, hypervObject **wmiClass)
@@ -96,6 +97,7 @@ hypervGetWmiClassList(hypervPrivate *priv, hypervWmiClassInfoListPtr wmiInfo,
 
     return hypervEnumAndPull(priv, &wqlQuery, wmiClass);
 }
+
 
 int
 hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
@@ -192,6 +194,7 @@ hypervCreateInvokeParamsList(hypervPrivate *priv, const char *method,
     return params;
 }
 
+
 /*
  * hypervFreeInvokeParams:
  * @params: Params object to be freed
@@ -228,6 +231,7 @@ hypervFreeInvokeParams(hypervInvokeParamsListPtr params)
     VIR_FREE(params);
 }
 
+
 static inline int
 hypervCheckParams(hypervInvokeParamsListPtr params)
 {
@@ -238,6 +242,7 @@ hypervCheckParams(hypervInvokeParamsListPtr params)
 
     return 0;
 }
+
 
 /*
  * hypervAddSimpleParam:
@@ -270,6 +275,7 @@ hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
     return 0;
 }
 
+
 /*
  * hypervAddEprParam:
  * @params: Params object to add to
@@ -301,6 +307,7 @@ hypervAddEprParam(hypervInvokeParamsListPtr params, const char *name,
 
     return 0;
 }
+
 
 /*
  * hypervCreateEmbeddedParam:
@@ -368,6 +375,7 @@ hypervSetEmbeddedProperty(virHashTablePtr table,
     return virHashUpdateEntry(table, name, (void*) value);
 }
 
+
 /*
  * hypervAddEmbeddedParam:
  * @params: Params list to add to
@@ -410,6 +418,7 @@ hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
     return 0;
 }
 
+
 /*
  * hypervFreeEmbeddedParam:
  * @param: Pointer to embedded param to free
@@ -422,10 +431,10 @@ hypervFreeEmbeddedParam(virHashTablePtr p)
     virHashFree(p);
 }
 
+
 /*
  * Serializing parameters to XML and invoking methods
  */
-
 static int
 hypervGetCimTypeInfo(hypervCimTypePtr typemap, const char *name,
         hypervCimTypePtr *property)
@@ -480,6 +489,7 @@ hypervCreateInvokeXmlDoc(hypervInvokeParamsListPtr params, WsXmlDocH *docRoot)
     return result;
 }
 
+
 static int
 hypervSerializeSimpleParam(hypervParamPtr p, const char *resourceUri,
         WsXmlNodeH *methodNode)
@@ -496,6 +506,7 @@ hypervSerializeSimpleParam(hypervParamPtr p, const char *resourceUri,
 
     return 0;
 }
+
 
 static int
 hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
@@ -619,6 +630,7 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
     VIR_FREE(query_string);
     return result;
 }
+
 
 static int
 hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
@@ -1124,6 +1136,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     return result;
 }
 
+
 void
 hypervFreeObject(hypervPrivate *priv G_GNUC_UNUSED, hypervObject *object)
 {
@@ -1234,7 +1247,6 @@ hypervReturnCodeToString(int returnCode)
         return _("Unknown return code");
     }
 }
-
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1385,6 +1397,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     return result;
 }
 
+
 int
 hypervMsvmComputerSystemEnabledStateToDomainState
   (Msvm_ComputerSystem *computerSystem)
@@ -1421,6 +1434,7 @@ hypervMsvmComputerSystemEnabledStateToDomainState
         return VIR_DOMAIN_NOSTATE;
     }
 }
+
 
 bool
 hypervIsMsvmComputerSystemActive(Msvm_ComputerSystem *computerSystem,
@@ -1461,6 +1475,7 @@ hypervIsMsvmComputerSystemActive(Msvm_ComputerSystem *computerSystem,
     }
 }
 
+
 int
 hypervMsvmComputerSystemToDomain(virConnectPtr conn,
                                  Msvm_ComputerSystem *computerSystem,
@@ -1488,6 +1503,7 @@ hypervMsvmComputerSystemToDomain(virConnectPtr conn,
 
     return *domain ? 0 : -1;
 }
+
 
 int
 hypervMsvmComputerSystemFromDomain(virDomainPtr domain,

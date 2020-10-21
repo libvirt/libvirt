@@ -82,7 +82,6 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
 }
 
 
-
 void
 hypervFreeParsedUri(hypervParsedUri **parsedUri)
 {

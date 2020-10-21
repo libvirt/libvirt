@@ -86,6 +86,7 @@ hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
     return 0;
 }
 
+
 static int
 hypervGetActiveVirtualSystemList(hypervPrivate *priv,
                                  Msvm_ComputerSystem **computerSystemList)
@@ -105,6 +106,7 @@ hypervGetActiveVirtualSystemList(hypervPrivate *priv,
 
     return 0;
 }
+
 
 /* gets all the vms including the ones that are marked inactive. */
 static int
@@ -127,6 +129,7 @@ hypervGetInactiveVirtualSystemList(hypervPrivate *priv,
     return 0;
 }
 
+
 static int
 hypervGetPhysicalSystemList(hypervPrivate *priv,
                             Win32_ComputerSystem **computerSystemList)
@@ -144,6 +147,7 @@ hypervGetPhysicalSystemList(hypervPrivate *priv,
 
     return 0;
 }
+
 
 static int
 hypervGetVirtualSystemByID(hypervPrivate *priv, int id,
@@ -166,6 +170,7 @@ hypervGetVirtualSystemByID(hypervPrivate *priv, int id,
 
     return 0;
 }
+
 
 static int
 hypervGetVirtualSystemByUUID(hypervPrivate *priv, const char *uuid,
@@ -214,6 +219,7 @@ hypervGetVirtualSystemByName(hypervPrivate *priv, const char *name,
     return 0;
 }
 
+
 static int
 hypervGetVSSDFromUUID(hypervPrivate *priv, const char *uuid,
                       Msvm_VirtualSystemSettingData **data)
@@ -238,6 +244,7 @@ hypervGetVSSDFromUUID(hypervPrivate *priv, const char *uuid,
     return 0;
 }
 
+
 static int
 hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
                                 Msvm_ProcessorSettingData **data)
@@ -261,6 +268,7 @@ hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
 
     return 0;
 }
+
 
 static int
 hypervGetMemSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
@@ -333,6 +341,7 @@ hypervParseVersionString(const char *str, unsigned int *major,
     return 0;
 }
 
+
 static int
 hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
 {
@@ -357,6 +366,7 @@ hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
 
     return result;
 }
+
 
 static virCapsPtr
 hypervCapsInit(hypervPrivate *priv)
@@ -397,8 +407,6 @@ hypervCapsInit(hypervPrivate *priv)
     return NULL;
 }
 
-
-
 /*
  * Driver functions
  */
@@ -418,6 +426,7 @@ hypervFreePrivate(hypervPrivate **priv)
     hypervFreeParsedUri(&(*priv)->parsedUri);
     VIR_FREE(*priv);
 }
+
 
 static int
 hypervInitConnection(virConnectPtr conn, hypervPrivate *priv,
@@ -477,6 +486,7 @@ hypervInitConnection(virConnectPtr conn, hypervPrivate *priv,
 
     return ret;
 }
+
 
 static virDrvOpenStatus
 hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
@@ -543,7 +553,6 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 }
 
 
-
 static int
 hypervConnectClose(virConnectPtr conn)
 {
@@ -557,13 +566,11 @@ hypervConnectClose(virConnectPtr conn)
 }
 
 
-
 static const char *
 hypervConnectGetType(virConnectPtr conn G_GNUC_UNUSED)
 {
     return "Hyper-V";
 }
-
 
 
 static int
@@ -628,7 +635,6 @@ hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
 }
 
 
-
 static char *
 hypervConnectGetHostname(virConnectPtr conn)
 {
@@ -648,7 +654,6 @@ hypervConnectGetHostname(virConnectPtr conn)
 }
 
 
-
 static char*
 hypervConnectGetCapabilities(virConnectPtr conn)
 {
@@ -656,7 +661,6 @@ hypervConnectGetCapabilities(virConnectPtr conn)
 
     return virCapabilitiesFormatXML(priv->caps);
 }
-
 
 
 static int
@@ -689,7 +693,6 @@ hypervConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
 
     return result;
 }
-
 
 
 static int
@@ -766,7 +769,6 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 }
 
 
-
 static int
 hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
@@ -799,7 +801,6 @@ hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 }
 
 
-
 static int
 hypervConnectNumOfDomains(virConnectPtr conn)
 {
@@ -826,7 +827,6 @@ hypervConnectNumOfDomains(virConnectPtr conn)
 }
 
 
-
 static virDomainPtr
 hypervDomainLookupByID(virConnectPtr conn, int id)
 {
@@ -844,7 +844,6 @@ hypervDomainLookupByID(virConnectPtr conn, int id)
 
     return domain;
 }
-
 
 
 static virDomainPtr
@@ -869,7 +868,6 @@ hypervDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 }
 
 
-
 static virDomainPtr
 hypervDomainLookupByName(virConnectPtr conn, const char *name)
 {
@@ -889,7 +887,6 @@ hypervDomainLookupByName(virConnectPtr conn, const char *name)
 }
 
 
-
 static int
 hypervDomainSuspend(virDomainPtr domain)
 {
@@ -907,7 +904,6 @@ hypervDomainSuspend(virDomainPtr domain)
 
     return hypervRequestStateChange(domain, requestedState);
 }
-
 
 
 static int
@@ -1019,7 +1015,6 @@ hypervDomainShutdown(virDomainPtr domain)
 }
 
 
-
 static int
 hypervDomainReboot(virDomainPtr domain, unsigned int flags)
 {
@@ -1028,14 +1023,12 @@ hypervDomainReboot(virDomainPtr domain, unsigned int flags)
 }
 
 
-
 static int
 hypervDomainReset(virDomainPtr domain, unsigned int flags)
 {
     virCheckFlags(0, -1);
     return hypervRequestStateChange(domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_RESET);
 }
-
 
 
 static int
@@ -1068,13 +1061,11 @@ hypervDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
 }
 
 
-
 static int
 hypervDomainDestroy(virDomainPtr domain)
 {
     return hypervDomainDestroyFlags(domain, 0);
 }
-
 
 
 static char *
@@ -1085,7 +1076,6 @@ hypervDomainGetOSType(virDomainPtr domain G_GNUC_UNUSED)
     osType = g_strdup("hvm");
     return osType;
 }
-
 
 
 static int
@@ -1143,7 +1133,6 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 }
 
 
-
 static int
 hypervDomainGetState(virDomainPtr domain, int *state, int *reason,
                      unsigned int flags)
@@ -1169,7 +1158,6 @@ hypervDomainGetState(virDomainPtr domain, int *state, int *reason,
 
     return result;
 }
-
 
 
 static char *
@@ -1284,7 +1272,6 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 }
 
 
-
 static int
 hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
 {
@@ -1327,7 +1314,6 @@ hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxn
 }
 
 
-
 static int
 hypervConnectNumOfDefinedDomains(virConnectPtr conn)
 {
@@ -1352,7 +1338,6 @@ hypervConnectNumOfDefinedDomains(virConnectPtr conn)
 
     return success ? count : -1;
 }
-
 
 
 static int
@@ -1383,13 +1368,11 @@ hypervDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
 }
 
 
-
 static int
 hypervDomainCreate(virDomainPtr domain)
 {
     return hypervDomainCreateWithFlags(domain, 0);
 }
-
 
 
 static int
@@ -1549,7 +1532,6 @@ hypervConnectIsEncrypted(virConnectPtr conn)
 }
 
 
-
 static int
 hypervConnectIsSecure(virConnectPtr conn)
 {
@@ -1561,7 +1543,6 @@ hypervConnectIsSecure(virConnectPtr conn)
         return 0;
     }
 }
-
 
 
 static int
@@ -1578,7 +1559,6 @@ hypervConnectIsAlive(virConnectPtr conn)
     else
         return 0;
 }
-
 
 
 static int
@@ -1600,7 +1580,6 @@ hypervDomainIsActive(virDomainPtr domain)
 }
 
 
-
 static int
 hypervDomainIsPersistent(virDomainPtr domain G_GNUC_UNUSED)
 {
@@ -1609,13 +1588,11 @@ hypervDomainIsPersistent(virDomainPtr domain G_GNUC_UNUSED)
 }
 
 
-
 static int
 hypervDomainIsUpdated(virDomainPtr domain G_GNUC_UNUSED)
 {
     return 0;
 }
-
 
 
 static int
@@ -1657,7 +1634,6 @@ hypervDomainManagedSave(virDomainPtr domain, unsigned int flags)
 }
 
 
-
 static int
 hypervDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
 {
@@ -1678,7 +1654,6 @@ hypervDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
 
     return result;
 }
-
 
 
 static int
@@ -2097,7 +2072,6 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainSetMemoryFlags = hypervDomainSetMemoryFlags, /* 3.6.0 */
     .connectIsAlive = hypervConnectIsAlive, /* 0.9.8 */
 };
-
 
 
 static void
