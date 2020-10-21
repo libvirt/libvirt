@@ -1619,7 +1619,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     Msvm_ComputerSystem *computerSystem = NULL;
     Msvm_Keyboard *keyboard = NULL;
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    hypervInvokeParamsListPtr params = NULL;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
     char keycodeStr[VIR_INT64_STR_BUFLEN];
 
     virCheckFlags(0, -1);
@@ -1672,10 +1672,8 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
             goto cleanup;
         }
 
-        if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0) {
-            hypervFreeInvokeParams(params);
+        if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
             goto cleanup;
-        }
 
         if (hypervInvokeMethod(priv, &params, NULL) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not press key %d"),
@@ -1699,10 +1697,8 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
             goto cleanup;
         }
 
-        if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0) {
-            hypervFreeInvokeParams(params);
+        if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
             goto cleanup;
-        }
 
         if (hypervInvokeMethod(priv, &params, NULL) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not release key %s"),
@@ -1730,7 +1726,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     hypervPrivate *priv = domain->conn->privateData;
     char *memory_str = NULL;
-    hypervInvokeParamsListPtr params = NULL;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
     unsigned long memory_mb = VIR_ROUND_UP(VIR_DIV_UP(memory, 1024), 2);
     Msvm_VirtualSystemSettingData *vssd = NULL;
     Msvm_MemorySettingData *memsd = NULL;
@@ -1814,7 +1810,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     VIR_FREE(memory_str);
     hypervFreeObject(priv, (hypervObject *)vssd);
     hypervFreeObject(priv, (hypervObject *)memsd);
-    hypervFreeInvokeParams(params);
+
     return result;
 }
 

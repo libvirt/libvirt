@@ -135,6 +135,7 @@ hypervInvokeParamsListPtr hypervCreateInvokeParamsList(hypervPrivate *priv,
         const char *method, const char *selector, hypervWmiClassInfoListPtr obj);
 
 void hypervFreeInvokeParams(hypervInvokeParamsListPtr params);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(hypervInvokeParamsList, hypervFreeInvokeParams);
 
 int hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
         const char *value);

@@ -788,7 +788,7 @@ hypervInvokeMethod(hypervPrivate *priv,
                    hypervInvokeParamsListPtr *paramsPtr,
                    WsXmlDocH *res)
 {
-    hypervInvokeParamsListPtr params = *paramsPtr;
+    g_autoptr(hypervInvokeParamsList) params = *paramsPtr;
     int result = -1;
     size_t i = 0;
     int returnCode;
@@ -963,7 +963,6 @@ hypervInvokeMethod(hypervPrivate *priv,
     VIR_FREE(returnValue);
     VIR_FREE(instanceID);
     hypervFreeObject(priv, (hypervObject *)job);
-    hypervFreeInvokeParams(params);
     *paramsPtr = NULL;
     return result;
 }
