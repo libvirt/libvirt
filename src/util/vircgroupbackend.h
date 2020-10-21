@@ -89,6 +89,10 @@ typedef int
                               const char *selfpath);
 
 typedef int
+(*virCgroupSetPlacementCB)(virCgroupPtr group,
+                           const char *path);
+
+typedef int
 (*virCgroupValidatePlacementCB)(virCgroupPtr group,
                                 pid_t pid);
 
@@ -369,6 +373,7 @@ struct _virCgroupBackend {
     virCgroupCopyPlacementCB copyPlacement;
     virCgroupDetectMountsCB detectMounts;
     virCgroupDetectPlacementCB detectPlacement;
+    virCgroupSetPlacementCB setPlacement;
     virCgroupValidatePlacementCB validatePlacement;
     virCgroupStealPlacementCB stealPlacement;
     virCgroupDetectControllersCB detectControllers;

@@ -365,6 +365,26 @@ virCgroupV1DetectPlacement(virCgroupPtr group,
 
 
 static int
+virCgroupV1SetPlacement(virCgroupPtr group,
+                        const char *path)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        if (!group->legacy[i].mountPoint)
+            continue;
+
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+            continue;
+
+        group->legacy[i].placement = g_strdup(path);
+    }
+
+    return 0;
+}
+
+
+static int
 virCgroupV1ValidatePlacement(virCgroupPtr group,
                              pid_t pid)
 {
@@ -2101,6 +2121,7 @@ virCgroupBackend virCgroupV1Backend = {
     .copyPlacement = virCgroupV1CopyPlacement,
     .detectMounts = virCgroupV1DetectMounts,
     .detectPlacement = virCgroupV1DetectPlacement,
+    .setPlacement = virCgroupV1SetPlacement,
     .validatePlacement = virCgroupV1ValidatePlacement,
     .stealPlacement = virCgroupV1StealPlacement,
     .detectControllers = virCgroupV1DetectControllers,

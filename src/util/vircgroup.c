@@ -394,6 +394,23 @@ virCgroupDetectPlacement(virCgroupPtr group,
 
 
 static int
+virCgroupSetPlacement(virCgroupPtr group,
+                      const char *path)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            group->backends[i]->setPlacement(group, path) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 virCgroupValidatePlacement(virCgroupPtr group,
                            pid_t pid)
 {
@@ -689,7 +706,7 @@ virCgroupNew(const char *path,
     if (virCgroupDetectMounts(newGroup) < 0)
         return -1;
 
-    if (virCgroupCopyPlacement(newGroup, path, NULL) < 0)
+    if (virCgroupSetPlacement(newGroup, path) < 0)
         return -1;
 
     /* ... but use /proc/cgroups to fill in the rest */

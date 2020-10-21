@@ -224,6 +224,16 @@ virCgroupV2DetectPlacement(virCgroupPtr group,
 
 
 static int
+virCgroupV2SetPlacement(virCgroupPtr group,
+                        const char *path)
+{
+    group->unified.placement = g_strdup(path);
+
+    return 0;
+}
+
+
+static int
 virCgroupV2ValidatePlacement(virCgroupPtr group,
                              pid_t pid G_GNUC_UNUSED)
 {
@@ -1845,6 +1855,7 @@ virCgroupBackend virCgroupV2Backend = {
     .copyPlacement = virCgroupV2CopyPlacement,
     .detectMounts = virCgroupV2DetectMounts,
     .detectPlacement = virCgroupV2DetectPlacement,
+    .setPlacement = virCgroupV2SetPlacement,
     .validatePlacement = virCgroupV2ValidatePlacement,
     .stealPlacement = virCgroupV2StealPlacement,
     .detectControllers = virCgroupV2DetectControllers,
