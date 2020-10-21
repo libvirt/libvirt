@@ -579,15 +579,11 @@ _virHashRemoveAllIter(const void *payload G_GNUC_UNUSED,
  *
  * Free the hash @table's contents. The userdata is
  * deallocated with the function provided at creation time.
- *
- * Returns the number of items removed on success, -1 on failure
  */
-ssize_t
+void
 virHashRemoveAll(virHashTablePtr table)
 {
-    return virHashRemoveSet(table,
-                            _virHashRemoveAllIter,
-                            NULL);
+    virHashRemoveSet(table, _virHashRemoveAllIter, NULL);
 }
 
 /**

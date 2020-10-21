@@ -83,7 +83,7 @@ int virHashRemoveEntry(virHashTablePtr table,
 /*
  * Remove all entries from the hash table.
  */
-ssize_t virHashRemoveAll(virHashTablePtr table);
+void virHashRemoveAll(virHashTablePtr table);
 
 /*
  * Retrieve the userdata.
