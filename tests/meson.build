@@ -56,7 +56,6 @@ mock_libs = [
   { 'name': 'domaincapsmock' },
   { 'name': 'shunload', 'sources': [ 'shunloadhelper.c' ] },
   { 'name': 'vircgroupmock' },
-  { 'name': 'virdeterministichashmock' },
   { 'name': 'virfilecachemock' },
   { 'name': 'virgdbusmock' },
   { 'name': 'virhostcpumock' },
