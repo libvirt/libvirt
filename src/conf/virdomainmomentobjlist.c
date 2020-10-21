@@ -76,7 +76,7 @@ struct moment_act_on_descendant {
 
 static int
 virDomainMomentActOnDescendant(void *payload,
-                               const void *name,
+                               const char *name,
                                void *data)
 {
     virDomainMomentObjPtr obj = payload;
@@ -307,7 +307,7 @@ struct virDomainMomentNameData {
 
 
 static int virDomainMomentObjListCopyNames(void *payload,
-                                           const void *name G_GNUC_UNUSED,
+                                           const char *name G_GNUC_UNUSED,
                                            void *opaque)
 {
     virDomainMomentObjPtr obj = payload;
@@ -491,7 +491,7 @@ struct moment_set_relation {
 };
 static int
 virDomainMomentSetRelations(void *payload,
-                            const void *name G_GNUC_UNUSED,
+                            const char *name G_GNUC_UNUSED,
                             void *data)
 {
     virDomainMomentObjPtr obj = payload;

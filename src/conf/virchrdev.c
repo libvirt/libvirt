@@ -279,7 +279,7 @@ virChrdevsPtr virChrdevAlloc(void)
  * Helper to clear stream callbacks when freeing the hash
  */
 static int virChrdevFreeClearCallbacks(void *payload,
-                                       const void *name G_GNUC_UNUSED,
+                                       const char *name G_GNUC_UNUSED,
                                        void *data G_GNUC_UNUSED)
 {
     virChrdevHashEntry *ent = payload;

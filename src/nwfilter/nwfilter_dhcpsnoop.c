@@ -1754,7 +1754,7 @@ virNWFilterSnoopLeaseFileSave(virNWFilterSnoopIPLeasePtr ipl)
  */
 static int
 virNWFilterSnoopPruneIter(const void *payload,
-                          const void *name G_GNUC_UNUSED,
+                          const char *name G_GNUC_UNUSED,
                           const void *data G_GNUC_UNUSED)
 {
     virNWFilterSnoopReqPtr req = (virNWFilterSnoopReqPtr)payload;
@@ -1784,7 +1784,7 @@ virNWFilterSnoopPruneIter(const void *payload,
  */
 static int
 virNWFilterSnoopSaveIter(void *payload,
-                         const void *name G_GNUC_UNUSED,
+                         const char *name G_GNUC_UNUSED,
                          void *data)
 {
     virNWFilterSnoopReqPtr req = payload;
@@ -1951,7 +1951,7 @@ virNWFilterSnoopJoinThreads(void)
  */
 static int
 virNWFilterSnoopRemAllReqIter(const void *payload,
-                              const void *name G_GNUC_UNUSED,
+                              const char *name G_GNUC_UNUSED,
                               const void *data G_GNUC_UNUSED)
 {
     virNWFilterSnoopReqPtr req = (virNWFilterSnoopReqPtr)payload;

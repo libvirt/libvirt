@@ -620,7 +620,7 @@ struct addToTableStruct {
 
 
 static int
-addToTable(void *payload, const void *name, void *data)
+addToTable(void *payload, const char *name, void *data)
 {
     struct addToTableStruct *atts = (struct addToTableStruct *)data;
     virNWFilterVarValuePtr val;

@@ -402,7 +402,7 @@ virNetworkObjFindByUUID(virNetworkObjListPtr nets,
 
 static int
 virNetworkObjSearchName(const void *payload,
-                        const void *name G_GNUC_UNUSED,
+                        const char *name G_GNUC_UNUSED,
                         const void *data)
 {
     virNetworkObjPtr obj = (virNetworkObjPtr) payload;
@@ -1178,7 +1178,7 @@ struct virNetworkObjBridgeInUseHelperData {
 
 static int
 virNetworkObjBridgeInUseHelper(const void *payload,
-                               const void *name G_GNUC_UNUSED,
+                               const char *name G_GNUC_UNUSED,
                                const void *opaque)
 {
     int ret;
@@ -1355,7 +1355,7 @@ struct _virNetworkObjListExportData {
 
 static int
 virNetworkObjListExportCallback(void *payload,
-                                const void *name G_GNUC_UNUSED,
+                                const char *name G_GNUC_UNUSED,
                                 void *opaque)
 {
     virNetworkObjListExportDataPtr data = opaque;
@@ -1439,7 +1439,7 @@ struct virNetworkObjListForEachHelperData {
 
 static int
 virNetworkObjListForEachHelper(void *payload,
-                               const void *name G_GNUC_UNUSED,
+                               const char *name G_GNUC_UNUSED,
                                void *opaque)
 {
     struct virNetworkObjListForEachHelperData *data = opaque;
@@ -1489,7 +1489,7 @@ struct virNetworkObjListGetHelperData {
 
 static int
 virNetworkObjListGetHelper(void *payload,
-                           const void *name G_GNUC_UNUSED,
+                           const char *name G_GNUC_UNUSED,
                            void *opaque)
 {
     struct virNetworkObjListGetHelperData *data = opaque;
@@ -1576,7 +1576,7 @@ struct virNetworkObjListPruneHelperData {
 
 static int
 virNetworkObjListPruneHelper(const void *payload,
-                             const void *name G_GNUC_UNUSED,
+                             const char *name G_GNUC_UNUSED,
                              const void *opaque)
 {
     const struct virNetworkObjListPruneHelperData *data = opaque;
@@ -1756,7 +1756,7 @@ struct _virNetworkObjPortListExportData {
 
 static int
 virNetworkObjPortListExportCallback(void *payload,
-                                    const void *name G_GNUC_UNUSED,
+                                    const char *name G_GNUC_UNUSED,
                                     void *opaque)
 {
     virNetworkObjPortListExportDataPtr data = opaque;
@@ -1834,7 +1834,7 @@ struct _virNetworkObjPortListForEachData {
 
 static int
 virNetworkObjPortForEachCallback(void *payload,
-                                 const void *name G_GNUC_UNUSED,
+                                 const char *name G_GNUC_UNUSED,
                                  void *opaque)
 {
     virNetworkObjPortListForEachData *data = opaque;

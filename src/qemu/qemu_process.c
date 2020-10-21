@@ -8067,7 +8067,7 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
 
 static int
 qemuProcessRefreshLegacyBlockjob(void *payload,
-                                 const void *name,
+                                 const char *name,
                                  void *opaque)
 {
     const char *jobname = name;

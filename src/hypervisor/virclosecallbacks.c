@@ -246,7 +246,7 @@ struct virCloseCallbacksData {
 
 static int
 virCloseCallbacksGetOne(void *payload,
-                        const void *key,
+                        const char *key,
                         void *opaque)
 {
     struct virCloseCallbacksData *data = opaque;

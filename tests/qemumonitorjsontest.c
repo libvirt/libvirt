@@ -2732,7 +2732,7 @@ testQemuMonitorCPUInfo(const void *opaque)
 
 static int
 testBlockNodeNameDetectFormat(void *payload,
-                              const void *name,
+                              const char *name,
                               void *opaque)
 {
     qemuBlockNodeNameBackingChainDataPtr entry = payload;

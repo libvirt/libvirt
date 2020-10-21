@@ -46,7 +46,7 @@ testHashInit(void)
 
 static int
 testHashCheckForEachCount(void *payload G_GNUC_UNUSED,
-                          const void *name G_GNUC_UNUSED,
+                          const char *name G_GNUC_UNUSED,
                           void *data G_GNUC_UNUSED)
 {
     size_t *count = data;
@@ -175,7 +175,7 @@ const int testHashCountRemoveForEachSome =
 
 static int
 testHashRemoveForEachSome(void *payload G_GNUC_UNUSED,
-                          const void *name,
+                          const char *name,
                           void *data)
 {
     virHashTablePtr hash = data;
@@ -198,7 +198,7 @@ const int testHashCountRemoveForEachAll = 0;
 
 static int
 testHashRemoveForEachAll(void *payload G_GNUC_UNUSED,
-                         const void *name,
+                         const char *name,
                          void *data)
 {
     virHashTablePtr hash = data;
@@ -266,7 +266,7 @@ testHashSteal(const void *data G_GNUC_UNUSED)
 
 static int
 testHashRemoveSetIter(const void *payload G_GNUC_UNUSED,
-                      const void *name,
+                      const char *name,
                       const void *data)
 {
     int *count = (int *) data;
@@ -326,7 +326,7 @@ const int testSearchIndex = G_N_ELEMENTS(uuids_subset) / 2;
 
 static int
 testHashSearchIter(const void *payload G_GNUC_UNUSED,
-                   const void *name,
+                   const char *name,
                    const void *data G_GNUC_UNUSED)
 {
     return STREQ(uuids_subset[testSearchIndex], name);

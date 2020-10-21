@@ -2106,7 +2106,7 @@ qemuDomainPrivateBlockJobFormatCommit(qemuBlockJobDataPtr job,
 
 static int
 qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
-                                              const void *name G_GNUC_UNUSED,
+                                              const char *name G_GNUC_UNUSED,
                                               void *opaque)
 {
     struct qemuDomainPrivateBlockJobFormatData *data = opaque;
@@ -6641,7 +6641,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
 
 /* Hash iterator callback to discard multiple snapshots.  */
 int qemuDomainMomentDiscardAll(void *payload,
-                               const void *name G_GNUC_UNUSED,
+                               const char *name G_GNUC_UNUSED,
                                void *data)
 {
     virDomainMomentObjPtr moment = payload;
@@ -10718,7 +10718,7 @@ qemuDomainPausedReasonToSuspendedEvent(virDomainPausedReason reason)
 
 static int
 qemuDomainDefHasManagedPRBlockjobIterator(void *payload,
-                                          const void *name G_GNUC_UNUSED,
+                                          const char *name G_GNUC_UNUSED,
                                           void *opaque)
 {
     qemuBlockJobDataPtr job = payload;

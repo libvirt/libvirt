@@ -140,12 +140,12 @@ struct printString
 
 
 static int
-printString(void *payload G_GNUC_UNUSED, const void *name, void *data)
+printString(void *payload G_GNUC_UNUSED, const char *name, void *data)
 {
     struct printString *ps = data;
 
-    if ((STREQ((char *)name, NWFILTER_STD_VAR_IP) && !ps->reportIP) ||
-        (STREQ((char *)name, NWFILTER_STD_VAR_MAC) && !ps->reportMAC))
+    if ((STREQ(name, NWFILTER_STD_VAR_IP) && !ps->reportIP) ||
+        (STREQ(name, NWFILTER_STD_VAR_MAC) && !ps->reportMAC))
         return 0;
 
     if (virBufferUse(&ps->buf) && ps->separator)

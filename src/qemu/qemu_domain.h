@@ -638,7 +638,7 @@ struct _virQEMUMomentRemove {
 };
 
 int qemuDomainMomentDiscardAll(void *payload,
-                               const void *name,
+                               const char *name,
                                void *data);
 
 int qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,

@@ -381,7 +381,7 @@ struct _checkOwnerData {
 
 static int
 checkOwner(void *payload,
-           const void *name,
+           const char *name,
            void *opaque)
 {
     checkOwnerData *data = opaque;
@@ -392,7 +392,7 @@ checkOwner(void *payload,
         !virStringListHasString(data->paths, name)) {
         fprintf(stderr,
                 "Path %s wasn't restored back to its original owner\n",
-                (const char *) name);
+                name);
         data->chown_fail = true;
     }
 
@@ -402,7 +402,7 @@ checkOwner(void *payload,
 
 static int
 printXATTR(void *payload,
-           const void *name,
+           const char *name,
            void *data)
 {
     bool *xattr_fail = data;
@@ -413,7 +413,7 @@ printXATTR(void *payload,
 
     /* Hash table key consists of "$path:$xattr_name", xattr
      * value is then the value stored in the hash table. */
-    printf("key=%s val=%s\n", (const char *) name, (const char *) payload);
+    printf("key=%s val=%s\n", name, (const char *) payload);
     return 0;
 }
 

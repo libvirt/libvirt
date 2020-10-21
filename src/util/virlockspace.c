@@ -683,7 +683,7 @@ struct virLockSpaceRemoveData {
 
 static int
 virLockSpaceRemoveResourcesForOwner(const void *payload,
-                                    const void *name G_GNUC_UNUSED,
+                                    const char *name G_GNUC_UNUSED,
                                     const void *opaque)
 {
     virLockSpaceResourcePtr res = (virLockSpaceResourcePtr)payload;

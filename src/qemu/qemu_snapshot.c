@@ -75,7 +75,7 @@ qemuSnapObjFromSnapshot(virDomainObjPtr vm,
 /* Count how many snapshots in a set are external snapshots.  */
 static int
 qemuSnapshotCountExternal(void *payload,
-                          const void *name G_GNUC_UNUSED,
+                          const char *name G_GNUC_UNUSED,
                           void *data)
 {
     virDomainMomentObjPtr snap = payload;
@@ -2265,7 +2265,7 @@ struct _virQEMUMomentReparent {
 
 static int
 qemuSnapshotChildrenReparent(void *payload,
-                             const void *name G_GNUC_UNUSED,
+                             const char *name G_GNUC_UNUSED,
                              void *data)
 {
     virDomainMomentObjPtr moment = payload;

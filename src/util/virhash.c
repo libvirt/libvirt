@@ -43,7 +43,7 @@ typedef struct _virHashEntry virHashEntry;
 typedef virHashEntry *virHashEntryPtr;
 struct _virHashEntry {
     struct _virHashEntry *next;
-    void *name;
+    char *name;
     void *payload;
 };
 
@@ -82,37 +82,37 @@ static int virHashAtomicOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virHashAtomic);
 
 
-static uint32_t virHashStrCode(const void *name, uint32_t seed)
+static uint32_t virHashStrCode(const char *name, uint32_t seed)
 {
     return virHashCodeGen(name, strlen(name), seed);
 }
 
-static bool virHashStrEqual(const void *namea, const void *nameb)
+static bool virHashStrEqual(const char *namea, const char *nameb)
 {
     return STREQ(namea, nameb);
 }
 
-static void *virHashStrCopy(const void *name)
+static char *virHashStrCopy(const char *name)
 {
     return g_strdup(name);
 }
 
 
 static char *
-virHashStrPrintHuman(const void *name)
+virHashStrPrintHuman(const char *name)
 {
     return g_strdup(name);
 }
 
 
-static void virHashStrFree(void *name)
+static void virHashStrFree(char *name)
 {
     VIR_FREE(name);
 }
 
 
 static size_t
-virHashComputeKey(const virHashTable *table, const void *name)
+virHashComputeKey(const virHashTable *table, const char *name)
 {
     uint32_t value = table->keyCode(name, table->seed);
     return value % table->size;
@@ -272,7 +272,7 @@ virHashFree(virHashTablePtr table)
 }
 
 static int
-virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
+virHashAddOrUpdateEntry(virHashTablePtr table, const char *name,
                         void *userdata,
                         bool is_update)
 {
@@ -337,7 +337,7 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
  * Returns 0 the addition succeeded and -1 in case of error.
  */
 int
-virHashAddEntry(virHashTablePtr table, const void *name, void *userdata)
+virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
 {
     return virHashAddOrUpdateEntry(table, name, userdata, false);
 }
@@ -355,7 +355,7 @@ virHashAddEntry(virHashTablePtr table, const void *name, void *userdata)
  * Returns 0 the addition succeeded and -1 in case of error.
  */
 int
-virHashUpdateEntry(virHashTablePtr table, const void *name,
+virHashUpdateEntry(virHashTablePtr table, const char *name,
                    void *userdata)
 {
     return virHashAddOrUpdateEntry(table, name, userdata, true);
@@ -363,7 +363,7 @@ virHashUpdateEntry(virHashTablePtr table, const void *name,
 
 int
 virHashAtomicUpdate(virHashAtomicPtr table,
-                    const void *name,
+                    const char *name,
                     void *userdata)
 {
     int ret;
@@ -378,7 +378,7 @@ virHashAtomicUpdate(virHashAtomicPtr table,
 
 static virHashEntryPtr
 virHashGetEntry(const virHashTable *table,
-                const void *name)
+                const char *name)
 {
     size_t key;
     virHashEntryPtr entry;
@@ -406,7 +406,7 @@ virHashGetEntry(const virHashTable *table,
  * Returns a pointer to the userdata
  */
 void *
-virHashLookup(const virHashTable *table, const void *name)
+virHashLookup(const virHashTable *table, const char *name)
 {
     virHashEntryPtr entry = virHashGetEntry(table, name);
 
@@ -428,7 +428,7 @@ virHashLookup(const virHashTable *table, const void *name)
  */
 bool
 virHashHasEntry(const virHashTable *table,
-                const void *name)
+                const char *name)
 {
     return !!virHashGetEntry(table, name);
 }
@@ -444,7 +444,7 @@ virHashHasEntry(const virHashTable *table,
  *
  * Returns a pointer to the userdata
  */
-void *virHashSteal(virHashTablePtr table, const void *name)
+void *virHashSteal(virHashTablePtr table, const char *name)
 {
     void *data = virHashLookup(table, name);
     if (data) {
@@ -458,7 +458,7 @@ void *virHashSteal(virHashTablePtr table, const void *name)
 
 void *
 virHashAtomicSteal(virHashAtomicPtr table,
-                   const void *name)
+                   const char *name)
 {
     void *data;
 
@@ -500,7 +500,7 @@ virHashSize(const virHashTable *table)
  * Returns 0 if the removal succeeded and -1 in case of error or not found.
  */
 int
-virHashRemoveEntry(virHashTablePtr table, const void *name)
+virHashRemoveEntry(virHashTablePtr table, const char *name)
 {
     virHashEntryPtr entry;
     virHashEntryPtr *nextptr;
@@ -615,7 +615,7 @@ virHashRemoveSet(virHashTablePtr table,
 
 static int
 _virHashRemoveAllIter(const void *payload G_GNUC_UNUSED,
-                      const void *name G_GNUC_UNUSED,
+                      const char *name G_GNUC_UNUSED,
                       const void *data G_GNUC_UNUSED)
 {
     return 1;
@@ -654,7 +654,7 @@ virHashRemoveAll(virHashTablePtr table)
 void *virHashSearch(const virHashTable *ctable,
                     virHashSearcher iter,
                     const void *data,
-                    void **name)
+                    char **name)
 {
     size_t i;
 
@@ -685,7 +685,7 @@ struct getKeysIter
 };
 
 static int virHashGetKeysIterator(void *payload,
-                                  const void *key, void *data)
+                                  const char *key, void *data)
 {
     struct getKeysIter *iter = data;
 
@@ -728,7 +728,7 @@ struct virHashEqualData
     virHashValueComparator compar;
 };
 
-static int virHashEqualSearcher(const void *payload, const void *name,
+static int virHashEqualSearcher(const void *payload, const char *name,
                                 const void *data)
 {
     struct virHashEqualData *vhed = (void *)data;

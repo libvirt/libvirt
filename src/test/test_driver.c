@@ -8592,7 +8592,7 @@ struct _testMomentRemoveData {
 
 static int
 testDomainSnapshotDiscardAll(void *payload,
-                             const void *name G_GNUC_UNUSED,
+                             const char *name G_GNUC_UNUSED,
                              void *data)
 {
     virDomainMomentObjPtr snap = payload;
@@ -8612,7 +8612,7 @@ struct _testMomentReparentData {
 
 static int
 testDomainMomentReparentChildren(void *payload,
-                                 const void *name G_GNUC_UNUSED,
+                                 const char *name G_GNUC_UNUSED,
                                  void *data)
 {
     virDomainMomentObjPtr moment = payload;
@@ -8906,7 +8906,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
 static int
 testDomainCheckpointDiscardAll(void *payload,
-                               const void *name G_GNUC_UNUSED,
+                               const char *name G_GNUC_UNUSED,
                                void *data)
 {
     virDomainMomentObjPtr chk = payload;

@@ -95,7 +95,7 @@ static void virDomainObjListDispose(void *obj)
 
 
 static int virDomainObjListSearchID(const void *payload,
-                                    const void *name G_GNUC_UNUSED,
+                                    const char *name G_GNUC_UNUSED,
                                     const void *data)
 {
     virDomainObjPtr obj = (virDomainObjPtr)payload;
@@ -649,7 +649,7 @@ struct virDomainObjListData {
 
 static int
 virDomainObjListCount(void *payload,
-                      const void *name G_GNUC_UNUSED,
+                      const char *name G_GNUC_UNUSED,
                       void *opaque)
 {
     virDomainObjPtr obj = payload;
@@ -696,7 +696,7 @@ struct virDomainIDData {
 
 static int
 virDomainObjListCopyActiveIDs(void *payload,
-                              const void *name G_GNUC_UNUSED,
+                              const char *name G_GNUC_UNUSED,
                               void *opaque)
 {
     virDomainObjPtr obj = payload;
@@ -741,7 +741,7 @@ struct virDomainNameData {
 
 static int
 virDomainObjListCopyInactiveNames(void *payload,
-                                  const void *name G_GNUC_UNUSED,
+                                  const char *name G_GNUC_UNUSED,
                                   void *opaque)
 {
     virDomainObjPtr obj = payload;
@@ -797,7 +797,7 @@ struct virDomainListIterData {
 
 static int
 virDomainObjListHelper(void *payload,
-                       const void *name G_GNUC_UNUSED,
+                       const char *name G_GNUC_UNUSED,
                        void *opaque)
 {
     struct virDomainListIterData *data = opaque;
@@ -925,7 +925,7 @@ struct virDomainListData {
 
 static int
 virDomainObjListCollectIterator(void *payload,
-                                const void *name G_GNUC_UNUSED,
+                                const char *name G_GNUC_UNUSED,
                                 void *opaque)
 {
     struct virDomainListData *data = opaque;

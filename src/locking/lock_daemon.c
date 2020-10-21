@@ -362,7 +362,7 @@ struct virLockDaemonClientReleaseData {
 
 static int
 virLockDaemonClientReleaseLockspace(void *payload,
-                                    const void *name G_GNUC_UNUSED,
+                                    const char *name G_GNUC_UNUSED,
                                     void *opaque)
 {
     virLockSpacePtr lockspace = payload;

@@ -481,7 +481,7 @@ qemuBlockJobIsRunning(qemuBlockJobDataPtr job)
 /* returns 1 for a job we didn't reconnect to */
 static int
 qemuBlockJobRefreshJobsFindInactive(const void *payload,
-                                    const void *name G_GNUC_UNUSED,
+                                    const char *name G_GNUC_UNUSED,
                                     const void *data G_GNUC_UNUSED)
 {
     const qemuBlockJobData *job = payload;

@@ -52,7 +52,7 @@ static virClassPtr virMacMapClass;
 
 static int
 virMacMapHashFree(void *payload,
-                  const void *name G_GNUC_UNUSED,
+                  const char *name G_GNUC_UNUSED,
                   void *opaque G_GNUC_UNUSED)
 {
     g_strfreev(payload);
@@ -197,7 +197,7 @@ virMacMapLoadFile(virMacMapPtr mgr,
 
 static int
 virMACMapHashDumper(void *payload,
-                    const void *name,
+                    const char *name,
                     void *data)
 {
     virJSONValuePtr obj = virJSONValueNewObject();

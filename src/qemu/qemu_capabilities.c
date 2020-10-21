@@ -2156,7 +2156,7 @@ struct virQEMUCapsSearchDomcapsData {
 
 static int
 virQEMUCapsSearchDomcaps(const void *payload,
-                         const void *name G_GNUC_UNUSED,
+                         const char *name G_GNUC_UNUSED,
                          const void *opaque)
 {
     virDomainCapsPtr domCaps = (virDomainCapsPtr) payload;

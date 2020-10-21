@@ -40,7 +40,7 @@ typedef void (*virHashDataFree) (void *payload);
  *
  * Returns -1 to stop the iteration, e.g. in case of an error
  */
-typedef int (*virHashIterator) (void *payload, const void *name, void *data);
+typedef int (*virHashIterator) (void *payload, const char *name, void *data);
 /**
  * virHashSearcher:
  * @payload: the data in the hash
@@ -51,7 +51,7 @@ typedef int (*virHashIterator) (void *payload, const void *name, void *data);
  * Returns 1 if the hash entry is desired, 0 to move
  * to next entry
  */
-typedef int (*virHashSearcher) (const void *payload, const void *name,
+typedef int (*virHashSearcher) (const void *payload, const char *name,
                                 const void *data);
 
 /**
@@ -64,7 +64,7 @@ typedef int (*virHashSearcher) (const void *payload, const void *name,
  *
  * Returns the hash code
  */
-typedef uint32_t (*virHashKeyCode)(const void *name,
+typedef uint32_t (*virHashKeyCode)(const char *name,
                                    uint32_t seed);
 /**
  * virHashKeyEqual:
@@ -75,7 +75,7 @@ typedef uint32_t (*virHashKeyCode)(const void *name,
  *
  * Returns true if the keys are equal, false otherwise
  */
-typedef bool (*virHashKeyEqual)(const void *namea, const void *nameb);
+typedef bool (*virHashKeyEqual)(const char *namea, const char *nameb);
 /**
  * virHashKeyCopy:
  * @name: the hash key
@@ -86,7 +86,7 @@ typedef bool (*virHashKeyEqual)(const void *namea, const void *nameb);
  * Returns a copy of @name which will eventually be passed to the
  * 'virHashKeyFree' callback at the end of its lifetime.
  */
-typedef void *(*virHashKeyCopy)(const void *name);
+typedef char *(*virHashKeyCopy)(const char *name);
 /**
  * virHashKeyPrintHuman:
  * @name: the hash key
@@ -97,7 +97,7 @@ typedef void *(*virHashKeyCopy)(const void *name);
  * Returns a string representation of the key for use in error messages. Caller
  * promises to always free the returned string.
  */
-typedef char *(*virHashKeyPrintHuman) (const void *name);
+typedef char *(*virHashKeyPrintHuman) (const char *name);
 
 /**
  * virHashKeyFree:
@@ -106,7 +106,7 @@ typedef char *(*virHashKeyPrintHuman) (const void *name);
  * Free any memory associated with the hash
  * key @name
  */
-typedef void (*virHashKeyFree)(void *name);
+typedef void (*virHashKeyFree)(char *name);
 
 /*
  * Constructor and destructor.
@@ -120,19 +120,19 @@ ssize_t virHashSize(const virHashTable *table);
  * Add a new entry to the hash table.
  */
 int virHashAddEntry(virHashTablePtr table,
-                    const void *name, void *userdata);
+                    const char *name, void *userdata);
 int virHashUpdateEntry(virHashTablePtr table,
-                       const void *name,
+                       const char *name,
                        void *userdata);
 int virHashAtomicUpdate(virHashAtomicPtr table,
-                        const void *name,
+                        const char *name,
                         void *userdata);
 
 /*
  * Remove an entry from the hash table.
  */
 int virHashRemoveEntry(virHashTablePtr table,
-                       const void *name);
+                       const char *name);
 
 /*
  * Remove all entries from the hash table.
@@ -142,15 +142,15 @@ ssize_t virHashRemoveAll(virHashTablePtr table);
 /*
  * Retrieve the userdata.
  */
-void *virHashLookup(const virHashTable *table, const void *name);
-bool virHashHasEntry(const virHashTable *table, const void *name);
+void *virHashLookup(const virHashTable *table, const char *name);
+bool virHashHasEntry(const virHashTable *table, const char *name);
 
 /*
  * Retrieve & remove the userdata.
  */
-void *virHashSteal(virHashTablePtr table, const void *name);
+void *virHashSteal(virHashTablePtr table, const char *name);
 void *virHashAtomicSteal(virHashAtomicPtr table,
-                         const void *name);
+                         const char *name);
 
 /*
  * Get the hash table's key/value pairs and have them optionally sorted.
@@ -193,6 +193,6 @@ bool virHashEqual(const virHashTable *table1,
 int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);
 ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *data);
 void *virHashSearch(const virHashTable *table, virHashSearcher iter,
-                    const void *data, void **name);
+                    const void *data, char **name);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virHashTable, virHashFree);
