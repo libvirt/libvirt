@@ -932,8 +932,8 @@ hypervDomainResume(virDomainPtr domain)
         goto cleanup;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange
-               (domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_ENABLED);
+    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain,
+                                                              MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_ENABLED);
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -1051,8 +1051,8 @@ hypervDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange
-               (domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
+    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain,
+                                                              MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -1103,14 +1103,14 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
 
     if (hypervGetProcSDByVSSDInstanceId(priv,
-                            virtualSystemSettingData->data.common->InstanceID,
-                            &processorSettingData) < 0) {
+                                        virtualSystemSettingData->data.common->InstanceID,
+                                        &processorSettingData) < 0) {
         goto cleanup;
     }
 
     if (hypervGetMemSDByVSSDInstanceId(priv,
-                           virtualSystemSettingData->data.common->InstanceID,
-                           &memorySettingData) < 0) {
+                                       virtualSystemSettingData->data.common->InstanceID,
+                                       &memorySettingData) < 0) {
         goto cleanup;
     }
 
@@ -1189,14 +1189,14 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     }
 
     if (hypervGetProcSDByVSSDInstanceId(priv,
-                           virtualSystemSettingData->data.common->InstanceID,
-                           &processorSettingData) < 0) {
+                                        virtualSystemSettingData->data.common->InstanceID,
+                                        &processorSettingData) < 0) {
         goto cleanup;
     }
 
     if (hypervGetMemSDByVSSDInstanceId(priv,
-                           virtualSystemSettingData->data.common->InstanceID,
-                           &memorySettingData) < 0) {
+                                       virtualSystemSettingData->data.common->InstanceID,
+                                       &memorySettingData) < 0) {
         goto cleanup;
     }
 
@@ -1358,8 +1358,8 @@ hypervDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange
-               (domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_ENABLED);
+    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain,
+                                                              MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_ENABLED);
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -1405,7 +1405,7 @@ hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
         result = 0;
     }
 
-    cleanup:
+ cleanup:
     hypervFreeObject(priv, (hypervObject *) vsgsd);
     hypervFreeObject(priv, (hypervObject *) vssd);
 
@@ -1675,8 +1675,8 @@ hypervDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange
-               (domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
+    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain,
+                                                              MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -1816,8 +1816,8 @@ hypervConnectListAllDomains(virConnectPtr conn,
 
 static int
 hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
-        unsigned int holdtime, unsigned int *keycodes, int nkeycodes,
-        unsigned int flags)
+                    unsigned int holdtime, unsigned int *keycodes, int nkeycodes,
+                    unsigned int flags)
 {
     int result = -1;
     size_t i = 0;
@@ -1840,11 +1840,11 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
         goto cleanup;
 
     virBufferEscapeSQL(&query,
-            "associators of "
-            "{Msvm_ComputerSystem.CreationClassName=\"Msvm_ComputerSystem\","
-            "Name=\"%s\"} "
-            "where ResultClass = Msvm_Keyboard",
-            uuid_string);
+                       "associators of "
+                       "{Msvm_ComputerSystem.CreationClassName=\"Msvm_ComputerSystem\","
+                       "Name=\"%s\"} "
+                       "where ResultClass = Msvm_Keyboard",
+                       uuid_string);
 
     if (hypervGetWmiClass(Msvm_Keyboard, &keyboard) < 0)
         goto cleanup;
@@ -1854,12 +1854,13 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     /* translate keycodes to win32 and generate keyup scancodes. */
     for (i = 0; i < nkeycodes; i++) {
         if (codeset != VIR_KEYCODE_SET_WIN32) {
-            keycode = virKeycodeValueTranslate(codeset, VIR_KEYCODE_SET_WIN32,
-                    keycodes[i]);
+            keycode = virKeycodeValueTranslate(codeset,
+                                               VIR_KEYCODE_SET_WIN32,
+                                               keycodes[i]);
 
             if (keycode < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Could not translate keycode"));
+                               _("Could not translate keycode"));
                 goto cleanup;
             }
             translatedKeycodes[i] = keycode;
@@ -1907,8 +1908,8 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
             goto cleanup;
 
         if (hypervInvokeMethod(priv, &params, NULL) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not release key %s"),
-                    keycodeStr);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not release key %s"), keycodeStr);
             goto cleanup;
         }
     }
@@ -1926,7 +1927,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
 
 static int
 hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
-        unsigned int flags)
+                           unsigned int flags)
 {
     int result = -1;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
@@ -1949,7 +1950,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         goto cleanup;
 
     if (hypervGetMsvmMemorySettingDataFromVSSD(priv, vssd->data.common->InstanceID,
-                &memsd) < 0)
+                                               &memsd) < 0)
         goto cleanup;
 
     if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
@@ -1964,7 +1965,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         virBufferEscapeSQL(&eprQuery, "where Name = \"%s\"", uuid_string);
 
         if (hypervAddEprParam(params, "ComputerSystem", priv, &eprQuery,
-                    Msvm_ComputerSystem_WmiInfo) < 0)
+                              Msvm_ComputerSystem_WmiInfo) < 0)
             goto cleanup;
     } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2) {
         params = hypervCreateInvokeParamsList(priv, "ModifyResourceSettings",
@@ -1983,7 +1984,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         goto cleanup;
 
     if (hypervSetEmbeddedProperty(memResource, "InstanceID",
-                memsd->data.common->InstanceID) < 0) {
+                                  memsd->data.common->InstanceID) < 0) {
         goto cleanup;
     }
 
@@ -2079,30 +2080,30 @@ hypervDebugHandler(const char *message, debug_level_e level,
                    void *user_data G_GNUC_UNUSED)
 {
     switch (level) {
-      case DEBUG_LEVEL_ERROR:
-      case DEBUG_LEVEL_CRITICAL:
-      case DEBUG_LEVEL_ALWAYS:
+    case DEBUG_LEVEL_ERROR:
+    case DEBUG_LEVEL_CRITICAL:
+    case DEBUG_LEVEL_ALWAYS:
         VIR_ERROR(_("openwsman: %s"), message);
         break;
 
-      case DEBUG_LEVEL_WARNING:
+    case DEBUG_LEVEL_WARNING:
         VIR_WARN("openwsman: %s", message);
         break;
 
-      case DEBUG_LEVEL_MESSAGE:
+    case DEBUG_LEVEL_MESSAGE:
         VIR_INFO("openwsman: %s", message);
         break;
 
-      case DEBUG_LEVEL_INFO:
+    case DEBUG_LEVEL_INFO:
         VIR_INFO("openwsman: %s", message);
         break;
 
-      case DEBUG_LEVEL_DEBUG:
+    case DEBUG_LEVEL_DEBUG:
         VIR_DEBUG("openwsman: %s", message);
         break;
 
-      case DEBUG_LEVEL_NONE:
-      default:
+    case DEBUG_LEVEL_NONE:
+    default:
         /* Ignore the rest */
         break;
     }
