@@ -1640,8 +1640,18 @@ hypervDomainManagedSave(virDomainPtr domain, unsigned int flags)
     hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
     bool in_transition = false;
+    int requestedState = -1;
 
     virCheckFlags(0, -1);
+
+    switch (priv->wmiVersion) {
+    case HYPERV_WMI_VERSION_V1:
+        requestedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_SUSPENDED;
+        break;
+    case HYPERV_WMI_VERSION_V2:
+        requestedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_OFFLINE;
+        break;
+    }
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         goto cleanup;
@@ -1653,8 +1663,7 @@ hypervDomainManagedSave(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange
-               (domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_SUSPENDED);
+    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain, requestedState);
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
