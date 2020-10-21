@@ -945,6 +945,77 @@ hypervDomainResume(virDomainPtr domain)
 }
 
 
+static int
+hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
+{
+    int result = -1;
+    hypervPrivate *priv = domain->conn->privateData;
+    Msvm_ComputerSystem *computerSystem = NULL;
+    Msvm_ShutdownComponent *shutdown = NULL;
+    bool in_transition = false;
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
+    g_autofree char *selector = NULL;
+
+    virCheckFlags(0, -1);
+
+    virUUIDFormat(domain->uuid, uuid);
+
+    if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
+        goto cleanup;
+
+    if (!hypervIsMsvmComputerSystemActive(computerSystem, &in_transition) ||
+        in_transition) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Domain is not active or in state transition"));
+        goto cleanup;
+    }
+
+    virBufferEscapeSQL(&query, MSVM_SHUTDOWNCOMPONENT_WQL_SELECT "WHERE SystemName = '%s'", uuid);
+
+    if (hypervGetWmiClass(Msvm_ShutdownComponent, &shutdown) < 0 ||
+        !shutdown) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Could not get Msvm_ShutdownComponent for domain with UUID '%s'"),
+                       uuid);
+        goto cleanup;
+    }
+
+    selector = g_strdup_printf("CreationClassName=\"Msvm_ShutdownComponent\"&DeviceID=\"%s\"&"
+                               "SystemCreationClassName=\"Msvm_ComputerSystem\"&SystemName=\"%s\"",
+                               shutdown->data.common->DeviceID, uuid);
+
+    params = hypervCreateInvokeParamsList(priv, "InitiateShutdown", selector,
+                                          Msvm_ShutdownComponent_WmiInfo);
+
+    hypervAddSimpleParam(params, "Force", "False");
+
+    /* "Reason" is not translated because the Hyper-V administrator may not
+     * know the libvirt user's language. They may not know English, either,
+     * but this makes it consistent, at least. */
+    hypervAddSimpleParam(params, "Reason", "Planned shutdown via libvirt");
+
+    if (hypervInvokeMethod(priv, &params, NULL) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *) computerSystem);
+    hypervFreeObject(priv, (hypervObject *) shutdown);
+
+    return result;
+}
+
+
+static int
+hypervDomainShutdown(virDomainPtr domain)
+{
+    return hypervDomainShutdownFlags(domain, 0);
+}
+
+
 
 static int
 hypervDomainReboot(virDomainPtr domain, unsigned int flags)
@@ -1994,6 +2065,8 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainLookupByName = hypervDomainLookupByName, /* 0.9.5 */
     .domainSuspend = hypervDomainSuspend, /* 0.9.5 */
     .domainResume = hypervDomainResume, /* 0.9.5 */
+    .domainShutdown = hypervDomainShutdown, /* 6.9.0 */
+    .domainShutdownFlags = hypervDomainShutdownFlags, /* 6.9.0 */
     .domainReboot = hypervDomainReboot, /* 6.9.0 */
     .domainReset = hypervDomainReset, /* 6.9.0 */
     .domainDestroy = hypervDomainDestroy, /* 0.9.5 */
