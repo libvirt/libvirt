@@ -380,7 +380,7 @@ testCheckExclusiveFlags(int flags)
 {
     virCheckFlags(FLAG_EXPECT_FAILURE |
                   FLAG_EXPECT_PARSE_ERROR |
-                  FLAG_FIPS |
+                  FLAG_FIPS_HOST |
                   FLAG_REAL_CAPS |
                   FLAG_SKIP_LEGACY_CPUS |
                   FLAG_SLIRP_HELPER |
@@ -399,6 +399,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
                                unsigned int flags,
                                bool jsonPropsValidation)
 {
+    bool enableFips = !!(flags & FLAG_FIPS_HOST);
     size_t i;
 
     if (qemuProcessCreatePretendCmdPrepare(drv, vm, migrateURI, false,
@@ -489,7 +490,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
     }
 
     return qemuProcessCreatePretendCmdBuild(drv, vm, migrateURI,
-                                            (flags & FLAG_FIPS), false,
+                                            enableFips, false,
                                             jsonPropsValidation);
 }
 
@@ -609,9 +610,6 @@ testCompareXMLToArgv(const void *data)
     virSetConnectNodeDev(conn);
     virSetConnectSecret(conn);
     virSetConnectStorage(conn);
-
-    if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
-        flags |= FLAG_FIPS;
 
     if (testCheckExclusiveFlags(info->flags) < 0)
         goto cleanup;
@@ -2962,7 +2960,8 @@ mymain(void)
     DO_TEST("panic-no-address",
             QEMU_CAPS_DEVICE_PANIC);
 
-    DO_TEST("fips-enabled", QEMU_CAPS_ENABLE_FIPS);
+    DO_TEST_CAPS_ARCH_VER_FULL("fips-enabled", "x86_64", "5.1.0", ARG_FLAGS, FLAG_FIPS_HOST);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("fips-enabled", "x86_64", ARG_FLAGS, FLAG_FIPS_HOST);
 
     DO_TEST("shmem", QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST("shmem-plain-doorbell", QEMU_CAPS_DEVICE_IVSHMEM,

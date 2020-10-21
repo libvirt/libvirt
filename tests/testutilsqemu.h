@@ -48,7 +48,7 @@ typedef enum {
 typedef enum {
     FLAG_EXPECT_FAILURE     = 1 << 0,
     FLAG_EXPECT_PARSE_ERROR = 1 << 1,
-    FLAG_FIPS               = 1 << 2,
+    FLAG_FIPS_HOST          = 1 << 2, /* simulate host with FIPS mode enabled */
     FLAG_REAL_CAPS          = 1 << 3,
     FLAG_SKIP_LEGACY_CPUS   = 1 << 4,
     FLAG_SLIRP_HELPER       = 1 << 5,
