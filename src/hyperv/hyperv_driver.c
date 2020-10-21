@@ -1397,6 +1397,32 @@ hypervDomainSetAutostart(virDomainPtr domain, int autostart)
 }
 
 
+static unsigned long long
+hypervNodeGetFreeMemory(virConnectPtr conn)
+{
+    unsigned long long freeMemoryBytes = 0;
+    hypervPrivate *priv = conn->privateData;
+    Win32_OperatingSystem *operatingSystem = NULL;
+    g_auto(virBuffer) query = { g_string_new(WIN32_OPERATINGSYSTEM_WQL_SELECT), 0 };
+
+    if (hypervGetWmiClass(Win32_OperatingSystem, &operatingSystem) < 0)
+        return 0;
+
+    if (!operatingSystem) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get free memory for host %s"),
+                       conn->uri->server);
+        return 0;
+    }
+
+    freeMemoryBytes = operatingSystem->data.common->FreePhysicalMemory * 1024;
+
+    hypervFreeObject(priv, (hypervObject *)operatingSystem);
+
+    return freeMemoryBytes;
+}
+
+
 static int
 hypervConnectIsEncrypted(virConnectPtr conn)
 {
@@ -1939,6 +1965,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainCreateWithFlags = hypervDomainCreateWithFlags, /* 0.9.5 */
     .domainGetAutostart = hypervDomainGetAutostart, /* 6.9.0 */
     .domainSetAutostart = hypervDomainSetAutostart, /* 6.9.0 */
+    .nodeGetFreeMemory = hypervNodeGetFreeMemory, /* 6.9.0 */
     .connectIsEncrypted = hypervConnectIsEncrypted, /* 0.9.5 */
     .connectIsSecure = hypervConnectIsSecure, /* 0.9.5 */
     .domainIsActive = hypervDomainIsActive, /* 0.9.5 */
