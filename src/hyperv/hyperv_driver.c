@@ -893,9 +893,7 @@ hypervDomainLookupByName(virConnectPtr conn, const char *name)
 static int
 hypervDomainSuspend(virDomainPtr domain)
 {
-    int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
-    Msvm_ComputerSystem *computerSystem = NULL;
     int requestedState = -1;
 
     switch (priv->wmiVersion) {
@@ -907,20 +905,7 @@ hypervDomainSuspend(virDomainPtr domain)
         break;
     }
 
-    if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
-
-    if (computerSystem->data.common->EnabledState != MSVM_COMPUTERSYSTEM_ENABLEDSTATE_ENABLED) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not active"));
-        goto cleanup;
-    }
-
-    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain, requestedState);
-
- cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
-
-    return result;
+    return hypervRequestStateChange(domain, requestedState);
 }
 
 
