@@ -1315,6 +1315,87 @@ hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
 }
 
 
+static int
+hypervDomainSetAutostart(virDomainPtr domain, int autostart)
+{
+    int result = -1;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    hypervPrivate *priv = domain->conn->privateData;
+    Msvm_VirtualSystemSettingData *vssd = NULL;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
+    g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virHashTable) autostartParam = NULL;
+    const char *methodName = NULL;
+    hypervWmiClassInfoListPtr embeddedParamClass = NULL;
+    const char *enabledValue = NULL, *disabledValue = NULL;
+    const char *embeddedParamName = NULL;
+
+    switch (priv->wmiVersion) {
+    case HYPERV_WMI_VERSION_V1:
+        methodName = "ModifyVirtualSystem";
+        embeddedParamClass = Msvm_VirtualSystemGlobalSettingData_WmiInfo;
+        enabledValue = "2";
+        disabledValue = "0";
+        embeddedParamName = "SystemSettingData";
+        break;
+    case HYPERV_WMI_VERSION_V2:
+        methodName = "ModifySystemSettings";
+        embeddedParamClass = Msvm_VirtualSystemSettingData_WmiInfo;
+        enabledValue = "4";
+        disabledValue = "2";
+        embeddedParamName = "SystemSettings";
+        break;
+    }
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervGetVSSDFromUUID(priv, uuid_string, &vssd) < 0)
+        goto cleanup;
+
+    params = hypervCreateInvokeParamsList(priv, methodName,
+                                          MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
+                                          Msvm_VirtualSystemManagementService_WmiInfo);
+
+    if (!params) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create params"));
+        goto cleanup;
+    }
+
+    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
+        virBufferEscapeSQL(&eprQuery,
+                           MSVM_COMPUTERSYSTEM_WQL_SELECT "WHERE Name = '%s'",
+                           uuid_string);
+
+        if (hypervAddEprParam(params, "ComputerSystem", priv, &eprQuery,
+                              Msvm_ComputerSystem_WmiInfo) < 0)
+            goto cleanup;
+    }
+
+    autostartParam = hypervCreateEmbeddedParam(priv, embeddedParamClass);
+
+    if (hypervSetEmbeddedProperty(autostartParam, "AutomaticStartupAction",
+                                  autostart ? enabledValue : disabledValue) < 0)
+        goto cleanup;
+
+    if (hypervSetEmbeddedProperty(autostartParam, "InstanceID",
+                                  vssd->data.common->InstanceID) < 0)
+        goto cleanup;
+
+    if (hypervAddEmbeddedParam(params, priv, embeddedParamName,
+                               &autostartParam, embeddedParamClass) < 0)
+        goto cleanup;
+
+    if (hypervInvokeMethod(priv, &params, NULL) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *)vssd);
+
+    return result;
+}
+
 
 static int
 hypervConnectIsEncrypted(virConnectPtr conn)
@@ -1857,6 +1938,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainCreate = hypervDomainCreate, /* 0.9.5 */
     .domainCreateWithFlags = hypervDomainCreateWithFlags, /* 0.9.5 */
     .domainGetAutostart = hypervDomainGetAutostart, /* 6.9.0 */
+    .domainSetAutostart = hypervDomainSetAutostart, /* 6.9.0 */
     .connectIsEncrypted = hypervConnectIsEncrypted, /* 0.9.5 */
     .connectIsSecure = hypervConnectIsSecure, /* 0.9.5 */
     .domainIsActive = hypervDomainIsActive, /* 0.9.5 */
