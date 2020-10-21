@@ -1697,7 +1697,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
     if (!(priv->devs = virChrdevAlloc()))
         goto error;
 
-    if (!(priv->blockjobs = virHashCreate(5, virObjectFreeHashData)))
+    if (!(priv->blockjobs = virHashNew(virObjectFreeHashData)))
         goto error;
 
     /* agent commands block by default, user can choose different behavior */
