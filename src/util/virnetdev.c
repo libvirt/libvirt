@@ -1695,7 +1695,7 @@ virNetDevParseVfInfo(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
             return rc;
         }
 
-        if (mac && tb[IFLA_VF_MAC]) {
+        if (mac && tb_vf[IFLA_VF_MAC]) {
             vf_mac = RTA_DATA(tb_vf[IFLA_VF_MAC]);
             if (vf_mac && vf_mac->vf == vf)  {
                 virMacAddrSetRaw(mac, vf_mac->mac);
@@ -1703,7 +1703,7 @@ virNetDevParseVfInfo(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
             }
         }
 
-        if (vlanid && tb[IFLA_VF_VLAN]) {
+        if (vlanid && tb_vf[IFLA_VF_VLAN]) {
             vf_vlan = RTA_DATA(tb_vf[IFLA_VF_VLAN]);
             if (vf_vlan && vf_vlan->vf == vf)  {
                 *vlanid = vf_vlan->vlan;
