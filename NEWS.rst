@@ -22,8 +22,11 @@ v6.9.0 (unreleased)
   * hyperv: implement new APIs
 
     The ``virConnectGetCapabilities()``, ``virConnectGetMaxVcpus()``,
-    ``virConnectGetVersion()``, and ``virDomainGetAutostart()`` APIs have been
-    implemented in the Hyper-V driver.
+    ``virConnectGetVersion()``, ``virDomainGetAutostart()``,
+    ``virDomainSetAutostart()``, ``virNodeGetFreeMemory()``,
+    ``virDomainReboot()``, ``virDomainReset()``, ``virDomainShutdown()``, and
+    ``virDomainShutdownFlags()`` APIs have been implemented in the Hyper-V
+    driver.
 
   * bhyve: implement virtio-9p filesystem support
 
