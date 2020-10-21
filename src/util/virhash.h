@@ -54,60 +54,6 @@ typedef int (*virHashIterator) (void *payload, const char *name, void *data);
 typedef int (*virHashSearcher) (const void *payload, const char *name,
                                 const void *data);
 
-/**
- * virHashKeyCode:
- * @name: the hash key
- * @seed: random seed
- *
- * Compute the hash code corresponding to the key @name, using
- * @seed to perturb the hashing algorithm
- *
- * Returns the hash code
- */
-typedef uint32_t (*virHashKeyCode)(const char *name,
-                                   uint32_t seed);
-/**
- * virHashKeyEqual:
- * @namea: the first hash key
- * @nameb: the second hash key
- *
- * Compare two hash keys for equality
- *
- * Returns true if the keys are equal, false otherwise
- */
-typedef bool (*virHashKeyEqual)(const char *namea, const char *nameb);
-/**
- * virHashKeyCopy:
- * @name: the hash key
- *
- * Create a copy of the hash key, duplicating
- * memory allocation where applicable
- *
- * Returns a copy of @name which will eventually be passed to the
- * 'virHashKeyFree' callback at the end of its lifetime.
- */
-typedef char *(*virHashKeyCopy)(const char *name);
-/**
- * virHashKeyPrintHuman:
- * @name: the hash key
- *
- * Get a human readable version of the key for error messages. Caller
- * will free the returned string.
- *
- * Returns a string representation of the key for use in error messages. Caller
- * promises to always free the returned string.
- */
-typedef char *(*virHashKeyPrintHuman) (const char *name);
-
-/**
- * virHashKeyFree:
- * @name: the hash key
- *
- * Free any memory associated with the hash
- * key @name
- */
-typedef void (*virHashKeyFree)(char *name);
-
 /*
  * Constructor and destructor.
  */

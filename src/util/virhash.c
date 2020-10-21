@@ -56,11 +56,6 @@ struct _virHashTable {
     size_t size;
     size_t nbElems;
     virHashDataFree dataFree;
-    virHashKeyCode keyCode;
-    virHashKeyEqual keyEqual;
-    virHashKeyCopy keyCopy;
-    virHashKeyPrintHuman keyPrint;
-    virHashKeyFree keyFree;
 };
 
 struct _virHashAtomic {
@@ -81,40 +76,10 @@ static int virHashAtomicOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virHashAtomic);
 
-
-static uint32_t virHashStrCode(const char *name, uint32_t seed)
-{
-    return virHashCodeGen(name, strlen(name), seed);
-}
-
-static bool virHashStrEqual(const char *namea, const char *nameb)
-{
-    return STREQ(namea, nameb);
-}
-
-static char *virHashStrCopy(const char *name)
-{
-    return g_strdup(name);
-}
-
-
-static char *
-virHashStrPrintHuman(const char *name)
-{
-    return g_strdup(name);
-}
-
-
-static void virHashStrFree(char *name)
-{
-    VIR_FREE(name);
-}
-
-
 static size_t
 virHashComputeKey(const virHashTable *table, const char *name)
 {
-    uint32_t value = table->keyCode(name, table->seed);
+    uint32_t value = virHashCodeGen(name, strlen(name), table->seed);
     return value % table->size;
 }
 
@@ -138,11 +103,6 @@ virHashNew(virHashDataFree dataFree)
     table->size = 32;
     table->nbElems = 0;
     table->dataFree = dataFree;
-    table->keyCode = virHashStrCode;
-    table->keyEqual = virHashStrEqual;
-    table->keyCopy = virHashStrCopy;
-    table->keyPrint = virHashStrPrintHuman;
-    table->keyFree = virHashStrFree;
 
     table->table = g_new0(virHashEntryPtr, table->size);
 
@@ -260,8 +220,7 @@ virHashFree(virHashTablePtr table)
 
             if (table->dataFree)
                 table->dataFree(iter->payload);
-            if (table->keyFree)
-                table->keyFree(iter->name);
+            g_free(iter->name);
             VIR_FREE(iter);
             iter = next;
         }
@@ -287,20 +246,15 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const char *name,
 
     /* Check for duplicate entry */
     for (entry = table->table[key]; entry; entry = entry->next) {
-        if (table->keyEqual(entry->name, name)) {
+        if (STREQ(entry->name, name)) {
             if (is_update) {
                 if (table->dataFree)
                     table->dataFree(entry->payload);
                 entry->payload = userdata;
                 return 0;
             } else {
-                g_autofree char *keystr = NULL;
-
-                if (table->keyPrint)
-                    keystr = table->keyPrint(name);
-
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Duplicate hash table key '%s'"), NULLSTR(keystr));
+                               _("Duplicate hash table key '%s'"), name);
                 return -1;
             }
         }
@@ -309,7 +263,7 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const char *name,
     }
 
     entry = g_new0(virHashEntry, 1);
-    entry->name = table->keyCopy(name);
+    entry->name = g_strdup(name);
     entry->payload = userdata;
 
     if (last)
@@ -388,7 +342,7 @@ virHashGetEntry(const virHashTable *table,
 
     key = virHashComputeKey(table, name);
     for (entry = table->table[key]; entry; entry = entry->next) {
-        if (table->keyEqual(entry->name, name))
+        if (STREQ(entry->name, name))
             return entry;
     }
 
@@ -510,11 +464,10 @@ virHashRemoveEntry(virHashTablePtr table, const char *name)
 
     nextptr = table->table + virHashComputeKey(table, name);
     for (entry = *nextptr; entry; entry = entry->next) {
-        if (table->keyEqual(entry->name, name)) {
+        if (STREQ(entry->name, name)) {
             if (table->dataFree)
                 table->dataFree(entry->payload);
-            if (table->keyFree)
-                table->keyFree(entry->name);
+            g_free(entry->name);
             *nextptr = entry->next;
             VIR_FREE(entry);
             table->nbElems--;
@@ -601,8 +554,7 @@ virHashRemoveSet(virHashTablePtr table,
                 count++;
                 if (table->dataFree)
                     table->dataFree(entry->payload);
-                if (table->keyFree)
-                    table->keyFree(entry->name);
+                g_free(entry->name);
                 *nextptr = entry->next;
                 VIR_FREE(entry);
                 table->nbElems--;
@@ -669,7 +621,7 @@ void *virHashSearch(const virHashTable *ctable,
         for (entry = table->table[i]; entry; entry = entry->next) {
             if (iter(entry->payload, entry->name, data)) {
                 if (name)
-                    *name = table->keyCopy(entry->name);
+                    *name = g_strdup(entry->name);
                 return entry->payload;
             }
         }
