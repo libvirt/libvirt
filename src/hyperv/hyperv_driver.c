@@ -287,6 +287,29 @@ hypervGetMemSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
 }
 
 
+static int
+hypervRequestStateChange(virDomainPtr domain, int state)
+{
+    int result = -1;
+    hypervPrivate *priv = domain->conn->privateData;
+    Msvm_ComputerSystem *computerSystem = NULL;
+
+    if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
+        goto cleanup;
+
+    if (computerSystem->data.common->EnabledState != MSVM_COMPUTERSYSTEM_ENABLEDSTATE_ENABLED) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not active"));
+        goto cleanup;
+    }
+
+    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain, state);
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *)computerSystem);
+
+    return result;
+}
+
 
 /*
  * API-specific utility functions
@@ -919,6 +942,24 @@ hypervDomainResume(virDomainPtr domain)
     hypervFreeObject(priv, (hypervObject *)computerSystem);
 
     return result;
+}
+
+
+
+static int
+hypervDomainReboot(virDomainPtr domain, unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    return hypervRequestStateChange(domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_REBOOT);
+}
+
+
+
+static int
+hypervDomainReset(virDomainPtr domain, unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    return hypervRequestStateChange(domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_RESET);
 }
 
 
@@ -1953,6 +1994,8 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainLookupByName = hypervDomainLookupByName, /* 0.9.5 */
     .domainSuspend = hypervDomainSuspend, /* 0.9.5 */
     .domainResume = hypervDomainResume, /* 0.9.5 */
+    .domainReboot = hypervDomainReboot, /* 6.9.0 */
+    .domainReset = hypervDomainReset, /* 6.9.0 */
     .domainDestroy = hypervDomainDestroy, /* 0.9.5 */
     .domainDestroyFlags = hypervDomainDestroyFlags, /* 0.9.5 */
     .domainGetOSType = hypervDomainGetOSType, /* 0.9.5 */
