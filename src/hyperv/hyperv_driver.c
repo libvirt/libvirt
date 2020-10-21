@@ -896,19 +896,26 @@ hypervDomainSuspend(virDomainPtr domain)
     int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
+    int requestedState = -1;
+
+    switch (priv->wmiVersion) {
+    case HYPERV_WMI_VERSION_V1:
+        requestedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_PAUSED;
+        break;
+    case HYPERV_WMI_VERSION_V2:
+        requestedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_QUIESCE;
+        break;
+    }
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         goto cleanup;
 
-    if (computerSystem->data.common->EnabledState !=
-        MSVM_COMPUTERSYSTEM_ENABLEDSTATE_ENABLED) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Domain is not active"));
+    if (computerSystem->data.common->EnabledState != MSVM_COMPUTERSYSTEM_ENABLEDSTATE_ENABLED) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not active"));
         goto cleanup;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange
-               (domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_PAUSED);
+    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain, requestedState);
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -924,12 +931,21 @@ hypervDomainResume(virDomainPtr domain)
     int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
+    int expectedState = -1;
+
+    switch (priv->wmiVersion) {
+    case HYPERV_WMI_VERSION_V1:
+        expectedState = MSVM_COMPUTERSYSTEM_ENABLEDSTATE_PAUSED;
+        break;
+    case HYPERV_WMI_VERSION_V2:
+        expectedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_QUIESCE;
+        break;
+    }
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
-    if (computerSystem->data.common->EnabledState !=
-        MSVM_COMPUTERSYSTEM_ENABLEDSTATE_PAUSED) {
+    if (computerSystem->data.common->EnabledState != expectedState) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Domain is not paused"));
         goto cleanup;
