@@ -1004,6 +1004,8 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
 
     params = hypervCreateInvokeParamsList(priv, "InitiateShutdown", selector,
                                           Msvm_ShutdownComponent_WmiInfo);
+    if (!params)
+        goto cleanup;
 
     hypervAddSimpleParam(params, "Force", "False");
 
@@ -1484,10 +1486,8 @@ hypervDomainSetAutostart(virDomainPtr domain, int autostart)
                                           MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
                                           Msvm_VirtualSystemManagementService_WmiInfo);
 
-    if (!params) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create params"));
+    if (!params)
         goto cleanup;
-    }
 
     if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
         virBufferEscapeSQL(&eprQuery,
@@ -1915,12 +1915,10 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
         g_snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
 
         params = hypervCreateInvokeParamsList(priv, "PressKey", selector,
-                Msvm_Keyboard_WmiInfo);
+                                              Msvm_Keyboard_WmiInfo);
 
-        if (!params) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create param"));
+        if (!params)
             goto cleanup;
-        }
 
         if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
             goto cleanup;
@@ -1940,12 +1938,10 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     for (i = 0; i < nkeycodes; i++) {
         g_snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
         params = hypervCreateInvokeParamsList(priv, "ReleaseKey", selector,
-                Msvm_Keyboard_WmiInfo);
+                                              Msvm_Keyboard_WmiInfo);
 
-        if (!params) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create param"));
+        if (!params)
             goto cleanup;
-        }
 
         if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
             goto cleanup;
@@ -1998,13 +1994,11 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
 
     if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
         params = hypervCreateInvokeParamsList(priv, "ModifyVirtualSystemResources",
-                MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
-                Msvm_VirtualSystemManagementService_WmiInfo);
+                                              MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
+                                              Msvm_VirtualSystemManagementService_WmiInfo);
 
-        if (!params) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create params"));
+        if (!params)
             goto cleanup;
-        }
 
         virBufferAddLit(&eprQuery, MSVM_COMPUTERSYSTEM_WQL_SELECT);
         virBufferEscapeSQL(&eprQuery, "where Name = \"%s\"", uuid_string);
@@ -2014,13 +2008,11 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
             goto cleanup;
     } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2) {
         params = hypervCreateInvokeParamsList(priv, "ModifyResourceSettings",
-                MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
-                Msvm_VirtualSystemManagementService_WmiInfo);
+                                              MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
+                                              Msvm_VirtualSystemManagementService_WmiInfo);
 
-        if (!params) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create params"));
+        if (!params)
             goto cleanup;
-        }
     }
 
     memResource = hypervCreateEmbeddedParam(priv, Msvm_MemorySettingData_WmiInfo);
