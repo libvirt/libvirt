@@ -969,7 +969,6 @@ int
 virCgroupNewDomainPartition(virCgroupPtr partition,
                             const char *driver,
                             const char *name,
-                            bool create,
                             virCgroupPtr *group)
 {
     g_autofree char *grpname = NULL;
@@ -993,7 +992,7 @@ virCgroupNewDomainPartition(virCgroupPtr partition,
      * a group for driver, is to avoid overhead to track
      * cumulative usage that we don't need.
      */
-    if (virCgroupMakeGroup(partition, newGroup, create,
+    if (virCgroupMakeGroup(partition, newGroup, true,
                            VIR_CGROUP_MEM_HIERACHY) < 0) {
         return -1;
     }
@@ -1278,7 +1277,6 @@ virCgroupNewMachineManual(const char *name,
     if (virCgroupNewDomainPartition(parent,
                                     drivername,
                                     name,
-                                    true,
                                     &newGroup) < 0)
         return -1;
 
@@ -2836,7 +2834,6 @@ int
 virCgroupNewDomainPartition(virCgroupPtr partition G_GNUC_UNUSED,
                             const char *driver G_GNUC_UNUSED,
                             const char *name G_GNUC_UNUSED,
-                            bool create G_GNUC_UNUSED,
                             virCgroupPtr *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",

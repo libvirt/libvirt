@@ -123,7 +123,6 @@ int virCgroupNewPartition(const char *path,
 int virCgroupNewDomainPartition(virCgroupPtr partition,
                                 const char *driver,
                                 const char *name,
-                                bool create,
                                 virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 

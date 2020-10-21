@@ -434,7 +434,7 @@ static int testCgroupNewForPartitionDomain(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    if ((rv = virCgroupNewDomainPartition(partitioncgroup, "lxc", "foo", true, &domaincgroup)) != 0) {
+    if ((rv = virCgroupNewDomainPartition(partitioncgroup, "lxc", "foo", &domaincgroup)) != 0) {
         fprintf(stderr, "Cannot create LXC cgroup: %d\n", -rv);
         return -1;
     }
@@ -475,7 +475,7 @@ static int testCgroupNewForPartitionDomainEscaped(const void *args G_GNUC_UNUSED
         return -1;
     }
 
-    if ((rv = virCgroupNewDomainPartition(partitioncgroup3, "lxc", "cpu.foo", true, &domaincgroup)) != 0) {
+    if ((rv = virCgroupNewDomainPartition(partitioncgroup3, "lxc", "cpu.foo", &domaincgroup)) != 0) {
         fprintf(stderr, "Cannot create LXC cgroup: %d\n", -rv);
         return -1;
     }
