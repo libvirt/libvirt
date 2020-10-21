@@ -73,8 +73,10 @@ hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
                        "ResultClass = Win32_Processor",
                        name);
 
-    if (hypervGetWmiClass(Win32_Processor, processorList) < 0 ||
-        !processorList) {
+    if (hypervGetWmiClass(Win32_Processor, processorList) < 0)
+        return -1;
+
+    if (!processorList) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up processor(s) on '%s'"),
                        name);
@@ -92,8 +94,10 @@ hypervGetActiveVirtualSystemList(hypervPrivate *priv,
                                              "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
                                              "AND " MSVM_COMPUTERSYSTEM_WQL_ACTIVE), 0 };
 
-    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0 ||
-        !*computerSystemList) {
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0)
+        return -1;
+
+    if (!*computerSystemList) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not look up active virtual machines"));
         return -1;
@@ -111,8 +115,10 @@ hypervGetInactiveVirtualSystemList(hypervPrivate *priv,
                                              "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
                                              "AND " MSVM_COMPUTERSYSTEM_WQL_INACTIVE), 0 };
 
-    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0 ||
-        !*computerSystemList) {
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0)
+        return -1;
+
+    if (!*computerSystemList) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not look up inactive virtual machines"));
         return -1;
@@ -127,8 +133,10 @@ hypervGetPhysicalSystemList(hypervPrivate *priv,
 {
     g_auto(virBuffer) query = { g_string_new(WIN32_COMPUTERSYSTEM_WQL_SELECT), 0 };
 
-    if (hypervGetWmiClass(Win32_ComputerSystem, computerSystemList) < 0 ||
-        !*computerSystemList) {
+    if (hypervGetWmiClass(Win32_ComputerSystem, computerSystemList) < 0)
+        return -1;
+
+    if (!*computerSystemList) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not look up Win32_ComputerSystem"));
         return -1;
@@ -148,11 +156,8 @@ hypervGetVirtualSystemByID(hypervPrivate *priv, int id,
                       "AND ProcessID = %d",
                       id);
 
-    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Could not look up virtual system with ID %d"), id);
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0)
         return -1;
-    }
 
     if (*computerSystemList == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN, _("No domain with ID %d"), id);
@@ -173,12 +178,8 @@ hypervGetVirtualSystemByUUID(hypervPrivate *priv, const char *uuid,
                        "AND Name = \"%s\"",
                        uuid);
 
-    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Could not look up virtual system with UUID '%s'"),
-                       uuid);
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0)
         return -1;
-    }
 
     if (*computerSystemList == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -201,11 +202,8 @@ hypervGetVirtualSystemByName(hypervPrivate *priv, const char *name,
                        "AND ElementName = \"%s\"",
                        name);
 
-    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Could not look up virtual system named '%s'"), name);
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0)
         return -1;
-    }
 
     if (*computerSystemList == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -227,8 +225,10 @@ hypervGetVSSDFromUUID(hypervPrivate *priv, const char *uuid,
                        "ResultClass = Msvm_VirtualSystemSettingData",
                        uuid);
 
-    if (hypervGetWmiClass(Msvm_VirtualSystemSettingData, data) < 0 ||
-        !*data) {
+    if (hypervGetWmiClass(Msvm_VirtualSystemSettingData, data) < 0)
+        return -1;
+
+    if (!*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up virtual system setting data with UUID '%s'"),
                        uuid);
@@ -249,8 +249,10 @@ hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
                        "ResultClass = Msvm_ProcessorSettingData",
                        id);
 
-    if (hypervGetWmiClass(Msvm_ProcessorSettingData, data) < 0 ||
-        !*data) {
+    if (hypervGetWmiClass(Msvm_ProcessorSettingData, data) < 0)
+        return -1;
+
+    if (!*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up processor setting data with virtual system instance ID '%s'"),
                        id);
@@ -271,8 +273,10 @@ hypervGetMemSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
                        "ResultClass = Msvm_MemorySettingData",
                        id);
 
-    if (hypervGetWmiClass(Msvm_MemorySettingData, data) < 0 ||
-        !*data) {
+    if (hypervGetWmiClass(Msvm_MemorySettingData, data) < 0)
+        return -1;
+
+    if (!*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up memory setting data with virtual system instance ID '%s'"),
                        id);
@@ -548,8 +552,10 @@ hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
     g_auto(virBuffer) query = { g_string_new(WIN32_OPERATINGSYSTEM_WQL_SELECT), 0 };
     unsigned int major, minor, micro;
 
-    if (hypervGetWmiClass(Win32_OperatingSystem, &os) < 0 ||
-        !os) {
+    if (hypervGetWmiClass(Win32_OperatingSystem, &os) < 0)
+        goto cleanup;
+
+    if (!os) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not get version information for host %s"),
                        conn->uri->server);
