@@ -983,7 +983,7 @@ virNWFilterVarAccessGetIntIterId(const virNWFilterVarAccess *vap)
 
 bool
 virNWFilterVarAccessIsAvailable(const virNWFilterVarAccess *varAccess,
-                                const virHashTable *hash)
+                                virHashTablePtr hash)
 {
     const char *varName = virNWFilterVarAccessGetVarName(varAccess);
     const char *res;

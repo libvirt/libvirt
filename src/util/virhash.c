@@ -360,7 +360,8 @@ virHashGetEntry(const virHashTable *table,
  * Returns a pointer to the userdata
  */
 void *
-virHashLookup(const virHashTable *table, const char *name)
+virHashLookup(virHashTablePtr table,
+              const char *name)
 {
     virHashEntryPtr entry = virHashGetEntry(table, name);
 
@@ -381,7 +382,7 @@ virHashLookup(const virHashTable *table, const char *name)
  * Returns true if the entry exists and false otherwise
  */
 bool
-virHashHasEntry(const virHashTable *table,
+virHashHasEntry(virHashTablePtr table,
                 const char *name)
 {
     return !!virHashGetEntry(table, name);
@@ -434,7 +435,7 @@ virHashAtomicSteal(virHashAtomicPtr table,
  * -1 in case of error
  */
 ssize_t
-virHashSize(const virHashTable *table)
+virHashSize(virHashTablePtr table)
 {
     if (table == NULL)
         return -1;
@@ -652,15 +653,13 @@ virHashRemoveAll(virHashTablePtr table)
  * The elements are processed in a undefined order. Caller is
  * responsible for freeing the @name.
  */
-void *virHashSearch(const virHashTable *ctable,
+void *virHashSearch(virHashTablePtr table,
                     virHashSearcher iter,
                     const void *opaque,
                     char **name)
 {
     size_t i;
 
-    /* Cast away const for internal detection of misuse.  */
-    virHashTablePtr table = (virHashTablePtr)ctable;
 
     if (table == NULL || iter == NULL)
         return NULL;
@@ -739,7 +738,7 @@ virHashGetItems(virHashTablePtr table,
 struct virHashEqualData
 {
     bool equal;
-    const virHashTable *table2;
+    virHashTablePtr table2;
     virHashValueComparator compar;
 };
 
@@ -760,8 +759,8 @@ static int virHashEqualSearcher(const void *payload, const char *name,
     return 0;
 }
 
-bool virHashEqual(const virHashTable *table1,
-                  const virHashTable *table2,
+bool virHashEqual(virHashTablePtr table1,
+                  virHashTablePtr table2,
                   virHashValueComparator compar)
 {
     struct virHashEqualData data = {

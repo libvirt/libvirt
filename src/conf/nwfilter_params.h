@@ -119,7 +119,7 @@ virNWFilterVarAccessType virNWFilterVarAccessGetType(
 unsigned int virNWFilterVarAccessGetIterId(const virNWFilterVarAccess *vap);
 unsigned int virNWFilterVarAccessGetIndex(const virNWFilterVarAccess *vap);
 bool virNWFilterVarAccessIsAvailable(const virNWFilterVarAccess *vap,
-                                     const virHashTable *hash);
+                                     virHashTablePtr hash);
 
 typedef struct _virNWFilterVarCombIterEntry virNWFilterVarCombIterEntry;
 typedef virNWFilterVarCombIterEntry *virNWFilterVarCombIterEntryPtr;
