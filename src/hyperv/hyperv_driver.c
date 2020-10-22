@@ -68,7 +68,7 @@ hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
 {
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Win32_ComputerSystem.Name=\"%s\"} "
+                       "ASSOCIATORS OF {Win32_ComputerSystem.Name='%s'} "
                        "WHERE AssocClass = Win32_ComputerSystemProcessor "
                        "ResultClass = Win32_Processor",
                        name);
@@ -180,7 +180,7 @@ hypervGetVirtualSystemByUUID(hypervPrivate *priv, const char *uuid,
     virBufferEscapeSQL(&query,
                        MSVM_COMPUTERSYSTEM_WQL_SELECT
                        "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
-                       "AND Name = \"%s\"",
+                       "AND Name = '%s'",
                        uuid);
 
     if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0)
@@ -204,7 +204,7 @@ hypervGetVirtualSystemByName(hypervPrivate *priv, const char *name,
     virBufferEscapeSQL(&query,
                        MSVM_COMPUTERSYSTEM_WQL_SELECT
                        "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
-                       "AND ElementName = \"%s\"",
+                       "AND ElementName = '%s'",
                        name);
 
     if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0)
@@ -226,7 +226,7 @@ hypervGetVSSDFromUUID(hypervPrivate *priv, const char *uuid,
 {
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Msvm_ComputerSystem.CreationClassName=\"Msvm_ComputerSystem\",Name=\"%s\"} "
+                       "ASSOCIATORS OF {Msvm_ComputerSystem.CreationClassName='Msvm_ComputerSystem',Name='%s'} "
                        "WHERE AssocClass = Msvm_SettingsDefineState "
                        "ResultClass = Msvm_VirtualSystemSettingData",
                        uuid);
@@ -251,7 +251,7 @@ hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
 {
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID=\"%s\"} "
+                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
                        "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
                        "ResultClass = Msvm_ProcessorSettingData",
                        id);
@@ -276,7 +276,7 @@ hypervGetMemSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
 {
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID=\"%s\"} "
+                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
                        "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
                        "ResultClass = Msvm_MemorySettingData",
                        id);
@@ -346,10 +346,9 @@ static int
 hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
 {
     Win32_ComputerSystemProduct *computerSystem = NULL;
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = { g_string_new(WIN32_COMPUTERSYSTEMPRODUCT_WQL_SELECT), 0 };
     int result = -1;
 
-    virBufferAddLit(&query, WIN32_COMPUTERSYSTEMPRODUCT_WQL_SELECT);
     if (hypervGetWmiClass(Win32_ComputerSystemProduct, &computerSystem) < 0)
         goto cleanup;
 
@@ -459,18 +458,18 @@ hypervInitConnection(virConnectPtr conn, hypervPrivate *priv,
     wqlQuery.info = Msvm_ComputerSystem_WmiInfo;
     wqlQuery.query = &query;
 
-    virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_SELECT);
-    virBufferAddLit(&query, "WHERE ");
-    virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_PHYSICAL);
+    virBufferAddLit(&query,
+                    MSVM_COMPUTERSYSTEM_WQL_SELECT
+                    "WHERE " MSVM_COMPUTERSYSTEM_WQL_PHYSICAL);
 
     /* try query using V2 namespace (for Hyper-V 2012+) */
     priv->wmiVersion = HYPERV_WMI_VERSION_V2;
 
     if (hypervEnumAndPull(priv, &wqlQuery, &computerSystem) < 0) {
         /* rebuild query because hypervEnumAndPull consumes it */
-        virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_SELECT);
-        virBufferAddLit(&query, "WHERE ");
-        virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_PHYSICAL);
+        virBufferAddLit(&query,
+                        MSVM_COMPUTERSYSTEM_WQL_SELECT
+                        "WHERE " MSVM_COMPUTERSYSTEM_WQL_PHYSICAL);
 
         /* fall back to V1 namespace (for Hyper-V 2008) */
         priv->wmiVersion = HYPERV_WMI_VERSION_V1;
@@ -1390,7 +1389,7 @@ hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
     if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
         virBufferEscapeSQL(&query,
                            MSVM_VIRTUALSYSTEMGLOBALSETTINGDATA_WQL_SELECT
-                           "WHERE SystemName = \"%s\"", uuid_string);
+                           "WHERE SystemName = '%s'", uuid_string);
 
         if (hypervGetWmiClass(Msvm_VirtualSystemGlobalSettingData, &vsgsd) < 0)
             goto cleanup;
@@ -1722,21 +1721,17 @@ hypervConnectListAllDomains(virConnectPtr conn,
         goto cleanup;
     }
 
-    virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_SELECT);
-    virBufferAddLit(&query, "where ");
-    virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_VIRTUAL);
+    virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_SELECT "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL);
 
     /* construct query with filter depending on flags */
     if (!(MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE) &&
           MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE))) {
         if (MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE)) {
-            virBufferAddLit(&query, "and ");
-            virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_ACTIVE);
+            virBufferAddLit(&query, "AND " MSVM_COMPUTERSYSTEM_WQL_ACTIVE);
         }
 
         if (MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE)) {
-            virBufferAddLit(&query, "and ");
-            virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_INACTIVE);
+            virBufferAddLit(&query, "AND " MSVM_COMPUTERSYSTEM_WQL_INACTIVE);
         }
     }
 
@@ -1840,10 +1835,8 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
         goto cleanup;
 
     virBufferEscapeSQL(&query,
-                       "associators of "
-                       "{Msvm_ComputerSystem.CreationClassName=\"Msvm_ComputerSystem\","
-                       "Name=\"%s\"} "
-                       "where ResultClass = Msvm_Keyboard",
+                       "ASSOCIATORS OF {Msvm_ComputerSystem.CreationClassName='Msvm_ComputerSystem',Name='%s'} "
+                       "WHERE ResultClass = Msvm_Keyboard",
                        uuid_string);
 
     if (hypervGetWmiClass(Msvm_Keyboard, &keyboard) < 0)
@@ -1961,8 +1954,9 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         if (!params)
             goto cleanup;
 
-        virBufferAddLit(&eprQuery, MSVM_COMPUTERSYSTEM_WQL_SELECT);
-        virBufferEscapeSQL(&eprQuery, "where Name = \"%s\"", uuid_string);
+        virBufferEscapeSQL(&eprQuery,
+                           MSVM_COMPUTERSYSTEM_WQL_SELECT
+                           "WHERE Name = '%s'", uuid_string);
 
         if (hypervAddEprParam(params, "ComputerSystem", priv, &eprQuery,
                               Msvm_ComputerSystem_WmiInfo) < 0)

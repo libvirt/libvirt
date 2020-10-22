@@ -914,8 +914,9 @@ hypervInvokeMethod(hypervPrivate *priv,
          * side! That is up to Windows to control, we don't do anything about it.
          */
         while (!completed && timeout >= 0) {
-            virBufferAddLit(&query, MSVM_CONCRETEJOB_WQL_SELECT);
-            virBufferEscapeSQL(&query, "where InstanceID = \"%s\"", instanceID);
+            virBufferEscapeSQL(&query,
+                               MSVM_CONCRETEJOB_WQL_SELECT
+                               "WHERE InstanceID = '%s'", instanceID);
 
             if (hypervGetWmiClassList(priv, Msvm_ConcreteJob_WmiInfo, &query,
                                       (hypervObject **)&job) < 0 || job == NULL)
@@ -1328,8 +1329,9 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
         /* FIXME: Poll every 100ms until the job completes or fails. There
          *        seems to be no other way than polling. */
         while (!completed) {
-            virBufferAddLit(&query, MSVM_CONCRETEJOB_WQL_SELECT);
-            virBufferAsprintf(&query, "where InstanceID = \"%s\"", instanceID);
+            virBufferAsprintf(&query,
+                              MSVM_CONCRETEJOB_WQL_SELECT
+                              "WHERE InstanceID = '%s'", instanceID);
 
             if (hypervGetWmiClassList(priv, Msvm_ConcreteJob_WmiInfo, &query,
                                       (hypervObject **)&concreteJob) < 0)
@@ -1520,10 +1522,10 @@ hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
 
     virUUIDFormat(domain->uuid, uuid_string);
 
-    virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_SELECT);
-    virBufferAddLit(&query, "where ");
-    virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_VIRTUAL);
-    virBufferAsprintf(&query, "and Name = \"%s\"", uuid_string);
+    virBufferAsprintf(&query,
+                      MSVM_COMPUTERSYSTEM_WQL_SELECT
+                      "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
+                      "AND Name = '%s'", uuid_string);
 
     if (hypervGetWmiClassList(priv, Msvm_ComputerSystem_WmiInfo, &query,
                               (hypervObject **)computerSystem) < 0)
@@ -1550,10 +1552,8 @@ hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&query,
-                      "associators of "
-                      "{Msvm_ComputerSystem.CreationClassName=\"Msvm_ComputerSystem\","
-                      "Name=\"%s\"} "
-                      "where AssocClass = Msvm_SettingsDefineState "
+                      "ASSOCIATORS OF {Msvm_ComputerSystem.CreationClassName='Msvm_ComputerSystem',Name='%s'} "
+                      "WHERE AssocClass = Msvm_SettingsDefineState "
                       "ResultClass = Msvm_VirtualSystemSettingData",
                       uuid_string);
 
@@ -1576,9 +1576,8 @@ hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&query,
-                      "associators of "
-                      "{Msvm_VirtualSystemSettingData.InstanceID=\"%s\"} "
-                      "where AssocClass = Msvm_VirtualSystemSettingDataComponent "
+                      "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
+                      "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
                       "ResultClass = Msvm_MemorySettingData",
                       vssd_instanceid);
 
