@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     PedPartition *part;
     int cmd = DISK_LAYOUT;
     const char *path;
-    char *canonical_path;
+    g_autofree char *canonical_path = NULL;
     const char *partsep;
     bool devmap_partsep = false;
 
