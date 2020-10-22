@@ -1,0 +1,15 @@
+<filter name='no-ipv6-spoofing' chain='ipv6-ip' priority='-610'>
+  <!-- allow UDP sent from link-local addresses (DHCP);
+       filter more exact later -->
+  <rule action='return' direction='out' priority='100'>
+    <ipv6 srcipaddr='FE80::' srcipmask='10' protocol='udp'/>
+  </rule>
+
+  <!-- allow all known IP addresses -->
+  <rule direction='out' action='return' priority='500'>
+    <ipv6 srcipaddr='$IPV6'/>
+  </rule>
+
+  <!-- drop everything else -->
+  <rule direction='out' action='drop' priority='1000'/>
+</filter>

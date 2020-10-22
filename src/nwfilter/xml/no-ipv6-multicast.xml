@@ -1,0 +1,9 @@
+<filter name='no-ipv6-multicast' chain='ipv6'>
+
+    <!-- drop if destination IP address is in the ff00::/8 subnet -->
+    <rule action='drop' direction='out'>
+        <ipv6 dstipaddr='FF00::' dstipmask='8' />
+    </rule>
+
+    <!-- not doing anything with receiving side ... -->
+</filter>
