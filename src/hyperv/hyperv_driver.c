@@ -1053,9 +1053,8 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     if (hypervGetProcSDByVSSDInstanceId(priv,
                                         virtualSystemSettingData->data.common->InstanceID,
-                                        &processorSettingData) < 0) {
+                                        &processorSettingData) < 0)
         goto cleanup;
-    }
 
     if (hypervGetMsvmMemorySettingDataFromVSSD(priv,
                                                virtualSystemSettingData->data.common->InstanceID,
@@ -1137,9 +1136,8 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     if (hypervGetProcSDByVSSDInstanceId(priv,
                                         virtualSystemSettingData->data.common->InstanceID,
-                                        &processorSettingData) < 0) {
+                                        &processorSettingData) < 0)
         goto cleanup;
-    }
 
     if (hypervGetMsvmMemorySettingDataFromVSSD(priv,
                                                virtualSystemSettingData->data.common->InstanceID,
