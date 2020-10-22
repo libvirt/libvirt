@@ -116,10 +116,9 @@ struct _virHashKeyValuePair {
     const void *key;
     const void *value;
 };
-typedef int (*virHashKeyComparator)(const virHashKeyValuePair *,
-                                    const virHashKeyValuePair *);
 virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
-                                       virHashKeyComparator compar);
+                                       size_t *nitems,
+                                       bool sortedKeys);
 
 /*
  * Compare two tables for equality: the lookup of a key's value in

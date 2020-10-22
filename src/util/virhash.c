@@ -626,48 +626,62 @@ void *virHashSearch(const virHashTable *ctable,
     return NULL;
 }
 
-struct getKeysIter
-{
-    virHashKeyValuePair *sortArray;
-    size_t arrayIdx;
+
+struct virHashGetItemsIteratorData {
+    virHashKeyValuePair *items;
+    size_t i;
 };
 
-static int virHashGetKeysIterator(void *payload,
-                                  const char *key, void *data)
+
+static int
+virHashGetItemsIterator(void *payload,
+                        const char *key,
+                        void *opaque)
 {
-    struct getKeysIter *iter = data;
+    struct virHashGetItemsIteratorData *data = opaque;
 
-    iter->sortArray[iter->arrayIdx].key = key;
-    iter->sortArray[iter->arrayIdx].value = payload;
+    data->items[data->i].key = key;
+    data->items[data->i].value = payload;
 
-    iter->arrayIdx++;
+    data->i++;
     return 0;
 }
 
-typedef int (*qsort_comp)(const void *, const void *);
 
-virHashKeyValuePairPtr virHashGetItems(virHashTablePtr table,
-                                       virHashKeyComparator compar)
+static int
+virHashGetItemsKeySorter(const void *va,
+                         const void *vb)
 {
-    ssize_t numElems = virHashSize(table);
-    struct getKeysIter iter = {
-        .arrayIdx = 0,
-        .sortArray = NULL,
-    };
+    const virHashKeyValuePair *a = va;
+    const virHashKeyValuePair *b = vb;
 
-    if (numElems < 0)
-        return NULL;
-
-    iter.sortArray = g_new0(virHashKeyValuePair, numElems + 1);
-
-    virHashForEach(table, virHashGetKeysIterator, &iter);
-
-    if (compar)
-        qsort(&iter.sortArray[0], numElems, sizeof(iter.sortArray[0]),
-              (qsort_comp)compar);
-
-    return iter.sortArray;
+    return strcmp(a->key, b->key);
 }
+
+
+virHashKeyValuePairPtr
+virHashGetItems(virHashTablePtr table,
+                size_t *nitems,
+                bool sortKeys)
+{
+    size_t dummy;
+    struct virHashGetItemsIteratorData data = { .items = NULL, .i = 0 };
+
+    if (!nitems)
+        nitems = &dummy;
+
+    *nitems = virHashSize(table);
+
+    data.items = g_new0(virHashKeyValuePair, *nitems + 1);
+
+    virHashForEach(table, virHashGetItemsIterator, &data);
+
+    if (sortKeys)
+        qsort(data.items, *nitems, sizeof(* data.items), virHashGetItemsKeySorter);
+
+    return data.items;
+}
+
 
 struct virHashEqualData
 {

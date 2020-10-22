@@ -755,13 +755,6 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
 }
 
 
-static int
-virNWFilterFormatParameterNameSorter(const virHashKeyValuePair *a,
-                                     const virHashKeyValuePair *b)
-{
-    return strcmp(a->key, b->key);
-}
-
 int
 virNWFilterFormatParamAttributes(virBufferPtr buf,
                                  virHashTablePtr table,
@@ -779,8 +772,7 @@ virNWFilterFormatParamAttributes(virBufferPtr buf,
         return -1;
     }
 
-    items = virHashGetItems(table,
-                            virNWFilterFormatParameterNameSorter);
+    items = virHashGetItems(table, NULL, true);
     if (!items)
         return -1;
 

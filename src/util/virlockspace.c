@@ -435,7 +435,7 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
         goto error;
     }
 
-    tmp = pairs = virHashGetItems(lockspace->resources, NULL);
+    tmp = pairs = virHashGetItems(lockspace->resources, NULL, false);
     while (tmp && tmp->value) {
         virLockSpaceResourcePtr res = (virLockSpaceResourcePtr)tmp->value;
         virJSONValuePtr child = virJSONValueNewObject();

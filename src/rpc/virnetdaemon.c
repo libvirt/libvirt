@@ -378,15 +378,6 @@ virNetDaemonNewPostExecRestart(virJSONValuePtr object,
 }
 
 
-static int
-daemonServerCompare(const virHashKeyValuePair *a, const virHashKeyValuePair *b)
-{
-    const char *as = a->key;
-    const char *bs = b->key;
-
-    return strcmp(as, bs);
-}
-
 virJSONValuePtr
 virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
 {
@@ -402,7 +393,7 @@ virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
         goto error;
     }
 
-    if (!(srvArray = virHashGetItems(dmn->servers, daemonServerCompare)))
+    if (!(srvArray = virHashGetItems(dmn->servers, NULL, true)))
         goto error;
 
     for (i = 0; srvArray[i].key; i++) {

@@ -730,7 +730,7 @@ virLockDaemonPreExecRestart(const char *state_file,
     }
 
 
-    tmp = pairs = virHashGetItems(lockDaemon->lockspaces, NULL);
+    tmp = pairs = virHashGetItems(lockDaemon->lockspaces, NULL, false);
     while (tmp && tmp->key) {
         virLockSpacePtr lockspace = (virLockSpacePtr)tmp->value;
 

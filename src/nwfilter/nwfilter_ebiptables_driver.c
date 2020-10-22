@@ -3126,9 +3126,12 @@ virNWFilterRuleInstSortPtr(const void *a, const void *b)
 
 
 static int
-ebiptablesFilterOrderSort(const virHashKeyValuePair *a,
-                          const virHashKeyValuePair *b)
+ebiptablesFilterOrderSort(const void *va,
+                          const void *vb)
 {
+    const virHashKeyValuePair *a = va;
+    const virHashKeyValuePair *b = vb;
+
     /* elements' values has been limited to range [-1000, 1000] */
     return *(virNWFilterChainPriority *)a->value -
            *(virNWFilterChainPriority *)b->value;
@@ -3288,12 +3291,14 @@ ebtablesGetSubChainInsts(virHashTablePtr chains,
                          size_t *ninsts)
 {
     g_autofree virHashKeyValuePairPtr filter_names = NULL;
+    size_t nfilter_names;
     size_t i;
 
-    filter_names = virHashGetItems(chains,
-                                   ebiptablesFilterOrderSort);
+    filter_names = virHashGetItems(chains, &nfilter_names, false);
     if (filter_names == NULL)
         return -1;
+
+    qsort(filter_names, nfilter_names, sizeof(*filter_names), ebiptablesFilterOrderSort);
 
     for (i = 0; filter_names[i].key; i++) {
         g_autofree ebtablesSubChainInstPtr inst = NULL;

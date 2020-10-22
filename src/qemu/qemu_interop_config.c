@@ -79,13 +79,6 @@ qemuBuildFileList(virHashTablePtr files, const char *dir)
     return 0;
 }
 
-static int
-qemuConfigFilesSorter(const virHashKeyValuePair *a,
-                      const virHashKeyValuePair *b)
-{
-    return strcmp(a->key, b->key);
-}
-
 #define QEMU_SYSTEM_LOCATION PREFIX "/share/qemu"
 #define QEMU_ETC_LOCATION SYSCONFDIR "/qemu"
 
@@ -141,7 +134,7 @@ qemuInteropFetchConfigs(const char *name,
     if (virHashSize(files) == 0)
         return 0;
 
-    if (!(pairs = virHashGetItems(files, qemuConfigFilesSorter)))
+    if (!(pairs = virHashGetItems(files, NULL, true)))
         return -1;
 
     for (tmp = pairs; tmp->key; tmp++) {

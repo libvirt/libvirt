@@ -362,13 +362,6 @@ testHashSearch(const void *data G_GNUC_UNUSED)
 
 
 static int
-testHashGetItemsCompKey(const virHashKeyValuePair *a,
-                        const virHashKeyValuePair *b)
-{
-    return strcmp(a->key, b->key);
-}
-
-static int
 testHashGetItems(const void *data G_GNUC_UNUSED)
 {
     virHashTablePtr hash;
@@ -389,14 +382,14 @@ testHashGetItems(const void *data G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    if (!(array = virHashGetItems(hash, NULL)) ||
+    if (!(array = virHashGetItems(hash, NULL, false)) ||
         array[3].key || array[3].value) {
         VIR_TEST_VERBOSE("\nfailed to get items with NULL sort");
         goto cleanup;
     }
     VIR_FREE(array);
 
-    if (!(array = virHashGetItems(hash, testHashGetItemsCompKey)) ||
+    if (!(array = virHashGetItems(hash, NULL, true)) ||
         STRNEQ(array[0].key, "a") ||
         STRNEQ(array[0].value, "3") ||
         STRNEQ(array[1].key, "b") ||

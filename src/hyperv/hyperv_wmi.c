@@ -681,7 +681,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
 
     /* retrieve parameters out of hash table */
     numKeys = virHashSize(p->embedded.table);
-    items = virHashGetItems(p->embedded.table, NULL);
+    items = virHashGetItems(p->embedded.table, NULL, false);
     if (!items) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not read embedded param hash table"));
