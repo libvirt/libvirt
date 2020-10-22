@@ -467,8 +467,7 @@ DSTPORTS = [ 80, 8080 ]
        </tr>
        <tr>
          <td> IPV6 </td>
-         <td> Not currently implemented:
-              the list of IPV6 addresses in use by an interface </td>
+         <td> The list of IPV6 addresses in use by an interface </td>
        </tr>
        <tr>
          <td> DHCPSERVER </td>
@@ -2013,9 +2012,33 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
               of the VM.</td>
       </tr>
        <tr>
+         <td> allow-arp </td>
+         <td> Allow ARP traffic in both directions</td>
+      </tr>
+       <tr>
+         <td> allow-ipv4 </td>
+         <td> Allow IPv4 traffic in both directions</td>
+      </tr>
+       <tr>
+         <td> allow-ipv6 </td>
+         <td> Allow IPv6 traffic in both directions</td>
+      </tr>
+       <tr>
+         <td> allow-incoming-ipv4 </td>
+         <td> Allow incoming IPv4 traffic</td>
+      </tr>
+       <tr>
+         <td> allow-incoming-ipv6 </td>
+         <td> Allow incoming IPv6 traffic</td>
+      </tr>
+       <tr>
          <td> allow-dhcp </td>
          <td> Allow a VM to request an IP address via DHCP (from any
               DHCP server)</td>
+      </tr>
+       <tr>
+         <td> allow-dhcpv6 </td>
+         <td> Similar to allow-dhcp, but for DHCPv6 </td>
       </tr>
        <tr>
          <td> allow-dhcp-server </td>
@@ -2025,14 +2048,26 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
               The name of the variable must be <i>DHCPSERVER</i>.</td>
       </tr>
        <tr>
+         <td> allow-dhcpv6-server </td>
+         <td> Similar to allow-dhcp-server, but for DHCPv6 </td>
+      </tr>
+       <tr>
          <td> no-ip-spoofing </td>
-         <td> Prevent a VM from sending of IP packets with
+         <td> Prevent a VM from sending of IPv4 packets with
               a source IP address different from the one
               in the packet. </td>
       </tr>
        <tr>
+         <td> no-ipv6-spoofing </td>
+         <td> Similar to no-ip-spoofing, but for IPv6 </td>
+      </tr>
+       <tr>
          <td> no-ip-multicast </td>
          <td> Prevent a VM from sending IP multicast packets. </td>
+      </tr>
+       <tr>
+         <td> no-ipv6-multicast </td>
+         <td> Similar to no-ip-multicast, but for IPv6 </td>
       </tr>
        <tr>
          <td> clean-traffic </td>
