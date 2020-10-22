@@ -1,7 +1,7 @@
 <filter name='allow-dhcp-server' chain='ipv4'>
 
-    <!-- accept outgoing DHCP requests -->
-    <!-- note, this rule must be evaluated before general MAC broadcast
+    <!-- accept outgoing DHCP requests
+         note, this rule must be evaluated before general MAC broadcast
          traffic is discarded since DHCP requests use MAC broadcast -->
     <rule action='accept' direction='out' priority='100'>
         <ip srcipaddr='0.0.0.0'
