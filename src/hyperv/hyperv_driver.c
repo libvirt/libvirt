@@ -173,30 +173,6 @@ hypervGetVirtualSystemByID(hypervPrivate *priv, int id,
 
 
 static int
-hypervGetVirtualSystemByUUID(hypervPrivate *priv, const char *uuid,
-                             Msvm_ComputerSystem **computerSystemList)
-{
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    virBufferEscapeSQL(&query,
-                       MSVM_COMPUTERSYSTEM_WQL_SELECT
-                       "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
-                       "AND Name = '%s'",
-                       uuid);
-
-    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystemList) < 0)
-        return -1;
-
-    if (*computerSystemList == NULL) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with UUID %s"), uuid);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 hypervGetVirtualSystemByName(hypervPrivate *priv, const char *name,
                              Msvm_ComputerSystem **computerSystemList)
 {
@@ -806,7 +782,7 @@ hypervDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     virUUIDFormat(uuid, uuid_string);
 
-    if (hypervGetVirtualSystemByUUID(priv, uuid_string, &computerSystem) < 0)
+    if (hypervMsvmComputerSystemFromUUID(priv, uuid_string, &computerSystem) < 0)
         goto cleanup;
 
     hypervMsvmComputerSystemToDomain(conn, computerSystem, &domain);

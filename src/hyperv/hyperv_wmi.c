@@ -1508,36 +1508,44 @@ hypervMsvmComputerSystemToDomain(virConnectPtr conn,
 
 
 int
-hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
-                                   Msvm_ComputerSystem **computerSystem)
+hypervMsvmComputerSystemFromUUID(hypervPrivate *priv, const char *uuid,
+                                 Msvm_ComputerSystem **computerSystem)
 {
-    hypervPrivate *priv = domain->conn->privateData;
-    char uuid_string[VIR_UUID_STRING_BUFLEN];
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 
-    if (computerSystem == NULL || *computerSystem != NULL) {
+    if (!computerSystem || *computerSystem) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    virUUIDFormat(domain->uuid, uuid_string);
-
-    virBufferAsprintf(&query,
-                      MSVM_COMPUTERSYSTEM_WQL_SELECT
-                      "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
-                      "AND Name = '%s'", uuid_string);
+    virBufferEscapeSQL(&query,
+                       MSVM_COMPUTERSYSTEM_WQL_SELECT
+                       "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
+                       "AND Name = '%s'", uuid);
 
     if (hypervGetWmiClassList(priv, Msvm_ComputerSystem_WmiInfo, &query,
                               (hypervObject **)computerSystem) < 0)
         return -1;
 
-    if (*computerSystem == NULL) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("No domain with UUID %s"), uuid_string);
+    if (!*computerSystem) {
+        virReportError(VIR_ERR_NO_DOMAIN, _("No domain with UUID %s"), uuid);
         return -1;
     }
 
     return 0;
+}
+
+
+int
+hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
+                                   Msvm_ComputerSystem **computerSystem)
+{
+    hypervPrivate *priv = domain->conn->privateData;
+    char uuidString[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(domain->uuid, uuidString);
+
+    return hypervMsvmComputerSystemFromUUID(priv, uuidString, computerSystem);
 }
 
 
