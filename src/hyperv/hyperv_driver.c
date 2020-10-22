@@ -220,30 +220,6 @@ hypervGetVirtualSystemByName(hypervPrivate *priv, const char *name,
 }
 
 
-static int
-hypervGetVSSDFromUUID(hypervPrivate *priv, const char *uuid,
-                      Msvm_VirtualSystemSettingData **data)
-{
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Msvm_ComputerSystem.CreationClassName='Msvm_ComputerSystem',Name='%s'} "
-                       "WHERE AssocClass = Msvm_SettingsDefineState "
-                       "ResultClass = Msvm_VirtualSystemSettingData",
-                       uuid);
-
-    if (hypervGetWmiClass(Msvm_VirtualSystemSettingData, data) < 0)
-        return -1;
-
-    if (!*data) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not look up virtual system setting data with UUID '%s'"),
-                       uuid);
-        return -1;
-    }
-
-    return 0;
-}
-
 
 static int
 hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
@@ -1096,10 +1072,9 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         goto cleanup;
 
-    if (hypervGetVSSDFromUUID(priv, uuid_string,
-                              &virtualSystemSettingData) < 0) {
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string,
+                                                      &virtualSystemSettingData) < 0)
         goto cleanup;
-    }
 
     if (hypervGetProcSDByVSSDInstanceId(priv,
                                         virtualSystemSettingData->data.common->InstanceID,
@@ -1182,10 +1157,9 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         goto cleanup;
 
-    if (hypervGetVSSDFromUUID(priv, uuid_string,
-                              &virtualSystemSettingData) < 0) {
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string,
+                                                      &virtualSystemSettingData) < 0)
         goto cleanup;
-    }
 
     if (hypervGetProcSDByVSSDInstanceId(priv,
                                         virtualSystemSettingData->data.common->InstanceID,
@@ -1397,7 +1371,7 @@ hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
         *autostart = vsgsd->data.common->AutomaticStartupAction == 2;
         result = 0;
     } else {
-        if (hypervGetVSSDFromUUID(priv, uuid_string, &vssd) < 0)
+        if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
             goto cleanup;
 
         *autostart = vssd->data.v2->AutomaticStartupAction == 4;
@@ -1446,7 +1420,7 @@ hypervDomainSetAutostart(virDomainPtr domain, int autostart)
 
     virUUIDFormat(domain->uuid, uuid_string);
 
-    if (hypervGetVSSDFromUUID(priv, uuid_string, &vssd) < 0)
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
         goto cleanup;
 
     params = hypervCreateInvokeParamsList(priv, methodName,
@@ -1721,7 +1695,9 @@ hypervConnectListAllDomains(virConnectPtr conn,
         goto cleanup;
     }
 
-    virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_SELECT "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL);
+    virBufferAddLit(&query,
+                    MSVM_COMPUTERSYSTEM_WQL_SELECT
+                    "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL);
 
     /* construct query with filter depending on flags */
     if (!(MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE) &&
