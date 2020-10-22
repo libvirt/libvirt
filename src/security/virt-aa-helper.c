@@ -1142,7 +1142,7 @@ get_files(vahControl * ctl)
             /* We don't need to add deny rw rules for readonly mounts,
              * this can only lead to troubles when mounting / readonly.
              */
-            if (vah_add_path(&buf, fs->src->path, fs->readonly ? "R" : "rw", true) != 0)
+            if (vah_add_path(&buf, fs->src->path, fs->readonly ? "R" : "rwl", true) != 0)
                 goto cleanup;
         }
     }
