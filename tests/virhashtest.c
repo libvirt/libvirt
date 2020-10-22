@@ -369,13 +369,6 @@ testHashGetItemsCompKey(const virHashKeyValuePair *a,
 }
 
 static int
-testHashGetItemsCompValue(const virHashKeyValuePair *a,
-                          const virHashKeyValuePair *b)
-{
-    return strcmp(a->value, b->value);
-}
-
-static int
 testHashGetItems(const void *data G_GNUC_UNUSED)
 {
     virHashTablePtr hash;
@@ -415,18 +408,6 @@ testHashGetItems(const void *data G_GNUC_UNUSED)
         goto cleanup;
     }
     VIR_FREE(array);
-
-    if (!(array = virHashGetItems(hash, testHashGetItemsCompValue)) ||
-        STRNEQ(array[0].key, "c") ||
-        STRNEQ(array[0].value, "1") ||
-        STRNEQ(array[1].key, "b") ||
-        STRNEQ(array[1].value, "2") ||
-        STRNEQ(array[2].key, "a") ||
-        STRNEQ(array[2].value, "3") ||
-        array[3].key || array[3].value) {
-        VIR_TEST_VERBOSE("\nfailed to get items with value sort");
-        goto cleanup;
-    }
 
     ret = 0;
 
