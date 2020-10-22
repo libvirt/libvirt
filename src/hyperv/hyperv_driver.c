@@ -247,31 +247,6 @@ hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
 
 
 static int
-hypervGetMemSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
-                               Msvm_MemorySettingData **data)
-{
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
-                       "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
-                       "ResultClass = Msvm_MemorySettingData",
-                       id);
-
-    if (hypervGetWmiClass(Msvm_MemorySettingData, data) < 0)
-        return -1;
-
-    if (!*data) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not look up memory setting data with virtual system instance ID '%s'"),
-                       id);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 hypervRequestStateChange(virDomainPtr domain, int state)
 {
     int result = -1;
@@ -1082,11 +1057,10 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
         goto cleanup;
     }
 
-    if (hypervGetMemSDByVSSDInstanceId(priv,
-                                       virtualSystemSettingData->data.common->InstanceID,
-                                       &memorySettingData) < 0) {
+    if (hypervGetMsvmMemorySettingDataFromVSSD(priv,
+                                               virtualSystemSettingData->data.common->InstanceID,
+                                               &memorySettingData) < 0)
         goto cleanup;
-    }
 
     /* Fill struct */
     info->state = hypervMsvmComputerSystemEnabledStateToDomainState(computerSystem);
@@ -1167,11 +1141,10 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    if (hypervGetMemSDByVSSDInstanceId(priv,
-                                       virtualSystemSettingData->data.common->InstanceID,
-                                       &memorySettingData) < 0) {
+    if (hypervGetMsvmMemorySettingDataFromVSSD(priv,
+                                               virtualSystemSettingData->data.common->InstanceID,
+                                               &memorySettingData) < 0)
         goto cleanup;
-    }
 
     /* Fill struct */
     def->virtType = VIR_DOMAIN_VIRT_HYPERV;
