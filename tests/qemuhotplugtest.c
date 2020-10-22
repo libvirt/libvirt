@@ -410,7 +410,7 @@ static struct testQemuHotplugCpuData *
 testQemuHotplugCpuPrepare(const char *test,
                           bool modern,
                           bool fail,
-                          virHashTablePtr qmpschema)
+                          GHashTable *qmpschema)
 {
     qemuDomainObjPrivatePtr priv = NULL;
     virCapsPtr caps = NULL;
@@ -510,7 +510,7 @@ struct testQemuHotplugCpuParams {
     bool state;
     bool modern;
     bool fail;
-    virHashTablePtr schema;
+    GHashTable *schema;
 };
 
 
@@ -594,7 +594,7 @@ testQemuHotplugCpuIndividual(const void *opaque)
 static int
 mymain(void)
 {
-    g_autoptr(virHashTable) qmpschema = NULL;
+    g_autoptr(GHashTable) qmpschema = NULL;
     int ret = 0;
     struct qemuHotplugTestData data = {0};
     struct testQemuHotplugCpuParams cpudata;

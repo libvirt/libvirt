@@ -47,11 +47,11 @@ struct _virDomainObjList {
 
     /* uuid string -> virDomainObj  mapping
      * for O(1), lockless lookup-by-uuid */
-    virHashTable *objs;
+    GHashTable *objs;
 
     /* name -> virDomainObj mapping for O(1),
      * lockless lookup-by-name */
-    virHashTable *objsName;
+    GHashTable *objsName;
 };
 
 

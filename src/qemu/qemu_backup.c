@@ -180,7 +180,7 @@ qemuBackupDiskPrepareOneBitmapsChain(virStorageSourcePtr backingChain,
                                      const char *targetbitmap,
                                      const char *incremental,
                                      virJSONValuePtr actions,
-                                     virHashTablePtr blockNamedNodeData)
+                                     GHashTable *blockNamedNodeData)
 {
     g_autoptr(virJSONValue) tmpactions = NULL;
 
@@ -201,7 +201,7 @@ qemuBackupDiskPrepareOneBitmapsChain(virStorageSourcePtr backingChain,
 static int
 qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
                                 virJSONValuePtr actions,
-                                virHashTablePtr blockNamedNodeData)
+                                GHashTable *blockNamedNodeData)
 {
     if (!qemuBlockBitmapChainIsValid(dd->domdisk->src,
                                      dd->backupdisk->incremental,
@@ -238,7 +238,7 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
                              struct qemuBackupDiskData *dd,
                              virJSONValuePtr actions,
                              bool pull,
-                             virHashTablePtr blockNamedNodeData,
+                             GHashTable *blockNamedNodeData,
                              virQEMUDriverConfigPtr cfg)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -344,7 +344,7 @@ qemuBackupDiskPrepareDataOnePull(virJSONValuePtr actions,
 static ssize_t
 qemuBackupDiskPrepareData(virDomainObjPtr vm,
                           virDomainBackupDefPtr def,
-                          virHashTablePtr blockNamedNodeData,
+                          GHashTable *blockNamedNodeData,
                           virJSONValuePtr actions,
                           virQEMUDriverConfigPtr cfg,
                           struct qemuBackupDiskData **rdd)
@@ -390,7 +390,7 @@ qemuBackupDiskPrepareData(virDomainObjPtr vm,
 
 static int
 qemuBackupDiskPrepareOneStorage(virDomainObjPtr vm,
-                                virHashTablePtr blockNamedNodeData,
+                                GHashTable *blockNamedNodeData,
                                 struct qemuBackupDiskData *dd,
                                 bool reuse_external)
 {
@@ -458,7 +458,7 @@ static int
 qemuBackupDiskPrepareStorage(virDomainObjPtr vm,
                              struct qemuBackupDiskData *disks,
                              size_t ndisks,
-                             virHashTablePtr blockNamedNodeData,
+                             GHashTable *blockNamedNodeData,
                              bool reuse_external)
 {
     size_t i;
@@ -706,7 +706,7 @@ qemuBackupBegin(virDomainObjPtr vm,
     g_autofree char *tlsSecretAlias = NULL;
     struct qemuBackupDiskData *dd = NULL;
     ssize_t ndd = 0;
-    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
     bool job_started = false;
     bool nbd_running = false;
     bool reuse = (flags & VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL);

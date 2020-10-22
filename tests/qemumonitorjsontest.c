@@ -45,7 +45,7 @@ struct _testQemuMonitorJSONSimpleFuncData {
     int (* func) (qemuMonitorPtr mon);
     virDomainXMLOptionPtr xmlopt;
     const char *reply;
-    virHashTablePtr schema;
+    GHashTable *schema;
     bool allowDeprecated;
     bool allowRemoved;
 };
@@ -53,7 +53,7 @@ struct _testQemuMonitorJSONSimpleFuncData {
 typedef struct _testGenericData testGenericData;
 struct _testGenericData {
     virDomainXMLOptionPtr xmlopt;
-    virHashTablePtr schema;
+    GHashTable *schema;
 };
 
 const char *queryBlockReply =
@@ -771,7 +771,7 @@ testQemuMonitorJSONAttachChardev(const void *opaque)
 
 static int
 qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
-                                    virHashTablePtr schema,
+                                    GHashTable *schema,
                                     const char *label,
                                     virDomainChrSourceDefPtr chr,
                                     const char *expectargs,
@@ -818,7 +818,7 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
 
 static int
 qemuMonitorJSONTestAttachChardev(virDomainXMLOptionPtr xmlopt,
-                                 virHashTablePtr schema)
+                                 GHashTable *schema)
 {
     virDomainChrSourceDef chr;
     int ret = 0;
@@ -1642,7 +1642,8 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
     int ret = -1;
-    virHashTablePtr blockDevices = NULL, expectedBlockDevices = NULL;
+    GHashTable *blockDevices = NULL;
+    GHashTable *expectedBlockDevices = NULL;
     struct qemuDomainDiskInfo *info;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -1716,7 +1717,7 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    virHashTablePtr blockstats = NULL;
+    GHashTable *blockstats = NULL;
     qemuBlockStatsPtr stats;
     int ret = -1;
     g_autoptr(qemuMonitorTest) test = NULL;
@@ -2008,7 +2009,8 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *opaque)
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
     int ret = -1;
-    virHashTablePtr info = NULL, expectedInfo = NULL;
+    GHashTable *info = NULL;
+    GHashTable *expectedInfo = NULL;
     qemuMonitorChardevInfo info0 = { NULL, VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT };
     qemuMonitorChardevInfo info1 = { (char *) "/dev/pts/21", VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED };
     qemuMonitorChardevInfo info2 = { (char *) "/dev/pts/20", VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT };
@@ -2404,7 +2406,7 @@ testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *opaqu
 struct testCPUData {
     const char *name;
     virDomainXMLOptionPtr xmlopt;
-    virHashTablePtr schema;
+    GHashTable *schema;
 };
 
 
@@ -2588,7 +2590,7 @@ struct testCPUInfoData {
     size_t maxvcpus;
     virDomainXMLOptionPtr xmlopt;
     bool fast;
-    virHashTablePtr schema;
+    GHashTable *schema;
 };
 
 
@@ -2773,7 +2775,7 @@ testBlockNodeNameDetect(const void *opaque)
     char *actual = NULL;
     virJSONValuePtr namedNodesJson = NULL;
     virJSONValuePtr blockstatsJson = NULL;
-    virHashTablePtr nodedata = NULL;
+    GHashTable *nodedata = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
@@ -2815,7 +2817,7 @@ testBlockNodeNameDetect(const void *opaque)
 
 
 struct testQAPISchemaData {
-    virHashTablePtr schema;
+    GHashTable *schema;
     const char *name;
     const char *query;
     const char *json;
@@ -2895,7 +2897,7 @@ testQAPISchemaValidate(const void *opaque)
 static int
 testQAPISchemaObjectDeviceAdd(const void *opaque)
 {
-    virHashTablePtr schema = (virHashTablePtr) opaque;
+    GHashTable *schema = (GHashTable *) opaque;
     virJSONValuePtr entry;
 
     if (virQEMUQAPISchemaPathGet("device_add/arg-type", schema, &entry) < 0) {

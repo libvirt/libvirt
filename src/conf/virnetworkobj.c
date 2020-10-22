@@ -59,13 +59,13 @@ struct _virNetworkObj {
     /* Immutable pointer, self locking APIs */
     virMacMapPtr macmap;
 
-    virHashTablePtr ports; /* uuid -> virNetworkPortDefPtr */
+    GHashTable *ports; /* uuid -> virNetworkPortDefPtr */
 };
 
 struct _virNetworkObjList {
     virObjectRWLockable parent;
 
-    virHashTablePtr objs;
+    GHashTable *objs;
 };
 
 static virClassPtr virNetworkObjClass;

@@ -43,7 +43,7 @@ VIR_LOG_INIT("util.virmacmap");
 struct virMacMap {
     virObjectLockable parent;
 
-    virHashTablePtr macs;
+    GHashTable *macs;
 };
 
 

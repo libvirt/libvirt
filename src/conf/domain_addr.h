@@ -196,7 +196,7 @@ void virDomainPCIAddressSetAllMulti(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 
 struct _virDomainCCWAddressSet {
-    virHashTablePtr defined;
+    GHashTable *defined;
     virDomainDeviceCCWAddress next;
 };
 typedef struct _virDomainCCWAddressSet virDomainCCWAddressSet;

@@ -22,7 +22,7 @@
 #include "qemu/qemu_qapi.h"
 
 struct testQEMUSchemaValidateCtxt {
-    virHashTablePtr schema;
+    GHashTable *schema;
     virBufferPtr debug;
     bool allowDeprecated;
 };
@@ -533,7 +533,7 @@ testQEMUSchemaValidateRecurse(virJSONValuePtr obj,
 int
 testQEMUSchemaValidate(virJSONValuePtr obj,
                        virJSONValuePtr root,
-                       virHashTablePtr schema,
+                       GHashTable *schema,
                        bool allowDeprecated,
                        virBufferPtr debug)
 {
@@ -568,7 +568,7 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
 int
 testQEMUSchemaValidateCommand(const char *command,
                               virJSONValuePtr arguments,
-                              virHashTablePtr schema,
+                              GHashTable *schema,
                               bool allowDeprecated,
                               bool allowRemoved,
                               virBufferPtr debug)
@@ -783,7 +783,7 @@ testQEMUSchemaGetLatest(const char *arch)
 }
 
 
-virHashTablePtr
+GHashTable *
 testQEMUSchemaLoadLatest(const char *arch)
 {
     virJSONValuePtr schema;
@@ -795,7 +795,7 @@ testQEMUSchemaLoadLatest(const char *arch)
 }
 
 
-virHashTablePtr
+GHashTable *
 testQEMUSchemaLoad(const char *filename)
 {
     virJSONValuePtr schema;

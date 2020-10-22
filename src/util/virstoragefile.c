@@ -4291,7 +4291,7 @@ virStorageFileCanonicalizePath(const char *path,
                                virStorageFileSimplifyPathReadlinkCallback cb,
                                void *cbdata)
 {
-    virHashTablePtr cycle = NULL;
+    GHashTable *cycle = NULL;
     bool beginSlash = false;
     bool beginDoubleSlash = false;
     char **components = NULL;
@@ -5160,7 +5160,7 @@ virStorageFileGetMetadataRecurseReadHeader(virStorageSourcePtr src,
                                            gid_t gid,
                                            char **buf,
                                            size_t *headerLen,
-                                           virHashTablePtr cycle)
+                                           GHashTable *cycle)
 {
     int ret = -1;
     const char *uniqueName;
@@ -5205,7 +5205,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                  virStorageSourcePtr parent,
                                  uid_t uid, gid_t gid,
                                  bool report_broken,
-                                 virHashTablePtr cycle,
+                                 GHashTable *cycle,
                                  unsigned int depth)
 {
     virStorageFileFormat orig_format = src->format;
@@ -5309,7 +5309,7 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
                           uid_t uid, gid_t gid,
                           bool report_broken)
 {
-    virHashTablePtr cycle = NULL;
+    GHashTable *cycle = NULL;
     virStorageType actualType = virStorageSourceGetActualType(src);
     int ret = -1;
 

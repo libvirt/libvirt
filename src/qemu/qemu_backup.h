@@ -59,4 +59,4 @@ qemuBackupDiskPrepareOneBitmapsChain(virStorageSourcePtr backingChain,
                                      const char *targetbitmap,
                                      const char *incremental,
                                      virJSONValuePtr actions,
-                                     virHashTablePtr blockNamedNodeData);
+                                     GHashTable *blockNamedNodeData);

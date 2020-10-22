@@ -296,7 +296,7 @@ struct _virQEMUDriver {
     virHostdevManagerPtr hostdevMgr;
 
     /* Immutable pointer. Unsafe APIs. XXX */
-    virHashTablePtr sharedDevices;
+    GHashTable *sharedDevices;
 
     /* Immutable pointer, immutable object */
     virPortAllocatorRangePtr remotePorts;

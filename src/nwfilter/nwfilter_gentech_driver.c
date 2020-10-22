@@ -127,7 +127,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
 
 
 /**
- * Convert a virHashTable into a string of comma-separated
+ * Convert a GHashTable into a string of comma-separated
  * variable names.
  */
 struct printString
@@ -166,7 +166,7 @@ printString(void *payload G_GNUC_UNUSED, const char *name, void *data)
  * Returns a string of comma separated variable names
  */
 static char *
-virNWFilterPrintVars(virHashTablePtr vars,
+virNWFilterPrintVars(GHashTable *vars,
                      const char *separator,
                      bool reportMAC,
                      bool reportIP)
@@ -195,11 +195,11 @@ virNWFilterPrintVars(virHashTablePtr vars,
  * Creates a new hash table with contents of var1 and var2 added where
  * contents of var2 will overwrite those of var1.
  */
-static virHashTablePtr
-virNWFilterCreateVarsFrom(virHashTablePtr vars1,
-                          virHashTablePtr vars2)
+static GHashTable *
+virNWFilterCreateVarsFrom(GHashTable *vars1,
+                          GHashTable *vars2)
 {
-    virHashTablePtr res = virHashNew(virNWFilterVarValueHashFree);
+    GHashTable *res = virHashNew(virNWFilterVarValueHashFree);
     if (!res)
         return NULL;
 
@@ -248,7 +248,7 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
 static int
 virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
                      virNWFilterDefPtr def,
-                     virHashTablePtr vars,
+                     GHashTable *vars,
                      enum instCase useNewFilter,
                      bool *foundNewFilter,
                      virNWFilterInstPtr inst);
@@ -256,7 +256,7 @@ virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
 static int
 virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
                              virNWFilterRuleDefPtr rule,
-                             virHashTablePtr vars,
+                             GHashTable *vars,
                              virNWFilterInstPtr inst)
 {
     virNWFilterRuleInstPtr ruleinst;
@@ -288,13 +288,13 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
 static int
 virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
                                 virNWFilterIncludeDefPtr inc,
-                                virHashTablePtr vars,
+                                GHashTable *vars,
                                 enum instCase useNewFilter,
                                 bool *foundNewFilter,
                                 virNWFilterInstPtr inst)
 {
     virNWFilterObjPtr obj;
-    virHashTablePtr tmpvars = NULL;
+    GHashTable *tmpvars = NULL;
     virNWFilterDefPtr childdef;
     virNWFilterDefPtr newChilddef;
     int ret = -1;
@@ -369,7 +369,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
 static int
 virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
                      virNWFilterDefPtr def,
-                     virHashTablePtr vars,
+                     GHashTable *vars,
                      enum instCase useNewFilter,
                      bool *foundNewFilter,
                      virNWFilterInstPtr inst)
@@ -404,8 +404,8 @@ virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
 
 static int
 virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
-                                   virHashTablePtr vars,
-                                   virHashTablePtr missing_vars,
+                                   GHashTable *vars,
+                                   GHashTable *missing_vars,
                                    int useNewFilter,
                                    virNWFilterDriverStatePtr driver)
 {
@@ -441,7 +441,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                 }
             }
         } else if (inc) {
-            g_autoptr(virHashTable) tmpvars = NULL;
+            g_autoptr(GHashTable) tmpvars = NULL;
 
             VIR_DEBUG("Following filter %s", inc->filterref);
             if (!(obj = virNWFilterObjListFindInstantiateFilter(driver->nwfilters,
@@ -516,7 +516,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
     const char *learning;
     bool reportIP = false;
 
-    virHashTablePtr missing_vars = virHashNew(virNWFilterVarValueHashFree);
+    GHashTable *missing_vars = virHashNew(virNWFilterVarValueHashFree);
 
     memset(&inst, 0, sizeof(inst));
 
@@ -639,7 +639,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
 
 
 static int
-virNWFilterVarHashmapAddStdValue(virHashTablePtr table,
+virNWFilterVarHashmapAddStdValue(GHashTable *table,
                                  const char *var,
                                  const char *value)
 {
@@ -940,7 +940,7 @@ enum {
 static int
 virNWFilterBuildOne(virNWFilterDriverStatePtr driver,
                     virNWFilterBindingDefPtr binding,
-                    virHashTablePtr skipInterfaces,
+                    GHashTable *skipInterfaces,
                     int step)
 {
     bool skipIface;
@@ -982,7 +982,7 @@ virNWFilterBuildOne(virNWFilterDriverStatePtr driver,
 
 struct virNWFilterBuildData {
     virNWFilterDriverStatePtr driver;
-    virHashTablePtr skipInterfaces;
+    GHashTable *skipInterfaces;
     int step;
 };
 

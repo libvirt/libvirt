@@ -2170,7 +2170,7 @@ qemuProcessMonitorReportLogError(qemuMonitorPtr mon G_GNUC_UNUSED,
 static int
 qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
                       int count,
-                      virHashTablePtr info)
+                      GHashTable *info)
 {
     size_t i;
 
@@ -2209,7 +2209,7 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
 
 static int
 qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
-                                     virHashTablePtr info)
+                                     GHashTable *info)
 {
     size_t i = 0;
 
@@ -2249,7 +2249,7 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
 static void
 qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
-                                     virHashTablePtr info,
+                                     GHashTable *info,
                                      int booted)
 {
     size_t i;
@@ -2291,7 +2291,7 @@ qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
                               qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virHashTablePtr info = NULL;
+    GHashTable *info = NULL;
     int ret = -1;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -2315,7 +2315,7 @@ qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
 
 static int
 qemuProcessRefreshPRManagerState(virDomainObjPtr vm,
-                                 virHashTablePtr info)
+                                 GHashTable *info)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMonitorPRManagerInfoPtr prManagerInfo;
@@ -2343,7 +2343,7 @@ qemuRefreshPRManagerState(virQEMUDriverPtr driver,
                           virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virHashTablePtr info = NULL;
+    GHashTable *info = NULL;
     int ret = -1;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER) ||
@@ -2438,7 +2438,7 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
                           qemuDomainLogContextPtr logCtxt)
 {
     int ret = -1;
-    virHashTablePtr info = NULL;
+    GHashTable *info = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool retry = true;
 
@@ -7966,7 +7966,7 @@ qemuProcessRefreshDisks(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-    virHashTablePtr table = NULL;
+    GHashTable *table = NULL;
     int ret = -1;
     size_t i;
 
@@ -8194,7 +8194,7 @@ static int
 qemuProcessRefreshLegacyBlockjobs(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm)
 {
-    virHashTablePtr blockJobs = NULL;
+    GHashTable *blockJobs = NULL;
     int ret = -1;
 
     qemuDomainObjEnterMonitor(driver, vm);

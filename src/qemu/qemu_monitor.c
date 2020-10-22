@@ -2098,11 +2098,11 @@ qemuDomainDiskInfoFree(void *value)
 }
 
 
-virHashTablePtr
+GHashTable *
 qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
 {
     int ret;
-    virHashTablePtr table;
+    GHashTable *table;
 
     QEMU_CHECK_MONITOR_NULL(mon);
 
@@ -2149,7 +2149,7 @@ qemuMonitorQueryBlockstats(qemuMonitorPtr mon)
  */
 int
 qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
-                                virHashTablePtr *ret_stats,
+                                GHashTable **ret_stats,
                                 bool backingChain)
 {
     int ret = -1;
@@ -2178,7 +2178,7 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
 /* Updates "stats" to fill virtual and physical size of the image */
 int
 qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
-                                    virHashTablePtr stats,
+                                    GHashTable *stats,
                                     bool backingChain)
 {
     VIR_DEBUG("stats=%p, backing=%d", stats, backingChain);
@@ -2191,7 +2191,7 @@ qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
 
 int
 qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
-                                            virHashTablePtr stats)
+                                            GHashTable *stats)
 {
     VIR_DEBUG("stats=%p", stats);
 
@@ -2210,7 +2210,7 @@ qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
  * storage nodes and returns them in a hash table of qemuBlockNamedNodeDataPtrs
  * filled with the data. The hash table keys are node names.
  */
-virHashTablePtr
+GHashTable *
 qemuMonitorBlockGetNamedNodeData(qemuMonitorPtr mon,
                                  bool supports_flat)
 {
@@ -2889,10 +2889,10 @@ qemuMonitorChardevInfoFree(void *data)
 
 int
 qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
-                          virHashTablePtr *retinfo)
+                          GHashTable **retinfo)
 {
     int ret;
-    virHashTablePtr info = NULL;
+    GHashTable *info = NULL;
 
     VIR_DEBUG("retinfo=%p", retinfo);
 
@@ -3412,7 +3412,7 @@ qemuMonitorBlockJobSetSpeed(qemuMonitorPtr mon,
 }
 
 
-virHashTablePtr
+GHashTable *
 qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon,
                               bool rawjobname)
 {
@@ -3431,7 +3431,7 @@ qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
                            const char *alias,
                            qemuMonitorBlockJobInfoPtr info)
 {
-    virHashTablePtr all;
+    GHashTable *all;
     qemuMonitorBlockJobInfoPtr data;
     int ret = 0;
 
@@ -3898,7 +3898,7 @@ qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
 }
 
 
-virHashTablePtr
+GHashTable *
 qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
                           const char *device)
 {
@@ -4299,7 +4299,7 @@ qemuMonitorSetIOThread(qemuMonitorPtr mon,
  */
 int
 qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
-                               virHashTablePtr *info)
+                               GHashTable **info)
 {
     int ret;
 
@@ -4604,10 +4604,10 @@ qemuMonitorGetSEVMeasurement(qemuMonitorPtr mon)
 
 int
 qemuMonitorGetPRManagerInfo(qemuMonitorPtr mon,
-                            virHashTablePtr *retinfo)
+                            GHashTable **retinfo)
 {
     int ret = -1;
-    virHashTablePtr info = NULL;
+    GHashTable *info = NULL;
 
     *retinfo = NULL;
 

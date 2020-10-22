@@ -102,7 +102,7 @@ typedef struct _hypervEprParam hypervEprParam;
 
 struct _hypervEmbeddedParam {
     const char *name;
-    virHashTablePtr table;
+    GHashTable *table;
     hypervWmiClassInfoPtr info; /* info of the object this param represents */
 };
 typedef struct _hypervEmbeddedParam hypervEmbeddedParam;
@@ -146,20 +146,20 @@ int hypervAddEprParam(hypervInvokeParamsListPtr params, const char *name,
                       hypervPrivate *priv, virBufferPtr query,
                       hypervWmiClassInfoListPtr eprInfo);
 
-virHashTablePtr hypervCreateEmbeddedParam(hypervPrivate *priv,
-                                          hypervWmiClassInfoListPtr info);
+GHashTable *hypervCreateEmbeddedParam(hypervPrivate *priv,
+                                      hypervWmiClassInfoListPtr info);
 
-int hypervSetEmbeddedProperty(virHashTablePtr table,
+int hypervSetEmbeddedProperty(GHashTable *table,
                               const char *name,
                               const char *value);
 
 int hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
                            hypervPrivate *priv,
                            const char *name,
-                           virHashTablePtr *table,
+                           GHashTable **table,
                            hypervWmiClassInfoListPtr info);
 
-void hypervFreeEmbeddedParam(virHashTablePtr p);
+void hypervFreeEmbeddedParam(GHashTable *p);
 
 int hypervInvokeMethod(hypervPrivate *priv,
                        hypervInvokeParamsListPtr *paramsPtr,

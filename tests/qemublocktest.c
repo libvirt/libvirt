@@ -43,7 +43,7 @@ struct testBackingXMLjsonXMLdata {
     int type;
     const char *xml;
     bool legacy;
-    virHashTablePtr schema;
+    GHashTable *schema;
     virJSONValuePtr schemaroot;
 };
 
@@ -133,7 +133,7 @@ static const char *testJSONtoJSONPath = abs_srcdir "/qemublocktestdata/jsontojso
 
 struct testJSONtoJSONData {
     const char *name;
-    virHashTablePtr schema;
+    GHashTable *schema;
     virJSONValuePtr schemaroot;
 };
 
@@ -192,7 +192,7 @@ struct testQemuDiskXMLToJSONImageData {
 
 struct testQemuDiskXMLToJSONData {
     virQEMUDriverPtr driver;
-    virHashTablePtr schema;
+    GHashTable *schema;
     virJSONValuePtr schemaroot;
     const char *name;
     bool fail;
@@ -459,7 +459,7 @@ testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
 struct testQemuImageCreateData {
     const char *name;
     const char *backingname;
-    virHashTablePtr schema;
+    GHashTable *schema;
     virJSONValuePtr schemaroot;
     virQEMUDriverPtr driver;
     virQEMUCapsPtr qemuCaps;
@@ -586,7 +586,7 @@ testQemuImageCreate(const void *opaque)
 static const char *bitmapDetectPrefix = "qemublocktestdata/bitmap/";
 
 static void
-testQemuDetectBitmapsWorker(virHashTablePtr nodedata,
+testQemuDetectBitmapsWorker(GHashTable *nodedata,
                             const char *nodename,
                             virBufferPtr buf)
 {
@@ -617,7 +617,7 @@ testQemuDetectBitmaps(const void *opaque)
 {
     const char *name = opaque;
     g_autoptr(virJSONValue) nodedatajson = NULL;
-    g_autoptr(virHashTable) nodedata = NULL;
+    g_autoptr(GHashTable) nodedata = NULL;
     g_autofree char *actual = NULL;
     g_autofree char *expectpath = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -729,7 +729,7 @@ testQemuBackupIncrementalBitmapCalculate(const void *opaque)
 {
     const struct testQemuBackupIncrementalBitmapCalculateData *data = opaque;
     g_autoptr(virJSONValue) nodedatajson = NULL;
-    g_autoptr(virHashTable) nodedata = NULL;
+    g_autoptr(GHashTable) nodedata = NULL;
     g_autoptr(virJSONValue) actions = virJSONValueNewArray();
     g_autofree char *expectpath = NULL;
     g_autoptr(virStorageSource) target = NULL;
@@ -784,7 +784,7 @@ testQemuCheckpointDelete(const void *opaque)
     g_autofree char *expectpath = NULL;
     g_autoptr(virJSONValue) actions = NULL;
     g_autoptr(virJSONValue) nodedatajson = NULL;
-    g_autoptr(virHashTable) nodedata = NULL;
+    g_autoptr(GHashTable) nodedata = NULL;
     g_autoptr(GSList) reopenimages = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -834,7 +834,7 @@ testQemuBlockBitmapValidate(const void *opaque)
 {
     const struct testQemuBlockBitmapValidateData *data = opaque;
     g_autoptr(virJSONValue) nodedatajson = NULL;
-    g_autoptr(virHashTable) nodedata = NULL;
+    g_autoptr(GHashTable) nodedata = NULL;
     bool actual;
 
     if (!(nodedatajson = virTestLoadFileJSON(bitmapDetectPrefix, data->name,
@@ -875,7 +875,7 @@ testQemuBlockBitmapBlockcopy(const void *opaque)
     g_autofree char *expectpath = NULL;
     g_autoptr(virJSONValue) actions = NULL;
     g_autoptr(virJSONValue) nodedatajson = NULL;
-    g_autoptr(virHashTable) nodedata = NULL;
+    g_autoptr(GHashTable) nodedata = NULL;
     g_autoptr(virStorageSource) fakemirror = virStorageSourceNew();
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -927,7 +927,7 @@ testQemuBlockBitmapBlockcommit(const void *opaque)
     g_autofree char *expectpath = NULL;
     g_autoptr(virJSONValue) actionsMerge = NULL;
     g_autoptr(virJSONValue) nodedatajson = NULL;
-    g_autoptr(virHashTable) nodedata = NULL;
+    g_autoptr(GHashTable) nodedata = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool active = data->top == data->chain;
 
@@ -975,7 +975,7 @@ mymain(void)
     struct testQemuBlockBitmapBlockcommitData blockbitmapblockcommitdata;
     char *capslatest_x86_64 = NULL;
     g_autoptr(virQEMUCaps) caps_x86_64 = NULL;
-    g_autoptr(virHashTable) qmp_schema_x86_64 = NULL;
+    g_autoptr(GHashTable) qmp_schema_x86_64 = NULL;
     virJSONValuePtr qmp_schemaroot_x86_64_blockdev_add = NULL;
     g_autoptr(virStorageSource) bitmapSourceChain = NULL;
 

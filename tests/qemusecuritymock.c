@@ -74,17 +74,17 @@ virMutex m = VIR_MUTEX_INITIALIZER;
  * "$path:$name" and value is just XATTR "$value". We don't need
  * to list XATTRs a path has, therefore we don't need something
  * more clever. */
-virHashTablePtr xattr_paths = NULL;
+GHashTable *xattr_paths = NULL;
 
 
 /* The UID:GID is stored in a hash table. Again, for simplicity,
  * the path is the key and the value is an uint32_t , where
  * the lower half is UID and the higher is GID. */
-virHashTablePtr chown_paths = NULL;
+GHashTable *chown_paths = NULL;
 
 /* The SELinux label is stored in a hash table. For simplicity,
  * the path is the key and the value is the label. */
-virHashTablePtr selinux_paths = NULL;
+GHashTable *selinux_paths = NULL;
 
 
 static void

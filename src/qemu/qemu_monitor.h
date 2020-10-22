@@ -673,7 +673,7 @@ int qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
                                     int period);
 
 int qemuMonitorBlockIOStatusToError(const char *status);
-virHashTablePtr qemuMonitorGetBlockInfo(qemuMonitorPtr mon);
+GHashTable *qemuMonitorGetBlockInfo(qemuMonitorPtr mon);
 
 virJSONValuePtr qemuMonitorQueryBlockstats(qemuMonitorPtr mon);
 
@@ -701,17 +701,17 @@ struct _qemuBlockStats {
 };
 
 int qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
-                                    virHashTablePtr *ret_stats,
+                                    GHashTable **ret_stats,
                                     bool backingChain)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
-                                        virHashTablePtr stats,
+                                        GHashTable *stats,
                                         bool backingChain)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
-                                                virHashTablePtr stats)
+                                                GHashTable *stats)
     ATTRIBUTE_NONNULL(2);
 
 typedef struct _qemuBlockNamedNodeDataBitmap qemuBlockNamedNodeDataBitmap;
@@ -740,7 +740,7 @@ struct _qemuBlockNamedNodeData {
     unsigned long long clusterSize;
 };
 
-virHashTablePtr
+GHashTable *
 qemuMonitorBlockGetNamedNodeData(qemuMonitorPtr mon,
                                  bool supports_flat);
 
@@ -990,7 +990,7 @@ struct _qemuMonitorChardevInfo {
 };
 void qemuMonitorChardevInfoFree(void *data);
 int qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
-                              virHashTablePtr *retinfo);
+                              GHashTable **retinfo);
 
 int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
                                        const char *bus,
@@ -1126,7 +1126,7 @@ struct _qemuMonitorBlockJobInfo {
     int ready; /* -1 if unknown, 0 if not ready, 1 if ready */
 };
 
-virHashTablePtr qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon,
+GHashTable *qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon,
                                               bool rawjobname);
 int qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
                                const char *device,
@@ -1295,7 +1295,7 @@ int qemuMonitorGetKVMState(qemuMonitorPtr mon,
 
 int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
                               char ***types);
-virHashTablePtr qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
+GHashTable *qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
                                           const char *device);
 int qemuMonitorGetObjectProps(qemuMonitorPtr mon,
                               const char *object,
@@ -1389,7 +1389,7 @@ struct _qemuMonitorMemoryDeviceInfo {
 };
 
 int qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
-                                   virHashTablePtr *info)
+                                   GHashTable **info)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorMigrateIncoming(qemuMonitorPtr mon,
@@ -1451,7 +1451,7 @@ struct _qemuMonitorPRManagerInfo {
 };
 
 int qemuMonitorGetPRManagerInfo(qemuMonitorPtr mon,
-                                virHashTablePtr *retinfo);
+                                GHashTable **retinfo);
 
 typedef struct  _qemuMonitorCurrentMachineInfo qemuMonitorCurrentMachineInfo;
 typedef qemuMonitorCurrentMachineInfo *qemuMonitorCurrentMachineInfoPtr;

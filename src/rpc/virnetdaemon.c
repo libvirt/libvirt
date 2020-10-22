@@ -66,7 +66,7 @@ struct _virNetDaemon {
     int sigwatch;
 #endif /* !WIN32 */
 
-    virHashTablePtr servers;
+    GHashTable *servers;
     virJSONValuePtr srvObject;
 
     virNetDaemonShutdownCallback shutdownPrepareCb;

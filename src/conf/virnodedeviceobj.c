@@ -46,7 +46,7 @@ struct _virNodeDeviceObjList {
 
     /* name string -> virNodeDeviceObj mapping
      * for O(1), lockless lookup-by-name */
-    virHashTable *objs;
+    GHashTable *objs;
 
 };
 

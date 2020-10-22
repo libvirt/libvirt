@@ -86,7 +86,7 @@ qemuMonitorTestPtr qemuMonitorTestNew(virDomainXMLOptionPtr xmlopt,
                                       virDomainObjPtr vm,
                                       virQEMUDriverPtr driver,
                                       const char *greeting,
-                                      virHashTablePtr schema);
+                                      GHashTable *schema);
 
 qemuMonitorTestPtr qemuMonitorTestNewFromFile(const char *fileName,
                                               virDomainXMLOptionPtr xmlopt,
@@ -94,7 +94,7 @@ qemuMonitorTestPtr qemuMonitorTestNewFromFile(const char *fileName,
 qemuMonitorTestPtr qemuMonitorTestNewFromFileFull(const char *fileName,
                                                   virQEMUDriverPtr driver,
                                                   virDomainObjPtr vm,
-                                                  virHashTablePtr qmpschema);
+                                                  GHashTable *qmpschema);
 
 qemuMonitorTestPtr qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt);
 

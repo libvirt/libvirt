@@ -112,10 +112,10 @@ struct ether_vlan_header
 
 
 static virMutex pendingLearnReqLock = VIR_MUTEX_INITIALIZER;
-static virHashTablePtr pendingLearnReq;
+static GHashTable *pendingLearnReq;
 
 static virMutex ifaceMapLock = VIR_MUTEX_INITIALIZER;
-static virHashTablePtr ifaceLockMap;
+static GHashTable *ifaceLockMap;
 
 typedef struct _virNWFilterIfaceLock virNWFilterIfaceLock;
 typedef virNWFilterIfaceLock *virNWFilterIfaceLockPtr;

@@ -558,7 +558,7 @@ testQemuGetLatestCapsForArch(const char *arch,
 }
 
 
-virHashTablePtr
+GHashTable *
 testQemuGetLatestCaps(void)
 {
     const char *archs[] = {
@@ -568,7 +568,7 @@ testQemuGetLatestCaps(void)
         "s390x",
         "x86_64",
     };
-    virHashTablePtr capslatest;
+    GHashTable *capslatest;
     size_t i;
 
     if (!(capslatest = virHashNew(g_free)))
@@ -664,7 +664,7 @@ testQemuCapsIterate(const char *suffix,
 
 int
 testQemuInfoSetArgs(struct testQemuInfo *info,
-                    virHashTablePtr capslatest, ...)
+                    GHashTable *capslatest, ...)
 {
     va_list argptr;
     testQemuInfoArgName argname;

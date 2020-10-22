@@ -84,7 +84,7 @@ struct _qemuMonitorTest {
     qemuMonitorTestItemPtr *items;
 
     virDomainObjPtr vm;
-    virHashTablePtr qapischema;
+    GHashTable *qapischema;
 };
 
 
@@ -1141,7 +1141,7 @@ qemuMonitorTestNew(virDomainXMLOptionPtr xmlopt,
                    virDomainObjPtr vm,
                    virQEMUDriverPtr driver,
                    const char *greeting,
-                   virHashTablePtr schema)
+                   GHashTable *schema)
 {
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
@@ -1341,7 +1341,7 @@ qemuMonitorTestPtr
 qemuMonitorTestNewFromFileFull(const char *fileName,
                                virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virHashTablePtr qmpschema)
+                               GHashTable *qmpschema)
 {
     qemuMonitorTestPtr ret = NULL;
     g_autofree char *jsonstr = NULL;

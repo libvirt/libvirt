@@ -69,15 +69,15 @@ struct _virStorageVolObjList {
 
     /* key string -> virStorageVolObj mapping
      * for (1), lockless lookup-by-key */
-    virHashTable *objsKey;
+    GHashTable *objsKey;
 
     /* name string -> virStorageVolObj mapping
      * for (1), lockless lookup-by-name */
-    virHashTable *objsName;
+    GHashTable *objsName;
 
     /* path string -> virStorageVolObj mapping
      * for (1), lockless lookup-by-path */
-    virHashTable *objsPath;
+    GHashTable *objsPath;
 };
 
 struct _virStoragePoolObj {
@@ -101,11 +101,11 @@ struct _virStoragePoolObjList {
 
     /* uuid string -> virStoragePoolObj mapping
      * for (1), lockless lookup-by-uuid */
-    virHashTable *objs;
+    GHashTable *objs;
 
     /* name string -> virStoragePoolObj mapping
      * for (1), lockless lookup-by-name */
-    virHashTable *objsName;
+    GHashTable *objsName;
 };
 
 

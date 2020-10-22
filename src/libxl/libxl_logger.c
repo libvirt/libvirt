@@ -42,7 +42,7 @@ struct xentoollog_logger_libvirt {
     const char *logDir;
 
     /* map storing the opened fds: "domid" -> FILE* */
-    virHashTablePtr files;
+    GHashTable *files;
     FILE *defaultLogFile;
 };
 

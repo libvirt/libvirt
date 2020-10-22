@@ -47,7 +47,7 @@ VIR_LOG_INIT("util.filecache");
 struct _virFileCache {
     virObjectLockable parent;
 
-    virHashTablePtr table;
+    GHashTable *table;
 
     char *dir;
     char *suffix;

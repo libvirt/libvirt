@@ -33,7 +33,7 @@ VIR_LOG_INIT("util.hash");
 
 struct _virHashAtomic {
     virObjectLockable parent;
-    virHashTablePtr hash;
+    GHashTable *hash;
 };
 
 static virClassPtr virHashAtomicClass;
@@ -78,11 +78,11 @@ virHashTableStringKey(const void *vkey)
  * virHashNew:
  * @dataFree: callback to free data
  *
- * Create a new virHashTablePtr.
+ * Create a new GHashTable *.
  *
  * Returns the newly created object.
  */
-virHashTablePtr
+GHashTable *
 virHashNew(virHashDataFree dataFree)
 {
     ignore_value(virHashTableSeedInitialize());
@@ -127,7 +127,7 @@ virHashAtomicDispose(void *obj)
  * deallocated with function provided at creation time.
  */
 void
-virHashFree(virHashTablePtr table)
+virHashFree(GHashTable *table)
 {
     if (table == NULL)
         return;
@@ -148,7 +148,7 @@ virHashFree(virHashTablePtr table)
  * Returns 0 the addition succeeded and -1 in case of error.
  */
 int
-virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
+virHashAddEntry(GHashTable *table, const char *name, void *userdata)
 {
     if (!table || !name)
         return -1;
@@ -177,7 +177,7 @@ virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
  * Returns 0 the addition succeeded and -1 in case of error.
  */
 int
-virHashUpdateEntry(virHashTablePtr table, const char *name,
+virHashUpdateEntry(GHashTable *table, const char *name,
                    void *userdata)
 {
     if (!table || !name)
@@ -213,7 +213,7 @@ virHashAtomicUpdate(virHashAtomicPtr table,
  * Returns a pointer to the userdata
  */
 void *
-virHashLookup(virHashTablePtr table,
+virHashLookup(GHashTable *table,
               const char *name)
 {
     if (!table || !name)
@@ -233,7 +233,7 @@ virHashLookup(virHashTablePtr table,
  * Returns true if the entry exists and false otherwise
  */
 bool
-virHashHasEntry(virHashTablePtr table,
+virHashHasEntry(GHashTable *table,
                 const char *name)
 {
     if (!table || !name)
@@ -253,7 +253,7 @@ virHashHasEntry(virHashTablePtr table,
  *
  * Returns a pointer to the userdata
  */
-void *virHashSteal(virHashTablePtr table, const char *name)
+void *virHashSteal(GHashTable *table, const char *name)
 {
     g_autofree void *orig_name = NULL;
     void *val = NULL;
@@ -294,7 +294,7 @@ virHashAtomicSteal(virHashAtomicPtr table,
  * -1 in case of error
  */
 ssize_t
-virHashSize(virHashTablePtr table)
+virHashSize(GHashTable *table)
 {
     if (table == NULL)
         return -1;
@@ -315,7 +315,7 @@ virHashSize(virHashTablePtr table)
  * Returns 0 if the removal succeeded and -1 in case of error or not found.
  */
 int
-virHashRemoveEntry(virHashTablePtr table,
+virHashRemoveEntry(GHashTable *table,
                    const char *name)
 {
     if (!table || !name)
@@ -356,7 +356,7 @@ virHashRemoveEntry(virHashTablePtr table,
  * Returns 0 on success or -1 on failure.
  */
 int
-virHashForEach(virHashTablePtr table, virHashIterator iter, void *opaque)
+virHashForEach(GHashTable *table, virHashIterator iter, void *opaque)
 {
     GHashTableIter htitr;
     void *key;
@@ -377,7 +377,7 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *opaque)
 
 
 int
-virHashForEachSafe(virHashTablePtr table,
+virHashForEachSafe(GHashTable *table,
                    virHashIterator iter,
                    void *opaque)
 {
@@ -397,7 +397,7 @@ virHashForEachSafe(virHashTablePtr table,
 
 
 int
-virHashForEachSorted(virHashTablePtr table,
+virHashForEachSorted(GHashTable *table,
                      virHashIterator iter,
                      void *opaque)
 {
@@ -448,7 +448,7 @@ virHashSearcherWrapFunc(gpointer key,
  * Returns number of items removed on success, -1 on failure
  */
 ssize_t
-virHashRemoveSet(virHashTablePtr table,
+virHashRemoveSet(GHashTable *table,
                  virHashSearcher iter,
                  const void *opaque)
 {
@@ -468,7 +468,7 @@ virHashRemoveSet(virHashTablePtr table,
  * deallocated with the function provided at creation time.
  */
 void
-virHashRemoveAll(virHashTablePtr table)
+virHashRemoveAll(GHashTable *table)
 {
     if (!table)
         return;
@@ -489,7 +489,7 @@ virHashRemoveAll(virHashTablePtr table)
  * The elements are processed in a undefined order. Caller is
  * responsible for freeing the @name.
  */
-void *virHashSearch(virHashTablePtr table,
+void *virHashSearch(GHashTable *table,
                     virHashSearcher iter,
                     const void *opaque,
                     char **name)
@@ -522,7 +522,7 @@ virHashGetItemsKeySorter(const void *va,
 
 
 virHashKeyValuePairPtr
-virHashGetItems(virHashTablePtr table,
+virHashGetItems(GHashTable *table,
                 size_t *nitems,
                 bool sortKeys)
 {
@@ -560,7 +560,7 @@ virHashGetItems(virHashTablePtr table,
 struct virHashEqualData
 {
     bool equal;
-    virHashTablePtr table2;
+    GHashTable *table2;
     virHashValueComparator compar;
 };
 
@@ -581,8 +581,8 @@ static int virHashEqualSearcher(const void *payload, const char *name,
     return 0;
 }
 
-bool virHashEqual(virHashTablePtr table1,
-                  virHashTablePtr table2,
+bool virHashEqual(GHashTable *table1,
+                  GHashTable *table2,
                   virHashValueComparator compar)
 {
     struct virHashEqualData data = {

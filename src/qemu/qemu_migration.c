@@ -5796,7 +5796,7 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriverPtr driver,
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool nbd = false;
-    virHashTablePtr blockinfo = NULL;
+    GHashTable *blockinfo = NULL;
     qemuDomainMirrorStatsPtr stats = &jobInfo->mirrorStats;
 
     for (i = 0; i < vm->def->ndisks; i++) {

@@ -55,7 +55,7 @@ struct _virSecretObjList {
 
     /* uuid string -> virSecretObj  mapping
      * for O(1), lockless lookup-by-uuid */
-    virHashTable *objs;
+    GHashTable *objs;
 };
 
 struct virSecretSearchData {

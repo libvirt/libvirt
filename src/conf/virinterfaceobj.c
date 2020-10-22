@@ -45,7 +45,7 @@ struct _virInterfaceObjList {
 
     /* name string -> virInterfaceObj  mapping
      * for O(1), lockless lookup-by-name */
-    virHashTable *objsName;
+    GHashTable *objsName;
 };
 
 /* virInterfaceObj manipulation */

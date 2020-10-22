@@ -40,7 +40,7 @@ struct _virCloseCallbacks {
     virObjectLockable parent;
 
     /* UUID string to qemuDriverCloseDef mapping */
-    virHashTablePtr list;
+    GHashTable *list;
 };
 
 

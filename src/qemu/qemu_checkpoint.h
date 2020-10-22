@@ -74,7 +74,7 @@ qemuCheckpointRollbackMetadata(virDomainObjPtr vm,
 
 int
 qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
-                                 virHashTablePtr blockNamedNodeData,
+                                 GHashTable *blockNamedNodeData,
                                  const char *delbitmap,
                                  virJSONValuePtr actions,
                                  const char *diskdst,

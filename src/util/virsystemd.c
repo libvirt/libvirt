@@ -45,7 +45,7 @@ VIR_LOG_INIT("util.systemd");
 #endif
 
 struct _virSystemdActivation {
-    virHashTablePtr fds;
+    GHashTable *fds;
 };
 
 typedef struct _virSystemdActivationEntry virSystemdActivationEntry;

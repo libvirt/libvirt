@@ -58,7 +58,7 @@ struct _virLockSpace {
     char *dir;
     virMutex lock;
 
-    virHashTablePtr resources;
+    GHashTable *resources;
 };
 
 

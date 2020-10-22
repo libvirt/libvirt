@@ -78,10 +78,10 @@ struct virNWFilterSnoopState {
     int                  wLeases; /* number of written leases */
     int                  nThreads; /* number of running threads */
     /* thread management */
-    virHashTablePtr      snoopReqs;
-    virHashTablePtr      ifnameToKey;
+    GHashTable *     snoopReqs;
+    GHashTable *     ifnameToKey;
     virMutex             snoopLock;  /* protects SnoopReqs and IfNameToKey */
-    virHashTablePtr      active;
+    GHashTable *     active;
     virMutex             activeLock; /* protects Active */
 };
 

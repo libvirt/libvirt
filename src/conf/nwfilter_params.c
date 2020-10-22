@@ -330,7 +330,7 @@ virNWFilterVarCombIterEntryInit(virNWFilterVarCombIterEntryPtr cie,
 
 static int
 virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
-                                  virHashTablePtr hash,
+                                  GHashTable *hash,
                                   const virNWFilterVarAccess *varAccess)
 {
     virNWFilterVarValuePtr varValue;
@@ -397,7 +397,7 @@ virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
  */
 static bool
 virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
-                                            virHashTablePtr hash)
+                                            GHashTable *hash)
 {
     size_t i, j;
     virNWFilterVarValuePtr varValue, tmp;
@@ -455,7 +455,7 @@ virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
  * be created.
  */
 virNWFilterVarCombIterPtr
-virNWFilterVarCombIterCreate(virHashTablePtr hash,
+virNWFilterVarCombIterCreate(GHashTable *hash,
                              virNWFilterVarAccessPtr *varAccess,
                              size_t nVarAccess)
 {
@@ -614,7 +614,7 @@ virNWFilterVarValueHashFree(void *payload)
 
 
 struct addToTableStruct {
-    virHashTablePtr target;
+    GHashTable *target;
     int errOccurred;
 };
 
@@ -644,8 +644,8 @@ addToTable(void *payload, const char *name, void *data)
 
 
 int
-virNWFilterHashTablePutAll(virHashTablePtr src,
-                           virHashTablePtr dest)
+virNWFilterHashTablePutAll(GHashTable *src,
+                           GHashTable *dest)
 {
     struct addToTableStruct atts = {
         .target = dest,
@@ -671,8 +671,8 @@ virNWFilterVarValueCompare(const void *a, const void *b)
 }
 
 bool
-virNWFilterHashTableEqual(virHashTablePtr a,
-                          virHashTablePtr b)
+virNWFilterHashTableEqual(GHashTable *a,
+                          GHashTable *b)
 {
     return virHashEqual(a, b, virNWFilterVarValueCompare);
 }
@@ -696,13 +696,13 @@ virNWFilterParseVarValue(const char *val)
     return virNWFilterVarValueCreateSimpleCopyValue(val);
 }
 
-virHashTablePtr
+GHashTable *
 virNWFilterParseParamAttributes(xmlNodePtr cur)
 {
     char *nam, *val;
     virNWFilterVarValuePtr value;
 
-    virHashTablePtr table = virHashNew(virNWFilterVarValueHashFree);
+    GHashTable *table = virHashNew(virNWFilterVarValueHashFree);
     if (!table)
         return NULL;
 
@@ -757,7 +757,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
 
 int
 virNWFilterFormatParamAttributes(virBufferPtr buf,
-                                 virHashTablePtr table,
+                                 GHashTable *table,
                                  const char *filterref)
 {
     virHashKeyValuePairPtr items;
@@ -983,7 +983,7 @@ virNWFilterVarAccessGetIntIterId(const virNWFilterVarAccess *vap)
 
 bool
 virNWFilterVarAccessIsAvailable(const virNWFilterVarAccess *varAccess,
-                                virHashTablePtr hash)
+                                GHashTable *hash)
 {
     const char *varName = virNWFilterVarAccessGetVarName(varAccess);
     const char *res;

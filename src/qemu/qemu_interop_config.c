@@ -35,7 +35,7 @@
 VIR_LOG_INIT("qemu.qemu_configs");
 
 static int
-qemuBuildFileList(virHashTablePtr files, const char *dir)
+qemuBuildFileList(GHashTable *files, const char *dir)
 {
     g_autoptr(DIR) dirp = NULL;
     struct dirent *ent = NULL;
@@ -87,7 +87,7 @@ qemuInteropFetchConfigs(const char *name,
                         char ***configs,
                         bool privileged)
 {
-    g_autoptr(virHashTable) files = NULL;
+    g_autoptr(GHashTable) files = NULL;
     g_autofree char *homeConfig = NULL;
     g_autofree char *xdgConfig = NULL;
     g_autofree char *sysLocation = virFileBuildPath(QEMU_SYSTEM_LOCATION, name, NULL);

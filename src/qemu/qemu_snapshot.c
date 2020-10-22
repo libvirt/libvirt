@@ -901,7 +901,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuSnapshotDiskContext, qemuSnapshotDiskContextCl
 static int
 qemuSnapshotDiskBitmapsPropagate(qemuSnapshotDiskDataPtr dd,
                                  virJSONValuePtr actions,
-                                 virHashTablePtr blockNamedNodeData)
+                                 GHashTable *blockNamedNodeData)
 {
     qemuBlockNamedNodeDataPtr entry;
     size_t i;
@@ -932,7 +932,7 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriverPtr driver,
                                    qemuSnapshotDiskDataPtr dd,
                                    virQEMUDriverConfigPtr cfg,
                                    bool reuse,
-                                   virHashTablePtr blockNamedNodeData,
+                                   GHashTable *blockNamedNodeData,
                                    qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -983,7 +983,7 @@ qemuSnapshotDiskPrepareOne(virDomainObjPtr vm,
                            virDomainDiskDefPtr disk,
                            virDomainSnapshotDiskDefPtr snapdisk,
                            qemuSnapshotDiskDataPtr dd,
-                           virHashTablePtr blockNamedNodeData,
+                           GHashTable *blockNamedNodeData,
                            bool reuse,
                            bool updateConfig,
                            qemuDomainAsyncJob asyncJob,
@@ -1099,7 +1099,7 @@ qemuSnapshotDiskPrepareActiveExternal(virDomainObjPtr vm,
                                       virDomainMomentObjPtr snap,
                                       virQEMUDriverConfigPtr cfg,
                                       bool reuse,
-                                      virHashTablePtr blockNamedNodeData,
+                                      GHashTable *blockNamedNodeData,
                                       qemuDomainAsyncJob asyncJob)
 {
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
@@ -1130,7 +1130,7 @@ qemuSnapshotDiskPrepareActiveExternal(virDomainObjPtr vm,
 static qemuSnapshotDiskContextPtr
 qemuSnapshotDiskPrepareDisksTransient(virDomainObjPtr vm,
                                       virQEMUDriverConfigPtr cfg,
-                                      virHashTablePtr blockNamedNodeData,
+                                      GHashTable *blockNamedNodeData,
                                       qemuDomainAsyncJob asyncJob)
 {
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
@@ -1279,7 +1279,7 @@ qemuSnapshotDiskCreate(qemuSnapshotDiskContextPtr snapctxt,
 static int
 qemuSnapshotCreateActiveExternalDisks(virDomainObjPtr vm,
                                       virDomainMomentObjPtr snap,
-                                      virHashTablePtr blockNamedNodeData,
+                                      GHashTable *blockNamedNodeData,
                                       unsigned int flags,
                                       virQEMUDriverConfigPtr cfg,
                                       qemuDomainAsyncJob asyncJob)
@@ -1320,7 +1320,7 @@ qemuSnapshotCreateDisksTransient(virDomainObjPtr vm,
     virQEMUDriverPtr driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
-    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
@@ -1362,7 +1362,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     int compressed;
     g_autoptr(virCommand) compressor = NULL;
     virQEMUSaveDataPtr data = NULL;
-    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
 
     /* If quiesce was requested, then issue a freeze command, and a
      * counterpart thaw command when it is actually sent to agent.

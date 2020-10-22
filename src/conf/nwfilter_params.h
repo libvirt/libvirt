@@ -63,15 +63,15 @@ int virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value);
 int virNWFilterVarValueAddValueCopy(virNWFilterVarValuePtr val, const char *value);
 int virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value);
 
-virHashTablePtr virNWFilterParseParamAttributes(xmlNodePtr cur);
+GHashTable *virNWFilterParseParamAttributes(xmlNodePtr cur);
 int virNWFilterFormatParamAttributes(virBufferPtr buf,
-                                     virHashTablePtr table,
+                                     GHashTable *table,
                                      const char *filterref);
 
-int virNWFilterHashTablePutAll(virHashTablePtr src,
-                               virHashTablePtr dest);
-bool virNWFilterHashTableEqual(virHashTablePtr a,
-                               virHashTablePtr b);
+int virNWFilterHashTablePutAll(GHashTable *src,
+                               GHashTable *dest);
+bool virNWFilterHashTableEqual(GHashTable *a,
+                               GHashTable *b);
 
 #define VALID_VARNAME \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
@@ -119,7 +119,7 @@ virNWFilterVarAccessType virNWFilterVarAccessGetType(
 unsigned int virNWFilterVarAccessGetIterId(const virNWFilterVarAccess *vap);
 unsigned int virNWFilterVarAccessGetIndex(const virNWFilterVarAccess *vap);
 bool virNWFilterVarAccessIsAvailable(const virNWFilterVarAccess *vap,
-                                     virHashTablePtr hash);
+                                     GHashTable *hash);
 
 typedef struct _virNWFilterVarCombIterEntry virNWFilterVarCombIterEntry;
 typedef virNWFilterVarCombIterEntry *virNWFilterVarCombIterEntryPtr;
@@ -135,12 +135,12 @@ struct _virNWFilterVarCombIterEntry {
 typedef struct _virNWFilterVarCombIter virNWFilterVarCombIter;
 typedef virNWFilterVarCombIter *virNWFilterVarCombIterPtr;
 struct _virNWFilterVarCombIter {
-    virHashTablePtr hashTable;
+    GHashTable *hashTable;
     size_t nIter;
     virNWFilterVarCombIterEntry iter[0];
 };
 virNWFilterVarCombIterPtr virNWFilterVarCombIterCreate(
-                             virHashTablePtr hash,
+                             GHashTable *hash,
                              virNWFilterVarAccessPtr *vars,
                              size_t nVars);
 

@@ -5784,7 +5784,7 @@ virDomainDefCollectBootOrder(virDomainDefPtr def G_GNUC_UNUSED,
                              virDomainDeviceInfoPtr info,
                              void *data)
 {
-    virHashTablePtr bootHash = data;
+    GHashTable *bootHash = data;
     g_autofree char *order = NULL;
 
     if (info->bootIndex == 0)
@@ -5817,7 +5817,7 @@ virDomainDefCollectBootOrder(virDomainDefPtr def G_GNUC_UNUSED,
 static int
 virDomainDefBootOrderPostParse(virDomainDefPtr def)
 {
-    virHashTablePtr bootHash = NULL;
+    GHashTable *bootHash = NULL;
     int ret = -1;
 
     if (!(bootHash = virHashNew(NULL)))
@@ -6861,7 +6861,7 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
 
 
 struct virDomainDefValidateAliasesData {
-    virHashTablePtr aliases;
+    GHashTable *aliases;
 };
 
 
@@ -6920,7 +6920,7 @@ virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
  */
 static int
 virDomainDefValidateAliases(const virDomainDef *def,
-                            virHashTablePtr *aliases)
+                            GHashTable **aliases)
 {
     struct virDomainDefValidateAliasesData data;
     int ret = -1;
@@ -6949,7 +6949,7 @@ static int
 virDomainDeviceValidateAliasImpl(const virDomainDef *def,
                                  virDomainDeviceDefPtr dev)
 {
-    virHashTablePtr aliases = NULL;
+    GHashTable *aliases = NULL;
     virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
     int ret = -1;
 
@@ -11982,7 +11982,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     virDomainHostdevDefPtr hostdev;
     xmlNodePtr cur;
     xmlNodePtr tmpNode;
-    virHashTablePtr filterparams = NULL;
+    GHashTable *filterparams = NULL;
     virDomainActualNetDefPtr actual = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainChrSourceReconnectDef reconnect = {0};

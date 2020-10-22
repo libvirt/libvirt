@@ -41,7 +41,7 @@ struct qemuBlockNodeNameBackingChainData {
     char *drvstorage;
 };
 
-virHashTablePtr
+GHashTable *
 qemuBlockNodeNameGetBackingChain(virJSONValuePtr namednodesdata,
                                  virJSONValuePtr blockstats);
 
@@ -50,7 +50,7 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          qemuDomainAsyncJob asyncJob);
 
-virHashTablePtr
+GHashTable *
 qemuBlockGetNodeData(virJSONValuePtr data);
 
 bool
@@ -209,7 +209,7 @@ qemuBlockStorageSourceCreate(virDomainObjPtr vm,
                              qemuDomainAsyncJob asyncJob);
 
 int
-qemuBlockStorageSourceCreateDetectSize(virHashTablePtr blockNamedNodeData,
+qemuBlockStorageSourceCreateDetectSize(GHashTable *blockNamedNodeData,
                                        virStorageSourcePtr src,
                                        virStorageSourcePtr templ);
 
@@ -220,11 +220,11 @@ qemuBlockRemoveImageMetadata(virQEMUDriverPtr driver,
                              virStorageSourcePtr src);
 
 qemuBlockNamedNodeDataBitmapPtr
-qemuBlockNamedNodeDataGetBitmapByName(virHashTablePtr blockNamedNodeData,
+qemuBlockNamedNodeDataGetBitmapByName(GHashTable *blockNamedNodeData,
                                       virStorageSourcePtr src,
                                       const char *bitmap);
 
-virHashTablePtr
+GHashTable *
 qemuBlockGetNamedNodeData(virDomainObjPtr vm,
                           qemuDomainAsyncJob asyncJob);
 
@@ -236,17 +236,17 @@ qemuBlockGetBitmapMergeActions(virStorageSourcePtr topsrc,
                                const char *dstbitmapname,
                                virStorageSourcePtr writebitmapsrc,
                                virJSONValuePtr *actions,
-                               virHashTablePtr blockNamedNodeData);
+                               GHashTable *blockNamedNodeData);
 
 bool
 qemuBlockBitmapChainIsValid(virStorageSourcePtr src,
                             const char *bitmapname,
-                            virHashTablePtr blockNamedNodeData);
+                            GHashTable *blockNamedNodeData);
 
 int
 qemuBlockBitmapsHandleBlockcopy(virStorageSourcePtr src,
                                 virStorageSourcePtr mirror,
-                                virHashTablePtr blockNamedNodeData,
+                                GHashTable *blockNamedNodeData,
                                 bool shallow,
                                 virJSONValuePtr *actions);
 
@@ -254,7 +254,7 @@ int
 qemuBlockBitmapsHandleCommitFinish(virStorageSourcePtr topsrc,
                                    virStorageSourcePtr basesrc,
                                    bool active,
-                                   virHashTablePtr blockNamedNodeData,
+                                   GHashTable *blockNamedNodeData,
                                    virJSONValuePtr *actions);
 
 int

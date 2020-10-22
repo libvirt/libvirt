@@ -107,7 +107,7 @@ qemuCheckpointWriteMetadata(virDomainObjPtr vm,
 
 int
 qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
-                                 virHashTablePtr blockNamedNodeData,
+                                 GHashTable *blockNamedNodeData,
                                  const char *delbitmap,
                                  virJSONValuePtr actions,
                                  const char *diskdst,
@@ -152,7 +152,7 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
-    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
     int rc = -1;
     g_autoptr(virJSONValue) actions = NULL;
     size_t i;
@@ -579,7 +579,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
-    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
     g_autofree struct qemuCheckpointDiskMap *diskmap = NULL;
     g_autoptr(virJSONValue) recoveractions = NULL;
     g_autoptr(virJSONValue) mergeactions = virJSONValueNewArray();

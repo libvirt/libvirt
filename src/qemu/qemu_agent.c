@@ -2128,7 +2128,7 @@ qemuAgentGetInterfaceOneAddress(virDomainIPAddressPtr ip_addr,
 static int
 qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
                                size_t *ifaces_count,
-                               virHashTablePtr ifaces_store,
+                               GHashTable *ifaces_store,
                                virJSONValuePtr iface_obj)
 {
     virJSONValuePtr ip_addr_arr = NULL;
@@ -2205,7 +2205,7 @@ static int
 qemuAgentGetAllInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
                                   virJSONValuePtr ret_array)
 {
-    g_autoptr(virHashTable) ifaces_store = NULL;
+    g_autoptr(GHashTable) ifaces_store = NULL;
     size_t ifaces_count = 0;
     size_t i;
 

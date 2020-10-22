@@ -45,7 +45,7 @@ VIR_LOG_INIT("conf.chrdev");
  * open in a given domain */
 struct _virChrdevs {
     virMutex lock;
-    virHashTablePtr hash;
+    GHashTable *hash;
 };
 
 typedef struct _virChrdevStreamInfo virChrdevStreamInfo;

@@ -70,8 +70,8 @@ iptablesPrivateChainCreate(virFirewallPtr fw,
                            void *opaque)
 {
     iptablesGlobalChainData *data = opaque;
-    virHashTablePtr chains = NULL;
-    virHashTablePtr links = NULL;
+    GHashTable *chains = NULL;
+    GHashTable *links = NULL;
     const char *const *tmp;
     int ret = -1;
     size_t i;

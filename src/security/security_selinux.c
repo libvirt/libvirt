@@ -58,7 +58,7 @@ struct _virSecuritySELinuxData {
     char *alt_domain_context;
     char *file_context;
     char *content_context;
-    virHashTablePtr mcs;
+    GHashTable *mcs;
     bool skipAllLabel;
     struct selabel_handle *label_handle;
 };

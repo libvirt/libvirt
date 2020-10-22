@@ -25,12 +25,12 @@
 
 int
 virQEMUQAPISchemaPathGet(const char *query,
-                         virHashTablePtr schema,
+                         GHashTable *schema,
                          virJSONValuePtr *entry);
 
 bool
 virQEMUQAPISchemaPathExists(const char *query,
-                            virHashTablePtr schema);
+                            GHashTable *schema);
 
-virHashTablePtr
+GHashTable *
 virQEMUQAPISchemaConvert(virJSONValuePtr schemareply);

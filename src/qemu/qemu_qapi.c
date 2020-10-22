@@ -69,7 +69,7 @@ virQEMUQAPISchemaObjectGet(const char *field,
 
 struct virQEMUQAPISchemaTraverseContext {
     const char *prevquery;
-    virHashTablePtr schema;
+    GHashTable *schema;
     char **queries;
     virJSONValuePtr returnType;
     size_t depth;
@@ -92,7 +92,7 @@ virQEMUQAPISchemaTraverseContextValidateDepth(struct virQEMUQAPISchemaTraverseCo
 static void
 virQEMUQAPISchemaTraverseContextInit(struct virQEMUQAPISchemaTraverseContext *ctxt,
                                      char **queries,
-                                     virHashTablePtr schema)
+                                     GHashTable *schema)
 {
     memset(ctxt, 0, sizeof(*ctxt));
     ctxt->schema = schema;
@@ -429,7 +429,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  */
 int
 virQEMUQAPISchemaPathGet(const char *query,
-                         virHashTablePtr schema,
+                         GHashTable *schema,
                          virJSONValuePtr *entry)
 {
     VIR_AUTOSTRINGLIST elems = NULL;
@@ -478,7 +478,7 @@ virQEMUQAPISchemaPathGet(const char *query,
 
 bool
 virQEMUQAPISchemaPathExists(const char *query,
-                            virHashTablePtr schema)
+                            GHashTable *schema)
 {
     return virQEMUQAPISchemaPathGet(query, schema, NULL) == 1;
 }
@@ -489,7 +489,7 @@ virQEMUQAPISchemaEntryProcess(size_t pos G_GNUC_UNUSED,
                               void *opaque)
 {
     const char *name;
-    virHashTablePtr schema = opaque;
+    GHashTable *schema = opaque;
 
     if (!(name = virJSONValueObjectGetString(item, "name"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -511,10 +511,10 @@ virQEMUQAPISchemaEntryProcess(size_t pos G_GNUC_UNUSED,
  * Converts the schema into the hash-table used by the functions working with
  * the schema. @schemareply is consumed and freed.
  */
-virHashTablePtr
+GHashTable *
 virQEMUQAPISchemaConvert(virJSONValuePtr schemareply)
 {
-    g_autoptr(virHashTable) schema = NULL;
+    g_autoptr(GHashTable) schema = NULL;
     g_autoptr(virJSONValue) schemajson = schemareply;
 
     if (!(schema = virHashNew(virJSONValueHashFree)))

@@ -145,11 +145,11 @@ static const char *commonRules[] = {
 };
 
 
-static virHashTablePtr
-virNWFilterCreateVarsFrom(virHashTablePtr vars1,
-                          virHashTablePtr vars2)
+static GHashTable *
+virNWFilterCreateVarsFrom(GHashTable *vars1,
+                          GHashTable *vars2)
 {
-    virHashTablePtr res = virHashNew(virNWFilterVarValueHashFree);
+    GHashTable *res = virHashNew(virNWFilterVarValueHashFree);
     if (!res)
         return NULL;
 
@@ -197,13 +197,13 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
 
 static int
 virNWFilterDefToInst(const char *xml,
-                     virHashTablePtr vars,
+                     GHashTable *vars,
                      virNWFilterInstPtr inst);
 
 static int
 virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
                              virNWFilterRuleDefPtr rule,
-                             virHashTablePtr vars,
+                             GHashTable *vars,
                              virNWFilterInstPtr inst)
 {
     virNWFilterRuleInstPtr ruleinst;
@@ -235,10 +235,10 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
 
 static int
 virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDefPtr inc,
-                                virHashTablePtr vars,
+                                GHashTable *vars,
                                 virNWFilterInstPtr inst)
 {
-    virHashTablePtr tmpvars = NULL;
+    GHashTable *tmpvars = NULL;
     int ret = -1;
     char *xml;
 
@@ -266,7 +266,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDefPtr inc,
 
 static int
 virNWFilterDefToInst(const char *xml,
-                     virHashTablePtr vars,
+                     GHashTable *vars,
                      virNWFilterInstPtr inst)
 {
     size_t i;
@@ -322,7 +322,7 @@ static void testRemoveCommonRules(char *rules)
 }
 
 
-static int testSetOneParameter(virHashTablePtr vars,
+static int testSetOneParameter(GHashTable *vars,
                                const char *name,
                                const char *value)
 {
@@ -344,7 +344,7 @@ static int testSetOneParameter(virHashTablePtr vars,
     return 0;
 }
 
-static int testSetDefaultParameters(virHashTablePtr vars)
+static int testSetDefaultParameters(GHashTable *vars)
 {
     if (testSetOneParameter(vars, "IPSETNAME", "tck_test") < 0 ||
         testSetOneParameter(vars, "A", "1.1.1.1") ||
@@ -368,7 +368,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 {
     char *actualargv = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virHashTablePtr vars = virHashNew(virNWFilterVarValueHashFree);
+    GHashTable *vars = virHashNew(virNWFilterVarValueHashFree);
     virNWFilterInst inst;
     int ret = -1;
 

@@ -59,7 +59,7 @@ VIR_LOG_INIT("locking.lock_daemon");
 struct _virLockDaemon {
     GMutex lock;
     virNetDaemonPtr dmn;
-    virHashTablePtr lockspaces;
+    GHashTable *lockspaces;
     virLockSpacePtr defaultLockspace;
 };
 

@@ -14,10 +14,10 @@
 
 VIR_LOG_INIT("tests.hashtest");
 
-static virHashTablePtr
+static GHashTable *
 testHashInit(void)
 {
-    virHashTablePtr hash;
+    GHashTable *hash;
     ssize_t i;
 
     if (!(hash = virHashNew(NULL)))
@@ -55,7 +55,7 @@ testHashCheckForEachCount(void *payload G_GNUC_UNUSED,
 }
 
 static int
-testHashCheckCount(virHashTablePtr hash, size_t count)
+testHashCheckCount(GHashTable *hash, size_t count)
 {
     size_t iter_count = 0;
 
@@ -85,7 +85,7 @@ struct testInfo {
 static int
 testHashGrow(const void *data G_GNUC_UNUSED)
 {
-    virHashTablePtr hash;
+    GHashTable *hash;
     int ret = -1;
 
     if (!(hash = testHashInit()))
@@ -106,7 +106,7 @@ static int
 testHashUpdate(const void *data G_GNUC_UNUSED)
 {
     int count = G_N_ELEMENTS(uuids) + G_N_ELEMENTS(uuids_new);
-    virHashTablePtr hash;
+    GHashTable *hash;
     size_t i;
     int ret = -1;
 
@@ -144,7 +144,7 @@ static int
 testHashRemove(const void *data G_GNUC_UNUSED)
 {
     int count = G_N_ELEMENTS(uuids) - G_N_ELEMENTS(uuids_subset);
-    virHashTablePtr hash;
+    GHashTable *hash;
     size_t i;
     int ret = -1;
 
@@ -178,7 +178,7 @@ testHashRemoveForEachSome(void *payload G_GNUC_UNUSED,
                           const char *name,
                           void *data)
 {
-    virHashTablePtr hash = data;
+    GHashTable *hash = data;
     size_t i;
 
     for (i = 0; i < G_N_ELEMENTS(uuids_subset); i++) {
@@ -201,7 +201,7 @@ testHashRemoveForEachAll(void *payload G_GNUC_UNUSED,
                          const char *name,
                          void *data)
 {
-    virHashTablePtr hash = data;
+    GHashTable *hash = data;
 
     virHashRemoveEntry(hash, name);
     return 0;
@@ -212,7 +212,7 @@ static int
 testHashRemoveForEach(const void *data)
 {
     const struct testInfo *info = data;
-    virHashTablePtr hash;
+    GHashTable *hash;
     int ret = -1;
 
     if (!(hash = testHashInit()))
@@ -238,7 +238,7 @@ static int
 testHashSteal(const void *data G_GNUC_UNUSED)
 {
     int count = G_N_ELEMENTS(uuids) - G_N_ELEMENTS(uuids_subset);
-    virHashTablePtr hash;
+    GHashTable *hash;
     size_t i;
     int ret = -1;
 
@@ -291,7 +291,7 @@ testHashRemoveSetIter(const void *payload G_GNUC_UNUSED,
 static int
 testHashRemoveSet(const void *data G_GNUC_UNUSED)
 {
-    virHashTablePtr hash;
+    GHashTable *hash;
     int count = 0;
     int rcount;
     int ret = -1;
@@ -335,7 +335,7 @@ testHashSearchIter(const void *payload G_GNUC_UNUSED,
 static int
 testHashSearch(const void *data G_GNUC_UNUSED)
 {
-    virHashTablePtr hash;
+    GHashTable *hash;
     void *entry;
     int ret = -1;
 
@@ -364,7 +364,7 @@ testHashSearch(const void *data G_GNUC_UNUSED)
 static int
 testHashGetItems(const void *data G_GNUC_UNUSED)
 {
-    virHashTablePtr hash;
+    GHashTable *hash;
     virHashKeyValuePairPtr array = NULL;
     int ret = -1;
     char keya[] = "a";
@@ -419,7 +419,8 @@ testHashEqualCompValue(const void *value1, const void *value2)
 static int
 testHashEqual(const void *data G_GNUC_UNUSED)
 {
-    virHashTablePtr hash1, hash2 = NULL;
+    GHashTable *hash1;
+    GHashTable *hash2 = NULL;
     int ret = -1;
     char keya[] = "a";
     char keyb[] = "b";
@@ -480,7 +481,7 @@ testHashEqual(const void *data G_GNUC_UNUSED)
 static int
 testHashDuplicate(const void *data G_GNUC_UNUSED)
 {
-    g_autoptr(virHashTable) hash = NULL;
+    g_autoptr(GHashTable) hash = NULL;
 
     if (!(hash = virHashNew(NULL)))
         return -1;

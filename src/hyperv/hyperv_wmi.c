@@ -312,18 +312,18 @@ hypervAddEprParam(hypervInvokeParamsListPtr params, const char *name,
  * @priv: hypervPrivate object associated with the connection
  * @info: WmiInfo of the object type to serialize
  *
- * Instantiates a virHashTable pre-filled with all the properties pre-added
+ * Instantiates a GHashTable pre-filled with all the properties pre-added
  * a key/value pairs set to NULL. The user then sets only those properties that
  * they wish to serialize, and passes the table via hypervAddEmbeddedParam.
  *
- * Returns a pointer to the virHashTable on success, otherwise NULL.
+ * Returns a pointer to the GHashTable on success, otherwise NULL.
  */
-virHashTablePtr
+GHashTable *
 hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
 {
     size_t i;
     size_t count;
-    g_autoptr(virHashTable) table = NULL;
+    g_autoptr(GHashTable) table = NULL;
     XmlSerializerInfo *typeinfo = NULL;
     hypervWmiClassInfoPtr classInfo = NULL;
 
@@ -366,7 +366,7 @@ hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
  *         -1 otherwise.
  */
 int
-hypervSetEmbeddedProperty(virHashTablePtr table,
+hypervSetEmbeddedProperty(GHashTable *table,
                           const char *name,
                           const char *value)
 {
@@ -382,7 +382,7 @@ hypervSetEmbeddedProperty(virHashTablePtr table,
  * @table: pointer to table of properties to add
  * @info: WmiInfo of the object to serialize
  *
- * Add a virHashTable containing object properties as an embedded param to
+ * Add a GHashTable containing object properties as an embedded param to
  * an invocation list.
  *
  * Upon successfull return the @table is consumed and the pointer is cleared out.
@@ -393,7 +393,7 @@ int
 hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
                        hypervPrivate *priv,
                        const char *name,
-                       virHashTablePtr *table,
+                       GHashTable **table,
                        hypervWmiClassInfoListPtr info)
 {
     hypervParamPtr p = NULL;
@@ -424,7 +424,7 @@ hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
  * Free the embedded param hash table.
  */
 void
-hypervFreeEmbeddedParam(virHashTablePtr p)
+hypervFreeEmbeddedParam(GHashTable *p)
 {
     virHashFree(p);
 }

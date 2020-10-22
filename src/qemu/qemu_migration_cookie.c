@@ -435,7 +435,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
                           virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autoptr(virHashTable) stats = virHashNew(g_free);
+    g_autoptr(GHashTable) stats = virHashNew(g_free);
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     size_t i;
     int rc;

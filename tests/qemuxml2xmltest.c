@@ -133,7 +133,7 @@ mymain(void)
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    g_autoptr(virHashTable) capslatest = NULL;
+    g_autoptr(GHashTable) capslatest = NULL;
     g_autoptr(virConnect) conn = NULL;
 
     capslatest = testQemuGetLatestCaps();

@@ -40,7 +40,7 @@ struct _virNWFilterBindingObjList {
 
     /* port dev name -> virNWFilterBindingObj  mapping
      * for O(1), lockless lookup-by-port dev */
-    virHashTable *objs;
+    GHashTable *objs;
 };
 
 

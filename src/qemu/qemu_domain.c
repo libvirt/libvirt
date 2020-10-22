@@ -7830,7 +7830,7 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriverPtr driver,
                                  int asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virHashTablePtr meminfo = NULL;
+    GHashTable *meminfo = NULL;
     int rc;
     size_t i;
 

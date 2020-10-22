@@ -37,7 +37,7 @@ struct _virNWFilterBindingDef {
     char *linkdevname;
     virMacAddr mac;
     char *filter;
-    virHashTablePtr filterparams;
+    GHashTable *filterparams;
 };
 
 

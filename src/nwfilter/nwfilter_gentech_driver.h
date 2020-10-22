@@ -49,7 +49,7 @@ int virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
 
 int virNWFilterTeardownFilter(virNWFilterBindingDefPtr binding);
 
-virHashTablePtr virNWFilterCreateVarHashmap(const char *macaddr,
+GHashTable *virNWFilterCreateVarHashmap(const char *macaddr,
                                             const virNWFilterVarValue *value);
 
 int virNWFilterBuildAll(virNWFilterDriverStatePtr driver,

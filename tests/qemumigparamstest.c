@@ -38,7 +38,7 @@ typedef struct _qemuMigParamsData qemuMigParamsData;
 struct _qemuMigParamsData {
     virDomainXMLOptionPtr xmlopt;
     const char *name;
-    virHashTablePtr qmpschema;
+    GHashTable *qmpschema;
 };
 
 
@@ -191,7 +191,7 @@ qemuMigParamsTestJSON(const void *opaque)
 static int
 mymain(void)
 {
-    g_autoptr(virHashTable) qmpschema = NULL;
+    g_autoptr(GHashTable) qmpschema = NULL;
     virQEMUDriver driver;
     int ret = 0;
 

@@ -640,7 +640,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
                             bool require_match)
 {
     virDomainDefPtr domdef = snapdef->parent.dom;
-    g_autoptr(virHashTable) map = virHashNew(NULL);
+    g_autoptr(GHashTable) map = virHashNew(NULL);
     g_autofree virDomainSnapshotDiskDefPtr olddisks = NULL;
     size_t i;
 

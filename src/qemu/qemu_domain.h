@@ -244,7 +244,7 @@ struct _qemuDomainObjPrivate {
     bool memPrealloc;
 
     /* running block jobs */
-    virHashTablePtr blockjobs;
+    GHashTable *blockjobs;
 
     bool disableSlirp;
 

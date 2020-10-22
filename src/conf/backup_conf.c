@@ -519,7 +519,7 @@ virDomainBackupAlignDisks(virDomainBackupDefPtr def,
                           virDomainDefPtr dom,
                           const char *suffix)
 {
-    g_autoptr(virHashTable) disks = virHashNew(NULL);
+    g_autoptr(GHashTable) disks = virHashNew(NULL);
     size_t i;
     int ndisks;
     bool backup_all = false;

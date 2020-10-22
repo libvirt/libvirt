@@ -96,7 +96,7 @@ int testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
 
 char *testQemuGetLatestCapsForArch(const char *arch,
                                    const char *suffix);
-virHashTablePtr testQemuGetLatestCaps(void);
+GHashTable *testQemuGetLatestCaps(void);
 
 typedef int (*testQemuCapsIterateCallback)(const char *inputDir,
                                            const char *prefix,
@@ -109,7 +109,7 @@ int testQemuCapsIterate(const char *suffix,
                         void *opaque);
 
 int testQemuInfoSetArgs(struct testQemuInfo *info,
-                        virHashTablePtr capslatest, ...);
+                        GHashTable *capslatest, ...);
 void testQemuInfoClear(struct testQemuInfo *info);
 
 #endif
