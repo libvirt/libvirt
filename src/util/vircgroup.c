@@ -2591,6 +2591,7 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
     if (!backends || !backendAvailable) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no cgroup backend available"));
+        ret = -1;
         goto cleanup;
     }
 
