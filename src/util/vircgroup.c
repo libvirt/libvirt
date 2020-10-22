@@ -2532,8 +2532,8 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
 int
 virCgroupKillRecursive(virCgroupPtr group, int signum)
 {
-    int ret = 0;
     int rc;
+    bool success = false;
     size_t i;
     bool backendAvailable = false;
     virCgroupBackendPtr *backends = virCgroupBackendGetAll();
@@ -2544,25 +2544,24 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (backends && backends[i] && backends[i]->available()) {
             backendAvailable = true;
-            rc = backends[i]->killRecursive(group, signum, pids);
-            if (rc < 0) {
-                ret = -1;
-                goto cleanup;
-            }
+            if ((rc = backends[i]->killRecursive(group, signum, pids)) < 0)
+                return -1;
+
             if (rc > 0)
-                ret = rc;
+                success = true;
         }
     }
+
+    if (success)
+        return 1;
 
     if (!backends || !backendAvailable) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no cgroup backend available"));
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 
