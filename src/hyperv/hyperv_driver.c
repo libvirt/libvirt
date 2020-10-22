@@ -1800,11 +1800,8 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
         if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
             goto cleanup;
 
-        if (hypervInvokeMethod(priv, &params, NULL) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not press key %d"),
-                           translatedKeycodes[i]);
+        if (hypervInvokeMethod(priv, &params, NULL) < 0)
             goto cleanup;
-        }
     }
 
     /* simulate holdtime by sleeping */
@@ -1823,11 +1820,8 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
         if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
             goto cleanup;
 
-        if (hypervInvokeMethod(priv, &params, NULL) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not release key %s"), keycodeStr);
+        if (hypervInvokeMethod(priv, &params, NULL) < 0)
             goto cleanup;
-        }
     }
 
     result = 0;
@@ -1919,10 +1913,8 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         }
     }
 
-    if (hypervInvokeMethod(priv, &params, NULL) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not set memory"));
+    if (hypervInvokeMethod(priv, &params, NULL) < 0)
         goto cleanup;
-    }
 
     result = 0;
 
