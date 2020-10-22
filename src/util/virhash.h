@@ -12,7 +12,7 @@
 /*
  * The hash table.
  */
-typedef struct _virHashTable virHashTable;
+typedef GHashTable virHashTable;
 typedef virHashTable *virHashTablePtr;
 
 typedef struct _virHashAtomic virHashAtomic;
@@ -142,4 +142,4 @@ ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void
 void *virHashSearch(virHashTablePtr table, virHashSearcher iter,
                     const void *opaque, char **name);
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(virHashTable, virHashFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virHashTable, g_hash_table_unref);
