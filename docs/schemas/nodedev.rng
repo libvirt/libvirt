@@ -216,27 +216,7 @@
     </optional>
 
     <optional>
-      <element name="capability">
-        <attribute name="type">
-          <value>mdev_types</value>
-        </attribute>
-        <oneOrMore>
-          <element name="type">
-            <attribute name="id">
-              <data type="string"/>
-            </attribute>
-            <optional>
-              <element name="name"><text/></element>
-            </optional>
-            <element name="deviceAPI">
-              <value>vfio-pci</value>
-            </element>
-            <element name="availableInstances">
-              <ref name="unsignedInt"/>
-            </element>
-          </element>
-        </oneOrMore>
-      </element>
+      <ref name="mdev_types"/>
     </optional>
 
     <optional>
@@ -704,6 +684,32 @@
     <data type="string">
       <param name="pattern">/[a-zA-Z0-9_\+\-/%]+</param>
     </data>
+  </define>
+
+  <define name="mdev_types">
+    <element name="capability">
+      <attribute name="type">
+        <value>mdev_types</value>
+      </attribute>
+      <oneOrMore>
+        <element name="type">
+          <attribute name="id">
+            <data type="string"/>
+          </attribute>
+          <optional>
+            <element name="name"><text/></element>
+          </optional>
+          <element name="deviceAPI">
+            <choice>
+              <value>vfio-pci</value>
+            </choice>
+          </element>
+          <element name="availableInstances">
+            <ref name="unsignedInt"/>
+          </element>
+        </element>
+      </oneOrMore>
+    </element>
   </define>
 
 </grammar>
