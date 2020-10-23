@@ -2584,26 +2584,25 @@ virNodeDeviceGetPCIIOMMUGroupCaps(virNodeDevCapPCIDevPtr pci_dev)
 
 
 static int
-virNodeDeviceGetPCIMdevTypesCaps(const char *sysfspath,
-                                 virNodeDevCapPCIDevPtr pci_dev)
+virNodeDeviceGetMdevTypesCaps(const char *sysfspath,
+                              virMediatedDeviceTypePtr **mdev_types,
+                              size_t *nmdev_types)
 {
     virMediatedDeviceTypePtr *types = NULL;
     size_t ntypes = 0;
     size_t i;
 
     /* this could be a refresh, so clear out the old data */
-    for (i = 0; i < pci_dev->nmdev_types; i++)
-       virMediatedDeviceTypeFree(pci_dev->mdev_types[i]);
-    VIR_FREE(pci_dev->mdev_types);
-    pci_dev->nmdev_types = 0;
-    pci_dev->flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+    for (i = 0; i < *nmdev_types; i++)
+       virMediatedDeviceTypeFree(*mdev_types[i]);
+    VIR_FREE(*mdev_types);
+    *nmdev_types = 0;
 
     if (virMediatedDeviceGetMdevTypes(sysfspath, &types, &ntypes) < 0)
         return -1;
 
-    pci_dev->mdev_types = g_steal_pointer(&types);
-    pci_dev->nmdev_types = ntypes;
-    pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+    *mdev_types = g_steal_pointer(&types);
+    *nmdev_types = ntypes;
 
     return 0;
 }
@@ -2620,9 +2619,17 @@ virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
                                virNodeDevCapPCIDevPtr pci_dev)
 {
     if (virNodeDeviceGetPCISRIOVCaps(sysfsPath, pci_dev) < 0 ||
-        virNodeDeviceGetPCIIOMMUGroupCaps(pci_dev) < 0 ||
-        virNodeDeviceGetPCIMdevTypesCaps(sysfsPath, pci_dev) < 0)
+        virNodeDeviceGetPCIIOMMUGroupCaps(pci_dev) < 0)
         return -1;
+
+    pci_dev->flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+    if (virNodeDeviceGetMdevTypesCaps(sysfsPath,
+                                      &pci_dev->mdev_types,
+                                      &pci_dev->nmdev_types) < 0)
+        return -1;
+    if (pci_dev->nmdev_types > 0)
+        pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+
     return 0;
 }
 
