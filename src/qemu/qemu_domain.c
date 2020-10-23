@@ -6251,7 +6251,7 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
         }
 
         if (mode == QEMU_DOMAIN_LOG_CONTEXT_MODE_START) {
-            if ((ctxt->readfd = open(ctxt->path, O_RDONLY, S_IRUSR | S_IWUSR)) < 0) {
+            if ((ctxt->readfd = open(ctxt->path, O_RDONLY)) < 0) {
                 virReportSystemError(errno, _("failed to open logfile %s"),
                                      ctxt->path);
                 goto error;
