@@ -2588,7 +2588,7 @@ virNodeDeviceGetPCIMdevTypesCaps(const char *sysfspath,
                                  virNodeDevCapPCIDevPtr pci_dev)
 {
     virMediatedDeviceTypePtr *types = NULL;
-    int rc = 0;
+    size_t ntypes = 0;
     size_t i;
 
     /* this could be a refresh, so clear out the old data */
@@ -2598,13 +2598,11 @@ virNodeDeviceGetPCIMdevTypesCaps(const char *sysfspath,
     pci_dev->nmdev_types = 0;
     pci_dev->flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
 
-    rc = virMediatedDeviceGetMdevTypes(sysfspath, &types);
-
-    if (rc <= 0)
-        return rc;
+    if (virMediatedDeviceGetMdevTypes(sysfspath, &types, &ntypes) < 0)
+        return -1;
 
     pci_dev->mdev_types = g_steal_pointer(&types);
-    pci_dev->nmdev_types = rc;
+    pci_dev->nmdev_types = ntypes;
     pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
 
     return 0;

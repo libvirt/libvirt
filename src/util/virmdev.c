@@ -528,7 +528,8 @@ void virMediatedDeviceAttrFree(virMediatedDeviceAttrPtr attr)
 
 ssize_t
 virMediatedDeviceGetMdevTypes(const char *sysfspath,
-                              virMediatedDeviceTypePtr **types)
+                              virMediatedDeviceTypePtr **types,
+                              size_t *ntypes)
 {
     ssize_t ret = -1;
     int dirret = -1;
@@ -537,7 +538,7 @@ virMediatedDeviceGetMdevTypes(const char *sysfspath,
     g_autofree char *types_path = NULL;
     g_autoptr(virMediatedDeviceType) mdev_type = NULL;
     virMediatedDeviceTypePtr *mdev_types = NULL;
-    size_t ntypes = 0;
+    size_t nmdev_types = 0;
     size_t i;
 
     types_path = g_strdup_printf("%s/mdev_supported_types", sysfspath);
@@ -558,7 +559,7 @@ virMediatedDeviceGetMdevTypes(const char *sysfspath,
         if (virMediatedDeviceTypeReadAttrs(tmppath, &mdev_type) < 0)
             goto cleanup;
 
-        if (VIR_APPEND_ELEMENT(mdev_types, ntypes, mdev_type) < 0)
+        if (VIR_APPEND_ELEMENT(mdev_types, nmdev_types, mdev_type) < 0)
             goto cleanup;
     }
 
@@ -566,10 +567,11 @@ virMediatedDeviceGetMdevTypes(const char *sysfspath,
         goto cleanup;
 
     *types = g_steal_pointer(&mdev_types);
-    ret = ntypes;
-    ntypes = 0;
+    *ntypes = nmdev_types;
+    nmdev_types = 0;
+    ret = 0;
  cleanup:
-    for (i = 0; i < ntypes; i++)
+    for (i = 0; i < nmdev_types; i++)
         virMediatedDeviceTypeFree(mdev_types[i]);
     VIR_FREE(mdev_types);
     return ret;
@@ -580,7 +582,8 @@ static const char *unsupported = N_("not supported on non-linux platforms");
 
 ssize_t
 virMediatedDeviceGetMdevTypes(const char *sysfspath G_GNUC_UNUSED,
-                              virMediatedDeviceTypePtr **types G_GNUC_UNUSED)
+                              virMediatedDeviceTypePtr **types G_GNUC_UNUSED,
+                              size_t *ntypes G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
