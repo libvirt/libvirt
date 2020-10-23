@@ -4013,7 +4013,7 @@ int qemuMonitorJSONAddFileHandleToSet(qemuMonitorPtr mon,
                                       const char *opaque,
                                       qemuMonitorAddFdInfoPtr fdinfo)
 {
-    virJSONValuePtr args = NULL;
+    g_autoptr(virJSONValue) args = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     g_autoptr(virJSONValue) cmd = NULL;
 
@@ -4024,7 +4024,7 @@ int qemuMonitorJSONAddFileHandleToSet(qemuMonitorPtr mon,
         if (virJSONValueObjectAdd(args, "j:fdset-id", fdset, NULL) < 0)
             return -1;
 
-    if (!(cmd = qemuMonitorJSONMakeCommandInternal("add-fd", args)))
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("add-fd", g_steal_pointer(&args))))
         return -1;
 
     if (qemuMonitorJSONCommandWithFd(mon, cmd, fd, &reply) < 0)
