@@ -310,7 +310,6 @@ tests += [
   { 'name': 'virfilecachetest' },
   { 'name': 'virfiletest' },
   { 'name': 'virfirewalltest' },
-  { 'name': 'virhashtest' },
   { 'name': 'virhostcputest', 'link_whole': [ test_file_wrapper_lib ] },
   { 'name': 'virhostdevtest' },
   { 'name': 'viriscsitest' },
