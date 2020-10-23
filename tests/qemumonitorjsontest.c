@@ -2792,7 +2792,7 @@ testBlockNodeNameDetect(const void *opaque)
                                                       blockstatsJson)))
         goto cleanup;
 
-    virHashForEach(nodedata, testBlockNodeNameDetectFormat, &buf);
+    virHashForEachSorted(nodedata, testBlockNodeNameDetectFormat, &buf);
 
     virBufferTrim(&buf, "\n");
 

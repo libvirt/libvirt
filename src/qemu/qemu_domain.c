@@ -2223,9 +2223,9 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
                       virTristateBoolTypeToString(virTristateBoolFromBool(bj)));
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        virHashForEach(priv->blockjobs,
-                       qemuDomainObjPrivateXMLFormatBlockjobIterator,
-                       &iterdata) < 0)
+        virHashForEachSorted(priv->blockjobs,
+                             qemuDomainObjPrivateXMLFormatBlockjobIterator,
+                             &iterdata) < 0)
         return -1;
 
     virXMLFormatElement(buf, "blockjobs", &attrBuf, &childBuf);

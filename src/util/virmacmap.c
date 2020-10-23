@@ -244,7 +244,7 @@ virMacMapDumpStrLocked(virMacMapPtr mgr,
 
     arr = virJSONValueNewArray();
 
-    if (virHashForEach(mgr->macs, virMACMapHashDumper, arr) < 0)
+    if (virHashForEachSorted(mgr->macs, virMACMapHashDumper, arr) < 0)
         goto cleanup;
 
     if (!(*str = virJSONValueToString(arr, true)))

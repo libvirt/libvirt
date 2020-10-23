@@ -234,9 +234,12 @@
   <allowReboot value='yes'/>
   <nodename index='0'/>
   <blockjobs active='yes'>
-    <blockjob name='pull-vdb-libvirt-3-format' type='pull' state='running'>
-      <disk dst='vdb'/>
-      <base node='libvirt-14-format'/>
+    <blockjob name='broken-test' type='broken' state='ready' brokentype='commit'/>
+    <blockjob name='commit-vdc-libvirt-9-format' type='commit' state='running' jobflags='0x0'>
+      <disk dst='vdc'/>
+      <base node='libvirt-11-format'/>
+      <top node='libvirt-9-format'/>
+      <topparent node='libvirt-2-format'/>
     </blockjob>
     <blockjob name='commit-vde-libvirt-17-format' type='active-commit' state='ready'>
       <disk dst='vde'/>
@@ -244,8 +247,60 @@
       <top node='libvirt-17-format'/>
       <deleteCommittedImages/>
     </blockjob>
+    <blockjob name='copy-vdd-libvirt-4321-format' type='copy' state='ready' jobflags='0x0' shallownew='yes'>
+      <disk dst='vdd'/>
+    </blockjob>
+    <blockjob name='create-libvirt-1337-storage' type='create' state='running'>
+      <create mode='storage'/>
+      <src type='network' format='qcow2'>
+        <source protocol='rbd' name='pool/volname.qcow2' tlsFromConfig='0' index='1337'>
+          <host name='example.org'/>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='libvirt-1337-storage'/>
+              <nodename type='format' name='libvirt-1337-format'/>
+            </nodenames>
+            <objects>
+              <secret type='auth' alias='libvirt-1337-storage-secret0'/>
+            </objects>
+          </privateData>
+        </source>
+      </src>
+    </blockjob>
+    <blockjob name='create-libvirt-1338-format' type='create' state='running' jobflags='0xabcd'>
+      <chains>
+        <disk type='file' format='qcow2'>
+          <source file='/create/src1.qcow2' index='1339'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='libvirt-1339-storage'/>
+                <nodename type='format' name='libvirt-1339-format'/>
+              </nodenames>
+            </privateData>
+          </source>
+          <backingStore/>
+        </disk>
+      </chains>
+      <src type='file' format='qcow2'>
+        <source file='/tmp/create/overlay.qcow2' index='1338'>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='libvirt-1338-storage'/>
+              <nodename type='format' name='libvirt-1338-format'/>
+            </nodenames>
+            <objects>
+              <secret type='encryption' alias='libvirt-1338-storage-secret0'/>
+            </objects>
+          </privateData>
+        </source>
+      </src>
+    </blockjob>
     <blockjob name='drive-virtio-disk0' type='copy' state='ready' jobflags='0x0'>
       <disk dst='vda' mirror='yes'/>
+    </blockjob>
+    <blockjob name='pull-vdb-libvirt-3-format' type='pull' state='running'>
+      <disk dst='vdb'/>
+      <base node='libvirt-14-format'/>
     </blockjob>
     <blockjob name='test-orphan-job0' type='copy' state='ready'>
       <chains>
@@ -283,61 +338,6 @@
           <backingStore/>
         </mirror>
       </chains>
-    </blockjob>
-    <blockjob name='broken-test' type='broken' state='ready' brokentype='commit'/>
-    <blockjob name='create-libvirt-1338-format' type='create' state='running' jobflags='0xabcd'>
-      <chains>
-        <disk type='file' format='qcow2'>
-          <source file='/create/src1.qcow2' index='1339'>
-            <privateData>
-              <nodenames>
-                <nodename type='storage' name='libvirt-1339-storage'/>
-                <nodename type='format' name='libvirt-1339-format'/>
-              </nodenames>
-            </privateData>
-          </source>
-          <backingStore/>
-        </disk>
-      </chains>
-      <src type='file' format='qcow2'>
-        <source file='/tmp/create/overlay.qcow2' index='1338'>
-          <privateData>
-            <nodenames>
-              <nodename type='storage' name='libvirt-1338-storage'/>
-              <nodename type='format' name='libvirt-1338-format'/>
-            </nodenames>
-            <objects>
-              <secret type='encryption' alias='libvirt-1338-storage-secret0'/>
-            </objects>
-          </privateData>
-        </source>
-      </src>
-    </blockjob>
-    <blockjob name='commit-vdc-libvirt-9-format' type='commit' state='running' jobflags='0x0'>
-      <disk dst='vdc'/>
-      <base node='libvirt-11-format'/>
-      <top node='libvirt-9-format'/>
-      <topparent node='libvirt-2-format'/>
-    </blockjob>
-    <blockjob name='create-libvirt-1337-storage' type='create' state='running'>
-      <create mode='storage'/>
-      <src type='network' format='qcow2'>
-        <source protocol='rbd' name='pool/volname.qcow2' tlsFromConfig='0' index='1337'>
-          <host name='example.org'/>
-          <privateData>
-            <nodenames>
-              <nodename type='storage' name='libvirt-1337-storage'/>
-              <nodename type='format' name='libvirt-1337-format'/>
-            </nodenames>
-            <objects>
-              <secret type='auth' alias='libvirt-1337-storage-secret0'/>
-            </objects>
-          </privateData>
-        </source>
-      </src>
-    </blockjob>
-    <blockjob name='copy-vdd-libvirt-4321-format' type='copy' state='ready' jobflags='0x0' shallownew='yes'>
-      <disk dst='vdd'/>
     </blockjob>
   </blockjobs>
   <agentTimeout>-2</agentTimeout>
