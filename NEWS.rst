@@ -13,6 +13,11 @@ v6.9.0 (unreleased)
 
 * **New features**
 
+  * qemu: Implement memory failure event
+
+    New event is implemented that is emitted whenever a guest encounters a
+    memory failure.
+
   * qemu: Implement support for ``<transient/>`` disks
 
     VMs based on the QEMU hypervisor now can use ``<transient/>`` option for
