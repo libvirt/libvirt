@@ -484,7 +484,7 @@ virHashRemoveEntry(virHashTablePtr table, const char *name)
  * virHashForEach
  * @table: the hash table to process
  * @iter: callback to process each element
- * @data: opaque data to pass to the iterator
+ * @opaque: opaque data to pass to the iterator
  *
  * Iterates over every element in the hash table, invoking the
  * 'iter' callback. The callback is allowed to remove the current element
@@ -495,7 +495,7 @@ virHashRemoveEntry(virHashTablePtr table, const char *name)
  * Returns 0 on success or -1 on failure.
  */
 int
-virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
+virHashForEach(virHashTablePtr table, virHashIterator iter, void *opaque)
 {
     size_t i;
     int ret = -1;
@@ -507,7 +507,7 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
         virHashEntryPtr entry = table->table[i];
         while (entry) {
             virHashEntryPtr next = entry->next;
-            ret = iter(entry->payload, entry->name, data);
+            ret = iter(entry->payload, entry->name, opaque);
 
             if (ret < 0)
                 return ret;
@@ -524,7 +524,7 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
  * virHashRemoveSet
  * @table: the hash table to process
  * @iter: callback to identify elements for removal
- * @data: opaque data to pass to the iterator
+ * @opaque: opaque data to pass to the iterator
  *
  * Iterates over all elements in the hash table, invoking the 'iter'
  * callback. If the callback returns a non-zero value, the element
@@ -536,7 +536,7 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
 ssize_t
 virHashRemoveSet(virHashTablePtr table,
                  virHashSearcher iter,
-                 const void *data)
+                 const void *opaque)
 {
     size_t i, count = 0;
 
@@ -548,7 +548,7 @@ virHashRemoveSet(virHashTablePtr table,
 
         while (*nextptr) {
             virHashEntryPtr entry = *nextptr;
-            if (!iter(entry->payload, entry->name, data)) {
+            if (!iter(entry->payload, entry->name, opaque)) {
                 nextptr = &entry->next;
             } else {
                 count++;
@@ -568,7 +568,7 @@ virHashRemoveSet(virHashTablePtr table,
 static int
 _virHashRemoveAllIter(const void *payload G_GNUC_UNUSED,
                       const char *name G_GNUC_UNUSED,
-                      const void *data G_GNUC_UNUSED)
+                      const void *opaque G_GNUC_UNUSED)
 {
     return 1;
 }
@@ -590,7 +590,7 @@ virHashRemoveAll(virHashTablePtr table)
  * virHashSearch:
  * @table: the hash table to search
  * @iter: an iterator to identify the desired element
- * @data: extra opaque information passed to the iter
+ * @opaque: extra opaque information passed to the iter
  * @name: the name of found user data, pass NULL to ignore
  *
  * Iterates over the hash table calling the 'iter' callback
@@ -601,7 +601,7 @@ virHashRemoveAll(virHashTablePtr table)
  */
 void *virHashSearch(const virHashTable *ctable,
                     virHashSearcher iter,
-                    const void *data,
+                    const void *opaque,
                     char **name)
 {
     size_t i;
@@ -615,7 +615,7 @@ void *virHashSearch(const virHashTable *ctable,
     for (i = 0; i < table->size; i++) {
         virHashEntryPtr entry;
         for (entry = table->table[i]; entry; entry = entry->next) {
-            if (iter(entry->payload, entry->name, data)) {
+            if (iter(entry->payload, entry->name, opaque)) {
                 if (name)
                     *name = g_strdup(entry->name);
                 return entry->payload;
@@ -677,9 +677,9 @@ struct virHashEqualData
 };
 
 static int virHashEqualSearcher(const void *payload, const char *name,
-                                const void *data)
+                                const void *opaque)
 {
-    struct virHashEqualData *vhed = (void *)data;
+    struct virHashEqualData *vhed = (void *)opaque;
     const void *value;
 
     value = virHashLookup(vhed->table2, name);

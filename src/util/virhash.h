@@ -34,25 +34,25 @@ typedef void (*virHashDataFree) (void *payload);
  * virHashIterator:
  * @payload: the data in the hash
  * @name: the hash key
- * @data: user supplied data blob
+ * @opaque: user supplied data blob
  *
  * Callback to process a hash entry during iteration
  *
  * Returns -1 to stop the iteration, e.g. in case of an error
  */
-typedef int (*virHashIterator) (void *payload, const char *name, void *data);
+typedef int (*virHashIterator) (void *payload, const char *name, void *opaque);
 /**
  * virHashSearcher:
  * @payload: the data in the hash
  * @name: the hash key
- * @data: user supplied data blob
+ * @opaque: user supplied data blob
  *
  * Callback to identify hash entry desired
  * Returns 1 if the hash entry is desired, 0 to move
  * to next entry
  */
 typedef int (*virHashSearcher) (const void *payload, const char *name,
-                                const void *data);
+                                const void *opaque);
 
 /*
  * Constructor and destructor.
@@ -136,9 +136,9 @@ bool virHashEqual(const virHashTable *table1,
 /*
  * Iterators
  */
-int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);
-ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *data);
+int virHashForEach(virHashTablePtr table, virHashIterator iter, void *opaque);
+ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *opaque);
 void *virHashSearch(const virHashTable *table, virHashSearcher iter,
-                    const void *data, char **name);
+                    const void *opaque, char **name);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virHashTable, virHashFree);
