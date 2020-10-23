@@ -299,7 +299,7 @@ void virChrdevFree(virChrdevsPtr devs)
         return;
 
     virMutexLock(&devs->lock);
-    virHashForEach(devs->hash, virChrdevFreeClearCallbacks, NULL);
+    virHashForEachSafe(devs->hash, virChrdevFreeClearCallbacks, NULL);
     virHashFree(devs->hash);
     virMutexUnlock(&devs->lock);
     virMutexDestroy(&devs->lock);

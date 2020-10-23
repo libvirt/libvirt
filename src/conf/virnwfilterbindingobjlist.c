@@ -364,7 +364,7 @@ virNWFilterBindingObjListForEach(virNWFilterBindingObjListPtr bindings,
         callback, opaque, 0,
     };
     virObjectRWLockRead(bindings);
-    virHashForEach(bindings->objs, virNWFilterBindingObjListHelper, &data);
+    virHashForEachSafe(bindings->objs, virNWFilterBindingObjListHelper, &data);
     virObjectRWUnlock(bindings);
     return data.ret;
 }

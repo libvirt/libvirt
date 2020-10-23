@@ -837,7 +837,7 @@ virDomainObjListForEach(virDomainObjListPtr doms,
         virObjectRWLockWrite(doms);
     else
         virObjectRWLockRead(doms);
-    virHashForEach(doms->objs, virDomainObjListHelper, &data);
+    virHashForEachSafe(doms->objs, virDomainObjListHelper, &data);
     virObjectRWUnlock(doms);
     return data.ret;
 }

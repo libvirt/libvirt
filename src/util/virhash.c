@@ -490,7 +490,9 @@ virHashRemoveEntry(virHashTablePtr table, const char *name)
  *
  * The elements are iterated in arbitrary order.
  *
- * virHashForEach, virHashForEachSafe allow the callback to remove the current
+ * virHashForEach prohibits @iter from modifying @table
+ *
+ * virHashForEachSafe allows the callback to remove the current
  * element using virHashRemoveEntry but calling other virHash* functions is
  * prohibited. Note that removing the entry invalidates @key and @payload in
  * the callback.

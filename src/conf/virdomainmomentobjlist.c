@@ -475,7 +475,7 @@ virDomainMomentForEach(virDomainMomentObjListPtr moments,
                        virHashIterator iter,
                        void *data)
 {
-    return virHashForEach(moments->objs, iter, data);
+    return virHashForEachSafe(moments->objs, iter, data);
 }
 
 

@@ -465,7 +465,7 @@ virStoragePoolObjListForEach(virStoragePoolObjListPtr pools,
     struct _virStoragePoolObjListForEachData data = { .iter = iter,
                                                       .opaque = opaque };
 
-    virHashForEach(pools->objs, virStoragePoolObjListForEachCb, &data);
+    virHashForEachSafe(pools->objs, virStoragePoolObjListForEachCb, &data);
 }
 
 
@@ -753,7 +753,7 @@ virStoragePoolObjForEachVolume(virStoragePoolObjPtr obj,
         .iter = iter, .opaque = opaque };
 
     virObjectRWLockRead(obj->volumes);
-    virHashForEach(obj->volumes->objsKey, virStoragePoolObjForEachVolumeCb,
+    virHashForEachSafe(obj->volumes->objsKey, virStoragePoolObjForEachVolumeCb,
                    &data);
     virObjectRWUnlock(obj->volumes);
     return 0;

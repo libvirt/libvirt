@@ -1468,7 +1468,7 @@ virNetworkObjListForEach(virNetworkObjListPtr nets,
     struct virNetworkObjListForEachHelperData data = {
         .callback = callback, .opaque = opaque, .ret = 0};
     virObjectRWLockRead(nets);
-    virHashForEach(nets->objs, virNetworkObjListForEachHelper, &data);
+    virHashForEachSafe(nets->objs, virNetworkObjListForEachHelper, &data);
     virObjectRWUnlock(nets);
     return data.ret;
 }
@@ -1841,7 +1841,7 @@ virNetworkObjPortForEach(virNetworkObjPtr obj,
                          void *opaque)
 {
     virNetworkObjPortListForEachData data = { iter, opaque, false };
-    virHashForEach(obj->ports, virNetworkObjPortForEachCallback, &data);
+    virHashForEachSafe(obj->ports, virNetworkObjPortForEachCallback, &data);
     if (data.err)
         return -1;
     return 0;

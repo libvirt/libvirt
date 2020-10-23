@@ -218,7 +218,7 @@ testHashRemoveForEach(const void *data)
     if (!(hash = testHashInit()))
         return -1;
 
-    if (virHashForEach(hash, (virHashIterator) info->data, hash)) {
+    if (virHashForEachSafe(hash, (virHashIterator) info->data, hash)) {
         VIR_TEST_VERBOSE("\nvirHashForEach didn't go through all entries");
         goto cleanup;
     }
