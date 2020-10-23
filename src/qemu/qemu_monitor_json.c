@@ -4020,9 +4020,10 @@ int qemuMonitorJSONAddFileHandleToSet(qemuMonitorPtr mon,
     if (virJSONValueObjectCreate(&args, "S:opaque", opaque, NULL) < 0)
         return -1;
 
-    if (fdset >= 0)
-        if (virJSONValueObjectAdd(args, "j:fdset-id", fdset, NULL) < 0)
-            return -1;
+    if (fdset >= 0 &&
+        virJSONValueObjectAdd(args, "j:fdset-id", fdset, NULL) < 0) {
+        return -1;
+    }
 
     if (!(cmd = qemuMonitorJSONMakeCommandInternal("add-fd", g_steal_pointer(&args))))
         return -1;
