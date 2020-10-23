@@ -2598,7 +2598,7 @@ virNodeDeviceGetPCIMdevTypesCaps(const char *sysfspath,
     pci_dev->nmdev_types = 0;
     pci_dev->flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
 
-    rc = virPCIGetMdevTypes(sysfspath, &types);
+    rc = virMediatedDeviceGetMdevTypes(sysfspath, &types);
 
     if (rc <= 0)
         return rc;

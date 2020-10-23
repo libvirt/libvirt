@@ -149,5 +149,9 @@ int
 virMediatedDeviceTypeReadAttrs(const char *sysfspath,
                                virMediatedDeviceTypePtr *type);
 
+ssize_t
+virMediatedDeviceGetMdevTypes(const char *sysfspath,
+                              virMediatedDeviceTypePtr **types);
+
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virMediatedDevice, virMediatedDeviceFree);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virMediatedDeviceType, virMediatedDeviceTypeFree);

@@ -275,9 +275,6 @@ int virPCIGetHeaderType(virPCIDevicePtr dev, int *hdrType);
 
 void virPCIEDeviceInfoFree(virPCIEDeviceInfoPtr dev);
 
-ssize_t virPCIGetMdevTypes(const char *sysfspath,
-                           virMediatedDeviceType ***types);
-
 void virPCIDeviceAddressFree(virPCIDeviceAddressPtr address);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virPCIDevice, virPCIDeviceFree);
