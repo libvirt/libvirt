@@ -277,25 +277,27 @@ virNodeDeviceCapPCIDefFormat(virBufferPtr buf,
                           virPCIHeaderTypeToString(data->pci_dev.hdrType));
     }
     if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_MDEV) {
-        virBufferAddLit(buf, "<capability type='mdev_types'>\n");
-        virBufferAdjustIndent(buf, 2);
-        for (i = 0; i < data->pci_dev.nmdev_types; i++) {
-            virMediatedDeviceTypePtr type = data->pci_dev.mdev_types[i];
-            virBufferEscapeString(buf, "<type id='%s'>\n", type->id);
+        if (data->pci_dev.nmdev_types > 0) {
+            virBufferAddLit(buf, "<capability type='mdev_types'>\n");
             virBufferAdjustIndent(buf, 2);
-            if (type->name)
-                virBufferEscapeString(buf, "<name>%s</name>\n",
-                                      type->name);
-            virBufferEscapeString(buf, "<deviceAPI>%s</deviceAPI>\n",
-                                  type->device_api);
-            virBufferAsprintf(buf,
-                              "<availableInstances>%u</availableInstances>\n",
-                              type->available_instances);
+            for (i = 0; i < data->pci_dev.nmdev_types; i++) {
+                virMediatedDeviceTypePtr type = data->pci_dev.mdev_types[i];
+                virBufferEscapeString(buf, "<type id='%s'>\n", type->id);
+                virBufferAdjustIndent(buf, 2);
+                if (type->name)
+                    virBufferEscapeString(buf, "<name>%s</name>\n",
+                                          type->name);
+                virBufferEscapeString(buf, "<deviceAPI>%s</deviceAPI>\n",
+                                      type->device_api);
+                virBufferAsprintf(buf,
+                                  "<availableInstances>%u</availableInstances>\n",
+                                  type->available_instances);
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</type>\n");
+            }
             virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</type>\n");
+            virBufferAddLit(buf, "</capability>\n");
         }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</capability>\n");
     }
     if (data->pci_dev.nIommuGroupDevices) {
         virBufferAsprintf(buf, "<iommuGroup number='%d'>\n",
@@ -1530,6 +1532,12 @@ virNodeDevPCICapMdevTypesParseXML(xmlXPathContextPtr ctxt,
 
     if ((nmdev_types = virXPathNodeSet("./type", ctxt, &nodes)) < 0)
         goto cleanup;
+
+    if (nmdev_types == 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing <type> element in <capability> element"));
+        goto cleanup;
+    }
 
     orignode = ctxt->node;
     for (i = 0; i < nmdev_types; i++) {
