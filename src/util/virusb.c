@@ -110,7 +110,7 @@ virUSBDeviceSearch(unsigned int vendor,
                    const char *vroot,
                    unsigned int flags)
 {
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     bool found = false;
     char *ignore = NULL;
     struct dirent *de;
@@ -180,7 +180,6 @@ virUSBDeviceSearch(unsigned int vendor,
     ret = list;
 
  cleanup:
-    VIR_DIR_CLOSE(dir);
     if (!ret)
         virObjectUnref(list);
     return ret;

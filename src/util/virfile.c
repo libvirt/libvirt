@@ -669,7 +669,7 @@ static int virFileLoopDeviceOpenLoopCtl(char **dev_name, int *fd)
 static int virFileLoopDeviceOpenSearch(char **dev_name)
 {
     int fd = -1;
-    DIR *dh = NULL;
+    g_autoptr(DIR) dh = NULL;
     struct dirent *de;
     char *looppath = NULL;
     struct loop_info64 lo;
@@ -726,7 +726,6 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
         VIR_DEBUG("No free loop devices available");
         VIR_FREE(looppath);
     }
-    VIR_DIR_CLOSE(dh);
     return fd;
 }
 
@@ -836,7 +835,7 @@ virFileNBDDeviceIsBusy(const char *dev_name)
 static char *
 virFileNBDDeviceFindUnused(void)
 {
-    DIR *dh;
+    g_autoptr(DIR) dh = NULL;
     char *ret = NULL;
     struct dirent *de;
     int direrr;
@@ -861,7 +860,6 @@ virFileNBDDeviceFindUnused(void)
                          _("No free NBD devices"));
 
  cleanup:
-    VIR_DIR_CLOSE(dh);
     return ret;
 }
 
@@ -979,7 +977,7 @@ int virFileNBDDeviceAssociate(const char *file,
  */
 int virFileDeleteTree(const char *dir)
 {
-    DIR *dh;
+    g_autoptr(DIR) dh = NULL;
     struct dirent *de;
     int ret = -1;
     int direrr;
@@ -1028,7 +1026,6 @@ int virFileDeleteTree(const char *dir)
     ret = 0;
 
  cleanup:
-    VIR_DIR_CLOSE(dh);
     return ret;
 }
 
@@ -2954,7 +2951,7 @@ int virFileChownFiles(const char *name,
     struct dirent *ent;
     int ret = -1;
     int direrr;
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
 
     if (virDirOpen(&dir, name) < 0)
         return -1;
@@ -2982,7 +2979,6 @@ int virFileChownFiles(const char *name,
     ret = 0;
 
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

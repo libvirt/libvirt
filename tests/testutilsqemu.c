@@ -510,7 +510,7 @@ testQemuGetLatestCapsForArch(const char *arch,
                              const char *suffix)
 {
     struct dirent *ent;
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     int rc;
     g_autofree char *fullsuffix = NULL;
     unsigned long maxver = 0;
@@ -558,7 +558,6 @@ testQemuGetLatestCapsForArch(const char *arch,
     ret = g_strdup_printf("%s/%s", TEST_QEMU_CAPS_PATH, maxname);
 
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -606,7 +605,7 @@ testQemuCapsIterate(const char *suffix,
                     void *opaque)
 {
     struct dirent *ent;
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     int rc;
     int ret = -1;
     bool fail = false;
@@ -667,7 +666,6 @@ testQemuCapsIterate(const char *suffix,
     ret = 0;
 
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

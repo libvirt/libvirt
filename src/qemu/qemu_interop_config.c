@@ -37,7 +37,7 @@ VIR_LOG_INIT("qemu.qemu_configs");
 static int
 qemuBuildFileList(virHashTablePtr files, const char *dir)
 {
-    DIR *dirp;
+    g_autoptr(DIR) dirp = NULL;
     struct dirent *ent = NULL;
     int rc;
     int ret = -1;
@@ -79,7 +79,6 @@ qemuBuildFileList(virHashTablePtr files, const char *dir)
 
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dirp);
     return ret;
 }
 

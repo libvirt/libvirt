@@ -143,7 +143,7 @@ static int
 virHookCheck(int no, const char *driver)
 {
     int ret;
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     g_autofree char *path = NULL;
     g_autofree char *dir_path = NULL;
@@ -198,8 +198,6 @@ virHookCheck(int no, const char *driver)
         ret = 1;
         break;
     }
-
-    VIR_DIR_CLOSE(dir);
 
     return ret;
 }
@@ -341,7 +339,7 @@ virHookCall(int driver,
             char **output)
 {
     int ret, script_ret;
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     g_autofree char *path = NULL;
     g_autofree char *dir_path = NULL;
@@ -437,8 +435,6 @@ virHookCall(int driver,
 
         virStringListAdd(&entries, entry_path);
     }
-
-    VIR_DIR_CLOSE(dir);
 
     if (ret < 0)
         return -1;

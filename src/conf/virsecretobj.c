@@ -896,7 +896,7 @@ int
 virSecretLoadAllConfigs(virSecretObjListPtr secrets,
                         const char *configDir)
 {
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *de;
     int rc;
 
@@ -926,6 +926,5 @@ virSecretLoadAllConfigs(virSecretObjListPtr secrets,
         virSecretObjEndAPI(&obj);
     }
 
-    VIR_DIR_CLOSE(dir);
     return 0;
 }

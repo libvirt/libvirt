@@ -134,7 +134,7 @@ virBhyveDomainCapsBuild(bhyveConnPtr conn,
 {
     virDomainCapsPtr caps = NULL;
     unsigned int bhyve_caps = 0;
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     size_t firmwares_alloc = 0;
     virBhyveDriverConfigPtr cfg = virBhyveDriverGetConfig(conn);
@@ -171,7 +171,6 @@ virBhyveDomainCapsBuild(bhyveConnPtr conn,
 
  cleanup:
     VIR_FREE(firmwares);
-    VIR_DIR_CLOSE(dir);
     virObjectUnref(cfg);
     return caps;
 }

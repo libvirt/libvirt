@@ -740,7 +740,7 @@ virNumaGetPages(int node,
                 size_t *npages)
 {
     int ret = -1;
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     int direrr = 0;
     struct dirent *entry;
     unsigned int ntmp = 0;
@@ -854,7 +854,6 @@ virNumaGetPages(int node,
     *npages = ntmp;
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

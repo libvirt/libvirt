@@ -1621,7 +1621,7 @@ virMemoryMaxValue(bool capped)
 bool
 virHostHasIOMMU(void)
 {
-    DIR *iommuDir = NULL;
+    g_autoptr(DIR) iommuDir = NULL;
     struct dirent *iommuGroup = NULL;
     bool ret = false;
     int direrr;
@@ -1638,7 +1638,6 @@ virHostHasIOMMU(void)
     ret = true;
 
  cleanup:
-    VIR_DIR_CLOSE(iommuDir);
     return ret;
 }
 
@@ -1658,7 +1657,7 @@ char *
 virHostGetDRMRenderNode(void)
 {
     char *ret = NULL;
-    DIR *driDir = NULL;
+    g_autoptr(DIR) driDir = NULL;
     const char *driPath = "/dev/dri";
     struct dirent *ent = NULL;
     int dirErr = 0;
@@ -1687,7 +1686,6 @@ virHostGetDRMRenderNode(void)
     ret = g_strdup_printf("%s/%s", driPath, ent->d_name);
 
  cleanup:
-    VIR_DIR_CLOSE(driDir);
     return ret;
 }
 

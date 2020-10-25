@@ -2898,7 +2898,7 @@ virNetDevRDMAFeature(const char *ifname,
 {
     g_autofree char *eth_devpath = NULL;
     g_autofree char *eth_res_buf = NULL;
-    DIR *dirp = NULL;
+    g_autoptr(DIR) dirp = NULL;
     struct dirent *dp;
     int ret = -1;
 
@@ -2934,7 +2934,6 @@ virNetDevRDMAFeature(const char *ifname,
     ret = 0;
 
  cleanup:
-    VIR_DIR_CLOSE(dirp);
     return ret;
 }
 

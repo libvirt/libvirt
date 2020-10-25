@@ -588,7 +588,7 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                virDomainLoadConfigNotify notify,
                                void *opaque)
 {
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     int ret = -1;
     int rc;
@@ -633,7 +633,6 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
         }
     }
 
-    VIR_DIR_CLOSE(dir);
     virObjectRWUnlock(doms);
     return ret;
 }

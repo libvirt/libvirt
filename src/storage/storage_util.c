@@ -1920,7 +1920,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
                             bool loop)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    DIR *dh;
+    g_autoptr(DIR) dh = NULL;
     struct dirent *dent;
     char *stablepath;
     int opentries = 0;
@@ -1963,7 +1963,6 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
         stablepath = g_strdup_printf("%s/%s", def->target.path, dent->d_name);
 
         if (virFileLinkPointsTo(stablepath, devpath)) {
-            VIR_DIR_CLOSE(dh);
             return stablepath;
         }
 
@@ -1974,8 +1973,6 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
         g_usleep(100 * 1000);
         goto retry;
     }
-
-    VIR_DIR_CLOSE(dh);
 
  ret_strdup:
     /* Couldn't find any matching stable link so give back
@@ -3505,7 +3502,7 @@ int
 virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *ent;
     struct statvfs sb;
     struct stat statbuf;
@@ -3595,7 +3592,6 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
 
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -3726,7 +3722,7 @@ getNewStyleBlockDevice(const char *lun_path,
                        const char *block_name G_GNUC_UNUSED,
                        char **block_device)
 {
-    DIR *block_dir = NULL;
+    g_autoptr(DIR) block_dir = NULL;
     struct dirent *block_dirent = NULL;
     int retval = -1;
     int direrr;
@@ -3753,7 +3749,6 @@ getNewStyleBlockDevice(const char *lun_path,
     retval = 0;
 
  cleanup:
-    VIR_DIR_CLOSE(block_dir);
     return retval;
 }
 
@@ -3799,7 +3794,7 @@ getBlockDevice(uint32_t host,
                uint32_t lun,
                char **block_device)
 {
-    DIR *lun_dir = NULL;
+    g_autoptr(DIR) lun_dir = NULL;
     struct dirent *lun_dirent = NULL;
     int retval = -1;
     int direrr;
@@ -3839,7 +3834,6 @@ getBlockDevice(uint32_t host,
     retval = 0;
 
  cleanup:
-    VIR_DIR_CLOSE(lun_dir);
     return retval;
 }
 
@@ -3968,7 +3962,7 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
     int retval = 0;
     uint32_t bus, target, lun;
     const char *device_path = "/sys/bus/scsi/devices";
-    DIR *devicedir = NULL;
+    g_autoptr(DIR) devicedir = NULL;
     struct dirent *lun_dirent = NULL;
     char devicepattern[64];
     int found = 0;
@@ -4000,8 +3994,6 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
         if (rc == 0)
             found++;
     }
-
-    VIR_DIR_CLOSE(devicedir);
 
     if (retval < 0)
         return -1;

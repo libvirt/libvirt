@@ -1072,7 +1072,7 @@ virNetworkObjLoadAllState(virNetworkObjListPtr nets,
                           const char *stateDir,
                           virNetworkXMLOptionPtr xmlopt)
 {
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     int ret = -1;
     int rc;
@@ -1097,7 +1097,6 @@ virNetworkObjLoadAllState(virNetworkObjListPtr nets,
     }
 
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -1108,7 +1107,7 @@ virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,
                             const char *autostartDir,
                             virNetworkXMLOptionPtr xmlopt)
 {
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     int ret = -1;
     int rc;
@@ -1132,7 +1131,6 @@ virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,
         virNetworkObjEndAPI(&obj);
     }
 
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -1707,7 +1705,7 @@ virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
                             const char *stateDir)
 {
     g_autofree char *dir = NULL;
-    DIR *dh = NULL;
+    g_autoptr(DIR) dh = NULL;
     struct dirent *de;
     int rc;
     int ret = -1;
@@ -1738,7 +1736,6 @@ virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
 
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dh);
     return ret;
 }
 
@@ -1863,7 +1860,7 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
                           const char *stateDir)
 {
     g_autofree char *dir = NULL;
-    DIR *dh = NULL;
+    g_autoptr(DIR) dh = NULL;
     struct dirent *de;
     int ret = -1;
     int rc;
@@ -1901,6 +1898,5 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
 
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dh);
     return ret;
 }

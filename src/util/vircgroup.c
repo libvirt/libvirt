@@ -2303,7 +2303,7 @@ virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
 int
 virCgroupRemoveRecursively(char *grppath)
 {
-    DIR *grpdir;
+    g_autoptr(DIR) grpdir = NULL;
     struct dirent *ent;
     int rc = 0;
     int direrr;
@@ -2333,8 +2333,6 @@ virCgroupRemoveRecursively(char *grppath)
         rc = -errno;
         VIR_ERROR(_("Failed to readdir for %s (%d)"), grppath, errno);
     }
-
-    VIR_DIR_CLOSE(grpdir);
 
     VIR_DEBUG("Removing cgroup %s", grppath);
     if (rmdir(grppath) != 0 && errno != ENOENT) {
@@ -2471,7 +2469,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     int rc;
     bool killedAny = false;
     g_autofree char *keypath = NULL;
-    DIR *dp = NULL;
+    g_autoptr(DIR) dp = NULL;
     struct dirent *ent;
     int direrr;
     VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
@@ -2524,7 +2522,6 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     ret = killedAny ? 1 : 0;
 
  cleanup:
-    VIR_DIR_CLOSE(dp);
     return ret;
 }
 

@@ -106,7 +106,7 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
                        unsigned int target,
                        unsigned long long unit)
 {
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     g_autofree char *path = NULL;
     char *sg = NULL;
@@ -129,7 +129,6 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
     }
 
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return sg;
 }
 
@@ -143,7 +142,7 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
                         unsigned int target,
                         unsigned long long unit)
 {
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     g_autofree char *path = NULL;
     char *name = NULL;
@@ -165,7 +164,6 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
     }
 
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return name;
 }
 

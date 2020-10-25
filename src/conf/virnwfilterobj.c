@@ -524,7 +524,7 @@ int
 virNWFilterObjListLoadAllConfigs(virNWFilterObjListPtr nwfilters,
                                  const char *configDir)
 {
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     int ret = -1;
     int rc;
@@ -543,7 +543,6 @@ virNWFilterObjListLoadAllConfigs(virNWFilterObjListPtr nwfilters,
             virNWFilterObjUnlock(obj);
     }
 
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

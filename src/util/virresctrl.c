@@ -781,7 +781,7 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
 static int
 virResctrlGetInfo(virResctrlInfoPtr resctrl)
 {
-    DIR *dirp = NULL;
+    g_autoptr(DIR) dirp = NULL;
     int ret = -1;
 
     ret = virDirOpenIfExists(&dirp, SYSFS_RESCTRL_PATH "/info");
@@ -802,7 +802,6 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
 
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dirp);
     return ret;
 }
 
@@ -1900,7 +1899,7 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
     virResctrlAllocPtr ret = NULL;
     virResctrlAllocPtr alloc = NULL;
     struct dirent *ent = NULL;
-    DIR *dirp = NULL;
+    g_autoptr(DIR) dirp = NULL;
     int rv = -1;
 
     if (virResctrlInfoIsEmpty(resctrl)) {
@@ -1947,7 +1946,6 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
 
  cleanup:
     virObjectUnref(alloc);
-    VIR_DIR_CLOSE(dirp);
     return ret;
 
  error:
@@ -2663,7 +2661,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
     int ret = -1;
     size_t i = 0;
     unsigned long long val = 0;
-    DIR *dirp = NULL;
+    g_autoptr(DIR) dirp = NULL;
     char *datapath = NULL;
     char *filepath = NULL;
     struct dirent *ent = NULL;
@@ -2747,7 +2745,6 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
     VIR_FREE(datapath);
     VIR_FREE(filepath);
     virResctrlMonitorStatsFree(stat);
-    VIR_DIR_CLOSE(dirp);
     return ret;
 }
 

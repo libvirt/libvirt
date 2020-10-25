@@ -169,7 +169,7 @@ virDMSanitizepath(const char *path)
     g_autofree char *dmDirPath = NULL;
     struct dirent *ent = NULL;
     struct stat sb[2];
-    DIR *dh = NULL;
+    g_autoptr(DIR) dh = NULL;
     const char *p;
     char *ret = NULL;
 
@@ -211,7 +211,6 @@ virDMSanitizepath(const char *path)
         }
     }
 
-    VIR_DIR_CLOSE(dh);
     return ret;
 }
 

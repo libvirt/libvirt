@@ -1003,7 +1003,7 @@ openvzSetUUID(int vpsid)
 
 static int openvzAssignUUIDs(void)
 {
-    DIR *dp;
+    g_autoptr(DIR) dp = NULL;
     struct dirent *dent;
     char *conf_dir;
     int vpsid;
@@ -1028,7 +1028,6 @@ static int openvzAssignUUIDs(void)
             openvzSetUUID(vpsid);
     }
 
-    VIR_DIR_CLOSE(dp);
     VIR_FREE(conf_dir);
     return ret;
 }

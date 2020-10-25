@@ -100,7 +100,7 @@ virSCSIHostFindByPCI(const char *sysfs_prefix,
 {
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH;
     struct dirent *entry = NULL;
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     char *host_link = NULL;
     char *host_path = NULL;
     char *p = NULL;
@@ -157,7 +157,6 @@ virSCSIHostFindByPCI(const char *sysfs_prefix,
     }
 
  cleanup:
-    VIR_DIR_CLOSE(dir);
     VIR_FREE(unique_path);
     VIR_FREE(host_link);
     VIR_FREE(host_path);

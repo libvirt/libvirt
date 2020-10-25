@@ -452,7 +452,7 @@ static int
 virCommandMassCloseGetFDsLinux(virCommandPtr cmd G_GNUC_UNUSED,
                                virBitmapPtr fds)
 {
-    DIR *dp = NULL;
+    g_autoptr(DIR) dp = NULL;
     struct dirent *entry;
     const char *dirName = "/proc/self/fd";
     int rc;
@@ -479,7 +479,6 @@ virCommandMassCloseGetFDsLinux(virCommandPtr cmd G_GNUC_UNUSED,
 
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dp);
     return ret;
 }
 

@@ -3464,7 +3464,7 @@ virSecuritySELinuxSetFileLabels(virSecurityManagerPtr mgr,
     int ret = 0;
     struct dirent *ent;
     char *filename = NULL;
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
 
     if ((ret = virSecuritySELinuxSetFilecon(mgr, path, seclabel->imagelabel, true)))
         return ret;
@@ -3487,7 +3487,6 @@ virSecuritySELinuxSetFileLabels(virSecurityManagerPtr mgr,
         virReportSystemError(errno, _("Unable to label files under %s"),
                              path);
 
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -3509,7 +3508,7 @@ virSecuritySELinuxRestoreFileLabels(virSecurityManagerPtr mgr,
     int ret = 0;
     struct dirent *ent;
     char *filename = NULL;
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
 
     if ((ret = virSecuritySELinuxRestoreFileLabel(mgr, path, true)))
         return ret;
@@ -3531,7 +3530,6 @@ virSecuritySELinuxRestoreFileLabels(virSecurityManagerPtr mgr,
         virReportSystemError(errno, _("Unable to restore file labels under %s"),
                              path);
 
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

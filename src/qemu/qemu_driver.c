@@ -357,7 +357,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
 {
     char *baseDir = (char *)data;
     g_autofree char *snapDir = NULL;
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     virDomainSnapshotDefPtr def = NULL;
     virDomainMomentObjPtr snap = NULL;
@@ -457,7 +457,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
 
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dir);
     virObjectUnlock(vm);
     return ret;
 }
@@ -469,7 +468,7 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
 {
     char *baseDir = (char *)data;
     g_autofree char *chkDir = NULL;
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     virDomainCheckpointDefPtr def = NULL;
     virDomainMomentObjPtr chk = NULL;
@@ -557,7 +556,6 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
 
     ret = 0;
  cleanup:
-    VIR_DIR_CLOSE(dir);
     virObjectUnlock(vm);
     return ret;
 }

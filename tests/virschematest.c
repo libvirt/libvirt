@@ -86,7 +86,7 @@ testSchemaDir(const char *schema,
               const char *dir_path,
               const char *filterstr)
 {
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *ent;
     int ret = 0;
     int rc;
@@ -128,7 +128,6 @@ testSchemaDir(const char *schema,
         ret = -1;
     }
 
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

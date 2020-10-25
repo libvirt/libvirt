@@ -90,7 +90,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
                                     uint32_t *host)
 {
     int ret = -1;
-    DIR *sysdir = NULL;
+    g_autoptr(DIR) sysdir = NULL;
     struct dirent *dirent = NULL;
     int direrr;
 
@@ -122,7 +122,6 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
     }
 
  cleanup:
-    VIR_DIR_CLOSE(sysdir);
     return ret;
 }
 

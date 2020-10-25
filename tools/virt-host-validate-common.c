@@ -374,7 +374,7 @@ int virHostValidateIOMMU(const char *hvname,
     } else if (ARCH_IS_PPC64(arch)) {
         /* Empty Block */
     } else if (ARCH_IS_S390(arch)) {
-        DIR *dir;
+        g_autoptr(DIR) dir = NULL;
 
         /* On s390x, we skip the IOMMU check if there are no PCI
          * devices (which is quite usual on s390x). If there are
@@ -383,7 +383,6 @@ int virHostValidateIOMMU(const char *hvname,
         if (!virDirOpen(&dir, "/sys/bus/pci/devices"))
             return 0;
         rc = virDirRead(dir, &dent, NULL);
-        VIR_DIR_CLOSE(dir);
         if (rc <= 0)
             return 0;
     } else {

@@ -432,7 +432,7 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
                         virPCIDevicePtr *matched,
                         void *data)
 {
-    DIR *dir;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     int ret = 0;
     int rc;
@@ -480,7 +480,6 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
             break;
         }
     }
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -1706,7 +1705,7 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
                             void *opaque)
 {
     g_autofree char *pcidir = NULL;
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     int ret = -1;
     struct dirent *ent;
     int direrr;
@@ -1741,7 +1740,6 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
     ret = 0;
 
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -1757,7 +1755,7 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
                                      void *opaque)
 {
     g_autofree char *groupPath = NULL;
-    DIR *groupDir = NULL;
+    g_autoptr(DIR) groupDir = NULL;
     int ret = -1;
     struct dirent *ent;
     int direrr;
@@ -1790,7 +1788,6 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
     ret = 0;
 
  cleanup:
-    VIR_DIR_CLOSE(groupDir);
     return ret;
 }
 
@@ -2388,7 +2385,7 @@ virPCIGetNetName(const char *device_link_sysfs_path,
     g_autofree char *pcidev_sysfs_net_path = NULL;
     g_autofree char *firstEntryName = NULL;
     int ret = -1;
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry = NULL;
     size_t i = 0;
 
@@ -2461,7 +2458,6 @@ virPCIGetNetName(const char *device_link_sysfs_path,
         }
     }
  cleanup:
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -2535,7 +2531,7 @@ virPCIGetMdevTypes(const char *sysfspath,
 {
     ssize_t ret = -1;
     int dirret = -1;
-    DIR *dir = NULL;
+    g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     g_autofree char *types_path = NULL;
     g_autoptr(virMediatedDeviceType) mdev_type = NULL;
@@ -2575,7 +2571,6 @@ virPCIGetMdevTypes(const char *sysfspath,
     for (i = 0; i < ntypes; i++)
         virMediatedDeviceTypeFree(mdev_types[i]);
     VIR_FREE(mdev_types);
-    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
