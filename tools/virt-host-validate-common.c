@@ -336,7 +336,6 @@ int virHostValidateIOMMU(const char *hvname,
     bool isAMD = false, isIntel = false;
     virArch arch = virArchFromHost();
     struct dirent *dent;
-    DIR *dir;
     int rc;
 
     flags = virHostValidateGetCPUFlags();
@@ -375,6 +374,8 @@ int virHostValidateIOMMU(const char *hvname,
     } else if (ARCH_IS_PPC64(arch)) {
         /* Empty Block */
     } else if (ARCH_IS_S390(arch)) {
+        DIR *dir;
+
         /* On s390x, we skip the IOMMU check if there are no PCI
          * devices (which is quite usual on s390x). If there are
          * no PCI devices the directory is still there but is
