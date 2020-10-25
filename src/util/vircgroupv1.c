@@ -875,12 +875,12 @@ virCgroupV1SetOwner(virCgroupPtr cgroup,
 {
     int ret = -1;
     size_t i;
-    DIR *dh = NULL;
     int direrr;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         g_autofree char *base = NULL;
         struct dirent *de;
+        DIR *dh = NULL;
 
         if (!((1 << i) & controllers))
             continue;
@@ -922,7 +922,6 @@ virCgroupV1SetOwner(virCgroupPtr cgroup,
     ret = 0;
 
  cleanup:
-    VIR_DIR_CLOSE(dh);
     return ret;
 }
 
