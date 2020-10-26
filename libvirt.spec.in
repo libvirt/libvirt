@@ -98,14 +98,14 @@
 %define with_numactl          0%{!?_without_numactl:1}
 
 # A few optional bits off by default, we enable later
-%define with_fuse             0
-%define with_sanlock          0
-%define with_numad            0
-%define with_firewalld_zone   0
-%define with_libssh2          0
-%define with_wireshark        0
-%define with_libssh           0
-%define with_dmidecode        0
+%define with_fuse             0%{!?_without_fuse:0}
+%define with_sanlock          0%{!?_without_sanlock:0}
+%define with_numad            0%{!?_without_numad:0}
+%define with_firewalld_zone   0%{!?_without_firewalld:0}
+%define with_libssh2          0%{!?_without_libssh2:0}
+%define with_wireshark        0%{!?_without_wireshark:0}
+%define with_libssh           0%{!?_without_libssh:0}
+%define with_dmidecode        0%{!?_without_dmidecode:0}
 
 # Finally set the OS / architecture specific special cases
 
