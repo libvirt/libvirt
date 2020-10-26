@@ -453,7 +453,7 @@ virNetClientSSHHelperCommand(virNetClientProxy proxy,
 
     switch (proxy) {
     case VIR_NET_CLIENT_PROXY_AUTO:
-        return g_strdup_printf("sh -c 'which virt-nc 1>/dev/null 2>&1; "
+        return g_strdup_printf("sh -c 'which virt-ssh-helper 1>/dev/null 2>&1; "
                                "if test $? = 0; then "
                                "    %s; "
                                "else"
