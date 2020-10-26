@@ -1865,6 +1865,7 @@ virCapabilitiesInitCaches(virCapsPtr caps)
         path = g_strdup_printf("%s/cpu/cpu%zd/cache/", SYSFS_SYSTEM_PATH, pos);
 
         VIR_DIR_CLOSE(dirp);
+        dirp = NULL;
 
         rv = virDirOpenIfExists(&dirp, path);
         if (rv < 0)
