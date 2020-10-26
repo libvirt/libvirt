@@ -1837,7 +1837,6 @@ virCapabilitiesInitCaches(virCapsPtr caps)
     size_t i = 0;
     virBitmapPtr cpus = NULL;
     ssize_t pos = -1;
-    DIR *dirp = NULL;
     int ret = -1;
     char *path = NULL;
     char *type = NULL;
@@ -1860,12 +1859,10 @@ virCapabilitiesInitCaches(virCapsPtr caps)
 
     while ((pos = virBitmapNextSetBit(cpus, pos)) >= 0) {
         int rv = -1;
+        g_autoptr(DIR) dirp = NULL;
 
         VIR_FREE(path);
         path = g_strdup_printf("%s/cpu/cpu%zd/cache/", SYSFS_SYSTEM_PATH, pos);
-
-        VIR_DIR_CLOSE(dirp);
-        dirp = NULL;
 
         rv = virDirOpenIfExists(&dirp, path);
         if (rv < 0)
@@ -1971,7 +1968,6 @@ virCapabilitiesInitCaches(virCapsPtr caps)
  cleanup:
     VIR_FREE(type);
     VIR_FREE(path);
-    VIR_DIR_CLOSE(dirp);
     virCapsHostCacheBankFree(bank);
     virBitmapFree(cpus);
     return ret;
