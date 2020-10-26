@@ -246,7 +246,6 @@
   <flag name='blockdev-hostdev-scsi'/>
   <flag name='usb-host.hostdevice'/>
   <flag name='virtio-balloon.free-page-reporting'/>
-  <flag name='block-export-add'/>
   <flag name='netdev.vhost-vdpa'/>
   <version>5001050</version>
   <kvmVersion>0</kvmVersion>
