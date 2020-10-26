@@ -481,7 +481,7 @@ virHashRemoveEntry(virHashTablePtr table, const char *name)
 
 
 /**
- * virHashForEach, virHashForEachSorted
+ * virHashForEach, virHashForEachSorted, virHashForEachSafe
  * @table: the hash table to process
  * @iter: callback to process each element
  * @opaque: opaque data to pass to the iterator
@@ -490,14 +490,14 @@ virHashRemoveEntry(virHashTablePtr table, const char *name)
  *
  * The elements are iterated in arbitrary order.
  *
- * virHashForEach allows the callback to remove the current
+ * virHashForEach, virHashForEachSafe allow the callback to remove the current
  * element using virHashRemoveEntry but calling other virHash* functions is
  * prohibited. Note that removing the entry invalidates @key and @payload in
  * the callback.
  *
  * virHashForEachSorted iterates the elements in order by sorted key.
  *
- * virHashForEachSorted is more computationally
+ * virHashForEachSorted and virHashForEachSafe are more computationally
  * expensive than virHashForEach.
  *
  * If @iter fails and returns a negative value, the evaluation is stopped and -1
@@ -525,6 +525,26 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *opaque)
 
             entry = next;
         }
+    }
+
+    return 0;
+}
+
+
+int
+virHashForEachSafe(virHashTablePtr table,
+                   virHashIterator iter,
+                   void *opaque)
+{
+    g_autofree virHashKeyValuePairPtr items = virHashGetItems(table, NULL, false);
+    size_t i;
+
+    if (!items)
+        return -1;
+
+    for (i = 0; items[i].key; i++) {
+        if (iter((void *)items[i].value, items[i].key, opaque) < 0)
+            return -1;
     }
 
     return 0;

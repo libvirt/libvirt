@@ -136,6 +136,7 @@ bool virHashEqual(const virHashTable *table1,
  * Iterators
  */
 int virHashForEach(virHashTablePtr table, virHashIterator iter, void *opaque);
+int virHashForEachSafe(virHashTablePtr table, virHashIterator iter, void *opaque);
 int virHashForEachSorted(virHashTablePtr table, virHashIterator iter, void *opaque);
 ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *opaque);
 void *virHashSearch(const virHashTable *table, virHashSearcher iter,
