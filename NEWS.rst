@@ -46,6 +46,12 @@ v6.9.0 (unreleased)
     Relying on the "Description" field caused queries to fail on non-"en-US"
     systems. The queries have been updated to avoid using localized strings.
 
+  * rpc: Fix ``virt-ssh-helper`` detection
+
+    libvirt 6.8.0 failed to correctly detect the availability of the new
+    ``virt-ssh-helper`` command on the remote host, and thus always used the
+    fallback instead; this has now been fixed.
+
 
 v6.8.0 (2020-10-01)
 ===================
