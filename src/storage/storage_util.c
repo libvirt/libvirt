@@ -3553,7 +3553,6 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
     }
     if (direrr < 0)
         goto cleanup;
-    VIR_DIR_CLOSE(dir);
 
     target = virStorageSourceNew();
 
