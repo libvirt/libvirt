@@ -3052,11 +3052,12 @@ testQemuMonitorJSONBlockExportAdd(const void *opaque)
     const testGenericData *data = opaque;
     g_autoptr(qemuMonitorTest) test = NULL;
     g_autoptr(virJSONValue) nbddata = NULL;
+    const char *bitmaps[] = { "bitmap1", "bitmap2", NULL };
 
     if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
         return -1;
 
-    if (!(nbddata = qemuBlockExportGetNBDProps("nodename", "exportname", true, "bitmapname")))
+    if (!(nbddata = qemuBlockExportGetNBDProps("nodename", "exportname", true, bitmaps)))
         return -1;
 
     if (qemuMonitorTestAddItem(test, "block-export-add", "{\"return\":{}}") < 0)

@@ -250,7 +250,7 @@
   <version>5001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
-  <package>v5.1.0-2207-g96292515c0</package>
+  <package>v5.1.0-2827-g2c6605389c</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>

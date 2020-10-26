@@ -3369,12 +3369,22 @@ virJSONValuePtr
 qemuBlockExportGetNBDProps(const char *nodename,
                            const char *exportname,
                            bool writable,
-                           const char *bitmap)
+                           const char **bitmaps)
 {
     g_autofree char *exportid = NULL;
+    g_autoptr(virJSONValue) bitmapsarr = NULL;
     virJSONValuePtr ret = NULL;
 
     exportid = g_strdup_printf("libvirt-nbd-%s", nodename);
+
+    if (bitmaps && *bitmaps) {
+        bitmapsarr = virJSONValueNewArray();
+
+        while (*bitmaps) {
+            if (virJSONValueArrayAppendString(bitmapsarr, *(bitmaps++)) < 0)
+                return NULL;
+        }
+    }
 
     if (virJSONValueObjectCreate(&ret,
                                  "s:type", "nbd",
@@ -3382,7 +3392,7 @@ qemuBlockExportGetNBDProps(const char *nodename,
                                  "s:node-name", nodename,
                                  "b:writable", writable,
                                  "s:name", exportname,
-                                 "S:bitmap", bitmap,
+                                 "A:bitmaps", &bitmapsarr,
                                  NULL) < 0)
         return NULL;
 
@@ -3418,11 +3428,12 @@ qemuBlockExportAddNBD(virDomainObjPtr vm,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_EXPORT_ADD)) {
             g_autoptr(virJSONValue) nbdprops = NULL;
+            const char *bitmaps[2] = { bitmap, NULL };
 
             if (!(nbdprops = qemuBlockExportGetNBDProps(src->nodeformat,
                                                         exportname,
                                                         writable,
-                                                        bitmap)))
+                                                        bitmaps)))
                 return -1;
 
             return qemuMonitorBlockExportAdd(priv->mon, &nbdprops);
