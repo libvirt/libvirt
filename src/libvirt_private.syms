@@ -2207,6 +2207,7 @@ virHashAtomicSteal;
 virHashAtomicUpdate;
 virHashEqual;
 virHashForEach;
+virHashForEachSorted;
 virHashFree;
 virHashGetItems;
 virHashHasEntry;
