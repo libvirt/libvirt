@@ -747,7 +747,7 @@ qemuMigrationCookieNBDXMLFormat(qemuMigrationCookieNBDPtr nbd,
     size_t i;
 
     if (nbd->port)
-        virBufferAsprintf(buf, " port='%d'", nbd->port);
+        virBufferAsprintf(&attrBuf, " port='%d'", nbd->port);
 
     for (i = 0; i < nbd->ndisks; i++) {
         virBufferEscapeString(&childBuf, "<disk target='%s'", nbd->disks[i].target);
