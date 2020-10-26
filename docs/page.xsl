@@ -196,7 +196,7 @@
       <xsl:if test="./html:a/@id">
         <a class="headerlink" href="#{html:a/@id}" title="Permalink to this headline">&#xb6;</a>
       </xsl:if>
-      <xsl:if test="./html:a[@class='toc-backref']">
+      <xsl:if test="parent::html:div[@class='section']">
         <a class="headerlink" href="#{../@id}" title="Permalink to this headline">&#xb6;</a>
       </xsl:if>
     </xsl:element>
