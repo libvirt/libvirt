@@ -479,9 +479,11 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
                                            QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
             goto cleanup;
 
-        if (!server_started &&
-            qemuMonitorNBDServerStart(priv->mon, &server, tls_alias) < 0)
-            goto exit_monitor;
+        if (!server_started) {
+            if (qemuMonitorNBDServerStart(priv->mon, &server, tls_alias) < 0)
+                goto exit_monitor;
+            server_started = true;
+        }
 
         if (qemuBlockExportAddNBD(vm, diskAlias, disk->src, diskAlias, true, NULL) < 0)
             goto exit_monitor;
