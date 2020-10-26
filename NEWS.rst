@@ -46,6 +46,7 @@ v6.9.0 (unreleased)
     Relying on the "Description" field caused queries to fail on non-"en-US"
     systems. The queries have been updated to avoid using localized strings.
 
+
 v6.8.0 (2020-10-01)
 ===================
 
@@ -142,6 +143,7 @@ v6.8.0 (2020-10-01)
     HAL is deprecated on all supported OS so there is no need to keep it
     in libvirt. udev backend is used on Linux OSes and devd can be eventually
     implemented as replacement for FreeBSD.
+
 
 v6.7.0 (2020-09-01)
 ===================
