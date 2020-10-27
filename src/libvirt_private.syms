@@ -3304,6 +3304,7 @@ virSystemdGetActivation;
 virSystemdGetMachineNameByPID;
 virSystemdHasLogind;
 virSystemdHasLogindResetCachedValue;
+virSystemdHasMachined;
 virSystemdHasMachinedResetCachedValue;
 virSystemdMakeScopeName;
 virSystemdMakeSliceName;

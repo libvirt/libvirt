@@ -147,7 +147,7 @@ void virSystemdHasLogindResetCachedValue(void)
  * -1 = error
  *  0 = machine1 is available
  */
-static int
+int
 virSystemdHasMachined(void)
 {
     int ret;
