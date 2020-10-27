@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-10-26 17:26+0000\n"
-"PO-Revision-Date: 2020-09-24 15:55+0000\n"
+"PO-Revision-Date: 2020-10-27 09:31+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.2.2\n"
+"X-Generator: Weblate 4.3.1\n"
 
 msgid ""
 "\n"
@@ -1195,7 +1195,7 @@ msgstr "недостатньо пам'яті для файла «%s»"
 
 #, c-format
 msgid "'%s' is not a VF device"
-msgstr ""
+msgstr "«%s» не є пристроєм VF"
 
 #, c-format
 msgid "'%s' is not a known interface"
@@ -4489,7 +4489,7 @@ msgstr "Не вдалося отримати IMedium, rc=%08x"
 
 #, c-format
 msgid "Could not get Msvm_ShutdownComponent for domain with UUID '%s'"
-msgstr ""
+msgstr "Не вдалося отримати Msvm_ShutdownComponent для домену із UUID «%s»"
 
 msgid "Could not get SOAP body"
 msgstr "Не вдалося отримати вміст SOAP"
@@ -4525,7 +4525,7 @@ msgstr "Не вдалося отримати тип пристрою, rc=%08x"
 
 #, c-format
 msgid "Could not get free memory for host %s"
-msgstr ""
+msgstr "Не вдалося отримати дані щодо вільної пам'яті для вузла %s"
 
 #, c-format
 msgid "Could not get instance ID for %s invocation"
@@ -4583,6 +4583,8 @@ msgstr "Не вдалося отримати список машин, rc=%08x"
 msgid ""
 "Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
 msgstr ""
+"Не вдалося отримати максимальне визначення Msvm_ProcessorSettingData для "
+"вузла %s"
 
 #, c-format
 msgid "Could not get medium storage location, rc=%08x"
@@ -4660,7 +4662,7 @@ msgstr "Не вдалося отримати кореневий елемент �
 
 #, c-format
 msgid "Could not get version information for host %s"
-msgstr ""
+msgstr "Не вдалося отримати дані щодо версії для вузла %s"
 
 #, c-format
 msgid "Could not handle file name '%s'"
@@ -4697,31 +4699,36 @@ msgid "Could not instantiate XML document"
 msgstr "Не вдалося створити екземпляр документа XML"
 
 msgid "Could not look up Win32_ComputerSystem"
-msgstr ""
+msgstr "Не вдалося виконати пошук Win32_ComputerSystem"
 
 msgid "Could not look up active virtual machines"
-msgstr ""
+msgstr "Не вдалося виконати пошук активних віртуальних машин"
 
 msgid "Could not look up inactive virtual machines"
-msgstr ""
+msgstr "Не вдалося виконати пошук неактивних віртуальних машин"
 
 #, c-format
 msgid ""
 "Could not look up memory setting data with virtual system instance ID '%s'"
 msgstr ""
+"Не вдалося виконати пошук даних щодо встановлення обсягу пам'яті із "
+"ідентифікатором екземпляра віртуальної системи «%s»"
 
 #, c-format
 msgid ""
 "Could not look up processor setting data with virtual system instance ID '%s'"
 msgstr ""
+"Не вдалося виконати пошук даних щодо встановлення процесора із "
+"ідентифікатором екземпляра віртуальної системи «%s»"
 
 #, c-format
 msgid "Could not look up processor(s) on '%s'"
-msgstr ""
+msgstr "Не вдалося виконати пошук процесорів на «%s»"
 
 #, c-format
 msgid "Could not look up virtual system setting data with UUID '%s'"
 msgstr ""
+"Не вдалося виконати пошук даних встановлення віртуальної системи із UUID «%s»"
 
 #, c-format
 msgid "Could not lookup %s for %s invocation"
@@ -4880,7 +4887,7 @@ msgstr "Не вдалося визначити коректний індекс �
 
 #, c-format
 msgid "Could not parse version from '%s'"
-msgstr ""
+msgstr "Не вдалося обробити дані щодо версії з «%s»"
 
 #, c-format
 msgid "Could not press key %d"
@@ -4888,7 +4895,7 @@ msgstr "Не вдалося натиснути клавішу %d"
 
 #, c-format
 msgid "Could not produce packed version number from '%s'"
-msgstr ""
+msgstr "Не вдалося створити номер запакованої версії з «%s»"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -5878,7 +5885,7 @@ msgid "Domain is not active"
 msgstr "Домен не є активним"
 
 msgid "Domain is not active or in state transition"
-msgstr ""
+msgstr "Домен не є активним або перебуває у стані переходу"
 
 msgid "Domain is not active or is in state transition"
 msgstr "Домен не є активним або перебуває у стані переходу"
@@ -7553,7 +7560,7 @@ msgstr "Не вдалося отримати кількість неактивн
 
 #, c-format
 msgid "Failed to get udev device for syspath '%s'"
-msgstr ""
+msgstr "Не вдалося отримати назву пристрою UDEV для шляху «%s»"
 
 msgid "Failed to get uuid of secret"
 msgstr "Не вдалося отримати UUID ключа"
@@ -7622,7 +7629,7 @@ msgstr "Не вдалося визначити стан блокування: %s
 
 #, c-format
 msgid "Failed to kill process %lld"
-msgstr ""
+msgstr "Не вдалося вбити процес %lld"
 
 #, c-format
 msgid "Failed to kill process %lld: %s"
@@ -9267,6 +9274,8 @@ msgstr "Процесор основної системи є надмножино
 #, c-format
 msgid "Host CPU model does not match required CPU vendor %s or(and) model %s"
 msgstr ""
+"Запис моделі процесора не збігається з потрібним системі записом виробника "
+"%s або (та) моделі процесора, %s"
 
 msgid "Host CPU provides forbidden features"
 msgstr "Процесором основної системи надаються заборонені можливості"
@@ -10260,10 +10269,10 @@ msgid "Invalid format for 'bonding/mode' for '%s'"
 msgstr "Некоректний формат запису «bonding/mode» для «%s»"
 
 msgid "Invalid format for launch security cbitpos"
-msgstr ""
+msgstr "Некоректний формат для cbitpos захисту запуску"
 
 msgid "Invalid format for launch security reduced-phys-bits"
-msgstr ""
+msgstr "Некоректний формат для reduced-phys-bits захисту запуску"
 
 #, c-format
 msgid "Invalid forwarder IP address '%s' in network '%s'"
@@ -11993,17 +12002,17 @@ msgstr ""
 "вказано некоректні дані"
 
 msgid "Missing or invalid fd in add-fd response"
-msgstr ""
+msgstr "Не вказано відповіді fd в add-fd або вказано некоректну відповідь"
 
 msgid "Missing or invalid fdset-id in add-fd response"
-msgstr ""
+msgstr "Не вказано відповіді fdset-id в add-fd або вказано некоректну відповідь"
 
 msgid "Missing or invalid name in query-rx-filter response"
 msgstr ""
 "У відповіді query-rx-filter пропущено назву або вказано некоректну назву"
 
 msgid "Missing or invalid return data in add-fd response"
-msgstr ""
+msgstr "Не вказано повернутих даних в add-fd або вказано некоректну відповідь"
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
 msgstr ""
@@ -12613,6 +12622,7 @@ msgstr ""
 
 msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
 msgstr ""
+"Не вказано атрибута «dev» <source> за допомогою <interface type='vdpa'/>"
 
 msgid ""
 "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
@@ -13512,7 +13522,7 @@ msgstr "Перекриття vcpus у resctrls"
 
 #, c-format
 msgid "Overlay file '%s' for transient disk '%s' already exists"
-msgstr ""
+msgstr "Файл накладки «%s» для проміжного диска «%s» вже існує"
 
 msgid "PASS"
 msgstr "ПРОЙДЕНО"
@@ -14449,7 +14459,7 @@ msgid "Retrieve threadpool attributes from a server. "
 msgstr "Отримати атрибути threadpool з сервера. "
 
 msgid "Return pool info in bytes"
-msgstr ""
+msgstr "Повернути дані щодо буфера у байтах"
 
 msgid "Returns XML <sources> document."
 msgstr "Повертає документ XML <sources>."
@@ -14605,14 +14615,14 @@ msgstr "Перевищення об'єму даних узгодження SASL:
 
 #, c-format
 msgid "SATA controller index %d out of [0..3] range"
-msgstr ""
+msgstr "Індекс контролера SATA %d не належить діапазону [0..3]"
 
 msgid "SATA is not supported with this QEMU binary"
 msgstr "SATA не підтримуються цим двійковим компонентом QEMU"
 
 #, c-format
 msgid "SATA unit index %d out of [0..29] range"
-msgstr ""
+msgstr "Індекс модуля SATA %d не належить діапазону [0..29]"
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
@@ -14678,6 +14688,7 @@ msgstr ""
 
 msgid "SEV launch security is not supported with this QEMU binary"
 msgstr ""
+"Підтримки захисту запуску SEV у цьому виконуваному файлі QEMU не передбачено"
 
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
 msgstr "SHUTDOWN_TIMEOUT має бути рівним або більшим за 0"
@@ -15883,6 +15894,8 @@ msgid ""
 "Target balloon freePageReporting attribute value '%s' does not match source "
 "'%s'"
 msgstr ""
+"Значення атрибута freePageReporting додаткової пам'яті призначення, %s, не "
+"відповідає моделі джерела, «%s»"
 
 #, c-format
 msgid "Target balloon model %s does not match source %s"
@@ -17015,7 +17028,7 @@ msgid "Too many disks in fsinfo: %zd for limit %d"
 msgstr "Забагато дисків у fsinfo: %zd при обмеженні у %d"
 
 msgid "Too many domain elements in migration cookie"
-msgstr ""
+msgstr "Забагато елементів домену у куці перенесення"
 
 #, c-format
 msgid "Too many domain_checkpoints '%d' for limit '%d'"
@@ -18016,6 +18029,8 @@ msgstr "На цій платформі неможливо визначити STP
 
 msgid "Unable to get VF net device stats on this platform"
 msgstr ""
+"Не вдалося отримати статистичні дані щодо мережевого пристрою VF на цій "
+"платформі"
 
 #, c-format
 msgid "Unable to get VLAN for interface %s"
@@ -18429,7 +18444,7 @@ msgstr "Не вдалося відкрити «%s»"
 
 #, c-format
 msgid "Unable to open '%s' for vdpa device"
-msgstr ""
+msgstr "Не вдалося відкрити «%s» для пристрою vdpa"
 
 msgid "Unable to open /dev/loop-control"
 msgstr "Не вдалося відкрити /dev/loop-control"
@@ -21417,7 +21432,7 @@ msgstr ""
 
 #, c-format
 msgid "block jobs are not supported on transient disk '%s'"
-msgstr ""
+msgstr "підтримки блокових завдань на проміжному диску «%s» не передбачено"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
@@ -21591,7 +21606,7 @@ msgid "bus %s too big for destination"
 msgstr "канал %s є надто великими для призначення"
 
 msgid "bus must be 0 for sata controller"
-msgstr ""
+msgstr "для контролера SATA bus має дорівнювати 0"
 
 msgid "bypass cache unsupported by this system"
 msgstr "підтримки обходу кешу у цій системі не передбачено"
@@ -21860,7 +21875,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot change config of '%s' network interface type"
-msgstr ""
+msgstr "не вдалося змінити налаштування типу інтерфейсу мережі «%s»"
 
 msgid "cannot change keymap setting on spice graphics"
 msgstr "не вдалося змінити параметр розкладки графічної системи SPICE"
@@ -25730,7 +25745,7 @@ msgid "error parsing IFLA_VF_PORT part"
 msgstr "помилка під час обробки частини IFLA_VF_PORT"
 
 msgid "error parsing IFLA_VF_STATS"
-msgstr ""
+msgstr "помилка під час спроби обробити IFLA_VF_STATS"
 
 msgid "error parsing pid of lldpad"
 msgstr "помилка під час обробки pid lldpad"
@@ -25868,6 +25883,9 @@ msgid ""
 "recipient: %s\n"
 "action: %s\n"
 msgstr ""
+"подія «memory-failure» для домену %s:\n"
+"отримувач: %s\n"
+"дія: %s\n"
 
 #, c-format
 msgid "event 'metadata-change' for domain %s: %s %s\n"
@@ -27235,7 +27253,7 @@ msgid "failed writing to file '%s'"
 msgstr "не вдалося виконати запис до файла «%s»"
 
 msgid "fatal"
-msgstr ""
+msgstr "критична помилка"
 
 #, c-format
 msgid "fatal signal %d"
@@ -27256,7 +27274,7 @@ msgstr ""
 "цим з'єднанням не передбачено можливості передавання дескрипторів файлів"
 
 msgid "fdset must be valid"
-msgstr ""
+msgstr "fdset має бути коректним"
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
@@ -27475,6 +27493,9 @@ msgid ""
 "\taction required: %d\n"
 "\trecursive: %d\n"
 msgstr ""
+"прапорці:\n"
+"\tпотрібна дія: %d\n"
+"\tрекурсивність: %d\n"
 
 msgid "floor attribute is not supported for this config"
 msgstr "підтримки атрибута floor для цієї конфігурації не передбачено"
@@ -27590,6 +27611,7 @@ msgstr "у паролі виявлено непридатні до друку с
 
 msgid "freePageReporting is not supported by this QEMU binary"
 msgstr ""
+"у цьому виконуваному файлі QEMU не передбачено підтримки freePageReporting"
 
 msgid "from snapshot"
 msgstr "зі знімка"
@@ -27791,7 +27813,7 @@ msgid "group_name can be configured only together with settings"
 msgstr "group_name можна налаштувати лише разом із параметрами (settings)"
 
 msgid "guest"
-msgstr ""
+msgstr "гостьова система"
 
 msgid "guest CIDs must be >= 3"
 msgstr "CID гостьових систем мають бути >= 3"
@@ -28019,7 +28041,7 @@ msgid "hostdev does not have an alias"
 msgstr "пристрій основної системи не має альтернативної назви"
 
 msgid "hostdev interface missing hostdev data"
-msgstr ""
+msgstr "у інтерфейсі hostdev пропущено дані hostdev"
 
 #, c-format
 msgid "hostdev invalid secret type '%s'"
@@ -28140,7 +28162,7 @@ msgstr ""
 "допомогою налаштувань"
 
 msgid "hypervisor"
-msgstr ""
+msgstr "гіпервізор"
 
 msgid "hypervisor connection URI"
 msgstr "URI з'єднання гіпервізора"
@@ -28191,7 +28213,7 @@ msgid "ifkey \"%s\" has no req"
 msgstr "ifkey «%s» не містить req"
 
 msgid "ignore"
-msgstr ""
+msgstr "ігнорувати"
 
 #, c-format
 msgid "ignoring debug level %d out of range [%d-%d]"
@@ -28342,7 +28364,7 @@ msgid "initiator iqn for underlying storage"
 msgstr "iqn ініціатора для базового сховища даних"
 
 msgid "inject"
-msgstr ""
+msgstr "вставити"
 
 msgid "inject-nmi"
 msgstr "nmi-ін'єкція"
@@ -28972,7 +28994,7 @@ msgstr "некоректне поєднання прапорців: (0x%x)"
 
 #, c-format
 msgid "invalid freePageReporting attribute value '%s'"
-msgstr ""
+msgstr "некоректне значення атрибута freePageReporting «%s»"
 
 msgid "invalid geometry settings (cyls)"
 msgstr "некоректні параметри геометрії (циліндри)"
@@ -29135,7 +29157,7 @@ msgstr "некоректний режим"
 
 #, c-format
 msgid "invalid model for interface of type '%s': '%s'"
-msgstr ""
+msgstr "некоректна модель для інтерфейсу типу «%s»: «%s»"
 
 #, c-format
 msgid "invalid model for video type '%s'"
@@ -30784,7 +30806,7 @@ msgstr ""
 "джерелом і призначенням)"
 
 msgid "migration with transient disk is not supported"
-msgstr ""
+msgstr "підтримки перенесення із проміжним диском не передбачено"
 
 msgid "migration with virtiofs device is not supported"
 msgstr "підтримки перенесення з пристроєм virtiofs не передбачено"
@@ -34209,16 +34231,17 @@ msgid "query-events reply data was missing 'name'"
 msgstr "у даних відповіді query-events не міститься поля «name»"
 
 msgid "query-fdsets reply was missing 'fdset-id'"
-msgstr ""
+msgstr "у відповіді query-fdsets немає «fdset-id»"
 
 msgid "query-fdsets return data missing 'fd'"
-msgstr ""
+msgstr "у повернутих query-fdsets даних немає «fd»"
 
 msgid "query-fdsets return data missing fd array element"
 msgstr ""
+"у повернутих query-fdsets даних немає елемента масиву дескрипторів файлів"
 
 msgid "query-fdsets return data missing fdset array element"
-msgstr ""
+msgstr "у повернутих query-fdsets даних немає елемента масиву fdset"
 
 msgid "query-hotpluggable-cpus didn't return device props"
 msgstr "query-hotpluggable-cpus не повернуто властивостей пристрою"
@@ -34258,6 +34281,7 @@ msgstr ""
 
 msgid "query-machines reply has malformed 'default-ram-id' data"
 msgstr ""
+"форматування даних «default-ram-id» у відповіді query-machines є помилковим"
 
 msgid "query-machines reply has malformed 'is-default' data"
 msgstr ""
@@ -34637,10 +34661,10 @@ msgstr ""
 "надісланий запит щодо призначення, «%s», не відповідає призначенню «%s»"
 
 msgid "requested unknown memory failure action"
-msgstr ""
+msgstr "надіслано запити щодо невідомої дії щодо помилки у пам'яті"
 
 msgid "requested unknown memory failure recipient"
-msgstr ""
+msgstr "надіслано запити щодо отримувача даних щодо помилки у пам'яті"
 
 #, c-format
 msgid "requested vcpu '%d' is not present in the domain"
@@ -35939,7 +35963,7 @@ msgid "target must be 0 for ide controller"
 msgstr "для контролера ide призначенням має бути 0"
 
 msgid "target must be 0 for sata controller"
-msgstr ""
+msgstr "для контролера SATA призначенням має бути 0"
 
 msgid ""
 "target must be 0 for scsi host device if its controller model is 'lsilogic'"
@@ -36721,26 +36745,28 @@ msgstr ""
 
 #, c-format
 msgid "transient disk '%s' must not be empty"
-msgstr ""
+msgstr "проміжний диск «%s» має бути непорожнім"
 
 #, c-format
 msgid "transient disk '%s' must not be read-only"
-msgstr ""
+msgstr "проміжний диск «%s» не має бути призначеним лише для читання"
 
 msgid "transient disk hotplug isn't supported"
-msgstr ""
+msgstr "підтримки з'єднання «у гарячу» проміжного диска не передбачено"
 
 #, c-format
 msgid "transient disk not supported by this QEMU binary (%s)"
 msgstr ""
+"підтримки проміжного диска у цьому виконуваному файлі QEMU не передбачено "
+"(%s)"
 
 #, c-format
 msgid "transient disk supported only with 'disk' device (%s)"
-msgstr ""
+msgstr "підтримку проміжних дисків передбачено лише для пристроїв «disk» (%s)"
 
 #, c-format
 msgid "transient disk supported only with 'file' type (%s)"
-msgstr ""
+msgstr "підтримку проміжних дисків передбачено лише для типу «file» (%s)"
 
 msgid "transient disks not supported yet"
 msgstr "підтримки тимчасових дисків не передбачено"
@@ -37451,7 +37477,7 @@ msgid "unexpected address type for ide disk"
 msgstr "неочікуваний тип адреси для диска IDE"
 
 msgid "unexpected address type for sata disk"
-msgstr ""
+msgstr "неочікуваний тип адреси для диска SATA"
 
 msgid "unexpected address type for scsi disk"
 msgstr "неочікуваний тип адреси для диска SCSI"
@@ -39063,15 +39089,15 @@ msgstr "підтримки можливості %s не передбачено"
 
 #, c-format
 msgid "unsupported filesystem accessmode '%s'"
-msgstr ""
+msgstr "непідтримуваний режим доступу до файлової системи «%s»"
 
 #, c-format
 msgid "unsupported filesystem driver '%s'"
-msgstr ""
+msgstr "непідтримуваний драйвер файлової системи «%s»"
 
 #, c-format
 msgid "unsupported filesystem type '%s'"
-msgstr ""
+msgstr "непідтримуваний тип файлової системи «%s»"
 
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
@@ -39409,13 +39435,13 @@ msgstr ""
 
 #, c-format
 msgid "vDPA chardev path '%s' does not exist"
-msgstr ""
+msgstr "шляху до символьного пристрою vDPA «%s» не існує"
 
 msgid "vDPA devices are not supported with this QEMU binary"
-msgstr ""
+msgstr "Підтримки пристроїв vDPA не передбачено у цьому виконуваному файлі QEMU"
 
 msgid "vDPA devices cannot be migrated"
-msgstr ""
+msgstr "Пристрої vDPA не можна переносити"
 
 msgid "vTPM usage specified, but name is missing"
 msgstr "Вказано використання vTPM, але назву не вказано"
@@ -39424,7 +39450,7 @@ msgid "validate the XML against the schema"
 msgstr "перевірити XML за схемою"
 
 msgid "validate the XML document against schema"
-msgstr ""
+msgstr "перевірити документ XML за схемою"
 
 #, c-format
 msgid "value '%llu' is too big for coalesce parameter, maximum is '%lu'"
