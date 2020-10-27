@@ -13,6 +13,12 @@ v6.9.0 (unreleased)
 
 * **New features**
 
+  * nodedev: Add support for channel subsystem (CSS) devices on S390
+
+    A CSS device is represented as a parent device of a CCW device.
+    This support allows to create vfio-ccw mediated devices with
+    ``virNodeDeviceCreateXML()``.
+
   * qemu: Implement memory failure event
 
     New event is implemented that is emitted whenever a guest encounters a
