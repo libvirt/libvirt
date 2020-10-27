@@ -365,7 +365,6 @@ virVHBAGetHostByWWN(const char *sysfs_prefix,
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH;
     struct dirent *entry = NULL;
     g_autoptr(DIR) dir = NULL;
-    char *ret = NULL;
 
     if (virDirOpen(&dir, prefix) < 0)
         return NULL;
@@ -375,24 +374,22 @@ virVHBAGetHostByWWN(const char *sysfs_prefix,
 
         if ((rc = vhbaReadCompareWWN(prefix, entry->d_name,
                                      "node_name", wwnn)) < 0)
-            goto cleanup;
+            return NULL;
 
         if (rc == 0)
             continue;
 
         if ((rc = vhbaReadCompareWWN(prefix, entry->d_name,
                                      "port_name", wwpn)) < 0)
-            goto cleanup;
+            return NULL;
 
         if (rc == 0)
             continue;
 
-        ret = g_strdup(entry->d_name);
-        break;
+        return g_strdup(entry->d_name);
     }
 
- cleanup:
-    return ret;
+    return NULL;
 }
 
 /* virVHBAGetHostByFabricWWN:

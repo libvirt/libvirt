@@ -1706,7 +1706,6 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
 {
     g_autofree char *pcidir = NULL;
     g_autoptr(DIR) dir = NULL;
-    int ret = -1;
     struct dirent *ent;
     int direrr;
 
@@ -1715,7 +1714,7 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
                              dev->address.function);
 
     if (virDirOpen(&dir, pcidir) < 0)
-        goto cleanup;
+        return -1;
 
     while ((direrr = virDirRead(dir, &ent, pcidir)) > 0) {
         g_autofree char *file = NULL;
@@ -1731,16 +1730,13 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
             STREQ(ent->d_name, "reset")) {
             file = g_strdup_printf("%s/%s", pcidir, ent->d_name);
             if ((actor)(dev, file, opaque) < 0)
-                goto cleanup;
+                return -1;
         }
     }
     if (direrr < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1756,7 +1752,6 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
 {
     g_autofree char *groupPath = NULL;
     g_autoptr(DIR) groupDir = NULL;
-    int ret = -1;
     struct dirent *ent;
     int direrr;
 
@@ -1765,8 +1760,7 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
 
     if (virDirOpenQuiet(&groupDir, groupPath) < 0) {
         /* just process the original device, nothing more */
-        ret = (actor)(orig, opaque);
-        goto cleanup;
+        return (actor)(orig, opaque);
     }
 
     while ((direrr = virDirRead(groupDir, &ent, groupPath)) > 0) {
@@ -1776,19 +1770,16 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Found invalid device link '%s' in '%s'"),
                            ent->d_name, groupPath);
-            goto cleanup;
+            return -1;
         }
 
         if ((actor)(&newDev, opaque) < 0)
-            goto cleanup;
+            return -1;
     }
     if (direrr < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

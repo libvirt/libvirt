@@ -739,7 +739,6 @@ virNumaGetPages(int node,
                 unsigned long long **pages_free,
                 size_t *npages)
 {
-    int ret = -1;
     g_autoptr(DIR) dir = NULL;
     int direrr = 0;
     struct dirent *entry;
@@ -763,12 +762,12 @@ virNumaGetPages(int node,
      * slightly different information. So we take the total memory on a node
      * and subtract memory taken by the huge pages. */
     if (virNumaGetHugePageInfoDir(&path, node) < 0)
-        goto cleanup;
+        return -1;
 
     /* It's okay if the @path doesn't exist. Maybe we are running on
      * system without huge pages support where the path may not exist. */
     if (virDirOpenIfExists(&dir, path) < 0)
-        goto cleanup;
+        return -1;
 
     while (dir && (direrr = virDirRead(dir, &entry, path)) > 0) {
         const char *page_name = entry->d_name;
@@ -789,17 +788,17 @@ virNumaGetPages(int node,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to parse %s"),
                            entry->d_name);
-            goto cleanup;
+            return -1;
         }
 
         if (virNumaGetHugePageInfo(node, page_size,
                                    &page_avail, &page_free) < 0)
-            goto cleanup;
+            return -1;
 
         if (VIR_REALLOC_N(tmp_size, ntmp + 1) < 0 ||
             VIR_REALLOC_N(tmp_avail, ntmp + 1) < 0 ||
             VIR_REALLOC_N(tmp_free, ntmp + 1) < 0)
-            goto cleanup;
+            return -1;
 
         tmp_size[ntmp] = page_size;
         tmp_avail[ntmp] = page_avail;
@@ -812,17 +811,17 @@ virNumaGetPages(int node,
     }
 
     if (direrr < 0)
-        goto cleanup;
+        return -1;
 
     /* Now append the ordinary system pages */
     if (VIR_REALLOC_N(tmp_size, ntmp + 1) < 0 ||
         VIR_REALLOC_N(tmp_avail, ntmp + 1) < 0 ||
         VIR_REALLOC_N(tmp_free, ntmp + 1) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNumaGetPageInfo(node, system_page_size, huge_page_sum,
                            &tmp_avail[ntmp], &tmp_free[ntmp]) < 0)
-        goto cleanup;
+        return -1;
     tmp_size[ntmp] = system_page_size;
     ntmp++;
 
@@ -852,9 +851,7 @@ virNumaGetPages(int node,
         tmp_free = NULL;
     }
     *npages = ntmp;
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

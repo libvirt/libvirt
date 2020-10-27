@@ -1091,12 +1091,11 @@ virNetworkObjLoadAllState(virNetworkObjListPtr nets,
         if (obj &&
             virNetworkObjLoadAllPorts(obj, stateDir) < 0) {
             virNetworkObjEndAPI(&obj);
-            goto cleanup;
+            return -1;
         }
         virNetworkObjEndAPI(&obj);
     }
 
- cleanup:
     return ret;
 }
 
@@ -1708,15 +1707,12 @@ virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
     g_autoptr(DIR) dh = NULL;
     struct dirent *de;
     int rc;
-    int ret = -1;
 
     if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
-        goto cleanup;
+        return -1;
 
-    if ((rc = virDirOpenIfExists(&dh, dir)) <= 0) {
-        ret = rc;
-        goto cleanup;
-    }
+    if ((rc = virDirOpenIfExists(&dh, dir)) <= 0)
+        return rc;
 
     while ((rc = virDirRead(dh, &de, dir)) > 0) {
         char *file = NULL;
@@ -1733,10 +1729,7 @@ virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
     }
 
     virHashRemoveAll(net->ports);
-
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1862,18 +1855,15 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
     g_autofree char *dir = NULL;
     g_autoptr(DIR) dh = NULL;
     struct dirent *de;
-    int ret = -1;
     int rc;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virNetworkPortDef) portdef = NULL;
 
     if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
-        goto cleanup;
+        return -1;
 
-    if ((rc = virDirOpenIfExists(&dh, dir)) <= 0) {
-        ret = rc;
-        goto cleanup;
-    }
+    if ((rc = virDirOpenIfExists(&dh, dir)) <= 0)
+        return rc;
 
     while ((rc = virDirRead(dh, &de, dir)) > 0) {
         g_autofree char *file = NULL;
@@ -1891,12 +1881,10 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
 
         virUUIDFormat(portdef->uuid, uuidstr);
         if (virHashAddEntry(net->ports, uuidstr, portdef) < 0)
-            goto cleanup;
+            return -1;
 
         portdef = NULL;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }

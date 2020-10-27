@@ -786,23 +786,18 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
 
     ret = virDirOpenIfExists(&dirp, SYSFS_RESCTRL_PATH "/info");
     if (ret <= 0)
-        goto cleanup;
+        return ret;
 
-    ret = virResctrlGetMemoryBandwidthInfo(resctrl);
-    if (ret < 0)
-        goto cleanup;
+    if ((ret = virResctrlGetMemoryBandwidthInfo(resctrl)) < 0)
+        return -1;
 
-    ret = virResctrlGetCacheInfo(resctrl, dirp);
-    if (ret < 0)
-        goto cleanup;
+    if ((ret = virResctrlGetCacheInfo(resctrl, dirp)) < 0)
+        return -1;
 
-    ret = virResctrlGetMonitorInfo(resctrl);
-    if (ret < 0)
-        goto cleanup;
+    if ((ret = virResctrlGetMonitorInfo(resctrl)) < 0)
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

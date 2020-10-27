@@ -516,12 +516,11 @@ testQemuGetLatestCapsForArch(const char *arch,
     unsigned long maxver = 0;
     unsigned long ver;
     g_autofree char *maxname = NULL;
-    char *ret = NULL;
 
     fullsuffix = g_strdup_printf("%s.%s", arch, suffix);
 
     if (virDirOpen(&dir, TEST_QEMU_CAPS_PATH) < 0)
-        goto cleanup;
+        return NULL;
 
     while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
         g_autofree char *tmp = NULL;
@@ -547,18 +546,15 @@ testQemuGetLatestCapsForArch(const char *arch,
     }
 
     if (rc < 0)
-        goto cleanup;
+        return NULL;
 
     if (!maxname) {
         VIR_TEST_VERBOSE("failed to find capabilities for '%s' in '%s'",
                          arch, TEST_QEMU_CAPS_PATH);
-        goto cleanup;
+        return NULL;
     }
 
-    ret = g_strdup_printf("%s/%s", TEST_QEMU_CAPS_PATH, maxname);
-
- cleanup:
-    return ret;
+    return g_strdup_printf("%s/%s", TEST_QEMU_CAPS_PATH, maxname);
 }
 
 
@@ -607,7 +603,6 @@ testQemuCapsIterate(const char *suffix,
     struct dirent *ent;
     g_autoptr(DIR) dir = NULL;
     int rc;
-    int ret = -1;
     bool fail = false;
 
     if (!callback)
@@ -616,11 +611,11 @@ testQemuCapsIterate(const char *suffix,
     /* Validate suffix */
     if (!STRPREFIX(suffix, ".")) {
         VIR_TEST_VERBOSE("malformed suffix '%s'", suffix);
-        goto cleanup;
+        return -1;
     }
 
     if (virDirOpen(&dir, TEST_QEMU_CAPS_PATH) < 0)
-        goto cleanup;
+        return -1;
 
     while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
         g_autofree char *tmp = g_strdup(ent->d_name);
@@ -634,13 +629,13 @@ testQemuCapsIterate(const char *suffix,
         /* Strip the leading prefix */
         if (!(version = STRSKIP(tmp, "caps_"))) {
             VIR_TEST_VERBOSE("malformed file name '%s'", ent->d_name);
-            goto cleanup;
+            return -1;
         }
 
         /* Find the last dot */
         if (!(archName = strrchr(tmp, '.'))) {
             VIR_TEST_VERBOSE("malformed file name '%s'", ent->d_name);
-            goto cleanup;
+            return -1;
         }
 
         /* The version number and the architecture name are separated by
@@ -661,12 +656,9 @@ testQemuCapsIterate(const char *suffix,
     }
 
     if (rc < 0 || fail)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

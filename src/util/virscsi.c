@@ -109,7 +109,6 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
     g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     g_autofree char *path = NULL;
-    char *sg = NULL;
     unsigned int adapter_id;
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_DEVICES;
 
@@ -120,16 +119,13 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
                            bus, target, unit);
 
     if (virDirOpen(&dir, path) < 0)
-        goto cleanup;
+        return NULL;
 
-    while (virDirRead(dir, &entry, path) > 0) {
-        /* Assume a single directory entry */
-        sg = g_strdup(entry->d_name);
-        break;
-    }
+    /* Assume a single directory entry */
+    if (virDirRead(dir, &entry, path) > 0)
+        return  g_strdup(entry->d_name);
 
- cleanup:
-    return sg;
+    return NULL;
 }
 
 /* Returns device name (e.g. "sdc") on success, or NULL
@@ -145,7 +141,6 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
     g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     g_autofree char *path = NULL;
-    char *name = NULL;
     unsigned int adapter_id;
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_DEVICES;
 
@@ -156,15 +151,12 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
                            target, unit);
 
     if (virDirOpen(&dir, path) < 0)
-        goto cleanup;
+        return NULL;
 
-    while (virDirRead(dir, &entry, path) > 0) {
-        name = g_strdup(entry->d_name);
-        break;
-    }
+    if (virDirRead(dir, &entry, path) > 0)
+        return g_strdup(entry->d_name);
 
- cleanup:
-    return name;
+    return NULL;
 }
 
 virSCSIDevicePtr

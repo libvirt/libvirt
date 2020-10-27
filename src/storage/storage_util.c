@@ -3507,13 +3507,12 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
     struct statvfs sb;
     struct stat statbuf;
     int direrr;
-    int ret = -1;
     g_autoptr(virStorageVolDef) vol = NULL;
     VIR_AUTOCLOSE fd = -1;
     g_autoptr(virStorageSource) target = NULL;
 
     if (virDirOpen(&dir, def->target.path) < 0)
-        goto cleanup;
+        return -1;
 
     while ((direrr = virDirRead(dir, &ent, def->target.path)) > 0) {
         int err;
@@ -3541,15 +3540,15 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
                 vol = NULL;
                 continue;
             }
-            goto cleanup;
+            return -1;
         }
 
         if (virStoragePoolObjAddVol(pool, vol) < 0)
-            goto cleanup;
+            return -1;
         vol = NULL;
     }
     if (direrr < 0)
-        goto cleanup;
+        return -1;
 
     target = virStorageSourceNew();
 
@@ -3557,25 +3556,25 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
         virReportSystemError(errno,
                              _("cannot open path '%s'"),
                              def->target.path);
-        goto cleanup;
+        return -1;
     }
 
     if (fstat(fd, &statbuf) < 0) {
         virReportSystemError(errno,
                              _("cannot stat path '%s'"),
                              def->target.path);
-        goto cleanup;
+        return -1;
     }
 
     if (virStorageBackendUpdateVolTargetInfoFD(target, fd, &statbuf) < 0)
-        goto cleanup;
+        return -1;
 
     /* VolTargetInfoFD doesn't update capacity correctly for the pool case */
     if (statvfs(def->target.path, &sb) < 0) {
         virReportSystemError(errno,
                              _("cannot statvfs path '%s'"),
                              def->target.path);
-        goto cleanup;
+        return -1;
     }
 
     def->capacity = ((unsigned long long)sb.f_frsize *
@@ -3590,9 +3589,7 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
     VIR_FREE(def->target.perms.label);
     def->target.perms.label = g_strdup(target->perms->label);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -3724,7 +3721,6 @@ getNewStyleBlockDevice(const char *lun_path,
 {
     g_autoptr(DIR) block_dir = NULL;
     struct dirent *block_dirent = NULL;
-    int retval = -1;
     int direrr;
     g_autofree char *block_path = NULL;
 
@@ -3733,7 +3729,7 @@ getNewStyleBlockDevice(const char *lun_path,
     VIR_DEBUG("Looking for block device in '%s'", block_path);
 
     if (virDirOpen(&block_dir, block_path) < 0)
-        goto cleanup;
+        return -1;
 
     while ((direrr = virDirRead(block_dir, &block_dirent, block_path)) > 0) {
         *block_device = g_strdup(block_dirent->d_name);
@@ -3744,12 +3740,9 @@ getNewStyleBlockDevice(const char *lun_path,
     }
 
     if (direrr < 0)
-        goto cleanup;
+        return -1;
 
-    retval = 0;
-
- cleanup:
-    return retval;
+    return 0;
 }
 
 
@@ -3796,7 +3789,6 @@ getBlockDevice(uint32_t host,
 {
     g_autoptr(DIR) lun_dir = NULL;
     struct dirent *lun_dirent = NULL;
-    int retval = -1;
     int direrr;
     g_autofree char *lun_path = NULL;
 
@@ -3806,7 +3798,7 @@ getBlockDevice(uint32_t host,
                                target, lun);
 
     if (virDirOpen(&lun_dir, lun_path) < 0)
-        goto cleanup;
+        return -1;
 
     while ((direrr = virDirRead(lun_dir, &lun_dirent, lun_path)) > 0) {
         if (STRPREFIX(lun_dirent->d_name, "block")) {
@@ -3814,27 +3806,23 @@ getBlockDevice(uint32_t host,
                 if (getNewStyleBlockDevice(lun_path,
                                            lun_dirent->d_name,
                                            block_device) < 0)
-                    goto cleanup;
+                    return -1;
             } else {
                 if (getOldStyleBlockDevice(lun_path,
                                            lun_dirent->d_name,
                                            block_device) < 0)
-                    goto cleanup;
+                    return -1;
             }
             break;
         }
     }
     if (direrr < 0)
-        goto cleanup;
-    if (!*block_device) {
-        retval = -2;
-        goto cleanup;
-    }
+        return -1;
 
-    retval = 0;
+    if (!*block_device)
+        return -2;
 
- cleanup:
-    return retval;
+    return 0;
 }
 
 

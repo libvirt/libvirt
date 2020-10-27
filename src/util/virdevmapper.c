@@ -171,7 +171,6 @@ virDMSanitizepath(const char *path)
     struct stat sb[2];
     g_autoptr(DIR) dh = NULL;
     const char *p;
-    char *ret = NULL;
 
     /* If a path is NOT provided then assume it's DM name */
     p = strrchr(path, '/');
@@ -206,12 +205,11 @@ virDMSanitizepath(const char *path)
 
         if (stat(tmp, &sb[1]) == 0 &&
             sb[0].st_rdev == sb[0].st_rdev) {
-            ret = g_steal_pointer(&tmp);
-            break;
+            return g_steal_pointer(&tmp);
         }
     }
 
-    return ret;
+    return NULL;
 }
 
 

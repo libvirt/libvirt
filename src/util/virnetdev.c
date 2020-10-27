@@ -2900,7 +2900,6 @@ virNetDevRDMAFeature(const char *ifname,
     g_autofree char *eth_res_buf = NULL;
     g_autoptr(DIR) dirp = NULL;
     struct dirent *dp;
-    int ret = -1;
 
     if (!virFileExists(SYSFS_INFINIBAND_DIR))
         return 0;
@@ -2913,12 +2912,11 @@ virNetDevRDMAFeature(const char *ifname,
     /* If /sys/class/net/<ifname>/device/resource doesn't exist it is not a PCI
      * device and therefore it will not have RDMA. */
     if (!virFileExists(eth_devpath)) {
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (virFileReadAll(eth_devpath, RESOURCE_FILE_LEN, &eth_res_buf) < 0)
-        goto cleanup;
+        return -1;
 
     while (virDirRead(dirp, &dp, SYSFS_INFINIBAND_DIR) > 0) {
         g_autofree char *ib_res_buf = NULL;
@@ -2931,10 +2929,8 @@ virNetDevRDMAFeature(const char *ifname,
             break;
         }
     }
-    ret = 0;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 

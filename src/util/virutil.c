@@ -1623,22 +1623,18 @@ virHostHasIOMMU(void)
 {
     g_autoptr(DIR) iommuDir = NULL;
     struct dirent *iommuGroup = NULL;
-    bool ret = false;
     int direrr;
 
     if (virDirOpenQuiet(&iommuDir, "/sys/kernel/iommu_groups/") < 0)
-        goto cleanup;
+        return false;
 
     while ((direrr = virDirRead(iommuDir, &iommuGroup, NULL)) > 0)
         break;
 
     if (direrr < 0 || !iommuGroup)
-        goto cleanup;
+        return false;
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 
@@ -1656,7 +1652,6 @@ virHostHasIOMMU(void)
 char *
 virHostGetDRMRenderNode(void)
 {
-    char *ret = NULL;
     g_autoptr(DIR) driDir = NULL;
     const char *driPath = "/dev/dri";
     struct dirent *ent = NULL;
@@ -1674,19 +1669,16 @@ virHostGetDRMRenderNode(void)
     }
 
     if (dirErr < 0)
-        goto cleanup;
+        return NULL;
 
     /* even if /dev/dri exists, there might be no renderDX nodes available */
     if (!have_rendernode) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No DRM render nodes available"));
-        goto cleanup;
+        return NULL;
     }
 
-    ret = g_strdup_printf("%s/%s", driPath, ent->d_name);
-
- cleanup:
-    return ret;
+    return g_strdup_printf("%s/%s", driPath, ent->d_name);
 }
 
 

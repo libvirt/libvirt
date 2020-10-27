@@ -836,7 +836,6 @@ static char *
 virFileNBDDeviceFindUnused(void)
 {
     g_autoptr(DIR) dh = NULL;
-    char *ret = NULL;
     struct dirent *de;
     int direrr;
 
@@ -846,21 +845,19 @@ virFileNBDDeviceFindUnused(void)
     while ((direrr = virDirRead(dh, &de, SYSFS_BLOCK_DIR)) > 0) {
         if (STRPREFIX(de->d_name, "nbd")) {
             int rv = virFileNBDDeviceIsBusy(de->d_name);
+
             if (rv < 0)
-                goto cleanup;
-            if (rv == 0) {
-                ret = g_strdup_printf("/dev/%s", de->d_name);
-                goto cleanup;
-            }
+                return NULL;
+
+            if (rv == 0)
+                return g_strdup_printf("/dev/%s", de->d_name);
         }
     }
     if (direrr < 0)
-        goto cleanup;
-    virReportSystemError(EBUSY, "%s",
-                         _("No free NBD devices"));
+        return NULL;
 
- cleanup:
-    return ret;
+    virReportSystemError(EBUSY, "%s", _("No free NBD devices"));
+    return NULL;
 }
 
 static bool
@@ -979,7 +976,6 @@ int virFileDeleteTree(const char *dir)
 {
     g_autoptr(DIR) dh = NULL;
     struct dirent *de;
-    int ret = -1;
     int direrr;
 
     /* Silently return 0 if passed NULL or directory doesn't exist */
@@ -998,35 +994,32 @@ int virFileDeleteTree(const char *dir)
         if (g_lstat(filepath, &sb) < 0) {
             virReportSystemError(errno, _("Cannot access '%s'"),
                                  filepath);
-            goto cleanup;
+            return -1;
         }
 
         if (S_ISDIR(sb.st_mode)) {
             if (virFileDeleteTree(filepath) < 0)
-                goto cleanup;
+                return -1;
         } else {
             if (unlink(filepath) < 0 && errno != ENOENT) {
                 virReportSystemError(errno,
                                      _("Cannot delete file '%s'"),
                                      filepath);
-                goto cleanup;
+                return -1;
             }
         }
     }
     if (direrr < 0)
-        goto cleanup;
+        return -1;
 
     if (rmdir(dir) < 0 && errno != ENOENT) {
         virReportSystemError(errno,
                              _("Cannot delete directory '%s'"),
                              dir);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 /* Like read(), but restarts after EINTR.  Doesn't play
@@ -2949,7 +2942,6 @@ int virFileChownFiles(const char *name,
                       gid_t gid)
 {
     struct dirent *ent;
-    int ret = -1;
     int direrr;
     g_autoptr(DIR) dir = NULL;
 
@@ -2969,17 +2961,14 @@ int virFileChownFiles(const char *name,
                                  _("cannot chown '%s' to (%u, %u)"),
                                  ent->d_name, (unsigned int) uid,
                                  (unsigned int) gid);
-            goto cleanup;
+            return -1;
         }
     }
 
     if (direrr < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 #else /* WIN32 */

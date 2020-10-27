@@ -456,7 +456,6 @@ virCommandMassCloseGetFDsLinux(virCommandPtr cmd G_GNUC_UNUSED,
     struct dirent *entry;
     const char *dirName = "/proc/self/fd";
     int rc;
-    int ret = -1;
 
     if (virDirOpen(&dp, dirName) < 0)
         return -1;
@@ -468,18 +467,16 @@ virCommandMassCloseGetFDsLinux(virCommandPtr cmd G_GNUC_UNUSED,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to parse FD: %s"),
                            entry->d_name);
-            goto cleanup;
+            return -1;
         }
 
         ignore_value(virBitmapSetBit(fds, fd));
     }
 
     if (rc < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 # else /* !__linux__ */

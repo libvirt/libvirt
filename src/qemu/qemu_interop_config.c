@@ -40,7 +40,6 @@ qemuBuildFileList(virHashTablePtr files, const char *dir)
     g_autoptr(DIR) dirp = NULL;
     struct dirent *ent = NULL;
     int rc;
-    int ret = -1;
 
     if ((rc = virDirOpenIfExists(&dirp, dir)) < 0)
         return -1;
@@ -62,24 +61,22 @@ qemuBuildFileList(virHashTablePtr files, const char *dir)
 
         if (stat(path, &sb) < 0) {
             virReportSystemError(errno, _("Unable to access %s"), path);
-            goto cleanup;
+            return -1;
         }
 
         if (!S_ISREG(sb.st_mode) && !S_ISLNK(sb.st_mode))
             continue;
 
         if (virHashUpdateEntry(files, filename, path) < 0)
-            goto cleanup;
+            return -1;
 
         path = NULL;
     }
 
     if (rc < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

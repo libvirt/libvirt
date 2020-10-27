@@ -2465,7 +2465,6 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
                                const char *taskFile,
                                bool dormdir)
 {
-    int ret = -1;
     int rc;
     bool killedAny = false;
     g_autofree char *keypath = NULL;
@@ -2480,14 +2479,14 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
 
     if ((rc = virCgroupKillInternal(group, signum, pids,
                                     controller, taskFile)) < 0) {
-        goto cleanup;
+        return -1;
     }
     if (rc == 1)
         killedAny = true;
 
     VIR_DEBUG("Iterate over children of %s (killedAny=%d)", keypath, killedAny);
     if ((rc = virDirOpenIfExists(&dp, keypath)) < 0)
-        goto cleanup;
+        return -1;
 
     if (rc == 0) {
         VIR_DEBUG("Path %s does not exist, assuming done", keypath);
@@ -2504,11 +2503,11 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
         VIR_DEBUG("Process subdir %s", ent->d_name);
 
         if (virCgroupNew(-1, ent->d_name, group, -1, &subgroup) < 0)
-            goto cleanup;
+            return -1;
 
         if ((rc = virCgroupKillRecursiveInternal(subgroup, signum, pids,
                                                  controller, taskFile, true)) < 0)
-            goto cleanup;
+            return -1;
         if (rc == 1)
             killedAny = true;
 
@@ -2516,13 +2515,10 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
             virCgroupRemove(subgroup);
     }
     if (direrr < 0)
-        goto cleanup;
+        return -1;
 
  done:
-    ret = killedAny ? 1 : 0;
-
- cleanup:
-    return ret;
+    return killedAny ? 1 : 0;
 }
 
 
