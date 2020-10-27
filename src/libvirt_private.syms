@@ -3302,6 +3302,7 @@ virSystemdCanSuspend;
 virSystemdCreateMachine;
 virSystemdGetActivation;
 virSystemdGetMachineNameByPID;
+virSystemdGetMachineUnitByPID;
 virSystemdHasLogind;
 virSystemdHasLogindResetCachedValue;
 virSystemdHasMachined;

@@ -277,6 +277,57 @@ virSystemdGetMachineNameByPID(pid_t pid)
 
 
 /**
+ * virSystemdGetMachineUnitByPID:
+ * @pid: pid of running VM
+ *
+ * Returns systemd Unit name of a running VM registered with machined.
+ * On error returns NULL.
+ */
+char *
+virSystemdGetMachineUnitByPID(pid_t pid)
+{
+    GDBusConnection *conn;
+    g_autoptr(GVariant) message = NULL;
+    g_autoptr(GVariant) reply = NULL;
+    g_autoptr(GVariant) gvar = NULL;
+    g_autofree char *object = NULL;
+    char *unit = NULL;
+
+    if (virSystemdHasMachined() < 0)
+        return NULL;
+
+    if (!(conn = virGDBusGetSystemBus()))
+        return NULL;
+
+    object = virSystemdGetMachineByPID(conn, pid);
+    if (!object)
+        return NULL;
+
+    message = g_variant_new("(ss)",
+                            "org.freedesktop.machine1.Machine", "Unit");
+
+    if (virGDBusCallMethod(conn,
+                           &reply,
+                           G_VARIANT_TYPE("(v)"),
+                           NULL,
+                           "org.freedesktop.machine1",
+                           object,
+                           "org.freedesktop.DBus.Properties",
+                           "Get",
+                           message) < 0)
+        return NULL;
+
+    g_variant_get(reply, "(v)", &gvar);
+    g_variant_get(gvar, "s", &unit);
+
+    VIR_DEBUG("Domain with pid %lld has unit name '%s'",
+              (long long) pid, unit);
+
+    return unit;
+}
+
+
+/**
  * virSystemdCreateMachine:
  * @name: driver unique name of the machine
  * @drivername: name of the virt driver

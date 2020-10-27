@@ -69,6 +69,8 @@ int virSystemdCanHybridSleep(bool *result);
 
 char *virSystemdGetMachineNameByPID(pid_t pid);
 
+char *virSystemdGetMachineUnitByPID(pid_t pid);
+
 int virSystemdGetActivation(virSystemdActivationMap *map,
                             size_t nmap,
                             virSystemdActivationPtr *act);

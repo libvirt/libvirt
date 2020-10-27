@@ -53,11 +53,10 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
                        GError **, error)
 {
     GVariant *reply = NULL;
+    g_autoptr(GVariant) params = parameters;
 
-    if (parameters) {
-        g_variant_ref_sink(parameters);
-        g_variant_unref(parameters);
-    }
+    if (params)
+        g_variant_ref_sink(params);
 
     VIR_MOCK_REAL_INIT(g_dbus_connection_call_sync);
 
@@ -71,7 +70,19 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
                 reply = g_variant_new("(o)",
                                       "/org/freedesktop/machine1/machine/qemu_2ddemo");
             } else if (STREQ(method_name, "Get")) {
-                reply = g_variant_new("(v)", g_variant_new_string("qemu-demo"));
+                const char *prop;
+                g_variant_get(params, "(@s&s)", NULL, &prop);
+
+                if (STREQ(prop, "Name")) {
+                    reply = g_variant_new("(v)", g_variant_new_string("qemu-demo"));
+                } else if (STREQ(prop, "Unit")) {
+                    reply = g_variant_new("(v)",
+                                          g_variant_new_string("machine-qemu-demo.scope"));
+                } else {
+                    *error = g_dbus_error_new_for_dbus_error(
+                            "org.freedesktop.systemd.badthing",
+                            "Unknown machine property");
+                }
             } else {
                 reply = g_variant_new("()");
             }
@@ -327,6 +338,23 @@ testGetMachineName(const void *opaque G_GNUC_UNUSED)
 
     VIR_FREE(tmp);
     return ret;
+}
+
+
+static int
+testGetMachineUnit(const void *opaque G_GNUC_UNUSED)
+{
+    g_autofree char *tmp = virSystemdGetMachineUnitByPID(1234);
+
+    if (!tmp) {
+        fprintf(stderr, "%s", "Failed to create get machine unit\n");
+        return -1;
+    }
+
+    if (STREQ(tmp, "machine-qemu-demo.scope"))
+        return 0;
+
+    return -1;
 }
 
 
@@ -656,6 +684,7 @@ mymain(void)
     DO_TEST("Test create bad systemd ", testCreateBadSystemd);
     DO_TEST("Test create with network ", testCreateNetwork);
     DO_TEST("Test getting machine name ", testGetMachineName);
+    DO_TEST("Test getting machine unit ", testGetMachineUnit);
 
 # define TEST_SCOPE(_name, unitname, _legacy) \
     do { \
