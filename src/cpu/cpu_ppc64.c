@@ -524,11 +524,11 @@ virCPUppc64Compare(virCPUDefPtr host,
         if (failIncompatible) {
             virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s",
                            _("unknown host CPU"));
-        } else {
-            VIR_WARN("unknown host CPU");
-            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+            return VIR_CPU_COMPARE_ERROR;
         }
-        return -1;
+
+        VIR_WARN("unknown host CPU");
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
     ret = ppc64Compute(host, cpu, NULL, &message);
