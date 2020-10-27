@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-09-24 11:56+0000\n"
+"POT-Creation-Date: 2020-10-26 17:26+0000\n"
 "PO-Revision-Date: 2020-09-24 15:55+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -44,7 +44,6 @@ msgstr ""
 "\n"
 "  (вкажіть help <група>, щоб отримати дані щодо команд у групі)\n"
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -707,16 +706,6 @@ msgstr "у цьому виконуваному файлі QEMU не передб
 msgid "%s object has invalid dynamic type"
 msgstr "Об'єкт %s належить до некоректного динамічного типу"
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "У об'єкта %s не вистачає обов'язкової властивості «%s»"
@@ -762,10 +751,6 @@ msgstr ""
 "%s%c"
 
 #, c-format
-msgid "%s: %d: failed to allocate %d bytes"
-msgstr "Помилка %s: %d: при спробі виділення %d байт"
-
-#, c-format
 msgid "%s: %d: failed to allocate argv"
 msgstr "%s: %d: не вдалося розмістити argv у пам'яті"
 
@@ -773,7 +758,6 @@ msgstr "%s: %d: не вдалося розмістити argv у пам'яті"
 msgid "%s: %d: failed to allocate mountpoints"
 msgstr "%s: %d: не вдалося розмістити точки монтування"
 
-#. The length of the formatting string minus two '%s'
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -1210,6 +1194,10 @@ msgid "'%s' file does not fit in memory"
 msgstr "недостатньо пам'яті для файла «%s»"
 
 #, c-format
+msgid "'%s' is not a VF device"
+msgstr ""
+
+#, c-format
 msgid "'%s' is not a known interface"
 msgstr "«%s» не є відомим програмі інтерфейсом"
 
@@ -1522,7 +1510,6 @@ msgstr "(визначення_інтерфейсу)"
 msgid "(libxl_migration_cookie)"
 msgstr "(libxl_migration_cookie)"
 
-#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
@@ -1580,7 +1567,6 @@ msgstr "(тестовий драйвер)"
 msgid "(volume_definition)"
 msgstr "(визначення_тому)"
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -2531,14 +2517,10 @@ msgstr "Рівень кешування «%u» вже визначено"
 msgid "Cache with id %u does not exists for level %d"
 msgstr "Кешу із ідентифікатором %u для рівня %d не існує"
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Виклик %s для неочікуваного типу «%s»"
 
-#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "Виклик %s для неочікуваного типу «%s», мало бути «%s»"
@@ -4240,12 +4222,6 @@ msgstr "Не вдалося створити засіб стеження"
 msgid "Could not create openwsman client"
 msgstr "Не вдалося створити клієнт openwsman"
 
-msgid "Could not create param"
-msgstr "Не вдалося створити параметр"
-
-msgid "Could not create params"
-msgstr "Не вдалося створити параметри"
-
 msgid "Could not create simple param"
 msgstr "Не вдалося створити простий параметр"
 
@@ -4511,6 +4487,10 @@ msgstr "Не вдалося отримати пункти EPR"
 msgid "Could not get IMedium, rc=%08x"
 msgstr "Не вдалося отримати IMedium, rc=%08x"
 
+#, c-format
+msgid "Could not get Msvm_ShutdownComponent for domain with UUID '%s'"
+msgstr ""
+
 msgid "Could not get SOAP body"
 msgstr "Не вдалося отримати вміст SOAP"
 
@@ -4542,6 +4522,10 @@ msgstr "Не вдалося отримати слот пристрою, rc=%08x"
 #, c-format
 msgid "Could not get device type, rc=%08x"
 msgstr "Не вдалося отримати тип пристрою, rc=%08x"
+
+#, c-format
+msgid "Could not get free memory for host %s"
+msgstr ""
 
 #, c-format
 msgid "Could not get instance ID for %s invocation"
@@ -4594,6 +4578,11 @@ msgstr "Не вдалося отримати список доменів, rc=%08
 #, c-format
 msgid "Could not get list of machines, rc=%08x"
 msgstr "Не вдалося отримати список машин, rc=%08x"
+
+#, c-format
+msgid ""
+"Could not get maximum definition of Msvm_ProcessorSettingData for host %s"
+msgstr ""
 
 #, c-format
 msgid "Could not get medium storage location, rc=%08x"
@@ -4670,6 +4659,10 @@ msgid "Could not get temp xml doc root"
 msgstr "Не вдалося отримати кореневий елемент тимчасового документа xml"
 
 #, c-format
+msgid "Could not get version information for host %s"
+msgstr ""
+
+#, c-format
 msgid "Could not handle file name '%s'"
 msgstr "Не вдалося обробити назву файла «%s»"
 
@@ -4703,17 +4696,36 @@ msgstr "Не вдалося ініціалізувати семафор сеан
 msgid "Could not instantiate XML document"
 msgstr "Не вдалося створити екземпляр документа XML"
 
+msgid "Could not look up Win32_ComputerSystem"
+msgstr ""
+
+msgid "Could not look up active virtual machines"
+msgstr ""
+
+msgid "Could not look up inactive virtual machines"
+msgstr ""
+
 #, c-format
-msgid "Could not lookup %s"
-msgstr "Не вдалося виконати пошук %s"
+msgid ""
+"Could not look up memory setting data with virtual system instance ID '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"Could not look up processor setting data with virtual system instance ID '%s'"
+msgstr ""
+
+#, c-format
+msgid "Could not look up processor(s) on '%s'"
+msgstr ""
+
+#, c-format
+msgid "Could not look up virtual system setting data with UUID '%s'"
+msgstr ""
 
 #, c-format
 msgid "Could not lookup %s for %s invocation"
 msgstr "Не вдалося виконати пошук %s для виклику %s"
-
-#, c-format
-msgid "Could not lookup %s for domain %s"
-msgstr "Не вдалося виконати пошук %s для домену %s"
 
 #, c-format
 msgid "Could not lookup '%s' from '%s'"
@@ -4867,8 +4879,16 @@ msgid "Could not parse valid disk index from '%s'"
 msgstr "Не вдалося визначити коректний індекс диска з «%s»"
 
 #, c-format
+msgid "Could not parse version from '%s'"
+msgstr ""
+
+#, c-format
 msgid "Could not press key %d"
 msgstr "Не вдалося натиснути клавішу %d"
+
+#, c-format
+msgid "Could not produce packed version number from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -4962,7 +4982,6 @@ msgstr "Не вдалося отримати запис «bridge/forward_delay»
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr "Не вдалося отримати запис «bridge/stp_state» для «%s»"
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "Не вдалося отримати дані щодо буфера"
 
@@ -5650,13 +5669,6 @@ msgid "Domain %s XML configuration not changed.\n"
 msgstr "Не змінено налаштування XML домену %s\n"
 
 #, c-format
-msgid ""
-"Domain %s asked for 'sev' launch but this QEMU does not support SEV feature"
-msgstr ""
-"Домен %s попросив запуску «sev», але у цьому QEMU не передбачено можливостей "
-"SEV"
-
-#, c-format
 msgid "Domain %s attached to pid %u\n"
 msgstr "Домен %s долучено до pid %u\n"
 
@@ -5829,7 +5841,6 @@ msgstr ""
 "У домені %d інтерфейсів. Будь ласка, вкажіть інтерфейс для від'єднання за "
 "допомогою --mac"
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -5865,6 +5876,9 @@ msgstr "Домен вже запущено"
 
 msgid "Domain is not active"
 msgstr "Домен не є активним"
+
+msgid "Domain is not active or in state transition"
+msgstr ""
 
 msgid "Domain is not active or is in state transition"
 msgstr "Домен не є активним або перебуває у стані переходу"
@@ -6674,12 +6688,6 @@ msgstr "Не вдалося виділити об'єм пам'яті для ка
 msgid "Failed to allocate new source node"
 msgstr "Не вдалося розмістити вузол нового джерела"
 
-msgid "Failed to allocate security label"
-msgstr "Не вдалося розмістити мітку захисту"
-
-msgid "Failed to allocate security model"
-msgstr "Не вдалося розмістити модель захисту"
-
 #, c-format
 msgid "Failed to allocate slirp for '%s'"
 msgstr "Не вдалося розмістити у пам'яті slirp для «%s»"
@@ -7064,20 +7072,13 @@ msgstr "Не вдалося створити потік обробки"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Не вдалося створити потік обробки для отримання даних перенесення"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle daemon restart"
 msgstr ""
 "Не вдалося створити потік обробки для роботи з перезапуску фонової служби"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Не вдалося створити потік для обробки завершення роботи домену"
 
-#. Not much else can be done
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Не вдалося створити потік обробки для обробки оновлення буфера"
 
@@ -7551,8 +7552,8 @@ msgid "Failed to get the number of inactive pools"
 msgstr "Не вдалося отримати кількість неактивних буферів"
 
 #, c-format
-msgid "Failed to get udev device for syspath '%s' or '%s'"
-msgstr "Не вдалося отримати назву пристрою UDEV для шляху «%s» або «%s»"
+msgid "Failed to get udev device for syspath '%s'"
+msgstr ""
 
 msgid "Failed to get uuid of secret"
 msgstr "Не вдалося отримати UUID ключа"
@@ -7620,8 +7621,8 @@ msgid "Failed to inquire lock: %s"
 msgstr "Не вдалося визначити стан блокування: %s"
 
 #, c-format
-msgid "Failed to kill process %ld"
-msgstr "Не вдалося вбити процес %ld"
+msgid "Failed to kill process %lld"
+msgstr ""
 
 #, c-format
 msgid "Failed to kill process %lld: %s"
@@ -7639,7 +7640,6 @@ msgstr "Не вдалося побудувати список активних �
 msgid "Failed to list active pools"
 msgstr "Не вдалося побудувати список активних резервних сховищ даних"
 
-#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "Не вдалося побудувати список доменів"
 
@@ -7655,27 +7655,21 @@ msgstr "Не вдалося побудувати список неактивни
 msgid "Failed to list inactive pools"
 msgstr "Не вдалося побудувати список неактивних резервних сховищ"
 
-#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "Не вдалося побудувати список інтерфейсів"
 
-#. there was an error during the call
 msgid "Failed to list network filter bindings"
 msgstr "Не вдалося створити список прив'язок фільтрів мережі"
 
-#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "Не вдалося побудувати список фільтрів мережі"
 
-#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "Не вдалося побудувати список мереж"
 
-#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "Не вдалося побудувати список вузлових пристроїв"
 
-#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "Не вдалося побудувати список ключів вузла"
 
@@ -7683,7 +7677,6 @@ msgstr "Не вдалося побудувати список ключів ву�
 msgid "Failed to list persistent guests on $uri"
 msgstr "Не вдалося побудувати список постійних гостьових систем з адресою $uri"
 
-#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "Не вдалося побудувати список буферів"
 
@@ -7705,7 +7698,6 @@ msgstr ""
 "Не вдалося побудувати список віртуальних процесорів для домену «%d» за "
 "допомогою libxenlight"
 
-#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "Не вдалося побудувати список томів"
 
@@ -8215,10 +8207,6 @@ msgstr ""
 "NUMA"
 
 #, c-format
-msgid "Failed to reserve %s %o"
-msgstr "Не вдалося зарезервувати %s %o"
-
-#, c-format
 msgid "Failed to reserve port %d"
 msgstr "Не вдалося зарезервувати порт %d"
 
@@ -8285,9 +8273,6 @@ msgstr "Не вдалося відновити роботу домену %d"
 msgid "Failed to resume domain '%d' with libxenlight"
 msgstr "Не вдалося відновити роботу домену «%d» за допомогою libxenlight"
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Не вдалося відновити роботу гостьової системи %s після помилки"
@@ -8900,63 +8885,10 @@ msgstr ""
 "У першого заснованого на файлі жорсткого диска немає джерела, не вдалося "
 "визначити сховище даних та шлях ддо файла VMX"
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr "Прапорець «%s» потрібен, якщо використовується «%s»"
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "Прапорці «%s» і «%s» не можна використовувати одночасно"
@@ -9331,6 +9263,10 @@ msgstr ""
 #, c-format
 msgid "Host CPU is a superset of CPU described in %s\n"
 msgstr "Процесор основної системи є надмножиною процесорі, описаних у %s\n"
+
+#, c-format
+msgid "Host CPU model does not match required CPU vendor %s or(and) model %s"
+msgstr ""
 
 msgid "Host CPU provides forbidden features"
 msgstr "Процесором основної системи надаються заборонені можливості"
@@ -9994,15 +9930,6 @@ msgstr "Некоректне значення allow: мало бути «yes» �
 msgid "Invalid append attribute value '%s'"
 msgstr "Некоректне значення атрибута append, «%s»"
 
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr "Некоректний аргумент"
 
@@ -10331,6 +10258,12 @@ msgstr "Некоректний формат запису «bonding/arp_validate�
 #, c-format
 msgid "Invalid format for 'bonding/mode' for '%s'"
 msgstr "Некоректний формат запису «bonding/mode» для «%s»"
+
+msgid "Invalid format for launch security cbitpos"
+msgstr ""
+
+msgid "Invalid format for launch security reduced-phys-bits"
+msgstr ""
 
 #, c-format
 msgid "Invalid forwarder IP address '%s' in network '%s'"
@@ -11234,12 +11167,6 @@ msgstr "Помилкове форматування масиву даних «di
 msgid "Malformed guest-get-fsinfo data array"
 msgstr "Помилкове форматування масиву даних guest-get-fsinfo"
 
-msgid "Malformed guest-get-users data array"
-msgstr "Помилкове форматування масиву даних guest-get-users"
-
-msgid "Malformed guest-get-vcpus data array"
-msgstr "Помилкове форматування масиву даних guest-get-vcpus"
-
 msgid "Malformed id field in JSON state document"
 msgstr ""
 "Помилкове форматування поля ідентифікатора (id) у документі щодо стану JSON"
@@ -12065,9 +11992,18 @@ msgstr ""
 "У відповіді query-rx-filter пропущено елемент %zu масиву «vlan-table» або "
 "вказано некоректні дані"
 
+msgid "Missing or invalid fd in add-fd response"
+msgstr ""
+
+msgid "Missing or invalid fdset-id in add-fd response"
+msgstr ""
+
 msgid "Missing or invalid name in query-rx-filter response"
 msgstr ""
 "У відповіді query-rx-filter пропущено назву або вказано некоректну назву"
+
+msgid "Missing or invalid return data in add-fd response"
+msgstr ""
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
 msgstr ""
@@ -12458,12 +12394,6 @@ msgstr "Підтримки дисків NVMe не передбачено у ць
 msgid "NVMe namespace can't be zero"
 msgstr "Простір назв NVMe не може бути нульовим"
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "Назва"
 
@@ -12680,6 +12610,9 @@ msgstr ""
 msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
 msgstr ""
 "Не вказано атрибута «dev» <source> за допомогою <interface type='direct'/>"
+
+msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
+msgstr ""
 
 msgid ""
 "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
@@ -13484,20 +13417,6 @@ msgstr ""
 "Параметр «%s» є некоректним для контролера PCI з індексом %d, модель %s і "
 "значенням modelName «%s»"
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr "Параметр --%s потрібен для параметра --%s"
@@ -13509,20 +13428,6 @@ msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 "У фоновій службі не передбачено підтримки додаткових прапорців або --rawstats"
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "Параметри --%s і --%s не можна використовувати одночасно"
@@ -13604,6 +13509,10 @@ msgstr "Вивід інформації щодо тому у форматі да
 
 msgid "Overlapping vcpus in resctrls"
 msgstr "Перекриття vcpus у resctrls"
+
+#, c-format
+msgid "Overlay file '%s' for transient disk '%s' already exists"
+msgstr ""
 
 msgid "PASS"
 msgstr "ПРОЙДЕНО"
@@ -14356,10 +14265,6 @@ msgid "Relative backing during copy not supported yet"
 msgstr "Підтримки відносного резервування під час копіювання ще не передбачено"
 
 #, c-format
-msgid "Release %s %o failed"
-msgstr "Не вдалося вивільнити %s %o"
-
-#, c-format
 msgid "Remote command terminated with non-zero code: %d"
 msgstr "Виконання віддаленої команди перервано з ненульовим кодом виходу: %d"
 
@@ -14543,8 +14448,8 @@ msgstr "Отримати обмеження налаштувань сервер�
 msgid "Retrieve threadpool attributes from a server. "
 msgstr "Отримати атрибути threadpool з сервера. "
 
-msgid "Reture pool info in bytes"
-msgstr "Повернути дані щодо буфера у байтах"
+msgid "Return pool info in bytes"
+msgstr ""
 
 msgid "Returns XML <sources> document."
 msgstr "Повертає документ XML <sources>."
@@ -14682,7 +14587,6 @@ msgstr "на цьому домені стан S3 вимкнено"
 msgid "S4 state is disabled for this domain"
 msgstr "на цьому домені стан S4 вимкнено"
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr "Профілю клієнта SASL «%s» немає серед дозволених ACL"
@@ -14699,8 +14603,16 @@ msgstr "Підтримки механізму SASL %s не передбачен�
 msgid "SASL negotiation data too long: %zu bytes"
 msgstr "Перевищення об'єму даних узгодження SASL: %zu байтів"
 
+#, c-format
+msgid "SATA controller index %d out of [0..3] range"
+msgstr ""
+
 msgid "SATA is not supported with this QEMU binary"
 msgstr "SATA не підтримуються цим двійковим компонентом QEMU"
+
+#, c-format
+msgid "SATA unit index %d out of [0..29] range"
+msgstr ""
 
 #, c-format
 msgid "SCSI bus index %d out of [0] range"
@@ -14749,9 +14661,6 @@ msgstr ""
 "Адреса SCSI основної системи контролер='%u' канал='%u' призначення='%u' "
 "модуль='%u' використовується іншим пристроєм SCSI основної системи"
 
-msgid "SCSI host device data structure was not initialized"
-msgstr "Структуру даних пристрою основної системи SCSI не було ініціалізовано"
-
 msgid "SCSI host device doesn't support managed mode"
 msgstr "У пристрої вузла SCSI не передбачено підтримки керованого режиму"
 
@@ -14766,6 +14675,9 @@ msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr ""
 "Пристрій основної системи SCSI_host має використовувати тип адреси «pci» або "
 "«ccw»"
+
+msgid "SEV launch security is not supported with this QEMU binary"
+msgstr ""
 
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
 msgstr "SHUTDOWN_TIMEOUT має бути рівним або більшим за 0"
@@ -15232,9 +15144,6 @@ msgstr "Час налаштування:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "У цій версії QEMU не передбачено підтримки прив'язки спільної пам'яті"
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 msgid "Shared memory:\n"
 msgstr "Спільна пам'ять:\n"
 
@@ -15310,7 +15219,6 @@ msgstr "Для цього потоку даних пропускання не п
 msgid "Snapshot"
 msgstr "Знімок"
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "Налаштування XML знімка %s не змінено.\n"
@@ -15801,7 +15709,6 @@ msgstr "Некоректний шлях до пристрою TPM %s"
 msgid "Table row cannot be empty"
 msgstr "Рядок таблиці не може бути порожнім"
 
-#. title
 msgid "Target"
 msgstr "Призначення"
 
@@ -15970,6 +15877,12 @@ msgid ""
 msgstr ""
 "Значення атрибута autodeflate додаткової пам'яті призначення, %s, не "
 "відповідає моделі джерела, «%s»"
+
+#, c-format
+msgid ""
+"Target balloon freePageReporting attribute value '%s' does not match source "
+"'%s'"
+msgstr ""
 
 #, c-format
 msgid "Target balloon model %s does not match source %s"
@@ -17101,9 +17014,8 @@ msgstr "Забагато клієнтів «%d» для обмеження «%d�
 msgid "Too many disks in fsinfo: %zd for limit %d"
 msgstr "Забагато дисків у fsinfo: %zd при обмеженні у %d"
 
-#, c-format
-msgid "Too many domain elements in migration cookie: %d"
-msgstr "Забагато елементів домену у куці перенесення: %d"
+msgid "Too many domain elements in migration cookie"
+msgstr ""
 
 #, c-format
 msgid "Too many domain_checkpoints '%d' for limit '%d'"
@@ -17235,11 +17147,9 @@ msgstr "Спроба запису до сокета у стані помилки
 msgid "Try again?"
 msgstr "Повторити спробу?"
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "Спроба вилучення об'єкта MultiCURL, який ще перебуває у користуванні"
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "Спроба вилучення об'єкта SharedCURL, який ще перебуває у користуванні"
 
@@ -17358,8 +17268,8 @@ msgstr "Схема адреси «%s» для вбудованого драйв�
 
 msgid "URI to use for disks migration (overrides --disks-port)"
 msgstr ""
-"Адреса, яку слід використати для перенесення дисків (перевизначається "
-"--disks-port)"
+"Адреса, яку слід використати для перенесення дисків (перевизначається --"
+"disks-port)"
 
 #, c-format
 msgid "URI with tcp scheme did not provide a server part: %s"
@@ -18104,6 +18014,9 @@ msgstr "На цій платформі неможливо визначити з�
 msgid "Unable to get STP on %s on this platform"
 msgstr "На цій платформі неможливо визначити STP на %s"
 
+msgid "Unable to get VF net device stats on this platform"
+msgstr ""
+
 #, c-format
 msgid "Unable to get VLAN for interface %s"
 msgstr "Неможливо отримати VLAN інтерфейсу %s"
@@ -18513,6 +18426,10 @@ msgstr "Не вдалося відкрити %s. Чи завантажено м�
 #, c-format
 msgid "Unable to open '%s'"
 msgstr "Не вдалося відкрити «%s»"
+
+#, c-format
+msgid "Unable to open '%s' for vdpa device"
+msgstr ""
 
 msgid "Unable to open /dev/loop-control"
 msgstr "Не вдалося відкрити /dev/loop-control"
@@ -19731,7 +19648,6 @@ msgstr "Невідомий тип enable, %d, у мережі"
 msgid "Unknown error"
 msgstr "Невідома помилка"
 
-#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "Невідоме значення помилки"
 
@@ -20522,13 +20438,11 @@ msgstr "У контейнерах не передбачено підтримки
 msgid "Vifname %s too big for destination"
 msgstr "Vifname %s є занадто великим для призначення"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 "Програма для керування libvirt %s за допомогою командного рядка — Virsh\n"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr ""
@@ -21502,6 +21416,10 @@ msgstr ""
 "передбачено"
 
 #, c-format
+msgid "block jobs are not supported on transient disk '%s'"
+msgstr ""
+
+#, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr ""
 "запитане значення пікового використання блоків є занадто великим для "
@@ -21672,8 +21590,8 @@ msgstr "побудова"
 msgid "bus %s too big for destination"
 msgstr "канал %s є надто великими для призначення"
 
-msgid "bus must be 0 for ide controller"
-msgstr "для контролера IDE bus має дорівнювати 0"
+msgid "bus must be 0 for sata controller"
+msgstr ""
 
 msgid "bypass cache unsupported by this system"
 msgstr "підтримки обходу кешу у цій системі не передбачено"
@@ -21941,8 +21859,8 @@ msgstr ""
 "знімку %s"
 
 #, c-format
-msgid "cannot change config of '%s' network type"
-msgstr "не вдалося змінити налаштування типу мережі «%s»"
+msgid "cannot change config of '%s' network interface type"
+msgstr ""
 
 msgid "cannot change keymap setting on spice graphics"
 msgstr "не вдалося змінити параметр розкладки графічної системи SPICE"
@@ -22699,7 +22617,6 @@ msgstr "не вдалося відкрити шлях «%s»"
 msgid "cannot open path '%s' in '%s'"
 msgstr "не вдалося відкрити каталог «%s» у «%s»"
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "не вдалося відкрити том «%s»"
@@ -23564,7 +23481,6 @@ msgstr "назва контрольної точки"
 msgid "child didn't write error (status=%d)"
 msgstr "дочірній процес не записав помилки (стан=%d)"
 
-#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "дочірньому процесу не вдалося створити каталог «%s»"
@@ -25813,6 +25729,9 @@ msgstr "помилка під час обробки IFLA_VF_PORT під час �
 msgid "error parsing IFLA_VF_PORT part"
 msgstr "помилка під час обробки частини IFLA_VF_PORT"
 
+msgid "error parsing IFLA_VF_STATS"
+msgstr ""
+
 msgid "error parsing pid of lldpad"
 msgstr "помилка під час обробки pid lldpad"
 
@@ -25942,6 +25861,13 @@ msgstr "подія «lifecycle» для ключа %s: %s\n"
 #, c-format
 msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr "подія «lifecycle» для сховища даних %s: %s\n"
+
+#, c-format
+msgid ""
+"event 'memory-failure' for domain %s:\n"
+"recipient: %s\n"
+"action: %s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'metadata-change' for domain %s: %s %s\n"
@@ -26316,9 +26242,6 @@ msgstr "не вдалося виконати перетворення розмі
 msgid "failed to convert the XML node tree"
 msgstr "не вдалося перетворити ієрархію вузлів XML"
 
-msgid "failed to copy 'vcpus'"
-msgstr "не вдалося скопіювати «vcpus»"
-
 msgid "failed to copy all device rules"
 msgstr "не вдалося скопіювати усі правила пристроїв"
 
@@ -26586,14 +26509,8 @@ msgstr "не вдалося отримати інтерфейс «%s»"
 msgid "failed to get interface-types from '%s'"
 msgstr "не вдалося отримати типи інтерфейсів з «%s»"
 
-msgid "failed to get launch security cbitpos"
-msgstr "не вдалося отримати cbitpos захисту від запуску"
-
 msgid "failed to get launch security policy"
 msgstr "не вдалося отримати правила захисту від запуску"
-
-msgid "failed to get launch security reduced-phys-bits"
-msgstr "не вдалося отримати reduced-phys-bits захисту від запуску"
 
 #, c-format
 msgid "failed to get list of %s interfaces on host"
@@ -27317,6 +27234,9 @@ msgstr "не вдалося записати дані до профілю"
 msgid "failed writing to file '%s'"
 msgstr "не вдалося виконати запис до файла «%s»"
 
+msgid "fatal"
+msgstr ""
+
 #, c-format
 msgid "fatal signal %d"
 msgstr "критичний сигнал %d"
@@ -27335,6 +27255,9 @@ msgid "fd passing is not supported by this connection"
 msgstr ""
 "цим з'єднанням не передбачено можливості передавання дескрипторів файлів"
 
+msgid "fdset must be valid"
+msgstr ""
+
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
 "отримати або встановити поточний визначений набір фільтрів журналу фонової "
@@ -27345,9 +27268,6 @@ msgstr ""
 "отримати або встановити поточний визначений набір виведень журналу фонової "
 "служби"
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, c-format
 msgid "field '%s' is malformed"
 msgstr "помилкове форматування поля «%s»"
@@ -27549,6 +27469,13 @@ msgstr ""
 "параметр flags має бути встановлено у VIR_MEMORY_VIRTUAL чи "
 "VIR_MEMORY_PHYSICAL"
 
+#, c-format
+msgid ""
+"flags:\n"
+"\taction required: %d\n"
+"\trecursive: %d\n"
+msgstr ""
+
 msgid "floor attribute is not supported for this config"
 msgstr "підтримки атрибута floor для цієї конфігурації не передбачено"
 
@@ -27660,6 +27587,9 @@ msgstr "виявлено надання без MAC-адреси"
 
 msgid "found non printable characters in secret"
 msgstr "у паролі виявлено непридатні до друку символи"
+
+msgid "freePageReporting is not supported by this QEMU binary"
+msgstr ""
 
 msgid "from snapshot"
 msgstr "зі знімка"
@@ -27860,6 +27790,9 @@ msgstr ""
 msgid "group_name can be configured only together with settings"
 msgstr "group_name можна налаштувати лише разом із параметрами (settings)"
 
+msgid "guest"
+msgstr ""
+
 msgid "guest CIDs must be >= 3"
 msgstr "CID гостьових систем мають бути >= 3"
 
@@ -27964,7 +27897,6 @@ msgstr "зупинити роботу домену після створення
 msgid "handler failed to wait on condition"
 msgstr "обробнику не вдалося дочекатися виконання умови"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "у результаті пошук хешу отримано нульовий вказівник"
 
@@ -28086,6 +28018,9 @@ msgstr "не знайдено пристрою основної системи %
 msgid "hostdev does not have an alias"
 msgstr "пристрій основної системи не має альтернативної назви"
 
+msgid "hostdev interface missing hostdev data"
+msgstr ""
+
 #, c-format
 msgid "hostdev invalid secret type '%s'"
 msgstr "некоректний тип ключа основної системи «%s»"
@@ -28204,6 +28139,9 @@ msgstr ""
 "файлову систему hugetlbfs не змонтовано або вимкнено адміністратором за "
 "допомогою налаштувань"
 
+msgid "hypervisor"
+msgstr ""
+
 msgid "hypervisor connection URI"
 msgstr "URI з'єднання гіпервізора"
 
@@ -28251,6 +28189,9 @@ msgstr "якщо IOMMU увімкнено ядром"
 #, c-format
 msgid "ifkey \"%s\" has no req"
 msgstr "ifkey «%s» не містить req"
+
+msgid "ignore"
+msgstr ""
 
 #, c-format
 msgid "ignoring debug level %d out of range [%d-%d]"
@@ -28399,6 +28340,9 @@ msgstr "ініціалізувати"
 
 msgid "initiator iqn for underlying storage"
 msgstr "iqn ініціатора для базового сховища даних"
+
+msgid "inject"
+msgstr ""
 
 msgid "inject-nmi"
 msgstr "nmi-ін'єкція"
@@ -28566,25 +28510,6 @@ msgstr "назва інтерфейсу"
 msgid "interface name %s does not fit into buffer "
 msgstr "назву інтерфейсу %s не можна розмістити у буфері "
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr "назва інтерфейсу або MAC-адреса"
 
@@ -29045,6 +28970,10 @@ msgstr "некоректний прапорець"
 msgid "invalid flag combination: (0x%x)"
 msgstr "некоректне поєднання прапорців: (0x%x)"
 
+#, c-format
+msgid "invalid freePageReporting attribute value '%s'"
+msgstr ""
+
 msgid "invalid geometry settings (cyls)"
 msgstr "некоректні параметри геометрії (циліндри)"
 
@@ -29203,6 +29132,10 @@ msgstr ""
 
 msgid "invalid mode"
 msgstr "некоректний режим"
+
+#, c-format
+msgid "invalid model for interface of type '%s': '%s'"
+msgstr ""
 
 #, c-format
 msgid "invalid model for video type '%s'"
@@ -30850,6 +30783,9 @@ msgstr ""
 "допомогою нарощувального копіювання (один основний образ використовується "
 "джерелом і призначенням)"
 
+msgid "migration with transient disk is not supported"
+msgstr ""
+
 msgid "migration with virtiofs device is not supported"
 msgstr "підтримки перенесення з пристроєм virtiofs не передбачено"
 
@@ -31908,15 +31844,6 @@ msgstr "змінити або отримати заголовок замість
 msgid "monitor failure"
 msgstr "помилка монітора"
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr "значенням monitor не повинен бути NULL"
 
@@ -32114,7 +32041,6 @@ msgstr "потребує можливостей rawio"
 msgid "negative size requires --shrink"
 msgstr "від'ємний розмір вимагає додавання параметра --shrink"
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "виявлений при узгодженні сторін SSF %d є не надто міцним"
@@ -32129,8 +32055,8 @@ msgstr ""
 
 msgid "netcat path not valid with native proxy mode"
 msgstr ""
-"шлях netcat не є чинним, якщо використовується режим природного "
-"проксі-сервера"
+"шлях netcat не є чинним, якщо використовується режим природного проксі-"
+"сервера"
 
 msgid "netdir"
 msgstr "мережевий каталог"
@@ -34157,17 +34083,8 @@ msgstr "Агентом qemu не надано поля «ip-address-type» дл�
 msgid "qemu agent didn't provide 'name' field"
 msgstr "Агентом qemu не надано поля «name»"
 
-msgid "qemu agent didn't provide 'return' field"
-msgstr "Агентом qemu не надано поля «return»"
-
 msgid "qemu agent didn't return an array of interfaces"
 msgstr "Агентом qemu не повернуто масиву інтерфейсів"
-
-msgid "qemu agent reply missing IP addr in array"
-msgstr "Відповідь агента qemu не містить адреси IP у масиві"
-
-msgid "qemu agent reply missing interface entry in array"
-msgstr "Відповідь агента qemu не містить запису інтерфейсу у масиві"
 
 #, c-format
 msgid "qemu block name '%s' doesn't match expected '%s'"
@@ -34291,6 +34208,18 @@ msgstr ""
 msgid "query-events reply data was missing 'name'"
 msgstr "у даних відповіді query-events не міститься поля «name»"
 
+msgid "query-fdsets reply was missing 'fdset-id'"
+msgstr ""
+
+msgid "query-fdsets return data missing 'fd'"
+msgstr ""
+
+msgid "query-fdsets return data missing fd array element"
+msgstr ""
+
+msgid "query-fdsets return data missing fdset array element"
+msgstr ""
+
 msgid "query-hotpluggable-cpus didn't return device props"
 msgstr "query-hotpluggable-cpus не повернуто властивостей пристрою"
 
@@ -34326,6 +34255,9 @@ msgid "query-machines reply has malformed 'default-cpu-type' data"
 msgstr ""
 "у відповіді query-machines використано помилкове форматування даних «default-"
 "cpu-type»"
+
+msgid "query-machines reply has malformed 'default-ram-id' data"
+msgstr ""
 
 msgid "query-machines reply has malformed 'is-default' data"
 msgstr ""
@@ -34703,6 +34635,12 @@ msgstr "бажаний розмір кешу стискання (у байтах
 msgid "requested target '%s' does not match target '%s'"
 msgstr ""
 "надісланий запит щодо призначення, «%s», не відповідає призначенню «%s»"
+
+msgid "requested unknown memory failure action"
+msgstr ""
+
+msgid "requested unknown memory failure recipient"
+msgstr ""
 
 #, c-format
 msgid "requested vcpu '%d' is not present in the domain"
@@ -36000,6 +35938,9 @@ msgstr "для моделі контролера «lsilogic» призначен
 msgid "target must be 0 for ide controller"
 msgstr "для контролера ide призначенням має бути 0"
 
+msgid "target must be 0 for sata controller"
+msgstr ""
+
 msgid ""
 "target must be 0 for scsi host device if its controller model is 'lsilogic'"
 msgstr ""
@@ -36778,6 +36719,29 @@ msgstr ""
 "загальне обмеження пропускання у форматі масштабованого цілого значення "
 "(типова одиниця — байти)"
 
+#, c-format
+msgid "transient disk '%s' must not be empty"
+msgstr ""
+
+#, c-format
+msgid "transient disk '%s' must not be read-only"
+msgstr ""
+
+msgid "transient disk hotplug isn't supported"
+msgstr ""
+
+#, c-format
+msgid "transient disk not supported by this QEMU binary (%s)"
+msgstr ""
+
+#, c-format
+msgid "transient disk supported only with 'disk' device (%s)"
+msgstr ""
+
+#, c-format
+msgid "transient disk supported only with 'file' type (%s)"
+msgstr ""
+
 msgid "transient disks not supported yet"
 msgstr "підтримки тимчасових дисків не передбачено"
 
@@ -37055,7 +37019,6 @@ msgstr "не вдалося знайти qemu-img"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr "не вдалося знайти коректний потрібний модуль VMware, «%s»"
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "не вдалося виконати fsync %s"
@@ -37487,6 +37450,9 @@ msgstr "неочікуваний тип адреси для диска FDC"
 msgid "unexpected address type for ide disk"
 msgstr "неочікуваний тип адреси для диска IDE"
 
+msgid "unexpected address type for sata disk"
+msgstr ""
+
 msgid "unexpected address type for scsi disk"
 msgstr "неочікуваний тип адреси для диска SCSI"
 
@@ -37899,8 +37865,6 @@ msgstr ""
 "у цьому виконуваному файлі QEMU не передбачено підтримки сокетів UNIX для "
 "графіки spice"
 
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "невідомо"
 
@@ -39097,28 +39061,18 @@ msgstr "непідтримувана дія у відповідь на поми�
 msgid "unsupported feature %s"
 msgstr "підтримки можливості %s не передбачено"
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
+#, c-format
+msgid "unsupported filesystem accessmode '%s'"
+msgstr ""
+
+#, c-format
+msgid "unsupported filesystem driver '%s'"
+msgstr ""
+
+#, c-format
+msgid "unsupported filesystem type '%s'"
+msgstr ""
+
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "непідтримувані прапорці (0x%lx) у функції %s"
@@ -39454,14 +39408,23 @@ msgstr ""
 "приєднання вгарячу віртуальних процесорів (%u)"
 
 #, c-format
-msgid "vCenter IP address %s too big for destination"
-msgstr "IP-адреса vCenter %s є занадто великою для призначення"
+msgid "vDPA chardev path '%s' does not exist"
+msgstr ""
+
+msgid "vDPA devices are not supported with this QEMU binary"
+msgstr ""
+
+msgid "vDPA devices cannot be migrated"
+msgstr ""
 
 msgid "vTPM usage specified, but name is missing"
 msgstr "Вказано використання vTPM, але назву не вказано"
 
 msgid "validate the XML against the schema"
 msgstr "перевірити XML за схемою"
+
+msgid "validate the XML document against schema"
+msgstr ""
 
 #, c-format
 msgid "value '%llu' is too big for coalesce parameter, maximum is '%lu'"
@@ -39938,9 +39901,6 @@ msgid "virtiofs only supports passthrough accessmode"
 msgstr ""
 "У virtiofs передбачено підтримку лише режиму доступу з передаванням даних"
 
-msgid "virtiofs requires one or more NUMA nodes"
-msgstr "Для virtiofs потрібен один або декілька вузлів NUMA"
-
 msgid "virtiofs requires shared memory"
 msgstr "virtiofs потребує спільної пам'яті"
 
@@ -40374,6 +40334,92 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid "%s: %d: failed to allocate %d bytes"
+#~ msgstr "Помилка %s: %d: при спробі виділення %d байт"
+
+#~ msgid "Could not create param"
+#~ msgstr "Не вдалося створити параметр"
+
+#~ msgid "Could not create params"
+#~ msgstr "Не вдалося створити параметри"
+
+#~ msgid "Could not lookup %s"
+#~ msgstr "Не вдалося виконати пошук %s"
+
+#~ msgid "Could not lookup %s for domain %s"
+#~ msgstr "Не вдалося виконати пошук %s для домену %s"
+
+#~ msgid ""
+#~ "Domain %s asked for 'sev' launch but this QEMU does not support SEV "
+#~ "feature"
+#~ msgstr ""
+#~ "Домен %s попросив запуску «sev», але у цьому QEMU не передбачено "
+#~ "можливостей SEV"
+
+#~ msgid "Failed to allocate security label"
+#~ msgstr "Не вдалося розмістити мітку захисту"
+
+#~ msgid "Failed to allocate security model"
+#~ msgstr "Не вдалося розмістити модель захисту"
+
+#~ msgid "Failed to get udev device for syspath '%s' or '%s'"
+#~ msgstr "Не вдалося отримати назву пристрою UDEV для шляху «%s» або «%s»"
+
+#~ msgid "Failed to kill process %ld"
+#~ msgstr "Не вдалося вбити процес %ld"
+
+#~ msgid "Failed to reserve %s %o"
+#~ msgstr "Не вдалося зарезервувати %s %o"
+
+#~ msgid "Malformed guest-get-users data array"
+#~ msgstr "Помилкове форматування масиву даних guest-get-users"
+
+#~ msgid "Malformed guest-get-vcpus data array"
+#~ msgstr "Помилкове форматування масиву даних guest-get-vcpus"
+
+#~ msgid "Release %s %o failed"
+#~ msgstr "Не вдалося вивільнити %s %o"
+
+#~ msgid "Reture pool info in bytes"
+#~ msgstr "Повернути дані щодо буфера у байтах"
+
+#~ msgid "SCSI host device data structure was not initialized"
+#~ msgstr ""
+#~ "Структуру даних пристрою основної системи SCSI не було ініціалізовано"
+
+#~ msgid "Too many domain elements in migration cookie: %d"
+#~ msgstr "Забагато елементів домену у куці перенесення: %d"
+
+#~ msgid "bus must be 0 for ide controller"
+#~ msgstr "для контролера IDE bus має дорівнювати 0"
+
+#~ msgid "cannot change config of '%s' network type"
+#~ msgstr "не вдалося змінити налаштування типу мережі «%s»"
+
+#~ msgid "failed to copy 'vcpus'"
+#~ msgstr "не вдалося скопіювати «vcpus»"
+
+#~ msgid "failed to get launch security cbitpos"
+#~ msgstr "не вдалося отримати cbitpos захисту від запуску"
+
+#~ msgid "failed to get launch security reduced-phys-bits"
+#~ msgstr "не вдалося отримати reduced-phys-bits захисту від запуску"
+
+#~ msgid "qemu agent didn't provide 'return' field"
+#~ msgstr "Агентом qemu не надано поля «return»"
+
+#~ msgid "qemu agent reply missing IP addr in array"
+#~ msgstr "Відповідь агента qemu не містить адреси IP у масиві"
+
+#~ msgid "qemu agent reply missing interface entry in array"
+#~ msgstr "Відповідь агента qemu не містить запису інтерфейсу у масиві"
+
+#~ msgid "vCenter IP address %s too big for destination"
+#~ msgstr "IP-адреса vCenter %s є занадто великою для призначення"
+
+#~ msgid "virtiofs requires one or more NUMA nodes"
+#~ msgstr "Для virtiofs потрібен один або декілька вузлів NUMA"
 
 #~ msgid "%s model of watchdog can go only on ISA bus"
 #~ msgstr "Модель %s watchdog може стосуватися лише каналу ISA"
