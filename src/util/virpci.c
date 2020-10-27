@@ -2384,7 +2384,6 @@ virPCIGetNetName(const char *device_link_sysfs_path,
 {
     g_autofree char *pcidev_sysfs_net_path = NULL;
     g_autofree char *firstEntryName = NULL;
-    int ret = -1;
     g_autoptr(DIR) dir = NULL;
     struct dirent *entry = NULL;
     size_t i = 0;
@@ -2399,8 +2398,7 @@ virPCIGetNetName(const char *device_link_sysfs_path,
 
     if (virDirOpenQuiet(&dir, pcidev_sysfs_net_path) < 0) {
         /* this *isn't* an error - caller needs to check for netname == NULL */
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     while (virDirRead(dir, &entry, pcidev_sysfs_net_path) > 0) {
@@ -2411,7 +2409,7 @@ virPCIGetNetName(const char *device_link_sysfs_path,
             g_autofree char *thisPhysPortID = NULL;
 
             if (virNetDevGetPhysPortID(entry->d_name, &thisPhysPortID) < 0)
-                goto cleanup;
+                return -1;
 
             /* if this one doesn't match, keep looking */
             if (STRNEQ_NULLABLE(physPortID, thisPhysPortID)) {
@@ -2431,34 +2429,27 @@ virPCIGetNetName(const char *device_link_sysfs_path,
         }
 
         *netname = g_strdup(entry->d_name);
-
-        ret = 0;
-        break;
+        return 0;
     }
 
-    if (ret < 0) {
-        if (physPortID) {
-            if (firstEntryName) {
-                /* we didn't match the provided phys_port_id, but this
-                 * is probably because phys_port_id isn't implemented
-                 * for this NIC driver, so just return the first
-                 * (probably only) netname we found.
-                 */
-                *netname = firstEntryName;
-                firstEntryName = NULL;
-                ret = 0;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not find network device with "
-                                 "phys_port_id '%s' under PCI device at %s"),
-                               physPortID, device_link_sysfs_path);
-            }
-        } else {
-            ret = 0; /* no netdev at the given index is *not* an error */
-        }
+    if (!physPortID)
+        return 0;
+
+    if (firstEntryName) {
+        /* we didn't match the provided phys_port_id, but this
+         * is probably because phys_port_id isn't implemented
+         * for this NIC driver, so just return the first
+         * (probably only) netname we found.
+         */
+        *netname = g_steal_pointer(&firstEntryName);
+        return 0;
     }
- cleanup:
-    return ret;
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Could not find network device with "
+                     "phys_port_id '%s' under PCI device at %s"),
+                   physPortID, device_link_sysfs_path);
+    return -1;
 }
 
 int
