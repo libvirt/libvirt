@@ -509,6 +509,8 @@ v6.4.0 (2020-06-02)
     already does in these cases. Users are encouraged to provide complete NUMA
     topologies to avoid unexpected changes in the domain XML.
 
+  * Cooperlake x86 CPU model is added
+
 * **Bug fixes**
 
   * qemu: fixed regression in network device hotplug with new qemu versions
