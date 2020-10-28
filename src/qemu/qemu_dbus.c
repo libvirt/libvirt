@@ -148,7 +148,8 @@ qemuDBusStop(virQEMUDriverPtr driver,
 
 int
 qemuDBusSetupCgroup(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm)
+                    virDomainObjPtr vm,
+                    virCgroupPtr cgroup)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -167,7 +168,7 @@ qemuDBusSetupCgroup(virQEMUDriverPtr driver,
         return -1;
     }
 
-    return virCgroupAddProcess(priv->cgroup, cpid);
+    return virCgroupAddProcess(cgroup, cpid);
 }
 
 int

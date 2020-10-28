@@ -280,7 +280,7 @@ qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
     virDomainDefPtr def = vm->def;
     size_t i;
 
-    if (qemuDBusSetupCgroup(driver, vm) < 0)
+    if (qemuDBusSetupCgroup(driver, vm, cgroup) < 0)
         return -1;
 
     for (i = 0; i < def->nvideos; i++) {
