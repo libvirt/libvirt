@@ -94,7 +94,6 @@
 %endif
 
 # Other optional features
-%define with_bash_completion  0%{!?_without_bash_completion:1}
 %define with_numactl          0%{!?_without_numactl:1}
 
 # A few optional bits off by default, we enable later
@@ -279,9 +278,7 @@ BuildRequires: glib2-devel >= 2.48
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
 BuildRequires: readline-devel
-%if %{with_bash_completion}
 BuildRequires: bash-completion >= 2.0
-%endif
 BuildRequires: gettext
 BuildRequires: libtasn1-devel
 BuildRequires: gnutls-devel
@@ -897,9 +894,7 @@ Requires: %{name}-libs = %{version}-%{release}
 Requires: gettext
 # Needed by virt-pki-validate script.
 Requires: gnutls-utils
-%if %{with_bash_completion}
 Requires: %{name}-bash-completion = %{version}-%{release}
-%endif
 
 %description client
 The client binaries needed to access the virtualization
@@ -919,20 +914,16 @@ Shared libraries for accessing the libvirt daemon.
 %package admin
 Summary: Set of tools to control libvirt daemon
 Requires: %{name}-libs = %{version}-%{release}
-%if %{with_bash_completion}
 Requires: %{name}-bash-completion = %{version}-%{release}
-%endif
 
 %description admin
 The client side utilities to control the libvirt daemon.
 
-%if %{with_bash_completion}
 %package bash-completion
 Summary: Bash completion script
 
 %description bash-completion
 Bash completion script stub.
-%endif
 
 %if %{with_wireshark}
 %package wireshark
@@ -1855,9 +1846,7 @@ exit 0
 %{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
 %endif
 
-%if %{with_bash_completion}
 %{_datadir}/bash-completion/completions/virsh
-%endif
 
 
 %{_unitdir}/libvirt-guests.service
@@ -1885,14 +1874,10 @@ exit 0
 %files admin
 %{_mandir}/man1/virt-admin.1*
 %{_bindir}/virt-admin
-%if %{with_bash_completion}
 %{_datadir}/bash-completion/completions/virt-admin
-%endif
 
-%if %{with_bash_completion}
 %files bash-completion
 %{_datadir}/bash-completion/completions/vsh
-%endif
 
 %if %{with_wireshark}
 %files wireshark
