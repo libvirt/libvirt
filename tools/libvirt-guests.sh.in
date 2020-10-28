@@ -206,9 +206,9 @@ start() {
                     retval run_virsh "$uri" start $bypass "$name" \
                         >/dev/null && \
                     gettext "done"; echo
-                    if "$sync_time"; then
-                        run_virsh "$uri" domtime --sync "$name" >/dev/null
-                    fi
+                fi
+                if "$sync_time"; then
+                    run_virsh "$uri" domtime --sync "$name" >/dev/null
                 fi
             fi
         done
