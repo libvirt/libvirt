@@ -1109,6 +1109,18 @@ exit 1
     %define arg_storage_iscsi_direct -Dstorage_iscsi_direct=disabled
 %endif
 
+%if %{with_libssh}
+    %define arg_libssh -Dlibssh=enabled
+%else
+    %define arg_libssh -Dlibssh=disabled
+%endif
+
+%if %{with_libssh2}
+    %define arg_libssh2 -Dlibssh2=enabled
+%else
+    %define arg_libssh2 -Dlibssh2=disabled
+%endif
+
 %define when  %(date +"%%F-%%T")
 %define where %(hostname)
 %define who   %{?packager}%{!?packager:Unknown}
@@ -1170,6 +1182,8 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dfirewalld=enabled \
            %{?arg_firewalld_zone} \
            %{?arg_wireshark} \
+           %{?arg_libssh} \
+           %{?arg_libssh2} \
            -Dpm_utils=disabled \
            -Dnss=enabled \
            %{arg_packager} \
