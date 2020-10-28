@@ -268,10 +268,6 @@ qemuDBusStart(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (priv->cgroup &&
-        virCgroupAddProcess(priv->cgroup, cpid) < 0)
-        goto cleanup;
-
     if (qemuSecurityDomainSetPathLabel(driver, vm, sockpath, false) < 0)
         goto cleanup;
 

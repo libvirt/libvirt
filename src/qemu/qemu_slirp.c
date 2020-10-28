@@ -251,7 +251,6 @@ qemuSlirpStart(qemuSlirpPtr slirp,
                virDomainNetDefPtr net,
                bool incoming)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = NULL;
@@ -355,9 +354,6 @@ qemuSlirpStart(qemuSlirpPtr slirp,
     }
 
     slirp->pid = pid;
-
-    if (priv->cgroup && qemuSlirpSetupCgroup(slirp, priv->cgroup) < 0)
-        goto error;
 
     return 0;
 
