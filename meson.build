@@ -636,10 +636,6 @@ libvirt_export_dynamic = cc.first_supported_link_argument([
 # check availability of various common functions (non-fatal if missing)
 
 functions = [
-  '__lxstat',
-  '__lxstat64',
-  '__xstat',
-  '__xstat64',
   'elf_aux_info',
   'fallocate',
   'getauxval',
@@ -653,8 +649,6 @@ functions = [
   'getuid',
   'getutxid',
   'if_indextoname',
-  'lstat',
-  'lstat64',
   'mmap',
   'newlocale',
   'pipe2',
@@ -666,15 +660,33 @@ functions = [
   'setgroups',
   'setns',
   'setrlimit',
-  'stat',
-  'stat64',
   'symlink',
   'sysctlbyname',
 ]
 
+stat_functions = [
+  '__lxstat',
+  '__lxstat64',
+  '__xstat',
+  '__xstat64',
+  'lstat',
+  'lstat64',
+  'stat',
+  'stat64',
+]
+
+functions += stat_functions
+
 foreach function : functions
   if cc.has_function(function)
     conf.set('WITH_@0@'.format(function.to_upper()), 1)
+  endif
+endforeach
+
+
+foreach function : stat_functions
+  if cc.has_header_symbol('sys/stat.h', function)
+    conf.set('WITH_@0@_DECL'.format(function.to_upper()), 1)
   endif
 endforeach
 
