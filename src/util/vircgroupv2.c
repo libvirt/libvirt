@@ -255,7 +255,7 @@ virCgroupV2ParseControllersFile(virCgroupPtr group,
     char **tmp;
 
     if (parent) {
-        contFile = g_strdup_printf("%s%s/cgroup.subtree_control",
+        contFile = g_strdup_printf("%s%s/cgroup.controllers",
                                    parent->unified.mountPoint,
                                    NULLSTR_EMPTY(parent->unified.placement));
     } else {
