@@ -115,6 +115,7 @@ stages:
   script:
     - meson build --werror $MESON_OPTS || (cat build/meson-logs/meson-log.txt && exit 1)
     - ninja -C build
+    - if test "$CROSS" = "i686" ; then ninja -C build test ; fi
 
 
 # Native container build jobs
