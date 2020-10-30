@@ -758,7 +758,7 @@ qemuMigrationCookieNBDXMLFormat(qemuMigrationCookieNBDPtr nbd,
 }
 
 
-static int
+int
 qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
                              virQEMUCapsPtr qemuCaps,
                              virBufferPtr buf,
