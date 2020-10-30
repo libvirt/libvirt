@@ -194,21 +194,21 @@ virSystemdHasLogind(void)
 }
 
 
-char *
-virSystemdGetMachineNameByPID(pid_t pid)
+/**
+ * virSystemdGetMachineByPID:
+ * @conn: dbus connection
+ * @pid: pid of running VM
+ *
+ * Returns dbus object path to VM registered with machined.
+ * On error returns NULL.
+ */
+static char *
+virSystemdGetMachineByPID(GDBusConnection *conn,
+                          pid_t pid)
 {
-    GDBusConnection *conn;
     g_autoptr(GVariant) message = NULL;
     g_autoptr(GVariant) reply = NULL;
-    g_autoptr(GVariant) gvar = NULL;
-    g_autofree char *object = NULL;
-    char *name = NULL;
-
-    if (virSystemdHasMachined() < 0)
-        return NULL;
-
-    if (!(conn = virGDBusGetSystemBus()))
-        return NULL;
+    char *object = NULL;
 
     message = g_variant_new("(u)", pid);
 
@@ -225,13 +225,33 @@ virSystemdGetMachineNameByPID(pid_t pid)
 
     g_variant_get(reply, "(o)", &object);
 
-    g_variant_unref(reply);
-    reply = NULL;
-
     VIR_DEBUG("Domain with pid %lld has object path '%s'",
               (long long) pid, object);
 
-    g_variant_unref(message);
+    return object;
+}
+
+
+char *
+virSystemdGetMachineNameByPID(pid_t pid)
+{
+    GDBusConnection *conn;
+    g_autoptr(GVariant) message = NULL;
+    g_autoptr(GVariant) reply = NULL;
+    g_autoptr(GVariant) gvar = NULL;
+    g_autofree char *object = NULL;
+    char *name = NULL;
+
+    if (virSystemdHasMachined() < 0)
+        return NULL;
+
+    if (!(conn = virGDBusGetSystemBus()))
+        return NULL;
+
+    object = virSystemdGetMachineByPID(conn, pid);
+    if (!object)
+        return NULL;
+
     message = g_variant_new("(ss)",
                             "org.freedesktop.machine1.Machine", "Name");
 
