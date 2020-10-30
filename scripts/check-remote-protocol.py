@@ -123,6 +123,12 @@ if n < 1:
 
 diff = subprocess.Popen(["diff", "-u", expected, "-"], stdin=subprocess.PIPE)
 actualstr = "\n".join(actual) + "\n"
+# i686 builds on x86_64 host add __attribute__(packed)) to
+# the structs. This doesn't matter functionally because we
+# know our RPC structs are suitably aligned to not need
+# packing, so we can just trim the attribute.
+actualstr = re.sub(r'''} __attribute__\(\(__packed__\)\);''', "};", actualstr)
+
 diff.communicate(input=actualstr.encode("utf-8"))
 
 sys.exit(diff.returncode)
