@@ -317,7 +317,8 @@ mymain(void)
     if (testQemuMigrationCookieDom2XML("modern", "qemustatusxml2xmldata/modern-in.xml", 0, 0) < 0)
         ret = -1;
 
-    if (testQemuMigrationCookieXML2XML("basic", "qemustatusxml2xmldata/modern-in.xml", 0) < 0)
+    if (testQemuMigrationCookieXML2XML("basic", "qemustatusxml2xmldata/modern-in.xml", 0) < 0 ||
+        testQemuMigrationCookieXML2XML("full", "qemustatusxml2xmldata/modern-in.xml", 0) < 0)
         ret = -1;
 
     virBufferFreeAndReset(&testnamebuf);

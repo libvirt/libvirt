@@ -1,0 +1,221 @@
+<qemu-migration>
+  <name>upstream</name>
+  <uuid>dcf47dbd-46d1-4d5b-b442-262a806a333a</uuid>
+  <hostname>hostname2</hostname>
+  <hostuuid>8b3f4dc4-6a8e-5f9b-94a5-4c35babd8d95</hostuuid>
+  <feature name='graphics'/>
+  <feature name='memory-hotplug'/>
+  <graphics type='spice' port='123' listen='test' tlsPort='321'>
+    <cert info='subject' value='testsubject'/>
+  </graphics>
+  <lockstate driver='blurb'>
+    <leases>leastest</leases>
+  </lockstate>
+  <domain type='kvm'>
+    <name>upstream</name>
+    <uuid>dcf47dbd-46d1-4d5b-b442-262a806a333a</uuid>
+    <memory unit='KiB'>1024000</memory>
+    <currentMemory unit='KiB'>1024000</currentMemory>
+    <memoryBacking>
+      <access mode='shared'/>
+    </memoryBacking>
+    <vcpu placement='auto' current='2'>8</vcpu>
+    <numatune>
+      <memory mode='strict' placement='auto'/>
+    </numatune>
+    <resource>
+      <partition>/machine</partition>
+    </resource>
+    <os>
+      <type arch='x86_64' machine='pc-i440fx-2.9'>hvm</type>
+      <bootmenu enable='yes'/>
+    </os>
+    <features>
+      <acpi/>
+      <apic/>
+      <vmport state='off'/>
+    </features>
+    <cpu>
+      <numa>
+        <cell id='0' cpus='0,2,4,6' memory='512000' unit='KiB'/>
+        <cell id='1' cpus='1,3,5,7' memory='512000' unit='KiB'/>
+      </numa>
+    </cpu>
+    <clock offset='utc'>
+      <timer name='rtc' tickpolicy='catchup'/>
+      <timer name='pit' tickpolicy='delay'/>
+      <timer name='hpet' present='no'/>
+    </clock>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>restart</on_crash>
+    <pm>
+      <suspend-to-mem enabled='no'/>
+      <suspend-to-disk enabled='no'/>
+    </pm>
+    <devices>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2' discard='unmap' detect_zeroes='on'/>
+        <auth username='testuser'>
+          <secret type='iscsi' usage='libvirtiscsi'/>
+        </auth>
+        <source file='/var/lib/libvirt/images/a.qcow2'/>
+        <backingStore type='file'>
+          <format type='qcow2'/>
+          <source file='/var/lib/libvirt/images/base.qcow2'>
+            <slices>
+              <slice type='storage' offset='1234' size='3456'/>
+            </slices>
+            <seclabel model='dac' relabel='yes'>
+              <label>qemu:qemu</label>
+            </seclabel>
+            <reservations managed='yes'/>
+          </source>
+          <backingStore/>
+        </backingStore>
+        <target dev='vdb' bus='virtio'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+      </disk>
+      <disk type='file' device='cdrom'>
+        <driver name='qemu' type='raw'/>
+        <source file='/var/lib/libvirt/images/systemrescuecd-x86-4.9.5.iso'/>
+        <backingStore/>
+        <target dev='hda' bus='ide'/>
+        <readonly/>
+        <boot order='1'/>
+        <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+      </disk>
+      <controller type='usb' index='0' model='ich9-ehci1'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x7'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci1'>
+        <master startport='0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0' multifunction='on'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci2'>
+        <master startport='2'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x1'/>
+      </controller>
+      <controller type='usb' index='0' model='ich9-uhci3'>
+        <master startport='4'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x2'/>
+      </controller>
+      <controller type='virtio-serial' index='0'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      </controller>
+      <controller type='ide' index='0'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+      </controller>
+      <controller type='scsi' index='0' model='lsilogic'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+      </controller>
+      <controller type='fdc' index='0'/>
+      <interface type='network'>
+        <mac address='52:54:00:36:bd:3b'/>
+        <source network='default'/>
+        <model type='virtio'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      </interface>
+      <serial type='pty'>
+        <target type='isa-serial' port='0'>
+          <model name='isa-serial'/>
+        </target>
+      </serial>
+      <console type='pty'>
+        <target type='serial' port='0'/>
+      </console>
+      <channel type='unix'>
+        <target type='virtio' name='org.qemu.guest_agent.0'/>
+        <address type='virtio-serial' controller='0' bus='0' port='1'/>
+      </channel>
+      <channel type='spicevmc'>
+        <target type='virtio' name='com.redhat.spice.0'/>
+        <address type='virtio-serial' controller='0' bus='0' port='2'/>
+      </channel>
+      <input type='tablet' bus='usb'>
+        <address type='usb' bus='0' port='1'/>
+      </input>
+      <input type='mouse' bus='ps2'/>
+      <graphics type='spice' autoport='yes'>
+        <listen type='address'/>
+        <image compression='off'/>
+      </graphics>
+      <sound model='ich6'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      </sound>
+      <video>
+        <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      </video>
+      <hostdev mode='subsystem' type='scsi' managed='yes'>
+        <source protocol='iscsi' name='iqn.1992-01.com.example:storage/1'>
+          <host name='example.org' port='3260'/>
+          <auth username='myname'>
+            <secret type='iscsi' usage='mycluster_myname'/>
+          </auth>
+        </source>
+        <address type='drive' controller='0' bus='0' target='2' unit='4'/>
+      </hostdev>
+      <redirdev bus='usb' type='spicevmc'>
+        <address type='usb' bus='0' port='2'/>
+      </redirdev>
+      <redirdev bus='usb' type='spicevmc'>
+        <address type='usb' bus='0' port='3'/>
+      </redirdev>
+      <memballoon model='virtio'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+      </memballoon>
+      <rng model='virtio'>
+        <backend model='random'>/dev/random</backend>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+      </rng>
+    </devices>
+    <seclabel type='dynamic' model='dac' relabel='yes'/>
+  </domain>
+  <network>
+    <interface index='0' vporttype='midonet'>
+      <portdata>testportdata</portdata>
+    </interface>
+  </network>
+  <nbd port='456'>
+    <disk target='vda' capacity='123'/>
+    <disk target='vdb' capacity='1235'/>
+  </nbd>
+  <statistics>
+    <started>12345</started>
+    <stopped>54321</stopped>
+    <sent>986</sent>
+    <delta>7654</delta>
+    <time_elapsed>1</time_elapsed>
+    <downtime>11</downtime>
+    <setup_time>12</setup_time>
+    <memory_total>2</memory_total>
+    <memory_processed>3</memory_processed>
+    <memory_remaining>4</memory_remaining>
+    <memory_bps>5</memory_bps>
+    <memory_constant>51</memory_constant>
+    <memory_normal>52</memory_normal>
+    <memory_normal_bytes>53</memory_normal_bytes>
+    <memory_dirty_rate>6</memory_dirty_rate>
+    <memory_iteration>7</memory_iteration>
+    <memory_postcopy_requests>8</memory_postcopy_requests>
+    <memory_page_size>9</memory_page_size>
+    <disk_total>10</disk_total>
+    <disk_processed>11</disk_processed>
+    <disk_remaining>12</disk_remaining>
+    <disk_bps>13</disk_bps>
+    <compression_cache>131</compression_cache>
+    <compression_bytes>132</compression_bytes>
+    <compression_pages>133</compression_pages>
+    <compression_cache_misses>134</compression_cache_misses>
+    <compression_overflow>135</compression_overflow>
+    <auto_converge_throttle>14</auto_converge_throttle>
+  </statistics>
+  <cpu mode='host-passthrough' check='partial' migratable='on'/>
+  <allowReboot value='yes'/>
+  <capabilities>
+    <cap name='xbzrle' auto='yes'/>
+    <cap name='postcopy-ram' auto='no'/>
+  </capabilities>
+</qemu-migration>
