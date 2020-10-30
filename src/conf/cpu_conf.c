@@ -743,21 +743,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     if (virDomainNumaDefFormatXML(&childrenBuf, numa) < 0)
         return -1;
 
-    /* Put it all together */
-    if (virBufferUse(&attributeBuf) || virBufferUse(&childrenBuf)) {
-        virBufferAddLit(buf, "<cpu");
-
-        if (virBufferUse(&attributeBuf))
-            virBufferAddBuffer(buf, &attributeBuf);
-
-        if (virBufferUse(&childrenBuf)) {
-            virBufferAddLit(buf, ">\n");
-            virBufferAddBuffer(buf, &childrenBuf);
-            virBufferAddLit(buf, "</cpu>\n");
-        } else {
-            virBufferAddLit(buf, "/>\n");
-        }
-    }
+    virXMLFormatElement(buf, "cpu", &attributeBuf, &childrenBuf);
 
     return 0;
 }
