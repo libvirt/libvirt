@@ -105,6 +105,7 @@ if conf.has('WITH_QEMU')
     { 'name': 'qemucpumock' },
     { 'name': 'qemuhotplugmock' },
     { 'name': 'qemuxml2argvmock' },
+    { 'name': 'virhostidmock' },
   ]
 endif
 

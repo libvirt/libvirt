@@ -92,7 +92,7 @@ static inline int pthread_sigmask(int how,
 }
 #endif
 
-char *virGetHostname(void);
+char *virGetHostname(void) G_GNUC_NO_INLINE;
 char *virGetHostnameQuiet(void);
 
 char *virGetUserDirectory(void);
