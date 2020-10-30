@@ -43,6 +43,12 @@ v6.9.0 (unreleased)
 
     Implement virito-9p shared filesystem using the ``<filesystem/>`` element.
 
+  * qemu: Add support for vDPA network devices.
+
+    VMs using the QEMU hypervisor can now specify vDPA network devices
+    using ``<interface type='vdpa'>``. The node device APIs also now
+    list and provide XML descriptions for vDPA devices.
+
 * **Improvements**
 
 * **Bug fixes**
