@@ -1429,7 +1429,7 @@ qemuMigrationCookieParse(virQEMUDriverPtr driver,
         }
     }
 
-    if (flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo)
+    if (flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo && priv->job.current)
         mig->jobInfo->operation = priv->job.current->operation;
 
     return g_steal_pointer(&mig);
