@@ -1,0 +1,6 @@
+<qemu-migration>
+  <name>upstream</name>
+  <uuid>dcf47dbd-46d1-4d5b-b442-262a806a333a</uuid>
+  <hostname>hostname2</hostname>
+  <hostuuid>8b3f4dc4-6a8e-5f9b-94a5-4c35babd8d95</hostuuid>
+</qemu-migration>
