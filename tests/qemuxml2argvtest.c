@@ -3053,6 +3053,7 @@ mymain(void)
                  QEMU_CAPS_OBJECT_MEMORY_FILE,
                  QEMU_CAPS_DEVICE_NVDIMM,
                  QEMU_CAPS_LAST);
+    DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
 
     DO_TEST("machine-aeskeywrap-on-caps",
             QEMU_CAPS_AES_KEY_WRAP,

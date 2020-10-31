@@ -3087,8 +3087,9 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         if (mem->nvdimmPath) {
             memPath = g_strdup(mem->nvdimmPath);
             /* If the NVDIMM is a real device then there's nothing to prealloc.
-             * If anything, we would be only wearing off the device. */
-            if (!mem->nvdimmPmem)
+             * If anything, we would be only wearing off the device.
+             * Similarly, virtio-pmem-pci doesn't need prealloc either. */
+            if (!mem->nvdimmPmem && mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
                 prealloc = true;
         } else if (useHugepage) {
             if (qemuGetDomainHupageMemPath(priv->driver, def, pagesize, &memPath) < 0)
@@ -3282,7 +3283,7 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
                          virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    const char *device;
+    const char *device = NULL;
 
     if (!mem->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3291,46 +3292,49 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
     }
 
     switch (mem->model) {
-    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-
-        if (mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM)
-            device = "pc-dimm";
-        else
-            device = "nvdimm";
-
-        virBufferAsprintf(&buf, "%s,", device);
-
-        if (mem->targetNode >= 0)
-            virBufferAsprintf(&buf, "node=%d,", mem->targetNode);
-
-        if (mem->labelsize)
-            virBufferAsprintf(&buf, "label-size=%llu,", mem->labelsize * 1024);
-
-        if (virUUIDIsValid(mem->uuid)) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-            virUUIDFormat(mem->uuid, uuidstr);
-            virBufferAsprintf(&buf, "uuid=%s,", uuidstr);
-        }
-
-        if (mem->readonly) {
-            virBufferAddLit(&buf, "unarmed=on,");
-        }
-
-        virBufferAsprintf(&buf, "memdev=mem%s,id=%s",
-                          mem->info.alias, mem->info.alias);
-
-        if (qemuBuildDeviceAddressStr(&buf, def, &mem->info, qemuCaps) < 0)
-            return NULL;
+        device = "pc-dimm";
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        device = "nvdimm";
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-    case VIR_DOMAIN_MEMORY_MODEL_NONE:
-    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        device = "virtio-pmem-pci";
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+    default:
+        virReportEnumRangeError(virDomainMemoryModel, mem->model);
+        return NULL;
+        break;
     }
+
+    virBufferAsprintf(&buf, "%s,", device);
+
+    if (mem->targetNode >= 0)
+        virBufferAsprintf(&buf, "node=%d,", mem->targetNode);
+
+    if (mem->labelsize)
+        virBufferAsprintf(&buf, "label-size=%llu,", mem->labelsize * 1024);
+
+    if (virUUIDIsValid(mem->uuid)) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(mem->uuid, uuidstr);
+        virBufferAsprintf(&buf, "uuid=%s,", uuidstr);
+    }
+
+    if (mem->readonly) {
+        virBufferAddLit(&buf, "unarmed=on,");
+    }
+
+    virBufferAsprintf(&buf, "memdev=mem%s,id=%s",
+                      mem->info.alias, mem->info.alias);
+
+    if (qemuBuildDeviceAddressStr(&buf, def, &mem->info, qemuCaps) < 0)
+        return NULL;
 
     return virBufferContentAndReset(&buf);
 }

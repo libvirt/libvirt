@@ -466,6 +466,29 @@ qemuAssignDeviceRNGAlias(virDomainDefPtr def,
 }
 
 
+static int
+qemuDeviceMemoryGetAliasID(virDomainDefPtr def,
+                           virDomainMemoryDefPtr mem,
+                           bool oldAlias,
+                           const char *prefix)
+{
+    size_t i;
+    int maxidx = 0;
+
+    /* virtio-pmem goes onto PCI bus and thus DIMM address is not valid */
+    if (!oldAlias && mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
+        return mem->info.addr.dimm.slot;
+
+    for (i = 0; i < def->nmems; i++) {
+        int idx;
+        if ((idx = qemuDomainDeviceAliasIndex(&def->mems[i]->info, prefix)) >= maxidx)
+            maxidx = idx + 1;
+    }
+
+    return maxidx;
+}
+
+
 /**
  * qemuAssignDeviceMemoryAlias:
  * @def: domain definition. Necessary only if @oldAlias is true.
@@ -483,29 +506,32 @@ qemuAssignDeviceMemoryAlias(virDomainDefPtr def,
                             virDomainMemoryDefPtr mem,
                             bool oldAlias)
 {
-    size_t i;
-    int maxidx = 0;
-    int idx;
-    const char *prefix;
+    const char *prefix = NULL;
+    int idx = 0;
 
     if (mem->info.alias)
         return 0;
 
-    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM)
+    switch (mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         prefix = "dimm";
-    else
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         prefix = "nvdimm";
-
-    if (oldAlias) {
-        for (i = 0; i < def->nmems; i++) {
-            if ((idx = qemuDomainDeviceAliasIndex(&def->mems[i]->info, prefix)) >= maxidx)
-                maxidx = idx + 1;
-        }
-    } else {
-        maxidx = mem->info.addr.dimm.slot;
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        prefix = "virtiopmem";
+        break;
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+    default:
+        virReportEnumRangeError(virDomainMemoryModel, mem->model);
+        return -1;
+        break;
     }
 
-    mem->info.alias = g_strdup_printf("%s%d", prefix, maxidx);
+    idx = qemuDeviceMemoryGetAliasID(def, mem, oldAlias, prefix);
+    mem->info.alias = g_strdup_printf("%s%d", prefix, idx);
 
     return 0;
 }
@@ -680,7 +706,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nmems; i++) {
-        if (qemuAssignDeviceMemoryAlias(NULL, def->mems[i], false) < 0)
+        if (qemuAssignDeviceMemoryAlias(def, def->mems[i], false) < 0)
             return -1;
     }
     if (def->vsock) {
