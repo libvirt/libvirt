@@ -1887,7 +1887,7 @@ virSecurityDACRestoreMemoryLabel(virSecurityManagerPtr mgr,
 {
     int ret = -1;
 
-    switch ((virDomainMemoryModel) mem->model) {
+    switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         ret = virSecurityDACRestoreFileLabel(mgr, mem->nvdimmPath);
         break;
@@ -2060,7 +2060,7 @@ virSecurityDACSetMemoryLabel(virSecurityManagerPtr mgr,
     uid_t user;
     gid_t group;
 
-    switch ((virDomainMemoryModel) mem->model) {
+    switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
         if (seclabel && !seclabel->relabel)

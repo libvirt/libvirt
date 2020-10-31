@@ -1571,7 +1571,7 @@ virSecuritySELinuxSetMemoryLabel(virSecurityManagerPtr mgr,
 {
     virSecurityLabelDefPtr seclabel;
 
-    switch ((virDomainMemoryModel) mem->model) {
+    switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
         if (!seclabel || !seclabel->relabel)
@@ -1600,7 +1600,7 @@ virSecuritySELinuxRestoreMemoryLabel(virSecurityManagerPtr mgr,
     int ret = -1;
     virSecurityLabelDefPtr seclabel;
 
-    switch ((virDomainMemoryModel) mem->model) {
+    switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
         if (!seclabel || !seclabel->relabel)

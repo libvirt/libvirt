@@ -16676,7 +16676,7 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    switch ((virDomainMemoryModel) def->model) {
+    switch (def->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         if (virDomainParseMemory("./pagesize", "./pagesize/@unit", ctxt,
                                  &def->pagesize, false, false) < 0)
@@ -16897,12 +16897,13 @@ virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    if ((def->model = virDomainMemoryModelTypeFromString(tmp)) <= 0) {
+    if ((val = virDomainMemoryModelTypeFromString(tmp)) <= 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("invalid memory model '%s'"), tmp);
         goto error;
     }
     VIR_FREE(tmp);
+    def->model = val;
 
     if ((tmp = virXMLPropString(memdevNode, "access"))) {
         if ((val = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
@@ -18579,7 +18580,7 @@ virDomainMemoryFindByDefInternal(virDomainDefPtr def,
             tmp->size != mem->size)
             continue;
 
-        switch ((virDomainMemoryModel) mem->model) {
+        switch (mem->model) {
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
             /* source stuff -> match with device */
             if (tmp->pagesize != mem->pagesize)
@@ -27846,7 +27847,7 @@ virDomainMemorySourceDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<source>\n");
     virBufferAdjustIndent(buf, 2);
 
-    switch ((virDomainMemoryModel) def->model) {
+    switch (def->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         if (def->sourceNodes) {
             if (!(bitmap = virBitmapFormat(def->sourceNodes)))

@@ -2322,7 +2322,7 @@ struct _virDomainMemoryDef {
     bool nvdimmPmem; /* valid only for NVDIMM */
 
     /* target */
-    int model; /* virDomainMemoryModel */
+    virDomainMemoryModel model;
     int targetNode;
     unsigned long long size; /* kibibytes */
     unsigned long long labelsize; /* kibibytes; valid only for NVDIMM */

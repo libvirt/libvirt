@@ -8485,7 +8485,7 @@ static int
 qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
                                          const virDomainDef *def)
 {
-    switch ((virDomainMemoryModel) mem->model) {
+    switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM &&
@@ -8598,7 +8598,7 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
     for (i = 0; i < def->nmems; i++) {
         hotplugMemory += def->mems[i]->size;
 
-        switch ((virDomainMemoryModel) def->mems[i]->model) {
+        switch (def->mems[i]->model) {
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
             needPCDimmCap = true;
             break;

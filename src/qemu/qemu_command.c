@@ -3280,7 +3280,7 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
         return NULL;
     }
 
-    switch ((virDomainMemoryModel) mem->model) {
+    switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
 

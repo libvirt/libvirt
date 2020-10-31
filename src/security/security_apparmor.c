@@ -684,7 +684,7 @@ AppArmorSetMemoryLabel(virSecurityManagerPtr mgr,
     if (mem == NULL)
         return 0;
 
-    switch ((virDomainMemoryModel) mem->model) {
+    switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         if (!virFileExists(mem->nvdimmPath)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
