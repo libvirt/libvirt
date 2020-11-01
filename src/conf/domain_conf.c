@@ -27839,13 +27839,8 @@ static int
 virDomainMemorySourceDefFormat(virBufferPtr buf,
                                virDomainMemoryDefPtr def)
 {
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_autofree char *bitmap = NULL;
-
-    if (!def->pagesize && !def->sourceNodes && !def->nvdimmPath)
-        return 0;
-
-    virBufferAddLit(buf, "<source>\n");
-    virBufferAdjustIndent(buf, 2);
 
     switch (def->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
@@ -27853,23 +27848,23 @@ virDomainMemorySourceDefFormat(virBufferPtr buf,
             if (!(bitmap = virBitmapFormat(def->sourceNodes)))
                 return -1;
 
-            virBufferAsprintf(buf, "<nodemask>%s</nodemask>\n", bitmap);
+            virBufferAsprintf(&childBuf, "<nodemask>%s</nodemask>\n", bitmap);
         }
 
         if (def->pagesize)
-            virBufferAsprintf(buf, "<pagesize unit='KiB'>%llu</pagesize>\n",
+            virBufferAsprintf(&childBuf, "<pagesize unit='KiB'>%llu</pagesize>\n",
                               def->pagesize);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        virBufferEscapeString(buf, "<path>%s</path>\n", def->nvdimmPath);
+        virBufferEscapeString(&childBuf, "<path>%s</path>\n", def->nvdimmPath);
 
         if (def->alignsize)
-            virBufferAsprintf(buf, "<alignsize unit='KiB'>%llu</alignsize>\n",
+            virBufferAsprintf(&childBuf, "<alignsize unit='KiB'>%llu</alignsize>\n",
                               def->alignsize);
 
         if (def->nvdimmPmem)
-            virBufferAddLit(buf, "<pmem/>\n");
+            virBufferAddLit(&childBuf, "<pmem/>\n");
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
@@ -27877,8 +27872,7 @@ virDomainMemorySourceDefFormat(virBufferPtr buf,
         break;
     }
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</source>\n");
+    virXMLFormatElement(buf, "source", NULL, &childBuf);
 
     return 0;
 }
