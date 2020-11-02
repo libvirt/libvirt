@@ -238,6 +238,7 @@
   <flag name='query-display-options'/>
   <flag name='set-action'/>
   <flag name='virtio-blk.queue-size'/>
+  <flag name='virtio-mem-pci'/>
   <version>6000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

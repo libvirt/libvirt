@@ -639,6 +639,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "s390-pv-guest", /* QEMU_CAPS_S390_PV_GUEST */
               "set-action", /* QEMU_CAPS_SET_ACTION */
               "virtio-blk.queue-size", /* QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE */
+
+              /* 410 */
+              "virtio-mem-pci", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI */
     );
 
 
@@ -1353,6 +1356,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-gpu-gl-pci", QEMU_CAPS_VIRTIO_GPU_GL_PCI },
     { "virtio-vga-gl", QEMU_CAPS_VIRTIO_VGA_GL },
     { "s390-pv-guest", QEMU_CAPS_S390_PV_GUEST },
+    { "virtio-mem-pci", QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI },
 };
 
 
