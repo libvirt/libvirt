@@ -149,22 +149,19 @@ virCgroupV2CopyPlacement(virCgroupPtr group,
                          const char *path,
                          virCgroupPtr parent)
 {
+    bool delim = STREQ(parent->unified.placement, "/") || STREQ(path, "");
+
     VIR_DEBUG("group=%p path=%s parent=%p", group, path, parent);
 
-    if (path[0] == '/') {
-        group->unified.placement = g_strdup(path);
-    } else {
-        bool delim = STREQ(parent->unified.placement, "/") || STREQ(path, "");
-        /*
-         * parent == "/" + path="" => "/"
-         * parent == "/libvirt.service" + path == "" => "/libvirt.service"
-         * parent == "/libvirt.service" + path == "foo" => "/libvirt.service/foo"
-         */
-        group->unified.placement = g_strdup_printf("%s%s%s",
-                                                   parent->unified.placement,
-                                                   delim ? "" : "/",
-                                                   path);
-    }
+    /*
+     * parent == "/" + path="" => "/"
+     * parent == "/libvirt.service" + path == "" => "/libvirt.service"
+     * parent == "/libvirt.service" + path == "foo" => "/libvirt.service/foo"
+     */
+    group->unified.placement = g_strdup_printf("%s%s%s",
+                                               parent->unified.placement,
+                                               delim ? "" : "/",
+                                               path);
 
     return 0;
 }

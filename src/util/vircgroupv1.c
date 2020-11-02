@@ -190,26 +190,24 @@ virCgroupV1CopyPlacement(virCgroupPtr group,
 {
     size_t i;
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        bool delim;
+
         if (!group->legacy[i].mountPoint)
             continue;
 
         if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
             continue;
 
-        if (path[0] == '/') {
-            group->legacy[i].placement = g_strdup(path);
-        } else {
-            bool delim = STREQ(parent->legacy[i].placement, "/") || STREQ(path, "");
-            /*
-             * parent == "/" + path="" => "/"
-             * parent == "/libvirt.service" + path == "" => "/libvirt.service"
-             * parent == "/libvirt.service" + path == "foo" => "/libvirt.service/foo"
-             */
-            group->legacy[i].placement = g_strdup_printf("%s%s%s",
-                                                         parent->legacy[i].placement,
-                                                         delim ? "" : "/",
-                                                         path);
-        }
+        delim = STREQ(parent->legacy[i].placement, "/") || STREQ(path, "");
+        /*
+         * parent == "/" + path="" => "/"
+         * parent == "/libvirt.service" + path == "" => "/libvirt.service"
+         * parent == "/libvirt.service" + path == "foo" => "/libvirt.service/foo"
+         */
+        group->legacy[i].placement = g_strdup_printf("%s%s%s",
+                                                     parent->legacy[i].placement,
+                                                     delim ? "" : "/",
+                                                     path);
     }
 
     return 0;
