@@ -73,6 +73,9 @@ prepareObjects(virQEMUDriverPtr driver,
                                             0)))
         return -1;
 
+    if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0)
+        return -1;
+
     *vm_ret = g_steal_pointer(&vm);
     return 0;
 }
@@ -134,6 +137,11 @@ static int
 mymain(void)
 {
     virQEMUDriver driver;
+    virSecurityManagerPtr stack = NULL;
+    virSecurityManagerPtr dac = NULL;
+#ifdef WITH_SELINUX
+    virSecurityManagerPtr selinux = NULL;
+#endif
     int ret = 0;
 
     if (virInitialize() < 0 ||
@@ -142,14 +150,44 @@ mymain(void)
 
     /* Now fix the secdriver */
     virObjectUnref(driver.securityManager);
-    if (!(driver.securityManager = virSecurityManagerNewDAC("test", 1000, 1000,
-                                                            VIR_SECURITY_MANAGER_PRIVILEGED |
-                                                            VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP,
-                                                            NULL))) {
+
+    if (!(dac = virSecurityManagerNewDAC("test", 1000, 1000,
+                                         VIR_SECURITY_MANAGER_PRIVILEGED |
+                                         VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP,
+                                         NULL))) {
         fprintf(stderr, "Cannot initialize DAC security driver");
         ret = -1;
         goto cleanup;
     }
+
+    if (!(stack = virSecurityManagerNewStack(dac))) {
+        fprintf(stderr, "Cannot initialize stack security driver");
+        ret = -1;
+        goto cleanup;
+    }
+    dac = NULL;
+
+#if WITH_SELINUX
+    selinux = virSecurityManagerNew("selinux", "test",
+                                    VIR_SECURITY_MANAGER_PRIVILEGED |
+                                    VIR_SECURITY_MANAGER_DEFAULT_CONFINED |
+                                    VIR_SECURITY_MANAGER_REQUIRE_CONFINED);
+    if (!selinux) {
+        fprintf(stderr, "Cannot initialize selinux security driver");
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (virSecurityManagerStackAddNested(stack, selinux) < 0) {
+        fprintf(stderr, "Cannot add selinux security driver onto stack");
+        ret = -1;
+        goto cleanup;
+    }
+    selinux = NULL;
+#endif
+
+    driver.securityManager = g_steal_pointer(&stack);
+
 
 #define DO_TEST_DOMAIN(f) \
     do { \
@@ -214,6 +252,11 @@ mymain(void)
 
  cleanup:
     qemuTestDriverFree(&driver);
+#ifdef WITH_SELINUX
+    virObjectUnref(selinux);
+#endif
+    virObjectUnref(dac);
+    virObjectUnref(stack);
     return ret;
 }
 

@@ -24,6 +24,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#ifdef WITH_SELINUX
+# include <selinux/selinux.h>
+# include <selinux/label.h>
+#endif
+
 #include "virmock.h"
 #include "virfile.h"
 #include "virthread.h"
@@ -41,7 +46,8 @@
  * work as expected. Therefore there is a lot we have to mock
  * (chown, stat, XATTR APIs, etc.). Since the test won't run as
  * root chown() would fail, therefore we have to keep everything
- * in memory. By default, all files are owned by 1:2.
+ * in memory. By default, all files are owned by 1:2 and have a
+ * SELinux label.
  * By the way, since there are some cases where real stat needs
  * to be called, the mocked functions are effective only if
  * $ENVVAR is set.
@@ -49,11 +55,16 @@
 
 #define DEFAULT_UID 1
 #define DEFAULT_GID 2
+#define DEFAULT_SELINUX_LABEL "system_u:object_r:default_t:s0"
 
 
 static int (*real_chown)(const char *path, uid_t uid, gid_t gid);
 static int (*real_open)(const char *path, int flags, ...);
 static int (*real_close)(int fd);
+#ifdef WITH_SELINUX
+static int (*real_setfilecon_raw)(const char *path, const char *context);
+static int (*real_getfilecon_raw)(const char *path, char **context);
+#endif
 
 
 /* Global mutex to avoid races */
@@ -70,6 +81,10 @@ virHashTablePtr xattr_paths = NULL;
  * the path is the key and the value is an uint32_t , where
  * the lower half is UID and the higher is GID. */
 virHashTablePtr chown_paths = NULL;
+
+/* The SELinux label is stored in a hash table. For simplicity,
+ * the path is the key and the value is the label. */
+virHashTablePtr selinux_paths = NULL;
 
 
 static void
@@ -94,6 +109,11 @@ init_hash(void)
         fprintf(stderr, "Unable to create hash table for chowned paths\n");
         abort();
     }
+
+    if (!(selinux_paths = virHashNew(g_free))) {
+        fprintf(stderr, "Unable to create hash table for selinux labels\n");
+        abort();
+    }
 }
 
 
@@ -106,6 +126,10 @@ init_syms(void)
     VIR_MOCK_REAL_INIT(chown);
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(close);
+#ifdef WITH_SELINUX
+    VIR_MOCK_REAL_INIT(setfilecon_raw);
+    VIR_MOCK_REAL_INIT(getfilecon_raw);
+#endif
 
     /* Intentionally not calling init_hash() here */
 }
@@ -376,7 +400,28 @@ typedef struct _checkOwnerData checkOwnerData;
 struct _checkOwnerData {
     const char **paths;
     bool chown_fail;
+    bool selinux_fail;
 };
+
+
+static int
+checkSELinux(void *payload,
+             const char *name,
+             void *opaque)
+{
+    checkOwnerData *data = opaque;
+    char *label = payload;
+
+    if (STRNEQ(label, DEFAULT_SELINUX_LABEL) &&
+        !virStringListHasString(data->paths, name)) {
+        fprintf(stderr,
+                "Path %s wasn't restored back to its original SELinux label\n",
+                name);
+        data->selinux_fail = true;
+    }
+
+    return 0;
+}
 
 
 static int
@@ -431,7 +476,7 @@ printXATTR(void *payload,
 int checkPaths(const char **paths)
 {
     int ret = -1;
-    checkOwnerData data = { .paths = paths, .chown_fail = false };
+    checkOwnerData data = { .paths = paths, .chown_fail = false, .selinux_fail = false };
     bool xattr_fail = false;
     size_t i;
 
@@ -445,13 +490,16 @@ int checkPaths(const char **paths)
         }
     }
 
-    if ((virHashForEach(chown_paths, checkOwner, &data)) < 0)
+    if (virHashForEach(selinux_paths, checkSELinux, &data) < 0)
         goto cleanup;
 
-    if ((virHashForEach(xattr_paths, printXATTR, &xattr_fail)) < 0)
+    if (virHashForEach(chown_paths, checkOwner, &data) < 0)
         goto cleanup;
 
-    if (data.chown_fail || xattr_fail)
+    if (virHashForEach(xattr_paths, printXATTR, &xattr_fail) < 0)
+        goto cleanup;
+
+    if (data.chown_fail || data.selinux_fail || xattr_fail)
         goto cleanup;
 
     ret = 0;
@@ -466,9 +514,10 @@ void freePaths(void)
     virMutexLock(&m);
     init_hash();
 
+    virHashFree(selinux_paths);
     virHashFree(chown_paths);
     virHashFree(xattr_paths);
-    chown_paths = xattr_paths = NULL;
+    selinux_paths = chown_paths = xattr_paths = NULL;
     virMutexUnlock(&m);
 }
 
@@ -490,3 +539,137 @@ virHostGetBootTime(unsigned long long *when)
     *when = 1234567890;
     return 0;
 }
+
+
+#ifdef WITH_SELINUX
+int
+is_selinux_enabled(void)
+{
+    return 1;
+}
+
+
+struct selabel_handle *
+selabel_open(unsigned int backend G_GNUC_UNUSED,
+             const struct selinux_opt *opts G_GNUC_UNUSED,
+             unsigned nopts G_GNUC_UNUSED)
+{
+    return (void*)((intptr_t) 0x1);
+}
+
+
+void
+selabel_close(struct selabel_handle *rec G_GNUC_UNUSED)
+{
+    /* nada */
+}
+
+
+const char *
+selinux_virtual_domain_context_path(void)
+{
+    return abs_srcdir "/qemusecuritydata/virtual_domain_context";
+}
+
+
+const char *
+selinux_virtual_image_context_path(void)
+{
+    return abs_srcdir "/qemusecuritydata/virtual_image_context";
+}
+
+
+int getcon_raw(char **context)
+{
+    *context = g_strdup("system_u:system_r:virtd_t:s0-s0:c0.c1023");
+    return 0;
+}
+
+
+static int
+mock_setfilecon_raw(const char *path,
+                    const char *context)
+{
+    g_autofree char *val = g_strdup(context);
+    int ret = -1;
+
+    virMutexLock(&m);
+    init_hash();
+
+    if (virHashUpdateEntry(selinux_paths, path, val) < 0)
+        goto cleanup;
+    val = NULL;
+
+    ret = 0;
+ cleanup:
+    virMutexUnlock(&m);
+    return ret;
+}
+
+
+static int
+mock_getfilecon_raw(const char *path,
+                    char **context)
+{
+    const char *val;
+
+    virMutexLock(&m);
+    init_hash();
+
+    val = virHashLookup(selinux_paths, path);
+    if (!val)
+        val = DEFAULT_SELINUX_LABEL;
+
+    *context = g_strdup(val);
+    virMutexUnlock(&m);
+    return 0;
+}
+
+
+int
+setfilecon_raw(const char *path,
+               const char *context)
+{
+    int ret;
+
+    init_syms();
+
+    if (getenv(ENVVAR))
+        ret = mock_setfilecon_raw(path, context);
+    else
+        ret = real_setfilecon_raw(path, context);
+
+    return ret;
+}
+
+
+int
+getfilecon_raw(const char *path,
+               char **context)
+{
+    int ret;
+
+    init_syms();
+
+    if (getenv(ENVVAR))
+        ret = mock_getfilecon_raw(path, context);
+    else
+        ret = real_getfilecon_raw(path, context);
+
+    return ret;
+}
+
+
+int
+selabel_lookup_raw(struct selabel_handle *hnd G_GNUC_UNUSED,
+                   char **context,
+                   const char *key G_GNUC_UNUSED,
+                   int type G_GNUC_UNUSED)
+{
+    /* This function will be called only if we haven't found original label in
+     * XATTRs. Return something else than DEFAULT_SELINUX_LABEL so that it is
+     * considered as error. */
+    *context = g_strdup("system_u:object_r:default_t:s1");
+    return 0;
+}
+#endif
