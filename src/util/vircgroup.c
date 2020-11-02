@@ -1131,21 +1131,18 @@ virCgroupEnableMissingControllers(char *path,
                                   virCgroupPtr *group)
 {
     g_autoptr(virCgroup) parent = NULL;
-    char *offset = path;
+    VIR_AUTOSTRINGLIST tokens = virStringSplit(path, "/", 0);
+    size_t i;
 
-    if (virCgroupNew("/",
-                     controllers,
-                     &parent) < 0)
+    if (virCgroupNew("/", controllers, &parent) < 0)
         return -1;
 
-    for (;;) {
+    /* Skip the first token as it is empty string. */
+    for (i = 1; tokens[i]; i++) {
         g_autoptr(virCgroup) tmp = NULL;
-        char *t = strchr(offset + 1, '/');
-        if (t)
-            *t = '\0';
 
         if (virCgroupNewFromParent(parent,
-                                   path,
+                                   tokens[i],
                                    controllers,
                                    &tmp) < 0)
             return -1;
@@ -1153,17 +1150,10 @@ virCgroupEnableMissingControllers(char *path,
         if (virCgroupMakeGroup(parent, tmp, true, VIR_CGROUP_SYSTEMD) < 0)
             return -1;
 
-        if (t) {
-            *t = '/';
-            offset = t;
-            virCgroupFree(parent);
-            parent = g_steal_pointer(&tmp);
-        } else {
-            *group = g_steal_pointer(&tmp);
-            break;
-        }
+        parent = g_steal_pointer(&tmp);
     }
 
+    *group = g_steal_pointer(&parent);
     return 0;
 }
 
