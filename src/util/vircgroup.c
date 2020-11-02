@@ -896,6 +896,7 @@ virCgroupNewPartition(const char *path,
     g_autofree char *newPath = NULL;
     g_autoptr(virCgroup) parent = NULL;
     g_autoptr(virCgroup) newGroup = NULL;
+    char *partition = NULL;
 
     VIR_DEBUG("path=%s create=%d controllers=%x",
               path, create, controllers);
@@ -914,17 +915,26 @@ virCgroupNewPartition(const char *path,
 
     if (STRNEQ(newPath, "/")) {
         char *tmp;
-        g_autofree char *parentPath = g_strdup(newPath);
+        const char *parentPath;
 
-        tmp = strrchr(parentPath, '/');
-        tmp++;
+        tmp = strrchr(newPath, '/');
         *tmp = '\0';
+
+        if (tmp == newPath) {
+            parentPath = "/";
+        } else {
+            parentPath = newPath;
+        }
 
         if (virCgroupNew(parentPath, controllers, &parent) < 0)
             return -1;
+
+        partition = tmp + 1;
+    } else {
+        partition = newPath;
     }
 
-    if (virCgroupNewFromParent(parent, newPath, controllers, &newGroup) < 0)
+    if (virCgroupNewFromParent(parent, partition, controllers, &newGroup) < 0)
         return -1;
 
     if (parent) {
