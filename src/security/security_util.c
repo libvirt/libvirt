@@ -269,8 +269,11 @@ virSecurityGetRememberedLabel(const char *name,
 
     *label = NULL;
 
-    if (!(ref_name = virSecurityGetRefCountAttrName(name)))
+    if (!(ref_name = virSecurityGetRefCountAttrName(name))) {
+        if (errno == ENOSYS)
+            return -2;
         return -1;
+    }
 
     if (virFileGetXAttrQuiet(path, ref_name, &value) < 0) {
         if (errno == ENOSYS || errno == ENODATA || errno == ENOTSUP)
@@ -364,8 +367,11 @@ virSecuritySetRememberedLabel(const char *name,
     g_autofree char *value = NULL;
     unsigned int refcount = 0;
 
-    if (!(ref_name = virSecurityGetRefCountAttrName(name)))
+    if (!(ref_name = virSecurityGetRefCountAttrName(name))) {
+        if (errno == ENOSYS)
+            return -2;
         return -1;
+    }
 
     if (virFileGetXAttrQuiet(path, ref_name, &value) < 0) {
         if (errno == ENOSYS || errno == ENOTSUP) {
@@ -452,8 +458,11 @@ virSecurityMoveRememberedLabel(const char *name,
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)) ||
         !(attr_name = virSecurityGetAttrName(name)) ||
-        !(timestamp_name = virSecurityGetTimestampAttrName(name)))
+        !(timestamp_name = virSecurityGetTimestampAttrName(name))) {
+        if (errno == ENOSYS)
+            return -2;
         return -1;
+    }
 
     if (virFileGetXAttrQuiet(src, ref_name, &ref_value) < 0) {
         if (errno == ENOSYS || errno == ENOTSUP) {
