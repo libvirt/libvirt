@@ -59,8 +59,6 @@ v6.9.0 (2020-11-02)
     using ``<interface type='vdpa'>``. The node device APIs also now
     list and provide XML descriptions for vDPA devices.
 
-* **Improvements**
-
 * **Bug fixes**
 
   * hyperv: ensure WQL queries work in all locales
