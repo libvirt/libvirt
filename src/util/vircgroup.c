@@ -893,7 +893,6 @@ virCgroupNewPartition(const char *path,
                       int controllers,
                       virCgroupPtr *group)
 {
-    g_autofree char *parentPath = NULL;
     g_autofree char *newPath = NULL;
     g_autoptr(virCgroup) parent = NULL;
     g_autoptr(virCgroup) newGroup = NULL;
@@ -915,7 +914,7 @@ virCgroupNewPartition(const char *path,
 
     if (STRNEQ(newPath, "/")) {
         char *tmp;
-        parentPath = g_strdup(newPath);
+        g_autofree char *parentPath = g_strdup(newPath);
 
         tmp = strrchr(parentPath, '/');
         tmp++;
