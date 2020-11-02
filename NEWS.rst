@@ -8,6 +8,16 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
+v6.10.0 (unreleased)
+===================
+
+* **New features**
+
+* **Improvements**
+
+* **Bug fixes**
+
+
 v6.9.0 (2020-11-02)
 ===================
 
