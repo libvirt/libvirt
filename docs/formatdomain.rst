@@ -7159,7 +7159,7 @@ Example: usage of the memory devices
        </target>
      </memory>
      <memory model='nvdimm'>
-       <uuid>
+       <uuid>9066901e-c90a-46ad-8b55-c18868cf92ae</uuid>
        <source>
          <path>/tmp/nvdimm</path>
        </source>
@@ -7173,7 +7173,7 @@ Example: usage of the memory devices
        </target>
      </memory>
      <memory model='nvdimm' access='shared'>
-       <uuid>
+       <uuid>e39080c8-7f99-4b12-9c43-d80014e977b8</uuid>
        <source>
          <path>/dev/dax0.0</path>
          <alignsize unit='KiB'>2048</alignsize>
@@ -7211,7 +7211,7 @@ Example: usage of the memory devices
 
 ``uuid``
    For pSeries guests, an uuid can be set to identify the nvdimm module. If
-   absent, libvirt will generate an uuid. automatically. This attribute is
+   absent, libvirt will generate an uuid automatically. This attribute is
    allowed only for ``model='nvdimm'`` for pSeries guests. :since:`Since 6.2.0`
 
 ``source``
