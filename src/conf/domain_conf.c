@@ -12248,7 +12248,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         int tmp;
         if ((tmp = virDomainNetMacTypeTypeFromString(macaddr_type)) <= 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid mac address check value: '%s'. Valid "
+                           _("invalid mac address type value: '%s'. Valid "
                              "values are \"generated\" and \"static\"."),
                            macaddr_type);
             goto error;
