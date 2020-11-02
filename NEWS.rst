@@ -9,7 +9,7 @@ For a more fine-grained view, use the `git log`_.
 
 
 v6.10.0 (unreleased)
-===================
+====================
 
 * **New features**
 
