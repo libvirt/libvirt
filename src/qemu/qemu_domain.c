@@ -11102,9 +11102,11 @@ qemuDomainNamePathsCleanup(virQEMUDriverConfigPtr cfg,
 {
     g_autofree char *cfg_file = NULL;
     g_autofree char *autostart_link = NULL;
+    g_autofree char *snap_dir = NULL;
 
     cfg_file = virDomainConfigFile(cfg->configDir, name);
     autostart_link = virDomainConfigFile(cfg->autostartDir, name);
+    snap_dir = g_strdup_printf("%s/%s", cfg->snapshotDir, name);
 
     if (virFileExists(cfg_file) &&
         unlink(cfg_file) < 0) {
@@ -11119,6 +11121,11 @@ qemuDomainNamePathsCleanup(virQEMUDriverConfigPtr cfg,
         if (!bestEffort)
             return -1;
     }
+
+    if (virFileIsDir(snap_dir) &&
+        virFileDeleteTree(snap_dir) < 0 &&
+        !bestEffort)
+        return -1;
 
     return 0;
 }
