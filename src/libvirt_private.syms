@@ -1609,6 +1609,10 @@ virSecurityManagerTransactionStart;
 virSecurityManagerVerify;
 
 
+# security/security_util.h
+virSecurityXATTRNamespaceDefined;
+
+
 # util/glibcompat.h
 vir_g_canonicalize_filename;
 vir_g_fsync;

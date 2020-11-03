@@ -32,3 +32,6 @@ int
 virSecurityMoveRememberedLabel(const char *name,
                                const char *src,
                                const char *dst);
+
+bool
+virSecurityXATTRNamespaceDefined(void);

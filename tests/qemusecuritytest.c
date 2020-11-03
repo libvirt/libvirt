@@ -22,6 +22,7 @@
 #include "testutils.h"
 #include "testutilsqemu.h"
 #include "security/security_manager.h"
+#include "security/security_util.h"
 #include "conf/domain_conf.h"
 #include "qemu/qemu_domain.h"
 #include "qemu/qemu_security.h"
@@ -147,6 +148,11 @@ mymain(void)
     if (virInitialize() < 0 ||
         qemuTestDriverInit(&driver) < 0)
         return -1;
+
+    if (!virSecurityXATTRNamespaceDefined()) {
+        ret = EXIT_AM_SKIP;
+        goto cleanup;
+    }
 
     /* Now fix the secdriver */
     virObjectUnref(driver.securityManager);

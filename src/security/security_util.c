@@ -107,6 +107,17 @@ virSecurityGetTimestampAttrName(const char *name G_GNUC_UNUSED)
 #endif /* !XATTR_NAMESPACE */
 
 
+bool
+virSecurityXATTRNamespaceDefined(void)
+{
+#ifdef XATTR_NAMESPACE
+    return true;
+#else
+    return false;
+#endif
+}
+
+
 static char *
 virSecurityGetTimestamp(void)
 {
