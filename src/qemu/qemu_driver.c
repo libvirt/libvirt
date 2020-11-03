@@ -19107,6 +19107,7 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
     virObjectEventPtr event_new = NULL;
     virObjectEventPtr event_old = NULL;
     int ret = -1;
+    virErrorPtr err = NULL;
     g_autofree char *new_dom_name = NULL;
     g_autofree char *old_dom_name = NULL;
     g_autofree char *new_dom_cfg_file = NULL;
@@ -19153,25 +19154,7 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
     new_dom_name = NULL;
 
     if (virDomainDefSave(vm->def, driver->xmlopt, cfg->configDir) < 0)
-        goto rollback;
-
-    if (virFileExists(old_dom_cfg_file) &&
-        unlink(old_dom_cfg_file) < 0) {
-        virReportSystemError(errno,
-                             _("cannot remove old domain config file %s"),
-                             old_dom_cfg_file);
-        goto rollback;
-    }
-
-    if (vm->autostart) {
-        if (virFileIsLink(old_dom_autostart_link) &&
-            unlink(old_dom_autostart_link) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to delete symlink '%s'"),
-                                 old_dom_autostart_link);
-            goto rollback;
-        }
-    }
+        goto cleanup;
 
     event_old = virDomainEventLifecycleNew(vm->def->id, old_dom_name, vm->def->uuid,
                                            VIR_DOMAIN_EVENT_UNDEFINED,
@@ -19184,23 +19167,17 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
     ret = 0;
 
  cleanup:
-    return ret;
-
- rollback:
-    if (old_dom_name) {
+    if (old_dom_name && ret < 0) {
         new_dom_name = vm->def->name;
         vm->def->name = old_dom_name;
         old_dom_name = NULL;
     }
 
-    if (virFileExists(new_dom_cfg_file))
-        unlink(new_dom_cfg_file);
-
-    if (vm->autostart &&
-        virFileExists(new_dom_autostart_link))
-        unlink(new_dom_autostart_link);
-
-    goto cleanup;
+    if (ret < 0)
+        virErrorPreserveLast(&err);
+    qemuDomainNamePathsCleanup(cfg, ret < 0 ? new_dom_name : old_dom_name, true);
+    virErrorRestore(&err);
+    return ret;
 }
 
 static int qemuDomainRename(virDomainPtr dom,

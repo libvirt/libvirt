@@ -1050,3 +1050,8 @@ qemuDomainFileWrapperFDClose(virDomainObjPtr vm,
 int
 qemuDomainInterfaceSetDefaultQDisc(virQEMUDriverPtr driver,
                                    virDomainNetDefPtr net);
+
+int
+qemuDomainNamePathsCleanup(virQEMUDriverConfigPtr cfg,
+                           const char *name,
+                           bool bestEffort);

@@ -11093,3 +11093,32 @@ qemuDomainInterfaceSetDefaultQDisc(virQEMUDriverPtr driver,
 
     return 0;
 }
+
+
+int
+qemuDomainNamePathsCleanup(virQEMUDriverConfigPtr cfg,
+                           const char *name,
+                           bool bestEffort)
+{
+    g_autofree char *cfg_file = NULL;
+    g_autofree char *autostart_link = NULL;
+
+    cfg_file = virDomainConfigFile(cfg->configDir, name);
+    autostart_link = virDomainConfigFile(cfg->autostartDir, name);
+
+    if (virFileExists(cfg_file) &&
+        unlink(cfg_file) < 0) {
+        virReportSystemError(errno, _("Failed to unlink '%s'"), cfg_file);
+        if (!bestEffort)
+            return -1;
+    }
+
+    if (virFileIsLink(autostart_link) == 1 &&
+        unlink(autostart_link) < 0) {
+        virReportSystemError(errno, _("Failed to unlink '%s'"), autostart_link);
+        if (!bestEffort)
+            return -1;
+    }
+
+    return 0;
+}
