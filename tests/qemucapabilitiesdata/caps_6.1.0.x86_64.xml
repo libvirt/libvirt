@@ -206,6 +206,7 @@
   <flag name='dbus-vmstate'/>
   <flag name='vhost-user-gpu'/>
   <flag name='vhost-user-vga'/>
+  <flag name='incremental-backup'/>
   <flag name='ramfb'/>
   <flag name='blockdev-file-dynamic-auto-read-only'/>
   <flag name='savevm-monitor-nodes'/>
@@ -217,6 +218,7 @@
   <flag name='vhost-user-fs'/>
   <flag name='query-named-block-nodes.flat'/>
   <flag name='blockdev-snapshot.allow-write-only-overlay'/>
+  <flag name='blockdev-reopen'/>
   <flag name='storage.werror'/>
   <flag name='fsdev.multidevs'/>
   <flag name='virtio.packed'/>
