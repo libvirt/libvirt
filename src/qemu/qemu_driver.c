@@ -19279,18 +19279,6 @@ static int qemuDomainRename(virDomainPtr dom,
         goto endjob;
     }
 
-    if (virDomainSnapshotObjListNum(vm->snapshots, NULL, 0) > 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("cannot rename domain with snapshots"));
-        goto endjob;
-    }
-
-    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, flags) > 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("cannot rename domain with checkpoints"));
-        goto endjob;
-    }
-
     if (virDomainObjListRename(driver->domains, vm, new_name, flags,
                                qemuDomainRenameCallback, driver) < 0)
         goto endjob;
