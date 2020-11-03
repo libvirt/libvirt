@@ -19130,20 +19130,20 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
                                                  new_dom_name)) ||
         !(old_dom_cfg_file = virDomainConfigFile(cfg->configDir,
                                                  vm->def->name)))
-        goto cleanup;
+        return -1;
 
     if (vm->autostart) {
         if (!(new_dom_autostart_link = virDomainConfigFile(cfg->autostartDir,
                                                           new_dom_name)) ||
             !(old_dom_autostart_link = virDomainConfigFile(cfg->autostartDir,
                                                           vm->def->name)))
-            goto cleanup;
+            return -1;
 
         if (symlink(new_dom_cfg_file, new_dom_autostart_link) < 0) {
             virReportSystemError(errno,
                                  _("Failed to create symlink '%s to '%s'"),
                                  new_dom_autostart_link, new_dom_cfg_file);
-            goto cleanup;
+            return -1;
         }
     }
 
