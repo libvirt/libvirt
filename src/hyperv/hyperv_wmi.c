@@ -1550,12 +1550,13 @@ hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Msvm_VirtualSystemSettingData
+ * Generic "Get WMI class list" helpers
  */
 
 int
 hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
-                                              const char *uuid_string, Msvm_VirtualSystemSettingData **list)
+                                              const char *uuid_string,
+                                              Msvm_VirtualSystemSettingData **list)
 {
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 
@@ -1573,13 +1574,10 @@ hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
 }
 
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Msvm_MemorySettingData
- */
-
 int
 hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
-                                       const char *vssd_instanceid, Msvm_MemorySettingData **list)
+                                       const char *vssd_instanceid,
+                                       Msvm_MemorySettingData **list)
 {
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 

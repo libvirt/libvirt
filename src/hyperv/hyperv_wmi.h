@@ -201,21 +201,9 @@ const char *hypervReturnCodeToString(int returnCode);
 
 
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Generic "Get WMI class list" helpers
- */
-
 int hypervGetWmiClassList(hypervPrivate *priv,
                           hypervWmiClassInfoListPtr wmiInfo, virBufferPtr query,
                           hypervObject **wmiClass);
-
-int hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
-                                                  const char *uuid_string,
-                                                  Msvm_VirtualSystemSettingData **list);
-
-int hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
-                                           const char *vssd_instanceid,
-                                           Msvm_MemorySettingData **list);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_ComputerSystem
@@ -239,3 +227,15 @@ hypervMsvmComputerSystemFromUUID(hypervPrivate *priv, const char *uuid,
 
 int hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
                                        Msvm_ComputerSystem **computerSystem);
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Generic "Get WMI class list" helpers
+ */
+
+int hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
+                                                  const char *uuid_string,
+                                                  Msvm_VirtualSystemSettingData **list);
+
+int hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
+                                           const char *vssd_instanceid,
+                                           Msvm_MemorySettingData **list);
