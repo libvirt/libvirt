@@ -250,10 +250,10 @@ int hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
                                                   const char *uuid_string,
                                                   Msvm_VirtualSystemSettingData **list);
 
-int hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv,
-                                    const char *id,
-                                    Msvm_ProcessorSettingData **data);
+int hypervGetProcessorSD(hypervPrivate *priv,
+                         const char *id,
+                         Msvm_ProcessorSettingData **data);
 
-int hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
-                                           const char *vssd_instanceid,
-                                           Msvm_MemorySettingData **list);
+int hypervGetMemorySD(hypervPrivate *priv,
+                      const char *vssd_instanceid,
+                      Msvm_MemorySettingData **list);

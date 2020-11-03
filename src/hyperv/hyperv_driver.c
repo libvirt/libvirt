@@ -985,14 +985,14 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
                                                       &virtualSystemSettingData) < 0)
         goto cleanup;
 
-    if (hypervGetProcSDByVSSDInstanceId(priv,
-                                        virtualSystemSettingData->data.common->InstanceID,
-                                        &processorSettingData) < 0)
+    if (hypervGetProcessorSD(priv,
+                             virtualSystemSettingData->data.common->InstanceID,
+                             &processorSettingData) < 0)
         goto cleanup;
 
-    if (hypervGetMsvmMemorySettingDataFromVSSD(priv,
-                                               virtualSystemSettingData->data.common->InstanceID,
-                                               &memorySettingData) < 0)
+    if (hypervGetMemorySD(priv,
+                          virtualSystemSettingData->data.common->InstanceID,
+                          &memorySettingData) < 0)
         goto cleanup;
 
     /* Fill struct */
@@ -1068,14 +1068,14 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
                                                       &virtualSystemSettingData) < 0)
         goto cleanup;
 
-    if (hypervGetProcSDByVSSDInstanceId(priv,
-                                        virtualSystemSettingData->data.common->InstanceID,
-                                        &processorSettingData) < 0)
+    if (hypervGetProcessorSD(priv,
+                             virtualSystemSettingData->data.common->InstanceID,
+                             &processorSettingData) < 0)
         goto cleanup;
 
-    if (hypervGetMsvmMemorySettingDataFromVSSD(priv,
-                                               virtualSystemSettingData->data.common->InstanceID,
-                                               &memorySettingData) < 0)
+    if (hypervGetMemorySD(priv,
+                          virtualSystemSettingData->data.common->InstanceID,
+                          &memorySettingData) < 0)
         goto cleanup;
 
     /* Fill struct */
@@ -1817,8 +1817,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
         goto cleanup;
 
-    if (hypervGetMsvmMemorySettingDataFromVSSD(priv, vssd->data.common->InstanceID,
-                                               &memsd) < 0)
+    if (hypervGetMemorySD(priv, vssd->data.common->InstanceID, &memsd) < 0)
         goto cleanup;
 
     if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {

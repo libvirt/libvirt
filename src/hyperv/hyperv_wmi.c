@@ -1571,9 +1571,9 @@ hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
 
 
 int
-hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv,
-                                const char *id,
-                                Msvm_ProcessorSettingData **data)
+hypervGetProcessorSD(hypervPrivate *priv,
+                     const char *id,
+                     Msvm_ProcessorSettingData **data)
 {
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     virBufferEscapeSQL(&query,
@@ -1597,9 +1597,9 @@ hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv,
 
 
 int
-hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
-                                       const char *vssd_instanceid,
-                                       Msvm_MemorySettingData **list)
+hypervGetMemorySD(hypervPrivate *priv,
+                  const char *vssd_instanceid,
+                  Msvm_MemorySettingData **list)
 {
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 
