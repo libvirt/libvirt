@@ -18,7 +18,7 @@
 
 #include <config.h>
 
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
 # include "virmock.h"
 # include <unistd.h>
 # include <fcntl.h>
