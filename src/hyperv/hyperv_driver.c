@@ -288,7 +288,7 @@ hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *) computerSystem);
+    hypervFreeObject(priv, (hypervObject *)computerSystem);
 
     return result;
 }
@@ -553,7 +553,7 @@ hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *) os);
+    hypervFreeObject(priv, (hypervObject *)os);
 
     return result;
 }
@@ -613,7 +613,7 @@ hypervConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
     result = processorSettingData->data.common->VirtualQuantity;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *) processorSettingData);
+    hypervFreeObject(priv, (hypervObject *)processorSettingData);
 
     return result;
 }
@@ -925,8 +925,8 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *) computerSystem);
-    hypervFreeObject(priv, (hypervObject *) shutdown);
+    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject(priv, (hypervObject *)shutdown);
 
     return result;
 }
@@ -1324,8 +1324,8 @@ hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
     }
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *) vsgsd);
-    hypervFreeObject(priv, (hypervObject *) vssd);
+    hypervFreeObject(priv, (hypervObject *)vsgsd);
+    hypervFreeObject(priv, (hypervObject *)vssd);
 
     return result;
 }
