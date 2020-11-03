@@ -1,1 +1,1 @@
-mount -t glusterfs example.com:/volume -o direct-io-mode=1 /mnt/gluster
+mount -t glusterfs example.com:/volume /mnt/gluster -o direct-io-mode=1
