@@ -206,7 +206,7 @@ qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
     if (!qemuBlockBitmapChainIsValid(dd->domdisk->src,
                                      dd->backupdisk->incremental,
                                      blockNamedNodeData)) {
-        virReportError(VIR_ERR_INVALID_ARG,
+        virReportError(VIR_ERR_CHECKPOINT_INCONSISTENT,
                        _("missing or broken bitmap '%s' for disk '%s'"),
                        dd->backupdisk->incremental, dd->domdisk->dst);
         return -1;
