@@ -1123,6 +1123,8 @@ opendir(const char *path)
 int
 close(int fd)
 {
+    init_syms();
+
     if (remove_fd(fd) < 0)
         return -1;
     return real_close(fd);
