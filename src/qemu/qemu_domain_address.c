@@ -408,18 +408,16 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
     if (qemuDomainIsS390CCW(def) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW)) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW))
-            qemuDomainPrimeVfioDeviceAddresses(
-                def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
-        qemuDomainPrimeVirtioDeviceAddresses(
-            def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
+            qemuDomainPrimeVfioDeviceAddresses(def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
+
+        qemuDomainPrimeVirtioDeviceAddresses(def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
 
         if (!(addrs = virDomainCCWAddressSetCreateFromDomain(def)))
             goto cleanup;
 
     } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
         /* deal with legacy virtio-s390 */
-        qemuDomainPrimeVirtioDeviceAddresses(
-            def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390);
+        qemuDomainPrimeVirtioDeviceAddresses(def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390);
     }
 
     ret = 0;
