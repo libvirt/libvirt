@@ -182,32 +182,6 @@ hypervGetVirtualSystemByName(hypervPrivate *priv, const char *name,
 }
 
 
-
-static int
-hypervGetProcSDByVSSDInstanceId(hypervPrivate *priv, const char *id,
-                                Msvm_ProcessorSettingData **data)
-{
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
-                       "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
-                       "ResultClass = Msvm_ProcessorSettingData",
-                       id);
-
-    if (hypervGetWmiClass(Msvm_ProcessorSettingData, data) < 0)
-        return -1;
-
-    if (!*data) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not look up processor setting data with virtual system instance ID '%s'"),
-                       id);
-        return -1;
-    }
-
-    return 0;
-}
-
-
 static int
 hypervRequestStateChange(virDomainPtr domain, int state)
 {
