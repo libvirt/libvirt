@@ -861,6 +861,40 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
 }
 
 
+static int
+virCgroupNewFromParent(virCgroupPtr parent,
+                       const char *path,
+                       int controllers,
+                       virCgroupPtr *group)
+{
+    g_autoptr(virCgroup) new = g_new0(virCgroup, 1);
+
+    VIR_DEBUG("parent=%p path=%s controllers=%d group=%p",
+              parent, path, controllers, group);
+
+    if (virCgroupSetBackends(new) < 0)
+        return -1;
+
+    if (virCgroupCopyMounts(new, parent) < 0)
+        return -1;
+
+    if (virCgroupCopyPlacement(new, path, parent) < 0)
+        return -1;
+
+    if (virCgroupDetectPlacement(new, -1, path) < 0)
+        return -1;
+
+    if (virCgroupValidatePlacement(new, -1) < 0)
+        return -1;
+
+    if (virCgroupDetectControllers(new, controllers, parent) < 0)
+        return -1;
+
+    *group = g_steal_pointer(&new);
+    return 0;
+}
+
+
 /**
  * virCgroupNewPartition:
  * @path: path for the partition
@@ -910,7 +944,7 @@ virCgroupNewPartition(const char *path,
             return -1;
     }
 
-    if (virCgroupNew(-1, newPath, parent, controllers, &newGroup) < 0)
+    if (virCgroupNewFromParent(parent, newPath, controllers, &newGroup) < 0)
         return -1;
 
     if (parent) {
@@ -965,7 +999,7 @@ virCgroupNewDomainPartition(virCgroupPtr partition,
     if (virCgroupPartitionEscape(&grpname) < 0)
         return -1;
 
-    if (virCgroupNew(-1, grpname, partition, -1, &newGroup) < 0)
+    if (virCgroupNewFromParent(partition, grpname, -1, &newGroup) < 0)
         return -1;
 
     /*
@@ -1032,7 +1066,7 @@ virCgroupNewThread(virCgroupPtr domain,
                    (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
                    (1 << VIR_CGROUP_CONTROLLER_CPUSET));
 
-    if (virCgroupNew(-1, name, domain, controllers, &newGroup) < 0)
+    if (virCgroupNewFromParent(domain, name, controllers, &newGroup) < 0)
         return -1;
 
     if (virCgroupMakeGroup(domain, newGroup, create, VIR_CGROUP_THREAD) < 0)
@@ -1133,11 +1167,10 @@ virCgroupEnableMissingControllers(char *path,
         if (t)
             *t = '\0';
 
-        if (virCgroupNew(pidleader,
-                         path,
-                         parent,
-                         controllers,
-                         &tmp) < 0)
+        if (virCgroupNewFromParent(parent,
+                                   path,
+                                   controllers,
+                                   &tmp) < 0)
             return -1;
 
         if (virCgroupMakeGroup(parent, tmp, true, VIR_CGROUP_SYSTEMD) < 0)
@@ -2583,7 +2616,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
 
         VIR_DEBUG("Process subdir %s", ent->d_name);
 
-        if (virCgroupNew(-1, ent->d_name, group, -1, &subgroup) < 0)
+        if (virCgroupNewFromParent(group, ent->d_name, -1, &subgroup) < 0)
             return -1;
 
         if ((rc = virCgroupKillRecursiveInternal(subgroup, signum, pids,
