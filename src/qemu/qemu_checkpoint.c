@@ -76,7 +76,7 @@ qemuCheckpointObjFromCheckpoint(virDomainObjPtr vm,
 }
 
 
-static int
+int
 qemuCheckpointWriteMetadata(virDomainObjPtr vm,
                             virDomainMomentObjPtr checkpoint,
                             virDomainXMLOptionPtr xmlopt,

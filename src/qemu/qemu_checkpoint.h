@@ -79,3 +79,9 @@ qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
                                  virJSONValuePtr actions,
                                  const char *diskdst,
                                  GSList **reopenimages);
+
+int
+qemuCheckpointWriteMetadata(virDomainObjPtr vm,
+                            virDomainMomentObjPtr checkpoint,
+                            virDomainXMLOptionPtr xmlopt,
+                            const char *checkpointDir);
