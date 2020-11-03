@@ -5137,6 +5137,9 @@ qemuMigrationDstPersist(virQEMUDriverPtr driver,
                                                priv->qemuCaps)))
         goto error;
 
+    if (!oldPersist && qemuDomainNamePathsCleanup(cfg, vmdef->name, false) < 0)
+        goto error;
+
     if (virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir) < 0 &&
         !ignoreSaveError)
         goto error;
