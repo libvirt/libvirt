@@ -194,10 +194,10 @@
     <xsl:element name="{name()}">
       <xsl:apply-templates mode="copy" />
       <xsl:if test="./html:a/@id">
-        <a class="headerlink" href="#{html:a/@id}" title="Permalink to this headline">&#xb6;</a>
+        <a class="headerlink" href="#{html:a/@id}" title="Link to this headline">&#xb6;</a>
       </xsl:if>
       <xsl:if test="parent::html:div[@class='section']">
-        <a class="headerlink" href="#{../@id}" title="Permalink to this headline">&#xb6;</a>
+        <a class="headerlink" href="#{../@id}" title="Link to this headline">&#xb6;</a>
       </xsl:if>
     </xsl:element>
   </xsl:template>
