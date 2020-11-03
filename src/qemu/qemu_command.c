@@ -393,6 +393,10 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
         virBufferAsprintf(buf, ",iobase=0x%x,irq=0x%x",
                           info->addr.isa.iobase,
                           info->addr.isa.irq);
+    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+        virBufferAsprintf(buf, ",slot=%d", info->addr.dimm.slot);
+        if (info->addr.dimm.base)
+            virBufferAsprintf(buf, ",addr=%llu", info->addr.dimm.base);
     }
 
     return 0;
@@ -3269,7 +3273,9 @@ qemuBuildMemoryDimmBackendStr(virBufferPtr buf,
 
 
 char *
-qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
+qemuBuildMemoryDeviceStr(const virDomainDef *def,
+                         virDomainMemoryDefPtr mem,
+                         virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *device;
@@ -3311,12 +3317,7 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
         virBufferAsprintf(&buf, "memdev=mem%s,id=%s",
                           mem->info.alias, mem->info.alias);
 
-        if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
-            virBufferAsprintf(&buf, ",slot=%d", mem->info.addr.dimm.slot);
-            if (mem->info.addr.dimm.base)
-                virBufferAsprintf(&buf, ",addr=%llu", mem->info.addr.dimm.base);
-        }
-
+        qemuBuildDeviceAddressStr(&buf, def, &mem->info, qemuCaps);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
@@ -7456,7 +7457,7 @@ qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
         virCommandAddArg(cmd, "-object");
         virCommandAddArgBuffer(cmd, &buf);
 
-        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i])))
+        if (!(dimmStr = qemuBuildMemoryDeviceStr(def, def->mems[i], priv->qemuCaps)))
             return -1;
 
         virCommandAddArgList(cmd, "-device", dimmStr, NULL);
