@@ -125,6 +125,11 @@ virDomainCheckpointGetConnect(virDomainCheckpointPtr checkpoint)
  * has a way to resupply correct defaults).  Not all hypervisors support
  * this flag.
  *
+ * If @flags includes VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE along with
+ * VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE the state of the metadata related
+ * to the disk state of the redefined checkpoint is validated. Note that
+ * hypervisors may require that the @domain is running to perform validation.
+ *
  * If @flags includes VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE, then the
  * libvirt will attempt to use guest agent to freeze and thaw all file
  * systems in use within domain OS. However, if the guest agent is not
@@ -154,6 +159,10 @@ virDomainCheckpointCreateXML(virDomainPtr domain,
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE,
                              VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE,
                              error);
+
+    VIR_REQUIRE_FLAG_GOTO(VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE,
+                          VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE,
+                          error);
 
     if (conn->driver->domainCheckpointCreateXML) {
         virDomainCheckpointPtr ret;
