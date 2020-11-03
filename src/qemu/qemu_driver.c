@@ -6705,7 +6705,7 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
 
     if (!(def = virDomainDefParseString(xml, driver->xmlopt,
                                         NULL, parse_flags)))
-        goto cleanup;
+        return NULL;
 
     if (virXMLCheckIllegalChars("name", def->name, "\n") < 0)
         goto cleanup;
@@ -6719,10 +6719,23 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
+    if (virDomainDefSave(vm->newDef ? vm->newDef : vm->def,
+                         driver->xmlopt, cfg->configDir) < 0)
+        goto cleanup;
+
     vm->persistent = 1;
 
-    if (virDomainDefSave(vm->newDef ? vm->newDef : vm->def,
-                         driver->xmlopt, cfg->configDir) < 0) {
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_DEFINED,
+                                     !oldDef ?
+                                     VIR_DOMAIN_EVENT_DEFINED_ADDED :
+                                     VIR_DOMAIN_EVENT_DEFINED_UPDATED);
+
+    VIR_INFO("Creating domain '%s'", vm->def->name);
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
+
+ cleanup:
+    if (!dom && !def) {
         if (oldDef) {
             /* There is backup so this VM was defined before.
              * Just restore the backup. */
@@ -6735,22 +6748,9 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
         } else {
             /* Brand new domain. Remove it */
             VIR_INFO("Deleting domain '%s'", vm->def->name);
-            vm->persistent = 0;
             qemuDomainRemoveInactiveJob(driver, vm);
         }
-        goto cleanup;
     }
-
-    event = virDomainEventLifecycleNewFromObj(vm,
-                                     VIR_DOMAIN_EVENT_DEFINED,
-                                     !oldDef ?
-                                     VIR_DOMAIN_EVENT_DEFINED_ADDED :
-                                     VIR_DOMAIN_EVENT_DEFINED_UPDATED);
-
-    VIR_INFO("Creating domain '%s'", vm->def->name);
-    dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
-
- cleanup:
     virDomainDefFree(oldDef);
     virDomainDefFree(def);
     virDomainObjEndAPI(&vm);
