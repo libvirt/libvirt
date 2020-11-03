@@ -205,6 +205,20 @@ int hypervGetWmiClassList(hypervPrivate *priv,
                           hypervWmiClassInfoListPtr wmiInfo, virBufferPtr query,
                           hypervObject **wmiClass);
 
+/**
+ * hypervGetWmiClass:
+ * @type: the type of the class being retrieved from WMI
+ * @class: double pointer where the class data will be stored
+ *
+ * Retrieve one or more classes from WMI.
+ *
+ * The following variables must exist in the caller:
+ *   1. hypervPrivate *priv
+ *   2. virBuffer query
+ */
+#define hypervGetWmiClass(type, class) \
+    hypervGetWmiClassList(priv, type ## _WmiInfo, &query, (hypervObject **)class)
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_ComputerSystem
  */

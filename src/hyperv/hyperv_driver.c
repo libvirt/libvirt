@@ -48,20 +48,6 @@ VIR_LOG_INIT("hyperv.hyperv_driver");
  * wrapper functions for commonly-accessed WMI objects and interfaces.
  */
 
-/**
- * hypervGetWmiClass:
- * @type: the type of the class being retrieved from WMI
- * @class: double pointer where the class data will be stored
- *
- * Retrieve one or more classes from WMI.
- *
- * The following variables must exist in the caller:
- *   1. hypervPrivate *priv
- *   2. virBuffer query
- */
-#define hypervGetWmiClass(type, class) \
-    hypervGetWmiClassList(priv, type ## _WmiInfo, &query, (hypervObject **)class)
-
 static int
 hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
                           Win32_Processor **processorList)

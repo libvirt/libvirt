@@ -918,8 +918,7 @@ hypervInvokeMethod(hypervPrivate *priv,
                                MSVM_CONCRETEJOB_WQL_SELECT
                                "WHERE InstanceID = '%s'", instanceID);
 
-            if (hypervGetWmiClassList(priv, Msvm_ConcreteJob_WmiInfo, &query,
-                                      (hypervObject **)&job) < 0 || job == NULL)
+            if (hypervGetWmiClass(Msvm_ConcreteJob, &job) < 0 || !job)
                 goto cleanup;
 
             jobState = job->data.common->JobState;
@@ -1333,8 +1332,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
                               MSVM_CONCRETEJOB_WQL_SELECT
                               "WHERE InstanceID = '%s'", instanceID);
 
-            if (hypervGetWmiClassList(priv, Msvm_ConcreteJob_WmiInfo, &query,
-                                      (hypervObject **)&concreteJob) < 0)
+            if (hypervGetWmiClass(Msvm_ConcreteJob, &concreteJob) < 0)
                 goto cleanup;
 
             if (concreteJob == NULL) {
@@ -1523,8 +1521,7 @@ hypervMsvmComputerSystemFromUUID(hypervPrivate *priv, const char *uuid,
                        "WHERE " MSVM_COMPUTERSYSTEM_WQL_VIRTUAL
                        "AND Name = '%s'", uuid);
 
-    if (hypervGetWmiClassList(priv, Msvm_ComputerSystem_WmiInfo, &query,
-                              (hypervObject **)computerSystem) < 0)
+    if (hypervGetWmiClass(Msvm_ComputerSystem, computerSystem) < 0)
         return -1;
 
     if (!*computerSystem) {
@@ -1566,8 +1563,7 @@ hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
                       "ResultClass = Msvm_VirtualSystemSettingData",
                       uuid_string);
 
-    if (hypervGetWmiClassList(priv, Msvm_VirtualSystemSettingData_WmiInfo, &query,
-                              (hypervObject **)list) < 0 || *list == NULL)
+    if (hypervGetWmiClass(Msvm_VirtualSystemSettingData, list) < 0 || !*list)
         return -1;
 
     return 0;
@@ -1587,8 +1583,7 @@ hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
                       "ResultClass = Msvm_MemorySettingData",
                       vssd_instanceid);
 
-    if (hypervGetWmiClassList(priv, Msvm_MemorySettingData_WmiInfo, &query,
-                              (hypervObject **)list) < 0 || *list == NULL)
+    if (hypervGetWmiClass(Msvm_MemorySettingData, list) < 0 || !*list)
         return -1;
 
     return 0;
