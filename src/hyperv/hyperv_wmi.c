@@ -41,8 +41,6 @@
 #include "virlog.h"
 #include "virxml.h"
 
-#define WS_SERIALIZER_FREE_MEM_WORKS 0
-
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
 #define HYPERV_JOB_TIMEOUT_MS 300000
@@ -1120,12 +1118,10 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
         filter_destroy(filter);
 
     if (data != NULL) {
-#if WS_SERIALIZER_FREE_MEM_WORKS
         if (ws_serializer_free_mem(serializerContext, data,
                                    wmiInfo->serializerInfo) < 0) {
             VIR_ERROR(_("Could not free deserialized data"));
         }
-#endif
     }
 
     VIR_FREE(query_string);
@@ -1141,26 +1137,20 @@ void
 hypervFreeObject(hypervPrivate *priv G_GNUC_UNUSED, hypervObject *object)
 {
     hypervObject *next;
-#if WS_SERIALIZER_FREE_MEM_WORKS
     WsSerializerContextH serializerContext;
-#endif
 
     if (object == NULL)
         return;
 
-#if WS_SERIALIZER_FREE_MEM_WORKS
     serializerContext = wsmc_get_serialization_context(priv->client);
-#endif
 
     while (object != NULL) {
         next = object->next;
 
-#if WS_SERIALIZER_FREE_MEM_WORKS
         if (ws_serializer_free_mem(serializerContext, object->data.common,
                                    object->info->serializerInfo) < 0) {
             VIR_ERROR(_("Could not free deserialized data"));
         }
-#endif
 
         VIR_FREE(object);
 
