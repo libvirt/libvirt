@@ -19179,11 +19179,11 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
     event_new = virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_DEFINED,
                                               VIR_DOMAIN_EVENT_DEFINED_RENAMED);
+    virObjectEventStateQueue(driver->domainEventState, event_old);
+    virObjectEventStateQueue(driver->domainEventState, event_new);
     ret = 0;
 
  cleanup:
-    virObjectEventStateQueue(driver->domainEventState, event_old);
-    virObjectEventStateQueue(driver->domainEventState, event_new);
     return ret;
 
  rollback:
