@@ -7309,11 +7309,15 @@ checkpoint-dumpxml
 Output the checkpoint XML for the domain's checkpoint named
 *checkpoint*.  Using
 *--security-info* will also include security sensitive information.
+
 Using *--size* will add XML indicating the current size in bytes of
 guest data that has changed since the checkpoint was created (although
 remember that guest activity between a size check and actually
 creating a backup can result in the backup needing slightly more
-space).  Using *--no-domain* will omit the <domain> element from the
+space). Note that some hypervisors may require that *domain* is running when
+*--size* is used.
+
+Using *--no-domain* will omit the <domain> element from the
 output for a more compact view.
 
 
