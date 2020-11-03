@@ -99,6 +99,10 @@ static const vshCmdOptDef opts_checkpoint_create[] = {
      .type = VSH_OT_BOOL,
      .help = N_("redefine metadata for existing checkpoint")
     },
+    {.name = "redefine-validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the redefined checkpoint")
+    },
     {.name = "quiesce",
      .type = VSH_OT_BOOL,
      .help = N_("quiesce guest's file systems")
@@ -116,8 +120,12 @@ cmdCheckpointCreate(vshControl *ctl,
     char *buffer = NULL;
     unsigned int flags = 0;
 
+    VSH_REQUIRE_OPTION("redefine-validate", "redefine");
+
     if (vshCommandOptBool(cmd, "redefine"))
         flags |= VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
+    if (vshCommandOptBool(cmd, "redefine-validate"))
+        flags |= VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE;
     if (vshCommandOptBool(cmd, "quiesce"))
         flags |= VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE;
 

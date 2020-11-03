@@ -7143,7 +7143,7 @@ checkpoint-create
 
 ::
 
-   checkpoint-create domain [xmlfile] { --redefine | [--quiesce]}
+   checkpoint-create domain [xmlfile] { --redefine [--redefine-validate] | [--quiesce]}
 
 Create a checkpoint for domain *domain* with the properties specified
 in *xmlfile* describing a <domaincheckpoint> top-level element. The
@@ -7160,6 +7160,11 @@ later recreated with the same name and UUID, or to make slight
 alterations in the checkpoint metadata (such as host-specific aspects
 of the domain XML embedded in the checkpoint).  When this flag is
 supplied, the *xmlfile* argument is mandatory.
+
+If *--redefine-validate* is specified along with *--redefine* the hypervisor
+performs validation of metadata associated with the checkpoint stored in places
+besides the checkpoint XML. Note that some hypervisors may require that the
+domain is running to perform validation.
 
 If *--quiesce* is specified, libvirt will try to use guest agent
 to freeze and unfreeze domain's mounted file systems. However,
