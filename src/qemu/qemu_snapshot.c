@@ -1924,6 +1924,11 @@ qemuSnapshotRevert(virDomainObjPtr vm,
                                   driver->xmlopt, priv->qemuCaps, true);
         if (!config)
             goto endjob;
+
+        if (STRNEQ(config->name, vm->def->name)) {
+            VIR_FREE(config->name);
+            config->name = g_strdup(vm->def->name);
+        }
     }
 
     if (snap->def->inactiveDom) {
@@ -1931,6 +1936,11 @@ qemuSnapshotRevert(virDomainObjPtr vm,
                                           driver->xmlopt, priv->qemuCaps, true);
         if (!inactiveConfig)
             goto endjob;
+
+        if (STRNEQ(inactiveConfig->name, vm->def->name)) {
+            VIR_FREE(inactiveConfig->name);
+            inactiveConfig->name = g_strdup(vm->def->name);
+        }
     } else {
         /* Inactive domain definition is missing:
          * - either this is an old active snapshot and we need to copy the
