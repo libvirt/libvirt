@@ -235,9 +235,8 @@ int hypervMsvmComputerSystemToDomain(virConnectPtr conn,
                                      Msvm_ComputerSystem *computerSystem,
                                      virDomainPtr *domain);
 
-int
-hypervMsvmComputerSystemFromUUID(hypervPrivate *priv, const char *uuid,
-                                 Msvm_ComputerSystem **computerSystem);
+int hypervMsvmComputerSystemFromUUID(hypervPrivate *priv, const char *uuid,
+                                     Msvm_ComputerSystem **computerSystem);
 
 int hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
                                        Msvm_ComputerSystem **computerSystem);
