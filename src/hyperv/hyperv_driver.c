@@ -421,8 +421,8 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     hypervPrivate *priv = NULL;
-    char *username = NULL;
-    char *password = NULL;
+    g_autofree char *username = NULL;
+    g_autofree char *password = NULL;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -472,8 +472,6 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
  cleanup:
     hypervFreePrivate(&priv);
-    VIR_FREE(username);
-    VIR_FREE(password);
 
     return result;
 }
