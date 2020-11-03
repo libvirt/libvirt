@@ -49,6 +49,7 @@
 #include "storage_conf.h"
 #include "virutil.h"
 #include "configmake.h"
+#include "security/security_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -131,7 +132,11 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged,
         cfg->group = (gid_t)-1;
     }
     cfg->dynamicOwnership = privileged;
-    cfg->rememberOwner = privileged;
+
+    if (privileged)
+        cfg->rememberOwner = virSecurityXATTRNamespaceDefined();
+    else
+        cfg->rememberOwner = false;
 
     cfg->cgroupControllers = -1; /* -1 == auto-detect */
 
