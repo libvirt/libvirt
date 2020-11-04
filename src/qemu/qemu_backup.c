@@ -277,6 +277,17 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
         return -1;
 
     if (dd->backupdisk->incremental) {
+        /* We deliberately don't check the config of the disk in the checkpoint
+         * definition as it's not guaranteed that the disks still correspond.
+         * We just verify that a checkpoint exists and later on that the disk
+         * has corresponding bitmap. */
+        if (!virDomainCheckpointFindByName(vm->checkpoints, dd->backupdisk->incremental)) {
+            virReportError(VIR_ERR_NO_DOMAIN_CHECKPOINT,
+                           _("Checkpoint '%s' for incremental backup of disk '%s' not found"),
+                           dd->backupdisk->incremental, dd->backupdisk->name);
+            return -1;
+        }
+
         if (dd->backupdisk->exportbitmap)
             dd->incrementalBitmap = g_strdup(dd->backupdisk->exportbitmap);
         else
