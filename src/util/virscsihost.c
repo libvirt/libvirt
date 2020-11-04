@@ -46,17 +46,16 @@ int
 virSCSIHostGetUniqueId(const char *sysfs_prefix,
                        int host)
 {
-    char *sysfs_path = NULL;
+    g_autofree char *sysfs_path = NULL;
     char *p = NULL;
-    int ret = -1;
-    char *buf = NULL;
+    g_autofree char *buf = NULL;
     int unique_id;
 
     sysfs_path = g_strdup_printf("%s/host%d/unique_id",
                                  sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH, host);
 
     if (virFileReadAll(sysfs_path, 1024, &buf) < 0)
-        goto cleanup;
+        return -1;
 
     if ((p = strchr(buf, '\n')))
         *p = '\0';
@@ -65,15 +64,10 @@ virSCSIHostGetUniqueId(const char *sysfs_prefix,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to parse unique_id: %s"), buf);
 
-        goto cleanup;
+        return -1;
     }
 
-    ret = unique_id;
-
- cleanup:
-    VIR_FREE(sysfs_path);
-    VIR_FREE(buf);
-    return ret;
+    return unique_id;
 }
 
 
