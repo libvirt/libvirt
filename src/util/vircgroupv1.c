@@ -339,23 +339,28 @@ virCgroupV1DetectPlacement(virCgroupPtr group,
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         const char *typestr = virCgroupV1ControllerTypeToString(i);
 
-        if (virCgroupV1MountOptsMatchController(controllers, typestr) &&
-            group->legacy[i].mountPoint != NULL &&
-            group->legacy[i].placement == NULL) {
-            /*
-             * selfpath == "/" + path="" -> "/"
-             * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"
-             * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
-             */
-            if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
-                group->legacy[i].placement = g_strdup(selfpath);
-            } else {
-                bool delim = STREQ(selfpath, "/") || STREQ(path, "");
+        if (!virCgroupV1MountOptsMatchController(controllers, typestr))
+            continue;
 
-                group->legacy[i].placement = g_strdup_printf("%s%s%s", selfpath,
-                                                             delim ? "" : "/",
-                                                             path);
-            }
+        if (!group->legacy[i].mountPoint)
+            continue;
+
+        if (group->legacy[i].placement)
+            continue;
+
+        /*
+         * selfpath == "/" + path="" -> "/"
+         * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"
+         * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
+         */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
+            group->legacy[i].placement = g_strdup(selfpath);
+        } else {
+            bool delim = STREQ(selfpath, "/") || STREQ(path, "");
+
+            group->legacy[i].placement = g_strdup_printf("%s%s%s", selfpath,
+                                                         delim ? "" : "/",
+                                                         path);
         }
     }
 
