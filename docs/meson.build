@@ -118,7 +118,6 @@ docs_rst_files = [
   'formatdomain',
   'glib-adoption',
   'hacking',
-  'kbase',
   'libvirt-go',
   'libvirt-go-xml',
   'newreposetup',

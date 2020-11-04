@@ -3,6 +3,7 @@ docs_kbase_files = [
   'debuglogs',
   'domainstatecapture',
   'incrementalbackupinternals',
+  'index',
   'kvm-realtime',
   'launch_security_sev',
   'locking-lockd',

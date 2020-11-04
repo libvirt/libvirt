@@ -126,7 +126,7 @@
         <dt><a href="hvsupport.html">Driver support</a></dt>
         <dd>matrix of API support per hypervisor per release</dd>
 
-        <dt><a href="kbase.html">Knowledge Base</a></dt>
+        <dt><a href="kbase/index.html">Knowledge Base</a></dt>
         <dd>Task oriented guides to key features</dd>
       </dl>
     </div>
