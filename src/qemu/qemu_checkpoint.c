@@ -371,18 +371,56 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
 }
 
 
+static int
+qemuCheckpointRedefineValidateBitmaps(virDomainObjPtr vm,
+                                      virDomainCheckpointDefPtr chkdef)
+{
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
+    size_t i;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        return -1;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+        return -1;
+
+    for (i = 0; i < chkdef->ndisks; i++) {
+        virDomainCheckpointDiskDefPtr chkdisk = chkdef->disks + i;
+        virDomainDiskDefPtr domdisk;
+
+        if (chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+            continue;
+
+        /* we tolerate missing disks due to possible detach */
+        if (!(domdisk = virDomainDiskByTarget(vm->def, chkdisk->name)))
+            continue;
+
+        if (!qemuBlockBitmapChainIsValid(domdisk->src, chkdef->parent.name,
+                                         blockNamedNodeData)) {
+            virReportError(VIR_ERR_CHECKPOINT_INCONSISTENT,
+                           _("missing or broken bitmap '%s' for disk '%s'"),
+                           chkdef->parent.name, domdisk->dst);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static virDomainMomentObjPtr
 qemuCheckpointRedefine(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        virDomainCheckpointDefPtr *def,
-                       bool *update_current)
+                       bool *update_current,
+                       bool validate_bitmaps)
 {
     if (virDomainCheckpointRedefinePrep(vm, *def, update_current) < 0)
         return NULL;
 
-    /* XXX Should we validate that the redefined checkpoint even
-     * makes sense, such as checking that qemu-img recognizes the
-     * checkpoint bitmap name in at least one of the domain's disks?  */
+    if (validate_bitmaps &&
+        qemuCheckpointRedefineValidateBitmaps(vm, *def) < 0)
+        return NULL;
 
     return virDomainCheckpointRedefineCommit(vm, def, driver->xmlopt);
 }
@@ -500,11 +538,13 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     virDomainCheckpointPtr checkpoint = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
+    bool validate_bitmaps = flags & VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE;
     unsigned int parse_flags = 0;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virDomainCheckpointDef) def = NULL;
 
-    virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE, NULL);
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE |
+                  VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE, NULL);
 
     if (redefine) {
         parse_flags |= VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;
@@ -535,7 +575,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
         return NULL;
 
     if (redefine) {
-        chk = qemuCheckpointRedefine(driver, vm, &def, &update_current);
+        chk = qemuCheckpointRedefine(driver, vm, &def, &update_current, validate_bitmaps);
     } else {
         chk = qemuCheckpointCreate(driver, vm, &def);
     }
