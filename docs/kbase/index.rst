@@ -2,8 +2,8 @@
 Knowledge base
 ==============
 
-`Debug logs <debuglogs.html>`__
-  Configuration of logging and tips on how to file a good bug report.
+Usage
+-----
 
 `Disk locking <locking.html>`__
    Ensuring exclusive guest access to disks with
@@ -34,14 +34,20 @@ Knowledge base
    Examination of the security protections used for QEMU and how they need
    configuring to allow use of QEMU passthrough with host files/devices.
 
-`Systemtap <systemtap.html>`__
-   Explanation of how to use systemtap for libvirt tracing.
-
 `Virtio-FS <virtiofs.html>`__
    Share a filesystem between the guest and the host
 
 `KVM real time <kvm-realtime.html>`__
    Run real time workloads in guests on a KVM hypervisor
+
+Internals / Debugging
+---------------------
+
+`Debug logs <debuglogs.html>`__
+  Configuration of logging and tips on how to file a good bug report.
+
+`Systemtap <systemtap.html>`__
+   Explanation of how to use systemtap for libvirt tracing.
 
 `Incremental backup internals <incrementalbackupinternals.html>`__
    Incremental backup implementation details relevant for users
