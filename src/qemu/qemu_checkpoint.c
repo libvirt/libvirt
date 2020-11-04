@@ -377,22 +377,14 @@ qemuCheckpointRedefine(virQEMUDriverPtr driver,
                        virDomainCheckpointDefPtr *def,
                        bool *update_current)
 {
-    virDomainMomentObjPtr chk = NULL;
-
-    if (virDomainCheckpointRedefinePrep(vm, def, &chk, driver->xmlopt,
-                                        update_current) < 0)
+    if (virDomainCheckpointRedefinePrep(vm, *def, update_current) < 0)
         return NULL;
 
     /* XXX Should we validate that the redefined checkpoint even
      * makes sense, such as checking that qemu-img recognizes the
      * checkpoint bitmap name in at least one of the domain's disks?  */
 
-    if (chk)
-        return chk;
-
-    chk = virDomainCheckpointAssignDef(vm->checkpoints, *def);
-    *def = NULL;
-    return chk;
+    return virDomainCheckpointRedefineCommit(vm, def, driver->xmlopt);
 }
 
 

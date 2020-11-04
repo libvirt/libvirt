@@ -8989,9 +8989,10 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
         goto cleanup;
 
     if (redefine) {
-        if (virDomainCheckpointRedefinePrep(vm, &def, &chk,
-                                            privconn->xmlopt,
-                                            &update_current) < 0)
+        if (virDomainCheckpointRedefinePrep(vm, def, &update_current) < 0)
+            goto cleanup;
+
+        if (!(chk = virDomainCheckpointRedefineCommit(vm, &def, privconn->xmlopt)))
             goto cleanup;
     } else {
         if (!(def->parent.dom = virDomainDefCopy(vm->def,
@@ -9002,9 +9003,7 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
 
         if (virDomainCheckpointAlignDisks(def) < 0)
             goto cleanup;
-    }
 
-    if (!chk) {
         if (!(chk = virDomainCheckpointAssignDef(vm->checkpoints, def)))
             goto cleanup;
 

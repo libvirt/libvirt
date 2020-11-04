@@ -513,16 +513,11 @@ virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
 
 int
 virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
-                                virDomainCheckpointDefPtr *defptr,
-                                virDomainMomentObjPtr *chk,
-                                virDomainXMLOptionPtr xmlopt,
+                                virDomainCheckpointDefPtr def,
                                 bool *update_current)
 {
-    virDomainCheckpointDefPtr def = *defptr;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainMomentObjPtr parent = NULL;
-    virDomainMomentObjPtr other = NULL;
-    virDomainCheckpointDefPtr otherdef = NULL;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
 
@@ -550,12 +545,26 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
     if (virDomainCheckpointGetCurrent(vm->checkpoints) == NULL)
         *update_current = true;
 
+    return 0;
+}
+
+
+virDomainMomentObjPtr
+virDomainCheckpointRedefineCommit(virDomainObjPtr vm,
+                                  virDomainCheckpointDefPtr *defptr,
+                                  virDomainXMLOptionPtr xmlopt)
+{
+    virDomainCheckpointDefPtr def = *defptr;
+    virDomainMomentObjPtr other = NULL;
+    virDomainCheckpointDefPtr otherdef = NULL;
+    virDomainMomentObjPtr chk = NULL;
+
     other = virDomainCheckpointFindByName(vm->checkpoints, def->parent.name);
     if (other) {
         otherdef = virDomainCheckpointObjGetDef(other);
         if (!virDomainDefCheckABIStability(otherdef->parent.dom,
                                            def->parent.dom, xmlopt))
-            return -1;
+            return NULL;
 
         /* Drop and rebuild the parent relationship, but keep all
          * child relations by reusing chk.  */
@@ -563,8 +572,11 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
         virObjectUnref(otherdef);
         other->def = &(*defptr)->parent;
         *defptr = NULL;
-        *chk = other;
+        chk = other;
+    } else {
+        chk = virDomainCheckpointAssignDef(vm->checkpoints, def);
+        *defptr = NULL;
     }
 
-    return 0;
+    return chk;
 }

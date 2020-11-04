@@ -90,10 +90,14 @@ virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
 int
 virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr checkpoint);
 
-int virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
-                                    virDomainCheckpointDefPtr *def,
-                                    virDomainMomentObjPtr *checkpoint,
-                                    virDomainXMLOptionPtr xmlopt,
-                                    bool *update_current);
+int
+virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
+                                virDomainCheckpointDefPtr def,
+                                bool *update_current);
+
+virDomainMomentObjPtr
+virDomainCheckpointRedefineCommit(virDomainObjPtr vm,
+                                  virDomainCheckpointDefPtr *defptr,
+                                  virDomainXMLOptionPtr xmlopt);
 
 VIR_ENUM_DECL(virDomainCheckpoint);
