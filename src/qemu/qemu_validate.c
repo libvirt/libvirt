@@ -1460,20 +1460,32 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
             return -1;
         }
 
-        if (net->driver.virtio.rx_queue_size &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtio rx_queue_size option is not supported "
-                             "with this QEMU binary"));
-            return -1;
+        if (net->driver.virtio.rx_queue_size) {
+            if (!VIR_IS_POW2(net->driver.virtio.rx_queue_size)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("rx_queue_size has to be a power of two"));
+                return -1;
+            }
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("virtio rx_queue_size option is not supported "
+                                 "with this QEMU binary"));
+                return -1;
+            }
         }
 
-        if (net->driver.virtio.tx_queue_size &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtio tx_queue_size option is not supported "
-                             "with this QEMU binary"));
-            return -1;
+        if (net->driver.virtio.tx_queue_size) {
+            if (!VIR_IS_POW2(net->driver.virtio.tx_queue_size)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("tx_queue_size has to be a power of two"));
+                return -1;
+            }
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("virtio tx_queue_size option is not supported "
+                                 "with this QEMU binary"));
+                return -1;
+            }
         }
 
         if (net->mtu &&
@@ -1484,16 +1496,6 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
             return -1;
         }
 
-        if (net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("rx_queue_size has to be a power of two"));
-            return -1;
-        }
-        if (net->driver.virtio.tx_queue_size & (net->driver.virtio.tx_queue_size - 1)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("tx_queue_size has to be a power of two"));
-            return -1;
-        }
         if (qemuValidateDomainVirtioOptions(net->virtio, qemuCaps) < 0)
             return -1;
     }
