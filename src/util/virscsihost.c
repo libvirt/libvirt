@@ -41,6 +41,8 @@ VIR_LOG_INIT("util.scsi_host");
  * Read the value of the "scsi_host" unique_id file.
  *
  * Returns the value on success or -1 on failure.
+ *
+ * No errors are reported.
  */
 int
 virSCSIHostGetUniqueId(const char *sysfs_prefix,
@@ -54,16 +56,14 @@ virSCSIHostGetUniqueId(const char *sysfs_prefix,
     sysfs_path = g_strdup_printf("%s/host%d/unique_id",
                                  sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH, host);
 
-    if (virFileReadAll(sysfs_path, 1024, &buf) < 0)
+    if (virFileReadAllQuiet(sysfs_path, 1024, &buf) < 0)
         return -1;
 
     if ((p = strchr(buf, '\n')))
         *p = '\0';
 
     if (virStrToLong_i(buf, NULL, 10, &unique_id) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to parse unique_id: %s"), buf);
-
+        VIR_DEBUG("unable to parse unique_id: '%s'", buf);
         return -1;
     }
 
