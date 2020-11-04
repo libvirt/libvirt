@@ -1,3 +1,4 @@
 [Unit]
 Description=Libvirt guests shutdown
+Requires=libvirtd.service
 Documentation=https://libvirt.org
