@@ -402,14 +402,6 @@ div.panel {
     background: rgb(230, 230, 230);
 }
 
-div.widepanel {
-    width: 70em;
-    max-width: 95%;
-    margin-left: 0px;
-    float: left;
-    background: rgb(230, 230, 230);
-}
-
 div.panel h2 {
     margin-top: 0px;
     padding: 0.5em;
