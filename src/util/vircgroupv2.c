@@ -407,9 +407,16 @@ virCgroupV2EnableController(virCgroupPtr group,
 
 
 static int
+virCgroupV2AddTask(virCgroupPtr group,
+                   pid_t pid,
+                   unsigned int flags);
+
+
+static int
 virCgroupV2MakeGroup(virCgroupPtr parent,
                      virCgroupPtr group,
                      bool create,
+                     pid_t pid,
                      unsigned int flags)
 {
     g_autofree char *path = NULL;
@@ -455,6 +462,12 @@ virCgroupV2MakeGroup(virCgroupPtr parent,
             }
         } else {
             size_t i;
+
+            if (pid > 0) {
+                if (virCgroupV2AddTask(group, pid, VIR_CGROUP_TASK_PROCESS) < 0)
+                    return -1;
+            }
+
             for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
                 int rc;
 

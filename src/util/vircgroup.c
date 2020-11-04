@@ -694,13 +694,14 @@ static int
 virCgroupMakeGroup(virCgroupPtr parent,
                    virCgroupPtr group,
                    bool create,
+                   pid_t pid,
                    unsigned int flags)
 {
     size_t i;
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (group->backends[i] &&
-            group->backends[i]->makeGroup(parent, group, create, flags) < 0) {
+            group->backends[i]->makeGroup(parent, group, create, pid, flags) < 0) {
             virCgroupRemove(group);
             return -1;
         }
@@ -970,7 +971,7 @@ virCgroupNewPartition(const char *path,
         return -1;
 
     if (parent) {
-        if (virCgroupMakeGroup(parent, newGroup, create, VIR_CGROUP_NONE) < 0)
+        if (virCgroupMakeGroup(parent, newGroup, create, -1, VIR_CGROUP_NONE) < 0)
             return -1;
     }
 
@@ -1033,7 +1034,7 @@ virCgroupNewDomainPartition(virCgroupPtr partition,
      * a group for driver, is to avoid overhead to track
      * cumulative usage that we don't need.
      */
-    if (virCgroupMakeGroup(partition, newGroup, true,
+    if (virCgroupMakeGroup(partition, newGroup, true, -1,
                            VIR_CGROUP_MEM_HIERACHY) < 0) {
         return -1;
     }
@@ -1090,7 +1091,7 @@ virCgroupNewThread(virCgroupPtr domain,
     if (virCgroupNewFromParent(domain, name, controllers, &newGroup) < 0)
         return -1;
 
-    if (virCgroupMakeGroup(domain, newGroup, create, VIR_CGROUP_THREAD) < 0)
+    if (virCgroupMakeGroup(domain, newGroup, create, -1, VIR_CGROUP_THREAD) < 0)
         return -1;
 
     *group = g_steal_pointer(&newGroup);
@@ -1192,7 +1193,7 @@ virCgroupEnableMissingControllers(char *path,
                                    &tmp) < 0)
             return -1;
 
-        if (virCgroupMakeGroup(parent, tmp, true, VIR_CGROUP_SYSTEMD) < 0)
+        if (virCgroupMakeGroup(parent, tmp, true, -1, VIR_CGROUP_SYSTEMD) < 0)
             return -1;
 
         virCgroupFree(parent);

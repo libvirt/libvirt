@@ -622,6 +622,7 @@ static int
 virCgroupV1MakeGroup(virCgroupPtr parent,
                      virCgroupPtr group,
                      bool create,
+                     pid_t pid G_GNUC_UNUSED,
                      unsigned int flags)
 {
     size_t i;

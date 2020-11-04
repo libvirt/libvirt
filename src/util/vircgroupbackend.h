@@ -122,6 +122,7 @@ typedef int
 (*virCgroupMakeGroupCB)(virCgroupPtr parent,
                         virCgroupPtr group,
                         bool create,
+                        pid_t pid,
                         unsigned int flags);
 
 typedef int
