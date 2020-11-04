@@ -112,15 +112,22 @@
         </script>
       </head>
       <body onload="pageload()">
-        <xsl:if test="html:html/html:body/@class">
-          <xsl:attribute name="class">
-            <xsl:value-of select="html:html/html:body/@class"/>
-          </xsl:attribute>
-        </xsl:if>
         <div id="body">
-          <div id="content">
-            <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
-          </div>
+          <xsl:choose>
+            <xsl:when test="html:html/html:body/html:div/@class='document'">
+              <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <div class="document">
+                <xsl:if test="html:html/html:body/@id">
+                  <xsl:attribute name="id">
+                    <xsl:value-of select="html:html/html:body/@id"/>
+                  </xsl:attribute>
+                </xsl:if>
+                <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
+              </div>
+            </xsl:otherwise>
+          </xsl:choose>
         </div>
         <div id="nav">
           <div id="home">

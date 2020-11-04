@@ -8,7 +8,7 @@
       // -->
     </script>
   </head>
-  <body class="index">
+  <body id="index">
     <h1>The virtualization API</h1>
 
     <div class="panel">

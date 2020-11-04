@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <body class="docs">
+  <body id="docs">
     <h1>Documentation</h1>
     <div class="panel">
       <h2>Deployment / operation</h2>
