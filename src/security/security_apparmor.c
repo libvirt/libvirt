@@ -686,12 +686,6 @@ AppArmorSetMemoryLabel(virSecurityManagerPtr mgr,
 
     switch ((virDomainMemoryModel) mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        if (mem->nvdimmPath == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: nvdimm without a path"),
-                           __func__);
-            return -1;
-        }
         if (!virFileExists(mem->nvdimmPath)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("%s: \'%s\' does not exist"),

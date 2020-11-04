@@ -6694,6 +6694,12 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            const virDomainDef *def)
 {
     if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+        if (!mem->nvdimmPath) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("path is required for model 'nvdimm'"));
+            return -1;
+        }
+
         if (mem->discard == VIR_TRISTATE_BOOL_YES) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("discard is not supported for nvdimms"));
@@ -16690,11 +16696,7 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        if (!(def->nvdimmPath = virXPathString("string(./path)", ctxt))) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("path is required for model 'nvdimm'"));
-            return -1;
-        }
+        def->nvdimmPath = virXPathString("string(./path)", ctxt);
 
         if (virDomainParseMemory("./alignsize", "./alignsize/@unit", ctxt,
                                  &def->alignsize, false, false) < 0)
