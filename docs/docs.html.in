@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body class="docs">
+    <h1>Documentation</h1>
     <div class="panel">
       <h2>Deployment / operation</h2>
 

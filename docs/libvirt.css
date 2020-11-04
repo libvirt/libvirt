@@ -427,6 +427,10 @@ body.index h1 {
     height: 300px;
 }
 
+body.docs h1 {
+    visibility: hidden;
+}
+
 br.clear {
     clear: both;
     border: 0px;
