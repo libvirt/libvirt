@@ -249,10 +249,10 @@
   <flag name='block-export-add'/>
   <flag name='netdev.vhost-vdpa'/>
   <flag name='fsdev.createmode'/>
-  <version>5001050</version>
+  <version>5001091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
-  <package>v5.1.0-2827-g2c6605389c</package>
+  <package>v5.2.0-rc1</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -286,7 +286,7 @@
     <property name='sse4.1' type='boolean' value='true' migratable='yes'/>
     <property name='family' type='number' value='23'/>
     <property name='vmx-vmwrite-vmexit-fields' type='boolean' value='false'/>
-    <property name='kvm-asyncpf-int' type='boolean' value='false'/>
+    <property name='kvm-asyncpf-int' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-vnmi' type='boolean' value='false'/>
     <property name='vmx-true-ctls' type='boolean' value='false'/>
     <property name='vmx-ept-execonly' type='boolean' value='false'/>
