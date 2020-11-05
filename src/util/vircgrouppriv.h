@@ -124,7 +124,7 @@ int virCgroupNewDomainPartition(virCgroupPtr partition,
                                 const char *driver,
                                 const char *name,
                                 virCgroupPtr *group)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int virCgroupRemoveRecursively(char *grppath);
 
