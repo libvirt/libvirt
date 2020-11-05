@@ -576,6 +576,64 @@ static int testCgroupNewForSelfHybrid(const void *args G_GNUC_UNUSED)
 }
 
 
+static int testCgroupNewForSelfSystemdLegacy(const void *args G_GNUC_UNUSED)
+{
+    g_autoptr(virCgroup) cgroup = NULL;
+    const char *empty[VIR_CGROUP_CONTROLLER_LAST] = { 0 };
+    const char *mounts[VIR_CGROUP_CONTROLLER_LAST] = {
+        [VIR_CGROUP_CONTROLLER_BLKIO] = "/not/really/sys/fs/cgroup/blkio",
+        [VIR_CGROUP_CONTROLLER_CPU] = "/not/really/sys/fs/cgroup/cpu",
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/not/really/sys/fs/cgroup/cpuacct",
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/not/really/sys/fs/cgroup/cpuset",
+        [VIR_CGROUP_CONTROLLER_DEVICES] = "/not/really/sys/fs/cgroup/devices",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/not/really/sys/fs/cgroup/freezer",
+        [VIR_CGROUP_CONTROLLER_MEMORY] = "/not/really/sys/fs/cgroup/memory",
+        [VIR_CGROUP_CONTROLLER_NET_CLS] = "/not/really/sys/fs/cgroup/net_cls",
+        [VIR_CGROUP_CONTROLLER_PERF_EVENT] = "/not/really/sys/fs/cgroup/perf_event",
+    };
+    const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
+        [VIR_CGROUP_CONTROLLER_BLKIO] = "",
+        [VIR_CGROUP_CONTROLLER_CPU] = "",
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = "",
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "",
+        [VIR_CGROUP_CONTROLLER_DEVICES] = "",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "",
+        [VIR_CGROUP_CONTROLLER_MEMORY] = "",
+        [VIR_CGROUP_CONTROLLER_NET_CLS] = "",
+        [VIR_CGROUP_CONTROLLER_PERF_EVENT] = "",
+    };
+
+    if (virCgroupNewSelf(&cgroup) < 0) {
+        fprintf(stderr, "Cannot create cgroup for self\n");
+        return -1;
+    }
+
+    return validateCgroup(cgroup, mounts, empty, placement, NULL, NULL, 0);
+}
+
+
+static int testCgroupNewForSelfSystemdUnified(const void *args G_GNUC_UNUSED)
+{
+    g_autoptr(virCgroup) cgroup = NULL;
+    const char *empty[VIR_CGROUP_CONTROLLER_LAST] = { 0 };
+    unsigned int controllers =
+        (1 << VIR_CGROUP_CONTROLLER_CPU) |
+        (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
+        (1 << VIR_CGROUP_CONTROLLER_MEMORY) |
+        (1 << VIR_CGROUP_CONTROLLER_DEVICES) |
+        (1 << VIR_CGROUP_CONTROLLER_BLKIO);
+
+    if (virCgroupNewSelf(&cgroup) < 0) {
+        fprintf(stderr, "Cannot create cgroup for self\n");
+        return -1;
+    }
+
+    return validateCgroup(cgroup, empty, empty, empty,
+                          "/not/really/sys/fs/cgroup", "",
+                          controllers);
+}
+
+
 static int testCgroupAvailable(const void *args)
 {
     bool got = virCgroupAvailable();
@@ -1044,6 +1102,20 @@ mymain(void)
         ret = -1;
     if (virTestRun("Cgroup available (hybrid)", testCgroupAvailable, (void*)0x1) < 0)
         ret = -1;
+    cleanupFakeFS(fakerootdir);
+
+    fakerootdir = initFakeFS("legacy", "systemd-legacy");
+    if (virTestRun("New cgroup for self (systemd-legacy)",
+                   testCgroupNewForSelfSystemdLegacy, NULL) < 0) {
+        ret = -1;
+    }
+    cleanupFakeFS(fakerootdir);
+
+    fakerootdir = initFakeFS("unified", "systemd-unified");
+    if (virTestRun("New cgroup for self (systemd-unified)",
+                   testCgroupNewForSelfSystemdUnified, NULL) < 0) {
+        ret = -1;
+    }
     cleanupFakeFS(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

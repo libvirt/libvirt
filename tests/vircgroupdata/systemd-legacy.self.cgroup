@@ -1,0 +1,11 @@
+1:blkio:/libvirt
+2:cpu:/libvirt/emulator
+3:cpuacct:/libvirt/emulator
+4:cpuset:/libvirt/emulator
+5:devices:/libvirt
+6:freezer:/libvirt
+7:hugetlb:/
+8:memory:/libvirt
+9:net_cls:/libvirt
+10:perf_event:/libvirt
+11:pids:/

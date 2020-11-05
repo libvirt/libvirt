@@ -1,0 +1,1 @@
+cgroup2 /not/really/sys/fs/cgroup cgroup2 rw,seclabel,nosuid,nodev,noexec,relatime,nsdelegate 0 0

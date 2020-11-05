@@ -1,0 +1,11 @@
+cgroup /not/really/sys/fs/cgroup/blkio cgroup rw,seclabel,nosuid,nodev,noexec,relatime,blkio 0 0
+cgroup /not/really/sys/fs/cgroup/cpu cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpu 0 0
+cgroup /not/really/sys/fs/cgroup/cpuacct cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpuacct 0 0
+cgroup /not/really/sys/fs/cgroup/cpuset cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpuset 0 0
+cgroup /not/really/sys/fs/cgroup/devices cgroup rw,seclabel,nosuid,nodev,noexec,relatime,devices 0 0
+cgroup /not/really/sys/fs/cgroup/freezer cgroup rw,seclabel,nosuid,nodev,noexec,relatime,freezer 0 0
+cgroup /not/really/sys/fs/cgroup/hugetlb cgroup rw,seclabel,nosuid,nodev,noexec,relatime,hugetlb 0 0
+cgroup /not/really/sys/fs/cgroup/memory cgroup rw,seclabel,nosuid,nodev,noexec,relatime,memory 0 0
+cgroup /not/really/sys/fs/cgroup/net_cls cgroup rw,seclabel,nosuid,nodev,noexec,relatime,net_cls 0 0
+cgroup /not/really/sys/fs/cgroup/perf_event cgroup rw,seclabel,nosuid,nodev,noexec,relatime,perf_event 0 0
+cgroup /not/really/sys/fs/cgroup/pids cgroup rw,seclabel,nosuid,nodev,noexec,relatime,pids 0 0
