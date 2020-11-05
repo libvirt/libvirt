@@ -3309,11 +3309,7 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 
             VBOX_UTF16_TO_UTF8(mediumLocUtf16, &mediumLocUtf8);
 
-            if (virDomainDiskSetSource(disk, mediumLocUtf8) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Could not set disk source"));
-                goto cleanup;
-            }
+            virDomainDiskSetSource(disk, mediumLocUtf8);
 
             rc = gVBoxAPI.UIMedium.GetReadOnly(medium, &readOnly);
             if (NS_FAILED(rc)) {

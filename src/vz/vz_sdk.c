@@ -674,8 +674,8 @@ prlsdkGetDiskInfo(vzDriverPtr driver,
     if (!(buf = prlsdkGetStringParamVar(PrlVmDev_GetFriendlyName, prldisk)))
         goto cleanup;
 
-    if (*buf != '\0' && virDomainDiskSetSource(disk, buf) < 0)
-        goto cleanup;
+    if (*buf != '\0')
+        virDomainDiskSetSource(disk, buf);
 
     if (prlsdkGetDiskId(prldisk, &disk->bus, &disk->dst) < 0)
         goto cleanup;

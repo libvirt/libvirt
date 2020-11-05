@@ -641,8 +641,7 @@ xenParseXLDiskSrc(virDomainDiskDefPtr disk, char *srcstr)
         disk->src->protocol = VIR_STORAGE_NET_PROTOCOL_RBD;
         ret = virStorageSourceParseRBDColonString(tmpstr, disk->src);
     } else {
-        if (virDomainDiskSetSource(disk, srcstr) < 0)
-            goto cleanup;
+        virDomainDiskSetSource(disk, srcstr);
 
         ret = 0;
     }

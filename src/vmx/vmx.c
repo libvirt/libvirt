@@ -2410,10 +2410,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
             if (!(tmp = ctx->parseFileName(fileName, ctx->opaque)))
                 goto cleanup;
-            if (virDomainDiskSetSource(*def, tmp) < 0) {
-                VIR_FREE(tmp);
-                goto cleanup;
-            }
+            virDomainDiskSetSource(*def, tmp);
             VIR_FREE(tmp);
             (*def)->cachemode = writeThrough ? VIR_DOMAIN_DISK_CACHE_WRITETHRU
                                              : VIR_DOMAIN_DISK_CACHE_DEFAULT;
@@ -2450,19 +2447,16 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
             if (!(tmp = ctx->parseFileName(fileName, ctx->opaque)))
                 goto cleanup;
-            if (virDomainDiskSetSource(*def, tmp) < 0) {
-                VIR_FREE(tmp);
-                goto cleanup;
-            }
+            virDomainDiskSetSource(*def, tmp);
             VIR_FREE(tmp);
         } else if (deviceType && STRCASEEQ(deviceType, "atapi-cdrom")) {
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
 
             if (fileName && STRCASEEQ(fileName, "auto detect")) {
-                ignore_value(virDomainDiskSetSource(*def, NULL));
+                virDomainDiskSetSource(*def, NULL);
                 (*def)->startupPolicy = VIR_DOMAIN_STARTUP_POLICY_OPTIONAL;
-            } else if (virDomainDiskSetSource(*def, fileName) < 0) {
-                goto cleanup;
+            } else {
+                virDomainDiskSetSource(*def, fileName);
             }
         } else if (deviceType && STRCASEEQ(deviceType, "cdrom-raw")) {
             /* Raw access CD-ROMs actually are device='lun' */
@@ -2470,10 +2464,10 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
 
             if (fileName && STRCASEEQ(fileName, "auto detect")) {
-                ignore_value(virDomainDiskSetSource(*def, NULL));
+                virDomainDiskSetSource(*def, NULL);
                 (*def)->startupPolicy = VIR_DOMAIN_STARTUP_POLICY_OPTIONAL;
-            } else if (virDomainDiskSetSource(*def, fileName) < 0) {
-                goto cleanup;
+            } else {
+                virDomainDiskSetSource(*def, fileName);
             }
         } else if (busType == VIR_DOMAIN_DISK_BUS_SCSI &&
                    deviceType && STRCASEEQ(deviceType, "scsi-passthru")) {
@@ -2481,9 +2475,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 /* SCSI-passthru CD-ROMs actually are device='lun' */
                 (*def)->device = VIR_DOMAIN_DISK_DEVICE_LUN;
                 virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
-
-                if (virDomainDiskSetSource(*def, fileName) < 0)
-                    goto cleanup;
+                virDomainDiskSetSource(*def, fileName);
             } else {
                 /*
                  * This function was called in order to parse a CDROM device,
@@ -2502,7 +2494,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             }
 
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
-            ignore_value(virDomainDiskSetSource(*def, NULL));
+            virDomainDiskSetSource(*def, NULL);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid or not yet handled value '%s' "
@@ -2514,18 +2506,14 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
     } else if (device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
         if (fileType != NULL && STRCASEEQ(fileType, "device")) {
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
-            if (virDomainDiskSetSource(*def, fileName) < 0)
-                goto cleanup;
+            virDomainDiskSetSource(*def, fileName);
         } else if (fileType != NULL && STRCASEEQ(fileType, "file")) {
             char *tmp = NULL;
 
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
             if (fileName && !(tmp = ctx->parseFileName(fileName, ctx->opaque)))
                 goto cleanup;
-            if (virDomainDiskSetSource(*def, tmp) < 0) {
-                VIR_FREE(tmp);
-                goto cleanup;
-            }
+            virDomainDiskSetSource(*def, tmp);
             VIR_FREE(tmp);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,

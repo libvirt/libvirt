@@ -479,7 +479,6 @@ static int virLXCControllerSetupLoopDeviceDisk(virDomainDiskDefPtr disk)
     int lofd;
     g_autofree char *loname = NULL;
     const char *src = virDomainDiskGetSource(disk);
-    int ret = -1;
 
     if ((lofd = virFileLoopDeviceAssociate(src, &loname)) < 0)
         return -1;
@@ -492,14 +491,7 @@ static int virLXCControllerSetupLoopDeviceDisk(virDomainDiskDefPtr disk)
      * the rest of container setup 'just works'
      */
     virDomainDiskSetType(disk, VIR_STORAGE_TYPE_BLOCK);
-    if (virDomainDiskSetSource(disk, loname) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    if (ret < 0)
-        VIR_FORCE_CLOSE(lofd);
+    virDomainDiskSetSource(disk, loname);
 
     return lofd;
 
@@ -561,8 +553,7 @@ static int virLXCControllerSetupNBDDeviceDisk(virDomainDiskDefPtr disk)
      * the rest of container setup 'just works'
      */
     virDomainDiskSetType(disk, VIR_STORAGE_TYPE_BLOCK);
-    if (virDomainDiskSetSource(disk, dev) < 0)
-        return -1;
+    virDomainDiskSetSource(disk, dev);
 
     return 0;
 }

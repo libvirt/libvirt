@@ -2241,13 +2241,12 @@ virDomainDiskGetSource(virDomainDiskDef const *def)
 }
 
 
-int
+void
 virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
 {
     char *tmp = g_strdup(src);
     g_free(def->src->path);
     def->src->path = tmp;
-    return 0;
 }
 
 

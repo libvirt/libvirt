@@ -3040,8 +3040,7 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def);
 int virDomainDiskGetType(virDomainDiskDefPtr def);
 void virDomainDiskSetType(virDomainDiskDefPtr def, int type);
 const char *virDomainDiskGetSource(virDomainDiskDef const *def);
-int virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
-    G_GNUC_WARN_UNUSED_RESULT;
+void virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src);
 void virDomainDiskEmptySource(virDomainDiskDefPtr def);
 const char *virDomainDiskGetDriver(const virDomainDiskDef *def);
 int virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)

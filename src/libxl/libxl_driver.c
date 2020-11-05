@@ -3022,8 +3022,7 @@ libxlDomainChangeEjectableMedia(virDomainObjPtr vm, virDomainDiskDefPtr disk)
         goto cleanup;
     }
 
-    if (virDomainDiskSetSource(origdisk, virDomainDiskGetSource(disk)) < 0)
-        goto cleanup;
+    virDomainDiskSetSource(origdisk, virDomainDiskGetSource(disk));
     virDomainDiskSetType(origdisk, virDomainDiskGetType(disk));
 
     virDomainDiskDefFree(disk);
@@ -4084,8 +4083,7 @@ libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
                 return -1;
             }
 
-            if (virDomainDiskSetSource(orig, virDomainDiskGetSource(disk)) < 0)
-                return -1;
+            virDomainDiskSetSource(orig, virDomainDiskGetSource(disk));
             virDomainDiskSetType(orig, virDomainDiskGetType(disk));
             virDomainDiskSetFormat(orig, virDomainDiskGetFormat(disk));
             if (virDomainDiskSetDriver(orig, virDomainDiskGetDriver(disk)) < 0)
