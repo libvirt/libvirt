@@ -3510,7 +3510,6 @@ virVsockSetGuestCid;
 # util/virxml.h
 virParseScaledValue;
 virXMLCheckIllegalChars;
-virXMLChildElementCount;
 virXMLExtractNamespaceXML;
 virXMLFormatElement;
 virXMLNodeContentString;
