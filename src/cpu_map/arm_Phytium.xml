@@ -1,0 +1,10 @@
+<cpus>
+  <model name='phytium-2000plus'>
+    <vendor name='Phytium'/>
+    <pvr value='0x662'/>
+  </model>
+  <model name='phytium-s2500'>
+    <vendor name='Phytium'/>
+    <pvr value='0x663'/>
+  </model>
+</cpus>

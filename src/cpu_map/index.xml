@@ -103,5 +103,8 @@
 
     <!-- Hisilicon-based CPU models -->
     <include filename='arm_Kunpeng-920.xml'/>
+
+	<!-- Phytium-based CPU models -->
+	<include filename='arm_Phytium.xml'/>
   </arch>
 </cpus>
