@@ -25317,7 +25317,7 @@ virDomainDiskSourceFormatNetworkCookies(virBufferPtr buf,
 }
 
 
-static int
+static void
 virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
                                  virBufferPtr childBuf,
                                  virStorageSourcePtr src,
@@ -25375,8 +25375,6 @@ virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
 
     if (src->timeout)
         virBufferAsprintf(childBuf, "<timeout seconds='%llu'/>\n", src->timeout);
-
-    return 0;
 }
 
 
@@ -25488,9 +25486,7 @@ virDomainDiskSourceFormat(virBufferPtr buf,
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        if (virDomainDiskSourceFormatNetwork(&attrBuf, &childBuf,
-                                             src, flags) < 0)
-            return -1;
+        virDomainDiskSourceFormatNetwork(&attrBuf, &childBuf, src, flags);
         break;
 
     case VIR_STORAGE_TYPE_VOLUME:
