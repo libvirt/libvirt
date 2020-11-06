@@ -29498,7 +29498,7 @@ virDomainVsockDefFormat(virBufferPtr buf,
 }
 
 
-static int
+static void
 virDomainDefFormatBlkiotune(virBufferPtr buf,
                             virDomainDefPtr def)
 {
@@ -29539,8 +29539,6 @@ virDomainDefFormatBlkiotune(virBufferPtr buf,
     }
 
     virXMLFormatElement(buf, "blkiotune", NULL, &childrenBuf);
-
-    return 0;
 }
 
 
@@ -29986,8 +29984,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     virBufferAsprintf(buf, "<currentMemory unit='KiB'>%llu</currentMemory>\n",
                       def->mem.cur_balloon);
 
-    if (virDomainDefFormatBlkiotune(buf, def) < 0)
-        return -1;
+    virDomainDefFormatBlkiotune(buf, def);
 
     virDomainMemtuneFormat(buf, &def->mem);
     virDomainMemorybackingFormat(buf, &def->mem);
