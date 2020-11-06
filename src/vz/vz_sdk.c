@@ -698,8 +698,7 @@ prlsdkGetDiskInfo(vzDriverPtr driver,
             VIR_FREE(disk->serial);
     }
 
-    if (virDomainDiskSetDriver(disk, "vz") < 0)
-        goto cleanup;
+    virDomainDiskSetDriver(disk, "vz");
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
         pret = PrlVmDevHd_GetDiskSize(prldisk, &size);

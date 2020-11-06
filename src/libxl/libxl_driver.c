@@ -4086,8 +4086,7 @@ libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
             virDomainDiskSetSource(orig, virDomainDiskGetSource(disk));
             virDomainDiskSetType(orig, virDomainDiskGetType(disk));
             virDomainDiskSetFormat(orig, virDomainDiskGetFormat(disk));
-            if (virDomainDiskSetDriver(orig, virDomainDiskGetDriver(disk)) < 0)
-                return -1;
+            virDomainDiskSetDriver(orig, virDomainDiskGetDriver(disk));
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

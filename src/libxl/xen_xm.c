@@ -165,10 +165,7 @@ xenParseXMDisk(char *entry, int hvm)
             len = tmp - src;
             tmp = g_strndup(src, len);
 
-            if (virDomainDiskSetDriver(disk, tmp) < 0) {
-                VIR_FREE(tmp);
-                goto error;
-            }
+            virDomainDiskSetDriver(disk, tmp);
             VIR_FREE(tmp);
 
             /* Strip the prefix we found off the source file name */
@@ -208,9 +205,8 @@ xenParseXMDisk(char *entry, int hvm)
     }
 
     /* No source, or driver name, so fix to phy: */
-    if (!virDomainDiskGetDriver(disk) &&
-        virDomainDiskSetDriver(disk, "phy") < 0)
-        goto error;
+    if (!virDomainDiskGetDriver(disk))
+        virDomainDiskSetDriver(disk, "phy");
 
     /* phy: type indicates a block device */
     virDomainDiskSetType(disk,

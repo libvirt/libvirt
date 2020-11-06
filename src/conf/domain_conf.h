@@ -3043,8 +3043,7 @@ const char *virDomainDiskGetSource(virDomainDiskDef const *def);
 void virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src);
 void virDomainDiskEmptySource(virDomainDiskDefPtr def);
 const char *virDomainDiskGetDriver(const virDomainDiskDef *def);
-int virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
-    G_GNUC_WARN_UNUSED_RESULT;
+void virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name);
 int virDomainDiskGetFormat(virDomainDiskDefPtr def);
 void virDomainDiskSetFormat(virDomainDiskDefPtr def, int format);
 virDomainControllerDefPtr

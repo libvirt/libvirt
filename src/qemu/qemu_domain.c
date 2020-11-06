@@ -5086,9 +5086,8 @@ qemuDomainDeviceDiskDefPostParse(virDomainDiskDefPtr disk,
                                  unsigned int parseFlags)
 {
     /* set default disk types and drivers */
-    if (!virDomainDiskGetDriver(disk) &&
-        virDomainDiskSetDriver(disk, "qemu") < 0)
-        return -1;
+    if (!virDomainDiskGetDriver(disk))
+        virDomainDiskSetDriver(disk, "qemu");
 
     /* default disk format for drives */
     if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&

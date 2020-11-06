@@ -361,9 +361,8 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
         /* for network-based disks, set 'qemu' as the default driver */
         if (actual_type == VIR_STORAGE_TYPE_NETWORK) {
-            if (!virDomainDiskGetDriver(disk) &&
-                virDomainDiskSetDriver(disk, "qemu") < 0)
-                return -1;
+            if (!virDomainDiskGetDriver(disk))
+                virDomainDiskSetDriver(disk, "qemu");
         }
 
         /* xl.cfg default format is raw. See xl-disk-configuration(5) */

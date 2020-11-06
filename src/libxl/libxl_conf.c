@@ -1237,7 +1237,7 @@ libxlUpdateDiskDef(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
         break;
     }
     if (driver)
-        ignore_value(virDomainDiskSetDriver(l_disk, driver));
+        virDomainDiskSetDriver(l_disk, driver);
 }
 
 int

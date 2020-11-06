@@ -725,8 +725,7 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
             disk->removable = libxldisk->removable;
 
             if (libxldisk->is_cdrom) {
-                if (virDomainDiskSetDriver(disk, "qemu") < 0)
-                    goto fail;
+                virDomainDiskSetDriver(disk, "qemu");
 
                 virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
@@ -772,21 +771,18 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
                 switch (libxldisk->backend) {
                 case LIBXL_DISK_BACKEND_QDISK:
                 case LIBXL_DISK_BACKEND_UNKNOWN:
-                    if (virDomainDiskSetDriver(disk, "qemu") < 0)
-                        goto fail;
+                    virDomainDiskSetDriver(disk, "qemu");
                     if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NONE)
                         virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
                     break;
 
                 case LIBXL_DISK_BACKEND_TAP:
-                    if (virDomainDiskSetDriver(disk, "tap") < 0)
-                        goto fail;
+                    virDomainDiskSetDriver(disk, "tap");
                     virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
                     break;
 
                 case LIBXL_DISK_BACKEND_PHY:
-                    if (virDomainDiskSetDriver(disk, "phy") < 0)
-                        goto fail;
+                    virDomainDiskSetDriver(disk, "phy");
                     virDomainDiskSetType(disk, VIR_STORAGE_TYPE_BLOCK);
                     break;
                 default:

@@ -2270,13 +2270,12 @@ virDomainDiskGetDriver(const virDomainDiskDef *def)
 }
 
 
-int
+void
 virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
 {
     char *tmp = g_strdup(name);
     g_free(def->driverName);
     def->driverName = tmp;
-    return 0;
 }
 
 
