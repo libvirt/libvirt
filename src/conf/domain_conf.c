@@ -5077,7 +5077,7 @@ virDomainPostParseCheckISCSIPath(char **srcpath)
         return;
 
     path = g_strdup_printf("%s/0", *srcpath);
-    VIR_FREE(*srcpath);
+    g_free(*srcpath);
     *srcpath = g_steal_pointer(&path);
 }
 
