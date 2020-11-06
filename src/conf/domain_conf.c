@@ -5068,21 +5068,18 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
  * provided, then default to zero. For an ISCSI LUN that is
  * is provided by /dev/disk/by-path/... , then that path will
  * have the specific lun requested.
- *
- * Returns 0 on success, -1 on failure
  */
-static int
+static void
 virDomainPostParseCheckISCSIPath(char **srcpath)
 {
     char *path = NULL;
 
     if (strchr(*srcpath, '/'))
-        return 0;
+        return;
 
     path = g_strdup_printf("%s/0", *srcpath);
     VIR_FREE(*srcpath);
     *srcpath = g_steal_pointer(&path);
-    return 0;
 }
 
 
@@ -5101,9 +5098,7 @@ virDomainHostdevDefPostParse(virDomainHostdevDefPtr dev,
         scsisrc = &dev->source.subsys.u.scsi;
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
             virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
-
-            if (virDomainPostParseCheckISCSIPath(&iscsisrc->src->path) < 0)
-                return -1;
+            virDomainPostParseCheckISCSIPath(&iscsisrc->src->path);
         }
 
         if (dev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
@@ -5283,9 +5278,8 @@ virDomainDiskDefPostParse(virDomainDiskDefPtr disk,
     }
 
     if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
-        disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
-        virDomainPostParseCheckISCSIPath(&disk->src->path) < 0) {
-        return -1;
+        disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI) {
+        virDomainPostParseCheckISCSIPath(&disk->src->path);
     }
 
     if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
