@@ -3434,8 +3434,7 @@ int virDomainLeaseIndex(virDomainDefPtr def,
                         virDomainLeaseDefPtr lease);
 int virDomainLeaseInsert(virDomainDefPtr def,
                          virDomainLeaseDefPtr lease);
-int virDomainLeaseInsertPreAlloc(virDomainDefPtr def)
-    G_GNUC_WARN_UNUSED_RESULT;
+void virDomainLeaseInsertPreAlloc(virDomainDefPtr def);
 void virDomainLeaseInsertPreAlloced(virDomainDefPtr def,
                                     virDomainLeaseDefPtr lease);
 virDomainLeaseDefPtr

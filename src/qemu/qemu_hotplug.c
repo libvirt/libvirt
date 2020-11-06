@@ -3321,8 +3321,7 @@ qemuDomainAttachLease(virQEMUDriverPtr driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
-    if (virDomainLeaseInsertPreAlloc(vm->def) < 0)
-        return -1;
+    virDomainLeaseInsertPreAlloc(vm->def);
 
     if (virDomainLockLeaseAttach(driver->lockManager, cfg->uri,
                                  vm, lease) < 0) {
