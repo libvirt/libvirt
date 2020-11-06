@@ -27724,8 +27724,7 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static int virDomainPanicDefFormat(virBufferPtr buf,
-                                   virDomainPanicDefPtr def)
+static void virDomainPanicDefFormat(virBufferPtr buf, virDomainPanicDefPtr def)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
@@ -27737,8 +27736,6 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
     virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0);
 
     virXMLFormatElement(buf, "panic", &attrBuf, &childrenBuf);
-
-    return 0;
 }
 
 static int
@@ -30346,10 +30343,8 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     if (def->nvram)
         virDomainNVRAMDefFormat(buf, def->nvram, flags);
 
-    for (n = 0; n < def->npanics; n++) {
-        if (virDomainPanicDefFormat(buf, def->panics[n]) < 0)
-            return -1;
-    }
+    for (n = 0; n < def->npanics; n++)
+        virDomainPanicDefFormat(buf, def->panics[n]);
 
     for (n = 0; n < def->nshmems; n++) {
         if (virDomainShmemDefFormat(buf, def->shmems[n], flags) < 0)
@@ -31465,7 +31460,8 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         rc = virDomainTPMDefFormat(&buf, src->data.tpm, flags);
         break;
     case VIR_DOMAIN_DEVICE_PANIC:
-        rc = virDomainPanicDefFormat(&buf, src->data.panic);
+        virDomainPanicDefFormat(&buf, src->data.panic);
+        rc = 0;
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
         rc = virDomainMemoryDefFormat(&buf, src->data.memory, def, flags);
