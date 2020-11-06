@@ -7290,8 +7290,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         }
 
-        if (virDomainControllerInsert(vmdef, controller) < 0)
-            return -1;
+        virDomainControllerInsert(vmdef, controller);
         dev->data.controller = NULL;
 
         break;

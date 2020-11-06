@@ -18086,14 +18086,11 @@ virDomainNetARPInterfaces(virDomainDefPtr def,
 }
 
 
-int virDomainControllerInsert(virDomainDefPtr def,
+void virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller)
 {
     def->controllers = g_renew(virDomainControllerDefPtr, def->controllers, def->ncontrollers + 1);
-
     virDomainControllerInsertPreAlloced(def, controller);
-
-    return 0;
 }
 
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,

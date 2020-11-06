@@ -2127,8 +2127,7 @@ libxlMakeDefaultUSBControllers(virDomainDefPtr def,
         if (libxlMakeUSBController(l_controller, &x_controllers[i]) < 0)
             goto error;
 
-        if (virDomainControllerInsert(def, l_controller) < 0)
-            goto error;
+        virDomainControllerInsert(def, l_controller);
 
         l_controller = NULL;
     }

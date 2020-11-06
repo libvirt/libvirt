@@ -3417,9 +3417,7 @@ int virDomainNetAppendIPAddress(virDomainNetDefPtr def,
                                 int family,
                                 unsigned int prefix);
 
-int virDomainControllerInsert(virDomainDefPtr def,
-                              virDomainControllerDefPtr controller)
-    G_GNUC_WARN_UNUSED_RESULT;
+void virDomainControllerInsert(virDomainDefPtr def, virDomainControllerDefPtr controller);
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller);
 int virDomainControllerFind(const virDomainDef *def, int type, int idx);
