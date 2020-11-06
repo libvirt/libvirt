@@ -25223,7 +25223,7 @@ virSecurityDeviceLabelDefFormat(virBufferPtr buf,
 }
 
 
-static int
+static void
 virDomainLeaseDefFormat(virBufferPtr buf,
                         virDomainLeaseDefPtr def)
 {
@@ -25237,8 +25237,6 @@ virDomainLeaseDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "/>\n");
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</lease>\n");
-
-    return 0;
 }
 
 static void
@@ -30275,8 +30273,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
             return -1;
 
     for (n = 0; n < def->nleases; n++)
-        if (virDomainLeaseDefFormat(buf, def->leases[n]) < 0)
-            return -1;
+        virDomainLeaseDefFormat(buf, def->leases[n]);
 
     for (n = 0; n < def->nfss; n++)
         if (virDomainFSDefFormat(buf, def->fss[n], flags) < 0)
@@ -31463,7 +31460,8 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         rc = virDomainDiskDefFormat(&buf, src->data.disk, flags, xmlopt);
         break;
     case VIR_DOMAIN_DEVICE_LEASE:
-        rc = virDomainLeaseDefFormat(&buf, src->data.lease);
+        virDomainLeaseDefFormat(&buf, src->data.lease);
+        rc = 0;
         break;
     case VIR_DOMAIN_DEVICE_FS:
         rc = virDomainFSDefFormat(&buf, src->data.fs, flags);
