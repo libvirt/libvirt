@@ -5177,7 +5177,7 @@ virDomainCheckVirtioOptions(virDomainVirtioOptionsPtr virtio)
 }
 
 
-static int
+static void
 virDomainChrDefPostParse(virDomainChrDefPtr chr,
                          const virDomainDef *def)
 {
@@ -5204,12 +5204,10 @@ virDomainChrDefPostParse(virDomainChrDefPtr chr,
 
         chr->target.port = maxport + 1;
     }
-
-    return 0;
 }
 
 
-static int
+static void
 virDomainRNGDefPostParse(virDomainRNGDefPtr rng)
 {
     /* set default path for virtio-rng "random" backend to /dev/random */
@@ -5217,8 +5215,6 @@ virDomainRNGDefPostParse(virDomainRNGDefPtr rng)
         !rng->source.file) {
         rng->source.file = g_strdup("/dev/random");
     }
-
-    return 0;
 }
 
 
@@ -5298,7 +5294,7 @@ virDomainDiskDefPostParse(virDomainDiskDefPtr disk,
 }
 
 
-static int
+static void
 virDomainVideoDefPostParse(virDomainVideoDefPtr video,
                            const virDomainDef *def)
 {
@@ -5310,8 +5306,6 @@ virDomainVideoDefPostParse(virDomainVideoDefPtr video,
 
     video->ram = VIR_ROUND_UP_POWER_OF_TWO(video->ram);
     video->vram = VIR_ROUND_UP_POWER_OF_TWO(video->vram);
-
-    return 0;
 }
 
 
@@ -5344,7 +5338,7 @@ virDomainNetDefPostParse(virDomainNetDefPtr net)
 }
 
 
-static int
+static void
 virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 {
     if (vsock->auto_cid == VIR_TRISTATE_BOOL_ABSENT) {
@@ -5353,8 +5347,6 @@ virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
         else
             vsock->auto_cid = VIR_TRISTATE_BOOL_YES;
     }
-
-    return 0;
 }
 
 
@@ -5386,11 +5378,13 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_CHR:
-        ret = virDomainChrDefPostParse(dev->data.chr, def);
+        virDomainChrDefPostParse(dev->data.chr, def);
+        ret = 0;
         break;
 
     case VIR_DOMAIN_DEVICE_RNG:
-        ret = virDomainRNGDefPostParse(dev->data.rng);
+        virDomainRNGDefPostParse(dev->data.rng);
+        ret = 0;
         break;
 
     case VIR_DOMAIN_DEVICE_DISK:
@@ -5398,7 +5392,8 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
-        ret = virDomainVideoDefPostParse(dev->data.video, def);
+        virDomainVideoDefPostParse(dev->data.video, def);
+        ret = 0;
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
@@ -5414,7 +5409,8 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_VSOCK:
-        ret = virDomainVsockDefPostParse(dev->data.vsock);
+        virDomainVsockDefPostParse(dev->data.vsock);
+        ret = 0;
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
@@ -27719,7 +27715,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static int
+static void
 virDomainNVRAMDefFormat(virBufferPtr buf,
                         virDomainNVRAMDefPtr def,
                         unsigned int flags)
@@ -27730,8 +27726,6 @@ virDomainNVRAMDefFormat(virBufferPtr buf,
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</nvram>\n");
-
-    return 0;
 }
 
 
