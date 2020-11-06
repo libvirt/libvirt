@@ -7492,7 +7492,7 @@ virDomainVirtioOptionsFormat(virBufferPtr buf,
 }
 
 
-static int ATTRIBUTE_NONNULL(2)
+static void ATTRIBUTE_NONNULL(2)
 virDomainDeviceInfoFormat(virBufferPtr buf,
                           virDomainDeviceInfoPtr info,
                           unsigned int flags)
@@ -7543,7 +7543,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
         info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
         /* We're done here */
-        return 0;
+        return;
 
     virBufferAsprintf(&attrBuf, " type='%s'",
                       virDomainDeviceAddressTypeToString(info->type));
@@ -7638,8 +7638,6 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     }
 
     virXMLFormatElement(buf, "address", &attrBuf, &childBuf);
-
-    return 0;
 }
 
 static int
@@ -25913,10 +25911,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     if (def->src->encryption && def->diskElementEnc &&
         virStorageEncryptionFormat(buf, def->src->encryption) < 0)
         return -1;
-    if (virDomainDeviceInfoFormat(buf, &def->info,
-                                  flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) < 0) {
-        return -1;
-    }
+    virDomainDeviceInfoFormat(buf, &def->info, flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT);
 
     if (virDomainDiskDefFormatPrivateData(buf, def, flags, xmlopt) < 0)
         return -1;
@@ -26117,8 +26112,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     if (virDomainControllerDriverFormat(&childBuf, def) < 0)
         return -1;
 
-    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
         def->opts.pciopts.pcihole64) {
@@ -26291,8 +26285,7 @@ virDomainFSDefFormat(virBufferPtr buf,
     if (def->readonly)
         virBufferAddLit(buf, "<readonly/>\n");
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(buf, &def->info, flags);
 
     if (def->space_hard_limit)
         virBufferAsprintf(buf, "<space_hard_limit unit='bytes'>"
@@ -27183,11 +27176,8 @@ virDomainNetDefFormat(virBufferPtr buf,
 
     virDomainNetDefCoalesceFormatXML(buf, def->coalesce);
 
-    if (virDomainDeviceInfoFormat(buf, &def->info,
-                                  flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT
-                                  | VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM) < 0) {
-        return -1;
-    }
+    virDomainDeviceInfoFormat(buf, &def->info, flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT
+                                                     | VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</interface>\n");
@@ -27486,8 +27476,7 @@ virDomainChrDefFormat(virBufferPtr buf,
     if (virDomainChrTargetDefFormat(buf, def, flags) < 0)
         return -1;
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(buf, &def->info, flags);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAsprintf(buf, "</%s>\n", elementName);
@@ -27533,8 +27522,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
                        _("unexpected smartcard type %d"), def->type);
         return -1;
     }
-    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     virBufferAsprintf(buf, "<smartcard mode='%s'", mode);
     if (def->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH &&
@@ -27609,8 +27597,7 @@ virDomainTPMDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(buf, &def->info, flags);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</tpm>\n");
@@ -27640,8 +27627,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
     if (def->audioId > 0)
         virBufferAsprintf(&childBuf, "<audio id='%d'/>\n", def->audioId);
 
-    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     virBufferAsprintf(buf, "<sound model='%s'",  model);
     if (virBufferUse(&childBuf)) {
@@ -27723,8 +27709,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     if (def->period)
         virBufferAsprintf(&childrenBuf, "<stats period='%i'/>\n", def->period);
 
-    if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(&childrenBuf, &def->info, flags);
 
     virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
 
@@ -27741,8 +27726,7 @@ virDomainNVRAMDefFormat(virBufferPtr buf,
 {
     virBufferAddLit(buf, "<nvram>\n");
     virBufferAdjustIndent(buf, 2);
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(buf, &def->info, flags);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</nvram>\n");
@@ -27775,8 +27759,7 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(&attrBuf, " model='%s' action='%s'", model, action);
 
-    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     virXMLFormatElement(buf, "watchdog", &attrBuf, &childBuf);
 
@@ -27793,8 +27776,7 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
         virBufferAsprintf(&attrBuf, " model='%s'",
                           virDomainPanicModelTypeToString(def->model));
 
-    if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0);
 
     virXMLFormatElement(buf, "panic", &attrBuf, &childrenBuf);
 
@@ -27836,8 +27818,7 @@ virDomainShmemDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(buf, &def->info, flags);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</shmem>\n");
@@ -27892,8 +27873,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
 
     virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(buf, &def->info, flags);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</rng>\n");
@@ -28029,8 +28009,7 @@ virDomainMemoryDefFormat(virBufferPtr buf,
 
     virDomainMemoryTargetDefFormat(buf, def);
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(buf, &def->info, flags);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</memory>\n");
@@ -28123,8 +28102,7 @@ virDomainVideoDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(buf, &def->info, flags);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</video>\n");
@@ -28180,8 +28158,7 @@ virDomainInputDefFormat(virBufferPtr buf,
     virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
 
     virBufferEscapeString(&childBuf, "<source evdev='%s'/>\n", def->source.evdev);
-    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     virXMLFormatElement(buf, "input", &attrBuf, &childBuf);
 
@@ -28792,11 +28769,8 @@ virDomainHostdevDefFormat(virBufferPtr buf,
     if (def->shareable)
         virBufferAddLit(buf, "<shareable/>\n");
 
-    if (virDomainDeviceInfoFormat(buf, def->info,
-                                  flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT
-                                  | VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM) < 0) {
-        return -1;
-    }
+    virDomainDeviceInfoFormat(buf, def->info, flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT
+                                                    | VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</hostdev>\n");
@@ -28822,10 +28796,7 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
     if (virDomainChrSourceDefFormat(buf, def->source, flags) < 0)
         return -1;
 
-    if (virDomainDeviceInfoFormat(buf, &def->info,
-                                  flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) < 0) {
-        return -1;
-    }
+    virDomainDeviceInfoFormat(buf, &def->info, flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT);
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</redirdev>\n");
     return 0;
@@ -28885,8 +28856,7 @@ virDomainHubDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     virBufferAsprintf(&attrBuf, " type='%s'", type);
 
@@ -29549,8 +29519,7 @@ virDomainVsockDefFormat(virBufferPtr buf,
         virBufferAsprintf(&cidAttrBuf, " address='%u'", vsock->guest_cid);
     virXMLFormatElement(&childBuf, "cid", &cidAttrBuf, NULL);
 
-    if (virDomainDeviceInfoFormat(&childBuf, &vsock->info, 0) < 0)
-        return -1;
+    virDomainDeviceInfoFormat(&childBuf, &vsock->info, 0);
 
     virXMLFormatElement(buf, "vsock", &attrBuf, &childBuf);
 
