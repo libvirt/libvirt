@@ -5016,7 +5016,7 @@ virDomainControllerSCSINextUnit(const virDomainDef *def,
 #define SCSI_WIDE_BUS_MAX_CONT_UNIT 16
 #define SCSI_NARROW_BUS_MAX_CONT_UNIT 7
 
-static int
+static void
 virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
                               const virDomainDef *def,
                               virDomainHostdevDefPtr hostdev)
@@ -5054,8 +5054,6 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
     hostdev->info->addr.drive.bus = 0;
     hostdev->info->addr.drive.target = 0;
     hostdev->info->addr.drive.unit = next_unit;
-
-    return 0;
 }
 
 
@@ -5089,6 +5087,7 @@ virDomainHostdevDefPostParse(virDomainHostdevDefPtr dev,
                              virDomainXMLOptionPtr xmlopt)
 {
     virDomainHostdevSubsysSCSIPtr scsisrc;
+    virDomainDeviceDriveAddressPtr addr = NULL;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return 0;
@@ -5101,27 +5100,23 @@ virDomainHostdevDefPostParse(virDomainHostdevDefPtr dev,
             virDomainPostParseCheckISCSIPath(&iscsisrc->src->path);
         }
 
-        if (dev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-            virDomainHostdevAssignAddress(xmlopt, def, dev) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Cannot assign SCSI host device address"));
+        if (dev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            virDomainHostdevAssignAddress(xmlopt, def, dev);
+
+        /* Ensure provided address doesn't conflict with existing
+         * scsi disk drive address
+         */
+        addr = &dev->info->addr.drive;
+        if (virDomainDriveAddressIsUsedByDisk(def,
+                                              VIR_DOMAIN_DISK_BUS_SCSI,
+                                              addr)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("SCSI host address controller='%u' "
+                             "bus='%u' target='%u' unit='%u' in "
+                             "use by a SCSI disk"),
+                           addr->controller, addr->bus,
+                           addr->target, addr->unit);
             return -1;
-        } else {
-            /* Ensure provided address doesn't conflict with existing
-             * scsi disk drive address
-             */
-            virDomainDeviceDriveAddressPtr addr = &dev->info->addr.drive;
-            if (virDomainDriveAddressIsUsedByDisk(def,
-                                                  VIR_DOMAIN_DISK_BUS_SCSI,
-                                                  addr)) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("SCSI host address controller='%u' "
-                                 "bus='%u' target='%u' unit='%u' in "
-                                 "use by a SCSI disk"),
-                               addr->controller, addr->bus,
-                               addr->target, addr->unit);
-                return -1;
-            }
         }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
