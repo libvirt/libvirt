@@ -31963,10 +31963,8 @@ virDomainDefVcpuOrderClear(virDomainDefPtr def)
  *
  * Set the block I/O tune settings from @info on the @disk, but error out early
  * in case of any error.  That is to make sure nothing will fail half-way.
- *
- * Returns: 0 on success, -1 otherwise
  */
-int
+void
 virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
                             virDomainBlockIoTuneInfo *info)
 {
@@ -31977,8 +31975,6 @@ virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
     VIR_FREE(disk->blkdeviotune.group_name);
     disk->blkdeviotune = *info;
     disk->blkdeviotune.group_name = g_steal_pointer(&tmp_group);
-
-    return 0;
 }
 
 

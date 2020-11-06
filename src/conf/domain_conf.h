@@ -3804,8 +3804,8 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
                                          int *nparams,
                                          int maxparams);
 
-int virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
-                                virDomainBlockIoTuneInfo *info);
+void virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
+                                 virDomainBlockIoTuneInfo *info);
 
 bool
 virDomainNetTypeSharesHostView(const virDomainNetDef *net);

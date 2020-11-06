@@ -16324,8 +16324,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
         ret = -1;
 
-        if (virDomainDiskSetBlockIOTune(disk, &info) < 0)
-            goto endjob;
+        virDomainDiskSetBlockIOTune(disk, &info);
 
         qemuDomainSetGroupBlockIoTune(def, &info);
 
@@ -16356,8 +16355,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (qemuDomainCheckBlockIoTuneReset(conf_disk, &conf_info) < 0)
             goto endjob;
 
-        if (virDomainDiskSetBlockIOTune(conf_disk, &conf_info) < 0)
-            goto endjob;
+        virDomainDiskSetBlockIOTune(conf_disk, &conf_info);
 
         qemuDomainSetGroupBlockIoTune(persistentDef, &conf_info);
 
