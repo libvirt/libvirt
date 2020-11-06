@@ -25648,7 +25648,7 @@ virDomainDiskDefFormatIotune(virBufferPtr buf,
 #undef FORMAT_IOTUNE
 
 
-static int
+static void
 virDomainDiskDefFormatDriver(virBufferPtr buf,
                              virDomainDiskDefPtr disk)
 {
@@ -25705,7 +25705,6 @@ virDomainDiskDefFormatDriver(virBufferPtr buf,
     virDomainVirtioOptionsFormat(&driverBuf, disk->virtio);
 
     virXMLFormatElement(buf, "driver", &driverBuf, NULL);
-    return 0;
 }
 
 
@@ -25837,8 +25836,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
-    if (virDomainDiskDefFormatDriver(buf, def) < 0)
-        return -1;
+    virDomainDiskDefFormatDriver(buf, def);
 
     /* Format as child of <disk> if defined there; otherwise,
      * if defined as child of <source>, then format later */
