@@ -28776,7 +28776,7 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static int
+static void
 virDomainRedirFilterDefFormat(virBufferPtr buf,
                               virDomainRedirFilterDefPtr filter)
 {
@@ -28784,7 +28784,7 @@ virDomainRedirFilterDefFormat(virBufferPtr buf,
 
     /* no need format an empty redirfilter */
     if (filter->nusbdevs == 0)
-        return 0;
+        return;
 
     virBufferAddLit(buf, "<redirfilter>\n");
     virBufferAdjustIndent(buf, 2);
@@ -28812,7 +28812,6 @@ virDomainRedirFilterDefFormat(virBufferPtr buf,
     }
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</redirfilter>\n");
-    return 0;
 }
 
 static int
