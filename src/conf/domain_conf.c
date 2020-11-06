@@ -17685,8 +17685,7 @@ virDomainDiskByTarget(virDomainDefPtr def,
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk)
 {
-    if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
-        return -1;
+    def->disks = g_renew(virDomainDiskDefPtr, def->disks, def->ndisks + 1);
 
     virDomainDiskInsertPreAlloced(def, disk);
 
@@ -18093,8 +18092,7 @@ virDomainNetARPInterfaces(virDomainDefPtr def,
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller)
 {
-    if (VIR_REALLOC_N(def->controllers, def->ncontrollers+1) < 0)
-        return -1;
+    def->controllers = g_renew(virDomainControllerDefPtr, def->controllers, def->ncontrollers + 1);
 
     virDomainControllerInsertPreAlloced(def, controller);
 
