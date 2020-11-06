@@ -88,8 +88,7 @@ static int testIdentityGetSystem(const void *data)
 #if !WITH_SELINUX
     if (context) {
         VIR_DEBUG("libvirt not compiled with SELinux, skipping this test");
-        ret = EXIT_AM_SKIP;
-        return -1;
+        return EXIT_AM_SKIP;
     }
 #endif
 

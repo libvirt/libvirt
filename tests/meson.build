@@ -313,6 +313,7 @@ tests += [
   { 'name': 'virfirewalltest' },
   { 'name': 'virhostcputest', 'link_whole': [ test_file_wrapper_lib ] },
   { 'name': 'virhostdevtest' },
+  { 'name': 'viridentitytest' },
   { 'name': 'viriscsitest' },
   { 'name': 'virkeycodetest' },
   { 'name': 'virkmodtest' },
@@ -483,7 +484,6 @@ if conf.has('WITH_SECDRIVER_SELINUX')
   if conf.has('WITH_LIBATTR')
     tests += [
       { 'name': 'securityselinuxtest' },
-      { 'name': 'viridentitytest' },
     ]
 
     if conf.has('WITH_QEMU')
