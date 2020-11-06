@@ -27738,7 +27738,7 @@ static void virDomainPanicDefFormat(virBufferPtr buf, virDomainPanicDefPtr def)
     virXMLFormatElement(buf, "panic", &attrBuf, &childrenBuf);
 }
 
-static int
+static void
 virDomainShmemDefFormat(virBufferPtr buf,
                         virDomainShmemDefPtr def,
                         unsigned int flags)
@@ -27777,8 +27777,6 @@ virDomainShmemDefFormat(virBufferPtr buf,
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</shmem>\n");
-
-    return 0;
 }
 
 static int
@@ -30346,10 +30344,8 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     for (n = 0; n < def->npanics; n++)
         virDomainPanicDefFormat(buf, def->panics[n]);
 
-    for (n = 0; n < def->nshmems; n++) {
-        if (virDomainShmemDefFormat(buf, def->shmems[n], flags) < 0)
-            return -1;
-    }
+    for (n = 0; n < def->nshmems; n++)
+        virDomainShmemDefFormat(buf, def->shmems[n], flags);
 
     for (n = 0; n < def->nmems; n++) {
         if (virDomainMemoryDefFormat(buf, def->mems[n], def, flags) < 0)
@@ -31467,7 +31463,8 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         rc = virDomainMemoryDefFormat(&buf, src->data.memory, def, flags);
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
-        rc = virDomainShmemDefFormat(&buf, src->data.shmem, flags);
+        virDomainShmemDefFormat(&buf, src->data.shmem, flags);
+        rc = 0;
         break;
     case VIR_DOMAIN_DEVICE_VSOCK:
         rc = virDomainVsockDefFormat(&buf, src->data.vsock);
