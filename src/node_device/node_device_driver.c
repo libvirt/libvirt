@@ -980,3 +980,29 @@ nodedevRegister(void)
     return udevNodeRegister();
 #endif
 }
+
+
+void
+nodeDeviceGenerateName(virNodeDeviceDef *def,
+                       const char *subsystem,
+                       const char *sysname,
+                       const char *s)
+{
+    size_t i;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf, "%s_%s",
+                      subsystem,
+                      sysname);
+
+    if (s != NULL)
+        virBufferAsprintf(&buf, "_%s", s);
+
+    g_free(def->name);
+    def->name = virBufferContentAndReset(&buf);
+
+    for (i = 0; i < strlen(def->name); i++) {
+        if (!(g_ascii_isalnum(*(def->name + i))))
+            *(def->name + i) = '_';
+    }
+}

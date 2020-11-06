@@ -311,22 +311,9 @@ udevGenerateDeviceName(struct udev_device *device,
                        virNodeDeviceDefPtr def,
                        const char *s)
 {
-    size_t i;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    virBufferAsprintf(&buf, "%s_%s",
-                      udev_device_get_subsystem(device),
-                      udev_device_get_sysname(device));
-
-    if (s != NULL)
-        virBufferAsprintf(&buf, "_%s", s);
-
-    def->name = virBufferContentAndReset(&buf);
-
-    for (i = 0; i < strlen(def->name); i++) {
-        if (!(g_ascii_isalnum(*(def->name + i))))
-            *(def->name + i) = '_';
-    }
+    nodeDeviceGenerateName(def,
+                           udev_device_get_subsystem(device),
+                           udev_device_get_sysname(device), s);
 
     return 0;
 }

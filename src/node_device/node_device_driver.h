@@ -120,3 +120,9 @@ nodeDeviceGetMdevctlStartCommand(virNodeDeviceDefPtr def,
 virCommandPtr
 nodeDeviceGetMdevctlStopCommand(const char *uuid,
                                 char **errmsg);
+
+void
+nodeDeviceGenerateName(virNodeDeviceDef *def,
+                       const char *subsystem,
+                       const char *sysname,
+                       const char *s);
