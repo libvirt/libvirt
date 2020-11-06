@@ -29372,7 +29372,7 @@ virDomainDefIothreadShouldFormat(virDomainDefPtr def)
 }
 
 
-static int
+static void
 virDomainIOMMUDefFormat(virBufferPtr buf,
                         const virDomainIOMMUDef *iommu)
 {
@@ -29407,8 +29407,6 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
                       virDomainIOMMUModelTypeToString(iommu->model));
 
     virXMLFormatElement(buf, "iommu", &attrBuf, &childBuf);
-
-    return 0;
 }
 
 
@@ -30384,9 +30382,8 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
             return -1;
     }
 
-    if (def->iommu &&
-        virDomainIOMMUDefFormat(buf, def->iommu) < 0)
-        return -1;
+    if (def->iommu)
+        virDomainIOMMUDefFormat(buf, def->iommu);
 
     if (def->vsock &&
         virDomainVsockDefFormat(buf, def->vsock) < 0)
