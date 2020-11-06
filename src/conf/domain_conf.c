@@ -29446,7 +29446,7 @@ virDomainMemorybackingFormat(virBufferPtr buf,
 }
 
 
-static int
+static void
 virDomainVsockDefFormat(virBufferPtr buf,
                         virDomainVsockDefPtr vsock)
 {
@@ -29470,8 +29470,6 @@ virDomainVsockDefFormat(virBufferPtr buf,
     virDomainDeviceInfoFormat(&childBuf, &vsock->info, 0);
 
     virXMLFormatElement(buf, "vsock", &attrBuf, &childBuf);
-
-    return 0;
 }
 
 
@@ -30355,9 +30353,8 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     if (def->iommu)
         virDomainIOMMUDefFormat(buf, def->iommu);
 
-    if (def->vsock &&
-        virDomainVsockDefFormat(buf, def->vsock) < 0)
-        return -1;
+    if (def->vsock)
+        virDomainVsockDefFormat(buf, def->vsock);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</devices>\n");
@@ -31467,7 +31464,8 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         rc = 0;
         break;
     case VIR_DOMAIN_DEVICE_VSOCK:
-        rc = virDomainVsockDefFormat(&buf, src->data.vsock);
+        virDomainVsockDefFormat(&buf, src->data.vsock);
+        rc = 0;
         break;
     case VIR_DOMAIN_DEVICE_AUDIO:
         rc = virDomainAudioDefFormat(&buf, src->data.audio);
