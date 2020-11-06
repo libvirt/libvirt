@@ -17682,14 +17682,11 @@ virDomainDiskByTarget(virDomainDefPtr def,
 }
 
 
-int virDomainDiskInsert(virDomainDefPtr def,
-                        virDomainDiskDefPtr disk)
+void virDomainDiskInsert(virDomainDefPtr def,
+                         virDomainDiskDefPtr disk)
 {
     def->disks = g_renew(virDomainDiskDefPtr, def->disks, def->ndisks + 1);
-
     virDomainDiskInsertPreAlloced(def, disk);
-
-    return 0;
 }
 
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,

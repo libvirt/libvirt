@@ -3354,9 +3354,7 @@ virDomainDiskDefPtr
 virDomainDiskByTarget(virDomainDefPtr def,
                       const char *dst);
 
-int virDomainDiskInsert(virDomainDefPtr def,
-                        virDomainDiskDefPtr disk)
-    G_GNUC_WARN_UNUSED_RESULT;
+void virDomainDiskInsert(virDomainDefPtr def, virDomainDiskDefPtr disk);
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk);
 int virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
