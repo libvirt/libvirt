@@ -27185,7 +27185,7 @@ virDomainChrAttrsDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static int
+static void
 virDomainChrSourceDefFormat(virBufferPtr buf,
                             virDomainChrSourceDefPtr def,
                             unsigned int flags)
@@ -27298,8 +27298,6 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         }
         virBufferAddLit(buf, "/>\n");
     }
-
-    return 0;
 }
 
 
@@ -27446,8 +27444,7 @@ virDomainChrDefFormat(virBufferPtr buf,
         return -1;
     virBufferAddLit(buf, ">\n");
 
-    if (virDomainChrSourceDefFormat(buf, def->source, flags) < 0)
-        return -1;
+    virDomainChrSourceDefFormat(buf, def->source, flags);
 
     if (virDomainChrTargetDefFormat(buf, def, flags) < 0)
         return -1;
@@ -27489,8 +27486,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        if (virDomainChrSourceDefFormat(&childBuf, def->data.passthru, flags) < 0)
-            return -1;
+        virDomainChrSourceDefFormat(&childBuf, def->data.passthru, flags);
         break;
 
     default:
@@ -27829,8 +27825,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
             return -1;
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
-        if (virDomainChrSourceDefFormat(buf, def->source.chardev, flags) < 0)
-            return -1;
+        virDomainChrSourceDefFormat(buf, def->source.chardev, flags);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</backend>\n");
         break;
@@ -28767,8 +28762,7 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
-    if (virDomainChrSourceDefFormat(buf, def->source, flags) < 0)
-        return -1;
+    virDomainChrSourceDefFormat(buf, def->source, flags);
 
     virDomainDeviceInfoFormat(buf, &def->info, flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT);
     virBufferAdjustIndent(buf, -2);
