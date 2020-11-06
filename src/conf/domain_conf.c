@@ -18274,7 +18274,8 @@ int virDomainLeaseIndex(virDomainDefPtr def,
 
 int virDomainLeaseInsertPreAlloc(virDomainDefPtr def)
 {
-    return VIR_EXPAND_N(def->leases, def->nleases, 1);
+    def->leases = g_renew(virDomainLeaseDefPtr, def->leases, def->nleases + 1);
+    return 0;
 }
 
 int virDomainLeaseInsert(virDomainDefPtr def,
