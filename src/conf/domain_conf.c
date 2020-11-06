@@ -14883,7 +14883,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
 }
 
 
-static int
+static void
 virDomainGraphicsDefParseXMLEGLHeadless(virDomainGraphicsDefPtr def,
                                         xmlNodePtr node,
                                         xmlXPathContextPtr ctxt)
@@ -14896,7 +14896,6 @@ virDomainGraphicsDefParseXMLEGLHeadless(virDomainGraphicsDefPtr def,
     if ((glNode = virXPathNode("./gl", ctxt)))
         def->data.egl_headless.rendernode = virXMLPropString(glNode,
                                                              "rendernode");
-    return 0;
 }
 
 
@@ -14984,8 +14983,7 @@ virDomainGraphicsDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
-        if (virDomainGraphicsDefParseXMLEGLHeadless(def, node, ctxt) < 0)
-            goto error;
+        virDomainGraphicsDefParseXMLEGLHeadless(def, node, ctxt);
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
