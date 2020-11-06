@@ -25605,7 +25605,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
                               disk->blkdeviotune.val); \
         }
 
-static int
+static void
 virDomainDiskDefFormatIotune(virBufferPtr buf,
                              virDomainDiskDefPtr disk)
 {
@@ -25643,8 +25643,6 @@ virDomainDiskDefFormatIotune(virBufferPtr buf,
     FORMAT_IOTUNE(write_iops_sec_max_length);
 
     virXMLFormatElement(buf, "iotune", NULL, &childBuf);
-
-    return 0;
 }
 
 #undef FORMAT_IOTUNE
@@ -25880,8 +25878,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     }
     virBufferAddLit(buf, "/>\n");
 
-    if (virDomainDiskDefFormatIotune(buf, def) < 0)
-        return -1;
+    virDomainDiskDefFormatIotune(buf, def);
 
     if (def->src->readonly)
         virBufferAddLit(buf, "<readonly/>\n");
