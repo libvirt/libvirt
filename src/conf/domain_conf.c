@@ -26692,7 +26692,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
 }
 
 
-static int
+static void
 virDomainVirtioNetGuestOptsFormat(char **outstr,
                                   virDomainNetDefPtr def)
 {
@@ -26720,11 +26720,10 @@ virDomainVirtioNetGuestOptsFormat(char **outstr,
     virBufferTrim(&buf, " ");
 
     *outstr = virBufferContentAndReset(&buf);
-    return 0;
 }
 
 
-static int
+static void
 virDomainVirtioNetHostOptsFormat(char **outstr,
                                  virDomainNetDefPtr def)
 {
@@ -26760,11 +26759,10 @@ virDomainVirtioNetHostOptsFormat(char **outstr,
     virBufferTrim(&buf, " ");
 
     *outstr = virBufferContentAndReset(&buf);
-    return 0;
 }
 
 
-static int
+static void
 virDomainVirtioNetDriverFormat(char **outstr,
                                virDomainNetDefPtr def)
 {
@@ -26797,7 +26795,6 @@ virDomainVirtioNetDriverFormat(char **outstr,
     virDomainVirtioOptionsFormat(&buf, def->virtio);
 
     *outstr = virBufferContentAndReset(&buf);
-    return 0;
 }
 
 
@@ -27094,10 +27091,9 @@ virDomainNetDefFormat(virBufferPtr buf,
             g_autofree char *gueststr = NULL;
             g_autofree char *hoststr = NULL;
 
-            if (virDomainVirtioNetDriverFormat(&str, def) < 0 ||
-                virDomainVirtioNetGuestOptsFormat(&gueststr, def) < 0 ||
-                virDomainVirtioNetHostOptsFormat(&hoststr, def) < 0)
-                rc = -1;
+            virDomainVirtioNetDriverFormat(&str, def);
+            virDomainVirtioNetGuestOptsFormat(&gueststr, def);
+            virDomainVirtioNetHostOptsFormat(&hoststr, def);
 
             if (!gueststr && !hoststr) {
                 if (str)
