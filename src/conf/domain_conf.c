@@ -18277,13 +18277,10 @@ void virDomainLeaseInsertPreAlloc(virDomainDefPtr def)
     def->leases = g_renew(virDomainLeaseDefPtr, def->leases, def->nleases + 1);
 }
 
-int virDomainLeaseInsert(virDomainDefPtr def,
-                         virDomainLeaseDefPtr lease)
+void virDomainLeaseInsert(virDomainDefPtr def, virDomainLeaseDefPtr lease)
 {
     virDomainLeaseInsertPreAlloc(def);
-
     virDomainLeaseInsertPreAlloced(def, lease);
-    return 0;
 }
 
 

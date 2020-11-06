@@ -3432,8 +3432,7 @@ const char *virDomainControllerAliasFind(const virDomainDef *def,
 
 int virDomainLeaseIndex(virDomainDefPtr def,
                         virDomainLeaseDefPtr lease);
-int virDomainLeaseInsert(virDomainDefPtr def,
-                         virDomainLeaseDefPtr lease);
+void virDomainLeaseInsert(virDomainDefPtr def, virDomainLeaseDefPtr lease);
 void virDomainLeaseInsertPreAlloc(virDomainDefPtr def);
 void virDomainLeaseInsertPreAlloced(virDomainDefPtr def,
                                     virDomainLeaseDefPtr lease);

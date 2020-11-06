@@ -7272,8 +7272,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                            lease->key, NULLSTR(lease->lockspace));
             return -1;
         }
-        if (virDomainLeaseInsert(vmdef, lease) < 0)
-            return -1;
+        virDomainLeaseInsert(vmdef, lease);
 
         /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
         dev->data.lease = NULL;
