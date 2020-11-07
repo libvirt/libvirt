@@ -2496,3 +2496,144 @@ qemuAgentSetResponseTimeout(qemuAgentPtr agent,
 {
     agent->timeout = timeout;
 }
+
+/**
+ * qemuAgentSSHGetAuthorizedKeys:
+ * @agent: agent object
+ * @user: user to get authorized keys for
+ * @keys: Array of authorized keys
+ *
+ * Fetch the public keys from @user's $HOME/.ssh/authorized_keys.
+ *
+ * Returns: number of keys returned on success,
+ *          -1 otherwise (error is reported)
+ */
+int
+qemuAgentSSHGetAuthorizedKeys(qemuAgentPtr agent,
+                              const char *user,
+                              char ***keys)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValuePtr data = NULL;
+    size_t ndata;
+    size_t i;
+    char **keys_ret = NULL;
+
+    if (!(cmd = qemuAgentMakeCommand("guest-ssh-get-authorized-keys",
+                                     "s:username", user,
+                                     NULL)))
+        return -1;
+
+    if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
+        return -1;
+
+    if (!(data = virJSONValueObjectGetObject(reply, "return")) ||
+        !(data = virJSONValueObjectGetArray(data, "keys"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qemu agent didn't return an array of keys"));
+        return -1;
+    }
+
+    ndata = virJSONValueArraySize(data);
+
+    keys_ret = g_new0(char *, ndata + 1);
+
+    for (i = 0; i < ndata; i++) {
+        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+
+        if (!entry) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("array element missing in guest-ssh-get-authorized-keys return value"));
+            goto error;
+        }
+
+        keys_ret[i] = g_strdup(virJSONValueGetString(entry));
+    }
+
+    *keys = g_steal_pointer(&keys_ret);
+    return ndata;
+
+ error:
+    virStringListFreeCount(keys_ret, ndata);
+    return -1;
+}
+
+
+/**
+ * qemuAgentSSHAddAuthorizedKeys:
+ * @agent: agent object
+ * @user: user to add authorized keys for
+ * @keys: Array of authorized keys
+ * @nkeys: number of items in @keys array
+ * @reset: whether to truncate authorized keys file before writing
+ *
+ * Append SSH @keys into the @user's authorized keys file. If
+ * @reset is true then the file is truncated before write and
+ * thus contains only newly added @keys.
+ *
+ * Returns: 0 on success,
+ *          -1 otherwise (error is reported)
+ */
+int
+qemuAgentSSHAddAuthorizedKeys(qemuAgentPtr agent,
+                              const char *user,
+                              const char **keys,
+                              size_t nkeys,
+                              bool reset)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) jkeys = NULL;
+
+    jkeys = qemuAgentMakeStringsArray(keys, nkeys);
+    if (jkeys == NULL)
+        return -1;
+
+    if (!(cmd = qemuAgentMakeCommand("guest-ssh-add-authorized-keys",
+                                     "s:username", user,
+                                     "a:keys", &jkeys,
+                                     "b:reset", reset,
+                                     NULL)))
+        return -1;
+
+    return qemuAgentCommand(agent, cmd, &reply, agent->timeout);
+}
+
+
+/**
+ * qemuAgentSSHRemoveAuthorizedKeys:
+ * @agent: agent object
+ * @user: user to remove authorized keys for
+ * @keys: Array of authorized keys
+ * @nkeys: number of items in @keys array
+ *
+ * Remove SSH @keys from the @user's authorized keys file. It's
+ * not considered an error when trying to remove a non-existent
+ * key.
+ *
+ * Returns: 0 on success,
+ *          -1 otherwise (error is reported)
+ */
+int
+qemuAgentSSHRemoveAuthorizedKeys(qemuAgentPtr agent,
+                                 const char *user,
+                                 const char **keys,
+                                 size_t nkeys)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) jkeys = NULL;
+
+    jkeys = qemuAgentMakeStringsArray(keys, nkeys);
+    if (jkeys == NULL)
+        return -1;
+
+    if (!(cmd = qemuAgentMakeCommand("guest-ssh-remove-authorized-keys",
+                                     "s:username", user,
+                                     "a:keys", &jkeys,
+                                     NULL)))
+        return -1;
+
+    return qemuAgentCommand(agent, cmd, &reply, agent->timeout);
+}

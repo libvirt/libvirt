@@ -170,3 +170,18 @@ int qemuAgentGetTimezone(qemuAgentPtr mon,
 
 void qemuAgentSetResponseTimeout(qemuAgentPtr mon,
                                  int timeout);
+
+int qemuAgentSSHGetAuthorizedKeys(qemuAgentPtr agent,
+                                  const char *user,
+                                  char ***keys);
+
+int qemuAgentSSHAddAuthorizedKeys(qemuAgentPtr agent,
+                                  const char *user,
+                                  const char **keys,
+                                  size_t nkeys,
+                                  bool reset);
+
+int qemuAgentSSHRemoveAuthorizedKeys(qemuAgentPtr agent,
+                                     const char *user,
+                                     const char **keys,
+                                     size_t nkeys);
