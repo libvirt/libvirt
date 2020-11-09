@@ -12758,3 +12758,136 @@ virDomainBackupGetXMLDesc(virDomainPtr domain,
     virDispatchError(conn);
     return NULL;
 }
+
+
+/**
+ * virDomainAuthorizedSSHKeysGet:
+ * @domain: a domain object
+ * @user: user to list keys for
+ * @keys: pointer to a variable to store authorized keys
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * For given @user in @domain fetch list of public SSH authorized
+ * keys and store them into @keys array which is allocated upon
+ * successful return and is NULL terminated. The caller is
+ * responsible for freeing @keys when no longer needed.
+ *
+ * Keys are in OpenSSH format (see sshd(8)) but from libvirt's
+ * point of view are opaque strings, i.e. not interpreted.
+ *
+ * Please note that some hypervisors may require guest agent to
+ * be configured and running in order to be able to run this API.
+ *
+ * Returns: number of keys stored in @keys,
+ *          -1 otherwise.
+ */
+int
+virDomainAuthorizedSSHKeysGet(virDomainPtr domain,
+                              const char *user,
+                              char ***keys,
+                              unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "user=%s, keys=%p, flags=0x%x",
+                     user, keys, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+    virCheckNonNullArgGoto(user, error);
+    virCheckNonNullArgGoto(keys, error);
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->driver->domainAuthorizedSSHKeysGet) {
+        int ret;
+        ret = conn->driver->domainAuthorizedSSHKeysGet(domain, user,
+                                                       keys, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virDomainAuthorizedSSHKeysSet:
+ * @domain: a domain object
+ * @user: user to add keys for
+ * @keys: authorized keys to set
+ * @nkeys: number of keys in @keys array
+ * @flags: bitwise or of virDomainAuthorizedSSHKeysSetFlags
+ *
+ * For given @user in @domain set @keys in authorized keys file.
+ * Any previous content of the file is overwritten with new keys.
+ * That is, if this API is called with @nkeys = 0, @keys = NULL
+ * and @flags = 0 then the authorized keys file for @user is
+ * cleared out.
+ *
+ * Keys are in OpenSSH format (see sshd(8)) but from libvirt's
+ * point of view are opaque strings, i.e. not interpreted.
+ *
+ * If VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND flag is set
+ * then the file is not overwritten and new @keys are appended
+ * instead.
+ *
+ * If VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE flag is set then
+ * instead of adding any new keys, provided @keys are removed
+ * from the file. It's not considered error if the key doesn't
+ * exist.
+ *
+ * Please note that some hypervisors may require guest agent to
+ * be configured and running in order to be able to run this API.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
+int
+virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
+                              const char *user,
+                              const char **keys,
+                              int nkeys,
+                              unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "user=%s, keys=%p, nkeys=%d, flags=0x%x",
+                     user, keys, nkeys, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+    virCheckNonNullArgGoto(user, error);
+
+    if (flags & VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND ||
+        flags & VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE)
+        virCheckNonNullArgGoto(keys, error);
+
+    VIR_EXCLUSIVE_FLAGS_RET(VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND,
+                            VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE,
+                            -1);
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->driver->domainAuthorizedSSHKeysSet) {
+        int ret;
+        ret = conn->driver->domainAuthorizedSSHKeysSet(domain, user,
+                                                       keys, nkeys, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}

@@ -1387,6 +1387,19 @@ typedef char *
 (*virDrvDomainBackupGetXMLDesc)(virDomainPtr domain,
                                 unsigned int flags);
 
+typedef int
+(*virDrvDomainAuthorizedSSHKeysGet)(virDomainPtr domain,
+                                    const char *user,
+                                    char ***keys,
+                                    unsigned int flags);
+
+typedef int
+(*virDrvDomainAuthorizedSSHKeysSet)(virDomainPtr domain,
+                                    const char *user,
+                                    const char **keys,
+                                    int nkeys,
+                                    unsigned int flags);
+
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
 
@@ -1650,4 +1663,6 @@ struct _virHypervisorDriver {
     virDrvDomainAgentSetResponseTimeout domainAgentSetResponseTimeout;
     virDrvDomainBackupBegin domainBackupBegin;
     virDrvDomainBackupGetXMLDesc domainBackupGetXMLDesc;
+    virDrvDomainAuthorizedSSHKeysGet domainAuthorizedSSHKeysGet;
+    virDrvDomainAuthorizedSSHKeysSet domainAuthorizedSSHKeysSet;
 };

@@ -5101,4 +5101,21 @@ int virDomainBackupBegin(virDomainPtr domain,
 char *virDomainBackupGetXMLDesc(virDomainPtr domain,
                                 unsigned int flags);
 
+int virDomainAuthorizedSSHKeysGet(virDomainPtr domain,
+                                  const char *user,
+                                  char ***keys,
+                                  unsigned int flags);
+
+typedef enum {
+    VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND = (1 << 0), /* don't truncate file, just append */
+    VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE = (1 << 1), /* remove keys, instead of adding them */
+
+} virDomainAuthorizedSSHKeysSetFlags;
+
+int virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
+                                  const char *user,
+                                  const char **keys,
+                                  int nkeys,
+                                  unsigned int flags);
+
 #endif /* LIBVIRT_DOMAIN_H */
