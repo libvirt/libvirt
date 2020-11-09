@@ -47,16 +47,8 @@
 
 VIR_LOG_INIT("hyperv.hyperv_wmi");
 
-static int
-hypervGetWmiClassInfo(hypervWmiClassInfoListPtr list, hypervWmiClassInfoPtr *info)
-{
-    *info = list->objs[0];
-    return 0;
-}
-
-
 int
-hypervGetWmiClassList(hypervPrivate *priv, hypervWmiClassInfoListPtr wmiInfo,
+hypervGetWmiClassList(hypervPrivate *priv, hypervWmiClassInfoPtr wmiInfo,
                       virBufferPtr query, hypervObject **wmiClass)
 {
     hypervWqlQuery wqlQuery = HYPERV_WQL_QUERY_INITIALIZER;
@@ -141,13 +133,9 @@ hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
 hypervInvokeParamsListPtr
 hypervCreateInvokeParamsList(const char *method,
                              const char *selector,
-                             hypervWmiClassInfoListPtr obj)
+                             hypervWmiClassInfoPtr info)
 {
     hypervInvokeParamsListPtr params = NULL;
-    hypervWmiClassInfoPtr info = NULL;
-
-    if (hypervGetWmiClassInfo(obj, &info) < 0)
-        return NULL;
 
     params = g_new0(hypervInvokeParamsList, 1);
 
@@ -259,13 +247,11 @@ int
 hypervAddEprParam(hypervInvokeParamsListPtr params,
                   const char *name,
                   virBufferPtr query,
-                  hypervWmiClassInfoListPtr eprInfo)
+                  hypervWmiClassInfoPtr classInfo)
 {
     hypervParamPtr p = NULL;
-    hypervWmiClassInfoPtr classInfo = NULL;
 
-    if (hypervGetWmiClassInfo(eprInfo, &classInfo) < 0 ||
-        hypervCheckParams(params) < 0)
+    if (hypervCheckParams(params) < 0)
         return -1;
 
     p = &params->params[params->nbParams];
@@ -290,17 +276,12 @@ hypervAddEprParam(hypervInvokeParamsListPtr params,
  * Returns a pointer to the GHashTable on success, otherwise NULL.
  */
 GHashTable *
-hypervCreateEmbeddedParam(hypervWmiClassInfoListPtr info)
+hypervCreateEmbeddedParam(hypervWmiClassInfoPtr classInfo)
 {
     size_t i;
     size_t count;
     g_autoptr(GHashTable) table = NULL;
     XmlSerializerInfo *typeinfo = NULL;
-    hypervWmiClassInfoPtr classInfo = NULL;
-
-    /* Get the typeinfo out of the class info list */
-    if (hypervGetWmiClassInfo(info, &classInfo) < 0)
-        return NULL;
 
     typeinfo = classInfo->serializerInfo;
 
@@ -363,16 +344,11 @@ int
 hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
                        const char *name,
                        GHashTable **table,
-                       hypervWmiClassInfoListPtr info)
+                       hypervWmiClassInfoPtr classInfo)
 {
     hypervParamPtr p = NULL;
-    hypervWmiClassInfoPtr classInfo = NULL;
 
     if (hypervCheckParams(params) < 0)
-        return -1;
-
-    /* Get the typeinfo out of the class info list */
-    if (hypervGetWmiClassInfo(info, &classInfo) < 0)
         return -1;
 
     p = &params->params[params->nbParams];
@@ -959,7 +935,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     WsSerializerContextH serializerContext;
     client_opt_t *options = NULL;
     char *query_string = NULL;
-    hypervWmiClassInfoPtr wmiInfo = NULL;
+    hypervWmiClassInfoPtr wmiInfo = wqlQuery->info;
     filter_t *filter = NULL;
     WsXmlDocH response = NULL;
     char *enumContext = NULL;
@@ -976,9 +952,6 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
         VIR_FREE(query_string);
         return -1;
     }
-
-    if (hypervGetWmiClassInfo(wqlQuery->info, &wmiInfo) < 0)
-        goto cleanup;
 
     serializerContext = wsmc_get_serialization_context(priv->client);
 

@@ -57,7 +57,7 @@ class WmiClass:
         header += "#define %s_WQL_SELECT \\\n" % name_upper
         header += "    \"SELECT * FROM %s \"\n" % self.name
         header += "\n"
-        header += "extern hypervWmiClassInfoListPtr %s_WmiInfo;\n\n" % self.name
+        header += "extern hypervWmiClassInfoPtr %s_WmiInfo;\n\n" % self.name
 
         header += self._declare_data_structs()
         header += self._declare_hypervObject_struct()
@@ -143,19 +143,12 @@ class WmiClass:
         This struct holds info with meta-data needed to make wsman requests for the WMI class.
         """
 
-        source = "hypervWmiClassInfoListPtr %s_WmiInfo = &(hypervWmiClassInfoList) {\n" % self.name
-        source += "    .count = 1,\n"
-        source += "    .objs = (hypervWmiClassInfoPtr []) {\n"
-
-        source += "        &(hypervWmiClassInfo) {\n"
-        source += "            .name = %s_CLASSNAME,\n" % self.name.upper()
-        source += "            .rootUri = %s,\n" % self.uri_info.rootUri
-        source += "            .resourceUri = %s_RESOURCE_URI,\n" % self.name.upper()
-        source += "            .serializerInfo = %s_Data_TypeInfo,\n" % self.name
-        source += "            .propertyInfo = %s_Typemap\n" % self.name
-        source += "        },\n"
-
-        source += "    }\n"
+        source = "hypervWmiClassInfoPtr %s_WmiInfo = &(hypervWmiClassInfo) {\n" % self.name
+        source += "    .name = %s_CLASSNAME,\n" % self.name.upper()
+        source += "    .rootUri = %s,\n" % self.uri_info.rootUri
+        source += "    .resourceUri = %s_RESOURCE_URI,\n" % self.name.upper()
+        source += "    .serializerInfo = %s_Data_TypeInfo,\n" % self.name
+        source += "    .propertyInfo = %s_Typemap\n" % self.name
         source += "};\n"
 
         return source

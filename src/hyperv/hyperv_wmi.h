@@ -56,7 +56,7 @@ typedef struct _hypervWqlQuery hypervWqlQuery;
 typedef hypervWqlQuery *hypervWqlQueryPtr;
 struct _hypervWqlQuery {
     virBufferPtr query;
-    hypervWmiClassInfoListPtr info;
+    hypervWmiClassInfoPtr info;
 };
 
 int hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
@@ -121,7 +121,7 @@ typedef hypervInvokeParamsList *hypervInvokeParamsListPtr;
 
 hypervInvokeParamsListPtr hypervCreateInvokeParamsList(const char *method,
                                                        const char *selector,
-                                                       hypervWmiClassInfoListPtr obj);
+                                                       hypervWmiClassInfoPtr obj);
 
 void hypervFreeInvokeParams(hypervInvokeParamsListPtr params);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(hypervInvokeParamsList, hypervFreeInvokeParams);
@@ -132,9 +132,9 @@ int hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
 int hypervAddEprParam(hypervInvokeParamsListPtr params,
                       const char *name,
                       virBufferPtr query,
-                      hypervWmiClassInfoListPtr eprInfo);
+                      hypervWmiClassInfoPtr eprInfo);
 
-GHashTable *hypervCreateEmbeddedParam(hypervWmiClassInfoListPtr info);
+GHashTable *hypervCreateEmbeddedParam(hypervWmiClassInfoPtr info);
 
 int hypervSetEmbeddedProperty(GHashTable *table,
                               const char *name,
@@ -143,7 +143,7 @@ int hypervSetEmbeddedProperty(GHashTable *table,
 int hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
                            const char *name,
                            GHashTable **table,
-                           hypervWmiClassInfoListPtr info);
+                           hypervWmiClassInfoPtr info);
 
 void hypervFreeEmbeddedParam(GHashTable *p);
 
@@ -188,7 +188,8 @@ const char *hypervReturnCodeToString(int returnCode);
 
 
 int hypervGetWmiClassList(hypervPrivate *priv,
-                          hypervWmiClassInfoListPtr wmiInfo, virBufferPtr query,
+                          hypervWmiClassInfoPtr wmiInfo,
+                          virBufferPtr query,
                           hypervObject **wmiClass);
 
 /**

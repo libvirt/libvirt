@@ -128,12 +128,4 @@ struct _hypervWmiClassInfo {
     hypervCimTypePtr propertyInfo;
 };
 
-
-typedef struct _hypervWmiClassInfoList hypervWmiClassInfoList;
-typedef hypervWmiClassInfoList *hypervWmiClassInfoListPtr;
-struct _hypervWmiClassInfoList {
-    size_t count;
-    hypervWmiClassInfoPtr *objs;
-};
-
 #include "hyperv_wmi_classes.generated.h"
