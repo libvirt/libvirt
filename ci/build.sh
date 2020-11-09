@@ -7,32 +7,15 @@
 #
 # to make.
 
-mkdir -p "$CI_CONT_BUILDDIR" || exit 1
-cd "$CI_CONT_BUILDDIR"
+cd "$CI_CONT_SRCDIR"
 
 export VIR_TEST_DEBUG=1
-NOCONFIGURE=1 "$CI_CONT_SRCDIR/autogen.sh" || exit 1
 
-# $CONFIGURE_OPTS is a env that can optionally be set in the container,
+# $MESON_OPTS is an env that can optionally be set in the container,
 # populated at build time from the Dockerfile. A typical use case would
-# be to pass --host/--target args to trigger cross-compilation
-#
-# This can be augmented by make local args in $CI_CONFIGURE_ARGS
-"$CI_CONFIGURE" $CONFIGURE_OPTS $CI_CONFIGURE_ARGS
-if test $? != 0; then
-    test -f config.log && cat config.log
-    exit 1
-fi
-find -name test-suite.log -delete
+# be to pass options to trigger cross-compilation
 
-make -j"$CI_SMP" $CI_MAKE_ARGS
+meson build --werror $MESON_OPTS $CI_MESON_ARGS || \
+(cat build/meson-logs/meson-log.txt && exit 1)
 
-if test $? != 0; then \
-    LOGS=$(find -name test-suite.log)
-    if test "$LOGS"; then
-        echo "=== LOG FILE(S) START ==="
-        cat $LOGS
-        echo "=== LOG FILE(S) END ==="
-    fi
-    exit 1
-fi
+ninja -C build $CI_NINJA_ARGS
