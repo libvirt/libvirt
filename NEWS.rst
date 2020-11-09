@@ -17,6 +17,12 @@ v6.10.0 (unreleased)
 
 * **Bug fixes**
 
+* **Removed features**
+
+  * hyperv: removed support for the Hyper-V V1 WMI API
+
+    This drops support for Windows Server 2008R2 and 2012.
+    The earliest supported version is now Windows 2012R2.
 
 v6.9.0 (2020-11-02)
 ===================
