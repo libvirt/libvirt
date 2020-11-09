@@ -125,7 +125,7 @@ cmdCheckpointCreate(vshControl *ctl,
     if (vshCommandOptBool(cmd, "redefine"))
         flags |= VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
     if (vshCommandOptBool(cmd, "redefine-validate"))
-        flags |= VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE;
+        flags |= VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE_VALIDATE;
     if (vshCommandOptBool(cmd, "quiesce"))
         flags |= VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE;
 

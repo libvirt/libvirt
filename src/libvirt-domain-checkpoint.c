@@ -125,7 +125,7 @@ virDomainCheckpointGetConnect(virDomainCheckpointPtr checkpoint)
  * has a way to resupply correct defaults).  Not all hypervisors support
  * this flag.
  *
- * If @flags includes VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE along with
+ * If @flags includes VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE_VALIDATE along with
  * VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE the state of the metadata related
  * to the disk state of the redefined checkpoint is validated. Note that
  * hypervisors may require that the @domain is running to perform validation.
@@ -160,7 +160,7 @@ virDomainCheckpointCreateXML(virDomainPtr domain,
                              VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE,
                              error);
 
-    VIR_REQUIRE_FLAG_GOTO(VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE,
+    VIR_REQUIRE_FLAG_GOTO(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE_VALIDATE,
                           VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE,
                           error);
 

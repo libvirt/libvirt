@@ -538,13 +538,13 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     virDomainCheckpointPtr checkpoint = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
-    bool validate_bitmaps = flags & VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE;
+    bool validate_bitmaps = flags & VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE_VALIDATE;
     unsigned int parse_flags = 0;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virDomainCheckpointDef) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE |
-                  VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE, NULL);
+                  VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE_VALIDATE, NULL);
 
     if (redefine) {
         parse_flags |= VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;

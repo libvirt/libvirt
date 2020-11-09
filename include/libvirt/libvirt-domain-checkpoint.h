@@ -57,8 +57,8 @@ typedef enum {
                                                             quiesce all mounted
                                                             file systems within
                                                             the domain */
-    VIR_DOMAIN_CHECKPOINT_REDEFINE_VALIDATE  = (1 << 2), /* validate disk data state
-                                                            when redefining a checkpoint */
+    VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE_VALIDATE  = (1 << 2),   /* validate disk data state
+                                                                     when redefining a checkpoint */
 } virDomainCheckpointCreateFlags;
 
 /* Create a checkpoint using the current VM state. */
