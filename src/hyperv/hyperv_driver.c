@@ -318,11 +318,6 @@ static int
 hypervInitConnection(virConnectPtr conn, hypervPrivate *priv,
                      char *username, char *password)
 {
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    hypervWqlQuery wqlQuery = HYPERV_WQL_QUERY_INITIALIZER;
-    hypervObject *computerSystem = NULL;
-    int ret = -1;
-
     /* Initialize the openwsman connection */
     priv->client = wsmc_create(conn->uri->server, conn->uri->port, "/wsman",
                                priv->parsedUri->transport, username, password);
@@ -330,47 +325,19 @@ hypervInitConnection(virConnectPtr conn, hypervPrivate *priv,
     if (priv->client == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not create openwsman client"));
-        goto cleanup;
+        return -1;
     }
 
     if (wsmc_transport_init(priv->client, NULL) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not initialize openwsman transport"));
-        goto cleanup;
+        return -1;
     }
 
     /* FIXME: Currently only basic authentication is supported  */
     wsman_transport_set_auth_method(priv->client, "basic");
 
-    wqlQuery.info = Msvm_ComputerSystem_WmiInfo;
-    wqlQuery.query = &query;
-
-    virBufferAddLit(&query,
-                    MSVM_COMPUTERSYSTEM_WQL_SELECT
-                    "WHERE " MSVM_COMPUTERSYSTEM_WQL_PHYSICAL);
-
-    /* try query using V2 namespace (for Hyper-V 2012+) */
-    priv->wmiVersion = HYPERV_WMI_VERSION_V2;
-
-    if (hypervEnumAndPull(priv, &wqlQuery, &computerSystem) < 0) {
-        /* rebuild query because hypervEnumAndPull consumes it */
-        virBufferAddLit(&query,
-                        MSVM_COMPUTERSYSTEM_WQL_SELECT
-                        "WHERE " MSVM_COMPUTERSYSTEM_WQL_PHYSICAL);
-
-        /* fall back to V1 namespace (for Hyper-V 2008) */
-        priv->wmiVersion = HYPERV_WMI_VERSION_V1;
-
-        if (hypervEnumAndPull(priv, &wqlQuery, &computerSystem) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    hypervFreeObject(priv, computerSystem);
-
-    return ret;
+    return 0;
 }
 
 
@@ -774,19 +741,7 @@ hypervDomainLookupByName(virConnectPtr conn, const char *name)
 static int
 hypervDomainSuspend(virDomainPtr domain)
 {
-    hypervPrivate *priv = domain->conn->privateData;
-    int requestedState = -1;
-
-    switch (priv->wmiVersion) {
-    case HYPERV_WMI_VERSION_V1:
-        requestedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_PAUSED;
-        break;
-    case HYPERV_WMI_VERSION_V2:
-        requestedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_QUIESCE;
-        break;
-    }
-
-    return hypervRequestStateChange(domain, requestedState);
+    return hypervRequestStateChange(domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_QUIESCE);
 }
 
 
@@ -796,21 +751,11 @@ hypervDomainResume(virDomainPtr domain)
     int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
-    int expectedState = -1;
-
-    switch (priv->wmiVersion) {
-    case HYPERV_WMI_VERSION_V1:
-        expectedState = MSVM_COMPUTERSYSTEM_ENABLEDSTATE_PAUSED;
-        break;
-    case HYPERV_WMI_VERSION_V2:
-        expectedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_QUIESCE;
-        break;
-    }
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         return -1;
 
-    if (computerSystem->data.common->EnabledState != expectedState) {
+    if (computerSystem->data.common->EnabledState != MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_QUIESCE) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Domain is not paused"));
         goto cleanup;
@@ -867,7 +812,7 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
                                "SystemCreationClassName=\"Msvm_ComputerSystem\"&SystemName=\"%s\"",
                                shutdown->data.common->DeviceID, uuid);
 
-    params = hypervCreateInvokeParamsList(priv, "InitiateShutdown", selector,
+    params = hypervCreateInvokeParamsList("InitiateShutdown", selector,
                                           Msvm_ShutdownComponent_WmiInfo);
     if (!params)
         goto cleanup;
@@ -1096,10 +1041,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     def->name = g_strdup(computerSystem->data.common->ElementName);
 
-    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
-        def->description = g_strdup(virtualSystemSettingData->data.v1->Notes);
-    } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2 &&
-               virtualSystemSettingData->data.v2->Notes.data != NULL) {
+    if (virtualSystemSettingData->data.v2->Notes.data) {
         char **notes = (char **)virtualSystemSettingData->data.v2->Notes.data;
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         size_t i = 0;
@@ -1259,32 +1201,17 @@ hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
     int result = -1;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     hypervPrivate *priv = domain->conn->privateData;
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    Msvm_VirtualSystemGlobalSettingData *vsgsd = NULL;
     Msvm_VirtualSystemSettingData *vssd = NULL;
 
     virUUIDFormat(domain->uuid, uuid_string);
 
-    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
-        virBufferEscapeSQL(&query,
-                           MSVM_VIRTUALSYSTEMGLOBALSETTINGDATA_WQL_SELECT
-                           "WHERE SystemName = '%s'", uuid_string);
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
+        goto cleanup;
 
-        if (hypervGetWmiClass(Msvm_VirtualSystemGlobalSettingData, &vsgsd) < 0)
-            goto cleanup;
-
-        *autostart = vsgsd->data.common->AutomaticStartupAction == 2;
-        result = 0;
-    } else {
-        if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-            goto cleanup;
-
-        *autostart = vssd->data.v2->AutomaticStartupAction == 4;
-        result = 0;
-    }
+    *autostart = vssd->data.v2->AutomaticStartupAction == 4;
+    result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)vsgsd);
     hypervFreeObject(priv, (hypervObject *)vssd);
 
     return result;
@@ -1299,64 +1226,32 @@ hypervDomainSetAutostart(virDomainPtr domain, int autostart)
     hypervPrivate *priv = domain->conn->privateData;
     Msvm_VirtualSystemSettingData *vssd = NULL;
     g_autoptr(hypervInvokeParamsList) params = NULL;
-    g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
     g_autoptr(GHashTable) autostartParam = NULL;
-    const char *methodName = NULL;
-    hypervWmiClassInfoListPtr embeddedParamClass = NULL;
-    const char *enabledValue = NULL, *disabledValue = NULL;
-    const char *embeddedParamName = NULL;
-
-    switch (priv->wmiVersion) {
-    case HYPERV_WMI_VERSION_V1:
-        methodName = "ModifyVirtualSystem";
-        embeddedParamClass = Msvm_VirtualSystemGlobalSettingData_WmiInfo;
-        enabledValue = "2";
-        disabledValue = "0";
-        embeddedParamName = "SystemSettingData";
-        break;
-    case HYPERV_WMI_VERSION_V2:
-        methodName = "ModifySystemSettings";
-        embeddedParamClass = Msvm_VirtualSystemSettingData_WmiInfo;
-        enabledValue = "4";
-        disabledValue = "2";
-        embeddedParamName = "SystemSettings";
-        break;
-    }
 
     virUUIDFormat(domain->uuid, uuid_string);
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
         goto cleanup;
 
-    params = hypervCreateInvokeParamsList(priv, methodName,
+    params = hypervCreateInvokeParamsList("ModifySystemSettings",
                                           MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
                                           Msvm_VirtualSystemManagementService_WmiInfo);
 
     if (!params)
         goto cleanup;
 
-    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
-        virBufferEscapeSQL(&eprQuery,
-                           MSVM_COMPUTERSYSTEM_WQL_SELECT "WHERE Name = '%s'",
-                           uuid_string);
-
-        if (hypervAddEprParam(params, "ComputerSystem", priv, &eprQuery,
-                              Msvm_ComputerSystem_WmiInfo) < 0)
-            goto cleanup;
-    }
-
-    autostartParam = hypervCreateEmbeddedParam(priv, embeddedParamClass);
+    autostartParam = hypervCreateEmbeddedParam(Msvm_VirtualSystemSettingData_WmiInfo);
 
     if (hypervSetEmbeddedProperty(autostartParam, "AutomaticStartupAction",
-                                  autostart ? enabledValue : disabledValue) < 0)
+                                  autostart ? "4" : "2") < 0)
         goto cleanup;
 
     if (hypervSetEmbeddedProperty(autostartParam, "InstanceID",
                                   vssd->data.common->InstanceID) < 0)
         goto cleanup;
 
-    if (hypervAddEmbeddedParam(params, priv, embeddedParamName,
-                               &autostartParam, embeddedParamClass) < 0)
+    if (hypervAddEmbeddedParam(params, "SystemSettings",
+                               &autostartParam, Msvm_VirtualSystemSettingData_WmiInfo) < 0)
         goto cleanup;
 
     if (hypervInvokeMethod(priv, &params, NULL) < 0)
@@ -1480,18 +1375,8 @@ hypervDomainManagedSave(virDomainPtr domain, unsigned int flags)
     hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
     bool in_transition = false;
-    int requestedState = -1;
 
     virCheckFlags(0, -1);
-
-    switch (priv->wmiVersion) {
-    case HYPERV_WMI_VERSION_V1:
-        requestedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_SUSPENDED;
-        break;
-    case HYPERV_WMI_VERSION_V2:
-        requestedState = MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_OFFLINE;
-        break;
-    }
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         goto cleanup;
@@ -1503,7 +1388,7 @@ hypervDomainManagedSave(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain, requestedState);
+    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_OFFLINE);
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -1749,7 +1634,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     for (i = 0; i < nkeycodes; i++) {
         g_snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
 
-        params = hypervCreateInvokeParamsList(priv, "PressKey", selector,
+        params = hypervCreateInvokeParamsList("PressKey", selector,
                                               Msvm_Keyboard_WmiInfo);
 
         if (!params)
@@ -1769,7 +1654,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     /* release the keys */
     for (i = 0; i < nkeycodes; i++) {
         g_snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
-        params = hypervCreateInvokeParamsList(priv, "ReleaseKey", selector,
+        params = hypervCreateInvokeParamsList("ReleaseKey", selector,
                                               Msvm_Keyboard_WmiInfo);
 
         if (!params)
@@ -1805,7 +1690,6 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     unsigned long memory_mb = VIR_ROUND_UP(VIR_DIV_UP(memory, 1024), 2);
     Msvm_VirtualSystemSettingData *vssd = NULL;
     Msvm_MemorySettingData *memsd = NULL;
-    g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
     g_autoptr(GHashTable) memResource = NULL;
 
     virCheckFlags(0, -1);
@@ -1820,31 +1704,14 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     if (hypervGetMemorySD(priv, vssd->data.common->InstanceID, &memsd) < 0)
         goto cleanup;
 
-    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
-        params = hypervCreateInvokeParamsList(priv, "ModifyVirtualSystemResources",
-                                              MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
-                                              Msvm_VirtualSystemManagementService_WmiInfo);
+    params = hypervCreateInvokeParamsList("ModifyResourceSettings",
+                                          MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
+                                          Msvm_VirtualSystemManagementService_WmiInfo);
 
-        if (!params)
-            goto cleanup;
+    if (!params)
+        goto cleanup;
 
-        virBufferEscapeSQL(&eprQuery,
-                           MSVM_COMPUTERSYSTEM_WQL_SELECT
-                           "WHERE Name = '%s'", uuid_string);
-
-        if (hypervAddEprParam(params, "ComputerSystem", priv, &eprQuery,
-                              Msvm_ComputerSystem_WmiInfo) < 0)
-            goto cleanup;
-    } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2) {
-        params = hypervCreateInvokeParamsList(priv, "ModifyResourceSettings",
-                                              MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
-                                              Msvm_VirtualSystemManagementService_WmiInfo);
-
-        if (!params)
-            goto cleanup;
-    }
-
-    memResource = hypervCreateEmbeddedParam(priv, Msvm_MemorySettingData_WmiInfo);
+    memResource = hypervCreateEmbeddedParam(Msvm_MemorySettingData_WmiInfo);
     if (!memResource)
         goto cleanup;
 
@@ -1856,18 +1723,10 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
         goto cleanup;
     }
 
-    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
-        if (hypervAddEmbeddedParam(params, priv, "ResourceSettingData",
-                                   &memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
-            goto cleanup;
-        }
-
-    } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2) {
-        if (hypervAddEmbeddedParam(params, priv, "ResourceSettings",
-                                   &memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
-            hypervFreeEmbeddedParam(memResource);
-            goto cleanup;
-        }
+    if (hypervAddEmbeddedParam(params, "ResourceSettings",
+                               &memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
+        hypervFreeEmbeddedParam(memResource);
+        goto cleanup;
     }
 
     if (hypervInvokeMethod(priv, &params, NULL) < 0)

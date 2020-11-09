@@ -131,8 +131,7 @@ typedef struct _hypervInvokeParamsList hypervInvokeParamsList;
 typedef hypervInvokeParamsList *hypervInvokeParamsListPtr;
 
 
-hypervInvokeParamsListPtr hypervCreateInvokeParamsList(hypervPrivate *priv,
-                                                       const char *method,
+hypervInvokeParamsListPtr hypervCreateInvokeParamsList(const char *method,
                                                        const char *selector,
                                                        hypervWmiClassInfoListPtr obj);
 
@@ -142,19 +141,18 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(hypervInvokeParamsList, hypervFreeInvokeParams);
 int hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
                          const char *value);
 
-int hypervAddEprParam(hypervInvokeParamsListPtr params, const char *name,
-                      hypervPrivate *priv, virBufferPtr query,
+int hypervAddEprParam(hypervInvokeParamsListPtr params,
+                      const char *name,
+                      virBufferPtr query,
                       hypervWmiClassInfoListPtr eprInfo);
 
-GHashTable *hypervCreateEmbeddedParam(hypervPrivate *priv,
-                                      hypervWmiClassInfoListPtr info);
+GHashTable *hypervCreateEmbeddedParam(hypervWmiClassInfoListPtr info);
 
 int hypervSetEmbeddedProperty(GHashTable *table,
                               const char *name,
                               const char *value);
 
 int hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
-                           hypervPrivate *priv,
                            const char *name,
                            GHashTable **table,
                            hypervWmiClassInfoListPtr info);

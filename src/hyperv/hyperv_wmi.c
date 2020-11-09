@@ -48,10 +48,8 @@
 VIR_LOG_INIT("hyperv.hyperv_wmi");
 
 static int
-hypervGetWmiClassInfo(hypervPrivate *priv, hypervWmiClassInfoListPtr list,
-                      hypervWmiClassInfoPtr *info)
+hypervGetWmiClassInfo(hypervWmiClassInfoListPtr list, hypervWmiClassInfoPtr *info)
 {
-    const char *version = "v2";
     size_t i;
 
     if (list->count == 0) {
@@ -66,19 +64,15 @@ hypervGetWmiClassInfo(hypervPrivate *priv, hypervWmiClassInfoListPtr list,
         return 0;
     }
 
-    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1)
-        version = "v1";
-
     for (i = 0; i < list->count; i++) {
-        if (STRCASEEQ(list->objs[i]->version, version)) {
+        if (STRCASEEQ(list->objs[i]->version, "v2")) {
             *info = list->objs[i];
             return 0;
         }
     }
 
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Could not match WMI class info for version %s"),
-                   version);
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Could not match WMI class info for version v2"));
 
     return -1;
 }
@@ -158,7 +152,6 @@ hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
 
 /*
  * hypervCreateInvokeParamsList:
- * @priv: hypervPrivate object associated with the connection.
  * @method: The name of the method you are calling
  * @selector: The selector for the object you are invoking the method on
  * @obj: The WmiInfo of the object class you are invoking the method on.
@@ -169,13 +162,14 @@ hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
  * be freed by hypervInvokeMethod. Otherwise returns NULL.
  */
 hypervInvokeParamsListPtr
-hypervCreateInvokeParamsList(hypervPrivate *priv, const char *method,
-                             const char *selector, hypervWmiClassInfoListPtr obj)
+hypervCreateInvokeParamsList(const char *method,
+                             const char *selector,
+                             hypervWmiClassInfoListPtr obj)
 {
     hypervInvokeParamsListPtr params = NULL;
     hypervWmiClassInfoPtr info = NULL;
 
-    if (hypervGetWmiClassInfo(priv, obj, &info) < 0)
+    if (hypervGetWmiClassInfo(obj, &info) < 0)
         return NULL;
 
     params = g_new0(hypervInvokeParamsList, 1);
@@ -285,14 +279,15 @@ hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
  * Adds an EPR param to the params list. Returns -1 on failure, 0 on success.
  */
 int
-hypervAddEprParam(hypervInvokeParamsListPtr params, const char *name,
-                  hypervPrivate *priv, virBufferPtr query,
+hypervAddEprParam(hypervInvokeParamsListPtr params,
+                  const char *name,
+                  virBufferPtr query,
                   hypervWmiClassInfoListPtr eprInfo)
 {
     hypervParamPtr p = NULL;
     hypervWmiClassInfoPtr classInfo = NULL;
 
-    if (hypervGetWmiClassInfo(priv, eprInfo, &classInfo) < 0 ||
+    if (hypervGetWmiClassInfo(eprInfo, &classInfo) < 0 ||
         hypervCheckParams(params) < 0)
         return -1;
 
@@ -309,7 +304,6 @@ hypervAddEprParam(hypervInvokeParamsListPtr params, const char *name,
 
 /*
  * hypervCreateEmbeddedParam:
- * @priv: hypervPrivate object associated with the connection
  * @info: WmiInfo of the object type to serialize
  *
  * Instantiates a GHashTable pre-filled with all the properties pre-added
@@ -319,7 +313,7 @@ hypervAddEprParam(hypervInvokeParamsListPtr params, const char *name,
  * Returns a pointer to the GHashTable on success, otherwise NULL.
  */
 GHashTable *
-hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
+hypervCreateEmbeddedParam(hypervWmiClassInfoListPtr info)
 {
     size_t i;
     size_t count;
@@ -328,7 +322,7 @@ hypervCreateEmbeddedParam(hypervPrivate *priv, hypervWmiClassInfoListPtr info)
     hypervWmiClassInfoPtr classInfo = NULL;
 
     /* Get the typeinfo out of the class info list */
-    if (hypervGetWmiClassInfo(priv, info, &classInfo) < 0)
+    if (hypervGetWmiClassInfo(info, &classInfo) < 0)
         return NULL;
 
     typeinfo = classInfo->serializerInfo;
@@ -377,7 +371,6 @@ hypervSetEmbeddedProperty(GHashTable *table,
 /*
  * hypervAddEmbeddedParam:
  * @params: Params list to add to
- * @priv: hypervPrivate object associated with the connection
  * @name: Name of the parameter
  * @table: pointer to table of properties to add
  * @info: WmiInfo of the object to serialize
@@ -391,7 +384,6 @@ hypervSetEmbeddedProperty(GHashTable *table,
  */
 int
 hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
-                       hypervPrivate *priv,
                        const char *name,
                        GHashTable **table,
                        hypervWmiClassInfoListPtr info)
@@ -403,7 +395,7 @@ hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
         return -1;
 
     /* Get the typeinfo out of the class info list */
-    if (hypervGetWmiClassInfo(priv, info, &classInfo) < 0)
+    if (hypervGetWmiClassInfo(info, &classInfo) < 0)
         return -1;
 
     p = &params->params[params->nbParams];
@@ -1008,7 +1000,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
         return -1;
     }
 
-    if (hypervGetWmiClassInfo(priv, wqlQuery->info, &wmiInfo) < 0)
+    if (hypervGetWmiClassInfo(wqlQuery->info, &wmiInfo) < 0)
         goto cleanup;
 
     serializerContext = wsmc_get_serialization_context(priv->client);
@@ -1260,15 +1252,11 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     Msvm_ConcreteJob *concreteJob = NULL;
     bool completed = false;
-    const char *resourceUri = MSVM_COMPUTERSYSTEM_V2_RESOURCE_URI;
 
     virUUIDFormat(domain->uuid, uuid_string);
 
     selector = g_strdup_printf("Name=%s&CreationClassName=Msvm_ComputerSystem", uuid_string);
     properties = g_strdup_printf("RequestedState=%d", requestedState);
-
-    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1)
-        resourceUri = MSVM_COMPUTERSYSTEM_V1_RESOURCE_URI;
 
     options = wsmc_options_init();
 
@@ -1282,7 +1270,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     wsmc_add_prop_from_str(options, properties);
 
     /* Invoke method */
-    response = wsmc_action_invoke(priv->client, resourceUri,
+    response = wsmc_action_invoke(priv->client, MSVM_COMPUTERSYSTEM_V2_RESOURCE_URI,
                                   options, "RequestStateChange", NULL);
 
     if (hypervVerifyResponse(priv->client, response, "invocation") < 0)
