@@ -5,7 +5,7 @@
     <h1>Microsoft Hyper-V hypervisor driver</h1>
     <ul id="toc"></ul>
     <p>
-        The libvirt Microsoft Hyper-V driver can manage Hyper-V 2008 R2 and newer.
+        The libvirt Microsoft Hyper-V driver can manage Hyper-V 2012 R2 and newer.
     </p>
 
 
@@ -129,21 +129,6 @@ winrm set winrm/config/service @{AllowUnencrypted="true"}
             <th>Kernel Version</th>
             <th>libvirt Representation</th>
         </thead>
-        <tr>
-            <td>Windows Server 2008</td>
-            <td>6.0.6001</td>
-            <td>600.6.1</td>
-        </tr>
-        <tr>
-            <td>Windows Server 2008 R2</td>
-            <td>6.1.7600</td>
-            <td>601.7.600</td>
-        </tr>
-        <tr>
-            <td>Windows Server 2012</td>
-            <td>6.2.9200</td>
-            <td>602.9.200</td>
-        </tr>
         <tr>
             <td>Windows Server 2012 R2</td>
             <td>6.3.9600</td>
