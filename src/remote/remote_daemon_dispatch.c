@@ -7381,3 +7381,85 @@ remoteDispatchDomainGetGuestInfo(virNetServerPtr server G_GNUC_UNUSED,
 
     return rv;
 }
+
+static int
+remoteDispatchDomainAuthorizedSshKeysGet(virNetServerPtr server G_GNUC_UNUSED,
+                                         virNetServerClientPtr client,
+                                         virNetMessagePtr msg G_GNUC_UNUSED,
+                                         virNetMessageErrorPtr rerr,
+                                         remote_domain_authorized_ssh_keys_get_args *args,
+                                         remote_domain_authorized_ssh_keys_get_ret *ret)
+{
+    int rv = -1;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
+    int nkeys = 0;
+    char **keys = NULL;
+    virDomainPtr dom = NULL;
+
+    if (!conn)
+        goto cleanup;
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((nkeys = virDomainAuthorizedSSHKeysGet(dom, args->user,
+                                               &keys, args->flags)) < 0)
+        goto cleanup;
+
+    if (nkeys > REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of keys %d, which exceeds max liit: %d"),
+                       nkeys, REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX);
+        goto cleanup;
+    }
+
+    ret->keys.keys_val = g_steal_pointer(&keys);
+    ret->keys.keys_len = nkeys;
+
+    rv = nkeys;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (nkeys > 0)
+        virStringListFreeCount(keys, nkeys);
+    virObjectUnref(dom);
+
+    return rv;
+}
+
+static int
+remoteDispatchDomainAuthorizedSshKeysSet(virNetServerPtr server G_GNUC_UNUSED,
+                                         virNetServerClientPtr client,
+                                         virNetMessagePtr msg G_GNUC_UNUSED,
+                                         virNetMessageErrorPtr rerr,
+                                         remote_domain_authorized_ssh_keys_set_args *args)
+{
+    int rv = -1;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
+    virDomainPtr dom = NULL;
+
+    if (!conn)
+        goto cleanup;
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if (args->keys.keys_len > REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of keys %d, which exceeds max liit: %d"),
+                       args->keys.keys_len, REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX);
+        goto cleanup;
+    }
+
+    rv = virDomainAuthorizedSSHKeysSet(dom, args->user,
+                                       (const char **) args->keys.keys_val,
+                                       args->keys.keys_len, args->flags);
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virObjectUnref(dom);
+
+    return rv;
+}

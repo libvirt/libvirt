@@ -3142,6 +3142,26 @@ struct remote_domain_backup_get_xml_desc_args {
 struct remote_domain_backup_get_xml_desc_ret {
         remote_nonnull_string      xml;
 };
+struct remote_domain_authorized_ssh_keys_get_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      user;
+        u_int                      flags;
+};
+struct remote_domain_authorized_ssh_keys_get_ret {
+        struct {
+                u_int              keys_len;
+                remote_nonnull_string * keys_val;
+        } keys;
+};
+struct remote_domain_authorized_ssh_keys_set_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      user;
+        struct {
+                u_int              keys_len;
+                remote_nonnull_string * keys_val;
+        } keys;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3566,4 +3586,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_BACKUP_BEGIN = 421,
         REMOTE_PROC_DOMAIN_BACKUP_GET_XML_DESC = 422,
         REMOTE_PROC_DOMAIN_EVENT_MEMORY_FAILURE = 423,
+        REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_GET = 424,
+        REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_SET = 425,
 };

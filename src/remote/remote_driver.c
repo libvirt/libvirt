@@ -8017,6 +8017,91 @@ remoteDomainGetGuestInfo(virDomainPtr dom,
     return rv;
 }
 
+static int
+remoteDomainAuthorizedSSHKeysGet(virDomainPtr domain,
+                                 const char *user,
+                                 char ***keys,
+                                 unsigned int flags)
+{
+    int rv = -1;
+    size_t i;
+    struct private_data *priv = domain->conn->privateData;
+    remote_domain_authorized_ssh_keys_get_args args;
+    remote_domain_authorized_ssh_keys_get_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.user = (char *) user;
+    args.flags = flags;
+    memset(&ret, 0, sizeof(ret));
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_GET,
+             (xdrproc_t) xdr_remote_domain_authorized_ssh_keys_get_args, (char *)&args,
+             (xdrproc_t) xdr_remote_domain_authorized_ssh_keys_get_ret, (char *)&ret) == -1) {
+        goto cleanup;
+    }
+
+    if (ret.keys.keys_len > REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX) {
+        virReportError(VIR_ERR_RPC, "%s",
+                       _("remoteDomainAuthorizedSSHKeysGet: "
+                         "returned number of keys exceeds limit"));
+        goto cleanup;
+    }
+
+    *keys = g_new0(char *, ret.keys.keys_len + 1);
+    for (i = 0; i < ret.keys.keys_len; i++)
+        (*keys)[i] = g_strdup(ret.keys.keys_val[i]);
+
+    rv = ret.keys.keys_len;
+
+ cleanup:
+    remoteDriverUnlock(priv);
+    xdr_free((xdrproc_t)xdr_remote_domain_authorized_ssh_keys_get_ret,
+             (char *) &ret);
+    return rv;
+}
+
+static int
+remoteDomainAuthorizedSSHKeysSet(virDomainPtr domain,
+                                 const char *user,
+                                 const char **keys,
+                                 int nkeys,
+                                 unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = domain->conn->privateData;
+    remote_domain_authorized_ssh_keys_set_args args;
+
+    remoteDriverLock(priv);
+
+    if (nkeys > REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX) {
+        virReportError(VIR_ERR_RPC, "%s",
+                       _("remoteDomainAuthorizedSSHKeysSet: "
+                         "returned number of keys exceeds limit"));
+        goto cleanup;
+    }
+
+    make_nonnull_domain(&args.dom, domain);
+    args.user = (char *) user;
+    args.keys.keys_len = nkeys;
+    args.keys.keys_val = (char **) keys;
+    args.flags = flags;
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_SET,
+             (xdrproc_t) xdr_remote_domain_authorized_ssh_keys_set_args, (char *)&args,
+             (xdrproc_t) xdr_void, (char *) NULL) == -1) {
+        goto cleanup;
+    }
+
+    rv = 0;
+
+ cleanup:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
  * These can return NULL if underlying memory allocations fail,
@@ -8448,6 +8533,8 @@ static virHypervisorDriver hypervisor_driver = {
     .domainAgentSetResponseTimeout = remoteDomainAgentSetResponseTimeout, /* 5.10.0 */
     .domainBackupBegin = remoteDomainBackupBegin, /* 6.0.0 */
     .domainBackupGetXMLDesc = remoteDomainBackupGetXMLDesc, /* 6.0.0 */
+    .domainAuthorizedSSHKeysGet = remoteDomainAuthorizedSSHKeysGet, /* 6.10.0 */
+    .domainAuthorizedSSHKeysSet = remoteDomainAuthorizedSSHKeysSet, /* 6.10.0 */
 };
 
 static virNetworkDriver network_driver = {

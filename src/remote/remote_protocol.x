@@ -280,6 +280,9 @@ const REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX = 2048;
  */
 const REMOTE_NETWORK_PORT_PARAMETERS_MAX = 16;
 
+/* Upper limit on number of SSH keys */
+const REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX = 2048;
+
 
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
@@ -3779,6 +3782,23 @@ struct remote_domain_backup_get_xml_desc_ret {
     remote_nonnull_string xml;
 };
 
+struct remote_domain_authorized_ssh_keys_get_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string user;
+    unsigned int flags;
+};
+
+struct remote_domain_authorized_ssh_keys_get_ret {
+    remote_nonnull_string keys<REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX>;
+};
+
+struct remote_domain_authorized_ssh_keys_set_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string user;
+    remote_nonnull_string keys<REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX>;
+    unsigned int flags;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6682,5 +6702,17 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_MEMORY_FAILURE = 423
+    REMOTE_PROC_DOMAIN_EVENT_MEMORY_FAILURE = 423,
+
+    /**
+     * @generate: none
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_GET = 424,
+
+    /**
+     * @generate: none
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_SET = 425
 };
