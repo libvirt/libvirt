@@ -54,11 +54,15 @@ virGDBusBusInit(GBusType type, GError **error)
     if (sharedBus) {
         return g_bus_get_sync(type, NULL, error);
     } else {
+        GDBusConnectionFlags dbusFlags =
+                G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT |
+                G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION;
+
         address = g_dbus_address_get_for_bus_sync(type, NULL, error);
         if (*error)
             return NULL;
         return g_dbus_connection_new_for_address_sync(address,
-                                                      G_DBUS_CONNECTION_FLAGS_NONE,
+                                                      dbusFlags,
                                                       NULL,
                                                       NULL,
                                                       error);
