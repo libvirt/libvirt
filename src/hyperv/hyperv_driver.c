@@ -192,7 +192,7 @@ hypervRequestStateChange(virDomainPtr domain, int state)
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         goto cleanup;
 
-    if (computerSystem->data.common->EnabledState != MSVM_COMPUTERSYSTEM_ENABLEDSTATE_ENABLED) {
+    if (computerSystem->data->EnabledState != MSVM_COMPUTERSYSTEM_ENABLEDSTATE_ENABLED) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not active"));
         goto cleanup;
     }
@@ -239,10 +239,10 @@ hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
     if (hypervGetWmiClass(Win32_ComputerSystemProduct, &computerSystem) < 0)
         goto cleanup;
 
-    if (virUUIDParse(computerSystem->data.common->UUID, uuid) < 0) {
+    if (virUUIDParse(computerSystem->data->UUID, uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse UUID from string '%s'"),
-                       computerSystem->data.common->UUID);
+                       computerSystem->data->UUID);
         goto cleanup;
     }
     result = 0;
@@ -443,11 +443,10 @@ hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
         goto cleanup;
     }
 
-    if (hypervParseVersionString(os->data.common->Version,
-                                 &major, &minor, &micro) < 0) {
+    if (hypervParseVersionString(os->data->Version, &major, &minor, &micro) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse version from '%s'"),
-                       os->data.common->Version);
+                       os->data->Version);
         goto cleanup;
     }
 
@@ -471,7 +470,7 @@ hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
     if (major > 99 || minor > 99 || micro > 999999) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not produce packed version number from '%s'"),
-                       os->data.common->Version);
+                       os->data->Version);
         goto cleanup;
     }
 
@@ -496,7 +495,7 @@ hypervConnectGetHostname(virConnectPtr conn)
     if (hypervGetPhysicalSystemList(priv, &computerSystem) < 0)
         goto cleanup;
 
-    hostname = g_strdup(computerSystem->data.common->DNSHostName);
+    hostname = g_strdup(computerSystem->data->DNSHostName);
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -537,7 +536,7 @@ hypervConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    result = processorSettingData->data.common->VirtualQuantity;
+    result = processorSettingData->data->VirtualQuantity;
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)processorSettingData);
@@ -561,13 +560,12 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     if (hypervGetPhysicalSystemList(priv, &computerSystem) < 0)
         goto cleanup;
 
-    if (hypervGetProcessorsByName(priv, computerSystem->data.common->Name,
-                                  &processorList) < 0) {
+    if (hypervGetProcessorsByName(priv, computerSystem->data->Name, &processorList) < 0) {
         goto cleanup;
     }
 
     /* Strip the string to fit more relevant information in 32 chars */
-    tmp = processorList->data.common->Name;
+    tmp = processorList->data->Name;
 
     while (*tmp != '\0') {
         if (STRPREFIX(tmp, "  ")) {
@@ -589,15 +587,15 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     }
 
     /* Fill struct */
-    if (virStrcpyStatic(info->model, processorList->data.common->Name) < 0) {
+    if (virStrcpyStatic(info->model, processorList->data->Name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU model %s too long for destination"),
-                       processorList->data.common->Name);
+                       processorList->data->Name);
         goto cleanup;
     }
 
-    info->memory = computerSystem->data.common->TotalPhysicalMemory / 1024; /* byte to kilobyte */
-    info->mhz = processorList->data.common->MaxClockSpeed;
+    info->memory = computerSystem->data->TotalPhysicalMemory / 1024; /* byte to kilobyte */
+    info->mhz = processorList->data->MaxClockSpeed;
     info->nodes = 1;
     info->sockets = 0;
 
@@ -606,8 +604,8 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
         ++info->sockets;
     }
 
-    info->cores = processorList->data.common->NumberOfCores;
-    info->threads = processorList->data.common->NumberOfLogicalProcessors / info->cores;
+    info->cores = processorList->data->NumberOfCores;
+    info->threads = processorList->data->NumberOfLogicalProcessors / info->cores;
     info->cpus = info->sockets * info->cores;
 
     result = 0;
@@ -637,7 +635,7 @@ hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 
     for (computerSystem = computerSystemList; computerSystem != NULL;
          computerSystem = computerSystem->next) {
-        ids[count++] = computerSystem->data.common->ProcessID;
+        ids[count++] = computerSystem->data->ProcessID;
 
         if (count >= maxids)
             break;
@@ -755,7 +753,7 @@ hypervDomainResume(virDomainPtr domain)
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         return -1;
 
-    if (computerSystem->data.common->EnabledState != MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_QUIESCE) {
+    if (computerSystem->data->EnabledState != MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_QUIESCE) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Domain is not paused"));
         goto cleanup;
@@ -810,7 +808,7 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
 
     selector = g_strdup_printf("CreationClassName=\"Msvm_ShutdownComponent\"&DeviceID=\"%s\"&"
                                "SystemCreationClassName=\"Msvm_ComputerSystem\"&SystemName=\"%s\"",
-                               shutdown->data.common->DeviceID, uuid);
+                               shutdown->data->DeviceID, uuid);
 
     params = hypervCreateInvokeParamsList("InitiateShutdown", selector,
                                           Msvm_ShutdownComponent_WmiInfo);
@@ -931,20 +929,20 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
         goto cleanup;
 
     if (hypervGetProcessorSD(priv,
-                             virtualSystemSettingData->data.common->InstanceID,
+                             virtualSystemSettingData->data->InstanceID,
                              &processorSettingData) < 0)
         goto cleanup;
 
     if (hypervGetMemorySD(priv,
-                          virtualSystemSettingData->data.common->InstanceID,
+                          virtualSystemSettingData->data->InstanceID,
                           &memorySettingData) < 0)
         goto cleanup;
 
     /* Fill struct */
     info->state = hypervMsvmComputerSystemEnabledStateToDomainState(computerSystem);
-    info->maxMem = memorySettingData->data.common->Limit * 1024; /* megabyte to kilobyte */
-    info->memory = memorySettingData->data.common->VirtualQuantity * 1024; /* megabyte to kilobyte */
-    info->nrVirtCpu = processorSettingData->data.common->VirtualQuantity;
+    info->maxMem = memorySettingData->data->Limit * 1024; /* megabyte to kilobyte */
+    info->memory = memorySettingData->data->VirtualQuantity * 1024; /* megabyte to kilobyte */
+    info->nrVirtCpu = processorSettingData->data->VirtualQuantity;
     info->cpuTime = 0;
 
     result = 0;
@@ -1014,12 +1012,12 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         goto cleanup;
 
     if (hypervGetProcessorSD(priv,
-                             virtualSystemSettingData->data.common->InstanceID,
+                             virtualSystemSettingData->data->InstanceID,
                              &processorSettingData) < 0)
         goto cleanup;
 
     if (hypervGetMemorySD(priv,
-                          virtualSystemSettingData->data.common->InstanceID,
+                          virtualSystemSettingData->data->InstanceID,
                           &memorySettingData) < 0)
         goto cleanup;
 
@@ -1027,27 +1025,27 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def->virtType = VIR_DOMAIN_VIRT_HYPERV;
 
     if (hypervIsMsvmComputerSystemActive(computerSystem, NULL)) {
-        def->id = computerSystem->data.common->ProcessID;
+        def->id = computerSystem->data->ProcessID;
     } else {
         def->id = -1;
     }
 
-    if (virUUIDParse(computerSystem->data.common->Name, def->uuid) < 0) {
+    if (virUUIDParse(computerSystem->data->Name, def->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse UUID from string '%s'"),
-                       computerSystem->data.common->Name);
+                       computerSystem->data->Name);
         return NULL;
     }
 
-    def->name = g_strdup(computerSystem->data.common->ElementName);
+    def->name = g_strdup(computerSystem->data->ElementName);
 
-    if (virtualSystemSettingData->data.v2->Notes.data) {
-        char **notes = (char **)virtualSystemSettingData->data.v2->Notes.data;
+    if (virtualSystemSettingData->data->Notes.data) {
+        char **notes = (char **)virtualSystemSettingData->data->Notes.data;
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         size_t i = 0;
 
         /* in practice Notes has 1 element */
-        for (i = 0; i < virtualSystemSettingData->data.v2->Notes.count; i++) {
+        for (i = 0; i < virtualSystemSettingData->data->Notes.count; i++) {
             /* but if there's more than 1, separate by double new line */
             if (virBufferUse(&buf) > 0)
                 virBufferAddLit(&buf, "\n\n");
@@ -1060,17 +1058,14 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     }
 
     /* mebibytes to kibibytes */
-    def->mem.max_memory = memorySettingData->data.common->Limit * 1024;
-    def->mem.cur_balloon = memorySettingData->data.common->VirtualQuantity * 1024;
-    virDomainDefSetMemoryTotal(def, memorySettingData->data.common->VirtualQuantity * 1024);
+    def->mem.max_memory = memorySettingData->data->Limit * 1024;
+    def->mem.cur_balloon = memorySettingData->data->VirtualQuantity * 1024;
+    virDomainDefSetMemoryTotal(def, memorySettingData->data->VirtualQuantity * 1024);
 
-    if (virDomainDefSetVcpusMax(def,
-                                processorSettingData->data.common->VirtualQuantity,
-                                NULL) < 0)
+    if (virDomainDefSetVcpusMax(def, processorSettingData->data->VirtualQuantity, NULL) < 0)
         goto cleanup;
 
-    if (virDomainDefSetVcpus(def,
-                             processorSettingData->data.common->VirtualQuantity) < 0)
+    if (virDomainDefSetVcpus(def, processorSettingData->data->VirtualQuantity) < 0)
         goto cleanup;
 
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
@@ -1110,7 +1105,7 @@ hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxn
 
     for (computerSystem = computerSystemList; computerSystem != NULL;
          computerSystem = computerSystem->next) {
-        names[count] = g_strdup(computerSystem->data.common->ElementName);
+        names[count] = g_strdup(computerSystem->data->ElementName);
 
         ++count;
 
@@ -1208,7 +1203,7 @@ hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
         goto cleanup;
 
-    *autostart = vssd->data.v2->AutomaticStartupAction == 4;
+    *autostart = vssd->data->AutomaticStartupAction == 4;
     result = 0;
 
  cleanup:
@@ -1246,8 +1241,7 @@ hypervDomainSetAutostart(virDomainPtr domain, int autostart)
                                   autostart ? "4" : "2") < 0)
         goto cleanup;
 
-    if (hypervSetEmbeddedProperty(autostartParam, "InstanceID",
-                                  vssd->data.common->InstanceID) < 0)
+    if (hypervSetEmbeddedProperty(autostartParam, "InstanceID", vssd->data->InstanceID) < 0)
         goto cleanup;
 
     if (hypervAddEmbeddedParam(params, "SystemSettings",
@@ -1284,7 +1278,7 @@ hypervNodeGetFreeMemory(virConnectPtr conn)
         return 0;
     }
 
-    freeMemoryBytes = operatingSystem->data.common->FreePhysicalMemory * 1024;
+    freeMemoryBytes = operatingSystem->data->FreePhysicalMemory * 1024;
 
     hypervFreeObject(priv, (hypervObject *)operatingSystem);
 
@@ -1409,8 +1403,7 @@ hypervDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         goto cleanup;
 
-    result = computerSystem->data.common->EnabledState ==
-             MSVM_COMPUTERSYSTEM_ENABLEDSTATE_SUSPENDED ? 1 : 0;
+    result = computerSystem->data->EnabledState == MSVM_COMPUTERSYSTEM_ENABLEDSTATE_SUSPENDED ? 1 : 0;
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -1431,8 +1424,7 @@ hypervDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
         goto cleanup;
 
-    if (computerSystem->data.common->EnabledState !=
-        MSVM_COMPUTERSYSTEM_ENABLEDSTATE_SUSPENDED) {
+    if (computerSystem->data->EnabledState != MSVM_COMPUTERSYSTEM_ENABLEDSTATE_SUSPENDED) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Domain has no managed save image"));
         goto cleanup;
@@ -1530,7 +1522,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
 
         /* managed save filter */
         if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE)) {
-            bool mansave = computerSystem->data.common->EnabledState ==
+            bool mansave = computerSystem->data->EnabledState ==
                            MSVM_COMPUTERSYSTEM_ENABLEDSTATE_SUSPENDED;
 
             if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE) && mansave) ||
@@ -1628,7 +1620,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
 
     selector = g_strdup_printf("CreationClassName=Msvm_Keyboard&DeviceID=%s&"
                                "SystemCreationClassName=Msvm_ComputerSystem&"
-                               "SystemName=%s", keyboard->data.common->DeviceID, uuid_string);
+                               "SystemName=%s", keyboard->data->DeviceID, uuid_string);
 
     /* press the keys */
     for (i = 0; i < nkeycodes; i++) {
@@ -1701,7 +1693,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
         goto cleanup;
 
-    if (hypervGetMemorySD(priv, vssd->data.common->InstanceID, &memsd) < 0)
+    if (hypervGetMemorySD(priv, vssd->data->InstanceID, &memsd) < 0)
         goto cleanup;
 
     params = hypervCreateInvokeParamsList("ModifyResourceSettings",
@@ -1718,10 +1710,8 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     if (hypervSetEmbeddedProperty(memResource, "VirtualQuantity", memory_str) < 0)
         goto cleanup;
 
-    if (hypervSetEmbeddedProperty(memResource, "InstanceID",
-                                  memsd->data.common->InstanceID) < 0) {
+    if (hypervSetEmbeddedProperty(memResource, "InstanceID", memsd->data->InstanceID) < 0)
         goto cleanup;
-    }
 
     if (hypervAddEmbeddedParam(params, "ResourceSettings",
                                &memResource, Msvm_MemorySettingData_WmiInfo) < 0) {

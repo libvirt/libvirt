@@ -23,7 +23,7 @@
 #
 
 
-class v2/Msvm_ComputerSystem
+class Msvm_ComputerSystem
     string   InstanceID
     string   Caption
     string   Description
@@ -72,7 +72,7 @@ class v2/Msvm_ComputerSystem
 end
 
 
-class v2/Msvm_ConcreteJob
+class Msvm_ConcreteJob
     string   InstanceID
     string   Caption
     string   Description
@@ -117,7 +117,7 @@ class v2/Msvm_ConcreteJob
 end
 
 
-class v2/Msvm_MemorySettingData
+class Msvm_MemorySettingData
     string  InstanceID
     string  Caption
     string  Description
@@ -149,7 +149,7 @@ class v2/Msvm_MemorySettingData
 end
 
 
-class v2/Msvm_ProcessorSettingData
+class Msvm_ProcessorSettingData
     string  InstanceID
     string  Caption
     string  Description
@@ -180,7 +180,7 @@ class v2/Msvm_ProcessorSettingData
 end
 
 
-class v2/Msvm_VirtualSystemSettingData
+class Msvm_VirtualSystemSettingData
     string   InstanceID
     string   Caption
     string   Description
@@ -569,7 +569,7 @@ class Win32_OperatingSystem
 end
 
 
-class v2/Msvm_VirtualSystemManagementService
+class Msvm_VirtualSystemManagementService
     string   InstanceID
     string   Caption
     string   Description
@@ -601,7 +601,7 @@ class v2/Msvm_VirtualSystemManagementService
 end
 
 
-class v2/Msvm_Keyboard
+class Msvm_Keyboard
     string   InstanceID
     string   Caption
     string   Description
@@ -648,7 +648,7 @@ class v2/Msvm_Keyboard
 end
 
 
-class v2/Msvm_ShutdownComponent
+class Msvm_ShutdownComponent
     string   InstanceID
     string   Caption
     string   Description

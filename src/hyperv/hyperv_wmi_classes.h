@@ -32,9 +32,6 @@
 #define ROOT_CIMV2 \
     "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"
 
-#define ROOT_VIRTUALIZATION \
-    "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/virtualization/*"
-
 #define ROOT_VIRTUALIZATION_V2 \
     "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/virtualization/v2/*"
 
@@ -121,8 +118,6 @@ typedef hypervWmiClassInfo *hypervWmiClassInfoPtr;
 struct _hypervWmiClassInfo {
     /* The WMI class name */
     const char *name;
-    /* The version of the WMI class as in "v1" or "v2" */
-    const char *version;
     /* The URI for wsman enumerate request */
     const char *rootUri;
     /* The namespace URI for XML serialization */

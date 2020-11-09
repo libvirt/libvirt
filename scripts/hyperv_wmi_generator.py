@@ -25,57 +25,22 @@ import os
 import os.path
 
 separator = "/*" + ("*" * 50) + "*\n"
-wmi_version_separator = "/"
 wmi_classes_by_name = {}
 
 
 class WmiClass:
-    """Represents WMI class and provides methods to generate C code.
+    """Represents WMI class and provides methods to generate C code."""
 
-    This class holds one or more instances of WmiClassVersion because with the
-    Windows 2012 release, Microsoft introduced "v2" version of Msvm_* family of
-    classes that need different URI for making wsman requests and also have
-    some additional/changed properties (though many of the properties are the
-    same as in "v1". Therefore, this class makes sure that C code is generated
-    for each of them while avoiding name conflicts, identifies common members,
-    and defined *_WmiInfo structs holding info about each version so the driver
-    code can make the right choices based on which Hyper-V host it's connected
-    to.
-    """
-
-    def __init__(self, name, versions=None):
+    def __init__(self, name, properties, uri_info):
         self.name = name
-        self.versions = versions if versions else list()
-        self.common = None
-
-    def prepare(self):
-        """Prepares the class for code generation
-
-        Makes sure that "versioned" classes are sorted by version, identifies
-        common properties and ensures that they are aligned by name and
-        type in each version
-        """
-        # sort versioned classes by version in case input file did not have them
-        # in order
-        self.versions = sorted(self.versions, key=lambda cls: cls.version or "")
-
-        # if there's more than one version make sure first one has name suffixed
-        # because we'll generate "common" member and will be the "base" name
-        if len(self.versions) > 1:
-            first = self.versions[0]
-            if first.version is None:
-                first.version = "v1"
-            first.name = "%s_%s" % (first.name, first.version)
-
-        # finally, identify common members in all versions and make sure they
-        # are in the same order - to ensure C struct member alignment
-        self._align_property_members()
+        self.properties = properties
+        self.uri_info = uri_info
 
     def generate_classes_header(self):
         """Generate C header code and return it as string
 
         Declares:
-          <class_name>_Data - used as one of hypervObject->data members
+          <class_name>_Data - used as hypervObject->data
           <class_name>_TypeInfo - used as wsman XmlSerializerInfo
           <class_name> - "inherits" hypervObject struct
         """
@@ -103,30 +68,28 @@ class WmiClass:
         """Returns a C code string defining wsman data structs
 
         Defines:
-          <class_name>_Data structs
-          <class_name>_WmiInfo - list holding metadata (e.g. request URIs) for
-                                 each known version of WMI class.
+          <class_name>_Data struct
+          <class_name>_WmiInfo - list holding metadata (e.g. request URIs) for the WMI class
         """
 
         source = separator
         source += " * %s\n" % self.name
         source += " */\n"
 
-        for cls in self.versions:
-            source += "SER_START_ITEMS(%s_Data)\n" % cls.name
+        source += "SER_START_ITEMS(%s_Data)\n" % self.name
 
-            for property in cls.properties:
-                source += property.generate_classes_source(cls.name)
+        for property in self.properties:
+            source += property.generate_classes_source(self.name)
 
-            source += "SER_END_ITEMS(%s_Data);\n\n" % cls.name
+        source += "SER_END_ITEMS(%s_Data);\n\n" % self.name
 
-            # also generate typemap data while we're here
-            source += "hypervCimType %s_Typemap[] = {\n" % cls.name
+        # also generate typemap data while we're here
+        source += "hypervCimType %s_Typemap[] = {\n" % self.name
 
-            for property in cls.properties:
-                source += property.generate_typemap()
-            source += '    { "", "", 0 },\n'  # null terminated
-            source += '};\n\n'
+        for property in self.properties:
+            source += property.generate_typemap()
+        source += '    { "", "", 0 },\n'  # null terminated
+        source += '};\n\n'
 
         source += self._define_WmiInfo_struct()
         source += "\n\n"
@@ -134,45 +97,29 @@ class WmiClass:
         return source
 
     def generate_classes_typedef(self):
-        """Returns C string for typdefs"""
+        """Returns C string for typedefs"""
 
         typedef = "typedef struct _%s %s;\n" % (self.name, self.name)
-
-        if self.common is not None:
-            typedef += "typedef struct _%s_Data %s_Data;\n" % (self.name, self.name)
-
-        for cls in self.versions:
-            typedef += "typedef struct _%s_Data %s_Data;\n" % (cls.name, cls.name)
+        typedef += "typedef struct _%s_Data %s_Data;\n" % (self.name, self.name)
 
         return typedef
 
     def _declare_data_structs(self):
         """Returns string C code declaring data structs.
 
-        The *_Data structs are members of hypervObject data union. Each one has
+        The *_Data structs are used as hypervObject->data. Each one has
         corresponding *_TypeInfo that is used for wsman unserialization of
-        response XML into the *_Data structs. If there's a "common" member, it
-        won't have corresponding *_TypeInfo because this is a special case only
-        used to provide a common "view" of v1, v2 etc members
+        response XML into the *_Data structs.
         """
 
-        header = ""
-        if self.common is not None:
-            header += "struct _%s_Data {\n" % self.name
-            for property in self.common:
-                header += property.generate_classes_header()
-            header += "};\n\n"
-
-        # Declare actual data struct for each versions
-        for cls in self.versions:
-            header += "#define %s_RESOURCE_URI \\\n" % cls.name.upper()
-            header += "    \"%s\"\n" % cls.uri_info.resourceUri
-            header += "\n"
-            header += "struct _%s_Data {\n" % cls.name
-            for property in cls.properties:
-                header += property.generate_classes_header()
-            header += "};\n\n"
-            header += "SER_DECLARE_TYPE(%s_Data);\n" % cls.name
+        header = "#define %s_RESOURCE_URI \\\n" % self.name.upper()
+        header += "    \"%s\"\n" % self.uri_info.resourceUri
+        header += "\n"
+        header += "struct _%s_Data {\n" % self.name
+        for property in self.properties:
+            header += property.generate_classes_header()
+        header += "};\n\n"
+        header += "SER_DECLARE_TYPE(%s_Data);\n" % self.name
 
         return header
 
@@ -181,19 +128,7 @@ class WmiClass:
 
         header = "\n/* must match hypervObject */\n"
         header += "struct _%s {\n" % self.name
-        header += "    union {\n"
-
-        # if there's common use it as "common" else first and only version is
-        # the "common" member
-        if self.common is not None:
-            header += "        %s_Data *common;\n" % self.name
-        else:
-            header += "        %s_Data *common;\n" % self.versions[0].name
-
-        for cls in self.versions:
-            header += "        %s_Data *%s;\n" % (cls.name, cls.version)
-
-        header += "    } data;\n"
+        header += "    %s_Data *data;\n" % self.name
         header += "    hypervWmiClassInfoPtr info;\n"
         header += "    %s *next;\n" % self.name
         header += "};\n"
@@ -205,125 +140,39 @@ class WmiClass:
     def _define_WmiInfo_struct(self):
         """Return string for C code defining *_WmiInfo struct
 
-        Those structs hold info with meta-data needed to make wsman requests for
-        each version of WMI class
+        This struct holds info with meta-data needed to make wsman requests for the WMI class.
         """
 
         source = "hypervWmiClassInfoListPtr %s_WmiInfo = &(hypervWmiClassInfoList) {\n" % self.name
-        source += "    .count = %d,\n" % len(self.versions)
+        source += "    .count = 1,\n"
         source += "    .objs = (hypervWmiClassInfoPtr []) {\n"
 
-        for cls in self.versions:
-            source += "        &(hypervWmiClassInfo) {\n"
-            source += "            .name = %s_CLASSNAME,\n" % self.name.upper()
-            if cls.version is not None:
-                source += "            .version = \"%s\",\n" % cls.version
-            else:
-                source += "            .version = NULL,\n"
-            source += "            .rootUri = %s,\n" % cls.uri_info.rootUri
-            source += "            .resourceUri = %s_RESOURCE_URI,\n" % cls.name.upper()
-            source += "            .serializerInfo = %s_Data_TypeInfo,\n" % cls.name
-            source += "            .propertyInfo = %s_Typemap\n" % cls.name
-            source += "        },\n"
+        source += "        &(hypervWmiClassInfo) {\n"
+        source += "            .name = %s_CLASSNAME,\n" % self.name.upper()
+        source += "            .rootUri = %s,\n" % self.uri_info.rootUri
+        source += "            .resourceUri = %s_RESOURCE_URI,\n" % self.name.upper()
+        source += "            .serializerInfo = %s_Data_TypeInfo,\n" % self.name
+        source += "            .propertyInfo = %s_Typemap\n" % self.name
+        source += "        },\n"
 
         source += "    }\n"
         source += "};\n"
 
         return source
 
-    def _align_property_members(self):
-        """Identifies common properties in all class versions.
-
-        Makes sure that properties in all versions are ordered with common
-        members first and that they are in the same order. This makes the
-        generated C structs memory aligned and safe to access via the "common"
-        struct that "shares" members with v1, v2 etc.
-        """
-
-        num_classes = len(self.versions)
-        common = {}
-        property_info = {}
-
-        if num_classes < 2:
-            return
-
-        # count property occurrences in all class versions
-        for cls in self.versions:
-            for prop in cls.properties:
-                # consdered same if matches by name AND type
-                key = "%s_%s_%s" % (prop.name, prop.type, prop.is_array)
-
-                if key in property_info:
-                    property_info[key][1] += 1
-                else:
-                    property_info[key] = [prop, 1]
-
-        # isolate those that are common for all and keep track of their positions
-        pos = 0
-        for key in sorted(property_info):
-            info = property_info[key]
-            # exists in all class versions
-            if info[1] == num_classes:
-                common[info[0].name] = [info[0], pos]
-                pos += 1
-
-        # alter each version's property list so that common members are first
-        # and in the same order as in the common dictionary
-        for cls in self.versions:
-            index = 0
-            count = len(cls.properties)
-
-            while index < count:
-                prop = cls.properties[index]
-
-                # it's a "common" property
-                if prop.name in common:
-                    pos = common[prop.name][1]
-
-                    # move to the same position as in "common" dictionary
-                    if index != pos:
-                        tmp = cls.properties[pos]
-                        cls.properties[pos] = prop
-                        cls.properties[index] = tmp
-                    else:
-                        index += 1
-                else:
-                    index += 1
-
-        # finally, get common properties as list sorted by position in dictionary
-        tmp = sorted(common.values(), key=lambda x: x[1])
-        self.common = []
-        for x in tmp:
-            self.common.append(x[0])
-
 
 class ClassUriInfo:
     """Prepares URI information needed for wsman requests."""
 
-    def __init__(self, wmi_name, version):
-        self.rootUri = "ROOT_CIMV2"
-        self.resourceUri = None
-        baseUri = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2"
-
+    def __init__(self, wmi_name):
         if wmi_name.startswith("Msvm_"):
-            baseUri = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/virtualization"
-            self.rootUri = "ROOT_VIRTUALIZATION"
-
-            if version == "v2":
-                baseUri += "/v2"
-                self.rootUri = "ROOT_VIRTUALIZATION_V2"
+            self.rootUri = "ROOT_VIRTUALIZATION_V2"
+            baseUri = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/virtualization/v2"
+        else:
+            self.rootUri = "ROOT_CIMV2"
+            baseUri = "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2"
 
         self.resourceUri = "%s/%s" % (baseUri, wmi_name)
-
-
-class WmiClassVersion:
-    """Represents specific version of WMI class."""
-
-    def __init__(self, name, version, properties, uri_info):
-        self.name = name
-        self.version = version
-        self.properties = properties
-        self.uri_info = uri_info
 
 
 class Property:
@@ -391,15 +240,11 @@ def parse_class(block, number):
     assert header_items[0] == "class"
 
     name = header_items[1]
-    properties = []
-    version = None
-    wmi_name = name
-    ns_separator = name.find(wmi_version_separator)
 
-    if ns_separator != -1:
-        version = name[:ns_separator]
-        wmi_name = name[ns_separator + 1:]
-        name = "%s_%s" % (wmi_name, version)
+    if name in wmi_classes_by_name:
+        report_error("class '%s' has already been defined" % name)
+
+    properties = []
 
     for line in block[1:]:
         # expected format: <type> <name>
@@ -414,16 +259,9 @@ def parse_class(block, number):
         else:
             is_array = False
 
-        properties.append(Property(type=items[0], name=items[1],
-                                   is_array=is_array))
+        properties.append(Property(type=items[0], name=items[1], is_array=is_array))
 
-    cls = WmiClassVersion(name=name, version=version, properties=properties,
-                          uri_info=ClassUriInfo(wmi_name, version))
-
-    if wmi_name in wmi_classes_by_name:
-        wmi_classes_by_name[wmi_name].versions.append(cls)
-    else:
-        wmi_classes_by_name[wmi_name] = WmiClass(wmi_name, [cls])
+    wmi_classes_by_name[name] = WmiClass(name, properties, ClassUriInfo(name))
 
 
 def main():
@@ -478,7 +316,6 @@ def main():
 
     for name in names:
         cls = wmi_classes_by_name[name]
-        cls.prepare()
 
         classes_typedef.write(cls.generate_classes_typedef())
         classes_header.write(cls.generate_classes_header())

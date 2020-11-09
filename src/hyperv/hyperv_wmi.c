@@ -50,31 +50,8 @@ VIR_LOG_INIT("hyperv.hyperv_wmi");
 static int
 hypervGetWmiClassInfo(hypervWmiClassInfoListPtr list, hypervWmiClassInfoPtr *info)
 {
-    size_t i;
-
-    if (list->count == 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("The WMI class info list is empty"));
-        return -1;
-    }
-
-    /* if there's just one WMI class and isn't versioned, assume "shared" */
-    if (list->count == 1 && list->objs[0]->version == NULL) {
-        *info = list->objs[0];
-        return 0;
-    }
-
-    for (i = 0; i < list->count; i++) {
-        if (STRCASEEQ(list->objs[i]->version, "v2")) {
-            *info = list->objs[i];
-            return 0;
-        }
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("Could not match WMI class info for version v2"));
-
-    return -1;
+    *info = list->objs[0];
+    return 0;
 }
 
 
@@ -911,7 +888,7 @@ hypervInvokeMethod(hypervPrivate *priv,
             if (hypervGetWmiClass(Msvm_ConcreteJob, &job) < 0 || !job)
                 goto cleanup;
 
-            jobState = job->data.common->JobState;
+            jobState = job->data->JobState;
             switch (jobState) {
             case MSVM_CONCRETEJOB_JOBSTATE_NEW:
             case MSVM_CONCRETEJOB_JOBSTATE_STARTING:
@@ -1078,7 +1055,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
 
         object = g_new0(hypervObject, 1);
         object->info = wmiInfo;
-        object->data.common = data;
+        object->data = data;
 
         data = NULL;
 
@@ -1139,7 +1116,7 @@ hypervFreeObject(hypervPrivate *priv G_GNUC_UNUSED, hypervObject *object)
     while (object != NULL) {
         next = object->next;
 
-        if (ws_serializer_free_mem(serializerContext, object->data.common,
+        if (ws_serializer_free_mem(serializerContext, object->data,
                                    object->info->serializerInfo) < 0) {
             VIR_ERROR(_("Could not free deserialized data"));
         }
@@ -1270,7 +1247,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     wsmc_add_prop_from_str(options, properties);
 
     /* Invoke method */
-    response = wsmc_action_invoke(priv->client, MSVM_COMPUTERSYSTEM_V2_RESOURCE_URI,
+    response = wsmc_action_invoke(priv->client, MSVM_COMPUTERSYSTEM_RESOURCE_URI,
                                   options, "RequestStateChange", NULL);
 
     if (hypervVerifyResponse(priv->client, response, "invocation") < 0)
@@ -1320,7 +1297,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
                 goto cleanup;
             }
 
-            switch (concreteJob->data.common->JobState) {
+            switch (concreteJob->data->JobState) {
             case MSVM_CONCRETEJOB_JOBSTATE_NEW:
             case MSVM_CONCRETEJOB_JOBSTATE_STARTING:
             case MSVM_CONCRETEJOB_JOBSTATE_RUNNING:
@@ -1380,7 +1357,7 @@ int
 hypervMsvmComputerSystemEnabledStateToDomainState
 (Msvm_ComputerSystem *computerSystem)
 {
-    switch (computerSystem->data.common->EnabledState) {
+    switch (computerSystem->data->EnabledState) {
     case MSVM_COMPUTERSYSTEM_ENABLEDSTATE_UNKNOWN:
         return VIR_DOMAIN_NOSTATE;
 
@@ -1421,7 +1398,7 @@ hypervIsMsvmComputerSystemActive(Msvm_ComputerSystem *computerSystem,
     if (in_transition != NULL)
         *in_transition = false;
 
-    switch (computerSystem->data.common->EnabledState) {
+    switch (computerSystem->data->EnabledState) {
     case MSVM_COMPUTERSYSTEM_ENABLEDSTATE_UNKNOWN:
         return false;
 
@@ -1467,17 +1444,17 @@ hypervMsvmComputerSystemToDomain(virConnectPtr conn,
         return -1;
     }
 
-    if (virUUIDParse(computerSystem->data.common->Name, uuid) < 0) {
+    if (virUUIDParse(computerSystem->data->Name, uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse UUID from string '%s'"),
-                       computerSystem->data.common->Name);
+                       computerSystem->data->Name);
         return -1;
     }
 
     if (hypervIsMsvmComputerSystemActive(computerSystem, NULL))
-        id = computerSystem->data.common->ProcessID;
+        id = computerSystem->data->ProcessID;
 
-    *domain = virGetDomain(conn, computerSystem->data.common->ElementName, uuid, id);
+    *domain = virGetDomain(conn, computerSystem->data->ElementName, uuid, id);
 
     return *domain ? 0 : -1;
 }
