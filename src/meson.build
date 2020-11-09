@@ -703,7 +703,7 @@ endforeach
 
 foreach data : virt_daemon_confs
   capitalize_args = [ '-c', 'print("@0@".capitalize())'.format(data['name']) ]
-  name_uc = run_command(python3_prog, capitalize_args, check: true).stdout().strip()
+  name_uc = run_command(python3_prog, capitalize_args, check: true, env: runutf8).stdout().strip()
   daemon_conf = configuration_data()
   daemon_conf.set('runstatedir', runstatedir)
   daemon_conf.set('sbindir', sbindir)
