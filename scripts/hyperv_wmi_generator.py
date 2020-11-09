@@ -51,9 +51,6 @@ class WmiClass:
         header += " * %s\n" % self.name
         header += " */\n"
         header += "\n"
-        header += "#define %s_CLASSNAME \\\n" % name_upper
-        header += "    \"%s\"\n" % self.name
-        header += "\n"
         header += "#define %s_WQL_SELECT \\\n" % name_upper
         header += "    \"SELECT * FROM %s \"\n" % self.name
         header += "\n"
@@ -144,7 +141,7 @@ class WmiClass:
         """
 
         source = "hypervWmiClassInfoPtr %s_WmiInfo = &(hypervWmiClassInfo) {\n" % self.name
-        source += "    .name = %s_CLASSNAME,\n" % self.name.upper()
+        source += "    .name = \"%s\",\n" % self.name
         source += "    .rootUri = %s,\n" % self.uri_info.rootUri
         source += "    .resourceUri = %s_RESOURCE_URI,\n" % self.name.upper()
         source += "    .serializerInfo = %s_Data_TypeInfo,\n" % self.name
