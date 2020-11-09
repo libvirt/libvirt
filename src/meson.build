@@ -75,7 +75,7 @@ if conf.has('WITH_DTRACE_PROBES')
     input: infile,
     output: out_stp,
     command: [
-      meson_python_prog, python3_prog.path(), dtrace2systemtap_prog.path(),
+      meson_python_prog, python3_prog, dtrace2systemtap_prog,
       bindir, sbindir, libdir, '@INPUT@'
     ],
     capture: true,
@@ -356,7 +356,7 @@ libvirt_syms = custom_target(
   input: [ public_sym_file ] + used_sym_files + generated_sym_files,
   output: 'libvirt.syms',
   command: [
-    meson_python_prog, python3_prog.path(), meson_gen_sym_prog.path(),
+    meson_python_prog, python3_prog, meson_gen_sym_prog,
     '@OUTPUT@', 'LIBVIRT_PRIVATE_' + meson.project_version(), '@INPUT@',
   ],
 )
@@ -367,7 +367,7 @@ if host_machine.system() == 'windows'
     input: libvirt_syms,
     output: 'libvirt.def',
     command: [
-      meson_python_prog, python3_prog.path(), meson_gen_def_prog.path(),
+      meson_python_prog, python3_prog, meson_gen_def_prog,
       '@INPUT@', '@OUTPUT@',
     ],
   )
@@ -417,7 +417,7 @@ if host_machine.system() == 'windows'
     input: libvirt_qemu_syms,
     output: 'libvirt_qemu.def',
     command: [
-      meson_python_prog, python3_prog.path(), meson_gen_def_prog.path(),
+      meson_python_prog, python3_prog, meson_gen_def_prog,
       '@INPUT@', '@OUTPUT@',
     ],
   )
@@ -471,7 +471,7 @@ if host_machine.system() == 'windows'
     input: libvirt_lxc_syms,
     output: 'libvirt_lxc.def',
     command: [
-      meson_python_prog, python3_prog.path(), meson_gen_def_prog.path(),
+      meson_python_prog, python3_prog, meson_gen_def_prog,
       '@INPUT@', '@OUTPUT@',
     ],
   )
@@ -686,7 +686,7 @@ foreach data : virt_test_aug_files
     input: [ data['conf'], data['aug'] ],
     output: data['name'],
     command: [
-      meson_python_prog, python3_prog.path(), augeas_gentest_prog.path(),
+      meson_python_prog, python3_prog, augeas_gentest_prog,
       '@INPUT@',
     ],
     capture: true,
@@ -762,7 +762,7 @@ foreach data : virt_daemon_confs
     input: [ conf_out, test_aug_tmp ],
     output: test_aug_out,
     command: [
-      meson_python_prog, python3_prog.path(), augeas_gentest_prog.path(),
+      meson_python_prog, python3_prog, augeas_gentest_prog,
       '@INPUT@',
     ],
     capture: true,
@@ -884,7 +884,7 @@ if conf.has('WITH_DTRACE_PROBES')
     input: rpc_probe_files,
     output: 'libvirt_functions.stp',
     command: [
-      meson_python_prog, python3_prog.path(), gensystemtap_prog.path(),
+      meson_python_prog, python3_prog, gensystemtap_prog,
       '@INPUT@',
     ],
     capture: true,

@@ -32,7 +32,7 @@ foreach name : keycode_list
     input: keymap_src_file,
     output: 'virkeycode-@0@.rst'.format(name),
     command: [
-      meson_python_prog, python3_prog.path(), keymap_gen_prog.path(), 'code-docs',
+      meson_python_prog, python3_prog, keymap_gen_prog, 'code-docs',
       '--lang', 'rst',
       '--title', 'virkeycode-@0@'.format(name),
       '--subtitle', 'Key code values for @0@'.format(name),
@@ -53,7 +53,7 @@ foreach name : keyname_list
     input: keymap_src_file,
     output: 'virkeyname-@0@.rst'.format(name),
     command: [
-      meson_python_prog, python3_prog.path(), keymap_gen_prog.path(), 'name-docs',
+      meson_python_prog, python3_prog, keymap_gen_prog, 'name-docs',
       '--lang', 'rst',
       '--title', 'virkeyname-@0@'.format(name),
       '--subtitle', 'Key name values for @0@'.format(name),

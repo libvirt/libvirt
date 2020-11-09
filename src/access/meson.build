@@ -82,7 +82,7 @@ if conf.has('WITH_POLKIT')
       'org.libvirt.api.policy',
       input: access_perm_h,
       output: 'org.libvirt.api.policy',
-      command: [ meson_python_prog, python3_prog.path(), genpolkit_prog.path(), '@INPUT@' ],
+      command: [ meson_python_prog, python3_prog, genpolkit_prog, '@INPUT@' ],
       capture: true,
       install: true,
       install_dir: datadir / 'polkit-1' / 'actions',

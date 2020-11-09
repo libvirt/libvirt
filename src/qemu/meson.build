@@ -71,7 +71,7 @@ if conf.has('WITH_DTRACE_PROBES')
     input: infile,
     output: out_stp,
     command: [
-      meson_python_prog, python3_prog.path(), dtrace2systemtap_prog.path(),
+      meson_python_prog, python3_prog, dtrace2systemtap_prog,
       bindir, sbindir, libdir, '@INPUT@',
     ],
     capture: true,
