@@ -14263,6 +14263,158 @@ cmdGuestInfo(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/*
+ * "get-user-sshkeys" command
+ */
+static const vshCmdInfo info_get_user_sshkeys[] = {
+    {.name = "help",
+     .data = N_("list authorized SSH keys for given user (via agent)")
+    },
+    {.name = "desc",
+     .data = N_("Use the guest agent to query authorized SSH keys for given "
+                "user")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_get_user_sshkeys[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
+    {.name = "user",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("user to list authorized keys for"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdGetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    const char *user;
+    VIR_AUTOSTRINGLIST keys = NULL;
+    int nkeys = 0;
+    size_t i;
+    const unsigned int flags = 0;
+    bool ret = false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "user", &user) < 0)
+        goto cleanup;
+
+    nkeys = virDomainAuthorizedSSHKeysGet(dom, user, &keys, flags);
+    if (nkeys < 0)
+        goto cleanup;
+
+    for (i = 0; i < nkeys; i++) {
+        vshPrint(ctl, "%s", keys[i]);
+    }
+
+    ret = true;
+ cleanup:
+    virshDomainFree(dom);
+    return ret;
+}
+
+
+/*
+ * "set-user-sshkeys" command
+ */
+static const vshCmdInfo info_set_user_sshkeys[] = {
+    {.name = "help",
+     .data = N_("manipulate authorized SSH keys file for given user (via agent)")
+    },
+    {.name = "desc",
+     .data = N_("Append, reset or remove specified key from the authorized "
+                "keys file for given user")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_set_user_sshkeys[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
+    {.name = "user",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("user to set authorized keys for"),
+    },
+    {.name = "file",
+     .type = VSH_OT_STRING,
+     .help = N_("optional file to read keys from"),
+    },
+    {.name = "reset",
+     .type = VSH_OT_BOOL,
+     .help = N_("clear out authorized keys file before adding new keys"),
+    },
+    {.name = "remove",
+     .type = VSH_OT_BOOL,
+     .help = N_("remove keys from the authorized keys file"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    const char *user;
+    const char *from;
+    g_autofree char *buffer = NULL;
+    VIR_AUTOSTRINGLIST keys = NULL;
+    int nkeys = 0;
+    unsigned int flags = 0;
+    bool ret = false;
+
+    VSH_REQUIRE_OPTION("remove", "file");
+    VSH_EXCLUSIVE_OPTIONS("reset", "remove");
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "user", &user) < 0)
+        goto cleanup;
+
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
+        goto cleanup;
+
+    if (!vshCommandOptBool(cmd, "reset")) {
+        flags |= VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND;
+
+        if (!from) {
+            vshError(ctl, _("Option --file is required"));
+            goto cleanup;
+        }
+    }
+
+    if (vshCommandOptBool(cmd, "remove"))
+        flags |= VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE;
+
+    if (from) {
+        if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
+            vshSaveLibvirtError();
+            goto cleanup;
+        }
+
+        if (!(keys = virStringSplit(buffer, "\n", -1)))
+            goto cleanup;
+
+        nkeys = virStringListLength((const char **) keys);
+    }
+
+    if (virDomainAuthorizedSSHKeysSet(dom, user,
+                                      (const char **) keys, nkeys, flags) < 0) {
+        goto cleanup;
+    }
+
+    ret = true;
+ cleanup:
+    virshDomainFree(dom);
+    return ret;
+}
+
+
 const vshCmdDef domManagementCmds[] = {
     {.name = "attach-device",
      .handler = cmdAttachDevice,
@@ -14530,6 +14682,12 @@ const vshCmdDef domManagementCmds[] = {
      .info = info_event,
      .flags = 0
     },
+    {.name = "get-user-sshkeys",
+     .handler = cmdGetUserSSHKeys,
+     .opts = opts_get_user_sshkeys,
+     .info = info_get_user_sshkeys,
+     .flags = 0
+    },
     {.name = "inject-nmi",
      .handler = cmdInjectNMI,
      .opts = opts_inject_nmi,
@@ -14774,6 +14932,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdSetLifecycleAction,
      .opts = opts_setLifecycleAction,
      .info = info_setLifecycleAction,
+     .flags = 0
+    },
+    {.name = "set-user-sshkeys",
+     .handler = cmdSetUserSSHKeys,
+     .opts = opts_set_user_sshkeys,
+     .info = info_set_user_sshkeys,
      .flags = 0
     },
     {.name = "set-user-password",

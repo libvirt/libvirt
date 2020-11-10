@@ -2636,6 +2636,21 @@ When *--timestamp* is used, a human-readable timestamp will be printed
 before the event.
 
 
+get-user-sshkeys
+----------------
+
+**Syntax:**
+
+::
+
+   get-user-sshkeys domain user
+
+Print SSH authorized keys for given *user* in the guest *domain*. Please note,
+that an entry in the file has internal structure as defined by *sshd(8)* and
+virsh/libvirt does handle keys as opaque strings, i.e. does not interpret
+them.
+
+
 guest-agent-timeout
 -------------------
 
@@ -4002,6 +4017,29 @@ encrypted by the method required by the guest OS.
 
 For QEMU/KVM, this requires the guest agent to be configured
 and running.
+
+
+set-user-sshkeys
+----------------
+
+**Syntax:**
+
+::
+
+   set-user-sshkeys domain user [--file FILE] [{--reset | --remove}]
+
+Append keys read from *FILE* into *user*'s SSH authorized keys file in the
+guest *domain*.  In the *FILE* keys must be on separate lines and each line
+must follow authorized keys format as defined by *sshd(8)*.
+
+If *--reset* is specified, then the guest authorized keys file content is
+removed before appending new keys. As a special case, if *--reset* is provided
+and no *FILE* was provided then no new keys are added and the authorized keys
+file is cleared out.
+
+If *--remove* is specified, then instead of adding any new keys then keys read
+from *FILE* are removed from the authorized keys file. It is not considered an
+error if the key does not exist in the file.
 
 
 setmaxmem
