@@ -174,3 +174,47 @@ virshNetworkUUIDCompleter(vshControl *ctl,
     g_free(nets);
     return ret;
 }
+
+
+char **
+virshNetworkDhcpMacCompleter(vshControl *ctl,
+                             const vshCmd *cmd,
+                             unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virNetworkDHCPLeasePtr *leases = NULL;
+    virNetworkPtr network = NULL;
+    int nleases;
+    size_t i = 0;
+    char **ret = NULL;
+    VIR_AUTOSTRINGLIST tmp = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
+        return NULL;
+
+    if ((nleases = virNetworkGetDHCPLeases(network, NULL, &leases, flags)) < 0)
+        goto cleanup;
+
+    tmp = g_new0(char *, nleases + 1);
+
+    for (i = 0; i < nleases; i++) {
+        virNetworkDHCPLeasePtr lease = leases[i];
+        tmp[i] = g_strdup(lease->mac);
+    }
+
+    ret = g_steal_pointer(&tmp);
+
+ cleanup:
+    if (leases) {
+        for (i = 0; i < nleases; i++)
+            virNetworkDHCPLeaseFree(leases[i]);
+        VIR_FREE(leases);
+    }
+    virNetworkFree(network);
+    return ret;
+}

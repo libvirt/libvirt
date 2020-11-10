@@ -37,3 +37,7 @@ char ** virshNetworkPortUUIDCompleter(vshControl *ctl,
 char ** virshNetworkUUIDCompleter(vshControl *ctl,
                                   const vshCmd *cmd,
                                   unsigned int flags);
+
+char ** virshNetworkDhcpMacCompleter(vshControl *ctl,
+                                     const vshCmd *cmd,
+                                     unsigned int flags);
