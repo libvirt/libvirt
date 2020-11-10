@@ -736,3 +736,24 @@ virshDomainSignalCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     return g_steal_pointer(&tmp);
 }
+
+
+char **
+virshDomainLifecycleCompleter(vshControl *ctl G_GNUC_UNUSED,
+                              const vshCmd *cmd G_GNUC_UNUSED,
+                              unsigned int flags)
+{
+    VIR_AUTOSTRINGLIST tmp = NULL;
+    size_t i = 0;
+
+    virCheckFlags(0, NULL);
+
+    tmp = g_new0(char *, VIR_DOMAIN_LIFECYCLE_LAST + 1);
+
+    for (i = 0; i < VIR_DOMAIN_LIFECYCLE_LAST; i++) {
+        const char *name = virDomainLifecycleTypeToString(i);
+        tmp[i] = g_strdup(name);
+    }
+
+    return g_steal_pointer(&tmp);
+}
