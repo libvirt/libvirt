@@ -94,3 +94,7 @@ char ** virshDomainCpulistCompleter(vshControl *ctl,
 char ** virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
                                              const vshCmd *cmd,
                                              unsigned int flags);
+
+char ** virshDomainConsoleCompleter(vshControl *ctl,
+                                    const vshCmd *cmd,
+                                    unsigned int flags);

@@ -2960,6 +2960,7 @@ static const vshCmdOptDef opts_console[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "devname", /* sc_prohibit_devname */
      .type = VSH_OT_STRING,
+     .completer = virshDomainConsoleCompleter,
      .help = N_("character device name")
     },
     {.name = "force",

@@ -661,3 +661,57 @@ virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
     virshDomainFree(dom);
     return ret;
 }
+
+
+char **
+virshDomainConsoleCompleter(vshControl *ctl,
+                            const vshCmd *cmd,
+                            unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    int nserials;
+    int nparallels;
+    g_autofree xmlNodePtr *serials = NULL;
+    g_autofree xmlNodePtr *parallels = NULL;
+    size_t i;
+    size_t offset = 0;
+    VIR_AUTOSTRINGLIST tmp = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (virshDomainGetXML(ctl, cmd, 0, &xmldoc, &ctxt) < 0)
+        return NULL;
+
+    nserials = virXPathNodeSet("./devices/serial", ctxt, &serials);
+    if (nserials < 0)
+        return NULL;
+
+    nparallels = virXPathNodeSet("./devices/parallel", ctxt, &parallels);
+    if (nparallels < 0)
+        return NULL;
+
+    tmp = g_new0(char *, nserials + nparallels + 1);
+
+    for (i = 0; i < nserials + nparallels; i++) {
+        g_autofree char *type = NULL;
+
+
+        if (i < nserials)
+            ctxt->node = serials[i];
+        else
+            ctxt->node = parallels[i - nserials];
+
+        type = virXPathString("string(./@type)", ctxt);
+        if (STRNEQ(type, "pty"))
+            continue;
+
+        tmp[offset++] = virXPathString("string(./alias/@name)", ctxt);
+    }
+
+    return g_steal_pointer(&tmp);
+}
