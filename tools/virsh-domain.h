@@ -39,3 +39,7 @@ typedef enum {
 VIR_ENUM_DECL(virshDomainHostnameSource);
 
 extern const vshCmdDef domManagementCmds[];
+
+VIR_ENUM_DECL(virDomainProcessSignal);
+VIR_ENUM_DECL(virDomainLifecycle);
+VIR_ENUM_DECL(virDomainLifecycleAction);

@@ -8910,7 +8910,6 @@ static const vshCmdOptDef opts_send_process_signal[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virDomainProcessSignal);
 VIR_ENUM_IMPL(virDomainProcessSignal,
               VIR_DOMAIN_PROCESS_SIGNAL_LAST,
                "nop",    "hup",  "int",  "quit",  "ill", /* 0-4 */
