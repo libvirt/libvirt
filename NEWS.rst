@@ -24,6 +24,13 @@ v6.10.0 (unreleased)
 
 * **New features**
 
+  * qemu: Implement OpenSSH authorized key file management APIs
+
+    New APIs (``virDomainAuthorizedSSHKeysGet()`` and
+    ``virDomainAuthorizedSSHKeysSet()``) and virsh commands
+    (``get-user-sshkeys`` and ``set-user-sshkeys``) are added to manage
+    authorized_keys SSH file for user.
+
   * hyperv: implement new APIs
 
     The `virDomainGetMaxMemory()``, ``virDomainSetMaxMemory()``,
