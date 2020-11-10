@@ -20094,6 +20094,85 @@ qemuDomainAgentSetResponseTimeout(virDomainPtr dom,
 }
 
 
+static int
+qemuDomainAuthorizedSSHKeysGet(virDomainPtr dom,
+                               const char *user,
+                               char ***keys,
+                               unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    qemuAgentPtr agent;
+    int rv = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainAuthorizedSshKeysGetEnsureACL(dom->conn, vm->def) < 0)
+        return -1;
+
+    if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
+        return -1;
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto endagentjob;
+
+    agent = qemuDomainObjEnterAgent(vm);
+    rv = qemuAgentSSHGetAuthorizedKeys(agent, user, keys);
+    qemuDomainObjExitAgent(vm, agent);
+
+ endagentjob:
+    qemuDomainObjEndAgentJob(vm);
+    virDomainObjEndAPI(&vm);
+    return rv;
+}
+
+
+static int
+qemuDomainAuthorizedSSHKeysSet(virDomainPtr dom,
+                               const char *user,
+                               const char **keys,
+                               int nkeys,
+                               unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    g_autoptr(virDomainObj) vm = NULL;
+    qemuAgentPtr agent;
+    const bool append = flags & VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND;
+    const bool remove = flags & VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE;
+    int rv = -1;
+
+    virCheckFlags(VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND |
+                  VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE, -1);
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainAuthorizedSshKeysSetEnsureACL(dom->conn, vm->def) < 0)
+        return -1;
+
+    if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
+        return -1;
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto endagentjob;
+
+    agent = qemuDomainObjEnterAgent(vm);
+    if (remove)
+        rv = qemuAgentSSHRemoveAuthorizedKeys(agent, user, keys, nkeys);
+    else
+        rv = qemuAgentSSHAddAuthorizedKeys(agent, user, keys, nkeys, !append);
+    qemuDomainObjExitAgent(vm, agent);
+
+ endagentjob:
+    qemuDomainObjEndAgentJob(vm);
+    virDomainObjEndAPI(&vm);
+    return rv;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectURIProbe = qemuConnectURIProbe,
@@ -20333,6 +20412,8 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainAgentSetResponseTimeout = qemuDomainAgentSetResponseTimeout, /* 5.10.0 */
     .domainBackupBegin = qemuDomainBackupBegin, /* 6.0.0 */
     .domainBackupGetXMLDesc = qemuDomainBackupGetXMLDesc, /* 6.0.0 */
+    .domainAuthorizedSSHKeysGet = qemuDomainAuthorizedSSHKeysGet, /* 6.10.0 */
+    .domainAuthorizedSSHKeysSet = qemuDomainAuthorizedSSHKeysSet, /* 6.10.0 */
 };
 
 
