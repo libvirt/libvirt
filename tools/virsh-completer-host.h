@@ -29,3 +29,7 @@ char ** virshAllocpagesPagesizeCompleter(vshControl *ctl,
 char ** virshCellnoCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags);
+
+char ** virshNodeCpuCompleter(vshControl *ctl,
+                              const vshCmd *cmd,
+                              unsigned int flags);

@@ -751,6 +751,7 @@ static const vshCmdInfo info_nodecpustats[] = {
 static const vshCmdOptDef opts_node_cpustats[] = {
     {.name = "cpu",
      .type = VSH_OT_INT,
+     .completer = virshNodeCpuCompleter,
      .help = N_("prints specified cpu statistics only.")
     },
     {.name = "percent",
