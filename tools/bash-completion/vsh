@@ -39,6 +39,7 @@ _vsh_complete()
     fi
 
     INPUT=( "${COMP_WORDS[@]:$i:$COMP_CWORD}" )
+    INPUT[-1]=${INPUT[-1]//\\:/:}
 
     # Uncomment these lines for easy debug.
 #    echo;
