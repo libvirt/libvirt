@@ -30,6 +30,7 @@
 #include "virstring.h"
 #include "virxml.h"
 #include "virperf.h"
+#include "virbitmap.h"
 
 char **
 virshDomainNameCompleter(vshControl *ctl,
@@ -580,4 +581,83 @@ virshDomainCpulistCompleter(vshControl *ctl,
         cpulist[i] = g_strdup_printf("%zu", i);
 
     return virshCommaStringListComplete(cpuid, (const char **)cpulist);
+}
+
+
+char **
+virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
+                                     const vshCmd *cmd,
+                                     unsigned int flags)
+{
+    virDomainPtr dom;
+    bool enable = vshCommandOptBool(cmd, "enable");
+    bool disable = vshCommandOptBool(cmd, "disable");
+    virTypedParameterPtr params = NULL;
+    unsigned int nparams = 0;
+    size_t i;
+    int nvcpus;
+    VIR_AUTOSTRINGLIST cpulist = NULL;
+    const char *vcpuid = NULL;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return NULL;
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "cpulist", &vcpuid) < 0)
+        goto cleanup;
+
+    /* retrieve vcpu count from the guest instead of the hypervisor */
+    if ((nvcpus = virDomainGetVcpusFlags(dom,
+                                         VIR_DOMAIN_VCPU_GUEST |
+                                         VIR_DOMAIN_VCPU_MAXIMUM)) < 0)
+        goto cleanup;
+
+    if (!enable && !disable) {
+        cpulist = g_new0(char *, nvcpus + 1);
+        for (i = 0; i < nvcpus; i++)
+            cpulist[i] = g_strdup_printf("%zu", i);
+    } else {
+        g_autofree char *onlineVcpuStr = NULL;
+        g_autofree unsigned char *vcpumap = NULL;
+        g_autoptr(virBitmap) vcpus = NULL;
+        size_t offset = 0;
+        int dummy;
+
+        if (virDomainGetGuestVcpus(dom, &params, &nparams, 0) < 0)
+            goto cleanup;
+
+        onlineVcpuStr = vshGetTypedParamValue(ctl, &params[1]);
+        if (virBitmapParse(onlineVcpuStr, &vcpus, nvcpus) < 0)
+            goto cleanup;
+
+        if (virBitmapToData(vcpus, &vcpumap, &dummy) < 0)
+            goto cleanup;
+
+        if (enable) {
+            cpulist = g_new0(char *, nvcpus - virBitmapCountBits(vcpus) + 1);
+            for (i = 0; i < nvcpus; i++) {
+                if (VIR_CPU_USED(vcpumap, i) != 0)
+                    continue;
+
+                cpulist[offset++] = g_strdup_printf("%zu", i);
+            }
+        } else if (disable) {
+            cpulist = g_new0(char *, virBitmapCountBits(vcpus) + 1);
+            for (i = 0; i < nvcpus; i++) {
+                if (VIR_CPU_USED(vcpumap, i) == 0)
+                    continue;
+
+                cpulist[offset++] = g_strdup_printf("%zu", i);
+            }
+        }
+    }
+
+    ret = virshCommaStringListComplete(vcpuid, (const char **)cpulist);
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    virshDomainFree(dom);
+    return ret;
 }

@@ -7436,6 +7436,7 @@ static const vshCmdOptDef opts_guestvcpus[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "cpulist",
      .type = VSH_OT_STRING,
+     .completer = virshDomainVcpulistViaAgentCompleter,
      .help = N_("list of cpus to enable or disable")
     },
     {.name = "enable",
