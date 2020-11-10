@@ -404,6 +404,7 @@ static const vshCmdOptDef opts_interface_name[] = {
     {.name = "interface",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshInterfaceMacCompleter,
      .help = N_("interface mac")
     },
     {.name = NULL}
