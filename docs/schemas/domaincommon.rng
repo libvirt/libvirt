@@ -1235,7 +1235,7 @@
           </optional>
           <optional>
             <attribute name="frequency">
-              <ref name="unsignedInt"/>
+              <ref name="unsignedLong"/>
             </attribute>
           </optional>
           <optional>

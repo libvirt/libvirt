@@ -1,0 +1,35 @@
+<domain type='kvm'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <title>A description of the test machine.</title>
+  <description>
+      A test of qemu&apos;s minimal configuration.
+      This test also tests the description and title elements.
+  </description>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='host-model'>
+    <model fallback='allow'/>
+    <feature policy='require' name='invtsc'/>
+  </cpu>
+  <clock offset='utc'>
+    <timer name='tsc' frequency='4567890000'/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' index='0'/>
+    <controller type='ide' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>
