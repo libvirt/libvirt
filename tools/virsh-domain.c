@@ -8905,6 +8905,7 @@ static const vshCmdOptDef opts_send_process_signal[] = {
     {.name = "signame",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainSignalCompleter,
      .help = N_("the signal number or name")
     },
     {.name = NULL}
