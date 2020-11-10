@@ -106,3 +106,7 @@ char ** virshDomainSignalCompleter(vshControl *ctl,
 char ** virshDomainLifecycleCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);
+
+char ** virshDomainLifecycleActionCompleter(vshControl *ctl,
+                                            const vshCmd *cmd,
+                                            unsigned int flags);

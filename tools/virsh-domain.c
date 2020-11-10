@@ -5723,6 +5723,7 @@ static const vshCmdOptDef opts_setLifecycleAction[] = {
     {.name = "action",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainLifecycleActionCompleter,
      .help = N_("lifecycle action to set")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
