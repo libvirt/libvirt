@@ -25,16 +25,19 @@
 #include "virsh.h"
 #include "virstring.h"
 
-char **
-virshInterfaceNameCompleter(vshControl *ctl,
-                            const vshCmd *cmd G_GNUC_UNUSED,
-                            unsigned int flags)
+typedef const char *
+(*virInterfaceStringCallback)(virInterfacePtr iface);
+
+static char **
+virshInterfaceStringHelper(vshControl *ctl,
+                           const vshCmd *cmd G_GNUC_UNUSED,
+                           unsigned int flags,
+                           virInterfaceStringCallback cb)
 {
     virshControlPtr priv = ctl->privData;
     virInterfacePtr *ifaces = NULL;
     int nifaces = 0;
     size_t i = 0;
-    char **ret = NULL;
     VIR_AUTOSTRINGLIST tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_INTERFACES_ACTIVE |
@@ -50,15 +53,23 @@ virshInterfaceNameCompleter(vshControl *ctl,
     tmp = g_new0(char *, nifaces + 1);
 
     for (i = 0; i < nifaces; i++) {
-        const char *name = virInterfaceGetName(ifaces[i]);
+        const char *name = (cb)(ifaces[i]);
 
         tmp[i] = g_strdup(name);
     }
 
-    ret = g_steal_pointer(&tmp);
-
     for (i = 0; i < nifaces; i++)
         virInterfaceFree(ifaces[i]);
     g_free(ifaces);
-    return ret;
+
+    return g_steal_pointer(&tmp);
+}
+
+
+char **
+virshInterfaceNameCompleter(vshControl *ctl,
+                            const vshCmd *cmd,
+                            unsigned int flags)
+{
+    return virshInterfaceStringHelper(ctl, cmd, flags, virInterfaceGetName);
 }
