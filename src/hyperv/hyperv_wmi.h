@@ -243,3 +243,11 @@ int hypervGetProcessorSD(hypervPrivate *priv,
 int hypervGetMemorySD(hypervPrivate *priv,
                       const char *vssd_instanceid,
                       Msvm_MemorySettingData **list);
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Msvm_VirtualSystemManagementService
+ */
+
+int hypervMsvmVSMSModifyResourceSettings(hypervPrivate *priv,
+                                         GHashTable **resourceSettingsPtr,
+                                         hypervWmiClassInfoPtr wmiInfo);

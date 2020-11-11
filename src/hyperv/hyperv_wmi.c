@@ -1542,3 +1542,40 @@ hypervGetMemorySD(hypervPrivate *priv,
 
     return 0;
 }
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Msvm_VirtualSystemManagementService
+ */
+
+int
+hypervMsvmVSMSModifyResourceSettings(hypervPrivate *priv,
+                                     GHashTable **resourceSettingsPtr,
+                                     hypervWmiClassInfoPtr wmiInfo)
+{
+    int result = -1;
+    GHashTable *resourceSettings = *resourceSettingsPtr;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
+
+    params = hypervCreateInvokeParamsList("ModifyResourceSettings",
+                                          MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
+                                          Msvm_VirtualSystemManagementService_WmiInfo);
+
+    if (!params)
+        goto cleanup;
+
+    if (hypervAddEmbeddedParam(params, "ResourceSettings", &resourceSettings, wmiInfo) < 0) {
+        hypervFreeEmbeddedParam(resourceSettings);
+        goto cleanup;
+    }
+
+    if (hypervInvokeMethod(priv, &params, NULL) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
+    *resourceSettingsPtr = NULL;
+
+    return result;
+}
