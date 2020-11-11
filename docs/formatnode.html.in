@@ -157,7 +157,7 @@
                     means such device cannot be used for PCI passthrough.
                     <span class="since">Since 1.3.3</span>
                   </dd>
-                  <dt><code><a id="MDEVCap">mdev_types</a></code></dt>
+                  <dt><code><a id="MDEVTypesCapPCI">mdev_types</a></code></dt>
                   <dd>
                     This device is capable of creating mediated devices.
                     The sub-elements are summarized in
@@ -423,7 +423,7 @@
     <h3><a id="MDEVTypesCap">mdev_types capability</a></h3>
 
     <p>
-      <a href="#MDEVCap">PCI</a> devices can be capable of
+      <a href="#MDEVTypesCapPCI">PCI</a> devices can be capable of
       creating mediated devices. If they indeed are capable,
       then the parent <code>capability</code> element for
       <code>mdev_types</code> type will contain a list of
