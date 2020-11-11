@@ -103,6 +103,10 @@ typedef enum {
 } virNodeDevPCICapFlags;
 
 typedef enum {
+    VIR_NODE_DEV_CAP_FLAG_CSS_MDEV                  = (1 << 0),
+} virNodeDevCCWCapFlags;
+
+typedef enum {
     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
     VIR_NODE_DEV_DRM_PRIMARY,
     VIR_NODE_DEV_DRM_CONTROL,
@@ -274,6 +278,9 @@ struct _virNodeDevCapCCW {
     unsigned int cssid;
     unsigned int ssid;
     unsigned int devno;
+    unsigned int flags; /* enum virNodeDevCCWCapFlags */
+    virMediatedDeviceTypePtr *mdev_types;
+    size_t nmdev_types;
 };
 
 typedef struct _virNodeDevCapVDPA virNodeDevCapVDPA;
@@ -390,6 +397,10 @@ virNodeDeviceGetSCSITargetCaps(const char *sysfsPath,
 int
 virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
                                virNodeDevCapPCIDevPtr pci_dev);
+
+int
+virNodeDeviceGetCSSDynamicCaps(const char *sysfsPath,
+                               virNodeDevCapCCWPtr ccw_dev);
 
 int
 virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def);

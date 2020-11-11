@@ -1,0 +1,17 @@
+<device>
+  <name>css_0_0_fffe</name>
+  <path>/sys/devices/css0/0.0.fffe</path>
+  <parent>computer</parent>
+  <capability type='css'>
+    <cssid>0x0</cssid>
+    <ssid>0x0</ssid>
+    <devno>0xfffe</devno>
+    <capability type='mdev_types'>
+      <type id='vfio_ccw-io'>
+        <name>I/O subchannel (Non-QDIO)</name>
+        <deviceAPI>vfio-ccw</deviceAPI>
+        <availableInstances>1</availableInstances>
+      </type>
+    </capability>
+  </capability>
+</device>

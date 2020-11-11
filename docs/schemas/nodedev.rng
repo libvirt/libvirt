@@ -654,6 +654,9 @@
     <element name="devno">
       <ref name="ccwDevnoRange"/>
     </element>
+    <optional>
+      <ref name="mdev_types"/>
+    </optional>
   </define>
 
   <define name="capvdpa">
@@ -702,6 +705,7 @@
           <element name="deviceAPI">
             <choice>
               <value>vfio-pci</value>
+              <value>vfio-ccw</value>
             </choice>
           </element>
           <element name="availableInstances">

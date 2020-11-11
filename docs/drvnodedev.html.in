@@ -139,7 +139,7 @@
 
     <h3><a id="MDEVCap">MDEV capability</a></h3>
     <p>
-      A PCI device capable of creating mediated devices will include a nested
+      A device capable of creating mediated devices will include a nested
       capability <code>mdev_types</code> which enumerates all supported mdev
       types on the physical device, along with the type attributes available
       through sysfs. A detailed description of the XML format for the

@@ -552,6 +552,10 @@ virNodeDeviceCapCCWDefFormat(virBufferPtr buf,
                       data->ccw_dev.ssid);
     virBufferAsprintf(buf, "<devno>0x%04x</devno>\n",
                       data->ccw_dev.devno);
+    if (data->ccw_dev.flags & VIR_NODE_DEV_CAP_FLAG_CSS_MDEV)
+        virNodeDeviceCapMdevTypesFormat(buf,
+                                        data->ccw_dev.mdev_types,
+                                        data->ccw_dev.nmdev_types);
 }
 
 
@@ -844,12 +848,42 @@ virNodeDevCapMdevTypesParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
+virNodeDevCSSCapabilityParseXML(xmlXPathContextPtr ctxt,
+                                xmlNodePtr node,
+                                virNodeDevCapCCWPtr ccw_dev)
+{
+    g_autofree char *type = virXMLPropString(node, "type");
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = node;
+
+    if (!type) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("Missing capability type"));
+        return -1;
+    }
+
+    if (STREQ(type, "mdev_types")) {
+        if (virNodeDevCapMdevTypesParseXML(ctxt,
+                                           &ccw_dev->mdev_types,
+                                           &ccw_dev->nmdev_types) < 0)
+            return -1;
+        ccw_dev->flags |= VIR_NODE_DEV_CAP_FLAG_CSS_MDEV;
+    }
+
+    return 0;
+}
+
+
+static int
 virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
                          virNodeDeviceDefPtr def,
                          xmlNodePtr node,
                          virNodeDevCapCCWPtr ccw_dev)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    g_autofree xmlNodePtr *nodes = NULL;
+    int n = 0;
+    size_t i = 0;
     g_autofree char *cssid = NULL;
     g_autofree char *ssid = NULL;
     g_autofree char *devno = NULL;
@@ -893,6 +927,14 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
                        _("invalid devno value '%s' for '%s'"),
                        devno, def->name);
         return -1;
+    }
+
+    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        if (virNodeDevCSSCapabilityParseXML(ctxt, nodes[i], ccw_dev) < 0)
+            return -1;
     }
 
     return 0;
@@ -2253,12 +2295,16 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
             virMediatedDeviceAttrFree(data->mdev.attributes[i]);
         VIR_FREE(data->mdev.attributes);
         break;
+    case VIR_NODE_DEV_CAP_CSS_DEV:
+        for (i = 0; i < data->ccw_dev.nmdev_types; i++)
+            virMediatedDeviceTypeFree(data->ccw_dev.mdev_types[i]);
+        VIR_FREE(data->ccw_dev.mdev_types);
+        break;
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_DRM:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
     case VIR_NODE_DEV_CAP_CCW_DEV:
-    case VIR_NODE_DEV_CAP_CSS_DEV:
     case VIR_NODE_DEV_CAP_VDPA:
     case VIR_NODE_DEV_CAP_LAST:
         /* This case is here to shutup the compiler */
@@ -2297,6 +2343,11 @@ virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
                                                &cap->data.pci_dev) < 0)
                 return -1;
             break;
+        case VIR_NODE_DEV_CAP_CSS_DEV:
+            if (virNodeDeviceGetCSSDynamicCaps(def->sysfs_path,
+                                               &cap->data.ccw_dev) < 0)
+                return -1;
+            break;
 
             /* all types that (supposedly) don't require any updates
              * relative to what's in the cache.
@@ -2313,7 +2364,6 @@ virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
         case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_MDEV:
         case VIR_NODE_DEV_CAP_CCW_DEV:
-        case VIR_NODE_DEV_CAP_CSS_DEV:
         case VIR_NODE_DEV_CAP_VDPA:
         case VIR_NODE_DEV_CAP_LAST:
             break;
@@ -2384,6 +2434,15 @@ virNodeDeviceCapsListExport(virNodeDeviceDefPtr def,
             flags = caps->data.pci_dev.flags;
 
             if (flags & VIR_NODE_DEV_CAP_FLAG_PCI_MDEV) {
+                MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_MDEV_TYPES);
+                ncaps++;
+            }
+        }
+
+        if (caps->data.type == VIR_NODE_DEV_CAP_CSS_DEV) {
+            flags = caps->data.ccw_dev.flags;
+
+            if (flags & VIR_NODE_DEV_CAP_FLAG_CSS_MDEV) {
                 MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_MDEV_TYPES);
                 ncaps++;
             }
@@ -2653,6 +2712,28 @@ virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
     return 0;
 }
 
+
+/* virNodeDeviceGetCSSDynamicCaps() get info that is stored in sysfs
+ * about devices related to this device, i.e. things that can change
+ * without this device itself changing. These must be refreshed
+ * anytime full XML of the device is requested, because they can
+ * change with no corresponding notification from the kernel/udev.
+ */
+int
+virNodeDeviceGetCSSDynamicCaps(const char *sysfsPath,
+                               virNodeDevCapCCWPtr ccw_dev)
+{
+    ccw_dev->flags &= ~VIR_NODE_DEV_CAP_FLAG_CSS_MDEV;
+    if (virNodeDeviceGetMdevTypesCaps(sysfsPath,
+                                      &ccw_dev->mdev_types,
+                                      &ccw_dev->nmdev_types) < 0)
+        return -1;
+    if (ccw_dev->nmdev_types > 0)
+        ccw_dev->flags |= VIR_NODE_DEV_CAP_FLAG_CSS_MDEV;
+
+    return 0;
+}
+
 #else
 
 int
@@ -2671,6 +2752,13 @@ virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath G_GNUC_UNUSED,
 
 int virNodeDeviceGetSCSITargetCaps(const char *sysfsPath G_GNUC_UNUSED,
                                    virNodeDevCapSCSITargetPtr scsi_target G_GNUC_UNUSED)
+{
+    return -1;
+}
+
+int
+virNodeDeviceGetCSSDynamicCaps(const char *sysfsPath G_GNUC_UNUSED,
+                               virNodeDevCapCCWPtr ccw_dev G_GNUC_UNUSED)
 {
     return -1;
 }

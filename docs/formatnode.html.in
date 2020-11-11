@@ -405,6 +405,21 @@
               <dd>The subchannel-set identifier.</dd>
               <dt><code>devno</code></dt>
               <dd>The device number.</dd>
+              <dt><code>capability</code></dt>
+              <dd>
+                This optional element can occur multiple times. If it
+                exists, it has a mandatory <code>type</code> attribute
+                which will be set to:
+                <dl>
+                  <dt><code><a id="MDEVTypesCapCSS">mdev_types</a></code></dt>
+                  <dd>
+                    <span class="since">Since 6.10.0</span>
+                    This device is capable of creating mediated devices.
+                    The sub-elements are summarized in
+                    <a href="#MDevTypesCap">mdev_types capability</a>.
+                  </dd>
+                </dl>
+              </dd>
             </dl>
           </dd>
           <dt><code>vdpa</code></dt>
@@ -423,10 +438,10 @@
     <h3><a id="MDEVTypesCap">mdev_types capability</a></h3>
 
     <p>
-      <a href="#MDEVTypesCapPCI">PCI</a> devices can be capable of
-      creating mediated devices. If they indeed are capable,
-      then the parent <code>capability</code> element for
-      <code>mdev_types</code> type will contain a list of
+      <a href="#MDEVTypesCapPCI">PCI</a> and <a href="#MDEVTypesCapCSS">CSS</a>
+      devices can be capable of creating mediated devices.
+      If they indeed are capable, then the parent <code>capability</code>
+      element for <code>mdev_types</code> type will contain a list of
       <code>type</code> elements, which list all mdev types supported
       on the physical device. <span class="since">Since 3.4.0</span>
       Each <code>type</code> element has a single <code>id</code>

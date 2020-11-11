@@ -696,6 +696,12 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
                 return true;
             break;
 
+        case VIR_NODE_DEV_CAP_CSS_DEV:
+            if (type == VIR_NODE_DEV_CAP_MDEV_TYPES &&
+                (cap->data.ccw_dev.flags & VIR_NODE_DEV_CAP_FLAG_CSS_MDEV))
+                return true;
+            break;
+
         case VIR_NODE_DEV_CAP_SYSTEM:
         case VIR_NODE_DEV_CAP_USB_DEV:
         case VIR_NODE_DEV_CAP_USB_INTERFACE:
@@ -710,7 +716,6 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
         case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_MDEV:
         case VIR_NODE_DEV_CAP_CCW_DEV:
-        case VIR_NODE_DEV_CAP_CSS_DEV:
         case VIR_NODE_DEV_CAP_VDPA:
         case VIR_NODE_DEV_CAP_LAST:
             break;

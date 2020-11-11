@@ -1139,6 +1139,9 @@ udevProcessCSS(struct udev_device *device,
     if (udevGenerateDeviceName(device, def, NULL) != 0)
         return -1;
 
+    if (virNodeDeviceGetCSSDynamicCaps(def->sysfs_path, &def->caps->data.ccw_dev) < 0)
+        return -1;
+
     return 0;
 }
 
