@@ -51,10 +51,12 @@ virNetDevOpenvswitchSetTimeout(unsigned int timeout)
     virNetDevOpenvswitchTimeout = timeout;
 }
 
-static void
-virNetDevOpenvswitchAddTimeout(virCommandPtr cmd)
+static virCommandPtr
+virNetDevOpenvswitchCreateCmd(void)
 {
+    virCommandPtr cmd = virCommandNew(OVS_VSCTL);
     virCommandAddArgFormat(cmd, "--timeout=%u", virNetDevOpenvswitchTimeout);
+    return cmd;
 }
 
 /**
@@ -151,8 +153,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                                         ovsport->profileID);
     }
 
-    cmd = virCommandNew(OVS_VSCTL);
-    virNetDevOpenvswitchAddTimeout(cmd);
+    cmd = virNetDevOpenvswitchCreateCmd();
     virCommandAddArgList(cmd, "--", "--if-exists", "del-port",
                          ifname, "--", "add-port", brname, ifname, NULL);
 
@@ -197,10 +198,8 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
  */
 int virNetDevOpenvswitchRemovePort(const char *brname G_GNUC_UNUSED, const char *ifname)
 {
-    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
 
-    cmd = virCommandNew(OVS_VSCTL);
-    virNetDevOpenvswitchAddTimeout(cmd);
     virCommandAddArgList(cmd, "--", "--if-exists", "del-port", ifname, NULL);
 
     if (virCommandRun(cmd, NULL) < 0) {
@@ -224,10 +223,8 @@ int virNetDevOpenvswitchRemovePort(const char *brname G_GNUC_UNUSED, const char 
 int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
 {
     size_t len;
-    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
 
-    cmd = virCommandNew(OVS_VSCTL);
-    virNetDevOpenvswitchAddTimeout(cmd);
     virCommandAddArgList(cmd, "--if-exists", "get", "Interface",
                          ifname, "external_ids:PortData", NULL);
 
@@ -267,8 +264,7 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
         return 0;
     }
 
-    cmd = virCommandNew(OVS_VSCTL);
-    virNetDevOpenvswitchAddTimeout(cmd);
+    cmd = virNetDevOpenvswitchCreateCmd();
     virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
     virCommandAddArgFormat(cmd, "external_ids:PortData=%s", migrate);
 
@@ -370,11 +366,9 @@ int
 virNetDevOpenvswitchInterfaceStats(const char *ifname,
                                    virDomainInterfaceStatsPtr stats)
 {
-    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
     g_autofree char *output = NULL;
 
-    cmd = virCommandNew(OVS_VSCTL);
-    virNetDevOpenvswitchAddTimeout(cmd);
     virCommandAddArgList(cmd, "--if-exists", "--format=list", "--data=json",
                          "--no-headings", "--columns=statistics", "list",
                          "Interface", ifname, NULL);
@@ -434,13 +428,11 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
 int
 virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 {
-    virCommandPtr cmd = NULL;
+    virCommandPtr cmd = virNetDevOpenvswitchCreateCmd();
     int exitstatus;
 
     *master = NULL;
 
-    cmd = virCommandNew(OVS_VSCTL);
-    virNetDevOpenvswitchAddTimeout(cmd);
     virCommandAddArgList(cmd, "iface-to-br", ifname, NULL);
     virCommandSetOutputBuffer(cmd, master);
 
@@ -495,11 +487,9 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
                                        bool server,
                                        char **ifname)
 {
-    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
     int status;
 
-    cmd = virCommandNew(OVS_VSCTL);
-    virNetDevOpenvswitchAddTimeout(cmd);
 
     if (server) {
         virCommandAddArgList(cmd, "--no-headings", "--columns=name", "find",
@@ -547,10 +537,8 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
 int virNetDevOpenvswitchUpdateVlan(const char *ifname,
                                    const virNetDevVlan *virtVlan)
 {
-    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
 
-    cmd = virCommandNew(OVS_VSCTL);
-    virNetDevOpenvswitchAddTimeout(cmd);
     virCommandAddArgList(cmd,
                          "--", "--if-exists", "clear", "Port", ifname, "tag",
                          "--", "--if-exists", "clear", "Port", ifname, "trunk",
