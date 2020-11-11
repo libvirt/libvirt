@@ -6357,7 +6357,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             break;
         case VIR_DOMAIN_TIMER_NAME_TSC:
             if (timer->frequency > 0)
-                virBufferAsprintf(&buf, ",tsc-frequency=%lu", timer->frequency);
+                virBufferAsprintf(&buf, ",tsc-frequency=%llu", timer->frequency);
             break;
         case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
             switch (timer->tickpolicy) {

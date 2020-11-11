@@ -14053,7 +14053,7 @@ virDomainTimerDefParseXML(xmlNodePtr node,
         }
     }
 
-    ret = virXPathULong("string(./@frequency)", ctxt, &def->frequency);
+    ret = virXPathULongLong("string(./@frequency)", ctxt, &def->frequency);
     if (ret == -1) {
         def->frequency = 0;
     } else if (ret < 0) {
@@ -22851,7 +22851,7 @@ virDomainTimerDefCheckABIStability(virDomainTimerDefPtr src,
     if (src->name == VIR_DOMAIN_TIMER_NAME_TSC) {
         if (src->frequency != dst->frequency) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target TSC frequency %lu does not match source %lu"),
+                           _("Target TSC frequency %llu does not match source %llu"),
                            dst->frequency, src->frequency);
             return false;
         }
@@ -28166,7 +28166,7 @@ virDomainTimerDefFormat(virBufferPtr buf,
 
     if (def->name == VIR_DOMAIN_TIMER_NAME_TSC) {
         if (def->frequency > 0)
-            virBufferAsprintf(buf, " frequency='%lu'", def->frequency);
+            virBufferAsprintf(buf, " frequency='%llu'", def->frequency);
 
         if (def->mode != -1) {
             const char *mode
