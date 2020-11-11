@@ -905,6 +905,33 @@ hypervDomainGetOSType(virDomainPtr domain G_GNUC_UNUSED)
 }
 
 
+static unsigned long long
+hypervDomainGetMaxMemory(virDomainPtr domain)
+{
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    hypervPrivate *priv = domain->conn->privateData;
+    Msvm_VirtualSystemSettingData *vssd = NULL;
+    Msvm_MemorySettingData *mem_sd = NULL;
+    int maxMemoryBytes = 0;
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
+        goto cleanup;
+
+    if (hypervGetMemorySD(priv, vssd->data->InstanceID, &mem_sd) < 0)
+        goto cleanup;
+
+    maxMemoryBytes = mem_sd->data->Limit * 1024;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *)vssd);
+    hypervFreeObject(priv, (hypervObject *)mem_sd);
+
+    return maxMemoryBytes;
+}
+
+
 static int
 hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
@@ -1765,6 +1792,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainDestroy = hypervDomainDestroy, /* 0.9.5 */
     .domainDestroyFlags = hypervDomainDestroyFlags, /* 0.9.5 */
     .domainGetOSType = hypervDomainGetOSType, /* 0.9.5 */
+    .domainGetMaxMemory = hypervDomainGetMaxMemory, /* 6.10.0 */
     .domainGetInfo = hypervDomainGetInfo, /* 0.9.5 */
     .domainGetState = hypervDomainGetState, /* 0.9.5 */
     .domainGetXMLDesc = hypervDomainGetXMLDesc, /* 0.9.5 */
