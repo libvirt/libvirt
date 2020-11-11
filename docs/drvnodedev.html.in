@@ -144,7 +144,7 @@
       types on the physical device, along with the type attributes available
       through sysfs. A detailed description of the XML format for the
       <code>mdev_types</code> capability can be found
-      <a href="formatnode.html#MDEVCap">here</a>.
+      <a href="formatnode.html#MDEVTypesCap">here</a>.
     </p>
     <p>
       The following example shows how we might represent an NVIDIA GPU device

@@ -159,35 +159,10 @@
                   </dd>
                   <dt><code><a id="MDEVCap">mdev_types</a></code></dt>
                   <dd>
-                    This device is capable of creating mediated devices, and
-                    the capability will contain a list of <code>type</code>
-                    elements, which list all mdev types supported on the
-                    physical device. <span class="since">Since 3.4.0</span>
-                    Each <code>type</code> element has a single <code>id</code>
-                    attribute that holds an official vendor-supplied identifier
-                    for the type. It supports the following sub-elements:
-                      <dl>
-                        <dt><code>name</code></dt>
-                        <dd>
-                          The <code>name</code> element holds a vendor-supplied
-                          code name for the given mediated device type. This is
-                          an optional element.
-                      </dd>
-                      <dt><code>deviceAPI</code></dt>
-                      <dd>
-                        The value of this element describes how an instance of
-                        the given type will be presented to the guest by the
-                        VFIO framework.
-                      </dd>
-                      <dt><code>availableInstances</code></dt>
-                      <dd>
-                        This element reports the current state of resource
-                        allocation. In other words, how many instances of the
-                        given type can still be successfully created on the
-                        physical device.
-                    </dd>
-                  </dl>
-                </dd>
+                    This device is capable of creating mediated devices.
+                    The sub-elements are summarized in
+                    <a href="#MDEVTypesCap">mdev_types capability</a>.
+                 </dd>
                 </dl>
               </dd>
 
@@ -444,6 +419,42 @@
         </dl>
       </dd>
     </dl>
+
+    <h3><a id="MDEVTypesCap">mdev_types capability</a></h3>
+
+    <p>
+      <a href="#MDEVCap">PCI</a> devices can be capable of
+      creating mediated devices. If they indeed are capable,
+      then the parent <code>capability</code> element for
+      <code>mdev_types</code> type will contain a list of
+      <code>type</code> elements, which list all mdev types supported
+      on the physical device. <span class="since">Since 3.4.0</span>
+      Each <code>type</code> element has a single <code>id</code>
+      attribute that holds an official vendor-supplied identifier
+      for the type. It supports the following sub-elements:
+      <dl>
+        <dt><code>name</code></dt>
+        <dd>
+          The <code>name</code> element holds a vendor-supplied
+          code name for the given mediated device type. This is
+          an optional element.
+        </dd>
+        <dt><code>deviceAPI</code></dt>
+        <dd>
+          The value of this element describes how an instance of
+          the given type will be presented to the guest by the
+          VFIO framework.
+        </dd>
+        <dt><code>availableInstances</code></dt>
+        <dd>
+          This element reports the current state of resource
+          allocation. In other words, how many instances of the
+          given type can still be successfully created on the
+          physical device.
+        </dd>
+      </dl>
+    </p>
+
 
     <h2><a id="nodeExample">Examples</a></h2>
 
