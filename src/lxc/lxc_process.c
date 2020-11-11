@@ -145,18 +145,27 @@ lxcProcessRemoveDomainStatus(virLXCDriverConfigPtr cfg,
 }
 
 
+typedef enum {
+    VIR_LXC_PROCESS_CLEANUP_RELEASE_SECLABEL = (1 << 0),
+    VIR_LXC_PROCESS_CLEANUP_RESTORE_SECLABEL = (1 << 1),
+    VIR_LXC_PROCESS_CLEANUP_REMOVE_TRANSIENT = (1 << 2),
+} virLXCProcessCleanupFlags;
+
 /**
  * virLXCProcessCleanup:
  * @driver: pointer to driver structure
  * @vm: pointer to VM to clean up
  * @reason: reason for switching the VM to shutoff state
+ * @flags: allows to run selective cleanups only
  *
- * Cleanout resources associated with the now dead VM
- *
+ * Clean out resources associated with the now dead VM.
+ * If @flags is zero then whole cleanup process is done,
+ * otherwise only selected sections are run.
  */
 static void virLXCProcessCleanup(virLXCDriverPtr driver,
                                  virDomainObjPtr vm,
-                                 virDomainShutoffReason reason)
+                                 virDomainShutoffReason reason,
+                                 unsigned int flags)
 {
     size_t i;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
@@ -164,8 +173,11 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     virConnectPtr conn = NULL;
 
-    VIR_DEBUG("Cleanup VM name=%s pid=%d reason=%d",
-              vm->def->name, (int)vm->pid, (int)reason);
+    VIR_DEBUG("Cleanup VM name=%s pid=%d reason=%d flags=0x%x",
+              vm->def->name, (int)vm->pid, (int)reason, flags);
+
+    if (flags == 0)
+        flags = ~0;
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
@@ -177,9 +189,15 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
                     NULL, xml, NULL);
     }
 
-    virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                      vm->def, false, false);
-    virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
+    if (flags & VIR_LXC_PROCESS_CLEANUP_RESTORE_SECLABEL) {
+        virSecurityManagerRestoreAllLabel(driver->securityManager,
+                                          vm->def, false, false);
+    }
+
+    if (flags & VIR_LXC_PROCESS_CLEANUP_RELEASE_SECLABEL) {
+        virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
+    }
+
     /* Clear out dynamically assigned labels */
     if (vm->def->nseclabels &&
         vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
@@ -258,7 +276,9 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
                     NULL, xml, NULL);
     }
 
-    virDomainObjRemoveTransientDef(vm);
+    if (flags & VIR_LXC_PROCESS_CLEANUP_REMOVE_TRANSIENT)
+        virDomainObjRemoveTransientDef(vm);
+
     virObjectUnref(cfg);
     virObjectUnref(conn);
 }
@@ -904,7 +924,7 @@ int virLXCProcessStop(virLXCDriverPtr driver,
     }
 
  cleanup:
-    virLXCProcessCleanup(driver, vm, reason);
+    virLXCProcessCleanup(driver, vm, reason, 0);
 
     return 0;
 }
@@ -1198,6 +1218,7 @@ int virLXCProcessStart(virConnectPtr conn,
     g_autoptr(virCgroup) selfcgroup = NULL;
     int status;
     g_autofree char *pidfile = NULL;
+    unsigned int stopFlags = 0;
 
     if (virCgroupNewSelf(&selfcgroup) < 0)
         return -1;
@@ -1265,6 +1286,7 @@ int virLXCProcessStart(virConnectPtr conn,
     VIR_DEBUG("Setting current domain def as transient");
     if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
         goto cleanup;
+    stopFlags |= VIR_LXC_PROCESS_CLEANUP_REMOVE_TRANSIENT;
 
     /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
@@ -1312,11 +1334,13 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
     }
     virDomainAuditSecurityLabel(vm, true);
+    stopFlags |= VIR_LXC_PROCESS_CLEANUP_RELEASE_SECLABEL;
 
     VIR_DEBUG("Setting domain security labels");
     if (virSecurityManagerSetAllLabel(driver->securityManager,
                                       vm->def, NULL, false, false) < 0)
         goto cleanup;
+    stopFlags |= VIR_LXC_PROCESS_CLEANUP_RESTORE_SECLABEL;
 
     VIR_DEBUG("Setting up consoles");
     for (i = 0; i < vm->def->nconsoles; i++) {
@@ -1525,7 +1549,13 @@ int virLXCProcessStart(virConnectPtr conn,
     }
     if (rc != 0) {
         virErrorPreserveLast(&err);
-        virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+        if (virDomainObjIsActive(vm)) {
+            virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+        } else {
+            /* virLXCProcessStop() is NOP if the container is not active.
+             * If there was a failure whilst creating it, cleanup manually. */
+            virLXCProcessCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stopFlags);
+        }
     }
     virCommandFree(cmd);
     for (i = 0; i < nttyFDs; i++)
