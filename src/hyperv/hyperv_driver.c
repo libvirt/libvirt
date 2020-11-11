@@ -933,20 +933,17 @@ hypervDomainGetMaxMemory(virDomainPtr domain)
 
 
 static int
-hypervDomainSetMemoryProperty(virDomainPtr domain, unsigned long memory,
+hypervDomainSetMemoryProperty(virDomainPtr domain,
+                              unsigned long memory,
                               const char* propertyName)
 {
     int result = -1;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     hypervPrivate *priv = domain->conn->privateData;
-    char *memory_str = NULL;
-    g_autoptr(hypervInvokeParamsList) params = NULL;
-    unsigned long memory_mb = VIR_ROUND_UP(VIR_DIV_UP(memory, 1024), 2);
     Msvm_VirtualSystemSettingData *vssd = NULL;
     Msvm_MemorySettingData *memsd = NULL;
     g_autoptr(GHashTable) memResource = NULL;
-
-    memory_str = g_strdup_printf("%lu", memory_mb);
+    g_autofree char *memory_str = g_strdup_printf("%lu", VIR_ROUND_UP(VIR_DIV_UP(memory, 1024), 2));
 
     virUUIDFormat(domain->uuid, uuid_string);
 
@@ -954,13 +951,6 @@ hypervDomainSetMemoryProperty(virDomainPtr domain, unsigned long memory,
         goto cleanup;
 
     if (hypervGetMemorySD(priv, vssd->data->InstanceID, &memsd) < 0)
-        goto cleanup;
-
-    params = hypervCreateInvokeParamsList("ModifyResourceSettings",
-                                          MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
-                                          Msvm_VirtualSystemManagementService_WmiInfo);
-
-    if (!params)
         goto cleanup;
 
     memResource = hypervCreateEmbeddedParam(Msvm_MemorySettingData_WmiInfo);
@@ -973,19 +963,13 @@ hypervDomainSetMemoryProperty(virDomainPtr domain, unsigned long memory,
     if (hypervSetEmbeddedProperty(memResource, "InstanceID", memsd->data->InstanceID) < 0)
         goto cleanup;
 
-    if (hypervAddEmbeddedParam(params, "ResourceSettings",
-                               &memResource, Msvm_MemorySettingData_WmiInfo) < 0) {
-        hypervFreeEmbeddedParam(memResource);
-        goto cleanup;
-    }
-
-    if (hypervInvokeMethod(priv, &params, NULL) < 0)
+    if (hypervMsvmVSMSModifyResourceSettings(priv, &memResource,
+                                             Msvm_MemorySettingData_WmiInfo) < 0)
         goto cleanup;
 
     result = 0;
 
  cleanup:
-    VIR_FREE(memory_str);
     hypervFreeObject(priv, (hypervObject *)vssd);
     hypervFreeObject(priv, (hypervObject *)memsd);
 
