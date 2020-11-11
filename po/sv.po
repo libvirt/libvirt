@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-10-26 17:26+0000\n"
-"PO-Revision-Date: 2020-11-08 18:35+0000\n"
+"PO-Revision-Date: 2020-11-11 14:35+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -438,33 +438,47 @@ msgid ""
 "   -q, --quiet    Don't display progress information\n"
 "\n"
 msgstr ""
+"\n"
+"syntax: %s [FLAGGOR] [HVTYP]\n"
+"\n"
+" Hypervisor-typer:\n"
+"\n"
+"   - qemu\n"
+"   - lxc\n"
+"   - bhyve\n"
+"\n"
+" Flaggor:\n"
+"   -h, --help     Vissa kommandoradshjälp\n"
+"   -v, --version  Visa kommandoversion\n"
+"   -q, --quiet    Visa inte förloppsinformation\n"
+"\n"
 
 #, c-format
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
-msgstr ""
+msgstr "    Bandbreddsgräns: %llu byte/s (%-.3lf %s/s)"
 
 msgid "  NAME\n"
 msgstr "  NAMN\n"
 
 #, c-format
 msgid " %s (help keyword '%s')\n"
-msgstr ""
+msgstr " %s (hjälpnyckelord ”%s”)\n"
 
 #, c-format
 msgid " %s (help keyword '%s'):\n"
-msgstr ""
+msgstr " %s (hjälpnyckelord ”%s”):\n"
 
 msgid " Hypervisors:"
-msgstr ""
+msgstr " Hypervisorer:"
 
 msgid " Miscellaneous:"
-msgstr ""
+msgstr " Diverse:"
 
 msgid " Networking:"
-msgstr ""
+msgstr " Nätverk:"
 
 msgid " Storage:"
-msgstr ""
+msgstr " Lagring:"
 
 #, c-format
 msgid ""
@@ -473,6 +487,10 @@ msgid ""
 " cur=%llu\n"
 " end=%llu\n"
 msgstr ""
+" typ=%s\n"
+" bandbredd=%lu\n"
+" akt=%llu\n"
+" slut=%llu\n"
 
 #, c-format
 msgid ""
@@ -480,82 +498,87 @@ msgid ""
 "from stored identity. Please verify the new host key '%s' to avoid possible "
 "man in the middle attack. The key is stored in '%s'."
 msgstr ""
+"!!! SSH:S VÄRDNYCKELSVERIFIKATION MISSLYCKADES !!!: Identiteten för värden "
+"”%s:%d” skiljer från den lagrade identiteten. Verifiera att den nya "
+"värdnyckeln ”%s” för att undvika en eventuell man-i-mitten-attack. Nyckeln "
+"är lagrade i ”%s”."
 
 #, c-format
 msgid "$%s value should be between 0 and %d"
-msgstr ""
+msgstr "värdet $%s skall vara mellan 0 och %d"
 
 #, c-format
 msgid "%6s: Checking %-60s: "
-msgstr ""
+msgstr "%6s: Kontrollerar %-60s: "
 
 #, c-format
 msgid "%s\n"
-msgstr ""
+msgstr "%s\n"
 
 #, c-format
 msgid "%s %s"
-msgstr ""
+msgstr "%s %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s '%s' has an unsupported type '%s'"
-msgstr "%s-hårddisk ”%s” har ett cache-läge som inte stödjs ”%s”"
+msgstr "%s %s ”%s” har en typ som inte stödjs ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
-msgstr "%s-hårddisk ”%s” har ett cache-läge som inte stödjs ”%s”"
+msgstr "%s %s ”%s” har en typ som inte stödjs ”%s”, ”%s” eller ”%s” förväntades"
 
 #, c-format
 msgid "%s (out of %d)"
-msgstr ""
+msgstr "%s (av %d)"
 
 #, c-format
 msgid "%s 3d acceleration is not supported"
-msgstr ""
+msgstr "%s 3d-acceleration stödjs inte"
 
 #, c-format
 msgid "%s array element does not contain data"
-msgstr ""
+msgstr "%s vektorelement innehåller inga data"
 
 #, c-format
 msgid "%s can't be empty"
-msgstr ""
+msgstr "%s får inte vara tom"
 
 #, c-format
 msgid "%s cannot be set higher than %s "
-msgstr ""
+msgstr "%s kan inte sättas högre än %s "
 
 #, c-format
 msgid "%s cannot parse GID '%s'"
-msgstr ""
+msgstr "%s kan inte tolka GID:n ”%s”"
 
 #, c-format
 msgid "%s cannot parse UID '%s'"
-msgstr ""
+msgstr "%s kan inte tolka UID:n ”%s”"
 
 #, c-format
 msgid "%s does not support passing a passphrase using a file descriptor"
-msgstr ""
+msgstr "%s stödjer inte att skicka en lösenfras med en filbeskrivare"
 
 #, c-format
 msgid "%s does not support passing passphrase via file descriptor"
-msgstr ""
+msgstr "%s stödjer inte att skicka en lösenfras via en filbeskrivare"
 
 #, c-format
 msgid "%s expects UID and GID parameters"
-msgstr ""
+msgstr "%s förväntar sig UID- och GID-parametrar"
 
 #, c-format
 msgid "%s failed new mode for target '%s' with status '%d'"
-msgstr ""
+msgstr "%s misslyckades att sätta ett nytt läge för målet ”%s” med status ”%d”"
 
 #, c-format
 msgid "%s family specified for non-IPv4 address '%s' in network '%s'"
-msgstr ""
+msgstr "%s-familjen angiven för en icke-IPv4-adress ”%s” i nätverket ”%s”"
 
 #, c-format
 msgid "%s forwarding requested, but no IP address provided for network '%s'"
 msgstr ""
+"%s-vidarebefordran begärd, men ingen IP-adress angiven för nätverket ”%s”"
 
 #, c-format
 msgid "%s harddisk '%s' has unsupported cache mode '%s'"
@@ -563,107 +586,107 @@ msgstr "%s-hårddisk ”%s” har ett cache-läge som inte stödjs ”%s”"
 
 #, c-format
 msgid "%s has illegal value %s"
-msgstr ""
+msgstr "%s har ett ogiltigt värde %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s has unexpected '*' before last line"
-msgstr "strömmen avslutades oväntat"
+msgstr "%s har en oväntad ”*” före sista raden"
 
 #, c-format
 msgid "%s in %s must be NULL"
-msgstr ""
+msgstr "%s i %s måste vara NULL"
 
 #, c-format
 msgid "%s in %s must be greater than zero"
-msgstr ""
+msgstr "%s i %s måste vara större än noll"
 
 #, c-format
 msgid "%s in %s must be zero"
-msgstr ""
+msgstr "%s i %s måste vara noll"
 
 #, c-format
 msgid "%s in %s must be zero or greater"
-msgstr ""
+msgstr "%s i %s måste vara noll eller större"
 
 #, c-format
 msgid "%s in %s must not be NULL"
-msgstr ""
+msgstr "%s i %s får inte vara NULL"
 
 #, c-format
 msgid "%s in %s must not be zero"
-msgstr ""
+msgstr "%s i %s får inte vara noll"
 
 #, c-format
 msgid "%s is missing 'type' property"
-msgstr ""
+msgstr "%s saknar egenskapen ”type”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not a supported cipher name"
-msgstr "%s-hårddisk ”%s” har ett cache-läge som inte stödjs ”%s”"
+msgstr "%s är inte ett chiffernamn som stödjs"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not a supported cipher state"
-msgstr "%s: %s: ej stödd autenticering %s"
+msgstr "%s är inte ett chiffertillstånd som stödjs"
 
 #, c-format
 msgid "%s is not an executable"
-msgstr ""
+msgstr "%s är inte en körbar"
 
 #, c-format
 msgid "%s is not available with this QEMU binary"
-msgstr ""
+msgstr "%s är inte tillgängligt med denna QEMU-binär"
 
 #, c-format
 msgid "%s is not supported by this QEMU binary"
-msgstr ""
+msgstr "%s stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
-msgstr ""
+msgstr "%s längd är större än den maximala: %d > %d"
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
-msgstr ""
+msgstr "%s-modell av vakthund kan bara gå via en PCI-buss"
 
 #, c-format
 msgid "%s model of watchdog does not support configuring the address"
-msgstr ""
+msgstr "%s-modellen av vakthund stödjer inte att konfigurera adressen"
 
 #, c-format
 msgid "%s model of watchdog is allowed for s390 and s390x only"
-msgstr ""
+msgstr "%s-modellen av vakthund tillåts bara för s390 och s390x"
 
 #, c-format
 msgid "%s model of watchdog is virtual and cannot go on any bus."
-msgstr ""
+msgstr "%s-modellen av vakthund är virtuell och kan inte gå via någon buss."
 
 #, c-format
 msgid "%s module is not loaded, "
-msgstr ""
+msgstr "modulen %s är inte laddad, "
 
 #, c-format
 msgid "%s namespace is not available"
-msgstr ""
+msgstr "namnrymden %s är inte tillgänglig"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s not found in %s"
-msgstr "Domän hittades inte: %s"
+msgstr "%s hittades inte i %s"
 
 #, c-format
 msgid "%s not implemented on Win32"
-msgstr ""
+msgstr "%s är inte implementerad på Win32"
 
 #, c-format
 msgid "%s not matched against 'allowed_users' in %s"
-msgstr ""
+msgstr "%s matchas inte mot ”allowed_users” i %s"
 
 #, c-format
 msgid "%s not parseable"
-msgstr ""
+msgstr "%s går inte att tolka"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s not supported in this QEMU binary"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "%s stödjs inte i denna QEMU-binär"
 
 #, c-format
 msgid "%s object has invalid dynamic type"
@@ -671,25 +694,27 @@ msgstr "%s-objekt har ogiltig dynamisk typ"
 
 #, c-format
 msgid "%s object is missing the required '%s' property"
-msgstr ""
+msgstr "objektet %s saknar den begärda egenskapen ”%s”"
 
 #, c-format
 msgid "%s reply data was missing 'model'"
-msgstr ""
+msgstr "svarsdata %s saknade ”model”"
 
 #, c-format
 msgid "%s reply data was missing 'name'"
-msgstr ""
+msgstr "svarsdata %s saknade ”name”"
 
 #, c-format
 msgid "%s reply data was missing 'props'"
-msgstr ""
+msgstr "svarsdata %s saknade ”props”"
 
 #, c-format
 msgid ""
 "%s rule with port specification requires protocol specification with "
 "protocol to be either one of tcp(6), udp(17), dccp(33), or sctp(132)"
 msgstr ""
+"regeln %s med portspecifikation kräver en protokollspecifikation med "
+"antingen protokollet tcp(6), udp(17), dccp(33) eller sctp(132)"
 
 #, c-format
 msgid "%s uri uuid action\n"
