@@ -933,8 +933,8 @@ hypervDomainGetMaxMemory(virDomainPtr domain)
 
 
 static int
-hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
-                           unsigned int flags)
+hypervDomainSetMemoryProperty(virDomainPtr domain, unsigned long memory,
+                              const char* propertyName)
 {
     int result = -1;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
@@ -945,8 +945,6 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     Msvm_VirtualSystemSettingData *vssd = NULL;
     Msvm_MemorySettingData *memsd = NULL;
     g_autoptr(GHashTable) memResource = NULL;
-
-    virCheckFlags(0, -1);
 
     memory_str = g_strdup_printf("%lu", memory_mb);
 
@@ -969,7 +967,7 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     if (!memResource)
         goto cleanup;
 
-    if (hypervSetEmbeddedProperty(memResource, "VirtualQuantity", memory_str) < 0)
+    if (hypervSetEmbeddedProperty(memResource, propertyName, memory_str) < 0)
         goto cleanup;
 
     if (hypervSetEmbeddedProperty(memResource, "InstanceID", memsd->data->InstanceID) < 0)
@@ -992,6 +990,21 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     hypervFreeObject(priv, (hypervObject *)memsd);
 
     return result;
+}
+
+
+static int
+hypervDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
+{
+    return hypervDomainSetMemoryProperty(domain, memory, "Limit");
+}
+
+
+static int
+hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory, unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    return hypervDomainSetMemoryProperty(domain, memory, "VirtualQuantity");
 }
 
 
@@ -1793,6 +1806,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainDestroyFlags = hypervDomainDestroyFlags, /* 0.9.5 */
     .domainGetOSType = hypervDomainGetOSType, /* 0.9.5 */
     .domainGetMaxMemory = hypervDomainGetMaxMemory, /* 6.10.0 */
+    .domainSetMaxMemory = hypervDomainSetMaxMemory, /* 6.10.0 */
     .domainSetMemory = hypervDomainSetMemory, /* 3.6.0 */
     .domainSetMemoryFlags = hypervDomainSetMemoryFlags, /* 3.6.0 */
     .domainGetInfo = hypervDomainGetInfo, /* 0.9.5 */
