@@ -7638,6 +7638,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     /* Do this before we delete the tree and remove pidfile. */
     qemuProcessKillManagedPRDaemon(vm);
 
+    qemuExtDevicesStop(driver, vm);
+
     virFileDeleteTree(priv->libDir);
     virFileDeleteTree(priv->channelTargetDir);
 
@@ -7653,8 +7655,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
                                  VIR_QEMU_PROCESS_KILL_NOCHECK));
 
     qemuDomainCleanupRun(driver, vm);
-
-    qemuExtDevicesStop(driver, vm);
 
     qemuDBusStop(driver, vm);
 
