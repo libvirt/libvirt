@@ -125,8 +125,8 @@ virHashAtomicDispose(void *obj)
  * Add the @userdata to the hash @table. This can later be retrieved
  * by using @name. Duplicate entries generate errors.
  *
- * Deprecated: Consider using g_hash_table_insert insert. Note that
- * g_hash_table_instead doesn't fail if entry exists. Also note that
+ * Deprecated: Consider using g_hash_table_insert instead. Note that
+ * g_hash_table_insert doesn't fail if entry exists. Also note that
  * g_hash_table_insert doesn't copy the key.
  *
  * Returns 0 the addition succeeded and -1 in case of error.
