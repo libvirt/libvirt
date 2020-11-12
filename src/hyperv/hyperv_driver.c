@@ -1079,6 +1079,60 @@ hypervDomainGetState(virDomainPtr domain, int *state, int *reason,
 
 
 static int
+hypervDomainSetVcpusFlags(virDomainPtr domain,
+                          unsigned int nvcpus,
+                          unsigned int flags)
+{
+    int result = -1;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    hypervPrivate *priv = domain->conn->privateData;
+    Msvm_VirtualSystemSettingData *vssd = NULL;
+    Msvm_ProcessorSettingData *proc_sd = NULL;
+    g_autoptr(GHashTable) vcpuResource = NULL;
+    g_autofree char *nvcpus_str = g_strdup_printf("%u", nvcpus);
+
+    virCheckFlags(0, -1);
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
+        goto cleanup;
+
+    if (hypervGetProcessorSD(priv, vssd->data->InstanceID, &proc_sd) < 0)
+        goto cleanup;
+
+    vcpuResource = hypervCreateEmbeddedParam(Msvm_ProcessorSettingData_WmiInfo);
+    if (!vcpuResource)
+        goto cleanup;
+
+    if (hypervSetEmbeddedProperty(vcpuResource, "VirtualQuantity", nvcpus_str) < 0)
+        goto cleanup;
+
+    if (hypervSetEmbeddedProperty(vcpuResource, "InstanceID", proc_sd->data->InstanceID) < 0)
+        goto cleanup;
+
+    if (hypervMsvmVSMSModifyResourceSettings(priv, &vcpuResource,
+                                             Msvm_ProcessorSettingData_WmiInfo) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *)vssd);
+    hypervFreeObject(priv, (hypervObject *)proc_sd);
+
+    return result;
+}
+
+
+static int
+hypervDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
+{
+    return hypervDomainSetVcpusFlags(domain, nvcpus, 0);
+}
+
+
+static int
 hypervDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
     int result = -1;
@@ -1991,6 +2045,8 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainSetMemoryFlags = hypervDomainSetMemoryFlags, /* 3.6.0 */
     .domainGetInfo = hypervDomainGetInfo, /* 0.9.5 */
     .domainGetState = hypervDomainGetState, /* 0.9.5 */
+    .domainSetVcpus = hypervDomainSetVcpus, /* 6.10.0 */
+    .domainSetVcpusFlags = hypervDomainSetVcpusFlags, /* 6.10.0 */
     .domainGetVcpusFlags = hypervDomainGetVcpusFlags, /* 6.10.0 */
     .domainGetVcpus = hypervDomainGetVcpus, /* 6.10.0 */
     .domainGetMaxVcpus = hypervDomainGetMaxVcpus, /* 6.10.0 */
