@@ -5795,7 +5795,6 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
                                unsigned int flags,
                                virBuffer *buf)
 {
-    int ret = -1;
     g_autoptr(virDomainDef) copy = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS | VIR_DOMAIN_XML_UPDATE_CPU, -1);
@@ -5805,7 +5804,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
 
     if (!(copy = virDomainDefCopy(def, driver->xmlopt, qemuCaps,
                                   flags & VIR_DOMAIN_XML_MIGRATABLE)))
-        goto cleanup;
+        return -1;
 
     def = copy;
 
@@ -5823,13 +5822,13 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
                                                      def->virtType,
                                                      def->emulator,
                                                      def->os.machine)))
-                goto cleanup;
+                return -1;
         }
 
         if (virCPUUpdate(def->os.arch, def->cpu,
                          virQEMUCapsGetHostModel(qCaps, def->virtType,
                                                  VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE)) {
@@ -5959,19 +5958,16 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
         if (origCPU) {
             virCPUDefFree(def->cpu);
             if (!(def->cpu = virCPUDefCopy(origCPU)))
-                goto cleanup;
+                return -1;
         }
 
         if (def->cpu && qemuDomainMakeCPUMigratable(def->cpu) < 0)
-            goto cleanup;
+            return -1;
     }
 
  format:
-    ret = virDomainDefFormatInternal(def, driver->xmlopt, buf,
-                                     virDomainDefFormatConvertXMLFlags(flags));
-
- cleanup:
-    return ret;
+    return virDomainDefFormatInternal(def, driver->xmlopt, buf,
+                                      virDomainDefFormatConvertXMLFlags(flags));
 }
 
 
@@ -7940,18 +7936,14 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
 {
     g_autoptr(virDomainDef) migratableDefSrc = NULL;
     g_autoptr(virDomainDef) migratableDefDst = NULL;
-    bool ret = false;
 
     if (!(migratableDefSrc = qemuDomainDefCopy(driver, qemuCaps, src, COPY_FLAGS)) ||
         !(migratableDefDst = qemuDomainDefCopy(driver, qemuCaps, dst, COPY_FLAGS)))
-        goto cleanup;
+        return false;
 
-    ret = qemuDomainMigratableDefCheckABIStability(driver,
-                                                   src, migratableDefSrc,
-                                                   dst, migratableDefDst);
-
- cleanup:
-    return ret;
+    return qemuDomainMigratableDefCheckABIStability(driver,
+                                                    src, migratableDefSrc,
+                                                    dst, migratableDefDst);
 }
 
 
@@ -7964,19 +7956,15 @@ qemuDomainCheckABIStability(virQEMUDriverPtr driver,
     g_autoptr(virDomainDef) migratableSrc = NULL;
     g_autoptr(virDomainDef) migratableDst = NULL;
     g_autofree char *xml = NULL;
-    bool ret = false;
 
     if (!(xml = qemuDomainFormatXML(driver, vm, COPY_FLAGS)) ||
         !(migratableSrc = qemuDomainDefFromXML(driver, priv->qemuCaps, xml)) ||
         !(migratableDst = qemuDomainDefCopy(driver, priv->qemuCaps, dst, COPY_FLAGS)))
-        goto cleanup;
+        return false;
 
-    ret = qemuDomainMigratableDefCheckABIStability(driver,
-                                                   vm->def, migratableSrc,
-                                                   dst, migratableDst);
-
- cleanup:
-    return ret;
+    return qemuDomainMigratableDefCheckABIStability(driver,
+                                                    vm->def, migratableSrc,
+                                                    dst, migratableDst);
 }
 
 #undef COPY_FLAGS
