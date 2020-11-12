@@ -1078,6 +1078,61 @@ hypervDomainGetState(virDomainPtr domain, int *state, int *reason,
 }
 
 
+static int
+hypervDomainGetVcpus(virDomainPtr domain,
+                     virVcpuInfoPtr info,
+                     int maxinfo,
+                     unsigned char *cpumaps,
+                     int maplen)
+{
+    int count = 0;
+    int vcpu_number;
+    hypervPrivate *priv = domain->conn->privateData;
+    Win32_PerfRawData_HvStats_HyperVHypervisorVirtualProcessor *vproc = NULL;
+
+    /* Hyper-V does not allow setting CPU affinity: all cores will be used */
+    if (cpumaps && maplen > 0)
+        memset(cpumaps, 0xFF, maxinfo * maplen);
+
+    for (vcpu_number = 0; vcpu_number < maxinfo; vcpu_number++) {
+        g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+
+        /* Name format: <domain_name>:Hv VP <vCPU_number> */
+        g_autofree char *vcpu_name = g_strdup_printf("%s:Hv VP %d", domain->name, vcpu_number);
+
+        /* try to free objects from previous iteration */
+        hypervFreeObject(priv, (hypervObject *)vproc);
+        vproc = NULL;
+
+        /* get the info */
+        virBufferEscapeSQL(&query,
+                           WIN32_PERFRAWDATA_HVSTATS_HYPERVHYPERVISORVIRTUALPROCESSOR_WQL_SELECT
+                           "WHERE Name = '%s'",
+                           vcpu_name);
+
+        if (hypervGetWmiClass(Win32_PerfRawData_HvStats_HyperVHypervisorVirtualProcessor, &vproc) < 0)
+            continue;
+
+        /* fill structure info */
+        info[vcpu_number].number = vcpu_number;
+        if (vproc) {
+            info[vcpu_number].state = VIR_VCPU_RUNNING;
+            info[vcpu_number].cpuTime = vproc->data->PercentTotalRunTime * 100;
+            info[vcpu_number].cpu = VIR_VCPU_INFO_CPU_UNAVAILABLE;
+        } else {
+            info[vcpu_number].state = VIR_VCPU_OFFLINE;
+            info[vcpu_number].cpuTime = 0LLU;
+            info[vcpu_number].cpu = VIR_VCPU_INFO_CPU_OFFLINE;
+        }
+        count++;
+    }
+
+    hypervFreeObject(priv, (hypervObject *)vproc);
+
+    return count;
+}
+
+
 static char *
 hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
@@ -1875,6 +1930,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainSetMemoryFlags = hypervDomainSetMemoryFlags, /* 3.6.0 */
     .domainGetInfo = hypervDomainGetInfo, /* 0.9.5 */
     .domainGetState = hypervDomainGetState, /* 0.9.5 */
+    .domainGetVcpus = hypervDomainGetVcpus, /* 6.10.0 */
     .domainGetXMLDesc = hypervDomainGetXMLDesc, /* 0.9.5 */
     .connectListDefinedDomains = hypervConnectListDefinedDomains, /* 0.9.5 */
     .connectNumOfDefinedDomains = hypervConnectNumOfDefinedDomains, /* 0.9.5 */
