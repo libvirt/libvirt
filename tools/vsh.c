@@ -606,19 +606,11 @@ vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
 }
 
 static bool
-vshCmddefHelp(vshControl *ctl, const vshCmdDef *def)
+vshCmddefHelp(const vshCmdDef *def)
 {
     const char *desc = NULL;
     char buf[256];
-    uint64_t opts_need_arg;
-    uint64_t opts_required;
     bool shortopt = false; /* true if 'arg' works instead of '--opt arg' */
-
-    if (vshCmddefOptParse(def, &opts_need_arg, &opts_required)) {
-        vshError(ctl, _("internal error: bad options in command: '%s'"),
-                 def->name);
-        return false;
-    }
 
     fputs(_("  NAME\n"), stdout);
     fprintf(stdout, "    %s - %s\n", def->name,
@@ -3113,7 +3105,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
     if ((def = vshCmddefSearch(name))) {
         if (def->flags & VSH_CMD_FLAG_ALIAS)
             def = vshCmddefSearch(def->alias);
-        return vshCmddefHelp(ctl, def);
+        return vshCmddefHelp(def);
     } else if ((grp = vshCmdGrpSearch(name))) {
         return vshCmdGrpHelp(ctl, grp);
     } else {
