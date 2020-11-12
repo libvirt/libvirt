@@ -399,7 +399,6 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
                   uint64_t *opts_required)
 {
     size_t i;
-    bool optional = false;
 
     *opts_need_arg = 0;
     *opts_required = 0;
@@ -410,30 +409,17 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
     for (i = 0; cmd->opts[i].name; i++) {
         const vshCmdOptDef *opt = &cmd->opts[i];
 
-        if (opt->type == VSH_OT_BOOL) {
-            optional = true;
+        if (opt->type == VSH_OT_BOOL)
             continue;
-        }
-
-        if (opt->flags & VSH_OFLAG_REQ_OPT) {
-            if (opt->flags & VSH_OFLAG_REQ)
-                *opts_required |= 1ULL << i;
-            else
-                optional = true;
-            continue;
-        }
 
         if (opt->type == VSH_OT_ALIAS)
             continue; /* skip the alias option */
 
-        *opts_need_arg |= 1ULL << i;
-        if (opt->flags & VSH_OFLAG_REQ) {
-            if (optional && opt->type != VSH_OT_ARGV)
-                return -1; /* mandatory options must be listed first */
+        if (!(opt->flags & VSH_OFLAG_REQ_OPT))
+            *opts_need_arg |= 1ULL << i;
+
+        if (opt->flags & VSH_OFLAG_REQ)
             *opts_required |= 1ULL << i;
-        } else {
-            optional = true;
-        }
     }
 
     return 0;
