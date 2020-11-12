@@ -405,6 +405,9 @@ cc_flags += [
   # so use this CLang-specific arg to keep it quiet
   '-Wno-typedef-redefinition',
 
+  # Clang complains about casts in G_DEFINE_TYPE(...)
+  '-Wno-incompatible-pointer-types-discards-qualifiers',
+
   # We don't use -Wc++-compat so we have to enable it explicitly
   '-Wjump-misses-init',
 
