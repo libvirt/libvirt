@@ -5796,7 +5796,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
                                virBuffer *buf)
 {
     int ret = -1;
-    virDomainDefPtr copy = NULL;
+    g_autoptr(virDomainDef) copy = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS | VIR_DOMAIN_XML_UPDATE_CPU, -1);
 
@@ -5971,7 +5971,6 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
                                      virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
-    virDomainDefFree(copy);
     return ret;
 }
 
@@ -7939,8 +7938,8 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
                                virDomainDefPtr src,
                                virDomainDefPtr dst)
 {
-    virDomainDefPtr migratableDefSrc = NULL;
-    virDomainDefPtr migratableDefDst = NULL;
+    g_autoptr(virDomainDef) migratableDefSrc = NULL;
+    g_autoptr(virDomainDef) migratableDefDst = NULL;
     bool ret = false;
 
     if (!(migratableDefSrc = qemuDomainDefCopy(driver, qemuCaps, src, COPY_FLAGS)) ||
@@ -7952,8 +7951,6 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
                                                    dst, migratableDefDst);
 
  cleanup:
-    virDomainDefFree(migratableDefSrc);
-    virDomainDefFree(migratableDefDst);
     return ret;
 }
 
@@ -7964,8 +7961,8 @@ qemuDomainCheckABIStability(virQEMUDriverPtr driver,
                             virDomainDefPtr dst)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainDefPtr migratableSrc = NULL;
-    virDomainDefPtr migratableDst = NULL;
+    g_autoptr(virDomainDef) migratableSrc = NULL;
+    g_autoptr(virDomainDef) migratableDst = NULL;
     g_autofree char *xml = NULL;
     bool ret = false;
 
@@ -7979,8 +7976,6 @@ qemuDomainCheckABIStability(virQEMUDriverPtr driver,
                                                    dst, migratableDst);
 
  cleanup:
-    virDomainDefFree(migratableSrc);
-    virDomainDefFree(migratableDst);
     return ret;
 }
 
