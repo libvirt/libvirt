@@ -1468,7 +1468,7 @@ if not get_option('yajl').disabled()
   if not yajl_dep.found()
     yajl_dep = cc.find_library('yajl', required: get_option('yajl'))
     if yajl_dep.found()
-      has_func = cc.has_function('yajl_tree_parse', dependencies: yajl_dep, prefix: '#include <yajl/yajl_common.h>')
+      has_func = cc.has_function('yajl_tree_parse', dependencies: yajl_dep, prefix: '#include <yajl/yajl_tree.h>')
       if not has_func and get_option('yajl').enabled()
         error('yajl >= @0@ was not found'.format(yajl_version))
       elif not has_func
