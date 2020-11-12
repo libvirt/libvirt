@@ -4,6 +4,7 @@
   <vendor>AMD</vendor>
   <feature name='vme'/>
   <feature name='ht'/>
+  <feature name='monitor'/>
   <feature name='mmxext'/>
   <feature name='fxsr_opt'/>
   <feature name='pdpe1gb'/>

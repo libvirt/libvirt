@@ -18,7 +18,7 @@
     <feature name='mce'/>
     <feature name='misalignsse'/>
     <feature name='mmx'/>
-    <feature name='monitor'/>
+    <feature name='monitor' removed='yes'/>
     <feature name='msr'/>
     <feature name='mtrr'/>
     <feature name='nx'/>

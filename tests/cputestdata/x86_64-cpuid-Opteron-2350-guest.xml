@@ -3,6 +3,7 @@
   <vendor>AMD</vendor>
   <feature policy='require' name='vme'/>
   <feature policy='require' name='ht'/>
+  <feature policy='require' name='monitor'/>
   <feature policy='require' name='mmxext'/>
   <feature policy='require' name='fxsr_opt'/>
   <feature policy='require' name='pdpe1gb'/>

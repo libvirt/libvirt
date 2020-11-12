@@ -2,6 +2,7 @@
   <model fallback='forbid'>EPYC</model>
   <vendor>AMD</vendor>
   <feature policy='require' name='ht'/>
+  <feature policy='require' name='monitor'/>
   <feature policy='require' name='osxsave'/>
   <feature policy='require' name='xsaves'/>
   <feature policy='require' name='cmp_legacy'/>

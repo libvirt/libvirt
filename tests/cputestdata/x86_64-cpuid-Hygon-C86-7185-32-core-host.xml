@@ -3,6 +3,7 @@
   <model>Dhyana</model>
   <vendor>Hygon</vendor>
   <feature name='ht'/>
+  <feature name='monitor'/>
   <feature name='osxsave'/>
   <feature name='xsaves'/>
   <feature name='cmp_legacy'/>

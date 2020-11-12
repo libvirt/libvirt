@@ -33,7 +33,7 @@
     <feature name='misalignsse'/>
     <feature name='mmx'/>
     <feature name='mmxext'/>
-    <feature name='monitor'/>
+    <feature name='monitor' removed='yes'/>
     <feature name='movbe'/>
     <feature name='msr'/>
     <feature name='mtrr'/>
