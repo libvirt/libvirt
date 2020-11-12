@@ -389,13 +389,11 @@ vshCmddefCheckInternals(vshControl *ctl,
 }
 
 /* Parse the options associated with @cmd, i.e. test whether options are
- * required or need an argument.
- *
- * Returns -1 on error or 0 on success, filling the caller-provided bitmaps
- * which keep track of required options and options needing an argument.
+ * required or need an argument and fill the appropriate caller-provided bitmaps
  */
-static int
-vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
+static void
+vshCmddefOptParse(const vshCmdDef *cmd,
+                  uint64_t *opts_need_arg,
                   uint64_t *opts_required)
 {
     size_t i;
@@ -404,7 +402,7 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
     *opts_required = 0;
 
     if (!cmd->opts)
-        return 0;
+        return;
 
     for (i = 0; cmd->opts[i].name; i++) {
         const vshCmdOptDef *opt = &cmd->opts[i];
@@ -421,8 +419,6 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
         if (opt->flags & VSH_OFLAG_REQ)
             *opts_required |= 1ULL << i;
     }
-
-    return 0;
 }
 
 static vshCmdOptDef helpopt = {
@@ -1388,14 +1384,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                     tkdata = g_strdup(cmd->alias);
                     cmd = vshCmddefSearch(tkdata);
                 }
-                if (vshCmddefOptParse(cmd, &opts_need_arg,
-                                      &opts_required) < 0) {
-                    if (!partial)
-                        vshError(ctl,
-                                 _("internal error: bad options in command: '%s'"),
-                                 tkdata);
-                    goto syntaxError;
-                }
+
+                vshCmddefOptParse(cmd, &opts_need_arg, &opts_required);
                 VIR_FREE(tkdata);
             } else if (data_only) {
                 goto get_data;
