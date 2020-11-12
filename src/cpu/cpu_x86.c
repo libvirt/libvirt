@@ -144,6 +144,7 @@ struct _virCPUx86Model {
     virCPUx86VendorPtr vendor;
     virCPUx86SignaturesPtr signatures;
     virCPUx86Data data;
+    GStrv removedFeatures;
 };
 
 typedef struct _virCPUx86Map virCPUx86Map;
@@ -1241,6 +1242,7 @@ x86ModelFree(virCPUx86ModelPtr model)
     g_free(model->name);
     virCPUx86SignaturesFree(model->signatures);
     virCPUx86DataClear(&model->data);
+    g_strfreev(model->removedFeatures);
     g_free(model);
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUx86Model, x86ModelFree);
@@ -1255,6 +1257,7 @@ x86ModelCopy(virCPUx86ModelPtr model)
     copy->name = g_strdup(model->name);
     copy->signatures = virCPUx86SignaturesCopy(model->signatures);
     x86DataCopy(&copy->data, &model->data);
+    copy->removedFeatures = g_strdupv(model->removedFeatures);
     copy->vendor = model->vendor;
 
     return g_steal_pointer(&copy);
@@ -1575,6 +1578,7 @@ x86ModelParseFeatures(virCPUx86ModelPtr model,
 
     for (i = 0; i < n; i++) {
         g_autofree char *ftname = NULL;
+        g_autofree char *removed = NULL;
         virCPUx86FeaturePtr feature;
 
         if (!(ftname = virXMLPropString(nodes[i], "name"))) {
@@ -1589,6 +1593,24 @@ x86ModelParseFeatures(virCPUx86ModelPtr model,
                            _("Feature %s required by CPU model %s not found"),
                            ftname, model->name);
             return -1;
+        }
+
+        if ((removed = virXMLPropString(nodes[i], "removed"))) {
+            int rem;
+
+            if ((rem = virTristateBoolTypeFromString(removed)) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Invalid 'removed' attribute for feature %s "
+                                 "in model %s"),
+                               ftname, model->name);
+                return -1;
+            }
+
+            if (rem == VIR_TRISTATE_BOOL_YES) {
+                if (virStringListAdd(&model->removedFeatures, ftname) < 0)
+                    return -1;
+                continue;
+            }
         }
 
         if (x86DataAdd(&model->data, &feature->data))
