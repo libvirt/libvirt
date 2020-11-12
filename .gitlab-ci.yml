@@ -585,3 +585,23 @@ check-dco:
       - $CI_PROJECT_NAMESPACE == 'libvirt'
   variables:
     GIT_DEPTH: 1000
+
+
+# Coverity job that is run only by schedules
+coverity:
+  image: $CI_REGISTRY_IMAGE/ci-centos-8:latest
+  needs:
+    - x64-centos-8-container
+  stage: builds
+  script:
+    - curl https://scan.coverity.com/download/linux64 --form project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN -o /tmp/cov-analysis-linux64.tgz
+    - tar xfz /tmp/cov-analysis-linux64.tgz
+    - meson build
+    - cov-analysis-linux64-*/bin/cov-build --dir cov-int ninja -C build
+    - tar cfz cov-int.tar.gz cov-int
+    - curl https://scan.coverity.com/builds?project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN --form email=$GITLAB_USER_EMAIL --form file=@cov-int.tar.gz --form version="$(git describe --tags)" --form description="$(git describe --tags) / $CI_COMMIT_TITLE / $CI_COMMIT_REF_NAME:$CI_PIPELINE_ID"
+  only:
+    refs:
+      - schedules
+    variables:
+      - $COVERITY_SCAN_PROJECT_NAME && $COVERITY_SCAN_TOKEN
