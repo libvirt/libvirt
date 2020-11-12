@@ -276,6 +276,7 @@ vshCmddefCheckInternals(vshControl *ctl,
 {
     size_t i;
     const char *help = NULL;
+    bool seenOptionalOption = false;
 
     /* in order to perform the validation resolve the alias first */
     if (cmd->flags & VSH_CMD_FLAG_ALIAS) {
@@ -311,6 +312,8 @@ vshCmddefCheckInternals(vshControl *ctl,
                          opt->name, cmd->name);
                 return -1; /* neither bool nor string options can be mandatory */
             }
+
+            seenOptionalOption = true;
             break;
 
         case VSH_OT_ALIAS: {
@@ -360,9 +363,25 @@ vshCmddefCheckInternals(vshControl *ctl,
                          opt->name, cmd->name);
                 return -1; /* OT_DATA should always be required. */
             }
+
+            if (seenOptionalOption) {
+                vshError(ctl, _("parameter '%s' of command '%s' must be listed before optional parameters"),
+                         opt->name, cmd->name);
+                return -1;  /* mandatory options must be listed first */
+            }
             break;
 
         case VSH_OT_INT:
+            if (opt->flags & VSH_OFLAG_REQ) {
+                if (seenOptionalOption) {
+                    vshError(ctl, _("parameter '%s' of command '%s' must be listed before optional parameters"),
+                             opt->name, cmd->name);
+                    return -1;  /* mandatory options must be listed first */
+                }
+            } else {
+                seenOptionalOption = true;
+            }
+
             break;
         }
     }
