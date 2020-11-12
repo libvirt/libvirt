@@ -10082,10 +10082,9 @@ int
 qemuDomainFixupCPUs(virDomainObjPtr vm,
                     virCPUDefPtr *origCPU)
 {
-    virCPUDefPtr fixedCPU = NULL;
-    virCPUDefPtr fixedOrig = NULL;
+    g_autoptr(virCPUDef) fixedCPU = NULL;
+    g_autoptr(virCPUDef) fixedOrig = NULL;
     virArch arch = vm->def->os.arch;
-    int ret = -1;
 
     if (!ARCH_IS_X86(arch))
         return 0;
@@ -10106,13 +10105,13 @@ qemuDomainFixupCPUs(virDomainObjPtr vm,
         (!(fixedCPU = virCPUDefCopyWithoutModel(vm->def->cpu)) ||
          virCPUDefCopyModelFilter(fixedCPU, vm->def->cpu, false,
                                   virQEMUCapsCPUFilterFeatures, &arch) < 0))
-        goto cleanup;
+        return -1;
 
     if (virCPUDefFindFeature(*origCPU, "cmt") &&
         (!(fixedOrig = virCPUDefCopyWithoutModel(*origCPU)) ||
          virCPUDefCopyModelFilter(fixedOrig, *origCPU, false,
                                   virQEMUCapsCPUFilterFeatures, &arch) < 0))
-        goto cleanup;
+        return -1;
 
     if (fixedCPU) {
         virCPUDefFree(vm->def->cpu);
@@ -10124,12 +10123,7 @@ qemuDomainFixupCPUs(virDomainObjPtr vm,
         *origCPU = g_steal_pointer(&fixedOrig);
     }
 
-    ret = 0;
-
- cleanup:
-    virCPUDefFree(fixedCPU);
-    virCPUDefFree(fixedOrig);
-    return ret;
+    return 0;
 }
 
 
