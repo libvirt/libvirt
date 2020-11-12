@@ -406,8 +406,7 @@ qemuDomainWriteMasterKeyFile(virQEMUDriverPtr driver,
                              virDomainObjPtr vm)
 {
     g_autofree char *path = NULL;
-    int fd = -1;
-    int ret = -1;
+    VIR_AUTOCLOSE fd = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     /* Only gets filled in if we have the capability */
@@ -420,24 +419,19 @@ qemuDomainWriteMasterKeyFile(virQEMUDriverPtr driver,
     if ((fd = open(path, O_WRONLY|O_TRUNC|O_CREAT, 0600)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to open domain master key file for write"));
-        goto cleanup;
+        return -1;
     }
 
     if (safewrite(fd, priv->masterKey, priv->masterKeyLen) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to write master key file for domain"));
-        goto cleanup;
+        return -1;
     }
 
     if (qemuSecurityDomainSetPathLabel(driver, vm, path, false) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-
-    return ret;
+    return 0;
 }
 
 
