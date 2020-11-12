@@ -25,8 +25,9 @@ means that QEMU needs to allocate the backing memory for all the guest
 RAM as shared memory. As of QEMU 4.2, it is possible to explicitly
 specify a memory backend when specifying the NUMA topology. This
 method is however only viable for machine types that do support
-NUMA. As of QEMU 5.0.0, it is possible to specify the memory backend
-without NUMA (using the so called memobject interface).
+NUMA. As of QEMU 5.0.0 and libvirt 6.9.0, it is possible to
+specify the memory backend without NUMA (using the so called
+memobject interface).
 
 Either of the following:
 
