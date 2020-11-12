@@ -131,8 +131,6 @@ int virFileClose(int *fdptr, virFileCloseFlags flags)
                 VIR_DEBUG("Failed to close fd %d: %s",
                           *fdptr, g_strerror(errno));
             }
-        } else {
-            VIR_DEBUG("Closed fd %d", *fdptr);
         }
     }
     *fdptr = -1;
