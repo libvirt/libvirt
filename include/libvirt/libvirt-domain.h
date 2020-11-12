@@ -1910,12 +1910,17 @@ typedef enum {
 # endif
 } virVcpuState;
 
+typedef enum {
+    VIR_VCPU_INFO_CPU_OFFLINE     = -1, /* the vCPU is offline */
+    VIR_VCPU_INFO_CPU_UNAVAILABLE = -2, /* the hypervisor does not expose real CPU information */
+} virVcpuHostCpuState;
+
 typedef struct _virVcpuInfo virVcpuInfo;
 struct _virVcpuInfo {
     unsigned int number;        /* virtual CPU number */
     int state;                  /* value from virVcpuState */
     unsigned long long cpuTime; /* CPU time used, in nanoseconds */
-    int cpu;                    /* real CPU number, or -1 if offline */
+    int cpu;                    /* real CPU number, or one of the values from virVcpuHostCpuState */
 };
 typedef virVcpuInfo *virVcpuInfoPtr;
 
