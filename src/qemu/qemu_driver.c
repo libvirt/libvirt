@@ -7761,9 +7761,9 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virDomainDef) vmdef = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    virDomainDeviceDefPtr devConf = NULL;
+    g_autoptr(virDomainDeviceDef) devConf = NULL;
     virDomainDeviceDef devConfSave = { 0 };
-    virDomainDeviceDefPtr devLive = NULL;
+    g_autoptr(virDomainDeviceDef) devLive = NULL;
     int ret = -1;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
@@ -7849,9 +7849,6 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
 
     ret = 0;
  cleanup:
-    virDomainDeviceDefFree(devConf);
-    virDomainDeviceDefFree(devLive);
-
     return ret;
 }
 
@@ -7907,7 +7904,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
     g_autoptr(virDomainDef) vmdef = NULL;
-    virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
+    g_autoptr(virDomainDeviceDef) dev = NULL;
+    virDomainDeviceDefPtr dev_copy = NULL;
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
     int ret = -1;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
@@ -8003,7 +8001,6 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
  cleanup:
     if (dev != dev_copy)
         virDomainDeviceDefFree(dev_copy);
-    virDomainDeviceDefFree(dev);
     virDomainObjEndAPI(&vm);
     virNWFilterUnlockFilterUpdates();
     return ret;
@@ -8017,7 +8014,8 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
+    g_autoptr(virDomainDeviceDef) dev = NULL;
+    virDomainDeviceDefPtr dev_copy = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
     g_autoptr(virDomainDef) vmdef = NULL;
     int ret = -1;
@@ -8093,7 +8091,6 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
  cleanup:
     if (dev != dev_copy)
         virDomainDeviceDefFree(dev_copy);
-    virDomainDeviceDefFree(dev);
     return ret;
 }
 
