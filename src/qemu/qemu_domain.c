@@ -9217,9 +9217,8 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
     virDomainVcpuDefPtr vcpu;
     qemuDomainVcpuPrivatePtr vcpupriv;
     size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
-    virBitmapPtr haltedmap = NULL;
+    g_autoptr(virBitmap) haltedmap = NULL;
     size_t i;
-    int ret = -1;
     bool fast;
 
     /* Not supported currently for TCG, see qemuDomainRefreshVcpuInfo */
@@ -9244,7 +9243,7 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
     haltedmap = qemuMonitorGetCpuHalted(qemuDomainGetMonitor(vm), maxvcpus,
                                         fast);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || !haltedmap)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < maxvcpus; i++) {
         vcpu = virDomainDefGetVcpu(vm->def, i);
@@ -9253,11 +9252,7 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
                                                                      vcpupriv->qemu_id));
     }
 
-    ret = 0;
-
- cleanup:
-    virBitmapFree(haltedmap);
-    return ret;
+    return 0;
 }
 
 bool
