@@ -183,7 +183,7 @@ virFileGetXAttrQuiet(const char *path,
  * return value from virFileGetXAttrQuiet gets scrambled
  * if we mock virFileGetXAttrQuiet, returning -1 instead
  * of 0 despite succeeding. This happens on FreeBSD 11/12
- * hosts with CLang, and is suspected to be some kind of
+ * hosts with Clang, and is suspected to be some kind of
  * compiler optimization. By mocking this function too we
  * can workaround it.
  */

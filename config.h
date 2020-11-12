@@ -26,7 +26,7 @@
 #endif
 
 #ifndef __GNUC__
-# error "Libvirt requires GCC >= 4.8, or CLang"
+# error "Libvirt requires GCC >= 4.8, or Clang"
 #endif
 
 /*

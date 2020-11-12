@@ -11,7 +11,7 @@ some of the existing languages.
 The preferred languages at this time are:
 
 -  C - for the main libvirt codebase. Dialect supported by
-   GCC/CLang only.
+   GCC/Clang only.
 -  Python - for supporting build scripts / tools. Code must run
    with both version 2.7 and 3.x at this time.
 

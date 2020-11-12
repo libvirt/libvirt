@@ -401,8 +401,8 @@ cc_flags += [
   # We do "bad" function casts all the time for event callbacks
   '-Wno-cast-function-type',
 
-  # CLang incorrectly complains about dup typedefs win gnu99 mode
-  # so use this CLang-specific arg to keep it quiet
+  # Clang incorrectly complains about dup typedefs win gnu99 mode
+  # so use this Clang-specific arg to keep it quiet
   '-Wno-typedef-redefinition',
 
   # Clang complains about casts in G_DEFINE_TYPE(...)
