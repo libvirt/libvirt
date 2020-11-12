@@ -3324,9 +3324,6 @@ const vshCmdInfo info_selftest[] = {
     {.name = NULL}
 };
 
-/* Prints help for every command.
- * That runs vshCmddefOptParse which validates
- * the per-command options structure. */
 bool
 cmdSelfTest(vshControl *ctl,
             const vshCmd *cmd G_GNUC_UNUSED)
