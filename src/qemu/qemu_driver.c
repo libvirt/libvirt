@@ -11169,7 +11169,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
     virQEMUDriverPtr driver = dconn->privateData;
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *origname = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -11202,7 +11202,6 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
                                         st, &def, origname, migParams, flags);
 
  cleanup:
-    qemuMigrationParamsFree(migParams);
     return ret;
 }
 
@@ -11224,7 +11223,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
     virQEMUDriverPtr driver = dconn->privateData;
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *origname = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -11267,7 +11266,6 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
                                         migParams, flags);
 
  cleanup:
-    qemuMigrationParamsFree(migParams);
     return ret;
 }
 
@@ -11286,7 +11284,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     int ret = -1;
     const char *dconnuri = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
@@ -11325,7 +11323,6 @@ qemuDomainMigratePerform(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    qemuMigrationParamsFree(migParams);
     return ret;
 }
 
@@ -11611,7 +11608,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     virQEMUDriverPtr driver = dconn->privateData;
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *origname = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -11638,7 +11635,6 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
                                         st, &def, origname, migParams, flags);
 
  cleanup:
-    qemuMigrationParamsFree(migParams);
     return ret;
 }
 
@@ -11658,7 +11654,7 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     const char *dom_xml = NULL;
     const char *dname = NULL;
     g_autofree char *origname = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -11695,7 +11691,6 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
                                         st, &def, origname, migParams, flags);
 
  cleanup:
-    qemuMigrationParamsFree(migParams);
     return ret;
 }
 
@@ -13001,7 +12996,7 @@ qemuDomainMigrateGetMaxDowntime(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    qemuMigrationParamsPtr migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     int ret = -1;
     int rc;
 
@@ -13042,7 +13037,6 @@ qemuDomainMigrateGetMaxDowntime(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    qemuMigrationParamsFree(migParams);
     virDomainObjEndAPI(&vm);
     return ret;
 }
