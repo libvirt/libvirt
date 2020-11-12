@@ -1628,6 +1628,16 @@ hypervDomainIsActive(virDomainPtr domain)
 
 
 static int
+hypervDomainGetMaxVcpus(virDomainPtr dom)
+{
+    if (hypervDomainIsActive(dom))
+        return hypervDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_MAXIMUM));
+    else
+        return hypervConnectGetMaxVcpus(dom->conn, NULL);
+}
+
+
+static int
 hypervDomainIsPersistent(virDomainPtr domain G_GNUC_UNUSED)
 {
     /* Hyper-V has no concept of transient domains, so all of them are persistent */
@@ -1983,6 +1993,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainGetState = hypervDomainGetState, /* 0.9.5 */
     .domainGetVcpusFlags = hypervDomainGetVcpusFlags, /* 6.10.0 */
     .domainGetVcpus = hypervDomainGetVcpus, /* 6.10.0 */
+    .domainGetMaxVcpus = hypervDomainGetMaxVcpus, /* 6.10.0 */
     .domainGetXMLDesc = hypervDomainGetXMLDesc, /* 0.9.5 */
     .connectListDefinedDomains = hypervConnectListDefinedDomains, /* 0.9.5 */
     .connectNumOfDefinedDomains = hypervConnectNumOfDefinedDomains, /* 0.9.5 */
