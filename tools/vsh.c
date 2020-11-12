@@ -307,8 +307,8 @@ vshCmddefCheckInternals(vshControl *ctl,
         case VSH_OT_STRING:
         case VSH_OT_BOOL:
             if (opt->flags & VSH_OFLAG_REQ) {
-                vshError(ctl, _("command '%s' misused VSH_OFLAG_REQ"),
-                         cmd->name);
+                vshError(ctl, _("parameter '%s' of command '%s' misused VSH_OFLAG_REQ"),
+                         opt->name, cmd->name);
                 return -1; /* neither bool nor string options can be mandatory */
             }
             break;
@@ -319,8 +319,8 @@ vshCmddefCheckInternals(vshControl *ctl,
             char *p;
 
             if (opt->flags || !opt->help) {
-                vshError(ctl, _("command '%s' has incorrect alias option"),
-                         cmd->name);
+                vshError(ctl, _("parameter '%s' of command '%s' has incorrect alias option"),
+                         opt->name, cmd->name);
                 return -1; /* alias options are tracked by the original name */
             }
             if ((p = strchr(name, '=')))
@@ -334,30 +334,30 @@ vshCmddefCheckInternals(vshControl *ctl,
                 VIR_FREE(name);
                 /* If alias comes with value, replacement must not be bool */
                 if (cmd->opts[j].type == VSH_OT_BOOL) {
-                    vshError(ctl, _("command '%s' has mismatched alias type"),
-                             cmd->name);
+                    vshError(ctl, _("alias '%s' of command '%s' has mismatched alias type"),
+                             opt->name, cmd->name);
                     return -1;
                 }
             }
             if (!cmd->opts[j].name) {
-                vshError(ctl, _("command '%s' has missing alias option"),
-                         cmd->name);
+                vshError(ctl, _("alias '%s' of command '%s' has missing alias option"),
+                         opt->name, cmd->name);
                 return -1; /* alias option must map to a later option name */
             }
         }
             break;
         case VSH_OT_ARGV:
             if (cmd->opts[i + 1].name) {
-                vshError(ctl, _("command '%s' does not list argv option last"),
-                         cmd->name);
+                vshError(ctl, _("parameter '%s' of command '%s' must be listed last"),
+                         opt->name, cmd->name);
                 return -1; /* argv option must be listed last */
             }
             break;
 
         case VSH_OT_DATA:
             if (!(opt->flags & VSH_OFLAG_REQ)) {
-                vshError(ctl, _("command '%s' has non-required VSH_OT_DATA"),
-                         cmd->name);
+                vshError(ctl, _("parameter '%s' of command '%s' must use VSH_OFLAG_REQ flag"),
+                         opt->name, cmd->name);
                 return -1; /* OT_DATA should always be required. */
             }
             break;
