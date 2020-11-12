@@ -20,6 +20,30 @@
 
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <glib-object.h>
+
+#if defined(__clang__) && GLIB_CHECK_VERSION(2, 67, 0)
+/*
+ * Clang detects (valid) issue in G_DEFINE_TYPE and derivatives starting with
+ * glib >= 2.67.0.  See https://gitlab.gnome.org/GNOME/glib/-/issues/600
+ *
+ * For that we need to disable the one check that produces an error in our
+ * builds when using any G_DEFINE_TYPE* macro.  Thankfully all those macros end
+ * up using _G_DEFINE_TYPE_EXTENDED_BEGIN.  Because with that we can redefine
+ * this one macro to cover all use cases.  The macro is defined the same way it
+ * is defined in glib (with a very low probability of being changed thanks to a
+ * comment above it).
+ */
+# undef _G_DEFINE_TYPE_EXTENDED_BEGIN
+
+# define _G_DEFINE_TYPE_EXTENDED_BEGIN(TypeName, type_name, TYPE_PARENT, flags) \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Wincompatible-pointer-types-discards-qualifiers\"") \
+    _G_DEFINE_TYPE_EXTENDED_BEGIN_PRE(TypeName, type_name, TYPE_PARENT) \
+    _G_DEFINE_TYPE_EXTENDED_BEGIN_REGISTER(TypeName, type_name, TYPE_PARENT, flags) \
+    _Pragma("GCC diagnostic pop")
+
+#endif /* __clang__ */
 
 gchar * vir_g_canonicalize_filename(const gchar *filename,
                                     const gchar *relative_to);
