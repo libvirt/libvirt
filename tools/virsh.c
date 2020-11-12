@@ -176,6 +176,7 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
         }
         vshDebug(ctl, VSH_ERR_INFO, "%s",
                  _("Failed to setup keepalive on connection\n"));
+        vshResetLibvirtError();
     }
 
  cleanup:
