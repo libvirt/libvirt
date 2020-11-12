@@ -2314,7 +2314,7 @@ qemuSnapshotDelete(virDomainObjPtr vm,
                   VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, -1);
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
         goto endjob;
@@ -2388,6 +2388,5 @@ qemuSnapshotDelete(virDomainObjPtr vm,
  endjob:
     qemuDomainObjEndJob(driver, vm);
 
- cleanup:
     return ret;
 }
