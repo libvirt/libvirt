@@ -7764,7 +7764,6 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
     g_autoptr(virDomainDeviceDef) devConf = NULL;
     virDomainDeviceDef devConfSave = { 0 };
     g_autoptr(virDomainDeviceDef) devLive = NULL;
-    int ret = -1;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
 
@@ -7780,12 +7779,12 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
         vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt,
                                               priv->qemuCaps);
         if (!vmdef)
-            goto cleanup;
+            return -1;
 
         if (!(devConf = virDomainDeviceDefParse(xml, vmdef,
                                                 driver->xmlopt, priv->qemuCaps,
                                                 parse_flags)))
-            goto cleanup;
+            return -1;
 
         /*
          * devConf will be NULLed out by
@@ -7796,60 +7795,58 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
 
         if (virDomainDeviceValidateAliasForHotplug(vm, devConf,
                                                    VIR_DOMAIN_AFFECT_CONFIG) < 0)
-            goto cleanup;
+            return -1;
 
         if (virDomainDefCompatibleDevice(vmdef, devConf, NULL,
                                          VIR_DOMAIN_DEVICE_ACTION_ATTACH,
                                          false) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuDomainAttachDeviceConfig(vmdef, devConf, priv->qemuCaps,
                                          parse_flags,
                                          driver->xmlopt) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!(devLive = virDomainDeviceDefParse(xml, vm->def,
                                                 driver->xmlopt, priv->qemuCaps,
                                                 parse_flags)))
-            goto cleanup;
+            return -1;
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG)
             qemuDomainAttachDeviceLiveAndConfigHomogenize(&devConfSave, devLive);
 
         if (virDomainDeviceValidateAliasForHotplug(vm, devLive,
                                                    VIR_DOMAIN_AFFECT_LIVE) < 0)
-            goto cleanup;
+            return -1;
 
         if (virDomainDefCompatibleDevice(vm->def, devLive, NULL,
                                          VIR_DOMAIN_DEVICE_ACTION_ATTACH,
                                          true) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuDomainAttachDeviceLive(vm, devLive, driver) < 0)
-            goto cleanup;
+            return -1;
         /*
          * update domain status forcibly because the domain status may be
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
         if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir) < 0)
-            goto cleanup;
+            return -1;
 
         virDomainObjAssignDef(vm, vmdef, false, NULL);
         vmdef = NULL;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -8107,7 +8104,6 @@ qemuDomainDetachDeviceAliasLiveAndConfig(virQEMUDriverPtr driver,
     virDomainDefPtr persistentDef = NULL;
     g_autoptr(virDomainDef) vmdef = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
-    int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -8119,21 +8115,21 @@ qemuDomainDetachDeviceAliasLiveAndConfig(virQEMUDriverPtr driver,
         parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
-        goto cleanup;
+        return -1;
 
     if (persistentDef) {
         virDomainDeviceDef dev;
 
         if (!(vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt,
                                                     priv->qemuCaps)))
-            goto cleanup;
+            return -1;
 
         if (virDomainDefFindDevice(vmdef, alias, &dev, true) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuDomainDetachDeviceConfig(vmdef, &dev, priv->qemuCaps,
                                          parse_flags, driver->xmlopt) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (def) {
@@ -8141,25 +8137,23 @@ qemuDomainDetachDeviceAliasLiveAndConfig(virQEMUDriverPtr driver,
         int rc;
 
         if (virDomainDefFindDevice(def, alias, &dev, true) < 0)
-            goto cleanup;
+            return -1;
 
         if ((rc = qemuDomainDetachDeviceLive(vm, &dev, driver, true)) < 0)
-            goto cleanup;
+            return -1;
 
         if (rc == 0 && qemuDomainUpdateDeviceList(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (vmdef) {
         if (virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir) < 0)
-            goto cleanup;
+            return -1;
         virDomainObjAssignDef(vm, vmdef, false, NULL);
         vmdef = NULL;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -11167,39 +11161,35 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *origname = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
-    int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     if (!(flags & VIR_MIGRATE_TUNNELLED)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("PrepareTunnel called but no TUNNELLED flag set"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
-        goto cleanup;
+        return -1;
 
     if (virLockManagerPluginUsesState(driver->lockManager)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot use migrate v2 protocol with lock manager %s"),
                        virLockManagerPluginGetName(driver->lockManager));
-        goto cleanup;
+        return -1;
     }
 
     if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        goto cleanup;
+        return -1;
 
     if (virDomainMigratePrepareTunnelEnsureACL(dconn, def) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = qemuMigrationDstPrepareTunnel(driver, dconn,
-                                        NULL, 0, NULL, NULL, /* No cookies in v2 */
-                                        st, &def, origname, migParams, flags);
-
- cleanup:
-    return ret;
+    return qemuMigrationDstPrepareTunnel(driver, dconn,
+                                         NULL, 0, NULL, NULL, /* No cookies in v2 */
+                                         st, &def, origname, migParams, flags);
 }
 
 /* Prepare is the first step, and it runs on the destination host.
@@ -11221,7 +11211,6 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *origname = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
-    int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
@@ -11232,38 +11221,35 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Tunnelled migration requested but invalid "
                          "RPC method called"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
-        goto cleanup;
+        return -1;
 
     if (virLockManagerPluginUsesState(driver->lockManager)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot use migrate v2 protocol with lock manager %s"),
                        virLockManagerPluginGetName(driver->lockManager));
-        goto cleanup;
+        return -1;
     }
 
     if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        goto cleanup;
+        return -1;
 
     if (virDomainMigratePrepare2EnsureACL(dconn, def) < 0)
-        goto cleanup;
+        return -1;
 
     /* Do not use cookies in v2 protocol, since the cookie
      * length was not sufficiently large, causing failures
      * migrating between old & new libvirtd
      */
-    ret = qemuMigrationDstPrepareDirect(driver, dconn,
-                                        NULL, 0, NULL, NULL, /* No cookies */
-                                        uri_in, uri_out,
-                                        &def, origname, NULL, 0, NULL, 0, NULL,
-                                        migParams, flags);
-
- cleanup:
-    return ret;
+    return qemuMigrationDstPrepareDirect(driver, dconn,
+                                         NULL, 0, NULL, NULL, /* No cookies */
+                                         uri_in, uri_out,
+                                         &def, origname, NULL, 0, NULL, 0, NULL,
+                                         migParams, flags);
 }
 
 
@@ -11606,33 +11592,29 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *origname = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
-    int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
     if (!(flags & VIR_MIGRATE_TUNNELLED)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("PrepareTunnel called but no TUNNELLED flag set"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
-        goto cleanup;
+        return -1;
 
     if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        goto cleanup;
+        return -1;
 
     if (virDomainMigratePrepareTunnel3EnsureACL(dconn, def) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = qemuMigrationDstPrepareTunnel(driver, dconn,
-                                        cookiein, cookieinlen,
-                                        cookieout, cookieoutlen,
-                                        st, &def, origname, migParams, flags);
-
- cleanup:
-    return ret;
+    return qemuMigrationDstPrepareTunnel(driver, dconn,
+                                         cookiein, cookieinlen,
+                                         cookieout, cookieoutlen,
+                                         st, &def, origname, migParams, flags);
 }
 
 static int
@@ -11652,7 +11634,6 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     const char *dname = NULL;
     g_autofree char *origname = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
-    int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
     if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
@@ -11669,26 +11650,23 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     if (!(flags & VIR_MIGRATE_TUNNELLED)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("PrepareTunnel called but no TUNNELLED flag set"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
-        goto cleanup;
+        return -1;
 
     if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        goto cleanup;
+        return -1;
 
     if (virDomainMigratePrepareTunnel3ParamsEnsureACL(dconn, def) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = qemuMigrationDstPrepareTunnel(driver, dconn,
-                                        cookiein, cookieinlen,
-                                        cookieout, cookieoutlen,
-                                        st, &def, origname, migParams, flags);
-
- cleanup:
-    return ret;
+    return qemuMigrationDstPrepareTunnel(driver, dconn,
+                                         cookiein, cookieinlen,
+                                         cookieout, cookieoutlen,
+                                         st, &def, origname, migParams, flags);
 }
 
 
