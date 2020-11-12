@@ -16,9 +16,11 @@ v6.10.0 (unreleased)
   * hyperv: implement new APIs
 
     The `virDomainGetMaxMemory()``, ``virDomainSetMaxMemory()``,
-    ``virDomainGetSchedulerType()``, ``virDomainGetSchedulerParameters()``, and
-    ``virDomainGetSchedulerParametersFlags()`` APIs have been implemented in
-    the Hyper-V driver.
+    ``virDomainGetSchedulerType()``, ``virDomainGetSchedulerParameters()``,
+    ``virDomainGetSchedulerParametersFlags()``, ``virDomainGetVcpus()``,
+    ``virDomainGetVcpusFlags()``, ``virDomainGetMaxVcpus()``,
+    ``virDomainSetVcpus()``, and ``virDomainSetVcpusFlags()`` APIs have been
+    implemented in the Hyper-V driver.
 
 * **Improvements**
 
