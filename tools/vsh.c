@@ -600,7 +600,7 @@ vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
     return true;
 }
 
-bool
+static bool
 vshCmddefHelp(vshControl *ctl, const vshCmdDef *def)
 {
     const char *desc = NULL;

@@ -248,7 +248,6 @@ void vshCloseLogFile(vshControl *ctl);
 
 const char *vshCmddefGetInfo(const vshCmdDef *cmd, const char *info);
 const vshCmdDef *vshCmddefSearch(const char *cmdname);
-bool vshCmddefHelp(vshControl *ctl, const vshCmdDef *def);
 const vshCmdGrp *vshCmdGrpSearch(const char *grpname);
 bool vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp);
 
