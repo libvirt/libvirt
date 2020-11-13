@@ -167,8 +167,8 @@
     %define with_libssh2 0%{!?_without_libssh2:1}
 %endif
 
-# Enable wireshark plugins for all distros shipping libvirt 1.2.2 or newer
-%if 0%{?fedora}
+# Enable wireshark plugins for all distros except RHEL-7
+%if 0%{?fedora} || 0%{?rhel} > 7
     %define with_wireshark 0%{!?_without_wireshark:1}
     %define wireshark_plugindir %(pkg-config --variable plugindir wireshark)/epan
 %endif
