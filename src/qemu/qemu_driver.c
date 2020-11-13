@@ -6748,15 +6748,6 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
         }
     }
 
-    event = virDomainEventLifecycleNewFromObj(vm,
-                                     VIR_DOMAIN_EVENT_DEFINED,
-                                     !oldDef ?
-                                     VIR_DOMAIN_EVENT_DEFINED_ADDED :
-                                     VIR_DOMAIN_EVENT_DEFINED_UPDATED);
-
-    VIR_INFO("Creating domain '%s'", vm->def->name);
-    dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
-
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     return dom;
