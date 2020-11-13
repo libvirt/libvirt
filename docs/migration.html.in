@@ -253,7 +253,7 @@
       migration by default. The <code>virsh</code> command has two flags to
       influence this behaviour. The  <code>--undefinesource</code> flag
       will cause the configuration file to be removed on the source host
-      after a successful migration. The <code>--persist</code> flag will
+      after a successful migration. The <code>--persistent</code> flag will
       cause a configuration file to be created on the destination host
       after a successful migration. The following table summarizes the
       configuration file handling in all possible state and flag
@@ -272,7 +272,7 @@
           <th>Source config</th>
           <th>Dest config</th>
           <th>--undefinesource</th>
-          <th>--persist</th>
+          <th>--persistent</th>
           <th>Dest type</th>
           <th>Source config</th>
           <th>Dest config</th>
