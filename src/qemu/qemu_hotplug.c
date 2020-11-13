@@ -5312,8 +5312,9 @@ qemuDomainDetachPrepDisk(virDomainObjPtr vm,
 }
 
 
-static bool qemuDomainDiskControllerIsBusy(virDomainObjPtr vm,
-                                           virDomainControllerDefPtr detach)
+static bool
+qemuDomainDiskControllerIsBusy(virDomainObjPtr vm,
+                               virDomainControllerDefPtr detach)
 {
     size_t i;
     virDomainDiskDefPtr disk;
@@ -5352,8 +5353,10 @@ static bool qemuDomainDiskControllerIsBusy(virDomainObjPtr vm,
     return false;
 }
 
-static bool qemuDomainControllerIsBusy(virDomainObjPtr vm,
-                                       virDomainControllerDefPtr detach)
+
+static bool
+qemuDomainControllerIsBusy(virDomainObjPtr vm,
+                           virDomainControllerDefPtr detach)
 {
     switch (detach->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
@@ -5371,6 +5374,7 @@ static bool qemuDomainControllerIsBusy(virDomainObjPtr vm,
         return true;
     }
 }
+
 
 static int
 qemuDomainDetachPrepController(virDomainObjPtr vm,
