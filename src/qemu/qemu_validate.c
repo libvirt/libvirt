@@ -1883,6 +1883,31 @@ qemuValidateDomainRNGDef(const virDomainRNGDef *def,
         return -1;
     }
 
+    switch ((virDomainRNGModel) def->model) {
+    case VIR_DOMAIN_RNG_MODEL_VIRTIO:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_RNG)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("domain configuration does not support rng model '%s'"),
+                           virDomainRNGModelTypeToString(def->model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_RNG_MODEL_VIRTIO_TRANSITIONAL:
+    case VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL) &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("domain configuration does not support rng model '%s'"),
+                           virDomainRNGModelTypeToString(def->model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_RNG_MODEL_LAST:
+        break;
+    }
+
     if (qemuValidateDomainVirtioOptions(def->virtio, qemuCaps) < 0)
         return -1;
 

@@ -641,20 +641,6 @@ virDomainCapsFormat(const virDomainCaps *caps)
 
 
 static int
-virDomainCapsDeviceRNGDefValidate(const virDomainCaps *caps,
-                                  const virDomainRNGDef *dev)
-{
-    if (ENUM_VALUE_MISSING(caps->rng.model, dev->model)) {
-        ENUM_VALUE_ERROR("rng model",
-                         virDomainRNGModelTypeToString(dev->model));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 virDomainCapsDeviceVideoDefValidate(const virDomainCaps *caps,
                                     const virDomainVideoDef *dev)
 {
@@ -676,9 +662,6 @@ virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
     int ret = 0;
 
     switch ((virDomainDeviceType) dev->type) {
-    case VIR_DOMAIN_DEVICE_RNG:
-        ret = virDomainCapsDeviceRNGDefValidate(caps, dev->data.rng);
-        break;
     case VIR_DOMAIN_DEVICE_VIDEO:
         ret = virDomainCapsDeviceVideoDefValidate(caps, dev->data.video);
         break;
@@ -706,6 +689,7 @@ virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
     case VIR_DOMAIN_DEVICE_HUB:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_IOMMU:
