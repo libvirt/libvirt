@@ -27074,7 +27074,6 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "<model type='%s'/>\n",
                               virDomainNetGetModelString(def));
         if (virDomainNetIsVirtioModel(def)) {
-            int rc = 0;
             g_autofree char *str = NULL;
             g_autofree char *gueststr = NULL;
             g_autofree char *hoststr = NULL;
@@ -27099,9 +27098,6 @@ virDomainNetDefFormat(virBufferPtr buf,
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</driver>\n");
             }
-
-            if (rc < 0)
-                return -1;
         }
     }
     if (def->backend.tap || def->backend.vhost) {
