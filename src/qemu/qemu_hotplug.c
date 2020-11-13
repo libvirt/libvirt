@@ -5373,13 +5373,15 @@ qemuDomainDiskControllerIsBusy(virDomainObjPtr vm,
             return true;
     }
 
-    for (i = 0; i < vm->def->nhostdevs; i++) {
-        hostdev = vm->def->hostdevs[i];
-        if (!virHostdevIsSCSIDevice(hostdev) ||
-            detach->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
-            continue;
-        if (hostdev->info->addr.drive.controller == detach->idx)
-            return true;
+    if (detach->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+        for (i = 0; i < vm->def->nhostdevs; i++) {
+            hostdev = vm->def->hostdevs[i];
+            if (!virHostdevIsSCSIDevice(hostdev))
+                continue;
+
+            if (hostdev->info->addr.drive.controller == detach->idx)
+                return true;
+        }
     }
 
     return false;
