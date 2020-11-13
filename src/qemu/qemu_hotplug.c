@@ -5327,15 +5327,47 @@ qemuDomainDiskControllerIsBusy(virDomainObjPtr vm,
             continue;
 
         /* check whether the disk uses this type controller */
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE &&
-            detach->type != VIR_DOMAIN_CONTROLLER_TYPE_IDE)
+        switch ((virDomainControllerType) detach->type) {
+        case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
+            if (disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
+                continue;
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+            if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC)
+                continue;
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+            if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI)
+                continue;
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+            if (disk->bus != VIR_DOMAIN_DISK_BUS_SATA)
+                continue;
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+            /* xenbus is not supported by the qemu driver */
             continue;
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC &&
-            detach->type != VIR_DOMAIN_CONTROLLER_TYPE_FDC)
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
+            /* virtio-serial does not host any disks */
             continue;
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
-            detach->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+        case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+        case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
+            /* These buses have (also) other device types too so they need to
+             * be checked elsewhere */
             continue;
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
+        default:
+            continue;
+        }
 
         if (disk->info.addr.drive.controller == detach->idx)
             return true;
