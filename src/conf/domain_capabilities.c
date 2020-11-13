@@ -640,22 +640,8 @@ virDomainCapsFormat(const virDomainCaps *caps)
     } while (0)
 
 
-static int
-virDomainCapsDeviceVideoDefValidate(const virDomainCaps *caps,
-                                    const virDomainVideoDef *dev)
-{
-    if (ENUM_VALUE_MISSING(caps->video.modelType, dev->type)) {
-        ENUM_VALUE_ERROR("video model",
-                         virDomainVideoTypeToString(dev->type));
-        return -1;
-    }
-
-    return 0;
-}
-
-
 int
-virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
+virDomainCapsDeviceDefValidate(const virDomainCaps *caps G_GNUC_UNUSED,
                                const virDomainDeviceDef *dev,
                                const virDomainDef *def G_GNUC_UNUSED)
 {
@@ -663,9 +649,6 @@ virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
 
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_VIDEO:
-        ret = virDomainCapsDeviceVideoDefValidate(caps, dev->data.video);
-        break;
-
     case VIR_DOMAIN_DEVICE_AUDIO:
         /* TODO: add validation */
         break;

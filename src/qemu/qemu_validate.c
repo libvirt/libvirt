@@ -2203,9 +2203,51 @@ static int
 qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
                                  virQEMUCapsPtr qemuCaps)
 {
+    virQEMUCapsFlags cap = QEMU_CAPS_LAST;
+
     /* there's no properties to validate for NONE video devices */
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_NONE)
         return 0;
+
+    switch ((virDomainVideoType) video->type) {
+    case VIR_DOMAIN_VIDEO_TYPE_VGA:
+        cap = QEMU_CAPS_DEVICE_VGA;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+        cap = QEMU_CAPS_DEVICE_CIRRUS_VGA;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+        cap = QEMU_CAPS_DEVICE_VMWARE_SVGA;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_QXL:
+        cap = QEMU_CAPS_DEVICE_QXL;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+        cap = QEMU_CAPS_DEVICE_VIRTIO_GPU;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+        cap = QEMU_CAPS_DEVICE_BOCHS_DISPLAY;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
+        cap = QEMU_CAPS_DEVICE_RAMFB;
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
+    case VIR_DOMAIN_VIDEO_TYPE_XEN:
+    case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+    case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+    case VIR_DOMAIN_VIDEO_TYPE_GOP:
+    case VIR_DOMAIN_VIDEO_TYPE_NONE:
+    case VIR_DOMAIN_VIDEO_TYPE_LAST:
+        /* nada */
+        break;
+    }
+
+    if (!virQEMUCapsGet(qemuCaps, cap)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("domain configuration does not support video model '%s'"),
+                       virDomainVideoTypeToString(video->type));
+        return -1;
+    }
 
     if (!video->primary &&
         video->type != VIR_DOMAIN_VIDEO_TYPE_QXL &&
