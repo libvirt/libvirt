@@ -6512,6 +6512,11 @@
             <ref name="featurestate"/>
           </element>
         </optional>
+        <optional>
+          <element name="poll-control">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

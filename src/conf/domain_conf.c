@@ -208,6 +208,7 @@ VIR_ENUM_IMPL(virDomainKVM,
               VIR_DOMAIN_KVM_LAST,
               "hidden",
               "hint-dedicated",
+              "poll-control",
 );
 
 VIR_ENUM_IMPL(virDomainXen,
@@ -19823,6 +19824,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
             switch ((virDomainKVM) feature) {
                 case VIR_DOMAIN_KVM_HIDDEN:
                 case VIR_DOMAIN_KVM_DEDICATED:
+                case VIR_DOMAIN_KVM_POLLCONTROL:
                     if (!(tmp = virXMLPropString(nodes[i], "state"))) {
                         virReportError(VIR_ERR_XML_ERROR,
                                        _("missing 'state' attribute for "
@@ -23982,6 +23984,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
             switch ((virDomainKVM) i) {
             case VIR_DOMAIN_KVM_HIDDEN:
             case VIR_DOMAIN_KVM_DEDICATED:
+            case VIR_DOMAIN_KVM_POLLCONTROL:
                 if (src->kvm_features[i] != dst->kvm_features[i]) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("State of KVM feature '%s' differs: "
@@ -29691,6 +29694,7 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                 switch ((virDomainKVM) j) {
                 case VIR_DOMAIN_KVM_HIDDEN:
                 case VIR_DOMAIN_KVM_DEDICATED:
+                case VIR_DOMAIN_KVM_POLLCONTROL:
                     if (def->kvm_features[j])
                         virBufferAsprintf(&childBuf, "<%s state='%s'/>\n",
                                           virDomainKVMTypeToString(j),

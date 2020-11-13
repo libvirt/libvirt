@@ -1766,6 +1766,7 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
      <kvm>
        <hidden state='on'/>
        <hint-dedicated state='on'/>
+       <poll-control='on'/>
      </kvm>
      <xen>
        <e820_host state='on'/>
@@ -1848,12 +1849,13 @@ are:
 ``kvm``
    Various features to change the behavior of the KVM hypervisor.
 
-   ============== ====================================================================== ======= ============================
-   Feature        Description                                                            Value   Since
-   ============== ====================================================================== ======= ============================
-   hidden         Hide the KVM hypervisor from standard MSR based discovery              on, off :since:`1.2.8 (QEMU 2.1.0)`
-   hint-dedicated Allows a guest to enable optimizations when running on dedicated vCPUs on, off :since:`5.7.0 (QEMU 2.12.0)`
-   ============== ====================================================================== ======= ============================
+   ============== ============================================================================ ======= ============================
+   Feature        Description                                                                  Value   Since
+   ============== ============================================================================ ======= ============================
+   hidden         Hide the KVM hypervisor from standard MSR based discovery                    on, off :since:`1.2.8 (QEMU 2.1.0)`
+   hint-dedicated Allows a guest to enable optimizations when running on dedicated vCPUs       on, off :since:`5.7.0 (QEMU 2.12.0)`
+   poll-control   Decrease IO completion latency by introducing a grace period of busy waiting on, off :since:`6.10.0 (QEMU 4.2)`
+   ============== ============================================================================ ======= ============================
 
 ``xen``
    Various features to change the behavior of the Xen hypervisor.

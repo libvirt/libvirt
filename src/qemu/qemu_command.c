@@ -6464,6 +6464,11 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
                     virBufferAddLit(&buf, ",kvm-hint-dedicated=on");
                 break;
 
+            case VIR_DOMAIN_KVM_POLLCONTROL:
+                if (def->kvm_features[i] == VIR_TRISTATE_SWITCH_ON)
+                    virBufferAddLit(&buf, ",kvm-poll-control=on");
+                break;
+
             /* coverity[dead_error_begin] */
             case VIR_DOMAIN_KVM_LAST:
                 break;

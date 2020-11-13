@@ -1912,6 +1912,7 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_KVM_HIDDEN = 0,
     VIR_DOMAIN_KVM_DEDICATED,
+    VIR_DOMAIN_KVM_POLLCONTROL,
 
     VIR_DOMAIN_KVM_LAST
 } virDomainKVM;
