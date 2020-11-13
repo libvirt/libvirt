@@ -942,7 +942,6 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     hypervObject *head = NULL;
     hypervObject *tail = NULL;
     WsXmlNodeH node = NULL;
-    XML_TYPE_PTR data = NULL;
     hypervObject *object;
 
     query_string = virBufferContentAndReset(wqlQuery->query);
@@ -983,6 +982,8 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     response = NULL;
 
     while (enumContext != NULL && *enumContext != '\0') {
+        XML_TYPE_PTR data = NULL;
+
         response = wsmc_action_pull(priv->client, wmiInfo->resourceUri, options,
                                     filter, enumContext);
 
@@ -1030,8 +1031,6 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
         object->info = wmiInfo;
         object->data = data;
 
-        data = NULL;
-
         if (head == NULL) {
             head = object;
         } else {
@@ -1058,13 +1057,6 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
 
     if (filter != NULL)
         filter_destroy(filter);
-
-    if (data != NULL) {
-        if (ws_serializer_free_mem(serializerContext, data,
-                                   wmiInfo->serializerInfo) < 0) {
-            VIR_ERROR(_("Could not free deserialized data"));
-        }
-    }
 
     VIR_FREE(query_string);
     ws_xml_destroy_doc(response);
