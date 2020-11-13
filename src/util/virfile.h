@@ -269,8 +269,7 @@ int virDirOpenQuiet(DIR **dirp, const char *dirname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 int virDirRead(DIR *dirp, struct dirent **ent, const char *dirname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
-void virDirClose(DIR *dirp)
-    ATTRIBUTE_NONNULL(1);
+void virDirClose(DIR *dirp);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(DIR, virDirClose);
 
 int virFileMakePath(const char *path) G_GNUC_WARN_UNUSED_RESULT;
