@@ -12,7 +12,9 @@
 
 typedef enum {
     MDEVCTL_CMD_START,
+    MDEVCTL_CMD_STOP,
     MDEVCTL_CMD_DEFINE,
+    MDEVCTL_CMD_UNDEFINE
 } MdevctlCmd;
 
 struct startTestInfo {
@@ -135,20 +137,22 @@ testMdevctlStartOrDefineHelper(const void *data)
                                     mdevxml, cmdlinefile, jsonfile);
 }
 
+typedef virCommand* (*GetStopUndefineCmdFunc)(const char *uuid, char **errbuf);
+struct UuidCommandTestInfo {
+    const char *uuid;
+    MdevctlCmd command;
+};
+
 static int
-testMdevctlStop(const void *data)
+testMdevctlUuidCommand(const char *uuid, GetStopUndefineCmdFunc func, const char *outfile)
 {
-    const char *uuid = data;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *actualCmdline = NULL;
     int ret = -1;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errmsg = NULL;
-    g_autofree char *cmdlinefile =
-        g_strdup_printf("%s/nodedevmdevctldata/mdevctl-stop.argv",
-                        abs_srcdir);
 
-    cmd = nodeDeviceGetMdevctlStopCommand(uuid, &errmsg);
+    cmd = func(uuid, &errmsg);
 
     if (!cmd)
         goto cleanup;
@@ -160,7 +164,7 @@ testMdevctlStop(const void *data)
     if (!(actualCmdline = virBufferCurrentContent(&buf)))
         goto cleanup;
 
-    if (nodedevCompareToFile(actualCmdline, cmdlinefile) < 0)
+    if (nodedevCompareToFile(actualCmdline, outfile) < 0)
         goto cleanup;
 
     ret = 0;
@@ -168,6 +172,27 @@ testMdevctlStop(const void *data)
  cleanup:
     virCommandSetDryRun(NULL, NULL, NULL);
     return ret;
+}
+
+static int
+testMdevctlUuidCommandHelper(const void *data)
+{
+    const struct UuidCommandTestInfo *info = data;
+    GetStopUndefineCmdFunc func;
+    const char *cmd;
+    g_autofree char *cmdlinefile = NULL;
+
+    if (info->command == MDEVCTL_CMD_STOP) {
+        cmd = "stop";
+        func = nodeDeviceGetMdevctlStopCommand;
+    } else {
+        return -1;
+    }
+
+    cmdlinefile = g_strdup_printf("%s/nodedevmdevctldata/mdevctl-%s.argv",
+                                  abs_srcdir, cmd);
+
+    return testMdevctlUuidCommand(info->uuid, func, cmdlinefile);
 }
 
 static int
@@ -388,8 +413,15 @@ mymain(void)
 #define DO_TEST_DEFINE(filename) \
     DO_TEST_CMD("mdevctl define " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_DEFINE)
 
+#define DO_TEST_UUID_COMMAND_FULL(desc, uuid, command) \
+    do { \
+        struct UuidCommandTestInfo info = { uuid, command }; \
+        DO_TEST_FULL(desc, testMdevctlUuidCommandHelper, &info); \
+       } \
+    while (0)
+
 #define DO_TEST_STOP(uuid) \
-    DO_TEST_FULL("mdevctl stop " uuid, testMdevctlStop, uuid)
+    DO_TEST_UUID_COMMAND_FULL("mdevctl stop " uuid, uuid, MDEVCTL_CMD_STOP)
 
 #define DO_TEST_LIST_DEFINED() \
     DO_TEST_FULL("mdevctl list --defined", testMdevctlListDefined, NULL)
