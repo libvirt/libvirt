@@ -386,7 +386,7 @@ BuildRequires: numad
 %endif
 
 %if %{with_wireshark}
-BuildRequires: wireshark-devel >= 2.4.0
+BuildRequires: wireshark-devel
 %endif
 
 %if %{with_libssh}
@@ -928,7 +928,7 @@ Bash completion script stub.
 %if %{with_wireshark}
 %package wireshark
 Summary: Wireshark dissector plugin for libvirt RPC transactions
-Requires: wireshark >= 2.4.0
+Requires: wireshark
 Requires: %{name}-libs = %{version}-%{release}
 
 %description wireshark
