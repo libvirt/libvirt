@@ -69,6 +69,9 @@ int virNetDaemonAddSignalHandler(virNetDaemonPtr dmn,
 void virNetDaemonUpdateServices(virNetDaemonPtr dmn,
                                 bool enabled);
 
+void virNetDaemonSetStateStopWorkerThread(virNetDaemonPtr dmn,
+                                          virThreadPtr *thr);
+
 void virNetDaemonRun(virNetDaemonPtr dmn);
 
 void virNetDaemonQuit(virNetDaemonPtr dmn);

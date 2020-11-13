@@ -88,6 +88,7 @@ virNetDaemonQuit;
 virNetDaemonRemoveShutdownInhibition;
 virNetDaemonRun;
 virNetDaemonSetShutdownCallbacks;
+virNetDaemonSetStateStopWorkerThread;
 virNetDaemonUpdateServices;
 
 

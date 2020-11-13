@@ -71,6 +71,7 @@ struct _virNetDaemon {
 
     virNetDaemonShutdownCallback shutdownPrepareCb;
     virNetDaemonShutdownCallback shutdownWaitCb;
+    virThreadPtr stateStopThread;
     int finishTimer;
     bool quit;
     bool finished;
@@ -108,6 +109,7 @@ virNetDaemonDispose(void *obj)
 #endif /* !WIN32 */
 
     VIR_FORCE_CLOSE(dmn->autoShutdownInhibitFd);
+    VIR_FREE(dmn->stateStopThread);
 
     virHashFree(dmn->servers);
 
@@ -773,6 +775,9 @@ daemonShutdownWait(void *opaque)
     if (dmn->shutdownWaitCb && dmn->shutdownWaitCb() < 0)
         goto finish;
 
+    if (dmn->stateStopThread)
+        virThreadJoin(dmn->stateStopThread);
+
     graceful = true;
 
  finish:
@@ -887,6 +892,18 @@ virNetDaemonRun(virNetDaemonPtr dmn)
     }
 
  cleanup:
+    virObjectUnlock(dmn);
+}
+
+
+void
+virNetDaemonSetStateStopWorkerThread(virNetDaemonPtr dmn,
+                                     virThreadPtr *thr)
+{
+    virObjectLock(dmn);
+
+    VIR_DEBUG("Setting state stop worker thread on dmn=%p to thr=%p", dmn, thr);
+    dmn->stateStopThread = g_steal_pointer(thr);
     virObjectUnlock(dmn);
 }
 

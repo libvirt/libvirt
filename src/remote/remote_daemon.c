@@ -529,11 +529,20 @@ static void daemonStopWorker(void *opaque)
 /* We do this in a thread to not block the main loop */
 static void daemonStop(virNetDaemonPtr dmn)
 {
-    virThread thr;
+    virThreadPtr thr;
     virObjectRef(dmn);
-    if (virThreadCreateFull(&thr, false, daemonStopWorker,
-                            "daemon-stop", false, dmn) < 0)
+
+    thr = g_new0(virThread, 1);
+
+    if (virThreadCreateFull(thr, true,
+                            daemonStopWorker,
+                            "daemon-stop", false, dmn) < 0) {
         virObjectUnref(dmn);
+        g_free(thr);
+        return;
+    }
+
+    virNetDaemonSetStateStopWorkerThread(dmn, &thr);
 }
 
 
