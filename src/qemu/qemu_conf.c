@@ -1254,7 +1254,7 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
 
     SET_TLS_VERIFY_DEFAULT(vnc, false);
     SET_TLS_VERIFY_DEFAULT(chardev, true);
-    SET_TLS_VERIFY_DEFAULT(migrate, false);
+    SET_TLS_VERIFY_DEFAULT(migrate, true);
     SET_TLS_VERIFY_DEFAULT(backup, false);
 
 #undef SET_TLS_VERIFY_DEFAULT
