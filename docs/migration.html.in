@@ -251,7 +251,7 @@
     <p>
       As mentioned above, libvirt will not modify configuration files during
       migration by default. The <code>virsh</code> command has two flags to
-      influence this behaviour. The  <code>--undefine-source</code> flag
+      influence this behaviour. The  <code>--undefinesource</code> flag
       will cause the configuration file to be removed on the source host
       after a successful migration. The <code>--persist</code> flag will
       cause a configuration file to be created on the destination host
@@ -271,7 +271,7 @@
           <th>Source type</th>
           <th>Source config</th>
           <th>Dest config</th>
-          <th>--undefine-source</th>
+          <th>--undefinesource</th>
           <th>--persist</th>
           <th>Dest type</th>
           <th>Source config</th>
