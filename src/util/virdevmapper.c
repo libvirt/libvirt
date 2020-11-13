@@ -204,7 +204,7 @@ virDMSanitizepath(const char *path)
         g_autofree char *tmp = g_strdup_printf(DEV_DM_DIR "/%s", ent->d_name);
 
         if (stat(tmp, &sb[1]) == 0 &&
-            sb[0].st_rdev == sb[0].st_rdev) {
+            sb[0].st_rdev == sb[1].st_rdev) {
             return g_steal_pointer(&tmp);
         }
     }
