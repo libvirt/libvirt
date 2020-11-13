@@ -620,16 +620,6 @@ virArch virQEMUCapsGetArch(virQEMUCapsPtr qemuCaps);
 unsigned int virQEMUCapsGetVersion(virQEMUCapsPtr qemuCaps);
 const char *virQEMUCapsGetPackage(virQEMUCapsPtr qemuCaps);
 
-virDomainCapsPtr
-virQEMUCapsGetDomainCapsCache(virQEMUCapsPtr qemuCaps,
-                              const char *machine,
-                              virArch arch,
-                              virDomainVirtType virttype,
-                              virArch hostarch,
-                              bool privileged,
-                              virFirmwarePtr *firmwares,
-                              size_t nfirmwares);
-
 unsigned int virQEMUCapsGetKVMVersion(virQEMUCapsPtr qemuCaps);
 int virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  virDomainVirtType type,
