@@ -406,8 +406,10 @@ virQEMUDriverConfigLoadDefaultTLSEntry(virQEMUDriverConfigPtr cfg,
     if ((rv = virConfGetValueString(conf, "default_tls_x509_cert_dir", &cfg->defaultTLSx509certdir)) < 0)
         return -1;
     cfg->defaultTLSx509certdirPresent = (rv == 1);
-    if (virConfGetValueBool(conf, "default_tls_x509_verify", &cfg->defaultTLSx509verify) < 0)
+    if ((rv = virConfGetValueBool(conf, "default_tls_x509_verify", &cfg->defaultTLSx509verify)) < 0)
         return -1;
+    if (rv == 1)
+        cfg->defaultTLSx509verifyPresent = true;
     if (virConfGetValueString(conf, "default_tls_x509_secret_uuid",
                               &cfg->defaultTLSx509secretUUID) < 0)
         return -1;
@@ -1240,16 +1242,20 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
 
 #undef SET_TLS_X509_CERT_DEFAULT
 
-#define SET_TLS_VERIFY_DEFAULT(val) \
+#define SET_TLS_VERIFY_DEFAULT(val, defaultverify) \
     do { \
-        if (!cfg->val## TLSx509verifyPresent) \
-            cfg->val## TLSx509verify = cfg->defaultTLSx509verify; \
+        if (!cfg->val## TLSx509verifyPresent) {\
+            if (cfg->defaultTLSx509verifyPresent) \
+                cfg->val## TLSx509verify = cfg->defaultTLSx509verify; \
+            else \
+                cfg->val## TLSx509verify = defaultverify;\
+        }\
     } while (0)
 
-    SET_TLS_VERIFY_DEFAULT(vnc);
-    SET_TLS_VERIFY_DEFAULT(chardev);
-    SET_TLS_VERIFY_DEFAULT(migrate);
-    SET_TLS_VERIFY_DEFAULT(backup);
+    SET_TLS_VERIFY_DEFAULT(vnc, false);
+    SET_TLS_VERIFY_DEFAULT(chardev, false);
+    SET_TLS_VERIFY_DEFAULT(migrate, false);
+    SET_TLS_VERIFY_DEFAULT(backup, false);
 
 #undef SET_TLS_VERIFY_DEFAULT
 

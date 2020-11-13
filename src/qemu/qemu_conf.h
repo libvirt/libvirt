@@ -108,6 +108,7 @@ struct _virQEMUDriverConfig {
     char *defaultTLSx509certdir;
     bool defaultTLSx509certdirPresent;
     bool defaultTLSx509verify;
+    bool defaultTLSx509verifyPresent;
     char *defaultTLSx509secretUUID;
 
     bool vncAutoUnixSocket;
