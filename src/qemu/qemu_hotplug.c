@@ -5392,20 +5392,28 @@ static bool
 qemuDomainControllerIsBusy(virDomainObjPtr vm,
                            virDomainControllerDefPtr detach)
 {
-    switch (detach->type) {
+    switch ((virDomainControllerType) detach->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
         return qemuDomainDiskControllerIsBusy(vm, detach);
 
-    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+    case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+    case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
+        /* detach of the controller types above is not yet supported */
+        return false;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+        /* qemu driver doesn't support xenbus */
+        return false;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
     default:
-        /* libvirt does not support sata controller, and does not support to
-         * detach virtio and smart card controller.
-         */
-        return true;
+        return false;
     }
 }
 
