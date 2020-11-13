@@ -1460,25 +1460,7 @@ else
 endif
 
 yajl_version = '2.0.3'
-if not get_option('yajl').disabled()
-  yajl_dep = dependency('yajl', version: '>=' + yajl_version, required: false)
-  # 2.0.3 was the version where the pkg-config file was first added
-  # SLES 12 and openSUSE Leap 42.3 still use 2.0.1
-  # TODO: delete this in July 2020
-  if not yajl_dep.found()
-    yajl_dep = cc.find_library('yajl', required: get_option('yajl'))
-    if yajl_dep.found()
-      has_func = cc.has_function('yajl_tree_parse', dependencies: yajl_dep, prefix: '#include <yajl/yajl_tree.h>')
-      if not has_func and get_option('yajl').enabled()
-        error('yajl >= @0@ was not found'.format(yajl_version))
-      elif not has_func
-        yajl_dep = dependency('', required: false)
-      endif
-    endif
-  endif
-else
-  yajl_dep = dependency('', required: false)
-endif
+yajl_dep = dependency('yajl', version: '>=' + yajl_version, required: get_option('yajl'))
 if yajl_dep.found()
   conf.set('WITH_YAJL', 1)
 endif
