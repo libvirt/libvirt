@@ -1428,11 +1428,8 @@ virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
 /**
  * virQEMUDriverGetDomainCapabilities:
  *
- * Get a reference to the virDomainCapsPtr instance from the virQEMUCapsPtr
- * domCapsCache. If there's no domcaps in the cache, create a new instance,
- * add it to the cache, and return a reference.
- *
- * The caller must release the reference with virObjetUnref
+ * Get a reference to the virDomainCapsPtr instance. The caller
+ * must release the reference with virObjetUnref().
  *
  * Returns: a reference to a virDomainCapsPtr instance or NULL
  */
@@ -1444,15 +1441,19 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
                                    virDomainVirtType virttype)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virDomainCaps) domCaps = NULL;
+    const char *path = virQEMUCapsGetBinary(qemuCaps);
 
-    return virQEMUCapsGetDomainCapsCache(qemuCaps,
-                                         machine,
-                                         arch,
-                                         virttype,
-                                         driver->hostarch,
-                                         driver->privileged,
-                                         cfg->firmwares,
-                                         cfg->nfirmwares);
+    if (!(domCaps = virDomainCapsNew(path, machine, arch, virttype)))
+        return NULL;
+
+    if (virQEMUCapsFillDomainCaps(qemuCaps, driver->hostarch,
+                                  domCaps, driver->privileged,
+                                  cfg->firmwares,
+                                  cfg->nfirmwares) < 0)
+        return NULL;
+
+    return g_steal_pointer(&domCaps);
 }
 
 
