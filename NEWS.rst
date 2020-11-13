@@ -11,6 +11,17 @@ For a more fine-grained view, use the `git log`_.
 v6.10.0 (unreleased)
 ====================
 
+* **Security**
+
+  * qemu: Enable client TLS certificate validation by default for ``chardev``,
+    ``migration``, and ``backup`` servers.
+
+  The default value if qemu.conf options ``chardev_tls_x509_verify``,
+  ``migrate_tls_x509_verify``, or  ``backup_tls_x509_verify`` are not specified
+  explicitly in the config file and also the ``default_tls_x509_verify`` config
+  option is missing are now '1'. This ensures that only legitimate clients
+  access servers, which don't have any additional form of authentication.
+
 * **New features**
 
   * hyperv: implement new APIs
