@@ -1105,24 +1105,20 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon G_GNUC_UNUSED,
     return 0;
 
  error:
-    if (localAddr) {
-        VIR_FREE(localAddr->service);
-        VIR_FREE(localAddr->node);
-        VIR_FREE(localAddr);
+    VIR_FREE(localAddr->service);
+    VIR_FREE(localAddr->node);
+    VIR_FREE(localAddr);
+
+    VIR_FREE(remoteAddr->service);
+    VIR_FREE(remoteAddr->node);
+    VIR_FREE(remoteAddr);
+
+    for (i = 0; i < subject->nidentity; i++) {
+        VIR_FREE(subject->identities[i].type);
+        VIR_FREE(subject->identities[i].name);
     }
-    if (remoteAddr) {
-        VIR_FREE(remoteAddr->service);
-        VIR_FREE(remoteAddr->node);
-        VIR_FREE(remoteAddr);
-    }
-    if (subject) {
-        for (i = 0; i < subject->nidentity; i++) {
-            VIR_FREE(subject->identities[i].type);
-            VIR_FREE(subject->identities[i].name);
-        }
-        VIR_FREE(subject->identities);
-        VIR_FREE(subject);
-    }
+    VIR_FREE(subject->identities);
+    VIR_FREE(subject);
 
     return -1;
 }
