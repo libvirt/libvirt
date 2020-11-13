@@ -4682,22 +4682,12 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     int ret = 0;
     virQEMUDriverPtr driver = opaque;
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
-    g_autoptr(virDomainCaps) domCaps = NULL;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                             def->emulator)))
         return -1;
 
-    if (!(domCaps = virQEMUDriverGetDomainCapabilities(driver, qemuCaps,
-                                                       def->os.machine,
-                                                       def->os.arch,
-                                                       def->virtType)))
-        return -1;
-
     if ((ret = qemuValidateDomainDeviceDefAddress(dev, qemuCaps)) < 0)
-        return ret;
-
-    if ((ret = virDomainCapsDeviceDefValidate(domCaps, dev, def)) < 0)
         return ret;
 
     switch ((virDomainDeviceType)dev->type) {

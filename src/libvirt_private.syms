@@ -212,7 +212,6 @@ virDomainCapsCPUModelsGet;
 virDomainCapsCPUModelsNew;
 virDomainCapsCPUUsableTypeFromString;
 virDomainCapsCPUUsableTypeToString;
-virDomainCapsDeviceDefValidate;
 virDomainCapsEnumClear;
 virDomainCapsEnumSet;
 virDomainCapsFormat;
