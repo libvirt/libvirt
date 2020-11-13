@@ -13,6 +13,7 @@
     <kvm>
       <hidden state='off'/>
       <hint-dedicated state='off'/>
+      <poll-control state='off'/>
     </kvm>
   </features>
   <clock offset='utc'/>

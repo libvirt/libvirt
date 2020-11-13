@@ -13,6 +13,7 @@
     <kvm>
       <hidden state='on'/>
       <hint-dedicated state='on'/>
+      <poll-control state='on'/>
     </kvm>
   </features>
   <cpu mode='host-passthrough' check='none'/>

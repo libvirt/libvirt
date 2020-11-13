@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -name QEMUGuest1 \
 -S \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off \
--cpu host,kvm=off,kvm-hint-dedicated=on \
+-cpu host,kvm=off,kvm-hint-dedicated=on,kvm-poll-control=on \
 -m 214 \
 -realtime mlock=off \
 -smp 6,sockets=6,cores=1,threads=1 \
