@@ -14,7 +14,7 @@
     </p>
 
     <pre>
-$ xz -c libvirt-x.x.x.tar.xz | tar xvf -
+$ xz -dc libvirt-x.x.x.tar.xz | tar xvf -
 $ cd libvirt-x.x.x
 $ meson build</pre>
 
