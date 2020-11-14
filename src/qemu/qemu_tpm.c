@@ -841,10 +841,11 @@ qemuExtTPMStop(virQEMUDriverPtr driver,
                virDomainObjPtr vm)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    g_autofree char *shortName = NULL;
     size_t i;
 
     for (i = 0; i < vm->def->ntpms; i++) {
+        g_autofree char *shortName = NULL;
+
         if (vm->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
             continue;
 
@@ -866,12 +867,13 @@ qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
                       virCgroupPtr cgroup)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    g_autofree char *shortName = NULL;
     int rc;
     pid_t pid;
     size_t i;
 
     for (i = 0; i < def->ntpms; i++) {
+        g_autofree char *shortName = NULL;
+
         if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
             continue;
 
