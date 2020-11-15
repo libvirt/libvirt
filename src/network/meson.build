@@ -84,31 +84,13 @@ if conf.has('WITH_NETWORK')
     runstatedir / 'libvirt' / 'network',
   ]
 
-  uuidgen_prog = find_program('uuidgen', required: false)
-
-  if uuidgen_prog.found()
-    uuid = run_command(uuidgen_prog).stdout().strip()
-
-    configure_file(
-      input: 'default.xml.in',
-      output: '@BASENAME@',
-      command: [
-        'sed', '-e', 's|</name>|</name>\\n  <uuid>@0@</uuid>|'.format(uuid),
-        '@INPUT@',
-      ],
-      capture: true,
-      install: true,
-      install_dir: confdir / 'qemu' / 'networks',
-    )
-  else
-    configure_file(
-      input: 'default.xml.in',
-      output: '@BASENAME@',
-      copy: true,
-      install: true,
-      install_dir: confdir / 'qemu' / 'networks',
-    )
-  endif
+  configure_file(
+    input: 'default.xml.in',
+    output: '@BASENAME@',
+    copy: true,
+    install: true,
+    install_dir: confdir / 'qemu' / 'networks',
+  )
 
   meson.add_install_script(
     meson_python_prog.path(), python3_prog.path(), meson_install_symlink_prog.path(),
