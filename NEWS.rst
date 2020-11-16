@@ -33,6 +33,7 @@ v6.10.0 (unreleased)
     This drops support for Windows Server 2008R2 and 2012.
     The earliest supported version is now Windows 2012R2.
 
+
 v6.9.0 (2020-11-02)
 ===================
 
@@ -165,17 +166,17 @@ v6.8.0 (2020-10-01)
 
   * qemu: Preserve qcow2 cluster size after external snapshots
 
-   The new overlay image which is installed on top of the current chain when
-   taking an external snapshot now preserves the cluser size of the original
-   top image to preserve any performance tuning done on the original image.
+    The new overlay image which is installed on top of the current chain when
+    taking an external snapshot now preserves the cluser size of the original
+    top image to preserve any performance tuning done on the original image.
 
 * **Bug fixes**
 
   * qemu: Various (i)SCSI backed hostdev fixes
 
-   (i)SCSI backed hostdevs now work again with an arbitrarily long
-   user-specified device alias and also honor the 'readonly' property after a
-   recent rewrite.
+    (i)SCSI backed hostdevs now work again with an arbitrarily long
+    user-specified device alias and also honor the 'readonly' property after a
+    recent rewrite.
 
 * **Removed features**
 
