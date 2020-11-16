@@ -771,6 +771,7 @@ int virTestMain(int argc,
     while ((lib = va_arg(ap, const char *))) {
         if (!virFileIsExecutable(lib)) {
             perror(lib);
+            va_end(ap);
             return EXIT_FAILURE;
         }
 
