@@ -204,7 +204,8 @@ udevListInterfacesByStatus(virConnectPtr conn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to get list of %s interfaces on host"),
                        virUdevStatusString(status));
-        goto error;
+        udev_unref(udev);
+        return -1;
     }
 
     /* Do the scan to load up the enumeration */
@@ -239,16 +240,6 @@ udevListInterfacesByStatus(virConnectPtr conn,
     udev_unref(udev);
 
     return count;
-
- error:
-    if (enumerate)
-        udev_enumerate_unref(enumerate);
-    udev_unref(udev);
-
-    for (names_len = 0; names_len < count; names_len++)
-        VIR_FREE(names[names_len]);
-
-    return -1;
 }
 
 static int
