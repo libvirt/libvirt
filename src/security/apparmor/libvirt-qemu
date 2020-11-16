@@ -102,6 +102,7 @@
 
   # the various binaries
   /usr/bin/kvm rmix,
+  /usr/bin/kvm-spice rmix,
   /usr/bin/qemu rmix,
   /usr/bin/qemu-aarch64 rmix,
   /usr/bin/qemu-alpha rmix,
