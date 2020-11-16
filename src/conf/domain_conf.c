@@ -18907,7 +18907,7 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 
     for (i = 0; i < n && i < VIR_DOMAIN_BOOT_LAST; i++) {
         int val;
-        char *dev = virXMLPropString(nodes[i], "dev");
+        g_autofree char *dev = virXMLPropString(nodes[i], "dev");
         if (!dev) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("missing boot device"));
@@ -18917,10 +18917,8 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown boot device '%s'"),
                            dev);
-            VIR_FREE(dev);
             return -1;
         }
-        VIR_FREE(dev);
         def->os.bootDevs[def->os.nBootDevs++] = val;
     }
 
