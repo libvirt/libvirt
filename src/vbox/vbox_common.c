@@ -245,6 +245,9 @@ vboxGetDriverConnection(void)
         if (!vbox_driver) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to create vbox driver object."));
+
+            virMutexUnlock(&vbox_driver_lock);
+
             return NULL;
         }
     }
