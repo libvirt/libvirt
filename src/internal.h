@@ -29,6 +29,10 @@
 #include <stdlib.h>
 #include "glibcompat.h"
 
+#if defined __clang_analyzer__ || defined __COVERITY__
+# define STATIC_ANALYSIS 1
+#endif
+
 #if STATIC_ANALYSIS
 # undef NDEBUG /* Don't let a prior NDEBUG definition cause trouble.  */
 # include <assert.h>
