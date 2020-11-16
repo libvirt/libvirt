@@ -128,7 +128,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
         if (fwBuf) {
             if (STREQ(type, "ipv4"))
                 virBufferAddLit(fwBuf, IPTABLES_PATH);
-            else if (STREQ(type, "ipv4"))
+            else if (STREQ(type, "ipv6"))
                 virBufferAddLit(fwBuf, IP6TABLES_PATH);
             else
                 virBufferAddLit(fwBuf, EBTABLES_PATH);
