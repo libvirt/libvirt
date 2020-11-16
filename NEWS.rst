@@ -239,6 +239,11 @@ v6.7.0 (2020-09-01)
     forbidden and no size auto-alignment will be made. Instead, libvirt will
     suggest an aligned round up size for the user.
 
+  * apparmor: Several improvements
+
+    Add support for virtiofs filesystem and allow QEMU to load old
+    shared objects after upgrade.
+
 * **Bug fixes**
 
   * virdevmapper: Deal with kernels without DM support
