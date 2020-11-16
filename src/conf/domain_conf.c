@@ -5810,20 +5810,19 @@ virDomainDefCollectBootOrder(virDomainDefPtr def G_GNUC_UNUSED,
 static int
 virDomainDefBootOrderPostParse(virDomainDefPtr def)
 {
-    GHashTable *bootHash = NULL;
-    int ret = -1;
+    g_autoptr(GHashTable) bootHash = NULL;
 
     if (!(bootHash = virHashNew(NULL)))
-        goto cleanup;
+        return -1;
 
     if (virDomainDeviceInfoIterate(def, virDomainDefCollectBootOrder, bootHash) < 0)
-        goto cleanup;
+        return -1;
 
     if (def->os.nBootDevs > 0 && virHashSize(bootHash) > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("per-device boot elements cannot be used"
                          " together with os/boot elements"));
-        goto cleanup;
+        return -1;
     }
 
     if (def->os.nBootDevs == 0 && virHashSize(bootHash) == 0) {
@@ -5831,11 +5830,7 @@ virDomainDefBootOrderPostParse(virDomainDefPtr def)
         def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
     }
 
-    ret = 0;
-
- cleanup:
-    virHashFree(bootHash);
-    return ret;
+    return 0;
 }
 
 
