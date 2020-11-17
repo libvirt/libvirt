@@ -99,24 +99,38 @@ VIR_ONCE_GLOBAL_INIT(virFirewall);
 static int
 virFirewallValidateBackend(virFirewallBackend backend)
 {
-    VIR_DEBUG("Validating backend %d", backend);
+    const char *commands[] = {
+        IPTABLES_PATH, IP6TABLES_PATH, EBTABLES_PATH
+    };
+    size_t i;
+
+    for (i = 0; i < G_N_ELEMENTS(commands); i++) {
+        if (!virFileIsExecutable(commands[i])) {
+            virReportSystemError(errno,
+                                 _("%s not available, firewall backend will not function"),
+                                 commands[i]);
+            return -1;
+        }
+    }
+    VIR_DEBUG("found iptables/ip6tables/ebtables");
+
     if (backend == VIR_FIREWALL_BACKEND_AUTOMATIC ||
         backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         int rv = virFirewallDIsRegistered();
 
         VIR_DEBUG("Firewalld is registered ? %d", rv);
-        if (rv < 0) {
-            if (rv == -2) {
-                if (backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("firewalld firewall backend requested, but service is not running"));
-                    return -1;
-                } else {
-                    VIR_DEBUG("firewalld service not running, trying direct backend");
-                    backend = VIR_FIREWALL_BACKEND_DIRECT;
-                }
-            } else {
+
+        if (rv == -1)
+            return -1;
+
+        if (rv == -2) {
+            if (backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("firewalld backend requested, but service is not running"));
                 return -1;
+            } else {
+                VIR_DEBUG("firewalld service not running, using direct backend");
+                backend = VIR_FIREWALL_BACKEND_DIRECT;
             }
         } else {
             VIR_DEBUG("firewalld service running, using firewalld backend");
@@ -124,25 +138,7 @@ virFirewallValidateBackend(virFirewallBackend backend)
         }
     }
 
-    if (backend == VIR_FIREWALL_BACKEND_DIRECT) {
-        const char *commands[] = {
-            IPTABLES_PATH, IP6TABLES_PATH, EBTABLES_PATH
-        };
-        size_t i;
-
-        for (i = 0; i < G_N_ELEMENTS(commands); i++) {
-            if (!virFileIsExecutable(commands[i])) {
-                virReportSystemError(errno,
-                                     _("direct firewall backend requested, but %s is not available"),
-                                     commands[i]);
-                return -1;
-            }
-        }
-        VIR_DEBUG("found iptables/ip6tables/ebtables, using direct backend");
-    }
-
     currentBackend = backend;
-
     return 0;
 }
 
