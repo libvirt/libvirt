@@ -123,7 +123,7 @@ To retrieve the version of ``virtlockd``:
 ::
 
   # virtlockd --version
-  virtlockd (libvirt) 1.1.1
+  virtlockd (libvirt) @VERSION@
 
 To start ``virtlockd``, instructing it to daemonize and create a PID file:
 

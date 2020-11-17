@@ -202,7 +202,7 @@ To retrieve the version of ``libvirtd``:
 ::
 
   # libvirtd --version
-  libvirtd (libvirt) 0.8.2
+  libvirtd (libvirt) @VERSION@
 
 
 To start ``libvirtd``, instructing it to daemonize and create a PID file:

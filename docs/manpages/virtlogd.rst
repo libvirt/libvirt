@@ -124,7 +124,7 @@ To retrieve the version of ``virtlogd``:
 ::
 
   # virtlogd --version
-  virtlogd (libvirt) 1.1.1
+  virtlogd (libvirt) @VERSION@
 
 To start ``virtlogd``, instructing it to daemonize and create a PID file:
 
