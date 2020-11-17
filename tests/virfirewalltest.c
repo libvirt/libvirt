@@ -194,7 +194,8 @@ testFirewallSingleGroup(const void *opaque)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT)
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD)
         virCommandSetDryRun(&cmdbuf, NULL, NULL);
     else
         fwBuf = &cmdbuf;
@@ -247,7 +248,8 @@ testFirewallRemoveRule(const void *opaque)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT)
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD)
         virCommandSetDryRun(&cmdbuf, NULL, NULL);
     else
         fwBuf = &cmdbuf;
@@ -307,7 +309,8 @@ testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT)
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD)
         virCommandSetDryRun(&cmdbuf, NULL, NULL);
     else
         fwBuf = &cmdbuf;
@@ -394,7 +397,8 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT) {
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         virCommandSetDryRun(&cmdbuf, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
@@ -462,7 +466,8 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT) {
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         virCommandSetDryRun(&cmdbuf, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
@@ -527,7 +532,8 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT) {
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         virCommandSetDryRun(&cmdbuf, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
@@ -590,7 +596,8 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT) {
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         virCommandSetDryRun(&cmdbuf, testFirewallRollbackHook, NULL);
     } else {
         fwError = true;
@@ -669,7 +676,8 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT) {
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         virCommandSetDryRun(&cmdbuf, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
@@ -756,7 +764,8 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT) {
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         virCommandSetDryRun(&cmdbuf, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
@@ -951,7 +960,8 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
     if (virFirewallSetBackend(data->tryBackend) < 0)
         goto cleanup;
 
-    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT) {
+    if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
+        data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         virCommandSetDryRun(&cmdbuf, testFirewallQueryHook, NULL);
     } else {
         fwBuf = &cmdbuf;

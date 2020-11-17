@@ -640,7 +640,7 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
 }
 
 
-static int
+static int G_GNUC_UNUSED
 virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
                               bool ignoreErrors,
                               char **output)
@@ -698,7 +698,16 @@ virFirewallApplyRule(virFirewallPtr firewall,
             return -1;
         break;
     case VIR_FIREWALL_BACKEND_FIREWALLD:
-        if (virFirewallApplyRuleFirewallD(rule, ignoreErrors, &output) < 0)
+        /* Since we are using raw iptables rules, there is no
+         * advantage to going through firewalld, so instead just add
+         * them directly rather that via dbus calls to firewalld. This
+         * has the useful side effect of eliminating extra unwanted
+         * warning messages in the system logs when trying to delete
+         * rules that don't exist (which is something that happens
+         * often when libvirtd is started, and *always* when firewalld
+         * is restarted)
+         */
+        if (virFirewallApplyRuleDirect(rule, ignoreErrors, &output) < 0)
             return -1;
         break;
 
