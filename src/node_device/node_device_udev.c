@@ -141,8 +141,9 @@ udevGetDeviceProperty(struct udev_device *udev_device,
 
     ret = udev_device_get_property_value(udev_device, property_key);
 
-    VIR_DEBUG("Found property key '%s' value '%s' for device with sysname '%s'",
-              property_key, NULLSTR(ret), udev_device_get_sysname(udev_device));
+    VIR_DEBUG("Found property key '%s' value '%s' for device with sysname '%s' errno='%s'",
+              property_key, NULLSTR(ret), udev_device_get_sysname(udev_device),
+              ret ? "" : g_strerror(errno));
 
     return ret;
 }
@@ -1609,7 +1610,7 @@ udevHandleOneDevice(struct udev_device *device)
 {
     const char *action = udev_device_get_action(device);
 
-    VIR_DEBUG("udev action: '%s'", action);
+    VIR_DEBUG("udev action: '%s': %s", action, udev_device_get_syspath(device));
 
     if (STREQ(action, "add") || STREQ(action, "change"))
         return udevAddOneDevice(device);
