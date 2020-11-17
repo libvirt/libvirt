@@ -3752,12 +3752,6 @@ qemuValidateDomainDeviceDefSPICEGraphics(const virDomainGraphicsDef *graphics,
     virDomainGraphicsListenDefPtr glisten = NULL;
     int tlsPort = graphics->data.spice.tlsPort;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("spice graphics are not supported with this QEMU"));
-        return -1;
-    }
-
     glisten = virDomainGraphicsGetListen((virDomainGraphicsDefPtr)graphics, 0);
     if (!glisten) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3823,8 +3817,18 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
                                     virQEMUDriverPtr driver,
                                     virQEMUCapsPtr qemuCaps)
 {
+    virDomainCapsDeviceGraphics graphicsCaps = { 0 };
     bool have_egl_headless = false;
     size_t i;
+
+    virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, &graphicsCaps);
+
+    if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(graphicsCaps.type, graphics->type)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("%s graphics are not supported with this QEMU"),
+                       virDomainGraphicsTypeToString(graphics->type));
+        return -1;
+    }
 
     for (i = 0; i < def->ngraphics; i++) {
         if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS) {
@@ -3838,13 +3842,6 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
      * supported by QEMU.
      */
     if (have_egl_headless) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_EGL_HEADLESS)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("egl-headless display is not supported with this "
-                             "QEMU binary"));
-            return -1;
-        }
-
         if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS &&
             graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
@@ -3878,14 +3875,6 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
         }
         break;
 
-    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("vnc graphics are not supported with this QEMU"));
-            return -1;
-        }
-        break;
-
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         if (qemuValidateDomainDeviceDefSPICEGraphics(graphics, driver,
                                                      qemuCaps) < 0)
@@ -3903,15 +3892,12 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
         }
 
         break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported graphics type '%s'"),
-                       virDomainGraphicsTypeToString(graphics->type));
-        return -1;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
-    default:
-        return -1;
+        break;
     }
 
     return 0;

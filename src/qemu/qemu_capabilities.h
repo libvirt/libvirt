@@ -739,6 +739,9 @@ int virQEMUCapsFillDomainCaps(virQEMUCapsPtr qemuCaps,
                               virFirmwarePtr *firmwares,
                               size_t nfirmwares);
 
+void virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUCapsPtr qemuCaps,
+                                             virDomainCapsDeviceGraphicsPtr dev);
+
 void virQEMUCapsFillDomainDeviceVideoCaps(virQEMUCapsPtr qemuCaps,
                                           virDomainCapsDeviceVideoPtr dev);
 
