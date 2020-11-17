@@ -214,6 +214,8 @@ virDomainCapsCPUModelPtr
 virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
                           const char *name);
 
+#define VIR_DOMAIN_CAPS_ENUM_IS_SET(capsEnum, value) \
+    ((capsEnum).values & (1 << value))
 
 #define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...) \
     do { \

@@ -287,7 +287,7 @@ virDomainCapsEnumFormat(virBufferPtr buf,
     for (i = 0; i < sizeof(capsEnum->values) * CHAR_BIT; i++) {
         const char *val;
 
-        if (!(capsEnum->values & (1 << i)))
+        if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(*capsEnum, i))
             continue;
 
         if ((val = (valToStr)(i)))
