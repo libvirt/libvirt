@@ -1076,8 +1076,6 @@ mymain(void)
     RUN_TEST_DIRECT(name, method); \
     RUN_TEST_FIREWALLD(name, method)
 
-    virFirewallSetLockOverride(true);
-
     RUN_TEST("single group", testFirewallSingleGroup);
     RUN_TEST("remove rule", testFirewallRemoveRule);
     RUN_TEST("many groups", testFirewallManyGroups);

@@ -96,59 +96,6 @@ virFirewallOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virFirewall);
 
-static bool iptablesUseLock;
-static bool ip6tablesUseLock;
-static bool ebtablesUseLock;
-static bool lockOverride; /* true to avoid lock probes */
-
-void
-virFirewallSetLockOverride(bool avoid)
-{
-    lockOverride = avoid;
-    if (avoid) {
-        /* add the lock option to all commands */
-        iptablesUseLock = true;
-        ip6tablesUseLock = true;
-        ebtablesUseLock = true;
-    }
-}
-
-static void
-virFirewallCheckUpdateLock(bool *lockflag,
-                           const char *const*args)
-{
-    int status; /* Ignore failed commands without logging them */
-    g_autoptr(virCommand) cmd = virCommandNewArgs(args);
-    if (virCommandRun(cmd, &status) < 0 || status) {
-        VIR_INFO("locking not supported by %s", args[0]);
-    } else {
-        VIR_INFO("using locking for %s", args[0]);
-        *lockflag = true;
-    }
-}
-
-static void
-virFirewallCheckUpdateLocking(void)
-{
-    const char *iptablesArgs[] = {
-        IPTABLES_PATH, "-w", "-L", "-n", NULL,
-    };
-    const char *ip6tablesArgs[] = {
-        IP6TABLES_PATH, "-w", "-L", "-n", NULL,
-    };
-    const char *ebtablesArgs[] = {
-        EBTABLES_PATH, "--concurrent", "-L", NULL,
-    };
-    if (lockOverride)
-        return;
-    virFirewallCheckUpdateLock(&iptablesUseLock,
-                               iptablesArgs);
-    virFirewallCheckUpdateLock(&ip6tablesUseLock,
-                               ip6tablesArgs);
-    virFirewallCheckUpdateLock(&ebtablesUseLock,
-                               ebtablesArgs);
-}
-
 static int
 virFirewallValidateBackend(virFirewallBackend backend)
 {
@@ -195,8 +142,6 @@ virFirewallValidateBackend(virFirewallBackend backend)
     }
 
     currentBackend = backend;
-
-    virFirewallCheckUpdateLocking();
 
     return 0;
 }
@@ -359,16 +304,13 @@ virFirewallAddRuleFullV(virFirewallPtr firewall,
 
     switch (rule->layer) {
     case VIR_FIREWALL_LAYER_ETHERNET:
-        if (ebtablesUseLock)
-            ADD_ARG(rule, "--concurrent");
+        ADD_ARG(rule, "--concurrent");
         break;
     case VIR_FIREWALL_LAYER_IPV4:
-        if (iptablesUseLock)
-            ADD_ARG(rule, "-w");
+        ADD_ARG(rule, "-w");
         break;
     case VIR_FIREWALL_LAYER_IPV6:
-        if (ip6tablesUseLock)
-            ADD_ARG(rule, "-w");
+        ADD_ARG(rule, "-w");
         break;
     case VIR_FIREWALL_LAYER_LAST:
         break;

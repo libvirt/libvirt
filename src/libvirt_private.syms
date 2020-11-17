@@ -2158,7 +2158,6 @@ virFirewallRuleAddArgList;
 virFirewallRuleAddArgSet;
 virFirewallRuleGetArgCount;
 virFirewallSetBackend;
-virFirewallSetLockOverride;
 virFirewallStartRollback;
 virFirewallStartTransaction;
 

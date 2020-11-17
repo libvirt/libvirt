@@ -503,8 +503,6 @@ mymain(void)
 {
     int ret = 0;
 
-    virFirewallSetLockOverride(true);
-
     if (virFirewallSetBackend(VIR_FIREWALL_BACKEND_DIRECT) < 0) {
         if (!hasNetfilterTools()) {
             fprintf(stderr, "iptables/ip6tables/ebtables tools not present");

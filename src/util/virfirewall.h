@@ -111,6 +111,4 @@ void virFirewallStartRollback(virFirewallPtr firewall,
 
 int virFirewallApply(virFirewallPtr firewall);
 
-void virFirewallSetLockOverride(bool avoid);
-
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virFirewall, virFirewallFree);
