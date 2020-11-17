@@ -124,6 +124,7 @@
         <value>sdl</value>
         <value>vnc</value>
         <value>spice</value>
+        <value>egl-headless</value>
       </enum>
     </graphics>
     <video supported='yes'>

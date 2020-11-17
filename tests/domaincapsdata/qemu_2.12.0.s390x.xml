@@ -151,6 +151,7 @@
       <enum name='type'>
         <value>sdl</value>
         <value>vnc</value>
+        <value>egl-headless</value>
       </enum>
     </graphics>
     <video supported='yes'>
