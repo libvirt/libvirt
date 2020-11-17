@@ -739,6 +739,10 @@ int virQEMUCapsFillDomainCaps(virQEMUCapsPtr qemuCaps,
                               virFirmwarePtr *firmwares,
                               size_t nfirmwares);
 
+void virQEMUCapsFillDomainDeviceVideoCaps(virQEMUCapsPtr qemuCaps,
+                                          virDomainCapsDeviceVideoPtr dev);
+
+
 bool virQEMUCapsGuestIsNative(virArch host,
                               virArch guest);
 
