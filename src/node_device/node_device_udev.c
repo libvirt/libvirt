@@ -837,11 +837,7 @@ udevProcessFloppy(struct udev_device *device,
 {
     int has_media = 0;
 
-    if (udevHasDeviceProperty(device, "ID_CDROM_MEDIA")) {
-        /* USB floppy */
-        if (udevGetIntProperty(device, "DKD_MEDIA_AVAILABLE", &has_media, 0) < 0)
-            return -1;
-    } else if (udevHasDeviceProperty(device, "ID_FS_LABEL")) {
+    if (udevHasDeviceProperty(device, "ID_FS_LABEL")) {
         /* Legacy floppy */
         has_media = 1;
     }
