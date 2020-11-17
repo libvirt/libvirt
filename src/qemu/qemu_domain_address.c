@@ -637,6 +637,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
             switch ((virDomainControllerModelSCSI) cont->model) {
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
                 return 0;
 
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
@@ -652,6 +653,8 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
                 return pciFlags;
 
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:

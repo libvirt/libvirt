@@ -433,6 +433,9 @@ vboxSetStorageController(virDomainControllerDefPtr controller,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("The vbox driver does not support %s SCSI "
                              "controller model"),

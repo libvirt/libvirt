@@ -3426,7 +3426,8 @@ specific features, such as:
 ``scsi``
    A ``scsi`` controller has an optional attribute ``model``, which is one of
    'auto', 'buslogic', 'ibmvscsi', 'lsilogic', 'lsisas1068', 'lsisas1078',
-   'virtio-scsi', 'vmpvscsi', 'virtio-transitional', 'virtio-non-transitional'.
+   'virtio-scsi', 'vmpvscsi', 'virtio-transitional', 'virtio-non-transitional',
+   'ncr53c90' (as builtin implicit controller only), 'am53c974', 'dc390'.
    See `Virtio transitional devices <#elementsVirtioTransitional>`__ for more
    details.
 ``usb``

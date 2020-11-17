@@ -445,6 +445,9 @@ VIR_ENUM_IMPL(virDomainControllerModelSCSI,
               "lsisas1078",
               "virtio-transitional",
               "virtio-non-transitional",
+              "ncr53c90",
+              "dc390",
+              "am53c974",
 );
 
 VIR_ENUM_IMPL(virDomainControllerModelISA, VIR_DOMAIN_CONTROLLER_MODEL_ISA_LAST,
@@ -4970,6 +4973,11 @@ virDomainSCSIDriveAddressIsUsed(const virDomainDef *def,
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
             reserved = 7;
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
+            max = 6;
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:

@@ -560,6 +560,9 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI,
               "UNUSED lsisas1078",
               "UNUSED virtio-transitional",
               "UNUSED virtio-non-transitional",
+              "UNUSED ncr53c90",
+              "UNUSED dc390",
+              "UNUSED am53c974",
 );
 
 static int virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);

@@ -2953,6 +2953,9 @@ qemuValidateCheckSCSIControllerModel(virQEMUCapsPtr qemuCaps,
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported controller model: %s"),
                        virDomainControllerModelSCSITypeToString(model));
@@ -3071,6 +3074,9 @@ qemuValidateDomainDeviceDefControllerSCSI(const virDomainControllerDef *controll
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
             break;

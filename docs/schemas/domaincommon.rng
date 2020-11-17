@@ -2381,6 +2381,9 @@
                   <value>lsisas1078</value>
                   <value>virtio-transitional</value>
                   <value>virtio-non-transitional</value>
+                  <value>ncr53c90</value>
+                  <value>dc390</value>
+                  <value>am53c974</value>
                 </choice>
               </attribute>
             </optional>
