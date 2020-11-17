@@ -169,10 +169,17 @@ udevGetIntProperty(struct udev_device *udev_device,
     const char *str = NULL;
 
     str = udevGetDeviceProperty(udev_device, property_key);
-
-    if (str && virStrToLong_i(str, NULL, base, value) < 0) {
+    if (!str) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to convert '%s' to int"), str);
+                       _("Missing udev property '%s' on '%s'"),
+                       property_key, udev_device_get_sysname(udev_device));
+        return -1;
+    }
+
+    if (virStrToLong_i(str, NULL, base, value) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse int '%s' from udev property '%s' on '%s'"),
+                       str, property_key, udev_device_get_sysname(udev_device));
         return -1;
     }
     return 0;
@@ -188,10 +195,17 @@ udevGetUintProperty(struct udev_device *udev_device,
     const char *str = NULL;
 
     str = udevGetDeviceProperty(udev_device, property_key);
-
-    if (str && virStrToLong_ui(str, NULL, base, value) < 0) {
+    if (!str) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to convert '%s' to int"), str);
+                       _("Missing udev property '%s' on '%s'"),
+                       property_key, udev_device_get_sysname(udev_device));
+        return -1;
+    }
+
+    if (virStrToLong_ui(str, NULL, base, value) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse uint '%s' from udev property '%s' on '%s'"),
+                       str, property_key, udev_device_get_sysname(udev_device));
         return -1;
     }
     return 0;
