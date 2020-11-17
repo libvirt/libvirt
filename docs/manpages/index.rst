@@ -2,8 +2,10 @@
 Libvirt Manual Pages
 ====================
 
-Daemons
-=======
+Common Daemons
+==============
+
+These daemons provide functionality across multiple libvirt drivers
 
 * `libvirtd(8) <libvirtd.html>`__ - libvirt management daemon
 * `virtlockd(8) <virtlockd.html>`__ - libvirt lock management daemon
