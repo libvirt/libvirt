@@ -1,4 +1,5 @@
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:fe \
@@ -11,6 +12,7 @@ ebtables \
 --ip6-destination-port 100:101 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -p ipv6 \
@@ -21,6 +23,7 @@ ebtables \
 --ip6-source-port 100:101 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -p ipv6 \
@@ -31,6 +34,7 @@ ebtables \
 --ip6-destination-port 100:101 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -p ipv6 \
@@ -41,6 +45,7 @@ ebtables \
 --ip6-source-port 65535:65535 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -p ipv6 \
@@ -51,6 +56,7 @@ ebtables \
 --ip6-destination-port 65535:65535 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -p ipv6 \
@@ -59,6 +65,7 @@ ebtables \
 --ip6-protocol 18 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -p ipv6 \
@@ -67,6 +74,7 @@ ebtables \
 --ip6-protocol 18 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -p ipv6 \
@@ -76,6 +84,7 @@ ebtables \
 --ip6-icmp-type 1:11/10:11 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -p ipv6 \
@@ -85,6 +94,7 @@ ebtables \
 --ip6-icmp-type 1:11/10:11 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -p ipv6 \
@@ -94,6 +104,7 @@ ebtables \
 --ip6-icmp-type 1:1/10:10 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -p ipv6 \
@@ -103,6 +114,7 @@ ebtables \
 --ip6-icmp-type 1:1/10:10 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -p ipv6 \
@@ -112,6 +124,7 @@ ebtables \
 --ip6-icmp-type 0:255/10:10 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -p ipv6 \
@@ -121,6 +134,7 @@ ebtables \
 --ip6-icmp-type 0:255/10:10 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -p ipv6 \
@@ -130,6 +144,7 @@ ebtables \
 --ip6-icmp-type 1:1/0:255 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -p ipv6 \

@@ -1,4 +1,5 @@
 ip6tables \
+-w \
 -A FJ-vnet0 \
 -p udplite \
 -m mac \
@@ -11,6 +12,7 @@ ip6tables \
 --state NEW,ESTABLISHED \
 -j RETURN
 ip6tables \
+-w \
 -A FP-vnet0 \
 -p udplite \
 --destination f:e:d::c:b:a/127 \
@@ -21,6 +23,7 @@ ip6tables \
 --state ESTABLISHED \
 -j ACCEPT
 ip6tables \
+-w \
 -A HJ-vnet0 \
 -p udplite \
 -m mac \
@@ -33,6 +36,7 @@ ip6tables \
 --state NEW,ESTABLISHED \
 -j RETURN
 ip6tables \
+-w \
 -A FJ-vnet0 \
 -p udplite \
 --destination a:b:c::/128 \
@@ -42,6 +46,7 @@ ip6tables \
 --state ESTABLISHED \
 -j RETURN
 ip6tables \
+-w \
 -A FP-vnet0 \
 -p udplite \
 -m mac \
@@ -53,6 +58,7 @@ ip6tables \
 --state NEW,ESTABLISHED \
 -j ACCEPT
 ip6tables \
+-w \
 -A HJ-vnet0 \
 -p udplite \
 --destination a:b:c::/128 \
@@ -62,6 +68,7 @@ ip6tables \
 --state ESTABLISHED \
 -j RETURN
 ip6tables \
+-w \
 -A FJ-vnet0 \
 -p udplite \
 --destination ::10.1.2.3/128 \
@@ -71,6 +78,7 @@ ip6tables \
 --state ESTABLISHED \
 -j RETURN
 ip6tables \
+-w \
 -A FP-vnet0 \
 -p udplite \
 -m mac \
@@ -82,6 +90,7 @@ ip6tables \
 --state NEW,ESTABLISHED \
 -j ACCEPT
 ip6tables \
+-w \
 -A HJ-vnet0 \
 -p udplite \
 --destination ::10.1.2.3/128 \

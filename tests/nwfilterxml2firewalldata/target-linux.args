@@ -1,40 +1,47 @@
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
 -p 0x806 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
 -p 0x806 \
 -j DROP
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
 -p 0x806 \
 -j DROP
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
 -p 0x800 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
 -p 0x800 \
 -j DROP
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
 -p 0x800 \
 -j DROP
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -m mac \
@@ -49,6 +56,7 @@ iptables \
 -- dir out' \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 --source 10.1.2.3/32 \
@@ -61,6 +69,7 @@ iptables \
 -- dir out' \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -m mac \
@@ -75,6 +84,7 @@ iptables \
 -- dir out' \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -m mac \
@@ -87,6 +97,7 @@ iptables \
 -- dir out' \
 -j DROP
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 --source 10.1.2.3/32 \
@@ -97,6 +108,7 @@ iptables \
 -- dir out' \
 -j DROP
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -m mac \
@@ -109,6 +121,7 @@ iptables \
 -- dir out' \
 -j DROP
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -m mac \
@@ -121,6 +134,7 @@ iptables \
 -- dir out' \
 -j REJECT
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 --source 10.1.2.3/32 \
@@ -131,6 +145,7 @@ iptables \
 -- dir out' \
 -j REJECT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -m mac \
@@ -143,6 +158,7 @@ iptables \
 -- dir out' \
 -j REJECT
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 --destination 10.1.2.3/22 \
@@ -155,6 +171,7 @@ iptables \
 -- dir in' \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -m mac \
@@ -169,6 +186,7 @@ iptables \
 -- dir in' \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 --destination 10.1.2.3/22 \
@@ -181,6 +199,7 @@ iptables \
 -- dir in' \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 --destination 10.1.2.3/22 \
@@ -191,6 +210,7 @@ iptables \
 -- dir in' \
 -j DROP
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -m mac \
@@ -203,6 +223,7 @@ iptables \
 -- dir in' \
 -j DROP
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 --destination 10.1.2.3/22 \
@@ -213,6 +234,7 @@ iptables \
 -- dir in' \
 -j DROP
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 --destination 10.1.2.3/22 \
@@ -223,6 +245,7 @@ iptables \
 -- dir in' \
 -j REJECT
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -m mac \
@@ -235,6 +258,7 @@ iptables \
 -- dir in' \
 -j REJECT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 --destination 10.1.2.3/22 \
@@ -245,6 +269,7 @@ iptables \
 -- dir in' \
 -j REJECT
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -m comment \
@@ -252,6 +277,7 @@ iptables \
 -- dir inout' \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -m comment \
@@ -259,6 +285,7 @@ iptables \
 -- dir inout' \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -m comment \
@@ -266,6 +293,7 @@ iptables \
 -- dir inout' \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -m comment \
@@ -273,6 +301,7 @@ iptables \
 -- dir inout' \
 -j DROP
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -m comment \
@@ -280,6 +309,7 @@ iptables \
 -- dir inout' \
 -j DROP
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -m comment \
@@ -287,6 +317,7 @@ iptables \
 -- dir inout' \
 -j DROP
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -m comment \
@@ -294,6 +325,7 @@ iptables \
 -- dir inout' \
 -j REJECT
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -m comment \
@@ -301,6 +333,7 @@ iptables \
 -- dir inout' \
 -j REJECT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -m comment \

@@ -105,6 +105,12 @@ void
 virFirewallSetLockOverride(bool avoid)
 {
     lockOverride = avoid;
+    if (avoid) {
+        /* add the lock option to all commands */
+        iptablesUseLock = true;
+        ip6tablesUseLock = true;
+        ebtablesUseLock = true;
+    }
 }
 
 static void

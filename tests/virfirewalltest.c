@@ -149,15 +149,17 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
                 *error = g_dbus_error_new_for_dbus_error("org.firewalld.error",
                                                          "something bad happened");
         } else {
-            if (nargs == 1 &&
+            if (nargs == 2 &&
                 STREQ(type, "ipv4") &&
-                STREQ(args[0], "-L")) {
+                STREQ(args[0], "-w") &&
+                STREQ(args[1], "-L")) {
                 reply = g_variant_new("(s)", TEST_FILTER_TABLE_LIST);
-            } else if (nargs == 3 &&
+            } else if (nargs == 4 &&
                        STREQ(type, "ipv4") &&
-                       STREQ(args[0], "-t") &&
-                       STREQ(args[1], "nat") &&
-                       STREQ(args[2], "-L")) {
+                       STREQ(args[0], "-w") &&
+                       STREQ(args[1], "-t") &&
+                       STREQ(args[2], "nat") &&
+                       STREQ(args[3], "-L")) {
                 reply = g_variant_new("(s)", TEST_NAT_TABLE_LIST);
             } else {
                 reply = g_variant_new("(s)", "success");
@@ -184,8 +186,8 @@ testFirewallSingleGroup(const void *opaque)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host '!192.168.122.1' --jump REJECT\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
 
     fwDisabled = data->fwDisabled;
@@ -236,8 +238,8 @@ testFirewallRemoveRule(const void *opaque)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host '!192.168.122.1' --jump REJECT\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
     virFirewallRulePtr fwrule;
 
@@ -295,10 +297,10 @@ testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host '!192.168.122.1' --jump REJECT\n"
-        IPTABLES_PATH " -A OUTPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A OUTPUT --jump DROP\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host '!192.168.122.1' --jump REJECT\n"
+        IPTABLES_PATH " -w -A OUTPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A OUTPUT --jump DROP\n";
     const struct testFirewallData *data = opaque;
 
     fwDisabled = data->fwDisabled;
@@ -382,10 +384,10 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -A OUTPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A OUTPUT --jump DROP\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
+        IPTABLES_PATH " -w -A OUTPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A OUTPUT --jump DROP\n";
     const struct testFirewallData *data = opaque;
 
     fwDisabled = data->fwDisabled;
@@ -450,10 +452,10 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -A OUTPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A OUTPUT --jump DROP\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
+        IPTABLES_PATH " -w -A OUTPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A OUTPUT --jump DROP\n";
     const struct testFirewallData *data = opaque;
 
     fwDisabled = data->fwDisabled;
@@ -517,8 +519,8 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.255 --jump REJECT\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.255 --jump REJECT\n";
     const struct testFirewallData *data = opaque;
 
     fwDisabled = data->fwDisabled;
@@ -577,11 +579,11 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -D INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -D INPUT --source-host 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -D INPUT --source-host '!192.168.122.1' --jump REJECT\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
+        IPTABLES_PATH " -w -D INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -D INPUT --source-host 192.168.122.255 --jump REJECT\n"
+        IPTABLES_PATH " -w -D INPUT --source-host '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
 
     fwDisabled = data->fwDisabled;
@@ -657,10 +659,10 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -D INPUT --source-host 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -D INPUT --source-host '!192.168.122.1' --jump REJECT\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
+        IPTABLES_PATH " -w -D INPUT --source-host 192.168.122.255 --jump REJECT\n"
+        IPTABLES_PATH " -w -D INPUT --source-host '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
 
     fwDisabled = data->fwDisabled;
@@ -740,14 +742,14 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.127 --jump REJECT\n"
-        IPTABLES_PATH " -A INPUT --source-host '!192.168.122.1' --jump REJECT\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -D INPUT --source-host 192.168.122.127 --jump REJECT\n"
-        IPTABLES_PATH " -D INPUT --source-host '!192.168.122.1' --jump REJECT\n"
-        IPTABLES_PATH " -D INPUT --source-host 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -D INPUT --source-host '!192.168.122.1' --jump REJECT\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.127 --jump REJECT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host '!192.168.122.1' --jump REJECT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.255 --jump REJECT\n"
+        IPTABLES_PATH " -w -D INPUT --source-host 192.168.122.127 --jump REJECT\n"
+        IPTABLES_PATH " -w -D INPUT --source-host '!192.168.122.1' --jump REJECT\n"
+        IPTABLES_PATH " -w -D INPUT --source-host 192.168.122.255 --jump REJECT\n"
+        IPTABLES_PATH " -w -D INPUT --source-host '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
 
     fwDisabled = data->fwDisabled;
@@ -882,12 +884,14 @@ testFirewallQueryHook(const char *const*args,
                       void *opaque G_GNUC_UNUSED)
 {
     if (STREQ(args[0], IPTABLES_PATH) &&
-        STREQ(args[1], "-L")) {
+        STREQ(args[1], "-w") &&
+        STREQ(args[2], "-L")) {
         *output = g_strdup(TEST_FILTER_TABLE_LIST);
     } else if (STREQ(args[0], IPTABLES_PATH) &&
-               STREQ(args[1], "-t") &&
-               STREQ(args[2], "nat") &&
-               STREQ(args[3], "-L")) {
+               STREQ(args[1], "-w") &&
+               STREQ(args[2], "-t") &&
+               STREQ(args[3], "nat") &&
+               STREQ(args[4], "-L")) {
         *output = g_strdup(TEST_NAT_TABLE_LIST);
     }
 }
@@ -930,15 +934,15 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.127 --jump REJECT\n"
-        IPTABLES_PATH " -L\n"
-        IPTABLES_PATH " -t nat -L\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.130 --jump REJECT\n"
-        IPTABLES_PATH " -A INPUT --source-host '!192.168.122.129' --jump REJECT\n"
-        IPTABLES_PATH " -A INPUT --source-host '!192.168.122.129' --jump REJECT\n"
-        IPTABLES_PATH " -A INPUT --source-host 192.168.122.128 --jump REJECT\n"
-        IPTABLES_PATH " -A INPUT --source-host '!192.168.122.1' --jump REJECT\n";
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.127 --jump REJECT\n"
+        IPTABLES_PATH " -w -L\n"
+        IPTABLES_PATH " -w -t nat -L\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.130 --jump REJECT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host '!192.168.122.129' --jump REJECT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host '!192.168.122.129' --jump REJECT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host 192.168.122.128 --jump REJECT\n"
+        IPTABLES_PATH " -w -A INPUT --source-host '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
 
     expectedLineNum = 0;

@@ -1,32 +1,41 @@
 ebtables \
+--concurrent \
 -t nat \
 -F J-vnet0-stp-xyz
 ebtables \
+--concurrent \
 -t nat \
 -X J-vnet0-stp-xyz
 ebtables \
+--concurrent \
 -t nat \
 -N J-vnet0-stp-xyz
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -d 01:80:c2:00:00:00 \
 -j J-vnet0-stp-xyz
 ebtables \
+--concurrent \
 -t nat \
 -F P-vnet0-stp-xyz
 ebtables \
+--concurrent \
 -t nat \
 -X P-vnet0-stp-xyz
 ebtables \
+--concurrent \
 -t nat \
 -N P-vnet0-stp-xyz
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -d 01:80:c2:00:00:00 \
 -j P-vnet0-stp-xyz
 ebtables \
+--concurrent \
 -t nat \
 -A P-vnet0-stp-xyz \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -35,6 +44,7 @@ ebtables \
 --stp-flags 68 \
 -j CONTINUE
 ebtables \
+--concurrent \
 -t nat \
 -A J-vnet0-stp-xyz \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -44,6 +54,7 @@ ebtables \
 --stp-root-cost 287454020:573785173 \
 -j RETURN
 ebtables \
+--concurrent \
 -t nat \
 -A P-vnet0-stp-xyz \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \

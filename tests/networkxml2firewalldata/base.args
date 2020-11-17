@@ -1,116 +1,150 @@
 iptables \
+-w \
 --table filter \
 --list-rules
 iptables \
+-w \
 --table nat \
 --list-rules
 iptables \
+-w \
 --table mangle \
 --list-rules
 iptables \
+-w \
 --table filter \
 --new-chain LIBVIRT_INP
 iptables \
+-w \
 --table filter \
 --insert INPUT \
 --jump LIBVIRT_INP
 iptables \
+-w \
 --table filter \
 --new-chain LIBVIRT_OUT
 iptables \
+-w \
 --table filter \
 --insert OUTPUT \
 --jump LIBVIRT_OUT
 iptables \
+-w \
 --table filter \
 --new-chain LIBVIRT_FWO
 iptables \
+-w \
 --table filter \
 --insert FORWARD \
 --jump LIBVIRT_FWO
 iptables \
+-w \
 --table filter \
 --new-chain LIBVIRT_FWI
 iptables \
+-w \
 --table filter \
 --insert FORWARD \
 --jump LIBVIRT_FWI
 iptables \
+-w \
 --table filter \
 --new-chain LIBVIRT_FWX
 iptables \
+-w \
 --table filter \
 --insert FORWARD \
 --jump LIBVIRT_FWX
 iptables \
+-w \
 --table nat \
 --new-chain LIBVIRT_PRT
 iptables \
+-w \
 --table nat \
 --insert POSTROUTING \
 --jump LIBVIRT_PRT
 iptables \
+-w \
 --table mangle \
 --new-chain LIBVIRT_PRT
 iptables \
+-w \
 --table mangle \
 --insert POSTROUTING \
 --jump LIBVIRT_PRT
 ip6tables \
+-w \
 --table filter \
 --list-rules
 ip6tables \
+-w \
 --table nat \
 --list-rules
 ip6tables \
+-w \
 --table mangle \
 --list-rules
 ip6tables \
+-w \
 --table filter \
 --new-chain LIBVIRT_INP
 ip6tables \
+-w \
 --table filter \
 --insert INPUT \
 --jump LIBVIRT_INP
 ip6tables \
+-w \
 --table filter \
 --new-chain LIBVIRT_OUT
 ip6tables \
+-w \
 --table filter \
 --insert OUTPUT \
 --jump LIBVIRT_OUT
 ip6tables \
+-w \
 --table filter \
 --new-chain LIBVIRT_FWO
 ip6tables \
+-w \
 --table filter \
 --insert FORWARD \
 --jump LIBVIRT_FWO
 ip6tables \
+-w \
 --table filter \
 --new-chain LIBVIRT_FWI
 ip6tables \
+-w \
 --table filter \
 --insert FORWARD \
 --jump LIBVIRT_FWI
 ip6tables \
+-w \
 --table filter \
 --new-chain LIBVIRT_FWX
 ip6tables \
+-w \
 --table filter \
 --insert FORWARD \
 --jump LIBVIRT_FWX
 ip6tables \
+-w \
 --table nat \
 --new-chain LIBVIRT_PRT
 ip6tables \
+-w \
 --table nat \
 --insert POSTROUTING \
 --jump LIBVIRT_PRT
 ip6tables \
+-w \
 --table mangle \
 --new-chain LIBVIRT_PRT
 ip6tables \
+-w \
 --table mangle \
 --insert POSTROUTING \
 --jump LIBVIRT_PRT

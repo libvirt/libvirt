@@ -1,30 +1,36 @@
 iptables \
+-w \
 -A FJ-vnet0 \
 -p icmp \
 -m state \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p icmp \
 -m state \
 --state ESTABLISHED \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p icmp \
 -m state \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -j DROP
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -j DROP
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -j DROP

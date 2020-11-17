@@ -1,4 +1,5 @@
 ip6tables \
+-w \
 -A FJ-vnet0 \
 -p icmpv6 \
 -m mac \
@@ -12,6 +13,7 @@ ip6tables \
 --state NEW,ESTABLISHED \
 -j RETURN
 ip6tables \
+-w \
 -A HJ-vnet0 \
 -p icmpv6 \
 -m mac \
@@ -25,6 +27,7 @@ ip6tables \
 --state NEW,ESTABLISHED \
 -j RETURN
 ip6tables \
+-w \
 -A FP-vnet0 \
 -p icmpv6 \
 -m mac \
@@ -37,6 +40,7 @@ ip6tables \
 --state NEW,ESTABLISHED \
 -j ACCEPT
 ip6tables \
+-w \
 -A FP-vnet0 \
 -p icmpv6 \
 -m mac \

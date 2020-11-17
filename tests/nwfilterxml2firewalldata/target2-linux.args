@@ -1,19 +1,23 @@
 iptables \
+-w \
 -A FP-vnet0 \
 -p tcp \
 --dport 22 \
 -j ACCEPT
 iptables \
+-w \
 -A FJ-vnet0 \
 -p tcp \
 --sport 22 \
 -j RETURN
 iptables \
+-w \
 -A HJ-vnet0 \
 -p tcp \
 --sport 22 \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p tcp \
 --sport 80 \
@@ -21,6 +25,7 @@ iptables \
 --state ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p tcp \
 --dport 80 \
@@ -28,6 +33,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p tcp \
 --sport 80 \
@@ -35,26 +41,32 @@ iptables \
 --state ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p tcp \
 -j REJECT
 iptables \
+-w \
 -A FP-vnet0 \
 -p tcp \
 -j REJECT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p tcp \
 -j REJECT
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -j DROP
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -j DROP
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -j DROP

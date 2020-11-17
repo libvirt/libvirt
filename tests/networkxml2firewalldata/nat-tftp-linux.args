@@ -1,4 +1,5 @@
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -6,6 +7,7 @@ iptables \
 --destination-port 67 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -13,6 +15,7 @@ iptables \
 --destination-port 67 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -20,6 +23,7 @@ iptables \
 --destination-port 68 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -27,6 +31,7 @@ iptables \
 --destination-port 68 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -34,6 +39,7 @@ iptables \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -41,6 +47,7 @@ iptables \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -48,6 +55,7 @@ iptables \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -55,6 +63,7 @@ iptables \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -62,6 +71,7 @@ iptables \
 --destination-port 69 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -69,28 +79,33 @@ iptables \
 --destination-port 69 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWO \
 --in-interface virbr0 \
 --jump REJECT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWI \
 --out-interface virbr0 \
 --jump REJECT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWX \
 --in-interface virbr0 \
 --out-interface virbr0 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWO \
 --source 192.168.122.0/24 \
 --in-interface virbr0 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWI \
 --destination 192.168.122.0/24 \
@@ -99,12 +114,14 @@ iptables \
 --ctstate ESTABLISHED,RELATED \
 --jump ACCEPT
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 '!' \
 --destination 192.168.122.0/24 \
 --jump MASQUERADE
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
@@ -113,6 +130,7 @@ iptables \
 --jump MASQUERADE \
 --to-ports 1024-65535
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
@@ -121,18 +139,21 @@ iptables \
 --jump MASQUERADE \
 --to-ports 1024-65535
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
 --destination 255.255.255.255/32 \
 --jump RETURN
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
 --destination 224.0.0.0/24 \
 --jump RETURN
 iptables \
+-w \
 --table mangle \
 --insert LIBVIRT_PRT \
 --out-interface virbr0 \

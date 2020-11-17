@@ -1,4 +1,5 @@
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -11,6 +12,7 @@ ebtables \
 --ip-destination-port 100:101 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -p ipv4 \
@@ -20,6 +22,7 @@ ebtables \
 --ip-tos 0x3f \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -p ipv4 \

@@ -1,4 +1,5 @@
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -m state \
@@ -7,6 +8,7 @@ iptables \
 --comment 'out: existing and related (ftp) connections' \
 -j RETURN
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -m state \
@@ -15,6 +17,7 @@ iptables \
 --comment 'out: existing and related (ftp) connections' \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -m state \
@@ -23,6 +26,7 @@ iptables \
 --comment 'in: existing connections' \
 -j ACCEPT
 iptables \
+-w \
 -A FP-vnet0 \
 -p tcp \
 --dport 21:22 \
@@ -32,6 +36,7 @@ iptables \
 --comment 'in: ftp and ssh' \
 -j ACCEPT
 iptables \
+-w \
 -A FP-vnet0 \
 -p icmp \
 -m state \
@@ -40,6 +45,7 @@ iptables \
 --comment 'in: icmp' \
 -j ACCEPT
 iptables \
+-w \
 -A FJ-vnet0 \
 -p udp \
 --dport 53 \
@@ -49,6 +55,7 @@ iptables \
 --comment 'out: DNS lookups' \
 -j RETURN
 iptables \
+-w \
 -A HJ-vnet0 \
 -p udp \
 --dport 53 \
@@ -58,18 +65,21 @@ iptables \
 --comment 'out: DNS lookups' \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -m comment \
 --comment 'inout: drop all non-accepted traffic' \
 -j DROP
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -m comment \
 --comment 'inout: drop all non-accepted traffic' \
 -j DROP
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -m comment \

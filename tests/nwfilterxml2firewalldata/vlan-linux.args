@@ -1,4 +1,5 @@
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -d 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -7,6 +8,7 @@ ebtables \
 --vlan-id 291 \
 -j CONTINUE
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -15,6 +17,7 @@ ebtables \
 --vlan-id 291 \
 -j CONTINUE
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -d 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -23,6 +26,7 @@ ebtables \
 --vlan-id 1234 \
 -j RETURN
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -31,6 +35,7 @@ ebtables \
 --vlan-id 1234 \
 -j RETURN
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -39,6 +44,7 @@ ebtables \
 --vlan-id 291 \
 -j DROP
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -47,6 +53,7 @@ ebtables \
 --vlan-encap 2054 \
 -j DROP
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \

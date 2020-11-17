@@ -1,4 +1,5 @@
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -6,6 +7,7 @@ iptables \
 --destination-port 67 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -13,6 +15,7 @@ iptables \
 --destination-port 67 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -20,6 +23,7 @@ iptables \
 --destination-port 68 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -27,6 +31,7 @@ iptables \
 --destination-port 68 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -34,6 +39,7 @@ iptables \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -41,6 +47,7 @@ iptables \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -48,6 +55,7 @@ iptables \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -55,38 +63,45 @@ iptables \
 --destination-port 53 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWO \
 --in-interface virbr0 \
 --jump REJECT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWI \
 --out-interface virbr0 \
 --jump REJECT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWX \
 --in-interface virbr0 \
 --out-interface virbr0 \
 --jump ACCEPT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_FWO \
 --in-interface virbr0 \
 --jump REJECT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_FWI \
 --out-interface virbr0 \
 --jump REJECT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_FWX \
 --in-interface virbr0 \
 --out-interface virbr0 \
 --jump ACCEPT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -94,6 +109,7 @@ ip6tables \
 --destination-port 53 \
 --jump ACCEPT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -101,6 +117,7 @@ ip6tables \
 --destination-port 53 \
 --jump ACCEPT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -108,6 +125,7 @@ ip6tables \
 --destination-port 53 \
 --jump ACCEPT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -115,6 +133,7 @@ ip6tables \
 --destination-port 53 \
 --jump ACCEPT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
@@ -122,6 +141,7 @@ ip6tables \
 --destination-port 547 \
 --jump ACCEPT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
@@ -129,12 +149,14 @@ ip6tables \
 --destination-port 546 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWO \
 --source 192.168.122.0/24 \
 --in-interface virbr0 \
 --jump ACCEPT
 iptables \
+-w \
 --table filter \
 --insert LIBVIRT_FWI \
 --destination 192.168.122.0/24 \
@@ -143,12 +165,14 @@ iptables \
 --ctstate ESTABLISHED,RELATED \
 --jump ACCEPT
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 '!' \
 --destination 192.168.122.0/24 \
 --jump MASQUERADE
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
@@ -157,6 +181,7 @@ iptables \
 --jump MASQUERADE \
 --to-ports 1024-65535
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
@@ -165,30 +190,35 @@ iptables \
 --jump MASQUERADE \
 --to-ports 1024-65535
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
 --destination 255.255.255.255/32 \
 --jump RETURN
 iptables \
+-w \
 --table nat \
 --insert LIBVIRT_PRT \
 --source 192.168.122.0/24 \
 --destination 224.0.0.0/24 \
 --jump RETURN
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_FWO \
 --source 2001:db8:ca2:2::/64 \
 --in-interface virbr0 \
 --jump ACCEPT
 ip6tables \
+-w \
 --table filter \
 --insert LIBVIRT_FWI \
 --destination 2001:db8:ca2:2::/64 \
 --out-interface virbr0 \
 --jump ACCEPT
 iptables \
+-w \
 --table mangle \
 --insert LIBVIRT_PRT \
 --out-interface virbr0 \

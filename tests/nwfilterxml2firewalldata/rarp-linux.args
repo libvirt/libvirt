@@ -1,7 +1,9 @@
 ebtables \
+--concurrent \
 -t nat \
 -N libvirt-J-vnet0
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -14,6 +16,7 @@ ebtables \
 --arp-mac-dst 0a:0b:0c:0d:0e:0f \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -23,6 +26,7 @@ ebtables \
 --arp-ptype 0xff \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -32,6 +36,7 @@ ebtables \
 --arp-ptype 0x100 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -41,6 +46,7 @@ ebtables \
 --arp-ptype 0xffff \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A PREROUTING \
 -i vnet0 \

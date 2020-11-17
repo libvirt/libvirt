@@ -58,90 +58,90 @@ struct _virNWFilterInst {
 
 static const char *commonRules[] = {
     /* Dropping ebtables rules */
-    "ebtables -t nat -D PREROUTING -i vnet0 -j libvirt-J-vnet0\n"
-    "ebtables -t nat -D POSTROUTING -o vnet0 -j libvirt-P-vnet0\n"
-    "ebtables -t nat -L libvirt-J-vnet0\n"
-    "ebtables -t nat -L libvirt-P-vnet0\n"
-    "ebtables -t nat -F libvirt-J-vnet0\n"
-    "ebtables -t nat -X libvirt-J-vnet0\n"
-    "ebtables -t nat -F libvirt-P-vnet0\n"
-    "ebtables -t nat -X libvirt-P-vnet0\n",
+    "ebtables --concurrent -t nat -D PREROUTING -i vnet0 -j libvirt-J-vnet0\n"
+    "ebtables --concurrent -t nat -D POSTROUTING -o vnet0 -j libvirt-P-vnet0\n"
+    "ebtables --concurrent -t nat -L libvirt-J-vnet0\n"
+    "ebtables --concurrent -t nat -L libvirt-P-vnet0\n"
+    "ebtables --concurrent -t nat -F libvirt-J-vnet0\n"
+    "ebtables --concurrent -t nat -X libvirt-J-vnet0\n"
+    "ebtables --concurrent -t nat -F libvirt-P-vnet0\n"
+    "ebtables --concurrent -t nat -X libvirt-P-vnet0\n",
 
     /* Creating ebtables chains */
-    "ebtables -t nat -N libvirt-J-vnet0\n"
-    "ebtables -t nat -N libvirt-P-vnet0\n",
+    "ebtables --concurrent -t nat -N libvirt-J-vnet0\n"
+    "ebtables --concurrent -t nat -N libvirt-P-vnet0\n",
 
     /* Dropping iptables rules */
-    "iptables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
-    "iptables -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n"
-    "iptables -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
-    "iptables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
-    "iptables -F FP-vnet0\n"
-    "iptables -X FP-vnet0\n"
-    "iptables -F FJ-vnet0\n"
-    "iptables -X FJ-vnet0\n"
-    "iptables -F HJ-vnet0\n"
-    "iptables -X HJ-vnet0\n",
+    "iptables -w -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
+    "iptables -w -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n"
+    "iptables -w -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
+    "iptables -w -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
+    "iptables -w -F FP-vnet0\n"
+    "iptables -w -X FP-vnet0\n"
+    "iptables -w -F FJ-vnet0\n"
+    "iptables -w -X FJ-vnet0\n"
+    "iptables -w -F HJ-vnet0\n"
+    "iptables -w -X HJ-vnet0\n",
 
     /* Creating iptables chains */
-    "iptables -N libvirt-in\n"
-    "iptables -N libvirt-out\n"
-    "iptables -N libvirt-in-post\n"
-    "iptables -N libvirt-host-in\n"
-    "iptables -D FORWARD -j libvirt-in\n"
-    "iptables -D FORWARD -j libvirt-out\n"
-    "iptables -D FORWARD -j libvirt-in-post\n"
-    "iptables -D INPUT -j libvirt-host-in\n"
-    "iptables -I FORWARD 1 -j libvirt-in\n"
-    "iptables -I FORWARD 2 -j libvirt-out\n"
-    "iptables -I FORWARD 3 -j libvirt-in-post\n"
-    "iptables -I INPUT 1 -j libvirt-host-in\n"
-    "iptables -N FP-vnet0\n"
-    "iptables -N FJ-vnet0\n"
-    "iptables -N HJ-vnet0\n"
-    "iptables -A libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
-    "iptables -A libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
-    "iptables -A libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
-    "iptables -D libvirt-in-post -m physdev --physdev-in vnet0 -j ACCEPT\n"
-    "iptables -A libvirt-in-post -m physdev --physdev-in vnet0 -j ACCEPT\n",
+    "iptables -w -N libvirt-in\n"
+    "iptables -w -N libvirt-out\n"
+    "iptables -w -N libvirt-in-post\n"
+    "iptables -w -N libvirt-host-in\n"
+    "iptables -w -D FORWARD -j libvirt-in\n"
+    "iptables -w -D FORWARD -j libvirt-out\n"
+    "iptables -w -D FORWARD -j libvirt-in-post\n"
+    "iptables -w -D INPUT -j libvirt-host-in\n"
+    "iptables -w -I FORWARD 1 -j libvirt-in\n"
+    "iptables -w -I FORWARD 2 -j libvirt-out\n"
+    "iptables -w -I FORWARD 3 -j libvirt-in-post\n"
+    "iptables -w -I INPUT 1 -j libvirt-host-in\n"
+    "iptables -w -N FP-vnet0\n"
+    "iptables -w -N FJ-vnet0\n"
+    "iptables -w -N HJ-vnet0\n"
+    "iptables -w -A libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
+    "iptables -w -A libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
+    "iptables -w -A libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
+    "iptables -w -D libvirt-in-post -m physdev --physdev-in vnet0 -j ACCEPT\n"
+    "iptables -w -A libvirt-in-post -m physdev --physdev-in vnet0 -j ACCEPT\n",
 
     /* Dropping ip6tables rules */
-    "ip6tables -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
-    "ip6tables -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n"
-    "ip6tables -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
-    "ip6tables -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
-    "ip6tables -F FP-vnet0\n"
-    "ip6tables -X FP-vnet0\n"
-    "ip6tables -F FJ-vnet0\n"
-    "ip6tables -X FJ-vnet0\n"
-    "ip6tables -F HJ-vnet0\n"
-    "ip6tables -X HJ-vnet0\n",
+    "ip6tables -w -D libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
+    "ip6tables -w -D libvirt-out -m physdev --physdev-out vnet0 -g FP-vnet0\n"
+    "ip6tables -w -D libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
+    "ip6tables -w -D libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
+    "ip6tables -w -F FP-vnet0\n"
+    "ip6tables -w -X FP-vnet0\n"
+    "ip6tables -w -F FJ-vnet0\n"
+    "ip6tables -w -X FJ-vnet0\n"
+    "ip6tables -w -F HJ-vnet0\n"
+    "ip6tables -w -X HJ-vnet0\n",
 
     /* Creating ip6tables chains */
-    "ip6tables -N libvirt-in\n"
-    "ip6tables -N libvirt-out\n"
-    "ip6tables -N libvirt-in-post\n"
-    "ip6tables -N libvirt-host-in\n"
-    "ip6tables -D FORWARD -j libvirt-in\n"
-    "ip6tables -D FORWARD -j libvirt-out\n"
-    "ip6tables -D FORWARD -j libvirt-in-post\n"
-    "ip6tables -D INPUT -j libvirt-host-in\n"
-    "ip6tables -I FORWARD 1 -j libvirt-in\n"
-    "ip6tables -I FORWARD 2 -j libvirt-out\n"
-    "ip6tables -I FORWARD 3 -j libvirt-in-post\n"
-    "ip6tables -I INPUT 1 -j libvirt-host-in\n"
-    "ip6tables -N FP-vnet0\n"
-    "ip6tables -N FJ-vnet0\n"
-    "ip6tables -N HJ-vnet0\n"
-    "ip6tables -A libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
-    "ip6tables -A libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
-    "ip6tables -A libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
-    "ip6tables -D libvirt-in-post -m physdev --physdev-in vnet0 -j ACCEPT\n"
-    "ip6tables -A libvirt-in-post -m physdev --physdev-in vnet0 -j ACCEPT\n",
+    "ip6tables -w -N libvirt-in\n"
+    "ip6tables -w -N libvirt-out\n"
+    "ip6tables -w -N libvirt-in-post\n"
+    "ip6tables -w -N libvirt-host-in\n"
+    "ip6tables -w -D FORWARD -j libvirt-in\n"
+    "ip6tables -w -D FORWARD -j libvirt-out\n"
+    "ip6tables -w -D FORWARD -j libvirt-in-post\n"
+    "ip6tables -w -D INPUT -j libvirt-host-in\n"
+    "ip6tables -w -I FORWARD 1 -j libvirt-in\n"
+    "ip6tables -w -I FORWARD 2 -j libvirt-out\n"
+    "ip6tables -w -I FORWARD 3 -j libvirt-in-post\n"
+    "ip6tables -w -I INPUT 1 -j libvirt-host-in\n"
+    "ip6tables -w -N FP-vnet0\n"
+    "ip6tables -w -N FJ-vnet0\n"
+    "ip6tables -w -N HJ-vnet0\n"
+    "ip6tables -w -A libvirt-out -m physdev --physdev-is-bridged --physdev-out vnet0 -g FP-vnet0\n"
+    "ip6tables -w -A libvirt-in -m physdev --physdev-in vnet0 -g FJ-vnet0\n"
+    "ip6tables -w -A libvirt-host-in -m physdev --physdev-in vnet0 -g HJ-vnet0\n"
+    "ip6tables -w -D libvirt-in-post -m physdev --physdev-in vnet0 -j ACCEPT\n"
+    "ip6tables -w -A libvirt-in-post -m physdev --physdev-in vnet0 -j ACCEPT\n",
 
     /* Inserting ebtables rules */
-    "ebtables -t nat -A PREROUTING -i vnet0 -j libvirt-J-vnet0\n"
-    "ebtables -t nat -A POSTROUTING -o vnet0 -j libvirt-P-vnet0\n",
+    "ebtables --concurrent -t nat -A PREROUTING -i vnet0 -j libvirt-J-vnet0\n"
+    "ebtables --concurrent -t nat -A POSTROUTING -o vnet0 -j libvirt-P-vnet0\n",
 };
 
 

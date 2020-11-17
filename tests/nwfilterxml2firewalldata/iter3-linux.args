@@ -1,4 +1,5 @@
 iptables \
+-w \
 -A FJ-vnet0 \
 -p tcp \
 --source 1.1.1.1 \
@@ -9,6 +10,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p tcp \
 --destination 1.1.1.1 \
@@ -19,6 +21,7 @@ iptables \
 --state ESTABLISHED \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p tcp \
 --source 1.1.1.1 \
@@ -29,6 +32,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p tcp \
 --source 1.1.1.1 \
@@ -39,6 +43,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p tcp \
 --destination 1.1.1.1 \
@@ -49,6 +54,7 @@ iptables \
 --state ESTABLISHED \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p tcp \
 --source 1.1.1.1 \
@@ -59,6 +65,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p udp \
 --source 2.2.2.2 \
@@ -69,6 +76,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p udp \
 --destination 2.2.2.2 \
@@ -79,6 +87,7 @@ iptables \
 --state ESTABLISHED \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p udp \
 --source 2.2.2.2 \
@@ -89,6 +98,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p udp \
 --source 2.2.2.2 \
@@ -99,6 +109,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p udp \
 --destination 2.2.2.2 \
@@ -109,6 +120,7 @@ iptables \
 --state ESTABLISHED \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p udp \
 --source 2.2.2.2 \
@@ -119,6 +131,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FJ-vnet0 \
 -p sctp \
 --source 2.2.2.2 \
@@ -130,6 +143,7 @@ iptables \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p sctp \
 --destination 2.2.2.2 \
@@ -141,6 +155,7 @@ iptables \
 --state ESTABLISHED \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p sctp \
 --source 2.2.2.2 \

@@ -1,40 +1,47 @@
 iptables \
+-w \
 -A FJ-vnet0 \
 -p icmp \
 -m connlimit \
 --connlimit-above 1 \
 -j DROP
 iptables \
+-w \
 -A HJ-vnet0 \
 -p icmp \
 -m connlimit \
 --connlimit-above 1 \
 -j DROP
 iptables \
+-w \
 -A FJ-vnet0 \
 -p tcp \
 -m connlimit \
 --connlimit-above 2 \
 -j DROP
 iptables \
+-w \
 -A HJ-vnet0 \
 -p tcp \
 -m connlimit \
 --connlimit-above 2 \
 -j DROP
 iptables \
+-w \
 -A FJ-vnet0 \
 -p all \
 -m state \
 --state NEW,ESTABLISHED \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p all \
 -m state \
 --state ESTABLISHED \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p all \
 -m state \

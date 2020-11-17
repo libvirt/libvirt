@@ -1,9 +1,11 @@
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-P-vnet0 \
 -p 0x1234 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -17,6 +19,7 @@ ebtables \
 --ip-tos 0x32 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:fe \
@@ -29,6 +32,7 @@ ebtables \
 --ip6-destination-port 13107:65535 \
 -j ACCEPT
 ebtables \
+--concurrent \
 -t nat \
 -A libvirt-J-vnet0 \
 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
@@ -41,6 +45,7 @@ ebtables \
 --arp-mac-dst 0a:0b:0c:0d:0e:0f \
 -j ACCEPT
 iptables \
+-w \
 -A FJ-vnet0 \
 -p udp \
 -m mac \
@@ -56,6 +61,7 @@ iptables \
 --comment 'udp rule' \
 -j RETURN
 iptables \
+-w \
 -A FP-vnet0 \
 -p udp \
 --source 10.1.2.3/32 \
@@ -69,6 +75,7 @@ iptables \
 --comment 'udp rule' \
 -j ACCEPT
 iptables \
+-w \
 -A HJ-vnet0 \
 -p udp \
 -m mac \
@@ -84,6 +91,7 @@ iptables \
 --comment 'udp rule' \
 -j RETURN
 ip6tables \
+-w \
 -A FJ-vnet0 \
 -p tcp \
 --destination a:b:c::/128 \
@@ -97,6 +105,7 @@ ip6tables \
 --comment 'tcp/ipv6 rule' \
 -j RETURN
 ip6tables \
+-w \
 -A FP-vnet0 \
 -p tcp \
 -m mac \
@@ -112,6 +121,7 @@ ip6tables \
 --comment 'tcp/ipv6 rule' \
 -j ACCEPT
 ip6tables \
+-w \
 -A HJ-vnet0 \
 -p tcp \
 --destination a:b:c::/128 \
@@ -125,6 +135,7 @@ ip6tables \
 --comment 'tcp/ipv6 rule' \
 -j RETURN
 ip6tables \
+-w \
 -A FJ-vnet0 \
 -p udp \
 -m state \
@@ -133,6 +144,7 @@ ip6tables \
 --comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
 -j RETURN
 ip6tables \
+-w \
 -A FP-vnet0 \
 -p udp \
 -m state \
@@ -141,6 +153,7 @@ ip6tables \
 --comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
 -j ACCEPT
 ip6tables \
+-w \
 -A HJ-vnet0 \
 -p udp \
 -m state \
@@ -149,6 +162,7 @@ ip6tables \
 --comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
 -j RETURN
 ip6tables \
+-w \
 -A FJ-vnet0 \
 -p sctp \
 -m state \
@@ -157,6 +171,7 @@ ip6tables \
 --comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
 -j RETURN
 ip6tables \
+-w \
 -A FP-vnet0 \
 -p sctp \
 -m state \
@@ -165,6 +180,7 @@ ip6tables \
 --comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
 -j ACCEPT
 ip6tables \
+-w \
 -A HJ-vnet0 \
 -p sctp \
 -m state \
@@ -173,6 +189,7 @@ ip6tables \
 --comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
 -j RETURN
 ip6tables \
+-w \
 -A FJ-vnet0 \
 -p ah \
 -m state \
@@ -182,6 +199,7 @@ ip6tables \
 -f ${tmp}' \
 -j RETURN
 ip6tables \
+-w \
 -A FP-vnet0 \
 -p ah \
 -m state \
@@ -191,6 +209,7 @@ ip6tables \
 -f ${tmp}' \
 -j ACCEPT
 ip6tables \
+-w \
 -A HJ-vnet0 \
 -p ah \
 -m state \
