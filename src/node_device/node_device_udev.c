@@ -1983,7 +1983,7 @@ nodeStateInitialize(bool privileged,
 
     virObjectLock(priv);
 
-    priv->udev_monitor = udev_monitor_new_from_netlink(udev, "kernel");
+    priv->udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
     if (!priv->udev_monitor) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("udev_monitor_new_from_netlink returned NULL"));
