@@ -962,37 +962,16 @@ udevProcessStorage(struct udev_device *device,
 
     if (!storage->drive_type ||
         STREQ(def->caps->data.storage.drive_type, "generic")) {
-        int val = 0;
-        const char *str = NULL;
-
         /* All floppy drives have the ID_DRIVE_FLOPPY prop. This is
          * needed since legacy floppies don't have a drive_type */
-        if (udevGetIntProperty(device, "ID_DRIVE_FLOPPY", &val, 0) < 0)
+        if (udevHasDeviceProperty(device, "ID_DRIVE_FLOPPY"))
+            storage->drive_type = g_strdup("floppy");
+        else if (udevHasDeviceProperty(device, "ID_CDROM"))
+            storage->drive_type = g_strdup("cd");
+        else if (udevHasDeviceProperty(device, "ID_DRIVE_FLASH_SD"))
+            storage->drive_type = g_strdup("sd");
+        else if (udevKludgeStorageType(def) != 0)
             goto cleanup;
-        else if (val == 1)
-            str = "floppy";
-
-        if (!str) {
-            if (udevGetIntProperty(device, "ID_CDROM", &val, 0) < 0)
-                goto cleanup;
-            else if (val == 1)
-                str = "cd";
-        }
-
-        if (!str) {
-            if (udevGetIntProperty(device, "ID_DRIVE_FLASH_SD", &val, 0) < 0)
-                goto cleanup;
-            if (val == 1)
-                str = "sd";
-        }
-
-        if (str) {
-            storage->drive_type = g_strdup(str);
-        } else {
-            /* If udev doesn't have it, perhaps we can guess it. */
-            if (udevKludgeStorageType(def) != 0)
-                goto cleanup;
-        }
     }
 
     if (STREQ(def->caps->data.storage.drive_type, "cd")) {
