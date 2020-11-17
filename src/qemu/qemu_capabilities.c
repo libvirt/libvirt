@@ -6068,7 +6068,7 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
 }
 
 
-static void
+void
 virQEMUCapsFillDomainDeviceRNGCaps(virQEMUCapsPtr qemuCaps,
                                    virDomainCapsDeviceRNGPtr rng)
 {
