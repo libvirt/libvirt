@@ -5342,6 +5342,33 @@ qemuDomainTPMDefPostParse(virDomainTPMDefPtr tpm,
 
 
 static int
+qemuDomainMemoryDefPostParse(virDomainMemoryDefPtr mem, virArch arch,
+                             unsigned int parseFlags)
+{
+    /* Memory alignment can't be done for migration or snapshot
+     * scenarios. This logic was defined by commit c7d7ba85a624.
+     *
+     * There is no easy way to replicate at this point the same conditions
+     * used to call qemuDomainAlignMemorySizes(), which means checking if
+     * we're not migrating and not in a snapshot.
+     *
+     * We can use the PARSE_ABI_UPDATE flag, which is more strict -
+     * existing guests will not activate the flag to avoid breaking
+     * boot ABI. This means that any alignment done here will be replicated
+     * later on by qemuDomainAlignMemorySizes() to contemplate existing
+     * guests as well. */
+    if (parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) {
+        if (ARCH_IS_PPC64(arch) &&
+            mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+            virDomainNVDimmAlignSizePseries(mem) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              unsigned int parseFlags,
@@ -5398,6 +5425,11 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         ret = qemuDomainTPMDefPostParse(dev->data.tpm, def->os.arch);
         break;
 
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        ret = qemuDomainMemoryDefPostParse(dev->data.memory, def->os.arch,
+                                           parseFlags);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -5410,7 +5442,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_RNG:
-    case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_AUDIO:
         ret = 0;
