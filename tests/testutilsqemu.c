@@ -31,7 +31,8 @@ static const char *qemu_emulators[VIR_ARCH_LAST] = {
     [VIR_ARCH_PPC] = "/usr/bin/qemu-system-ppc",
     [VIR_ARCH_RISCV32] = "/usr/bin/qemu-system-riscv32",
     [VIR_ARCH_RISCV64] = "/usr/bin/qemu-system-riscv64",
-    [VIR_ARCH_S390X] = "/usr/bin/qemu-system-s390x"
+    [VIR_ARCH_S390X] = "/usr/bin/qemu-system-s390x",
+    [VIR_ARCH_SPARC] = "/usr/bin/qemu-system-sparc",
 };
 
 static const virArch arch_alias[VIR_ARCH_LAST] = {
@@ -74,6 +75,11 @@ static const char *const riscv64_machines[] = {
 static const char *const s390x_machines[] = {
     "s390-virtio", "s390-ccw-virtio", "s390-ccw", NULL
 };
+static const char *const sparc_machines[] = {
+    "SS-5", "LX", "SPARCClassic", "SPARCbook",
+    "SS-10", "SS-20", "SS-4", "SS-600MP",
+    "Voyager", "leon3_generic", NULL
+};
 
 static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = i386_machines,
@@ -85,6 +91,7 @@ static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_RISCV32] = riscv32_machines,
     [VIR_ARCH_RISCV64] = riscv64_machines,
     [VIR_ARCH_S390X] = s390x_machines,
+    [VIR_ARCH_SPARC] = sparc_machines,
 };
 
 static const char *const *kvm_machines[VIR_ARCH_LAST] = {
@@ -106,7 +113,8 @@ static const char *qemu_default_ram_id[VIR_ARCH_LAST] = {
     [VIR_ARCH_ARMV7L] = "vexpress.highmem",
     [VIR_ARCH_PPC64] = "ppc_spapr.ram",
     [VIR_ARCH_PPC] = "ppc_spapr.ram",
-    [VIR_ARCH_S390X] = "s390.ram"
+    [VIR_ARCH_S390X] = "s390.ram",
+    [VIR_ARCH_SPARC] = "sun4m.ram",
 };
 
 char *
@@ -181,19 +189,21 @@ testQemuAddGuest(virCapsPtr caps,
                                        NULL))
         goto error;
 
-    nmachines = g_strv_length((char **)kvm_machines[emu_arch]);
-    machines = virCapabilitiesAllocMachines(kvm_machines[emu_arch],
-                                            nmachines);
-    if (machines == NULL)
-        goto error;
+    if (kvm_machines[emu_arch] != NULL) {
+        nmachines = g_strv_length((char **)kvm_machines[emu_arch]);
+        machines = virCapabilitiesAllocMachines(kvm_machines[emu_arch],
+                                                nmachines);
+        if (machines == NULL)
+            goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest,
-                                       VIR_DOMAIN_VIRT_KVM,
-                                       qemu_emulators[emu_arch],
-                                       NULL,
-                                       nmachines,
-                                       machines))
-        goto error;
+        if (!virCapabilitiesAddGuestDomain(guest,
+                                           VIR_DOMAIN_VIRT_KVM,
+                                           qemu_emulators[emu_arch],
+                                           NULL,
+                                           nmachines,
+                                           machines))
+            goto error;
+    }
 
     return 0;
 
@@ -363,18 +373,20 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
                                       defaultRAMid);
                 virQEMUCapsSet(tmpCaps, QEMU_CAPS_TCG);
             }
-            for (j = 0; kvm_machines[i][j] != NULL; j++) {
-                virQEMUCapsAddMachine(tmpCaps,
-                                      VIR_DOMAIN_VIRT_KVM,
-                                      kvm_machines[i][j],
-                                      NULL,
-                                      NULL,
-                                      0,
+            if (kvm_machines[i] != NULL) {
+                for (j = 0; kvm_machines[i][j] != NULL; j++) {
+                    virQEMUCapsAddMachine(tmpCaps,
+                                          VIR_DOMAIN_VIRT_KVM,
+                                          kvm_machines[i][j],
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          false,
                                       false,
-                                      false,
-                                      true,
-                                      defaultRAMid);
-                virQEMUCapsSet(tmpCaps, QEMU_CAPS_KVM);
+                                          true,
+                                          defaultRAMid);
+                    virQEMUCapsSet(tmpCaps, QEMU_CAPS_KVM);
+                }
             }
         }
 
