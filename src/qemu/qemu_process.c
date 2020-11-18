@@ -6493,6 +6493,12 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     if (qemuExtDevicesPrepareDomain(driver, vm) < 0)
         return -1;
 
+    if (flags & VIR_QEMU_PROCESS_START_NEW) {
+        VIR_DEBUG("Aligning guest memory");
+        if (qemuDomainAlignMemorySizes(vm->def) < 0)
+            return -1;
+    }
+
     for (i = 0; i < vm->def->nchannels; i++) {
         if (qemuDomainPrepareChannel(vm->def->channels[i],
                                      priv->channelTargetDir) < 0)

@@ -9841,9 +9841,6 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 
     qemuBuildDomainLoaderCommandLine(cmd, def, qemuCaps);
 
-    if (!migrateURI && !snapshot && qemuDomainAlignMemorySizes(def) < 0)
-        return NULL;
-
     if (qemuBuildMemCommandLine(cmd, def, qemuCaps, priv) < 0)
         return NULL;
 
