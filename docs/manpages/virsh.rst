@@ -4538,14 +4538,18 @@ attach-disk
       [--current]] | [--persistent]] [--targetbus bus]
       [--driver driver] [--subdriver subdriver] [--iothread iothread]
       [--cache cache] [--io io] [--type type] [--alias alias]
-      [--mode mode] [--sourcetype sourcetype] [--serial serial]
-      [--wwn wwn] [--rawio] [--address address] [--multifunction]
-      [--print-xml]
+      [--mode mode] [--sourcetype sourcetype]
+      [--source-protocol protocol] [--source-host-name hostname:port]
+      [--source-host-transport transport] [--source-host-socket socket]
+      [--serial serial] [--wwn wwn] [--rawio] [--address address]
+      [--multifunction] [--print-xml]
 
 Attach a new disk device to the domain.
-*source* is path for the files and devices. *target* controls the bus or
-device under which the disk is exposed to the guest OS. It indicates the
-"logical" device name; the optional *targetbus* attribute specifies the type
+*source* is path for the files and devices unless *--source-protocol*
+is specified, in which case *source* is the name of a network disk.
+*target* controls the bus or device under which the disk is exposed
+to the guest OS. It indicates the "logical" device name;
+the optional *targetbus* attribute specifies the type
 of disk device to emulate; possible values are driver specific, with typical
 values being *ide*, *scsi*, *virtio*, *xen*, *usb*, *sata*, or *sd*, if
 omitted, the bus type is inferred from the style of the device name (e.g.  a
@@ -4563,7 +4567,7 @@ within the existing virtual cdrom or floppy device; consider using
 ``update-device`` for this usage instead.
 *alias* can set user supplied alias.
 *mode* can specify the two specific mode *readonly* or *shareable*.
-*sourcetype* can indicate the type of source (block|file)
+*sourcetype* can indicate the type of source (block|file|network)
 *cache* can be one of "default", "none", "writethrough", "writeback",
 "directsync" or "unsafe".
 *io* controls specific policies on I/O; QEMU guests support "threads",
@@ -4578,6 +4582,19 @@ ide:controller.bus.unit, usb:bus.port, sata:controller.bus.unit or
 ccw:cssid.ssid.devno. Virtio-ccw devices must have their cssid set to 0xfe.
 *multifunction* indicates specified pci address is a multifunction pci device
 address.
+
+There is also support for using a network disk. As specified, the user can
+provide a *--source-protocol* in which case the *source* parameter will
+be interpreted as the source name. *--source-protocol* must be provided
+if the user intends to provide a network disk or host information.
+Host information can be provided using the tags
+*--source-host-name*, *--source-host-transport*, and *--source-host-socket*,
+which respectively denote the name of the host, the host's transport method,
+and the socket that the host uses. *--source-host-socket* and
+*--source-host-name* cannot both be provided, and the user must provide a
+*--source-host-transport* if they want to provide a *--source-host-socket*.
+The *--source-host-name* parameter supports host:port syntax
+if the user wants to provide a port as well.
 
 If *--print-xml* is specified, then the XML of the disk that would be attached
 is printed instead.

@@ -78,3 +78,17 @@ attach_disk --target sda --sourcetype file --type disk --address ccw:12.34.56
 attach_disk --target vda --sourcetype file --type disk --address test:12.34.56
 attach_disk --target vda --sourcetype file --type disk --address test:12:34:56
 attach_disk --target vda --sourcetype file --type disk --address test:12.34.56
+
+./virsh attach-disk --print-xml --domain testdom $@ --source "" --source-protocol AAA
+./virsh attach-disk --print-xml --domain testdom $@ --source "" --source-protocol AAA
+attach_disk --target hda --source-protocol AAA --sourcetype file
+attach_disk --target hda --sourcetype network
+attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name hostname
+attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:port
+attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:
+attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name :port
+attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name :
+attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:port --source-host-transport trnsp
+attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-transport trnsp
+attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-transport trnsp --source-host-socket /nonexistent/socket
+attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-socket /nonexistent/socket

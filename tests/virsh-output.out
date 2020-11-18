@@ -405,4 +405,92 @@ error: Invalid address.
 + ./virsh attach-disk --print-xml --domain testdom --target vda --sourcetype file --type disk --address test:12.34.56 --source /nonexistent/file
 error: Invalid address.
 
++ ./virsh attach-disk --print-xml --domain testdom --source '' --source-protocol AAA
+error: command 'attach-disk' requires <target> option
++ ./virsh attach-disk --print-xml --domain testdom --source '' --source-protocol AAA
+error: command 'attach-disk' requires <target> option
++ attach_disk --target hda --source-protocol AAA --sourcetype file
++ ./virsh attach-disk --print-xml --domain testdom --target hda --source-protocol AAA --sourcetype file --source /nonexistent/file
+error: --source-protocol option requires --sourcetype network
+
++ attach_disk --target hda --sourcetype network
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source /nonexistent/file
+error: --source-protocol option requires --sourcetype network
+
++ attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name hostname
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source-protocol TEST --source-host-name hostname --source /nonexistent/file
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='hostname'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
++ attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:port
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:port --source /nonexistent/file
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='hostname' port='port'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
++ attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source-protocol TEST --source-host-name hostname: --source /nonexistent/file
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='hostname' port=''/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
++ attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name :port
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source-protocol TEST --source-host-name :port --source /nonexistent/file
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='' port='port'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
++ attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name :
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source-protocol TEST --source-host-name : --source /nonexistent/file
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host name='' port=''/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
++ attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:port --source-host-transport trnsp
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source-protocol TEST --source-host-name hostname:port --source-host-transport trnsp --source /nonexistent/file
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host transport='trnsp' name='hostname' port='port'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
++ attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-transport trnsp
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source-protocol TEST --source-host-transport trnsp --source /nonexistent/file
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host transport='trnsp'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
++ attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-transport trnsp --source-host-socket /nonexistent/socket
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source-protocol TEST --source-host-transport trnsp --source-host-socket /nonexistent/socket --source /nonexistent/file
+<disk type='network'>
+  <source protocol='TEST' name='/nonexistent/file'>
+    <host transport='trnsp' socket='/nonexistent/socket'/>
+  </source>
+  <target dev='hda'/>
+</disk>
+
++ attach_disk --target hda --sourcetype network --source-protocol TEST --source-host-socket /nonexistent/socket
++ ./virsh attach-disk --print-xml --domain testdom --target hda --sourcetype network --source-protocol TEST --source-host-socket /nonexistent/socket --source /nonexistent/file
+error: Option --source-host-transport is required by option --source-host-socket
+
 end
