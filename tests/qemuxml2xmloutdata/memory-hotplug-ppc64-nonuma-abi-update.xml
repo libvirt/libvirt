@@ -1,0 +1,38 @@
+<domain type='kvm'>
+  <name>QEMUGuest1</name>
+  <uuid>49545eb3-75e1-2d0a-acdd-f0294406c99e</uuid>
+  <maxMemory slots='16' unit='KiB'>4194304</maxMemory>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
+    </controller>
+    <memballoon model='none'/>
+    <panic model='pseries'/>
+    <memory model='dimm'>
+      <target>
+        <size unit='KiB'>524288</size>
+      </target>
+      <address type='dimm' slot='0'/>
+    </memory>
+    <memory model='dimm'>
+      <target>
+        <size unit='KiB'>524288</size>
+      </target>
+      <address type='dimm' slot='1'/>
+    </memory>
+  </devices>
+</domain>

@@ -3005,6 +3005,13 @@ mymain(void)
     DO_TEST("memory-hotplug-ppc64-nonuma", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST_FULL("memory-hotplug-ppc64-nonuma-abi-update",
+                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+                 ARG_QEMU_CAPS,
+                 QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM,
+                 QEMU_CAPS_NUMA, QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+                 QEMU_CAPS_OBJECT_MEMORY_RAM,
+                 QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-access");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-label");

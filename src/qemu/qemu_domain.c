@@ -5358,10 +5358,16 @@ qemuDomainMemoryDefPostParse(virDomainMemoryDefPtr mem, virArch arch,
      * later on by qemuDomainAlignMemorySizes() to contemplate existing
      * guests as well. */
     if (parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) {
-        if (ARCH_IS_PPC64(arch) &&
-            mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-            virDomainNVDimmAlignSizePseries(mem) < 0)
-            return -1;
+        if (ARCH_IS_PPC64(arch)) {
+            unsigned long long ppc64MemModuleAlign = 256 * 1024;
+
+            if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+                if (virDomainNVDimmAlignSizePseries(mem) < 0)
+                    return -1;
+            } else {
+                mem->size = VIR_ROUND_UP(mem->size, ppc64MemModuleAlign);
+            }
+        }
     }
 
     return 0;
