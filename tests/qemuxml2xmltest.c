@@ -32,7 +32,8 @@ testXML2XMLActive(const void *opaque)
     const struct testQemuInfo *info = opaque;
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
-                                      info->infile, info->outfile, true, 0,
+                                      info->infile, info->outfile, true,
+                                      info->parseFlags,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 }
 
@@ -43,7 +44,8 @@ testXML2XMLInactive(const void *opaque)
     const struct testQemuInfo *info = opaque;
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
-                                      info->infile, info->outfile, false, 0,
+                                      info->infile, info->outfile, false,
+                                      info->parseFlags,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 }
 
