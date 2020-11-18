@@ -33,7 +33,7 @@ v6.10.0 (unreleased)
 
   * hyperv: implement new APIs
 
-    The `virDomainGetMaxMemory()``, ``virDomainSetMaxMemory()``,
+    The ``virDomainGetMaxMemory()``, ``virDomainSetMaxMemory()``,
     ``virDomainGetSchedulerType()``, ``virDomainGetSchedulerParameters()``,
     ``virDomainGetSchedulerParametersFlags()``, ``virDomainGetVcpus()``,
     ``virDomainGetVcpusFlags()``, ``virDomainGetMaxVcpus()``,
