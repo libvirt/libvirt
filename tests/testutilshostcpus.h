@@ -130,6 +130,14 @@ static virCPUDef cpuS390Data = {
     .threads = 1,
 };
 
+static virCPUDef cpuSparcData = {
+    .type = VIR_CPU_TYPE_HOST,
+    .arch = VIR_ARCH_SPARC,
+    .sockets = 1,
+    .cores = 1,
+    .threads = 1,
+};
+
 static inline virCPUDefPtr
 testUtilsHostCpusGetDefForModel(const char *model)
 {
@@ -161,6 +169,8 @@ testUtilsHostCpusGetDefForArch(virArch arch)
         return virCPUDefCopy(&cpuS390Data);
     else if (arch == VIR_ARCH_AARCH64)
         return virCPUDefCopy(&cpuAarch64Data);
+    else if (arch == VIR_ARCH_SPARC)
+        return virCPUDefCopy(&cpuSparcData);
 
     return NULL;
 }
