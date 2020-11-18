@@ -1391,7 +1391,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
  * driver. If @refresh is true, the capabilities will be
  * rebuilt first
  *
- * The caller must release the reference with virObjetUnref
+ * The caller must release the reference with virObjectUnref
  *
  * Returns: a reference to a virCapsPtr instance or NULL
  */
