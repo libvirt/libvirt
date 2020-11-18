@@ -5360,24 +5360,6 @@ virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 
 
 static int
-virDomainMemoryDefPostParse(virDomainMemoryDefPtr mem,
-                            const virDomainDef *def)
-{
-    /* Although only the QEMU driver implements PPC64 support, this
-     * code is related to the platform specification (PAPR), i.e. it
-     * is hypervisor agnostic, and any future PPC64 hypervisor driver
-     * will have the same restriction.
-     */
-    if (ARCH_IS_PPC64(def->os.arch) &&
-        mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        virDomainNVDimmAlignSizePseries(mem) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
 virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
                                   const virDomainDef *def,
                                   unsigned int parseFlags G_GNUC_UNUSED,
@@ -5422,10 +5404,6 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
         ret = 0;
         break;
 
-    case VIR_DOMAIN_DEVICE_MEMORY:
-        ret = virDomainMemoryDefPostParse(dev->data.memory, def);
-        break;
-
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -5440,6 +5418,7 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_AUDIO:
         ret = 0;
