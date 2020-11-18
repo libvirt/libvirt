@@ -678,6 +678,15 @@ virsh migrate --domain web1 [--p2p] --copy-storage-all
     </pre>
 
     <p>
+      One caveat is that on SELinux-enabled systems all the sockets that the
+      hypervisor is going to connect to needs to have the proper context and
+      that is chosen before its creation by the process that creates it.  That
+      is usually done by using <code>setsockcreatecon{,raw}()</code> functions.
+      Generally *system_r:system_u:svirt_socket_t:s0* should do the trick, but
+      check the SELinux rules and settings of your system.
+    </p>
+
+    <p>
       Supported by QEMU driver
     </p>
 
