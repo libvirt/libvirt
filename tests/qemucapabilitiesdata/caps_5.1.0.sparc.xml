@@ -1,0 +1,133 @@
+<qemuCaps>
+  <emulator>/usr/bin/qemu-system-sparc</emulator>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
+  <flag name='spice'/>
+  <flag name='usb-redir'/>
+  <flag name='scsi-disk.channel'/>
+  <flag name='scsi-block'/>
+  <flag name='dump-guest-memory'/>
+  <flag name='usb-redir.filter'/>
+  <flag name='scsi-disk.wwn'/>
+  <flag name='seccomp-sandbox'/>
+  <flag name='reboot-timeout'/>
+  <flag name='vnc'/>
+  <flag name='device-video-primary'/>
+  <flag name='nbd-server'/>
+  <flag name='rng-random'/>
+  <flag name='rng-egd'/>
+  <flag name='mem-merge'/>
+  <flag name='drive-discard'/>
+  <flag name='boot-strict'/>
+  <flag name='enable-fips'/>
+  <flag name='spice-file-xfer-disable'/>
+  <flag name='msg-timestamp'/>
+  <flag name='active-commit'/>
+  <flag name='change-backing-file'/>
+  <flag name='memory-backend-ram'/>
+  <flag name='numa'/>
+  <flag name='memory-backend-file'/>
+  <flag name='splash-timeout'/>
+  <flag name='iothread'/>
+  <flag name='migrate-rdma'/>
+  <flag name='drive-iotune-max'/>
+  <flag name='machine-vmport-opt'/>
+  <flag name='aes-key-wrap'/>
+  <flag name='dea-key-wrap'/>
+  <flag name='vhost-user-multiqueue'/>
+  <flag name='migration-event'/>
+  <flag name='gic-version'/>
+  <flag name='incoming-defer'/>
+  <flag name='chardev-file-append'/>
+  <flag name='vserport-change-event'/>
+  <flag name='spice-gl'/>
+  <flag name='chardev-logfile'/>
+  <flag name='debug-threads'/>
+  <flag name='secret'/>
+  <flag name='name-guest'/>
+  <flag name='spice-unix'/>
+  <flag name='drive-detect-zeroes'/>
+  <flag name='tls-creds-x509'/>
+  <flag name='smm'/>
+  <flag name='query-hotpluggable-cpus'/>
+  <flag name='drive-iotune-max-length'/>
+  <flag name='query-qmp-schema'/>
+  <flag name='gluster.debug_level'/>
+  <flag name='drive-iotune-group'/>
+  <flag name='spice-rendernode'/>
+  <flag name='block-write-threshold'/>
+  <flag name='query-named-block-nodes'/>
+  <flag name='kernel-irqchip'/>
+  <flag name='kernel-irqchip.split'/>
+  <flag name='loadparm'/>
+  <flag name='vnc-multi-servers'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='numa.dist'/>
+  <flag name='disk-share-rw'/>
+  <flag name='iscsi.password-secret'/>
+  <flag name='isa-serial'/>
+  <flag name='dump-completed'/>
+  <flag name='qcow2-luks'/>
+  <flag name='seccomp-blacklist'/>
+  <flag name='query-cpus-fast'/>
+  <flag name='disk-write-cache'/>
+  <flag name='nbd-tls'/>
+  <flag name='pr-manager-helper'/>
+  <flag name='qom-list-properties'/>
+  <flag name='memory-backend-file.discard-data'/>
+  <flag name='sdl-gl'/>
+  <flag name='screendump_device'/>
+  <flag name='blockdev-del'/>
+  <flag name='chardev-fd-pass'/>
+  <flag name='egl-headless'/>
+  <flag name='blockdev'/>
+  <flag name='memory-backend-memfd'/>
+  <flag name='memory-backend-memfd.hugetlb'/>
+  <flag name='iothread.poll-max-ns'/>
+  <flag name='egl-headless.rendernode'/>
+  <flag name='memory-backend-file.align'/>
+  <flag name='memory-backend-file.pmem'/>
+  <flag name='scsi-disk.device_id'/>
+  <flag name='overcommit'/>
+  <flag name='query-current-machine'/>
+  <flag name='bitmap-merge'/>
+  <flag name='nbd-bitmap'/>
+  <flag name='migration-file-drop-cache'/>
+  <flag name='dbus-vmstate'/>
+  <flag name='blockdev-file-dynamic-auto-read-only'/>
+  <flag name='savevm-monitor-nodes'/>
+  <flag name='drive-nvme'/>
+  <flag name='smp-dies'/>
+  <flag name='rng-builtin'/>
+  <flag name='query-named-block-nodes.flat'/>
+  <flag name='blockdev-snapshot.allow-write-only-overlay'/>
+  <flag name='storage.werror'/>
+  <flag name='fsdev.multidevs'/>
+  <flag name='aio.io_uring'/>
+  <flag name='tcg'/>
+  <flag name='fw_cfg'/>
+  <flag name='migration-param.bandwidth'/>
+  <flag name='migration-param.downtime'/>
+  <flag name='migration-param.xbzrle-cache-size'/>
+  <flag name='numa.hmat'/>
+  <flag name='blockdev-hostdev-scsi'/>
+  <flag name='netdev.vhost-vdpa'/>
+  <flag name='fsdev.createmode'/>
+  <flag name='ncr53c90'/>
+  <version>5001000</version>
+  <kvmVersion>0</kvmVersion>
+  <microcodeVersion>0</microcodeVersion>
+  <package>qemu-5.1.0-5.fc33</package>
+  <arch>sparc</arch>
+  <machine type='tcg' name='SS-5' maxCpus='1' default='yes' defaultCPU='Fujitsu-MB86904-sparc-cpu'/>
+  <machine type='tcg' name='SS-20' maxCpus='4' defaultCPU='TI-SuperSparc-II-sparc-cpu'/>
+  <machine type='tcg' name='LX' maxCpus='1' defaultCPU='TI-MicroSparc-I-sparc-cpu'/>
+  <machine type='tcg' name='SPARCClassic' maxCpus='1' defaultCPU='TI-MicroSparc-I-sparc-cpu'/>
+  <machine type='tcg' name='leon3_generic' maxCpus='1' defaultCPU='LEON3-sparc-cpu'/>
+  <machine type='tcg' name='SPARCbook' maxCpus='1' defaultCPU='TI-MicroSparc-I-sparc-cpu'/>
+  <machine type='tcg' name='SS-4' maxCpus='1' defaultCPU='Fujitsu-MB86904-sparc-cpu'/>
+  <machine type='tcg' name='SS-600MP' maxCpus='4' defaultCPU='TI-SuperSparc-II-sparc-cpu'/>
+  <machine type='tcg' name='SS-10' maxCpus='4' defaultCPU='TI-SuperSparc-II-sparc-cpu'/>
+  <machine type='tcg' name='Voyager' maxCpus='1' defaultCPU='Fujitsu-MB86904-sparc-cpu'/>
+</qemuCaps>
