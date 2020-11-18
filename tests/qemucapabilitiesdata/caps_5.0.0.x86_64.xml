@@ -245,6 +245,8 @@
   <flag name='numa.hmat'/>
   <flag name='blockdev-hostdev-scsi'/>
   <flag name='fsdev.createmode'/>
+  <flag name='dc390'/>
+  <flag name='am53c974'/>
   <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100241</microcodeVersion>

@@ -156,6 +156,8 @@
   <flag name='tcg'/>
   <flag name='pvscsi'/>
   <flag name='fw_cfg'/>
+  <flag name='dc390'/>
+  <flag name='am53c974'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

@@ -164,6 +164,8 @@
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='fsdev.createmode'/>
+  <flag name='dc390'/>
+  <flag name='am53c974'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700289</microcodeVersion>

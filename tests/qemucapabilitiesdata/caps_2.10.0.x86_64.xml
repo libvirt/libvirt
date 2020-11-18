@@ -191,6 +191,8 @@
   <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>
   <flag name='fsdev.createmode'/>
+  <flag name='dc390'/>
+  <flag name='am53c974'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100287</microcodeVersion>

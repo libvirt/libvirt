@@ -604,6 +604,11 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "block-export-add",
               "netdev.vhost-vdpa",
               "fsdev.createmode",
+
+              /* 385 */
+              "ncr53c90",
+              "dc390",
+              "am53c974",
     );
 
 
@@ -1306,6 +1311,20 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "tcg-accel", QEMU_CAPS_TCG },
     { "pvscsi", QEMU_CAPS_SCSI_PVSCSI },
     { "spapr-tpm-proxy", QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY },
+    /*
+     * We don't probe 'esp' directly, because it is often reported
+     * as present for all QEMU binaries, due to it being enabled
+     * for built as a dependancy of dc390/am53c974 PCI SCSI
+     * controllers.
+     *
+     * The base 'esp' device is only used as a built-in device
+     * and is not user-creatable. So we turn this cap on later
+     * based on arch.
+     *
+     * { "esp", QEMU_CAPS_SCSI_NCR53C90 },
+     */
+    { "dc390", QEMU_CAPS_SCSI_DC390 },
+    { "am53c974", QEMU_CAPS_SCSI_AM53C974 },
 };
 
 
@@ -5120,6 +5139,14 @@ virQEMUCapsInitProcessCaps(virQEMUCapsPtr qemuCaps)
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_SAVEVM_MONITOR_NODES))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV);
+
+    /* We can't probe "esp" as a type via virQEMUCapsObjectTypes
+     * array as it is only usable when builtin to the machine type
+     */
+    if (qemuCaps->arch == VIR_ARCH_SPARC ||
+        qemuCaps->arch == VIR_ARCH_M68K ||
+        qemuCaps->arch == VIR_ARCH_MIPS)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_SCSI_NCR53C90);
 
     virQEMUCapsInitProcessCapsInterlock(qemuCaps);
 }
