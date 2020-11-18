@@ -36,6 +36,9 @@ struct _virDomainCapsEnum {
     unsigned int values; /* Bitmask of values supported in the corresponding enum */
 };
 
+#define STATIC_ASSERT_ENUM(last) \
+    G_STATIC_ASSERT(last <= sizeof(unsigned int) * CHAR_BIT)
+
 typedef struct _virDomainCapsStringValues virDomainCapsStringValues;
 typedef virDomainCapsStringValues *virDomainCapsStringValuesPtr;
 struct _virDomainCapsStringValues {
@@ -43,6 +46,8 @@ struct _virDomainCapsStringValues {
     size_t nvalues; /* number of strings */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_LOADER_TYPE_LAST);
+STATIC_ASSERT_ENUM(VIR_TRISTATE_BOOL_LAST);
 typedef struct _virDomainCapsLoader virDomainCapsLoader;
 typedef virDomainCapsLoader *virDomainCapsLoaderPtr;
 struct _virDomainCapsLoader {
@@ -53,6 +58,7 @@ struct _virDomainCapsLoader {
     virDomainCapsEnum secure;   /* Info about secure:virTristateBool */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_OS_DEF_FIRMWARE_LAST);
 typedef struct _virDomainCapsOS virDomainCapsOS;
 typedef virDomainCapsOS *virDomainCapsOSPtr;
 struct _virDomainCapsOS {
@@ -61,6 +67,9 @@ struct _virDomainCapsOS {
     virDomainCapsLoader loader;     /* Info about virDomainLoaderDef */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_DISK_DEVICE_LAST);
+STATIC_ASSERT_ENUM(VIR_DOMAIN_DISK_BUS_LAST);
+STATIC_ASSERT_ENUM(VIR_DOMAIN_DISK_MODEL_LAST);
 typedef struct _virDomainCapsDeviceDisk virDomainCapsDeviceDisk;
 typedef virDomainCapsDeviceDisk *virDomainCapsDeviceDiskPtr;
 struct _virDomainCapsDeviceDisk {
@@ -71,6 +80,7 @@ struct _virDomainCapsDeviceDisk {
     /* add new fields here */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_GRAPHICS_TYPE_LAST);
 typedef struct _virDomainCapsDeviceGraphics virDomainCapsDeviceGraphics;
 typedef virDomainCapsDeviceGraphics *virDomainCapsDeviceGraphicsPtr;
 struct _virDomainCapsDeviceGraphics {
@@ -78,6 +88,7 @@ struct _virDomainCapsDeviceGraphics {
     virDomainCapsEnum type;   /* virDomainGraphicsType */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_VIDEO_TYPE_LAST);
 typedef struct _virDomainCapsDeviceVideo virDomainCapsDeviceVideo;
 typedef virDomainCapsDeviceVideo *virDomainCapsDeviceVideoPtr;
 struct _virDomainCapsDeviceVideo {
@@ -85,6 +96,11 @@ struct _virDomainCapsDeviceVideo {
     virDomainCapsEnum modelType;   /* virDomainVideoType */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_HOSTDEV_MODE_LAST);
+STATIC_ASSERT_ENUM(VIR_DOMAIN_STARTUP_POLICY_LAST);
+STATIC_ASSERT_ENUM(VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST);
+STATIC_ASSERT_ENUM(VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST);
+STATIC_ASSERT_ENUM(VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST);
 typedef struct _virDomainCapsDeviceHostdev virDomainCapsDeviceHostdev;
 typedef virDomainCapsDeviceHostdev *virDomainCapsDeviceHostdevPtr;
 struct _virDomainCapsDeviceHostdev {
@@ -97,6 +113,8 @@ struct _virDomainCapsDeviceHostdev {
     /* add new fields here */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_RNG_MODEL_LAST);
+STATIC_ASSERT_ENUM(VIR_DOMAIN_RNG_BACKEND_LAST);
 typedef struct _virDomainCapsDeviceRNG virDomainCapsDeviceRNG;
 typedef virDomainCapsDeviceRNG *virDomainCapsDeviceRNGPtr;
 struct _virDomainCapsDeviceRNG {
@@ -105,6 +123,7 @@ struct _virDomainCapsDeviceRNG {
     virDomainCapsEnum backendModel;   /* virDomainRNGBackend */
 };
 
+STATIC_ASSERT_ENUM(VIR_GIC_VERSION_LAST);
 typedef struct _virDomainCapsFeatureGIC virDomainCapsFeatureGIC;
 typedef virDomainCapsFeatureGIC *virDomainCapsFeatureGICPtr;
 struct _virDomainCapsFeatureGIC {
