@@ -3161,6 +3161,9 @@ mymain(void)
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_NEC_USB_XHCI);
 
+    DO_TEST("sparc-minimal",
+            QEMU_CAPS_SCSI_NCR53C90);
+
     /* VM XML has invalid arch/ostype/virttype combo, but the SKIP flag
      * will avoid the error during parse. This will cause us to fill in
      * the missing machine type using the i386 binary, despite it being

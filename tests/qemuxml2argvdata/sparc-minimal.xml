@@ -1,0 +1,21 @@
+<domain type='qemu'>
+  <name>redhat62sparc</name>
+  <uuid>00010203-0405-4607-8809-0a0b0c0d0e0f</uuid>
+  <memory unit="mib">500</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch="sparc">hvm</type>
+  </os>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver type='qcow2'/>
+      <source file='/home/berrange/VirtualMachines/redhat-6.2-sparc.img'/>
+      <target dev='sda' bus='scsi'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <source file='/home/berrange/VirtualMachines/redhat-6.2-sparc.iso'/>
+      <target dev='sdb' bus='scsi'/>
+    </disk>
+    <controller type="scsi" model="ncr53c90" index="0"/>
+  </devices>
+</domain>
