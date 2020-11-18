@@ -1100,6 +1100,12 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
             if (uri->port)
                 port = uri->port;
         } else if (STREQ(uri->scheme, "unix")) {
+            if (flags & VIR_MIGRATE_TLS) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("NBD migration with TLS is not supported over UNIX socket"));
+                return -1;
+            }
+
             if (!uri->path) {
                 virReportError(VIR_ERR_INVALID_ARG, "%s",
                                _("UNIX disks URI does not include path"));
