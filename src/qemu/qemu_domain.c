@@ -3561,6 +3561,10 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         break;
 
     case VIR_ARCH_SPARC:
+        addDefaultUSB = false;
+        addDefaultMemballoon = false;
+        break;
+
     case VIR_ARCH_SPARC64:
         addPCIRoot = true;
         break;
