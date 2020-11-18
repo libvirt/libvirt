@@ -2471,11 +2471,15 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
             virBufferAddLit(&buf, "pvscsi");
             break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
+            virBufferAddLit(&buf, "am53c974");
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+            virBufferAddLit(&buf, "dc-390");
+            break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90: /* It is built-in dev */
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported controller model: %s"),
                            virDomainControllerModelSCSITypeToString(def->model));
@@ -2712,6 +2716,14 @@ qemuBuildSkipController(const virDomainControllerDef *controller,
     if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
         controller->idx == 0 && qemuDomainHasBuiltinIDE(def))
         return true;
+
+    /* first ESP SCSI controller is implicit on certain machine types */
+    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
+        controller->idx == 0 &&
+        controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90 &&
+        qemuDomainHasBuiltinESP(def)) {
+        return true;
+    }
 
     return false;
 }

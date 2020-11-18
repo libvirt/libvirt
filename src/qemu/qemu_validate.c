@@ -2953,13 +2953,31 @@ qemuValidateCheckSCSIControllerModel(virQEMUCapsPtr qemuCaps,
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
-    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
-    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
-    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported controller model: %s"),
                        virDomainControllerModelSCSITypeToString(model));
         return false;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_NCR53C90)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support "
+                             "the NCR53C90 (ESP) controller"));
+        }
+        return true;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DC390)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support "
+                             "the DC390 (ESP) controller"));
+        }
+        return true;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_AM53C974)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support "
+                             "the AM53C974 (ESP) controller"));
+        }
+        return true;
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3067,6 +3085,19 @@ qemuValidateDomainDeviceDefControllerSCSI(const virDomainControllerDef *controll
                 return -1;
             break;
 
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
+            if (controller->idx != 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("ncr53c90 can only be used as first SCSI controller"));
+                return -1;
+            }
+            if (!qemuDomainHasBuiltinESP(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("ncr53c90 SCSI controller is not a built-in for this machine"));
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
@@ -3074,7 +3105,6 @@ qemuValidateDomainDeviceDefControllerSCSI(const virDomainControllerDef *controll
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:

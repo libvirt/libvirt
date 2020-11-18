@@ -176,6 +176,12 @@ qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
             controller->info.alias = g_strdup("usb");
             return 0;
         }
+    } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+        if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90 &&
+            controller->idx == 0) {
+            controller->info.alias = g_strdup("scsi");
+            return 0;
+        }
     }
     /* all other controllers use the default ${type}${index} naming
      * scheme for alias/id.

@@ -64,6 +64,8 @@ qemuDomainGetSCSIControllerModel(const virDomainDef *def,
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
     else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
+    else if (qemuDomainHasBuiltinESP(def))
+        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90;
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("Unable to determine model for SCSI controller idx=%d"),
@@ -2247,6 +2249,11 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
            dealt with earlier on */
         if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
             cont->idx == 0)
+            continue;
+
+        /* NCR53C90 SCSI controller is always a built-in device */
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
+            cont->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90)
             continue;
 
         if (!virDeviceInfoPCIAddressIsWanted(&cont->info))
