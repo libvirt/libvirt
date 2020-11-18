@@ -110,10 +110,6 @@ int virCgroupGetValueForBlkDev(const char *str,
                                const char *devPath,
                                char **value);
 
-int virCgroupNew(const char *path,
-                 int controllers,
-                 virCgroupPtr *group);
-
 int virCgroupNewPartition(const char *path,
                           bool create,
                           int controllers,

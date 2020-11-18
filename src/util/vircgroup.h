@@ -60,6 +60,10 @@ typedef enum {
 
 bool virCgroupAvailable(void);
 
+int virCgroupNew(const char *path,
+                 int controllers,
+                 virCgroupPtr *group);
+
 int virCgroupNewSelf(virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1);
 

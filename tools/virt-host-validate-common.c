@@ -293,7 +293,7 @@ int virHostValidateCGroupControllers(const char *hvname,
     int ret = 0;
     size_t i;
 
-    if (virCgroupNewSelf(&group) < 0)
+    if (virCgroupNew("/", -1, &group) < 0)
         return -1;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {

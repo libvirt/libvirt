@@ -1796,6 +1796,7 @@ virCgroupHasController;
 virCgroupHasEmptyTasks;
 virCgroupKillPainfully;
 virCgroupKillRecursive;
+virCgroupNew;
 virCgroupNewDetect;
 virCgroupNewDetectMachine;
 virCgroupNewDomainPartition;
