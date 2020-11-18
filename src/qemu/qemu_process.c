@@ -7436,7 +7436,10 @@ qemuProcessCreatePretendCmdPrepare(virQEMUDriverPtr driver,
                   VIR_QEMU_PROCESS_START_AUTODESTROY, -1);
 
     flags |= VIR_QEMU_PROCESS_START_PRETEND;
-    flags |= VIR_QEMU_PROCESS_START_NEW;
+
+    if (!migrateURI)
+        flags |= VIR_QEMU_PROCESS_START_NEW;
+
     if (standalone)
         flags |= VIR_QEMU_PROCESS_START_STANDALONE;
 
