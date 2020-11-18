@@ -780,6 +780,7 @@ bool qemuDomainIsPSeries(const virDomainDef *def);
 bool qemuDomainHasPCIRoot(const virDomainDef *def);
 bool qemuDomainHasPCIeRoot(const virDomainDef *def);
 bool qemuDomainHasBuiltinIDE(const virDomainDef *def);
+bool qemuDomainHasBuiltinESP(const virDomainDef *def);
 bool qemuDomainNeedsFDC(const virDomainDef *def);
 bool qemuDomainSupportsPCI(virDomainDefPtr def,
                            virQEMUCapsPtr qemuCaps);

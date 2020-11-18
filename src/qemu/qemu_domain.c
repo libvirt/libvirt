@@ -8289,6 +8289,23 @@ qemuDomainMachineHasBuiltinIDE(const char *machine,
 }
 
 
+bool qemuDomainHasBuiltinESP(const virDomainDef *def)
+{
+    /* These machines use ncr53c90 (ESP) SCSI controller built-in */
+    if (def->os.arch == VIR_ARCH_SPARC) {
+        return true;
+    } else if (ARCH_IS_MIPS64(def->os.arch) &&
+               (STREQ(def->os.machine, "magnum") ||
+                STREQ(def->os.machine, "pica61"))) {
+        return true;
+    } else if (def->os.arch == VIR_ARCH_M68K &&
+               STREQ(def->os.machine, "q800")) {
+        return true;
+    }
+    return false;
+}
+
+
 static bool
 qemuDomainMachineNeedsFDC(const char *machine,
                           const virArch arch)
