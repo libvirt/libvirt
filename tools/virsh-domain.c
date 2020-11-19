@@ -519,6 +519,22 @@ cmdAttachDiskFormatAddress(vshControl *ctl,
 }
 
 
+enum virshAttachDiskSourceType {
+    VIRSH_ATTACH_DISK_SOURCE_TYPE_NONE,
+    VIRSH_ATTACH_DISK_SOURCE_TYPE_FILE,
+    VIRSH_ATTACH_DISK_SOURCE_TYPE_BLOCK,
+
+    VIRSH_ATTACH_DISK_SOURCE_TYPE_LAST
+};
+
+VIR_ENUM_DECL(virshAttachDiskSource);
+VIR_ENUM_IMPL(virshAttachDiskSource,
+              VIRSH_ATTACH_DISK_SOURCE_TYPE_LAST,
+              "",
+              "file",
+              "block");
+
+
 static bool
 cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 {
@@ -527,7 +543,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *target = NULL;
     const char *driver = NULL;
     const char *subdriver = NULL;
-    const char *type = NULL;
+    const char *device = NULL;
     const char *mode = NULL;
     const char *iothread = NULL;
     const char *cache = NULL;
@@ -537,10 +553,10 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *wwn = NULL;
     const char *targetbus = NULL;
     const char *alias = NULL;
-    bool isBlock = false;
     int ret;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     const char *stype = NULL;
+    int type = VIR_STORAGE_TYPE_NONE;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *xml = NULL;
     struct stat st;
@@ -564,7 +580,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "target", &target) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "driver", &driver) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "subdriver", &subdriver) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "type", &type) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "type", &device) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "iothread", &iothread) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "cache", &cache) < 0 ||
@@ -577,18 +593,22 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "sourcetype", &stype) < 0)
         return false;
 
-    if (!stype) {
+    if (stype &&
+        (type = virshAttachDiskSourceTypeFromString(stype)) < 0) {
+        vshError(ctl, _("Unknown source type: '%s'"), stype);
+        return false;
+    }
+
+    if (type == VIRSH_ATTACH_DISK_SOURCE_TYPE_NONE) {
         if (STRNEQ_NULLABLE(driver, "file") &&
             STRNEQ_NULLABLE(driver, "tap") &&
             source &&
             stat(source, &st) == 0 &&
-            S_ISBLK(st.st_mode))
-            isBlock = true;
-    } else if (STREQ(stype, "block")) {
-        isBlock = true;
-    } else if (STRNEQ(stype, "file")) {
-        vshError(ctl, _("Unknown source type: '%s'"), stype);
-        return false;
+            S_ISBLK(st.st_mode)) {
+            type = VIRSH_ATTACH_DISK_SOURCE_TYPE_BLOCK;
+        } else {
+            type = VIRSH_ATTACH_DISK_SOURCE_TYPE_FILE;
+        }
     }
 
     if (mode) {
@@ -604,13 +624,10 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     /* Make XML of disk */
     virBufferAddLit(&buf, "<disk");
-    if (isBlock)
-        virBufferAddLit(&buf, " type='block'");
-    else
-        virBufferAddLit(&buf, " type='file'");
+    virBufferAsprintf(&buf, " type='%s'", virshAttachDiskSourceTypeToString(type));
 
-    if (type)
-        virBufferAsprintf(&buf, " device='%s'", type);
+    if (device)
+        virBufferAsprintf(&buf, " device='%s'", device);
     if (vshCommandOptBool(cmd, "rawio"))
         virBufferAddLit(&buf, " rawio='yes'");
     virBufferAddLit(&buf, ">\n");
@@ -633,9 +650,20 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         virBufferAddLit(&buf, "/>\n");
     }
 
-    if (source)
-        virBufferAsprintf(&buf, "<source %s='%s'/>\n",
-                          !isBlock ? "file" : "dev", source);
+    switch ((enum virshAttachDiskSourceType) type) {
+    case VIRSH_ATTACH_DISK_SOURCE_TYPE_FILE:
+        virBufferEscapeString(&buf, "<source file='%s'/>\n", source);
+        break;
+
+    case VIRSH_ATTACH_DISK_SOURCE_TYPE_BLOCK:
+        virBufferEscapeString(&buf, "<source dev='%s'/>\n", source);
+        break;
+
+    case VIRSH_ATTACH_DISK_SOURCE_TYPE_NONE:
+    case VIRSH_ATTACH_DISK_SOURCE_TYPE_LAST:
+        break;
+    }
+
     virBufferAsprintf(&buf, "<target dev='%s'", target);
     if (targetbus)
         virBufferAsprintf(&buf, " bus='%s'", targetbus);
