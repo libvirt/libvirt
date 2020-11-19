@@ -861,6 +861,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
 typedef enum {
     VIR_CPU_ADD_FEATURE_MODE_EXCLUSIVE, /* Fail if feature exists */
     VIR_CPU_ADD_FEATURE_MODE_UPDATE,    /* Add feature or update policy */
+    VIR_CPU_ADD_FEATURE_MODE_NEW,       /* Add feature if it does not exist */
 } virCPUDefAddFeatureMode;
 
 static int
@@ -876,6 +877,9 @@ virCPUDefAddFeatureInternal(virCPUDefPtr def,
 
     if ((feat = virCPUDefFindFeature(def, name))) {
         switch (mode) {
+        case VIR_CPU_ADD_FEATURE_MODE_NEW:
+            return 0;
+
         case VIR_CPU_ADD_FEATURE_MODE_UPDATE:
             feat->policy = policy;
             return 0;
@@ -917,6 +921,16 @@ virCPUDefAddFeature(virCPUDefPtr def,
 {
     return virCPUDefAddFeatureInternal(def, name, policy,
                                        VIR_CPU_ADD_FEATURE_MODE_EXCLUSIVE);
+}
+
+
+int
+virCPUDefAddFeatureIfMissing(virCPUDefPtr def,
+                             const char *name,
+                             int policy)
+{
+    return virCPUDefAddFeatureInternal(def, name, policy,
+                                       VIR_CPU_ADD_FEATURE_MODE_NEW);
 }
 
 

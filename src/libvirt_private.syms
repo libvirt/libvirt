@@ -96,6 +96,7 @@ virDomainCheckpointTypeToString;
 virCPUCacheModeTypeFromString;
 virCPUCacheModeTypeToString;
 virCPUDefAddFeature;
+virCPUDefAddFeatureIfMissing;
 virCPUDefCheckFeatures;
 virCPUDefCopy;
 virCPUDefCopyModel;

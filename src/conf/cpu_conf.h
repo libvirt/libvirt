@@ -229,6 +229,11 @@ virCPUDefUpdateFeature(virCPUDefPtr cpu,
                        const char *name,
                        int policy);
 
+int
+virCPUDefAddFeatureIfMissing(virCPUDefPtr def,
+                             const char *name,
+                             int policy);
+
 virCPUFeatureDefPtr
 virCPUDefFindFeature(virCPUDefPtr def,
                      const char *name);
