@@ -558,6 +558,10 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *stype = NULL;
     int type = VIR_STORAGE_TYPE_NONE;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) diskAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) diskChildBuf = VIR_BUFFER_INIT_CHILD(&buf);
+    g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
     g_autofree char *xml = NULL;
     struct stat st;
     bool current = vshCommandOptBool(cmd, "current");
@@ -622,71 +626,56 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (wwn && !virValidateWWN(wwn))
         return false;
 
-    /* Make XML of disk */
-    virBufferAddLit(&buf, "<disk");
-    virBufferAsprintf(&buf, " type='%s'", virshAttachDiskSourceTypeToString(type));
-
-    if (device)
-        virBufferAsprintf(&buf, " device='%s'", device);
+    virBufferAsprintf(&diskAttrBuf, " type='%s'", virshAttachDiskSourceTypeToString(type));
+    virBufferEscapeString(&diskAttrBuf, " device='%s'", device);
     if (vshCommandOptBool(cmd, "rawio"))
-        virBufferAddLit(&buf, " rawio='yes'");
-    virBufferAddLit(&buf, ">\n");
-    virBufferAdjustIndent(&buf, 2);
+        virBufferAddLit(&diskAttrBuf, " rawio='yes'");
 
-    if (driver || subdriver || iothread || cache || io) {
-        virBufferAddLit(&buf, "<driver");
+    virBufferEscapeString(&driverAttrBuf, " name='%s'", driver);
+    virBufferEscapeString(&driverAttrBuf, " type='%s'", subdriver);
+    virBufferEscapeString(&driverAttrBuf, " iothread='%s'", iothread);
+    virBufferEscapeString(&driverAttrBuf, " cache='%s'", cache);
+    virBufferEscapeString(&driverAttrBuf, " io='%s'", io);
 
-        if (driver)
-            virBufferAsprintf(&buf, " name='%s'", driver);
-        if (subdriver)
-            virBufferAsprintf(&buf, " type='%s'", subdriver);
-        if (iothread)
-            virBufferAsprintf(&buf, " iothread='%s'", iothread);
-        if (cache)
-            virBufferAsprintf(&buf, " cache='%s'", cache);
-        if (io)
-            virBufferAsprintf(&buf, " io='%s'", io);
-
-        virBufferAddLit(&buf, "/>\n");
-    }
+    virXMLFormatElement(&diskChildBuf, "driver", &driverAttrBuf, NULL);
 
     switch ((enum virshAttachDiskSourceType) type) {
     case VIRSH_ATTACH_DISK_SOURCE_TYPE_FILE:
-        virBufferEscapeString(&buf, "<source file='%s'/>\n", source);
+        virBufferEscapeString(&sourceAttrBuf, " file='%s'", source);
         break;
 
     case VIRSH_ATTACH_DISK_SOURCE_TYPE_BLOCK:
-        virBufferEscapeString(&buf, "<source dev='%s'/>\n", source);
+        virBufferEscapeString(&sourceAttrBuf, " dev='%s'", source);
         break;
 
     case VIRSH_ATTACH_DISK_SOURCE_TYPE_NONE:
     case VIRSH_ATTACH_DISK_SOURCE_TYPE_LAST:
         break;
     }
+    virXMLFormatElement(&diskChildBuf, "source", &sourceAttrBuf, NULL);
 
-    virBufferAsprintf(&buf, "<target dev='%s'", target);
+    virBufferAsprintf(&diskChildBuf, "<target dev='%s'", target);
     if (targetbus)
-        virBufferAsprintf(&buf, " bus='%s'", targetbus);
-    virBufferAddLit(&buf, "/>\n");
+        virBufferAsprintf(&diskChildBuf, " bus='%s'", targetbus);
+    virBufferAddLit(&diskChildBuf, "/>\n");
 
     if (mode)
-        virBufferAsprintf(&buf, "<%s/>\n", mode);
+        virBufferAsprintf(&diskChildBuf, "<%s/>\n", mode);
 
     if (serial)
-        virBufferAsprintf(&buf, "<serial>%s</serial>\n", serial);
+        virBufferAsprintf(&diskChildBuf, "<serial>%s</serial>\n", serial);
 
     if (alias)
-        virBufferAsprintf(&buf, "<alias name='%s'/>\n", alias);
+        virBufferAsprintf(&diskChildBuf, "<alias name='%s'/>\n", alias);
 
     if (wwn)
-        virBufferAsprintf(&buf, "<wwn>%s</wwn>\n", wwn);
+        virBufferAsprintf(&diskChildBuf, "<wwn>%s</wwn>\n", wwn);
 
     if (straddr &&
-        cmdAttachDiskFormatAddress(ctl, &buf, straddr, target, multifunction) < 0)
+        cmdAttachDiskFormatAddress(ctl, &diskChildBuf, straddr, target, multifunction) < 0)
         return false;
 
-    virBufferAdjustIndent(&buf, -2);
-    virBufferAddLit(&buf, "</disk>\n");
+    virXMLFormatElement(&buf, "disk", &diskAttrBuf, &diskChildBuf);
 
     xml = virBufferContentAndReset(&buf);
 
