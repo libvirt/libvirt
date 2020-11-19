@@ -2,6 +2,8 @@
 
 . "$(dirname $0)/test-lib.sh"
 
+test_expensive
+
 if [ ! -x /bin/bash ]; then
     echo skipping test - no bash
     exit 77
