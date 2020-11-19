@@ -578,7 +578,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *alias = NULL;
     struct DiskAddress diskAddr;
     bool isFile = false;
-    bool functionReturn = false;
     int ret;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     const char *stype = NULL;
@@ -615,7 +614,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "targetbus", &targetbus) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "alias", &alias) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "sourcetype", &stype) < 0)
-        goto cleanup;
+        return false;
 
     if (!stype) {
         if (driver && (STREQ(driver, "file") || STREQ(driver, "tap"))) {
@@ -628,19 +627,19 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         isFile = true;
     } else if (STRNEQ(stype, "block")) {
         vshError(ctl, _("Unknown source type: '%s'"), stype);
-        goto cleanup;
+        return false;
     }
 
     if (mode) {
         if (STRNEQ(mode, "readonly") && STRNEQ(mode, "shareable")) {
             vshError(ctl, _("No support for %s in command 'attach-disk'"),
                      mode);
-            goto cleanup;
+            return false;
         }
     }
 
     if (wwn && !virValidateWWN(wwn))
-        goto cleanup;
+        return false;
 
     /* Make XML of disk */
     virBufferAsprintf(&buf, "<disk type='%s'",
@@ -692,7 +691,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (straddr) {
         if (str2DiskAddress(straddr, &diskAddr) != 0) {
             vshError(ctl, _("Invalid address."));
-            goto cleanup;
+            return false;
         }
 
         if (STRPREFIX((const char *)target, "vd")) {
@@ -714,7 +713,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
             } else {
                 vshError(ctl, "%s",
                          _("expecting a pci:0000.00.00.00 or ccw:00.0.0000 address."));
-                goto cleanup;
+                return false;
             }
         } else if (STRPREFIX((const char *)target, "sd")) {
             if (diskAddr.type == DISK_ADDR_TYPE_SCSI) {
@@ -736,7 +735,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
             } else {
                 vshError(ctl, "%s",
                 _("expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address."));
-                goto cleanup;
+                return false;
             }
         } else if (STRPREFIX((const char *)target, "hd")) {
             if (diskAddr.type == DISK_ADDR_TYPE_IDE) {
@@ -747,7 +746,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
                                   diskAddr.addr.ide.unit);
             } else {
                 vshError(ctl, "%s", _("expecting an ide:00.00.00 address."));
-                goto cleanup;
+                return false;
             }
         }
     }
@@ -759,12 +758,11 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "print-xml")) {
         vshPrint(ctl, "%s", xml);
-        functionReturn = true;
-        goto cleanup;
+        return true;
     }
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        goto cleanup;
+        return false;
 
     if (persistent &&
         virDomainIsActive(dom) == 1)
@@ -775,15 +773,14 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     else
         ret = virDomainAttachDevice(dom, xml);
 
-    if (ret != 0) {
+    if (ret < 0) {
         vshError(ctl, "%s", _("Failed to attach disk"));
-    } else {
-        vshPrintExtra(ctl, "%s", _("Disk attached successfully\n"));
-        functionReturn = true;
+        return false;
     }
 
- cleanup:
-    return functionReturn;
+
+    vshPrintExtra(ctl, "%s", _("Disk attached successfully\n"));
+    return true;
 }
 
 /*
