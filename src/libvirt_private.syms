@@ -3081,6 +3081,7 @@ virRandomBits;
 virRandomBytes;
 virRandomGenerateWWN;
 virRandomInt;
+virRandomToken;
 
 
 # util/virresctrl.h

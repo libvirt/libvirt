@@ -161,3 +161,21 @@ virRandomGenerateWWN(char **wwn,
                            (unsigned long long)virRandomBits(36));
     return 0;
 }
+
+char *virRandomToken(size_t len)
+{
+    g_autofree unsigned char *data = g_new0(unsigned char, len);
+    g_autofree char *token = g_new0(char, (len * 2) + 1);
+    static const char hex[] = "0123456789abcdef";
+    size_t i;
+
+    if (virRandomBytes(data, len) < 0)
+        return NULL;
+
+    for (i = 0; i < len; i++) {
+        token[(i*2)] = hex[data[i] & 0xf];
+        token[(i*2)+1] = hex[(data[i] >> 4) & 0xf];
+    }
+
+    return g_steal_pointer(&token);
+}

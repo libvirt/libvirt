@@ -26,3 +26,4 @@ uint32_t virRandomInt(uint32_t max);
 int virRandomBytes(unsigned char *buf, size_t buflen)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
 int virRandomGenerateWWN(char **wwn, const char *virt_type) G_GNUC_NO_INLINE;
+char *virRandomToken(size_t len);
