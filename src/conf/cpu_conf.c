@@ -857,11 +857,17 @@ virCPUDefFormatBuf(virBufferPtr buf,
     return 0;
 }
 
+
+typedef enum {
+    VIR_CPU_ADD_FEATURE_MODE_EXCLUSIVE, /* Fail if feature exists */
+    VIR_CPU_ADD_FEATURE_MODE_UPDATE,    /* Add feature or update policy */
+} virCPUDefAddFeatureMode;
+
 static int
 virCPUDefAddFeatureInternal(virCPUDefPtr def,
                             const char *name,
                             int policy,
-                            bool update)
+                            virCPUDefAddFeatureMode mode)
 {
     virCPUFeatureDefPtr feat;
 
@@ -869,16 +875,18 @@ virCPUDefAddFeatureInternal(virCPUDefPtr def,
         policy = -1;
 
     if ((feat = virCPUDefFindFeature(def, name))) {
-        if (update) {
+        switch (mode) {
+        case VIR_CPU_ADD_FEATURE_MODE_UPDATE:
             feat->policy = policy;
             return 0;
+
+        case VIR_CPU_ADD_FEATURE_MODE_EXCLUSIVE:
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("CPU feature '%s' specified more than once"),
+                           name);
+            return -1;
         }
-
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU feature '%s' specified more than once"),
-                       name);
-
-        return -1;
     }
 
     if (VIR_RESIZE_N(def->features, def->nfeatures_max,
@@ -898,7 +906,8 @@ virCPUDefUpdateFeature(virCPUDefPtr def,
                        const char *name,
                        int policy)
 {
-    return virCPUDefAddFeatureInternal(def, name, policy, true);
+    return virCPUDefAddFeatureInternal(def, name, policy,
+                                       VIR_CPU_ADD_FEATURE_MODE_UPDATE);
 }
 
 int
@@ -906,7 +915,8 @@ virCPUDefAddFeature(virCPUDefPtr def,
                     const char *name,
                     int policy)
 {
-    return virCPUDefAddFeatureInternal(def, name, policy, false);
+    return virCPUDefAddFeatureInternal(def, name, policy,
+                                       VIR_CPU_ADD_FEATURE_MODE_EXCLUSIVE);
 }
 
 
