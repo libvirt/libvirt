@@ -52,6 +52,178 @@
 #include "virenum.h"
 #include "virutil.h"
 
+enum virshAddressType {
+    VIRSH_ADDRESS_TYPE_PCI,
+    VIRSH_ADDRESS_TYPE_SCSI,
+    VIRSH_ADDRESS_TYPE_IDE,
+    VIRSH_ADDRESS_TYPE_CCW,
+    VIRSH_ADDRESS_TYPE_USB,
+    VIRSH_ADDRESS_TYPE_SATA,
+
+    VIRSH_ADDRESS_TYPE_LAST
+};
+
+VIR_ENUM_DECL(virshAddress);
+VIR_ENUM_IMPL(virshAddress,
+              VIRSH_ADDRESS_TYPE_LAST,
+              "pci",
+              "scsi",
+              "ide",
+              "ccw",
+              "usb",
+              "sata");
+
+struct virshAddressPCI {
+    unsigned int domain;
+    unsigned int bus;
+    unsigned int slot;
+    unsigned int function;
+    bool multifunction;
+};
+
+struct virshAddressDrive {
+    unsigned int controller;
+    unsigned int bus;
+    unsigned long long unit;
+};
+
+struct virshAddressCCW {
+    unsigned int cssid;
+    unsigned int ssid;
+    unsigned int devno;
+};
+
+struct virshAddressUSB {
+    unsigned int bus;
+    unsigned int port;
+};
+
+struct virshAddress {
+    int type; /* enum virshAddressType */
+    union {
+        struct virshAddressPCI pci;
+        struct virshAddressDrive drive;
+        struct virshAddressCCW ccw;
+        struct virshAddressUSB usb;
+    } addr;
+};
+
+
+/* pci address pci:0000.00.0x0a.0 (domain:bus:slot:function)
+ * ide disk address: ide:00.00.0 (controller:bus:unit)
+ * scsi disk address: scsi:00.00.0 (controller:bus:unit)
+ * ccw disk address: ccw:0xfe.0.0000 (cssid:ssid:devno)
+ * usb disk address: usb:00.00 (bus:port)
+ * sata disk address: sata:00.00.0 (controller:bus:unit)
+ */
+static int
+virshAddressParse(const char *str,
+                  bool multifunction,
+                  struct virshAddress *addr)
+{
+    g_autofree char *type = g_strdup(str);
+    char *a = strchr(type, ':');
+
+    if (!addr)
+        return -1;
+
+    *a = '\0';
+
+    addr->type = virshAddressTypeFromString(type);
+
+    switch ((enum virshAddressType) addr->type) {
+    case VIRSH_ADDRESS_TYPE_PCI:
+        addr->addr.pci.multifunction = multifunction;
+
+        if (virStrToLong_uip(++a, &a, 16, &addr->addr.pci.domain) < 0 ||
+            virStrToLong_uip(++a, &a, 16, &addr->addr.pci.bus) < 0 ||
+            virStrToLong_uip(++a, &a, 16, &addr->addr.pci.slot) < 0 ||
+            virStrToLong_uip(++a, &a, 16, &addr->addr.pci.function) < 0)
+            return -1;
+        break;
+
+    case VIRSH_ADDRESS_TYPE_SATA:
+    case VIRSH_ADDRESS_TYPE_IDE:
+    case VIRSH_ADDRESS_TYPE_SCSI:
+        if (virStrToLong_uip(++a, &a, 10, &addr->addr.drive.controller) < 0 ||
+            virStrToLong_uip(++a, &a, 10, &addr->addr.drive.bus) < 0 ||
+            virStrToLong_ullp(++a, &a, 10, &addr->addr.drive.unit) < 0)
+            return -1;
+        break;
+
+    case VIRSH_ADDRESS_TYPE_CCW:
+        if (virStrToLong_uip(++a, &a, 16, &addr->addr.ccw.cssid) < 0 ||
+            virStrToLong_uip(++a, &a, 16, &addr->addr.ccw.ssid) < 0 ||
+            virStrToLong_uip(++a, &a, 16, &addr->addr.ccw.devno) < 0)
+            return -1;
+        break;
+
+    case VIRSH_ADDRESS_TYPE_USB:
+        if (virStrToLong_uip(++a, &a, 10, &addr->addr.usb.bus) < 0 ||
+            virStrToLong_uip(++a, &a, 10, &addr->addr.usb.port) < 0)
+            return -1;
+        break;
+
+    case VIRSH_ADDRESS_TYPE_LAST:
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static void
+virshAddressFormat(virBufferPtr buf,
+                   struct virshAddress *addr)
+{
+    switch ((enum virshAddressType) addr->type) {
+    case VIRSH_ADDRESS_TYPE_PCI:
+        virBufferAsprintf(buf,
+                          "<address type='pci' domain='0x%04x' bus='0x%02x' slot='0x%02x' function='0x%0x'",
+                          addr->addr.pci.domain,
+                          addr->addr.pci.bus,
+                          addr->addr.pci.slot,
+                          addr->addr.pci.function);
+
+        if (addr->addr.pci.multifunction)
+            virBufferAddLit(buf, " multifunction='on'");
+
+        virBufferAddLit(buf, "/>\n");
+        break;
+
+    case VIRSH_ADDRESS_TYPE_SATA:
+    case VIRSH_ADDRESS_TYPE_IDE:
+    case VIRSH_ADDRESS_TYPE_SCSI:
+        virBufferAsprintf(buf,
+                          "<address type='drive' controller='%u' bus='%u' unit='%llu'/>\n",
+                          addr->addr.drive.controller,
+                          addr->addr.drive.bus,
+                          addr->addr.drive.unit);
+        break;
+
+    case VIRSH_ADDRESS_TYPE_CCW:
+        virBufferAsprintf(buf,
+                          "<address type='ccw' cssid='0x%02x' ssid='0x%01x' devno='0x%04x'/>\n",
+                          addr->addr.ccw.cssid,
+                          addr->addr.ccw.ssid,
+                          addr->addr.ccw.devno);
+        break;
+
+    case VIRSH_ADDRESS_TYPE_USB:
+        virBufferAsprintf(buf,
+                          "<address type='usb' bus='%u' port='%u'/>\n",
+                          addr->addr.usb.bus,
+                          addr->addr.usb.port);
+        break;
+
+    case VIRSH_ADDRESS_TYPE_LAST:
+    default:
+        return;
+    }
+}
+
+
 #define VIRSH_COMMON_OPT_DOMAIN_PERSISTENT \
     {.name = "persistent", \
      .type = VSH_OT_BOOL, \
@@ -304,177 +476,6 @@ static const vshCmdOptDef opts_attach_disk[] = {
     VIRSH_COMMON_OPT_DOMAIN_CURRENT,
     {.name = NULL}
 };
-
-enum virshAddressType {
-    VIRSH_ADDRESS_TYPE_PCI,
-    VIRSH_ADDRESS_TYPE_SCSI,
-    VIRSH_ADDRESS_TYPE_IDE,
-    VIRSH_ADDRESS_TYPE_CCW,
-    VIRSH_ADDRESS_TYPE_USB,
-    VIRSH_ADDRESS_TYPE_SATA,
-
-    VIRSH_ADDRESS_TYPE_LAST
-};
-
-VIR_ENUM_DECL(virshAddress);
-VIR_ENUM_IMPL(virshAddress,
-              VIRSH_ADDRESS_TYPE_LAST,
-              "pci",
-              "scsi",
-              "ide",
-              "ccw",
-              "usb",
-              "sata");
-
-struct virshAddressPCI {
-    unsigned int domain;
-    unsigned int bus;
-    unsigned int slot;
-    unsigned int function;
-    bool multifunction;
-};
-
-struct virshAddressDrive {
-    unsigned int controller;
-    unsigned int bus;
-    unsigned long long unit;
-};
-
-struct virshAddressCCW {
-    unsigned int cssid;
-    unsigned int ssid;
-    unsigned int devno;
-};
-
-struct virshAddressUSB {
-    unsigned int bus;
-    unsigned int port;
-};
-
-struct virshAddress {
-    int type; /* enum virshAddressType */
-    union {
-        struct virshAddressPCI pci;
-        struct virshAddressDrive drive;
-        struct virshAddressCCW ccw;
-        struct virshAddressUSB usb;
-    } addr;
-};
-
-
-/* pci address pci:0000.00.0x0a.0 (domain:bus:slot:function)
- * ide disk address: ide:00.00.0 (controller:bus:unit)
- * scsi disk address: scsi:00.00.0 (controller:bus:unit)
- * ccw disk address: ccw:0xfe.0.0000 (cssid:ssid:devno)
- * usb disk address: usb:00.00 (bus:port)
- * sata disk address: sata:00.00.0 (controller:bus:unit)
- */
-static int
-virshAddressParse(const char *str,
-                  bool multifunction,
-                  struct virshAddress *addr)
-{
-    g_autofree char *type = g_strdup(str);
-    char *a = strchr(type, ':');
-
-    if (!addr)
-        return -1;
-
-    *a = '\0';
-
-    addr->type = virshAddressTypeFromString(type);
-
-    switch ((enum virshAddressType) addr->type) {
-    case VIRSH_ADDRESS_TYPE_PCI:
-        addr->addr.pci.multifunction = multifunction;
-
-        if (virStrToLong_uip(++a, &a, 16, &addr->addr.pci.domain) < 0 ||
-            virStrToLong_uip(++a, &a, 16, &addr->addr.pci.bus) < 0 ||
-            virStrToLong_uip(++a, &a, 16, &addr->addr.pci.slot) < 0 ||
-            virStrToLong_uip(++a, &a, 16, &addr->addr.pci.function) < 0)
-            return -1;
-        break;
-
-    case VIRSH_ADDRESS_TYPE_SATA:
-    case VIRSH_ADDRESS_TYPE_IDE:
-    case VIRSH_ADDRESS_TYPE_SCSI:
-        if (virStrToLong_uip(++a, &a, 10, &addr->addr.drive.controller) < 0 ||
-            virStrToLong_uip(++a, &a, 10, &addr->addr.drive.bus) < 0 ||
-            virStrToLong_ullp(++a, &a, 10, &addr->addr.drive.unit) < 0)
-            return -1;
-        break;
-
-    case VIRSH_ADDRESS_TYPE_CCW:
-        if (virStrToLong_uip(++a, &a, 16, &addr->addr.ccw.cssid) < 0 ||
-            virStrToLong_uip(++a, &a, 16, &addr->addr.ccw.ssid) < 0 ||
-            virStrToLong_uip(++a, &a, 16, &addr->addr.ccw.devno) < 0)
-            return -1;
-        break;
-
-    case VIRSH_ADDRESS_TYPE_USB:
-        if (virStrToLong_uip(++a, &a, 10, &addr->addr.usb.bus) < 0 ||
-            virStrToLong_uip(++a, &a, 10, &addr->addr.usb.port) < 0)
-            return -1;
-        break;
-
-    case VIRSH_ADDRESS_TYPE_LAST:
-    default:
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static void
-virshAddressFormat(virBufferPtr buf,
-                   struct virshAddress *addr)
-{
-    switch ((enum virshAddressType) addr->type) {
-    case VIRSH_ADDRESS_TYPE_PCI:
-        virBufferAsprintf(buf,
-                          "<address type='pci' domain='0x%04x' bus='0x%02x' slot='0x%02x' function='0x%0x'",
-                          addr->addr.pci.domain,
-                          addr->addr.pci.bus,
-                          addr->addr.pci.slot,
-                          addr->addr.pci.function);
-
-        if (addr->addr.pci.multifunction)
-            virBufferAddLit(buf, " multifunction='on'");
-
-        virBufferAddLit(buf, "/>\n");
-        break;
-
-    case VIRSH_ADDRESS_TYPE_SATA:
-    case VIRSH_ADDRESS_TYPE_IDE:
-    case VIRSH_ADDRESS_TYPE_SCSI:
-        virBufferAsprintf(buf,
-                          "<address type='drive' controller='%u' bus='%u' unit='%llu'/>\n",
-                          addr->addr.drive.controller,
-                          addr->addr.drive.bus,
-                          addr->addr.drive.unit);
-        break;
-
-    case VIRSH_ADDRESS_TYPE_CCW:
-        virBufferAsprintf(buf,
-                          "<address type='ccw' cssid='0x%02x' ssid='0x%01x' devno='0x%04x'/>\n",
-                          addr->addr.ccw.cssid,
-                          addr->addr.ccw.ssid,
-                          addr->addr.ccw.devno);
-        break;
-
-    case VIRSH_ADDRESS_TYPE_USB:
-        virBufferAsprintf(buf,
-                          "<address type='usb' bus='%u' port='%u'/>\n",
-                          addr->addr.usb.bus,
-                          addr->addr.usb.port);
-        break;
-
-    case VIRSH_ADDRESS_TYPE_LAST:
-    default:
-        return;
-    }
-}
 
 
 static int
