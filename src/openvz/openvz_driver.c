@@ -2067,9 +2067,9 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
     const char *uri_in = NULL;
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
-    char *my_hostname = NULL;
+    g_autofree char *my_hostname = NULL;
     const char *hostname = NULL;
-    virURIPtr uri = NULL;
+    g_autoptr(virURI) uri = NULL;
     int ret = -1;
 
     if (virTypedParamsValidate(params, nparams, OPENVZ_MIGRATION_PARAMETERS) < 0)
@@ -2146,8 +2146,6 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
         virDomainObjListRemove(driver->domains, vm);
 
  done:
-    VIR_FREE(my_hostname);
-    virURIFree(uri);
     virDomainObjEndAPI(&vm);
     return ret;
 }
