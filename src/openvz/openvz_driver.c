@@ -2113,6 +2113,8 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
                              " but migration requires an FQDN"));
             goto error;
         }
+
+        hostname = my_hostname;
     } else {
         uri = virURIParse(uri_in);
 
